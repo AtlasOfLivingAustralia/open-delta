@@ -1,0 +1,335 @@
+/*******************************************************************************
+ * Copyright (C) 2011 Atlas of Living Australia
+ * All Rights Reserved.
+ * 
+ * The contents of this file are subject to the Mozilla Public
+ * License Version 1.1 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of
+ * the License at http://www.mozilla.org/MPL/
+ * 
+ * Software distributed under the License is distributed on an "AS
+ * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+ * implied. See the License for the specific language governing
+ * rights and limitations under the License.
+ ******************************************************************************/
+package au.org.ala.delta.rtf;
+
+import java.io.IOException;
+import java.util.Dictionary;
+import java.util.Hashtable;
+import java.util.Vector;
+
+import javax.swing.text.AttributeSet;
+import javax.swing.text.MutableAttributeSet;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.TabStop;
+
+class RTFAttributes {
+	static MyRTFAttribute attributes[];
+
+	static {
+		Vector<GenericAttribute> a = new Vector<GenericAttribute>();
+		int CHR = MyRTFAttribute.D_CHARACTER;
+		int PGF = MyRTFAttribute.D_PARAGRAPH;
+		// int SEC = MyRTFAttribute.D_SECTION;
+		int DOC = MyRTFAttribute.D_DOCUMENT;
+		int PST = MyRTFAttribute.D_META;
+		Boolean True = Boolean.valueOf(true);
+		Boolean False = Boolean.valueOf(false);
+
+		a.addElement(new BooleanAttribute(CHR, StyleConstants.Italic, "i"));
+		a.addElement(new BooleanAttribute(CHR, StyleConstants.Bold, "b"));
+		a.addElement(new BooleanAttribute(CHR, StyleConstants.Underline, "ul"));
+		
+		a.addElement(new BooleanAttribute(CHR, StyleConstants.Superscript, "super"));
+		a.addElement(new BooleanAttribute(CHR, StyleConstants.Subscript, "sub"));
+		
+		a.addElement(NumericAttribute.NewTwips(PGF, StyleConstants.LeftIndent, "li", 0f, 0));
+		a.addElement(NumericAttribute.NewTwips(PGF, StyleConstants.RightIndent, "ri", 0f, 0));
+		a.addElement(NumericAttribute.NewTwips(PGF, StyleConstants.FirstLineIndent, "fi", 0f, 0));
+
+		a.addElement(new AssertiveAttribute(PGF, StyleConstants.Alignment, "ql", StyleConstants.ALIGN_LEFT));
+		a.addElement(new AssertiveAttribute(PGF, StyleConstants.Alignment, "qr", StyleConstants.ALIGN_RIGHT));
+		a.addElement(new AssertiveAttribute(PGF, StyleConstants.Alignment, "qc", StyleConstants.ALIGN_CENTER));
+		a.addElement(new AssertiveAttribute(PGF, StyleConstants.Alignment, "qj", StyleConstants.ALIGN_JUSTIFIED));
+		a.addElement(NumericAttribute.NewTwips(PGF, StyleConstants.SpaceAbove, "sa", 0));
+		a.addElement(NumericAttribute.NewTwips(PGF, StyleConstants.SpaceBelow, "sb", 0));
+
+		a.addElement(new AssertiveAttribute(PST, MyRTFReader.TabAlignmentKey, "tqr", TabStop.ALIGN_RIGHT));
+		a.addElement(new AssertiveAttribute(PST, MyRTFReader.TabAlignmentKey, "tqc", TabStop.ALIGN_CENTER));
+		a.addElement(new AssertiveAttribute(PST, MyRTFReader.TabAlignmentKey, "tqdec", TabStop.ALIGN_DECIMAL));
+
+		a.addElement(new AssertiveAttribute(PST, MyRTFReader.TabLeaderKey, "tldot", TabStop.LEAD_DOTS));
+		a.addElement(new AssertiveAttribute(PST, MyRTFReader.TabLeaderKey, "tlhyph", TabStop.LEAD_HYPHENS));
+		a.addElement(new AssertiveAttribute(PST, MyRTFReader.TabLeaderKey, "tlul", TabStop.LEAD_UNDERLINE));
+		a.addElement(new AssertiveAttribute(PST, MyRTFReader.TabLeaderKey, "tlth", TabStop.LEAD_THICKLINE));
+		a.addElement(new AssertiveAttribute(PST, MyRTFReader.TabLeaderKey, "tleq", TabStop.LEAD_EQUALS));
+
+		/* The following aren't actually recognized by Swing */
+		a.addElement(new BooleanAttribute(CHR, Constants.Caps, "caps"));
+		a.addElement(new BooleanAttribute(CHR, Constants.Outline, "outl"));
+		a.addElement(new BooleanAttribute(CHR, Constants.SmallCaps, "scaps"));
+		a.addElement(new BooleanAttribute(CHR, Constants.Shadow, "shad"));
+		a.addElement(new BooleanAttribute(CHR, Constants.Hidden, "v"));
+		a.addElement(new BooleanAttribute(CHR, Constants.Strikethrough, "strike"));
+		a.addElement(new BooleanAttribute(CHR, Constants.Deleted, "deleted"));
+
+		a.addElement(new AssertiveAttribute(DOC, "saveformat", "defformat", "RTF"));
+		a.addElement(new AssertiveAttribute(DOC, "landscape", "landscape"));
+
+		a.addElement(NumericAttribute.NewTwips(DOC, Constants.PaperWidth, "paperw", 12240));
+		a.addElement(NumericAttribute.NewTwips(DOC, Constants.PaperHeight, "paperh", 15840));
+		a.addElement(NumericAttribute.NewTwips(DOC, Constants.MarginLeft, "margl", 1800));
+		a.addElement(NumericAttribute.NewTwips(DOC, Constants.MarginRight, "margr", 1800));
+		a.addElement(NumericAttribute.NewTwips(DOC, Constants.MarginTop, "margt", 1440));
+		a.addElement(NumericAttribute.NewTwips(DOC, Constants.MarginBottom, "margb", 1440));
+		a.addElement(NumericAttribute.NewTwips(DOC, Constants.GutterWidth, "gutter", 0));
+
+		a.addElement(new AssertiveAttribute(PGF, Constants.WidowControl, "nowidctlpar", False));
+		a.addElement(new AssertiveAttribute(PGF, Constants.WidowControl, "widctlpar", True));
+		a.addElement(new AssertiveAttribute(DOC, Constants.WidowControl, "widowctrl", True));
+
+		MyRTFAttribute[] attrs = new MyRTFAttribute[a.size()];
+		a.copyInto(attrs);
+		attributes = attrs;
+	}
+
+	static Dictionary<String, MyRTFAttribute> attributesByKeyword() {
+		Dictionary<String, MyRTFAttribute> d = new Hashtable<String, MyRTFAttribute>(attributes.length);
+		int i, m;
+
+		m = attributes.length;
+		for (i = 0; i < m; i++)
+			d.put(attributes[i].rtfName(), attributes[i]);
+
+		return d;
+	}
+
+	/************************************************************************/
+	/************************************************************************/
+
+	static abstract class GenericAttribute {
+		int domain;
+		Object swingName;
+		String rtfName;
+
+		protected GenericAttribute(int d, Object s, String r) {
+			domain = d;
+			swingName = s;
+			rtfName = r;
+		}
+
+		public int domain() {
+			return domain;
+		}
+
+		public Object swingName() {
+			return swingName;
+		}
+
+		public String rtfName() {
+			return rtfName;
+		}
+
+		abstract boolean set(MutableAttributeSet target);
+
+		abstract boolean set(MutableAttributeSet target, int parameter);
+
+		abstract boolean setDefault(MutableAttributeSet target);
+
+		public boolean write(AttributeSet source, RTFGenerator target, boolean force) throws IOException {
+			return writeValue(source.getAttribute(swingName), target, force);
+		}
+
+		public boolean writeValue(Object value, RTFGenerator target, boolean force) throws IOException {
+			return false;
+		}
+	}
+
+	static class BooleanAttribute extends GenericAttribute implements MyRTFAttribute {
+		boolean rtfDefault;
+		boolean swingDefault;
+
+		protected static final Boolean True = Boolean.valueOf(true);
+		protected static final Boolean False = Boolean.valueOf(false);
+
+		public BooleanAttribute(int d, Object s, String r, boolean ds, boolean dr) {
+			super(d, s, r);
+			swingDefault = ds;
+			rtfDefault = dr;
+		}
+
+		public BooleanAttribute(int d, Object s, String r) {
+			super(d, s, r);
+
+			swingDefault = false;
+			rtfDefault = false;
+		}
+
+		public boolean set(MutableAttributeSet target) {
+			/*
+			 * TODO: There's some ambiguity about whether this shouldset* or *toggle* the attribute.
+			 */
+			target.addAttribute(swingName, True);
+
+			return true; /* true indicates we were successful */
+		}
+
+		public boolean set(MutableAttributeSet target, int parameter) {
+			/* See above note in the case that parameter==1 */
+			Boolean value = (parameter != 0 ? True : False);
+
+			target.addAttribute(swingName, value);
+
+			return true; /* true indicates we were successful */
+		}
+
+		public boolean setDefault(MutableAttributeSet target) {
+			if (swingDefault != rtfDefault || (target.getAttribute(swingName) != null))
+				target.addAttribute(swingName, Boolean.valueOf(rtfDefault));
+			return true;
+		}
+
+		public boolean writeValue(Object o_value, RTFGenerator target, boolean force) throws IOException {
+			Boolean val;
+
+			if (o_value == null)
+				val = Boolean.valueOf(swingDefault);
+			else
+				val = (Boolean) o_value;
+
+			if (force || (val.booleanValue() != rtfDefault)) {
+				if (val.booleanValue()) {
+					target.writeControlWord(rtfName);
+				} else {
+					target.writeControlWord(rtfName, 0);
+				}
+			}
+			return true;
+		}
+	}
+
+	static class AssertiveAttribute extends GenericAttribute implements MyRTFAttribute {
+		Object swingValue;
+
+		public AssertiveAttribute(int d, Object s, String r) {
+			super(d, s, r);
+			swingValue = Boolean.valueOf(true);
+		}
+
+		public AssertiveAttribute(int d, Object s, String r, Object v) {
+			super(d, s, r);
+			swingValue = v;
+		}
+
+		public AssertiveAttribute(int d, Object s, String r, int v) {
+			super(d, s, r);
+			swingValue = new Integer(v);
+		}
+
+		public boolean set(MutableAttributeSet target) {
+			if (swingValue == null)
+				target.removeAttribute(swingName);
+			else
+				target.addAttribute(swingName, swingValue);
+
+			return true;
+		}
+
+		public boolean set(MutableAttributeSet target, int parameter) {
+			return false;
+		}
+
+		public boolean setDefault(MutableAttributeSet target) {
+			target.removeAttribute(swingName);
+			return true;
+		}
+
+		public boolean writeValue(Object value, RTFGenerator target, boolean force) throws IOException {
+			if (value == null) {
+				return !force;
+			}
+
+			if (value.equals(swingValue)) {
+				target.writeControlWord(rtfName);
+				return true;
+			}
+
+			return !force;
+		}
+	}
+
+	static class NumericAttribute extends GenericAttribute implements MyRTFAttribute {
+		int rtfDefault;
+		Number swingDefault;
+		float scale;
+
+		protected NumericAttribute(int d, Object s, String r) {
+			super(d, s, r);
+			rtfDefault = 0;
+			swingDefault = null;
+			scale = 1f;
+		}
+
+		public NumericAttribute(int d, Object s, String r, int ds, int dr) {
+			this(d, s, r, new Integer(ds), dr, 1f);
+		}
+
+		public NumericAttribute(int d, Object s, String r, Number ds, int dr, float sc) {
+			super(d, s, r);
+			swingDefault = ds;
+			rtfDefault = dr;
+			scale = sc;
+		}
+
+		public static NumericAttribute NewTwips(int d, Object s, String r, float ds, int dr) {
+			return new NumericAttribute(d, s, r, new Float(ds), dr, 20f);
+		}
+
+		public static NumericAttribute NewTwips(int d, Object s, String r, int dr) {
+			return new NumericAttribute(d, s, r, null, dr, 20f);
+		}
+
+		public boolean set(MutableAttributeSet target) {
+			return false;
+		}
+
+		public boolean set(MutableAttributeSet target, int parameter) {
+			Number swingValue;
+
+			if (scale == 1f)
+				swingValue = new Integer(parameter);
+			else
+				swingValue = new Float(parameter / scale);
+			target.addAttribute(swingName, swingValue);
+			return true;
+		}
+
+		public boolean setDefault(MutableAttributeSet target) {
+			Number old = (Number) target.getAttribute(swingName);
+			if (old == null)
+				old = swingDefault;
+			if (old != null && ((scale == 1f && old.intValue() == rtfDefault) || (Math.round(old.floatValue() * scale) == rtfDefault)))
+				return true;
+			set(target, rtfDefault);
+			return true;
+		}
+
+		public boolean writeValue(Object o_value, RTFGenerator target, boolean force) throws IOException {
+			Number value = (Number) o_value;
+			if (value == null)
+				value = swingDefault;
+			if (value == null) {
+				/*
+				 * TODO: What is the proper behavior if the Swing object does not specify a value, and we don't know its default value? Currently we pretend that the RTF default value is equivalent
+				 * (probably a workable assumption)
+				 */
+				return true;
+			}
+			int int_value = Math.round(value.floatValue() * scale);
+			if (force || (int_value != rtfDefault))
+				target.writeControlWord(rtfName, int_value);
+			return true;
+		}
+	}
+}

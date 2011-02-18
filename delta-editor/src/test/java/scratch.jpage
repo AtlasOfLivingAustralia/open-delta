@@ -1,0 +1,4 @@
+byte[] b = {92, 105, 32, 65, 110, 100, 114, 111, 112, 111, 103, 111, 110, 92, 105, 48, 32, 32, 60, 76, 46, 62, 0};
+System.out.println(new String(b));
+
+System.out.println(new String("DELTA-Datafile (c) G.F. Weiller 1996; CSIRO Entomology 1997").length());
