@@ -17,6 +17,7 @@ package au.org.ala.delta;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
+import java.io.StringWriter;
 
 import javax.swing.AbstractListModel;
 import javax.swing.Action;
@@ -40,6 +41,8 @@ import javax.swing.text.MutableAttributeSet;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledEditorKit;
+
+import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
 
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
@@ -118,7 +121,7 @@ public class StateEditor extends JPanel {
 			if (sv != null) {
 				String str = sv.getValue();
 				if (!str.startsWith("{\\rtf1")) {
-					str = String.format("{\\rtf1\\ansi\\ansicpg1252\\deff0\\deftab720 {\\fonttbl{\\f1\\fswiss Arial;}} \\plain\\f1\\fs24 %s }", sv.getValue());
+					str = String.format("{\\rtf1\\ansi\\ansicpg1252 %s }", sv.getValue());
 				}
 
 				_textPane.setText(str);
@@ -209,19 +212,17 @@ public class StateEditor extends JPanel {
 			boolean valid = verify(input);
 			
 			if (valid) {
-				String text = ((JTextPane)input).getText();
-				if (text == null) {
-					System.out.println("There was a problem retrieving text from the editor pane!");
-					Document doc = ((JTextPane)input).getDocument();
-					try {
-						text = doc.getText(0, doc.getLength());
-					} catch (BadLocationException e) {
-						
-						e.printStackTrace();
-					}
+				Document doc = ((JTextPane)input).getDocument();
+				MyRTFEditorKit kit = (MyRTFEditorKit) _textPane.getEditorKit();				
+				ByteOutputStream bos = new ByteOutputStream();
+				try {
+					kit.write(bos, doc, 0, doc.getLength());
+					String rtf = new String(bos.getBytes()).trim();
+					_item.setAttribute(_character, "<" + rtf.trim() + ">");
+				} catch (Exception ex) {
+					throw new RuntimeException(ex);					
 				}
 				
-				_item.setAttribute(_character, "<"+text.trim()+">");
 				// TODO I've bypassed the application model step here which will prevent notification of
 				// other components looking at the same data set.
 				//_context.setAttribute(_item, _character, ((JTextPane)input).getText());

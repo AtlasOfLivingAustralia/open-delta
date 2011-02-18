@@ -61,7 +61,7 @@ public class MatrixTableModel implements TableModel {
 		if (_context.VOP != null) {
 			int itemId = _context.VOP.getDeltaMaster().uniIdFromItemNo(rowIndex + 1);
 			VOItemDesc itemDesc = (VOItemDesc) _context.VOP.getDescFromId(itemId);
-			int charId = _context.VOP.getDeltaMaster().uniIdFromCharNo(columnIndex);			
+			int charId = _context.VOP.getDeltaMaster().uniIdFromCharNo(columnIndex + 1);			
 			Attribute attr = itemDesc.readAttribute(charId);
 			if (attr != null) {
 				return attr.getAsText(0, _context.VOP);
