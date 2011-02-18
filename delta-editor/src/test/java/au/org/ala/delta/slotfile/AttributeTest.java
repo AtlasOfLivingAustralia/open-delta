@@ -14,6 +14,8 @@
  ******************************************************************************/
 package au.org.ala.delta.slotfile;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.Arrays;
 
 import junit.framework.TestCase;
@@ -59,10 +61,10 @@ public class AttributeTest extends TestCase {
 		
 		byte[] data = attribute.getData();
 		
-		assertEquals("chunk type", (byte)ChunkType.CHUNK_NUMBER, data[1]);
+		assertEquals("chunk type", (byte)ChunkType.CHUNK_NUMBER, data[0]);
 		
 		DeltaNumber deltaNumber = new DeltaNumber();
-		deltaNumber.fromBinary(data, 2);
+		deltaNumber.fromBinary(data, 1);
 		
 		assertEquals(12.444f, deltaNumber.asFloat());
 		assertEquals(3, deltaNumber.getDecimal());
@@ -74,7 +76,7 @@ public class AttributeTest extends TestCase {
 		
 		data = attribute.getData();
 		
-		assertEquals("chunk type", (byte)ChunkType.CHUNK_TEXT, data[1]);
+		assertEquals("chunk type", (byte)ChunkType.CHUNK_TEXT, data[0]);
 		
 	}
 	
@@ -86,10 +88,10 @@ public class AttributeTest extends TestCase {
 		
 		byte[] data = attribute.getData();
 		
-		assertEquals("chunk type", (byte)ChunkType.CHUNK_NUMBER, data[1]);
+		assertEquals("chunk type", (byte)ChunkType.CHUNK_NUMBER, data[0]);
 		
 		DeltaNumber deltaNumber = new DeltaNumber();
-		deltaNumber.fromBinary(data, 2);
+		deltaNumber.fromBinary(data, 1);
 		
 		assertEquals(expectedValue, deltaNumber.asFloat());
 		assertEquals(expectedNumDecimalPlaces, deltaNumber.getDecimal());
@@ -101,13 +103,13 @@ public class AttributeTest extends TestCase {
 		// Since I am not sure exactly what is supposed to happen here I'm going to leave this for a 
 		// bit.
 		String attributeText = 
-			"\\i{}Agraulus\\i0{} P. Beauv., \\i{}Agrestis\\i0{} Bub., \\i{}Anomalotis\\i0{}\n"+
-			"Steud., \\i{}Bromidium\\i0{} Nees, \\i{}Candollea\\i0{} Steud.,\n"+
-			"\\i{}Chaetotropis\\i0{} Kunth, \\i{}Decandolea\\i0{} Batard, \\i{}Didymochaeta\\i0{}\n"+
-			"Steud., \\i{}Lachnagrostis\\i0{} Trin., \\i{}Neoschischkinia\\i0{} Tsvelev,\n"+
-			"\\i{}Notonema\\i0{} Raf., \\i{}Pentatherum\\i0{} Nabelek, \\i{}Podagrostis\\i0{}\n"+
-			"(Griseb.) Scribn., \\i{}Senisetum\\i0{} Koidz., \\i{}Trichodium\\i0{} Michaux,\n"+
-			"\\i{}Vilfa\\i0{} Adans.";
+			"\\iAgraulus\\i0 P. Beauv., \\iAgrestis\\i0 Bub., \\iAnomalotis\\i0\n"+
+			"Steud., \\iBromidium\\i0 Nees, \\iCandollea\\i0 Steud.,\n"+
+			"\\iChaetotropis\\i0 Kunth, \\iDecandolea\\i0 Batard, \\iDidymochaeta\\i0\n"+
+			"Steud., \\iLachnagrostis\\i0 Trin., \\iNeoschischkinia\\i0 Tsvelev,\n"+
+			"\\iNotonema\\i0 Raf., \\iPentatherum\\i0 Nabelek, \\iPodagrostis\\i0\n"+
+			"(Griseb.) Scribn., \\iSenisetum\\i0 Koidz., \\iTrichodium\\i0 Michaux,\n"+
+			"\\iVilfa\\i0 Adans.";
 		testShortTextAttribute(attributeText);
 	}
 	
@@ -144,14 +146,15 @@ public class AttributeTest extends TestCase {
 		
 		byte[] data = attribute.getData();
 		
-		assertEquals("chunk type", (byte)ChunkType.CHUNK_TEXT, data[1]);
+		assertEquals("chunk type", (byte)ChunkType.CHUNK_TEXT, data[0]);
 		
 		// We only have ASCII characters so string length should be the same as byte length
 		// Also we are little endian so the least significant byte will be first in the array
-		assertEquals("chunk length", attributeText.length(), data[2]);
-		assertEquals("chunk length", 0, data[3]);
+		ByteBuffer buffer = ByteBuffer.wrap(data, 1, 2) ;
+		buffer.order(ByteOrder.LITTLE_ENDIAN);
+		assertEquals("chunk length", attributeText.length(), buffer.getShort());
 		
-		byte[] subData = Arrays.copyOfRange(data, 4, data.length);
+		byte[] subData = Arrays.copyOfRange(data, 3, data.length);
 		assertEquals("attribute text", attributeText, new String(subData));
 	}
 	

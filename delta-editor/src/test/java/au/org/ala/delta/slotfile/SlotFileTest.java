@@ -182,7 +182,6 @@ public class SlotFileTest {
 		SlotHeader firstHeader = preexistingSlots.get(firstPos);
 		
 		slotFile.allocSlot(firstHeader.SlotSize, firstHeader.SlotId, firstHeader.DataSize, firstHeader.GrowSize);
-		slotFile.seekToEnd();
 		
 		slotFile.copySlotData(firstPos, slotFile);
 	
