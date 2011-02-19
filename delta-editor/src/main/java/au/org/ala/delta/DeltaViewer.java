@@ -48,8 +48,6 @@ import au.org.ala.delta.model.DeltaDataSetRepository;
 import au.org.ala.delta.slotfile.SlotFileRepository;
 import au.org.ala.delta.util.IProgressObserver;
 
-import com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel;
-
 public class DeltaViewer extends JFrame {
 
 	private static final long serialVersionUID = 1L;
@@ -202,8 +200,14 @@ public class DeltaViewer extends JFrame {
 		} catch (Exception ex) {
 			
 		}
-		mnuLF.add(new JMenuItem(new LookAndFeelAction(this, new NimbusLookAndFeel())));
-
+		try {
+			// Nimbus L&F was added in update java 6 update 10.
+			LookAndFeel nimbusLaF = (LookAndFeel) Class.forName("javax.swing.plaf.nimbus.NimbusLookAndFeel").newInstance(); 
+			mnuLF.add(new JMenuItem(new LookAndFeelAction(this, nimbusLaF)));
+		}
+		catch (Exception e) {
+			// The Nimbus L&F is not available, no matter.
+		}
 		menuBar.add(mnuWindow);
 		
 		JMenu mnuHelp = new JMenu("Help");
