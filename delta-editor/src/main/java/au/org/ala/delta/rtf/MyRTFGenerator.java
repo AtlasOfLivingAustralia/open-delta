@@ -137,6 +137,50 @@ class RTFGenerator extends Object {
 
 		gen.writeRTFTrailer();
 	}
+	
+	/**
+	 * Writes just the content of the document, skipping the RTF header, font table and other properties.
+	 * @param d the document to write.
+	 * @param to the output stream to write to.
+	 * @throws IOException if there is an error accessing the document.
+	 */
+	public static void writeDocumentBody(Document d, OutputStream to) throws IOException {
+		RTFGenerator gen = new RTFGenerator(to);
+		Element root = d.getDefaultRootElement();
+		
+		int max = root.getElementCount();
+		MutableAttributeSet currentAttributes = new SimpleAttributeSet();
+		gen.outputAttributes = currentAttributes;
+		gen.outputConversion = outputConversionForName("ansi");
+		for (int idx = 0; idx < max; idx++) {
+			
+			Element el = root.getElement(idx);
+					
+			int sub_count = el.getElementCount();
+			for (int j = 0; j < sub_count; j++) {
+				gen.writeTextElementWithoutFontOrColour(el.getElement(j));
+			}			
+		}
+	}
+	
+	public void writeTextElementWithoutFontOrColour(Element el) throws IOException {
+		checkControlWords(outputAttributes, el.getAttributes(), RTFAttributes.attributes, MyRTFAttribute.D_CHARACTER);
+
+		if (el.isLeaf()) {
+			try {
+				el.getDocument().getText(el.getStartOffset(), el.getEndOffset() - el.getStartOffset(), this.workingSegment);
+			} catch (BadLocationException ble) {
+				/* TODO is this the correct error to raise? */
+				ble.printStackTrace();
+				throw new InternalError(ble.getMessage());
+			}
+			writeText(this.workingSegment);
+		} else {
+			int sub_count = el.getElementCount();
+			for (int idx = 0; idx < sub_count; idx++)
+				writeTextElement(el.getElement(idx));
+		}
+	}
 
 	public RTFGenerator(OutputStream to) {
 		colorTable = new Hashtable();

@@ -100,6 +100,10 @@ public class MyRTFEditorKit extends StyledEditorKit {
 		RTFGenerator.writeDocument(doc, out);
 	}
 
+	public void writeBody(OutputStream out, Document doc) throws IOException, BadLocationException  {
+		RTFGenerator.writeDocumentBody(doc, out);
+	}
+
 	/**
 	 * Insert content from the given stream, which will be treated as plain text.
 	 * 
