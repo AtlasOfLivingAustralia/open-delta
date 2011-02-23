@@ -44,6 +44,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
 import au.org.ala.delta.editor.controller.HelpController;
+import au.org.ala.delta.gui.util.IconHelper;
 import au.org.ala.delta.model.DeltaDataSetRepository;
 import au.org.ala.delta.slotfile.SlotFileRepository;
 import au.org.ala.delta.util.IProgressObserver;
@@ -82,6 +83,7 @@ public class DeltaViewer extends JFrame {
 
 	protected DeltaViewer() {
 		super("Delta Viewer (prototype)");
+		setIconImage(IconHelper.createImageIcon("Delta_16_alt.png").getImage());
 		this.setExtendedState(MAXIMIZED_BOTH | DISPOSE_ON_CLOSE);
 		this.getContentPane().setLayout(new BorderLayout());
 		
