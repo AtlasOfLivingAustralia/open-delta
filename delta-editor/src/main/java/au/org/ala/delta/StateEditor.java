@@ -44,6 +44,7 @@ import javax.swing.text.StyledEditorKit;
 
 import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
 
+import au.org.ala.delta.gui.RtfEditor;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
@@ -55,7 +56,7 @@ public class StateEditor extends JPanel {
 	private static final long serialVersionUID = 1L;
 
 	private DeltaContext _context;
-	private JTextPane _textPane;
+	private RtfEditor _textPane;
 	private JToggleButton _btnBold;
 	private JList _list;
 
@@ -71,8 +72,7 @@ public class StateEditor extends JPanel {
 		this.setPreferredSize(new Dimension(200, 150));
 		JSplitPane split = new JSplitPane();
 
-		_textPane = new JTextPane();
-		_textPane.setEditorKit(new MyRTFEditorKit());
+		_textPane = new RtfEditor();
 		_list = new JList();
 
 		split.setLeftComponent(_textPane);
@@ -81,31 +81,9 @@ public class StateEditor extends JPanel {
 		split.setDividerLocation(300);
 		split.setResizeWeight(0.5);
 
-		JToolBar toolbar = new JToolBar();
+		JToolBar toolbar = _textPane.buildAndInstallToolbar();
 		add(toolbar, BorderLayout.NORTH);
 
-		_btnBold = decorateToolbarAction(new StyledEditorKit.BoldAction(), "B");
-		toolbar.add(_btnBold);
-		toolbar.add(decorateToolbarAction(new SuperscriptAction(), "S"));
-		toolbar.add(decorateToolbarAction(new SubscriptAction(), "s"));
-
-		_textPane.addCaretListener(new CaretListener() {
-
-			@Override
-			public void caretUpdate(CaretEvent e) {
-
-				SwingUtilities.invokeLater(new Runnable() {
-
-					@Override
-					public void run() {
-						StyledEditorKit kit = (StyledEditorKit) _textPane.getEditorKit();
-						MutableAttributeSet attr = kit.getInputAttributes();
-						_btnBold.setSelected(StyleConstants.isBold(attr));
-					}
-				});
-
-			}
-		});
 		_textPane.getDocument().addDocumentListener(new EditListener());
 		_textPane.setInputVerifier(new EditCommitter());
 
@@ -138,53 +116,6 @@ public class StateEditor extends JPanel {
 		}
 		_modified = false;
 	}
-
-	private JToggleButton decorateToolbarAction(Action action, String name) {
-		JToggleButton b = new JToggleButton(action);
-		b.setFocusable(false);
-		action.putValue(Action.NAME, name);
-		return b;
-	}
-
-	class SubscriptAction extends StyledEditorKit.StyledTextAction {
-
-		private static final long serialVersionUID = 1L;
-
-		public SubscriptAction() {
-			super(StyleConstants.Subscript.toString());
-		}
-
-		public void actionPerformed(ActionEvent ae) {
-			if (_textPane != null) {
-				StyledEditorKit kit = getStyledEditorKit(_textPane);
-				MutableAttributeSet attr = kit.getInputAttributes();
-				boolean subscript = (StyleConstants.isSubscript(attr)) ? false : true;
-				SimpleAttributeSet sas = new SimpleAttributeSet();
-				StyleConstants.setSubscript(sas, subscript);
-				setCharacterAttributes(_textPane, sas, false);
-			}
-		}
-	}
-
-	class SuperscriptAction extends StyledEditorKit.StyledTextAction {
-
-		private static final long serialVersionUID = 1L;
-
-		public SuperscriptAction() {
-			super(StyleConstants.Superscript.toString());
-		}
-
-		public void actionPerformed(ActionEvent ae) {
-			if (_textPane != null) {
-				StyledEditorKit kit = getStyledEditorKit(_textPane);
-				MutableAttributeSet attr = kit.getInputAttributes();
-				boolean superscript = (StyleConstants.isSuperscript(attr)) ? false : true;
-				SimpleAttributeSet sas = new SimpleAttributeSet();
-				StyleConstants.setSuperscript(sas, superscript);
-				setCharacterAttributes(_textPane, sas, false);
-			}
-		}
-	}
 	
 	class EditListener implements DocumentListener {
 
@@ -216,7 +147,7 @@ public class StateEditor extends JPanel {
 				MyRTFEditorKit kit = (MyRTFEditorKit) _textPane.getEditorKit();				
 				ByteOutputStream bos = new ByteOutputStream();
 				try {
-					kit.write(bos, doc, 0, doc.getLength());
+					kit.writeBody(bos, doc);
 					String rtf = new String(bos.getBytes()).trim();
 					_item.setAttribute(_character, "<" + rtf.trim() + ">");
 				} catch (Exception ex) {
