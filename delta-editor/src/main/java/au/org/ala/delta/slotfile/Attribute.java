@@ -812,6 +812,8 @@ public class Attribute implements Iterable<AttrChunk> {
 			break;
 
 		default:
+			// Just write the chunk type (e.g. ChuckType.CHUNK_TO has no data, just represents a '-')
+			chunkData = initialiseBufferForChunk(1, chunk);
 			break;
 		}
 
