@@ -1,0 +1,2083 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+
+
+
+<meta http-equiv="content-type" content="text/html; charset=windows-1252">
+<title> DELTA Editor User's Guide</title>
+<link rel="stylesheet" type="text/css" href="delta-ed_files/style.css">
+</head><body>
+
+<table summary="Citation, logo, and link to DELTA Home" width="100%">
+<tbody><tr>
+<td style="padding-right: 36px;"></td>
+<td class="center middle"><a href="http://delta-intkey.com/contact/dallwitz.htm">Dallwitz,
+  M.J.</a>, Paine, T.A. and Zurcher, E.J. 1999 onwards. User’s guide to
+  the&nbsp;DELTA&nbsp;Editor. <a href="http://delta-intkey.com/">http://delta-intkey.com</a></td>
+<td class="right" style="padding-top: 0.15em;">
+<a href="http://delta-intkey.com/"><img src="delta-ed_files/deltlogo.gif" alt="DELTA Home"></a>
+</td>
+</tr>
+</tbody></table>
+
+<hr class="margintp7">
+<p class="pdfversion">
+    <a href="http://delta-intkey.com/www/delta-ed.pdf">PDF Version</a> (543KB)</p>
+<hr class="margintp7">
+
+<h1 class="margint2">User’s Guide to the DELTA Editor</h1>
+
+
+<p class="revdate">11 January 2010</p>
+
+<p class="author"><a href="http://delta-intkey.com/contact/dallwitz.htm">M.J.
+Dallwitz</a>, T.A. Paine and E.J. Zurcher</p>
+
+<p class="abstract">Abstract</p>
+
+<p>The DELTA system is a flexible data-coding format for
+taxonomic descriptions, and an associated set of programs for producing and
+typesetting natural-language descriptions and keys, for interactive
+identification and information retrieval, and for conversion of the data to
+formats required for phylogenetic and phenetic analysis. This document is an
+introduction to the use of the DELTA Editor, a program for entering and
+maintaining DELTA data.</p>
+
+<p class="contentshead">Contents</p>
+
+<div align="center">
+
+<table summary="" border="0" cellpadding="0" cellspacing="0">
+ <tbody><tr>
+  <td style="padding: 0mm 5.4pt;" valign="top">
+  <p class="contents" style=""><b><a href="#_Introduction">Introduction</a></b></p>
+  </td>
+ </tr>
+ <tr>
+  <td style="padding: 0mm 5.4pt;" valign="top">
+  <p class="contents" style="">&nbsp;&nbsp;&nbsp;&nbsp;<a href="#_Notation">Notation</a></p>
+  </td>
+ </tr>
+ <tr>
+  <td style="padding: 0mm 5.4pt;" valign="top">
+  <p class="contents" style=""><b><a href="#_Experimenting_with_the">Experimenting with the sample data</a></b></p>
+  </td>
+ </tr>
+ <tr>
+  <td style="padding: 0mm 5.4pt;" valign="top">
+  <p class="contents" style="">&nbsp;&nbsp;&nbsp;&nbsp;<a href="#_Opening_the_sample">Opening the sample data</a></p>
+  </td>
+ </tr>
+ <tr>
+  <td style="padding: 0mm 5.4pt;" valign="top">
+  <p class="contents" style="">&nbsp;&nbsp;&nbsp;&nbsp;<a href="#_Making_a_copy">Making a copy of the data</a></p>
+  </td>
+ </tr>
+ <tr>
+  <td style="padding: 0mm 5.4pt;" valign="top">
+  <p class="contents" style="">&nbsp;&nbsp;&nbsp;&nbsp;<a href="#_Exporting_to_DELTA">Exporting to DELTA text files</a></p>
+  </td>
+ </tr>
+ <tr>
+  <td style="padding: 0mm 5.4pt;" valign="top">
+  <p class="contents" style="">&nbsp;&nbsp;&nbsp;&nbsp;<a href="#_Printing_the_character">Printing the character list</a></p>
+  </td>
+ </tr>
+ <tr>
+  <td style="padding: 0mm 5.4pt;" valign="top">
+  <p class="contents" style="">&nbsp;&nbsp;&nbsp;&nbsp;<a href="#_Producing_natural-language_descript">Producing natural-language descriptions</a></p>
+  </td>
+ </tr>
+ <tr>
+  <td style="padding: 0mm 5.4pt;" valign="top">
+  <p class="contents" style="">&nbsp;&nbsp;&nbsp;&nbsp;<a href="#_Generating_a_conventional">Generating a conventional key</a></p>
+  </td>
+ </tr>
+ <tr>
+  <td style="padding: 0mm 5.4pt;" valign="top">
+  <p class="contents" style="">&nbsp;&nbsp;&nbsp;&nbsp;<a href="#_Generating_an_interactive">Generating an interactive key</a></p>
+  </td>
+ </tr>
+ <tr>
+  <td style="padding: 0mm 5.4pt;" valign="top">
+  <p class="contents" style=""><b><a href="#_Creating_a_Data">Creating a data set</a></b></p>
+  </td>
+ </tr>
+ <tr>
+  <td style="padding: 0mm 5.4pt;" valign="top">
+  <p class="contents" style="">&nbsp;&nbsp;&nbsp;&nbsp;<a href="#_Developing_a_character">Developing a character list: reproducibility</a></p>
+  </td>
+ </tr>
+ <tr>
+  <td style="padding: 0mm 5.4pt;" valign="top">
+  <p class="contents" style="">&nbsp;&nbsp;&nbsp;&nbsp;<a href="#_Entering_characters">Entering characters</a></p>
+  </td>
+ </tr>
+ <tr>
+  <td style="padding: 0mm 5.4pt;" valign="top">
+  <p class="contents" style="">&nbsp;&nbsp;&nbsp;&nbsp;<a href="#_Saving_the_data">Saving the data set</a></p>
+  </td>
+ </tr>
+ <tr>
+  <td style="padding: 0mm 5.4pt;" valign="top">
+  <p class="contents" style="">&nbsp;&nbsp;&nbsp;&nbsp;<a href="#_Entering_taxon_names">Entering taxon names</a></p>
+  </td>
+ </tr>
+ <tr>
+  <td style="padding: 0mm 5.4pt;" valign="top">
+  <p class="contents" style="">&nbsp;&nbsp;&nbsp;&nbsp;<a href="#_Recording_simple_attributes">Recording simple attributes of taxa</a></p>
+  </td>
+ </tr>
+ <tr>
+  <td style="padding: 0mm 5.4pt;" valign="top">
+  <p class="contents" style="">&nbsp;&nbsp;&nbsp;&nbsp;<a href="#_Exporting_to_DELTA_1">Exporting to DELTA text files</a></p>
+  </td>
+ </tr>
+ <tr>
+  <td style="padding: 0mm 5.4pt;" valign="top">
+  <p class="contents" style="">&nbsp;&nbsp;&nbsp;&nbsp;<a href="#_Producing_output_via">Producing output via action sets</a></p>
+  </td>
+ </tr>
+ <tr>
+  <td style="padding: 0mm 5.4pt;" valign="top">
+  <p class="contents" style=""><b><a href="#_Importing_DELTA_Text">Importing DELTA text files</a></b></p>
+  </td>
+ </tr>
+ <tr>
+  <td style="padding: 0mm 5.4pt;" valign="top">
+  <p class="contents" style=""><b><a href="#_Saving_or_Exporting">Saving or exporting a data set</a></b></p>
+  </td>
+ </tr>
+ <tr>
+  <td style="padding: 0mm 5.4pt;" valign="top">
+  <p class="contents" style=""><b><a href="#_Views_of_the">Views of the data</a></b></p>
+  </td>
+ </tr>
+ <tr>
+  <td style="padding: 0mm 5.4pt;" valign="top">
+  <p class="contents" style=""><b><a href="#_The_Attribute_Editors">The attribute editors</a></b></p>
+  </td>
+ </tr>
+ <tr>
+  <td style="padding: 0mm 5.4pt;" valign="top">
+  <p class="contents" style="">&nbsp;&nbsp;&nbsp;&nbsp;<a href="#_The_tree-view_attribute_1">The tree-view attribute editor</a></p>
+  </td>
+ </tr>
+ <tr>
+  <td style="padding: 0mm 5.4pt;" valign="top">
+  <p class="contents" style="">&nbsp;&nbsp;&nbsp;&nbsp;<a href="#_The_grid-view_attribute">The grid-view attribute editor</a></p>
+  </td>
+ </tr>
+ <tr>
+  <td style="padding: 0mm 5.4pt;" valign="top">
+  <p class="contents" style="">&nbsp;&nbsp;&nbsp;&nbsp;<a href="#_Using_the_%91Enter%92">Using the ‘Enter’ key in attribute editing</a></p>
+  </td>
+ </tr>
+ <tr>
+  <td style="padding: 0mm 5.4pt;" valign="top">
+  <p class="contents" style=""><b><a href="#_The_Item_Editor">The item editor</a></b></p>
+  </td>
+ </tr>
+ <tr>
+  <td style="padding: 0mm 5.4pt;" valign="top">
+  <p class="contents" style=""><b><a href="#_The_Character_Editor">The character editor</a></b></p>
+  </td>
+ </tr>
+ <tr>
+  <td style="padding: 0mm 5.4pt;" valign="top">
+  <p class="contents" style="">&nbsp;&nbsp;&nbsp;&nbsp;<a href="#_The_state_editor">The state editor</a></p>
+  </td>
+ </tr>
+ <tr>
+  <td style="padding: 0mm 5.4pt;" valign="top">
+  <p class="contents" style="">&nbsp;&nbsp;&nbsp;&nbsp;<a href="#_The_notes_editor">The notes editor</a></p>
+  </td>
+ </tr>
+ <tr>
+  <td style="padding: 0mm 5.4pt;" valign="top">
+  <p class="contents" style="">&nbsp;&nbsp;&nbsp;&nbsp;<a href="#_The_image-association_editor">The image-association editor</a></p>
+  </td>
+ </tr>
+ <tr>
+  <td style="padding: 0mm 5.4pt;" valign="top">
+  <p class="contents" style="">&nbsp;&nbsp;&nbsp;&nbsp;<a href="#_The_controlling-attribute_editor">The controlling-attribute editor</a></p>
+  </td>
+ </tr>
+ <tr>
+  <td style="padding: 0mm 5.4pt;" valign="top">
+  <p class="contents" style="">&nbsp;&nbsp;&nbsp;&nbsp;<a href="#_The_%91Controlled-by%92_chooser">The ‘controlled-by’ chooser</a></p>
+  </td>
+ </tr>
+ <tr>
+  <td style="padding: 0mm 5.4pt;" valign="top">
+  <p class="contents" style=""><b><a href="#_The_Image_Settings">The image settings dialog</a></b></p>
+  </td>
+ </tr>
+ <tr>
+  <td style="padding: 0mm 5.4pt;" valign="top">
+  <p class="contents" style=""><b><a href="#_Images_Windows_and">Image windows and overlays</a></b></p>
+  </td>
+ </tr>
+ <tr>
+  <td style="padding: 0mm 5.4pt;" valign="top">
+  <p class="contents" style=""><b><a href="#_Entering_Special_Symbols">Entering special symbols</a></b></p>
+  </td>
+ </tr>
+ <tr>
+  <td style="padding: 0mm 5.4pt;" valign="top">
+  <p class="contents" style=""><b><a href="#_Planned_Major_Enhancements">Planned enhancements and known bugs</a></b></p>
+  </td>
+ </tr>
+ <tr>
+  <td style="padding: 0mm 5.4pt;" valign="top">
+  <p class="contents" style=""><b><a href="#_Acknowledgements">Acknowledgements</a></b></p>
+  </td>
+ </tr>
+ <tr>
+  <td style="padding: 0mm 5.4pt;" valign="top">
+  <p class="contents" style=""><b><a href="#_References">References</a></b></p>
+  </td>
+ </tr>
+</tbody></table>
+
+</div>
+
+<h2><a name="_Introduction"></a>Introduction</h2>
+
+<p>This document is an introduction to the use of the DELTA
+Editor ‘Delta’, a program for entering and maintaining DELTA (Description
+Language for Taxonomy) data. The DELTA Editor will eventually replace and
+extend the functionality of the programs Confor (data translation) and Delfor
+(data maintenance). The program is still being developed, and many planned
+features have not yet been implemented.</p>
+
+<p>This version provides for the editing, integrity checking
+and maintenance of DELTA data sets (including directives files), but will not
+perform any translations of the data. Hence it will have to be used in
+conjunction with Confor. However, runs of Confor and other DELTA programs can
+be initiated from within the Editor.</p>
+
+<p>This document should be used in conjunction with the <i><a href="http://delta-intkey.com/www/uguide.htm">User’s Guide to the DELTA System</a></i>,
+which contains details of the purpose and syntax of directives used by Confor
+and other DELTA programs.</p>
+
+<p>You should back up your data regularly. For additional
+security, export the data to DELTA text files (see <a href="#_Saving_or_Exporting">Saving or Exporting a Data Set</a>), and back up
+these as well as the binary database file (.dlt).</p>
+
+<h3><a name="_Notation"></a>Notation</h3>
+
+<p>It is often necessary to describe a sequence of selections
+in menus and dialogs. We will represent such sequences by a list of the
+selections, separated by the symbol ‘&gt;’. Unless otherwise indicated, the
+first selection is in the main menu bar of the program. For example, ‘File &gt;
+New Dataset’ means ‘in the main menu bar, click on ‘File’; then, in the menu
+that is displayed, click on ‘New Dataset’’.</p>
+
+<h2><a name="_Experimenting_with_the"></a>Experimenting with the Sample Data</h2>
+
+<p>Before starting to prepare your own data, we strongly
+recommend <i>working through</i> (not just
+reading) the following examples, which use the sample data that are supplied
+with the DELTA programs. This should take less than an hour, but will save time
+in the long run.</p>
+
+<h3><a name="_Opening_the_sample"></a>Opening the sample data</h3>
+
+<p>To start the DELTA Editor, click the Windows ‘Start’ button,
+and in the menus that are displayed, select ‘Programs &gt; Delta &gt; Delta
+Editor’.</p>
+
+<p>The program window is initially empty, except for a menu bar
+at the top. To open the sample data, select ‘File &gt; Open Dataset’. The
+following dialog is displayed.</p>
+
+<p class="image"><img src="delta-ed_files/delta-ed-01.png" alt="'Open' dialog." border="0"></p>
+
+<p>Click on ‘sample’, and click ‘Open’. In the new dialog that
+is displayed, click on ‘sample.dlt’, and click ‘Open’.</p>
+
+<p>The following screen is displayed. It is described in detail
+later (see <a href="#_The_Tree-View_Attribute">The tree-view attribute editor</a>).</p>
+
+<p class="image"><img src="delta-ed_files/delta-ed-02.png" alt="sample.dlt - Attribute Edit (Trees)" border="0"></p>
+
+<h3><a name="_Making_a_copy"></a>Making a copy of the data</h3>
+
+<p>So that you can experiment freely with the sample data
+without the risk of corrupting the original files, make a copy as follows.
+Select ‘File &gt; Save Dataset As’. The ‘Save As’ dialog is displayed. You are
+in the ‘sample’ folder. Click <img style="vertical-align: middle;" src="delta-ed_files/button-up_one_level.png" alt="'Up one level' button." border="0"> (‘Up One Level’) to take you to the Delta
+folder, then click <img style="vertical-align: middle;" src="delta-ed_files/button-new_folder.png" alt="'Create New Folder' button." border="0"> (‘Create New Folder’). Type ‘Test’, click on
+the adjacent ‘folder’ icon <img style="vertical-align: middle;" src="delta-ed_files/icon-folder.png" alt="'Folder' icon." border="0"> to select
+the newly created folder, and click ‘Open’. The following dialog is displayed.</p>
+
+<p class="image"><img src="delta-ed_files/delta-ed-06.png" alt="'Save As' dialog." border="0"></p>
+
+<p>Check that the ‘Save in’ folder is ‘Test’ (as shown). Then
+type ‘Testdata’ in the ‘File name’ box (overwriting ‘sample.dlt’), and click
+‘Save’.</p>
+
+<h3><a name="_Exporting_to_DELTA"></a>Exporting to DELTA text files</h3>
+
+<p>Before
+the data can be used by other programs such as Confor, Key, etc., they must be
+‘exported’ to text files. These comprise data files in the DELTA format (e.g.
+‘specs’ — specifications; ‘chars’ — character list), and ‘directives’ or
+‘action’ files (e.g. ‘tonatr’ — translate into natural language), which specify
+how the data are to be processed. These files are described in detail in the <i><a href="http://delta-intkey.com/www/uguide.htm">User’s Guide to the DELTA System</a></i>.</p>
+
+<p>To export the data to DELTA text files, select ‘File &gt;
+Export Directives’. The following dialog is displayed.</p>
+
+<p class="image"><img src="delta-ed_files/delta-ed-07.png" alt="'Select DELTA files to export' dialog." border="0"></p>
+
+<p>Click ‘OK’. An ‘Export Status’ window shows progress. When
+the process is finished, click ‘Done’. This reveals the ‘Export Log’ window;
+close it by clicking <img style="vertical-align: middle;" src="delta-ed_files/button-close.png" alt="'Close window' button." border="0">.</p>
+
+<p>Note that the database stores information about the
+exporting. Therefore, when you close the Editor later, you will be asked
+whether you want to save the changes, even if you have not explicitly altered
+the data. You should normally answer ‘Yes’.</p>
+
+<h3><a name="_Printing_the_character"></a>Printing the character list</h3>
+
+<p style="page-break-after: avoid;">To format and print the character list, proceed as
+follows. Select ‘View &gt; Action Sets’. The following dialog is displayed (you
+will see different dates and times in the ‘Imported/exported’ column).</p>
+
+<p class="image"><img src="delta-ed_files/delta-ed-09.png" alt="'Testdata.dlt [2] - Actions' dialog. Print Character List." border="0"></p>
+
+<p>Select ‘Print the character list – RTF.’, as shown (‘RTF’ is
+Microsoft’s ‘Rich Text Format’). Click ‘Run’. The following message is displayed.</p>
+
+<p class="image"><img src="delta-ed_files/delta-ed-10.png" alt="'Query Export' dialog." border="0"></p>
+
+<p>As you have already exported all the files, click ‘No’.
+Confor is then run, and a log of the run is displayed. This displays the names
+of the output files, ‘printcr.lst’ and ‘rtf\chars.rtf’, and would also show any
+error messages. Also displayed is a message asking whether you want to close
+the window (i.e. the log); click ‘Yes’.</p>
+
+<p>‘printcr.lst’ is a text file containing a more detailed log
+of the process. There is usually no need to look at it, but it may occasionally
+be helpful to do so if there are errors, or if the output is not what you
+expected.</p>
+
+<p style="">‘rtf\chars.rtf’ is an RTF file
+containing the main output. The name indicates that the file ‘chars.rtf’ is in
+the sub-folder ‘rtf’ of the ‘Test’ folder. You can open and print ‘chars.rtf’
+in MS Word, MS Word Viewer, or WordPad. MS Word Viewer can be obtained free of
+charge from Microsoft — see the <i><a href="http://delta-intkey.com/www/install.htm">DELTA Installation Guide</a></i>.
+WordPad comes with Windows, but is not recommended, as its formatting
+capabilities are limited.</p>
+
+<p>N.B. If a file is open in Word, no other program can use it.
+Therefore, if you are using Word to view chars.rtf, you must close the file
+before running ‘printcr’ again to regenerate it.</p>
+
+<h3><a name="_Producing_natural-language_descript"></a>Producing
+natural-language descriptions</h3>
+
+<p>If you have closed the ‘Actions’ dialog, open it again by
+selecting ‘View &gt; Action Sets’. There are four options for translating into
+natural-language descriptions.</p>
+
+<ol><li>HTML
+— Hypertext Markup Language. This is a format used for Web pages. Each taxon
+description is in a separate file, and an index to these files is produced.</li>
+<li>Plain
+text.</li>
+<li>RTF,
+separate file for each taxon. These files are usually used for displaying the
+descriptions within Intkey.</li>
+<li>RTF,
+single file for all taxa. This is the best form for printing the entire set of
+descriptions.</li></ol>
+
+<p>Click on the first option, and click ‘Run’. This creates a
+file ‘index.htm’ in the ‘Test’ folder, and files ‘agrostis.htm’, etc., in the
+subfolder ‘www’. Open ‘index.htm’ in a Web browser such as Netscape or Internet
+Explorer. The links to the descriptions should work, but other links, such as
+those to the Introduction (‘intro.htm’) and the images, will not work, because
+those files are not an integral part of the DELTA database, and so were not
+copied to the ‘Test’ folder by the process that copied the DELTA files.</p>
+
+<p>(If you wish, you can use Windows Explorer to copy the files
+necessary to make the links work. Create a folder ‘images’ in the ‘Test’
+folder, and copy to it all the files in the ‘sample\images’ folder. Copy all
+the ‘.htm’ files from the ‘Sample’ folder to ‘Test\Www’. Copy ‘deltlogo.gif’ (or
+‘deltlog0.gif in some versions) from the ‘Delta’ folder to ‘Test\www’. To make
+the link to the character list work, run the Action Set ‘Print the character
+list – HTML.)</p>
+
+<h3><a name="_Generating_a_conventional"></a>Generating a conventional key</h3>
+
+<p>Confor is the only one of the programs that works directly
+from the DELTA-format data files. The other programs, Intkey, Dist, and Key
+work from special data files, which are created by Confor from the DELTA data
+files.</p>
+
+<p>If you have closed the ‘Actions’ dialog, open it again by
+selecting ‘View &gt; Action Sets’. Select ‘Translate into KEY format’, and
+click ‘Run’. This creates data files ‘kchars’ and ‘kitems’, which are used by
+the key-generation program, Key.</p>
+
+<p>In the ‘Actions’ dialog, click on the ‘Key’ tab. The
+following dialog is displayed.</p>
+
+<p class="image"><img src="delta-ed_files/delta-ed-11.png" alt="'Testdata.dlt [2] - Actions' dialog. Directives for program KEY." border="0"></p>
+
+<p>Select ‘Confirmatory characters - RTF’ (as shown), and click
+‘Run’. The key is created in the file ‘key5.rtf’ in the ‘Test\rtf’ folder. You
+can view and print it using MS Word or an equivalent program, as described
+previously for the character list.</p>
+
+<p>If you want to create another key, using one of the other
+‘Key’ action sets, there is no need to run ‘Translate into KEY format’ again.
+(It would be necessary, however, if you changed the data, or the parameters
+that are defined in the ‘Translate into KEY format’ action set. More details
+about this are given later.)</p>
+
+<h3><a name="_Generating_an_interactive"></a>Generating an interactive key</h3>
+
+<p>If you have closed the ‘Actions’ dialog, open it again by
+selecting ‘View &gt; Action Sets’. If necessary, select the ‘Confor’ tab.
+Select ‘Translate into INTKEY format’, and click ‘Run’. This creates data files
+‘ichars’ and ‘iitems’, which are used by the interactive key program, Intkey.</p>
+
+<p>In the ‘Actions’ dialog, click on the ‘Intkey’ tab. The
+following dialog is displayed.</p>
+
+<p class="image"><img src="delta-ed_files/delta-ed-12.png" alt="'Testdata.dlt [2] - Actions' dialog. Directives for program INTKEY." border="0"></p>
+
+<p>Select ‘Intkey initialization file’ (as shown), and click
+‘Run’.</p>
+
+<p>Intkey has built-in help. To get started, select ‘Help &gt;
+Introduction’. There is an extensive example in the <i><a href="http://delta-intkey.com/www/overview.htm">Overview of the
+DELTA System</a></i>.</p>
+
+<p>When you close Intkey, you will be given the opportunity to
+add the data set to the Intkey index.</p>
+
+<p>You can also run Intkey directly, without using the DELTA
+Editor. Click the Windows ‘Start’ button, and in the menus that are displayed,
+select ‘Programs &gt; Delta &gt; Intkey’. A dialog for selecting a data set is
+displayed. If you previously added the data set to the Intkey index, you can
+now select it in the ‘Select by title’ box. Otherwise, use the ‘Select by name
+of initialization file’ box; click the ‘Browse’ button and find the file
+‘intkey.ink’ in the ‘Test’ folder.</p>
+
+<h2><a name="_Creating_a_Data"></a>Creating a Data Set</h2>
+
+<p>To start the DELTA Editor, click the Windows ‘Start’ button,
+and in the menus that are displayed, select ‘Programs &gt; Delta &gt; Delta
+Editor’.</p>
+
+<p>The program window is initially empty, except for a menu bar
+at the top. To start a new data set, select ‘File &gt; New Dataset’. The
+‘Attribute Edit (Trees)’ window is displayed.</p>
+
+<p class="image"><img src="delta-ed_files/delta-ed-13.png" alt="DELTA - Document1. New document screen." border="0"></p>
+
+<p>You can enter data either by typing it into the Editor or by
+importing existing DELTA text files (see <a href="#_Importing_DELTA_Text">Importing
+DELTA Text Files</a>).</p>
+
+<h3><a name="_Developing_a_character"></a>Developing a character list:
+reproducibility</h3>
+
+<p>If you are starting a data set from scratch, begin by
+entering only a few characters and a few taxa (say about 5 of each), and recording
+the data for these taxa. Then test <i>all</i>
+the applications you intend to use — for example, produce natural-language
+descriptions, a conventional key, an interactive key, and a cladistic tree.
+Then add a few more characters and taxa, and repeat the testing. This iterative
+procedure helps you develop strategies for character definition (e.g. wording, number
+of states, multistate versus numeric, arrangement in sentences), which you can
+apply and refine as development of the character list proceeds.</p>
+
+<p>Ideally, after the above process, the character list should
+be tested by having several people independently record descriptions of about
+10 disparate taxa. The different versions of the descriptions will probably be
+different, i.e. the results will not be reproducible. You need to detect such
+problems before you have recorded much data.</p>
+
+<p>The Differences option in Intkey can easily pinpoint the
+discrepancies. The reasons for them can then be discussed, and the character
+list refined on this basis. This process should then be iterated, adding a few
+more taxa each time, until the character list seems satisfactory.</p>
+
+<p>Character notes, and preferably character illustrations,
+should be added during the development of the character list. There is a
+tendency to think that these are only for the benefit of the end user, and to
+postpone adding them. However, they are an essential part of obtaining
+reproducible descriptions. Without precise character notes, the character
+concepts of even the principal author may drift during the recording of the
+data, as more specimens are seen. Then, data recorded near the end of the
+project may not be comparable to data recorded near the beginning. Pay
+particular attention to the boundaries between character states, i.e. describe
+nearly intermediate conditions, and say to which state they are deemed to
+belong (unless you intend recording such intermediates as belonging to both
+states). It is also worth recording your <i>reasons</i>
+for defining the characters as you have, while these reasons are still fresh in
+your mind.</p>
+
+<h3><a name="_Entering_characters"></a>Entering characters</h3>
+
+<p style="page-break-after: avoid;">You can enter character
+descriptions either by choosing ‘View &gt; Character editor’ from the menu, or
+by right-clicking the mouse in the upper right pane of the data window and
+selecting ‘Append new character to end of list’ from the menu that will appear.
+The ‘Character Edit’ dialog is displayed.</p>
+
+<p class="image"><img src="delta-ed_files/delta-ed-14.png" alt="'Document1 [2] - Character Edit' dialog. Empty." border="0"></p>
+
+<p>As an example, we will enter 2 characters — for flower
+colour and leaf length. In the ‘Character Type’ box, click on <img style="vertical-align: middle;" src="delta-ed_files/button-drop_down.png" alt="'Drop-down list' button." border="0"> and select ‘Unordered multistate’. In the
+‘Edit feature description’ box, enter ‘flowers &lt;colour&gt;’. The window now
+looks like this.</p>
+
+<p class="image"><img src="delta-ed_files/delta-ed-16.png" alt="'Document1 [2] - Character Edit' dialog. Feature 1." border="0"></p>
+
+<p>Click in the ‘Edit state description’ box, type ‘red’, and press
+‘Enter’. Type ‘orange’, and press ‘Enter’. Similarly, enter states ‘yellow’ and
+‘white’. The window now looks like this.</p>
+
+<p class="image"><img src="delta-ed_files/delta-ed-17.png" alt="'Document1 [2] - Character Edit' dialog. Character 1." border="0"></p>
+
+<p>In some contexts, characters are selected from lists of
+their ‘feature descriptions’ alone (i.e. without their states). The word
+‘colour’ is necessary to allow the character to be distinguished in these
+contexts from other flower characters, such ‘size’ and ‘number of petals’.
+Placing the word in angle brackets causes it to be omitted from descriptions,
+e.g. ‘flowers orange’ instead of ‘flowers colour orange’.</p>
+
+<p>In the ‘Character number’ box, click <img style="vertical-align: middle;" src="delta-ed_files/button-scroll_up.png" alt="'Scroll up' button." border="0">.
+This changes the character number to 2. In the ‘Character Type’ box, select
+‘Real numeric’. In the ‘Edit feature description’ box, enter ‘leaves
+&lt;length&gt;. In the ‘Units’ box, enter ‘cm long’. The window now looks like
+this.</p>
+
+<p class="image"><img src="delta-ed_files/delta-ed-19.png" alt="'Document1 [2] - Character Edit' dialog. Character 2." border="0"></p>
+
+<p>Close the ‘Character Edit’ window by clicking ‘Done’. Right
+click in the top-right pane of the ‘Attribute Edit’ window, and, in the menu
+that appears, select ‘Expand all’. The window now looks like this.</p>
+
+<p class="image"><img src="delta-ed_files/delta-ed-20.png" alt="Delta - Document1. Character list." border="0"></p>
+
+<h3><a name="_Saving_the_data"></a>Saving the data set</h3>
+
+<p style="page-break-after: avoid;">Select ‘File &gt; Save Dataset’. The following window
+is displayed.</p>
+
+<p class="image"><img src="delta-ed_files/delta-ed-21.png" alt="'Save As' dialog." border="0"></p>
+
+<p>Create a new folder and move to it as follows. Click <img style="vertical-align: middle;" src="delta-ed_files/button-new_folder.png" alt="'New folder' button." border="0">. Type a suitable name, e.g. ‘Grevillea’.
+Click on the <img style="vertical-align: middle;" src="delta-ed_files/icon-folder.png" alt="'Folder' icon." border="0"> icon
+adjacent to the newly created folder, causing it to be selected. Click ‘Open’.
+The dialog should now look like this.</p>
+
+<p class="image"><img src="delta-ed_files/delta-ed-24.png" alt="'Save As' dialog." border="0"></p>
+
+<p>Make sure that the ‘Save in’ folder is the newly created one
+(‘Grevillea’). Type a suitable name, e.g. ‘Grevillea’, in the ‘File name’ box,
+and click ‘Save’. This saves the data in the file ‘Grevillea.dlt’. This is a
+binary file — it will be intelligible only when viewed in the DELTA Editor.</p>
+
+<p><i>It is important to
+save each data set in a separate folder, as described above.</i> Later on, you
+will need to produce many other files associated with the data set, and it is
+convenient to give these the same names in every data set. Thus, to keep the
+files distinct, they must be in different folders.</p>
+
+<h3><a name="_Entering_taxon_names"></a>Entering taxon names</h3>
+
+<p style="page-break-after: avoid;">You can enter new taxon names either by choosing ‘View
+&gt; Taxon editor’ from the menu, or by right-clicking the mouse in the upper
+left pane of the data window, and selecting ‘Append new taxon to end of list’
+from the menu that will appear. The ‘Taxon Edit’ dialog is displayed.</p>
+
+<p class="image"><img src="delta-ed_files/delta-ed-25.png" alt="'Item Edit' dialog. Empty." border="0"></p>
+
+<p>As an example, we will enter 2 taxon names. In the ‘Edit
+taxon name’ box, type ‘<i>Grevillea
+biternata</i> &lt;Meisn.&gt;’. Use the <img style="vertical-align: middle;" src="delta-ed_files/button-italic.png" alt="'Italic' button." border="0"> button at the bottom of the window to produce
+italics. Putting the authority in angle brackets as shown causes it to be
+omitted in certain contexts, for example, in keys.</p>
+
+<p>In the ‘Taxon number’ box, click <img style="vertical-align: middle;" src="delta-ed_files/button-scroll_up.png" alt="'Scroll up' button." border="0">.
+This changes the taxon number to 2. Enter the second taxon name, ‘<i>Grevillea robusta</i> &lt;A.Cunn.&gt;’. Then
+click ‘Done’.</p>
+
+<p>The ‘Attribute Edit (Trees) window is again displayed. The
+first taxon, <i>Grevillea biternata</i>, is
+selected, and the characters in the top-right pane now have boxes for recording
+the character values for this taxon.</p>
+
+<h3><a name="_Recording_simple_attributes"></a>Recording simple attributes of
+taxa</h3>
+
+<p style="page-break-after: avoid;">To record the attribute ‘flowers white’ for the
+selected taxon, <i>Grevillea biternata</i>,
+click in the box adjacent to the character state ‘white’ in the top-right pane.
+A tick appears in the box. To record the attribute ‘leaves 2.5–3.5 cm long’,
+type ‘2.5–3.5’ in the box under ‘leaves &lt;length&gt;. The window now looks
+like this.</p>
+
+<p class="image"><img src="delta-ed_files/delta-ed-27.png" alt="Grevillea.dlt - Attribute Edit (Trees). Entering simple attributes." border="0"></p>
+
+<p>Now select the second taxon, <i>Grevillea robusta</i>, and record ‘flowers orange’, and ‘leaves 20–30
+cm long’. Save the file (‘File &gt; Save Dataset’).</p>
+
+<p>For instructions on entering more complex attributes, see <a href="#_The_Tree-View_Attribute">The tree-view attribute editor</a>.</p>
+
+<h3><a name="_Exporting_to_DELTA_1"></a>Exporting to DELTA text files</h3>
+
+<p>Before the data can be used by other programs such as
+Confor, Key, etc., they must be ‘exported’ to text files. These comprise data
+files in the DELTA format (e.g. ‘specs’ — specifications; ‘chars’ — character
+list), and ‘directives files’ or ‘action sets’ (e.g. ‘tonatr’ — translate into
+natural language), which specify how the data are to be processed. These files
+are described in detail in the <i><a href="http://delta-intkey.com/www/uguide.htm">User’s Guide to the DELTA System</a></i>.</p>
+
+<p>To export the data to DELTA text files, select ‘File &gt;
+Export Directives’. The following dialog is displayed.</p>
+
+<p class="image"><img src="delta-ed_files/delta-ed-28.png" alt="'Select DELTA files to export' dialog." border="0"></p>
+
+<p>Click ‘OK’. An ‘Export Status’ window shows progress. When
+the process is finished, click ‘Done’. This reveals the ‘Export Log’ window;
+close it by clicking <img style="vertical-align: middle;" src="delta-ed_files/button-close.png" alt="'Close window' button." border="0">.</p>
+
+<p>Note that the database stores information about the
+exporting. Therefore, when you close the Editor later, you will be asked
+whether you want to save the changes, even if you have not explicitly altered
+the data. You should normally answer ‘Yes’.</p>
+
+<h3><a name="_Producing_output_via"></a>Producing output via action sets</h3>
+
+<p>Action sets are sets of instructions that will be read and
+processed by various programs, in order to produce output such as
+natural-language descriptions, or to carry out pre-defined operations in the
+interactive identification program, Intkey. Templates for various commonly used
+action sets are automatically included when a new dataset is created as
+described above. These templates are based on a subset of the action sets
+included in the sample data supplied with the programs (see <a href="#_Experimenting_with_the">Experimenting with the Sample Data</a>). The
+sample data contain references to taxon names and to character and state
+numbers that will usually be inconsistent with or inappropriate for another
+data set. Rather than deleting directives containing such information, they
+have been turned into comments, in order to serve as examples.</p>
+
+<p>The program Confor converts DELTA text files (see <a href="#_Exporting_to_DELTA_1">previous section</a>) into natural-language
+descriptions, or into the formats required by other programs such as Intkey
+(interactive key), Dist (generating distance matrices), and Key (generating
+conventional keys) (see <a href="#_Experimenting_with_the">Experimenting with
+the Sample Data</a>).</p>
+
+<p>Confor action sets are based on the directives</p>
+
+<p class="indentt0">*INPUT FILE specs</p>
+
+<p class="indentt0">*INPUT FILE chars</p>
+
+<p class="indentt0">*INPUT FILE items</p>
+
+<p>Although this sequence of directives constitutes a valid
+action set, it only reads and checks the basic DELTA text files. To produce
+output, we need to add directives specifying the type of output required, and
+the names of the output files. For example, the action set</p>
+
+<p class="indentt0">*INPUT FILE specs</p>
+
+<p class="indentt0">*TRANSLATE INTO NATURAL LANGUAGE</p>
+
+<p class="indentt0">*PRINT FILE descrip.txt</p>
+
+<p class="indentt0">*INPUT FILE chars</p>
+
+<p class="indentt0">*INPUT FILE items</p>
+
+<p class="margint0">produces natural-language descriptions in a file descrip.txt.</p>
+
+<p>Further directives can be added to define the required
+output in more detail, and to document the purpose of the action set and
+individual directives. For example, the following action set causes new
+paragraphs to be started at designated points in the descriptions.</p>
+
+<p class="indentt0">*COMMENT Translate into natural language - plain text</p>
+
+<p class="indentt0">*INPUT FILE specs</p>
+
+<p class="indentt0">*TRANSLATE INTO NATURAL LANGUAGE</p>
+
+<p class="indentt0">*PRINT FILE descrip.txt</p>
+
+<p class="indentt0">*COMMENT Start new paragraphs at the designated points.</p>
+
+<p class="indentt0">*NEW PARAGRAPHS AT CHARACTERS 1-2 12 25-26 68 77-78 87-89</p>
+
+<p class="indentt0">*INPUT FILE chars</p>
+
+<p class="indentt0">*INPUT FILE items</p>
+
+<p class="margint0">The COMMENT directives are skipped by the program – they are
+for the benefit of human readers.</p>
+
+<p>The first two of the above action sets will work with any
+datasets. The third will fail if the dataset does not have at least 89
+characters (and, of course, the positions of the new paragraphs are unlikely to
+be suitable for other datasets). The action set will be suitable for general
+use again if we deactivate the NEW PARAGRAPHS AT CHARACTERS directive by
+turning it into a comment, thus:</p>
+
+<p class="indentt0">*COMMENT : NEW PARAGRAPHS AT CHARACTERS 1-2 12 25-26 68 77-78
+87-89</p>
+
+<p class="margint0">This allows the contents of the original directive to remain as an
+example. The colon after COMMENT has no significance for the program; we use it
+so that deactivated directives can be more easily distinguished from ordinary
+comments. The user can edit the list of characters to suit the requirements of
+another dataset, then reactivate the directive by removing ‘COMMENT : ’, for
+example:</p>
+
+<p class="indentt0">*NEW PARAGRAPHS AT CHARACTERS 1 20 34</p>
+
+<p>To view a list of action sets, select ‘View &gt; Action
+Sets’. The following ‘Actions’ dialog is displayed.</p>
+
+<p class="image"><img src="delta-ed_files/delta-ed-29.png" alt="'Grevillea.dlt [2] - Actions' dialog." border="0"></p>
+
+<p>The action-set descriptions shown in the column labelled
+‘Action’ are taken from a ‘COMMENT’ or ‘SHOW’ directive at the start of each
+action set. The text in the ‘File name’ column is the internal file name of the
+action set, and also the name of the corresponding external file when the data
+are exported to DELTA text files. The ‘Imported/exported’ column show the date
+and time when the action set was most recently imported from or exported to its
+external counterpart.</p>
+
+<p>The sets whose descriptions start with ‘~’ are partial sets,
+which are incapable of producing output by themselves, but are invoked by other
+action sets.</p>
+
+<p>Click on ‘Translate into natural language – RTF, single file
+for all taxa.’, and then click ‘Edit’. The following window is displayed.</p>
+
+<p class="image"><img src="delta-ed_files/delta-ed-30.png" alt="tonatr directives." border="0"></p>
+
+<p>Note the ‘INPUT FILE’ directives, which invoke other files
+of directives, such as ‘layout’. Close this window by clicking <img style="vertical-align: middle;" src="delta-ed_files/button-close.png" alt="'Close window' button." border="0">. The ‘Actions’ dialog is revealed again.
+Scroll down and click on ‘~ Layout for natural-language descriptions.’, and
+click ‘Edit’. The following window is displayed (you will see some additional
+blank lines, which have been removed here to reduce the size of the image).</p>
+
+<p class="image"><img src="delta-ed_files/delta-ed-32.png" alt="'layout' directives." border="0"></p>
+
+<p>The directives that start ‘*COMMENT : ’ have been deactivated
+for the reasons given above. They can be activated by removing the text
+‘COMMENT : ’, but the Editor will reject the changed action set when you
+attempt to save it, unless appropriate changes have also been made to the
+content of the directive.</p>
+
+<p>This window is a simple text editor. Activate the ‘NEW
+PARAGRAPHS AT CHARACTERS’ directive by deleting the text ‘COMMENT : ’ in front
+of it. N.B. Do not delete the ‘*’ — this is a necessary part of the syntax of
+all DELTA directives. Next, delete all the numbers at the end of the directive,
+except ‘1–2’. The directive should now read</p>
+
+<p class="indentt0">*NEW PARAGRAPHS AT CHARACTERS 1–2</p>
+
+<p>This means that, in the descriptions, new paragraphs will be
+started at character 1 (flower colour), and character 2 (leaf length). This is
+hardly necessary now, with only 2 characters, but will be appropriate later
+when more flower and leaf characters are added. (The number ‘2’ in the
+directive will be changed automatically as more flower characters are added
+above the leaf characters.)</p>
+
+<p>Similarly, activate the ‘ITEM SUBHEADINGS’ directive, and
+make it read</p>
+
+<p class="indent">* ITEM SUBHEADINGS</p>
+
+<p class="indentt0">#1. \b{}Flowers.\b0{}.</p>
+
+<p class="indentt0">#2. \b{}Leaves\b0{}.</p>
+
+<p>(Delete the rest of the subheadings, leaving only these
+two.) The window should now look like this.</p>
+
+<p class="image"><img src="delta-ed_files/delta-ed-33.png" alt="Modified 'layout' directives." border="0"></p>
+
+<p>Save the changes by selecting ‘File &gt; Save text’ in the
+main window (not shown above), and close the editing window. (Saving the file
+causes the syntax to be checked. If there are errors, you will have to correct
+them before the action set can be saved. See the <i><a href="http://delta-intkey.com/www/uguide.htm">User’s Guide to the
+DELTA System</a></i> for detailed information about the meaning and syntax of
+directives.) Then save the whole data set (‘File &gt; Save Dataset’).</p>
+
+<p>Now run the ‘tonatr’ action set, and look at the output, as
+described in <a href="#_Experimenting_with_the">Experimenting with the Sample
+Data</a>.</p>
+
+<p>Also try running all the other kinds of action set mentioned
+in <a href="#_Experimenting_with_the">Experimenting with the Sample Data</a>.
+All of the action sets will run without altering the templates, but to get good
+results you will usually need to change some of the directives.</p>
+
+<p>Numeric characters (such as ‘leaf length’) cannot be used in
+conventional keys unless they are converted into multistate characters during
+the ‘Translate into KEY format. (tokey)’ run. Therefore you should activate the
+KEY STATES directive in this action set, and change it to read (for example)</p>
+
+<p class="indentt0">*KEY STATES 2,~5/5–15/15~</p>
+
+<p>which defines three states for ‘leaf length’: ‘1. up to 5 cm
+long/ 2. 5–15 cm long/ 3. 15 cm long or more/’.</p>
+
+<p>The action sets ‘tonath’ and ‘tonatsr’, which produce
+natural-language descriptions in separate files for each taxon, require a text
+character in which you must record the name of the output file for each taxon
+(without the file extension or type (.rtf or .htm), which is added by the
+program). These names must not be longer than 8 symbols, and alphabetic symbols
+should be in lower case.</p>
+
+<h2><a name="_Importing_DELTA_Text"></a>Importing DELTA Text Files</h2>
+
+<p style="page-break-after: avoid;">To import existing DELTA text files, first start a new
+data set by selecting ‘File &gt; New Dataset’. Then select ‘File &gt; Import
+directives’. This will open a dialog to allow you to select the directory in
+which the DELTA files reside. (All directives files must reside in the same
+directory.) After choosing the directory, a new dialog will open and present
+you with a list of files in the folder that appear to be DELTA directives
+files. (The program examines the files to determine whether the first non-blank
+character in the file is ‘*’.) The program assumes that the external files are
+split into the usual arrangement of ‘specifications’, ‘characters’, ‘items’,
+and other directives files. Here is the result of selecting the DELTA ‘sample’
+directory.</p>
+
+<p class="image"><img src="delta-ed_files/delta-ed-34.png" alt="'Select DELTA files to import' dialog." border="0"></p>
+
+<p>Move the names of the files you wish to import to the boxes
+on the left of the dialog by selecting them in the box on the right and
+clicking the appropriate ‘&lt;&lt;’ button. Note that some names are already in
+the left-hand boxes — the names of the main data files (‘specs’, ‘chars’, and
+‘items’), and the names of the action-set templates supplied with the programs.
+You should set the appropriate ‘Directive type’ (Confor, Intkey, Dist, or Key),
+before or after moving the name(s). A letter in parentheses to the right of the
+name of each selected file indicates the ‘Directive type’ you have specified
+for that file.</p>
+
+<p class="image"><img src="delta-ed_files/delta-ed-35.png" alt="Modified 'Select DELTA files to import' dialog." border="0"></p>
+
+<p>Some files are not being imported for various reasons. (The
+‘check’ files are not needed, as the Editor always maintains the correct
+syntax. ‘intkey.ini’ is the same as ‘intkey.ink’. ‘natord1’ is a Delfor file,
+which contains directives not recognized by the Editor.) Click ‘OK’ to begin
+reading the files. An ‘Import Status’ dialog shows progress, and a check box allows
+you to specify whether to ‘Pause on errors and messages’. Another window
+contains a log of the importing process. When all the files have been imported,
+click the ‘Done’ button to close the ‘Import Status’ dialog. You can then save,
+print, or close the log.</p>
+
+<p>There are two special points to note about the format of the
+DELTA directives files. Firstly, they should use the ANSI, rather than OEM
+(also called ‘IBM’ or ‘ASCII’), encoding for accented characters. Secondly, if
+formatting information (e.g., italics, bold, etc.) is included, it should be in
+the form of RTF commands. However, the directives files should <i>not</i> be true RTF documents; they should
+only use RTF markup conventions. That is, they should not include a full RTF
+header, but should only make use of RTF markup commands, such as ‘\i{}’ to
+initiate italics and ‘\i0{}’ to end italics. (The use of ‘{}’ instead of a
+space to terminate an RTF instruction is unusual, but allowed by the RTF
+specification. It is necessary to use this form for the time being, because the
+current Confor may remove spaces.)</p>
+
+<p>For more information about RTF marks, see the <i><a href="http://delta-intkey.com/www/uguide.htm">User’s Guide to the DELTA System</a></i>.</p>
+
+<h2><a name="_Saving_or_Exporting"></a>Saving or Exporting a Data Set</h2>
+
+<p>A data set is normally saved in a binary format. Unlike the
+‘old’ DELTA files, all information about items, characters, dependencies,
+directives, and so on is saved in a single binary file. This file should
+normally be given the extension ‘.dlt’. When you make changes during a session,
+those changes are not made to the ‘dlt’ file until you explicitly save them.
+This is done via the ‘File &gt; Save’ or ‘File &gt; Save As’ options of the
+main menu. If you have made changes but not saved them, the program will ask
+whether you want to save or discard your changes when you close the document
+(or exit the program).</p>
+
+<p>A data set can also be exported into old-style,
+human-readable directives files, as described in the DELTA User’s Guide. To do
+so, select ‘File &gt; Export directives’ from the menu. This will open a dialog
+to allow you to select the directory in which the DELTA files should be placed.
+After choosing the directory, a new dialog will open, allowing you to specify
+the files to be exported. After specifying the files, Click ‘OK’. While the
+files are being written, a status dialog will show the progress of the
+procedure. Existing directives files in the target directory will be renamed to
+have the extension ‘.bak’.</p>
+
+<h2><a name="_Views_of_the"></a>Views of the Data</h2>
+
+<p>There are several ways of viewing and editing the data. It
+is possible (and often convenient) to view your data in several different ways
+simultaneously. The default view is currently the ‘tree-view’ attribute editor.
+To open a new view of a data set, select ‘View’, then select the required view.</p>
+
+<h2><a name="_The_Tree-View_Attribute"></a><a name="_The_Attribute_Editors"></a>The Attribute Editors</h2>
+
+<h3><a name="_The_tree-view_attribute_1"></a>The tree-view attribute editor</h3>
+
+<p style="page-break-after: avoid;">This is the default means of
+viewing the data. Here is an example.</p>
+
+<p class="image"><img src="delta-ed_files/delta-ed-36.png" alt="sample.dlt - Attribute Edit (Trees)" border="0"></p>
+
+<p>The window is divided into four panes, which can be resized
+by the user as desired by clicking on and dragging the boundaries between them.</p>
+
+<p><i>The Item Tree
+(top-left pane).</i> This contains a list of the names and numbers of all items
+(taxa) in the data set. To select an item as the ‘current’ item for the window,
+click on it (i.e. on its name or number) with the left mouse button (item 3,
+Anisopogon, is the currently selected item in the example above). To move an
+item to a different position in the list, drag it with the left mouse button
+(that is, move the mouse while holding down the button). To copy (or move) an
+item, drag it with the right mouse button — a popup menu offers a choice
+between copying or moving. Clicking the right mouse button opens a popup menu
+with options for inserting, modifying or deleting items in the list.
+Double-clicking on an item will open the item editor dialog.</p>
+
+<p>(The reader might wonder why this pane is called the item <i>tree</i> when it appears to be a simple <i>list</i> of items. In future versions of the
+program, it will be possible to group items hierarchically. When that is
+implemented, a tree structure will be used for navigating the hierarchy.)</p>
+
+<p><i>The Character Tree
+(top-right pane).</i> The upper-level nodes of this tree consist of a list of
+the feature descriptions of all characters in the data set. An icon to the left
+of the feature description indicates the character type — whether <b>T</b>ext, <b>I</b>nteger numeric, <b>R</b>eal
+numeric, <b>U</b>nordered multistate, or <b>O</b>rdered multistate. When a node is
+expanded, it reveals either (for text and numeric characters, such as character
+8 in the example above) a text box giving the value of that character for the
+selected item (and possibly the units of measurement); or (for multistate
+characters, such as characters 10 and 11 in the example above) a list of the
+states defined for that character.</p>
+
+<p>To select a character as the ‘current’ character for the
+window, click on it (anywhere in its feature or state description) with the
+left mouse button (character 11 is the currently selected character in the
+example above). To move a character to a different position in the list, drag
+its feature description with the left mouse button. To move a state within its
+character, drag the state description with the left mouse button. Clicking the
+right mouse button opens a popup menu with options for inserting, modifying or
+deleting characters and their states. Double-clicking on a character will open
+the character editor dialog.</p>
+
+<p>For multistate characters, a check box appears to the left
+of each state description. If a tick is present in the box, it indicates that
+the state applies to the currently selected item. A smaller, grey tick
+indicates that the state is present by implication, rather than explicit coding
+(see character 10 in the example). If the background colour of the box is
+white, the application of that state to the currently selected item may be
+toggled by clicking on the box.</p>
+
+<p>A white background in a character-value box, as in
+characters 8 and 10 in the example, indicates that the attribute is ‘simple’,
+and the value(s) can be edited <i>in situ</i>.
+A grey background, as in character 11 in the example, indicates that the
+attribute is ‘complex’, defined as follows.</p>
+
+<ul><li><i>Text characters</i>. The attribute has
+embedded formatting information.</li>
+<li><i>Numeric characters</i>. The attribute
+includes comments, extreme values (enclosed in parentheses), or delimiters
+other than ‘–’ (‘to’).</li>
+<li><i>Multistate characters</i>. The attribute
+includes comments, or delimiters other than ‘/’ (‘or’); or the states within
+the attribute are not in ascending order.</li></ul>
+
+<p class="margint0">Complex attributes can be edited or entered only in the
+complex-attribute editing pane — see below.</p>
+
+<p>If a character is inapplicable because of dependency
+relationships, a diagonal red bar appears across both the ‘type’ icon and the
+state check boxes.</p>
+
+<p><i>The Complex-Attribute
+Editor (lower-left pane).</i> This pane is a rich edit control — that is, it
+allows display and editing of formatting marks. It contains the DELTA encoding
+for the currently selected item and character, using the traditional DELTA
+style. Angle brackets should appear around comments, but should <i>not</i> be placed around text attributes. A
+toolbar above the pane provides controls for rendering portions of the text in
+bold, italics, etc., and for undoing changes. Error checking is performed when
+the input focus leaves the edit control.</p>
+
+<p><i>The State List
+(bottom-right pane).</i> If the currently selected character is a text or
+numeric character, this pane contains only an icon denoting the character type,
+and the units of measurement (if applicable). If the currently selected
+character is a multistate character, it contains a list of the states of the
+character, with a check box next to each. The appearance and method of use of
+the check boxes is the same as in the character-tree pane. This pane is
+provided so that the codings may be viewed and edited when the character is not
+‘expanded’ in the character-tree pane.</p>
+
+<h3><a name="_The_grid-view_attribute"></a>The grid-view attribute editor</h3>
+
+<p style="page-break-after: avoid;">This view is similar to that
+of a spreadsheet program. Here is an example.</p>
+
+<p class="image"><img src="delta-ed_files/delta-ed-37.png" alt="sample.dlt - Attribute Edit (Grid)" border="0"></p>
+
+<p>The upper pane of this view is a grid displaying the data
+matrix. The columns represent the characters of the data set and the rows
+represent the items. The cells of the matrix display the attribute corresponding
+to a given character (column) and item (row). For non-text characters, any
+comments are removed from the attribute before display. This allows more of the
+‘basic’ data to be displayed. When an attribute appears in grey text (as for
+many of the entries in the column for character 10 in the example), it
+indicates that the state shown is present implicitly, rather than by explicit
+encoding. A grey background, as for character 11 of most taxa in the example,
+indicates that the attribute is ‘complex’ (see definition above) and can be
+edited or entered only in the complex-attribute editing pane. A focus rectangle
+indicates the currently selected attribute of the grid. Elements of the pane
+may be resized by dragging their boundaries in the column or row headings (the
+grey areas at the left and top).</p>
+
+<p>Characters and items may be re-ordered by dragging a feature
+name or taxon name (that is, the grid’s column or row headings, respectively)
+to the desired position. Dragging with the right mouse button either moves or
+copies the item (for rows) or character (for columns) — a popup menu offers the
+choice ‘Move here’ or ‘Copy here’. Clicking the right mouse button opens a
+popup menu with options for inserting, modifying or deleting items or
+characters. Double-clicking (with the left mouse button) on a character name
+will open the character editor dialog. Double-clicking on an item name will
+open the item editor dialog.</p>
+
+<p>To copy cells to the clipboard, select the cells you want,
+and choose ‘Edit &gt; Copy’ from the main menu. Note that the keyboard shortcut
+is ‘Ctrl+Ins’, not the standard Windows ‘Ctrl+C’. The ‘Paste’ option has not
+been implemented, but the clipboard can be pasted into other programs such as
+Excel or Word. When pasting into Excel, start a new sheet, select the whole
+sheet, and format the cells as text (otherwise DELTA codes containing a slash
+will be interpreted as dates). Select the top left cell, and paste.</p>
+
+<p>There are ‘Print’, ‘Print Preview’, and ‘Print Setup’
+options in the ‘File’ menu (in grid view only). If you want more control over
+the layout, you can copy part of the grid and paste it into a word processor or
+spreadsheet. In Word, paste into a table, or paste as text and then use ‘Table
+&gt; Convert &gt; Text to Table’.</p>
+
+<p>The bottom portion of the window consists of the same panes
+for editing an attribute as were described for the Tree View window.</p>
+
+<h3><a name="_Using_the_‘Enter’"></a>Using the ‘Enter’ key in attribute editing</h3>
+
+<p>When
+editing attributes in either the tree or grid view, pressing the ‘Enter’ key
+causes a skip to the next taxon, or the next applicable character, and
+‘Shift/Enter’ causes a backward skip. If the taxon-tree pane is active,
+skipping is by taxa, and if the character-tree pane is active, skipping is by
+characters. Otherwise, the type of skipping is determined by a drop-down listbox
+in the toolbar.</p>
+
+<p>Clicking ‘Ctrl/Enter’ in the complex-attribute editing pane
+inserts a new-paragraph mark.</p>
+
+<h2><a name="_The_Item_Editor"></a>The Item Editor</h2>
+
+<p style="page-break-after: avoid;">This dialog is provided for the creation or
+modification of new items and their names. It is opened either by choosing
+‘View &gt; Item editor’ from the menu; by right-clicking the mouse in the upper
+left pane (the Item Tree) of the Tree View window, and selecting ‘Insert new
+item at this position’ or ‘Append new item to end of list’ from the resulting
+menu; or by double-clicking on an item name in either the Tree or Grid View.
+The dialog appears as shown here.</p>
+
+<p class="image"><img src="delta-ed_files/delta-ed-38.png" alt="sample.dlt [2] - Item Edit." border="0"></p>
+
+<p>In the upper-left portion of the dialog, a small up-down
+control allows selection of the taxon that is to be modified. Alternatively,
+the taxon can be selected from a list by clicking the ‘Select’ button. A rich
+edit control in the upper-right corner is used for entering or modifying the
+taxon name. A toolbar at the bottom of the window provides controls for
+rendering portions of the text in bold, italics, etc., and for undoing changes.</p>
+
+<p>The ‘Images’ panel, which occupies the bottom half of the
+dialog, allows images to be associated with the taxon. On the left side of the
+panel is a list of the names of image files associated with the taxon. (Note
+that the program stores only the names of image files within the DELTA data
+file. It does not store copies of the images themselves). <b>N.B. Although the
+Editor will accept blanks in image file names, such names should be avoided, as
+they will not work with other DELTA programs, which use blanks as delimiters.</b>
+The names within this list may be re-ordered by dragging and dropping with the
+left mouse button. Clicking on the list with the right mouse button opens a
+popup menu with options for inserting, modifying or deleting images.
+Double-clicking (with the left mouse button) on an image file name will cause
+that image to be displayed in a window of its own.</p>
+
+<p>Clicking the ‘Settings’ button located near the centre of
+the panel will open the image settings dialog (described <a href="#_The_Image_Settings">below</a>). Clicking the ‘Display’ button causes
+the currently selected image to be displayed. Clicking the ‘Add’ button allows
+you to preview and select a new image file to insert in the list (the image is
+inserted just above the current selection). Clicking the ‘Delete’ button caused
+the currently selected image file to be removed from the list. In the upper
+right portion of the panel is an edit control for entering a ‘subject text’ for
+the image. This text is used as a brief label for the image; it is used in the
+‘Subject’ menu and caption of the displayed image to identify the image. A
+second edit control below this provides a space for entering developer’s notes
+about the image.</p>
+
+<p>In the lower right portion of the panel are controls for
+associating and previewing one or more sound files with the current image. (As
+with images, only the names of sound files are stored within the DELTA file.
+The files themselves are not stored.) A drop-down list box in this region lists
+the sound files associated with the image. Clicking with the right mouse button
+on the list opens a popup menu with options for inserting, modifying or
+deleting sounds. Clicking the x-shaped button causes the currently selected sound
+to be deleted, and clicking the arrow-shaped button plays the sound. The
+‘Insert’ button allows you to locate, preview, and select new sounds for the
+image.</p>
+
+<p>The ‘Done’ button in the lower-left corner causes the dialog
+to close.</p>
+
+<p>The ‘Help’ button in the lower-right corner is not
+functional at present.</p>
+
+<h2><a name="_The_Character_Editor"></a>The Character Editor</h2>
+
+<p>This dialog is provided for the creation and modification of
+characters and their associated states. It is opened either by choosing ‘View
+&gt; Character editor’ from the menu; by right-clicking the mouse in the upper
+right pane (the Character Tree) of the Tree View window, and selecting ‘Insert
+new character at this position’ or ‘Append new character to end of list’ from
+the resulting menu; or by double-clicking on a feature description in either
+the Tree or Grid View. Here is an example.</p>
+
+<p class="image"><img src="delta-ed_files/delta-ed-39.png" alt="sample.dlt [2] - Character Edit." border="0"></p>
+
+<p style="page-break-after: avoid;">This is a relatively complex
+dialog, with a number of components.</p>
+
+<p><i>The character number
+selector</i>. At the upper-left of the dialog is a small up-down control
+showing the number of the character being edited. The value shown here can be
+changed to select a different character for editing. Alternatively, a character
+can be selected from the character list by clicking the ‘Select’ button.</p>
+
+<p><i>The character type
+selector.</i> Just below the character number selector is a drop-down listbox
+that indicates the character type. The type should be chosen for any newly
+define character. It is not possible to freely reassign the type of a character
+once it has been defined, provided no items are encoded for that character, and
+no controlling attributes are defined by it.</p>
+
+<p><i>The mandatory
+character checkbox</i>. This indicates whether the character is ‘mandatory’,
+that is, must be recorded in every item.</p>
+
+<p><i>The exclusive
+character checkbox</i>. This checkbox, which appears only for multistate
+characters, indicates whether states of the character should be ‘exclusive’,
+that is, whether only a single state of the character can be associated with
+any given item.</p>
+
+<p><i>The feature
+description editor.</i> This is located at the top centre of the dialog, and is
+a rich edit control containing the ‘feature’, or basic description of the
+character. As with ‘conventional’ DELTA coding, the feature description should
+usually begin with a lower-case letter.</p>
+
+<p><i>The language selector.</i>
+This is at the upper-right of the dialog. It is intended to allow selection of
+alternative languages. This feature has not yet been implemented.</p>
+
+<p><i>The wording variant
+selector. </i>This is near the upper-right corner of the dialog. It is intended
+to allow the used to select among alternate wordings of the character list for
+different purposes (such as key generation vs. natural language descriptions).
+This feature has not yet been implemented.</p>
+
+<p><i>The ‘Help’ button</i>.
+This is at the lower right of the dialog. It is currently not functional.</p>
+
+<p><i>The formatting toolbar</i>.
+This is located at the bottom centre of the dialog. It provides buttons for
+rendering text in bold, italics, etc., and for undoing editing operations. The
+toolbar will operate with whichever rich edit control is currently active.</p>
+
+<p><i>The ‘Done’ button.</i>
+This is at the lower left of the dialog. It closes the dialog.</p>
+
+<p>In mid-dialog are a series of different controls, each
+providing access to a different aspect of the character. These are selected via
+a tab mechanism.</p>
+
+<h3><a name="_The_state_editor"></a>The state editor</h3>
+
+<p class="image"><img src="delta-ed_files/delta-ed-40.png" alt="'State editor' panel." border="0"></p>
+
+<p>This panel contains a list of currently defined states (on
+the left), a rich edit control (on the right), and a check box and buttons (in
+the middle). The user selects among states via the list control on the left.
+The description of that state may then be edited in the rich editing control on
+the right. Clicking the ‘Add’ button indicates that a new state is to be
+inserted above the currently selected state. Clicking the ‘Delete’ button
+deletes the currently selected state. New states may be appended to the list by
+moving the list selection to the line below the last already-defined state,
+then entering the new state description in the state description editor. Pressing
+the ‘Enter’ key while in the description editor will cause the selection to
+move forward to the next state. This can be used to append a series of new
+states to the character without having to repeatedly use the list box and add
+button. States in the list control can be re-ordered via dragging-and-dropping.
+The ‘Implicit’ check box allows the specification of the currently selected
+state as the ‘implicit’ state. When the character is not recorded for a taxon,
+the implicit state value is assumed. The name of the implicit state (if one
+exists) will be shown in italics in the ‘Defined states’ list; state 2 in the
+figure above is implicit.</p>
+
+<h3><a name="_The_notes_editor"></a>The notes editor</h3>
+
+<p class="image"><img src="delta-ed_files/delta-ed-41.png" alt="'Notes editor' panel." border="0"></p>
+
+<p>This panel consists of a single, large, rich edit control.
+Supplementary information about the character may be entered here.</p>
+
+<h3><a name="_The_image-association_editor"></a>The image-association editor</h3>
+
+<p class="image"><img src="delta-ed_files/delta-ed-42.png" alt="'Image-association' editor." border="0"></p>
+
+<p>The ‘Images’ panel allows the association of images with the
+character. On the left side of the panel is a list of the names of image files
+associated with the character. (Note that the program stores only the names of
+image files within the DELTA data file. It does not store copies of the images
+themselves). <b>N.B. Although the Editor will accept blanks in image file
+names, such names should be avoided, as they will not work with other DELTA
+programs, which use blanks as delimiters.</b> The names within this list may be
+re-ordered by dragging and dropping with the left mouse button. Clicking on the
+list with the right mouse button opens a popup menu with options for inserting,
+modifying or deleting images. Double-clicking (with the left mouse button) on
+an image file name will cause that image to be displayed in a window of its
+own.</p>
+
+<h3><a name="_The_controlling-attribute_editor"></a>The controlling-attribute
+editor</h3>
+
+<p class="image"><img src="delta-ed_files/delta-ed-43.png" alt="'Controlling-attribute' editor." border="0"></p>
+
+<p>This panel is used for defining ‘controlling attributes’;
+that is, combinations of one or more states within a character, which when
+encoded for in a given item can make other ‘dependent’ characters inapplicable.
+It can also be used to define the associations between the controlling
+attributes and the corresponding dependent characters.</p>
+
+<p>The example above is associated with a character that
+encoded ligules as being present or absent. A controlling attribute<b> </b>(‘ligule: absent’) is defined here,
+and is used to make inapplicable another character dealing with ligule shape.</p>
+
+<p>The panel contains a drop-down list of controlling
+attributes defined for this character in the upper left corner, a list box of
+the character’s states in the lower-left corner, and two lists to the right
+containing characters within the data set. To define a new controlling
+attribute, select ‘[new]’from the list of controlling attributes. Then use the
+state list box to select those states that should constitute the new
+controlling attribute (the selected states will appear in a bold font). When
+all relevant states have been selected, click the ‘Define’ button to define the
+new controlling attribute. You will be given an opportunity to assign an
+identifying label to the controlling attribute; by default, a label will be
+generated from the character's feature and state descriptions. (However, note
+that there is currently no provision for exporting custom labels to DELTA
+format.)</p>
+
+<p>Characters are placed under (or removed from) the control of
+a given controlling attribute by use of the two list boxes on the right side of
+the panel. The list on the far right includes all characters in the data set.
+They may be added to the ‘inapplicable’ character list either by selecting them
+and clicking the move (‘&lt;&lt;‘) button, or by dragging-and-dropping to the
+other list. A similar procedure can be used to remove characters from the
+‘inapplicable’ list.</p>
+
+<h3><a name="_The_‘Controlled-by’_chooser"></a>The ‘Controlled-by’ chooser</h3>
+
+<p class="image"><img src="delta-ed_files/delta-ed-44.png" alt="'Controlled-by' chooser." border="0"></p>
+
+<p>This panel provides an alternative way of associating
+dependent characters with their controlling attributes. Note, however, that
+controlling attributes cannot be <i>defined</i>
+in this panel.</p>
+
+<p>The panel shows controlling attributes that control the
+current character. On the right of the panel is a list of all controlling
+attributes defined for the data set. On the left is a list showing those that
+make the current character inapplicable. Controlling attributes may be moved to
+(or from) the ‘made inapplicable by’ list either by selecting them and clicking
+the ‘Move’ button, or by dragging-and-dropping them.</p>
+
+<p>The ‘Edit’ button is not yet functional, but is intended to
+take the user to a view where a given controlling attribute was defined.</p>
+
+<h2><a name="_The_Image_Settings"></a>The Image Settings Dialog</h2>
+
+<p style="page-break-after: avoid;">This dialog is provided to change settings related to
+display of images and their text overlays. It is opened either by choosing
+‘View &gt; Image settings’ from the menu; by clicking on the ‘Settings’ button
+of the images panel of the Item Editor or Character Editor windows; or by
+right-clicking the mouse on an image file name in an images panel or a
+displayed image and selecting ‘Image settings’ from the resulting menu. Here is
+an example.</p>
+
+<p class="image"><img src="delta-ed_files/delta-ed-45.png" alt="'Image settings' dialog." border="0"></p>
+
+<p>The left portion of this dialog selects default
+characteristics to be applied to newly created text overlays on images.
+Changing these settings generally has no effect on existing overlays. An
+exception is that changing ‘Button alignment’ will affect existing push-button
+overlays if those overlays are later edited or repositioned on their image. For
+more detailed information on the meaning of these settings, see the section
+below on Image Windows and Overlays.</p>
+
+<p class="MsoFooter">An edit control in the upper right portion of this dialog
+contains the ‘image path’. This is a list of directories in which the program
+will look for image or sound files. Multiple directories are separated with a
+semicolon. For example, an image path of ‘.;images;e:\’ will cause the program
+to search for images in the current directory (that is, the directory in which
+the ‘.dlt’ file itself resides), the subdirectory ‘images’ of the current
+directory, and the root directory of the E: drive. Components of the image path
+may be URL’s, e.g., http://delta-intkey.com/angio/images. The ‘Browse’ button
+can be used to locate directories on the local machine to be added to the image
+path. URL’s must be entered manually.</p>
+
+<p class="MsoFooter">The lower left portion of the dialog provides a mechanism
+for setting the fonts to be used for image overlays. The ‘default’ font is used
+for most text overlays. The ‘feature’ font is used for the display of feature
+description overlays; if it is not set explicitly, the ‘default’ font is used.
+The ‘button’ font is used for the ‘OK’, ‘Cancel’, and ‘Notes’ buttons. Changes
+to these values will affect all existing overlays, as well as those yet to be
+created. A sample of each font is displayed as changes are made.</p>
+
+<p>Note that changes made within this dialog do not take effect
+immediately. You must click either the ‘Apply’ button or ‘OK’ button (which
+also closes the dialog) for any changes to be applied.</p>
+
+<h2><a name="_Images_Windows_and"></a>Image Windows and Overlays</h2>
+
+<p style="page-break-after: avoid;">Character and taxon images are displayed in windows
+that are meant to closely resemble the appearance they have within Intkey.
+These images may have <i>overlays</i>
+superimposed upon them. The editor provides facilities for adding, modifying,
+and deleting these overlays. Here is an example of a character image, as
+displayed in the editor.</p>
+
+<p class="image"><img src="delta-ed_files/delta-ed-46.png" alt="Character 6 overlays." border="0"></p>
+
+<p>Note that the image window contains its own menu. The
+‘Subject’ menu item allows the user to go to a different image attached to the
+same taxon or character, based on the subject text of the image. The ‘Control’
+menu provides options for going on to the next or previous image associated
+with the current taxon or character, or for going on to the next taxon or
+character. The ‘Window’ menu provides options for controlling how the image and
+its overlays are displayed, and for obtaining information about the image. </p>
+
+<p>The image above contains examples of the basic different
+types of overlays: text boxes (which automatically become scrollable for large
+amounts of text), push buttons, and ‘hotspots’. Overlays are inserted,
+modified, or deleted by right clicking on the image or an existing overlay.
+This will cause a popup-menu to appear, as seen below.</p>
+
+<p class="image"><img src="delta-ed_files/delta-ed-47.png" alt="Character 9 overlays and menus." border="0"></p>
+
+<p>The range of overlay types that are available depends upon
+the type of image being viewed. All image types allow for the creation of ‘OK’
+and ‘Cancel’ buttons, which can be used in Intkey to close the image window;
+and for the creation of general-purpose ‘text’ overlays, which may contain any
+arbitrary text. Taxon images may also contain a text overlay to contain the
+name of the taxon, and a ‘Notes’ button which, when clicked, will cause notes
+associated with the image to be displayed in a separate window. Similarly,
+character images may contain a ‘feature’ text overlay, which displays the
+feature description of the character; and a ‘Notes’ button which, when clicked,
+will cause the character notes associated with the character to be displayed.</p>
+
+<p>Character images may contain several other types of overlay,
+depending on the character type. Images associated with multistate characters
+may contain ‘state’ text overlays, which displays a state number and
+description. When used in Intkey, these overlays may be selected by the user to
+indicate the applicability of that state. The ‘state’ overlays may also have
+one or more ‘hotspots’ associated with them — regions of the underlying image
+that may also be used by an Intkey user to select the associated state.
+Similarly, images associated with numeric characters may contain selectable
+‘value’ overlays that contain a numeric value (or range of numeric values), and
+these may also have associated hotspots. Images for numeric characters may, in
+addition, contain an ‘enter’ overlay in which an Intkey end-user may enter any
+value, and a ‘units’ overlay which displays the character’s units of
+measurement (if they have been defined).</p>
+
+<p>The basic overlays for a character image can be inserted in
+a single step by selecting the option ‘All usual overlays’. This inserts the ‘Feature
+description’ box, ‘State’ boxes (for a multistate character) or ‘Enter’ and ‘Units’
+boxes (for a numeric character), ‘OK’ and ‘Cancel’ buttons, a ‘Notes’ button
+(if there are notes for the character), and a hotspot for each character state.</p>
+
+<p>Once they have been created, overlays may be resized or
+repositioned by use of the mouse (or similar pointing device). Click on a
+overlay to select it. Its border will become thicker. (The innermost margin of
+this border corresponds to the border of the ‘normal’ overlay window.) When the
+cursor is positioned over this border, it changes to a double-headed arrow,
+indicating that the overlay window may be re-sized by holding down the left
+mouse button and moving the mouse. (The ‘OK’, ‘Cancel’, and ‘Notes’
+push-buttons are exceptions to this — they may be moved but not resized.) To
+move the selected overlay window, but retain its size, position the cursor in
+the middle of the window and hold down the left mouse button. The cursor will
+change to a ‘hand’, and moving the cursor will move the window to a new
+position. An overlay may not be positioned beyond the boundaries of the image
+window. A ‘selected’ overlay may be returned to its normal state by ‘selecting’
+another overlay, or by clicking on some portion of the image where there is no
+overlay.</p>
+
+<p>Double-clicking the left mouse button within a ‘selected’
+overlay will open a dialog box for modification of the properties of the
+overlay. The dialog may also be opened by right-clicking on the overlay and
+selecting ‘Edit overlay’ from the popup menu. A sample of such a dialog for a
+‘state’ overlay appears as show here.</p>
+
+<p class="image"><img src="delta-ed_files/delta-ed-48.png" alt="Modify state dialog." border="0"></p>
+
+<p>The four checkboxes along the left side of the dialog
+control aspects of how the text within the overlay will be displayed. A tick in
+the first checkbox indicates that the text should be centred (both vertically
+and horizontally) within its border. The default behaviour is for text to begin
+in the upper-left corner of its containing frame. Ticking the second checkbox
+indicates that any comments within the state description text should be
+displayed, with the surrounding angle brackets converted into parentheses. By
+default, comments are removed from the text. A tick in the third checkbox
+indicates whether the state description should be omitted entirely; the default
+behaviour is to display the state description text. The fourth checkbox
+indicates that the height of the frame containing the text should automatically
+be adjusted to contain an integral number of lines. By default, the text boxes
+may be of any height.</p>
+
+<p>Any text entered in the ‘Additional Text’ area of the dialog
+will be appended to the state description text. If the state description text
+is omitted entirely, the text entered here will be displayed instead.</p>
+
+<p>In the central-right portion of the dialog are controls for
+viewing and modifying the position of the upper-left corner of the overlay (‘X’
+and ‘Y’) and the overlay’s width and height (‘W’ and ‘H’). These values are
+expressed in <i>image units</i>, not pixels;
+these are values in the range 0 to 1000, with a value of 1000 corresponding to
+the width or height of the entire image. However, if the ‘Use Integral Height’
+checkbox is ticked, the height value (‘H’) is given in terms of lines of text.
+The upper-left corner of the image is always taken as the origin (0,0), with
+positive values to the right and downwards.</p>
+
+<p>Note that changes made within this dialog do not take effect
+immediately. You must click either the ‘Apply’ button or ‘OK’ button (which
+also closes the dialog) for any changes to be applied. The dialogs for
+modifying other types of text overlays are quite similar to the ‘state’ example
+shown here, and differ only in minor details. A corresponding dialog for
+‘button’ overlays allows only the button’s position to be modified.</p>
+
+<p>A slightly different dialog is available for editing the
+properties of hotspots. Here is an example.</p>
+
+<p class="image"><img src="delta-ed_files/delta-ed-49.png" alt="'Modify hotspot' dialog." border="0"></p>
+
+<p>At the top of this dialog, a pair of radio buttons is used
+to select whether the shape of the hotspot is rectangular or elliptical. To the
+right centre are controls for viewing and modifying the position and extent of
+the hotspot, just as for text overlays. To the left are controls that affect
+how the hotspot boundaries appear. By default, the hotspots are invisible to
+Intkey user, with only a change in cursor shape notifying them when the mouse
+passes over a hotspot. If the ‘Pop up’ option is selected, the outline of the
+hotspot will become visible whenever the mouse passes over the hotspot or over
+any other hotspot or ‘state’ overlay associated with the same state as the
+hotspot. The ‘Use custom color’ option allows the designer to select the colour
+that should be used in drawing the outline of a pop-up hotspot. By default, the
+boundary lines are drawn by ‘inverting’ the colours of the display. Note that
+‘inverting’ the colours a second time restores the original colours. Hence when
+hot-spot boundary lines drawn in this way exactly overlie one another, they
+disappear from view. If the use of a custom colour is selected, the colour to
+be used may be chosen from the dialog that appears when the ‘Choose color’
+button is clicked.</p>
+
+<h2><a name="_Entering_Special_Symbols"></a>Entering Special Symbols</h2>
+
+<p class="marginb2">The Rich Edit controls used in the Delta Editor support a
+variety of special symbols and international characters, which can be entered
+via the Windows ‘Character Map’ utility. (If this isn’t already installed on
+your system, you can install it as follows. (1) Click the Start button, point
+to Settings, and then click Control Panel. (2) Double-click the Add/Remove Programs
+icon. (3) Click the Windows Setup tab. (4) Double click Accessories. (5) Check
+Character Map, and then click OK. (6) Click OK.) In addition, the Delta editor
+provides a number of shortcut keys to ease entry of many of these characters.
+For the most part, these shortcuts are the same as the defaults provided in
+Word 97, but several additional shortcuts of particular use with biological
+data (e.g., &#9794;, &#9792;, ×, and the Greek alphabet) are provided. Here is
+a complete list.</p>
+
+<div align="center">
+
+<table class="border" summary="" border="1" cellpadding="0" cellspacing="0" width="90%">
+ <thead>
+  <tr>
+   <th class="border grey" valign="top" width="306">
+   <p class="tablegrey">Shortcut Keystroke</p>
+   </th>
+   <th class="border grey" valign="top" width="259">
+   <p class="tablegrey">Resulting symbol</p>
+   </th>
+  </tr>
+ </thead>
+ <tbody><tr>
+  <td class="border" valign="top" width="306">
+  <p class="table">Ctrl + Num-</p>
+  </td>
+  <td class="border" valign="top" width="259">
+  <p class="table">– (en dash)</p>
+  </td>
+ </tr>
+ <tr>
+  <td class="border" valign="top" width="306">
+  <p class="table">Ctrl + Shift + space</p>
+  </td>
+  <td class="border" valign="top" width="259">
+  <p class="table">&nbsp; (non-breaking space)</p>
+  </td>
+ </tr>
+ <tr>
+  <td class="border" valign="top" width="306">
+  <p class="table">Ctrl + -</p>
+  </td>
+  <td class="border" valign="top" width="259" nowrap="nowrap">
+  <p class="table">- (‘optional’ hyphen; but see Notes)</p>
+  </td>
+ </tr>
+ <tr>
+  <td class="border" valign="top" width="306">
+  <p class="table">Ctrl + Alt + c</p>
+  </td>
+  <td class="border" valign="top" width="259">
+  <p class="table">©</p>
+  </td>
+ </tr>
+ <tr>
+  <td class="border" valign="top" width="306">
+  <p class="table">Ctrl + Alt + r</p>
+  </td>
+  <td class="border" valign="top" width="259">
+  <p class="table">®</p>
+  </td>
+ </tr>
+ <tr>
+  <td class="border" valign="top" width="306">
+  <p class="table">Ctrl + Alt + t</p>
+  </td>
+  <td class="border" valign="top" width="259">
+  <p class="table">™</p>
+  </td>
+ </tr>
+ <tr>
+  <td class="border" valign="top" width="306">
+  <p class="table">Ctrl + Alt + m</p>
+  </td>
+  <td class="border" valign="top" width="259">
+  <p class="table">&#9794;</p>
+  </td>
+ </tr>
+ <tr>
+  <td class="border" valign="top" width="306">
+  <p class="table">Ctrl + Alt + f</p>
+  </td>
+  <td class="border" valign="top" width="259">
+  <p class="table">&#9792;</p>
+  </td>
+ </tr>
+ <tr>
+  <td class="border" valign="top" width="306">
+  <p class="table">Ctrl + Alt + x</p>
+  </td>
+  <td class="border" valign="top" width="259">
+  <p class="table">×</p>
+  </td>
+ </tr>
+ <tr>
+  <td class="border" valign="top" width="306">
+  <p class="table">Ctrl + Alt + o</p>
+  </td>
+  <td class="border" valign="top" width="259">
+  <p class="table">º</p>
+  </td>
+ </tr>
+ <tr>
+  <td class="border" valign="top" width="306">
+  <p class="table">Ctrl + Alt + !</p>
+  </td>
+  <td class="border" valign="top" width="259">
+  <p class="table">¡</p>
+  </td>
+ </tr>
+ <tr>
+  <td class="border" valign="top" width="306">
+  <p class="table">Ctrl + Alt + ?</p>
+  </td>
+  <td class="border" valign="top" width="259">
+  <p class="table">¿</p>
+  </td>
+ </tr>
+ <tr>
+  <td class="border" valign="top" width="306">
+  <p class="table">Ctrl + Alt + +</p>
+  </td>
+  <td class="border" valign="top" width="259">
+  <p class="table">±</p>
+  </td>
+ </tr>
+ <tr>
+  <td class="border" valign="top" width="306">
+  <p class="table">Ctrl + Alt + .</p>
+  </td>
+  <td class="border" valign="top" width="259">
+  <p class="table">...</p>
+  </td>
+ </tr>
+ <tr>
+  <td class="border" valign="top" width="306">
+  <p class="table">Ctrl + Alt + Num-</p>
+  </td>
+  <td class="border" valign="top" width="259">
+  <p class="table">— (em dash)</p>
+  </td>
+ </tr>
+ <tr>
+  <td class="border" valign="top" width="306">
+  <p class="table">Ctrl + ' followed by:</p>
+  </td>
+  <td class="border" valign="top" width="259">
+  <p class="table">(acute accents)</p>
+  </td>
+ </tr>
+ <tr>
+  <td class="border" valign="top" width="306">
+  <p class="table">&nbsp;&nbsp;&nbsp;&nbsp;one of A,a,E,e,I,i,O,o,U,u,Y,y</p>
+  </td>
+  <td class="border" valign="top" width="259">
+  <p class="table">Á,á,É,é,Í,í,Ó,ó,Ú,ú,Ý,ý</p>
+  </td>
+ </tr>
+ <tr>
+  <td class="border" valign="top" width="306">
+  <p class="table">&nbsp;&nbsp;&nbsp;&nbsp;one of C,c,D,d,L,l,N,n,R,r,S,s,T,t,Z,z
+  </p>
+  </td>
+  <td class="border" valign="top" width="259">
+  <p class="table">&#262;,&#263;,Ð,ð,&#313;,&#314;,&#323;,&#324;,&#340;,&#341;,&#346;,&#347;,&#354;,&#355;,&#377;,&#378;</p>
+  </td>
+ </tr>
+ <tr>
+  <td class="border" valign="top" width="306">
+  <p class="table">&nbsp;&nbsp;&nbsp;&nbsp;space</p>
+  </td>
+  <td class="border" valign="top" width="259">
+  <p class="table">&#8242; (prime)</p>
+  </td>
+ </tr>
+ <tr>
+  <td class="border" valign="top" width="306">
+  <p class="table">&nbsp;&nbsp;&nbsp;&nbsp;'</p>
+  </td>
+  <td class="border" valign="top" width="259">
+  <p class="table">’ (closing single quote)</p>
+  </td>
+ </tr>
+ <tr>
+  <td class="border" valign="top" width="306">
+  <p class="table">&nbsp;&nbsp;&nbsp;&nbsp;"</p>
+  </td>
+  <td class="border" valign="top" width="259">
+  <p class="table">” (closing double quote)</p>
+  </td>
+ </tr>
+ <tr>
+  <td class="border" valign="top" width="306">
+  <p class="table">Ctrl + ` followed by:</p>
+  </td>
+  <td class="border" valign="top" width="259">
+  <p class="table">(grave accents)</p>
+  </td>
+ </tr>
+ <tr>
+  <td class="border" valign="top" width="306">
+  <p class="table">&nbsp;&nbsp;&nbsp;&nbsp;one of A,a,E,e,I,i,O,o,U,u</p>
+  </td>
+  <td class="border" valign="top" width="259">
+  <p class="table">À,à,È,è,Ì,ì,Ò,ò,Ù,ù</p>
+  </td>
+ </tr>
+ <tr>
+  <td class="border" valign="top" width="306">
+  <p class="table">&nbsp;&nbsp;&nbsp;&nbsp;`</p>
+  </td>
+  <td class="border" valign="top" width="259">
+  <p class="table">‘ (opening single quote)</p>
+  </td>
+ </tr>
+ <tr>
+  <td class="border" valign="top" width="306">
+  <p class="table">&nbsp;&nbsp;&nbsp;&nbsp;"</p>
+  </td>
+  <td class="border" valign="top" width="259">
+  <p class="table">“ (opening double quote)</p>
+  </td>
+ </tr>
+ <tr>
+  <td class="border" valign="top" width="306">
+  <p class="table">&nbsp;&nbsp;&nbsp;&nbsp;&lt;</p>
+  </td>
+  <td class="border" valign="top" width="259">
+  <p class="table">«</p>
+  </td>
+ </tr>
+ <tr>
+  <td class="border" valign="top" width="306">
+  <p class="table">&nbsp;&nbsp;&nbsp;&nbsp;&gt;</p>
+  </td>
+  <td class="border" valign="top" width="259">
+  <p class="table">»</p>
+  </td>
+ </tr>
+ <tr>
+  <td class="border" valign="top" width="306">
+  <p class="table">Ctrl + ^ followed by:</p>
+  </td>
+  <td class="border" valign="top" width="259">
+  <p class="table">(circumflex)</p>
+  </td>
+ </tr>
+ <tr>
+  <td class="border" valign="top" width="306">
+  <p class="table">&nbsp;&nbsp;&nbsp;&nbsp;one of A,a,E,e,I,i,O,o,U,u</p>
+  </td>
+  <td class="border" valign="top" width="259">
+  <p class="table">Â,â,Ê,ê,Î,î,Ô,ô,Û,û</p>
+  </td>
+ </tr>
+ <tr>
+  <td class="border" valign="top" width="306">
+  <p class="table">Ctrl + Alt + ^ followed by:</p>
+  </td>
+  <td class="border" valign="top" width="259">
+  <p class="table">(hacek)</p>
+  </td>
+ </tr>
+ <tr>
+  <td class="border" valign="top" width="306">
+  <p class="table">&nbsp;&nbsp;&nbsp;&nbsp;one of
+  C,c,D,d,E,e,L,l,N,n,R,r,S,s,T,t,Z,z</p>
+  </td>
+  <td class="border" valign="top" width="259">
+  <p class="table">&#268;,&#269;,&#270;,&#271;,&#276;,&#277;,&#317;,&#318;,&#327;,&#328;,&#344;,&#345;,Š,š,&#356;,&#357;,Ž,ž</p>
+  </td>
+ </tr>
+ <tr>
+  <td class="border" valign="top" width="306">
+  <p class="table">Ctrl + : followed by:</p>
+  </td>
+  <td class="border" valign="top" width="259">
+  <p class="table">(umlaut)</p>
+  </td>
+ </tr>
+ <tr>
+  <td class="border" valign="top" width="306">
+  <p class="table">&nbsp;&nbsp;&nbsp;&nbsp;one of A,a,E,e,I,i,O,o,U,u,Y,y</p>
+  </td>
+  <td class="border" valign="top" width="259">
+  <p class="table">Ä,ä,Ë,ë,Ï,ï,Ö,ö,Ü,Ÿ,ÿ</p>
+  </td>
+ </tr>
+ <tr>
+  <td class="border" valign="top" width="306">
+  <p class="table">Ctrl + ~ followed by:</p>
+  </td>
+  <td class="border" valign="top" width="259">
+  <p class="table">(tilde)</p>
+  </td>
+ </tr>
+ <tr>
+  <td class="border" valign="top" width="306">
+  <p class="table">&nbsp;&nbsp;&nbsp;&nbsp;one of A,a,N,n,O,o</p>
+  </td>
+  <td class="border" valign="top" width="259">
+  <p class="table">Ã,ã,Ñ,ñ,Õ,õ</p>
+  </td>
+ </tr>
+ <tr>
+  <td class="border" valign="top" width="306">
+  <p class="table">Ctrl + @ followed by:</p>
+  </td>
+  <td class="border" valign="top" width="259">
+  <p class="table">(ring)</p>
+  </td>
+ </tr>
+ <tr>
+  <td class="border" valign="top" width="306">
+  <p class="table">&nbsp;&nbsp;&nbsp;&nbsp;one of A,a,U,u</p>
+  </td>
+  <td class="border" valign="top" width="259">
+  <p class="table">Å,å,&#366;,&#367;</p>
+  </td>
+ </tr>
+ <tr>
+  <td class="border" valign="top" width="306">
+  <p class="table">Ctrl + , followed by:</p>
+  </td>
+  <td class="border" valign="top" width="259">
+  <p class="table">(cedilla)</p>
+  </td>
+ </tr>
+ <tr>
+  <td class="border" valign="top" width="306">
+  <p class="table">&nbsp;&nbsp;&nbsp;&nbsp;one of C,c,K,k,L,l,N,n,R,r,S,s,T,t</p>
+  </td>
+  <td class="border" valign="top" width="259">
+  <p class="table">Ç,ç,&#310;,&#311;,&#315;,&#316;,&#325;,&#326;,&#342;,&#343;,&#350;,&#351;,&#354;,&#355;</p>
+  </td>
+ </tr>
+ <tr>
+  <td class="border" valign="top" width="306">
+  <p class="table">Ctrl + &amp; followed by:</p>
+  </td>
+  <td class="border" valign="top" width="259">
+  <p class="table">(linkage)</p>
+  </td>
+ </tr>
+ <tr>
+  <td class="border" valign="top" width="306">
+  <p class="table">&nbsp;&nbsp;&nbsp;&nbsp;one of A,a,O,o,s</p>
+  </td>
+  <td class="border" valign="top" width="259">
+  <p class="table">Æ,æ,Œ,œ,ß</p>
+  </td>
+ </tr>
+ <tr>
+  <td class="border" valign="top" width="306">
+  <p class="table">Ctrl + / followed by:</p>
+  </td>
+  <td class="border" valign="top" width="259">
+  <p class="table">(slash)</p>
+  </td>
+ </tr>
+ <tr>
+  <td class="border" valign="top" width="306">
+  <p class="table">&nbsp;&nbsp;&nbsp;&nbsp;one of L,l,O,o</p>
+  </td>
+  <td class="border" valign="top" width="259">
+  <p class="table">&#321;,&#322;,Ø,ø</p>
+  </td>
+ </tr>
+ <tr>
+  <td class="border" valign="top" width="306">
+  <p class="table">&nbsp;&nbsp;&nbsp;&nbsp;c</p>
+  </td>
+  <td class="border" valign="top" width="259">
+  <p class="table">¢</p>
+  </td>
+ </tr>
+ <tr>
+  <td class="border" valign="top" width="306">
+  <p class="table">Ctrl + " followed by:</p>
+  </td>
+  <td class="border" valign="top" width="259">
+  <p class="table">(double acute)</p>
+  </td>
+ </tr>
+ <tr>
+  <td class="border" valign="top" width="306">
+  <p class="table">&nbsp;&nbsp;&nbsp;&nbsp;one of O,o,U,u</p>
+  </td>
+  <td class="border" valign="top" width="259">
+  <p class="table">&#336;,&#337;,&#368;,&#369;</p>
+  </td>
+ </tr>
+ <tr>
+  <td class="border" valign="top" width="306">
+  <p class="table">&nbsp;&nbsp;&nbsp;&nbsp;space</p>
+  </td>
+  <td class="border" valign="top" width="259">
+  <p class="table">&#8243; (double prime)</p>
+  </td>
+ </tr>
+ <tr>
+  <td class="border" valign="top" width="306">
+  <p class="table">Ctrl + g followed by:</p>
+  </td>
+  <td class="border" valign="top" width="259">
+  <p class="table">(Greek)</p>
+  </td>
+ </tr>
+ <tr>
+  <td class="border" valign="top" width="306">
+  <p class="table">&nbsp;&nbsp;&nbsp;&nbsp;one of A,B,C,D,E,F,G,H,I,J,K,L</p>
+  </td>
+  <td class="border" valign="top" width="259">
+  <p class="table">&#913;,&#914;,&#936;,&#916;,&#917;,&#934;,&#915;,&#919;,&#921;,&#926;,&#922;,&#923;</p>
+  </td>
+ </tr>
+ <tr>
+  <td class="border" valign="top" width="306">
+  <p class="table">&nbsp;&nbsp;&nbsp;&nbsp;one of M,N,O,P,R,S,T,U,V,W,X,Y,Z</p>
+  </td>
+  <td class="border" valign="top" width="259">
+  <p class="table">&#924;,&#925;,&#927;,&#928;,&#929;,&#931;,&#932;,&#920;,&#937;,&#931;,&#935;,&#933;,&#918;</p>
+  </td>
+ </tr>
+ <tr>
+  <td class="border" valign="top" width="306">
+  <p class="table">&nbsp;&nbsp;&nbsp;&nbsp;one of a,b,c,d,e,f,g,h,i,j,k,l</p>
+  </td>
+  <td class="border" valign="top" width="259">
+  <p class="table">&#945;,&#946;,&#968;,&#948;,&#949;,&#966;,&#947;,&#951;,&#953;,&#958;,&#954;,&#955;</p>
+  </td>
+ </tr>
+ <tr>
+  <td class="border" valign="top" width="306">
+  <p class="table">&nbsp;&nbsp;&nbsp;&nbsp;one of m,n,o,p,r,s,t,u,v,w,x,y,z</p>
+  </td>
+  <td class="border" valign="top" width="259">
+  <p class="table">&#956;,&#957;,&#959;,&#960;,&#961;,&#963;,&#964;,&#952;,&#969;,&#962;,&#967;,&#965;,&#950;</p>
+  </td>
+ </tr>
+</tbody></table>
+
+</div>
+
+<h3>Notes</h3>
+
+<p>At present, the rich edit controls within the Delta Editor
+use the Arial font, and only those characters available in that font will be
+displayed properly. Earlier versions of the font may not be able to display all
+the characters listed above.</p>
+
+<p>Future versions of the Editor may allow the user to select
+the font used in rich edit controls. When that occurs, the user should always
+attempt to select a font that can properly display all the symbols used within
+the data set.</p>
+
+<p>The key combinations outlined above are case-sensitive. On
+some keyboards, for example, the ‘:’ character is obtained by holding down the
+Shift key while pressing the ‘;’ key. Hence the prefix for placing umlauts
+above characters requires holding down the Shift and Ctrl keys simultaneously,
+then pressing the ‘;’ key. The most complex such operation is the prefix for
+placing haceks above characters – on some keyboards this requires
+simultaneously holding down the Shift, Ctrl, and Alt keys, then pressing the
+‘6’ key. For the most part, these key combinations are intended to aid the
+entry of an occasional international character or symbol. If an entire dataset
+is to be entered in a non-English language, then it may be more convenient to
+install a suitable keyboard configuration for that language.</p>
+
+<p>Many of the key sequences listed above involve a control key
+combination, followed by some other key. The state of the control key is
+ignored when processing the concluding key. For example, to generate the ‘<span class="math">é</span>’ character, the ‘Ctrl +<span class="math">'</span>’ prefix may be followed either by ‘e’
+alone or by ‘Ctrl +e’.</p>
+
+<p>The complete set of characters shown above is available in
+any of the rich edit controls of the editor (that is, is any context where
+bold, italics, etc. can also be displayed). A subset of these characters –
+those that are also members of the ANSI Windows character set — are also
+available when editing directives files.</p>
+
+<p>The rich edit controls do not display optional hyphens
+correctly: they are displayed as if they were non-breaking hyphens. However,
+they will be exported as non-breaking hyphens.</p>
+
+<p>Unlike the shortcut keys available in Word, these key
+combinations are not user-definable. If you think that additional symbols
+should be added to those listed above, contact the Delta development team.</p>
+
+<h2><a name="_Planned_Major_Enhancements"></a>Planned
+Enhancements and Known Bugs</h2>
+
+<h3>Editing the main data</h3>
+
+<p>Further consistency checking needs to be added in many
+areas.</p>
+
+<p>‘Mandatory’ characters are not enforced, except when data
+are being imported.</p>
+
+<p>When deleting characters, states, or controlling attributes,
+no feedback is currently presented to the user to indicate whether these
+objects are already in use.</p>
+
+<p>Better feedback needs to be provided to the user when a
+newly encoded attribute renders previously coded attributes inapplicable.
+(Currently, the controlling attribute in the tree view is flagged with an
+exclamation mark in a red triangle, and the dependent attributes in the grid
+view are displayed with both the previously coded values and a red line
+indicating ‘not applicable’.)</p>
+
+<p>Code for validating the changed contents of an attribute
+needs to be improved.</p>
+
+<p>No user-interface mechanism is provided for changing the
+font face and size used by some of the controls.</p>
+
+<p>Support for alternate wording of character sets (including
+multiple languages) has not yet been implemented.</p>
+
+<h3>Editing other directives</h3>
+
+<p>Currently, all the directives normally contained in the
+files ‘specs’, ‘chars’, ‘items’, ‘cnotes’, ‘cimages’, and ‘timages’ can be
+edited via a Windows interface that ‘understands’ this information. All others
+must still be edited in the old way — as text. Proper interfaces will be
+provided for editing these other directives. In the meantime, the files
+containing them should be imported into the editor (and exported as necessary)
+if characters, states, or taxa are added or moved. The editor keeps all
+directives consistent with these changes. Thus, the program Delfor is now
+unnecessary for most purposes.</p>
+
+<p>The KEY CHARACTER LIST directive is not fully supported: it
+is not maintained when characters or states are added, deleted, or reordered.</p>
+
+<h3>Producing output</h3>
+
+<p>All the functions of Confor will be incorporated into the
+Editor.</p>
+
+<h3>Bugs</h3>
+
+<p>A list of known bugs is available at <a href="http://delta-intkey.com/www/bugs.htm">http://delta-intkey.com/www/bugs.htm</a>.</p>
+
+<h2><a name="_Acknowledgements"></a>Acknowledgements</h2>
+
+<p>We thank Marianne Horak and Max Day for reviewing this
+document, and suggesting many improvements.</p>
+
+<h2><a name="_References"></a>References</h2>
+
+<p class="hangingt0" style="page-break-after: avoid;">Dallwitz, M.J. 1992 onwards. Overview
+of the DELTA System. <a href="http://delta-intkey.com/">http://delta-intkey.com</a></p>
+
+<p class="hangingt0">Dallwitz, M.J., Paine, T.A., and Zurcher, E.J. 1992 onwards.
+The DELTA System: installation guide. <a href="http://delta-intkey.com/">http://delta-intkey.com</a></p>
+
+<p class="hangingt0">Dallwitz, M.J., Paine, T.A., and Zurcher, E.J. 1993 onwards.
+User’s guide to the DELTA System: a general system for processing taxonomic
+descriptions. 4th edition. <a href="http://delta-intkey.com/">http://delta-intkey.com</a></p>
+
+
+<hr class="margint1p5">
+
+<table class="margintp7" summary="Logo and link to DELTA Home">
+<tbody><tr>
+<td style="padding-right: 0.3em;">
+<a href="http://delta-intkey.com/"><img src="delta-ed_files/deltlogo.gif" alt="DELTA Home"></a>
+</td>
+<td class="middle" style="padding-bottom: 0.3em;">
+<a href="http://delta-intkey.com/"><b>DELTA Home Page</b></a>
+</td>
+</tr>
+</tbody></table>
+
+</body></html>
