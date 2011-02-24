@@ -6,7 +6,7 @@ PUBLIC "-//Sun Microsystems Inc.//DTD JavaHelp HelpSet Version 2.0//EN"
 <helpset version="2.0">
 
   <!-- title -->
-  <title>Delta Editor</title>
+  <title>Delta Editor Help Demonstration</title>
 
   <!-- maps -->
   <maps>
