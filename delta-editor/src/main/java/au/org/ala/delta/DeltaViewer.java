@@ -222,7 +222,7 @@ public class DeltaViewer extends JFrame {
 		mnuHelp.add(mnuHelpContents);
 		mnuHelpContents.addActionListener(_helpController.helpAction());
 		
-		JMenuItem helpOnSelection = new JMenuItem("Select Component", IconHelper.createImageIcon("help_cursor.gif"));
+		JMenuItem helpOnSelection = new JMenuItem("Select Component", IconHelper.createImageIcon("help_cursor.png"));
 		
 		helpOnSelection.addActionListener(_helpController.helpOnSelectionAction());
 		mnuHelp.add(helpOnSelection);
