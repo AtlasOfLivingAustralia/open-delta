@@ -12,45 +12,41 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  ******************************************************************************/
+
 package au.org.ala.delta.model;
 
-import java.util.List;
+import au.org.ala.delta.model.impl.AttributeData;
 
-import au.org.ala.delta.model.impl.ItemData;
+/**
+ * An attribute is the value of a single character associated with an item.
+ */
+public class Attribute {
 
-public class Item {
-
-	private ItemData _impl;
-
-	private int _itemId;
-	private String _description;
+	private AttributeData _impl;
 	
-	public Item(ItemData impl, int itemNum) {
+	private Character _character;
+	
+	public Attribute(AttributeData impl) {
 		_impl = impl;
-		_itemId = itemNum;
 	}
 	
-	public Item(int itemId) {
-		_itemId = itemId;
+	public Character getCharacter() {
+		return _character;
 	}
 	
-	public int getItemId() {
-		return _itemId;
-	}
-
-	public void setDescription(String itemName) {
-		_description = itemName;
-	}
-	
-	public String getDescription() {
-		return _description;
+	public boolean isPresent(int stateId) {
+		String value = _impl.getValue();
+		
+		// Parse and do something....
+		return false;
 	}
 	
-	public List<Attribute> getAttributes() {
-		return _impl.getAttributes();
+	public String getValue() {
+		return _impl.getValue();
 	}
 	
-	public Attribute getAttribute(Character character) {
-		return _impl.getAttribute(character);
+	public void setValue(String value) {
+		_impl.setValue(value);
 	}
+	
 }

@@ -26,6 +26,7 @@ import au.org.ala.delta.model.NumericCharacter;
 import au.org.ala.delta.model.OrderedMultiStateCharacter;
 import au.org.ala.delta.model.RealCharacter;
 import au.org.ala.delta.model.StateValue;
+import au.org.ala.delta.model.TextCharacter;
 import au.org.ala.delta.model.UnorderedMultiStateCharacter;
 import au.org.ala.delta.slotfile.Attribute;
 import au.org.ala.delta.slotfile.CharType;
@@ -36,7 +37,8 @@ import au.org.ala.delta.slotfile.VOCharBaseDesc.CharTextInfo;
 import au.org.ala.delta.slotfile.VOCharTextDesc;
 import au.org.ala.delta.slotfile.VODirFileDesc;
 import au.org.ala.delta.slotfile.VODirFileDesc.Dir;
-import au.org.ala.delta.slotfile.VOItemAdaptor;
+import au.org.ala.delta.slotfile.model.VOCharacterAdaptor;
+import au.org.ala.delta.slotfile.model.VOItemAdaptor;
 import au.org.ala.delta.slotfile.VOItemDesc;
 import au.org.ala.delta.slotfile.VOTextCharacter;
 import au.org.ala.delta.util.CodeTimer;
@@ -91,7 +93,7 @@ public class DeltaFileReader {
 			Character chr = null;
 			switch (charType) {
 				case CharType.TEXT:
-					chr = new VOTextCharacter(charDesc, i);
+					chr = new TextCharacter(i);
 					break;
 				case CharType.INTEGER:
 					chr = new IntegerCharacter(i);
@@ -109,9 +111,7 @@ public class DeltaFileReader {
 					throw new RuntimeException("Unrecognized character type: " + charType);
 			}
 			
-			chr.setDescription(text[0]);
-			chr.setNotes(text[1]);
-			
+			chr.setImpl(new VOCharacterAdaptor(charDesc, textDesc));
 			if (chr instanceof MultiStateCharacter) {
 				populateStates(charDesc, (MultiStateCharacter) chr, states);
 			} else if (chr instanceof NumericCharacter) {
@@ -141,7 +141,7 @@ public class DeltaFileReader {
 		for (int i = 1; i <= nItems; ++i) {
 			int itemId = vop.getDeltaMaster().uniIdFromItemNo(i);
 			VOItemDesc itemDesc = (VOItemDesc) vop.getDescFromId(itemId);			
-			Item item = new VOItemAdaptor(itemDesc, i);
+			Item item = new Item(new VOItemAdaptor(itemDesc, i), i);
 			item.setDescription(itemDesc.getAnsiName());
 			context.addItem(item, item.getItemId());
 			

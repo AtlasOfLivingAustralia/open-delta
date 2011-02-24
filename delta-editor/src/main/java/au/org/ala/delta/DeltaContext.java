@@ -346,15 +346,4 @@ public class DeltaContext {
 	public Set<Integer> getNewParagraphCharacters() {
 		return _newParagraphCharacters;
 	}
-
-	/**
-	 * @param _item
-	 * @param _character
-	 * @param text
-	 */
-	public void setAttribute(Item _item, Character _character, String text) {
-		
-		_item.setAttribute(_character, text);
-		
-	}
 }

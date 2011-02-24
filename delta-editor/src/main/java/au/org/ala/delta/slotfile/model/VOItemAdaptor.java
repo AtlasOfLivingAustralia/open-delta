@@ -12,48 +12,70 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  ******************************************************************************/
-package au.org.ala.delta.slotfile;
+package au.org.ala.delta.slotfile.model;
+
+import java.util.List;
 
 import au.org.ala.delta.model.Character;
-import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.impl.AttributeData;
+import au.org.ala.delta.model.impl.ItemData;
+import au.org.ala.delta.slotfile.VOAdaptor;
+import au.org.ala.delta.slotfile.VOItemDesc;
 
 
-public class VOItemAdaptor extends Item implements VOAdaptor<VOItemDesc> {
+public class VOItemAdaptor implements ItemData, VOAdaptor<VOItemDesc> {
 
 	private VOItemDesc _voItemDesc;
 	
 	
 	
 	public VOItemAdaptor(VOItemDesc voItem, int i) {
-		super(i);
 		_voItemDesc = voItem;
 	}
 	
-	@Override
+
 	public VOItemDesc getVirtualObject() {
 		return _voItemDesc;
 	}
 
-	@Override
+
 	public int getItemId() {
-		return super.getItemId();
+		return _voItemDesc.getUniId();
 	}
 
-	@Override
+
 	public void setDescription(String itemName) {		
-		super.setDescription(itemName);		
-	}
-
-	@Override
-	public String getDescription() {
-		return _voItemDesc.getAnsiName();
-	}
-
-	@Override
-	public void setAttribute(Character character, String value) {
 		
-		Attribute attribute = new Attribute(value, ((VOAdaptor<VOCharBaseDesc>)character).getVirtualObject());
-		_voItemDesc.writeAttribute(attribute);
 	}
+
+
+	public String getDescription() {
+		return _voItemDesc.getAnsiName();	
+	}
+
+
+	/* (non-Javadoc)
+	 * @see au.org.ala.delta.model.impl.ItemImpl#getAttributes()
+	 */
+	@Override
+	public List<au.org.ala.delta.model.Attribute> getAttributes() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see au.org.ala.delta.model.impl.ItemImpl#getAttribute(au.org.ala.delta.model.Character)
+	 */
+	@Override
+	public au.org.ala.delta.model.Attribute getAttribute(Character character) {
+		
+		AttributeData impl = new VOAttributeAdaptor(_voItemDesc, ((VOCharacterAdaptor)character.getImpl()).getCharBaseDesc());
+		return new au.org.ala.delta.model.Attribute(impl);
+	}
+
+	
+	
+	
+	
 	
 }

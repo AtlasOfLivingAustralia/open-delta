@@ -52,6 +52,7 @@ import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.StateValue;
+import au.org.ala.delta.model.TextCharacter;
 import au.org.ala.delta.rtf.MyRTFEditorKit;
 
 public class StateEditor extends JPanel {
@@ -154,7 +155,27 @@ public class StateEditor extends JPanel {
 				try {
 					kit.writeBody(bos, doc);
 					String rtf = new String(bos.getBytes()).trim();
-					_item.setAttribute(_character, "<" + rtf.trim() + ">");
+					if (_character instanceof TextCharacter) {
+						rtf = "<"+rtf+">";
+					}
+					else {
+						// bit dodgy the RTF isn't quite how we want.  strip off leading/trailing control chars.
+						if (rtf.startsWith("\\")) {
+							rtf = rtf.substring(rtf.indexOf(' ')+1);
+						}
+						int lastCommentIndex = rtf.lastIndexOf(">");
+						String bitAfterLastComment = rtf;
+						if (lastCommentIndex > 0) {
+							bitAfterLastComment = rtf.substring(lastCommentIndex);
+						}
+						
+						int controlCharAfterComment = bitAfterLastComment.indexOf("\\");
+						if (controlCharAfterComment > 0) {
+							rtf = rtf.substring(0, controlCharAfterComment);
+						}
+					}
+					_item.getAttribute(_character).setValue(rtf);
+					_modified = false;
 				} catch (Exception ex) {
 					throw new RuntimeException(ex);					
 				}
@@ -179,7 +200,7 @@ public class StateEditor extends JPanel {
 				
 				return true;
 			}
-			return true;
+			return false;
 		}
 	}
 

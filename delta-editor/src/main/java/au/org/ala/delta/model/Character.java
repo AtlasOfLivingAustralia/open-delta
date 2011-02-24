@@ -17,6 +17,8 @@ package au.org.ala.delta.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import au.org.ala.delta.model.impl.CharacterData;
+
 public abstract class Character {
 	
 	private int _number;
@@ -25,6 +27,8 @@ public abstract class Character {
 	private boolean _exclusive;
 	private String _description;
 	private String _notes;
+	
+	protected CharacterData _impl;
 	
 	public Character(int number) {
 		_number = number;
@@ -77,6 +81,14 @@ public abstract class Character {
 	@Override
 	public String toString() {
 		return _description;
+	}
+	
+	public CharacterData getImpl() {
+		return _impl;
+	}
+	
+	public void setImpl(CharacterData impl) {
+		_impl = impl;
 	}
 	
 }
