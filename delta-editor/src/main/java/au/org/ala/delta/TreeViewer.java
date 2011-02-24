@@ -18,9 +18,11 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 
+import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultListModel;
 import javax.swing.DropMode;
 import javax.swing.ImageIcon;
+import javax.swing.JCheckBox;
 import javax.swing.JInternalFrame;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
@@ -32,8 +34,10 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellEditor;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeCellEditor;
 import javax.swing.tree.TreeSelectionModel;
 
 import au.org.ala.delta.model.Character;
@@ -226,6 +230,7 @@ class DeltaTreeCellRenderer extends DefaultTreeCellRenderer {
 	private ImageIcon _omIcon;
 	private ImageIcon _umIcon;
 	
+	private JCheckBox stateValueRenderer = new JCheckBox();
 	
 	public DeltaTreeCellRenderer(DeltaContext context) {
 		_context = context;
@@ -252,6 +257,7 @@ class DeltaTreeCellRenderer extends DefaultTreeCellRenderer {
     }
 
 	public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus) {
+	
 		super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
 		if (value instanceof CharacterTreeNode) {
 			Character ch = (Character) ((CharacterTreeNode) value).getUserObject();
@@ -268,6 +274,44 @@ class DeltaTreeCellRenderer extends DefaultTreeCellRenderer {
 			}
 			
 		}  
+		else if (leaf) {
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode)value;
+			String name = node.getUserObject().toString();
+			if (node.getParent() instanceof CharacterTreeNode) {
+				Character ch = (Character) ((CharacterTreeNode) node.getParent()).getUserObject();
+				
+				if (ch instanceof MultiStateCharacter) {
+					
+					stateValueRenderer.setText(name);
+					stateValueRenderer.setForeground(getForeground());
+					if (selected) {
+						stateValueRenderer.setBackground(getBackgroundSelectionColor());
+					}
+					else {
+						stateValueRenderer.setBackground(getBackgroundNonSelectionColor());
+					}
+					stateValueRenderer.setSelected(false);
+					if (_context.selectedItem != null) {
+						StateValue stateValue = _context.getMatrix().getValue(ch.getCharacterId(), _context.selectedItem.getItemId());
+						
+						if (stateValue != null) {
+							String valueStr = stateValue.getValue();
+							try {
+								int stateValueInt = Integer.valueOf(valueStr);
+								String[] states = ((MultiStateCharacter) ch).getStates();
+								if (states[stateValueInt-1].equals(name)) {
+									stateValueRenderer.setSelected(true);
+								}
+							}
+							catch (Exception e) {
+								// We don't handle multiple selection right now...
+							}
+						}
+					}
+					return stateValueRenderer;
+				}
+			}
+		}
 		return this;
 	}
 }

@@ -15,14 +15,17 @@
 package au.org.ala.delta;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.io.StringWriter;
 
 import javax.swing.AbstractListModel;
 import javax.swing.Action;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.InputVerifier;
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -110,8 +113,10 @@ public class StateEditor extends JPanel {
 			if (ch instanceof MultiStateCharacter) {
 				MultiStateCharacter mc = (MultiStateCharacter) ch;
 				_list.setModel(new StateListModel(mc.getStates()));
+				_list.setCellRenderer(new StateRenderer());
 			} else {
 				_list.setModel(new DefaultListModel());
+				_list.setCellRenderer(new DefaultListCellRenderer());
 			}
 		}
 		_modified = false;
@@ -178,6 +183,25 @@ public class StateEditor extends JPanel {
 		}
 	}
 
+}
+
+
+class StateRenderer extends DefaultListCellRenderer {
+
+	private JCheckBox stateRenderer = new JCheckBox();
+	/* (non-Javadoc)
+	 * @see javax.swing.DefaultListCellRenderer#getListCellRendererComponent(javax.swing.JList, java.lang.Object, int, boolean, boolean)
+	 */
+	@Override
+	public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
+			boolean cellHasFocus) {
+		super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+		stateRenderer.setBackground(getBackground());
+		stateRenderer.setForeground(getForeground());
+		stateRenderer.setText(value.toString());
+		return stateRenderer;
+	}
+	
 }
 
 class StateListModel extends AbstractListModel {
