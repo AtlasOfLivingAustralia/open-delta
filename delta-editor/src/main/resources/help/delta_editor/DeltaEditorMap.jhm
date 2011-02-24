@@ -11,5 +11,5 @@
 	<mapID target="items" url="pages/delta-ed.htm#_The_Item_Editor" />
 	<mapID target="treeview" url="pages/delta-ed.htm#_The_tree-view_attribute_1" />
 	<mapID target="gridview" url="pages/delta-ed.htm#_The_grid-view_attribute" />
-	<mapID target="editor.image.icon" url="images/Delta_16_alt.png"/>
+	<mapID target="editor.image.icon" url="images/Delta_blue_16.png"/>
 </map>
