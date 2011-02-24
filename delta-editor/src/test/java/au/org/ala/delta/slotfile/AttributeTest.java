@@ -113,6 +113,31 @@ public class AttributeTest extends TestCase {
 		
 	}
 	
+	/**
+	 * Tests that a numeric attribute including extremes and a 3 range value is parsed correctly.
+	 */
+	@Test public void testNumberRangeWithExtremes() {
+		fakeVO = setupExpectationsForIntegerCharacter();
+		String value = "(1-)2-3-4(-5)";
+		Attribute attribute = new Attribute(value, fakeVO);
+		
+		int offset = 0;
+		byte[] data = attribute.getData();
+		
+		assertEquals(7, attribute.getNChunks());
+		
+		// Should be Extreme Low, number, to, number, to, number, extreme high
+		offset = testNumericChunkCorrect(data, offset, ChunkType.CHUNK_EXLO_NUMBER, 1f, 0);
+		offset = testNumberChunkCorrect(data, offset, 2f, 0);
+		// The "-" delimiter (ChunkType.CHUNK_TO)
+		assertEquals(ChunkType.CHUNK_TO, data[offset++]);
+		offset = testNumberChunkCorrect(data, offset, 3f, 0);
+		assertEquals(ChunkType.CHUNK_TO, data[offset++]);
+		offset = testNumberChunkCorrect(data, offset, 4f, 0);
+		offset = testNumericChunkCorrect(data, offset, ChunkType.CHUNK_EXHI_NUMBER, 5f, 0);
+		
+	}
+	
 	private void testNumber(String numberStr, float expectedValue, int expectedNumDecimalPlaces) {
 		
 		Attribute attribute = new Attribute(numberStr, fakeVO);
@@ -195,8 +220,9 @@ public class AttributeTest extends TestCase {
 		return offset;
 	}
 	
-	private int testNumberChunkCorrect(byte[] data, int offset, float expectedValue, int expectedDecimalPlaces) {
-		assertEquals(ChunkType.CHUNK_NUMBER, data[offset]);
+	
+	private int testNumericChunkCorrect(byte[] data, int offset, int expectedType, float expectedValue, int expectedDecimalPlaces) {
+		assertEquals(expectedType, data[offset]);
 		offset++;
 		DeltaNumber deltaNumber = new DeltaNumber();
 		deltaNumber.fromBinary(data, offset);
@@ -204,6 +230,10 @@ public class AttributeTest extends TestCase {
 		assertEquals(expectedDecimalPlaces, deltaNumber.getDecimal());
 		offset += DeltaNumber.size();
 		return offset;
+	}
+	
+	private int testNumberChunkCorrect(byte[] data, int offset, float expectedValue, int expectedDecimalPlaces) {
+		return testNumericChunkCorrect(data, offset, ChunkType.CHUNK_NUMBER, expectedValue, expectedDecimalPlaces);
 	}
 	
 	private VOCharBaseDesc setupExpectationsForTextCharacter() {
