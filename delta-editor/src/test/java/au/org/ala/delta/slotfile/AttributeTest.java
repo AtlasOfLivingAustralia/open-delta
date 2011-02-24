@@ -36,21 +36,32 @@ public class AttributeTest extends TestCase {
 			setImposteriser(ClassImposteriser.INSTANCE);
 		}
 	};
-	
+
+	/** A mock of the VOCharBaseDesc we use to assist with our tests */
 	private VOCharBaseDesc fakeVO;
 	
+	/**
+	 * Tests that a single integer numeric attribute is parsed correctly.
+	 */
 	@Test public void testParseIntegerChar() {
 		fakeVO = setupExpectationsForIntegerCharacter();
 		String value = "12";
 		testNumber(value, 12f, 0);
 	}
 	
+	/**
+	 * Tests that a single real numeric attribute is parsed correctly.
+	 */
 	@Test public void testParseRealChar() {
 		fakeVO = setupExpectationsForRealCharacter();
 		String value = "12.444";
 		testNumber(value, 12.444f, 3);
 	}
 	
+	/**
+	 * Tests that a real numeric attribute of the form: 
+	 * <value><comment> / <comment><value> is parsed correctly.
+	 */
 	@Test public void testParseRealCharWithComments() {
 		fakeVO = setupExpectationsForRealCharacter();
 		String value = "12.444<or thereabouts>";
@@ -61,22 +72,44 @@ public class AttributeTest extends TestCase {
 		
 		byte[] data = attribute.getData();
 		
-		assertEquals("chunk type", (byte)ChunkType.CHUNK_NUMBER, data[0]);
-		
-		DeltaNumber deltaNumber = new DeltaNumber();
-		deltaNumber.fromBinary(data, 1);
-		
-		assertEquals(12.444f, deltaNumber.asFloat());
-		assertEquals(3, deltaNumber.getDecimal());
-		
+		testNumberChunkCorrect(data, 0, 12.444f, 3);
 		
 		value = "<about>3.3333";
 		attribute = new Attribute(value, fakeVO);
 		assertEquals(2, attribute.getNChunks());
 		
 		data = attribute.getData();
+		int offset = 0;
+		offset = testShortTextChunkCorrect(data, offset, "about");
 		
-		assertEquals("chunk type", (byte)ChunkType.CHUNK_TEXT, data[0]);
+		testNumberChunkCorrect(data, offset, 3.333f, 4);
+	}
+
+	/**
+	 * Tests that a numeric attribute of the form: 
+	 * <low value>-<high value> is parsed correctly.
+	 */
+	@Test public void testNumberRange() {
+		fakeVO = setupExpectationsForIntegerCharacter();
+		String value = "100-110";
+		Attribute attribute = new Attribute(value, fakeVO);
+			
+		int offset = 0;
+		byte[] data = attribute.getData();
+
+		assertEquals(3, attribute.getNChunks());
+		
+		// Should be NUMBER, TO, NUMBER
+		// First number - 100
+		offset = testNumberChunkCorrect(data, offset, 100f, 0);
+		
+		// The "-" delimiter (ChunkType.CHUNK_TO)
+		assertEquals(ChunkType.CHUNK_TO, data[offset]);
+		offset++;
+		
+		// Second number - 110
+		assertEquals(3, data[offset]);
+		offset = testNumberChunkCorrect(data, offset, 110f, 0);
 		
 	}
 	
@@ -88,13 +121,7 @@ public class AttributeTest extends TestCase {
 		
 		byte[] data = attribute.getData();
 		
-		assertEquals("chunk type", (byte)ChunkType.CHUNK_NUMBER, data[0]);
-		
-		DeltaNumber deltaNumber = new DeltaNumber();
-		deltaNumber.fromBinary(data, 1);
-		
-		assertEquals(expectedValue, deltaNumber.asFloat());
-		assertEquals(expectedNumDecimalPlaces, deltaNumber.getDecimal());
+		testNumberChunkCorrect(data, 0, expectedValue, expectedNumDecimalPlaces);
 	}
 	
 
@@ -146,21 +173,39 @@ public class AttributeTest extends TestCase {
 		
 		byte[] data = attribute.getData();
 		
-		assertEquals("chunk type", (byte)ChunkType.CHUNK_TEXT, data[0]);
+		testShortTextChunkCorrect(data, 0, attributeText);
+	}
+	
+	private int testShortTextChunkCorrect(byte[] data, int offset, String expectedValue) {
+		
+		assertEquals("chunk type", (byte)ChunkType.CHUNK_TEXT, data[offset]);
+		offset++;
 		
 		// We only have ASCII characters so string length should be the same as byte length
 		// Also we are little endian so the least significant byte will be first in the array
-		ByteBuffer buffer = ByteBuffer.wrap(data, 1, 2) ;
+		ByteBuffer buffer = ByteBuffer.wrap(data, offset, 2) ;
 		buffer.order(ByteOrder.LITTLE_ENDIAN);
-		assertEquals("chunk length", attributeText.length(), buffer.getShort());
+		assertEquals("chunk length", expectedValue.length(), buffer.getShort());
+		offset += 2;
 		
-		byte[] subData = Arrays.copyOfRange(data, 3, data.length);
-		assertEquals("attribute text", attributeText, new String(subData));
+		byte[] subData = Arrays.copyOfRange(data, offset, offset+expectedValue.length());
+		assertEquals("attribute text", expectedValue, new String(subData));
+		offset += expectedValue.length();
+		
+		return offset;
 	}
 	
-	/**
-	 * @return
-	 */
+	private int testNumberChunkCorrect(byte[] data, int offset, float expectedValue, int expectedDecimalPlaces) {
+		assertEquals(ChunkType.CHUNK_NUMBER, data[offset]);
+		offset++;
+		DeltaNumber deltaNumber = new DeltaNumber();
+		deltaNumber.fromBinary(data, offset);
+		assertEquals(expectedValue, deltaNumber.asFloat(), 0.001f);
+		assertEquals(expectedDecimalPlaces, deltaNumber.getDecimal());
+		offset += DeltaNumber.size();
+		return offset;
+	}
+	
 	private VOCharBaseDesc setupExpectationsForTextCharacter() {
 		return setupExpectationsForCharacter(CharType.TEXT);
 	}
