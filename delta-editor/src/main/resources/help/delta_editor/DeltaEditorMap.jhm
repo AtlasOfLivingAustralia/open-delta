@@ -5,6 +5,11 @@
          "http://java.sun.com/products/javahelp/map_1_0.dtd">
 
 <map version="1.0">
-	<mapID target="characters" url="pages/characters.html" />
-	<mapID target="items" url="pages/items.html" />
+	<!-- <mapID target="top" url="http://delta-intkey.com/www/delta-ed.htm"/> -->
+	<mapID target="top" url="pages/delta-ed.htm"/> 
+	<mapID target="characters" url="pages/delta-ed.htm#_The_Character_Editor" />
+	<mapID target="items" url="pages/delta-ed.htm#_The_Item_Editor" />
+	<mapID target="treeview" url="pages/delta-ed.htm#_The_tree-view_attribute_1" />
+	<mapID target="gridview" url="pages/delta-ed.htm#_The_grid-view_attribute" />
+	<mapID target="editor.image.icon" url="images/Delta_16_alt.png"/>
 </map>

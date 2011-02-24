@@ -63,9 +63,10 @@ public class DeltaViewer extends JFrame {
 	private SaveAction _saveAction;
 	private SaveAsAction _saveAsAction;
 	
+	private HelpController _helpController;
+	
 	
 	public static void main(String[] args) {		
-		System.out.println("Using "+System.getProperty("file.encoding"));
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -82,16 +83,19 @@ public class DeltaViewer extends JFrame {
 	}
 
 	protected DeltaViewer() {
-		super("Delta Viewer (prototype)");
-		setIconImage(IconHelper.createImageIcon("Delta_16_alt.png").getImage());
-		this.setExtendedState(MAXIMIZED_BOTH | DISPOSE_ON_CLOSE);
+		super("DELTA - DEscription Language for TAxonomy (prototype)");
+		setIconImage(IconHelper.createDeltaImageIcon().getImage());
+	
+		this.setExtendedState(MAXIMIZED_BOTH);
 		this.getContentPane().setLayout(new BorderLayout());
 		
+		
+		_helpController = new HelpController();
 		_saveAction = new SaveAction();
 		_saveAsAction = new SaveAsAction();
 		_dataSetRepository = new SlotFileRepository();
 		
-		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
 
 		_desktop = new JDesktopPane();
 
@@ -105,6 +109,7 @@ public class DeltaViewer extends JFrame {
 
 		setJMenuBar(buildMenus());
 		
+		_helpController.enableHelpKey(this);
 
 	}
 
@@ -215,9 +220,13 @@ public class DeltaViewer extends JFrame {
 		JMenu mnuHelp = new JMenu("Help");
 		JMenuItem mnuHelpContents = new JMenuItem("Contents");
 		mnuHelp.add(mnuHelpContents);
-		mnuHelpContents.addActionListener(
-				new HelpController().helpAction()
-		);
+		mnuHelpContents.addActionListener(_helpController.helpAction());
+		
+		JMenuItem helpOnSelection = new JMenuItem("Select Component", IconHelper.createImageIcon("help_cursor.gif"));
+		
+		helpOnSelection.addActionListener(_helpController.helpOnSelectionAction());
+		mnuHelp.add(helpOnSelection);
+		
 		menuBar.add(mnuHelp);
 
 		return menuBar;
@@ -252,14 +261,19 @@ public class DeltaViewer extends JFrame {
 	}
 
 	private void newMatrix(DeltaContext context) {
-		addToDesktop(new MatrixViewer(context));
+		MatrixViewer matrixViewer = new MatrixViewer(context);
+		_helpController.setHelpKeyForComponent(matrixViewer, HelpController.GRID_VIEW_HELP_KEY);
+		addToDesktop(matrixViewer);
 	}
 
 	private void newTree(DeltaContext context) {
-		addToDesktop(new TreeViewer(context));
+		TreeViewer treeViewer = new TreeViewer(context);
+		_helpController.setHelpKeyForComponent(treeViewer, HelpController.TREE_VIEW_HELP_KEY);
+		addToDesktop(treeViewer);
 	}
 	
 	private void addToDesktop(JInternalFrame frame) {
+		frame.setFrameIcon(IconHelper.createDeltaImageIcon());
 		_desktop.add(frame);		
 		frame.setClosable(true);
 		frame.setMaximizable(true);

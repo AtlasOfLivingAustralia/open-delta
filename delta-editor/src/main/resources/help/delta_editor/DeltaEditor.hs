@@ -13,6 +13,13 @@ PUBLIC "-//Sun Microsystems Inc.//DTD JavaHelp HelpSet Version 2.0//EN"
      <homeID>introduction</homeID>
      <mapref location="DeltaEditorMap.jhm"/>
   </maps>
+  
+  <presentation default="true" displayviews="true" displayviewimages="true">
+  	<name>DELTAEditor</name>
+  	<size width="1024" height="768"/>
+  	<title>DELTA Editor</title>
+  	<image>editor.image.icon</image>
+  </presentation>
 
   <!-- views -->
   <view mergetype="javax.help.AppendMerge">

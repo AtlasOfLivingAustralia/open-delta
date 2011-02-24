@@ -229,11 +229,11 @@ class DeltaTreeCellRenderer extends DefaultTreeCellRenderer {
 	
 	public DeltaTreeCellRenderer(DeltaContext context) {
 		_context = context;
-		_textIcon = createImageIcon("images/textchar.png");
-		_realIcon = createImageIcon("images/realchar.png");
-		_intIcon = createImageIcon("images/intchar.png");
-		_omIcon = createImageIcon("images/omchar.png");
-		_umIcon = createImageIcon("images/umchar.png");
+		_textIcon = createImageIcon("/icons/textchar.png");
+		_realIcon = createImageIcon("/icons/realchar.png");
+		_intIcon = createImageIcon("/icons/intchar.png");
+		_omIcon = createImageIcon("/icons/omchar.png");
+		_umIcon = createImageIcon("/icons/umchar.png");
 	}
 	
 	 /** Returns an ImageIcon, or null if the path was invalid. */

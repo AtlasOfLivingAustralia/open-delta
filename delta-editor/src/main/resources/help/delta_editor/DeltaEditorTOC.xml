@@ -2,10 +2,10 @@
 <!DOCTYPE toc
   PUBLIC "-//Sun Microsystems Inc.//DTD JavaHelp TOC Version 1.0//EN"
          "http://java.sun.com/products/javahelp/toc_1_0.dtd">
-<toc version="1.0">
+<toc label="DELTA Editor Help">
   <tocitem text="Delta Editor">
-    <tocitem text="Characters" target="characters" />
-	<tocitem text="Items" target="items" />
+    <tocitem text="The Character Editor" target="characters" />
+	<tocitem text="The Item Editor" target="items" />
   </tocitem>
 </toc>
 
