@@ -157,35 +157,35 @@ public class RTFReader {
 	}
 	
 	private void translateKeyword(String keyword, int param, boolean hasParam) {
-		if (keyword.trim().length() > 0) {
-			if (Keyword.KEYWORDS.containsKey(keyword)) {
-				Keyword kwd = Keyword.KEYWORDS.get(keyword);
-				switch (kwd.getKeywordType()) {
-					case Character:
-						parseChar(((CharacterKeyword) kwd).getOutputChar());
-						break;
-					case Destination:
-						_parserState.rds = ((DestinationKeyword) kwd).getDestinationState();
-						if (_parserState.rds == DestinationState.Header) {
-							_headerGroupBuffer = new StringBuilder(keyword);
-						}
-						break;
-					default:					
-						break;
+
+		if (Keyword.KEYWORDS.containsKey(keyword)) {
+			Keyword kwd = Keyword.KEYWORDS.get(keyword);
+			switch (kwd.getKeywordType()) {
+				case Character:
+					parseChar(((CharacterKeyword) kwd).getOutputChar());
+					break;
+				case Destination:
+					_parserState.rds = ((DestinationKeyword) kwd).getDestinationState();
+					if (_parserState.rds == DestinationState.Header) {
+						_headerGroupBuffer = new StringBuilder(keyword);
+					}
+					break;
+				default:					
+					break;
+			}
+		} else {
+			if (_parserState.rds == DestinationState.Header) {
+				_headerGroupBuffer.append("\\").append(keyword);
+				if (hasParam) {
+					_headerGroupBuffer.append(param);
 				}
 			} else {
-				if (_parserState.rds == DestinationState.Header) {
-					_headerGroupBuffer.append("\\").append(keyword);
-					if (hasParam) {
-						_headerGroupBuffer.append(param);
-					}
-				} else {
-					if (_handler != null) {
-						_handler.onKeyword(keyword, hasParam, param);
-					}
+				if (_handler != null) {
+					_handler.onKeyword(keyword, hasParam, param);
 				}
 			}
-		}		
+		}
+	
 	}
 	
 	private void parseChar(char ch) {

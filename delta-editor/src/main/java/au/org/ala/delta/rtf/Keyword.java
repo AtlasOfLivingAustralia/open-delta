@@ -12,7 +12,8 @@ public abstract class Keyword {
 	}
 	
 	static {
-		// registerKeyword(new CharacterKeyword("par", (char) 0x0a));
+		registerKeyword(new CharacterKeyword("\r", '\r'));
+		registerKeyword(new CharacterKeyword("\n", '\n'));		
 		
 		// Destinations...
 		registerKeyword(new DestinationKeyword("fonttbl", DestinationState.Header));	
