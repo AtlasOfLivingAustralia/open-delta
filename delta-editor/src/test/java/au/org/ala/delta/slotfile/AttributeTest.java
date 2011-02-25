@@ -245,22 +245,123 @@ public class AttributeTest extends TestCase {
 	private VOCharBaseDesc setupExpectationsForRealCharacter() {
 		return setupExpectationsForCharacter(CharType.REAL);
 	}
+	private VOCharBaseDesc setupExpectationsForMultiStateCharacter(int charType, int numStates) {
+		return setupExpectationsForCharacter(charType, numStates);
+	}
+	
 	
 	private VOCharBaseDesc setupExpectationsForCharacter(int charType) {
+		return setupExpectationsForCharacter(charType, 1);
+	}
+	
+	private VOCharBaseDesc setupExpectationsForCharacter(int charType, int numStates) {
 		fakeVO = context.mock(VOCharBaseDesc.class);
 		final int finalCharType = charType;
+		final int finalNumStates = numStates;
 		
 		context.checking(new Expectations() {
 			{
 				atLeast(1).of(fakeVO).getUniId(); will(returnValue(1));
 				atLeast(1).of(fakeVO).getCharType(); will(returnValue(finalCharType));
-				atLeast(1).of(fakeVO).uniIdFromStateNo(1); will(returnValue(3));
-				atLeast(1).of(fakeVO).testCharFlag((byte)1); will(returnValue(true));
+				atLeast(1).of(fakeVO).testCharFlag((byte)1); will(returnValue(false));
 				
+				for (int i=1; i<=finalNumStates; i++) {
+					atLeast(1).of(fakeVO).uniIdFromStateNo(i); will(returnValue(i));
+					atLeast(0).of(fakeVO).stateNoFromUniId(i); will(returnValue(i));
+				}
 			}
 		});
 		return fakeVO;
 	}
 	
+	/**
+	 * Tests the isStateEncoded method of attribute.
+	 */
+	@Test public void testIsStateEncodedUnorderedMultistateCharWithRange() {
+		
+		boolean[] expectedValues = {true, false, true, false, false};
+		testMultiStateChar(CharType.UNORDERED, "1-3", expectedValues); 
+	}
 	
+	/**
+	 * Tests the isStateEncoded method of attribute.
+	 */
+	@Test public void testIsStateEncodedUnorderedMultistateCharWithAnd() {
+		
+		boolean[] expectedValues = {false, true, false, true, true};
+		testMultiStateChar(CharType.UNORDERED, "2&4&5", expectedValues); 
+	}
+	/**
+	 * Tests the isStateEncoded method of attribute.
+	 */
+	@Test public void testIsStateEncodedOrderedMultistateCharWithRange() {
+		
+		boolean[] expectedValues = {true, true, true, false, false};
+		testMultiStateChar(CharType.ORDERED, "1-3", expectedValues); 
+	}
+	
+	/**
+	 * Tests the isStateEncoded method of attribute.
+	 */
+	@Test public void testIsStateEncodedOrderedMultistateCharWithRangeAndExtraValue() {
+		
+		boolean[] expectedValues = {true, true, true, false, true};
+		testMultiStateChar(CharType.ORDERED, "1-3&5", expectedValues); 
+	}
+	
+	
+	private void testMultiStateChar(int charType, String attributeValue, boolean[] expectedValues) {
+		VOCharBaseDesc fakeVO = setupExpectationsForMultiStateCharacter(charType, 5);
+		Attribute attribute = new Attribute(attributeValue, fakeVO); 
+		
+		int[] states = {1,2,3,4,5};
+		
+		checkStateEncoding(attribute, states, expectedValues);
+	}
+	
+	private void checkStateEncoding(Attribute attribute, int[] states, boolean expectedValues[]) {
+		
+		for (int i=0; i<states.length; i++) {
+			boolean stateEncoded = attribute.encodesState(fakeVO, states[i], true, false);
+			assertEquals(expectedValues[i], stateEncoded);
+		}
+	}
+	
+	@Test public void testIsSimpleText() {
+		fakeVO = setupExpectationsForTextCharacter();
+		Attribute attribute = new Attribute("<simple text>", fakeVO);
+		assertTrue(attribute.isSimple(fakeVO));
+		
+		
+	}
+	
+	@Test public void testIsSimpleTextWithRTF() {
+		fakeVO = setupExpectationsForTextCharacter();
+		Attribute attribute = new Attribute("<\\b Text with RTF markup\\b0>", fakeVO);
+		assertFalse(attribute.isSimple(fakeVO));
+	}
+	
+	@Test public void testIsSimpleNumber() {
+		fakeVO = setupExpectationsForIntegerCharacter();
+		Attribute attribute = new Attribute("2-3", fakeVO);
+		assertTrue(attribute.isSimple(fakeVO));
+	}
+	
+	@Test public void testIsSimpleNumberWithComments() {
+		fakeVO = setupExpectationsForIntegerCharacter();
+		Attribute attribute = new Attribute("2<not simple anymore>-3", fakeVO);
+		assertFalse(attribute.isSimple(fakeVO));
+	}
+	
+	@Test public void testIsSimpleMultiState() {
+		fakeVO = setupExpectationsForMultiStateCharacter(CharType.ORDERED, 5);
+		Attribute attribute = new Attribute("2/3/5", fakeVO);
+		assertTrue(attribute.isSimple(fakeVO));
+	}
+	
+	@Test public void testIsSimpleMultiStateWithRange() {
+		fakeVO = setupExpectationsForMultiStateCharacter(CharType.ORDERED, 5);
+		Attribute attribute = new Attribute("2-5", fakeVO);
+		assertFalse(attribute.isSimple(fakeVO));
+	}
 }
