@@ -1,23 +1,31 @@
 package au.org.ala.delta.rtf;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class CharacterAttributes {
-	
-	public boolean Bold;
-	public boolean Underline;
-	public boolean Italic;
-	public boolean Subscript;
-	public boolean Superscript;
+		
+	private Map<CharacterAttributeType, Integer> _attrMap = new HashMap<CharacterAttributeType, Integer>();
 	
 	public CharacterAttributes() {
-		Bold = Underline = Italic = Subscript = Superscript = false;
+		for (CharacterAttributeType attrType : CharacterAttributeType.values()) {
+			_attrMap.put(attrType, 0);
+		}
 	}
 	
 	public CharacterAttributes(CharacterAttributes other) {
-		Bold = other.Bold;
-		Underline = other.Underline;
-		Italic = other.Italic;
-		Subscript = other.Subscript;
-		Superscript = other.Subscript;
+		for (CharacterAttributeType attrType : CharacterAttributeType.values()) {
+			_attrMap.put(attrType, other.get(attrType));
+			
+		}
+	}
+	
+	public int get(CharacterAttributeType attrType) {
+		return _attrMap.get(attrType);		
+	}
+	
+	public void set(CharacterAttributeType attrType, int value) {
+		_attrMap.put(attrType, value);
 	}
 
 }

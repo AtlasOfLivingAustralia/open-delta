@@ -12,6 +12,15 @@ public abstract class Keyword {
 	}
 	
 	static {
+		
+		// Attribute keywords (keywords that alter character/section or document attributes)
+		registerKeyword(new AttributeKeyword("b", CharacterAttributeType.Bold, 1, false));
+		registerKeyword(new AttributeKeyword("i", CharacterAttributeType.Italics, 1, false));
+		registerKeyword(new AttributeKeyword("u", CharacterAttributeType.Underline, 1, false));
+		registerKeyword(new AttributeKeyword("sub", CharacterAttributeType.Subscript, 1, false));
+		registerKeyword(new AttributeKeyword("super", CharacterAttributeType.Superscript, 1, false));
+		
+		// Character literal keywords...
 		registerKeyword(new CharacterKeyword("\r", '\r'));
 		registerKeyword(new CharacterKeyword("\n", '\n'));		
 		
@@ -36,6 +45,19 @@ public abstract class Keyword {
 		
 	public KeywordType getKeywordType() {
 		return _type;
+	}
+
+	public static AttributeKeyword findAttributeKeyword(CharacterAttributeType attrType) {
+		for (Keyword kwd : KEYWORDS.values()) {
+			if (kwd instanceof AttributeKeyword) {
+				AttributeKeyword attrKwd = (AttributeKeyword) kwd;
+				if (attrKwd.getAttributeType() == attrType) {
+					return attrKwd;
+				}
+			}
+		}
+		
+		return null;
 	}
 
 }

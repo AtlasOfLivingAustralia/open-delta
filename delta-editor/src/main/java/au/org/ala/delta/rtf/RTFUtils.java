@@ -1,6 +1,7 @@
 package au.org.ala.delta.rtf;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class RTFUtils {
@@ -51,9 +52,9 @@ class FilteringRTFHandler implements RTFHandler {
 		if (_allowedKeywords.contains(keyword)) {
 			_buffer.append("\\").append(keyword);
 			if (hasParam) {
-				_buffer.append(param);
-				_buffer.append(" ");
+				_buffer.append(param);				
 			}
+			_buffer.append(" ");
 		}
 	}
 
@@ -72,6 +73,23 @@ class FilteringRTFHandler implements RTFHandler {
 
 	public String getFilteredText() {
 		return _buffer.toString();
+	}
+
+	@Override
+	public void onCharacterAttributeChange(List<AttributeValue> values) {
+		boolean atLeastOneAllowed = false;
+		for (AttributeValue val : values) {
+			if (_allowedKeywords.contains(val.getKeyword())) {
+				atLeastOneAllowed = true;
+				_buffer.append("\\").append(val.getKeyword());
+				if (val.hasParam()) {					
+					_buffer.append(val.getParam());
+				}
+			}
+		}
+		if (atLeastOneAllowed) {
+			_buffer.append(" "); // terminate the string of control words...
+		}
 	}
 
 }

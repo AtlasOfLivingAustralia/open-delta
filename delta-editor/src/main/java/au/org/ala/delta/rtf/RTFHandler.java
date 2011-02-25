@@ -1,5 +1,7 @@
 package au.org.ala.delta.rtf;
 
+import java.util.List;
+
 public interface RTFHandler {
 	
 	void startParse();
@@ -9,6 +11,8 @@ public interface RTFHandler {
 	void onHeaderGroup(String group);
 	
 	void onTextCharacter(char ch);
+	
+	void onCharacterAttributeChange(List<AttributeValue> changes);
 	
 	void endParse();
 

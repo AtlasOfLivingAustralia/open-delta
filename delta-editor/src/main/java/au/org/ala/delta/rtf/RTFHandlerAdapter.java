@@ -1,5 +1,7 @@
 package au.org.ala.delta.rtf;
 
+import java.util.List;
+
 public class RTFHandlerAdapter implements RTFHandler {
 
 	@Override
@@ -20,6 +22,10 @@ public class RTFHandlerAdapter implements RTFHandler {
 
 	@Override
 	public void endParse() {
+	}
+
+	@Override
+	public void onCharacterAttributeChange(List<AttributeValue> changes) {
 	}
 
 }

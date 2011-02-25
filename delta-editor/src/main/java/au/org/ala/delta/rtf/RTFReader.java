@@ -4,7 +4,11 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
+
+import org.hamcrest.beans.HasPropertyWithValue;
 
 public class RTFReader {
 
@@ -170,6 +174,22 @@ public class RTFReader {
 						_headerGroupBuffer = new StringBuilder(keyword);
 					}
 					break;
+				case Attribute:
+					AttributeKeyword attrKwd = (AttributeKeyword) kwd;
+					
+					if (hasParam) {
+						_parserState.CharacterAttributes.set(attrKwd.getAttributeType(), param);
+					} else {
+						_parserState.CharacterAttributes.set(attrKwd.getAttributeType(), attrKwd.getDefaultValue());
+					}
+					
+					AttributeValue val = new AttributeValue(attrKwd.getKeyword(), hasParam, param);
+					if (_handler != null) {
+						List<AttributeValue> values =new ArrayList<AttributeValue>();
+						values.add(val);
+						_handler.onCharacterAttributeChange(values);
+					}
+					break;
 				default:					
 					break;
 			}
@@ -234,8 +254,8 @@ public class RTFReader {
 		}
 		
 		ParserState prevState = _stateStack.pop();
-		if (_parserState.rds != prevState.rds) {
-			endGroupAction(_parserState.rds);
+		if (_parserState.rds== DestinationState.Normal) {
+			endGroupAction(_parserState, prevState);
 		}
 		
 		_parserState = prevState;
@@ -246,11 +266,29 @@ public class RTFReader {
 		
 	}
 
-	private void endGroupAction(DestinationState rds) {
-		switch (rds) {
+	private void endGroupAction(ParserState currentState, ParserState previousState) {
+		switch (currentState.rds) {
 			case Header:
 				emitHeaderGroup(_headerGroupBuffer.toString());
 				_headerGroupBuffer = new StringBuilder();
+				break;
+			default:
+				List<AttributeValue> changes = new ArrayList<AttributeValue>();
+				
+				for (CharacterAttributeType attrType : CharacterAttributeType.values()) {
+					int currentVal = currentState.CharacterAttributes.get(attrType);
+					int previousVal = previousState.CharacterAttributes.get(attrType);
+					if (previousVal != currentVal) {
+						AttributeKeyword attrKeyword = Keyword.findAttributeKeyword(attrType);
+						if (attrKeyword != null) {
+							changes.add(new AttributeValue(attrKeyword.getKeyword(), true, previousVal));
+						}
+					}
+				}
+				
+				if (_handler != null && changes.size() > 0) {
+					_handler.onCharacterAttributeChange(changes);
+				}
 				break;
 		}
 	}
