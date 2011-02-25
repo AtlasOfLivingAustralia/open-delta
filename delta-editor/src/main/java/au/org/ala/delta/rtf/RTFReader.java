@@ -13,13 +13,18 @@ public class RTFReader {
 	private Stack<ParserState> _stateStack = new Stack<ParserState>();
 	private ParserState _parserState;
 	private long _cbBin = 0;
+	private StringBuilder _headerGroupBuffer = new StringBuilder();
 	
-	public RTFReader(InputStream stream) {
+	private RTFHandler _handler;
+	
+	public RTFReader(InputStream stream, RTFHandler handler) {
 		_stream = new PushbackInputStream(stream);
+		_handler = handler;
 	}
 	
-	public RTFReader(String rtf) {
+	public RTFReader(String rtf, RTFHandler handler) {
 		_stream = new PushbackInputStream(new ByteArrayInputStream(rtf.getBytes()));
+		_handler = handler;
 	}
 
 	public void parse() throws IOException {
@@ -27,6 +32,10 @@ public class RTFReader {
 		int intCh = 0;	
 		short b = 0;
 		_parserState = new ParserState();
+		
+		if (_handler != null) {
+			_handler.startParse();
+		}
 		
 		while ((intCh = _stream.read()) >= 0) {
 			char ch = (char) intCh;
@@ -48,7 +57,7 @@ public class RTFReader {
 						parseRtfKeyword();
 						break;
 					case '\n':
-					case '\r':
+					case '\r':					
 						break;
 					default:
 						if (_parserState.ris == ParserInternalState.Normal) {
@@ -93,6 +102,11 @@ public class RTFReader {
 		if (_cGroup > 0) {
 			throw new RuntimeException("Unmatched '{'");
 		}
+		
+		if (_handler != null) {
+			_handler.endParse();
+		}
+		
 	}
 	
 	private void parseRtfKeyword() throws IOException {
@@ -143,7 +157,35 @@ public class RTFReader {
 	}
 	
 	private void translateKeyword(String keyword, int param, boolean hasParam) {
-		System.err.println("translate keyword: " + keyword);
+		if (keyword.trim().length() > 0) {
+			if (Keyword.KEYWORDS.containsKey(keyword)) {
+				Keyword kwd = Keyword.KEYWORDS.get(keyword);
+				switch (kwd.getKeywordType()) {
+					case Character:
+						parseChar(((CharacterKeyword) kwd).getOutputChar());
+						break;
+					case Destination:
+						_parserState.rds = ((DestinationKeyword) kwd).getDestinationState();
+						if (_parserState.rds == DestinationState.Header) {
+							_headerGroupBuffer = new StringBuilder(keyword);
+						}
+						break;
+					default:					
+						break;
+				}
+			} else {
+				if (_parserState.rds == DestinationState.Header) {
+					_headerGroupBuffer.append("\\").append(keyword);
+					if (hasParam) {
+						_headerGroupBuffer.append(param);
+					}
+				} else {
+					if (_handler != null) {
+						_handler.onKeyword(keyword, hasParam, param);
+					}
+				}
+			}
+		}		
 	}
 	
 	private void parseChar(char ch) {
@@ -157,6 +199,9 @@ public class RTFReader {
 			case Normal:
 				printChar(ch);
 				return;
+			case Header:
+				_headerGroupBuffer.append(ch);
+				break;
 			default:
 				// TODO handle other destination types
 		}
@@ -164,7 +209,9 @@ public class RTFReader {
 	}
 	
 	private void printChar(char ch) {
-		System.out.print(ch);
+		if (_handler != null) {
+			_handler.onTextCharacter(ch);
+		}
 	}
 	
 	private void pushParserState() {
@@ -172,10 +219,13 @@ public class RTFReader {
 		_stateStack.push(_parserState);
 		// and create a new one based on this one
 		_parserState = new ParserState(_parserState);
-		// execpt that RIS is reset
+		// except that RIS is reset
 		_parserState.ris = ParserInternalState.Normal;
 		// increment group depth
 		_cGroup++;
+		if (_parserState.rds == DestinationState.Header) {
+			_headerGroupBuffer.append("{");
+		}
 	}
 	
 	private void popParserState() {
@@ -189,10 +239,26 @@ public class RTFReader {
 		}
 		
 		_parserState = prevState;
-		_cGroup--;		
+		_cGroup--;
+		if (_parserState.rds == DestinationState.Header) {
+			_headerGroupBuffer.append("}");
+		}
+		
 	}
 
 	private void endGroupAction(DestinationState rds) {
+		switch (rds) {
+			case Header:
+				emitHeaderGroup(_headerGroupBuffer.toString());
+				_headerGroupBuffer = new StringBuilder();
+				break;
+		}
+	}
+	
+	private void emitHeaderGroup(String group) {
+		if (_handler != null) {
+			_handler.onHeaderGroup(group);
+		}
 	}
 
 }

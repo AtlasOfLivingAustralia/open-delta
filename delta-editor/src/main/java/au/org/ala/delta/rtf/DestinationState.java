@@ -1,5 +1,5 @@
 package au.org.ala.delta.rtf;
 
 public enum DestinationState {
-	Normal, Skip
+	Normal, Skip, Header
 }
