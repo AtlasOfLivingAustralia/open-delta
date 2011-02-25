@@ -209,7 +209,7 @@ public class DeltaViewer extends JFrame {
 		}
 		try {
 			// Nimbus L&F was added in update java 6 update 10.
-			LookAndFeel nimbusLaF = (LookAndFeel) Class.forName("javax.swing.plaf.nimbus.NimbusLookAndFeel").newInstance(); 
+			LookAndFeel nimbusLaF = (LookAndFeel) Class.forName("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel").newInstance(); 
 			mnuLF.add(new JMenuItem(new LookAndFeelAction(this, nimbusLaF)));
 		}
 		catch (Exception e) {
