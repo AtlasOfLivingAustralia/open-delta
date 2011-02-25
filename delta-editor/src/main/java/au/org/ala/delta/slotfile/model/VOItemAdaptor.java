@@ -19,11 +19,10 @@ import java.util.List;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.impl.AttributeData;
 import au.org.ala.delta.model.impl.ItemData;
-import au.org.ala.delta.slotfile.VOAdaptor;
 import au.org.ala.delta.slotfile.VOItemDesc;
 
 
-public class VOItemAdaptor implements ItemData, VOAdaptor<VOItemDesc> {
+public class VOItemAdaptor implements ItemData {
 
 	private VOItemDesc _voItemDesc;
 	
@@ -33,11 +32,6 @@ public class VOItemAdaptor implements ItemData, VOAdaptor<VOItemDesc> {
 		_voItemDesc = voItem;
 	}
 	
-
-	public VOItemDesc getVirtualObject() {
-		return _voItemDesc;
-	}
-
 
 	public int getItemId() {
 		return _voItemDesc.getUniId();
@@ -54,23 +48,17 @@ public class VOItemAdaptor implements ItemData, VOAdaptor<VOItemDesc> {
 	}
 
 
-	/* (non-Javadoc)
-	 * @see au.org.ala.delta.model.impl.ItemImpl#getAttributes()
-	 */
 	@Override
 	public List<au.org.ala.delta.model.Attribute> getAttributes() {
-		// TODO Auto-generated method stub
+		
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see au.org.ala.delta.model.impl.ItemImpl#getAttribute(au.org.ala.delta.model.Character)
-	 */
 	@Override
 	public au.org.ala.delta.model.Attribute getAttribute(Character character) {
 		
 		AttributeData impl = new VOAttributeAdaptor(_voItemDesc, ((VOCharacterAdaptor)character.getImpl()).getCharBaseDesc());
-		return new au.org.ala.delta.model.Attribute(impl);
+		return new au.org.ala.delta.model.Attribute(character, impl);
 	}
 
 	

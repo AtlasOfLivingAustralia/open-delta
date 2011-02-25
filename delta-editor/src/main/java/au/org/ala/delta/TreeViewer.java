@@ -40,6 +40,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeCellEditor;
 import javax.swing.tree.TreeSelectionModel;
 
+import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.IntegerCharacter;
 import au.org.ala.delta.model.Item;
@@ -292,19 +293,24 @@ class DeltaTreeCellRenderer extends DefaultTreeCellRenderer {
 					}
 					stateValueRenderer.setSelected(false);
 					if (_context.selectedItem != null) {
-						StateValue stateValue = _context.getMatrix().getValue(ch.getCharacterId(), _context.selectedItem.getItemId());
+						Item item = _context.selectedItem;
+						Attribute attribute = item.getAttribute(ch);
 						
-						if (stateValue != null) {
-							String valueStr = stateValue.getValue();
+						if (attribute != null) {
 							try {
-								int stateValueInt = Integer.valueOf(valueStr);
+								
 								String[] states = ((MultiStateCharacter) ch).getStates();
-								if (states[stateValueInt-1].equals(name)) {
-									stateValueRenderer.setSelected(true);
+								
+								for (int stateId = 0; stateId<states.length; stateId++) {
+									if (states[stateId].equals(name)) {
+										stateValueRenderer.setSelected(attribute.isPresent(stateId));
+										break;
+									}
 								}
 							}
 							catch (Exception e) {
 								// We don't handle multiple selection right now...
+								e.printStackTrace();
 							}
 						}
 					}

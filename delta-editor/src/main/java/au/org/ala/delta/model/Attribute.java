@@ -26,7 +26,8 @@ public class Attribute {
 	
 	private Character _character;
 	
-	public Attribute(AttributeData impl) {
+	public Attribute(Character character, AttributeData impl) {
+		_character = character;
 		_impl = impl;
 	}
 	
@@ -35,10 +36,11 @@ public class Attribute {
 	}
 	
 	public boolean isPresent(int stateId) {
-		String value = _impl.getValue();
 		
-		// Parse and do something....
-		return false;
+		if (!(_character instanceof MultiStateCharacter)) {
+			return false;
+		}
+		return _impl.isStatePresent(stateId);
 	}
 	
 	public String getValue() {

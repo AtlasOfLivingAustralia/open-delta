@@ -9,7 +9,6 @@ import au.org.ala.delta.slotfile.VOItemDesc;
 public class VOAttributeAdaptor implements AttributeData {
 
 	
-	
 	private VOItemDesc _itemDesc;
 	private VOCharBaseDesc _charBaseDesc;
 	
@@ -30,6 +29,15 @@ public class VOAttributeAdaptor implements AttributeData {
 	public void setValue(String value) {
 		Attribute attribute = new Attribute(value, _charBaseDesc);
 		_itemDesc.writeAttribute(attribute);
+	}
+
+	@Override
+	public boolean isStatePresent(int stateId) {
+		Attribute attribute = _itemDesc.readAttribute(_charBaseDesc.getUniId());
+		if (attribute == null) {
+			return false;
+		}
+		return attribute.encodesState(_charBaseDesc, stateId, true);
 	}
 
 }
