@@ -8,8 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
-import org.hamcrest.beans.HasPropertyWithValue;
-
 public class RTFReader {
 
 	private int _cGroup = 0;
