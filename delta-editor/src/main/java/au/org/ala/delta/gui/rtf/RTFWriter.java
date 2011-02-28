@@ -56,7 +56,8 @@ public class RTFWriter {
 			_currentState = false;
 		}
 		
-		public void handleAttribute(AttributeSet attributes) throws IOException {
+		public boolean handleAttribute(AttributeSet attributes) throws IOException {
+			boolean handled = false;
 			Boolean attributeValue = (Boolean)attributes.getAttribute(_documentAttribute);
 			if (attributeValue == null) {
 				attributeValue = Boolean.FALSE;
@@ -67,7 +68,9 @@ public class RTFWriter {
 					_outputStream.write('0');
 				}
 				_currentState = attributeValue.booleanValue();
+				handled = true;
 			}
+			return handled;
 		}
 	}
 	
@@ -80,12 +83,22 @@ public class RTFWriter {
 		Element docRoot = _document.getDefaultRootElement();
 		
 		writeElement(docRoot, activeAttributes);
+		
+		closeOpenAttributes();
+	}
+	
+	private void closeOpenAttributes() throws IOException {
+		SimpleAttributeSet emptyAttributes = new SimpleAttributeSet();
+		for (AttributeHandler handler : _attributeHandlers.values()) {
+			handler.handleAttribute(emptyAttributes);
+		}
 	}
 	
 
 	private void writeElement(Element element, MutableAttributeSet activeAttributes) throws BadLocationException, IOException {
 		
 		AttributeSet elementAttributes = element.getAttributes();
+		
 		writeAttributeChangesAsRTF(activeAttributes, elementAttributes);
 		
 		if (element.isLeaf()) {
@@ -103,12 +116,18 @@ public class RTFWriter {
 	private void writeAttributeChangesAsRTF(MutableAttributeSet activeAttributes,
 			AttributeSet elementAttributes) throws IOException {
 	
+		boolean changed = false;
 		Enumeration e = elementAttributes.getAttributeNames();
 		while (e.hasMoreElements()) {
 			AttributeHandler handler = _attributeHandlers.get(e.nextElement());
 			if (handler != null) {
-				handler.handleAttribute(elementAttributes);
+				boolean handled = handler.handleAttribute(elementAttributes);
+				changed = changed || handled;
 			}
+		}
+		if (changed) {
+			// write a trailing space after the control characters.
+			_outputStream.write(' ');
 		}
 		
 	}
