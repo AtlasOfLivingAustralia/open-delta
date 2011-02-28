@@ -138,7 +138,7 @@ public class TextComponentValidator extends InputVerifier {
 		ValidationResult result = _validator.validate(value);
 		updateTextStyles((JTextComponent)component, result);
 		if (!result.isValid()) {
-			_errorMessageDisplay.setMessage(result._errorMessage);
+			_errorMessageDisplay.setMessage(result.getMessage());
 			_errorMessageDisplay.showAbove(component);
 			component.addKeyListener(new ErrorDisplayHider(component));
 			
@@ -171,7 +171,7 @@ public class TextComponentValidator extends InputVerifier {
 			updateStyle(component, Color.BLACK, Color.WHITE, 0);
 		}
 		else {
-			updateStyle(component, Color.WHITE, Color.RED, validationResult._invalidCharacterPosition);
+			updateStyle(component, Color.WHITE, Color.RED, validationResult.getInvalidCharacterPosition());
 		}
 	}
 	
