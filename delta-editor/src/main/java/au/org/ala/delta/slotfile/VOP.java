@@ -79,16 +79,11 @@ public class VOP {
 			SlotFile.SlotHeader header = new SlotFile.SlotHeader();
 			header.read(_permSlotFile);
 
-			System.out.println("---------------------------------");
-			System.out.println("Offset: "+hdrPtr+" "+Integer.toHexString(hdrPtr)+" (hex)");
-			System.out.println(header.toString());
 			if (header.SlotId == SlotFile.SID_DELETED) {
-				System.out.println("***Deleted***");
 				_permSlotFile.freeSlot(hdrPtr, header.SlotSize);
 			}
 
 			if (header.SlotId == VOAnyDesc.SID_UIDS) {
-				System.out.println("***UIDS****");
 				// UID info...
 				int n = header.DataSize / 4; // Size in bytes of a TVOUniID, or
 												// an int
@@ -101,7 +96,7 @@ public class VOP {
 				_permSlotFile.freeSlot(hdrPtr, header.SlotSize);
 			} else if (header.SlotId == VOAnyDesc.SID_DESC) {
 				VOAnyDesc desc = VOAnyDesc.CreateAnyDesc(this, false);
-				System.out.println("Descriptor: "+desc.getTypeId());
+				
 				if (useIds != null) {
 					for (int typeId : useIds) {
 						if (desc.isA(typeId)) {

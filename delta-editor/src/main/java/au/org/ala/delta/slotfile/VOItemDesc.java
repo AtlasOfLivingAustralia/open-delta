@@ -99,11 +99,9 @@ public class VOItemDesc extends VOImageHolderDesc implements INameHolder {
 
 		_attrOffset = mapStart + (_fixedData.nBlocks * 8);
 		for (int i = 0; i < _fixedData.nBlocks; ++i) {
-			System.out.print("Attribute map starts @ "+_slotFile.tell());
 			int uid = _slotFile.readInt();
 			int attr = _slotFile.readInt();
 
-			System.out.println(", char id: "+uid+", offset: "+attr);
 			if (uid == VOUID_DELETED) {
 				_deletedAttributes.add(attr);
 			} else {
@@ -297,9 +295,7 @@ public class VOItemDesc extends VOImageHolderDesc implements INameHolder {
 		for (int charId : _attributeMap.keySet()) {
 			Attribute attr = new Attribute(charId);
 			dataSeek(_attrOffset + _attributeMap.get(charId));
-			System.out.print("Attribute: "+charId+" @ "+_slotFile.tell()+" "+Integer.toHexString((_slotFile.tell())));
 			int blockLeng = _slotFile.readInt();
-			System.out.println(" , Block length: "+blockLeng);
 			byte[] data = _slotFile.read(blockLeng);
 			attr.setData(data);
 			attr.initReadData();
