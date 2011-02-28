@@ -40,7 +40,7 @@ public class SlotFileTest {
 	
 	
 	@Before public void setUp() throws Exception {
-		slotFile = copyAndOpen("/sample.dlt");
+		slotFile = copyAndOpen("/SAMPLE.DLT");
 	}
 	
 	@After public void tearDown() throws Exception {
