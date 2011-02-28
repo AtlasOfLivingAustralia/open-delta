@@ -13,7 +13,7 @@
  * rights and limitations under the License.
  ******************************************************************************/
 
-package au.org.ala.delta.gui;
+package au.org.ala.delta.gui.rtf;
 
 import java.io.ByteArrayOutputStream;
 
@@ -49,10 +49,10 @@ public class RtfEditorPane extends JTextPane {
 	public String getRtfTextBody() {
 		String rtfText = null;
 		Document doc = getDocument();
-		MyRTFEditorKit kit = (MyRTFEditorKit)getEditorKit();				
+		SimpleRtfEditorKit kit = new SimpleRtfEditorKit();			
 		ByteArrayOutputStream bos = new ByteArrayOutputStream(doc.getLength());
 		try {
-			kit.writeBody(bos, doc);
+			kit.write(bos, doc, 0, doc.getLength());
 			rtfText = new String(bos.toByteArray()).trim();
 			
 		} catch (Exception ex) {
@@ -61,6 +61,7 @@ public class RtfEditorPane extends JTextPane {
 		}
 		return rtfText;
 	}
+	
 	
 	
 	public String getPlainText() {

@@ -13,7 +13,7 @@
  * rights and limitations under the License.
  ******************************************************************************/
 
-package au.org.ala.delta.gui;
+package au.org.ala.delta.gui.rtf;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;

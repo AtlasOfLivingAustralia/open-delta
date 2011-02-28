@@ -148,6 +148,12 @@ public class Attribute implements Iterable<AttrChunk> {
 			throw new AttributeParseException(
 					AttributeParseError.EAP_CHARTYPE_UNDEFINED, 0);
 		}
+		// Insert comments around text characters if they are not already present.
+		if (CharType.isText(charType)) {
+			if (!text.startsWith("<")) {
+				text = "<"+text+">";
+			}
+		}
 
 		// Ignore whether exclusive if parsing Intkey "use" directive
 		boolean isExclusive = charBase

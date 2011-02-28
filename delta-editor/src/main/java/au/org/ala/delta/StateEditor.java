@@ -17,40 +17,39 @@ package au.org.ala.delta;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 
 import javax.swing.AbstractListModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
-import javax.swing.InputVerifier;
 import javax.swing.JCheckBox;
-import javax.swing.JComponent;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
-import javax.swing.JTextPane;
 import javax.swing.JToolBar;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.text.Document;
 
-import au.org.ala.delta.gui.RtfEditor;
+import au.org.ala.delta.gui.rtf.RtfEditor;
+import au.org.ala.delta.gui.validator.AttributeValidator;
+import au.org.ala.delta.gui.validator.RtfEditorValidator;
+import au.org.ala.delta.gui.validator.ValidationListener;
+import au.org.ala.delta.gui.validator.ValidationResult;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.StateValue;
-import au.org.ala.delta.model.TextCharacter;
-import au.org.ala.delta.rtf.MyRTFEditorKit;
 
-import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
-
-public class StateEditor extends JPanel {
+public class StateEditor extends JPanel implements ValidationListener {
 
 	private static final long serialVersionUID = 1L;
 
 	private DeltaContext _context;
 	private RtfEditor _textPane;
 	private JList _list;
+	private boolean _valid = true;
 
 	private Character _character;
 	private Item _item;
@@ -77,13 +76,16 @@ public class StateEditor extends JPanel {
 		add(toolbar, BorderLayout.NORTH);
 
 		_textPane.getDocument().addDocumentListener(new EditListener());
-		_textPane.setInputVerifier(new EditCommitter());
 
+		_textPane.addFocusListener(new EditCommitter() );
+		
 		add(split, BorderLayout.CENTER);
 	}
 
 	public void bind(Character ch, Item item) {
-
+		if (!_valid) {
+			return;
+		}
 		_character = ch;
 		_item = item;
 		if (ch != null && item != null) {
@@ -107,9 +109,31 @@ public class StateEditor extends JPanel {
 				_list.setModel(new DefaultListModel());
 				_list.setCellRenderer(new DefaultListCellRenderer());
 			}
+			AttributeValidator validator = new AttributeValidator(_item, _character);
+			RtfEditorValidator rtfValidator = new RtfEditorValidator(validator, this);
+			_textPane.setInputVerifier(rtfValidator);
+		}
+		else {
+			_textPane.setInputVerifier(null);
+			
 		}
 		_modified = false;
 	}
+	
+	
+	@Override
+	public void validationSuceeded(ValidationResult results) {
+		_valid = true;
+		
+	}
+
+
+	@Override
+	public void validationFailed(ValidationResult results) {
+		_valid = false;
+	}
+
+
 
 	class EditListener implements DocumentListener {
 
@@ -128,73 +152,30 @@ public class StateEditor extends JPanel {
 			_modified = true;
 		}
 	}
-
-	class EditCommitter extends InputVerifier {
+	
+	/**
+	 * Edits are committed on focus lost events - hence we validate at this
+	 * point. TODO a failed validate prevents focus transferal but it doesn't
+	 * prevent a selection on the table or list from updating the text in the
+	 * document!
+	 * 
+	 * @see java.awt.event.FocusAdapter#focusLost(java.awt.event.FocusEvent)
+	 */
+	class EditCommitter extends FocusAdapter {
 
 		@Override
-		public boolean shouldYieldFocus(JComponent input) {
-			boolean valid = verify(input);
-
-			if (valid) {
-				Document doc = ((JTextPane) input).getDocument();
-				MyRTFEditorKit kit = (MyRTFEditorKit) _textPane.getEditorKit();
-				ByteOutputStream bos = new ByteOutputStream();
-				try {
-					kit.writeBody(bos, doc);
-					String rtf = new String(bos.getBytes()).trim();
-					if (_character instanceof TextCharacter) {
-						rtf = "<" + rtf + ">";
-					} else {
-						// bit dodgy the RTF isn't quite how we want. strip off
-						// leading/trailing control chars.
-						if (rtf.startsWith("\\")) {
-							rtf = rtf.substring(rtf.indexOf(' ') + 1);
-						}
-						int lastCommentIndex = rtf.lastIndexOf(">");
-						String bitAfterLastComment = rtf;
-						if (lastCommentIndex > 0) {
-							bitAfterLastComment = rtf.substring(lastCommentIndex);
-						}
-
-						int controlCharAfterComment = bitAfterLastComment.indexOf("\\");
-						if (controlCharAfterComment > 0) {
-							rtf = rtf.substring(0, controlCharAfterComment);
-						}
-						rtf = rtf.trim();
-					}
-					_item.getAttribute(_character).setValue(rtf);
-					_modified = false;
-				} catch (Exception ex) {
-					throw new RuntimeException(ex);
-				}
-
-				// TODO I've bypassed the application model step here which will
-				// prevent notification of
-				// other components looking at the same data set.
-				// _context.setAttribute(_item, _character,
-				// ((JTextPane)input).getText());
+		public void focusLost(FocusEvent e) {
+			if (!_modified || !_valid) {
+				return;
 			}
-
-			return valid;
+			String attributeText = _textPane.getRtfTextBody();
+			
+			_item.getAttribute(_character).setValue(attributeText);
+			_modified = false;
 		}
-
-		/**
-		 * Edits are committed on focus lost events - hence we validate at this
-		 * point. TODO a failed validate prevents focus transferal but it
-		 * doesn't prevent a selection on the table or list from updating the
-		 * text in the document!
-		 * 
-		 * @see java.awt.event.FocusAdapter#focusLost(java.awt.event.FocusEvent)
-		 */
-		@Override
-		public boolean verify(JComponent component) {
-			if (_modified) {
-
-				return true;
-			}
-			return false;
-		}
+		
 	}
+	
 
 	class StateRenderer extends DefaultListCellRenderer {
 
