@@ -158,7 +158,7 @@ public class TextComponentValidator extends InputVerifier {
 	 * @param component
 	 * @return
 	 */
-	public Object getValueToValidate(JTextComponent component) {
+	public Object getValueToValidate(JComponent component) {
 		String text = null;
 		if (component instanceof JTextComponent) {
 			text = ((JTextComponent)component).getText();
