@@ -227,7 +227,7 @@ public class DeltaViewer extends JFrame {
 		menuBar.add(mnuWindow);
 		
 		JMenu mnuHelp = new JMenu("Help");
-		JMenuItem mnuHelpContents = new JMenuItem("Contents");
+		JMenuItem mnuHelpContents = new JMenuItem("Contents...");
 		mnuHelp.add(mnuHelpContents);
 		mnuHelpContents.addActionListener(_helpController.helpAction());
 		
@@ -246,6 +246,7 @@ public class DeltaViewer extends JFrame {
 			}
 			
 		});
+		mnuHelp.addSeparator();
 		mnuHelp.add(mnuAbout);
 		
 		menuBar.add(mnuHelp);
