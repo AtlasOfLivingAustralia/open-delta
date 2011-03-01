@@ -42,9 +42,6 @@ import javax.swing.KeyStroke;
 import javax.swing.LookAndFeel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import javax.swing.event.InternalFrameAdapter;
-import javax.swing.event.InternalFrameEvent;
-import javax.swing.event.InternalFrameListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
@@ -63,7 +60,6 @@ public class DeltaViewer extends JFrame {
 	private JDesktopPane _desktop;
 	private StatusBar _statusBar;
 
-	private EditorDataModel _model;
 	// Yuk.
 	private DeltaDataSetRepository _dataSetRepository;
 	
@@ -117,11 +113,16 @@ public class DeltaViewer extends JFrame {
 		setJMenuBar(buildMenus());
 		
 		_helpController.enableHelpKey(this);
-		
-		_model = new EditorDataModel(null);
 
 	}
 
+	private EditorDataModel getCurrentDataSet() {
+		EditorDataModel model = null;
+		if (_desktop.getSelectedFrame() instanceof IContextHolder) {
+			model = ((IContextHolder)_desktop.getSelectedFrame()).getContext();
+		}
+		return model;
+	}
 	private JMenuBar buildMenus() {
 
 		JMenuBar menuBar = new JMenuBar();
@@ -171,7 +172,11 @@ public class DeltaViewer extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				newMatrix(_model);
+				EditorDataModel model = getCurrentDataSet();
+				if (model != null) {
+					newMatrix(model);
+				}
+				
 			}
 		});
 
@@ -182,7 +187,10 @@ public class DeltaViewer extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				newTree();
+				EditorDataModel model = getCurrentDataSet(); 
+				if (model != null) {
+					newTree(model);
+				}
 			}
 		});
 
@@ -267,14 +275,14 @@ public class DeltaViewer extends JFrame {
 		return selectedFile;
 	}
 
-	private void newMatrix(DeltaDataSet dataSet) {
+	private void newMatrix(EditorDataModel dataSet) {
 		MatrixViewer matrixViewer = new MatrixViewer(dataSet);
 		_helpController.setHelpKeyForComponent(matrixViewer, HelpController.GRID_VIEW_HELP_KEY);
 		addToDesktop(matrixViewer);
 	}
 
-	private void newTree() {
-		TreeViewer treeViewer = new TreeViewer(_model);
+	private void newTree(EditorDataModel dataSet) {
+		TreeViewer treeViewer = new TreeViewer(dataSet);
 		_helpController.setHelpKeyForComponent(treeViewer, HelpController.TREE_VIEW_HELP_KEY);
 		addToDesktop(treeViewer);
 	}
@@ -324,8 +332,8 @@ public class DeltaViewer extends JFrame {
 				try {
 					setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 					DeltaDataSet dataSet = _dataSetRepository.findByName(file.getAbsolutePath(), _statusBar);
-					_model.setCurrentDataSet(dataSet);
-					newMatrix(dataSet);
+					EditorDataModel model = new EditorDataModel(dataSet);
+					newMatrix(model);
 					_saveAction.setEnabled(true);
 					_saveAsAction.setEnabled(true);
 				} catch (Exception ex) {
@@ -352,7 +360,10 @@ public class DeltaViewer extends JFrame {
 		}
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			_dataSetRepository.save(_model.getCurrentDataSet(), null);
+			EditorDataModel model = getCurrentDataSet();
+			if (model != null) {
+				_dataSetRepository.save(model.getCurrentDataSet(), null);
+			}
 		}
 	}
 
@@ -368,7 +379,10 @@ public class DeltaViewer extends JFrame {
 			
 			File newFile = selectFile(false);
 			if (newFile != null) {
-				_dataSetRepository.saveAsName(_model.getCurrentDataSet(), newFile.getAbsolutePath(), null);
+				EditorDataModel model = getCurrentDataSet();
+				if (model != null) {
+					_dataSetRepository.saveAsName(model.getCurrentDataSet(), newFile.getAbsolutePath(), null);
+				}
 			}
 		}
 	}

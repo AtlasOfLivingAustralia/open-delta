@@ -14,8 +14,10 @@
  ******************************************************************************/
 package au.org.ala.delta;
 
+import au.org.ala.delta.gui.EditorDataModel;
+
 public interface IContextHolder {
 	
-	DeltaContext getContext();
+	EditorDataModel getContext();
 
 }

@@ -43,20 +43,21 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
+import au.org.ala.delta.gui.EditorDataModel;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Item;
 
-public class MatrixViewer extends JInternalFrame {
+public class MatrixViewer extends JInternalFrame implements IContextHolder {
 
 	private static final long serialVersionUID = 1L;
 
-	private DeltaDataSet _dataSet;
+	private EditorDataModel _dataSet;
 	private JTable _table;
 	private JTable _fixedColumns;
 	private MatrixTableModel _model;
 	private StateEditor _stateEditor;
 
-	public MatrixViewer(DeltaDataSet dataSet) {
+	public MatrixViewer(EditorDataModel dataSet) {
 		super("Matrix Viewer - " + dataSet.getName());
 		_dataSet = dataSet;
 		_model = new MatrixTableModel(dataSet);
@@ -149,7 +150,7 @@ public class MatrixViewer extends JInternalFrame {
 
 	}
 
-	public DeltaDataSet getDataSet() {
+	public EditorDataModel getContext() {
 		return _dataSet;
 	}
 
