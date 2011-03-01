@@ -47,6 +47,7 @@ import au.org.ala.delta.model.OrderedMultiStateCharacter;
 import au.org.ala.delta.model.RealCharacter;
 import au.org.ala.delta.model.TextCharacter;
 import au.org.ala.delta.model.UnorderedMultiStateCharacter;
+import au.org.ala.delta.rtf.RTFUtils;
 
 public class TreeViewer extends JInternalFrame {
 
@@ -186,7 +187,7 @@ class CharStateHolder {
 	public String toString() {
 		if (_dataModel.getSelectedItem() != null) {
 			Attribute attribute = _dataModel.getSelectedItem().getAttribute(_character);
-			return String.format("%s", attribute == null ? "--" : attribute.getValue());
+			return String.format("%s", attribute == null ? "--" : RTFUtils.stripFormatting(attribute.getValue()));
 		} else {
 			return "---";
 		}

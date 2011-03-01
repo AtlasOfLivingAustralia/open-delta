@@ -19,6 +19,7 @@ import javax.swing.table.TableModel;
 
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.rtf.RTFUtils;
 
 public class MatrixTableModel implements TableModel {
 
@@ -55,7 +56,7 @@ public class MatrixTableModel implements TableModel {
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		String attributeValue = _dataSet.getAttributeAsString(rowIndex+1, columnIndex+1);
+		String attributeValue = RTFUtils.stripFormatting(_dataSet.getAttributeAsString(rowIndex+1, columnIndex+1));
 		if (attributeValue == null) {
 			attributeValue = "-";
 		}
