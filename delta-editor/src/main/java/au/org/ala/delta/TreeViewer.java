@@ -49,7 +49,7 @@ import au.org.ala.delta.model.TextCharacter;
 import au.org.ala.delta.model.UnorderedMultiStateCharacter;
 import au.org.ala.delta.rtf.RTFUtils;
 
-public class TreeViewer extends JInternalFrame {
+public class TreeViewer extends JInternalFrame implements IContextHolder {
 
 	private static final long serialVersionUID = 1L;
 
@@ -120,6 +120,11 @@ public class TreeViewer extends JInternalFrame {
 		this.getContentPane().setLayout(new BorderLayout());
 		getContentPane().add(divider);
 
+	}
+
+	@Override
+	public EditorDataModel getContext() {
+		return _dataModel;
 	}
 
 }
