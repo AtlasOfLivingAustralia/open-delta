@@ -36,7 +36,7 @@ import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 import javax.swing.text.StyledEditorKit;
 
-import au.org.ala.delta.rtf.MyRTFEditorKit;
+import au.org.ala.delta.gui.rtf.SimpleRtfEditorKit;
 
 public class RTFTester extends JFrame {
 
@@ -101,7 +101,7 @@ public class RTFTester extends JFrame {
 	public String getRTF() {
 
 		StyledDocument doc = (StyledDocument) _textPane.getDocument();
-		MyRTFEditorKit kit = new MyRTFEditorKit();
+		SimpleRtfEditorKit kit = new SimpleRtfEditorKit();
 
 		try {
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
