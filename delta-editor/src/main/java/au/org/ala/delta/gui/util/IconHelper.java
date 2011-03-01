@@ -26,12 +26,17 @@ import javax.swing.ImageIcon;
 public class IconHelper {
 
 	private static final String ICON_PATH = "/icons";
+	private static final String DELTA_IMAGE_32 = "Delta_blue_32.png";
 	private static final String DELTA_IMAGE_16 = "Delta_blue_16.png";
 	private static final String DELTA_IMAGE_14 = "Delta_blue_14.png";
 	private static final String DELTA_IMAGE_12 = "Delta_blue_12.png";
 	
 	public static ImageIcon createImageIcon(String imageFileName) {		
 		return new ImageIcon(imageURLFromFileName(imageFileName));
+	}
+	
+	public static ImageIcon createLargeIcon() {
+		return createImageIcon(DELTA_IMAGE_32);
 	}
 	
 	public static ImageIcon createDeltaImageIcon() {

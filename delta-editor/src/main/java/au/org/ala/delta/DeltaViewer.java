@@ -235,11 +235,22 @@ public class DeltaViewer extends JFrame {
 		
 		helpOnSelection.addActionListener(_helpController.helpOnSelectionAction());
 		mnuHelp.add(helpOnSelection);
+
+		
+		JMenuItem mnuAbout = new JMenuItem("About...");
+		mnuAbout.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				newAboutBox();
+			}
+			
+		});
+		mnuHelp.add(mnuAbout);
 		
 		menuBar.add(mnuHelp);
-
+		
 		return menuBar;
-
 	}
 
 	private File _lastDirectory = null;
@@ -285,6 +296,11 @@ public class DeltaViewer extends JFrame {
 		TreeViewer treeViewer = new TreeViewer(dataSet);
 		_helpController.setHelpKeyForComponent(treeViewer, HelpController.TREE_VIEW_HELP_KEY);
 		addToDesktop(treeViewer);
+	}
+	
+	private void newAboutBox() {
+		AboutBox aboutBox = new AboutBox(this);
+		aboutBox.setVisible(true);
 	}
 	
 	private void addToDesktop(JInternalFrame frame) {

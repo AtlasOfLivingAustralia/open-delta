@@ -3,9 +3,14 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>au.org.ala.delta</groupId>
 	<artifactId>delta-editor</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0 M1</version>
 	<name>DELTA editor protoptye</name>
 
+	<scm>
+		<connection>scm:svn:http://open-delta.googlecode.com/svn/trunk/</connection>
+		<developerConnection>scm:svn:https://open-delta.googlecode.com/svn/trunk/</developerConnection>
+		<url>http://code.google.com/p/open-delta/</url>
+	</scm>
 	<build>
 		<plugins>
 			<plugin>
@@ -15,6 +20,9 @@
 						<manifest>
 							<mainClass>au.org.ala.delta.DeltaViewer</mainClass>
 						</manifest>
+						<manifestEntries>	
+							<Implementation-Version>${project.version} (${buildNumber})</Implementation-Version>
+						</manifestEntries>
 					</archive>
 					<descriptorRefs>
 						<descriptorRef>jar-with-dependencies</descriptorRef>
@@ -40,7 +48,23 @@
 					<encoding>Cp1252</encoding>
 				</configuration>
 			</plugin>
-
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>buildnumber-maven-plugin</artifactId>
+				<version>1.0-beta-3</version>
+				<executions>
+					<execution>
+						<phase>validate</phase>
+						<goals>
+							<goal>create</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<doCheck>true</doCheck>
+					<doUpdate>true</doUpdate>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 
