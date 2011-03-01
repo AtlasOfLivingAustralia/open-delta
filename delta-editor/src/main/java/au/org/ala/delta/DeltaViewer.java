@@ -233,13 +233,13 @@ public class DeltaViewer extends JFrame {
 
 	private void loadFile() {
 		
-		File toOpen = selectFile();
+		File toOpen = selectFile(true);
 		if (toOpen != null) {
 			loadFile(toOpen);
 		}
 	}
 	
-	private File selectFile() {
+	private File selectFile(boolean open) {
 		File selectedFile = null;
 		JFileChooser chooser = new JFileChooser();
 
@@ -248,7 +248,13 @@ public class DeltaViewer extends JFrame {
 		}
 
 		chooser.setFileFilter(new FileNameExtensionFilter("Delta Editor files *.dlt", "dlt"));
-		int dialogResult = chooser.showOpenDialog(this);
+		int dialogResult;
+		if (open) {
+			dialogResult = chooser.showOpenDialog(this);
+		}
+		else {
+			dialogResult = chooser.showSaveDialog(this);
+		}
 		if (dialogResult == JFileChooser.APPROVE_OPTION) {
 			selectedFile = chooser.getSelectedFile();
 			_lastDirectory = chooser.getCurrentDirectory();
@@ -326,7 +332,7 @@ public class DeltaViewer extends JFrame {
 		}
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			_dataSetRepository.save(_model, null);
+			_dataSetRepository.save(_model.getCurrentDataSet(), null);
 		}
 	}
 
@@ -340,9 +346,9 @@ public class DeltaViewer extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			
-			File newFile = selectFile();
+			File newFile = selectFile(false);
 			if (newFile != null) {
-				_dataSetRepository.saveAsName(_model, newFile.getAbsolutePath(), null);
+				_dataSetRepository.saveAsName(_model.getCurrentDataSet(), newFile.getAbsolutePath(), null);
 			}
 		}
 	}

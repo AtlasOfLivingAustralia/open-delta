@@ -14,11 +14,11 @@
  ******************************************************************************/
 package au.org.ala.delta.slotfile.model;
 
-import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.DeltaFileReader;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.DeltaDataSetRepository;
 import au.org.ala.delta.slotfile.BinFileMode;
+import au.org.ala.delta.slotfile.DeltaVOP;
 import au.org.ala.delta.slotfile.SlotFile;
 import au.org.ala.delta.util.IProgressObserver;
 
@@ -35,9 +35,7 @@ public class SlotFileRepository implements DeltaDataSetRepository {
 	 */
 	@Override
 	public void save(DeltaDataSet dataSet, IProgressObserver observer) {
-		
-		((DeltaContext)dataSet).VOP.commit(null);
-		
+		getVOP(dataSet).commit(null);
 	}
 	
 	/** 
@@ -51,7 +49,7 @@ public class SlotFileRepository implements DeltaDataSetRepository {
 	public void saveAsName(DeltaDataSet dataSet, String name, IProgressObserver observer) {
 		
 		SlotFile newFile = new SlotFile(name, BinFileMode.FM_NEW);
-		((DeltaContext)dataSet).VOP.commit(newFile);
+		getVOP(dataSet).commit(newFile);
 		
 	}
 
@@ -70,6 +68,9 @@ public class SlotFileRepository implements DeltaDataSetRepository {
 		return dataSet;
 	}
 
-	
+	private DeltaVOP getVOP(DeltaDataSet dataSet) {
+		VOPAdaptor vop = (VOPAdaptor)dataSet;
+		return vop.getVOP();
+	}
 	
 }

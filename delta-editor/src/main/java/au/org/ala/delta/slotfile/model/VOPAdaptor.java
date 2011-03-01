@@ -25,6 +25,10 @@ public class VOPAdaptor implements DeltaDataSet {
 		_vop = vop;
 	}
 	
+	public DeltaVOP getVOP() {
+		return _vop;
+	}
+	
 	@Override
 	public Item getItem(int number) {
 		int itemId = _vop.getDeltaMaster().uniIdFromItemNo(number);

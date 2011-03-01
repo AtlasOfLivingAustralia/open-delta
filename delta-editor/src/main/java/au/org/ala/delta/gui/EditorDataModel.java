@@ -46,6 +46,10 @@ public class EditorDataModel implements DeltaDataSet {
 		return _selectedCharacter;
 	}
 	
+	public DeltaDataSet getCurrentDataSet() {
+		return _currentDataSet;
+	}
+	
 	
 	@Override
 	public String getName() {
@@ -76,6 +80,7 @@ public class EditorDataModel implements DeltaDataSet {
 	public int getMaximumNumberOfItems() {
 		return _currentDataSet.getMaximumNumberOfItems();
 	}
+	
 	
 	
 	
