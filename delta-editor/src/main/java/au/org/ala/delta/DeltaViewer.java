@@ -45,6 +45,8 @@ import javax.swing.UIManager;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
+import org.jdesktop.application.SingleFrameApplication;
+
 import au.org.ala.delta.editor.controller.HelpController;
 import au.org.ala.delta.gui.EditorDataModel;
 import au.org.ala.delta.gui.util.IconHelper;
@@ -53,7 +55,7 @@ import au.org.ala.delta.model.DeltaDataSetRepository;
 import au.org.ala.delta.slotfile.model.SlotFileRepository;
 import au.org.ala.delta.util.IProgressObserver;
 
-public class DeltaViewer extends JFrame {
+public class DeltaViewer extends SingleFrameApplication {
 
 	private static final long serialVersionUID = 1L;
 
@@ -70,49 +72,33 @@ public class DeltaViewer extends JFrame {
 	
 	
 	public static void main(String[] args) {		
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-				} catch (Exception ex) {
-					System.err.println(ex);
-				}
-		
-				DeltaViewer instance = new DeltaViewer();
-				instance.setVisible(true);
-			}
-		});
-
+		launch(DeltaViewer.class, args);
 	}
-
-	protected DeltaViewer() {
-		super("DELTA - DEscription Language for TAxonomy (prototype)");
-		setIconImage(IconHelper.createDeltaImageIcon().getImage());
 	
-		this.setExtendedState(MAXIMIZED_BOTH);
-		this.getContentPane().setLayout(new BorderLayout());
-		
+	@Override
+	protected void startup() {
+		//super("DELTA - DEscription Language for TAxonomy (prototype)");
+		JFrame frame = getMainFrame();
+		frame.setIconImage(IconHelper.createDeltaImageIcon().getImage());
+	
+		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		
 		_helpController = new HelpController();
 		_saveAction = new SaveAction();
 		_saveAsAction = new SaveAsAction();
 		_dataSetRepository = new SlotFileRepository();
-		
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
 
 		_desktop = new JDesktopPane();
-
-		this.getContentPane().setLayout(new BorderLayout());
-		this.getContentPane().add(_desktop, BorderLayout.CENTER);
-
 		_desktop.setBackground(SystemColor.control);
 
 		_statusBar = new StatusBar();
-		getContentPane().add(_statusBar, BorderLayout.SOUTH);
+		getMainView().setStatusBar(_statusBar);
 
-		setJMenuBar(buildMenus());
+		getMainView().setMenuBar(buildMenus());
 		
-		_helpController.enableHelpKey(this);
+		_helpController.enableHelpKey(frame);
+		
+		show(_desktop);
 
 	}
 
@@ -152,7 +138,7 @@ public class DeltaViewer extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				DeltaViewer.this.dispose();
+				exit();
 			}
 		});
 
@@ -208,18 +194,18 @@ public class DeltaViewer extends JFrame {
 		JMenu mnuLF = new JMenu("Look & feel");
 		mnuWindow.add(mnuLF);
 		
-		mnuLF.add(new JMenuItem(new LookAndFeelAction(this, new MetalLookAndFeel())));
+		mnuLF.add(new JMenuItem(new LookAndFeelAction(getMainFrame(), new MetalLookAndFeel())));
 		try {
 			Class c = Class.forName(UIManager.getSystemLookAndFeelClassName());
 			LookAndFeel sysLaf = (LookAndFeel) c.newInstance();
-			mnuLF.add(new JMenuItem(new LookAndFeelAction(this, sysLaf)));
+			mnuLF.add(new JMenuItem(new LookAndFeelAction(getMainFrame(), sysLaf)));
 		} catch (Exception ex) {
 			
 		}
 		try {
 			// Nimbus L&F was added in update java 6 update 10.
 			LookAndFeel nimbusLaF = (LookAndFeel) Class.forName("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel").newInstance(); 
-			mnuLF.add(new JMenuItem(new LookAndFeelAction(this, nimbusLaF)));
+			mnuLF.add(new JMenuItem(new LookAndFeelAction(getMainFrame(), nimbusLaF)));
 		}
 		catch (Exception e) {
 			// The Nimbus L&F is not available, no matter.
@@ -275,10 +261,10 @@ public class DeltaViewer extends JFrame {
 		chooser.setFileFilter(new FileNameExtensionFilter("Delta Editor files *.dlt", "dlt"));
 		int dialogResult;
 		if (open) {
-			dialogResult = chooser.showOpenDialog(this);
+			dialogResult = chooser.showOpenDialog(getMainFrame());
 		}
 		else {
-			dialogResult = chooser.showSaveDialog(this);
+			dialogResult = chooser.showSaveDialog(getMainFrame());
 		}
 		if (dialogResult == JFileChooser.APPROVE_OPTION) {
 			selectedFile = chooser.getSelectedFile();
@@ -300,8 +286,8 @@ public class DeltaViewer extends JFrame {
 	}
 	
 	private void newAboutBox() {
-		AboutBox aboutBox = new AboutBox(this);
-		aboutBox.setVisible(true);
+		AboutBox aboutBox = new AboutBox(getMainFrame());
+		show(aboutBox);
 	}
 	
 	private void addToDesktop(JInternalFrame frame) {
@@ -347,7 +333,7 @@ public class DeltaViewer extends JFrame {
 			@Override
 			public void run() {
 				try {
-					setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+					getMainFrame().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 					DeltaDataSet dataSet = _dataSetRepository.findByName(file.getAbsolutePath(), _statusBar);
 					EditorDataModel model = new EditorDataModel(dataSet);
 					newMatrix(model);
@@ -356,7 +342,7 @@ public class DeltaViewer extends JFrame {
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				} finally {
-					setCursor(Cursor.getDefaultCursor());
+					getMainFrame().setCursor(Cursor.getDefaultCursor());
 					_statusBar.clear();
 				}
 			}
