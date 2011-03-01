@@ -292,7 +292,7 @@ class ItemColumnModel implements TableModel {
 	@Override
 	public Object getValueAt(int row, int column) {
 		Item item = _dataSet.getItem(row + 1);
-		return item.getDescription();
+		return (row+1)+ ". "+ item.getDescription();
 	}
 
 	@Override

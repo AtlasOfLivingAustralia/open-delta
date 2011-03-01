@@ -40,7 +40,7 @@ public class MatrixTableModel implements TableModel {
 
 	@Override
 	public String getColumnName(int column) {
-		return _dataSet.getCharacter(column + 1).getDescription();
+		return (column+1)+ ". "+ _dataSet.getCharacter(column + 1).getDescription();
 	}
 
 	@Override

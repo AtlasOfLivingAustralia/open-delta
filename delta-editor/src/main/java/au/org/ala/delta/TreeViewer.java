@@ -204,7 +204,7 @@ class ItemViewModel {
 
 	@Override
 	public String toString() {
-		return _model.getDescription();
+		return _model.getItemId() + ". " +_model.getDescription();
 	}
 
 	public Item getItem() {
