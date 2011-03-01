@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.ImplicitValue;
 import au.org.ala.delta.model.IntegerCharacter;
 import au.org.ala.delta.model.Item;
@@ -37,20 +38,35 @@ import au.org.ala.delta.slotfile.VOCharBaseDesc.CharTextInfo;
 import au.org.ala.delta.slotfile.VOCharTextDesc;
 import au.org.ala.delta.slotfile.VODirFileDesc;
 import au.org.ala.delta.slotfile.VODirFileDesc.Dir;
+import au.org.ala.delta.slotfile.VOItemDesc;
 import au.org.ala.delta.slotfile.model.VOCharacterAdaptor;
 import au.org.ala.delta.slotfile.model.VOItemAdaptor;
-import au.org.ala.delta.slotfile.VOItemDesc;
-import au.org.ala.delta.slotfile.VOTextCharacter;
+import au.org.ala.delta.slotfile.model.VOPAdaptor;
 import au.org.ala.delta.util.CodeTimer;
 import au.org.ala.delta.util.IProgressObserver;
 
 public class DeltaFileReader {
 	
-	public static DeltaContext readDeltaFile(String filename) {
-		return readDeltaFile(filename, null);
+	public static DeltaContext readDeltaFileFully(String filename) {
+		return readDeltaFileFully(filename, null);
 	}
 
-	public static DeltaContext readDeltaFile(String filename, IProgressObserver observer) {
+	
+	public static DeltaDataSet readDeltaFile(String fileName, IProgressObserver observer) {
+		if (observer != null) {
+			observer.progress("Loading file " + fileName, 0);
+		}
+		
+		CodeTimer t = new CodeTimer("Reading Delta File");
+		
+		DeltaVOP vop = new DeltaVOP(fileName, false);
+		DeltaDataSet dataSet = new VOPAdaptor(vop);
+		
+		return dataSet;
+	}
+	
+	
+	public static DeltaContext readDeltaFileFully(String filename, IProgressObserver observer) {
 		
 		if (observer != null) {
 			observer.progress("Loading file " + filename, 0);
@@ -166,6 +182,25 @@ public class DeltaFileReader {
 		
 		t1.stop(false);
 		
+		readDirectives(observer, vop, progmax, progress);
+		
+		t.stop(false);
+
+		if (context.VOP == null) {
+			vop.close();
+		}
+
+		return context;
+
+	}
+
+	/**
+	 * @param observer
+	 * @param vop
+	 * @param progmax
+	 * @param progress
+	 */
+	private static void readDirectives(IProgressObserver observer, DeltaVOP vop, int progmax, int progress) {
 		CodeTimer t2 = new CodeTimer("Reading Directives");
 		
 		for (int i = 1; i <= vop.getDeltaMaster().getNDirFiles(); ++i) {
@@ -183,15 +218,6 @@ public class DeltaFileReader {
 		}
 		
 		t2.stop(true);
-		
-		t.stop(false);
-
-		if (context.VOP == null) {
-			vop.close();
-		}
-
-		return context;
-
 	}
 	
 	private static void populateStates(VOCharBaseDesc charBase, MultiStateCharacter chr, List<String> states) {

@@ -18,31 +18,29 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 
 import au.org.ala.delta.model.Character;
-import au.org.ala.delta.slotfile.Attribute;
-import au.org.ala.delta.slotfile.VOItemDesc;
+import au.org.ala.delta.model.DeltaDataSet;
 
 public class MatrixTableModel implements TableModel {
 
-	private DeltaContext _context;
+	private DeltaDataSet _dataSet;
 
-	public MatrixTableModel(DeltaContext context) {
-		_context = context;
+	public MatrixTableModel(DeltaDataSet dataSet) {
+		_dataSet = dataSet;
 	}
 		
-
 	@Override
 	public int getColumnCount() {
-		return _context.getNumberOfCharacters();
+		return _dataSet.getNumberOfCharacters();
 	}
 
 	@Override
 	public int getRowCount() {
-		return _context.getMaximumNumberOfItems();
+		return _dataSet.getMaximumNumberOfItems();
 	}
 
 	@Override
 	public String getColumnName(int column) {
-		return _context.getCharacter(column + 1).getDescription();
+		return _dataSet.getCharacter(column + 1).getDescription();
 	}
 
 	@Override
@@ -57,23 +55,11 @@ public class MatrixTableModel implements TableModel {
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		
-		if (_context.VOP != null) {
-			int itemId = _context.VOP.getDeltaMaster().uniIdFromItemNo(rowIndex + 1);
-			VOItemDesc itemDesc = (VOItemDesc) _context.VOP.getDescFromId(itemId);
-			int charId = _context.VOP.getDeltaMaster().uniIdFromCharNo(columnIndex + 1);			
-			Attribute attr = itemDesc.readAttribute(charId);
-			if (attr != null) {
-				return attr.getAsText(0, _context.VOP);
-			}
-			return "-";
+		String attributeValue = _dataSet.getAttributeAsString(rowIndex+1, columnIndex+1);
+		if (attributeValue == null) {
+			attributeValue = "-";
 		}
-		
-		if (_context != null) {
-			return _context.getMatrix().getValue(columnIndex + 1, rowIndex + 1);
-		}
-		
-		return "X";
+		return attributeValue;
 	}
 
 	@Override

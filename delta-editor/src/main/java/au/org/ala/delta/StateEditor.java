@@ -38,15 +38,14 @@ import au.org.ala.delta.gui.validator.ValidationListener;
 import au.org.ala.delta.gui.validator.ValidationResult;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
-import au.org.ala.delta.model.StateValue;
 
 public class StateEditor extends JPanel implements ValidationListener {
 
 	private static final long serialVersionUID = 1L;
 
-	private DeltaContext _context;
 	private RtfEditor _textPane;
 	private JList _list;
 	private boolean _valid = true;
@@ -57,8 +56,8 @@ public class StateEditor extends JPanel implements ValidationListener {
 	/** Tracks whether the attribute has been modified since it was displayed */
 	private boolean _modified;
 
-	public StateEditor(DeltaContext context) {
-		_context = context;
+	public StateEditor(DeltaDataSet dataSet) {
+		
 		setLayout(new BorderLayout());
 		this.setPreferredSize(new Dimension(200, 150));
 		JSplitPane split = new JSplitPane();
@@ -89,21 +88,20 @@ public class StateEditor extends JPanel implements ValidationListener {
 		_character = ch;
 		_item = item;
 		if (ch != null && item != null) {
-			final StateValue sv = _context.getMatrix().getValue(_character.getCharacterId(), _item.getItemId());
-			if (sv != null) {
-				String str = sv.getValue();
-				if (!str.startsWith("{\\rtf1")) {
-					str = String.format("{\\rtf1\\ansi\\ansicpg1252 %s }", sv.getValue());
+			String value = _item.getAttribute(_character).getValue();
+			if (value != null) {
+				if (!value.startsWith("{\\rtf1")) {
+					value = String.format("{\\rtf1\\ansi\\ansicpg1252 %s }", value);
 				}
 
-				_textPane.setText(str);
+				_textPane.setText(value);
 			} else {
 				_textPane.setText("");
 			}
 
 			if (ch instanceof MultiStateCharacter) {
 				MultiStateCharacter mc = (MultiStateCharacter) ch;
-				_list.setModel(new StateListModel(mc.getStates()));
+				_list.setModel(new StateListModel(mc));
 				_list.setCellRenderer(new StateRenderer());
 			} else {
 				_list.setModel(new DefaultListModel());
@@ -199,7 +197,7 @@ public class StateEditor extends JPanel implements ValidationListener {
 			if (_item != null) {
 				Attribute attribute = _item.getAttribute(_character);
 				if (attribute != null) {
-					stateRenderer.setSelected(attribute.isPresent(index));
+					stateRenderer.setSelected(attribute.isPresent(index+1));
 				}
 			}
 
@@ -213,20 +211,20 @@ class StateListModel extends AbstractListModel {
 
 	private static final long serialVersionUID = 1L;
 
-	private String[] _states;
+	private MultiStateCharacter _character;
 
-	public StateListModel(String[] states) {
-		_states = states;
+	public StateListModel(MultiStateCharacter character) {
+		_character = character;
 	}
 
 	@Override
 	public int getSize() {
-		return _states.length;
+		return _character.getNumberOfStates();
 	}
 
 	@Override
 	public Object getElementAt(int index) {
-		return String.format("%d. %s", index + 1, _states[index]);
+		return String.format("%d. %s", index + 1, _character.getState(index+1));
 	}
 
 }

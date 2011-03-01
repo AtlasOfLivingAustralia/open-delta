@@ -50,8 +50,6 @@ public class CONFOR {
 		DirectiveFileParser p = new DirectiveFileParser();
 		p.parse(f, context);
 		
-		MatrixViewer viewer = new MatrixViewer(context);
-		viewer.setVisible(true);
 	}
 
 }

@@ -25,7 +25,7 @@ public abstract class MultiStateCharacter extends Character {
 	}
 
 	public int getNumberOfStates() {
-		return _numberOfStates;
+		return _impl.getNumberOfStates();
 	}
 
 	public void setNumberOfStates(int states) {
@@ -33,6 +33,9 @@ public abstract class MultiStateCharacter extends Character {
 		_states = new String[_numberOfStates];
 	}
 
+	public String getState(int stateNumber) {
+		return stateNumber + "." + _impl.getStateText(stateNumber);
+	}
 	public String[] getStates() {
 		return _states;
 	}
@@ -48,10 +51,6 @@ public abstract class MultiStateCharacter extends Character {
 	public void setState(int stateId, String state) {
 		// TODO bounds check!
 		_states[stateId - 1] = state;
-	}
-
-	public String getState(int stateId) {
-		return _states[stateId - 1];
 	}
 
 }

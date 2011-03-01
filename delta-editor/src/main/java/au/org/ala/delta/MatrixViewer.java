@@ -43,22 +43,23 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
+import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Item;
 
-public class MatrixViewer extends JInternalFrame implements IContextHolder {
+public class MatrixViewer extends JInternalFrame {
 
 	private static final long serialVersionUID = 1L;
 
-	private DeltaContext _context;
+	private DeltaDataSet _dataSet;
 	private JTable _table;
 	private JTable _fixedColumns;
 	private MatrixTableModel _model;
 	private StateEditor _stateEditor;
 
-	public MatrixViewer(DeltaContext context) {
-		super("Matrix Viewer - " + context.getVariable("HEADING", ""));
-		_context = context;
-		_model = new MatrixTableModel(context);
+	public MatrixViewer(DeltaDataSet dataSet) {
+		super("Matrix Viewer - " + dataSet.getName());
+		_dataSet = dataSet;
+		_model = new MatrixTableModel(dataSet);
 
 		this.setSize(new Dimension(600, 500));
 
@@ -69,7 +70,7 @@ public class MatrixViewer extends JInternalFrame implements IContextHolder {
 
 		_table.setRowSelectionAllowed(false);
 
-		_fixedColumns = new JTable(new ItemColumnModel(context));
+		_fixedColumns = new JTable(new ItemColumnModel(dataSet));
 		_fixedColumns.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
 		_fixedColumns.getTableHeader().setPreferredSize(new Dimension(_table.getColumnModel().getTotalColumnWidth(), 100));
 		_fixedColumns.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -94,8 +95,8 @@ public class MatrixViewer extends JInternalFrame implements IContextHolder {
 				int itemId = _table.getSelectedRow() + 1;
 			
 				if (charId > 0 && itemId > 0) {
-					au.org.ala.delta.model.Character selectedCharacter = _context.getCharacter(charId);
-					Item selectedItem = _context.getItem(itemId);				
+					au.org.ala.delta.model.Character selectedCharacter = _dataSet.getCharacter(charId);
+					Item selectedItem = _dataSet.getItem(itemId);				
 					_stateEditor.bind(selectedCharacter, selectedItem);
 				}
 				
@@ -134,7 +135,7 @@ public class MatrixViewer extends JInternalFrame implements IContextHolder {
 		content.setDividerSize(4);
 		content.setDividerLocation(180);
 		
-		_stateEditor = new StateEditor(_context);
+		_stateEditor = new StateEditor(_dataSet);
 		
 		JSplitPane divider =new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		divider.setDividerLocation(getHeight() - 200);
@@ -148,8 +149,8 @@ public class MatrixViewer extends JInternalFrame implements IContextHolder {
 
 	}
 
-	public DeltaContext getContext() {
-		return _context;
+	public DeltaDataSet getDataSet() {
+		return _dataSet;
 	}
 
 }
@@ -267,10 +268,10 @@ class MyCellRenderer extends JTextArea implements TableCellRenderer {
 
 class ItemColumnModel implements TableModel {
 
-	private DeltaContext _context;
+	private DeltaDataSet _dataSet;
 
-	public ItemColumnModel(DeltaContext context) {
-		_context = context;
+	public ItemColumnModel(DeltaDataSet dataSet) {
+		_dataSet = dataSet;
 	}
 
 	@Override
@@ -285,12 +286,12 @@ class ItemColumnModel implements TableModel {
 
 	@Override
 	public int getRowCount() {
-		return _context.getMaximumNumberOfItems();
+		return _dataSet.getMaximumNumberOfItems();
 	}
 
 	@Override
 	public Object getValueAt(int row, int column) {
-		Item item = _context.getItem(row + 1);
+		Item item = _dataSet.getItem(row + 1);
 		return item.getDescription();
 	}
 

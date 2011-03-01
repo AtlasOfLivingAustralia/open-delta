@@ -17,15 +17,14 @@ package au.org.ala.delta.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import au.org.ala.delta.model.impl.CharacterData;
 
 public abstract class Character {
 	
 	private int _number;
 	private List<CharacterDependency> _dependentCharacters = new ArrayList<CharacterDependency>();
-	private boolean _mandatory;
-	private boolean _exclusive;
-	private String _description;
+
 	private String _notes;
 	
 	protected CharacterData _impl;
@@ -39,11 +38,11 @@ public abstract class Character {
 	}
 	
 	public String getDescription() {
-		return _description;
+		return _impl.getDescription();
 	}
 	
 	public void setDescription(String desc) {
-		_description = desc;
+		throw new NotImplementedException();
 	}
 	
 	public void addDependentCharacter(CharacterDependency dependency) {
@@ -55,19 +54,19 @@ public abstract class Character {
 	}
 	
 	public void setMandatory(boolean b) {
-		_mandatory = b;
+		throw new NotImplementedException();
 	}
 	
 	public boolean isMandatory() {
-		return _mandatory;
+		return _impl.isMandatory();
 	}
 	
 	public void setExclusive(boolean exclusive) {
-		_exclusive = exclusive;
+		throw new NotImplementedException();
 	}
 	
 	public boolean isExclusive() {
-		return _exclusive;
+		return _impl.isExclusive();
 	}
 	
 	public void setNotes(String notes) {
@@ -80,7 +79,7 @@ public abstract class Character {
 	
 	@Override
 	public String toString() {
-		return _description;
+		return _number + ". " + getDescription();
 	}
 	
 	public CharacterData getImpl() {

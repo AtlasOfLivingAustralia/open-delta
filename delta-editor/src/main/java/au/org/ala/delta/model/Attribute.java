@@ -35,12 +35,12 @@ public class Attribute {
 		return _character;
 	}
 	
-	public boolean isPresent(int stateId) {
+	public boolean isPresent(int stateNumber) {
 		
 		if (!(_character instanceof MultiStateCharacter)) {
 			return false;
 		}
-		return _impl.isStatePresent(stateId);
+		return _impl.isStatePresent(stateNumber);
 	}
 	
 	public String getValue() {

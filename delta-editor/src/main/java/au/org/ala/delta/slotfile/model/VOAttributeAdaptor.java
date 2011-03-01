@@ -32,7 +32,8 @@ public class VOAttributeAdaptor implements AttributeData {
 	}
 
 	@Override
-	public boolean isStatePresent(int stateId) {
+	public boolean isStatePresent(int stateNumber) {
+		int stateId = _charBaseDesc.uniIdFromStateNo(stateNumber);
 		Attribute attribute = _itemDesc.readAttribute(_charBaseDesc.getUniId());
 		if (attribute == null) {
 			return false;

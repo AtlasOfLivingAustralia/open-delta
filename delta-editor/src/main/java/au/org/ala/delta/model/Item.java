@@ -23,7 +23,6 @@ public class Item {
 	private ItemData _impl;
 
 	private int _itemId;
-	private String _description;
 	
 	public Item(ItemData impl, int itemNum) {
 		_impl = impl;
@@ -38,12 +37,12 @@ public class Item {
 		return _itemId;
 	}
 
-	public void setDescription(String itemName) {
-		_description = itemName;
+	public void setDescription(String description) {
+		_impl.setDescription(description);
 	}
 	
 	public String getDescription() {
-		return _description;
+		return _impl.getDescription();
 	}
 	
 	public List<Attribute> getAttributes() {

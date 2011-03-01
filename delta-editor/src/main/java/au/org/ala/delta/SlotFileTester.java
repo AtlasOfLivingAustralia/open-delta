@@ -36,13 +36,13 @@ public class SlotFileTester {
 			System.err.println(ex);
 		}
 
-		DeltaContext context = DeltaFileReader.readDeltaFile("c:/zz/grasses.dlt");
+		DeltaContext context = DeltaFileReader.readDeltaFileFully("c:/zz/grasses.dlt");
 
-		MatrixViewer grid = new MatrixViewer(context);
-		grid.setVisible(true);
-		
-		TreeViewer tree = new TreeViewer(context);
-		tree.setVisible(true);
+//		MatrixViewer grid = new MatrixViewer(context);
+//		grid.setVisible(true);
+//		
+//		TreeViewer tree = new TreeViewer(context);
+//		tree.setVisible(true);
 
 	}
 

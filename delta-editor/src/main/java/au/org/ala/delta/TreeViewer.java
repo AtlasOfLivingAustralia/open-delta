@@ -18,7 +18,6 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 
-import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultListModel;
 import javax.swing.DropMode;
 import javax.swing.ImageIcon;
@@ -34,12 +33,11 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeCellEditor;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeCellEditor;
 import javax.swing.tree.TreeSelectionModel;
 
+import au.org.ala.delta.gui.EditorDataModel;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.IntegerCharacter;
@@ -47,48 +45,47 @@ import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.OrderedMultiStateCharacter;
 import au.org.ala.delta.model.RealCharacter;
-import au.org.ala.delta.model.StateValue;
 import au.org.ala.delta.model.TextCharacter;
 import au.org.ala.delta.model.UnorderedMultiStateCharacter;
 
-public class TreeViewer extends JInternalFrame implements IContextHolder {
+public class TreeViewer extends JInternalFrame {
 
 	private static final long serialVersionUID = 1L;
 
-	private DeltaContext _context;
+	private EditorDataModel _dataModel;
 	private StateEditor _stateEditor;
 
-	public TreeViewer(DeltaContext context) {
-		super("Tree Viewer - " + context.getVariable("HEADING", ""));
+	public TreeViewer(EditorDataModel dataModel) {
+		super("Tree Viewer - " + dataModel.getName());
 		this.setSize(new Dimension(500, 400));
 
-		_context = context;
+		_dataModel = dataModel;
 
 		final JList lst = new JList();
-		lst.setModel(new ItemListModel(_context));
+		lst.setModel(new ItemListModel(_dataModel));
 		lst.setDragEnabled(true);
 		lst.setDropMode(DropMode.ON);
 
 		final JTree tree = new JTree();
-		final CharacterTreeModel treeModel = new CharacterTreeModel(_context);
+		final CharacterTreeModel treeModel = new CharacterTreeModel(_dataModel);
 		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		tree.setModel(treeModel);
 		tree.setRootVisible(false);
 		tree.setShowsRootHandles(true);
-		tree.setCellRenderer(new DeltaTreeCellRenderer(_context));
+		tree.setCellRenderer(new DeltaTreeCellRenderer(_dataModel));
 		tree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
 			
 			@Override
 			public void valueChanged(TreeSelectionEvent e) {
 				DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
 				if (node instanceof CharacterTreeNode) {
-					_context.selectedCharacter = ((CharacterTreeNode) node).getCharacter();
+					_dataModel.setSelectedCharacter(((CharacterTreeNode) node).getCharacter());
 				} else if (node.getParent() instanceof CharacterTreeNode) {
-					_context.selectedCharacter = ((CharacterTreeNode) node.getParent()).getCharacter();
+					_dataModel.setSelectedCharacter(((CharacterTreeNode) node.getParent()).getCharacter());
 				} else {
-					_context.selectedCharacter = null;
+					_dataModel.setSelectedCharacter(null);
 				}
-				_stateEditor.bind(_context.selectedCharacter, _context.selectedItem);
+				_stateEditor.bind(_dataModel.getSelectedCharacter(), _dataModel.getSelectedItem());
 			}
 		});
 
@@ -97,9 +94,9 @@ public class TreeViewer extends JInternalFrame implements IContextHolder {
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
 
-				_context.selectedItem = ((ItemViewModel) lst.getSelectedValue()).getItem();
+				_dataModel.setSelectedItem(((ItemViewModel) lst.getSelectedValue()).getItem());
 				tree.updateUI();
-				_stateEditor.bind(_context.selectedCharacter, _context.selectedItem);
+				_stateEditor.bind(_dataModel.getSelectedCharacter(), _dataModel.getSelectedItem());
 			}
 		});
 
@@ -110,7 +107,7 @@ public class TreeViewer extends JInternalFrame implements IContextHolder {
 		content.setRightComponent(new JScrollPane(tree));
 		content.setLeftComponent(new JScrollPane(lst));
 		
-		_stateEditor = new StateEditor(context);
+		_stateEditor = new StateEditor(_dataModel);
 		
 		JSplitPane divider =new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		divider.setDividerLocation(getHeight() - 200);
@@ -124,31 +121,26 @@ public class TreeViewer extends JInternalFrame implements IContextHolder {
 
 	}
 
-	@Override
-	public DeltaContext getContext() {
-		return _context;
-	}
-
 }
 
 class ItemListModel extends DefaultListModel implements ListModel {
 
 	private static final long serialVersionUID = 1L;
 
-	private DeltaContext _context;
+	private EditorDataModel _dataModel;
 
-	public ItemListModel(DeltaContext context) {
-		_context = context;
+	public ItemListModel(EditorDataModel dataModel) {
+		_dataModel = dataModel;
 	}
 
 	@Override
 	public int getSize() {
-		return _context.getMaximumNumberOfItems();
+		return _dataModel.getMaximumNumberOfItems();
 	}
 
 	@Override
 	public Object getElementAt(int index) {
-		return new ItemViewModel(_context.getItem(index + 1));
+		return new ItemViewModel(_dataModel.getItem(index + 1));
 	}
 
 }
@@ -157,8 +149,8 @@ class CharacterTreeModel extends DefaultTreeModel {
 
 	private static final long serialVersionUID = 1L;
 
-	public CharacterTreeModel(DeltaContext context) {
-		super(new ContextRootNode(context), false);
+	public CharacterTreeModel(EditorDataModel dataModel) {
+		super(new ContextRootNode(dataModel), false);
 	}
 
 }
@@ -167,13 +159,13 @@ class ContextRootNode extends DefaultMutableTreeNode {
 
 	private static final long serialVersionUID = 1L;
 
-	private DeltaContext _context;
+	private EditorDataModel _dataModel;
 
-	public ContextRootNode(DeltaContext context) {
-		_context = context;
-		for (int i = 0; i < _context.getNumberOfCharacters(); ++i) {
-			au.org.ala.delta.model.Character ch = _context.getCharacter(i + 1);
-			add(new CharacterTreeNode(context, ch));
+	public ContextRootNode(EditorDataModel dataModel) {
+		_dataModel = dataModel;
+		for (int i = 0; i < _dataModel.getNumberOfCharacters(); ++i) {
+			au.org.ala.delta.model.Character ch = _dataModel.getCharacter(i + 1);
+			add(new CharacterTreeNode(_dataModel, ch));
 		}
 
 	}
@@ -182,19 +174,19 @@ class ContextRootNode extends DefaultMutableTreeNode {
 
 class CharStateHolder {
 
-	private DeltaContext _context;
+	private EditorDataModel _dataModel;
 	private Character _character;
 
-	public CharStateHolder(DeltaContext context, Character character) {
-		_context = context;
+	public CharStateHolder(EditorDataModel dataModel, Character character) {
+		_dataModel = dataModel;
 		_character = character;
 	}
 
 	@Override
 	public String toString() {
-		if (_context.selectedItem != null) {
-			StateValue stateval = _context.getMatrix().getValue(_character.getCharacterId(), _context.selectedItem.getItemId());
-			return String.format("%s", stateval == null ? "No value" : stateval.getValue());
+		if (_dataModel.getSelectedItem() != null) {
+			Attribute attribute = _dataModel.getSelectedItem().getAttribute(_character);
+			return String.format("%s", attribute == null ? "--" : attribute.getValue());
 		} else {
 			return "---";
 		}
@@ -224,7 +216,7 @@ class DeltaTreeCellRenderer extends DefaultTreeCellRenderer {
 	
 	private static final long serialVersionUID = 1L;
 	
-	private DeltaContext _context;
+	private EditorDataModel _dataModel;
 	private ImageIcon _textIcon;
 	private ImageIcon _realIcon;
 	private ImageIcon _intIcon;
@@ -233,8 +225,8 @@ class DeltaTreeCellRenderer extends DefaultTreeCellRenderer {
 	
 	private JCheckBox stateValueRenderer = new JCheckBox();
 	
-	public DeltaTreeCellRenderer(DeltaContext context) {
-		_context = context;
+	public DeltaTreeCellRenderer(EditorDataModel dataModel) {
+		_dataModel = dataModel;
 		_textIcon = createImageIcon("/icons/textchar.png");
 		_realIcon = createImageIcon("/icons/realchar.png");
 		_intIcon = createImageIcon("/icons/intchar.png");
@@ -252,10 +244,6 @@ class DeltaTreeCellRenderer extends DefaultTreeCellRenderer {
             return null;
         }
     }	
-    
-    public DeltaContext getContext() {
-    	return _context;
-    }
 
 	public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus) {
 	
@@ -292,18 +280,19 @@ class DeltaTreeCellRenderer extends DefaultTreeCellRenderer {
 						stateValueRenderer.setBackground(getBackgroundNonSelectionColor());
 					}
 					stateValueRenderer.setSelected(false);
-					if (_context.selectedItem != null) {
-						Item item = _context.selectedItem;
+					if (_dataModel.getSelectedItem() != null) {
+						Item item = _dataModel.getSelectedItem();
 						Attribute attribute = item.getAttribute(ch);
 						
 						if (attribute != null) {
 							try {
 								
-								String[] states = ((MultiStateCharacter) ch).getStates();
+								MultiStateCharacter multiStateChar = (MultiStateCharacter) ch;
+								int numStates = multiStateChar.getNumberOfStates();
 								
-								for (int stateId = 0; stateId<states.length; stateId++) {
-									if (states[stateId].equals(name)) {
-										stateValueRenderer.setSelected(attribute.isPresent(stateId));
+								for (int stateNumber = 1; stateNumber<=numStates; stateNumber++) {
+									if (multiStateChar.getState(stateNumber).equals(name)) {
+										stateValueRenderer.setSelected(attribute.isPresent(stateNumber));
 										break;
 									}
 								}
@@ -327,11 +316,11 @@ class CharacterTreeNode extends DefaultMutableTreeNode {
 	private static final long serialVersionUID = 1L;
 
 	private Character _character;
-	private DeltaContext _context;
+	private EditorDataModel _dataModel;
 
-	public CharacterTreeNode(DeltaContext context, Character ch) {
+	public CharacterTreeNode(EditorDataModel dataModel, Character ch) {
 		super(ch);
-		_context = context;
+		_dataModel = dataModel;
 		_character = ch;
 		if (_character instanceof MultiStateCharacter) {
 			MultiStateCharacter ms = (MultiStateCharacter) _character;
@@ -339,7 +328,7 @@ class CharacterTreeNode extends DefaultMutableTreeNode {
 				add(new DefaultMutableTreeNode(ms.getState(i + 1)));
 			}
 		} else {
-			add(new DefaultMutableTreeNode(new CharStateHolder(_context, ch)));
+			add(new DefaultMutableTreeNode(new CharStateHolder(_dataModel, ch)));
 		}
 	}
 	

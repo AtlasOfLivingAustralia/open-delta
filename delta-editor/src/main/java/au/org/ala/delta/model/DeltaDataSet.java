@@ -15,9 +15,19 @@
 package au.org.ala.delta.model;
 
 /**
- * @author god08d
- *
+ * Represents a single DELTA data set, consisting of a List of characters and a List of Items.
  */
-public class DeltaDataSet {
+public interface DeltaDataSet {
+	
+	public String getName();
+	
+	public Item getItem(int number);
+	
+	public String getAttributeAsString(int itemNumber, int characterNumber);
 
+	public Character getCharacter(int number);
+
+	public int getNumberOfCharacters();
+
+	public int getMaximumNumberOfItems();
 }

@@ -16,6 +16,8 @@ package au.org.ala.delta.slotfile.model;
 
 import java.util.List;
 
+import org.apache.commons.lang.NotImplementedException;
+
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.impl.AttributeData;
 import au.org.ala.delta.model.impl.ItemData;
@@ -39,7 +41,7 @@ public class VOItemAdaptor implements ItemData {
 
 
 	public void setDescription(String itemName) {		
-		
+		throw new NotImplementedException();
 	}
 
 
@@ -51,19 +53,16 @@ public class VOItemAdaptor implements ItemData {
 	@Override
 	public List<au.org.ala.delta.model.Attribute> getAttributes() {
 		
-		return null;
+		throw new NotImplementedException();
 	}
 
 	@Override
 	public au.org.ala.delta.model.Attribute getAttribute(Character character) {
-		
+		if (character == null) {
+			return null;
+		}
 		AttributeData impl = new VOAttributeAdaptor(_voItemDesc, ((VOCharacterAdaptor)character.getImpl()).getCharBaseDesc());
 		return new au.org.ala.delta.model.Attribute(character, impl);
 	}
 
-	
-	
-	
-	
-	
 }

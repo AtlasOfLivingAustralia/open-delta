@@ -14,7 +14,6 @@
  ******************************************************************************/
 package au.org.ala.delta.model;
 
-import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.util.IProgressObserver;
 
 /**
@@ -22,9 +21,9 @@ import au.org.ala.delta.util.IProgressObserver;
  */
 public interface DeltaDataSetRepository {
 
-	public void save(DeltaContext dataSet, IProgressObserver observer);
+	public void save(DeltaDataSet dataSet, IProgressObserver observer);
 	
-	public DeltaContext findByName(String name, IProgressObserver observer);
+	public DeltaDataSet findByName(String name, IProgressObserver observer);
 	
-	public void saveAsName(DeltaContext dataSet, String name, IProgressObserver observer);
+	public void saveAsName(DeltaDataSet dataSet, String name, IProgressObserver observer);
 }

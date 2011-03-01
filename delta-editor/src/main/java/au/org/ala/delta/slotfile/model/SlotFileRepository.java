@@ -12,16 +12,18 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  ******************************************************************************/
-package au.org.ala.delta.slotfile;
+package au.org.ala.delta.slotfile.model;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.DeltaFileReader;
+import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.DeltaDataSetRepository;
+import au.org.ala.delta.slotfile.BinFileMode;
+import au.org.ala.delta.slotfile.SlotFile;
 import au.org.ala.delta.util.IProgressObserver;
 
 /**
- * @author god08d
- *
+ * Provides access to DELTA Data sets via a slot file implementation.
  */
 public class SlotFileRepository implements DeltaDataSetRepository {
 
@@ -32,7 +34,7 @@ public class SlotFileRepository implements DeltaDataSetRepository {
 	 * @see au.org.ala.delta.model.DeltaDataSetRepository#save(au.org.ala.delta.model.DeltaDataSet)
 	 */
 	@Override
-	public void save(DeltaContext dataSet, IProgressObserver observer) {
+	public void save(DeltaDataSet dataSet, IProgressObserver observer) {
 		
 		((DeltaContext)dataSet).VOP.commit(null);
 		
@@ -45,7 +47,8 @@ public class SlotFileRepository implements DeltaDataSetRepository {
 	 * @param observer allows the progress of the save to be tracked if required.
 	 * @see au.org.ala.delta.model.DeltaDataSetRepository#save(au.org.ala.delta.model.DeltaDataSet)
 	 */
-	public void saveAsName(DeltaContext dataSet, String name, IProgressObserver observer) {
+	@Override
+	public void saveAsName(DeltaDataSet dataSet, String name, IProgressObserver observer) {
 		
 		SlotFile newFile = new SlotFile(name, BinFileMode.FM_NEW);
 		((DeltaContext)dataSet).VOP.commit(newFile);
@@ -61,10 +64,10 @@ public class SlotFileRepository implements DeltaDataSetRepository {
 	 * @see au.org.ala.delta.model.DeltaDataSetRepository#findByName(java.lang.String)
 	 */
 	@Override
-	public DeltaContext findByName(String name, IProgressObserver observer) {
+	public DeltaDataSet findByName(String name, IProgressObserver observer) {
 
-		DeltaContext context = DeltaFileReader.readDeltaFile(name, observer);
-		return context;
+		DeltaDataSet dataSet = DeltaFileReader.readDeltaFile(name, observer);
+		return dataSet;
 	}
 
 	
