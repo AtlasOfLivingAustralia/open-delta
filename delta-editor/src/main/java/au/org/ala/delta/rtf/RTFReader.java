@@ -1,9 +1,9 @@
 package au.org.ala.delta.rtf;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.PushbackInputStream;
+import java.io.PushbackReader;
+import java.io.Reader;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -11,7 +11,7 @@ import java.util.Stack;
 public class RTFReader {
 
 	private int _cGroup = 0;
-	private PushbackInputStream _stream;
+	private PushbackReader _stream;
 	private Stack<ParserState> _stateStack = new Stack<ParserState>();
 	private ParserState _parserState;
 	private long _cbBin = 0;
@@ -19,13 +19,13 @@ public class RTFReader {
 	
 	private RTFHandler _handler;
 	
-	public RTFReader(InputStream stream, RTFHandler handler) {
-		_stream = new PushbackInputStream(stream);
+	public RTFReader(Reader stream, RTFHandler handler) {
+		_stream = new PushbackReader(stream);
 		_handler = handler;
 	}
 	
 	public RTFReader(String rtf, RTFHandler handler) {
-		_stream = new PushbackInputStream(new ByteArrayInputStream(rtf.getBytes()));
+		_stream = new PushbackReader(new StringReader(rtf));
 		_handler = handler;
 	}
 
