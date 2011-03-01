@@ -74,8 +74,8 @@ public class SimpleRtfEditorKitTest extends TestCase {
 		assertTrue(documentAsString.substring(27, 38).contains("\\b"));
 		assertTrue(documentAsString.substring(27, 38).contains("\\i"));
 		assertTrue(documentAsString.substring(27, 38).contains("\\super0"));
-		assertEquals(" This is bold italic\n", documentAsString.substring(38, 59));
-		assertTrue(documentAsString.substring(59, documentAsString.length()).contains("\\i0"));
-		assertTrue(documentAsString.substring(59, documentAsString.length()).contains("\\b0"));
+		assertEquals(" This is bold italic", documentAsString.substring(38, 58));
+		assertTrue(documentAsString.substring(58, documentAsString.length()).contains("\\i0"));
+		assertTrue(documentAsString.substring(58, documentAsString.length()).contains("\\b0"));
 	}
 }

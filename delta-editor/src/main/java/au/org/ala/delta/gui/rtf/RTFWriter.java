@@ -78,11 +78,10 @@ public class RTFWriter {
 	 * Writes the contents of the StyledDocument to the OutputStream.
 	 */
 	public void write() throws IOException, BadLocationException {
-		MutableAttributeSet activeAttributes = new SimpleAttributeSet();
 		
 		Element docRoot = _document.getDefaultRootElement();
 		
-		writeElement(docRoot, activeAttributes);
+		writeElement(docRoot);
 		
 		closeOpenAttributes();
 	}
@@ -95,11 +94,11 @@ public class RTFWriter {
 	}
 	
 
-	private void writeElement(Element element, MutableAttributeSet activeAttributes) throws BadLocationException, IOException {
+	private void writeElement(Element element) throws BadLocationException, IOException {
 		
 		AttributeSet elementAttributes = element.getAttributes();
 		
-		writeAttributeChangesAsRTF(activeAttributes, elementAttributes);
+		writeAttributeChangesAsRTF(elementAttributes);
 		
 		if (element.isLeaf()) {
 			String plainText = _document.getText(element.getStartOffset(), element.getEndOffset()-element.getStartOffset());
@@ -107,24 +106,21 @@ public class RTFWriter {
 		}
 		else  {
 			for (int i=0; i<element.getElementCount(); i++) {
-				writeElement(element.getElement(i), activeAttributes);
+				writeElement(element.getElement(i));
 			}
 		}
 	}
 	
 
-	private void writeAttributeChangesAsRTF(MutableAttributeSet activeAttributes,
-			AttributeSet elementAttributes) throws IOException {
+	private void writeAttributeChangesAsRTF(AttributeSet elementAttributes) throws IOException {
 	
 		boolean changed = false;
-		Enumeration e = elementAttributes.getAttributeNames();
-		while (e.hasMoreElements()) {
-			AttributeHandler handler = _attributeHandlers.get(e.nextElement());
-			if (handler != null) {
-				boolean handled = handler.handleAttribute(elementAttributes);
-				changed = changed || handled;
-			}
+
+		for (AttributeHandler handler : _attributeHandlers.values()) {
+			boolean handled = handler.handleAttribute(elementAttributes);
+			changed = changed || handled;
 		}
+		
 		if (changed) {
 			// write a trailing space after the control characters.
 			_outputStream.write(' ');

@@ -21,8 +21,6 @@ import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 
-import au.org.ala.delta.rtf.MyRTFEditorKit;
-
 
 /**
  * A JTextPane that works with RTF text by default.
@@ -37,7 +35,7 @@ public class RtfEditorPane extends JTextPane {
 	 * Creates a new RtfEditorPane.
 	 */
 	public RtfEditorPane() {
-		setEditorKit(new MyRTFEditorKit());
+		setEditorKit(new SimpleRtfEditorKit());
 	}
 	
 	/**
