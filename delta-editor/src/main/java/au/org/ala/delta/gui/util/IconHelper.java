@@ -27,9 +27,10 @@ public class IconHelper {
 
 	private static final String ICON_PATH = "/icons";
 	private static final String DELTA_IMAGE_16 = "Delta_blue_16.png";
+	private static final String DELTA_IMAGE_14 = "Delta_blue_14.png";
+	private static final String DELTA_IMAGE_12 = "Delta_blue_12.png";
 	
-	public static ImageIcon createImageIcon(String imageFileName) {
-		
+	public static ImageIcon createImageIcon(String imageFileName) {		
 		return new ImageIcon(imageURLFromFileName(imageFileName));
 	}
 	
@@ -37,6 +38,13 @@ public class IconHelper {
 		return createImageIcon(DELTA_IMAGE_16);
 	}
 	
+	public static ImageIcon createInternalFrameNormalIcon() {
+		return createImageIcon(DELTA_IMAGE_14);
+	}
+	
+	public static ImageIcon createInternalFrameMaximizedIcon() {
+		return createImageIcon(DELTA_IMAGE_12);
+	}
 	
 	private static URL imageURLFromFileName(String imageFileName) {
 		URL imageUrl = IconHelper.class.getResource(ICON_PATH+"/"+imageFileName);

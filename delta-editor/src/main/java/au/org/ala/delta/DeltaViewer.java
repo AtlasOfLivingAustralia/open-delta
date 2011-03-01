@@ -22,6 +22,8 @@ import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
 import java.io.File;
 
@@ -40,6 +42,9 @@ import javax.swing.KeyStroke;
 import javax.swing.LookAndFeel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.event.InternalFrameAdapter;
+import javax.swing.event.InternalFrameEvent;
+import javax.swing.event.InternalFrameListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
@@ -282,6 +287,21 @@ public class DeltaViewer extends JFrame {
 		frame.setResizable(true);
 		frame.setIconifiable(true);
 		frame.setVisible(true);
+		frame.setFrameIcon(IconHelper.createInternalFrameNormalIcon());
+		frame.addPropertyChangeListener(JInternalFrame.IS_MAXIMUM_PROPERTY, new PropertyChangeListener() {
+			
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				Boolean newValue = (Boolean) evt.getNewValue();
+				JInternalFrame frame = (JInternalFrame) evt.getSource();
+				if (newValue) {
+					frame.setFrameIcon(IconHelper.createInternalFrameMaximizedIcon());
+				} else {
+					frame.setFrameIcon(IconHelper.createInternalFrameNormalIcon());
+				}
+			}
+		});
+		
 		try {
 			frame.setMaximum(false);
 		} catch (Exception ex) {
@@ -442,6 +462,8 @@ class TileAction extends AbstractAction {
 
 class StatusBar extends JPanel implements IProgressObserver {
 
+	private static final long serialVersionUID = 1L;
+	
 	private JProgressBar _prog;
 	private JLabel _label;
 
@@ -449,13 +471,14 @@ class StatusBar extends JPanel implements IProgressObserver {
 		setLayout(new BorderLayout());
 		setPreferredSize(new Dimension(400, 23));
 		_prog = new JProgressBar();
-		_prog.setPreferredSize(new Dimension(200, 20));
+		_prog.setPreferredSize(new Dimension(0, 20));
+		_prog.setVisible(false);
 		_label = new JLabel();
 		_prog.setMaximum(100);
 		_prog.setMinimum(0);
 		add(_prog, BorderLayout.WEST);
 		add(_label, BorderLayout.CENTER);
-		_prog.setValue(0);
+		_prog.setValue(0);		
 	}
 
 	public void clear() {
@@ -471,7 +494,17 @@ class StatusBar extends JPanel implements IProgressObserver {
 			@Override
 			public void run() {
 				_label.setText(message);
-				_prog.setValue(Math.min(percentComplete, 100));
+				int value = Math.min(percentComplete, 100);
+				if (value < 0 || value == 100) {
+					if (!_prog.isVisible()) {
+						_prog.setVisible(true);
+						_prog.setPreferredSize(new Dimension(400,23));
+					}
+					_prog.setValue(value);	
+				} else {
+					_prog.setVisible(false);					
+					_prog.setPreferredSize(new Dimension(0,23));
+				}				
 			}
 		});
 
