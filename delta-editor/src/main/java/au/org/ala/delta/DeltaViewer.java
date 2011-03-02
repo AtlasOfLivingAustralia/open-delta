@@ -77,7 +77,7 @@ public class DeltaViewer extends SingleFrameApplication {
 	
 	@Override
 	protected void startup() {
-		//super("DELTA - DEscription Language for TAxonomy (prototype)");
+	
 		JFrame frame = getMainFrame();
 		frame.setIconImage(IconHelper.createDeltaImageIcon().getImage());
 	
@@ -113,7 +113,8 @@ public class DeltaViewer extends SingleFrameApplication {
 
 		JMenuBar menuBar = new JMenuBar();
 
-		JMenu mnuFile = new JMenu("File");
+		JMenu mnuFile = new JMenu();
+		mnuFile.setName("FileMenu");
 		mnuFile.setMnemonic('f');
 
 		JMenuItem mnuFileOpen = new JMenuItem("Open Dataset...");
