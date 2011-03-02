@@ -62,7 +62,7 @@ public class DeltaViewer extends SingleFrameApplication {
 	private JDesktopPane _desktop;
 	private StatusBar _statusBar;
 
-	// Yuk.
+	// Yuk
 	private DeltaDataSetRepository _dataSetRepository;
 	
 	private SaveAction _saveAction;
