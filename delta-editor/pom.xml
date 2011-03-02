@@ -25,7 +25,7 @@
 			<resource>
 				<directory>src/main/resources</directory>
 				<excludes>
-				    <exclude>i18n/**</exclude>
+					<exclude>i18n/**</exclude>
 				</excludes>
 			</resource>
 		</resources>
@@ -87,20 +87,28 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>native2ascii-maven-plugin</artifactId>
+				<dependencies>
+					<dependency>
+						<groupId>com.sun</groupId>
+						<artifactId>tools</artifactId>
+						<version>1.5.0</version>
+						<scope>system</scope>
+						<systemPath>${java.home}/../lib/tools.jar</systemPath>
+					</dependency>
+				</dependencies>
 				<executions>
 					<execution>
 						<goals>
 							<goal>native2ascii</goal>
 						</goals>
-						<!-- specific configurations -->
-						<configuration>
-							<encoding>UTF8</encoding>
-							<src>${basedir}/src/main/resources/i18n</src>
-							<includes>**/*</includes>
-							<dest>${project.build.directory}/classes</dest>
-						</configuration>
 					</execution>
 				</executions>
+				<configuration>
+					<encoding>UTF8</encoding>
+					<src>${basedir}/src/main/resources/i18n</src>
+					<includes>**/*</includes>
+					<dest>${project.build.directory}/classes</dest>
+				</configuration>
 
 			</plugin>
 		</plugins>
