@@ -78,19 +78,26 @@ public class VOItemDesc extends VOImageHolderDesc implements INameHolder {
 		_slotFile.seek(_slotHdrPtr + fixedSizeOffs);
 		short diskFixedSize = _slotFile.readShort();
 
-		assert diskFixedSize == ItemFixedData.SIZE;
 		_dataOffs = SlotFile.SlotHeader.SIZE + diskFixedSize;
 
 		_slotFile.seek(_slotHdrPtr + SlotFile.SlotHeader.SIZE);
 
 		_fixedData = new ItemFixedData();
-		_fixedData.read(_slotFile);
-
+		if (diskFixedSize < ItemFixedData.SIZE) {
+			_fixedData.legacyRead(_slotFile);
+		}
+		else {
+			_fixedData.read(_slotFile);
+		}
+		
 		// Logger.debug("ItemDesc: UniId=%d nBlocks=%d, itemFlags=%x, attribEnd=%d, nImages=%d",
 		// _fixedData.UniId, _fixedData.nBlocks, _fixedData.itemFlags,
 		// _fixedData.attribEnd, _fixedData.nImages);
 
-		if (_fixedData.attribEnd == 0 && _fixedData.nBlocks > 0) {
+		// For old data sets, the Fixed Data portion of an item is shorter (50 bytes) than the newer
+		// format (59 bytes) - this corresponds to attribEnd, nImages itemFlags.  Hence we need to correct
+		// these values.
+		if ((_fixedData.attribEnd == 0) && _fixedData.nBlocks > 0) {
 			_fixedData.attribEnd = getDataSize();
 		}
 
@@ -514,7 +521,7 @@ public class VOItemDesc extends VOImageHolderDesc implements INameHolder {
 	public class ItemFixedData extends FixedData {
 
 		public static final int SIZE = FixedData.SIZE + 2 + 4 + 4 + 4 + 1;
-
+		
 		public ItemFixedData() {
 			super("Item Desc");
 			this.TypeID = VODescFactory.VOItemDesc_TypeId;
@@ -534,6 +541,13 @@ public class VOItemDesc extends VOImageHolderDesc implements INameHolder {
 			attribEnd = file.readInt();
 			nImages = file.readInt();
 			itemFlags = file.readByte();
+		}
+		
+		// To support older DELTA files that did not have attribEnd, nImages or itemFlags fields.
+		public void legacyRead(BinFile file) {
+			super.read(file);
+			fixedSize = file.readShort();
+			nBlocks = file.readInt();
 		}
 
 		@Override
