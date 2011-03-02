@@ -31,6 +31,7 @@ public class AboutBox extends JDialog {
 		super(owner, "About Delta", true);
 		
 		this.setMinimumSize(new Dimension(500, 200));
+		this.setResizable(false);
 		
 		JPanel topPanel = new JPanel();
 				
