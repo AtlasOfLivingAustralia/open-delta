@@ -337,10 +337,8 @@ public class VODeltaMasterDesc extends VONoteDesc {
 		}
 
 		@Override
-		public void write(BinFile f) {
-			System.out.println(f.tell());
+		public void write(BinFile f) {		
 			super.write(f);
-			System.out.println(f.tell());
 			f.writeShort(fixedSize);
 			f.writeShort(majorVersion);
 			f.writeShort(minorVersion);
