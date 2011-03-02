@@ -21,6 +21,15 @@
 		<url>http://code.google.com/p/open-delta/</url>
 	</scm>
 	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<excludes>
+				    <exclude>i18n/**</exclude>
+				</excludes>
+			</resource>
+		</resources>
+
 		<plugins>
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
@@ -29,7 +38,7 @@
 						<manifest>
 							<mainClass>au.org.ala.delta.DeltaViewer</mainClass>
 						</manifest>
-						<manifestEntries>	
+						<manifestEntries>
 							<Implementation-Version>${project.version} (${buildNumber})</Implementation-Version>
 						</manifestEntries>
 					</archive>
@@ -75,6 +84,25 @@
 				</configuration>
 			</plugin>
 
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>native2ascii-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>native2ascii</goal>
+						</goals>
+						<!-- specific configurations -->
+						<configuration>
+							<encoding>UTF8</encoding>
+							<src>${basedir}/src/main/resources/i18n</src>
+							<includes>**/*</includes>
+							<dest>${project.build.directory}/classes</dest>
+						</configuration>
+					</execution>
+				</executions>
+
+			</plugin>
 		</plugins>
 	</build>
 
