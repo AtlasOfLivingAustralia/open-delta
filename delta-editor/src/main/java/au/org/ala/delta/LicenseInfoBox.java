@@ -80,7 +80,7 @@ public class LicenseInfoBox extends JDialog {
 				licenseText.append("\n");
 			}
 		} catch (Exception ex) {
-			
+			Logger.log("Error while reading Mozilla License text from resource file: %s", ex.getMessage());
 		}
 		
 		return licenseText.toString();
