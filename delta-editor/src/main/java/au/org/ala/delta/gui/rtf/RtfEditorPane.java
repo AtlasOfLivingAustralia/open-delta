@@ -15,7 +15,7 @@
 
 package au.org.ala.delta.gui.rtf;
 
-import java.io.ByteArrayOutputStream;
+import java.io.StringWriter;
 
 import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
@@ -48,10 +48,10 @@ public class RtfEditorPane extends JTextPane {
 		String rtfText = null;
 		Document doc = getDocument();
 		SimpleRtfEditorKit kit = new SimpleRtfEditorKit();			
-		ByteArrayOutputStream bos = new ByteArrayOutputStream(doc.getLength());
+		StringWriter writer = new StringWriter();
 		try {
-			kit.write(bos, doc, 0, doc.getLength());
-			rtfText = new String(bos.toByteArray()).trim();
+			kit.writeBody(writer, doc, 0, doc.getLength());
+			rtfText = writer.toString();
 			
 		} catch (Exception ex) {
 			ex.printStackTrace();

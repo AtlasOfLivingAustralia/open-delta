@@ -17,6 +17,8 @@ import org.junit.Test;
  */
 public class SimpleRtfEditorKitTest extends TestCase {
 	
+	private static final String WRITER_HEADER_TEXT = "{\\rtf\\ansi\\deff0{\\fonttbl{\\f0\\froman Tms Rmn;}}\\pard\\plain ";
+	
 	@Test public void testReadSimpleDocument() throws Exception {
 		SimpleRtfEditorKit editorKit = new SimpleRtfEditorKit();
 		
@@ -31,7 +33,7 @@ public class SimpleRtfEditorKitTest extends TestCase {
 		bout.flush();
 		String documentAsString = new String(bout.toByteArray());
 		
-		assertEquals("This is plain text.\n", documentAsString);
+		assertEquals(WRITER_HEADER_TEXT+"This is plain text.\n"+"}", documentAsString);
 		
 	}
 	
@@ -70,14 +72,17 @@ public class SimpleRtfEditorKitTest extends TestCase {
 		
 		// The order in which the attributes are processed and hence emitted is not deterministic
 		// so the assertions are more fiddly...
-		assertEquals("\\super", documentAsString.substring(0, 6));
-		assertEquals(" This is plain text. ", documentAsString.substring(6, 27));
-		assertTrue(documentAsString.substring(27, 38).contains("\\b"));
-		assertTrue(documentAsString.substring(27, 38).contains("\\i"));
-		assertTrue(documentAsString.substring(27, 38).contains("\\super0"));
-		assertEquals(" This is bold italic", documentAsString.substring(38, 58));
-		assertTrue(documentAsString.substring(58, documentAsString.length()).contains("\\i0"));
-		assertTrue(documentAsString.substring(58, documentAsString.length()).contains("\\b0"));
+		int offset = 0;
+		assertEquals(WRITER_HEADER_TEXT, documentAsString.substring(offset, WRITER_HEADER_TEXT.length()));
+		offset += WRITER_HEADER_TEXT.length();
+		assertEquals("\\super", documentAsString.substring(offset, offset+6));
+		assertEquals(" This is plain text. ", documentAsString.substring(offset+6, offset+27));
+		assertTrue(documentAsString.substring(offset+27, offset+38).contains("\\b"));
+		assertTrue(documentAsString.substring(offset+27, offset+38).contains("\\i"));
+		assertTrue(documentAsString.substring(offset+27, offset+38).contains("\\super0"));
+		assertEquals(" This is bold italic", documentAsString.substring(offset+38, offset+58));
+		assertTrue(documentAsString.substring(offset+58, documentAsString.length()).contains("\\i0"));
+		assertTrue(documentAsString.substring(offset+58, documentAsString.length()).contains("\\b0"));
 	}
 	
 	public void testUnicode() throws Exception {
@@ -93,7 +98,7 @@ public class SimpleRtfEditorKitTest extends TestCase {
 		bout.flush();
 		String documentAsString = new String(bout.toByteArray());
 
-		assertEquals("This is \\u2222? text.\n", documentAsString);
+		assertEquals(WRITER_HEADER_TEXT+"This is \\u2222? text.\n"+"}", documentAsString);
 		
 		
 	}

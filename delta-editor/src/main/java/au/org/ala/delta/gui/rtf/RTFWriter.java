@@ -1,15 +1,13 @@
 package au.org.ala.delta.gui.rtf;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.util.Enumeration;
+import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Element;
-import javax.swing.text.MutableAttributeSet;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
@@ -19,17 +17,31 @@ import javax.swing.text.StyledDocument;
  */
 public class RTFWriter {
 
-	/** The output stream we are writing to */
-	private OutputStream _outputStream;
+	private static final String HEADER_TEXT = "{\\rtf\\ansi\\deff0{\\fonttbl{\\f0\\froman Tms Rmn;}}\\pard\\plain ";
+	private static final String TRAILING_TEXT = "}";
 	
+	/** The output stream we are writing to */
+	private Writer _writer;
+	
+	/** The Document we are building */
 	private StyledDocument _document;
+	
+	/** Whether or not to write the RTF header - default is true */
+	private boolean _writeRtfHeader;
+	
+	
 	
 	/** Handles for RTF attributes */
 	private Map<Object, AttributeHandler> _attributeHandlers = new HashMap<Object, AttributeHandler>();
 	
-	public RTFWriter(OutputStream outputStream, StyledDocument document) {
-		_outputStream = outputStream;
+	public RTFWriter(Writer Writer, StyledDocument document) {
+		this(Writer, document, true);
+	}
+	
+	public RTFWriter(Writer Writer, StyledDocument document, boolean writeRtfHeader) {
+		_writer = Writer;
 		_document = document;
+		_writeRtfHeader = writeRtfHeader;
 		
 		configureAttributeHandlers();
 	}
@@ -47,12 +59,12 @@ public class RTFWriter {
 	 * Knows how to convert an RTF character attribute into a StyledDocument attribute.
 	 */
 	public class AttributeHandler {
-		private byte[] _rtfKeyword;
+		private String _rtfKeyword;
 		private Object _documentAttribute;
 		private Boolean _currentState;
 		public AttributeHandler(Object documentAttribute, String rtfKeyword) {
 			_documentAttribute = documentAttribute;
-			_rtfKeyword = ("\\"+rtfKeyword).getBytes();
+			_rtfKeyword = "\\"+rtfKeyword;
 			_currentState = false;
 		}
 		
@@ -63,9 +75,9 @@ public class RTFWriter {
 				attributeValue = Boolean.FALSE;
 			}
 			if (_currentState != attributeValue) {
-				_outputStream.write(_rtfKeyword);
+				_writer.write(_rtfKeyword);
 				if (Boolean.FALSE.equals(attributeValue)) {
-					_outputStream.write('0');
+					_writer.write('0');
 				}
 				_currentState = attributeValue.booleanValue();
 				handled = true;
@@ -75,15 +87,25 @@ public class RTFWriter {
 	}
 	
 	/**
-	 * Writes the contents of the StyledDocument to the OutputStream.
+	 * Writes the contents of the StyledDocument to the Writer.
 	 */
 	public void write() throws IOException, BadLocationException {
 		
+		// TODO derive the font for the header from the document.
+		if (_writeRtfHeader) {
+			_writer.write(HEADER_TEXT);
+		}
 		Element docRoot = _document.getDefaultRootElement();
 		
 		writeElement(docRoot);
 		
 		closeOpenAttributes();
+		
+		if (_writeRtfHeader) {
+			_writer.write(TRAILING_TEXT);
+		}
+		
+		_writer.flush();
 	}
 	
 	private void closeOpenAttributes() throws IOException {
@@ -102,7 +124,7 @@ public class RTFWriter {
 		
 		if (element.isLeaf()) {
 			String plainText = _document.getText(element.getStartOffset(), element.getEndOffset()-element.getStartOffset());
-			_outputStream.write(plainText.getBytes());
+			_writer.write(plainText);
 		}
 		else  {
 			for (int i=0; i<element.getElementCount(); i++) {
@@ -123,7 +145,7 @@ public class RTFWriter {
 		
 		if (changed) {
 			// write a trailing space after the control characters.
-			_outputStream.write(' ');
+			_writer.write(' ');
 		}
 		
 	}

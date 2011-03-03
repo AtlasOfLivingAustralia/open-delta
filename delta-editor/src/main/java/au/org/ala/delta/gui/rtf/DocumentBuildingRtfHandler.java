@@ -65,7 +65,10 @@ public class DocumentBuildingRtfHandler extends RTFHandlerAdapter {
 	private char _previousChar;
 	@Override
 	public void onTextCharacter(char ch) {
-		
+
+		if (ch == 0) {
+			return;
+		}
 		if (ch > 0xFF) {
 			insertUnicodeCodePoint(ch);
 		}
@@ -77,6 +80,7 @@ public class DocumentBuildingRtfHandler extends RTFHandlerAdapter {
 					_textBuffer.append('\n');
 				}
 				_textBuffer.append(ch);
+				System.out.println(Integer.toString((int)ch));
 			}
 		}
 		_previousChar = ch;
