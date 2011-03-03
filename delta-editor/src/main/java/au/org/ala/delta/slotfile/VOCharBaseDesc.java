@@ -348,7 +348,7 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 		public static final int SIZE = FixedData.SIZE + 2 + 4 + 4 + 4 + 1 + 4 + 4 + 4 + 4 + 4 + 4;
 
 		public CharBaseFixedData() {
-			super("Character Base");
+			super("Char Base");
 			this.TypeID = VODescFactory.VOCharBaseDesc_TypeId;
 			this.fixedSize = SIZE;
 		}
