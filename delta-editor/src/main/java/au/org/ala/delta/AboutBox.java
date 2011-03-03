@@ -31,6 +31,9 @@ import javax.swing.text.StyleConstants;
 import au.org.ala.delta.gui.util.IconHelper;
 import java.awt.FlowLayout;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.EtchedBorder;
+import javax.swing.border.MatteBorder;
+import javax.swing.UIManager;
 
 public class AboutBox extends JDialog {
 
@@ -120,6 +123,7 @@ public class AboutBox extends JDialog {
 		pnlRightButton.add(btnOK, BorderLayout.CENTER);
 		
 		JPanel pnlBottom = new JPanel();
+		pnlBottom.setBorder(new MatteBorder(1, 0, 0, 0, (Color) UIManager.getColor("Button.darkShadow")));
 		pnlBottom.setLayout(new BorderLayout(0, 0));
 		pnlBottom.add(pnlLeftButton, BorderLayout.WEST);
 		pnlBottom.add(pnlRightButton, BorderLayout.EAST);
