@@ -332,7 +332,6 @@ public abstract class VOAnyDesc {
 		}
 		
 		dataSeek(_dataPtr);
-		System.out.println("about to write "+buf.length+" bytes @ "+_slotFile.tell()+" into "+_slotFile.getFileName());
 		_slotFile.swrite(buf);
 		_dataPtr += buf.length;
 		_dataPtr = _slotFile.tell() - (_slotHdrPtr + _dataOffs);
