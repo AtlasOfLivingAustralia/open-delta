@@ -34,18 +34,17 @@ public class LicenseInfoBox extends JDialog {
 		topLabel.setFont(new Font(topLabel.getFont().getName(), topLabel.getFont().getStyle(), 14));
 		topLabel.setBorder(BorderFactory.createEmptyBorder(20,0,20,0));
 
-		JPanel topPanel = new JPanel();
-		topPanel.add(topLabel, BorderLayout.CENTER);
+		JPanel pnlTop = new JPanel();
+		pnlTop.add(topLabel, BorderLayout.CENTER);
 		
 		JTextArea textArea = new JTextArea(loadLicenseText());
-		textArea.setEnabled(false);
-		textArea.setDisabledTextColor(Color.BLACK);
+		textArea.setEditable(false);
 		
 		JScrollPane scrollPane = new JScrollPane(textArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED); 
 		
 		
-		JButton okButton = new JButton("OK");
-		okButton.addActionListener(new ActionListener() {
+		JButton btnOK = new JButton("OK");
+		btnOK.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -54,15 +53,15 @@ public class LicenseInfoBox extends JDialog {
 			
 		});
 		
-		JPanel bottomPanel = new JPanel();
-		bottomPanel.setLayout(new BoxLayout(bottomPanel, BoxLayout.PAGE_AXIS));
-		okButton.setAlignmentX(RIGHT_ALIGNMENT);
-		bottomPanel.add(okButton, BorderLayout.WEST);
-		bottomPanel.setBorder(BorderFactory.createEmptyBorder(20,0,20,20));
+		JPanel pnlBottom = new JPanel();
+		pnlBottom.setLayout(new BoxLayout(pnlBottom, BoxLayout.PAGE_AXIS));
+		btnOK.setAlignmentX(RIGHT_ALIGNMENT);
+		pnlBottom.add(btnOK, BorderLayout.WEST);
+		pnlBottom.setBorder(BorderFactory.createEmptyBorder(20,0,20,20));
 		
-		this.add(topPanel, BorderLayout.NORTH);
-		this.add(scrollPane, BorderLayout.CENTER);
-		this.add(bottomPanel, BorderLayout.SOUTH);
+		getContentPane().add(pnlTop, BorderLayout.NORTH);
+		getContentPane().add(scrollPane, BorderLayout.CENTER);
+		getContentPane().add(pnlBottom, BorderLayout.SOUTH);
 		
 		//center the dialog on screen
 		this.setLocationRelativeTo(owner);

@@ -1,3 +1,4 @@
+
 package au.org.ala.delta;
 
 import java.awt.BorderLayout;
@@ -9,6 +10,12 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
@@ -22,10 +29,14 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 
 import au.org.ala.delta.gui.util.IconHelper;
+import java.awt.FlowLayout;
+import javax.swing.border.EmptyBorder;
 
 public class AboutBox extends JDialog {
 
 	private static final long serialVersionUID = 1L;
+	
+	private static final int BYTES_IN_MEGABTYE = 1048576;
 	 
 	public AboutBox(Frame owner) {
 		super(owner, "About Delta", true);
@@ -33,22 +44,23 @@ public class AboutBox extends JDialog {
 		this.setMinimumSize(new Dimension(500, 200));
 		this.setResizable(false);
 		
-		JPanel topPanel = new JPanel();
+		JPanel pnlTop = new JPanel();
+		pnlTop.setBackground(Color.WHITE);
 				
 		String topText = "<html><center>" +
 				"Delta Editor<br>" +
 				"Version " + getVersionFromManifest() +
 				"</center></html>";
 		
-		JLabel topTextLabel = new JLabel(topText);
-		topTextLabel.setFont(new Font(topTextLabel.getFont().getName(), topTextLabel.getFont().getStyle(), 16));
+		JLabel lblTopText = new JLabel(topText);
+		lblTopText.setFont(new Font(lblTopText.getFont().getName(), lblTopText.getFont().getStyle(), 16));
 		
 		Icon deltaIcon = IconHelper.createLargeIcon();
-		JLabel iconLabel = new JLabel(deltaIcon);
-		iconLabel.setBorder(BorderFactory.createEmptyBorder(0,0,0,20));
+		JLabel lblIcon = new JLabel(deltaIcon);
+		lblIcon.setBorder(BorderFactory.createEmptyBorder(0,0,0,20));
 		
-		topPanel.add(iconLabel, BorderLayout.EAST);
-		topPanel.add(topTextLabel, BorderLayout.CENTER);
+		pnlTop.add(lblIcon, BorderLayout.EAST);
+		pnlTop.add(lblTopText, BorderLayout.CENTER);
 		
 
 		String middleText = "<html><center>" +
@@ -57,14 +69,15 @@ public class AboutBox extends JDialog {
 			"Copyright Atlas of Living Australia 2011<br>" +
 			"</center></html>";
 		
-		JLabel middleTextLabel = new JLabel(middleText);
-		middleTextLabel.setFont(new Font(middleTextLabel.getFont().getName(), middleTextLabel.getFont().getStyle(), 16));
+		JLabel lblMiddleText = new JLabel(middleText);
+		lblMiddleText.setFont(new Font(lblMiddleText.getFont().getName(), lblMiddleText.getFont().getStyle(), 16));
 		
-		JPanel middlePanel = new JPanel();
-		middlePanel.add(middleTextLabel, BorderLayout.CENTER);
+		JPanel pnlMiddle = new JPanel();
+		pnlMiddle.setBackground(Color.WHITE);
+		pnlMiddle.add(lblMiddleText, BorderLayout.CENTER);
 		
-		JButton okButton = new JButton("OK");
-		okButton.addActionListener(new ActionListener() {
+		JButton btnOK = new JButton("OK");
+		btnOK.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -73,8 +86,8 @@ public class AboutBox extends JDialog {
 			
 		});
 		
-		JButton licenseButton = new JButton("License Details");
-		licenseButton.addActionListener(new ActionListener() {
+		JButton btnLicenseDetails = new JButton("License Details");
+		btnLicenseDetails.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -84,33 +97,37 @@ public class AboutBox extends JDialog {
 			
 		});
 		
-		JButton copyVersionButton = new JButton("Copy Version Info To Clipboard");
-		copyVersionButton.addActionListener(new ActionListener() {
+		JButton btnViewSysInfo = new JButton("View System Information");
+		btnViewSysInfo.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				copyVersionInfoToClipboard();
+				SystemInfoBox sysInfoBox = new SystemInfoBox(AboutBox.this, generateSystemInfo());
+				sysInfoBox.setVisible(true);
 			}
 			
 		});
 		
-		JPanel leftButtonPanel = new JPanel();
-		JPanel rightButtonPanel = new JPanel();
+		JPanel pnlLeftButton = new JPanel();
+		FlowLayout fl_pnlLeftButton = (FlowLayout) pnlLeftButton.getLayout();
+		fl_pnlLeftButton.setAlignment(FlowLayout.LEFT);
+		JPanel pnlRightButton = new JPanel();
 		
-		leftButtonPanel.add(licenseButton, BorderLayout.EAST);
-		leftButtonPanel.add(copyVersionButton, BorderLayout.WEST);
-		leftButtonPanel.setBorder(BorderFactory.createEmptyBorder(0,0,0,20));
+		pnlLeftButton.add(btnLicenseDetails, BorderLayout.EAST);
+		pnlLeftButton.add(btnViewSysInfo, BorderLayout.WEST);
+		pnlLeftButton.setBorder(new EmptyBorder(0, 0, 0, 0));
 		
-		rightButtonPanel.add(okButton, BorderLayout.CENTER);
+		pnlRightButton.add(btnOK, BorderLayout.CENTER);
 		
-		JPanel bottomPanel = new JPanel();
-		bottomPanel.add(leftButtonPanel, BorderLayout.EAST);
-		bottomPanel.add(rightButtonPanel, BorderLayout.WEST);
+		JPanel pnlBottom = new JPanel();
+		pnlBottom.setLayout(new BorderLayout(0, 0));
+		pnlBottom.add(pnlLeftButton, BorderLayout.WEST);
+		pnlBottom.add(pnlRightButton, BorderLayout.EAST);
 
 		
-		this.add(topPanel, BorderLayout.NORTH);
-		this.add(middlePanel, BorderLayout.CENTER);
-		this.add(bottomPanel, BorderLayout.SOUTH);
+		getContentPane().add(pnlTop, BorderLayout.NORTH);
+		getContentPane().add(pnlMiddle, BorderLayout.CENTER);
+		getContentPane().add(pnlBottom, BorderLayout.SOUTH);
 		
 		//center the dialog on screen
 		this.setLocationRelativeTo(owner);
@@ -122,10 +139,32 @@ public class AboutBox extends JDialog {
 		return versionString;
 	}
 	
-	private void copyVersionInfoToClipboard() {
+	private String generateSystemInfo() {
+		
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss zzzz");
+		Calendar cal = Calendar.getInstance();
+		Date currentTime = cal.getTime();
+		
+		//Free, max and total memory should be written out in megabytes
+		long freeMemory = Runtime.getRuntime().freeMemory() / BYTES_IN_MEGABTYE;
+		long maxMemory = Runtime.getRuntime().maxMemory() / BYTES_IN_MEGABTYE;
+		long totalMemory = Runtime.getRuntime().totalMemory() / BYTES_IN_MEGABTYE;
+		
 		StringBuilder versionInfo = new StringBuilder();
 		versionInfo.append("Delta Editor " + getVersionFromManifest());
 		versionInfo.append("\n");
+		versionInfo.append("date: ");
+		versionInfo.append(df.format(currentTime));
+		versionInfo.append("\n");
+		versionInfo.append("free memory: ");
+		versionInfo.append(freeMemory);
+		versionInfo.append(" MB \n");
+		versionInfo.append("total memory: ");
+		versionInfo.append(totalMemory);
+		versionInfo.append(" MB \n");
+		versionInfo.append("max memory: ");
+		versionInfo.append(maxMemory);
+		versionInfo.append(" MB\n");
 		versionInfo.append("java.version: ");
 		versionInfo.append(System.getProperty("java.version"));
 		versionInfo.append("\n");
@@ -147,8 +186,6 @@ public class AboutBox extends JDialog {
 		versionInfo.append("user.region: ");
 		versionInfo.append(System.getProperty("user.region"));
 		
-		StringSelection selection = new StringSelection(versionInfo.toString());
-		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(selection, null);
-		
+		return versionInfo.toString();
 	}
 }
