@@ -93,7 +93,7 @@ public class SimpleRtfEditorKitTest extends TestCase {
 		bout.flush();
 		String documentAsString = new String(bout.toByteArray());
 
-		assertEquals("This is \\u2222 text.\n", documentAsString);
+		assertEquals("This is \\u2222? text.\n", documentAsString);
 		
 		
 	}
