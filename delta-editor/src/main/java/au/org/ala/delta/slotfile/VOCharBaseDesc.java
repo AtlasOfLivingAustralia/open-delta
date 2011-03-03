@@ -36,8 +36,6 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 		_slotFile.seek(_slotHdrPtr + fixedSizeOffs);
 		short diskFixedSize = _slotFile.readShort();
 
-		assert diskFixedSize == CharBaseFixedData.SIZE;
-
 		_dataOffs = SlotFile.SlotHeader.SIZE + diskFixedSize;
 		_slotFile.seek(_slotHdrPtr + SlotFile.SlotHeader.SIZE);
 		_fixedData = new CharBaseFixedData();
@@ -383,7 +381,10 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 			codedImplicit = file.readInt();
 			nControlling = file.readInt();
 			nControls = file.readInt();
-			nImages = file.readInt();
+			if (fixedSize == SIZE) {
+				nImages = file.readInt();
+			}
+			
 		}
 
 		@Override
