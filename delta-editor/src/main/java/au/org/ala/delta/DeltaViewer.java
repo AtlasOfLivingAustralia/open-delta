@@ -71,7 +71,7 @@ public class DeltaViewer extends SingleFrameApplication {
 	private HelpController _helpController;
 	
 	
-	public static void main(String[] args) {		
+	public static void main(String[] args) {
 		launch(DeltaViewer.class, args);
 	}
 	
@@ -114,12 +114,12 @@ public class DeltaViewer extends SingleFrameApplication {
 		JMenuBar menuBar = new JMenuBar();
 
 		JMenu mnuFile = new JMenu();
-		mnuFile.setName("FileMenu");
-		mnuFile.setMnemonic('f');
+		mnuFile.setName("mnuFile");
 
-		JMenuItem mnuFileOpen = new JMenuItem("Open Dataset...");
-		mnuFileOpen.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, ActionEvent.CTRL_MASK));
-		mnuFileOpen.addActionListener(new ActionListener() {
+		JMenuItem mnuItFileOpen = new JMenuItem();
+		mnuItFileOpen.setName("mnuItFileOpen");
+		mnuItFileOpen.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, ActionEvent.CTRL_MASK));
+		mnuItFileOpen.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -127,15 +127,18 @@ public class DeltaViewer extends SingleFrameApplication {
 			}
 		});
 		
-		JMenuItem mnuFileSave = new JMenuItem("Save Dataset");
+		JMenuItem mnuItFileSave = new JMenuItem();
+		mnuItFileSave.setName("mnuItFileSave");
 		
-		mnuFileSave.setAction(_saveAction);
+		mnuItFileSave.setAction(_saveAction);
 		
-		JMenuItem mnuFileSaveAs = new JMenuItem("Save Dataset As...");
-		mnuFileSaveAs.setAction(_saveAsAction);
+		JMenuItem mnuItFileSaveAs = new JMenuItem();
+		mnuItFileSaveAs.setName("mnuItFileSaveAs");
+		mnuItFileSaveAs.setAction(_saveAsAction);
 
-		JMenuItem mnuFileExit = new JMenuItem("Exit");
-		mnuFileExit.addActionListener(new ActionListener() {
+		JMenuItem mnuItFileExit = new JMenuItem();
+		mnuItFileExit.setName("mnuItFileExit");
+		mnuItFileExit.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -143,19 +146,20 @@ public class DeltaViewer extends SingleFrameApplication {
 			}
 		});
 
-		mnuFile.add(mnuFileOpen);
+		mnuFile.add(mnuItFileOpen);
 		mnuFile.addSeparator();
-		mnuFile.add(mnuFileSave);
-		mnuFile.add(mnuFileSaveAs);
+		mnuFile.add(mnuItFileSave);
+		mnuFile.add(mnuItFileSaveAs);
 		mnuFile.addSeparator();
-		mnuFile.add(mnuFileExit);
+		mnuFile.add(mnuItFileExit);
 		menuBar.add(mnuFile);
 
-		JMenu mnuView = new JMenu("View");
-		mnuView.setMnemonic('v');
+		JMenu mnuView = new JMenu();
+		mnuView.setName("mnuView");
 
-		JMenuItem mnuGrid = new JMenuItem("New Grid view");
-		mnuGrid.addActionListener(new ActionListener() {
+		JMenuItem mnuItGrid = new JMenuItem();
+		mnuItGrid.setName("mnuItGrid");
+		mnuItGrid.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -167,10 +171,11 @@ public class DeltaViewer extends SingleFrameApplication {
 			}
 		});
 
-		mnuView.add(mnuGrid);
+		mnuView.add(mnuItGrid);
 
-		JMenuItem mnuTree = new JMenuItem("New Tree view");
-		mnuTree.addActionListener(new ActionListener() {
+		JMenuItem mnuItTree = new JMenuItem();
+		mnuItTree.setName("mnuItTree");
+		mnuItTree.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -181,18 +186,20 @@ public class DeltaViewer extends SingleFrameApplication {
 			}
 		});
 
-		mnuView.add(mnuTree);
+		mnuView.add(mnuItTree);
 
 		menuBar.add(mnuView);
 
-		JMenu mnuWindow = new JMenu("Window");
-		mnuWindow.setMnemonic('w');
-		JMenuItem mnuTile = new JMenuItem(new TileAction(_desktop));
-		mnuWindow.add(mnuTile);
+		JMenu mnuWindow = new JMenu();
+		mnuWindow.setName("mnuWindow");
+		JMenuItem mnuItTile = new JMenuItem(new TileAction(_desktop));
+		mnuItTile.setName("mnuItTile");
+		mnuWindow.add(mnuItTile);
 
 		mnuWindow.addSeparator();
 
-		JMenu mnuLF = new JMenu("Look & feel");
+		JMenu mnuLF = new JMenu();
+		mnuLF.setName("mnuLF");
 		mnuWindow.add(mnuLF);
 		
 		mnuLF.add(new JMenuItem(new LookAndFeelAction(getMainFrame(), new MetalLookAndFeel())));
@@ -213,19 +220,23 @@ public class DeltaViewer extends SingleFrameApplication {
 		}
 		menuBar.add(mnuWindow);
 		
-		JMenu mnuHelp = new JMenu("Help");
-		JMenuItem mnuHelpContents = new JMenuItem("Contents...");
-		mnuHelp.add(mnuHelpContents);
-		mnuHelpContents.addActionListener(_helpController.helpAction());
+		JMenu mnuHelp = new JMenu();
+		mnuHelp.setName("mnuHelp");
+		JMenuItem mnuItHelpContents = new JMenuItem();
+		mnuItHelpContents.setName("mnuItHelpContents");
+		mnuHelp.add(mnuItHelpContents);
+		mnuItHelpContents.addActionListener(_helpController.helpAction());
 		
-		JMenuItem helpOnSelection = new JMenuItem("Select Component", IconHelper.createImageIcon("help_cursor.png"));
+		JMenuItem mnuItHelpOnSelection = new JMenuItem(IconHelper.createImageIcon("help_cursor.png"));
+		mnuItHelpOnSelection.setName("mnuItHelpOnSelection");
 		
-		helpOnSelection.addActionListener(_helpController.helpOnSelectionAction());
-		mnuHelp.add(helpOnSelection);
+		mnuItHelpOnSelection.addActionListener(_helpController.helpOnSelectionAction());
+		mnuHelp.add(mnuItHelpOnSelection);
 
 		
-		JMenuItem mnuAbout = new JMenuItem("About...");
-		mnuAbout.addActionListener(new ActionListener() {
+		JMenuItem mnuItAbout = new JMenuItem();
+		mnuItAbout.setName("mnuItAbout");
+		mnuItAbout.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -234,7 +245,7 @@ public class DeltaViewer extends SingleFrameApplication {
 			
 		});
 		mnuHelp.addSeparator();
-		mnuHelp.add(mnuAbout);
+		mnuHelp.add(mnuItAbout);
 		
 		menuBar.add(mnuHelp);
 		
