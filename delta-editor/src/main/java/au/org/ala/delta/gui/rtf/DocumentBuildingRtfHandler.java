@@ -65,17 +65,26 @@ public class DocumentBuildingRtfHandler extends RTFHandlerAdapter {
 	private char _previousChar;
 	@Override
 	public void onTextCharacter(char ch) {
-		// Convert \r to \n as the editor pane ignores \r.  Not sure what is 
-		// happening to the \n's... they don't seem to be coming through.
-		if (ch != '\r' ) {
-			if (_previousChar == '\r' && ch != '\n') {
-				_textBuffer.append('\n');
+		
+		if (ch > 0xFF) {
+			insertUnicodeCodePoint(ch);
+		}
+		else {
+			// Convert \r to \n as the editor pane ignores \r.  Not sure what is 
+			// happening to the \n's... they don't seem to be coming through.
+			if (ch != '\r' ) {
+				if (_previousChar == '\r' && ch != '\n') {
+					_textBuffer.append('\n');
+				}
+				_textBuffer.append(ch);
 			}
-			_textBuffer.append(ch);
 		}
 		_previousChar = ch;
 	}
 	
+	private void insertUnicodeCodePoint(char ch) {
+		_textBuffer.append("\\u").append(Integer.toString(ch));
+	}
 	
 	@Override
 	public void endParse() {

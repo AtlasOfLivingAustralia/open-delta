@@ -3,6 +3,7 @@ package au.org.ala.delta.gui.rtf;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.io.StringReader;
 
 import javax.swing.text.DefaultStyledDocument;
 
@@ -77,5 +78,23 @@ public class SimpleRtfEditorKitTest extends TestCase {
 		assertEquals(" This is bold italic", documentAsString.substring(38, 58));
 		assertTrue(documentAsString.substring(58, documentAsString.length()).contains("\\i0"));
 		assertTrue(documentAsString.substring(58, documentAsString.length()).contains("\\b0"));
+	}
+	
+	public void testUnicode() throws Exception {
+		String rtf = "{\\rtf\\ansi\\deff0{\\fonttbl{\\f0\\froman Tms Rmn;}}\\pard\\plain This is \\u2222? text.}";
+		StringReader reader = new StringReader(rtf);
+		SimpleRtfEditorKit editorKit = new SimpleRtfEditorKit();
+		DefaultStyledDocument doc = new DefaultStyledDocument();
+		editorKit.read(reader, doc, 0);
+		
+		ByteArrayOutputStream bout = new ByteArrayOutputStream();
+		editorKit.write(bout, doc, 0, doc.getLength());
+		
+		bout.flush();
+		String documentAsString = new String(bout.toByteArray());
+
+		assertEquals("This is \\u2222 text.\n", documentAsString);
+		
+		
 	}
 }
