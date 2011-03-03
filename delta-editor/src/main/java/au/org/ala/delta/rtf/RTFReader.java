@@ -158,7 +158,24 @@ public class RTFReader {
 		translateKeyword(keyword.toString(), param, hasParam);		
 	}
 	
-	private void translateKeyword(String keyword, int param, boolean hasParam) {
+	/**
+	 * This method is to allow SpecialKeyword to read data from the input stream.
+	 * @return the next value from the stream being parsed.
+	 * @throws IOException if there is an error reading from the stream.
+	 */
+	int read() throws IOException {
+		return _stream.read();
+	}
+	
+	/**
+	 * This method is to allow SpecialKeyword access to the parser state.
+	 * @return the current state of the reader.
+	 */
+	ParserState currentState() {
+		return _parserState;
+	}
+	
+	private void translateKeyword(String keyword, int param, boolean hasParam) throws IOException {
 
 		if (Keyword.KEYWORDS.containsKey(keyword)) {
 			Keyword kwd = Keyword.KEYWORDS.get(keyword);
@@ -186,6 +203,12 @@ public class RTFReader {
 						List<AttributeValue> values =new ArrayList<AttributeValue>();
 						values.add(val);
 						_handler.onCharacterAttributeChange(values);
+					}
+					break;
+				case Special:
+					char[] output = ((SpecialKeyword)kwd).process(param, this);
+					for (char ch : output) {
+						parseChar(ch);
 					}
 					break;
 				default:					
