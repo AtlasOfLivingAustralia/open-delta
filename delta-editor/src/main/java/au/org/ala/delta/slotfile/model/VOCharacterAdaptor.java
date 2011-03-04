@@ -62,7 +62,9 @@ public class VOCharacterAdaptor implements CharacterData {
 
 	@Override
 	public int getNumberOfStates() {
-		return _charDesc.getNStates();
+		// Trying to read past the number of states actually used yields an error
+		return _charDesc.getNStatesUsed();
+		// return _charDesc.getNStates();
 	}
 
 	

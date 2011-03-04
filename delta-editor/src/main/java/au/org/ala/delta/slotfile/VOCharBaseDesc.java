@@ -294,7 +294,7 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 	}
 
 	public int uniIdFromStateNo(int stateNo) {
-		if (stateNo < 0 || stateNo > _fixedData.nStatesUsed) {
+		if (stateNo <= 0 || stateNo > _fixedData.nStatesUsed) {
 			return STATEID_NULL;
 		}
 		return _stateNumberMappingVector.get(stateNo - 1);

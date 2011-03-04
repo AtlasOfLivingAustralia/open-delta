@@ -80,7 +80,6 @@ public class DocumentBuildingRtfHandler extends RTFHandlerAdapter {
 					_textBuffer.append('\n');
 				}
 				_textBuffer.append(ch);
-				System.out.println(Integer.toString((int)ch));
 			}
 		}
 		_previousChar = ch;

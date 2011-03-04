@@ -118,7 +118,15 @@ public class Utils {
 			} while (RTFnext[0] < (int) text.length());
 		}
 
-		String str = new String(wideBuf);
+		StringBuilder b = new StringBuilder();
+		for (char ch : wideBuf) {
+			if (ch ==0) {
+				break;	// simulate null terminated
+			}
+			b.append(ch);
+		}
+		String str = b.toString();
+		
 		try {
 			return str.getBytes("UTF-8");
 		} catch (UnsupportedEncodingException ex) {
@@ -334,11 +342,11 @@ public class Utils {
 						result = 0xad;
 						endPos[0] = cmdStart + 1;
 					} else if (ch == '\'' && cmdStart + 2 < endPos[0]) {
-						char[] buff = new char[3];
+						char[] buff = new char[2];
 						buff[0] = RTFString.charAt(cmdStart + 1);
 						buff[1] = RTFString.charAt(cmdStart + 2);
-						buff[2] = 0;
-						result = (char) Integer.parseInt(new String(buff));
+											
+						result = (char) Integer.parseInt(new String(buff), 16);
 						endPos[0] = cmdStart + 1 + 2;
 					} else {
 						result = ch;

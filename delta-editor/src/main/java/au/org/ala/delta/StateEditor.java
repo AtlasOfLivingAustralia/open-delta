@@ -177,6 +177,8 @@ public class StateEditor extends JPanel implements ValidationListener {
 
 	class StateRenderer extends DefaultListCellRenderer {
 
+		private static final long serialVersionUID = 1L;
+		
 		private JCheckBox stateRenderer = new JCheckBox();
 
 		/*
@@ -224,7 +226,7 @@ class StateListModel extends AbstractListModel {
 
 	@Override
 	public Object getElementAt(int index) {
-		return String.format("%d. %s", index + 1, _character.getState(index+1));
+		return _character.getState(index+1);
 	}
 
 }
