@@ -41,17 +41,39 @@ import javax.swing.UIManager;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Resource;
+import org.jdesktop.application.ResourceMap;
 
 public class AboutBox extends JDialog {
 
 	private static final long serialVersionUID = 1L;
 	
-	private static final int BYTES_IN_MEGABTYE = 1048576;
+	@Resource 
+	String windowTitle;
+	
+	@Resource
+	String applicationTitle;
+	
+	@Resource
+	String versionString;
+	
+	@Resource
+	String attributionLine1;
+	
+	@Resource
+	String attributionLine2;
+	
+	@Resource
+	String copyrightString;
 	 
 	public AboutBox(Frame owner) {
-		super(owner, "About Delta", true);
+		super(owner, true);
 		
 		ActionMap actionMap = Application.getInstance().getContext().getActionMap(this);
+		ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(AboutBox.class);
+		resourceMap.injectFields(this);
+		
+		this.setTitle(windowTitle);
 		
 		this.setMinimumSize(new Dimension(500, 200));
 		this.setResizable(false);
@@ -59,12 +81,14 @@ public class AboutBox extends JDialog {
 		JPanel pnlTop = new JPanel();
 		pnlTop.setBackground(Color.WHITE);
 				
-		String topText = "<html><center>" +
-				"Delta Editor<br>" +
-				"Version " + getVersionFromManifest() +
-				"</center></html>";
+		StringBuilder topTextBuilder = new StringBuilder();
+		topTextBuilder.append("<html><center>");
+		topTextBuilder.append(applicationTitle);
+		topTextBuilder.append("<br>");
+		topTextBuilder.append(String.format(versionString, getVersionFromManifest()));
+		topTextBuilder.append("</center></html>");		
 		
-		JLabel lblTopText = new JLabel(topText);
+		JLabel lblTopText = new JLabel(topTextBuilder.toString());
 		lblTopText.setFont(new Font(lblTopText.getFont().getName(), lblTopText.getFont().getStyle(), 16));
 		
 		Icon deltaIcon = IconHelper.createLargeIcon();
@@ -74,14 +98,20 @@ public class AboutBox extends JDialog {
 		pnlTop.add(lblIcon, BorderLayout.EAST);
 		pnlTop.add(lblTopText, BorderLayout.CENTER);
 		
+		StringBuilder middleTextBuilder = new StringBuilder();
+		middleTextBuilder.append("<html><center>");
+		middleTextBuilder.append("<p>");
+		middleTextBuilder.append(attributionLine1);
+		middleTextBuilder.append("</p>");
+		middleTextBuilder.append("<p>");
+		middleTextBuilder.append(copyrightString);
+		middleTextBuilder.append("</p>");
+		middleTextBuilder.append("<br>");
+		middleTextBuilder.append(attributionLine2);
 
-		String middleText = "<html><center>" +
-			"Part of the Open Delta Suite<br>" +
-			"Based on work by M.J. Dallwitz, T.A. Paine and E.J. Zurcher<br>" +
-			"Copyright Atlas of Living Australia 2011<br>" +
-			"</center></html>";
+		middleTextBuilder.append("</center></html>");
 		
-		JLabel lblMiddleText = new JLabel(middleText);
+		JLabel lblMiddleText = new JLabel(middleTextBuilder.toString());
 		lblMiddleText.setFont(new Font(lblMiddleText.getFont().getName(), lblMiddleText.getFont().getStyle(), 16));
 		
 		JPanel pnlMiddle = new JPanel();
@@ -136,61 +166,11 @@ public class AboutBox extends JDialog {
 
 	@Action
 	public void showSystemInfo() {
-		SystemInfoBox sysInfoBox = new SystemInfoBox(this, generateSystemInfo());
+		SystemInfoBox sysInfoBox = new SystemInfoBox(this);
 		sysInfoBox.setVisible(true);
 	}
 
 	private String getVersionFromManifest() {
 		return Utils.getVersionFromManifest();
-	}
-	
-	private String generateSystemInfo() {
-		
-		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss zzzz");
-		Calendar cal = Calendar.getInstance();
-		Date currentTime = cal.getTime();
-		
-		//Free, max and total memory should be written out in megabytes
-		long freeMemory = Runtime.getRuntime().freeMemory() / BYTES_IN_MEGABTYE;
-		long maxMemory = Runtime.getRuntime().maxMemory() / BYTES_IN_MEGABTYE;
-		long totalMemory = Runtime.getRuntime().totalMemory() / BYTES_IN_MEGABTYE;
-		
-		StringBuilder versionInfo = new StringBuilder();
-		versionInfo.append("Delta Editor " + getVersionFromManifest());
-		versionInfo.append("\n");
-		versionInfo.append("date: ");
-		versionInfo.append(df.format(currentTime));
-		versionInfo.append("\n");
-		versionInfo.append("free memory: ");
-		versionInfo.append(freeMemory);
-		versionInfo.append(" MB \n");
-		versionInfo.append("total memory: ");
-		versionInfo.append(totalMemory);
-		versionInfo.append(" MB \n");
-		versionInfo.append("max memory: ");
-		versionInfo.append(maxMemory);
-		versionInfo.append(" MB\n");
-		versionInfo.append("java.version: ");
-		versionInfo.append(System.getProperty("java.version"));
-		versionInfo.append("\n");
-		versionInfo.append("java.vendor: ");
-		versionInfo.append(System.getProperty("java.vendor"));
-		versionInfo.append("\n");
-		versionInfo.append("os.name: ");
-		versionInfo.append(System.getProperty("os.name"));
-		versionInfo.append("\n");
-		versionInfo.append("os.arch: ");
-		versionInfo.append(System.getProperty("os.arch"));
-		versionInfo.append("\n");
-		versionInfo.append("os.version: ");
-		versionInfo.append(System.getProperty("os.version"));
-		versionInfo.append("\n");
-		versionInfo.append("user.language: ");
-		versionInfo.append(System.getProperty("user.language"));
-		versionInfo.append("\n");
-		versionInfo.append("user.region: ");
-		versionInfo.append(System.getProperty("user.region"));
-		
-		return versionInfo.toString();
 	}
 }

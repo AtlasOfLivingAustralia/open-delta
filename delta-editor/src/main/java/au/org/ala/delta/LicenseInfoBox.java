@@ -10,6 +10,7 @@ import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
+import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -20,17 +21,41 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 
+import org.jdesktop.application.Action;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.Resource;
+import org.jdesktop.application.ResourceMap;
+
 public class LicenseInfoBox extends JDialog {
+	
+	@Resource
+	String windowTitle;
+	
+	@Resource
+	String licenseAttribution;
+	
+	@Resource
+	String sourceCodeLocation;
 
 	public LicenseInfoBox(Dialog owner) {
-		super(owner, "License Information",  true);
+		super(owner, true);
+		
+		ActionMap actionMap = Application.getInstance().getContext().getActionMap(this);
+		ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(AboutBox.class);
+		resourceMap.injectFields(this);
+		
+		this.setTitle(windowTitle);
 		
 		this.setMinimumSize(new Dimension(800, 800));
 		
-		String labelText = "<html><center>This software is made available under Version 1.1 of the Mozilla Public License<br>" +
-			"Source code can be downloaded from: http://code.google.com/p/open-delta</center></html>";
+		StringBuilder labelTextBuilder = new StringBuilder();
+		labelTextBuilder.append("<html><center>");
+		labelTextBuilder.append(licenseAttribution);
+		labelTextBuilder.append("<br>");
+		labelTextBuilder.append(sourceCodeLocation);
+		labelTextBuilder.append("</center></html>");
 		
-		JLabel topLabel = new JLabel(labelText);
+		JLabel topLabel = new JLabel(labelTextBuilder.toString());
 		topLabel.setFont(new Font(topLabel.getFont().getName(), topLabel.getFont().getStyle(), 14));
 		topLabel.setBorder(BorderFactory.createEmptyBorder(20,0,20,0));
 
@@ -43,15 +68,8 @@ public class LicenseInfoBox extends JDialog {
 		JScrollPane scrollPane = new JScrollPane(textArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED); 
 		
 		
-		JButton btnOK = new JButton("OK");
-		btnOK.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				LicenseInfoBox.this.dispose();
-			}
-			
-		});
+		JButton btnOK = new JButton();
+		btnOK.setAction(actionMap.get("closeLicenseInfoBox"));
 		
 		JPanel pnlBottom = new JPanel();
 		pnlBottom.setLayout(new BoxLayout(pnlBottom, BoxLayout.PAGE_AXIS));
@@ -83,5 +101,10 @@ public class LicenseInfoBox extends JDialog {
 		}
 		
 		return licenseText.toString();
+	}
+	
+	@Action
+	public void closeLicenseInfoBox() {
+		this.dispose();
 	}
 }

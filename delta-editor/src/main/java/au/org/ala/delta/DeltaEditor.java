@@ -166,18 +166,25 @@ public class DeltaEditor extends SingleFrameApplication {
 		mnuLF.setName("mnuLF");
 		mnuWindow.add(mnuLF);
 		
-		mnuLF.add(new JMenuItem(new LookAndFeelAction(getMainFrame(), new MetalLookAndFeel())));
+		JMenuItem mnuItMetalLF = new JMenuItem(new LookAndFeelAction(getMainFrame(), new MetalLookAndFeel()));
+		mnuItMetalLF.setName("mnuItMetalLF");
+		mnuLF.add(mnuItMetalLF);
+		
 		try {
 			Class c = Class.forName(UIManager.getSystemLookAndFeelClassName());
 			LookAndFeel sysLaf = (LookAndFeel) c.newInstance();
-			mnuLF.add(new JMenuItem(new LookAndFeelAction(getMainFrame(), sysLaf)));
+			JMenuItem mnuItWindowsLF = new JMenuItem(new LookAndFeelAction(getMainFrame(), sysLaf));
+			mnuItWindowsLF.setName("mnuItWindowsLF");
+			mnuLF.add(mnuItWindowsLF);
 		} catch (Exception ex) {
-			
+			// do nothing
 		}
 		try {
 			// Nimbus L&F was added in update java 6 update 10.
 			LookAndFeel nimbusLaF = (LookAndFeel) Class.forName("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel").newInstance(); 
-			mnuLF.add(new JMenuItem(new LookAndFeelAction(getMainFrame(), nimbusLaF)));
+			JMenuItem mnuItNimbusLF = new JMenuItem(new LookAndFeelAction(getMainFrame(), nimbusLaF));
+			mnuItNimbusLF.setName("mnuItNimbusLF");
+			mnuLF.add(mnuItNimbusLF);
 		}
 		catch (Exception e) {
 			// The Nimbus L&F is not available, no matter.

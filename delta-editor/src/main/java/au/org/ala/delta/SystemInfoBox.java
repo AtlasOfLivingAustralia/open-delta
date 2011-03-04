@@ -1,36 +1,46 @@
 package au.org.ala.delta;
 
+import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Toolkit;
-
-import javax.swing.JDialog;
-import javax.swing.JScrollPane;
-import java.awt.BorderLayout;
-import javax.swing.BoxLayout;
-import javax.swing.JPanel;
-import javax.swing.JButton;
-import java.awt.Component;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 
+import javax.swing.ActionMap;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.border.EmptyBorder;
+
+import org.jdesktop.application.Action;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.Resource;
+import org.jdesktop.application.ResourceMap;
+
+import au.org.ala.delta.util.Utils;
 
 public class SystemInfoBox extends JDialog {
 
 	private String configDetails;
-	public SystemInfoBox(Dialog owner, String configDetails) {
+	
+	@Resource
+	String windowTitle;
+	
+	public SystemInfoBox(Dialog owner) {
 		super(owner, true);
 		
-		this.configDetails = configDetails;
+		ActionMap actionMap = Application.getInstance().getContext().getActionMap(this);
+		ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(AboutBox.class);
+		resourceMap.injectFields(this);
 		
-		setTitle("System Information");
+		this.configDetails = Utils.generateSystemInfo();
+		
+		setTitle(windowTitle);
 		this.setMinimumSize(new Dimension(800, 400));
 		
 		getContentPane().setLayout(new BorderLayout(0, 0));
@@ -40,28 +50,14 @@ public class SystemInfoBox extends JDialog {
 		getContentPane().add(pnlButton, BorderLayout.SOUTH);
 		pnlButton.setLayout(new BorderLayout(0, 0));
 		
-		JButton btnCopyToClipboard = new JButton("Copy to clipboard");
+		JButton btnCopyToClipboard = new JButton();
+		btnCopyToClipboard.setAction(actionMap.get("copySystemInfoToClipboard"));
 		pnlButton.add(btnCopyToClipboard, BorderLayout.WEST);
 		
-		btnCopyToClipboard.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				copyToClipboard();
-			}
-		});
-		
-		JButton btnOK = new JButton("OK");
+		JButton btnOK = new JButton();
+		btnOK.setAction(actionMap.get("closeSystemInfoBox"));
 		btnOK.setAlignmentX(Component.RIGHT_ALIGNMENT);
 		pnlButton.add(btnOK, BorderLayout.EAST);
-		
-		btnOK.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				SystemInfoBox.this.dispose();
-			}
-		});
 		
 		JScrollPane scrollPane = new JScrollPane();
 		getContentPane().add(scrollPane, BorderLayout.CENTER);
@@ -75,9 +71,15 @@ public class SystemInfoBox extends JDialog {
 		this.setLocationRelativeTo(owner);
 	}
 	
-	private void copyToClipboard() {
+	@Action
+	public void copySystemInfoToClipboard() {
 		StringSelection selection = new StringSelection(this.configDetails);
 		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(selection, null);
+	}
+	
+	@Action
+	public void closeSystemInfoBox() {
+		this.dispose();
 	}
 	
 }

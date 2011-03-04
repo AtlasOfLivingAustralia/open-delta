@@ -17,7 +17,11 @@ package au.org.ala.delta.util;
 import java.awt.Dimension;
 import java.awt.Window;
 import java.io.UnsupportedEncodingException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 import javax.swing.JFrame;
 
@@ -423,5 +427,57 @@ public class Utils {
 	public static String getVersionFromManifest() {
 		String versionString = Utils.class.getPackage().getImplementationVersion();
 		return versionString;
+	}
+	
+	private static final int BYTES_IN_MEGABTYE = 1048576;
+	
+	public static String generateSystemInfo() {
+		
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss zzzz", Locale.ENGLISH);
+		Calendar cal = Calendar.getInstance();
+		Date currentTime = cal.getTime();
+		
+		//Free, max and total memory should be written out in megabytes
+		long freeMemory = Runtime.getRuntime().freeMemory() / BYTES_IN_MEGABTYE;
+		long maxMemory = Runtime.getRuntime().maxMemory() / BYTES_IN_MEGABTYE;
+		long totalMemory = Runtime.getRuntime().totalMemory() / BYTES_IN_MEGABTYE;
+		
+		StringBuilder versionInfo = new StringBuilder();
+		versionInfo.append("Delta Editor " + getVersionFromManifest());
+		versionInfo.append("\n");
+		versionInfo.append("date: ");
+		versionInfo.append(df.format(currentTime));
+		versionInfo.append("\n");
+		versionInfo.append("free memory: ");
+		versionInfo.append(freeMemory);
+		versionInfo.append(" MB \n");
+		versionInfo.append("total memory: ");
+		versionInfo.append(totalMemory);
+		versionInfo.append(" MB \n");
+		versionInfo.append("max memory: ");
+		versionInfo.append(maxMemory);
+		versionInfo.append(" MB\n");
+		versionInfo.append("java.version: ");
+		versionInfo.append(System.getProperty("java.version"));
+		versionInfo.append("\n");
+		versionInfo.append("java.vendor: ");
+		versionInfo.append(System.getProperty("java.vendor"));
+		versionInfo.append("\n");
+		versionInfo.append("os.name: ");
+		versionInfo.append(System.getProperty("os.name"));
+		versionInfo.append("\n");
+		versionInfo.append("os.arch: ");
+		versionInfo.append(System.getProperty("os.arch"));
+		versionInfo.append("\n");
+		versionInfo.append("os.version: ");
+		versionInfo.append(System.getProperty("os.version"));
+		versionInfo.append("\n");
+		versionInfo.append("user.language: ");
+		versionInfo.append(System.getProperty("user.language"));
+		versionInfo.append("\n");
+		versionInfo.append("user.region: ");
+		versionInfo.append(System.getProperty("user.region"));
+		
+		return versionInfo.toString();
 	}
 }
