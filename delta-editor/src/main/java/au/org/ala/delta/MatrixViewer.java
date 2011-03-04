@@ -43,6 +43,10 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
+import org.jdesktop.application.Application;
+import org.jdesktop.application.Resource;
+import org.jdesktop.application.ResourceMap;
+
 import au.org.ala.delta.gui.EditorDataModel;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Item;
@@ -56,9 +60,18 @@ public class MatrixViewer extends JInternalFrame implements IContextHolder {
 	private JTable _fixedColumns;
 	private MatrixTableModel _model;
 	private StateEditor _stateEditor;
+	
+	@Resource
+	String windowTitle;
 
 	public MatrixViewer(EditorDataModel dataSet) {
-		super("Matrix Viewer - " + dataSet.getName());
+		super();
+		
+		ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(AboutBox.class);
+		resourceMap.injectFields(this);
+		
+		this.setTitle(String.format(windowTitle, dataSet.getName()));
+		
 		_dataSet = dataSet;
 		_model = new MatrixTableModel(dataSet);
 
@@ -270,8 +283,13 @@ class MyCellRenderer extends JTextArea implements TableCellRenderer {
 class ItemColumnModel implements TableModel {
 
 	private DeltaDataSet _dataSet;
+	
+	@Resource
+	String columnName;
 
 	public ItemColumnModel(DeltaDataSet dataSet) {
+		ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(AboutBox.class);
+		resourceMap.injectFields(this);
 		_dataSet = dataSet;
 	}
 
@@ -282,7 +300,7 @@ class ItemColumnModel implements TableModel {
 
 	@Override
 	public String getColumnName(int column) {
-		return "Item description";
+		return columnName;
 	}
 
 	@Override

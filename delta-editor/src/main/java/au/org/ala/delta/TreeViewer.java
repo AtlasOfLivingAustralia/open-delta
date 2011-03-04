@@ -37,6 +37,10 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeSelectionModel;
 
+import org.jdesktop.application.Application;
+import org.jdesktop.application.Resource;
+import org.jdesktop.application.ResourceMap;
+
 import au.org.ala.delta.gui.EditorDataModel;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
@@ -55,9 +59,18 @@ public class TreeViewer extends JInternalFrame implements IContextHolder {
 
 	private EditorDataModel _dataModel;
 	private StateEditor _stateEditor;
+	
+	@Resource
+	String windowTitle;
 
 	public TreeViewer(EditorDataModel dataModel) {
-		super("Tree Viewer - " + dataModel.getName());
+		super();
+		
+		ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(AboutBox.class);
+		resourceMap.injectFields(this);
+		
+		this.setTitle(String.format(windowTitle, dataModel.getName()));
+		
 		this.setSize(new Dimension(500, 400));
 
 		_dataModel = dataModel;

@@ -20,11 +20,12 @@ import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
 import java.io.File;
-import java.util.Locale;
 
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
@@ -45,6 +46,9 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
 import org.jdesktop.application.Action;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.Resource;
+import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.SingleFrameApplication;
 
 import au.org.ala.delta.editor.controller.HelpController;
@@ -69,6 +73,12 @@ public class DeltaEditor extends SingleFrameApplication {
 	
 	private HelpController _helpController;
 	
+	@Resource 
+	String windowTitleWithoutFilename;
+	
+	@Resource 
+	String windowTitleWithFilename;
+	
 	
 	public static void main(String[] args) {
 		launch(DeltaEditor.class, args);
@@ -81,6 +91,9 @@ public class DeltaEditor extends SingleFrameApplication {
 	@Override
 	protected void startup() {
 		_saveEnabled = false;
+		
+		ResourceMap resourceMap = getContext().getResourceMap(AboutBox.class);
+		resourceMap.injectFields(this);
 	
 		JFrame frame = getMainFrame();
 		frame.setIconImage(IconHelper.createDeltaImageIcon().getImage());
@@ -242,13 +255,17 @@ public class DeltaEditor extends SingleFrameApplication {
 	}
 
 	private void newMatrix(EditorDataModel dataSet) {
+		getMainFrame().setTitle(String.format(windowTitleWithFilename, dataSet.getName()));
 		MatrixViewer matrixViewer = new MatrixViewer(dataSet);
+		matrixViewer.addFocusListener(new viewerFocusListener(this, dataSet));
 		_helpController.setHelpKeyForComponent(matrixViewer, HelpController.GRID_VIEW_HELP_KEY);
 		addToDesktop(matrixViewer);
 	}
 
 	private void newTree(EditorDataModel dataSet) {
+		getMainFrame().setTitle(String.format(windowTitleWithFilename, dataSet.getName()));
 		TreeViewer treeViewer = new TreeViewer(dataSet);
+		treeViewer.addFocusListener(new viewerFocusListener(this, dataSet));
 		_helpController.setHelpKeyForComponent(treeViewer, HelpController.TREE_VIEW_HELP_KEY);
 		addToDesktop(treeViewer);
 	}
@@ -370,6 +387,14 @@ public class DeltaEditor extends SingleFrameApplication {
 		}
 	}
 	
+	public void viewerFocusLost(EditorDataModel dataSet) {
+		getMainFrame().setTitle(String.format(windowTitleWithoutFilename, dataSet.getName()));
+	}
+	
+	public void viewFocusGained(EditorDataModel dataSet) {
+		getMainFrame().setTitle(String.format(windowTitleWithFilename, dataSet.getName()));
+	}
+	
 	@Action
 	public void loadFile() {
 		
@@ -454,6 +479,27 @@ class LookAndFeelAction extends AbstractAction {
 			System.err.println(ex);
 		}
 
+	}
+	
+}
+
+class viewerFocusListener implements FocusListener {
+
+	DeltaEditor _deltaEditor;
+	EditorDataModel _dataSet;
+	
+	public viewerFocusListener(DeltaEditor deltaEditor, EditorDataModel dataSet) {
+		_dataSet = dataSet;
+	}
+	
+	@Override
+	public void focusGained(FocusEvent e) {
+		_deltaEditor.viewFocusGained(_dataSet);
+	}
+
+	@Override
+	public void focusLost(FocusEvent e) {
+		_deltaEditor.viewerFocusLost(_dataSet);
 	}
 	
 }
