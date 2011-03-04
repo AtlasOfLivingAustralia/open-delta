@@ -36,7 +36,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>au.org.ala.delta.DeltaViewer</mainClass>
+							<mainClass>au.org.ala.delta.DeltaEditor</mainClass>
 						</manifest>
 						<manifestEntries>
 							<Implementation-Version>${project.version} (${buildNumber})</Implementation-Version>
