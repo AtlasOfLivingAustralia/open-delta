@@ -411,5 +411,9 @@ public class Utils {
 		return tmp.trim();
 		
 	}
-
+	
+	public static String getVersionFromManifest() {
+		String versionString = Utils.class.getPackage().getImplementationVersion();
+		return versionString;
+	}
 }

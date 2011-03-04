@@ -17,6 +17,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JButton;
@@ -29,11 +30,17 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 
 import au.org.ala.delta.gui.util.IconHelper;
+import au.org.ala.delta.util.Utils;
+
 import java.awt.FlowLayout;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.MatteBorder;
 import javax.swing.UIManager;
+
+import org.jdesktop.application.Action;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ApplicationContext;
 
 public class AboutBox extends JDialog {
 
@@ -43,6 +50,8 @@ public class AboutBox extends JDialog {
 	 
 	public AboutBox(Frame owner) {
 		super(owner, "About Delta", true);
+		
+		ActionMap actionMap = Application.getInstance().getContext().getActionMap(this);
 		
 		this.setMinimumSize(new Dimension(500, 200));
 		this.setResizable(false);
@@ -79,37 +88,14 @@ public class AboutBox extends JDialog {
 		pnlMiddle.setBackground(Color.WHITE);
 		pnlMiddle.add(lblMiddleText, BorderLayout.CENTER);
 		
-		JButton btnOK = new JButton("OK");
-		btnOK.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				AboutBox.this.dispose();
-			}
-			
-		});
+		JButton btnOK = new JButton();
+		btnOK.setAction(actionMap.get("closeAboutBox"));
 		
-		JButton btnLicenseDetails = new JButton("License Details");
-		btnLicenseDetails.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				LicenseInfoBox licenseInfoBox = new LicenseInfoBox(AboutBox.this);
-				licenseInfoBox.setVisible(true);
-			}
-			
-		});
+		JButton btnLicenseDetails = new JButton();
+		btnLicenseDetails.setAction(actionMap.get("showLicense"));
 		
-		JButton btnViewSysInfo = new JButton("View System Information");
-		btnViewSysInfo.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				SystemInfoBox sysInfoBox = new SystemInfoBox(AboutBox.this, generateSystemInfo());
-				sysInfoBox.setVisible(true);
-			}
-			
-		});
+		JButton btnViewSysInfo = new JButton();
+		btnViewSysInfo.setAction(actionMap.get("showSystemInfo"));
 		
 		JPanel pnlLeftButton = new JPanel();
 		FlowLayout fl_pnlLeftButton = (FlowLayout) pnlLeftButton.getLayout();
@@ -137,10 +123,25 @@ public class AboutBox extends JDialog {
 		this.setLocationRelativeTo(owner);
 	}
 	
+	@Action
+	public void closeAboutBox() {
+		this.dispose();
+	}
 	
+	@Action
+	public void showLicense() {
+		LicenseInfoBox licenseInfoBox = new LicenseInfoBox(this);
+		licenseInfoBox.setVisible(true);
+	}
+
+	@Action
+	public void showSystemInfo() {
+		SystemInfoBox sysInfoBox = new SystemInfoBox(this, generateSystemInfo());
+		sysInfoBox.setVisible(true);
+	}
+
 	private String getVersionFromManifest() {
-		String versionString = getClass().getPackage().getImplementationVersion();
-		return versionString;
+		return Utils.getVersionFromManifest();
 	}
 	
 	private String generateSystemInfo() {

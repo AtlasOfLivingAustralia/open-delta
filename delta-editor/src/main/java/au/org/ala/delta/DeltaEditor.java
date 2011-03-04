@@ -20,14 +20,14 @@ import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
 import java.io.File;
+import java.util.Locale;
 
 import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
 import javax.swing.JDesktopPane;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -38,13 +38,13 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
-import javax.swing.KeyStroke;
 import javax.swing.LookAndFeel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
+import org.jdesktop.application.Action;
 import org.jdesktop.application.SingleFrameApplication;
 
 import au.org.ala.delta.editor.controller.HelpController;
@@ -55,7 +55,7 @@ import au.org.ala.delta.model.DeltaDataSetRepository;
 import au.org.ala.delta.slotfile.model.SlotFileRepository;
 import au.org.ala.delta.util.IProgressObserver;
 
-public class DeltaViewer extends SingleFrameApplication {
+public class DeltaEditor extends SingleFrameApplication {
 
 	private static final long serialVersionUID = 1L;
 
@@ -65,18 +65,22 @@ public class DeltaViewer extends SingleFrameApplication {
 	// Yuk
 	private DeltaDataSetRepository _dataSetRepository;
 	
-	private SaveAction _saveAction;
-	private SaveAsAction _saveAsAction;
+	private boolean _saveEnabled;
 	
 	private HelpController _helpController;
 	
 	
 	public static void main(String[] args) {
-		launch(DeltaViewer.class, args);
+		launch(DeltaEditor.class, args);
+	}
+	
+	public boolean getSaveEnabled() {
+		return _saveEnabled;
 	}
 	
 	@Override
 	protected void startup() {
+		_saveEnabled = false;
 	
 		JFrame frame = getMainFrame();
 		frame.setIconImage(IconHelper.createDeltaImageIcon().getImage());
@@ -84,8 +88,6 @@ public class DeltaViewer extends SingleFrameApplication {
 		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		
 		_helpController = new HelpController();
-		_saveAction = new SaveAction();
-		_saveAsAction = new SaveAsAction();
 		_dataSetRepository = new SlotFileRepository();
 
 		_desktop = new JDesktopPane();
@@ -110,6 +112,7 @@ public class DeltaViewer extends SingleFrameApplication {
 		return model;
 	}
 	private JMenuBar buildMenus() {
+		ActionMap actionMap = getContext().getActionMap(this);
 
 		JMenuBar menuBar = new JMenuBar();
 
@@ -117,34 +120,16 @@ public class DeltaViewer extends SingleFrameApplication {
 		mnuFile.setName("mnuFile");
 
 		JMenuItem mnuItFileOpen = new JMenuItem();
-		mnuItFileOpen.setName("mnuItFileOpen");
-		mnuItFileOpen.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, ActionEvent.CTRL_MASK));
-		mnuItFileOpen.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				loadFile();
-			}
-		});
+		mnuItFileOpen.setAction(actionMap.get("loadFile"));
 		
 		JMenuItem mnuItFileSave = new JMenuItem();
-		mnuItFileSave.setName("mnuItFileSave");
-		
-		mnuItFileSave.setAction(_saveAction);
+		mnuItFileSave.setAction(actionMap.get("saveFile"));
 		
 		JMenuItem mnuItFileSaveAs = new JMenuItem();
-		mnuItFileSaveAs.setName("mnuItFileSaveAs");
-		mnuItFileSaveAs.setAction(_saveAsAction);
+		mnuItFileSaveAs.setAction(actionMap.get("saveAsFile"));
 
 		JMenuItem mnuItFileExit = new JMenuItem();
-		mnuItFileExit.setName("mnuItFileExit");
-		mnuItFileExit.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				exit();
-			}
-		});
+		mnuItFileExit.setAction(actionMap.get("exitApplication"));
 
 		mnuFile.add(mnuItFileOpen);
 		mnuFile.addSeparator();
@@ -158,33 +143,12 @@ public class DeltaViewer extends SingleFrameApplication {
 		mnuView.setName("mnuView");
 
 		JMenuItem mnuItGrid = new JMenuItem();
-		mnuItGrid.setName("mnuItGrid");
-		mnuItGrid.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				EditorDataModel model = getCurrentDataSet();
-				if (model != null) {
-					newMatrix(model);
-				}
-				
-			}
-		});
+		mnuItGrid.setAction(actionMap.get("newGridView")); 
 
 		mnuView.add(mnuItGrid);
 
 		JMenuItem mnuItTree = new JMenuItem();
-		mnuItTree.setName("mnuItTree");
-		mnuItTree.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				EditorDataModel model = getCurrentDataSet(); 
-				if (model != null) {
-					newTree(model);
-				}
-			}
-		});
+		mnuItTree.setAction(actionMap.get("newTreeView")); 
 
 		mnuView.add(mnuItTree);
 
@@ -192,8 +156,8 @@ public class DeltaViewer extends SingleFrameApplication {
 
 		JMenu mnuWindow = new JMenu();
 		mnuWindow.setName("mnuWindow");
-		JMenuItem mnuItTile = new JMenuItem(new TileAction(_desktop));
-		mnuItTile.setName("mnuItTile");
+		JMenuItem mnuItTile = new JMenuItem();
+		mnuItTile.setAction(actionMap.get("tileFrames"));
 		mnuWindow.add(mnuItTile);
 
 		mnuWindow.addSeparator();
@@ -235,15 +199,8 @@ public class DeltaViewer extends SingleFrameApplication {
 
 		
 		JMenuItem mnuItAbout = new JMenuItem();
-		mnuItAbout.setName("mnuItAbout");
-		mnuItAbout.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				newAboutBox();
-			}
-			
-		});
+		mnuItAbout.setAction(actionMap.get("openAbout"));
+		
 		mnuHelp.addSeparator();
 		mnuHelp.add(mnuItAbout);
 		
@@ -254,14 +211,6 @@ public class DeltaViewer extends SingleFrameApplication {
 
 	private File _lastDirectory = null;
 
-	private void loadFile() {
-		
-		File toOpen = selectFile(true);
-		if (toOpen != null) {
-			loadFile(toOpen);
-		}
-	}
-	
 	private File selectFile(boolean open) {
 		File selectedFile = null;
 		JFileChooser chooser = new JFileChooser();
@@ -297,7 +246,7 @@ public class DeltaViewer extends SingleFrameApplication {
 		addToDesktop(treeViewer);
 	}
 	
-	private void newAboutBox() {
+	private void createAboutBox() {
 		AboutBox aboutBox = new AboutBox(getMainFrame());
 		show(aboutBox);
 	}
@@ -349,8 +298,7 @@ public class DeltaViewer extends SingleFrameApplication {
 					DeltaDataSet dataSet = _dataSetRepository.findByName(file.getAbsolutePath(), _statusBar);
 					EditorDataModel model = new EditorDataModel(dataSet);
 					newMatrix(model);
-					_saveAction.setEnabled(true);
-					_saveAsAction.setEnabled(true);
+					_saveEnabled = true;
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				} finally {
@@ -365,79 +313,8 @@ public class DeltaViewer extends SingleFrameApplication {
 
 	}
 	
-	class SaveAction extends AbstractAction {
-		
-		public SaveAction() {
-			super("Save Dataset");
-			setEnabled(false);
-			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
-			putValue(SHORT_DESCRIPTION, "Saves the changes made to the current data set");
-		}
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			EditorDataModel model = getCurrentDataSet();
-			if (model != null) {
-				_dataSetRepository.save(model.getCurrentDataSet(), null);
-			}
-		}
-	}
-
-	class SaveAsAction extends AbstractAction {
-		
-		public SaveAsAction() {
-			super("Save Dataset As...");
-			setEnabled(false);
-			putValue(SHORT_DESCRIPTION, "Saves the contents of the current data set into a new file");
-		}
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			
-			File newFile = selectFile(false);
-			if (newFile != null) {
-				EditorDataModel model = getCurrentDataSet();
-				if (model != null) {
-					_dataSetRepository.saveAsName(model.getCurrentDataSet(), newFile.getAbsolutePath(), null);
-				}
-			}
-		}
-	}
-}
-
-class LookAndFeelAction extends AbstractAction {
-
-	private static final long serialVersionUID = 1L;
-
-	private LookAndFeel _laf;
-	private Frame _frame;
-
-	public LookAndFeelAction(Frame frame, LookAndFeel laf) {
-		super(laf.getName());
-		_laf = laf;
-		_frame = frame;
-	}
-
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		try {
-			UIManager.setLookAndFeel(_laf);
-			SwingUtilities.updateComponentTreeUI(_frame);
-		} catch (Exception ex) {
-			System.err.println(ex);
-		}
-
-	}
-}
-
-class TileAction extends AbstractAction {
-
-	private JDesktopPane desk; // the desktop to work with
-
-	public TileAction(JDesktopPane desk) {
-		super("Tile Frames");
-		this.desk = desk;
-	}
-
-	public void actionPerformed(ActionEvent ev) {
+	//This could be turned into a utility method
+	private void tileFramesInDesktopPane(JDesktopPane desk) {
 
 		// How many frames do we have?
 		JInternalFrame[] allframes = desk.getAllFrames();
@@ -485,9 +362,94 @@ class TileAction extends AbstractAction {
 			x = 0;
 		}
 	}
+	
+	@Action
+	public void loadFile() {
+		
+		File toOpen = selectFile(true);
+		if (toOpen != null) {
+			loadFile(toOpen);
+		}
+	}
+	
+	@Action(enabledProperty="saveEnabled")
+	public void saveFile() {
+		EditorDataModel model = getCurrentDataSet();
+		if (model != null) {
+			_dataSetRepository.save(model.getCurrentDataSet(), null);
+		}
+	}
+
+	@Action(enabledProperty="saveEnabled")
+	public void saveAsFile() {
+		
+		File newFile = selectFile(false);
+		if (newFile != null) {
+			EditorDataModel model = getCurrentDataSet();
+			if (model != null) {
+				_dataSetRepository.saveAsName(model.getCurrentDataSet(), newFile.getAbsolutePath(), null);
+			}
+		}
+	}
+	
+	@Action
+	public void exitApplication() {
+		exit();
+	}
+	
+	@Action
+	public void newGridView() {
+		EditorDataModel model = getCurrentDataSet();
+		if (model != null) {
+			newMatrix(model);
+		}
+	}
+	
+	@Action
+	public void newTreeView() {
+		EditorDataModel model = getCurrentDataSet(); 
+		if (model != null) {
+			newTree(model);
+		}
+	}
+	
+   @Action
+   public void tileFrames() {
+	   tileFramesInDesktopPane(_desktop);
+   }
+   
+   @Action
+   public void openAbout() {
+	   createAboutBox();
+   }
+	
 }
 
+class LookAndFeelAction extends AbstractAction {
 
+	private static final long serialVersionUID = 1L;
+
+	private LookAndFeel _laf;
+	private Frame _frame;
+
+	public LookAndFeelAction(Frame frame, LookAndFeel laf) {
+		super(laf.getName());
+		_laf = laf;
+		_frame = frame;
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		try {
+			UIManager.setLookAndFeel(_laf);
+			SwingUtilities.updateComponentTreeUI(_frame);
+		} catch (Exception ex) {
+			System.err.println(ex);
+		}
+
+	}
+	
+}
 
 class StatusBar extends JPanel implements IProgressObserver {
 
