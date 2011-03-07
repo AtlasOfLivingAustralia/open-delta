@@ -4,7 +4,7 @@
 	<groupId>au.org.ala.delta</groupId>
 	<artifactId>delta-editor</artifactId>
 	<version>1.0-M1</version>
-	<name>DELTA editor protoptye</name>
+	<name>DELTA Editor</name>
 	<repositories>
 		<repository>
 			<id>maven2-repository.dev.java.net</id>
