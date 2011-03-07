@@ -20,8 +20,6 @@ import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
@@ -42,11 +40,12 @@ import javax.swing.JProgressBar;
 import javax.swing.LookAndFeel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.event.InternalFrameEvent;
+import javax.swing.event.InternalFrameListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
 import org.jdesktop.application.Action;
-import org.jdesktop.application.Application;
 import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.SingleFrameApplication;
@@ -72,6 +71,8 @@ public class DeltaEditor extends SingleFrameApplication {
 	private boolean _saveEnabled;
 	
 	private HelpController _helpController;
+	
+	private int numViewersOpen;
 	
 	@Resource 
 	String windowTitleWithoutFilename;
@@ -257,17 +258,19 @@ public class DeltaEditor extends SingleFrameApplication {
 	private void newMatrix(EditorDataModel dataSet) {
 		getMainFrame().setTitle(String.format(windowTitleWithFilename, dataSet.getName()));
 		MatrixViewer matrixViewer = new MatrixViewer(dataSet);
-		matrixViewer.addFocusListener(new viewerFocusListener(this, dataSet));
+		matrixViewer.addInternalFrameListener(new ViewerFrameListener(dataSet, DeltaEditor.this));
 		_helpController.setHelpKeyForComponent(matrixViewer, HelpController.GRID_VIEW_HELP_KEY);
 		addToDesktop(matrixViewer);
+		viewerOpened();
 	}
 
 	private void newTree(EditorDataModel dataSet) {
 		getMainFrame().setTitle(String.format(windowTitleWithFilename, dataSet.getName()));
 		TreeViewer treeViewer = new TreeViewer(dataSet);
-		treeViewer.addFocusListener(new viewerFocusListener(this, dataSet));
+		treeViewer.addInternalFrameListener(new ViewerFrameListener(dataSet, DeltaEditor.this));
 		_helpController.setHelpKeyForComponent(treeViewer, HelpController.TREE_VIEW_HELP_KEY);
 		addToDesktop(treeViewer);
+		viewerOpened();
 	}
 	
 	private void createAboutBox() {
@@ -387,11 +390,18 @@ public class DeltaEditor extends SingleFrameApplication {
 		}
 	}
 	
-	public void viewerFocusLost(EditorDataModel dataSet) {
-		getMainFrame().setTitle(String.format(windowTitleWithoutFilename, dataSet.getName()));
+	void viewerOpened() {
+		numViewersOpen++;
 	}
 	
-	public void viewFocusGained(EditorDataModel dataSet) {
+	void viewerClosed(EditorDataModel dataSet) {
+		numViewersOpen--;
+		if (numViewersOpen == 0) {
+			getMainFrame().setTitle(windowTitleWithoutFilename);
+		}
+	}
+	
+	void viewerFocusGained(EditorDataModel dataSet) {
 		getMainFrame().setTitle(String.format(windowTitleWithFilename, dataSet.getName()));
 	}
 	
@@ -483,24 +493,43 @@ class LookAndFeelAction extends AbstractAction {
 	
 }
 
-class viewerFocusListener implements FocusListener {
-
-	DeltaEditor _deltaEditor;
+/**
+ * Used to alert the DeltaEditor when grid and matrix views are closed or brought into focus.
+ * @author Chris
+ *
+ */
+class ViewerFrameListener implements InternalFrameListener {
+	
 	EditorDataModel _dataSet;
+	DeltaEditor _deltaEditor;
 	
-	public viewerFocusListener(DeltaEditor deltaEditor, EditorDataModel dataSet) {
+	/**
+	 * ctor
+	 * @param dataSet The data set associated with the viewer
+	 * @param deltaEditor Reference to the instance of DeltaEditor that created the viewer
+	 */
+	public ViewerFrameListener(EditorDataModel dataSet, DeltaEditor deltaEditor) {
 		_dataSet = dataSet;
-	}
-	
-	@Override
-	public void focusGained(FocusEvent e) {
-		_deltaEditor.viewFocusGained(_dataSet);
+		_deltaEditor = deltaEditor;
 	}
 
-	@Override
-	public void focusLost(FocusEvent e) {
-		_deltaEditor.viewerFocusLost(_dataSet);
+	public void internalFrameOpened(InternalFrameEvent e) {}
+
+	public void internalFrameClosing(InternalFrameEvent e) {}
+
+	public void internalFrameClosed(InternalFrameEvent e) {
+		_deltaEditor.viewerClosed(_dataSet);
 	}
+
+	public void internalFrameIconified(InternalFrameEvent e) {}
+
+	public void internalFrameDeiconified(InternalFrameEvent e) {}
+
+	public void internalFrameActivated(InternalFrameEvent e) {
+		_deltaEditor.viewerFocusGained(_dataSet);
+	}
+
+	public void internalFrameDeactivated(InternalFrameEvent e) {}
 	
 }
 
