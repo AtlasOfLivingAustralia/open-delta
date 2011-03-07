@@ -60,7 +60,11 @@ public class DeltaFileReader {
 		CodeTimer t = new CodeTimer("Reading Delta File");
 		
 		DeltaVOP vop = new DeltaVOP(fileName, false);
+		
+		t.stop(true);
+		
 		DeltaDataSet dataSet = new VOPAdaptor(vop);
+		
 		
 		return dataSet;
 	}

@@ -20,15 +20,14 @@ import java.io.RandomAccessFile;
 import java.io.SyncFailedException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.channels.FileChannel;
 
 /**
-//binfile.cpp
-
-//Encapsulate a binary data file similar to TFile
-//but incorporate exception handling.
-//
-//Currently uses low level c function.
-//Could be rewritten to use ansi compatible FILE functions or c++ streams.
+ * //binfile.cpp
+ * 
+ * //Encapsulate a binary data file similar to TFile //but incorporate exception
+ * handling. // //Currently uses low level c function. //Could be rewritten to
+ * use ansi compatible FILE functions or c++ streams.
  * 
  */
 public class BinFile {
@@ -39,10 +38,13 @@ public class BinFile {
 	protected byte[] _buffer;
 	protected int _filePointer;
 
+	protected FileChannel _channel;
+
 	public BinFile() {
 	}
 
 	public BinFile(String filename, BinFileMode mode) {
+
 		if (filename == null) {
 			filename = makeTempFileName();
 			mode = BinFileMode.FM_TEMPORARY;
@@ -52,11 +54,12 @@ public class BinFile {
 	}
 
 	public void write(byte[] data) {
-		try {
-			_file.write(data);
-		} catch (IOException ioex) {
-			throw new RuntimeException(ioex);
-		}
+		// try {
+		// _file.write(data);
+		writeBytes(data);
+		// } catch (IOException ioex) {
+		// throw new RuntimeException(ioex);
+		// }
 	}
 
 	public byte[] read(int length) {
@@ -65,7 +68,8 @@ public class BinFile {
 
 	protected String makeTempFileName() {
 		try {
-			return File.createTempFile("delta_temp_file", ".dlt").getAbsolutePath();
+			return File.createTempFile("delta_temp_file", ".dlt")
+					.getAbsolutePath();
 		} catch (IOException ioex) {
 			throw new RuntimeException(ioex);
 		}
@@ -78,34 +82,37 @@ public class BinFile {
 		try {
 			String ra_mode = "r";
 			switch (mode) {
-				case FM_APPEND:
-				case FM_NEW:
-				case FM_EXISTING:
-				case FM_TEMPORARY:
-					ra_mode = "rw";
-					break;
+			case FM_APPEND:
+			case FM_NEW:
+			case FM_EXISTING:
+			case FM_TEMPORARY:
+				ra_mode = "rw";
+				break;
 			}
 			_file = new RandomAccessFile(f, ra_mode);
+			_channel = _file.getChannel();
 
-			/*if (mode == BinFileMode.FM_READONLY) {
-				CodeTimer t = new CodeTimer("loading file buffer");
-				_file.seek(0);
-				_buffer = new byte[(int) _file.length()];
-				_file.read(_buffer);
-				t.stop(true);
-				_file.seek(0);
-			}*/
+			/*
+			 * if (mode == BinFileMode.FM_READONLY) { CodeTimer t = new
+			 * CodeTimer("loading file buffer"); _file.seek(0); _buffer = new
+			 * byte[(int) _file.length()]; _file.read(_buffer); t.stop(true);
+			 * _file.seek(0); }
+			 */
+
 		} catch (IOException ioex) {
 			throw new RuntimeException(ioex);
 		}
 	}
 
-	
 	public void close() {
-		if (_file != null) {
+		/*
+		 * if (_file != null) { try { _file.close(); _file = null; } catch
+		 * (IOException ioex) { throw new RuntimeException(ioex); } }
+		 */
+		if (_channel != null) {
 			try {
-				_file.close();
-				_file = null;
+				_channel.close();
+				_channel = null;
 			} catch (IOException ioex) {
 				throw new RuntimeException(ioex);
 			}
@@ -122,7 +129,7 @@ public class BinFile {
 	}
 
 	public boolean isOpen() {
-		return _file != null;
+		return _channel != null;
 	}
 
 	public int seek(int offset) {
@@ -130,32 +137,45 @@ public class BinFile {
 		if (_buffer != null) {
 			_filePointer = offset;
 		} else {
-			assert _file != null;
+			assert _channel != null;
 			try {
-				_file.seek(offset);
+				// _file.seek(offset);
+				_channel.position(offset);
 			} catch (IOException ioex) {
 				throw new RuntimeException(ioex);
 			}
 		}
 		return offset;
 	}
-	
+
 	public int seekToEnd() {
-		assert _file != null;
+		assert _channel != null;
 		try {
-			return seek((int)_file.length());
-		}
-		catch (IOException e) {
+			// return seek((int)_file.length());
+			return seek((int) _channel.size());
+		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	public int seekToBegin() {
-		assert _file != null;
-		
+		assert _channel != null;
+
 		return seek(0);
 	}
-	
+
+	public ByteBuffer readByteBuffer(int size) {
+		ByteBuffer bb = ByteBuffer.allocate(size);
+		try {
+			int bytesRead = _channel.read(bb);
+			bb.order(ByteOrder.LITTLE_ENDIAN);
+			bb.position(0);
+			assert bytesRead == size;
+		} catch (IOException ioex) {
+			throw new RuntimeException(ioex);
+		}
+		return bb;
+	}
 
 	public int readBytes(byte[] buffer) {
 		if (_buffer != null) {
@@ -166,7 +186,14 @@ public class BinFile {
 			return buffer.length;
 		} else {
 			try {
-				return _file.read(buffer);
+				ByteBuffer bb = ByteBuffer.allocate(buffer.length);
+				;
+				int bytesRead = _channel.read(bb);
+				bb.position(0);
+				bb.get(buffer, 0, buffer.length);
+				return bytesRead;
+				// return _file.read(buffer);
+
 			} catch (IOException ioex) {
 				throw new RuntimeException(ioex);
 			}
@@ -178,7 +205,8 @@ public class BinFile {
 			return _filePointer;
 		} else {
 			try {
-				return (int) _file.getFilePointer();
+				// return (int) _file.getFilePointer();
+				return (int) _channel.position();
 			} catch (IOException ex) {
 				throw new RuntimeException(ex);
 			}
@@ -189,14 +217,29 @@ public class BinFile {
 		byte[] buffer = new byte[count];
 		int read = readBytes(buffer);
 		if (read < count) {
-			throw new RuntimeException("Incorrect number of bytes read reading " + this.getClass().getSimpleName() + " Expected " + count + " got " + read);
+			throw new RuntimeException(
+					"Incorrect number of bytes read reading "
+							+ this.getClass().getSimpleName() + " Expected "
+							+ count + " got " + read);
 		}
 		return buffer;
 	}
 
 	public void writeBytes(byte[] buffer) {
 		try {
-			_file.write(buffer);
+			ByteBuffer bb = ByteBuffer.allocate(buffer.length);
+			bb.put(buffer);
+			bb.position(0);
+			_channel.write(bb);
+			// _file.write(buffer);
+		} catch (IOException ioex) {
+			throw new RuntimeException(ioex);
+		}
+	}
+
+	private void writeBytes(ByteBuffer buffer) {
+		try {
+			_channel.write(buffer);
 		} catch (IOException ioex) {
 			throw new RuntimeException(ioex);
 		}
@@ -204,7 +247,11 @@ public class BinFile {
 
 	public void writeByte(byte b) {
 		try {
-			_file.write(b);
+			// _file.write(b);
+			ByteBuffer bb = ByteBuffer.allocate(1);
+			bb.put(b);
+			bb.position(0);
+			_channel.write(bb);
 		} catch (IOException ioex) {
 			throw new RuntimeException(ioex);
 		}
@@ -214,7 +261,7 @@ public class BinFile {
 		ByteBuffer buffer = ByteBuffer.allocate(2);
 		buffer.order(ByteOrder.LITTLE_ENDIAN);
 		buffer.putShort(value);
-		writeBytes(buffer.array());
+		writeBytes(buffer);
 	}
 
 	public void write(int i) {
@@ -241,38 +288,35 @@ public class BinFile {
 		ByteBuffer b = ByteBuffer.allocate(4);
 		b.order(ByteOrder.LITTLE_ENDIAN);
 		b.putInt(value);
-		writeBytes(b.array());
+		writeBytes(b);
 	}
 
 	public void writeLong(long value) {
 		ByteBuffer b = ByteBuffer.allocate(8);
 		b.order(ByteOrder.LITTLE_ENDIAN);
 		b.putLong(value);
-		writeBytes(b.array());
-	}
-	
-	protected int read() {
-		if (_buffer != null) {
-			if (_filePointer >= _buffer.length) {
-				return -1;
-			}
-			int result = _buffer[_filePointer];
-			_filePointer++;
-			return result & 0x000000ff;
-		} else {
-			try {
-				return _file.read();
-			} catch (IOException ioex) {
-				throw new RuntimeException(ioex);
-			}
-		}
+		writeBytes(b);
 	}
 
+	/*
+	 * protected int read() { if (_buffer != null) { if (_filePointer >=
+	 * _buffer.length) { return -1; } int result = _buffer[_filePointer];
+	 * _filePointer++; return result & 0x000000ff; } else { try { return
+	 * _file.read(); } catch (IOException ioex) { throw new
+	 * RuntimeException(ioex); } } }
+	 */
+
 	public byte readByte() {
-		int b = read();
-		if (b < 0) {
-			throw new RuntimeException("EOF encountered reading object of type " + this.getClass().getSimpleName());
-		}
+		byte[] buf = new byte[1];
+		readBytes(buf);
+		int b = buf[0];
+
+		// int b = read();
+		/*
+		 * if (b < 0) { throw new
+		 * RuntimeException("EOF encountered reading object of type " +
+		 * this.getClass().getSimpleName()); }
+		 */
 		return (byte) b;
 	}
 
@@ -318,23 +362,25 @@ public class BinFile {
 	}
 
 	public String sread(int size) {
-		byte[] buffer = readBytes(size);
-		return new String(buffer);
+		ByteBuffer bb = readByteBuffer(size);
+		return new String(bb.array());
+//		byte[] buffer = readBytes(size);
+//		return new String(buffer);
 	}
-	
+
 	/**
 	 * Forces the contents of this file to be written to disk.
 	 */
 	public void commit() {
-		
+
 		try {
-			_file.getFD().sync();
-		}
-		catch (SyncFailedException e) {
-			// TODO uhoh, what do we do if the sync fails... (i am not sure why it would)
+			// _file.getFD().sync();
+			_channel.force(false);
+		} catch (SyncFailedException e) {
+			// TODO uhoh, what do we do if the sync fails... (i am not sure why
+			// it would)
 			e.printStackTrace();
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			// TODO mmm file descriptor was null - that is bad.
 			e.printStackTrace();
 		}
@@ -342,17 +388,17 @@ public class BinFile {
 			_fileMode = BinFileMode.FM_EXISTING;
 		}
 	}
-	
+
 	public String getFileName() {
 		return _filename;
 	}
-	
-	public long getFileTime() { 
+
+	public long getFileTime() {
 		File f = new File(_filename);
 		return f.lastModified();
 	}
-	
-	public void setFileTime (long time) { 
+
+	public void setFileTime(long time) {
 		File f = new File(_filename);
 		f.setLastModified(time);
 	}
@@ -360,41 +406,41 @@ public class BinFile {
 	public BinFileMode getFileMode() {
 		return _fileMode;
 	}
-	
+
 	public void copyFile(BinFile other, int dataSize) {
 		// Make sure other is not this.
-		  if(other == this) {
-			  // TODO create a BinFileException
-			  throw new RuntimeException("FE_BAD_COPY : " + _filename);
-		  }
-		  // Copy in blocks.
-		  int blkSize = 1024 * 8; // 8K
-		  int numBlk = dataSize / blkSize;
-		  int rest = dataSize % blkSize;
-		  byte[] buf = new byte[blkSize];
-		  for (int i=0; i<numBlk; i++) {
-		      other.readBytes(buf);
-		      swrite(buf);
-		  }
-		  buf = new byte[rest];
-		  other.readBytes(buf);
-		  swrite(buf);
+		if (other == this) {
+			// TODO create a BinFileException
+			throw new RuntimeException("FE_BAD_COPY : " + _filename);
+		}
+		// Copy in blocks.
+		int blkSize = 1024 * 8; // 8K
+		int numBlk = dataSize / blkSize;
+		int rest = dataSize % blkSize;
+		byte[] buf = new byte[blkSize];
+		for (int i = 0; i < numBlk; i++) {
+			other.readBytes(buf);
+			swrite(buf);
+		}
+		buf = new byte[rest];
+		other.readBytes(buf);
+		swrite(buf);
 	}
-	
+
 	public void setLength(int newLength) {
 		try {
-			_file.setLength(newLength);
-		}
-		catch (IOException e) {
+			// _file.setLength(newLength);
+			_channel.truncate(newLength);
+		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	public int getLength() {
 		try {
-			return (int)_file.length();
-		}
-		catch (IOException e) {
+			// return (int)_file.length();
+			return (int) _channel.size();
+		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 	}

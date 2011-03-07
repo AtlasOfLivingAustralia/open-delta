@@ -14,6 +14,7 @@
  ******************************************************************************/
 package au.org.ala.delta.slotfile;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -105,9 +106,15 @@ public class VOItemDesc extends VOImageHolderDesc implements INameHolder {
 		dataSeek(mapStart);
 
 		_attrOffset = mapStart + (_fixedData.nBlocks * 8);
+		
+		ByteBuffer b = _slotFile.readByteBuffer(_fixedData.nBlocks * (4 + 4));
+		
 		for (int i = 0; i < _fixedData.nBlocks; ++i) {
-			int uid = _slotFile.readInt();
-			int attr = _slotFile.readInt();
+//			int uid = _slotFile.readInt();
+//			int attr = _slotFile.readInt();
+			
+			int uid = b.getInt();
+			int attr = b.getInt();
 
 			if (uid == VOUID_DELETED) {
 				_deletedAttributes.add(attr);
@@ -536,11 +543,19 @@ public class VOItemDesc extends VOImageHolderDesc implements INameHolder {
 		@Override
 		public void read(BinFile file) {
 			super.read(file);
-			fixedSize = file.readShort();
-			nBlocks = file.readInt();
-			attribEnd = file.readInt();
-			nImages = file.readInt();
-			itemFlags = file.readByte();
+			ByteBuffer b = file.readByteBuffer(SIZE);
+			
+			fixedSize = b.getShort();
+			nBlocks = b.getInt();
+			attribEnd = b.getInt();
+			nImages = b.getInt();
+			itemFlags = b.get();			
+			
+//			fixedSize = file.readShort();
+//			nBlocks = file.readInt();
+//			attribEnd = file.readInt();
+//			nImages = file.readInt();
+//			itemFlags = file.readByte();
 		}
 		
 		// To support older DELTA files that did not have attribEnd, nImages or itemFlags fields.

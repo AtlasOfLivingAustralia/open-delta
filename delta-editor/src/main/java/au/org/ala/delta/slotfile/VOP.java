@@ -85,10 +85,9 @@ public class VOP {
 
 			if (header.SlotId == VOAnyDesc.SID_UIDS) {
 				// UID info...
-				int n = header.DataSize / 4; // Size in bytes of a TVOUniID, or
-												// an int
+				int n = header.DataSize / 4; // Size in bytes of a TVOUniID, or				
 				_lastUniId = _permSlotFile.readInt();
-				n--;
+				n--;				
 				for (int i = 0; i < n; i++) {
 					int id = _permSlotFile.readInt();
 					_uniIdCont.push(id);

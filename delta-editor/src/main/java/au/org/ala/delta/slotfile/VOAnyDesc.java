@@ -670,16 +670,29 @@ public abstract class VOAnyDesc {
 		
 		@Override		
 		public void read(BinFile file) {
-			TypeID = file.readInt();
-			CreateTime = file.readInt();
-			ModifyTime = file.readInt();
-			RefCount = file.readShort();
-			StoreFlags = file.readByte();
-			UniId = file.readInt();
-			OwnerId = file.readInt();
-			Acronym = file.readBytes(SIZE_ACRONYM);
-			unused1 = file.readInt();
-			unused2 = file.readInt();			
+			ByteBuffer b = file.readByteBuffer(SIZE);
+			
+			TypeID = b.getInt();
+			CreateTime = b.getInt();
+			ModifyTime = b.getInt();
+			RefCount = b.getShort();
+			StoreFlags = b.get();
+			UniId = b.getInt();
+			OwnerId = b.getInt();			
+			b.get(Acronym);
+			unused1 = b.getInt();
+			unused2 = b.getInt();			
+			
+//			TypeID = file.readInt();
+//			CreateTime = file.readInt();
+//			ModifyTime = file.readInt();
+//			RefCount = file.readShort();
+//			StoreFlags = file.readByte();
+//			UniId = file.readInt();
+//			OwnerId = file.readInt();
+//			Acronym = file.readBytes(SIZE_ACRONYM);
+//			unused1 = file.readInt();
+//			unused2 = file.readInt();			
 		}
 
 

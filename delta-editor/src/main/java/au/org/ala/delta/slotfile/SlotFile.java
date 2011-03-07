@@ -14,6 +14,7 @@
  ******************************************************************************/
 package au.org.ala.delta.slotfile;
 
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -320,10 +321,17 @@ public class SlotFile extends BinFile {
 
 		@Override
 		public void read(BinFile file) {
-			SlotId = file.readInt();
-			SlotSize = file.readInt();
-			DataSize = file.readInt();
-			GrowSize = file.readInt();
+			ByteBuffer bb = file.readByteBuffer(SIZE);
+			
+			SlotId = bb.getInt();
+			SlotSize = bb.getInt();
+			DataSize = bb.getInt();
+			GrowSize = bb.getInt();
+			
+//			SlotId = file.readInt();
+//			SlotSize = file.readInt();
+//			DataSize = file.readInt();
+//			GrowSize = file.readInt();
 		}
 		
 		@Override
