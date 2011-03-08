@@ -110,8 +110,6 @@ public class VOItemDesc extends VOImageHolderDesc implements INameHolder {
 		ByteBuffer b = _slotFile.readByteBuffer(_fixedData.nBlocks * (4 + 4));
 		
 		for (int i = 0; i < _fixedData.nBlocks; ++i) {
-//			int uid = _slotFile.readInt();
-//			int attr = _slotFile.readInt();
 			
 			int uid = b.getInt();
 			int attr = b.getInt();
@@ -324,8 +322,9 @@ public class VOItemDesc extends VOImageHolderDesc implements INameHolder {
 
 		dataSeek(_fixedData.attribEnd /* 0 */);
 
+		ByteBuffer b = readBuffer(_fixedData.nImages * 4);
 		for (int i = 0; i < _fixedData.nImages; ++i) {
-			dest.add(readInt());
+			dest.add(b.getInt());
 		}
 		return dest;
 
@@ -550,19 +549,14 @@ public class VOItemDesc extends VOImageHolderDesc implements INameHolder {
 			attribEnd = b.getInt();
 			nImages = b.getInt();
 			itemFlags = b.get();			
-			
-//			fixedSize = file.readShort();
-//			nBlocks = file.readInt();
-//			attribEnd = file.readInt();
-//			nImages = file.readInt();
-//			itemFlags = file.readByte();
 		}
 		
 		// To support older DELTA files that did not have attribEnd, nImages or itemFlags fields.
 		public void legacyRead(BinFile file) {
 			super.read(file);
-			fixedSize = file.readShort();
-			nBlocks = file.readInt();
+			ByteBuffer b = file.readByteBuffer(6);
+			fixedSize = b.getShort();
+			nBlocks = b.getInt();
 		}
 
 		@Override

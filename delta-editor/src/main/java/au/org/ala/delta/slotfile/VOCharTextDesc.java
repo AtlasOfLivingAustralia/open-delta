@@ -14,6 +14,7 @@
  ******************************************************************************/
 package au.org.ala.delta.slotfile;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -359,12 +360,14 @@ public class VOCharTextDesc extends VOAnyDesc {
 		@Override
 		public void read(BinFile file) {
 			super.read(file);
-			fixedSize = file.readShort();
-			charBaseId = file.readInt();
-			charLangId = file.readInt();
-			featureLeng = file.readInt();
-			notesLeng = file.readInt();
-			nStateLengs = file.readInt();
+			ByteBuffer b = file.readByteBuffer(SIZE);
+			
+			fixedSize = b.getShort();
+			charBaseId = b.getInt();
+			charLangId = b.getInt();
+			featureLeng = b.getInt();
+			notesLeng = b.getInt();
+			nStateLengs = b.getInt();
 		}
 
 		@Override

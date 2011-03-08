@@ -14,6 +14,7 @@
  ******************************************************************************/
 package au.org.ala.delta.slotfile;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -76,11 +77,11 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 		List<Integer> dest = new ArrayList<Integer>();
 		dataSeek(_fixedData.nStates * 4 + _fixedData.nDescriptors * CharTextInfo.SIZE + _fixedData.nControlling * 4 + _fixedData.nControls * 4);
 
+		ByteBuffer b = readBuffer(_fixedData.nImages * 4);
 		for (int i = 0; i < _fixedData.nImages; ++i) {
-			dest.add(readInt());
+			dest.add(b.getInt());
 		}
 		return dest;
-
 	}
 
 	@Override
@@ -258,8 +259,9 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 		List<Integer> dest = new ArrayList<Integer>();
 
 		dataSeek(_fixedData.nStates * 4 + _fixedData.nDescriptors * CharTextInfo.SIZE);
+		ByteBuffer b = readBuffer(_fixedData.nControlling * 4);
 		for (int i = 0; i < _fixedData.nControlling; ++i) {
-			dest.add(readInt());
+			dest.add(b.getInt());
 		}
 
 		return dest;
@@ -269,8 +271,9 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 		List<Integer> dest = new ArrayList<Integer>();
 
 		dataSeek(_fixedData.nStates * 4 + _fixedData.nDescriptors * CharTextInfo.SIZE + _fixedData.nControlling * 4);
+		ByteBuffer b = readBuffer(_fixedData.nControls * 4);		
 		for (int i = 0; i < _fixedData.nControls; ++i) {
-			dest.add(readInt());
+			dest.add(b.getInt());
 		}
 
 		return dest;
@@ -371,18 +374,20 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 		@Override
 		public void read(BinFile file) {
 			super.read(file);
-			fixedSize = file.readShort();
-			charType = file.readInt();
-			nStates = file.readInt();
-			nStatesUsed = file.readInt();
-			charFlags = file.readByte();
-			nDescriptors = file.readInt();
-			uncodedImplicit = file.readInt();
-			codedImplicit = file.readInt();
-			nControlling = file.readInt();
-			nControls = file.readInt();
+			ByteBuffer b = file.readByteBuffer(SIZE);
+			
+			fixedSize = b.getShort();
+			charType = b.getInt();
+			nStates = b.getInt();
+			nStatesUsed = b.getInt();
+			charFlags = b.get();
+			nDescriptors = b.getInt();
+			uncodedImplicit = b.getInt();
+			codedImplicit = b.getInt();
+			nControlling = b.getInt();
+			nControls = b.getInt();
 			if (fixedSize == SIZE) {
-				nImages = file.readInt();
+				nImages = b.getInt();
 			}
 			
 		}
@@ -414,8 +419,10 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 
 		@Override
 		public void read(BinFile file) {
-			langDesc = file.readInt();
-			charDesc = file.readInt();
+			ByteBuffer b = file.readByteBuffer(8);
+			
+			langDesc = b.getInt();
+			charDesc = b.getInt();
 		}
 
 		@Override

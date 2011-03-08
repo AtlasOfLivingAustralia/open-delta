@@ -46,52 +46,51 @@ import au.org.ala.delta.util.CodeTimer;
 import au.org.ala.delta.util.IProgressObserver;
 
 public class DeltaFileReader {
-	
+
+	/**
+	 * Private CTOR for static class
+	 */
+	private DeltaFileReader() {
+	}
+
 	public static DeltaContext readDeltaFileFully(String filename) {
 		return readDeltaFileFully(filename, null);
 	}
 
-	
 	public static DeltaDataSet readDeltaFile(String fileName, IProgressObserver observer) {
+
 		if (observer != null) {
 			observer.progress("Loading file " + fileName, 0);
 		}
-		
-		CodeTimer t = new CodeTimer("Reading Delta File");
-		
+
 		DeltaVOP vop = new DeltaVOP(fileName, false);
-		
-		t.stop(true);
-		
 		DeltaDataSet dataSet = new VOPAdaptor(vop);
 		
-		
+		vop.getPermSlotFile().dumpStats();
+
 		return dataSet;
 	}
-	
-	
+
 	public static DeltaContext readDeltaFileFully(String filename, IProgressObserver observer) {
-		
+
 		if (observer != null) {
 			observer.progress("Loading file " + filename, 0);
 		}
-		
+
 		CodeTimer t = new CodeTimer("Reading Delta File");
-		
-		
 
 		DeltaContext context = new DeltaContext();
-		
+
 		context.setVariable("HEADING", filename);
 
 		DeltaVOP vop = new DeltaVOP(filename, false);
-		
- 		context.VOP = vop;
+
+		context.VOP = vop;
 
 		int nChars = vop.getDeltaMaster().getNChars();
 		int nItems = vop.getDeltaMaster().getNItems();
-		int nDirectives = vop.getDeltaMaster().getNItems();		
-		
+		int nDirectives = vop.getDeltaMaster().getNItems();
+
 		int progmax = nChars + nItems + nDirectives;
 		int progress = 0;
 
@@ -112,40 +111,40 @@ public class DeltaFileReader {
 			int charType = charDesc.getCharType();
 			Character chr = null;
 			switch (charType) {
-				case CharType.TEXT:
-					chr = new TextCharacter(i);
-					break;
-				case CharType.INTEGER:
-					chr = new IntegerCharacter(i);
-					break;
-				case CharType.UNORDERED:
-					chr = new UnorderedMultiStateCharacter(i);					
-					break;
-				case CharType.ORDERED:
-					chr = new OrderedMultiStateCharacter(i);
-					break;
-				case CharType.REAL:
-					chr = new RealCharacter(i);
-					break;
-				default:
-					throw new RuntimeException("Unrecognized character type: " + charType);
+			case CharType.TEXT:
+				chr = new TextCharacter(i);
+				break;
+			case CharType.INTEGER:
+				chr = new IntegerCharacter(i);
+				break;
+			case CharType.UNORDERED:
+				chr = new UnorderedMultiStateCharacter(i);
+				break;
+			case CharType.ORDERED:
+				chr = new OrderedMultiStateCharacter(i);
+				break;
+			case CharType.REAL:
+				chr = new RealCharacter(i);
+				break;
+			default:
+				throw new RuntimeException("Unrecognized character type: " + charType);
 			}
-			
+
 			chr.setImpl(new VOCharacterAdaptor(charDesc, textDesc));
 			if (chr instanceof MultiStateCharacter) {
 				populateStates(charDesc, (MultiStateCharacter) chr, states);
 			} else if (chr instanceof NumericCharacter) {
-				if (charDesc.getNStates() > 0) {					
+				if (charDesc.getNStates() > 0) {
 					@SuppressWarnings("unchecked")
 					NumericCharacter<? extends Number> c = (NumericCharacter<? extends Number>) chr;
 					int idState = charDesc.uniIdFromStateNo(1);
-                    if (idState < states.size()) {					
-                    	c.setUnits(states.get(idState));
-                    }
+					if (idState < states.size()) {
+						c.setUnits(states.get(idState));
+					}
 				}
 			}
 
-			chr.setDescription(textDesc.readFeatureText(TextType.RTF));				
+			chr.setDescription(textDesc.readFeatureText(TextType.RTF));
 			chr.setMandatory(charDesc.testCharFlag(VOCharBaseDesc.CHAR_MANDATORY));
 			chr.setExclusive(charDesc.testCharFlag(VOCharBaseDesc.CHAR_EXCLUSIVE));
 			context.addCharacter(chr, chr.getCharacterId());
@@ -160,34 +159,34 @@ public class DeltaFileReader {
 		// Items...
 		for (int i = 1; i <= nItems; ++i) {
 			int itemId = vop.getDeltaMaster().uniIdFromItemNo(i);
-			VOItemDesc itemDesc = (VOItemDesc) vop.getDescFromId(itemId);			
+			VOItemDesc itemDesc = (VOItemDesc) vop.getDescFromId(itemId);
 			Item item = new Item(new VOItemAdaptor(itemDesc, i), i);
 			item.setDescription(itemDesc.getAnsiName());
 			context.addItem(item, item.getItemId());
-			
+
 			List<Attribute> attrs = itemDesc.readAllAttributes();
 			for (Attribute attr : attrs) {
 				if (attr.getCharId() >= 0) {
 					int charIndex = vop.getDeltaMaster().charNoFromUniId(attr.getCharId());
 					Character c = context.getCharacter(charIndex);
-					
+
 					StateValue sv = new StateValue(c, item, attr.getAsText(0, vop));
 					context.getMatrix().setValue(charIndex, i, sv);
-				}				
+				}
 			}
-			
+
 			progress++;
 			if (observer != null && progress % 10 == 0) {
 				int percent = (int) (((double) progress / (double) progmax) * 100);
 				observer.progress("Loading Items", percent);
 			}
-			
+
 		}
-		
+
 		t1.stop(false);
-		
+
 		readDirectives(observer, vop, progmax, progress);
-		
+
 		t.stop(false);
 
 		if (context.VOP == null) {
@@ -206,24 +205,24 @@ public class DeltaFileReader {
 	 */
 	private static void readDirectives(IProgressObserver observer, DeltaVOP vop, int progmax, int progress) {
 		CodeTimer t2 = new CodeTimer("Reading Directives");
-		
+
 		for (int i = 1; i <= vop.getDeltaMaster().getNDirFiles(); ++i) {
 			int uid = vop.getDeltaMaster().uniIdFromDirFileNo(i);
 			VODirFileDesc dirDesc = (VODirFileDesc) vop.getDescFromId(uid);
 			DirectiveFile dirFile = new DirectiveFile(dirDesc.getFileName());
 			dirFile.progType = dirDesc.getProgType();
-			 for (int j = 1; j <= dirDesc.getNDirectives(); ++j) {
-				 Dir d = dirDesc.readDirective(j);
+			for (int j = 1; j <= dirDesc.getNDirectives(); ++j) {
+				Dir d = dirDesc.readDirective(j);
 				if (observer != null && progress % 10 == 0) {
 					int percent = (int) (((double) progress / (double) progmax) * 100);
 					observer.progress("Loading Directives", percent);
-				}				 
-			 }
+				}
+			}
 		}
-		
+
 		t2.stop(true);
 	}
-	
+
 	private static void populateStates(VOCharBaseDesc charBase, MultiStateCharacter chr, List<String> states) {
 		chr.setNumberOfStates(charBase.getNStatesUsed());
 
@@ -235,11 +234,11 @@ public class DeltaFileReader {
 			chr.setImplicitValueStateId(iv);
 		}
 
-		for (int j = 0; j < charBase.getNStates(); ++j) {
+		for (int j = 0; j < charBase.getNStatesUsed(); ++j) {
 			int stateId = charBase.uniIdFromStateNo(j + 1);
 			chr.setState(j + 1, states.get(stateId));
 		}
-		
+
 	}
 
 }
@@ -250,7 +249,7 @@ class DirectiveFile {
 	public int type;
 	public String name;
 	public List<String> directives = new ArrayList<String>();
-	
+
 	public DirectiveFile(String name) {
 		this.name = name;
 	}

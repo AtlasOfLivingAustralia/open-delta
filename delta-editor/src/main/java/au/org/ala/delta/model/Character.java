@@ -42,7 +42,7 @@ public abstract class Character {
 	}
 	
 	public void setDescription(String desc) {
-		throw new NotImplementedException();
+		// throw new NotImplementedException();
 	}
 	
 	public void addDependentCharacter(CharacterDependency dependency) {
@@ -54,7 +54,7 @@ public abstract class Character {
 	}
 	
 	public void setMandatory(boolean b) {
-		throw new NotImplementedException();
+		// throw new NotImplementedException();
 	}
 	
 	public boolean isMandatory() {
@@ -62,7 +62,7 @@ public abstract class Character {
 	}
 	
 	public void setExclusive(boolean exclusive) {
-		throw new NotImplementedException();
+//		throw new NotImplementedException();
 	}
 	
 	public boolean isExclusive() {

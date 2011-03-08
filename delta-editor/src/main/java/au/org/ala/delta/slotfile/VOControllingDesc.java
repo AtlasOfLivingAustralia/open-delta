@@ -14,6 +14,7 @@
  ******************************************************************************/
 package au.org.ala.delta.slotfile;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -155,11 +156,12 @@ public class VOControllingDesc extends VOAnyDesc {
 		@Override
 		public void read(BinFile file) {
 			super.read(file);
-			fixedSize = file.readShort();
-			controlChar = file.readInt();
-			nStates = file.readInt();
-			labelLeng = file.readInt();
-			nControlled = file.readInt();
+			ByteBuffer b = file.readByteBuffer(SIZE);
+			fixedSize = b.getShort();
+			controlChar = b.getInt();
+			nStates = b.getInt();
+			labelLeng = b.getInt();
+			nControlled = b.getInt();
 		}
 
 		@Override

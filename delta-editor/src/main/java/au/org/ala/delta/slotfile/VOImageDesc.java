@@ -15,6 +15,7 @@
 package au.org.ala.delta.slotfile;
 
 import java.awt.Point;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -459,12 +460,14 @@ public class VOImageDesc extends VOAnyDesc {
 		@Override
 		public void read(BinFile file) {
 			super.read(file);
-			fixedSize = file.readShort();
-			ownerId = file.readInt();
-			imageType = file.readInt();
-			nameLen = file.readShort();
-			nOverlays = file.readShort();
-			alignment = file.readShort();
+			ByteBuffer b = file.readByteBuffer(SIZE);
+			
+			fixedSize = b.getShort();
+			ownerId = b.getInt();
+			imageType = b.getInt();
+			nameLen = b.getShort();
+			nOverlays = b.getShort();
+			alignment = b.getShort();
 		}
 
 		@Override

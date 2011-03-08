@@ -75,10 +75,17 @@ public abstract class VOAnyDesc {
 	
 	public static class VOException extends RuntimeException  {
 		
+		private static final long serialVersionUID = 1L;
+		
 		private VOErrorType _error;
+		
 		public VOException(VOErrorType error) {
 			super(error.name());
 			_error = error;
+		}
+		
+		public VOErrorType getError() {
+			return _error;
 		}
 	}
 	
@@ -182,8 +189,9 @@ public abstract class VOAnyDesc {
 	
 	protected short[] readShortArray(int count) {
 		short[] dest = new short[count];
+		ByteBuffer b = readBuffer(count * 2);		
 		for (int i =0; i < count; ++i) {
-			dest[i] = readShort();
+			dest[i] = b.getShort();
 		}
 		return dest;
 	}
@@ -204,6 +212,10 @@ public abstract class VOAnyDesc {
 		return _slotFile.readShort();
 	}
 	
+	protected ByteBuffer readBuffer(int size) {
+		assert _slotFile != null;
+		return _slotFile.readByteBuffer(size);
+	}
 	
 	protected byte[] readBytes(int size) {
 		return _slotFile.readBytes(size);
@@ -230,6 +242,22 @@ public abstract class VOAnyDesc {
 	
 	protected String readString(int size) {
 		return _slotFile.sread(size);
+	}
+	
+	protected ByteBuffer dataReadBuffer(int len) {
+		if (len > 0) {
+			int endPos = getDataSize();
+			if (_dataPtr + len > endPos) {
+				len = endPos - _dataPtr;
+			}
+			dataSeek(_dataPtr);
+			ByteBuffer b = _slotFile.readByteBuffer(len);
+			// Weird, this comes straight from the C++, but anyhoo...
+			// _dataPtr += len;
+			_dataPtr = _slotFile.tell() - (_slotHdrPtr + _dataOffs);
+			return b;
+		}
+		return ByteBuffer.allocate(0);		
 	}
 
 	protected int dataRead(byte[] dest, int len) {
@@ -264,15 +292,15 @@ public abstract class VOAnyDesc {
 	
 	protected List<Integer> readIntArrayToList(int count) {
 		int size = count * 4;
-		byte[] buf = new byte[size]; 
-		dataRead(buf, size);		
+		
+		ByteBuffer b = dataReadBuffer(size);
+		
 		List<Integer> dest = new ArrayList<Integer>();
-		ByteBuffer b = ByteBuffer.wrap(buf);
-		b.order(ByteOrder.LITTLE_ENDIAN);		
-		for (int i = 0; i < size; i += 4) {
-			int uid = b.getInt(i);
-			dest.add(uid);
+		
+		for (int i = 0; i < count; i++) {
+			dest.add(b.getInt());
 		}
+		
 		return dest;
 	}
 	

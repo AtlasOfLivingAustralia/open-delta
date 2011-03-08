@@ -24,7 +24,6 @@ import java.util.Map;
 
 import org.apache.commons.lang.NotImplementedException;
 
-import au.org.ala.delta.Logger;
 import au.org.ala.delta.slotfile.directive.ConforDirType;
 import au.org.ala.delta.slotfile.directive.DistDirType;
 import au.org.ala.delta.slotfile.directive.IntkeyDirType;
@@ -76,8 +75,8 @@ public class VODirFileDesc extends VOAnyDesc implements WindowsConstants {
 		_fixedData = new DirFileFixedData();
 		_fixedData.read(_slotFile);
 
-//		Logger.debug("DirectiveFile: %s (Flags %d, nDirs=%d, filetime=%s)", new String(_fixedData.fileName).trim(), _fixedData.fileFlags, _fixedData.nDirs,
-				//Utils.FILETIMEToDate(_fixedData.fileModifyTime));
+		// Logger.debug("DirectiveFile: %s (Flags %d, nDirs=%d, filetime=%s)", new String(_fixedData.fileName).trim(), _fixedData.fileFlags, _fixedData.nDirs,
+		// Utils.FILETIMEToDate(_fixedData.fileModifyTime));
 
 		dataSeek(0);
 
@@ -167,25 +166,25 @@ public class VODirFileDesc extends VOAnyDesc implements WindowsConstants {
 
 	public void setDirArray() {
 		switch (getProgType()) {
-			case PROGTYPE_CONFOR:
-				_directiveArray = Arrays.asList(ConforDirType.ConforDirArray);
-				_nDirectives = _directiveArray.size();
-				break;
-			case PROGTYPE_KEY:
-				_directiveArray = Arrays.asList(KeyDirType.KeyDirArray);
-				_nDirectives = _directiveArray.size();
-				break;
-			case PROGTYPE_DIST:
-				_directiveArray = Arrays.asList(DistDirType.DistDirArray);
-				_nDirectives = _directiveArray.size();
-				break;
-			case PROGTYPE_INTKEY:
-				_directiveArray = Arrays.asList(IntkeyDirType.IntkeyDirArray);
-				_nDirectives = _directiveArray.size();
-				break;
+		case PROGTYPE_CONFOR:
+			_directiveArray = Arrays.asList(ConforDirType.ConforDirArray);
+			_nDirectives = _directiveArray.size();
+			break;
+		case PROGTYPE_KEY:
+			_directiveArray = Arrays.asList(KeyDirType.KeyDirArray);
+			_nDirectives = _directiveArray.size();
+			break;
+		case PROGTYPE_DIST:
+			_directiveArray = Arrays.asList(DistDirType.DistDirArray);
+			_nDirectives = _directiveArray.size();
+			break;
+		case PROGTYPE_INTKEY:
+			_directiveArray = Arrays.asList(IntkeyDirType.IntkeyDirArray);
+			_nDirectives = _directiveArray.size();
+			break;
 		}
 	}
-	
+
 	public List<Directive> getDirArray() {
 		return _directiveArray;
 	}
@@ -251,252 +250,252 @@ public class VODirFileDesc extends VOAnyDesc implements WindowsConstants {
 		int i, j;
 
 		switch (argType) {
-			case DirectiveArgType.DIRARG_NONE:
-			case DirectiveArgType.DIRARG_TRANSLATION:
-			case DirectiveArgType.DIRARG_INTERNAL:
-			case DirectiveArgType.DIRARG_INTKEY_INCOMPLETE:
-				break;
+		case DirectiveArgType.DIRARG_NONE:
+		case DirectiveArgType.DIRARG_TRANSLATION:
+		case DirectiveArgType.DIRARG_INTERNAL:
+		case DirectiveArgType.DIRARG_INTKEY_INCOMPLETE:
+			break;
 
-			// ReadAsText:
-			case DirectiveArgType.DIRARG_OTHER:
-			case DirectiveArgType.DIRARG_TEXT:
-			case DirectiveArgType.DIRARG_FILE:
-			case DirectiveArgType.DIRARG_COMMENT: {
-				readAsText(directive);
-				break;
+		// ReadAsText:
+		case DirectiveArgType.DIRARG_OTHER:
+		case DirectiveArgType.DIRARG_TEXT:
+		case DirectiveArgType.DIRARG_FILE:
+		case DirectiveArgType.DIRARG_COMMENT: {
+			readAsText(directive);
+			break;
+		}
+		case DirectiveArgType.DIRARG_INTEGER:
+		case DirectiveArgType.DIRARG_REAL:
+		case DirectiveArgType.DIRARG_INTKEY_ONOFF:
+
+			directive.resizeArgs(1);
+			directive.args[0].value = readNumber();
+			break;
+
+		case DirectiveArgType.DIRARG_CHAR:
+		case DirectiveArgType.DIRARG_ITEM:
+			directive.resizeArgs(1);
+			directive.args[0].id = readInt();
+			break;
+
+		case DirectiveArgType.DIRARG_CHARLIST:
+		case DirectiveArgType.DIRARG_ITEMLIST:
+			nObjs = readInt();
+			directive.resizeArgs(nObjs);
+
+			for (i = 0; i < nObjs; ++i) {
+				directive.args[i].id = readInt();
 			}
-			case DirectiveArgType.DIRARG_INTEGER:
-			case DirectiveArgType.DIRARG_REAL:
-			case DirectiveArgType.DIRARG_INTKEY_ONOFF:
+			break;
 
-				directive.resizeArgs(1);
-				directive.args[0].value = readNumber();
-				break;
+		case DirectiveArgType.DIRARG_TEXTLIST:
+		case DirectiveArgType.DIRARG_CHARTEXTLIST:
+		case DirectiveArgType.DIRARG_ITEMTEXTLIST:
+		case DirectiveArgType.DIRARG_ITEMFILELIST: {
+			boolean commentsSupported = false; // Flag for presence of comment fields, added August 2000
+			nObjs = readInt();
 
-			case DirectiveArgType.DIRARG_CHAR:
-			case DirectiveArgType.DIRARG_ITEM:
-				directive.resizeArgs(1);
+			directive.resizeArgs(nObjs);
+			for (i = 0; i < directive.args.length; ++i) {
+				// For each ID
+				directive.args[i].id = readInt();
+				if (i == 0) // Do checking to allow for changes in file structure
+				{
+					if (directive.args[i].id == VOUID_NAME) {
+						commentsSupported = true;
+					} else if (argType == DirectiveArgType.DIRARG_TEXTLIST) { // These directives used to be treated as DIRARG_TEXT prior to 30 August 2000
+																				// If this is the case, back up and read it as if it where DIRARG_TEXT.
+						directive.args[i].id = VOUID_NULL;
+						dataSeek(_dirOffset + _dirLocVector.get(dirNo).getLoc() + 4 + 4);
+						readAsText(directive);
+						continue;
+					}
+				}
+				nObjs = readInt();
+				directive.args[i].text = readString(nObjs);
+
+				if (commentsSupported) {
+					nObjs = readInt();
+					directive.args[i].comment = readString(nObjs);
+				}
+			}
+			break;
+		}
+
+		case DirectiveArgType.DIRARG_CHARINTEGERLIST:
+		case DirectiveArgType.DIRARG_CHARREALLIST:
+		case DirectiveArgType.DIRARG_ITEMREALLIST:
+			nObjs = readInt();
+
+			directive.resizeArgs(nObjs);
+			for (i = 0; i < nObjs; ++i) {
+				// For each ID
+				directive.args[i].id = readInt();
+				directive.args[i].value = readNumber();
+			}
+			break;
+
+		case DirectiveArgType.DIRARG_CHARGROUPS:
+			nObjs = readInt();
+			directive.resizeArgs(nObjs);
+			for (i = 0; i < directive.args.length; ++i) { // For each char group
+				nObjs = readInt();
+				directive.args[i].resizeDataVect(nObjs);
+				for (j = 0; j < nObjs; ++j) { // Read the char ids.
+					directive.args[i].dataVect[j].setUniId(readInt());
+				}
+			}
+			break;
+
+		case DirectiveArgType.DIRARG_ITEMCHARLIST:
+			nObjs = readInt();
+			directive.resizeArgs(nObjs);
+			for (i = 0; i < directive.args.length; ++i) { // For each item
+				directive.args[i].id = readInt();
+				nObjs = readInt();
+				directive.args[i].resizeDataVect(nObjs);
+				for (j = 0; j < nObjs; ++j) {
+					// Read the char ids.
+					directive.args[i].dataVect[j].setUniId(readInt());
+				}
+			}
+			break;
+
+		case DirectiveArgType.DIRARG_ALLOWED:
+			nObjs = readInt();
+			directive.resizeArgs(nObjs);
+			for (i = 0; i < directive.args.length; ++i) {
+				// For each character
+				directive.args[i].id = readInt();
+
+				directive.args[i].resizeDataVect(3);
+				for (j = 0; j < 3; ++j) {
+					// Read the numbers.
+					directive.args[i].dataVect[j].read(_slotFile);
+				}
+			}
+			break;
+
+		case DirectiveArgType.DIRARG_KEYSTATE:
+			nObjs = readInt(); // Read number of key states
+
+			directive.resizeArgs(nObjs);
+			for (i = 0; i < directive.args.length; ++i) { // For each key state
+				directive.args[i].id = readInt();
+				directive.args[i].value = readNumber();
+				nObjs = readInt();
+
+				directive.args[i].resizeDataVect(nObjs);
+				for (j = 0; j < nObjs; ++j) {
+					// Read associated values.
+					directive.args[i].dataVect[j].read(_slotFile);
+				}
+			}
+			break;
+
+		case DirectiveArgType.DIRARG_PRESET:
+			nObjs = readInt();
+			directive.resizeArgs(nObjs);
+			for (i = 0; i < directive.args.length; ++i) { // For each character
+				directive.args[i].id = readInt();
+				directive.args[i].resizeDataVect(2);
+				for (j = 0; j < 2; ++j)
+					// Read the numbers.
+					directive.args[i].dataVect[j].setIntNumb(readInt());
+			}
+			break;
+
+		case DirectiveArgType.DIRARG_INTKEY_ITEM:
+			directive.resizeArgs(1);
+			nObjs = readInt();
+			if (nObjs < 0) // Is an ID
 				directive.args[0].id = readInt();
-				break;
-
-			case DirectiveArgType.DIRARG_CHARLIST:
-			case DirectiveArgType.DIRARG_ITEMLIST:
-				nObjs = readInt();
-				directive.resizeArgs(nObjs);
-
-				for (i = 0; i < nObjs; ++i) {
-					directive.args[i].id = readInt();
-				}
-				break;
-
-			case DirectiveArgType.DIRARG_TEXTLIST:
-			case DirectiveArgType.DIRARG_CHARTEXTLIST:
-			case DirectiveArgType.DIRARG_ITEMTEXTLIST:
-			case DirectiveArgType.DIRARG_ITEMFILELIST: {
-				boolean commentsSupported = false; // Flag for presence of comment fields, added August 2000
-				nObjs = readInt();
-
-				directive.resizeArgs(nObjs);
-				for (i = 0; i < directive.args.length; ++i) {
-					// For each ID
-					directive.args[i].id = readInt();
-					if (i == 0) // Do checking to allow for changes in file structure
-					{
-						if (directive.args[i].id == VOUID_NAME) {
-							commentsSupported = true;
-						} else if (argType == DirectiveArgType.DIRARG_TEXTLIST) { // These directives used to be treated as DIRARG_TEXT prior to 30 August 2000
-																					// If this is the case, back up and read it as if it where DIRARG_TEXT.
-							directive.args[i].id = VOUID_NULL;
-							dataSeek(_dirOffset + _dirLocVector.get(dirNo).getLoc() + 4 + 4);
-							readAsText(directive);
-							continue;
-						}
-					}
-					nObjs = readInt();
-					directive.args[i].text = readString(nObjs);
-
-					if (commentsSupported) {
-						nObjs = readInt();
-						directive.args[i].comment = readString(nObjs);
-					}
-				}
-				break;
+			else // Is a keyword string (which OUGHT to refer to a single taxon)
+			{
+				directive.args[0].text = readString(nObjs);
 			}
+			break;
 
-			case DirectiveArgType.DIRARG_CHARINTEGERLIST:
-			case DirectiveArgType.DIRARG_CHARREALLIST:
-			case DirectiveArgType.DIRARG_ITEMREALLIST:
-				nObjs = readInt();
+		case DirectiveArgType.DIRARG_INTKEY_CHARLIST:
+		case DirectiveArgType.DIRARG_INTKEY_ITEMLIST:
+		case DirectiveArgType.DIRARG_KEYWORD_CHARLIST:
+		case DirectiveArgType.DIRARG_KEYWORD_ITEMLIST:
+		case DirectiveArgType.DIRARG_INTKEY_CHARREALLIST: // Almost like the others, but not quite....
+			nObjs = readInt();
 
-				directive.resizeArgs(nObjs);
-				for (i = 0; i < nObjs; ++i) {
-					// For each ID
-					directive.args[i].id = readInt();
-					directive.args[i].value = readNumber();
-				}
-				break;
-
-			case DirectiveArgType.DIRARG_CHARGROUPS:
-				nObjs = readInt();
-				directive.resizeArgs(nObjs);
-				for (i = 0; i < directive.args.length; ++i) { // For each char group
-					nObjs = readInt();
-					directive.args[i].resizeDataVect(nObjs);
-					for (j = 0; j < nObjs; ++j) { // Read the char ids.
-						directive.args[i].dataVect[j].setUniId(readInt());
-					}
-				}
-				break;
-
-			case DirectiveArgType.DIRARG_ITEMCHARLIST:
-				nObjs = readInt();
-				directive.resizeArgs(nObjs);
-				for (i = 0; i < directive.args.length; ++i) { // For each item
-					directive.args[i].id = readInt();
-					nObjs = readInt();
-					directive.args[i].resizeDataVect(nObjs);
-					for (j = 0; j < nObjs; ++j) {
-						// Read the char ids.
-						directive.args[i].dataVect[j].setUniId(readInt());
-					}
-				}
-				break;
-
-			case DirectiveArgType.DIRARG_ALLOWED:
-				nObjs = readInt();
-				directive.resizeArgs(nObjs);
-				for (i = 0; i < directive.args.length; ++i) {
-					// For each character
-					directive.args[i].id = readInt();
-
-					directive.args[i].resizeDataVect(3);
-					for (j = 0; j < 3; ++j) {
-						// Read the numbers.
-						directive.args[i].dataVect[j].read(_slotFile);
-					}
-				}
-				break;
-
-			case DirectiveArgType.DIRARG_KEYSTATE:
-				nObjs = readInt(); // Read number of key states
-
-				directive.resizeArgs(nObjs);
-				for (i = 0; i < directive.args.length; ++i) { // For each key state
-					directive.args[i].id = readInt();
-					directive.args[i].value = readNumber();
-					nObjs = readInt();
-
-					directive.args[i].resizeDataVect(nObjs);
-					for (j = 0; j < nObjs; ++j) {
-						// Read associated values.
-						directive.args[i].dataVect[j].read(_slotFile);
-					}
-				}
-				break;
-
-			case DirectiveArgType.DIRARG_PRESET:
-				nObjs = readInt();
-				directive.resizeArgs(nObjs);
-				for (i = 0; i < directive.args.length; ++i) { // For each character
-					directive.args[i].id = readInt();
-					directive.args[i].resizeDataVect(2);
-					for (j = 0; j < 2; ++j)
-						// Read the numbers.
-						directive.args[i].dataVect[j].setIntNumb(readInt());
-				}
-				break;
-
-			case DirectiveArgType.DIRARG_INTKEY_ITEM:
-				directive.resizeArgs(1);
+			directive.resizeArgs(nObjs);
+			for (i = 0; i < directive.args.length; ++i) {
 				nObjs = readInt();
 				if (nObjs < 0) // Is an ID
-					directive.args[0].id = readInt();
-				else // Is a keyword string (which OUGHT to refer to a single taxon)
+					directive.args[i].id = readInt();
+				else // Is a keyword string (or possibly command modifier
 				{
-					directive.args[0].text = readString(nObjs);
+					nObjs &= INTKEY_TEXT_MASK;
+
+					directive.args[i].text = readString(nObjs);
 				}
-				break;
+				if (argType == DirectiveArgType.DIRARG_INTKEY_CHARREALLIST)
+					directive.args[i].value = readNumber();
+			}
+			break;
 
-			case DirectiveArgType.DIRARG_INTKEY_CHARLIST:
-			case DirectiveArgType.DIRARG_INTKEY_ITEMLIST:
-			case DirectiveArgType.DIRARG_KEYWORD_CHARLIST:
-			case DirectiveArgType.DIRARG_KEYWORD_ITEMLIST:
-			case DirectiveArgType.DIRARG_INTKEY_CHARREALLIST: // Almost like the others, but not quite....
+		case DirectiveArgType.DIRARG_INTKEY_ITEMCHARSET:
+			nObjs = readInt();
+			directive.resizeArgs(nObjs);
+			for (i = 0; i < directive.args.length; ++i) {
 				nObjs = readInt();
-
-				directive.resizeArgs(nObjs);
-				for (i = 0; i < directive.args.length; ++i) {
-					nObjs = readInt();
-					if (nObjs < 0) // Is an ID
-						directive.args[i].id = readInt();
-					else // Is a keyword string (or possibly command modifier
-					{
+				if (nObjs == IS_ITEM_ID) // Is an item ID
+				{
+					directive.args[i].id = readInt();
+					directive.args[i].value.setFromValue((float) -1.0);
+				} else if (nObjs == IS_CHAR_ID) // Is an character ID
+				{
+					directive.args[i].id = readInt();
+					directive.args[i].value.setFromValue((float) 1.0);
+				} else // Is a string
+				{
+					int type = nObjs & INTKEY_TYPE_MASK;
+					if (type != 0) {
+						if (type == ITEM_KEYWORD)
+							directive.args[i].value.setFromValue((float) -1.0);
+						else if (type == CHAR_KEYWORD)
+							directive.args[i].value.setFromValue((float) 1.0);
 						nObjs &= INTKEY_TEXT_MASK;
+					} else
+						directive.args[i].value.setFromValue((float) 0.0);
 
-						directive.args[i].text = readString(nObjs);
-					}
-					if (argType == DirectiveArgType.DIRARG_INTKEY_CHARREALLIST)
-						directive.args[i].value = readNumber();
+					directive.args[i].text = readString(nObjs);
 				}
-				break;
+			}
+			break;
 
-			case DirectiveArgType.DIRARG_INTKEY_ITEMCHARSET:
+		case DirectiveArgType.DIRARG_INTKEY_ATTRIBUTES:
+			nObjs = readInt();
+			directive.resizeArgs(nObjs);
+			for (i = 0; i < directive.args.length; ++i) {
 				nObjs = readInt();
-				directive.resizeArgs(nObjs);
-				for (i = 0; i < directive.args.length; ++i) {
-					nObjs = readInt();
-					if (nObjs == IS_ITEM_ID) // Is an item ID
-					{
-						directive.args[i].id = readInt();
-						directive.args[i].value.setFromValue((float) -1.0);
-					} else if (nObjs == IS_CHAR_ID) // Is an character ID
-					{
-						directive.args[i].id = readInt();
-						directive.args[i].value.setFromValue((float) 1.0);
-					} else // Is a string
-					{
-						int type = nObjs & INTKEY_TYPE_MASK;
-						if (type != 0) {
-							if (type == ITEM_KEYWORD)
-								directive.args[i].value.setFromValue((float) -1.0);
-							else if (type == CHAR_KEYWORD)
-								directive.args[i].value.setFromValue((float) 1.0);
-							nObjs &= INTKEY_TEXT_MASK;
-						} else
-							directive.args[i].value.setFromValue((float) 0.0);
-
-						directive.args[i].text = readString(nObjs);
-					}
+				if (nObjs == IS_CHAR_ID) // Is an ID
+				{
+					directive.args[i].id = readInt();
+				} else // Is a keyword string (or possibly command modifier
+				{
+					nObjs &= INTKEY_TEXT_MASK;
+					directive.args[i].text = readString(nObjs);
 				}
-				break;
-
-			case DirectiveArgType.DIRARG_INTKEY_ATTRIBUTES:
 				nObjs = readInt();
-				directive.resizeArgs(nObjs);
-				for (i = 0; i < directive.args.length; ++i) {
-					nObjs = readInt();
-					if (nObjs == IS_CHAR_ID) // Is an ID
-					{
-						directive.args[i].id = readInt();
-					} else // Is a keyword string (or possibly command modifier
-					{
-						nObjs &= INTKEY_TEXT_MASK;
-						directive.args[i].text = readString(nObjs);
-					}
-					nObjs = readInt();
-					if (nObjs > 0) {
-						Attribute ourAttrib = directive.args[i].attrib; // Just to simplify the following statements, like a Pascal "with"
+				if (nObjs > 0) {
+					Attribute ourAttrib = directive.args[i].attrib; // Just to simplify the following statements, like a Pascal "with"
 
-						ourAttrib.setCharId(directive.args[i].id);
-						byte[] data = readBytes(nObjs);
-						ourAttrib.setData(data);
-						ourAttrib.initReadData();
-					}
+					ourAttrib.setCharId(directive.args[i].id);
+					byte[] data = readBytes(nObjs);
+					ourAttrib.setData(data);
+					ourAttrib.initReadData();
 				}
-				break;
+			}
+			break;
 
-			default:
-				throw new RuntimeException("Bad arg type");
+		default:
+			throw new RuntimeException("Bad arg type");
 		}
 
 		return directive;
@@ -557,39 +556,39 @@ public class VODirFileDesc extends VOAnyDesc implements WindowsConstants {
 		for (VODirFileDesc.DirSummary dirLocSummary : _dirLocVector) {
 			int dirType = dirLocSummary.getType();
 			switch (dirType) {
-				case ConforDirType.NUMBER_OF_CHARACTERS: // used to "flags" specifications generally
-				case ConforDirType.ITEM_DESCRIPTIONS:
-				case ConforDirType.CHARACTER_LIST:
-				case ConforDirType.TRANSLATE_INTO_ALICE_FORMAT:
-				case ConforDirType.TRANSLATE_INTO_DELTA_FORMAT:
-				case ConforDirType.TRANSLATE_INTO_DCR_FORMAT:
-				case ConforDirType.TRANSLATE_INTO_DIST_FORMAT:
-				case ConforDirType.TRANSLATE_INTO_HENNIG86_FORMAT:
-				case ConforDirType.TRANSLATE_INTO_INTKEY_FORMAT:
-				case ConforDirType.TRANSLATE_INTO_KEY_FORMAT:
-				case ConforDirType.TRANSLATE_INTO_NATURAL_LANGUAGE:
-				case ConforDirType.TRANSLATE_INTO_NEXUS_FORMAT:
-				case ConforDirType.TRANSLATE_INTO_PAUP_FORMAT:
-				case ConforDirType.TRANSLATE_INTO_PAYNE_FORMAT:
-					return dirType;
-				case ConforDirType.PRINT_ITEM_NAMES:
-				case ConforDirType.PRINT_ITEM_DESCRIPTIONS:
-				case ConforDirType.PRINT_CHARACTER_LIST:
-				case ConforDirType.PRINT_SUMMARY:
-				case ConforDirType.PRINT_UNCODED_CHARACTERS:
+			case ConforDirType.NUMBER_OF_CHARACTERS: // used to "flags" specifications generally
+			case ConforDirType.ITEM_DESCRIPTIONS:
+			case ConforDirType.CHARACTER_LIST:
+			case ConforDirType.TRANSLATE_INTO_ALICE_FORMAT:
+			case ConforDirType.TRANSLATE_INTO_DELTA_FORMAT:
+			case ConforDirType.TRANSLATE_INTO_DCR_FORMAT:
+			case ConforDirType.TRANSLATE_INTO_DIST_FORMAT:
+			case ConforDirType.TRANSLATE_INTO_HENNIG86_FORMAT:
+			case ConforDirType.TRANSLATE_INTO_INTKEY_FORMAT:
+			case ConforDirType.TRANSLATE_INTO_KEY_FORMAT:
+			case ConforDirType.TRANSLATE_INTO_NATURAL_LANGUAGE:
+			case ConforDirType.TRANSLATE_INTO_NEXUS_FORMAT:
+			case ConforDirType.TRANSLATE_INTO_PAUP_FORMAT:
+			case ConforDirType.TRANSLATE_INTO_PAYNE_FORMAT:
+				return dirType;
+			case ConforDirType.PRINT_ITEM_NAMES:
+			case ConforDirType.PRINT_ITEM_DESCRIPTIONS:
+			case ConforDirType.PRINT_CHARACTER_LIST:
+			case ConforDirType.PRINT_SUMMARY:
+			case ConforDirType.PRINT_UNCODED_CHARACTERS:
+				bestType = dirType;
+				break;
+			case ConforDirType.CHARACTER_NOTES:
+			case ConforDirType.CHARACTER_IMAGES:
+			case ConforDirType.TAXON_IMAGES:
+			case ConforDirType.STARTUP_IMAGES:
+			case ConforDirType.CHARACTER_KEYWORD_IMAGES:
+			case ConforDirType.TAXON_KEYWORD_IMAGES:
+				if (bestType == 0)
 					bestType = dirType;
-					break;
-				case ConforDirType.CHARACTER_NOTES:
-				case ConforDirType.CHARACTER_IMAGES:
-				case ConforDirType.TAXON_IMAGES:
-				case ConforDirType.STARTUP_IMAGES:
-				case ConforDirType.CHARACTER_KEYWORD_IMAGES:
-				case ConforDirType.TAXON_KEYWORD_IMAGES:
-					if (bestType == 0)
-						bestType = dirType;
-					break;
-				default:
-					break;
+				break;
+			default:
+				break;
 			}
 		}
 		return bestType;
@@ -625,11 +624,15 @@ public class VODirFileDesc extends VOAnyDesc implements WindowsConstants {
 		@Override
 		public void read(BinFile file) {
 			super.read(file);
-			fixedSize = file.readShort();
-			fileName = file.sread(MAX_PATH).trim();
-			fileModifyTime = file.readLong();
-			nDirs = file.readInt();
-			fileFlags = file.readInt();
+			ByteBuffer b = file.readByteBuffer(SIZE);
+
+			fixedSize = b.getShort();
+			byte[] sbytes = new byte[MAX_PATH];
+			b.get(sbytes);
+			fileName = new String(sbytes).trim();
+			fileModifyTime = b.getLong();
+			nDirs = b.getInt();
+			fileFlags = b.getInt();
 		}
 
 		@Override

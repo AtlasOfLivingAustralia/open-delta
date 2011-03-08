@@ -37,6 +37,8 @@ public class BinFile {
 	protected RandomAccessFile _file;
 	protected byte[] _buffer;
 	protected int _filePointer;
+	
+	private BinFileStats _stats = new BinFileStats();
 
 	protected FileChannel _channel;
 
@@ -191,8 +193,6 @@ public class BinFile {
 				bb.position(0);
 				bb.get(buffer, 0, buffer.length);
 				return bytesRead;
-				// return _file.read(buffer);
-
 			} catch (IOException ioex) {
 				throw new RuntimeException(ioex);
 			}
@@ -213,15 +213,9 @@ public class BinFile {
 	}
 
 	protected byte[] readBytes(int count) {
-		byte[] buffer = new byte[count];
-		int read = readBytes(buffer);
-		if (read < count) {
-			throw new RuntimeException(
-					"Incorrect number of bytes read reading "
-							+ this.getClass().getSimpleName() + " Expected "
-							+ count + " got " + read);
-		}
-		return buffer;
+		ByteBuffer b = readByteBuffer(count);
+		_stats.ReadBytes++;
+		return b.array();
 	}
 
 	public void writeBytes(byte[] buffer) {
@@ -309,39 +303,26 @@ public class BinFile {
 	 */
 
 	public byte readByte() {
-		byte[] buf = new byte[1];
-		readBytes(buf);
-		int b = buf[0];
-
-		// int b = read();
-		/*
-		 * if (b < 0) { throw new
-		 * RuntimeException("EOF encountered reading object of type " +
-		 * this.getClass().getSimpleName()); }
-		 */
-		return (byte) b;
+		ByteBuffer b = readByteBuffer(1);
+		_stats.ReadByte++;		
+		return b.get();
 	}
 
 	public short readShort() {
-		// Files are little endian
-		byte lo = readByte();
-		byte hi = readByte();
-
-		return (short) (((hi << 8) & 0xFF00) + (lo & 0x00FF));
+		ByteBuffer b = readByteBuffer(2);		
+		_stats.ReadShort++;
+		return b.getShort();
 	}
 
 	public long readLong() {
-		byte[] bytes = readBytes(8);
-		ByteBuffer b = ByteBuffer.wrap(bytes);
-		b.order(ByteOrder.LITTLE_ENDIAN);
+		ByteBuffer b = readByteBuffer(8);
+		_stats.ReadLong++;		
 		return b.getLong();
 	}
 
 	public int readInt() {
-		byte[] bytes = readBytes(4);
-		ByteBuffer b = ByteBuffer.wrap(bytes);
-		b.order(ByteOrder.LITTLE_ENDIAN);
-
+		ByteBuffer b = readByteBuffer(4);		
+		_stats.ReadInt++;
 		return b.getInt();
 	}
 
@@ -455,5 +436,23 @@ public class BinFile {
 			throw new RuntimeException(e);
 		}
 	}
+	
+	public void dumpStats() {
+		_stats.dump();
+	}
 
+}
+
+class BinFileStats {
+	
+	public int ReadByte = 0;
+	public int ReadInt = 0;
+	public int ReadShort = 0;
+	public int ReadLong = 0;
+	public int ReadBytes = 0;
+	
+	public void dump() {
+		System.out.printf("ReadByte: %d\nReadInt: %d\nReadShort: %d\nReadLong: %d\nReadBytes: %d\n", ReadByte, ReadInt, ReadShort, ReadLong, ReadBytes);
+	}
+	
 }

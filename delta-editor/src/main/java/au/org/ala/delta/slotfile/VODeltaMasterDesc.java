@@ -14,6 +14,7 @@
  ******************************************************************************/
 package au.org.ala.delta.slotfile;
 
+import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.List;
 
@@ -326,14 +327,16 @@ public class VODeltaMasterDesc extends VONoteDesc {
 			// read the super fixed data...
 			super.read(f);
 			// now read my specific data...
-			fixedSize = f.readShort();
-			majorVersion = f.readShort();
-			minorVersion = f.readShort();
-			nChars = f.readInt();
-			nItems = f.readInt();
-			nLangs = f.readInt();
-			nContAttrs = f.readInt();
-			nDirFiles = f.readInt();
+			ByteBuffer b = f.readByteBuffer(SIZE);
+			
+			fixedSize = b.getShort();
+			majorVersion = b.getShort();
+			minorVersion = b.getShort();
+			nChars = b.getInt();
+			nItems = b.getInt();
+			nLangs = b.getInt();
+			nContAttrs = b.getInt();
+			nDirFiles = b.getInt();
 		}
 
 		@Override

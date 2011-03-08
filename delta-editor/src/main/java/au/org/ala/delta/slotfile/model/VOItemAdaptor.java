@@ -41,7 +41,7 @@ public class VOItemAdaptor implements ItemData {
 
 
 	public void setDescription(String itemName) {		
-		throw new NotImplementedException();
+		// throw new NotImplementedException();
 	}
 
 
