@@ -51,7 +51,7 @@ public class RtfEditorPane extends JTextPane {
 		StringWriter writer = new StringWriter();
 		try {
 			kit.writeBody(writer, doc, 0, doc.getLength());
-			rtfText = writer.toString();
+			rtfText = writer.toString().trim();
 			
 		} catch (Exception ex) {
 			ex.printStackTrace();

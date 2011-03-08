@@ -94,7 +94,20 @@ public class DocumentBuildingRtfHandler extends RTFHandlerAdapter {
 	
 	@Override
 	public void endParse() {
+		
+		trimTrailingWhitespace();
 		appendToDocument();
+	}
+
+
+	private void trimTrailingWhitespace() {
+		
+		int pos = _textBuffer.length()-1;
+		
+		while ((pos >= 0) && Character.isWhitespace(_textBuffer.charAt(pos))) {
+			_textBuffer.deleteCharAt(pos);
+			pos--;
+		}
 	}
 
 	@Override
@@ -131,13 +144,21 @@ public class DocumentBuildingRtfHandler extends RTFHandlerAdapter {
 	 * set of current attributes.
 	 */
 	private void appendToDocument() {
+		appendToDocument(_textBuffer.toString());
+	}
+
+	/**
+	 * Appends the supplied text to the end of the Document we are building with the 
+	 * set of current attributes.
+	 */
+	private void appendToDocument(String text) {
 		try {
-			_document.insertString(_document.getLength(), _textBuffer.toString(), _currentAttributes);
+			_document.insertString(_document.getLength(), text, _currentAttributes);
 			_textBuffer = new StringBuilder();
 		}
 		catch (BadLocationException e) {
 			throw new RuntimeException("Parsing the RTF document failed!", e);
 		}
 	}
-
+	
 }
