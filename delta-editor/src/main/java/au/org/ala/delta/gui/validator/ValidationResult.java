@@ -1,10 +1,16 @@
 package au.org.ala.delta.gui.validator;
 
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ResourceMap;
+
+
 
 /**
  * The result of a validation. 
  */
 public class ValidationResult {
+	
+	private static final ResourceMap RESOURCES = Application.getInstance().getContext().getResourceMap();
 	
 	private int _invalidCharacterPosition;
 	private String _errorMessageKey;
@@ -19,7 +25,7 @@ public class ValidationResult {
 	 */
 	public ValidationResult(String messageKey, int invalidCharacterPosition) {
 	
-		_errorMessageKey = messageKey;
+		_errorMessageKey = "errors."+messageKey;
 		_invalidCharacterPosition = invalidCharacterPosition;
 	}
 
@@ -39,8 +45,12 @@ public class ValidationResult {
 	}
 
 	public String getMessage() {
-		// TODO resource bundle lookup!
-		return _errorMessageKey;
+		if (_invalidCharacterPosition != -1) {
+			return RESOURCES.getString(_errorMessageKey, _invalidCharacterPosition);
+		}
+		else {
+			return RESOURCES.getString(_errorMessageKey);
+		}
 	}
 	
 	public int getInvalidCharacterPosition() {

@@ -63,7 +63,7 @@ public class Attribute implements Iterable<AttrChunk> {
 		
 		@Override
 		public String getMessage() {
-			return _error.name()+":"+_value;
+			return _error.name();
 		}
 	}
 
