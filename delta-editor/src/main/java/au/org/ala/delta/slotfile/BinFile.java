@@ -239,6 +239,7 @@ public class BinFile {
 
 	private void writeBytes(ByteBuffer buffer) {
 		try {
+			buffer.position(0);
 			_channel.write(buffer);
 		} catch (IOException ioex) {
 			throw new RuntimeException(ioex);
@@ -289,7 +290,6 @@ public class BinFile {
 		ByteBuffer b = ByteBuffer.allocate(4);
 		b.order(ByteOrder.LITTLE_ENDIAN);
 		b.putInt(value);
-		b.position(0);
 		writeBytes(b);
 	}
 
@@ -297,7 +297,6 @@ public class BinFile {
 		ByteBuffer b = ByteBuffer.allocate(8);
 		b.order(ByteOrder.LITTLE_ENDIAN);
 		b.putLong(value);
-		b.position(0);
 		writeBytes(b);
 	}
 
