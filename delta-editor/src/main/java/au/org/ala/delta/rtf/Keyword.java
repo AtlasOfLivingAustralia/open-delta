@@ -14,11 +14,9 @@ public abstract class Keyword {
 	static {
 		
 		// Attribute keywords (keywords that alter character/section or document attributes)
-		registerKeyword(new AttributeKeyword("b", CharacterAttributeType.Bold, 1, false));
-		registerKeyword(new AttributeKeyword("i", CharacterAttributeType.Italics, 1, false));
-		registerKeyword(new AttributeKeyword("u", CharacterAttributeType.Underline, 1, false));
-		registerKeyword(new AttributeKeyword("sub", CharacterAttributeType.Subscript, 1, false));
-		registerKeyword(new AttributeKeyword("super", CharacterAttributeType.Superscript, 1, false));
+		for (CharacterAttributeType attribute : CharacterAttributeType.values()) {
+			registerKeyword(new AttributeKeyword(attribute.keyword(), attribute, 1, false));
+		}
 		
 		// Character literal keywords...
 		registerKeyword(new CharacterKeyword("\r", '\r'));

@@ -2,9 +2,11 @@ package au.org.ala.delta.gui.rtf;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 
+import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
 
 import junit.framework.TestCase;
@@ -87,6 +89,25 @@ public class SimpleRtfEditorKitTest extends TestCase {
 	
 	public void testUnicode() throws Exception {
 		String rtf = "{\\rtf\\ansi\\deff0{\\fonttbl{\\f0\\froman Tms Rmn;}}\\pard\\plain This is \\u2222? text.}";
+		String documentAsString = readAndWrite(rtf);
+
+		assertEquals(WRITER_HEADER_TEXT+"This is \\u2222? text.\n"+"}", documentAsString);
+	}
+	
+	public void testUnderline() throws Exception {
+		String rtf = "{\\rtf\\ansi\\deff0{\\fonttbl{\\f0\\froman Tms Rmn;}}\\pard\\plain This is \\ul underlined\\ul0 text.}";
+		String documentAsString = readAndWrite(rtf);
+
+		assertEquals(WRITER_HEADER_TEXT+"This is \\ul underlined\\ul0 text.\n"+"}", documentAsString);
+	}
+
+	/**
+	 * Writes the supplied String using the editor kit, then reads it back and returns
+	 * the read string.
+	 * @param rtf the string to write.
+	 * @return the string after it's been read back.
+	 */
+	private String readAndWrite(String rtf) throws IOException, BadLocationException {
 		StringReader reader = new StringReader(rtf);
 		SimpleRtfEditorKit editorKit = new SimpleRtfEditorKit();
 		DefaultStyledDocument doc = new DefaultStyledDocument();
@@ -97,9 +118,8 @@ public class SimpleRtfEditorKitTest extends TestCase {
 		
 		bout.flush();
 		String documentAsString = new String(bout.toByteArray());
-
-		assertEquals(WRITER_HEADER_TEXT+"This is \\u2222? text.\n"+"}", documentAsString);
-		
-		
+		return documentAsString;
 	}
+	
+	
 }

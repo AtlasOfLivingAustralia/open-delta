@@ -11,6 +11,7 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 
 import au.org.ala.delta.rtf.AttributeValue;
+import au.org.ala.delta.rtf.CharacterAttributeType;
 import au.org.ala.delta.rtf.RTFHandlerAdapter;
 
 /**
@@ -31,11 +32,11 @@ public class DocumentBuildingRtfHandler extends RTFHandlerAdapter {
 	private Map<String, AttributeHandler> _attributeHandlers = new HashMap<String, AttributeHandler>();
 	
 	public void configureAttributeHandlers() {
-		_attributeHandlers.put("b", new AttributeHandler(StyleConstants.Bold));
-		_attributeHandlers.put("i", new AttributeHandler(StyleConstants.Italic));
-		_attributeHandlers.put("u", new AttributeHandler(StyleConstants.Underline));
-		_attributeHandlers.put("sub", new AttributeHandler(StyleConstants.Subscript));
-		_attributeHandlers.put("super", new AttributeHandler(StyleConstants.Superscript));
+		_attributeHandlers.put(CharacterAttributeType.Bold.keyword(), new AttributeHandler(StyleConstants.Bold));
+		_attributeHandlers.put(CharacterAttributeType.Italics.keyword(), new AttributeHandler(StyleConstants.Italic));
+		_attributeHandlers.put(CharacterAttributeType.Underline.keyword(), new AttributeHandler(StyleConstants.Underline));
+		_attributeHandlers.put(CharacterAttributeType.Subscript.keyword(), new AttributeHandler(StyleConstants.Subscript));
+		_attributeHandlers.put(CharacterAttributeType.Superscript.keyword(), new AttributeHandler(StyleConstants.Superscript));
 	}
 	
 	/**

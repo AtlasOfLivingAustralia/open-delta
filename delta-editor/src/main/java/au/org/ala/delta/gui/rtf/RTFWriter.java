@@ -12,6 +12,8 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
+import au.org.ala.delta.rtf.CharacterAttributeType;
+
 /**
  * Writes the contents of a StyledDocument as RTF encoded text.
  */
@@ -48,11 +50,11 @@ public class RTFWriter {
 	
 	
 	private void configureAttributeHandlers() {
-		_attributeHandlers.put(StyleConstants.Bold, new AttributeHandler(StyleConstants.Bold, "b"));
-		_attributeHandlers.put(StyleConstants.Italic, new AttributeHandler(StyleConstants.Italic, "i"));
-		_attributeHandlers.put(StyleConstants.Underline, new AttributeHandler(StyleConstants.Underline, "u"));
-		_attributeHandlers.put(StyleConstants.Subscript, new AttributeHandler(StyleConstants.Subscript, "sub"));
-		_attributeHandlers.put(StyleConstants.Superscript, new AttributeHandler(StyleConstants.Superscript, "super"));
+		_attributeHandlers.put(StyleConstants.Bold, new AttributeHandler(StyleConstants.Bold, CharacterAttributeType.Bold.keyword()));
+		_attributeHandlers.put(StyleConstants.Italic, new AttributeHandler(StyleConstants.Italic, CharacterAttributeType.Italics.keyword()));
+		_attributeHandlers.put(StyleConstants.Underline, new AttributeHandler(StyleConstants.Underline, CharacterAttributeType.Underline.keyword()));
+		_attributeHandlers.put(StyleConstants.Subscript, new AttributeHandler(StyleConstants.Subscript, CharacterAttributeType.Subscript.keyword()));
+		_attributeHandlers.put(StyleConstants.Superscript, new AttributeHandler(StyleConstants.Superscript, CharacterAttributeType.Superscript.keyword()));
 	}
 	
 	/**
