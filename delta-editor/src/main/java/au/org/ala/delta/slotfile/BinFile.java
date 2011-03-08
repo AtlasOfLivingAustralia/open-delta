@@ -353,7 +353,7 @@ public class BinFile {
 
 	public void swrite(String data, int length) {
 		byte[] buffer = new byte[length];
-		byte[] stringBytes = data.getBytes();
+		byte[] stringBytes = SlotFileEncoding.encode(data);
 		for (int i = 0; i < length; ++i) {
 			if (i < stringBytes.length) {
 				buffer[i] = stringBytes[i];
@@ -366,9 +366,7 @@ public class BinFile {
 
 	public String sread(int size) {
 		ByteBuffer bb = readByteBuffer(size);
-		return new String(bb.array());
-//		byte[] buffer = readBytes(size);
-//		return new String(buffer);
+		return SlotFileEncoding.decode(bb.array());
 	}
 
 	/**

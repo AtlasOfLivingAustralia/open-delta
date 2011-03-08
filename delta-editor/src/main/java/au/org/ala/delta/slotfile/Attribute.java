@@ -770,7 +770,7 @@ public class Attribute implements Iterable<AttrChunk> {
 
 		case ChunkType.CHUNK_TEXT: {
 			// TODO deal with character encoding here...
-			byte[] stringBytes = chunk.getString().getBytes();
+			byte[] stringBytes = SlotFileEncoding.encode(chunk.getString());
 			int strLeng = stringBytes.length;
 			chunkData = initialiseBufferForChunk(strLeng + 2/*
 															 * size of unsigned
@@ -784,7 +784,7 @@ public class Attribute implements Iterable<AttrChunk> {
 		}
 
 		case ChunkType.CHUNK_LONGTEXT: {
-			byte[] stringBytes = chunk.getString().getBytes();
+			byte[] stringBytes = SlotFileEncoding.encode(chunk.getString());
 			int strLeng = stringBytes.length;
 
 			chunkData = initialiseBufferForChunk(
@@ -1136,12 +1136,12 @@ public class Attribute implements Iterable<AttrChunk> {
 			case ChunkType.CHUNK_TEXT:
 				short varLeng = MAKEWORD(_owner._data[_pos + 1],
 						_owner._data[_pos + 2]);
-				String val = new String(_owner._data, _pos + 3, varLeng);
+				String val = SlotFileEncoding.decode(_owner._data, _pos + 3, varLeng);
 				ret.setString(val);
 				break;
 			case ChunkType.CHUNK_LONGTEXT:
 				int varleng = MAKEDWORD(_owner._data, _pos + 1);
-				String str = new String(_owner._data, _pos + 5, varleng);
+				String str = SlotFileEncoding.decode(_owner._data, _pos + 5, varleng);
 				ret.setString(str);
 				break;
 			case ChunkType.CHUNK_STATE:

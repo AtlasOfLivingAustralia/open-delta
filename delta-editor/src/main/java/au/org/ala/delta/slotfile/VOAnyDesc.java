@@ -300,20 +300,9 @@ public abstract class VOAnyDesc {
 		return FixedData.SIZE;
 	}
 
-	/**
-	 * 
-	 * @param string the String to write.
-	 * @return the number of bytes written (not necessarily buf.length() depending on the char encoding)...
-	 */
 	protected byte[] stringToBytes(String string) {
-		// TODO, at the moment both the read and write string methods
-		// simply do a String.getBytes() method which will work so long as the 
-		// DELTA file is not shared across platforms with different character encodings...
-		// Probably better to write in UTF-8 or something but we'll lose compatibility with 
-		// existing DELTA files if we do that....
-		byte[] bytes = string.getBytes();
 		
-		return bytes;
+		return SlotFileEncoding.encode(string);
 	}
 	
 	protected void dataWrite(int i) {
@@ -645,7 +634,7 @@ public abstract class VOAnyDesc {
 		
 		public FixedData(String acronym) {
 			assert acronym.length() <= SIZE_ACRONYM;
-			byte[] src = acronym.getBytes();
+			byte[] src = SlotFileEncoding.encode(acronym);
 			for (int i = 0; i < SIZE_ACRONYM; ++i) {
 				if (i < src.length) {
 					Acronym[i] = src[i];

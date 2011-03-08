@@ -48,7 +48,7 @@ public 	class VONoteDesc extends VOAnyDesc {
 		assert _slotFile != null;
 		_slotFile.seek(_slotHdrPtr + _noteOffs);
 		byte[] bytes = _slotFile.read(NOTE_SIZE);
-		return new String(bytes);
+		return SlotFileEncoding.decode(bytes);
 	}
 	
 	public void writeNote(String note) {

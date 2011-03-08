@@ -31,7 +31,7 @@ public class FileSignature implements IOObject {
 	@Override
 	public void read(BinFile file) {
 
-		Copyright = new String(file.readBytes(64));
+		Copyright = SlotFileEncoding.decode(file.readBytes(64));
 		MajorVersion = file.readByte();
 		MinorVersion = file.readByte();
 		Magic = file.readShort();
