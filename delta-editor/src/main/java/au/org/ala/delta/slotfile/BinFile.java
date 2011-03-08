@@ -187,7 +187,6 @@ public class BinFile {
 		} else {
 			try {
 				ByteBuffer bb = ByteBuffer.allocate(buffer.length);
-				;
 				int bytesRead = _channel.read(bb);
 				bb.position(0);
 				bb.get(buffer, 0, buffer.length);
@@ -228,6 +227,7 @@ public class BinFile {
 	public void writeBytes(byte[] buffer) {
 		try {
 			ByteBuffer bb = ByteBuffer.allocate(buffer.length);
+			bb.order(ByteOrder.LITTLE_ENDIAN);
 			bb.put(buffer);
 			bb.position(0);
 			_channel.write(bb);
@@ -249,6 +249,7 @@ public class BinFile {
 		try {
 			// _file.write(b);
 			ByteBuffer bb = ByteBuffer.allocate(1);
+			bb.order(ByteOrder.LITTLE_ENDIAN);
 			bb.put(b);
 			bb.position(0);
 			_channel.write(bb);
@@ -288,6 +289,7 @@ public class BinFile {
 		ByteBuffer b = ByteBuffer.allocate(4);
 		b.order(ByteOrder.LITTLE_ENDIAN);
 		b.putInt(value);
+		b.position(0);
 		writeBytes(b);
 	}
 
@@ -295,6 +297,7 @@ public class BinFile {
 		ByteBuffer b = ByteBuffer.allocate(8);
 		b.order(ByteOrder.LITTLE_ENDIAN);
 		b.putLong(value);
+		b.position(0);
 		writeBytes(b);
 	}
 
@@ -428,9 +431,20 @@ public class BinFile {
 	}
 
 	public void setLength(int newLength) {
+
 		try {
 			// _file.setLength(newLength);
-			_channel.truncate(newLength);
+			int currentPos = tell();
+			_channel.position(_channel.size());
+			long growSize = newLength - _channel.size();
+			ByteBuffer dummyBuffer = ByteBuffer.allocate((int)growSize);
+			for (int i=0; i < growSize; i++) {
+				dummyBuffer.put((byte)0);
+			}
+			dummyBuffer.position(0);
+			_channel.write(dummyBuffer);
+			seek(currentPos);
+			
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}

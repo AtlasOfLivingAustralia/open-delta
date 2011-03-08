@@ -321,8 +321,7 @@ public class SlotFile extends BinFile {
 
 		@Override
 		public void read(BinFile file) {
-			ByteBuffer bb = file.readByteBuffer(SIZE);
-			
+			ByteBuffer bb = file.readByteBuffer(SIZE);			
 			SlotId = bb.getInt();
 			SlotSize = bb.getInt();
 			DataSize = bb.getInt();
