@@ -15,7 +15,6 @@
 package au.org.ala.delta;
 
 import java.awt.BorderLayout;
-import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.SystemColor;
@@ -35,6 +34,7 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.LookAndFeel;
@@ -46,9 +46,12 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
 import org.jdesktop.application.Action;
+import org.jdesktop.application.Application;
 import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.SingleFrameApplication;
+import org.jdesktop.application.Task;
+import org.jdesktop.application.Task.BlockingScope;
 
 import au.org.ala.delta.editor.controller.HelpController;
 import au.org.ala.delta.gui.EditorDataModel;
@@ -308,36 +311,67 @@ public class DeltaEditor extends SingleFrameApplication {
 		}
 		frame.setSize(new Dimension(800,500));		
 	}
+	
+	
+	
+	abstract class ProgressObservingTask<T, V> extends Task<T, V> implements IProgressObserver {
+		
+		public ProgressObservingTask(Application app) {
+			super(app);
+		}
+	
+		@Override
+		public void progress(String message, int percentComplete) {
+			//message(message);
+			setProgress(percentComplete);
+		}
+		
+	}
+	
+	/**
+	 * Loads a Delta file and creates a new tree view when it finishes.
+	 */
+	class DeltaFileLoader extends ProgressObservingTask<DeltaDataSet, Void> {
 
-	private void loadFile(final File file) {
+		/** The file to load */
+		private File _deltaFile;
+		
+		/**
+		 * Creates a DeltaFileLoader for the specified application that will load the supplied DELTA file.
+		 * @param app the application this task is a part of.
+		 * @param deltaFile the file to load.
+		 */
+		public DeltaFileLoader(Application app, File deltaFile) {
+			super(app);
+			_deltaFile = deltaFile;
+			
+		}
+		
+		@Override
+		protected DeltaDataSet doInBackground() throws Exception {
+			message("loading", _deltaFile.getAbsolutePath());
+			return _dataSetRepository.findByName(_deltaFile.getAbsolutePath(), this);
+		}
+		
+		@Override
+		protected void succeeded(DeltaDataSet result) {
+			EditorDataModel model = new EditorDataModel(result);
+			newTree(model);
+			_saveEnabled = true;
+		}
 
-		Thread t = new Thread() {
+		/**
+		 * Shows an error dialog with the message from the supplied Throwable.
+		 */
+		@Override
+		protected void failed(Throwable cause) {
+			JOptionPane.showMessageDialog(getMainFrame(), cause.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
+		}
 
-			{
-				this.setDaemon(true);
-				this.setName("File loader");
-			}
-
-			@Override
-			public void run() {
-				try {
-					getMainFrame().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-					DeltaDataSet dataSet = _dataSetRepository.findByName(file.getAbsolutePath(), _statusBar);
-					EditorDataModel model = new EditorDataModel(dataSet);
-					newMatrix(model);
-					_saveEnabled = true;
-				} catch (Exception ex) {
-					ex.printStackTrace();
-				} finally {
-					getMainFrame().setCursor(Cursor.getDefaultCursor());
-					_statusBar.clear();
-				}
-			}
-
-		};
-
-		t.start();
-
+		@Override
+		protected void finished() {
+			setMessage("");
+		}		
 	}
 	
 	//This could be turned into a utility method
@@ -405,13 +439,16 @@ public class DeltaEditor extends SingleFrameApplication {
 		getMainFrame().setTitle(String.format(windowTitleWithFilename, dataSet.getName()));
 	}
 	
-	@Action
-	public void loadFile() {
+	@Action(block=BlockingScope.APPLICATION)
+	public Task<DeltaDataSet, Void> loadFile() {
 		
+		Task<DeltaDataSet, Void> fileOpenTask = null;
 		File toOpen = selectFile(true);
 		if (toOpen != null) {
-			loadFile(toOpen);
+			fileOpenTask = new DeltaFileLoader(this, toOpen);
+			fileOpenTask.addPropertyChangeListener(_statusBar);
 		}
+		return fileOpenTask;
 	}
 	
 	@Action(enabledProperty="saveEnabled")
@@ -533,7 +570,7 @@ class ViewerFrameListener implements InternalFrameListener {
 	
 }
 
-class StatusBar extends JPanel implements IProgressObserver {
+class StatusBar extends JPanel implements PropertyChangeListener {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -560,27 +597,25 @@ class StatusBar extends JPanel implements IProgressObserver {
 	}
 
 	@Override
-	public void progress(final String message, final int percentComplete) {
-
-		SwingUtilities.invokeLater(new Runnable() {
-
-			@Override
-			public void run() {
-				_label.setText(message);
-				int value = Math.min(percentComplete, 100);
-				if (value < 0 || value == 100) {
-					if (!_prog.isVisible()) {
-						_prog.setVisible(true);
-						_prog.setPreferredSize(new Dimension(400,23));
-					}
-					_prog.setValue(value);	
-				} else {
-					_prog.setVisible(false);					
-					_prog.setPreferredSize(new Dimension(0,23));
-				}				
+	public void propertyChange(PropertyChangeEvent evt) {
+		if ("progress".equals(evt.getPropertyName())) {
+			
+			int percentComplete = (Integer)evt.getNewValue();
+			int value = Math.min(percentComplete, 100);
+			if (value < 0 || value == 100) {
+				if (!_prog.isVisible()) {
+					_prog.setVisible(true);
+					_prog.setPreferredSize(new Dimension(400,23));
+				}
+				_prog.setValue(value);	
+			} else {
+				_prog.setVisible(false);					
+				_prog.setPreferredSize(new Dimension(0,23));
 			}
-		});
-
+		} else if ("message".equals(evt.getPropertyName())) {
+			_label.setText((String)evt.getNewValue());
+		}
+		
 	}
 
 }
