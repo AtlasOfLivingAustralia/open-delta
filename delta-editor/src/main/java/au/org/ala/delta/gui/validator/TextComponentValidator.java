@@ -3,14 +3,22 @@ package au.org.ala.delta.gui.validator;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Point;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.InputVerifier;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.event.InternalFrameEvent;
+import javax.swing.event.InternalFrameListener;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
@@ -30,20 +38,34 @@ public class TextComponentValidator extends InputVerifier {
 	/**
 	 * Responsible for hiding the popup when a key is pressed.
 	 */
-	class ErrorDisplayHider extends KeyAdapter {
+	class ErrorDisplayHider extends KeyAdapter implements FocusListener {
 
 		private JComponent _component;
 		public ErrorDisplayHider(JComponent component) {
 			_component = component;
+			_component.addFocusListener(this);
 		}
 		@Override
 		public void keyPressed(KeyEvent e) {
+			cleanup();
+		}
+		
+		private void cleanup() {
 			try {
 				_errorMessageDisplay.setVisible(false);
 			}
 			finally {
 				_component.removeKeyListener(this);
+				_component.removeFocusListener(this);
 			}
+		}
+		
+		@Override
+		public void focusGained(FocusEvent e) {}
+		
+		@Override
+		public void focusLost(FocusEvent e) {
+			cleanup();
 		}
 	}
 	
@@ -120,7 +142,6 @@ public class TextComponentValidator extends InputVerifier {
 		if (!(component instanceof JTextComponent)) {
 			return true;
 		}
-
 		
 		return validate(component);
 	}
@@ -140,7 +161,8 @@ public class TextComponentValidator extends InputVerifier {
 		if (!result.isValid()) {
 			_errorMessageDisplay.setMessage(result.getMessage());
 			_errorMessageDisplay.showAbove(component);
-			component.addKeyListener(new ErrorDisplayHider(component));
+			ErrorDisplayHider hider = new ErrorDisplayHider(component);
+			component.addKeyListener(hider);
 			
 			if (_listener != null) {
 				_listener.validationFailed(result);
@@ -167,21 +189,9 @@ public class TextComponentValidator extends InputVerifier {
 	}
 	
 	private void updateTextStyles(JTextComponent component, ValidationResult validationResult) {
-		if (validationResult.isValid()) {
-			updateStyle(component, Color.BLACK, Color.WHITE, 0);
-		}
-		else {
-			updateStyle(component, Color.WHITE, Color.RED, validationResult.getInvalidCharacterPosition());
+		if (!validationResult.isValid()) {
+			component.select(validationResult.getInvalidCharacterPosition(), component.getDocument().getLength());
 		}
 	}
-	
-	private void updateStyle(JTextComponent component, Color foreground, Color background, int position) {
-		StyledDocument document = (StyledDocument)component.getDocument();
-		
-		SimpleAttributeSet attributes = new SimpleAttributeSet();	
-		attributes.addAttribute(StyleConstants.Foreground, foreground);
-		attributes.addAttribute(StyleConstants.Background, background);
-		
-		document.setCharacterAttributes(position, document.getLength(), attributes, false);
-	}
+
 }
