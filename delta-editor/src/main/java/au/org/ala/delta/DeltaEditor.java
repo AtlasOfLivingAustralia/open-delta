@@ -21,6 +21,7 @@ import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.beans.PropertyVetoException;
 import java.io.File;
 
@@ -61,8 +62,14 @@ import au.org.ala.delta.model.DeltaDataSetRepository;
 import au.org.ala.delta.slotfile.model.SlotFileRepository;
 import au.org.ala.delta.util.IProgressObserver;
 
+/**
+ * The main class for the DELTA Editor.
+ */
 public class DeltaEditor extends SingleFrameApplication {
 
+	/** Helper class for notifying listeners of property changes */
+	private PropertyChangeSupport _propertyChangeSupport;
+	
 	private static final long serialVersionUID = 1L;
 
 	private JDesktopPane _desktop;
@@ -72,6 +79,7 @@ public class DeltaEditor extends SingleFrameApplication {
 	private DeltaDataSetRepository _dataSetRepository;
 	
 	private boolean _saveEnabled;
+	private boolean _saveAsEnabled;
 	
 	private HelpController _helpController;
 	
@@ -82,6 +90,8 @@ public class DeltaEditor extends SingleFrameApplication {
 	
 	@Resource 
 	String windowTitleWithFilename;
+	
+	private EditorDataModel _selectedDataSet;
 	
 	
 	public static void main(String[] args) {
@@ -95,6 +105,8 @@ public class DeltaEditor extends SingleFrameApplication {
 	@Override
 	protected void startup() {
 		_saveEnabled = false;
+		_saveAsEnabled = false;
+		_propertyChangeSupport = new PropertyChangeSupport(this);
 		
 		ResourceMap resourceMap = getContext().getResourceMap(AboutBox.class);
 		resourceMap.injectFields(this);
@@ -122,12 +134,9 @@ public class DeltaEditor extends SingleFrameApplication {
 	}
 
 	private EditorDataModel getCurrentDataSet() {
-		EditorDataModel model = null;
-		if (_desktop.getSelectedFrame() instanceof IContextHolder) {
-			model = ((IContextHolder)_desktop.getSelectedFrame()).getContext();
-		}
-		return model;
+		return _selectedDataSet;
 	}
+	
 	private JMenuBar buildMenus() {
 		ActionMap actionMap = getContext().getActionMap(this);
 
@@ -432,11 +441,16 @@ public class DeltaEditor extends SingleFrameApplication {
 		numViewersOpen--;
 		if (numViewersOpen == 0) {
 			getMainFrame().setTitle(windowTitleWithoutFilename);
+			setSaveAsEnabled(false);
+			setSaveEnabled(false);
 		}
 	}
 	
 	void viewerFocusGained(EditorDataModel dataSet) {
 		getMainFrame().setTitle(String.format(windowTitleWithFilename, dataSet.getName()));
+		setSaveEnabled(true);
+		setSaveAsEnabled(true);
+		_selectedDataSet = dataSet;
 	}
 	
 	@Action(block=BlockingScope.APPLICATION)
@@ -459,7 +473,7 @@ public class DeltaEditor extends SingleFrameApplication {
 		}
 	}
 
-	@Action(enabledProperty="saveEnabled")
+	@Action(enabledProperty="saveAsEnabled")
 	public void saveAsFile() {
 		
 		File newFile = selectFile(false);
@@ -500,6 +514,30 @@ public class DeltaEditor extends SingleFrameApplication {
    @Action
    public void openAbout() {
 	   createAboutBox();
+   }
+   
+   public void addPropertyChangeListener(PropertyChangeListener listener) {
+	   _propertyChangeSupport.addPropertyChangeListener(listener);
+   }
+   
+   public void setSaveEnabled(boolean saveEnabled) {
+	   boolean oldSaveEnabled = _saveEnabled;
+	   _saveEnabled = saveEnabled;
+	   _propertyChangeSupport.firePropertyChange("saveEnabled", oldSaveEnabled, _saveEnabled);
+   }
+   
+   public boolean isSaveEnabled() {
+	   return _saveEnabled;
+   }
+   
+   public void setSaveAsEnabled(boolean saveEnabled) {
+	   boolean oldSaveAsEnabled = _saveAsEnabled;
+	   _saveAsEnabled = saveEnabled;
+	   _propertyChangeSupport.firePropertyChange("saveAsEnabled", oldSaveAsEnabled, _saveAsEnabled);
+   }
+   
+   public boolean isSaveAsEnabled() {
+	   return _saveAsEnabled;
    }
 	
 }
