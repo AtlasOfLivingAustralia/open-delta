@@ -124,17 +124,17 @@
 		            <goal>launch4j</goal>
 		          </goals>
 		          <configuration>
-		            <dontWrapJar>false</dontWrapJar>
+		            <dontWrapJar>true</dontWrapJar>
 		            <headerType>gui</headerType>
 		            <outfile>target/DeltaEditor.exe</outfile>
-		            <jar>target/${project.artifactId}-${project.version}-jar-with-dependencies.jar</jar>
+		            <jar>${project.artifactId}-${project.version}-jar-with-dependencies.jar</jar>
 		            <errTitle>Error</errTitle>
 		            <icon>installer\resources\delta_editor.ico</icon>
-                    <classPath>
+                    <!--<classPath>
               			<mainClass>au.org.ala.delta.DeltaEditor</mainClass>
               			<addDependencies>false</addDependencies>
               			<preCp>anything</preCp>
-           			</classPath>
+           			</classPath>-->
 		            <jre>
 		              <path>jre</path>
 		              <!--<minVersion>1.6.0</minVersion>-->
@@ -161,7 +161,9 @@
               	<taskdef name="nsis" classname="com.danielreese.nsisant.Task">
 					<classpath location="./installer/nsisant-1.3.jar" />
 				</taskdef>
-                <nsis script="./installer/DeltaEditor.nsi"/>
+                <nsis script="./installer/DeltaEditor.nsi">
+                	<define name="VERSION" value="${project.version}"/>
+                </nsis>
               </target>
             </configuration>
             <goals>
