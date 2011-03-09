@@ -74,7 +74,7 @@ public class IconHelper {
 		if (Platform.isWindowsAero()) {
 			return createImageIcon(DELTA_IMAGE_12);
 		} else {
-			return createImageIcon(DELTA_IMAGE_16);
+			return createImageIcon(DELTA_IMAGE_14);
 		}
 	}
 
