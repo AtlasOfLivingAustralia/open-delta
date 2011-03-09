@@ -9,6 +9,8 @@ import au.org.ala.delta.slotfile.VOCharBaseDesc;
 import au.org.ala.delta.slotfile.VOCharTextDesc;
 
 public class VOCharacterAdaptor implements CharacterData {
+	/** If they've been specified, units are stored as state text for state number 1. */
+	private static final int UNITS_TEXT_STATE_NUMBER = 1;
 	
 	private VOCharBaseDesc _charDesc;
 	private VOCharTextDesc _textDesc;
@@ -49,8 +51,11 @@ public class VOCharacterAdaptor implements CharacterData {
 
 	@Override
 	public String getUnits() {
-		// TODO Auto-generated method stub
-		return null;
+		String units = "";
+		if (_charDesc.getNStatesUsed() >= UNITS_TEXT_STATE_NUMBER) {
+			units = getStateText(UNITS_TEXT_STATE_NUMBER);
+		}
+		return units;
 	}
 	
 	@Override

@@ -22,7 +22,6 @@ import java.awt.event.FocusEvent;
 
 import javax.swing.AbstractListModel;
 import javax.swing.DefaultListCellRenderer;
-import javax.swing.DefaultListModel;
 import javax.swing.JCheckBox;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -32,6 +31,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import au.org.ala.delta.gui.rtf.RtfEditor;
+import au.org.ala.delta.gui.util.IconHelper;
 import au.org.ala.delta.gui.validator.AttributeValidator;
 import au.org.ala.delta.gui.validator.RtfEditorValidator;
 import au.org.ala.delta.gui.validator.ValidationListener;
@@ -41,6 +41,7 @@ import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
+import au.org.ala.delta.model.NumericCharacter;
 
 public class StateEditor extends JPanel implements ValidationListener {
 
@@ -104,8 +105,8 @@ public class StateEditor extends JPanel implements ValidationListener {
 				_list.setModel(new StateListModel(mc));
 				_list.setCellRenderer(new StateRenderer());
 			} else {
-				_list.setModel(new DefaultListModel());
-				_list.setCellRenderer(new DefaultListCellRenderer());
+				_list.setModel(new CharacterModel(ch));
+				_list.setCellRenderer(new CharacterRenderer());
 			}
 			AttributeValidator validator = new AttributeValidator(_item, _character);
 			RtfEditorValidator rtfValidator = new RtfEditorValidator(validator, this);
@@ -207,6 +208,32 @@ public class StateEditor extends JPanel implements ValidationListener {
 		}
 
 	}
+	
+	/**
+	 * Renders a Character as an icon, and if it's a numeric character, it's units.
+	 * @author god08d
+	 *
+	 */
+	class CharacterRenderer extends DefaultListCellRenderer {
+		
+		@Override
+		public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
+				boolean cellHasFocus) {
+			super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+			
+			Character ch = (Character)value;
+			setIcon(IconHelper.iconForCharacter(ch));
+			
+			if (ch instanceof NumericCharacter) {
+				setText(((NumericCharacter)ch).getUnits());
+				System.out.println(((NumericCharacter)ch).getUnits());
+			}
+			else {
+				setText("");
+			}
+			return this;
+		}
+	}
 }
 
 class StateListModel extends AbstractListModel {
@@ -228,5 +255,22 @@ class StateListModel extends AbstractListModel {
 	public Object getElementAt(int index) {
 		return _character.getState(index+1);
 	}
+}
 
+class CharacterModel extends AbstractListModel {
+	private Character _character;
+
+	public CharacterModel(Character character) {
+		_character = character;
+	}
+
+	@Override
+	public int getSize() {
+		return 1;
+	}
+
+	@Override
+	public Object getElementAt(int index) {
+		return _character;
+	}
 }

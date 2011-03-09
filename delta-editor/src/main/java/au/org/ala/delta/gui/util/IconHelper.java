@@ -19,6 +19,12 @@ import java.net.URL;
 
 import javax.swing.ImageIcon;
 
+import au.org.ala.delta.model.IntegerCharacter;
+import au.org.ala.delta.model.OrderedMultiStateCharacter;
+import au.org.ala.delta.model.RealCharacter;
+import au.org.ala.delta.model.TextCharacter;
+import au.org.ala.delta.model.UnorderedMultiStateCharacter;
+
 /**
  * Utilities for working with image icons.
  *
@@ -30,6 +36,12 @@ public class IconHelper {
 	private static final String DELTA_IMAGE_16 = "Delta_blue_16.png";
 	private static final String DELTA_IMAGE_14 = "Delta_blue_14.png";
 	private static final String DELTA_IMAGE_12 = "Delta_blue_12.png";
+	
+	private static final ImageIcon _textIcon = createImageIcon("textchar.png");
+	private static final ImageIcon _realIcon = createImageIcon("realchar.png");
+	private static final ImageIcon _intIcon = createImageIcon("intchar.png");
+	private static final ImageIcon _omIcon = createImageIcon("omchar.png");
+	private static final ImageIcon _umIcon = createImageIcon("umchar.png");
 	
 	public static ImageIcon createImageIcon(String imageFileName) {		
 		return new ImageIcon(imageURLFromFileName(imageFileName));
@@ -51,8 +63,32 @@ public class IconHelper {
 		return createImageIcon(DELTA_IMAGE_12);
 	}
 	
+	
+	/**
+	 * Returns the appropriate icon for the supplied character.
+	 * @param ch the character to get the icon for.
+	 * @return an icon representing the type of the supplied Character
+	 */
+	public static ImageIcon iconForCharacter(au.org.ala.delta.model.Character ch) {
+		ImageIcon icon = null;
+		if (ch instanceof TextCharacter) {
+			icon = _textIcon;
+		} else if (ch instanceof RealCharacter) {
+			icon = _realIcon;			
+		} else if (ch instanceof IntegerCharacter) {
+			icon = _intIcon;				
+		} else if (ch instanceof OrderedMultiStateCharacter) {
+			icon = _omIcon;
+		} else if (ch instanceof UnorderedMultiStateCharacter) {
+			icon = _umIcon;
+		}
+		return icon;
+	}
+	
 	private static URL imageURLFromFileName(String imageFileName) {
 		URL imageUrl = IconHelper.class.getResource(ICON_PATH+"/"+imageFileName);
 		return imageUrl;
 	}
+	
+	
 }

@@ -20,7 +20,6 @@ import java.awt.Dimension;
 
 import javax.swing.DefaultListModel;
 import javax.swing.DropMode;
-import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JInternalFrame;
 import javax.swing.JList;
@@ -43,16 +42,12 @@ import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.gui.EditorDataModel;
 import au.org.ala.delta.gui.InternalFrameDataModelListener;
+import au.org.ala.delta.gui.util.IconHelper;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
-import au.org.ala.delta.model.IntegerCharacter;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
-import au.org.ala.delta.model.OrderedMultiStateCharacter;
-import au.org.ala.delta.model.RealCharacter;
-import au.org.ala.delta.model.TextCharacter;
-import au.org.ala.delta.model.UnorderedMultiStateCharacter;
-import au.org.ala.delta.rtf.RTFUtils;
+import au.org.ala.delta.model.NumericCharacter;
 
 public class TreeViewer extends JInternalFrame {
 
@@ -229,51 +224,19 @@ class DeltaTreeCellRenderer extends DefaultTreeCellRenderer {
 	private static final long serialVersionUID = 1L;
 	
 	private EditorDataModel _dataModel;
-	private ImageIcon _textIcon;
-	private ImageIcon _realIcon;
-	private ImageIcon _intIcon;
-	private ImageIcon _omIcon;
-	private ImageIcon _umIcon;
-	
 	private JCheckBox stateValueRenderer = new JCheckBox();
 	
 	public DeltaTreeCellRenderer(EditorDataModel dataModel) {
 		_dataModel = dataModel;
-		_textIcon = createImageIcon("/icons/textchar.png");
-		_realIcon = createImageIcon("/icons/realchar.png");
-		_intIcon = createImageIcon("/icons/intchar.png");
-		_omIcon = createImageIcon("/icons/omchar.png");
-		_umIcon = createImageIcon("/icons/umchar.png");
 	}
-	
-	 /** Returns an ImageIcon, or null if the path was invalid. */
-    protected static ImageIcon createImageIcon(String path) {
-        java.net.URL imgURL = TreeViewer.class.getResource(path);
-        if (imgURL != null) {
-            return new ImageIcon(imgURL);
-        } else {
-            System.err.println("Couldn't find file: " + path);
-            return null;
-        }
-    }	
+
 
 	public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus) {
 	
 		super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
 		if (value instanceof CharacterTreeNode) {
 			Character ch = (Character) ((CharacterTreeNode) value).getUserObject();
-			if (ch instanceof TextCharacter) {
-				setIcon(_textIcon);
-			} else if (ch instanceof RealCharacter) {
-				setIcon(_realIcon);			
-			} else if (ch instanceof IntegerCharacter) {
-				setIcon(_intIcon);				
-			} else if (ch instanceof OrderedMultiStateCharacter) {
-				setIcon(_omIcon);
-			} else if (ch instanceof UnorderedMultiStateCharacter) {
-				setIcon(_umIcon);
-			}
-			
+			setIcon(IconHelper.iconForCharacter(ch));	
 		}  
 		else if (leaf) {
 			DefaultMutableTreeNode node = (DefaultMutableTreeNode)value;
@@ -316,6 +279,9 @@ class DeltaTreeCellRenderer extends DefaultTreeCellRenderer {
 						}
 					}
 					return stateValueRenderer;
+				}
+				else if (ch instanceof NumericCharacter) {
+					setText(getText() + " "+((NumericCharacter)ch).getUnits());
 				}
 			}
 		}

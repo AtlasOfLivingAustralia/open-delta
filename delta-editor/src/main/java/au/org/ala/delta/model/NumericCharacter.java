@@ -14,20 +14,20 @@
  ******************************************************************************/
 package au.org.ala.delta.model;
 
+import org.apache.commons.lang.NotImplementedException;
+
 public abstract class NumericCharacter<T extends Number> extends Character{
 	
-	private String _units;
-
 	protected NumericCharacter(int number, CharacterType characterType) {
 		super(number, characterType);
 	}
 	
 	public String getUnits() {
-		return _units;
+		return _impl.getUnits();
 	}
 	
 	public void setUnits(String units) {
-		_units = units;
+		throw new NotImplementedException();
 	}
 
 }
