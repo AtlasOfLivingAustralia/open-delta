@@ -91,6 +91,7 @@ public class DeltaEditor extends SingleFrameApplication {
 	@Resource 
 	String windowTitleWithFilename;
 	
+	/** Tracks the data set being edited by which internal frame is currently focussed */
 	private EditorDataModel _selectedDataSet;
 	
 	
@@ -481,6 +482,9 @@ public class DeltaEditor extends SingleFrameApplication {
 			EditorDataModel model = getCurrentDataSet();
 			if (model != null) {
 				_dataSetRepository.saveAsName(model.getCurrentDataSet(), newFile.getAbsolutePath(), null);
+				model.setName(newFile.getAbsolutePath());
+				// Force a refresh of the main application title.
+				viewerFocusGained(model);
 			}
 		}
 	}

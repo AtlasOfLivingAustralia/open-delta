@@ -415,7 +415,7 @@ public class VOP {
 	}
 
 	public String getFilename() {
-		return _filename;
+		return _permSlotFile.getFileName();
 	}
 
 	public VOAnyDesc getDescFromId(int id) {

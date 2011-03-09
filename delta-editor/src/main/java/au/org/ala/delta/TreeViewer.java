@@ -17,6 +17,8 @@ package au.org.ala.delta;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 import javax.swing.DefaultListModel;
 import javax.swing.DropMode;
@@ -53,7 +55,7 @@ import au.org.ala.delta.model.TextCharacter;
 import au.org.ala.delta.model.UnorderedMultiStateCharacter;
 import au.org.ala.delta.rtf.RTFUtils;
 
-public class TreeViewer extends JInternalFrame implements IContextHolder {
+public class TreeViewer extends JInternalFrame {
 
 	private static final long serialVersionUID = 1L;
 
@@ -69,12 +71,14 @@ public class TreeViewer extends JInternalFrame implements IContextHolder {
 		ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(AboutBox.class);
 		resourceMap.injectFields(this);
 		
-		this.setTitle(String.format(windowTitle, dataModel.getName()));
 		
 		this.setSize(new Dimension(500, 400));
 
 		_dataModel = dataModel;
+		_dataModel.addPropertyChangeListener(new DataModelListener());
 
+		updateTitle();
+		
 		final JList lst = new JList();
 		lst.setModel(new ItemListModel(_dataModel));
 		lst.setDragEnabled(true);
@@ -135,13 +139,20 @@ public class TreeViewer extends JInternalFrame implements IContextHolder {
 
 	}
 
-	@Override
-	public EditorDataModel getContext() {
-		return _dataModel;
+	public void updateTitle() {
+		super.setTitle(String.format(windowTitle, _dataModel.getName()));
 	}
-
+	
+	class DataModelListener implements PropertyChangeListener {
+	
+		@Override
+		public void propertyChange(PropertyChangeEvent evt) {
+			if ("name".equals(evt.getPropertyName())) {
+				updateTitle();
+			}	
+		}		
+	}
 }
-
 class ItemListModel extends DefaultListModel implements ListModel {
 
 	private static final long serialVersionUID = 1L;

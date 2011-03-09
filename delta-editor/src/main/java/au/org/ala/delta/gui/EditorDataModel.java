@@ -1,5 +1,10 @@
 package au.org.ala.delta.gui;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Item;
@@ -19,9 +24,17 @@ public class EditorDataModel implements DeltaDataSet {
 	/** The number of the currently selected item */
 	private Item _selectedItem;
 	
+	/** Helper class for notifying interested parties of property changes */
+	private PropertyChangeSupport _propertyChangeSupport;
+	
 	
 	public EditorDataModel(DeltaDataSet dataSet) {
 		_currentDataSet = dataSet;
+		_propertyChangeSupport = new PropertyChangeSupport(this);
+	}
+	
+	public void addPropertyChangeListener(PropertyChangeListener listener) {
+		_propertyChangeSupport.addPropertyChangeListener(listener);
 	}
 	
 	public void setCurrentDataSet(DeltaDataSet dataSet) {
@@ -55,9 +68,17 @@ public class EditorDataModel implements DeltaDataSet {
 	public String getName() {
 		return _currentDataSet.getName();
 	}
+	
+	public void setName(String name) {
+		
+		_currentDataSet.setName(name);
+		
+		_propertyChangeSupport.firePropertyChange("name", null, name);
+	}
 
 	@Override
 	public Item getItem(int number) {
+		
 		return _currentDataSet.getItem(number);
 	}
 
@@ -82,6 +103,27 @@ public class EditorDataModel implements DeltaDataSet {
 	}
 	
 	
+	private class PropertyChangeDetector implements InvocationHandler {
+
+		/**
+		 * Attempts to detect when properties have changed using the fact that the method starts with "set".
+		 */
+		@Override
+		public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+			
+			Object result = method.invoke(proxy, args);
+			String methodName = method.getName();
+			if (methodName.startsWith("set")) {
+				// Bit of a lazy property change - we aren't respecting the "old value" and are assuming
+				// that there is a single argument to the method containing the new value. 
+				String propertyName = methodName.substring(3);
+				_propertyChangeSupport.firePropertyChange(propertyName, null, args[0]);
+			}
+			
+			return result;
+		}
+		
+	}
 	
 	
 	

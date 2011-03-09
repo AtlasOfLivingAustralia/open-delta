@@ -68,6 +68,12 @@ public class VOPAdaptor implements DeltaDataSet {
 	public String getName() {
 		return _vop.getFilename();
 	}
+	
+	/**
+	 * Doesn't do anything - the name is always the filename of the slot file.
+	 */
+	@Override
+	public void setName(String name) {}
 
 	@Override
 	public int getNumberOfCharacters() {

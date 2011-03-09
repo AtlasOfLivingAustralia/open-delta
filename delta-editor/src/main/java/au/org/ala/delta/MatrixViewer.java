@@ -22,6 +22,8 @@ import java.awt.Graphics;
 import java.awt.SystemColor;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -51,7 +53,7 @@ import au.org.ala.delta.gui.EditorDataModel;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Item;
 
-public class MatrixViewer extends JInternalFrame implements IContextHolder {
+public class MatrixViewer extends JInternalFrame {
 
 	private static final long serialVersionUID = 1L;
 
@@ -73,6 +75,7 @@ public class MatrixViewer extends JInternalFrame implements IContextHolder {
 		this.setTitle(String.format(windowTitle, dataSet.getName()));
 		
 		_dataSet = dataSet;
+		_dataSet.addPropertyChangeListener(new DataModelListener());
 		_model = new MatrixTableModel(dataSet);
 
 		this.setSize(new Dimension(600, 500));
@@ -162,9 +165,19 @@ public class MatrixViewer extends JInternalFrame implements IContextHolder {
 		this.getContentPane().add(divider, BorderLayout.CENTER);
 
 	}
-
-	public EditorDataModel getContext() {
-		return _dataSet;
+	
+	public void updateTitle() {
+		super.setTitle(String.format(windowTitle, _dataSet.getName()));
+	}
+	
+	class DataModelListener implements PropertyChangeListener {
+		
+		@Override
+		public void propertyChange(PropertyChangeEvent evt) {
+			if ("name".equals(evt.getPropertyName())) {
+				updateTitle();
+			}	
+		}		
 	}
 
 }

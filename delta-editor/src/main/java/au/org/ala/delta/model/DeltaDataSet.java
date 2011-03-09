@@ -21,6 +21,8 @@ public interface DeltaDataSet {
 	
 	public String getName();
 	
+	public void setName(String name);
+	
 	public Item getItem(int number);
 	
 	public String getAttributeAsString(int itemNumber, int characterNumber);
