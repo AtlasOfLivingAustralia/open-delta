@@ -226,7 +226,6 @@ public class StateEditor extends JPanel implements ValidationListener {
 			
 			if (ch instanceof NumericCharacter) {
 				setText(((NumericCharacter)ch).getUnits());
-				System.out.println(((NumericCharacter)ch).getUnits());
 			}
 			else {
 				setText("");

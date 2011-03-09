@@ -5,14 +5,13 @@ import au.org.ala.delta.model.CharacterFactory;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Item;
-import au.org.ala.delta.slotfile.Attribute;
 import au.org.ala.delta.slotfile.CharType;
 import au.org.ala.delta.slotfile.DeltaVOP;
 import au.org.ala.delta.slotfile.TextType;
 import au.org.ala.delta.slotfile.VOCharBaseDesc;
+import au.org.ala.delta.slotfile.VOCharBaseDesc.CharTextInfo;
 import au.org.ala.delta.slotfile.VOCharTextDesc;
 import au.org.ala.delta.slotfile.VOItemDesc;
-import au.org.ala.delta.slotfile.VOCharBaseDesc.CharTextInfo;
 
 /**
  * Implementation of a DELTA DataSet that uses the random access slotfile to read data on demand rather
