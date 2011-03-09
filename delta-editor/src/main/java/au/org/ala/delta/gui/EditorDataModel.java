@@ -37,6 +37,14 @@ public class EditorDataModel implements DeltaDataSet {
 		_propertyChangeSupport.addPropertyChangeListener(listener);
 	}
 	
+	public void removePropertyChangeListener(PropertyChangeListener listener) {
+		_propertyChangeSupport.removePropertyChangeListener(listener);
+		
+		if (_propertyChangeSupport.getPropertyChangeListeners().length == 0) {
+			close();
+		}
+	}
+	
 	public void setCurrentDataSet(DeltaDataSet dataSet) {
 		_currentDataSet = dataSet;
 		_selectedCharacter = null;
@@ -102,7 +110,11 @@ public class EditorDataModel implements DeltaDataSet {
 		return _currentDataSet.getMaximumNumberOfItems();
 	}
 	
-	
+	@Override
+	public void close() {
+		_currentDataSet.close();
+	}
+
 	private class PropertyChangeDetector implements InvocationHandler {
 
 		/**

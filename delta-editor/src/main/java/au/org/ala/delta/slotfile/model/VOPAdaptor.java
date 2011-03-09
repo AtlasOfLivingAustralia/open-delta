@@ -85,6 +85,11 @@ public class VOPAdaptor implements DeltaDataSet {
 	public int getMaximumNumberOfItems() {
 		return _vop.getDeltaMaster().getNItems();
 	}
+	
+	@Override
+	public void close() {
+		_vop.close();
+	}
 
 	/**
 	 * Converts a slotfile CharType int into a model class CharacterType enum.

@@ -17,8 +17,6 @@ package au.org.ala.delta;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 
 import javax.swing.DefaultListModel;
 import javax.swing.DropMode;
@@ -44,6 +42,7 @@ import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.gui.EditorDataModel;
+import au.org.ala.delta.gui.InternalFrameDataModelListener;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.IntegerCharacter;
@@ -75,9 +74,7 @@ public class TreeViewer extends JInternalFrame {
 		this.setSize(new Dimension(500, 400));
 
 		_dataModel = dataModel;
-		_dataModel.addPropertyChangeListener(new DataModelListener());
-
-		updateTitle();
+		new InternalFrameDataModelListener(this, dataModel, windowTitle);
 		
 		final JList lst = new JList();
 		lst.setModel(new ItemListModel(_dataModel));
@@ -137,20 +134,6 @@ public class TreeViewer extends JInternalFrame {
 		this.getContentPane().setLayout(new BorderLayout());
 		getContentPane().add(divider);
 
-	}
-
-	public void updateTitle() {
-		super.setTitle(String.format(windowTitle, _dataModel.getName()));
-	}
-	
-	class DataModelListener implements PropertyChangeListener {
-	
-		@Override
-		public void propertyChange(PropertyChangeEvent evt) {
-			if ("name".equals(evt.getPropertyName())) {
-				updateTitle();
-			}	
-		}		
 	}
 }
 class ItemListModel extends DefaultListModel implements ListModel {

@@ -36,6 +36,8 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.LineBorder;
+import javax.swing.event.InternalFrameEvent;
+import javax.swing.event.InternalFrameListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelListener;
@@ -50,6 +52,7 @@ import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.gui.EditorDataModel;
+import au.org.ala.delta.gui.InternalFrameDataModelListener;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Item;
 
@@ -75,7 +78,7 @@ public class MatrixViewer extends JInternalFrame {
 		this.setTitle(String.format(windowTitle, dataSet.getName()));
 		
 		_dataSet = dataSet;
-		_dataSet.addPropertyChangeListener(new DataModelListener());
+		new InternalFrameDataModelListener(this, dataSet, windowTitle);
 		_model = new MatrixTableModel(dataSet);
 
 		this.setSize(new Dimension(600, 500));
@@ -165,21 +168,6 @@ public class MatrixViewer extends JInternalFrame {
 		this.getContentPane().add(divider, BorderLayout.CENTER);
 
 	}
-	
-	public void updateTitle() {
-		super.setTitle(String.format(windowTitle, _dataSet.getName()));
-	}
-	
-	class DataModelListener implements PropertyChangeListener {
-		
-		@Override
-		public void propertyChange(PropertyChangeEvent evt) {
-			if ("name".equals(evt.getPropertyName())) {
-				updateTitle();
-			}	
-		}		
-	}
-
 }
 
 class BottomLineBorder extends LineBorder {

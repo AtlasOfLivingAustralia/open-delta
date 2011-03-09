@@ -32,4 +32,10 @@ public interface DeltaDataSet {
 	public int getNumberOfCharacters();
 
 	public int getMaximumNumberOfItems();
+	
+	/**
+	 * Closes this DeltaDataSet, allowing it to release any resources it may have aquired.
+	 */
+	public void close();
+	
 }

@@ -133,6 +133,18 @@ public class DeltaEditor extends SingleFrameApplication {
 		show(_desktop);
 
 	}
+	
+	/**
+	 * Closes all internal frames to allow their associated data models to be closed.
+	 */
+	@Override
+	protected void shutdown() {
+		for (JInternalFrame frame : _desktop.getAllFrames()) {
+			frame.dispose();
+		}
+		
+		super.shutdown();
+	}
 
 	private EditorDataModel getCurrentDataSet() {
 		return _selectedDataSet;
