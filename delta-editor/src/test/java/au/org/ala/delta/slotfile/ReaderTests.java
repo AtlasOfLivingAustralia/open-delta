@@ -8,21 +8,27 @@ import au.org.ala.delta.DeltaTestCase;
 import au.org.ala.delta.util.CodeTimer;
 
 public class ReaderTests extends DeltaTestCase {
+	
+	private String[] _files = new String[] { "Ponerini.dlt", "vide.dlt", "cflora.dlt", "sample.dlt", "newsample.dlt", "Grevillea.dlt" }; 
 
 	public void testBasicRead() throws IOException {
-		File f = copyURLToFile("/Ponerini.dlt");
-		CodeTimer t = new CodeTimer("readDeltaFile");
-		DeltaFileReader.readDeltaFile(f.getAbsolutePath(), null);
-		t.stop(true);
+		
+		for (String filename : _files) {
+			File f = copyURLToFile(String.format("/%s", filename));
+			CodeTimer t = new CodeTimer("Reading " + filename);
+			DeltaFileReader.readDeltaFile(f.getAbsolutePath(), null);
+			t.stop(true);			
+		}		
 	}
 	
-	public void testFullRead() throws IOException {
-		// File f = copyURLToFile("/sample.dlt");
-		File f = copyURLToFile("/Ponerini.dlt");
-		CodeTimer t = new CodeTimer("readDeltaFile");
-		DeltaFileReader.readDeltaFileFully(f.getAbsolutePath());
-		t.stop(true);		
-	}
+	
+//	public void testFullRead() throws IOException {
+//		// File f = copyURLToFile("/sample.dlt");
+//		File f = copyURLToFile("/Ponerini.dlt");
+//		CodeTimer t = new CodeTimer("readDeltaFile");
+//		DeltaFileReader.readDeltaFileFully(f.getAbsolutePath());
+//		t.stop(true);		
+//	}
 	
 //	public void testFullRead2() throws IOException {
 //		CodeTimer t = new CodeTimer("readDeltaFile");

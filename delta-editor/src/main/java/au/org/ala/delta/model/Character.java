@@ -17,7 +17,8 @@ package au.org.ala.delta.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import org.apache.commons.lang.NotImplementedException;
+
 import au.org.ala.delta.model.impl.CharacterData;
 
 public abstract class Character {
@@ -42,7 +43,7 @@ public abstract class Character {
 	}
 	
 	public void setDescription(String desc) {
-		// throw new NotImplementedException();
+		throw new NotImplementedException();
 	}
 	
 	public void addDependentCharacter(CharacterDependency dependency) {
@@ -54,7 +55,7 @@ public abstract class Character {
 	}
 	
 	public void setMandatory(boolean b) {
-		// throw new NotImplementedException();
+		throw new NotImplementedException();
 	}
 	
 	public boolean isMandatory() {
@@ -62,7 +63,7 @@ public abstract class Character {
 	}
 	
 	public void setExclusive(boolean exclusive) {
-//		throw new NotImplementedException();
+		throw new NotImplementedException();
 	}
 	
 	public boolean isExclusive() {

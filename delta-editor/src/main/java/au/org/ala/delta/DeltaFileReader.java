@@ -66,8 +66,6 @@ public class DeltaFileReader {
 		DeltaVOP vop = new DeltaVOP(fileName, false);
 		DeltaDataSet dataSet = new VOPAdaptor(vop);
 		
-		vop.getPermSlotFile().dumpStats();
-
 		return dataSet;
 	}
 
