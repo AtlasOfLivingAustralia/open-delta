@@ -25,13 +25,17 @@ public abstract class Character {
 	
 	private int _number;
 	private List<CharacterDependency> _dependentCharacters = new ArrayList<CharacterDependency>();
-
-	private String _notes;
+	private String _notes;	
+	protected CharacterData _impl;	
+	private CharacterType _characterType;
 	
-	protected CharacterData _impl;
-	
-	public Character(int number) {
+	protected Character(int number, CharacterType characterType) {
+		_characterType = characterType;
 		_number = number;
+	}
+	
+	public CharacterType getCharacterType() {
+		return _characterType;
 	}
 	
 	public int getCharacterId() {

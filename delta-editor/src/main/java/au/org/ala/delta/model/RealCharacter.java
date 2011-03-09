@@ -17,7 +17,7 @@ package au.org.ala.delta.model;
 public class RealCharacter extends NumericCharacter<Double> {
 	
 	public RealCharacter(int number) {
-		super(number);
+		super(number, CharacterType.RealNumeric);
 	}
 
 }

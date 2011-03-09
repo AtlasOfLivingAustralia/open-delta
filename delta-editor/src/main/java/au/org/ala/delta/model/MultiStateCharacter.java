@@ -20,8 +20,8 @@ public abstract class MultiStateCharacter extends Character {
 	private String[] _states;
 	private ImplicitValue _implicitValueStateId;
 
-	public MultiStateCharacter(int number) {
-		super(number);
+	public MultiStateCharacter(int number, CharacterType characterType) {
+		super(number, characterType);
 	}
 
 	public int getNumberOfStates() {

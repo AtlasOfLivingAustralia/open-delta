@@ -17,7 +17,7 @@ package au.org.ala.delta.model;
 public class TextCharacter extends Character {
 
 	public TextCharacter(int number) {
-		super(number);
+		super(number, CharacterType.Text);
 	}
 
 }

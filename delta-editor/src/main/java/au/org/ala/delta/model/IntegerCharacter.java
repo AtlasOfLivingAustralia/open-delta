@@ -17,7 +17,7 @@ package au.org.ala.delta.model;
 public class IntegerCharacter extends NumericCharacter<Integer> {
 
 	public IntegerCharacter(int number) {
-		super(number);
+		super(number, CharacterType.IntegerNumeric);
 	}
 
 }

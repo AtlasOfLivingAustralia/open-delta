@@ -18,8 +18,8 @@ public abstract class NumericCharacter<T extends Number> extends Character{
 	
 	private String _units;
 
-	public NumericCharacter(int number) {
-		super(number);
+	protected NumericCharacter(int number, CharacterType characterType) {
+		super(number, characterType);
 	}
 	
 	public String getUnits() {
