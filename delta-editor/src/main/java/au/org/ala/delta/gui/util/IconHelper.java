@@ -15,7 +15,10 @@
 
 package au.org.ala.delta.gui.util;
 
+import java.awt.Image;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.ImageIcon;
 
@@ -33,6 +36,7 @@ import au.org.ala.delta.util.Platform;
 public class IconHelper {
 
 	private static final String ICON_PATH = "/icons";
+	private static final String DELTA_IMAGE_48 = "Delta_blue_48.png";
 	private static final String DELTA_IMAGE_32 = "Delta_blue_32.png";
 	private static final String DELTA_IMAGE_16 = "Delta_blue_16.png";
 	private static final String DELTA_IMAGE_14 = "Delta_blue_14.png";
@@ -100,6 +104,18 @@ public class IconHelper {
 	private static URL imageURLFromFileName(String imageFileName) {
 		URL imageUrl = IconHelper.class.getResource(ICON_PATH + "/" + imageFileName);
 		return imageUrl;
+	}
+
+	public static List<? extends Image> getDeltaIconList() {
+		List<Image> list = new ArrayList<Image>();
+		
+		list.add(createImageIcon(DELTA_IMAGE_48).getImage());
+		list.add(createImageIcon(DELTA_IMAGE_32).getImage());
+		list.add(createImageIcon(DELTA_IMAGE_16).getImage());
+		list.add(createImageIcon(DELTA_IMAGE_14).getImage());
+		list.add(createImageIcon(DELTA_IMAGE_12).getImage());
+
+		return list;
 	}
 
 }

@@ -113,7 +113,8 @@ public class DeltaEditor extends SingleFrameApplication {
 		resourceMap.injectFields(this);
 	
 		JFrame frame = getMainFrame();
-		frame.setIconImage(IconHelper.createDeltaImageIcon().getImage());
+		
+		frame.setIconImages(IconHelper.getDeltaIconList());
 	
 		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		
