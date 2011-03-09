@@ -8,6 +8,7 @@ import au.org.ala.delta.model.Item;
 import au.org.ala.delta.slotfile.Attribute;
 import au.org.ala.delta.slotfile.CharType;
 import au.org.ala.delta.slotfile.DeltaVOP;
+import au.org.ala.delta.slotfile.TextType;
 import au.org.ala.delta.slotfile.VOCharBaseDesc;
 import au.org.ala.delta.slotfile.VOCharTextDesc;
 import au.org.ala.delta.slotfile.VOItemDesc;
@@ -57,11 +58,8 @@ public class VOPAdaptor implements DeltaDataSet {
 		VOItemDesc itemDesc = (VOItemDesc) _vop.getDescFromId(itemId);
 		
 		int charId = _vop.getDeltaMaster().uniIdFromCharNo(characterNumber);			
-		Attribute attr = itemDesc.readAttribute(charId);
-		if (attr != null) {
-			return attr.getAsText(0, _vop);
-		}
-		return "-";
+		return itemDesc.readAttributeAsText(charId, TextType.UTF8, 1);
+		
 	}
 	
 	@Override

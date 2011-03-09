@@ -87,8 +87,8 @@ public class MatrixViewer extends JInternalFrame {
 		_table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		_table.getTableHeader().setSize(new Dimension(_table.getColumnModel().getTotalColumnWidth(), 100));
 		_table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
 		_table.setRowSelectionAllowed(false);
+		_table.setDefaultRenderer(Object.class, new AttributeCellRenderer());
 
 		_fixedColumns = new JTable(new ItemColumnModel(dataSet));
 		_fixedColumns.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
@@ -127,7 +127,7 @@ public class MatrixViewer extends JInternalFrame {
 		_table.getSelectionModel().addListSelectionListener(listener);
 		_table.getColumnModel().getSelectionModel().addListSelectionListener(listener);
 		
-		_table.getTableHeader().setDefaultRenderer(new MyCellRenderer());
+		_table.getTableHeader().setDefaultRenderer(new TableHeaderRenderer());
 
 		final JScrollPane scrollpane = new JScrollPane(_table);
 		scrollpane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -184,7 +184,26 @@ class BottomLineBorder extends LineBorder {
 	}
 }
 
-class MyCellRenderer extends JTextArea implements TableCellRenderer {
+class AttributeCellRenderer extends DefaultTableCellRenderer {
+	
+	
+	public Component getTableCellRendererComponent(
+			JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+			
+		
+		Component comp = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+		
+		if (table.getModel().isCellEditable(row, column)) {
+			setBackground(Color.WHITE);
+		}
+		else {
+			setBackground(new Color(0xE8, 0xE8, 0xE8));
+		}
+		return comp;
+	}
+}
+
+class TableHeaderRenderer extends JTextArea implements TableCellRenderer {
 
 	private static final long serialVersionUID = 1L;
 
@@ -192,7 +211,7 @@ class MyCellRenderer extends JTextArea implements TableCellRenderer {
 	/** map from table to map of rows to map of column heights */
 	private final Map cellSizes = new HashMap();
 
-	public MyCellRenderer() {
+	public TableHeaderRenderer() {
 		setLineWrap(true);
 		setWrapStyleWord(true);
 		setPreferredSize(new Dimension(150, 100));
@@ -209,7 +228,8 @@ class MyCellRenderer extends JTextArea implements TableCellRenderer {
 		// setBorder(adaptee.getBorder());
 		setFont(adaptee.getFont());
 		setText(adaptee.getText());
-
+		
+		
 		// This line was very important to get it working with JDK1.4
 		TableColumnModel columnModel = table.getColumnModel();
 
@@ -250,8 +270,8 @@ class MyCellRenderer extends JTextArea implements TableCellRenderer {
 			TableColumn tc = ((TableColumn) columns.nextElement());
 
 			TableCellRenderer cellRenderer = tc.getCellRenderer();
-			if (cellRenderer instanceof MyCellRenderer) {
-				MyCellRenderer tar = (MyCellRenderer) cellRenderer;
+			if (cellRenderer instanceof TableHeaderRenderer) {
+				TableHeaderRenderer tar = (TableHeaderRenderer) cellRenderer;
 				maximum_height = Math.max(maximum_height, tar.findMaximumRowSize(table, row));
 			}
 		}

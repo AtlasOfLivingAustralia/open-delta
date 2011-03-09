@@ -43,6 +43,10 @@ public class Attribute {
 		return _impl.isStatePresent(stateNumber);
 	}
 	
+	public boolean isSimple() {
+		return _impl.isSimple();
+	}
+	
 	public String getValue() {
 		return _impl.getValue();
 	}

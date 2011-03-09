@@ -19,6 +19,7 @@ import javax.swing.table.TableModel;
 
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.model.TextCharacter;
 import au.org.ala.delta.rtf.RTFUtils;
 
 public class MatrixTableModel implements TableModel {
@@ -51,7 +52,11 @@ public class MatrixTableModel implements TableModel {
 
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
-		return false;
+		Character character = _dataSet.getCharacter(columnIndex+1);
+		if (character instanceof TextCharacter) {
+			return true;
+		}
+		return _dataSet.getItem(rowIndex+1).getAttribute(character).isSimple();
 	}
 
 	@Override

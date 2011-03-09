@@ -7,4 +7,6 @@ public interface AttributeData {
 	public void setValue(String value);
 	
 	public boolean isStatePresent(int stateNumber);
+	
+	public boolean isSimple();
 }

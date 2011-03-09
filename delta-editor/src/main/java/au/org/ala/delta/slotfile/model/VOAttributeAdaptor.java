@@ -41,4 +41,19 @@ public class VOAttributeAdaptor implements AttributeData {
 		return attribute.encodesState(_charBaseDesc, stateId, true);
 	}
 
+	@Override
+	public boolean isSimple() {
+		if ((_itemDesc == null) || (_charBaseDesc == null)) {
+			return true;
+		}
+		Attribute attribute = _itemDesc.readAttribute(_charBaseDesc.getUniId());
+		if (attribute != null) {
+			return attribute.isSimple(_charBaseDesc);
+		}
+		
+		return true;
+	}
+	
+	
+
 }

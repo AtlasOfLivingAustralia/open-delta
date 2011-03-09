@@ -896,7 +896,7 @@ public class Attribute implements Iterable<AttrChunk> {
 		          int chunkType = chunk.getType();
 		          if (chunkType == ChunkType.CHUNK_STATE) {
 		              int stateId = chunk.getStateId();
-		              if (stateId == 0) {
+		              if (stateId == VOCharBaseDesc.STATEID_NULL) {
 		            	  return false;
 		              }
 		              int newState = charBase.stateNoFromUniId(stateId);

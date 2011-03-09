@@ -198,8 +198,7 @@ class CharStateHolder {
 	@Override
 	public String toString() {
 		if (_dataModel.getSelectedItem() != null) {
-			Attribute attribute = _dataModel.getSelectedItem().getAttribute(_character);
-			return String.format("%s", attribute == null ? "--" : RTFUtils.stripFormatting(attribute.getValue()));
+			return _dataModel.getAttributeAsString(_dataModel.getSelectedItem().getItemId(), _character.getCharacterId());
 		} else {
 			return "---";
 		}
