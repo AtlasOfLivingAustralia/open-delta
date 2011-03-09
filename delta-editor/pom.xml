@@ -128,7 +128,8 @@
 		            <headerType>gui</headerType>
 		            <outfile>target/DeltaEditor.exe</outfile>
 		            <jar>target/${project.artifactId}-${project.version}-jar-with-dependencies.jar</jar>
-		            <errTitle>alakai</errTitle>
+		            <errTitle>Error</errTitle>
+		            <icon>installer\resources\delta_editor.ico</icon>
                     <classPath>
               			<mainClass>au.org.ala.delta.DeltaEditor</mainClass>
               			<addDependencies>false</addDependencies>
