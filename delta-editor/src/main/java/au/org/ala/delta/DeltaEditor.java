@@ -74,6 +74,8 @@ public class DeltaEditor extends SingleFrameApplication {
 
 	private JDesktopPane _desktop;
 	private StatusBar _statusBar;
+	
+	private ActionMap _actionMap;
 
 	// Yuk
 	private DeltaDataSetRepository _dataSetRepository;
@@ -84,6 +86,8 @@ public class DeltaEditor extends SingleFrameApplication {
 	private HelpController _helpController;
 	
 	private int numViewersOpen;
+	
+	
 	
 	@Resource 
 	String windowTitleWithoutFilename;
@@ -103,6 +107,14 @@ public class DeltaEditor extends SingleFrameApplication {
 		return _saveEnabled;
 	}
 	
+	/**
+	 * A dummy property to disable the menus that aren't yet implemented.
+	 * @return always returns false
+	 */
+	public boolean isEnabled() {
+		return false;
+	}
+	
 	@Override
 	protected void startup() {
 		_saveEnabled = false;
@@ -111,6 +123,8 @@ public class DeltaEditor extends SingleFrameApplication {
 		
 		ResourceMap resourceMap = getContext().getResourceMap(AboutBox.class);
 		resourceMap.injectFields(this);
+		
+		_actionMap = getContext().getActionMap(this);
 	
 		JFrame frame = getMainFrame();
 		
@@ -152,7 +166,7 @@ public class DeltaEditor extends SingleFrameApplication {
 	}
 	
 	private JMenuBar buildMenus() {
-		ActionMap actionMap = getContext().getActionMap(this);
+		
 
 		JMenuBar menuBar = new JMenuBar();
 
@@ -160,16 +174,16 @@ public class DeltaEditor extends SingleFrameApplication {
 		mnuFile.setName("mnuFile");
 
 		JMenuItem mnuItFileOpen = new JMenuItem();
-		mnuItFileOpen.setAction(actionMap.get("loadFile"));
+		mnuItFileOpen.setAction(_actionMap.get("loadFile"));
 		
 		JMenuItem mnuItFileSave = new JMenuItem();
-		mnuItFileSave.setAction(actionMap.get("saveFile"));
+		mnuItFileSave.setAction(_actionMap.get("saveFile"));
 		
 		JMenuItem mnuItFileSaveAs = new JMenuItem();
-		mnuItFileSaveAs.setAction(actionMap.get("saveAsFile"));
+		mnuItFileSaveAs.setAction(_actionMap.get("saveAsFile"));
 
 		JMenuItem mnuItFileExit = new JMenuItem();
-		mnuItFileExit.setAction(actionMap.get("exitApplication"));
+		mnuItFileExit.setAction(_actionMap.get("exitApplication"));
 
 		mnuFile.add(mnuItFileOpen);
 		mnuFile.addSeparator();
@@ -179,25 +193,18 @@ public class DeltaEditor extends SingleFrameApplication {
 		mnuFile.add(mnuItFileExit);
 		menuBar.add(mnuFile);
 
-		JMenu mnuView = new JMenu();
-		mnuView.setName("mnuView");
-
-		JMenuItem mnuItGrid = new JMenuItem();
-		mnuItGrid.setAction(actionMap.get("newGridView")); 
-
-		mnuView.add(mnuItGrid);
-
-		JMenuItem mnuItTree = new JMenuItem();
-		mnuItTree.setAction(actionMap.get("newTreeView")); 
-
-		mnuView.add(mnuItTree);
-
+		
+		// View Menu
+		JMenu mnuView = buildViewMenu();
+		
 		menuBar.add(mnuView);
 
+		
+		// Window Menu
 		JMenu mnuWindow = new JMenu();
 		mnuWindow.setName("mnuWindow");
 		JMenuItem mnuItTile = new JMenuItem();
-		mnuItTile.setAction(actionMap.get("tileFrames"));
+		mnuItTile.setAction(_actionMap.get("tileFrames"));
 		mnuWindow.add(mnuItTile);
 
 		mnuWindow.addSeparator();
@@ -246,7 +253,7 @@ public class DeltaEditor extends SingleFrameApplication {
 
 		
 		JMenuItem mnuItAbout = new JMenuItem();
-		mnuItAbout.setAction(actionMap.get("openAbout"));
+		mnuItAbout.setAction(_actionMap.get("openAbout"));
 		
 		mnuHelp.addSeparator();
 		mnuHelp.add(mnuItAbout);
@@ -254,6 +261,48 @@ public class DeltaEditor extends SingleFrameApplication {
 		menuBar.add(mnuHelp);
 		
 		return menuBar;
+	}
+
+	/**
+	 * Builds and returns the View menu.
+	 * @return a new JMenu ready to be added to the menu bar.
+	 */
+	private JMenu buildViewMenu() {
+		JMenu mnuView = new JMenu();
+		mnuView.setName("mnuView");
+
+		String[] viewMenuActions = {
+				"newTreeView",
+				"newGridView",
+				"-",
+				"viewCharacterEditor",
+				"viewTaxonEditor",
+				"-",
+				"viewActionSets",
+				"viewImageSettings"
+		};
+		
+		for (String action : viewMenuActions) {
+			addMenu(mnuView, action);
+		}
+		
+		return mnuView;
+	}
+	
+	/**
+	 * Creates and adds a menu item to the supplied menu with an action identified by the supplied actionName.
+	 * @param menu the menu to add the new item to.
+	 * @param actionName the name of the action, or "-" to add a separator.
+	 */
+	private void addMenu(JMenu menu, String actionName) {
+		if ("-".equals(actionName)) {
+			menu.addSeparator();
+		}
+		else {
+			JMenuItem menuItem = new JMenuItem();
+			menuItem.setAction(_actionMap.get(actionName));
+			menu.add(menuItem);
+		}
 	}
 
 	private File _lastDirectory = null;
@@ -531,6 +580,22 @@ public class DeltaEditor extends SingleFrameApplication {
    @Action
    public void openAbout() {
 	   createAboutBox();
+   }
+   
+   @Action(enabledProperty="enabled")
+   public void viewCharacterEditor() {
+   }
+   
+   @Action(enabledProperty="enabled")
+   public void viewTaxonEditor() {
+   }
+   
+   @Action(enabledProperty="enabled")
+   public void viewActionSets() {
+   }
+   
+   @Action(enabledProperty="enabled")
+   public void viewImageSettings() {
    }
    
    public void addPropertyChangeListener(PropertyChangeListener listener) {
