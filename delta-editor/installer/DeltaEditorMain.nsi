@@ -52,7 +52,8 @@ Var StartMenuGroup
 !insertmacro MUI_LANGUAGE English
 
 # Installer attributes
-OutFile "..\target\OpenDelta-${VERSION}-Installer.exe"
+
+OutFile "..\target\OpenDelta-${VERSION}-r${BUILDNUMBER}-Installer.exe"
 InstallDir OpenDelta
 CRCCheck on
 XPStyle on
@@ -69,9 +70,13 @@ Section -Main SEC0000
     File "..\target\DeltaEditor.exe"
     File /r "$%JAVA_HOME%\jre"
   
+    ; Output sample dlt into sample subdirectory
+    SetOutPath $INSTDIR\sample
+    File "..\sampledata\sample.dlt"
+    
     ; Output JAR files to lib subdirectory
     SetOutPath $INSTDIR\lib
-    File "..\target\delta-editor-${VERSION}-jar-with-dependencies.jar"
+    File "..\target\${JARNAME}"
   
     WriteRegStr HKLM "${REGKEY}\Components" Main 1
 SectionEnd
@@ -116,6 +121,8 @@ Section /o -un.Main UNSEC0000
     Delete /REBOOTOK $INSTDIR\lib\*.jar
     RmDir /REBOOTOK $INSTDIR\lib
     RmDir /r /REBOOTOK $INSTDIR\jre
+    Delete /REBOOTOK $INSTDIR\sample\sample.dlt
+    RmDir /REBOOTOK $INSTDIR\sample
     DeleteRegValue HKLM "${REGKEY}\Components" Main
 SectionEnd
 
@@ -142,6 +149,11 @@ SectionEnd
 Function .onInit
     InitPluginsDir
     !insertmacro MULTIUSER_INIT
+    
+    StrCmp ${INCLUDEJRE} "1" 0 +3
+    OutFile "..\target\OpenDelta-${VERSION}-r${BUILDNUMBER}-Installer.exe"
+    Goto +2
+    OutFile "..\target\OpenDelta-${VERSION}-r${BUILDNUMBER}-Installer-NOJRE.exe"
 FunctionEnd
 
 # Uninstaller functions
