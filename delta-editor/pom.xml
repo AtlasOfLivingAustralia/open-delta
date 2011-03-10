@@ -127,7 +127,7 @@
 		            <dontWrapJar>true</dontWrapJar>
 		            <headerType>gui</headerType>
 		            <outfile>target/DeltaEditor.exe</outfile>
-		            <jar>${project.artifactId}-${project.version}-jar-with-dependencies.jar</jar>
+		            <jar>lib\${project.artifactId}-${project.version}-jar-with-dependencies.jar</jar>
 		            <errTitle>Error</errTitle>
 		            <icon>installer\resources\delta_editor.ico</icon>
                     <!--<classPath>
