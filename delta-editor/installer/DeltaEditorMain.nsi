@@ -36,6 +36,7 @@ Name "OpenDelta Suite"
 
 # Variables
 Var StartMenuGroup
+Var IncludeJRE
 
 # Installer pages
 !insertmacro MUI_PAGE_WELCOME
@@ -53,7 +54,6 @@ Var StartMenuGroup
 
 # Installer attributes
 
-OutFile "..\target\OpenDelta-${VERSION}-r${BUILDNUMBER}-Installer.exe"
 InstallDir OpenDelta
 CRCCheck on
 XPStyle on
@@ -63,20 +63,9 @@ ShowUninstDetails show
 
 # Installer sections
 Section -Main SEC0000
-    SetOutPath $INSTDIR
     SetOverwrite on
     
-    ; Put file there
-    File "..\target\DeltaEditor.exe"
-    File /r "$%JAVA_HOME%\jre"
-  
-    ; Output sample dlt into sample subdirectory
-    SetOutPath $INSTDIR\sample
-    File "..\sampledata\sample.dlt"
-    
-    ; Output JAR files to lib subdirectory
-    SetOutPath $INSTDIR\lib
-    File "..\target\${JARNAME}"
+    Call InstallAddFiles
   
     WriteRegStr HKLM "${REGKEY}\Components" Main 1
 SectionEnd
@@ -87,7 +76,7 @@ Section -post SEC0001
     WriteUninstaller $INSTDIR\uninstall.exe
     !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
     SetOutPath $SMPROGRAMS\$StartMenuGroup
-    CreateShortCut "$SMPROGRAMS\$StartMenuGroup\DeltaEditor.lnk" "$INSTDIR\DeltaEditor.exe"
+    CreateShortCut "$SMPROGRAMS\$StartMenuGroup\DeltaEditor.lnk" "$INSTDIR\${EXENAME}"
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Uninstall $(^Name).lnk" $INSTDIR\uninstall.exe
     !insertmacro MUI_STARTMENU_WRITE_END
     WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" DisplayName "$(^Name)"
@@ -117,12 +106,8 @@ done${UNSECTION_ID}:
 
 # Uninstaller sections
 Section /o -un.Main UNSEC0000
-    Delete /REBOOTOK $INSTDIR\*.exe
-    Delete /REBOOTOK $INSTDIR\lib\*.jar
-    RmDir /REBOOTOK $INSTDIR\lib
-    RmDir /r /REBOOTOK $INSTDIR\jre
-    Delete /REBOOTOK $INSTDIR\sample\sample.dlt
-    RmDir /REBOOTOK $INSTDIR\sample
+    Call un.UninstallRemoveFiles
+
     DeleteRegValue HKLM "${REGKEY}\Components" Main
 SectionEnd
 
@@ -149,11 +134,6 @@ SectionEnd
 Function .onInit
     InitPluginsDir
     !insertmacro MULTIUSER_INIT
-    
-    StrCmp ${INCLUDEJRE} "1" 0 +3
-    OutFile "..\target\OpenDelta-${VERSION}-r${BUILDNUMBER}-Installer.exe"
-    Goto +2
-    OutFile "..\target\OpenDelta-${VERSION}-r${BUILDNUMBER}-Installer-NOJRE.exe"
 FunctionEnd
 
 # Uninstaller functions
