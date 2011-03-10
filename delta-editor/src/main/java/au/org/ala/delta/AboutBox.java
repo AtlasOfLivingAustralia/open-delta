@@ -4,45 +4,29 @@ package au.org.ala.delta;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Frame;
-import java.awt.Toolkit;
-import java.awt.datatransfer.StringSelection;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
-import java.util.TimeZone;
+import java.awt.event.HierarchyListener;
 
 import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextPane;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyleConstants;
-
-import au.org.ala.delta.gui.util.IconHelper;
-import au.org.ala.delta.util.Utils;
-
-import java.awt.FlowLayout;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.EtchedBorder;
-import javax.swing.border.MatteBorder;
 import javax.swing.UIManager;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.MatteBorder;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
-import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
+
+import au.org.ala.delta.gui.util.IconHelper;
+import au.org.ala.delta.util.Utils;
 
 public class AboutBox extends JDialog {
 
@@ -68,6 +52,7 @@ public class AboutBox extends JDialog {
 	 
 	public AboutBox(Frame owner) {
 		super(owner, true);
+		setName("aboutBox");
 		
 		ActionMap actionMap = Application.getInstance().getContext().getActionMap(this);
 		ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(AboutBox.class);
@@ -148,9 +133,6 @@ public class AboutBox extends JDialog {
 		getContentPane().add(pnlTop, BorderLayout.NORTH);
 		getContentPane().add(pnlMiddle, BorderLayout.CENTER);
 		getContentPane().add(pnlBottom, BorderLayout.SOUTH);
-		
-		//center the dialog on screen
-		this.setLocationRelativeTo(owner);
 	}
 	
 	@Action
@@ -173,4 +155,10 @@ public class AboutBox extends JDialog {
 	private String getVersionFromManifest() {
 		return Utils.getVersionFromManifest();
 	}
+
+	@Override
+	public void addHierarchyListener(HierarchyListener l) {
+		// do nothing - working around a StackOverflowError when SAF saves the dialog properties under Open JDK on
+		// linux. We don't need to save these properties anyway.
+	}	
 }
