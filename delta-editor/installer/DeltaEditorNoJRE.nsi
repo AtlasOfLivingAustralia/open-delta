@@ -5,7 +5,7 @@ OutFile "..\target\OpenDelta-${VERSION}-Installer-NOJRE.exe"
 Function InstallAddFiles
     SetOutPath $INSTDIR
     ; Put file there
-    File "..\target\${EXENAME}"
+    File /oname=${EXEOUTPUTNAME} "..\target\${EXENAME}" 
   
     ; Output sample dlt into sample subdirectory
     SetOutPath $INSTDIR\sample

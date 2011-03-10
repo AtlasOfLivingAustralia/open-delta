@@ -36,7 +36,6 @@ Name "OpenDelta Suite"
 
 # Variables
 Var StartMenuGroup
-Var IncludeJRE
 
 # Installer pages
 !insertmacro MUI_PAGE_WELCOME
@@ -76,7 +75,7 @@ Section -post SEC0001
     WriteUninstaller $INSTDIR\uninstall.exe
     !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
     SetOutPath $SMPROGRAMS\$StartMenuGroup
-    CreateShortCut "$SMPROGRAMS\$StartMenuGroup\DeltaEditor.lnk" "$INSTDIR\${EXENAME}"
+    CreateShortCut "$SMPROGRAMS\$StartMenuGroup\DeltaEditor.lnk" "$INSTDIR\${EXEOUTPUTNAME}"
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Uninstall $(^Name).lnk" $INSTDIR\uninstall.exe
     !insertmacro MUI_STARTMENU_WRITE_END
     WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" DisplayName "$(^Name)"

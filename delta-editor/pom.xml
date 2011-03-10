@@ -21,7 +21,6 @@
 		<url>http://code.google.com/p/open-delta/</url>
 	</scm>
 	<build>
-	    <finalName>${project.artifactId}-${project.version}-r${buildNumber}</finalName>
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>
@@ -46,6 +45,8 @@
 					<descriptorRefs>
 						<descriptorRef>jar-with-dependencies</descriptorRef>
 					</descriptorRefs>
+			        <finalName>${project.build.finalName}-with-dependencies</finalName>
+                    <appendAssemblyId>false</appendAssemblyId>
 				</configuration>
 				<executions>
 					<execution>
@@ -120,7 +121,7 @@
 		      <executions>
 		        <execution>
 		          <id>DeltaEditorWithJRE</id>
-		          <phase>package</phase>
+		          <phase>install</phase>
 		          <goals>
 		            <goal>launch4j</goal>
 		          </goals>
@@ -128,18 +129,17 @@
 		            <dontWrapJar>true</dontWrapJar>
 		            <headerType>gui</headerType>
 		            <outfile>target/DeltaEditor.exe</outfile>
-		            <jar>lib\${project.build.finalName}-jar-with-dependencies.jar</jar>
+		            <jar>lib\${project.build.finalName}-with-dependencies.jar</jar>
 		            <errTitle>Error</errTitle>
 		            <icon>installer\resources\delta_editor.ico</icon>
 		            <jre>
 		              <path>jre</path>
-		              <!--<minVersion>1.6.0</minVersion>-->
 		            </jre>
 		          </configuration>
 		        </execution>
                 <execution>
                   <id>DeltaEditorNOJRE</id>
-                  <phase>package</phase>
+                  <phase>install</phase>
                   <goals>
                     <goal>launch4j</goal>
                   </goals>
@@ -147,11 +147,11 @@
                     <dontWrapJar>true</dontWrapJar>
                     <headerType>gui</headerType>
                     <outfile>target/DeltaEditor-NOJRE.exe</outfile>
-                    <jar>lib\${project.build.finalName}-jar-with-dependencies.jar</jar>
+                    <jar>lib\${project.build.finalName}-with-dependencies.jar</jar>
                     <errTitle>Error</errTitle>
                     <icon>installer\resources\delta_editor.ico</icon>
                     <jre>
-                      <minVersion>1.5.0</minVersion>
+                      <minVersion>1.6.0_10</minVersion>
                     </jre>
                   </configuration>
                 </execution>
@@ -164,7 +164,7 @@
         <executions>
           <execution>
             <id>InstallerWithJRE</id>
-            <phase>package</phase>
+            <phase>install</phase>
             <configuration>
               <target>
               	<taskdef name="nsis" classname="com.danielreese.nsisant.Task">
@@ -172,8 +172,9 @@
 				</taskdef>
                 <nsis script="./installer/DeltaEditorWithJRE.nsi">
                 	<define name="VERSION" value="${project.version} r${buildNumber}"/>
-                	<define name="JARNAME" value="${project.build.finalName}-jar-with-dependencies.jar"/>
+                	<define name="JARNAME" value="${project.build.finalName}-with-dependencies.jar"/>
                 	<define name="EXENAME" value="DeltaEditor.exe"/>
+                	<define name="EXEOUTPUTNAME" value="DeltaEditor.exe"/>
                 </nsis>
               </target>
             </configuration>
@@ -183,7 +184,7 @@
           </execution>
           <execution>
             <id>InstallerNoJRE</id>
-            <phase>package</phase>
+            <phase>install</phase>
             <configuration>
               <target>
                 <taskdef name="nsis" classname="com.danielreese.nsisant.Task">
@@ -191,8 +192,9 @@
                 </taskdef>
                 <nsis script="./installer/DeltaEditorNoJRE.nsi">
                     <define name="VERSION" value="${project.version} r${buildNumber}"/>
-                    <define name="JARNAME" value="${project.build.finalName}-jar-with-dependencies.jar"/>
+                    <define name="JARNAME" value="${project.build.finalName}-with-dependencies.jar"/>
                     <define name="EXENAME" value="DeltaEditor-NOJRE.exe"/>
+                    <define name="EXEOUTPUTNAME" value="DeltaEditor.exe"/>
                 </nsis>
               </target>
             </configuration>

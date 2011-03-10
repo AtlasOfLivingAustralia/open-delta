@@ -5,7 +5,7 @@ OutFile "..\target\OpenDelta-${VERSION}-Installer.exe"
 Function InstallAddFiles
     SetOutPath $INSTDIR
     ; Put file there
-    File "..\target\${EXENAME}"
+    File /oname=${EXEOUTPUTNAME} "..\target\${EXENAME}" 
     
     ; Include the JRE
     File /r "$%JAVA_HOME%\jre"
