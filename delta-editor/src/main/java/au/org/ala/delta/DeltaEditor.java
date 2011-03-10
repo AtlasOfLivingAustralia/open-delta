@@ -132,6 +132,7 @@ public class DeltaEditor extends SingleFrameApplication {
 		_actionMap = getContext().getActionMap(this);
 	
 		JFrame frame = getMainFrame();
+		frame.setPreferredSize(new Dimension(800,600));
 		
 		frame.setIconImages(IconHelper.getDeltaIconList());
 	
