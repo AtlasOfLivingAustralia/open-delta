@@ -95,6 +95,11 @@ public class DeltaEditor extends SingleFrameApplication {
 	@Resource 
 	String windowTitleWithFilename;
 	
+	@Resource
+	private String warning;
+	@Resource
+	private String warningTitle;
+	
 	/** Tracks the data set being edited by which internal frame is currently focussed */
 	private EditorDataModel _selectedDataSet;
 	
@@ -159,6 +164,14 @@ public class DeltaEditor extends SingleFrameApplication {
 		}
 		
 		super.shutdown();
+	}
+
+	
+	@Override
+	protected void ready() {
+		 
+		JOptionPane.showConfirmDialog(getMainFrame(), warning, warningTitle, JOptionPane.DEFAULT_OPTION ,JOptionPane.WARNING_MESSAGE);
+		super.ready();
 	}
 
 	private EditorDataModel getCurrentDataSet() {
