@@ -129,7 +129,7 @@
 		          <configuration>
 		            <dontWrapJar>true</dontWrapJar>
 		            <headerType>gui</headerType>
-		            <outfile>target/DeltaEditor.exe</outfile>
+		            <outfile>target/DELTA Editor.exe</outfile>
 		            <jar>lib\${project.build.finalName}-with-dependencies.jar</jar>
 		            <errTitle>Error</errTitle>
 		            <icon>installer\resources\delta_editor.ico</icon>
@@ -147,7 +147,7 @@
                   <configuration>
                     <dontWrapJar>true</dontWrapJar>
                     <headerType>gui</headerType>
-                    <outfile>target/DeltaEditor-NOJRE.exe</outfile>
+                    <outfile>target/DELTA Editor-NOJRE.exe</outfile>
                     <jar>lib\${project.build.finalName}-with-dependencies.jar</jar>
                     <errTitle>Error</errTitle>
                     <icon>installer\resources\delta_editor.ico</icon>
@@ -174,8 +174,8 @@
                 <nsis script="./installer/DeltaEditorWithJRE.nsi">
                 	<define name="VERSION" value="${project.version}"/>
                 	<define name="JARNAME" value="${project.build.finalName}-with-dependencies.jar"/>
-                	<define name="EXENAME" value="DeltaEditor.exe"/>
-                	<define name="EXEOUTPUTNAME" value="DeltaEditor.exe"/>
+                	<define name="EXENAME" value="DELTA Editor.exe"/>
+                	<define name="EXEOUTPUTNAME" value="DELTA Editor.exe"/>
                 </nsis>
               </target>
             </configuration>
@@ -194,8 +194,8 @@
                 <nsis script="./installer/DeltaEditorNoJRE.nsi">
                     <define name="VERSION" value="${project.version}"/>
                     <define name="JARNAME" value="${project.build.finalName}-with-dependencies.jar"/>
-                    <define name="EXENAME" value="DeltaEditor-NOJRE.exe"/>
-                    <define name="EXEOUTPUTNAME" value="DeltaEditor.exe"/>
+                    <define name="EXENAME" value="DELTA Editor-NOJRE.exe"/>
+                    <define name="EXEOUTPUTNAME" value="DELTA Editor.exe"/>
                 </nsis>
               </target>
             </configuration>
