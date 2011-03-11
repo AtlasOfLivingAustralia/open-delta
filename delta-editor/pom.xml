@@ -32,7 +32,20 @@
 
 		<plugins>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifest>
+							<mainClass>au.org.ala.delta.DeltaEditor</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+
+			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.1</version>
 				<configuration>
 					<archive>
 						<manifest>
@@ -45,12 +58,12 @@
 					<descriptorRefs>
 						<descriptorRef>jar-with-dependencies</descriptorRef>
 					</descriptorRefs>
-			        <finalName>${project.build.finalName}-with-dependencies</finalName>
-                    <appendAssemblyId>false</appendAssemblyId>
+					
+					<appendAssemblyId>true</appendAssemblyId>
 				</configuration>
 				<executions>
 					<execution>
-						<id>make-my-jar-with-dependencies</id>
+						<id>with-dependencies</id>
 						<phase>package</phase>
 						<goals>
 							<goal>single</goal>
@@ -58,6 +71,8 @@
 					</execution>
 				</executions>
 			</plugin>
+
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -113,97 +128,99 @@
 				</configuration>
 
 			</plugin>
-			
-		    <plugin>
-		      <groupId>org.bluestemsoftware.open.maven.plugin</groupId>
-		      <artifactId>launch4j-plugin</artifactId>
-		      <version>1.5.0.0</version>
-		      <executions>
-		        <execution>
-		          <id>DeltaEditorWithJRE</id>
-		          <phase>install</phase>
-		          <goals>
-		            <goal>launch4j</goal>
-		          </goals>
-		          <configuration>
-		            <dontWrapJar>true</dontWrapJar>
-		            <headerType>gui</headerType>
-		            <outfile>target/DeltaEditor.exe</outfile>
-		            <jar>lib\${project.build.finalName}-with-dependencies.jar</jar>
-		            <errTitle>Error</errTitle>
-		            <icon>installer\resources\delta_editor.ico</icon>
-		            <jre>
-		              <path>jre</path>
-		            </jre>
-		          </configuration>
-		        </execution>
-                <execution>
-                  <id>DeltaEditorNOJRE</id>
-                  <phase>install</phase>
-                  <goals>
-                    <goal>launch4j</goal>
-                  </goals>
-                  <configuration>
-                    <dontWrapJar>true</dontWrapJar>
-                    <headerType>gui</headerType>
-                    <outfile>target/DeltaEditor-NOJRE.exe</outfile>
-                    <jar>lib\${project.build.finalName}-with-dependencies.jar</jar>
-                    <errTitle>Error</errTitle>
-                    <icon>installer\resources\delta_editor.ico</icon>
-                    <jre>
-                      <minVersion>1.6.0_10</minVersion>
-                    </jre>
-                  </configuration>
-                </execution>
-		      </executions>
-		    </plugin>
-		    
-      <plugin>
-        <artifactId>maven-antrun-plugin</artifactId>
-		<version>1.6</version>
-        <executions>
-          <execution>
-            <id>InstallerWithJRE</id>
-            <phase>install</phase>
-            <configuration>
-              <target>
-              	<taskdef name="nsis" classname="com.danielreese.nsisant.Task">
-					<classpath location="./installer/nsisant-1.3.jar" />
-				</taskdef>
-                <nsis script="./installer/DeltaEditorWithJRE.nsi">
-                	<define name="VERSION" value="${project.version}"/>
-                	<define name="JARNAME" value="${project.build.finalName}-with-dependencies.jar"/>
-                	<define name="EXENAME" value="DeltaEditor.exe"/>
-                	<define name="EXEOUTPUTNAME" value="DeltaEditor.exe"/>
-                </nsis>
-              </target>
-            </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>InstallerNoJRE</id>
-            <phase>install</phase>
-            <configuration>
-              <target>
-                <taskdef name="nsis" classname="com.danielreese.nsisant.Task">
-                    <classpath location="./installer/nsisant-1.3.jar" />
-                </taskdef>
-                <nsis script="./installer/DeltaEditorNoJRE.nsi">
-                    <define name="VERSION" value="${project.version}"/>
-                    <define name="JARNAME" value="${project.build.finalName}-with-dependencies.jar"/>
-                    <define name="EXENAME" value="DeltaEditor-NOJRE.exe"/>
-                    <define name="EXEOUTPUTNAME" value="DeltaEditor.exe"/>
-                </nsis>
-              </target>
-            </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
+
+			<plugin>
+				<groupId>org.bluestemsoftware.open.maven.plugin</groupId>
+				<artifactId>launch4j-plugin</artifactId>
+				<version>1.5.0.0</version>
+				<executions>
+					<execution>
+						<id>DeltaEditorWithJRE</id>
+						<phase>install</phase>
+						<goals>
+							<goal>launch4j</goal>
+						</goals>
+						<configuration>
+							<dontWrapJar>true</dontWrapJar>
+							<headerType>gui</headerType>
+							<outfile>target/DeltaEditor.exe</outfile>
+							<jar>lib\${project.build.finalName}-with-dependencies.jar</jar>
+							<errTitle>Error</errTitle>
+							<icon>installer\resources\delta_editor.ico</icon>
+							<jre>
+								<path>jre</path>
+							</jre>
+						</configuration>
+					</execution>
+					<execution>
+						<id>DeltaEditorNOJRE</id>
+						<phase>install</phase>
+						<goals>
+							<goal>launch4j</goal>
+						</goals>
+						<configuration>
+							<dontWrapJar>true</dontWrapJar>
+							<headerType>gui</headerType>
+							<outfile>target/DeltaEditor-NOJRE.exe</outfile>
+							<jar>lib\${project.build.finalName}-with-dependencies.jar</jar>
+							<errTitle>Error</errTitle>
+							<icon>installer\resources\delta_editor.ico</icon>
+							<jre>
+								<minVersion>1.6.0_10</minVersion>
+							</jre>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.6</version>
+				<executions>
+					<execution>
+						<id>InstallerWithJRE</id>
+						<phase>install</phase>
+						<configuration>
+							<target>
+								<taskdef name="nsis" classname="com.danielreese.nsisant.Task">
+									<classpath location="./installer/nsisant-1.3.jar" />
+								</taskdef>
+								<nsis script="./installer/DeltaEditorWithJRE.nsi">
+									<define name="VERSION" value="${project.version}" />
+									<define name="JARNAME"
+										value="${project.build.finalName}-with-dependencies.jar" />
+									<define name="EXENAME" value="DeltaEditor.exe" />
+									<define name="EXEOUTPUTNAME" value="DeltaEditor.exe" />
+								</nsis>
+							</target>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>InstallerNoJRE</id>
+						<phase>install</phase>
+						<configuration>
+							<target>
+								<taskdef name="nsis" classname="com.danielreese.nsisant.Task">
+									<classpath location="./installer/nsisant-1.3.jar" />
+								</taskdef>
+								<nsis script="./installer/DeltaEditorNoJRE.nsi">
+									<define name="VERSION" value="${project.version}" />
+									<define name="JARNAME"
+										value="${project.build.finalName}-with-dependencies.jar" />
+									<define name="EXENAME" value="DeltaEditor-NOJRE.exe" />
+									<define name="EXEOUTPUTNAME" value="DeltaEditor.exe" />
+								</nsis>
+							</target>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 
 		</plugins>
 	</build>
