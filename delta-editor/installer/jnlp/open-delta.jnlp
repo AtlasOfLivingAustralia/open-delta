@@ -19,6 +19,6 @@
   </security>
   <resources>
     <j2se version="1.6.0"/>
-    <jar href="delta-editor-M1.jar" main="true"/>
+    <jar href="delta-editor-1.0-M1.jar" main="true"/>
   </resources>
 </jnlp> 
