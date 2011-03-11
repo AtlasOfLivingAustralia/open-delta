@@ -33,7 +33,7 @@
 		<plugins>
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
-				<version>2.1</version>
+				<version>2.2-beta-5</version>
 				<configuration>
 					<archive>
 						<manifest>
@@ -48,6 +48,8 @@
 					</descriptorRefs>
                     <appendAssemblyId>false</appendAssemblyId>
                     <classifier>with-dependencies</classifier>
+                    <finalName>${project.build.finalName}-with-dependencies</finalName>
+                    
 				</configuration>
 				<executions>
 					<execution>
@@ -129,7 +131,7 @@
 		          <configuration>
 		            <dontWrapJar>true</dontWrapJar>
 		            <headerType>gui</headerType>
-		            <outfile>target/DELTA Editor.exe</outfile>
+		            <outfile>target/DeltaEditor.exe</outfile>
 		            <jar>lib\${project.build.finalName}-with-dependencies.jar</jar>
 		            <errTitle>Error</errTitle>
 		            <icon>installer\resources\delta_editor.ico</icon>
@@ -147,7 +149,7 @@
                   <configuration>
                     <dontWrapJar>true</dontWrapJar>
                     <headerType>gui</headerType>
-                    <outfile>target/DELTA Editor-NOJRE.exe</outfile>
+                    <outfile>target/DeltaEditor-NOJRE.exe</outfile>
                     <jar>lib\${project.build.finalName}-with-dependencies.jar</jar>
                     <errTitle>Error</errTitle>
                     <icon>installer\resources\delta_editor.ico</icon>
@@ -174,8 +176,8 @@
                 <nsis script="./installer/DeltaEditorWithJRE.nsi">
                 	<define name="VERSION" value="${project.version}"/>
                 	<define name="JARNAME" value="${project.build.finalName}-with-dependencies.jar"/>
-                	<define name="EXENAME" value="DELTA Editor.exe"/>
-                	<define name="EXEOUTPUTNAME" value="DELTA Editor.exe"/>
+                	<define name="EXENAME" value="DeltaEditor.exe"/>
+                	<define name="EXEOUTPUTNAME" value="DeltaEditor.exe"/>
                 </nsis>
               </target>
             </configuration>
@@ -194,8 +196,8 @@
                 <nsis script="./installer/DeltaEditorNoJRE.nsi">
                     <define name="VERSION" value="${project.version}"/>
                     <define name="JARNAME" value="${project.build.finalName}-with-dependencies.jar"/>
-                    <define name="EXENAME" value="DELTA Editor-NOJRE.exe"/>
-                    <define name="EXEOUTPUTNAME" value="DELTA Editor.exe"/>
+                    <define name="EXENAME" value="DeltaEditor-NOJRE.exe"/>
+                    <define name="EXEOUTPUTNAME" value="DeltaEditor.exe"/>
                 </nsis>
               </target>
             </configuration>
