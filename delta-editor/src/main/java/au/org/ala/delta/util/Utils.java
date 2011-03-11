@@ -443,7 +443,7 @@ public class Utils {
 		long totalMemory = Runtime.getRuntime().totalMemory() / BYTES_IN_MEGABTYE;
 		
 		StringBuilder versionInfo = new StringBuilder();
-		versionInfo.append("Delta Editor " + getVersionFromManifest());
+		versionInfo.append("DELTA Editor " + getVersionFromManifest());
 		versionInfo.append("\n");
 		versionInfo.append("date: ");
 		versionInfo.append(df.format(currentTime));
