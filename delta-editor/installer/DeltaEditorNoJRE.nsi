@@ -23,4 +23,7 @@ Function un.UninstallRemoveFiles
     
     Delete /REBOOTOK $INSTDIR\sample\sample.dlt
     RmDir /REBOOTOK $INSTDIR\sample
+    
+    FlushINI $INSTDIR\uninstall.ini
+    Delete /REBOOTOK $INSTDIR\uninstall.ini
 FunctionEnd

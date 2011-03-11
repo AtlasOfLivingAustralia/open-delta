@@ -22,7 +22,7 @@ Name "OpenDelta Suite"
 !define MUI_HEADERIMAGE_BITMAP ".\resources\InstallerHeaderImage.bmp"
 !define MUI_ABORTWARNING
 !define MUI_FINISHPAGE_NOAUTOCLOSE
-!define MUI_STARTMENUPAGE_REGISTRY_ROOT HKLM
+#!define MUI_STARTMENUPAGE_REGISTRY_ROOT HKLM
 !define MUI_STARTMENUPAGE_REGISTRY_KEY ${REGKEY}
 !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME StartMenuGroup
 !define MUI_STARTMENUPAGE_DEFAULTFOLDER "OpenDelta Suite"
@@ -57,7 +57,7 @@ InstallDir OpenDelta
 CRCCheck on
 XPStyle on
 ShowInstDetails show
-InstallDirRegKey HKLM "${REGKEY}" Path
+;InstallDirRegKey SHELL_CONTEXT "${REGKEY}" Path
 ShowUninstDetails show
 
 # Installer sections
@@ -66,11 +66,11 @@ Section -Main SEC0000
     
     Call InstallAddFiles
   
-    WriteRegStr HKLM "${REGKEY}\Components" Main 1
+    WriteRegStr SHELL_CONTEXT "${REGKEY}\Components" Main 1
 SectionEnd
 
 Section -post SEC0001
-    WriteRegStr HKLM "${REGKEY}" Path $INSTDIR
+    WriteRegStr SHELL_CONTEXT "${REGKEY}" Path $INSTDIR
     SetOutPath $INSTDIR
     WriteUninstaller $INSTDIR\uninstall.exe
     !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
@@ -78,22 +78,24 @@ Section -post SEC0001
     CreateShortCut "$SMPROGRAMS\$StartMenuGroup\DeltaEditor.lnk" "$INSTDIR\${EXEOUTPUTNAME}"
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Uninstall $(^Name).lnk" $INSTDIR\uninstall.exe
     !insertmacro MUI_STARTMENU_WRITE_END
-    WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" DisplayName "$(^Name)"
-    WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" DisplayIcon $INSTDIR\uninstall.exe
-    WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" UninstallString $INSTDIR\uninstall.exe
-    WriteRegDWORD HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" NoModify 1
-    WriteRegDWORD HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" NoRepair 1
+    WriteRegStr SHELL_CONTEXT "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" DisplayName "$(^Name)"
+    WriteRegStr SHELL_CONTEXT "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" DisplayIcon $INSTDIR\uninstall.exe
+    WriteRegStr SHELL_CONTEXT "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" UninstallString $INSTDIR\uninstall.exe
+    WriteRegDWORD SHELL_CONTEXT "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" NoModify 1
+    WriteRegDWORD SHELL_CONTEXT "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" NoRepair 1
     
-    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" "Version" "${VERSION}"
-    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" "DisplayVersion" "${VERSION}"
-    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" "URLInfoAbout" "http://code.google.com/p/open-delta/"
-    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" "InstallDate" "${DATE}"
+    WriteRegStr SHELL_CONTEXT "Software\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" "Version" "${VERSION}"
+    WriteRegStr SHELL_CONTEXT "Software\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" "DisplayVersion" "${VERSION}"
+    WriteRegStr SHELL_CONTEXT "Software\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" "URLInfoAbout" "http://code.google.com/p/open-delta/"
+    WriteRegStr SHELL_CONTEXT "Software\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" "InstallDate" "${DATE}"
+    
+    WriteINIStr $INSTDIR\uninstall.ini UninstallMode mode $MultiUser.InstallMode
 SectionEnd
 
 # Macro for selecting uninstaller sections
 !macro SELECT_UNSECTION SECTION_NAME UNSECTION_ID
     Push $R0
-    ReadRegStr $R0 HKLM "${REGKEY}\Components" "${SECTION_NAME}"
+    ReadRegStr $R0 SHELL_CONTEXT "${REGKEY}\Components" "${SECTION_NAME}"
     StrCmp $R0 1 0 next${UNSECTION_ID}
     !insertmacro SelectSection "${UNSECTION_ID}"
     GoTo done${UNSECTION_ID}
@@ -105,21 +107,22 @@ done${UNSECTION_ID}:
 
 # Uninstaller sections
 Section /o -un.Main UNSEC0000
+    ReadINIStr $0 $INSTDIR\uninstall.ini UninstallMode mode
+
     Call un.UninstallRemoveFiles
 
-    DeleteRegValue HKLM "${REGKEY}\Components" Main
+    DeleteRegValue SHELL_CONTEXT "${REGKEY}\Components" Main
 SectionEnd
 
 Section -un.post UNSEC0001
-    WriteINIStr $DESKTOP\something.ini section1 something $SMPROGRAMS
-    DeleteRegKey HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)"
+    DeleteRegKey SHELL_CONTEXT "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)"
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Uninstall $(^Name).lnk"
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\DeltaEditor.lnk"
     Delete /REBOOTOK $INSTDIR\uninstall.exe
-    DeleteRegValue HKLM "${REGKEY}" StartMenuGroup
-    DeleteRegValue HKLM "${REGKEY}" Path
-    DeleteRegKey /IfEmpty HKLM "${REGKEY}\Components"
-    DeleteRegKey /IfEmpty HKLM "${REGKEY}"
+    DeleteRegValue SHELL_CONTEXT "${REGKEY}" StartMenuGroup
+    DeleteRegValue SHELL_CONTEXT "${REGKEY}" Path
+    DeleteRegKey /IfEmpty SHELL_CONTEXT "${REGKEY}\Components"
+    DeleteRegKey /IfEmpty SHELL_CONTEXT "${REGKEY}"
     RmDir /REBOOTOK "$SMPROGRAMS\$StartMenuGroup"
     RmDir /REBOOTOK $INSTDIR
     Push $R0
@@ -139,6 +142,14 @@ FunctionEnd
 Function un.onInit
     !insertmacro MUI_STARTMENU_GETFOLDER Application $StartMenuGroup
     !insertmacro MULTIUSER_UNINIT
+    
+    ReadINIStr $0 $INSTDIR\uninstall.ini UninstallMode mode
+    
+    StrCmp $0 "CurrentUser" 0 +3
+    Call un.MultiUser.InstallMode.CurrentUser
+    Goto +2
+    Call un.MultiUser.InstallMode.AllUsers
+    
     !insertmacro SELECT_UNSECTION Main ${UNSEC0000}
 FunctionEnd
 
