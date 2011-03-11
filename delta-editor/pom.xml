@@ -46,7 +46,8 @@
 					<descriptorRefs>
 						<descriptorRef>jar-with-dependencies</descriptorRef>
 					</descriptorRefs>
-                    <appendAssemblyId>true</appendAssemblyId>
+                    <appendAssemblyId>false</appendAssemblyId>
+                    <classifier>with-dependencies</classifier>
 				</configuration>
 				<executions>
 					<execution>
