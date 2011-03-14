@@ -2,7 +2,7 @@ package au.org.ala.delta.gui.validator;
 
 import javax.swing.JComponent;
 
-import au.org.ala.delta.gui.rtf.RtfEditor;
+import au.org.ala.delta.ui.rtf.RtfEditor;
 
 /**
  * Invokes the correct method on the RtfEditor to return the RTF formatted text instead of plain text.

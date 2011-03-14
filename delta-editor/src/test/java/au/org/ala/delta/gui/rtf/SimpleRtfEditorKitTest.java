@@ -13,6 +13,8 @@ import junit.framework.TestCase;
 
 import org.junit.Test;
 
+import au.org.ala.delta.ui.rtf.SimpleRtfEditorKit;
+
 
 /**
  * Tests the SimpleRtfEditorKit
