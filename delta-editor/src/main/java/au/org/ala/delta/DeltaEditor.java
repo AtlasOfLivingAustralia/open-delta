@@ -54,12 +54,13 @@ import org.jdesktop.application.SingleFrameApplication;
 import org.jdesktop.application.Task;
 import org.jdesktop.application.Task.BlockingScope;
 
-import au.org.ala.delta.editor.controller.HelpController;
 import au.org.ala.delta.gui.EditorDataModel;
+import au.org.ala.delta.gui.help.HelpConstants;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.DeltaDataSetRepository;
 import au.org.ala.delta.slotfile.model.SlotFileRepository;
 import au.org.ala.delta.ui.AboutBox;
+import au.org.ala.delta.ui.help.HelpController;
 import au.org.ala.delta.ui.util.IconHelper;
 import au.org.ala.delta.util.IProgressObserver;
 
@@ -139,7 +140,7 @@ public class DeltaEditor extends SingleFrameApplication {
 	
 		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		
-		_helpController = new HelpController();
+		_helpController = new HelpController("help/delta_editor/DeltaEditor");
 		_dataSetRepository = new SlotFileRepository();
 
 		_desktop = new JDesktopPane();
@@ -349,7 +350,7 @@ public class DeltaEditor extends SingleFrameApplication {
 		getMainFrame().setTitle(String.format(windowTitleWithFilename, dataSet.getName()));
 		MatrixViewer matrixViewer = new MatrixViewer(dataSet);
 		matrixViewer.addInternalFrameListener(new ViewerFrameListener(dataSet, DeltaEditor.this));
-		_helpController.setHelpKeyForComponent(matrixViewer, HelpController.GRID_VIEW_HELP_KEY);
+		_helpController.setHelpKeyForComponent(matrixViewer, HelpConstants.GRID_VIEW_HELP_KEY);
 		addToDesktop(matrixViewer);
 		viewerOpened();
 	}
@@ -358,7 +359,7 @@ public class DeltaEditor extends SingleFrameApplication {
 		getMainFrame().setTitle(String.format(windowTitleWithFilename, dataSet.getName()));
 		TreeViewer treeViewer = new TreeViewer(dataSet);
 		treeViewer.addInternalFrameListener(new ViewerFrameListener(dataSet, DeltaEditor.this));
-		_helpController.setHelpKeyForComponent(treeViewer, HelpController.TREE_VIEW_HELP_KEY);
+		_helpController.setHelpKeyForComponent(treeViewer, HelpConstants.TREE_VIEW_HELP_KEY);
 		addToDesktop(treeViewer);
 		viewerOpened();
 	}

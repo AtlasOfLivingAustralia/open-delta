@@ -5,8 +5,7 @@
          "http://java.sun.com/products/javahelp/map_1_0.dtd">
 
 <map version="1.0">
-	<!-- <mapID target="top" url="http://delta-intkey.com/www/delta-ed.htm"/> -->
-	<mapID target="top" url="pages/delta-ed.htm"/> 
+	<mapID target="root" url="pages/delta-ed.htm"/> 
 	<mapID target="characters" url="pages/delta-ed.htm#_The_Character_Editor" />
 	<mapID target="items" url="pages/delta-ed.htm#_The_Item_Editor" />
 	<mapID target="treeview" url="pages/delta-ed.htm#_The_tree-view_attribute_1" />
