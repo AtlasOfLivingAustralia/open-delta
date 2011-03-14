@@ -212,6 +212,12 @@
 	</build>
 
 	<dependencies>
+	
+		<dependency>
+			<groupId>au.org.ala.delta</groupId>
+			<artifactId>delta-common</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>commons-lang</groupId>
 			<artifactId>commons-lang</artifactId>

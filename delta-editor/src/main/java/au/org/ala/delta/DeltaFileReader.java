@@ -39,6 +39,7 @@ import au.org.ala.delta.slotfile.VOCharTextDesc;
 import au.org.ala.delta.slotfile.VODirFileDesc;
 import au.org.ala.delta.slotfile.VODirFileDesc.Dir;
 import au.org.ala.delta.slotfile.VOItemDesc;
+import au.org.ala.delta.slotfile.model.SlotFileDataSetFactory;
 import au.org.ala.delta.slotfile.model.VOCharacterAdaptor;
 import au.org.ala.delta.slotfile.model.VOItemAdaptor;
 import au.org.ala.delta.slotfile.model.VOPAdaptor;
@@ -64,7 +65,8 @@ public class DeltaFileReader {
 		}
 
 		DeltaVOP vop = new DeltaVOP(fileName, false);
-		DeltaDataSet dataSet = new VOPAdaptor(vop);
+		SlotFileDataSetFactory factory = new SlotFileDataSetFactory(vop);
+		DeltaDataSet dataSet = new VOPAdaptor(vop, factory);
 		
 		return dataSet;
 	}
@@ -83,7 +85,7 @@ public class DeltaFileReader {
 
 		DeltaVOP vop = new DeltaVOP(filename, false);
 
-		context.VOP = vop;
+		
 
 		int nChars = vop.getDeltaMaster().getNChars();
 		int nItems = vop.getDeltaMaster().getNItems();
@@ -187,9 +189,9 @@ public class DeltaFileReader {
 
 		t.stop(false);
 
-		if (context.VOP == null) {
-			vop.close();
-		}
+		
+		vop.close();
+	
 
 		return context;
 

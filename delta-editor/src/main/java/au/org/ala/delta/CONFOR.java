@@ -29,7 +29,7 @@ public class CONFOR {
 		DirectiveFileParser.DIRECTIVE_TREE.dump();
 
 		//String filename = "C:\\Users\\baird\\Dev\\Backup of M. Dallwitz computer, 23 jan 2001  (archive only)\\Drive D\\delta\\sample\\tonat";
-		String filename = "c:\\delta\test\\tokey";
+		String filename = "c:\\delta\\test\\tokey";
 		File f = new File(filename);
 		if (!f.exists()) {
 			Logger.log("File %s does not exist!", filename);

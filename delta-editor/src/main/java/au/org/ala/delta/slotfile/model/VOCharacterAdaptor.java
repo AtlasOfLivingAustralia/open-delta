@@ -71,7 +71,10 @@ public class VOCharacterAdaptor implements CharacterData {
 		return _charDesc.getNStatesUsed();
 		// return _charDesc.getNStates();
 	}
-
 	
+	@Override
+	public void setMandatory(boolean b) {
+		_charDesc.setCharFlag(VOCharBaseDesc.CHAR_MANDATORY);
+	}
 	
 }

@@ -1,7 +1,6 @@
 package au.org.ala.delta.slotfile.model;
 
 import au.org.ala.delta.model.Character;
-import au.org.ala.delta.model.CharacterFactory;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Item;
@@ -9,8 +8,6 @@ import au.org.ala.delta.slotfile.CharType;
 import au.org.ala.delta.slotfile.DeltaVOP;
 import au.org.ala.delta.slotfile.TextType;
 import au.org.ala.delta.slotfile.VOCharBaseDesc;
-import au.org.ala.delta.slotfile.VOCharBaseDesc.CharTextInfo;
-import au.org.ala.delta.slotfile.VOCharTextDesc;
 import au.org.ala.delta.slotfile.VOItemDesc;
 
 /**
@@ -20,9 +17,11 @@ import au.org.ala.delta.slotfile.VOItemDesc;
 public class VOPAdaptor implements DeltaDataSet {
 
 	private DeltaVOP _vop;
+	private SlotFileDataSetFactory _factory;
 
-	public VOPAdaptor(DeltaVOP vop) {
+	public VOPAdaptor(DeltaVOP vop, SlotFileDataSetFactory factory) {
 		_vop = vop;
+		_factory = factory;
 	}
 	
 	public DeltaVOP getVOP() {
@@ -31,24 +30,16 @@ public class VOPAdaptor implements DeltaDataSet {
 	
 	@Override
 	public Item getItem(int number) {
-		int itemId = _vop.getDeltaMaster().uniIdFromItemNo(number);
-		VOItemDesc itemDesc = (VOItemDesc) _vop.getDescFromId(itemId);
-		VOItemAdaptor adaptor = new VOItemAdaptor(itemDesc, number);
-		return new Item(adaptor, number);
+		return _factory.createItem(number);
 	}
 	
 	@Override
 	public Character getCharacter(int number) {
+		
 		int charId = _vop.getDeltaMaster().uniIdFromCharNo(number);	
 		VOCharBaseDesc characterDesc = (VOCharBaseDesc)_vop.getDescFromId(charId);
-		CharTextInfo txtInfo = characterDesc.readCharTextInfo(0, (short) 0);
-		VOCharTextDesc textDesc = (VOCharTextDesc) _vop.getDescFromId(txtInfo.charDesc);
 		
-		VOCharacterAdaptor characterAdaptor = new VOCharacterAdaptor(characterDesc, textDesc);
-		au.org.ala.delta.model.Character character = CharacterFactory.newCharacter(fromCharType(characterDesc.getCharType()), number);
-		character.setImpl(characterAdaptor);
-		
-		return character;
+		return _factory.createCharacter(fromCharType(characterDesc.getCharType()), number);
 	}
 
 	@Override
@@ -109,5 +100,6 @@ public class VOPAdaptor implements DeltaDataSet {
 			throw new RuntimeException("Unregognised character type: " + charType);
 		}
 	}
+	
 	
 }

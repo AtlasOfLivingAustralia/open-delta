@@ -158,7 +158,7 @@ public class VODeltaMasterDesc extends VONoteDesc {
 
 	private int getIdFromNo(List<Integer> vector, int num) {
 		if (num <= 0 || num > vector.size()) {
-			return 0;
+			return VOUID_NULL;
 		}
 		return vector.get(num - 1);
 	}
