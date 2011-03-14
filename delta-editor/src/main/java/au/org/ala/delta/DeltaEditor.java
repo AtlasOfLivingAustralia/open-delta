@@ -56,10 +56,11 @@ import org.jdesktop.application.Task.BlockingScope;
 
 import au.org.ala.delta.editor.controller.HelpController;
 import au.org.ala.delta.gui.EditorDataModel;
-import au.org.ala.delta.gui.util.IconHelper;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.DeltaDataSetRepository;
 import au.org.ala.delta.slotfile.model.SlotFileRepository;
+import au.org.ala.delta.ui.AboutBox;
+import au.org.ala.delta.ui.util.IconHelper;
 import au.org.ala.delta.util.IProgressObserver;
 
 /**

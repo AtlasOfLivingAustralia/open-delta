@@ -24,7 +24,7 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
-import au.org.ala.delta.gui.util.IconHelper;
+import au.org.ala.delta.ui.util.IconHelper;
 
 /**
  * Provides basic indications on a JTextComponent that the component's text is invalid.

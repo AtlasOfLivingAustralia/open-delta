@@ -55,6 +55,7 @@ import au.org.ala.delta.gui.EditorDataModel;
 import au.org.ala.delta.gui.InternalFrameDataModelListener;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.ui.AboutBox;
 
 public class MatrixViewer extends JInternalFrame {
 
