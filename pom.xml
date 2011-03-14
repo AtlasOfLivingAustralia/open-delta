@@ -1,0 +1,20 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>au.org.ala.delta</groupId>
+	<artifactId>open-delta</artifactId>
+	<version>1.0-M2</version>
+	<name>Open DELTA suite</name>
+    <packaging>pom</packaging>
+	<scm>
+		<connection>scm:svn:http://open-delta.googlecode.com/svn/trunk/</connection>
+		<developerConnection>scm:svn:https://open-delta.googlecode.com/svn/trunk/</developerConnection>
+		<url>http://code.google.com/p/open-delta/</url>
+	</scm>
+	
+	<modules>
+	    <module>common</module>
+		<module>delta-editor</module>
+	</modules>
+	
+</project>
