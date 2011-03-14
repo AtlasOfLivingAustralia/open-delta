@@ -1,4 +1,4 @@
-package au.org.ala.delta.gui.rtf;
+package au.org.ala.delta.ui.rtf;
 
 import java.io.IOException;
 import java.io.InputStream;

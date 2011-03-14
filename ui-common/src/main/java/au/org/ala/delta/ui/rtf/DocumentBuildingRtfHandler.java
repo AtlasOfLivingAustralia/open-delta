@@ -1,4 +1,4 @@
-package au.org.ala.delta.gui.rtf;
+package au.org.ala.delta.ui.rtf;
 
 import java.util.HashMap;
 import java.util.List;
