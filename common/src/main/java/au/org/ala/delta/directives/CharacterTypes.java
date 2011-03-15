@@ -16,11 +16,14 @@ package au.org.ala.delta.directives;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.Logger;
-import au.org.ala.delta.model.CharacterFactory;
 import au.org.ala.delta.model.CharacterType;
+import au.org.ala.delta.model.DefaultDataSetFactory;
+import au.org.ala.delta.model.DeltaDataSetFactory;
 
 public class CharacterTypes extends AbstractCharacterListDirective<CharacterType> {
 
+	DeltaDataSetFactory _factory = new DefaultDataSetFactory();
+	
 	public CharacterTypes() {
 		super("character", "types");
 	}
@@ -33,7 +36,8 @@ public class CharacterTypes extends AbstractCharacterListDirective<CharacterType
 	@Override
 	protected void processCharacter(DeltaContext context, int charIndex, CharacterType rhs) {
 		Logger.debug("Setting type for character %d to %s", charIndex, rhs);
-		au.org.ala.delta.model.Character c = CharacterFactory.newCharacter(rhs, charIndex);
+		
+		au.org.ala.delta.model.Character c = _factory.createCharacter(rhs, charIndex);
 		context.addCharacter(c, charIndex);
 	}
 

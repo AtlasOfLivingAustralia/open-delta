@@ -14,10 +14,23 @@
  ******************************************************************************/
 package au.org.ala.delta.directives;
 
-public class CharacterReliabilities extends Directive {
 
+/**
+ * Processes the CHARACTER RELIABILITES directive.
+ */
+public class CharacterReliabilities extends CharacterWeightDirective {
+
+	/** The default weight for any characters not included in this directive */
+	private static final double DEFAULT_WEIGHT = 5.0d;
+	
+	/** The minimum allowed weight for a character */
+	private static final double MIN_WEIGHT = 0d;
+	
+	/** The maximum allowed weight for a character */
+	private static final double MAX_WEIGHT = 10d;
+	
 	public CharacterReliabilities() {
-		super("character", "reliabilities");
+		super(MIN_WEIGHT, MAX_WEIGHT, DEFAULT_WEIGHT, "character", "reliabilities");
 	}
-
+	
 }

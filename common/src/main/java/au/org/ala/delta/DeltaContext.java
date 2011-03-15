@@ -28,21 +28,18 @@ import java.util.Stack;
 
 import au.org.ala.delta.directives.ParsingContext;
 import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.CharacterType;
+import au.org.ala.delta.model.DefaultDataSetFactory;
+import au.org.ala.delta.model.DeltaDataSetFactory;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.StateValueMatrix;
-import au.org.ala.delta.model.UnorderedMultiStateCharacter;
 import au.org.ala.delta.util.Functor;
 import au.org.ala.delta.util.Utils;
 
+/**
+ * Context associated with a set of DELTA input files.
+ */
 public class DeltaContext {
-	
-	// HACKS!
-	//public DeltaVOP VOP = null;
-	
-	public Character selectedCharacter;
-	public Item selectedItem;
-	
-	// END HACKS
 
 	private Map<String, Object> _variables;
 	private int _ListFilenameSize = 15;
@@ -75,6 +72,8 @@ public class DeltaContext {
 
 	private StateValueMatrix _matrix;
 
+	private double[] _characterWeights;
+	
 	public DeltaContext() {
 		_variables = new HashMap<String, Object>();
 
@@ -242,10 +241,10 @@ public class DeltaContext {
 	public Character getCharacter(int number) {
 		if (number <= _characters.length) {
 			Character c = _characters[number - 1];
-			if (c == null) {
-				c = new UnorderedMultiStateCharacter(number);
-				((UnorderedMultiStateCharacter) c).setNumberOfStates(2);
-				_characters[number - 1] = c;
+			if (c==null) {
+				DeltaDataSetFactory _factory = new DefaultDataSetFactory();
+				c = _factory.createCharacter(CharacterType.UnorderedMultiState, number);
+				_characters[number-1] = c;
 			}
 			return c;
 		}
@@ -342,5 +341,17 @@ public class DeltaContext {
 
 	public Set<Integer> getNewParagraphCharacters() {
 		return _newParagraphCharacters;
+	}
+
+	public void setCharacterWeight(int number, double weight) {
+		if (_characterWeights == null) {
+			_characterWeights = new double[getNumberOfCharacters()];
+		}
+		_characterWeights[number-1] = weight;
+		
+	}
+	
+	public double getCharacterWeight(int number) {
+		return _characterWeights[number-1];
 	}
 }
