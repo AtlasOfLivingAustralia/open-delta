@@ -3,6 +3,8 @@ package au.org.ala.delta.slotfile.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.NotImplementedException;
+
 import au.org.ala.delta.model.impl.CharacterData;
 import au.org.ala.delta.slotfile.TextType;
 import au.org.ala.delta.slotfile.VOCharBaseDesc;
@@ -34,6 +36,16 @@ public class VOCharacterAdaptor implements CharacterData {
 		return _textDesc.readFeatureText(TextType.RTF);
 	}
 	
+	@Override
+	public void setDescription(String desc) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public void setUnits(String units) {
+		throw new NotImplementedException();
+	}
+
 	@Override
 	public boolean isExclusive() {
 		return _charDesc.testCharFlag(VOCharBaseDesc.CHAR_EXCLUSIVE);
