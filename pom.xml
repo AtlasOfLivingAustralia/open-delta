@@ -5,19 +5,76 @@
 	<artifactId>open-delta</artifactId>
 	<version>1.0-M2</version>
 	<name>Open DELTA suite</name>
-    <packaging>pom</packaging>
+	<packaging>pom</packaging>
 	<scm>
 		<connection>scm:svn:http://open-delta.googlecode.com/svn/trunk/</connection>
 		<developerConnection>scm:svn:https://open-delta.googlecode.com/svn/trunk/</developerConnection>
 		<url>http://code.google.com/p/open-delta/</url>
 	</scm>
-	
+
 	<modules>
-	    <module>common</module>
-	    <module>ui-common</module>	    
+		<module>common</module>
+		<module>ui-common</module>
 		<module>delta-editor</module>
         <module>intkey</module>
         <module>confor</module>
 	</modules>
-	
+
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.6</version>
+				<executions>
+					<execution>
+						<id>InstallerWithJRE</id>
+						<phase>install</phase>
+						<configuration>
+							<target>
+								<taskdef name="nsis" classname="com.danielreese.nsisant.Task">
+									<classpath location="./installer/nsisant-1.3.jar" />
+								</taskdef>
+								<nsis script="./installer/DeltaEditorWithJRE.nsi">
+									<define name="VERSION" value="${project.version}" />
+									<!--<define name="JARNAME"
+										value="${project.build.finalName}-with-dependencies.jar" />-->
+                                   <define name="JARNAME"
+                                        value="delta-editor-${project.version}-with-dependencies.jar" />	
+									<define name="EXENAME" value="DeltaEditor.exe" />
+									<define name="EXEOUTPUTNAME" value="DeltaEditor.exe" />
+								</nsis>
+							</target>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>InstallerNoJRE</id>
+						<phase>install</phase>
+						<configuration>
+							<target>
+								<taskdef name="nsis" classname="com.danielreese.nsisant.Task">
+									<classpath location="./installer/nsisant-1.3.jar" />
+								</taskdef>
+								<nsis script="./installer/DeltaEditorNoJRE.nsi">
+									<define name="VERSION" value="${project.version}" />
+									<!--<define name="JARNAME"
+										value="${project.build.finalName}-with-dependencies.jar" />-->
+                                  <define name="JARNAME"
+                                        value="delta-editor-${project.version}-with-dependencies.jar" />
+									<define name="EXENAME" value="DeltaEditor-NOJRE.exe" />
+									<define name="EXEOUTPUTNAME" value="DeltaEditor.exe" />
+								</nsis>
+							</target>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
 </project>

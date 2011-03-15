@@ -6,15 +6,15 @@ Function InstallAddFiles
     SetOutPath "$INSTDIR"
     
     ; Put file there
-    File "/oname=${EXEOUTPUTNAME}" "..\target\${EXENAME}" 
+    File "/oname=${EXEOUTPUTNAME}" "..\delta-editor\target\${EXENAME}" 
   
     ; Output sample dlt into sample subdirectory
     SetOutPath "$INSTDIR\sample"
-    File "..\sampledata\sample.dlt"
+    File "..\delta-editor\sampledata\sample.dlt"
     
     ; Output JAR files to lib subdirectory
     SetOutPath "$INSTDIR\lib"
-    File "..\target\${JARNAME}"
+    File "..\delta-editor\target\${JARNAME}"
 FunctionEnd
 
 Function un.UninstallRemoveFiles
