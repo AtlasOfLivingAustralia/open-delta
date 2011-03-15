@@ -1,0 +1,35 @@
+*COMMENT Confirmatory characters - HTML.
+
+*HEADING Key 5a. Confirmatory characters
+
+*NUMBER OF CONFIRMATORY CHARACTERS 3
+
+*OUTPUT DIRECTORY www
+
+*PRINT COMMENT 
+<head>
+<title>
+DELTA Sample Data
+- Key 5a. Confirmatory characters
+</title>
+<meta name="description"
+content="Key for
+DELTA Sample Data,
+generated from a DELTA database.">
+</head>
+
+<body>
+<a href="http://biodiversity.uno.edu/delta/">
+<img align=right border=0 src="deltlogo.gif"></a>
+<h1><b>
+DELTA Sample Data
+</b></h1>
+<h2>
+L. Watson and M. J. Dallwitz
+</h2>
+<p><hr noshade>
+
+<h2>Key 5a. Confirmatory characters</h2>
+<dl>
+
+*INPUT FILE markhtm

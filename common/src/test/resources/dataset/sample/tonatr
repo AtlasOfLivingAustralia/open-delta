@@ -1,0 +1,47 @@
+*SHOW Translate into natural language - RTF, single file for all taxa.
+
+*LISTING FILE tonatr.lst
+
+*OUTPUT DIRECTORY rtf
+
+*PRINT FILE descrip.rtf
+
+*INPUT FILE specs
+
+*TRANSLATE INTO NATURAL LANGUAGE
+
+*INPUT FILE markrtf
+
+*INPUT FILE layout
+
+*INPUT FILE empchari
+
+*INPUT FILE empcharm
+
+*ITEM HEADINGS !
+# \i{}Echinochloa\i0{} <P. Beauv.>/ !\page\fs50{} E!
+# \i{}Bambusa\i0{} <Schreber>/ !\page\fs50{} B!
+# \i{}Chloris\i0{} <O. Swartz>/ !\page\fs50{} C!
+# \i{}Agrostis\i0{} <L.>/ !\sb300\fs50{} A!
+# \i{}Festuca\i0{} <L.>/ !\page\fs50{} F!
+# \i{}Oryza\i0{} <L.>/ !\page\fs50{} O!
+# \i{}Panicum\i0{} <L.>/ !\page\fs50{} P!
+# \i{}Zea\i0{} <L.>/ !\page\fs50{} Z!
+
+*INPUT FILE chars
+
+*PRINT COMMENT 
+\pard\plain\s2\qc\sb500\sa400\keepn\b\f2\fs28\kerning28{} Implicit Attributes
+\par\pard\plain\qj\sa300\fs22{}Unless indicated otherwise,
+the following attributes are implicit throughout the descriptions,
+except where the characters concerned are inapplicable.
+
+*TRANSLATE IMPLICIT VALUES
+
+*PRINT COMMENT 
+\par\pard\plain\s2\qc\sb500\sa400\keepn\b\f2\fs28\kerning28{} Descriptions
+\par\pard\plain\qj\fs22{}The bold-italic parts are diagnostic descriptions,
+generated with the aid of Intkey (Dallwitz \i{}et al.\i0{} 1995, 2000).
+They distinguish each taxon in at least two respects from every other taxon.
+
+*INPUT FILE items
