@@ -30,10 +30,6 @@ import javax.swing.JToolBar;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import au.org.ala.delta.gui.validator.AttributeValidator;
-import au.org.ala.delta.gui.validator.RtfEditorValidator;
-import au.org.ala.delta.gui.validator.ValidationListener;
-import au.org.ala.delta.gui.validator.ValidationResult;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.DeltaDataSet;
@@ -42,6 +38,10 @@ import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.NumericCharacter;
 import au.org.ala.delta.ui.rtf.RtfEditor;
 import au.org.ala.delta.ui.util.IconHelper;
+import au.org.ala.delta.ui.validator.AttributeValidator;
+import au.org.ala.delta.ui.validator.RtfEditorValidator;
+import au.org.ala.delta.ui.validator.ValidationListener;
+import au.org.ala.delta.ui.validator.ValidationResult;
 
 public class StateEditor extends JPanel implements ValidationListener {
 

@@ -1,4 +1,4 @@
-package au.org.ala.delta.gui.validator;
+package au.org.ala.delta.ui.validator;
 
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.slotfile.Attribute.AttributeParseException;

@@ -1,4 +1,4 @@
-package au.org.ala.delta.gui.help;
+package au.org.ala.delta.ui.help;
 
 /**
  * Defines constants for use in the help subsystem.

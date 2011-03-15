@@ -1,4 +1,4 @@
-package au.org.ala.delta.gui.validator;
+package au.org.ala.delta.ui.validator;
 
 import java.awt.Color;
 import java.awt.Dimension;

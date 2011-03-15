@@ -1,4 +1,4 @@
-package au.org.ala.delta.gui.validator;
+package au.org.ala.delta.ui.validator;
 
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
