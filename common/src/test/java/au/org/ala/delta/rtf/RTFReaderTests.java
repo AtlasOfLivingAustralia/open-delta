@@ -11,32 +11,34 @@ public class RTFReaderTests extends TestCase {
 
 	public void testReader1() throws IOException {
 		String rtf = getFileAsString("/rtf/test1.rtf");
-		String stripped = RTFUtils.stripFormatting(rtf);
-		System.out.println(stripped);
+		String actual = RTFUtils.stripFormatting(rtf);
+		String expected = "This is plain text.";
+		assertEquals(expected, actual);
 	}
 
 	public void testReader2() throws IOException {
 		String rtf = getFileAsString("/rtf/test2.rtf");
-		String stripped = RTFUtils.stripUnrecognizedRTF(rtf);
-		System.out.println(stripped);
+		String actual = RTFUtils.stripUnrecognizedRTF(rtf);
+		System.out.println(actual);
 	}
 	
 	public void testReader3() throws IOException {
 		String rtf = "{\\rtf\\ansi\\deff0{\\fonttbl{\\f0\\froman Tms Rmn;}}\\pard\\plain \\fs20 \\super This is plain text. \\super0\\par{\\b\\i This is bold italic}}";
-		String stripped = RTFUtils.stripUnrecognizedRTF(rtf);
-		System.out.println(stripped);
+		String actual = RTFUtils.stripUnrecognizedRTF(rtf);
+		String expected = "\\super This is plain text. \\super0 \\b \\i This is bold italic\\b0\\i0 ";
+		assertEquals(expected, actual);
 		
-		stripped = RTFUtils.stripFormatting(rtf);
-		System.out.println(stripped);			
+		expected = "This is plain text. This is bold italic";
+		actual = RTFUtils.stripFormatting(rtf);
+		assertEquals(expected, actual);			
 	}
 	
 	public void testEmdash() throws IOException {
-		String rtf = "{\\rtf\\ansi\\deff0{\\fonttbl{\\f0\\froman Tms Rmn;}}\\pard\\plain \\fs20 \\emdash Emdash. — \\u2014? }";		
-		String stripped = RTFUtils.stripFormatting(rtf);
-		System.out.println(stripped);			
+		String rtf = "{\\rtf\\ansi\\deff0{\\fonttbl{\\f0\\froman Tms Rmn;}}\\pard\\plain \\fs20 \\emdash Emdash\\u8212?}";		
+		String actual = RTFUtils.stripFormatting(rtf);
+		String expected = "—Emdash—";
+		assertEquals(expected, actual);
 	}
-	
-	
 	
 	/**
 	 * Tests the RTFReader can correctly handle escaped unicode code points of the form \\u<code point>.
@@ -53,6 +55,13 @@ public class RTFReaderTests extends TestCase {
 		
 		
 		assertEquals(expectedResult, stripped);
+	}
+	
+	public void testCodePageKeyword() {
+		String rtf = "{\\rtf\\ansi\\deff0{\\fonttbl{\\f0\\froman Tms Rmn;}}\\pard\\plain This is a special character: \\'c0.}";
+		String actual = RTFUtils.stripFormatting(rtf);
+		String expected = "This is a special character: À.";
+		assertEquals(expected, actual);
 	}
 	
 	/**
