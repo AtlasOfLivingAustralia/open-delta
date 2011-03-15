@@ -30,9 +30,11 @@ import au.org.ala.delta.directives.ParsingContext;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DefaultDataSetFactory;
+import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.DeltaDataSetFactory;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.StateValueMatrix;
+import au.org.ala.delta.model.UnorderedMultiStateCharacter;
 import au.org.ala.delta.util.Functor;
 import au.org.ala.delta.util.Utils;
 
@@ -41,6 +43,8 @@ import au.org.ala.delta.util.Utils;
  */
 public class DeltaContext {
 
+	private DeltaDataSet _dataSet;
+	
 	private Map<String, Object> _variables;
 	private int _ListFilenameSize = 15;
 	private List<String> _errorMessages = new ArrayList<String>();
@@ -102,7 +106,14 @@ public class DeltaContext {
 		_printStream = System.out;
 		_errorStream = System.err;
 		_listStream = System.out;
+		
+		DeltaDataSetFactory _dataSetFactory = new DefaultDataSetFactory();
+		_dataSet = _dataSetFactory.createDataSet("unnamed");
 
+	}
+	
+	public DeltaDataSet getDataSet() {
+		return _dataSet;
 	}
 
 	public void setVariable(String name, Object value) {
@@ -244,6 +255,7 @@ public class DeltaContext {
 			if (c==null) {
 				DeltaDataSetFactory _factory = new DefaultDataSetFactory();
 				c = _factory.createCharacter(CharacterType.UnorderedMultiState, number);
+				((UnorderedMultiStateCharacter)c).setNumberOfStates(2);
 				_characters[number-1] = c;
 			}
 			return c;

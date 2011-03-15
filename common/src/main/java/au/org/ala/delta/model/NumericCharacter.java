@@ -27,7 +27,7 @@ public abstract class NumericCharacter<T extends Number> extends Character{
 	}
 	
 	public void setUnits(String units) {
-		throw new NotImplementedException();
+		_impl.setUnits(units);
 	}
 
 }

@@ -21,6 +21,11 @@ public class DefaultCharacterData implements CharacterData {
 	public String getDescription() {
 		return _description;
 	}
+	
+	@Override
+	public void setDescription(String description) {
+		_description = description;
+	}
 
 	@Override
 	public boolean isExclusive() {
@@ -35,6 +40,11 @@ public class DefaultCharacterData implements CharacterData {
 	@Override
 	public String getUnits() {
 		return _units;
+	}
+	
+	@Override
+	public void setUnits(String units) {
+		_units = units;
 	}
 
 	@Override

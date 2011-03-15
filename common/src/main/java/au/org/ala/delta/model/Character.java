@@ -47,7 +47,7 @@ public abstract class Character {
 	}
 	
 	public void setDescription(String desc) {
-		throw new NotImplementedException();
+		_impl.setDescription(desc);
 	}
 	
 	public void addDependentCharacter(CharacterDependency dependency) {

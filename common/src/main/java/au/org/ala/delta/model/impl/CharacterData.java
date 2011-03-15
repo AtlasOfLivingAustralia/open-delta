@@ -17,4 +17,8 @@ public interface CharacterData {
 	public int getNumberOfStates();
 
 	public void setMandatory(boolean b);
+
+	public void setDescription(String desc);
+
+	public void setUnits(String units);
 }

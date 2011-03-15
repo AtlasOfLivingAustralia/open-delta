@@ -22,6 +22,7 @@ import au.org.ala.delta.model.DeltaDataSetFactory;
 
 public class CharacterTypes extends AbstractCharacterListDirective<CharacterType> {
 
+	// TODO fixme
 	DeltaDataSetFactory _factory = new DefaultDataSetFactory();
 	
 	public CharacterTypes() {
