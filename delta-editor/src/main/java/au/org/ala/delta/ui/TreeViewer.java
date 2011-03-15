@@ -12,7 +12,7 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  ******************************************************************************/
-package au.org.ala.delta;
+package au.org.ala.delta.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -46,9 +46,6 @@ import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.NumericCharacter;
 import au.org.ala.delta.ui.AboutBox;
-import au.org.ala.delta.ui.EditorDataModel;
-import au.org.ala.delta.ui.InternalFrameDataModelListener;
-import au.org.ala.delta.ui.StateEditor;
 import au.org.ala.delta.ui.util.IconHelper;
 
 public class TreeViewer extends JInternalFrame {
