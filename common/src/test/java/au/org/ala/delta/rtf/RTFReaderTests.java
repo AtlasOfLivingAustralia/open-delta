@@ -30,6 +30,13 @@ public class RTFReaderTests extends TestCase {
 		System.out.println(stripped);			
 	}
 	
+	public void testEmdash() throws IOException {
+		String rtf = "{\\rtf\\ansi\\deff0{\\fonttbl{\\f0\\froman Tms Rmn;}}\\pard\\plain \\fs20 \\emdash Emdash. — \\u2014? }";		
+		String stripped = RTFUtils.stripFormatting(rtf);
+		System.out.println(stripped);			
+	}
+	
+	
 	
 	/**
 	 * Tests the RTFReader can correctly handle escaped unicode code points of the form \\u<code point>.

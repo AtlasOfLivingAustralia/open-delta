@@ -49,8 +49,7 @@ public class DocumentBuildingRtfHandler extends RTFHandlerAdapter {
 		}
 		
 		public void handleAttribute(AttributeValue attr, MutableAttributeSet newAttributes) {
-			newAttributes.addAttribute(_styleAttribute, Boolean.valueOf(!attr.hasParam()));
-			
+			newAttributes.addAttribute(_styleAttribute, Boolean.valueOf(!attr.hasParam()));			
 		}
 	}
 	
@@ -87,9 +86,10 @@ public class DocumentBuildingRtfHandler extends RTFHandlerAdapter {
 	}
 	
 	private void insertUnicodeCodePoint(char ch) {
-		_textBuffer.append("\\u").append(Integer.toString(ch));
-		// we are now supposed to write our "best ascii representation of the char.  
-		_textBuffer.append("?");
+		_textBuffer.append(ch);
+//		_textBuffer.append("\\u").append(Integer.toString(ch, 16)); // in hex
+//		// we are now supposed to write our "best ascii representation of the char.  
+//		_textBuffer.append("?");
 	}
 	
 	@Override

@@ -13,6 +13,8 @@ import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
 import au.org.ala.delta.rtf.CharacterAttributeType;
+import au.org.ala.delta.rtf.CharacterKeyword;
+import au.org.ala.delta.rtf.Keyword;
 
 /**
  * Writes the contents of a StyledDocument as RTF encoded text.
@@ -126,7 +128,23 @@ public class RTFWriter {
 		
 		if (element.isLeaf()) {
 			String plainText = _document.getText(element.getStartOffset(), element.getEndOffset()-element.getStartOffset());
-			_writer.write(plainText);
+			for (int i = 0; i < plainText.length(); ++i) {
+				char ch = plainText.charAt(i);
+				if (ch > 127) {
+					CharacterKeyword kwd = Keyword.findKeywordForCharacter(ch);
+					if (kwd != null) {
+						_writer.write("\\");
+						_writer.write(kwd.getKeyword());
+						_writer.write(" ");
+					} else {
+						_writer.write("\\u");
+						_writer.write(Integer.toString(ch));
+						_writer.write("? ");
+					}
+				} else {
+					_writer.write(ch);					
+				}
+			}
 		}
 		else  {
 			for (int i=0; i<element.getElementCount(); i++) {
