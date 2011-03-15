@@ -34,7 +34,9 @@ public class TranslateInto extends Directive {
 		TRANSLATE_TYPE_MAP.put("EXIFOR", TranslateType.EXIR);
 		TRANSLATE_TYPE_MAP.put("PAYFOR", TranslateType.Payne);
 		TRANSLATE_TYPE_MAP.put("DISFOR", TranslateType.Dist);
-		TRANSLATE_TYPE_MAP.put("PAUFOR", TranslateType.PAUP);		
+		TRANSLATE_TYPE_MAP.put("PAUFOR", TranslateType.PAUP);	
+		TRANSLATE_TYPE_MAP.put("INTFOR", TranslateType.IntKey);	
+		
 	}
 
 	public TranslateInto() {
