@@ -63,8 +63,21 @@ ShowUninstDetails show
 Section -Main SEC0000
     SetOverwrite on
     
-    Call InstallAddFiles
+    SetOutPath "$INSTDIR"
+    ; Put file there
+    File "/oname=${EXEOUTPUTNAME}" "..\delta-editor\target\${EXENAME}" 
+
+    ; Do With JRE/No JRE specific stuff here    
+    Call CustomAddFiles
   
+    ; Output sample dlt into sample subdirectory
+    SetOutPath "$INSTDIR\sample"
+    File "..\delta-editor\sampledata\sample.dlt"
+    
+    ; Output JAR files to lib subdirectory
+    SetOutPath "$INSTDIR\lib"
+    File "..\delta-editor\target\${JARNAME}"
+    
     WriteRegStr SHELL_CONTEXT "${REGKEY}\Components" Main 1
 SectionEnd
 
@@ -106,7 +119,18 @@ done${UNSECTION_ID}:
 
 # Uninstaller sections
 Section /o -un.Main UNSEC0000
-    Call un.UninstallRemoveFiles
+    Delete /REBOOTOK "$INSTDIR\*.exe"
+    Delete /REBOOTOK "$INSTDIR\lib\*.jar"
+    RmDir /REBOOTOK "$INSTDIR\lib"
+
+    ; Do With JRE/No JRE specific stuff here    
+    Call un.CustomRemoveFiles
+    
+    Delete /REBOOTOK "$INSTDIR\sample\sample.dlt"
+    RmDir /REBOOTOK "$INSTDIR\sample"
+    
+    FlushINI "$INSTDIR\uninstall.ini"
+    Delete /REBOOTOK "$INSTDIR\uninstall.ini"
 
     DeleteRegValue SHELL_CONTEXT "${REGKEY}\Components" Main
 SectionEnd
