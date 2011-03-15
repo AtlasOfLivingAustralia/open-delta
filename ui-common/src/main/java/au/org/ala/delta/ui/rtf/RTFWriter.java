@@ -139,7 +139,7 @@ public class RTFWriter {
 					} else {
 						_writer.write("\\u");
 						_writer.write(Integer.toString(ch));
-						_writer.write("? ");
+						_writer.write("?");
 					}
 				} else {
 					_writer.write(ch);					
