@@ -40,14 +40,15 @@ import org.jdesktop.application.Application;
 import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 
-import au.org.ala.delta.gui.EditorDataModel;
-import au.org.ala.delta.gui.InternalFrameDataModelListener;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.NumericCharacter;
 import au.org.ala.delta.ui.AboutBox;
+import au.org.ala.delta.ui.EditorDataModel;
+import au.org.ala.delta.ui.InternalFrameDataModelListener;
+import au.org.ala.delta.ui.StateEditor;
 import au.org.ala.delta.ui.util.IconHelper;
 
 public class TreeViewer extends JInternalFrame {

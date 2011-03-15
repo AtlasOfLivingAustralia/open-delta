@@ -1,4 +1,4 @@
-package au.org.ala.delta.gui;
+package au.org.ala.delta.ui;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;

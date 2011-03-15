@@ -12,7 +12,7 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  ******************************************************************************/
-package au.org.ala.delta;
+package au.org.ala.delta.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
