@@ -42,6 +42,7 @@ public abstract class Keyword {
 
 		// Special keywords
 		registerKeyword(new UnicodeKeyword("u"));
+		registerKeyword(new CodePageKeyword());
 	}
 
 	protected String _keyword;
