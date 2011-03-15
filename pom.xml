@@ -36,12 +36,23 @@
 								</taskdef>
 								<nsis script="./installer/DeltaEditorWithJRE.nsi">
 									<define name="VERSION" value="${project.version}" />
-									<!--<define name="JARNAME"
-										value="${project.build.finalName}-with-dependencies.jar" />-->
-                                   <define name="JARNAME"
-                                        value="delta-editor-${project.version}-with-dependencies.jar" />	
-									<define name="EXENAME" value="DeltaEditor.exe" />
-									<define name="EXEOUTPUTNAME" value="DeltaEditor.exe" />
+									
+                                    <define name="LICENSE-TEXT-PATH"
+                                        value="..\common\src\main\resources\au\org\ala\delta\resources\MPL-1.1.txt" />
+                                        
+                                    <define name="SAMPLE-DLT-PATH" value="..\sampledata\sample.dlt" />                                       
+									
+									<define name="DELTA-EDITOR-JARPATH"
+                                        value="..\delta-editor\target\delta-editor-${project.version}-with-dependencies.jar" />
+                                    <define name="DELTA-EDITOR-EXEPATH"
+                                        value="..\delta-editor\target\DeltaEditor.exe" />
+                                    <define name="DELTA-EDITOR-EXEOUTPUTNAME" value="DeltaEditor.exe" />
+                                    
+                                    <define name="INTKEY-JARPATH"
+                                        value="..\intkey\target\delta-intkey-${project.version}-with-dependencies.jar" />
+                                    <define name="INTKEY-EXEPATH"
+                                        value="..\intkey\target\Intkey.exe" />
+                                    <define name="INTKEY-EXEOUTPUTNAME" value="Intkey.exe" />                                        
 								</nsis>
 							</target>
 						</configuration>
@@ -49,29 +60,40 @@
 							<goal>run</goal>
 						</goals>
 					</execution>
-					<execution>
-						<id>InstallerNoJRE</id>
-						<phase>install</phase>
-						<configuration>
-							<target>
-								<taskdef name="nsis" classname="com.danielreese.nsisant.Task">
-									<classpath location="./installer/nsisant-1.3.jar" />
-								</taskdef>
-								<nsis script="./installer/DeltaEditorNoJRE.nsi">
-									<define name="VERSION" value="${project.version}" />
-									<!--<define name="JARNAME"
-										value="${project.build.finalName}-with-dependencies.jar" />-->
-                                  <define name="JARNAME"
-                                        value="delta-editor-${project.version}-with-dependencies.jar" />
-									<define name="EXENAME" value="DeltaEditor-NOJRE.exe" />
-									<define name="EXEOUTPUTNAME" value="DeltaEditor.exe" />
-								</nsis>
-							</target>
-						</configuration>
-						<goals>
-							<goal>run</goal>
-						</goals>
-					</execution>
+                    <execution>
+                        <id>InstallerNOJRE</id>
+                        <phase>install</phase>
+                        <configuration>
+                            <target>
+                                <taskdef name="nsis" classname="com.danielreese.nsisant.Task">
+                                    <classpath location="./installer/nsisant-1.3.jar" />
+                                </taskdef>
+                                <nsis script="./installer/DeltaEditorNoJRE.nsi">
+                                    <define name="VERSION" value="${project.version}" />
+                                    
+                                    <define name="LICENSE-TEXT-PATH"
+                                        value="..\common\src\main\resources\au\org\ala\delta\resources\MPL-1.1.txt" />
+                                        
+                                    <define name="SAMPLE-DLT-PATH" value="..\sampledata\sample.dlt" />                                       
+                                    
+                                    <define name="DELTA-EDITOR-JARPATH"
+                                        value="..\delta-editor\target\delta-editor-${project.version}-with-dependencies.jar" />
+                                    <define name="DELTA-EDITOR-EXEPATH"
+                                        value="..\delta-editor\target\DeltaEditor-NOJRE.exe" />
+                                    <define name="DELTA-EDITOR-EXEOUTPUTNAME" value="DeltaEditor.exe" />
+                                    
+                                    <define name="INTKEY-JARPATH"
+                                        value="..\intkey\target\delta-intkey-${project.version}-with-dependencies.jar" />
+                                    <define name="INTKEY-EXEPATH"
+                                        value="..\intkey\target\Intkey-NOJRE.exe" />
+                                    <define name="INTKEY-EXEOUTPUTNAME" value="Intkey.exe" />                                        
+                                </nsis>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
 				</executions>
 			</plugin>
 		</plugins>

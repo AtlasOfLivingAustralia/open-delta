@@ -38,7 +38,7 @@ Var StartMenuGroup
 
 # Installer pages
 !insertmacro MUI_PAGE_WELCOME
-!insertmacro MUI_PAGE_LICENSE "..\delta-editor\src\main\resources\au\org\ala\delta\resources\MPL-1.1.txt"
+!insertmacro MUI_PAGE_LICENSE "${LICENSE-TEXT-PATH}"
 !insertmacro MULTIUSER_PAGE_INSTALLMODE
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_STARTMENU Application $StartMenuGroup
@@ -64,19 +64,20 @@ Section -Main SEC0000
     SetOverwrite on
     
     SetOutPath "$INSTDIR"
-    ; Put file there
-    File "/oname=${EXEOUTPUTNAME}" "..\delta-editor\target\${EXENAME}" 
+    File "/oname=${DELTA-EDITOR-EXEOUTPUTNAME}" "${DELTA-EDITOR-EXEPATH}"
+    File "/oname=${INTKEY-EXEOUTPUTNAME}" "${INTKEY-EXEPATH}"  
 
     ; Do With JRE/No JRE specific stuff here    
     Call CustomAddFiles
   
     ; Output sample dlt into sample subdirectory
     SetOutPath "$INSTDIR\sample"
-    File "..\delta-editor\sampledata\sample.dlt"
+    File "${SAMPLE-DLT-PATH}"
     
     ; Output JAR files to lib subdirectory
     SetOutPath "$INSTDIR\lib"
-    File "..\delta-editor\target\${JARNAME}"
+    File "${DELTA-EDITOR-JARPATH}"
+    File "${INTKEY-JARPATH}"
     
     WriteRegStr SHELL_CONTEXT "${REGKEY}\Components" Main 1
 SectionEnd
@@ -87,7 +88,11 @@ Section -post SEC0001
     WriteUninstaller "$INSTDIR\uninstall.exe"
     !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
     SetOutPath $SMPROGRAMS\$StartMenuGroup
-    CreateShortCut "$SMPROGRAMS\$StartMenuGroup\DELTA Editor.lnk" "$INSTDIR\${EXEOUTPUTNAME}"
+    
+    CreateShortCut "$SMPROGRAMS\$StartMenuGroup\DELTA Editor.lnk" "$INSTDIR\${DELTA-EDITOR-EXEOUTPUTNAME}"
+    CreateShortCut "$SMPROGRAMS\$StartMenuGroup\Intkey.lnk" "$INSTDIR\${INTKEY-EXEOUTPUTNAME}"
+    
+    
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Uninstall $(^Name).lnk" "$INSTDIR\uninstall.exe"
     !insertmacro MUI_STARTMENU_WRITE_END
     WriteRegStr SHELL_CONTEXT "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" DisplayName "$(^Name)"
@@ -138,7 +143,10 @@ SectionEnd
 Section -un.post UNSEC0001
     DeleteRegKey SHELL_CONTEXT "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)"
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Uninstall $(^Name).lnk"
+    
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\DELTA Editor.lnk"
+    Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Intkey.lnk"
+    
     Delete /REBOOTOK "$INSTDIR\uninstall.exe"
     DeleteRegValue SHELL_CONTEXT "${REGKEY}" StartMenuGroup
     DeleteRegValue SHELL_CONTEXT "${REGKEY}" Path
