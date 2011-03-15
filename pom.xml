@@ -16,6 +16,7 @@
 	    <module>common</module>
 	    <module>ui-common</module>	    
 		<module>delta-editor</module>
+		<module>intkey</module>
 	</modules>
 	
 </project>
