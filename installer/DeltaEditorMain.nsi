@@ -93,7 +93,10 @@ Section -post SEC0001
     
     CreateShortCut "$SMPROGRAMS\$StartMenuGroup\DELTA Editor.lnk" "$INSTDIR\${DELTA-EDITOR-EXEOUTPUTNAME}"
     CreateShortCut "$SMPROGRAMS\$StartMenuGroup\Intkey.lnk" "$INSTDIR\${INTKEY-EXEOUTPUTNAME}"
+    
+    SetOutPath "$INSTDIR"
     CreateShortCut "$SMPROGRAMS\$StartMenuGroup\CONFOR.lnk" "cmd.exe" '/k "$INSTDIR\${CONFOR-EXEOUTPUTNAME}"' "$INSTDIR\${CONFOR-EXEOUTPUTNAME}" "" ""
+    SetOutPath $SMPROGRAMS\$StartMenuGroup
     
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Uninstall $(^Name).lnk" "$INSTDIR\uninstall.exe"
     !insertmacro MUI_STARTMENU_WRITE_END
