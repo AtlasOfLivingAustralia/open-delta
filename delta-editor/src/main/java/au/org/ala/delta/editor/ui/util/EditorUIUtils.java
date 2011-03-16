@@ -13,11 +13,11 @@ import au.org.ala.delta.util.Platform;
 public class EditorUIUtils {
 
     private static final String ICON_PATH = "/au/org/ala/delta/editor/resources/icons";
-    private static final ImageIcon _textIcon = IconHelper.createImageIcon(ICON_PATH + "/textchar.png");
-    private static final ImageIcon _realIcon = IconHelper.createImageIcon(ICON_PATH + "/realchar.png");
-    private static final ImageIcon _intIcon = IconHelper.createImageIcon(ICON_PATH + "/intchar.png");
-    private static final ImageIcon _omIcon = IconHelper.createImageIcon(ICON_PATH + "/omchar.png");
-    private static final ImageIcon _umIcon = IconHelper.createImageIcon(ICON_PATH + "/umchar.png");
+    private static final ImageIcon _textIcon = IconHelper.createImageIconFromAbsolutePath(ICON_PATH + "/textchar.png");
+    private static final ImageIcon _realIcon = IconHelper.createImageIconFromAbsolutePath(ICON_PATH + "/realchar.png");
+    private static final ImageIcon _intIcon = IconHelper.createImageIconFromAbsolutePath(ICON_PATH + "/intchar.png");
+    private static final ImageIcon _omIcon = IconHelper.createImageIconFromAbsolutePath(ICON_PATH + "/omchar.png");
+    private static final ImageIcon _umIcon = IconHelper.createImageIconFromAbsolutePath(ICON_PATH + "/umchar.png");
     
     public static ImageIcon createLargeIcon() {
         return IconHelper.createBlue32ImageIcon();
