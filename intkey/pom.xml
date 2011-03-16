@@ -112,7 +112,7 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>DeltaEditorNOJRE</id>
+                        <id>IntkeyNOJRE</id>
                         <phase>install</phase>
                         <goals>
                             <goal>launch4j</goal>

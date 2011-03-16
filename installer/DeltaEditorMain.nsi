@@ -65,7 +65,8 @@ Section -Main SEC0000
     
     SetOutPath "$INSTDIR"
     File "/oname=${DELTA-EDITOR-EXEOUTPUTNAME}" "${DELTA-EDITOR-EXEPATH}"
-    File "/oname=${INTKEY-EXEOUTPUTNAME}" "${INTKEY-EXEPATH}"  
+    File "/oname=${INTKEY-EXEOUTPUTNAME}" "${INTKEY-EXEPATH}" 
+    File "/oname=${CONFOR-EXEOUTPUTNAME}" "${CONFOR-EXEPATH}"  
 
     ; Do With JRE/No JRE specific stuff here    
     Call CustomAddFiles
@@ -78,6 +79,7 @@ Section -Main SEC0000
     SetOutPath "$INSTDIR\lib"
     File "${DELTA-EDITOR-JARPATH}"
     File "${INTKEY-JARPATH}"
+    File "${CONFOR-JARPATH}"
     
     WriteRegStr SHELL_CONTEXT "${REGKEY}\Components" Main 1
 SectionEnd
@@ -91,7 +93,7 @@ Section -post SEC0001
     
     CreateShortCut "$SMPROGRAMS\$StartMenuGroup\DELTA Editor.lnk" "$INSTDIR\${DELTA-EDITOR-EXEOUTPUTNAME}"
     CreateShortCut "$SMPROGRAMS\$StartMenuGroup\Intkey.lnk" "$INSTDIR\${INTKEY-EXEOUTPUTNAME}"
-    
+    CreateShortCut "$SMPROGRAMS\$StartMenuGroup\CONFOR.lnk" "cmd.exe" '/k "$INSTDIR\${CONFOR-EXEOUTPUTNAME}"' "$INSTDIR\${CONFOR-EXEOUTPUTNAME}" "" ""
     
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Uninstall $(^Name).lnk" "$INSTDIR\uninstall.exe"
     !insertmacro MUI_STARTMENU_WRITE_END
@@ -146,6 +148,7 @@ Section -un.post UNSEC0001
     
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\DELTA Editor.lnk"
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Intkey.lnk"
+    Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\CONFOR.lnk"
     
     Delete /REBOOTOK "$INSTDIR\uninstall.exe"
     DeleteRegValue SHELL_CONTEXT "${REGKEY}" StartMenuGroup

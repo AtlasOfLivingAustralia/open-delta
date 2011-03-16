@@ -52,7 +52,13 @@
                                         value="..\intkey\target\delta-intkey-${project.version}-with-dependencies.jar" />
                                     <define name="INTKEY-EXEPATH"
                                         value="..\intkey\target\Intkey.exe" />
-                                    <define name="INTKEY-EXEOUTPUTNAME" value="Intkey.exe" />                                        
+                                    <define name="INTKEY-EXEOUTPUTNAME" value="Intkey.exe" />
+                                    
+                                    <define name="CONFOR-JARPATH"
+                                        value="..\confor\target\confor-${project.version}-with-dependencies.jar" />
+                                    <define name="CONFOR-EXEPATH"
+                                        value="..\confor\target\CONFOR-NOJRE.exe" />
+                                    <define name="CONFOR-EXEOUTPUTNAME" value="CONFOR.exe" />                                     
 								</nsis>
 							</target>
 						</configuration>
@@ -86,7 +92,13 @@
                                         value="..\intkey\target\delta-intkey-${project.version}-with-dependencies.jar" />
                                     <define name="INTKEY-EXEPATH"
                                         value="..\intkey\target\Intkey-NOJRE.exe" />
-                                    <define name="INTKEY-EXEOUTPUTNAME" value="Intkey.exe" />                                        
+                                    <define name="INTKEY-EXEOUTPUTNAME" value="Intkey.exe" />   
+                                    
+                                    <define name="CONFOR-JARPATH"
+                                        value="..\confor\target\confor-${project.version}-with-dependencies.jar" />
+                                    <define name="CONFOR-EXEPATH"
+                                        value="..\confor\target\CONFOR-NOJRE.exe" />
+                                    <define name="CONFOR-EXEOUTPUTNAME" value="CONFOR.exe" />                                        
                                 </nsis>
                             </target>
                         </configuration>
