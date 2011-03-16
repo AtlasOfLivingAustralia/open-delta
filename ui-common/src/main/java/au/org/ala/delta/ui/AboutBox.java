@@ -94,7 +94,7 @@ public class AboutBox extends JDialog implements HyperlinkListener {
 		JLabel lblTopText = new JLabel(topTextBuilder.toString());
 		lblTopText.setFont(new Font(lblTopText.getFont().getName(), lblTopText.getFont().getStyle(), 16));
 		
-		Icon deltaIcon = IconHelper.createLargeIcon();
+		Icon deltaIcon = IconHelper.createBlue32ImageIcon();
 		JLabel lblIcon = new JLabel(deltaIcon);
 	
 		pnlTop.add(lblIcon, BorderLayout.EAST);
