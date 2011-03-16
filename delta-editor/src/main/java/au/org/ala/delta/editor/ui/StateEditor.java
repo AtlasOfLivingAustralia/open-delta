@@ -30,6 +30,7 @@ import javax.swing.JToolBar;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import au.org.ala.delta.editor.ui.util.EditorUIUtils;
 import au.org.ala.delta.editor.ui.validator.AttributeValidator;
 import au.org.ala.delta.editor.ui.validator.RtfEditorValidator;
 import au.org.ala.delta.editor.ui.validator.ValidationListener;
@@ -41,7 +42,6 @@ import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.NumericCharacter;
 import au.org.ala.delta.ui.rtf.RtfEditor;
-import au.org.ala.delta.ui.util.IconHelper;
 
 public class StateEditor extends JPanel implements ValidationListener {
 
@@ -222,7 +222,7 @@ public class StateEditor extends JPanel implements ValidationListener {
 			super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 			
 			Character ch = (Character)value;
-			setIcon(IconHelper.iconForCharacter(ch));
+			setIcon(EditorUIUtils.iconForCharacter(ch));
 			
 			if (ch instanceof NumericCharacter) {
 				setText(((NumericCharacter)ch).getUnits());

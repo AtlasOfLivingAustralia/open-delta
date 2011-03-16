@@ -40,6 +40,7 @@ import org.jdesktop.application.Application;
 import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 
+import au.org.ala.delta.editor.ui.util.EditorUIUtils;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
@@ -47,7 +48,6 @@ import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.NumericCharacter;
 import au.org.ala.delta.rtf.RTFUtils;
 import au.org.ala.delta.ui.AboutBox;
-import au.org.ala.delta.ui.util.IconHelper;
 
 public class TreeViewer extends JInternalFrame {
 
@@ -240,7 +240,7 @@ class DeltaTreeCellRenderer extends DefaultTreeCellRenderer {
 		super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
 		if (value instanceof CharacterTreeNode) {
 			Character ch = (Character) ((CharacterTreeNode) value).getUserObject();
-			setIcon(IconHelper.iconForCharacter(ch));
+			setIcon(EditorUIUtils.iconForCharacter(ch));
 		} else if (leaf) {
 			DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
 			String name = node.getUserObject().toString();

@@ -59,6 +59,7 @@ import au.org.ala.delta.editor.ui.EditorDataModel;
 import au.org.ala.delta.editor.ui.MatrixViewer;
 import au.org.ala.delta.editor.ui.TreeViewer;
 import au.org.ala.delta.editor.ui.help.HelpConstants;
+import au.org.ala.delta.editor.ui.util.EditorUIUtils;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.DeltaDataSetRepository;
 import au.org.ala.delta.ui.AboutBox;
@@ -138,7 +139,7 @@ public class DeltaEditor extends SingleFrameApplication {
 		JFrame frame = getMainFrame();
 		frame.setPreferredSize(new Dimension(800,600));
 		
-		frame.setIconImages(IconHelper.getDeltaIconList());
+		frame.setIconImages(IconHelper.getBlueIconList());
 	
 		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		
@@ -372,14 +373,14 @@ public class DeltaEditor extends SingleFrameApplication {
 	}
 	
 	private void addToDesktop(JInternalFrame frame) {
-		frame.setFrameIcon(IconHelper.createDeltaImageIcon());
+		frame.setFrameIcon(EditorUIUtils.createDeltaImageIcon());
 		_desktop.add(frame);		
 		frame.setClosable(true);
 		frame.setMaximizable(true);
 		frame.setResizable(true);
 		frame.setIconifiable(true);
 		frame.setVisible(true);
-		frame.setFrameIcon(IconHelper.createInternalFrameNormalIcon());
+		frame.setFrameIcon(EditorUIUtils.createInternalFrameNormalIcon());
 		frame.addPropertyChangeListener(JInternalFrame.IS_MAXIMUM_PROPERTY, new PropertyChangeListener() {
 			
 			@Override
@@ -387,9 +388,9 @@ public class DeltaEditor extends SingleFrameApplication {
 				Boolean newValue = (Boolean) evt.getNewValue();
 				JInternalFrame frame = (JInternalFrame) evt.getSource();
 				if (newValue) {
-					frame.setFrameIcon(IconHelper.createInternalFrameMaximizedIcon());
+					frame.setFrameIcon(EditorUIUtils.createInternalFrameMaximizedIcon());
 				} else {
-					frame.setFrameIcon(IconHelper.createInternalFrameNormalIcon());
+					frame.setFrameIcon(EditorUIUtils.createInternalFrameNormalIcon());
 				}
 			}
 		});
