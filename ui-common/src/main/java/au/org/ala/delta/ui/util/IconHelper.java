@@ -37,13 +37,23 @@ import au.org.ala.delta.util.Platform;
 public class IconHelper {
 
     private static final String ICON_PATH = "/au/org/ala/delta/resources/icons";
-    private static final String DELTA_BLUE_IMAGE_48 = ICON_PATH + "/Delta_blue_48.png";
-    private static final String DELTA_BLUE_IMAGE_32 = ICON_PATH + "/Delta_blue_32.png";
-    private static final String DELTA_BLUE_IMAGE_16 = ICON_PATH + "/Delta_blue_16.png";
-    private static final String DELTA_BLUE_IMAGE_14 = ICON_PATH + "/Delta_blue_14.png";
-    private static final String DELTA_BLUE_IMAGE_12 = ICON_PATH + "/Delta_blue_12.png";
+    private static final String DELTA_BLUE_IMAGE_48 = "Delta_blue_48.png";
+    private static final String DELTA_BLUE_IMAGE_32 = "Delta_blue_32.png";
+    private static final String DELTA_BLUE_IMAGE_16 = "Delta_blue_16.png";
+    private static final String DELTA_BLUE_IMAGE_14 = "Delta_blue_14.png";
+    private static final String DELTA_BLUE_IMAGE_12 = "Delta_blue_12.png";
 
     public static ImageIcon createImageIcon(String imageFileName) {
+        return new ImageIcon(imageURLFromFileName(ICON_PATH + "/" + imageFileName));
+    }
+    
+    /**
+     * Used to create an ImageIcon using a resource that is outside the 
+     * au.org.ala.delta.resources.icons package
+     * @param imageFileName
+     * @return
+     */
+    public static ImageIcon createImageIconFromAbsolutePath(String imageFileName) {
         return new ImageIcon(imageURLFromFileName(imageFileName));
     }
 
