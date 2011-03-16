@@ -27,6 +27,7 @@ import au.org.ala.delta.model.OrderedMultiStateCharacter;
 import au.org.ala.delta.model.RealCharacter;
 import au.org.ala.delta.model.TextCharacter;
 import au.org.ala.delta.model.UnorderedMultiStateCharacter;
+import au.org.ala.delta.ui.util.IconHelper;
 import au.org.ala.delta.util.Platform;
 
 /**
@@ -35,87 +36,47 @@ import au.org.ala.delta.util.Platform;
  */
 public class IconHelper {
 
-	private static final String ICON_PATH = "/icons";
-	private static final String DELTA_IMAGE_48 = "Delta_blue_48.png";
-	private static final String DELTA_IMAGE_32 = "Delta_blue_32.png";
-	private static final String DELTA_IMAGE_16 = "Delta_blue_16.png";
-	private static final String DELTA_IMAGE_14 = "Delta_blue_14.png";
-	private static final String DELTA_IMAGE_12 = "Delta_blue_12.png";
+    private static final String ICON_PATH = "/au/org/ala/delta/resources/icons";
+    private static final String DELTA_BLUE_IMAGE_48 = ICON_PATH + "/Delta_blue_48.png";
+    private static final String DELTA_BLUE_IMAGE_32 = ICON_PATH + "/Delta_blue_32.png";
+    private static final String DELTA_BLUE_IMAGE_16 = ICON_PATH + "/Delta_blue_16.png";
+    private static final String DELTA_BLUE_IMAGE_14 = ICON_PATH + "/Delta_blue_14.png";
+    private static final String DELTA_BLUE_IMAGE_12 = ICON_PATH + "/Delta_blue_12.png";
 
-	private static final ImageIcon _textIcon = createImageIcon("textchar.png");
-	private static final ImageIcon _realIcon = createImageIcon("realchar.png");
-	private static final ImageIcon _intIcon = createImageIcon("intchar.png");
-	private static final ImageIcon _omIcon = createImageIcon("omchar.png");
-	private static final ImageIcon _umIcon = createImageIcon("umchar.png");
+    public static ImageIcon createImageIcon(String imageFileName) {
+        return new ImageIcon(imageURLFromFileName(imageFileName));
+    }
 
-	public static ImageIcon createImageIcon(String imageFileName) {
-		return new ImageIcon(imageURLFromFileName(imageFileName));
-	}
+    public static ImageIcon createBlue32ImageIcon() {
+        return createImageIcon(IconHelper.DELTA_BLUE_IMAGE_32);
+    }
 
-	public static ImageIcon createLargeIcon() {
-		return createImageIcon(DELTA_IMAGE_32);
-	}
+    public static ImageIcon createBlue16ImageIcon() {
+        return createImageIcon(IconHelper.DELTA_BLUE_IMAGE_16);
+    }
 
-	public static ImageIcon createDeltaImageIcon() {
-		return createImageIcon(DELTA_IMAGE_16);
-	}
+    public static ImageIcon createBlue14ImageIcon() {
+        return createImageIcon(IconHelper.DELTA_BLUE_IMAGE_14);
+    }
+    
+    public static ImageIcon createBlue12ImageIcon() {
+        return createImageIcon(IconHelper.DELTA_BLUE_IMAGE_12);
+    }
 
-	public static ImageIcon createInternalFrameNormalIcon() {
+    public static List<? extends Image> getBlueIconList() {
+        List<Image> list = new ArrayList<Image>();
 
-		if (Platform.isWindowsAero()) {
-			return createImageIcon(DELTA_IMAGE_14);
-		} else {
-			return createImageIcon(DELTA_IMAGE_16);
-		}
+        list.add(createImageIcon(DELTA_BLUE_IMAGE_48).getImage());
+        list.add(createImageIcon(DELTA_BLUE_IMAGE_32).getImage());
+        list.add(createImageIcon(DELTA_BLUE_IMAGE_16).getImage());
+        list.add(createImageIcon(DELTA_BLUE_IMAGE_14).getImage());
+        list.add(createImageIcon(DELTA_BLUE_IMAGE_12).getImage());
 
-	}
+        return list;
+    }
 
-	public static ImageIcon createInternalFrameMaximizedIcon() {
-		if (Platform.isWindowsAero()) {
-			return createImageIcon(DELTA_IMAGE_12);
-		} else {
-			return createImageIcon(DELTA_IMAGE_14);
-		}
-	}
-
-	/**
-	 * Returns the appropriate icon for the supplied character.
-	 * 
-	 * @param ch
-	 *            the character to get the icon for.
-	 * @return an icon representing the type of the supplied Character
-	 */
-	public static ImageIcon iconForCharacter(au.org.ala.delta.model.Character ch) {
-		ImageIcon icon = null;
-		if (ch instanceof TextCharacter) {
-			icon = _textIcon;
-		} else if (ch instanceof RealCharacter) {
-			icon = _realIcon;
-		} else if (ch instanceof IntegerCharacter) {
-			icon = _intIcon;
-		} else if (ch instanceof OrderedMultiStateCharacter) {
-			icon = _omIcon;
-		} else if (ch instanceof UnorderedMultiStateCharacter) {
-			icon = _umIcon;
-		}
-		return icon;
-	}
-
-	private static URL imageURLFromFileName(String imageFileName) {
-		URL imageUrl = IconHelper.class.getResource(ICON_PATH + "/" + imageFileName);
-		return imageUrl;
-	}
-
-	public static List<? extends Image> getDeltaIconList() {
-		List<Image> list = new ArrayList<Image>();
-		
-		list.add(createImageIcon(DELTA_IMAGE_48).getImage());
-		list.add(createImageIcon(DELTA_IMAGE_32).getImage());
-		list.add(createImageIcon(DELTA_IMAGE_16).getImage());
-		list.add(createImageIcon(DELTA_IMAGE_14).getImage());
-		list.add(createImageIcon(DELTA_IMAGE_12).getImage());
-
-		return list;
-	}
-
+    private static URL imageURLFromFileName(String imageFileName) {
+        URL imageUrl = IconHelper.class.getResource(ICON_PATH + "/" + imageFileName);
+        return imageUrl;
+    }
 }
