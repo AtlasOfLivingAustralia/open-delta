@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.apache.commons.lang.NotImplementedException;
 
+import au.org.ala.delta.rtf.RTFUtils;
 import au.org.ala.delta.util.Utils;
 
 public class VOCharTextDesc extends VOAnyDesc {
@@ -41,21 +42,21 @@ public class VOCharTextDesc extends VOAnyDesc {
 		_fixedData = new CharTextFixedData();
 		_fixedData.read(_slotFile);
 
-//		Logger.debug("Unid: %d charUniD=%d, LangUnid=%d, Feature Len: %d NotesLen: %d nStateLengs: %d", _fixedData.UniId, _fixedData.charBaseId, _fixedData.charLangId, _fixedData.featureLeng,
-//				_fixedData.notesLeng, _fixedData.nStateLengs);
+		// Logger.debug("Unid: %d charUniD=%d, LangUnid=%d, Feature Len: %d NotesLen: %d nStateLengs: %d", _fixedData.UniId, _fixedData.charBaseId, _fixedData.charLangId, _fixedData.featureLeng,
+		// _fixedData.notesLeng, _fixedData.nStateLengs);
 
 		dataSeek(0);
 
 		// SNIP >>>>>
 		_stateLengs = readStateLengs();
 
-//		Logger.debug("State lengths: %s", _stateLengs);
-//
-//		Logger.debug("Feature Text: %s", readFeatureText(TextType.RTF));
-//
-//		Logger.debug("State Texts: %s", readAllStates(TextType.RTF));
-//
-//		Logger.debug("Note Text: %s", readNoteText(TextType.RTF));
+		// Logger.debug("State lengths: %s", _stateLengs);
+		//
+		// Logger.debug("Feature Text: %s", readFeatureText(TextType.RTF));
+		//
+		// Logger.debug("State Texts: %s", readAllStates(TextType.RTF));
+		//
+		// Logger.debug("Note Text: %s", readNoteText(TextType.RTF));
 	}
 
 	@Override
@@ -108,7 +109,7 @@ public class VOCharTextDesc extends VOAnyDesc {
 		if (textType == TextType.ANSI) {
 			s = Utils.RTFToANSI(s);
 		} else if (textType == TextType.UTF8) {
-			s = new String(Utils.RTFToUTF8(s));
+			s = RTFUtils.stripFormatting(s);
 		}
 
 		return s;
@@ -129,7 +130,7 @@ public class VOCharTextDesc extends VOAnyDesc {
 		if (textType == TextType.ANSI) {
 			s = Utils.RTFToANSI(s);
 		} else if (textType == TextType.UTF8) {
-			s = new String(Utils.RTFToUTF8(s));
+			s = RTFUtils.stripFormatting(s);
 		}
 
 		return s;
@@ -144,7 +145,7 @@ public class VOCharTextDesc extends VOAnyDesc {
 			if (textType == TextType.ANSI) {
 				s = Utils.RTFToANSI(s);
 			} else if (textType == TextType.UTF8) {
-				s = new String(Utils.RTFToUTF8(s));
+				s = RTFUtils.stripFormatting(s);
 			}
 			list.add(s);
 		}
@@ -164,9 +165,9 @@ public class VOCharTextDesc extends VOAnyDesc {
 
 			String dest = readString(_fixedData.notesLeng);
 			if (textType == TextType.ANSI) {
-				Utils.RTFToANSI(dest);
+				dest = Utils.RTFToANSI(dest);
 			} else if (textType == TextType.UTF8) {
-				Utils.RTFToUTF8(dest);
+				dest = RTFUtils.stripFormatting(dest);
 			}
 			return dest;
 		}
@@ -182,13 +183,12 @@ public class VOCharTextDesc extends VOAnyDesc {
 			states.clear();
 			states.addAll(readAllStates(textType));
 		}
-		
+
 		return results;
 	}
 
 	public void writeStateLengs(List<Integer> src) {
-		
-		
+
 		byte[] trailerBuf = null;
 		int trailerLen = 0;
 		int startPos = 0;
@@ -200,11 +200,11 @@ public class VOCharTextDesc extends VOAnyDesc {
 		}
 		dataSeek(startPos + SIZE_OF_INT_IN_BYTES * src.size() + trailerLen);
 		dataSeek(startPos);
-		
+
 		for (int i : src) {
 			dataWrite(i);
 		}
-		
+
 		if (src.size() != _fixedData.nStateLengs) {
 			_fixedData.nStateLengs = src.size();
 			setDirty();
@@ -220,19 +220,19 @@ public class VOCharTextDesc extends VOAnyDesc {
 		byte[] trailerBuf = null;
 		int trailerLeng = 0;
 		int startPos = _fixedData.nStateLengs * SIZE_OF_INT_IN_BYTES;
-		
+
 		byte[] srcBytes = stringToBytes(src);
-		
+
 		if (srcBytes.length != _fixedData.featureLeng) {
-			trailerBuf = dupTrailingData(startPos+_fixedData.featureLeng);
+			trailerBuf = dupTrailingData(startPos + _fixedData.featureLeng);
 			if (trailerBuf != null) {
 				trailerLeng = trailerBuf.length;
 			}
 		}
-		
+
 		dataSeek(startPos + srcBytes.length + trailerLeng);
 		dataSeek(startPos);
-		
+
 		dataWrite(srcBytes);
 		if (srcBytes.length != _fixedData.featureLeng) {
 			_fixedData.featureLeng = srcBytes.length;
@@ -245,18 +245,18 @@ public class VOCharTextDesc extends VOAnyDesc {
 	}
 
 	public void writeStateText(String src, int stateId) {
-		
+
 		byte[] srcBytes = stringToBytes(src);
-		
+
 		byte[] trailerBuf = null;
 		int trailerLeng = 0;
 		if (stateId >= _fixedData.nStateLengs) {
 			List<Integer> newLengs = new ArrayList<Integer>(_stateLengs);
 			writeStateLengs(newLengs);
 		}
-		
+
 		int seekPos = _fixedData.nStateLengs * SIZE_OF_INT_IN_BYTES + _fixedData.featureLeng;
-		for (int i=0; i<stateId; ++i) {
+		for (int i = 0; i < stateId; ++i) {
 			seekPos += _stateLengs.get(i);
 		}
 		if (srcBytes.length != _stateLengs.get(stateId)) {
@@ -265,11 +265,10 @@ public class VOCharTextDesc extends VOAnyDesc {
 				trailerLeng = trailerBuf.length;
 			}
 		}
-		
+
 		dataSeek(seekPos + srcBytes.length + trailerLeng);
 		dataSeek(seekPos);
-		
-		
+
 		dataWrite(srcBytes);
 		if (srcBytes.length != _stateLengs.get(stateId)) {
 			_stateLengs.set(stateId, srcBytes.length);
@@ -279,7 +278,7 @@ public class VOCharTextDesc extends VOAnyDesc {
 				dataTruncate();
 			}
 		}
-		
+
 	}
 
 	public void writeAllStates(List<String> src) {
@@ -288,28 +287,28 @@ public class VOCharTextDesc extends VOAnyDesc {
 		int newLen = 0;
 		int oldLen = 0;
 		List<Integer> newLengs = new ArrayList<Integer>(_stateLengs);
-		for (int i=0; i<_fixedData.nStateLengs; ++i) {
+		for (int i = 0; i < _fixedData.nStateLengs; ++i) {
 			oldLen += _stateLengs.get(i);
 		}
-		for (int i=0; i<src.size(); i++) {
+		for (int i = 0; i < src.size(); i++) {
 			byte[] srcBytes = stringToBytes(src.get(i));
 			newLen += srcBytes.length;
 		}
-		
+
 		if (newLen != oldLen) { // Save a copy of any following data!
 			trailerBuf = dupTrailingData(_fixedData.nStateLengs * SIZE_OF_INT_IN_BYTES + _fixedData.featureLeng + oldLen);
 			if (trailerBuf != null) {
 				trailerLeng = trailerBuf.length;
 			}
 		}
-		
+
 		int seekPos = _fixedData.nStateLengs * SIZE_OF_INT_IN_BYTES + _fixedData.featureLeng;
-		
+
 		dataSeek(seekPos + newLen + trailerLeng);
 		dataSeek(seekPos);
-		for (int i=0; i<src.size(); i++) {
+		for (int i = 0; i < src.size(); i++) {
 			byte[] srcBytes = stringToBytes(src.get(i));
-			
+
 			dataWrite(srcBytes);
 			if (newLengs.get(i) != srcBytes.length) {
 				newLengs.set(i, srcBytes.length);
@@ -361,7 +360,7 @@ public class VOCharTextDesc extends VOAnyDesc {
 		public void read(BinFile file) {
 			super.read(file);
 			ByteBuffer b = file.readByteBuffer(SIZE);
-			
+
 			fixedSize = b.getShort();
 			charBaseId = b.getInt();
 			charLangId = b.getInt();

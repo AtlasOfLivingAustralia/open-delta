@@ -25,6 +25,8 @@ import java.util.Locale;
 
 import javax.swing.JFrame;
 
+import au.org.ala.delta.rtf.RTFUtils;
+
 public class Utils {
 	
 	public static void centreWindow(Window c, JFrame frame) {
@@ -97,6 +99,12 @@ public class Utils {
 		
 	}
 
+	/**
+	 * @deprecated Use {@link RTFUtils#stripFormatting(String)}
+	 * @param text
+	 * @return
+	 */
+	@Deprecated
 	public static byte[] RTFToUTF8(String text) {
 		// Same as RTFToANSI, overall. But returns a string of UTF8 encoded Unicode,
 		// rather than ANSI.
@@ -130,7 +138,6 @@ public class Utils {
 			b.append(ch);
 		}
 		String str = b.toString();
-		
 		try {
 			return str.getBytes("UTF-8");
 		} catch (UnsupportedEncodingException ex) {

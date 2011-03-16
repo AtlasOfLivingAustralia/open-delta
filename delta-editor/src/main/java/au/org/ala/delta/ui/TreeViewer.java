@@ -45,7 +45,7 @@ import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.NumericCharacter;
-import au.org.ala.delta.ui.AboutBox;
+import au.org.ala.delta.rtf.RTFUtils;
 import au.org.ala.delta.ui.util.IconHelper;
 
 public class TreeViewer extends JInternalFrame {
@@ -54,22 +54,21 @@ public class TreeViewer extends JInternalFrame {
 
 	private EditorDataModel _dataModel;
 	private StateEditor _stateEditor;
-	
+
 	@Resource
 	String windowTitle;
 
 	public TreeViewer(EditorDataModel dataModel) {
 		super();
-		
+
 		ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(AboutBox.class);
 		resourceMap.injectFields(this);
-		
-		
+
 		this.setSize(new Dimension(500, 400));
 
 		_dataModel = dataModel;
 		new InternalFrameDataModelListener(this, dataModel, windowTitle);
-		
+
 		final JList lst = new JList();
 		lst.setModel(new ItemListModel(_dataModel));
 		lst.setDragEnabled(true);
@@ -83,10 +82,15 @@ public class TreeViewer extends JInternalFrame {
 		tree.setShowsRootHandles(true);
 		tree.setCellRenderer(new DeltaTreeCellRenderer(_dataModel));
 		tree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
-			
+
 			@Override
 			public void valueChanged(TreeSelectionEvent e) {
 				DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+
+				if (node == null) {
+					return;
+				}
+
 				if (node instanceof CharacterTreeNode) {
 					_dataModel.setSelectedCharacter(((CharacterTreeNode) node).getCharacter());
 				} else if (node.getParent() instanceof CharacterTreeNode) {
@@ -115,13 +119,13 @@ public class TreeViewer extends JInternalFrame {
 
 		content.setRightComponent(new JScrollPane(tree));
 		content.setLeftComponent(new JScrollPane(lst));
-		
+
 		_stateEditor = new StateEditor(_dataModel);
-		
-		JSplitPane divider =new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+
+		JSplitPane divider = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		divider.setDividerLocation(getHeight() - 200);
 		divider.setResizeWeight(1);
-		
+
 		divider.setTopComponent(content);
 		divider.setBottomComponent(_stateEditor);
 
@@ -130,6 +134,7 @@ public class TreeViewer extends JInternalFrame {
 
 	}
 }
+
 class ItemListModel extends DefaultListModel implements ListModel {
 
 	private static final long serialVersionUID = 1L;
@@ -210,7 +215,7 @@ class ItemViewModel {
 
 	@Override
 	public String toString() {
-		return _model.getItemId() + ". " +_model.getDescription();
+		return _model.getItemId() + ". " + RTFUtils.stripFormatting(_model.getDescription());
 	}
 
 	public Item getItem() {
@@ -219,68 +224,63 @@ class ItemViewModel {
 }
 
 class DeltaTreeCellRenderer extends DefaultTreeCellRenderer {
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
 	private EditorDataModel _dataModel;
 	private JCheckBox stateValueRenderer = new JCheckBox();
-	
+
 	public DeltaTreeCellRenderer(EditorDataModel dataModel) {
 		_dataModel = dataModel;
 	}
 
-
 	public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus) {
-	
+
 		super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
 		if (value instanceof CharacterTreeNode) {
 			Character ch = (Character) ((CharacterTreeNode) value).getUserObject();
-			setIcon(IconHelper.iconForCharacter(ch));	
-		}  
-		else if (leaf) {
-			DefaultMutableTreeNode node = (DefaultMutableTreeNode)value;
+			setIcon(IconHelper.iconForCharacter(ch));
+		} else if (leaf) {
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
 			String name = node.getUserObject().toString();
 			if (node.getParent() instanceof CharacterTreeNode) {
 				Character ch = (Character) ((CharacterTreeNode) node.getParent()).getUserObject();
-				
+
 				if (ch instanceof MultiStateCharacter) {
-					
+
 					stateValueRenderer.setText(name);
 					stateValueRenderer.setForeground(getForeground());
 					if (selected) {
 						stateValueRenderer.setBackground(getBackgroundSelectionColor());
-					}
-					else {
+					} else {
 						stateValueRenderer.setBackground(getBackgroundNonSelectionColor());
 					}
 					stateValueRenderer.setSelected(false);
 					if (_dataModel.getSelectedItem() != null) {
 						Item item = _dataModel.getSelectedItem();
 						Attribute attribute = item.getAttribute(ch);
-						
+
 						if (attribute != null) {
 							try {
-								
+
 								MultiStateCharacter multiStateChar = (MultiStateCharacter) ch;
 								int numStates = multiStateChar.getNumberOfStates();
-								
-								for (int stateNumber = 1; stateNumber<=numStates; stateNumber++) {
+
+								for (int stateNumber = 1; stateNumber <= numStates; stateNumber++) {
 									if (multiStateChar.getState(stateNumber).equals(name)) {
 										stateValueRenderer.setSelected(attribute.isPresent(stateNumber));
 										break;
 									}
 								}
-							}
-							catch (Exception e) {
+							} catch (Exception e) {
 								// We don't handle multiple selection right now...
 								e.printStackTrace();
 							}
 						}
 					}
 					return stateValueRenderer;
-				}
-				else if (ch instanceof NumericCharacter) {
-					setText(getText() + " "+((NumericCharacter)ch).getUnits());
+				} else if (ch instanceof NumericCharacter) {
+					setText(getText() + " " + ((NumericCharacter) ch).getUnits());
 				}
 			}
 		}
@@ -308,7 +308,7 @@ class CharacterTreeNode extends DefaultMutableTreeNode {
 			add(new DefaultMutableTreeNode(new CharStateHolder(_dataModel, ch)));
 		}
 	}
-	
+
 	public Character getCharacter() {
 		return _character;
 	}
@@ -316,6 +316,11 @@ class CharacterTreeNode extends DefaultMutableTreeNode {
 	@Override
 	public boolean isLeaf() {
 		return false;
+	}
+
+	@Override
+	public String toString() {
+		return RTFUtils.stripFormatting(_character.getDescription());
 	}
 
 }

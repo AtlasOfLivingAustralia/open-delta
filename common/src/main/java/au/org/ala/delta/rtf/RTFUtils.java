@@ -4,6 +4,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
+
 public class RTFUtils {
 
 	public static String stripFormatting(String rtf) {
@@ -15,6 +17,11 @@ public class RTFUtils {
 	}
 	
 	private static String filter(String rtf, String...allowedKeywords) {
+		
+		if (StringUtils.isEmpty(rtf)) {
+			return rtf;
+		}
+		
 		FilteringRTFHandler handler = new FilteringRTFHandler(allowedKeywords);
 		RTFReader reader = new RTFReader(rtf, handler);
 		try {
@@ -22,11 +29,8 @@ public class RTFUtils {
 		} catch (Exception ex) {
 			throw new RuntimeException(ex);
 		}
-		return handler.getFilteredText();
-		
+		return handler.getFilteredText();		
 	}
-		
-		
 
 }
 
@@ -72,7 +76,7 @@ class FilteringRTFHandler implements RTFHandler {
 	}
 
 	public String getFilteredText() {
-		return _buffer.toString();
+		return _buffer.toString().trim();
 	}
 
 	@Override

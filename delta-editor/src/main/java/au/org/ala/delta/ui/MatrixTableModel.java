@@ -42,7 +42,7 @@ public class MatrixTableModel implements TableModel {
 
 	@Override
 	public String getColumnName(int column) {
-		return (column+1)+ ". "+ _dataSet.getCharacter(column + 1).getDescription();
+		return (column+1)+ ". " + RTFUtils.stripFormatting(_dataSet.getCharacter(column + 1).getDescription());
 	}
 
 	@Override
@@ -61,7 +61,8 @@ public class MatrixTableModel implements TableModel {
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		String attributeValue = RTFUtils.stripFormatting(_dataSet.getAttributeAsString(rowIndex+1, columnIndex+1));
+		String tmp = _dataSet.getAttributeAsString(rowIndex+1, columnIndex+1);
+		String attributeValue = RTFUtils.stripFormatting(tmp);
 		if (attributeValue == null) {
 			attributeValue = "-";
 		}

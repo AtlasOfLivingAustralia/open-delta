@@ -25,6 +25,7 @@ import java.util.TreeMap;
 
 import org.apache.commons.lang.NotImplementedException;
 
+import au.org.ala.delta.rtf.RTFUtils;
 import au.org.ala.delta.util.Utils;
 
 public class VOItemDesc extends VOImageHolderDesc implements INameHolder {
@@ -272,7 +273,7 @@ public class VOItemDesc extends VOImageHolderDesc implements INameHolder {
 			if (textType == TextType.ANSI) {
 				return Utils.RTFToANSI(dest.toString());
 			} else if (textType == TextType.UTF8) {
-				return new String(Utils.RTFToUTF8(dest.toString()));
+				return RTFUtils.stripFormatting(dest.toString());
 			}
 
 		}
