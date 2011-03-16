@@ -22,14 +22,6 @@ import java.util.List;
 
 import javax.swing.ImageIcon;
 
-import au.org.ala.delta.model.IntegerCharacter;
-import au.org.ala.delta.model.OrderedMultiStateCharacter;
-import au.org.ala.delta.model.RealCharacter;
-import au.org.ala.delta.model.TextCharacter;
-import au.org.ala.delta.model.UnorderedMultiStateCharacter;
-import au.org.ala.delta.ui.util.IconHelper;
-import au.org.ala.delta.util.Platform;
-
 /**
  * Utilities for working with image icons.
  * 
@@ -37,12 +29,16 @@ import au.org.ala.delta.util.Platform;
 public class IconHelper {
 
     private static final String ICON_PATH = "/au/org/ala/delta/resources/icons";
+
     private static final String DELTA_BLUE_IMAGE_48 = "Delta_blue_48.png";
     private static final String DELTA_BLUE_IMAGE_32 = "Delta_blue_32.png";
     private static final String DELTA_BLUE_IMAGE_16 = "Delta_blue_16.png";
     private static final String DELTA_BLUE_IMAGE_14 = "Delta_blue_14.png";
     private static final String DELTA_BLUE_IMAGE_12 = "Delta_blue_12.png";
 
+    private static final String DELTA_RED_IMAGE_32 = "Delta_32.png";
+    private static final String DELTA_RED_IMAGE_16 = "Delta_16.png";
+    
     public static ImageIcon createImageIcon(String imageFileName) {
         return new ImageIcon(imageURLFromFileName(ICON_PATH + "/" + imageFileName));
     }
@@ -81,6 +77,15 @@ public class IconHelper {
         list.add(createImageIcon(DELTA_BLUE_IMAGE_16).getImage());
         list.add(createImageIcon(DELTA_BLUE_IMAGE_14).getImage());
         list.add(createImageIcon(DELTA_BLUE_IMAGE_12).getImage());
+
+        return list;
+    }
+    
+    public static List<? extends Image> getRedIconList() {
+        List<Image> list = new ArrayList<Image>();
+
+        list.add(createImageIcon(DELTA_RED_IMAGE_32).getImage());
+        list.add(createImageIcon(DELTA_RED_IMAGE_16).getImage());
 
         return list;
     }
