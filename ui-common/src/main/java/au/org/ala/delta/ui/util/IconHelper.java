@@ -76,7 +76,7 @@ public class IconHelper {
     }
 
     private static URL imageURLFromFileName(String imageFileName) {
-        URL imageUrl = IconHelper.class.getResource(ICON_PATH + "/" + imageFileName);
+        URL imageUrl = IconHelper.class.getResource(imageFileName);
         return imageUrl;
     }
 }
