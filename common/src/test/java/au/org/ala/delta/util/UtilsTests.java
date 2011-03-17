@@ -59,5 +59,61 @@ public class UtilsTests extends TestCase {
 	}
 	
 	
+	/**
+	 * Tests the remove comments method.
+	 */
+	public void testRemoveCommentsSingleCommentAtEnd() {
+		String rtfWithComments = "\\i{}Echinochloa\\i0{} <P. Beauv.>";
+		
+		String withoutComments = Utils.removeComments(rtfWithComments, 1);
+		
+		assertEquals("\\i{}Echinochloa\\i0{}", withoutComments);
+	}
+	
+	/**
+	 * Tests the remove comments method.
+	 */
+	public void testRemoveCommentsSingleCommentAtStart() {
+		String rtfWithComments = "<mature> Culms";
+		
+		String withoutComments = Utils.removeComments(rtfWithComments, 1);
+		
+		assertEquals(" Culms", withoutComments);
+	}
+	
+	/**
+	 * Tests the remove comments method.
+	 */
+	public void testRemoveCommentsCommentAtStartAndEnd() {
+		String rtfWithComments = "<mature> Culms <maximum Height: Data Unreliable For Large Genera>";
+		
+		String withoutComments = Utils.removeComments(rtfWithComments, 1);
+		
+		assertEquals(" Culms", withoutComments);
+	}
+	
+	/**
+	 * Tests the remove comments method.
+	 */
+	public void testRemoveCommentsCommentInMiddle() {
+		String rtfWithComments = "Culms <maximum Height: Data Unreliable For Large Genera> Again";
+		
+		String withoutComments = Utils.removeComments(rtfWithComments, 1);
+		
+		assertEquals("Culms Again", withoutComments);
+	}
+	
+	/**
+	 * Tests the remove comments method.
+	 */
+	public void testRemoveCommentsCommentInStartMiddleAndEnd() {
+		String rtfWithComments = "<start>Culms <middle> Again<end>";
+		
+		String withoutComments = Utils.removeComments(rtfWithComments, 1);
+		
+		// This seems to be a bug with the existing (C++) system - the first comment is not removed in
+		// this case.
+		assertEquals("<start>Culms Again", withoutComments);
+	}
 
 }

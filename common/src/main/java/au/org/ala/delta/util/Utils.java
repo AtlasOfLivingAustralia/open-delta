@@ -28,7 +28,7 @@ import javax.swing.JFrame;
 import au.org.ala.delta.rtf.RTFUtils;
 
 public class Utils {
-	
+
 	public static void centreWindow(Window c, JFrame frame) {
 		Dimension app = frame.getSize();
 		int x = frame.getX() + (app.width - c.getWidth()) / 2;
@@ -66,15 +66,15 @@ public class Utils {
 	public static Date FILETIMEToDate(long FILETIME) {
 		return new Date((FILETIME / 10000L) - 11644473600000L);
 	}
-	
+
 	public static int strtol(String buf) {
 		return strtol(buf, null, 10);
 	}
-	
+
 	public static int strtol(String buf, int[] endpos) {
 		return strtol(buf, endpos, 10);
 	}
-	
+
 	public static int strtol(String buf, int[] endpos, int radix) {
 		StringBuffer digits = new StringBuffer();
 		int i = 0;
@@ -86,17 +86,17 @@ public class Utils {
 				break;
 			}
 		}
-		
+
 		if (endpos != null && endpos.length > 0) {
 			endpos[0] = i;
 		}
-		
-		if (digits.length() > 0) {				
+
+		if (digits.length() > 0) {
 			return Integer.parseInt(digits.toString(), radix);
 		} else {
 			return 0;
 		}
-		
+
 	}
 
 	/**
@@ -106,7 +106,8 @@ public class Utils {
 	 */
 	@Deprecated
 	public static byte[] RTFToUTF8(String text) {
-		// Same as RTFToANSI, overall. But returns a string of UTF8 encoded Unicode,
+		// Same as RTFToANSI, overall. But returns a string of UTF8 encoded
+		// Unicode,
 		// rather than ANSI.
 		// We first build up a UCS2 "wide" string, then convert it to UTF8
 		boolean hadControl = false;
@@ -132,8 +133,8 @@ public class Utils {
 
 		StringBuilder b = new StringBuilder();
 		for (char ch : wideBuf) {
-			if (ch ==0) {
-				break;	// simulate null terminated
+			if (ch == 0) {
+				break; // simulate null terminated
 			}
 			b.append(ch);
 		}
@@ -187,7 +188,8 @@ public class Utils {
 		public char unicodeValue;
 	}
 
-	static RTFcmdReplace[] RTFreps = new RTFcmdReplace[] { new RTFcmdReplace("par", "\r\n", (char) 0x0d), new RTFcmdReplace("line", "\r\n", (char) 0x0b), new RTFcmdReplace("tab", "\t", (char) 0x09),
+	static RTFcmdReplace[] RTFreps = new RTFcmdReplace[] { new RTFcmdReplace("par", "\r\n", (char) 0x0d),
+			new RTFcmdReplace("line", "\r\n", (char) 0x0b), new RTFcmdReplace("tab", "\t", (char) 0x09),
 			new RTFcmdReplace("page", "\f", (char) 0x0c), new RTFcmdReplace("lquote", "\221", (char) 0x2018), // 145
 																												// ANSI
 			new RTFcmdReplace("rquote", "\222", (char) 0x2019), // 146
@@ -302,7 +304,9 @@ public class Utils {
 
 						int numStart = curPos[0];
 						boolean hasParam = false;
-						if (curPos[0] < endPos[0] && (RTFString.charAt(curPos[0]) == '-' || Character.isDigit(RTFString.charAt(curPos[0])))) {
+						if (curPos[0] < endPos[0]
+								&& (RTFString.charAt(curPos[0]) == '-' || Character
+										.isDigit(RTFString.charAt(curPos[0])))) {
 							hasParam = true;
 							while (++curPos[0] < endPos[0] && Character.isDigit(RTFString.charAt(curPos[0]))) {
 							}
@@ -356,7 +360,7 @@ public class Utils {
 						char[] buff = new char[2];
 						buff[0] = RTFString.charAt(cmdStart + 1);
 						buff[1] = RTFString.charAt(cmdStart + 2);
-											
+
 						result = (char) Integer.parseInt(new String(buff), 16);
 						endPos[0] = cmdStart + 1 + 2;
 					} else {
@@ -415,40 +419,161 @@ public class Utils {
 			0x178 // Ÿ
 	};
 
-	public static String removeComments(String src, int level) {
+	/**
+	 * Removes DELTA style <> comments from the supplied string.
+	 * 
+	 * @param src the string to remove comments from.
+	 * @param level
+	 *            0 = don't remove, 1 = remove all, 2 = remove only if other
+	 *            text, 3 = same as 2, but outer brackets are removed if
+	 *            commented text is used.
+	 * @return the string with comments removed
+	 */
+	public static String removeComments(String text, int level) {
 		if (level == 0) {
-			return src;
+			return text;
 		}
-		return src + " - Pretend this has the comments removed!";
+		System.out.println("removing comments from: "+text);
+		// int mode = level & RC_MODEMASK;
+		// boolean doConvert = level & RC_CONVERT_BRACKETS;
+		// boolean removeInner = level & RC_REMOVE_INNER;
+		// boolean stripSpaces = level & RC_STRIP_SPACES;
+		// boolean removeBrackets = level & RC_REMOVE_BRACKETS;
+
+		int mode = level;
+		boolean doConvert = false;
+		boolean removeInner = true;
+		boolean stripSpaces = true;
+		boolean removeBrackets = false;
+
+		int commentLevel = 0;
+		boolean hasText = mode == 1;
+		boolean hadInner = false;
+		char ch;
+		int i, curStart = -1, start = -1, end = -1;
+		int innerStart = -1;
+		boolean wasSpace = true;
+		boolean wasBrace = false;
+		// TODO despaceRTF(text);
+		if (stripSpaces) {
+			text = stripExtraSpaces(text);
+		}
+		StringBuilder result = new StringBuilder(text);
+
+		for (i = 0; i < result.length(); ++i) { // Work through string
+			// Is character an opening bracket?
+			if (result.charAt(i) == '<'
+					&& (wasSpace || wasBrace || (ch = result.charAt(i - 1)) == ' ' || ch == '<' || ch == '>')) {
+				wasBrace = true;
+				if (doConvert) {
+					result.setCharAt(i, ')');
+				}
+				if (removeBrackets || (mode == 3 && commentLevel == 0)) {
+					result.deleteCharAt(i--);
+				}
+				if (commentLevel == 0) {
+					curStart = i;
+					if (start == -1)
+						start = i;
+				} else if (commentLevel == 1) {
+					innerStart = i;
+					hadInner = true;
+				}
+				// Keep track of nesting level
+				commentLevel++;
+			}
+			// Was it a closing bracket?
+			else if (result.charAt(i) == '>' && commentLevel > 0 && result.charAt(i - 1) != '|'
+					&& (i + 1 == result.length() || (ch = result.charAt(i + 1)) == ' ' || ch == '<' || ch == '>')) {
+				// Keep track of nesting level
+				commentLevel--;
+				wasBrace = true;
+				if (doConvert)
+					result.setCharAt(i, ')');
+				if (removeBrackets || (mode == 3 && commentLevel == 0))
+					result.deleteCharAt(i--);
+				if (commentLevel == 0) {
+					if (start != -1) {
+						end = i;
+						if (removeInner && hadInner) // In this case, check for
+														// and remove an empty
+														// comment...
+						{
+							int leng = end - curStart - 1;
+							String contents = result.substring(curStart + 1, end - 1);
+							contents = stripExtraSpaces(contents);
+							if (contents.isEmpty() || contents == " ") {
+								result.delete(curStart, end - 1);
+								i = curStart;
+							} else if (stripSpaces && contents.length() != leng) {
+								result.replace(curStart + 1, curStart + leng, contents);
+								i -= leng - contents.length();
+							}
+						}
+					}
+					hadInner = false;
+				} else if (commentLevel == 1 && removeInner) {
+					// If we're removing inner comments, get rid of this
+					// part of the string, and any space before it.
+					int leng = i - innerStart + 1;
+					result.delete(innerStart, innerStart + leng);
+					i = innerStart - 1;
+					while (result.length() > i && result.charAt(i) == ' ')
+						result.deleteCharAt(i--);
+				}
+			} else if (commentLevel == 0 && (hasText || result.charAt(i) != ' ')) {
+				hasText = true;
+				wasBrace = false;
+				wasSpace = (end == i - 1 && i > 0);
+				if (end != -1 && mode > 0) {
+					result.delete(start, end+1);
+					i -= end - start + 2;
+					// Hmm. How SHOULD spaces around the removed comments
+					// be treated? This erases the spaces BEFORE the comment
+					while (i >= 0 && result.length() > i && result.charAt(i) == ' ')
+						result.deleteCharAt(i--);
+					start = -1;
+					end = -1;
+				}
+			} else
+				wasBrace = false;
+		}
+		if (end != -1 && hasText && mode > 0) {
+			result.delete(start, end+1);
+			for (i = result.length() - 1; i >= 0 && result.charAt(i) == ' '; --i)
+				result.deleteCharAt(i);
+		}
+		return result.toString();
 	}
 
-	// Strip extra spaces from a string. This means reducing multiple spaces to a
+	// Strip extra spaces from a string. This means reducing multiple spaces to
+	// a
 	// single space AND stripping leading and trailing spaces from comments
 	public static String stripExtraSpaces(String str) {
 		// TODO Needs to be done properly!
 		String tmp = str.replaceAll("  ", " ");
 		return tmp.trim();
-		
+
 	}
-	
+
 	public static String getVersionFromManifest() {
 		String versionString = Utils.class.getPackage().getImplementationVersion();
 		return versionString;
 	}
-	
+
 	private static final int BYTES_IN_MEGABTYE = 1048576;
-	
+
 	public static String generateSystemInfo() {
-		
+
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss zzzz", Locale.ENGLISH);
 		Calendar cal = Calendar.getInstance();
 		Date currentTime = cal.getTime();
-		
-		//Free, max and total memory should be written out in megabytes
+
+		// Free, max and total memory should be written out in megabytes
 		long freeMemory = Runtime.getRuntime().freeMemory() / BYTES_IN_MEGABTYE;
 		long maxMemory = Runtime.getRuntime().maxMemory() / BYTES_IN_MEGABTYE;
 		long totalMemory = Runtime.getRuntime().totalMemory() / BYTES_IN_MEGABTYE;
-		
+
 		StringBuilder versionInfo = new StringBuilder();
 		versionInfo.append("DELTA Editor " + getVersionFromManifest());
 		versionInfo.append("\n");
@@ -484,7 +609,7 @@ public class Utils {
 		versionInfo.append("\n");
 		versionInfo.append("user.region: ");
 		versionInfo.append(System.getProperty("user.region"));
-		
+
 		return versionInfo.toString();
 	}
 }
