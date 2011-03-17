@@ -19,14 +19,23 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 
 import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
+import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
+import javax.swing.text.BadLocationException;
 import javax.swing.text.MutableAttributeSet;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
@@ -48,6 +57,73 @@ public class RtfEditor extends RtfEditorPane {
 	private JToggleButton _btnUnderline;
 	private JToggleButton _btnSuperScript;
 	private JToggleButton _btnSubScript;
+	private List<SpecialCharHandler> _specialCharHandlers = new ArrayList<SpecialCharHandler>();	
+	private SpecialCharHandler _currentCharHandler;
+	
+	public RtfEditor() {
+		super();		
+		try {
+			URL url = this.getClass().getResource("/au/org/ala/delta/resources/RTFSpecialBindings.properties");
+			Properties p = new Properties();
+			p.load(url.openStream());
+			for (Object objKey : p.keySet()) {
+				String key = (String) objKey;
+				String hex = p.getProperty(key);
+				int code = Integer.parseInt(hex, 16);
+				KeyStroke keyStroke = KeyStroke.getKeyStroke(key.replaceAll("[.]", " "));				
+				registerKeyStrokeAction(key, new InsertCharacterAction(this, (char) code), keyStroke);
+			}
+		} catch (IOException ioex) {
+			throw new RuntimeException(ioex);
+		}
+		
+		_specialCharHandlers.add(new AcuteCharacterHandler());
+		_specialCharHandlers.add(new GraveAccentCharacterHandler());
+		_specialCharHandlers.add(new CircumflexCharacterHandler());
+		
+		this.addKeyListener(new KeyAdapter() {
+			
+			@Override
+			public void keyReleased(KeyEvent e) {
+				if (_currentCharHandler != null && _currentCharHandler.hasBeenProcessed()) {
+					_currentCharHandler = null;
+					e.consume();
+				}
+			}
+			
+			@Override
+			public void keyTyped(KeyEvent e) {
+				if (_currentCharHandler != null) {
+					e.consume();
+				}
+			}
+							
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (_currentCharHandler != null) {
+					if (_currentCharHandler.processFollowUpKey(e, RtfEditor.this)) {
+						e.consume();
+					}					
+				} else {
+					for (SpecialCharHandler handler : _specialCharHandlers) {						
+						if (handler.getModifiers() == e.getModifiers() && handler.getKeyCode() == e.getKeyCode()) {
+							_currentCharHandler = handler;
+							_currentCharHandler.setHasBeenProcessed(false);
+							e.consume();
+							break;
+						}
+					}
+				}
+			}
+						
+		});
+		
+	}
+	
+	protected void registerKeyStrokeAction(String actionMapKey, Action action, KeyStroke keyStroke) {
+		getInputMap().put(keyStroke, actionMapKey);
+		getActionMap().put(actionMapKey, action);
+	}
 	
 
 	/**
@@ -102,6 +178,15 @@ public class RtfEditor extends RtfEditorPane {
 		for (Component comp :_toolBar.getComponents()) {
 			comp.setEnabled(enable);
 		}
+	}
+	
+	public void insertCharAtCaret(char ch) {
+		int offset = getCaret().getDot();
+		try {
+			getDocument().insertString(offset, "" + ch, null);
+		} catch (BadLocationException ex) {
+			throw new RuntimeException(ex);
+		}		
 	}
 	
 	/**
