@@ -433,7 +433,7 @@ public class Utils {
 		if (level == 0) {
 			return text;
 		}
-		System.out.println("removing comments from: "+text);
+		
 		// int mode = level & RC_MODEMASK;
 		// boolean doConvert = level & RC_CONVERT_BRACKETS;
 		// boolean removeInner = level & RC_REMOVE_INNER;
