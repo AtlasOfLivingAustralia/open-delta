@@ -36,8 +36,11 @@ public class IconHelper {
     private static final String DELTA_BLUE_IMAGE_14 = "Delta_blue_14.png";
     private static final String DELTA_BLUE_IMAGE_12 = "Delta_blue_12.png";
 
-    private static final String DELTA_RED_IMAGE_32 = "Delta_32.png";
-    private static final String DELTA_RED_IMAGE_16 = "Delta_16.png";
+    private static final String DELTA_RED_IMAGE_48 = "Delta_red_48.png";
+    private static final String DELTA_RED_IMAGE_32 = "Delta_red_32.png";
+    private static final String DELTA_RED_IMAGE_16 = "Delta_red_16.png";
+    private static final String DELTA_RED_IMAGE_14 = "Delta_red_14.png";
+    private static final String DELTA_RED_IMAGE_12 = "Delta_red_12.png";
     
     public static ImageIcon createImageIcon(String imageFileName) {
         return new ImageIcon(imageURLFromFileName(ICON_PATH + "/" + imageFileName));
@@ -84,8 +87,11 @@ public class IconHelper {
     public static List<? extends Image> getRedIconList() {
         List<Image> list = new ArrayList<Image>();
 
+        list.add(createImageIcon(DELTA_RED_IMAGE_48).getImage());
         list.add(createImageIcon(DELTA_RED_IMAGE_32).getImage());
         list.add(createImageIcon(DELTA_RED_IMAGE_16).getImage());
+        list.add(createImageIcon(DELTA_RED_IMAGE_14).getImage());
+        list.add(createImageIcon(DELTA_RED_IMAGE_12).getImage());
 
         return list;
     }
