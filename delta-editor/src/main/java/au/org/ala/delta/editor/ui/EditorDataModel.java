@@ -6,6 +6,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
 import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Item;
 
@@ -114,6 +115,28 @@ public class EditorDataModel implements DeltaDataSet {
 	public void close() {
 		_currentDataSet.close();
 	}
+	
+	@Override
+	public Character addCharacter(CharacterType type) {
+		return _currentDataSet.addCharacter(type);
+	}
+	
+	@Override
+	public Character addCharacter(int characterNumber, CharacterType type) {
+		return _currentDataSet.addCharacter(characterNumber, type);
+	}
+
+	@Override
+	public Item addItem(int itemNumber) {
+		return _currentDataSet.addItem(itemNumber);
+	}
+
+	@Override
+	public Item addItem() {
+		return _currentDataSet.addItem();
+	}
+
+
 
 	private class PropertyChangeDetector implements InvocationHandler {
 
