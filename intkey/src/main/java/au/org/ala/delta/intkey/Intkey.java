@@ -11,12 +11,13 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
 import org.jdesktop.application.Action;
-import org.jdesktop.application.SingleFrameApplication;
+import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.ui.AboutBox;
+import au.org.ala.delta.ui.DeltaSingleFrameApplication;
 import au.org.ala.delta.ui.util.IconHelper;
 
-public class Intkey extends SingleFrameApplication {
+public class Intkey extends DeltaSingleFrameApplication {
     
     private JDesktopPane _desktop;
     private ActionMap _actionMap;
@@ -37,6 +38,9 @@ public class Intkey extends SingleFrameApplication {
        
         _desktop = new JDesktopPane();
         _desktop.setBackground(SystemColor.control);
+        
+        ResourceMap rm = getContext().getResourceMap(AboutBox.class);
+        String foo = rm.getString("AboutBox.windowTitle");
         
         getMainView().setMenuBar(buildMenus());
 
