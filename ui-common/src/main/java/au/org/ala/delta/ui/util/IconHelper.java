@@ -28,7 +28,7 @@ import javax.swing.ImageIcon;
  */
 public class IconHelper {
 
-    private static final String ICON_PATH = "/au/org/ala/delta/resources/icons";
+    private static final String ICON_PATH = "/au/org/ala/delta/ui/resources/icons";
 
     private static final String DELTA_BLUE_IMAGE_48 = "Delta_blue_48.png";
     private static final String DELTA_BLUE_IMAGE_32 = "Delta_blue_32.png";
