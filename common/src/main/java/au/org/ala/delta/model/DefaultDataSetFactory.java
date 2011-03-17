@@ -13,7 +13,7 @@ public class DefaultDataSetFactory implements DeltaDataSetFactory {
 
 	@Override
 	public DeltaDataSet createDataSet(String name) {
-		return new DefaultDataSet();
+		return new DefaultDataSet(this);
 	}
 
 	@Override

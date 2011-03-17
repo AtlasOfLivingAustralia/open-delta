@@ -50,10 +50,12 @@ public class DeltaContext {
 	private List<String> _errorMessages = new ArrayList<String>();
 
 	private TranslateType _translateType;
-	private Character[] _characters;
 	private Item[] _items;
 	private Set<Integer> _excludedCharacters = new HashSet<Integer>();
+	private Set<Integer> _excludedItems = new HashSet<Integer>();
+	
 	private Set<Integer> _newParagraphCharacters = new HashSet<Integer>();
+	private Map<Integer, String> _itemHeadings = new HashMap<Integer, String>();
 
 	private int _numberOfCharacters;
 	private int _maxNumberOfStates;
@@ -205,7 +207,6 @@ public class DeltaContext {
 
 	public void setNumberOfCharacters(int characters) {
 		_numberOfCharacters = characters;
-		_characters = new Character[characters];
 	}
 
 	public int getNumberOfCharacters() {
@@ -250,29 +251,19 @@ public class DeltaContext {
 	}
 
 	public Character getCharacter(int number) {
-		if (number <= _characters.length) {
-			Character c = _characters[number - 1];
+		if (number <= _numberOfCharacters) {
+			Character c = _dataSet.getCharacter(number);
 			if (c==null) {
-				DeltaDataSetFactory _factory = new DefaultDataSetFactory();
-				c = _factory.createCharacter(CharacterType.UnorderedMultiState, number);
+				c = _dataSet.addCharacter(number, CharacterType.UnorderedMultiState);
 				((UnorderedMultiStateCharacter)c).setNumberOfStates(2);
-				_characters[number-1] = c;
 			}
 			return c;
 		}
 		throw new RuntimeException("No such character number " + number);
 	}
 
-	public void addCharacter(Character character, int index) {
-		_characters[index - 1] = character;
-	}
-
-	public void addItem(Item item, int index) {
-		_items[index - 1] = item;
-	}
-
 	public Item getItem(int index) {
-		return _items[index - 1];
+		return _dataSet.getItem(index);
 	}
 
 	public TranslateType getTranslateType() {
@@ -365,5 +356,25 @@ public class DeltaContext {
 	
 	public double getCharacterWeight(int number) {
 		return _characterWeights[number-1];
+	}
+
+	/**
+	 * Returns true if the specified item has been marked as excluded by an EXCLUDED ITEMS directive
+	 * @param itemNumber the item number to check.
+	 * @return whether the specified item is excluded.
+	 */
+	public boolean isExcluded(int itemNumber) {
+		return _excludedItems.contains(itemNumber);
+	}
+
+	/**
+	 * Returns the heading for the supplied item as defined by the ITEM HEADINGS directive.  If no heading has
+	 * been supplied, this method returns null.
+	 * @param itemNumber the item to get the heading for.
+	 * @return the heading defined for the specified item or null if no heading was defined.
+	 */
+	public String getItemHeading(int itemNumber) {
+		
+		return _itemHeadings.get(itemNumber);
 	}
 }

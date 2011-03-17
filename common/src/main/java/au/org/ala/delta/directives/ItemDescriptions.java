@@ -20,8 +20,6 @@ import java.io.StringReader;
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.model.Character;
-import au.org.ala.delta.model.DefaultDataSetFactory;
-import au.org.ala.delta.model.DeltaDataSetFactory;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.StateValue;
 import au.org.ala.delta.model.TextCharacter;
@@ -43,10 +41,6 @@ public class ItemDescriptions extends Directive {
 }
 
 class ItemsParser extends AbstractStreamParser {
-
-	// TODO fixme
-	DeltaDataSetFactory _factory = new DefaultDataSetFactory();
-	
 	
 	public ItemsParser(DeltaContext context, Reader reader) {
 		super(context, reader);
@@ -72,7 +66,7 @@ class ItemsParser extends AbstractStreamParser {
 		String itemName = readToNextEndSlashSpace();
 		Logger.debug("Parsing Item %s", itemName);
 		
-		Item item = _factory.createItem(itemIndex);
+		Item item = _context.getDataSet().addItem(itemIndex);
 		item.setDescription(itemName);
 		skipWhitespace();
 		while (_currentChar != '#' && _currentInt >= 0) {
@@ -102,7 +96,8 @@ class ItemsParser extends AbstractStreamParser {
 			if (comment != null) {
 				stateValue.setComment(comment);
 			}
-			_context.addItem(item, item.getItemId());
+			item.addAttribute(ch, strValue);
+			
 			_context.getMatrix().setValue(charIdx, itemIndex, stateValue);
 			Logger.debug("  %d. %s", charIdx, stateValue);
 			skipWhitespace();

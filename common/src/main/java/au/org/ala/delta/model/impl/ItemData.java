@@ -11,9 +11,9 @@ public interface ItemData {
 	
 	public void setDescription(String description);
 	
-	public int getItemId();
-	
 	public List<Attribute> getAttributes();
 	
 	public Attribute getAttribute(Character character);
+
+	public void addAttribute(Character character, String value);
 }

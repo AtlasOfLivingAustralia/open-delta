@@ -34,14 +34,8 @@ public class VOItemAdaptor implements ItemData {
 		_voItemDesc = voItem;
 	}
 	
-
-	public int getItemId() {
-		return _voItemDesc.getUniId();
-	}
-
-
 	public void setDescription(String itemName) {		
-		// throw new NotImplementedException();
+		throw new NotImplementedException();
 	}
 
 
@@ -65,4 +59,12 @@ public class VOItemAdaptor implements ItemData {
 		return new au.org.ala.delta.model.Attribute(character, impl);
 	}
 
+	/**
+	 * This method does nothing - the VOItemAdaptor reads from the slot file and creates Attributes
+	 * when requested by getAttribute. 
+	 */
+	@Override
+	public void addAttribute(Character character, String value) {
+		// do nothing - attributes are created on the fly when getAttribute is called.
+	}
 }

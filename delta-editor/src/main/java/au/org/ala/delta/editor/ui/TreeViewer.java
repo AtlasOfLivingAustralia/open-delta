@@ -198,7 +198,7 @@ class CharStateHolder {
 	@Override
 	public String toString() {
 		if (_dataModel.getSelectedItem() != null) {
-			return _dataModel.getAttributeAsString(_dataModel.getSelectedItem().getItemId(), _character.getCharacterId());
+			return _dataModel.getAttributeAsString(_dataModel.getSelectedItem().getItemNumber(), _character.getCharacterId());
 		} else {
 			return "---";
 		}
@@ -216,7 +216,7 @@ class ItemViewModel {
 
 	@Override
 	public String toString() {
-		return _model.getItemId() + ". " + RTFUtils.stripFormatting(_model.getDescription());
+		return _model.getItemNumber() + ". " + RTFUtils.stripFormatting(_model.getDescription());
 	}
 
 	public Item getItem() {

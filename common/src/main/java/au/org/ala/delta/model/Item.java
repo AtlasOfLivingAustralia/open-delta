@@ -18,23 +18,27 @@ import java.util.List;
 
 import au.org.ala.delta.model.impl.ItemData;
 
+/**
+ * Represents an Item in the DELTA system.
+ * An item usually corresponds to a Taxon, but a 1-1 relationship is not required.
+ */
 public class Item {
 
 	private ItemData _impl;
 
-	private int _itemId;
+	private int _itemNumber;
 	
 	public Item(ItemData impl, int itemNum) {
 		_impl = impl;
-		_itemId = itemNum;
+		_itemNumber = itemNum;
 	}
 	
 	public Item(int itemId) {
-		_itemId = itemId;
+		_itemNumber = itemId;
 	}
 	
-	public int getItemId() {
-		return _itemId;
+	public int getItemNumber() {
+		return _itemNumber;
 	}
 
 	public void setDescription(String description) {
@@ -51,5 +55,13 @@ public class Item {
 	
 	public Attribute getAttribute(Character character) {
 		return _impl.getAttribute(character);
+	}
+	
+	public void addAttribute(Character character, String value) {
+		_impl.addAttribute(character, value);
+	}
+	
+	public boolean hasAttribute(Character character) {
+		return getAttribute(character) != null;
 	}
 }

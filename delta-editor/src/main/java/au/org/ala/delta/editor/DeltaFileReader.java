@@ -148,7 +148,7 @@ public class DeltaFileReader {
 			chr.setDescription(textDesc.readFeatureText(TextType.RTF));
 			chr.setMandatory(charDesc.testCharFlag(VOCharBaseDesc.CHAR_MANDATORY));
 			chr.setExclusive(charDesc.testCharFlag(VOCharBaseDesc.CHAR_EXCLUSIVE));
-			context.addCharacter(chr, chr.getCharacterId());
+			
 			progress++;
 			if (observer != null && progress % 10 == 0) {
 				int percent = (int) (((double) progress / (double) progmax) * 100);
@@ -163,7 +163,7 @@ public class DeltaFileReader {
 			VOItemDesc itemDesc = (VOItemDesc) vop.getDescFromId(itemId);
 			Item item = new Item(new VOItemAdaptor(itemDesc, i), i);
 			item.setDescription(itemDesc.getAnsiName());
-			context.addItem(item, item.getItemId());
+			
 
 			List<Attribute> attrs = itemDesc.readAllAttributes();
 			for (Attribute attr : attrs) {

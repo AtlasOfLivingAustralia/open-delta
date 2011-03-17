@@ -38,4 +38,33 @@ public interface DeltaDataSet {
 	 */
 	public void close();
 	
+	
+	// Creation methods
+	/**
+	 * Creates a new Character and adds it to this DeltaDataSet.
+	 * @param type the type of Character to create.
+	 * @return the new Character.
+	 */
+	public Character addCharacter(CharacterType type);
+	
+	/**
+	 * Creates a new Character and adds it to this DeltaDataSet.
+	 * @param characterNumber the number that will identify the new character.
+	 * @param type the type of Character to create.
+	 * @return the new Character.
+	 */
+	public Character addCharacter(int characterNumber, CharacterType type);
+	
+	/**
+	 * Creates a new Item and adds it to this DeltaDataSet.
+	 * @return the new Item.
+	 */
+	public Item addItem();
+	
+	/**
+	 * Creates a new Item and adds it to this DeltaDataSet.
+	 * @param itemNumber the number that will identify the new item
+	 * @return the new Item.
+	 */
+	public Item addItem(int itemNumber);
 }

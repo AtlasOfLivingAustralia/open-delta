@@ -23,6 +23,10 @@ public enum CharacterType {
 	OrderedMultiState,
 	UnorderedMultiState;
 	
+	public boolean isMultistate() {
+		return (this.equals(OrderedMultiState) || (this.equals(UnorderedMultiState)));
+	}
+	
 	public static CharacterType parse(String str) {
 		String s = str.substring(0,2).toUpperCase();
 		if (TYPE_MAP.containsKey(s)) {

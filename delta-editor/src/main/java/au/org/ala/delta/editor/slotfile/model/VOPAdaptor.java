@@ -1,5 +1,7 @@
 package au.org.ala.delta.editor.slotfile.model;
 
+import org.apache.commons.lang.NotImplementedException;
+
 import au.org.ala.delta.editor.slotfile.CharType;
 import au.org.ala.delta.editor.slotfile.DeltaVOP;
 import au.org.ala.delta.editor.slotfile.TextType;
@@ -77,6 +79,26 @@ public class VOPAdaptor implements DeltaDataSet {
 	@Override
 	public void close() {
 		_vop.close();
+	}
+	
+	@Override
+	public Character addCharacter(CharacterType type) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public Item addItem() {
+		throw new NotImplementedException();
+	}
+	
+	@Override
+	public Character addCharacter(int characterNumber, CharacterType type) {
+		throw new NotImplementedException();
+	}
+	
+	@Override
+	public Item addItem(int itemNumber) {
+		throw new NotImplementedException();
 	}
 
 	/**
