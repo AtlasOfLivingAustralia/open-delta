@@ -151,7 +151,7 @@ public class RTFReader {
 			}			
 		}
 		
-		if (ch != ' ') {
+		if (ch != ' ' && ch >= 0) {
 			_stream.unread(ch);
 		}
 		

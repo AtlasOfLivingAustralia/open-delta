@@ -53,7 +53,12 @@ public class DocumentBuildingRtfHandler extends RTFHandlerAdapter {
 		}
 	}
 	
-	
+	@Override
+	public void onKeyword(String keyword, boolean hasParam, int param) {
+		if (keyword.equals("par")) {
+			_textBuffer.append("\n");
+		}
+	}
 	
 	public DocumentBuildingRtfHandler(DefaultStyledDocument document) {
 		configureAttributeHandlers();
@@ -69,29 +74,17 @@ public class DocumentBuildingRtfHandler extends RTFHandlerAdapter {
 		if (ch == 0) {
 			return;
 		}
-		if (ch > 0xFF) {
-			insertUnicodeCodePoint(ch);
-		}
-		else {
-			// Convert \r to \n as the editor pane ignores \r.  Not sure what is 
-			// happening to the \n's... they don't seem to be coming through.
-			if (ch != '\r' ) {
-				if (_previousChar == '\r' && ch != '\n') {
-					_textBuffer.append('\n');
-				}
-				_textBuffer.append(ch);
+		// Convert \r to \n as the editor pane ignores \r.  Not sure what is 
+		// happening to the \n's... they don't seem to be coming through.
+		if (ch != '\r' ) {
+			if (_previousChar == '\r' && ch != '\n') {
+				_textBuffer.append('\n');
 			}
+			_textBuffer.append(ch);
 		}
 		_previousChar = ch;
 	}
-	
-	private void insertUnicodeCodePoint(char ch) {
-		_textBuffer.append(ch);
-//		_textBuffer.append("\\u").append(Integer.toString(ch, 16)); // in hex
-//		// we are now supposed to write our "best ascii representation of the char.  
-//		_textBuffer.append("?");
-	}
-	
+		
 	@Override
 	public void endParse() {
 		

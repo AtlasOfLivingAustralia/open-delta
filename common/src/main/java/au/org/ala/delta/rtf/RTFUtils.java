@@ -8,28 +8,36 @@ import org.apache.commons.lang.StringUtils;
 
 public class RTFUtils {
 
+	public static String stripFormatting(String rtf, boolean newlinesToSpace) {
+		return filter(rtf, newlinesToSpace);
+	}
+
 	public static String stripFormatting(String rtf) {
-		return filter(rtf);
+		return filter(rtf, true);
 	}
-	
+
 	public static String stripUnrecognizedRTF(String rtf) {
-		return filter(rtf, "i", "b", "u", "super", "sub");
+		return filter(rtf, true, "i", "b", "u", "super", "sub");
 	}
-	
-	private static String filter(String rtf, String...allowedKeywords) {
-		
+
+	public static String stripUnrecognizedRTF(String rtf, boolean newlinesToSpace) {
+		return filter(rtf, newlinesToSpace, "i", "b", "u", "super", "sub");
+	}
+
+	private static String filter(String rtf, boolean newLinesToSpace, String... allowedKeywords) {
+
 		if (StringUtils.isEmpty(rtf)) {
 			return rtf;
 		}
-		
-		FilteringRTFHandler handler = new FilteringRTFHandler(allowedKeywords);
+
+		FilteringRTFHandler handler = new FilteringRTFHandler(newLinesToSpace, allowedKeywords);
 		RTFReader reader = new RTFReader(rtf, handler);
 		try {
 			reader.parse();
 		} catch (Exception ex) {
 			throw new RuntimeException(ex);
 		}
-		return handler.getFilteredText();		
+		return handler.getFilteredText();
 	}
 
 }
@@ -39,8 +47,10 @@ class FilteringRTFHandler implements RTFHandler {
 	private Set<String> _allowedKeywords = new HashSet<String>();
 
 	private StringBuilder _buffer;
+	private boolean _newlinesToSpace;
 
-	public FilteringRTFHandler(String... allowed) {
+	public FilteringRTFHandler(boolean newlinesToSpace, String... allowed) {
+		_newlinesToSpace = newlinesToSpace;
 		for (String word : allowed) {
 			_allowedKeywords.add(word);
 		}
@@ -53,10 +63,15 @@ class FilteringRTFHandler implements RTFHandler {
 
 	@Override
 	public void onKeyword(String keyword, boolean hasParam, int param) {
+
+		if (_newlinesToSpace && keyword.equals("par")) {
+			_buffer.append(" ");
+		}
+
 		if (_allowedKeywords.contains(keyword)) {
 			_buffer.append("\\").append(keyword);
 			if (hasParam) {
-				_buffer.append(param);				
+				_buffer.append(param);
 			}
 			_buffer.append(" ");
 		}
@@ -76,7 +91,7 @@ class FilteringRTFHandler implements RTFHandler {
 	}
 
 	public String getFilteredText() {
-		return _buffer.toString().trim();
+		return _buffer.toString();
 	}
 
 	@Override
@@ -86,7 +101,7 @@ class FilteringRTFHandler implements RTFHandler {
 			if (_allowedKeywords.contains(val.getKeyword())) {
 				atLeastOneAllowed = true;
 				_buffer.append("\\").append(val.getKeyword());
-				if (val.hasParam()) {					
+				if (val.hasParam()) {
 					_buffer.append(val.getParam());
 				}
 			}

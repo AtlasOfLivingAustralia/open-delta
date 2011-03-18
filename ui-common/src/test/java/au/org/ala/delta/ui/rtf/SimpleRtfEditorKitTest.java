@@ -37,7 +37,7 @@ public class SimpleRtfEditorKitTest extends TestCase {
 		bout.flush();
 		String documentAsString = new String(bout.toByteArray());
 		
-		assertEquals(WRITER_HEADER_TEXT+"This is plain text.\n"+"}", documentAsString);
+		assertEquals(WRITER_HEADER_TEXT+"This is plain text.\\par }", documentAsString);
 		
 	}
 	
@@ -81,26 +81,26 @@ public class SimpleRtfEditorKitTest extends TestCase {
 		offset += WRITER_HEADER_TEXT.length();
 		assertEquals("\\super", documentAsString.substring(offset, offset+6));
 		assertEquals(" This is plain text. ", documentAsString.substring(offset+6, offset+27));
-		assertTrue(documentAsString.substring(offset+27, offset+38).contains("\\b"));
-		assertTrue(documentAsString.substring(offset+27, offset+38).contains("\\i"));
-		assertTrue(documentAsString.substring(offset+27, offset+38).contains("\\super0"));
-		assertEquals(" This is bold italic", documentAsString.substring(offset+38, offset+58));
-		assertTrue(documentAsString.substring(offset+58, documentAsString.length()).contains("\\i0"));
-		assertTrue(documentAsString.substring(offset+58, documentAsString.length()).contains("\\b0"));
+		assertTrue(documentAsString.substring(offset+27, offset+44).contains("\\b"));
+		assertTrue(documentAsString.substring(offset+27, offset+44).contains("\\i"));
+		assertTrue(documentAsString.substring(offset+27, offset+44).contains("\\super0"));
+		assertEquals(" This is bold italic", documentAsString.substring(offset+44, offset+64));
+		assertTrue(documentAsString.substring(offset+64, documentAsString.length()).contains("\\i0"));
+		assertTrue(documentAsString.substring(offset+64, documentAsString.length()).contains("\\b0"));
 	}
 	
 	public void testUnicode() throws Exception {
 		String rtf = "{\\rtf\\ansi\\deff0{\\fonttbl{\\f0\\froman Tms Rmn;}}\\pard\\plain This is \\u2222? text.}";
 		String documentAsString = readAndWrite(rtf);
 
-		assertEquals(WRITER_HEADER_TEXT+"This is \\u2222? text.\n"+"}", documentAsString);
+		assertEquals(WRITER_HEADER_TEXT+"This is \\u2222? text.\\par }", documentAsString);
 	}
 	
 	public void testUnderline() throws Exception {
 		String rtf = "{\\rtf\\ansi\\deff0{\\fonttbl{\\f0\\froman Tms Rmn;}}\\pard\\plain This is \\ul underlined\\ul0 text.}";
 		String documentAsString = readAndWrite(rtf);
 
-		assertEquals(WRITER_HEADER_TEXT+"This is \\ul underlined\\ul0 text.\n"+"}", documentAsString);
+		assertEquals(WRITER_HEADER_TEXT+"This is \\ul underlined\\ul0 text.\\par }", documentAsString);
 	}
 
 	/**

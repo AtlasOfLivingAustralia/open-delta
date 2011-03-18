@@ -63,7 +63,7 @@ public class RtfEditor extends RtfEditorPane {
 	public RtfEditor() {
 		super();		
 		try {
-			URL url = this.getClass().getResource("/au/org/ala/delta/resources/RTFSpecialBindings.properties");
+			URL url = this.getClass().getResource("/au/org/ala/delta/ui/resources/RTFSpecialBindings.properties");
 			Properties p = new Properties();
 			p.load(url.openStream());
 			for (Object objKey : p.keySet()) {

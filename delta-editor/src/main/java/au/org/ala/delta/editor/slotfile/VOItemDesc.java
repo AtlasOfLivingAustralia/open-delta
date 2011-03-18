@@ -262,8 +262,7 @@ public class VOItemDesc extends VOImageHolderDesc implements INameHolder {
 				VOCharBaseDesc charBase = (VOCharBaseDesc) getVOP()
 						.getDescFromId(charId);
 				for (AttrChunk chunk : attr) {
-					if (showComments == 0 || !chunk.isTextChunk()
-							|| CharType.isText(charBase.getCharType())) {
+					if (showComments == 0 || !chunk.isTextChunk() || CharType.isText(charBase.getCharType())) {
 						dest.append(chunk.getAsText(charBase));
 					}
 				}

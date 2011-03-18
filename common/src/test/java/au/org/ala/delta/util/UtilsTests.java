@@ -58,6 +58,7 @@ public class UtilsTests extends TestCase {
 		assertEquals(expected, actual);
 	}
 	
+
 	
 	/**
 	 * Tests the remove comments method.

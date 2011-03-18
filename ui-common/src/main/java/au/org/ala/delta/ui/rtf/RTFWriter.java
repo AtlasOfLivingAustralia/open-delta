@@ -142,7 +142,11 @@ public class RTFWriter {
 						_writer.write("?");
 					}
 				} else {
-					_writer.write(ch);					
+					if (ch == '\n') {
+						_writer.write("\\par ");
+					} else {
+						_writer.write(ch);
+					}
 				}
 			}
 		}
