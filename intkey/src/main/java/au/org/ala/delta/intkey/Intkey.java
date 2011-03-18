@@ -1,14 +1,23 @@
 package au.org.ala.delta.intkey;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.SystemColor;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.awt.event.ContainerEvent;
+import java.awt.event.ContainerListener;
 
 import javax.swing.ActionMap;
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JSplitPane;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ResourceMap;
@@ -19,7 +28,11 @@ import au.org.ala.delta.ui.util.IconHelper;
 
 public class Intkey extends DeltaSingleFrameApplication {
     
-    private JDesktopPane _desktop;
+    private JPanel _rootPanel;
+    private JFrame _mainFrame;
+    private JSplitPane _rootSplitPane;
+    private JSplitPane _innerSplitPane1;
+    private JSplitPane _innerSplitPane2;
     private ActionMap _actionMap;
     
     public static void main(String[] args) {
@@ -30,21 +43,59 @@ public class Intkey extends DeltaSingleFrameApplication {
     protected void startup() {
         _actionMap = getContext().getActionMap(this);
         
-        JFrame mainFrame = getMainFrame();
-        mainFrame.setTitle("Intkey");
-        mainFrame.setPreferredSize(new Dimension(800,600));
-        mainFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-        mainFrame.setIconImages(IconHelper.getRedIconList());
-       
-        _desktop = new JDesktopPane();
-        _desktop.setBackground(SystemColor.control);
+        _mainFrame = getMainFrame();
+        _mainFrame.setTitle("Intkey");
+        _mainFrame.setPreferredSize(new Dimension(1000,600));
+        _mainFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        _mainFrame.setIconImages(IconHelper.getRedIconList());
         
-        ResourceMap rm = getContext().getResourceMap(AboutBox.class);
-        String foo = rm.getString("AboutBox.windowTitle");
+        _rootPanel = new JPanel();
+        _rootPanel.setBackground(SystemColor.control);
+        _rootPanel.setLayout(new BorderLayout());
+        
+        _innerSplitPane1 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, new JList(new String[] {"one", "two", "three", "four"}), new JList(new String[] {"five", "six", "seven", "eight"}));
+        _innerSplitPane2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, new JList(new String[] {"nine", "ten", "eleven", "twelve"}), new JList(new String[] {"thirteen", "fourteen", "fifteen", "sixteen"}));
+        _innerSplitPane1.setContinuousLayout(true);
+        _innerSplitPane2.setContinuousLayout(true);
+        _innerSplitPane1.setDividerLocation(0.5);
+        _innerSplitPane2.setDividerLocation(0.5);
+        
+        _rootSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, _innerSplitPane1, _innerSplitPane2);
+        _rootSplitPane.setContinuousLayout(true);
+        _rootSplitPane.setDividerLocation(0.5);
+        
+        _rootPanel.add(_rootSplitPane, BorderLayout.CENTER);
+        
+        _rootPanel.addComponentListener(new ComponentListener() {
+
+            @Override
+            public void componentHidden(ComponentEvent e) {
+                // do nothing
+            }
+
+            @Override
+            public void componentMoved(ComponentEvent e) {
+                // do nothing
+            }
+
+            @Override
+            public void componentResized(ComponentEvent e) {
+                _rootSplitPane.setDividerLocation(2.0/3.0);
+                _innerSplitPane1.setDividerLocation(2.0/3.0);
+                _innerSplitPane2.setDividerLocation(2.0/3.0);
+                
+            }
+
+            @Override
+            public void componentShown(ComponentEvent e) {
+                // do nothing
+            }
+            
+        });
         
         getMainView().setMenuBar(buildMenus());
 
-        show(_desktop);
+        show(_rootPanel);
     }
 
     @Override
