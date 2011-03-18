@@ -24,7 +24,7 @@ public class VODeltaMasterDesc extends VONoteDesc {
 
 	public static final short DELTA_MAJOR_VERSION = 0;
 	public static final short DELTA_MINOR_VERSION = 1;
-	
+
 	private MasterFixedData _fixedData;
 
 	private List<Integer> _charVector;
@@ -35,78 +35,80 @@ public class VODeltaMasterDesc extends VONoteDesc {
 
 	public VODeltaMasterDesc(SlotFile slotFile, VOP vop) {
 		super(slotFile, vop);
-		_fixedData = new MasterFixedData("DELTA MASTER");
+		synchronized (getVOP()) {
+			_fixedData = new MasterFixedData("DELTA MASTER");
 
-		_slotFile.seek(_slotHdrPtr + fixedSizeOffs);
-		short diskFixedSize = _slotFile.readShort();
-		assert diskFixedSize == MasterFixedData.SIZE;
+			_slotFile.seek(_slotHdrPtr + fixedSizeOffs);
+			short diskFixedSize = _slotFile.readShort();
+			assert diskFixedSize == MasterFixedData.SIZE;
 
-		_dataOffs = SlotFile.SlotHeader.SIZE + diskFixedSize;
-		_slotFile.seek(_slotHdrPtr + SlotFile.SlotHeader.SIZE);
-		_fixedData.read(_slotFile);
+			_dataOffs = SlotFile.SlotHeader.SIZE + diskFixedSize;
+			_slotFile.seek(_slotHdrPtr + SlotFile.SlotHeader.SIZE);
+			_fixedData.read(_slotFile);
 
-		if (_fixedData.majorVersion > 0) {
-			throw new RuntimeException("Bad major version number: " + _fixedData.majorVersion);
+			if (_fixedData.majorVersion > 0) {
+				throw new RuntimeException("Bad major version number: " + _fixedData.majorVersion);
+			}
+
+			if (_fixedData.minorVersion > 1) {
+				throw new RuntimeException("Bad minor version number:" + _fixedData.minorVersion);
+			}
+
+			// Logger.debug("nChars: %d", _fixedData.nChars);
+			// Logger.debug("nItems: %d", _fixedData.nItems);
+			// Logger.debug("nLangs: %d", _fixedData.nLangs);
+			// Logger.debug("nDirFiles: %d", _fixedData.nDirFiles);
+			// Logger.debug("nContAttrs: %d", _fixedData.nContAttrs);
+
+			_charVector = readIntArrayToList(_fixedData.nChars);
+			// Logger.debug("charVector: %s", _charVector);
+
+			_itemVector = readIntArrayToList(_fixedData.nItems);
+			// Logger.debug("itemVector: %s", _itemVector);
+
+			_langVector = readIntArrayToList(_fixedData.nLangs);
+			// Logger.debug("langVector: %s", _langVector);
+
+			_contAttrVector = readIntArrayToList(_fixedData.nContAttrs);
+			// Logger.debug("contAttrVector: %s", _contAttrVector);
+
+			_dirFileVector = readIntArrayToList(_fixedData.nDirFiles);
+			// Logger.debug("dirFileVector: %s", _dirFileVector);
 		}
-
-		if (_fixedData.minorVersion > 1) {
-			throw new RuntimeException("Bad minor version number:" + _fixedData.minorVersion);
-		}
-
-		// Logger.debug("nChars: %d", _fixedData.nChars);
-		// Logger.debug("nItems: %d", _fixedData.nItems);
-		// Logger.debug("nLangs: %d", _fixedData.nLangs);
-		// Logger.debug("nDirFiles: %d", _fixedData.nDirFiles);
-		// Logger.debug("nContAttrs: %d", _fixedData.nContAttrs);
-
-		_charVector = readIntArrayToList(_fixedData.nChars);
-		// Logger.debug("charVector: %s", _charVector);
-
-		_itemVector = readIntArrayToList(_fixedData.nItems);
-		// Logger.debug("itemVector: %s", _itemVector);
-
-		_langVector = readIntArrayToList(_fixedData.nLangs);
-		// Logger.debug("langVector: %s", _langVector);
-
-		_contAttrVector = readIntArrayToList(_fixedData.nContAttrs);
-		// Logger.debug("contAttrVector: %s", _contAttrVector);
-
-		_dirFileVector = readIntArrayToList(_fixedData.nDirFiles);
-		// Logger.debug("dirFileVector: %s", _dirFileVector);
 
 	}
 
 	public void storeQData() {
-		makeTemp();
-		_fixedData.nChars = _charVector.size();
-		_fixedData.nItems = _itemVector.size();
-		_fixedData.nLangs = _langVector.size();
-		_fixedData.nContAttrs = _contAttrVector.size();
-		_fixedData.nDirFiles = _dirFileVector.size();
-		_fixedData.majorVersion = DELTA_MAJOR_VERSION;
-		_fixedData.minorVersion = DELTA_MINOR_VERSION;
-		if (_fixedData.fixedSize < FixedData.SIZE) {
-			_dataOffs = SlotHeader.SIZE + FixedData.SIZE; // /// Adjust DataOffs accordingly
-			_fixedData.fixedSize = FixedData.SIZE;
+		synchronized (getVOP()) {
+			makeTemp();
+			_fixedData.nChars = _charVector.size();
+			_fixedData.nItems = _itemVector.size();
+			_fixedData.nLangs = _langVector.size();
+			_fixedData.nContAttrs = _contAttrVector.size();
+			_fixedData.nDirFiles = _dirFileVector.size();
+			_fixedData.majorVersion = DELTA_MAJOR_VERSION;
+			_fixedData.minorVersion = DELTA_MINOR_VERSION;
+			if (_fixedData.fixedSize < FixedData.SIZE) {
+				_dataOffs = SlotHeader.SIZE + FixedData.SIZE; // /// Adjust DataOffs accordingly
+				_fixedData.fixedSize = FixedData.SIZE;
+			}
+
+			_slotFile.seek(_slotHdrPtr + SlotHeader.SIZE);
+			_fixedData.write(_slotFile);
+
+			// This seek forces allocation of a sufficiently large slot...
+			final int VO_UNI_ID_SIZE = 4; /* a VO unique id is an int */
+			dataSeek(VO_UNI_ID_SIZE * _charVector.size() + VO_UNI_ID_SIZE * _itemVector.size() + VO_UNI_ID_SIZE * _langVector.size() + VO_UNI_ID_SIZE * _contAttrVector.size() + VO_UNI_ID_SIZE
+					* _dirFileVector.size());
+			dataSeek(0);
+
+			writeIntCollection(_charVector);
+			writeIntCollection(_itemVector);
+			writeIntCollection(_langVector);
+			writeIntCollection(_contAttrVector);
+			writeIntCollection(_dirFileVector);
+			dataTruncate();
 		}
-
-		_slotFile.seek(_slotHdrPtr + SlotHeader.SIZE);
-		_fixedData.write(_slotFile);
-
-		// This seek forces allocation of a sufficiently large slot...
-		final int VO_UNI_ID_SIZE = 4; /* a VO unique id is an int */
-		dataSeek(VO_UNI_ID_SIZE * _charVector.size() + VO_UNI_ID_SIZE
-				* _itemVector.size() + VO_UNI_ID_SIZE * _langVector.size()
-				+ VO_UNI_ID_SIZE * _contAttrVector.size() + VO_UNI_ID_SIZE
-				* _dirFileVector.size());
-		dataSeek(0);
-
-		writeIntCollection(_charVector);
-		writeIntCollection(_itemVector);
-		writeIntCollection(_langVector);
-		writeIntCollection(_contAttrVector);
-		writeIntCollection(_dirFileVector);
-		dataTruncate();
 	}
 
 	private void writeIntCollection(Collection<Integer> ints) {
@@ -328,7 +330,7 @@ public class VODeltaMasterDesc extends VONoteDesc {
 			super.read(f);
 			// now read my specific data...
 			ByteBuffer b = f.readByteBuffer(SIZE);
-			
+
 			fixedSize = b.getShort();
 			majorVersion = b.getShort();
 			minorVersion = b.getShort();
@@ -340,7 +342,7 @@ public class VODeltaMasterDesc extends VONoteDesc {
 		}
 
 		@Override
-		public void write(BinFile f) {		
+		public void write(BinFile f) {
 			super.write(f);
 			f.writeShort(fixedSize);
 			f.writeShort(majorVersion);

@@ -26,26 +26,27 @@ public class VOControllingDesc extends VOAnyDesc {
 
 	public VOControllingDesc(SlotFile slotFile, VOP vop) {
 		super(slotFile, vop);
+		synchronized (getVOP()) {
+			_slotFile.seek(_slotHdrPtr + fixedSizeOffs);
+			short diskFixedSize = _slotFile.readShort();
 
-		_slotFile.seek(_slotHdrPtr + fixedSizeOffs);
-		short diskFixedSize = _slotFile.readShort();
+			assert diskFixedSize == ControllingFixedData.SIZE;
 
-		assert diskFixedSize == ControllingFixedData.SIZE;
+			_dataOffs = SlotFile.SlotHeader.SIZE + diskFixedSize;
+			_slotFile.seek(_slotHdrPtr + SlotFile.SlotHeader.SIZE);
+			_fixedData = new ControllingFixedData();
+			_fixedData.read(_slotFile);
 
-		_dataOffs = SlotFile.SlotHeader.SIZE + diskFixedSize;
-		_slotFile.seek(_slotHdrPtr + SlotFile.SlotHeader.SIZE);
-		_fixedData = new ControllingFixedData();
-		_fixedData.read(_slotFile);
+			// Logger.debug("ControllingDesc: controlChar=%d, nStates=%d, labelLeng=%d, nControlled=%d", _fixedData.controlChar, _fixedData.nStates, _fixedData.labelLeng, _fixedData.nControlled);
+			//
+			// // SNIP >>>>
+			//
+			// Logger.debug("Label: %s States: %s Controlled: %s", readLabel(), readStateIds(), readControlledChars());
 
-		// Logger.debug("ControllingDesc: controlChar=%d, nStates=%d, labelLeng=%d, nControlled=%d", _fixedData.controlChar, _fixedData.nStates, _fixedData.labelLeng, _fixedData.nControlled);
-		//
-		// // SNIP >>>>
-		//
-		// Logger.debug("Label: %s States: %s Controlled: %s", readLabel(), readStateIds(), readControlledChars());
+			// SNIP <<<<
 
-		// SNIP <<<<
-
-		dataSeek(0);
+			dataSeek(0);
+		}
 	}
 
 	@Override
@@ -85,27 +86,33 @@ public class VOControllingDesc extends VOAnyDesc {
 	}
 
 	public List<Integer> readStateIds() {
-		dataSeek(0);
-		return readIntArrayToList(_fixedData.nStates);
+		synchronized (getVOP()) {
+			dataSeek(0);
+			return readIntArrayToList(_fixedData.nStates);
+		}
 
 	}
 
 	public String readLabel() {
-		if (_fixedData.labelLeng > 0) {
-			dataSeek(_fixedData.nStates * 4);
-			return readString(_fixedData.labelLeng);
-		} else {
-			return "";
+		synchronized (getVOP()) {
+			if (_fixedData.labelLeng > 0) {
+				dataSeek(_fixedData.nStates * 4);
+				return readString(_fixedData.labelLeng);
+			} else {
+				return "";
+			}
 		}
 	}
 
 	public List<Integer> readControlledChars() {
-		List<Integer> dest = new ArrayList<Integer>();
-		if (_fixedData.nControlled > 0) {
-			dataSeek((_fixedData.nStates * 4) + _fixedData.labelLeng);
-			dest = readIntArrayToList(_fixedData.nControlled);
+		synchronized (getVOP()) {
+			List<Integer> dest = new ArrayList<Integer>();
+			if (_fixedData.nControlled > 0) {
+				dataSeek((_fixedData.nStates * 4) + _fixedData.labelLeng);
+				dest = readIntArrayToList(_fixedData.nControlled);
+			}
+			return dest;
 		}
-		return dest;
 	}
 
 	public void writeLabel(String aLabel) {

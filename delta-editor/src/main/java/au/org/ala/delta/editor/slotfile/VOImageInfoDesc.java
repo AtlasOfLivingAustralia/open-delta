@@ -24,18 +24,20 @@ public class VOImageInfoDesc extends VOAnyDesc {
 
 	public VOImageInfoDesc(SlotFile slotFile, VOP vop) {
 		super(slotFile, vop);
-		_slotFile.seek(_slotHdrPtr + fixedSizeOffs);
-		short diskFixedSize = _slotFile.readShort();
-		assert diskFixedSize == ImageInfoFixedData.SIZE;
-		_dataOffs = SlotFile.SlotHeader.SIZE + diskFixedSize;
-		_slotFile.seek(_slotHdrPtr + SlotFile.SlotHeader.SIZE);
-		_fixedData = new ImageInfoFixedData();
-		_fixedData.read(_slotFile);
+		synchronized (getVOP()) {
+			_slotFile.seek(_slotHdrPtr + fixedSizeOffs);
+			short diskFixedSize = _slotFile.readShort();
+			assert diskFixedSize == ImageInfoFixedData.SIZE;
+			_dataOffs = SlotFile.SlotHeader.SIZE + diskFixedSize;
+			_slotFile.seek(_slotHdrPtr + SlotFile.SlotHeader.SIZE);
+			_fixedData = new ImageInfoFixedData();
+			_fixedData.read(_slotFile);
 
-		// Logger.debug("ImageInfoDesc: pathLen=%d, nFonts=%d, alignment=%d, overlayDefs=%x, hotspotDefs=%x", _fixedData.pathLen, _fixedData.nFonts, _fixedData.alignment, _fixedData.overlayDefs,
-		// _fixedData.hotspotDefs);
+			// Logger.debug("ImageInfoDesc: pathLen=%d, nFonts=%d, alignment=%d, overlayDefs=%x, hotspotDefs=%x", _fixedData.pathLen, _fixedData.nFonts, _fixedData.alignment, _fixedData.overlayDefs,
+			// _fixedData.hotspotDefs);
 
-		dataSeek(0);
+			dataSeek(0);
+		}
 	}
 
 	@Override
@@ -94,28 +96,30 @@ public class VOImageInfoDesc extends VOAnyDesc {
 	}
 
 	public Pair<LOGFONT, String> readOverlayFont(OverlayFontType fontType) {
-		dataSeek(_fixedData.pathLen);
-		String comment = null;
-		LOGFONT font = null;
-		if (_fixedData.nFonts > fontType.ordinal()) {
-			// Skip preceding fonts...
-			for (int i = 0; i < fontType.ordinal(); ++i) {
+		synchronized (getVOP()) {
+			dataSeek(_fixedData.pathLen);
+			String comment = null;
+			LOGFONT font = null;
+			if (_fixedData.nFonts > fontType.ordinal()) {
+				// Skip preceding fonts...
+				for (int i = 0; i < fontType.ordinal(); ++i) {
+					int commentLen = readShort();
+					comment = readString(commentLen);
+					readBytes(LOGFONT.SIZE);
+					// dataSeek(commentLen + LOGFONT.SIZE, SeekDirection.FROM_CUR);
+				}
 				int commentLen = readShort();
-				comment = readString(commentLen);
-				readBytes(LOGFONT.SIZE);
-				// dataSeek(commentLen + LOGFONT.SIZE, SeekDirection.FROM_CUR);
+				if (commentLen != 0) {
+					comment = readString(commentLen);
+				} else {
+					comment = "";
+				}
+				font = new LOGFONT();
+				font.read(_slotFile);
 			}
-			int commentLen = readShort();
-			if (commentLen != 0) {
-				comment = readString(commentLen);
-			} else {
-				comment = "";
-			}
-			font = new LOGFONT();
-			font.read(_slotFile);
-		}
 
-		return new Pair<LOGFONT, String>(font, comment);
+			return new Pair<LOGFONT, String>(font, comment);
+		}
 	}
 
 	public void writeImagePath(String imagePath) {

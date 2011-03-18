@@ -32,25 +32,29 @@ public class VOPAdaptor implements DeltaDataSet {
 	
 	@Override
 	public Item getItem(int number) {
-		return _factory.createItem(number);
+		synchronized (_vop) {
+			return _factory.createItem(number);	
+		}		
 	}
 	
 	@Override
 	public Character getCharacter(int number) {
-		
-		int charId = _vop.getDeltaMaster().uniIdFromCharNo(number);	
-		VOCharBaseDesc characterDesc = (VOCharBaseDesc)_vop.getDescFromId(charId);
-		
-		return _factory.createCharacter(fromCharType(characterDesc.getCharType()), number);
+		synchronized (_vop) {
+			int charId = _vop.getDeltaMaster().uniIdFromCharNo(number);	
+			VOCharBaseDesc characterDesc = (VOCharBaseDesc)_vop.getDescFromId(charId);
+			return _factory.createCharacter(fromCharType(characterDesc.getCharType()), number);
+		}
 	}
 
 	@Override
 	public String getAttributeAsString(int itemNumber, int characterNumber) {
-		int itemId = _vop.getDeltaMaster().uniIdFromItemNo(itemNumber);
-		VOItemDesc itemDesc = (VOItemDesc) _vop.getDescFromId(itemId);
-		
-		int charId = _vop.getDeltaMaster().uniIdFromCharNo(characterNumber);			
-		return itemDesc.readAttributeAsText(charId, TextType.UTF8, 1);
+		synchronized (_vop) {
+			int itemId = _vop.getDeltaMaster().uniIdFromItemNo(itemNumber);
+			VOItemDesc itemDesc = (VOItemDesc) _vop.getDescFromId(itemId);
+			
+			int charId = _vop.getDeltaMaster().uniIdFromCharNo(characterNumber);			
+			return itemDesc.readAttributeAsText(charId, TextType.UTF8, 1);
+		}
 		
 	}
 	
@@ -67,13 +71,17 @@ public class VOPAdaptor implements DeltaDataSet {
 
 	@Override
 	public int getNumberOfCharacters() {
-		return _vop.getDeltaMaster().getNChars();
+		synchronized (_vop) {
+			return _vop.getDeltaMaster().getNChars();
+		}
 		
 	}
 
 	@Override
 	public int getMaximumNumberOfItems() {
-		return _vop.getDeltaMaster().getNItems();
+		synchronized (_vop) {
+			return _vop.getDeltaMaster().getNItems();
+		}
 	}
 	
 	@Override

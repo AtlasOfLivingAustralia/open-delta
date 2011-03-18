@@ -14,10 +14,10 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.slotfile;
 
-public 	class VONoteDesc extends VOAnyDesc {
-	
+public class VONoteDesc extends VOAnyDesc {
+
 	private static int _noteOffs = FixedData.SIZE + SlotFile.SlotHeader.SIZE;
-	
+
 	public static final int NOTE_SIZE = 256;
 
 	public VONoteDesc(SlotFile slotFile, VOP vop) {
@@ -38,47 +38,51 @@ public 	class VONoteDesc extends VOAnyDesc {
 	public int getNumberOfItems() {
 		return 0;
 	}
-	
+
 	@Override
 	public int getFixedDataSize() {
 		return NoteFixedData.SIZE;
 	}
-	
+
 	public String readNote() {
-		assert _slotFile != null;
-		_slotFile.seek(_slotHdrPtr + _noteOffs);
-		byte[] bytes = _slotFile.read(NOTE_SIZE);
-		return SlotFileEncoding.decode(bytes);
+		synchronized (getVOP()) {
+			assert _slotFile != null;
+			_slotFile.seek(_slotHdrPtr + _noteOffs);
+			byte[] bytes = _slotFile.read(NOTE_SIZE);
+			return SlotFileEncoding.decode(bytes);
+		}
 	}
-	
+
 	public void writeNote(String note) {
-		assert _slotFile != null;
-		_slotFile.seek(_slotHdrPtr + _noteOffs);
-		_slotFile.swrite(note, NOTE_SIZE);
+		synchronized (getVOP()) {
+			assert _slotFile != null;
+			_slotFile.seek(_slotHdrPtr + _noteOffs);
+			_slotFile.swrite(note, NOTE_SIZE);
+		}
 	}
-	
+
 	public class NoteFixedData extends FixedData {
-		
+
 		public static final int SIZE = FixedData.SIZE + NOTE_SIZE;
-		
+
 		byte[] Note = new byte[NOTE_SIZE];
 
 		public NoteFixedData(String acronym) {
 			super(acronym);
 		}
-		
+
 		@Override
 		public void read(BinFile file) {
 			super.read(file);
-			Note = file.readBytes(NOTE_SIZE);			
+			Note = file.readBytes(NOTE_SIZE);
 		}
-		
+
 		@Override
 		public void write(BinFile file) {
 			super.write(file);
 			file.swrite(Note);
 		}
-		
+
 	}
-	
+
 }

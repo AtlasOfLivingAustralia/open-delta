@@ -21,12 +21,11 @@ import java.util.List;
 import org.apache.commons.lang.NotImplementedException;
 
 public class VOCharBaseDesc extends VOImageHolderDesc {
-	
+
 	public static final int STATEID_NULL = -1;
-	
-	public static final byte CHAR_EXCLUSIVE = 0x1;  // Character states are exclusive
-	public static final byte CHAR_MANDATORY = 0x2;  // Character is mandatory
-	
+
+	public static final byte CHAR_EXCLUSIVE = 0x1; // Character states are exclusive
+	public static final byte CHAR_MANDATORY = 0x2; // Character is mandatory
 
 	private CharBaseFixedData _fixedData;
 	protected CharTextInfo _charDescript;
@@ -34,26 +33,28 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 
 	public VOCharBaseDesc(SlotFile slotFile, VOP vop) {
 		super(slotFile, vop);
-		_slotFile.seek(_slotHdrPtr + fixedSizeOffs);
-		short diskFixedSize = _slotFile.readShort();
+		synchronized (getVOP()) {
+			_slotFile.seek(_slotHdrPtr + fixedSizeOffs);
+			short diskFixedSize = _slotFile.readShort();
 
-		_dataOffs = SlotFile.SlotHeader.SIZE + diskFixedSize;
-		_slotFile.seek(_slotHdrPtr + SlotFile.SlotHeader.SIZE);
-		_fixedData = new CharBaseFixedData();
-		_fixedData.read(_slotFile);
+			_dataOffs = SlotFile.SlotHeader.SIZE + diskFixedSize;
+			_slotFile.seek(_slotHdrPtr + SlotFile.SlotHeader.SIZE);
+			_fixedData = new CharBaseFixedData();
+			_fixedData.read(_slotFile);
 
-//		Logger.debug("UniId: %d charType: %d nStates: %d nStatesUsed: %d charFlags: %x uncodedImplict: %d codedImplict: %d nControlling: %d nControls: %d nImages: %d", _fixedData.UniId,
-//				_fixedData.charType, _fixedData.nStates, _fixedData.nStatesUsed, _fixedData.charFlags, _fixedData.uncodedImplicit, _fixedData.codedImplicit, _fixedData.nControlling,
-//				_fixedData.nControls, _fixedData.nImages);
+			// Logger.debug("UniId: %d charType: %d nStates: %d nStatesUsed: %d charFlags: %x uncodedImplict: %d codedImplict: %d nControlling: %d nControls: %d nImages: %d", _fixedData.UniId,
+			// _fixedData.charType, _fixedData.nStates, _fixedData.nStatesUsed, _fixedData.charFlags, _fixedData.uncodedImplicit, _fixedData.codedImplicit, _fixedData.nControlling,
+			// _fixedData.nControls, _fixedData.nImages);
 
-		dataSeek(0);
+			dataSeek(0);
 
-		_stateNumberMappingVector = readStateNumberMap();
-//		Logger.debug("StateNumberMapping: %s", _stateNumberMappingVector);
+			_stateNumberMappingVector = readStateNumberMap();
+			// Logger.debug("StateNumberMapping: %s", _stateNumberMappingVector);
 
-		cacheCharTextInfo(0, (short) 0);
+			cacheCharTextInfo(0, (short) 0);
 
-		// Logger.debug("CharTextInfo: LangDesc = %d, CharTextDesc =%d", _charDescript.langDesc, _charDescript.charDesc);
+			// Logger.debug("CharTextInfo: LangDesc = %d, CharTextDesc =%d", _charDescript.langDesc, _charDescript.charDesc);
+		}
 
 	}
 
@@ -74,14 +75,16 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 
 	@Override
 	public List<Integer> readImageList() {
-		List<Integer> dest = new ArrayList<Integer>();
-		dataSeek(_fixedData.nStates * 4 + _fixedData.nDescriptors * CharTextInfo.SIZE + _fixedData.nControlling * 4 + _fixedData.nControls * 4);
+		synchronized (getVOP()) {
+			List<Integer> dest = new ArrayList<Integer>();
+			dataSeek(_fixedData.nStates * 4 + _fixedData.nDescriptors * CharTextInfo.SIZE + _fixedData.nControlling * 4 + _fixedData.nControls * 4);
 
-		ByteBuffer b = readBuffer(_fixedData.nImages * 4);
-		for (int i = 0; i < _fixedData.nImages; ++i) {
-			dest.add(b.getInt());
+			ByteBuffer b = readBuffer(_fixedData.nImages * 4);
+			for (int i = 0; i < _fixedData.nImages; ++i) {
+				dest.add(b.getInt());
+			}
+			return dest;
 		}
-		return dest;
 	}
 
 	@Override
@@ -225,58 +228,66 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 	}
 
 	public CharTextInfo readCharTextInfo(int langDesc, short variantNo) {
-		CharTextInfo someInfo = new CharTextInfo();
-		
-		dataSeek(_fixedData.nStates * 4);
+		synchronized (getVOP()) {
+			CharTextInfo someInfo = new CharTextInfo();
 
-		int nLangMatches = 0;
-		for (int i = 0; i < _fixedData.nDescriptors; ++i) {
-			someInfo.read(_slotFile);
-			if (langDesc == someInfo.langDesc) {
-				if (variantNo == nLangMatches++) {					
-					return someInfo;
+			dataSeek(_fixedData.nStates * 4);
+
+			int nLangMatches = 0;
+			for (int i = 0; i < _fixedData.nDescriptors; ++i) {
+				someInfo.read(_slotFile);
+				if (langDesc == someInfo.langDesc) {
+					if (variantNo == nLangMatches++) {
+						return someInfo;
+					}
 				}
 			}
+
+			// otherwise throw something?
+
+			return null;
 		}
-
-		// otherwise throw something?
-
-		return null;
 	}
 
 	public List<CharTextInfo> readCharTextInfo() {
-		List<CharTextInfo> dest = new ArrayList<VOCharBaseDesc.CharTextInfo>();
-		dataSeek(_fixedData.nStates * 4);
-		for (int i = 0; i < _fixedData.nDescriptors; ++i) {
-			CharTextInfo textInfo = new CharTextInfo();
-			textInfo.read(_slotFile);
-			dest.add(textInfo);
+		synchronized (getVOP()) {
+			List<CharTextInfo> dest = new ArrayList<VOCharBaseDesc.CharTextInfo>();
+			dataSeek(_fixedData.nStates * 4);
+			for (int i = 0; i < _fixedData.nDescriptors; ++i) {
+				CharTextInfo textInfo = new CharTextInfo();
+				textInfo.read(_slotFile);
+				dest.add(textInfo);
+			}
+			return dest;
 		}
-		return dest;
 	}
 
 	public List<Integer> readControllingInfo() {
-		List<Integer> dest = new ArrayList<Integer>();
+		synchronized (getVOP()) {
+			List<Integer> dest = new ArrayList<Integer>();
 
-		dataSeek(_fixedData.nStates * 4 + _fixedData.nDescriptors * CharTextInfo.SIZE);
-		ByteBuffer b = readBuffer(_fixedData.nControlling * 4);
-		for (int i = 0; i < _fixedData.nControlling; ++i) {
-			dest.add(b.getInt());
+			dataSeek(_fixedData.nStates * 4 + _fixedData.nDescriptors * CharTextInfo.SIZE);
+			ByteBuffer b = readBuffer(_fixedData.nControlling * 4);
+			for (int i = 0; i < _fixedData.nControlling; ++i) {
+				dest.add(b.getInt());
+			}
+
+			return dest;
 		}
-
-		return dest;
 	}
 
 	public List<Integer> readDependentContAttrs() {
-		List<Integer> dest = new ArrayList<Integer>();
+		synchronized (getVOP()) {
+			List<Integer> dest = new ArrayList<Integer>();
 
-		dataSeek(_fixedData.nStates * 4 + _fixedData.nDescriptors * CharTextInfo.SIZE + _fixedData.nControlling * 4);
-		ByteBuffer b = readBuffer(_fixedData.nControls * 4);		
-		for (int i = 0; i < _fixedData.nControls; ++i) {
-			dest.add(b.getInt());
+			dataSeek(_fixedData.nStates * 4 + _fixedData.nDescriptors * CharTextInfo.SIZE + _fixedData.nControlling * 4);
+			ByteBuffer b = readBuffer(_fixedData.nControls * 4);
+			for (int i = 0; i < _fixedData.nControls; ++i) {
+				dest.add(b.getInt());
+			}
+
+			return dest;
 		}
-
-		return dest;
 
 	}
 
@@ -375,7 +386,7 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 		public void read(BinFile file) {
 			super.read(file);
 			ByteBuffer b = file.readByteBuffer(SIZE);
-			
+
 			fixedSize = b.getShort();
 			charType = b.getInt();
 			nStates = b.getInt();
@@ -389,7 +400,7 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 			if (fixedSize == SIZE) {
 				nImages = b.getInt();
 			}
-			
+
 		}
 
 		@Override
@@ -420,7 +431,7 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 		@Override
 		public void read(BinFile file) {
 			ByteBuffer b = file.readByteBuffer(8);
-			
+
 			langDesc = b.getInt();
 			charDesc = b.getInt();
 		}

@@ -43,11 +43,7 @@ public class MatrixTableModel implements TableModel {
 	@Override
 	public String getColumnName(int column) {
 		Character ch = _dataSet.getCharacter(column + 1);
-		if (ch != null) {
-			return (column+1)+ ". " + RTFUtils.stripFormatting(ch.getDescription());
-		} else {
-			return "XXX";
-		}
+		return (column+1)+ ". " + RTFUtils.stripFormatting(ch.getDescription());
 	}
 
 	@Override

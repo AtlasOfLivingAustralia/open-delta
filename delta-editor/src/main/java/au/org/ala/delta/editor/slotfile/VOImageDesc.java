@@ -34,17 +34,19 @@ public class VOImageDesc extends VOAnyDesc {
 
 	public VOImageDesc(SlotFile slotFile, VOP vop) {
 		super(slotFile, vop);
-		_slotFile.seek(_slotHdrPtr + fixedSizeOffs);
-		short diskFixedSize = _slotFile.readShort();
+		synchronized (getVOP()) {
+			_slotFile.seek(_slotHdrPtr + fixedSizeOffs);
+			short diskFixedSize = _slotFile.readShort();
 
-		assert diskFixedSize == ImageFixedData.SIZE;
+			assert diskFixedSize == ImageFixedData.SIZE;
 
-		_dataOffs = SlotFile.SlotHeader.SIZE + diskFixedSize;
-		_slotFile.seek(_slotHdrPtr + SlotFile.SlotHeader.SIZE);
-		_fixedData = new ImageFixedData();
-		_fixedData.read(_slotFile);
+			_dataOffs = SlotFile.SlotHeader.SIZE + diskFixedSize;
+			_slotFile.seek(_slotHdrPtr + SlotFile.SlotHeader.SIZE);
+			_fixedData = new ImageFixedData();
+			_fixedData.read(_slotFile);
 
-		dataSeek(0);
+			dataSeek(0);
+		}
 
 		// Logger.debug("ImageDesc: OwnerID=%d imageType=%d nameLen=%d nOverlays=%d, alignment=%d", _fixedData.ownerId, _fixedData.imageType, _fixedData.nameLen, _fixedData.nOverlays,
 		// _fixedData.alignment);
@@ -135,46 +137,50 @@ public class VOImageDesc extends VOAnyDesc {
 	}
 
 	public List<ImageOverlay> readAllOverlays() {
-		List<ImageOverlay> dest = new ArrayList<VOImageDesc.ImageOverlay>();
-		usedIds = new HashSet<Integer>();
-		if (_fixedData.nOverlays > 0) {
-			// Skip over name...
-			dataSeek(_fixedData.nameLen);
+		synchronized (getVOP()) {
+			List<ImageOverlay> dest = new ArrayList<VOImageDesc.ImageOverlay>();
+			usedIds = new HashSet<Integer>();
+			if (_fixedData.nOverlays > 0) {
+				// Skip over name...
+				dataSeek(_fixedData.nameLen);
 
-			for (int i = 0; i < _fixedData.nOverlays; ++i) {
-				ImageOverlay anOverlay = readSingleOverlay(true);
-				dest.add(anOverlay);
-			}
-			// Code to cope with legacy situation, where IDs were not stored. This could
-			// eventually be discarded.
-			boolean newIds = false;
-			for (ImageOverlay overlay : dest) {
-
-				if (overlay.location.size() == 0) {
-					overlay.location.add(new OverlayLoc());
+				for (int i = 0; i < _fixedData.nOverlays; ++i) {
+					ImageOverlay anOverlay = readSingleOverlay(true);
+					dest.add(anOverlay);
 				}
-				for (OverlayLoc loc : overlay.location) {
-					if (loc.ID == 0) {
-						newIds = true;
-						loc.ID = getNextId(overlay.type);
+				// Code to cope with legacy situation, where IDs were not stored. This could
+				// eventually be discarded.
+				boolean newIds = false;
+				for (ImageOverlay overlay : dest) {
+
+					if (overlay.location.size() == 0) {
+						overlay.location.add(new OverlayLoc());
+					}
+					for (OverlayLoc loc : overlay.location) {
+						if (loc.ID == 0) {
+							newIds = true;
+							loc.ID = getNextId(overlay.type);
+						}
 					}
 				}
+				if (newIds)
+					writeAllOverlays(dest);
+
 			}
-			if (newIds)
-				writeAllOverlays(dest);
 
+			return dest;
 		}
-
-		return dest;
 	}
 
 	public ImageOverlay readOverlay(int Id) {
-		int startLoc = getOverlayStart(Id);
-		if (startLoc != -1) {
-			dataSeek(startLoc);
-			return readSingleOverlay();
+		synchronized (getVOP()) {
+			int startLoc = getOverlayStart(Id);
+			if (startLoc != -1) {
+				dataSeek(startLoc);
+				return readSingleOverlay();
+			}
+			return null;
 		}
-		return null;
 	}
 
 	public OverlayLoc readLocation(int Id) {
@@ -240,49 +246,51 @@ public class VOImageDesc extends VOAnyDesc {
 	}
 
 	protected int getOverlayStart(int Id, int[] basePtr) {
-		if (hasId(Id)) {
+		synchronized (getVOP()) {
+			if (hasId(Id)) {
 
-			dataSeek(_fixedData.nameLen);
-			for (int i = 0; i < _fixedData.nOverlays; ++i) {
-				int curPos = dataTell();
-				// First part gives type of the overlay,
-				// followed by the lengths of remaining info
-				short[] valBuf = readShortArray(4);
-				// Reads in:
-				// 0 : overlay type
-				// 1 : length of location list
-				// 2 : length of overlay text
-				// 3 : length of (image level) comment (usually 0)
-				// Next part is the location of this overlay, and its hotspots
-				// Starts with a 4-byte value. Lowest byte indicates the draw type
-				// Highest three bytes contain the ID
-				for (int j = 0; j < valBuf[1]; ++j) {
-					int aValue = readInt();
+				dataSeek(_fixedData.nameLen);
+				for (int i = 0; i < _fixedData.nOverlays; ++i) {
+					int curPos = dataTell();
+					// First part gives type of the overlay,
+					// followed by the lengths of remaining info
+					short[] valBuf = readShortArray(4);
+					// Reads in:
+					// 0 : overlay type
+					// 1 : length of location list
+					// 2 : length of overlay text
+					// 3 : length of (image level) comment (usually 0)
+					// Next part is the location of this overlay, and its hotspots
+					// Starts with a 4-byte value. Lowest byte indicates the draw type
+					// Highest three bytes contain the ID
+					for (int j = 0; j < valBuf[1]; ++j) {
+						int aValue = readInt();
 
-					int curId = aValue >> 8;
-					if (basePtr != null && basePtr.length > 0 && j == 0) {
-						basePtr[0] = curId;
+						int curId = aValue >> 8;
+						if (basePtr != null && basePtr.length > 0 && j == 0) {
+							basePtr[0] = curId;
+						}
+						if (curId == Id) {
+							// Found what we were looking for...
+							return curPos;
+						}
+						// Skip over rest of "location" information...
+						dataSeek(4 + 2 + 2 + 2 + 2, SeekDirection.FROM_CUR);
 					}
-					if (curId == Id) {
-						// Found what we were looking for...
-						return curPos;
+					int olType = valBuf[0];
+					dataSeek(valBuf[2] + valBuf[3], SeekDirection.FROM_CUR);
+					if (olType == OverlayType.OLSTATE)
+						dataSeek(4, SeekDirection.FROM_CUR);
+					else if (olType == OverlayType.OLVALUE)
+						dataSeek(DeltaNumber.size(), SeekDirection.FROM_CUR);
+					else if (olType == OverlayType.OLKEYWORD) {
+						short textLen = readShort();
+						dataSeek(textLen, SeekDirection.FROM_CUR);
 					}
-					// Skip over rest of "location" information...
-					dataSeek(4 + 2 + 2 + 2 + 2, SeekDirection.FROM_CUR);
-				}
-				int olType = valBuf[0];
-				dataSeek(valBuf[2] + valBuf[3], SeekDirection.FROM_CUR);
-				if (olType == OverlayType.OLSTATE)
-					dataSeek(4, SeekDirection.FROM_CUR);
-				else if (olType == OverlayType.OLVALUE)
-					dataSeek(DeltaNumber.size(), SeekDirection.FROM_CUR);
-				else if (olType == OverlayType.OLKEYWORD) {
-					short textLen = readShort();
-					dataSeek(textLen, SeekDirection.FROM_CUR);
 				}
 			}
+			return -1;
 		}
-		return -1;
 	}
 
 	protected ImageOverlay readSingleOverlay() {
@@ -461,7 +469,7 @@ public class VOImageDesc extends VOAnyDesc {
 		public void read(BinFile file) {
 			super.read(file);
 			ByteBuffer b = file.readByteBuffer(SIZE);
-			
+
 			fixedSize = b.getShort();
 			ownerId = b.getInt();
 			imageType = b.getInt();
