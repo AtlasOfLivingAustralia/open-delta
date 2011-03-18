@@ -80,11 +80,21 @@ public class RtfEditor extends RtfEditorPane {
 		_specialCharHandlers.add(new AcuteCharacterHandler());
 		_specialCharHandlers.add(new GraveAccentCharacterHandler());
 		_specialCharHandlers.add(new CircumflexCharacterHandler());
+		_specialCharHandlers.add(new UmlautCharacterHandler());
+		_specialCharHandlers.add(new TildeCharacterHandler());
+		_specialCharHandlers.add(new RingCharacterHandler());
+		_specialCharHandlers.add(new HacekCharacterHandler());
+		_specialCharHandlers.add(new CedillaCharacterHandler());
+		_specialCharHandlers.add(new LigatureCharacterHandler());
+		_specialCharHandlers.add(new SlashCharacterHandler());
+		_specialCharHandlers.add(new DoubleAcuteCharacterHandler());
+		_specialCharHandlers.add(new GreekCharacterHandler());
 		
 		this.addKeyListener(new KeyAdapter() {
 			
 			@Override
-			public void keyReleased(KeyEvent e) {
+			public void keyReleased(KeyEvent e) {				
+				// System.err.printf("KeyReleased: %s %s (%s)\n", e.getModifiersExText(e.getModifiersEx()), e.getKeyText(e.getKeyCode()), e.getKeyChar());				
 				if (_currentCharHandler != null && _currentCharHandler.hasBeenProcessed()) {
 					_currentCharHandler = null;
 					e.consume();
@@ -99,7 +109,7 @@ public class RtfEditor extends RtfEditorPane {
 			}
 							
 			@Override
-			public void keyPressed(KeyEvent e) {
+			public void keyPressed(KeyEvent e) {				
 				if (_currentCharHandler != null) {
 					if (_currentCharHandler.processFollowUpKey(e, RtfEditor.this)) {
 						e.consume();
@@ -277,7 +287,7 @@ public class RtfEditor extends RtfEditorPane {
 			boolean superscript = (StyleConstants.isSuperscript(inputAttributes)) ? false : true;
 			
 			StyleConstants.setSuperscript(characterAttributes, superscript);
-			// Turn off superscript if it's on
+			// Turn off subscript if it's on
 			StyleConstants.setSubscript(characterAttributes, false);		
 		}
 	}

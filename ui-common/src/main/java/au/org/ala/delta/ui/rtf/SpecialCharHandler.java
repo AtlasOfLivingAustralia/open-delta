@@ -6,11 +6,10 @@ import java.util.Map;
 
 import au.org.ala.delta.util.Pair;
 
-public abstract class SpecialCharHandler {
+public class SpecialCharHandler {
 	
 	private int _keyCode;
 	private int _modifiers;
-	
 	
 	private SpecialCharacterMode _mode;
 	private Map<Character, Character> _charMap = new HashMap<Character, Character>();
@@ -25,8 +24,7 @@ public abstract class SpecialCharHandler {
 		return new Pair<Character, Character>(keyIn, (char) keyOut);
 	}
 	
-	
-	protected SpecialCharHandler(int keyCode, int modifiers, SpecialCharacterMode mode, int defaultChar, Pair<Character, Character> ... mappings) {
+	public SpecialCharHandler(int keyCode, int modifiers, SpecialCharacterMode mode, int defaultChar, Pair<Character, Character> ... mappings) {
 		_keyCode= keyCode;
 		_modifiers = modifiers;
 		_mode = mode;

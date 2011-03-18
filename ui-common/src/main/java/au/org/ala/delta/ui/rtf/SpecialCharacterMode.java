@@ -10,7 +10,7 @@ public enum SpecialCharacterMode {
 	Tilde,
 	Ring,
 	Cedilla,
-	Linkage,
+	Ligature,
 	Slash,
 	DoubleAcute,
 	Greek

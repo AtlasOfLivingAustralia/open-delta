@@ -6,9 +6,8 @@ public class AcuteCharacterHandler extends SpecialCharHandler {
 	
 	@SuppressWarnings("unchecked")
 	public AcuteCharacterHandler() {
-		super(KeyEvent.VK_QUOTE, KeyEvent.CTRL_MASK, 
-			SpecialCharacterMode.AcuteAccents, 0xB4,
-			pair('a', 0xe1),
+		super(KeyEvent.VK_QUOTE, KeyEvent.CTRL_MASK, SpecialCharacterMode.AcuteAccents, 0x2032,
+			pair('a', 0xe1),				
 		    pair('A', 0xc1),
 		    pair('e', 0xe9),
 		    pair('E', 0xc9),
