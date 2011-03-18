@@ -20,15 +20,17 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.SystemColor;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import javax.swing.ActionMap;
 import javax.swing.JInternalFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -36,8 +38,6 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.LineBorder;
-import javax.swing.event.InternalFrameEvent;
-import javax.swing.event.InternalFrameListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelListener;
@@ -47,9 +47,12 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
+import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
+import org.jdesktop.application.Task;
+import org.jdesktop.application.Task.BlockingScope;
 
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Item;
@@ -64,6 +67,7 @@ public class MatrixViewer extends JInternalFrame {
 	private JTable _fixedColumns;
 	private MatrixTableModel _model;
 	private StateEditor _stateEditor;
+	private ItemColumnModel _fixedModel;
 	
 	@Resource
 	String windowTitle;
@@ -71,7 +75,7 @@ public class MatrixViewer extends JInternalFrame {
 	public MatrixViewer(EditorDataModel dataSet) {
 		super();
 		
-		ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(AboutBox.class);
+		ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(MatrixViewer.class);
 		resourceMap.injectFields(this);
 		
 		this.setTitle(String.format(windowTitle, dataSet.getName()));
@@ -85,11 +89,13 @@ public class MatrixViewer extends JInternalFrame {
 		_table = new JTable(_model);
 		_table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		_table.getTableHeader().setSize(new Dimension(_table.getColumnModel().getTotalColumnWidth(), 100));
-		_table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		_table.getSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		_table.setRowSelectionAllowed(false);
+		_table.setCellSelectionEnabled(true);
 		_table.setDefaultRenderer(Object.class, new AttributeCellRenderer());
 
-		_fixedColumns = new JTable(new ItemColumnModel(dataSet));
+		_fixedModel = new ItemColumnModel(dataSet);
+		_fixedColumns = new JTable(_fixedModel);
 		_fixedColumns.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
 		_fixedColumns.getTableHeader().setPreferredSize(new Dimension(_table.getColumnModel().getTotalColumnWidth(), 100));
 		_fixedColumns.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -165,7 +171,62 @@ public class MatrixViewer extends JInternalFrame {
 
 		this.getContentPane().setLayout(new BorderLayout());
 		this.getContentPane().add(divider, BorderLayout.CENTER);
+		
+		_table.getActionMap().getParent().remove("paste");
+		
+		ActionMap actionMap = Application.getInstance().getContext().getActionMap(this);
+		javax.swing.Action copyAll = actionMap.get("copyAll");
+		if (copyAll != null) {
+			_table.getActionMap().put("copyAll", copyAll);
+		}
+	}
+	
+	@Action(block=BlockingScope.APPLICATION)
+	public Task<Void, Void> copyAll() {		
+		Task<Void, Void> task = new CopyAllTask(Application.getInstance());
+		return task;		
+	}
+	
+	class CopyAllTask extends Task<Void, Void> {
 
+		public CopyAllTask(Application application) {
+			super(application);
+		}
+
+		@Override
+		protected Void doInBackground() throws Exception {
+			
+			message("copying");
+			
+			String seperator = "\t";
+			String eol = "\n";
+			StringBuilder b = new StringBuilder();
+			
+			// First do row headers, which are item descriptions
+			b.append("(Items)");
+			for (int i = 0; i < _model.getColumnCount(); i++) {
+				b.append(seperator).append(_model.getColumnName(i));			
+			}
+			b.append(eol);
+			
+			// Now for each row...
+			
+			for (int row = 0; row < _model.getRowCount(); ++row) {
+				b.append(_fixedModel.getValueAt(row, 0));
+				// and for each data item (column)
+				for (int col = 0; col < _model.getColumnCount(); ++col) {
+					String value = (String) _model.getValueAt(row, col);
+					b.append(seperator).append(value);
+				}
+				b.append(eol);
+			}
+			
+	        Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
+	        cb.setContents(new StringSelection(b.toString()), null);		
+
+			return null;
+		}
+		
 	}
 }
 
@@ -192,11 +253,16 @@ class AttributeCellRenderer extends DefaultTableCellRenderer {
 		
 		Component comp = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 		
-		if (table.getModel().isCellEditable(row, column)) {
-			setBackground(Color.WHITE);
-		}
-		else {
-			setBackground(new Color(0xE8, 0xE8, 0xE8));
+		if (isSelected) {
+			setBackground(SystemColor.textHighlight);
+			setForeground(SystemColor.textHighlightText);
+		} else {
+			setForeground(SystemColor.controlText);
+			if (table.getModel().isCellEditable(row, column)) {
+				setBackground(Color.WHITE);
+			} else {
+				setBackground(new Color(0xE8, 0xE8, 0xE8));
+			}
 		}
 		return comp;
 	}

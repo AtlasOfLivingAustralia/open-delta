@@ -48,6 +48,7 @@ import javax.swing.plaf.metal.MetalLookAndFeel;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
+import org.jdesktop.application.ProxyActions;
 import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.SingleFrameApplication;
@@ -70,6 +71,7 @@ import au.org.ala.delta.util.IProgressObserver;
 /**
  * The main class for the DELTA Editor.
  */
+@ProxyActions("copyAll")
 public class DeltaEditor extends SingleFrameApplication {
 
 	/** Helper class for notifying listeners of property changes */
@@ -211,7 +213,12 @@ public class DeltaEditor extends SingleFrameApplication {
 		mnuFile.addSeparator();
 		mnuFile.add(mnuItFileExit);
 		menuBar.add(mnuFile);
-
+		
+		
+		// Edit Menu
+		
+		JMenu mnuEdit = buildEditMenu();
+		menuBar.add(mnuEdit);
 		
 		// View Menu
 		JMenu mnuView = buildViewMenu();
@@ -280,6 +287,25 @@ public class DeltaEditor extends SingleFrameApplication {
 		menuBar.add(mnuHelp);
 		
 		return menuBar;
+	}
+	
+	private JMenu buildEditMenu() {
+		JMenu mnuEdit = new JMenu();
+		mnuEdit.setName("mnuEdit");
+
+		String[] viewMenuActions = {
+				"copy",
+				"paste",
+				"-",
+				"copyAll"
+		};
+		
+		for (String action : viewMenuActions) {
+			addMenu(mnuEdit, action);
+		}
+		
+		return mnuEdit;
+		
 	}
 
 	/**
@@ -400,7 +426,7 @@ public class DeltaEditor extends SingleFrameApplication {
 		} catch (Exception ex) {
 			// ignore
 		}
-		frame.setSize(new Dimension(800,500));		
+		frame.setSize(new Dimension(800,500));
 	}
 	
 	

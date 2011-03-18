@@ -65,12 +65,14 @@ public class SlotFileDataSetFactory implements DeltaDataSetFactory {
 		int charId = _vop.getDeltaMaster().uniIdFromCharNo(number);	
 		VOCharBaseDesc characterDesc = (VOCharBaseDesc)_vop.getDescFromId(charId);
 		CharTextInfo txtInfo = characterDesc.readCharTextInfo(0, (short) 0);
-		VOCharTextDesc textDesc = (VOCharTextDesc) _vop.getDescFromId(txtInfo.charDesc);
+		if (txtInfo != null) {
+			VOCharTextDesc textDesc = (VOCharTextDesc) _vop.getDescFromId(txtInfo.charDesc);		
+			VOCharacterAdaptor characterAdaptor = new VOCharacterAdaptor(characterDesc, textDesc);
+			character.setImpl(characterAdaptor);		
+			return character;			
+		} else {
+			return null;
+		}
 		
-		VOCharacterAdaptor characterAdaptor = new VOCharacterAdaptor(characterDesc, textDesc);
-		
-		character.setImpl(characterAdaptor);
-		
-		return character;
 	}
 }

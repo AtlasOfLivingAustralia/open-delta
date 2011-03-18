@@ -164,7 +164,7 @@ public class StateEditor extends JPanel implements ValidationListener {
 
 		@Override
 		public void focusLost(FocusEvent e) {
-			if (!_modified || !_valid) {
+			if (!_modified || !_valid || _item == null) {
 				return;
 			}
 			String attributeText = _textPane.getRtfTextBody();

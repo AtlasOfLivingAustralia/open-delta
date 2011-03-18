@@ -52,6 +52,10 @@ public class RtfEditorPane extends JTextPane {
 		try {
 			kit.writeBody(writer, doc, 0, doc.getLength());
 			rtfText = writer.toString().trim();
+			if (rtfText.endsWith("\\par")) {
+				rtfText = rtfText.substring(0, rtfText.lastIndexOf("\\par"));
+			}
+			
 			
 		} catch (Exception ex) {
 			ex.printStackTrace();
