@@ -57,6 +57,7 @@ public class DeltaContext {
 	private Set<Integer> _newParagraphCharacters = new HashSet<Integer>();
 	private Map<Integer, String> _itemHeadings = new HashMap<Integer, String>();
 	private Map<Integer, String> _itemSubHeadings = new HashMap<Integer, String>();
+	private Set<Set<Integer>> _linkedCharacters = new HashSet<Set<Integer>>();
 
 	private int _numberOfCharacters;
 	private int _maxNumberOfStates;
@@ -393,5 +394,25 @@ public class DeltaContext {
 	 */
 	public String getItemSubheading(int characterNumber) {
 		return _itemSubHeadings.get(characterNumber);
+	}
+	
+	public void linkCharacters(Set<Integer> linkedCharacters) {
+		_linkedCharacters.add(linkedCharacters);
+	}
+	
+	/**
+	 * Returns the set of characters linked to the supplied character.
+	 * @param characterNumber the character of interest.
+	 * @return the set of characters linked to the supplied character number, or null if the 
+	 * character is not linked to any other characters.  The returned
+	 * set includes the supplied character.
+	 */
+	public Set<Integer> getLinkedCharacters(int characterNumber) {
+		for (Set<Integer> linkedCharacters : _linkedCharacters) {
+			if (linkedCharacters.contains(characterNumber)) {
+				return linkedCharacters;
+			}
+		}
+		return null;
 	}
 }
