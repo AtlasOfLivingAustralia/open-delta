@@ -104,17 +104,12 @@ public class UtilsTests extends TestCase {
 		assertEquals("Culms Again", withoutComments);
 	}
 	
-	/**
-	 * Tests the remove comments method.
-	 */
-	public void testRemoveCommentsCommentInStartMiddleAndEnd() {
-		String rtfWithComments = "<start>Culms <middle> Again<end>";
+	public void testStripComments() {
+		String rtfWithComments = "Culms <maximum Height: Data Unreliable For Large Genera>";
 		
-		String withoutComments = Utils.removeComments(rtfWithComments, 1);
+		String withoutComments = Utils.removeComments(rtfWithComments, 0, false, false, false, true);
 		
-		// This seems to be a bug with the existing (C++) system - the first comment is not removed in
-		// this case.
-		assertEquals("<start>Culms Again", withoutComments);
+		assertEquals("Culms maximum Height: Data Unreliable For Large Genera", withoutComments);
 	}
 
 }

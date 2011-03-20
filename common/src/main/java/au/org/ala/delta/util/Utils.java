@@ -420,6 +420,16 @@ public class Utils {
 	};
 
 	/**
+	 * Calls removeComments with the supplied level and all other parameters = false.
+	 * @param text the text to remove comments from.
+	 * @param level identifies the extent of the removal operation.
+	 * @return the supplied text without comments
+	 */
+	public static String removeComments(String text, int level) {
+		return removeComments(text, level, false, false, false, false);
+	}
+	
+	/**
 	 * Removes DELTA style <> comments from the supplied string.
 	 * 
 	 * @param src the string to remove comments from.
@@ -429,23 +439,11 @@ public class Utils {
 	 *            commented text is used.
 	 * @return the string with comments removed
 	 */
-	public static String removeComments(String text, int level) {
-		if (level == 0) {
-			return text;
-		}
+	public static String removeComments(String text, int level, boolean convertCommentsToBrackets, boolean removeInnerComments, 
+			boolean stripSpaces, boolean removeBrackets) {
 		
-		// int mode = level & RC_MODEMASK;
-		// boolean doConvert = level & RC_CONVERT_BRACKETS;
-		// boolean removeInner = level & RC_REMOVE_INNER;
-		// boolean stripSpaces = level & RC_STRIP_SPACES;
-		// boolean removeBrackets = level & RC_REMOVE_BRACKETS;
-
 		int mode = level;
-		boolean doConvert = false;
-		boolean removeInner = true;
-		boolean stripSpaces = true;
-		boolean removeBrackets = false;
-
+		
 		int commentLevel = 0;
 		boolean hasText = mode == 1;
 		boolean hadInner = false;
@@ -465,7 +463,7 @@ public class Utils {
 			if (result.charAt(i) == '<'
 					&& (wasSpace || wasBrace || (ch = result.charAt(i - 1)) == ' ' || ch == '<' || ch == '>')) {
 				wasBrace = true;
-				if (doConvert) {
+				if (convertCommentsToBrackets) {
 					result.setCharAt(i, ')');
 				}
 				if (removeBrackets || (mode == 3 && commentLevel == 0)) {
@@ -488,14 +486,14 @@ public class Utils {
 				// Keep track of nesting level
 				commentLevel--;
 				wasBrace = true;
-				if (doConvert)
+				if (convertCommentsToBrackets)
 					result.setCharAt(i, ')');
 				if (removeBrackets || (mode == 3 && commentLevel == 0))
 					result.deleteCharAt(i--);
 				if (commentLevel == 0) {
 					if (start != -1) {
 						end = i;
-						if (removeInner && hadInner) // In this case, check for
+						if (removeInnerComments && hadInner) // In this case, check for
 														// and remove an empty
 														// comment...
 						{
@@ -512,7 +510,7 @@ public class Utils {
 						}
 					}
 					hadInner = false;
-				} else if (commentLevel == 1 && removeInner) {
+				} else if (commentLevel == 1 && removeInnerComments) {
 					// If we're removing inner comments, get rid of this
 					// part of the string, and any space before it.
 					int leng = i - innerStart + 1;
