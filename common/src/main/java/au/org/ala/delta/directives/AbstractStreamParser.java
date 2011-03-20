@@ -24,6 +24,7 @@ public abstract class AbstractStreamParser {
 	protected DeltaContext _context;
 	protected char _currentChar;
 	protected int _currentInt;
+	protected int _position;
 
 	public AbstractStreamParser(DeltaContext context, Reader reader) {
 		_reader = reader;
@@ -44,6 +45,7 @@ public abstract class AbstractStreamParser {
 
 	protected int readNext() throws Exception {
 		_currentInt = _reader.read();
+		_position++;
 		_currentChar = (char) _currentInt;
 		return _currentInt;
 	}

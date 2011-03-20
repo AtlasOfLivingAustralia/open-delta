@@ -56,6 +56,7 @@ public class DeltaContext {
 	
 	private Set<Integer> _newParagraphCharacters = new HashSet<Integer>();
 	private Map<Integer, String> _itemHeadings = new HashMap<Integer, String>();
+	private Map<Integer, String> _itemSubHeadings = new HashMap<Integer, String>();
 
 	private int _numberOfCharacters;
 	private int _maxNumberOfStates;
@@ -376,5 +377,21 @@ public class DeltaContext {
 	public String getItemHeading(int itemNumber) {
 		
 		return _itemHeadings.get(itemNumber);
+	}
+
+	
+	public void itemSubheading(int characterNumber, String subheading) {
+		_itemSubHeadings.put(characterNumber, subheading);
+		
+	}
+	
+	/**
+	 * Returns the sub heading for the supplied character as defined by the ITEM SUBHEADINGS directive.  
+	 * If no heading has been supplied, this method returns null.
+	 * @param characterNumber the character number to get the heading for.
+	 * @return the heading defined for the specified item or null if no heading was defined.
+	 */
+	public String getItemSubheading(int characterNumber) {
+		return _itemSubHeadings.get(characterNumber);
 	}
 }
