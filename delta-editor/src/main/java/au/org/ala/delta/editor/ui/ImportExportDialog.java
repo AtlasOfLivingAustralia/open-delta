@@ -76,17 +76,42 @@ public class ImportExportDialog extends JDialog {
 	private JButton btnChange;
 	private final ButtonGroup buttonGroup = new ButtonGroup();
 	private JList otherDirectivesList;
+	private JRadioButton rdbtnConfor;
+	private JRadioButton rdbtnIntkey;
+	private JRadioButton rdbtnDist;
+	private JRadioButton rdbtnKey;
 	
 	public ImportExportDialog() {
 		
 		_specsFile = DEFAULT_SPECS_DIRECTIVE_FILE;
 		_otherDirectivesFiles = new ArrayList<DirectiveFile>();
 		_possibleDirectiveFiles = new ArrayList<String>();
+		
 		createUI();
-		ActionMap actionMap = Application.getInstance().getContext().getActionMap(this);
-		btnChange.setAction(actionMap.get("directorySelected"));
+		addEventListeners();
 	}
 
+	private void addEventListeners() {
+		ActionMap actionMap = Application.getInstance().getContext().getActionMap(this);
+		btnChange.setAction(actionMap.get("directorySelected"));
+		
+		ActionListener typeSelectionListener = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				updateSelectedDirectiveType((JRadioButton)e.getSource());
+			}
+		};
+		rdbtnConfor.putClientProperty(DirectiveType.class, DirectiveType.CONFOR);
+		rdbtnConfor.addActionListener(typeSelectionListener);
+		rdbtnIntkey.putClientProperty(DirectiveType.class, DirectiveType.INTKEY);
+		rdbtnIntkey.addActionListener(typeSelectionListener);
+		rdbtnDist.putClientProperty(DirectiveType.class, DirectiveType.DIST);
+		rdbtnDist.addActionListener(typeSelectionListener);
+		rdbtnKey.putClientProperty(DirectiveType.class, DirectiveType.KEY);
+		rdbtnKey.addActionListener(typeSelectionListener);
+				
+	}
+	
 	/**
 	 * Creates and lays out the UI components for this dialog.
 	 */
@@ -153,17 +178,18 @@ public class ImportExportDialog extends JDialog {
 		JPanel panel_4 = new JPanel();
 		panel_4.setBorder(new TitledBorder(null, "Directive type", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		
-		JRadioButton rdbtnConfor = new JRadioButton("Confor");
+		rdbtnConfor = new JRadioButton("Confor");
 		buttonGroup.add(rdbtnConfor);
 		
-		JRadioButton rdbtnIntkey = new JRadioButton("Intkey");
+		rdbtnIntkey = new JRadioButton("Intkey");
 		buttonGroup.add(rdbtnIntkey);
 		
-		JRadioButton rdbtnDist = new JRadioButton("Dist");
+		rdbtnDist = new JRadioButton("Dist");
 		buttonGroup.add(rdbtnDist);
 		
-		JRadioButton rdbtnKey = new JRadioButton("Key");
+		rdbtnKey = new JRadioButton("Key");
 		buttonGroup.add(rdbtnKey);
+		
 		GroupLayout gl_panel_4 = new GroupLayout(panel_4);
 		gl_panel_4.setHorizontalGroup(
 			gl_panel_4.createParallelGroup(Alignment.LEADING)
@@ -427,6 +453,12 @@ public class ImportExportDialog extends JDialog {
 		}
 	}
 	
+	public void updateSelectedDirectiveType(JRadioButton selected) {
+		if (selected.isSelected()) {
+			_selectedDirectiveType = (DirectiveType)selected.getClientProperty(DirectiveType.class);
+		}
+	}
+	
 	public void moveFromPossibleToOther() {
 		
 		DefaultListModel model = (DefaultListModel)possibleDirectivesList.getModel();
@@ -476,5 +508,7 @@ public class ImportExportDialog extends JDialog {
 			otherDirectivesModel.addElement(file);
 		}
 		otherDirectivesList.setModel(otherDirectivesModel);
+		
+		
 	}
 }
