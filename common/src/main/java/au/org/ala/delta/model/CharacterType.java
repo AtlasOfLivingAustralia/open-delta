@@ -27,6 +27,10 @@ public enum CharacterType {
 		return (this.equals(OrderedMultiState) || (this.equals(UnorderedMultiState)));
 	}
 	
+	public boolean isNumeric() {
+		return (this.equals(IntegerNumeric) || (this.equals(RealNumeric)));
+	}
+	
 	public static CharacterType parse(String str) {
 		String s = str.substring(0,2).toUpperCase();
 		if (TYPE_MAP.containsKey(s)) {

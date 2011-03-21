@@ -14,8 +14,12 @@ public interface CharacterData {
 	
 	public String getStateText(int stateNumber);
 	
+	public void setStateText(int stateNumber, String text);
+	
 	public int getNumberOfStates();
-
+	
+	public void setNumberOfStates(int numStates);
+	
 	public void setMandatory(boolean b);
 
 	public void setDescription(String desc);

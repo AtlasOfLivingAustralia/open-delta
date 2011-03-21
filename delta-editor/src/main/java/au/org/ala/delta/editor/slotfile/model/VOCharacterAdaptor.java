@@ -81,12 +81,20 @@ public class VOCharacterAdaptor implements CharacterData {
 	public int getNumberOfStates() {
 		// Trying to read past the number of states actually used yields an error
 		return _charDesc.getNStatesUsed();
-		// return _charDesc.getNStates();
 	}
 	
 	@Override
 	public void setMandatory(boolean b) {
 		_charDesc.setCharFlag(VOCharBaseDesc.CHAR_MANDATORY);
 	}
-	
+
+	@Override
+	public void setStateText(int stateNumber, String text) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public void setNumberOfStates(int numStates) {
+		throw new NotImplementedException();
+	}
 }

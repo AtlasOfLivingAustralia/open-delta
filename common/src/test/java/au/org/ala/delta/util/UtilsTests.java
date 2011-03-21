@@ -104,12 +104,23 @@ public class UtilsTests extends TestCase {
 		assertEquals("Culms Again", withoutComments);
 	}
 	
-	public void testStripComments() {
-		String rtfWithComments = "Culms <maximum Height: Data Unreliable For Large Genera>";
-		
-		String withoutComments = Utils.removeComments(rtfWithComments, 0, false, false, false, true);
-		
-		assertEquals("Culms maximum Height: Data Unreliable For Large Genera", withoutComments);
-	}
+//	/**
+//	 * Tests the remove comments method with nested comments
+//	 */
+//	public void testRemoveCommentsWithNestedComments() {
+//		String rtfWithComments = "Culms <Blah<Test> asdfas>";
+//		
+//		String withoutComments = Utils.removeComments(rtfWithComments, 1);
+//		
+//		assertEquals("Culms", withoutComments);
+//	}
+//	
+//	public void testStripComments() {
+//		String rtfWithComments = "Culms <maximum Height: Data Unreliable For Large Genera>";
+//		
+//		String withoutComments = Utils.removeComments(rtfWithComments, 0, false, false, false, true);
+//		
+//		assertEquals("Culms maximum Height: Data Unreliable For Large Genera", withoutComments);
+//	}
 
 }

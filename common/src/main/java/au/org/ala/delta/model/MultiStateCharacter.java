@@ -16,8 +16,7 @@ package au.org.ala.delta.model;
 
 public abstract class MultiStateCharacter extends Character {
 
-	private int _numberOfStates;
-	private String[] _states;
+
 	private ImplicitValue _implicitValueStateId;
 
 	public MultiStateCharacter(int number, CharacterType characterType) {
@@ -29,15 +28,22 @@ public abstract class MultiStateCharacter extends Character {
 	}
 
 	public void setNumberOfStates(int states) {
-		_numberOfStates = states;
-		_states = new String[_numberOfStates];
+		_impl.setNumberOfStates(states);
+	}
+	
+	public void setState(int stateNumber, String text) {
+		_impl.setStateText(stateNumber, text);
 	}
 
 	public String getState(int stateNumber) {
 		return stateNumber + ". " + _impl.getStateText(stateNumber);
 	}
 	public String[] getStates() {
-		return _states;
+		String[] states = new String[_impl.getNumberOfStates()];
+		for (int i=1; i<=states.length; i++) {
+			states[i-1] = _impl.getStateText(i);
+		}
+		return states;
 	}
 
 	public void setImplicitValueStateId(ImplicitValue value) {
@@ -47,10 +53,7 @@ public abstract class MultiStateCharacter extends Character {
 	public ImplicitValue getImplicitValueStateId() {
 		return _implicitValueStateId;
 	}
-
-	public void setState(int stateId, String state) {
-		// TODO bounds check!
-		_states[stateId - 1] = state;
-	}
-
+	
+	
+	
 }

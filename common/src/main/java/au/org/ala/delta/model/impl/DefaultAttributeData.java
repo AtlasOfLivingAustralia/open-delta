@@ -1,5 +1,6 @@
 package au.org.ala.delta.model.impl;
 
+
 /**
  * A simple implementation of AttributeData that stores attribute data in-memory.
  */
@@ -20,6 +21,7 @@ public class DefaultAttributeData implements AttributeData {
 	@Override
 	public boolean isStatePresent(int stateNumber) {
 		return false;
+		
 	}
 
 	@Override

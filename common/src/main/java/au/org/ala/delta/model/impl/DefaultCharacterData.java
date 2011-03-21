@@ -49,7 +49,19 @@ public class DefaultCharacterData implements CharacterData {
 
 	@Override
 	public String getStateText(int stateNumber) {
-		return _states[stateNumber];
+		return _states[stateNumber-1];
+	}
+	
+	@Override
+	public void setStateText(int stateNumber, String text) {
+		
+		_states[stateNumber-1] = text;
+	}
+	
+	@Override
+	public void setNumberOfStates(int numStates) {
+		_states = new String[numStates];
+		
 	}
 
 	@Override
