@@ -19,6 +19,7 @@ import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -59,6 +60,7 @@ import org.jdesktop.application.Task.BlockingScope;
 
 import au.org.ala.delta.editor.slotfile.model.SlotFileRepository;
 import au.org.ala.delta.editor.ui.EditorDataModel;
+import au.org.ala.delta.editor.ui.ImportExportDialog;
 import au.org.ala.delta.editor.ui.MatrixViewer;
 import au.org.ala.delta.editor.ui.TreeViewer;
 import au.org.ala.delta.editor.ui.help.HelpConstants;
@@ -281,6 +283,19 @@ public class DeltaEditor extends SingleFrameApplication {
 		JMenuItem mnuItFileSaveAs = new JMenuItem();
 		mnuItFileSaveAs.setAction(_actionMap.get("saveAsFile"));
 
+		JMenuItem mnuImport = new JMenuItem("Import directives...");
+		mnuImport.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				show(new ImportExportDialog());
+				
+			}
+		});
+		
+		JMenuItem mnuExport = new JMenuItem("Export directives...");
+		mnuExport.setEnabled(false);
+		
 		JMenuItem mnuItFileExit = new JMenuItem();
 		mnuItFileExit.setAction(_actionMap.get("exitApplication"));
 
@@ -288,6 +303,9 @@ public class DeltaEditor extends SingleFrameApplication {
 		mnuFile.addSeparator();
 		mnuFile.add(mnuItFileSave);
 		mnuFile.add(mnuItFileSaveAs);
+		mnuFile.addSeparator();
+		mnuFile.add(mnuImport);
+		mnuFile.add(mnuExport);	
 		mnuFile.addSeparator();
 		String[] previous = EditorPreferences.getPreviouslyUsedFiles();
 		if (previous != null && previous.length > 0) {
