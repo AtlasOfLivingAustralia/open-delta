@@ -42,7 +42,7 @@ public class Intkey extends DeltaSingleFrameApplication {
     @Override
     protected void startup() {
         _actionMap = getContext().getActionMap(this);
-        
+        //
         _mainFrame = getMainFrame();
         _mainFrame.setTitle("Intkey");
         _mainFrame.setPreferredSize(new Dimension(1000,600));
