@@ -41,14 +41,12 @@ import javax.swing.ListSelectionModel;
 import javax.swing.border.LineBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.event.TableModelListener;
+import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
-import javax.swing.table.TableModel;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.Resource;
@@ -70,18 +68,18 @@ public class MatrixViewer extends JInternalFrame {
 	private MatrixTableModel _model;
 	private StateEditor _stateEditor;
 	private ItemColumnModel _fixedModel;
-	
+
 	@Resource
 	String windowTitle;
 
 	public MatrixViewer(EditorDataModel dataSet) {
 		super();
-		
+
 		ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(MatrixViewer.class);
 		resourceMap.injectFields(this);
-		
+
 		this.setTitle(String.format(windowTitle, dataSet.getName()));
-		
+
 		_dataSet = dataSet;
 		new InternalFrameDataModelListener(this, dataSet, windowTitle);
 		_model = new MatrixTableModel(dataSet);
@@ -111,7 +109,7 @@ public class MatrixViewer extends JInternalFrame {
 				_table.getSelectionModel().setSelectionInterval(row, row);
 			}
 		});
-		
+
 		ListSelectionListener listener = new ListSelectionListener() {
 
 			@Override
@@ -120,20 +118,19 @@ public class MatrixViewer extends JInternalFrame {
 				_fixedColumns.getSelectionModel().setSelectionInterval(row, row);
 				int charId = _table.getSelectedColumn() + 1;
 				int itemId = _table.getSelectedRow() + 1;
-			
+
 				if (charId > 0 && itemId > 0) {
 					au.org.ala.delta.model.Character selectedCharacter = _dataSet.getCharacter(charId);
-					Item selectedItem = _dataSet.getItem(itemId);				
+					Item selectedItem = _dataSet.getItem(itemId);
 					_stateEditor.bind(selectedCharacter, selectedItem);
 				}
-				
+
 			}
 		};
 
-		
 		_table.getSelectionModel().addListSelectionListener(listener);
 		_table.getColumnModel().getSelectionModel().addListSelectionListener(listener);
-		
+
 		_table.getTableHeader().setDefaultRenderer(new TableHeaderRenderer());
 
 		final JScrollPane scrollpane = new JScrollPane(_table);
@@ -161,46 +158,46 @@ public class MatrixViewer extends JInternalFrame {
 		content.add(fixedScrollPane, JSplitPane.LEFT);
 		content.setDividerSize(4);
 		content.setDividerLocation(180);
-		
+
 		_stateEditor = new StateEditor(_dataSet);
-		
-		JSplitPane divider =new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+
+		JSplitPane divider = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		divider.setDividerLocation(getHeight() - 200);
 		divider.setResizeWeight(1);
-		
+
 		divider.setTopComponent(content);
 		divider.setBottomComponent(_stateEditor);
 
 		this.getContentPane().setLayout(new BorderLayout());
 		this.getContentPane().add(divider, BorderLayout.CENTER);
-		
+
 		_table.getActionMap().getParent().remove("paste");
-		
+
 		ActionMap actionMap = Application.getInstance().getContext().getActionMap(this);
 		javax.swing.Action copyAll = actionMap.get("copyAll");
 		if (copyAll != null) {
 			_table.getActionMap().put("copyAll", copyAll);
-		}		
-		
+		}
+
 		javax.swing.Action copySelection = actionMap.get("copy");
 		if (copySelection != null) {
 			_table.getActionMap().put("copy", copySelection);
 		}
 	}
-	
-	@Action(block=BlockingScope.APPLICATION)
+
+	@Action(block = BlockingScope.APPLICATION)
 	public Task<Void, Void> copy() {
 		return new CopySelectedTask(Application.getInstance());
 	}
-	
-	@Action(block=BlockingScope.APPLICATION)
-	public Task<Void, Void> copyAll() {		
-		return new CopyAllTask(Application.getInstance());		
+
+	@Action(block = BlockingScope.APPLICATION)
+	public Task<Void, Void> copyAll() {
+		return new CopyAllTask(Application.getInstance());
 	}
-	
+
 	abstract class ClipboardCopyTask extends Task<Void, Void> {
-		
-		protected String CELL_SEPERATOR = "\t"; 
+
+		protected String CELL_SEPERATOR = "\t";
 		protected String EOL = "\n";
 		private long _totalCells = 0;
 		private long _cellsCopied = 0;
@@ -209,11 +206,11 @@ public class MatrixViewer extends JInternalFrame {
 		public ClipboardCopyTask(Application application) {
 			super(application);
 		}
-		
+
 		protected void setTotalCells(long total) {
 			_totalCells = total;
 		}
-		
+
 		protected void incrementCellsCopied() {
 			_cellsCopied++;
 			int newPercent = (int) (((double) _cellsCopied) / ((double) _totalCells) * 100);
@@ -222,29 +219,29 @@ public class MatrixViewer extends JInternalFrame {
 				setProgress(_lastPercent);
 			}
 		}
-		
+
 	}
-	
+
 	class CopySelectedTask extends ClipboardCopyTask {
-		
+
 		public CopySelectedTask(Application application) {
 			super(application);
 		}
 
 		@Override
 		protected Void doInBackground() throws Exception {
-			
+
 			message("copying");
-			
+
 			StringBuilder b = new StringBuilder();
-			
+
 			int[] cols = _table.getSelectedColumns();
 			int[] rows = _table.getSelectedRows();
-			
+
 			setTotalCells(cols.length * rows.length);
-			
-			// Now for each row...		
-			for (int i = 0; i< rows.length; ++i) {
+
+			// Now for each row...
+			for (int i = 0; i < rows.length; ++i) {
 				int row = rows[i];
 
 				for (int j = 0; j < cols.length; ++j) {
@@ -258,15 +255,15 @@ public class MatrixViewer extends JInternalFrame {
 				}
 				b.append(EOL);
 			}
-						
-	        Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
-	        cb.setContents(new StringSelection(b.toString()), null);		
+
+			Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
+			cb.setContents(new StringSelection(b.toString()), null);
 
 			return null;
 		}
 
 	}
-	
+
 	class CopyAllTask extends CopySelectedTask {
 
 		public CopyAllTask(Application application) {
@@ -275,22 +272,22 @@ public class MatrixViewer extends JInternalFrame {
 
 		@Override
 		protected Void doInBackground() throws Exception {
-			
+
 			message("copying");
-			
+
 			StringBuilder b = new StringBuilder();
 
 			setTotalCells(_model.getColumnCount() * _model.getRowCount());
-					
+
 			// First do row headers, which are item descriptions
 			b.append("(Items)");
 			for (int i = 0; i < _model.getColumnCount(); i++) {
-				b.append(CELL_SEPERATOR).append(_model.getColumnName(i));			
+				b.append(CELL_SEPERATOR).append(_model.getColumnName(i));
 			}
 			b.append(EOL);
-			
+
 			// Now for each row...
-			
+
 			for (int row = 0; row < _model.getRowCount(); ++row) {
 				b.append(_fixedModel.getValueAt(row, 0));
 				// and for each data item (column)
@@ -301,13 +298,13 @@ public class MatrixViewer extends JInternalFrame {
 				}
 				b.append(EOL);
 			}
-						
-	        Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
-	        cb.setContents(new StringSelection(b.toString()), null);		
+
+			Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
+			cb.setContents(new StringSelection(b.toString()), null);
 
 			return null;
 		}
-		
+
 	}
 }
 
@@ -329,15 +326,13 @@ class BottomLineBorder extends LineBorder {
 }
 
 class AttributeCellRenderer extends DefaultTableCellRenderer {
-	
+
 	private static final long serialVersionUID = 1L;
 
-	public Component getTableCellRendererComponent(
-			JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-			
-		
+	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+
 		Component comp = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-		
+
 		if (isSelected) {
 			setBackground(SystemColor.textHighlight);
 			setForeground(SystemColor.textHighlightText);
@@ -359,7 +354,7 @@ class TableHeaderRenderer extends JTextArea implements TableCellRenderer {
 
 	private final DefaultTableCellRenderer adaptee = new DefaultTableCellRenderer();
 	/** map from table to map of rows to map of column heights */
-	private final Map<JTable,Map<Integer, Map<Integer,Integer>>> cellSizes = new HashMap<JTable, Map<Integer, Map<Integer,Integer>>>();
+	private final Map<JTable, Map<Integer, Map<Integer, Integer>>> cellSizes = new HashMap<JTable, Map<Integer, Map<Integer, Integer>>>();
 
 	public TableHeaderRenderer() {
 		setLineWrap(true);
@@ -378,8 +373,7 @@ class TableHeaderRenderer extends JTextArea implements TableCellRenderer {
 		// setBorder(adaptee.getBorder());
 		setFont(adaptee.getFont());
 		setText(adaptee.getText());
-		
-		
+
 		// This line was very important to get it working with JDK1.4
 		TableColumnModel columnModel = table.getColumnModel();
 
@@ -445,10 +439,12 @@ class TableHeaderRenderer extends JTextArea implements TableCellRenderer {
 	}
 }
 
-class ItemColumnModel implements TableModel {
+class ItemColumnModel extends AbstractTableModel {
+
+	private static final long serialVersionUID = 1L;
 
 	private DeltaDataSet _dataSet;
-	
+
 	@Resource
 	String columnName;
 
@@ -476,7 +472,7 @@ class ItemColumnModel implements TableModel {
 	@Override
 	public Object getValueAt(int row, int column) {
 		Item item = _dataSet.getItem(row + 1);
-		return (row+1)+ ". "+ item.getDescription();
+		return (row + 1) + ". " + item.getDescription();
 	}
 
 	@Override
@@ -487,21 +483,6 @@ class ItemColumnModel implements TableModel {
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
 		return false;
-	}
-
-	@Override
-	public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-		throw new NotImplementedException();
-	}
-
-	@Override
-	public void addTableModelListener(TableModelListener l) {
-		throw new NotImplementedException();
-	}
-
-	@Override
-	public void removeTableModelListener(TableModelListener l) {
-		throw new NotImplementedException();
 	}
 
 }
