@@ -11,7 +11,7 @@ public class RTFReaderTests extends TestCase {
 
 	public void testReader1() throws IOException {
 		String rtf = getFileAsString("/rtf/test1.rtf");
-		String actual = RTFUtils.stripFormatting(rtf);
+		String actual = RTFUtils.stripFormatting(rtf, false);
 		String expected = "This is plain text.";
 		assertEquals(expected, actual);
 	}
@@ -24,12 +24,12 @@ public class RTFReaderTests extends TestCase {
 	
 	public void testReader3() throws IOException {
 		String rtf = "{\\rtf\\ansi\\deff0{\\fonttbl{\\f0\\froman Tms Rmn;}}\\pard\\plain \\fs20 \\super This is plain text. \\super0\\par{\\b\\i This is bold italic}}";
-		String actual = RTFUtils.stripUnrecognizedRTF(rtf);
+		String actual = RTFUtils.stripUnrecognizedRTF(rtf, false);
 		String expected = "\\super This is plain text. \\super0 \\b \\i This is bold italic\\b0\\i0 ";
 		assertEquals(expected, actual);
 		
 		expected = "This is plain text. This is bold italic";
-		actual = RTFUtils.stripFormatting(rtf);
+		actual = RTFUtils.stripFormatting(rtf, false);
 		assertEquals(expected, actual);			
 	}
 	
