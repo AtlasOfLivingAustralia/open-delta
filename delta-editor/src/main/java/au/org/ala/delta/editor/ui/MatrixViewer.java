@@ -29,6 +29,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.swing.ActionMap;
 import javax.swing.JInternalFrame;
@@ -47,6 +48,7 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.Resource;
@@ -178,16 +180,94 @@ public class MatrixViewer extends JInternalFrame {
 		javax.swing.Action copyAll = actionMap.get("copyAll");
 		if (copyAll != null) {
 			_table.getActionMap().put("copyAll", copyAll);
+		}		
+		
+		javax.swing.Action copySelection = actionMap.get("copy");
+		if (copySelection != null) {
+			_table.getActionMap().put("copy", copySelection);
 		}
 	}
 	
 	@Action(block=BlockingScope.APPLICATION)
-	public Task<Void, Void> copyAll() {		
-		Task<Void, Void> task = new CopyAllTask(Application.getInstance());
-		return task;		
+	public Task<Void, Void> copy() {
+		return new CopySelectedTask(Application.getInstance());
 	}
 	
-	class CopyAllTask extends Task<Void, Void> {
+	@Action(block=BlockingScope.APPLICATION)
+	public Task<Void, Void> copyAll() {		
+		return new CopyAllTask(Application.getInstance());		
+	}
+	
+	abstract class ClipboardCopyTask extends Task<Void, Void> {
+		
+		protected String CELL_SEPERATOR = "\t"; 
+		protected String EOL = "\n";
+		private long _totalCells = 0;
+		private long _cellsCopied = 0;
+		private int _lastPercent = 0;
+
+		public ClipboardCopyTask(Application application) {
+			super(application);
+		}
+		
+		protected void setTotalCells(long total) {
+			_totalCells = total;
+		}
+		
+		protected void incrementCellsCopied() {
+			_cellsCopied++;
+			int newPercent = (int) (((double) _cellsCopied) / ((double) _totalCells) * 100);
+			if (newPercent != _lastPercent) {
+				_lastPercent = newPercent;
+				setProgress(_lastPercent);
+			}
+		}
+		
+	}
+	
+	class CopySelectedTask extends ClipboardCopyTask {
+		
+		public CopySelectedTask(Application application) {
+			super(application);
+		}
+
+		@Override
+		protected Void doInBackground() throws Exception {
+			
+			message("copying");
+			
+			StringBuilder b = new StringBuilder();
+			
+			int[] cols = _table.getSelectedColumns();
+			int[] rows = _table.getSelectedRows();
+			
+			setTotalCells(cols.length * rows.length);
+			
+			// Now for each row...		
+			for (int i = 0; i< rows.length; ++i) {
+				int row = rows[i];
+
+				for (int j = 0; j < cols.length; ++j) {
+					int col = cols[j];
+					String value = (String) _model.getValueAt(row, col);
+					if (col > 0) {
+						b.append(CELL_SEPERATOR);
+					}
+					b.append(value);
+					incrementCellsCopied();
+				}
+				b.append(EOL);
+			}
+						
+	        Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
+	        cb.setContents(new StringSelection(b.toString()), null);		
+
+			return null;
+		}
+
+	}
+	
+	class CopyAllTask extends CopySelectedTask {
 
 		public CopyAllTask(Application application) {
 			super(application);
@@ -198,16 +278,16 @@ public class MatrixViewer extends JInternalFrame {
 			
 			message("copying");
 			
-			String seperator = "\t";
-			String eol = "\n";
 			StringBuilder b = new StringBuilder();
-			
+
+			setTotalCells(_model.getColumnCount() * _model.getRowCount());
+					
 			// First do row headers, which are item descriptions
 			b.append("(Items)");
 			for (int i = 0; i < _model.getColumnCount(); i++) {
-				b.append(seperator).append(_model.getColumnName(i));			
+				b.append(CELL_SEPERATOR).append(_model.getColumnName(i));			
 			}
-			b.append(eol);
+			b.append(EOL);
 			
 			// Now for each row...
 			
@@ -216,11 +296,12 @@ public class MatrixViewer extends JInternalFrame {
 				// and for each data item (column)
 				for (int col = 0; col < _model.getColumnCount(); ++col) {
 					String value = (String) _model.getValueAt(row, col);
-					b.append(seperator).append(value);
+					b.append(CELL_SEPERATOR).append(value);
+					incrementCellsCopied();
 				}
-				b.append(eol);
+				b.append(EOL);
 			}
-			
+						
 	        Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
 	        cb.setContents(new StringSelection(b.toString()), null);		
 
@@ -231,6 +312,9 @@ public class MatrixViewer extends JInternalFrame {
 }
 
 class BottomLineBorder extends LineBorder {
+
+	private static final long serialVersionUID = 1L;
+
 	public BottomLineBorder(Color color) {
 		super(color);
 	}
@@ -246,7 +330,8 @@ class BottomLineBorder extends LineBorder {
 
 class AttributeCellRenderer extends DefaultTableCellRenderer {
 	
-	
+	private static final long serialVersionUID = 1L;
+
 	public Component getTableCellRendererComponent(
 			JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 			
@@ -274,7 +359,7 @@ class TableHeaderRenderer extends JTextArea implements TableCellRenderer {
 
 	private final DefaultTableCellRenderer adaptee = new DefaultTableCellRenderer();
 	/** map from table to map of rows to map of column heights */
-	private final Map cellSizes = new HashMap();
+	private final Map<JTable,Map<Integer, Map<Integer,Integer>>> cellSizes = new HashMap<JTable, Map<Integer, Map<Integer,Integer>>>();
 
 	public TableHeaderRenderer() {
 		setLineWrap(true);
@@ -310,13 +395,13 @@ class TableHeaderRenderer extends JTextArea implements TableCellRenderer {
 	}
 
 	private void addSize(JTable table, int row, int column, int height) {
-		Map rows = (Map) cellSizes.get(table);
+		Map<Integer, Map<Integer, Integer>> rows = cellSizes.get(table);
 		if (rows == null) {
-			cellSizes.put(table, rows = new HashMap());
+			cellSizes.put(table, rows = new HashMap<Integer, Map<Integer, Integer>>());
 		}
-		Map rowheights = (Map) rows.get(new Integer(row));
+		Map<Integer, Integer> rowheights = rows.get(new Integer(row));
 		if (rowheights == null) {
-			rows.put(new Integer(row), rowheights = new HashMap());
+			rows.put(new Integer(row), rowheights = new HashMap<Integer, Integer>());
 		}
 		rowheights.put(new Integer(column), new Integer(height));
 	}
@@ -326,7 +411,7 @@ class TableHeaderRenderer extends JTextArea implements TableCellRenderer {
 	 */
 	private int findTotalMaximumRowSize(JTable table, int row) {
 		int maximum_height = 0;
-		Enumeration columns = table.getColumnModel().getColumns();
+		Enumeration<TableColumn> columns = table.getColumnModel().getColumns();
 
 		// Enumeration columns = table.getColumnModel().getColumns();
 
@@ -343,23 +428,17 @@ class TableHeaderRenderer extends JTextArea implements TableCellRenderer {
 		return maximum_height;
 	}
 
-	// TableCellRenderer defaultRenderer = this.tableHeader.getDefaultRenderer();
-	// if (defaultRenderer instanceof MyCellRender) {
-	// this.tableHeader.setDefaultRenderer(((SortableHeaderRenderer) defaultRenderer).tableCellRenderer);
-	//
-	//
-
 	private int findMaximumRowSize(JTable table, int row) {
-		Map rows = (Map) cellSizes.get(table);
+		Map<Integer, Map<Integer, Integer>> rows = cellSizes.get(table);
 		if (rows == null)
 			return 0;
-		Map rowheights = (Map) rows.get(new Integer(row));
+		Map<Integer, Integer> rowheights = rows.get(new Integer(row));
 		if (rowheights == null)
 			return 0;
 		int maximum_height = 0;
-		for (Iterator it = rowheights.entrySet().iterator(); it.hasNext();) {
-			Map.Entry entry = (Map.Entry) it.next();
-			int cellHeight = ((Integer) entry.getValue()).intValue();
+		for (Iterator<Entry<Integer, Integer>> it = rowheights.entrySet().iterator(); it.hasNext();) {
+			Map.Entry<Integer, Integer> entry = it.next();
+			int cellHeight = entry.getValue().intValue();
 			maximum_height = Math.max(maximum_height, cellHeight);
 		}
 		return maximum_height;
@@ -407,26 +486,22 @@ class ItemColumnModel implements TableModel {
 
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-		// TODO Auto-generated method stub
-
+		throw new NotImplementedException();
 	}
 
 	@Override
 	public void addTableModelListener(TableModelListener l) {
-		// TODO Auto-generated method stub
-
+		throw new NotImplementedException();
 	}
 
 	@Override
 	public void removeTableModelListener(TableModelListener l) {
-		// TODO Auto-generated method stub
-
+		throw new NotImplementedException();
 	}
 
 }
