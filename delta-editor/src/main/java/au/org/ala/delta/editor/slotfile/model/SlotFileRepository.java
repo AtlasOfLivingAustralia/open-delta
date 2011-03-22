@@ -27,6 +27,8 @@ import au.org.ala.delta.util.IProgressObserver;
  */
 public class SlotFileRepository implements DeltaDataSetRepository {
 
+	
+
 	/** 
 	 * Saves the supplied data set to permanent storage
 	 * @param dataSet the DELTA data set to save.
@@ -66,6 +68,16 @@ public class SlotFileRepository implements DeltaDataSetRepository {
 
 		DeltaDataSet dataSet = DeltaFileReader.readDeltaFile(name, observer);
 		return dataSet;
+	}
+	
+	/**
+	 * Creates a new DeltaDataSet backed by a new DeltaVOP.
+	 */
+	@Override
+	public DeltaDataSet newDataSet() {
+		DeltaVOP vop = new DeltaVOP();
+		SlotFileDataSetFactory _factory = new SlotFileDataSetFactory(vop);
+		return _factory.createDataSet("");
 	}
 
 	private DeltaVOP getVOP(DeltaDataSet dataSet) {

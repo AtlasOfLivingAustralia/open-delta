@@ -75,7 +75,11 @@ public class EditorDataModel implements DeltaDataSet {
 	
 	@Override
 	public String getName() {
-		return _currentDataSet.getName();
+		String name = _currentDataSet.getName();
+		if (name == null) {
+			name = "";
+		}
+		return name;
 	}
 	
 	public void setName(String name) {

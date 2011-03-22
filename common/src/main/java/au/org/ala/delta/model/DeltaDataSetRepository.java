@@ -26,4 +26,6 @@ public interface DeltaDataSetRepository {
 	public DeltaDataSet findByName(String name, IProgressObserver observer);
 	
 	public void saveAsName(DeltaDataSet dataSet, String name, IProgressObserver observer);
+	
+	public DeltaDataSet newDataSet();
 }

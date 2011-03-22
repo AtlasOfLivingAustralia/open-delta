@@ -18,7 +18,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.NotImplementedException;
-import org.omg.CORBA._PolicyStub;
 
 import au.org.ala.delta.util.Utils;
 
@@ -28,6 +27,10 @@ public class DeltaVOP extends VOP {
 	private VOImageInfoDesc _imageInfo;
 	private Map<String, VOItemDesc> _itemNames = new HashMap<String, VOItemDesc>();
 
+	public DeltaVOP() {
+		this(false);
+	}
+	
 	public DeltaVOP(boolean noTemp) {
 		super(noTemp);
 	}

@@ -71,7 +71,11 @@ public class VOPAdaptor implements DeltaDataSet {
 
 	@Override
 	public int getNumberOfCharacters() {
+		
 		synchronized (_vop) {
+			if (_vop.getDeltaMaster() == null) {
+				return 0;
+			}
 			return _vop.getDeltaMaster().getNChars();
 		}
 		
@@ -80,6 +84,9 @@ public class VOPAdaptor implements DeltaDataSet {
 	@Override
 	public int getMaximumNumberOfItems() {
 		synchronized (_vop) {
+			if (_vop.getDeltaMaster() == null) {
+				return 0;
+			}
 			return _vop.getDeltaMaster().getNItems();
 		}
 	}

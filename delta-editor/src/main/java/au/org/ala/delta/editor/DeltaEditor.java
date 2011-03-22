@@ -19,7 +19,6 @@ import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -49,6 +48,7 @@ import javax.swing.event.InternalFrameListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
+import org.apache.commons.lang.StringUtils;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ProxyActions;
@@ -58,9 +58,9 @@ import org.jdesktop.application.SingleFrameApplication;
 import org.jdesktop.application.Task;
 import org.jdesktop.application.Task.BlockingScope;
 
+import au.org.ala.delta.editor.directives.ImportController;
 import au.org.ala.delta.editor.slotfile.model.SlotFileRepository;
 import au.org.ala.delta.editor.ui.EditorDataModel;
-import au.org.ala.delta.editor.ui.ImportExportDialog;
 import au.org.ala.delta.editor.ui.MatrixViewer;
 import au.org.ala.delta.editor.ui.TreeViewer;
 import au.org.ala.delta.editor.ui.help.HelpConstants;
@@ -273,39 +273,20 @@ public class DeltaEditor extends SingleFrameApplication {
 	private void buildFileMenu(JMenu mnuFile) {
 
 		mnuFile.removeAll();
+	
 
-		JMenuItem mnuItFileOpen = new JMenuItem();
-		mnuItFileOpen.setAction(_actionMap.get("loadFile"));
+		String[] fileMenuActions = { 
+				"newFile", "loadFile", "closeFile", "-", 
+				"saveFile", "saveAsFile", "-", 
+				"importDirectives", "exportDirectives"};
 
-		JMenuItem mnuItFileSave = new JMenuItem();
-		mnuItFileSave.setAction(_actionMap.get("saveFile"));
-
-		JMenuItem mnuItFileSaveAs = new JMenuItem();
-		mnuItFileSaveAs.setAction(_actionMap.get("saveAsFile"));
-
-		JMenuItem mnuImport = new JMenuItem("Import directives...");
-		mnuImport.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				show(new ImportExportDialog());
-				
-			}
-		});
-		
-		JMenuItem mnuExport = new JMenuItem("Export directives...");
-		mnuExport.setEnabled(false);
+		for (String action : fileMenuActions) {
+			addMenu(mnuFile, action);
+		}
 		
 		JMenuItem mnuItFileExit = new JMenuItem();
 		mnuItFileExit.setAction(_actionMap.get("exitApplication"));
 
-		mnuFile.add(mnuItFileOpen);
-		mnuFile.addSeparator();
-		mnuFile.add(mnuItFileSave);
-		mnuFile.add(mnuItFileSaveAs);
-		mnuFile.addSeparator();
-		mnuFile.add(mnuImport);
-		mnuFile.add(mnuExport);	
 		mnuFile.addSeparator();
 		String[] previous = EditorPreferences.getPreviouslyUsedFiles();
 		if (previous != null && previous.length > 0) {
@@ -627,8 +608,14 @@ public class DeltaEditor extends SingleFrameApplication {
 	@Action(enabledProperty = "saveEnabled")
 	public void saveFile() {
 		EditorDataModel model = getCurrentDataSet();
+		
 		if (model != null) {
-			_dataSetRepository.save(model.getCurrentDataSet(), null);
+			if (StringUtils.isEmpty(model.getName())) {
+				saveAsFile();
+			}
+			else {
+				_dataSetRepository.save(model.getCurrentDataSet(), null);
+			}
 		}
 	}
 
@@ -692,6 +679,28 @@ public class DeltaEditor extends SingleFrameApplication {
 
 	@Action(enabledProperty = "enabled")
 	public void viewImageSettings() {
+	}
+	
+	@Action(enabledProperty = "saveAsEnabled")
+	public void importDirectives() {
+		new ImportController(this).begin();
+		
+	}
+	
+	@Action(enabledProperty = "saveAsEnabled")
+	public void exportDirectives() {
+		
+	}
+	
+	@Action
+	public void newFile() {
+		EditorDataModel model = new EditorDataModel(_dataSetRepository.newDataSet());
+		newTree(model);
+	}
+	
+	@Action(enabledProperty = "saveAsEnabled") 
+	public void closeFile() {
+		
 	}
 
 	public void addPropertyChangeListener(PropertyChangeListener listener) {

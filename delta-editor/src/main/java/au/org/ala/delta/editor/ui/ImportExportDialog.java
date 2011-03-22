@@ -40,7 +40,7 @@ public class ImportExportDialog extends JDialog {
 	private static final String DEFAULT_CHARS_DIRECTIVE_FILE = "chars";
 	private static final String DEFAULT_SPECS_DIRECTIVE_FILE = "specs";
 
-	private enum DirectiveType {
+	public static enum DirectiveType {
 		CONFOR("C"), INTKEY("I"), DIST("D"), KEY("K"); 
 		private String _abbreviation;
 		private DirectiveType(String abbreviation) {
@@ -49,7 +49,7 @@ public class ImportExportDialog extends JDialog {
 		public String getAbbreviation(){return _abbreviation;}
 	};
 	
-	private class DirectiveFile {
+	public static class DirectiveFile {
 		public String _fileName;
 		public DirectiveType _type;
 		
@@ -65,6 +65,7 @@ public class ImportExportDialog extends JDialog {
 	private String _itemsFile;
 	private List<DirectiveFile> _otherDirectivesFiles;
 	private List<String> _possibleDirectiveFiles;
+	private boolean _okPressed;
 	
 	private static final long serialVersionUID = 8695641918190503720L;
 	private JTextField currentDirectoryTextField;
@@ -80,13 +81,17 @@ public class ImportExportDialog extends JDialog {
 	private JRadioButton rdbtnIntkey;
 	private JRadioButton rdbtnDist;
 	private JRadioButton rdbtnKey;
+	private JButton btnOk;
+	private JButton btnCancel;
 	
 	public ImportExportDialog() {
+		setName("ImportExportDialog");
 		
 		_specsFile = DEFAULT_SPECS_DIRECTIVE_FILE;
 		_otherDirectivesFiles = new ArrayList<DirectiveFile>();
 		_possibleDirectiveFiles = new ArrayList<String>();
-		
+		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+		setModal(true);
 		createUI();
 		addEventListeners();
 	}
@@ -94,6 +99,8 @@ public class ImportExportDialog extends JDialog {
 	private void addEventListeners() {
 		ActionMap actionMap = Application.getInstance().getContext().getActionMap(this);
 		btnChange.setAction(actionMap.get("directorySelected"));
+		btnOk.setAction(actionMap.get("okPressed"));
+		btnCancel.setAction(actionMap.get("cancelPressed"));
 		
 		ActionListener typeSelectionListener = new ActionListener() {
 			@Override
@@ -371,9 +378,9 @@ public class ImportExportDialog extends JDialog {
 		JPanel buttonBar = new JPanel();
 		buttonBar.setBorder(new EmptyBorder(5, 0, 5, 0));
 		
-		JButton btnOk = new JButton("OK");
+		btnOk = new JButton("OK");
 		
-		JButton btnCnacel = new JButton("Cancel");
+		btnCancel = new JButton("Cancel");
 		
 		JButton btnHelp = new JButton("Help");
 		GroupLayout gl_buttonBar = new GroupLayout(buttonBar);
@@ -383,7 +390,7 @@ public class ImportExportDialog extends JDialog {
 					.addGap(96)
 					.addComponent(btnOk)
 					.addGap(79)
-					.addComponent(btnCnacel)
+					.addComponent(btnCancel)
 					.addGap(82)
 					.addComponent(btnHelp)
 					.addGap(94))
@@ -393,7 +400,7 @@ public class ImportExportDialog extends JDialog {
 				.addGroup(gl_buttonBar.createSequentialGroup()
 					.addGap(5)
 					.addGroup(gl_buttonBar.createParallelGroup(Alignment.BASELINE)
-						.addComponent(btnCnacel)
+						.addComponent(btnCancel)
 						.addComponent(btnOk)
 						.addComponent(btnHelp)))
 		);
@@ -453,6 +460,22 @@ public class ImportExportDialog extends JDialog {
 		}
 	}
 	
+	@Action
+	public void okPressed() {
+		_okPressed = true;
+		setVisible(false);
+	}
+	
+	@Action
+	public void cancelPressed() {
+		_okPressed = false;
+		setVisible(false);
+	}
+	
+	public boolean proceed() {
+		return _okPressed;
+	}
+	
 	public void updateSelectedDirectiveType(JRadioButton selected) {
 		if (selected.isSelected()) {
 			_selectedDirectiveType = (DirectiveType)selected.getClientProperty(DirectiveType.class);
@@ -510,5 +533,28 @@ public class ImportExportDialog extends JDialog {
 		otherDirectivesList.setModel(otherDirectivesModel);
 		
 		
+	}
+	
+	public List<DirectiveFile> getSelectedFiles() {
+		DirectiveFile specsFile = new DirectiveFile();
+		specsFile._fileName = _specsFile;
+		specsFile._type = DirectiveType.CONFOR;
+		DirectiveFile charsFile = new DirectiveFile();
+		charsFile._fileName = _charactersFile;
+		charsFile._type = DirectiveType.CONFOR;
+		DirectiveFile itemsFile = new DirectiveFile();
+		itemsFile._fileName = _itemsFile;
+		itemsFile._type = DirectiveType.CONFOR;
+		
+		List<DirectiveFile> files = new ArrayList<DirectiveFile>(_otherDirectivesFiles);
+		files.add(specsFile);
+		files.add(charsFile);
+		files.add(itemsFile);
+		
+		return files;
+	}
+	
+	public File getSelectedDirectory() {
+		return _currentDirectory;
 	}
 }

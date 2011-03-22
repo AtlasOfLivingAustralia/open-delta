@@ -220,7 +220,11 @@ public class VOP {
 	   // if data were committed to a new file, use the new file from now.
 	   if(file != _permSlotFile)
 	   {
-	      _permSlotFile.close();
+		   // If this is a new VOP _permSlotFile can be null at this point.
+		   if (_permSlotFile != null) {
+			   _permSlotFile.close();
+		   }
+	      
 	      _permSlotFile = file;
 	   }
 	
@@ -415,6 +419,9 @@ public class VOP {
 	}
 
 	public String getFilename() {
+		if (_permSlotFile == null) {
+			return null;
+		}
 		return _permSlotFile.getFileName();
 	}
 
