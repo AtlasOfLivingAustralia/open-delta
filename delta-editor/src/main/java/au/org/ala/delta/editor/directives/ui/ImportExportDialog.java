@@ -1,4 +1,4 @@
-package au.org.ala.delta.editor.ui;
+package au.org.ala.delta.editor.directives.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -26,8 +26,11 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
+import org.apache.commons.lang.StringUtils;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
+import org.jdesktop.application.Resource;
+import org.jdesktop.application.ResourceMap;
 
 /**
  * The ImportExportDialog is the user interface component that allows the user to:
@@ -84,8 +87,23 @@ public class ImportExportDialog extends JDialog {
 	private JButton btnOk;
 	private JButton btnCancel;
 	
+	@Resource
+	private String specificationsPanelTitle;
+	@Resource
+	private String charsPanelTitle;
+	@Resource
+	private String itemsPanelTitle;
+	@Resource
+	private String otherPanelTitle;
+	@Resource
+	private String possiblePanelTitle;
+	@Resource
+	private String directiveTypePanelTitle;
+	
 	public ImportExportDialog() {
-		setName("ImportExportDialog");
+		setName("ImportExportDialogBox");
+		ResourceMap resources = Application.getInstance().getContext().getResourceMap(ImportExportDialog.class);
+		resources.injectFields(this);
 		
 		_specsFile = DEFAULT_SPECS_DIRECTIVE_FILE;
 		_otherDirectivesFiles = new ArrayList<DirectiveFile>();
@@ -93,6 +111,7 @@ public class ImportExportDialog extends JDialog {
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setModal(true);
 		createUI();
+		
 		addEventListeners();
 	}
 
@@ -100,6 +119,7 @@ public class ImportExportDialog extends JDialog {
 		ActionMap actionMap = Application.getInstance().getContext().getActionMap(this);
 		btnChange.setAction(actionMap.get("directorySelected"));
 		btnOk.setAction(actionMap.get("okPressed"));
+		btnOk.setEnabled(false);
 		btnCancel.setAction(actionMap.get("cancelPressed"));
 		
 		ActionListener typeSelectionListener = new ActionListener() {
@@ -126,17 +146,17 @@ public class ImportExportDialog extends JDialog {
 		JPanel leftPanel = new JPanel();
 		
 		JPanel panel = new JPanel();
-		panel.setBorder(new TitledBorder(null, "Specifications file", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panel.setBorder(new TitledBorder(null, specificationsPanelTitle, TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		
 		JPanel panel_1 = new JPanel();
-		panel_1.setBorder(new TitledBorder(null, "Characters file", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panel_1.setBorder(new TitledBorder(null, charsPanelTitle, TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		
 		JPanel panel_2 = new JPanel();
-		panel_2.setBorder(new TitledBorder(null, "Items file", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panel_2.setBorder(new TitledBorder(null, itemsPanelTitle, TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		
 		JPanel panel_3 = new JPanel();
 		panel_3.setPreferredSize(new Dimension(150, 10));
-		panel_3.setBorder(new TitledBorder(null, "Other directives files", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panel_3.setBorder(new TitledBorder(null, otherPanelTitle, TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		GroupLayout gl_leftPanel = new GroupLayout(leftPanel);
 		gl_leftPanel.setHorizontalGroup(
 			gl_leftPanel.createParallelGroup(Alignment.TRAILING)
@@ -183,18 +203,22 @@ public class ImportExportDialog extends JDialog {
 		});
 		
 		JPanel panel_4 = new JPanel();
-		panel_4.setBorder(new TitledBorder(null, "Directive type", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panel_4.setBorder(new TitledBorder(null, directiveTypePanelTitle, TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		
-		rdbtnConfor = new JRadioButton("Confor");
+		rdbtnConfor = new JRadioButton();
+		rdbtnConfor.setName("directiveTypeConfor");
 		buttonGroup.add(rdbtnConfor);
 		
-		rdbtnIntkey = new JRadioButton("Intkey");
+		rdbtnIntkey = new JRadioButton();
+		rdbtnIntkey.setName("directiveTypeIntkey");
 		buttonGroup.add(rdbtnIntkey);
 		
-		rdbtnDist = new JRadioButton("Dist");
+		rdbtnDist = new JRadioButton();
+		rdbtnDist.setName("directiveTypeDist");
 		buttonGroup.add(rdbtnDist);
 		
-		rdbtnKey = new JRadioButton("Key");
+		rdbtnKey = new JRadioButton();
+		rdbtnKey.setName("directiveTypeKey");
 		buttonGroup.add(rdbtnKey);
 		
 		GroupLayout gl_panel_4 = new GroupLayout(panel_4);
@@ -324,7 +348,7 @@ public class ImportExportDialog extends JDialog {
 		rightPanel.setLayout(new BorderLayout(0, 0));
 		
 		JPanel panel_5 = new JPanel();
-		panel_5.setBorder(new TitledBorder(null, "Possible directive files", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panel_5.setBorder(new TitledBorder(null, possiblePanelTitle, TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		rightPanel.add(panel_5, BorderLayout.CENTER);
 		panel_5.setLayout(new BorderLayout(0, 0));
 		
@@ -446,6 +470,7 @@ public class ImportExportDialog extends JDialog {
 		);
 		topPanel.setLayout(gl_topPanel);
 		getContentPane().setLayout(groupLayout);
+		setPreferredSize(new Dimension(500,500));
 	}
 	
 	@Action
@@ -524,6 +549,7 @@ public class ImportExportDialog extends JDialog {
 		for (String file : _possibleDirectiveFiles) {
 			possibleDirectivesModel.addElement(file);
 		}
+	
 		possibleDirectivesList.setModel(possibleDirectivesModel);
 		
 		DefaultListModel otherDirectivesModel = new DefaultListModel();
@@ -532,7 +558,8 @@ public class ImportExportDialog extends JDialog {
 		}
 		otherDirectivesList.setModel(otherDirectivesModel);
 		
-		
+		btnOk.setEnabled((_currentDirectory != null) && 
+			(!_otherDirectivesFiles.isEmpty() || StringUtils.isNotEmpty(_charactersFile) || StringUtils.isNotEmpty(_itemsFile)));
 	}
 	
 	public List<DirectiveFile> getSelectedFiles() {

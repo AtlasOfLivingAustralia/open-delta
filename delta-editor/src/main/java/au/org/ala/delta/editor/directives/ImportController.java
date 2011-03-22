@@ -4,9 +4,9 @@ import java.io.File;
 import java.util.List;
 
 import au.org.ala.delta.editor.DeltaEditor;
+import au.org.ala.delta.editor.directives.ui.ImportExportDialog;
 import au.org.ala.delta.editor.directives.ui.ImportExportStatusDialog;
-import au.org.ala.delta.editor.ui.ImportExportDialog;
-import au.org.ala.delta.editor.ui.ImportExportDialog.DirectiveFile;
+import au.org.ala.delta.editor.directives.ui.ImportExportDialog.DirectiveFile;
 
 /**
  * The ImportController manages the process of importing a set of directives files
