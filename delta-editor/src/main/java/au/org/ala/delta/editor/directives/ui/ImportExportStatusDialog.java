@@ -1,6 +1,7 @@
 package au.org.ala.delta.editor.directives.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -35,6 +36,8 @@ public class ImportExportStatusDialog extends JDialog {
 
 	public ImportExportStatusDialog() {
 		
+		setMinimumSize(new Dimension(300, 300));
+		setPreferredSize(new Dimension(300, 300));
 		JPanel statusPanel = new JPanel();
 		getContentPane().add(statusPanel, BorderLayout.CENTER);
 		

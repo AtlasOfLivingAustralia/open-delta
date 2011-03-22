@@ -573,10 +573,11 @@ public class ImportExportDialog extends JDialog {
 		itemsFile._fileName = _itemsFile;
 		itemsFile._type = DirectiveType.CONFOR;
 		
-		List<DirectiveFile> files = new ArrayList<DirectiveFile>(_otherDirectivesFiles);
+		List<DirectiveFile> files = new ArrayList<DirectiveFile>();
 		files.add(specsFile);
 		files.add(charsFile);
 		files.add(itemsFile);
+		files.addAll(_otherDirectivesFiles);
 		
 		return files;
 	}

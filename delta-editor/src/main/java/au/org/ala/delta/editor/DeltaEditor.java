@@ -185,7 +185,7 @@ public class DeltaEditor extends SingleFrameApplication {
 		super.ready();
 	}
 
-	private EditorDataModel getCurrentDataSet() {
+	public EditorDataModel getCurrentDataSet() {
 		return _selectedDataSet;
 	}
 

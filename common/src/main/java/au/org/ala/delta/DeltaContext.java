@@ -83,6 +83,10 @@ public class DeltaContext {
 	private double[] _characterWeights;
 	
 	public DeltaContext() {
+		this(new DefaultDataSetFactory().createDataSet(""));
+	}
+	
+	public DeltaContext(DeltaDataSet dataSet) {
 		_variables = new HashMap<String, Object>();
 
 		_variables.put("DATEFORMAT", "dd-MMM-yyyy");
@@ -111,10 +115,13 @@ public class DeltaContext {
 		_errorStream = System.err;
 		_listStream = System.out;
 		
-		DeltaDataSetFactory _dataSetFactory = new DefaultDataSetFactory();
-		_dataSet = _dataSetFactory.createDataSet("unnamed");
-
+		_dataSet = dataSet;
 	}
+	
+	private void init() {
+		
+	}
+	
 	
 	public DeltaDataSet getDataSet() {
 		return _dataSet;
