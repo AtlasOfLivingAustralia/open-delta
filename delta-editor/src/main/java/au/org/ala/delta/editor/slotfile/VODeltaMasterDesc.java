@@ -303,7 +303,7 @@ public class VODeltaMasterDesc extends VONoteDesc {
 	public static final int nContAttrsOffs = NoteFixedData.SIZE + 18;
 	public static final int nDirFileOffs = NoteFixedData.SIZE + 22;
 
-	public class MasterFixedData extends NoteFixedData implements IOObject {
+	public static class MasterFixedData extends NoteFixedData implements IOObject {
 
 		public static final int SIZE = NoteFixedData.SIZE + 2 + 2 + 2 + 4 + 4 + 4 + 4 + 4;
 

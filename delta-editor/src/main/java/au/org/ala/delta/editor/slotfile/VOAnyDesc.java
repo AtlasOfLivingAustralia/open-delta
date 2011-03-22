@@ -656,7 +656,7 @@ public abstract class VOAnyDesc {
 	public static final int OwnerIdOffs = SlotFile.SlotHeader.SIZE + 19;
 	public static final int AcronymOffs = SlotFile.SlotHeader.SIZE + 23;
 
-	public class FixedData implements IOObject {
+	public static class FixedData implements IOObject {
 				
 		public static final int SIZE = 4 + 4 + 4 + 2 + 1 + 4 + 4 + SIZE_ACRONYM + 4 + 4;
 		

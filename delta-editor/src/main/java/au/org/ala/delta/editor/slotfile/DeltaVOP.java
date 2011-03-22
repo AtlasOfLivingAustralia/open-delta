@@ -33,6 +33,9 @@ public class DeltaVOP extends VOP {
 	
 	public DeltaVOP(boolean noTemp) {
 		super(noTemp);
+		
+		// Initialise the master descriptor
+		initialiseDELTAMaster();
 	}
 
 	public DeltaVOP(String filename, boolean readonly) {
@@ -148,6 +151,14 @@ public class DeltaVOP extends VOP {
 
 	protected void killDescList() {
 		throw new NotImplementedException();
+	}
+	
+	/**
+	 * Creates and inserts new DELTAMaster for this DeltaVOP.
+	 */
+	private void initialiseDELTAMaster() {
+		VODeltaMasterDesc.MasterFixedData deltaMaster = new VODeltaMasterDesc.MasterFixedData("(Unlabelled)");
+		insertObject(deltaMaster, VODeltaMasterDesc.MasterFixedData.SIZE, null, 0, 128);
 	}
 
 }

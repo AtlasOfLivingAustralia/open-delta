@@ -21,6 +21,15 @@ public class SlotFileDataSetFactory implements DeltaDataSetFactory {
 	/** The Virtual Object that represents the whole data set */
 	private DeltaVOP _vop;
 	
+	
+	/**
+	 * Creates a new instance of the SlotFileDataSetFactory without an existing DeltaVOP.
+	 * A SlotFileDataSetFactory created in this way will create and initialise a new DeltaVOP.
+	 */
+	public SlotFileDataSetFactory() {
+		_vop = createDeltaVOP();
+	}
+	
 	/**
 	 * Creates a new instance of the SlotFileDataSetFactory that can create instances of the model
 	 * classes associated backed by the supplied VOP.
@@ -74,5 +83,109 @@ public class SlotFileDataSetFactory implements DeltaDataSetFactory {
 			return null;
 		}
 		
+	}
+	
+	/**
+	 * Creates a new instance of a DeltaVOP, initialises the master descriptor, then 
+	 * pre-populates the VOP with the set of template directives files that are distributed
+	 * with the DELTA suite.  These templates take the form of _<type>_<filename> where type
+	 * can be one of "c" (confor), "i" (intkey), "k" (key) or "d" (dist).
+	 * @return a newly created and initialised DeltaVOP.
+	 */
+	private DeltaVOP createDeltaVOP() {
+		DeltaVOP vop = new DeltaVOP();
+		
+		// Create the master descriptor.
+		/*TVODeltaMasterDesc::TFixedData masterFd;
+	      lstrcpy(masterFd.Note, "(Unlabelled)");
+	      if (Vop.InsertObject(&masterFd,
+	          sizeof(masterFd),
+	          0,
+	          0,
+	          0,
+	          128) != NULL)
+	        {
+	          char buffer[MAX_PATH];
+	          char curDir[MAX_PATH];
+	          GetCurrentDirectory(sizeof(curDir), curDir);
+	          GetDocManager().GetApplication()->GetModuleFileName (buffer, _MAX_PATH);
+
+	          char* pathEnd = strrchr(buffer, '\\');
+	          if (!pathEnd)
+	            return status;
+	          *(pathEnd + 1) = 0;
+	          strcat(buffer, "_?_*");
+	          WIN32_FIND_DATA findData;
+	          HANDLE finder = FindFirstFile(buffer, &findData);
+	          if (pathEnd == buffer || *(pathEnd - 1) == ':')
+	            ++pathEnd;
+	          *pathEnd = 0;
+	          SetCurrentDirectory(buffer);
+	          if (finder != INVALID_HANDLE_VALUE)
+	            {
+	              // Do a completely silent import...
+	              TImportStatusDialog* statusDialog = new TImportStatusDialog(GetDocManager().GetApplication()->GetMainWindow(), "IMPORTSTATUSDIALOG");
+	              statusDialog->Create();
+	              statusDialog->pauseCheck->Uncheck();
+	              GetDocManager().GetApplication()->GetMainWindow()->SetActiveWindow();
+	              ::SetCursor(::LoadCursor(0, IDC_WAIT));
+
+	              TDirectivesInOut dirInOut(this, statusDialog);
+	              dirInOut.EnableStatusBar(false);
+	              char fileTitle[MAX_PATH];
+	              DWORD noUse = FILE_ATTRIBUTE_DIRECTORY | FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_TEMPORARY;
+	              do
+	                {
+	                  if (!(findData.dwFileAttributes & noUse) &&
+	                      MyGetFileTitle(findData.cFileName, fileTitle, sizeof(fileTitle)) == 0)
+	                    {
+	                      char typeCh = tolower(fileTitle[1]);
+	                      short progType;
+	                      if (typeCh == 'c')
+	                        progType = PROGTYPE_CONFOR;
+	                      else if (typeCh == 'i')
+	                        progType = PROGTYPE_INTKEY;
+	                      else if (typeCh == 'd')
+	                        progType = PROGTYPE_DIST;
+	                      else if (typeCh == 'k')
+	                        progType = PROGTYPE_KEY;
+	                      else
+	                        continue;
+	                      TVODirFileDesc* newDirFile = CreateDirFile(findData.cFileName, 0, progType << 16, false);
+	                      if (newDirFile == NULL)
+	                        continue;
+	                      std::string tempName;
+	                      try
+	                        {
+	                          dirInOut.Init();
+	                          if (dirInOut.ReadDirectivesFile(newDirFile, tempName, true))
+	                            {
+	                              newDirFile->SetFileName(fileTitle + 3);
+	                              SYSTEMTIME sysTime;
+	                              FILETIME modTime;
+	                              GetSystemTime(&sysTime);
+	                              if (SystemTimeToFileTime(&sysTime, &modTime))
+	                                newDirFile->SetFileModifyTime(modTime);
+	                              NotifyDirFileCreate(newDirFile);
+	                            }
+	                          else
+	                            throw TDirInOutEx(ED_DELTADOC_UNOPENED);
+	                        }
+	                      catch (TDirInOutEx& ex)
+	                        {
+	                          DeleteDirFile(newDirFile->GetUniId(), false);
+	                        }
+	                    }
+	                }
+	              while (FindNextFile(finder, &findData));
+	              FindClose(finder);
+	              ::SetCursor(::LoadCursor(0, IDC_ARROW));
+	            }
+	          SetCurrentDirectory(curDir);
+	          BuildSpecialDirFiles();
+	          status = true;
+	          Commit(); */
+		
+		return vop;
 	}
 }

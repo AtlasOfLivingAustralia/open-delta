@@ -61,7 +61,7 @@ public class VONoteDesc extends VOAnyDesc {
 		}
 	}
 
-	public class NoteFixedData extends FixedData {
+	public static class NoteFixedData extends FixedData {
 
 		public static final int SIZE = FixedData.SIZE + NOTE_SIZE;
 
