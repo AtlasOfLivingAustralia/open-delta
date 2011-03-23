@@ -305,7 +305,10 @@ public class VODeltaMasterDesc extends VONoteDesc {
 
 	public static class MasterFixedData extends NoteFixedData implements IOObject {
 
-		public static final int SIZE = NoteFixedData.SIZE + 2 + 2 + 2 + 4 + 4 + 4 + 4 + 4;
+		/** The size of the data excluding the parent class data */
+		private static final int MASTER_DATA_SIZE =  2 + 2 + 2 + 4 + 4 + 4 + 4 + 4;
+		/** the overall size of the data */
+		public static final int SIZE = NoteFixedData.SIZE + MASTER_DATA_SIZE;
 
 		public MasterFixedData(String acronym) {
 			super(acronym);
@@ -329,7 +332,7 @@ public class VODeltaMasterDesc extends VONoteDesc {
 			// read the super fixed data...
 			super.read(f);
 			// now read my specific data...
-			ByteBuffer b = f.readByteBuffer(SIZE);
+			ByteBuffer b = f.readByteBuffer(MASTER_DATA_SIZE);
 
 			fixedSize = b.getShort();
 			majorVersion = b.getShort();
