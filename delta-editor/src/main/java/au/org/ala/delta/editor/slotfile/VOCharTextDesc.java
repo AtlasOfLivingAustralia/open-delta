@@ -265,7 +265,11 @@ public class VOCharTextDesc extends VOAnyDesc {
 			int trailerLeng = 0;
 			if (stateId >= _fixedData.nStateLengs) {
 				List<Integer> newLengs = new ArrayList<Integer>(_stateLengs);
-				// TODO need to do resize equiv here....
+				int i=_stateLengs.size();
+				while (i<=stateId) {
+					_stateLengs.add(0);
+					i++;
+				}
 				writeStateLengs(newLengs);
 			}
 
