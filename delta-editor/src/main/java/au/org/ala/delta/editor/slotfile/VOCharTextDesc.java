@@ -267,9 +267,9 @@ public class VOCharTextDesc extends VOAnyDesc {
 			int trailerLeng = 0;
 			if (stateId >= _fixedData.nStateLengs) {
 				List<Integer> newLengs = new ArrayList<Integer>(_stateLengs);
-				int i = _stateLengs.size();
-				while (i <= stateId+1) {
-					_stateLengs.add(0);
+				int i = newLengs.size();
+				while (i <= stateId) {
+					newLengs.add(0);
 					i++;
 				}
 				writeStateLengs(newLengs);
