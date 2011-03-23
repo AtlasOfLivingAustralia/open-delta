@@ -342,6 +342,11 @@ public class SlotFile extends BinFile {
 		}
 		
 		@Override
+		public int size() {
+			return SIZE;
+		}
+
+		@Override
 		public String toString() {
 			return String.format("Slot ID=%d, Size=%d, DataSize=%d, GrowSize=%d", SlotId, SlotSize, DataSize, GrowSize);
 		}

@@ -20,4 +20,6 @@ public interface IOObject {
 	
 	void write(BinFile file);
 	
+	int size();
+	
 }

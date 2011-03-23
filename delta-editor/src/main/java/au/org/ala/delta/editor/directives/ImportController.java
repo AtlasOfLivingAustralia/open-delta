@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.List;
 
 import org.jdesktop.application.Task;
+import org.jdesktop.application.TaskEvent;
+import org.jdesktop.application.TaskListener;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.DirectiveFileParser;
@@ -11,6 +13,7 @@ import au.org.ala.delta.editor.DeltaEditor;
 import au.org.ala.delta.editor.directives.ui.ImportExportDialog;
 import au.org.ala.delta.editor.directives.ui.ImportExportDialog.DirectiveFile;
 import au.org.ala.delta.editor.directives.ui.ImportExportStatusDialog;
+import au.org.ala.delta.model.DeltaDataSet;
 
 /**
  * The ImportController manages the process of importing a set of directives files
@@ -19,11 +22,11 @@ import au.org.ala.delta.editor.directives.ui.ImportExportStatusDialog;
 public class ImportController {
 
 	private DeltaEditor _context;
-	private ImportExportStatusDialog _statusDialog;
-	
+	private DeltaDataSet _dataSet;
 	
 	public ImportController(DeltaEditor context) {
 		_context = context;
+		_dataSet = context.getCurrentDataSet();
 	}
 	
 	public void begin() {
@@ -40,12 +43,19 @@ public class ImportController {
 	}
 	
 	public void doImport(File selectedDirectory, List<DirectiveFile> files) {
-		_statusDialog = new ImportExportStatusDialog();
-		_context.show(_statusDialog);
+		ImportExportStatusDialog statusDialog = new ImportExportStatusDialog();
+		_context.show(statusDialog);
 		
 		// Do the import on a background thread.
+		DoImportTask importTask = new DoImportTask(selectedDirectory, files);
+		importTask.addTaskListener(new StatusUpdater(statusDialog));
+		importTask.execute();
+	}
+	
+	public void doSilentImport(File selectedDirectory, List<DirectiveFile> files) {
 		new DoImportTask(selectedDirectory, files).execute();
 	}
+
 	
 	public class DoImportTask extends Task<Void, ImportExportStatus> {
 
@@ -68,6 +78,7 @@ public class ImportController {
 			ImportExportStatus status = new ImportExportStatus();
 			publish(status);
 						
+			DeltaContext context = new DeltaContext(_dataSet);
 			for (DirectiveFile file : _files) {
 				
 				// First check if the existing dataset has a directives file with the same name
@@ -76,7 +87,7 @@ public class ImportController {
 				// Looks like we skip the specs file if we have non zero items or chars.....
 				
 				
-				DeltaContext context = new DeltaContext(_context.getCurrentDataSet());
+			
 				
 				DirectiveFileParser parser = new DirectiveFileParser();
 				
@@ -89,8 +100,28 @@ public class ImportController {
 		}
 
 		@Override
-		protected void process(List<ImportExportStatus> values) {
-			_statusDialog.update(values.get(0));
+		protected void failed(Throwable cause) {
+			cause.printStackTrace();
+			super.failed(cause);
+		}
+		
+		
+	}
+	
+	/**
+	 * Listens for import progress and updates the Status Dialog.
+	 */
+	private class StatusUpdater extends TaskListener.Adapter<Void, ImportExportStatus> {
+
+		private ImportExportStatusDialog _statusDialog;
+		
+		public StatusUpdater(ImportExportStatusDialog statusDialog) {
+			_statusDialog = statusDialog;
+		}
+		@Override
+		public void process(TaskEvent<List<ImportExportStatus>> event) {
+			
+			_statusDialog.update(event.getValue().get(0));
 		}
 		
 	}

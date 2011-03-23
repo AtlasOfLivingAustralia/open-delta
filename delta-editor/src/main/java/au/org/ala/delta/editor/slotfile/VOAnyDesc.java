@@ -55,7 +55,7 @@ public abstract class VOAnyDesc {
 	private List<Integer> _embedded = new ArrayList<Integer>();
 	private short _refCount;
 	private short _tempRefCount;
-	private int _uniId;
+	protected int _uniId;
 	
 	private String _acronym;
 	protected SlotFile _slotFile;
@@ -351,6 +351,18 @@ public abstract class VOAnyDesc {
 		dataSeek(_dataPtr);
 		_slotFile.swrite(buf);
 		_dataPtr += buf.length;
+		_dataPtr = _slotFile.tell() - (_slotHdrPtr + _dataOffs);
+	}
+	
+	protected void dataWrite(IOObject obj) {
+		makeTemp();
+		int endPos = getDataSize();
+		if (obj.size() + _dataPtr > endPos) {
+			_slotHdrPtr = _slotFile.growSlotData(_slotHdrPtr, obj.size() + _dataPtr - endPos, false);
+		}
+		dataSeek(_dataPtr);
+		obj.write(_slotFile);
+		_dataPtr += obj.size();
 		_dataPtr = _slotFile.tell() - (_slotHdrPtr + _dataOffs);
 	}
 
@@ -726,6 +738,11 @@ public abstract class VOAnyDesc {
 			file.writeInt(unused1);
 			file.writeInt(unused2);
 			
+		}
+		
+		@Override
+		public int size() {
+			return SIZE;
 		}
 	}
 

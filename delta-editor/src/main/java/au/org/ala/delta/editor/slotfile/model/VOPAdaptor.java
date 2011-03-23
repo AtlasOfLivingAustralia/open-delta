@@ -42,7 +42,7 @@ public class VOPAdaptor implements DeltaDataSet {
 		synchronized (_vop) {
 			int charId = _vop.getDeltaMaster().uniIdFromCharNo(number);	
 			VOCharBaseDesc characterDesc = (VOCharBaseDesc)_vop.getDescFromId(charId);
-			return _factory.createCharacter(fromCharType(characterDesc.getCharType()), number);
+			return _factory.createCharacter(CharacterTypeConverter.fromCharType(characterDesc.getCharType()), number);
 		}
 	}
 
@@ -98,7 +98,10 @@ public class VOPAdaptor implements DeltaDataSet {
 	
 	@Override
 	public Character addCharacter(CharacterType type) {
-		throw new NotImplementedException();
+		synchronized (_vop) {
+			Character character = _factory.createCharacter(type, getNumberOfCharacters()+1);
+			return character;
+		}
 	}
 
 	@Override
@@ -108,35 +111,15 @@ public class VOPAdaptor implements DeltaDataSet {
 	
 	@Override
 	public Character addCharacter(int characterNumber, CharacterType type) {
-		throw new NotImplementedException();
+		synchronized (_vop) {
+			
+			return _factory.createCharacter(type, characterNumber);
+		}
 	}
 	
 	@Override
 	public Item addItem(int itemNumber) {
 		throw new NotImplementedException();
 	}
-
-	/**
-	 * Converts a slotfile CharType int into a model class CharacterType enum.
-	 * @param charType the slotfile character type.
-	 * @return the appropriate matching CharacterType for the supplied char type.
-	 */
-	public CharacterType fromCharType(int charType) {
-		switch (charType) {
-		case CharType.TEXT:
-			return CharacterType.Text;
-		case CharType.INTEGER:
-			return CharacterType.IntegerNumeric;
-		case CharType.REAL:
-			return CharacterType.RealNumeric;
-		case CharType.ORDERED:
-			return CharacterType.OrderedMultiState;
-		case CharType.UNORDERED:
-			return CharacterType.UnorderedMultiState;
-		default:
-			throw new RuntimeException("Unregognised character type: " + charType);
-		}
-	}
-	
 	
 }

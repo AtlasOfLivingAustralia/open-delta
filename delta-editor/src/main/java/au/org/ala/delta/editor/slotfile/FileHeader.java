@@ -33,5 +33,12 @@ public class FileHeader implements IOObject {
 	public void write(BinFile file) {
 		file.writeInt(SysDataPtr);		
 	}
+
+	@Override
+	public int size() {
+		return SIZE;
+	}
+	
+	
 	
 }

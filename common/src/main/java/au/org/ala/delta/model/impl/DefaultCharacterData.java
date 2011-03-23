@@ -5,17 +5,11 @@ package au.org.ala.delta.model.impl;
  */
 public class DefaultCharacterData implements CharacterData {
 
-	private String _name;
 	private String _description;
 	private boolean _exclusive;
 	private boolean _mandatory;
 	private String _units;
 	private String[] _states = new String[0];
-	
-	@Override
-	public String getName() {
-		return _name;
-	}
 
 	@Override
 	public String getDescription() {

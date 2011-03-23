@@ -20,6 +20,8 @@ import java.util.List;
 
 import org.apache.commons.lang.NotImplementedException;
 
+import au.org.ala.delta.editor.slotfile.VOCharTextDesc.CharTextFixedData;
+
 public class VOCharBaseDesc extends VOImageHolderDesc {
 
 	public static final int STATEID_NULL = -1;
@@ -183,7 +185,12 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 	}
 
 	public void setInitialStateNumber(int nStates) {
-		throw new NotImplementedException();
+	   _stateNumberMappingVector = new ArrayList<Integer>(nStates);
+	   for (int i = 0; i < nStates; ++i) {
+	      _stateNumberMappingVector.add(i);
+	   }
+	   _fixedData.nStatesUsed = nStates;
+	   setDirty();
 	}
 
 	public boolean addControllingInfo(List<Integer> src) {
@@ -214,11 +221,8 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 		throw new NotImplementedException();
 	}
 
-	public CharTextInfo cacheCharTextInfo(int langDesc, short variantNo) {
-		if (_charDescript == null) {
-			_charDescript = readCharTextInfo(langDesc, variantNo);
-		}
-		return _charDescript;
+	public VOCharTextDesc cacheCharTextInfo(int langDesc, short variantNo) {
+        return readCharTextInfo(langDesc, variantNo, true);
 	}
 
 	public List<Integer> readStateNumberMap() {
@@ -227,7 +231,11 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 
 	}
 
-	public CharTextInfo readCharTextInfo(int langDesc, short variantNo) {
+	public VOCharTextDesc readCharTextInfo(int langDesc, short variantNo) {
+		return readCharTextInfo(langDesc, variantNo, false);
+	}
+	
+	protected VOCharTextDesc readCharTextInfo(int langDesc, short variantNo, boolean cacheCharTextInfo) {
 		synchronized (getVOP()) {
 			CharTextInfo someInfo = new CharTextInfo();
 
@@ -238,14 +246,28 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 				someInfo.read(_slotFile);
 				if (langDesc == someInfo.langDesc) {
 					if (variantNo == nLangMatches++) {
-						return someInfo;
+						if (cacheCharTextInfo) {
+							_charDescript = someInfo;
+						}
+						return (VOCharTextDesc)getVOP().getDescFromId(someInfo.charDesc);
 					}
 				}
 			}
 
-			// otherwise throw something?
-
-			return null;
+			VOCharTextDesc.CharTextFixedData charTextFixedData = new VOCharTextDesc.CharTextFixedData();
+			List<CharTextInfo> existingText = readCharTextInfo();
+			charTextFixedData.charBaseId = getUniId();
+			
+			VOCharTextDesc charTextDesc = (VOCharTextDesc)getVOP().insertObject(charTextFixedData, CharTextFixedData.SIZE, null, 0, 0);
+			someInfo.langDesc = 0;
+			someInfo.charDesc = charTextDesc.getUniId();
+			if (cacheCharTextInfo) {
+				_charDescript = someInfo;
+			}
+			existingText.add(someInfo);
+			writeCharTextInfo(existingText);
+			
+			return charTextDesc;
 		}
 	}
 
@@ -296,7 +318,31 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 	}
 
 	public void writeCharTextInfo(List<CharTextInfo> src) {
-		throw new NotImplementedException();
+		byte[] trailerBuf = null;
+		int trailerLeng = 0;
+		int startPos = _fixedData.nStates * 4;
+		if (src.size() != _fixedData.nDescriptors) {// Save a copy of any following data!
+		    trailerBuf = dupTrailingData(startPos + _fixedData.nDescriptors * CharTextInfo.SIZE);
+		    if (trailerBuf != null) {
+		    	trailerLeng = trailerBuf.length;
+		    }
+		}
+
+	  // Seek to force allocation of large enough slot
+	  dataSeek(startPos + CharTextInfo.SIZE * src.size() + trailerLeng);
+	  dataSeek(startPos);
+
+	  for (CharTextInfo charText : src) {
+		  dataWrite(charText);
+	  }
+	  if (src.size() != _fixedData.nDescriptors) {
+	      _fixedData.nDescriptors = src.size();
+	      setDirty();
+	      if (trailerBuf != null) {
+	          dataWrite(trailerBuf);
+	          dataTruncate();
+	        }
+	    }
 	}
 
 	public void writeControllingInfo(List<Integer> src) {
@@ -355,9 +401,10 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 	public static final int nControlsOffs = SlotFile.SlotHeader.SIZE + FixedData.SIZE + 29;
 	public static final int nImagesOffs = SlotFile.SlotHeader.SIZE + FixedData.SIZE + 33;
 
-	public class CharBaseFixedData extends FixedData {
+	public static class CharBaseFixedData extends FixedData {
 
-		public static final int SIZE = FixedData.SIZE + 2 + 4 + 4 + 4 + 1 + 4 + 4 + 4 + 4 + 4 + 4;
+		private static final int CHAR_BASE_SIZE = 2 + 4 + 4 + 4 + 1 + 4 + 4 + 4 + 4 + 4 + 4;
+		public static final int SIZE = FixedData.SIZE + CHAR_BASE_SIZE;
 
 		public CharBaseFixedData() {
 			super("Char Base");
@@ -385,7 +432,7 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 		@Override
 		public void read(BinFile file) {
 			super.read(file);
-			ByteBuffer b = file.readByteBuffer(SIZE);
+			ByteBuffer b = file.readByteBuffer(CHAR_BASE_SIZE);
 
 			fixedSize = b.getShort();
 			charType = b.getInt();
@@ -441,6 +488,16 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 			file.writeInt(langDesc);
 			file.writeInt(charDesc);
 		}
+
+		/* (non-Javadoc)
+		 * @see au.org.ala.delta.editor.slotfile.IOObject#size()
+		 */
+		@Override
+		public int size() {
+			return SIZE;
+		}
+		
+		
 	}
 
 }

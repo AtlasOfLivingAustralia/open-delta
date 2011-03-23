@@ -265,6 +265,7 @@ public class VOCharTextDesc extends VOAnyDesc {
 			int trailerLeng = 0;
 			if (stateId >= _fixedData.nStateLengs) {
 				List<Integer> newLengs = new ArrayList<Integer>(_stateLengs);
+				// TODO need to do resize equiv here....
 				writeStateLengs(newLengs);
 			}
 
@@ -354,9 +355,10 @@ public class VOCharTextDesc extends VOAnyDesc {
 	public static final int notesLengOffs = SlotFile.SlotHeader.SIZE + FixedData.SIZE + 14;
 	public static final int nStateLengsOffs = SlotFile.SlotHeader.SIZE + FixedData.SIZE + 18;
 
-	public class CharTextFixedData extends FixedData {
+	public static class CharTextFixedData extends FixedData {
 
-		public static final int SIZE = FixedData.SIZE + 2 + 4 + 4 + 4 + 4 + 4;
+		private static final int CHAR_TEXT_SIZE = 2 + 4 + 4 + 4 + 4 + 4;
+		public static final int SIZE = FixedData.SIZE + CHAR_TEXT_SIZE;
 
 		public CharTextFixedData() {
 			super("Char Text");
@@ -374,7 +376,7 @@ public class VOCharTextDesc extends VOAnyDesc {
 		@Override
 		public void read(BinFile file) {
 			super.read(file);
-			ByteBuffer b = file.readByteBuffer(SIZE);
+			ByteBuffer b = file.readByteBuffer(CHAR_TEXT_SIZE);
 
 			fixedSize = b.getShort();
 			charBaseId = b.getInt();

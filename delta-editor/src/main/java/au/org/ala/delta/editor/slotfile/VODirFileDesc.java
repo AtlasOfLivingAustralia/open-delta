@@ -778,6 +778,10 @@ public class VODirFileDesc extends VOAnyDesc implements WindowsConstants {
 			file.writeByte(_decimal);
 		}
 
+		@Override
+		public int size() {
+			return 4;
+		}
 	}
 
 	public class DirSummary implements IOObject {
@@ -814,6 +818,11 @@ public class VODirFileDesc extends VOAnyDesc implements WindowsConstants {
 		public void write(BinFile file) {
 			file.write(_loc);
 			file.write(_type);
+		}
+		
+		@Override
+		public int size() {
+			return SIZE;
 		}
 
 		@Override

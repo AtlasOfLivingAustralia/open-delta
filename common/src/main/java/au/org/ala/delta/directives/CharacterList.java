@@ -70,9 +70,15 @@ class CharacterListParser extends AbstractStreamParser {
 			if (skipWhitespace()) {
 				if (_currentChar != '#') {
 					if (ch instanceof MultiStateCharacter) {
+						MultiStateCharacter multistateChar = (MultiStateCharacter) ch;
+						if (multistateChar.getNumberOfStates() == 0) {
+							// If this character was not specified in the NUMBERS OF STATES 
+							// directive, the default value is 2.
+							multistateChar.setNumberOfStates(2);
+						}
 						boolean haveStates = java.lang.Character.isDigit(_currentChar);
 						while (haveStates) {
-							parseState((MultiStateCharacter) ch);
+							parseState(multistateChar);
 							skipWhitespace();
 							haveStates = java.lang.Character.isDigit(_currentChar);
 						}

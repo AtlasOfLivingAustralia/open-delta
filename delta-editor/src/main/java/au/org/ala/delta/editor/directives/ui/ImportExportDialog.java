@@ -53,6 +53,11 @@ public class ImportExportDialog extends JDialog {
 	};
 	
 	public static class DirectiveFile {
+		
+		public DirectiveFile(String name, DirectiveType type) {
+			_fileName = name;
+			_type = type;
+		}
 		public String _fileName;
 		public DirectiveType _type;
 		
@@ -511,9 +516,7 @@ public class ImportExportDialog extends JDialog {
 		
 		DefaultListModel model = (DefaultListModel)possibleDirectivesList.getModel();
 		for (Object file : possibleDirectivesList.getSelectedValues()) {
-			DirectiveFile directiveFile = new DirectiveFile();
-			directiveFile._fileName = (String)file;
-			directiveFile._type = _selectedDirectiveType;
+			DirectiveFile directiveFile = new DirectiveFile((String)file, _selectedDirectiveType);
 			
 			_otherDirectivesFiles.add(directiveFile);
 			model.removeElement(file);
@@ -563,15 +566,9 @@ public class ImportExportDialog extends JDialog {
 	}
 	
 	public List<DirectiveFile> getSelectedFiles() {
-		DirectiveFile specsFile = new DirectiveFile();
-		specsFile._fileName = _specsFile;
-		specsFile._type = DirectiveType.CONFOR;
-		DirectiveFile charsFile = new DirectiveFile();
-		charsFile._fileName = _charactersFile;
-		charsFile._type = DirectiveType.CONFOR;
-		DirectiveFile itemsFile = new DirectiveFile();
-		itemsFile._fileName = _itemsFile;
-		itemsFile._type = DirectiveType.CONFOR;
+		DirectiveFile specsFile = new DirectiveFile(_specsFile, DirectiveType.CONFOR);
+		DirectiveFile charsFile = new DirectiveFile(_charactersFile, DirectiveType.CONFOR);
+		DirectiveFile itemsFile = new DirectiveFile(_itemsFile, DirectiveType.CONFOR);
 		
 		List<DirectiveFile> files = new ArrayList<DirectiveFile>();
 		files.add(specsFile);

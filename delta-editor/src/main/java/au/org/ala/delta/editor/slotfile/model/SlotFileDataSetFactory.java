@@ -4,7 +4,6 @@ import au.org.ala.delta.editor.slotfile.DeltaVOP;
 import au.org.ala.delta.editor.slotfile.VOCharBaseDesc;
 import au.org.ala.delta.editor.slotfile.VOCharTextDesc;
 import au.org.ala.delta.editor.slotfile.VOItemDesc;
-import au.org.ala.delta.editor.slotfile.VOCharBaseDesc.CharTextInfo;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterFactory;
 import au.org.ala.delta.model.CharacterType;
@@ -27,7 +26,8 @@ public class SlotFileDataSetFactory implements DeltaDataSetFactory {
 	 * A SlotFileDataSetFactory created in this way will create and initialise a new DeltaVOP.
 	 */
 	public SlotFileDataSetFactory() {
-		_vop = createDeltaVOP();
+		_vop =  new DeltaVOP();
+		initialiseVOP();
 	}
 	
 	/**
@@ -64,6 +64,10 @@ public class SlotFileDataSetFactory implements DeltaDataSetFactory {
 
 	/**
 	 * Creates a new Character of the specified type backed by a VOCharacterAdaptor.
+	 * If the supplied character number exists in the model, it will be wrapped in a 
+	 * model Character object and returned, otherwise it will be created first.
+	 * 
+	 * @param type the type of character to create.
 	 * @param number identifies the character. Characters in a DeltaDataSet must have unique numbers.
 	 */
 	@Override
@@ -71,40 +75,41 @@ public class SlotFileDataSetFactory implements DeltaDataSetFactory {
 		
 		Character character = CharacterFactory.newCharacter(type, number);
 		
-		int charId = _vop.getDeltaMaster().uniIdFromCharNo(number);	
-		VOCharBaseDesc characterDesc = (VOCharBaseDesc)_vop.getDescFromId(charId);
-		CharTextInfo txtInfo = characterDesc.readCharTextInfo(0, (short) 0);
-		if (txtInfo != null) {
-			VOCharTextDesc textDesc = (VOCharTextDesc) _vop.getDescFromId(txtInfo.charDesc);		
-			VOCharacterAdaptor characterAdaptor = new VOCharacterAdaptor(characterDesc, textDesc);
-			character.setImpl(characterAdaptor);		
-			return character;			
-		} else {
-			return null;
+		VOCharacterAdaptor characterAdaptor = null;
+		if (number > _vop.getDeltaMaster().getNChars()) {
+			VOCharBaseDesc charBase = newVOCharDesc(type, number);
+			characterAdaptor = new VOCharacterAdaptor(charBase);
 		}
+		else {
+			int charId = _vop.getDeltaMaster().uniIdFromCharNo(number);	
+			VOCharBaseDesc characterDesc = (VOCharBaseDesc)_vop.getDescFromId(charId);
+			VOCharTextDesc textDesc = characterDesc.readCharTextInfo(0, (short) 0);
+			characterAdaptor = new VOCharacterAdaptor(characterDesc, textDesc);		
+		}
+		character.setImpl(characterAdaptor);	
+		return character;
+	}
+	
+	private VOCharBaseDesc newVOCharDesc(CharacterType type, int characterNumber) {
+		VOCharBaseDesc.CharBaseFixedData characterFixedData = new VOCharBaseDesc.CharBaseFixedData();
+		VOCharBaseDesc characterBase = (VOCharBaseDesc)_vop.insertObject(characterFixedData, VOCharBaseDesc.CharBaseFixedData.SIZE, null, 0, 0);
+		int charId = characterBase.getUniId();
+		_vop.getDeltaMaster().insertCharacter(charId, characterNumber);
 		
+		characterBase.setCharType((short)CharacterTypeConverter.toCharType(type));
+		
+		return characterBase;
 	}
 	
 	/**
-	 * Creates a new instance of a DeltaVOP, initialises the master descriptor, then 
-	 * pre-populates the VOP with the set of template directives files that are distributed
+	 * Populates the VOP with the set of template directives files that are distributed
 	 * with the DELTA suite.  These templates take the form of _<type>_<filename> where type
 	 * can be one of "c" (confor), "i" (intkey), "k" (key) or "d" (dist).
-	 * @return a newly created and initialised DeltaVOP.
 	 */
-	private DeltaVOP createDeltaVOP() {
-		DeltaVOP vop = new DeltaVOP();
+	private void initialiseVOP() {
 		
-		// Create the master descriptor.
-		/*TVODeltaMasterDesc::TFixedData masterFd;
-	      lstrcpy(masterFd.Note, "(Unlabelled)");
-	      if (Vop.InsertObject(&masterFd,
-	          sizeof(masterFd),
-	          0,
-	          0,
-	          0,
-	          128) != NULL)
-	        {
+		
+		/*
 	          char buffer[MAX_PATH];
 	          char curDir[MAX_PATH];
 	          GetCurrentDirectory(sizeof(curDir), curDir);
@@ -186,6 +191,5 @@ public class SlotFileDataSetFactory implements DeltaDataSetFactory {
 	          status = true;
 	          Commit(); */
 		
-		return vop;
 	}
 }

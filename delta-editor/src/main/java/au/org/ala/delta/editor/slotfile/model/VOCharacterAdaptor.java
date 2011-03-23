@@ -1,8 +1,5 @@
 package au.org.ala.delta.editor.slotfile.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.lang.NotImplementedException;
 
 import au.org.ala.delta.editor.slotfile.TextType;
@@ -17,33 +14,39 @@ public class VOCharacterAdaptor implements CharacterData {
 	private VOCharBaseDesc _charDesc;
 	private VOCharTextDesc _textDesc;
 	
+	public VOCharacterAdaptor(VOCharBaseDesc charBase) {
+		this (charBase, null);
+	}
+	
 	public VOCharacterAdaptor(VOCharBaseDesc charBase, VOCharTextDesc textDesc) {
 		_charDesc = charBase;
 		_textDesc = textDesc;
 	}
-
-	
-	@Override
-	public String getName() {
-		List<String> states = new ArrayList<String>();
-		String[] text = _textDesc.ReadAllText(TextType.RTF, states);
-		return text[0];
-	}
-
 	
 	@Override
 	public String getDescription() {
-		return _textDesc.readFeatureText(TextType.RTF);
+		String description = "";
+		if (_textDesc != null) {
+			description = _textDesc.readFeatureText(TextType.RTF);
+		}
+		return description;
 	}
 	
 	@Override
 	public void setDescription(String desc) {
-		throw new NotImplementedException();
+		_textDesc.makeTemp();
+		_textDesc.writeFeatureText(desc);
 	}
 
 	@Override
 	public void setUnits(String units) {
-		throw new NotImplementedException();
+		if (_charDesc.getNStatesUsed() > 0) {
+			throw new NotImplementedException("Deleting existing states not implemented!");
+		}
+		_charDesc.setInitialStateNumber(1);
+		int stateId = _charDesc.uniIdFromStateNo(1);
+		_textDesc.makeTemp();
+		_textDesc.writeStateText(units, stateId);
 	}
 
 	@Override
@@ -72,6 +75,9 @@ public class VOCharacterAdaptor implements CharacterData {
 	
 	@Override
 	public String getStateText(int stateNumber) {
+		if (_textDesc == null) {
+			return "";
+		}
 		int stateId = _charDesc.uniIdFromStateNo(stateNumber);
 		return _textDesc.readStateText(stateId, TextType.UTF8);
 	}
@@ -95,6 +101,10 @@ public class VOCharacterAdaptor implements CharacterData {
 
 	@Override
 	public void setNumberOfStates(int numStates) {
-		throw new NotImplementedException();
+		
+		if (_charDesc.getNStatesUsed() > 0) {
+			throw new NotImplementedException("Ooops, don't currently handle deleting existing states...");
+		}
+		_charDesc.setInitialStateNumber(numStates);
 	}
 }

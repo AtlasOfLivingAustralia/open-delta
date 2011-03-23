@@ -246,6 +246,11 @@ public class VOImageInfoDesc extends VOAnyDesc {
 			file.write(lfPitchAndFamily);
 			file.write(lfFaceName);
 		}
+		
+		@Override
+		public int size() {
+			return SIZE;
+		}
 
 		@Override
 		public String toString() {

@@ -104,11 +104,9 @@ public class DeltaFileReader {
 			int charId = vop.getDeltaMaster().uniIdFromCharNo(i);
 			VOCharBaseDesc charDesc = (VOCharBaseDesc) vop.getDescFromId(charId);
 
-			CharTextInfo txtInfo = charDesc.readCharTextInfo(0, (short) 0);
-			VOCharTextDesc textDesc = (VOCharTextDesc) vop.getDescFromId(txtInfo.charDesc);
+			VOCharTextDesc textDesc = charDesc.readCharTextInfo(0, (short) 0);
 			List<String> states = new ArrayList<String>();
-			String[] text = textDesc.ReadAllText(TextType.RTF, states);
-
+			
 			int charType = charDesc.getCharType();
 			Character chr = null;
 			switch (charType) {

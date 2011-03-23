@@ -59,4 +59,11 @@ public class FileSignature implements IOObject {
 		file.writeShort(MAGIC_NUMBER);
 	}
 
+	@Override
+	public int size() {
+		return SIZE;
+	}
+	
+	
+
 }

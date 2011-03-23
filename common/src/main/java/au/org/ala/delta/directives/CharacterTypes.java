@@ -18,9 +18,16 @@ import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.model.MultiStateCharacter;
 
 public class CharacterTypes extends AbstractCharacterListDirective<CharacterType> {
 
+	/** 
+	 * Tracks the number last character that was created to allow defaults to be created 
+	 * for characters not explicitly specified
+	 */
+	private int _lastCharacterNumber = 0;
+	
 	public CharacterTypes() {
 		super("character", "types");
 	}
@@ -31,12 +38,22 @@ public class CharacterTypes extends AbstractCharacterListDirective<CharacterType
 	}
 
 	@Override
-	protected void processCharacter(DeltaContext context, int charIndex, CharacterType type) {
-		Logger.debug("Setting type for character %d to %s", charIndex, type);
+	protected void processCharacter(DeltaContext context, int charNumber, CharacterType type) {
+		Logger.debug("Setting type for character %d to %s", charNumber, type);
 		
 		DeltaDataSet dataSet = context.getDataSet();
 		
-		dataSet.addCharacter(charIndex, type);
+		// CG - this is making an assumption that character types are in ascending numerical order.
+		// I am not sure if this is valid....
+		for (int i=_lastCharacterNumber+1; i<charNumber; i++) {
+			createDefaultCharacter(dataSet, i);
+		}
+		
+		dataSet.addCharacter(charNumber, type);
+		_lastCharacterNumber = charNumber;
 	}
-
+	
+	private void createDefaultCharacter(DeltaDataSet dataSet, int number) {
+		dataSet.addCharacter(number, CharacterType.UnorderedMultiState);
+	}
 }
