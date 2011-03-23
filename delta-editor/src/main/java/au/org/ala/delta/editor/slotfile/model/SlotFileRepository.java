@@ -81,7 +81,7 @@ public class SlotFileRepository implements DeltaDataSetRepository {
 	}
 
 	private DeltaVOP getVOP(DeltaDataSet dataSet) {
-		VOPAdaptor vop = (VOPAdaptor)dataSet;
+		SlotFileDataSet vop = (SlotFileDataSet)dataSet;
 		return vop.getVOP();
 	}
 	

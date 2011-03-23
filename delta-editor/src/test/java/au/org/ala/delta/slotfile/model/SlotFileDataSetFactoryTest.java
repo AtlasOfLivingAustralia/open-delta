@@ -7,7 +7,7 @@ import org.junit.Test;
 import au.org.ala.delta.editor.slotfile.DeltaVOP;
 import au.org.ala.delta.editor.slotfile.VODeltaMasterDesc;
 import au.org.ala.delta.editor.slotfile.model.SlotFileDataSetFactory;
-import au.org.ala.delta.editor.slotfile.model.VOPAdaptor;
+import au.org.ala.delta.editor.slotfile.model.SlotFileDataSet;
 
 /**
  * Tests the SlotFileDataSetFactory.
@@ -22,7 +22,7 @@ public class SlotFileDataSetFactoryTest extends TestCase {
 		
 		SlotFileDataSetFactory factory = new SlotFileDataSetFactory();
 		
-		VOPAdaptor dataSet = (VOPAdaptor)factory.createDataSet("unnamed");
+		SlotFileDataSet dataSet = (SlotFileDataSet)factory.createDataSet("unnamed");
 		
 		DeltaVOP vop = dataSet.getVOP();
 		

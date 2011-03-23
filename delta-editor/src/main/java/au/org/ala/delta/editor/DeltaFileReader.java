@@ -31,7 +31,7 @@ import au.org.ala.delta.editor.slotfile.VODirFileDesc.Dir;
 import au.org.ala.delta.editor.slotfile.model.SlotFileDataSetFactory;
 import au.org.ala.delta.editor.slotfile.model.VOCharacterAdaptor;
 import au.org.ala.delta.editor.slotfile.model.VOItemAdaptor;
-import au.org.ala.delta.editor.slotfile.model.VOPAdaptor;
+import au.org.ala.delta.editor.slotfile.model.SlotFileDataSet;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.ImplicitValue;
@@ -67,7 +67,7 @@ public class DeltaFileReader {
 
 		DeltaVOP vop = new DeltaVOP(fileName, false);
 		SlotFileDataSetFactory factory = new SlotFileDataSetFactory(vop);
-		DeltaDataSet dataSet = new VOPAdaptor(vop, factory);
+		DeltaDataSet dataSet = new SlotFileDataSet(vop, factory);
 		
 		return dataSet;
 	}

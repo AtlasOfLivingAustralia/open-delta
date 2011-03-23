@@ -16,12 +16,12 @@ import au.org.ala.delta.model.Item;
  * Implementation of a DELTA DataSet that uses the random access slotfile to read data on demand rather
  * than storing it in memory.
  */
-public class VOPAdaptor implements DeltaDataSet {
+public class SlotFileDataSet implements DeltaDataSet {
 
 	private DeltaVOP _vop;
 	private SlotFileDataSetFactory _factory;
 
-	public VOPAdaptor(DeltaVOP vop, SlotFileDataSetFactory factory) {
+	public SlotFileDataSet(DeltaVOP vop, SlotFileDataSetFactory factory) {
 		_vop = vop;
 		_factory = factory;
 	}

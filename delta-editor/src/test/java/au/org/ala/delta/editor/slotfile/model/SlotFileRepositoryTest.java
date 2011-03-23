@@ -13,7 +13,7 @@ import org.junit.Test;
 import au.org.ala.delta.editor.slotfile.DeltaVOP;
 import au.org.ala.delta.editor.slotfile.VOP;
 import au.org.ala.delta.editor.slotfile.model.SlotFileRepository;
-import au.org.ala.delta.editor.slotfile.model.VOPAdaptor;
+import au.org.ala.delta.editor.slotfile.model.SlotFileDataSet;
 import au.org.ala.delta.model.DeltaDataSet;
 
 /**
@@ -88,7 +88,7 @@ public class SlotFileRepositoryTest {
 	}
 	
 	private DeltaVOP getVOP(DeltaDataSet dataSet) {
-		return ((VOPAdaptor)dataSet).getVOP();
+		return ((SlotFileDataSet)dataSet).getVOP();
 	}
 	
 	private void delete(VOP vop, File file) {

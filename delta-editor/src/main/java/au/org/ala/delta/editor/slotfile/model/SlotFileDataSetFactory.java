@@ -46,7 +46,7 @@ public class SlotFileDataSetFactory implements DeltaDataSetFactory {
 	@Override
 	public DeltaDataSet createDataSet(String name) {
 
-		DeltaDataSet dataSet = new VOPAdaptor(_vop, this);
+		DeltaDataSet dataSet = new SlotFileDataSet(_vop, this);
 		return dataSet;
 	}
 
