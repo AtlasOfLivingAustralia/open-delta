@@ -187,8 +187,12 @@ public class VODeltaMasterDesc extends VONoteDesc {
 	}
 
 	private boolean insertElement(List<Integer> vector, int uid, int index) {
+
 		if (index == 0 || index > vector.size()) {
 			index = vector.size();
+		}
+		else {
+			index--;
 		}
 		vector.add(index, (Integer) uid);
 
