@@ -23,4 +23,10 @@ public interface CharacterData {
 	public void setDescription(String desc);
 
 	public void setUnits(String units);
+
+	public void setExclusive(boolean exclusive);
+	
+	public String getNotes();
+
+	void setNotes(String note);
 }

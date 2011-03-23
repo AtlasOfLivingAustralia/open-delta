@@ -17,15 +17,12 @@ package au.org.ala.delta.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.NotImplementedException;
-
 import au.org.ala.delta.model.impl.CharacterData;
 
 public abstract class Character {
 	
 	private int _number;
 	private List<CharacterDependency> _dependentCharacters = new ArrayList<CharacterDependency>();
-	private String _notes;	
 	protected CharacterData _impl;	
 	private CharacterType _characterType;
 	
@@ -67,7 +64,7 @@ public abstract class Character {
 	}
 	
 	public void setExclusive(boolean exclusive) {
-		throw new NotImplementedException();
+		_impl.setExclusive(exclusive);
 	}
 	
 	public boolean isExclusive() {
@@ -75,11 +72,11 @@ public abstract class Character {
 	}
 	
 	public void setNotes(String notes) {
-		_notes = notes;
+		_impl.setNotes(notes);
 	}
 	
 	public String getNotes() {
-		return _notes;
+		return _impl.getNotes();
 	}
 	
 	@Override

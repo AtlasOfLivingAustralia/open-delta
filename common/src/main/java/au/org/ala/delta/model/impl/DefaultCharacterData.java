@@ -5,6 +5,7 @@ package au.org.ala.delta.model.impl;
  */
 public class DefaultCharacterData implements CharacterData {
 
+	private String _notes;
 	private String _description;
 	private boolean _exclusive;
 	private boolean _mandatory;
@@ -66,7 +67,26 @@ public class DefaultCharacterData implements CharacterData {
 	@Override
 	public void setMandatory(boolean mandatory) {
 		_mandatory = mandatory;
-
 	}
 
+	/**
+	 * @return the notes about this character
+	 */
+	public String getNotes() {
+		return _notes;
+	}
+
+	/**
+	 * @param notes the notes to set
+	 */
+	public void setNotes(String notes) {
+		_notes = notes;
+	}
+
+	
+	@Override
+	public void setExclusive(boolean exclusive) {
+		_exclusive = exclusive;
+		
+	}
 }

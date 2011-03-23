@@ -43,7 +43,9 @@ public class VOCharTextDesc extends VOAnyDesc {
 			_fixedData = new CharTextFixedData();
 			_fixedData.read(_slotFile);
 
-			// Logger.debug("Unid: %d charUniD=%d, LangUnid=%d, Feature Len: %d NotesLen: %d nStateLengs: %d", _fixedData.UniId, _fixedData.charBaseId, _fixedData.charLangId, _fixedData.featureLeng,
+			// Logger.debug("Unid: %d charUniD=%d, LangUnid=%d, Feature Len: %d NotesLen: %d nStateLengs: %d",
+			// _fixedData.UniId, _fixedData.charBaseId, _fixedData.charLangId,
+			// _fixedData.featureLeng,
 			// _fixedData.notesLeng, _fixedData.nStateLengs);
 
 			dataSeek(0);
@@ -265,8 +267,8 @@ public class VOCharTextDesc extends VOAnyDesc {
 			int trailerLeng = 0;
 			if (stateId >= _fixedData.nStateLengs) {
 				List<Integer> newLengs = new ArrayList<Integer>(_stateLengs);
-				int i=_stateLengs.size();
-				while (i<=stateId) {
+				int i = _stateLengs.size();
+				while (i <= stateId+1) {
 					_stateLengs.add(0);
 					i++;
 				}
@@ -315,7 +317,8 @@ public class VOCharTextDesc extends VOAnyDesc {
 			}
 
 			if (newLen != oldLen) { // Save a copy of any following data!
-				trailerBuf = dupTrailingData(_fixedData.nStateLengs * SIZE_OF_INT_IN_BYTES + _fixedData.featureLeng + oldLen);
+				trailerBuf = dupTrailingData(_fixedData.nStateLengs * SIZE_OF_INT_IN_BYTES + _fixedData.featureLeng
+						+ oldLen);
 				if (trailerBuf != null) {
 					trailerLeng = trailerBuf.length;
 				}
@@ -343,12 +346,67 @@ public class VOCharTextDesc extends VOAnyDesc {
 		}
 	}
 
-	void writeNoteText(String src) {
-		throw new NotImplementedException();
+	/**
+	 * Writes the supplied note text to the slot file.
+	 * @param noteText the note text to write.
+	 */
+	public void writeNoteText(String noteText) {
+		byte[] trailerBuf = null;
+		int trailerLeng = 0;
+		int seekPos = _fixedData.nStateLengs * 4 + _fixedData.featureLeng;
+		for (int i = 0; i < _fixedData.nStateLengs; ++i) {
+			seekPos += _stateLengs.get(i);
+		}
+		if (noteText.length() != _fixedData.notesLeng) { // Save a copy of any
+													// following data!
+			trailerBuf = dupTrailingData(seekPos + _fixedData.notesLeng);
+			if (trailerBuf != null) {
+				trailerLeng = trailerBuf.length;
+			}
+		}
+		dataSeek(seekPos + noteText.length() + trailerLeng);
+		dataSeek(seekPos);
+		dataWrite(stringToBytes(noteText));
+		if (noteText.length() != _fixedData.notesLeng) {
+			_fixedData.notesLeng = noteText.length();
+			setDirty();
+			if (trailerBuf != null) {
+				dataWrite(trailerBuf);
+				dataTruncate();
+			}
+		}
 	}
 
+	/**
+	 * Writes the feature description, all state text and notes to the slot file.
+	 * @param feature the new feature description
+	 * @param states the new state text
+	 * @param notes the new notes
+	 */
 	public void writeAllText(String feature, List<String> states, String notes) {
-		throw new NotImplementedException();
+		int seekPos = states.size() * 4 + feature.length() + notes.length();
+		for (int i = 0; i < states.size(); ++i) {
+			seekPos += states.get(i).length();
+		}
+
+		dataSeek(seekPos);
+		dataSeek(0);
+		_stateLengs = new ArrayList<Integer>();
+		for (String state : states) {
+		    int stLeng = state.length();
+		    dataWrite(stLeng);
+		    _stateLengs.add(stLeng);
+		}
+		_fixedData.nStateLengs = states.size();
+		dataWrite(stringToBytes(feature));
+		_fixedData.featureLeng = feature.length();
+		for (String state : states) {
+			dataWrite(stringToBytes(state));
+		}
+		dataWrite(stringToBytes(notes));
+		_fixedData.notesLeng = notes.length();
+		dataTruncate();
+		setDirty();
 	}
 
 	// Fixed data offsets

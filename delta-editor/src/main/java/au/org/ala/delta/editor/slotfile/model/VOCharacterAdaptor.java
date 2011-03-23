@@ -7,6 +7,10 @@ import au.org.ala.delta.editor.slotfile.VOCharBaseDesc;
 import au.org.ala.delta.editor.slotfile.VOCharTextDesc;
 import au.org.ala.delta.model.impl.CharacterData;
 
+/**
+ * Adapts the CharacterData interface to the VOCharBaseDesc and VOCharTextDesc slot file
+ * classes.
+ */
 public class VOCharacterAdaptor implements CharacterData {
 	/** If they've been specified, units are stored as state text for state number 1. */
 	private static final int UNITS_TEXT_STATE_NUMBER = 1;
@@ -53,10 +57,20 @@ public class VOCharacterAdaptor implements CharacterData {
 	public boolean isExclusive() {
 		return _charDesc.testCharFlag(VOCharBaseDesc.CHAR_EXCLUSIVE);
 	}
+	
+	@Override
+	public void setExclusive(boolean b) {
+		_charDesc.setCharFlag(VOCharBaseDesc.CHAR_EXCLUSIVE);
+	}
 
 	@Override
 	public boolean isMandatory() {
 		return _charDesc.testCharFlag(VOCharBaseDesc.CHAR_MANDATORY);
+	}
+	
+	@Override
+	public void setMandatory(boolean b) {
+		_charDesc.setCharFlag(VOCharBaseDesc.CHAR_MANDATORY);
 	}
 
 
@@ -89,14 +103,12 @@ public class VOCharacterAdaptor implements CharacterData {
 		return _charDesc.getNStatesUsed();
 	}
 	
-	@Override
-	public void setMandatory(boolean b) {
-		_charDesc.setCharFlag(VOCharBaseDesc.CHAR_MANDATORY);
-	}
+	
 
 	@Override
 	public void setStateText(int stateNumber, String text) {
-		throw new NotImplementedException();
+		int stateId = _charDesc.uniIdFromStateNo(stateNumber);
+		_textDesc.writeStateText(text, stateId);
 	}
 
 	@Override
@@ -107,4 +119,14 @@ public class VOCharacterAdaptor implements CharacterData {
 		}
 		_charDesc.setInitialStateNumber(numStates);
 	}
+
+	@Override
+	public String getNotes() {
+		return _textDesc.readNoteText(TextType.RTF); 	
+	}	
+	
+	@Override
+	public void setNotes(String note) {
+		_textDesc.writeNoteText(note);
+	}	
 }
