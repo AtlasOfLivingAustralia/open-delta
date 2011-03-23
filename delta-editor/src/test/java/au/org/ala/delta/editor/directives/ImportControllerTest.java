@@ -13,7 +13,6 @@ import junit.framework.TestCase;
 import org.junit.Before;
 
 import sun.awt.AppContext;
-
 import au.org.ala.delta.editor.DeltaEditor;
 import au.org.ala.delta.editor.directives.ui.ImportExportDialog.DirectiveFile;
 import au.org.ala.delta.editor.directives.ui.ImportExportDialog.DirectiveType;
@@ -75,7 +74,7 @@ public class ImportControllerTest extends TestCase {
 		// the import is finished before doing our assertions.
 		waitForTaskCompletion();
 		
-		//assertEquals(89, _dataSet.getNumberOfCharacters());
+		assertEquals(89, _dataSet.getNumberOfCharacters());
 		//assertEquals(14, _dataSet.getMaximumNumberOfItems());
 		
 		
