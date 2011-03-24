@@ -67,4 +67,5 @@ public interface DeltaDataSet {
 	 * @return the new Item.
 	 */
 	public Item addItem(int itemNumber);
+	
 }

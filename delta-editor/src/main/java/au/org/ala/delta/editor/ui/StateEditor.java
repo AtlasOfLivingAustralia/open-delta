@@ -22,7 +22,6 @@ import java.awt.event.FocusEvent;
 
 import javax.swing.AbstractListModel;
 import javax.swing.DefaultListCellRenderer;
-import javax.swing.JCheckBox;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
@@ -53,12 +52,17 @@ public class StateEditor extends JPanel implements ValidationListener {
 
 	private Character _character;
 	private Item _item;
+	private DeltaDataSet _dataSet;
 
 	/** Tracks whether the attribute has been modified since it was displayed */
 	private boolean _modified;
 
+	private EditListener _editListener;
+
 	public StateEditor(DeltaDataSet dataSet) {
-		
+
+		_dataSet = dataSet;
+
 		setLayout(new BorderLayout());
 		this.setPreferredSize(new Dimension(200, 150));
 		JSplitPane split = new JSplitPane();
@@ -75,10 +79,11 @@ public class StateEditor extends JPanel implements ValidationListener {
 		JToolBar toolbar = _textPane.buildAndInstallToolbar();
 		add(toolbar, BorderLayout.NORTH);
 
-		_textPane.getDocument().addDocumentListener(new EditListener());
+		_editListener = new EditListener();
+		_textPane.getDocument().addDocumentListener(_editListener);
 
-		_textPane.addFocusListener(new EditCommitter() );
-		
+		_textPane.addFocusListener(new EditCommitter());
+
 		add(split, BorderLayout.CENTER);
 	}
 
@@ -86,80 +91,95 @@ public class StateEditor extends JPanel implements ValidationListener {
 		if (!_valid) {
 			return;
 		}
-		_character = ch;
-		_item = item;
-		if (ch != null && item != null) {
-			Attribute attr = _item.getAttribute(_character);
-			if (attr != null) {
-				String value = attr.getValue();
-				if (value != null) {
-					if (!value.startsWith("{\\rtf1")) {
-						value = String.format("{\\rtf1\\ansi\\ansicpg1252 %s }", value);
+		// Disable the change listener so that the bind doesn't set the changed flag		
+		try {
+			_editListener.setDisabled(true);
+			_character = ch;
+			_item = item;
+			if (ch != null && item != null) {
+				Attribute attr = _item.getAttribute(_character);
+				if (attr != null) {
+					String value = attr.getValue();
+					if (value != null) {
+						if (!value.startsWith("{\\rtf1")) {
+							value = String.format("{\\rtf1\\ansi\\ansicpg1252 %s }", value);
+						}
+
+						_textPane.setText(value);
+					} else {
+						_textPane.setText("");
 					}
-	
-					_textPane.setText(value);
 				} else {
 					_textPane.setText("");
 				}
-			}
 
-			if (ch instanceof MultiStateCharacter) {
-				MultiStateCharacter mc = (MultiStateCharacter) ch;
-				_list.setModel(new StateListModel(mc));
-				_list.setCellRenderer(new StateRenderer());
+				if (ch instanceof MultiStateCharacter) {
+					MultiStateCharacter mc = (MultiStateCharacter) ch;
+					_list.setCellRenderer(new StateRenderer());
+					_list.setModel(new StateListModel(mc));					
+				} else {
+					_list.setCellRenderer(new CharacterRenderer());
+					_list.setModel(new CharacterModel(ch));					
+				}
+				AttributeValidator validator = new AttributeValidator(_dataSet, _character);
+				RtfEditorValidator rtfValidator = new RtfEditorValidator(validator, this);
+				_textPane.setInputVerifier(rtfValidator);
 			} else {
-				_list.setModel(new CharacterModel(ch));
-				_list.setCellRenderer(new CharacterRenderer());
+				_textPane.setInputVerifier(null);
+
 			}
-			AttributeValidator validator = new AttributeValidator(_item, _character);
-			RtfEditorValidator rtfValidator = new RtfEditorValidator(validator, this);
-			_textPane.setInputVerifier(rtfValidator);
+			_modified = false;
+		} finally {
+			// Re-enable the change listener
+			_editListener.setDisabled(false);
 		}
-		else {
-			_textPane.setInputVerifier(null);
-			
-		}
-		_modified = false;
 	}
-	
-	
+
 	@Override
 	public void validationSuceeded(ValidationResult results) {
 		_valid = true;
-		
-	}
 
+	}
 
 	@Override
 	public void validationFailed(ValidationResult results) {
 		_valid = false;
 	}
 
-
-
 	class EditListener implements DocumentListener {
+
+		private boolean _disabled;
 
 		@Override
 		public void insertUpdate(DocumentEvent e) {
-			_modified = true;
+			if (!_disabled) {
+				_modified = true;
+			}
 		}
 
 		@Override
 		public void removeUpdate(DocumentEvent e) {
-			_modified = true;
+			if (!_disabled) {
+				_modified = true;
+			}
 		}
 
 		@Override
 		public void changedUpdate(DocumentEvent e) {
-			_modified = true;
+			if (!_disabled) {
+				_modified = true;
+			}
 		}
+
+		public void setDisabled(boolean disabled) {
+			_disabled = disabled;
+		}
+
 	}
-	
+
 	/**
-	 * Edits are committed on focus lost events - hence we validate at this
-	 * point. TODO a failed validate prevents focus transferal but it doesn't
-	 * prevent a selection on the table or list from updating the text in the
-	 * document!
+	 * Edits are committed on focus lost events - hence we validate at this point. TODO a failed validate prevents focus transferal but it doesn't prevent a selection on the table or list from
+	 * updating the text in the document!
 	 * 
 	 * @see java.awt.event.FocusAdapter#focusLost(java.awt.event.FocusEvent)
 	 */
@@ -171,32 +191,28 @@ public class StateEditor extends JPanel implements ValidationListener {
 				return;
 			}
 			String attributeText = _textPane.getRtfTextBody();
-			
+
 			_item.getAttribute(_character).setValue(attributeText);
 			_modified = false;
 		}
-		
+
 	}
-	
 
 	class StateRenderer extends DefaultListCellRenderer {
 
 		private static final long serialVersionUID = 1L;
-		
+
 		private MultiStateCheckbox stateRenderer = new MultiStateCheckbox();
 
 		/*
 		 * (non-Javadoc)
 		 * 
-		 * @see
-		 * javax.swing.DefaultListCellRenderer#getListCellRendererComponent(
-		 * javax.swing.JList, java.lang.Object, int, boolean, boolean)
+		 * @see javax.swing.DefaultListCellRenderer#getListCellRendererComponent( javax.swing.JList, java.lang.Object, int, boolean, boolean)
 		 */
 		@Override
-		public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
-				boolean cellHasFocus) {
+		public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
 			super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-								
+
 			stateRenderer.setBackground(getBackground());
 			stateRenderer.setForeground(getForeground());
 			stateRenderer.setText(value.toString());
@@ -207,26 +223,28 @@ public class StateEditor extends JPanel implements ValidationListener {
 		}
 
 	}
-	
+
 	/**
 	 * Renders a Character as an icon, and if it's a numeric character, it's units.
+	 * 
 	 * @author god08d
-	 *
+	 * 
 	 */
 	class CharacterRenderer extends DefaultListCellRenderer {
-		
+
+		private static final long serialVersionUID = 1L;
+
+		@SuppressWarnings("rawtypes")
 		@Override
-		public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
-				boolean cellHasFocus) {
+		public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
 			super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-			
-			Character ch = (Character)value;
+
+			Character ch = (Character) value;
 			setIcon(EditorUIUtils.iconForCharacter(ch));
-			
+
 			if (ch instanceof NumericCharacter) {
-				setText(((NumericCharacter)ch).getUnits());
-			}
-			else {
+				setText(((NumericCharacter) ch).getUnits());
+			} else {
 				setText("");
 			}
 			return this;
@@ -251,11 +269,14 @@ class StateListModel extends AbstractListModel {
 
 	@Override
 	public Object getElementAt(int index) {
-		return _character.getState(index+1);
+		return _character.getState(index + 1);
 	}
 }
 
 class CharacterModel extends AbstractListModel {
+
+	private static final long serialVersionUID = 1L;
+
 	private Character _character;
 
 	public CharacterModel(Character character) {

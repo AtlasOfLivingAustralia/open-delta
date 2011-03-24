@@ -2,6 +2,7 @@ package au.org.ala.delta.editor.slotfile.model;
 
 import org.apache.commons.lang.NotImplementedException;
 
+import au.org.ala.delta.editor.slotfile.Attribute;
 import au.org.ala.delta.editor.slotfile.TextType;
 import au.org.ala.delta.editor.slotfile.VOCharBaseDesc;
 import au.org.ala.delta.editor.slotfile.VOCharTextDesc;
@@ -12,6 +13,7 @@ import au.org.ala.delta.model.impl.CharacterData;
  * classes.
  */
 public class VOCharacterAdaptor implements CharacterData {
+	
 	/** If they've been specified, units are stored as state text for state number 1. */
 	private static final int UNITS_TEXT_STATE_NUMBER = 1;
 	
@@ -151,5 +153,10 @@ public class VOCharacterAdaptor implements CharacterData {
 	public void setUncodedImplicitState(int stateNo) {
 		int stateId = _charDesc.uniIdFromStateNo(stateNo);
 		_charDesc.setUncodedImplicit((short) stateId);
+	}
+
+	@Override
+	public void validateAttributeText(String text) {
+		new Attribute(text, _charDesc);
 	}	
 }

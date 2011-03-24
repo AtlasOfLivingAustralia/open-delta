@@ -1,5 +1,7 @@
 package au.org.ala.delta.model.impl;
 
+import org.apache.commons.lang.NotImplementedException;
+
 /**
  * An implementation of CharacterData that maintains the data in-memory.
  */
@@ -111,4 +113,10 @@ public class DefaultCharacterData implements CharacterData {
 	public void setUncodedImplicitState(int stateId) {
 		_uncodedImplicitStateId = stateId;
 	}
+
+	@Override
+	public void validateAttributeText(String text) {
+		throw new NotImplementedException();
+	}
+	
 }

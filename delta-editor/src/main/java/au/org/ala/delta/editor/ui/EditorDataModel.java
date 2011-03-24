@@ -164,6 +164,4 @@ public class EditorDataModel implements DeltaDataSet {
 		
 	}
 	
-	
-	
 }

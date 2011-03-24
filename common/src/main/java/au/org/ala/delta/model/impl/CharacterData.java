@@ -37,5 +37,7 @@ public interface CharacterData {
 	int getUncodedImplicitState();
 	
 	void setUncodedImplicitState(int stateId);
+
+	void validateAttributeText(String text);
 	
 }

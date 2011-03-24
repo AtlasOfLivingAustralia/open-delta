@@ -3,6 +3,8 @@ package au.org.ala.delta.model.impl;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.NotImplementedException;
+
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DeltaDataSet;
@@ -101,4 +103,5 @@ public class DefaultDataSet implements DeltaDataSet {
 		
 		return item;	
 	}
+	
 }

@@ -23,12 +23,13 @@ import java.util.Set;
 import org.apache.commons.lang.NotImplementedException;
 
 import au.org.ala.delta.editor.slotfile.Attribute.AttributeParseException.AttributeParseError;
+import au.org.ala.delta.model.DeltaParseException;
 import au.org.ala.delta.util.ArrayUtils;
 import au.org.ala.delta.util.Utils;
 
 public class Attribute implements Iterable<AttrChunk> {
 
-	public static class AttributeParseException extends RuntimeException {
+	public static class AttributeParseException extends DeltaParseException {
 		
 		private static final long serialVersionUID = -6900898497848554617L;
 
@@ -43,6 +44,7 @@ public class Attribute implements Iterable<AttrChunk> {
 		private int _value;
 
 		public AttributeParseException(AttributeParseError error, int value) {
+			super(error.name(), value);
 			_error = error;
 			_value = value;
 		}

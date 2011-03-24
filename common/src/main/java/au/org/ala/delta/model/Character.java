@@ -91,5 +91,9 @@ public abstract class Character {
 	public void setImpl(CharacterData impl) {
 		_impl = impl;
 	}
+
+	public void validateAttributeText(String text) {
+		_impl.validateAttributeText(text);		
+	}
 	
 }
