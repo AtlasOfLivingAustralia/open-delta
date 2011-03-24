@@ -14,7 +14,7 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.slotfile.directive;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import org.apache.commons.lang.NotImplementedException;
 
 public class DirOutApplicableChars implements DirectiveFunctor {
 

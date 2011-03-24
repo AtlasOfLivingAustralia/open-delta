@@ -347,7 +347,7 @@ class AttributeCellRenderer extends DefaultTableCellRenderer {
 			} else {
 				setForeground(SystemColor.controlText);
 			}
-			
+
 			if (model.isCellEditable(row, column)) {
 				setBackground(Color.WHITE);
 			} else {
