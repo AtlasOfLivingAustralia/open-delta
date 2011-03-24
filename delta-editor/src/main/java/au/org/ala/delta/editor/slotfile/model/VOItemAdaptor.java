@@ -21,6 +21,7 @@ import org.apache.commons.lang.NotImplementedException;
 import au.org.ala.delta.editor.slotfile.AttrChunk;
 import au.org.ala.delta.editor.slotfile.Attribute;
 import au.org.ala.delta.editor.slotfile.DeltaVOP;
+import au.org.ala.delta.editor.slotfile.VOCharBaseDesc;
 import au.org.ala.delta.editor.slotfile.VOItemDesc;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.impl.AttributeData;
@@ -72,7 +73,7 @@ public class VOItemAdaptor implements ItemData {
 		if (character == null) {
 			return null;
 		}
-		AttributeData impl = new VOAttributeAdaptor(_voItemDesc, ((VOCharacterAdaptor)character.getImpl()).getCharBaseDesc());
+		AttributeData impl = new VOAttributeAdaptor(_voItemDesc, getVOCharBaseDesc(character));
 		return new au.org.ala.delta.model.Attribute(character, impl);
 	}
 
@@ -82,6 +83,12 @@ public class VOItemAdaptor implements ItemData {
 	 */
 	@Override
 	public void addAttribute(Character character, String value) {
-		// do nothing - attributes are created on the fly when getAttribute is called.
+		
+		Attribute attribute = new Attribute(value, getVOCharBaseDesc(character));
+		_voItemDesc.writeAttribute(attribute);
+	}
+	
+	private VOCharBaseDesc getVOCharBaseDesc(Character character) {
+		return ((VOCharacterAdaptor)character.getImpl()).getCharBaseDesc();
 	}
 }
