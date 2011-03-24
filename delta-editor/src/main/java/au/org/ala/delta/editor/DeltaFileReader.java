@@ -227,10 +227,8 @@ public class DeltaFileReader {
 
 		int uncodedImplicitStateId = charBase.getUncodedImplicit();
 		if (uncodedImplicitStateId != VOCharBaseDesc.STATEID_NULL) {
-			ImplicitValue iv = new ImplicitValue();
-			iv.setUncoded(uncodedImplicitStateId);
-			iv.setCoded(charBase.getCodedImplicit());
-			chr.setImplicitValueStateId(iv);
+			chr.setUncodedImplicitState(uncodedImplicitStateId);
+			chr.setCodedImplicitState(charBase.getCodedImplicit());
 		}
 
 		for (int j = 0; j < charBase.getNStatesUsed(); ++j) {

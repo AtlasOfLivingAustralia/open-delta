@@ -128,5 +128,28 @@ public class VOCharacterAdaptor implements CharacterData {
 	@Override
 	public void setNotes(String note) {
 		_textDesc.writeNoteText(note);
+	}
+
+	@Override
+	public int getCodedImplicitState() {
+		return _charDesc.stateNoFromUniId(_charDesc.getCodedImplicit());
+	}
+
+	@Override
+	public int getUncodedImplicitState() {	
+		return _charDesc.stateNoFromUniId(_charDesc.getUncodedImplicit());
+	}
+
+	@Override
+	public void setCodedImplicitState(int stateNo) {
+		int stateId = _charDesc.uniIdFromStateNo(stateNo);
+		_charDesc.setCodedImplicit((short) stateId);
+		
+	}
+
+	@Override
+	public void setUncodedImplicitState(int stateNo) {
+		int stateId = _charDesc.uniIdFromStateNo(stateNo);
+		_charDesc.setUncodedImplicit((short) stateId);
 	}	
 }

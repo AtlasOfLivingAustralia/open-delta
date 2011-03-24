@@ -89,15 +89,18 @@ public class StateEditor extends JPanel implements ValidationListener {
 		_character = ch;
 		_item = item;
 		if (ch != null && item != null) {
-			String value = _item.getAttribute(_character).getValue();
-			if (value != null) {
-				if (!value.startsWith("{\\rtf1")) {
-					value = String.format("{\\rtf1\\ansi\\ansicpg1252 %s }", value);
+			Attribute attr = _item.getAttribute(_character);
+			if (attr != null) {
+				String value = attr.getValue();
+				if (value != null) {
+					if (!value.startsWith("{\\rtf1")) {
+						value = String.format("{\\rtf1\\ansi\\ansicpg1252 %s }", value);
+					}
+	
+					_textPane.setText(value);
+				} else {
+					_textPane.setText("");
 				}
-
-				_textPane.setText(value);
-			} else {
-				_textPane.setText("");
 			}
 
 			if (ch instanceof MultiStateCharacter) {
@@ -180,7 +183,7 @@ public class StateEditor extends JPanel implements ValidationListener {
 
 		private static final long serialVersionUID = 1L;
 		
-		private JCheckBox stateRenderer = new JCheckBox();
+		private MultiStateCheckbox stateRenderer = new MultiStateCheckbox();
 
 		/*
 		 * (non-Javadoc)
@@ -193,16 +196,12 @@ public class StateEditor extends JPanel implements ValidationListener {
 		public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
 				boolean cellHasFocus) {
 			super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+								
 			stateRenderer.setBackground(getBackground());
 			stateRenderer.setForeground(getForeground());
 			stateRenderer.setText(value.toString());
 			stateRenderer.setSelected(false);
-			if (_item != null) {
-				Attribute attribute = _item.getAttribute(_character);
-				if (attribute != null) {
-					stateRenderer.setSelected(attribute.isPresent(index+1));
-				}
-			}
+			stateRenderer.bind((MultiStateCharacter) _character, _item, index + 1);
 
 			return stateRenderer;
 		}

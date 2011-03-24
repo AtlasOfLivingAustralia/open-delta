@@ -17,8 +17,13 @@ package au.org.ala.delta.editor.ui;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 
+import org.apache.commons.lang.StringUtils;
+
+import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.TextCharacter;
 import au.org.ala.delta.rtf.RTFUtils;
 
@@ -57,17 +62,38 @@ public class MatrixTableModel implements TableModel {
 		if (character instanceof TextCharacter) {
 			return true;
 		}
-		return _dataSet.getItem(rowIndex+1).getAttribute(character).isSimple();
+		Attribute attr = _dataSet.getItem(rowIndex+1).getAttribute(character); 
+		return attr == null || attr.isSimple();
+	}
+	
+	public Integer getImplicitStateNo(int rowIndex, int columnIndex) {
+		Character character = _dataSet.getCharacter(columnIndex+1);				
+		if (character instanceof MultiStateCharacter) {
+			MultiStateCharacter msc = (MultiStateCharacter) character;					
+			Attribute attr = _dataSet.getItem(rowIndex + 1).getAttribute(character);
+			if (attr == null) {
+				int implicit = msc.getUncodedImplicitState();
+				if (implicit > 0) {
+					return implicit;
+				}
+			}
+		}
+		
+		return null;
 	}
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		String tmp = _dataSet.getAttributeAsString(rowIndex+1, columnIndex+1);
-		String attributeValue = RTFUtils.stripFormatting(tmp);
-		if (attributeValue == null) {
-			attributeValue = "-";
+		String tmp = _dataSet.getAttributeAsString(rowIndex+1, columnIndex+1);					
+		if (StringUtils.isEmpty(tmp)) {
+			Integer implicit = getImplicitStateNo(rowIndex, columnIndex);
+			if (implicit != null) {
+				return String.format("%d", implicit);
+			}			
+			return "";			
+		} else {
+			return RTFUtils.stripFormatting(tmp);
 		}
-		return attributeValue;
 	}
 
 	@Override

@@ -229,7 +229,7 @@ class DeltaTreeCellRenderer extends DefaultTreeCellRenderer {
 	private static final long serialVersionUID = 1L;
 
 	private EditorDataModel _dataModel;
-	private JCheckBox stateValueRenderer = new JCheckBox();
+	private MultiStateCheckbox stateValueRenderer = new MultiStateCheckbox();
 
 	public DeltaTreeCellRenderer(EditorDataModel dataModel) {
 		_dataModel = dataModel;
@@ -245,10 +245,12 @@ class DeltaTreeCellRenderer extends DefaultTreeCellRenderer {
 			DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
 			String name = node.getUserObject().toString();
 			if (node.getParent() instanceof CharacterTreeNode) {
+				
 				Character ch = (Character) ((CharacterTreeNode) node.getParent()).getUserObject();
-
-				if (ch instanceof MultiStateCharacter) {
-
+				
+				if (node instanceof MultistateStateNode) {
+					MultistateStateNode msnode = (MultistateStateNode) node;	
+					Item item = _dataModel.getSelectedItem();					
 					stateValueRenderer.setText(name);
 					stateValueRenderer.setForeground(getForeground());
 					if (selected) {
@@ -256,29 +258,7 @@ class DeltaTreeCellRenderer extends DefaultTreeCellRenderer {
 					} else {
 						stateValueRenderer.setBackground(getBackgroundNonSelectionColor());
 					}
-					stateValueRenderer.setSelected(false);
-					if (_dataModel.getSelectedItem() != null) {
-						Item item = _dataModel.getSelectedItem();
-						Attribute attribute = item.getAttribute(ch);
-
-						if (attribute != null) {
-							try {
-
-								MultiStateCharacter multiStateChar = (MultiStateCharacter) ch;
-								int numStates = multiStateChar.getNumberOfStates();
-
-								for (int stateNumber = 1; stateNumber <= numStates; stateNumber++) {
-									if (multiStateChar.getState(stateNumber).equals(name)) {
-										stateValueRenderer.setSelected(attribute.isPresent(stateNumber));
-										break;
-									}
-								}
-							} catch (Exception e) {
-								// We don't handle multiple selection right now...
-								e.printStackTrace();
-							}
-						}
-					}
+					stateValueRenderer.bind( msnode.getCharacter(), item, msnode.getStateNo());
 					return stateValueRenderer;
 				} else if (ch instanceof NumericCharacter) {
 					setText(getText() + " " + ((NumericCharacter) ch).getUnits());
@@ -303,7 +283,7 @@ class CharacterTreeNode extends DefaultMutableTreeNode {
 		if (_character instanceof MultiStateCharacter) {
 			MultiStateCharacter ms = (MultiStateCharacter) _character;
 			for (int i = 0; i < ms.getNumberOfStates(); ++i) {
-				add(new DefaultMutableTreeNode(ms.getState(i + 1)));
+				add(new MultistateStateNode(_dataModel, ms, i + 1));
 			}
 		} else {
 			add(new DefaultMutableTreeNode(new CharStateHolder(_dataModel, ch)));
@@ -321,7 +301,37 @@ class CharacterTreeNode extends DefaultMutableTreeNode {
 
 	@Override
 	public String toString() {
-		return RTFUtils.stripFormatting(_character.getDescription());
+		return String.format("%d. %s", _character.getCharacterId(), RTFUtils.stripFormatting(_character.getDescription()));
 	}
 
+}
+
+class MultistateStateNode extends DefaultMutableTreeNode {
+
+	private static final long serialVersionUID = 1L;
+	
+	private MultiStateCharacter _character;
+	private EditorDataModel _dataModel;
+	private int _stateNo;
+	
+	public MultistateStateNode(EditorDataModel dataModel, MultiStateCharacter ch, int stateNo) {
+		super(ch.getState(stateNo));
+		_character = ch;
+		_dataModel = dataModel;
+		_stateNo = stateNo;
+	}
+	
+	@Override
+	public boolean isLeaf() {
+		return true;
+	}
+	
+	public MultiStateCharacter getCharacter() {
+		return _character;
+	}
+	
+	public int getStateNo() {
+		return _stateNo;
+	}
+	
 }

@@ -47,6 +47,7 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
+import org.apache.commons.lang.StringUtils;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.Resource;
@@ -332,13 +333,22 @@ class AttributeCellRenderer extends DefaultTableCellRenderer {
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 
 		Component comp = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+		MatrixTableModel model = (MatrixTableModel) table.getModel();
 
 		if (isSelected) {
 			setBackground(SystemColor.textHighlight);
 			setForeground(SystemColor.textHighlightText);
 		} else {
-			setForeground(SystemColor.controlText);
-			if (table.getModel().isCellEditable(row, column)) {
+
+			Integer implicit = model.getImplicitStateNo(row, column);
+			if (implicit != null) {
+				// This is an implicit value...
+				setForeground(SystemColor.green);
+			} else {
+				setForeground(SystemColor.controlText);
+			}
+			
+			if (model.isCellEditable(row, column)) {
 				setBackground(Color.WHITE);
 			} else {
 				setBackground(new Color(0xE8, 0xE8, 0xE8));

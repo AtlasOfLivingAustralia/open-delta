@@ -73,6 +73,10 @@ public class VOItemAdaptor implements ItemData {
 		if (character == null) {
 			return null;
 		}
+		
+		 if (_voItemDesc.readAttribute(((VOCharacterAdaptor)character.getImpl()).getCharBaseDesc().getUniId())== null) {
+			 return null;
+		 }
 		AttributeData impl = new VOAttributeAdaptor(_voItemDesc, getVOCharBaseDesc(character));
 		return new au.org.ala.delta.model.Attribute(character, impl);
 	}
