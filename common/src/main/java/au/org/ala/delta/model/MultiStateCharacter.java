@@ -16,7 +16,6 @@ package au.org.ala.delta.model;
 
 public abstract class MultiStateCharacter extends Character {
 
-
 	private ImplicitValue _implicitValueStateId;
 
 	public MultiStateCharacter(int number, CharacterType characterType) {
@@ -30,7 +29,7 @@ public abstract class MultiStateCharacter extends Character {
 	public void setNumberOfStates(int states) {
 		_impl.setNumberOfStates(states);
 	}
-	
+
 	public void setState(int stateNumber, String text) {
 		_impl.setStateText(stateNumber, text);
 	}
@@ -38,22 +37,29 @@ public abstract class MultiStateCharacter extends Character {
 	public String getState(int stateNumber) {
 		return stateNumber + ". " + _impl.getStateText(stateNumber);
 	}
+
 	public String[] getStates() {
 		String[] states = new String[_impl.getNumberOfStates()];
-		for (int i=1; i<=states.length; i++) {
-			states[i-1] = _impl.getStateText(i);
+		for (int i = 1; i <= states.length; i++) {
+			states[i - 1] = _impl.getStateText(i);
 		}
 		return states;
 	}
 
-	public void setImplicitValueStateId(ImplicitValue value) {
-		_implicitValueStateId = value;
+	public int getCodedImplicitState() {
+		return _impl.getCodedImplicitState();
+	}
+	
+	public int getUncodedImplicitState() {
+		return _impl.getUncodedImplicitState();
+	}
+	
+	public void setCodedImplicitState(int stateId) {
+		_impl.setCodedImplicitState(stateId);
+	}
+	
+	public void setUncodedImplicitState(int stateId) {
+		_impl.setUncodedImplicitState(stateId);
 	}
 
-	public ImplicitValue getImplicitValueStateId() {
-		return _implicitValueStateId;
-	}
-	
-	
-	
 }

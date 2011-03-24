@@ -45,7 +45,8 @@ public class ImplicitValues extends AbstractCharacterListDirective<ImplicitValue
 		if (c instanceof MultiStateCharacter) {
 			Logger.debug("Setting implicit value for character %d: %s", charIndex, rhs);
 			MultiStateCharacter msc = (MultiStateCharacter) c;
-			msc.setImplicitValueStateId(rhs);
+			msc.setCodedImplicitState(rhs.getCoded());
+			msc.setUncodedImplicitState(rhs.getUncoded());
 		} else {
 			throw new RuntimeException("Attempted to set implicit values for non-multistate character: " + charIndex);
 		}

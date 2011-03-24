@@ -2,31 +2,40 @@ package au.org.ala.delta.model.impl;
 
 public interface CharacterData {
 	
-	public String getDescription();
+	String getDescription();
 	
-	public boolean isExclusive();
+	boolean isExclusive();
 	
-	public boolean isMandatory();
+	boolean isMandatory();
 	
-	public String getUnits();
+	String getUnits();
 	
-	public String getStateText(int stateNumber);
+	String getStateText(int stateNumber);
 	
-	public void setStateText(int stateNumber, String text);
+	void setStateText(int stateNumber, String text);
 	
-	public int getNumberOfStates();
+	int getNumberOfStates();
 	
-	public void setNumberOfStates(int numStates);
+	void setNumberOfStates(int numStates);
 	
-	public void setMandatory(boolean b);
+	void setMandatory(boolean b);
 
-	public void setDescription(String desc);
+	void setDescription(String desc);
 
-	public void setUnits(String units);
+	void setUnits(String units);
 
-	public void setExclusive(boolean exclusive);
+	void setExclusive(boolean exclusive);
 	
-	public String getNotes();
+	String getNotes();
 
 	void setNotes(String note);
+	
+	int getCodedImplicitState();
+	
+	void setCodedImplicitState(int stateId);
+	
+	int getUncodedImplicitState();
+	
+	void setUncodedImplicitState(int stateId);
+	
 }

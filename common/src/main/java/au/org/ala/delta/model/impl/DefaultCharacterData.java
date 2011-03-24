@@ -11,6 +11,8 @@ public class DefaultCharacterData implements CharacterData {
 	private boolean _mandatory;
 	private String _units;
 	private String[] _states = new String[0];
+	private int _codedImplicitStateId;
+	private int _uncodedImplicitStateId;
 
 	@Override
 	public String getDescription() {
@@ -88,5 +90,25 @@ public class DefaultCharacterData implements CharacterData {
 	public void setExclusive(boolean exclusive) {
 		_exclusive = exclusive;
 		
+	}
+
+	@Override
+	public int getCodedImplicitState() {
+		return _codedImplicitStateId;
+	}
+
+	@Override
+	public void setCodedImplicitState(int stateId) {
+		_codedImplicitStateId = stateId;
+	}
+
+	@Override
+	public int getUncodedImplicitState() {
+		return _uncodedImplicitStateId;
+	}
+
+	@Override
+	public void setUncodedImplicitState(int stateId) {
+		_uncodedImplicitStateId = stateId;
 	}
 }
