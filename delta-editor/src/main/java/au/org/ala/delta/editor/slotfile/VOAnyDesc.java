@@ -312,10 +312,10 @@ public abstract class VOAnyDesc {
 	/** Allows the automatic makeTemp() operation to be disabled during saves */
 	private boolean _tempDisabled = false;
 	public void disableTemp() {
-		_tempDisabled = false;
+		_tempDisabled = true;
 	}
 	public void enableTemp() {
-		_tempDisabled = true;
+		_tempDisabled = false;
 	}
 		
 	public boolean makeTemp() {
@@ -769,9 +769,4 @@ public abstract class VOAnyDesc {
 	public void setSlotFile(SlotFile dstFile) {
 		_slotFile = dstFile;
 	}
-
-	public void setVop(VOP vop) {
-		_vop = vop;
-	}
-
 }

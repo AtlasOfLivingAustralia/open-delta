@@ -76,7 +76,7 @@ public class VOCharTextDesc extends VOAnyDesc {
 		return 0;
 	}
 
-	public void StoreQData() {
+	public void storeQData() {
 		synchronized (getVOP()) {
 			// Instead the DeltaVOP.commit() method is synchronized.
 			makeTemp();
@@ -89,14 +89,14 @@ public class VOCharTextDesc extends VOAnyDesc {
 			// program
 			// version)
 			// re-write the whole slot, using the new size.
-			if (_fixedData.fixedSize < VOCharBaseDesc.CharBaseFixedData.SIZE) {
+			if (_fixedData.fixedSize < CharTextFixedData.SIZE) {
 				// Save a copy of all "variable" data
 				trailerBuf = dupTrailingData(0);
 				if (trailerBuf != null) {
 					trailerLeng = trailerBuf.length;
 				}
-				_dataOffs = SlotFile.SlotHeader.SIZE + VOCharBaseDesc.CharBaseFixedData.SIZE;
-				_fixedData.fixedSize = VOCharBaseDesc.CharBaseFixedData.SIZE;
+				_dataOffs = SlotFile.SlotHeader.SIZE + CharTextFixedData.SIZE;
+				_fixedData.fixedSize = CharTextFixedData.SIZE;
 				// Do seek to force allocation of large enough slot
 				dataSeek(trailerLeng);
 			}

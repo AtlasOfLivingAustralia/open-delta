@@ -196,6 +196,8 @@ public class VODeltaMasterDesc extends VONoteDesc {
 			index--;
 		}
 		vector.add(index, (Integer) uid);
+		
+		setDirty();
 
 		return true;
 	}

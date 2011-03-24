@@ -1,5 +1,7 @@
 package au.org.ala.delta.editor.slotfile.model;
 
+import java.io.File;
+
 import junit.framework.TestCase;
 
 import org.junit.Test;
@@ -15,13 +17,15 @@ import au.org.ala.delta.model.TextCharacter;
  */
 public class SlotFileDataSetTest extends TestCase {
 
-	private SlotFileDataSet _dataSet = (SlotFileDataSet)new SlotFileDataSetFactory().createDataSet("test");
+	private SlotFileRepository _repo = new SlotFileRepository();
+	
+	private SlotFileDataSet _dataSet = (SlotFileDataSet)_repo.newDataSet();
 	
 	/**
 	 * Tests that a new Data set can be created and a text character added successfully.
 	 */
 	@Test
-	public void testCreateNewTextCharacter() {
+	public void testCreateNewTextCharacter() throws Exception {
 		
 		String description = "I am a new text character";
 		String notes = "This is a really great character";
@@ -34,6 +38,11 @@ public class SlotFileDataSetTest extends TestCase {
 		textChar.setMandatory(mandatory);
 		textChar.setNotes(notes);
 		
+		File temp = File.createTempFile("test", "dlt");
+		_repo.saveAsName(_dataSet, temp.getAbsolutePath(), null);
+		_dataSet.close();
+	
+		_dataSet = (SlotFileDataSet)_repo.findByName(temp.getAbsolutePath(), null);
 		
 		int number = textChar.getCharacterId();
 		textChar = (TextCharacter)_dataSet.getCharacter(number);
