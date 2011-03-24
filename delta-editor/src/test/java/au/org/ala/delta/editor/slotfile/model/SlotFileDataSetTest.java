@@ -38,7 +38,7 @@ public class SlotFileDataSetTest extends TestCase {
 		textChar.setMandatory(mandatory);
 		textChar.setNotes(notes);
 		
-		File temp = File.createTempFile("test", "dlt");
+		File temp = File.createTempFile("test", ".dlt");
 		_repo.saveAsName(_dataSet, temp.getAbsolutePath(), null);
 		_dataSet.close();
 	
@@ -134,7 +134,7 @@ public class SlotFileDataSetTest extends TestCase {
 	 * Tests that a new Data set can be created and a new item added successfully.
 	 */
 	@Test
-	public void testCreateNewItemWithTextAttribute() {
+	public void testCreateNewItemWithTextAttribute() throws Exception {
 	
 		TextCharacter textChar = (TextCharacter)_dataSet.addCharacter(CharacterType.Text);
 		textChar.setDescription("Text char");
@@ -146,6 +146,12 @@ public class SlotFileDataSetTest extends TestCase {
 		
 		String attributeText = "I am a new item attribute";
 		item.addAttribute(textChar,"<"+attributeText+">");
+		
+		File temp = File.createTempFile("test", ".dlt");
+		_repo.saveAsName(_dataSet, temp.getAbsolutePath(), null);
+		_dataSet.close();
+	
+		_dataSet = (SlotFileDataSet)_repo.findByName(temp.getAbsolutePath(), null);
 		
 		item = _dataSet.getItem(item.getItemNumber());
 		assertEquals(description, item.getDescription());

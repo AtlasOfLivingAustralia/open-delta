@@ -163,16 +163,16 @@ public class VOItemDesc extends VOImageHolderDesc implements INameHolder {
 			// If the size of TFixedData has been increased (due to a newer program
 			// version)
 			// re-write the whole slot, using the new size.
-			if (_fixedData.fixedSize < FixedData.SIZE) {
+			if (_fixedData.fixedSize < ItemFixedData.SIZE) {
 				// Save a copy of all "variable" data
 				trailerBuf = dupTrailingData(0);
 				if (trailerBuf != null) {
 					trailerLeng = trailerBuf.length;
 				}
-				_dataOffs = SlotFile.SlotHeader.SIZE + FixedData.SIZE; // /// Adjust
+				_dataOffs = SlotFile.SlotHeader.SIZE + ItemFixedData.SIZE; // /// Adjust
 																		// DataOffs
 																		// accordingly
-				_fixedData.fixedSize = FixedData.SIZE;
+				_fixedData.fixedSize = ItemFixedData.SIZE;
 				// Do seek to force allocation of large enough slot
 				dataSeek(trailerLeng);
 			}
