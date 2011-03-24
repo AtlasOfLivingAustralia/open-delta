@@ -307,9 +307,19 @@ public abstract class VOAnyDesc {
 	protected int dataSeek(int pos) {
 		return dataSeek(pos, SeekDirection.FROM_BEG);
 	}
+	
+	
+	/** Allows the automatic makeTemp() operation to be disabled during saves */
+	private boolean _tempDisabled = false;
+	public void disableTemp() {
+		_tempDisabled = false;
+	}
+	public void enableTemp() {
+		_tempDisabled = true;
+	}
 		
 	public boolean makeTemp() {
-		if (_vop == null) {
+		if (_tempDisabled) {
 			return false;
 		}
 		

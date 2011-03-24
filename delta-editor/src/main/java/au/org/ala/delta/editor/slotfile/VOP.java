@@ -185,12 +185,12 @@ public class VOP {
 				// At this stage, DataSeek and DataWrite must NOT automatically move the object
 				// to the temporary file. So we set the descriptor's VOP pointer to NULL, so that
 				// MakeTemp() will fail.
-		         desc.setVop(null);
+		         desc.disableTemp();
 
 		         desc.storeQData();
 		         desc.setDirty(false); ////
 
-		         desc.setVop(this);
+		        desc.enableTemp();
 			}
 			if(desc.hasRefChanged()) {
 				desc.writeRefCount(desc.getRefCount());  // sum stored RefCount.

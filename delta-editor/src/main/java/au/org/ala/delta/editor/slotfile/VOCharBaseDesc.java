@@ -102,37 +102,37 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 	}
 
 	public void storeQData() {
-		// This method is not synchronized on the VOP as the VOP is null at this
-		// point.
-		makeTemp();
-		writeStateNumberMap(_stateNumberMappingVector);
-
-		byte[] trailerBuf = null;
-		int trailerLeng = 0;
-
-		// If the size of TFixedData has been increased (due to a newer program
-		// version)
-		// re-write the whole slot, using the new size.
-		if (_fixedData.fixedSize < CharBaseFixedData.SIZE) {
-			// Save a copy of all "variable" data
-			trailerBuf = dupTrailingData(0);
-			if (trailerBuf != null) {
-				trailerLeng = trailerBuf.length;
+		synchronized (getVOP()) {
+			makeTemp();
+			writeStateNumberMap(_stateNumberMappingVector);
+	
+			byte[] trailerBuf = null;
+			int trailerLeng = 0;
+	
+			// If the size of TFixedData has been increased (due to a newer program
+			// version)
+			// re-write the whole slot, using the new size.
+			if (_fixedData.fixedSize < CharBaseFixedData.SIZE) {
+				// Save a copy of all "variable" data
+				trailerBuf = dupTrailingData(0);
+				if (trailerBuf != null) {
+					trailerLeng = trailerBuf.length;
+				}
+				_dataOffs = SlotFile.SlotHeader.SIZE + CharBaseFixedData.SIZE; 
+				_fixedData.fixedSize = CharBaseFixedData.SIZE;
+				// Do seek to force allocation of large enough slot
+				dataSeek(trailerLeng);
 			}
-			_dataOffs = SlotFile.SlotHeader.SIZE + CharBaseFixedData.SIZE; 
-			_fixedData.fixedSize = CharBaseFixedData.SIZE;
-			// Do seek to force allocation of large enough slot
-			dataSeek(trailerLeng);
-		}
-
-		_slotFile.seek(_slotHdrPtr + SlotFile.SlotHeader.SIZE);
-		_fixedData.write(_slotFile);
-
-		if (trailerBuf != null) { // If fixedData was resized, re-write the
-									// saved, variable-length data
-			dataSeek(0);
-			dataWrite(trailerBuf);
-			dataTruncate();
+	
+			_slotFile.seek(_slotHdrPtr + SlotFile.SlotHeader.SIZE);
+			_fixedData.write(_slotFile);
+	
+			if (trailerBuf != null) { // If fixedData was resized, re-write the
+										// saved, variable-length data
+				dataSeek(0);
+				dataWrite(trailerBuf);
+				dataTruncate();
+			}
 		}
 	}
 
