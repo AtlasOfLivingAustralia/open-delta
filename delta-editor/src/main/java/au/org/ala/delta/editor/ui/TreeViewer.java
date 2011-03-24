@@ -132,6 +132,9 @@ public class TreeViewer extends JInternalFrame {
 
 		this.getContentPane().setLayout(new BorderLayout());
 		getContentPane().add(divider);
+		
+		lst.setSelectedIndex(0);
+		tree.setSelectionRow(0);
 
 	}
 }

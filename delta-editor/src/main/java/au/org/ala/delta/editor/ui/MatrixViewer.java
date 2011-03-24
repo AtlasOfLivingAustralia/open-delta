@@ -80,7 +80,6 @@ public class MatrixViewer extends JInternalFrame {
 		_table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		_table.getTableHeader().setSize(new Dimension(_table.getColumnModel().getTotalColumnWidth(), 100));
 		_table.getSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-		_table.setRowSelectionAllowed(false);
 		_table.setCellSelectionEnabled(true);
 		_table.setDefaultRenderer(Object.class, new AttributeCellRenderer());
 
@@ -176,6 +175,13 @@ public class MatrixViewer extends JInternalFrame {
 		if (copySelection != null) {
 			_table.getActionMap().put("copy", copySelection);
 		}
+		
+		selectCell(0, 0);
+	}
+	
+	private void selectCell(int rowIndex, int colIndex) {
+		_table.getSelectionModel().setSelectionInterval(rowIndex, rowIndex);
+		_table.getColumnModel().getSelectionModel().setSelectionInterval(colIndex, colIndex);		
 	}
 
 	@Action(block = BlockingScope.APPLICATION)
