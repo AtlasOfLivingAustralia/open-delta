@@ -7,9 +7,13 @@ import java.util.Map;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 
+/**
+ * Implements ItemData and stores the data in memory.
+ */
 public class DefaultItemData implements ItemData {
 
 	private String _description;
+	private boolean _variant;
 	
 	private Map<Character, Attribute> _attributes = new HashMap<Character, Attribute>();
 	
@@ -41,6 +45,17 @@ public class DefaultItemData implements ItemData {
 		Attribute attribute = new Attribute(character, attributeData);
 		_attributes.put(character, attribute);
 	}
+
+	@Override
+	public boolean isVariant() {
+		return _variant;
+	}
+
+	@Override
+	public void setVariant(boolean variant) {
+		_variant = variant;	
+	}
+	
 	
 	
 

@@ -16,4 +16,8 @@ public interface ItemData {
 	public Attribute getAttribute(Character character);
 
 	public void addAttribute(Character character, String value);
+
+	public boolean isVariant();
+	
+	public void setVariant(boolean variant);
 }

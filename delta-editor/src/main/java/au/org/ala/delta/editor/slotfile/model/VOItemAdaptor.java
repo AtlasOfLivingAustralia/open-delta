@@ -95,4 +95,14 @@ public class VOItemAdaptor implements ItemData {
 	private VOCharBaseDesc getVOCharBaseDesc(Character character) {
 		return ((VOCharacterAdaptor)character.getImpl()).getCharBaseDesc();
 	}
+
+	@Override
+	public boolean isVariant() {
+		return _voItemDesc.isVariant();
+	}
+
+	@Override
+	public void setVariant(boolean variant) {
+		_voItemDesc.setVariant(variant);
+	}
 }

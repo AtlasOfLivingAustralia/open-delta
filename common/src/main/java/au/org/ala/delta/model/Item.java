@@ -64,4 +64,12 @@ public class Item {
 	public boolean hasAttribute(Character character) {
 		return getAttribute(character) != null;
 	}
+	
+	public boolean isVariant() {
+		return _impl.isVariant();
+	}
+	
+	public void setVariant(boolean variant) {
+		_impl.setVariant(variant);
+	}
 }
