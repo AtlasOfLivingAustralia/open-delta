@@ -152,41 +152,41 @@ public class VOItemDesc extends VOImageHolderDesc implements INameHolder {
 
 	// Write the cached data
 	public void storeQData() {
-		synchronized (getVOP()) {
+		// This method is not synchronized on the VOP as the VOP is null at this point.
+		// Instead the DeltaVOP.commit() method is synchronized.
 
-			makeTemp();
-			List<Attribute> attribList = readAllAttributes();
-			writeAllAttributes(attribList, false);
+		makeTemp();
+		List<Attribute> attribList = readAllAttributes();
+		writeAllAttributes(attribList, false);
 
-			byte[] trailerBuf = null;
-			int trailerLeng = 0;
+		byte[] trailerBuf = null;
+		int trailerLeng = 0;
 
-			// If the size of TFixedData has been increased (due to a newer program
-			// version)
-			// re-write the whole slot, using the new size.
-			if (_fixedData.fixedSize < FixedData.SIZE) {
-				// Save a copy of all "variable" data
-				trailerBuf = dupTrailingData(0);
-				if (trailerBuf != null) {
-					trailerLeng = trailerBuf.length;
-				}
-				_dataOffs = SlotFile.SlotHeader.SIZE + FixedData.SIZE; // /// Adjust
-																		// DataOffs
-																		// accordingly
-				_fixedData.fixedSize = FixedData.SIZE;
-				// Do seek to force allocation of large enough slot
-				dataSeek(trailerLeng);
+		// If the size of TFixedData has been increased (due to a newer program
+		// version)
+		// re-write the whole slot, using the new size.
+		if (_fixedData.fixedSize < FixedData.SIZE) {
+			// Save a copy of all "variable" data
+			trailerBuf = dupTrailingData(0);
+			if (trailerBuf != null) {
+				trailerLeng = trailerBuf.length;
 			}
+			_dataOffs = SlotFile.SlotHeader.SIZE + FixedData.SIZE; // /// Adjust
+																	// DataOffs
+																	// accordingly
+			_fixedData.fixedSize = FixedData.SIZE;
+			// Do seek to force allocation of large enough slot
+			dataSeek(trailerLeng);
+		}
 
-			_slotFile.seek(_slotHdrPtr + SlotFile.SlotHeader.SIZE);
-			_fixedData.write(_slotFile);
+		_slotFile.seek(_slotHdrPtr + SlotFile.SlotHeader.SIZE);
+		_fixedData.write(_slotFile);
 
-			if (trailerBuf != null) { // If fixedData was resized, re-write the
-										// saved, variable-length data
-				dataSeek(0);
-				dataWrite(trailerBuf);
-				dataTruncate();
-			}
+		if (trailerBuf != null) { // If fixedData was resized, re-write the
+									// saved, variable-length data
+			dataSeek(0);
+			dataWrite(trailerBuf);
+			dataTruncate();
 		}
 	}
 

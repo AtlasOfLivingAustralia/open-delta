@@ -18,8 +18,6 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.NotImplementedException;
-
 import au.org.ala.delta.rtf.RTFUtils;
 import au.org.ala.delta.util.Utils;
 
@@ -79,8 +77,39 @@ public class VOCharTextDesc extends VOAnyDesc {
 	}
 
 	public void StoreQData() {
-		throw new NotImplementedException();
-		// write the cached data
+		// This method is not synchronized on the VOP as the VOP is null at this
+		// point.
+		// Instead the DeltaVOP.commit() method is synchronized.
+		makeTemp();
+		writeStateLengs(_stateLengs);
+
+		byte[] trailerBuf = null;
+		int trailerLeng = 0;
+
+		// If the size of TFixedData has been increased (due to a newer program
+		// version)
+		// re-write the whole slot, using the new size.
+		if (_fixedData.fixedSize < VOCharBaseDesc.CharBaseFixedData.SIZE) {
+			// Save a copy of all "variable" data
+			trailerBuf = dupTrailingData(0);
+			if (trailerBuf != null) {
+				trailerLeng = trailerBuf.length;
+			}
+			_dataOffs = SlotFile.SlotHeader.SIZE + VOCharBaseDesc.CharBaseFixedData.SIZE;
+			_fixedData.fixedSize = VOCharBaseDesc.CharBaseFixedData.SIZE;
+			// Do seek to force allocation of large enough slot
+			dataSeek(trailerLeng);
+		}
+
+		_slotFile.seek(_slotHdrPtr + SlotFile.SlotHeader.SIZE);
+		_fixedData.write(_slotFile);
+
+		if (trailerBuf != null) { // If fixedData was resized, re-write the
+									// saved, variable-length data
+			dataSeek(0);
+			dataWrite(trailerBuf);
+			dataTruncate();
+		}
 	}
 
 	public int getCharBaseId() {
@@ -348,7 +377,9 @@ public class VOCharTextDesc extends VOAnyDesc {
 
 	/**
 	 * Writes the supplied note text to the slot file.
-	 * @param noteText the note text to write.
+	 * 
+	 * @param noteText
+	 *            the note text to write.
 	 */
 	public void writeNoteText(String noteText) {
 		byte[] trailerBuf = null;
@@ -358,7 +389,7 @@ public class VOCharTextDesc extends VOAnyDesc {
 			seekPos += _stateLengs.get(i);
 		}
 		if (noteText.length() != _fixedData.notesLeng) { // Save a copy of any
-													// following data!
+			// following data!
 			trailerBuf = dupTrailingData(seekPos + _fixedData.notesLeng);
 			if (trailerBuf != null) {
 				trailerLeng = trailerBuf.length;
@@ -378,10 +409,15 @@ public class VOCharTextDesc extends VOAnyDesc {
 	}
 
 	/**
-	 * Writes the feature description, all state text and notes to the slot file.
-	 * @param feature the new feature description
-	 * @param states the new state text
-	 * @param notes the new notes
+	 * Writes the feature description, all state text and notes to the slot
+	 * file.
+	 * 
+	 * @param feature
+	 *            the new feature description
+	 * @param states
+	 *            the new state text
+	 * @param notes
+	 *            the new notes
 	 */
 	public void writeAllText(String feature, List<String> states, String notes) {
 		int seekPos = states.size() * 4 + feature.length() + notes.length();
@@ -393,9 +429,9 @@ public class VOCharTextDesc extends VOAnyDesc {
 		dataSeek(0);
 		_stateLengs = new ArrayList<Integer>();
 		for (String state : states) {
-		    int stLeng = state.length();
-		    dataWrite(stLeng);
-		    _stateLengs.add(stLeng);
+			int stLeng = state.length();
+			dataWrite(stLeng);
+			_stateLengs.add(stLeng);
 		}
 		_fixedData.nStateLengs = states.size();
 		dataWrite(stringToBytes(feature));

@@ -26,7 +26,8 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 
 	public static final int STATEID_NULL = -1;
 
-	public static final byte CHAR_EXCLUSIVE = 0x1; // Character states are exclusive
+	public static final byte CHAR_EXCLUSIVE = 0x1; // Character states are
+													// exclusive
 	public static final byte CHAR_MANDATORY = 0x2; // Character is mandatory
 
 	private CharBaseFixedData _fixedData;
@@ -44,18 +45,23 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 			_fixedData = new CharBaseFixedData();
 			_fixedData.read(_slotFile);
 
-			// Logger.debug("UniId: %d charType: %d nStates: %d nStatesUsed: %d charFlags: %x uncodedImplict: %d codedImplict: %d nControlling: %d nControls: %d nImages: %d", _fixedData.UniId,
-			// _fixedData.charType, _fixedData.nStates, _fixedData.nStatesUsed, _fixedData.charFlags, _fixedData.uncodedImplicit, _fixedData.codedImplicit, _fixedData.nControlling,
+			// Logger.debug("UniId: %d charType: %d nStates: %d nStatesUsed: %d charFlags: %x uncodedImplict: %d codedImplict: %d nControlling: %d nControls: %d nImages: %d",
+			// _fixedData.UniId,
+			// _fixedData.charType, _fixedData.nStates, _fixedData.nStatesUsed,
+			// _fixedData.charFlags, _fixedData.uncodedImplicit,
+			// _fixedData.codedImplicit, _fixedData.nControlling,
 			// _fixedData.nControls, _fixedData.nImages);
 
 			dataSeek(0);
 
 			_stateNumberMappingVector = readStateNumberMap();
-			// Logger.debug("StateNumberMapping: %s", _stateNumberMappingVector);
+			// Logger.debug("StateNumberMapping: %s",
+			// _stateNumberMappingVector);
 
 			cacheCharTextInfo(0, (short) 0);
 
-			// Logger.debug("CharTextInfo: LangDesc = %d, CharTextDesc =%d", _charDescript.langDesc, _charDescript.charDesc);
+			// Logger.debug("CharTextInfo: LangDesc = %d, CharTextDesc =%d",
+			// _charDescript.langDesc, _charDescript.charDesc);
 		}
 
 	}
@@ -79,7 +85,8 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 	public List<Integer> readImageList() {
 		synchronized (getVOP()) {
 			List<Integer> dest = new ArrayList<Integer>();
-			dataSeek(_fixedData.nStates * 4 + _fixedData.nDescriptors * CharTextInfo.SIZE + _fixedData.nControlling * 4 + _fixedData.nControls * 4);
+			dataSeek(_fixedData.nStates * 4 + _fixedData.nDescriptors * CharTextInfo.SIZE + _fixedData.nControlling * 4
+					+ _fixedData.nControls * 4);
 
 			ByteBuffer b = readBuffer(_fixedData.nImages * 4);
 			for (int i = 0; i < _fixedData.nImages; ++i) {
@@ -95,7 +102,38 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 	}
 
 	public void storeQData() {
-		throw new NotImplementedException();
+		// This method is not synchronized on the VOP as the VOP is null at this
+		// point.
+		makeTemp();
+		writeStateNumberMap(_stateNumberMappingVector);
+
+		byte[] trailerBuf = null;
+		int trailerLeng = 0;
+
+		// If the size of TFixedData has been increased (due to a newer program
+		// version)
+		// re-write the whole slot, using the new size.
+		if (_fixedData.fixedSize < CharBaseFixedData.SIZE) {
+			// Save a copy of all "variable" data
+			trailerBuf = dupTrailingData(0);
+			if (trailerBuf != null) {
+				trailerLeng = trailerBuf.length;
+			}
+			_dataOffs = SlotFile.SlotHeader.SIZE + CharBaseFixedData.SIZE; 
+			_fixedData.fixedSize = CharBaseFixedData.SIZE;
+			// Do seek to force allocation of large enough slot
+			dataSeek(trailerLeng);
+		}
+
+		_slotFile.seek(_slotHdrPtr + SlotFile.SlotHeader.SIZE);
+		_fixedData.write(_slotFile);
+
+		if (trailerBuf != null) { // If fixedData was resized, re-write the
+									// saved, variable-length data
+			dataSeek(0);
+			dataWrite(trailerBuf);
+			dataTruncate();
+		}
 	}
 
 	public int getCharType() {
@@ -185,12 +223,12 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 	}
 
 	public void setInitialStateNumber(int nStates) {
-	   _stateNumberMappingVector = new ArrayList<Integer>(nStates);
-	   for (int i = 0; i < nStates; ++i) {
-	      _stateNumberMappingVector.add(i);
-	   }
-	   _fixedData.nStatesUsed = nStates;
-	   setDirty();
+		_stateNumberMappingVector = new ArrayList<Integer>(nStates);
+		for (int i = 0; i < nStates; ++i) {
+			_stateNumberMappingVector.add(i);
+		}
+		_fixedData.nStatesUsed = nStates;
+		setDirty();
 	}
 
 	public boolean addControllingInfo(List<Integer> src) {
@@ -222,7 +260,7 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 	}
 
 	public VOCharTextDesc cacheCharTextInfo(int langDesc, short variantNo) {
-        return readCharTextInfo(langDesc, variantNo, true);
+		return readCharTextInfo(langDesc, variantNo, true);
 	}
 
 	public List<Integer> readStateNumberMap() {
@@ -234,7 +272,7 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 	public VOCharTextDesc readCharTextInfo(int langDesc, short variantNo) {
 		return readCharTextInfo(langDesc, variantNo, false);
 	}
-	
+
 	protected VOCharTextDesc readCharTextInfo(int langDesc, short variantNo, boolean cacheCharTextInfo) {
 		synchronized (getVOP()) {
 			CharTextInfo someInfo = new CharTextInfo();
@@ -249,7 +287,7 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 						if (cacheCharTextInfo) {
 							_charDescript = someInfo;
 						}
-						return (VOCharTextDesc)getVOP().getDescFromId(someInfo.charDesc);
+						return (VOCharTextDesc) getVOP().getDescFromId(someInfo.charDesc);
 					}
 				}
 			}
@@ -257,8 +295,9 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 			VOCharTextDesc.CharTextFixedData charTextFixedData = new VOCharTextDesc.CharTextFixedData();
 			List<CharTextInfo> existingText = readCharTextInfo();
 			charTextFixedData.charBaseId = getUniId();
-			
-			VOCharTextDesc charTextDesc = (VOCharTextDesc)getVOP().insertObject(charTextFixedData, CharTextFixedData.SIZE, null, 0, 0);
+
+			VOCharTextDesc charTextDesc = (VOCharTextDesc) getVOP().insertObject(charTextFixedData,
+					CharTextFixedData.SIZE, null, 0, 0);
 			someInfo.langDesc = 0;
 			someInfo.charDesc = charTextDesc.getUniId();
 			if (cacheCharTextInfo) {
@@ -266,7 +305,7 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 			}
 			existingText.add(someInfo);
 			writeCharTextInfo(existingText);
-			
+
 			return charTextDesc;
 		}
 	}
@@ -313,36 +352,62 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 
 	}
 
-	public void writeStateNumberMap(List<Short> src) {
-		throw new NotImplementedException();
+	public void writeStateNumberMap(List<Integer> src) {
+		byte[] trailerBuf = null;
+		int trailerLeng = 0;
+		int startPos = 0;
+		if (src.size() != _fixedData.nStates) { // Save a copy of any following
+												// data!
+			trailerBuf = dupTrailingData(_fixedData.nStates * 4);
+			if (trailerBuf != null) {
+				trailerLeng = trailerBuf.length;
+			}
+		}
+
+		// Seek to force allocation of large enough slot
+		dataSeek(4 * src.size() + trailerLeng);
+		dataSeek(startPos);
+
+		for (int i : src) {
+			dataWrite(i);
+		}
+		if (src.size() != _fixedData.nStates) {
+			_fixedData.nStates = src.size();
+			setDirty();
+			if (trailerBuf != null) {
+				dataWrite(trailerBuf);
+				dataTruncate();
+			}
+		}
 	}
 
 	public void writeCharTextInfo(List<CharTextInfo> src) {
 		byte[] trailerBuf = null;
 		int trailerLeng = 0;
 		int startPos = _fixedData.nStates * 4;
-		if (src.size() != _fixedData.nDescriptors) {// Save a copy of any following data!
-		    trailerBuf = dupTrailingData(startPos + _fixedData.nDescriptors * CharTextInfo.SIZE);
-		    if (trailerBuf != null) {
-		    	trailerLeng = trailerBuf.length;
-		    }
+		if (src.size() != _fixedData.nDescriptors) {// Save a copy of any
+													// following data!
+			trailerBuf = dupTrailingData(startPos + _fixedData.nDescriptors * CharTextInfo.SIZE);
+			if (trailerBuf != null) {
+				trailerLeng = trailerBuf.length;
+			}
 		}
 
-	  // Seek to force allocation of large enough slot
-	  dataSeek(startPos + CharTextInfo.SIZE * src.size() + trailerLeng);
-	  dataSeek(startPos);
+		// Seek to force allocation of large enough slot
+		dataSeek(startPos + CharTextInfo.SIZE * src.size() + trailerLeng);
+		dataSeek(startPos);
 
-	  for (CharTextInfo charText : src) {
-		  dataWrite(charText);
-	  }
-	  if (src.size() != _fixedData.nDescriptors) {
-	      _fixedData.nDescriptors = src.size();
-	      setDirty();
-	      if (trailerBuf != null) {
-	          dataWrite(trailerBuf);
-	          dataTruncate();
-	        }
-	    }
+		for (CharTextInfo charText : src) {
+			dataWrite(charText);
+		}
+		if (src.size() != _fixedData.nDescriptors) {
+			_fixedData.nDescriptors = src.size();
+			setDirty();
+			if (trailerBuf != null) {
+				dataWrite(trailerBuf);
+				dataTruncate();
+			}
+		}
 	}
 
 	public void writeControllingInfo(List<Integer> src) {
@@ -489,15 +554,16 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 			file.writeInt(charDesc);
 		}
 
-		/* (non-Javadoc)
+		/*
+		 * (non-Javadoc)
+		 * 
 		 * @see au.org.ala.delta.editor.slotfile.IOObject#size()
 		 */
 		@Override
 		public int size() {
 			return SIZE;
 		}
-		
-		
+
 	}
 
 }

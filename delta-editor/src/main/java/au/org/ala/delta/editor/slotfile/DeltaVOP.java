@@ -81,40 +81,43 @@ public class DeltaVOP extends VOP {
 
 	// Wrapper around Vop::Commit to also make a .bak copy of the "original" file
 	public boolean commit(SlotFile slotFile) {
-		if (slotFile == null) {
-			slotFile = getPermSlotFile();
-		}
-		if (slotFile == null) {
-			return false;
-		}
-		if (slotFile.getFileMode() == BinFileMode.FM_EXISTING) {
-			String bakName = slotFile.getFileName();
-			if (bakName.charAt(bakName.length() -1) != '.') {
-		        bakName += '.';
+		
+		synchronized(this) {
+			if (slotFile == null) {
+				slotFile = getPermSlotFile();
 			}
-		    bakName += "bak";
-		    try {
-		          // Copy the entire contents of the original file,
-		          // and its timestamp
-		          BinFile bakFile = new BinFile(bakName, BinFileMode.FM_NEW);
-		          slotFile.seekToEnd();
-		          int size = slotFile.tell();
-		          slotFile.seekToBegin();
-		          bakFile.copyFile(slotFile, size);
-		          
-		          bakFile.setFileTime(slotFile.getFileTime());
-		     }
-		     catch (Exception e) {
-		          //::MessageBox(NULL, "Error creating backup of data file", "File Error", MB_OK);
-		    	 throw new RuntimeException(e);
-		     }
-		 }
-		  boolean result = super.commit(slotFile);
-		  // "Touch" the time stamp; otherwise the time stamp isn't updated until we
-		  // finally close the file, which could lead to mis-leading times on the backup
-		  // version.
-		  slotFile.setFileTime(System.currentTimeMillis());
-		  return result;
+			if (slotFile == null) {
+				return false;
+			}
+			if (slotFile.getFileMode() == BinFileMode.FM_EXISTING) {
+				String bakName = slotFile.getFileName();
+				if (bakName.charAt(bakName.length() -1) != '.') {
+			        bakName += '.';
+				}
+			    bakName += "bak";
+			    try {
+			          // Copy the entire contents of the original file,
+			          // and its timestamp
+			          BinFile bakFile = new BinFile(bakName, BinFileMode.FM_NEW);
+			          slotFile.seekToEnd();
+			          int size = slotFile.tell();
+			          slotFile.seekToBegin();
+			          bakFile.copyFile(slotFile, size);
+			          
+			          bakFile.setFileTime(slotFile.getFileTime());
+			     }
+			     catch (Exception e) {
+			          //::MessageBox(NULL, "Error creating backup of data file", "File Error", MB_OK);
+			    	 throw new RuntimeException(e);
+			     }
+			 }
+			  boolean result = super.commit(slotFile);
+			  // "Touch" the time stamp; otherwise the time stamp isn't updated until we
+			  // finally close the file, which could lead to mis-leading times on the backup
+			  // version.
+			  slotFile.setFileTime(System.currentTimeMillis());
+			  return result;
+		}
 	}
 
 	@Override

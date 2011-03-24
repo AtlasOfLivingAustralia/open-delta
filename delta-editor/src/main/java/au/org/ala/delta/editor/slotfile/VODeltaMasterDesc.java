@@ -79,36 +79,37 @@ public class VODeltaMasterDesc extends VONoteDesc {
 	}
 
 	public void storeQData() {
-		synchronized (getVOP()) {
-			makeTemp();
-			_fixedData.nChars = _charVector.size();
-			_fixedData.nItems = _itemVector.size();
-			_fixedData.nLangs = _langVector.size();
-			_fixedData.nContAttrs = _contAttrVector.size();
-			_fixedData.nDirFiles = _dirFileVector.size();
-			_fixedData.majorVersion = DELTA_MAJOR_VERSION;
-			_fixedData.minorVersion = DELTA_MINOR_VERSION;
-			if (_fixedData.fixedSize < FixedData.SIZE) {
-				_dataOffs = SlotHeader.SIZE + FixedData.SIZE; // /// Adjust DataOffs accordingly
-				_fixedData.fixedSize = FixedData.SIZE;
-			}
-
-			_slotFile.seek(_slotHdrPtr + SlotHeader.SIZE);
-			_fixedData.write(_slotFile);
-
-			// This seek forces allocation of a sufficiently large slot...
-			final int VO_UNI_ID_SIZE = 4; /* a VO unique id is an int */
-			dataSeek(VO_UNI_ID_SIZE * _charVector.size() + VO_UNI_ID_SIZE * _itemVector.size() + VO_UNI_ID_SIZE * _langVector.size() + VO_UNI_ID_SIZE * _contAttrVector.size() + VO_UNI_ID_SIZE
-					* _dirFileVector.size());
-			dataSeek(0);
-
-			writeIntCollection(_charVector);
-			writeIntCollection(_itemVector);
-			writeIntCollection(_langVector);
-			writeIntCollection(_contAttrVector);
-			writeIntCollection(_dirFileVector);
-			dataTruncate();
+		// This method is not synchronized on the VOP as the VOP is null at this point.
+		// Instead the DeltaVOP.commit() method is synchronized.
+		
+		makeTemp();
+		_fixedData.nChars = _charVector.size();
+		_fixedData.nItems = _itemVector.size();
+		_fixedData.nLangs = _langVector.size();
+		_fixedData.nContAttrs = _contAttrVector.size();
+		_fixedData.nDirFiles = _dirFileVector.size();
+		_fixedData.majorVersion = DELTA_MAJOR_VERSION;
+		_fixedData.minorVersion = DELTA_MINOR_VERSION;
+		if (_fixedData.fixedSize < FixedData.SIZE) {
+			_dataOffs = SlotHeader.SIZE + FixedData.SIZE; // /// Adjust DataOffs accordingly
+			_fixedData.fixedSize = FixedData.SIZE;
 		}
+
+		_slotFile.seek(_slotHdrPtr + SlotHeader.SIZE);
+		_fixedData.write(_slotFile);
+
+		// This seek forces allocation of a sufficiently large slot...
+		final int VO_UNI_ID_SIZE = 4; /* a VO unique id is an int */
+		dataSeek(VO_UNI_ID_SIZE * _charVector.size() + VO_UNI_ID_SIZE * _itemVector.size() + VO_UNI_ID_SIZE * _langVector.size() + VO_UNI_ID_SIZE * _contAttrVector.size() + VO_UNI_ID_SIZE
+				* _dirFileVector.size());
+		dataSeek(0);
+
+		writeIntCollection(_charVector);
+		writeIntCollection(_itemVector);
+		writeIntCollection(_langVector);
+		writeIntCollection(_contAttrVector);
+		writeIntCollection(_dirFileVector);
+		dataTruncate();
 	}
 
 	private void writeIntCollection(Collection<Integer> ints) {
