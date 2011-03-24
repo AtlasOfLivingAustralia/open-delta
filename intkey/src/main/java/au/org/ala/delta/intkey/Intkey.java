@@ -1,12 +1,13 @@
 package au.org.ala.delta.intkey;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Frame;
 import java.awt.Insets;
 import java.awt.SystemColor;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 
 import javax.swing.ActionMap;
 import javax.swing.JButton;
@@ -20,6 +21,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.JTextField;
 
 import org.jdesktop.application.Action;
 
@@ -27,8 +29,6 @@ import au.org.ala.delta.intkey.ui.SelectDataSetDialog;
 import au.org.ala.delta.ui.AboutBox;
 import au.org.ala.delta.ui.DeltaSingleFrameApplication;
 import au.org.ala.delta.ui.util.IconHelper;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 
 public class Intkey extends DeltaSingleFrameApplication {
     
@@ -36,6 +36,7 @@ public class Intkey extends DeltaSingleFrameApplication {
     private JSplitPane _rootSplitPane;
     private JSplitPane _innerSplitPaneRight;
     private JSplitPane _innerSplitPaneLeft;
+    private JTextField textField;
     
     public static void main(String[] args) {
         launch(Intkey.class, args);
@@ -170,6 +171,13 @@ public class Intkey extends DeltaSingleFrameApplication {
         getMainView().setMenuBar(buildMenus());
         
         show(_rootPanel);
+        
+        textField = new JTextField();
+        textField.setFont(new Font("Tahoma", Font.BOLD, 13));
+        textField.setForeground(SystemColor.text);
+        textField.setBackground(Color.BLACK);
+        _rootPanel.add(textField, BorderLayout.SOUTH);
+        textField.setColumns(10);
     }
     
     @Override
