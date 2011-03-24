@@ -16,8 +16,6 @@ package au.org.ala.delta.model;
 
 public abstract class MultiStateCharacter extends Character {
 
-	private ImplicitValue _implicitValueStateId;
-
 	public MultiStateCharacter(int number, CharacterType characterType) {
 		super(number, characterType);
 	}
