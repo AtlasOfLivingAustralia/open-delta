@@ -119,8 +119,35 @@ public class SlotFileDataSetTest extends TestCase {
 		item = _dataSet.getItem(item.getItemNumber());
 		
 		assertEquals(description, item.getDescription());
-		
 	}
+	
+	/**
+	 * Tests that a new Data set can be created and a new item added successfully.
+	 */
+	@Test
+	public void testCreateNewItemWithTextAttribute() {
+	
+		TextCharacter textChar = (TextCharacter)_dataSet.addCharacter(CharacterType.Text);
+		textChar.setDescription("Text char");
+		
+		String description = "I am a new Item";
+		Item item = _dataSet.addItem();
+		item.setDescription(description);
+		
+		String attributeText = "I am a new item attribute";
+		item.addAttribute(textChar,"<"+attributeText+">");
+		
+		item = _dataSet.getItem(item.getItemNumber());
+		assertEquals(description, item.getDescription());
+		assertEquals(attributeText, item.getAttribute(textChar).getValue());
+		
+		item = _dataSet.addItem();
+		attributeText = "\\i{}Ornithospermum\\i0{} Dumoulin, \\i{}Tema\\i0{} Adans.";
+		item.addAttribute(textChar,"<"+attributeText+">");
+		assertEquals(attributeText, item.getAttribute(textChar).getValue());
+	}
+	
+	
 	
 	
 }
