@@ -25,29 +25,18 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.swing.ActionMap;
 import javax.swing.JInternalFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
-import javax.swing.JTextArea;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.LineBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
 
-import org.apache.commons.lang.StringUtils;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.Resource;
@@ -101,7 +90,8 @@ public class MatrixViewer extends JInternalFrame {
 		_fixedColumns.getTableHeader().setPreferredSize(new Dimension(_table.getColumnModel().getTotalColumnWidth(), 100));
 		_fixedColumns.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		_fixedColumns.setBackground(SystemColor.control);
-
+		_fixedColumns.setDefaultRenderer(Object.class, new FixedColumnRenderer());
+		
 		_fixedColumns.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 
 			@Override
@@ -110,6 +100,8 @@ public class MatrixViewer extends JInternalFrame {
 				_table.getSelectionModel().setSelectionInterval(row, row);
 			}
 		});
+				
+		new TableRowResizer(_fixedColumns, _table);
 
 		ListSelectionListener listener = new ListSelectionListener() {
 
@@ -326,129 +318,6 @@ class BottomLineBorder extends LineBorder {
 	}
 }
 
-class AttributeCellRenderer extends DefaultTableCellRenderer {
-
-	private static final long serialVersionUID = 1L;
-
-	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-
-		Component comp = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-		MatrixTableModel model = (MatrixTableModel) table.getModel();
-
-		if (isSelected) {
-			setBackground(SystemColor.textHighlight);
-			setForeground(SystemColor.textHighlightText);
-		} else {
-
-			Integer implicit = model.getImplicitStateNo(row, column);
-			if (implicit != null) {
-				// This is an implicit value...
-				setForeground(SystemColor.green);
-			} else {
-				setForeground(SystemColor.controlText);
-			}
-
-			if (model.isCellEditable(row, column)) {
-				setBackground(Color.WHITE);
-			} else {
-				setBackground(new Color(0xE8, 0xE8, 0xE8));
-			}
-		}
-		return comp;
-	}
-}
-
-class TableHeaderRenderer extends JTextArea implements TableCellRenderer {
-
-	private static final long serialVersionUID = 1L;
-
-	private final DefaultTableCellRenderer adaptee = new DefaultTableCellRenderer();
-	/** map from table to map of rows to map of column heights */
-	private final Map<JTable, Map<Integer, Map<Integer, Integer>>> cellSizes = new HashMap<JTable, Map<Integer, Map<Integer, Integer>>>();
-
-	public TableHeaderRenderer() {
-		setLineWrap(true);
-		setWrapStyleWord(true);
-		setPreferredSize(new Dimension(150, 100));
-		setBackground(SystemColor.control);
-		setBorder(new BottomLineBorder(SystemColor.controlShadow));
-	}
-
-	public Component getTableCellRendererComponent(//
-			JTable table, Object obj, boolean isSelected, boolean hasFocus, int row, int column) {
-		// set the colours, etc. using the standard for that platform
-		adaptee.getTableCellRendererComponent(table, obj, isSelected, hasFocus, row, column);
-		// setForeground(adaptee.getForeground());
-		// setBackground(adaptee.getBackground());
-		// setBorder(adaptee.getBorder());
-		setFont(adaptee.getFont());
-		setText(adaptee.getText());
-
-		// This line was very important to get it working with JDK1.4
-		TableColumnModel columnModel = table.getColumnModel();
-
-		setSize(columnModel.getColumn(column).getWidth(), 100000);
-
-		int height_wanted = (int) getPreferredSize().getHeight();
-		addSize(table, row, column, height_wanted);
-		height_wanted = findTotalMaximumRowSize(table, row);
-		if (row >= 0 && height_wanted != table.getRowHeight(row)) {
-			table.setRowHeight(row, height_wanted);
-		}
-		return this;
-	}
-
-	private void addSize(JTable table, int row, int column, int height) {
-		Map<Integer, Map<Integer, Integer>> rows = cellSizes.get(table);
-		if (rows == null) {
-			cellSizes.put(table, rows = new HashMap<Integer, Map<Integer, Integer>>());
-		}
-		Map<Integer, Integer> rowheights = rows.get(new Integer(row));
-		if (rowheights == null) {
-			rows.put(new Integer(row), rowheights = new HashMap<Integer, Integer>());
-		}
-		rowheights.put(new Integer(column), new Integer(height));
-	}
-
-	/**
-	 * Look through all columns and get the renderer. If it is also a TextAreaRenderer, we look at the maximum height in its hash table for this row.
-	 */
-	private int findTotalMaximumRowSize(JTable table, int row) {
-		int maximum_height = 0;
-		Enumeration<TableColumn> columns = table.getColumnModel().getColumns();
-
-		// Enumeration columns = table.getColumnModel().getColumns();
-
-		while (columns.hasMoreElements()) {
-
-			TableColumn tc = ((TableColumn) columns.nextElement());
-
-			TableCellRenderer cellRenderer = tc.getCellRenderer();
-			if (cellRenderer instanceof TableHeaderRenderer) {
-				TableHeaderRenderer tar = (TableHeaderRenderer) cellRenderer;
-				maximum_height = Math.max(maximum_height, tar.findMaximumRowSize(table, row));
-			}
-		}
-		return maximum_height;
-	}
-
-	private int findMaximumRowSize(JTable table, int row) {
-		Map<Integer, Map<Integer, Integer>> rows = cellSizes.get(table);
-		if (rows == null)
-			return 0;
-		Map<Integer, Integer> rowheights = rows.get(new Integer(row));
-		if (rowheights == null)
-			return 0;
-		int maximum_height = 0;
-		for (Iterator<Entry<Integer, Integer>> it = rowheights.entrySet().iterator(); it.hasNext();) {
-			Map.Entry<Integer, Integer> entry = it.next();
-			int cellHeight = entry.getValue().intValue();
-			maximum_height = Math.max(maximum_height, cellHeight);
-		}
-		return maximum_height;
-	}
-}
-
 class ItemColumnModel extends AbstractTableModel {
 
 	private static final long serialVersionUID = 1L;
@@ -482,7 +351,7 @@ class ItemColumnModel extends AbstractTableModel {
 	@Override
 	public Object getValueAt(int row, int column) {
 		Item item = _dataSet.getItem(row + 1);
-		return (row + 1) + ". " + item.getDescription();
+		return item.getDescription();
 	}
 
 	@Override

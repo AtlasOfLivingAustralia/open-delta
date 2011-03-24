@@ -22,7 +22,6 @@ import org.apache.commons.lang.StringUtils;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.DeltaDataSet;
-import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.TextCharacter;
 import au.org.ala.delta.rtf.RTFUtils;
@@ -48,7 +47,7 @@ public class MatrixTableModel implements TableModel {
 	@Override
 	public String getColumnName(int column) {
 		Character ch = _dataSet.getCharacter(column + 1);
-		return (column+1)+ ". " + RTFUtils.stripFormatting(ch.getDescription());
+		return RTFUtils.stripFormatting(ch.getDescription());
 	}
 
 	@Override
@@ -84,16 +83,21 @@ public class MatrixTableModel implements TableModel {
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		String tmp = _dataSet.getAttributeAsString(rowIndex+1, columnIndex+1);					
+		String tmp = _dataSet.getAttributeAsString(rowIndex+1, columnIndex+1);
+		MatrixCellViewModel vm = new MatrixCellViewModel();
 		if (StringUtils.isEmpty(tmp)) {
 			Integer implicit = getImplicitStateNo(rowIndex, columnIndex);
 			if (implicit != null) {
-				return String.format("%d", implicit);
-			}			
-			return "";			
+				vm.setText(String.format("%d", implicit));
+				vm.setImplicit(true);			
+			} else {
+				vm.setText("");
+			}						
 		} else {
-			return RTFUtils.stripFormatting(tmp);
+			vm.setText(RTFUtils.stripFormatting(tmp));
 		}
+		
+		return vm;
 	}
 
 	@Override
