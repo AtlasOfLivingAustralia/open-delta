@@ -517,7 +517,7 @@ public class VOItemDesc extends VOImageHolderDesc implements INameHolder {
 	public static final int nImagesOffs = SlotFile.SlotHeader.SIZE + FixedData.SIZE + 4;
 	public static final int nFlagsOffs = SlotFile.SlotHeader.SIZE + FixedData.SIZE + 4;
 
-	public class ItemFixedData extends FixedData {
+	public static class ItemFixedData extends FixedData {
 
 		public static final int SIZE = FixedData.SIZE + 2 + 4 + 4 + 4 + 1;
 

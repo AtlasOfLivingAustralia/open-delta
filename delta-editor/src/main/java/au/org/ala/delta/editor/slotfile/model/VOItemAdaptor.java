@@ -18,24 +18,41 @@ import java.util.List;
 
 import org.apache.commons.lang.NotImplementedException;
 
+import au.org.ala.delta.editor.slotfile.AttrChunk;
+import au.org.ala.delta.editor.slotfile.Attribute;
+import au.org.ala.delta.editor.slotfile.DeltaVOP;
 import au.org.ala.delta.editor.slotfile.VOItemDesc;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.impl.AttributeData;
 import au.org.ala.delta.model.impl.ItemData;
+import au.org.ala.delta.util.Utils;
 
-
+/**
+ * Adapts a slot file VOItemDesc to the model Item interface.
+ */
 public class VOItemAdaptor implements ItemData {
 
 	private VOItemDesc _voItemDesc;
+	private DeltaVOP _vop;
 	
 	
-	
-	public VOItemAdaptor(VOItemDesc voItem, int i) {
+	public VOItemAdaptor(DeltaVOP vop, VOItemDesc voItem, int i) {
+		_vop = vop;
 		_voItemDesc = voItem;
 	}
 	
 	public void setDescription(String itemName) {		
-		throw new NotImplementedException();
+		
+		String oldDescription = getDescription();
+		
+		Attribute nameAttribute = new Attribute(VOItemDesc.VOUID_NAME);
+		nameAttribute.insert(0, new AttrChunk(itemName));
+		_voItemDesc.writeAttribute(nameAttribute);
+		
+		if (!Utils.RTFToANSI(itemName).equals(oldDescription)) {
+			_vop.deleteFromNameList(_voItemDesc);
+			_vop.insertInNameList(_voItemDesc);
+		}
 	}
 
 

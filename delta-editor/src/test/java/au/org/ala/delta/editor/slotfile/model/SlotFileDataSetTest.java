@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.IntegerCharacter;
+import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.TextCharacter;
 
@@ -104,5 +105,22 @@ public class SlotFileDataSetTest extends TestCase {
 			assertEquals(i+". "+stateText[i-1], multiStateChar.getState(i));
 		}
 	}
+	
+	/**
+	 * Tests that a new Data set can be created and a new item added successfully.
+	 */
+	@Test
+	public void testCreateNewItem() {
+	
+		String description = "I am a new Item";
+		Item item = _dataSet.addItem();
+		item.setDescription(description);
+		
+		item = _dataSet.getItem(item.getItemNumber());
+		
+		assertEquals(description, item.getDescription());
+		
+	}
+	
 	
 }

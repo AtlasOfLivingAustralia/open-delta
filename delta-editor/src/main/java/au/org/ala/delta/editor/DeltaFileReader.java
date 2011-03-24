@@ -159,7 +159,7 @@ public class DeltaFileReader {
 		for (int i = 1; i <= nItems; ++i) {
 			int itemId = vop.getDeltaMaster().uniIdFromItemNo(i);
 			VOItemDesc itemDesc = (VOItemDesc) vop.getDescFromId(itemId);
-			Item item = new Item(new VOItemAdaptor(itemDesc, i), i);
+			Item item = new Item(new VOItemAdaptor(vop, itemDesc, i), i);
 			item.setDescription(itemDesc.getAnsiName());
 			
 

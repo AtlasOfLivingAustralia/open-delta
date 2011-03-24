@@ -72,7 +72,7 @@ public class DeltaVOP extends VOP {
 	}
 
 	public boolean deleteFromNameList(VOItemDesc item) {
-		throw new NotImplementedException();
+		return (_itemNames.remove(item.getAnsiName()) != null);
 	}
 
 	public void insertInNameList(VOItemDesc item) {

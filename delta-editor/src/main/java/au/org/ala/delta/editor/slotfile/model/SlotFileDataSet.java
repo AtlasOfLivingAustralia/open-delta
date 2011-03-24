@@ -1,8 +1,5 @@
 package au.org.ala.delta.editor.slotfile.model;
 
-import org.apache.commons.lang.NotImplementedException;
-
-import au.org.ala.delta.editor.slotfile.CharType;
 import au.org.ala.delta.editor.slotfile.DeltaVOP;
 import au.org.ala.delta.editor.slotfile.TextType;
 import au.org.ala.delta.editor.slotfile.VOCharBaseDesc;
@@ -106,7 +103,10 @@ public class SlotFileDataSet implements DeltaDataSet {
 
 	@Override
 	public Item addItem() {
-		throw new NotImplementedException();
+		synchronized (_vop) {
+			Item item = addItem(getMaximumNumberOfItems()+1);
+			return item;
+		}
 	}
 	
 	@Override
@@ -119,7 +119,9 @@ public class SlotFileDataSet implements DeltaDataSet {
 	
 	@Override
 	public Item addItem(int itemNumber) {
-		throw new NotImplementedException();
+		synchronized (_vop) {
+			return _factory.createItem(itemNumber);
+		}
 	}
 	
 }

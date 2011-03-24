@@ -4,6 +4,7 @@ import au.org.ala.delta.editor.slotfile.DeltaVOP;
 import au.org.ala.delta.editor.slotfile.VOCharBaseDesc;
 import au.org.ala.delta.editor.slotfile.VOCharTextDesc;
 import au.org.ala.delta.editor.slotfile.VOItemDesc;
+import au.org.ala.delta.editor.slotfile.VOItemDesc.ItemFixedData;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterFactory;
 import au.org.ala.delta.model.CharacterType;
@@ -56,9 +57,20 @@ public class SlotFileDataSetFactory implements DeltaDataSetFactory {
 	 */
 	@Override
 	public Item createItem(int number) {
-		int itemId = _vop.getDeltaMaster().uniIdFromItemNo(number);
-		VOItemDesc itemDesc = (VOItemDesc) _vop.getDescFromId(itemId);
-		VOItemAdaptor adaptor = new VOItemAdaptor(itemDesc, number);
+		
+		VOItemDesc itemDesc = null;
+		if (number > _vop.getDeltaMaster().getNItems()) {
+			VOItemDesc.ItemFixedData itemFixedData = new VOItemDesc.ItemFixedData();
+			itemDesc = (VOItemDesc)_vop.insertObject(itemFixedData, ItemFixedData.SIZE, null, 0, 100);
+			int itemId = itemDesc.getUniId();
+			_vop.getDeltaMaster().insertItem(itemId, number);
+		}
+		else {
+			int itemId = _vop.getDeltaMaster().uniIdFromItemNo(number);
+			itemDesc = (VOItemDesc) _vop.getDescFromId(itemId);
+		}
+		
+		VOItemAdaptor adaptor = new VOItemAdaptor(_vop, itemDesc, number);
 		return new Item(adaptor, number);
 	}
 
