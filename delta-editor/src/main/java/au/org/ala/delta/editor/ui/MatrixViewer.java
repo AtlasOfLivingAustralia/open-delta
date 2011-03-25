@@ -46,6 +46,7 @@ import org.jdesktop.application.Task.BlockingScope;
 
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.ui.AboutBox;
 
 public class MatrixViewer extends JInternalFrame {
@@ -329,6 +330,7 @@ class ItemColumnModel extends AbstractTableModel {
 	private static final long serialVersionUID = 1L;
 
 	private DeltaDataSet _dataSet;
+	private ItemFormatter _formatter;
 
 	@Resource
 	String columnName;
@@ -337,6 +339,9 @@ class ItemColumnModel extends AbstractTableModel {
 		ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(AboutBox.class);
 		resourceMap.injectFields(this);
 		_dataSet = dataSet;
+		boolean includeNumber = false;
+		boolean stripRtf = true;
+		_formatter = new ItemFormatter(includeNumber, stripRtf);
 	}
 
 	@Override
@@ -357,7 +362,7 @@ class ItemColumnModel extends AbstractTableModel {
 	@Override
 	public Object getValueAt(int row, int column) {
 		Item item = _dataSet.getItem(row + 1);
-		return item.getDescription();
+		return _formatter.formatItemDescription(item);
 	}
 
 	@Override

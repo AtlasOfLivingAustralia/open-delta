@@ -13,7 +13,7 @@ import javax.swing.ListSelectionModel;
 
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Item;
-import au.org.ala.delta.rtf.RTFUtils;
+import au.org.ala.delta.model.format.ItemFormatter;
 
 /**
  * A specialised List for displaying DELTA Items.
@@ -56,20 +56,16 @@ public class ItemList extends JList {
 	class ItemViewModel {
 
 		private Item _model;
-
+		private ItemFormatter _formatter;
+		
 		public ItemViewModel(Item item) {
 			_model = item;
+			_formatter = new ItemFormatter();
 		}
 
 		@Override
 		public String toString() {
-			StringBuilder builder = new StringBuilder();
-			builder.append(_model.getItemNumber()).append(". ");
-			if (_model.isVariant()) {
-				builder.append("(+) ");
-			}
-			builder.append(RTFUtils.stripFormatting(_model.getDescription()));
-			return builder.toString();
+			return _formatter.formatItemDescription(_model);
 		}
 
 		public Item getItem() {
