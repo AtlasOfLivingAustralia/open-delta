@@ -1,6 +1,5 @@
 package au.org.ala.delta.editor.ui;
 
-import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -8,14 +7,13 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.AbstractListModel;
 import javax.swing.Action;
-import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 
-
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.rtf.RTFUtils;
 
 /**
  * A specialised List for displaying DELTA Items.
@@ -43,7 +41,7 @@ public class ItemList extends JList {
 		
 		@Override
 		public Object getElementAt(int index) {
-			return _dataSet.getItem(index+1);
+			return new ItemViewModel(_dataSet.getItem(index+1));
 		}
 
 		@Override
@@ -53,37 +51,29 @@ public class ItemList extends JList {
 	}
 	
 	/**
-	 * Works with an ItemListModel to render Items in an appropriate manner.
+	 * Represents an Item in a way suitable for display on the List.
 	 */
-	class ItemRenderer extends DefaultListCellRenderer {
+	class ItemViewModel {
 
-		private static final long serialVersionUID = 1615023904839892809L;
+		private Item _model;
+
+		public ItemViewModel(Item item) {
+			_model = item;
+		}
 
 		@Override
-		public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
-				boolean cellHasFocus) {
-			
-			Item item = (Item)value;
-			
-			super.getListCellRendererComponent(list, formatItem(item), index, isSelected, cellHasFocus);
-			
-			
-			return this;
-		}
-		
-		/**
-		 * Formats an item description by including it's number and whether or not it is a variant item.
-		 * @param item the item to format.
-		 * @return a string representing the supplied Item.
-		 */
-		private String formatItem(Item item) {
+		public String toString() {
 			StringBuilder builder = new StringBuilder();
-			builder.append(item.getItemNumber()).append(". ");
-			if (item.isVariant()) {
+			builder.append(_model.getItemNumber()).append(". ");
+			if (_model.isVariant()) {
 				builder.append("(+) ");
 			}
-			builder.append(item.getDescription());
+			builder.append(RTFUtils.stripFormatting(_model.getDescription()));
 			return builder.toString();
+		}
+
+		public Item getItem() {
+			return _model;
 		}
 	}
 	
@@ -96,13 +86,21 @@ public class ItemList extends JList {
 		setDataSet(dataSet);
 	}
 	
+	public Item getSelectedItem() {
+		Item selectedItem = null;
+		ItemViewModel item = (ItemViewModel)getSelectedValue();
+		if (item != null) {
+			selectedItem = item.getItem();
+		}
+		return selectedItem;
+	}
+	
 	/**
 	 * Creates an ItemList backed by the supplied dataSet.
 	 * @param dataSet the data set to act as the model for this List.
 	 */
 	public void setDataSet(DeltaDataSet dataSet) {
 		setModel(new ItemListModel(dataSet));
-		setCellRenderer(new ItemRenderer());
 	}
 	
 	
@@ -123,6 +121,9 @@ public class ItemList extends JList {
 	public class DoubleClickToAction extends MouseAdapter {
 		public void mouseClicked(MouseEvent e) {
 			if (e.getClickCount() == 2) {
+				int index = locationToIndex(e.getPoint());
+				setSelectedIndex(index);
+				
 				Action action = getActionMap().get(SELECTION_ACTION_NAME);
 	
 				if (action != null) {

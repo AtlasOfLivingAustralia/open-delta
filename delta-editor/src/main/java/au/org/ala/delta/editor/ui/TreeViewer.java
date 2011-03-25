@@ -18,14 +18,11 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 
-import javax.swing.DefaultListModel;
 import javax.swing.DropMode;
 import javax.swing.JInternalFrame;
-import javax.swing.JList;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTree;
-import javax.swing.ListModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TreeSelectionEvent;
@@ -68,8 +65,7 @@ public class TreeViewer extends JInternalFrame {
 		_dataModel = dataModel;
 		new InternalFrameDataModelListener(this, dataModel, windowTitle);
 
-		final JList lst = new JList();
-		lst.setModel(new ItemListModel(_dataModel));
+		final ItemList lst = new ItemList(_dataModel);
 		lst.setDragEnabled(true);
 		lst.setDropMode(DropMode.ON);
 
@@ -106,7 +102,7 @@ public class TreeViewer extends JInternalFrame {
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
 
-				_dataModel.setSelectedItem(((ItemViewModel) lst.getSelectedValue()).getItem());
+				_dataModel.setSelectedItem(lst.getSelectedItem());
 				tree.updateUI();
 				_stateEditor.bind(_dataModel.getSelectedCharacter(), _dataModel.getSelectedItem());
 			}
@@ -135,28 +131,6 @@ public class TreeViewer extends JInternalFrame {
 		tree.setSelectionRow(0);
 
 	}
-}
-
-class ItemListModel extends DefaultListModel implements ListModel {
-
-	private static final long serialVersionUID = 1L;
-
-	private EditorDataModel _dataModel;
-
-	public ItemListModel(EditorDataModel dataModel) {
-		_dataModel = dataModel;
-	}
-
-	@Override
-	public int getSize() {
-		return _dataModel.getMaximumNumberOfItems();
-	}
-
-	@Override
-	public Object getElementAt(int index) {
-		return new ItemViewModel(_dataModel.getItem(index + 1));
-	}
-
 }
 
 class CharacterTreeModel extends DefaultTreeModel {
@@ -207,23 +181,6 @@ class CharStateHolder {
 
 }
 
-class ItemViewModel {
-
-	private Item _model;
-
-	public ItemViewModel(Item item) {
-		_model = item;
-	}
-
-	@Override
-	public String toString() {
-		return _model.getItemNumber() + ". " + RTFUtils.stripFormatting(_model.getDescription());
-	}
-
-	public Item getItem() {
-		return _model;
-	}
-}
 
 class DeltaTreeCellRenderer extends DefaultTreeCellRenderer {
 

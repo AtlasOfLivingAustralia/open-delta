@@ -140,11 +140,15 @@ public class ItemEditor extends JDialog {
 	@Action
 	public void selectItemByName() {
 		if (btnSelect.isSelected()) {
+			chckbxTreatAsVariant.setEnabled(false);
+			spinner.setEnabled(false);
 			lblEditTaxonName.setText(selectTaxonLabelText);
 			editorScroller.setViewportView(taxonSelectionList);
 			taxonSelectionList.requestFocusInWindow();
 		}
 		else {
+			chckbxTreatAsVariant.setEnabled(true);
+			spinner.setEnabled(true);
 			lblEditTaxonName.setText(editTaxonLabelText);
 			editorScroller.setViewportView(rtfEditor);
 		}
