@@ -2,19 +2,23 @@ package au.org.ala.delta.editor.ui;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.observer.CharacterObserver;
+import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
+import au.org.ala.delta.model.observer.DeltaDataSetObserver;
+import au.org.ala.delta.model.observer.ItemObserver;
 
 
 /**
  * Maintains the current overall state of the DELTA Editor.
  */
-public class EditorDataModel implements DeltaDataSet {
+public class EditorDataModel implements DeltaDataSet, ItemObserver, CharacterObserver {
 
 	/** The currently selected data set */
 	private DeltaDataSet _currentDataSet;
@@ -28,6 +32,7 @@ public class EditorDataModel implements DeltaDataSet {
 	/** Helper class for notifying interested parties of property changes */
 	private PropertyChangeSupport _propertyChangeSupport;
 	
+	private List<DeltaDataSetObserver> _observerList = new ArrayList<DeltaDataSetObserver>();
 	
 	public EditorDataModel(DeltaDataSet dataSet) {
 		_currentDataSet = dataSet;
@@ -127,7 +132,9 @@ public class EditorDataModel implements DeltaDataSet {
 	
 	@Override
 	public Character addCharacter(int characterNumber, CharacterType type) {
-		return _currentDataSet.addCharacter(characterNumber, type);
+		Character character = _currentDataSet.addCharacter(characterNumber, type);
+		fireDeltaDataSetEvent(null, character, new CharacterAddedDispatcher());
+		return character;
 	}
 
 	@Override
@@ -137,31 +144,77 @@ public class EditorDataModel implements DeltaDataSet {
 
 	@Override
 	public Item addItem() {
-		return _currentDataSet.addItem();
-	}
-
-
-
-	private class PropertyChangeDetector implements InvocationHandler {
-
-		/**
-		 * Attempts to detect when properties have changed using the fact that the method starts with "set".
-		 */
-		@Override
-		public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-			
-			Object result = method.invoke(proxy, args);
-			String methodName = method.getName();
-			if (methodName.startsWith("set")) {
-				// Bit of a lazy property change - we aren't respecting the "old value" and are assuming
-				// that there is a single argument to the method containing the new value. 
-				String propertyName = methodName.substring(3);
-				_propertyChangeSupport.firePropertyChange(propertyName, null, args[0]);
-			}
-			
-			return result;
-		}
-		
+		Item item = _currentDataSet.addItem();
+		item.addItemObserver(this);
+		fireDeltaDataSetEvent(item, null, new ItemAddedDispatcher());
+		return item;
 	}
 	
+	private void fireDeltaDataSetEvent(Item item, Character character, DataSetEventDispatcher dispatcher) {
+		dispatcher.fireDataSetEvent(item, character);
+	}
+	
+	@Override
+	public void characterChanged(Character character) {
+		fireDeltaDataSetEvent(null, character, new CharacterEditedDispatcher());
+		
+	}
+
+	@Override
+	public void itemChanged(Item item) {
+		fireDeltaDataSetEvent(item, null, new ItemEditedDispatcher());
+	}
+
+	public void addDeltaDataSetObserver(DeltaDataSetObserver observer) {
+	     _observerList.add(observer);
+	 }
+
+	 public void removeDeltaDataSetObserver(DeltaDataSetObserver observer) {
+	     _observerList.remove(observer);
+	 }
+
+	 private abstract class DataSetEventDispatcher {
+		
+		 public void fireDataSetEvent(Item item, Character character) {
+			 
+			 DeltaDataSetChangeEvent dataSetChangeEvent = new DeltaDataSetChangeEvent(
+					 EditorDataModel.this, character, item);
+            
+			 // process in reverse order to support removal during processing.
+		     for (int i = _observerList.size()-1; i>=0; i--) {
+		        	doFireEvent((DeltaDataSetObserver)_observerList.get(i), dataSetChangeEvent); 
+		     }
+		 }
+		 
+		 public abstract void doFireEvent(DeltaDataSetObserver observer, DeltaDataSetChangeEvent event);
+	 }
+	 
+	 private class ItemAddedDispatcher extends DataSetEventDispatcher {
+		 @Override
+			public void doFireEvent(DeltaDataSetObserver observer, DeltaDataSetChangeEvent event) {
+			 observer.itemAdded(event);
+			}
+	 }
+	 
+	 private class ItemEditedDispatcher extends DataSetEventDispatcher {
+		 @Override
+			public void doFireEvent(DeltaDataSetObserver observer, DeltaDataSetChangeEvent event) {
+			 observer.itemEdited(event);
+			}
+	 }
+	 
+	 private class CharacterEditedDispatcher extends DataSetEventDispatcher {
+		 @Override
+			public void doFireEvent(DeltaDataSetObserver observer, DeltaDataSetChangeEvent event) {
+			 observer.characterEdited(event);
+			}
+	 }
+	 
+	 private class CharacterAddedDispatcher extends DataSetEventDispatcher {
+		 @Override
+			public void doFireEvent(DeltaDataSetObserver observer, DeltaDataSetChangeEvent event) {
+			 observer.characterAdded(event);
+			}
+	 }
+
 }

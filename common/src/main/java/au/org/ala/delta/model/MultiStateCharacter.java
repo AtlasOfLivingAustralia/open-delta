@@ -26,10 +26,12 @@ public abstract class MultiStateCharacter extends Character {
 
 	public void setNumberOfStates(int states) {
 		_impl.setNumberOfStates(states);
+		notifyObservers();
 	}
 
 	public void setState(int stateNumber, String text) {
 		_impl.setStateText(stateNumber, text);
+		notifyObservers();
 	}
 
 	public String getState(int stateNumber) {
@@ -54,10 +56,12 @@ public abstract class MultiStateCharacter extends Character {
 	
 	public void setCodedImplicitState(int stateId) {
 		_impl.setCodedImplicitState(stateId);
+		notifyObservers();
 	}
 	
 	public void setUncodedImplicitState(int stateId) {
 		_impl.setUncodedImplicitState(stateId);
+		notifyObservers();
 	}
 
 }

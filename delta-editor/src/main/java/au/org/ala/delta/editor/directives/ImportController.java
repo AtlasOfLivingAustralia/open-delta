@@ -107,9 +107,7 @@ public class ImportController {
 		protected void failed(Throwable cause) {
 			cause.printStackTrace();
 			super.failed(cause);
-		}
-		
-		
+		}	
 	}
 	
 	/**

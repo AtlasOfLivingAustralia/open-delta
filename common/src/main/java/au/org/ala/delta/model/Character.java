@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import au.org.ala.delta.model.impl.CharacterData;
+import au.org.ala.delta.model.observer.CharacterObserver;
 
 public abstract class Character {
 	
@@ -25,6 +26,7 @@ public abstract class Character {
 	private List<CharacterDependency> _dependentCharacters = new ArrayList<CharacterDependency>();
 	protected CharacterData _impl;	
 	private CharacterType _characterType;
+	private List<CharacterObserver> _observers;
 	
 	protected Character(int number, CharacterType characterType) {
 		_characterType = characterType;
@@ -45,6 +47,7 @@ public abstract class Character {
 	
 	public void setDescription(String desc) {
 		_impl.setDescription(desc);
+		notifyObservers();
 	}
 	
 	public void addDependentCharacter(CharacterDependency dependency) {
@@ -57,6 +60,7 @@ public abstract class Character {
 	
 	public void setMandatory(boolean b) {
 		_impl.setMandatory(b);
+		notifyObservers();
 	}
 	
 	public boolean isMandatory() {
@@ -65,6 +69,7 @@ public abstract class Character {
 	
 	public void setExclusive(boolean exclusive) {
 		_impl.setExclusive(exclusive);
+		notifyObservers();
 	}
 	
 	public boolean isExclusive() {
@@ -73,6 +78,7 @@ public abstract class Character {
 	
 	public void setNotes(String notes) {
 		_impl.setNotes(notes);
+		notifyObservers();
 	}
 	
 	public String getNotes() {
@@ -96,4 +102,38 @@ public abstract class Character {
 		_impl.validateAttributeText(text);		
 	}
 	
+	/**
+	 * Registers interest in being notified of changes to this Character.
+	 * @param observer the object interested in receiving notification of changes.
+	 */
+	public void addCharacterObserver(CharacterObserver observer) {
+		if (_observers == null) {
+			_observers = new ArrayList<CharacterObserver>(1);
+		}
+		_observers.add(observer);
+	}
+	
+	/**
+	 * De-registers interest in changes to this Character.
+	 * @param observer the object no longer interested in receiving notification of changes.
+	 */
+	public void removeCharacterObserver(CharacterObserver observer) {
+		if (_observers == null) {
+			return;
+		}
+		_observers.remove(observer);
+	}
+	
+	/**
+	 * Notifies all registered CharacterObservers that this Character has changed.
+	 */
+	protected void notifyObservers() {
+		if (_observers == null) {
+			return;
+		}
+		// Notify observers in reverse order to support observer removal during event handling.
+		for (int i=_observers.size()-1; i>=0; i--) {
+			_observers.get(i).characterChanged(this);
+		}
+	}
 }
