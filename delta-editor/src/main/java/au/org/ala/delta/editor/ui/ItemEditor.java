@@ -1,28 +1,41 @@
 package au.org.ala.delta.editor.ui;
 
-import javax.swing.JDialog;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.ActionMap;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
-import javax.swing.SpinnerNumberModel;
+import javax.swing.JTabbedPane;
+import javax.swing.JToggleButton;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.ListSelectionModel;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.JButton;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
+import org.jdesktop.application.Action;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.Resource;
+import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.ui.rtf.RtfEditor;
-import javax.swing.JCheckBox;
-import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
-import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import au.org.ala.delta.ui.util.IconHelper;
 
 /**
  * Provides a user interface that allows an item description and images to be edited.
@@ -37,19 +50,38 @@ public class ItemEditor extends JDialog {
 	/** The currently selected Item */
 	private Item _selectedItem;
 	
+	/** Flag to allow updates to the model to be disabled during new item selection */
+	private boolean _editsDisabled;
+	
 	private JSpinner spinner;
 	private RtfEditor rtfEditor;
 	private JCheckBox chckbxTreatAsVariant;
+	private JButton btnDone;
+	private JLabel lblEditTaxonName;
+	private JToggleButton btnSelect;
+	private ItemList taxonSelectionList;
+	private JScrollPane editorScroller;
+	
+	@Resource
+	private String titleSuffix;
+	@Resource
+	private String editTaxonLabelText;
+	@Resource
+	private String selectTaxonLabelText;
 	
 	public ItemEditor() {	
+		setName("ItemEditorDialog");
+		ResourceMap resources = Application.getInstance().getContext().getResourceMap(ItemEditor.class);
+		resources.injectFields(this);
+		ActionMap map = Application.getInstance().getContext().getActionMap(this);
 		createUI();
-		addEventHandlers();
+		addEventHandlers(map);
 	}
 
 	/**
 	 * Adds the event handlers to the UI components.
 	 */
-	private void addEventHandlers() {
+	private void addEventHandlers(ActionMap map) {
 		spinner.addChangeListener(new ChangeListener() {
 			@Override
 			public void stateChanged(ChangeEvent e) {
@@ -61,57 +93,100 @@ public class ItemEditor extends JDialog {
 		chckbxTreatAsVariant.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				_selectedItem.setVariant(chckbxTreatAsVariant.isSelected());
+				
 			}
 		});
-		
 		rtfEditor.getDocument().addDocumentListener(new DocumentListener() {
 			@Override
 			public void removeUpdate(DocumentEvent e) {
-				_selectedItem.setDescription(rtfEditor.getRtfTextBody());
+				itemEditPerformed();
 			}
 			
 			@Override
 			public void insertUpdate(DocumentEvent e) {
-				_selectedItem.setDescription(rtfEditor.getRtfTextBody());
+				itemEditPerformed();
 			}
 			
 			@Override
 			public void changedUpdate(DocumentEvent e) {
-				_selectedItem.setDescription(rtfEditor.getRtfTextBody());
+				itemEditPerformed();
 			}
 		});
+		taxonSelectionList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		taxonSelectionList.addListSelectionListener(new ListSelectionListener() {
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				_selectedItem = _dataSet.getItem(taxonSelectionList.getSelectedIndex()+1);
+				updateUI();
+			}
+		});
+		
+		btnDone.setAction(map.get("itemEditDone"));
+		chckbxTreatAsVariant.setAction(map.get("itemVarianceChanged"));
+		btnSelect.setAction(map.get("selectItemByName"));
+		taxonSelectionList.setSelectionAction(map.get("taxonSelected"));
 	}
 	
+	@Action
+	public void itemEditDone() {
+		setVisible(false);
+	}
+	
+	@Action
+	public void itemVarianceChanged() {
+		_selectedItem.setVariant(chckbxTreatAsVariant.isSelected());
+	}
+	
+	@Action
+	public void selectItemByName() {
+		if (btnSelect.isSelected()) {
+			lblEditTaxonName.setText(selectTaxonLabelText);
+			editorScroller.setViewportView(taxonSelectionList);
+			taxonSelectionList.requestFocusInWindow();
+		}
+		else {
+			lblEditTaxonName.setText(editTaxonLabelText);
+			editorScroller.setViewportView(rtfEditor);
+		}
+	}
+	
+	@Action
+	public void taxonSelected() {
+		btnSelect.setSelected(false);
+		selectItemByName();
+	}
 	
 	/**
 	 * Creates the user interface components of this dialog.
 	 */
 	private void createUI() {
+		setIconImages(IconHelper.getBlueIconList());
 		JLabel lblTaxonNumber = new JLabel("Taxon Number:");
 		lblTaxonNumber.setName("taxonNumberLabel");
 		
 		spinner = new JSpinner();
+		spinner.setModel(new SpinnerNumberModel(1, 1, 1, 1));
 		
-		JButton btnSelect = new JButton("Select");
+		btnSelect = new JToggleButton("Select");
 		btnSelect.setName("selectTaxonNumberButton");
 		
-		JLabel lblEditTaxonName = new JLabel("Edit taxon name:");
-		lblEditTaxonName.setName("editTaxonNameLabel");
+		lblEditTaxonName = new JLabel(editTaxonLabelText);
 		
 		rtfEditor = new RtfEditor();
-		JScrollPane editorScroller = new JScrollPane(rtfEditor);
+		editorScroller = new JScrollPane(rtfEditor);
 		
 		chckbxTreatAsVariant = new JCheckBox("Treat as Variant");
-		chckbxTreatAsVariant.setName("treatAsVariantLabel");
+		chckbxTreatAsVariant.setName("treatAsVariantCheckbox");
 		
 		JPanel panel = new JPanel();
 		
-		JButton btnDone = new JButton("Done");
+		btnDone = new JButton("Done");
 		btnDone.setName("doneEditingTaxonButton");
 		
 		JButton btnHelp = new JButton("Help");
 		btnHelp.setName("helpWithTaxonEditorButton");
+		
+		taxonSelectionList = new ItemList();
 		
 		GroupLayout groupLayout = new GroupLayout(getContentPane());
 		groupLayout.setHorizontalGroup(
@@ -123,22 +198,24 @@ public class ItemEditor extends JDialog {
 							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 								.addGroup(groupLayout.createSequentialGroup()
 									.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
-										.addComponent(spinner, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+										.addComponent(spinner)
 										.addComponent(lblTaxonNumber, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-									.addPreferredGap(ComponentPlacement.UNRELATED)
+									.addGap(18)
 									.addComponent(btnSelect))
 								.addComponent(chckbxTreatAsVariant))
-							.addGap(31)
+							.addGap(23)
 							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 								.addComponent(lblEditTaxonName)
-								.addComponent(editorScroller, GroupLayout.PREFERRED_SIZE, 327, GroupLayout.PREFERRED_SIZE)))
-						.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING, false)
-							.addGroup(Alignment.LEADING, groupLayout.createSequentialGroup()
-								.addComponent(btnDone)
-								.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-								.addComponent(btnHelp))
-							.addComponent(panel, Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 502, GroupLayout.PREFERRED_SIZE)))
-					.addContainerGap(19, Short.MAX_VALUE))
+								.addComponent(editorScroller, GroupLayout.DEFAULT_SIZE, 337, Short.MAX_VALUE)))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+								.addGroup(groupLayout.createSequentialGroup()
+									.addComponent(btnDone)
+									.addPreferredGap(ComponentPlacement.RELATED, 402, Short.MAX_VALUE)
+									.addComponent(btnHelp))
+								.addComponent(panel, GroupLayout.DEFAULT_SIZE, 512, Short.MAX_VALUE))
+							.addGap(1)))
+					.addGap(19))
 		);
 		groupLayout.setVerticalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
@@ -148,21 +225,21 @@ public class ItemEditor extends JDialog {
 						.addComponent(lblTaxonNumber)
 						.addComponent(lblEditTaxonName))
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addGroup(groupLayout.createSequentialGroup()
 							.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
 								.addComponent(spinner, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 								.addComponent(btnSelect))
-							.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+							.addPreferredGap(ComponentPlacement.RELATED, 67, Short.MAX_VALUE)
 							.addComponent(chckbxTreatAsVariant))
-						.addComponent(editorScroller, GroupLayout.PREFERRED_SIZE, 113, GroupLayout.PREFERRED_SIZE))
+						.addComponent(editorScroller, GroupLayout.DEFAULT_SIZE, 113, Short.MAX_VALUE))
 					.addGap(18)
-					.addComponent(panel, GroupLayout.PREFERRED_SIZE, 148, GroupLayout.PREFERRED_SIZE)
+					.addComponent(panel, GroupLayout.DEFAULT_SIZE, 148, Short.MAX_VALUE)
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
 						.addComponent(btnDone)
 						.addComponent(btnHelp))
-					.addContainerGap(17, Short.MAX_VALUE))
+					.addGap(17))
 		);
 		panel.setLayout(new BorderLayout(0, 0));
 		
@@ -170,7 +247,8 @@ public class ItemEditor extends JDialog {
 		tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
 		panel.add(tabbedPane);
 		getContentPane().setLayout(groupLayout);
-		pack();
+		setPreferredSize(new Dimension(550, 400));
+		setModal(true);
 	}
 	
 	/**
@@ -180,9 +258,16 @@ public class ItemEditor extends JDialog {
 	 */
 	public void bind(EditorDataModel dataSet) {
 		_dataSet = dataSet;
-		
+		taxonSelectionList.setDataSet(dataSet);
 		_selectedItem = dataSet.getSelectedItem();
 		updateUI();
+	}
+	
+	private void itemEditPerformed() {
+		if (_editsDisabled) {
+			return;
+		}
+		_selectedItem.setDescription(rtfEditor.getRtfTextBody());
 	}
 	
 	/**
@@ -190,18 +275,20 @@ public class ItemEditor extends JDialog {
 	 */
 	private void updateUI() {
 		
+		_editsDisabled = true;
+		setTitle(_dataSet.getName() + " "+titleSuffix);
 		if (_selectedItem == null) {
 			_selectedItem = _dataSet.getItem(1);
 		}
-		SpinnerNumberModel model = new SpinnerNumberModel(
-				_selectedItem.getItemNumber(), 1, _dataSet.getMaximumNumberOfItems(), 1);
-		spinner.setModel(model);
+		SpinnerNumberModel model = (SpinnerNumberModel)spinner.getModel();
+		model.setMaximum(_dataSet.getMaximumNumberOfItems());
+		model.setValue(_selectedItem.getItemNumber());
+		
 		
 		rtfEditor.setText(_selectedItem.getDescription());
 		
 		chckbxTreatAsVariant.setSelected(_selectedItem.isVariant());
-		
+	
+		_editsDisabled = false;
 	}
-	
-	
 }

@@ -32,6 +32,8 @@ import org.jdesktop.application.Application;
 import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 
+import au.org.ala.delta.ui.util.IconHelper;
+
 /**
  * The ImportExportDialog is the user interface component that allows the user to:
  * 1) In import mode: select a set of DELTA directive files to import into the DELTA Editor.
@@ -148,6 +150,7 @@ public class ImportExportDialog extends JDialog {
 	 * Creates and lays out the UI components for this dialog.
 	 */
 	private void createUI() {
+		setIconImages(IconHelper.getBlueIconList());
 		JPanel leftPanel = new JPanel();
 		
 		JPanel panel = new JPanel();
