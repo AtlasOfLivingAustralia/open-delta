@@ -42,7 +42,7 @@ import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.NumericCharacter;
 import au.org.ala.delta.ui.rtf.RtfEditor;
 
-public class StateEditor extends JPanel implements ValidationListener {
+public class AttributeEditor extends JPanel implements ValidationListener {
 
 	private static final long serialVersionUID = 1L;
 
@@ -59,7 +59,7 @@ public class StateEditor extends JPanel implements ValidationListener {
 
 	private EditListener _editListener;
 
-	public StateEditor(DeltaDataSet dataSet) {
+	public AttributeEditor(DeltaDataSet dataSet) {
 
 		_dataSet = dataSet;
 

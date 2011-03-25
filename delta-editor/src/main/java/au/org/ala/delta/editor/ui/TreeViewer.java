@@ -51,7 +51,7 @@ public class TreeViewer extends JInternalFrame {
 	private static final long serialVersionUID = 1L;
 
 	private EditorDataModel _dataModel;
-	private StateEditor _stateEditor;
+	private AttributeEditor _stateEditor;
 
 	@Resource
 	String windowTitle;
@@ -121,7 +121,7 @@ public class TreeViewer extends JInternalFrame {
 		content.setRightComponent(new JScrollPane(tree));
 		content.setLeftComponent(new JScrollPane(lst));
 
-		_stateEditor = new StateEditor(_dataModel);
+		_stateEditor = new AttributeEditor(_dataModel);
 
 		JSplitPane divider = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		divider.setDividerLocation(getHeight() - 200);

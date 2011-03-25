@@ -56,7 +56,7 @@ public class MatrixViewer extends JInternalFrame {
 	private JTable _table;
 	private JTable _fixedColumns;
 	private MatrixTableModel _model;
-	private StateEditor _stateEditor;
+	private AttributeEditor _stateEditor;
 	private ItemColumnModel _fixedModel;
 
 	@Resource
@@ -151,7 +151,7 @@ public class MatrixViewer extends JInternalFrame {
 		content.setDividerSize(4);
 		content.setDividerLocation(180);
 
-		_stateEditor = new StateEditor(_dataSet);
+		_stateEditor = new AttributeEditor(_dataSet);
 
 		JSplitPane divider = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		divider.setDividerLocation(getHeight() - 200);
