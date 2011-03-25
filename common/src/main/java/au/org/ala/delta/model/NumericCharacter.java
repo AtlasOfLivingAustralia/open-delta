@@ -14,7 +14,6 @@
  ******************************************************************************/
 package au.org.ala.delta.model;
 
-import org.apache.commons.lang.NotImplementedException;
 
 public abstract class NumericCharacter<T extends Number> extends Character{
 	

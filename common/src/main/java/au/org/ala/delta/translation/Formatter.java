@@ -1,7 +1,5 @@
 package au.org.ala.delta.translation;
 
-import java.text.ParseException;
-
 import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.DeltaContext;

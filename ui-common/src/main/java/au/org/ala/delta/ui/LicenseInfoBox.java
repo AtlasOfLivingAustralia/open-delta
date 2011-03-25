@@ -1,12 +1,9 @@
 package au.org.ala.delta.ui;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
@@ -30,6 +27,8 @@ import au.org.ala.delta.Logger;
 
 public class LicenseInfoBox extends JDialog {
 	
+	private static final long serialVersionUID = 1L;
+
 	@Resource
 	String windowTitle;
 	

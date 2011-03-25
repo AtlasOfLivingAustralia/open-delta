@@ -6,8 +6,6 @@ import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.ActionMap;
 import javax.swing.JButton;
@@ -25,6 +23,8 @@ import org.jdesktop.application.ResourceMap;
 import au.org.ala.delta.util.Utils;
 
 public class SystemInfoBox extends JDialog {
+
+	private static final long serialVersionUID = 1L;
 
 	private String configDetails;
 	

@@ -1,6 +1,5 @@
 package au.org.ala.delta.editor.slotfile.model;
 
-import au.org.ala.delta.editor.slotfile.Attribute;
 import au.org.ala.delta.editor.slotfile.DeltaVOP;
 import au.org.ala.delta.editor.slotfile.TextType;
 import au.org.ala.delta.editor.slotfile.VOCharBaseDesc;
@@ -8,7 +7,6 @@ import au.org.ala.delta.editor.slotfile.VOItemDesc;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DeltaDataSet;
-import au.org.ala.delta.model.DeltaParseException;
 import au.org.ala.delta.model.Item;
 
 /**

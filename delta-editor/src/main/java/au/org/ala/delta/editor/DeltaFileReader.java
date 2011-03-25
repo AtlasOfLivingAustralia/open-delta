@@ -26,15 +26,12 @@ import au.org.ala.delta.editor.slotfile.VOCharBaseDesc;
 import au.org.ala.delta.editor.slotfile.VOCharTextDesc;
 import au.org.ala.delta.editor.slotfile.VODirFileDesc;
 import au.org.ala.delta.editor.slotfile.VOItemDesc;
-import au.org.ala.delta.editor.slotfile.VOCharBaseDesc.CharTextInfo;
-import au.org.ala.delta.editor.slotfile.VODirFileDesc.Dir;
+import au.org.ala.delta.editor.slotfile.model.SlotFileDataSet;
 import au.org.ala.delta.editor.slotfile.model.SlotFileDataSetFactory;
 import au.org.ala.delta.editor.slotfile.model.VOCharacterAdaptor;
 import au.org.ala.delta.editor.slotfile.model.VOItemAdaptor;
-import au.org.ala.delta.editor.slotfile.model.SlotFileDataSet;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.DeltaDataSet;
-import au.org.ala.delta.model.ImplicitValue;
 import au.org.ala.delta.model.IntegerCharacter;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
@@ -211,7 +208,7 @@ public class DeltaFileReader {
 			DirectiveFile dirFile = new DirectiveFile(dirDesc.getFileName());
 			dirFile.progType = dirDesc.getProgType();
 			for (int j = 1; j <= dirDesc.getNDirectives(); ++j) {
-				Dir d = dirDesc.readDirective(j);
+				dirDesc.readDirective(j);
 				if (observer != null && progress % 10 == 0) {
 					int percent = (int) (((double) progress / (double) progmax) * 100);
 					observer.progress("Loading Directives", percent);

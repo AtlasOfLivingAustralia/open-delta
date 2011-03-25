@@ -7,10 +7,8 @@ import au.org.ala.delta.DeltaTestCase;
 import au.org.ala.delta.editor.DeltaFileReader;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DeltaDataSet;
-import au.org.ala.delta.model.IntegerCharacter;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
-import au.org.ala.delta.model.RealCharacter;
 import au.org.ala.delta.rtf.RTFUtils;
 import au.org.ala.delta.util.CodeTimer;
 
@@ -56,12 +54,6 @@ public class ReaderTests extends DeltaTestCase {
 			case OrderedMultiState:
 				MultiStateCharacter msc = (MultiStateCharacter) ch;
 				msc.getStates();
-				break;
-			case IntegerNumeric:
-				IntegerCharacter intch = (IntegerCharacter) ch;
-				break;
-			case RealNumeric:
-				RealCharacter rch = (RealCharacter) ch;
 				break;
 			default:
 

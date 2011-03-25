@@ -18,7 +18,6 @@ import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DeltaDataSet;
-import au.org.ala.delta.model.MultiStateCharacter;
 
 public class CharacterTypes extends AbstractCharacterListDirective<CharacterType> {
 

@@ -20,7 +20,6 @@ import java.awt.Dimension;
 
 import javax.swing.DefaultListModel;
 import javax.swing.DropMode;
-import javax.swing.JCheckBox;
 import javax.swing.JInternalFrame;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
@@ -41,7 +40,6 @@ import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.editor.ui.util.EditorUIUtils;
-import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
@@ -238,6 +236,7 @@ class DeltaTreeCellRenderer extends DefaultTreeCellRenderer {
 		_dataModel = dataModel;
 	}
 
+	@SuppressWarnings("rawtypes")
 	public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus) {
 
 		super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
@@ -286,7 +285,7 @@ class CharacterTreeNode extends DefaultMutableTreeNode {
 		if (_character instanceof MultiStateCharacter) {
 			MultiStateCharacter ms = (MultiStateCharacter) _character;
 			for (int i = 0; i < ms.getNumberOfStates(); ++i) {
-				add(new MultistateStateNode(_dataModel, ms, i + 1));
+				add(new MultistateStateNode(ms, i + 1));
 			}
 		} else {
 			add(new DefaultMutableTreeNode(new CharStateHolder(_dataModel, ch)));
@@ -314,13 +313,11 @@ class MultistateStateNode extends DefaultMutableTreeNode {
 	private static final long serialVersionUID = 1L;
 	
 	private MultiStateCharacter _character;
-	private EditorDataModel _dataModel;
 	private int _stateNo;
 	
-	public MultistateStateNode(EditorDataModel dataModel, MultiStateCharacter ch, int stateNo) {
+	public MultistateStateNode(MultiStateCharacter ch, int stateNo) {
 		super(ch.getState(stateNo));
 		_character = ch;
-		_dataModel = dataModel;
 		_stateNo = stateNo;
 	}
 	

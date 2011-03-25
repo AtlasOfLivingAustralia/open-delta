@@ -143,7 +143,7 @@ class DirStartMatcher extends LineMatcher {
 		state.CurrentDirective = new DirModel();
 		state.CurrentDirective.Names = new String[] { m.group(1), m.group(2), m.group(3), m.group(4) };	
 		state.CurrentList.add(state.CurrentDirective);		
-		Logger.debug("encountered new directive: \"%s\", \"%s\", \"%s\", \"%s\"", state.CurrentDirective.Names);
+		Logger.debug("encountered new directive: \"%s\", \"%s\", \"%s\", \"%s\"", (Object[]) state.CurrentDirective.Names);
 	}
 	
 }

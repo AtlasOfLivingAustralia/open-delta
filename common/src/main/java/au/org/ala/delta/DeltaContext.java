@@ -31,7 +31,6 @@ import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DefaultDataSetFactory;
 import au.org.ala.delta.model.DeltaDataSet;
-import au.org.ala.delta.model.DeltaDataSetFactory;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.StateValueMatrix;
 import au.org.ala.delta.model.UnorderedMultiStateCharacter;

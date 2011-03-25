@@ -17,8 +17,6 @@ package au.org.ala.delta.editor.slotfile;
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
 
-import au.org.ala.delta.Logger;
-
 public class VODescFactory {
 	
 	public static final int VOAnyDesc_TypeId = VOAnyDesc.VOTID_USER_BASE;

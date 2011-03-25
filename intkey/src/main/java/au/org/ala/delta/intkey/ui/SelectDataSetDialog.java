@@ -1,37 +1,33 @@
 package au.org.ala.delta.intkey.ui;
 
-import javax.swing.JDialog;
+import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.Frame;
 
-import javax.swing.JLabel;
-import java.awt.BorderLayout;
-
 import javax.swing.ActionMap;
-import javax.swing.JFileChooser;
-import javax.swing.JPanel;
-import javax.swing.BoxLayout;
-import javax.swing.JScrollPane;
-import javax.swing.JList;
 import javax.swing.JButton;
-import javax.swing.border.BevelBorder;
-import java.awt.Font;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
-import java.awt.Component;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.SwingConstants;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-
 public class SelectDataSetDialog extends JDialog {
     
-    private String _selectedFilePath;
+	private static final long serialVersionUID = 1L;
+	
+	private String _selectedFilePath;
     private boolean _fileSelected;
     
     private JTextField txtFldFilePath;

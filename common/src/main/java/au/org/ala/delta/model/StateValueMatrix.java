@@ -33,5 +33,13 @@ public class StateValueMatrix {
 	public StateValue getValue(int charIndex, int itemIndex) {
 		return _matrix[charIndex - 1][itemIndex - 1];
 	}
+	
+	public int getCharacterCount() {
+		return _characterCount;
+	}
+	
+	public int getItemCount() {
+		return _itemCount;
+	}
 
 }

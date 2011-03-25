@@ -5,8 +5,6 @@ import java.net.URL;
 
 import junit.framework.TestCase;
 import au.org.ala.delta.directives.DirectiveFileParser;
-//import au.org.ala.delta.translation.NaturalLanguageTranslator;
-import au.org.ala.delta.translation.TypeSetter;
 
 /**
  * Tests DELTA file parsing.

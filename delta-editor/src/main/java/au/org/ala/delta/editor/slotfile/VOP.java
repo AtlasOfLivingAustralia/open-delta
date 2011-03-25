@@ -23,8 +23,6 @@ import au.org.ala.delta.editor.slotfile.SlotFile.SlotHeader;
 
 public class VOP {
 
-	private String _filename;
-
 	private SlotFile _permSlotFile;
 	private SlotFile _tempSlotFile;
 	protected int _lastUniId;
@@ -46,9 +44,8 @@ public class VOP {
 	public VOP(String filename, boolean readonly, int[] useIds) {
 		open(filename, readonly, useIds);
 	}
-
+	
 	public void open(String filename, boolean readonly, int[] useIds) {
-		_filename = filename;
 		_useIds = useIds;
 		BinFileMode mode = readonly ? BinFileMode.FM_READONLY
 				: BinFileMode.FM_EXISTING;
