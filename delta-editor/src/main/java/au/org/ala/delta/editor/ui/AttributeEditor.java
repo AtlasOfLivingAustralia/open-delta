@@ -192,7 +192,12 @@ public class AttributeEditor extends JPanel implements ValidationListener {
 			}
 			String attributeText = _textPane.getRtfTextBody();
 
-			_item.getAttribute(_character).setValue(attributeText);
+			Attribute attr = _item.getAttribute(_character);
+			if (attr != null) {
+				attr.setValue(attributeText);
+			} else {
+				System.err.println("No Attribute! should I be allowed to edit this?");
+			}
 			_modified = false;
 		}
 

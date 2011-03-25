@@ -1,5 +1,7 @@
 package au.org.ala.delta.model.impl;
 
+import au.org.ala.delta.model.Item;
+
 public interface CharacterData {
 	
 	String getDescription();
@@ -39,5 +41,7 @@ public interface CharacterData {
 	void setUncodedImplicitState(int stateId);
 
 	void validateAttributeText(String text);
+	
+	ControllingInfo checkApplicability(Item item);
 	
 }

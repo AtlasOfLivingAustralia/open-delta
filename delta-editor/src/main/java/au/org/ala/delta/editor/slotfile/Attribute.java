@@ -18,7 +18,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.Set;
+import java.util.List;
 
 import org.apache.commons.lang.NotImplementedException;
 
@@ -27,7 +27,7 @@ import au.org.ala.delta.util.ArrayUtils;
 import au.org.ala.delta.util.Utils;
 
 public class Attribute implements Iterable<AttrChunk> {
-	
+
 	enum AttributeParseError {
 		EAP_NULL, EAP_BAD_STATE_NUMBER, //
 		EAP_UNMATCHED_CLOSEBRACK, //
@@ -36,7 +36,7 @@ public class Attribute implements Iterable<AttrChunk> {
 	};
 
 	public static class AttributeParseException extends DeltaParseException {
-		
+
 		private static final long serialVersionUID = -6900898497848554617L;
 
 		private AttributeParseError _error;
@@ -61,7 +61,7 @@ public class Attribute implements Iterable<AttrChunk> {
 		public int getValue() {
 			return _value;
 		}
-		
+
 		@Override
 		public String getMessage() {
 			return _error.name();
@@ -117,13 +117,12 @@ public class Attribute implements Iterable<AttrChunk> {
 
 	@Override
 	public String toString() {
-		return String.format("Attribute: charID=%d nChunks=%d", _charId,
-				_nChunks);
+		return String.format("Attribute: charID=%d nChunks=%d", _charId, _nChunks);
 	}
 
 	public void init(int aCharId) {
 		_charId = aCharId;
-		_data = new byte[] {ChunkType.CHUNK_STOP};
+		_data = new byte[] { ChunkType.CHUNK_STOP };
 		_nChunks = 0;
 
 	}
@@ -144,21 +143,18 @@ public class Attribute implements Iterable<AttrChunk> {
 			}
 		}
 		int charType = charBase.getCharType();
-		if (text.length() > 0
-				&& (charType == CharType.UNKNOWN || charType >= CharType.LISTEND)) {
-			throw new AttributeParseException(
-					AttributeParseError.EAP_CHARTYPE_UNDEFINED, 0);
+		if (text.length() > 0 && (charType == CharType.UNKNOWN || charType >= CharType.LISTEND)) {
+			throw new AttributeParseException(AttributeParseError.EAP_CHARTYPE_UNDEFINED, 0);
 		}
 		// Insert comments around text characters if they are not already present.
 		if (CharType.isText(charType)) {
 			if (!text.startsWith("<")) {
-				text = "<"+text+">";
+				text = "<" + text + ">";
 			}
 		}
 
 		// Ignore whether exclusive if parsing Intkey "use" directive
-		boolean isExclusive = charBase
-				.testCharFlag(VOCharBaseDesc.CHAR_EXCLUSIVE) && !isIntkey;
+		boolean isExclusive = charBase.testCharFlag(VOCharBaseDesc.CHAR_EXCLUSIVE) && !isIntkey;
 
 		ParseState parseState = ParseState.NOWHERE;
 		int commentLevel = 0;
@@ -193,23 +189,18 @@ public class Attribute implements Iterable<AttrChunk> {
 					// a comment or not and enable/disable formatting
 					// accordingly.
 					// But that will be awfully hard to get right.....
-					throw new AttributeParseException(
-							AttributeParseError.EAP_BAD_RTF, i - nHidden);
+					throw new AttributeParseException(AttributeParseError.EAP_BAD_RTF, i - nHidden);
 				}
 				// if (bracketLevel != 0)
 				// throw TAttributeParseEx(EAP_BAD_RTF_BRACKET, i - nHidden);
 				// Not really an error. But this would indicate that there are
 				// RTF brackets enclosing text, rather than an RTF command
 				if (ch == Delimiters.CLOSEBRACK)
-					throw new AttributeParseException(
-							AttributeParseError.EAP_UNMATCHED_CLOSEBRACK, i
-									- nHidden);
+					throw new AttributeParseException(AttributeParseError.EAP_UNMATCHED_CLOSEBRACK, i - nHidden);
 
 				else if (ch == Delimiters.OPENBRACK) {
 					if (isIntkey) {// Disallow comments if Intkey "use"
-						throw new AttributeParseException(
-								AttributeParseError.EAP_BADATTR_SYMBOL, i
-										- nHidden);
+						throw new AttributeParseException(AttributeParseError.EAP_BADATTR_SYMBOL, i - nHidden);
 					}
 					++commentLevel; // We have entered a textual comment.
 					textStart = i;
@@ -223,55 +214,41 @@ public class Attribute implements Iterable<AttrChunk> {
 					{ // first save that "something", but don't otherwise change
 						// parse state
 
-						
 						switch (parseState) {
 						case VARIABLE:
-							insert(end(), new AttrChunk(
-									ChunkType.CHUNK_VARIABLE));
+							insert(end(), new AttrChunk(ChunkType.CHUNK_VARIABLE));
 							break;
 
 						case UNKNOWN:
-							insert(end(),
-									new AttrChunk(ChunkType.CHUNK_UNKNOWN));
+							insert(end(), new AttrChunk(ChunkType.CHUNK_UNKNOWN));
 							break;
 
 						case INAPPLICABLE:
-							insert(end(), new AttrChunk(
-									ChunkType.CHUNK_INAPPLICABLE));
+							insert(end(), new AttrChunk(ChunkType.CHUNK_INAPPLICABLE));
 							break;
 
 						case NUMBER:
 							if (CharType.isNumeric(charType)) {
 								DeltaNumber aNumb = new DeltaNumber(substring(text, startPos, i - startPos + 1));
 								if (aNumb.lessThan(prevNumb)) {
-									throw new AttributeParseException(
-											AttributeParseError.EAP_BAD_NUMERIC_ORDER,
-											startPos - nHidden);
+									throw new AttributeParseException(AttributeParseError.EAP_BAD_NUMERIC_ORDER, startPos - nHidden);
 								}
 								insert(end(), new AttrChunk(aNumb));
 								prevNumb = aNumb;
 							} else if (CharType.isMultistate(charType)) {
 								int stateNo = Utils.strtol((substring(text, startPos, i - startPos + 1)));
-								int stateId = charBase
-										.uniIdFromStateNo(stateNo);
+								int stateId = charBase.uniIdFromStateNo(stateNo);
 								if (stateId == VOCharBaseDesc.STATEID_NULL)
-									throw new AttributeParseException(
-											AttributeParseError.EAP_BAD_STATE_NUMBER,
-											startPos - nHidden);
+									throw new AttributeParseException(AttributeParseError.EAP_BAD_STATE_NUMBER, startPos - nHidden);
 								if (isExclusive && hadState)
-									throw new AttributeParseException(
-											AttributeParseError.EAP_EXCLUSIVE_ERROR,
-											startPos - nHidden);
-								insert(end(), new AttrChunk(
-										ChunkType.CHUNK_STATE, stateId));
+									throw new AttributeParseException(AttributeParseError.EAP_EXCLUSIVE_ERROR, startPos - nHidden);
+								insert(end(), new AttrChunk(ChunkType.CHUNK_STATE, stateId));
 								hadState = true;
 							}
 							break;
 
 						default:
-							throw new AttributeParseException(
-									AttributeParseError.EAP_BADATTR_SYMBOL, i
-											- nHidden);
+							throw new AttributeParseException(AttributeParseError.EAP_BADATTR_SYMBOL, i - nHidden);
 						}
 						// If we jumped here by hitting the end of the loop,
 						// then let's
@@ -290,14 +267,9 @@ public class Attribute implements Iterable<AttrChunk> {
 						&& parseState == ParseState.NOWHERE) {
 
 					// / Start test block for handling negative numerics
-					if (CharType.isNumeric(charType)
-							&& i < text.length() - 1
-							&& (text.charAt(i + 1) == '.' || Character
-									.isDigit(text.charAt(i + 1)))) {
+					if (CharType.isNumeric(charType) && i < text.length() - 1 && (text.charAt(i + 1) == '.' || Character.isDigit(text.charAt(i + 1)))) {
 						if (++numbCount > 3)
-							throw new AttributeParseException(
-									AttributeParseError.EAP_BADATTR_SYMBOL, i
-											- nHidden);
+							throw new AttributeParseException(AttributeParseError.EAP_BADATTR_SYMBOL, i - nHidden);
 						parseState = ParseState.NUMBER;
 						startPos = i;
 						hadDecimal = false;
@@ -309,81 +281,59 @@ public class Attribute implements Iterable<AttrChunk> {
 						parseState = ParseState.INAPPLICABLE;
 						hadPseudo = true;
 					} else
-						throw new AttributeParseException(
-								AttributeParseError.EAP_BADATTR_SYMBOL, i
-										- nHidden);
+						throw new AttributeParseException(AttributeParseError.EAP_BADATTR_SYMBOL, i - nHidden);
 				}
 
 				else if (ch == 'U') {
 					if (!(pseudoOK && parseState == ParseState.NOWHERE))
-						throw new AttributeParseException(
-								AttributeParseError.EAP_BADATTR_SYMBOL, i
-										- nHidden);
+						throw new AttributeParseException(AttributeParseError.EAP_BADATTR_SYMBOL, i - nHidden);
 					parseState = ParseState.UNKNOWN;
 					hadPseudo = true;
 				}
 
 				else if (CharType.isText(charType))
-					throw new AttributeParseException(
-							AttributeParseError.EAP_BADATTR_SYMBOL, i - nHidden);
+					throw new AttributeParseException(AttributeParseError.EAP_BADATTR_SYMBOL, i - nHidden);
 
 				else if (ch == ',') // Should only occur at the start, after a
 									// comment
 				{
 					if (!onlyText)
-						throw new AttributeParseException(
-								AttributeParseError.EAP_BADATTR_SYMBOL, i
-										- nHidden);
+						throw new AttributeParseException(AttributeParseError.EAP_BADATTR_SYMBOL, i - nHidden);
 				}
 
 				else if (ch == 'V') {
 					if (!(pseudoOK && parseState == ParseState.NOWHERE))
-						throw new AttributeParseException(
-								AttributeParseError.EAP_BADATTR_SYMBOL, i
-										- nHidden);
+						throw new AttributeParseException(AttributeParseError.EAP_BADATTR_SYMBOL, i - nHidden);
 					parseState = ParseState.VARIABLE;
 					hadPseudo = true;
 				}
 
-				else if (ch == Delimiters.STATERANGE
-						|| ch == Delimiters.ANDSTATE) {
+				else if (ch == Delimiters.STATERANGE || ch == Delimiters.ANDSTATE) {
 					// Is this a pseudo-value?
 					if (parseState == ParseState.NUMBER) {
 						if (!inserted) {
 							if (CharType.isNumeric(charType)) {
 								DeltaNumber aNumb = new DeltaNumber(substring(text, startPos, i - startPos + 1));
 								if (aNumb.lessThan(prevNumb))
-									throw new AttributeParseException(
-											AttributeParseError.EAP_BAD_NUMERIC_ORDER,
-											startPos - nHidden);
+									throw new AttributeParseException(AttributeParseError.EAP_BAD_NUMERIC_ORDER, startPos - nHidden);
 								insert(end(), new AttrChunk(aNumb));
 								prevNumb = aNumb;
 							} else if (CharType.isMultistate(charType)) {
 								int stateNo = Utils.strtol((substring(text, startPos, i - startPos + 1)));
-								int stateId = charBase
-										.uniIdFromStateNo(stateNo);
+								int stateId = charBase.uniIdFromStateNo(stateNo);
 								if (stateId == VOCharBaseDesc.STATEID_NULL)
-									throw new AttributeParseException(
-											AttributeParseError.EAP_BAD_STATE_NUMBER,
-											startPos - nHidden);
+									throw new AttributeParseException(AttributeParseError.EAP_BAD_STATE_NUMBER, startPos - nHidden);
 								if (isExclusive && hadState)
-									throw new AttributeParseException(
-											AttributeParseError.EAP_EXCLUSIVE_ERROR,
-											startPos - nHidden);
-								insert(end(), new AttrChunk(
-										ChunkType.CHUNK_STATE, stateId));
+									throw new AttributeParseException(AttributeParseError.EAP_EXCLUSIVE_ERROR, startPos - nHidden);
+								insert(end(), new AttrChunk(ChunkType.CHUNK_STATE, stateId));
 								hadState = true;
 							}
 						}
 					} else
-						throw new AttributeParseException(
-								AttributeParseError.EAP_BADATTR_SYMBOL, i
-										- nHidden);
+						throw new AttributeParseException(AttributeParseError.EAP_BADATTR_SYMBOL, i - nHidden);
 					if (ch == Delimiters.ANDSTATE) {
 						if (isIntkey) // Disallow & if Intkey "use"
-							throw new AttributeParseException(
-									AttributeParseError.EAP_BADATTR_SYMBOL, i
-											- nHidden);
+							throw new AttributeParseException(AttributeParseError.EAP_BADATTR_SYMBOL, i - nHidden);
 						insert(end(), new AttrChunk(ChunkType.CHUNK_AND));
 						numbCount = 0;
 						prevNumb = new DeltaNumber(-Float.MAX_VALUE);
@@ -399,59 +349,45 @@ public class Attribute implements Iterable<AttrChunk> {
 
 				else if (ch == Delimiters.ORSTATE) {
 					if (parseState == ParseState.UNKNOWN)
-						throw new AttributeParseException(
-								AttributeParseError.EAP_BADATTR_SYMBOL, i
-										- nHidden);
+						throw new AttributeParseException(AttributeParseError.EAP_BADATTR_SYMBOL, i - nHidden);
 					if (!inserted) // If we were in the middle of "something",
 					{ // first save that "something", but don't otherwise change
 						// parse state
 						switch (parseState) {
 						case VARIABLE:
-							insert(end(), new AttrChunk(
-									ChunkType.CHUNK_VARIABLE));
+							insert(end(), new AttrChunk(ChunkType.CHUNK_VARIABLE));
 							break;
 
 						case UNKNOWN:
-							insert(end(),
-									new AttrChunk(ChunkType.CHUNK_UNKNOWN));
+							insert(end(), new AttrChunk(ChunkType.CHUNK_UNKNOWN));
 							break;
 
 						case INAPPLICABLE:
-							insert(end(), new AttrChunk(
-									ChunkType.CHUNK_INAPPLICABLE));
+							insert(end(), new AttrChunk(ChunkType.CHUNK_INAPPLICABLE));
 							break;
 
 						case NUMBER:
 							if (CharType.isNumeric(charType)) {
 								DeltaNumber aNumb = new DeltaNumber(substring(text, startPos, i - startPos + 1));
 								if (aNumb.lessThan(prevNumb)) {
-									throw new AttributeParseException(
-											AttributeParseError.EAP_BAD_NUMERIC_ORDER,
-											startPos - nHidden);
+									throw new AttributeParseException(AttributeParseError.EAP_BAD_NUMERIC_ORDER, startPos - nHidden);
 								}
 								insert(end(), new AttrChunk(aNumb));
 								prevNumb = aNumb;
 							} else if (CharType.isMultistate(charType)) {
-								int stateNo = Utils.strtol(substring(text, startPos, i -startPos + 1));
+								int stateNo = Utils.strtol(substring(text, startPos, i - startPos + 1));
 								int stateId = charBase.uniIdFromStateNo(stateNo);
 								if (stateId == VOCharBaseDesc.STATEID_NULL)
-									throw new AttributeParseException(
-											AttributeParseError.EAP_BAD_STATE_NUMBER,
-											startPos - nHidden);
+									throw new AttributeParseException(AttributeParseError.EAP_BAD_STATE_NUMBER, startPos - nHidden);
 								if (isExclusive && hadState)
-									throw new AttributeParseException(
-											AttributeParseError.EAP_EXCLUSIVE_ERROR,
-											startPos - nHidden);
-								insert(end(), new AttrChunk(
-										ChunkType.CHUNK_STATE, stateId));
+									throw new AttributeParseException(AttributeParseError.EAP_EXCLUSIVE_ERROR, startPos - nHidden);
+								insert(end(), new AttrChunk(ChunkType.CHUNK_STATE, stateId));
 								hadState = true;
 							}
 							break;
 
 						default:
-							throw new AttributeParseException(
-									AttributeParseError.EAP_BADATTR_SYMBOL, i
-											- nHidden);
+							throw new AttributeParseException(AttributeParseError.EAP_BADATTR_SYMBOL, i - nHidden);
 						}
 					}
 					insert(end(), new AttrChunk(ChunkType.CHUNK_OR));
@@ -466,22 +402,15 @@ public class Attribute implements Iterable<AttrChunk> {
 					prevNumb = new DeltaNumber(-Float.MAX_VALUE);
 				}
 
-				else if (ch == '.'
-						&& (charType != CharType.REAL || (parseState == ParseState.NUMBER && hadDecimal)))
-					throw new AttributeParseException(
-							AttributeParseError.EAP_BADATTR_SYMBOL, i - nHidden);
+				else if (ch == '.' && (charType != CharType.REAL || (parseState == ParseState.NUMBER && hadDecimal)))
+					throw new AttributeParseException(AttributeParseError.EAP_BADATTR_SYMBOL, i - nHidden);
 
 				else if (ch == '.' || Character.isDigit(ch)) {
 					if (hadPseudo || hadExHi)
-						throw new AttributeParseException(
-								AttributeParseError.EAP_BADATTR_SYMBOL, i
-										- nHidden);
+						throw new AttributeParseException(AttributeParseError.EAP_BADATTR_SYMBOL, i - nHidden);
 					if (parseState == ParseState.NOWHERE) {
-						if (CharType.isText(charType)
-								|| (CharType.isNumeric(charType) && ++numbCount > 3))
-							throw new AttributeParseException(
-									AttributeParseError.EAP_BADATTR_SYMBOL, i
-											- nHidden);
+						if (CharType.isText(charType) || (CharType.isNumeric(charType) && ++numbCount > 3))
+							throw new AttributeParseException(AttributeParseError.EAP_BADATTR_SYMBOL, i - nHidden);
 						parseState = ParseState.NUMBER;
 						startPos = i;
 						hadDecimal = false;
@@ -489,140 +418,99 @@ public class Attribute implements Iterable<AttrChunk> {
 					if (ch == '.')
 						hadDecimal = true;
 					if (parseState != ParseState.NUMBER || inserted)
-						throw new AttributeParseException(
-								AttributeParseError.EAP_BADATTR_SYMBOL, i
-										- nHidden);
+						throw new AttributeParseException(AttributeParseError.EAP_BADATTR_SYMBOL, i - nHidden);
 				} else if (ch == '(' && !isIntkey) // Should be "extreme" low or
 													// high value.
 				{ // Handle this specially, since it requires multi-character
 					// scanning.
 					if (hadPseudo || hadExHi)
-						throw new AttributeParseException(
-								AttributeParseError.EAP_BADATTR_SYMBOL, i
-										- nHidden);
+						throw new AttributeParseException(AttributeParseError.EAP_BADATTR_SYMBOL, i - nHidden);
 					if (!CharType.isNumeric(charType))
-						throw new AttributeParseException(
-								AttributeParseError.EAP_BADATTR_SYMBOL, i
-										- nHidden);
+						throw new AttributeParseException(AttributeParseError.EAP_BADATTR_SYMBOL, i - nHidden);
 					int j;
 					hadDecimal = false;
-					if (numbCount > 0 && i + 1 < text.length()
-							&& text.charAt(i + 1) == Delimiters.STATERANGE) // (extreme
-																			// high)
+					if (numbCount > 0 && i + 1 < text.length() && text.charAt(i + 1) == Delimiters.STATERANGE) // (extreme
+																												// high)
 					{
 						if (parseState == ParseState.NUMBER) {
 							if (!inserted) {
 								DeltaNumber aNumb = new DeltaNumber(substring(text, startPos, i - startPos + 1));
 								if (aNumb.lessThan(prevNumb)) {
-									throw new AttributeParseException(
-											AttributeParseError.EAP_BAD_NUMERIC_ORDER,
-											startPos - nHidden);
+									throw new AttributeParseException(AttributeParseError.EAP_BAD_NUMERIC_ORDER, startPos - nHidden);
 								}
 								insert(end(), new AttrChunk(aNumb));
 								prevNumb = aNumb;
 								inserted = true;
 							}
 						} else if (parseState != ParseState.UNKNOWN)
-							throw new AttributeParseException(
-									AttributeParseError.EAP_BADATTR_SYMBOL, i
-											- nHidden);
+							throw new AttributeParseException(AttributeParseError.EAP_BADATTR_SYMBOL, i - nHidden);
 						// insert(end(), TAttrChunk(CHUNK_TO)); // Is this
 						// needed, or is it implicit in the extreme hi flag?
 						pseudoOK = false;
 						startPos = -1;
-						for (j = i + 2; j < text.length()
-								&& text.charAt(j) != ')'; ++j) {
-							if (!(Character.isDigit(text.charAt(j))
-									|| (text.charAt(j) == '.' && charType == CharType.REAL)
+						for (j = i + 2; j < text.length() && text.charAt(j) != ')'; ++j) {
+							if (!(Character.isDigit(text.charAt(j)) || (text.charAt(j) == '.' && charType == CharType.REAL)
 
 							|| (j == i + 2 && text.charAt(j) == '-')))
-								throw new AttributeParseException(
-										AttributeParseError.EAP_BADATTR_SYMBOL,
-										j - nHidden);
+								throw new AttributeParseException(AttributeParseError.EAP_BADATTR_SYMBOL, j - nHidden);
 							if (startPos < 0)
 								startPos = j;
 							if (text.charAt(j) == '.') {
 								if (hadDecimal)
-									throw new AttributeParseException(
-											AttributeParseError.EAP_BADATTR_SYMBOL,
-											j - nHidden);
+									throw new AttributeParseException(AttributeParseError.EAP_BADATTR_SYMBOL, j - nHidden);
 								else
 									hadDecimal = true;
 							}
 						}
 						if (startPos < 0 || j == text.length())
-							throw new AttributeParseException(
-									AttributeParseError.EAP_BADATTR_SYMBOL,
-									startPos - nHidden);
+							throw new AttributeParseException(AttributeParseError.EAP_BADATTR_SYMBOL, startPos - nHidden);
 						i = j;
 						DeltaNumber exhiNumb = new DeltaNumber(substring(text, startPos, i - startPos));
 						if (exhiNumb.lessThan(prevNumb)) {
-							throw new AttributeParseException(
-									AttributeParseError.EAP_BAD_NUMERIC_ORDER,
-									startPos - nHidden);
+							throw new AttributeParseException(AttributeParseError.EAP_BAD_NUMERIC_ORDER, startPos - nHidden);
 						}
-						insert(end(), new AttrChunk(
-								ChunkType.CHUNK_EXHI_NUMBER, exhiNumb));
+						insert(end(), new AttrChunk(ChunkType.CHUNK_EXHI_NUMBER, exhiNumb));
 						prevNumb = exhiNumb;
 					} else // Ought to be the start of an extreme low value
 					{
-						if (parseState != ParseState.NOWHERE || hadExLo
-								|| numbCount > 0)
-							throw new AttributeParseException(
-									AttributeParseError.EAP_BADATTR_SYMBOL, i
-											- nHidden);
+						if (parseState != ParseState.NOWHERE || hadExLo || numbCount > 0)
+							throw new AttributeParseException(AttributeParseError.EAP_BADATTR_SYMBOL, i - nHidden);
 						startPos = -1;
-						for (j = i + 1; j < text.length() - 1
-								&& (text.charAt(j) != Delimiters.STATERANGE || j == i + 1); ++j) {
-							if (!(Character.isDigit(text.charAt(j))
-									|| (text.charAt(j) == '.' && charType == CharType.REAL) || (j == i + 1 && text
-									.charAt(j) == '-')))
-								throw new AttributeParseException(
-										AttributeParseError.EAP_BADATTR_SYMBOL,
-										j - nHidden);
+						for (j = i + 1; j < text.length() - 1 && (text.charAt(j) != Delimiters.STATERANGE || j == i + 1); ++j) {
+							if (!(Character.isDigit(text.charAt(j)) || (text.charAt(j) == '.' && charType == CharType.REAL) || (j == i + 1 && text.charAt(j) == '-')))
+								throw new AttributeParseException(AttributeParseError.EAP_BADATTR_SYMBOL, j - nHidden);
 							if (startPos < 0)
 								startPos = j;
 							if (text.charAt(j) == '.') {
 								if (hadDecimal)
-									throw new AttributeParseException(
-											AttributeParseError.EAP_BADATTR_SYMBOL,
-											j - nHidden);
+									throw new AttributeParseException(AttributeParseError.EAP_BADATTR_SYMBOL, j - nHidden);
 								else
 									hadDecimal = true;
 							}
 						}
-						if (startPos < 0 || j == text.length() - 1
-								|| text.charAt(j + 1) != ')')
-							throw new AttributeParseException(
-									AttributeParseError.EAP_BADATTR_SYMBOL,
-									startPos - nHidden);
+						if (startPos < 0 || j == text.length() - 1 || text.charAt(j + 1) != ')')
+							throw new AttributeParseException(AttributeParseError.EAP_BADATTR_SYMBOL, startPos - nHidden);
 						i = j + 1;
 						DeltaNumber exloNumb = new DeltaNumber(substring(text, startPos, i - startPos - 1));
-						insert(end(), new AttrChunk(
-								ChunkType.CHUNK_EXLO_NUMBER, exloNumb));
+						insert(end(), new AttrChunk(ChunkType.CHUNK_EXLO_NUMBER, exloNumb));
 						prevNumb = exloNumb;
 						hadExLo = true;
 						parseState = ParseState.NOWHERE;
 						inserted = false;
 					}
 				} else if (ch == '\\' && !isIntkey)
-					throw new AttributeParseException(
-							AttributeParseError.EAP_BAD_RTF, i - nHidden);
+					throw new AttributeParseException(AttributeParseError.EAP_BAD_RTF, i - nHidden);
 				else
-					throw new AttributeParseException(
-							AttributeParseError.EAP_BADATTR_SYMBOL, i - nHidden);
+					throw new AttributeParseException(AttributeParseError.EAP_BADATTR_SYMBOL, i - nHidden);
 
 				if (commentLevel == 0)
 					onlyText = false;
 			} else if (ch == Delimiters.OPENBRACK) {
 				++commentLevel;
-			} else if (ch == Delimiters.CLOSEBRACK && --commentLevel == 0
-					&& i - textStart > 1) // Save text if length > 0
+			} else if (ch == Delimiters.CLOSEBRACK && --commentLevel == 0 && i - textStart > 1) // Save text if length > 0
 			{
 				if (bracketLevel != 0)
-					throw new AttributeParseException(
-							AttributeParseError.EAP_BAD_RTF_BRACKET, i
-									- nHidden);
+					throw new AttributeParseException(AttributeParseError.EAP_BAD_RTF_BRACKET, i - nHidden);
 				// The "+1" and "-1" strip off the outermost pair of brackets.
 				int start = textStart + 1;
 				int finish = i - 1;
@@ -632,8 +520,7 @@ public class Attribute implements Iterable<AttrChunk> {
 				while (text.charAt(finish) == ' ' && finish >= start)
 					--finish;
 				if (finish >= start)
-					insert(end(),
-							new AttrChunk(substring(text, start, finish - start + 1)));
+					insert(end(), new AttrChunk(substring(text, start, finish - start + 1)));
 				// insert(end(), TAttrChunk(text.substr(textStart + 1, i -
 				// textStart - 1)));
 			}
@@ -650,10 +537,9 @@ public class Attribute implements Iterable<AttrChunk> {
 						inRTF = true;
 					else if (ch == '{') {
 						++bracketLevel;
-					}
-					else if (ch != ' ')
+					} else if (ch != ' ')
 						--nHidden;
-					
+
 				}
 			} else if (ch == '{') {
 				++bracketLevel;
@@ -669,8 +555,7 @@ public class Attribute implements Iterable<AttrChunk> {
 		}
 
 		if (commentLevel > 0)
-			throw new AttributeParseException(
-					AttributeParseError.EAP_MISSING_CLOSEBRACK, i - nHidden);
+			throw new AttributeParseException(AttributeParseError.EAP_MISSING_CLOSEBRACK, i - nHidden);
 
 		if (!inserted && !onlyText) {
 			switch (parseState) {
@@ -690,9 +575,7 @@ public class Attribute implements Iterable<AttrChunk> {
 				if (CharType.isNumeric(charType)) {
 					DeltaNumber aNumb = new DeltaNumber(substring(text, startPos, i - startPos + 1));
 					if (aNumb.lessThan(prevNumb)) {
-						throw new AttributeParseException(
-								AttributeParseError.EAP_BAD_NUMERIC_ORDER,
-								startPos - nHidden);
+						throw new AttributeParseException(AttributeParseError.EAP_BAD_NUMERIC_ORDER, startPos - nHidden);
 					}
 					insert(end(), new AttrChunk(aNumb));
 					prevNumb = aNumb;
@@ -700,36 +583,34 @@ public class Attribute implements Iterable<AttrChunk> {
 					int stateNo = Utils.strtol((substring(text, startPos, i - startPos + 1)));
 					int stateId = charBase.uniIdFromStateNo(stateNo);
 					if (stateId == VOCharBaseDesc.STATEID_NULL)
-						throw new AttributeParseException(
-								AttributeParseError.EAP_BAD_STATE_NUMBER,
-								startPos - nHidden);
+						throw new AttributeParseException(AttributeParseError.EAP_BAD_STATE_NUMBER, startPos - nHidden);
 					if (isExclusive && hadState)
-						throw new AttributeParseException(
-								AttributeParseError.EAP_EXCLUSIVE_ERROR,
-								startPos - nHidden);
+						throw new AttributeParseException(AttributeParseError.EAP_EXCLUSIVE_ERROR, startPos - nHidden);
 					insert(end(), new AttrChunk(ChunkType.CHUNK_STATE, stateId));
 					hadState = true;
 				}
 				break;
 
 			default:
-				throw new AttributeParseException(
-						AttributeParseError.EAP_BADATTR_SYMBOL, i - nHidden);
+				throw new AttributeParseException(AttributeParseError.EAP_BADATTR_SYMBOL, i - nHidden);
 			}
 		}
 	}
-	
+
 	/**
-	 * Mimics the behaviour of the c++ string::substr.  Main differences from String.substring are:
-	 * 1) It takes a start position and length instead of start position and end position
-	 * 2) It is tolerant of requests for a substring that go past the end of the string.
-	 * @param source the source string
-	 * @param startPos the start position in the source String
-	 * @param length the desired length for the substring.
+	 * Mimics the behaviour of the c++ string::substr. Main differences from String.substring are: 1) It takes a start position and length instead of start position and end position 2) It is tolerant
+	 * of requests for a substring that go past the end of the string.
+	 * 
+	 * @param source
+	 *            the source string
+	 * @param startPos
+	 *            the start position in the source String
+	 * @param length
+	 *            the desired length for the substring.
 	 * @return
 	 */
 	private String substring(String source, int beginIndex, int length) {
-		
+
 		int endIndex = beginIndex + length;
 		endIndex = Math.min(source.length(), endIndex);
 		return source.substring(beginIndex, endIndex);
@@ -752,14 +633,16 @@ public class Attribute implements Iterable<AttrChunk> {
 	}
 
 	public int end() {
-		return _data.length-1;
+		return _data.length - 1;
 	}
 
 	/**
-	 * Inserts the supplied chunk at the nominated position in the backing byte array for this
-	 * attribute.
-	 * @param where the position to insert the chunk.
-	 * @param chunk the chunk to insert.
+	 * Inserts the supplied chunk at the nominated position in the backing byte array for this attribute.
+	 * 
+	 * @param where
+	 *            the position to insert the chunk.
+	 * @param chunk
+	 *            the chunk to insert.
 	 * @return the index into the backing byte array where the next insert should go
 	 */
 	public int insert(int where, AttrChunk chunk) {
@@ -778,8 +661,7 @@ public class Attribute implements Iterable<AttrChunk> {
 			byte[] stringBytes = SlotFileEncoding.encode(chunk.getString());
 			int strLeng = stringBytes.length;
 			chunkData = initialiseBufferForChunk(strLeng + 2/*
-															 * size of unsigned
-															 * short
+															 * size of unsigned short
 															 */+ 1, chunk);
 
 			chunkData.put((byte) (strLeng & 0xff));
@@ -792,8 +674,7 @@ public class Attribute implements Iterable<AttrChunk> {
 			byte[] stringBytes = SlotFileEncoding.encode(chunk.getString());
 			int strLeng = stringBytes.length;
 
-			chunkData = initialiseBufferForChunk(
-					strLeng + 4/* size of int */+ 1, chunk);
+			chunkData = initialiseBufferForChunk(strLeng + 4/* size of int */+ 1, chunk);
 
 			chunkData.put((byte) (strLeng & 0xff));
 			chunkData.put((byte) ((strLeng >> 8) & 0xff));
@@ -840,31 +721,31 @@ public class Attribute implements Iterable<AttrChunk> {
 
 	public void erase(int where) {
 		long start = where;
-		  if (start >= _data.length - 1) { // Don't erase the terminal STOP chunk
-		    return;
-		  }
-		  AttrIterator i = new AttrIterator(this, where);
-		  i.increment();
-		 
-		  ArrayUtils.deleteRange(_data, where, i.getPos());
-		  --_nChunks; 
+		if (start >= _data.length - 1) { // Don't erase the terminal STOP chunk
+			return;
+		}
+		AttrIterator i = new AttrIterator(this, where);
+		i.increment();
+
+		ArrayUtils.deleteRange(_data, where, i.getPos());
+		--_nChunks;
 	}
 
 	public void erase(int start, int end) {
-		
-		  if (start >= _data.length - 1 || end > _data.length - 1) {
-		    return;
-		  }
-		  // Count the number of chunks between start & end to keep _nchunks up to date.
-		  AttrIterator i = new AttrIterator(this, start);
-		  long nDel = 0;
-		  while (i.getPos() < end) {
-		      i.increment();
-		      ++nDel;
-		  }
-		 
-		  _data = ArrayUtils.deleteRange(_data, start, end);
-		 _nChunks -= nDel;
+
+		if (start >= _data.length - 1 || end > _data.length - 1) {
+			return;
+		}
+		// Count the number of chunks between start & end to keep _nchunks up to date.
+		AttrIterator i = new AttrIterator(this, start);
+		long nDel = 0;
+		while (i.getPos() < end) {
+			i.increment();
+			++nDel;
+		}
+
+		_data = ArrayUtils.deleteRange(_data, start, end);
+		_nChunks -= nDel;
 	}
 
 	public void setCharId(int newCharId) {
@@ -890,69 +771,131 @@ public class Attribute implements Iterable<AttrChunk> {
 
 	public boolean isSimple(VOCharBaseDesc charBase) {
 		if ((_charId == 0) || (_charId != charBase.getUniId())) {
-		    return false;
+			return false;
 		}
 		int charType = charBase.getCharType();
-		  
-		  if (CharType.isMultistate(charType)) { /// Must have only state values, in ascending order, and "or" separators.
-		    
-		      int lastState = 0;
-		      for (AttrChunk chunk : this) {
-		          int chunkType = chunk.getType();
-		          if (chunkType == ChunkType.CHUNK_STATE) {
-		              int stateId = chunk.getStateId();
-		              if (stateId == VOCharBaseDesc.STATEID_NULL) {
-		            	  return false;
-		              }
-		              int newState = charBase.stateNoFromUniId(stateId);
-		              if (newState < lastState) {
-		                return false;
-		              }
-		              lastState = newState;
-		            }
-		          else if (chunkType != ChunkType.CHUNK_OR)
-		            return false;
-		        }
-		    }
-		  else if (CharType.isNumeric(charType)) /// Must have only non-extreme numeric values, in ascending order, or range separators.
-		    {
-		      DeltaNumber lastValue = new DeltaNumber(-Float.MAX_VALUE, (byte)0);
-		      int valueCount = 0;
-		      
-		      for (AttrChunk chunk : this) {
-		          int chunkType = chunk.getType();
-		          if (chunkType == ChunkType.CHUNK_NUMBER) {
-		              DeltaNumber value = chunk.getNumber();
-		              if (++valueCount > 3 || value.lessThan(lastValue)) {
-		                return false;
-		              }
-		              lastValue = value;
-		            }
-		          else if (chunkType != ChunkType.CHUNK_TO) {
-		            return false;
-		          }
-		        }
-		    }
-		  else if (CharType.isText(charType)) { /// Must not have any RTF codes
-		    
-		      for (AttrChunk chunk : this) {
-		        
-		          String text = chunk.getAsText(charBase);
-		          if (!text.equals(Utils.RTFToANSI(text))) {
-		            return false;
-		          }
-		        }
-		    }
-		  return true;
+
+		if (CharType.isMultistate(charType)) { // / Must have only state values, in ascending order, and "or" separators.
+
+			int lastState = 0;
+			for (AttrChunk chunk : this) {
+				int chunkType = chunk.getType();
+				if (chunkType == ChunkType.CHUNK_STATE) {
+					int stateId = chunk.getStateId();
+					if (stateId == VOCharBaseDesc.STATEID_NULL) {
+						return false;
+					}
+					int newState = charBase.stateNoFromUniId(stateId);
+					if (newState < lastState) {
+						return false;
+					}
+					lastState = newState;
+				} else if (chunkType != ChunkType.CHUNK_OR)
+					return false;
+			}
+		} else if (CharType.isNumeric(charType)) // / Must have only non-extreme numeric values, in ascending order, or range separators.
+		{
+			DeltaNumber lastValue = new DeltaNumber(-Float.MAX_VALUE, (byte) 0);
+			int valueCount = 0;
+
+			for (AttrChunk chunk : this) {
+				int chunkType = chunk.getType();
+				if (chunkType == ChunkType.CHUNK_NUMBER) {
+					DeltaNumber value = chunk.getNumber();
+					if (++valueCount > 3 || value.lessThan(lastValue)) {
+						return false;
+					}
+					lastValue = value;
+				} else if (chunkType != ChunkType.CHUNK_TO) {
+					return false;
+				}
+			}
+		} else if (CharType.isText(charType)) { // / Must not have any RTF codes
+
+			for (AttrChunk chunk : this) {
+
+				String text = chunk.getAsText(charBase);
+				if (!text.equals(Utils.RTFToANSI(text))) {
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 
 	public boolean deleteState(VOCharBaseDesc charBase, int stateId) {
 		throw new NotImplementedException();
 	}
 
-	public boolean getEncodedStates(VOCharBaseDesc charBase,
-			Set<Integer> stateIds, short[] pseudoValues) {
-		throw new NotImplementedException();
+	public boolean getEncodedStates(VOCharBaseDesc charBase, List<Integer> stateIds, short[] pseudoValues) {
+
+		stateIds.clear();
+		pseudoValues[0] = VOItemDesc.PSEUDO_NONE;
+
+		if (_charId == VOAnyDesc.VOUID_NULL || _charId != charBase.getUniId()) {
+			return false;
+		}
+		int charType = charBase.getCharType();
+		if (!CharType.isMultistate(charType)) {
+			return false;
+		}
+
+		boolean isOrdered = (charType == CharType.ORDERED);
+		int rangeStart = 0;
+		boolean inRange = false;
+		boolean empty = true;
+		AttrIterator iter;
+		for (iter = begin(); iter.hasNext(); iter.next()) {
+			byte chunkType = iter.getChunkType();
+			if (chunkType != ChunkType.CHUNK_STOP) {
+				empty = false;
+			}
+
+			switch (chunkType) {
+			case ChunkType.CHUNK_INAPPLICABLE:
+				pseudoValues[0] |= VOItemDesc.PSEUDO_INAPPLICABLE;
+				break;
+			case ChunkType.CHUNK_VARIABLE:
+				pseudoValues[0] |= VOItemDesc.PSEUDO_VARIABLE;
+				break;
+			case ChunkType.CHUNK_UNKNOWN:
+				pseudoValues[0] |= VOItemDesc.PSEUDO_UNKNOWN;
+				break;
+			case ChunkType.CHUNK_STATE:
+				stateIds.add(iter.get().getStateId());
+				if (isOrdered) {
+					if (inRange) {
+						int startState = charBase.stateNoFromUniId(rangeStart);
+						int endState = charBase.stateNoFromUniId(iter.get().getStateId());
+						int aState = Math.min(startState, endState);
+						if (aState > 0) {
+							// a check to ensure the state IDs were valid
+							endState = Math.max(startState, endState);
+							// The delimiting states will have already been inserted.
+							for (++aState; aState < endState; ++aState) {
+								stateIds.add(charBase.uniIdFromStateNo(aState));
+							}
+							inRange = false;
+						}
+					}
+					rangeStart = iter.get().getStateId();
+				}
+				break;
+			case ChunkType.CHUNK_TO:
+				if (isOrdered)
+					inRange = true;
+				break;
+			default:
+				break;
+			}
+		}
+		// Had nothing, so use implicit value
+		if (empty) {
+			int implicitId = charBase.getUncodedImplicit();
+			if (implicitId != 0)
+				stateIds.add(implicitId);
+		}
+		return !stateIds.isEmpty();
 	}
 
 	public boolean initReadData() {
@@ -1053,65 +996,59 @@ public class Attribute implements Iterable<AttrChunk> {
 		VOCharBaseDesc charBase = (VOCharBaseDesc) vop.getDescFromId(_charId);
 		StringBuffer dest = new StringBuffer();
 		for (AttrChunk chunk : this) {
-			if (showComments == 0 || !chunk.isTextChunk()
-					|| CharType.isText(charBase.getCharType())) {
+			if (showComments == 0 || !chunk.isTextChunk() || CharType.isText(charBase.getCharType())) {
 				dest.append(chunk.getAsText(charBase));
 			}
 		}
 		return dest.toString();
 	}
-	
-	
+
 	public boolean encodesState(VOCharBaseDesc charBase, int stateId, boolean checkRanges) {
 		return encodesState(charBase, stateId, checkRanges, false);
 	}
-	
-	public boolean encodesState(VOCharBaseDesc charBase, int stateId, boolean checkRanges, boolean wasImplicit) {
-		  if ((_charId == 0) || (_charId != charBase.getUniId())) {
-		    return false;
-		  }
-		  int charType = charBase.getCharType();
-		  if (!CharType.isMultistate(charType)) {
-		    return false;
-		  }
 
-		  boolean isOrdered = (charType == CharType.ORDERED);
-		  int rangeStart = -1;
-		  boolean inRange = false;
-		  boolean textOnly = true;
-		  for (AttrChunk chunk : this) {
-		     
-		        textOnly = false;
-		      if (chunk.getType() == ChunkType.CHUNK_STATE)
-		        {
-		          if  (chunk.getStateId() == stateId) {
-		        	  return true;
-		          }
-		          if (isOrdered && checkRanges) {
-		              if (inRange) {
-		                  int startState = charBase.stateNoFromUniId(rangeStart);
-		                  int endState = charBase.stateNoFromUniId(chunk.getStateId());
-		                  int testState = charBase.stateNoFromUniId(stateId);
-		                  if (startState > 0 &&
-		                      endState > 0 &&
-		                      testState > Math.min(startState, endState) &&
-		                      testState < Math.max(startState, endState)) {
-		                    return true;
-		                  }
-		                  inRange = false;
-		                }
-		              rangeStart = chunk.getStateId();
-		            }
-		        }
-		      if (isOrdered && chunk.getType() == ChunkType.CHUNK_TO) {
-		        inRange = true;
-		      }
-		    }
-		  if (textOnly && charBase.getUncodedImplicit() == stateId) {
-		      wasImplicit = true;
-		      return true;
-		  }
-		  return false;
+	public boolean encodesState(VOCharBaseDesc charBase, int stateId, boolean checkRanges, boolean wasImplicit) {
+		if ((_charId == 0) || (_charId != charBase.getUniId())) {
+			return false;
+		}
+		int charType = charBase.getCharType();
+		if (!CharType.isMultistate(charType)) {
+			return false;
+		}
+
+		boolean isOrdered = (charType == CharType.ORDERED);
+		int rangeStart = -1;
+		boolean inRange = false;
+		boolean textOnly = true;
+		for (AttrChunk chunk : this) {
+
+			textOnly = false;
+			if (chunk.getType() == ChunkType.CHUNK_STATE) {
+				if (chunk.getStateId() == stateId) {
+					return true;
+				}
+				if (isOrdered && checkRanges) {
+					if (inRange) {
+						int startState = charBase.stateNoFromUniId(rangeStart);
+						int endState = charBase.stateNoFromUniId(chunk.getStateId());
+						int testState = charBase.stateNoFromUniId(stateId);
+						if (startState > 0 && endState > 0 && testState > Math.min(startState, endState) && testState < Math.max(startState, endState)) {
+							return true;
+						}
+						inRange = false;
+					}
+					rangeStart = chunk.getStateId();
+				}
+			}
+			if (isOrdered && chunk.getType() == ChunkType.CHUNK_TO) {
+				inRange = true;
+			}
+		}
+		if (textOnly && charBase.getUncodedImplicit() == stateId) {
+			wasImplicit = true;
+			return true;
+		}
+		return false;
 	}
 
 	/**
@@ -1139,8 +1076,7 @@ public class Attribute implements Iterable<AttrChunk> {
 			AttrChunk ret = new AttrChunk(_owner._data[_pos]);
 			switch (ret.getType()) {
 			case ChunkType.CHUNK_TEXT:
-				short varLeng = MAKEWORD(_owner._data[_pos + 1],
-						_owner._data[_pos + 2]);
+				short varLeng = MAKEWORD(_owner._data[_pos + 1], _owner._data[_pos + 2]);
 				String val = SlotFileEncoding.decode(_owner._data, _pos + 3, varLeng);
 				ret.setString(val);
 				break;
@@ -1183,8 +1119,7 @@ public class Attribute implements Iterable<AttrChunk> {
 			case ChunkType.CHUNK_STOP:
 				return false;
 			case ChunkType.CHUNK_TEXT:
-				_pos += 2 + MAKEWORD(_owner._data[_pos + 1],
-						_owner._data[_pos + 2]);
+				_pos += 2 + MAKEWORD(_owner._data[_pos + 1], _owner._data[_pos + 2]);
 				;
 				break;
 			case ChunkType.CHUNK_LONGTEXT:
@@ -1224,8 +1159,7 @@ public class Attribute implements Iterable<AttrChunk> {
 
 		public boolean isTextChunk() {
 			byte type = getChunkType();
-			return type == ChunkType.CHUNK_TEXT
-					|| type == ChunkType.CHUNK_LONGTEXT;
+			return type == ChunkType.CHUNK_TEXT || type == ChunkType.CHUNK_LONGTEXT;
 		}
 
 		@Override
@@ -1243,7 +1177,7 @@ public class Attribute implements Iterable<AttrChunk> {
 			increment();
 			return chunk;
 		}
-		
+
 		public int getPos() {
 			return _pos;
 		}

@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import au.org.ala.delta.model.impl.CharacterData;
+import au.org.ala.delta.model.impl.ControllingInfo;
 import au.org.ala.delta.model.observer.CharacterObserver;
 
 public abstract class Character {
@@ -102,6 +103,7 @@ public abstract class Character {
 		_impl.validateAttributeText(text);		
 	}
 	
+
 	/**
 	 * Registers interest in being notified of changes to this Character.
 	 * @param observer the object interested in receiving notification of changes.
@@ -136,4 +138,9 @@ public abstract class Character {
 			_observers.get(i).characterChanged(this);
 		}
 	}
+	
+	public ControllingInfo checkApplicability(Item item) {
+		return _impl.checkApplicability(item);
+	}
+	
 }

@@ -114,4 +114,8 @@ public class Item {
 			_observers.get(i).itemChanged(this);
 		}
 	}
+	
+	public ItemData getItemData() {
+		return _impl;
+	}
 }

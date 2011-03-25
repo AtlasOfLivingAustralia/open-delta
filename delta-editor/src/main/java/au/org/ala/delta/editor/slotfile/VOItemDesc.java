@@ -48,8 +48,12 @@ public class VOItemDesc extends VOImageHolderDesc implements INameHolder {
 	public static final int CHUNK_OR = 9; // Connective "or"
 	public static final int CHUNK_AND = 10; // Connective "and"
 	public static final int CHUNK_TO = 11; // Connective "to"
-	public static final int CHUNK_LONGTEXT = 12; // Text longer than 0xffff in
-													// length.
+	public static final int CHUNK_LONGTEXT = 12; // Text longer than 0xffff in length.
+
+	public static final short PSEUDO_NONE = 0x00;
+	public static final short PSEUDO_UNKNOWN = 0x01;
+	public static final short PSEUDO_VARIABLE = 0x02;
+	public static final short PSEUDO_INAPPLICABLE = 0x04;
 
 	/**
 	 * Holds the offset (in bytes) into the attribute data for each character. Key: character uid Value: the offset into the attribute data.
@@ -156,10 +160,10 @@ public class VOItemDesc extends VOImageHolderDesc implements INameHolder {
 			makeTemp();
 			List<Attribute> attribList = readAllAttributes();
 			writeAllAttributes(attribList, false);
-	
+
 			byte[] trailerBuf = null;
 			int trailerLeng = 0;
-	
+
 			// If the size of TFixedData has been increased (due to a newer program
 			// version)
 			// re-write the whole slot, using the new size.
@@ -170,16 +174,16 @@ public class VOItemDesc extends VOImageHolderDesc implements INameHolder {
 					trailerLeng = trailerBuf.length;
 				}
 				_dataOffs = SlotFile.SlotHeader.SIZE + ItemFixedData.SIZE; // /// Adjust
-																		// DataOffs
-																		// accordingly
+																			// DataOffs
+																			// accordingly
 				_fixedData.fixedSize = ItemFixedData.SIZE;
 				// Do seek to force allocation of large enough slot
 				dataSeek(trailerLeng);
 			}
-	
+
 			_slotFile.seek(_slotHdrPtr + SlotFile.SlotHeader.SIZE);
 			_fixedData.write(_slotFile);
-	
+
 			if (trailerBuf != null) { // If fixedData was resized, re-write the
 										// saved, variable-length data
 				dataSeek(0);

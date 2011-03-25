@@ -105,4 +105,8 @@ public class VOItemAdaptor implements ItemData {
 	public void setVariant(boolean variant) {
 		_voItemDesc.setVariant(variant);
 	}
+	
+	public VOItemDesc getItemDesc() {
+		return _voItemDesc;
+	}
 }

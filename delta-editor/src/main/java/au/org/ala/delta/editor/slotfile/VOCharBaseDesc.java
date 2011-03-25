@@ -39,29 +39,13 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 		synchronized (getVOP()) {
 			_slotFile.seek(_slotHdrPtr + fixedSizeOffs);
 			short diskFixedSize = _slotFile.readShort();
-
 			_dataOffs = SlotFile.SlotHeader.SIZE + diskFixedSize;
 			_slotFile.seek(_slotHdrPtr + SlotFile.SlotHeader.SIZE);
 			_fixedData = new CharBaseFixedData();
 			_fixedData.read(_slotFile);
-
-			// Logger.debug("UniId: %d charType: %d nStates: %d nStatesUsed: %d charFlags: %x uncodedImplict: %d codedImplict: %d nControlling: %d nControls: %d nImages: %d",
-			// _fixedData.UniId,
-			// _fixedData.charType, _fixedData.nStates, _fixedData.nStatesUsed,
-			// _fixedData.charFlags, _fixedData.uncodedImplicit,
-			// _fixedData.codedImplicit, _fixedData.nControlling,
-			// _fixedData.nControls, _fixedData.nImages);
-
 			dataSeek(0);
-
 			_stateNumberMappingVector = readStateNumberMap();
-			// Logger.debug("StateNumberMapping: %s",
-			// _stateNumberMappingVector);
-
 			cacheCharTextInfo(0, (short) 0);
-
-			// Logger.debug("CharTextInfo: LangDesc = %d, CharTextDesc =%d",
-			// _charDescript.langDesc, _charDescript.charDesc);
 		}
 
 	}
@@ -85,8 +69,7 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 	public List<Integer> readImageList() {
 		synchronized (getVOP()) {
 			List<Integer> dest = new ArrayList<Integer>();
-			dataSeek(_fixedData.nStates * 4 + _fixedData.nDescriptors * CharTextInfo.SIZE + _fixedData.nControlling * 4
-					+ _fixedData.nControls * 4);
+			dataSeek(_fixedData.nStates * 4 + _fixedData.nDescriptors * CharTextInfo.SIZE + _fixedData.nControlling * 4 + _fixedData.nControls * 4);
 
 			ByteBuffer b = readBuffer(_fixedData.nImages * 4);
 			for (int i = 0; i < _fixedData.nImages; ++i) {
@@ -105,10 +88,10 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 		synchronized (getVOP()) {
 			makeTemp();
 			writeStateNumberMap(_stateNumberMappingVector);
-	
+
 			byte[] trailerBuf = null;
 			int trailerLeng = 0;
-	
+
 			// If the size of TFixedData has been increased (due to a newer program
 			// version)
 			// re-write the whole slot, using the new size.
@@ -118,15 +101,15 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 				if (trailerBuf != null) {
 					trailerLeng = trailerBuf.length;
 				}
-				_dataOffs = SlotFile.SlotHeader.SIZE + CharBaseFixedData.SIZE; 
+				_dataOffs = SlotFile.SlotHeader.SIZE + CharBaseFixedData.SIZE;
 				_fixedData.fixedSize = CharBaseFixedData.SIZE;
 				// Do seek to force allocation of large enough slot
 				dataSeek(trailerLeng);
 			}
-	
+
 			_slotFile.seek(_slotHdrPtr + SlotFile.SlotHeader.SIZE);
 			_fixedData.write(_slotFile);
-	
+
 			if (trailerBuf != null) { // If fixedData was resized, re-write the
 										// saved, variable-length data
 				dataSeek(0);
@@ -296,8 +279,7 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 			List<CharTextInfo> existingText = readCharTextInfo();
 			charTextFixedData.charBaseId = getUniId();
 
-			VOCharTextDesc charTextDesc = (VOCharTextDesc) getVOP().insertObject(charTextFixedData,
-					CharTextFixedData.SIZE, null, 0, 0);
+			VOCharTextDesc charTextDesc = (VOCharTextDesc) getVOP().insertObject(charTextFixedData, CharTextFixedData.SIZE, null, 0, 0);
 			someInfo.langDesc = 0;
 			someInfo.charDesc = charTextDesc.getUniId();
 			if (cacheCharTextInfo) {

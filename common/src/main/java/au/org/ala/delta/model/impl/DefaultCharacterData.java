@@ -2,6 +2,8 @@ package au.org.ala.delta.model.impl;
 
 import org.apache.commons.lang.NotImplementedException;
 
+import au.org.ala.delta.model.Item;
+
 /**
  * An implementation of CharacterData that maintains the data in-memory.
  */
@@ -116,6 +118,11 @@ public class DefaultCharacterData implements CharacterData {
 
 	@Override
 	public void validateAttributeText(String text) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public ControllingInfo checkApplicability(Item item) {
 		throw new NotImplementedException();
 	}
 	
