@@ -101,6 +101,7 @@ public class ItemList extends JList {
 	 */
 	public void setDataSet(DeltaDataSet dataSet) {
 		setModel(new ItemListModel(dataSet));
+		
 	}
 	
 	

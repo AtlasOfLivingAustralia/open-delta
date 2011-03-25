@@ -18,6 +18,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 
+import javax.swing.ActionMap;
 import javax.swing.DropMode;
 import javax.swing.JInternalFrame;
 import javax.swing.JScrollPane;
@@ -33,6 +34,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeSelectionModel;
 
 import org.jdesktop.application.Application;
+import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 
@@ -57,7 +59,8 @@ public class TreeViewer extends JInternalFrame {
 	public TreeViewer(EditorDataModel dataModel) {
 		super();
 
-		ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(AboutBox.class);
+		ApplicationContext context = Application.getInstance().getContext();
+		ResourceMap resourceMap = context.getResourceMap(AboutBox.class);
 		resourceMap.injectFields(this);
 
 		this.setSize(new Dimension(500, 400));
@@ -68,6 +71,9 @@ public class TreeViewer extends JInternalFrame {
 		final ItemList lst = new ItemList(_dataModel);
 		lst.setDragEnabled(true);
 		lst.setDropMode(DropMode.ON);
+		ActionMap actionMap = context.getActionMap();
+		lst.setSelectionAction(actionMap.get("viewTaxonEditor"));
+		
 
 		final JTree tree = new JTree();
 		final CharacterTreeModel treeModel = new CharacterTreeModel(_dataModel);

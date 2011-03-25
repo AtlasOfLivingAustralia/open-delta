@@ -85,6 +85,9 @@ public class ItemEditor extends JDialog {
 		spinner.addChangeListener(new ChangeListener() {
 			@Override
 			public void stateChanged(ChangeEvent e) {
+				if (_editsDisabled) {
+					return;
+				}
 				_selectedItem = _dataSet.getItem((Integer)spinner.getValue());
 				updateUI();
 			}
@@ -116,6 +119,9 @@ public class ItemEditor extends JDialog {
 		taxonSelectionList.addListSelectionListener(new ListSelectionListener() {
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
+				if (_editsDisabled) {
+					return;
+				}
 				_selectedItem = _dataSet.getItem(taxonSelectionList.getSelectedIndex()+1);
 				updateUI();
 			}
@@ -284,6 +290,7 @@ public class ItemEditor extends JDialog {
 		if (_selectedItem == null) {
 			_selectedItem = _dataSet.getItem(1);
 		}
+		
 		SpinnerNumberModel model = (SpinnerNumberModel)spinner.getModel();
 		model.setMaximum(_dataSet.getMaximumNumberOfItems());
 		model.setValue(_selectedItem.getItemNumber());
@@ -292,7 +299,7 @@ public class ItemEditor extends JDialog {
 		rtfEditor.setText(_selectedItem.getDescription());
 		
 		chckbxTreatAsVariant.setSelected(_selectedItem.isVariant());
-	
+		
 		_editsDisabled = false;
 	}
 }
