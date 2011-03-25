@@ -18,7 +18,12 @@ import au.org.ala.delta.editor.directives.ui.ImportExportDialog.DirectiveFile;
 import au.org.ala.delta.editor.directives.ui.ImportExportDialog.DirectiveType;
 import au.org.ala.delta.editor.slotfile.model.SlotFileDataSetFactory;
 import au.org.ala.delta.editor.ui.EditorDataModel;
+import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.model.IntegerCharacter;
+import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.UnorderedMultiStateCharacter;
 
 /**
  * Tests the ImportController class.
@@ -75,8 +80,40 @@ public class ImportControllerTest extends TestCase {
 		waitForTaskCompletion();
 		
 		assertEquals(89, _dataSet.getNumberOfCharacters());
-		//assertEquals(14, _dataSet.getMaximumNumberOfItems());
+		// do a few random assertions
+		Character character = _dataSet.getCharacter(10);
+		assertEquals(10, character.getCharacterId());
+		assertEquals("<adaxial> ligule <presence>", character.getDescription());
+		assertEquals(CharacterType.UnorderedMultiState, character.getCharacterType());
+		UnorderedMultiStateCharacter multiStateChar = (UnorderedMultiStateCharacter)character;
+		assertEquals(2, multiStateChar.getNumberOfStates());
+		assertEquals("1. <consistently> present <<implicit>>", multiStateChar.getState(1));
+		assertEquals("2. absent <at least from upper leaves>", multiStateChar.getState(2));
 		
+		character = _dataSet.getCharacter(48);
+		assertEquals("awns <of female-fertile lemmas, if present, number>", character.getDescription());
+		assertEquals(CharacterType.IntegerNumeric, character.getCharacterType());
+		assertEquals(48, character.getCharacterId());
+		
+		character = _dataSet.getCharacter(85);
+		assertEquals(85, character.getCharacterId());
+		assertEquals("<number of species>", character.getDescription());
+		assertEquals(CharacterType.IntegerNumeric, character.getCharacterType());
+		IntegerCharacter integerCharacter = (IntegerCharacter)character;
+		assertEquals("species", integerCharacter.getUnits());
+		
+		
+		assertEquals(14, _dataSet.getMaximumNumberOfItems());
+		
+		Item item = _dataSet.getItem(5);
+		assertEquals(5, item.getItemNumber());
+		
+		// At the moment getDescription() strips RTF... probably should leave that to the formatter.
+		//assertEquals("\\i{}Cynodon\\i0{} <Rich.>", item.getDescription());
+		
+		assertEquals("Cynodon <Rich.>", item.getDescription());
+		assertEquals("4-60(-100)", item.getAttribute(_dataSet.getCharacter(2)).getValue());
+		assertEquals("3", item.getAttribute(_dataSet.getCharacter(60)).getValue());
 		
 	}
 	
