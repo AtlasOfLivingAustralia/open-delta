@@ -208,7 +208,13 @@ class DeltaTreeCellRenderer extends DefaultTreeCellRenderer {
 			setIcon(EditorUIUtils.iconForCharacter(ch));
 		} else if (leaf) {
 			DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
-			String name = node.getUserObject().toString();
+			
+			Object userObject = node.getUserObject();
+			if (userObject == null) {
+				return this;
+			}
+			String name = userObject.toString();
+			
 			if (node.getParent() instanceof CharacterTreeNode) {
 				
 				Character ch = (Character) ((CharacterTreeNode) node.getParent()).getUserObject();
