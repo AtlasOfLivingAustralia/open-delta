@@ -86,7 +86,7 @@ class CharacterListParser extends AbstractStreamParser {
 						// we might see a units descriptor...
 						@SuppressWarnings("rawtypes")
 						NumericCharacter nc = (NumericCharacter) ch;
-						String units = _currentChar + readToNextEndSlashSpace();
+						String units = readToNextEndSlashSpace();
 						nc.setUnits(units);
 					}
 				} else {
