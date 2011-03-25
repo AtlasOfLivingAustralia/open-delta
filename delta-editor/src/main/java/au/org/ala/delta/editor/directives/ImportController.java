@@ -79,21 +79,25 @@ public class ImportController {
 			publish(status);
 						
 			DeltaContext context = new DeltaContext(_dataSet);
+			DirectiveFileParser parser = new DirectiveFileParser();
 			for (DirectiveFile file : _files) {
 				
 				// First check if the existing dataset has a directives file with the same name
 				// and same last modified date.  If so, skip it.
-				
+				status.setCurrentFile(file._fileName);
+				publish(status);
 				// Looks like we skip the specs file if we have non zero items or chars.....
+				try {
 				
-				
-			
-				
-				DirectiveFileParser parser = new DirectiveFileParser();
-				
-				File directiveFile = new File(_directoryName+file._fileName);
-				parser.parse(directiveFile, context);
-				
+					File directiveFile = new File(_directoryName+file._fileName);
+					parser.parse(directiveFile, context);
+				}
+				catch (Exception e) {
+					status.setTotalErrors(status.getTotalErrors()+1);
+					e.printStackTrace();
+				}
+				status.setTotalLines(status.getTotalLines()+1);
+				publish(status);
 			}
 			
 			return null;
