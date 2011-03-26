@@ -640,7 +640,7 @@ public class DeltaEditor extends SingleFrameApplication {
 		exit();
 	}
 
-	@Action
+	@Action(enabledProperty = "saveAsEnabled")
 	public void newGridView() {
 		EditorDataModel model = getCurrentDataSet();
 		if (model != null) {
@@ -648,7 +648,7 @@ public class DeltaEditor extends SingleFrameApplication {
 		}
 	}
 
-	@Action
+	@Action(enabledProperty = "saveAsEnabled")
 	public void newTreeView() {
 		EditorDataModel model = getCurrentDataSet();
 		if (model != null) {
