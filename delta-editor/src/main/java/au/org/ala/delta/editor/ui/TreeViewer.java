@@ -43,6 +43,7 @@ import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.NumericCharacter;
+import au.org.ala.delta.model.impl.ControllingInfo;
 import au.org.ala.delta.rtf.RTFUtils;
 import au.org.ala.delta.ui.AboutBox;
 
@@ -203,9 +204,11 @@ class DeltaTreeCellRenderer extends DefaultTreeCellRenderer {
 	public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus) {
 
 		super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
+		Item item = _dataModel.getSelectedItem();
 		if (value instanceof CharacterTreeNode) {
-			Character ch = (Character) ((CharacterTreeNode) value).getUserObject();
-			setIcon(EditorUIUtils.iconForCharacter(ch));
+			Character ch = (Character) ((CharacterTreeNode) value).getUserObject();			
+			ControllingInfo info = ch.checkApplicability(item);			
+			setIcon(EditorUIUtils.iconForCharacter(ch, info.isInapplicable()));
 		} else if (leaf) {
 			DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
 			
@@ -215,13 +218,10 @@ class DeltaTreeCellRenderer extends DefaultTreeCellRenderer {
 			}
 			String name = userObject.toString();
 			
-			if (node.getParent() instanceof CharacterTreeNode) {
-				
-				Character ch = (Character) ((CharacterTreeNode) node.getParent()).getUserObject();
-				
+			if (node.getParent() instanceof CharacterTreeNode) {				
+				Character ch = (Character) ((CharacterTreeNode) node.getParent()).getUserObject();				
 				if (node instanceof MultistateStateNode) {
-					MultistateStateNode msnode = (MultistateStateNode) node;	
-					Item item = _dataModel.getSelectedItem();					
+					MultistateStateNode msnode = (MultistateStateNode) node;						
 					stateValueRenderer.setText(name);
 					stateValueRenderer.setForeground(getForeground());
 					if (selected) {
