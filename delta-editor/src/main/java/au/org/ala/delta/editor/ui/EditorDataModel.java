@@ -96,8 +96,9 @@ public class EditorDataModel implements DeltaDataSet, ItemObserver, CharacterObs
 
 	@Override
 	public Item getItem(int number) {
-		
-		return _currentDataSet.getItem(number);
+		Item item = _currentDataSet.getItem(number);
+		item.addItemObserver(this);
+		return item;
 	}
 
 	@Override
@@ -107,7 +108,9 @@ public class EditorDataModel implements DeltaDataSet, ItemObserver, CharacterObs
 
 	@Override
 	public Character getCharacter(int number) {
-		return _currentDataSet.getCharacter(number);
+		Character character = _currentDataSet.getCharacter(number);
+		character.addCharacterObserver(this);
+		return character;
 	}
 
 	@Override
@@ -127,19 +130,26 @@ public class EditorDataModel implements DeltaDataSet, ItemObserver, CharacterObs
 	
 	@Override
 	public Character addCharacter(CharacterType type) {
-		return _currentDataSet.addCharacter(type);
+		Character character = _currentDataSet.addCharacter(type);
+		character.addCharacterObserver(this);
+		fireDeltaDataSetEvent(null, character, new CharacterAddedDispatcher());
+		return character;
 	}
 	
 	@Override
 	public Character addCharacter(int characterNumber, CharacterType type) {
 		Character character = _currentDataSet.addCharacter(characterNumber, type);
+		character.addCharacterObserver(this);
 		fireDeltaDataSetEvent(null, character, new CharacterAddedDispatcher());
 		return character;
 	}
 
 	@Override
 	public Item addItem(int itemNumber) {
-		return _currentDataSet.addItem(itemNumber);
+		Item item = _currentDataSet.addItem(itemNumber);
+		item.addItemObserver(this);
+		fireDeltaDataSetEvent(item, null, new ItemAddedDispatcher());
+		return item;
 	}
 
 	@Override

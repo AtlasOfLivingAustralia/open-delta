@@ -306,6 +306,8 @@ public class MatrixViewer extends JInternalFrame {
 		}
 
 	}
+
+	
 }
 
 class BottomLineBorder extends LineBorder {
