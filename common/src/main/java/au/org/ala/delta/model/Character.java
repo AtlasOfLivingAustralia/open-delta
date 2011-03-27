@@ -112,7 +112,9 @@ public abstract class Character {
 		if (_observers == null) {
 			_observers = new ArrayList<CharacterObserver>(1);
 		}
-		_observers.add(observer);
+		if (!_observers.contains(observer)) {
+			_observers.add(observer);
+		}
 	}
 	
 	/**
