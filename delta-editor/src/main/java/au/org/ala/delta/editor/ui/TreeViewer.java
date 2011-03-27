@@ -110,7 +110,7 @@ public class TreeViewer extends JInternalFrame {
 			public void valueChanged(ListSelectionEvent e) {
 
 				_dataModel.setSelectedItem(lst.getSelectedItem());
-				tree.updateUI();
+				tree.repaint();
 				_stateEditor.bind(_dataModel.getSelectedCharacter(), _dataModel.getSelectedItem());
 			}
 		});
