@@ -58,6 +58,8 @@ public class AttributeEditor extends JPanel implements ValidationListener {
 	private boolean _modified;
 
 	private EditListener _editListener;
+	
+	private boolean _inapplicable;
 
 	public AttributeEditor(DeltaDataSet dataSet) {
 
@@ -96,7 +98,9 @@ public class AttributeEditor extends JPanel implements ValidationListener {
 			_editListener.setDisabled(true);
 			_character = ch;
 			_item = item;
+			_inapplicable = false;
 			if (ch != null && item != null) {
+				_inapplicable = _character.checkApplicability(_item).isInapplicable();
 				Attribute attr = _item.getAttribute(_character);
 				if (attr != null) {
 					String value = attr.getValue();
@@ -221,8 +225,8 @@ public class AttributeEditor extends JPanel implements ValidationListener {
 			stateRenderer.setBackground(getBackground());
 			stateRenderer.setForeground(getForeground());
 			stateRenderer.setText(value.toString());
-			stateRenderer.setSelected(false);
-			stateRenderer.bind((MultiStateCharacter) _character, _item, index + 1);
+			stateRenderer.setSelected(false);			
+			stateRenderer.bind((MultiStateCharacter) _character, _item, index + 1, _inapplicable);
 
 			return stateRenderer;
 		}

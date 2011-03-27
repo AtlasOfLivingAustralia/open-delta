@@ -21,10 +21,12 @@ public class MultiStateCheckbox extends JCheckBox {
 	private static final ImageIcon _disabled_icon = IconHelper.createImageIconFromAbsolutePath(ICON_PATH + "/checkbox_disabled.png");
 	private static final ImageIcon _explicit_icon = IconHelper.createImageIconFromAbsolutePath(ICON_PATH + "/checkbox_explicit.png");
 	private static final ImageIcon _implicit_icon = IconHelper.createImageIconFromAbsolutePath(ICON_PATH + "/checkbox_implicit.png");
+	private static final ImageIcon _inapplicable_icon = IconHelper.createImageIconFromAbsolutePath(ICON_PATH + "/checkbox_inapplicable.png");
 
 	private MultiStateCharacter _character;
 	private int _stateNo;
 	private Item _item;
+	private boolean _inapplicable;
 
 	public MultiStateCheckbox() {
 		super();
@@ -47,37 +49,42 @@ public class MultiStateCheckbox extends JCheckBox {
 		if (_item == null || _character == null || _stateNo <= 0) {
 			this.setEnabled(false);
 		} else {
-			this.setEnabled(true); // TODO: this will ultimately depend on the controlling/controlled characters...
-
-			Attribute attr = _item.getAttribute(_character);
-			if (attr != null) {
-				boolean selected = attr.isPresent(_stateNo);
-				setSelected(selected);
-				if (selected) {
-					setSelectedIcon(_explicit_icon);
+			this.setEnabled(!_inapplicable);
+			
+			if (_inapplicable) {
+				setDisabledIcon(_inapplicable_icon);
+			} else {
+				setDisabledIcon(_disabled_icon);
+				Attribute attr = _item.getAttribute(_character);
+				if (attr != null) {
+					boolean selected = attr.isPresent(_stateNo);
+					setSelected(selected);
+					if (selected) {
+						setSelectedIcon(_explicit_icon);
+					} else {
+						int implicit = _character.getCodedImplicitState();
+						if (implicit > 0 && implicit == _stateNo) {
+							setSelected(true);
+							setSelectedIcon(_implicit_icon);
+						}	
+					}
 				} else {
-					int implicit = _character.getCodedImplicitState();
+					int implicit = _character.getUncodedImplicitState();
 					if (implicit > 0 && implicit == _stateNo) {
 						setSelected(true);
 						setSelectedIcon(_implicit_icon);
 					}
-
-				}
-			} else {
-				int implicit = _character.getUncodedImplicitState();
-				if (implicit > 0 && implicit == _stateNo) {
-					setSelected(true);
-					setSelectedIcon(_implicit_icon);
 				}
 			}
 
 		}
 	}
 
-	public void bind(MultiStateCharacter character, Item item, int stateNo) {
+	public void bind(MultiStateCharacter character, Item item, int stateNo, boolean inapplicable) {
 		_character = character;
 		_stateNo = stateNo;
 		_item = item;
+		_inapplicable = inapplicable;
 		calculateState();
 	}
 

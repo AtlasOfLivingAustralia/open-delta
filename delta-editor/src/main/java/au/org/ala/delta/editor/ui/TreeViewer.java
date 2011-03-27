@@ -206,8 +206,10 @@ class DeltaTreeCellRenderer extends DefaultTreeCellRenderer {
 		super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
 		Item item = _dataModel.getSelectedItem();
 		if (value instanceof CharacterTreeNode) {
-			Character ch = (Character) ((CharacterTreeNode) value).getUserObject();			
-			ControllingInfo info = ch.checkApplicability(item);			
+			CharacterTreeNode node = (CharacterTreeNode) value;
+			Character ch = (Character) node.getUserObject();			
+			ControllingInfo info = ch.checkApplicability(item);
+			node.setInapplicable(info.isInapplicable());
 			setIcon(EditorUIUtils.iconForCharacter(ch, info.isInapplicable()));
 		} else if (leaf) {
 			DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
@@ -218,8 +220,9 @@ class DeltaTreeCellRenderer extends DefaultTreeCellRenderer {
 			}
 			String name = userObject.toString();
 			
-			if (node.getParent() instanceof CharacterTreeNode) {				
-				Character ch = (Character) ((CharacterTreeNode) node.getParent()).getUserObject();				
+			if (node.getParent() instanceof CharacterTreeNode) {
+				CharacterTreeNode parentNode = (CharacterTreeNode) node.getParent();
+				Character ch = (Character) parentNode.getUserObject();				
 				if (node instanceof MultistateStateNode) {
 					MultistateStateNode msnode = (MultistateStateNode) node;						
 					stateValueRenderer.setText(name);
@@ -229,7 +232,8 @@ class DeltaTreeCellRenderer extends DefaultTreeCellRenderer {
 					} else {
 						stateValueRenderer.setBackground(getBackgroundNonSelectionColor());
 					}
-					stateValueRenderer.bind( msnode.getCharacter(), item, msnode.getStateNo());
+					stateValueRenderer.setEnabled(parentNode.isInapplicable());
+					stateValueRenderer.bind( msnode.getCharacter(), item, msnode.getStateNo(), parentNode.isInapplicable());
 					return stateValueRenderer;
 				} else if (ch instanceof NumericCharacter) {
 					setText(getText() + " " + ((NumericCharacter) ch).getUnits());
@@ -246,6 +250,7 @@ class CharacterTreeNode extends DefaultMutableTreeNode {
 
 	private Character _character;
 	private EditorDataModel _dataModel;
+	private boolean _inapplicable;
 
 	public CharacterTreeNode(EditorDataModel dataModel, Character ch) {
 		super(ch);
@@ -268,6 +273,14 @@ class CharacterTreeNode extends DefaultMutableTreeNode {
 	@Override
 	public boolean isLeaf() {
 		return false;
+	}
+	
+	public void setInapplicable(boolean inapplicable) {
+		_inapplicable = inapplicable;
+	}
+	
+	public boolean isInapplicable() {
+		return _inapplicable;
 	}
 
 	@Override
