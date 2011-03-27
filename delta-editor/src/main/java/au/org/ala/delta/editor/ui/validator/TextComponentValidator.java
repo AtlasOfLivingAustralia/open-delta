@@ -1,6 +1,5 @@
 package au.org.ala.delta.editor.ui.validator;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.FocusEvent;
@@ -13,6 +12,7 @@ import javax.swing.InputVerifier;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.UIManager;
 import javax.swing.text.JTextComponent;
 
 import au.org.ala.delta.ui.util.IconHelper;
@@ -72,9 +72,12 @@ public class TextComponentValidator extends InputVerifier {
 		public ErrorDisplay() {
 			setUndecorated(true);
 			_messageLabel = new JLabel(IconHelper.createImageIcon("error.png"));
-			_messageLabel.setBackground(new Color(255,254,200));
+			_messageLabel.setBackground(UIManager.getColor("ToolTip.background"));
+			_messageLabel.setForeground(UIManager.getColor("ToolTip.foreground"));
+			_messageLabel.setFont(UIManager.getFont("ToolTip.font"));
+			_messageLabel.setBorder(BorderFactory.createLineBorder(UIManager.getColor("ToolTip.foreground")));
 			_messageLabel.setOpaque(true);
-			_messageLabel.setBorder(BorderFactory.createLineBorder(Color.RED, 2));
+			
 			getContentPane().add(_messageLabel);
 			setFocusableWindowState(false);
 		}
