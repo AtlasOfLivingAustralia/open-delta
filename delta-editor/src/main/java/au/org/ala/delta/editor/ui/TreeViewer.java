@@ -24,6 +24,7 @@ import javax.swing.JInternalFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTree;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TreeSelectionEvent;
@@ -150,15 +151,21 @@ public class TreeViewer extends JInternalFrame {
 		}
 		@Override
 		public void characterAdded(DeltaDataSetChangeEvent event) {
-			// This is a bit lazy and will probably need to be fixed when we can do edit's directly
-			// on the tree.
-			tree.setModel(new CharacterTreeModel(_dataModel));
+			updateTree();
 		}
 		@Override
 		public void characterEdited(DeltaDataSetChangeEvent event) {
+			updateTree();
+		}
+		
+		private void updateTree() {
 			// This is a bit lazy and will probably need to be fixed when we can do edit's directly
 			// on the tree.
-			tree.setModel(new CharacterTreeModel(_dataModel));
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					tree.setModel(new CharacterTreeModel(_dataModel));
+				}
+			});
 		}
 	}
 
@@ -168,14 +175,9 @@ class CharacterTreeModel extends DefaultTreeModel {
 
 	private static final long serialVersionUID = 1L;
 
-	private EditorDataModel _dataModel;
-	
 	public CharacterTreeModel(EditorDataModel dataModel) {
 		super(new ContextRootNode(dataModel), false);
-		_dataModel = dataModel;
 	}	
-	
-	
 }
 
 
