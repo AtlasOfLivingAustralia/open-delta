@@ -231,11 +231,11 @@ public class ImportExportDialog extends JDialog {
 				.addGroup(gl_leftPanel.createSequentialGroup()
 					.addContainerGap()
 					.addGroup(gl_leftPanel.createParallelGroup(Alignment.TRAILING)
-						.addComponent(panel_2, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 283, Short.MAX_VALUE)
-						.addComponent(panel_3, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 283, Short.MAX_VALUE)
-						.addComponent(panel_1, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 283, Short.MAX_VALUE)
-						.addComponent(panel, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 283, Short.MAX_VALUE))
-					.addContainerGap())
+						.addComponent(panel_2, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 391, Short.MAX_VALUE)
+						.addComponent(panel_3, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 391, Short.MAX_VALUE)
+						.addComponent(panel_1, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 391, Short.MAX_VALUE)
+						.addComponent(panel, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 391, Short.MAX_VALUE))
+					.addGap(1))
 		);
 		gl_leftPanel.setVerticalGroup(
 			gl_leftPanel.createParallelGroup(Alignment.LEADING)
@@ -247,7 +247,7 @@ public class ImportExportDialog extends JDialog {
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(panel_2, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(panel_3, GroupLayout.DEFAULT_SIZE, 221, Short.MAX_VALUE))
+					.addComponent(panel_3, GroupLayout.DEFAULT_SIZE, 287, Short.MAX_VALUE))
 		);
 		panel_3.setLayout(new BorderLayout(0, 0));
 		
@@ -308,11 +308,11 @@ public class ImportExportDialog extends JDialog {
 			gl_panel_7.createParallelGroup(Alignment.TRAILING)
 				.addGroup(gl_panel_7.createSequentialGroup()
 					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-					.addGroup(gl_panel_7.createParallelGroup(Alignment.LEADING)
-						.addGroup(Alignment.TRAILING, gl_panel_7.createSequentialGroup()
+					.addGroup(gl_panel_7.createParallelGroup(Alignment.TRAILING)
+						.addGroup(gl_panel_7.createSequentialGroup()
 							.addComponent(panel_4, GroupLayout.PREFERRED_SIZE, 139, GroupLayout.PREFERRED_SIZE)
-							.addContainerGap())
-						.addGroup(Alignment.TRAILING, gl_panel_7.createSequentialGroup()
+							.addGap(5))
+						.addGroup(gl_panel_7.createSequentialGroup()
 							.addGroup(gl_panel_7.createParallelGroup(Alignment.LEADING)
 								.addComponent(moveToPossibleButton)
 								.addComponent(moveToOtherButton))
@@ -324,7 +324,7 @@ public class ImportExportDialog extends JDialog {
 					.addComponent(moveToOtherButton)
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(moveToPossibleButton)
-					.addPreferredGap(ComponentPlacement.RELATED, 118, Short.MAX_VALUE)
+					.addPreferredGap(ComponentPlacement.RELATED, 114, Short.MAX_VALUE)
 					.addComponent(panel_4, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 		);
 		panel_7.setLayout(gl_panel_7);
@@ -337,8 +337,8 @@ public class ImportExportDialog extends JDialog {
 		gl_panel_2.setHorizontalGroup(
 			gl_panel_2.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panel_2.createSequentialGroup()
-					.addComponent(itemsFileTextField, GroupLayout.PREFERRED_SIZE, 217, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED, 60, Short.MAX_VALUE)
+					.addComponent(itemsFileTextField, GroupLayout.DEFAULT_SIZE, 217, Short.MAX_VALUE)
+					.addGap(59)
 					.addComponent(moveToItemsButton)
 					.addGap(50))
 		);
@@ -358,10 +358,10 @@ public class ImportExportDialog extends JDialog {
 		moveToCharsButton = new JButton("<<");
 		GroupLayout gl_panel_1 = new GroupLayout(panel_1);
 		gl_panel_1.setHorizontalGroup(
-			gl_panel_1.createParallelGroup(Alignment.LEADING)
-				.addGroup(Alignment.TRAILING, gl_panel_1.createSequentialGroup()
-					.addComponent(charactersFileTextField, GroupLayout.PREFERRED_SIZE, 218, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED, 79, Short.MAX_VALUE)
+			gl_panel_1.createParallelGroup(Alignment.TRAILING)
+				.addGroup(gl_panel_1.createSequentialGroup()
+					.addComponent(charactersFileTextField, GroupLayout.DEFAULT_SIZE, 218, Short.MAX_VALUE)
+					.addGap(58)
 					.addComponent(moveToCharsButton)
 					.addGap(50))
 		);
@@ -382,10 +382,10 @@ public class ImportExportDialog extends JDialog {
 		
 		GroupLayout gl_panel = new GroupLayout(panel);
 		gl_panel.setHorizontalGroup(
-			gl_panel.createParallelGroup(Alignment.LEADING)
-				.addGroup(Alignment.TRAILING, gl_panel.createSequentialGroup()
-					.addComponent(specificationsFileTextField, GroupLayout.PREFERRED_SIZE, 219, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED, 76, Short.MAX_VALUE)
+			gl_panel.createParallelGroup(Alignment.TRAILING)
+				.addGroup(gl_panel.createSequentialGroup()
+					.addComponent(specificationsFileTextField, GroupLayout.DEFAULT_SIZE, 219, Short.MAX_VALUE)
+					.addGap(57)
 					.addComponent(moveToSpecsButton)
 					.addGap(50))
 		);
@@ -402,11 +402,9 @@ public class ImportExportDialog extends JDialog {
 		
 		JPanel rightPanel = new JPanel();
 		rightPanel.setName("directoryPanel");
-		rightPanel.setLayout(new BorderLayout(0, 0));
 		
 		JPanel panel_5 = new JPanel();
 		panel_5.setBorder(new TitledBorder(null, possiblePanelTitle, TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		rightPanel.add(panel_5, BorderLayout.CENTER);
 		panel_5.setLayout(new BorderLayout(0, 0));
 		
 		possibleDirectivesList = new JList();
@@ -426,13 +424,13 @@ public class ImportExportDialog extends JDialog {
 		gl_panel_6.setHorizontalGroup(
 			gl_panel_6.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panel_6.createSequentialGroup()
-					.addGap(12)
+					.addGap(2)
 					.addComponent(lblExclude)
 					.addGap(5)
-					.addComponent(currentImportFilterTextField)
+					.addComponent(currentImportFilterTextField, GroupLayout.DEFAULT_SIZE, 52, Short.MAX_VALUE)
 					.addGap(5)
 					.addComponent(excludeFilterButton)
-					.addGap(12))
+					.addGap(2))
 		);
 		gl_panel_6.setVerticalGroup(
 			gl_panel_6.createParallelGroup(Alignment.LEADING)
@@ -468,25 +466,24 @@ public class ImportExportDialog extends JDialog {
 		JButton btnHelp = new JButton("Help");
 		GroupLayout gl_buttonBar = new GroupLayout(buttonBar);
 		gl_buttonBar.setHorizontalGroup(
-			gl_buttonBar.createParallelGroup(Alignment.LEADING)
+			gl_buttonBar.createParallelGroup(Alignment.TRAILING)
 				.addGroup(gl_buttonBar.createSequentialGroup()
-					.addGap(96)
+					.addContainerGap(398, Short.MAX_VALUE)
 					.addComponent(btnOk)
-					.addGap(79)
+					.addGap(5)
 					.addComponent(btnCancel)
-					.addGap(82)
+					.addGap(5)
 					.addComponent(btnHelp)
-					.addGap(94))
+					.addContainerGap())
 		);
 		gl_buttonBar.setVerticalGroup(
-			gl_buttonBar.createParallelGroup(Alignment.LEADING)
+			gl_buttonBar.createParallelGroup(Alignment.TRAILING)
 				.addGroup(gl_buttonBar.createSequentialGroup()
 					.addGap(5)
 					.addGroup(gl_buttonBar.createParallelGroup(Alignment.BASELINE)
 						.addComponent(btnCancel)
 						.addComponent(btnOk)
 						.addComponent(btnHelp)))
-					.addGap(5)
 		);
 		buttonBar.setLayout(gl_buttonBar);
 		GroupLayout groupLayout = new GroupLayout(getContentPane());
@@ -494,10 +491,10 @@ public class ImportExportDialog extends JDialog {
 			groupLayout.createParallelGroup(Alignment.LEADING)
 				.addComponent(topPanel, GroupLayout.DEFAULT_SIZE, 629, Short.MAX_VALUE)
 				.addGroup(groupLayout.createSequentialGroup()
-					.addComponent(leftPanel, GroupLayout.PREFERRED_SIZE, 411, GroupLayout.PREFERRED_SIZE)
+					.addComponent(leftPanel, GroupLayout.DEFAULT_SIZE, 375, Short.MAX_VALUE)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(rightPanel, GroupLayout.DEFAULT_SIZE, 202, Short.MAX_VALUE)
-					.addGap(10))
+					.addContainerGap())
 				.addComponent(buttonBar, GroupLayout.DEFAULT_SIZE, 629, Short.MAX_VALUE)
 		);
 		groupLayout.setVerticalGroup(
@@ -506,10 +503,22 @@ public class ImportExportDialog extends JDialog {
 					.addGap(5)
 					.addComponent(topPanel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addComponent(rightPanel, GroupLayout.DEFAULT_SIZE, 463, Short.MAX_VALUE)
-						.addComponent(leftPanel, GroupLayout.DEFAULT_SIZE, 463, Short.MAX_VALUE))
+						.addComponent(leftPanel, GroupLayout.DEFAULT_SIZE, 459, Short.MAX_VALUE)
+						.addComponent(rightPanel, GroupLayout.DEFAULT_SIZE, 459, Short.MAX_VALUE))
 					.addComponent(buttonBar, GroupLayout.PREFERRED_SIZE, 42, GroupLayout.PREFERRED_SIZE))
 		);
+		GroupLayout gl_rightPanel = new GroupLayout(rightPanel);
+		gl_rightPanel.setHorizontalGroup(
+			gl_rightPanel.createParallelGroup(Alignment.LEADING)
+				.addComponent(panel_5, GroupLayout.DEFAULT_SIZE, 172, Short.MAX_VALUE)
+		);
+		gl_rightPanel.setVerticalGroup(
+			gl_rightPanel.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_rightPanel.createSequentialGroup()
+					.addGap(5)
+					.addComponent(panel_5, GroupLayout.DEFAULT_SIZE, 459, Short.MAX_VALUE))
+		);
+		rightPanel.setLayout(gl_rightPanel);
 		GroupLayout gl_topPanel = new GroupLayout(topPanel);
 		gl_topPanel.setHorizontalGroup(
 			gl_topPanel.createParallelGroup(Alignment.LEADING)
