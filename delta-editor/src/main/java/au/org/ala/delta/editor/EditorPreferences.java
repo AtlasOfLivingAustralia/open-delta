@@ -18,6 +18,10 @@ public class EditorPreferences {
 	private static String MRU_SEPARATOR = "\n";
 	/** The maximum number of Most Recently Used files */
 	private static int MAX_SIZE_MRU = 4;
+	
+	private static String IMPORT_FILE_FILTER_KEY = "importFileFilter";
+	/** Default value for the import file filter */
+	private static String DEFAULT_IMPORT_FILE_FILTER = "*.bak;*.box;tidy*.;reorder*.";
 
 	/**
 	 * @return An array of the most recently used filenames 
@@ -67,6 +71,22 @@ public class EditorPreferences {
 			prefs.sync();
 		} catch (BackingStoreException e) {
 			throw new RuntimeException(e);
+		}
+	}
+	
+	public static String getImportFileFilter() {
+		Preferences prefs = Preferences.userNodeForPackage(DeltaEditor.class);
+		if (prefs != null) {
+			return prefs.get(IMPORT_FILE_FILTER_KEY, DEFAULT_IMPORT_FILE_FILTER);
+		}
+
+		return DEFAULT_IMPORT_FILE_FILTER;
+	}
+	
+	public static void setImportFileFilter(String filter) {
+		Preferences prefs = Preferences.userNodeForPackage(DeltaEditor.class);
+		if (prefs != null) {
+			prefs.put(IMPORT_FILE_FILTER_KEY, filter);
 		}
 	}
 

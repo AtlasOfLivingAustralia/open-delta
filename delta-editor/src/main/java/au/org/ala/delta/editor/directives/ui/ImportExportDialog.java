@@ -8,6 +8,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.AbstractListModel;
 import javax.swing.ActionMap;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultListModel;
@@ -23,6 +24,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
@@ -32,6 +34,9 @@ import org.jdesktop.application.Application;
 import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 
+import au.org.ala.delta.editor.EditorPreferences;
+import au.org.ala.delta.editor.directives.ImportFileNameFilter;
+import au.org.ala.delta.ui.MessageDialogHelper;
 import au.org.ala.delta.ui.util.IconHelper;
 
 /**
@@ -76,13 +81,12 @@ public class ImportExportDialog extends JDialog {
 	private List<DirectiveFile> _otherDirectivesFiles;
 	private List<String> _possibleDirectiveFiles;
 	private boolean _okPressed;
+	private String _currentFilter;
 	
 	private static final long serialVersionUID = 8695641918190503720L;
 	private JTextField currentDirectoryTextField;
-	private JTextField specificationsFileTextField;
 	private JTextField charactersFileTextField;
 	private JTextField itemsFileTextField;
-	private JTextField textField_4;
 	private JList possibleDirectivesList;
 	private JButton btnChange;
 	private final ButtonGroup buttonGroup = new ButtonGroup();
@@ -93,7 +97,17 @@ public class ImportExportDialog extends JDialog {
 	private JRadioButton rdbtnKey;
 	private JButton btnOk;
 	private JButton btnCancel;
+	private JButton moveToOtherButton;
+	private JButton moveToPossibleButton;
 	
+	@Resource
+	private String filterDialogTitle;
+	@Resource
+	private String filterDialogMessage;
+	@Resource
+	private String directoryChooserTitle;
+	@Resource
+	private String dialogTitle;
 	@Resource
 	private String specificationsPanelTitle;
 	@Resource
@@ -106,6 +120,12 @@ public class ImportExportDialog extends JDialog {
 	private String possiblePanelTitle;
 	@Resource
 	private String directiveTypePanelTitle;
+	private JButton moveToSpecsButton;
+	private JButton moveToCharsButton;
+	private JButton moveToItemsButton;
+	private JTextField specificationsFileTextField;
+	private JButton excludeFilterButton;
+	private JTextField currentImportFilterTextField;
 	
 	public ImportExportDialog() {
 		setName("ImportExportDialogBox");
@@ -119,7 +139,19 @@ public class ImportExportDialog extends JDialog {
 		setModal(true);
 		createUI();
 		
+		_currentFilter = EditorPreferences.getImportFileFilter();
+		
 		addEventListeners();
+		
+		// This is necessary as if we bring up the chooser dialog before this dialog is visible
+		// the JFileChooser cannot be shown relative to this dialog and hence will always appear
+		// on the default monitor in a multi monitor configuration.
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				directorySelected();
+			}
+		});
 	}
 
 	private void addEventListeners() {
@@ -128,6 +160,7 @@ public class ImportExportDialog extends JDialog {
 		btnOk.setAction(actionMap.get("okPressed"));
 		btnOk.setEnabled(false);
 		btnCancel.setAction(actionMap.get("cancelPressed"));
+		excludeFilterButton.setAction(actionMap.get("updateFilter"));
 		
 		ActionListener typeSelectionListener = new ActionListener() {
 			@Override
@@ -135,6 +168,32 @@ public class ImportExportDialog extends JDialog {
 				updateSelectedDirectiveType((JRadioButton)e.getSource());
 			}
 		};
+		moveToOtherButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				moveFromPossibleToOther();
+			}
+		});
+		moveToPossibleButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				moveFromOtherToPossible();
+			}
+		});
+		moveToSpecsButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				moveToSpecs();
+			}
+		});
+		moveToCharsButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				moveToChars();
+			}
+		});
+		moveToItemsButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				moveToItems();
+			}
+		});
+		
 		rdbtnConfor.putClientProperty(DirectiveType.class, DirectiveType.CONFOR);
 		rdbtnConfor.addActionListener(typeSelectionListener);
 		rdbtnIntkey.putClientProperty(DirectiveType.class, DirectiveType.INTKEY);
@@ -143,13 +202,14 @@ public class ImportExportDialog extends JDialog {
 		rdbtnDist.addActionListener(typeSelectionListener);
 		rdbtnKey.putClientProperty(DirectiveType.class, DirectiveType.KEY);
 		rdbtnKey.addActionListener(typeSelectionListener);
-				
+		
 	}
 	
 	/**
 	 * Creates and lays out the UI components for this dialog.
 	 */
 	private void createUI() {
+		setTitle(dialogTitle);
 		setIconImages(IconHelper.getBlueIconList());
 		JPanel leftPanel = new JPanel();
 		
@@ -197,18 +257,8 @@ public class ImportExportDialog extends JDialog {
 		JPanel panel_7 = new JPanel();
 		panel_3.add(panel_7, BorderLayout.EAST);
 		
-		JButton button_3 = new JButton("<<");
-		button_3.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				moveFromPossibleToOther();
-			}
-		});
-		
-		JButton button_4 = new JButton(">>");
-		button_4.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-			}
-		});
+		moveToOtherButton = new JButton("<<");
+		moveToPossibleButton = new JButton(">>");
 		
 		JPanel panel_4 = new JPanel();
 		panel_4.setBorder(new TitledBorder(null, directiveTypePanelTitle, TitledBorder.LEADING, TitledBorder.TOP, null, null));
@@ -216,6 +266,7 @@ public class ImportExportDialog extends JDialog {
 		rdbtnConfor = new JRadioButton();
 		rdbtnConfor.setName("directiveTypeConfor");
 		buttonGroup.add(rdbtnConfor);
+		rdbtnConfor.setSelected(true);
 		
 		rdbtnIntkey = new JRadioButton();
 		rdbtnIntkey.setName("directiveTypeIntkey");
@@ -254,25 +305,26 @@ public class ImportExportDialog extends JDialog {
 		panel_4.setLayout(gl_panel_4);
 		GroupLayout gl_panel_7 = new GroupLayout(panel_7);
 		gl_panel_7.setHorizontalGroup(
-			gl_panel_7.createParallelGroup(Alignment.LEADING)
+			gl_panel_7.createParallelGroup(Alignment.TRAILING)
 				.addGroup(gl_panel_7.createSequentialGroup()
-					.addGap(30)
-					.addGroup(gl_panel_7.createParallelGroup(Alignment.TRAILING)
-						.addComponent(button_4)
-						.addComponent(button_3))
-					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-				.addGroup(Alignment.TRAILING, gl_panel_7.createSequentialGroup()
 					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-					.addComponent(panel_4, GroupLayout.PREFERRED_SIZE, 88, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap())
+					.addGroup(gl_panel_7.createParallelGroup(Alignment.LEADING)
+						.addGroup(Alignment.TRAILING, gl_panel_7.createSequentialGroup()
+							.addComponent(panel_4, GroupLayout.PREFERRED_SIZE, 139, GroupLayout.PREFERRED_SIZE)
+							.addContainerGap())
+						.addGroup(Alignment.TRAILING, gl_panel_7.createSequentialGroup()
+							.addGroup(gl_panel_7.createParallelGroup(Alignment.LEADING)
+								.addComponent(moveToPossibleButton)
+								.addComponent(moveToOtherButton))
+							.addGap(50))))
 		);
 		gl_panel_7.setVerticalGroup(
 			gl_panel_7.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panel_7.createSequentialGroup()
-					.addComponent(button_3)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(button_4)
-					.addPreferredGap(ComponentPlacement.RELATED, 52, Short.MAX_VALUE)
+					.addComponent(moveToOtherButton)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(moveToPossibleButton)
+					.addPreferredGap(ComponentPlacement.RELATED, 118, Short.MAX_VALUE)
 					.addComponent(panel_4, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 		);
 		panel_7.setLayout(gl_panel_7);
@@ -280,22 +332,22 @@ public class ImportExportDialog extends JDialog {
 		itemsFileTextField = new JTextField();
 		itemsFileTextField.setColumns(10);
 		
-		JButton button_2 = new JButton("<<");
+		moveToItemsButton = new JButton("<<");
 		GroupLayout gl_panel_2 = new GroupLayout(panel_2);
 		gl_panel_2.setHorizontalGroup(
 			gl_panel_2.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panel_2.createSequentialGroup()
-					.addComponent(itemsFileTextField, GroupLayout.DEFAULT_SIZE, 164, Short.MAX_VALUE)
-					.addGap(34)
-					.addComponent(button_2)
-					.addGap(29))
+					.addComponent(itemsFileTextField, GroupLayout.PREFERRED_SIZE, 217, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED, 60, Short.MAX_VALUE)
+					.addComponent(moveToItemsButton)
+					.addGap(50))
 		);
 		gl_panel_2.setVerticalGroup(
 			gl_panel_2.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panel_2.createSequentialGroup()
 					.addGroup(gl_panel_2.createParallelGroup(Alignment.BASELINE)
 						.addComponent(itemsFileTextField, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)
-						.addComponent(button_2))
+						.addComponent(moveToItemsButton))
 					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 		);
 		panel_2.setLayout(gl_panel_2);
@@ -303,22 +355,22 @@ public class ImportExportDialog extends JDialog {
 		charactersFileTextField = new JTextField();
 		charactersFileTextField.setColumns(10);
 		
-		JButton button_1 = new JButton("<<");
+		moveToCharsButton = new JButton("<<");
 		GroupLayout gl_panel_1 = new GroupLayout(panel_1);
 		gl_panel_1.setHorizontalGroup(
 			gl_panel_1.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_panel_1.createSequentialGroup()
-					.addComponent(charactersFileTextField, GroupLayout.DEFAULT_SIZE, 166, Short.MAX_VALUE)
-					.addGap(35)
-					.addComponent(button_1)
-					.addGap(26))
+				.addGroup(Alignment.TRAILING, gl_panel_1.createSequentialGroup()
+					.addComponent(charactersFileTextField, GroupLayout.PREFERRED_SIZE, 218, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED, 79, Short.MAX_VALUE)
+					.addComponent(moveToCharsButton)
+					.addGap(50))
 		);
 		gl_panel_1.setVerticalGroup(
 			gl_panel_1.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panel_1.createSequentialGroup()
 					.addGroup(gl_panel_1.createParallelGroup(Alignment.BASELINE)
 						.addComponent(charactersFileTextField, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)
-						.addComponent(button_1))
+						.addComponent(moveToCharsButton))
 					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 		);
 		panel_1.setLayout(gl_panel_1);
@@ -326,26 +378,23 @@ public class ImportExportDialog extends JDialog {
 		specificationsFileTextField = new JTextField();
 		specificationsFileTextField.setColumns(10);
 		
-		JButton button = new JButton("<<");
-		button.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-			}
-		});
+		moveToSpecsButton = new JButton("<<");
+		
 		GroupLayout gl_panel = new GroupLayout(panel);
 		gl_panel.setHorizontalGroup(
 			gl_panel.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_panel.createSequentialGroup()
-					.addComponent(specificationsFileTextField, GroupLayout.DEFAULT_SIZE, 168, Short.MAX_VALUE)
-					.addGap(33)
-					.addComponent(button)
-					.addGap(26))
+				.addGroup(Alignment.TRAILING, gl_panel.createSequentialGroup()
+					.addComponent(specificationsFileTextField, GroupLayout.PREFERRED_SIZE, 219, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED, 76, Short.MAX_VALUE)
+					.addComponent(moveToSpecsButton)
+					.addGap(50))
 		);
 		gl_panel.setVerticalGroup(
 			gl_panel.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panel.createSequentialGroup()
 					.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
 						.addComponent(specificationsFileTextField, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)
-						.addComponent(button))
+						.addComponent(moveToSpecsButton))
 					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 		);
 		panel.setLayout(gl_panel);
@@ -368,10 +417,11 @@ public class ImportExportDialog extends JDialog {
 		
 		JLabel lblExclude = new JLabel("Exclude");
 		
-		textField_4 = new JTextField();
-		textField_4.setColumns(10);
+		currentImportFilterTextField = new JTextField();
+		currentImportFilterTextField.setEditable(false);
+		currentImportFilterTextField.setColumns(10);
 		
-		JButton button_5 = new JButton("...");
+		excludeFilterButton = new JButton("...");
 		GroupLayout gl_panel_6 = new GroupLayout(panel_6);
 		gl_panel_6.setHorizontalGroup(
 			gl_panel_6.createParallelGroup(Alignment.LEADING)
@@ -379,9 +429,9 @@ public class ImportExportDialog extends JDialog {
 					.addGap(12)
 					.addComponent(lblExclude)
 					.addGap(5)
-					.addComponent(textField_4)
+					.addComponent(currentImportFilterTextField)
 					.addGap(5)
-					.addComponent(button_5)
+					.addComponent(excludeFilterButton)
 					.addGap(12))
 		);
 		gl_panel_6.setVerticalGroup(
@@ -391,10 +441,10 @@ public class ImportExportDialog extends JDialog {
 					.addComponent(lblExclude))
 				.addGroup(gl_panel_6.createSequentialGroup()
 					.addGap(6)
-					.addComponent(textField_4, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+					.addComponent(currentImportFilterTextField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 				.addGroup(gl_panel_6.createSequentialGroup()
 					.addGap(5)
-					.addComponent(button_5))
+					.addComponent(excludeFilterButton))
 		);
 		panel_6.setLayout(gl_panel_6);
 		
@@ -404,6 +454,7 @@ public class ImportExportDialog extends JDialog {
 		
 		currentDirectoryTextField = new JTextField();
 		currentDirectoryTextField.setColumns(10);
+		currentDirectoryTextField.setEditable(false);
 		
 		btnChange = new JButton("Change...");
 		
@@ -435,27 +486,29 @@ public class ImportExportDialog extends JDialog {
 						.addComponent(btnCancel)
 						.addComponent(btnOk)
 						.addComponent(btnHelp)))
+					.addGap(5)
 		);
 		buttonBar.setLayout(gl_buttonBar);
 		GroupLayout groupLayout = new GroupLayout(getContentPane());
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
-				.addComponent(topPanel, GroupLayout.DEFAULT_SIZE, 553, Short.MAX_VALUE)
+				.addComponent(topPanel, GroupLayout.DEFAULT_SIZE, 629, Short.MAX_VALUE)
 				.addGroup(groupLayout.createSequentialGroup()
-					.addComponent(leftPanel, GroupLayout.DEFAULT_SIZE, 325, Short.MAX_VALUE)
-					.addComponent(rightPanel, GroupLayout.DEFAULT_SIZE, 218, Short.MAX_VALUE)
+					.addComponent(leftPanel, GroupLayout.PREFERRED_SIZE, 411, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(rightPanel, GroupLayout.DEFAULT_SIZE, 202, Short.MAX_VALUE)
 					.addGap(10))
-				.addComponent(buttonBar, GroupLayout.DEFAULT_SIZE, 553, Short.MAX_VALUE)
+				.addComponent(buttonBar, GroupLayout.DEFAULT_SIZE, 629, Short.MAX_VALUE)
 		);
 		groupLayout.setVerticalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup()
-				    .addGap(5)
+					.addGap(5)
 					.addComponent(topPanel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addComponent(leftPanel, GroupLayout.DEFAULT_SIZE, 442, Short.MAX_VALUE)
-						.addComponent(rightPanel, GroupLayout.DEFAULT_SIZE, 442, Short.MAX_VALUE))
-					.addComponent(buttonBar, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+						.addComponent(rightPanel, GroupLayout.DEFAULT_SIZE, 463, Short.MAX_VALUE)
+						.addComponent(leftPanel, GroupLayout.DEFAULT_SIZE, 463, Short.MAX_VALUE))
+					.addComponent(buttonBar, GroupLayout.PREFERRED_SIZE, 42, GroupLayout.PREFERRED_SIZE))
 		);
 		GroupLayout gl_topPanel = new GroupLayout(topPanel);
 		gl_topPanel.setHorizontalGroup(
@@ -478,14 +531,16 @@ public class ImportExportDialog extends JDialog {
 		);
 		topPanel.setLayout(gl_topPanel);
 		getContentPane().setLayout(groupLayout);
-		setPreferredSize(new Dimension(500,500));
+		setPreferredSize(new Dimension(600,600));
 	}
 	
 	@Action
 	public void directorySelected() {
 		JFileChooser directorySelector = new JFileChooser(_currentDirectory);
+		directorySelector.setDialogTitle(directoryChooserTitle);
 		directorySelector.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		directorySelector.setAcceptAllFileFilterUsed(false);
+		
 		int result = directorySelector.showOpenDialog(this);
 		if (result == JFileChooser.APPROVE_OPTION) {
 			_currentDirectory = directorySelector.getSelectedFile();
@@ -517,22 +572,67 @@ public class ImportExportDialog extends JDialog {
 	
 	public void moveFromPossibleToOther() {
 		
-		DefaultListModel model = (DefaultListModel)possibleDirectivesList.getModel();
 		for (Object file : possibleDirectivesList.getSelectedValues()) {
 			DirectiveFile directiveFile = new DirectiveFile((String)file, _selectedDirectiveType);
 			
 			_otherDirectivesFiles.add(directiveFile);
-			model.removeElement(file);
+			_possibleDirectiveFiles.remove(file);
 		}
+		updateUI();
+	}
+	
+	public void moveFromOtherToPossible() {
+		
+		for (Object file : otherDirectivesList.getSelectedValues()) {
+			DirectiveFile directiveFile = (DirectiveFile)file;
+			_possibleDirectiveFiles.add(directiveFile._fileName);
+			_otherDirectivesFiles.remove(file);
+		}
+		updateUI();
+	}
+	
+	public void moveToSpecs() {
+		String file = (String)possibleDirectivesList.getSelectedValue();
+		if (StringUtils.isNotEmpty(_specsFile)) {
+			_possibleDirectiveFiles.add(_specsFile);
+		}
+		_possibleDirectiveFiles.remove(file);
+		_specsFile = file;
+		
+		updateUI();
+	}
+	
+	public void moveToChars() {
+		String file = (String)possibleDirectivesList.getSelectedValue();
+		if (StringUtils.isNotEmpty(_charactersFile)) {
+			_possibleDirectiveFiles.add(_charactersFile);
+		}
+		_possibleDirectiveFiles.remove(file);
+		_charactersFile = file;
+		updateUI();
+	}
+	
+	public void moveToItems() {
+		String file = (String)possibleDirectivesList.getSelectedValue();
+		if (StringUtils.isNotEmpty(_itemsFile)) {
+			_possibleDirectiveFiles.add(_itemsFile);
+		}
+		_possibleDirectiveFiles.remove(file);
+		_itemsFile = file;
 		updateUI();
 	}
 	
 	private void updateModelForNewCurrentDirectory() {
 		_otherDirectivesFiles = new ArrayList<DirectiveFile>();
 		_possibleDirectiveFiles = new ArrayList<String>();
-		for (File file : _currentDirectory.listFiles()) {
+		
+		for (File file : _currentDirectory.listFiles(new ImportFileNameFilter(_currentFilter))) {
 			_possibleDirectiveFiles.add(file.getName());
 			
+		}
+		if (_possibleDirectiveFiles.contains(DEFAULT_SPECS_DIRECTIVE_FILE)) {
+			_specsFile = DEFAULT_SPECS_DIRECTIVE_FILE;
+			_possibleDirectiveFiles.remove(DEFAULT_SPECS_DIRECTIVE_FILE);
 		}
 		if (_possibleDirectiveFiles.contains(DEFAULT_CHARS_DIRECTIVE_FILE)) {
 			_charactersFile = DEFAULT_CHARS_DIRECTIVE_FILE;
@@ -551,11 +651,9 @@ public class ImportExportDialog extends JDialog {
 		currentDirectoryTextField.setText(_currentDirectory.getAbsolutePath());
 		charactersFileTextField.setText(_charactersFile);
 		itemsFileTextField.setText(_itemsFile);
-		DefaultListModel possibleDirectivesModel = new DefaultListModel();
-		for (String file : _possibleDirectiveFiles) {
-			possibleDirectivesModel.addElement(file);
-		}
-	
+		specificationsFileTextField.setText(_specsFile);
+		currentImportFilterTextField.setText(_currentFilter);
+		FilteredListModel possibleDirectivesModel = new FilteredListModel(_currentFilter);
 		possibleDirectivesList.setModel(possibleDirectivesModel);
 		
 		DefaultListModel otherDirectivesModel = new DefaultListModel();
@@ -563,6 +661,7 @@ public class ImportExportDialog extends JDialog {
 			otherDirectivesModel.addElement(file);
 		}
 		otherDirectivesList.setModel(otherDirectivesModel);
+		
 		
 		btnOk.setEnabled((_currentDirectory != null) && 
 			(!_otherDirectivesFiles.isEmpty() || StringUtils.isNotEmpty(_charactersFile) || StringUtils.isNotEmpty(_itemsFile)));
@@ -584,5 +683,48 @@ public class ImportExportDialog extends JDialog {
 	
 	public File getSelectedDirectory() {
 		return _currentDirectory;
+	}
+	
+	@Action
+	public void updateFilter() {
+		
+		String filter = MessageDialogHelper.showInputDialog(this, filterDialogTitle, filterDialogMessage, 35, _currentFilter);
+		if (filter != null) {
+			setCurrentFilter(filter);
+		}
+	}
+	
+	public void setCurrentFilter(String filter) {
+		_currentFilter = filter;
+		EditorPreferences.setImportFileFilter(filter);
+		currentImportFilterTextField.setText(_currentFilter);
+		
+		updateUI();
+	}
+	
+	private class FilteredListModel extends AbstractListModel {
+
+		private static final long serialVersionUID = -2432156074008941418L;
+		private List<String> _filteredList = new ArrayList<String>();
+		
+		public FilteredListModel(String filter) {
+			ImportFileNameFilter importFilter = new ImportFileNameFilter(_currentFilter);
+			for (String file : _possibleDirectiveFiles) {
+				if (importFilter.accept(new File(file))) {
+					_filteredList.add(file);
+				}
+			}
+		}
+
+		@Override
+		public Object getElementAt(int index) {			
+			return _filteredList.get(index);
+		}
+
+		@Override
+		public int getSize() {
+			return _filteredList.size();
+		}
+		
 	}
 }
