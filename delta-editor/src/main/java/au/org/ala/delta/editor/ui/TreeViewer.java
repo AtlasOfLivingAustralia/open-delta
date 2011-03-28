@@ -44,6 +44,8 @@ import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.NumericCharacter;
 import au.org.ala.delta.model.impl.ControllingInfo;
+import au.org.ala.delta.model.observer.AbstractDataSetObserver;
+import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
 import au.org.ala.delta.rtf.RTFUtils;
 import au.org.ala.delta.ui.AboutBox;
 
@@ -136,19 +138,46 @@ public class TreeViewer extends JInternalFrame {
 		
 		lst.setSelectedIndex(0);
 		tree.setSelectionRow(0);
+		
+		_dataModel.addDeltaDataSetObserver(new NewCharacterListener(tree));
 
 	}
+	class NewCharacterListener extends AbstractDataSetObserver {
+
+		private JTree tree;
+		public NewCharacterListener(JTree tree) {
+			this.tree = tree;
+		}
+		@Override
+		public void characterAdded(DeltaDataSetChangeEvent event) {
+			// This is a bit lazy and will probably need to be fixed when we can do edit's directly
+			// on the tree.
+			tree.setModel(new CharacterTreeModel(_dataModel));
+		}
+		@Override
+		public void characterEdited(DeltaDataSetChangeEvent event) {
+			// This is a bit lazy and will probably need to be fixed when we can do edit's directly
+			// on the tree.
+			tree.setModel(new CharacterTreeModel(_dataModel));
+		}
+	}
+
 }
 
 class CharacterTreeModel extends DefaultTreeModel {
 
 	private static final long serialVersionUID = 1L;
 
+	private EditorDataModel _dataModel;
+	
 	public CharacterTreeModel(EditorDataModel dataModel) {
 		super(new ContextRootNode(dataModel), false);
-	}
-
+		_dataModel = dataModel;
+	}	
+	
+	
 }
+
 
 class ContextRootNode extends DefaultMutableTreeNode {
 
@@ -207,10 +236,17 @@ class DeltaTreeCellRenderer extends DefaultTreeCellRenderer {
 		Item item = _dataModel.getSelectedItem();
 		if (value instanceof CharacterTreeNode) {
 			CharacterTreeNode node = (CharacterTreeNode) value;
-			Character ch = (Character) node.getUserObject();			
-			ControllingInfo info = ch.checkApplicability(item);
-			node.setInapplicable(info.isInapplicable());
-			setIcon(EditorUIUtils.iconForCharacter(ch, info.isInapplicable()));
+			Character ch = (Character) node.getUserObject();
+			// The selected item can be null when adding characters to a new dataset.
+			boolean inapplicable = false;
+			if (item != null) {
+				ControllingInfo info = ch.checkApplicability(item);
+				inapplicable = info.isInapplicable();
+			}
+				
+			node.setInapplicable(inapplicable);
+			setIcon(EditorUIUtils.iconForCharacter(ch, inapplicable));
+			
 		} else if (leaf) {
 			DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
 			

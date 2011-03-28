@@ -154,6 +154,11 @@ public class VOCharTextDesc extends VOAnyDesc {
 
 	public String readStateText(int stateId, TextType textType) {
 		synchronized (getVOP()) {
+			// This can happen if the UI updates during import after the number of states
+			// has been set but before the text for each state has been set.
+			if (stateId >= _stateLengs.size()) {
+				return "";
+			}
 			int readSize = _stateLengs.get(stateId);
 			int seekPos = _fixedData.nStateLengs * 4 + _fixedData.featureLeng;
 			for (int i = 0; i < stateId; ++i) {

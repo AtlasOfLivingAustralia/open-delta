@@ -668,17 +668,22 @@ public class ImportExportDialog extends JDialog {
 	}
 	
 	public List<DirectiveFile> getSelectedFiles() {
-		DirectiveFile specsFile = new DirectiveFile(_specsFile, DirectiveType.CONFOR);
-		DirectiveFile charsFile = new DirectiveFile(_charactersFile, DirectiveType.CONFOR);
-		DirectiveFile itemsFile = new DirectiveFile(_itemsFile, DirectiveType.CONFOR);
 		
 		List<DirectiveFile> files = new ArrayList<DirectiveFile>();
-		files.add(specsFile);
-		files.add(charsFile);
-		files.add(itemsFile);
+		addIfNotEmpty(_specsFile, files);
+		addIfNotEmpty(_charactersFile, files);
+		addIfNotEmpty(_itemsFile, files);
+		
 		files.addAll(_otherDirectivesFiles);
 		
 		return files;
+	}
+	
+	private void addIfNotEmpty(String fileName, List<DirectiveFile> files) {
+		if (StringUtils.isNotEmpty(fileName)) {
+			DirectiveFile specsFile = new DirectiveFile(fileName, DirectiveType.CONFOR);
+			files.add(specsFile);
+		}
 	}
 	
 	public File getSelectedDirectory() {

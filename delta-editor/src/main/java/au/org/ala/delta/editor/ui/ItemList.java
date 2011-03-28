@@ -11,9 +11,10 @@ import javax.swing.JList;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 
-import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.format.ItemFormatter;
+import au.org.ala.delta.model.observer.AbstractDataSetObserver;
+import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
 
 /**
  * A specialised List for displaying DELTA Items.
@@ -33,10 +34,11 @@ public class ItemList extends JList {
 	class ItemListModel extends AbstractListModel {
 
 		private static final long serialVersionUID = 3730613528594711922L;
-		private DeltaDataSet _dataSet;
+		private EditorDataModel _dataSet;
 		
-		public ItemListModel(DeltaDataSet dataSet) {
+		public ItemListModel(EditorDataModel dataSet) {
 			_dataSet = dataSet;
+			_dataSet.addDeltaDataSetObserver(new NewItemListener());
 		}
 		
 		@Override
@@ -48,6 +50,16 @@ public class ItemList extends JList {
 		public int getSize() {
 			return _dataSet.getMaximumNumberOfItems();
 		}
+		
+		class NewItemListener extends AbstractDataSetObserver {
+
+			@Override
+			public void itemAdded(DeltaDataSetChangeEvent event) {
+				fireIntervalAdded(ItemListModel.this, getSize()-1, getSize()-1);
+			}
+			
+		}
+		
 	}
 	
 	/**
@@ -77,7 +89,7 @@ public class ItemList extends JList {
 		setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 	}
 	
-	public ItemList(DeltaDataSet dataSet) {
+	public ItemList(EditorDataModel dataSet) {
 		this();
 		setDataSet(dataSet);
 	}
@@ -95,7 +107,7 @@ public class ItemList extends JList {
 	 * Creates an ItemList backed by the supplied dataSet.
 	 * @param dataSet the data set to act as the model for this List.
 	 */
-	public void setDataSet(DeltaDataSet dataSet) {
+	public void setDataSet(EditorDataModel dataSet) {
 		setModel(new ItemListModel(dataSet));
 		
 	}
@@ -130,5 +142,7 @@ public class ItemList extends JList {
 			}
 		}
 	}
+	
+	
 	
 }
