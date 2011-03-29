@@ -177,8 +177,9 @@ public class MatrixViewer extends JInternalFrame {
 		if (copySelection != null) {
 			_table.getActionMap().put("copy", copySelection);
 		}
-		
-		selectCell(0, 0);
+		if ((_dataSet.getMaximumNumberOfItems() > 0) && (_dataSet.getNumberOfCharacters() > 0)) {
+			selectCell(0, 0);
+		}
 	}
 	
 	private void selectCell(int rowIndex, int colIndex) {
