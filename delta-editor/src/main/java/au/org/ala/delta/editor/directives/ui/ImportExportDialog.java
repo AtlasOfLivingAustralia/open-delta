@@ -2,6 +2,7 @@ package au.org.ala.delta.editor.directives.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -127,7 +128,9 @@ public class ImportExportDialog extends JDialog {
 	private JButton excludeFilterButton;
 	private JTextField currentImportFilterTextField;
 	
-	public ImportExportDialog() {
+	public ImportExportDialog(Window parent) {
+		
+		super(parent);
 		setName("ImportExportDialogBox");
 		ResourceMap resources = Application.getInstance().getContext().getResourceMap(ImportExportDialog.class);
 		resources.injectFields(this);

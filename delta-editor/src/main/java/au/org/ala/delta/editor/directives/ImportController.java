@@ -31,7 +31,7 @@ public class ImportController {
 	
 	public void begin() {
 		
-		ImportExportDialog dialog = new ImportExportDialog();
+		ImportExportDialog dialog = new ImportExportDialog(_context.getMainFrame());
 		_context.show(dialog);
 		
 		if (dialog.proceed()) {
@@ -43,7 +43,7 @@ public class ImportController {
 	}
 	
 	public void doImport(File selectedDirectory, List<DirectiveFile> files) {
-		ImportExportStatusDialog statusDialog = new ImportExportStatusDialog();
+		ImportExportStatusDialog statusDialog = new ImportExportStatusDialog(_context.getMainFrame());
 		_context.show(statusDialog);
 		
 		// Do the import on a background thread.

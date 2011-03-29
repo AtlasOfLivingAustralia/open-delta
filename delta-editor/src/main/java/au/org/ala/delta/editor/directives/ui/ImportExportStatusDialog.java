@@ -2,6 +2,7 @@ package au.org.ala.delta.editor.directives.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Window;
 
 import javax.swing.ActionMap;
 import javax.swing.GroupLayout;
@@ -44,7 +45,8 @@ public class ImportExportStatusDialog extends JDialog {
 	/**
 	 * Displays the status of a directives import during the import process.
 	 */
-	public ImportExportStatusDialog() {
+	public ImportExportStatusDialog(Window parent) {
+		super(parent);
 		createUI();
 		addEventListeners();
 	}
