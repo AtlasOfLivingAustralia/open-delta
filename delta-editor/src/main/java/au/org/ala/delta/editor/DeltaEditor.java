@@ -14,7 +14,6 @@
  ******************************************************************************/
 package au.org.ala.delta.editor;
 
-import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.SystemColor;
@@ -27,9 +26,12 @@ import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.EventObject;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
@@ -38,13 +40,10 @@ import javax.swing.JDesktopPane;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
-import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
 import javax.swing.LookAndFeel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -68,10 +67,12 @@ import au.org.ala.delta.editor.slotfile.model.SlotFileRepository;
 import au.org.ala.delta.editor.ui.EditorDataModel;
 import au.org.ala.delta.editor.ui.ItemEditor;
 import au.org.ala.delta.editor.ui.MatrixViewer;
+import au.org.ala.delta.editor.ui.StatusBar;
 import au.org.ala.delta.editor.ui.TreeViewer;
 import au.org.ala.delta.editor.ui.help.HelpConstants;
 import au.org.ala.delta.editor.ui.util.EditorUIUtils;
 import au.org.ala.delta.model.AbstractObservableDataSet;
+import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.DeltaDataSetRepository;
 import au.org.ala.delta.ui.AboutBox;
 import au.org.ala.delta.ui.MessageDialogHelper;
@@ -119,6 +120,11 @@ public class DeltaEditor extends SingleFrameApplication {
 	private String warning;
 	@Resource
 	private String warningTitle;
+	@Resource 
+	private String closeWithoutSavingMessage;
+	@Resource 
+	private String newDataSetName;
+	
 
 	/** Tracks the data set being edited by which internal frame is currently focused */
 	private EditorDataModel _selectedDataSet;
@@ -162,6 +168,31 @@ public class DeltaEditor extends SingleFrameApplication {
 		frame.setIconImages(IconHelper.getBlueIconList());
 
 		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+		addExitListener(new ExitListener() {
+			
+			@Override
+			public void willExit(EventObject event) {}
+			
+			@Override
+			public boolean canExit(EventObject event) {
+				_closingFromMenu = true;
+				
+				boolean canClose = true;
+				
+				// Copy the keys to prevent concurrent modification exceptions.
+				// (because keys are removed when there are no more active views of a dataset.
+				Set<AbstractObservableDataSet> dataSets = new HashSet<AbstractObservableDataSet>(_activeViews.keySet());
+				for (AbstractObservableDataSet dataSet : dataSets) {
+					
+					canClose = confirmClose(dataSet);
+					if (canClose) {
+						closeAll(dataSet);
+					}
+				}
+				_closingFromMenu = false;
+				return canClose;
+			}
+		});
 
 		_helpController = new HelpController("help/delta_editor/DeltaEditor");
 		_dataSetRepository = new SlotFileRepository();
@@ -608,7 +639,7 @@ public class DeltaEditor extends SingleFrameApplication {
 		boolean canClose = true;
 		// If we are about to close the last view of a data set, check if it needs to be saved.
 		if ((views.size() == 1 && !_closingFromMenu)) {
-			canClose = confirmClose(model);
+			canClose = confirmClose(model.getCurrentDataSet());
 		}
 		if (canClose) {
 			views.remove(view);
@@ -632,10 +663,17 @@ public class DeltaEditor extends SingleFrameApplication {
 	 * @param model the model to be closed.
 	 * @return true if the close can proceed.
 	 */
-	private boolean confirmClose(EditorDataModel model) {
+	private boolean confirmClose(DeltaDataSet dataSet) {
 		boolean canClose = true;
-		if (model.isModified()) {
-			int result = MessageDialogHelper.showConfirmDialog(this.getMainFrame(), "", "The document has been changed.\nDo you want to save the changes?", 20);
+		if (dataSet.isModified()) {
+			String title = dataSet.getName();
+			if (title != null) {
+				title = new File(title).getName();
+			}
+			else {
+				title = newDataSetName;
+			}
+			int result = MessageDialogHelper.showConfirmDialog(this.getMainFrame(), title, closeWithoutSavingMessage, 20);
 			canClose = (result != JOptionPane.CANCEL_OPTION);
 			if (result == JOptionPane.YES_OPTION) {
 				saveFile();
@@ -767,21 +805,28 @@ public class DeltaEditor extends SingleFrameApplication {
 			_closingFromMenu = true;
 			if (confirmClose(getCurrentDataSet()) == true) {
 				AbstractObservableDataSet dataSet = getCurrentDataSet().getCurrentDataSet();
-				List<JInternalFrame> views = _activeViews.get(dataSet);
-				// Close in reverse order as the event handlers for close actually remove the
-				// value from the list.
-				for (int i=views.size()-1; i>=0; i--) {
-					try {
-						views.get(i).setClosed(true);
-					} catch (PropertyVetoException e) {
-					}
-				}
+				closeAll(dataSet);
 			}
 		}
 		finally {
 			_closingFromMenu = false;
 		}
 		
+	}
+
+	/**
+	 * @param dataSet
+	 */
+	private void closeAll(AbstractObservableDataSet dataSet) {
+		List<JInternalFrame> views = _activeViews.get(dataSet);
+		// Close in reverse order as the event handlers for close actually remove the
+		// value from the list.
+		for (int i=views.size()-1; i>=0; i--) {
+			try {
+				views.get(i).setClosed(true);
+			} catch (PropertyVetoException e) {
+			}
+		}
 	}
 
 	public void addPropertyChangeListener(PropertyChangeListener listener) {
@@ -893,54 +938,4 @@ class ViewerFrameListener implements InternalFrameListener, VetoableChangeListen
 			}
 		}
 	}
-}
-
-class StatusBar extends JPanel implements PropertyChangeListener {
-
-	private static final long serialVersionUID = 1L;
-
-	private JProgressBar _prog;
-	private JLabel _label;
-
-	public StatusBar() {
-		setLayout(new BorderLayout());
-		setPreferredSize(new Dimension(400, 23));
-		_prog = new JProgressBar();
-		_prog.setPreferredSize(new Dimension(0, 20));
-		_prog.setVisible(false);
-		_label = new JLabel();
-		_prog.setMaximum(100);
-		_prog.setMinimum(0);
-		add(_prog, BorderLayout.WEST);
-		add(_label, BorderLayout.CENTER);
-		_prog.setValue(0);
-	}
-
-	public void clear() {
-		_prog.setValue(0);
-		_label.setText("");
-	}
-
-	@Override
-	public void propertyChange(PropertyChangeEvent evt) {
-		if ("progress".equals(evt.getPropertyName())) {
-
-			int percentComplete = (Integer) evt.getNewValue();
-			int value = Math.min(percentComplete, 100);
-			if (value < 0 || value == 100) {
-				if (!_prog.isVisible()) {
-					_prog.setVisible(true);
-					_prog.setPreferredSize(new Dimension(400, 23));
-				}
-				_prog.setValue(value);
-			} else {
-				_prog.setVisible(false);
-				_prog.setPreferredSize(new Dimension(0, 23));
-			}
-		} else if ("message".equals(evt.getPropertyName())) {
-			_label.setText((String) evt.getNewValue());
-		}
-
-	}
-
 }
