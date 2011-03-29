@@ -36,8 +36,8 @@ public class ImportExportStatusDialog extends JDialog {
 
 	public ImportExportStatusDialog() {
 		
-		setMinimumSize(new Dimension(300, 300));
-		setPreferredSize(new Dimension(300, 300));
+		setMinimumSize(new Dimension(465, 354));
+		setPreferredSize(new Dimension(465, 354));
 		JPanel statusPanel = new JPanel();
 		getContentPane().add(statusPanel, BorderLayout.CENTER);
 		
@@ -56,6 +56,7 @@ public class ImportExportStatusDialog extends JDialog {
 		textFromLastShowDirective.setBorder(new SoftBevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		
 		JCheckBox chckbxPauseOnErrors = new JCheckBox("Pause on errors and messages");
+		chckbxPauseOnErrors.setSelected(true);
 		
 		JButton btnDone = new JButton("Done");
 		
@@ -64,24 +65,20 @@ public class ImportExportStatusDialog extends JDialog {
 		gl_statusPanel.setHorizontalGroup(
 			gl_statusPanel.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_statusPanel.createSequentialGroup()
-					.addGroup(gl_statusPanel.createParallelGroup(Alignment.LEADING)
-						.addGroup(Alignment.TRAILING, gl_statusPanel.createSequentialGroup()
-							.addContainerGap()
-							.addGroup(gl_statusPanel.createParallelGroup(Alignment.TRAILING)
-								.addComponent(panel, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 388, Short.MAX_VALUE)
-								.addComponent(lblImportingDeltaData, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 388, Short.MAX_VALUE)
-								.addComponent(panel_1, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 388, Short.MAX_VALUE)
-								.addGroup(Alignment.LEADING, gl_statusPanel.createSequentialGroup()
-									.addComponent(chckbxPauseOnErrors)
-									.addGap(215))
-								.addComponent(lblTextFromLast, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 388, Short.MAX_VALUE)
-								.addComponent(textFromLastShowDirective, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 388, Short.MAX_VALUE)))
+					.addContainerGap()
+					.addGroup(gl_statusPanel.createParallelGroup(Alignment.TRAILING)
+						.addComponent(panel, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 388, Short.MAX_VALUE)
+						.addComponent(lblImportingDeltaData, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 388, Short.MAX_VALUE)
+						.addComponent(panel_1, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 388, Short.MAX_VALUE)
+						.addGroup(Alignment.LEADING, gl_statusPanel.createSequentialGroup()
+							.addComponent(chckbxPauseOnErrors)
+							.addGap(215))
+						.addComponent(lblTextFromLast, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 388, Short.MAX_VALUE)
+						.addComponent(textFromLastShowDirective, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 388, Short.MAX_VALUE)
 						.addGroup(gl_statusPanel.createSequentialGroup()
-							.addContainerGap()
 							.addComponent(btnDone)
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(btnCancel)
-							.addPreferredGap(ComponentPlacement.RELATED, 163, Short.MAX_VALUE)))
+							.addComponent(btnCancel)))
 					.addContainerGap())
 		);
 		gl_statusPanel.setVerticalGroup(
@@ -95,14 +92,14 @@ public class ImportExportStatusDialog extends JDialog {
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(lblTextFromLast)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(textFromLastShowDirective, GroupLayout.PREFERRED_SIZE, 63, GroupLayout.PREFERRED_SIZE)
+					.addComponent(textFromLastShowDirective, GroupLayout.DEFAULT_SIZE, 63, Short.MAX_VALUE)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(chckbxPauseOnErrors)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_statusPanel.createParallelGroup(Alignment.BASELINE)
-						.addComponent(btnDone)
-						.addComponent(btnCancel))
-					.addContainerGap(17, Short.MAX_VALUE))
+						.addComponent(btnCancel)
+						.addComponent(btnDone))
+					.addGap(14))
 		);
 		
 		JLabel lblStatistics = new JLabel("Statistics");
@@ -117,68 +114,79 @@ public class ImportExportStatusDialog extends JDialog {
 		JLabel lblLines = new JLabel("Lines:");
 		
 		totalLines = new JLabel("1861");
+		totalLines.setHorizontalAlignment(SwingConstants.TRAILING);
 		
 		currentFileLine = new JLabel("8");
+		currentFileLine.setHorizontalAlignment(SwingConstants.TRAILING);
 		
 		JLabel lblErrors = new JLabel("Errors:");
 		
 		totalErrors = new JLabel("0");
+		totalErrors.setHorizontalAlignment(SwingConstants.TRAILING);
 		
 		currentFileErrors = new JLabel("0");
+		currentFileErrors.setHorizontalAlignment(SwingConstants.TRAILING);
 		GroupLayout gl_panel_2 = new GroupLayout(panel_2);
 		gl_panel_2.setHorizontalGroup(
 			gl_panel_2.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panel_2.createSequentialGroup()
-					.addGap(1)
-					.addGroup(gl_panel_2.createParallelGroup(Alignment.LEADING)
+					.addContainerGap()
+					.addGroup(gl_panel_2.createParallelGroup(Alignment.LEADING, false)
 						.addGroup(gl_panel_2.createSequentialGroup()
 							.addComponent(lblLines)
 							.addGap(113)
-							.addComponent(totalLines)
-							.addGap(108)
-							.addComponent(currentFileLine))
+							.addComponent(totalLines))
 						.addGroup(gl_panel_2.createSequentialGroup()
 							.addComponent(lblErrors)
 							.addGap(108)
-							.addComponent(totalErrors)
-							.addGap(126)
-							.addComponent(currentFileErrors))))
+							.addComponent(totalErrors, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+					.addGap(108)
+					.addGroup(gl_panel_2.createParallelGroup(Alignment.TRAILING)
+						.addComponent(currentFileLine, GroupLayout.PREFERRED_SIZE, 45, GroupLayout.PREFERRED_SIZE)
+						.addComponent(currentFileErrors, GroupLayout.PREFERRED_SIZE, 47, GroupLayout.PREFERRED_SIZE))
+					.addGap(84))
 		);
 		gl_panel_2.setVerticalGroup(
 			gl_panel_2.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panel_2.createSequentialGroup()
+					.addGroup(gl_panel_2.createParallelGroup(Alignment.LEADING, false)
+						.addComponent(lblLines, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+						.addGroup(gl_panel_2.createParallelGroup(Alignment.BASELINE)
+							.addComponent(totalLines, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+							.addComponent(currentFileLine, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_panel_2.createParallelGroup(Alignment.LEADING)
-						.addComponent(lblLines)
-						.addComponent(totalLines)
-						.addComponent(currentFileLine))
-					.addGap(5)
-					.addGroup(gl_panel_2.createParallelGroup(Alignment.LEADING)
-						.addComponent(lblErrors)
-						.addComponent(totalErrors)
-						.addComponent(currentFileErrors)))
+						.addGroup(gl_panel_2.createParallelGroup(Alignment.BASELINE)
+							.addComponent(totalErrors)
+							.addComponent(currentFileErrors))
+						.addComponent(lblErrors))
+					.addContainerGap())
 		);
 		panel_2.setLayout(gl_panel_2);
 		GroupLayout gl_panel_1 = new GroupLayout(panel_1);
 		gl_panel_1.setHorizontalGroup(
 			gl_panel_1.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panel_1.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(lblStatistics, GroupLayout.PREFERRED_SIZE, 122, GroupLayout.PREFERRED_SIZE)
+					.addGap(20)
+					.addComponent(lblTota, GroupLayout.PREFERRED_SIZE, 129, GroupLayout.PREFERRED_SIZE)
+					.addComponent(lblCurrentFile_1, GroupLayout.PREFERRED_SIZE, 134, GroupLayout.PREFERRED_SIZE)
+					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+				.addGroup(gl_panel_1.createSequentialGroup()
 					.addGap(1)
-					.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_panel_1.createSequentialGroup()
-							.addComponent(lblStatistics, GroupLayout.PREFERRED_SIZE, 122, GroupLayout.PREFERRED_SIZE)
-							.addGap(5)
-							.addComponent(lblTota, GroupLayout.PREFERRED_SIZE, 125, GroupLayout.PREFERRED_SIZE)
-							.addComponent(lblCurrentFile_1, GroupLayout.PREFERRED_SIZE, 134, GroupLayout.PREFERRED_SIZE))
-						.addComponent(panel_2, GroupLayout.PREFERRED_SIZE, 386, GroupLayout.PREFERRED_SIZE)))
+					.addComponent(panel_2, GroupLayout.DEFAULT_SIZE, 429, Short.MAX_VALUE))
 		);
 		gl_panel_1.setVerticalGroup(
 			gl_panel_1.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panel_1.createSequentialGroup()
 					.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING)
 						.addComponent(lblStatistics)
-						.addComponent(lblTota)
+						.addComponent(lblTota, GroupLayout.PREFERRED_SIZE, 14, GroupLayout.PREFERRED_SIZE)
 						.addComponent(lblCurrentFile_1, GroupLayout.PREFERRED_SIZE, 19, GroupLayout.PREFERRED_SIZE))
-					.addComponent(panel_2, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+					.addGap(2)
+					.addComponent(panel_2, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+					.addGap(3))
 		);
 		panel_1.setLayout(gl_panel_1);
 		
@@ -190,13 +198,13 @@ public class ImportExportStatusDialog extends JDialog {
 		
 		JLabel lblHeading = new JLabel("Heading:");
 		
-		heading = new JLabel("New label");
+		heading = new JLabel("");
 		
-		importDirectory = new JLabel("New label");
+		importDirectory = new JLabel("");
 		
-		currentFile = new JLabel("New label");
+		currentFile = new JLabel("");
 		
-		currentDirective = new JLabel("New label");
+		currentDirective = new JLabel("");
 		GroupLayout gl_panel = new GroupLayout(panel);
 		gl_panel.setHorizontalGroup(
 			gl_panel.createParallelGroup(Alignment.LEADING)
@@ -206,28 +214,28 @@ public class ImportExportStatusDialog extends JDialog {
 						.addGroup(gl_panel.createSequentialGroup()
 							.addComponent(lblCurrent)
 							.addGap(47)
-							.addComponent(currentDirective, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+							.addComponent(currentDirective, GroupLayout.DEFAULT_SIZE, 299, Short.MAX_VALUE))
 						.addGroup(gl_panel.createSequentialGroup()
-							.addComponent(lblHeading)
-							.addGap(45)
-							.addComponent(heading, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+							.addGap(88)
+							.addComponent(heading, GroupLayout.DEFAULT_SIZE, 299, Short.MAX_VALUE))
 						.addGroup(gl_panel.createSequentialGroup()
 							.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
 								.addComponent(lblImportDirectory)
 								.addComponent(lblCurrentFile))
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
-								.addComponent(currentFile, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-								.addComponent(importDirectory, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+								.addComponent(currentFile, GroupLayout.DEFAULT_SIZE, 299, Short.MAX_VALUE)
+								.addComponent(importDirectory, GroupLayout.DEFAULT_SIZE, 299, Short.MAX_VALUE)))
+						.addComponent(lblHeading))
 					.addContainerGap())
 		);
 		gl_panel.setVerticalGroup(
-			gl_panel.createParallelGroup(Alignment.LEADING)
-				.addGroup(Alignment.TRAILING, gl_panel.createSequentialGroup()
-					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-					.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
-						.addComponent(lblHeading)
-						.addComponent(heading))
+			gl_panel.createParallelGroup(Alignment.TRAILING)
+				.addGroup(gl_panel.createSequentialGroup()
+					.addGap(5)
+					.addGroup(gl_panel.createParallelGroup(Alignment.TRAILING)
+						.addComponent(heading)
+						.addComponent(lblHeading))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
 						.addComponent(lblImportDirectory)
@@ -239,7 +247,8 @@ public class ImportExportStatusDialog extends JDialog {
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
 						.addComponent(lblCurrent, GroupLayout.PREFERRED_SIZE, 14, GroupLayout.PREFERRED_SIZE)
-						.addComponent(currentDirective)))
+						.addComponent(currentDirective))
+					.addGap(0, 0, Short.MAX_VALUE))
 		);
 		panel.setLayout(gl_panel);
 		statusPanel.setLayout(gl_statusPanel);
