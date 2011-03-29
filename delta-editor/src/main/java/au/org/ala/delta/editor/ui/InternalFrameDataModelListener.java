@@ -26,7 +26,7 @@ public class InternalFrameDataModelListener implements PropertyChangeListener, I
 		_frameTitle = frameTitle;
 		model.addPropertyChangeListener(this);
 		frame.addInternalFrameListener(this);
-		_model.addDeltaDataSetObserver(this);
+		model.addDeltaDataSetObserver(this);
 		updateTitle();
 	}
 
@@ -51,9 +51,7 @@ public class InternalFrameDataModelListener implements PropertyChangeListener, I
 
 	@Override
 	public void internalFrameClosed(InternalFrameEvent e) {
-		_model.removePropertyChangeListener(this);
-		_model.removeDeltaDataSetObserver(this);
-		
+		_model.close();
 	}
 
 	@Override
@@ -122,5 +120,4 @@ public class InternalFrameDataModelListener implements PropertyChangeListener, I
 	public void characterSelected(DeltaDataSetChangeEvent event) {
 		_frame.repaint();
 	}
-
 }

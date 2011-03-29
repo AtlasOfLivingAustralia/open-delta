@@ -47,6 +47,8 @@ import org.jdesktop.application.Task.BlockingScope;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.format.ItemFormatter;
+import au.org.ala.delta.model.observer.AbstractDataSetObserver;
+import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
 import au.org.ala.delta.ui.AboutBox;
 
 public class MatrixViewer extends JInternalFrame {
@@ -331,16 +333,17 @@ class ItemColumnModel extends AbstractTableModel {
 
 	private static final long serialVersionUID = 1L;
 
-	private DeltaDataSet _dataSet;
+	private EditorDataModel _dataSet;
 	private ItemFormatter _formatter;
 
 	@Resource
 	String columnName;
 
-	public ItemColumnModel(DeltaDataSet dataSet) {
+	public ItemColumnModel(EditorDataModel dataSet) {
 		ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(AboutBox.class);
 		resourceMap.injectFields(this);
 		_dataSet = dataSet;
+		_dataSet.addDeltaDataSetObserver(new ItemAddedListener());
 		boolean includeNumber = false;
 		boolean stripRtf = true;
 		_formatter = new ItemFormatter(includeNumber, stripRtf);
@@ -375,6 +378,17 @@ class ItemColumnModel extends AbstractTableModel {
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
 		return false;
+	}
+	
+	class ItemAddedListener extends AbstractDataSetObserver {
+		@Override
+		public void itemAdded(DeltaDataSetChangeEvent event) {
+			fireTableRowsInserted(event.getItem().getItemNumber()-1, event.getItem().getItemNumber()-1);
+		}
+		@Override
+		public void itemEdited(DeltaDataSetChangeEvent event) {
+			fireTableCellUpdated(event.getItem().getItemNumber()-1, 0);
+		}
 	}
 
 }

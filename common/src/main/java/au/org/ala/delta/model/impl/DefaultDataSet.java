@@ -3,9 +3,9 @@ package au.org.ala.delta.model.impl;
 import java.util.HashMap;
 import java.util.Map;
 
+import au.org.ala.delta.model.AbstractObservableDataSet;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterType;
-import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.DeltaDataSetFactory;
 import au.org.ala.delta.model.Item;
 
@@ -15,7 +15,7 @@ import au.org.ala.delta.model.Item;
  * Note that this class is not thread safe.
  *
  */
-public class DefaultDataSet implements DeltaDataSet {
+public class DefaultDataSet extends AbstractObservableDataSet {
 
 	/** The name of this data set */
 	private String _name;
@@ -43,7 +43,7 @@ public class DefaultDataSet implements DeltaDataSet {
 	}
 
 	@Override
-	public Item getItem(int number) {
+	public Item doGetItem(int number) {
 		return _items.get(number);
 	}
 
@@ -53,7 +53,7 @@ public class DefaultDataSet implements DeltaDataSet {
 	}
 
 	@Override
-	public Character getCharacter(int number) {
+	public Character doGetCharacter(int number) {
 		return 	_characters.get(number);
 	}
 
@@ -71,30 +71,18 @@ public class DefaultDataSet implements DeltaDataSet {
 	public void close() {
 		// Do nothing.
 	}
-
-	@Override
-	public Character addCharacter(CharacterType type) {
-		
-		return addCharacter(getNumberOfCharacters(), type);
-	}
 	
 	@Override
-	public Character addCharacter(int characterNumber, CharacterType type) {
+	protected Character doAddCharacter(int characterNumber, CharacterType type) {
 		
 		Character character = _factory.createCharacter(type, characterNumber);
 		_characters.put(characterNumber, character);
 		
 		return character;
 	}
-
-	@Override
-	public Item addItem() {
-		
-		return addItem(getMaximumNumberOfItems());
-	}
 	
 	@Override
-	public Item addItem(int itemNumber) {
+	protected Item doAddItem(int itemNumber) {
 		
 		Item item = _factory.createItem(itemNumber);
 		_items.put(itemNumber, item);

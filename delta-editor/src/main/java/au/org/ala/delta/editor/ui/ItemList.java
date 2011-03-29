@@ -57,9 +57,7 @@ public class ItemList extends JList {
 			public void itemAdded(DeltaDataSetChangeEvent event) {
 				fireIntervalAdded(ItemListModel.this, getSize()-1, getSize()-1);
 			}
-			
 		}
-		
 	}
 	
 	/**
@@ -89,6 +87,10 @@ public class ItemList extends JList {
 		setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 	}
 	
+	/**
+	 * Creates an ItemList backed by the supplied dataSet.
+	 * @param dataSet the data set to act as the model for this List.
+	 */
 	public ItemList(EditorDataModel dataSet) {
 		this();
 		setDataSet(dataSet);
@@ -103,10 +105,7 @@ public class ItemList extends JList {
 		return selectedItem;
 	}
 	
-	/**
-	 * Creates an ItemList backed by the supplied dataSet.
-	 * @param dataSet the data set to act as the model for this List.
-	 */
+	
 	public void setDataSet(EditorDataModel dataSet) {
 		setModel(new ItemListModel(dataSet));
 		

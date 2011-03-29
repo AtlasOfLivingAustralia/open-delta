@@ -66,7 +66,7 @@ import au.org.ala.delta.editor.ui.MatrixViewer;
 import au.org.ala.delta.editor.ui.TreeViewer;
 import au.org.ala.delta.editor.ui.help.HelpConstants;
 import au.org.ala.delta.editor.ui.util.EditorUIUtils;
-import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.model.AbstractObservableDataSet;
 import au.org.ala.delta.model.DeltaDataSetRepository;
 import au.org.ala.delta.ui.AboutBox;
 import au.org.ala.delta.ui.help.HelpController;
@@ -476,7 +476,7 @@ public class DeltaEditor extends SingleFrameApplication {
 	/**
 	 * Loads a Delta file and creates a new tree view when it finishes.
 	 */
-	class DeltaFileLoader extends ProgressObservingTask<DeltaDataSet, Void> {
+	class DeltaFileLoader extends ProgressObservingTask<AbstractObservableDataSet, Void> {
 
 		/** The file to load */
 		private File _deltaFile;
@@ -496,13 +496,13 @@ public class DeltaEditor extends SingleFrameApplication {
 		}
 
 		@Override
-		protected DeltaDataSet doInBackground() throws Exception {
+		protected AbstractObservableDataSet doInBackground() throws Exception {
 			message("loading", _deltaFile.getAbsolutePath());
-			return _dataSetRepository.findByName(_deltaFile.getAbsolutePath(), this);
+			return (AbstractObservableDataSet)_dataSetRepository.findByName(_deltaFile.getAbsolutePath(), this);
 		}
 
 		@Override
-		protected void succeeded(DeltaDataSet result) {
+		protected void succeeded(AbstractObservableDataSet result) {
 			EditorDataModel model = new EditorDataModel(result);
 			EditorPreferences.addFileToMRU(_deltaFile.getAbsolutePath());
 			buildFileMenu(_fileMenu);
@@ -595,9 +595,9 @@ public class DeltaEditor extends SingleFrameApplication {
 	}
 
 	@Action(block = BlockingScope.APPLICATION)
-	public Task<DeltaDataSet, Void> loadFile() {
+	public Task<AbstractObservableDataSet, Void> loadFile() {
 
-		Task<DeltaDataSet, Void> fileOpenTask = null;
+		Task<AbstractObservableDataSet, Void> fileOpenTask = null;
 		File toOpen = selectFile(true);
 		if (toOpen != null) {
 			fileOpenTask = new DeltaFileLoader(this, toOpen);
@@ -642,7 +642,7 @@ public class DeltaEditor extends SingleFrameApplication {
 
 	@Action(enabledProperty = "saveAsEnabled")
 	public void newGridView() {
-		EditorDataModel model = getCurrentDataSet();
+		EditorDataModel model = new EditorDataModel(getCurrentDataSet().getCurrentDataSet());
 		if (model != null) {
 			newMatrix(model);
 		}
@@ -650,7 +650,7 @@ public class DeltaEditor extends SingleFrameApplication {
 
 	@Action(enabledProperty = "saveAsEnabled")
 	public void newTreeView() {
-		EditorDataModel model = getCurrentDataSet();
+		EditorDataModel model = new EditorDataModel(getCurrentDataSet().getCurrentDataSet());
 		if (model != null) {
 			newTree(model);
 		}
@@ -698,7 +698,7 @@ public class DeltaEditor extends SingleFrameApplication {
 	
 	@Action
 	public void newFile() {
-		EditorDataModel model = new EditorDataModel(_dataSetRepository.newDataSet());
+		EditorDataModel model = new EditorDataModel((AbstractObservableDataSet)_dataSetRepository.newDataSet());
 		newTree(model);
 	}
 	

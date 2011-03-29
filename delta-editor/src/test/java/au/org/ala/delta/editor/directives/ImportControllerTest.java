@@ -18,9 +18,9 @@ import au.org.ala.delta.editor.directives.ui.ImportExportDialog.DirectiveFile;
 import au.org.ala.delta.editor.directives.ui.ImportExportDialog.DirectiveType;
 import au.org.ala.delta.editor.slotfile.model.SlotFileDataSetFactory;
 import au.org.ala.delta.editor.ui.EditorDataModel;
+import au.org.ala.delta.model.AbstractObservableDataSet;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterType;
-import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.IntegerCharacter;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.UnorderedMultiStateCharacter;
@@ -51,13 +51,13 @@ public class ImportControllerTest extends TestCase {
 	private ImportController importer;
 	
 	/** The data set we are importing into */
-	private DeltaDataSet _dataSet;
+	private AbstractObservableDataSet _dataSet;
 	
 	@Before
 	public void setUp() {
 		// Sure hope this won't throw a headless exception at some point...
 		DeltaEditorTestHelper helper = new DeltaEditorTestHelper();
-		_dataSet = new SlotFileDataSetFactory().createDataSet("test");
+		_dataSet = (AbstractObservableDataSet)new SlotFileDataSetFactory().createDataSet("test");
 		EditorDataModel model = new EditorDataModel(_dataSet);
 		helper.setModel(model);
 		

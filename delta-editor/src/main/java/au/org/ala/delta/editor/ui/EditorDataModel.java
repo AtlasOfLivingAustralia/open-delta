@@ -5,23 +5,25 @@ import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.List;
 
+import au.org.ala.delta.model.AbstractObservableDataSet;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Item;
-import au.org.ala.delta.model.observer.CharacterObserver;
 import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
 import au.org.ala.delta.model.observer.DeltaDataSetObserver;
-import au.org.ala.delta.model.observer.ItemObserver;
 
 
 /**
- * Maintains the current overall state of the DELTA Editor.
+ * Provides the UI model with a backing DeltaDataSet.  Each EditorDataModel is associated with a 
+ * single view component.  This class maintains a separate list of DeltaDataSetObservers 
+ * to allow clean removal of listeners from the backing DeltaDataSet when a view of the model is 
+ * closed. 
  */
-public class EditorDataModel implements DeltaDataSet, ItemObserver, CharacterObserver {
+public class EditorDataModel implements DeltaDataSet, DeltaDataSetObserver {
 
 	/** The currently selected data set */
-	private DeltaDataSet _currentDataSet;
+	private AbstractObservableDataSet _currentDataSet;
 	
 	/** The number of the currently selected character */
 	private Character _selectedCharacter;
@@ -32,10 +34,11 @@ public class EditorDataModel implements DeltaDataSet, ItemObserver, CharacterObs
 	/** Helper class for notifying interested parties of property changes */
 	private PropertyChangeSupport _propertyChangeSupport;
 	
+	/** Maintains a list of objects interested in being notified of changes to this model */
 	private List<DeltaDataSetObserver> _observerList = new ArrayList<DeltaDataSetObserver>();
 	
-	public EditorDataModel(DeltaDataSet dataSet) {
-		_currentDataSet = dataSet;
+	public EditorDataModel(AbstractObservableDataSet dataSet) {
+		setCurrentDataSet(dataSet);
 		_propertyChangeSupport = new PropertyChangeSupport(this);
 	}
 	
@@ -51,8 +54,12 @@ public class EditorDataModel implements DeltaDataSet, ItemObserver, CharacterObs
 		}
 	}
 	
-	public void setCurrentDataSet(DeltaDataSet dataSet) {
+	public void setCurrentDataSet(AbstractObservableDataSet dataSet) {
+		if (_currentDataSet != null) {
+			_currentDataSet.removeDeltaDataSetObserver(this);
+		}
 		_currentDataSet = dataSet;
+		_currentDataSet.addDeltaDataSetObserver(this);
 		_selectedCharacter = null;
 		_selectedItem = null;
 	}
@@ -73,10 +80,30 @@ public class EditorDataModel implements DeltaDataSet, ItemObserver, CharacterObs
 		return _selectedCharacter;
 	}
 	
-	public DeltaDataSet getCurrentDataSet() {
+	public AbstractObservableDataSet getCurrentDataSet() {
 		return _currentDataSet;
 	}
 	
+
+	/**
+	 * Adds an observer interested in receiving notification of changes to this model.
+	 * Duplicate observers are ignored.
+	 * @param observer the observer to add.
+	 */
+	public void addDeltaDataSetObserver(DeltaDataSetObserver observer) {
+		if (_observerList.contains(observer)) {
+			return;
+		}
+		_observerList.add(observer);
+	}
+
+	/**
+	 * Prevents an observer from receiving further notifications of changes to this model.
+	 * @param observer the observer to remove.
+	 */
+	public void removeDeltaDataSetObserver(DeltaDataSetObserver observer) {
+		_observerList.remove(observer);
+	}
 	
 	@Override
 	public String getName() {
@@ -97,7 +124,6 @@ public class EditorDataModel implements DeltaDataSet, ItemObserver, CharacterObs
 	@Override
 	public Item getItem(int number) {
 		Item item = _currentDataSet.getItem(number);
-		item.addItemObserver(this);
 		return item;
 	}
 
@@ -109,7 +135,6 @@ public class EditorDataModel implements DeltaDataSet, ItemObserver, CharacterObs
 	@Override
 	public Character getCharacter(int number) {
 		Character character = _currentDataSet.getCharacter(number);
-		character.addCharacterObserver(this);
 		return character;
 	}
 
@@ -125,106 +150,101 @@ public class EditorDataModel implements DeltaDataSet, ItemObserver, CharacterObs
 	
 	@Override
 	public void close() {
+		_currentDataSet.removeDeltaDataSetObserver(this);
 		_currentDataSet.close();
-	}
-	
-	@Override
-	public Character addCharacter(CharacterType type) {
-		Character character = _currentDataSet.addCharacter(type);
-		character.addCharacterObserver(this);
-		fireDeltaDataSetEvent(null, character, new CharacterAddedDispatcher());
-		return character;
 	}
 	
 	@Override
 	public Character addCharacter(int characterNumber, CharacterType type) {
 		Character character = _currentDataSet.addCharacter(characterNumber, type);
-		character.addCharacterObserver(this);
-		fireDeltaDataSetEvent(null, character, new CharacterAddedDispatcher());
+		return character;
+	}
+	
+	@Override
+	public Character addCharacter(CharacterType type) {
+		Character character = _currentDataSet.addCharacter(type);
 		return character;
 	}
 
 	@Override
 	public Item addItem(int itemNumber) {
 		Item item = _currentDataSet.addItem(itemNumber);
-		item.addItemObserver(this);
-		fireDeltaDataSetEvent(item, null, new ItemAddedDispatcher());
 		return item;
 	}
 
 	@Override
 	public Item addItem() {
 		Item item = _currentDataSet.addItem();
-		item.addItemObserver(this);
-		fireDeltaDataSetEvent(item, null, new ItemAddedDispatcher());
 		return item;
 	}
-	
-	private void fireDeltaDataSetEvent(Item item, Character character, DataSetEventDispatcher dispatcher) {
-		dispatcher.fireDataSetEvent(item, character);
-	}
-	
+
 	@Override
-	public void characterChanged(Character character) {
-		fireDeltaDataSetEvent(null, character, new CharacterEditedDispatcher());
-		
+	public void itemAdded(DeltaDataSetChangeEvent event) {
+		for (int i=_observerList.size()-1; i>=0; i--) {
+			_observerList.get(i).itemAdded(event);
+		}
 	}
 
 	@Override
-	public void itemChanged(Item item) {
-		fireDeltaDataSetEvent(item, null, new ItemEditedDispatcher());
+	public void itemDeleted(DeltaDataSetChangeEvent event) {
+		for (int i=_observerList.size()-1; i>=0; i--) {
+			_observerList.get(i).itemDeleted(event);
+		}
 	}
 
-	public void addDeltaDataSetObserver(DeltaDataSetObserver observer) {
-	     _observerList.add(observer);
-	 }
+	@Override
+	public void itemMoved(DeltaDataSetChangeEvent event) {
+		for (int i=_observerList.size()-1; i>=0; i--) {
+			_observerList.get(i).itemMoved(event);
+		}
+	}
 
-	 public void removeDeltaDataSetObserver(DeltaDataSetObserver observer) {
-	     _observerList.remove(observer);
-	 }
+	@Override
+	public void itemEdited(DeltaDataSetChangeEvent event) {
+		for (int i=_observerList.size()-1; i>=0; i--) {
+			_observerList.get(i).itemEdited(event);
+		}
+	}
 
-	 private abstract class DataSetEventDispatcher {
-		
-		 public void fireDataSetEvent(Item item, Character character) {
-			 
-			 DeltaDataSetChangeEvent dataSetChangeEvent = new DeltaDataSetChangeEvent(
-					 EditorDataModel.this, character, item);
-            
-			 // process in reverse order to support removal during processing.
-		     for (int i = _observerList.size()-1; i>=0; i--) {
-		        	doFireEvent((DeltaDataSetObserver)_observerList.get(i), dataSetChangeEvent); 
-		     }
-		 }
-		 
-		 public abstract void doFireEvent(DeltaDataSetObserver observer, DeltaDataSetChangeEvent event);
-	 }
-	 
-	 private class ItemAddedDispatcher extends DataSetEventDispatcher {
-		 @Override
-			public void doFireEvent(DeltaDataSetObserver observer, DeltaDataSetChangeEvent event) {
-			 observer.itemAdded(event);
-			}
-	 }
-	 
-	 private class ItemEditedDispatcher extends DataSetEventDispatcher {
-		 @Override
-			public void doFireEvent(DeltaDataSetObserver observer, DeltaDataSetChangeEvent event) {
-			 observer.itemEdited(event);
-			}
-	 }
-	 
-	 private class CharacterEditedDispatcher extends DataSetEventDispatcher {
-		 @Override
-			public void doFireEvent(DeltaDataSetObserver observer, DeltaDataSetChangeEvent event) {
-			 observer.characterEdited(event);
-			}
-	 }
-	 
-	 private class CharacterAddedDispatcher extends DataSetEventDispatcher {
-		 @Override
-			public void doFireEvent(DeltaDataSetObserver observer, DeltaDataSetChangeEvent event) {
-			 observer.characterAdded(event);
-			}
-	 }
+	@Override
+	public void itemSelected(DeltaDataSetChangeEvent event) {
+		for (int i=_observerList.size()-1; i>=0; i--) {
+			_observerList.get(i).itemSelected(event);
+		}
+	}
 
+	@Override
+	public void characterAdded(DeltaDataSetChangeEvent event) {
+		for (int i=_observerList.size()-1; i>=0; i--) {
+			_observerList.get(i).characterAdded(event);
+		}
+	}
+
+	@Override
+	public void characterDeleted(DeltaDataSetChangeEvent event) {
+		for (int i=_observerList.size()-1; i>=0; i--) {
+			_observerList.get(i).characterDeleted(event);
+		}
+	}
+
+	@Override
+	public void characterMoved(DeltaDataSetChangeEvent event) {
+		for (int i=_observerList.size()-1; i>=0; i--) {
+			_observerList.get(i).characterMoved(event);
+		}
+	}
+
+	@Override
+	public void characterEdited(DeltaDataSetChangeEvent event) {
+		for (int i=_observerList.size()-1; i>=0; i--) {
+			_observerList.get(i).characterEdited(event);
+		}
+	}
+
+	@Override
+	public void characterSelected(DeltaDataSetChangeEvent event) {
+		for (int i=_observerList.size()-1; i>=0; i--) {
+			_observerList.get(i).characterSelected(event);
+		}	
+	}
 }

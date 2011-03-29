@@ -4,16 +4,16 @@ import au.org.ala.delta.editor.slotfile.DeltaVOP;
 import au.org.ala.delta.editor.slotfile.TextType;
 import au.org.ala.delta.editor.slotfile.VOCharBaseDesc;
 import au.org.ala.delta.editor.slotfile.VOItemDesc;
+import au.org.ala.delta.model.AbstractObservableDataSet;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterType;
-import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Item;
 
 /**
  * Implementation of a DELTA DataSet that uses the random access slotfile to read data on demand rather
  * than storing it in memory.
  */
-public class SlotFileDataSet implements DeltaDataSet {
+public class SlotFileDataSet extends AbstractObservableDataSet {
 
 	private DeltaVOP _vop;
 	private SlotFileDataSetFactory _factory;
@@ -28,14 +28,14 @@ public class SlotFileDataSet implements DeltaDataSet {
 	}
 	
 	@Override
-	public Item getItem(int number) {
+	protected Item doGetItem(int number) {
 		synchronized (_vop) {
 			return _factory.createItem(number);	
 		}		
 	}
 	
 	@Override
-	public Character getCharacter(int number) {
+	protected Character doGetCharacter(int number) {
 		synchronized (_vop) {
 			int charId = _vop.getDeltaMaster().uniIdFromCharNo(number);	
 			VOCharBaseDesc characterDesc = (VOCharBaseDesc)_vop.getDescFromId(charId);
@@ -88,29 +88,19 @@ public class SlotFileDataSet implements DeltaDataSet {
 		}
 	}
 	
+	/**
+	 * Once there are no more observers of this data set, close the underlying VOP object (which
+	 * will close files associated with the VOP).
+	 */
 	@Override
 	public void close() {
-		_vop.close();
-	}
-	
-	@Override
-	public Character addCharacter(CharacterType type) {
-		synchronized (_vop) {
-			Character character = _factory.createCharacter(type, getNumberOfCharacters()+1);
-			return character;
-		}
-	}
-
-	@Override
-	public Item addItem() {
-		synchronized (_vop) {
-			Item item = addItem(getMaximumNumberOfItems()+1);
-			return item;
+		if (_observerList.isEmpty()) {
+			_vop.close();
 		}
 	}
 	
 	@Override
-	public Character addCharacter(int characterNumber, CharacterType type) {
+	protected Character doAddCharacter(int characterNumber, CharacterType type) {
 		synchronized (_vop) {
 			
 			return _factory.createCharacter(type, characterNumber);
@@ -118,7 +108,7 @@ public class SlotFileDataSet implements DeltaDataSet {
 	}
 	
 	@Override
-	public Item addItem(int itemNumber) {
+	protected Item doAddItem(int itemNumber) {
 		synchronized (_vop) {
 			return _factory.createItem(itemNumber);
 		}
