@@ -26,10 +26,13 @@ public class DefaultDataSet extends AbstractObservableDataSet {
 	
 	private DeltaDataSetFactory _factory;
 	
+	private boolean _modified;
+	
 	public DefaultDataSet(DeltaDataSetFactory factory) {
 		_factory = factory;
 		_items = new HashMap<Integer, Item>();
 		_characters = new HashMap<Integer, Character>();
+		_modified = false;
 	}
 	
 	@Override
@@ -86,8 +89,18 @@ public class DefaultDataSet extends AbstractObservableDataSet {
 		
 		Item item = _factory.createItem(itemNumber);
 		_items.put(itemNumber, item);
-		
+
 		return item;	
 	}
+
+	@Override
+	public boolean isModified() {
+		return _modified;
+	}
+	
+	public void setModified(boolean modified) {
+		_modified = modified;
+	}
+	
 	
 }

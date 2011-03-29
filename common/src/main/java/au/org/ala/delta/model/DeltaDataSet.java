@@ -34,6 +34,12 @@ public interface DeltaDataSet {
 	public int getMaximumNumberOfItems();
 	
 	/**
+	 * @return true if this DeltaDataSet has been modified since it was opened.  An unchanged 
+	 * new dataset should return false.
+	 */
+	public boolean isModified();
+	
+	/**
 	 * Closes this DeltaDataSet, allowing it to release any resources it may have aquired.
 	 */
 	public void close();

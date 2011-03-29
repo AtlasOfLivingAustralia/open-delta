@@ -113,5 +113,12 @@ public class SlotFileDataSet extends AbstractObservableDataSet {
 			return _factory.createItem(itemNumber);
 		}
 	}
+
+	@Override
+	public boolean isModified() {
+		synchronized (_vop) {
+			return _vop.isDirty();
+		}
+	}
 	
 }

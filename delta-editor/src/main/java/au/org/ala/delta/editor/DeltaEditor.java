@@ -24,7 +24,12 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.beans.PropertyVetoException;
+import java.beans.VetoableChangeListener;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
@@ -69,6 +74,7 @@ import au.org.ala.delta.editor.ui.util.EditorUIUtils;
 import au.org.ala.delta.model.AbstractObservableDataSet;
 import au.org.ala.delta.model.DeltaDataSetRepository;
 import au.org.ala.delta.ui.AboutBox;
+import au.org.ala.delta.ui.MessageDialogHelper;
 import au.org.ala.delta.ui.help.HelpController;
 import au.org.ala.delta.ui.util.IconHelper;
 import au.org.ala.delta.util.IProgressObserver;
@@ -112,8 +118,10 @@ public class DeltaEditor extends SingleFrameApplication {
 	@Resource
 	private String warningTitle;
 
-	/** Tracks the data set being edited by which internal frame is currently focussed */
+	/** Tracks the data set being edited by which internal frame is currently focused */
 	private EditorDataModel _selectedDataSet;
+	/** Tracks the views open for each data set */
+	private Map<AbstractObservableDataSet, List<JInternalFrame>> _activeViews;
 
 	public static void main(String[] args) {
 		launch(DeltaEditor.class, args);
@@ -134,9 +142,11 @@ public class DeltaEditor extends SingleFrameApplication {
 
 	@Override
 	protected void startup() {
+		
 		_saveEnabled = false;
 		_saveAsEnabled = false;
 		_propertyChangeSupport = new PropertyChangeSupport(this);
+		_activeViews = new HashMap<AbstractObservableDataSet, List<JInternalFrame>>();
 
 		ResourceMap resourceMap = getContext().getResourceMap(AboutBox.class);
 		resourceMap.injectFields(this);
@@ -406,21 +416,25 @@ public class DeltaEditor extends SingleFrameApplication {
 	}
 
 	private void newMatrix(EditorDataModel dataSet) {
-		getMainFrame().setTitle(String.format(windowTitleWithFilename, dataSet.getName()));
+		
 		MatrixViewer matrixViewer = new MatrixViewer(dataSet);
-		matrixViewer.addInternalFrameListener(new ViewerFrameListener(dataSet, DeltaEditor.this));
-		_helpController.setHelpKeyForComponent(matrixViewer, HelpConstants.GRID_VIEW_HELP_KEY);
-		addToDesktop(matrixViewer);
-		viewerOpened();
+		newView(matrixViewer, dataSet, HelpConstants.GRID_VIEW_HELP_KEY);
 	}
 
 	private void newTree(EditorDataModel dataSet) {
-		getMainFrame().setTitle(String.format(windowTitleWithFilename, dataSet.getName()));
 		TreeViewer treeViewer = new TreeViewer(dataSet);
-		treeViewer.addInternalFrameListener(new ViewerFrameListener(dataSet, DeltaEditor.this));
-		_helpController.setHelpKeyForComponent(treeViewer, HelpConstants.TREE_VIEW_HELP_KEY);
-		addToDesktop(treeViewer);
-		viewerOpened();
+		newView(treeViewer, dataSet, HelpConstants.TREE_VIEW_HELP_KEY);
+	}
+	
+	private void newView(JInternalFrame view, EditorDataModel dataSet, String helpKey) {
+		getMainFrame().setTitle(String.format(windowTitleWithFilename, dataSet.getName()));
+		ViewerFrameListener listener = new ViewerFrameListener(dataSet, DeltaEditor.this);
+		view.addInternalFrameListener(listener);
+		view.addVetoableChangeListener(listener);
+		
+		_helpController.setHelpKeyForComponent(view, helpKey);
+		addToDesktop(view);
+		viewerOpened(dataSet, view);
 	}
 
 	private void createAboutBox() {
@@ -574,18 +588,45 @@ public class DeltaEditor extends SingleFrameApplication {
 		}
 	}
 
-	void viewerOpened() {
+	void viewerOpened(EditorDataModel model, JInternalFrame view) {
+		AbstractObservableDataSet dataSet = model.getCurrentDataSet();
+		List<JInternalFrame> views = _activeViews.get(dataSet);
+		if (views == null) {
+			views = new ArrayList<JInternalFrame>();
+			_activeViews.put(dataSet, views);
+		}
+		views.add(view);
 		numViewersOpen++;
 	}
 
-	void viewerClosed(EditorDataModel dataSet) {
-		numViewersOpen--;
-		if (numViewersOpen == 0) {
-			getMainFrame().setTitle(windowTitleWithoutFilename);
-			setSaveAsEnabled(false);
-			setSaveEnabled(false);
-			_selectedDataSet = null;
+	boolean viewerClosing(EditorDataModel model, JInternalFrame view) {
+		AbstractObservableDataSet dataSet = model.getCurrentDataSet();
+		List<JInternalFrame> views = _activeViews.get(dataSet);
+		boolean canClose = true;
+		// If we are about to close the last view of a data set, check if it needs to be saved.
+		if (views.size() == 1) {
+			if (model.isModified()) {
+				int result = MessageDialogHelper.showConfirmDialog(this.getMainFrame(), "", "The document has been changed.\nDo you want to save the changes?", 20);
+				canClose = (result != JOptionPane.CANCEL_OPTION);
+				if (result == JOptionPane.YES_OPTION) {
+					saveFile();
+				}
+			}
 		}
+		if (canClose) {
+			views.remove(view);
+			if (views.isEmpty()) {
+				_activeViews.remove(dataSet);
+			}
+			numViewersOpen--;
+			if (numViewersOpen == 0) {
+				getMainFrame().setTitle(windowTitleWithoutFilename);
+				setSaveAsEnabled(false);
+				setSaveEnabled(false);
+				_selectedDataSet = null;
+			}
+		}
+		return canClose;
 	}
 
 	void viewerFocusGained(EditorDataModel dataSet) {
@@ -705,7 +746,16 @@ public class DeltaEditor extends SingleFrameApplication {
 	
 	@Action(enabledProperty = "saveAsEnabled") 
 	public void closeFile() {
-		
+		AbstractObservableDataSet dataSet = getCurrentDataSet().getCurrentDataSet();
+		List<JInternalFrame> views = _activeViews.get(dataSet);
+		// Close in reverse order as the event handlers for close actually remove the
+		// value from the list.
+		for (int i=views.size()-1; i>=0; i--) {
+			try {
+				views.get(i).setClosed(true);
+			} catch (PropertyVetoException e) {
+			}
+		}
 	}
 
 	public void addPropertyChangeListener(PropertyChangeListener listener) {
@@ -766,7 +816,7 @@ class LookAndFeelAction extends AbstractAction {
  * @author Chris
  * 
  */
-class ViewerFrameListener implements InternalFrameListener {
+class ViewerFrameListener implements InternalFrameListener, VetoableChangeListener {
 
 	EditorDataModel _dataSet;
 	DeltaEditor _deltaEditor;
@@ -791,7 +841,7 @@ class ViewerFrameListener implements InternalFrameListener {
 	}
 
 	public void internalFrameClosed(InternalFrameEvent e) {
-		_deltaEditor.viewerClosed(_dataSet);
+		
 	}
 
 	public void internalFrameIconified(InternalFrameEvent e) {
@@ -807,6 +857,16 @@ class ViewerFrameListener implements InternalFrameListener {
 	public void internalFrameDeactivated(InternalFrameEvent e) {
 	}
 
+	@Override
+	public void vetoableChange(PropertyChangeEvent e) throws PropertyVetoException {
+
+		if ("closed".equals(e.getPropertyName()) && (e.getNewValue().equals(Boolean.TRUE))) {
+			boolean canClose = _deltaEditor.viewerClosing(_dataSet, (JInternalFrame)e.getSource());
+			if (!canClose) {
+				throw new PropertyVetoException("Not saved", e);
+			}
+		}
+	}
 }
 
 class StatusBar extends JPanel implements PropertyChangeListener {

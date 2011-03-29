@@ -32,6 +32,22 @@ public class MessageDialogHelper {
 	}
 	
 	/**
+	 * Uses JOptionPane.showInputDialog to display the supplied (multi-line) message and return the
+	 * user selection.
+	 * @param parent the parent component used to display the JOptionPane.
+	 * @param title the title for the option pane.
+	 * @param text the message text to display on the option pane.  Multi-line messages should 
+	 * use the "\n" character.
+	 * @param numColumns the column position to wrap the text at.
+	 * @return the value returned from the JOptionPane showConfirmDialog method (i.e the user selection)
+	 */
+	public static int showConfirmDialog(Component parent, String title, String text, int numColumns) {
+		
+		JTextArea messageDisplay = createMessageDisplay(text, numColumns);
+		return JOptionPane.showConfirmDialog(parent, messageDisplay, title, JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE) ;
+	}
+	
+	/**
 	 * Creates a text area that looks like a JLabel that has a preferredSize calculated to fit
 	 * all of the supplied text wrapped at the supplied column. 
 	 * @param text the text to display in the JTextArea.

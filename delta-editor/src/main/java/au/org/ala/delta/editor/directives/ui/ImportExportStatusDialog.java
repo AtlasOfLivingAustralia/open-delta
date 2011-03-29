@@ -3,6 +3,7 @@ package au.org.ala.delta.editor.directives.ui;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 
+import javax.swing.ActionMap;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
@@ -15,6 +16,9 @@ import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.SoftBevelBorder;
+
+import org.jdesktop.application.Action;
+import org.jdesktop.application.Application;
 
 import au.org.ala.delta.editor.directives.ImportExportStatus;
 
@@ -33,9 +37,26 @@ public class ImportExportStatusDialog extends JDialog {
 	private JLabel currentFileLine;
 	private JLabel currentFileErrors;
 	private JLabel textFromLastShowDirective;
+	private JButton btnDone;
+	private JButton btnCancel;
+	private JCheckBox chckbxPauseOnErrors;
 
+	/**
+	 * Displays the status of a directives import during the import process.
+	 */
 	public ImportExportStatusDialog() {
-		
+		createUI();
+		addEventListeners();
+	}
+	
+	private void addEventListeners() {
+		ActionMap actions = Application.getInstance().getContext().getActionMap(this);
+		btnDone.setAction(actions.get("importDone"));
+		btnCancel.setAction(actions.get("cancelImport"));
+	}
+
+	private void createUI() {
+		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setMinimumSize(new Dimension(465, 354));
 		setPreferredSize(new Dimension(465, 354));
 		JPanel statusPanel = new JPanel();
@@ -55,12 +76,12 @@ public class ImportExportStatusDialog extends JDialog {
 		textFromLastShowDirective = new JLabel();
 		textFromLastShowDirective.setBorder(new SoftBevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		
-		JCheckBox chckbxPauseOnErrors = new JCheckBox("Pause on errors and messages");
+		chckbxPauseOnErrors = new JCheckBox("Pause on errors and messages");
 		chckbxPauseOnErrors.setSelected(true);
 		
-		JButton btnDone = new JButton("Done");
+		btnDone = new JButton("Done");
 		
-		JButton btnCancel = new JButton("Cancel");
+		btnCancel = new JButton("Cancel");
 		GroupLayout gl_statusPanel = new GroupLayout(statusPanel);
 		gl_statusPanel.setHorizontalGroup(
 			gl_statusPanel.createParallelGroup(Alignment.LEADING)
@@ -270,5 +291,19 @@ public class ImportExportStatusDialog extends JDialog {
 		currentFileErrors.setText(Integer.toString(status.getErrorsInCurrentFile()));
 		
 		textFromLastShowDirective.setText(status.getTextFromLastShowDirective());
+	}
+	
+	@Action
+	public void importDone() {
+		setVisible(false);
+	}
+	
+	@Action
+	public void cancelImport() {
+		setVisible(false);
+	}
+	
+	public boolean getPauseOnError() {
+		return chckbxPauseOnErrors.isSelected();
 	}
 }
