@@ -584,6 +584,7 @@ public class DeltaEditor extends SingleFrameApplication {
 			getMainFrame().setTitle(windowTitleWithoutFilename);
 			setSaveAsEnabled(false);
 			setSaveEnabled(false);
+			_selectedDataSet = null;
 		}
 	}
 
