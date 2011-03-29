@@ -23,7 +23,7 @@ import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.NumericCharacter;
 
-public class CharacterList extends Directive {
+public class CharacterList extends ConforDirective {
 
 	public CharacterList() {
 		super("character", "list");

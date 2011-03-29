@@ -20,7 +20,7 @@ import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.TranslateType;
 
-public class TranslateInto extends Directive {
+public class TranslateInto extends ConforDirective {
 	
 	private static HashMap<String, TranslateType>  TRANSLATE_TYPE_MAP = new HashMap<String, TranslateType>();
 	

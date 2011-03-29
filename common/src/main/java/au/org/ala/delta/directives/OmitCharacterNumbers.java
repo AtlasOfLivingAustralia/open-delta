@@ -16,7 +16,7 @@ package au.org.ala.delta.directives;
 
 import au.org.ala.delta.DeltaContext;
 
-public class OmitCharacterNumbers extends Directive {
+public class OmitCharacterNumbers extends ConforDirective {
 	
 	public OmitCharacterNumbers() {
 		super("omit", "character", "numbers");

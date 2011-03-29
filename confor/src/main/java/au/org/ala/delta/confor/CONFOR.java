@@ -19,7 +19,7 @@ import java.io.IOException;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.Logger;
-import au.org.ala.delta.directives.DirectiveFileParser;
+import au.org.ala.delta.directives.ConforDirectiveFileParser;
 
 public class CONFOR {
 
@@ -28,7 +28,8 @@ public class CONFOR {
 	 */
 	public static void main(String[] args) throws IOException {
 
-		DirectiveFileParser.DIRECTIVE_TREE.dump();
+	    ConforDirectiveFileParser p = ConforDirectiveFileParser.createInstance();
+		p.getDirectiveTree().dump();
 
 		String filename = "c:\\delta\\test\\tokey";
 		File f = new File(filename);
@@ -48,7 +49,6 @@ public class CONFOR {
 		
 		Logger.log("%s", context.getCredits());
 
-		DirectiveFileParser p = new DirectiveFileParser();
 		p.parse(f, context);
 		
 	}

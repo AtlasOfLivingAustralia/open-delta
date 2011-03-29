@@ -18,7 +18,7 @@ import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.model.MultiStateCharacter;
 
-public class NumbersOfStates extends AbstractCharacterListDirective<Integer> {
+public class NumbersOfStates extends AbstractCharacterListDirective<DeltaContext, Integer> {
 	
 	public NumbersOfStates() {
 		super("numbers", "of", "states");

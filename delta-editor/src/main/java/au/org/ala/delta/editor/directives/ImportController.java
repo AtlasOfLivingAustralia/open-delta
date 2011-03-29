@@ -8,7 +8,7 @@ import org.jdesktop.application.TaskEvent;
 import org.jdesktop.application.TaskListener;
 
 import au.org.ala.delta.DeltaContext;
-import au.org.ala.delta.directives.DirectiveFileParser;
+import au.org.ala.delta.directives.ConforDirectiveFileParser;
 import au.org.ala.delta.editor.DeltaEditor;
 import au.org.ala.delta.editor.directives.ui.ImportExportDialog;
 import au.org.ala.delta.editor.directives.ui.ImportExportDialog.DirectiveFile;
@@ -79,7 +79,7 @@ public class ImportController {
 			publish(status);
 						
 			DeltaContext context = new DeltaContext(_dataSet);
-			DirectiveFileParser parser = new DirectiveFileParser();
+			ConforDirectiveFileParser parser = ConforDirectiveFileParser.createInstance();
 			for (DirectiveFile file : _files) {
 				
 				// First check if the existing dataset has a directives file with the same name

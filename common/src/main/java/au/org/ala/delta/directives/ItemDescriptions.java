@@ -24,7 +24,7 @@ import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.StateValue;
 import au.org.ala.delta.model.TextCharacter;
 
-public class ItemDescriptions extends Directive {
+public class ItemDescriptions extends ConforDirective {
 
 	
 	public ItemDescriptions() {

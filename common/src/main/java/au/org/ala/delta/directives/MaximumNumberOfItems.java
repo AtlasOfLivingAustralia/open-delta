@@ -17,7 +17,7 @@ package au.org.ala.delta.directives;
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.Logger;
 
-public class MaximumNumberOfItems extends Directive {
+public class MaximumNumberOfItems extends ConforDirective {
 	
 	public MaximumNumberOfItems() {
 		super("maximum", "number", "of", "items");

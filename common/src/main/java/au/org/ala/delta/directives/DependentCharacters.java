@@ -24,7 +24,7 @@ import au.org.ala.delta.Logger;
 import au.org.ala.delta.model.CharacterDependency;
 import au.org.ala.delta.util.IntegerFunctor;
 
-public class DependentCharacters extends AbstractCharacterListDirective<String> {
+public class DependentCharacters extends AbstractCharacterListDirective<DeltaContext, String> {
 
 	public DependentCharacters() {
 		super("dependent", "characters");
@@ -54,7 +54,7 @@ public class DependentCharacters extends AbstractCharacterListDirective<String> 
 		String[] charBits = charSet.split(":");
 		for (String charBit : charBits) {
 			IntRange r = parseRange(charBit);
-			forEach(r, context, new IntegerFunctor() {
+			forEach(r, context, new IntegerFunctor<DeltaContext>() {
 				@Override
 				public void invoke(DeltaContext context, int arg) {
 					CharacterDependency d = new CharacterDependency(charIndex, states, arg);

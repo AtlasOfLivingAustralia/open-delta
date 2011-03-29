@@ -17,7 +17,7 @@ package au.org.ala.delta.directives;
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.Logger;
 
-public class MandatoryCharacters extends AbstractRangeListDirective {
+public class MandatoryCharacters extends AbstractRangeListDirective<DeltaContext> {
 
 	public MandatoryCharacters() {
 		super("mandatory", "characters");

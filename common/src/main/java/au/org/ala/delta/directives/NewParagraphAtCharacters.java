@@ -16,7 +16,7 @@ package au.org.ala.delta.directives;
 
 import au.org.ala.delta.DeltaContext;
 
-public class NewParagraphAtCharacters extends AbstractRangeListDirective {
+public class NewParagraphAtCharacters extends AbstractRangeListDirective<DeltaContext> {
 	
 	public NewParagraphAtCharacters() {
 		super("new", "paragraph", "at", "characters");		

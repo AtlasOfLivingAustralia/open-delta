@@ -17,7 +17,7 @@ package au.org.ala.delta.directives;
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.Logger;
 
-public class PrintWidth extends Directive {
+public class PrintWidth extends ConforDirective {
 	
 	public PrintWidth() {
 		super("print", "width");

@@ -16,7 +16,7 @@ package au.org.ala.delta.directives;
 
 import au.org.ala.delta.DeltaContext;
 
-public class OmitInnerComments extends Directive {
+public class OmitInnerComments extends ConforDirective {
 	
 	public OmitInnerComments() {
 		super("omit", "inner", "comments");		

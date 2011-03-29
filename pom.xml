@@ -43,7 +43,7 @@
 									<define name="SAMPLE-DLT-PATH" value="..\sampledata\sample.dlt" />
 
 									<define name="DELTA-EDITOR-JARPATH"
-										value="..\delta-editor\target\delta-editor-${project.version}-with-dependencies.jar" />
+										value="..\delta-editor\target\delta-editor-${project.version}.jar" />
 									<define name="DELTA-EDITOR-EXEPATH" value="..\delta-editor\target\DeltaEditor.exe" />
 									<define name="DELTA-EDITOR-EXEOUTPUTNAME" value="DeltaEditor.exe" />
 
@@ -117,6 +117,7 @@
 						<configuration>
 							<descriptors>
 								<descriptor>delta-zip-assembly.xml</descriptor>
+								<descriptor>delta-dir-assembly.xml</descriptor>
 							</descriptors>
 						</configuration>
 					</execution>

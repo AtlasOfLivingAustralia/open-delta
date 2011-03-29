@@ -18,7 +18,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import au.org.ala.delta.directives.Directive;
+import au.org.ala.delta.directives.AbstractDirective;
+import au.org.ala.delta.directives.ConforDirective;
 import au.org.ala.delta.directives.DirectiveSearchResult;
 import au.org.ala.delta.directives.DirectiveSearchResult.ResultType;
 
@@ -30,7 +31,7 @@ public class Tree {
 		_toplevel = new TreeNodeList(null, "ROOT");
 	}
 	
-	public void addDirective(Directive directive) {
+	public void addDirective(AbstractDirective directive) {
 		TreeNodeList p = _toplevel;
 		
 		String[] words = directive.getControlWords();
@@ -120,14 +121,14 @@ class TreeNode {
 }
 
 class DirectiveTreeNode extends TreeNode {
-	private Directive _directive;
+	private AbstractDirective _directive;
 	
-	public DirectiveTreeNode(TreeNode parent, String name, Directive directive) {
+	public DirectiveTreeNode(TreeNode parent, String name, AbstractDirective directive) {
 		super(parent, name);
 		_directive = directive;
 	}
 	
-	public Directive getDirective() {
+	public AbstractDirective getDirective() {
 		return _directive;
 	}
 	

@@ -22,9 +22,9 @@ public class DirectiveSearchResult {
 	}
 
 	private ResultType _resultType;
-	private Directive _directive;
+	private AbstractDirective _directive;
 
-	public DirectiveSearchResult(ResultType resultType, Directive directive) {
+	public DirectiveSearchResult(ResultType resultType, AbstractDirective directive) {
 		this._resultType = resultType;
 		this._directive = directive;
 	}
@@ -33,7 +33,7 @@ public class DirectiveSearchResult {
 		return _resultType;
 	}
 
-	public Directive getDirective() {
+	public AbstractDirective getDirective() {
 		return _directive;
 	}
 

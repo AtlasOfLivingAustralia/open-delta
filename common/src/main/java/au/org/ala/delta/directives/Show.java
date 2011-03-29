@@ -16,7 +16,7 @@ package au.org.ala.delta.directives;
 
 import au.org.ala.delta.DeltaContext;
 
-public class Show extends Directive {
+public class Show extends ConforDirective {
 
 	public Show() {
 		super("show");

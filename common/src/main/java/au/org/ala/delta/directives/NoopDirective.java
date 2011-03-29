@@ -16,7 +16,7 @@ package au.org.ala.delta.directives;
 
 import au.org.ala.delta.DeltaContext;
 
-public abstract class NoopDirective extends Directive {
+public abstract class NoopDirective extends ConforDirective {
 	
 	public NoopDirective(String ...controlwords) {
 		super(controlwords);

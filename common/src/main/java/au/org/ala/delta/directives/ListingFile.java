@@ -19,7 +19,7 @@ import java.io.PrintStream;
 
 import au.org.ala.delta.DeltaContext;
 
-public class ListingFile extends Directive {
+public class ListingFile extends ConforDirective {
 	
 	public ListingFile() {
 		super("listing", "file");

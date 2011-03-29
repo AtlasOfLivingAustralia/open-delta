@@ -16,7 +16,7 @@ package au.org.ala.delta.directives;
 
 import au.org.ala.delta.DeltaContext;
 
-public class OmitInapplicables extends Directive {
+public class OmitInapplicables extends ConforDirective {
 	
 	public OmitInapplicables() {
 		super("omit", "inapplicables");

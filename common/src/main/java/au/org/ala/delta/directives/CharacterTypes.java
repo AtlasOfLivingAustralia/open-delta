@@ -19,7 +19,7 @@ import au.org.ala.delta.Logger;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DeltaDataSet;
 
-public class CharacterTypes extends AbstractCharacterListDirective<CharacterType> {
+public class CharacterTypes extends AbstractCharacterListDirective<DeltaContext, CharacterType> {
 
 	/** 
 	 * Tracks the number last character that was created to allow defaults to be created 

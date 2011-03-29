@@ -16,7 +16,7 @@ package au.org.ala.delta.directives;
 
 import au.org.ala.delta.DeltaContext;
 
-public class CharacterForTaxonImages extends Directive {
+public class CharacterForTaxonImages extends ConforDirective {
 	
 	public CharacterForTaxonImages() {
 		super("character", "for", "taxon", "images");

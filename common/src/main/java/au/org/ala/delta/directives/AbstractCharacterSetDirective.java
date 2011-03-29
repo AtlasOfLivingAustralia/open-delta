@@ -26,7 +26,7 @@ import au.org.ala.delta.DeltaContext;
  * An AbstractCharacterSetDirective is a directive that takes a space separated list of 
  * character sets of the form: c1:c2:...cn where cn is a character number or a range of numbers.
  */
-public abstract class AbstractCharacterSetDirective extends Directive {
+public abstract class AbstractCharacterSetDirective<C extends AbstractDeltaContext> extends AbstractDirective<C> {
 
 	private static Pattern CHAR_SET_PATTERN = Pattern.compile("^(\\d+)[:-](.*)$");
 
@@ -35,7 +35,7 @@ public abstract class AbstractCharacterSetDirective extends Directive {
 	}
 
 	@Override
-	public void process(DeltaContext context, String data) throws Exception {
+	public void process(C context, String data) throws Exception {
 		String[] typeDescriptors = data.split(" |\\n");
 		for (String typeDescriptor : typeDescriptors) {
 			typeDescriptor = typeDescriptor.trim();
@@ -56,6 +56,6 @@ public abstract class AbstractCharacterSetDirective extends Directive {
 		}
 	}
 
-	protected abstract void processCharacterSet(DeltaContext context, Set<Integer> characters);
+	protected abstract void processCharacterSet(C context, Set<Integer> characters);
 
 }

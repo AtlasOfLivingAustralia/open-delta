@@ -14,10 +14,10 @@
  ******************************************************************************/
 package au.org.ala.delta.util;
 
-import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.directives.AbstractDeltaContext;
 
-public interface IntegerFunctor {
+public interface IntegerFunctor<T extends AbstractDeltaContext>  {
 	
-	void invoke(DeltaContext context, int arg);
+	void invoke(T context, int arg);
 
 }

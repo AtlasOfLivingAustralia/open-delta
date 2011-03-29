@@ -20,7 +20,7 @@ import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.ImplicitValue;
 import au.org.ala.delta.model.MultiStateCharacter;
 
-public class ImplicitValues extends AbstractCharacterListDirective<ImplicitValue> {
+public class ImplicitValues extends AbstractCharacterListDirective<DeltaContext, ImplicitValue> {
 	
 	public ImplicitValues() {
 		super("implicit", "values");

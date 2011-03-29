@@ -7,7 +7,7 @@ import au.org.ala.delta.DeltaContext;
  * Parent class for the CharacterReliabilities and CharacterWeight directives as these directives
  * perform very similar functions.
  */
-public abstract class CharacterWeightDirective extends AbstractCharacterListDirective<Double>{
+public abstract class CharacterWeightDirective extends AbstractCharacterListDirective<DeltaContext, Double>{
 
 	/** The minimum value any character weight is allowed to have */
 	private double _minimumWeight;

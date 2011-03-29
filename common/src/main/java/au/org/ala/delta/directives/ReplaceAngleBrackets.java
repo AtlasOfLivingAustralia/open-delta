@@ -16,7 +16,7 @@ package au.org.ala.delta.directives;
 
 import au.org.ala.delta.DeltaContext;
 
-public class ReplaceAngleBrackets extends Directive {
+public class ReplaceAngleBrackets extends ConforDirective {
 	
 	public ReplaceAngleBrackets() {
 		super("replace", "angle", "brackets");

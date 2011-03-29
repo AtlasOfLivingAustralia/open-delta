@@ -4,7 +4,8 @@ import java.io.File;
 import java.net.URL;
 
 import junit.framework.TestCase;
-import au.org.ala.delta.directives.DirectiveFileParser;
+import au.org.ala.delta.directives.ConforDirectiveFileParser;
+import au.org.ala.delta.directives.DirectiveParser;
 
 /**
  * Tests DELTA file parsing.
@@ -21,9 +22,8 @@ public class DirectiveFileParserTest extends TestCase {
 		
 		DeltaContext context = new DeltaContext();
 		
-		DirectiveFileParser p = new DirectiveFileParser();
+		DirectiveParser<DeltaContext> p = ConforDirectiveFileParser.createInstance();
 		p.parse(toint, context);
-		
 	}
 	
 //	/**

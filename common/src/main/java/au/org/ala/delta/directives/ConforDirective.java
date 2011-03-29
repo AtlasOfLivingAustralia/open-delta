@@ -25,42 +25,14 @@ import org.apache.commons.lang.math.IntRange;
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.util.IntegerFunctor;
 
-public abstract class Directive {
+public abstract class ConforDirective extends AbstractDirective<DeltaContext> {
 	
 	private static Pattern VAR_PATTERN = Pattern.compile("[#]([A-Z]+)");
-
-	private String _data;
-	private String _controlWords[];
-
-	// **
-
-	protected Directive(String... controlWords) {
-		assert controlWords.length <= 4;
-		_controlWords = controlWords;
-	}
 	
-	public String getData() {
-		return _data;
-	}
+    protected ConforDirective(String... controlWords) {
+        super(controlWords);
+    }
 
-	public String[] getControlWords() {
-		return _controlWords;
-	}
-
-	@Override
-	public String toString() {
-		return String.format("Directive: %s", StringUtils.join(_controlWords, " "));
-	}
-	
-	/**
-	 * Directives must override this, otherwise they will fail!
-	 * @param context
-	 * @param data
-	 */
-	public void process(DeltaContext context, String data) throws Exception {
-		throw new NotImplementedException();
-	}
-	
 	protected String replaceVariables(DeltaContext context, String str) {
 		String result = str;
 		Matcher m = VAR_PATTERN.matcher(str);	
@@ -87,31 +59,6 @@ public abstract class Directive {
 				stream.println(message);
 			}
 			stream.println();
-		}
-	}
-
-	public Object getName() {
-		return StringUtils.join(_controlWords, " ").toUpperCase();
-	}
-	
-	private static Pattern RANGE_PATTERN = Pattern.compile("^([-]*\\d+)[-](\\d+)$");
-	
-	protected IntRange parseRange(String str) {
-		Matcher m = RANGE_PATTERN.matcher(str);
-		if (m.matches()) {
-			int lhs = Integer.parseInt(m.group(1));
-			int rhs = Integer.parseInt(m.group(2));
-			return new IntRange(lhs, rhs);
-		} else {
-			return new IntRange(Integer.parseInt(str));
-		}
-	}
-	
-	protected void forEach(IntRange range, DeltaContext context, IntegerFunctor func) {
-		for (int i = range.getMinimumInteger(); i <= range.getMaximumInteger(); ++i) {
-			if (func != null) {
-				func.invoke(context, i);
-			}
 		}
 	}
 

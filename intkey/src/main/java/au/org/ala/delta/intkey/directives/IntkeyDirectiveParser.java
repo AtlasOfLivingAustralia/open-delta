@@ -1,11 +1,19 @@
 package au.org.ala.delta.intkey.directives;
 
-import au.org.ala.delta.directives.AbstractDirectiveParser;
+import au.org.ala.delta.directives.DirectiveParser;
 
-public class IntkeyDirectiveParser extends AbstractDirectiveParser<IntkeyContext> {
+public class IntkeyDirectiveParser extends DirectiveParser<IntkeyContext> {
     
-    public IntkeyDirectiveParser() {
-        super(new IntkeyContext());
-        //register(new MyIntKeyDir());
-    }   
+    //private constructor - use factory method to get an instance.
+    private IntkeyDirectiveParser() {}
+    
+    public static IntkeyDirectiveParser createInstance() {
+        IntkeyDirectiveParser instance = new IntkeyDirectiveParser();
+        
+        instance.register(new FileTaxaDirective());
+        
+        return instance;
+    }
+    
+    
 }

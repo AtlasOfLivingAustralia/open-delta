@@ -17,7 +17,7 @@ package au.org.ala.delta.directives;
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.Logger;
 
-public class Comment extends Directive {
+public class Comment extends ConforDirective {
 	
 	public Comment() {
 		super("comment");

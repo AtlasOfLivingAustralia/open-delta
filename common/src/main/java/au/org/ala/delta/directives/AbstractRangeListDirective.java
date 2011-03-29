@@ -19,21 +19,21 @@ import org.apache.commons.lang.math.IntRange;
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.util.IntegerFunctor;
 
-public abstract class AbstractRangeListDirective extends Directive {
+public abstract class AbstractRangeListDirective<C extends AbstractDeltaContext> extends AbstractDirective<C> {
 	
 	protected AbstractRangeListDirective(String ...controlWords) {
 		super(controlWords);
 	}
 
 	@Override
-	public void process(DeltaContext context, String data) throws Exception {
+	public void process(C context, String data) throws Exception {
 		// data is a space separate list of ranges...
 		String[] ranges = data.split(" ");
 		for (String range : ranges) {
 			IntRange r = parseRange(range);
-			forEach(r, context, new IntegerFunctor() {
+			forEach(r, context, new IntegerFunctor<C>() {
 				@Override
-				public void invoke(DeltaContext context, int number) {
+				public void invoke(C context, int number) {
 					processNumber(context, number);
 				}
 			});
@@ -41,6 +41,6 @@ public abstract class AbstractRangeListDirective extends Directive {
 
 	}
 
-	protected abstract void processNumber(DeltaContext context, int number);
+	protected abstract void processNumber(C context, int number);
 
 }

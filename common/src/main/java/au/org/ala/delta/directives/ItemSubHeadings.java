@@ -9,7 +9,7 @@ import au.org.ala.delta.DeltaContext;
 /**
  * This class parses the ITEM SUBHEADINGS directive.
  */
-public class ItemSubHeadings extends Directive {
+public class ItemSubHeadings extends ConforDirective {
 
 	/** These characters may not be used as delimiters in the directive */
 	private static final String[] INAVLID_DELIMITERS = new String[] { "*", "#", "<", ">" };

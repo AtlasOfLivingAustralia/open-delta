@@ -16,7 +16,7 @@ package au.org.ala.delta.directives;
 
 import au.org.ala.delta.DeltaContext;
 
-public class ExcludeCharacters extends AbstractRangeListDirective {
+public class ExcludeCharacters extends AbstractRangeListDirective<DeltaContext> {
 	
 	public ExcludeCharacters() {
 		super("exclude", "characters");

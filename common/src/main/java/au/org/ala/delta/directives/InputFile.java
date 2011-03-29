@@ -19,7 +19,7 @@ import java.io.FileNotFoundException;
 
 import au.org.ala.delta.DeltaContext;
 
-public class InputFile extends Directive {
+public class InputFile extends ConforDirective {
 
 	public InputFile() {
 		super("input", "file");
@@ -32,7 +32,7 @@ public class InputFile extends Directive {
 		 
 		try {
 			if (file.exists()) {				
-				new DirectiveFileParser().parse(file, context);				
+				ConforDirectiveFileParser.createInstance().parse(file, context);				
 			} else {
 				throw new FileNotFoundException(data);
 			}

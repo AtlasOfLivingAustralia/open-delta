@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
+import au.org.ala.delta.directives.AbstractDeltaContext;
 import au.org.ala.delta.directives.ParsingContext;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterType;
@@ -40,7 +41,7 @@ import au.org.ala.delta.util.Utils;
 /**
  * Context associated with a set of DELTA input files.
  */
-public class DeltaContext {
+public class DeltaContext extends AbstractDeltaContext {
 
 	private DeltaDataSet _dataSet;
 	
@@ -75,7 +76,6 @@ public class DeltaContext {
 	private PrintStream _listStream;
 	private PrintStream _errorStream;
 	private PrintStream _printStream;
-	private Stack<ParsingContext> _parsingContexts = new Stack<ParsingContext>();
 
 	private StateValueMatrix _matrix;
 
@@ -219,26 +219,6 @@ public class DeltaContext {
 
 	public int getNumberOfCharacters() {
 		return _numberOfCharacters;
-	}
-
-	public ParsingContext getCurrentParsingContext() {
-		if (_parsingContexts.size() > 0) {
-			return _parsingContexts.peek();
-		}
-		return null;
-	}
-
-	public ParsingContext newParsingContext(File file) {
-		ParsingContext context = new ParsingContext(file);
-		_parsingContexts.push(context);
-		return context;
-	}
-
-	public ParsingContext endCurrentParsingContext() {
-		if (_parsingContexts.size() > 0) {
-			return _parsingContexts.pop();
-		}
-		return null;
 	}
 
 	public void setMaximumNumberOfStates(int maxStates) {

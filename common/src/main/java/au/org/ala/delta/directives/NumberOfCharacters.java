@@ -17,7 +17,7 @@ package au.org.ala.delta.directives;
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.Logger;
 
-public class NumberOfCharacters extends Directive {
+public class NumberOfCharacters extends ConforDirective {
 
 	public NumberOfCharacters() {
 		super("number", "of", "characters");

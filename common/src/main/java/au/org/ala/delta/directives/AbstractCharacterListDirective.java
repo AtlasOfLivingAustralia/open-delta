@@ -20,7 +20,7 @@ import org.apache.commons.lang.math.IntRange;
 
 import au.org.ala.delta.DeltaContext;
 
-public abstract class AbstractCharacterListDirective<T> extends Directive {
+public abstract class AbstractCharacterListDirective<C extends AbstractDeltaContext, T> extends AbstractDirective<C> {
 
 	private static Pattern CHAR_LIST_ITEM_PATTERN = Pattern.compile("^(\\d+),(.*)$|^(\\d+[-]\\d+),(.*)$");
 
@@ -29,7 +29,7 @@ public abstract class AbstractCharacterListDirective<T> extends Directive {
 	}
 
 	@Override
-	public void process(DeltaContext context, String data) throws Exception {
+	public void process(C context, String data) throws Exception {
 		String[] typeDescriptors = data.split(" |\\n");
 		for (String typeDescriptor : typeDescriptors) {
 			typeDescriptor = typeDescriptor.trim();
@@ -44,8 +44,8 @@ public abstract class AbstractCharacterListDirective<T> extends Directive {
 		}
 	}
 
-	protected abstract T interpretRHS(DeltaContext context, String rhs);
+	protected abstract T interpretRHS(C context, String rhs);
 
-	protected abstract void processCharacter(DeltaContext context, int charIndex, T rhs);
+	protected abstract void processCharacter(C context, int charIndex, T rhs);
 
 }

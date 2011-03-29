@@ -38,6 +38,7 @@
                     <archive>
                         <manifest>
                             <mainClass>au.org.ala.delta.editor.DeltaEditor</mainClass>
+                            <addClasspath>true</addClasspath>
                         </manifest>
                         <manifestEntries>
                             <Implementation-Version>${project.version} (${buildNumber})</Implementation-Version>
@@ -176,7 +177,7 @@
 							<dontWrapJar>true</dontWrapJar>
 							<headerType>gui</headerType>
 							<outfile>target/DeltaEditor.exe</outfile>
-							<jar>lib\${project.build.finalName}-with-dependencies.jar</jar>
+							<jar>lib\${project.build.finalName}.jar</jar>
 							<errTitle>Error</errTitle>
 							<icon>installer\resources\delta_editor.ico</icon>
 							<jre>

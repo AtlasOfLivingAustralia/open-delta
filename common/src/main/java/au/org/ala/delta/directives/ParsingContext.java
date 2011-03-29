@@ -17,61 +17,63 @@ package au.org.ala.delta.directives;
 import java.io.File;
 
 public class ParsingContext {
-	
-	private File _file;
-	private long _currentOffset;
-	private long _currentLine;
-	private long _currentDirectiveStartLine;
-	private long _currentDirectiveStartOffset;
-	
-	public ParsingContext(File file) {
-		_file = file;
-	}
-	
-	public File getFile() {
-		return _file;
-	}
-		
-	public long getCurrentOffset() {
-		return _currentOffset;
-	}
-	
-	public void setCurrentOffset(long offset) {
-		_currentOffset = offset;
-	}
-	
-	public void setCurrentLine(long line) {
-		_currentLine = line;
-	}
-	
-	public long getCurrentLine() {
-		return _currentLine;
-	}
-	
-	public void incrementCurrentOffset() {
-		_currentOffset++;
-	}
-	
-	public void incrementCurrentLine() {
-		_currentLine++;
-	}
-	
-	public long getCurrentDirectiveStartLine() {
-		return _currentDirectiveStartLine;
-	}
-	
-	public void setCurrentDirectiveStartLine(long line) {
-		_currentDirectiveStartLine = line;
-	}
-	
-	public long getCurrentDirectiveStartOffset() {
-		return _currentDirectiveStartOffset;
-	}
-	
-	public void setCurrentDirectiveStartOffset(long offset) {
-		_currentDirectiveStartOffset = offset;
-	}
-	
-	
+
+    private File _file;
+    private long _currentOffset;
+    private long _currentLine;
+    private long _currentDirectiveStartLine;
+    private long _currentDirectiveStartOffset;
+
+    public ParsingContext() {
+
+    }
+
+    public File getFile() {
+        return _file;
+    }
+
+    public void setFile(File file) {
+        _file = file;
+    }
+
+    public long getCurrentOffset() {
+        return _currentOffset;
+    }
+
+    public void setCurrentOffset(long offset) {
+        _currentOffset = offset;
+    }
+
+    public void setCurrentLine(long line) {
+        _currentLine = line;
+    }
+
+    public long getCurrentLine() {
+        return _currentLine;
+    }
+
+    public void incrementCurrentOffset() {
+        _currentOffset++;
+    }
+
+    public void incrementCurrentLine() {
+        _currentLine++;
+    }
+
+    public long getCurrentDirectiveStartLine() {
+        return _currentDirectiveStartLine;
+    }
+
+    public void setCurrentDirectiveStartLine(long line) {
+        _currentDirectiveStartLine = line;
+    }
+
+    public long getCurrentDirectiveStartOffset() {
+        return _currentDirectiveStartOffset;
+    }
+
+    public void setCurrentDirectiveStartOffset(long offset) {
+        _currentDirectiveStartOffset = offset;
+    }
 
 }
