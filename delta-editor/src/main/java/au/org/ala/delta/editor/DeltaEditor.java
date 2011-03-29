@@ -100,6 +100,8 @@ public class DeltaEditor extends SingleFrameApplication {
 
 	private boolean _saveEnabled;
 	private boolean _saveAsEnabled;
+	/** Flag to keep track of whether we have already asked the user if they want to save before closing */
+	private boolean _closingFromMenu;
 
 	private HelpController _helpController;
 
@@ -145,6 +147,7 @@ public class DeltaEditor extends SingleFrameApplication {
 		
 		_saveEnabled = false;
 		_saveAsEnabled = false;
+		_closingFromMenu = false;
 		_propertyChangeSupport = new PropertyChangeSupport(this);
 		_activeViews = new HashMap<AbstractObservableDataSet, List<JInternalFrame>>();
 
@@ -604,14 +607,8 @@ public class DeltaEditor extends SingleFrameApplication {
 		List<JInternalFrame> views = _activeViews.get(dataSet);
 		boolean canClose = true;
 		// If we are about to close the last view of a data set, check if it needs to be saved.
-		if (views.size() == 1) {
-			if (model.isModified()) {
-				int result = MessageDialogHelper.showConfirmDialog(this.getMainFrame(), "", "The document has been changed.\nDo you want to save the changes?", 20);
-				canClose = (result != JOptionPane.CANCEL_OPTION);
-				if (result == JOptionPane.YES_OPTION) {
-					saveFile();
-				}
-			}
+		if ((views.size() == 1 && !_closingFromMenu)) {
+			canClose = confirmClose(model);
 		}
 		if (canClose) {
 			views.remove(view);
@@ -624,6 +621,24 @@ public class DeltaEditor extends SingleFrameApplication {
 				setSaveAsEnabled(false);
 				setSaveEnabled(false);
 				_selectedDataSet = null;
+			}
+		}
+		return canClose;
+	}
+
+	/**
+	 * Asks the user whether they wish to save before closing.  If this method returns false
+	 * the close will be aborted.
+	 * @param model the model to be closed.
+	 * @return true if the close can proceed.
+	 */
+	private boolean confirmClose(EditorDataModel model) {
+		boolean canClose = true;
+		if (model.isModified()) {
+			int result = MessageDialogHelper.showConfirmDialog(this.getMainFrame(), "", "The document has been changed.\nDo you want to save the changes?", 20);
+			canClose = (result != JOptionPane.CANCEL_OPTION);
+			if (result == JOptionPane.YES_OPTION) {
+				saveFile();
 			}
 		}
 		return canClose;
@@ -671,6 +686,8 @@ public class DeltaEditor extends SingleFrameApplication {
 			if (model != null) {
 				_dataSetRepository.saveAsName(model.getCurrentDataSet(), newFile.getAbsolutePath(), null);
 				model.setName(newFile.getAbsolutePath());
+				EditorPreferences.addFileToMRU(newFile.getAbsolutePath());
+				buildFileMenu(_fileMenu);
 				// Force a refresh of the main application title.
 				viewerFocusGained(model);
 			}
@@ -746,16 +763,25 @@ public class DeltaEditor extends SingleFrameApplication {
 	
 	@Action(enabledProperty = "saveAsEnabled") 
 	public void closeFile() {
-		AbstractObservableDataSet dataSet = getCurrentDataSet().getCurrentDataSet();
-		List<JInternalFrame> views = _activeViews.get(dataSet);
-		// Close in reverse order as the event handlers for close actually remove the
-		// value from the list.
-		for (int i=views.size()-1; i>=0; i--) {
-			try {
-				views.get(i).setClosed(true);
-			} catch (PropertyVetoException e) {
+		try {
+			_closingFromMenu = true;
+			if (confirmClose(getCurrentDataSet()) == true) {
+				AbstractObservableDataSet dataSet = getCurrentDataSet().getCurrentDataSet();
+				List<JInternalFrame> views = _activeViews.get(dataSet);
+				// Close in reverse order as the event handlers for close actually remove the
+				// value from the list.
+				for (int i=views.size()-1; i>=0; i--) {
+					try {
+						views.get(i).setClosed(true);
+					} catch (PropertyVetoException e) {
+					}
+				}
 			}
 		}
+		finally {
+			_closingFromMenu = false;
+		}
+		
 	}
 
 	public void addPropertyChangeListener(PropertyChangeListener listener) {
@@ -860,10 +886,10 @@ class ViewerFrameListener implements InternalFrameListener, VetoableChangeListen
 	@Override
 	public void vetoableChange(PropertyChangeEvent e) throws PropertyVetoException {
 
-		if ("closed".equals(e.getPropertyName()) && (e.getNewValue().equals(Boolean.TRUE))) {
+		if (JInternalFrame.IS_CLOSED_PROPERTY.equals(e.getPropertyName()) && (e.getNewValue().equals(Boolean.TRUE))) {
 			boolean canClose = _deltaEditor.viewerClosing(_dataSet, (JInternalFrame)e.getSource());
 			if (!canClose) {
-				throw new PropertyVetoException("Not saved", e);
+				throw new PropertyVetoException("Close cancelled", e);
 			}
 		}
 	}
