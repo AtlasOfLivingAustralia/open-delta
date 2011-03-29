@@ -4,4 +4,6 @@ import org.jdesktop.application.SingleFrameApplication;
 
 public abstract class DeltaSingleFrameApplication extends SingleFrameApplication {
 
+	
+	
 }

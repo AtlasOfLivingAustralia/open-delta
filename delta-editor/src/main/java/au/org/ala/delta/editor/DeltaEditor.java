@@ -16,7 +16,6 @@ package au.org.ala.delta.editor;
 
 import java.awt.Dimension;
 import java.awt.Frame;
-import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeEvent;
@@ -36,7 +35,6 @@ import java.util.Set;
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.JComponent;
-import javax.swing.JDesktopPane;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
@@ -58,7 +56,6 @@ import org.jdesktop.application.Application;
 import org.jdesktop.application.ProxyActions;
 import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
-import org.jdesktop.application.SingleFrameApplication;
 import org.jdesktop.application.Task;
 import org.jdesktop.application.Task.BlockingScope;
 
@@ -70,7 +67,6 @@ import au.org.ala.delta.editor.ui.MatrixViewer;
 import au.org.ala.delta.editor.ui.StatusBar;
 import au.org.ala.delta.editor.ui.TreeViewer;
 import au.org.ala.delta.editor.ui.help.HelpConstants;
-import au.org.ala.delta.editor.ui.util.EditorUIUtils;
 import au.org.ala.delta.model.AbstractObservableDataSet;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.DeltaDataSetRepository;
@@ -84,14 +80,13 @@ import au.org.ala.delta.util.IProgressObserver;
  * The main class for the DELTA Editor.
  */
 @ProxyActions("copyAll")
-public class DeltaEditor extends SingleFrameApplication {
+public class DeltaEditor extends InternalFrameApplication {
 
 	/** Helper class for notifying listeners of property changes */
 	private PropertyChangeSupport _propertyChangeSupport;
 
 	private static final long serialVersionUID = 1L;
 
-	private JDesktopPane _desktop;
 	private StatusBar _statusBar;
 
 	private ActionMap _actionMap;
@@ -197,9 +192,6 @@ public class DeltaEditor extends SingleFrameApplication {
 		_helpController = new HelpController("help/delta_editor/DeltaEditor");
 		_dataSetRepository = new SlotFileRepository();
 
-		_desktop = new JDesktopPane();
-		_desktop.setBackground(SystemColor.control);
-
 		_statusBar = new StatusBar();
 		getMainView().setStatusBar(_statusBar);
 
@@ -207,20 +199,9 @@ public class DeltaEditor extends SingleFrameApplication {
 
 		_helpController.enableHelpKey(frame);
 
+		createDesktop();
 		show(_desktop);
 
-	}
-
-	/**
-	 * Closes all internal frames to allow their associated data models to be closed.
-	 */
-	@Override
-	protected void shutdown() {
-		for (JInternalFrame frame : _desktop.getAllFrames()) {
-			frame.dispose();
-		}
-
-		super.shutdown();
 	}
 
 	@Override
@@ -467,7 +448,7 @@ public class DeltaEditor extends SingleFrameApplication {
 		view.addVetoableChangeListener(listener);
 		
 		_helpController.setHelpKeyForComponent(view, helpKey);
-		addToDesktop(view);
+		show(view);
 		viewerOpened(dataSet, view);
 	}
 
@@ -476,37 +457,7 @@ public class DeltaEditor extends SingleFrameApplication {
 		show(aboutBox);
 	}
 
-	private void addToDesktop(JInternalFrame frame) {
-		frame.setFrameIcon(EditorUIUtils.createDeltaImageIcon());
-		_desktop.add(frame);
-		frame.setClosable(true);
-		frame.setMaximizable(true);
-		frame.setResizable(true);
-		frame.setIconifiable(true);
-		frame.setVisible(true);
-		frame.setFrameIcon(EditorUIUtils.createInternalFrameNormalIcon());
-		frame.addPropertyChangeListener(JInternalFrame.IS_MAXIMUM_PROPERTY, new PropertyChangeListener() {
-
-			@Override
-			public void propertyChange(PropertyChangeEvent evt) {
-				Boolean newValue = (Boolean) evt.getNewValue();
-				JInternalFrame frame = (JInternalFrame) evt.getSource();
-				if (newValue) {
-					frame.setFrameIcon(EditorUIUtils.createInternalFrameMaximizedIcon());
-				} else {
-					frame.setFrameIcon(EditorUIUtils.createInternalFrameNormalIcon());
-				}
-			}
-		});
-
-		try {
-			frame.setMaximum(false);
-		} catch (Exception ex) {
-			// ignore
-		}
-		frame.setSize(new Dimension(800, 500));
-	}
-
+	
 	abstract class ProgressObservingTask<T, V> extends Task<T, V> implements IProgressObserver {
 
 		public ProgressObservingTask(Application app) {
@@ -572,55 +523,7 @@ public class DeltaEditor extends SingleFrameApplication {
 		}
 	}
 
-	// This could be turned into a utility method
-	private void tileFramesInDesktopPane(JDesktopPane desk) {
-
-		// How many frames do we have?
-		JInternalFrame[] allframes = desk.getAllFrames();
-		int count = allframes.length;
-		if (count == 0)
-			return;
-
-		// Determine the necessary grid size
-		int sqrt = (int) Math.sqrt(count);
-		int rows = sqrt;
-		int cols = sqrt;
-		if (rows * cols < count) {
-			cols++;
-			if (rows * cols < count) {
-				rows++;
-			}
-		}
-
-		// Define some initial values for size & location.
-		Dimension size = desk.getSize();
-
-		int w = size.width / cols;
-		int h = size.height / rows;
-		int x = 0;
-		int y = 0;
-
-		// Iterate over the frames, deiconifying any iconified frames and then
-		// relocating & resizing each.
-		for (int i = 0; i < rows; i++) {
-			for (int j = 0; j < cols && ((i * cols) + j < count); j++) {
-				JInternalFrame f = allframes[(i * cols) + j];
-
-				if (!f.isClosed()) {
-					try {
-						f.setMaximum(false);
-						f.setIcon(false);
-					} catch (PropertyVetoException ignored) {
-					}
-				}
-
-				desk.getDesktopManager().resizeFrame(f, x, y, w, h);
-				x += w;
-			}
-			y += h; // start the next row
-			x = 0;
-		}
-	}
+	
 
 	void viewerOpened(EditorDataModel model, JInternalFrame view) {
 		AbstractObservableDataSet dataSet = model.getCurrentDataSet();
@@ -755,7 +658,7 @@ public class DeltaEditor extends SingleFrameApplication {
 
 	@Action
 	public void tileFrames() {
-		tileFramesInDesktopPane(_desktop);
+		tileFramesInDesktopPane();
 	}
 
 	@Action
