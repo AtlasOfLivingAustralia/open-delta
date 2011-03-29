@@ -20,8 +20,6 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.math.IntRange;
 
-import au.org.ala.delta.DeltaContext;
-
 /**
  * An AbstractCharacterSetDirective is a directive that takes a space separated list of 
  * character sets of the form: c1:c2:...cn where cn is a character number or a range of numbers.

@@ -16,7 +16,6 @@ package au.org.ala.delta.directives;
 
 import org.apache.commons.lang.math.IntRange;
 
-import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.util.IntegerFunctor;
 
 public abstract class AbstractRangeListDirective<C extends AbstractDeltaContext> extends AbstractDirective<C> {

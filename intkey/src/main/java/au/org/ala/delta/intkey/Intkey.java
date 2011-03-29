@@ -10,6 +10,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -201,7 +202,7 @@ public class Intkey extends DeltaSingleFrameApplication {
                     cmdMenu.doClick();
                 } else {
                     try {
-                        IntkeyDirectiveParser.createInstance().parse(new ByteArrayInputStream(cmdStr.getBytes()), new IntkeyContext());
+                        IntkeyDirectiveParser.createInstance().parse(new InputStreamReader(new ByteArrayInputStream(cmdStr.getBytes())), new IntkeyContext());
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }

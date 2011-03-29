@@ -18,12 +18,9 @@ import java.io.PrintStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.IntRange;
 
 import au.org.ala.delta.DeltaContext;
-import au.org.ala.delta.util.IntegerFunctor;
 
 public abstract class ConforDirective extends AbstractDirective<DeltaContext> {
 	

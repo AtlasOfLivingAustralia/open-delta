@@ -14,7 +14,6 @@
  ******************************************************************************/
 package au.org.ala.delta;
 
-import java.io.File;
 import java.io.PrintStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -24,7 +23,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Stack;
 
 import au.org.ala.delta.directives.AbstractDeltaContext;
 import au.org.ala.delta.directives.ParsingContext;
@@ -115,10 +113,6 @@ public class DeltaContext extends AbstractDeltaContext {
 		_listStream = System.out;
 		
 		_dataSet = dataSet;
-	}
-	
-	private void init() {
-		
 	}
 	
 	

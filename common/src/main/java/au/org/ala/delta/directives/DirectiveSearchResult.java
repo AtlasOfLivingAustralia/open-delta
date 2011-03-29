@@ -14,7 +14,6 @@
  ******************************************************************************/
 package au.org.ala.delta.directives;
 
-
 public class DirectiveSearchResult {
 
 	public enum ResultType {
@@ -22,8 +21,11 @@ public class DirectiveSearchResult {
 	}
 
 	private ResultType _resultType;
+
+	@SuppressWarnings("rawtypes")
 	private AbstractDirective _directive;
 
+    @SuppressWarnings("rawtypes")
 	public DirectiveSearchResult(ResultType resultType, AbstractDirective directive) {
 		this._resultType = resultType;
 		this._directive = directive;
@@ -33,6 +35,7 @@ public class DirectiveSearchResult {
 		return _resultType;
 	}
 
+    @SuppressWarnings("rawtypes")
 	public AbstractDirective getDirective() {
 		return _directive;
 	}

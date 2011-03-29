@@ -6,7 +6,6 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.IntRange;
 
-import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.util.IntegerFunctor;
 
 public abstract class AbstractDirective<C extends AbstractDeltaContext> {

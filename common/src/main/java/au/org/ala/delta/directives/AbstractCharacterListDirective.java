@@ -18,8 +18,6 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.math.IntRange;
 
-import au.org.ala.delta.DeltaContext;
-
 public abstract class AbstractCharacterListDirective<C extends AbstractDeltaContext, T> extends AbstractDirective<C> {
 
 	private static Pattern CHAR_LIST_ITEM_PATTERN = Pattern.compile("^(\\d+),(.*)$|^(\\d+[-]\\d+),(.*)$");

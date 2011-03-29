@@ -1,6 +1,5 @@
 package au.org.ala.delta.intkey.directives.invocation;
 
-import au.org.ala.delta.intkey.IntkeySession;
 
 /**
  * Command pattern. Represents a call to one of the Intkey

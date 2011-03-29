@@ -1,8 +1,6 @@
 package au.org.ala.delta.intkey.directives;
 
-import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.AbstractDirective;
-import au.org.ala.delta.directives.ConforDirective;
 import au.org.ala.delta.intkey.directives.invocation.FileTaxaDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.InvocationFactory;
 

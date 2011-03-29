@@ -10,7 +10,7 @@ public class IntkeyDirectiveParser extends DirectiveParser<IntkeyContext> {
     public static IntkeyDirectiveParser createInstance() {
         IntkeyDirectiveParser instance = new IntkeyDirectiveParser();
         
-        instance.register(new FileTaxaDirective());
+        instance.registerDirective(new FileTaxaDirective());
         
         return instance;
     }

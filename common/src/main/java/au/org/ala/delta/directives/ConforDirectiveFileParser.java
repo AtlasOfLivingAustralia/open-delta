@@ -14,21 +14,7 @@
  ******************************************************************************/
 package au.org.ala.delta.directives;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
-
 import au.org.ala.delta.DeltaContext;
-import au.org.ala.delta.Logger;
-import au.org.ala.delta.Tree;
-import au.org.ala.delta.directives.DirectiveSearchResult.ResultType;
 
 /**
  * A directive file is a text file containing one or more directives. Directives
@@ -50,35 +36,35 @@ public class ConforDirectiveFileParser extends DirectiveParser<DeltaContext> {
     public static ConforDirectiveFileParser createInstance() {
         ConforDirectiveFileParser instance = new ConforDirectiveFileParser();
         
-        instance.register(new Show());
-        instance.register(new Heading());
-        instance.register(new TranslateInto());
-        instance.register(new CharacterReliabilities());
-        instance.register(new CharacterWeights());
-        instance.register(new InputFile());
-        instance.register(new ListingFile());
-        instance.register(new PrintFile());
-        instance.register(new NumberOfCharacters());
-        instance.register(new MaximumNumberOfStates());
-        instance.register(new MaximumNumberOfItems());
-        instance.register(new DataBufferSize());
-        instance.register(new CharacterTypes());
-        instance.register(new NumbersOfStates());
-        instance.register(new ImplicitValues());
-        instance.register(new DependentCharacters());
-        instance.register(new MandatoryCharacters());
-        instance.register(new PrintWidth());
-        instance.register(new Comment());
-        instance.register(new ReplaceAngleBrackets());
-        instance.register(new OmitCharacterNumbers());
-        instance.register(new OmitInapplicables());
-        instance.register(new OmitInnerComments());
-        instance.register(new OmitTypeSettingMarks());
-        instance.register(new CharacterForTaxonImages());
-        instance.register(new ExcludeCharacters());
-        instance.register(new NewParagraphAtCharacters());
-        instance.register(new CharacterList());
-        instance.register(new ItemDescriptions());
+        instance.registerDirective(new Show());
+        instance.registerDirective(new Heading());
+        instance.registerDirective(new TranslateInto());
+        instance.registerDirective(new CharacterReliabilities());
+        instance.registerDirective(new CharacterWeights());
+        instance.registerDirective(new InputFile());
+        instance.registerDirective(new ListingFile());
+        instance.registerDirective(new PrintFile());
+        instance.registerDirective(new NumberOfCharacters());
+        instance.registerDirective(new MaximumNumberOfStates());
+        instance.registerDirective(new MaximumNumberOfItems());
+        instance.registerDirective(new DataBufferSize());
+        instance.registerDirective(new CharacterTypes());
+        instance.registerDirective(new NumbersOfStates());
+        instance.registerDirective(new ImplicitValues());
+        instance.registerDirective(new DependentCharacters());
+        instance.registerDirective(new MandatoryCharacters());
+        instance.registerDirective(new PrintWidth());
+        instance.registerDirective(new Comment());
+        instance.registerDirective(new ReplaceAngleBrackets());
+        instance.registerDirective(new OmitCharacterNumbers());
+        instance.registerDirective(new OmitInapplicables());
+        instance.registerDirective(new OmitInnerComments());
+        instance.registerDirective(new OmitTypeSettingMarks());
+        instance.registerDirective(new CharacterForTaxonImages());
+        instance.registerDirective(new ExcludeCharacters());
+        instance.registerDirective(new NewParagraphAtCharacters());
+        instance.registerDirective(new CharacterList());
+        instance.registerDirective(new ItemDescriptions());
         
         return instance;
     }

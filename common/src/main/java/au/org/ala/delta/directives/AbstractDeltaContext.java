@@ -1,6 +1,5 @@
 package au.org.ala.delta.directives;
 
-import java.io.File;
 import java.util.Stack;
 
 public abstract class AbstractDeltaContext {

@@ -1,10 +1,9 @@
 package au.org.ala.delta.directives;
 
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,29 +30,38 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
     public static char DIRECTIVE_DELIMITER = '*';
     private final static String _blank = " \n\r";
     private Tree directiveTree = new Tree();
+    
+    private List<DirectiveParserObserver> _observers = new ArrayList<DirectiveParserObserver>();
+    
+    public void registerObserver(DirectiveParserObserver o) {
+        _observers.add(o);
+    }
+    
+    public void deregisterObserver(DirectiveParserObserver o) {
+        _observers.remove(o);
+    }
 
     public Tree getDirectiveTree() {
         return directiveTree;
     }
 
-    protected void register(AbstractDirective<C> dir) {
+    protected void registerDirective(AbstractDirective<C> dir) {
         directiveTree.addDirective(dir);
     }
 
     public void parse(File file, C context) throws IOException {
-        FileInputStream fileStream = new FileInputStream(file);
+        FileReader reader = new FileReader(file);
         ParsingContext pc = context.newParsingContext();
         pc.setFile(file);
-        doParse(fileStream, context, pc);
+        doParse(reader, context, pc);
     }
 
-    public void parse(InputStream stream, C context) throws IOException {
+    public void parse(Reader reader, C context) throws IOException {
         ParsingContext pc = context.newParsingContext();
-        doParse(stream, context, pc);
+        doParse(reader, context, pc);
     }
 
-    protected void doParse(InputStream stream, C context, ParsingContext pc) throws IOException {
-        InputStreamReader reader = new InputStreamReader(stream);
+    protected void doParse(Reader reader, C context, ParsingContext pc) throws IOException {
 
         StringBuilder currentData = new StringBuilder();
         int ch = reader.read();
@@ -76,8 +84,10 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
             prev = ch;
             ch = reader.read();
             if (ch == '\n') {
-                // TODO - fix this
-                // !context.ListMessage(line.toString().trim());
+                for (DirectiveParserObserver o: _observers) {
+                    o.preProcess(line.toString().trim());
+                }
+                
                 pc.incrementCurrentLine();
                 pc.setCurrentOffset(0);
                 line.setLength(0);
@@ -87,10 +97,16 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
         }
 
         processDirective(currentData, context);
+        
+        for (DirectiveParserObserver o: _observers) {
+            o.postProcess();
+        }
+        
         Logger.log("Finished!");
         context.endCurrentParsingContext();
     }
 
+    @SuppressWarnings({"rawtypes", "unchecked"})
     protected void processDirective(StringBuilder data, C context) {
         if (data.length() > 0) {
 
@@ -114,7 +130,6 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
                         }
                         // String dd = data.substring(i + word.length() +
                         // 1).trim();
-                        // context.ListMessage(d, "%s", dd);
                         d.process(context, dd);
                     } catch (Exception ex) {
                         if (pc.getFile() != null) {
