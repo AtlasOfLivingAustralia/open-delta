@@ -24,6 +24,7 @@ import javax.swing.AbstractListModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JToolBar;
 import javax.swing.event.DocumentEvent;
@@ -71,8 +72,10 @@ public class AttributeEditor extends JPanel implements ValidationListener {
 
 		_textPane = new RtfEditor();
 		_list = new JList();
-
-		split.setLeftComponent(_textPane);
+		
+		JScrollPane scrollPane = new JScrollPane(_textPane);
+		split.setLeftComponent(scrollPane);
+		
 		split.setRightComponent(_list);
 
 		split.setDividerLocation(300);
