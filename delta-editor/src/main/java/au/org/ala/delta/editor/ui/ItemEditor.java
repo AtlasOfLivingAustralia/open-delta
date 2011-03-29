@@ -216,15 +216,15 @@ public class ItemEditor extends JDialog {
 							.addGap(23)
 							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 								.addComponent(lblEditTaxonName)
-								.addComponent(editorScroller, GroupLayout.DEFAULT_SIZE, 365, Short.MAX_VALUE)))
+								.addComponent(editorScroller, GroupLayout.DEFAULT_SIZE, 520, Short.MAX_VALUE)))
 						.addGroup(groupLayout.createSequentialGroup()
 							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 								.addGroup(groupLayout.createSequentialGroup()
-									.addGap(0, 0, Short.MAX_VALUE)
+									.addGap(0, 576, Short.MAX_VALUE)
 									.addComponent(btnDone)
 									.addGap(5)
 									.addComponent(btnHelp))
-								.addComponent(panel, GroupLayout.DEFAULT_SIZE, 512, Short.MAX_VALUE))
+								.addComponent(panel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 							.addGap(1)))
 					.addGap(19))
 		);
@@ -245,7 +245,7 @@ public class ItemEditor extends JDialog {
 							.addComponent(chckbxTreatAsVariant))
 						.addComponent(editorScroller, GroupLayout.DEFAULT_SIZE, 113, Short.MAX_VALUE))
 					.addGap(18)
-					.addComponent(panel, GroupLayout.DEFAULT_SIZE, 148, Short.MAX_VALUE)
+					.addComponent(panel, GroupLayout.DEFAULT_SIZE, 266, Short.MAX_VALUE)
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
 						.addComponent(btnDone)
@@ -256,6 +256,9 @@ public class ItemEditor extends JDialog {
 		
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
+		ImageDetailsPanel imageDetails = new ImageDetailsPanel();
+		imageDetails.setEnabled(false);
+		tabbedPane.addTab("Images", imageDetails);
 		panel.add(tabbedPane);
 		getContentPane().setLayout(groupLayout);
 		setPreferredSize(new Dimension(550, 400));
