@@ -2,6 +2,7 @@ package au.org.ala.delta.editor.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -69,7 +70,8 @@ public class ItemEditor extends JDialog {
 	@Resource
 	private String selectTaxonLabelText;
 	
-	public ItemEditor() {	
+	public ItemEditor(Window parent) {	
+		super(parent);
 		setName("ItemEditorDialog");
 		ResourceMap resources = Application.getInstance().getContext().getResourceMap(ItemEditor.class);
 		resources.injectFields(this);
