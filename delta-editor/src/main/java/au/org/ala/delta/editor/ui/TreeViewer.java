@@ -120,7 +120,6 @@ public class TreeViewer extends JInternalFrame {
 		});
 
 		JSplitPane content = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-		content.setName("charactersDivider");
 		content.setDividerSize(4);
 		content.setDividerLocation(180);
 
@@ -130,7 +129,7 @@ public class TreeViewer extends JInternalFrame {
 		_stateEditor = new AttributeEditor(_dataModel);
 
 		JSplitPane divider = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-		divider.setName("attributeDivider");
+		
 		divider.setDividerLocation(getHeight() - 200);
 		divider.setResizeWeight(1);
 

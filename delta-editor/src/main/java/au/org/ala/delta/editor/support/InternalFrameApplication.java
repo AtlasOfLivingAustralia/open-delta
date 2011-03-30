@@ -51,7 +51,7 @@ public abstract class InternalFrameApplication extends DeltaSingleFrameApplicati
 
 	private void addToDesktop(JInternalFrame frame) {
 		frame.setFrameIcon(EditorUIUtils.createDeltaImageIcon());
-		_desktop.add(frame);
+		
 		frame.setClosable(true);
 		frame.setMaximizable(true);
 		frame.setResizable(true);
@@ -72,10 +72,23 @@ public abstract class InternalFrameApplication extends DeltaSingleFrameApplicati
 			}
 		});
 
+		
+		_desktop.add(frame);
+		
 		// Restore session state
 		restoreSession(frame);
-
+		boolean maximum = frame.isMaximum();
+		
 		frame.setVisible(true);
+		
+		// This is to work around a strange bit of code (looks like a bug) that gets invoked in the 
+		// WindowsDesktopManager during setVisible that will un-maximise the frame.
+		try {
+			if (maximum) {
+				frame.setMaximum(true);
+			}
+		} catch (PropertyVetoException e) {
+		}
 	}
 
 	/**
@@ -153,42 +166,32 @@ public abstract class InternalFrameApplication extends DeltaSingleFrameApplicati
 				
 			}
 		} 
-		offsetPosition(frame);
-		adjustSize(frame);
+		if (!frame.isMaximum()) {
+			offsetPosition(frame);
+		}
 	}
 
 	private void offsetPosition(JInternalFrame frame) {
 		
 		Point p = frame.getLocation();
 		int offset = 0;
-		while (positionTaken(p.x+offset, p.y+offset)) {
+		while (positionTaken(frame, p.x+offset, p.y+offset)) {
 			offset += 10;
 		}
 		frame.setLocation(p.x+offset, p.y+offset);
 	}
 	
-	private void adjustSize(JInternalFrame frame) {
-		Rectangle bounds = frame.getBounds();
-		Dimension desktopSize = _desktop.getSize();
-		
-		if (bounds.x+bounds.width > desktopSize.width) {
-			bounds.width = desktopSize.width - bounds.x;
-		}
-		if (bounds.y+bounds.height > desktopSize.height) {
-			bounds.height = desktopSize.height - bounds.y;
-		}
-		
-		frame.setBounds(bounds);
-		
-	}
 	
-	private boolean positionTaken(int x, int y) {
+	private boolean positionTaken(JInternalFrame newFrame, int x, int y) {
 		boolean taken = false;
 		for (JInternalFrame frame : _desktop.getAllFrames()) {
-			if ((Math.abs(frame.getLocation().x - x) <= 10) &&
-			    (Math.abs(frame.getLocation().y - y) <= 10)) {
-			    taken = true;
-			    break;
+			if (frame != newFrame) {
+				
+				if ((Math.abs(frame.getLocation().x - x) <= 10) &&
+				    (Math.abs(frame.getLocation().y - y) <= 10)) {
+				    taken = true;
+				    break;
+				}
 			}
 		}
 		return taken;
@@ -198,9 +201,7 @@ public abstract class InternalFrameApplication extends DeltaSingleFrameApplicati
 
 		@Override
 		public void internalFrameClosing(InternalFrameEvent e) {
-			if (e.getSource() instanceof JInternalFrame) {
-				saveSession((JInternalFrame) e.getSource());
-			}
+			saveSession(e.getInternalFrame());
 		}
 
 	}

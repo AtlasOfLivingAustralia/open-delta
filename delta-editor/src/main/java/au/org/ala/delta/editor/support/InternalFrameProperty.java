@@ -65,8 +65,8 @@ public class InternalFrameProperty extends WindowProperty {
         if (c instanceof JInternalFrame) {
 			WindowState windowState = (WindowState) state;
 			JInternalFrame internalFrame = (JInternalFrame) c;
-            
-            Rectangle gcBounds0 = windowState.getGraphicsConfigurationBounds();
+			int frameState = windowState.getFrameState();
+			Rectangle gcBounds0 = windowState.getGraphicsConfigurationBounds();
             if (gcBounds0 != null && internalFrame.isResizable()) {
                 if (computeVirtualGraphicsBounds().contains(gcBounds0.getLocation())) {
                     internalFrame.setBounds(windowState.getBounds());
@@ -74,11 +74,12 @@ public class InternalFrameProperty extends WindowProperty {
                     internalFrame.setSize(windowState.getBounds().getSize());
                 }
             }
-           
-			int frameState = windowState.getFrameState();
+			
 			if ((frameState & Frame.MAXIMIZED_BOTH) != 0) {
 				try {
+					
 					internalFrame.setMaximum(true);
+					
 				} catch (PropertyVetoException e) {
 				}
 			}
