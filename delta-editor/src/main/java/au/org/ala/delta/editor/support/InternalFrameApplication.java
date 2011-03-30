@@ -1,6 +1,8 @@
 package au.org.ala.delta.editor.support;
 
 import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.SystemColor;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -148,20 +150,48 @@ public abstract class InternalFrameApplication extends DeltaSingleFrameApplicati
 			try {
 				getContext().getSessionStorage().restore(frame, frame.getName() + ".session.xml");
 			} catch (IOException e) {
-				configureDefaultPosition(frame);
+				
 			}
-		} else {
-			configureDefaultPosition(frame);
-		}
+		} 
+		offsetPosition(frame);
+		adjustSize(frame);
 	}
 
-	private void configureDefaultPosition(JInternalFrame frame) {
-		try {
-			frame.setMaximum(false);
-		} catch (Exception ex) {
-			// ignore
+	private void offsetPosition(JInternalFrame frame) {
+		
+		Point p = frame.getLocation();
+		int offset = 0;
+		while (positionTaken(p.x+offset, p.y+offset)) {
+			offset += 10;
 		}
-		frame.setSize(new Dimension(800, 500));
+		frame.setLocation(p.x+offset, p.y+offset);
+	}
+	
+	private void adjustSize(JInternalFrame frame) {
+		Rectangle bounds = frame.getBounds();
+		Dimension desktopSize = _desktop.getSize();
+		
+		if (bounds.x+bounds.width > desktopSize.width) {
+			bounds.width = desktopSize.width - bounds.x;
+		}
+		if (bounds.y+bounds.height > desktopSize.height) {
+			bounds.height = desktopSize.height - bounds.y;
+		}
+		
+		frame.setBounds(bounds);
+		
+	}
+	
+	private boolean positionTaken(int x, int y) {
+		boolean taken = false;
+		for (JInternalFrame frame : _desktop.getAllFrames()) {
+			if ((Math.abs(frame.getLocation().x - x) <= 10) &&
+			    (Math.abs(frame.getLocation().y - y) <= 10)) {
+			    taken = true;
+			    break;
+			}
+		}
+		return taken;
 	}
 
 	class FrameListener extends InternalFrameAdapter {

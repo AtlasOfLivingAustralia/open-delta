@@ -63,7 +63,7 @@ public class TreeViewer extends JInternalFrame {
 	public TreeViewer(EditorDataModel dataModel) {
 		super();
 
-		setName("tree");
+		setName(dataModel.getShortName()+ "-tree");
 		ApplicationContext context = Application.getInstance().getContext();
 		ResourceMap resourceMap = context.getResourceMap(AboutBox.class);
 		resourceMap.injectFields(this);
@@ -120,6 +120,7 @@ public class TreeViewer extends JInternalFrame {
 		});
 
 		JSplitPane content = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+		content.setName("charactersDivider");
 		content.setDividerSize(4);
 		content.setDividerLocation(180);
 
@@ -129,6 +130,7 @@ public class TreeViewer extends JInternalFrame {
 		_stateEditor = new AttributeEditor(_dataModel);
 
 		JSplitPane divider = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+		divider.setName("attributeDivider");
 		divider.setDividerLocation(getHeight() - 200);
 		divider.setResizeWeight(1);
 

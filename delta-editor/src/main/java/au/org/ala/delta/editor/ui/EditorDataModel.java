@@ -2,6 +2,7 @@ package au.org.ala.delta.editor.ui;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -111,6 +112,14 @@ public class EditorDataModel implements DeltaDataSet, DeltaDataSetObserver {
 		if (name == null) {
 			name = "";
 		}
+		return name;
+	}
+	public String getShortName() {
+		String name = _currentDataSet.getName();
+		if (name == null) {
+			name = "";
+		}
+		name = new File(name).getName();
 		return name;
 	}
 	
