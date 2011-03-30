@@ -66,7 +66,7 @@ public class MatrixViewer extends JInternalFrame {
 
 	public MatrixViewer(EditorDataModel dataSet) {
 		super();
-
+		setName(dataSet.getShortName()+"-grid");
 		ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(MatrixViewer.class);
 		resourceMap.injectFields(this);
 
