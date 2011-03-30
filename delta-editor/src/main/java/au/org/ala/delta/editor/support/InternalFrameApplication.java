@@ -1,13 +1,16 @@
-package au.org.ala.delta.editor;
+package au.org.ala.delta.editor.support;
 
 import java.awt.Dimension;
 import java.awt.SystemColor;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
+import java.io.IOException;
 
 import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
+import javax.swing.event.InternalFrameAdapter;
+import javax.swing.event.InternalFrameEvent;
 
 import au.org.ala.delta.editor.ui.util.EditorUIUtils;
 import au.org.ala.delta.ui.DeltaSingleFrameApplication;
@@ -19,16 +22,16 @@ public abstract class InternalFrameApplication extends DeltaSingleFrameApplicati
 
 	/** The desktop we are working with */
 	protected JDesktopPane _desktop;
-	
+
 	/**
 	 * Initialises the desktop.
 	 */
 	protected void createDesktop() {
 		_desktop = new JDesktopPane();
 		_desktop.setBackground(SystemColor.control);
+		getContext().getSessionStorage().putProperty(JInternalFrame.class, new InternalFrameProperty());
 	}
 
-	
 	protected void show(JInternalFrame frame) {
 		assert (frame != null);
 
@@ -38,9 +41,10 @@ public abstract class InternalFrameApplication extends DeltaSingleFrameApplicati
 		if (!_desktop.isVisible()) {
 			show(_desktop);
 		}
-		
+
+		frame.addInternalFrameListener(new FrameListener());
 		addToDesktop(frame);
-		
+
 	}
 
 	private void addToDesktop(JInternalFrame frame) {
@@ -50,7 +54,7 @@ public abstract class InternalFrameApplication extends DeltaSingleFrameApplicati
 		frame.setMaximizable(true);
 		frame.setResizable(true);
 		frame.setIconifiable(true);
-		frame.setVisible(true);
+
 		frame.setFrameIcon(EditorUIUtils.createInternalFrameNormalIcon());
 		frame.addPropertyChangeListener(JInternalFrame.IS_MAXIMUM_PROPERTY, new PropertyChangeListener() {
 
@@ -66,20 +70,17 @@ public abstract class InternalFrameApplication extends DeltaSingleFrameApplicati
 			}
 		});
 
-		try {
-			frame.setMaximum(false);
-		} catch (Exception ex) {
-			// ignore
-		}
-		frame.setSize(new Dimension(800, 500));
+		// Restore session state
+		restoreSession(frame);
+
+		frame.setVisible(true);
 	}
-	
+
 	/**
 	 * Tiles the open JInternalFrames.
 	 */
 	protected void tileFramesInDesktopPane() {
 
-		
 		// How many frames do we have?
 		JInternalFrame[] allframes = _desktop.getAllFrames();
 		int count = allframes.length;
@@ -127,5 +128,51 @@ public abstract class InternalFrameApplication extends DeltaSingleFrameApplicati
 		}
 	}
 
+	private void saveSession(JInternalFrame frame) {
+		if (frame == null) {
+			return;
+		}
+		String componentName = frame.getName();
+		if (componentName == null) {
+			return;
+		}
+		try {
+			getContext().getSessionStorage().save(frame, componentName + ".session.xml");
+		} catch (IOException e) {
+		}
+
+	}
+
+	private void restoreSession(JInternalFrame frame) {
+		if ((frame != null) && (frame.getName() != null)) {
+			try {
+				getContext().getSessionStorage().restore(frame, frame.getName() + ".session.xml");
+			} catch (IOException e) {
+				configureDefaultPosition(frame);
+			}
+		} else {
+			configureDefaultPosition(frame);
+		}
+	}
+
+	private void configureDefaultPosition(JInternalFrame frame) {
+		try {
+			frame.setMaximum(false);
+		} catch (Exception ex) {
+			// ignore
+		}
+		frame.setSize(new Dimension(800, 500));
+	}
+
+	class FrameListener extends InternalFrameAdapter {
+
+		@Override
+		public void internalFrameClosing(InternalFrameEvent e) {
+			if (e.getSource() instanceof JInternalFrame) {
+				saveSession((JInternalFrame) e.getSource());
+			}
+		}
+
+	}
 
 }

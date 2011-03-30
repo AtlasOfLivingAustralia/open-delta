@@ -63,11 +63,12 @@ public class TreeViewer extends JInternalFrame {
 	public TreeViewer(EditorDataModel dataModel) {
 		super();
 
+		setName("tree");
 		ApplicationContext context = Application.getInstance().getContext();
 		ResourceMap resourceMap = context.getResourceMap(AboutBox.class);
 		resourceMap.injectFields(this);
 
-		this.setSize(new Dimension(500, 400));
+		this.setSize(new Dimension(800, 500));
 
 		_dataModel = dataModel;
 		new InternalFrameDataModelListener(this, dataModel, windowTitle);

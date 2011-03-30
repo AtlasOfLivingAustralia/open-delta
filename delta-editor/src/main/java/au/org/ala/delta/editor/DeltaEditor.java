@@ -45,8 +45,8 @@ import javax.swing.JOptionPane;
 import javax.swing.LookAndFeel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
-import javax.swing.event.InternalFrameListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
@@ -61,6 +61,7 @@ import org.jdesktop.application.Task.BlockingScope;
 
 import au.org.ala.delta.editor.directives.ImportController;
 import au.org.ala.delta.editor.slotfile.model.SlotFileRepository;
+import au.org.ala.delta.editor.support.InternalFrameApplication;
 import au.org.ala.delta.editor.ui.EditorDataModel;
 import au.org.ala.delta.editor.ui.ItemEditor;
 import au.org.ala.delta.editor.ui.MatrixViewer;
@@ -790,7 +791,7 @@ class LookAndFeelAction extends AbstractAction {
  * @author Chris
  * 
  */
-class ViewerFrameListener implements InternalFrameListener, VetoableChangeListener {
+class ViewerFrameListener extends InternalFrameAdapter implements VetoableChangeListener {
 
 	EditorDataModel _dataSet;
 	DeltaEditor _deltaEditor;
@@ -808,27 +809,8 @@ class ViewerFrameListener implements InternalFrameListener, VetoableChangeListen
 		_deltaEditor = deltaEditor;
 	}
 
-	public void internalFrameOpened(InternalFrameEvent e) {
-	}
-
-	public void internalFrameClosing(InternalFrameEvent e) {
-	}
-
-	public void internalFrameClosed(InternalFrameEvent e) {
-		
-	}
-
-	public void internalFrameIconified(InternalFrameEvent e) {
-	}
-
-	public void internalFrameDeiconified(InternalFrameEvent e) {
-	}
-
 	public void internalFrameActivated(InternalFrameEvent e) {
 		_deltaEditor.viewerFocusGained(_dataSet);
-	}
-
-	public void internalFrameDeactivated(InternalFrameEvent e) {
 	}
 
 	@Override
