@@ -15,7 +15,11 @@
 
 package au.org.ala.delta.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import au.org.ala.delta.model.impl.AttributeData;
+import au.org.ala.delta.model.observer.AttributeObserver;
 
 /**
  * An attribute is the value of a single character associated with an item.
@@ -25,6 +29,8 @@ public class Attribute {
 	private AttributeData _impl;
 	
 	private Character _character;
+	private Item _item;
+	private List<AttributeObserver> _observers;
 	
 	public Attribute(Character character, AttributeData impl) {
 		_character = character;
@@ -33,6 +39,14 @@ public class Attribute {
 	
 	public Character getCharacter() {
 		return _character;
+	}
+	
+	public void setItem(Item item) {
+		_item = item;
+	}
+	
+	public Item getItem() {
+		return _item;
 	}
 	
 	public boolean isPresent(int stateNumber) {
@@ -53,6 +67,44 @@ public class Attribute {
 	
 	public void setValue(String value) {
 		_impl.setValue(value);
+		notifyObservers();
+	}
+	
+	/**
+	 * Registers interest in being notified of changes to this Attribute.
+	 * @param observer the object interested in receiving notification of changes.
+	 */
+	public void addAttributeObserver(AttributeObserver observer) {
+		if (_observers == null) {
+			_observers = new ArrayList<AttributeObserver>(1);
+		}
+		if (!_observers.contains(observer)) {
+			_observers.add(observer);
+		}
+	}
+	
+	/**
+	 * De-registers interest in changes to this Attribute.
+	 * @param observer the object no longer interested in receiving notification of changes.
+	 */
+	public void removeAttributeObserver(AttributeObserver observer) {
+		if (_observers == null) {
+			return;
+		}
+		_observers.remove(observer);
+	}
+	
+	/**
+	 * Notifies all registered CharacterObservers that this Character has changed.
+	 */
+	protected void notifyObservers() {
+		if (_observers == null) {
+			return;
+		}
+		// Notify observers in reverse order to support observer removal during event handling.
+		for (int i=_observers.size()-1; i>=0; i--) {
+			_observers.get(i).attributeChanged(this);
+		}
 	}
 	
 }

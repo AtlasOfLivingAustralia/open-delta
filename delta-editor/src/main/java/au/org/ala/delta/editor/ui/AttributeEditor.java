@@ -37,10 +37,11 @@ import au.org.ala.delta.editor.ui.validator.ValidationListener;
 import au.org.ala.delta.editor.ui.validator.ValidationResult;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
-import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.NumericCharacter;
+import au.org.ala.delta.model.observer.AbstractDataSetObserver;
+import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
 import au.org.ala.delta.ui.rtf.RtfEditor;
 
 public class AttributeEditor extends JPanel implements ValidationListener {
@@ -53,7 +54,7 @@ public class AttributeEditor extends JPanel implements ValidationListener {
 
 	private Character _character;
 	private Item _item;
-	private DeltaDataSet _dataSet;
+	private EditorDataModel _dataSet;
 
 	/** Tracks whether the attribute has been modified since it was displayed */
 	private boolean _modified;
@@ -62,10 +63,20 @@ public class AttributeEditor extends JPanel implements ValidationListener {
 	
 	private boolean _inapplicable;
 
-	public AttributeEditor(DeltaDataSet dataSet) {
+	public AttributeEditor(EditorDataModel dataSet) {
 
 		_dataSet = dataSet;
 
+		_dataSet.addDeltaDataSetObserver(new AbstractDataSetObserver() {
+			@Override
+			public void itemEdited(DeltaDataSetChangeEvent event) {
+				if (event.getItem() == _item) {
+					repaint();
+				}
+			}
+			
+		});
+		
 		setLayout(new BorderLayout());
 		this.setPreferredSize(new Dimension(200, 150));
 		JSplitPane split = new JSplitPane();

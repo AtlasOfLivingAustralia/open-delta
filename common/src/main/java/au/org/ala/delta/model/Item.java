@@ -18,13 +18,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import au.org.ala.delta.model.impl.ItemData;
+import au.org.ala.delta.model.observer.AttributeObserver;
 import au.org.ala.delta.model.observer.ItemObserver;
 
 /**
  * Represents an Item in the DELTA system.
  * An item usually corresponds to a Taxon, but a 1-1 relationship is not required.
  */
-public class Item {
+public class Item implements AttributeObserver {
 
 	private ItemData _impl;
 
@@ -59,7 +60,12 @@ public class Item {
 	}
 	
 	public Attribute getAttribute(Character character) {
-		return _impl.getAttribute(character);
+		Attribute attribute = _impl.getAttribute(character);
+		if (attribute != null) {
+			attribute.setItem(this);
+			attribute.addAttributeObserver(this);
+		}
+		return attribute;
 	}
 	
 	public void addAttribute(Character character, String value) {
@@ -78,6 +84,12 @@ public class Item {
 	public void setVariant(boolean variant) {
 		_impl.setVariant(variant);
 		notifyObservers();
+	}
+	
+	@Override
+	public void attributeChanged(Attribute attribute) {
+		notifyObservers(attribute);
+		
 	}
 	
 	/**
@@ -108,12 +120,19 @@ public class Item {
 	 * Notifies all registered ItemObservers that this Item has changed.
 	 */
 	protected void notifyObservers() {
+		notifyObservers(null);
+	}	
+	
+	/**
+	 * Notifies all registered ItemObservers that this Item has changed.
+	 */
+	protected void notifyObservers(Attribute attribute) {
 		if (_observers == null) {
 			return;
 		}
 		// Notify observers in reverse order to support observer removal during event handling.
 		for (int i=_observers.size()-1; i>=0; i--) {
-			_observers.get(i).itemChanged(this);
+			_observers.get(i).itemChanged(this, attribute);
 		}
 	}
 	

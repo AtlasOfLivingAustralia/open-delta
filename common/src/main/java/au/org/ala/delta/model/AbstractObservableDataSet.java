@@ -128,11 +128,9 @@ public abstract class AbstractObservableDataSet implements DeltaDataSet, ItemObs
 	}
 
 	@Override
-	public void itemChanged(Item item) {
+	public void itemChanged(Item item, Attribute attribute) {
 		fireDeltaDataSetEvent(item, null, new ItemEditedDispatcher());
 	}
-
-	
 
 	protected abstract class DataSetEventDispatcher {
 

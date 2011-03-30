@@ -1,5 +1,6 @@
 package au.org.ala.delta.model.observer;
 
+import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Item;
 
 /**
@@ -12,5 +13,5 @@ public interface ItemObserver {
 	 * Invoked when an item changes.
 	 * @param item the item that has changed.
 	 */
-	public void itemChanged(Item item);
+	public void itemChanged(Item item, Attribute attribute);
 }
