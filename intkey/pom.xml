@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>delta-intkey</groupId>
 	<artifactId>delta-intkey</artifactId>
-	<version>1.0-M2</version>
+	<version>1.0-M2-SNAPSHOT</version>
 	<name>intkey</name>
 	<repositories>
 		<repository>
@@ -185,6 +185,13 @@
 				<src>${basedir}/src/main/resources/i18n</src> <includes>**/*</includes> <dest>${project.build.directory}/classes</dest> 
 				</configuration> </plugin> -->
 		</plugins>
+		<extensions>
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-ssh</artifactId>
+				<version>1.0-beta-7</version>
+			</extension>
+		</extensions>
 	</build>
 
 	<dependencies>
@@ -204,5 +211,18 @@
 			<version>1.9</version>
 		</dependency>
 	</dependencies>
+	<distributionManagement>
+		<repository>
+			<uniqueVersion>false</uniqueVersion>
+			<id>ALA</id>
+			<name>ala-repository</name>
+			<url>${ala.repository.url}</url>
+		</repository>
+		<snapshotRepository>
+			<id>ala-repository</id>
+			<name>ala-repository</name>
+			<url>${ala.repository.url}</url>
+		</snapshotRepository>
+	</distributionManagement>
 
 </project>

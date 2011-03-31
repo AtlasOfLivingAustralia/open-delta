@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>au.org.ala.delta</groupId>
 	<artifactId>delta-ui-common</artifactId>
-	<version>1.0-M2</version>
+	<version>1.0-M2-SNAPSHOT</version>
 	<name>DELTA User Interface Common</name>
 
 	<repositories>
@@ -66,6 +66,13 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		<extensions>
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-ssh</artifactId>
+				<version>1.0-beta-7</version>
+			</extension>
+		</extensions>
 	</build>
 
 	<dependencies>
@@ -120,4 +127,17 @@
 		</dependency>
 
 	</dependencies>
+	<distributionManagement>
+		<repository>
+			<uniqueVersion>false</uniqueVersion>
+			<id>ALA</id>
+			<name>ala-repository</name>
+			<url>${ala.repository.url}</url>
+		</repository>
+		<snapshotRepository>
+			<id>ala-repository</id>
+			<name>ala-repository</name>
+			<url>${ala.repository.url}</url>
+		</snapshotRepository>
+	</distributionManagement>
 </project>
