@@ -39,6 +39,7 @@ import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 
+import au.org.ala.delta.editor.EditorPreferences;
 import au.org.ala.delta.editor.ui.util.EditorUIUtils;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
@@ -55,7 +56,9 @@ public class TreeViewer extends JInternalFrame {
 	private static final long serialVersionUID = 1L;
 
 	private EditorDataModel _dataModel;
-	private AttributeEditor _stateEditor;
+	private AttributeEditor _stateEditor; 
+	private JTree _tree;
+	private ItemList _itemList;
 
 	@Resource
 	String windowTitle;
@@ -73,25 +76,25 @@ public class TreeViewer extends JInternalFrame {
 		_dataModel = dataModel;
 		new InternalFrameDataModelListener(this, dataModel, windowTitle);
 
-		final ItemList lst = new ItemList(_dataModel);
-		lst.setDragEnabled(true);
-		lst.setDropMode(DropMode.ON);
+		_itemList = new ItemList(_dataModel);
+		_itemList.setDragEnabled(true);
+		_itemList.setDropMode(DropMode.ON);
 		ActionMap actionMap = context.getActionMap();
-		lst.setSelectionAction(actionMap.get("viewTaxonEditor"));
+		_itemList.setSelectionAction(actionMap.get("viewTaxonEditor"));
 		
 
-		final JTree tree = new JTree();
+		_tree = new JTree();
 		final CharacterTreeModel treeModel = new CharacterTreeModel(_dataModel);
-		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-		tree.setModel(treeModel);
-		tree.setRootVisible(false);
-		tree.setShowsRootHandles(true);
-		tree.setCellRenderer(new DeltaTreeCellRenderer(_dataModel));
-		tree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
+		_tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+		_tree.setModel(treeModel);
+		_tree.setRootVisible(false);
+		_tree.setShowsRootHandles(true);
+		_tree.setCellRenderer(new DeltaTreeCellRenderer(_dataModel));
+		_tree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
 
 			@Override
 			public void valueChanged(TreeSelectionEvent e) {
-				DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+				DefaultMutableTreeNode node = (DefaultMutableTreeNode) _tree.getLastSelectedPathComponent();
 
 				if (node == null) {
 					return;
@@ -108,13 +111,13 @@ public class TreeViewer extends JInternalFrame {
 			}
 		});
 
-		lst.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+		_itemList.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
 
-				_dataModel.setSelectedItem(lst.getSelectedItem());
-				tree.repaint();
+				_dataModel.setSelectedItem(_itemList.getSelectedItem());
+				_tree.repaint();
 				_stateEditor.bind(_dataModel.getSelectedCharacter(), _dataModel.getSelectedItem());
 			}
 		});
@@ -123,8 +126,8 @@ public class TreeViewer extends JInternalFrame {
 		content.setDividerSize(4);
 		content.setDividerLocation(180);
 
-		content.setRightComponent(new JScrollPane(tree));
-		content.setLeftComponent(new JScrollPane(lst));
+		content.setRightComponent(new JScrollPane(_tree));
+		content.setLeftComponent(new JScrollPane(_itemList));
 
 		_stateEditor = new AttributeEditor(_dataModel);
 
@@ -135,16 +138,54 @@ public class TreeViewer extends JInternalFrame {
 
 		divider.setTopComponent(content);
 		divider.setBottomComponent(_stateEditor);
+		
+		_stateEditor.add(new AttributeEditorListener() {					
+			@Override
+			public void advance() {
+				switch (EditorPreferences.getEditorAdvanceMode()) {
+					case Character:
+						// find the next character in the tree and select it...
+						int nextCharRow = findNextCharacterRow();
+						_tree.setSelectionRow(nextCharRow);
+						_tree.scrollRowToVisible(nextCharRow);										
+						break;
+					case Item:
+						int candidateIndex = _itemList.getSelectedIndex() + 1;
+						if (candidateIndex < _itemList.getModel().getSize()) {
+							_itemList.setSelectedIndex(candidateIndex);
+							_itemList.ensureIndexIsVisible(candidateIndex);
+						}
+						break;
+				}
+			}
+		});
 
 		this.getContentPane().setLayout(new BorderLayout());
 		getContentPane().add(divider);
 		
-		lst.setSelectedIndex(0);
-		tree.setSelectionRow(0);
+		_itemList.setSelectedIndex(0);
+		_tree.setSelectionRow(0);
 		
-		_dataModel.addDeltaDataSetObserver(new NewCharacterListener(tree));
+		_dataModel.addDeltaDataSetObserver(new NewCharacterListener(_tree));
 
 	}
+	
+	private int findNextCharacterRow() {
+		if (_tree.getSelectionCount() > 0) {  
+			int current = _tree.getSelectionRows()[0];
+			int row = current;
+			while (++row < _tree.getRowCount()) {
+				Object obj = _tree.getPathForRow(row).getLastPathComponent();
+				if (obj instanceof CharacterTreeNode) {
+					return row;
+				}
+			}
+			return current;
+		}
+		
+		return 0;
+	}
+	
 	class NewCharacterListener extends AbstractDataSetObserver {
 
 		private JTree tree;

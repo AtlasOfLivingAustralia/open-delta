@@ -7,6 +7,8 @@ import java.util.prefs.Preferences;
 
 import org.apache.commons.lang.StringUtils;
 
+import au.org.ala.delta.editor.ui.EditorAdvanceMode;
+
 /**
  * Preferences facade for the Delta Editor
  */
@@ -22,6 +24,10 @@ public class EditorPreferences {
 	private static String IMPORT_FILE_FILTER_KEY = "importFileFilter";
 	/** Default value for the import file filter */
 	private static String DEFAULT_IMPORT_FILE_FILTER = "*.bak;*.box;tidy*.;reorder*.";
+	
+	private static String ADVANCE_MODE_KEY = "EditorAdvanceMode";
+	
+	private static EditorAdvanceMode DEFAULT_EDITOR_ADVANCE_MODE = EditorAdvanceMode.Character;
 
 	/**
 	 * @return An array of the most recently used filenames 
@@ -88,6 +94,22 @@ public class EditorPreferences {
 		if (prefs != null) {
 			prefs.put(IMPORT_FILE_FILTER_KEY, filter);
 		}
+	}
+	
+	public static EditorAdvanceMode getEditorAdvanceMode() {
+		Preferences prefs = Preferences.userNodeForPackage(DeltaEditor.class);
+		if (prefs != null) {
+			String mode = prefs.get(ADVANCE_MODE_KEY, DEFAULT_EDITOR_ADVANCE_MODE.toString());
+			return EditorAdvanceMode.valueOf(mode);
+		}	
+		return DEFAULT_EDITOR_ADVANCE_MODE;
+	}
+	
+	public static void setEditorAdvanceMode(EditorAdvanceMode mode) {
+		Preferences prefs = Preferences.userNodeForPackage(DeltaEditor.class);
+		if (prefs != null) {
+			prefs.put(ADVANCE_MODE_KEY, mode.toString());
+		}		
 	}
 
 }

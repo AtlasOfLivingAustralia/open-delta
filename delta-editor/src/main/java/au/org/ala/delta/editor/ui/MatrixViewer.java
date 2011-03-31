@@ -44,6 +44,7 @@ import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.Task;
 import org.jdesktop.application.Task.BlockingScope;
 
+import au.org.ala.delta.editor.EditorPreferences;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.model.observer.AbstractDataSetObserver;
@@ -164,6 +165,28 @@ public class MatrixViewer extends JInternalFrame {
 
 		this.getContentPane().setLayout(new BorderLayout());
 		this.getContentPane().add(divider, BorderLayout.CENTER);
+		
+		_stateEditor.add(new AttributeEditorListener() {
+			
+			@Override
+			public void advance() {
+				switch (EditorPreferences.getEditorAdvanceMode()) {
+					case Character:
+						int candidateCharIndex = _table.getSelectedColumn() + 1;
+						if (candidateCharIndex < _table.getModel().getColumnCount()) {
+							_table.setColumnSelectionInterval(candidateCharIndex, candidateCharIndex);							
+						}
+						break;
+					case Item:
+						int candidateRowIndex = _table.getSelectedRow() + 1;
+						if (candidateRowIndex < _table.getModel().getRowCount()) {
+							_table.setRowSelectionInterval(candidateRowIndex, candidateRowIndex);							
+						}						
+						break;
+				}
+				scrollCellToVisible(_table.getSelectedRow(), _table.getSelectedColumn());
+			}
+		});
 
 		_table.getActionMap().getParent().remove("paste");
 
@@ -181,6 +204,10 @@ public class MatrixViewer extends JInternalFrame {
 			selectCell(0, 0);
 		}
 	}
+	
+	public void scrollCellToVisible(int row, int column) {
+		_table.scrollRectToVisible(_table.getCellRect(row, column, true));
+	}	
 	
 	private void selectCell(int rowIndex, int colIndex) {
 		_table.getSelectionModel().setSelectionInterval(rowIndex, rowIndex);

@@ -19,9 +19,14 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.AbstractListModel;
 import javax.swing.DefaultListCellRenderer;
+import javax.swing.InputVerifier;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -60,7 +65,9 @@ public class AttributeEditor extends JPanel implements ValidationListener {
 	private boolean _modified;
 
 	private EditListener _editListener;
-	
+
+	private List<AttributeEditorListener> _listeners = new ArrayList<AttributeEditorListener>();
+
 	private boolean _inapplicable;
 
 	public AttributeEditor(EditorDataModel dataSet) {
@@ -83,10 +90,10 @@ public class AttributeEditor extends JPanel implements ValidationListener {
 
 		_textPane = new RtfEditor();
 		_list = new JList();
-		
+
 		JScrollPane scrollPane = new JScrollPane(_textPane);
 		split.setLeftComponent(scrollPane);
-		
+
 		split.setRightComponent(_list);
 
 		split.setDividerLocation(300);
@@ -99,15 +106,73 @@ public class AttributeEditor extends JPanel implements ValidationListener {
 		_textPane.getDocument().addDocumentListener(_editListener);
 
 		_textPane.addFocusListener(new EditCommitter());
+		_textPane.addKeyListener(new KeyAdapter() {
+			
+			@Override
+			public void keyReleased(KeyEvent e) {
+				if (e.getModifiers() == 0 && e.getKeyCode() == KeyEvent.VK_ENTER) {
+					e.consume();
+				}
+			}
+			
+			@Override
+			public void keyTyped(KeyEvent e) {
+				if (e.getModifiers() == 0 && e.getKeyCode() == KeyEvent.VK_ENTER) {
+					e.consume();
+				}
+			}
+			
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.getModifiers() == 0 && e.getKeyCode() == KeyEvent.VK_ENTER) {
+					e.consume();
+					InputVerifier validator = _textPane.getInputVerifier();
+					if (validator != null) {
+						if (!validator.verify(_textPane)) {
+							return;
+						}
+					}
+					if (commitChanges()) {
+						// Notify the host of this control to advance to either the next item or character...
+						fireAdvance();						
+					}
+				}
+			}
+
+		});
 
 		add(split, BorderLayout.CENTER);
+	}
+
+	public void add(AttributeEditorListener listener) {
+		if (!_listeners.contains(listener)) {
+			_listeners.add(listener);
+		}
+	}
+
+	public void remove(AttributeEditorListener listener) {
+		if (_listeners.contains(listener)) {
+			_listeners.remove(listener);
+		}
+	}
+
+	protected void fireAdvance() {
+		for (AttributeEditorListener l : _listeners) {
+			l.advance();
+		}
 	}
 
 	public void bind(Character ch, Item item) {
 		if (!_valid) {
 			return;
 		}
-		// Disable the change listener so that the bind doesn't set the changed flag		
+		
+		if (_modified) {
+			if (!commitChanges()) {
+				return;
+			}
+		}
+		// Disable the change listener so that the bind doesn't set the changed flag
 		try {
 			_editListener.setDisabled(true);
 			_character = ch;
@@ -134,10 +199,10 @@ public class AttributeEditor extends JPanel implements ValidationListener {
 				if (ch instanceof MultiStateCharacter) {
 					MultiStateCharacter mc = (MultiStateCharacter) ch;
 					_list.setCellRenderer(new StateRenderer());
-					_list.setModel(new StateListModel(mc));					
+					_list.setModel(new StateListModel(mc));
 				} else {
 					_list.setCellRenderer(new CharacterRenderer());
-					_list.setModel(new CharacterModel(ch));					
+					_list.setModel(new CharacterModel(ch));
 				}
 				AttributeValidator validator = new AttributeValidator(_dataSet, _character);
 				RtfEditorValidator rtfValidator = new RtfEditorValidator(validator, this);
@@ -195,21 +260,18 @@ public class AttributeEditor extends JPanel implements ValidationListener {
 
 	}
 
-	/**
-	 * Edits are committed on focus lost events - hence we validate at this point. TODO a failed validate prevents focus transferal but it doesn't prevent a selection on the table or list from
-	 * updating the text in the document!
-	 * 
-	 * @see java.awt.event.FocusAdapter#focusLost(java.awt.event.FocusEvent)
-	 */
-	class EditCommitter extends FocusAdapter {
+	private boolean commitChanges() {
 
-		@Override
-		public void focusLost(FocusEvent e) {
-			if (!_modified || !_valid || _item == null) {
-				return;
-			}
+		if (!_valid || _item == null) {
+			return false;
+		}
+
+		if (!_modified) {
+			return true;
+		}
+
+		try {
 			String attributeText = _textPane.getRtfTextBody();
-
 			Attribute attr = _item.getAttribute(_character);
 			if (attr != null) {
 				attr.setValue(attributeText);
@@ -217,6 +279,24 @@ public class AttributeEditor extends JPanel implements ValidationListener {
 				System.err.println("No Attribute! should I be allowed to edit this?");
 			}
 			_modified = false;
+		} catch (Exception ex) {
+			_textPane.requestFocusInWindow();
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Edits are committed on focus lost events. TODO a failed validate prevents focus transferal but it doesn't prevent a selection on the table or list from updating the text in the document!
+	 * 
+	 * @see java.awt.event.FocusAdapter#focusLost(java.awt.event.FocusEvent)
+	 */
+	class EditCommitter extends FocusAdapter {
+
+		@Override
+		public void focusLost(FocusEvent e) {
+			commitChanges();
 		}
 
 	}
@@ -239,7 +319,7 @@ public class AttributeEditor extends JPanel implements ValidationListener {
 			stateRenderer.setBackground(getBackground());
 			stateRenderer.setForeground(getForeground());
 			stateRenderer.setText(value.toString());
-			stateRenderer.setSelected(false);			
+			stateRenderer.setSelected(false);
 			stateRenderer.bind((MultiStateCharacter) _character, _item, index + 1, _inapplicable);
 
 			return stateRenderer;
