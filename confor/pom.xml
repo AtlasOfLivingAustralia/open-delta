@@ -214,13 +214,13 @@
 	<distributionManagement>
 		<repository>
 			<uniqueVersion>false</uniqueVersion>
-			<id>ALA</id>
-			<name>ala-repository</name>
+			<id>ala-repository</id>
+			<name>ALA Maven Repository</name>
 			<url>${ala.repository.url}</url>
 		</repository>
 		<snapshotRepository>
 			<id>ala-repository</id>
-			<name>ala-repository</name>
+			<name>ALA Maven Repository</name>
 			<url>${ala.repository.url}</url>
 		</snapshotRepository>
 	</distributionManagement>
