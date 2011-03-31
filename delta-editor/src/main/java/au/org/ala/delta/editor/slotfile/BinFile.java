@@ -21,6 +21,7 @@ import java.io.SyncFailedException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
 
 /**
  * //binfile.cpp
@@ -94,6 +95,10 @@ public class BinFile {
 			_file = new RandomAccessFile(f, ra_mode);
 			_channel = _file.getChannel();
 
+			// Attempt to lock the file to prevent concurrent access.
+			if (ra_mode.contains("w")) {
+				_channel.tryLock();
+			}
 			/*
 			 * if (mode == BinFileMode.FM_READONLY) { CodeTimer t = new
 			 * CodeTimer("loading file buffer"); _file.seek(0); _buffer = new
