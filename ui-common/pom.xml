@@ -135,6 +135,7 @@
 			<url>${ala.repository.url}</url>
 		</repository>
 		<snapshotRepository>
+			<uniqueVersion>false</uniqueVersion>
 			<id>ala-repository</id>
 			<name>ALA Maven Repository</name>
 			<url>${ala.repository.url}</url>
