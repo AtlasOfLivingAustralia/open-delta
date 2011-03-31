@@ -48,13 +48,14 @@ public class DeltaContext extends AbstractDeltaContext {
 	private List<String> _errorMessages = new ArrayList<String>();
 
 	private TranslateType _translateType;
-	private Item[] _items;
 	private Set<Integer> _excludedCharacters = new HashSet<Integer>();
 	private Set<Integer> _excludedItems = new HashSet<Integer>();
 	
 	private Set<Integer> _newParagraphCharacters = new HashSet<Integer>();
 	private Map<Integer, String> _itemHeadings = new HashMap<Integer, String>();
 	private Map<Integer, String> _itemSubHeadings = new HashMap<Integer, String>();
+	private Map<Integer, String> _indexHeadings = new HashMap<Integer, String>();
+	
 	private Set<Set<Integer>> _linkedCharacters = new HashSet<Set<Integer>>();
 
 	private int _numberOfCharacters;
@@ -225,7 +226,6 @@ public class DeltaContext extends AbstractDeltaContext {
 
 	public void setMaximumNumberOfItems(int items) {
 		_maxNumberOfItems = items;
-		_items = new Item[items];
 	}
 
 	public int getMaximumNumberOfItems() {
@@ -374,6 +374,17 @@ public class DeltaContext extends AbstractDeltaContext {
 	 */
 	public String getItemSubheading(int characterNumber) {
 		return _itemSubHeadings.get(characterNumber);
+	}
+	
+	
+	/**
+	 * Returns the index heading for the supplied item number as defined by the INDEX HEADINGS directive.  
+	 * If no heading has been supplied, this method returns null.
+	 * @param itemNumber the item to get the heading for.
+	 * @return the index heading defined for the specified item or null if no heading was defined.
+	 */
+	public String getIndexHeading(int itemNumber) {
+		return _indexHeadings.get(itemNumber);
 	}
 	
 	public void linkCharacters(Set<Integer> linkedCharacters) {

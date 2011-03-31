@@ -1,5 +1,6 @@
 package au.org.ala.delta.translation;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
 
 import au.org.ala.delta.DeltaContext;
@@ -30,6 +31,7 @@ public class NaturalLanguageTranslator {
 		// TODO work out whether we need to output an "implicit attributes" section.
 		// if not, i think we need to explicitly include the implicit attributes in the items...
 		
+		
 		// Start of file mark.
 		_typeSetter.insertTypeSettingMarks(28);
 		
@@ -47,35 +49,81 @@ public class NaturalLanguageTranslator {
 
 	private boolean _printingImplicitAttributeSection;
 	
+	/** This is a static local variable in the fortran code*/
+	private int currentItemHeadingItemNumber;
+	/** This is a static local variable in the fortran code */
+	private int currentIndexHeadingItemNumber;
+	
+	
+	enum TypeSetting {ADD_TYPESETTING_MARKS, DO_NOTHING, REMOVE_EXISTING_TYPESETTINGMARKS};
+	TypeSetting _typeSettingMode;
+	
 	private void translateItem(Item item) {
 	
 		
-		// If Item is excluded by the EXCLUDE ITEMS directive
-		if (_context.isExcluded(item.getItemNumber())) {
-			return;
+		boolean ifBegin = false;
+		boolean ifEnd = true;
+		boolean chineseLanguageFormat = false;
+		
+		int itemNumber = item.getItemNumber();
+		boolean isImplicitCharactersSection = item.getDescription().equals("Implicit Characters");
+		
+		if (!isImplicitCharactersSection) {
+			if (StringUtils.isNotEmpty(_context.getItemHeading(itemNumber))) {
+				currentItemHeadingItemNumber = itemNumber; // ITHD
+			}
+			if (StringUtils.isNotEmpty(_context.getIndexHeading(itemNumber))) {
+				currentIndexHeadingItemNumber = itemNumber; // IXHD
+			}
+			
+			// If Item is excluded by the EXCLUDE ITEMS directive
+			if (_context.isExcluded(item.getItemNumber())) {
+				return;
+			}
 		}
 		
-		if (!_printingImplicitAttributeSection) {
+		// Output a typesetting mark at the start of each file.
+		if (!ifBegin) {
+			_typeSetter.insertTypeSettingMarks(28);
+			ifBegin = true;
+			ifEnd = false;
+		}
+		
+		// The "Implicit Characters" section ignores the ADD CHARACTERS and EMPHASISE CHARACTERS
+		// directive.
+		if (!isImplicitCharactersSection) {
+			// Copies IADDT(item number) into IADDC if ADD CHARACTERS directive not null and 
+			// data exists for the item.
+		
+			// Otherwise initialise IADDC to all 0s.
 			
-			// Check if characters have been added to this Item via the ADD CHARACTERS directive
-			// Sets the local array IADDC.
-			
-			// Same for emphasised characters - initialises IEMPC		
+			// Same again for EMPHAISE CHARACTERS - copies IEMPT(item number) into IEMPC 
+			// Or initialises IEMPC to all zeros.
+				
 		}
 		else {
-			// Set all elements of IADDC to 0.
-			// Set all elements of IEMPC to 0
+			// initialises IEMPC and IADDC to all 0s.  
 		}
 		
-		
 		// Setup indentation.
+		int pSeq = 0;
+		_typeSetter.indent(0);
+		int numBlankLines;
 		
-		// If we are doing typesetting do _output.blankLine(1, 0);
-		// 
-		_typeSetter.writeBlankLines(2, 5); // different for typeset....
-		
-		if (!_printingImplicitAttributeSection) {
-			_typeSetter.insertTypeSettingMarks(13);
+		if (chineseLanguageFormat) {
+			numBlankLines=1;
+		}
+		else {
+			numBlankLines = 2;
+		}
+		if (_typeSettingMode == TypeSetting.DO_NOTHING || _typeSettingMode == TypeSetting.REMOVE_EXISTING_TYPESETTINGMARKS) {
+			_typeSetter.writeBlankLines(numBlankLines, 5);
+		}
+		else {
+			_typeSetter.writeBlankLines(1, 0);
+			if (!isImplicitCharactersSection) {
+				_typeSetter.insertTypeSettingMarks(13);
+			}
 		}
 		
 		printItemHeading(item.getItemNumber());
