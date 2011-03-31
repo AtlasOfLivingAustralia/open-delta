@@ -11,6 +11,7 @@ public class IntkeyDirectiveParser extends DirectiveParser<IntkeyContext> {
         IntkeyDirectiveParser instance = new IntkeyDirectiveParser();
         
         instance.registerDirective(new FileTaxaDirective());
+        instance.registerDirective(new NewDatasetDirective());
         
         return instance;
     }

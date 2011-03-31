@@ -6,6 +6,8 @@ import java.awt.Component;
 import java.awt.Font;
 import java.awt.Insets;
 import java.awt.SystemColor;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.ByteArrayInputStream;
@@ -23,7 +25,6 @@ import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -32,20 +33,15 @@ import javax.swing.filechooser.FileFilter;
 
 import org.jdesktop.application.Action;
 
-import au.org.ala.delta.DeltaContext;
-import au.org.ala.delta.directives.ConforDirectiveFileParser;
+import au.org.ala.delta.Logger;
+import au.org.ala.delta.intkey.directives.FileTaxaDirective;
 import au.org.ala.delta.intkey.directives.IntkeyContext;
+import au.org.ala.delta.intkey.directives.IntkeyDirective;
 import au.org.ala.delta.intkey.directives.IntkeyDirectiveParser;
-import au.org.ala.delta.intkey.directives.invocation.FileTaxaDirectiveInvocation;
-import au.org.ala.delta.intkey.directives.invocation.InvocationFactory;
 import au.org.ala.delta.intkey.ui.SelectDataSetDialog;
 import au.org.ala.delta.ui.AboutBox;
 import au.org.ala.delta.ui.DeltaSingleFrameApplication;
 import au.org.ala.delta.ui.util.IconHelper;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 
 public class Intkey extends DeltaSingleFrameApplication {
 
@@ -56,6 +52,8 @@ public class Intkey extends DeltaSingleFrameApplication {
     private JTextField _txtFldCmdBar;
 
     private Map<String, JMenu> _cmdMenus;
+
+    private IntkeyContext _context;
 
     public static void main(String[] args) {
         launch(Intkey.class, args);
@@ -72,6 +70,8 @@ public class Intkey extends DeltaSingleFrameApplication {
         mainFrame.setTitle("Intkey");
         mainFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         mainFrame.setIconImages(IconHelper.getRedIconList());
+
+        _context = new IntkeyContext(this);
 
         _rootPanel = new JPanel();
         _rootPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -202,7 +202,7 @@ public class Intkey extends DeltaSingleFrameApplication {
                     cmdMenu.doClick();
                 } else {
                     try {
-                        IntkeyDirectiveParser.createInstance().parse(new InputStreamReader(new ByteArrayInputStream(cmdStr.getBytes())), new IntkeyContext());
+                        IntkeyDirectiveParser.createInstance().parse(new InputStreamReader(new ByteArrayInputStream(cmdStr.getBytes())), _context);
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
@@ -210,7 +210,7 @@ public class Intkey extends DeltaSingleFrameApplication {
             }
         });
 
-        _txtFldCmdBar.setFont(new Font("Tahoma", Font.BOLD, 13));
+        _txtFldCmdBar.setFont(new Font("Courier New", Font.BOLD, 13));
         _txtFldCmdBar.setForeground(SystemColor.text);
         _txtFldCmdBar.setBackground(Color.BLACK);
         _rootPanel.add(_txtFldCmdBar, BorderLayout.SOUTH);
@@ -240,8 +240,7 @@ public class Intkey extends DeltaSingleFrameApplication {
         JMenu mnuFile = new JMenu();
         mnuFile.setName("mnuFile");
 
-        JMenuItem mnuItNewDataSet = new JMenuItem();
-        mnuItNewDataSet.setAction(actionMap.get("newDataSet"));
+        JMenuItem mnuItNewDataSet = buildMenuItemForDirective(new FileTaxaDirective(), "mnuDirectiveNewDataSet");
         mnuFile.add(mnuItNewDataSet);
 
         JMenuItem mnuItPreferences = new JMenuItem();
@@ -261,8 +260,8 @@ public class Intkey extends DeltaSingleFrameApplication {
         mnuItFileCharactersCmd.setAction(actionMap.get("setFileCharacters"));
         mnuFileCmds.add(mnuItFileCharactersCmd);
 
-        JMenuItem mnuItFileTaxaCmd = new JMenuItem();
-        mnuItFileTaxaCmd.setAction(actionMap.get("setFileTaxa"));
+        JMenuItem mnuItFileTaxaCmd = buildMenuItemForDirective(new FileTaxaDirective(), "mnuDirectiveFileTaxa");
+        
         mnuFileCmds.add(mnuItFileTaxaCmd);
 
         mnuFile.add(mnuFileCmds);
@@ -327,13 +326,12 @@ public class Intkey extends DeltaSingleFrameApplication {
 
     // File menu actions
     @Action
-    public void exitApplication() {
-        exit();
+    public void switchAdvancedMode() {
     }
 
     @Action
-    public void newDataSet() {
-        handleNewDataSetDirective(null, false);
+    public void exitApplication() {
+        exit();
     }
 
     @Action
@@ -346,19 +344,6 @@ public class Intkey extends DeltaSingleFrameApplication {
 
     @Action
     public void setFileCharacters() {
-    }
-
-    @Action
-    public void setFileTaxa() {
-        _txtFldCmdBar.setText("File Taxa");
-
-        FileTaxaDirectiveInvocation invc = InvocationFactory.createFileTaxaInvocation(null);
-        invc.execute();
-        _txtFldCmdBar.setText("");
-    }
-
-    @Action
-    public void switchAdvancedMode() {
     }
 
     // Window menu actions
@@ -382,27 +367,33 @@ public class Intkey extends DeltaSingleFrameApplication {
         show(aboutBox);
     }
 
-    public JSplitPane getInnerSplitPaneLeft() {
-        return _innerSplitPaneLeft;
+    private JMenuItem buildMenuItemForDirective(IntkeyDirective dir, String itemName) {
+        JMenuItem mnuIt = new JMenuItem();
+        mnuIt.setName(itemName);
+
+        mnuIt.addActionListener(new DirectiveMenuActionListener(dir, _context));
+
+        return mnuIt;
     }
 
-    public void handleNewDataSetDirective(String filename, boolean isFileInput) {
-        if (filename == null) {
-            SelectDataSetDialog dlg = new SelectDataSetDialog(getMainFrame());
-            show(dlg);
-            if (dlg.isFileSelected()) {
-                filename = dlg.getSelectedFilePath();
-            } else {
-                return;
+    private class DirectiveMenuActionListener implements ActionListener {
+
+        private IntkeyDirective _dir;
+        private IntkeyContext _context;
+
+        public DirectiveMenuActionListener(IntkeyDirective dir, IntkeyContext context) {
+            _dir = dir;
+            _context = context;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            try {
+            _dir.process(_context, null);
+            } catch (Exception ex) {
+                Logger.log("Error while running directive from menu - %s", _dir.toString());
             }
         }
-
-        // do stuff with file here.
-        JOptionPane.showMessageDialog(getMainFrame(), "Filename is: " + filename);
-        try {
-            IntkeyDirectiveParser.createInstance().parse(new File(filename), new IntkeyContext());
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
     }
+
 }

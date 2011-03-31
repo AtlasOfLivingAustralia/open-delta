@@ -1,6 +1,8 @@
-package au.org.ala.delta.intkey;
+package au.org.ala.delta.intkey.model;
 
 import org.apache.commons.lang.NotImplementedException;
+
+import au.org.ala.delta.intkey.Params;
 
 /**
  * 
