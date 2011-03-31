@@ -21,7 +21,6 @@ import java.io.SyncFailedException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
-import java.nio.channels.FileLock;
 
 /**
  * //binfile.cpp

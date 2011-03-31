@@ -67,9 +67,12 @@ public class ReaderTests extends DeltaTestCase {
 			for (int j = 1; j <= ds.getNumberOfCharacters(); ++j) {
 				au.org.ala.delta.model.Character ch = ds.getCharacter(j);
 				au.org.ala.delta.model.Attribute a = item.getAttribute(ch);
-				String strValue = a.getValue();
-				if (ch.getCharacterType() == CharacterType.Text) {
-					RTFUtils.stripFormatting(strValue);
+				if (a != null) {
+				
+					String strValue = a.getValue();
+					if (ch.getCharacterType() == CharacterType.Text) {
+						RTFUtils.stripFormatting(strValue);
+					}
 				}
 			}
 		}

@@ -72,6 +72,8 @@ public class SlotFileRepositoryTest {
 			_slotFileRepository.saveAsName(data, copy.getAbsolutePath(), null);
 			System.out.println(testFile.getAbsolutePath());
 			
+			data.close();
+			
 			DeltaDataSet copySet = _slotFileRepository.findByName(copy.getAbsolutePath(), null);
 			
 			originalVOP = getVOP(data);
