@@ -3,6 +3,8 @@ package au.org.ala.delta.editor.directives;
 import java.io.File;
 import java.util.List;
 
+import javax.swing.JOptionPane;
+
 import org.jdesktop.application.Task;
 import org.jdesktop.application.TaskEvent;
 import org.jdesktop.application.TaskListener;
@@ -31,6 +33,10 @@ public class ImportController {
 	
 	public void begin() {
 		
+		if ((_dataSet.getNumberOfCharacters() > 0) || (_dataSet.getMaximumNumberOfItems() > 0)) {
+			JOptionPane.showMessageDialog(_context.getMainFrame(), "Imports are only currently supported for new data sets.");
+			return;
+		}
 		ImportExportDialog dialog = new ImportExportDialog(_context.getMainFrame());
 		_context.show(dialog);
 		

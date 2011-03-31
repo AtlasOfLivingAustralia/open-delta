@@ -83,6 +83,8 @@ import au.org.ala.delta.util.IProgressObserver;
 @ProxyActions("copyAll")
 public class DeltaEditor extends InternalFrameApplication {
 
+	private static final String DELTA_FILE_EXTENSION = "dlt";
+	
 	/** Helper class for notifying listeners of property changes */
 	private PropertyChangeSupport _propertyChangeSupport;
 
@@ -417,7 +419,7 @@ public class DeltaEditor extends InternalFrameApplication {
 			chooser.setCurrentDirectory(_lastDirectory);
 		}
 
-		chooser.setFileFilter(new FileNameExtensionFilter("Delta Editor files *.dlt", "dlt"));
+		chooser.setFileFilter(new FileNameExtensionFilter("Delta Editor files *.dlt", DELTA_FILE_EXTENSION));
 		int dialogResult;
 		if (open) {
 			dialogResult = chooser.showOpenDialog(getMainFrame());
@@ -623,7 +625,15 @@ public class DeltaEditor extends InternalFrameApplication {
 	public void saveAsFile() {
 
 		File newFile = selectFile(false);
+		
 		if (newFile != null) {
+			if (newFile.exists()){
+				JOptionPane.showMessageDialog(getMainFrame(), "File already exists.");
+				return;
+			}
+			if (!newFile.getName().endsWith("."+DELTA_FILE_EXTENSION)) {
+				newFile = new File(newFile.getAbsolutePath()+"."+DELTA_FILE_EXTENSION);
+			}
 			EditorDataModel model = getCurrentDataSet();
 			if (model != null) {
 				_dataSetRepository.saveAsName(model.getCurrentDataSet(), newFile.getAbsolutePath(), null);
