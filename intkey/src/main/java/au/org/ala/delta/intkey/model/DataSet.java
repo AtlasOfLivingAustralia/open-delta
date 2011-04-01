@@ -1,8 +1,10 @@
 package au.org.ala.delta.intkey.model;
 
+import java.io.File;
+import java.util.Arrays;
+
 import org.apache.commons.lang.NotImplementedException;
 
-import au.org.ala.delta.intkey.Params;
 
 /**
  * 
@@ -17,6 +19,734 @@ public class DataSet {
     
     
     //void Init(HFILE, HFILE, TDeltaReg *);
+    
+  //-----------------------Init-------------------------------------------------//
+ // reads in data set parameters
+ // revised 29-jun-00.
+  
+ public void init(File cFile, File tFile, TDeltaReg RegInfo
+ )
+ {
+     int recno, rpCdat, rpCdep, rpCheckForCd, rpCimagesC, rpCimagesI, rpCsynon,
+          rpFont, rpNewPara, rpNext, rpOmitOr, rpOmitPeriod,
+          rpHeading, rpInvdep, rpItemSubHead, rpOrWord, rpRegSubHeading, rpSpec,
+          rpStat, rpUseCc=0, rpNonAutoCc=0, rpValidationString;
+     int cptr, dupItemPtr, enableDeltaOutput, i, lbtree, lkstat,
+          nc, nrealc=0, ns, tmp, tptr, wrd;
+     int[] fparam = new int[Constants.LREC];
+     float verd, verp;
+     int bit, j, last_used=26, len, maxint, ms, type,
+         ver_major=5, ver_minor=2;
+     String validationString;
+
+     if (_initDone) {
+       clear();
+     }
+     
+     BinFile cBinFile = new BinFile(cFile.getAbsolutePath(), BinFileMode.FM_READONLY);
+     BinFile tBinFile = new BinFile(tFile.getAbsolutePath(), BinFileMode.FM_READONLY);
+     
+     int sizeIntInBytes = Integer.SIZE / Byte.SIZE;
+  
+     // read first record of characters file
+     // ccc if (_lread(cFile, (char *)fparam, LREC*sizeof(long)) < LREC*sizeof(long))
+     //  message(7, MB_OK, 2, 1);
+
+     nc = cBinFile.readInt(); // 0
+     
+     cBinFile.readInt(); // 1
+     
+     _rpCdes = cBinFile.readInt(); // 2
+     rpStat = cBinFile.readInt(); // 3
+     _rpChlp = cBinFile.readInt(); // 4
+     _rpChlpGrp = cBinFile.readInt(); // 5
+     _rpChlpFmt1 = cBinFile.readInt(); // 6
+     _rpChlpFmt2 = cBinFile.readInt(); // 7
+     rpCimagesC = cBinFile.readInt(); // 8
+     _rpStartupImages = cBinFile.readInt(); // 9
+     _rpCKeyImages = cBinFile.readInt(); // 10
+     _rpTKeyImages = cBinFile.readInt(); // 11
+     rpHeading = cBinFile.readInt(); // 12
+     rpRegSubHeading = cBinFile.readInt(); // record pointer to registration subheading (13)
+     rpValidationString = cBinFile.readInt(); // record pointer to validation string for registered dataset (14)
+     
+     cBinFile.readInt(); // 15
+     
+     rpOrWord = cBinFile.readInt(); // 16
+     rpCheckForCd = cBinFile.readInt(); // 17
+     rpFont = cBinFile.readInt(); //18
+     rpItemSubHead = cBinFile.readInt(); // 19
+     
+     cBinFile.seek((Constants.LREC - 2) * sizeIntInBytes);
+     
+     cptr = cBinFile.readInt();
+  
+     /*cccif (!cptr)
+     {
+       _lclose(cFile);
+       if ((cFile = OpenFile((LPSTR)NULL, &Datafile[CHRDAT].Ofstr,
+         OF_REOPEN | OF_READ | OF_SHARE_DENY_WRITE)) == HFILE_ERROR)
+         message(5, MB_OK, 2, 1);
+       Datafile[CHRDAT].hfile = cFile;
+       Datafile[HLPCHR].hfile = cFile;
+       // reposition to second record
+       _llseek(cFile, LREC*sizeof(long), SEEK_SET);
+     }
+     ccc */
+  
+     // read first record of items file
+     //if (_lread(tFile, (char *)fparam, sizeof(long)*LREC) < sizeof(long)*LREC)
+       //message(8, MB_OK, 2, 1);
+  
+     /*ccc
+     // check compatability
+     if (nc != fparam[1])           // same number of characters?
+       message(10, MB_OK, 2, 1);
+     if (fparam[4] != LREC)         // correct record length?
+       message(11, MB_OK, 2, 1);
+     if ((int)fparam[15] != ver_major) // correct major version number?
+     {
+       verd = (float)fparam[15] + ((float)fparam[20])/100.;
+       verp = (float)ver_major + ((float)ver_minor)/100.;
+       message(12, MB_OK, 2, 1, verd, verp);
+     }
+     if ((int)fparam[20] != ver_minor && // correct minor version number?
+      fparam[last_used+1] != 0)
+     {
+       verd = (float)fparam[15] + ((float)fparam[20])/100.;
+       verp = (float)ver_major + ((float)ver_minor)/100.;
+       message(107, MB_OK, 0, 1, verd, verp);
+     }
+     ccc*/
+  
+     _nItem = tBinFile.readInt();             // number of items (0)
+     _nChar = tBinFile.readInt();             // number of characters (1) 
+     ms = tBinFile.readInt();                // maximum number of states (2)
+     
+     tBinFile.readInt(); // 3
+     tBinFile.readInt(); // 4
+     
+     _rpTnam = tBinFile.readInt();            // record pointer to taxon names (5) 
+     rpSpec = tBinFile.readInt();            // record pointer to specifications  (6)
+     _rpMini = tBinFile.readInt();            // record pointer to minima of integer characters (7)
+     _lDep = tBinFile.readInt();              // length of dependency array (8)
+     rpCdep = tBinFile.readInt();            // record pointer to character dependency array (9)
+     _lInvdep = tBinFile.readInt();          // length of inverted dependency array (10)
+     rpInvdep = tBinFile.readInt();         // record pointer to inverted dependency array (11)
+     rpCdat = tBinFile.readInt();           // record pointer to data for each character (12)
+     _lSbnd = tBinFile.readInt();            // length of state bounds array (13)
+     lkstat = Math.max(1, tBinFile.readInt());   // length of key states array (14)
+     
+     tBinFile.readInt(); // 15
+     
+     _rpNkbd = tBinFile.readInt();           // record pointer to key state bounds array (16)
+     maxint = tBinFile.readInt();           // maximum integer value (17)
+     
+     tBinFile.readInt(); // 18
+     tBinFile.readInt(); // 19
+     tBinFile.readInt(); // 20
+     
+     Params.setTaxonImageChar(tBinFile.readInt());   // character specifying taxon images (21)
+     rpCimagesI = tBinFile.readInt();        // pointer to character images (22)
+     _rpTimages = tBinFile.readInt();        // pointer to taxon images (23)
+     enableDeltaOutput = tBinFile.readInt(); // whether to allow DELTA output via OUTPUT SUMMARY command (24)
+     _chineseFmt = tBinFile.readInt() > 0;       // whether chinese character set (25)
+     rpCsynon = tBinFile.readInt();         // record pointer to characters for synonomy (26)
+     rpOmitOr = tBinFile.readInt();         // record pointer to "omit or" list of characters (27)
+     rpNext = tBinFile.readInt();           // pointer to second parameter record (28)
+     dupItemPtr = tBinFile.readInt();   // pointer to duplicated item name mask (29: Constants.LREC - 3)
+     tptr = tBinFile.readInt();         // pointer to b-tree and image masks appended to items file (30: Constants.LREC - 2)
+     lbtree = tBinFile.readInt();       // length of btree in bytes (31: Constants.LREC - 1)
+     
+     if (rpNext > 0)
+     {
+       // read second parameters record of items file
+       //_llseek(tFile, (rpNext-1)*LREC*sizeof(long), SEEK_SET);
+       //if (_lread(tFile, (char *)fparam, sizeof(long)*LREC) < sizeof(long)*LREC)
+       //  message(8, MB_OK, 2, 1);
+       
+       // SHOULD THIS BE rpNext or npNext - 1?
+       tBinFile.seek((rpNext - 1) * Constants.LREC * sizeIntInBytes);  
+         
+  
+       rpUseCc = tBinFile.readInt(); // pointer to USE CONTROLLING CHARACTER FIRST character list
+       _rpTlinks[0] = tBinFile.readInt(); // pointer to taxon links information
+       rpOmitPeriod = tBinFile.readInt(); // pointer to Omit Period for Characters information
+       rpNewPara = tBinFile.readInt(); // pointer to New Paragraphs at Characters information
+       rpNonAutoCc = tBinFile.readInt(); // pointer to NONAUTOMATIC CONTROL CHARACTERS chartacters
+       _rpTlinks[1] = tBinFile.readInt(); // pointer to automatically generated taxon links information
+     }
+     else
+     {
+       rpUseCc = 0;
+       _rpTlinks[0] = 0;
+       _rpTlinks[1] = 0;
+       rpOmitPeriod = 0;
+       rpNewPara = 0;
+       rpNonAutoCc = 0;
+     }
+     
+     /* ccc
+
+//     if (RegInfo->regStatus != valid)
+//     {
+//       BOOL isRegValid = FALSE;
+//       char *heading, *validator;
+//       // check for registered data set
+//       if (rpValidationString)
+//       {
+//         // reading registration heading
+//         _llseek(cFile, (rpHeading-1)*LREC*sizeof(long), SEEK_SET);
+//         if (_lread(cFile, (char *)fparam, sizeof(long)*LREC) < sizeof(long)*LREC)
+//           message(8, MB_OK, 2, 1);
+//         len = (int)fparam[0];
+//         if ((heading = (char *)malloc(len+1)) == NULL)
+//           InsuffMem();
+//         else
+//         {
+//           _lread(cFile, heading, len);
+//           heading[len] = '\0';
+//         }
+//         // reading validation string
+//         _llseek(cFile, (rpValidationString-1)*LREC*sizeof(long), SEEK_SET);
+//         if (_lread(cFile, (char *)fparam, sizeof(long)*LREC) < sizeof(long)*LREC)
+//           message(8, MB_OK, 2, 1);
+//         len = (int)fparam[0];
+//         if ((validator = (char *)malloc(len+1)) == NULL)
+//           InsuffMem();
+//         else
+//         {
+//           _lread(cFile, validator, len);
+//           validator[len] = '\0';
+//         }
+//         isRegValid = RegInfo->CheckValidation(heading, validator);
+//         free(validator);
+//         free(heading);
+ //
+//       }
+//       if (!isRegValid)
+//         DoDelay(RegInfo);
+//     }
+  
+     if (!tptr)
+     {
+       _lclose(tFile);
+       if ((tFile = OpenFile((LPSTR)NULL, &Datafile[ITMDAT].Ofstr,
+         OF_REOPEN | OF_READ | OF_SHARE_DENY_WRITE)) == HFILE_ERROR)
+         message(6, MB_OK, 2, 1);
+       Datafile[ITMDAT].hfile = tFile;
+       Datafile[NAMDAT].hfile = tFile;
+       Datafile[CIMGDAT].hfile = tFile;
+       // reposition to second record
+       _llseek(tFile, LREC*sizeof(long), SEEK_SET);
+     }
+     
+     ccc*/
+
+     // read and display data heading
+     BinFile hFile;
+     if (rpHeading > 0)  // heading is in chars file
+     {
+       hFile = cBinFile;
+       recno = rpHeading;
+     }
+     else
+     {
+       hFile = tBinFile;
+       recno = 2;
+     }
+     //_llseek(hFile, (recno-1)*LREC*sizeof(long), SEEK_SET);
+     hFile.seek((recno-1) * Constants.LREC * sizeIntInBytes);
+     
+     len = hFile.readInt();
+     
+     hFile.seek(recno * Constants.LREC * sizeIntInBytes);
+     
+     byte[] headingBytes = hFile.read(len);
+     
+     _heading = new String(headingBytes);
+     System.out.println(_heading);
+     
+     /*(if (_lread(hFile, (char *)fparam, sizeof(long)*LREC) < sizeof(long)*LREC)
+       message(8, MB_OK, 2, 1);
+     len = (int)fparam[0];
+     if ((heading = (char *)malloc(len+1)) == NULL)
+       InsuffMem();
+     else
+     {
+       _lread(hFile, heading, len);
+       heading[len] = '\0';
+ #ifndef RTFTEXT
+       if (!chineseFmt)
+         OemToAnsi(heading, heading);
+ #endif
+       MainAppWdw->LogWdw()->OutputText(heading, 2, 0, 0);
+       DoLog = 0; // now force to main window as well
+//       OutputText(NULL, heading, 0, 0, -2);
+       DoLog = 1;
+       // include heading in window title
+       char *temp;
+       int ltemp = strlen(heading) + 10;
+       if ((temp = (char *)malloc(ltemp)) == NULL)
+         InsuffMem();
+       else
+       {
+         wsprintf(temp, "INTKEY : %s", heading);
+         SetMainCaption(temp);
+         free(temp);
+       }
+     }*/
+
+     /* ccc
+     // check that there is a loaded CD containing the specified ichars file
+     // with the same data set heading as the current data set
+     if (tptr && rpCheckForCd)
+     {
+       // extract the name of the file to find on the CD
+       _llseek(cFile, (rpCheckForCd-1)*LREC*sizeof(long), SEEK_SET);
+       if (_lread(cFile, (char *)fparam, sizeof(long)*LREC) < sizeof(long)*LREC)
+         message(8, MB_OK, 2, 1);
+       len = (int)fparam[0];
+       char *temp;
+       if ((temp = (char *)malloc(len+1)) == NULL)
+         InsuffMem();
+       else
+       {
+         _lread(cFile, temp, len);
+         temp[len] = '\0';
+       }
+       bool status = CheckForCD(temp);
+       free(temp);
+       if (!status)
+       {
+         free(heading);
+         _lclose(Datafile[CHRDAT].hfile);
+         _lclose(Datafile[ITMDAT].hfile);
+         message(341, MB_OK, 2, 1);
+       }
+     }
+
+     if (rpRegSubHeading)
+     {
+       _llseek(hFile, (rpRegSubHeading-1)*LREC*sizeof(long), SEEK_SET);
+
+       // read and display registered dataset subheading
+       if (_lread(hFile, (char *)fparam, sizeof(long)*LREC) < sizeof(long)*LREC)
+         message(8, MB_OK, 2, 1);
+       len = (int)fparam[0];
+       char *temp;
+       if ((temp = (char *)malloc(len+1)) == NULL)
+         InsuffMem();
+       else
+       {
+         _lread(hFile, temp, len);
+         temp[len] = '\0';
+ #ifndef RTFTEXT
+         if (!chineseFmt)
+           OemToAnsi(temp, temp);
+ #endif
+         MainAppWdw->LogWdw()->OutputText(temp, 2, 0, 0);
+         DoLog = 0; // force to main window
+//         OutputText(NULL, temp, 0, 0, -2);
+         DoLog = 1;
+         free(temp);
+       }
+     }
+
+     if (rpValidationString)
+     {
+       _llseek(hFile, (rpValidationString-1)*LREC*sizeof(long), SEEK_SET);
+
+       // read and display registered dataset subheading
+       if (_lread(hFile, (char *)fparam, sizeof(long)*LREC) < sizeof(long)*LREC)
+         message(8, MB_OK, 2, 1);
+       len = (int)fparam[0];
+       if ((validationString = (char *)malloc(len+1)) == NULL)
+         InsuffMem();
+       else
+       {
+         _lread(hFile, validationString, len);
+         validationString[len] = '\0';
+         free(validationString); // do this after validation string has been used
+       }
+     }
+  
+     // set image and information paths for compressed files
+ #ifdef __WIN32__
+     char *dataSetImagePath = CurrentNetImagePath();
+     if (dataSetImagePath && lstrlen(dataSetImagePath))
+       SetIpath(dataSetImagePath, false, NImageDir, ImageDir);
+  
+     char *dataSetInfoPath = CurrentNetInfoPath();
+     if (dataSetInfoPath && lstrlen(dataSetInfoPath))
+       SetIpath(dataSetInfoPath, false, NInfoDir, InfoDir);
+ #endif
+  
+     // read value of "or" string from chars file, if present, otherwise use the
+     // English word.
+     // This will be used in descriptions.
+     // Note: "or" should be in the same language as the character descriptions,
+     // which is not necessarily that which INTKEY is using.
+     if (rpOrWord)
+     {
+       _llseek(cFile, (rpOrWord-1)*LREC*sizeof(long), SEEK_SET);
+       if (_lread(cFile, (char *)fparam, sizeof(long)*LREC) < sizeof(long)*LREC)
+         message(8, MB_OK, 2, 1);
+       len = (int)fparam[0];
+     }
+     else
+       len = lstrlen(TIntkeyApp->EnglishOr());
+     if ((OrWord = (char *)malloc(len+1)) == NULL)
+       InsuffMem();
+     else
+     {
+       if (rpOrWord)
+         _lread(cFile, OrWord, len);
+       else
+         lstrcpy(OrWord, TIntkeyApp->EnglishOr());
+       OrWord[len] = '\0';
+     }
+  
+     // get overlay fonts from chars file
+     GetImageFonts(rpFont, buttonFont, defaultFont, featureFont);
+  
+     // get record pointers for Item Subheadings
+     if (rpItemSubHead)
+     {
+       _llseek(hFile, (rpItemSubHead-1)*LREC*sizeof(long), SEEK_SET);
+  
+       if ((itemSubHead = (long *)malloc(nChar*sizeof(long))) == NULL)
+         InsuffMem();
+       else
+         ReadDa((LPSTR)itemSubHead, nChar*sizeof(long), cFile, LREC, rpItemSubHead);
+     }
+
+     if (hFile == cFile)
+     {
+       // restore position in chars file to record number 2
+       _llseek(cFile, LREC*sizeof(long), SEEK_SET);
+       // reset position in items file to step over dummy header
+       _llseek(tFile, 3*LREC*sizeof(long), SEEK_SET);
+     }
+  
+     Ntrem = nItem;
+     if (Stopbest == 0)
+       Stopbest = nChar;
+//     if (Autobest == 1)
+//       Autobest = nItem;
+//     SavedAutobest = Autobest;
+  
+     // allocate memory for storage of basic information
+     // read numbers of states
+     if ((nStat = (LPLONG)malloc(nChar*sizeof(long))) == NULL)
+         InsuffMem();
+     else
+     {
+      ReadDa((LPSTR)nStat, nChar*sizeof(long), cFile, LREC, rpStat);
+     }
+  
+     // read character types
+     if ((tmp = (LPLONG)malloc(nChar*sizeof(long))) == NULL ||
+         (cType = (LPSTR)malloc(nChar*sizeof(char))) == NULL)
+       InsuffMem();
+     else
+     {
+       ReadDa((LPSTR)tmp, nChar*sizeof(long), tFile, LREC, rpSpec);
+       for (i = 0; i < nChar; ++i)
+         cType[i] = tmp[i];
+     }
+  
+     if (enableDeltaOutput)
+     {
+       // check validity of checksum
+       long chk = 0;
+       for (i = 0; i < nChar; ++i)
+         chk += cType[i];
+       if (enableDeltaOutput == chk)
+         noDeltaOutput = 0;
+       else
+         noDeltaOutput = 1;
+     }
+     else
+       noDeltaOutput = 1;
+
+     recno = rpSpec + (nChar+LREC-1)/LREC;
+     // read numbers of states from items file and check for compatability
+     // (only compare multistates because if ICHARS and IITEMS are generated
+     //  separately, numerics characters with units will differ)
+
+     ReadDa((LPSTR)tmp, nChar*sizeof(long), tFile, LREC, recno);
+     for (i = 0; i < nChar; ++i)
+     if (abs(cType[i]) < 3 && nStat[i] != tmp[i])
+        message(57, MB_OK, 2, 1);
+
+     // used characters
+     Used = tmp;
+     SET_ARRAY(Used, nChar, 0L)
+     // list of characters in the order in which they were used
+     if ((UsedInOrder = (long *)malloc(nChar*sizeof(long))) == NULL)
+       InsuffMem();
+     else
+       SET_ARRAY(UsedInOrder, nChar, 0L);
+  
+     // reliabilities
+     recno += (nChar+LREC-1)/LREC;
+     if ((charRel = (LPFLOAT)calloc(nChar, sizeof(float))) == NULL ||
+     (srtCharRel = (LPFLOAT)calloc(nChar, sizeof(float))) == NULL ||
+     (keyCharRel = (LPLONG)calloc(nChar, sizeof(float))) == NULL)
+       InsuffMem();
+     else
+     {
+       ReadDa((LPSTR)charRel, nChar*sizeof(float), tFile, LREC, recno);
+       SortRel();
+     }
+
+  
+     // table of item differences
+     if ((Itmdif = (long *)calloc(nItem, sizeof(long))) == NULL)
+       InsuffMem();
+     for (long k = 0; k < nItem; ++k)
+       Itmdif[k] = 0;
+
+     if (rpMini)
+     {
+       // minima of integer characters
+       if ((minC = (LPLONG)malloc(nChar*sizeof(long))) == NULL)
+         InsuffMem();
+       else
+       {
+     ReadDa((LPSTR)minC, nChar*sizeof(long), tFile, LREC, rpMini);
+       }
+
+       // maxima of integer characters
+       if ((maxC = (LPLONG)malloc(nChar*sizeof(long))) == NULL)
+         InsuffMem();
+       else
+       {
+         rpMini += (nChar + LREC - 1)/LREC;
+     ReadDa((LPSTR)maxC, nChar*sizeof(long), tFile, LREC, rpMini);
+       }
+     }
+
+     // character dependencies.
+     if (lDep > nChar)
+     {
+       if ((cDep = (LPLONG)calloc(lDep, sizeof(long))) == NULL)
+         InsuffMem();
+       else
+       {
+     ReadDa((LPSTR)cDep,lDep*sizeof(long), tFile, LREC, rpCdep);
+       }
+
+       if ((invdep = (LPLONG)calloc(lInvdep, sizeof(long))) == NULL)
+         InsuffMem();
+       else
+       {
+     ReadDa((LPSTR)invdep, lInvdep*sizeof(long), tFile, LREC, rpInvdep);
+ //  GlobalUnlock(hgblLplongInvdep);
+       }
+     }
+  
+     // record addresses for character data
+     if ((chrDat = (LPDWORD)malloc(nChar*sizeof(DWORD))) == NULL)
+       InsuffMem();
+     else
+     {
+       ReadDa((LPSTR)chrDat, nChar*sizeof(long), tFile, LREC, rpCdat);
+     }
+
+     // characters for synonomy
+     if (rpCsynon)
+     {
+       if ((chrSynonymy = (long *)malloc(nChar*sizeof(long))) == NULL)
+         InsuffMem();
+       else
+       {
+         ReadDa((LPSTR)chrSynonymy, nChar*sizeof(long), tFile, LREC, rpCsynon);
+       }
+     }
+
+     // omit "or" for characters
+     if (rpOmitOr)
+     {
+       if ((cOmitOr = (long *)malloc(nChar*sizeof(long))) == NULL)
+         InsuffMem();
+       else
+       {
+         ReadDa((LPSTR)cOmitOr, nChar*sizeof(long), tFile, LREC, rpOmitOr);
+       }
+     }
+
+     // use controlling character first
+     if (rpUseCc)
+     {
+       if ((useCcFirst = (long *)malloc(nChar*sizeof(long))) == NULL)
+         InsuffMem();
+       else
+       {
+         ReadDa((LPSTR)useCcFirst, nChar*sizeof(long), tFile, LREC, rpUseCc);
+       }
+     }
+
+     // omit period for characters
+     if (rpOmitPeriod)
+     {
+       if ((cOmitPeriod = (long *)malloc(nChar*sizeof(long))) == NULL)
+         InsuffMem();
+       else
+       {
+         ReadDa((LPSTR)cOmitPeriod, nChar*sizeof(long), tFile, LREC, rpOmitPeriod);
+       }
+     }
+
+     // new paragraphs at characters
+     if (rpNewPara)
+     {
+       if ((cNewPara = (long *)malloc(nChar*sizeof(long))) == NULL)
+         InsuffMem();
+       else
+       {
+         ReadDa((LPSTR)cNewPara, nChar*sizeof(long), tFile, LREC, rpNewPara);
+       }
+     }
+
+     if (rpNonAutoCc)
+     {
+       if ((nonAutoCc = (long *)malloc(nChar*sizeof(long))) == NULL)
+         InsuffMem();
+       else
+       {
+         ReadDa((LPSTR)nonAutoCc, nChar*sizeof(long), tFile, LREC, rpNonAutoCc);
+       }
+     }
+
+
+     // specimen description
+     if ((SpecWrd = (LPLONG)malloc(nChar*sizeof(long))) == NULL ||
+     (SpecBit = (LPINT)malloc(nChar*sizeof(int))) == NULL)
+       InsuffMem();
+  
+     // initialize pointers for Specimen description
+     ms1 = max(ms+1, maxint+3);
+     mss = max(ms1, (int)lkstat);
+     for (i=0,bit=0,wrd=0; i < nChar; ++i)
+     {
+       type = abs((int)cType[i]);
+       if (type <= 3)
+       {
+     ns = (type < 3) ? nStat[i] : maxC[i] - minC[i] + 3;
+     SpecWrd[i]= wrd;
+     SpecBit[i] = bit;
+     bit += (ns + 1);
+     j = bit/NBINWD;
+     wrd += j;
+     bit -= (j*NBINWD);
+       }
+       else if (type == 4)
+     ++nrealc;
+     }
+     if (bit)
+       ++wrd;
+     if (nrealc)
+     {
+       for (i = 0; i < nChar; ++i)
+       {
+     if (abs((int)cType[i]) == 4)
+     {
+       SpecWrd[i] = wrd;
+       wrd += (2 * sizeof(float));
+     }
+       }
+     }
+     if (wrd)
+     {
+      if ((SpecData = (LPDWORD)malloc(wrd*sizeof(long))) == NULL)
+        InsuffMem();
+     }
+     else
+       SpecData = NULL;
+
+     // single attribute
+     len = (int)max((int)(ms1+NBINWD-1)/NBINWD, (int)((MAXCMDLINE)/sizeof(long)));
+     LenAttrib = max(2, len);
+     if ((Attrib = (LPDWORD)malloc(LenAttrib*sizeof(long))) == NULL)
+       InsuffMem();
+
+     // allocate space for storing state values
+     if ((State1 = (LPBYTE)malloc(mss*sizeof(char))) == NULL ||
+     (State2 = (LPBYTE)malloc(mss*sizeof(char))) == NULL ||
+     (State3 = (LPBYTE)malloc(mss*sizeof(char))) == NULL)
+       InsuffMem();
+
+//     InitFileMapping();
+     InitBtree(tptr, lbtree, dupItemPtr, nItem);
+     InitKeywords(TIntkeyApp->RpKeywords(), &tptr, nItem, rpTnam);
+  
+     CharMask = new MASK(1, nChar);
+     CharMask->set_default_mask(nChar);
+     TaxonMask = new MASK(1, nItem);
+     TaxonMask->set_default_mask(nItem);
+     SavedCharMask = new MASK(1, nChar);
+     SavedCharMask->copy_mask(CharMask, nChar);
+
+     // Character image info has been shifted from items file to characters file.
+     // However, to maintain compatability with older datasets, need to determine
+     // in which file the information resides
+     // 23-may-94.
+     if (rpCimagesC != 0)
+     {
+       rpCimages = rpCimagesC;
+       Datafile[CIMGDAT].hfile = Datafile[CHRDAT].hfile;
+       Datafile[CIMGDAT].Ofstr = Datafile[CHRDAT].Ofstr;
+       TIntkeyApp->SetFileTypeMap(CIMGDAT, 0);
+       j = 1;
+     }
+     else if (rpCimagesI != 0)
+     {
+       rpCimages = rpCimagesI;
+       Datafile[CIMGDAT].hfile = Datafile[ITMDAT].hfile;
+       Datafile[CIMGDAT].Ofstr = Datafile[ITMDAT].Ofstr;
+       TIntkeyApp->SetFileTypeMap(CIMGDAT, 1);
+       j = 2;
+     }
+     else
+     {
+       rpCimages = 0;
+       j = 0;
+     }
+
+//     if (rpTimages != 0)
+//     {
+//       Datafile[TIMGDAT].hfile = Datafile[CHRDAT].hfile;
+//       Datafile[TIMGDAT].Ofstr = Datafile[CHRDAT].Ofstr;
+//       FileTypeMap[TIMGDAT] = 0;
+//     }
+//     else
+//     {
+       Datafile[TIMGDAT].hfile = Datafile[ITMDAT].hfile;
+       Datafile[TIMGDAT].Ofstr = Datafile[ITMDAT].Ofstr;
+       TIntkeyApp->SetFileTypeMap(TIMGDAT, 1);
+//     }
+
+     // other image data (Startup, Character Keyword, Taxon Keyword) is in
+     // characters file
+     Datafile[OTHERIMGDAT].hfile = Datafile[CHRDAT].hfile;
+     Datafile[OTHERIMGDAT].Ofstr = Datafile[CHRDAT].Ofstr;
+     TIntkeyApp->SetFileTypeMap(OTHERIMGDAT, 0);
+
+     // prepare image masks and character note masks
+     InitImages(tptr, nChar, nItem, rpCimages, rpTimages);
+     InitNotes(cptr, nChar, rpChlp);
+//     InitMenus(cptr, tptr, nItem, nChar, rpTnam, rpCdes);
+  
+     secure_data_files(cptr, tptr, j);
+     InitFileMapping();
+     SetTabInfo(TabInfo);
+
+*/
+     _initDone = true;
+     return;
+ }
 
     //int best(TDialog *, long);
 
@@ -266,6 +996,10 @@ public boolean cc_process1(int c, int[] list, String useType, int[] n)
 
     public int getRpTnam() {
         return _rpTnam;
+    }
+    
+    protected void clear() {
+        
     }
     
     /*

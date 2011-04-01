@@ -10,15 +10,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.ActionMap;
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -29,7 +29,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
-import javax.swing.filechooser.FileFilter;
 
 import org.jdesktop.application.Action;
 
@@ -38,7 +37,7 @@ import au.org.ala.delta.intkey.directives.FileTaxaDirective;
 import au.org.ala.delta.intkey.directives.IntkeyContext;
 import au.org.ala.delta.intkey.directives.IntkeyDirective;
 import au.org.ala.delta.intkey.directives.IntkeyDirectiveParser;
-import au.org.ala.delta.intkey.ui.SelectDataSetDialog;
+import au.org.ala.delta.intkey.directives.NewDatasetDirective;
 import au.org.ala.delta.ui.AboutBox;
 import au.org.ala.delta.ui.DeltaSingleFrameApplication;
 import au.org.ala.delta.ui.util.IconHelper;
@@ -70,6 +69,49 @@ public class Intkey extends DeltaSingleFrameApplication {
         mainFrame.setTitle("Intkey");
         mainFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         mainFrame.setIconImages(IconHelper.getRedIconList());
+        
+        mainFrame.addWindowListener(new WindowListener() {
+            
+            @Override
+            public void windowOpened(WindowEvent e) {
+                // TODO Auto-generated method stub
+                
+            }
+            
+            @Override
+            public void windowIconified(WindowEvent e) {
+                // TODO Auto-generated method stub
+                
+            }
+            
+            @Override
+            public void windowDeiconified(WindowEvent e) {
+                // TODO Auto-generated method stub
+                
+            }
+            
+            @Override
+            public void windowDeactivated(WindowEvent e) {
+                // TODO Auto-generated method stub
+                
+            }
+            
+            @Override
+            public void windowClosing(WindowEvent e) {
+                System.out.println("Closing window");
+            }
+            
+            @Override
+            public void windowClosed(WindowEvent e) {
+                System.out.println("Window closed");
+            }
+            
+            @Override
+            public void windowActivated(WindowEvent arg0) {
+                // TODO Auto-generated method stub
+                
+            }
+        }); 
 
         _context = new IntkeyContext(this);
 
@@ -240,7 +282,7 @@ public class Intkey extends DeltaSingleFrameApplication {
         JMenu mnuFile = new JMenu();
         mnuFile.setName("mnuFile");
 
-        JMenuItem mnuItNewDataSet = buildMenuItemForDirective(new FileTaxaDirective(), "mnuDirectiveNewDataSet");
+        JMenuItem mnuItNewDataSet = buildMenuItemForDirective(new NewDatasetDirective(), "mnuDirectiveNewDataSet");
         mnuFile.add(mnuItNewDataSet);
 
         JMenuItem mnuItPreferences = new JMenuItem();

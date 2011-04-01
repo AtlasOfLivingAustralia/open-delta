@@ -1,6 +1,8 @@
 package au.org.ala.delta.intkey.directives;
 
 import org.apache.commons.lang.StringUtils;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.SingleFrameApplication;
 
 import au.org.ala.delta.intkey.ui.SelectDataSetDialog;
 
@@ -16,7 +18,8 @@ public class NewDatasetDirective extends IntkeyDirective {
 
         if (filePath == null) {
             SelectDataSetDialog dlg = new SelectDataSetDialog(context.getMainFrame());
-            dlg.setVisible(true);
+            ((SingleFrameApplication)Application.getInstance()).show(dlg);
+            //dlg.setVisible(true);
             if (dlg.isFileSelected()) {
                 filePath = dlg.getSelectedFilePath();
             }

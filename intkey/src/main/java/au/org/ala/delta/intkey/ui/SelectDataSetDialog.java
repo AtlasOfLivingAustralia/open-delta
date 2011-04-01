@@ -119,8 +119,9 @@ public class SelectDataSetDialog extends JDialog {
         if(returnVal == JFileChooser.APPROVE_OPTION) {
            _selectedFilePath = chooser.getSelectedFile().getAbsolutePath();
            _fileSelected =  true;
-           //SelectDataSetDialog.this.setVisible(false);
-           SelectDataSetDialog.this.dispose();
+           //SelectDataSetDialog.this.
+           SelectDataSetDialog.this.setVisible(false);
+           //SelectDataSetDialog.this.dispose();
         }
     }
 
