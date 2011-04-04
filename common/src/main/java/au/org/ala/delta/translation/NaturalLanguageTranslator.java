@@ -194,12 +194,22 @@ public class NaturalLanguageTranslator {
 	
 	private void printTaxonName(Item item) {
 		
-		if (_startOfNewFile) {
-			_typeSetter.insertTypeSettingMarks(14);
+		Integer characterForTaxonNames = _context.getCharacterForTaxonNames();
+		
+		int typeSettingMarkNum = 14;
+		
+		// if !_startOfNewFile || _already output item heading and value exists for type mark 51
+		if (!_startOfNewFile) {
+			typeSettingMarkNum = 51;
 		}
-		else  {
-			_typeSetter.insertTypeSettingMarks(51);
+		
+		if (characterForTaxonNames != null) {
+			writeCharacterForTaxonName(characterForTaxonNames, typeSettingMarkNum);
 		}
+		else {
+			WNAME();
+		}
+		
 		
 		// A taxon name can be override by the CHARACTER FOR TAXON NAME directive
 		// Need to treat variant items differently
@@ -213,6 +223,18 @@ public class NaturalLanguageTranslator {
 	private void writeCharacterAttributes(Item item, Character character) {
 		if (item.hasAttribute(character)) {
 			_typeSetter.writeText(" "+_formatter.formatAttribute(character, item.getAttribute(character).getValue()));
+		}
+		
+	}
+	
+	private void writeCharacterForTaxonName(Item item, int characterNumber, int typeSettingMarkNum, boolean masterItemMaskedIn) {
+		if (_typeSettingMode == TypeSetting.ADD_TYPESETTING_MARKS) {
+			_typeSetter.insertTypeSettingMarks(typeSettingMarkNum);
+		}
+		
+		if (item.isVariant() && masterItemMaskedIn) {
+			// next character is a capital
+			
 		}
 		
 	}

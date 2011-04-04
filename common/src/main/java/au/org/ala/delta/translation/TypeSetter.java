@@ -9,6 +9,9 @@ import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.lang.WordUtils;
 
 import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.rtf.RTFUtils;
+import au.org.ala.delta.translation.NaturalLanguageTranslator.TypeSetting;
+import au.org.ala.delta.util.Utils;
 
 /**
  * The TypeSetter is responsible for formatting output produced by the NaturalLanguageTranslator.
@@ -17,11 +20,16 @@ public class TypeSetter {
 
 	private static final String BLANK = " ";
 	private DeltaContext _context;
-	private int _lineWidth = 80;
+	private int _printWidth = 80;
 	private PrintStream _output;
 	private int _currentIndent;
 	private int _currentLinePos;
+	private int _icmd;
+	private int _icap;
 
+	private StringBuilder _outputBuffer;
+	private int _endWordIndex;
+	
 	public TypeSetter() throws Exception {
 		_output = new PrintStream(new File("c:\\temp\\test-confor-output"));
 
@@ -33,7 +41,7 @@ public class TypeSetter {
 
 	public void indent(int numSpaces) {
 
-		if (numSpaces > _lineWidth - 20) {
+		if (numSpaces > _printWidth - 20) {
 			return;
 		}
 
@@ -48,9 +56,12 @@ public class TypeSetter {
 	 * and a number of spaces)
 	 */
 	public void indent() {
-		for (int i = 0; i < _currentIndent; i++) {
-			print(BLANK);
+		if (_currentIndent <= (Math.abs(_printWidth) - 20) ) {
+			for (int i = 0; i < _currentIndent; i++) {
+				print(BLANK);
+			}
 		}
+		_endWordIndex = 0;
 	}
 
 	public void writeBlankLines(int numLines, int requiredNumLinesLeftOnPage) {
@@ -81,8 +92,8 @@ public class TypeSetter {
 	}
 
 	public void writeText(String word) {
-		if (_currentLinePos + word.length() > _lineWidth) {
-			word = WordUtils.wrap(word, _lineWidth-_currentLinePos);
+		if (_currentLinePos + word.length() > _printWidth) {
+			word = WordUtils.wrap(word, _printWidth-_currentLinePos);
 			
 			String words[] = word.split(SystemUtils.LINE_SEPARATOR);
 			
@@ -132,5 +143,108 @@ public class TypeSetter {
 		newLine();
 		indent(8);
 		
+	}
+	
+	public void writeJustifiedOutput(String text, boolean inHtml, boolean encodeXmlBrackets, TypeSetting typeSettingMode) {
+		if (typeSettingMode == TypeSetting.REMOVE_EXISTING_TYPESETTINGMARKS) {
+			text = RTFUtils.stripFormatting(text);
+		}
+		else if (typeSettingMode == TypeSetting.ADD_TYPESETTING_MARKS) {
+			// Convert number ranges to use an en dash.
+			
+			// replace < and > with &lt; and %gt;
+			
+		}
+		
+	}
+	
+	private boolean iomcap = false;
+	
+	/** JSTOUT */
+	public void writeJustifiedOutput(String text, int completionAction, boolean inHtmlRtf) {
+		// If we are doing chinese output, do that.
+		boolean binary = _printWidth < 0;
+		int oldBufferPos = _outputBuffer.length()-1;
+		
+		if (_outputBuffer.length() > 0) {
+			if (!text.startsWith(BLANK) && _outputBuffer.charAt(_outputBuffer.length()-1) != ' ') {
+				_endWordIndex = _outputBuffer.length()-1;
+				if (_endWordIndex < Math.abs(_printWidth)) {
+					_outputBuffer.append(' ');
+					oldBufferPos = _outputBuffer.length()-1;
+				}
+			}
+		}
+		
+		int jin = 0;
+		while (jin < text.length() && text.charAt(jin) == ' ') {
+			jin++;
+		}
+		if (_endWordIndex < 0) {
+			indent();
+		}
+		if ((((inHtmlRtf == false) || (binary == false)) && (text.charAt(jin) == ' ')) == false)  {
+			if (_outputBuffer.length()-1 >= Math.abs(_printWidth)) {
+				//goto 200;
+			}
+			char c = text.charAt(jin);
+			if (c == '|' && iomcap) {
+				_icap = 0;
+				//goto 150;
+			}
+			if ((_icap != 0) && (c != '\\') && !inHtmlRtf) {
+				c = capitalize(c);
+			}
+			if ((c == ' ') && (lastCharInBuffer() == ' ')) {
+				//goto 150;
+			}
+			
+			if (c == '@') {
+				
+			}
+		}
+		
+		
+	}
+	
+	private char lastCharInBuffer() {
+		return _outputBuffer.charAt(_outputBuffer.length()-1);
+	}
+	
+	
+	private boolean ignore(char ch) {
+		boolean ignore = false;
+		if (_icmd != 0) {
+			ignore = true;
+			if ((_icmd == 1) && (ch == '\\')) {
+				_icmd = 0;
+				ignore = false;
+			}
+			else if ((_icmd == 1) && (ch == '-')) {
+				_icmd = 0;
+			} 
+			else if (ch == '{') {
+				
+			}
+			else if ((ch == ' ') || (!Character.isDigit(ch) && !Character.isLetter(ch))) {
+				_icmd = 0;
+			}
+			else {
+				_icmd =2;
+			}
+		}
+		else if (ch == '\\') {
+			_icmd = 1;
+			ignore = true;
+		}
+		return ignore;
+	}
+	
+	private char capitalize(char ch) {
+		if (!ignore(ch)) {
+			_icap = 0;
+			ch = Character.toUpperCase(ch);
+		}
+		return ch;
 	}
 }
