@@ -57,7 +57,8 @@ public class DeltaContext extends AbstractDeltaContext {
 	private Map<Integer, String> _indexHeadings = new HashMap<Integer, String>();
 	
 	private Set<Set<Integer>> _linkedCharacters = new HashSet<Set<Integer>>();
-
+	private Integer _characterForTaxonNames = null;
+	
 	private int _numberOfCharacters;
 	private int _maxNumberOfStates;
 	private int _maxNumberOfItems;
@@ -405,5 +406,17 @@ public class DeltaContext extends AbstractDeltaContext {
 			}
 		}
 		return null;
+	}
+
+	public void setCharacterForTaxonNames(Integer characterNum) {
+		_characterForTaxonNames = characterNum;
+	}
+	
+	/**
+	 * @return the character specified by the CHARACTER FOR TAXON NAMES directive.  The value of the item attribute
+	 * for this character will be used as the item name.
+	 */
+	public Integer getCharacterForTaxonNames() {
+		return _characterForTaxonNames;
 	}
 }
