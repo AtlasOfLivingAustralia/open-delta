@@ -204,10 +204,10 @@ public class NaturalLanguageTranslator {
 		}
 		
 		if (characterForTaxonNames != null) {
-			writeCharacterForTaxonName(characterForTaxonNames, typeSettingMarkNum);
+			//writeCharacterForTaxonName(characterForTaxonNames, typeSettingMarkNum);
 		}
 		else {
-			WNAME();
+			//WNAME();
 		}
 		
 		
