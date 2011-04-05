@@ -1,4 +1,4 @@
-package au.org.ala.delta.editor.slotfile;
+package au.org.ala.delta.io;
 
 import java.nio.charset.Charset;
 
@@ -7,7 +7,7 @@ import java.nio.charset.Charset;
  * To maintain compatibility with existing DELTA data sets, Strings stored in the slot file will always
  * be stored using the Cp1252 character encoding. 
  */
-public class SlotFileEncoding {
+public class BinFileEncoding {
 
 	public static final Charset SLOT_FILE_CHAR_ENCODING = Charset.forName("Cp1252");
 	

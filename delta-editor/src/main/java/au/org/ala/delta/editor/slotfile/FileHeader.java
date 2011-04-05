@@ -14,6 +14,8 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.slotfile;
 
+import au.org.ala.delta.io.BinFile;
+
 public class FileHeader implements IOObject {
 
 	public static final int SIZE = 4; // 4 bytes to store a 32 bit number

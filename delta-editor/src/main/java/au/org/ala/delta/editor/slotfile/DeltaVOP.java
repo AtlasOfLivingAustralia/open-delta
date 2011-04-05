@@ -19,6 +19,8 @@ import java.util.Map;
 
 import org.apache.commons.lang.NotImplementedException;
 
+import au.org.ala.delta.io.BinFile;
+import au.org.ala.delta.io.BinFileMode;
 import au.org.ala.delta.util.Utils;
 
 public class DeltaVOP extends VOP {

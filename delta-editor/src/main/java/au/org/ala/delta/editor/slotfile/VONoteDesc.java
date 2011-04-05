@@ -14,6 +14,9 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.slotfile;
 
+import au.org.ala.delta.io.BinFile;
+import au.org.ala.delta.io.BinFileEncoding;
+
 public class VONoteDesc extends VOAnyDesc {
 
 	private static int _noteOffs = FixedData.SIZE + SlotFile.SlotHeader.SIZE;
@@ -49,7 +52,7 @@ public class VONoteDesc extends VOAnyDesc {
 			assert _slotFile != null;
 			_slotFile.seek(_slotHdrPtr + _noteOffs);
 			byte[] bytes = _slotFile.read(NOTE_SIZE);
-			return SlotFileEncoding.decode(bytes);
+			return BinFileEncoding.decode(bytes);
 		}
 	}
 
@@ -74,7 +77,7 @@ public class VONoteDesc extends VOAnyDesc {
 		@Override
 		public void read(BinFile file) {
 			super.read(file);
-			Note = file.readBytes(NOTE_SIZE);
+			Note = file.read(NOTE_SIZE);
 		}
 
 		@Override

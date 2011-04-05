@@ -12,7 +12,7 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  ******************************************************************************/
-package au.org.ala.delta.editor.slotfile;
+package au.org.ala.delta.io;
 
 import java.io.File;
 import java.io.IOException;
@@ -337,7 +337,7 @@ public class BinFile {
 
 	public void swrite(String data, int length) {
 		byte[] buffer = new byte[length];
-		byte[] stringBytes = SlotFileEncoding.encode(data);
+		byte[] stringBytes = BinFileEncoding.encode(data);
 		for (int i = 0; i < length; ++i) {
 			if (i < stringBytes.length) {
 				buffer[i] = stringBytes[i];
@@ -350,7 +350,7 @@ public class BinFile {
 
 	public String sread(int size) {
 		ByteBuffer bb = readByteBuffer(size);
-		return SlotFileEncoding.decode(bb.array());
+		return BinFileEncoding.decode(bb.array());
 	}
 
 	/**

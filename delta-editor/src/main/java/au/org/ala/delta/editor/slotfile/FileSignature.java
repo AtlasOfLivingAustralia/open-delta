@@ -14,6 +14,9 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.slotfile;
 
+import au.org.ala.delta.io.BinFile;
+import au.org.ala.delta.io.BinFileEncoding;
+
 public class FileSignature implements IOObject {
 
 	public static final int SIZE = 68;
@@ -31,7 +34,7 @@ public class FileSignature implements IOObject {
 	@Override
 	public void read(BinFile file) {
 
-		Copyright = SlotFileEncoding.decode(file.readBytes(64));
+		Copyright = BinFileEncoding.decode(file.read(64));
 		MajorVersion = file.readByte();
 		MinorVersion = file.readByte();
 		Magic = file.readShort();

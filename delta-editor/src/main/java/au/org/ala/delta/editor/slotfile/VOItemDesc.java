@@ -25,6 +25,7 @@ import java.util.TreeMap;
 
 import org.apache.commons.lang.NotImplementedException;
 
+import au.org.ala.delta.io.BinFile;
 import au.org.ala.delta.rtf.RTFUtils;
 import au.org.ala.delta.util.Utils;
 

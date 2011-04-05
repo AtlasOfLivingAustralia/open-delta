@@ -16,6 +16,7 @@ package au.org.ala.delta.editor.slotfile;
 
 import org.apache.commons.lang.NotImplementedException;
 
+import au.org.ala.delta.io.BinFile;
 import au.org.ala.delta.util.Pair;
 
 public class VOImageInfoDesc extends VOAnyDesc {
@@ -226,7 +227,7 @@ public class VOImageInfoDesc extends VOAnyDesc {
 			lfClipPrecision = file.readByte();
 			lfQuality = file.readByte();
 			lfPitchAndFamily = file.readByte();
-			lfFaceName = file.readBytes(32);
+			lfFaceName = file.read(32);
 		}
 
 		@Override

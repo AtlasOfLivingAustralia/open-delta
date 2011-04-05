@@ -15,9 +15,9 @@
 package au.org.ala.delta.editor.slotfile.model;
 
 import au.org.ala.delta.editor.DeltaFileReader;
-import au.org.ala.delta.editor.slotfile.BinFileMode;
 import au.org.ala.delta.editor.slotfile.DeltaVOP;
 import au.org.ala.delta.editor.slotfile.SlotFile;
+import au.org.ala.delta.io.BinFileMode;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.DeltaDataSetRepository;
 import au.org.ala.delta.util.IProgressObserver;

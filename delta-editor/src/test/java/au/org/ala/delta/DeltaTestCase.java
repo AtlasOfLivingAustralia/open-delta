@@ -8,8 +8,8 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 
-import au.org.ala.delta.editor.slotfile.BinFileMode;
 import au.org.ala.delta.editor.slotfile.SlotFile;
+import au.org.ala.delta.io.BinFileMode;
 import junit.framework.TestCase;
 
 public abstract class DeltaTestCase extends TestCase {

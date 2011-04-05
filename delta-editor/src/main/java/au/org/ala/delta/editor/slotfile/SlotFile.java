@@ -19,6 +19,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import au.org.ala.delta.io.BinFile;
+import au.org.ala.delta.io.BinFileMode;
+
 /**
  * Encapsulates the 
  */

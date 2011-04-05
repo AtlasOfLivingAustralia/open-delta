@@ -28,6 +28,7 @@ import au.org.ala.delta.editor.slotfile.directive.ConforDirType;
 import au.org.ala.delta.editor.slotfile.directive.DistDirType;
 import au.org.ala.delta.editor.slotfile.directive.IntkeyDirType;
 import au.org.ala.delta.editor.slotfile.directive.KeyDirType;
+import au.org.ala.delta.io.BinFile;
 import au.org.ala.delta.util.Utils;
 
 public class VODirFileDesc extends VOAnyDesc implements WindowsConstants {

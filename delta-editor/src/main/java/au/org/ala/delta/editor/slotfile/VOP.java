@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import au.org.ala.delta.editor.slotfile.SlotFile.SlotHeader;
+import au.org.ala.delta.io.BinFileMode;
 
 public class VOP {
 

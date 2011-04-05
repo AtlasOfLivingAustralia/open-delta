@@ -21,6 +21,7 @@ import java.util.List;
 import org.apache.commons.lang.NotImplementedException;
 
 import au.org.ala.delta.editor.slotfile.VOCharTextDesc.CharTextFixedData;
+import au.org.ala.delta.io.BinFile;
 
 public class VOCharBaseDesc extends VOImageHolderDesc {
 

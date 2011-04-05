@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.List;
 
 import au.org.ala.delta.editor.slotfile.SlotFile.SlotHeader;
+import au.org.ala.delta.io.BinFile;
 
 public class VODeltaMasterDesc extends VONoteDesc {
 

@@ -20,6 +20,8 @@ import java.util.List;
 
 import org.apache.commons.lang.NotImplementedException;
 
+import au.org.ala.delta.io.BinFile;
+
 public class VOControllingDesc extends VOAnyDesc {
 
 	private ControllingFixedData _fixedData;

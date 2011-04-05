@@ -21,6 +21,8 @@ import java.util.Date;
 import java.util.List;
 
 import au.org.ala.delta.editor.slotfile.SlotFile.SlotHeader;
+import au.org.ala.delta.io.BinFile;
+import au.org.ala.delta.io.BinFileEncoding;
 
 public abstract class VOAnyDesc {
 
@@ -218,11 +220,11 @@ public abstract class VOAnyDesc {
 	}
 	
 	protected byte[] readBytes(int size) {
-		return _slotFile.readBytes(size);
+		return _slotFile.read(size);
 	}
 	
 	protected DeltaNumber readNumber() {
-		byte[] data = _slotFile.readBytes(DeltaNumber.size());
+		byte[] data = _slotFile.read(DeltaNumber.size());
 		DeltaNumber n = new DeltaNumber();
 		n.fromBinary(data);
 		return n;
@@ -237,7 +239,7 @@ public abstract class VOAnyDesc {
 	protected byte[] readPersData(int size) {
 		assert _slotFile != null;
 		_slotFile.seek(_slotHdrPtr + TypeIdOffs);
-		return _slotFile.readBytes(size);
+		return _slotFile.read(size);
 	}
 	
 	protected String readString(int size) {
@@ -340,7 +342,7 @@ public abstract class VOAnyDesc {
 
 	protected byte[] stringToBytes(String string) {
 		
-		return SlotFileEncoding.encode(string);
+		return BinFileEncoding.encode(string);
 	}
 	
 	protected void dataWrite(int i) {
@@ -684,7 +686,7 @@ public abstract class VOAnyDesc {
 		
 		public FixedData(String acronym) {
 			assert acronym.length() <= SIZE_ACRONYM;
-			byte[] src = SlotFileEncoding.encode(acronym);
+			byte[] src = BinFileEncoding.encode(acronym);
 			for (int i = 0; i < SIZE_ACRONYM; ++i) {
 				if (i < src.length) {
 					Acronym[i] = src[i];

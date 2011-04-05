@@ -14,6 +14,8 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.slotfile;
 
+import au.org.ala.delta.io.BinFile;
+
 public interface IOObject {
 
 	void read(BinFile file);

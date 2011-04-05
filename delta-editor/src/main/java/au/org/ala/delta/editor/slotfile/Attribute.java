@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.apache.commons.lang.NotImplementedException;
 
+import au.org.ala.delta.io.BinFileEncoding;
 import au.org.ala.delta.model.DeltaParseException;
 import au.org.ala.delta.util.ArrayUtils;
 import au.org.ala.delta.util.Utils;
@@ -658,7 +659,7 @@ public class Attribute implements Iterable<AttrChunk> {
 
 		case ChunkType.CHUNK_TEXT: {
 			// TODO deal with character encoding here...
-			byte[] stringBytes = SlotFileEncoding.encode(chunk.getString());
+			byte[] stringBytes = BinFileEncoding.encode(chunk.getString());
 			int strLeng = stringBytes.length;
 			chunkData = initialiseBufferForChunk(strLeng + 2/*
 															 * size of unsigned short
@@ -671,7 +672,7 @@ public class Attribute implements Iterable<AttrChunk> {
 		}
 
 		case ChunkType.CHUNK_LONGTEXT: {
-			byte[] stringBytes = SlotFileEncoding.encode(chunk.getString());
+			byte[] stringBytes = BinFileEncoding.encode(chunk.getString());
 			int strLeng = stringBytes.length;
 
 			chunkData = initialiseBufferForChunk(strLeng + 4/* size of int */+ 1, chunk);
@@ -1077,12 +1078,12 @@ public class Attribute implements Iterable<AttrChunk> {
 			switch (ret.getType()) {
 			case ChunkType.CHUNK_TEXT:
 				short varLeng = MAKEWORD(_owner._data[_pos + 1], _owner._data[_pos + 2]);
-				String val = SlotFileEncoding.decode(_owner._data, _pos + 3, varLeng);
+				String val = BinFileEncoding.decode(_owner._data, _pos + 3, varLeng);
 				ret.setString(val);
 				break;
 			case ChunkType.CHUNK_LONGTEXT:
 				int varleng = MAKEDWORD(_owner._data, _pos + 1);
-				String str = SlotFileEncoding.decode(_owner._data, _pos + 5, varleng);
+				String str = BinFileEncoding.decode(_owner._data, _pos + 5, varleng);
 				ret.setString(str);
 				break;
 			case ChunkType.CHUNK_STATE:
