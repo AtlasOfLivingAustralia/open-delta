@@ -4,6 +4,9 @@ import java.io.File;
 
 import org.apache.commons.lang.NotImplementedException;
 
+import au.org.ala.delta.io.BinFile;
+import au.org.ala.delta.io.BinFileMode;
+
 
 /**
  * 

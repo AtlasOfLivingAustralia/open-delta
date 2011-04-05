@@ -5,11 +5,11 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-import au.org.ala.delta.intkey.model.ported.BinFile;
-import au.org.ala.delta.intkey.model.ported.BinFileMode;
 import au.org.ala.delta.intkey.model.ported.Constants;
 import au.org.ala.delta.intkey.model.ported.DataSet;
 import au.org.ala.delta.intkey.model.ported.Params;
+import au.org.ala.delta.io.BinFile;
+import au.org.ala.delta.io.BinFileMode;
 
 public class IntkeyDatasetFileBuilder {
     
