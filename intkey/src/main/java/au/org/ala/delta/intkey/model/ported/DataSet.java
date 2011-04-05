@@ -1,7 +1,6 @@
-package au.org.ala.delta.intkey.model;
+package au.org.ala.delta.intkey.model.ported;
 
 import java.io.File;
-import java.util.Arrays;
 
 import org.apache.commons.lang.NotImplementedException;
 
@@ -11,21 +10,30 @@ import org.apache.commons.lang.NotImplementedException;
  * @author Chris
  *
  */
+
 public class DataSet {
+    
+    private static final int sizeIntInBytes = Integer.SIZE / Byte.SIZE;
+    
     public DataSet() {
         _initDone = false;
         _noDeltaOutput = false;
     }
     
-    
-    //void Init(HFILE, HFILE, TDeltaReg *);
-    
   //-----------------------Init-------------------------------------------------//
  // reads in data set parameters
  // revised 29-jun-00.
+    
+private void seekToRecord(BinFile bFile, int recordNumber) {
+    bFile.seek(recordNumber * Constants.LREC * sizeIntInBytes); 
+}
+
+private String readString(BinFile bFile, int length) {
+    byte[] bytes = bFile.read(length);
+    return new String(bytes);
+}
   
- public void init(File cFile, File tFile, TDeltaReg RegInfo
- )
+ public void init(File cFile, File tFile)
  {
      int recno, rpCdat, rpCdep, rpCheckForCd, rpCimagesC, rpCimagesI, rpCsynon,
           rpFont, rpNewPara, rpNext, rpOmitOr, rpOmitPeriod,
@@ -45,13 +53,8 @@ public class DataSet {
      
      BinFile cBinFile = new BinFile(cFile.getAbsolutePath(), BinFileMode.FM_READONLY);
      BinFile tBinFile = new BinFile(tFile.getAbsolutePath(), BinFileMode.FM_READONLY);
-     
-     int sizeIntInBytes = Integer.SIZE / Byte.SIZE;
   
      // read first record of characters file
-     // ccc if (_lread(cFile, (char *)fparam, LREC*sizeof(long)) < LREC*sizeof(long))
-     //  message(7, MB_OK, 2, 1);
-
      nc = cBinFile.readInt(); // 0
      
      cBinFile.readInt(); // 1
@@ -77,11 +80,11 @@ public class DataSet {
      rpFont = cBinFile.readInt(); //18
      rpItemSubHead = cBinFile.readInt(); // 19
      
-     cBinFile.seek((Constants.LREC - 2) * sizeIntInBytes);
+     seekToRecord(cBinFile, Constants.LREC - 2);
      
      cptr = cBinFile.readInt();
   
-     /*cccif (!cptr)
+     /*CCCif (!cptr)
      {
        _lclose(cFile);
        if ((cFile = OpenFile((LPSTR)NULL, &Datafile[CHRDAT].Ofstr,
@@ -91,40 +94,16 @@ public class DataSet {
        Datafile[HLPCHR].hfile = cFile;
        // reposition to second record
        _llseek(cFile, LREC*sizeof(long), SEEK_SET);
-     }
-     ccc */
+     }ccc*/
   
      // read first record of items file
-     //if (_lread(tFile, (char *)fparam, sizeof(long)*LREC) < sizeof(long)*LREC)
-       //message(8, MB_OK, 2, 1);
-  
-     /*ccc
-     // check compatability
-     if (nc != fparam[1])           // same number of characters?
-       message(10, MB_OK, 2, 1);
-     if (fparam[4] != LREC)         // correct record length?
-       message(11, MB_OK, 2, 1);
-     if ((int)fparam[15] != ver_major) // correct major version number?
-     {
-       verd = (float)fparam[15] + ((float)fparam[20])/100.;
-       verp = (float)ver_major + ((float)ver_minor)/100.;
-       message(12, MB_OK, 2, 1, verd, verp);
-     }
-     if ((int)fparam[20] != ver_minor && // correct minor version number?
-      fparam[last_used+1] != 0)
-     {
-       verd = (float)fparam[15] + ((float)fparam[20])/100.;
-       verp = (float)ver_major + ((float)ver_minor)/100.;
-       message(107, MB_OK, 0, 1, verd, verp);
-     }
-     ccc*/
-  
+     
      _nItem = tBinFile.readInt();             // number of items (0)
      _nChar = tBinFile.readInt();             // number of characters (1) 
      ms = tBinFile.readInt();                // maximum number of states (2)
      
      tBinFile.readInt(); // 3
-     tBinFile.readInt(); // 4
+     int itemsFileRecordLength = tBinFile.readInt(); // 4
      
      _rpTnam = tBinFile.readInt();            // record pointer to taxon names (5) 
      rpSpec = tBinFile.readInt();            // record pointer to specifications  (6)
@@ -137,14 +116,14 @@ public class DataSet {
      _lSbnd = tBinFile.readInt();            // length of state bounds array (13)
      lkstat = Math.max(1, tBinFile.readInt());   // length of key states array (14)
      
-     tBinFile.readInt(); // 15
+     int itemsFileMajorVersion = tBinFile.readInt(); // 15
      
      _rpNkbd = tBinFile.readInt();           // record pointer to key state bounds array (16)
      maxint = tBinFile.readInt();           // maximum integer value (17)
      
      tBinFile.readInt(); // 18
      tBinFile.readInt(); // 19
-     tBinFile.readInt(); // 20
+     int itemsFileMinorVersion = tBinFile.readInt(); // 20
      
      Params.setTaxonImageChar(tBinFile.readInt());   // character specifying taxon images (21)
      rpCimagesI = tBinFile.readInt();        // pointer to character images (22)
@@ -158,15 +137,38 @@ public class DataSet {
      tptr = tBinFile.readInt();         // pointer to b-tree and image masks appended to items file (30: Constants.LREC - 2)
      lbtree = tBinFile.readInt();       // length of btree in bytes (31: Constants.LREC - 1)
      
+     // check compatability
+     if (nc != _nChar) {           // same number of characters?
+       //message(10, MB_OK, 2, 1);
+       throw new RuntimeException("Differing number of characters");  
+     }
+     if (itemsFileRecordLength != Constants.LREC)         // correct record length?
+       //message(11, MB_OK, 2, 1);
+       throw new RuntimeException("Incorrect record length");  
+     if (itemsFileMajorVersion != ver_major) // correct major version number?
+     {
+       //verd = (float)fparam[15] + ((float)fparam[20])/100.;
+       //verp = (float)ver_major + ((float)ver_minor)/100.;
+       //message(12, MB_OK, 2, 1, verd, verp);
+         throw new RuntimeException("Differing major version");
+     }
+     
+     //Not sure why rpOmitOr is being checked here. Original syntax was "fparam[last_used+1] != 0", where
+     //last_used was set to 26. fparam was the array holding all of the integers in the record. CPF 4/4/2011. 
+     if (itemsFileMinorVersion != ver_minor && rpOmitOr != 0) // correct minor version number?
+     {
+       //verd = (float)fparam[15] + ((float)fparam[20])/100.;
+       //verp = (float)ver_major + ((float)ver_minor)/100.;
+       //message(107, MB_OK, 0, 1, verd, verp);
+         throw new RuntimeException("Differing minor version");
+     }
+     
      if (rpNext > 0)
      {
        // read second parameters record of items file
-       //_llseek(tFile, (rpNext-1)*LREC*sizeof(long), SEEK_SET);
-       //if (_lread(tFile, (char *)fparam, sizeof(long)*LREC) < sizeof(long)*LREC)
-       //  message(8, MB_OK, 2, 1);
        
        // SHOULD THIS BE rpNext or npNext - 1?
-       tBinFile.seek((rpNext - 1) * Constants.LREC * sizeIntInBytes);  
+       seekToRecord(tBinFile, rpNext - 1);  
          
   
        rpUseCc = tBinFile.readInt(); // pointer to USE CONTROLLING CHARACTER FIRST character list
@@ -187,47 +189,6 @@ public class DataSet {
      }
      
      /* ccc
-
-//     if (RegInfo->regStatus != valid)
-//     {
-//       BOOL isRegValid = FALSE;
-//       char *heading, *validator;
-//       // check for registered data set
-//       if (rpValidationString)
-//       {
-//         // reading registration heading
-//         _llseek(cFile, (rpHeading-1)*LREC*sizeof(long), SEEK_SET);
-//         if (_lread(cFile, (char *)fparam, sizeof(long)*LREC) < sizeof(long)*LREC)
-//           message(8, MB_OK, 2, 1);
-//         len = (int)fparam[0];
-//         if ((heading = (char *)malloc(len+1)) == NULL)
-//           InsuffMem();
-//         else
-//         {
-//           _lread(cFile, heading, len);
-//           heading[len] = '\0';
-//         }
-//         // reading validation string
-//         _llseek(cFile, (rpValidationString-1)*LREC*sizeof(long), SEEK_SET);
-//         if (_lread(cFile, (char *)fparam, sizeof(long)*LREC) < sizeof(long)*LREC)
-//           message(8, MB_OK, 2, 1);
-//         len = (int)fparam[0];
-//         if ((validator = (char *)malloc(len+1)) == NULL)
-//           InsuffMem();
-//         else
-//         {
-//           _lread(cFile, validator, len);
-//           validator[len] = '\0';
-//         }
-//         isRegValid = RegInfo->CheckValidation(heading, validator);
-//         free(validator);
-//         free(heading);
- //
-//       }
-//       if (!isRegValid)
-//         DoDelay(RegInfo);
-//     }
-  
      if (!tptr)
      {
        _lclose(tFile);
@@ -240,7 +201,6 @@ public class DataSet {
        // reposition to second record
        _llseek(tFile, LREC*sizeof(long), SEEK_SET);
      }
-     
      ccc*/
 
      // read and display data heading
@@ -255,47 +215,14 @@ public class DataSet {
        hFile = tBinFile;
        recno = 2;
      }
-     //_llseek(hFile, (recno-1)*LREC*sizeof(long), SEEK_SET);
-     hFile.seek((recno-1) * Constants.LREC * sizeIntInBytes);
-     
+
+     seekToRecord(hFile, recno-1);
      len = hFile.readInt();
-     
-     hFile.seek(recno * Constants.LREC * sizeIntInBytes);
-     
-     byte[] headingBytes = hFile.read(len);
-     
-     _heading = new String(headingBytes);
+     seekToRecord(hFile, recno);
+     _heading = readString(hFile, len);
      System.out.println(_heading);
-     
-     /*(if (_lread(hFile, (char *)fparam, sizeof(long)*LREC) < sizeof(long)*LREC)
-       message(8, MB_OK, 2, 1);
-     len = (int)fparam[0];
-     if ((heading = (char *)malloc(len+1)) == NULL)
-       InsuffMem();
-     else
-     {
-       _lread(hFile, heading, len);
-       heading[len] = '\0';
- #ifndef RTFTEXT
-       if (!chineseFmt)
-         OemToAnsi(heading, heading);
- #endif
-       MainAppWdw->LogWdw()->OutputText(heading, 2, 0, 0);
-       DoLog = 0; // now force to main window as well
-//       OutputText(NULL, heading, 0, 0, -2);
-       DoLog = 1;
-       // include heading in window title
-       char *temp;
-       int ltemp = strlen(heading) + 10;
-       if ((temp = (char *)malloc(ltemp)) == NULL)
-         InsuffMem();
-       else
-       {
-         wsprintf(temp, "INTKEY : %s", heading);
-         SetMainCaption(temp);
-         free(temp);
-       }
-     }*/
+     //output to log window
+     //set as heading of main window
 
      /* ccc
      // check that there is a loaded CD containing the specified ichars file
@@ -324,53 +251,29 @@ public class DataSet {
          _lclose(Datafile[ITMDAT].hfile);
          message(341, MB_OK, 2, 1);
        }
-     }
-
-     if (rpRegSubHeading)
+     }*/
+     
+     if (rpRegSubHeading > 0)
      {
-       _llseek(hFile, (rpRegSubHeading-1)*LREC*sizeof(long), SEEK_SET);
-
-       // read and display registered dataset subheading
-       if (_lread(hFile, (char *)fparam, sizeof(long)*LREC) < sizeof(long)*LREC)
-         message(8, MB_OK, 2, 1);
-       len = (int)fparam[0];
-       char *temp;
-       if ((temp = (char *)malloc(len+1)) == NULL)
-         InsuffMem();
-       else
-       {
-         _lread(hFile, temp, len);
-         temp[len] = '\0';
- #ifndef RTFTEXT
-         if (!chineseFmt)
-           OemToAnsi(temp, temp);
- #endif
-         MainAppWdw->LogWdw()->OutputText(temp, 2, 0, 0);
-         DoLog = 0; // force to main window
-//         OutputText(NULL, temp, 0, 0, -2);
-         DoLog = 1;
-         free(temp);
-       }
+       // read and display registered dataset subheading  
+       seekToRecord(hFile, rpRegSubHeading-1);
+       len = hFile.readInt();
+       seekToRecord(hFile, rpRegSubHeading);
+       String regSubHeading = readString(hFile, len);
+       System.out.println(regSubHeading);
      }
 
-     if (rpValidationString)
+     if (rpValidationString > 0)
      {
-       _llseek(hFile, (rpValidationString-1)*LREC*sizeof(long), SEEK_SET);
-
-       // read and display registered dataset subheading
-       if (_lread(hFile, (char *)fparam, sizeof(long)*LREC) < sizeof(long)*LREC)
-         message(8, MB_OK, 2, 1);
-       len = (int)fparam[0];
-       if ((validationString = (char *)malloc(len+1)) == NULL)
-         InsuffMem();
-       else
-       {
-         _lread(hFile, validationString, len);
-         validationString[len] = '\0';
-         free(validationString); // do this after validation string has been used
-       }
+         // read validation string
+         seekToRecord(hFile, rpValidationString-1);
+         len = hFile.readInt();
+         seekToRecord(hFile, rpValidationString);
+         validationString = readString(hFile, len);
+         System.out.println(validationString);
      }
-  
+
+     /*
      // set image and information paths for compressed files
  #ifdef __WIN32__
      char *dataSetImagePath = CurrentNetImagePath();
@@ -916,9 +819,14 @@ public boolean cc_process1(int c, int[] list, String useType, int[] n)
     long MinC(long i) const { return(cType[i] == 3 ?  minC[i] : 0); }
     int Mss() const {return mss;}
     int Ms1() const {return ms1;}
-    long Nchar() const {return nChar;}
+    */
+    public int Nchar() {return _nChar;}
+    
+    /*
     bool NewParagraph(long c) const {return (cNewPara && cNewPara[c-1]) ? true : false;}
-    long Nitem() const {return nItem;}
+    */
+    public int Nitem(){ return _nItem;}
+    /*
     FLAG NoDeltaOutput() const {return noDeltaOutput;}
     long Nstat(long i) const { return nStat[i]; }
     void SetCharRel(float *rel) { memcpy(charRel, rel, nChar*sizeof(float));}

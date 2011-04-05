@@ -1,4 +1,4 @@
-package au.org.ala.delta.intkey.model;
+package au.org.ala.delta.intkey.model.ported;
 
 //See PARS.H
 public class Params {

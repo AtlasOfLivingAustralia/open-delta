@@ -1,5 +1,5 @@
 package au.org.ala.delta.intkey.model;
 
-public class TDeltaReg {
+public class Taxon {
 
 }

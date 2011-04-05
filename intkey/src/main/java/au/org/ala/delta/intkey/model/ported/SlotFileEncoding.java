@@ -1,4 +1,4 @@
-package au.org.ala.delta.intkey.model;
+package au.org.ala.delta.intkey.model.ported;
 
 import java.nio.charset.Charset;
 
