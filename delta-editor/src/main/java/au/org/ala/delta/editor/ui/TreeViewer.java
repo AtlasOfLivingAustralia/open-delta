@@ -17,6 +17,8 @@ package au.org.ala.delta.editor.ui;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.swing.ActionMap;
 import javax.swing.DropMode;
@@ -34,6 +36,7 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeSelectionModel;
 
+import org.apache.commons.lang.StringUtils;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Resource;
@@ -45,6 +48,7 @@ import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.NumericCharacter;
+import au.org.ala.delta.model.TextCharacter;
 import au.org.ala.delta.model.impl.ControllingInfo;
 import au.org.ala.delta.model.observer.AbstractDataSetObserver;
 import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
@@ -117,6 +121,11 @@ public class TreeViewer extends JInternalFrame {
 			public void valueChanged(ListSelectionEvent e) {
 
 				_dataModel.setSelectedItem(_itemList.getSelectedItem());
+				int[] nodes = new int[13];
+				for (int i=0; i<nodes.length;i++) {
+					nodes[i] = i;
+				}
+				treeModel.itemChanged();
 				_tree.repaint();
 				_stateEditor.bind(_dataModel.getSelectedCharacter(), _dataModel.getSelectedItem());
 			}
@@ -218,9 +227,29 @@ class CharacterTreeModel extends DefaultTreeModel {
 
 	private static final long serialVersionUID = 1L;
 
+	private Set<Integer> _variableLengthCharacterIndicies;
 	public CharacterTreeModel(EditorDataModel dataModel) {
 		super(new ContextRootNode(dataModel), false);
+		
+		_variableLengthCharacterIndicies = new HashSet<Integer>();
+		for (int i=1; i<=dataModel.getNumberOfCharacters(); i++) {
+			Character character = dataModel.getCharacter(i);
+			if ((character instanceof TextCharacter) || (character instanceof NumericCharacter)) {
+				_variableLengthCharacterIndicies.add(i-1);
+			}
+		}
 	}	
+	
+	/**
+	 * We notify about changes to text & numeric characters as differing text lengths will invalidate
+	 * the preferred size of the label that renders the text and this value is cached by the tree UI delegate.
+	 * Multistate characters will maintain the same text as the text is specified by the character.
+	 */
+	public void itemChanged() {
+		for (int i : _variableLengthCharacterIndicies) {
+			nodeChanged(((ContextRootNode)getRoot()).getChildAt(i).getChildAt(0));
+		}
+	}
 }
 
 
@@ -263,7 +292,7 @@ class CharStateHolder {
 }
 
 
-class DeltaTreeCellRenderer extends DefaultTreeCellRenderer {
+class DeltaTreeCellRenderer extends DefaultTreeCellRenderer  {
 
 	private static final long serialVersionUID = 1L;
 
@@ -277,6 +306,7 @@ class DeltaTreeCellRenderer extends DefaultTreeCellRenderer {
 	@SuppressWarnings("rawtypes")
 	public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus) {
 
+		
 		super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
 		Item item = _dataModel.getSelectedItem();
 		if (value instanceof CharacterTreeNode) {
@@ -308,7 +338,7 @@ class DeltaTreeCellRenderer extends DefaultTreeCellRenderer {
 					MultistateStateNode msnode = (MultistateStateNode) node;						
 					stateValueRenderer.setText(name);
 					stateValueRenderer.setForeground(getForeground());
-					if (selected) {
+					if (sel) {
 						stateValueRenderer.setBackground(getBackgroundSelectionColor());
 					} else {
 						stateValueRenderer.setBackground(getBackgroundNonSelectionColor());
@@ -319,10 +349,20 @@ class DeltaTreeCellRenderer extends DefaultTreeCellRenderer {
 				} else if (ch instanceof NumericCharacter) {
 					setText(getText() + " " + ((NumericCharacter) ch).getUnits());
 				}
+				else {
+					if (StringUtils.isEmpty(name)) {
+						name = "                     ";
+					}
+					setText(name);
+					System.out.println("Name: "+name);
+					System.out.println("Preferred size: "+getPreferredSize());
+					
+				}
 			}
 		}
 		return this;
 	}
+	
 }
 
 class CharacterTreeNode extends DefaultMutableTreeNode {
