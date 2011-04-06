@@ -14,6 +14,8 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,6 +40,7 @@ import au.org.ala.delta.intkey.directives.IntkeyContext;
 import au.org.ala.delta.intkey.directives.IntkeyDirective;
 import au.org.ala.delta.intkey.directives.IntkeyDirectiveParser;
 import au.org.ala.delta.intkey.directives.NewDatasetDirective;
+import au.org.ala.delta.intkey.model.IntkeyDataset;
 import au.org.ala.delta.ui.AboutBox;
 import au.org.ala.delta.ui.DeltaSingleFrameApplication;
 import au.org.ala.delta.ui.util.IconHelper;
@@ -53,6 +56,10 @@ public class Intkey extends DeltaSingleFrameApplication {
     private Map<String, JMenu> _cmdMenus;
 
     private IntkeyContext _context;
+    private JList _listBestCharacters;
+    private JList _listUsedCharacters;
+    private JList _listRemainingTaxa;
+    private JList _listEliminatedTaxa;
 
     public static void main(String[] args) {
         launch(Intkey.class, args);
@@ -158,8 +165,8 @@ public class Intkey extends DeltaSingleFrameApplication {
         JScrollPane sclPaneBestCharacters = new JScrollPane();
         pnlBestCharacters.add(sclPaneBestCharacters, BorderLayout.CENTER);
 
-        JList listBestCharacters = new JList();
-        sclPaneBestCharacters.setViewportView(listBestCharacters);
+        _listBestCharacters = new JList();
+        sclPaneBestCharacters.setViewportView(_listBestCharacters);
 
         JPanel pnlBestCharactersHeader = new JPanel();
         pnlBestCharacters.add(pnlBestCharactersHeader, BorderLayout.NORTH);
@@ -176,8 +183,8 @@ public class Intkey extends DeltaSingleFrameApplication {
         JScrollPane sclPnUsedCharacters = new JScrollPane();
         pnlUsedCharacters.add(sclPnUsedCharacters, BorderLayout.CENTER);
 
-        JList listUsedCharacters = new JList();
-        sclPnUsedCharacters.setViewportView(listUsedCharacters);
+        _listUsedCharacters = new JList();
+        sclPnUsedCharacters.setViewportView(_listUsedCharacters);
 
         JPanel pnlUsedCharactersHeader = new JPanel();
         pnlUsedCharacters.add(pnlUsedCharactersHeader, BorderLayout.NORTH);
@@ -200,8 +207,8 @@ public class Intkey extends DeltaSingleFrameApplication {
         JScrollPane sclPnRemainingTaxa = new JScrollPane();
         pnlRemainingTaxa.add(sclPnRemainingTaxa, BorderLayout.CENTER);
 
-        JList listRemainingTaxa = new JList();
-        sclPnRemainingTaxa.setViewportView(listRemainingTaxa);
+        _listRemainingTaxa = new JList();
+        sclPnRemainingTaxa.setViewportView(_listRemainingTaxa);
 
         JPanel pnlRemainingTaxaHeader = new JPanel();
         pnlRemainingTaxa.add(pnlRemainingTaxaHeader, BorderLayout.NORTH);
@@ -218,8 +225,8 @@ public class Intkey extends DeltaSingleFrameApplication {
         JScrollPane sclPnEliminatedTaxa = new JScrollPane();
         pnlEliminatedTaxa.add(sclPnEliminatedTaxa, BorderLayout.CENTER);
 
-        JList listEliminatedTaxa = new JList();
-        sclPnEliminatedTaxa.setViewportView(listEliminatedTaxa);
+        _listEliminatedTaxa = new JList();
+        sclPnEliminatedTaxa.setViewportView(_listEliminatedTaxa);
 
         JPanel pnlEliminatedTaxaHeader = new JPanel();
         pnlEliminatedTaxa.add(pnlEliminatedTaxaHeader, BorderLayout.NORTH);
@@ -433,9 +440,15 @@ public class Intkey extends DeltaSingleFrameApplication {
             try {
             _dir.process(_context, null);
             } catch (Exception ex) {
-                Logger.log("Error while running directive from menu - %s", _dir.toString());
+                Logger.log("Error while running directive from menu - %s %s", _dir.toString(), ex.getMessage());
+                ex.printStackTrace();
             }
         }
+    }
+    
+    public void handleNewDataSet(IntkeyDataset dataset) {
+        _listBestCharacters.setListData(dataset.getCharacters().toArray());
+        _listRemainingTaxa.setListData(dataset.getTaxa().toArray());
     }
 
 }

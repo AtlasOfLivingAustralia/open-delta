@@ -43,7 +43,7 @@ public class NewDatasetDirective extends IntkeyDirective {
         
         @Override
         public void execute(IntkeyContext context) {
-            context.newDataSet(_fileName);
+            context.newDataSetFile(_fileName);
         }
         
         @Override

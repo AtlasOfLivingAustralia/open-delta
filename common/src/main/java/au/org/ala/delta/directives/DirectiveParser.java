@@ -143,19 +143,15 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
                     return;
 
                 } else if (result.getResultType() == ResultType.NotFound) {
-                    if (pc.getFile() != null) {
-                        Logger.log("Unrecognized Directive: %s at offset %s %d:%d", StringUtils.join(controlWords, " "), pc.getFile().getName(), pc.getCurrentDirectiveStartLine(),
-                                pc.getCurrentDirectiveStartOffset());
-                    } else {
-                        Logger.log("Unrecognized Directive: %s at offset %d:%d", StringUtils.join(controlWords, " "), pc.getCurrentDirectiveStartLine(), pc.getCurrentDirectiveStartOffset());
-                    }
+                    handleUnrecognizedDirective(pc, controlWords);
                     return;
                 }
                 i += word.length() + 1;
             }
-
         }
     }
+    
+    protected abstract void handleUnrecognizedDirective(ParsingContext pc, List<String> controlWords);
 
     private String readWord(StringBuilder buf, int start) {
         int i = start;

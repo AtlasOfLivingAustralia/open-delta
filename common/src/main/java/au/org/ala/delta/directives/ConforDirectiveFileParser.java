@@ -14,7 +14,12 @@
  ******************************************************************************/
 package au.org.ala.delta.directives;
 
+import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
+
 import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.Logger;
 
 /**
  * A directive file is a text file containing one or more directives. Directives
@@ -67,6 +72,16 @@ public class ConforDirectiveFileParser extends DirectiveParser<DeltaContext> {
         instance.registerDirective(new ItemDescriptions());
         
         return instance;
+    }
+
+    @Override
+    protected void handleUnrecognizedDirective(ParsingContext pc, List<String> controlWords) {
+        if (pc.getFile() != null) {
+            Logger.log("Unrecognized Directive: %s at offset %s %d:%d", StringUtils.join(controlWords, " "), pc.getFile().getName(), pc.getCurrentDirectiveStartLine(),
+                    pc.getCurrentDirectiveStartOffset());
+        } else {
+            Logger.log("Unrecognized Directive: %s at offset %d:%d", StringUtils.join(controlWords, " "), pc.getCurrentDirectiveStartLine(), pc.getCurrentDirectiveStartOffset());
+        }
     }
 
 }

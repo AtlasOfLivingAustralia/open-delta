@@ -36,7 +36,7 @@ public class Character {
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
+        /*StringBuilder builder = new StringBuilder();
         builder.append(_description);
         builder.append("\n");
         
@@ -46,7 +46,8 @@ public class Character {
             builder.append("\n");
         }
         
-        return builder.toString();
+        return builder.toString();*/
+        return _description;
     }
     
     
