@@ -3,12 +3,12 @@ package au.org.ala.delta.inkey.model;
 import java.io.File;
 import java.net.URL;
 
+import junit.framework.TestCase;
+
 import org.junit.Test;
 
+import au.org.ala.delta.intkey.model.IntkeyDataset;
 import au.org.ala.delta.intkey.model.IntkeyDatasetFileBuilder;
-import au.org.ala.delta.intkey.model.ported.DataSet;
-
-import junit.framework.TestCase;
 
 public class DataSetTest extends TestCase {
     
@@ -43,6 +43,13 @@ public class DataSetTest extends TestCase {
     public void testDataSetFileReader() throws Exception {
         URL icharsFileUrl = getClass().getResource("/dataset/sample/ichars");        
         URL iitemsFileUrl = getClass().getResource("/dataset/sample/iitems");    
-        new IntkeyDatasetFileBuilder().readDataSet(new File(icharsFileUrl.toURI()), new File(iitemsFileUrl.toURI()));
+        IntkeyDataset ds = new IntkeyDatasetFileBuilder().readDataSet(new File(icharsFileUrl.toURI()), new File(iitemsFileUrl.toURI()));
+        
+        /*System.out.println(ds.getHeading());
+        System.out.println(ds.getSubHeading());
+        System.out.println(ds.getValidationString());
+        
+        System.out.println(ds.getCharacters());
+        System.out.println(ds.getTaxa());*/
     }
 }

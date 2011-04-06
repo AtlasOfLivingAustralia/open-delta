@@ -6,9 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import au.org.ala.delta.intkey.model.ported.Constants;
-import au.org.ala.delta.intkey.model.ported.DataSet;
-import au.org.ala.delta.intkey.model.ported.Params;
 import au.org.ala.delta.io.BinFile;
+import au.org.ala.delta.io.BinFileEncoding;
 import au.org.ala.delta.io.BinFileMode;
 
 public class IntkeyDatasetFileBuilder {
@@ -79,7 +78,7 @@ public class IntkeyDatasetFileBuilder {
         seekToRecord(hFile, recno);
         
         String heading = readString(hFile, len);
-        System.out.println(heading);
+        _ds.setHeading(heading);
         //output to log window
         //set as heading of main window
         
@@ -90,7 +89,7 @@ public class IntkeyDatasetFileBuilder {
           len = hFile.readInt();
           seekToRecord(hFile, _charFileHeader.getRpRegSubHeading());
           String regSubHeading = readString(hFile, len);
-          System.out.println(regSubHeading);
+          _ds.setSubHeading(regSubHeading);
         }
 
         if (_charFileHeader.getRpValidationString() > 0)
@@ -100,68 +99,23 @@ public class IntkeyDatasetFileBuilder {
             len = hFile.readInt();
             seekToRecord(hFile, _charFileHeader.getRpValidationString());
             String validationString = readString(hFile, len);
-            System.out.println(validationString);
+            _ds.setValidationString(validationString);
         }
         
-        return null;
+        readTaxonData();
+        readCharacterData();
         
-        //create a ported DataSet and initialise it to read in header information etc.
-        /*
-        BinFile cBinFile = new BinFile(charactersFile.getAbsolutePath(), BinFileMode.FM_READONLY);
-        BinFile iBinFile = new BinFile(itemsFile.getAbsolutePath(), BinFileMode.FM_READONLY);
+        _ds.setCharactersFile(charactersFile);
+        _ds.setItemsFile(itemsFile);
+        _ds.setCharactersFileHeader(_charFileHeader);
+        _ds.setItemsFileHeader(_itemFileHeader);
+        _ds.setCharacters(_characters);
+        _ds.setTaxa(_taxa);
         
-        DataSet ds = new DataSet();
-        ds.init(charactersFile, itemsFile);
+        _charBinFile.close();
+        _itemBinFile.close();
         
-        
-        //READ AND OUTPUT CHARACTER DESCRIPTIONS
-        int numChars = ds.Nchar();
-        
-        seekToRecord(cBinFile, ds.getRpCdes());
-        
-        List<Integer> charDescriptionRecordIndicies = new ArrayList<Integer>();
-        ByteBuffer recordIndiciesData = cBinFile.readByteBuffer(numChars);
-        
-        for (int i = 0; i < numChars; i++) {
-            charDescriptionRecordIndicies.add(recordIndiciesData.getInt());
-        }
-        
-        for(int index: charDescriptionRecordIndicies) {
-            seekToRecord(cBinFile, index);
-            
-            ByteBuffer charDescriptionTextData = cBinFile.readByteBuffer(numChars);
-            
-        }
-        
-        
-        // READ AND OUTPUT TAXON NAMES;
-        int numItems = ds.Nitem();
-        
-        seekToRecord(iBinFile, ds.getRpTnam() - 1);
-        
-        List<Integer> taxonNameOffsets = new ArrayList<Integer>(); 
-        for (int i = 0; i < numItems + 1; i++) {
-            taxonNameOffsets.add(iBinFile.readInt());
-        }
-        
-        int recordsSpannedByOffsets = Double.valueOf(Math.ceil(Integer.valueOf(numItems).doubleValue() / Integer.valueOf(Constants.LREC).doubleValue())).intValue();
-        
-        seekToRecord(iBinFile, ds.getRpTnam() - 1 + recordsSpannedByOffsets);
-        
-        ByteBuffer nameBuffer = iBinFile.readByteBuffer(taxonNameOffsets.get(taxonNameOffsets.size() - 1));
-        nameBuffer.position(0);
-        
-        for (int i = 0; i < numItems; i++) {
-            int start = taxonNameOffsets.get(i);
-            int end = taxonNameOffsets.get(i + 1);
-            int nameLength = end - start;
-            byte[] nameArray = new byte[nameLength];
-            nameBuffer.get(nameArray);
-            System.out.println(new String(nameArray));
-        }
-        
-        return null;
-        */
+        return _ds;
     }
     
     private void readCharactersFileHeader() {
@@ -263,7 +217,115 @@ public class IntkeyDatasetFileBuilder {
             _itemFileHeader.setRpNewPara(0);
             _itemFileHeader.setRpNonAutoCc(0);
         }
+    }
+    
+    private void readCharacterData() {
+        //READ AND OUTPUT CHARACTER DESCRIPTIONS
+        int numChars = _charFileHeader.getNC();
         
+        for (int i=0; i < numChars; i++) {
+            _characters.add(new Character());
+        }
+        
+        //READ NUMBER OF CHARACTER STATES
+        seekToRecord(_charBinFile, _charFileHeader.getRpStat() - 1);
+        
+        List<Integer> numStates = new ArrayList<Integer>();
+        ByteBuffer numStatesData = _charBinFile.readByteBuffer(numChars * sizeIntInBytes);
+        for (int i = 0; i < numChars; i++) {
+            numStates.add(numStatesData.getInt());
+        }
+        
+        //READ CHARACTER DESCRIPTIONS
+        seekToRecord(_charBinFile, _charFileHeader.getRpCdes() - 1);
+        
+        List<Integer> charDescriptionRecordIndicies = new ArrayList<Integer>();
+        ByteBuffer recordIndiciesData = _charBinFile.readByteBuffer(numChars * sizeIntInBytes);
+        
+        for (int i = 0; i < numChars; i++) {
+            charDescriptionRecordIndicies.add(recordIndiciesData.getInt());
+        }
+        
+        for(int i = 0; i < numChars; i++) {
+            
+            Character ch = _characters.get(i);
+            List<String> charStates = new ArrayList<String>();
+            
+            int descRecordIndex = charDescriptionRecordIndicies.get(i);
+            
+            seekToRecord(_charBinFile, descRecordIndex - 1);
+            
+            int numStatesForChar = numStates.get(i);
+            ByteBuffer charDescriptionsTextData = _charBinFile.readByteBuffer((numStatesForChar + 1) * sizeIntInBytes);
+            
+            List<Integer> charDescriptionsLengths = new ArrayList<Integer>();
+            
+            int lengthTotal = 0;
+            
+            for (int j = 0; j < numStatesForChar + 1; j++) {
+                int descLength = charDescriptionsTextData.getInt();
+                charDescriptionsLengths.add(descLength);
+                lengthTotal += descLength;
+            }
+            
+            int recordsSpannedByDescLengths = Double.valueOf(Math.ceil(Integer.valueOf(numStatesForChar + 1).doubleValue() / Integer.valueOf(Constants.LREC).doubleValue())).intValue();
+
+            seekToRecord(_charBinFile, descRecordIndex - 1 + recordsSpannedByDescLengths);
+            ByteBuffer descBuffer = _charBinFile.readByteBuffer(lengthTotal);
+            
+            
+            for (int k=0; k < charDescriptionsLengths.size(); k++) {
+                int len = charDescriptionsLengths.get(k);
+                byte[] descArray = new byte[len];
+                descBuffer.get(descArray);
+                
+                String descriptionText = BinFileEncoding.decode(descArray);                
+                
+                if (k == 0) {
+                    // First description listed is the character description
+                    ch.setDescription(descriptionText);
+                } else {
+                    charStates.add(descriptionText);
+                }
+            }
+            
+            ch.setStates(charStates);
+        }
+    }
+    
+    private void readTaxonData() {
+
+        int numItems = _itemFileHeader.getNItem();
+        
+        for (int i=0; i < numItems; i++) {
+            _taxa.add(new Taxon());
+        }
+        
+        // READ TAXON NAMES - rpTnam
+        seekToRecord(_itemBinFile, _itemFileHeader.getRpTnam() - 1);
+        
+        List<Integer> taxonNameOffsets = new ArrayList<Integer>(); 
+        for (int i = 0; i < numItems + 1; i++) {
+            taxonNameOffsets.add(_itemBinFile.readInt());
+        }
+        
+        int recordsSpannedByOffsets = Double.valueOf(Math.ceil(Integer.valueOf(numItems).doubleValue() / Integer.valueOf(Constants.LREC).doubleValue())).intValue();
+        
+        seekToRecord(_itemBinFile, _itemFileHeader.getRpTnam() - 1 + recordsSpannedByOffsets);
+        
+        ByteBuffer nameBuffer = _itemBinFile.readByteBuffer(taxonNameOffsets.get(taxonNameOffsets.size() - 1));
+        nameBuffer.position(0);
+        
+        for (int i = 0; i < numItems; i++) {
+            int start = taxonNameOffsets.get(i);
+            int end = taxonNameOffsets.get(i + 1);
+            int nameLength = end - start;
+            byte[] nameArray = new byte[nameLength];
+            nameBuffer.get(nameArray);
+            _taxa.get(i).setName(BinFileEncoding.decode(nameArray));
+        }
+        
+        //
     }
     
     private static void seekToRecord(BinFile bFile, int recordNumber) {
@@ -277,7 +339,7 @@ public class IntkeyDatasetFileBuilder {
 
     private static String readString(BinFile bFile, int length) {
         byte[] bytes = bFile.read(length);
-        return new String(bytes);
+        return BinFileEncoding.decode(bytes);
     }
     
 }
