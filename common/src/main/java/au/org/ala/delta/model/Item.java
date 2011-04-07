@@ -139,4 +139,22 @@ public class Item implements AttributeObserver {
 	public ItemData getItemData() {
 		return _impl;
 	}
+	
+	/**
+	 * Items are equal if they have the same item number.
+	 */
+	public boolean equals(Object item) {
+		if ((item == null) || !(item instanceof Item)) {
+			return false;
+		}
+		
+		return _itemNumber == ((Item)item).getItemNumber();
+	}
+	
+	/**
+	 * The item number is unique so makes a decent hashcode.
+	 */
+	public int hashCode() {
+		return _itemNumber;
+	}
 }

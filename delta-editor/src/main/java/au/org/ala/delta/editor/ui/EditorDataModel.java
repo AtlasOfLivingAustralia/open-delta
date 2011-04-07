@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import au.org.ala.delta.model.AbstractObservableDataSet;
+import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DeltaDataSet;
@@ -190,6 +191,13 @@ public class EditorDataModel implements DeltaDataSet, DeltaDataSetObserver {
 	@Override
 	public boolean isModified() {
 		return _currentDataSet.isModified();
+	}
+	
+	
+
+	@Override
+	public Attribute getAttribute(int itemNumber, int characterNumber) {
+		return _currentDataSet.getAttribute(itemNumber, characterNumber);
 	}
 
 	@Override

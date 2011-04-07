@@ -74,4 +74,6 @@ public interface DeltaDataSet {
 	 */
 	public Item addItem(int itemNumber);
 	
+	public Attribute getAttribute(int itemNumber, int characterNumber);
+	
 }

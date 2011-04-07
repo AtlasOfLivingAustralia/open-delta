@@ -88,6 +88,13 @@ public abstract class AbstractObservableDataSet implements DeltaDataSet, ItemObs
 	}
 	protected abstract Item doAddItem(int itemNumber);
 	
+	
+	
+	@Override
+	public Attribute getAttribute(int itemNumber, int characterNumber) {
+		return getItem(itemNumber).getAttribute(getCharacter(characterNumber));
+	}
+	
 	/**
 	 * Adds an observer interested in receiving notification of changes to this data set.
 	 * Duplicate observers are ignored.
