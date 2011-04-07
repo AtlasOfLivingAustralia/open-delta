@@ -77,9 +77,7 @@ Section -Main SEC0000
     
     ; Output JAR files to lib subdirectory
     SetOutPath "$INSTDIR\lib"
-    File "${DELTA-EDITOR-JARPATH}"
-    File "${INTKEY-JARPATH}"
-    File "${CONFOR-JARPATH}"
+    File "${JARPATH}\*.jar"
     
     WriteRegStr SHELL_CONTEXT "${REGKEY}\Components" Main 1
 SectionEnd

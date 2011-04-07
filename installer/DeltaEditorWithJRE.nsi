@@ -1,6 +1,6 @@
 !include .\DeltaEditorMain.nsi
 
-OutFile "..\target\Open-DELTA-${VERSION}-Installer.exe"
+OutFile "..\target\${OUTPUT-FILE-NAME}"
 
 Function CustomAddFiles
     ; Include the JRE

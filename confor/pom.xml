@@ -12,7 +12,6 @@
 		<url>http://code.google.com/p/open-delta/</url>
 	</scm>
 	<build>
-
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -21,6 +20,7 @@
 					<archive>
 						<manifest>
 							<mainClass>au.org.ala.delta.confor.CONFOR</mainClass>
+							<addClasspath>true</addClasspath>
 						</manifest>
 						<manifestEntries>
 							<Implementation-Version>${project.version} (${buildNumber})</Implementation-Version>
@@ -32,30 +32,43 @@
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<version>2.2-beta-5</version>
-				<configuration>
-					<archive>
-						<manifest>
-							<mainClass>au.org.ala.delta.confor.CONFOR</mainClass>
-						</manifest>
-						<manifestEntries>
-							<Implementation-Version>${project.version} (${buildNumber})</Implementation-Version>
-						</manifestEntries>
-					</archive>
-					<descriptorRefs>
-						<descriptorRef>jar-with-dependencies</descriptorRef>
-					</descriptorRefs>
-					<appendAssemblyId>false</appendAssemblyId>
-					<classifier>with-dependencies</classifier>
-					<finalName>${project.build.finalName}-with-dependencies</finalName>
-
-				</configuration>
 				<executions>
+					<execution>
+						<id>dependency-jars</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<descriptors>
+								<descriptor>../delta-dependency-jar-dir-assembly.xml</descriptor>
+							</descriptors>
+							<appendAssemblyId>false</appendAssemblyId>
+							<finalName>dependencies</finalName>
+						</configuration>
+					</execution>
 					<execution>
 						<id>with-dependencies</id>
 						<phase>package</phase>
 						<goals>
 							<goal>single</goal>
 						</goals>
+						<configuration>
+							<archive>
+								<manifest>
+									<mainClass>au.org.ala.delta.confor.CONFOR</mainClass>
+								</manifest>
+								<manifestEntries>
+									<Implementation-Version>${project.version} (${buildNumber})</Implementation-Version>
+								</manifestEntries>
+							</archive>
+							<descriptorRefs>
+								<descriptorRef>jar-with-dependencies</descriptorRef>
+							</descriptorRefs>
+							<classifier>with-dependencies</classifier>
+							<appendAssemblyId>false</appendAssemblyId>
+							<finalName>${project.build.finalName}-with-dependencies</finalName>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
@@ -103,7 +116,7 @@
 					</binFileExtensions>
 					<repositoryLayout>flat</repositoryLayout>
 					<repositoryName>lib</repositoryName>
-					<generateRepository>true</generateRepository>
+					<generateRepository>false</generateRepository>
 					<showConsoleWindow>true</showConsoleWindow>
 				</configuration>
 				<executions>
@@ -131,7 +144,7 @@
 							<dontWrapJar>true</dontWrapJar>
 							<headerType>console</headerType>
 							<outfile>target/CONFOR.exe</outfile>
-							<jar>lib/${project.build.finalName}-with-dependencies.jar</jar>
+							<jar>lib/${project.build.finalName}.jar</jar>
 							<errTitle>Error</errTitle>
 							<icon>installer/resources/Delta_CONFOR.ico</icon>
 							<jre>
@@ -149,7 +162,7 @@
 							<dontWrapJar>true</dontWrapJar>
 							<headerType>console</headerType>
 							<outfile>target/CONFOR-NOJRE.exe</outfile>
-							<jar>lib/${project.build.finalName}-with-dependencies.jar</jar>
+							<jar>lib/${project.build.finalName}.jar</jar>
 							<errTitle>Error</errTitle>
 							<icon>installer/resources/Delta_CONFOR.ico</icon>
 							<jre>

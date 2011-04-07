@@ -35,25 +35,23 @@
 									<classpath location="./installer/nsisant-1.3.jar" />
 								</taskdef>
 								<nsis script="./installer/DeltaEditorWithJRE.nsi">
+									<define name="OUTPUT-FILE-NAME" value="${project.build.finalName}-Installer.exe" />
+
 									<define name="VERSION" value="${project.version}" />
 
 									<define name="LICENSE-TEXT-PATH"
 										value="..\common\src\main\resources\au\org\ala\delta\resources\MPL-1.1.txt" />
 
+									<define name="JARPATH" value="..\target\installer-jars" />
+
 									<define name="SAMPLE-DLT-PATH" value="..\sampledata\sample.dlt" />
 
-									<define name="DELTA-EDITOR-JARPATH"
-										value="..\delta-editor\target\delta-editor-${project.version}.jar" />
 									<define name="DELTA-EDITOR-EXEPATH" value="..\delta-editor\target\DeltaEditor.exe" />
 									<define name="DELTA-EDITOR-EXEOUTPUTNAME" value="DeltaEditor.exe" />
 
-									<define name="INTKEY-JARPATH"
-										value="..\intkey\target\delta-intkey-${project.version}-with-dependencies.jar" />
 									<define name="INTKEY-EXEPATH" value="..\intkey\target\Intkey.exe" />
 									<define name="INTKEY-EXEOUTPUTNAME" value="Intkey.exe" />
 
-									<define name="CONFOR-JARPATH"
-										value="..\confor\target\confor-${project.version}-with-dependencies.jar" />
 									<define name="CONFOR-EXEPATH" value="..\confor\target\CONFOR-NOJRE.exe" />
 									<define name="CONFOR-EXEOUTPUTNAME" value="CONFOR.exe" />
 								</nsis>
@@ -72,6 +70,9 @@
 									<classpath location="./installer/nsisant-1.3.jar" />
 								</taskdef>
 								<nsis script="./installer/DeltaEditorNoJRE.nsi">
+									<define name="OUTPUT-FILE-NAME"
+										value="${project.build.finalName}-Installer-NOJRE.exe" />
+
 									<define name="VERSION" value="${project.version}" />
 
 									<define name="LICENSE-TEXT-PATH"
@@ -79,19 +80,15 @@
 
 									<define name="SAMPLE-DLT-PATH" value="..\sampledata\sample.dlt" />
 
-									<define name="DELTA-EDITOR-JARPATH"
-										value="..\delta-editor\target\delta-editor-${project.version}-with-dependencies.jar" />
+									<define name="JARPATH" value="..\target\installer-jars" />
+
 									<define name="DELTA-EDITOR-EXEPATH"
 										value="..\delta-editor\target\DeltaEditor-NOJRE.exe" />
 									<define name="DELTA-EDITOR-EXEOUTPUTNAME" value="DeltaEditor.exe" />
 
-									<define name="INTKEY-JARPATH"
-										value="..\intkey\target\delta-intkey-${project.version}-with-dependencies.jar" />
 									<define name="INTKEY-EXEPATH" value="..\intkey\target\Intkey-NOJRE.exe" />
 									<define name="INTKEY-EXEOUTPUTNAME" value="Intkey.exe" />
 
-									<define name="CONFOR-JARPATH"
-										value="..\confor\target\confor-${project.version}-with-dependencies.jar" />
 									<define name="CONFOR-EXEPATH" value="..\confor\target\CONFOR-NOJRE.exe" />
 									<define name="CONFOR-EXEOUTPUTNAME" value="CONFOR.exe" />
 								</nsis>
@@ -109,6 +106,20 @@
 				<version>2.2-beta-5</version>
 				<executions>
 					<execution>
+						<id>installation-jars</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<descriptors>
+								<descriptor>delta-installer-jar-dir-assembly.xml</descriptor>
+							</descriptors>
+	                        <finalName>installer-jars</finalName>
+                            <appendAssemblyId>false</appendAssemblyId>
+						</configuration>
+					</execution>
+					<execution>
 						<id>zip-archive</id>
 						<phase>install</phase>
 						<goals>
@@ -116,8 +127,7 @@
 						</goals>
 						<configuration>
 							<descriptors>
-								<descriptor>delta-zip-assembly.xml</descriptor>
-								<descriptor>delta-dir-assembly.xml</descriptor>
+								<descriptor>delta-zip-distribution-assembly.xml</descriptor>
 							</descriptors>
 						</configuration>
 					</execution>
@@ -130,9 +140,9 @@
 				<artifactId>wagon-ssh</artifactId>
 				<version>1.0-beta-7</version>
 			</extension>
-		</extensions>		
+		</extensions>
 	</build>
-	
+
 	<distributionManagement>
 		<repository>
 			<uniqueVersion>false</uniqueVersion>
@@ -147,5 +157,5 @@
 			<url>${ala.repository.url}</url>
 		</snapshotRepository>
 	</distributionManagement>
-	
+
 </project>

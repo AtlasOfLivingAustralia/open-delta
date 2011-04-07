@@ -14,7 +14,6 @@
 		</repository>
 	</repositories>
 
-
 	<scm>
 		<connection>scm:svn:http://open-delta.googlecode.com/svn/trunk/</connection>
 		<developerConnection>scm:svn:https://open-delta.googlecode.com/svn/trunk/</developerConnection>
@@ -35,45 +34,58 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
 				<configuration>
-                    <archive>
-                        <manifest>
-                            <mainClass>au.org.ala.delta.editor.DeltaEditor</mainClass>
-                            <addClasspath>true</addClasspath>
-                        </manifest>
-                        <manifestEntries>
-                            <Implementation-Version>${project.version} (${buildNumber})</Implementation-Version>
-                        </manifestEntries>
-                    </archive>
+					<archive>
+						<manifest>
+							<mainClass>au.org.ala.delta.editor.DeltaEditor</mainClass>
+							<addClasspath>true</addClasspath>
+						</manifest>
+						<manifestEntries>
+							<Implementation-Version>${project.version} (${buildNumber})</Implementation-Version>
+						</manifestEntries>
+					</archive>
 				</configuration>
 			</plugin>
 
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<version>2.2-beta-5</version>
-				<configuration>
-					<archive>
-						<manifest>
-							<mainClass>au.org.ala.delta.editor.DeltaEditor</mainClass>
-						</manifest>
-						<manifestEntries>
-							<Implementation-Version>${project.version} (${buildNumber})</Implementation-Version>
-						</manifestEntries>
-					</archive>
-					<descriptorRefs>
-						<descriptorRef>jar-with-dependencies</descriptorRef>
-					</descriptorRefs>
-					<appendAssemblyId>false</appendAssemblyId>
-					<classifier>with-dependencies</classifier>
-					<finalName>${project.build.finalName}-with-dependencies</finalName>
-
-				</configuration>
 				<executions>
+					<execution>
+						<id>dependency-jars</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<descriptors>
+								<descriptor>../delta-dependency-jar-dir-assembly.xml</descriptor>
+							</descriptors>
+							<finalName>dependencies</finalName>
+							<appendAssemblyId>false</appendAssemblyId>
+						</configuration>
+					</execution>
 					<execution>
 						<id>with-dependencies</id>
 						<phase>package</phase>
 						<goals>
 							<goal>single</goal>
 						</goals>
+						<configuration>
+							<archive>
+								<manifest>
+									<mainClass>au.org.ala.delta.editor.DeltaEditor</mainClass>
+								</manifest>
+								<manifestEntries>
+									<Implementation-Version>${project.version} (${buildNumber})</Implementation-Version>
+								</manifestEntries>
+							</archive>
+							<descriptorRefs>
+								<descriptorRef>jar-with-dependencies</descriptorRef>
+							</descriptorRefs>
+							<appendAssemblyId>false</appendAssemblyId>
+							<classifier>with-dependencies</classifier>
+							<finalName>${project.build.finalName}-with-dependencies</finalName>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
@@ -149,7 +161,7 @@
 					</binFileExtensions>
 					<repositoryLayout>flat</repositoryLayout>
 					<repositoryName>lib</repositoryName>
-					<generateRepository>true</generateRepository>
+					<generateRepository>false</generateRepository>
 					<showConsoleWindow>false</showConsoleWindow>
 				</configuration>
 				<executions>
@@ -195,7 +207,7 @@
 							<dontWrapJar>true</dontWrapJar>
 							<headerType>gui</headerType>
 							<outfile>target/DeltaEditor-NOJRE.exe</outfile>
-							<jar>lib\${project.build.finalName}-with-dependencies.jar</jar>
+							<jar>lib\${project.build.finalName}.jar</jar>
 							<errTitle>Error</errTitle>
 							<icon>installer\resources\delta_editor.ico</icon>
 							<jre>
@@ -223,7 +235,7 @@
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-		
+
 			<groupId>au.org.ala.delta</groupId>
 			<artifactId>delta-ui-common</artifactId>
 			<version>${project.version}</version>
