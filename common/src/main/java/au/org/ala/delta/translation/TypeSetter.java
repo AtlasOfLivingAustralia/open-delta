@@ -19,7 +19,7 @@ public class TypeSetter {
 	private int _currentIndent;
 	private int _currentLinePos;
 	private int _icmd;
-	private int _icap;
+	private boolean _capitalise;
 	
 	/** TODO fix me this is OUTPUT FORMAT HTML */
 	private boolean _ihtml = false;
@@ -87,8 +87,9 @@ public class TypeSetter {
 		
 		text = text.trim();
 		
-		text = capitaliseFirstWord(text);
-		
+		if (_capitalise) {
+			text = capitaliseFirstWord(text);
+		}
 		if (!_indented) {
 			indent();
 		}
@@ -181,6 +182,7 @@ public class TypeSetter {
 		else if (tmp.charAt(index-1) == '|') {
 			tmp.deleteCharAt(index-1);
 		}
+		_capitalise = false;
 		return tmp.toString();
 	}
 	
@@ -212,7 +214,7 @@ public class TypeSetter {
 		
 	}
 	
-	private TypeSetting _typeSettingMode = TypeSetting.REMOVE_EXISTING_TYPESETTINGMARKS;
+	private TypeSetting _typeSettingMode = TypeSetting.DO_NOTHING;
 	
 	public void writeJustifiedOutput(String text, int completionAction, boolean inHtmlRtf, boolean encodeXmlBrackets) {
 		if (_typeSettingMode == TypeSetting.REMOVE_EXISTING_TYPESETTINGMARKS) {
@@ -273,12 +275,12 @@ public class TypeSetter {
 				}
 				char c = text.charAt(jin);
 				if (c == '|' && iomcap) {
-					_icap = 0;
+					_capitalise = false;
 					continue;
 				}
 				boolean ignore = ignore(c);
 				
-				if ((_icap != 0) && (c != '\\') && !inHtmlRtf) {
+				if ((_capitalise) && (c != '\\') && !inHtmlRtf) {
 					c = capitalize(c);
 				}
 				if ((c == ' ') && (lastCharInBuffer() == ' ')) {
@@ -389,7 +391,7 @@ public class TypeSetter {
 	
 	private char capitalize(char ch) {
 		if (!ignore(ch)) {
-			_icap = 0;
+			_capitalise = false;
 			ch = Character.toUpperCase(ch);
 		}
 		return ch;
@@ -401,7 +403,7 @@ public class TypeSetter {
 	}
 
 	public void captialiseNextWord() {
-		_icap = 1;
+		_capitalise = true;
 		
 	}
 

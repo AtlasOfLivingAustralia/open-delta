@@ -1,15 +1,15 @@
 *SHOW ~ open-delta simple test data set.
 
 *CHARACTER LIST
-#1. text character<with comment 1>/
+#1. text character <with comment 1>/
 
-#2. integer numeric character<comment 2>/
+#2. integer numeric character <comment 2>/
        whole units/
 
-#3. real numeric <comment 3>character/
+#3. real numeric <comment 3> character/
        real units/
        
-#4. unordered multistate character<comment 4>/
+#4. unordered multistate character <comment 4>/
        1. state 1/
        2. state 2/
 

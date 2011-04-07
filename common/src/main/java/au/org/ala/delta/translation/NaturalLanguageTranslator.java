@@ -63,7 +63,7 @@ public class NaturalLanguageTranslator {
 	
 	
 	enum TypeSetting {ADD_TYPESETTING_MARKS, DO_NOTHING, REMOVE_EXISTING_TYPESETTINGMARKS};
-	TypeSetting _typeSettingMode;
+	TypeSetting _typeSettingMode = TypeSetting.DO_NOTHING;
 	
 	boolean _newParagraph;
 	
@@ -412,14 +412,14 @@ public class NaturalLanguageTranslator {
 	private boolean outputRedundantVariantAttribute(Item item, int character) {
 		boolean masterItemMaskedIn = true; /* Not sure under what conditions this would be false */
 		if (masterItemMaskedIn) {
-			Boolean insertRedundantVariantAttributes = !_context.getOmitRedundantVariantAttributes();
-			if (insertRedundantVariantAttributes == null) {
+			Boolean omitRedundantVariantAttributes = _context.getOmitRedundantVariantAttributes();
+			if (omitRedundantVariantAttributes == null) {
 				if (_context.isCharacterAdded(item.getItemNumber(), character) == false) {
 					// Don't output this attribute
 					return false;
 				}
 			}
-			else if (insertRedundantVariantAttributes == false) {
+			else if (omitRedundantVariantAttributes == true) {
 				if (_context.isCharacterAdded(item.getItemNumber(), character) == false) {
 					// Don't output this attribute
 					return false;
@@ -582,14 +582,14 @@ public class NaturalLanguageTranslator {
 			if (/* item subgroup type is not text comment */false) {
 				_typeSetter.insertTypeSettingMarks(25);
 			}
-			_typeSetter.writeJustifiedOutput(description, 0, false);
+			_typeSetter.writeJustifiedText(description, 0, false);
 			if (/* item subgroup type is not text comment */false) {
 				_typeSetter.insertTypeSettingMarks(26);
 			}
 		}
 		_typeSetter.insertTypeSettingMarks(15);
 		if (completionAction > 0) {
-			_typeSetter.writeJustifiedOutput(" ", completionAction, false);
+			_typeSetter.writeJustifiedText(" ", completionAction, false);
 			if (StringUtils.isEmpty(description)) {
 				_typeSetter.writeBlankLines(1, 0);
 			}
