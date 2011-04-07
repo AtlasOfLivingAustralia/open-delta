@@ -1,20 +1,12 @@
 *SHOW Translate into natural language - plain text.
 
-*HEADING Grass Genera #TIME #DATE
-
-*LISTING FILE tonat.lst
-
-*PRINT FILE tonat.prt
+*HEADING Test Data Set
 
 *INPUT FILE specs
 
 *TRANSLATE INTO NATURAL LANGUAGE
 
-*OMIT TYPESETTING MARKS
-
-*PRINT WIDTH 78
-
-*INPUT FILE layout
+*PRINT WIDTH 80
 
 *INPUT FILE chars
 
