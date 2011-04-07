@@ -50,13 +50,18 @@ public class DeltaContext extends AbstractDeltaContext {
 	private TranslateType _translateType;
 	private Set<Integer> _excludedCharacters = new HashSet<Integer>();
 	private Set<Integer> _excludedItems = new HashSet<Integer>();
-	
+	private Set<Integer> _omitPeriodForCharacters = new HashSet<Integer>();
+	private Set<Integer> _replaceSemiColonWithComma = new HashSet<Integer>();
+	private Set<Integer> _omitOrForCharacters = new HashSet<Integer>();
 	private Set<Integer> _newParagraphCharacters = new HashSet<Integer>();
 	private Map<Integer, String> _itemHeadings = new HashMap<Integer, String>();
 	private Map<Integer, String> _itemSubHeadings = new HashMap<Integer, String>();
 	private Map<Integer, String> _indexHeadings = new HashMap<Integer, String>();
 	
 	private Set<Set<Integer>> _linkedCharacters = new HashSet<Set<Integer>>();
+	private Map<Integer,Set<Integer>> _emphasizedCharacters = new HashMap<Integer, Set<Integer>>();
+	private Map<Integer,Set<Integer>> _addedCharacters = new HashMap<Integer, Set<Integer>>();
+	private Set<Integer> _emphasizedFeatures = new HashSet<Integer>();
 	private Integer _characterForTaxonNames = null;
 	
 	private int _numberOfCharacters;
@@ -68,6 +73,9 @@ public class DeltaContext extends AbstractDeltaContext {
 	private boolean _omitCharacterNumbers = false;
 	private boolean _omitInnerComments = false;
 	private boolean _omitInapplicables = false;
+	private Boolean _omitRedundantVariantAttributes = null;
+	private boolean _useAlternateComma;
+	private boolean _insertImplicitValues = false;
 
 	private Integer _characterForTaxonImages = null;
 
@@ -328,6 +336,10 @@ public class DeltaContext extends AbstractDeltaContext {
 	public Set<Integer> getNewParagraphCharacters() {
 		return _newParagraphCharacters;
 	}
+	
+	public boolean startNewParagraphAtCharacter(int charNumber) {
+		return _newParagraphCharacters.contains(charNumber);
+	}
 
 	public void setCharacterWeight(int number, double weight) {
 		if (_characterWeights == null) {
@@ -418,5 +430,65 @@ public class DeltaContext extends AbstractDeltaContext {
 	 */
 	public Integer getCharacterForTaxonNames() {
 		return _characterForTaxonNames;
+	}
+
+	/**
+	 * Specifies whether attributes in a variant items are output in natural language translations.
+	 * Controlled by the OMIT REDUNDANT VARIANT ATTRIBUTES and INCLUDE REDUNDANT VARIANT ATTRIBUTES
+	 * directives. If neither directive is given, the default is to output attributes as coded.
+	 * @param b true if redundant variant attributes should be omitted.
+	 */
+	public void setOmitRedundantVariantAttributes(Boolean b) {
+		_omitRedundantVariantAttributes = b;
+		
+	}
+	
+	/**
+	 * Specifies whether attributes in a variant items are output in natural language translations.
+	 * Controlled by the OMIT REDUNDANT VARIANT ATTRIBUTES and INCLUDE REDUNDANT VARIANT ATTRIBUTES
+	 * directives. If neither directive is given, the default is to output attributes as coded.
+	 * @param b true if redundant variant attributes should be omitted.
+	 */
+	public Boolean getOmitRedundantVariantAttributes() {
+		return _omitRedundantVariantAttributes;
+	}
+
+	public boolean getOmitPeriodForCharacter(int characterNum) {
+		return _omitPeriodForCharacters.contains(characterNum);
+	}
+
+	public boolean replaceSemiColonWithComma(int characterNum) {
+		return _replaceSemiColonWithComma.contains(characterNum);
+	}
+	public boolean useAlternateComma() {
+		return _useAlternateComma;
+	}
+	
+	public boolean isCharacterEmphasized(int itemNum, int characterNum) {
+		return entryExists(_emphasizedCharacters, itemNum, characterNum);
+	}
+	
+	public boolean isCharacterAdded(int itemNum, int characterNum) {
+		return entryExists(_addedCharacters, itemNum, characterNum);
+	}
+	
+	private boolean entryExists(Map<Integer, Set<Integer>> map, int itemNum, int characterNum) {
+		Set<Integer> characterSet = map.get(itemNum);
+		if (characterSet != null) {
+			return characterSet.contains(characterNum);
+		}
+		return false;
+	}
+
+	public boolean emphasizeFeature(int i) {
+		return _emphasizedFeatures.contains(i);
+	}
+
+	public boolean insertImplicitValues() {
+		return _insertImplicitValues;
+	}
+
+	public boolean omitOrForCharacter(int i) {
+		return _omitOrForCharacters.contains(i);
 	}
 }
