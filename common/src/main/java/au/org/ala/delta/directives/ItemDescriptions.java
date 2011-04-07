@@ -63,10 +63,17 @@ class ItemsParser extends AbstractStreamParser {
 		assert _currentChar == '#';
 		readNext();
 
+		boolean variant = false;
+		if (_currentChar == '+') {
+			variant = true;
+			readNext();
+		}
+		
 		String itemName = readToNextEndSlashSpace();
 		Logger.debug("Parsing Item %s", itemName);
 		
 		Item item = _context.getDataSet().addItem(itemIndex);
+		item.setVariant(variant);
 		item.setDescription(itemName);
 		skipWhitespace();
 		while (_currentChar != '#' && _currentInt >= 0) {
