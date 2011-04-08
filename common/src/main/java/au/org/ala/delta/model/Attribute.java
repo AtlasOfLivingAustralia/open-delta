@@ -18,6 +18,8 @@ package au.org.ala.delta.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 import au.org.ala.delta.model.impl.AttributeData;
 import au.org.ala.delta.model.observer.AttributeObserver;
 
@@ -28,8 +30,8 @@ public class Attribute {
 
 	private AttributeData _impl;
 	
-	private Character _character;
-	private Item _item;
+	protected Character _character;
+	protected Item _item;
 	private List<AttributeObserver> _observers;
 	
 	public Attribute(Character character, AttributeData impl) {
@@ -54,7 +56,23 @@ public class Attribute {
 		if (!(_character instanceof MultiStateCharacter)) {
 			return false;
 		}
-		return _impl.isStatePresent(stateNumber);
+		
+		
+		boolean statePresent = _impl.isStatePresent(stateNumber);
+		
+		if ((statePresent == false) && (StringUtils.isEmpty(getValue()))) {
+			MultiStateCharacter multiStateChar = (MultiStateCharacter)_character;
+			statePresent = (stateNumber == multiStateChar.getUncodedImplicitState());
+		}
+		return statePresent;
+	}
+	
+	public boolean isImplicit() {
+		if (!(_character instanceof MultiStateCharacter)) {
+			return false;
+		}
+		MultiStateCharacter multiStateChar = (MultiStateCharacter)_character;
+		return (StringUtils.isEmpty(getValue()) && multiStateChar.getUncodedImplicitState() > 0);
 	}
 	
 	public boolean isSimple() {
@@ -69,6 +87,7 @@ public class Attribute {
 		_impl.setValue(value);
 		notifyObservers();
 	}
+	
 	
 	/**
 	 * Registers interest in being notified of changes to this Attribute.

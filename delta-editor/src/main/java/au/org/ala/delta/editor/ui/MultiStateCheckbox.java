@@ -56,18 +56,12 @@ public class MultiStateCheckbox extends JCheckBox {
 			} else {
 				setDisabledIcon(_disabled_icon);
 				Attribute attr = _item.getAttribute(_character);
-				if (attr != null) {
-					boolean selected = attr.isPresent(_stateNo);
-					setSelected(selected);
-					if (selected) {
-						setSelectedIcon(_explicit_icon);
-					} 
-				} else {
-					int implicit = _character.getUncodedImplicitState();
-					if (implicit > 0 && implicit == _stateNo) {
-						setSelected(true);
-						setSelectedIcon(_implicit_icon);
-					}
+				setSelected(attr.isPresent(_stateNo));
+				if (attr.isImplicit()) {
+					setSelectedIcon(_implicit_icon);
+				}
+				else {
+					setSelectedIcon(_explicit_icon);
 				}
 			}
 

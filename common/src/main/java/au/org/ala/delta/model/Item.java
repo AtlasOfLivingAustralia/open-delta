@@ -61,6 +61,7 @@ public class Item implements AttributeObserver {
 	
 	public Attribute getAttribute(Character character) {
 		Attribute attribute = _impl.getAttribute(character);
+
 		if (attribute != null) {
 			attribute.setItem(this);
 			attribute.addAttributeObserver(this);

@@ -72,7 +72,7 @@ public class MatrixTableModel implements TableModel {
 		if (character instanceof MultiStateCharacter) {
 			MultiStateCharacter msc = (MultiStateCharacter) character;					
 			Attribute attr = _dataSet.getItem(rowIndex + 1).getAttribute(character);
-			if (attr == null) {
+			if (attr == null || attr.isImplicit()) {
 				int implicit = msc.getUncodedImplicitState();
 				if (implicit > 0) {
 					return implicit;
