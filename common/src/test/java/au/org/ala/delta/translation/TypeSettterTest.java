@@ -83,7 +83,7 @@ public class TypeSettterTest extends TestCase {
 		String[] lines = output().split(SystemUtils.LINE_SEPARATOR);
 		
 		assertEquals("    The quick brown fox jumps over the lazy dog....The quick brown fox jumps", lines[0]);
-		assertEquals("    over the lazy dog....", lines[1]);
+		assertEquals("over the lazy dog....", lines[1]);
 		
 		input = "Thisisareallyreallyreallyreallyreallyreallyreallyreallylongstringreallyreallyreally";
 		_typeSetter.setIndent(4);
@@ -93,7 +93,7 @@ public class TypeSettterTest extends TestCase {
 		lines = output().split(SystemUtils.LINE_SEPARATOR);
 		
 		assertEquals("    "+input.substring(0, 76), lines[0]);
-		assertEquals("    "+input.substring(76, input.length()), lines[1]);
+		assertEquals(input.substring(76, input.length()), lines[1]);
 		
 	}
 	

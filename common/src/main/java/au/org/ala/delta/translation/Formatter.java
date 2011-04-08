@@ -6,6 +6,7 @@ import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.NumericCharacter;
+import au.org.ala.delta.model.TextCharacter;
 import au.org.ala.delta.rtf.RTFUtils;
 import au.org.ala.delta.util.Utils;
 
@@ -20,6 +21,28 @@ public class Formatter {
 		_context = context;
 	}
 	
+	public String stripComments(String text) {
+		
+		// The following pattern matches the occurance of <> with any amount of whitespace 
+		// before or after and replaces it with a single space.  The ? in the <.*?> only 
+		// matches characters up to the first > - otherwise all text in between the opening
+		// bracket of the first comment and the closing bracket of the last comment would be 
+		// matched.
+		
+		// The result is then trimmed in case the comment was at the start or end of the 
+		// string.
+		
+		return text.replaceAll("\\s*<.*?>\\s*", " ").trim();
+	}
+	
+	public String removeOuterBrackets(String text) {
+		if (StringUtils.isEmpty(text) || text.length() <= 2) {
+			return text;
+		}
+		else {
+			return text.substring(1, text.length()-1);
+		}
+	}
 	
 	public String formatTaxonName(String name) {
 		
@@ -31,7 +54,13 @@ public class Formatter {
 	}
 	
 	public String formatAttribute(Character character, String attribute) {
-		attribute = Utils.removeComments(attribute, 1, true, true, false, true);
+		if (StringUtils.isEmpty(attribute)) {
+			return "";
+		}
+		if (character instanceof TextCharacter) {
+			attribute = removeOuterBrackets(attribute);
+		}
+		attribute = stripComments(attribute);
 		attribute = RTFUtils.stripFormatting(attribute);
 		if (character.getCharacterType().isNumeric()) {
 			attribute = formatNumericAttribute((NumericCharacter<?>)character, attribute);
@@ -48,7 +77,7 @@ public class Formatter {
 			
 		}
 		else {
-			name = Utils.removeComments(name, 1, false, false, false, true);
+			name = stripComments(name);
 		}
 		name = RTFUtils.stripFormatting(name);
 		return name;

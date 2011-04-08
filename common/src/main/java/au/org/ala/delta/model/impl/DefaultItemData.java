@@ -6,6 +6,7 @@ import java.util.Map;
 
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.MultiStateCharacter;
 
 /**
  * Implements ItemData and stores the data in memory.
@@ -35,7 +36,17 @@ public class DefaultItemData implements ItemData {
 
 	@Override
 	public Attribute getAttribute(Character character) {
-		return _attributes.get(character);
+		
+		Attribute attribute = _attributes.get(character);
+		if (attribute == null) {
+			
+			if (character instanceof MultiStateCharacter) {
+				attribute = new Attribute(character, new DefaultAttributeData());
+			}
+			
+		}
+		
+		return attribute; 
 	}
 
 	@Override

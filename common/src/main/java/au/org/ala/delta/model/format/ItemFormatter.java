@@ -12,14 +12,21 @@ public class ItemFormatter {
 	
 	private boolean _includeNumber;
 	private boolean _stripRtf;
+	private String variant;
 	
 	public ItemFormatter() {
-		this(true, false);
+		this(true, false, true);
 	}
 	
-	public ItemFormatter(boolean includeNumber, boolean stripRtf) {
+	public ItemFormatter(boolean includeNumber, boolean stripRtf, boolean useShortVariant) {
 		_includeNumber = includeNumber;
 		_stripRtf = stripRtf;
+		if (useShortVariant) {
+			variant = "(+) ";
+		}
+		else {
+			variant = "(variant)";
+		}
 	}
 	
 	/**
@@ -35,7 +42,7 @@ public class ItemFormatter {
 			builder.append(item.getItemNumber()).append(". ");
 		}
 		if (item.isVariant()) {
-			builder.append("(+) ");
+			builder.append(variant);
 		}
 		String description = item.getDescription();
 		if (StringUtils.isNotEmpty(description) && _stripRtf) {

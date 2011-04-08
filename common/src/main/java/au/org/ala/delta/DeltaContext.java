@@ -293,10 +293,6 @@ public class DeltaContext extends AbstractDeltaContext {
 		_omitCharacterNumbers = b;
 	}
 
-	public boolean isOmitCharacterNumbers() {
-		return _omitCharacterNumbers;
-	}
-
 	public void setOmitInnerComments(boolean b) {
 		_omitInnerComments = b;
 	}
@@ -490,5 +486,9 @@ public class DeltaContext extends AbstractDeltaContext {
 
 	public boolean omitOrForCharacter(int i) {
 		return _omitOrForCharacters.contains(i);
+	}
+
+	public boolean omitCharacterNumbers() {
+		return _omitCharacterNumbers;
 	}
 }

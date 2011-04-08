@@ -68,15 +68,19 @@ public class TypeSetter {
 	
 	public void writeBlankLines(int numLines, int requiredNumLinesLeftOnPage) {
 		
-		printBufferLine(false);
+		printBufferLine();
 		for (int i = 0; i < numLines; i++) {
 			_output.println();
 		}
 	}
 	
+	public void printBufferLine() {
+		printBufferLine(false);
+	}
+	
 	public void printBufferLine(boolean indentNewLine) {
 		_output.println(_outputBuffer.toString());
-		_indented = false;
+		
 		_outputBuffer = new StringBuilder();
 		if (indentNewLine) {
 			indent();
@@ -94,7 +98,7 @@ public class TypeSetter {
 			indent();
 		}
 		if (willFitOnLine() == false) {
-			printBufferLine(true);
+			printBufferLine();
 		}
 		
 		// Insert a space if one is required.
@@ -113,7 +117,7 @@ public class TypeSetter {
 			
 			String trailingText = _outputBuffer.substring(wrappingPos);
 			_outputBuffer.delete(wrappingPos, _outputBuffer.length());
-			printBufferLine(true);
+			printBufferLine();
 			
 			_outputBuffer.append(trailingText.trim());
 		}
@@ -357,6 +361,9 @@ public class TypeSetter {
 	}
 	
 	private char lastCharInBuffer() {
+		if (_outputBuffer.length() == 0) {
+			return 0;
+		}
 		return _outputBuffer.charAt(_outputBuffer.length()-1);
 	}
 	
@@ -416,7 +423,7 @@ public class TypeSetter {
 			writeJustifiedOutput(" ", -1, false);
 		}
 		else {
-			writeFromVocabulary(Word.FULL_STOP, 0);
+			writeFromVocabulary(word, 0);
 		}
 		
 	}

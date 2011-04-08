@@ -385,7 +385,8 @@ class ItemColumnModel extends AbstractTableModel {
 		_dataSet.addDeltaDataSetObserver(new ItemAddedListener());
 		boolean includeNumber = false;
 		boolean stripRtf = true;
-		_formatter = new ItemFormatter(includeNumber, stripRtf);
+		boolean useShortFormOfVariant = true;
+		_formatter = new ItemFormatter(includeNumber, stripRtf, useShortFormOfVariant);
 	}
 
 	@Override
