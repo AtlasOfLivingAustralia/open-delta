@@ -359,15 +359,6 @@ class DeltaTreeCellRenderer extends DefaultTreeCellRenderer  {
 				} else if (ch instanceof NumericCharacter) {
 					setText(getText() + " " + ((NumericCharacter) ch).getUnits());
 				}
-				else {
-					if (StringUtils.isEmpty(name)) {
-						name = "                     ";
-					}
-					setText(name);
-					System.out.println("Name: "+name);
-					System.out.println("Preferred size: "+getPreferredSize());
-					
-				}
 			}
 		}
 		return this;
