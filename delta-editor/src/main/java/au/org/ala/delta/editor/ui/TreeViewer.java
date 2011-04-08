@@ -36,7 +36,6 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeSelectionModel;
 
-import org.apache.commons.lang.StringUtils;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Resource;
