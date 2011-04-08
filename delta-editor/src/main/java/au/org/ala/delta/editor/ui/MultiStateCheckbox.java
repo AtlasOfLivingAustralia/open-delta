@@ -61,13 +61,7 @@ public class MultiStateCheckbox extends JCheckBox {
 					setSelected(selected);
 					if (selected) {
 						setSelectedIcon(_explicit_icon);
-					} else {
-						int implicit = _character.getCodedImplicitState();
-						if (implicit > 0 && implicit == _stateNo) {
-							setSelected(true);
-							setSelectedIcon(_implicit_icon);
-						}	
-					}
+					} 
 				} else {
 					int implicit = _character.getUncodedImplicitState();
 					if (implicit > 0 && implicit == _stateNo) {
