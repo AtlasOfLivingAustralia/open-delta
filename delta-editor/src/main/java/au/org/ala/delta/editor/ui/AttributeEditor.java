@@ -110,21 +110,21 @@ public class AttributeEditor extends JPanel implements ValidationListener {
 			
 			@Override
 			public void keyReleased(KeyEvent e) {
-				if (e.getModifiers() == 0 && e.getKeyCode() == KeyEvent.VK_ENTER) {
+				if (noModifiersOrShift(e.getModifiers()) && e.getKeyCode() == KeyEvent.VK_ENTER) {
 					e.consume();
 				}
 			}
 			
 			@Override
 			public void keyTyped(KeyEvent e) {
-				if (e.getModifiers() == 0 && e.getKeyCode() == KeyEvent.VK_ENTER) {
+				if (noModifiersOrShift(e.getModifiers()) && e.getKeyCode() == KeyEvent.VK_ENTER) {
 					e.consume();
 				}
 			}
 			
 			@Override
 			public void keyPressed(KeyEvent e) {
-				if (e.getModifiers() == 0 && e.getKeyCode() == KeyEvent.VK_ENTER) {
+				if (noModifiersOrShift(e.getModifiers()) && e.getKeyCode() == KeyEvent.VK_ENTER) {
 					e.consume();
 					InputVerifier validator = _textPane.getInputVerifier();
 					if (validator != null) {
@@ -133,10 +133,19 @@ public class AttributeEditor extends JPanel implements ValidationListener {
 						}
 					}
 					if (commitChanges()) {
-						// Notify the host of this control to advance to either the next item or character...
-						fireAdvance();						
+						if (e.getModifiers() == 0) {
+							// Notify the host of this control to advance to either the next item or character...
+							fireAdvance();	
+						}
+						else {
+							fireReverse();
+						}
 					}
 				}
+			}
+			
+			private boolean noModifiersOrShift(int modifiers) {
+				return ((modifiers == 0) || ((modifiers & KeyEvent.SHIFT_MASK) > 0));
 			}
 
 		});
@@ -159,6 +168,12 @@ public class AttributeEditor extends JPanel implements ValidationListener {
 	protected void fireAdvance() {
 		for (AttributeEditorListener l : _listeners) {
 			l.advance();
+		}
+	}
+	
+	protected void fireReverse() {
+		for (AttributeEditorListener l : _listeners) {
+			l.reverse();
 		}
 	}
 

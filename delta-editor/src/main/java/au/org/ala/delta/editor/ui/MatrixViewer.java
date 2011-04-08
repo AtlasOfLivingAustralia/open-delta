@@ -170,21 +170,11 @@ public class MatrixViewer extends JInternalFrame {
 			
 			@Override
 			public void advance() {
-				switch (EditorPreferences.getEditorAdvanceMode()) {
-					case Character:
-						int candidateCharIndex = _table.getSelectedColumn() + 1;
-						if (candidateCharIndex < _table.getModel().getColumnCount()) {
-							_table.setColumnSelectionInterval(candidateCharIndex, candidateCharIndex);							
-						}
-						break;
-					case Item:
-						int candidateRowIndex = _table.getSelectedRow() + 1;
-						if (candidateRowIndex < _table.getModel().getRowCount()) {
-							_table.setRowSelectionInterval(candidateRowIndex, candidateRowIndex);							
-						}						
-						break;
-				}
-				scrollCellToVisible(_table.getSelectedRow(), _table.getSelectedColumn());
+				updateSelection(1);
+			}
+			@Override
+			public void reverse() {
+				updateSelection(-1);
 			}
 		});
 
@@ -203,6 +193,28 @@ public class MatrixViewer extends JInternalFrame {
 		if ((_dataSet.getMaximumNumberOfItems() > 0) && (_dataSet.getNumberOfCharacters() > 0)) {
 			selectCell(0, 0);
 		}
+	}
+	
+	/**
+	 * Updates the current table selection index.  
+	 * @param selectionModifier the amount to add to the current selection index.
+	 */
+	private void updateSelection(int selectionModifier) {
+		switch (EditorPreferences.getEditorAdvanceMode()) {
+		case Character:
+			int candidateCharIndex = _table.getSelectedColumn() + selectionModifier;
+			if (candidateCharIndex >= 0 && candidateCharIndex < _table.getModel().getColumnCount()) {
+				_table.setColumnSelectionInterval(candidateCharIndex, candidateCharIndex);							
+			}
+			break;
+		case Item:
+			int candidateRowIndex = _table.getSelectedRow() + selectionModifier;;
+			if (candidateRowIndex >= 0 && candidateRowIndex < _table.getModel().getRowCount()) {
+				_table.setRowSelectionInterval(candidateRowIndex, candidateRowIndex);							
+			}						
+			break;
+		}
+		scrollCellToVisible(_table.getSelectedRow(), _table.getSelectedColumn());
 	}
 	
 	public void scrollCellToVisible(int row, int column) {

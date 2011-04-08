@@ -151,21 +151,11 @@ public class TreeViewer extends JInternalFrame {
 		_stateEditor.add(new AttributeEditorListener() {					
 			@Override
 			public void advance() {
-				switch (EditorPreferences.getEditorAdvanceMode()) {
-					case Character:
-						// find the next character in the tree and select it...
-						int nextCharRow = findNextCharacterRow();
-						_tree.setSelectionRow(nextCharRow);
-						_tree.scrollRowToVisible(nextCharRow);										
-						break;
-					case Item:
-						int candidateIndex = _itemList.getSelectedIndex() + 1;
-						if (candidateIndex < _itemList.getModel().getSize()) {
-							_itemList.setSelectedIndex(candidateIndex);
-							_itemList.ensureIndexIsVisible(candidateIndex);
-						}
-						break;
-				}
+				updateSelection(1);
+			}
+			@Override
+			public void reverse() {
+				updateSelection(-1);
 			}
 		});
 
@@ -179,15 +169,35 @@ public class TreeViewer extends JInternalFrame {
 
 	}
 	
-	private int findNextCharacterRow() {
+	private void updateSelection(int increment) {
+			switch (EditorPreferences.getEditorAdvanceMode()) {
+				case Character:
+					// find the next character in the tree and select it...
+					int nextCharRow = findCharacterRow(increment);
+					_tree.setSelectionRow(nextCharRow);
+					_tree.scrollRowToVisible(nextCharRow);										
+					break;
+				case Item:
+					int candidateIndex = _itemList.getSelectedIndex() + increment;
+					if (candidateIndex >= 0 && candidateIndex < _itemList.getModel().getSize()) {
+						_itemList.setSelectedIndex(candidateIndex);
+						_itemList.ensureIndexIsVisible(candidateIndex);
+					}
+					break;
+			}
+	}
+	
+	private int findCharacterRow(int searchIncrement) {
 		if (_tree.getSelectionCount() > 0) {  
 			int current = _tree.getSelectionRows()[0];
 			int row = current;
-			while (++row < _tree.getRowCount()) {
+			row += searchIncrement;
+			while (row >= 0 && row < _tree.getRowCount()) {
 				Object obj = _tree.getPathForRow(row).getLastPathComponent();
 				if (obj instanceof CharacterTreeNode) {
 					return row;
 				}
+				row += searchIncrement;
 			}
 			return current;
 		}
