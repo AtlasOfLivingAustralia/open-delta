@@ -113,7 +113,7 @@ public class DeltaEditor extends InternalFrameApplication {
 
 	@Resource
 	String windowTitleWithFilename;
-
+	
 	@Resource
 	private String warning;
 	@Resource
@@ -130,8 +130,16 @@ public class DeltaEditor extends InternalFrameApplication {
 	private Map<AbstractObservableDataSet, List<JInternalFrame>> _activeViews;
 
 	public static void main(String[] args) {
+		setupMacSystemProperties(DeltaEditor.class);
 		launch(DeltaEditor.class, args);
 	}
+	
+	@Override
+	protected void initialize(String[] args) {
+		ResourceMap resourceMap = getContext().getResourceMap(DeltaEditor.class);
+		resourceMap.injectFields(this);
+	}
+	
 
 	public boolean getSaveEnabled() {
 		return _saveEnabled;
@@ -154,9 +162,6 @@ public class DeltaEditor extends InternalFrameApplication {
 		_closingFromMenu = false;
 		_propertyChangeSupport = new PropertyChangeSupport(this);
 		_activeViews = new HashMap<AbstractObservableDataSet, List<JInternalFrame>>();
-
-		ResourceMap resourceMap = getContext().getResourceMap(AboutBox.class);
-		resourceMap.injectFields(this);
 
 		_actionMap = getContext().getActionMap(this);
 
@@ -288,12 +293,18 @@ public class DeltaEditor extends InternalFrameApplication {
 		mnuItHelpOnSelection.addActionListener(_helpController.helpOnSelectionAction());
 		mnuHelp.add(mnuItHelpOnSelection);
 
-		JMenuItem mnuItAbout = new JMenuItem();
-		mnuItAbout.setAction(_actionMap.get("openAbout"));
+		javax.swing.Action openAboutAction = _actionMap.get("openAbout");
+		
 
-		mnuHelp.addSeparator();
-		mnuHelp.add(mnuItAbout);
-
+		if (isMac()) {
+			configureMacAboutBox(openAboutAction);
+		}
+		else {
+			JMenuItem mnuItAbout = new JMenuItem();
+			mnuItAbout.setAction(openAboutAction);
+			mnuHelp.addSeparator();
+			mnuHelp.add(mnuItAbout);
+		}
 		menuBar.add(mnuHelp);
 
 		return menuBar;
