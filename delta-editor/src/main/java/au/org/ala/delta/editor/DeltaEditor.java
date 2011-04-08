@@ -324,8 +324,7 @@ public class DeltaEditor extends InternalFrameApplication {
 			addMenu(mnuFile, action);
 		}
 		
-		JMenuItem mnuItFileExit = new JMenuItem();
-		mnuItFileExit.setAction(_actionMap.get("exitApplication"));
+		
 
 		mnuFile.addSeparator();
 		String[] previous = EditorPreferences.getPreviouslyUsedFiles();
@@ -341,10 +340,15 @@ public class DeltaEditor extends InternalFrameApplication {
 					item.setMnemonic(KeyEvent.VK_1 + i);					
 					mnuFile.add(item);
 				}
-				mnuFile.addSeparator();
 			}
 		}
-		mnuFile.add(mnuItFileExit);
+		
+		if (!isMac()) {
+			mnuFile.addSeparator();
+			JMenuItem mnuItFileExit = new JMenuItem();
+			mnuItFileExit.setAction(_actionMap.get("exitApplication"));
+			mnuFile.add(mnuItFileExit);
+		}
 
 	}
 	
