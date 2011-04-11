@@ -109,11 +109,12 @@ public class NaturalLanguageTranslatorTest extends TestCase {
 	 */
 	private void checkResult(String expectedResultsFileName) throws Exception {
 		String expectedResults = classLoaderPathToString("/dataset/simple/expected_results/"+expectedResultsFileName);
-		expectedResults.replace("\n", System.getProperty("line.separator"));
-		expectedResults.replace("\r\n", System.getProperty("line.separator"));
-		String actualResults = actualResults();
-		actualResults.replace("\n", System.getProperty("line.separator"));
-		actualResults.replace("\r\n", System.getProperty("line.separator"));
+		expectedResults = expectedResults.replace("\n", System.getProperty("line.separator"));
+		expectedResults = expectedResults.replace("\r\n", System.getProperty("line.separator"));
+		expectedResults = expectedResults.trim();
+		String actualResults = actualResults().trim();
+		actualResults = actualResults.replace("\n", System.getProperty("line.separator"));
+		actualResults = actualResults.replace("\r\n", System.getProperty("line.separator"));
 		assertEquals(expectedResults, actualResults);
 	}
 	
