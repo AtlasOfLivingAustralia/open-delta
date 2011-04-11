@@ -109,7 +109,7 @@ public class NaturalLanguageTranslatorTest extends TestCase {
 	 */
 	private void checkResult(String expectedResultsFileName) throws Exception {
 		String expectedResults = classLoaderPathToString("/dataset/simple/expected_results/"+expectedResultsFileName);
-		
+		expectedResults.replace("\n", System.getProperty("line.separator"));
 		String actualResults = actualResults();
 		
 		assertEquals(expectedResults, actualResults);
