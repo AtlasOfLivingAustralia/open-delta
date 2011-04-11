@@ -45,6 +45,7 @@ import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.NumericCharacter;
+import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.observer.AbstractDataSetObserver;
 import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
 import au.org.ala.delta.ui.rtf.RtfEditor;
@@ -373,7 +374,8 @@ public class AttributeEditor extends JPanel implements ValidationListener {
 class StateListModel extends AbstractListModel {
 
 	private static final long serialVersionUID = 1L;
-
+	private static CharacterFormatter _characterFormatter = new CharacterFormatter();
+	
 	private MultiStateCharacter _character;
 
 	public StateListModel(MultiStateCharacter character) {
@@ -387,7 +389,7 @@ class StateListModel extends AbstractListModel {
 
 	@Override
 	public Object getElementAt(int index) {
-		return _character.getState(index + 1);
+		return _characterFormatter.formatState(_character, index + 1);
 	}
 }
 

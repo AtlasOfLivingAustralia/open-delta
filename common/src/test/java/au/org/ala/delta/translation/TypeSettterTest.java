@@ -70,6 +70,7 @@ public class TypeSettterTest extends TestCase {
 		assertEquals(input+SystemUtils.LINE_SEPARATOR, output());
 		
 		_typeSetter.setIndent(4);
+		_typeSetter.indent();
 		_typeSetter.writeJustifiedText(input, -1, false);
 		_typeSetter.printBufferLine(false);
 		
@@ -77,6 +78,7 @@ public class TypeSettterTest extends TestCase {
 		
 		input = input+input;
 		_typeSetter.setIndent(4);
+		_typeSetter.indent();
 		_typeSetter.writeJustifiedText(input, -1, false);
 		_typeSetter.printBufferLine(false);
 		
@@ -87,6 +89,7 @@ public class TypeSettterTest extends TestCase {
 		
 		input = "Thisisareallyreallyreallyreallyreallyreallyreallyreallylongstringreallyreallyreally";
 		_typeSetter.setIndent(4);
+		_typeSetter.indent();
 		_typeSetter.writeJustifiedText(input, -1, false);
 		_typeSetter.printBufferLine(false);
 		

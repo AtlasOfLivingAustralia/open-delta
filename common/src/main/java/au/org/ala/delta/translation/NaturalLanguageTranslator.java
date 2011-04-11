@@ -137,7 +137,7 @@ public class NaturalLanguageTranslator {
 				_typeSetter.insertTypeSettingMarks(13);
 			}
 		}
-
+		
 		printItemHeading(item.getItemNumber());
 		printIndexHeading(item.getItemNumber());
 
@@ -172,7 +172,7 @@ public class NaturalLanguageTranslator {
 		}
 
 		int numChars = _context.getDataSet().getNumberOfCharacters();
-
+		_newParagraph = true;
 		for (int i = 1; i <= numChars; i++) {
 
 			int ichtxt = 0;
@@ -200,7 +200,7 @@ public class NaturalLanguageTranslator {
 				// Only start a new paragraph if we've output something since
 				// the last paragraph
 				if (_context.startNewParagraphAtCharacter(i)) {
-					if (lParaTxt == 0) {
+					if (_textOutputSinceLastParagraph == false) {
 						_newParagraph = false;
 					}
 				}

@@ -80,7 +80,7 @@ public class TypeSetter {
 	
 	public void printBufferLine(boolean indentNewLine) {
 		_output.println(_outputBuffer.toString());
-		
+		_indented = false;
 		_outputBuffer = new StringBuilder();
 		if (indentNewLine) {
 			indent();
@@ -94,9 +94,7 @@ public class TypeSetter {
 		if (_capitalise) {
 			text = capitaliseFirstWord(text);
 		}
-		if (!_indented) {
-			indent();
-		}
+		
 		if (willFitOnLine() == false) {
 			printBufferLine();
 		}

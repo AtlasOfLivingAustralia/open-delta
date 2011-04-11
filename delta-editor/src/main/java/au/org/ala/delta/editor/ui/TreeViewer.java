@@ -48,6 +48,7 @@ import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.NumericCharacter;
 import au.org.ala.delta.model.TextCharacter;
+import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.impl.ControllingInfo;
 import au.org.ala.delta.model.observer.AbstractDataSetObserver;
 import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
@@ -62,6 +63,7 @@ public class TreeViewer extends JInternalFrame {
 	private AttributeEditor _stateEditor; 
 	private JTree _tree;
 	private ItemList _itemList;
+	
 
 	@Resource
 	String windowTitle;
@@ -414,12 +416,13 @@ class CharacterTreeNode extends DefaultMutableTreeNode {
 class MultistateStateNode extends DefaultMutableTreeNode {
 
 	private static final long serialVersionUID = 1L;
+	private static CharacterFormatter _characterFormatter = new CharacterFormatter();
 	
 	private MultiStateCharacter _character;
 	private int _stateNo;
 	
 	public MultistateStateNode(MultiStateCharacter ch, int stateNo) {
-		super(ch.getState(stateNo));
+		super(_characterFormatter.formatState(ch, stateNo));
 		_character = ch;
 		_stateNo = stateNo;
 	}

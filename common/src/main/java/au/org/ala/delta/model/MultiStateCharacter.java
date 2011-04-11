@@ -35,7 +35,7 @@ public abstract class MultiStateCharacter extends Character {
 	}
 
 	public String getState(int stateNumber) {
-		return stateNumber + ". " + _impl.getStateText(stateNumber);
+		return _impl.getStateText(stateNumber);
 	}
 
 	public String[] getStates() {

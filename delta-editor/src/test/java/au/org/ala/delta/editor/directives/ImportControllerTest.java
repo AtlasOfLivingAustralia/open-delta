@@ -87,8 +87,8 @@ public class ImportControllerTest extends TestCase {
 		assertEquals(CharacterType.UnorderedMultiState, character.getCharacterType());
 		UnorderedMultiStateCharacter multiStateChar = (UnorderedMultiStateCharacter)character;
 		assertEquals(2, multiStateChar.getNumberOfStates());
-		assertEquals("1. <consistently> present <<implicit>>", multiStateChar.getState(1));
-		assertEquals("2. absent <at least from upper leaves>", multiStateChar.getState(2));
+		assertEquals("<consistently> present <<implicit>>", multiStateChar.getState(1));
+		assertEquals("absent <at least from upper leaves>", multiStateChar.getState(2));
 		
 		character = _dataSet.getCharacter(48);
 		assertEquals("awns <of female-fertile lemmas, if present, number>", character.getDescription());

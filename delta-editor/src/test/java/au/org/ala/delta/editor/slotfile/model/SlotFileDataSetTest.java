@@ -111,7 +111,7 @@ public class SlotFileDataSetTest extends TestCase {
 		assertEquals(notes, multiStateChar.getNotes());
 		assertEquals(stateText.length, multiStateChar.getNumberOfStates());
 		for (int i=1; i<=stateText.length; i++) {
-			assertEquals(i+". "+stateText[i-1], multiStateChar.getState(i));
+			assertEquals(stateText[i-1], multiStateChar.getState(i));
 		}
 	}
 	
