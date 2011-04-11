@@ -462,20 +462,13 @@ public class NaturalLanguageTranslator {
 				return false;
 			}
 		} else if (omitRedundantVariantAttributes == true) {
-			if (_context.isCharacterAdded(item.getItemNumber(), character.getCharacterId()) == false) {
+			
+			if (item.isInherited(character) && _context.isCharacterAdded(item.getItemNumber(), character.getCharacterId()) == false) {
 				// Don't output this attribute
 				return false;
 			}
-			boolean attributeValueIsSameAsMasterItem = false;
-			/** need to compare to master */
-			if (attributeValueIsSameAsMasterItem /*
-												 * this comparison is an
-												 * artifact of how the data
-												 * is stored
-												 */) {
-				// Don't output this attribute
-				return false;
-			}
+			return !(item.getAttribute(character).getValue().equals(item.getParentAttribute(character).getValue()));
+				
 		}
 		
 		return true;

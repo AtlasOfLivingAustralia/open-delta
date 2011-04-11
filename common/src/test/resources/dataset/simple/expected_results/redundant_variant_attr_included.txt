@@ -1,9 +1,5 @@
 
 
-Test Data Set
-
-
-
 
 item 1 <comment 1>
 
@@ -23,7 +19,8 @@ character state 5.
 (Variant) item 3
 
       (1) Text character attribute 3,1. (2) Integer numeric character 1 whole
-units. (5) Ordered multistate character state 5.
+units. (4) Unordered multistate character state 1. (5) Ordered multistate
+character state 5.
 
 
 item 4
@@ -35,4 +32,5 @@ item 5
 
       (1) Text character attribute 5,1. (2) Integer numeric character 4 whole
 units. (3) Real numeric character 1.01 real units. (4) Unordered multistate
-character state 2. (5) Ordered multistate character state 3 to state 4.
+character state 2. (5) Ordered multistate character state 3 to state 4, or
+state 4 and state 5.

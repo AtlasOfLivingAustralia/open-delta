@@ -55,9 +55,19 @@ public class NaturalLanguageTranslatorTest extends TestCase {
 		_context.setOmitRedundantVariantAttributes(true);
 		
 		_naturalLanguageTranslator.translate();
-		//checkResult("redundant_variant_attr_omitted.txt");
+		checkResult("redundant_variant_attr_omitted.txt");
 	}
 	
+	@Test
+	/**
+	 * Tests the INSERT REDUNDANT VARIANT ATTRIBUTES directive works correctly.
+	 */
+	public void testInsertRedundantVariantAttributes() throws Exception {
+		_context.setOmitRedundantVariantAttributes(false);
+		
+		_naturalLanguageTranslator.translate();
+		checkResult("redundant_variant_attr_included.txt");
+	}
 	
 	/**
 	 * Reads in specs/chars/items from the simple test data set but no other configuration.

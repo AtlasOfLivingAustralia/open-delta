@@ -30,7 +30,7 @@ public class VariantItem extends Item {
 	public Attribute getAttribute(Character character) {
 		Attribute attribute = null;
 		if (isInherited(character)) {
-			attribute = _parent.getAttribute(character);
+			attribute = getParentAttribute(character);
 		}
 		else {
 			attribute = super.getAttribute(character);
@@ -50,5 +50,10 @@ public class VariantItem extends Item {
 
 	public boolean isVariant() {
 		return true;
+	}
+
+
+	public Attribute getParentAttribute(Character character) {
+		return _parent.getAttribute(character);
 	}
 }
