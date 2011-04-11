@@ -1,13 +1,11 @@
 package au.org.ala.delta.intkey.model;
 
-import java.util.ArrayList;
-import java.util.List;
 
-public class Character {
+public abstract class Character {
 
     private String _description;
     private IntkeyCharacterType _type;
-    private List<String> _states;
+    private double reliablity;
     
     public String getDescription() {
         return _description;
@@ -15,11 +13,6 @@ public class Character {
     
     public IntkeyCharacterType getType() {
         return _type;
-    }
-    
-    public List<String> getStates() {
-        //return defensive copy
-        return new ArrayList<String>(_states);
     }
     
     void setDescription(String description) {
@@ -30,10 +23,6 @@ public class Character {
         this._type = type;
     }
     
-    void setStates(List<String> states) {
-        this._states = states;
-    }
-
     @Override
     public String toString() {
         /*StringBuilder builder = new StringBuilder();
@@ -48,6 +37,14 @@ public class Character {
         
         return builder.toString();*/
         return _description;
+    }
+
+    public double getReliablity() {
+        return reliablity;
+    }
+
+    void setReliablity(double reliablity) {
+        this.reliablity = reliablity;
     }
     
     
