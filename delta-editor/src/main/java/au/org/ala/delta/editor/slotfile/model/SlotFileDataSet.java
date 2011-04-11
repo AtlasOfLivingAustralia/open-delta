@@ -113,6 +113,13 @@ public class SlotFileDataSet extends AbstractObservableDataSet {
 			return _factory.createItem(itemNumber);
 		}
 	}
+	
+	@Override
+	protected Item doAddVariantItem(int parentItemNumber, int itemNumber) {
+		synchronized (_vop) {
+			return _factory.createVariantItem(getItem(parentItemNumber), itemNumber);
+		}
+	}
 
 	@Override
 	public boolean isModified() {

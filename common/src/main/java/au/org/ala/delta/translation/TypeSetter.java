@@ -1,6 +1,7 @@
 package au.org.ala.delta.translation;
 
 import java.io.PrintStream;
+import java.util.logging.Logger;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -13,6 +14,7 @@ import au.org.ala.delta.translation.Words.Word;
  */
 public class TypeSetter {
 
+	private Logger logger = Logger.getLogger(TypeSetter.class.getName());
 	private static final String BLANK = " ";
 	private int _printWidth = 80;
 	private PrintStream _output;
@@ -79,6 +81,8 @@ public class TypeSetter {
 	}
 	
 	public void printBufferLine(boolean indentNewLine) {
+		System.out.println( "New line for: "+_outputBuffer.toString());
+		
 		_output.println(_outputBuffer.toString());
 		_indented = false;
 		_outputBuffer = new StringBuilder();
@@ -94,13 +98,13 @@ public class TypeSetter {
 		if (_capitalise) {
 			text = capitaliseFirstWord(text);
 		}
-		
+		System.out.println("Writing : "+text);
 		if (willFitOnLine() == false) {
 			printBufferLine();
 		}
 		
 		// Insert a space if one is required.
-		if (_outputBuffer.length() > 0 && lastCharInBuffer() != ' ') {
+		if (_outputBuffer.length() > 0 && lastCharInBuffer() != ' ' && !".".equals(text) && !",".equals(text)) {
 			_outputBuffer.append(' ');
 		}
 		
@@ -188,27 +192,12 @@ public class TypeSetter {
 		return tmp.toString();
 	}
 	
-	protected void print(String text) {
-		_output.print(text);
-		_currentLinePos += text.length();
-	}
 	
 	protected void newLine() {
 		_output.println();
 		_currentLinePos = 0;
 	}
 
-	protected void completePreviousWord() {
-		_output.println();
-	}
-
-	public void writeInt(int i) {
-		_output.print(i);
-	}
-
-	public void write(String text) {
-		_output.print(text);
-	}
 
 	public void newParagraph() {
 		newLine();
@@ -413,6 +402,7 @@ public class TypeSetter {
 	}
 
 	public void insertPunctuationMark(Word word) {
+		System.out.println("Writing punctuation! "+word);
 		
 		String punctuationMark = Words.word(word);
 		assert punctuationMark.length() == 1;
@@ -421,13 +411,13 @@ public class TypeSetter {
 			writeJustifiedOutput(" ", -1, false);
 		}
 		else {
-			writeFromVocabulary(word, 0);
+			writeFromVocabulary(word, -1);
 		}
 		
 	}
 	
 	public void writeFromVocabulary(Word word, int completionAction) {
-		writeJustifiedOutput(Words.word(word), completionAction, false);
+		writeJustifiedText(Words.word(word), completionAction, false);
 	}
 
 }

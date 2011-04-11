@@ -112,7 +112,7 @@ public class Formatter {
 			
 		}
 		
-		return StringUtils.join(values, " or ");
+		return StringUtils.join(values, ", or ");
 	}
 	
 	

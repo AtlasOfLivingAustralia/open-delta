@@ -92,6 +92,17 @@ public class DefaultDataSet extends AbstractObservableDataSet {
 
 		return item;	
 	}
+	
+
+	@Override
+	protected Item doAddVariantItem(int parentItemNumber, int itemNumber) {
+		Item parent = getItem(parentItemNumber);
+		
+		Item item = _factory.createVariantItem(parent, itemNumber);
+		_items.put(itemNumber, item);
+
+		return item;	
+	}
 
 	@Override
 	public boolean isModified() {

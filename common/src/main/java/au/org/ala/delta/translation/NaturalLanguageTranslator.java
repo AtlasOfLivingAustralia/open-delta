@@ -173,6 +173,7 @@ public class NaturalLanguageTranslator {
 
 		int numChars = _context.getDataSet().getNumberOfCharacters();
 		_newParagraph = true;
+		_previousCharInSentence = 0;
 		for (int i = 1; i <= numChars; i++) {
 
 			int ichtxt = 0;
@@ -299,7 +300,13 @@ public class NaturalLanguageTranslator {
 						item.getItemNumber(), i, _context.getItemSubheading(i),
 						false, false, ifofset);
 				writeCharacterAttributes(item, character);
+				
+				
 			}
+			
+		}
+		if (_characterOutputSinceLastPuntuation) {
+			writePunctuation(Word.FULL_STOP);
 		}
 
 	}
@@ -367,8 +374,7 @@ public class NaturalLanguageTranslator {
 			_typeSetter.insertTypeSettingMarks(33);
 		}
 		if (!_context.omitCharacterNumbers()) {
-			_typeSetter.writeJustifiedOutput("(" + characterNumber + ")", 0,
-					false);
+			_typeSetter.writeJustifiedText("(" + characterNumber + ")", 0, false);
 		}
 
 		int ioffset = 0;
@@ -555,7 +561,6 @@ public class NaturalLanguageTranslator {
 		writeNameToIndexFile();
 
 		_typeSetter.insertTypeSettingMarks(36);
-		_typeSetter.endLine();
 
 	}
 
@@ -564,10 +569,10 @@ public class NaturalLanguageTranslator {
 
 	private void writeCharacterAttributes(Item item, Character character) {
 		if (item.hasAttribute(character)) {
-			_typeSetter.writeJustifiedText(
-					_formatter.formatAttribute(character, item
-									.getAttribute(character).getValue()), -1,
-					false);
+			Attribute attribute = item.getAttribute(character);
+			String formattedAttribute = _formatter.formatAttribute(character, attribute.getValue());
+			_typeSetter.writeJustifiedText(formattedAttribute, -1, false);
+			_characterOutputSinceLastPuntuation = true;
 		}
 
 	}
@@ -582,8 +587,7 @@ public class NaturalLanguageTranslator {
 		if (item.isVariant() && masterItemMaskedIn) {
 			// next character is a capital
 			_typeSetter.captialiseNextWord();
-			_typeSetter.writeJustifiedOutput(Words.word(Word.VARIANT), 0,
-					false, false);
+			_typeSetter.writeJustifiedText(Words.word(Word.VARIANT), 0, false);
 		}
 
 		Attribute attribute = _dataSet.getAttribute(item.getItemNumber(),
@@ -592,14 +596,14 @@ public class NaturalLanguageTranslator {
 		// comments are treated
 		// as I don't yet understand how item descriptions are broken into the
 		// subgroups.
-		_typeSetter.writeJustifiedOutput(attribute.getValue(), 0, false, false);
+		_typeSetter.writeJustifiedText(attribute.getValue(), 0, false);
 
 		if (_typeSettingMode == TypeSetting.ADD_TYPESETTING_MARKS) {
 			_typeSetter.insertTypeSettingMarks(15);
 		}
 
 		if (completionAction > 0) {
-			_typeSetter.writeJustifiedOutput(" ", completionAction, false);
+			_typeSetter.writeJustifiedText(" ", completionAction, false);
 			if ((attribute == null)
 					|| StringUtils.isEmpty(attribute.getValue())) {
 				_typeSetter.writeBlankLines(1, 0);
@@ -635,20 +639,19 @@ public class NaturalLanguageTranslator {
 			if (item.isVariant() && masterItemMaskedIn) {
 				// next character is a capital
 				_typeSetter.captialiseNextWord();
-				_typeSetter.writeJustifiedOutput(Words.word(Word.VARIANT), 0,
-						false, false);
+				_typeSetter.writeJustifiedText(Words.word(Word.VARIANT), 0,false);
 			}
 			if (/* item subgroup type is not text comment */false) {
 				_typeSetter.insertTypeSettingMarks(25);
 			}
-			_typeSetter.writeJustifiedText(description, 0, false);
+			_typeSetter.writeJustifiedText(description, -1, false);
 			if (/* item subgroup type is not text comment */false) {
 				_typeSetter.insertTypeSettingMarks(26);
 			}
 		}
 		_typeSetter.insertTypeSettingMarks(15);
 		if (completionAction > 0) {
-			_typeSetter.writeJustifiedText(" ", completionAction, false);
+			_typeSetter.writeJustifiedText("", completionAction, false);
 			if (StringUtils.isEmpty(description)) {
 				_typeSetter.writeBlankLines(1, 0);
 			}

@@ -12,7 +12,7 @@ import org.junit.Test;
 /**
  * Tests the TypeSetter class.
  */
-public class TypeSettterTest extends TestCase {
+public class TypeSetterTest extends TestCase {
 	
 	private TypeSetter _typeSetter;
 	private ByteArrayOutputStream _bytes;

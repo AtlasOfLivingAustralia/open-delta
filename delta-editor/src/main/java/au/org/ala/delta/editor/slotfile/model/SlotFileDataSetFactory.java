@@ -11,6 +11,7 @@ import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.DeltaDataSetFactory;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.VariantItem;
 
 
 /**
@@ -58,6 +59,11 @@ public class SlotFileDataSetFactory implements DeltaDataSetFactory {
 	@Override
 	public Item createItem(int number) {
 		
+		VOItemAdaptor adaptor = createSlotFileItem(number);
+		return new Item(adaptor, number);
+	}
+
+	private VOItemAdaptor createSlotFileItem(int number) {
 		VOItemDesc itemDesc = null;
 		if (number > _vop.getDeltaMaster().getNItems()) {
 			VOItemDesc.ItemFixedData itemFixedData = new VOItemDesc.ItemFixedData();
@@ -71,7 +77,13 @@ public class SlotFileDataSetFactory implements DeltaDataSetFactory {
 		}
 		
 		VOItemAdaptor adaptor = new VOItemAdaptor(_vop, itemDesc, number);
-		return new Item(adaptor, number);
+		return adaptor;
+	}
+	
+	@Override
+	public Item createVariantItem(Item parent, int number) {
+		VOItemAdaptor adaptor = createSlotFileItem(number);
+		return new VariantItem(parent, adaptor, number);
 	}
 
 	/**

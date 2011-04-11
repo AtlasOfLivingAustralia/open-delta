@@ -42,6 +42,9 @@ public class ItemDescriptions extends ConforDirective {
 
 class ItemsParser extends AbstractStreamParser {
 	
+	/** The last Item parsed that is not a variant Item */
+	private int _lastMaster;
+	
 	public ItemsParser(DeltaContext context, Reader reader) {
 		super(context, reader);
 	}
@@ -63,17 +66,13 @@ class ItemsParser extends AbstractStreamParser {
 		assert _currentChar == '#';
 		readNext();
 
-		boolean variant = false;
-		if (_currentChar == '+') {
-			variant = true;
-			readNext();
-		}
+		Item item = null;
+	
+		item = createItem(itemIndex);
 		
 		String itemName = readToNextEndSlashSpace();
 		Logger.debug("Parsing Item %s", itemName);
-		
-		Item item = _context.getDataSet().addItem(itemIndex);
-		item.setVariant(variant);
+	
 		item.setDescription(itemName);
 		skipWhitespace();
 		while (_currentChar != '#' && _currentInt >= 0) {
@@ -109,6 +108,22 @@ class ItemsParser extends AbstractStreamParser {
 			Logger.debug("  %d. %s", charIdx, stateValue);
 			skipWhitespace();
 		}
+	}
+
+	private Item createItem(int itemIndex) throws Exception {
+		Item item;
+		if (_currentChar == '+') {
+			if (itemIndex == 1) {
+				throw new RuntimeException("The first item cannot be a variant item!");
+			}
+		    item = _context.getDataSet().addVariantItem(_lastMaster, itemIndex);
+			readNext();
+		}
+		else {
+			item = _context.getDataSet().addItem(itemIndex);
+			_lastMaster = itemIndex;
+		}
+		return item;
 	}
 
 	private String readStateValue(Character character) throws Exception {

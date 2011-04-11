@@ -19,10 +19,20 @@ public interface DeltaDataSetFactory {
 	public Item createItem(int number);
 	
 	/**
+	 * Creates a new variant Item with the supplied number and parent Item.
+	 * @param parent the parent Item for the new Item.
+	 * @param itemNumber the number for the new Item.
+	 * @return a new variant Item.
+	 */
+	public Item createVariantItem(Item parent, int itemNumber);
+	
+	/**
 	 * Creates a new Character of the specified type.
 	 * @param type the type of Character to create.
 	 * @param number the character number.
 	 * @return a new Character of the specified type.
 	 */
 	public Character createCharacter(CharacterType type, int number);
+
+	
 }

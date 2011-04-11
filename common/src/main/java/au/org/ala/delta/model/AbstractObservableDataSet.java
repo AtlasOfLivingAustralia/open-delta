@@ -88,6 +88,13 @@ public abstract class AbstractObservableDataSet implements DeltaDataSet, ItemObs
 	}
 	protected abstract Item doAddItem(int itemNumber);
 	
+	public Item addVariantItem(int parentItemNumber, int itemNumber) {
+		Item item = doAddVariantItem(parentItemNumber, itemNumber);
+		item.addItemObserver(this);
+		fireItemAdded(item);
+		return item;
+	}
+	protected abstract Item doAddVariantItem(int parentItemNumber, int itemNumber);
 	
 	
 	@Override

@@ -189,6 +189,11 @@ public class EditorDataModel implements DeltaDataSet, DeltaDataSetObserver {
 	}
 	
 	@Override
+	public Item addVariantItem(int parentItemNumber, int itemNumber) {
+		return _currentDataSet.addVariantItem(parentItemNumber, itemNumber);
+	}
+	
+	@Override
 	public boolean isModified() {
 		return _currentDataSet.isModified();
 	}

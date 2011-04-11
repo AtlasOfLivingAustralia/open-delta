@@ -23,6 +23,16 @@ public class DefaultDataSetFactory implements DeltaDataSetFactory {
 		
 		return item;
 	}
+	
+	
+
+	@Override
+	public Item createVariantItem(Item parent, int itemNumber) {
+		ItemData defaultData = new DefaultItemData();
+		Item item = new VariantItem(parent, defaultData, itemNumber);
+		
+		return item;
+	}
 
 	@Override
 	public Character createCharacter(CharacterType type, int number) {
