@@ -81,8 +81,7 @@ public class TypeSetter {
 	}
 	
 	public void printBufferLine(boolean indentNewLine) {
-		System.out.println( "New line for: "+_outputBuffer.toString());
-		
+	
 		_output.println(_outputBuffer.toString());
 		_indented = false;
 		_outputBuffer = new StringBuilder();
@@ -98,7 +97,7 @@ public class TypeSetter {
 		if (_capitalise) {
 			text = capitaliseFirstWord(text);
 		}
-		System.out.println("Writing : "+text);
+		
 		if (willFitOnLine() == false) {
 			printBufferLine();
 		}
@@ -402,7 +401,6 @@ public class TypeSetter {
 	}
 
 	public void insertPunctuationMark(Word word) {
-		System.out.println("Writing punctuation! "+word);
 		
 		String punctuationMark = Words.word(word);
 		assert punctuationMark.length() == 1;

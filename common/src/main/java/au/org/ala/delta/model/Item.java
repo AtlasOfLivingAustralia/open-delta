@@ -17,6 +17,8 @@ package au.org.ala.delta.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 import au.org.ala.delta.model.impl.ItemData;
 import au.org.ala.delta.model.observer.AttributeObserver;
 import au.org.ala.delta.model.observer.ItemObserver;
@@ -75,7 +77,8 @@ public class Item implements AttributeObserver {
 	}
 	
 	public boolean hasAttribute(Character character) {
-		return getAttribute(character) != null;
+		Attribute attribute = getAttribute(character);
+		return ((attribute != null) && StringUtils.isNotEmpty(attribute.getValue()));
 	}
 	
 	public boolean isVariant() {

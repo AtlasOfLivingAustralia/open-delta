@@ -43,7 +43,7 @@ public class NaturalLanguageTranslatorTest extends TestCase {
 	public void testBasicTranslation() throws Exception {
 		
 		_naturalLanguageTranslator.translate();
-		//checkResult("default.txt");
+		checkResult("default.txt");
 	}
 	
 	@Test

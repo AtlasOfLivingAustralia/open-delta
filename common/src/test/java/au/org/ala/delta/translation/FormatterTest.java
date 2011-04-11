@@ -3,6 +3,10 @@ package au.org.ala.delta.translation;
 import org.junit.Test;
 
 import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.model.CharacterType;
+import au.org.ala.delta.model.DefaultDataSetFactory;
+import au.org.ala.delta.model.DeltaDataSetFactory;
+import au.org.ala.delta.model.MultiStateCharacter;
 
 import junit.framework.TestCase;
 
@@ -11,7 +15,7 @@ import junit.framework.TestCase;
  */
 public class FormatterTest extends TestCase {
 
-	
+	private DeltaDataSetFactory _factory = new DefaultDataSetFactory();
 	private Formatter _formatter = new Formatter(new DeltaContext());
 	
 	@Test
@@ -39,6 +43,19 @@ public class FormatterTest extends TestCase {
 		String textWithComment = "This has <more> than <one> comment.";
 		
 		assertEquals("This has than comment.", _formatter.stripComments(textWithComment));
+	}
+	
+	@Test
+	public void testFormatMultiStateCharacter() {
+		String attribute = "1-2/2&3";
+		MultiStateCharacter character = (MultiStateCharacter)_factory.createCharacter(CharacterType.UnorderedMultiState, 1);
+		character.setNumberOfStates(3);
+		character.setState(1, "state 1");
+		character.setState(2, "state 2");
+		character.setState(3, "state 3");
+		
+		String result = _formatter.formatAttribute(character, attribute);
+		assertEquals("state 1 to state 2, or state 2 and state 3", result);
 	}
 	
 	

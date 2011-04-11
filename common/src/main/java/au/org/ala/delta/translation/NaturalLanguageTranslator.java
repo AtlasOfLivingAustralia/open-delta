@@ -10,6 +10,7 @@ import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.VariantItem;
 import au.org.ala.delta.model.impl.ControllingInfo;
 import au.org.ala.delta.translation.Words.Word;
 
@@ -50,6 +51,7 @@ public class NaturalLanguageTranslator {
 			translateItem(dataSet.getItem(i));
 		}
 
+		_typeSetter.printBufferLine();
 		// End of file mark
 		_typeSetter.insertTypeSettingMarks(29);
 	}
@@ -263,9 +265,12 @@ public class NaturalLanguageTranslator {
 					}
 				}
 
+				Character character = _context.getDataSet().getCharacter(i);
+
+				
 				int ioa = 0;
 				if (item.isVariant()) {
-					if (!outputRedundantVariantAttribute(item, i)) {
+					if (!outputVariantAttribute((VariantItem)item, character)) {
 						continue;
 					}
 				}
@@ -294,12 +299,12 @@ public class NaturalLanguageTranslator {
 				boolean useOr = !(_context.omitOrForCharacter(i));
 				boolean useComma = !_context.replaceSemiColonWithComma(i);
 
-				Character character = _context.getDataSet().getCharacter(i);
-
-				writeFeature(character.getDescription(), true,
-						item.getItemNumber(), i, _context.getItemSubheading(i),
-						false, false, ifofset);
-				writeCharacterAttributes(item, character);
+				if (item.hasAttribute(character)) {
+					writeFeature(character.getDescription(), true,
+							item.getItemNumber(), i, _context.getItemSubheading(i),
+							false, false, ifofset);
+					writeCharacterAttribute(item, character);
+				}
 				
 				
 			}
@@ -446,36 +451,33 @@ public class NaturalLanguageTranslator {
 	 * 
 	 * @return true if the attribute should be output.
 	 */
-	private boolean outputRedundantVariantAttribute(Item item, int character) {
-		boolean masterItemMaskedIn = true; /*
-											 * Not sure under what conditions
-											 * this would be false
-											 */
-		if (masterItemMaskedIn) {
-			Boolean omitRedundantVariantAttributes = _context
-					.getOmitRedundantVariantAttributes();
-			if (omitRedundantVariantAttributes == null) {
-				if (_context.isCharacterAdded(item.getItemNumber(), character) == false) {
-					// Don't output this attribute
-					return false;
-				}
-			} else if (omitRedundantVariantAttributes == true) {
-				if (_context.isCharacterAdded(item.getItemNumber(), character) == false) {
-					// Don't output this attribute
-					return false;
-				}
-				boolean attributeValueIsSameAsMasterItem = false;
-				/** need to compare to master */
-				if (attributeValueIsSameAsMasterItem /*
-													 * this comparison is an
-													 * artifact of how the data
-													 * is stored
-													 */) {
-					// Don't output this attribute
-					return false;
-				}
+	private boolean outputVariantAttribute(VariantItem item, Character character) {
+		
+		Boolean omitRedundantVariantAttributes = _context
+				.getOmitRedundantVariantAttributes();
+		if (omitRedundantVariantAttributes == null) {
+			if (item.isInherited(character) &&
+			    (_context.isCharacterAdded(item.getItemNumber(), character.getCharacterId()) == false)) {
+				// Don't output this attribute
+				return false;
+			}
+		} else if (omitRedundantVariantAttributes == true) {
+			if (_context.isCharacterAdded(item.getItemNumber(), character.getCharacterId()) == false) {
+				// Don't output this attribute
+				return false;
+			}
+			boolean attributeValueIsSameAsMasterItem = false;
+			/** need to compare to master */
+			if (attributeValueIsSameAsMasterItem /*
+												 * this comparison is an
+												 * artifact of how the data
+												 * is stored
+												 */) {
+				// Don't output this attribute
+				return false;
 			}
 		}
+		
 		return true;
 	}
 
@@ -567,14 +569,13 @@ public class NaturalLanguageTranslator {
 	private void writeNameToIndexFile() {
 	}
 
-	private void writeCharacterAttributes(Item item, Character character) {
-		if (item.hasAttribute(character)) {
-			Attribute attribute = item.getAttribute(character);
-			String formattedAttribute = _formatter.formatAttribute(character, attribute.getValue());
-			_typeSetter.writeJustifiedText(formattedAttribute, -1, false);
-			_characterOutputSinceLastPuntuation = true;
-		}
-
+	private void writeCharacterAttribute(Item item, Character character) {
+	
+		Attribute attribute = item.getAttribute(character);
+		String formattedAttribute = _formatter.formatAttribute(character, attribute.getValue());
+		_typeSetter.writeJustifiedText(formattedAttribute, -1, false);
+		_characterOutputSinceLastPuntuation = true;
+		
 	}
 
 	private void writeCharacterForTaxonName(Item item, int characterNumber,
