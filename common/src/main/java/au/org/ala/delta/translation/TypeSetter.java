@@ -98,12 +98,13 @@ public class TypeSetter {
 			text = capitaliseFirstWord(text);
 		}
 		
+		System.out.println("Buffer :"+text);
 		if (willFitOnLine() == false) {
 			printBufferLine();
 		}
 		
 		// Insert a space if one is required.
-		if (_outputBuffer.length() > 0 && lastCharInBuffer() != ' ' && !".".equals(text) && !",".equals(text)) {
+		if (_outputBuffer.length() > 0 && lastCharInBuffer() != ' ' && !isPunctuationMark(text)) {
 			_outputBuffer.append(' ');
 		}
 		
@@ -124,6 +125,10 @@ public class TypeSetter {
 		}
 		complete(completionAction);
 		
+	}
+	
+	private boolean isPunctuationMark(String text) {
+		return ".".equals(text) || ",".equals(text) || ";".equals(text);
 	}
 	
 	private void complete(int completionAction) {

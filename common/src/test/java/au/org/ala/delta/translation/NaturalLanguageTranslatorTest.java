@@ -6,6 +6,8 @@ import java.io.PrintStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.HashSet;
+import java.util.Set;
 
 import junit.framework.TestCase;
 
@@ -67,6 +69,21 @@ public class NaturalLanguageTranslatorTest extends TestCase {
 		
 		_naturalLanguageTranslator.translate();
 		checkResult("redundant_variant_attr_included.txt");
+	}
+	
+	@Test
+	/**
+	 * Tests the natural language output handles the LINK CHARACTERS directive correctly.
+	 */
+	public void testLinkedCharacters() throws Exception {
+		Set<Integer> linkedCharacters = new HashSet<Integer>();
+		linkedCharacters.add(4);
+		linkedCharacters.add(5);
+		
+		_context.linkCharacters(linkedCharacters);
+		
+		_naturalLanguageTranslator.translate();
+		checkResult("linked_characters.txt");
 	}
 	
 	/**

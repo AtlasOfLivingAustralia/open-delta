@@ -1,6 +1,9 @@
 package au.org.ala.delta.translation;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
@@ -176,6 +179,8 @@ public class NaturalLanguageTranslator {
 		int numChars = _context.getDataSet().getNumberOfCharacters();
 		_newParagraph = true;
 		_previousCharInSentence = 0;
+		List<Character> characters = new ArrayList<Character>();
+		Set<Integer> linkedCharacters = new HashSet<Integer>();
 		for (int i = 1; i <= numChars; i++) {
 
 			int ichtxt = 0;
@@ -300,22 +305,81 @@ public class NaturalLanguageTranslator {
 				boolean useComma = !_context.replaceSemiColonWithComma(i);
 
 				if (item.hasAttribute(character)) {
-					writeFeature(character.getDescription(), true,
-							item.getItemNumber(), i, _context.getItemSubheading(i),
-							false, false, ifofset);
-					writeCharacterAttribute(item, character);
+				
+					// It is most convenient to write linked characters out in a block.
+					if (isPartOfLinkedSet(linkedCharacters, i)) {
+						characters.add(character);
+					}
+					else {
+						
+						// This character is not a part of the previous set - write out the
+						// previous set.
+						if (!characters.isEmpty()) {
+							writeAttributes(item, characters);
+							characters = new ArrayList<Character>();
+						}
+						
+						linkedCharacters = _context.getLinkedCharacters(i);
+						characters.add(character);
+						
+					}
+					
 				}
-				
-				
 			}
 			
+		}
+		if (!characters.isEmpty()) {
+			writeAttributes(item, characters);
 		}
 		if (_characterOutputSinceLastPuntuation) {
 			writePunctuation(Word.FULL_STOP);
 		}
 
 	}
+	
+	private boolean isPartOfLinkedSet(Set<Integer> linkedCharacters, int characterNumber) {
+		return ((linkedCharacters != null) && linkedCharacters.contains(characterNumber));
+	}
+	
+	/**
+	 * Writes the attributes of an Item corresponding to the supplied list of Characters.
+	 * If the list has more than one Character it is implied the Characters are linked.
+	 * @param item the item to write attributes of.
+	 * @param characters the characters to write.
+	 */
+	private void writeAttributes(Item item, List<Character> characters) {
 
+		
+		for (Character character : characters) {
+			int characterNumber = character.getCharacterId();
+			
+			boolean subsequentPartOfLinkedSet = (characters.size() > 1) && (character != characters.get(0));
+			
+			String description = character.getDescription();
+			if (subsequentPartOfLinkedSet) {
+				description = removeCommonPrefix(characters.get(0).getDescription(), description);
+			}
+			
+			writeFeature(description, true,
+					item.getItemNumber(), characterNumber, _context.getItemSubheading(characterNumber),
+					false, false, new int[_context.getNumberOfCharacters()], subsequentPartOfLinkedSet);
+			writeCharacterAttribute(item, character);
+		}
+	}
+
+	private String removeCommonPrefix(String master, String text) {
+		if (StringUtils.isEmpty(master) || StringUtils.isEmpty(text)) {
+			return text;
+		}
+		
+		int minLength = Math.min(master.length(), text.length());
+		
+		int i = 0;
+		while (i < minLength && master.charAt(i) == text.charAt(i)) {
+			i++;
+		}
+		return text.substring(i);
+	}
 	private boolean isUnknownOrInapplicable(Attribute attribute) {
 
 		return false;
@@ -328,14 +392,13 @@ public class NaturalLanguageTranslator {
 
 	private void writeFeature(String description, boolean omitFinalPeriod,
 			int itemNumber, int characterNumber, String subHeading,
-			boolean emphasizeFeature, boolean emphasizeCharacter, int[] offsets) {
+			boolean emphasizeFeature, boolean emphasizeCharacter, int[] offsets, boolean subsequentPartOfLinkedSet) {
 
 		// Insert a full stop if required.
 		if (_newParagraph == true
 				|| StringUtils.isNotEmpty(subHeading)
-				|| (_previousCharInSentence != 0)
-				|| (!_context.getLinkedCharacters(characterNumber).contains(
-						_previousCharInSentence))) {
+				|| (_previousCharInSentence == 0)
+				|| (!subsequentPartOfLinkedSet)) {
 
 			if ((_previousCharInSentence != 0)
 					&& (!_context
@@ -386,16 +449,11 @@ public class NaturalLanguageTranslator {
 		// Check if we are starting a new sentence or starting a new set of
 		// linked characters.
 		if ((_previousCharInSentence == 0)
-				|| (_context.getLinkedCharacters(characterNumber).contains(
-						_previousCharInSentence) && _lastCharacterOutput < _previousCharInSentence)) {
+				|| (!subsequentPartOfLinkedSet && _lastCharacterOutput < _previousCharInSentence)) {
 			ioffset = 0;
 			_typeSetter.captialiseNextWord();
-		} else {
-			if (offsets[characterNumber] < 0) {
-				return;
-			}
-			// TODO _typeSetter.dontCapitalizeNextWord();
-		}
+		} 
+		
 		int completionAction = -1;
 		boolean emphasisApplied = false;
 		if (emphasizeCharacter) {
@@ -437,7 +495,7 @@ public class NaturalLanguageTranslator {
 	}
 
 	private void writePunctuation(Word punctuationMark) {
-		_typeSetter.insertPunctuationMark(Word.FULL_STOP);
+		_typeSetter.insertPunctuationMark(punctuationMark);
 		_characterOutputSinceLastPuntuation = false;
 	}
 
