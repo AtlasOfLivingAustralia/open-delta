@@ -66,7 +66,8 @@ class CharacterListParser extends AbstractStreamParser {
 		if (m.matches()) {
 			int charId = Integer.parseInt(m.group(1));
 			au.org.ala.delta.model.Character ch = _context.getCharacter(charId);
-			ch.setDescription(m.group(2));
+			String description = cleanWhiteSpace(m.group(2));
+			ch.setDescription(description);
 			if (skipWhitespace()) {
 				if (_currentChar != '#') {
 					if (ch instanceof MultiStateCharacter) {
@@ -114,6 +115,17 @@ class CharacterListParser extends AbstractStreamParser {
 		} else {
 			throw new IllegalStateException("State does not match expected format!:" + state);
 		}
+	}
+	
+	/**
+	 * Character descriptions can span multiple lines and have whitespace designed to keep the
+	 * chars file format looking nice.  This method turns any sequence of whitespace (including
+	 * newlines) into a single space.
+	 * @param description the description has read from the chars file.
+	 * @return the description with whitespace tidied up.
+	 */
+	private String cleanWhiteSpace(String description) {
+		return description.replaceAll("\\s+", " ");
 	}
 
 }
