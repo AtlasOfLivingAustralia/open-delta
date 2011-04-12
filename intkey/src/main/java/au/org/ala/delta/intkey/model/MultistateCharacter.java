@@ -5,18 +5,18 @@ import java.util.List;
 
 public class MultistateCharacter extends Character {
     private boolean _ordered;
-    private List<String> _states;
+    private List<CharacterState> _states;
     
     public MultistateCharacter(boolean isOrdered) {
         _ordered = isOrdered;
     }
     
-    public List<String> getStates() {
+    public List<CharacterState> getStates() {
         //return defensive copy
-        return new ArrayList<String>(_states);
+        return new ArrayList<CharacterState>(_states);
     }
     
-    void setStates(List<String> states) {
+    void setStates(List<CharacterState> states) {
         this._states = states;
     }
 

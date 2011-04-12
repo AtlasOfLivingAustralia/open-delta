@@ -4,6 +4,7 @@ import java.io.File;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import au.org.ala.delta.intkey.model.ported.Constants;
@@ -326,14 +327,17 @@ public class IntkeyDatasetFileBuilder {
         }
 
         // READ CHARACTER RELIABILITIES
-        
-        // Records with character values are followed by records containing NC integers designating character states. This information is read from elsewhere so 
-        // skip all these records to get to the NC real values representing the reliabilities.
-        
-        //TODO need to read out characters states (only from multistates) and compare.
+
+        // Records with character values are followed by records containing NC
+        // integers designating character states. This information is read from
+        // elsewhere so
+        // skip all these records to get to the NC real values representing the
+        // reliabilities.
+
+        // TODO need to read out characters states (only from multistates) and
+        // compare.
         int recordsSpannedByCharTypes = Double.valueOf(Math.ceil(Integer.valueOf(numChars).doubleValue() / Integer.valueOf(Constants.LREC).doubleValue())).intValue();
-        
-        
+
         seekToRecord(_itemBinFile, _itemFileHeader.getRpSpec() - 1 + (recordsSpannedByCharTypes * 2));
         ByteBuffer charReliabilityData = _itemBinFile.readByteBuffer(numChars * sizeFloatInBytes);
         for (Character ch : _characters) {
@@ -342,6 +346,8 @@ public class IntkeyDatasetFileBuilder {
         }
 
         readCharacterDescriptionsAndStates();
+        readCharacterDependencies();
+        readCharacterTaxonData();
 
     }
 
@@ -370,7 +376,6 @@ public class IntkeyDatasetFileBuilder {
         for (int i = 0; i < numChars; i++) {
 
             Character ch = _characters.get(i);
-            List<String> charStates = new ArrayList<String>();
 
             int descRecordIndex = charDescriptionRecordIndicies.get(i);
 
@@ -391,6 +396,8 @@ public class IntkeyDatasetFileBuilder {
 
             int recordsSpannedByDescLengths = Double.valueOf(Math.ceil(Integer.valueOf(numStatesForChar + 1).doubleValue() / Integer.valueOf(Constants.LREC).doubleValue())).intValue();
 
+            List<String> charStateDescriptions = new ArrayList<String>();
+
             seekToRecord(_charBinFile, descRecordIndex - 1 + recordsSpannedByDescLengths);
             ByteBuffer descBuffer = _charBinFile.readByteBuffer(lengthTotal);
 
@@ -405,28 +412,125 @@ public class IntkeyDatasetFileBuilder {
                     // First description listed is the character description
                     ch.setDescription(descriptionText);
                 } else {
-                    charStates.add(descriptionText);
+                    charStateDescriptions.add(descriptionText);
                 }
             }
 
             if (ch instanceof IntegerNumericCharacter) {
-                if (charStates.size() == 1) {
-                    ((IntegerNumericCharacter) ch).setUnitsDescription(charStates.get(0));
-                } else if (charStates.size() > 1) {
+                if (charStateDescriptions.size() == 1) {
+                    ((IntegerNumericCharacter) ch).setUnitsDescription(charStateDescriptions.get(0));
+                } else if (charStateDescriptions.size() > 1) {
                     throw new RuntimeException("Integer characters should only have one state listed which represents the units description.");
                 }
             } else if (ch instanceof RealNumericCharacter) {
-                if (charStates.size() == 1) {
-                    ((RealNumericCharacter) ch).setUnitsDescription(charStates.get(0));
-                } else if (charStates.size() > 1) {
+                if (charStateDescriptions.size() == 1) {
+                    ((RealNumericCharacter) ch).setUnitsDescription(charStateDescriptions.get(0));
+                } else if (charStateDescriptions.size() > 1) {
                     throw new RuntimeException("Real numeric characters should only have one state listed which represents the units description.");
                 }
             } else if (ch instanceof MultistateCharacter) {
-                ((MultistateCharacter) ch).setStates(charStates);
+                List<CharacterState> states = new ArrayList<CharacterState>();
+                for (String stateDescription : charStateDescriptions) {
+                    states.add(new CharacterState(stateDescription));
+                }
+                ((MultistateCharacter) ch).setStates(states);
             } else {
-                if (charStates.size() > 0) {
+                if (charStateDescriptions.size() > 0) {
                     throw new RuntimeException("Text characters should not have a state specified");
                 }
+            }
+        }
+    }
+
+    private void readCharacterDependencies() {
+        int numChars = _itemFileHeader.getNChar();
+
+        // If LDep is 0, there are no dependencies. Otherwise dependency data
+        // consists of LDep integers, starting at record
+        // rpCdep.
+        if (_itemFileHeader.getLDep() >= numChars) {
+            seekToRecord(_itemBinFile, _itemFileHeader.getRpCdep() - 1);
+            List<Integer> dependencyData = readIntegerList(_itemBinFile, _itemFileHeader.getLDep());
+
+            // At the start of the dependency data there is an integer value for
+            // each character.
+            // If non zero, the value is an offset further down the list where
+            // its dependency data is.
+            // Otherwise the character does not have any dependent characters.
+            for (int i = 0; i < numChars; i++) {
+                int charDepIndex = dependencyData.get(i);
+                if (charDepIndex > 0) {
+                    Character c = _characters.get(i);
+                    if (!(c instanceof MultistateCharacter)) {
+                        throw new RuntimeException("Only multistate characters can be controlling characters");
+                    }
+
+                    MultistateCharacter controllingChar = (MultistateCharacter) c;
+
+                    int numStates = controllingChar.getStates().size();
+
+                    // The dependency data for each character consists of one
+                    // integer for each of the character's states. If the
+                    // integer
+                    // value listed for a state is non-zero, the value is an
+                    // offset pointing to further down the list where
+                    // the state's dependency data is.
+                    int stateDepIndiciesStart = charDepIndex - 1;
+                    int stateDepIndiciesEnd = charDepIndex - 1 + numStates;
+                    List<Integer> stateDepRecordIndicies = dependencyData.subList(stateDepIndiciesStart, stateDepIndiciesEnd);
+
+                    for (int j = 0; j < numStates; j++) {
+                        int stateDepRecordIndex = stateDepRecordIndicies.get(j);
+
+                        if (stateDepRecordIndex > 0) {
+                            // First value listed in the state's dependency data
+                            // is the number of character ranges dependent on
+                            // that state.
+                            int numDependentCharRanges = dependencyData.get(stateDepRecordIndex - 1);
+
+                            // Immediately after the range information is listed
+                            // - the upper and lower bound is listed for each
+                            // range.
+                            List<Integer> rangeNumbers = dependencyData.subList(stateDepRecordIndex, stateDepRecordIndex + (numDependentCharRanges * 2));
+
+                            for (int k = 0; k < numDependentCharRanges; k = k + 2) {
+                                int lowerBound = rangeNumbers.get(k);
+                                int upperBound = rangeNumbers.get(k + 1);
+                                //System.out.println(String.format("Character: %d State: %d Range lower bound: %d, Range upper bound: %d", i, j, lowerBound, upperBound));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void readCharacterTaxonData() {
+        int numChars = _itemFileHeader.getNChar();
+
+        seekToRecord(_itemBinFile, _itemFileHeader.getRpCdat() - 1);
+        List<Integer> charTaxonDataRecordIndicies = readIntegerList(_itemBinFile, numChars);
+
+        for (int i = 0; i < numChars; i++) {
+            int charTaxonDataRecordIndex = charTaxonDataRecordIndicies.get(i);
+            Character c = _characters.get(i);
+
+            seekToRecord(_itemBinFile, charTaxonDataRecordIndex - 1);
+
+            if (c instanceof MultistateCharacter) {
+                
+                for (Taxon t : _taxa) {
+                    byte[] data = new byte[((MultistateCharacter) c).getStates().size() + 1];
+                    _itemBinFile.readBytes(data);
+                    System.out.println(c.getDescription() + " " + t.toString() + " " + Arrays.toString(data));
+                }
+
+            } else if (c instanceof IntegerNumericCharacter) {
+
+            } else if (c instanceof RealNumericCharacter) {
+
+            } else if (c instanceof TextCharacter) {
+
             }
         }
     }
@@ -475,9 +579,18 @@ public class IntkeyDatasetFileBuilder {
         return bFile.readByteBuffer(Constants.LREC * sizeIntInBytes);
     }
 
-    private static String readString(BinFile bFile, int length) {
-        byte[] bytes = bFile.read(length);
+    private static String readString(BinFile bFile, int numBytes) {
+        byte[] bytes = bFile.read(numBytes);
         return BinFileEncoding.decode(bytes);
     }
 
+    private static List<Integer> readIntegerList(BinFile bFile, int numInts) {
+        ByteBuffer bb = bFile.readByteBuffer(numInts * sizeIntInBytes);
+
+        List<Integer> retList = new ArrayList<Integer>();
+        for (int i = 0; i < numInts; i++) {
+            retList.add(bb.getInt());
+        }
+        return retList;
+    }
 }

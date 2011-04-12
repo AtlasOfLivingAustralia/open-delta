@@ -25,17 +25,6 @@ public abstract class Character {
     
     @Override
     public String toString() {
-        /*StringBuilder builder = new StringBuilder();
-        builder.append(_description);
-        builder.append("\n");
-        
-        for (String state: _states) {
-            builder.append("\t-> ");
-            builder.append(state);
-            builder.append("\n");
-        }
-        
-        return builder.toString();*/
         return _description;
     }
 
