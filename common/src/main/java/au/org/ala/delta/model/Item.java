@@ -62,13 +62,17 @@ public class Item implements AttributeObserver {
 	}
 	
 	public Attribute getAttribute(Character character) {
-		Attribute attribute = _impl.getAttribute(character);
+		Attribute attribute = doGetAttribute(character);
 
 		if (attribute != null) {
 			attribute.setItem(this);
 			attribute.addAttributeObserver(this);
 		}
 		return attribute;
+	}
+	
+	protected Attribute doGetAttribute(Character character) {
+		return _impl.getAttribute(character);
 	}
 	
 	public void addAttribute(Character character, String value) {

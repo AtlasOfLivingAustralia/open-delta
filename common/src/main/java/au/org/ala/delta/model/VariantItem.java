@@ -19,23 +19,16 @@ public class VariantItem extends Item {
 		_parent = parent;
 	}
 	
-	
-	/**
-	 * Returns the attribute of this Item for the specified character.  If this Item does
-	 * not have a coded attribute, the parent's attribute will be returned.
-	 * @param character the character to get the attribute for.
-	 * @return the Attribute of this Item for the supplied Character.
-	 */
+		
 	@Override
-	public Attribute getAttribute(Character character) {
+	protected Attribute doGetAttribute(Character character) {
 		Attribute attribute = null;
 		if (isInherited(character)) {
 			attribute = getParentAttribute(character);
 		}
 		else {
-			attribute = super.getAttribute(character);
+			attribute = super.doGetAttribute(character);
 		}
-		
 		return attribute;
 	}
 	
@@ -43,7 +36,7 @@ public class VariantItem extends Item {
 	 * @return true if the attribute for the supplied character is inherited from the parent Item.
 	 */
 	public boolean isInherited(Character character) {
-		Attribute attribute = super.getAttribute(character);
+		Attribute attribute = super.doGetAttribute(character);
 		return ((attribute == null) || StringUtils.isEmpty(attribute.getValue()));
 	}
 
@@ -54,6 +47,6 @@ public class VariantItem extends Item {
 
 
 	public Attribute getParentAttribute(Character character) {
-		return _parent.getAttribute(character);
+		return _parent.doGetAttribute(character);
 	}
 }
