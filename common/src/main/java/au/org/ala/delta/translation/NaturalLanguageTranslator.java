@@ -1,7 +1,6 @@
 package au.org.ala.delta.translation;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -13,333 +12,221 @@ import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Item;
-import au.org.ala.delta.model.VariantItem;
-import au.org.ala.delta.model.impl.ControllingInfo;
 import au.org.ala.delta.translation.Words.Word;
 
-/**
- * Writes natural language description of a DeltaDataSet using the configuration
- * specified by the DeltaContext.
- */
-public class NaturalLanguageTranslator {
+public class NaturalLanguageTranslator implements Translator {
 
-	private TypeSetter _typeSetter;
+	
 	private DeltaContext _context;
-	private Formatter _formatter;
+	private TypeSetter _printer;
 	private DeltaDataSet _dataSet;
-
+	private PlainTextTypeSetter _typeSetter;
+	private Formatter _formatter;
+	
+	
 	public NaturalLanguageTranslator(DeltaContext context, TypeSetter typeSetter) {
 		_context = context;
-		_dataSet = context.getDataSet();
-		_typeSetter = typeSetter;
+		_printer = typeSetter;
+		_dataSet = _context.getDataSet();
+		_typeSetter = new PlainTextTypeSetter(_printer);
 		_formatter = new Formatter(context);
 	}
+	
+	@Override
+	public void beforeFirstItem() {
+		_typeSetter.beforeFirstItem();
+		
+		// Insert the implicit attributes section if required.
 
-	/**
-	 * Translates the DeltaDataSet into a natural lanugage description.
-	 */
-	public void translate() {
-		// TODO work out whether we need to output an "implicit attributes"
-		// section.
-		// if not, i think we need to explicitly include the implicit attributes
-		// in the items...
-
-		// Start of file mark.
-		_typeSetter.insertTypeSettingMarks(28);
-
-		DeltaDataSet dataSet = _context.getDataSet();
-
-		int numItems = dataSet.getMaximumNumberOfItems();
-		for (int i = 1; i <= numItems; i++) {
-			translateItem(dataSet.getItem(i));
-		}
-
-		_typeSetter.printBufferLine();
-		// End of file mark
-		_typeSetter.insertTypeSettingMarks(29);
 	}
 
-	private boolean _printingImplicitAttributeSection;
-
-	/** This is a static local variable in the fortran code */
-	private int currentItemHeadingItemNumber;
-	/** This is a static local variable in the fortran code */
-	private int currentIndexHeadingItemNumber;
-
-	enum TypeSetting {
-		ADD_TYPESETTING_MARKS, DO_NOTHING, REMOVE_EXISTING_TYPESETTINGMARKS
-	};
-
-	TypeSetting _typeSettingMode = TypeSetting.DO_NOTHING;
-
-	boolean _newParagraph;
-
-	private void translateItem(Item item) {
-
-		boolean ifBegin = false;
-		boolean ifEnd = true;
-		boolean chineseLanguageFormat = false;
-
-		int itemNumber = item.getItemNumber();
-		boolean isImplicitCharactersSection = item.getDescription().equals(
-				"Implicit Characters");
-
-		if (!isImplicitCharactersSection) {
-			if (StringUtils.isNotEmpty(_context.getItemHeading(itemNumber))) {
-				currentItemHeadingItemNumber = itemNumber; // ITHD
-			}
-			if (StringUtils.isNotEmpty(_context.getIndexHeading(itemNumber))) {
-				currentIndexHeadingItemNumber = itemNumber; // IXHD
-			}
-
-			// If Item is excluded by the EXCLUDE ITEMS directive
-			if (_context.isExcluded(item.getItemNumber())) {
-				return;
-			}
-		}
-
-		// Output a typesetting mark at the start of each file.
-		if (!ifBegin) {
-			_typeSetter.insertTypeSettingMarks(28);
-			ifBegin = true;
-			ifEnd = false;
-		}
-
-		// The "Implicit Characters" section ignores the ADD CHARACTERS and
-		// EMPHASISE CHARACTERS
-		// directive.
-		if (!isImplicitCharactersSection) {
-			// Copies IADDT(item number) into IADDC if ADD CHARACTERS directive
-			// not null and
-			// data exists for the item.
-
-			// Otherwise initialise IADDC to all 0s.
-
-			// Same again for EMPHAISE CHARACTERS - copies IEMPT(item number)
-			// into IEMPC
-			// Or initialises IEMPC to all zeros.
-
-		} else {
-			// initialises IEMPC and IADDC to all 0s.
-		}
-
-		// Setup indentation.
-		int pSeq = 0;
-		_typeSetter.setIndent(0);
-		int numBlankLines;
-
-		if (chineseLanguageFormat) {
-			numBlankLines = 1;
-		} else {
-			numBlankLines = 2;
-		}
-		if (_typeSettingMode == TypeSetting.DO_NOTHING
-				|| _typeSettingMode == TypeSetting.REMOVE_EXISTING_TYPESETTINGMARKS) {
-			_typeSetter.writeBlankLines(numBlankLines, 5);
-		} else {
-			_typeSetter.writeBlankLines(1, 0);
-			if (!isImplicitCharactersSection) {
-				_typeSetter.insertTypeSettingMarks(13);
-			}
-		}
+	@Override
+	public void beforeItem(Item item) {
 		
-		printItemHeading(item.getItemNumber());
-		printIndexHeading(item.getItemNumber());
-
-		if (!_printingImplicitAttributeSection) {
-			printTaxonName(item);
-		}
-
-		_newParagraph = false;
-		if (_context.getNewParagraphCharacters().isEmpty()) {
-			_newParagraph = true;
-		}
-
-		int lParaTxt = 1;
-		boolean jiempf = false;
-		int jiempc = 0;
-		int ifeto = 0;
-		int lstcho = 0;
-		int iotxt = 0;
-		int lastxt = 0;
-
-		int[] ifofset = new int[_dataSet.getNumberOfCharacters()];
-		Arrays.fill(ifofset, 0);
-
-		// This loop fills in offsets for linked characters... whatever that
-		// means....
-		// MIght also setup buffers etc for printing.
-		for (int i = 1; i < _dataSet.getNumberOfCharacters(); i++) {
-			if (ifofset[i] != 0) {
-				continue;
-			}
-
-		}
-
-		int numChars = _context.getDataSet().getNumberOfCharacters();
+		_typeSetter.beforeItem(item);
+		
+		printItemHeading(item);
+		
+		printTaxonName(item);
+		
 		_newParagraph = true;
-		_previousCharInSentence = 0;
-		List<Character> characters = new ArrayList<Character>();
-		Set<Integer> linkedCharacters = new HashSet<Integer>();
-		for (int i = 1; i <= numChars; i++) {
+		// if html output printIndexHeading(item) - better in a whole other Something.
+		
+	}
 
-			int ichtxt = 0;
-			int jstatout = 0;
-			int icmtout = 0;
-			int notoutp = 0;
-
-			if (_context.startNewParagraphAtCharacter(i)) {
-				_newParagraph = true;
-			}
-			if (_context.getItemSubheading(i) != null) {
-				/* jhd = */_context.getItemSubheading(i);
-			}
-			if (_typeSettingMode == TypeSetting.ADD_TYPESETTING_MARKS) {
-				jiempf = _context.emphasizeFeature(i);
-			}
-
-			if (isIncluded(item, i) == 0) {
-				continue;
-			}
-			Attribute attribute = _dataSet
-					.getAttribute(item.getItemNumber(), i);
-			if (attribute != null) {
-
-				// Only start a new paragraph if we've output something since
-				// the last paragraph
-				if (_context.startNewParagraphAtCharacter(i)) {
-					if (_textOutputSinceLastParagraph == false) {
-						_newParagraph = false;
-					}
-				}
-				jiempc = 0;
-				int jiemps = 0;
-				if (_context.isCharacterEmphasized(item.getItemNumber(), i)) {
-					jiempc = i;
-					jiemps = 1;
-				}
-
-				if ((jiempc == 0)
-						&& (_typeSettingMode == TypeSetting.ADD_TYPESETTING_MARKS)) {
-					Set<Integer> linkedChars = _context.getLinkedCharacters(i);
-					if (!linkedChars.isEmpty()) {
-						int ifset = 0;
-						if (ifofset[i] != 0) {
-							ifset = 1;
-						}
-						int minof = 0;
-						for (int j = i + 1; j < _dataSet
-								.getNumberOfCharacters(); j++) {
-							if (isCoded(item, j) && (isIncluded(item, j) > 0)) {
-								if ((isIncluded(item, j) == 1)
-										&& (true /*
-												 * there is a check for a type
-												 * of implicitness here - the
-												 * character is missing. type 2
-												 * means the character number is
-												 * there but nothing else.
-												 */)
-										&& (_context.insertImplicitValues() == false)) {
-									continue;
-								}
-								if (isUnknownOrInapplicable(attribute)) {
-									continue;
-								}
-								if (_context.isCharacterEmphasized(
-										item.getItemNumber(), j)
-										&& ifofset[j] != 0) {
-									jiempc = i;
-									if (ifset != 0) {
-										break;
-									} else {
-										if (ifofset[j] > 0) {
-											if (minof == 0) {
-												minof = ifofset[j];
-											} else {
-												minof = Math.min(minof,
-														ifofset[j]);
-											}
-										}
-									}
-								}
-							}
-						}
-						if ((jiempc != 0) && (ifset == 0)) {
-							ifofset[i] = minof;
-						}
-					}
-				}
-
-				Character character = _context.getDataSet().getCharacter(i);
-
-				
-				int ioa = 0;
-				if (item.isVariant()) {
-					if (!outputVariantAttribute((VariantItem)item, character)) {
-						continue;
-					}
-				}
-				if ((isIncluded(item, i) == 1) && attribute.isImplicit()
-						&& !_context.insertImplicitValues()) {
-					continue;
-				}
-
-				String comma = Words.word(Word.COMMA);
-				if (_context.useAlternateComma()) {
-					comma = Words.word(Word.ALTERNATE_COMMA);
-				}
-
-				/**
-				 * Error case where there is nothing coded for the attribute
-				 * (and presumably it's not implicit or part of a variant item?
-				 * it seems to put ****** out. I've got some missing characters
-				 * in my dataset and it doesn't do this. Not sure how to trigger
-				 * this condition or if it's just an internal bug detection
-				 * routine in CONFOR.
-				 */
-
-				// if just character number coded
-				// continue; Not sure how we represent this case in our model.
-
-				boolean useOr = !(_context.omitOrForCharacter(i));
-				boolean useComma = !_context.replaceSemiColonWithComma(i);
-
-				if (item.hasAttribute(character)) {
-				
-					// It is most convenient to write linked characters out in a block.
-					if (isPartOfLinkedSet(linkedCharacters, i)) {
-						characters.add(character);
-					}
-					else {
-						
-						// This character is not a part of the previous set - write out the
-						// previous set.
-						if (!characters.isEmpty()) {
-							writeAttributes(item, characters);
-							characters = new ArrayList<Character>();
-						}
-						
-						linkedCharacters = _context.getLinkedCharacters(i);
-						characters.add(character);
-						
-					}
-					
-				}
-			}
-			
-		}
-		if (!characters.isEmpty()) {
-			writeAttributes(item, characters);
+	@Override
+	public void afterItem(Item item) {
+		
+		if (!_characters.isEmpty()) {
+			writeAttributes(item, _characters);
+			_characters = new ArrayList<Character>();
 		}
 		if (_characterOutputSinceLastPuntuation) {
 			writePunctuation(Word.FULL_STOP);
 		}
+		_lastCharacterOutput = 0;
+		_previousCharInSentence = 0;
+		_typeSetter.afterItem(item);
+		_newParagraph = true;
+		
+	}
+
+	private List<Character> _characters = new ArrayList<Character>();
+	Set<Integer> _linkedCharacters = new HashSet<Integer>();
+	
+	@Override
+	public void beforeAttribute(Attribute attribute) {
+		
+		Item item = attribute.getItem();
+		au.org.ala.delta.model.Character character = attribute.getCharacter();
+		
+
+		System.out.println(item.getItemNumber() + ", "+character.getCharacterId()+" = "+attribute.getValue());
+		
+		String comma = Words.word(Word.COMMA);
+		if (_context.useAlternateComma()) {
+			comma = Words.word(Word.ALTERNATE_COMMA);
+		}	
+				
+		// It is most convenient to write linked characters out in a block.
+		if (isPartOfLinkedSet(_linkedCharacters, character)) {
+			_characters.add(character);
+		}
+		else {
+			
+			// This character is not a part of the previous set - write out the
+			// previous set.
+			if (!_characters.isEmpty()) {
+				writeAttributes(item, _characters);
+				_characters = new ArrayList<Character>();
+			}
+			
+			_linkedCharacters = _context.getLinkedCharacters(character.getCharacterId());
+			_characters.add(character);
+			
+		}
+	}
+	
+	private boolean isPartOfLinkedSet(Set<Integer> linkedCharacters, Character character) {
+		int characterNumber = character.getCharacterId();
+		return ((linkedCharacters != null) && linkedCharacters.contains(characterNumber));
+	}
+
+	@Override
+	public void afterAttribute(Attribute attribute) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void afterLastItem() {
+		_typeSetter.afterLastItem();
+		
 
 	}
 	
-	private boolean isPartOfLinkedSet(Set<Integer> linkedCharacters, int characterNumber) {
-		return ((linkedCharacters != null) && linkedCharacters.contains(characterNumber));
+	protected void printItemHeading(Item item) {
+
+		String heading = _context.getItemHeading(item.getItemNumber());
+		if (heading == null) {
+			return;
+		}
+		_typeSetter.beforeItemHeading();
+		
+		writeSentence(heading);
+		
+		_typeSetter.afterItemHeading();
 	}
+	
+	private void writeSentence(String heading) {
+		_printer.writeJustifiedText(heading, -1, false);
+	}
+	
+
+	private void printTaxonName(Item item) {
+
+		Integer characterForTaxonNames = _context.getCharacterForTaxonNames();
+
+		_typeSetter.beforeItemName();
+		
+		if (characterForTaxonNames != null) {
+			writeCharacterForTaxonName(item, characterForTaxonNames, 0);
+		} else {
+			writeName(item, 1, 0);
+		}
+		
+		//writeNameToIndexFile();
+
+		_typeSetter.afterItemName();
+
+	}
+	
+	private void writeCharacterForTaxonName(Item item, int characterNumber, int completionAction) {
+		
+		if (item.isVariant()) {
+			// next character is a capital
+			_printer.captialiseNextWord();
+			_printer.writeJustifiedText(Words.word(Word.VARIANT), 0, false);
+		}
+
+		Attribute attribute = _dataSet.getAttribute(item.getItemNumber(),
+				characterNumber);
+		// TODO the CONFOR code (TNAT) strips comments. Not sure how nested
+		// comments are treated
+		// as I don't yet understand how item descriptions are broken into the
+		// subgroups.
+		String itemDescription = attribute.getValue();
+		_printer.writeJustifiedText(itemDescription, 0, false);
+
+		
+		complete(completionAction, itemDescription);
+
+	}
+	
+	/**
+	 * 
+	 * @param item
+	 *            the item to write the name of
+	 * @param commentAction
+	 *            0 = omit comments, 1 = output comments with angle brackets, 2
+	 *            - output comments without angle brackets
+	 * @param typeSettingMarkNum
+	 * @param completionAction
+	 */
+	private void writeName(Item item, int commentAction, int completionAction) {
+		String description = item.getDescription();
+
+		if ((commentAction != 0) || (false/*
+										 * item description subgroup 1 type is
+										 * not text comment
+										 */)) {
+			if (/* is text comment and */commentAction == 2) {
+				// skip first "<"
+			}
+
+			if (item.isVariant()) {
+				// next character is a capital
+				_printer.captialiseNextWord();
+				_printer.writeJustifiedText(Words.word(Word.VARIANT), 0,false);
+			}
+			
+			_printer.writeJustifiedText(description, -1, false);
+			
+		}
+		
+		complete(completionAction, description);
+	}
+
+	private void complete(int completionAction, String description) {
+		if (completionAction > 0) {
+			_printer.writeJustifiedText("", completionAction, false);
+			if (StringUtils.isEmpty(description)) {
+				_printer.writeBlankLines(1, 0);
+			}
+		}
+	}
+	
+	
 	
 	/**
 	 * Writes the attributes of an Item corresponding to the supplied list of Characters.
@@ -380,11 +267,17 @@ public class NaturalLanguageTranslator {
 		}
 		return text.substring(i);
 	}
-	private boolean isUnknownOrInapplicable(Attribute attribute) {
-
-		return false;
+	
+	private void writeCharacterAttribute(Item item, Character character) {
+		
+		Attribute attribute = item.getAttribute(character);
+		String formattedAttribute = _formatter.formatAttribute(character, attribute.getValue());
+		_printer.writeJustifiedText(formattedAttribute, -1, false);
+		_characterOutputSinceLastPuntuation = true;
+		
 	}
-
+	
+	private boolean _newParagraph;
 	private int _lastCharacterOutput;
 	private int _previousCharInSentence;
 	private boolean _characterOutputSinceLastPuntuation;
@@ -403,7 +296,7 @@ public class NaturalLanguageTranslator {
 			if ((_previousCharInSentence != 0)
 					&& (!_context
 							.getOmitPeriodForCharacter(_lastCharacterOutput))) {
-				_typeSetter.insertPunctuationMark(Word.FULL_STOP);
+				_printer.insertPunctuationMark(Word.FULL_STOP);
 			}
 			_previousCharInSentence = 0;
 			_characterOutputSinceLastPuntuation = false;
@@ -423,26 +316,19 @@ public class NaturalLanguageTranslator {
 		}
 
 		if (_newParagraph == true) {
-			if (_typeSettingMode == TypeSetting.ADD_TYPESETTING_MARKS) {
-				_typeSetter.endLine();
-				_typeSetter.insertTypeSettingMarks(16);
-			} else {
-				_typeSetter.writeBlankLines(1, 2);
-				_typeSetter.setIndent(6);
-				_typeSetter.indent();
-			}
+			_typeSetter.newParagraph();
 			_newParagraph = false;
 			_textOutputSinceLastParagraph = false;
 		}
 
 		if (StringUtils.isNotEmpty(subHeading)) {
-			_typeSetter.insertTypeSettingMarks(32);
+			_printer.insertTypeSettingMarks(32);
 			writeSentence(subHeading, 0, 0);
 
-			_typeSetter.insertTypeSettingMarks(33);
+			_printer.insertTypeSettingMarks(33);
 		}
 		if (!_context.omitCharacterNumbers()) {
-			_typeSetter.writeJustifiedText("(" + characterNumber + ")", 0, false);
+			_printer.writeJustifiedText("(" + characterNumber + ")", 0, false);
 		}
 
 		int ioffset = 0;
@@ -451,7 +337,7 @@ public class NaturalLanguageTranslator {
 		if ((_previousCharInSentence == 0)
 				|| (!subsequentPartOfLinkedSet && _lastCharacterOutput < _previousCharInSentence)) {
 			ioffset = 0;
-			_typeSetter.captialiseNextWord();
+			_printer.captialiseNextWord();
 		} 
 		
 		int completionAction = -1;
@@ -460,7 +346,7 @@ public class NaturalLanguageTranslator {
 			if ((ioffset == 0)
 					|| _context.isCharacterEmphasized(itemNumber,
 							characterNumber)) {
-				_typeSetter.insertTypeSettingMarks(19);
+				_printer.insertTypeSettingMarks(19);
 				emphasisApplied = true;
 				completionAction = -1;
 				if (ioffset == 0 && (offsets[characterNumber] > 0)) {
@@ -473,241 +359,29 @@ public class NaturalLanguageTranslator {
 
 		if (emphasizeCharacter) {
 			if (emphasisApplied) {
-				_typeSetter.insertTypeSettingMarks(20);
+				_printer.insertTypeSettingMarks(20);
 			}
 			if (emphasizeFeature) {
-				_typeSetter.insertTypeSettingMarks(18);
+				_printer.insertTypeSettingMarks(18);
 			}
 		}
 
 		_previousCharInSentence = characterNumber;
 
 	}
-
+	
 	private void writeSentence(String sentence, int commentAction,
 			int completionAction) {
 		// TODO This does a bunch of stuff including inserting typesetting marks
 		// in the middle
 		// of the sentence.
-		_typeSetter.writeJustifiedText(sentence, completionAction,
+		_printer.writeJustifiedText(sentence, completionAction,
 				commentAction == 4 || commentAction == 5);
 
 	}
 
 	private void writePunctuation(Word punctuationMark) {
-		_typeSetter.insertPunctuationMark(punctuationMark);
+		_printer.insertPunctuationMark(punctuationMark);
 		_characterOutputSinceLastPuntuation = false;
 	}
-
-	/**
-	 * If the INSERT REDUNDANT VARIANT ATTRIBUTES directive has been given
-	 * return true. If the OMIT REDUNDANT VARIANT ATTRIBUTES directive has been
-	 * given return true only if: 1) The attribute has been coded. 2) The coded
-	 * value is different to the value of the attribute in the master Item. If
-	 * neither of these directives have been given, return true if the character
-	 * has been added.
-	 * 
-	 * @return true if the attribute should be output.
-	 */
-	private boolean outputVariantAttribute(VariantItem item, Character character) {
-		
-		Boolean omitRedundantVariantAttributes = _context
-				.getOmitRedundantVariantAttributes();
-		if (omitRedundantVariantAttributes == null) {
-			if (item.isInherited(character) &&
-			    (_context.isCharacterAdded(item.getItemNumber(), character.getCharacterId()) == false)) {
-				// Don't output this attribute
-				return false;
-			}
-		} else if (omitRedundantVariantAttributes == true) {
-			
-			if (item.isInherited(character) && _context.isCharacterAdded(item.getItemNumber(), character.getCharacterId()) == false) {
-				// Don't output this attribute
-				return false;
-			}
-			return !(item.getAttribute(character).getValue().equals(item.getParentAttribute(character).getValue()));
-				
-		}
-		
-		return true;
-	}
-
-	private boolean isCoded(Item item, int characterNumber) {
-		Attribute attribute = _dataSet.getAttribute(item.getItemNumber(),
-				characterNumber);
-
-		// V is considered coded.
-		// U is not unless some other subgroup exists (Maybe a comment?)
-		// Inapplicable is considered coded if the OMIT INAPPLICABLES directed
-		// has not been received.
-		Character character = _dataSet.getCharacter(characterNumber);
-		ControllingInfo huh = character.checkApplicability(item);
-		huh.isInapplicable();
-		// return (attribute != null && attribute.isVariable() ||
-		// (attribute.isInapplicable() && _context.isOmitInapplicables() ==
-		// false));
-		return (attribute != null);
-	}
-
-	private int isIncluded(Item item, int characterNumber) {
-		int result = 1;
-		if (_context.isExcluded(characterNumber)) {
-			result = 0;
-			// if _context.isCharacterAdded(int item, int character) ||
-			// _context.isEmphasized(int item, int character) {
-			// result = 2;
-			// }
-		}
-
-		return result;
-	}
-
-	private void translateCharacterDescription(Character character) {
-		if (_context.getNewParagraphCharacters().contains(
-				character.getCharacterId())) {
-			_typeSetter.newParagraph();
-		}
-
-		String characterDescription = _formatter.formatCharacterName(character
-				.getDescription());
-		_typeSetter.captialiseNextWord();
-		_typeSetter.writeJustifiedOutput(characterDescription, 0, false);
-	}
-
-	private void printItemHeading(int itemNumber) {
-
-		String heading = _context.getItemHeading(itemNumber);
-		if (heading == null) {
-			return;
-		}
-		_typeSetter.insertTypeSettingMarks(30);
-		writeSentence(heading, 0, 0);
-		_typeSetter.insertTypeSettingMarks(31);
-	}
-
-	// Lines 857-882 of TNAT.FOR
-	private void printIndexHeading(int itemNumber) {
-
-		// ignoring for the moment....
-	}
-
-	private boolean _startOfNewFile = false;
-
-	private void printTaxonName(Item item) {
-
-		Integer characterForTaxonNames = _context.getCharacterForTaxonNames();
-
-		int typeSettingMarkNum = 14;
-
-		// if !_startOfNewFile || _already output item heading and value exists
-		// for type mark 51
-		if (!_startOfNewFile) {
-			typeSettingMarkNum = 51;
-		}
-
-		if (characterForTaxonNames != null) {
-			writeCharacterForTaxonName(item, characterForTaxonNames,
-					typeSettingMarkNum, 0, true);
-		} else {
-			writeName(item, 1, typeSettingMarkNum, 0, true);
-		}
-		writeNameToIndexFile();
-
-		_typeSetter.insertTypeSettingMarks(36);
-
-	}
-
-	private void writeNameToIndexFile() {
-	}
-
-	private void writeCharacterAttribute(Item item, Character character) {
-	
-		Attribute attribute = item.getAttribute(character);
-		String formattedAttribute = _formatter.formatAttribute(character, attribute.getValue());
-		_typeSetter.writeJustifiedText(formattedAttribute, -1, false);
-		_characterOutputSinceLastPuntuation = true;
-		
-	}
-
-	private void writeCharacterForTaxonName(Item item, int characterNumber,
-			int typeSettingMarkNum, int completionAction,
-			boolean masterItemMaskedIn) {
-		if (_typeSettingMode == TypeSetting.ADD_TYPESETTING_MARKS) {
-			_typeSetter.insertTypeSettingMarks(typeSettingMarkNum);
-		}
-
-		if (item.isVariant() && masterItemMaskedIn) {
-			// next character is a capital
-			_typeSetter.captialiseNextWord();
-			_typeSetter.writeJustifiedText(Words.word(Word.VARIANT), 0, false);
-		}
-
-		Attribute attribute = _dataSet.getAttribute(item.getItemNumber(),
-				characterNumber);
-		// TODO the CONFOR code (TNAT) strips comments. Not sure how nested
-		// comments are treated
-		// as I don't yet understand how item descriptions are broken into the
-		// subgroups.
-		_typeSetter.writeJustifiedText(attribute.getValue(), 0, false);
-
-		if (_typeSettingMode == TypeSetting.ADD_TYPESETTING_MARKS) {
-			_typeSetter.insertTypeSettingMarks(15);
-		}
-
-		if (completionAction > 0) {
-			_typeSetter.writeJustifiedText(" ", completionAction, false);
-			if ((attribute == null)
-					|| StringUtils.isEmpty(attribute.getValue())) {
-				_typeSetter.writeBlankLines(1, 0);
-			}
-		}
-
-	}
-
-	/**
-	 * 
-	 * @param item
-	 *            the item to write the name of
-	 * @param commentAction
-	 *            0 = omit comments, 1 = output comments with angle brackets, 2
-	 *            - output comments without angle brackets
-	 * @param typeSettingMarkNum
-	 * @param completionAction
-	 */
-	private void writeName(Item item, int commentAction,
-			int typeSettingMarkNum, int completionAction,
-			boolean masterItemMaskedIn) {
-		String description = item.getDescription();
-
-		if ((commentAction != 0) || (false/*
-										 * item description subgroup 1 type is
-										 * not text comment
-										 */)) {
-			if (/* is text comment and */commentAction == 2) {
-				// skip first "<"
-			}
-
-			_typeSetter.insertTypeSettingMarks(typeSettingMarkNum);
-			if (item.isVariant() && masterItemMaskedIn) {
-				// next character is a capital
-				_typeSetter.captialiseNextWord();
-				_typeSetter.writeJustifiedText(Words.word(Word.VARIANT), 0,false);
-			}
-			if (/* item subgroup type is not text comment */false) {
-				_typeSetter.insertTypeSettingMarks(25);
-			}
-			_typeSetter.writeJustifiedText(description, -1, false);
-			if (/* item subgroup type is not text comment */false) {
-				_typeSetter.insertTypeSettingMarks(26);
-			}
-		}
-		_typeSetter.insertTypeSettingMarks(15);
-		if (completionAction > 0) {
-			_typeSetter.writeJustifiedText("", completionAction, false);
-			if (StringUtils.isEmpty(description)) {
-				_typeSetter.writeBlankLines(1, 0);
-			}
-		}
-	}
-
 }

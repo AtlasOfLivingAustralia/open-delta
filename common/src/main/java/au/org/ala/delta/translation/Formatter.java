@@ -32,7 +32,7 @@ public class Formatter {
 		// The result is then trimmed in case the comment was at the start or end of the 
 		// string.
 		
-		return text.replaceAll("\\s*<.*?>\\s*", " ").trim();
+		return text.replaceAll("\\s*<.*?>+\\s*", " ").trim();
 	}
 	
 	public String removeOuterBrackets(String text) {
@@ -60,13 +60,17 @@ public class Formatter {
 		if (character instanceof TextCharacter) {
 			attribute = removeOuterBrackets(attribute);
 		}
-		attribute = stripComments(attribute);
 		attribute = RTFUtils.stripFormatting(attribute);
+		
+		
 		if (character.getCharacterType().isNumeric()) {
 			attribute = formatNumericAttribute((NumericCharacter<?>)character, attribute);
 		}
 		else if (character.getCharacterType().isMultistate()) {
 			attribute = formatMultiStateAttribute((MultiStateCharacter)character, attribute);
+		}
+		else {
+			attribute = stripComments(attribute);
 		}
 		return attribute;
 	}
@@ -130,7 +134,10 @@ public class Formatter {
 		}
 		try {
 			int stateNum = Integer.parseInt(valueWithoutComments);
-			return character.getState(stateNum);
+			String state = character.getState(stateNum);
+			state = RTFUtils.stripFormatting(state);
+			state = stripComments(state);
+			return state;
 		}
 		catch (Exception e) {
 			System.out.println(valueWithoutComments);

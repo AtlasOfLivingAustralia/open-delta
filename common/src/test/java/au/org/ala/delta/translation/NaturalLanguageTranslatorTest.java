@@ -26,10 +26,12 @@ public class NaturalLanguageTranslatorTest extends TestCase {
 
 	
 	private NaturalLanguageTranslator _naturalLanguageTranslator;
+	private DataSetTranslator _dataSetTranslator;
 	private DeltaContext _context;
 	private TypeSetter _typeSetter;
 	private ByteArrayOutputStream _bytes;
-	
+	private static final String DEFAULT_DATASET_PATH="/dataset/simple/tonat";
+	private static final String SAMPLE_DATASET_PATH="/dataset/sample/tonat_simple";
 	
 	@Before
 	public void setUp() throws Exception {
@@ -37,14 +39,15 @@ public class NaturalLanguageTranslatorTest extends TestCase {
 		_bytes = new ByteArrayOutputStream();
 		PrintStream pout = new PrintStream(_bytes);
 		_typeSetter = new TypeSetter(pout, 78);
+		
 		_context = new DeltaContext();
-		initialiseContext();
 		_naturalLanguageTranslator = new NaturalLanguageTranslator(_context, _typeSetter);
+		_dataSetTranslator = new DataSetTranslator(_context, _naturalLanguageTranslator);
 	}
 	
 	public void testBasicTranslation() throws Exception {
-		
-		_naturalLanguageTranslator.translate();
+		initialiseContext(DEFAULT_DATASET_PATH);
+		_dataSetTranslator.translate();
 		checkResult("default.txt");
 	}
 	
@@ -53,10 +56,10 @@ public class NaturalLanguageTranslatorTest extends TestCase {
 	 * Tests the OMIT REDUNDANT VARIANT ATTRIBUTES directive works correctly.
 	 */
 	public void testOmitRedundantVariantAttributes() throws Exception {
-		
+		initialiseContext(DEFAULT_DATASET_PATH);
 		_context.setOmitRedundantVariantAttributes(true);
 		
-		_naturalLanguageTranslator.translate();
+		_dataSetTranslator.translate();
 		checkResult("redundant_variant_attr_omitted.txt");
 	}
 	
@@ -65,9 +68,10 @@ public class NaturalLanguageTranslatorTest extends TestCase {
 	 * Tests the INSERT REDUNDANT VARIANT ATTRIBUTES directive works correctly.
 	 */
 	public void testInsertRedundantVariantAttributes() throws Exception {
+		initialiseContext(DEFAULT_DATASET_PATH);
 		_context.setOmitRedundantVariantAttributes(false);
 		
-		_naturalLanguageTranslator.translate();
+		_dataSetTranslator.translate();
 		checkResult("redundant_variant_attr_included.txt");
 	}
 	
@@ -76,14 +80,22 @@ public class NaturalLanguageTranslatorTest extends TestCase {
 	 * Tests the natural language output handles the LINK CHARACTERS directive correctly.
 	 */
 	public void testLinkedCharacters() throws Exception {
+		initialiseContext(DEFAULT_DATASET_PATH);
 		Set<Integer> linkedCharacters = new HashSet<Integer>();
 		linkedCharacters.add(4);
 		linkedCharacters.add(5);
 		
 		_context.linkCharacters(linkedCharacters);
 		
-		_naturalLanguageTranslator.translate();
+		_dataSetTranslator.translate();
 		checkResult("linked_characters.txt");
+	}
+	
+	public void testSimpleSampleTranslation() throws Exception{
+		initialiseContext(SAMPLE_DATASET_PATH);
+		
+		_dataSetTranslator.translate();
+		//checkResult("/dataset/sample/expected_results/default.txt");
 	}
 	
 	/**
@@ -91,9 +103,9 @@ public class NaturalLanguageTranslatorTest extends TestCase {
 	 * Test cases can manually configure the DeltaContext before doing the translation.
 	 * @throws Exception if there was an error reading the input files.
 	 */
-	private void initialiseContext() throws Exception {
+	private void initialiseContext(String path) throws Exception {
 		
-		File specs = classloaderPathToFile("/dataset/simple/tonat");
+		File specs = classloaderPathToFile(path);
 
 		ConforDirectiveFileParser parser = ConforDirectiveFileParser.createInstance();
 		parser.parse(specs, _context);
@@ -108,7 +120,11 @@ public class NaturalLanguageTranslatorTest extends TestCase {
 	 * @throws Exception if there is an error reading the file.
 	 */
 	private void checkResult(String expectedResultsFileName) throws Exception {
-		String expectedResults = classLoaderPathToString("/dataset/simple/expected_results/"+expectedResultsFileName);
+		
+		if (expectedResultsFileName.indexOf('/') < 0) {
+			expectedResultsFileName =  "/dataset/simple/expected_results/" + expectedResultsFileName;
+		}
+		String expectedResults = classLoaderPathToString(expectedResultsFileName);
 		
 		if (System.getProperty("line.separator") != "\n") {
 			expectedResults = expectedResults.replaceAll("\n", System.getProperty("line.separator"));

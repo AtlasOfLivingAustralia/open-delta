@@ -6,7 +6,6 @@ import java.util.logging.Logger;
 import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.rtf.RTFUtils;
-import au.org.ala.delta.translation.NaturalLanguageTranslator.TypeSetting;
 import au.org.ala.delta.translation.Words.Word;
 
 /**
@@ -208,7 +207,10 @@ public class TypeSetter {
 		indent();
 		
 	}
-	
+	enum TypeSetting {
+		ADD_TYPESETTING_MARKS, DO_NOTHING, REMOVE_EXISTING_TYPESETTINGMARKS
+	};
+
 	private TypeSetting _typeSettingMode = TypeSetting.DO_NOTHING;
 	
 	public void writeJustifiedOutput(String text, int completionAction, boolean inHtmlRtf, boolean encodeXmlBrackets) {
