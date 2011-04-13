@@ -28,6 +28,7 @@ public abstract class Character {
 	protected CharacterData _impl;	
 	private CharacterType _characterType;
 	private List<CharacterObserver> _observers;
+	private double _reliability;
 	
 	protected Character(int number, CharacterType characterType) {
 		_characterType = characterType;
@@ -144,5 +145,13 @@ public abstract class Character {
 	public ControllingInfo checkApplicability(Item item) {
 		return _impl.checkApplicability(item);
 	}
+
+    public double getReliability() {
+        return _reliability;
+    }
+
+    public void setReliability(double reliability) {
+        this._reliability = reliability;
+    }
 	
 }

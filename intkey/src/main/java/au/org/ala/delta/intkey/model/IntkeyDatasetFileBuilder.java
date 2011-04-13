@@ -2,15 +2,20 @@ package au.org.ala.delta.intkey.model;
 
 import java.io.File;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import au.org.ala.delta.intkey.model.ported.Constants;
 import au.org.ala.delta.io.BinFile;
 import au.org.ala.delta.io.BinFileEncoding;
 import au.org.ala.delta.io.BinFileMode;
+import au.org.ala.delta.model.CharacterType;
+import au.org.ala.delta.model.DefaultDataSetFactory;
+import au.org.ala.delta.model.IntegerCharacter;
+import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.MultiStateCharacter;
+import au.org.ala.delta.model.RealCharacter;
+import au.org.ala.delta.model.TextCharacter;
 
 public class IntkeyDatasetFileBuilder {
 
@@ -25,8 +30,8 @@ public class IntkeyDatasetFileBuilder {
     private BinFile _itemBinFile;
     private CharactersFileHeader _charFileHeader;
     private ItemsFileHeader _itemFileHeader;
-    private List<Character> _characters;
-    private List<Taxon> _taxa;
+    private List<au.org.ala.delta.model.Character> _characters;
+    private List<Item> _taxa;
 
     public IntkeyDataset readDataSet(File charactersFile, File itemsFile) {
 
@@ -37,8 +42,8 @@ public class IntkeyDatasetFileBuilder {
         _ds = new IntkeyDataset();
         _charFileHeader = new CharactersFileHeader();
         _itemFileHeader = new ItemsFileHeader();
-        _characters = new ArrayList<Character>();
-        _taxa = new ArrayList<Taxon>();
+        _characters = new ArrayList<au.org.ala.delta.model.Character>();
+        _taxa = new ArrayList<Item>();
 
         readCharactersFileHeader();
         readItemsFileHeader();
@@ -292,6 +297,7 @@ public class IntkeyDatasetFileBuilder {
     private void readCharacters() {
 
         int numChars = _charFileHeader.getNC();
+        DefaultDataSetFactory dsFactory = new DefaultDataSetFactory();
 
         // READ CHARACTER TYPES
         seekToRecord(_itemBinFile, _itemFileHeader.getRpSpec() - 1);
@@ -301,23 +307,23 @@ public class IntkeyDatasetFileBuilder {
             // Type for corresponding character is indicated by the absolute
             // value of the supplied integer value
             int charType = Math.abs(charTypeData.getInt());
-            Character newChar = null;
+            au.org.ala.delta.model.Character newChar = null;
 
             switch (charType) {
             case 1:
-                newChar = new MultistateCharacter(false);
+                newChar = dsFactory.createCharacter(CharacterType.UnorderedMultiState, i);
                 break;
             case 2:
-                newChar = new MultistateCharacter(true);
+                newChar = dsFactory.createCharacter(CharacterType.OrderedMultiState, i);
                 break;
             case 3:
-                newChar = new IntegerNumericCharacter();
+                newChar = dsFactory.createCharacter(CharacterType.IntegerNumeric, i);
                 break;
             case 4:
-                newChar = new RealNumericCharacter();
+                newChar = dsFactory.createCharacter(CharacterType.RealNumeric, i);
                 break;
             case 5:
-                newChar = new TextCharacter();
+                newChar = dsFactory.createCharacter(CharacterType.Text, i);
                 break;
             default:
                 throw new RuntimeException("Unrecognized character type");
@@ -340,9 +346,9 @@ public class IntkeyDatasetFileBuilder {
 
         seekToRecord(_itemBinFile, _itemFileHeader.getRpSpec() - 1 + (recordsSpannedByCharTypes * 2));
         ByteBuffer charReliabilityData = _itemBinFile.readByteBuffer(numChars * sizeFloatInBytes);
-        for (Character ch : _characters) {
+        for (au.org.ala.delta.model.Character ch : _characters) {
             Float reliability = charReliabilityData.getFloat();
-            ch.setReliablity(reliability);
+            ch.setReliability(Float.valueOf(reliability).doubleValue());
         }
 
         readCharacterDescriptionsAndStates();
@@ -375,7 +381,7 @@ public class IntkeyDatasetFileBuilder {
 
         for (int i = 0; i < numChars; i++) {
 
-            Character ch = _characters.get(i);
+            au.org.ala.delta.model.Character ch = _characters.get(i);
 
             int descRecordIndex = charDescriptionRecordIndicies.get(i);
 
@@ -416,24 +422,27 @@ public class IntkeyDatasetFileBuilder {
                 }
             }
 
-            if (ch instanceof IntegerNumericCharacter) {
+            if (ch instanceof IntegerCharacter) {
                 if (charStateDescriptions.size() == 1) {
-                    ((IntegerNumericCharacter) ch).setUnitsDescription(charStateDescriptions.get(0));
+                    ((IntegerCharacter) ch).setUnits(charStateDescriptions.get(0));
                 } else if (charStateDescriptions.size() > 1) {
                     throw new RuntimeException("Integer characters should only have one state listed which represents the units description.");
                 }
-            } else if (ch instanceof RealNumericCharacter) {
+            } else if (ch instanceof RealCharacter) {
                 if (charStateDescriptions.size() == 1) {
-                    ((RealNumericCharacter) ch).setUnitsDescription(charStateDescriptions.get(0));
+                    ((RealCharacter) ch).setUnits(charStateDescriptions.get(0));
                 } else if (charStateDescriptions.size() > 1) {
                     throw new RuntimeException("Real numeric characters should only have one state listed which represents the units description.");
                 }
-            } else if (ch instanceof MultistateCharacter) {
-                List<CharacterState> states = new ArrayList<CharacterState>();
-                for (String stateDescription : charStateDescriptions) {
-                    states.add(new CharacterState(stateDescription));
+            } else if (ch instanceof MultiStateCharacter) {
+                //List<CharacterState> states = new ArrayList<CharacterState>();
+                MultiStateCharacter multiStateChar = (MultiStateCharacter) ch; 
+                
+                multiStateChar.setNumberOfStates(charStateDescriptions.size());
+                
+                for (int l=0; l < charStateDescriptions.size(); l++) {
+                    multiStateChar.setState(l+1, charStateDescriptions.get(l));
                 }
-                ((MultistateCharacter) ch).setStates(states);
             } else {
                 if (charStateDescriptions.size() > 0) {
                     throw new RuntimeException("Text characters should not have a state specified");
@@ -460,14 +469,14 @@ public class IntkeyDatasetFileBuilder {
             for (int i = 0; i < numChars; i++) {
                 int charDepIndex = dependencyData.get(i);
                 if (charDepIndex > 0) {
-                    Character c = _characters.get(i);
-                    if (!(c instanceof MultistateCharacter)) {
+                    au.org.ala.delta.model.Character c = _characters.get(i);
+                    if (!(c instanceof MultiStateCharacter)) {
                         throw new RuntimeException("Only multistate characters can be controlling characters");
                     }
 
-                    MultistateCharacter controllingChar = (MultistateCharacter) c;
+                    MultiStateCharacter controllingChar = (MultiStateCharacter) c;
 
-                    int numStates = controllingChar.getStates().size();
+                    int numStates = controllingChar.getStates().length;
 
                     // The dependency data for each character consists of one
                     // integer for each of the character's states. If the
@@ -514,15 +523,15 @@ public class IntkeyDatasetFileBuilder {
 
         for (int i = 0; i < numChars; i++) {
             int charTaxonDataRecordIndex = charTaxonDataRecordIndicies.get(i);
-            Character c = _characters.get(i);
+            au.org.ala.delta.model.Character c = _characters.get(i);
 
             seekToRecord(_itemBinFile, charTaxonDataRecordIndex - 1);
 
-            if (c instanceof MultistateCharacter) {
+            if (c instanceof MultiStateCharacter) {
                 
-                MultistateCharacter multiStateChar = (MultistateCharacter) c; 
+                MultiStateCharacter multiStateChar = (MultiStateCharacter) c; 
                 
-                int bitsPerTaxon = multiStateChar.getStates().size() + 1;
+                int bitsPerTaxon = multiStateChar.getStates().length + 1;
                 int totalBitsNeeded = bitsPerTaxon * _taxa.size();
                 
                 int bytesToRead = Double.valueOf(Math.ceil(Double.valueOf(totalBitsNeeded) / Double.valueOf(Byte.SIZE))).intValue(); 
@@ -532,7 +541,7 @@ public class IntkeyDatasetFileBuilder {
                 List<Boolean> taxaData = byteArrayToBooleanList(bytes);
                 
                 for (int j=0; j < numTaxa; j++) {
-                    Taxon t = _taxa.get(j);
+                    Item t = _taxa.get(j);
                     
                     int startIndex = j * bitsPerTaxon;
                     int endIndex = startIndex + bitsPerTaxon;
@@ -541,10 +550,10 @@ public class IntkeyDatasetFileBuilder {
                     //System.out.println(c.getDescription() + " " + t.toString() + " " + taxonData.toString());
                 }
 
-            } else if (c instanceof IntegerNumericCharacter) {
+            } else if (c instanceof IntegerCharacter) {
                 
                 
-            } else if (c instanceof RealNumericCharacter) {
+            } else if (c instanceof RealCharacter) {
 
             } else if (c instanceof TextCharacter) {
                 TextCharacter textChar = (TextCharacter) c;
@@ -557,9 +566,10 @@ public class IntkeyDatasetFileBuilder {
     private void readTaxonData() {
 
         int numItems = _itemFileHeader.getNItem();
-
+        DefaultDataSetFactory dsFactory = new DefaultDataSetFactory();
+        
         for (int i = 0; i < numItems; i++) {
-            _taxa.add(new Taxon());
+            _taxa.add(dsFactory.createItem(i));
         }
 
         // READ TAXON NAMES - rpTnam
@@ -583,10 +593,8 @@ public class IntkeyDatasetFileBuilder {
             int nameLength = end - start;
             byte[] nameArray = new byte[nameLength];
             nameBuffer.get(nameArray);
-            _taxa.get(i).setName(BinFileEncoding.decode(nameArray));
+            _taxa.get(i).setDescription(BinFileEncoding.decode(nameArray));
         }
-
-        //
     }
 
     private static void seekToRecord(BinFile bFile, int recordNumber) {
