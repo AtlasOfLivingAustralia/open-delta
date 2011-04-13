@@ -507,6 +507,7 @@ public class IntkeyDatasetFileBuilder {
 
     private void readCharacterTaxonData() {
         int numChars = _itemFileHeader.getNChar();
+        int numTaxa = _itemFileHeader.getNItem();
 
         seekToRecord(_itemBinFile, _itemFileHeader.getRpCdat() - 1);
         List<Integer> charTaxonDataRecordIndicies = readIntegerList(_itemBinFile, numChars);
@@ -519,18 +520,36 @@ public class IntkeyDatasetFileBuilder {
 
             if (c instanceof MultistateCharacter) {
                 
-                for (Taxon t : _taxa) {
-                    byte[] data = new byte[((MultistateCharacter) c).getStates().size() + 1];
-                    _itemBinFile.readBytes(data);
-                    System.out.println(c.getDescription() + " " + t.toString() + " " + Arrays.toString(data));
+                MultistateCharacter multiStateChar = (MultistateCharacter) c; 
+                
+                int bitsPerTaxon = multiStateChar.getStates().size() + 1;
+                int totalBitsNeeded = bitsPerTaxon * _taxa.size();
+                
+                int bytesToRead = Double.valueOf(Math.ceil(Double.valueOf(totalBitsNeeded) / Double.valueOf(Byte.SIZE))).intValue(); 
+                
+                byte[] bytes = new byte[bytesToRead];
+                _itemBinFile.readBytes(bytes);
+                List<Boolean> taxaData = byteArrayToBooleanList(bytes);
+                
+                for (int j=0; j < numTaxa; j++) {
+                    Taxon t = _taxa.get(j);
+                    
+                    int startIndex = j * bitsPerTaxon;
+                    int endIndex = startIndex + bitsPerTaxon;
+                    
+                    List<Boolean> taxonData = taxaData.subList(startIndex, endIndex);
+                    //System.out.println(c.getDescription() + " " + t.toString() + " " + taxonData.toString());
                 }
 
             } else if (c instanceof IntegerNumericCharacter) {
-
+                
+                
             } else if (c instanceof RealNumericCharacter) {
 
             } else if (c instanceof TextCharacter) {
-
+                TextCharacter textChar = (TextCharacter) c;
+                
+                
             }
         }
     }
@@ -592,5 +611,30 @@ public class IntkeyDatasetFileBuilder {
             retList.add(bb.getInt());
         }
         return retList;
+    }
+    
+    private static List<Boolean> byteArrayToBooleanList(byte[] bArray) {
+        List<Boolean> boolList = new ArrayList<Boolean>();
+        
+        for (byte b: bArray) {
+            List<Boolean> l = byteToBooleanList(b);
+            boolList.addAll(l);
+        }
+        
+        return boolList;
+    }
+    
+    private static List<Boolean> byteToBooleanList(byte b) {
+        List<Boolean> boolList = new ArrayList<Boolean>();
+        
+        for (int i = 0; i < Byte.SIZE; i++) {
+            if ((b & (1 << i)) > 0) {
+                boolList.add(true);
+            } else {
+                boolList.add(false);
+            }
+        }
+        
+        return boolList;
     }
 }
