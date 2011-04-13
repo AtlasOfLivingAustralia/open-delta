@@ -15,9 +15,28 @@
 package au.org.ala.delta.model;
 
 public class IntegerCharacter extends NumericCharacter<Integer> {
+    
+    private int minimumValue;
+    private int maximumValue;
 
 	public IntegerCharacter(int number) {
 		super(number, CharacterType.IntegerNumeric);
 	}
+
+    public int getMinimumValue() {
+        return minimumValue;
+    }
+
+    public void setMinimumValue(int minimumValue) {
+        this.minimumValue = minimumValue;
+    }
+
+    public int getMaximumValue() {
+        return maximumValue;
+    }
+
+    public void setMaximumValue(int maximumValue) {
+        this.maximumValue = maximumValue;
+    }
 
 }

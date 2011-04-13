@@ -28,7 +28,7 @@ public class DataSet {
  // revised 29-jun-00.
     
 private void seekToRecord(BinFile bFile, int recordNumber) {
-    bFile.seek(recordNumber * Constants.LREC * sizeIntInBytes); 
+    bFile.seek(recordNumber * Constants.RECORD_LENGTH_INTEGERS * sizeIntInBytes); 
 }
 
 private String readString(BinFile bFile, int length) {
@@ -44,7 +44,7 @@ private String readString(BinFile bFile, int length) {
           rpStat, rpUseCc=0, rpNonAutoCc=0, rpValidationString;
      int cptr, dupItemPtr, enableDeltaOutput, i, lbtree, lkstat,
           nc, nrealc=0, ns, tmp, tptr, wrd;
-     int[] fparam = new int[Constants.LREC];
+     int[] fparam = new int[Constants.RECORD_LENGTH_INTEGERS];
      float verd, verp;
      int bit, j, last_used=26, len, maxint, ms, type,
          ver_major=5, ver_minor=2;
@@ -83,7 +83,7 @@ private String readString(BinFile bFile, int length) {
      rpFont = cBinFile.readInt(); //18
      rpItemSubHead = cBinFile.readInt(); // 19
      
-     seekToRecord(cBinFile, Constants.LREC - 2);
+     seekToRecord(cBinFile, Constants.RECORD_LENGTH_INTEGERS - 2);
      
      cptr = cBinFile.readInt();
   
@@ -145,7 +145,7 @@ private String readString(BinFile bFile, int length) {
        //message(10, MB_OK, 2, 1);
        throw new RuntimeException("Differing number of characters");  
      }
-     if (itemsFileRecordLength != Constants.LREC)         // correct record length?
+     if (itemsFileRecordLength != Constants.RECORD_LENGTH_INTEGERS)         // correct record length?
        //message(11, MB_OK, 2, 1);
        throw new RuntimeException("Incorrect record length");  
      if (itemsFileMajorVersion != ver_major) // correct major version number?

@@ -44,12 +44,11 @@ public class DataSetTest extends TestCase {
         URL icharsFileUrl = getClass().getResource("/dataset/sample/ichars");        
         URL iitemsFileUrl = getClass().getResource("/dataset/sample/iitems");    
         IntkeyDataset ds = new IntkeyDatasetFileBuilder().readDataSet(new File(icharsFileUrl.toURI()), new File(iitemsFileUrl.toURI()));
-        
-        /*System.out.println(ds.getHeading());
-        System.out.println(ds.getSubHeading());
-        System.out.println(ds.getValidationString());
-        
-        System.out.println(ds.getCharacters());
-        System.out.println(ds.getTaxa());*/
     }
+    
+    /*@Test
+    public void testGrassesReader() throws Exception {
+        IntkeyDataset ds = new IntkeyDatasetFileBuilder().readDataSet(new File("C:/Users/Chris/DELTA resources/samples/grasses/grasses/YCHARS"),
+                new File("C:/Users/Chris/DELTA resources/samples/grasses/grasses/YITEMS"));
+    }*/
 }
