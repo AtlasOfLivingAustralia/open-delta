@@ -22,7 +22,7 @@ public class ItemFormatter {
 		_includeNumber = includeNumber;
 		_stripRtf = stripRtf;
 		if (useShortVariant) {
-			variant = "(+) ";
+			variant = "(+)";
 		}
 		else {
 			variant = "(variant)";
@@ -42,7 +42,7 @@ public class ItemFormatter {
 			builder.append(item.getItemNumber()).append(". ");
 		}
 		if (item.isVariant()) {
-			builder.append(variant);
+			builder.append(variant).append(" ");
 		}
 		String description = item.getDescription();
 		if (StringUtils.isNotEmpty(description) && _stripRtf) {

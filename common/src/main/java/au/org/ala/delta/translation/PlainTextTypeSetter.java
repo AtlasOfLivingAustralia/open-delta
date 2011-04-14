@@ -2,6 +2,7 @@ package au.org.ala.delta.translation;
 
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.translation.attribute.ParsedAttribute.Values;
 
 public class PlainTextTypeSetter implements Translator {
 
@@ -67,6 +68,18 @@ public class PlainTextTypeSetter implements Translator {
 		_printer.writeBlankLines(1, 2);
 		_printer.setIndent(6);
 		_printer.indent();
+	}
+
+
+	@Override
+	public void attributeComment(String comment) {
+		
+	}
+
+
+	@Override
+	public void attributeValues(Values values) {
+		
 	}
 	
 }

@@ -95,7 +95,7 @@ public class NaturalLanguageTranslatorTest extends TestCase {
 		initialiseContext(SAMPLE_DATASET_PATH);
 		
 		_dataSetTranslator.translate();
-		//checkResult("/dataset/sample/expected_results/default.txt");
+		checkResult("/dataset/sample/expected_results/default.txt");
 	}
 	
 	/**

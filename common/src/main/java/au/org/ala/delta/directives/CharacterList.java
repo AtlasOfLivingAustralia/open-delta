@@ -111,21 +111,11 @@ class CharacterListParser extends AbstractStreamParser {
 		Matcher m = FEAT_DESC_PATTERN.matcher(state);
 		if (m.matches()) {
 			int stateId = Integer.parseInt(m.group(1));
-			ch.setState(stateId, m.group(2));
+			ch.setState(stateId, cleanWhiteSpace(m.group(2)));
 		} else {
 			throw new IllegalStateException("State does not match expected format!:" + state);
 		}
 	}
 	
-	/**
-	 * Character descriptions can span multiple lines and have whitespace designed to keep the
-	 * chars file format looking nice.  This method turns any sequence of whitespace (including
-	 * newlines) into a single space.
-	 * @param description the description has read from the chars file.
-	 * @return the description with whitespace tidied up.
-	 */
-	private String cleanWhiteSpace(String description) {
-		return description.replaceAll("\\s+", " ");
-	}
 
 }

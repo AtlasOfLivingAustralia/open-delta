@@ -6,6 +6,10 @@ import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.translation.attribute.AttributeParser;
+import au.org.ala.delta.translation.attribute.ParsedAttribute;
+import au.org.ala.delta.translation.attribute.ParsedAttribute.CommentedValues;
+import au.org.ala.delta.translation.attribute.ParsedAttribute.Values;
 
 /**
  * The DataSetTranslator iterates through the Items and Attributes of a DeltaDataSet, raising
@@ -18,11 +22,13 @@ public class DataSetTranslator {
 	private DeltaContext _context;
 	private Translator _interested;
 	private DataSetFilter _filter;
+	private AttributeParser _parser;
 	
 	public DataSetTranslator(DeltaContext context, Translator interested) {
 		_context = context;;
 		_interested = interested;
-		_filter = new DataSetFilter(context);
+		_filter = new NaturalLanguageDataSetFilter(context);
+		_parser = new AttributeParser();
 	}
 	
 	public void translate() {
@@ -65,8 +71,21 @@ public class DataSetTranslator {
 			if (_filter.filter(item, character)) {
 				logger.fine(item.getItemNumber() + ", "+character.getCharacterId()+" = "+attribute.getValue());
 				_interested.beforeAttribute(attribute);
+				translateAttribute(attribute);
 				_interested.afterAttribute(attribute);
 			}	
+		}
+	}
+	
+	private void translateAttribute(Attribute attribute) {
+		String value = attribute.getValue();
+		ParsedAttribute parsedAttribute = _parser.parse(value);
+		
+		_interested.attributeComment(parsedAttribute.getCharacterComment());
+		
+		for (CommentedValues values : parsedAttribute.getCommentedValues()) {
+			_interested.attributeValues(values.getValues());
+			_interested.attributeComment(values.getComment());
 		}
 	}
 }
@@ -81,5 +100,7 @@ interface Translator {
 	public void beforeAttribute(Attribute attribute);
 	public void afterAttribute(Attribute attribute);
 	public void afterLastItem();
+	public void attributeComment(String comment);
+	public void attributeValues(Values values);
 	
 }

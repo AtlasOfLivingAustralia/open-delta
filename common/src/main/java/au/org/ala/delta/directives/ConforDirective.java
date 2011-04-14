@@ -58,5 +58,4 @@ public abstract class ConforDirective extends AbstractDirective<DeltaContext> {
 			stream.println();
 		}
 	}
-
 }

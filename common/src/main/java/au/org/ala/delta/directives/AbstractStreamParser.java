@@ -158,5 +158,17 @@ public abstract class AbstractStreamParser {
 		return b.toString();
 
 	}
+	
+
+	/**
+	 * Character descriptions can span multiple lines and have whitespace designed to keep the
+	 * chars file format looking nice.  This method turns any sequence of whitespace (including
+	 * newlines) into a single space.
+	 * @param description the description has read from the chars file.
+	 * @return the description with whitespace tidied up.
+	 */
+	protected String cleanWhiteSpace(String description) {
+		return description.replaceAll("\\s+", " ");
+	}
 
 }

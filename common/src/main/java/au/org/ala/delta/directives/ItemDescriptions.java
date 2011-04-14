@@ -73,7 +73,7 @@ class ItemsParser extends AbstractStreamParser {
 		String itemName = readToNextEndSlashSpace();
 		Logger.debug("Parsing Item %s", itemName);
 	
-		item.setDescription(itemName);
+		item.setDescription(itemName.trim());
 		skipWhitespace();
 		while (_currentChar != '#' && _currentInt >= 0) {
 			int charIdx = readInteger();
@@ -91,18 +91,25 @@ class ItemsParser extends AbstractStreamParser {
 					readNext();
 					strValue = readStateValue(ch);
 				} else if (isWhiteSpace(_currentChar)) {
-					strValue = "U";
+					if (comment == null) {
+						strValue = "U";
+					}
+					else {
+						strValue = "";
+					}
 				} else {
 					throw new RuntimeException(String.format("Expected a ',' for state values (Character %d is not a Text character)", charIdx));
 				}
 
 			}
 			assert strValue != null;
+		
 			StateValue stateValue = new StateValue(ch, item, strValue);
 			if (comment != null) {
 				stateValue.setComment(comment);
+				strValue = comment+strValue;
 			}
-			item.addAttribute(ch, strValue);
+			item.addAttribute(ch, cleanWhiteSpace(strValue));
 			
 			_context.getMatrix().setValue(charIdx, itemIndex, stateValue);
 			Logger.debug("  %d. %s", charIdx, stateValue);

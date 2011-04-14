@@ -97,7 +97,6 @@ public class TypeSetter {
 			text = capitaliseFirstWord(text);
 		}
 		
-		System.out.println("Buffer :"+text);
 		if (willFitOnLine() == false) {
 			printBufferLine();
 		}
@@ -176,20 +175,22 @@ public class TypeSetter {
 				char next = tmp.charAt(index);
 				if (next != '\\' && next != '-') {
 					
-					while (Character.isLetterOrDigit(tmp.charAt(index))) {
+					while (index < text.length() && Character.isLetterOrDigit(tmp.charAt(index))) {
 						index++;
 					}
 				}
 			}
 		}
-		while (!Character.isLetter(tmp.charAt(index))) {
+		while (index < text.length() && !Character.isLetterOrDigit(tmp.charAt(index))) {
 			index++;
 		}
-		if ((index == 0) || (tmp.charAt(index-1) != '|')) {
-			tmp.setCharAt(index, Character.toUpperCase(tmp.charAt(index)));
-		}
-		else if (tmp.charAt(index-1) == '|') {
-			tmp.deleteCharAt(index-1);
+		if (index < text.length() && Character.isLetter(tmp.charAt(index))) {
+			if ((index == 0) || (tmp.charAt(index-1) != '|')) {
+				tmp.setCharAt(index, Character.toUpperCase(tmp.charAt(index)));
+			}
+			else if (tmp.charAt(index-1) == '|') {
+				tmp.deleteCharAt(index-1);
+			}
 		}
 		_capitalise = false;
 		return tmp.toString();
@@ -412,13 +413,9 @@ public class TypeSetter {
 		String punctuationMark = Words.word(word);
 		assert punctuationMark.length() == 1;
 		
-		if (lastCharInBuffer() == punctuationMark.charAt(0)) {
-			writeJustifiedOutput(" ", -1, false);
-		}
-		else {
+		if (lastCharInBuffer() != punctuationMark.charAt(0)) {
 			writeFromVocabulary(word, -1);
 		}
-		
 	}
 	
 	public void writeFromVocabulary(Word word, int completionAction) {

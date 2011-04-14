@@ -67,12 +67,27 @@ public class Attribute {
 		return statePresent;
 	}
 	
+	/**
+	 * An implicit value is one for which no attribute value is coded but an implicit value
+	 * has been specified for the attributes character.
+	 * @return true if the value of this attribute is derived from the Characters implicit value.
+	 */
 	public boolean isImplicit() {
 		if (!(_character instanceof MultiStateCharacter)) {
 			return false;
 		}
 		MultiStateCharacter multiStateChar = (MultiStateCharacter)_character;
 		return (StringUtils.isEmpty(getValue()) && multiStateChar.getUncodedImplicitState() > 0);
+	}
+	
+	/**
+	 * An unknown attribute is one that has not been coded, or has been coded explicitly with 
+	 * the value "U".
+	 * @return true if the value of this attribute is unknown.
+	 */
+	public boolean isUnknown() {
+		String value = getValue();
+		return (StringUtils.isEmpty(value) || "U".equals(value.toUpperCase()));
 	}
 	
 	public boolean isSimple() {

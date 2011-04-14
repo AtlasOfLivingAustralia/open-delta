@@ -12,7 +12,18 @@ import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.MultiStateCharacter;
+import au.org.ala.delta.model.NumericCharacter;
+import au.org.ala.delta.model.format.AttributeFormatter;
+import au.org.ala.delta.model.format.CharacterFormatter;
+import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.translation.Words.Word;
+import au.org.ala.delta.translation.attribute.AttributeParser;
+import au.org.ala.delta.translation.attribute.AttributeTranslator;
+import au.org.ala.delta.translation.attribute.MultiStateAttributeTranslator;
+import au.org.ala.delta.translation.attribute.NumericAttributeTranslator;
+import au.org.ala.delta.translation.attribute.TextAttributeTranslator;
+import au.org.ala.delta.translation.attribute.ParsedAttribute.Values;
 
 public class NaturalLanguageTranslator implements Translator {
 
@@ -21,7 +32,9 @@ public class NaturalLanguageTranslator implements Translator {
 	private TypeSetter _printer;
 	private DeltaDataSet _dataSet;
 	private PlainTextTypeSetter _typeSetter;
-	private Formatter _formatter;
+	private ItemFormatter _itemFormatter;
+	private AttributeFormatter _attributeFormatter;
+	private CharacterFormatter _characterFormatter;
 	
 	
 	public NaturalLanguageTranslator(DeltaContext context, TypeSetter typeSetter) {
@@ -29,7 +42,9 @@ public class NaturalLanguageTranslator implements Translator {
 		_printer = typeSetter;
 		_dataSet = _context.getDataSet();
 		_typeSetter = new PlainTextTypeSetter(_printer);
-		_formatter = new Formatter(context);
+		_itemFormatter = new ItemFormatter(false, true, false);
+		_attributeFormatter = new AttributeFormatter(false, true, true);
+		_characterFormatter = new CharacterFormatter(false, true, true);
 	}
 	
 	@Override
@@ -125,6 +140,16 @@ public class NaturalLanguageTranslator implements Translator {
 
 	}
 	
+	@Override
+	public void attributeComment(String comment) {
+		
+	}
+
+	@Override
+	public void attributeValues(Values values) {
+		
+	}
+
 	protected void printItemHeading(Item item) {
 
 		String heading = _context.getItemHeading(item.getItemNumber());
@@ -194,25 +219,17 @@ public class NaturalLanguageTranslator implements Translator {
 	 * @param completionAction
 	 */
 	private void writeName(Item item, int commentAction, int completionAction) {
-		String description = item.getDescription();
+		
+		String description = _itemFormatter.formatItemDescription(item);
+		
 
-		if ((commentAction != 0) || (false/*
-										 * item description subgroup 1 type is
-										 * not text comment
-										 */)) {
-			if (/* is text comment and */commentAction == 2) {
-				// skip first "<"
-			}
-
-			if (item.isVariant()) {
-				// next character is a capital
-				_printer.captialiseNextWord();
-				_printer.writeJustifiedText(Words.word(Word.VARIANT), 0,false);
-			}
-			
-			_printer.writeJustifiedText(description, -1, false);
-			
+		if (item.isVariant()) {
+			// next character is a capital
+			_printer.captialiseNextWord();
 		}
+		
+		_printer.writeJustifiedText(description, -1, false);
+		
 		
 		complete(completionAction, description);
 	}
@@ -242,11 +259,10 @@ public class NaturalLanguageTranslator implements Translator {
 			
 			boolean subsequentPartOfLinkedSet = (characters.size() > 1) && (character != characters.get(0));
 			
-			String description = character.getDescription();
+			String description = _characterFormatter.formatCharacterDescription(character);
 			if (subsequentPartOfLinkedSet) {
 				description = removeCommonPrefix(characters.get(0).getDescription(), description);
 			}
-			
 			writeFeature(description, true,
 					item.getItemNumber(), characterNumber, _context.getItemSubheading(characterNumber),
 					false, false, new int[_context.getNumberOfCharacters()], subsequentPartOfLinkedSet);
@@ -271,10 +287,24 @@ public class NaturalLanguageTranslator implements Translator {
 	private void writeCharacterAttribute(Item item, Character character) {
 		
 		Attribute attribute = item.getAttribute(character);
-		String formattedAttribute = _formatter.formatAttribute(character, attribute.getValue());
+		AttributeParser parser = new AttributeParser();
+		AttributeTranslator translator = translatorFor(character);
+		
+		String formattedAttribute = translator.translate(parser.parse(attribute.getValue()));
 		_printer.writeJustifiedText(formattedAttribute, -1, false);
 		_characterOutputSinceLastPuntuation = true;
 		
+	}
+	
+	private AttributeTranslator translatorFor(Character character) {
+		if (character instanceof MultiStateCharacter) {
+			return new MultiStateAttributeTranslator((MultiStateCharacter)character);
+		}
+		if (character instanceof NumericCharacter<?>) {
+			return new NumericAttributeTranslator((NumericCharacter<?>)character);
+		}
+		
+		return new TextAttributeTranslator();
 	}
 	
 	private boolean _newParagraph;
@@ -328,7 +358,7 @@ public class NaturalLanguageTranslator implements Translator {
 			_printer.insertTypeSettingMarks(33);
 		}
 		if (!_context.omitCharacterNumbers()) {
-			_printer.writeJustifiedText("(" + characterNumber + ")", 0, false);
+			_printer.writeJustifiedText("(" + characterNumber + ")", -1, false);
 		}
 
 		int ioffset = 0;
@@ -354,7 +384,7 @@ public class NaturalLanguageTranslator implements Translator {
 				}
 			}
 		}
-		description = _formatter.formatCharacterName(description);
+		
 		writeSentence(description, 0, completionAction);
 
 		if (emphasizeCharacter) {
