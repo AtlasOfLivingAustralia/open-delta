@@ -68,46 +68,8 @@ public class IntkeyDatasetFileBuilder {
         if (_itemFileHeader.getMajorVer() != datasetMajorVersion || (_itemFileHeader.getMinorVer() != datasetMinorVersion && _itemFileHeader.getRpOmitOr() != 0)) {
             throw new RuntimeException("Incorrect file version");
         }
-
-        // read and display data heading
-        BinFile hFile;
-        int recno;
-        if (_charFileHeader.getRpHeading() > 0) // heading is in chars file
-        {
-            hFile = _charBinFile;
-            recno = _charFileHeader.getRpHeading();
-        } else // heading is in items file
-        {
-            hFile = _itemBinFile;
-            recno = 2;
-        }
-
-        seekToRecord(hFile, recno - 1);
-        int len = hFile.readInt();
-        seekToRecord(hFile, recno);
-
-        String heading = readString(hFile, len);
-        _ds.setHeading(heading);
-        // output to log window
-        // set as heading of main window
-
-        if (_charFileHeader.getRpRegSubHeading() > 0) {
-            // read and display registered dataset subheading
-            seekToRecord(hFile, _charFileHeader.getRpRegSubHeading() - 1);
-            len = hFile.readInt();
-            seekToRecord(hFile, _charFileHeader.getRpRegSubHeading());
-            String regSubHeading = readString(hFile, len);
-            _ds.setSubHeading(regSubHeading);
-        }
-
-        if (_charFileHeader.getRpValidationString() > 0) {
-            // read validation string
-            seekToRecord(hFile, _charFileHeader.getRpValidationString() - 1);
-            len = hFile.readInt();
-            seekToRecord(hFile, _charFileHeader.getRpValidationString());
-            String validationString = readString(hFile, len);
-            _ds.setValidationString(validationString);
-        }
+        
+        readHeadingsAndValidationString();
 
         readTaxonData();
         readCharacters();
@@ -128,7 +90,7 @@ public class IntkeyDatasetFileBuilder {
     private void readCharactersFileHeader() {
         // read first record which contains header file information;
 
-        ByteBuffer headerBytes = readRecord(_charBinFile, 0);
+        ByteBuffer headerBytes = readRecord(_charBinFile, 1);
 
         // read first record of characters file
         _charFileHeader.setNC(headerBytes.getInt()); // 0
@@ -176,7 +138,7 @@ public class IntkeyDatasetFileBuilder {
 
     private void readItemsFileHeader() {
 
-        ByteBuffer headerBytes = readRecord(_itemBinFile, 0);
+        ByteBuffer headerBytes = readRecord(_itemBinFile, 1);
 
         _itemFileHeader.setNItem(headerBytes.getInt()); // number of items (0)
         _itemFileHeader.setNChar(headerBytes.getInt()); // number of characters
@@ -275,9 +237,9 @@ public class IntkeyDatasetFileBuilder {
                                                          // Constants.LREC - 1)
 
         if (_itemFileHeader.getRpNext() > 0) {
-            ByteBuffer secondHeaderBytes = readRecord(_charBinFile, 0);
+            ByteBuffer secondHeaderBytes = readRecord(_itemBinFile, _itemFileHeader.getRpNext());
 
-            _itemFileHeader.setRpUseCc(0);
+            _itemFileHeader.setRpUseCc(secondHeaderBytes.getInt());
             int rpTlinks1 = secondHeaderBytes.getInt();
             _itemFileHeader.setRpOmitPeriod(secondHeaderBytes.getInt());
             _itemFileHeader.setRpNewPara(secondHeaderBytes.getInt());
@@ -294,6 +256,48 @@ public class IntkeyDatasetFileBuilder {
             _itemFileHeader.setRpNonAutoCc(0);
         }
     }
+    
+    private void readHeadingsAndValidationString() {
+     // read and display data heading
+        BinFile hFile;
+        int recno;
+        if (_charFileHeader.getRpHeading() > 0) // heading is in chars file
+        {
+            hFile = _charBinFile;
+            recno = _charFileHeader.getRpHeading();
+        } else // heading is in items file
+        {
+            hFile = _itemBinFile;
+            recno = 2;
+        }
+
+        seekToRecord(hFile, recno);
+        int headingLength = hFile.readInt();
+        seekToRecord(hFile, recno + 1);
+
+        String heading = readString(hFile, headingLength);
+        _ds.setHeading(heading);
+        // output to log window
+        // set as heading of main window
+
+        if (_charFileHeader.getRpRegSubHeading() > 0) {
+            // read and display registered dataset subheading
+            seekToRecord(hFile, _charFileHeader.getRpRegSubHeading());
+            int subheadingLength = hFile.readInt();
+            seekToRecord(hFile, _charFileHeader.getRpRegSubHeading() + 1);
+            String regSubHeading = readString(hFile, subheadingLength);
+            _ds.setSubHeading(regSubHeading);
+        }
+
+        if (_charFileHeader.getRpValidationString() > 0) {
+            // read validation string
+            seekToRecord(hFile, _charFileHeader.getRpValidationString());
+            int validationStringLength = hFile.readInt();
+            seekToRecord(hFile, _charFileHeader.getRpValidationString() + 1);
+            String validationString = readString(hFile, validationStringLength);
+            _ds.setValidationString(validationString);
+        }
+    }
 
     private void readCharacters() {
 
@@ -301,7 +305,7 @@ public class IntkeyDatasetFileBuilder {
         DefaultDataSetFactory dsFactory = new DefaultDataSetFactory();
 
         // READ CHARACTER TYPES
-        seekToRecord(_itemBinFile, _itemFileHeader.getRpSpec() - 1);
+        seekToRecord(_itemBinFile, _itemFileHeader.getRpSpec());
         ByteBuffer charTypeData = _itemBinFile.readByteBuffer(numChars * sizeIntInBytes);
 
         for (int i = 0; i < numChars; i++) {
@@ -312,19 +316,19 @@ public class IntkeyDatasetFileBuilder {
 
             switch (charType) {
             case 1:
-                newChar = dsFactory.createCharacter(CharacterType.UnorderedMultiState, i);
+                newChar = dsFactory.createCharacter(CharacterType.UnorderedMultiState, i + 1);
                 break;
             case 2:
-                newChar = dsFactory.createCharacter(CharacterType.OrderedMultiState, i);
+                newChar = dsFactory.createCharacter(CharacterType.OrderedMultiState, i + 1);
                 break;
             case 3:
-                newChar = dsFactory.createCharacter(CharacterType.IntegerNumeric, i);
+                newChar = dsFactory.createCharacter(CharacterType.IntegerNumeric, i + 1);
                 break;
             case 4:
-                newChar = dsFactory.createCharacter(CharacterType.RealNumeric, i);
+                newChar = dsFactory.createCharacter(CharacterType.RealNumeric, i + 1);
                 break;
             case 5:
-                newChar = dsFactory.createCharacter(CharacterType.Text, i);
+                newChar = dsFactory.createCharacter(CharacterType.Text, i + 1);
                 break;
             default:
                 throw new RuntimeException("Unrecognized character type");
@@ -345,7 +349,7 @@ public class IntkeyDatasetFileBuilder {
         // compare.
         int recordsSpannedByCharTypes = Double.valueOf(Math.ceil(Integer.valueOf(numChars).doubleValue() / Integer.valueOf(Constants.RECORD_LENGTH_INTEGERS).doubleValue())).intValue();
 
-        seekToRecord(_itemBinFile, _itemFileHeader.getRpSpec() - 1 + (recordsSpannedByCharTypes * 2));
+        seekToRecord(_itemBinFile, _itemFileHeader.getRpSpec() + (recordsSpannedByCharTypes * 2));
         ByteBuffer charReliabilityData = _itemBinFile.readByteBuffer(numChars * sizeFloatInBytes);
         for (au.org.ala.delta.model.Character ch : _characters) {
             Float reliability = charReliabilityData.getFloat();
@@ -363,7 +367,7 @@ public class IntkeyDatasetFileBuilder {
         int numChars = _charFileHeader.getNC();
 
         // READ CHARACTER DESCRIPTIONS
-        seekToRecord(_charBinFile, _charFileHeader.getRpCdes() - 1);
+        seekToRecord(_charBinFile, _charFileHeader.getRpCdes());
 
         List<Integer> charDescriptionRecordIndicies = new ArrayList<Integer>();
         ByteBuffer recordIndiciesData = _charBinFile.readByteBuffer(numChars * sizeIntInBytes);
@@ -373,7 +377,7 @@ public class IntkeyDatasetFileBuilder {
         }
 
         // READ NUMBER OF CHARACTER STATES
-        seekToRecord(_charBinFile, _charFileHeader.getRpStat() - 1);
+        seekToRecord(_charBinFile, _charFileHeader.getRpStat());
 
         List<Integer> numStates = new ArrayList<Integer>();
         ByteBuffer numStatesData = _charBinFile.readByteBuffer(numChars * sizeIntInBytes);
@@ -387,7 +391,7 @@ public class IntkeyDatasetFileBuilder {
 
             int descRecordIndex = charDescriptionRecordIndicies.get(i);
 
-            seekToRecord(_charBinFile, descRecordIndex - 1);
+            seekToRecord(_charBinFile, descRecordIndex);
 
             int numStatesForChar = numStates.get(i);
             ByteBuffer charDescriptionsTextData = _charBinFile.readByteBuffer((numStatesForChar + 1) * sizeIntInBytes);
@@ -407,7 +411,7 @@ public class IntkeyDatasetFileBuilder {
 
             List<String> charStateDescriptions = new ArrayList<String>();
 
-            seekToRecord(_charBinFile, descRecordIndex - 1 + recordsSpannedByDescLengths);
+            seekToRecord(_charBinFile, descRecordIndex + recordsSpannedByDescLengths);
             ByteBuffer descBuffer = _charBinFile.readByteBuffer(lengthTotal);
 
             for (int k = 0; k < charDescriptionsLengths.size(); k++) {
@@ -458,13 +462,13 @@ public class IntkeyDatasetFileBuilder {
     private void readCharacterMinimumsAndMaximums() {
         int numChars = _itemFileHeader.getNChar();
         
-        seekToRecord(_itemBinFile, _itemFileHeader.getRpMini() - 1);
+        seekToRecord(_itemBinFile, _itemFileHeader.getRpMini());
         
         List<Integer> minimumValues = readIntegerList(_itemBinFile, numChars);
         
         int recordsSpannedByMinimumValues = recordsSpannedByBytes(numChars * sizeIntInBytes);
         
-        seekToRecord(_itemBinFile, _itemFileHeader.getRpMini() - 1 + recordsSpannedByMinimumValues);
+        seekToRecord(_itemBinFile, _itemFileHeader.getRpMini() + recordsSpannedByMinimumValues);
         
         List<Integer> maximumValues = readIntegerList(_itemBinFile, numChars);
         
@@ -480,7 +484,7 @@ public class IntkeyDatasetFileBuilder {
                 intChar.setMinimumValue(minValue);
                 intChar.setMaximumValue(maxValue);
                 
-                System.out.println(String.format("%s %d %d", c.getDescription(), minValue, maxValue));
+                //System.out.println(String.format("%s %d %d", c.getDescription(), minValue, maxValue));
             }
         }
     }
@@ -492,7 +496,7 @@ public class IntkeyDatasetFileBuilder {
         // consists of LDep integers, starting at record
         // rpCdep.
         if (_itemFileHeader.getLDep() >= numChars) {
-            seekToRecord(_itemBinFile, _itemFileHeader.getRpCdep() - 1);
+            seekToRecord(_itemBinFile, _itemFileHeader.getRpCdep());
             List<Integer> dependencyData = readIntegerList(_itemBinFile, _itemFileHeader.getLDep());
 
             // At the start of the dependency data there is an integer value for
@@ -553,14 +557,14 @@ public class IntkeyDatasetFileBuilder {
         int numChars = _itemFileHeader.getNChar();
         int numTaxa = _itemFileHeader.getNItem();
 
-        seekToRecord(_itemBinFile, _itemFileHeader.getRpCdat() - 1);
+        seekToRecord(_itemBinFile, _itemFileHeader.getRpCdat());
         List<Integer> charTaxonDataRecordIndicies = readIntegerList(_itemBinFile, numChars);
 
         for (int i = 0; i < numChars; i++) {
             int charTaxonDataRecordIndex = charTaxonDataRecordIndicies.get(i);
             au.org.ala.delta.model.Character c = _characters.get(i);
 
-            seekToRecord(_itemBinFile, charTaxonDataRecordIndex - 1);
+            seekToRecord(_itemBinFile, charTaxonDataRecordIndex);
 
             if (c instanceof MultiStateCharacter) {
 
@@ -582,11 +586,30 @@ public class IntkeyDatasetFileBuilder {
                     int endIndex = startIndex + bitsPerTaxon;
 
                     List<Boolean> taxonData = taxaData.subList(startIndex, endIndex);
-                    // System.out.println(c.getDescription() + " " +
-                    // t.toString() + " " + taxonData.toString());
+                    //System.out.println(c.getDescription() + " " + t.getDescription() + " " + taxonData.toString());
                 }
 
             } else if (c instanceof IntegerCharacter) {
+                IntegerCharacter intChar = (IntegerCharacter) c;
+                
+                int bitsPerTaxon = intChar.getMaximumValue() - intChar.getMinimumValue() + 4;
+                int totalBitsNeeded = bitsPerTaxon * _taxa.size();
+                
+                int bytesToRead = Double.valueOf(Math.ceil(Double.valueOf(totalBitsNeeded) / Double.valueOf(Byte.SIZE))).intValue();
+
+                byte[] bytes = new byte[bytesToRead];
+                _itemBinFile.readBytes(bytes);
+                List<Boolean> taxaData = byteArrayToBooleanList(bytes);
+                
+                for (int j = 0; j < numTaxa; j++) {
+                    Item t = _taxa.get(j);
+
+                    int startIndex = j * bitsPerTaxon;
+                    int endIndex = startIndex + bitsPerTaxon;
+
+                    List<Boolean> taxonData = taxaData.subList(startIndex, endIndex);
+                    //System.out.println(c.getDescription() + " " + t.getDescription() + " " + taxonData.toString());
+                }
                 
 
             } else if (c instanceof RealCharacter) {
@@ -599,7 +622,7 @@ public class IntkeyDatasetFileBuilder {
 
                 int recordsSpannedByInapplicabilityData = recordsSpannedByBytes(bytesToRead);
 
-                seekToRecord(_itemBinFile, charTaxonDataRecordIndex - 1 + recordsSpannedByInapplicabilityData);
+                seekToRecord(_itemBinFile, charTaxonDataRecordIndex + recordsSpannedByInapplicabilityData);
                 
                 // Read two float values per taxon
                 List<Float> taxonData = readFloatList(_itemBinFile, numTaxa * 2);
@@ -626,13 +649,13 @@ public class IntkeyDatasetFileBuilder {
 
                 int recordsSpannedByInapplicabilityData = recordsSpannedByBytes(bytesToRead);
 
-                seekToRecord(_itemBinFile, charTaxonDataRecordIndex - 1 + recordsSpannedByInapplicabilityData);
+                seekToRecord(_itemBinFile, charTaxonDataRecordIndex + recordsSpannedByInapplicabilityData);
 
                 List<Integer> taxonTextDataOffsets = readIntegerList(_itemBinFile, numTaxa + 1);
 
                 int recordsSpannedByOffsets = recordsSpannedByBytes((numTaxa + 1) * sizeIntInBytes);
 
-                seekToRecord(_itemBinFile, charTaxonDataRecordIndex - 1 + recordsSpannedByInapplicabilityData + recordsSpannedByOffsets);
+                seekToRecord(_itemBinFile, charTaxonDataRecordIndex + recordsSpannedByInapplicabilityData + recordsSpannedByOffsets);
 
                 ByteBuffer taxonTextData = _itemBinFile.readByteBuffer(taxonTextDataOffsets.get(taxonTextDataOffsets.size() - taxonTextDataOffsets.get(0)));
 
@@ -667,7 +690,7 @@ public class IntkeyDatasetFileBuilder {
         }
 
         // READ TAXON NAMES - rpTnam
-        seekToRecord(_itemBinFile, _itemFileHeader.getRpTnam() - 1);
+        seekToRecord(_itemBinFile, _itemFileHeader.getRpTnam());
 
         List<Integer> taxonNameOffsets = new ArrayList<Integer>();
         for (int i = 0; i < numItems + 1; i++) {
@@ -676,7 +699,7 @@ public class IntkeyDatasetFileBuilder {
 
         int recordsSpannedByOffsets = Double.valueOf(Math.ceil(Integer.valueOf(numItems).doubleValue() / Integer.valueOf(Constants.RECORD_LENGTH_INTEGERS).doubleValue())).intValue();
 
-        seekToRecord(_itemBinFile, _itemFileHeader.getRpTnam() - 1 + recordsSpannedByOffsets);
+        seekToRecord(_itemBinFile, _itemFileHeader.getRpTnam() + recordsSpannedByOffsets);
 
         ByteBuffer nameBuffer = _itemBinFile.readByteBuffer(taxonNameOffsets.get(taxonNameOffsets.size() - 1));
         nameBuffer.position(0);
@@ -690,11 +713,15 @@ public class IntkeyDatasetFileBuilder {
             _taxa.get(i).setDescription(BinFileEncoding.decode(nameArray));
         }
     }
+    
+    //--------------- UTILITY METHODS --------------------------------------------------------
 
+    //Note that records are 1 indexed.
     private static void seekToRecord(BinFile bFile, int recordNumber) {
-        bFile.seek(recordNumber * Constants.RECORD_LENGTH_INTEGERS * sizeIntInBytes);
+        bFile.seek((recordNumber - 1) * Constants.RECORD_LENGTH_INTEGERS * sizeIntInBytes);
     }
 
+    //Read the designed record from the file. Note that records are 1 indexed.
     private static ByteBuffer readRecord(BinFile bFile, int recordNumber) {
         seekToRecord(bFile, recordNumber);
         return bFile.readByteBuffer(Constants.RECORD_LENGTH_INTEGERS * sizeIntInBytes);
