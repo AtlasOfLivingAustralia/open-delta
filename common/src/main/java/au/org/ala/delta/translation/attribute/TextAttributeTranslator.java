@@ -28,8 +28,17 @@ public class TextAttributeTranslator extends AttributeTranslator {
 		if (StringUtils.isNotEmpty(comment)) {
 			comment = RTFUtils.stripFormatting(comment);
 			// Omit the brackets either side of the comment.
-			_translatedValue.append(comment.substring(1, comment.length()-1));
+			_translatedValue.append(removeCommentBrackets(comment));
 		}
+	}
+	
+	private String removeCommentBrackets(String comment) {
+		int numBrackets = 0;
+		while (comment.charAt(numBrackets) == '<') {
+			numBrackets++;
+		}
+		
+		return comment.substring(numBrackets, comment.length()-numBrackets);
 	}
 	
 

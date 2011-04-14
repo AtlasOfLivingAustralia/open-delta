@@ -32,6 +32,8 @@ public class NaturalLanguageTranslatorTest extends TestCase {
 	private ByteArrayOutputStream _bytes;
 	private static final String DEFAULT_DATASET_PATH="/dataset/simple/tonat";
 	private static final String SAMPLE_DATASET_PATH="/dataset/sample/tonat_simple";
+	private static final String PONERINI_DATASET_PATH="/dataset/ponerini/tonats";
+	
 	
 	@Before
 	public void setUp() throws Exception {
@@ -98,6 +100,13 @@ public class NaturalLanguageTranslatorTest extends TestCase {
 		checkResult("/dataset/sample/expected_results/default.txt");
 	}
 	
+	public void testSimplePoneriniTranslation() throws Exception {
+		initialiseContext(PONERINI_DATASET_PATH);	
+		
+		_dataSetTranslator.translate();
+		checkResult("/dataset/ponerini/expected_results/default.txt");
+	}
+	
 	/**
 	 * Reads in specs/chars/items from the simple test data set but no other configuration.
 	 * Test cases can manually configure the DeltaContext before doing the translation.
@@ -132,6 +141,16 @@ public class NaturalLanguageTranslatorTest extends TestCase {
 		expectedResults = expectedResults.trim();
 		String actualResults = actualResults().trim();
 		
+		// This is here because I keep getting bitten by end of line issues and the test failure
+		// comparison editor doesn't display them.
+		for (int i=0; i<expectedResults.length(); i++) {
+			if (expectedResults.charAt(i) != actualResults.charAt(i)) {
+				System.out.println("First wrong character @ position "+i);
+				System.out.println("Expected: "+(int)expectedResults.charAt(i)+", found: "+(int)actualResults.charAt(i));
+				break;
+			}
+		}
+		
 		assertEquals(expectedResults, actualResults);
 	}
 	
@@ -143,7 +162,7 @@ public class NaturalLanguageTranslatorTest extends TestCase {
 	private String classLoaderPathToString(String path) throws Exception {
 		File file = classloaderPathToFile(path);
 		
-		return FileUtils.readFileToString(file);
+		return FileUtils.readFileToString(file, "Cp1252");
 	}
 	
 	private String actualResults() {
