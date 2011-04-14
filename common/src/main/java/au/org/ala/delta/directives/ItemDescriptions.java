@@ -16,6 +16,7 @@ package au.org.ala.delta.directives;
 
 import java.io.Reader;
 import java.io.StringReader;
+import java.text.ParseException;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.Logger;
@@ -81,7 +82,17 @@ class ItemsParser extends AbstractStreamParser {
 			String strValue = null;
 			String comment = null;
 			if (ch instanceof TextCharacter) {
-				strValue = readComment();
+				if (_currentChar == '<') {
+					strValue = readComment();
+				}
+				else if (_currentChar == ',') {
+					readNext();
+					if (_currentChar != '-') {
+						throw new ParseException("Expected a comment for a text character", _position);
+					}
+					strValue = "-";
+					readNext();
+				}
 			} else {
 
 				if (_currentChar == '<') {

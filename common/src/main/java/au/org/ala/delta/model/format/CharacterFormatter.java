@@ -49,6 +49,9 @@ public class CharacterFormatter extends Formatter {
 	}
 
 	public String formatCharacterDescription(Character character) {
+		if (character.getCharacterId() == 15) {
+			System.out.println("I need a breakpoint");
+		}
 		String description = character.getDescription();
 		if (StringUtils.isEmpty(description)) {
 			return "";

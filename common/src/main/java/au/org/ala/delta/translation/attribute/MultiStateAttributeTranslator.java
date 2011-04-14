@@ -22,10 +22,18 @@ public class MultiStateAttributeTranslator extends AttributeTranslator {
 
 	@Override
 	public String translateValue(String value) {
+		
+		String state = "";
+		try{ 
 		int stateNum = Integer.parseInt(value);
 		
-		String state = _formatter.formatState(_character, stateNum);
-		
+		state = _formatter.formatState(_character, stateNum);
+		}
+		catch (NumberFormatException e) {
+			System.err.println("Error translating character: "+_character.getCharacterId());
+			e.printStackTrace();
+			throw e;
+		}
 		return state;
 	}
 

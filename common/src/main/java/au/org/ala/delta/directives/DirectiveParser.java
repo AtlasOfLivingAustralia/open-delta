@@ -1,9 +1,12 @@
 package au.org.ala.delta.directives;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,7 +53,8 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
     }
 
     public void parse(File file, C context) throws IOException {
-        FileReader reader = new FileReader(file);
+        FileInputStream fileIn = new FileInputStream(file);
+    	InputStreamReader reader = new InputStreamReader(fileIn, context.getFileEncoding());
         ParsingContext pc = context.newParsingContext();
         pc.setFile(file);
         doParse(reader, context, pc);

@@ -114,4 +114,23 @@ public class AttributeParserTest extends TestCase {
 		assertEquals("&", values.getSeparator());
 	}
 	
+	@Test
+	public void testSpecialCharacterInComment() {
+		String attributeValue = "2<1/1>/7<3/3>";
+		ParsedAttribute attribute = _parser.parse(attributeValue);
+		
+		assertEquals("", attribute.getCharacterComment());
+		
+		List<CommentedValues> commentedValues = attribute.getCommentedValues();
+		assertEquals(2, commentedValues.size());
+		assertEquals(1, commentedValues.get(0).getNumValues());
+		assertEquals("2", commentedValues.get(0).getValue(0));
+		assertEquals("<1/1>", commentedValues.get(0).getComment());
+		
+		assertEquals(1, commentedValues.get(1).getNumValues());
+		assertEquals("7", commentedValues.get(1).getValue(0));
+		assertEquals("<3/3>", commentedValues.get(1).getComment());
+	
+	}
+	
 }

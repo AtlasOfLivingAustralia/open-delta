@@ -38,6 +38,20 @@ public class ParsedAttribute {
 		public Values getValues() {
 			return _values;
 		}
+		
+		public String getValue(int index) {
+			if (_values == null) {
+				throw new IndexOutOfBoundsException();
+			}
+			return getValues().getValue(index);
+		}
+		
+		public int getNumValues() {
+			if (_values == null) {
+				return 0;
+			}
+			return getValues().getNumValues();
+		}
 	}
 	
 	public static class Values {

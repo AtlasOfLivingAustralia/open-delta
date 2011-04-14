@@ -33,13 +33,13 @@ public class NaturalLanguageTranslatorTest extends TestCase {
 	private static final String DEFAULT_DATASET_PATH="/dataset/simple/tonat";
 	private static final String SAMPLE_DATASET_PATH="/dataset/sample/tonat_simple";
 	private static final String PONERINI_DATASET_PATH="/dataset/ponerini/tonats";
-	
+	private static final String VIDE_DATASET_PATH="/dataset/vide/tonats";
 	
 	@Before
 	public void setUp() throws Exception {
 		
 		_bytes = new ByteArrayOutputStream();
-		PrintStream pout = new PrintStream(_bytes);
+		PrintStream pout = new PrintStream(_bytes, false, "UTF-8");
 		_typeSetter = new TypeSetter(pout, 78);
 		
 		_context = new DeltaContext();
@@ -108,6 +108,17 @@ public class NaturalLanguageTranslatorTest extends TestCase {
 	}
 	
 	/**
+	 * This test method actually takes quite a while so might not be suitable for the normal
+	 * build as it slows down the test cycle a fair bit.
+	 */
+	public void zztestSimpleVideTranslation() throws Exception {
+		initialiseContext(VIDE_DATASET_PATH);	
+		
+		_dataSetTranslator.translate();
+		checkResult("/dataset/vide/expected_results/default.txt");
+	}
+	
+	/**
 	 * Reads in specs/chars/items from the simple test data set but no other configuration.
 	 * Test cases can manually configure the DeltaContext before doing the translation.
 	 * @throws Exception if there was an error reading the input files.
@@ -146,7 +157,7 @@ public class NaturalLanguageTranslatorTest extends TestCase {
 		for (int i=0; i<expectedResults.length(); i++) {
 			if (expectedResults.charAt(i) != actualResults.charAt(i)) {
 				System.out.println("First wrong character @ position "+i);
-				System.out.println("Expected: "+(int)expectedResults.charAt(i)+", found: "+(int)actualResults.charAt(i));
+				System.out.println("Expected: "+Integer.toHexString((int)expectedResults.charAt(i))+", found: "+Integer.toHexString((int)actualResults.charAt(i)));
 				break;
 			}
 		}
@@ -166,7 +177,7 @@ public class NaturalLanguageTranslatorTest extends TestCase {
 	}
 	
 	private String actualResults() {
-		return new String(_bytes.toByteArray(), Charset.forName("Cp1252"));
+		return new String(_bytes.toByteArray(), Charset.forName("UTF-8"));
 	}
 	
 }

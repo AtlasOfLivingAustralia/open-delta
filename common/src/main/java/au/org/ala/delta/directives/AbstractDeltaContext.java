@@ -1,5 +1,6 @@
 package au.org.ala.delta.directives;
 
+import java.nio.charset.Charset;
 import java.util.Stack;
 
 public abstract class AbstractDeltaContext {
@@ -24,6 +25,10 @@ public abstract class AbstractDeltaContext {
             return _parsingContexts.pop();
         }
         return null;
+    }
+    
+    public Charset getFileEncoding() {
+    	return Charset.forName("Cp1252");
     }
 
 }
