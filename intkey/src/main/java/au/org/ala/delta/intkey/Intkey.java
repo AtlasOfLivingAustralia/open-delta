@@ -14,8 +14,6 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -62,6 +60,7 @@ public class Intkey extends DeltaSingleFrameApplication {
     private JList _listEliminatedTaxa;
 
     public static void main(String[] args) {
+    	setupMacSystemProperties(Intkey.class);
         launch(Intkey.class, args);
     }
 
