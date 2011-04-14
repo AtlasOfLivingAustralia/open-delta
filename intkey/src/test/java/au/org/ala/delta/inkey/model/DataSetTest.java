@@ -46,9 +46,9 @@ public class DataSetTest extends TestCase {
         IntkeyDataset ds = new IntkeyDatasetFileBuilder().readDataSet(new File(icharsFileUrl.toURI()), new File(iitemsFileUrl.toURI()));
     }
     
-    @Test
+    /*@Test
     public void testGrassesReader() throws Exception {
         IntkeyDataset ds = new IntkeyDatasetFileBuilder().readDataSet(new File("C:/Users/Chris/DELTA resources/samples/grasses/grasses/YCHARS"),
                 new File("C:/Users/Chris/DELTA resources/samples/grasses/grasses/YITEMS"));
-    }
+    }*/
 }
