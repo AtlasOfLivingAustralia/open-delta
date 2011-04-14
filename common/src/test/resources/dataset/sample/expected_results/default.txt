@@ -1,6 +1,9 @@
 
 
 
+
+
+
 Echinochloa <P. Beauv.>
 
       (1) Including Ornithospermum Dumoulin, Tema Adans. (2) Culms 40-360 cm
@@ -8,8 +11,8 @@ high. (3) Culms herbaceous. (4) Annual, or perennial. (5) Culms branched
 above, or unbranched above. (7) Culm nodes glabrous. (10) Ligule present, or
 absent. (11) Ligule <when present,> a fringe of hairs. (12) Plants bisexual,
 with bisexual spikelets. (13) Inflorescence of spicate main branches <the
-spikelets often hispid>. (15) Inflorescence not comprising ‘partial
-inflorescences’ and foliar organs. (16) Spikelet-bearing axes persistent. (18)
+spikelets often hispid>. (15) Inflorescence not comprising ëpartial
+inflorescencesí and foliar organs. (16) Spikelet-bearing axes persistent. (18)
 Spikelets <paired, or clustered in little secondary racemelets>. (19)
 Spikelets secund. (26) Spikelets 2.3-7 mm long. (27) Spikelets compressed
 dorsiventrally. (28) Spikelets falling with the glumes. (30) Rachilla
@@ -26,7 +29,7 @@ clear germination flap. (54) Lemmas 5 nerved. (55) Palea present <the tip
 reflexed>. (56) Palea relatively long. (57) Lodicules present. (58) Lodicules
 fleshy. (59) Lodicules glabrous. (60) Stamens 3. (61) Ovary glabrous. (62)
 Stigmas 2. (63) Stigmas red pigmented. (64) Fruit small. (66) Hilum short.
-(68) C4. (69) Biochemical type NADP–ME <3 species>. (70) XyMS–. (73) Midrib
+(68) C4. (69) Biochemical type NADPñME <3 species>. (70) XyMSñ. (73) Midrib
 conspicuous. (74) Midrib having a conventional arc of bundles. (75) Midrib
 with colourless tissue adaxially. (76) Many of the smallest vascular bundles
 unaccompanied by sclerenchyma. (78) Panicoideae. (79) Panicodae. (84)
@@ -41,7 +44,7 @@ perennial. (7) Culm nodes glabrous. (8) Leaf blades linear-lanceolate. (9)
 Leaf blades 2-3 mm wide. (11) Ligule a fringed membrane <the membrane short to
 relatively long, hairy on the back>. (12) Plants bisexual, with bisexual
 spikelets. (13) Inflorescence paniculate. (14) Inflorescence open. (15)
-Inflorescence not comprising ‘partial inflorescences’ and foliar organs. (16)
+Inflorescence not comprising ëpartial inflorescencesí and foliar organs. (16)
 Spikelet-bearing axes persistent. (19) Spikelets not secund. (26) Spikelets
 40-60 mm long. (27) Spikelets compressed laterally. (28) Spikelets
 disarticulating above the glumes. (30) Rachilla prolonged beyond the uppermost
@@ -58,7 +61,7 @@ female-fertile florets. (44) Female-fertile florets 1. (45) Lemmas incised.
 Lemmas non-carinate <rounded on the back>. (53) Lemmas without a germination
 flap. (54) Lemmas 3 nerved. (55) Palea present. (56) Palea relatively long
 <narrow, lanceolate>. (57) Lodicules present. (58) Lodicules membranous <two
-‘stipoid’ and larger, the third smaller and flimsier>. (59) Lodicules
+ëstipoidí and larger, the third smaller and flimsier>. (59) Lodicules
 glabrous. (60) Stamens 3. (61) Ovary hairy <sparingly so, towards the apex>.
 (62) Stigmas 2, or 3. (63) Stigmas white. (64) Fruit medium sized. (66) Hilum
 long-linear. (67) Pericarp free, or loosely adherent. (68) C3. (70) XyMS+.
@@ -71,9 +74,9 @@ Anisopog.
 Bambusa <Schreber>
 
       (1) Including Arundarbor Kuntze, Bonia Balansa, Criciuma Soderstrom &
-Londoño, Dendrocalamopsis (Chia & Fung) Keng f., Eremocaulon Soderstrom &
-Londoño, Guadua Kunth, Ischurochloa Büse, Leleba Nakai, Lingnania McClure,
-Tetragonocalamus Nakai – cf. Clayton and Renvoize (1986). Soderstrom and Ellis
+LondoÒo, Dendrocalamopsis (Chia & Fung) Keng f., Eremocaulon Soderstrom &
+LondoÒo, Guadua Kunth, Ischurochloa B¸se, Leleba Nakai, Lingnania McClure,
+Tetragonocalamus Nakai ñ cf. Clayton and Renvoize (1986). Soderstrom and Ellis
 (1987) refer Criciuma, Eremocaulon and Guadua to their subtribe Guaduinae,
 along with Olmeca, and place Tetragonocalamus in the Arundinariinae, but
 revised generic descriptions adequate for the present purpose are not
@@ -82,8 +85,8 @@ available. (2) Culms (200-)500-3500 cm high. (3) Culms woody and persistent.
 Culm nodes glabrous. (11) Ligule an unfringed membrane to a fringed membrane.
 (12) Plants bisexual, with bisexual spikelets. (13) Inflorescence <of
 pseudospikelets, these solitary or in tufts, fascicles or capitula on leafless
-branches>. (14) Inflorescence open. (15) Inflorescence a complex of ‘partial
-inflorescences’ and intervening foliar organs. (16) Spikelet-bearing axes
+branches>. (14) Inflorescence open. (15) Inflorescence a complex of ëpartial
+inflorescencesí and intervening foliar organs. (16) Spikelet-bearing axes
 persistent. (19) Spikelets not secund. (26) Spikelets 10-80 mm long. (27)
 Spikelets compressed laterally to not noticeably compressed. (28) Spikelets
 disarticulating above the glumes. (29) Spikelets disarticulating between the
@@ -93,9 +96,9 @@ florets. (30) Rachilla prolonged beyond the uppermost female-fertile floret.
 carinate. (38) Upper glume 7-18 nerved. (39) Spikelets with incomplete
 florets. (40) The incomplete florets distal to the female-fertile florets, or
 both distal and proximal to the female-fertile florets. (41) The proximal
-incomplete florets 0-3 <? – fewer than 4>. (42) The proximal incomplete
+incomplete florets 0-3 <? ñ fewer than 4>. (42) The proximal incomplete
 florets sterile. (43) The proximal lemmas awnless. (44) Female-fertile florets
-1-20 <–‘many’>. (45) Lemmas entire. (46) Lemmas blunt. (47) Lemmas awnless
+1-20 <ñëmanyí>. (45) Lemmas entire. (46) Lemmas blunt. (47) Lemmas awnless
 <usually>, or mucronate <Guadua>. (52) Lemmas carinate to non-carinate. (54)
 Lemmas 9-22 nerved. (55) Palea present. (56) Palea relatively long. (57)
 Lodicules present. (58) Lodicules membranous. (59) Lodicules ciliate. (60)
@@ -117,18 +120,18 @@ Heterolepis Boiss., Leptochloris Kuntze, Phacellaria Steud., Trichloris Benth.
 Culm nodes glabrous. (8) Leaf blades linear. (11) Ligule a fringed membrane to
 a fringe of hairs. (12) Plants bisexual, with bisexual spikelets. (13)
 Inflorescence of spicate main branches <rarely a single raceme>. (15)
-Inflorescence not comprising ‘partial inflorescences’ and foliar organs. (16)
+Inflorescence not comprising ëpartial inflorescencesí and foliar organs. (16)
 Spikelet-bearing axes persistent. (18) Spikelets solitary, or paired. (19)
 Spikelets secund <on the dorsiventral rachis>. (20) Spikelets not in distinct
-‘long-and-short’ combinations. (26) Spikelets 1.8-5.5 mm long. (27) Spikelets
+ëlong-and-shortí combinations. (26) Spikelets 1.8-5.5 mm long. (27) Spikelets
 compressed laterally. (28) Spikelets disarticulating above the glumes <the
 glumes usually persistent>. (30) Rachilla prolonged beyond the uppermost
 female-fertile floret. (31) Hairy callus present <usually minute>. (33) Glumes
 two. (34) Glumes very unequal <divergent>. (35) Glumes <(the longer) usually>
 shorter than the adjacent lemmas. (36) Glumes awnless. (38) Upper glume 1-4
 nerved. (39) Spikelets with incomplete florets. (40) The incomplete florets
-distal to the female-fertile florets <at least one of these conspicuous – the
-spikelet ‘with two florets’>. (44) Female-fertile florets 1 <rarely 2>. (45)
+distal to the female-fertile florets <at least one of these conspicuous ñ the
+spikelet ëwith two floretsí>. (44) Female-fertile florets 1 <rarely 2>. (45)
 Lemmas entire <truncate>, or incised. (47) Lemmas awned. (48) Awns 1
 <usually>, or 3 <<5%>>. (49) Awns from a sinus, or apical. (50) Awns
 non-geniculate. (52) Lemmas carinate. (53) Lemmas without a germination flap.
@@ -153,7 +156,7 @@ Cynodon <Rich.>
 glabrous. (8) Leaf blades linear <test>. (10) Ligule present. (11) Ligule a
 fringed membrane to a fringe of hairs. (12) Plants bisexual, with bisexual
 spikelets. (13) Inflorescence of spicate main branches. (15) Inflorescence not
-comprising ‘partial inflorescences’ and foliar organs. (16) Spikelet-bearing
+comprising ëpartial inflorescencesí and foliar organs. (16) Spikelet-bearing
 axes persistent. (18) Spikelets solitary. (19) Spikelets secund. (26)
 Spikelets 1.7-3 mm long. (27) Spikelets compressed laterally. (28) Spikelets
 disarticulating above the glumes, or disarticulating between the glumes. (30)
@@ -169,7 +172,7 @@ Female-fertile florets 1. (45) Lemmas entire. (46) Lemmas pointed, or blunt.
 present. (56) Palea relatively long. (57) Lodicules present. (58) Lodicules
 fleshy. (59) Lodicules glabrous. (60) Stamens 3. (61) Ovary glabrous. (62)
 Stigmas 2. (63) Stigmas red pigmented. (64) Fruit small. (66) Hilum short.
-(67) Pericarp fused. (68) C4. (69) Biochemical type NAD–ME <2 species>. (70)
+(67) Pericarp fused. (68) C4. (69) Biochemical type NADñME <2 species>. (70)
 XyMS+. (73) Midrib conspicuous. (74) Midrib with one bundle only, or having a
 conventional arc of bundles. (76) All the vascular bundles accompanied by
 sclerenchyma. (78) Chloridoideae. (83) Main chloridoid assemblage. (85) 10
@@ -186,16 +189,16 @@ Culms herbaceous. (4) Annual, or perennial. (5) Culms branched above, or
 unbranched above. (6) Leaf blades pseudopetiolate, or not pseudopetiolate. (8)
 Leaf blades linear. (11) Ligule an unfringed membrane to a fringed membrane.
 (12) Plants bisexual, with bisexual spikelets. (13) Inflorescence of spicate
-main branches, or paniculate <usually with paired or digitate ‘racemes’, these
+main branches, or paniculate <usually with paired or digitate ëracemesí, these
 often spatheate and aggregated into false panicles>. (15) Inflorescence a
-complex of ‘partial inflorescences’ and intervening foliar organs <often>, or
-not comprising ‘partial inflorescences’ and foliar organs. (16)
+complex of ëpartial inflorescencesí and intervening foliar organs <often>, or
+not comprising ëpartial inflorescencesí and foliar organs. (16)
 Spikelet-bearing axes disarticulating. (17) Spikelet-bearing axes
 disarticulating at the joints. (18) Spikelets paired. (20) Spikelets
-consistently in ‘long-and-short’ combinations. (21) Spikelets in
-pedicellate/sessile combinations. (22) Pedicels of the ‘pedicellate’ spikelets
-free of the rachis. (23) The ‘shorter’ spikelets hermaphrodite. (24) The
-‘longer’ spikelets male-only, or sterile <sometimes reduced to their
+consistently in ëlong-and-shortí combinations. (21) Spikelets in
+pedicellate/sessile combinations. (22) Pedicels of the ëpedicellateí spikelets
+free of the rachis. (23) The ëshorterí spikelets hermaphrodite. (24) The
+ëlongerí spikelets male-only, or sterile <sometimes reduced to their
 pedicels>. (25) The pedicelled spikelets male or barren, usually awnless,
 occasionally suppressed. (27) Spikelets compressed laterally, or not
 noticeably compressed, or compressed dorsiventrally. (28) Spikelets falling
@@ -213,7 +216,7 @@ non-carinate. (54) Lemmas 1-3 nerved. (55) Palea present. (56) Palea very
 reduced <hyaline>. (57) Lodicules present <tiny>. (58) Lodicules fleshy. (59)
 Lodicules ciliate, or glabrous. (60) Stamens 1-3. (61) Ovary glabrous. (62)
 Stigmas 2. (64) Fruit small. (66) Hilum short. (68) C4. (69) Biochemical type
-NADP–ME <3 species>. (70) XyMS–. (73) Midrib conspicuous. (74) Midrib having a
+NADPñME <3 species>. (70) XyMSñ. (73) Midrib conspicuous. (74) Midrib having a
 conventional arc of bundles. (75) Midrib with colourless tissue adaxially.
 (76) Many of the smallest vascular bundles unaccompanied by sclerenchyma, or
 all the vascular bundles accompanied by sclerenchyma. (78) Panicoideae. (79)
@@ -233,8 +236,8 @@ Culms herbaceous. (4) Annual, or perennial. (5) Culms unbranched above. (7)
 Culm nodes glabrous. (8) Leaf blades linear. (9) Leaf blades 0.2-10 mm wide.
 (11) Ligule an unfringed membrane. (12) Plants bisexual, with bisexual
 spikelets. (13) Inflorescence paniculate. (14) Inflorescence open, or
-contracted <e.g., Bromidium>. (15) Inflorescence not comprising ‘partial
-inflorescences’ and foliar organs. (16) Spikelet-bearing axes persistent. (19)
+contracted <e.g., Bromidium>. (15) Inflorescence not comprising ëpartial
+inflorescencesí and foliar organs. (16) Spikelet-bearing axes persistent. (19)
 Spikelets not secund. (26) Spikelets 0.8-4 mm long. (27) Spikelets compressed
 laterally. (28) Spikelets disarticulating above the glumes. (30) Rachilla
 prolonged beyond the uppermost female-fertile floret, or terminated by a
@@ -267,8 +270,8 @@ Eleusine <Gaertn.>
 <the culms flattened>. (7) Culm nodes glabrous. (8) Leaf blades linear. (11)
 Ligule a fringed membrane. (12) Plants bisexual, with bisexual spikelets. (13)
 Inflorescence of spicate main branches. (14) Inflorescence open, or contracted
-<sometimes forming a capitulum>. (15) Inflorescence not comprising ‘partial
-inflorescences’ and foliar organs. (16) Spikelet-bearing axes persistent. (19)
+<sometimes forming a capitulum>. (15) Inflorescence not comprising ëpartial
+inflorescencesí and foliar organs. (16) Spikelet-bearing axes persistent. (19)
 Spikelets secund. (26) Spikelets 3.5-11 mm long. (27) Spikelets compressed
 laterally. (28) Spikelets disarticulating above the glumes, or not
 disarticulating <E. coracana>. (29) Spikelets disarticulating between the
@@ -284,7 +287,7 @@ present. (57) Lodicules present. (58) Lodicules fleshy, or membranous. (59)
 Lodicules glabrous. (60) Stamens 3. (61) Ovary glabrous. (62) Stigmas 2. (63)
 Stigmas white, or brown. (64) Fruit small <0.9-2 mm long>. (65) Fruit
 sculptured. (66) Hilum short. (67) Pericarp free. (68) C4. (69) Biochemical
-type NAD–ME <2 species>. (70) XyMS+. (73) Midrib conspicuous. (74) Midrib with
+type NADñME <2 species>. (70) XyMS+. (73) Midrib conspicuous. (74) Midrib with
 one bundle only. (76) All the vascular bundles accompanied by sclerenchyma.
 (78) Chloridoideae. (83) Main chloridoid assemblage. (85) 9 species. (86)
 Holarctic, Paleotropical, Neotropical, Cape, and Antarctic. (87) Metcalfe
@@ -302,8 +305,8 @@ Culm nodes glabrous. (8) Leaf blades linear to linear-lanceolate. (9) Leaf
 blades 0.2-15 mm wide. (11) Ligule an unfringed membrane <sometimes
 ciliolate>. (12) Plants bisexual, with bisexual spikelets <Leucopoa being
 excluded>. (13) Inflorescence paniculate. (14) Inflorescence open <usually>,
-or contracted <<15%> rarely>. (15) Inflorescence not comprising ‘partial
-inflorescences’ and foliar organs. (16) Spikelet-bearing axes persistent. (19)
+or contracted <<15%> rarely>. (15) Inflorescence not comprising ëpartial
+inflorescencesí and foliar organs. (16) Spikelet-bearing axes persistent. (19)
 Spikelets not secund. (26) Spikelets 3-20 mm long. (27) Spikelets compressed
 laterally. (28) Spikelets disarticulating above the glumes. (29) Spikelets
 disarticulating between the florets. (30) Rachilla prolonged beyond the
@@ -340,7 +343,7 @@ linear-lanceolate. (11) Ligule an unfringed membrane. (12) Plants bisexual,
 with bisexual spikelets. (13) Inflorescence paniculate <axes usually wavy, the
 spikelets appressed>, or of spicate main branches <the primary branches often
 reduced to racemes>. (14) Inflorescence open. (15) Inflorescence not
-comprising ‘partial inflorescences’ and foliar organs. (16) Spikelet-bearing
+comprising ëpartial inflorescencesí and foliar organs. (16) Spikelet-bearing
 axes persistent. (19) Spikelets not secund. (26) Spikelets 4-12 mm long. (27)
 Spikelets <strongly> compressed laterally. (28) Spikelets disarticulating
 above the glumes <i.e. above the pedicel cup representing them>, or not
@@ -374,18 +377,18 @@ Panicum <L.>
       (1) Including Chasea Nieuw., Coleataenia Griseb., Dileucaden (Raf.)
 Steud., Eatonia Raf., Eriolytrum Kunth, Milium Adans., Monachne P. Beauv.,
 Phanopyrum (Raf.) Nash, Polyneura Peter, Psilochloa Launert, Setiacis S.L.
-Chen and Y.X. Jin (? – original description inadequate). (2) Culms 20-400 cm
+Chen and Y.X. Jin (? ñ original description inadequate). (2) Culms 20-400 cm
 high. (3) Culms woody and persistent, or herbaceous. (4) Annual, or perennial
-<but no overwintering rosette – by contrast with Dichanthelium>. (5) Culms
+<but no overwintering rosette ñ by contrast with Dichanthelium>. (5) Culms
 branched above, or unbranched above. (6) Leaf blades pseudopetiolate <<2%>
 rarely>, or not pseudopetiolate. (7) Culm nodes hairy, or glabrous. (11)
 Ligule an unfringed membrane, or a fringed membrane to a fringe of hairs. (12)
 Plants bisexual, with bisexual spikelets. (13) Inflorescence paniculate
 <except in the Stolonifera group, where it consists of racemes and the
 distinction from Brachiaria breaks down>. (14) Inflorescence open, or
-contracted. (15) Inflorescence not comprising ‘partial inflorescences’ and
+contracted. (15) Inflorescence not comprising ëpartial inflorescencesí and
 foliar organs. (16) Spikelet-bearing axes persistent. (19) Spikelets not
-secund <except the American Agrostoidea group, ‘Psilochloa’, etc.>. (26)
+secund <except the American Agrostoidea group, ëPsilochloaí, etc.>. (26)
 Spikelets 1.4-6 mm long. (27) Spikelets compressed dorsiventrally <with very
 few exceptions: e.g. P. hemitomum>. (28) Spikelets falling with the glumes, or
 not disarticulating. (30) Rachilla terminated by a female-fertile floret <very
@@ -405,8 +408,8 @@ present. (58) Lodicules fleshy. (59) Lodicules glabrous. (60) Stamens 3. (61)
 Ovary glabrous. (62) Stigmas 2. (63) Stigmas red pigmented. (64) Fruit small.
 (66) Hilum short <linear in (e.g.) P. glutinosum, P. macranthum, P.
 pilgerianum = Psilochloa>. (68) C4, or C3. (69) Biochemical type PCK <5
-species>, or NAD–ME <14 species>, or NADP–ME <4 species>. (70) <When
-biochemically tested,> XyMS+ <C3, or C4 NAD-ME or PCK>, or XyMS– <NADP-ME>.
+species>, or NADñME <14 species>, or NADPñME <4 species>. (70) <When
+biochemically tested,> XyMS+ <C3, or C4 NAD-ME or PCK>, or XyMSñ <NADP-ME>.
 (73) Midrib conspicuous, or not readily distinguishable. (74) Midrib with one
 bundle only, or having a conventional arc of bundles. (75) Midrib with
 colourless tissue adaxially, or without colourless tissue adaxially. (76) Many
@@ -420,7 +423,7 @@ Paleotropical, Neotropical, Australian, and Antarctic. (87) Mainly Metcalfe
 Phragmites <Adans.>
 
       (1) Including Czernya Presl, Miphragtes Nieuwland, Oxyanthe Steud.,
-Trichoon Roth, Xenochloa Roem. & Schult. (2) Culms 60-400 cm high <–1000 cm>.
+Trichoon Roth, Xenochloa Roem. & Schult. (2) Culms 60-400 cm high <ñ1000 cm>.
 (3) Culms woody and persistent to herbaceous <often somewhat persistent>. (4)
 Perennial. (5) Culms branched above <especially when main culm damaged>, or
 unbranched above. (6) Leaf blades not pseudopetiolate. (7) Culm nodes
@@ -428,7 +431,7 @@ glabrous. (8) Leaf blades linear-lanceolate to lanceolate. (9) Leaf blades
 6-50 mm wide. (11) Ligule a fringe of hairs. (12) Plants bisexual, with
 bisexual spikelets. (13) Inflorescence paniculate. (14) Inflorescence open
 <20-60 cm long, plumose, the fertile lemmas surrounded by long white silky
-hairs>. (15) Inflorescence not comprising ‘partial inflorescences’ and foliar
+hairs>. (15) Inflorescence not comprising ëpartial inflorescencesí and foliar
 organs. (16) Spikelet-bearing axes persistent. (19) Spikelets not secund. (26)
 Spikelets 9-16 mm long. (27) Spikelets compressed laterally. (28) Spikelets
 disarticulating above the glumes <at least above the L1>. (29) Spikelets
@@ -466,21 +469,21 @@ in a boat-shaped tip>. (9) Leaf blades 0.2-12 mm wide <rarely wider>. (11)
 Ligule an unfringed membrane, or a fringed membrane <<10%> rarely>. (12)
 Plants bisexual, with bisexual spikelets <<95%>>, or dioecious <or
 gynodioecious, in subgenus Andinae>. (13) Inflorescence paniculate. (14)
-Inflorescence open, or contracted. (15) Inflorescence not comprising ‘partial
-inflorescences’ and foliar organs. (16) Spikelet-bearing axes persistent. (19)
+Inflorescence open, or contracted. (15) Inflorescence not comprising ëpartial
+inflorescencesí and foliar organs. (16) Spikelet-bearing axes persistent. (19)
 Spikelets not secund. (26) Spikelets 2-11 mm long. (27) Spikelets compressed
 laterally. (28) Spikelets disarticulating above the glumes. (29) Spikelets
 disarticulating between the florets. (30) Rachilla prolonged beyond the
 uppermost female-fertile floret. (31) Hairy callus present, or absent. (33)
 Glumes two. (34) Glumes more or less equal, or very unequal to more or less
-equal <nearly always ‘subequal’, with the G1 somewhat shorter>. (35) Glumes
+equal <nearly always ësubequalí, with the G1 somewhat shorter>. (35) Glumes
 shorter than the adjacent lemmas. (36) Glumes awnless. (37) Glumes carinate.
 (38) Upper glume (1-)3(-5) nerved. (39) Spikelets with female-fertile florets
 only, or with incomplete florets. (40) The incomplete florets distal to the
 female-fertile florets. (44) Female-fertile florets (1-)2-13(-15) <the
 one-floreted species very unusual, perhaps restricted to Malesia>. (45) Lemmas
 <nearly always> entire <very rarely tridenticulate>. (46) Lemmas pointed. (47)
-Lemmas awnless, or mucronate <2–3 mm terminal ‘awns’ in a very few species,
+Lemmas awnless, or mucronate <2ñ3 mm terminal ëawnsí in a very few species,
 e.g. in the southern South American P. flabellata>. (52) Lemmas carinate. (53)
 Lemmas without a germination flap. (54) Lemmas (3-)5 nerved, or 7-11 nerved
 <<2%> rarely, e.g. in the Australian Neuropoa>. (55) Palea present. (56) Palea
@@ -503,11 +506,11 @@ Zea <L.>
 Plants monoecious with all the fertile spikelets unisexual. (13) Inflorescence
 <peculiar: the female axillary, comprising a stout, spicate spadix with
 spikelets in few to several longitudinal rows, terminating in a tuft of long
-pendulous styles (‘silks’); the male spikelets in terminal panicles of
-spiciform ‘tassels’>. (15) Inflorescence not comprising ‘partial
-inflorescences’ and foliar organs. (16) Spikelet-bearing axes persistent. (18)
+pendulous styles (ësilksí); the male spikelets in terminal panicles of
+spiciform ëtasselsí>. (15) Inflorescence not comprising ëpartial
+inflorescencesí and foliar organs. (16) Spikelet-bearing axes persistent. (18)
 Spikelets paired. (19) Spikelets not secund. (20) Spikelets consistently in
-‘long-and-short’ combinations <male>, or not in distinct ‘long-and-short’
+ëlong-and-shortí combinations <male>, or not in distinct ëlong-and-shortí
 combinations <female>. (25) Male spikelets in pairs, two-flowered, with
 many-nerved, membranous glumes. Lemmas and paleas hyaline, the florets with
 three stamens and two cuneate lodicules. (27) Spikelets not noticeably
@@ -522,7 +525,7 @@ Female-fertile florets 1. (47) Lemmas awnless. (52) Lemmas non-carinate. (54)
 Lemmas 3 nerved. (55) Palea present. (56) Palea relatively long. (57)
 Lodicules absent. (60) Stamens 0. (61) Ovary glabrous. (62) Stigmas 2 <at tip
 of style>. (63) Stigmas white to red pigmented <or green>. (64) Fruit medium
-sized. (66) Hilum short. (68) C4. (69) Biochemical type NADP–ME. (70) XyMS–.
+sized. (66) Hilum short. (68) C4. (69) Biochemical type NADPñME. (70) XyMSñ.
 (73) Midrib conspicuous. (74) Midrib having a conventional arc of bundles.
 (75) Midrib with colourless tissue adaxially. (76) Many of the smallest
 vascular bundles unaccompanied by sclerenchyma. (77) Fruiting inflorescence a
