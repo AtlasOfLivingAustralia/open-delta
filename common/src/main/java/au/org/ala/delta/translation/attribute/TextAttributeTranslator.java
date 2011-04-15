@@ -26,7 +26,7 @@ public class TextAttributeTranslator extends AttributeTranslator {
 	 */
 	public void characterComment(String comment) {
 		if (StringUtils.isNotEmpty(comment)) {
-			comment = RTFUtils.stripFormatting(comment);
+			comment = RTFUtils.stripFormatting(comment, false);
 			// Omit the brackets either side of the comment.
 			_translatedValue.append(removeCommentBrackets(comment));
 		}

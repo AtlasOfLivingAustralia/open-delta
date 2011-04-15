@@ -114,6 +114,31 @@ public class MultiStateAttributeTranslatorTest extends TestCase {
 		assertEquals("<comment> State 1 to State 2 to State 3 <comment 2>, or State 1 and State 3 <comment 3>", value);
 	}
 	
+	/**
+	 * To allow tidy formatting of attributes in a DELTA file, comments can be used to escape
+	 * a newline character that would otherwise signify the end of the attribute.
+	 * These comments don't appear in the natural language output.
+	 */
+	@Test
+	public void testOmitEmptyComments() {
+		
+		String attributeValue = "1<\n>/2<>/3<test>";
+		String value = format(_multiStateCharacter, attributeValue);
+		
+		assertEquals("State 1, or State 2, or State 3 <test>", value);
+		
+		attributeValue = "1<\r\n>/2< >/3<test>";
+		value = format(_multiStateCharacter, attributeValue);
+		
+		assertEquals("State 1, or State 2, or State 3 <test>", value);
+		
+		attributeValue = "1<\t>/2<	>/3<test>";
+		value = format(_multiStateCharacter, attributeValue);
+		
+		assertEquals("State 1, or State 2, or State 3 <test>", value);
+	}
+	
+	
 	private String format(au.org.ala.delta.model.Character character, String value) {
 		AttributeParser parser = new AttributeParser();
 		

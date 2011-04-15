@@ -3,6 +3,7 @@ package au.org.ala.delta.translation.attribute;
 import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.model.NumericCharacter;
+import au.org.ala.delta.rtf.RTFUtils;
 import au.org.ala.delta.translation.attribute.ParsedAttribute.Values;
 
 /**
@@ -42,7 +43,9 @@ public class NumericAttributeTranslator extends AttributeTranslator {
 	
 	private void appendUnits() {
 		if (StringUtils.isNotEmpty(_character.getUnits())) {
-			_translatedValue.append(" ").append(_character.getUnits());
+			String units = RTFUtils.stripFormatting(_character.getUnits());
+			
+			_translatedValue.append(" ").append(units);
 		}
 	}
 }

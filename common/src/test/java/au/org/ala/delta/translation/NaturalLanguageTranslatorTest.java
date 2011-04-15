@@ -152,6 +152,10 @@ public class NaturalLanguageTranslatorTest extends TestCase {
 		expectedResults = expectedResults.trim();
 		String actualResults = actualResults().trim();
 		
+		// Our RTF stripping doesn't remove keywords that translate to a single unicode character.
+		//actualResults = actualResults.replaceAll("\\u2013 ", "");
+		//actualResults = actualResults.replaceAll("\\u2014 ", "");
+		
 		// This is here because I keep getting bitten by end of line issues and the test failure
 		// comparison editor doesn't display them.
 		for (int i=0; i<expectedResults.length(); i++) {

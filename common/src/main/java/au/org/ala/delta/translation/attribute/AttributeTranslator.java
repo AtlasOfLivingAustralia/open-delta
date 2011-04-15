@@ -3,6 +3,7 @@ package au.org.ala.delta.translation.attribute;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -17,6 +18,7 @@ public abstract class AttributeTranslator {
 
 	private Map<String, String> _separators;
 	protected StringBuilder _translatedValue;
+	protected Pattern emptyCommentPattern = Pattern.compile("<\\s*>");
 	
 	public AttributeTranslator() {
 		_separators = new HashMap<String, String>();
@@ -72,7 +74,7 @@ public abstract class AttributeTranslator {
 	}
 	
 	public void comment(String comment) {
-		if (StringUtils.isNotEmpty(comment)) {
+		if (StringUtils.isNotEmpty(comment) && !emptyCommentPattern.matcher(comment).matches()) {
 			
 			_translatedValue.append(" ");
 			_translatedValue.append(RTFUtils.stripFormatting(comment));

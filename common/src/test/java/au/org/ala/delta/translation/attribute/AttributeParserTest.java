@@ -132,5 +132,4 @@ public class AttributeParserTest extends TestCase {
 		assertEquals("<3/3>", commentedValues.get(1).getComment());
 	
 	}
-	
 }
