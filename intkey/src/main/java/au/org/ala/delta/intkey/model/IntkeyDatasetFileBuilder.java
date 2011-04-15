@@ -10,6 +10,7 @@ import au.org.ala.delta.io.BinFile;
 import au.org.ala.delta.io.BinFileEncoding;
 import au.org.ala.delta.io.BinFileMode;
 import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.CharacterDependency;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DefaultDataSetFactory;
 import au.org.ala.delta.model.IntegerCharacter;
@@ -442,8 +443,6 @@ public class IntkeyDatasetFileBuilder {
                     throw new RuntimeException("Real numeric characters should only have one state listed which represents the units description.");
                 }
             } else if (ch instanceof MultiStateCharacter) {
-                // List<CharacterState> states = new
-                // ArrayList<CharacterState>();
                 MultiStateCharacter multiStateChar = (MultiStateCharacter) ch;
 
                 multiStateChar.setNumberOfStates(charStateDescriptions.size());
@@ -483,8 +482,6 @@ public class IntkeyDatasetFileBuilder {
                 
                 intChar.setMinimumValue(minValue);
                 intChar.setMaximumValue(maxValue);
-                
-                //System.out.println(String.format("%s %d %d", c.getDescription(), minValue, maxValue));
             }
         }
     }
@@ -543,8 +540,9 @@ public class IntkeyDatasetFileBuilder {
                             for (int k = 0; k < numDependentCharRanges; k = k + 2) {
                                 int lowerBound = rangeNumbers.get(k);
                                 int upperBound = rangeNumbers.get(k + 1);
-                                // System.out.println(String.format("Character: %d State: %d Range lower bound: %d, Range upper bound: %d",
-                                // i, j, lowerBound, upperBound));
+                                
+                                //CharacterDependency charDep = new CharacterDependency(controllingCharacterId, states, dependentCharacterId)
+                                //System.out.println(String.format("Character: %d State: %d Range lower bound: %d, Range upper bound: %d", i, j, lowerBound, upperBound));
                             }
                         }
                     }

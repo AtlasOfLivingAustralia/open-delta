@@ -1,5 +1,8 @@
 package au.org.ala.delta.intkey.directives;
 
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
 import org.apache.commons.lang.StringUtils;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.SingleFrameApplication;
@@ -16,13 +19,22 @@ public class NewDatasetDirective extends IntkeyDirective {
     public IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
         String filePath = data;
 
-        if (filePath == null) {
+        /*if (filePath == null) {
             SelectDataSetDialog dlg = new SelectDataSetDialog(context.getMainFrame());
             ((SingleFrameApplication)Application.getInstance()).show(dlg);
             //dlg.setVisible(true);
             if (dlg.isFileSelected()) {
                 filePath = dlg.getSelectedFilePath();
             }
+        }*/
+        
+        //TODO - This is temporary until the SelectDataSetDialog has been completed.
+        JFileChooser chooser = new JFileChooser();
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Data Initialization Files (*.ini, *.ink)", "ini", "ink");
+        chooser.setFileFilter(filter);
+        int returnVal = chooser.showOpenDialog(context.getMainFrame());
+        if(returnVal == JFileChooser.APPROVE_OPTION) {
+           filePath = chooser.getSelectedFile().getAbsolutePath();
         }
 
         if (filePath != null) {

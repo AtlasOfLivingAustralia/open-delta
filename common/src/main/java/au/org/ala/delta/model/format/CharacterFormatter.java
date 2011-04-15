@@ -12,10 +12,10 @@ public class CharacterFormatter extends Formatter {
 	private boolean _includeNumber;
 	
 	public CharacterFormatter() {
-		this(true, false, false);
+		this(true, false, false, false);
 	}
-	public CharacterFormatter(boolean includeNumber, boolean stripComments, boolean stripFormatting) {
-		super(stripComments, stripFormatting);
+	public CharacterFormatter(boolean includeNumber, boolean stripComments, boolean replaceAngleBrackets, boolean stripFormatting) {
+		super(stripComments, replaceAngleBrackets, stripFormatting);
 		_includeNumber = includeNumber;
 	}
 	

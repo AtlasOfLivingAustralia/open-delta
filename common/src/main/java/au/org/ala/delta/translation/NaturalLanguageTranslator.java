@@ -41,8 +41,8 @@ public class NaturalLanguageTranslator implements Translator {
 		_printer = typeSetter;
 		_dataSet = _context.getDataSet();
 		_typeSetter = new PlainTextTypeSetter(_printer);
-		_itemFormatter = new ItemFormatter(false, true, false);
-		_characterFormatter = new CharacterFormatter(false, true, true);
+		_itemFormatter = new ItemFormatter(false, false, false, true, false);
+		_characterFormatter = new CharacterFormatter(false, true, false, true);
 	}
 	
 	@Override

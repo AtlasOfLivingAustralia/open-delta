@@ -9,7 +9,7 @@ public class AttributeFormatter extends CharacterFormatter {
 
 	
 	public AttributeFormatter(boolean includeNumber, boolean stripFormatting) {
-		super(includeNumber, false, stripFormatting);
+		super(includeNumber, false, stripFormatting, false);
 	}
 
 	

@@ -384,9 +384,11 @@ class ItemColumnModel extends AbstractTableModel {
 		_dataSet = dataSet;
 		_dataSet.addDeltaDataSetObserver(new ItemAddedListener());
 		boolean includeNumber = false;
+		boolean stripComments = false;
+		boolean replaceAngleBrackets = false;
 		boolean stripRtf = true;
 		boolean useShortFormOfVariant = true;
-		_formatter = new ItemFormatter(includeNumber, stripRtf, useShortFormOfVariant);
+		_formatter = new ItemFormatter(includeNumber, stripComments, replaceAngleBrackets, stripRtf, useShortFormOfVariant);
 	}
 
 	@Override

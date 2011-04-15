@@ -44,13 +44,20 @@ public class IntkeyContext extends AbstractDeltaContext {
             createNewDataSet();
         } else {
             _dataset = null;
-            _charactersFile = null;
+            _taxaFile = null;
         }
     }
     
     public void setFileTaxa(String fileName) {
         System.out.println("Setting taxa file to: " + fileName);
         _taxaFile = new File(_datasetInitFile.getParentFile(), fileName);
+        
+        if (_dataset == null && _charactersFile != null) {
+            createNewDataSet();
+        } else {
+            _dataset = null;
+            _charactersFile = null;
+        }
     }
     
     private void createNewDataSet() {

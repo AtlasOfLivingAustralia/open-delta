@@ -15,10 +15,12 @@ public class Formatter {
 	
 	private boolean _stripComments;
 	private boolean _stripFormatting;
+	private boolean _replaceAngleBrackets;
 	
-	public Formatter(boolean stripComments, boolean stripFormatting) {
+	public Formatter(boolean stripComments, boolean replaceAngleBrackets, boolean stripFormatting) {
 		_stripComments = stripComments;
 		_stripFormatting = stripFormatting;
+		_replaceAngleBrackets = replaceAngleBrackets;
 	}
 	
 	/**
@@ -38,7 +40,26 @@ public class Formatter {
 		if (_stripComments) {
 			text = stripComments(text);
 		}
+		if (!_stripComments && _replaceAngleBrackets) {
+		    text = replaceAngleBrackets(text);
+		}
 		return text;
+	}
+	
+	/**
+	 * Replace angle brackets with parentheses in the supplied text, or simply remove them from the
+	 * text if a single pair of angle brackets encloses the entire text.
+	 * @param text the text to replace angle brackets in
+	 * @return the text with angle brackets replaced.
+	 */
+	public String replaceAngleBrackets(String text) {
+	    if (text.indexOf('<') == 0 && text.indexOf('>') == text.length() - 1) {
+	        text = text.substring(1, text.length() - 1);
+	    } else {
+	        text = text.replace('<', '(');
+	        text = text.replace('>', ')');
+	    }
+	    return text;
 	}
 	
 	

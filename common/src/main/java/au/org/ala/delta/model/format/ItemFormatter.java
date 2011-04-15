@@ -11,11 +11,11 @@ public class ItemFormatter extends Formatter {
 	private String variant;
 	
 	public ItemFormatter() {
-		this(true, false, true);
+		this(true, false, false, false, true);
 	}
 	
-	public ItemFormatter(boolean includeNumber, boolean stripRtf, boolean useShortVariant) {
-		super(false, stripRtf);
+	public ItemFormatter(boolean includeNumber, boolean stripComments, boolean replaceAngleBrackets, boolean stripRtf, boolean useShortVariant) {
+		super(stripComments, replaceAngleBrackets, stripRtf);
 		_includeNumber = includeNumber;
 
 		if (useShortVariant) {

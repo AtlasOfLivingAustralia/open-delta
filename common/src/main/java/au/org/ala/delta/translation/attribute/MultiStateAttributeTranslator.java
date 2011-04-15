@@ -17,7 +17,7 @@ public class MultiStateAttributeTranslator extends AttributeTranslator {
 	
 	public MultiStateAttributeTranslator(MultiStateCharacter character) {
 		_character = character;
-		_formatter = new CharacterFormatter(false, true, true);
+		_formatter = new CharacterFormatter(false, true, false, true);
 	}
 
 	@Override
