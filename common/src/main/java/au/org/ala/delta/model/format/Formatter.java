@@ -82,6 +82,7 @@ public class Formatter {
 	
 	public static abstract class CommentExtractor extends AbstractStreamParser {
 
+		protected char _previousChar = 0;
 		
 		public CommentExtractor(String value) {
 			super(null, new StringReader(value));
@@ -93,7 +94,7 @@ public class Formatter {
 			
 			while (_currentInt >= 0) {
 				
-				if (_currentChar == '<') {
+				if (matchesComment()) {
 					
 					checkValue(value.toString());
 					value = new StringBuffer();
@@ -113,6 +114,19 @@ public class Formatter {
 			if (!StringUtils.isEmpty(value)) {
 				value(value);
 			}
+		}
+		
+		protected boolean matchesComment() {
+			if (_currentChar == '<') {
+				return _position == 1 || Character.isWhitespace(_previousChar);
+			}
+			return false;
+		}
+		
+		@Override
+		protected int readNext() throws Exception {
+			_previousChar = _currentChar;
+			return super.readNext();
 		}
 		
 		public abstract void comment(String comment) throws ParseException;
