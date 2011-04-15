@@ -21,6 +21,12 @@ import au.org.ala.delta.model.DeltaDataSet;
 
 public class CharacterTypes extends AbstractCharacterListDirective<DeltaContext, CharacterType> {
 
+	/** 
+	 * Tracks the number last character that was created to allow defaults to be created 
+	 * for characters not explicitly specified
+	 */
+	private int _lastCharacterNumber = 0;
+	
 	public CharacterTypes() {
 		super("character", "types");
 	}
@@ -29,36 +35,40 @@ public class CharacterTypes extends AbstractCharacterListDirective<DeltaContext,
 	protected CharacterType interpretRHS(DeltaContext context, String rhs) {
 		return CharacterType.parse(rhs);
 	}
-
+	
+	
+	/**
+	 * Overrides process in the parent class to create any default characters required after
+	 * the last explicitly typed one.
+	 */
 	@Override
 	public void process(DeltaContext context, String data) throws Exception {
+		
 		super.process(context, data);
 		
-		createDefaultCharacters(context);
+		for (int i=_lastCharacterNumber+1; i<context.getNumberOfCharacters(); i++) {
+			createDefaultCharacter(context.getDataSet(), i);
+		}
+		
 	}
-	
+
 	@Override
 	protected void processCharacter(DeltaContext context, int charNumber, CharacterType type) {
 		Logger.debug("Setting type for character %d to %s", charNumber, type);
 		
 		DeltaDataSet dataSet = context.getDataSet();
+		
+		// CG - this is making an assumption that character types are in ascending numerical order.
+		// I am not sure if this is valid....
+		for (int i=_lastCharacterNumber+1; i<charNumber; i++) {
+			createDefaultCharacter(dataSet, i);
+		}
+		
 		dataSet.addCharacter(charNumber, type);
+		_lastCharacterNumber = charNumber;
 	}
 	
-	
-	/**
-	 * Characters not explicitly listed in the CHARACTER TYPES directive default to 
-	 * unordered multistate characters.
-	 * @param dataSet
-	 */
-	private void createDefaultCharacters(DeltaContext context) {
-		
-		DeltaDataSet dataSet = context.getDataSet();
-		for (int i=1; i<=context.getNumberOfCharacters(); i++) {
-			Logger.debug("Creating a default (unordered multistate) character with number %d", i);
-			if (dataSet.getCharacter(i) == null) {
-				dataSet.addCharacter(i, CharacterType.UnorderedMultiState);
-			}
-		}
+	private void createDefaultCharacter(DeltaDataSet dataSet, int number) {
+		dataSet.addCharacter(number, CharacterType.UnorderedMultiState);
 	}
 }
