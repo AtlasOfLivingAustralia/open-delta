@@ -68,7 +68,7 @@ public abstract class AttributeTranslator {
 	
 	public void characterComment(String comment) {
 		if (StringUtils.isNotEmpty(comment)) {
-			_translatedValue.append(comment);
+			_translatedValue.append(RTFUtils.stripFormatting(comment));
 			_translatedValue.append(" ");
 		}
 	}

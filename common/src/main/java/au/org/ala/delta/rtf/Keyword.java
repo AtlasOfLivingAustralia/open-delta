@@ -33,6 +33,12 @@ public abstract class Keyword {
 		registerKeyword(new CharacterKeyword("emdash", (char) 0x2014));
 		registerKeyword(new CharacterKeyword("enspace", (char) 0x2002));
 		registerKeyword(new CharacterKeyword("emspace", (char) 0x2003));
+		
+		// This is the cheats way of allowing an escaped grouping bracket.
+		registerKeyword(new CharacterKeyword("{", '{'));
+		registerKeyword(new CharacterKeyword("}", '}'));
+		
+		
 
 		// Destinations...
 		registerKeyword(new DestinationKeyword("fonttbl", DestinationState.Header));

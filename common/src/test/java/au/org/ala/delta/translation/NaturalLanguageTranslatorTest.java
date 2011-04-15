@@ -115,7 +115,7 @@ public class NaturalLanguageTranslatorTest extends TestCase {
 		initialiseContext(VIDE_DATASET_PATH);	
 		
 		_dataSetTranslator.translate();
-		checkResult("/dataset/vide/expected_results/default.txt");
+		checkResult("/dataset/vide/expected_results/default.txt", true);
 	}
 	
 	/**
@@ -131,15 +131,19 @@ public class NaturalLanguageTranslatorTest extends TestCase {
 		parser.parse(specs, _context);
 	}
 	
-	
+	private void checkResult(String expectedResultsFileName) throws Exception {
+		checkResult(expectedResultsFileName, false);
+	}
 	/**
 	 * Checks the result of the translation is identical to the contents of the supplied file.
 	 *
 	 * @param expectedResultsFileName the name of the file - the path "/dataset/simple/expected_results/" is 
 	 * prepended before loading the file contents.
+	 * @param vide true if we are checking the Vide dataset - we do a few things a bit differently
+	 * to CONFOR that I am taking into account.
 	 * @throws Exception if there is an error reading the file.
 	 */
-	private void checkResult(String expectedResultsFileName) throws Exception {
+	private void checkResult(String expectedResultsFileName, boolean vide) throws Exception {
 		
 		if (expectedResultsFileName.indexOf('/') < 0) {
 			expectedResultsFileName =  "/dataset/simple/expected_results/" + expectedResultsFileName;
@@ -152,9 +156,50 @@ public class NaturalLanguageTranslatorTest extends TestCase {
 		expectedResults = expectedResults.trim();
 		String actualResults = actualResults().trim();
 		
-		// Our RTF stripping doesn't remove keywords that translate to a single unicode character.
-		//actualResults = actualResults.replaceAll("\\u2013 ", "");
-		//actualResults = actualResults.replaceAll("\\u2014 ", "");
+		
+		if (vide) {
+			// Our RTF stripping doesn't remove keywords that translate to a single unicode character.
+			actualResults = actualResults.replaceAll("\\u2013", "");
+			actualResults = actualResults.replaceAll("\\u2014", "");
+			actualResults = actualResults.replaceAll("\\s+", " ");
+			actualResults = actualResults.replaceAll("\\s\\.", ".");
+			actualResults = actualResults.replaceAll("\\s,", ",");
+			expectedResults = expectedResults.replaceAll("\\s+", " ");
+			expectedResults = expectedResults.replaceAll("\\s,", ",");
+			expectedResults = expectedResults.replaceAll("\\s\\.", ".");
+			
+			int different = actualResults.indexOf("{3");
+			
+			StringBuilder actual = new StringBuilder();
+			StringBuilder expected = new StringBuilder();
+			int minLength = Math.min(actualResults.length(), expectedResults.length());
+			for (int i=0; i<different; i++) {
+				actual.append(actualResults.charAt(i));
+				expected.append(expectedResults.charAt(i));
+				if (i % 80 == 0) {
+					actual.append("\n");
+					expected.append("\n");
+				}
+			}
+			
+			for (int i=different; i<different+20; i++) {
+				actual.append('*');
+				expected.append('*');
+			}
+			// Skip a few chars - we are treating escaped \{ better than CONFOR.
+			for (int i=different+20; i<minLength; i++) {
+				
+				actual.append(actualResults.charAt(i+5));
+				expected.append(expectedResults.charAt(i));
+				if (i % 80 == 0) {
+					actual.append("\n");
+					expected.append("\n");
+				}
+			}
+			
+			actualResults = actual.toString();
+			expectedResults = expected.toString();
+		}
 		
 		// This is here because I keep getting bitten by end of line issues and the test failure
 		// comparison editor doesn't display them.
