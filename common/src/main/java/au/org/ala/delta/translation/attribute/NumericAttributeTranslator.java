@@ -1,9 +1,7 @@
 package au.org.ala.delta.translation.attribute;
 
-import org.apache.commons.lang.StringUtils;
-
 import au.org.ala.delta.model.NumericCharacter;
-import au.org.ala.delta.rtf.RTFUtils;
+import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.translation.attribute.ParsedAttribute.Values;
 
 /**
@@ -15,8 +13,12 @@ public class NumericAttributeTranslator extends AttributeTranslator {
 	/** The character associated with attribute to translate */
 	private NumericCharacter<?> _character;
 	
+	/** Knows how to format character units  */
+	private CharacterFormatter _formatter;
+	
 	public NumericAttributeTranslator(NumericCharacter<?> character) {
 		_character = character;
+		_formatter = new CharacterFormatter(false, true, true);
 	}
 	
 	@Override
@@ -42,10 +44,10 @@ public class NumericAttributeTranslator extends AttributeTranslator {
 	
 	
 	private void appendUnits() {
-		if (StringUtils.isNotEmpty(_character.getUnits())) {
-			String units = RTFUtils.stripFormatting(_character.getUnits());
-			
+		if (_character.hasUnits()) {
+			String units = _formatter.formatUnits(_character);
 			_translatedValue.append(" ").append(units);
 		}
+		
 	}
 }

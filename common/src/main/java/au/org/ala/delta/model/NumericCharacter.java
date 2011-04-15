@@ -14,6 +14,8 @@
  ******************************************************************************/
 package au.org.ala.delta.model;
 
+import org.apache.commons.lang.StringUtils;
+
 
 public abstract class NumericCharacter<T extends Number> extends Character{
 	
@@ -28,6 +30,14 @@ public abstract class NumericCharacter<T extends Number> extends Character{
 	public void setUnits(String units) {
 		_impl.setUnits(units);
 		notifyObservers();
+	}
+	
+	/**
+	 * 
+	 * @return true if units have been specified for this character.
+	 */
+	public boolean hasUnits() {
+		return StringUtils.isNotEmpty(getUnits());
 	}
 
 }

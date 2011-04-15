@@ -1,9 +1,6 @@
 package au.org.ala.delta.model.format;
 
-import org.apache.commons.lang.StringUtils;
-
 import au.org.ala.delta.model.Attribute;
-import au.org.ala.delta.rtf.RTFUtils;
 
 /**
  * Formats an attribute.
@@ -11,17 +8,19 @@ import au.org.ala.delta.rtf.RTFUtils;
 public class AttributeFormatter extends CharacterFormatter {
 
 	
-	public AttributeFormatter(boolean includeNumber, boolean stripComments, boolean stripFormatting) {
-		super(includeNumber, stripComments, stripFormatting);
+	public AttributeFormatter(boolean includeNumber, boolean stripFormatting) {
+		super(includeNumber, false, stripFormatting);
 	}
+
 	
+	/**
+	 * Attribute formatting differs from Character and Item formatting in that by default
+	 * attribute comments are not removed.
+	 * @param attribute the attribute to format.
+	 * @return the formatted attribute value.
+	 */
 	public String format(Attribute attribute) {
-
-		if ((attribute == null) || StringUtils.isEmpty(attribute.getValue())) {
-			return "";
-		}
-
-		return RTFUtils.stripFormatting(attribute.getValue());
+		return defaultFormat(attribute.getValue());
 	}
 	
 }

@@ -1,10 +1,8 @@
 package au.org.ala.delta.model.format;
 
-import org.apache.commons.lang.StringUtils;
-
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.MultiStateCharacter;
-import au.org.ala.delta.rtf.RTFUtils;
+import au.org.ala.delta.model.NumericCharacter;
 
 /**
  * Knows how to format Characters.
@@ -12,18 +10,13 @@ import au.org.ala.delta.rtf.RTFUtils;
 public class CharacterFormatter extends Formatter {
 
 	private boolean _includeNumber;
-	private boolean _stripComments;
-	private boolean _stripFormatting;
 	
 	public CharacterFormatter() {
 		this(true, false, false);
 	}
 	public CharacterFormatter(boolean includeNumber, boolean stripComments, boolean stripFormatting) {
-		
+		super(stripComments, stripFormatting);
 		_includeNumber = includeNumber;
-		_stripComments = stripComments;
-		_stripFormatting = stripFormatting;
-		
 	}
 	
 	/**
@@ -38,30 +31,25 @@ public class CharacterFormatter extends Formatter {
 			state.append(stateNumber).append(". ");
 		}
 		String stateText = character.getState(stateNumber);
-		if (_stripFormatting) {
-			stateText = RTFUtils.stripFormatting(stateText);
-		}
-		if (_stripComments) {
-			stateText = stripComments(stateText);
-		}
-		state.append(stateText);
+		
+		state.append(defaultFormat(stateText));
 		return state.toString();
 	}
 
 	public String formatCharacterDescription(Character character) {
 		
 		String description = character.getDescription();
-		if (StringUtils.isEmpty(description)) {
-			return "";
-		}
-		
-		if (_stripComments) {
-			description = RTFUtils.stripFormatting(description);
-		}
-		if (_stripComments) {
-			description = stripComments(description);
-		}
-		return description;
+		return defaultFormat(description);
+	}
+	
+	/**
+	 * Formats the units of a numeric character.
+	 * @param character the character to format.
+	 * @return the characters units, formatted.
+	 */
+	public String formatUnits(NumericCharacter<?> character) {
+		String units = character.getUnits();
+		return defaultFormat(units);
 	}
 	
 }

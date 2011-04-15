@@ -6,9 +6,47 @@ import java.text.ParseException;
 import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.directives.AbstractStreamParser;
+import au.org.ala.delta.rtf.RTFUtils;
 
+/**
+ * Base class for DELTA formatters.
+ */
 public class Formatter {
-
+	
+	private boolean _stripComments;
+	private boolean _stripFormatting;
+	
+	public Formatter(boolean stripComments, boolean stripFormatting) {
+		_stripComments = stripComments;
+		_stripFormatting = stripFormatting;
+	}
+	
+	/**
+	 * Formats the supplied text according to how this Formatter was configured on construction.
+	 * @param text the text to format.
+	 * @return the formatted text.
+	 */
+	public String defaultFormat(String text) {
+	
+		if (StringUtils.isEmpty(text)) {
+			return "";
+		}
+		
+		if (_stripFormatting) {
+			text = RTFUtils.stripFormatting(text);
+		}
+		if (_stripComments) {
+			text = stripComments(text);
+		}
+		return text;
+	}
+	
+	
+	/**
+	 * Removes the comments from the supplied text.
+	 * @param text the text to remove comments from.
+	 * @return the text without comments.
+	 */
 	public String stripComments(String text) {
 		CommentStripper stripper = new CommentStripper(text);
 		try {

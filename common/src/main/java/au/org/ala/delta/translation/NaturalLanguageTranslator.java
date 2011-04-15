@@ -33,7 +33,6 @@ public class NaturalLanguageTranslator implements Translator {
 	private DeltaDataSet _dataSet;
 	private PlainTextTypeSetter _typeSetter;
 	private ItemFormatter _itemFormatter;
-	private AttributeFormatter _attributeFormatter;
 	private CharacterFormatter _characterFormatter;
 	
 	
@@ -43,7 +42,6 @@ public class NaturalLanguageTranslator implements Translator {
 		_dataSet = _context.getDataSet();
 		_typeSetter = new PlainTextTypeSetter(_printer);
 		_itemFormatter = new ItemFormatter(false, true, false);
-		_attributeFormatter = new AttributeFormatter(false, true, true);
 		_characterFormatter = new CharacterFormatter(false, true, true);
 	}
 	

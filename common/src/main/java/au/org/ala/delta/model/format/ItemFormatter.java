@@ -1,17 +1,13 @@
 package au.org.ala.delta.model.format;
 
-import org.apache.commons.lang.StringUtils;
-
 import au.org.ala.delta.model.Item;
-import au.org.ala.delta.rtf.RTFUtils;
 
 /**
  * Knows how to format items in a standard way.
  */
-public class ItemFormatter {
+public class ItemFormatter extends Formatter {
 	
 	private boolean _includeNumber;
-	private boolean _stripRtf;
 	private String variant;
 	
 	public ItemFormatter() {
@@ -19,8 +15,9 @@ public class ItemFormatter {
 	}
 	
 	public ItemFormatter(boolean includeNumber, boolean stripRtf, boolean useShortVariant) {
+		super(false, stripRtf);
 		_includeNumber = includeNumber;
-		_stripRtf = stripRtf;
+
 		if (useShortVariant) {
 			variant = "(+)";
 		}
@@ -45,9 +42,8 @@ public class ItemFormatter {
 			builder.append(variant).append(" ");
 		}
 		String description = item.getDescription();
-		if (StringUtils.isNotEmpty(description) && _stripRtf) {
-			description = RTFUtils.stripFormatting(description);
-		}
+		description = defaultFormat(description);
+		
 		builder.append(description);
 		return builder.toString();
 		
