@@ -1,0 +1,2249 @@
+*SHOW Combined Arctic Flora character list, 08 January-99
+
+*CHARACTER LIST
+#1. <<af1 ag2>> <common name>/
+
+#2. <<af2>> <family>/
+       1. Asteraceae, daisy family/
+       2. Betulaceae, birch family/
+       3. Boraginaceae, lungwort family/
+       4. Brassicaceae (Cruciferae), Draba family/
+       5. Campanulaceae, bluebell family/
+       6. Caryophyllaceae, pink family/
+       7. Crassulaceae, stonecrop family/
+       8. Cyperaceae, sedge family/
+       9. Diapensiaceae/
+       10. Empetraceae, crowberry family/
+       11. Ericaceae, bilberry family/
+       12. Equisetaceae, horsetail family/
+       13. Fabaceae (Leguminosae), pea family/
+       14. Gentianaceae/
+       15. Haloragaceae, watermilfoil family/
+       16. Hippuridaceae, mare's tail family/
+       17. Juncaeae, rush family/
+       18. Lentibulariaceae, bladderwort family/
+       19. Liliaceae, lily family/
+       20. Linaceae, flax family/
+       21. Lycopodiaceae, club-moss family/
+       22. Onagraceae, fireweed family/
+       23. Orchidaceae, orchid family/
+       24. Papaveraceaae, poppy family/
+       25. Plantaginaceae, plantain family/
+       26. Plumbaginaceae, leadwort family/
+       27. Poaceae, grass family/
+       28. Polemoniaceae/
+       29. Polygonaceae, buckwheat family/
+       30. Polypodiaceae, fern family/
+       31. Portulaceae/
+       32. Potamogetonaceae, pondweed family/
+       33. Primulaceae/
+       34. Pyrolaceae/
+       35. Ranunculaceae, buttercup family/
+       36. Rosaceae, rose family/
+       37. Salicaceae, willow family/
+       38. Saxifragaceae, saxifrage family/
+       39. Scrophulariaceae, fernweed family/
+       40. Sparganiaceae/
+
+#3. <<se1>> Nomenclatural section used by Flora of North America project:/
+
+#4. <<af3 ag2>> <place of valid publication>/
+
+#5. <<ag3>> <synonymy based on type specimen>/
+
+#6. <<ag4>> type: <specimen>/
+
+#7. <<ag5>> <synonyms based on different type specimens>/
+
+#8. <<af4>> <synonymy, according to Kartesz (1994), Porsild (1957), Polunin
+          (1940)>/
+
+#9. <<af7 se5~>> plants <sexuality>/
+       1. monoecious/
+       2. dioecious/
+       3. bisexual <<implicit>>/
+       4. asexual/
+
+#10. <<se4>> plants <size>/
+       1. less than 15 cm high/
+       2. more than 15 cm high/
+
+#11. <<af9 sa3 se10 ag6>> plants <height>/
+       cm high/
+
+#12. <<af5>> plants <habit>/
+       1. herbs <<implicit>>/
+       2. shrubs/
+
+#13. <<sa2>> plants <habit>/
+       1. dwarf shrubs <0.1 m or less, e.g. \i{}S. reticulata\i0{}>/
+       2. low shrubs <0.15-0.5 m, e.g. \i{}S. calcicola\i0{}>/
+       3. mid shrubs <0.6-2.0 m, e.g. some \i{}S. alaxensis\i0{} or \i{}S.
+          richardsonii\i0{}>/
+       4. tall shrubs <greater than 2.0 m, e.g. some \i{}S. planifolia\i0{} or
+          \i{}S. pulchra\i0{}>/
+       5. trees <sometimes with several trunks, but of "tree" stature, e.g. some
+          \i{}S. alaxensis\i0{}>/
+
+#14. <<af6>> plants <longevity>/
+       1. annual herbs/
+       2. binennial herbs/
+       3. perennial herbs/
+
+#15. <<af14 se9~>> plants <general appearance> <<? reorder states>>/
+       1. single-stemmed/
+       2. forming loose clusters/
+       3. tufted <caespitose>/
+       4. cushion-like/
+       5. matted/
+       6. in basal rosettes/
+       7. with many stems arising from a caudex <root crown>/
+       8. with branching stems/
+
+#16. <<sa5>> plants <vegetative reproduction>/
+       1. not colonial <<implicit>>/
+       2. forming colonies by layering <e.g. some \i{}S. arctic\i0{} or \i{}S.
+          arctophila\i0{}>/
+       3. forming rhizomatous mats <e.g. \i{}S. herbacea\i0{}>/
+
+#17. <<af8>> plants <vegetatively proliferating by bulbils>/
+       1. vegetatively proliferating by bulbils/
+       2. not vegetatively proliferating by bulbils <<implicit>>/
+
+#18. <<af12>> taproot <presence>/
+       1. present/
+       2. absent <<implicit>>/
+
+#19. <<af13>> <root comment>/
+
+#20. <<se17>> roots <external colour, scored dried, young material>/
+       1. colourless/
+       2. white/
+       3. yellow <not yellow brown>/
+       4. pallid-brown <includes yellow-brown>/
+       5. red-brown <includes dark-brown and chestnut-coloured>/
+       6. purple/
+       7. gray/
+       8. black/
+
+#21. <<se6>> plants <with horizontal stems either rhizomes or stolons or with
+          vertical underground stems>/
+       1. with conspicuously long horizontal stems <more than 2 cm>/
+       2. with short horizontal stems <usually less than 2 cm and just visible
+          between the culms>/
+       3. without easily seen horizontal stems/
+       4. with no rhizomes or stollons/
+       5. with vertical underground or ground level stems/
+
+#22. <<se7>> plants <horizontal stems whether rhizomes or stolons>/
+       1. rhizomatous <below ground>/
+       2. stoloniferous <above ground>/
+
+#23. <<ag12>> rhizomes <whether elongate>/
+       1. elongate/
+       2. compacted/
+
+#24. <<ag13>> rhizomes <width>/
+       mm wide/
+
+#25. <<ag14>> rhizome scales <surface>/
+       1. smooth/
+       2. striate/
+       3. grooved/
+
+#26. <<ag15>> rhizome scales <length>/
+       mm long/
+
+#27. <<ag16>> rhizome scales <whether hairy>/
+       1. glabrous/
+       2. hairy/
+
+#28. <<se16>> stem <scales present or absent at the base of stems or on rhizomes
+          or stolons>/
+       1. scales present/
+       2. scales absent/
+
+#29. <<ag17>> prophylls <length>/
+       mm long/
+
+#30. <<ag18>> prophylls <features of the veins>/
+       1. with smooth veins/
+       2. with scabrous veins/
+       3. with hairy veins/
+
+#31. <<ag19>> prophylls <presence of pronounced keels>/
+       1. with pronounced keels/
+       2. lacking pronounced keels/
+
+#32. <<af15 sa4 se12~ ag8~>> stems <position>/
+       1. erect/
+       2. decumbent/
+       3. prostrate <trailing on the ground>/
+       4. somewhat curving/
+       5. trailing/
+
+#33. <<se11>> stems <length relative to leaves>/
+       1. shorter than the leaves/
+       2. about as high as the leaves/
+       3. conspicuously taller than the leaves/
+
+#34. <<se13>> stems <whether filiform> <<diameter recorded as comment for
+          evaluation>>/
+       1. filiform/
+       2. not filiform <<implicit>>/
+
+#35. <<se15>> stems <shape in cross section, mid-third of the uppermost
+          internode, cf. Metcalfe 1971>/
+       1. triangular in cross section/
+       2. circular or oval in cross section/
+
+#36. <<af16 se14 ag44~>> stems <hairs>/
+       1. glabrous/
+       2. sparsely hairy/
+       3. densely hairy/
+       4. scabrous/
+       5. covered with large resinous wart-like glands/
+
+#37. <<ag42>> culm nodes <whether exposed>/
+       1. not exposed/
+       2. becoming exposed/
+
+#38. <<ag43>> culm nodes number visible <if exposed, applies to grasses>/
+
+#39. <<ag9>> culm nodes <whether rooting at the lower culm nodes, grasses>/
+       1. rooting at the lower nodes/
+       2. not rooting at the lower nodes <<implicit>>/
+
+#40. <<sa6>> branches <color of 1- to 2-year-old shoots>/
+       1. yellowish/
+       2. gray-brown/
+       3. red-brown/
+       4. violet/
+       5. yellow-brown/
+       6. brownish/
+
+#41. <<sa7>> branches <glaucescence>/
+       1. not glaucous <lacking waxy coating> <<implicit>>/
+       2. thinly glaucous <visible when scratched or with isolated crystals>/
+       3. thickly glaucous <bluish or whitish waxy coating>/
+
+#42. <<sa115>> branches <general hairiness>/
+       1. glabrous/
+       2. glabrescent/
+       3. hairy/
+
+#43. <<sa8>> branches <hairiness>/
+       1. pilose/
+       2. villous/
+       3. tomentose/
+       4. woolly/
+       5. long-silky/
+
+#44. <<sa9>> branches epidermis <flakiness of 3-4-year old shoots>/
+       1. not flaky <<implicit>>/
+       2. flaky/
+
+#45. <<sa10>> branchlets <color>/
+       1. yellow-green/
+       2. yellow-brown/
+       3. gray-brown/
+       4. red-brown/
+       5. violet/
+       6. brownish/
+
+#46. <<sa11>> branchlets <glaucescence>/
+       1. not glaucous <lacking any waxy coating>/
+       2. thinly glaucous/
+       3. thickly glaucous/
+
+#47. <<sa116>> branchlets <general hairiness>/
+       1. glabrous/
+       2. hairy/
+       3. glabrescent/
+
+#48. <<sa12>> branchlets <hairiness>/
+       1. puberulent/
+       2. pubescent/
+       3. pilose/
+       4. villous/
+       5. woolly/
+       6. short-silky <hairs less than 0.5 mm>/
+       7. long-silky <hairsgreater than 0.5 mm>/
+
+#49. <<sa13>> branchlets hair <density>/
+       1. sparse/
+       2. moderately dense <surface 50% visible>/
+       3. very dense <surface completely obscured>/
+
+#50. <<sa14>> branchlets hair <orientation to surface>/
+       1. appressed/
+       2. fishhook-curved/
+       3. spreading/
+
+#51. <<sa15>> bud scale inner membrane <adnation, as seen on open buds >/
+       1. free and separating from outer membrane/
+       2. free but not separating from outer membrane/
+       3. fused to outer layer/
+
+#52. <<af17 sa21~>> stipules <presence>/
+       1. present/
+       2. absent <<implicit>>/
+
+#53. <<af18>> stipules <sheathing>/
+       1. sheathing <ochreate as in \i{}Rumex\i0{} or connate as in
+          \i{}Astragalus\i0{}>/
+       2. not sheathing <<implicit>>/
+
+#54. <<af19>> stipules <colour>/
+       1. brown/
+       2. green/
+       3. white/
+       4. colourless/
+
+#55. <<af20>> stipules <form>/
+       1. leaf-like/
+       2. scale-like or rudimentary <<implicit>>/
+
+#56. <<sa22>> stipules apex <shape>/
+       1. acuminate/
+       2. acute/
+       3. obtuse/
+       4. rounded/
+
+#57. <<af21>> petioles <presence>/
+       1. present <<implicit>>/
+       2. absent/
+
+#58. <<af22 sa24>> petioles <length>/
+       mm long/
+
+#59. <<sa23>> petioles <cross-section at midpoint>/
+       1. convex to flat in cross-section/
+       2. shallowly concave in cross-section/
+       3. deeply concave in cross-section, but margins not covering the groove/
+       4. deeply concave in cross-section, margins covering groove <e.g. some
+          \i{}S. reticulata\i0{} or \i{}S. richardsonii\i0{}>/
+       5. flat/
+
+#60. <<sa118>> petioles <general hairiness>/
+       1. glabrous/
+       2. hairy/
+       3. glabrescent/
+
+#61. <<sa25>> petioles adaxial surface <hairiness>/
+       1. puberulent/
+       2. pilose/
+       3. villous/
+       4. tomentose/
+       5. short-silky <hairs less than 0.5 mm>/
+
+#62. <<sa26>> petioles <whether glandular dots at base of leaf>/
+       1. glandular dots at the base of the leaf absent/
+       2. glandular dots at the base of the leaf present/
+
+#63. <<sa17>> juvenile leaves <color of unfolding leaves>/
+       1. reddish/
+       2. yellowish green/
+
+#64. <<sa117>> juvenile leaves <general hairiness>/
+       1. glabrous/
+       2. hairy/
+
+#65. <<sa18>> juvenile leaves lower surface <hairiness>/
+       1. puberulent/
+       2. pubescent/
+       3. pilose/
+       4. villous/
+       5. tomentose/
+       6. woolly/
+       7. short-silky <hairs less than 0.5 mm>/
+       8. long-silky <hairs greater than 0.5 mm>/
+
+#66. <<sa19>> juvenile leaves hair <density>/
+       1. sparse/
+       2. moderately dense <surface 50% visible>/
+       3. very dense <surface completely obscured>/
+
+#67. <<sa20>> juvenile leaves <hair color>/
+       1. white/
+       2. gray/
+
+#68. <<se18>> sheaths <monocots, sheath blade zone, consider adaxial surface>/
+       1. tapering into the blade/
+       2. abruptly contracted into the blades/
+
+#69. <<se19>> sheaths <longevity>/
+       1. persisting/
+       2. breaking down into fibres/
+
+#70. <<se20>> sheaths <build up at base of plant>/
+       1. forming a conspicuous build up at the base of the plant/
+       2. not forming a conspicuous build up at the base of the plant/
+
+#71. <<se21>> sheaths <colour>/
+       1. greyish brown/
+       2. brown/
+       3. green/
+       4. reddish/
+
+#72. <<ag23>> sheaths <whether margins are fused>/
+       1. with the margins fused to the apex/
+       2. with the margins fused only in the lower part/
+       3. with the margins not fused/
+
+#73. <<ag24>> sheaths <surface features>/
+       1. glabrous/
+       2. with trichomes/
+
+#74. <<ag25>> sheaths <type of trichomes>/
+       1. pubescent/
+       2. hirsute/
+       3. scabrous/
+
+#75. <<se29>> ligules <presence of ligule>/
+       1. present/
+       2. absent <<implicit>>/
+
+#76. <<ag26>> ligules <length>/
+       mm long/
+
+#77. <<ag27>> ligules <type>/
+       1. membranous/
+       2. a fringed membrane/
+
+#78. <<ag28>> ligules <whether hairy>/
+       1. glabrous/
+       2. hairy/
+
+#79. <<ag29>> ligules <shape>/
+       1. linear/
+       2. lanceolate/
+       3. ovate-oblong/
+       4. transversely oblong <long rectangular>/
+
+#80. <<ag30>> ligules apices <shape of the apical region>/
+       1. acuminate/
+       2. acute/
+       3. obtuse/
+       4. truncate/
+
+#81. <<ag31>> ligules <whether apex entire>/
+       1. entire/
+       2. erose/
+       3. lacerate/
+       4. cleft/
+
+#82. <<af27>> leaves <longevity>/
+       1. evergreen/
+       2. deciduous <<implicit>>/
+       3. marcescent/
+       4. withering early/
+
+#83. <<af24 se22~ ag20~>> leaves <position>/
+       1. mostly basal/
+       2. distributed along the stems/
+       3. arising singly from creeping rhizomes/
+       4. in a basal rosette/
+
+#84. <<af23>> leaves <attachment>/
+       1. alternate/
+       2. opposite/
+       3. whorled/
+
+#85. <<ag21>> leaves <whether distichous>/
+       1. distinctly distichous/
+       2. not distinctly distichous <<implicit>>/
+
+#86. <<af26>> leaves <heterophyllous>/
+       1. heterophyllous <<specify>>/
+       2. not heterophyllous <<implicit>>/
+
+#87. <<af25>> leaves <simple or compound>/
+       1. simple <<implicit>>/
+       2. compound/
+
+#88. <<af29>> <simple> leaves <whether lobed>/
+       1. lobed/
+       2. not lobed <<implicit>>/
+       3. cut into linear divisions/
+
+#89. <<af30 sa28 se25 ag34>> <simple or compound> leaves <length excluding
+          petiole>/
+       cm long/
+
+#90. <<af31 sa29 se26 ag35>> <simple or compound> leaves <total width>/
+       mm wide/
+
+#91. <<ag22>> leaf blades <grasses, presence of blade or sheath auricles>/
+       1. with sheath auricles/
+       2. with blade auricles/
+       3. without auricles <<implicit>>/
+
+#92. <<ag32>> leaf blades <monocots, vernation>/
+       1. rolled in bud/
+       2. folded in bud/
+
+#93. <<af28 se23>> <simple> leaf blades <shape>/
+       1. linear/
+       2. oblong/
+       3. elliptic/
+       4. circular/
+       5. lanceolate/
+       6. ovate/
+       7. oblanceolate/
+       8. obovate/
+       9. spatulate/
+       10. reniform/
+
+#94. <<sa30>> <simple> leaf blades length-width ratio/
+
+#95. <<se27>> <simple> leaf blades <appearance>/
+       1. straight/
+       2. somewhat curled/
+
+#96. <<ag36>> <simple> leaf blades <orientation>/
+       1. appressed to the stem/
+       2. spreading from the vertical/
+       3. divaricate/
+       4. reflexed/
+
+#97. <<af32>> <simple or compound> leaf blades <texture>/
+       1. herbaceous <<implicit>>/
+       2. leathery/
+       3. succulent/
+       4. membranous/
+
+#98. <<af43>> <compound> leaves <form>/
+       1. trifoliate/
+       2. pinnate/
+       3. palmate/
+       4. decompound/
+
+#99. <<af44>> leaflets <number>/
+
+#100. <<af46>> leaflets <length in mm>/
+       mm long/
+
+#101. leaflet <width in mm>/
+       mm long/
+
+#102. <<af47>> leaflets <shape>/
+       1. linear/
+       2. oblong/
+       3. elliptic/
+       4. ovate/
+       5. obovate/
+       6. lanceolate/
+       7. oblanceolate/
+
+#103. <<sa31>> <simple or compound> leaf blades <stomatal patterns on largest
+          mature leaves>/
+       1. stomata only on lower surface/
+       2. stomata on both upper and lower surfaces/
+       3. stomata on upper surface only present along veins or at apex/
+
+#104. <<sa38>> <simple or compound> leaf blades adaxial <upper> surface
+          <luster>/
+       1. dull <<implicit>>/
+       2. shiny/
+       3. highly glossy/
+
+#105. <<af33 se28~ ag37~ ag38?>> <simple or compound> leaf blades <presence of
+          hairs>/
+       1. glabrous/
+       2. scabrous/
+       3. hairy/
+
+#106. <<af34>> <simple or compound> leaf blades <location of hairs on surfaces,
+          excluding margins>/
+       1. with hairs on the adaxial <upper surface>/
+       2. with hairs on the abaxial <lower surface>/
+       3. with hairs equally dense on both surfaces/
+
+#107. <<ag38>> <simple or compound> leaf blades adaxially <features>/
+       1. glabrous/
+       2. glabrescent <becoming glabrous, usually sparsely hairy>/
+       3. scabrous/
+       4. hairy/
+
+#108. <<sa39>> <simple or compound> leaf blades upper surface <hairiness>/
+       1. puberulent/
+       2. pilose/
+       3. villous/
+       4. short-silky <hairs less than 0.5 mm>/
+       5. long-silky <haris greater than 0.5 mm>/
+
+#109. <<sa40>> <simple or compound> leaf blades adaxial <upper> surface hairs
+          <density>/
+       1. sparse/
+       2. moderately dense <surface 50% visible>/
+       3. dense/
+
+#110. <<sa41>> <simple or compound> leaf blades upper surface <hair color>/
+       1. white/
+       2. gray/
+       3. a mixture of white and rust-colored/
+
+#111. <<sa32>> <simple or compound> leaf blades abaxial <lower> surface
+          <glaucescence or waxy bloom>/
+       1. not glaucous/
+       2. glaucous/
+       3. obscured by hairs/
+
+#112. <<ag37>> <simple or compound> leaf blades abaxial surface <features>/
+       1. glabrous/
+       2. glabrescent/
+       3. scabrous/
+       4. hairy/
+
+#113. <<sa33>> <simple or compound> leaf blades abaxial <lower> surface
+          <hairiness>/
+       1. pilose/
+       2. villous/
+       3. tomentose/
+       4. short-silky <hairs less than 0.5 mm>/
+       5. long-silky <hairs greater than 0.5 mm>/
+       6. woolly/
+
+#114. <<sa34>> <simple or compound> leaf blades abaxial <lower surface> <hair
+          density>/
+       1. hairs sparse/
+       2. hairs moderately dense/
+       3. hairs very dense/
+
+#115. <<sa35>> <simple or compound> leaf blades abaxial <lower> surface <hair
+          color>/
+       1. hairs white/
+       2. hairs rust-colored/
+       3. hairs mixture of white and rust-colored/
+
+#116. <<sa36>> <simple or compound> leaf blades abaxial <lower> surface <hair
+          orientation>/
+       1. appressed/
+       2. spreading/
+       3. erect/
+
+#117. <<sa37>> <simple or compound> leaf blades abaxial <lower> surface <hair
+          shape>/
+       1. straight/
+       2. wavy/
+       3. curved/
+
+#118. <<af35>> <simple or compound> leaf blades <hair type>/
+       1. hairs glandular/
+       2. hairs stellate/
+       3. hairs simple, unbranched/
+       4. hairs branched/
+
+#119. <<af41>> <simple or compound> leaf blade venation <pattern>/
+       1. pinnate/
+       2. trinerved/
+       3. palmate/
+       4. parallel/
+       5. appearing single-veined/
+       6. inconspicuous/
+       7. reticulate/
+
+#120. <<ag39>> <simple> leaf blades <grasses, midvein size>/
+       1. midvein conspicuously larger than the lateral veins/
+       2. midvein similar in size to other veins in the leaf/
+
+#121. <<ag40>> <simple> leaf blades <grasses, presence or absence of bulliform
+          cells associated with the midvein>/
+       1. bulliform cells in distinct rows on either side of the midvein/
+       2. without bulliform cells in a distinct row on either side of the
+          midvein <<implicit>>/
+       3. bulliform cells in a single row above the midvein resulting in the
+          leaf looking longitudinally channelled/
+
+#122. <<se24>> <simple> leaf blades <whether septate nodulose>/
+       1. septate nodulose/
+       2. not septate nodulose <<implicit>>/
+
+#123. <<sa42>> <simple> leaf blades secondary veins <whether protruding>/
+       1. impressed into adaxial surface, protruding on abaxial surface/
+       2. protruding on adaxial and abaxial surfaces/
+       3. flat on adaxial surface, protruding on abaxial surface/
+
+#124. <<sa43>> <simple> leaf blades secondary veins <position>/
+       1. arising along midrib/
+       2. mostly arising at or close to a single point at base and running in
+          recurved arches toward leaf apex/
+
+#125. <<af37 sa44>> <simple> leaf bases <shape>/
+       1. cordate/
+       2. truncate/
+       3. obtuse/
+       4. acute/
+       5. cuneate/
+       6. attenuate/
+       7. rounded/
+       8. hastate/
+
+#126. <simple> leaf blades <shape in cross section>/
+       1. circular in cross section/
+       2. triangular in cross section/
+       3. flat/
+       4. bristle-like/
+       5. strongly keeled/
+       6. involute/
+       7. revolute/
+       8. folded/
+       9. caniculate/
+
+#127. <<sa122>> <simple, flat> leaf margins <general toothing>/
+       1. entire/
+       2. toothed/
+
+#128. <<sa46>> <simple or compound> leaf margins <toothing>/
+       1. entire <<implicit>>/
+       2. glandular-dotted/
+       3. serrulate/
+       4. serrate/
+       5. crenate/
+       6. dentate/
+
+#129. <<sa47>> <simple> leaf margins with teeth or glands <position>/
+       1. all around leaf/
+       2. toward base only/
+       3. toward apex only/
+
+#130. <<sa48>> <simple> leaf margins with <number of teeth or glands per cm>/
+       teeth or glands per cm/
+
+#131. <<sa49>> <simple> leaf <margins> glands <position>/
+       1. marginal/
+       2. submarginal/
+
+#132. <<af40>> <simple> leaf margins <whether hairy>/
+       1. with hairs/
+       2. without hairs <<implicit>>/
+
+#133. <<af36 sa50>> <simple> leaf apices <tip shape>/
+       1. acuminate/
+       2. acute/
+       3. obtuse/
+       4. rounded/
+       5. retuse/
+
+#134. <<af42>> conspicuous hydathodes <presence>/
+       1. present/
+       2. absent <<implicit>>/
+
+#135. <<af48>> flowering stems <peduncles, presence of leaves>/
+       1. with leaves <sometimes smaller than basal leaves>/
+       2. without leaves <scapose>/
+
+#136. <<af49>> flowering stems <hairs>/
+       1. glabrous/
+       2. hairy/
+
+#137. uppermost leaf or reduced bract <position on the flowering stems>/
+       1. arising below the middle of the culm/
+       2. arising above the middle of the culm/
+
+#138. <<se30>> leaf or reduced bract closely associated with the inflorescence
+          <presence>/
+       1. present/
+       2. absent/
+
+#139. <<se31>> leaf or reduced bract closely associated with the inflorescence
+          <whether conspicuous>/
+       1. conspicuous and leaf-like/
+       2. much reduced, or scale-like/
+
+#140. <<se32>> leaf or reduced bract closely associated with the inflorescence
+          <relative length>/
+       1. extending beyond the inflorescence/
+       2. similar in length to the inflorescence/
+       3. shorter than the apex of the inflorescence/
+
+#141. <<se33>> leaf or reduced bract closely associated with the inflorescence
+          <length>/
+       cm long/
+
+#142. <<se34>> leaf or reduced bract closely associated with the inflorescence
+          <relative sheath length>/
+       1. with sheath longer than the blade/
+       2. with sheath shorter than the blade/
+       3. sheathless/
+
+#143. <<se35>> leaf or reduced bract closely associated with the inflorescence
+          <longevity>/
+       1. caducous/
+       2. persistent <<implicit>>/
+
+#144. <<ag41>> flag leaf sheaths <whether inflated>/
+       1. inflated/
+       2. not inflated <<implicit>>/
+
+#145. <<af50>> Flowering stem <peduncle> <length from base to lowest flower>/
+       cm long/
+
+#146. <<af56>> inflorescence <involucral bracts>/
+       1. with involucral bracts/
+       2. without involucral bracts <<implicit>>/
+       3. flowers on pedicels subtended by bracts/
+
+#147. inflorescence involucral bract <shape>/
+       1. resembling leaves/
+       2. cut into linear divisions/
+
+#148. <<se46>> pistilate or bisexual spike(s) <sedges, presence of floral bracts
+          at the base>/
+       1. with empty bracts at the base <as in \i{}Eriophorum\i0{}>/
+       2. without empty bracts at the base <<implicit>>/
+
+#149. <<af52>> flowers <grouping>/
+       1. solitary/
+       2. in inflorescences <<implicit>>/
+
+#150. <<af53>> inflorescence <or single flower> <position>/
+       1. terminal <<implicit>>/
+       2. axillary/
+
+#151. <<af54 ag45~>> inflorescence <type>/
+       1. spicate/
+       2. racemose/
+       3. paniculate/
+       4. cymose/
+       5. fasciculate/
+       6. head-like/
+       7. a catkin/
+
+#152. <<se36>> inflorescence <number of spikes regardless of sexuality>/
+       1. a single spike/
+       2. multispicate/
+
+#153. <<se37>> inflorescence <total number of spikes in a multispicate
+          inflorescence>/
+       spikes/
+
+#154. <<ag46>> inflorescence <shape>/
+       1. linear/
+       2. oblong/
+       3. lanceolate/
+       4. ovate/
+       5. globose or subglobose/
+       6. obovate/
+       7. ellipsoid/
+       8. clindrical/
+
+#155. <<ag47>> inflorescence <whether dense>/
+       1. dense/
+       2. diffuse/
+
+#156. <<se40>> individual spike(s) <orientation>/
+       1. erect/
+       2. ascending <but not erect>/
+       3. divergent <but neither erect nor ascending>/
+       4. reflexed/
+       5. pendent <drooping>/
+
+#157. <<se44>> inflorescence <whether lateral spikes are sessile>/
+       1. lateral spikes sessile/
+       2. lateral spikes borne on pedicels/
+
+#158. <<se45>> pedicels <surface>/
+       1. smooth/
+       2. scabrous/
+
+#159. <<af57>> inflorescence <bulbils>/
+       1. with bulbils/
+       2. without bulbils <<implicit>>/
+
+#160. <<se38 ag48>> inflorescence <total length including all separate spikes>/
+       cm long/
+
+#161. <<se39 ag49>> inflorescence <width>/
+       mm wide/
+
+#162. <<ag50>> inflorescence main axis <rachis> <hairs>/
+       1. glabrous/
+       2. scabrous/
+       3. hairy/
+
+#163. <<ag51>> inflorescence main axis <rachis> <surface texture>/
+       1. smooth/
+       2. scabrous/
+       3. striate/
+
+#164. <<ag52>> number of inflorescence branches at lowest node/
+
+#165. <<ag55>> inflorescence primary branches <whether the secondary branches
+          are spreading>/
+       1. with appressed secondary branches/
+       2. with spreading secondary branches/
+
+#166. <<ag53>> inflorescence primary branches <length>/
+       mm long/
+
+#167. <<ag54>> inflorescence primary branches <surface features>/
+       1. smooth/
+       2. scabrous/
+
+#168. <<se42>> terminal spike <sexuality>/
+       1. staminate at the base/
+       2. wholly staminate/
+       3. staminate at the apex/
+       4. with both sexes in each floret <bisexual>/
+       5. pistilate/
+
+#169. <<sa51>> catkins flowering <relative time of catkin opening>/
+       1. before the opening of leaf buds/
+       2. with the opening of leaf buds/
+
+#170. <<sa52>> catkins <position on previous year's shoot>/
+       1. terminal on previous year's shoot/
+       2. one to several just below tip of previous year's shoot/
+       3. numerous just below tip of previous year's shoot/
+
+#171. <<sa61>> male catkins <density>/
+       1. densely flowered/
+       2. moderately densely flowered/
+       3. loosely flowered/
+
+#172. <<sa62>> male catkins <length>/
+       mm long/
+
+#173. <<sa63>> male catkins <width of pressed catkins>/
+       mm wide/
+
+#174. <<sa64>> male catkins <general shape>/
+       1. slender/
+       2. stout/
+       3. subglobose/
+       4. globose/
+       5. shape indeterminate <few flowered, shape not applicable>/
+
+#175. <<sa65>> male catkins peduncles <length>/
+       mm long/
+
+#176. <<sa66>> male catkins <presence of leafy, flowering branchlets>/
+       1. borne on a flowering branchlet <terminating in a catkin>/
+       2. sessile/
+
+#177. <<sa67>> male catkins flowering branchlets <length>/
+       mm long/
+
+#178. <<sa80>> female catkins <density>/
+       1. densely flowered/
+       2. moderately densely flowered/
+       3. loosely flowered/
+
+#179. <<sa81>> female catkins <length>/
+       mm long/
+
+#180. <<sa82>> female catkins <width of pressed catkins>/
+       mm wide/
+
+#181. <<sa83>> female catkins <general shape>/
+       1. slender/
+       2. stout/
+       3. subglobose/
+       4. globose/
+       5. shape indeterminate <few flowered, shape not applicable>/
+
+#182. <<sa84>> female catkins peduncles <length>/
+       mm long/
+
+#183. <<sa85>> female catkins <presence of leafy, flowering branchlets>/
+       1. borne on a flowering branchlet/
+       2. sessile/
+
+#184. <<sa86>> female catkins flowering branchlets <length>/
+       mm long/
+
+#185. <<ag56>> spikelets <whether with pedicels>/
+       1. pedicellate/
+       2. sessile/
+
+#186. <<ag57>> spikelets disarticulating/
+       1. above the glumes/
+       2. at the base of the spikelet/
+       3. at the nodes of the main axis/
+
+#187. <<ag58>> spikelets <compression>/
+       1. laterally compressed/
+       2. dorsoventrally compressed/
+
+#188. <<ag59>> spikelets <shape in longitudinal section>/
+       1. linear/
+       2. oblong/
+       3. lanceolate/
+       4. ovate/
+       5. oblanceolate/
+       6. obovate/
+
+#189. <<ag60>> spikelets <length>/
+       mm long/
+
+#190. <<ag61>> spikelets <width>/
+       mm wide/
+
+#191. <<ag62>> florets per spikelet/
+
+#192. <<af55>> flowers per inflorescence <number>/
+
+#193. <<af59>> flowers <size>/
+       1. small, less than 5 mm in diameter or length/
+       2. medium-sized, 5-15 mm in diameter or length/
+       3. large, greater than 15 mm in diameter or length/
+
+#194. flowers <whether stalked>/
+       1. sessile or subsessile/
+       2. borne on a stalk <pedicel>/
+
+#195. <<af58>> flowers <sexuality>/
+       1. unisexual/
+       2. bisexual <<implicit>>/
+
+#196. <<af60>> flowers <symmetry>/
+       1. actinomorphic <<implicit>>/
+       2. zygomorphic/
+
+#197. <<se43>> staminate flowers <visibility>/
+       1. inconspicuous <often concealed among pistilate flowers>/
+       2. conspicuous/
+
+#198. <<se47>> floral bracts <pistilate and bisexual relative length>/
+       1. shorter than the gynoecium/
+       2. as long as the gynoecium/
+       3. longer than the gynoecium/
+
+#199. <<sa53>> floral bracts <color>/
+       1. tawny <dull yellowish-brown>/
+       2. light rose/
+       3. brown/
+       4. black/
+       5. bicolor <darker toward tip>/
+       6. pale grey <lead coloured>/
+       7. orange brown/
+       8. green/
+       9. white or translucent/
+
+#200. <<se49>> floral bracts <pistilate and bisexual margins>/
+       1. with margins the same colour as the body of the bract/
+       2. with margins, and sometimes mid-vein paler in colour than the adjacent
+          area of the bract/
+       3. with margins darker in colour than the midvein/
+       4. with margins and midvein paler than body of bract/
+
+#201. <<se51>> floral bracts <pistilate and bisexual orientation>/
+       1. reflexed/
+       2. not reflexed <<implicit>>/
+
+#202. <<se52>> floral bracts <pistilate and bisexual shape at apex>/
+       1. truncate/
+       2. rounded/
+       3. retuse/
+       4. lacerate/
+       5. ovate/
+       6. obtuse/
+       7. lanceolate/
+       8. cuspidate/
+       9. acute/
+       10. obovate/
+
+#203. <<sa54>> floral bracts <shape, both male and female>/
+       1. widest at base/
+       2. widest at middle/
+       3. widest toward tip <apex>/
+
+#204. <<se53>> floral bracts <pistilate and bisexual longevity>/
+       1. falling early <caducous>/
+       2. not falling early <<implicit>>/
+
+#205. <<se54>> floral bracts <pistilate and bisexual spikelets>/
+       mm long/
+
+#206. <<se55>> floral bracts <pistilate and bisexual spikelets>/
+       mm wide/
+
+#207. <<sa56>> floral bracts <hairiness on outer surface>/
+       1. glabrous/
+       2. hairy all over/
+       3. hairy mainly at apex/
+
+#208. <<sa57>> floral bracts hairs <density>/
+       1. sparse/
+       2. moderately dense <surface 50% visible>/
+       3. very dense <surface completely obscured>/
+
+#209. <<sa58>> floral bracts <hair shape>/
+       1. straight/
+       2. wavy/
+
+#210. <<sa60>> floral bracts <apex toothing>/
+       1. entire/
+       2. minute undulations/
+       3. divided into 3-lobes/
+
+#211. <<ag63>> <glumes comment>/
+
+#212. <<ag64>> first glume <length relative to the second glume>/
+       × the length of the second glume/
+
+#213. <<ag65>> first glume <length relative to the spikelet>/
+       × spikelet length/
+
+#214. <<ag66>> first glume <length>/
+       mm long/
+
+#215. <<ag67>> first glume <shape>/
+       1. linear/
+       2. oblong/
+       3. deltoid/
+       4. lanceolate/
+       5. ovate/
+       6. obovate/
+       7. oblanceolate/
+       8. transversely oblong/
+
+#216. <<ag68>> first glume <whether hairy>/
+       1. glabrous/
+       2. with trichomes/
+
+#217. <<ag69>> first glume veins <number>/
+
+#218. <<ag70>> first glume margins <whether ciliate>/
+       1. glabrous/
+       2. ciliate/
+
+#219. <<ag71>> first glume apex <shape of the apical region>/
+       1. caudate/
+       2. acuminate/
+       3. acute/
+       4. obtuse/
+       5. truncate/
+
+#220. <<ag72>> second glume <length relative to the spikelet>/
+       1. 0.4 × as long as the spikelet or less/
+       2. 0.4-0.9 × as long as the spikelet/
+       3. as long, or longer than the spikelet/
+
+#221. <<ag73>> second glume <length relative to the lowest floret, without lemma
+          awn>/
+       1. shorter than the lowest floret/
+       2. almost as long as, or longer than, the lowest floret/
+
+#222. <<ag74>> second glume <length>/
+       mm long/
+
+#223. <<ag75>> second glume <shape>/
+       1. linear/
+       2. oblong/
+       3. deltoid/
+       4. lanceolate/
+       5. ovate/
+       6. elliptic/
+       7. oblanceolate/
+
+#224. <<ag76>> second glume <surface features>/
+       1. glabrous/
+       2. with trichomes/
+
+#225. <<ag77>> second glume veins <number>/
+
+#226. <<ag78>> rachilla internode <length>/
+       mm long/
+
+#227. <<ag107>> rachilla <width>/
+       1. rachilla tough, 1 mm wide or more/
+       2. rachilla flexuous, less than 1 mm wide/
+
+#228. <<ag79>> rachilla internode <surface features>/
+       1. glabrous/
+       2. scabrous/
+       3. hairy/
+
+#229. <<ag80>> rachilla <whether pronounced between the florets>/
+       1. pronounced between the florets/
+       2. not pronounced between the florets/
+
+#230. <<ag81>> rachilla <whether terminating in a naked point or spikelet>/
+       1. terminating in a well-formed floret/
+       2. terminating in a vestigial floret/
+       3. extending beyond the uppermost floret <the terminal floret absent>/
+
+#231. <<ag82>> callus <whether differentiated>/
+       1. differentiated/
+       2. not differentiated <<implicit>>/
+
+#232. <<ag83>> callus <presence of hairs>/
+       1. glabrous/
+       2. hairy <<implicit>>/
+
+#233. <<ag84>> callus hairs <length>/
+       mm long/
+
+#234. <<ag85>> callus hairs <length relative to the floret>/
+       1. shorter than the floret/
+       2. subequal to the floret/
+       3. longer than the floret/
+
+#235. <<ag86>> lemma <of fertile floret, length>/
+       mm long/
+
+#236. <<ag87>> lemma <of fertile floret, shape>/
+       1. linear/
+       2. oblong/
+       3. ovate/
+       4. lanceolate/
+       5. elliptic/
+       6. obovate/
+       7. oblanceolate/
+
+#237. <<ag88>> lemma <of fertile floret, whether keeled>/
+       1. keeled/
+       2. rounded on the back/
+
+#238. <<ag106>> lemma <whether inrolled>/
+       1. lemma not strongly inrolled/
+       2. lemma strongly inrolled/
+
+#239. <<ag89>> lemma surface <of fertile floret, luster>/
+       1. shiny/
+       2. dull/
+
+#240. <<ag90>> lemma <of fertile floret, whether hairy>/
+       1. glabrous/
+       2. sparsely scaberulous/
+       3. hairy/
+
+#241. <<ag91>> lemma with trichomes/
+       1. on veins only/
+       2. on intervein region and veins/
+
+#242. <<ag92>> lemma veins <number>/
+
+#243. <<ag93>> lemma apex <of fertile floret, shape of the apical region>/
+       1. caudate/
+       2. acuminate/
+       3. acute/
+       4. rounded/
+       5. truncate/
+
+#244. <<ag94>> lemma apex <of fertile floret, apical modifications>/
+       1. entire/
+       2. erose/
+       3. lacerate/
+       4. bifid/
+
+#245. <<ag95>> lemma apex <of fertile floret, whether ciliate>/
+       1. ciliate/
+       2. not ciliate/
+
+#246. <<ag96>> lemma apex <of fertile floret, presence of apical appendages>/
+       1. awnless/
+       2. awned/
+
+#247. <<ag97>> awn arising <of the fertile floret, position of the awn>/
+       1. from the tip/
+       2. from below the apex but above the middle/
+       3. from the middle or below <but not near the base>/
+       4. from just above the base/
+
+#248. <<ag98>> awn <of fertile floret awn, length>/
+       mm long/
+
+#249. <<ag99>> palea <of fertile floret, development>/
+       1. well-developed/
+       2. vestigial/
+       3. absent/
+
+#250. <<ag100>> palea <length>/
+       mm long/
+
+#251. <<ag101>> palea <of fertile floret trichomes on the veins or keels>/
+       1. with glabrous veins/
+       2. with scabrous veins/
+       3. with hairy veins/
+
+#252. <<se56>> perianth <presence>/
+       1. present <<implicit>>/
+       2. absent/
+       3. reduced to lodicules/
+       4. represented by bristles/
+
+#253. <<se58>> perianth <bristles texture>/
+       1. bristles silky white/
+       2. bristles dull white or yellowish/
+       3. bristles inconspicuous/
+
+#254. <<af61>> sepals <presence>/
+       1. present <<implicit>>/
+       2. absent/
+
+#255. <<af64>> sepals <number of free, or fused but each sepal having distinct
+          tips>/
+
+#256. <<af63>> sepals <fusion>/
+       1. free/
+       2. fused/
+
+#257. sepals <length in mm>/
+       mm long/
+
+#258. <<af62>> sepals <or calyx> <colour>/
+       1. green/
+       2. yellow/
+       3. brown/
+       4. purple/
+       5. red/
+       6. of an unusual colour <<specify>>/
+       7. blue/
+       8. white or translucent/
+
+#259. <<af65>> sepals <or calyx> <hairs>/
+       1. glabrous/
+       2. hairy/
+
+#260. sepals hair colour/
+       1. translucent or white/
+       2. brown/
+       3. black/
+
+#261. <<af66>> sepals <or calyx> <texture>/
+       1. herbaceous <<implicit>>/
+       2. scarious/
+       3. <not herbacious or scarious> <<specify>>/
+       4. fleshy/
+       5. petaloid/
+
+#262. <<af67>> sepals <or calyx> <accrescent>/
+       1. accrescent/
+       2. non-accrescent <<implicit>>/
+
+#263. <<af68>> calyx <shape>/
+       1. tubular/
+       2. bell-shaped/
+       3. bilabiate/
+       4. funnel-form/
+       5. rotate/
+
+#264. <<af69>> calyx <margin, when sepals fused>/
+       1. unlobed/
+       2. 2-lobed/
+       3. 3-lobed/
+       4. 4-lobed/
+       5. 5-lobed/
+
+#265. <<af70>> petals <presence>/
+       1. present <<implicit>>/
+       2. absent/
+
+#266. <<af74>> petals <free, number>/
+
+#267. <<af73>> petals <fusion>/
+       1. free <to the base>/
+       2. fused <all petals joined at least at base>/
+       3. both free and fused <as in pea flowers>/
+
+#268. <<af71>> petals <colour>/
+       1. green/
+       2. white/
+       3. yellow/
+       4. orange/
+       5. red/
+       6. pink/
+       7. purple/
+       8. blue/
+       9. of an unusual colour <<specify>>/
+       10. brown/
+
+#269. <<af72>> petals <markings>/
+       1. with contrasting markings <<specify>>/
+       2. without contrasting markings <<implicit>>/
+
+#270. <<af75>> petals <free> <shape>/
+       1. elliptic/
+       2. ovate/
+       3. obovate/
+       4. lanceolate/
+       5. oblanceolate/
+       6. spatulate/
+       7. linear/
+
+#271. <<af76>> petals <free> <apex>/
+       1. unlobed/
+       2. 2-lobed/
+       3. 3-lobed/
+       4. 4-lobed/
+       5. 5-lobed/
+
+#272. <<af77>> petals <length in mm>/
+       mm long/
+
+#273. <<af78>> petals <spurred>/
+       1. spurred/
+       2. not spurred <<implicit>>/
+
+#274. <<af79>> petals <length relative to sepals>/
+       1. shorter than the calyx/
+       2. same length as the calyx/
+       3. longer than the calyx <<implicit>>/
+
+#275. <<af80>> Corolla <fused, number of lobes>/
+       1. unlobed/
+       2. 2-lobed/
+       3. 3-lobed/
+       4. 4-lobed/
+       5. 5-lobed/
+
+#276. <<af81>> corolla <shape>/
+       1. rotate/
+       2. cup-like/
+       3. bilabiate/
+       4. campanulate/
+       5. urceolate/
+       6. with narrow tube and spreading lobes/
+       7. tubular/
+       8. funnel-form/
+       9. papilionaceous/
+
+#277. <<af82 sa68~>> stamens <number>/
+
+#278. <<af83>> stamens <fusion>/
+       1. free <from one another> <<implicit>>/
+       2. fused <<state how>>/
+
+#279. <<af84>> stamens <relative lengths>/
+       1. filaments markedly unequal in length/
+       2. filament all equal in length <<implicit>>/
+
+#280. <<af85>> stamens <attachment to corolla>/
+       1. fused to the corolla/
+       2. free of the corolla <<implicit>>/
+
+#281. <<sa74>> stamens filaments <hairiness>/
+       1. glabrous/
+       2. hairy all over/
+       3. hairy on lower half/
+       4. hairy at base only/
+
+#282. <<sa69>> anthers <color>/
+       1. purple <dark purple>/
+       2. purple becoming yellow/
+       3. reddish <or brownish> becoming yellow/
+       4. yellow/
+       5. blue/
+
+#283. <<sa70>> anthers <shape, when dehiscent>/
+       1. ellipsoid/
+       2. stout-cylindrical <less than 3x as long as wide>/
+       3. slender-cylindrical <greater than 3x as long as wide>/
+       4. ovoid/
+       5. subglobose/
+
+#284. <<sa71>> anthers <axis shape after dehiscence>/
+       1. axis straight/
+       2. axis twisted/
+
+#285. <<sa72 se60 ag102>> anthers <including any apiculum (apical) and basal
+          appendages length of dry, empty anthers>/
+       mm long/
+
+#286. nectaries in bisexual flowers/
+       1. present/
+       2. absent <<implicit>>/
+
+#287. <<sa75>> male flowers abaxial nectaries <number>/
+       1. absent/
+       2. one/
+       3. two/
+
+#288. <<sa76>> male flowers adaxial nectaries <number>/
+       1. one/
+       2. two/
+       3. several/
+
+#289. <<sa77>> male flowers abaxial nectaries <shape>/
+       1. slender-rod/
+       2. broad-rod/
+       3. square/
+       4. ovate/
+       5. half-cup-shaped/
+
+#290. <<sa78>> male flowers adaxial nectaries <length>/
+       mm long/
+
+#291. <<sa79>> male flowers nectaries <coalescence>/
+       1. separate/
+       2. partially connected at base/
+       3. cup-shaped/
+
+#292. receptacle <height>/
+       mm high/
+
+#293. <<af86>> carpels <fusion>/
+       1. monomerous/
+       2. apocarpous/
+       3. partly fused/
+       4. syncarpous <completely fused> <<implicit>>/
+
+#294. <<af87>> carpels <degree of fusion>/
+       1. free/
+       2. partly fused <<state how>>/
+       3. completely fused <<implicit>>/
+
+#295. <<af88>> carpels <number>/
+
+#296. <<af89>> ovary <position, when carpels fused or appearing monomerous>/
+       1. superior/
+       2. partly inferior/
+       3. inferior/
+
+#297. <<sa93>> ovaries <shape>/
+       1. inverse club-shaped <obclavate>/
+       2. pear-shaped <pyriform>/
+       3. ovate <egg-shaped>/
+       4. inverse turnip-shaped/
+       5. urceolate/
+       6. oblong/
+       7. elliptic/
+
+#298. <<sa94>> <ovaries> beak <shape>/
+       1. gradually tapering to style <no evident transition>/
+       2. slightly bulged below style <slight curve to style>/
+       3. abruptly tapering to style/
+
+#299. <<sa121>> ovaries <general hairiness>/
+       1. glabrous/
+       2. hairy/
+
+#300. <<sa87>> ovaries <hairiness>/
+       1. puberulent/
+       2. pubescent/
+       3. pilose/
+       4. villous/
+       5. tomentose/
+       6. short-silky <hairs less than 0.5 mm>/
+       7. long-silky <greater than 0.5 mm>/
+       8. strigose/
+
+#301. <<sa88>> <ovaries> hairs <density>/
+       1. in patches or streaks/
+       2. sparse/
+       3. moderately dense/
+       4. dense/
+
+#302. <<sa89>> <ovaries, hair color>/
+       1. white/
+       2. mixture of white and rust-colored/
+       3. brown/
+
+#303. <<sa90>> <ovaries, hair orientation to surface>/
+       1. appressed/
+       2. spreading/
+
+#304. <<sa91>> <ovaries, hair shape>/
+       1. straight/
+       2. wavy/
+       3. crinkled/
+       4. branched/
+       5. stellate/
+
+#305. <<sa92>> <ovaries, hair type>/
+       1. flattened/
+       2. ribbon-like/
+       3. cylindrical/
+       4. with thickened bases/
+
+#306. <<sa98>> stipes <length>/
+       mm long/
+
+#307. <<af93>> styles <presence>/
+       1. present <<implicit>>/
+       2. absent/
+
+#308. <<af95 sa96>> styles <fusion, when styles greater than one per ovary>/
+       1. free/
+       2. partially fused/
+       3. completely fused/
+
+#309. <<af94>> styles <number, when carpels fused>/
+
+#310. <<sa97>> styles <length>/
+       mm long/
+
+#311. <<se79>> styles <relative length, used in Cyperaceae>/
+       1. thickish and short/
+       2. slender, not extending beyond the beak/
+       3. slender, extending beyond the beak/
+       4. long and thick/
+
+#312. <<se80>> styles <basal portion>/
+       1. base an enlarged, bulge, separated from the top of the achene
+          <\i{}Eleocharis\i0{}>/
+       2. base not enlarged, continuous with the achene <<implicit>>/
+
+#313. <<af96 se81>> stigmas per style <number>/
+
+#314. <<sa95>> stigmas <shape>/
+       1. slender-cylindrical <e.g. \i{}Salix alaxensis\i0{}>/
+       2. broad-cylindrical <e.g. \i{}Salix reticulata\i0{}>/
+       3. two plump lobes with continuous stigmatic surface <connecting all 4
+          lobes, e.g. \i{}Salix herbacea\i0{}>/
+
+#315. <<sa96>> stigmas lobes <length>/
+       mm long/
+
+#316. <<af91>> placentation <when carpels fused>/
+       1. axile <<implicit>>/
+       2. parietal/
+       3. apical/
+       4. basal/
+       5. free central/
+
+#317. <<af92 sa107>> ovules <number gynoecium>/
+
+#318. <<sa99>> female flowers abaxial nectaries <presence and number>/
+       1. absent/
+       2. one/
+       3. two/
+
+#319. <<sa100>> female flowers adaxial nectaries <lobing>/
+       1. unlobed/
+       2. two or more lobes/
+
+#320. <<sa101>> female flowers adaxial nectaries <between ovary and rachis>
+          <shape>/
+       1. slender-rod/
+       2. broad-rod/
+       3. square/
+       4. ovate/
+
+#321. <<sa102>> female flowers adaxial nectaries rachis <length>/
+       mm long/
+
+#322. <<sa103>> female flowers adaxial nectaries <relative length>/
+       1. shorter than stipes/
+       2. equal to stipes/
+       3. longer than stipes/
+
+#323. <<sa104>> female flowers nectaries <coalescence>/
+       1. separate/
+       2. partially connected/
+
+#324. fruit <whether surrounded>/
+       1. surrounded by a perigynium/
+       2. not surrounded by a perigynium <<implicit>>/
+
+#325. <<af97 se61~>> fruit <type>/
+       1. a follicle/
+       2. a legume/
+       3. a capsule/
+       4. a silique/
+       5. an achene/
+       6. a nut/
+       7. a berry/
+       8. a drupe/
+       9. an aggregate of drupelets/
+       10. a schizocarp/
+       11. a caryopsis/
+       12. a samara/
+
+#326. <<af98>> fruit <shape>/
+       1. spherical/
+       2. ellipsoid/
+       3. ovoid/
+       4. elongate-cylindrical/
+       5. distinctly flat/
+       6. of an unusual shape <<specify>>/
+       7. obovate/
+       8. oblong/
+       9. clavate/
+
+#327. <<af99 sa105 ag103>> fruit <length or height>/
+       mm long/
+
+#328. <<af100>> fruit <width>/
+       mm wide/
+
+#329. peduncle length in fruit/
+       mm long/
+
+#330. <<af101>> fruit <texture at maturity>/
+       1. fleshy <at least partly>/
+       2. dry/
+
+#331. <<af102>> fruit <dehiscence>/
+       1. dehiscent/
+       2. indehiscent/
+       3. schizocarpous/
+
+#332. <<af103>> fruit <colour>/
+       1. yellowish/
+       2. black/
+       3. brown/
+       4. red/
+       5. purple/
+       6. blue/
+       7. green at maturity/
+       8. golden brown/
+
+#333. <<af104 sa106>> fruit <hairs>/
+       1. glabrous <<implicit>>/
+       2. hairy/
+       3. glabrescent/
+
+#334. <<af105>> fruit <calyx persisting>/
+       1. calyx persisting/
+       2. calyx not persisting <<implicit>>/
+       3. perianth persisting as bristles/
+
+#335. <<af106>> fruit <style(s) persisting>/
+       1. styles persisting <describe>/
+       2. styles not persistent <<implicit>>/
+
+#336. persistent style <shape in fruit>/
+       1. hooked/
+       2. plumose/
+       3. straight/
+
+#337. persistent style <length in fruit>/
+       mm long/
+
+#338. <<se62>> perigynia <shape>/
+       1. globose, or subglobose/
+       2. sub-lanceolate/
+       3. broadly ovate/
+       4. oblong/
+       5. obovate/
+       6. elliptic/
+
+#339. <<se63>> perigynia <height>/
+       mm long/
+
+#340. <<se64>> perigynia <width>/
+       mm wide/
+
+#341. <<se65>> perigynia <with or without a stalk, stipe>/
+       1. borne on a stalk/
+       2. sessile/
+
+#342. <<se66>> perigynia <position of at least the lower perigyna relative to
+          stem of spike>/
+       1. erect or ascending/
+       2. reflexed/
+       3. spreading at maturity/
+
+#343. <<se67>> perigynia <colour>/
+       1. black/
+       2. straw-coloured/
+       3. golden brown/
+       4. brown/
+       5. green/
+       6. whitish/
+
+#344. <<se68>> perigynia <texture>/
+       1. membranous <thin and almost translucent>/
+       2. leathery/
+
+#345. <<se69>> perigynia <surface luster>/
+       1. surface glossy/
+       2. surface dull/
+
+#346. <<se70>> perigynia <indumentum>/
+       1. glabrous/
+       2. hairy/
+       3. scabrous/
+
+#347. <<se71>> perigynia <whether tuberculate>/
+       1. tuberculate/
+       2. glandular/
+       3. papillose/
+
+#348. <<se72>> perigynia <visibility of nerves on the abaxial, ventral surface>/
+       1. strongly nerved/
+       2. faintly nerved/
+       3. appearing nerveless/
+
+#349. <<se73>> perigynia <whether inflated>/
+       1. inflated/
+       2. not inflated <<implicit>>/
+
+#350. <<se74>> perigynia <presence of wing>/
+       1. with a wing/
+       2. without a wing <<implicit>>/
+
+#351. <<se75>> perigynia <whether keeled>/
+       1. not keeled <<implicit>>/
+       2. with 2 keels/
+       3. with 3 keels/
+
+#352. <<se77>> perigynia apex/
+       1. beaked with a long beak/
+       2. beaked with a short beak/
+       3. merely conical <almost beakless>/
+       4. without a beak/
+
+#353. <<se78>> perigynia apex <beak>/
+       1. oblique, becoming slightly bidentate/
+       2. deeply bidentate/
+       3. not bidentate <<implicit>>/
+
+#354. <<se82>> achenes <size relative to perigyna>/
+       1. filling the perigynia/
+       2. not filling the upper part of the perigynia/
+
+#355. <<se84>> achenes <general shape>/
+       1. lenticular/
+       2. triangular/
+       3. oblong/
+       4. subterete/
+       5. ovoid/
+
+#356. <<af107>> seeds <number>/
+
+#357. <<af108>> seeds <length>/
+       mm long/
+
+#358. <<af109>> seeds <colour>/
+       1. black/
+       2. brown/
+       3. white/
+       4. <not black, brown, or white> <<specify>>/
+
+#359. <<af110>> seeds <surface>/
+       1. smooth/
+       2. hairy/
+       3. spinose/
+       4. verrucose/
+       5. ridged/
+       6. winged/
+
+#360. <<af111 sa108~ se87 ag104>> 2\i{}n\i0{} =/
+
+#361. <<sa109>> <chromosome number reference> <author and date>/
+
+#362. <<af112>> supposed basic chromosome number of family/
+
+#363. <<af113>> ploidy levels recorded/
+
+#364. <<af114 se88>> <northern hemisphere distribution>/
+       1. circumpolar/
+       2. circumboreal/
+       3. amphi-Atlantic/
+       4. amphi-Beringian/
+       5. North American/
+       6. not circumpolar, amphi-Atlantic, amphi-Beringian, or North American
+          <<specify>>/
+
+#365. <<af115 se91>> <North American phytogeography>/
+       1. arctic <widespread>/
+       2. high arctic <mainly restricted to the islands>/
+       3. low arctic <mainly restricted to the continent>/
+       4. alpine/
+       5. boreal/
+       6. coastal <mainly restricted to the coasts>/
+
+#366. <<af116 se92>> <range in Arctic Islands>/
+       1. wide-ranging in the Arctic Islands/
+       2. of limited distribution in the Arctic Islands/
+       3. neither wide-ranging nor of limited distribution in the Arctic Islands
+          <<implicit>>/
+
+#367. <<af117 se89>> <abundance in Arctic Islands>/
+       1. common/
+       2. uncommon/
+       3. rare/
+
+#368. <<sa11>> northern hemisphere: <distribution>/
+       1. Greenland/
+       2. St. Pierre and Miquelon/
+       3. Canada/
+       4. United States/
+       5. Eurasia/
+
+#369. <<sa112>> Canada: <distribution>/
+       1. Alta./
+       2. B.C./
+       3. Lab./
+       4. Man./
+       5. N.B./
+       6. Nfld./
+       7. N.W.T. (Frank.)/
+       8. N.W.T. (Keew.)/
+       9. N.W.T. (Mack.)/
+       10. N.S./
+       11. Ont./
+       12. P.E.I./
+       13. Que./
+       14. Sask./
+       15. Yukon/
+
+#370. <<sa113>> USA: <distribution>/
+       1. Alaska/
+       2. Ariz./
+       3. Calif./
+       4. Colo./
+       5. Idaho./
+       6. Maine/
+       7. Mich./
+       8. Minn./
+       9. Mont./
+       10. Nev./
+       11. N.H./
+       12. N.Mex./
+       13. N.York/
+       14. Oreg./
+       15. S. Dak./
+       16. Utah/
+       17. Vt./
+       18. Wash./
+       19. Wyo./
+
+#371. <<af118 se90>> Arctic Islands: <distribution> <<key only>>/
+       1. Baffin/
+       2. Devon/
+       3. Ellesmere/
+       4. Axel Heiberg/
+       5. Parry Islands <Melville, Bathurst, and Prince Patrick>/
+       6. Cornwallis/
+       7. Banks/
+       8. Victoria/
+       9. Prince of Wales/
+       10. Somerset/
+       11. King William/
+       12. Southampton/
+       13. Coats/
+       14. <small islands> <<specify>>/
+
+#372. <<sa110>> elevation/
+       m/
+
+#373. <<af119 se93 ag109>> substrate type:/
+       1. acidic/
+       2. calcareous/
+       3. halophytic/
+       4. nitrophilous/
+       5. peat/
+
+#374. <<af120 se94 ag110~>> <habitat in the Arctic>/
+       1. aquatic/
+       2. wet meadows/
+       3. moist areas <<specify, e.g., riverbeds, brooks, lakeshores, etc.>>/
+       4. hummocks/
+       5. snow beds/
+       6. rocky sites/
+       7. clay/
+       8. sand/
+
+#375. substrate <drainage>/
+       1. aquatic/
+       2. imperfectly drained <moist areas>/
+       3. on seepage slopes/
+       4. on solifluction slopes/
+       5. dry/
+       6. moderately well drained/
+
+#376. substrate <ionic character>/
+       1. acidic/
+       2. calcareous/
+       3. halophytic/
+       4. nitrophilous/
+
+#377. substrate <particle size>/
+       1. rock/
+       2. gravel/
+       3. sand/
+       4. silt/
+       5. clay/
+       6. till/
+       7. moss/
+
+#378. substrate <organic content>/
+       1. with low organic content/
+       2. with high organic content/
+       3. peat/
+
+#379. <habitat in the Arctic Islands>/
+       1. wet meadows/
+       2. hummocks/
+       3. snow beds/
+       4. around the margins of ponds/
+       5. depressions of low centre polygons/
+       6. marshes/
+       7. along streams/
+       8. river terraces/
+       9. lake shores <<specify beaches or swales>>/
+       10. tundra/
+       11. slopes/
+       12. ridges/
+       13. cliffs/
+       14. sea shore/
+
+#380. <<af121 se95 ag108~ ag109~>> <ecological notes> << e.g., flowering time,
+          pollination, fruit or seed dispersal>>/
+
+#381. <<af122 ag111>> <taxon as an environmental indicator>/
+
+#382. <<af123 se96>> <indigenous knowledge>/
+
+#383. <<af124>> <economic uses>/
+
+#384. <<af125 sa114 se98 ag113>> <general notes>/
+
+#385. <<af126 se99 ag112>> <brief notes (extracted from 'general notes')>/
+
+#386. <<af127 an477>> Subclass/
+       1. Dicotyledonae <Magnoliopsida>/
+       2. Monocotyledonae <Liliopsida>/
+
+#387. <<af128 an479>> Dahlgren's Superorder <of Dicotyledonae-modified from
+          Dahlgren 1980)>/
+       1. Magnoliiflorae/
+       2. Ranunculiflorae/
+       3. Caryophylliflorae/
+       4. Polygoniflorae/
+       5. Malviflorae/
+       6. Primuliflorae/
+       7. Rosiflorae/
+       8. Fabiflorae/
+       9. Myrtiflorae/
+       10. Rutiflorae/
+       11. Asteriflorae/
+       12. Solaniflorae/
+       13. Corniflorae/
+       14. Gentianiflorae/
+       15. Lamiflorae/
+       16. Nymphaeiflorae/
+       17. Violflorae/
+
+#388. <<af129 an481>> Dahlgren's Superorder <of Monocots: Dahlgren, Clifford and
+          Yeo 1985>/
+       1. Alismatiflorae/
+       2. Liliiflorae/
+       3. Commeliniflorae/
+       4. Bromeliiflorae/
+
+#389. <<af130 an484>> Dahlgren's Order <of Ranunculiflorae>/
+       1. Ranunculales/
+       2. Papaverales/
+
+#390. <<af131 an485>> Dahlgren's Order <of Caryophylliflorae>/
+       1. Caryophyllales/
+
+#391. <<af132 an487>> Dahlgren's Order <of Malviflorae>/
+       1. Plumbaginales/
+
+#392. <<af133 an488>> Dahlgren's Order <of Violiflorae>/
+       1. Salicales/
+       2. Capparales/
+
+#393. <<af134 an490>> Dahlgren's Order <of Primuliflorae>/
+       1. Primulales/
+
+#394. <<af135 an491>> Dahlgren's Order <of Rosiflorae>/
+       1. Fagales/
+       2. Juglandales/
+       3. Saxifragales/
+       4. Rosales/
+
+#395. <<af136 an493>> Dahlgren's Order <of Fabiflorae>/
+       1. Fabales/
+
+#396. <<af137 an495>> Dahlgren's Order <of Myrtiflorae>/
+       1. Myrtales/
+       2. Haloragales/
+
+#397. <<af138 an496>> Dahlgren's Order <of Rutiflorae>/
+       1. Geraniales/
+
+#398. <<af140 an501>> Dahlgren's Order <of Solaniflorae>/
+       1. Solanales/
+       2. Boraginales/
+
+#399. <<af139 an500>> Dahlgren's Order <of Asteriflorae>/
+       1. Campanulales/
+       2. Asterales/
+
+#400. <<af141 an502>> Dahlgren's Order <of Corniflorae>/
+       1. Ericales/
+
+#401. <<af142 an504>> Dahlgren's Order <of Gentianiflorae>/
+       1. Gentianales/
+
+#402. <<af143 an505>> Dahlgren's Order <of Lamiiflorae>/
+       1. Scrophulariales/
+       2. Hippuridales/
+
+#403. <<af144 an506>> Dahlgren's Order <of Alismatiflorae: Dahlgren, Clifford
+          and Yeo 1985>/
+       1. Zosterales/
+
+#404. <<af145 an509>> Dahlgren's Order <of Liliiflorae: Dahlgren, Clifford and
+          Yeo 1985>/
+       1. Liliales/
+       2. Orchidales/
+
+#405. <<af146 an511>> Dahlgren's Order <of Commeliniflorae: Dahlgren, Clifford
+          and Yeo 1985>/
+       1. Cyperales/
+       2. Poales/
+
+#406. <<af147 an516>> Cronquist's Subclass <of Magnoliopsida: 1981>/
+       1. Magnoliidae/
+       2. Hamamelidae/
+       3. Caryophyllidae/
+       4. Dilleniidae/
+       5. Rosidae/
+       6. Asteridae/
+
+#407. <<af148 an517>> Cronquist's Order <of Magnoliidae>/
+       1. Ranunculales/
+       2. Papaverales/
+
+#408. <<af149 an518>> Cronquist's Order <of Hamamelidae>/
+       1. Fagales/
+
+#409. <<af150 an519>> Cronquist's Order <of Caryophyllidae>/
+       1. Caryophyllales/
+       2. Polygonales/
+       3. Plumbaginales/
+
+#410. <<af151 an520>> Cronquist's Order <of Dilleniidae>/
+       1. Dilleniales/
+       2. Salicales/
+       3. Capparales/
+       4. Ericales/
+       5. Diapensiales/
+       6. Primulales/
+
+#411. <<af152 an521>> Cronquist's Order <of Rosidae>/
+       1. Rosales/
+       2. Fabales/
+       3. Haloragales/
+       4. Myrtales/
+       5. Linales/
+
+#412. <<af153 an522>> Cronquist's Order <of Asteridae>/
+       1. Gentianales/
+       2. Solanales/
+       3. Lamiales/
+       4. Callitrichales/
+       5. Plantaginales/
+       6. Scrophulariales/
+       7. Campanulales/
+       8. Asterales/
+
+#413. <<af154 an523>> Takhtajan's Subclass <of Magnoliopsida: 1980>/
+       1. Ranunculidae/
+       2. Hamamelidae/
+       3. Caryophyllidae/
+       4. Dilleniidae/
+       5. Rosidae/
+       6. Asteridae/
+
+#414. <<af155 an524>> Takhtajan's Superorder <of Dicots>/
+       1. Magnolianae/
+       2. Rafflesianae/
+       3. Ranunculanae/
+       4. Hamamelidanae/
+       5. Caryophyllanae/
+       6. Plumbaginanae/
+       7. Dillenianae/
+       8. Ericanae/
+       9. Rosanae/
+       10. Myrtanae/
+       11. Rutanae/
+       12. Asteranae/
+       13. Gentianaceae/
+       14. Laminae/
+
+#415. <<af156 an526>> Takhtajan's Order <of Ranunculidae>/
+       1. Ranunculales/
+       2. Papaverales/
+
+#416. <<af157 an527>> Takhtajan's Order <of Hamamelididae>/
+       1. Trochodendrales/
+       2. Fagales/
+       3. Cercidiphyllales/
+       4. Eupteleales/
+       5. Didymelales/
+       6. Hamamelidales/
+       7. Eucommiales/
+       8. Urticales/
+       9. Barbeyales/
+       10. Casuarinales/
+       11. Balanopales/
+       12. Leitneriales/
+       13. Myricales/
+       14. Juglandales/
+
+#417. <<af158 an528>> Takhtajan's Order <of Caryophyllidae>/
+       1. Caryophyllales/
+       2. Polygonales/
+       3. Plumbaginales/
+
+#418. <<af159 an529>> Takhtajan's Order <of Dilleniidae>/
+       1. Dilleniales/
+       2. Capparales/
+       3. Salicales/
+       4. Ericales/
+       5. Primulales/
+
+#419. <<af160 an530>> Takhtajan's Order <of Rosidae>/
+       1. Saxifragales/
+       2. Rosales/
+       3. Fabales/
+       4. Myrtales/
+       5. Geraniales/
+
+#420. <<af161 an531>> Takhtajan's Order <of Asteridae>/
+       1. Gentianales/
+       2. Polemoniales/
+       3. Scrophulariales/
+       4. Campanulales/
+       5. Asterales/
+
+#421. <<af162>> <number of species in world>/
+       species/
+
+#422. <<af163>> <number of genera in world>/
+       genera/
+
+#423. <<af164>> <names of> genera in study region:/
+
+#424. <<af165>> morphological data <whether coded>/
+       1. coded <<implicit>>/
+       2. not coded/
+       3. coding in progress/
+
+#425. <<af166>> <taxonomic level>/
+       1. species <<implicit>>/
+       2. genus/
+       3. family/
+       4. class/
+
+#426. <<af167>> <whether accepted in this study>/
+       1. accepted in this study <<implicit>>/
+       2. not accepted in this study/
+       3. status under consideration/
+
+#427. <<af168 ag114>> <illustrations>/
+
+#428. <<ag115>> <working comments>/
+
+#429. <<SA1>> <date, source material>/
+
+#430. <<se2>> Section used by Porsild (1957):/
+
+#431. code used for graphics files:/
+
+#432. code used to indicate subject of image:/
+       1. A = anatomy/
+       2. B = black and white drawing/
+       3. E = environment or habitat/
+       4. C = close up of plant/
+       5. F = flower/
+       6. I = inflorescence/
+       7. L = leaf or leaves/
+       8. M = map/
+       9. P = plate, where more than one picture is combined into a plate/
+       10. R = roots/
+       11. S = herbarium specimen/
+       12. T = type specimen/
+       13. U = fruit/

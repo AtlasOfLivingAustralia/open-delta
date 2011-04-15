@@ -1,8 +1,6 @@
 package au.org.ala.delta.translation.attribute;
 
-import org.apache.commons.lang.StringUtils;
 
-import au.org.ala.delta.rtf.RTFUtils;
 
 
 /**
@@ -11,6 +9,10 @@ import au.org.ala.delta.rtf.RTFUtils;
  */
 public class TextAttributeTranslator extends AttributeTranslator {
 
+	public TextAttributeTranslator() {
+		super();
+	}
+	
 	@Override
 	public String translateValue(String value) {
 		throw new RuntimeException("This should never have been called");
@@ -24,12 +26,10 @@ public class TextAttributeTranslator extends AttributeTranslator {
 	/**
 	 * Overrides the parent method to omit the brackets surrounding the comment.
 	 */
-	public void characterComment(String comment) {
-		if (StringUtils.isNotEmpty(comment)) {
-			comment = RTFUtils.stripFormatting(comment, false);
-			// Omit the brackets either side of the comment.
-			_translatedValue.append(removeCommentBrackets(comment));
-		}
+	public String characterComment(String comment) {
+		
+		comment = _attributeFormatter.formatComment(comment);
+		return removeCommentBrackets(comment);
 	}
 	
 	private String removeCommentBrackets(String comment) {

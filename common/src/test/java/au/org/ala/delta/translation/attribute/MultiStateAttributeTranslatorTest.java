@@ -24,11 +24,14 @@ public class MultiStateAttributeTranslatorTest extends TestCase {
 	public void setUp() throws Exception {
 		_factory = new DefaultDataSetFactory();
 		_multiStateCharacter = (MultiStateCharacter)_factory.createCharacter(CharacterType.UnorderedMultiState, 1);
-		_multiStateCharacter.setNumberOfStates(3);
+		_multiStateCharacter.setNumberOfStates(6);
 		_multiStateCharacter.setDescription("A multistate character");
 		_multiStateCharacter.setState(1, "State 1");
 		_multiStateCharacter.setState(2, "State 2");
 		_multiStateCharacter.setState(3, "State 3");
+		_multiStateCharacter.setState(4, "<State 4>");
+		_multiStateCharacter.setState(5, "State 5");
+		_multiStateCharacter.setState(6, "State 6");
 		
 		_translator = new MultiStateAttributeTranslator(_multiStateCharacter);
 	}
@@ -136,6 +139,26 @@ public class MultiStateAttributeTranslatorTest extends TestCase {
 		value = format(_multiStateCharacter, attributeValue);
 		
 		assertEquals("State 1, or State 2, or State 3 <test>", value);
+	}
+	
+	@Test
+	public void testStateValueOnlyContainComments() {
+		
+		String attributeValue = "1/2/3/4";
+		String value = format(_multiStateCharacter, attributeValue);
+		
+		assertEquals("State 1, or State 2, or State 3", value);
+		
+		attributeValue = "3/4/5";
+		value = format(_multiStateCharacter, attributeValue);
+			
+		assertEquals("State 3, or State 5", value);
+		
+		attributeValue = "4/5";
+		value = format(_multiStateCharacter, attributeValue);
+			
+		assertEquals("State 5", value);
+		
 	}
 	
 	

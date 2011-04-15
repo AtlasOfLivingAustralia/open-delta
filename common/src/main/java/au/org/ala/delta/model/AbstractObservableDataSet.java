@@ -26,8 +26,11 @@ public abstract class AbstractObservableDataSet implements DeltaDataSet, ItemObs
 	 */
 	@Override
 	public Character getCharacter(int number) {
+		
 		Character character = doGetCharacter(number);
-		character.addCharacterObserver(this);
+		if (character != null) {
+			character.addCharacterObserver(this);
+		}
 		return character;
 	}
 	protected abstract Character doGetCharacter(int number);

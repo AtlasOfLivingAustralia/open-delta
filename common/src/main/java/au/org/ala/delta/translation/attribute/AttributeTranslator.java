@@ -1,13 +1,13 @@
 package au.org.ala.delta.translation.attribute;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 
-import au.org.ala.delta.rtf.RTFUtils;
+import au.org.ala.delta.model.format.AttributeFormatter;
 import au.org.ala.delta.translation.attribute.ParsedAttribute.CommentedValues;
 import au.org.ala.delta.translation.attribute.ParsedAttribute.Values;
 
@@ -16,14 +16,16 @@ import au.org.ala.delta.translation.attribute.ParsedAttribute.Values;
  */
 public abstract class AttributeTranslator {
 
+	
 	private Map<String, String> _separators;
 	protected StringBuilder _translatedValue;
-	protected Pattern emptyCommentPattern = Pattern.compile("<\\s*>");
+	protected AttributeFormatter _attributeFormatter;
 	
 	public AttributeTranslator() {
 		_separators = new HashMap<String, String>();
 		_separators.put("&", "and");
 		_separators.put("-", "to");
+		_attributeFormatter = new AttributeFormatter(false, true);
 	}
 	
 	/**
@@ -33,28 +35,35 @@ public abstract class AttributeTranslator {
 	 */
 	public String translate(ParsedAttribute attribute) {
 		_translatedValue = new StringBuilder();
-		characterComment(attribute.getCharacterComment());
+		_translatedValue.append(characterComment(attribute.getCharacterComment()));
 		
 		List<CommentedValues> commentedValues = attribute.getCommentedValues();
-		for (int i=0; i<commentedValues.size()-1; i++) {
-			commentedValues(commentedValues.get(i));
-			_translatedValue.append(", or ");
+		boolean valueOutput = false;
+		for (int i=0; i<commentedValues.size(); i++) {
+			String nextValue = commentedValues(commentedValues.get(i));
+			
+			if (valueOutput && StringUtils.isNotEmpty(nextValue)) {
+				_translatedValue.append(", or ");
+			}
+			valueOutput = valueOutput | StringUtils.isNotEmpty(nextValue);
+			_translatedValue.append(nextValue);
+			
 		}
-		if (commentedValues.size() > 0) {
-			commentedValues(commentedValues.get(commentedValues.size()-1));
-		}
+		
 		return _translatedValue.toString().trim();
 	}
 	
-	public void commentedValues(CommentedValues commentedValues) {
+	public String commentedValues(CommentedValues commentedValues) {
 	
+		StringBuilder output = new StringBuilder();
 		
 		// Special case - if an attribute is marked not applicable and has a comment
 		// the "not applicable" is omitted from the description.
 		if (!isInapplicableWithComment(commentedValues)) {
-			values(commentedValues.getValues());
+			 output.append(values(commentedValues.getValues()));
 		}
-		comment(commentedValues.getComment());
+		output.append(comment(commentedValues.getComment()));
+		return output.toString();
 	}
 	
 	private boolean isInapplicableWithComment(CommentedValues commentedValues) {
@@ -66,59 +75,105 @@ public abstract class AttributeTranslator {
 			
 	}
 	
-	public void characterComment(String comment) {
+	public String characterComment(String comment) {
+		StringBuilder output = new StringBuilder();
+		comment = _attributeFormatter.formatComment(comment);
 		if (StringUtils.isNotEmpty(comment)) {
-			_translatedValue.append(RTFUtils.stripFormatting(comment));
-			_translatedValue.append(" ");
+			output.append(comment);
+			output.append(" ");
 		}
+		return output.toString();
 	}
 	
-	public void comment(String comment) {
-		if (StringUtils.isNotEmpty(comment) && !emptyCommentPattern.matcher(comment).matches()) {
-			
-			_translatedValue.append(" ");
-			_translatedValue.append(RTFUtils.stripFormatting(comment));
+	public String comment(String comment) {
+		comment = _attributeFormatter.formatComment(comment);
+		StringBuilder output = new StringBuilder();
+		if (StringUtils.isNotEmpty(comment)) {
+			output.append(" ");
+			output.append(comment);
 		}
+		return output.toString();
 	}
 	
-	protected void values(Values values) {
+	protected String values(Values values) {
 		if (values == null) {
-			return;
+			return "";
 		}
 		List<String> valueStrings = values.getValues();
 		if (valueStrings.isEmpty()) {
-			return;
+			return "";
 		}
-		_translatedValue.append(getTranslatedValue(valueStrings.get(0)));
+
+		StringBuilder output = new StringBuilder();
+		
 		if ("&".equals(values.getSeparator())) {
 			
-			translateAndSeparatedValues(valueStrings);
+			output.append(translateAndSeparatedValues(valueStrings));
+		} 
+		else if ("-".equals(values.getSeparator())) {
+			output.append(translateRangeSeparatedValues(valueStrings));
 		}
-		if ("-".equals(values.getSeparator())) {
-			translateOrSeparatedValues(valueStrings);
+		else {
+			String value = getTranslatedValue(valueStrings.get(0));
+			
+			if (StringUtils.isNotEmpty(value)) {
+				output.append(value);
+			}
 		}
+		return output.toString();
 		
 	}
 
-	protected void translateOrSeparatedValues(List<String> valueStrings) {
-		for (int i=1; i<valueStrings.size(); i++) {
-			
-			_translatedValue.append(rangeSeparator());
-			_translatedValue.append(getTranslatedValue(valueStrings.get(i)));
+	protected String translateRangeSeparatedValues(List<String> valueStrings) {
+		
+		StringBuilder output = new StringBuilder();
+		List<String> translatedValues = translateValues(valueStrings);
+		
+		if (!translatedValues.isEmpty()) {
+			for (int i=0; i<translatedValues.size()-1; i++) {
+				String value = translatedValues.get(i);
+				
+				output.append(value);
+				
+				output.append(rangeSeparator());
+			}
+			output.append(translatedValues.get(translatedValues.size()-1));
 		}
+		return output.toString();
 	}
 
-	protected void translateAndSeparatedValues(List<String> valueStrings) {
-		for (int i=1; i<valueStrings.size(); i++) {
-			if (valueStrings.size() > 2) {
-				_translatedValue.append(",");
+	protected String translateAndSeparatedValues(List<String> valueStrings) {
+		
+		StringBuilder output = new StringBuilder();
+		
+		List<String> translatedValues = translateValues(valueStrings);
+		if (!translatedValues.isEmpty()) {
+			output.append(translatedValues.get(0));
+			for (int i=1; i<translatedValues.size(); i++) {
+				
+				if (translatedValues.size() > 2) {
+					output.append(",");
+				}
+				output.append(" ");
+				if (i == translatedValues.size()-1) {
+					output.append("and ");
+				}
+				output.append(translatedValues.get(i));
+				
 			}
-			_translatedValue.append(" ");
-			if (i == valueStrings.size()-1) {
-				_translatedValue.append("and ");
-			}
-			_translatedValue.append(getTranslatedValue(valueStrings.get(i)));
 		}
+		return output.toString();
+	}
+	
+	protected List<String> translateValues(List<String> valueStrings) {
+		List<String> translatedValues = new ArrayList<String>();
+		for (int i=0; i<valueStrings.size(); i++) {
+			String value = getTranslatedValue(valueStrings.get(i));
+			if (StringUtils.isNotEmpty(value))	{
+				translatedValues.add(value);
+			}
+		}
+		return translatedValues;
 	}
 	
 	protected String getTranslatedValue(String value) {

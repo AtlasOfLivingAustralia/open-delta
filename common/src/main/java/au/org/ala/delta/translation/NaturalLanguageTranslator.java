@@ -264,6 +264,9 @@ public class NaturalLanguageTranslator implements Translator {
 			writeFeature(description, true,
 					item.getItemNumber(), characterNumber, _context.getItemSubheading(characterNumber),
 					false, false, new int[_context.getNumberOfCharacters()], subsequentPartOfLinkedSet);
+			if (character.getCharacterId() == 7) {
+				System.out.println("Breka");
+			}
 			writeCharacterAttribute(item, character);
 		}
 	}

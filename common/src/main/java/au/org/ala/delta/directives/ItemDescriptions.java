@@ -16,14 +16,12 @@ package au.org.ala.delta.directives;
 
 import java.io.Reader;
 import java.io.StringReader;
-import java.text.ParseException;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.StateValue;
-import au.org.ala.delta.model.TextCharacter;
 
 public class ItemDescriptions extends ConforDirective {
 
@@ -74,53 +72,38 @@ class ItemsParser extends AbstractStreamParser {
 		String itemName = readToNextEndSlashSpace();
 		Logger.debug("Parsing Item %s", itemName);
 	
-		item.setDescription(itemName.trim());
+		item.setDescription(cleanWhiteSpace(itemName.trim()));
 		skipWhitespace();
 		while (_currentChar != '#' && _currentInt >= 0) {
 			int charIdx = readInteger();
 			au.org.ala.delta.model.Character ch = _context.getCharacter(charIdx);
 			String strValue = null;
 			String comment = null;
-			if (ch instanceof TextCharacter) {
-				if (_currentChar == '<') {
-					strValue = readComment();
-				}
-				else if (_currentChar == ',') {
-					readNext();
-					if (_currentChar != '-') {
-						throw new ParseException("Expected a comment for a text character", _position);
-					}
-					strValue = "-";
-					readNext();
-				}
-			} else {
 
-				if (_currentChar == '<') {
-					comment = readComment();
-				}
-				if (_currentChar == ',') {
-					readNext();
-					strValue = readStateValue(ch);
-				} else if (isWhiteSpace(_currentChar)) {
-					if (comment == null) {
-						strValue = "U";
-					}
-					else {
-						strValue = "";
-					}
-				} else {
-					throw new RuntimeException(String.format("Expected a ',' for state values (Character %d is not a Text character)", charIdx));
-				}
-
+			if (_currentChar == '<') {
+				comment = readComment();
 			}
-			assert strValue != null;
-		
+			if (_currentChar == ',') {
+				readNext();
+				strValue = readStateValue(ch);
+			} else if (isWhiteSpace(_currentChar)) {
+				if (comment == null) {
+					strValue = "U";
+				}
+				else {
+					strValue = "";
+				}
+			}
+
 			StateValue stateValue = new StateValue(ch, item, strValue);
+			StringBuilder value = new StringBuilder();
 			if (comment != null) {
-				stateValue.setComment(comment);
-				strValue = comment+strValue;
+				value.append(comment);
 			}
-			item.addAttribute(ch, cleanWhiteSpace(strValue));
+			if (strValue != null) {
+				value.append(strValue);
+			}
+			item.addAttribute(ch, cleanWhiteSpace(value.toString().trim()));
 			
 			_context.getMatrix().setValue(charIdx, itemIndex, stateValue);
 			Logger.debug("  %d. %s", charIdx, stateValue);

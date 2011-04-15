@@ -2,6 +2,7 @@ package au.org.ala.delta.model.format;
 
 import java.io.StringReader;
 import java.text.ParseException;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -12,6 +13,9 @@ import au.org.ala.delta.rtf.RTFUtils;
  * Base class for DELTA formatters.
  */
 public class Formatter {
+	
+	protected static Pattern EMPTY_COMMENT_PATTERN = Pattern.compile("<\\s*>");
+	
 	
 	private boolean _stripComments;
 	private boolean _stripFormatting;
@@ -43,6 +47,8 @@ public class Formatter {
 		if (!_stripComments && _replaceAngleBrackets) {
 		    text = replaceAngleBrackets(text);
 		}
+		// Stripping formatting can leave extra whitespace lying around sometimes.
+		text = text.replaceAll(" +", " ");
 		return text;
 	}
 	

@@ -34,6 +34,7 @@ public class NaturalLanguageTranslatorTest extends TestCase {
 	private static final String SAMPLE_DATASET_PATH="/dataset/sample/tonat_simple";
 	private static final String PONERINI_DATASET_PATH="/dataset/ponerini/tonats";
 	private static final String VIDE_DATASET_PATH="/dataset/vide/tonats";
+	private static final String CFLORA_DATASET_PATH="/dataset/cflora/tonats";
 	
 	@Before
 	public void setUp() throws Exception {
@@ -116,6 +117,17 @@ public class NaturalLanguageTranslatorTest extends TestCase {
 		
 		_dataSetTranslator.translate();
 		checkResult("/dataset/vide/expected_results/default.txt", true);
+	}
+	
+	/**
+	 * This test method actually takes quite a while so might not be suitable for the normal
+	 * build as it slows down the test cycle a fair bit.
+	 */
+	public void zztestSimpleCFloraTranslation() throws Exception {
+		initialiseContext(CFLORA_DATASET_PATH);	
+		
+		_dataSetTranslator.translate();
+		checkResult("/dataset/cflora/expected_results/default.txt");
 	}
 	
 	/**

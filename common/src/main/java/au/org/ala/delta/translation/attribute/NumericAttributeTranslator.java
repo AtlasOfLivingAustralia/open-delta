@@ -1,5 +1,7 @@
 package au.org.ala.delta.translation.attribute;
 
+import org.apache.commons.lang.StringUtils;
+
 import au.org.ala.delta.model.NumericCharacter;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.translation.attribute.ParsedAttribute.Values;
@@ -36,18 +38,24 @@ public class NumericAttributeTranslator extends AttributeTranslator {
 	 * Overrides the parent method to append the characters units, if any, to the translation.
 	 */
 	@Override
-	protected void values(Values values) {
-		super.values(values);
+	protected String values(Values values) {
 		
-		appendUnits();
+		StringBuilder output = new StringBuilder();
+		
+		String value = super.values(values);
+		if (StringUtils.isNotEmpty(value)) {
+			output.append(value).append(getUnits());
+		}
+		return output.toString();
 	}
 	
 	
-	private void appendUnits() {
+	private String getUnits() {
+		StringBuilder output = new StringBuilder();
 		if (_character.hasUnits()) {
 			String units = _formatter.formatUnits(_character);
-			_translatedValue.append(" ").append(units);
+			output.append(" ").append(units);
 		}
-		
+		return output.toString();
 	}
 }
