@@ -4,7 +4,7 @@ import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.translation.attribute.ParsedAttribute.Values;
 
-public class PlainTextTypeSetter implements Translator {
+public class PlainTextTypeSetter implements DataSetTranslator {
 
 	private TypeSetter _printer;
 	

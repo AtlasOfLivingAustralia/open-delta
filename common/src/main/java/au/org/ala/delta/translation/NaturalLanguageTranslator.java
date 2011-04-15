@@ -14,7 +14,6 @@ import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.NumericCharacter;
-import au.org.ala.delta.model.format.AttributeFormatter;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.translation.Words.Word;
@@ -22,10 +21,10 @@ import au.org.ala.delta.translation.attribute.AttributeParser;
 import au.org.ala.delta.translation.attribute.AttributeTranslator;
 import au.org.ala.delta.translation.attribute.MultiStateAttributeTranslator;
 import au.org.ala.delta.translation.attribute.NumericAttributeTranslator;
-import au.org.ala.delta.translation.attribute.TextAttributeTranslator;
 import au.org.ala.delta.translation.attribute.ParsedAttribute.Values;
+import au.org.ala.delta.translation.attribute.TextAttributeTranslator;
 
-public class NaturalLanguageTranslator implements Translator {
+public class NaturalLanguageTranslator extends AbstractDataSetTranslator implements DataSetTranslator {
 
 	
 	private DeltaContext _context;
@@ -37,6 +36,7 @@ public class NaturalLanguageTranslator implements Translator {
 	
 	
 	public NaturalLanguageTranslator(DeltaContext context, TypeSetter typeSetter) {
+		super(context, new NaturalLanguageDataSetFilter(context));
 		_context = context;
 		_printer = typeSetter;
 		_dataSet = _context.getDataSet();
@@ -44,6 +44,7 @@ public class NaturalLanguageTranslator implements Translator {
 		_itemFormatter = new ItemFormatter(false, false, false, true, false);
 		_characterFormatter = new CharacterFormatter(false, true, false, true);
 	}
+	
 	
 	@Override
 	public void beforeFirstItem() {
@@ -53,6 +54,7 @@ public class NaturalLanguageTranslator implements Translator {
 
 	}
 
+	
 	@Override
 	public void beforeItem(Item item) {
 		
@@ -131,6 +133,7 @@ public class NaturalLanguageTranslator implements Translator {
 
 	}
 
+	
 	@Override
 	public void afterLastItem() {
 		_typeSetter.afterLastItem();
@@ -138,11 +141,13 @@ public class NaturalLanguageTranslator implements Translator {
 
 	}
 	
+	
 	@Override
 	public void attributeComment(String comment) {
 		
 	}
 
+	
 	@Override
 	public void attributeValues(Values values) {
 		

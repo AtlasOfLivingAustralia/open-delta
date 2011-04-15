@@ -24,9 +24,7 @@ import au.org.ala.delta.directives.ConforDirectiveFileParser;
  */
 public class NaturalLanguageTranslatorTest extends TestCase {
 
-	
-	private NaturalLanguageTranslator _naturalLanguageTranslator;
-	private DataSetTranslator _dataSetTranslator;
+	private AbstractDataSetTranslator _dataSetTranslator;
 	private DeltaContext _context;
 	private TypeSetter _typeSetter;
 	private ByteArrayOutputStream _bytes;
@@ -44,8 +42,7 @@ public class NaturalLanguageTranslatorTest extends TestCase {
 		_typeSetter = new TypeSetter(pout, 78);
 		
 		_context = new DeltaContext();
-		_naturalLanguageTranslator = new NaturalLanguageTranslator(_context, _typeSetter);
-		_dataSetTranslator = new DataSetTranslator(_context, _naturalLanguageTranslator);
+		_dataSetTranslator = new NaturalLanguageTranslator(_context, _typeSetter);
 	}
 	
 	public void testBasicTranslation() throws Exception {
