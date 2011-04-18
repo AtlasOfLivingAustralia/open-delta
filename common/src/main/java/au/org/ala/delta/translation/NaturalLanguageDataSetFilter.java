@@ -32,11 +32,10 @@ public class NaturalLanguageDataSetFilter implements DataSetFilter {
 	@Override
 	public boolean filter(Item item, Character character) {
 		
-		if (!item.hasAttribute(character)) {
-			return false;
-		}
+		
 		Attribute attribute = item.getAttribute(character);
 
+		
 		if (attribute.isUnknown()) { 
 			return false;
 		}
@@ -47,9 +46,14 @@ public class NaturalLanguageDataSetFilter implements DataSetFilter {
 		if (item.isVariant()) {
 			return outputVariantAttribute((VariantItem)item, character);
 		}
-
+		
 		if (attribute.isImplicit()) {
 			return outputImplictValue(attribute);
+		}
+		
+		
+		if (!item.hasAttribute(character)) {
+			return false;
 		}
 		return true;
 	}
@@ -104,7 +108,7 @@ public class NaturalLanguageDataSetFilter implements DataSetFilter {
 	
 	private boolean outputImplictValue(Attribute attribute) {
 		if (isIncluded(attribute.getItem(), attribute.getCharacter()) == 1) {
-		    return _context.insertImplicitValues();
+		    return _context.getInsertImplicitValues();
 		}
 		return true;
 	}

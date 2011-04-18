@@ -87,7 +87,7 @@ public class Attribute {
 	 */
 	public boolean isUnknown() {
 		String value = getValue();
-		return (StringUtils.isEmpty(value) || "U".equals(value.toUpperCase()));
+		return ("U".equals(value) || (StringUtils.isEmpty(value) && !isImplicit()));
 	}
 	
 	public boolean isSimple() {
@@ -139,6 +139,18 @@ public class Attribute {
 		for (int i=_observers.size()-1; i>=0; i--) {
 			_observers.get(i).attributeChanged(this);
 		}
+	}
+
+	/**
+	 * @return the implicit value of this attribute.
+	 */
+	public String getImplicitValue() {
+		if (!isImplicit()) {
+			throw new RuntimeException("Cannot get an implict value on an attribute that is not implicit.");
+		}
+		MultiStateCharacter multiStateChar = (MultiStateCharacter)_character;
+		int implicitState = multiStateChar.getUncodedImplicitState();
+		return Integer.toString(implicitState);
 	}
 	
 }

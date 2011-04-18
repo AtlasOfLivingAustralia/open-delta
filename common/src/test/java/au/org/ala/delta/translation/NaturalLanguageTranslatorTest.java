@@ -98,6 +98,13 @@ public class NaturalLanguageTranslatorTest extends TestCase {
 		checkResult("/dataset/sample/expected_results/default.txt");
 	}
 	
+	public void testSampleTranslationWithImplictValues() throws Exception{
+		initialiseContext(SAMPLE_DATASET_PATH);
+		_context.setInsertImplicitValues(true);
+		_dataSetTranslator.translate();
+		checkResult("/dataset/sample/expected_results/withimplicitvalues.txt");
+	}
+	
 	public void testSimplePoneriniTranslation() throws Exception {
 		initialiseContext(PONERINI_DATASET_PATH);	
 		
@@ -159,9 +166,16 @@ public class NaturalLanguageTranslatorTest extends TestCase {
 		}
 		String expectedResults = classLoaderPathToString(expectedResultsFileName);
 		
-		if (System.getProperty("line.separator") != "\n") {
-			expectedResults = expectedResults.replaceAll("\n", System.getProperty("line.separator"));
+		boolean dosEol = expectedResults.contains("\r\n");
+		String expectedLineSeparator = "\n";
+		if (dosEol) {
+			expectedLineSeparator = "\r\n";
 		}
+		
+		if (!System.getProperty("line.separator").equals(expectedLineSeparator)) {
+			expectedResults = expectedResults.replaceAll(expectedLineSeparator, System.getProperty("line.separator"));
+		}
+		
 		expectedResults = expectedResults.trim();
 		String actualResults = actualResults().trim();
 		

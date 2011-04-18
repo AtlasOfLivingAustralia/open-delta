@@ -1,0 +1,580 @@
+
+
+
+
+
+
+Echinochloa <P. Beauv.>
+
+      (1) Including Ornithospermum Dumoulin, Tema Adans. (2) Culms 40-360 cm
+high. (3) Culms herbaceous. (4) Annual, or perennial. (5) Culms branched
+above, or unbranched above. (6) Leaf blades not pseudopetiolate. (7) Culm
+nodes glabrous. (10) Ligule present, or absent. (11) Ligule <when present,> a
+fringe of hairs. (12) Plants bisexual, with bisexual spikelets. (13)
+Inflorescence of spicate main branches <the spikelets often hispid>. (15)
+Inflorescence not comprising ‘partial inflorescences’ and foliar organs. (16)
+Spikelet-bearing axes persistent. (18) Spikelets <paired, or clustered in
+little secondary racemelets>. (19) Spikelets secund. (26) Spikelets 2.3-7 mm
+long. (27) Spikelets compressed dorsiventrally. (28) Spikelets falling with
+the glumes. (30) Rachilla terminated by a female-fertile floret. (31) Hairy
+callus absent. (32) Glumes present. (33) Glumes two. (34) Glumes very unequal.
+(35) Glumes <(the upper)> shorter than the adjacent lemmas to long relative to
+the adjacent lemmas. (36) Glumes awned, or awnless. (38) Upper glume 5 nerved,
+or 7 nerved. (39) Spikelets with incomplete florets. (40) The incomplete
+florets proximal to the female-fertile florets. (41) The proximal incomplete
+florets 1. (42) The proximal incomplete florets male <<10%> rarely>, or
+sterile. (43) The proximal lemmas awned, or awnless. (44) Female-fertile
+florets 1. (45) Lemmas entire. (47) Lemmas awnless <obtuse to apiculate>. (52)
+Lemmas non-carinate. (53) Lemmas with a clear germination flap. (54) Lemmas 5
+nerved. (55) Palea present <the tip reflexed>. (56) Palea relatively long.
+(57) Lodicules present. (58) Lodicules fleshy. (59) Lodicules glabrous. (60)
+Stamens 3. (61) Ovary glabrous. (62) Stigmas 2. (63) Stigmas red pigmented.
+(64) Fruit small. (65) Fruit smooth. (66) Hilum short. (67) Pericarp fused.
+(68) C4. (69) Biochemical type NADP–ME <3 species>. (70) XyMS–. (71) Mesophyll
+without arm cells. (72) Mesophyll without fusoids. (73) Midrib conspicuous.
+(74) Midrib having a conventional arc of bundles. (75) Midrib with colourless
+tissue adaxially. (76) Many of the smallest vascular bundles unaccompanied by
+sclerenchyma. (77) Fruiting inflorescence not as in maize. (78) Panicoideae.
+(79) Panicodae. (84) Paniceae. (85) 30-40 species. (86) Holarctic,
+Paleotropical, Neotropical, and Australian. (87) Metcalfe 1960; this project.
+(89) Echinoch.
+
+
+Anisopogon <R.Br.>
+
+      (2) Culms 60-110 cm high. (3) Culms herbaceous. (4) <Oat-like>
+perennial. (6) Leaf blades not pseudopetiolate. (7) Culm nodes glabrous. (8)
+Leaf blades linear-lanceolate. (9) Leaf blades 2-3 mm wide. (10) Ligule
+present. (11) Ligule a fringed membrane <the membrane short to relatively
+long, hairy on the back>. (12) Plants bisexual, with bisexual spikelets. (13)
+Inflorescence paniculate. (14) Inflorescence open. (15) Inflorescence not
+comprising ‘partial inflorescences’ and foliar organs. (16) Spikelet-bearing
+axes persistent. (19) Spikelets not secund. (20) Spikelets not in distinct
+‘long-and-short’ combinations. (26) Spikelets 40-60 mm long. (27) Spikelets
+compressed laterally. (28) Spikelets disarticulating above the glumes. (30)
+Rachilla prolonged beyond the uppermost female-fertile floret <the slender
+prolongation 6-8 mm long, in the palea groove>. (31) Hairy callus present
+<about 6 mm long, with dense, white hairs>. (32) Glumes present. (33) Glumes
+two. (34) Glumes more or less equal <the upper slightly longer>. (35) Glumes
+long relative to the adjacent lemmas. (36) Glumes awnless. (37) Glumes
+non-carinate. (38) Upper glume 7-9 nerved. (39) Spikelets with female-fertile
+florets only, or with incomplete florets <usually with a single, abortive
+floret>. (40) The incomplete florets distal to the female-fertile florets.
+(44) Female-fertile florets 1. (45) Lemmas incised. (47) Lemmas awned. (48)
+Awns 3. (49) Awns from a sinus. (50) Awns geniculate. (51) Awns much longer
+than the body of the lemma <up to 8 cm long>. (52) Lemmas non-carinate
+<rounded on the back>. (53) Lemmas without a germination flap. (54) Lemmas 3
+nerved. (55) Palea present. (56) Palea relatively long <narrow, lanceolate>.
+(57) Lodicules present. (58) Lodicules membranous <two ‘stipoid’ and larger,
+the third smaller and flimsier>. (59) Lodicules glabrous. (60) Stamens 3. (61)
+Ovary hairy <sparingly so, towards the apex>. (62) Stigmas 2, or 3. (63)
+Stigmas white. (64) Fruit medium sized. (65) Fruit smooth. (66) Hilum
+long-linear. (67) Pericarp free, or loosely adherent. (68) C3. (70) XyMS+.
+(71) Mesophyll without arm cells. (72) Mesophyll without fusoids. (73) Midrib
+not readily distinguishable. (74) Midrib with one bundle only. (75) Midrib
+without colourless tissue adaxially. (76) All the vascular bundles accompanied
+by sclerenchyma. (77) Fruiting inflorescence not as in maize. (78)
+Arundinoideae. (82) Stipeae. (85) 1 species. (86) Australian. (87) This
+project. (89) Anisopog.
+
+
+Bambusa <Schreber>
+
+      (1) Including Arundarbor Kuntze, Bonia Balansa, Criciuma Soderstrom &
+Londoño, Dendrocalamopsis (Chia & Fung) Keng f., Eremocaulon Soderstrom &
+Londoño, Guadua Kunth, Ischurochloa Büse, Leleba Nakai, Lingnania McClure,
+Tetragonocalamus Nakai – cf. Clayton and Renvoize (1986). Soderstrom and Ellis
+(1987) refer Criciuma, Eremocaulon and Guadua to their subtribe Guaduinae,
+along with Olmeca, and place Tetragonocalamus in the Arundinariinae, but
+revised generic descriptions adequate for the present purpose are not
+available. (2) Culms (200-)500-3500 cm high. (3) Culms woody and persistent.
+(4) Perennial. (5) Culms branched above. (6) Leaf blades pseudopetiolate. (7)
+Culm nodes glabrous. (10) Ligule present. (11) Ligule an unfringed membrane to
+a fringed membrane. (12) Plants bisexual, with bisexual spikelets. (13)
+Inflorescence <of pseudospikelets, these solitary or in tufts, fascicles or
+capitula on leafless branches>. (14) Inflorescence open. (15) Inflorescence a
+complex of ‘partial inflorescences’ and intervening foliar organs. (16)
+Spikelet-bearing axes persistent. (19) Spikelets not secund. (20) Spikelets
+not in distinct ‘long-and-short’ combinations. (26) Spikelets 10-80 mm long.
+(27) Spikelets compressed laterally to not noticeably compressed. (28)
+Spikelets disarticulating above the glumes. (29) Spikelets disarticulating
+between the florets. (30) Rachilla prolonged beyond the uppermost
+female-fertile floret. (31) Hairy callus absent. (32) Glumes present. (33)
+Glumes two. (34) Glumes more or less equal. (35) Glumes shorter than the
+adjacent lemmas. (36) Glumes awnless. (37) Glumes carinate. (38) Upper glume
+7-18 nerved. (39) Spikelets with incomplete florets. (40) The incomplete
+florets distal to the female-fertile florets, or both distal and proximal to
+the female-fertile florets. (41) The proximal incomplete florets 0-3 <? –
+fewer than 4>. (42) The proximal incomplete florets sterile. (43) The proximal
+lemmas awnless. (44) Female-fertile florets 1-20 <–‘many’>. (45) Lemmas
+entire. (46) Lemmas blunt. (47) Lemmas awnless <usually>, or mucronate
+<Guadua>. (52) Lemmas carinate to non-carinate. (54) Lemmas 9-22 nerved. (55)
+Palea present. (56) Palea relatively long. (57) Lodicules present. (58)
+Lodicules membranous. (59) Lodicules ciliate. (60) Stamens 6. (61) Ovary
+hairy. (62) Stigmas 3 <usually?>. (65) Fruit smooth. (66) Hilum long-linear.
+(67) Pericarp fused. (68) C3. (70) XyMS+. (71) Mesophyll with arm cells. (72)
+Mesophyll with fusoids. (73) Midrib conspicuous. (74) Midrib having complex
+vascularization. (75) Midrib without colourless tissue adaxially. (76) All the
+vascular bundles accompanied by sclerenchyma. (77) Fruiting inflorescence not
+as in maize. (78) Bambusoideae. (79) Bambusodae. (81) Bambuseae. (85) <About>
+120 species. (86) Holarctic, Paleotropical, Neotropical, and Australian. (87)
+Metcalfe 1960; this project. (89) Bambusa.
+
+
+Chloris <O. Swartz>
+
+      (1) Including Actinochloris Steud., Agrostomia Cerv., Apogon Steud.,
+Chloridopsis Hack., Chloropsis Kuntze, Chlorostis Raf., Geopogon Steud.,
+Heterolepis Boiss., Leptochloris Kuntze, Phacellaria Steud., Trichloris Benth.
+(2) Culms 10-300 cm high. (3) Culms herbaceous. (4) Annual, or perennial. (6)
+Leaf blades not pseudopetiolate. (7) Culm nodes glabrous. (8) Leaf blades
+linear. (10) Ligule present. (11) Ligule a fringed membrane to a fringe of
+hairs. (12) Plants bisexual, with bisexual spikelets. (13) Inflorescence of
+spicate main branches <rarely a single raceme>. (15) Inflorescence not
+comprising ‘partial inflorescences’ and foliar organs. (16) Spikelet-bearing
+axes persistent. (18) Spikelets solitary, or paired. (19) Spikelets secund <on
+the dorsiventral rachis>. (20) Spikelets not in distinct ‘long-and-short’
+combinations. (26) Spikelets 1.8-5.5 mm long. (27) Spikelets compressed
+laterally. (28) Spikelets disarticulating above the glumes <the glumes usually
+persistent>. (30) Rachilla prolonged beyond the uppermost female-fertile
+floret. (31) Hairy callus present <usually minute>. (32) Glumes present. (33)
+Glumes two. (34) Glumes very unequal <divergent>. (35) Glumes <(the longer)
+usually> shorter than the adjacent lemmas. (36) Glumes awnless. (38) Upper
+glume 1-4 nerved. (39) Spikelets with incomplete florets. (40) The incomplete
+florets distal to the female-fertile florets <at least one of these
+conspicuous – the spikelet ‘with two florets’>. (44) Female-fertile florets 1
+<rarely 2>. (45) Lemmas entire <truncate>, or incised. (47) Lemmas awned. (48)
+Awns 1 <usually>, or 3 <<5%>>. (49) Awns from a sinus, or apical. (50) Awns
+non-geniculate. (52) Lemmas carinate. (53) Lemmas without a germination flap.
+(54) Lemmas 1-7 nerved. (55) Palea present. (56) Palea relatively long. (57)
+Lodicules present. (58) Lodicules fleshy. (59) Lodicules glabrous. (60)
+Stamens 3. (61) Ovary glabrous. (62) Stigmas 2. (63) Stigmas white, or red
+pigmented. (64) Fruit small. (65) Fruit smooth. (66) Hilum short. (67)
+Pericarp free to fused. (68) C4. (69) Biochemical type PCK <6 species>. (70)
+XyMS+. (71) Mesophyll without arm cells. (72) Mesophyll without fusoids. (73)
+Midrib conspicuous. (74) Midrib with one bundle only, or having a conventional
+arc of bundles. (75) Midrib with colourless tissue adaxially, or without
+colourless tissue adaxially. (76) Many of the smallest vascular bundles
+unaccompanied by sclerenchyma, or all the vascular bundles accompanied by
+sclerenchyma. (77) Fruiting inflorescence not as in maize. (78) Chloridoideae.
+(83) Main chloridoid assemblage. (85) <About> 55 species. (86) Holarctic,
+Paleotropical, Neotropical, and Australian. (87) Metcalfe 1960; this project.
+(89) Chloris.
+
+
+Cynodon <Rich.>
+
+      (1) Including Capriola Adans., Dactilon Vill., Fibichia Koel. (2) Culms
+4-60(-100) cm high. (3) Culms herbaceous. (4) Perennial. (6) Leaf blades not
+pseudopetiolate. (7) Culm nodes glabrous. (8) Leaf blades linear <test>. (10)
+Ligule present. (11) Ligule a fringed membrane to a fringe of hairs. (12)
+Plants bisexual, with bisexual spikelets. (13) Inflorescence of spicate main
+branches. (15) Inflorescence not comprising ‘partial inflorescences’ and
+foliar organs. (16) Spikelet-bearing axes persistent. (18) Spikelets solitary.
+(19) Spikelets secund. (26) Spikelets 1.7-3 mm long. (27) Spikelets compressed
+laterally. (28) Spikelets disarticulating above the glumes, or disarticulating
+between the glumes. (30) Rachilla prolonged beyond the uppermost
+female-fertile floret, or terminated by a female-fertile floret <C.
+incompletus>. (31) Hairy callus absent. (32) Glumes present. (33) Glumes two.
+(34) Glumes very unequal to more or less equal. (35) Glumes shorter than the
+adjacent lemmas. (36) Glumes awnless. (37) Glumes carinate. (38) Upper glume 1
+nerved, or 1-3 nerved. (39) Spikelets with female-fertile florets only
+<normally>, or with incomplete florets. (40) The incomplete florets <(when
+present)> distal to the female-fertile florets. (44) Female-fertile florets 1.
+(45) Lemmas entire. (46) Lemmas pointed, or blunt. (47) Lemmas awnless. (52)
+Lemmas carinate. (54) Lemmas 1-4 nerved. (55) Palea present. (56) Palea
+relatively long. (57) Lodicules present. (58) Lodicules fleshy. (59) Lodicules
+glabrous. (60) Stamens 3. (61) Ovary glabrous. (62) Stigmas 2. (63) Stigmas
+red pigmented. (64) Fruit small. (65) Fruit smooth. (66) Hilum short. (67)
+Pericarp fused. (68) C4. (69) Biochemical type NAD–ME <2 species>. (70) XyMS+.
+(71) Mesophyll without arm cells. (72) Mesophyll without fusoids. (73) Midrib
+conspicuous. (74) Midrib with one bundle only, or having a conventional arc of
+bundles. (75) Midrib without colourless tissue adaxially. (76) All the
+vascular bundles accompanied by sclerenchyma. (77) Fruiting inflorescence not
+as in maize. (78) Chloridoideae. (83) Main chloridoid assemblage. (85) 10
+species. (86) Holarctic, Paleotropical, Neotropical, Cape, Australian, and
+Antarctic. (87) This project. (89) Cynodon.
+
+
+Andropogon <L.>
+
+      (1) Including Anatherum P. Beauv., Arthrostachys Desv., Arthrolophis
+(Trin.) Chiov., Dimeiostemon Raf., Eriopodium Hochst., Heterochloa Desv.,
+Homoeatherum Nees, Leptopogon Roberty. (2) Culms 8-250(-430) cm high. (3)
+Culms herbaceous. (4) Annual, or perennial. (5) Culms branched above, or
+unbranched above. (6) Leaf blades pseudopetiolate, or not pseudopetiolate. (8)
+Leaf blades linear. (10) Ligule present. (11) Ligule an unfringed membrane to
+a fringed membrane. (12) Plants bisexual, with bisexual spikelets. (13)
+Inflorescence of spicate main branches, or paniculate <usually with paired or
+digitate ‘racemes’, these often spatheate and aggregated into false panicles>.
+(15) Inflorescence a complex of ‘partial inflorescences’ and intervening
+foliar organs <often>, or not comprising ‘partial inflorescences’ and foliar
+organs. (16) Spikelet-bearing axes disarticulating. (17) Spikelet-bearing axes
+disarticulating at the joints. (18) Spikelets paired. (20) Spikelets
+consistently in ‘long-and-short’ combinations. (21) Spikelets in
+pedicellate/sessile combinations. (22) Pedicels of the ‘pedicellate’ spikelets
+free of the rachis. (23) The ‘shorter’ spikelets hermaphrodite. (24) The
+‘longer’ spikelets male-only, or sterile <sometimes reduced to their
+pedicels>. (25) The pedicelled spikelets male or barren, usually awnless,
+occasionally suppressed. (27) Spikelets compressed laterally, or not
+noticeably compressed, or compressed dorsiventrally. (28) Spikelets falling
+with the glumes. (30) Rachilla terminated by a female-fertile floret. (31)
+Hairy callus present. (32) Glumes present. (33) Glumes two. (34) Glumes more
+or less equal. (35) Glumes long relative to the adjacent lemmas. (36) Glumes
+awned, or awnless <G2 sometimes aristate>. (38) Upper glume 1-3 nerved. (39)
+Spikelets with incomplete florets. (40) The incomplete florets proximal to the
+female-fertile florets. (41) The proximal incomplete florets 1. (42) The
+proximal incomplete florets sterile. (43) The proximal lemmas awnless. (44)
+Female-fertile florets 1. (45) Lemmas incised <usually bifid>. (47) Lemmas
+awned. (48) Awns 1. (49) Awns from a sinus. (50) Awns geniculate. (51) Awns
+about as long as the body of the lemma to much longer than the body of the
+lemma. (52) Lemmas non-carinate. (54) Lemmas 1-3 nerved. (55) Palea present.
+(56) Palea very reduced <hyaline>. (57) Lodicules present <tiny>. (58)
+Lodicules fleshy. (59) Lodicules ciliate, or glabrous. (60) Stamens 1-3. (61)
+Ovary glabrous. (62) Stigmas 2. (64) Fruit small. (65) Fruit smooth. (66)
+Hilum short. (67) Pericarp fused. (68) C4. (69) Biochemical type NADP–ME <3
+species>. (70) XyMS–. (71) Mesophyll without arm cells. (72) Mesophyll without
+fusoids. (73) Midrib conspicuous. (74) Midrib having a conventional arc of
+bundles. (75) Midrib with colourless tissue adaxially. (76) Many of the
+smallest vascular bundles unaccompanied by sclerenchyma, or all the vascular
+bundles accompanied by sclerenchyma. (77) Fruiting inflorescence not as in
+maize. (78) Panicoideae. (79) Andropogonodae. (84) Andropogoneae. (85) <About>
+100 species. (86) Holarctic, Paleotropical, Neotropical, and Cape. (87)
+Metcalfe 1960; this project. (89) Andropog.
+
+
+Agrostis <L.>
+
+      (1) Including Agraulus P. Beauv., Agrestis Bub., Anomalotis Steud.,
+Bromidium Nees, Candollea Steud., Chaetotropis Kunth, Decandolea Batard,
+Didymochaeta Steud., Lachnagrostis Trin., Neoschischkinia Tsvelev, Notonema
+Raf., Pentatherum Nabelek, Podagrostis (Griseb.) Scribn., Senisetum Koidz.,
+Trichodium Michaux, Vilfa Adans. (2) Culms <mostly> (3-)5-100 cm high. (3)
+Culms herbaceous. (4) Annual, or perennial. (5) Culms unbranched above. (6)
+Leaf blades not pseudopetiolate. (7) Culm nodes glabrous. (8) Leaf blades
+linear. (9) Leaf blades 0.2-10 mm wide. (10) Ligule present. (11) Ligule an
+unfringed membrane. (12) Plants bisexual, with bisexual spikelets. (13)
+Inflorescence paniculate. (14) Inflorescence open, or contracted <e.g.,
+Bromidium>. (15) Inflorescence not comprising ‘partial inflorescences’ and
+foliar organs. (16) Spikelet-bearing axes persistent. (19) Spikelets not
+secund. (20) Spikelets not in distinct ‘long-and-short’ combinations. (26)
+Spikelets 0.8-4 mm long. (27) Spikelets compressed laterally. (28) Spikelets
+disarticulating above the glumes. (30) Rachilla prolonged beyond the uppermost
+female-fertile floret, or terminated by a female-fertile floret. (31) Hairy
+callus present <the hairs less than 0.5 mm long>, or absent. (32) Glumes
+present. (33) Glumes two. (34) Glumes more or less equal. (35) Glumes long
+relative to the adjacent lemmas. (36) Glumes awnless. (37) Glumes carinate, or
+non-carinate. (38) Upper glume 1 nerved. (39) Spikelets with female-fertile
+florets only. (44) Female-fertile florets 1. (45) Lemmas entire to incised
+<usually truncate or emarginate, sometimes toothed via excurrent veins>. (47)
+Lemmas awnless, or mucronate, or awned. (48) Awns <when present,> 1, or 3
+<Bromidium>, or 5 <rarely>. (49) Awns dorsal. (50) Awns geniculate. (51) Awns
+much shorter than the body of the lemma to about as long as the body of the
+lemma, or much longer than the body of the lemma <<2%> rarely>. (52) Lemmas
+non-carinate. (53) Lemmas without a germination flap. (54) Lemmas 3-5 nerved.
+(55) Palea <nearly always> present. (56) Palea relatively long, or conspicuous
+but relatively short, or very reduced. (57) Lodicules present. (58) Lodicules
+membranous. (59) Lodicules glabrous. (60) Stamens 3. (61) Ovary glabrous. (62)
+Stigmas 2. (63) Stigmas white. (64) Fruit small. (65) Fruit smooth. (66) Hilum
+short. (67) Pericarp fused. (68) C3. (70) XyMS+. (71) Mesophyll without arm
+cells. (72) Mesophyll without fusoids. (73) Midrib conspicuous, or not readily
+distinguishable. (74) Midrib with one bundle only. (75) Midrib without
+colourless tissue adaxially. (76) Many of the smallest vascular bundles
+unaccompanied by sclerenchyma, or all the vascular bundles accompanied by
+sclerenchyma. (77) Fruiting inflorescence not as in maize. (78) Pooideae. (79)
+Poodae. (80) Aveneae. (85) <About> 220 species. (86) Holarctic, Paleotropical,
+Neotropical, Cape, Australian, and Antarctic. (87) Metcalfe 1960; this
+project. (89) Agrostis.
+
+
+Eleusine <Gaertn.>
+
+      (2) Culms 10-150 cm high. (3) Culms herbaceous. (4) Annual, or perennial
+<the culms flattened>. (6) Leaf blades not pseudopetiolate. (7) Culm nodes
+glabrous. (8) Leaf blades linear. (10) Ligule present. (11) Ligule a fringed
+membrane. (12) Plants bisexual, with bisexual spikelets. (13) Inflorescence of
+spicate main branches. (14) Inflorescence open, or contracted <sometimes
+forming a capitulum>. (15) Inflorescence not comprising ‘partial
+inflorescences’ and foliar organs. (16) Spikelet-bearing axes persistent. (19)
+Spikelets secund. (26) Spikelets 3.5-11 mm long. (27) Spikelets compressed
+laterally. (28) Spikelets disarticulating above the glumes, or not
+disarticulating <E. coracana>. (29) Spikelets disarticulating between the
+florets <except in E. coracana>. (30) Rachilla prolonged beyond the uppermost
+female-fertile floret. (31) Hairy callus absent. (32) Glumes present. (33)
+Glumes two. (34) Glumes very unequal. (35) Glumes shorter than the adjacent
+lemmas. (36) Glumes awnless. (37) Glumes carinate. (38) Upper glume 3-5(-7)
+nerved. (39) Spikelets with female-fertile florets only, or with incomplete
+florets. (40) The incomplete florets distal to the female-fertile florets.
+(44) Female-fertile florets 3-15. (45) Lemmas entire. (46) Lemmas pointed, or
+blunt. (47) Lemmas awnless to mucronate. (52) Lemmas carinate. (54) Lemmas 3
+nerved. (55) Palea present. (57) Lodicules present. (58) Lodicules fleshy, or
+membranous. (59) Lodicules glabrous. (60) Stamens 3. (61) Ovary glabrous. (62)
+Stigmas 2. (63) Stigmas white, or brown. (64) Fruit small <0.9-2 mm long>.
+(65) Fruit sculptured. (66) Hilum short. (67) Pericarp free. (68) C4. (69)
+Biochemical type NAD–ME <2 species>. (70) XyMS+. (71) Mesophyll without arm
+cells. (72) Mesophyll without fusoids. (73) Midrib conspicuous. (74) Midrib
+with one bundle only. (75) Midrib without colourless tissue adaxially. (76)
+All the vascular bundles accompanied by sclerenchyma. (77) Fruiting
+inflorescence not as in maize. (78) Chloridoideae. (83) Main chloridoid
+assemblage. (85) 9 species. (86) Holarctic, Paleotropical, Neotropical, Cape,
+and Antarctic. (87) Metcalfe 1960; this project. (89) Eleusine.
+
+
+Festuca <L.>
+
+      (1) Including Amphigenes Janka, Anatherum Nabelek, Argillochloa Weber,
+Bucetum Parnell, Drymochloa Holub, Drymonaetes Fourr., Festucaria Fabric.,
+Gnomonia Lunell, Gramen Krause, Hellerochloa Rauschert, Leiopoa Ohwi,
+Lojaconoa Gand., Nabelekia Roshev., Wasatchia M. E. Jones. (2) Culms 2-200 cm
+high. (3) Culms herbaceous. (4) Perennial. (5) Culms unbranched above. (6)
+Leaf blades not pseudopetiolate. (7) Culm nodes glabrous. (8) Leaf blades
+linear to linear-lanceolate. (9) Leaf blades 0.2-15 mm wide. (10) Ligule
+present. (11) Ligule an unfringed membrane <sometimes ciliolate>. (12) Plants
+bisexual, with bisexual spikelets <Leucopoa being excluded>. (13)
+Inflorescence paniculate. (14) Inflorescence open <usually>, or contracted
+<<15%> rarely>. (15) Inflorescence not comprising ‘partial inflorescences’ and
+foliar organs. (16) Spikelet-bearing axes persistent. (19) Spikelets not
+secund. (20) Spikelets not in distinct ‘long-and-short’ combinations. (26)
+Spikelets 3-20 mm long. (27) Spikelets compressed laterally. (28) Spikelets
+disarticulating above the glumes. (29) Spikelets disarticulating between the
+florets. (30) Rachilla prolonged beyond the uppermost female-fertile floret.
+(31) Hairy callus absent. (32) Glumes present. (33) Glumes two. (34) Glumes
+very unequal. (35) Glumes shorter than the adjacent lemmas. (36) Glumes
+awnless. (37) Glumes carinate to non-carinate. (38) Upper glume (1-)3-5
+nerved. (39) Spikelets with incomplete florets. (40) The incomplete florets
+distal to the female-fertile florets. (44) Female-fertile florets 2-14 <rarely
+1>. (45) Lemmas entire, or incised. (46) Lemmas <when entire> pointed, or
+blunt. (47) Lemmas awnless, or mucronate, or awned. (48) Awns <when present,>
+1. (49) Awns from a sinus, or apical. (50) Awns non-geniculate. (51) Awns much
+shorter than the body of the lemma <usually>, or about as long as the body of
+the lemma <sometimes, rarely somewhat longer>. (52) Lemmas non-carinate. (54)
+Lemmas 3-7 nerved. (55) Palea present. (56) Palea relatively long. (57)
+Lodicules present. (58) Lodicules membranous. (59) Lodicules ciliate, or
+glabrous. (60) Stamens 3. (61) Ovary glabrous, or hairy. (62) Stigmas 2. (63)
+Stigmas white. (64) Fruit small, or medium sized, or large. (65) Fruit smooth.
+(66) Hilum long-linear <usually about as long as the grain, but sometimes
+elliptical and only half as long>. (67) Pericarp fused. (68) C3. (70) XyMS+.
+(71) Mesophyll without arm cells. (72) Mesophyll without fusoids. (73) Midrib
+conspicuous, or not readily distinguishable. (74) Midrib with one bundle only.
+(75) Midrib without colourless tissue adaxially. (76) Many of the smallest
+vascular bundles unaccompanied by sclerenchyma, or all the vascular bundles
+accompanied by sclerenchyma. (77) Fruiting inflorescence not as in maize. (78)
+Pooideae. (79) Poodae. (80) Poeae. (85) 360 species <or more>. (86) Holarctic,
+Paleotropical, Neotropical, Cape, Australian, and Antarctic. (87) Metcalfe
+1960; this project; Aiken et al. 1985. (89) Festuca.
+
+
+Oryza <L.>
+
+      (1) Including Padia Moritzi. (2) Culms 30-300 cm high. (3) Culms
+herbaceous. (4) Annual, or perennial. (6) Leaf blades pseudopetiolate, or not
+pseudopetiolate. (7) Culm nodes glabrous. (8) Leaf blades linear to
+linear-lanceolate. (10) Ligule present. (11) Ligule an unfringed membrane.
+(12) Plants bisexual, with bisexual spikelets. (13) Inflorescence paniculate
+<axes usually wavy, the spikelets appressed>, or of spicate main branches <the
+primary branches often reduced to racemes>. (14) Inflorescence open. (15)
+Inflorescence not comprising ‘partial inflorescences’ and foliar organs. (16)
+Spikelet-bearing axes persistent. (19) Spikelets not secund. (20) Spikelets
+not in distinct ‘long-and-short’ combinations. (26) Spikelets 4-12 mm long.
+(27) Spikelets <strongly> compressed laterally. (28) Spikelets disarticulating
+above the glumes <i.e. above the pedicel cup representing them>, or not
+applicable. (30) Rachilla terminated by a female-fertile floret. (31) Hairy
+callus absent. (32) Glumes present to absent <represented only by a small
+2-lobed cupule>. (33) Glumes <if present,> two. (34) Glumes more or less
+equal. (35) Glumes shorter than the adjacent lemmas. (36) Glumes awnless. (38)
+Upper glume 0 nerved. (39) Spikelets with incomplete florets. (40) The
+incomplete florets proximal to the female-fertile florets. (41) The proximal
+incomplete florets 2 <small, vestigial, no more than half the spikelet length,
+sometimes only bristles>. (42) The proximal incomplete florets sterile. (43)
+The proximal lemmas awnless. (44) Female-fertile florets 1. (45) Lemmas
+entire. (46) Lemmas pointed. (47) Lemmas awnless, or mucronate, or awned. (48)
+Awns <when present,> 1. (49) Awns apical. (50) Awns non-geniculate. (51) Awns
+much shorter than the body of the lemma to much longer than the body of the
+lemma. (52) Lemmas <strongly> carinate. (54) Lemmas 3-9 nerved. (55) Palea
+present. (56) Palea relatively long <but narrower than the lemma>. (57)
+Lodicules present. (58) Lodicules membranous <but the membranous flange may be
+narrow>. (59) Lodicules glabrous. (60) Stamens 6. (61) Ovary glabrous. (62)
+Stigmas 2. (64) Fruit small, or medium sized, or large. (65) Fruit smooth.
+(66) Hilum long-linear. (67) Pericarp fused. (68) C3. (70) XyMS+. (71)
+Mesophyll with arm cells. (72) Mesophyll without fusoids. (73) Midrib
+conspicuous. (74) Midrib having complex vascularization. (75) Midrib without
+colourless tissue adaxially. (76) All the vascular bundles accompanied by
+sclerenchyma. (77) Fruiting inflorescence not as in maize. (78) Bambusoideae.
+(79) Oryzodae. (81) Oryzeae. (85) 25 species. (86) Holarctic, Paleotropical,
+and Neotropical. (87) Metcalfe 1960; this project. (89) Oryza.
+
+
+Panicum <L.>
+
+      (1) Including Chasea Nieuw., Coleataenia Griseb., Dileucaden (Raf.)
+Steud., Eatonia Raf., Eriolytrum Kunth, Milium Adans., Monachne P. Beauv.,
+Phanopyrum (Raf.) Nash, Polyneura Peter, Psilochloa Launert, Setiacis S.L.
+Chen and Y.X. Jin (? – original description inadequate). (2) Culms 20-400 cm
+high. (3) Culms woody and persistent, or herbaceous. (4) Annual, or perennial
+<but no overwintering rosette – by contrast with Dichanthelium>. (5) Culms
+branched above, or unbranched above. (6) Leaf blades pseudopetiolate <<2%>
+rarely>, or not pseudopetiolate. (7) Culm nodes hairy, or glabrous. (10)
+Ligule present. (11) Ligule an unfringed membrane, or a fringed membrane to a
+fringe of hairs. (12) Plants bisexual, with bisexual spikelets. (13)
+Inflorescence paniculate <except in the Stolonifera group, where it consists
+of racemes and the distinction from Brachiaria breaks down>. (14)
+Inflorescence open, or contracted. (15) Inflorescence not comprising ‘partial
+inflorescences’ and foliar organs. (16) Spikelet-bearing axes persistent. (19)
+Spikelets not secund <except the American Agrostoidea group, ‘Psilochloa’,
+etc.>. (20) Spikelets not in distinct ‘long-and-short’ combinations. (26)
+Spikelets 1.4-6 mm long. (27) Spikelets compressed dorsiventrally <with very
+few exceptions: e.g. P. hemitomum>. (28) Spikelets falling with the glumes, or
+not disarticulating. (30) Rachilla terminated by a female-fertile floret <very
+rarely prolonged, e.g. occasionally in P. heliophilum: Zuloaga and Morone
+1991>. (31) Hairy callus absent. (32) Glumes present. (33) Glumes two. (34)
+Glumes <nearly always> very unequal. (35) Glumes <(the longer)> long relative
+to the adjacent lemmas. (36) Glumes <nearly always> awnless <the G2 truncate
+to pointed, very rarely shortly awn-tipped>. (38) Upper glume 3-9 nerved. (39)
+Spikelets <nearly always> with incomplete florets. (40) The incomplete florets
+proximal to the female-fertile florets. (41) The proximal incomplete florets 1
+<rarely 2>. (42) The proximal incomplete florets male, or sterile. (43) The
+proximal lemmas awnless. (44) Female-fertile florets 1. (45) Lemmas entire.
+(46) Lemmas pointed, or blunt. (47) Lemmas awnless <rarely minutely
+apiculate>. (52) Lemmas non-carinate. (53) Lemmas with a clear germination
+flap. (54) Lemmas 3-11 nerved. (55) Palea present. (56) Palea relatively long.
+(57) Lodicules present. (58) Lodicules fleshy. (59) Lodicules glabrous. (60)
+Stamens 3. (61) Ovary glabrous. (62) Stigmas 2. (63) Stigmas red pigmented.
+(64) Fruit small. (65) Fruit smooth. (66) Hilum short <linear in (e.g.) P.
+glutinosum, P. macranthum, P. pilgerianum = Psilochloa>. (67) Pericarp fused.
+(68) C4, or C3. (69) Biochemical type PCK <5 species>, or NAD–ME <14 species>,
+or NADP–ME <4 species>. (70) <When biochemically tested,> XyMS+ <C3, or C4
+NAD-ME or PCK>, or XyMS– <NADP-ME>. (71) Mesophyll without arm cells. (72)
+Mesophyll without fusoids. (73) Midrib conspicuous, or not readily
+distinguishable. (74) Midrib with one bundle only, or having a conventional
+arc of bundles. (75) Midrib with colourless tissue adaxially, or without
+colourless tissue adaxially. (76) Many of the smallest vascular bundles
+unaccompanied by sclerenchyma, or all the vascular bundles accompanied by
+sclerenchyma <rarely>. (77) Fruiting inflorescence not as in maize. (78)
+Panicoideae. (79) Panicodae. (84) Paniceae. (85) <About> 370 species. (86)
+Holarctic, Paleotropical, Neotropical, Australian, and Antarctic. (87) Mainly
+Metcalfe 1960 and this project. (89) Panicum.
+
+
+Phragmites <Adans.>
+
+      (1) Including Czernya Presl, Miphragtes Nieuwland, Oxyanthe Steud.,
+Trichoon Roth, Xenochloa Roem. & Schult. (2) Culms 60-400 cm high <–1000 cm>.
+(3) Culms woody and persistent to herbaceous <often somewhat persistent>. (4)
+Perennial. (5) Culms branched above <especially when main culm damaged>, or
+unbranched above. (6) Leaf blades not pseudopetiolate. (7) Culm nodes
+glabrous. (8) Leaf blades linear-lanceolate to lanceolate. (9) Leaf blades
+6-50 mm wide. (10) Ligule present. (11) Ligule a fringe of hairs. (12) Plants
+bisexual, with bisexual spikelets. (13) Inflorescence paniculate. (14)
+Inflorescence open <20-60 cm long, plumose, the fertile lemmas surrounded by
+long white silky hairs>. (15) Inflorescence not comprising ‘partial
+inflorescences’ and foliar organs. (16) Spikelet-bearing axes persistent. (19)
+Spikelets not secund. (20) Spikelets not in distinct ‘long-and-short’
+combinations. (26) Spikelets 9-16 mm long. (27) Spikelets compressed
+laterally. (28) Spikelets disarticulating above the glumes <at least above the
+L1>. (29) Spikelets disarticulating between the florets. (30) Rachilla
+prolonged beyond the uppermost female-fertile floret. (31) Hairy callus
+present <with long fine silky hairs>. (32) Glumes present. (33) Glumes two.
+(34) Glumes very unequal. (35) Glumes shorter than the adjacent lemmas. (36)
+Glumes awnless. (37) Glumes non-carinate <rounded on the back>. (38) Upper
+glume 3-5 nerved. (39) Spikelets with incomplete florets. (40) The incomplete
+florets both distal and proximal to the female-fertile florets. (41) The
+proximal incomplete florets 1. (42) The proximal incomplete florets male <the
+stamens often 2>, or sterile. (43) The proximal lemmas awnless. (44)
+Female-fertile florets (2-)3-10. (45) Lemmas entire. (46) Lemmas pointed
+<acute to acuminate or aristulate>. (47) Lemmas awnless, or awned
+<narrow-attenuate, muticous to aristulate>. (48) Awns <(if lemmas aristulate)>
+1. (49) Awns apical. (50) Awns non-geniculate. (51) Awns much shorter than the
+body of the lemma. (52) Lemmas non-carinate. (54) Lemmas 1-3 nerved. (55)
+Palea present. (56) Palea conspicuous but relatively short. (57) Lodicules
+present. (58) Lodicules fleshy. (59) Lodicules ciliate, or glabrous. (60)
+Stamens 3. (61) Ovary glabrous. (62) Stigmas 2. (63) Stigmas brown. (64) Fruit
+small. (65) Fruit smooth. (66) Hilum short. (67) Pericarp fused. (68) C3. (70)
+XyMS+. (71) Mesophyll with arm cells. (72) Mesophyll without fusoids. (73)
+Midrib conspicuous. (74) Midrib having a conventional arc of bundles. (75)
+Midrib without colourless tissue adaxially. (76) All the vascular bundles
+accompanied by sclerenchyma. (77) Fruiting inflorescence not as in maize. (78)
+Arundinoideae. (82) Arundineae. (85) 3 species. (86) Holarctic, Paleotropical,
+Neotropical, Australian, and Antarctic. (87) Metcalfe 1960; this project. (89)
+Phragmit.
+
+
+Poa <L.>
+
+      (1) Including Arctopoa (Griseb.) Probat., Neuropoa Clayton, Oreopoa
+Grand., Paneion Lunell, Parodiochloa C.E. Hubb., Poagrostis Raf. (2) Culms
+(1-)4-150 cm high. (3) Culms herbaceous. (4) Annual, or perennial. (5) Culms
+unbranched above. (6) Leaf blades not pseudopetiolate. (8) Leaf blades linear,
+or linear-lanceolate <often ending in a boat-shaped tip>. (9) Leaf blades
+0.2-12 mm wide <rarely wider>. (10) Ligule present. (11) Ligule an unfringed
+membrane, or a fringed membrane <<10%> rarely>. (12) Plants bisexual, with
+bisexual spikelets <<95%>>, or dioecious <or gynodioecious, in subgenus
+Andinae>. (13) Inflorescence paniculate. (14) Inflorescence open, or
+contracted. (15) Inflorescence not comprising ‘partial inflorescences’ and
+foliar organs. (16) Spikelet-bearing axes persistent. (19) Spikelets not
+secund. (20) Spikelets not in distinct ‘long-and-short’ combinations. (26)
+Spikelets 2-11 mm long. (27) Spikelets compressed laterally. (28) Spikelets
+disarticulating above the glumes. (29) Spikelets disarticulating between the
+florets. (30) Rachilla prolonged beyond the uppermost female-fertile floret.
+(31) Hairy callus present, or absent. (32) Glumes present. (33) Glumes two.
+(34) Glumes more or less equal, or very unequal to more or less equal <nearly
+always ‘subequal’, with the G1 somewhat shorter>. (35) Glumes shorter than the
+adjacent lemmas. (36) Glumes awnless. (37) Glumes carinate. (38) Upper glume
+(1-)3(-5) nerved. (39) Spikelets with female-fertile florets only, or with
+incomplete florets. (40) The incomplete florets distal to the female-fertile
+florets. (44) Female-fertile florets (1-)2-13(-15) <the one-floreted species
+very unusual, perhaps restricted to Malesia>. (45) Lemmas <nearly always>
+entire <very rarely tridenticulate>. (46) Lemmas pointed. (47) Lemmas awnless,
+or mucronate <2–3 mm terminal ‘awns’ in a very few species, e.g. in the
+southern South American P. flabellata>. (52) Lemmas carinate. (53) Lemmas
+without a germination flap. (54) Lemmas (3-)5 nerved, or 7-11 nerved <<2%>
+rarely, e.g. in the Australian Neuropoa>. (55) Palea present. (56) Palea
+relatively long, or conspicuous but relatively short. (57) Lodicules present.
+(58) Lodicules membranous. (59) Lodicules <nearly always> glabrous
+<occasionally ciliolate>. (60) Stamens 3. (61) Ovary glabrous. (62) Stigmas 2.
+(63) Stigmas white. (64) Fruit small. (65) Fruit smooth. (66) Hilum short.
+(67) Pericarp fused. (68) C3. (70) XyMS+. (71) Mesophyll without arm cells.
+(72) Mesophyll without fusoids. (73) Midrib conspicuous. (74) Midrib with one
+bundle only. (75) Midrib without colourless tissue adaxially. (76) Many of the
+smallest vascular bundles unaccompanied by sclerenchyma, or all the vascular
+bundles accompanied by sclerenchyma. (77) Fruiting inflorescence not as in
+maize. (78) Pooideae. (79) Poodae. (80) Poeae. (85) <About> 500 species. (86)
+Holarctic, Paleotropical, Neotropical, Australian, and Antarctic. (87) Mainly
+Metcalfe 1960; this project. (89) Poa.
+
+
+Zea <L.>
+
+      (1) Including Mays Miller, Mayzea Raf., Reana Brignoli, Thalysia Kuntze.
+= Zea mays subsp. mays. (2) Culms 200-450 cm high. (3) Culms herbaceous. (4)
+<Robust> annual. (6) Leaf blades not pseudopetiolate. (7) Culm nodes glabrous.
+(10) Ligule present. (11) Ligule a fringed membrane. (12) Plants monoecious
+with all the fertile spikelets unisexual. (13) Inflorescence <peculiar: the
+female axillary, comprising a stout, spicate spadix with spikelets in few to
+several longitudinal rows, terminating in a tuft of long pendulous styles
+(‘silks’); the male spikelets in terminal panicles of spiciform ‘tassels’>.
+(15) Inflorescence not comprising ‘partial inflorescences’ and foliar organs.
+(16) Spikelet-bearing axes persistent. (18) Spikelets paired. (19) Spikelets
+not secund. (20) Spikelets consistently in ‘long-and-short’ combinations
+<male>, or not in distinct ‘long-and-short’ combinations <female>. (25) Male
+spikelets in pairs, two-flowered, with many-nerved, membranous glumes. Lemmas
+and paleas hyaline, the florets with three stamens and two cuneate lodicules.
+(27) Spikelets not noticeably compressed to compressed dorsiventrally. (28)
+Spikelets not disarticulating. (30) Rachilla terminated by a female-fertile
+floret. (31) Hairy callus absent. (32) Glumes present. (33) Glumes two. (34)
+Glumes more or less equal. (35) Glumes long relative to the adjacent lemmas.
+(36) Glumes awnless. (38) Upper glume 0 nerved. (39) Spikelets with incomplete
+florets. (40) The incomplete florets proximal to the female-fertile florets.
+(41) The proximal incomplete florets 1. (42) The proximal incomplete florets
+sterile. (43) The proximal lemmas awnless. (44) Female-fertile florets 1. (47)
+Lemmas awnless. (52) Lemmas non-carinate. (54) Lemmas 3 nerved. (55) Palea
+present. (56) Palea relatively long. (57) Lodicules absent. (60) Stamens 0.
+(61) Ovary glabrous. (62) Stigmas 2 <at tip of style>. (63) Stigmas white to
+red pigmented <or green>. (64) Fruit medium sized. (65) Fruit smooth. (66)
+Hilum short. (67) Pericarp fused. (68) C4. (69) Biochemical type NADP–ME. (70)
+XyMS–. (71) Mesophyll without arm cells. (72) Mesophyll without fusoids. (73)
+Midrib conspicuous. (74) Midrib having a conventional arc of bundles. (75)
+Midrib with colourless tissue adaxially. (76) Many of the smallest vascular
+bundles unaccompanied by sclerenchyma. (77) Fruiting inflorescence a massive,
+spatheate cob, the fruits in many rows. (78) Panicoideae. (79) Andropogonodae.
+(84) Maydeae. (85) 1 species. (86) Neotropical. (87) Metcalfe 1960; this
+project. (89) Zea.

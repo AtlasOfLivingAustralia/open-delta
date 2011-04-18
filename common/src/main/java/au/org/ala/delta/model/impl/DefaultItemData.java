@@ -39,11 +39,7 @@ public class DefaultItemData implements ItemData {
 		
 		Attribute attribute = _attributes.get(character);
 		if (attribute == null) {
-			
-			if (character instanceof MultiStateCharacter) {
-				attribute = new Attribute(character, new DefaultAttributeData());
-			}
-			
+			attribute = new Attribute(character, new DefaultAttributeData());
 		}
 		
 		return attribute; 

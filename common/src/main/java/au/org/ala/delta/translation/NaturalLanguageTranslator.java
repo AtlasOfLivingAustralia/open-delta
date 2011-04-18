@@ -290,7 +290,12 @@ public class NaturalLanguageTranslator extends AbstractDataSetTranslator impleme
 		AttributeParser parser = new AttributeParser();
 		AttributeTranslator translator = translatorFor(character);
 		
-		String formattedAttribute = translator.translate(parser.parse(attribute.getValue()));
+		String value = attribute.getValue();
+		if (attribute.isImplicit()) {
+			value = attribute.getImplicitValue();
+		}
+		
+		String formattedAttribute = translator.translate(parser.parse(value));
 		_printer.writeJustifiedText(formattedAttribute, -1, false);
 		_characterOutputSinceLastPuntuation = true;
 		

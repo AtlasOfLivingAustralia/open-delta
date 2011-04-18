@@ -484,7 +484,11 @@ public class DeltaContext extends AbstractDeltaContext {
 		return _emphasizedFeatures.contains(i);
 	}
 
-	public boolean insertImplicitValues() {
+	public boolean setInsertImplicitValues(boolean insertImplicitValues) {
+		return _insertImplicitValues = insertImplicitValues;
+	}
+	
+	public boolean getInsertImplicitValues() {
 		return _insertImplicitValues;
 	}
 

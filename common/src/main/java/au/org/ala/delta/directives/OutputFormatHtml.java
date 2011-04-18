@@ -7,6 +7,9 @@ import au.org.ala.delta.DeltaContext;
  */
 public class OutputFormatHtml extends AbstractDirective<DeltaContext>{
 
+	public OutputFormatHtml() {
+		super("output", "format", "html");
+	}
 	/**
 	 * Updates the context to indicate this directive has been processed.
 	 */
