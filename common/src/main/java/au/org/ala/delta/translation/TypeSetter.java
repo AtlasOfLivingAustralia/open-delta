@@ -1,7 +1,6 @@
 package au.org.ala.delta.translation;
 
 import java.io.PrintStream;
-import java.util.logging.Logger;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -13,20 +12,12 @@ import au.org.ala.delta.translation.Words.Word;
  */
 public class TypeSetter {
 
-	private Logger logger = Logger.getLogger(TypeSetter.class.getName());
-	private static final String BLANK = " ";
 	private int _printWidth = 80;
 	private PrintStream _output;
 	private int _currentIndent;
-	private int _currentLinePos;
-	private int _icmd;
 	private boolean _capitalise;
 	
-	/** TODO fix me this is OUTPUT FORMAT HTML */
-	private boolean _ihtml = false;
-	
 	private StringBuilder _outputBuffer;
-	private int _endWordIndex;
 	private boolean _indented;
 	
 	public TypeSetter(PrintStream output, int lineWidth) {
@@ -59,7 +50,6 @@ public class TypeSetter {
 				_outputBuffer.append(' ');
 			}
 		}
-		_endWordIndex = 0;
 		_indented = true;
 	}
 
@@ -199,7 +189,6 @@ public class TypeSetter {
 	
 	protected void newLine() {
 		_output.println();
-		_currentLinePos = 0;
 	}
 
 
@@ -229,8 +218,6 @@ public class TypeSetter {
 		
 	}
 	
-	private boolean iomcap = false;
-	
 	private int bufferIndex() {
 		return _outputBuffer.length()-1;
 	}
@@ -240,120 +227,6 @@ public class TypeSetter {
 	}
 	
 	
-	/** JSTOUT */
-	public void writeJustifiedOutput(String text, int completionAction, boolean inHtmlRtf) {
-		// If we are doing chinese output, do that.
-		boolean binary = _printWidth < 0;
-		int oldBufferPos = bufferIndex();
-		
-		if (_outputBuffer.length() > 0) {
-			if (text.startsWith(BLANK) && lastCharInBuffer() != ' ') {
-				_endWordIndex = bufferIndex();
-				if (willFitOnLine()) {
-					_outputBuffer.append(' ');
-					oldBufferPos = bufferIndex();
-				}
-			}
-		}
-		int lstr = 0;
-		int jin = 0;
-		while (jin < text.length() && text.charAt(jin) == ' ') {
-			jin++;
-		}
-		char inchar = ' ';
-		int idorepl = 1;
-		int nobreak = 0;
-		while (jin < text.length()) {
-			if (_endWordIndex < 0) {
-				indent();
-			}
-			if ((((inHtmlRtf == false) || (binary == false)) && (text.charAt(jin) == ' ')) == false)  {
-				if (_outputBuffer.length()-1 >= Math.abs(_printWidth)) {
-					//goto 200;
-				}
-				char c = text.charAt(jin);
-				if (c == '|' && iomcap) {
-					_capitalise = false;
-					continue;
-				}
-				boolean ignore = ignore(c);
-				
-				if ((_capitalise) && (c != '\\') && !inHtmlRtf) {
-					c = capitalize(c);
-				}
-				if ((c == ' ') && (lastCharInBuffer() == ' ')) {
-					continue;
-				}
-				
-				if (c == '@') {
-					// substitution belongs in the NaturalLanguageTranslator - the only keyword supported in this
-					// routine is @name which inserts the taxon name.  Ideally this class doesn't know anything
-					// about the data model.
-					throw new RuntimeException("Substitution not yet supported!");
-				}
-				else if (ignore == false && (c == '{')) {
-					lstr = -1;
-					// Skip {} in text - this looks like a work around for the dodgy RTF groups all through the
-					// descriptions in the sample data set.
-					jin = jin + 1;
-				}
-				else if (inHtmlRtf || (_ihtml == false) || (c < 32) || (lookupHtml(c) == null)) {
-					lstr = 0;
-				}
-				else {
-					lstr = 0;
-					if (c == '\\') {
-						_icmd = 0;
-					
-						// replace the RTF control word with an html equiv.
-						//rtf2Html(text, jin);
-					}
-					else {
-						// increment lstr by the size of the html replacement of c.
-					}
-				}
-				if (lstr < 0) {
-					// This is the case of an unrecognised RTF control word....
-					
-				}
-				else if (lstr == 0) {
-					_outputBuffer.append(c);
-					
-				}
-				else if (_outputBuffer.length()-1 + lstr < Math.abs(_printWidth)) {
-					if (c == '\\' || c == '@') {
-						
-					}
-					else {
-						// do html substitution.
-					}
-				}
-				if (_endWordIndex <= _currentIndent) {
-					_endWordIndex = _outputBuffer.length()-1;
-				}
-				inchar = c;
-				idorepl = 1;
-				nobreak = 0;
-			}
-			jin++;
-		}
-		_endWordIndex = _outputBuffer.length()-1;
-		if (!(_outputBuffer.length()-1 >= Math.abs(_printWidth))) {
-			_outputBuffer.append(' ');
-		}
-		//goto 400;
-		
-		nobreak = 0;
-		if (_endWordIndex <= _currentIndent) {
-			// no previous word break on line.
-			// set word break at next blank, or when output buffer is full.
-			if (jin > text.length()) {
-				//goto 500;
-			}
-			//if ()
-		}
-	}
-	
 	private char lastCharInBuffer() {
 		if (_outputBuffer.length() == 0) {
 			return 0;
@@ -361,48 +234,6 @@ public class TypeSetter {
 		return _outputBuffer.charAt(_outputBuffer.length()-1);
 	}
 	
-	
-	private boolean ignore(char ch) {
-		boolean ignore = false;
-		if (_icmd != 0) {
-			ignore = true;
-			if ((_icmd == 1) && (ch == '\\')) {
-				_icmd = 0;
-				ignore = false;
-			}
-			else if ((_icmd == 1) && (ch == '-')) {
-				_icmd = 0;
-			} 
-			else if (ch == '{') {
-				
-			}
-			else if ((ch == ' ') || (!Character.isDigit(ch) && !Character.isLetter(ch))) {
-				_icmd = 0;
-			}
-			else {
-				_icmd =2;
-			}
-		}
-		else if (ch == '\\') {
-			_icmd = 1;
-			ignore = true;
-		}
-		return ignore;
-	}
-	
-	private char capitalize(char ch) {
-		if (!ignore(ch)) {
-			_capitalise = false;
-			ch = Character.toUpperCase(ch);
-		}
-		return ch;
-	}
-	
-	/** This seems to be a lookup table for cp1252->html conversion.*/
-	private String lookupHtml(char c) {
-		return null;
-	}
-
 	public void captialiseNextWord() {
 		_capitalise = true;
 		

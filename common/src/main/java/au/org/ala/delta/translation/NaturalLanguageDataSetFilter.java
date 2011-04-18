@@ -36,7 +36,7 @@ public class NaturalLanguageDataSetFilter implements DataSetFilter {
 			return false;
 		}
 		Attribute attribute = item.getAttribute(character);
-System.out.println("Filter: "+attribute.getValue());
+
 		if (attribute.isUnknown()) { 
 			return false;
 		}
@@ -74,7 +74,6 @@ System.out.println("Filter: "+attribute.getValue());
 				// Don't output this attribute
 				return false;
 			}
-			System.out.println("attribute: "+item.getItemNumber()+", "+character.getCharacterId()+" not inherited");
 		} else if (omitRedundantVariantAttributes == true) {
 			
 			if (item.isInherited(character) && _context.isCharacterAdded(item.getItemNumber(), character.getCharacterId()) == false) {

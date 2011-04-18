@@ -70,8 +70,7 @@ class ItemsParser extends AbstractStreamParser {
 		item = createItem(itemIndex);
 		
 		String itemName = readToNextEndSlashSpace();
-		Logger.debug("Parsing Item %s", itemName);
-	
+		
 		item.setDescription(cleanWhiteSpace(itemName.trim()));
 		skipWhitespace();
 		while (_currentChar != '#' && _currentInt >= 0) {
@@ -106,7 +105,7 @@ class ItemsParser extends AbstractStreamParser {
 			item.addAttribute(ch, cleanWhiteSpace(value.toString().trim()));
 			
 			_context.getMatrix().setValue(charIdx, itemIndex, stateValue);
-			Logger.debug("  %d. %s", charIdx, stateValue);
+		
 			skipWhitespace();
 		}
 	}

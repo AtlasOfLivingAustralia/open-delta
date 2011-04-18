@@ -76,6 +76,7 @@ public class DeltaContext extends AbstractDeltaContext {
 	private Boolean _omitRedundantVariantAttributes = null;
 	private boolean _useAlternateComma;
 	private boolean _insertImplicitValues = false;
+	private boolean _outputHtml = false;
 
 	private Integer _characterForTaxonImages = null;
 
@@ -161,6 +162,10 @@ public class DeltaContext extends AbstractDeltaContext {
 	public void setPrintStream(PrintStream stream) {
 		_printStream = stream;
 	}
+	
+	public PrintStream getPrintStream() {
+		return _printStream;
+	}
 
 	public void setErrorStream(PrintStream stream) {
 		_errorStream = stream;
@@ -192,10 +197,6 @@ public class DeltaContext extends AbstractDeltaContext {
 
 	public List<String> getErrorMessages() {
 		return _errorMessages;
-	}
-
-	public void PrintMessage(String format, Object... args) {
-		OutputMessage(_printStream, format, args);
 	}
 
 	private void OutputMessage(PrintStream stream, String format, Object... args) {
@@ -490,5 +491,13 @@ public class DeltaContext extends AbstractDeltaContext {
 
 	public boolean omitCharacterNumbers() {
 		return _omitCharacterNumbers;
+	}
+
+	public void setOutputHtml(boolean b) {
+		_outputHtml = b;
+	}
+	
+	public boolean getOutputHtml() {
+		return _outputHtml;
 	}
 }

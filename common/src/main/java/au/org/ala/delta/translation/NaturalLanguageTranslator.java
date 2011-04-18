@@ -95,9 +95,6 @@ public class NaturalLanguageTranslator extends AbstractDataSetTranslator impleme
 		Item item = attribute.getItem();
 		au.org.ala.delta.model.Character character = attribute.getCharacter();
 		
-
-		System.out.println(item.getItemNumber() + ", "+character.getCharacterId()+" = "+attribute.getValue());
-		
 		String comma = Words.word(Word.COMMA);
 		if (_context.useAlternateComma()) {
 			comma = Words.word(Word.ALTERNATE_COMMA);
@@ -269,9 +266,6 @@ public class NaturalLanguageTranslator extends AbstractDataSetTranslator impleme
 			writeFeature(description, true,
 					item.getItemNumber(), characterNumber, _context.getItemSubheading(characterNumber),
 					false, false, new int[_context.getNumberOfCharacters()], subsequentPartOfLinkedSet);
-			if (character.getCharacterId() == 7) {
-				System.out.println("Breka");
-			}
 			writeCharacterAttribute(item, character);
 		}
 	}
