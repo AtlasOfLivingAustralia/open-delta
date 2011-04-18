@@ -36,7 +36,7 @@ public class RTFReaderTests extends TestCase {
 	public void testEmdash() throws IOException {
 		String rtf = "{\\rtf\\ansi\\deff0{\\fonttbl{\\f0\\froman Tms Rmn;}}\\pard\\plain \\fs20 \\emdash Emdash\\u8212?}";		
 		String actual = RTFUtils.stripFormatting(rtf);
-		String expected = "—Emdash—";
+		String expected = "\u2014Emdash\u2014";
 		assertEquals(expected, actual);
 	}
 	
@@ -60,7 +60,7 @@ public class RTFReaderTests extends TestCase {
 	public void testCodePageKeyword() {
 		String rtf = "{\\rtf\\ansi\\deff0{\\fonttbl{\\f0\\froman Tms Rmn;}}\\pard\\plain This is a special character: \\'c0.}";
 		String actual = RTFUtils.stripFormatting(rtf);
-		String expected = "This is a special character: À.";
+		String expected = "This is a special character: "+(char)0xc0+".";
 		assertEquals(expected, actual);
 	}
 	
