@@ -22,21 +22,22 @@ import org.apache.commons.lang.StringUtils;
 public class CharacterDependency {
 
 	private int _controllingCharacterId;
-	private int _dependentCharacterId;
+	private Set<Integer> _dependentCharacterIds;
 	private Set<Integer> _states = new HashSet<Integer>();
 
-	public CharacterDependency(int controllingCharacterId, Set<Integer> states, int dependentCharacterId) {
+	public CharacterDependency(int controllingCharacterId, Set<Integer> states, Set<Integer> dependentCharacterIds) {
 		_controllingCharacterId = controllingCharacterId;
-		_dependentCharacterId = dependentCharacterId;
-		_states = states;
+		_dependentCharacterIds = new HashSet<Integer>(dependentCharacterIds);
+		_states = new HashSet<Integer>(states);
 	}
 
 	public int getControllingCharacterId() {
 		return _controllingCharacterId;
 	}
 
-	public int getDependentCharacterId() {
-		return _dependentCharacterId;
+	public Set<Integer>  getDependentCharacterIds() {
+	    //return defensive copy
+		return new HashSet<Integer>(_dependentCharacterIds);
 	}
 
 	public void addStateValueId(int stateId) {
@@ -44,12 +45,13 @@ public class CharacterDependency {
 	}
 
 	public Set<Integer> getStates() {
-		return _states;
+	    //return defensive copy
+		return new HashSet<Integer>(_states);
 	}
 
 	@Override
 	public String toString() {
 		String states = StringUtils.join(_states, ", ");
-		return String.format("Char. %d controls char. %d for states [%s]", _controllingCharacterId, _dependentCharacterId, states);
+		return String.format("Char. %d controls chars. [%s] for states [%s]", _controllingCharacterId, _dependentCharacterIds, states);
 	}
 }

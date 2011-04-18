@@ -26,44 +26,51 @@ import au.org.ala.delta.util.IntegerFunctor;
 
 public class DependentCharacters extends AbstractCharacterListDirective<DeltaContext, String> {
 
-	public DependentCharacters() {
-		super("dependent", "characters");
-	}
+    public DependentCharacters() {
+        super("dependent", "characters");
+    }
 
-	@Override
-	protected String interpretRHS(DeltaContext context, String rhs) {
-		return rhs;
-	}
+    @Override
+    protected String interpretRHS(DeltaContext context, String rhs) {
+        return rhs;
+    }
 
-	@Override
-	protected void processCharacter(DeltaContext context, final int charIndex, String rhs) {
-		// Dependencies take the form <c>,<s>:<d>. rhs == <s>:<d>
-		// <s> = a set of state ids separated by "/"
-		// <d> is a set of character ids separated by : and can include ranges
-		// (n-n)
+    @Override
+    protected void processCharacter(DeltaContext context, final int charIndex, String rhs) {
+        // Dependencies take the form <c>,<s>:<d>. rhs == <s>:<d>
+        // <s> = a set of state ids separated by "/"
+        // <d> is a set of character ids separated by : and can include ranges
+        // (n-n)
 
-		final au.org.ala.delta.model.Character ch = context.getCharacter(charIndex);
-		final Set<Integer> states = new HashSet<Integer>();
-		String stateSet = rhs.substring(0, rhs.indexOf(":"));
-		String[] stateIds = stateSet.split("/");
-		for (String stateId : stateIds) {
-			states.add(Integer.parseInt(stateId));
-		}
+        final au.org.ala.delta.model.Character ch = context.getCharacter(charIndex);
+        final Set<Integer> states = new HashSet<Integer>();
+        String stateSet = rhs.substring(0, rhs.indexOf(":"));
+        String[] stateIds = stateSet.split("/");
+        for (String stateId : stateIds) {
+            states.add(Integer.parseInt(stateId));
+        }
 
-		String charSet = rhs.substring(rhs.indexOf(":") + 1);
-		String[] charBits = charSet.split(":");
-		for (String charBit : charBits) {
-			IntRange r = parseRange(charBit);
-			forEach(r, context, new IntegerFunctor<DeltaContext>() {
-				@Override
-				public void invoke(DeltaContext context, int arg) {
-					CharacterDependency d = new CharacterDependency(charIndex, states, arg);
-					Logger.debug("Character dependency: %s", d);
-					ch.addDependentCharacter(d);
-				}
-			});
-		}
+        String charSet = rhs.substring(rhs.indexOf(":") + 1);
+        String[] charBits = charSet.split(":");
+        for (String charBit : charBits) {
+            IntRange r = parseRange(charBit);
 
-	}
+            Set<Integer> dependentCharacterIds = new HashSet<Integer>();
+            for (int dependentChar : r.toArray()) {
+                dependentCharacterIds.add(dependentChar);
+            }
+
+            CharacterDependency d = new CharacterDependency(charIndex, states, dependentCharacterIds);
+            /*
+             * forEach(r, context, new IntegerFunctor<DeltaContext>() {
+             * 
+             * @Override public void invoke(DeltaContext context, int arg) {
+             * CharacterDependency d = new CharacterDependency(charIndex,
+             * states, arg); Logger.debug("Character dependency: %s", d);
+             * ch.addDependentCharacter(d); } });
+             */
+        }
+
+    }
 
 }

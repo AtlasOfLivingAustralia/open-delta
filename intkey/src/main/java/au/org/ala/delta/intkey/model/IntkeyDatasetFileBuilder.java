@@ -3,7 +3,11 @@ package au.org.ala.delta.intkey.model;
 import java.io.File;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
+import org.apache.commons.lang.math.IntRange;
 
 import au.org.ala.delta.intkey.model.ported.Constants;
 import au.org.ala.delta.io.BinFile;
@@ -524,6 +528,8 @@ public class IntkeyDatasetFileBuilder {
                     List<Integer> stateDepRecordIndicies = dependencyData.subList(stateDepIndiciesStart, stateDepIndiciesEnd);
 
                     for (int j = 0; j < numStates; j++) {
+                        Integer stateId = j + 1;
+                        
                         int stateDepRecordIndex = stateDepRecordIndicies.get(j);
 
                         if (stateDepRecordIndex > 0) {
@@ -537,13 +543,25 @@ public class IntkeyDatasetFileBuilder {
                             // range.
                             List<Integer> rangeNumbers = dependencyData.subList(stateDepRecordIndex, stateDepRecordIndex + (numDependentCharRanges * 2));
 
+                            Set<Integer> dependentChars = new HashSet<Integer>();
+                            
                             for (int k = 0; k < numDependentCharRanges; k = k + 2) {
                                 int lowerBound = rangeNumbers.get(k);
                                 int upperBound = rangeNumbers.get(k + 1);
                                 
-                                //CharacterDependency charDep = new CharacterDependency(controllingCharacterId, states, dependentCharacterId)
-                                //System.out.println(String.format("Character: %d State: %d Range lower bound: %d, Range upper bound: %d", i, j, lowerBound, upperBound));
+                                IntRange r = new IntRange(lowerBound, upperBound);
+                                
+                                for (int dependentChar: r.toArray()) {
+                                    dependentChars.add(dependentChar);
+                                }
+                                
+                                //System.out.println(String.format("Character: %s State: %d Range lower bound: %d, Range upper bound: %d", c.getDescription(), stateId, lowerBound, upperBound));
                             }
+                            
+                            Set<Integer> stateSet = new HashSet<Integer>();
+                            stateSet.add(stateId);
+                            CharacterDependency charDep = new CharacterDependency(c.getCharacterId(), stateSet, dependentChars);
+                            c.addDependentCharacter(charDep);
                         }
                     }
                 }
