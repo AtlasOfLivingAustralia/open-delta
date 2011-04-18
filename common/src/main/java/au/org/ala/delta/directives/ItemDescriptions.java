@@ -70,7 +70,8 @@ class ItemsParser extends AbstractStreamParser {
 		item = createItem(itemIndex);
 		
 		String itemName = readToNextEndSlashSpace();
-		
+		Logger.debug("Parsing Item %s", itemName);
+	
 		item.setDescription(cleanWhiteSpace(itemName.trim()));
 		skipWhitespace();
 		while (_currentChar != '#' && _currentInt >= 0) {

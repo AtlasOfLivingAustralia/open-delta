@@ -21,6 +21,7 @@ import java.io.InputStreamReader;
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.directives.ConforDirectiveFileParser;
+import au.org.ala.delta.directives.ConforDirectiveParserObserver;
 import au.org.ala.delta.translation.AbstractDataSetTranslator;
 import au.org.ala.delta.translation.DataSetTranslatorFactory;
 
@@ -73,6 +74,7 @@ public class CONFOR {
 	public CONFOR(File input) throws Exception {
 		DeltaContext context = new DeltaContext();
 		ConforDirectiveFileParser p = ConforDirectiveFileParser.createInstance();
+		p.registerObserver(new ConforDirectiveParserObserver(context));
 		
 		p.parse(input, context);
 		

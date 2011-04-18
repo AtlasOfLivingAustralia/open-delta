@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 
 import au.org.ala.delta.directives.AbstractDeltaContext;
+import au.org.ala.delta.directives.DirectiveParserObserver;
 import au.org.ala.delta.directives.ParsingContext;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterType;
@@ -89,6 +90,8 @@ public class DeltaContext extends AbstractDeltaContext {
 	private StateValueMatrix _matrix;
 
 	private double[] _characterWeights;
+	
+	private DirectiveParserObserver _observer;
 	
 	public DeltaContext() {
 		this(new DefaultDataSetFactory().createDataSet(""));
@@ -500,4 +503,13 @@ public class DeltaContext extends AbstractDeltaContext {
 	public boolean getOutputHtml() {
 		return _outputHtml;
 	}
+	
+	public DirectiveParserObserver getDirectiveParserObserver() {
+		return _observer;
+	}
+	
+	public void setDirectiveParserObserver(DirectiveParserObserver observer) {
+		_observer = observer;
+	}
+	
 }

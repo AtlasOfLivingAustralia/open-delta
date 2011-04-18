@@ -8,6 +8,7 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
     
     public ConforDirectiveParserObserver(DeltaContext context) {
         _context = context;
+        _context.setDirectiveParserObserver(this);
     }
     
     @Override
