@@ -33,7 +33,10 @@ public class InputFile extends ConforDirective {
 		try {
 			if (file.exists()) {
 				ConforDirectiveFileParser parser = ConforDirectiveFileParser.createInstance();
-				parser.registerObserver(context.getDirectiveParserObserver());
+				DirectiveParserObserver observer = context.getDirectiveParserObserver();
+				if (observer != null) {
+					parser.registerObserver(observer);
+				}
 				parser.parse(file, context);				
 			} else {
 				throw new FileNotFoundException(data);
