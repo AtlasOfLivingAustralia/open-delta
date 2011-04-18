@@ -287,7 +287,7 @@ public class MatrixViewer extends JInternalFrame {
 
 				for (int j = 0; j < cols.length; ++j) {
 					int col = cols[j];
-					String value = (String) _model.getValueAt(row, col);
+					String value = ((MatrixCellViewModel) _model.getValueAt(row, col)).getText();
 					if (col > 0) {
 						b.append(CELL_SEPERATOR);
 					}
@@ -333,7 +333,7 @@ public class MatrixViewer extends JInternalFrame {
 				b.append(_fixedModel.getValueAt(row, 0));
 				// and for each data item (column)
 				for (int col = 0; col < _model.getColumnCount(); ++col) {
-					String value = (String) _model.getValueAt(row, col);
+					String value = ((MatrixCellViewModel) _model.getValueAt(row, col)).getText();
 					b.append(CELL_SEPERATOR).append(value);
 					incrementCellsCopied();
 				}
