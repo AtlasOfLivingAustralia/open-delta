@@ -52,7 +52,7 @@ public abstract class Character {
 		notifyObservers();
 	}
 	
-	public void addDependentCharacter(CharacterDependency dependency) {
+	public void addDependentCharacters(CharacterDependency dependency) {
 		_dependentCharacters.add(dependency);
 	}
 	
@@ -145,13 +145,13 @@ public abstract class Character {
 	public ControllingInfo checkApplicability(Item item) {
 		return _impl.checkApplicability(item);
 	}
-
+	
     public double getReliability() {
-        return _reliability;
+        return _impl.getReliability();
     }
 
     public void setReliability(double reliability) {
-        this._reliability = reliability;
+        _impl.setReliability(reliability);
     }
 	
 }

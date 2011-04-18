@@ -374,6 +374,38 @@ public class VOCharacterAdaptor implements CharacterData {
 		}
 	}
 
+    @Override
+    public double getReliability() {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void setReliability(double reliability) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public int getMaximumValue() {
+        // Always return 0, maximum value for a character
+        // is not stored in slot file
+        return 0;
+    }
+
+    @Override
+    public void setMaximumValue(int max) {
+        // Do nothing, maximum value for a character is not stored in slot file.
+    }
+
+    @Override
+    public int getMinimumValue() {
+        return 0;
+    }
+
+    @Override
+    public void setMinimumValue(int min) {
+        
+    }
+
 }
 
 class CircularDependencyException extends RuntimeException {

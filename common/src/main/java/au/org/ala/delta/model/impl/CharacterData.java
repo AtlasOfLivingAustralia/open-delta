@@ -44,4 +44,15 @@ public interface CharacterData {
 	
 	ControllingInfo checkApplicability(Item item);
 	
+    double getReliability();
+
+    void setReliability(double reliability);
+    
+    int getMaximumValue();
+
+    void setMaximumValue(int max);    
+
+    int getMinimumValue();
+
+    void setMinimumValue(int min);    
 }

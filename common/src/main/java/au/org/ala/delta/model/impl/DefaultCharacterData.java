@@ -17,6 +17,9 @@ public class DefaultCharacterData implements CharacterData {
 	private String[] _states = new String[0];
 	private int _codedImplicitStateId;
 	private int _uncodedImplicitStateId;
+	private double _reliability;
+	private int _maximumValue;
+	private int _minimumValue;
 
 	@Override
 	public String getDescription() {
@@ -125,5 +128,35 @@ public class DefaultCharacterData implements CharacterData {
 	public ControllingInfo checkApplicability(Item item) {
 		throw new NotImplementedException();
 	}
+
+    @Override
+    public double getReliability() {
+        return _reliability;
+    }
+
+    @Override
+    public void setReliability(double reliability) {
+        _reliability = reliability;
+    }
+
+    @Override
+    public int getMaximumValue() {
+        return _maximumValue;
+    }
+
+    @Override
+    public void setMaximumValue(int max) {
+        _maximumValue = max;
+    }
+
+    @Override
+    public int getMinimumValue() {
+        return _minimumValue;
+    }
+
+    @Override
+    public void setMinimumValue(int min) {
+        _minimumValue = min;
+    }
 	
 }

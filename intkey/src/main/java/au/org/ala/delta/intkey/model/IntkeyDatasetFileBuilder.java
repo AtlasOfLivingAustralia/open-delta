@@ -561,7 +561,7 @@ public class IntkeyDatasetFileBuilder {
                             Set<Integer> stateSet = new HashSet<Integer>();
                             stateSet.add(stateId);
                             CharacterDependency charDep = new CharacterDependency(c.getCharacterId(), stateSet, dependentChars);
-                            c.addDependentCharacter(charDep);
+                            c.addDependentCharacters(charDep);
                         }
                     }
                 }
