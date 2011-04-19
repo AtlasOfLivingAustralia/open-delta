@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>delta-intkey</groupId>
 	<artifactId>delta-intkey</artifactId>
-	<version>1.0-M2-SNAPSHOT</version>
+	<version>1.0-M2</version>
 	<name>intkey</name>
 	<repositories>
 		<repository>
