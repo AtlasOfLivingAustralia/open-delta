@@ -63,4 +63,20 @@ public abstract class DeltaSingleFrameApplication extends SingleFrameApplication
 		 }
 	}
 	
+	/**
+     * Overrides shutdown to prevent NullPointerExceptions being output in Ubuntu.
+     * (Frames are opened maximised by default so the bounds listener never gets the 
+     * normal frame bounds which causes a null pointer when trying to save those bounds).
+     */
+    @Override
+    protected void shutdown() {
+        try {
+        	super.shutdown();
+        }
+        catch (Exception e) {
+        	
+        }
+    }
+
+	
 }
