@@ -66,14 +66,14 @@ public class TypeSetterTest extends TestCase {
 	
 	public void testLineWrap() {
 		String input = "The quick brown fox jumps over the lazy dog....";
-		_typeSetter.writeJustifiedText(input, -1, false);
+		_typeSetter.writeJustifiedText(input, -1);
 		_typeSetter.printBufferLine(false);
 		
 		assertEquals(input+SystemUtils.LINE_SEPARATOR, output());
 		
 		_typeSetter.setIndent(4);
 		_typeSetter.indent();
-		_typeSetter.writeJustifiedText(input, -1, false);
+		_typeSetter.writeJustifiedText(input, -1);
 		_typeSetter.printBufferLine(false);
 		
 		assertEquals("    "+input+SystemUtils.LINE_SEPARATOR, output());
@@ -81,7 +81,7 @@ public class TypeSetterTest extends TestCase {
 		input = input+input;
 		_typeSetter.setIndent(4);
 		_typeSetter.indent();
-		_typeSetter.writeJustifiedText(input, -1, false);
+		_typeSetter.writeJustifiedText(input, -1);
 		_typeSetter.printBufferLine(false);
 		
 		String[] lines = output().split(SystemUtils.LINE_SEPARATOR);
@@ -92,7 +92,7 @@ public class TypeSetterTest extends TestCase {
 		input = "Thisisareallyreallyreallyreallyreallyreallyreallyreallylongstringreallyreallyreally";
 		_typeSetter.setIndent(4);
 		_typeSetter.indent();
-		_typeSetter.writeJustifiedText(input, -1, false);
+		_typeSetter.writeJustifiedText(input, -1);
 		_typeSetter.printBufferLine(false);
 		
 		lines = output().split(SystemUtils.LINE_SEPARATOR);
@@ -107,7 +107,7 @@ public class TypeSetterTest extends TestCase {
 		Arrays.fill(input, 'a');
 		input[_lineWidth - 1] = ' ';
 		
-		_typeSetter.writeJustifiedText(new String(input), -1, false);
+		_typeSetter.writeJustifiedText(new String(input), -1);
 		_typeSetter.printBufferLine(false);
 		
 		String[] lines = output().split(SystemUtils.LINE_SEPARATOR);
@@ -120,8 +120,8 @@ public class TypeSetterTest extends TestCase {
 		assertEquals(expectedLine2, lines[1]);
 		
 		// Now do it again as two separate writes
-		_typeSetter.writeJustifiedText(expectedLine1, -1, false);
-		_typeSetter.writeJustifiedText(expectedLine2, -1, false);
+		_typeSetter.writeJustifiedText(expectedLine1, -1);
+		_typeSetter.writeJustifiedText(expectedLine2, -1);
 		_typeSetter.printBufferLine(false);
 		
 		lines = output().split(SystemUtils.LINE_SEPARATOR);

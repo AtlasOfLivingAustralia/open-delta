@@ -85,6 +85,10 @@ public class Formatter {
 		return stripper.getValue();
 	}
 	
+	
+	/**
+	 * Removes DELTA style comments from a string.
+	 */
 	class CommentStripper extends CommentExtractor {
 
 		private StringBuilder _value = new StringBuilder();
@@ -97,8 +101,14 @@ public class Formatter {
 
 		@Override
 		public void value(String value) {
-			_value.append(value.trim());
-			_value.append(" ");
+			if (value == null) {
+				return;
+			}
+			value = value.trim();
+			if (StringUtils.isNotBlank(value)) {
+				_value.append(value.trim());
+				_value.append(" ");
+			}
 			
 		}
 		
@@ -107,6 +117,9 @@ public class Formatter {
 		}
 	}
 	
+	/**
+	 * Parses a string looking for comments.
+	 */
 	public static abstract class CommentExtractor extends AbstractStreamParser {
 
 		protected char _previousChar = 0;
@@ -117,31 +130,27 @@ public class Formatter {
 		@Override
 		public void parse() throws Exception {
 			readNext();
-			StringBuffer value = new StringBuffer();
 			
 			while (_currentInt >= 0) {
 				
 				if (matchesComment()) {
-					
-					checkValue(value.toString());
-					value = new StringBuffer();
-					comment(readComment());
-					
+					comment(readComment());		
 				}
-				if (_currentInt >= 0) {
-					value.append(_currentChar);
+				else {
+					value(readValue());
 				}
-				readNext();
-				
 			}
-			checkValue(value.toString());
 		}
 		
-		public void checkValue(String value) throws ParseException {
-			if (!StringUtils.isEmpty(value)) {
-				value(value);
+		public String readValue() throws Exception {
+			StringBuffer value = new StringBuffer();
+			while (_currentInt >= 0 && !matchesComment()) {
+				value.append(_currentChar);
+				readNext();
 			}
+			return value.toString();
 		}
+		
 		
 		protected boolean matchesComment() {
 			if (_currentChar == '<') {

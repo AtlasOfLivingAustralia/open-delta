@@ -1,0 +1,20 @@
+mark 28
+
+mark 13mark 51mark 25item 1 mark 26<comment 1>mark 15
+mark 16(1) Character text attribute 1,1. (2) Character integer numeric 1mark 13 whole units. (3) Character real numeric 2.5 real units. (4) Character unordered multistate state 1, or state 2. (5) Character ordered multistate state 3 to state 5. mark 27
+
+mark 13mark 51mark 25item 2 mark 26<comment 2>mark 15
+mark 16(1) Character text attribute 2,1. (2) Character integer numeric 1 whole units. (4) Character unordered multistate state 1. (5) Character ordered multistate state 4. mark 27
+
+mark 13mark 51(Variant) mark 25item 3mark 26mark 15
+mark 16(1) Character text attribute 3,1. (2) Character integer numeric 1 whole units. (4) Character unordered multistate state 1. (5) Character ordered multistate state 4. mark 27
+
+mark 13mark 51mark 25item 4mark 26mark 15
+mark 16(1) Character text attribute 4,1. mark 27
+
+mark 13mark 51mark 25item 5mark 26mark 15
+mark 16(1) Character text attribute 5,1. (2) Character integer numeric 4 whole units. (3) Character real numeric 1.01 real units. (4) Character unordered multistate state 2. (5) Character ordered multistate state 3 to state 4, or state 4 and state 5. mark 27
+
+mark 13mark 51mark 25item 6mark 26mark 15
+mark 16(1) Character text blah. (5) Character ordered multistate state 5. mark 27
+mark 29

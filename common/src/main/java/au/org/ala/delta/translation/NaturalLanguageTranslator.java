@@ -169,7 +169,7 @@ public class NaturalLanguageTranslator extends AbstractDataSetTranslator impleme
 	}
 	
 	private void writeSentence(String heading) {
-		_printer.writeJustifiedText(heading, -1, false);
+		_printer.writeJustifiedText(heading, -1);
 	}
 	
 
@@ -196,7 +196,7 @@ public class NaturalLanguageTranslator extends AbstractDataSetTranslator impleme
 		if (item.isVariant()) {
 			// next character is a capital
 			_printer.captialiseNextWord();
-			_printer.writeJustifiedText(Words.word(Word.VARIANT), 0, false);
+			_printer.writeJustifiedText(Words.word(Word.VARIANT), 0);
 		}
 
 		Attribute attribute = _dataSet.getAttribute(item.getItemNumber(),
@@ -206,7 +206,7 @@ public class NaturalLanguageTranslator extends AbstractDataSetTranslator impleme
 		// as I don't yet understand how item descriptions are broken into the
 		// subgroups.
 		String itemDescription = attribute.getValue();
-		_printer.writeJustifiedText(itemDescription, 0, false);
+		_printer.writeJustifiedText(itemDescription, 0);
 
 		
 		complete(completionAction, itemDescription);
@@ -233,7 +233,7 @@ public class NaturalLanguageTranslator extends AbstractDataSetTranslator impleme
 			_printer.captialiseNextWord();
 		}
 		
-		_printer.writeJustifiedText(description, -1, false);
+		_printer.writeJustifiedText(description, -1);
 		
 		
 		complete(completionAction, description);
@@ -241,7 +241,7 @@ public class NaturalLanguageTranslator extends AbstractDataSetTranslator impleme
 
 	private void complete(int completionAction, String description) {
 		if (completionAction > 0) {
-			_printer.writeJustifiedText("", completionAction, false);
+			_printer.writeJustifiedText("", completionAction);
 			if (StringUtils.isEmpty(description)) {
 				_printer.writeBlankLines(1, 0);
 			}
@@ -301,7 +301,7 @@ public class NaturalLanguageTranslator extends AbstractDataSetTranslator impleme
 		}
 		
 		String formattedAttribute = translator.translate(parser.parse(value));
-		_printer.writeJustifiedText(formattedAttribute, -1, false);
+		_printer.writeJustifiedText(formattedAttribute, -1);
 		_characterOutputSinceLastPuntuation = true;
 		
 	}
@@ -368,7 +368,7 @@ public class NaturalLanguageTranslator extends AbstractDataSetTranslator impleme
 			_printer.insertTypeSettingMarks(33);
 		}
 		if (!_context.omitCharacterNumbers()) {
-			_printer.writeJustifiedText("(" + characterNumber + ")", -1, false);
+			_printer.writeJustifiedText("(" + characterNumber + ")", -1);
 		}
 
 		int ioffset = 0;
@@ -415,8 +415,7 @@ public class NaturalLanguageTranslator extends AbstractDataSetTranslator impleme
 		// TODO This does a bunch of stuff including inserting typesetting marks
 		// in the middle
 		// of the sentence.
-		_printer.writeJustifiedText(sentence, completionAction,
-				commentAction == 4 || commentAction == 5);
+		_printer.writeJustifiedText(sentence, completionAction);
 
 	}
 

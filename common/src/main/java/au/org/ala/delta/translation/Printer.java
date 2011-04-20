@@ -20,12 +20,17 @@ public class Printer {
 	private StringBuilder _outputBuffer;
 	private boolean _indented;
 	
+	/**
+	 * Creates a new Printer that will print to the supplied PrintStream.
+	 * @param output the output stream to print to.
+	 * @param lineWidth the position at which line wrapping should occur.  a lineWidth of zero
+	 * means no line wrapping.
+	 */
 	public Printer(PrintStream output, int lineWidth) {
 		_output = output;
 		_outputBuffer = new StringBuilder();
 		_indented = false;
 		_printWidth = lineWidth;
-
 	}
 
 	public void insertTypeSettingMarks(int number) {
@@ -79,8 +84,13 @@ public class Printer {
 		}
 	}
 	
-	public void writeJustifiedText(String text, int completionAction, boolean inHtmlRtf) {
+	public void writeJustifiedText(String text, int completionAction) {
 		
+		writeJustifiedText(text, completionAction, true);
+		
+	}
+	
+	public void writeJustifiedText(String text, int completionAction, boolean addSpaceIfRequired) {
 		text = text.trim();
 		
 		if (_capitalise) {
@@ -92,7 +102,7 @@ public class Printer {
 		}
 		
 		// Insert a space if one is required.
-		if (_outputBuffer.length() > 0 && lastCharInBuffer() != ' ' && !isPunctuationMark(text)) {
+		if (_outputBuffer.length() > 0 && lastCharInBuffer() != ' ' && addSpaceIfRequired) {
 			_outputBuffer.append(' ');
 		}
 		
@@ -112,11 +122,6 @@ public class Printer {
 			_outputBuffer.append(trailingText.trim());
 		}
 		complete(completionAction);
-		
-	}
-	
-	private boolean isPunctuationMark(String text) {
-		return ".".equals(text) || ",".equals(text) || ";".equals(text);
 	}
 	
 	private void complete(int completionAction) {
@@ -214,7 +219,7 @@ public class Printer {
 			
 		}
 		
-		writeJustifiedText(text, completionAction, inHtmlRtf);
+		writeJustifiedText(text, completionAction);
 		
 	}
 	
@@ -223,6 +228,9 @@ public class Printer {
 	}
 	
 	private boolean willFitOnLine() {
+		if (_printWidth == 0) {
+			return true;
+		}
 		return bufferIndex() < Math.abs(_printWidth);
 	}
 	

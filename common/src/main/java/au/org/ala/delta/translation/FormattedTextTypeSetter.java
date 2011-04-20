@@ -25,6 +25,7 @@ public class FormattedTextTypeSetter extends PlainTextTypeSetter {
 
 	@Override
 	public void beforeItem(Item item) {
+		_printer.writeBlankLines(1, 0);
 		writeTypeSettingMark(MarkPosition.BEFORE_ITEM_OR_HEADING);
 
 	}
