@@ -1,5 +1,7 @@
 package au.org.ala.delta.model.impl;
 
+import java.util.List;
+
 import au.org.ala.delta.model.Item;
 
 public interface CharacterData {
@@ -44,9 +46,9 @@ public interface CharacterData {
 	
 	ControllingInfo checkApplicability(Item item);
 	
-    double getReliability();
+    float getReliability();
 
-    void setReliability(double reliability);
+    void setReliability(float reliability);
     
     int getMaximumValue();
 
@@ -54,5 +56,17 @@ public interface CharacterData {
 
     int getMinimumValue();
 
-    void setMinimumValue(int min);    
+    void setMinimumValue(int min);
+    
+    String getImageData();
+    
+    void setImageData(String imageData);
+    
+    String getItemSubheading();
+    
+    void setItemSubheading(String charItemSubheading);
+    
+    List<Float> getKeyStateBoundaries();
+    
+    void setKeyStateBoundaries(List<Float> keyStateBoundaries);
 }

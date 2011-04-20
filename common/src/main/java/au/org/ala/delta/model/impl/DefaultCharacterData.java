@@ -1,5 +1,8 @@
 package au.org.ala.delta.model.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang.NotImplementedException;
 
 import au.org.ala.delta.model.Item;
@@ -17,9 +20,12 @@ public class DefaultCharacterData implements CharacterData {
 	private String[] _states = new String[0];
 	private int _codedImplicitStateId;
 	private int _uncodedImplicitStateId;
-	private double _reliability;
+	private float _reliability;
 	private int _maximumValue;
 	private int _minimumValue;
+	private String _imageData;
+	private String _itemSubheading;
+	private List<Float> _keyStateBoundaries;
 
 	@Override
 	public String getDescription() {
@@ -130,12 +136,12 @@ public class DefaultCharacterData implements CharacterData {
 	}
 
     @Override
-    public double getReliability() {
+    public float getReliability() {
         return _reliability;
     }
 
     @Override
-    public void setReliability(double reliability) {
+    public void setReliability(float reliability) {
         _reliability = reliability;
     }
 
@@ -157,6 +163,36 @@ public class DefaultCharacterData implements CharacterData {
     @Override
     public void setMinimumValue(int min) {
         _minimumValue = min;
+    }
+
+    @Override
+    public String getImageData() {
+        return _imageData;
+    }
+
+    @Override
+    public void setImageData(String imageData) {
+        _imageData = imageData;
+    }
+
+    @Override
+    public String getItemSubheading() {
+        return _itemSubheading;
+    }
+
+    @Override
+    public void setItemSubheading(String charItemSubheading) {
+        _itemSubheading = charItemSubheading;
+    }
+
+    @Override
+    public List<Float> getKeyStateBoundaries() {
+        return new ArrayList<Float>(_keyStateBoundaries);
+    }
+
+    @Override
+    public void setKeyStateBoundaries(List<Float> keyStateBoundaries) {
+        _keyStateBoundaries = new ArrayList<Float>(keyStateBoundaries);
     }
 	
 }

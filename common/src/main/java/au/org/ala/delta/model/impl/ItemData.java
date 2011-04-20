@@ -7,17 +7,21 @@ import au.org.ala.delta.model.Character;
 
 public interface ItemData {
 	
-	public String getDescription();
+	String getDescription();
 	
-	public void setDescription(String description);
+	void setDescription(String description);
 	
-	public List<Attribute> getAttributes();
+	List<Attribute> getAttributes();
 	
-	public Attribute getAttribute(Character character);
+	Attribute getAttribute(Character character);
 
-	public void addAttribute(Character character, String value);
+	void addAttribute(Character character, String value);
 
-	public boolean isVariant();
+	boolean isVariant();
 	
-	public void setVariant(boolean variant);
+	void setVariant(boolean variant);
+	
+    String getImageData();
+    
+    void setImageData(String imageData);
 }

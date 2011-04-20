@@ -106,4 +106,14 @@ public class VOItemAdaptor implements ItemData {
 	public VOItemDesc getItemDesc() {
 		return _voItemDesc;
 	}
+
+    @Override
+    public String getImageData() {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void setImageData(String imageData) {
+        throw new NotImplementedException();
+    }
 }

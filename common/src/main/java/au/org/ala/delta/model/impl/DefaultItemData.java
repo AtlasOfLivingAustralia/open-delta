@@ -15,6 +15,7 @@ public class DefaultItemData implements ItemData {
 
 	private String _description;
 	private boolean _variant;
+	private String _imageData;
 	
 	private Map<Character, Attribute> _attributes = new HashMap<Character, Attribute>();
 	
@@ -62,6 +63,16 @@ public class DefaultItemData implements ItemData {
 	public void setVariant(boolean variant) {
 		_variant = variant;	
 	}
+
+    @Override
+    public String getImageData() {
+        return _imageData;
+    }
+
+    @Override
+    public void setImageData(String imageData) {
+        _imageData = imageData;
+    }
 	
 	
 	

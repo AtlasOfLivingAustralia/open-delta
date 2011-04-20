@@ -94,6 +94,14 @@ public class Item implements AttributeObserver {
 		notifyObservers();
 	}
 	
+    public String getImageData() {
+        return _impl.getImageData();
+    }
+
+    public void setImageData(String imageData) {
+        _impl.setImageData(imageData);
+    }
+	
 	@Override
 	public void attributeChanged(Attribute attribute) {
 		notifyObservers(attribute);

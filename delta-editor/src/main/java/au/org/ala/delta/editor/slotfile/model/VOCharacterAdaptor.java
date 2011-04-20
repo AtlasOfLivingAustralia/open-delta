@@ -375,12 +375,12 @@ public class VOCharacterAdaptor implements CharacterData {
 	}
 
     @Override
-    public double getReliability() {
+    public float getReliability() {
         throw new NotImplementedException();
     }
 
     @Override
-    public void setReliability(double reliability) {
+    public void setReliability(float reliability) {
         throw new NotImplementedException();
     }
 
@@ -398,12 +398,44 @@ public class VOCharacterAdaptor implements CharacterData {
 
     @Override
     public int getMinimumValue() {
+        // Always return 0, minimum value for a character
+        // is not stored in slot file
         return 0;
     }
 
     @Override
     public void setMinimumValue(int min) {
-        
+        // Do nothing, maximum value for a character is not stored in slot file.
+    }
+
+    @Override
+    public String getImageData() {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void setImageData(String imageData) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public String getItemSubheading() {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void setItemSubheading(String charItemSubheading) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public List<Float> getKeyStateBoundaries() {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void setKeyStateBoundaries(List<Float> keyStateBoundaries) {
+        throw new NotImplementedException();
     }
 
 }

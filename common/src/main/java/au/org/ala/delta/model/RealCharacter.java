@@ -14,10 +14,20 @@
  ******************************************************************************/
 package au.org.ala.delta.model;
 
+import java.util.List;
+
 public class RealCharacter extends NumericCharacter<Double> {
 	
 	public RealCharacter(int number) {
 		super(number, CharacterType.RealNumeric);
 	}
+	
+    public List<Float> getKeyStateBoundaries() {
+        return _impl.getKeyStateBoundaries();
+    }
+    
+    public void setKeyStateBoundaries(List<Float> keyStateBoundaries) {
+        _impl.setKeyStateBoundaries(keyStateBoundaries);
+    }
 
 }
