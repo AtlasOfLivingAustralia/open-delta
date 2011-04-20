@@ -24,23 +24,28 @@ import au.org.ala.delta.translation.attribute.NumericAttributeTranslator;
 import au.org.ala.delta.translation.attribute.ParsedAttribute.Values;
 import au.org.ala.delta.translation.attribute.TextAttributeTranslator;
 
+
+/**
+ * The NaturalLanguageTranslator is responsible for turning a DELTA data set into formatted
+ * natural language.
+ */
 public class NaturalLanguageTranslator extends AbstractDataSetTranslator implements DataSetTranslator {
 
 	
 	private DeltaContext _context;
 	private Printer _printer;
 	private DeltaDataSet _dataSet;
-	private PlainTextTypeSetter _typeSetter;
+	private TypeSetter _typeSetter;
 	private ItemFormatter _itemFormatter;
 	private CharacterFormatter _characterFormatter;
 	
 	
-	public NaturalLanguageTranslator(DeltaContext context, Printer printer) {
+	public NaturalLanguageTranslator(DeltaContext context, TypeSetter typeSetter, Printer printer) {
 		super(context, new NaturalLanguageDataSetFilter(context));
 		_context = context;
 		_printer = printer;
 		_dataSet = _context.getDataSet();
-		_typeSetter = new PlainTextTypeSetter(_printer);
+		_typeSetter = typeSetter;
 		_itemFormatter = new ItemFormatter(false, false, false, true, false);
 		_characterFormatter = new CharacterFormatter(false, true, false, true);
 	}
