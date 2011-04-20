@@ -2,6 +2,7 @@ package au.org.ala.delta.translation;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -126,7 +127,7 @@ public abstract class NaturalLangaugeTranslatorTest extends TestCase {
 		
 		// This is here because I keep getting bitten by end of line issues and the test failure
 		// comparison editor doesn't display them.
-		for (int i=0; i<expectedResults.length(); i++) {
+		for (int i=0; i<expectedResults.length() && i<actualResults.length(); i++) {
 			if (expectedResults.charAt(i) != actualResults.charAt(i)) {
 				System.out.println("First wrong character @ position "+i);
 				System.out.println("Expected: "+Integer.toHexString((int)expectedResults.charAt(i))+", found: "+Integer.toHexString((int)actualResults.charAt(i)));
@@ -149,7 +150,8 @@ public abstract class NaturalLangaugeTranslatorTest extends TestCase {
 		return FileUtils.readFileToString(file, "Cp1252");
 	}
 
-	private String actualResults() {
+	private String actualResults() throws IOException {
+		_bytes.flush();
 		return new String(_bytes.toByteArray(), Charset.forName("UTF-8"));
 	}
 

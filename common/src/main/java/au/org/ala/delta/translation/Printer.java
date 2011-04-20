@@ -85,13 +85,13 @@ public class Printer {
 	}
 	
 	public void writeJustifiedText(String text, int completionAction) {
-		
+		text = text.trim(); 
 		writeJustifiedText(text, completionAction, true);
-		
 	}
 	
+	private boolean _omitNextTrailingSpace = false;
+	
 	public void writeJustifiedText(String text, int completionAction, boolean addSpaceIfRequired) {
-		text = text.trim();
 		
 		if (_capitalise) {
 			text = capitaliseFirstWord(text);
@@ -102,8 +102,8 @@ public class Printer {
 		}
 		
 		// Insert a space if one is required.
-		if (_outputBuffer.length() > 0 && lastCharInBuffer() != ' ' && addSpaceIfRequired) {
-			_outputBuffer.append(' ');
+		if (addSpaceIfRequired) {
+			insertTrailingSpace();
 		}
 		
 		_outputBuffer.append(text);
@@ -122,6 +122,21 @@ public class Printer {
 			_outputBuffer.append(trailingText.trim());
 		}
 		complete(completionAction);
+	}
+	
+	public void writeTypeSettingMark(String mark) {
+		writeJustifiedText(mark, -1, false);
+		_omitNextTrailingSpace = true;
+	}
+	
+	private void insertTrailingSpace() {
+		if (_omitNextTrailingSpace) {
+			_omitNextTrailingSpace = false;
+			return;
+		}
+		if (_outputBuffer.length() > 0 && lastCharInBuffer() != ' ') {
+			_outputBuffer.append(' ');
+		}
 	}
 	
 	private void complete(int completionAction) {

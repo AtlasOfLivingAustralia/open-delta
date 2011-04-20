@@ -50,7 +50,7 @@ public class TypeSetNaturalLanguageTranslatorTest extends
 		initialiseContext(DEFAULT_DATASET_PATH);
 		
 		_dataSetTranslator.translate();
-		//checkResult("typeset.txt");
+		checkResult("typeset.txt");
 	}
 	
 	

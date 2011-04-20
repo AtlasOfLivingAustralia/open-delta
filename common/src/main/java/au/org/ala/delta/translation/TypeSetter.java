@@ -29,4 +29,10 @@ public interface TypeSetter {
 	public abstract void afterItemName();
 
 	public abstract void newParagraph();
+
+	public String typeSetItemDescription(String description);
+
+	public abstract void beforeNewParagraphCharacter();
+	
+	public String rangeSeparator();
 }

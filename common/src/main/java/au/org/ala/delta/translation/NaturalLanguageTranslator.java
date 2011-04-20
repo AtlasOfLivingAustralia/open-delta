@@ -46,7 +46,7 @@ public class NaturalLanguageTranslator extends AbstractDataSetTranslator impleme
 		_printer = printer;
 		_dataSet = _context.getDataSet();
 		_typeSetter = typeSetter;
-		_itemFormatter = new ItemFormatter(false, false, false, true, false);
+		_itemFormatter = new TypeSettingItemFormatter(_typeSetter);
 		_characterFormatter = new CharacterFormatter(false, true, false, true);
 	}
 	
@@ -131,28 +131,22 @@ public class NaturalLanguageTranslator extends AbstractDataSetTranslator impleme
 
 	@Override
 	public void afterAttribute(Attribute attribute) {
-		// TODO Auto-generated method stub
-
 	}
 
 	
 	@Override
 	public void afterLastItem() {
 		_typeSetter.afterLastItem();
-		
-
 	}
 	
 	
 	@Override
 	public void attributeComment(String comment) {
-		
 	}
 
 	
 	@Override
 	public void attributeValues(Values values) {
-		
 	}
 
 	protected void printItemHeading(Item item) {
@@ -235,7 +229,6 @@ public class NaturalLanguageTranslator extends AbstractDataSetTranslator impleme
 		
 		_printer.writeJustifiedText(description, -1);
 		
-		
 		complete(completionAction, description);
 	}
 
@@ -311,7 +304,7 @@ public class NaturalLanguageTranslator extends AbstractDataSetTranslator impleme
 			return new MultiStateAttributeTranslator((MultiStateCharacter)character);
 		}
 		if (character instanceof NumericCharacter<?>) {
-			return new NumericAttributeTranslator((NumericCharacter<?>)character);
+			return new NumericAttributeTranslator((NumericCharacter<?>)character, _typeSetter);
 		}
 		
 		return new TextAttributeTranslator();
@@ -357,6 +350,7 @@ public class NaturalLanguageTranslator extends AbstractDataSetTranslator impleme
 
 		if (_newParagraph == true) {
 			_typeSetter.newParagraph();
+			_typeSetter.beforeNewParagraphCharacter();
 			_newParagraph = false;
 			_textOutputSinceLastParagraph = false;
 		}

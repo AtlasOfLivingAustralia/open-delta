@@ -1,12 +1,18 @@
 package au.org.ala.delta.translation;
 
+import java.text.ParseException;
 import java.util.Map;
 
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.TypeSettingMark;
 import au.org.ala.delta.model.TypeSettingMark.MarkPosition;
+import au.org.ala.delta.model.format.Formatter.CommentExtractor;
 
+
+/**
+ * Inserts specified typesetting marks at various points in the translation process.
+ */
 public class FormattedTextTypeSetter extends PlainTextTypeSetter {
 
 	private Map<MarkPosition, TypeSettingMark> _typeSettingMarks;
@@ -32,30 +38,32 @@ public class FormattedTextTypeSetter extends PlainTextTypeSetter {
 
 	@Override
 	public void afterItem(Item item) {
-		// TODO Auto-generated method stub
+		// The prepended space here seems unnecessary but it makes it match the CONFOR 
+		// output which simplifies my testing.
+		writeTypeSettingMark(" "+_typeSettingMarks.get(MarkPosition.AFTER_ITEM).getMarkText());
 
 	}
 
 	@Override
-	public void beforeAttribute(Attribute attribute) {
-		// TODO Auto-generated method stub
-
-	}
+	public void beforeAttribute(Attribute attribute) {}
 
 	@Override
-	public void afterAttribute(Attribute attribute) {
-		// TODO Auto-generated method stub
-
-	}
+	public void afterAttribute(Attribute attribute) {}
 
 	@Override
 	public void afterLastItem() {
+		_printer.printBufferLine();
 		writeTypeSettingMark(MarkPosition.AFTER_LAST_ITEM_IN_FILE);
+		_printer.printBufferLine();
+	}
+	
+	private void writeTypeSettingMark(String mark) {
+		_printer.writeTypeSettingMark(mark);
 	}
 	
 	private void writeTypeSettingMark(MarkPosition mark) {
 		
-		_printer.writeJustifiedText(_typeSettingMarks.get(mark).getMarkText(), -1, false);
+		writeTypeSettingMark(_typeSettingMarks.get(mark).getMarkText());
 	}
 	
 	public void beforeItemHeading() {
@@ -84,5 +92,81 @@ public class FormattedTextTypeSetter extends PlainTextTypeSetter {
 		_printer.endLine();
 		_printer.insertTypeSettingMarks(16);
 	}
+	
+	@Override
+	public String typeSetItemDescription(String description) {
+		return typeSetCommentedValue(description, 
+				MarkPosition.BEFORE_NON_COMMENT_ITEM_NAME_SECTION, 
+				MarkPosition.AFTER_NON_COMMENT_ITEM_NAME_SECTION);
 
+	}
+	
+	@Override
+	public void beforeNewParagraphCharacter() {
+		writeTypeSettingMark(MarkPosition.BEFORE_NEW_PARAGRAPH_CHARACTER);
+	}
+	
+	@Override
+	public String rangeSeparator() {
+		return _typeSettingMarks.get(MarkPosition.RANGE_SYBOL).getMarkText();
+	}
+		
+	/**
+	 * Parses the supplied value, inserting the supplied typesetting marks before and after each
+	 * non-commented section of the value.
+	 * @param value the commented value to typeset.
+	 * @param beforePosition the typesetting mark to insert before each non-commented section of the value.
+	 * @param afterPosition the typesetting mark to after before each non-commented section of the value.
+	 */
+	private String typeSetCommentedValue(String value, MarkPosition beforePosition, MarkPosition afterPosition) {
+		String beforeValueMark = _typeSettingMarks.get(beforePosition).getMarkText();
+		String afterValueMark = _typeSettingMarks.get(afterPosition).getMarkText();
+		
+		CommentedValueTypeSetter typeSetter = new CommentedValueTypeSetter(value, beforeValueMark, afterValueMark);
+		try {
+			typeSetter.parse();
+		}
+		catch (Exception e) {
+			throw new RuntimeException("Unexpected error occured typesetting: "+value, e);
+		}
+		return typeSetter.getTypesetValue();
+	}
+
+	
+	/**
+	 * Typesets a value containing comments by inserting typesetting marks before and after
+	 * non-comment portions of the value.
+	 */
+	class CommentedValueTypeSetter extends CommentExtractor {
+
+		private String _beforeValueMark;
+		private String _afterValueMark;
+		
+		private StringBuilder _typeSetValue;
+		
+		public CommentedValueTypeSetter(String value, String beforeValueMark, String afterValueMark) {
+			super(value);
+			_beforeValueMark = beforeValueMark;
+			_afterValueMark = afterValueMark;
+			_typeSetValue = new StringBuilder();
+		}
+		
+		@Override
+		public void comment(String comment) throws ParseException {
+			_typeSetValue.append(comment);
+		}
+
+		@Override
+		public void value(String value) throws ParseException {
+			_typeSetValue.append(_beforeValueMark);
+			
+			_typeSetValue.append(value);
+			
+			_typeSetValue.append(_afterValueMark);
+		}
+		
+		public String getTypesetValue() {
+			return _typeSetValue.toString();
+		}
+	}
 }

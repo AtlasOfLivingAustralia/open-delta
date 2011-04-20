@@ -4,6 +4,7 @@ import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.model.NumericCharacter;
 import au.org.ala.delta.model.format.CharacterFormatter;
+import au.org.ala.delta.translation.TypeSetter;
 import au.org.ala.delta.translation.attribute.ParsedAttribute.Values;
 
 /**
@@ -18,9 +19,13 @@ public class NumericAttributeTranslator extends AttributeTranslator {
 	/** Knows how to format character units  */
 	private CharacterFormatter _formatter;
 	
-	public NumericAttributeTranslator(NumericCharacter<?> character) {
+	/** Knows how to type set a range symbol */
+	private TypeSetter _typeSetter;
+	
+	public NumericAttributeTranslator(NumericCharacter<?> character, TypeSetter typeSetter) {
 		_character = character;
 		_formatter = new CharacterFormatter(false, true, false, true);
+		_typeSetter = typeSetter;
 	}
 	
 	@Override
@@ -30,7 +35,7 @@ public class NumericAttributeTranslator extends AttributeTranslator {
 
 	@Override
 	public String rangeSeparator() {
-		return "-";
+		return _typeSetter.rangeSeparator();
 	}
 	
 
