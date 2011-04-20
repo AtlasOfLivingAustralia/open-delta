@@ -6,6 +6,7 @@ import java.text.ParseException;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.model.TypeSettingMark;
+import au.org.ala.delta.model.TypeSettingMark.MarkPosition;
 
 /**
  * Processes the TYPESETTING MARKS directive.
@@ -123,7 +124,7 @@ public class TypeSettingMarks extends AbstractDirective<DeltaContext> {
 				allowWhiteSpace = mark.startsWith(" ");
 					
 			}
-			return new TypeSettingMark(markNumber, mark.trim(), allowWhiteSpace);
+			return new TypeSettingMark(MarkPosition.fromId(markNumber), mark.trim(), allowWhiteSpace);
 		}
 		
 		protected String readOptionalComment() throws Exception {

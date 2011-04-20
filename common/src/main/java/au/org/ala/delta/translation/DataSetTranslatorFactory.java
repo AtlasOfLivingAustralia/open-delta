@@ -13,7 +13,7 @@ public class DataSetTranslatorFactory {
 		
 		AbstractDataSetTranslator translator = null;
 		TranslateType translation = context.getTranslateType();
-		TypeSetter typeSetter = createTypeSetter(context);
+		Printer typeSetter = createTypeSetter(context);
 		if (translation.equals(TranslateType.NaturalLanguage) && context.getOutputHtml() == false) {
 			
 			translator = new NaturalLanguageTranslator(context, typeSetter);
@@ -24,9 +24,9 @@ public class DataSetTranslatorFactory {
 		return translator;
 	}
 	
-	private TypeSetter createTypeSetter(DeltaContext context) {
+	private Printer createTypeSetter(DeltaContext context) {
 		int printWidth = context.getPrintWidth();
 		
-		return new TypeSetter(context.getPrintStream(), printWidth);
+		return new Printer(context.getPrintStream(), printWidth);
 	}
 }

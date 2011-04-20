@@ -4,14 +4,15 @@ import java.util.Map;
 
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Item;
-import au.org.ala.delta.translation.TypeSettingMark.NaturalLanguageMarks;
+import au.org.ala.delta.model.TypeSettingMark;
+import au.org.ala.delta.model.TypeSettingMark.MarkPosition;
 
 public class FormattedTextTypeSetter extends PlainTextTypeSetter {
 
-	private Map<TypeSettingMark, String> _typeSettingMarks;
-	private TypeSetter _printer;
+	private Map<MarkPosition, TypeSettingMark> _typeSettingMarks;
+	private Printer _printer;
 	
-	public FormattedTextTypeSetter(Map<TypeSettingMark, String> typeSettingMarks, TypeSetter typeSetter) {
+	public FormattedTextTypeSetter(Map<MarkPosition, TypeSettingMark> typeSettingMarks, Printer typeSetter) {
 		super(typeSetter);
 		_printer = typeSetter;
 		_typeSettingMarks = typeSettingMarks;
@@ -19,12 +20,12 @@ public class FormattedTextTypeSetter extends PlainTextTypeSetter {
 	
 	@Override
 	public void beforeFirstItem() {
-		writeTypeSettingMark(TypeSettingMark.NaturalLanguageMarks.START_OF_FILE);
+		writeTypeSettingMark(MarkPosition.START_OF_FILE);
 	}
 
 	@Override
 	public void beforeItem(Item item) {
-		writeTypeSettingMark(NaturalLanguageMarks.BEFORE_ITEM_OR_HEADING);
+		writeTypeSettingMark(MarkPosition.BEFORE_ITEM_OR_HEADING);
 
 	}
 
@@ -48,34 +49,34 @@ public class FormattedTextTypeSetter extends PlainTextTypeSetter {
 
 	@Override
 	public void afterLastItem() {
-		writeTypeSettingMark(NaturalLanguageMarks.AFTER_LAST_ITEM_IN_FILE);
+		writeTypeSettingMark(MarkPosition.AFTER_LAST_ITEM_IN_FILE);
 	}
 	
-	private void writeTypeSettingMark(TypeSettingMark.NaturalLanguageMarks mark) {
+	private void writeTypeSettingMark(MarkPosition mark) {
 		
-		_printer.writeJustifiedText(_typeSettingMarks.get(mark), -1, false);
+		_printer.writeJustifiedText(_typeSettingMarks.get(mark).getMarkText(), -1, false);
 	}
 	
 	public void beforeItemHeading() {
-		writeTypeSettingMark(NaturalLanguageMarks.BEFORE_ITEM_HEADING);
+		writeTypeSettingMark(MarkPosition.BEFORE_ITEM_HEADING);
 	}
 	
 	public void afterItemHeading() {
-		writeTypeSettingMark(NaturalLanguageMarks.AFTER_ITEM_HEADING);
+		writeTypeSettingMark(MarkPosition.AFTER_ITEM_HEADING);
 	}
 	
 	boolean startOfFile = false;
 	public void beforeItemName() {
 		if (startOfFile) {
-			writeTypeSettingMark(NaturalLanguageMarks.BEFORE_ITEM_NAME_AT_START_OF_FILE);
+			writeTypeSettingMark(MarkPosition.BEFORE_ITEM_NAME_AT_START_OF_FILE);
 		}
 		else {
-			writeTypeSettingMark(NaturalLanguageMarks.BEFORE_ITEM_NAME);
+			writeTypeSettingMark(MarkPosition.BEFORE_ITEM_NAME);
 		}
 		
 	}
 	public void afterItemName() {
-		writeTypeSettingMark(NaturalLanguageMarks.AFTER_ITEM_NAME);
+		writeTypeSettingMark(MarkPosition.AFTER_ITEM_NAME);
 	}
 	
 	public void newParagraph() {

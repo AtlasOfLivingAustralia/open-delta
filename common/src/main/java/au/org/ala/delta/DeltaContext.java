@@ -34,6 +34,7 @@ import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.StateValueMatrix;
 import au.org.ala.delta.model.TypeSettingMark;
+import au.org.ala.delta.model.TypeSettingMark.MarkPosition;
 import au.org.ala.delta.model.UnorderedMultiStateCharacter;
 import au.org.ala.delta.util.Functor;
 import au.org.ala.delta.util.Utils;
@@ -59,7 +60,7 @@ public class DeltaContext extends AbstractDeltaContext {
 	private Map<Integer, String> _itemHeadings = new HashMap<Integer, String>();
 	private Map<Integer, String> _itemSubHeadings = new HashMap<Integer, String>();
 	private Map<Integer, String> _indexHeadings = new HashMap<Integer, String>();
-	private Map<Integer, TypeSettingMark> _typeSettingMarks = new HashMap<Integer, TypeSettingMark>();
+	private Map<MarkPosition, TypeSettingMark> _typeSettingMarks = new HashMap<MarkPosition, TypeSettingMark>();
 	
 	private Set<Set<Integer>> _linkedCharacters = new HashSet<Set<Integer>>();
 	private Map<Integer,Set<Integer>> _emphasizedCharacters = new HashMap<Integer, Set<Integer>>();
@@ -519,11 +520,15 @@ public class DeltaContext extends AbstractDeltaContext {
 	}
 
 	public void addTypeSettingMark(TypeSettingMark mark) {
-		_typeSettingMarks.put(mark.getMarkNumber(), mark);
+		_typeSettingMarks.put(mark.getMark(), mark);
 	}
 	
-	public TypeSettingMark getTypeSettingMark(int markNumber) {
-		return _typeSettingMarks.get(markNumber);
+	public Map<MarkPosition, TypeSettingMark> getTypeSettingMarks() {
+		return _typeSettingMarks;
+	}
+	
+	public TypeSettingMark getTypeSettingMark(MarkPosition mark) {
+		return _typeSettingMarks.get(mark);
 	}
 	
 }

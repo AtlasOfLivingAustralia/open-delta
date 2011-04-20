@@ -26,7 +26,7 @@ public class NaturalLanguageTranslatorTest extends TestCase {
 
 	private AbstractDataSetTranslator _dataSetTranslator;
 	private DeltaContext _context;
-	private TypeSetter _typeSetter;
+	private Printer _typeSetter;
 	private ByteArrayOutputStream _bytes;
 	private static final String DEFAULT_DATASET_PATH="/dataset/simple/tonat";
 	private static final String SAMPLE_DATASET_PATH="/dataset/sample/tonat_simple";
@@ -39,7 +39,7 @@ public class NaturalLanguageTranslatorTest extends TestCase {
 		
 		_bytes = new ByteArrayOutputStream();
 		PrintStream pout = new PrintStream(_bytes, false, "UTF-8");
-		_typeSetter = new TypeSetter(pout, 78);
+		_typeSetter = new Printer(pout, 78);
 		
 		_context = new DeltaContext();
 		_dataSetTranslator = new NaturalLanguageTranslator(_context, _typeSetter);

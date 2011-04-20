@@ -28,17 +28,17 @@ public class NaturalLanguageTranslator extends AbstractDataSetTranslator impleme
 
 	
 	private DeltaContext _context;
-	private TypeSetter _printer;
+	private Printer _printer;
 	private DeltaDataSet _dataSet;
 	private PlainTextTypeSetter _typeSetter;
 	private ItemFormatter _itemFormatter;
 	private CharacterFormatter _characterFormatter;
 	
 	
-	public NaturalLanguageTranslator(DeltaContext context, TypeSetter typeSetter) {
+	public NaturalLanguageTranslator(DeltaContext context, Printer printer) {
 		super(context, new NaturalLanguageDataSetFilter(context));
 		_context = context;
-		_printer = typeSetter;
+		_printer = printer;
 		_dataSet = _context.getDataSet();
 		_typeSetter = new PlainTextTypeSetter(_printer);
 		_itemFormatter = new ItemFormatter(false, false, false, true, false);
