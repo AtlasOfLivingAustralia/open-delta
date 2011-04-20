@@ -68,6 +68,7 @@ import au.org.ala.delta.editor.ui.MatrixViewer;
 import au.org.ala.delta.editor.ui.StatusBar;
 import au.org.ala.delta.editor.ui.TreeViewer;
 import au.org.ala.delta.editor.ui.help.HelpConstants;
+import au.org.ala.delta.editor.ui.util.MenuBuilder;
 import au.org.ala.delta.model.AbstractObservableDataSet;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.DeltaDataSetRepository;
@@ -314,17 +315,12 @@ public class DeltaEditor extends InternalFrameApplication {
 
 		mnuFile.removeAll();
 	
-
 		String[] fileMenuActions = { 
 				"newFile", "loadFile", "closeFile", "-", 
 				"saveFile", "saveAsFile", "-", 
 				"importDirectives", "exportDirectives"};
 
-		for (String action : fileMenuActions) {
-			addMenu(mnuFile, action);
-		}
-		
-		
+		MenuBuilder.buildMenu(mnuFile, fileMenuActions, _actionMap);
 
 		mnuFile.addSeparator();
 		String[] previous = EditorPreferences.getPreviouslyUsedFiles();
@@ -378,14 +374,11 @@ public class DeltaEditor extends InternalFrameApplication {
 		JMenu mnuEdit = new JMenu();
 		mnuEdit.setName("mnuEdit");
 
-		String[] viewMenuActions = { "copy", "paste", "-", "copyAll" };
+		String[] editMenuActions = { "copy", "paste", "-", "copyAll" };
 
-		for (String action : viewMenuActions) {
-			addMenu(mnuEdit, action);
-		}
+		MenuBuilder.buildMenu(mnuEdit, editMenuActions, _actionMap);
 
 		return mnuEdit;
-
 	}
 
 	/**
@@ -399,29 +392,9 @@ public class DeltaEditor extends InternalFrameApplication {
 
 		String[] viewMenuActions = { "newTreeView", "newGridView", "-", "viewCharacterEditor", "viewTaxonEditor", "-", "viewActionSets", "viewImageSettings" };
 
-		for (String action : viewMenuActions) {
-			addMenu(mnuView, action);
-		}
-
+		MenuBuilder.buildMenu(mnuView, viewMenuActions, _actionMap);
+		
 		return mnuView;
-	}
-
-	/**
-	 * Creates and adds a menu item to the supplied menu with an action identified by the supplied actionName.
-	 * 
-	 * @param menu
-	 *            the menu to add the new item to.
-	 * @param actionName
-	 *            the name of the action, or "-" to add a separator.
-	 */
-	private void addMenu(JMenu menu, String actionName) {
-		if ("-".equals(actionName)) {
-			menu.addSeparator();
-		} else {
-			JMenuItem menuItem = new JMenuItem();
-			menuItem.setAction(_actionMap.get(actionName));
-			menu.add(menuItem);
-		}
 	}
 
 	private File _lastDirectory = null;
