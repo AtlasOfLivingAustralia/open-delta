@@ -151,7 +151,24 @@ public class DeltaVOP extends VOP {
 	}
 
 	protected VOAnyDesc removeDesc(VOAnyDesc desc) {
-		throw new NotImplementedException();
+		if (desc != null) {	
+		    if (desc.isA(VOAnyDesc.VOTID_DELTA_BASE)) {
+		        _deltaMaster = null;
+		    }
+		    if (desc.isA(VODescFactory.VOImageDesc_TypeId)) {
+		        _imageInfo = null;
+		    }
+		    if (desc.isA(VODescFactory.VOItemDesc_TypeId)) {
+			  
+		        VOItemDesc item = (VOItemDesc)desc;
+		        // Remove the item's name from our list of names
+		 
+		        if (!deleteFromNameList(item)) {
+		            throw new RuntimeException("Error encountered deleting item from name list");
+		        }
+		     }
+	    }
+		return super.removeDesc(desc);
 	}
 
 	protected void killDescList() {

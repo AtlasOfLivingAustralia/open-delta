@@ -86,7 +86,7 @@ public class VOImageDesc extends VOAnyDesc {
 		setDirty();
 	}
 
-	int getImageType() {
+	public int getImageType() {
 		return _fixedData.imageType;
 	}
 

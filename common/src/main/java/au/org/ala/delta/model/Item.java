@@ -36,7 +36,7 @@ public class Item implements AttributeObserver {
 	private List<ItemObserver> _observers;
 	
 	public Item(ItemData impl, int itemNum) {
-		_impl = impl;
+		setItemData(impl);
 		_itemNumber = itemNum;
 	}
 	
@@ -46,6 +46,15 @@ public class Item implements AttributeObserver {
 	
 	public int getItemNumber() {
 		return _itemNumber;
+	}
+	
+	/**
+	 * This needs to be done when items are inserted or deleted - the remaining items
+	 * may need to be renumbered to account for the change.
+	 * @param number the new number for this item.
+	 */
+	public void setItemNumber(int number) {
+		_itemNumber = number;
 	}
 
 	public void setDescription(String description) {
@@ -154,6 +163,10 @@ public class Item implements AttributeObserver {
 	
 	public ItemData getItemData() {
 		return _impl;
+	}
+	
+	protected void setItemData(ItemData impl) {
+		_impl = impl;
 	}
 	
 	/**

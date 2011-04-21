@@ -79,5 +79,5 @@ public interface DeltaDataSet {
 	public Attribute getAttribute(int itemNumber, int characterNumber);
 
 	
-	
+	public void deleteItem(Item item);
 }

@@ -81,8 +81,43 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 	}
 
 	@Override
-	public boolean writeImageList(List<Integer> imagelist) {
-		throw new NotImplementedException();
+	public boolean writeImageList(List<Integer> imageList) {
+		byte[] trailerBuf = null;
+		int trailerLeng = 0;
+		int startPos = _fixedData.nStates * SIZE_OF_INT_IN_BYTES +
+		               _fixedData.nDescriptors * CharTextInfo.SIZE +
+		               _fixedData.nControlling * SIZE_OF_INT_IN_BYTES +
+		               _fixedData.nControls * SIZE_OF_INT_IN_BYTES;
+
+		if (imageList.size() != _fixedData.nImages) { // Save a copy of any following data!
+		    trailerBuf = dupTrailingData(startPos + _fixedData.nImages * SIZE_OF_INT_IN_BYTES);
+		    if (trailerBuf != null) {
+		    	trailerLeng = trailerBuf.length;
+		    }
+		}
+		
+		// Seek to force allocation of large enough slot
+		dataSeek(startPos + SIZE_OF_INT_IN_BYTES * imageList.size() + trailerLeng);
+		dataSeek(startPos);
+
+		for (int imageId : imageList) {
+		    dataWrite(imageId);
+		}
+		if (imageList.size() != _fixedData.nImages) {
+		    _fixedData.nImages = imageList.size();
+		    setDirty();
+		    if (trailerBuf != null) {
+		        dataWrite(trailerBuf);
+		        dataTruncate();
+		    }
+		}
+		return true;
+	}
+	
+	public void deleteImage(int imageId) {
+		List<Integer> imageList = readImageList();
+		imageList.remove(imageId);
+		writeImageList(imageList);
 	}
 
 	public void storeQData() {
@@ -428,10 +463,6 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 	}
 
 	public short insertState(int stateNo, Object vopDoc) {
-		throw new NotImplementedException();
-	}
-
-	void deleteImage(int imageId) {
 		throw new NotImplementedException();
 	}
 

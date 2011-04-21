@@ -134,6 +134,10 @@ public abstract class AbstractObservableDataSet implements DeltaDataSet, ItemObs
 		fireDeltaDataSetEvent(item, null, new ItemAddedDispatcher());
 	}
 	
+	protected void fireItemDeleted(Item item) {
+		fireDeltaDataSetEvent(item, null, new ItemDeletedDispatcher());
+	}
+	
 	protected void fireCharacterAdded(Character character) {
 		fireDeltaDataSetEvent(null, character, new CharacterAddedDispatcher());
 	}
@@ -176,6 +180,13 @@ public abstract class AbstractObservableDataSet implements DeltaDataSet, ItemObs
 		@Override
 		public void doFireEvent(DeltaDataSetObserver observer, DeltaDataSetChangeEvent event) {
 			observer.itemEdited(event);
+		}
+	}
+	
+	protected class ItemDeletedDispatcher extends DataSetEventDispatcher {
+		@Override
+		public void doFireEvent(DeltaDataSetObserver observer, DeltaDataSetChangeEvent event) {
+			observer.itemDeleted(event);
 		}
 	}
 

@@ -113,5 +113,21 @@ public class DefaultDataSet extends AbstractObservableDataSet {
 		_modified = modified;
 	}
 	
+	@Override
+	public void deleteItem(Item item) {
+		
+		
+		int numItems = _items.size();
+		_items.remove(item);
+		for (int i=item.getItemNumber()+1; i<=numItems; i++) {
+			
+			Item tmp = doGetItem(i);
+			tmp.setItemNumber(i-1);
+			_items.remove(i);
+			_items.put(i-1, tmp);		
+		}
+		
+		fireItemDeleted(item);
+	}
 	
 }

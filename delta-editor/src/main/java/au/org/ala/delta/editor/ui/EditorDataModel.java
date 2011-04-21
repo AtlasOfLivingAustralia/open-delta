@@ -198,7 +198,14 @@ public class EditorDataModel implements DeltaDataSet, DeltaDataSetObserver {
 		return _currentDataSet.isModified();
 	}
 	
+	public void deleteItem(int itemNumber) {
+		deleteItem(_currentDataSet.getItem(itemNumber));
+	}
 	
+	@Override
+	public void deleteItem(Item item) {
+		_currentDataSet.deleteItem(item);
+	}
 
 	@Override
 	public Attribute getAttribute(int itemNumber, int characterNumber) {

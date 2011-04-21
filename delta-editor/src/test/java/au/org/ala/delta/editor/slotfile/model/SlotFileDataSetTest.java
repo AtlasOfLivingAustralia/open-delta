@@ -165,7 +165,79 @@ public class SlotFileDataSetTest extends TestCase {
 		assertFalse(item.isVariant());
 	}
 	
+	@Test
+	private void addItems() throws Exception {
+		for (int i=0; i<10; i++) {
+			Item item = _dataSet.addItem();
+			
+			item.setDescription("Item "+(i+1));
+		}
+	}
 	
+	/**
+	 * Tests the deleteItem method.
+	 */
+	@Test
+	public void testDeleteItemInTheMiddle() throws Exception {
+		
+		addItems();
+		
+		int itemNumberToDelete = 5;
+		Item toDelete = _dataSet.getItem(itemNumberToDelete);
+		
+		_dataSet.deleteItem(toDelete);
+		
+		for (int i=1; i<itemNumberToDelete; i++) {
+			Item item = _dataSet.getItem(i);
+			
+			assertEquals(i, item.getItemNumber());
+			assertEquals("Item "+i, item.getDescription());
+		}
+		
+		for (int i=itemNumberToDelete; i<=_dataSet.getMaximumNumberOfItems(); i++) {
+			Item item = _dataSet.getItem(i);
+			
+			assertEquals(i, item.getItemNumber());
+			assertEquals("Item "+(i+1), item.getDescription());
+		}
+	}
+	
+	
+	@Test
+	public void testDeleteFirstItem() throws Exception {
+		
+		addItems();
+		
+		int itemNumberToDelete = 1;
+		Item toDelete = _dataSet.getItem(itemNumberToDelete);
+		
+		_dataSet.deleteItem(toDelete);
+		
+		for (int i=1; i<=_dataSet.getMaximumNumberOfItems(); i++) {
+			Item item = _dataSet.getItem(i);
+			
+			assertEquals(i, item.getItemNumber());
+			assertEquals("Item "+(i+1), item.getDescription());
+		}
+	}
+	
+	@Test
+	public void testDeleteLastItem() throws Exception {
+		
+		addItems();
+		
+		int itemNumberToDelete = _dataSet.getMaximumNumberOfItems();
+		Item toDelete = _dataSet.getItem(itemNumberToDelete);
+		
+		_dataSet.deleteItem(toDelete);
+		
+		for (int i=1; i<=_dataSet.getMaximumNumberOfItems(); i++) {
+			Item item = _dataSet.getItem(i);
+			
+			assertEquals(i, item.getItemNumber());
+			assertEquals("Item "+i, item.getDescription());
+		}
+	}
 	
 	
 }

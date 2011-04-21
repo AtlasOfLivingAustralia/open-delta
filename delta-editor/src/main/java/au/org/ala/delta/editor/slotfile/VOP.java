@@ -16,6 +16,7 @@ package au.org.ala.delta.editor.slotfile;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -333,6 +334,60 @@ public class VOP {
 	  return desc;
 	  
 	 }
+	 
+    /*
+	 * --- Delete Object from the Vop
+	 *
+	 * Objects that are referenced or embedded are not deleted.
+	 * If the object references other objects, than these will be unreferenced.
+	 * If the object embedds other objecte, than these are deleted too.
+	 * The actual work is done by a recursive delete function.
+	 */
+	public void deleteObject(VOAnyDesc desc) {
+	  if( desc.getActiveRefCount()<= 0 && !desc.isEmbedded() )  // can't delete embedded or linked ones
+	      deleteObjectR(desc);
+	}
+
+	/**
+	 *  Recursive delete.
+	 */
+	void deleteObjectR(VOAnyDesc desc) {
+	    // Undo all references in the other objects  ( UN-SYMMETRY references are set at a higher level !!!!)
+	    // should make an extra function UnReference(desc)
+	
+	    // Get a sorted array of all dependent uids
+		List<Integer> uids = desc.getDependents();
+	    for (int i : uids) {
+	        if (_finderMap.containsKey(i)) {
+	    		  
+	            VOAnyDesc d = _finderMap.get(i);
+	            d.decRefCount();
+	        }
+	    }
+	 
+	    // Recursivly delete all embedded objects
+	    // Get an array of all embedded uids
+		uids = desc.getEmbeddeds();
+	    // check every descriptor and if embedded in current one delete
+		for (int i : uids) {
+	      
+	        if (_finderMap.containsKey(i)) {
+	       
+	            VOAnyDesc d = _finderMap.get(i);
+	            deleteObjectR(d);
+	        }
+	    }
+	  
+	    // Recover uniId;
+	    _uniIdCont.add(desc.getUniId());
+
+	    // Recover slot;
+	    desc.getSlotFile().freeSlot(desc.getSlotHdrPtr(), desc.readSlotSize());
+
+	    // Remove from List.
+	    removeDesc(desc);
+	}
+
 	
 	 
 	 public boolean move2Temp(VOAnyDesc desc) {
