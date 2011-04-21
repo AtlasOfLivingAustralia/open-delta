@@ -48,6 +48,7 @@ public class ItemList extends JList {
 
 		@Override
 		public int getSize() {
+			
 			return _dataSet.getMaximumNumberOfItems();
 		}
 		
@@ -55,7 +56,14 @@ public class ItemList extends JList {
 
 			@Override
 			public void itemAdded(DeltaDataSetChangeEvent event) {
-				fireIntervalAdded(ItemListModel.this, getSize()-1, getSize()-1);
+				int newItem = event.getItem().getItemNumber();
+				fireIntervalAdded(ItemListModel.this, newItem-1, newItem-1);
+			}
+			
+			@Override
+			public void itemDeleted(DeltaDataSetChangeEvent event) {
+				int deletedItem = event.getItem().getItemNumber();
+				fireIntervalRemoved(ItemListModel.this, deletedItem-1, deletedItem-1);
 			}
 		}
 	}

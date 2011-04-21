@@ -16,6 +16,7 @@ package au.org.ala.delta.editor.slotfile;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang.NotImplementedException;
 
@@ -27,7 +28,7 @@ public class DeltaVOP extends VOP {
 
 	private VODeltaMasterDesc _deltaMaster;
 	private VOImageInfoDesc _imageInfo;
-	private Map<String, VOItemDesc> _itemNames;
+	private Map<VOItemDesc, String> _itemNames;
 
 	public DeltaVOP() {
 		this(false);
@@ -61,8 +62,13 @@ public class DeltaVOP extends VOP {
 			ansiName = name;
 		}
 
-		if (_itemNames.containsKey(ansiName)) {
-			return _itemNames.get(ansiName);
+		for (Entry<VOItemDesc, String> entry : _itemNames.entrySet()) {
+			if (name.equals(entry.getValue())) {
+				return entry.getKey();
+			}
+		}
+		if (_itemNames.containsValue(ansiName)) {
+			return null;
 		}
 
 		return null;
@@ -74,11 +80,11 @@ public class DeltaVOP extends VOP {
 	}
 
 	public boolean deleteFromNameList(VOItemDesc item) {
-		return (_itemNames.remove(item.getAnsiName()) != null);
+		return (_itemNames.remove(item) != null);
 	}
 
 	public void insertInNameList(VOItemDesc item) {
-		_itemNames.put(item.getAnsiName(), item);
+		_itemNames.put(item, item.getAnsiName());
 	}
 
 	// Wrapper around Vop::Commit to also make a .bak copy of the "original" file
@@ -141,10 +147,10 @@ public class DeltaVOP extends VOP {
 			}
 			if (desc.isA(VODescFactory.VOItemDesc_TypeId)) {
 				if (_itemNames == null) {
-					_itemNames = new HashMap<String, VOItemDesc>();
+					_itemNames = new HashMap<VOItemDesc, String>();
 				}
 				VOItemDesc item = (VOItemDesc) desc;
-				_itemNames.put(item.getAnsiName(), item);
+				_itemNames.put(item, item.getAnsiName());
 			}
 		}
 		return desc;

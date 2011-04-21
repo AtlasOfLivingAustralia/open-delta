@@ -35,6 +35,9 @@ public class SlotFileDataSet extends AbstractObservableDataSet {
 	@Override
 	protected Item doGetItem(int number) {
 		synchronized (_vop) {
+			if (number > getMaximumNumberOfItems()) {
+				throw new IndexOutOfBoundsException("No such Item ("+number+">"+getMaximumNumberOfItems());
+			}
 			return _factory.createItem(number);	
 		}		
 	}
@@ -115,7 +118,8 @@ public class SlotFileDataSet extends AbstractObservableDataSet {
 	@Override
 	protected Item doAddItem(int itemNumber) {
 		synchronized (_vop) {
-			return _factory.createItem(itemNumber);
+			Item item = _factory.createItem(itemNumber);
+			return item;
 		}
 	}
 	
