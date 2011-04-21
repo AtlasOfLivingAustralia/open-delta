@@ -1,12 +1,18 @@
 package au.org.ala.delta.editor;
 
+import javax.swing.JOptionPane;
+
 import org.apache.commons.lang.StringUtils;
 import org.jdesktop.application.Action;
 
 import au.org.ala.delta.editor.ui.EditorDataModel;
 import au.org.ala.delta.editor.ui.ItemList;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.ui.MessageDialogHelper;
 
+/**
+ * Handles actions performed on the ItemList.
+ */
 public class ItemController {
 
 	private ItemList _view;
@@ -30,8 +36,10 @@ public class ItemController {
 	
 	@Action
 	public void deleteItem() {
-		int itemNumber = _view.getSelectedIndex();
-		_model.deleteItem(itemNumber);
+		Item toDelete = getSelectedItem();
+		if (confirmDelete(toDelete)) {
+			_model.deleteItem(toDelete);
+		}
 	}
 	
 	@Action
@@ -48,6 +56,17 @@ public class ItemController {
 	
 	private void displayItemEditor(int itemNumber) {
 		
+	}
+	
+	public Item getSelectedItem() {
+		int itemNumber = _view.getSelectedIndex()+1;
+		return _model.getItem(itemNumber);
+	}
+	
+	private boolean confirmDelete(Item toDelete) {
+		int result = MessageDialogHelper.showConfirmDialog(_view, "CONFIRM", 
+				"Please confirm that you really wish to delete this taxon:\n" + toDelete.getDescription(), 50);
+		return result == JOptionPane.OK_OPTION;
 	}
 	
 }

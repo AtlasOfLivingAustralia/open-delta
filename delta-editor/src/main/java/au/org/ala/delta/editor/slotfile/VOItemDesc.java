@@ -23,8 +23,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import org.apache.commons.lang.NotImplementedException;
-
 import au.org.ala.delta.io.BinFile;
 import au.org.ala.delta.rtf.RTFUtils;
 import au.org.ala.delta.util.Utils;
@@ -507,11 +505,36 @@ public class VOItemDesc extends VOImageHolderDesc implements INameHolder {
 	}
 
 	public boolean writeImageList(List<Integer> imageList) {
-		throw new NotImplementedException();
+		byte[] trailerBuf = null;
+		int trailerLeng = 0;
+
+		if (imageList.size() != _fixedData.nImages) { // Save a copy of any following data!
+		    trailerBuf = dupTrailingData(_fixedData.attribEnd + _fixedData.nImages * SIZE_OF_INT_IN_BYTES);
+		    if (trailerBuf != null) {
+		    	trailerLeng = trailerBuf.length;
+		    }
+		}
+		// Seek to force allocation of large enough slot
+		dataSeek(_fixedData.attribEnd + imageList.size() * SIZE_OF_INT_IN_BYTES + trailerLeng);
+		dataSeek(_fixedData.attribEnd);
+		for (int imageId : imageList) {
+		    dataWrite(imageId);
+		}
+		setDirty();
+		if (imageList.size() != _fixedData.nImages) {
+		    _fixedData.nImages = imageList.size();
+		    if (trailerBuf != null) {
+		        dataWrite(trailerBuf);
+		        dataTruncate();
+		    }
+		}
+		return true;
 	}
 
 	public void deleteImage(int imageId) {
-		throw new NotImplementedException();
+		List<Integer> imageList = readImageList();
+		imageList.remove(new Integer(imageId));
+		writeImageList(imageList);
 	}
 
 	// Fixed data and offsets

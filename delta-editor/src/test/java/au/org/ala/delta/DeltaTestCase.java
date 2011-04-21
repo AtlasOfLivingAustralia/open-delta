@@ -48,6 +48,13 @@ public abstract class DeltaTestCase extends TestCase {
 		FileUtils.copyURLToFile(deltaFileUrl, tempFile);		
 		return tempFile;	
 	}
+	
+	
+	protected File newTempFile() throws IOException {
+		File tempFile = File.createTempFile("test", ".dlt");
+		_tempFiles.add(tempFile);
+		return tempFile;
+	}
 
 	@Override
 	protected void tearDown() throws Exception {

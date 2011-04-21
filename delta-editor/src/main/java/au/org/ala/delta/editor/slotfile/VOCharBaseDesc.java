@@ -116,7 +116,7 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 	
 	public void deleteImage(int imageId) {
 		List<Integer> imageList = readImageList();
-		imageList.remove(imageId);
+		imageList.remove(new Integer(imageId));
 		writeImageList(imageList);
 	}
 

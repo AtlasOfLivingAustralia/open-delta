@@ -153,7 +153,7 @@ public class VODeltaMasterDesc extends VONoteDesc {
 
 	@Override
 	public int getTypeId() {
-		return VOAnyDesc.VOTID_DELTA_BASE;
+		return VODescFactory.VODeltaMasterDesc_TypeId;
 	}
 
 	private int getNoFromId(List<Integer> vector, int uid) {
@@ -176,12 +176,14 @@ public class VODeltaMasterDesc extends VONoteDesc {
 		int temp = vector.get(oldindex);
 		vector.remove(oldindex);
 		vector.set(newindex, temp);
+		setDirty();
 		return true;
 	}
 
 	private boolean removeElement(List<Integer> vector, int uid) {
 		if (vector.contains(uid)) {
 			vector.remove((Integer) uid);
+			setDirty();
 			return true;
 		}
 		return false;
@@ -290,7 +292,7 @@ public class VODeltaMasterDesc extends VONoteDesc {
 
 	@Override
 	public int getNumberOfItems() {
-		// TODO Auto-generated method stub
+		
 		return 0;
 	}
 

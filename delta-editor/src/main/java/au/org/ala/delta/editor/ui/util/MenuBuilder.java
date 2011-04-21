@@ -3,6 +3,7 @@ package au.org.ala.delta.editor.ui.util;
 import javax.swing.ActionMap;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 
 /**
  * Helper class that will assemble a menu from a list of Strings.
@@ -26,6 +27,12 @@ public class MenuBuilder {
 		}
 	}
 	
+	public static void buildMenu(JPopupMenu menu, String[] actionNames, ActionMap actionMap) {
+		for (String action : actionNames) {
+			addMenuItem(menu, action, actionMap);
+		}
+	}
+	
 	/**
 	 * Creates and adds a menu item to the supplied menu with an action identified by the supplied actionName.
 	 * 
@@ -41,6 +48,14 @@ public class MenuBuilder {
 			JMenuItem menuItem = new JMenuItem();
 			menuItem.setAction(actionMap.get(actionName));
 			menu.add(menuItem);
+		}
+	}
+	
+	private static void addMenuItem(JPopupMenu menu, String actionName, ActionMap actionMap) {
+		if ("-".equals(actionName)) {
+			menu.addSeparator();
+		} else {
+			menu.add(actionMap.get(actionName));
 		}
 	}
 

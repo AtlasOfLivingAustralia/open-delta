@@ -27,7 +27,7 @@ public class DeltaVOP extends VOP {
 
 	private VODeltaMasterDesc _deltaMaster;
 	private VOImageInfoDesc _imageInfo;
-	private Map<String, VOItemDesc> _itemNames = new HashMap<String, VOItemDesc>();
+	private Map<String, VOItemDesc> _itemNames;
 
 	public DeltaVOP() {
 		this(false);

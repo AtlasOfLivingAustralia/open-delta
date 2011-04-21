@@ -23,6 +23,7 @@ import java.util.Set;
 import javax.swing.ActionMap;
 import javax.swing.DropMode;
 import javax.swing.JInternalFrame;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTree;
@@ -42,7 +43,10 @@ import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.editor.EditorPreferences;
+import au.org.ala.delta.editor.ItemController;
 import au.org.ala.delta.editor.ui.util.EditorUIUtils;
+import au.org.ala.delta.editor.ui.util.MenuBuilder;
+import au.org.ala.delta.editor.ui.util.PopupMenuListener;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
@@ -131,7 +135,14 @@ public class TreeViewer extends JInternalFrame {
 				_stateEditor.bind(_dataModel.getSelectedCharacter(), _dataModel.getSelectedItem());
 			}
 		});
-
+		
+		JPopupMenu popup = new JPopupMenu();
+		ActionMap itemActions = context.getActionMap(ItemController.class, new ItemController(_itemList, _dataModel));
+		String[] itemsPopupActions = new String[] {"deleteItem", "-"};
+		MenuBuilder.buildMenu(popup, itemsPopupActions, itemActions);
+		
+		new PopupMenuListener(popup, _itemList);
+		
 		JSplitPane content = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		content.setDividerSize(4);
 		content.setDividerLocation(180);

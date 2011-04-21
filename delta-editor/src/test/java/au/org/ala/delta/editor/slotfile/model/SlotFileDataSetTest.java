@@ -1,12 +1,14 @@
 package au.org.ala.delta.editor.slotfile.model;
 
 import java.io.File;
-
-import junit.framework.TestCase;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Test;
 
+import au.org.ala.delta.DeltaTestCase;
 import au.org.ala.delta.model.CharacterType;
+import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.IntegerCharacter;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
@@ -15,7 +17,7 @@ import au.org.ala.delta.model.TextCharacter;
 /**
  * Tests the SlotFileDataSet class.
  */
-public class SlotFileDataSetTest extends TestCase {
+public class SlotFileDataSetTest  extends DeltaTestCase {
 
 	private SlotFileRepository _repo = new SlotFileRepository();
 	
@@ -236,6 +238,51 @@ public class SlotFileDataSetTest extends TestCase {
 			
 			assertEquals(i, item.getItemNumber());
 			assertEquals("Item "+i, item.getDescription());
+		}
+	}
+	
+	@Test
+	public void testDeleteItemsWithSample() throws Exception {
+		
+		// Item 13 has no images.
+		deleteItemWithSample(13);
+		
+		// Item 5 has an image.
+		deleteItemWithSample(5);
+	}
+	
+	private void deleteItemWithSample(int itemNumberToDelete) throws Exception {
+		File f = copyURLToFile("/SAMPLE.DLT");
+		DeltaDataSet dataSet = _repo.findByName(f.getAbsolutePath(), null);
+		
+		List<String> itemNames = new ArrayList<String>();
+		for (int i=1; i<=dataSet.getMaximumNumberOfItems(); i++) {
+			itemNames.add(dataSet.getItem(i).getDescription());
+		}
+	
+		itemNames.remove(itemNumberToDelete-1);
+		
+		Item toDelete = dataSet.getItem(itemNumberToDelete);
+		
+		dataSet.deleteItem(toDelete);
+		
+		checkDescriptions(dataSet, itemNames);
+		
+		// Save and load to ensure it saves correctly.
+		File temp = newTempFile();
+		_repo.saveAsName(dataSet, temp.getAbsolutePath(), null);
+		dataSet.close();
+	
+		dataSet = (SlotFileDataSet)_repo.findByName(temp.getAbsolutePath(), null);
+		checkDescriptions(dataSet, itemNames);
+		
+	}
+
+	private void checkDescriptions(DeltaDataSet dataSet, List<String> itemNames) {
+		for (int i=1; i<dataSet.getMaximumNumberOfItems(); i++) {
+			Item item = dataSet.getItem(i);
+			assertEquals(i, item.getItemNumber());
+			assertEquals(itemNames.get(i-1), item.getDescription());
 		}
 	}
 	

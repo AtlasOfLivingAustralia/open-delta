@@ -128,7 +128,7 @@ public class ItemList extends JList {
 	 */
 	public class DoubleClickToAction extends MouseAdapter {
 		public void mouseClicked(MouseEvent e) {
-			if (e.getClickCount() == 2) {
+			if (e.getClickCount() == 2 && e.getButton() == MouseEvent.BUTTON1) {
 				int index = locationToIndex(e.getPoint());
 				setSelectedIndex(index);
 				
