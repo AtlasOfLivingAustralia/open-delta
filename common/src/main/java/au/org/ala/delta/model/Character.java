@@ -85,6 +85,80 @@ public abstract class Character {
     public String getNotes() {
         return _impl.getNotes();
     }
+    
+    public float getReliability() {
+        return _impl.getReliability();
+    }
+
+    public void setReliability(float reliability) {
+        _impl.setReliability(reliability);
+    }
+
+    public String getImageData() {
+        return _impl.getImageData();
+    }
+
+    public void setImageData(String imageData) {
+        _impl.setImageData(imageData);
+    }
+
+    public String getItemSubheading() {
+        return _impl.getItemSubheading();
+    }
+
+    public void setItemSubheading(String charItemSubheading) {
+        _impl.setItemSubheading(charItemSubheading);
+    }
+    
+    public boolean getContainsSynonmyInformation() {
+        return _impl.getContainsSynonmyInformation();
+    }
+    
+    public void setContainsSynonmyInformation(boolean containsSynonmyInfo) {
+        _impl.setContainsSynonmyInformation(containsSynonmyInfo);
+    }
+    
+    public boolean getOmitOr() {
+        return _impl.getOmitOr();
+    }
+    
+    public void setOmitOr(boolean omitOr) {
+        _impl.setOmitOr(omitOr);
+    }
+    
+    public boolean getUseCc() {
+        return _impl.getUseCc();
+    }
+    
+    public void setUseCc(boolean useCc) {
+        _impl.setUseCc(useCc);
+    }
+    
+    public boolean getOmitPeriod() {
+        return _impl.getOmitPeriod();
+    }
+    
+    public void setOmitPeriod(boolean omitPeriod) {
+        _impl.setOmitPeriod(omitPeriod);
+    }
+    
+    public boolean getNewParagraph() {
+        return _impl.getNewParagraph();
+    }
+    
+    public void setNewParagraph(boolean newParagraph) {
+        _impl.setNewParagraph(newParagraph);
+    }
+    
+    public boolean getNonAutoCc() {
+        return _impl.getNonAutoCc();
+    }
+    
+    public void setNonAutoCc(boolean nonAutoCc) {
+        _impl.setNonAutoCc(nonAutoCc);
+    }
+    
+    
 
     @Override
     public String toString() {
@@ -149,30 +223,6 @@ public abstract class Character {
 
     public ControllingInfo checkApplicability(Item item) {
         return _impl.checkApplicability(item);
-    }
-
-    public float getReliability() {
-        return _impl.getReliability();
-    }
-
-    public void setReliability(float reliability) {
-        _impl.setReliability(reliability);
-    }
-
-    public String getImageData() {
-        return _impl.getImageData();
-    }
-
-    public void setImageData(String imageData) {
-        _impl.setImageData(imageData);
-    }
-
-    public String getItemSubheading() {
-        return _impl.getItemSubheading();
-    }
-
-    public void setItemSubheading(String charItemSubheading) {
-        _impl.setItemSubheading(charItemSubheading);
     }
 
 }

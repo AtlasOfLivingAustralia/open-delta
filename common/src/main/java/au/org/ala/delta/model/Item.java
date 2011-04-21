@@ -110,6 +110,24 @@ public class Item implements AttributeObserver {
     public void setImageData(String imageData) {
         _impl.setImageData(imageData);
     }
+    
+    public String getLinkFileDataWithSubjects() {
+        return _impl.getLinkFileDataWithSubjects();
+    }
+
+    public void setLinkFileDataWithSubjects(String linkFileData) {
+        _impl.setLinkFileDataWithSubjects(linkFileData);
+    }
+
+    public String getLinkFileDataNoSubjects() {
+        return _impl.getLinkFileDataNoSubjects();
+    }
+
+    public void setLinkFileDataNoSubjects(String linkFileData) {
+        _impl.setLinkFileDataNoSubjects(linkFileData);
+    }
+    
+    
 	
 	@Override
 	public void attributeChanged(Attribute attribute) {

@@ -438,6 +438,66 @@ public class VOCharacterAdaptor implements CharacterData {
         throw new NotImplementedException();
     }
 
+    @Override
+    public boolean getContainsSynonmyInformation() {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void setContainsSynonmyInformation(boolean containsSynonmyInfo) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public boolean getOmitOr() {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void setOmitOr(boolean omitOr) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public boolean getUseCc() {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void setUseCc(boolean useCc) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public boolean getOmitPeriod() {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void setOmitPeriod(boolean omitPeriod) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public boolean getNewParagraph() {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void setNewParagraph(boolean newParagraph) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public boolean getNonAutoCc() {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void setNonAutoCc(boolean nonAutoCc) {
+        throw new NotImplementedException();
+    }
+
 }
 
 class CircularDependencyException extends RuntimeException {

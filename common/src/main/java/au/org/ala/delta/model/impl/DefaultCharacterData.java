@@ -26,6 +26,12 @@ public class DefaultCharacterData implements CharacterData {
 	private String _imageData;
 	private String _itemSubheading;
 	private List<Float> _keyStateBoundaries;
+	private boolean _containsSynonmyInfo;
+	private boolean _omitOr;
+	private boolean _useCc;
+	private boolean _omitPeriod;
+	private boolean _newParagraph;
+	private boolean _nonAutoCc;
 
 	@Override
 	public String getDescription() {
@@ -194,5 +200,67 @@ public class DefaultCharacterData implements CharacterData {
     public void setKeyStateBoundaries(List<Float> keyStateBoundaries) {
         _keyStateBoundaries = new ArrayList<Float>(keyStateBoundaries);
     }
+
+    @Override
+    public boolean getContainsSynonmyInformation() {
+        return _containsSynonmyInfo;
+    }
+
+    @Override
+    public void setContainsSynonmyInformation(boolean containsSynonmyInfo) {
+        _containsSynonmyInfo = containsSynonmyInfo;
+    }
+
+    @Override
+    public boolean getOmitOr() {
+        return _omitOr;
+    }
+
+    @Override
+    public void setOmitOr(boolean omitOr) {
+        _omitOr = omitOr;
+    }
+
+    @Override
+    public boolean getUseCc() {
+        return _useCc;
+    }
+
+    @Override
+    public void setUseCc(boolean useCc) {
+        _useCc = useCc;
+    }
+
+    @Override
+    public boolean getOmitPeriod() {
+        return _omitPeriod;
+    }
+
+    @Override
+    public void setOmitPeriod(boolean omitPeriod) {
+        _omitPeriod = omitPeriod;
+    }
+
+    @Override
+    public boolean getNewParagraph() {
+        return _newParagraph;
+    }
+
+    @Override
+    public void setNewParagraph(boolean newParagraph) {
+        _newParagraph = newParagraph;
+    }
+
+    @Override
+    public boolean getNonAutoCc() {
+        return _nonAutoCc;
+    }
+
+    @Override
+    public void setNonAutoCc(boolean nonAutoCc) {
+        _nonAutoCc = nonAutoCc;
+    }
+
+
 	
 }

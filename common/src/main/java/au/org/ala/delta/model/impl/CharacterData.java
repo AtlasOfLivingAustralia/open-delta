@@ -69,4 +69,28 @@ public interface CharacterData {
     List<Float> getKeyStateBoundaries();
     
     void setKeyStateBoundaries(List<Float> keyStateBoundaries);
+    
+    boolean getContainsSynonmyInformation();
+    
+    void setContainsSynonmyInformation(boolean containsSynonmyInfo);
+    
+    boolean getOmitOr();
+    
+    void setOmitOr(boolean omitOr);
+    
+    boolean getUseCc();
+    
+    void setUseCc(boolean useCc);
+    
+    boolean getOmitPeriod();
+    
+    void setOmitPeriod(boolean omitPeriod);
+    
+    boolean getNewParagraph();
+    
+    void setNewParagraph(boolean newParagraph);
+    
+    boolean getNonAutoCc();
+    
+    void setNonAutoCc(boolean nonAutoCc);
 }

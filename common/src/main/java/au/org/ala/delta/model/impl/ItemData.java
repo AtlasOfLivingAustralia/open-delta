@@ -24,4 +24,12 @@ public interface ItemData {
     String getImageData();
     
     void setImageData(String imageData);
+    
+    String getLinkFileDataWithSubjects();
+    
+    void setLinkFileDataWithSubjects(String linkFileData);
+    
+    String getLinkFileDataNoSubjects();
+    
+    void setLinkFileDataNoSubjects(String linkFileData); 
 }

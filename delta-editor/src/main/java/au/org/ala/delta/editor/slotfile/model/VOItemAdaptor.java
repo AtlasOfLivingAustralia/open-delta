@@ -116,4 +116,24 @@ public class VOItemAdaptor implements ItemData {
     public void setImageData(String imageData) {
         throw new NotImplementedException();
     }
+
+    @Override
+    public String getLinkFileDataWithSubjects() {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void setLinkFileDataWithSubjects(String linkFileData) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public String getLinkFileDataNoSubjects() {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void setLinkFileDataNoSubjects(String linkFileData) {
+        throw new NotImplementedException();
+    }
 }
