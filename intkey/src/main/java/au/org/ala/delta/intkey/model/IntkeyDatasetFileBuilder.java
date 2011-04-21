@@ -362,14 +362,21 @@ public class IntkeyDatasetFileBuilder {
 
         int recordsSpannedByCharTypes = recordsSpannedByBytes(numChars * sizeIntInBytes);
 
-        // Numbers of states for each character are also specified in items
-        // file. Ensure that this
-        // information is consistent between the characters and items files.
+        // read numbers of states from items file and check for compatability
+        // (only compare multistates because if ICHARS and IITEMS are generated
+        // separately, numerics characters with units will differ)
         seekToRecord(_itemBinFile, _itemFileHeader.getRpSpec() + recordsSpannedByCharTypes);
         List<Integer> itemsFileNumCharacterStates = readIntegerList(_itemBinFile, numChars);
 
-        if (!itemsFileNumCharacterStates.equals(numCharacterStates)) {
-            throw new RuntimeException("Numbers of states for characters differ between characters file and items file");
+        for (int i = 0; i < numChars; i++) {
+            Character ch = _characters.get(i);
+            if (ch instanceof MultiStateCharacter) {
+                int numStatesFromCharsFile = numCharacterStates.get(i);
+                int numStatesFromItemsFile = itemsFileNumCharacterStates.get(i);
+                if (numStatesFromItemsFile != numStatesFromCharsFile) {
+                    throw new RuntimeException("Numbers of states for characters differ between characters file and items file");
+                }
+            }
         }
 
         int recordsSpannedByNumCharStates = recordsSpannedByBytes(numChars * sizeIntInBytes);
@@ -828,7 +835,7 @@ public class IntkeyDatasetFileBuilder {
             nameBuffer.get(nameArray);
             _taxa.get(i).setDescription(BinFileEncoding.decode(nameArray));
         }
-        
+
         readTaxonLinksFiles();
     }
 
@@ -997,13 +1004,13 @@ public class IntkeyDatasetFileBuilder {
 
         _ds.setDeltaOutputPermitted(deltaOutputEnabled);
     }
-    
+
     public void readTaxonLinksFiles() {
         int numItems = _itemFileHeader.getNItem();
-        
+
         List<String> linksFileDataWithSubjects = null;
         List<String> linksFileDataNoSubjects = null;
-        
+
         if (_itemFileHeader.getRpTlinks()[0] != 0) {
             linksFileDataWithSubjects = readStringList(_itemBinFile, _itemFileHeader.getRpTlinks()[0], numItems);
         }
@@ -1011,19 +1018,19 @@ public class IntkeyDatasetFileBuilder {
         if (_itemFileHeader.getRpTlinks()[1] != 0) {
             linksFileDataNoSubjects = readStringList(_itemBinFile, _itemFileHeader.getRpTlinks()[1], numItems);
         }
-        
-        for (int i=0; i < numItems; i++) {
+
+        for (int i = 0; i < numItems; i++) {
             Item it = _taxa.get(i);
-            
+
             if (linksFileDataWithSubjects != null) {
                 it.setLinkFileDataWithSubjects(linksFileDataWithSubjects.get(i));
             }
-            
+
             if (linksFileDataNoSubjects != null) {
                 it.setLinkFileDataNoSubjects(linksFileDataNoSubjects.get(i));
             }
         }
-        
+
     }
 
     // --------------- UTILITY METHODS
@@ -1045,6 +1052,11 @@ public class IntkeyDatasetFileBuilder {
         return BinFileEncoding.decode(bytes);
     }
 
+    // Helper method to deal with a common pattern in intkey data files - one
+    // record
+    // contains a single integer which is the length of the string in bytes, the
+    // following
+    // record contains the text of the string
     private static String readReferencedString(BinFile bFile, int recordNumber) {
         seekToRecord(bFile, recordNumber);
         int stringLength = bFile.readInt();
@@ -1052,6 +1064,11 @@ public class IntkeyDatasetFileBuilder {
         return readString(bFile, stringLength);
     }
 
+    // Helper method to deak with a common pattern in intkey data files - a
+    // record contains
+    // N integer values, each of which, if non-zero point to records from which
+    // a string can be
+    // read using readReferencedString (see above)
     private static List<String> readStringList(BinFile bFile, int recordNumber, int listSize) {
         List<String> returnList = new ArrayList<String>();
 
