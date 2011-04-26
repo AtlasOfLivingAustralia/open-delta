@@ -50,8 +50,9 @@ public class ItemController {
 	public void buildPopup() {
 		JPopupMenu popup = new JPopupMenu();
 		ActionMap itemActions = _context.getActionMap(ItemController.class, this);
-		String[] itemsPopupActions = new String[] {"editItem", "addItem", "insertItem", "deleteItem", "-"};
+		String[] itemsPopupActions = new String[] {"editItem", "addItem", "insertItem", "deleteItem", "-", "cancel"};
 		MenuBuilder.buildMenu(popup, itemsPopupActions, itemActions);
+		
 		
 		new PopupMenuListener(popup, _view);
 	}
@@ -102,6 +103,10 @@ public class ItemController {
 		editNewItem(newItem, e);
 	}
 	
+	@Action
+	public void cancel() {
+		// Do nothing.
+	}
 	
 	public void editNewItem(Item newItem, ActionEvent e) {
 		int selectedIndex = newItem.getItemNumber()-1;
