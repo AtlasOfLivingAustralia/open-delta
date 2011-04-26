@@ -68,7 +68,9 @@ public interface DeltaDataSet {
 	public Item addItem();
 	
 	/**
-	 * Creates a new Item and adds it to this DeltaDataSet.
+	 * Creates a new Item and adds it to this DeltaDataSet.  If the supplied item number is
+	 * already used by an Item, this operation will be treated as an insert - the new item
+	 * will take the supplied number and subsequent items will be re-numbered.
 	 * @param itemNumber the number that will identify the new item
 	 * @return the new Item.
 	 */

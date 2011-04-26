@@ -97,7 +97,7 @@ public class ItemController {
 	@Action
 	public void insertItem(ActionEvent e) {
 		int selectedItem = _view.getSelectedIndex()+1;
-		Item newItem = _model.addItem(selectedItem+1);
+		Item newItem = _model.addItem(selectedItem);
 		
 		editNewItem(newItem, e);
 	}

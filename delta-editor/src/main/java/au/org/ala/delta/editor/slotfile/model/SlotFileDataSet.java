@@ -38,8 +38,12 @@ public class SlotFileDataSet extends AbstractObservableDataSet {
 			if (number > getMaximumNumberOfItems()) {
 				throw new IndexOutOfBoundsException("No such Item ("+number+">"+getMaximumNumberOfItems());
 			}
-			return _factory.createItem(number);	
-		}		
+			
+			int itemId = _vop.getDeltaMaster().uniIdFromItemNo(number);
+			VOItemDesc itemDesc = (VOItemDesc) _vop.getDescFromId(itemId);
+			VOItemAdaptor adaptor = new VOItemAdaptor(_vop, itemDesc, number);
+			return new Item(adaptor, number);
+		}
 	}
 	
 	@Override

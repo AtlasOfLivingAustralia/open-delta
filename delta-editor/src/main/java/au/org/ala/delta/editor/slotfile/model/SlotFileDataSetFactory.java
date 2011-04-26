@@ -65,17 +65,12 @@ public class SlotFileDataSetFactory implements DeltaDataSetFactory {
 
 	private VOItemAdaptor createSlotFileItem(int number) {
 		VOItemDesc itemDesc = null;
-		if (number > _vop.getDeltaMaster().getNItems()) {
-			VOItemDesc.ItemFixedData itemFixedData = new VOItemDesc.ItemFixedData();
-			itemDesc = (VOItemDesc)_vop.insertObject(itemFixedData, ItemFixedData.SIZE, null, 0, 100);
-			int itemId = itemDesc.getUniId();
-			_vop.getDeltaMaster().insertItem(itemId, number);
-		}
-		else {
-			int itemId = _vop.getDeltaMaster().uniIdFromItemNo(number);
-			itemDesc = (VOItemDesc) _vop.getDescFromId(itemId);
-		}
 		
+		VOItemDesc.ItemFixedData itemFixedData = new VOItemDesc.ItemFixedData();
+		itemDesc = (VOItemDesc)_vop.insertObject(itemFixedData, ItemFixedData.SIZE, null, 0, 100);
+		int itemId = itemDesc.getUniId();
+		_vop.getDeltaMaster().insertItem(itemId, number);
+
 		VOItemAdaptor adaptor = new VOItemAdaptor(_vop, itemDesc, number);
 		return adaptor;
 	}
