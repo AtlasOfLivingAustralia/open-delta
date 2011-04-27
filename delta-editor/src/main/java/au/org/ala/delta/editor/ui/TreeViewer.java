@@ -17,6 +17,9 @@ package au.org.ala.delta.editor.ui;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -85,7 +88,7 @@ public class TreeViewer extends JInternalFrame {
 		_itemList = new ItemList(_dataModel);
 		_itemList.setDragEnabled(true);
 		_itemList.setDropMode(DropMode.ON);
-		ActionMap actionMap = context.getActionMap();
+		final ActionMap actionMap = context.getActionMap();
 		_itemList.setSelectionAction(actionMap.get("viewTaxonEditor"));
 		
 
@@ -114,6 +117,14 @@ public class TreeViewer extends JInternalFrame {
 					_dataModel.setSelectedCharacter(null);
 				}
 				_stateEditor.bind(_dataModel.getSelectedCharacter(), _dataModel.getSelectedItem());
+			}
+		});
+		_tree.addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent e) {
+				int selectedRow = _tree.getClosestRowForLocation(e.getX(), e.getY());
+				if ((selectedRow >= 0) && (e.getClickCount() == 2)) {
+					actionMap.get("viewCharacterEditor").actionPerformed(new ActionEvent(_tree, -1, ""));
+				}
 			}
 		});
 

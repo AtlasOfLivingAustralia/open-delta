@@ -39,7 +39,12 @@ public class CharacterFormatter extends Formatter {
 	public String formatCharacterDescription(Character character) {
 		
 		String description = character.getDescription();
-		return defaultFormat(description);
+		String formattedDescription = defaultFormat(description);
+		
+		if (_includeNumber) {
+			formattedDescription = character.getCharacterId()+". "+formattedDescription;
+		}
+		return formattedDescription;
 	}
 	
 	/**

@@ -62,6 +62,7 @@ import org.jdesktop.application.Task.BlockingScope;
 import au.org.ala.delta.editor.directives.ImportController;
 import au.org.ala.delta.editor.slotfile.model.SlotFileRepository;
 import au.org.ala.delta.editor.support.InternalFrameApplication;
+import au.org.ala.delta.editor.ui.CharacterEditor;
 import au.org.ala.delta.editor.ui.EditorDataModel;
 import au.org.ala.delta.editor.ui.ItemEditor;
 import au.org.ala.delta.editor.ui.MatrixViewer;
@@ -665,8 +666,11 @@ public class DeltaEditor extends InternalFrameApplication {
 		createAboutBox();
 	}
 
-	@Action(enabledProperty = "enabled")
+	@Action(enabledProperty = "saveAsEnabled")
 	public void viewCharacterEditor() {
+		CharacterEditor editor = new CharacterEditor(this.getMainFrame());
+		editor.bind(getCurrentDataSet());
+		show(editor);
 	}
 
 	@Action(enabledProperty = "saveAsEnabled")
