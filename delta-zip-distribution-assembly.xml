@@ -11,6 +11,13 @@
 	</formats>
 	<fileSets>
 		<fileSet>
+			<directory>${project.basedir}/sampledata</directory>
+			<outputDirectory>/sample</outputDirectory>
+			<includes>
+				<include>sample.dlt</include>
+			</includes>
+		</fileSet>
+		<fileSet>
 			<directory>${project.basedir}/delta-editor/target</directory>
 			<outputDirectory>/lib</outputDirectory>
 			<includes>
