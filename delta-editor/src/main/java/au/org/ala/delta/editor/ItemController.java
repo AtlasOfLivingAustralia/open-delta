@@ -123,6 +123,14 @@ public class ItemController {
 		}
 	}
 	
+	public void moveItem(Item item, int newIndex) {
+		_model.moveItem(item, newIndex+1);
+		
+		_view.setSelectedIndex(newIndex);
+		_view.ensureIndexIsVisible(newIndex);
+		
+	}
+	
 	private boolean confirmDelete(Item toDelete) {
 		int result = MessageDialogHelper.showConfirmDialog(_view, "CONFIRM", 
 				"Please confirm that you really wish to delete this taxon:\n" + toDelete.getDescription(), 50);
@@ -140,6 +148,7 @@ public class ItemController {
 		private int sourceIndex;
 		
 		public boolean canImport(TransferHandler.TransferSupport info) {
+			
 			return info.isDataFlavorSupported(_itemFlavor);
 		}
 		
@@ -171,8 +180,12 @@ public class ItemController {
 			}
 			
 			int targetIndex = list.getDropLocation().getIndex();
+			if (targetIndex > sourceIndex) {
+				targetIndex--;
+			}
+			
 			if (info.getUserDropAction() == DnDConstants.ACTION_MOVE) {
-				System.out.println("Moving item "+item.getItemNumber() + " from "+sourceIndex+ " to "+targetIndex);
+				moveItem(item, targetIndex);
 			}
 			else if (info.getUserDropAction() == DnDConstants.ACTION_COPY) {
 				System.out.println("Copying item "+item.getItemNumber() + " from "+sourceIndex+ " to "+targetIndex);

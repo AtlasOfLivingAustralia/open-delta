@@ -65,6 +65,14 @@ public class ItemList extends JList {
 				int deletedItem = event.getItem().getItemNumber();
 				fireIntervalRemoved(ItemListModel.this, deletedItem-1, deletedItem-1);
 			}
+			
+			@Override
+			public void itemMoved(DeltaDataSetChangeEvent event) {
+				int oldIndex = event.getItem().getItemNumber();
+				int newIndex = (Integer)event.getExtraInformation();
+				
+				fireContentsChanged(ItemListModel.this, Math.min(oldIndex, newIndex)-1, Math.max(oldIndex, newIndex)-1);
+			}
 		}
 	}
 	
