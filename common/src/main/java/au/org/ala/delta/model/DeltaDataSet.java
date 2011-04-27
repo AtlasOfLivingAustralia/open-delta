@@ -80,6 +80,17 @@ public interface DeltaDataSet {
 	
 	public Attribute getAttribute(int itemNumber, int characterNumber);
 
-	
+	/**
+	 * Deletes the supplied Item from the data set.
+	 * @param item the item to delete.
+	 */
 	public void deleteItem(Item item);
+	
+	/**
+	 * Changes the position in the item list of a specific item.  The Item, and all subsequent
+	 * Items will be renumbered.
+	 * @param item the Item to move.
+	 * @param newItemNumber the new item number for the Item.
+	 */
+	public void moveItem(Item item, int newItemNumber);
 }

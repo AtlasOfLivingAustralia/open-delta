@@ -116,18 +116,42 @@ public class DefaultDataSet extends AbstractObservableDataSet {
 	@Override
 	public void deleteItem(Item item) {
 		
-		
 		int numItems = _items.size();
 		_items.remove(item);
-		for (int i=item.getItemNumber()+1; i<=numItems; i++) {
-			
-			Item tmp = doGetItem(i);
-			tmp.setItemNumber(i-1);
-			_items.remove(i);
-			_items.put(i-1, tmp);		
-		}
+		
+		renumberItems(item.getItemNumber()+1, numItems, -1);
 		
 		fireItemDeleted(item);
 	}
+
+	@Override
+	public void moveItem(Item item, int newItemNumber) {
+		int oldItemNumber = item.getItemNumber();
+		
+		_items.remove(oldItemNumber);
+		if (newItemNumber < oldItemNumber) {
+			renumberItems(newItemNumber, oldItemNumber-1, 1);
+		}
+		else if (newItemNumber > oldItemNumber ){
+			renumberItems(oldItemNumber+1, newItemNumber, -1);
+		}
+		item.setItemNumber(newItemNumber);
+		_items.put(newItemNumber,item);
+		
+	}
+	
+	private void renumberItems(int from, int to, int change) {
+		Map<Integer, Item> tempItems = new HashMap<Integer, Item>();
+		for (int i=from; i<=to; i++) {
+			
+			Item tmp = doGetItem(i);
+			tmp.setItemNumber(i+change);
+			_items.remove(i);
+			tempItems.put(i+change, tmp);		
+		}
+		_items.putAll(tempItems);
+	}
+	
+	
 	
 }

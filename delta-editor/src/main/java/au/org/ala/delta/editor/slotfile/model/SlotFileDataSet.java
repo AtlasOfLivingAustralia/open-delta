@@ -199,4 +199,13 @@ public class SlotFileDataSet extends AbstractObservableDataSet {
 		_vop.deleteObject(imageDesc);
 	    // TODO fireImageDeleted();
 	}	
+	
+	
+	@Override
+	public void moveItem(Item item, int newItemNumber) {
+		synchronized (_vop) {
+			_vop.getDeltaMaster().moveItem(item.getItemNumber(), newItemNumber);	
+			fireItemMoved(item, newItemNumber);
+		}
+	}
 }

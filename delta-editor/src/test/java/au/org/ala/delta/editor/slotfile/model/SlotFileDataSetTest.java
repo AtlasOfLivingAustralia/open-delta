@@ -286,5 +286,89 @@ public class SlotFileDataSetTest  extends DeltaTestCase {
 		}
 	}
 	
+	@Test
+	public void testMoveItemForwards() throws Exception {
+		addItems();
+		testMoveItemForwards(2, 8);
+	}
+	
+	@Test
+	public void testMoveFirstToLast() throws Exception {
+		addItems();
+		testMoveItemForwards(1, 10);
+	}
+	
+	private void testMoveItemForwards(int from, int to) {
+		int itemNumberToMove = from;
+		Item toMove = _dataSet.getItem(itemNumberToMove);
+		
+		_dataSet.moveItem(toMove, to);
+		
+		for (int i=1; i<itemNumberToMove; i++) {
+			Item item = _dataSet.getItem(i);
+			
+			assertEquals(i, item.getItemNumber());
+			assertEquals("Item "+i, item.getDescription());
+		}
+		for (int i=itemNumberToMove; i<to; i++) {
+			Item item = _dataSet.getItem(i);
+			assertEquals(i, item.getItemNumber());
+			assertEquals("Item "+(i+1), item.getDescription());
+		}
+		assertEquals("Item "+from, _dataSet.getItem(to).getDescription());
+		assertEquals(to, _dataSet.getItem(to).getItemNumber());
+		
+		for (int i=to+1; i<=_dataSet.getMaximumNumberOfItems(); i++) {
+			Item item = _dataSet.getItem(i);
+			
+			assertEquals(i, item.getItemNumber());
+			assertEquals("Item "+i, item.getDescription());
+		}
+	}
+	
+	@Test
+	public void testMoveItemBackwards() throws Exception {
+		addItems();
+		testMoveItemBackwards(7, 2);
+	}
+	
+	@Test
+	public void testMoveLastToFirst() throws Exception {
+		addItems();
+		testMoveItemBackwards(10, 1);
+	}
+	
+
+	private void testMoveItemBackwards(int from, int to) {
+		int itemNumberToMove = from;
+		Item toMove = _dataSet.getItem(itemNumberToMove);
+		
+		_dataSet.moveItem(toMove, to);
+		
+		for (int i=1; i<to; i++) {
+			Item item = _dataSet.getItem(i);
+			
+			assertEquals(i, item.getItemNumber());
+			assertEquals("Item "+i, item.getDescription());
+		}
+		
+		assertEquals("Item "+from, _dataSet.getItem(to).getDescription());
+		assertEquals(to, _dataSet.getItem(to).getItemNumber());
+		
+		
+		for (int i=to+1; i<=from; i++) {
+			Item item = _dataSet.getItem(i);
+			assertEquals(i, item.getItemNumber());
+			assertEquals("Item "+(i-1), item.getDescription());
+		}
+		
+		for (int i=from+1; i<=_dataSet.getMaximumNumberOfItems(); i++) {
+			Item item = _dataSet.getItem(i);
+			
+			assertEquals(i, item.getItemNumber());
+			assertEquals("Item "+i, item.getDescription());
+		}
+	}
+	
 	
 }

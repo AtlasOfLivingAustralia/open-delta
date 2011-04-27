@@ -211,6 +211,12 @@ public class EditorDataModel implements DeltaDataSet, DeltaDataSetObserver {
 	public Attribute getAttribute(int itemNumber, int characterNumber) {
 		return _currentDataSet.getAttribute(itemNumber, characterNumber);
 	}
+	
+
+	@Override
+	public void moveItem(Item item, int newItemNumber) {
+		_currentDataSet.moveItem(item, newItemNumber);
+	}
 
 	@Override
 	public void itemAdded(DeltaDataSetChangeEvent event) {

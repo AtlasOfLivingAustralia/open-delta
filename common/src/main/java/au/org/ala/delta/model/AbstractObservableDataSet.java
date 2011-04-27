@@ -129,6 +129,9 @@ public abstract class AbstractObservableDataSet implements DeltaDataSet, ItemObs
 	protected void fireDeltaDataSetEvent(Item item, Character character, DataSetEventDispatcher dispatcher) {
 		dispatcher.fireDataSetEvent(item, character);
 	}
+	protected void fireDeltaDataSetEvent(Item item, Character character, Object extraInformation, DataSetEventDispatcher dispatcher) {
+		dispatcher.fireDataSetEvent(item, character, extraInformation);
+	}
 	
 	protected void fireItemAdded(Item item) {
 		fireDeltaDataSetEvent(item, null, new ItemAddedDispatcher());
@@ -141,6 +144,10 @@ public abstract class AbstractObservableDataSet implements DeltaDataSet, ItemObs
 	protected void fireCharacterAdded(Character character) {
 		fireDeltaDataSetEvent(null, character, new CharacterAddedDispatcher());
 	}
+	
+	protected void fireItemMoved(Item item, int oldItemNumber) {
+		fireDeltaDataSetEvent(item, null, oldItemNumber, new ItemMovedDispatcher());
+	}
 
 	@Override
 	public void characterChanged(Character character) {
@@ -152,17 +159,27 @@ public abstract class AbstractObservableDataSet implements DeltaDataSet, ItemObs
 	public void itemChanged(Item item, Attribute attribute) {
 		fireDeltaDataSetEvent(item, null, new ItemEditedDispatcher());
 	}
+	
 
 	protected abstract class DataSetEventDispatcher {
 
-		public void fireDataSetEvent(Item item, Character character) {
+		public void fireDataSetEvent(Item item, Character character, Object extraInformation) {
 
 			DeltaDataSetChangeEvent dataSetChangeEvent = new DeltaDataSetChangeEvent(AbstractObservableDataSet.this,
+					character, item, extraInformation);
+			fireDataSetEvent(dataSetChangeEvent);	
+		}
+		
+		public void fireDataSetEvent(Item item, Character character) {
+			DeltaDataSetChangeEvent dataSetChangeEvent = new DeltaDataSetChangeEvent(AbstractObservableDataSet.this,
 					character, item);
-
+			fireDataSetEvent(dataSetChangeEvent);
+		}
+		
+		protected void fireDataSetEvent(DeltaDataSetChangeEvent event) {
 			// process in reverse order to support removal during processing.
 			for (int i = _observerList.size() - 1; i >= 0; i--) {
-				doFireEvent((DeltaDataSetObserver) _observerList.get(i), dataSetChangeEvent);
+				doFireEvent((DeltaDataSetObserver) _observerList.get(i), event);
 			}
 		}
 
@@ -180,6 +197,12 @@ public abstract class AbstractObservableDataSet implements DeltaDataSet, ItemObs
 		@Override
 		public void doFireEvent(DeltaDataSetObserver observer, DeltaDataSetChangeEvent event) {
 			observer.itemEdited(event);
+		}
+	}
+	protected class ItemMovedDispatcher extends DataSetEventDispatcher {
+		@Override
+		public void doFireEvent(DeltaDataSetObserver observer, DeltaDataSetChangeEvent event) {
+			observer.itemMoved(event);
 		}
 	}
 	
