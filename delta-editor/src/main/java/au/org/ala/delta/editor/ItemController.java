@@ -96,11 +96,11 @@ public class ItemController {
 	}
 	
 	@Action
-	public void insertItem(ActionEvent e) {
+	public void insertItem() {
 		int selectedItem = _view.getSelectedIndex()+1;
 		Item newItem = _model.addItem(selectedItem);
 		
-		editNewItem(newItem, e);
+		editNewItem(newItem, new ActionEvent(_view, -1, ""));
 	}
 	
 	@Action
@@ -129,6 +129,12 @@ public class ItemController {
 		_view.setSelectedIndex(newIndex);
 		_view.ensureIndexIsVisible(newIndex);
 		
+	}
+	
+	public void copyItem(Item item, int copyLocation) {
+		
+		Item newItem = _model.addItem(copyLocation+1);
+		newItem.setDescription("Copy of " +item.getDescription());
 	}
 	
 	private boolean confirmDelete(Item toDelete) {
@@ -188,8 +194,7 @@ public class ItemController {
 				moveItem(item, targetIndex);
 			}
 			else if (info.getUserDropAction() == DnDConstants.ACTION_COPY) {
-				System.out.println("Copying item "+item.getItemNumber() + " from "+sourceIndex+ " to "+targetIndex);
-				
+				copyItem(item, targetIndex);
 			}
 			return true;
 		}
