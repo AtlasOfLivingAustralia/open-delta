@@ -175,7 +175,7 @@ public class VODeltaMasterDesc extends VONoteDesc {
 		newindex--;
 		int temp = vector.get(oldindex);
 		vector.remove(oldindex);
-		vector.set(newindex, temp);
+		vector.add(newindex, temp);
 		setDirty();
 		return true;
 	}
