@@ -32,6 +32,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JToolBar;
+import javax.swing.JTree;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.AbstractTableModel;
@@ -70,6 +71,9 @@ public class AttributeEditor extends JPanel implements ValidationListener {
 
 	/** Tracks whether the attribute has been modified since it was displayed */
 	private boolean _modified;
+	
+	/** Tracks whether we are committing changes - and hence can ignore the change event */
+	private boolean _committing;
 
 	private EditListener _editListener;
 
@@ -80,13 +84,15 @@ public class AttributeEditor extends JPanel implements ValidationListener {
 	public AttributeEditor(EditorDataModel dataSet) {
 
 		_dataSet = dataSet;
-
+		_committing = false;
 		_dataSet.addDeltaDataSetObserver(new AbstractDataSetObserver() {
 			@Override
 			public void itemEdited(DeltaDataSetChangeEvent event) {
 				if (event.getItem() == _item) {
-					// This is lazy but has the desired effect of updating the displayed values.
-					bind(_character, _item);
+					if (!_committing) {
+						// This is lazy but has the desired effect of updating the displayed values.
+						bind(_character, _item);
+					}
 				}
 			}
 			
@@ -292,26 +298,32 @@ public class AttributeEditor extends JPanel implements ValidationListener {
 
 	private boolean commitChanges() {
 
-		if (!_valid || _item == null) {
-			return false;
-		}
-
-		if (!_modified) {
-			return true;
-		}
-
 		try {
-			String attributeText = _textPane.getRtfTextBody();
-			Attribute attr = _item.getAttribute(_character);
-			if (attr != null) {
-				attr.setValue(attributeText);
-			} else {
-				System.err.println("No Attribute! should I be allowed to edit this?");
+			_committing = true;
+			if (!_valid || _item == null) {
+				return false;
 			}
-			_modified = false;
-		} catch (Exception ex) {
-			_textPane.requestFocusInWindow();
-			return false;
+	
+			if (!_modified) {
+				return true;
+			}
+	
+			try {
+				String attributeText = _textPane.getRtfTextBody();
+				Attribute attr = _item.getAttribute(_character);
+				if (attr != null) {
+					attr.setValue(attributeText);
+				} else {
+					System.err.println("No Attribute! should I be allowed to edit this?");
+				}
+				_modified = false;
+			} catch (Exception ex) {
+				_textPane.requestFocusInWindow();
+				return false;
+			}
+		}
+		finally {
+			_committing = false;
 		}
 
 		return true;
@@ -380,6 +392,15 @@ public class AttributeEditor extends JPanel implements ValidationListener {
 			checkBox.setText((String)value);
 			return checkBox;
 		}
+
+		@Override
+		public Component getTreeCellEditorComponent(JTree tree, Object value,
+				boolean isSelected, boolean expanded, boolean leaf, int row) {
+			// TODO Auto-generated method stub
+			JCheckBox checkBox = (JCheckBox)super.getTreeCellEditorComponent(tree, value, isSelected, expanded,
+					leaf, row);
+			return checkBox;
+		}
 	}
 	
 
@@ -408,47 +429,49 @@ public class AttributeEditor extends JPanel implements ValidationListener {
 			return this;
 		}
 	}
-}
 
-class StateListModel extends AbstractTableModel {
 
-	private static final long serialVersionUID = 1L;
-	private static CharacterFormatter _characterFormatter = new CharacterFormatter();
+	class StateListModel extends AbstractTableModel {
 	
-	private Item _item;
-	private MultiStateCharacter _character;
-
-	public StateListModel(MultiStateCharacter character, Item item) {
-		_character = character;
-		_item = item;
-	}
-	
-	@Override
-	public int getRowCount() {
-		return _character.getNumberOfStates();
-	}
-
-	@Override
-	public int getColumnCount() {
-		return 1;
-	}
-
-	@Override
-	public Object getValueAt(int rowIndex, int columnIndex) {
-		return _characterFormatter.formatState(_character, rowIndex + 1);
-	}
-
-	@Override
-	public boolean isCellEditable(int rowIndex, int columnIndex) {
+		private static final long serialVersionUID = 1L;
+		private CharacterFormatter _characterFormatter = new CharacterFormatter();
 		
-		return true;
-	}
-
-	@Override
-	public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-		_item.getAttribute(_character).setStatePresent(rowIndex+1, (Boolean)aValue);
-	}
+		private Item _item;
+		private MultiStateCharacter _character;
 	
+		public StateListModel(MultiStateCharacter character, Item item) {
+			_character = character;
+			_item = item;
+		}
+		
+		@Override
+		public int getRowCount() {
+			return _character.getNumberOfStates();
+		}
+	
+		@Override
+		public int getColumnCount() {
+			return 1;
+		}
+	
+		@Override
+		public Object getValueAt(int rowIndex, int columnIndex) {
+			return _characterFormatter.formatState(_character, rowIndex + 1);
+		}
+	
+		@Override
+		public boolean isCellEditable(int rowIndex, int columnIndex) {
+			
+			Attribute attribute = _item.getAttribute(_character);
+			return !_inapplicable && attribute.isSimple();
+		}
+	
+		@Override
+		public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+			_item.getAttribute(_character).setStatePresent(rowIndex+1, (Boolean)aValue);
+		}
+		
+	}
 }
 
 class CharacterModel extends AbstractTableModel {
