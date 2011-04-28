@@ -30,8 +30,12 @@ public class PopupMenuListener extends MouseAdapter {
 
     private void maybeShowPopup(MouseEvent e) {
         if (e.isPopupTrigger()) {
-            _popup.show(e.getComponent(),
+            getPopup().show(e.getComponent(),
                        e.getX(), e.getY());
         }
+    }
+    
+    protected JPopupMenu getPopup() {
+    	return _popup;
     }
 }

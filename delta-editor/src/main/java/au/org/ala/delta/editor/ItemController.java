@@ -44,17 +44,23 @@ public class ItemController {
 		_view.setDropMode(DropMode.INSERT);
 		_view.setTransferHandler(new ItemTransferHandler());
 		
-		buildPopup();
+		new PopupBuilder();
 	}
 	
-	public void buildPopup() {
+	public JPopupMenu buildPopup() {
 		JPopupMenu popup = new JPopupMenu();
 		ActionMap itemActions = _context.getActionMap(ItemController.class, this);
-		String[] itemsPopupActions = new String[] {"editItem", "addItem", "insertItem", "deleteItem", "-", "cancel"};
+		
+		String[] itemsPopupActions;
+		if (_model.getMaximumNumberOfItems() == 0) {
+			itemsPopupActions = new String[] {"addItem", "-", "cancel"};
+		}
+		else {
+		    itemsPopupActions = new String[] {"editItem", "addItem", "insertItem", "deleteItem", "-", "cancel"};
+		}
 		MenuBuilder.buildMenu(popup, itemsPopupActions, itemActions);
 		
-		
-		new PopupMenuListener(popup, _view);
+		return popup;
 	}
 	
 	/**
@@ -233,4 +239,15 @@ public class ItemController {
 		
 	}
 	
+	class PopupBuilder extends PopupMenuListener {
+		public PopupBuilder() {
+			super(null, _view);
+		}
+		
+		@Override
+		protected JPopupMenu getPopup() {
+			return buildPopup();
+		}
+		
+	}
 }
