@@ -9,4 +9,6 @@ public interface AttributeData {
 	public boolean isStatePresent(int stateNumber);
 	
 	public boolean isSimple();
+
+	public void setStatePresent(int stateNumber, boolean present);
 }

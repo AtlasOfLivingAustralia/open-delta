@@ -23,6 +23,10 @@ public class DefaultAttributeData implements AttributeData {
 		return false;
 		
 	}
+	
+	public void setStatePresent(int stateNumber, boolean present) {
+		throw new UnsupportedOperationException();
+	}
 
 	@Override
 	public boolean isSimple() {

@@ -67,6 +67,14 @@ public class Attribute {
 		return statePresent;
 	}
 	
+	public void setStatePresent(int stateNumber, boolean present) {
+		if (!(_character instanceof MultiStateCharacter)) {
+			return;
+		}
+		
+		_impl.setStatePresent(stateNumber, present);
+	}
+	
 	/**
 	 * An implicit value is one for which no attribute value is coded but an implicit value
 	 * has been specified for the attributes character.

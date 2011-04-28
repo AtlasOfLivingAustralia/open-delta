@@ -728,7 +728,7 @@ public class Attribute implements Iterable<AttrChunk> {
 		AttrIterator i = new AttrIterator(this, where);
 		i.increment();
 
-		ArrayUtils.deleteRange(_data, where, i.getPos());
+		_data = ArrayUtils.deleteRange(_data, where, i.getPos());
 		--_nChunks;
 	}
 
@@ -1181,6 +1181,10 @@ public class Attribute implements Iterable<AttrChunk> {
 
 		public int getPos() {
 			return _pos;
+		}
+		
+		public void setPos(int pos) {
+			_pos = pos;
 		}
 
 		@Override
