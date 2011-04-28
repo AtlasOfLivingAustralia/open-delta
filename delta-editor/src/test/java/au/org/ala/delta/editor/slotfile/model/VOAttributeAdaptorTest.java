@@ -93,5 +93,36 @@ public class VOAttributeAdaptorTest extends TestCase {
 		assertEquals("1", _attributeAdaptor.getValue());
 	}
 	
+	@Test 
+	public void testSetStatePresentRemoveAttribute() {
+		
+		_attributeAdaptor.setValue("1");
+		_attributeAdaptor.setStatePresent(1, false);
+		assertEquals("", _attributeAdaptor.getValue());
+		
+		_attributeAdaptor.setStatePresent(1, true);
+		assertEquals("1", _attributeAdaptor.getValue());
+		
+		_attributeAdaptor.setValue("1/2/3");
+		_attributeAdaptor.setStatePresent(1, false);
+		assertEquals("2/3", _attributeAdaptor.getValue());
+		
+		_attributeAdaptor.setValue("1/2/3");
+		_attributeAdaptor.setStatePresent(2, false);
+		assertEquals("1/3", _attributeAdaptor.getValue());
+	}
+	
+	
+	@Test 
+	public void testSetStatePresentRemoveLastState() {
+		
+		_attributeAdaptor.setValue("1/2/3");
+		_attributeAdaptor.setStatePresent(3, false);
+		assertEquals("1/2", _attributeAdaptor.getValue());
+		
+		_attributeAdaptor.setValue("1/2");
+		_attributeAdaptor.setStatePresent(2, false);
+		assertEquals("1", _attributeAdaptor.getValue());
+	}
 
 }

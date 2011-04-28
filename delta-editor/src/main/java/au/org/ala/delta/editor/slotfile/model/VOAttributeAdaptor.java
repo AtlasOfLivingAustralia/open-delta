@@ -88,7 +88,8 @@ public class VOAttributeAdaptor implements AttributeData {
 							
 						}
 						else if (previousStateNumber != 0) {
-							AttrChunk previousChunk = prevStateIterator.next();
+							prevStateIterator.increment();
+							AttrChunk previousChunk = prevStateIterator.get();
 							if (previousChunk.getType() == ChunkType.CHUNK_OR) {
 								i.increment();
 								attribute.erase(prevStateIterator.getPos(), i.getPos());
