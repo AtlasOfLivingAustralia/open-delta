@@ -375,6 +375,7 @@ public class AttributeEditor extends JPanel implements ValidationListener {
 				Object value, boolean isSelected, int row, int column) {
 			
 			JCheckBox checkBox = (JCheckBox)super.getTableCellEditorComponent(table, value, isSelected, row, column);
+			checkBox.setOpaque(false);
 			checkBox.setSelected(_item.getAttribute(_character).isPresent(row+1));
 			checkBox.setText((String)value);
 			return checkBox;
