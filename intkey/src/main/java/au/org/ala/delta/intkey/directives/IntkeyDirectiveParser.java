@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
+import au.org.ala.delta.Logger;
 import au.org.ala.delta.directives.DirectiveParser;
 import au.org.ala.delta.directives.ParsingContext;
 
@@ -24,7 +25,10 @@ public class IntkeyDirectiveParser extends DirectiveParser<IntkeyContext> {
 
     @Override
     protected void handleUnrecognizedDirective(ParsingContext pc, List<String> controlWords) {
-        System.out.println("Ignoring unrecognized directive: " + StringUtils.join(controlWords, " "));
+        //TODO eventually all unrecognized directives need to be properly handled. This is here so that
+        // intkey dataset can be used with milestone release without implemented directives causing 
+        // errors
+        Logger.log("Ignoring unrecognized directive: %s ", StringUtils.join(controlWords, " "));
     }
     
     

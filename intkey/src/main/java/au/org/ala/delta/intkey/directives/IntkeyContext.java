@@ -37,7 +37,7 @@ public class IntkeyContext extends AbstractDeltaContext {
     }
     
     public void setFileCharacters(String fileName) {
-        System.out.println("Setting characters file to: " + fileName);
+        Logger.log("Setting characters file to: %s", fileName);
         _charactersFile = new File(_datasetInitFile.getParentFile(), fileName);
         
         if (_dataset == null && _taxaFile != null) {
@@ -49,7 +49,7 @@ public class IntkeyContext extends AbstractDeltaContext {
     }
     
     public void setFileTaxa(String fileName) {
-        System.out.println("Setting taxa file to: " + fileName);
+        Logger.log("Setting taxa file to: %s", fileName);
         _taxaFile = new File(_datasetInitFile.getParentFile(), fileName);
         
         if (_dataset == null && _charactersFile != null) {
@@ -66,7 +66,7 @@ public class IntkeyContext extends AbstractDeltaContext {
     }
     
     public void newDataSetFile(String fileName) {
-        System.out.println("Reading in new Data Set file from: " + fileName);
+        Logger.log("Reading in new Data Set file from: %s", fileName);
         
         IntkeyDirectiveParser parser = IntkeyDirectiveParser.createInstance();
         
