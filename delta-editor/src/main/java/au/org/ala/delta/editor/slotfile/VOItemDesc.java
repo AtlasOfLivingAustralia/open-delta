@@ -374,7 +374,7 @@ public class VOItemDesc extends VOImageHolderDesc implements INameHolder {
 			}
 			if (bestOffset != -1) {
 				dataSeek(_attrOffset + bestOffset + SIZE_OF_INT_IN_BYTES);
-				_deletedAttributes.remove(bestOffset);
+				_deletedAttributes.remove((Integer)bestOffset);
 			} else { // Couldn't find a suitable free block.
 				trailerBuf = dupTrailingData(_fixedData.attribEnd);
 				if (trailerBuf != null) {
