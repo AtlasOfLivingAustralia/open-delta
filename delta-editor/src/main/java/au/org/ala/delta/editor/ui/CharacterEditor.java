@@ -6,6 +6,7 @@ import java.awt.Window;
 
 import javax.swing.AbstractListModel;
 import javax.swing.ActionMap;
+import javax.swing.ComboBoxModel;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
@@ -34,6 +35,7 @@ import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.ui.rtf.RtfEditor;
@@ -215,6 +217,7 @@ public class CharacterEditor extends JDialog {
 	    exclusiveCheckBox = new JCheckBox("Exclusive");
 		
 		comboBox = new JComboBox();
+		comboBox.setModel(new CharacterTypeComboModel());
 		
 		JLabel lblCharacterType = new JLabel("Character Type:");
 		
@@ -337,6 +340,8 @@ public class CharacterEditor extends JDialog {
 		rtfEditor.setText(_selectedCharacter.getDescription());
 		
 		mandatoryCheckBox.setSelected(_selectedCharacter.isMandatory());
+		exclusiveCheckBox.setSelected(_selectedCharacter.isExclusive());
+		comboBox.setSelectedItem(_selectedCharacter.getCharacterType());
 		
 		_editsDisabled = false;
 	}
@@ -354,6 +359,34 @@ public class CharacterEditor extends JDialog {
 		@Override
 		public Object getElementAt(int index) {
 			return _formatter.formatCharacterDescription(_dataSet.getCharacter(index+1));
+		}
+		
+	}
+	
+	class CharacterTypeComboModel extends AbstractListModel implements ComboBoxModel {
+
+		private static final long serialVersionUID = -9004809838787455121L;
+		private Object _selected;
+		
+		@Override
+		public int getSize() {
+			return CharacterType.values().length;
+		}
+
+		@Override
+		public Object getElementAt(int index) {
+			return CharacterType.values()[index];
+		}
+
+		@Override
+		public void setSelectedItem(Object anItem) {
+			_selected = anItem;
+			fireContentsChanged(this, -1, -1);
+		}
+
+		@Override
+		public Object getSelectedItem() {
+			return _selected;
 		}
 		
 	}

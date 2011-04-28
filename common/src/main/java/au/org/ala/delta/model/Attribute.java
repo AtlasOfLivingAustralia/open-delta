@@ -73,6 +73,8 @@ public class Attribute {
 		}
 		
 		_impl.setStatePresent(stateNumber, present);
+		
+		notifyObservers();
 	}
 	
 	/**

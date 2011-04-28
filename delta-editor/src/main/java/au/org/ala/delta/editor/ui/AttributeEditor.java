@@ -24,16 +24,19 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.AbstractListModel;
-import javax.swing.DefaultListCellRenderer;
+import javax.swing.DefaultCellEditor;
 import javax.swing.InputVerifier;
-import javax.swing.JList;
+import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.JTable;
 import javax.swing.JToolBar;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableColumn;
 
 import au.org.ala.delta.editor.ui.util.EditorUIUtils;
 import au.org.ala.delta.editor.ui.validator.AttributeValidator;
@@ -50,12 +53,15 @@ import au.org.ala.delta.model.observer.AbstractDataSetObserver;
 import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
 import au.org.ala.delta.ui.rtf.RtfEditor;
 
+/**
+ * The AttributeEditor allows a user to change the value of an attribute.
+ */
 public class AttributeEditor extends JPanel implements ValidationListener {
 
 	private static final long serialVersionUID = 1L;
 
 	private RtfEditor _textPane;
-	private JList _list;
+	private JTable _characterDetailsTable;
 	private boolean _valid = true;
 
 	private Character _character;
@@ -79,7 +85,8 @@ public class AttributeEditor extends JPanel implements ValidationListener {
 			@Override
 			public void itemEdited(DeltaDataSetChangeEvent event) {
 				if (event.getItem() == _item) {
-					repaint();
+					// This is lazy but has the desired effect of updating the displayed values.
+					bind(_character, _item);
 				}
 			}
 			
@@ -90,12 +97,12 @@ public class AttributeEditor extends JPanel implements ValidationListener {
 		JSplitPane split = new JSplitPane();
 
 		_textPane = new RtfEditor();
-		_list = new JList();
+		_characterDetailsTable = new JTable();
 
 		JScrollPane scrollPane = new JScrollPane(_textPane);
 		split.setLeftComponent(scrollPane);
 
-		split.setRightComponent(_list);
+		split.setRightComponent(_characterDetailsTable);
 
 		split.setDividerLocation(300);
 		split.setResizeWeight(0.5);
@@ -214,11 +221,18 @@ public class AttributeEditor extends JPanel implements ValidationListener {
 
 				if (ch instanceof MultiStateCharacter) {
 					MultiStateCharacter mc = (MultiStateCharacter) ch;
-					_list.setCellRenderer(new StateRenderer());
-					_list.setModel(new StateListModel(mc));
+					_characterDetailsTable.setModel(new StateListModel(mc, _item));
+					TableColumn onlyColumn = _characterDetailsTable.getColumnModel().getColumn(0);
+					StateRenderer renderer = new StateRenderer();
+					
+					_characterDetailsTable.setRowHeight(renderer.getPreferredSize().height);
+					onlyColumn.setCellRenderer(renderer);
+					onlyColumn.setCellEditor(new StateEditor());
+					
+					_characterDetailsTable.setCellEditor(new DefaultCellEditor(new JCheckBox()));
 				} else {
-					_list.setCellRenderer(new CharacterRenderer());
-					_list.setModel(new CharacterModel(ch));
+					_characterDetailsTable.setModel(new CharacterModel(ch));
+					_characterDetailsTable.getColumnModel().getColumn(0).setCellRenderer(new CharacterRenderer());
 				}
 				AttributeValidator validator = new AttributeValidator(_dataSet, _character);
 				RtfEditorValidator rtfValidator = new RtfEditorValidator(validator, this);
@@ -317,31 +331,56 @@ public class AttributeEditor extends JPanel implements ValidationListener {
 
 	}
 
-	class StateRenderer extends DefaultListCellRenderer {
+	class StateRenderer extends DefaultTableCellRenderer {
 
 		private static final long serialVersionUID = 1L;
 
 		private MultiStateCheckbox stateRenderer = new MultiStateCheckbox();
 
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see javax.swing.DefaultListCellRenderer#getListCellRendererComponent( javax.swing.JList, java.lang.Object, int, boolean, boolean)
-		 */
+		
 		@Override
-		public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-			super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-
+		public Component getTableCellRendererComponent(JTable table,
+				Object value, boolean isSelected, boolean hasFocus, int row,
+				int column) {
+			
+			super.getTableCellRendererComponent(table, value, isSelected, hasFocus,
+					row, column);
+			
 			stateRenderer.setBackground(getBackground());
 			stateRenderer.setForeground(getForeground());
 			stateRenderer.setText(value.toString());
 			stateRenderer.setSelected(false);
-			stateRenderer.bind((MultiStateCharacter) _character, _item, index + 1, _inapplicable);
+			stateRenderer.bind((MultiStateCharacter) _character, _item, row + 1, _inapplicable);
 
 			return stateRenderer;
 		}
 
+		@Override
+		public Dimension getPreferredSize() {
+			
+			return stateRenderer.getPreferredSize();
+		}
 	}
+	
+	class StateEditor extends DefaultCellEditor {
+		
+		private static final long serialVersionUID = 8431473832073654661L;
+
+		public StateEditor() {
+			super(new JCheckBox());
+		}
+
+		@Override
+		public Component getTableCellEditorComponent(JTable table,
+				Object value, boolean isSelected, int row, int column) {
+			
+			JCheckBox checkBox = (JCheckBox)super.getTableCellEditorComponent(table, value, isSelected, row, column);
+			checkBox.setSelected(_item.getAttribute(_character).isPresent(row+1));
+			checkBox.setText((String)value);
+			return checkBox;
+		}
+	}
+	
 
 	/**
 	 * Renders a Character as an icon, and if it's a numeric character, it's units.
@@ -349,20 +388,19 @@ public class AttributeEditor extends JPanel implements ValidationListener {
 	 * @author god08d
 	 * 
 	 */
-	class CharacterRenderer extends DefaultListCellRenderer {
+	class CharacterRenderer extends DefaultTableCellRenderer {
 
 		private static final long serialVersionUID = 1L;
-
-		@SuppressWarnings("rawtypes")
+		
 		@Override
-		public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-			super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-
+		public Component getTableCellRendererComponent(JTable table,
+				Object value, boolean isSelected, boolean hasFocus, int row,
+				int column) {
 			Character ch = (Character) value;
 			setIcon(EditorUIUtils.iconForCharacter(ch));
 
 			if (ch instanceof NumericCharacter) {
-				setText(((NumericCharacter) ch).getUnits());
+				setText(((NumericCharacter<?>) ch).getUnits());
 			} else {
 				setText("");
 			}
@@ -371,29 +409,48 @@ public class AttributeEditor extends JPanel implements ValidationListener {
 	}
 }
 
-class StateListModel extends AbstractListModel {
+class StateListModel extends AbstractTableModel {
 
 	private static final long serialVersionUID = 1L;
 	private static CharacterFormatter _characterFormatter = new CharacterFormatter();
 	
+	private Item _item;
 	private MultiStateCharacter _character;
 
-	public StateListModel(MultiStateCharacter character) {
+	public StateListModel(MultiStateCharacter character, Item item) {
 		_character = character;
+		_item = item;
 	}
-
+	
 	@Override
-	public int getSize() {
+	public int getRowCount() {
 		return _character.getNumberOfStates();
 	}
 
 	@Override
-	public Object getElementAt(int index) {
-		return _characterFormatter.formatState(_character, index + 1);
+	public int getColumnCount() {
+		return 1;
 	}
+
+	@Override
+	public Object getValueAt(int rowIndex, int columnIndex) {
+		return _characterFormatter.formatState(_character, rowIndex + 1);
+	}
+
+	@Override
+	public boolean isCellEditable(int rowIndex, int columnIndex) {
+		
+		return true;
+	}
+
+	@Override
+	public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+		_item.getAttribute(_character).setStatePresent(rowIndex+1, (Boolean)aValue);
+	}
+	
 }
 
-class CharacterModel extends AbstractListModel {
+class CharacterModel extends AbstractTableModel {
 
 	private static final long serialVersionUID = 1L;
 
@@ -404,12 +461,17 @@ class CharacterModel extends AbstractListModel {
 	}
 
 	@Override
-	public int getSize() {
+	public int getRowCount() {
+		return 1;
+	}
+	
+	@Override
+	public int getColumnCount() {
 		return 1;
 	}
 
 	@Override
-	public Object getElementAt(int index) {
+	public Object getValueAt(int rowIndex, int columnIndex) {
 		return _character;
 	}
 }
