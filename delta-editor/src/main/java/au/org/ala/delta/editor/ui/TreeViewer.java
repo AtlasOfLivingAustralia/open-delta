@@ -20,11 +20,13 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.EventObject;
 import java.util.HashSet;
 import java.util.Set;
 
 import javax.swing.ActionMap;
 import javax.swing.DropMode;
+import javax.swing.JCheckBox;
 import javax.swing.JInternalFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -35,6 +37,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellEditor;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeSelectionModel;
@@ -47,6 +50,7 @@ import org.jdesktop.application.ResourceMap;
 import au.org.ala.delta.editor.EditorPreferences;
 import au.org.ala.delta.editor.ItemController;
 import au.org.ala.delta.editor.ui.util.EditorUIUtils;
+import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
@@ -97,8 +101,11 @@ public class TreeViewer extends JInternalFrame {
 		_tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		_tree.setModel(treeModel);
 		_tree.setRootVisible(false);
+		_tree.setEditable(true);
 		_tree.setShowsRootHandles(true);
-		_tree.setCellRenderer(new DeltaTreeCellRenderer(_dataModel));
+		DeltaTreeCellRenderer renderer = new DeltaTreeCellRenderer(_dataModel);
+		_tree.setCellRenderer(renderer);
+		//_tree.setCellEditor(new StateEditor(_tree, renderer));
 		_tree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
 
 			@Override
@@ -245,6 +252,57 @@ public class TreeViewer extends JInternalFrame {
 			});
 		}
 	}
+	
+	class StateEditor extends DefaultTreeCellEditor {
+		
+		private static final long serialVersionUID = 8431473832073654661L;
+
+		public StateEditor(JTree tree, DefaultTreeCellRenderer renderer) {
+			super(tree, renderer);
+		}
+
+		
+		@Override
+		public Component getTreeCellEditorComponent(JTree tree, Object value,
+				boolean isSelected, boolean expanded, boolean leaf, int row) {
+			
+			JCheckBox checkBox = new JCheckBox();
+			
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
+			
+			Object userObject = node.getUserObject();
+			if (userObject == null) {
+				return checkBox;
+			}
+			String name = userObject.toString();
+			
+			if (leaf) {
+				if (node.getParent() instanceof CharacterTreeNode) {
+					CharacterTreeNode parentNode = (CharacterTreeNode) node.getParent();
+					Character ch = (Character) parentNode.getUserObject();				
+					if (ch instanceof MultiStateCharacter) {
+						checkBox.setText(name);
+						
+					}
+				}
+			}
+			
+			checkBox.setOpaque(false);
+			
+			
+			return checkBox;
+		}
+
+
+		@Override
+		public boolean isCellEditable(EventObject event) {
+			
+			super.isCellEditable(event);
+			return true;
+		}
+		
+		
+	}
 
 }
 
@@ -370,6 +428,10 @@ class DeltaTreeCellRenderer extends DefaultTreeCellRenderer  {
 					}
 					stateValueRenderer.setEnabled(parentNode.isInapplicable());
 					stateValueRenderer.bind( msnode.getCharacter(), item, msnode.getStateNo(), parentNode.isInapplicable());
+					if (!parentNode.isInapplicable()) {
+						Attribute attribute = item.getAttribute(ch);
+						stateValueRenderer.setEnabled(attribute.isSimple());
+					}
 					return stateValueRenderer;
 				} else if (ch instanceof NumericCharacter) {
 					setText(getText() + " " + ((NumericCharacter) ch).getUnits());

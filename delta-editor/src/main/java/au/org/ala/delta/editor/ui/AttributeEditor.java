@@ -32,7 +32,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JToolBar;
-import javax.swing.JTree;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.AbstractTableModel;
@@ -363,7 +362,11 @@ public class AttributeEditor extends JPanel implements ValidationListener {
 			stateRenderer.setText(value.toString());
 			stateRenderer.setSelected(false);
 			stateRenderer.bind((MultiStateCharacter) _character, _item, row + 1, _inapplicable);
-
+			if (!_inapplicable) {
+				Attribute attribute = _item.getAttribute(_character);
+				stateRenderer.setEnabled(attribute.isSimple());
+			}
+			
 			return stateRenderer;
 		}
 
@@ -390,15 +393,6 @@ public class AttributeEditor extends JPanel implements ValidationListener {
 			checkBox.setOpaque(false);
 			checkBox.setSelected(_item.getAttribute(_character).isPresent(row+1));
 			checkBox.setText((String)value);
-			return checkBox;
-		}
-
-		@Override
-		public Component getTreeCellEditorComponent(JTree tree, Object value,
-				boolean isSelected, boolean expanded, boolean leaf, int row) {
-			// TODO Auto-generated method stub
-			JCheckBox checkBox = (JCheckBox)super.getTreeCellEditorComponent(tree, value, isSelected, expanded,
-					leaf, row);
 			return checkBox;
 		}
 	}
