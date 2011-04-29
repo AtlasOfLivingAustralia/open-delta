@@ -44,17 +44,17 @@ public class FileCharactersDirective extends IntkeyDirective {
         }
 
         if (fileName != null) {
-            FileTaxaDirectiveInvocation invoc = new FileTaxaDirectiveInvocation(fileName);
+            FileCharactersDirectiveInvocation invoc = new FileCharactersDirectiveInvocation(fileName);
             return invoc;
         }
 
         return null;
     }
 
-    class FileTaxaDirectiveInvocation implements IntkeyDirectiveInvocation {
+    class FileCharactersDirectiveInvocation implements IntkeyDirectiveInvocation {
         private String _fileName;
 
-        public FileTaxaDirectiveInvocation(String fileName) {
+        public FileCharactersDirectiveInvocation(String fileName) {
             _fileName = fileName;
         }
 
