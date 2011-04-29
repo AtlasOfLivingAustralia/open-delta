@@ -25,11 +25,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.swing.ActionMap;
+import javax.swing.DefaultCellEditor;
 import javax.swing.DropMode;
 import javax.swing.JCheckBox;
 import javax.swing.JInternalFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
@@ -40,6 +42,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellEditor;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import org.jdesktop.application.Application;
@@ -105,7 +108,7 @@ public class TreeViewer extends JInternalFrame {
 		_tree.setShowsRootHandles(true);
 		DeltaTreeCellRenderer renderer = new DeltaTreeCellRenderer(_dataModel);
 		_tree.setCellRenderer(renderer);
-		//_tree.setCellEditor(new StateEditor(_tree, renderer));
+		_tree.setCellEditor(new DeltaTreeEditor(_tree, renderer));
 		_tree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
 
 			@Override
@@ -253,55 +256,126 @@ public class TreeViewer extends JInternalFrame {
 		}
 	}
 	
-	class StateEditor extends DefaultTreeCellEditor {
+	/**
+	 * Provides the mechanism for editing multistate attributes.
+	 */
+	class MultiStateAttributeCellEditor extends AttributeCellEditor {
 		
-		private static final long serialVersionUID = 8431473832073654661L;
+		private static final long serialVersionUID = 2155436614741771060L;
+		
+		public MultiStateAttributeCellEditor() {
+			super(new JCheckBox());
+			
+			editorComponent.setOpaque(false);
+		}
+		@Override
+		protected Component configureEditingComponent(Attribute attribute, DefaultMutableTreeNode node) {
+			MultistateStateNode nodeValue = (MultistateStateNode)node;
+			
+			MultiStateCharacter character = (MultiStateCharacter)attribute.getCharacter();
+			int stateNum = nodeValue.getStateNo();
+			getEditingCheckBox().setText(character.getState(stateNum));
+			getEditingCheckBox().setSelected(attribute.isPresent(stateNum));
+			return editorComponent;
+		}	
+		
+		private JCheckBox getEditingCheckBox() {
+			return (JCheckBox)editorComponent;
+		}
+	}
+	
+	/**
+	 * Provides the mechanism for editing numeric or text attributes.
+	 */
+	class NumericTextAttributeCellEditor extends AttributeCellEditor {
+		
+		private static final long serialVersionUID = -6054961593128043309L;
 
-		public StateEditor(JTree tree, DefaultTreeCellRenderer renderer) {
-			super(tree, renderer);
+		public NumericTextAttributeCellEditor() {
+			super(new JTextField());
 		}
 
+		@Override
+		protected Component configureEditingComponent(Attribute attribute, DefaultMutableTreeNode nodeUserObject) {
+			((JTextField)editorComponent).setText(attribute.getValue());
+			return editorComponent;
+		}
+	}
+	
+	/**
+	 * Provides support for editors by determining which node has been selected and whether it 
+	 * may be edited
+	 */
+	abstract class AttributeCellEditor extends DefaultCellEditor {
+		
+		private static final long serialVersionUID = -792901638653087259L;
+
+		public AttributeCellEditor(JTextField textField) {
+			super(textField);
+		}
+		
+		public AttributeCellEditor(JCheckBox checkBox) {
+			super(checkBox);
+		}
 		
 		@Override
 		public Component getTreeCellEditorComponent(JTree tree, Object value,
 				boolean isSelected, boolean expanded, boolean leaf, int row) {
 			
-			JCheckBox checkBox = new JCheckBox();
-			
 			DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
-			
-			Object userObject = node.getUserObject();
-			if (userObject == null) {
-				return checkBox;
-			}
-			String name = userObject.toString();
 			
 			if (leaf) {
 				if (node.getParent() instanceof CharacterTreeNode) {
 					CharacterTreeNode parentNode = (CharacterTreeNode) node.getParent();
 					Character ch = (Character) parentNode.getUserObject();				
-					if (ch instanceof MultiStateCharacter) {
-						checkBox.setText(name);
-						
-					}
+					
+					Attribute attribute = _dataModel.getSelectedItem().getAttribute(ch);
+					return configureEditingComponent(attribute, node);
 				}
 			}
 			
-			checkBox.setOpaque(false);
-			
-			
-			return checkBox;
+			return null;
 		}
+		
+		protected abstract Component configureEditingComponent(Attribute attribute, DefaultMutableTreeNode nodeUserObject);
+		
+		@Override
+		public boolean isCellEditable(EventObject anEvent) {
+			if (anEvent == null) {
+			    return false;
+			}
+		                     
+            if (anEvent instanceof MouseEvent) {
+            	MouseEvent event = (MouseEvent)anEvent;
+            
+            	TreePath path = _tree.getPathForLocation(event.getX(),event.getY());
+		        if (path!=null) {					
+					Object value = path.getLastPathComponent();
+					//return  _tree.getModel().isLeaf(value);
+					// Temporary workaround till we hook up validation to text/numeric edits.
+					return (value instanceof MultistateStateNode);
+		        }
+            }
+            return false;
+		}
+	}
+	
+	/**
+	 * Overrides the editing behavior of the DefaultTreeCellEditor to allow editing to
+	 * occur with a single click.  (The default is three).
+	 */
+	class DeltaTreeEditor extends DefaultTreeCellEditor {
+		
+		private static final long serialVersionUID = 8431473832073654661L;
 
+		public DeltaTreeEditor(JTree tree, DefaultTreeCellRenderer renderer) {
+			super(tree, renderer, new MultiStateAttributeCellEditor());
+		}
 
 		@Override
-		public boolean isCellEditable(EventObject event) {
-			
-			super.isCellEditable(event);
+		protected boolean canEditImmediately(EventObject e) {
 			return true;
 		}
-		
-		
 	}
 
 }
@@ -309,11 +383,12 @@ public class TreeViewer extends JInternalFrame {
 class CharacterTreeModel extends DefaultTreeModel {
 
 	private static final long serialVersionUID = 1L;
-
+	private EditorDataModel _dataModel;
+	
 	private Set<Integer> _variableLengthCharacterIndicies;
 	public CharacterTreeModel(EditorDataModel dataModel) {
 		super(new ContextRootNode(dataModel), false);
-		
+		_dataModel = dataModel;
 		_variableLengthCharacterIndicies = new HashSet<Integer>();
 		for (int i=1; i<=dataModel.getNumberOfCharacters(); i++) {
 			Character character = dataModel.getCharacter(i);
@@ -322,6 +397,29 @@ class CharacterTreeModel extends DefaultTreeModel {
 			}
 		}
 	}	
+	
+	/**
+     * Handles the different values that will be supplied by the different editing
+     * components.
+     */
+   public void valueForPathChanged(TreePath path, Object newValue) {
+	   DefaultMutableTreeNode  aNode = (DefaultMutableTreeNode)path.getLastPathComponent();
+	   
+	   Item item = _dataModel.getSelectedItem();
+	   if (aNode instanceof MultistateStateNode) {
+		   MultistateStateNode node = (MultistateStateNode)aNode;
+		   
+		   Attribute attribute = item.getAttribute(node.getCharacter());
+		   attribute.setStatePresent(node.getStateNo(), (Boolean)newValue);
+	   }
+	   else {
+		   CharStateHolder holder = (CharStateHolder)aNode.getUserObject();
+		   Attribute attribute = item.getAttribute(holder.getCharacter());
+		   attribute.setValue((String)newValue);
+	   }
+      
+       nodeChanged(aNode);
+   }
 	
 	/**
 	 * We notify about changes to text & numeric characters as differing text lengths will invalidate
@@ -370,6 +468,10 @@ class CharStateHolder {
 		} else {
 			return "---";
 		}
+	}
+	
+	public Character getCharacter() {
+		return _character;
 	}
 
 }
