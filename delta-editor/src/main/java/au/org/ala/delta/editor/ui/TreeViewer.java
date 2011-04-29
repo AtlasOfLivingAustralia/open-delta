@@ -364,16 +364,23 @@ public class TreeViewer extends JInternalFrame {
 			DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
 			
 			if (leaf) {
-				if (node.getParent() instanceof CharacterTreeNode) {
-					CharacterTreeNode parentNode = (CharacterTreeNode) node.getParent();
-					Character ch = (Character) parentNode.getUserObject();				
-					
+				Character ch = getCharacterFor(node);
+				if (ch != null) {
 					Attribute attribute = _dataModel.getSelectedItem().getAttribute(ch);
 					return configureEditingComponent(attribute, node);
 				}
 			}
 			
 			return null;
+		}
+		
+		private Character getCharacterFor(DefaultMutableTreeNode node) {
+			Character ch = null;
+			if (node.getParent() instanceof CharacterTreeNode) {
+				CharacterTreeNode parentNode = (CharacterTreeNode) node.getParent();
+				ch = (Character) parentNode.getUserObject();				
+			}
+			return ch;
 		}
 		
 		/**
@@ -390,14 +397,21 @@ public class TreeViewer extends JInternalFrame {
 			if (anEvent == null) {
 			    return false;
 			}
-		                     
+		                   
             if (anEvent instanceof MouseEvent) {
             	MouseEvent event = (MouseEvent)anEvent;
             
             	TreePath path = _tree.getPathForLocation(event.getX(),event.getY());
 		        if (path!=null) {					
 					Object value = path.getLastPathComponent();
-					return  _tree.getModel().isLeaf(value);
+					if ( _tree.getModel().isLeaf(value)) {
+						Character ch = getCharacterFor((DefaultMutableTreeNode)value);
+						Item item = _dataModel.getSelectedItem();
+						if (!ch.checkApplicability(item).isInapplicable()) {
+							Attribute attribute = _dataModel.getSelectedItem().getAttribute(ch);
+							return attribute.isSimple();
+						}
+					}
 		        }
             }
             return false;
