@@ -10,8 +10,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -92,49 +90,6 @@ public class Intkey extends DeltaSingleFrameApplication {
         mainFrame.setTitle("Intkey");
         mainFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         mainFrame.setIconImages(IconHelper.getRedIconList());
-
-        mainFrame.addWindowListener(new WindowListener() {
-
-            @Override
-            public void windowOpened(WindowEvent e) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void windowIconified(WindowEvent e) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void windowDeiconified(WindowEvent e) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void windowDeactivated(WindowEvent e) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void windowClosing(WindowEvent e) {
-                System.out.println("Closing window");
-            }
-
-            @Override
-            public void windowClosed(WindowEvent e) {
-                System.out.println("Window closed");
-            }
-
-            @Override
-            public void windowActivated(WindowEvent arg0) {
-                // TODO Auto-generated method stub
-
-            }
-        });
 
         _context = new IntkeyContext(this);
 
@@ -263,9 +218,11 @@ public class Intkey extends DeltaSingleFrameApplication {
                     try {
                         IntkeyDirectiveParser.createInstance().parse(new InputStreamReader(new ByteArrayInputStream(cmdStr.getBytes())), _context);
                     } catch (Exception ex) {
+                        Logger.log("Exception thrown while processing directive \"%s\"", cmdStr);
                         ex.printStackTrace();
                     }
                 }
+                _txtFldCmdBar.setText(null);
             }
         });
 
