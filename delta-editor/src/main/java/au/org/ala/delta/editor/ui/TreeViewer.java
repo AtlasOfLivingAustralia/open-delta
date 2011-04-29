@@ -34,6 +34,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
+import javax.swing.event.CellEditorListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TreeSelectionEvent;
@@ -53,6 +54,10 @@ import org.jdesktop.application.ResourceMap;
 import au.org.ala.delta.editor.EditorPreferences;
 import au.org.ala.delta.editor.ItemController;
 import au.org.ala.delta.editor.ui.util.EditorUIUtils;
+import au.org.ala.delta.editor.ui.validator.AttributeValidator;
+import au.org.ala.delta.editor.ui.validator.TextComponentValidator;
+import au.org.ala.delta.editor.ui.validator.ValidationListener;
+import au.org.ala.delta.editor.ui.validator.ValidationResult;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
@@ -287,19 +292,53 @@ public class TreeViewer extends JInternalFrame {
 	/**
 	 * Provides the mechanism for editing numeric or text attributes.
 	 */
-	class NumericTextAttributeCellEditor extends AttributeCellEditor {
+	class NumericTextAttributeCellEditor extends AttributeCellEditor implements ValidationListener {
 		
 		private static final long serialVersionUID = -6054961593128043309L;
 
+		private boolean _valid;
+		private TextComponentValidator _validator;
+		
 		public NumericTextAttributeCellEditor() {
-			super(new JTextField());
+			super(new JTextField());	
+			_valid = true;
+			
 		}
 
 		@Override
 		protected Component configureEditingComponent(Attribute attribute, DefaultMutableTreeNode nodeUserObject) {
-			((JTextField)editorComponent).setText(attribute.getValue());
+			getTextField().setText(attribute.getValue());
+			_validator = new TextComponentValidator(new AttributeValidator(_dataModel, attribute.getCharacter()), this);
+			//getTextField().setInputVerifier(_validator);
+			_valid = true;
 			return editorComponent;
 		}
+		
+		private JTextField getTextField() {
+			return (JTextField)editorComponent;
+		}
+
+		@Override
+		public void validationSuceeded(ValidationResult results) {
+			_valid = true;
+			
+		}
+
+		@Override
+		public void validationFailed(ValidationResult results) {
+			_valid = false;
+		}
+
+		@Override
+		public boolean stopCellEditing() {
+			_validator.verify(getTextField());
+			if (_valid) {
+				fireEditingStopped();
+			}
+			return _valid;
+		}
+		
+		
 	}
 	
 	/**
@@ -321,7 +360,7 @@ public class TreeViewer extends JInternalFrame {
 		@Override
 		public Component getTreeCellEditorComponent(JTree tree, Object value,
 				boolean isSelected, boolean expanded, boolean leaf, int row) {
-			
+			super.getTreeCellEditorComponent(tree, value, isSelected, expanded, leaf, row);
 			DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
 			
 			if (leaf) {
@@ -337,7 +376,14 @@ public class TreeViewer extends JInternalFrame {
 			return null;
 		}
 		
-		protected abstract Component configureEditingComponent(Attribute attribute, DefaultMutableTreeNode nodeUserObject);
+		/**
+		 * Subclasses should override this method to configure the editor appropriately for the
+		 * supplied node to be edited.
+		 * @param attribute the attribute represented by the node.
+		 * @param node the node to be edited.
+		 * @return the component that will be used as the editor.
+		 */
+		protected abstract Component configureEditingComponent(Attribute attribute, DefaultMutableTreeNode node);
 		
 		@Override
 		public boolean isCellEditable(EventObject anEvent) {
@@ -351,9 +397,7 @@ public class TreeViewer extends JInternalFrame {
             	TreePath path = _tree.getPathForLocation(event.getX(),event.getY());
 		        if (path!=null) {					
 					Object value = path.getLastPathComponent();
-					//return  _tree.getModel().isLeaf(value);
-					// Temporary workaround till we hook up validation to text/numeric edits.
-					return (value instanceof MultistateStateNode);
+					return  _tree.getModel().isLeaf(value);
 		        }
             }
             return false;
@@ -368,14 +412,56 @@ public class TreeViewer extends JInternalFrame {
 		
 		private static final long serialVersionUID = 8431473832073654661L;
 
+		private MultiStateAttributeCellEditor _multistateEditor;
+		private NumericTextAttributeCellEditor _numericTextEditor;
+		private DefaultTreeCellRenderer _renderer;
+		
 		public DeltaTreeEditor(JTree tree, DefaultTreeCellRenderer renderer) {
-			super(tree, renderer, new MultiStateAttributeCellEditor());
+			super(tree, renderer, new NumericTextAttributeCellEditor());
+			_multistateEditor = new MultiStateAttributeCellEditor();
+			_numericTextEditor = (NumericTextAttributeCellEditor)realEditor;
+			_renderer = renderer;
+		}
+		
+		@Override
+		public Component getTreeCellEditorComponent(JTree tree, Object value,
+				boolean isSelected, boolean expanded, boolean leaf, int row) {
+			
+			if (value instanceof MultistateStateNode) {
+				realEditor = _multistateEditor;
+				// We do this to prevent the leaf icon being displayed before the editor.
+				renderer = null;
+				
+			}
+			else {
+				realEditor = _numericTextEditor;
+				renderer = _renderer;
+			}
+			return super.getTreeCellEditorComponent(tree, value, isSelected, expanded, leaf, row);
 		}
 
 		@Override
 		protected boolean canEditImmediately(EventObject e) {
 			return true;
 		}
+		
+		/**
+	     * Adds the <code>CellEditorListener</code>.
+	     * @param l the listener to be added
+	     */
+	    public void addCellEditorListener(CellEditorListener l) {
+	    	_multistateEditor.addCellEditorListener(l);
+	    	_numericTextEditor.addCellEditorListener(l);
+	    }
+
+	    /**
+	      * Removes the previously added <code>CellEditorListener</code>.
+	      * @param l the listener to be removed
+	      */
+	    public void removeCellEditorListener(CellEditorListener l) {
+	    	_multistateEditor.removeCellEditorListener(l);
+	    	_numericTextEditor.addCellEditorListener(l);
+	    }
 	}
 
 }

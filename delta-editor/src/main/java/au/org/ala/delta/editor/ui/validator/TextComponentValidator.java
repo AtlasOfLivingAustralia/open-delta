@@ -163,7 +163,9 @@ public class TextComponentValidator extends InputVerifier {
 			}
 		}
 		else {
-			_listener.validationSuceeded(result);
+			if (_listener != null) {
+				_listener.validationSuceeded(result);
+			}
 			valid = true;
 		}
 		return valid;
