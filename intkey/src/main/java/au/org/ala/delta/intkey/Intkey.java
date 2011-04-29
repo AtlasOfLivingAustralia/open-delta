@@ -38,6 +38,7 @@ import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.Logger;
+import au.org.ala.delta.intkey.directives.FileCharactersDirective;
 import au.org.ala.delta.intkey.directives.FileTaxaDirective;
 import au.org.ala.delta.intkey.directives.IntkeyContext;
 import au.org.ala.delta.intkey.directives.IntkeyDirective;
@@ -318,8 +319,7 @@ public class Intkey extends DeltaSingleFrameApplication {
         JMenu mnuFileCmds = new JMenu();
         mnuFileCmds.setName("mnuFileCmds");
 
-        JMenuItem mnuItFileCharactersCmd = new JMenuItem();
-        mnuItFileCharactersCmd.setAction(actionMap.get("setFileCharacters"));
+        JMenuItem mnuItFileCharactersCmd = buildMenuItemForDirective(new FileCharactersDirective(), "mnuDirectiveFileCharacters");
         mnuFileCmds.add(mnuItFileCharactersCmd);
 
         JMenuItem mnuItFileTaxaCmd = buildMenuItemForDirective(new FileTaxaDirective(), "mnuDirectiveFileTaxa");
