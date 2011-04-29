@@ -86,4 +86,12 @@ public class IntkeyContext extends AbstractDeltaContext {
         return _appUI.getMainFrame();
     }
     
+    public IntkeyDataset getDataset() {
+        return _dataset;
+    }
+    
+    public void useCharacters() {
+        Logger.log("Using characters");
+    }
+    
 }
