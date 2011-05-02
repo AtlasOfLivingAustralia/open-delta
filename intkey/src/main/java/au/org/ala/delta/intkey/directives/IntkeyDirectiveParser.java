@@ -29,29 +29,30 @@ public class IntkeyDirectiveParser extends DirectiveParser<IntkeyContext> {
 
         return instance;
     }
-    
+
     @Override
     protected void processDirective(StringBuilder data, IntkeyContext context) {
-        ParsingContext pc = context.getCurrentParsingContext();
-        char ch = data.charAt(0);
-        if (Character.isDigit(ch)) {
-            DirectiveSearchResult r = getDirectiveTree().findDirective(new ArrayList<String>(Arrays.asList("use")));
-            IntkeyDirective useDirective = (IntkeyDirective) r.getDirective();
-            try {
-                useDirective.doProcess(context, data.toString());
-            } catch (Exception ex) {
-                if (pc.getFile() != null) {
-                    throw new RuntimeException(String.format("Exception occured trying to process directive: %s (%s %d:%d)", useDirective.getName(), pc.getFile().getName(),
-                            pc.getCurrentDirectiveStartLine(), pc.getCurrentDirectiveStartOffset()), ex);
-                } else {
-                    throw new RuntimeException(String.format("Exception occured trying to process directive: %s (%d:%d)", useDirective.getName(), pc.getCurrentDirectiveStartLine(),
-                            pc.getCurrentDirectiveStartOffset()), ex);
+        if (data.length() > 0) {
+            ParsingContext pc = context.getCurrentParsingContext();
+            char ch = data.charAt(0);
+            if (Character.isDigit(ch)) {
+                DirectiveSearchResult r = getDirectiveTree().findDirective(new ArrayList<String>(Arrays.asList("use")));
+                IntkeyDirective useDirective = (IntkeyDirective) r.getDirective();
+                try {
+                    useDirective.doProcess(context, data.toString());
+                } catch (Exception ex) {
+                    if (pc.getFile() != null) {
+                        throw new RuntimeException(String.format("Exception occured trying to process directive: %s (%s %d:%d)", useDirective.getName(), pc.getFile().getName(),
+                                pc.getCurrentDirectiveStartLine(), pc.getCurrentDirectiveStartOffset()), ex);
+                    } else {
+                        throw new RuntimeException(String.format("Exception occured trying to process directive: %s (%d:%d)", useDirective.getName(), pc.getCurrentDirectiveStartLine(),
+                                pc.getCurrentDirectiveStartOffset()), ex);
+                    }
                 }
+            } else {
+                super.processDirective(data, context);
             }
-        } else {
-            super.processDirective(data, context);
         }
-        
     }
 
     @Override

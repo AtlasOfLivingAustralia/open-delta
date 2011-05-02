@@ -3,6 +3,7 @@ package au.org.ala.delta.intkey.directives;
 import java.io.File;
 
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 
 import org.apache.commons.lang.StringUtils;
@@ -60,8 +61,11 @@ public class FileCharactersDirective extends IntkeyDirective {
 
         @Override
         public void execute(IntkeyContext context) {
-            context.setFileCharacters(_fileName);
-
+            try {
+                context.setFileCharacters(_fileName);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(context.getMainFrame(), ex.getMessage(), "", JOptionPane.ERROR_MESSAGE);
+            } 
         }
 
         @Override
