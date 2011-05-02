@@ -353,6 +353,22 @@ public abstract class VOAnyDesc {
 		dataWrite(buff.array());
 	}
 	
+	protected void dataWrite(short i) {
+		ByteBuffer buff = ByteBuffer.allocate(2);
+		buff.order(ByteOrder.LITTLE_ENDIAN);
+		buff.putShort(i);
+		dataWrite(buff.array());
+	}
+	
+	protected void dataWrite(short[] shorts) {
+		ByteBuffer buff = ByteBuffer.allocate(2*shorts.length);
+		buff.order(ByteOrder.LITTLE_ENDIAN);
+		for (int i=0; i<shorts.length; i++) {
+			buff.putShort(shorts[i]);
+		}
+		dataWrite(buff.array());
+	}
+	
 	protected void dataWrite(byte[] buf) {
 		makeTemp();
 		int endPos = getDataSize();

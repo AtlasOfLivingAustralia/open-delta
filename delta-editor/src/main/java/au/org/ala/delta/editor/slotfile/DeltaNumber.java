@@ -86,13 +86,14 @@ public class DeltaNumber {
 		_decimal = Decimal;
 	}
 
-	public void setFromString(String src) {
+	public int setFromString(String src) {
 		char decimal = new DecimalFormatSymbols().getDecimalSeparator();
 		int effectiveLength = parseFloat(src);	
 		int pos = src.indexOf(decimal);
 		if (pos > 0) {
 			_decimal = (byte) (effectiveLength - 1 - pos);
 		}
+		return effectiveLength;
 	}
 	
 	/**
