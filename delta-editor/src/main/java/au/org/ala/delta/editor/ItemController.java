@@ -1,18 +1,11 @@
 package au.org.ala.delta.editor;
 
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.dnd.DnDConstants;
 import java.awt.event.ActionEvent;
-import java.io.IOException;
 
 import javax.swing.ActionMap;
-import javax.swing.DropMode;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
-import javax.swing.TransferHandler;
 
 import org.apache.commons.lang.StringUtils;
 import org.jdesktop.application.Action;
@@ -20,7 +13,8 @@ import org.jdesktop.application.Application;
 import org.jdesktop.application.ApplicationContext;
 
 import au.org.ala.delta.editor.ui.EditorDataModel;
-import au.org.ala.delta.editor.ui.ItemList;
+import au.org.ala.delta.editor.ui.ReorderableItemList;
+import au.org.ala.delta.editor.ui.dnd.ItemTransferHandler;
 import au.org.ala.delta.editor.ui.util.MenuBuilder;
 import au.org.ala.delta.editor.ui.util.PopupMenuListener;
 import au.org.ala.delta.model.Item;
@@ -31,18 +25,18 @@ import au.org.ala.delta.ui.MessageDialogHelper;
  */
 public class ItemController {
 
-	private ItemList _view;
+	private ReorderableItemList _view;
 	private EditorDataModel _model;
 	private ApplicationContext _context;
 	
-	public ItemController(ItemList view, EditorDataModel model) {
+	public ItemController(ReorderableItemList view, EditorDataModel model) {
 		_view = view;
 		_model = model;
 		_context = Application.getInstance().getContext();
 		
-		_view.setDragEnabled(true);
-		_view.setDropMode(DropMode.INSERT);
-		_view.setTransferHandler(new ItemTransferHandler());
+		JComponent viewComponent = (JComponent)_view;
+		
+		viewComponent.setTransferHandler(new ListItemTransferHandler());
 		
 		new PopupBuilder();
 	}
@@ -78,18 +72,18 @@ public class ItemController {
 	 */
 	@Action
 	public void deleteItem() {
-		int selectedIndex = _view.getSelectedIndex();
+		
 		Item toDelete = _view.getSelectedItem();
+		
 		if (toDelete == null) {
 			return;
 		}
+		
+		int itemNum = toDelete.getItemNumber();
 		if (confirmDelete(toDelete)) {
 			_model.deleteItem(toDelete);
 		}
-		if (selectedIndex >= _model.getMaximumNumberOfItems()) {
-			selectedIndex = _model.getMaximumNumberOfItems()-1;
-		}
-		_view.setSelectedIndex(selectedIndex);
+		updateSelection(itemNum);
 	}
 	
 	/**
@@ -103,8 +97,12 @@ public class ItemController {
 	
 	@Action
 	public void insertItem() {
-		int selectedItem = _view.getSelectedIndex()+1;
-		Item newItem = _model.addItem(selectedItem);
+		Item selectedItem = _view.getSelectedItem();
+		int itemNumber = 1;
+		if (selectedItem != null) {
+			itemNumber = selectedItem.getItemNumber();
+		}
+		Item newItem = _model.addItem(itemNumber);
 		
 		editNewItem(newItem, new ActionEvent(_view, -1, ""));
 	}
@@ -115,26 +113,27 @@ public class ItemController {
 	}
 	
 	public void editNewItem(Item newItem, ActionEvent e) {
-		int selectedIndex = newItem.getItemNumber()-1;
-		_view.setSelectedIndex(selectedIndex);
-		_view.ensureIndexIsVisible(selectedIndex);
+		int selectedItem = newItem.getItemNumber();
+		_view.setSelectedItem(selectedItem);
+		
 		editItem(e);
 		
 		if (StringUtils.isEmpty(newItem.getDescription())) {
 			_model.deleteItem(newItem);
-			if (selectedIndex >= _model.getMaximumNumberOfItems()) {
-				selectedIndex = _model.getMaximumNumberOfItems()-1;
-			}
-			_view.setSelectedIndex(selectedIndex);
+			updateSelection(selectedItem);
 		}
+	}
+	
+	private void updateSelection(int itemNum) {
+		if (itemNum > _model.getMaximumNumberOfItems()) {
+			itemNum = _model.getMaximumNumberOfItems();
+		}
+		_view.setSelectedItem(itemNum);
 	}
 	
 	public void moveItem(Item item, int newIndex) {
 		_model.moveItem(item, newIndex+1);
-		
-		_view.setSelectedIndex(newIndex);
-		_view.ensureIndexIsVisible(newIndex);
-		
+		_view.setSelectedItem(newIndex+1);
 	}
 	
 	public void copyItem(Item item, int copyLocation) {
@@ -144,104 +143,53 @@ public class ItemController {
 	}
 	
 	private boolean confirmDelete(Item toDelete) {
-		int result = MessageDialogHelper.showConfirmDialog(_view, "CONFIRM", 
+		JComponent viewComponent = (JComponent)_view;
+		int result = MessageDialogHelper.showConfirmDialog(viewComponent, "CONFIRM", 
 				"Please confirm that you really wish to delete this taxon:\n" + toDelete.getDescription(), 50);
 		return result == JOptionPane.OK_OPTION;
 	}
 	
-	private static DataFlavor _itemFlavor = new DataFlavor(Item.class, "Item");
-	
 	/**
 	 * Handles drag and drop of Items in the ItemList.
 	 */
-	class ItemTransferHandler extends TransferHandler {
+	class ListItemTransferHandler extends ItemTransferHandler {
 		
 		private static final long serialVersionUID = 889705892088002277L;
-		private int sourceIndex;
 		
-		public boolean canImport(TransferHandler.TransferSupport info) {
-			
-			return info.isDataFlavorSupported(_itemFlavor);
-		}
-		
-		protected Transferable createTransferable(JComponent c) {
-			ItemList list = (ItemList)c;
-			Item item = list.getSelectedItem();
-			sourceIndex = list.getSelectedIndex();
-			
-			return new ItemTransferrable(item);
-			
-		}
-		
-		public int getSourceActions(JComponent c) {
-			return TransferHandler.COPY_OR_MOVE;
-		}
-		
-		public boolean importData(TransferHandler.TransferSupport info) {
-			ItemList list = (ItemList)info.getComponent();
-			
-			Transferable transferrable = info.getTransferable();
-			
-			Item item = null;
-			try {
-				item = (Item)transferrable.getTransferData(_itemFlavor);
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-				return false;
-			}
-			
-			int targetIndex = list.getDropLocation().getIndex();
-			if (targetIndex > sourceIndex) {
-				targetIndex--;
-			}
-			
-			if (info.getUserDropAction() == DnDConstants.ACTION_MOVE) {
-				moveItem(item, targetIndex);
-			}
-			else if (info.getUserDropAction() == DnDConstants.ACTION_COPY) {
-				copyItem(item, targetIndex);
-			}
-			return true;
-		}
-	}
-
-	/**
-	 * Transfers an Item.
-	 */
-	class ItemTransferrable implements Transferable {
-
-		private Item _item;
-		
-		public ItemTransferrable(Item item) {
-			_item = item;
+		@Override
+		protected Item getItem() {
+			return _view.getSelectedItem();
 		}
 		
 		@Override
-		public DataFlavor[] getTransferDataFlavors() {
-			return new DataFlavor[] {_itemFlavor};
-		}
-
-		@Override
-		public boolean isDataFlavorSupported(DataFlavor flavor) {
-			
-			return _itemFlavor.equals(flavor);
-		}
-
-		@Override
-		public Object getTransferData(DataFlavor flavor)
-				throws UnsupportedFlavorException, IOException {
-			if (!isDataFlavorSupported(flavor)) {
-				throw new UnsupportedFlavorException(flavor);
+		protected int getStartIndex() {
+			int startIndex = 0;
+			Item selected = _view.getSelectedItem();
+			if (selected != null) {
+				startIndex = selected.getItemNumber()-1;
 			}
-			return _item;
+			return startIndex;
 		}
 		
+		@Override
+		protected int getDropLocationIndex() {
+			return _view.getDropLocationIndex();
+		}
+
+		@Override
+		protected void moveItem(Item item, int targetIndex) {
+			ItemController.this.moveItem(item, targetIndex);
+		}
+
+		@Override
+		protected void copyItem(Item item, int targetIndex) {
+			ItemController.this.copyItem(item, targetIndex);
+		}
 	}
 	
 	class PopupBuilder extends PopupMenuListener {
 		public PopupBuilder() {
-			super(null, _view);
+			super(null, (JComponent)_view);
 		}
 		
 		@Override

@@ -29,23 +29,24 @@ public class TableRowResizer extends MouseInputAdapter {
 	}
 
 	private int getResizingRow(Point p, int row) {
-		if (row == -1) {
-			return -1;
+		int resizingRow = -1;
+		if (row != -1) {
+			
+			int col = _fixedColumnsTable.columnAtPoint(p);
+			if (col != -1) {
+					
+				Rectangle r = _fixedColumnsTable.getCellRect(row, col, true);
+				r.grow(0, -3);
+				if (!r.contains(p)) {
+					
+					int midPoint = r.y + r.height / 2;
+					resizingRow = (p.y < midPoint) ? row - 1 : row;
+				}
+			}
 		}
-		int col = _fixedColumnsTable.columnAtPoint(p);
-		if (col == -1) {
-			return -1;
-		}
-		Rectangle r = _fixedColumnsTable.getCellRect(row, col, true);
-		r.grow(0, -3);
-		if (r.contains(p)) {
-			return -1;
-		}
-
-		int midPoint = r.y + r.height / 2;
-		int rowIndex = (p.y < midPoint) ? row - 1 : row;
-
-		return rowIndex;
+		// Disable drag and drop during a resize operation.
+		_fixedColumnsTable.setDragEnabled(resizingRow == -1);
+		return resizingRow;
 	}
 
 	public void mousePressed(MouseEvent e) {
@@ -71,6 +72,7 @@ public class TableRowResizer extends MouseInputAdapter {
 		int mouseY = e.getY();
 
 		if (resizingRow >= 0) {
+			
 			int newHeight = mouseY - mouseYOffset;
 			if (newHeight > 0) {
 				_fixedColumnsTable.setRowHeight(resizingRow, newHeight);

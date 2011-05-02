@@ -99,7 +99,7 @@ public class TreeViewer extends JInternalFrame {
 
 		_itemList = new ItemList(_dataModel);
 		_itemList.setDragEnabled(true);
-		_itemList.setDropMode(DropMode.ON);
+		_itemList.setDropMode(DropMode.INSERT);
 		final ActionMap actionMap = context.getActionMap();
 		_itemList.setSelectionAction(actionMap.get("viewTaxonEditor"));
 		
@@ -149,10 +149,7 @@ public class TreeViewer extends JInternalFrame {
 			public void valueChanged(ListSelectionEvent e) {
 
 				_dataModel.setSelectedItem(_itemList.getSelectedItem());
-				int[] nodes = new int[13];
-				for (int i=0; i<nodes.length;i++) {
-					nodes[i] = i;
-				}
+				
 				treeModel.itemChanged();
 				_tree.repaint();
 				_stateEditor.bind(_dataModel.getSelectedCharacter(), _dataModel.getSelectedItem());

@@ -19,7 +19,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.SystemColor;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
@@ -27,6 +26,7 @@ import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 
 import javax.swing.ActionMap;
+import javax.swing.DropMode;
 import javax.swing.JInternalFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -35,7 +35,6 @@ import javax.swing.ListSelectionModel;
 import javax.swing.border.LineBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.table.AbstractTableModel;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
@@ -45,23 +44,21 @@ import org.jdesktop.application.Task;
 import org.jdesktop.application.Task.BlockingScope;
 
 import au.org.ala.delta.editor.EditorPreferences;
+import au.org.ala.delta.editor.ItemController;
+import au.org.ala.delta.editor.ui.dnd.DropIndicationTable;
 import au.org.ala.delta.model.Item;
-import au.org.ala.delta.model.format.ItemFormatter;
-import au.org.ala.delta.model.observer.AbstractDataSetObserver;
-import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
-import au.org.ala.delta.ui.AboutBox;
 
 public class MatrixViewer extends JInternalFrame {
 
 	private static final long serialVersionUID = 1L;
 
 	private EditorDataModel _dataSet;
-	private JTable _table;
-	private JTable _fixedColumns;
+	private DropIndicationTable _table;
+	private TableRowHeader _fixedColumns;
 	private MatrixTableModel _model;
 	private AttributeEditor _stateEditor;
-	private ItemColumnModel _fixedModel;
 
+	
 	@Resource
 	String windowTitle;
 
@@ -79,20 +76,13 @@ public class MatrixViewer extends JInternalFrame {
 
 		this.setSize(new Dimension(600, 500));
 
-		_table = new JTable(_model);
-		_table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-		_table.getTableHeader().setSize(new Dimension(_table.getColumnModel().getTotalColumnWidth(), 100));
-		_table.getSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-		_table.setCellSelectionEnabled(true);
-		_table.setDefaultRenderer(Object.class, new AttributeCellRenderer());
-
-		_fixedModel = new ItemColumnModel(dataSet);
-		_fixedColumns = new JTable(_fixedModel);
-		_fixedColumns.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
-		_fixedColumns.getTableHeader().setPreferredSize(new Dimension(_table.getColumnModel().getTotalColumnWidth(), 100));
-		_fixedColumns.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		_fixedColumns.setBackground(SystemColor.control);
-		_fixedColumns.setDefaultRenderer(Object.class, new FixedColumnRenderer());
+		_fixedColumns = new TableRowHeader(dataSet);
+		_fixedColumns.setDragEnabled(true);
+		_fixedColumns.setDropMode(DropMode.INSERT_ROWS);
+		new ItemController(_fixedColumns, dataSet);
+		
+		_table = new DropIndicationTable(_model, _fixedColumns);
+		_fixedColumns.setTable(_table);
 		
 		_fixedColumns.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 
@@ -104,7 +94,13 @@ public class MatrixViewer extends JInternalFrame {
 		});
 				
 		new TableRowResizer(_fixedColumns, _table);
-
+		
+		_table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		_table.getTableHeader().setSize(new Dimension(_table.getColumnModel().getTotalColumnWidth(), 100));
+		_table.getSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+		_table.setCellSelectionEnabled(true);
+		_table.setDefaultRenderer(Object.class, new AttributeCellRenderer());
+		
 		ListSelectionListener listener = new ListSelectionListener() {
 
 			@Override
@@ -114,9 +110,12 @@ public class MatrixViewer extends JInternalFrame {
 				int charId = _table.getSelectedColumn() + 1;
 				int itemId = _table.getSelectedRow() + 1;
 
+				
+				
 				if (charId > 0 && itemId > 0) {
 					au.org.ala.delta.model.Character selectedCharacter = _dataSet.getCharacter(charId);
 					Item selectedItem = _dataSet.getItem(itemId);
+					_dataSet.setSelectedItem(selectedItem);
 					_stateEditor.bind(selectedCharacter, selectedItem);
 				}
 
@@ -142,8 +141,17 @@ public class MatrixViewer extends JInternalFrame {
 			@Override
 			public void adjustmentValueChanged(AdjustmentEvent e) {
 				fixedScrollPane.getViewport().setViewPosition(scrollpane.getViewport().getViewPosition());
-				fixedScrollPane.invalidate();
-				fixedScrollPane.updateUI();
+			}
+		});
+		
+		// Even though the vertical scrollbar policy is "never" the scroll position can be
+		// adjusted while dragging during a drag and drop operation.
+		fixedScrollPane.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
+			
+			@Override
+			public void adjustmentValueChanged(AdjustmentEvent e) {
+				scrollpane.getViewport().setViewPosition(fixedScrollPane.getViewport().getViewPosition());
+				
 			}
 		});
 
@@ -330,7 +338,7 @@ public class MatrixViewer extends JInternalFrame {
 			// Now for each row...
 
 			for (int row = 0; row < _model.getRowCount(); ++row) {
-				b.append(_fixedModel.getValueAt(row, 0));
+				b.append(_fixedColumns.getModel().getValueAt(row, 0));
 				// and for each data item (column)
 				for (int col = 0; col < _model.getColumnCount(); ++col) {
 					String value = ((MatrixCellViewModel) _model.getValueAt(row, col)).getText();
@@ -368,69 +376,3 @@ class BottomLineBorder extends LineBorder {
 	}
 }
 
-class ItemColumnModel extends AbstractTableModel {
-
-	private static final long serialVersionUID = 1L;
-
-	private EditorDataModel _dataSet;
-	private ItemFormatter _formatter;
-
-	@Resource
-	String columnName;
-
-	public ItemColumnModel(EditorDataModel dataSet) {
-		ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(AboutBox.class);
-		resourceMap.injectFields(this);
-		_dataSet = dataSet;
-		_dataSet.addDeltaDataSetObserver(new ItemAddedListener());
-		boolean includeNumber = false;
-		boolean stripComments = false;
-		boolean replaceAngleBrackets = false;
-		boolean stripRtf = true;
-		boolean useShortFormOfVariant = true;
-		_formatter = new ItemFormatter(includeNumber, stripComments, replaceAngleBrackets, stripRtf, useShortFormOfVariant);
-	}
-
-	@Override
-	public int getColumnCount() {
-		return 1;
-	}
-
-	@Override
-	public String getColumnName(int column) {
-		return columnName;
-	}
-
-	@Override
-	public int getRowCount() {
-		return _dataSet.getMaximumNumberOfItems();
-	}
-
-	@Override
-	public Object getValueAt(int row, int column) {
-		Item item = _dataSet.getItem(row + 1);
-		return _formatter.formatItemDescription(item);
-	}
-
-	@Override
-	public Class<?> getColumnClass(int columnIndex) {
-		return Item.class;
-	}
-
-	@Override
-	public boolean isCellEditable(int rowIndex, int columnIndex) {
-		return false;
-	}
-	
-	class ItemAddedListener extends AbstractDataSetObserver {
-		@Override
-		public void itemAdded(DeltaDataSetChangeEvent event) {
-			fireTableRowsInserted(event.getItem().getItemNumber()-1, event.getItem().getItemNumber()-1);
-		}
-		@Override
-		public void itemEdited(DeltaDataSetChangeEvent event) {
-			fireTableCellUpdated(event.getItem().getItemNumber()-1, 0);
-		}
-	}
-
-}
