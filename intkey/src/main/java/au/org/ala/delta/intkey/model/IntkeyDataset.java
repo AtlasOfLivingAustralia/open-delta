@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
 
 public class IntkeyDataset {
@@ -141,5 +142,9 @@ public class IntkeyDataset {
     }
     void setChineseFormat(boolean chineseFormat) {
         this.chineseFormat = chineseFormat;
+    }
+    
+    public Character getCharacter(int charNum) {
+        return _characters.get(charNum - 1);
     }
 }

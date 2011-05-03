@@ -29,4 +29,10 @@ public class MultiStateInputDialog extends CharacterValueInputDialog {
         // TODO Auto-generated constructor stub
     }
 
+    @Override
+    void handleBtnOKClicked() {
+        // TODO Auto-generated method stub
+        
+    }
+
 }

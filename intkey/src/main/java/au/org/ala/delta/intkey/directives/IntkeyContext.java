@@ -4,13 +4,13 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.directives.AbstractDeltaContext;
 import au.org.ala.delta.intkey.Intkey;
 import au.org.ala.delta.intkey.model.IntkeyDataset;
 import au.org.ala.delta.intkey.model.IntkeyDatasetFileBuilder;
+import au.org.ala.delta.intkey.model.specimen.Specimen;
 
 /**
  * Controller? Handles input and updates UI, model accordingly.
@@ -33,9 +33,12 @@ public class IntkeyContext extends AbstractDeltaContext {
     private File _datasetInitFile;
 
     private Intkey _appUI;
+    
+    private Specimen _specimen;
 
     public IntkeyContext(Intkey appUI) {
         _appUI = appUI;
+        _specimen = new Specimen();
     }
 
     public void setFileCharacters(String fileName) {
@@ -116,6 +119,10 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     public void useCharacters() {
         Logger.log("Using characters");
+    }
+    
+    public Specimen getSpecimen() {
+        return _specimen;
     }
 
 }

@@ -43,6 +43,7 @@ import au.org.ala.delta.intkey.directives.IntkeyDirective;
 import au.org.ala.delta.intkey.directives.IntkeyDirectiveParser;
 import au.org.ala.delta.intkey.directives.NewDatasetDirective;
 import au.org.ala.delta.intkey.model.IntkeyDataset;
+import au.org.ala.delta.intkey.ui.TextInputDialog;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.format.CharacterFormatter;
@@ -206,6 +207,7 @@ public class Intkey extends DeltaSingleFrameApplication {
         getMainView().setMenuBar(buildMenus());
         
         _txtFldCmdBar = new JTextField();
+        _txtFldCmdBar.setCaretColor(Color.WHITE);
         _txtFldCmdBar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 String cmdStr = _txtFldCmdBar.getText();

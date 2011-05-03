@@ -9,6 +9,8 @@ import javax.swing.JButton;
 import javax.swing.border.EmptyBorder;
 import java.awt.Dimension;
 import javax.swing.JLabel;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public abstract class CharacterValueInputDialog extends JDialog {
     protected JPanel _buttonPanel;
@@ -21,6 +23,7 @@ public abstract class CharacterValueInputDialog extends JDialog {
     protected JPanel _pnlMain;
     public CharacterValueInputDialog(Frame owner) {
         super(owner, true);
+        setLocationRelativeTo(owner);
         setSize(new Dimension(500, 150));
         setResizable(false);
         getContentPane().setLayout(new BorderLayout(0, 0));
@@ -31,6 +34,11 @@ public abstract class CharacterValueInputDialog extends JDialog {
         _buttonPanel.setLayout(new GridLayout(0, 4, 5, 5));
         
         JButton _btnOk = new JButton("OK");
+        _btnOk.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                CharacterValueInputDialog.this.handleBtnOKClicked();
+            }
+        });
         _buttonPanel.add(_btnOk);
         
         _btnImages = new JButton("Images");
@@ -56,5 +64,7 @@ public abstract class CharacterValueInputDialog extends JDialog {
         getContentPane().add(_pnlMain, BorderLayout.CENTER);
         _pnlMain.setLayout(new BorderLayout(0, 0));
     }
+    
+    abstract void handleBtnOKClicked();
 
 }
