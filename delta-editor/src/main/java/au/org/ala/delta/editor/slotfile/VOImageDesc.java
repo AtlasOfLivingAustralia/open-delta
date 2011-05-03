@@ -626,7 +626,21 @@ public class VOImageDesc extends VOAnyDesc {
 	}
 
 	public VOImageDesc clone(int newOwnerId) {
-		throw new NotImplementedException();
+		if (getVOP() == null) {
+			return null;
+		}
+		
+	    int dataSize = getDataSize();
+		byte[] dataBuf = new byte[dataSize];
+		dataSeek(0);
+		dataRead(dataBuf, dataSize);
+		
+		VOImageDesc newImageDesc = (VOImageDesc)getVOP().insertObject(
+				_fixedData, _fixedData.size(), dataBuf, dataSize + _fixedData.size(), 32);
+		 
+		newImageDesc.setOwnerId(newOwnerId);
+		newImageDesc.touch();
+		return newImageDesc;
 	}
 
 	public List<ImageOverlay> readAllOverlays() {
@@ -714,11 +728,115 @@ public class VOImageDesc extends VOAnyDesc {
 	}
 
 	public boolean replaceOverlay(ImageOverlay src, boolean frontOnly) {
-		throw new NotImplementedException();
+		synchronized(getVOP()) {
+		if (src.location.size() == 0) {
+	        OverlayLoc emptyLocation = new OverlayLoc();
+	        src.location.add(emptyLocation);
+	    }
+	    int srcId = src.location.get(0).ID;
+
+	    int startLoc = getOverlayStart(srcId);
+	    if (startLoc == -1) {
+	        return false;
+	    }
+
+	    // Read in a copy of the old version, then read through it to locate
+	    // its end. Copy and save all that follows
+	    // Keep track of the IDs used in the old version
+	    dataSeek(startLoc);
+	    
+	    ImageOverlay oldOl = readSingleOverlay();
+
+	    byte[] trailerBuf = dupTrailingData(0, SeekDirection.FROM_CUR);
+
+	    if (frontOnly) { // If changing only the front
+	    
+	      if (src.location.size() > 1) { // Remove all "extra" locations
+	          src.location = src.location.subList(0, 1);
+	      }
+	      if (oldOl.location.size() > 1) { // Then copy any "extra" locations from the "old" data
+	          src.location.addAll(oldOl.location.subList(1, oldOl.location.size()));
+	        }
+	    }
+
+	    Set<Integer> oldIds = new HashSet<Integer>();
+	    for (OverlayLoc loc : oldOl.location) {
+	    	oldIds.add(loc.ID);
+	    }
+	  
+	    // Check the IDs in the new version. We might need to add some new ones.
+	    for (OverlayLoc loc : src.location) {
+	        // If it's not in the old set, make it zero, so a new ID will
+	        // be allocated when it's written.
+	        // Otherwise, remove the value from the list of "old" IDs
+	        if (!oldIds.contains(loc.ID)) {
+	            loc.ID = 0;
+	        }
+	        else {
+	            oldIds.remove(loc.ID);
+	        }
+	    }
+
+	    // Free up any IDs that used to be present in this overlay, but are no
+	    // longer in use.
+	    for (int id : oldIds) {
+	        usedIds.remove(id);
+	    }
+
+	    // Now go back to the old starting point, write out the new version
+	    // and whatever may have followed.
+	    dataSeek(startLoc);
+	    writeSingleOverlay(src, true);
+	    if (trailerBuf != null) {
+	        dataWrite(trailerBuf);
+	        dataTruncate();
+	    }
+	    return true;
+		}
 	}
 
 	public boolean replaceLocation(OverlayLoc src) {
-		throw new NotImplementedException();
+		synchronized (getVOP()) {
+		int startLoc = getOverlayStart(src.ID);
+		if (startLoc == -1) {
+		    return false;
+		}
+		dataSeek(startLoc);
+
+		short[] valBuf = new short[4];
+		// First part gives type of the overlay,
+		// followed by the lengths of remaining info
+		for (int i=0; i<valBuf.length; i++) {
+		    valBuf[i] = dataReadShort();
+		}
+		//Reads in:
+		// 0 : overlay type
+		// 1 : length of location list
+		// 2 : length of overlay text
+		// 3 : length of (image level) comment (usually 0)
+		// Next part is the location of this overlay, and its hotspots
+		// Starts with a 4-byte value. Lowest byte indicates the draw type
+		// Highest three bytes contain the ID
+		for (int j = 0; j < valBuf[1]; ++j) {
+		    int aValue = dataReadInt();
+		    if ((aValue >> 8) == src.ID) {// Found what we were looking for...
+		        dataSeek(-4, SeekDirection.FROM_CUR);
+		        aValue = (src.drawType.ordinal() & 0xff) | (src.ID << 8);
+		        dataWrite(aValue);
+		        dataWrite(src.flags);
+		        dataWrite(src.X);
+		        dataWrite(src.Y);
+		        dataWrite(src.W);
+		        dataWrite(src.H);
+		        return true;
+		    }
+		    else {
+		          // Skip over rest of "location" information...
+		        dataSeek(SIZE_OF_INT_IN_BYTES + 4 * 2 /* size of short */, SeekDirection.FROM_CUR);             
+		    }
+		}
+		return false;
+		}
 	}
 
 	public int insertOverlay(ImageOverlay src) {
@@ -726,23 +844,180 @@ public class VOImageDesc extends VOAnyDesc {
 	}
 
 	public int insertOverlay(ImageOverlay src, int placeId) {
-		throw new NotImplementedException();
+		synchronized (getVOP()) {
+			
+		int startLoc = _fixedData.nameLen;
+
+		if (hasId(placeId)) {
+		    ImageOverlay prev = readOverlay(placeId);
+		    if (prev != null) {
+		        startLoc = dataTell();
+		    }
+		}
+
+		byte[] trailerBuf = dupTrailingData(startLoc);
+		
+		if (src.location.size() == 0) {
+		    OverlayLoc emptyLocation = new OverlayLoc();
+		    src.location.add(emptyLocation);
+		}
+
+		dataSeek(startLoc);
+		int retVal = writeSingleOverlay(src);
+		_fixedData.nOverlays++;
+		setDirty();
+
+		if (trailerBuf != null) {
+		    dataWrite(trailerBuf);
+		    dataTruncate();
+		}
+		return retVal;
+		}
 	}
 
 	public int insertLocation(OverlayLoc src, int placeId) {
-		throw new NotImplementedException();
+		synchronized(getVOP()) {
+		int retVal = 0;
+		int startLoc = getOverlayStart(placeId);
+		if (startLoc != -1) {
+		    dataSeek(startLoc);
+		    short[] valBuf = new short[4];
+			// First part gives type of the overlay,
+			// followed by the lengths of remaining info
+			for (int i=0; i<valBuf.length; i++) {
+			    valBuf[i] = dataReadShort();
+			}
+		    //Reads in:
+		    // 0 : overlay type
+		    // 1 : length of location list
+		    // 2 : length of overlay text
+		    // 3 : length of (image level) comment (usually 0)
+		    // Next part is the location of this overlay, and its hotspots
+		    // Starts with a 4-byte value. Lowest byte indicates the draw type
+		    // Highest three bytes contain the ID
+		    for (int j = 0; j < valBuf[1]; ++j)  {
+		        int aValue = dataReadInt();
+		        // Skip over the rest of the location information.
+		        dataSeek(4 + 2 + 2 + 2 +2, SeekDirection.FROM_CUR);
+		        if ((aValue >> 8) == placeId) { // We've just read what we were looking for...		            
+		            int startWrite = dataTell();
+		            int trailerLeng = 0;
+		            byte[] trailerBuf = dupTrailingData(startWrite);
+		            if (trailerBuf != null) {
+		            	trailerLeng = trailerBuf.length;
+		            }
+		            if (src.ID == 0 || usedIds.contains(src.ID)) {
+		                src.ID = getNextId(valBuf[0], true);
+		            }
+		            aValue = (src.drawType.ordinal() & 0xff) | (src.ID << 8);
+		            dataSeek(startLoc + trailerLeng + 4 + 4 + 2 + 2 + 2 + 2);       
+		            dataSeek(startWrite);
+		            dataWrite(aValue);
+		            dataWrite(src.flags);
+		            dataWrite(src.X);
+		            dataWrite(src.Y);
+		            dataWrite(src.W);
+		            dataWrite(src.H);
+		            if (trailerBuf != null) {		               
+		                dataWrite(trailerBuf);
+		                dataTruncate();
+		            }
+		            retVal = src.ID;
+		            break;
+		        }
+		    }
+		    if (retVal != 0) {
+		        ++valBuf[1];
+		        dataSeek(startLoc);
+		        dataWrite(valBuf);
+		    }
+		}
+		return retVal;
+		}
 	}
 
 	public boolean removeOverlay(int Id) {
-		throw new NotImplementedException();
+		synchronized (getVOP()) {
+			
+		
+		int startLoc = getOverlayStart(Id);
+		if (startLoc != -1) {
+		    dataSeek(startLoc);
+		    
+		    ImageOverlay olDel = readSingleOverlay();
+		    byte[] trailerBuf = dupTrailingData(0, SeekDirection.FROM_CUR);
+		    if (trailerBuf != null) {
+		        dataSeek(startLoc);
+		        dataWrite(trailerBuf);
+		        dataTruncate();    
+		    }
+		    _fixedData.nOverlays--;
+		    setDirty();
+		    for (OverlayLoc loc : olDel.location) {
+		        usedIds.remove(loc.ID);
+		    }
+		
+		    return true;
+		}
+		return false;
+		}
 	}
 
 	public boolean removeLocation(int Id) {
-		throw new NotImplementedException();
+		synchronized (getVOP()) {
+		int startLoc = getOverlayStart(Id);
+		if (startLoc != -1) {
+		    dataSeek(startLoc);
+		    short[] valBuf = new short[4];
+			// First part gives type of the overlay,
+			// followed by the lengths of remaining info
+			for (int i=0; i<valBuf.length; i++) {
+			    valBuf[i] = dataReadShort();
+			}
+		    //Reads in:
+		    // 0 : overlay type
+		    // 1 : length of location list
+		    // 2 : length of overlay text
+		    // 3 : length of (image level) comment (usually 0)
+		    // Next part is the location of this overlay, and its hotspots
+		    // Starts with a 4-byte value. Lowest byte indicates the draw type
+		    // Highest three bytes contain the ID
+		    // Start with an index of 1; we should never remove the "main" location
+		    // First skip over the "main" location
+		    dataSeek(4 + 4 + 2 + 2 + 2 + 2, SeekDirection.FROM_CUR);
+		    for (int j = 1; j < valBuf[1]; ++j) {
+		        int locLoc = dataTell();
+		        int aValue = dataReadInt();
+		        dataSeek(4 + 2 + 2 + 2 + 2, SeekDirection.FROM_CUR);
+		        if ((aValue >> 8) == Id) { // We've just read what we were looking for...
+		            
+		            byte[] trailerBuf = dupTrailingData(0, SeekDirection.FROM_CUR);
+
+		            // Update location count for overlay
+		            --valBuf[1];
+		            dataSeek(startLoc);
+		            dataWrite(valBuf);
+
+		            // Then write out any trailing stuff
+		            dataSeek(locLoc);
+		            if (trailerBuf != null) {
+		               dataWrite(trailerBuf);
+		            }    
+		            
+		            dataTruncate();
+		            usedIds.remove(Id);
+		            return true;
+		        }
+		    }
+		}
+		}
+		return false;
 	}
 
-	public int getBaseId(int Id) {
-		throw new NotImplementedException();
+	public int getBaseId(int id) {
+		int[] result = new int[1];
+		int overlayStart = getOverlayStart(id, result);
+		return overlayStart == -1 ? -1 : result[0];
 	}
 
 	protected int getOverlayStart(int Id) {
