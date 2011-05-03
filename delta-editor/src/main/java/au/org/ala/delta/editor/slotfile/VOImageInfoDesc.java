@@ -14,14 +14,16 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.slotfile;
 
-import org.apache.commons.lang.NotImplementedException;
+import java.awt.Font;
 
 import au.org.ala.delta.io.BinFile;
+import au.org.ala.delta.io.BinFileEncoding;
 import au.org.ala.delta.util.Pair;
 
 public class VOImageInfoDesc extends VOAnyDesc {
 
 	private ImageInfoFixedData _fixedData;
+	private Font[] _overlayFont = new Font[OverlayFontType.values().length];
 
 	public VOImageInfoDesc(SlotFile slotFile, VOP vop) {
 		super(slotFile, vop);
@@ -56,8 +58,33 @@ public class VOImageInfoDesc extends VOAnyDesc {
 		return 0;
 	}
 
-	public void StoreQData() {
-		throw new NotImplementedException();
+	public void storeQData() {
+		makeTemp();
+		byte[] trailerBuf = null;
+		int trailerLeng = 0;
+
+		// If the size of TFixedData has been increased (due to a newer program version)
+		// re-write the whole slot, using the new size.
+		if (_fixedData.fixedSize < ImageInfoFixedData.SIZE) {
+		      // Save a copy of all "variable" data
+		      trailerBuf = dupTrailingData(0);
+		      if (trailerBuf != null) {
+		    	  trailerLeng = trailerBuf.length;
+		      }
+		      _dataOffs = SlotFile.SlotHeader.SIZE + ImageInfoFixedData.SIZE; ///// Adjust DataOffs accordingly
+		      _fixedData.fixedSize = ImageInfoFixedData.SIZE;
+		      // Do seek to force allocation of large enough slot
+		      dataSeek(trailerLeng);
+		}
+
+		_slotFile.seek(_slotHdrPtr + SlotFile.SlotHeader.SIZE);
+		dataWrite(_fixedData);
+		
+		if (trailerBuf != null) { // If fixedData was resized, re-write the saved, variable-length data
+		    dataSeek(0);
+		    dataWrite(trailerBuf);
+		    dataTruncate();
+		}
 	}
 
 	public short getButtonAlignment() {
@@ -124,12 +151,96 @@ public class VOImageInfoDesc extends VOAnyDesc {
 	}
 
 	public void writeImagePath(String imagePath) {
-		throw new NotImplementedException();
+		synchronized (getVOP()) {
+			
+			byte[] trailerBuf = null;
+			int trailerLeng = 0;
+	
+			if (imagePath.length() != _fixedData.pathLen) { // Save a copy of any following data!
+			    trailerBuf = dupTrailingData(_fixedData.pathLen);
+			    if (trailerBuf != null) {
+			    	trailerLeng = trailerBuf.length;
+			    }
+			}
+	
+			// Seek to force allocation of large enough slot
+			dataSeek(imagePath.length() + trailerLeng);
+			dataSeek(0);
+			dataWrite(stringToBytes(imagePath));
+			if (imagePath.length() != _fixedData.pathLen) {
+			    setDirty();
+			    _fixedData.pathLen = (short)imagePath.length();
+			    if (trailerBuf != null) {
+			        dataWrite(trailerBuf);
+			        dataTruncate();
+			    }
+			}
+		}
+	}
+	
+	public Font getOverlayFontObject(OverlayFontType fontType) {
+		if (_overlayFont[fontType.ordinal()] == null) {
+		   
+		    Pair<LOGFONT, String> fontInfo = readOverlayFont(fontType);
+		    if (fontInfo == null && fontType.equals(OverlayFontType.OF_FEATURE)) {
+		    	fontInfo = readOverlayFont(OverlayFontType.OF_DEFAULT);
+		    }
+		    if (fontInfo.getFirst() != null) {
+		    	_overlayFont[fontType.ordinal()] = fontInfo.getFirst().toFont();
+		    }
+		    
+		}
+        return _overlayFont[fontType.ordinal()];
 	}
 
 	public void writeOverlayFont(OverlayFontType fontType, String comment, LOGFONT logFont) {
-		throw new NotImplementedException();
-	}
+		synchronized (getVOP()) {
+			
+		dataSeek(_fixedData.pathLen);
+		short commentLen = 0;
+		for (int i = 0; i < fontType.ordinal(); ++i) {
+		    if (i + 1 > _fixedData.nFonts) {
+		        // Fill in "empty" font spaces with zeroes
+		        dataWrite(commentLen);
+		        
+		        LOGFONT nullFont = new LOGFONT();
+		        nullFont.write(_slotFile);
+		    }
+		    else {
+		        commentLen = dataReadShort();
+		        dataSeek(commentLen + LOGFONT.SIZE, SeekDirection.FROM_CUR);
+		    }
+		}
+		byte[] trailerBuf = null;
+		int trailerLeng = 0;
+		int startPos = dataTell();
+		// May need to store any "trailing" information
+		if (fontType.ordinal() + 1 < _fixedData.nFonts) {
+		    commentLen = dataReadShort();
+		    dataSeek(commentLen + LOGFONT.SIZE, SeekDirection.FROM_CUR);
+		    trailerBuf = dupTrailingData(0, SeekDirection.FROM_CUR);
+		    if (trailerBuf != null) {
+		    	trailerLeng = trailerBuf.length;
+		    }
+		}
+		// Seek to force allocation of large enough slot
+		dataSeek(startPos + trailerLeng + 2 + comment.length() + LOGFONT.SIZE);
+		dataSeek(startPos);
+		commentLen = (short)comment.length();
+		dataWrite(commentLen);
+		dataWrite(stringToBytes(comment));
+		dataWrite(logFont);
+		if (trailerBuf != null) {
+		    dataWrite(trailerBuf);
+		}
+		dataTruncate();
+		if (_fixedData.nFonts < fontType.ordinal() + 1)  {
+		    _fixedData.nFonts = (short)(fontType.ordinal() + 1);
+		    setDirty();
+		}
+		_overlayFont[fontType.ordinal()] = logFont.lfHeight != 0 ? logFont.toFont() : null;
+		}
+    }
 
 	// TFont* GetOverlayFontObject(const OverlayFontType fontType);
 	// protected:
@@ -237,6 +348,7 @@ public class VOImageInfoDesc extends VOAnyDesc {
 			file.write(lfEscapement);
 			file.write(lfOrientation);
 			file.write(lfWeight);
+			
 			file.write(lfItalic);
 			file.write(lfUnderline);
 			file.write(lfStrikeOut);
@@ -258,6 +370,15 @@ public class VOImageInfoDesc extends VOAnyDesc {
 			return String.format("LOGFONT: %s", new String(lfFaceName));
 		}
 
+		public Font toFont() {
+			
+			if (lfHeight == 0) {
+				return null;
+			}
+			int style = (lfItalic != 0) ? Font.ITALIC : 0;
+			style = style | (lfWeight > 500 ? Font.BOLD : 0); 
+			return new Font(BinFileEncoding.decode(lfFaceName), style, Math.abs(lfHeight));
+		}
 	}
 
 }

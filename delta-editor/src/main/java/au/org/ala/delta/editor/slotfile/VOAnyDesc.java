@@ -292,6 +292,18 @@ public abstract class VOAnyDesc {
 		return buffer.getInt();
 	}
 	
+	protected short dataReadShort() {
+		final int SIZE_OF_SHORT = 2;
+		ByteBuffer buffer = ByteBuffer.allocate(SIZE_OF_SHORT);
+		buffer.order(ByteOrder.LITTLE_ENDIAN);
+		
+		int numBytes = dataRead(buffer.array(), SIZE_OF_SHORT);
+		if (numBytes != SIZE_OF_SHORT) {
+			throw new RuntimeException("Failed to read a short!");
+		}
+		return buffer.getShort();
+	}
+	
 	protected List<Integer> readIntArrayToList(int count) {
 		int size = count * 4;
 		

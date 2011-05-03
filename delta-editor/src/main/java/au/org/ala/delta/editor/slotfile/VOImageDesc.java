@@ -690,15 +690,18 @@ public class VOImageDesc extends VOAnyDesc {
 	}
 
 	public void writeAllOverlays(List<ImageOverlay> overlays) {
-		usedIds.clear();
-		dataSeek(_fixedData.nameLen);
-	    for (ImageOverlay overlay : overlays) {
-	        writeSingleOverlay(overlay);
-	    }
-	    if (_fixedData.nOverlays != overlays.size()) {
-	        _fixedData.nOverlays = (short)overlays.size();
-	        setDirty();
-	    }
+		synchronized (getVOP()) {
+			
+			usedIds.clear();
+			dataSeek(_fixedData.nameLen);
+		    for (ImageOverlay overlay : overlays) {
+		        writeSingleOverlay(overlay);
+		    }
+		    if (_fixedData.nOverlays != overlays.size()) {
+		        _fixedData.nOverlays = (short)overlays.size();
+		        setDirty();
+		    }
+		}
 	}
 
 	public boolean hasId(int Id) {
@@ -867,6 +870,7 @@ public class VOImageDesc extends VOAnyDesc {
 	}
 
 	protected int writeSingleOverlay(ImageOverlay anOverlay, boolean reuseIds) {
+		
 		int retVal = 0;
 		short[] valBuf = new short[4];
 		valBuf[0] = (short)anOverlay.type;
