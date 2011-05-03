@@ -1266,12 +1266,17 @@ public class VOImageDesc extends VOAnyDesc {
 	public static final int nOverlaysOffs = nameLenOffs + 2;
 	public static final int alignmentOffs = nOverlaysOffs + 2;
 
-	public class ImageFixedData extends FixedData {
+	public static class ImageFixedData extends FixedData {
 
 		public static final int SIZE = FixedData.SIZE + 2 + 4 + 4 + 2 + 2 + 2;
 
 		public ImageFixedData() {
 			super("Image Desc");
+		}
+		public ImageFixedData(int ownerId, int imageType) {
+			this();
+			this.ownerId = ownerId;
+			this.imageType = imageType;
 		}
 
 		short fixedSize = SIZE;

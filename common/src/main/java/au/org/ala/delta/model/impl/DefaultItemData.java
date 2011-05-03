@@ -4,9 +4,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.NotImplementedException;
+
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
-import au.org.ala.delta.model.MultiStateCharacter;
 
 /**
  * Implements ItemData and stores the data in memory.
@@ -94,6 +95,11 @@ public class DefaultItemData implements ItemData {
     @Override
     public void setLinkFileDataNoSubjects(String linkFileData) {
         _linkFileDataNoSubjects = linkFileData;
+    }
+    
+    @Override
+    public void addImage(String fileName, String comments) {
+    	throw new NotImplementedException();
     }
 
 }

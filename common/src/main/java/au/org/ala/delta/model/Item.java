@@ -127,6 +127,9 @@ public class Item implements AttributeObserver {
         _impl.setLinkFileDataNoSubjects(linkFileData);
     }
     
+    public void addImage(String fileName, String comments) {
+    	_impl.addImage(fileName, comments);
+    }
     
 	
 	@Override

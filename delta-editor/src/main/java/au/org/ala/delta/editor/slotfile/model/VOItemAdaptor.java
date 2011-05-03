@@ -22,6 +22,7 @@ import au.org.ala.delta.editor.slotfile.AttrChunk;
 import au.org.ala.delta.editor.slotfile.Attribute;
 import au.org.ala.delta.editor.slotfile.DeltaVOP;
 import au.org.ala.delta.editor.slotfile.VOCharBaseDesc;
+import au.org.ala.delta.editor.slotfile.VOImageHolderDesc;
 import au.org.ala.delta.editor.slotfile.VOItemDesc;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.impl.AttributeData;
@@ -31,7 +32,7 @@ import au.org.ala.delta.util.Utils;
 /**
  * Adapts a slot file VOItemDesc to the model Item interface.
  */
-public class VOItemAdaptor implements ItemData {
+public class VOItemAdaptor extends ImageHolderAdatptor implements ItemData {
 
 	private VOItemDesc _voItemDesc;
 	private DeltaVOP _vop;
@@ -136,4 +137,16 @@ public class VOItemAdaptor implements ItemData {
     public void setLinkFileDataNoSubjects(String linkFileData) {
         throw new NotImplementedException();
     }
+
+	@Override
+	protected VOImageHolderDesc getImageHolder() {
+		return _voItemDesc;
+	}
+
+	@Override
+	protected DeltaVOP getVOP() {
+		return _vop;
+	}
+    
+   
 }

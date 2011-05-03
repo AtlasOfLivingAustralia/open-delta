@@ -31,5 +31,7 @@ public interface ItemData {
     
     String getLinkFileDataNoSubjects();
     
-    void setLinkFileDataNoSubjects(String linkFileData); 
+    void setLinkFileDataNoSubjects(String linkFileData);
+
+	void addImage(String fileName, String comments); 
 }
