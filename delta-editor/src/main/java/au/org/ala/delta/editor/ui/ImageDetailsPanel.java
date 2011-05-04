@@ -49,14 +49,38 @@ public class ImageDetailsPanel extends JPanel {
 	
 	/** The currently selected image */
 	private Image _selectedImage;
+	
 	private ImageList imageList;
 	private RtfEditorPane subjectTextPane;
 	private RtfEditorPane developerNotesTextPane;
+	private JButton btnDisplay;
+	private JButton btnDelete;
+	private JButton btnSettings;
+	private JButton btnAdd;
 
 	public ImageDetailsPanel() {
-		
+		createUI();
+		addEventHandlers();
+	}
+	
+	private void addEventHandlers() {
 		ActionMap actions = Application.getInstance().getContext().getActionMap(this);
 		
+		btnDisplay.setAction(actions.get("displayImage"));
+		btnAdd.setAction(actions.get("addImage"));
+		btnDelete.setAction(actions.get("deleteImage"));
+		imageList.addListSelectionListener(new ListSelectionListener() {
+			
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				_selectedImage = (Image)imageList.getSelectedValue();
+				updateDisplay();
+			}
+		});
+		imageList.setSelectionAction(actions.get("displayImage"));
+	}
+
+	private void createUI() {
 		JPanel panel = new JPanel();
 		
 		JPanel buttonPanel = new JPanel();
@@ -85,14 +109,11 @@ public class ImageDetailsPanel extends JPanel {
 					.addContainerGap())
 		);
 		
-		JButton btnSettings = new JButton("Settings...");
+		btnSettings = new JButton("Settings...");
+		btnDisplay = new JButton("Display");
+		btnAdd = new JButton("Add");
+		btnDelete = new JButton("Delete");
 		
-		JButton btnDisplay = new JButton("Display");
-		
-		JButton btnAdd = new JButton("Add");
-		btnAdd.setAction(actions.get("addImage"));
-		
-		JButton btnDelete = new JButton("Delete");
 		GroupLayout gl_buttonPanel = new GroupLayout(buttonPanel);
 		gl_buttonPanel.setHorizontalGroup(
 			gl_buttonPanel.createParallelGroup(Alignment.TRAILING)
@@ -226,14 +247,7 @@ public class ImageDetailsPanel extends JPanel {
 		
 		imageList = new ImageList();
 	
-		imageList.addListSelectionListener(new ListSelectionListener() {
-			
-			@Override
-			public void valueChanged(ListSelectionEvent e) {
-				_selectedImage = (Image)imageList.getSelectedValue();
-				updateDisplay();
-			}
-		});
+		
 		scrollPane.setViewportView(imageList);
 		panel.setLayout(gl_panel);
 		setLayout(groupLayout);
@@ -258,6 +272,25 @@ public class ImageDetailsPanel extends JPanel {
 		return null;
 	}
 	
+	
+	/**
+	 * Displays the currently selected image.
+	 */
+	@Action
+	public void displayImage() {
+		if (_selectedImage == null) {
+			return;
+		}
+		
+		Window parent = ((SingleFrameApplication)Application.getInstance()).getMainFrame();
+		
+		JDialog dialog = ImageViewer.asDialog(parent, _imagePath, _selectedImage);
+		dialog.setVisible(true);
+	}
+	
+	/**
+	 * Prompts the user to select a file and adds it as an image to the Illustratable object.
+	 */
 	@Action
 	public void addImage() {
 		File file = getImageFile();
@@ -267,6 +300,16 @@ public class ImageDetailsPanel extends JPanel {
 		
 		_illustratable.addImage(file.getAbsolutePath(), "");
 		
+	}
+	
+	/**
+	 * Deletes the currently selected image 
+	 */
+	@Action
+	public void deleteImage() {
+		if (_selectedImage == null) {
+			return;
+		}
 	}
 	
 	private void determineImagePath() {
@@ -285,8 +328,12 @@ public class ImageDetailsPanel extends JPanel {
 		if (_selectedImage == null) {
 			subjectTextPane.setText("");
 			developerNotesTextPane.setText("");
+			btnDisplay.setEnabled(false);
+			btnDelete.setEnabled(false);
 		}
 		else {
+			btnDisplay.setEnabled(true);
+			btnDelete.setEnabled(true);
 			List<ImageOverlay> overlays = _selectedImage.getOverlays();
 			for (ImageOverlay overlay : overlays) {
 			
@@ -300,10 +347,6 @@ public class ImageDetailsPanel extends JPanel {
 					
 				}
 			}
-			Window parent = ((SingleFrameApplication)Application.getInstance()).getMainFrame();
-			
-			JDialog dialog = ImageViewer.asDialog(parent, _imagePath, _selectedImage);
-			dialog.setVisible(true);
 		}
 	}
 
