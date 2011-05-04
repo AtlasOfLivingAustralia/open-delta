@@ -7,6 +7,7 @@ import java.util.Map;
 import org.apache.commons.lang.math.FloatRange;
 import org.apache.commons.lang.math.IntRange;
 
+import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.IntegerCharacter;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.RealCharacter;
@@ -56,5 +57,34 @@ public class Specimen {
     
     public void setTextValue(TextCharacter ch, List<String> val) {
         System.out.println("Setting text character value: " + val.toString());
+        _textValues.put(ch, val);
+    }
+    
+    public boolean hasValueFor(Character ch) {
+        if (ch instanceof MultiStateCharacter) {
+            return _multistateValues.containsKey(ch);
+        } else if (ch instanceof IntegerCharacter) {
+            return _integerValues.containsKey(ch);
+        } else if (ch instanceof RealCharacter) {
+            return _realValues.containsKey(ch);
+        } else if (ch instanceof TextCharacter) {
+            return _textValues.containsKey(ch);
+        } else {
+            throw new RuntimeException("Unrecognized character type");
+        }
+    }
+    
+    public void removeValueForCharacter(Character ch) {
+        if (ch instanceof MultiStateCharacter) {
+            _multistateValues.remove(ch);
+        } else if (ch instanceof IntegerCharacter) {
+            _integerValues.remove(ch);
+        } else if (ch instanceof RealCharacter) {
+            _realValues.remove(ch);
+        } else if (ch instanceof TextCharacter) {
+            _textValues.remove(ch);
+        } else {
+            throw new RuntimeException("Unrecognized character type");
+        }        
     }
 }
