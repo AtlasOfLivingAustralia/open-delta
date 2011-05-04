@@ -675,8 +675,7 @@ public class DeltaEditor extends InternalFrameApplication {
 
 	@Action(enabledProperty = "saveAsEnabled")
 	public void viewTaxonEditor() {
-		ItemEditor editor = new ItemEditor(this.getMainFrame());
-		editor.bind(getCurrentDataSet());
+		ItemEditor editor = new ItemEditor(this.getMainFrame(), getCurrentDataSet());
 		show(editor);
 	}
 

@@ -7,7 +7,7 @@ import org.junit.After;
 import org.junit.Before;
 
 import au.org.ala.delta.DeltaTestCase;
-import au.org.ala.delta.editor.slotfile.VOImageDesc.ImageOverlay;
+import au.org.ala.delta.model.image.ImageOverlay;
 
 
 /**

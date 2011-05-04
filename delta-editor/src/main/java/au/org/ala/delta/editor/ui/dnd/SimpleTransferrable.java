@@ -5,26 +5,23 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 
-import au.org.ala.delta.model.Item;
-
-public class ItemTransferrable implements Transferable {
+public class SimpleTransferrable<T> implements Transferable {
 	
-	public static DataFlavor ITEM_DATA_FLAVOUR = new DataFlavor(Item.class, "Item");
-	private Item _item;
+	private T _toTransfer;
 	
-	public ItemTransferrable(Item item) {
-		_item = item;
+	public SimpleTransferrable(T toTransfer) {
+		_toTransfer = toTransfer;
 	}
 	
 	@Override
 	public DataFlavor[] getTransferDataFlavors() {
-		return new DataFlavor[] {ITEM_DATA_FLAVOUR};
+		return new DataFlavor[] {new DataFlavor(_toTransfer.getClass(), _toTransfer.getClass().getName())};
 	}
 
 	@Override
 	public boolean isDataFlavorSupported(DataFlavor flavor) {
 		
-		return ITEM_DATA_FLAVOUR.equals(flavor);
+		return flavor.getRepresentationClass().equals(_toTransfer.getClass());
 	}
 
 	@Override
@@ -33,6 +30,8 @@ public class ItemTransferrable implements Transferable {
 		if (!isDataFlavorSupported(flavor)) {
 			throw new UnsupportedFlavorException(flavor);
 		}
-		return _item;
+		return _toTransfer;
 	}
+	
+
 }

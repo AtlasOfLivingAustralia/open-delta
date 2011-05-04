@@ -4,6 +4,7 @@ import java.util.List;
 
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.image.Image;
 
 public interface ItemData {
 	
@@ -33,5 +34,7 @@ public interface ItemData {
     
     void setLinkFileDataNoSubjects(String linkFileData);
 
-	void addImage(String fileName, String comments); 
+	void addImage(String fileName, String comments);
+
+	List<Image> getImages(); 
 }

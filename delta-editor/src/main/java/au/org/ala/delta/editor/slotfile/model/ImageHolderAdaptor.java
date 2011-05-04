@@ -1,6 +1,7 @@
 package au.org.ala.delta.editor.slotfile.model;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -9,11 +10,12 @@ import au.org.ala.delta.editor.slotfile.DeltaVOP;
 import au.org.ala.delta.editor.slotfile.ImageType;
 import au.org.ala.delta.editor.slotfile.VOImageDesc;
 import au.org.ala.delta.editor.slotfile.VOImageHolderDesc;
+import au.org.ala.delta.model.image.Image;
 
 /**
  * Helper class for working with VOImageHolderDesc objects.
  */
-public abstract class ImageHolderAdatptor {
+public abstract class ImageHolderAdaptor {
 	
 	/**
 	 * Should be overriden by subclasses to return an appropriate instance of
@@ -48,5 +50,23 @@ public abstract class ImageHolderAdatptor {
 			images.add(imageId);
 			getImageHolder().writeImageList(images);
 		}
+	}
+	
+	public List<Image> getImages() {
+		List<Integer> imageIds = getImageHolder().readImageList();
+		
+		List<Image> images = new ArrayList<Image>();
+	
+		for (int id : imageIds) {
+			images.add(createImage(id));
+		}
+		
+		return images;
+	}
+	
+	protected Image createImage(int id) {
+		VOImageDesc imageDesc = (VOImageDesc)getVOP().getDescFromId(id);
+		
+		return new Image(new VOImageAdaptor(imageDesc));
 	}
 }

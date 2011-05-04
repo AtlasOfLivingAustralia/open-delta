@@ -14,7 +14,6 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.slotfile;
 
-import java.awt.Point;
 import java.nio.ByteBuffer;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -22,9 +21,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang.NotImplementedException;
-
 import au.org.ala.delta.io.BinFile;
+import au.org.ala.delta.model.image.ImageOverlay;
+import au.org.ala.delta.model.image.OverlayLocation;
+import au.org.ala.delta.model.image.OverlayLocation.OLDrawType;
+import au.org.ala.delta.model.image.OverlayType;
 import au.org.ala.delta.util.Utils;
 
 public class VOImageDesc extends VOAnyDesc {
@@ -169,8 +170,8 @@ public class VOImageDesc extends VOAnyDesc {
 		  boolean inHotspot = false;
 		  int bracketLevel = 0;
 		  ImageOverlay anOverlay = new ImageOverlay();
-		  OverlayLoc olLocation = new OverlayLoc();
-		  OverlayLoc hsLocation = new OverlayLoc();
+		  OverlayLocation olLocation = new OverlayLocation();
+		  OverlayLocation hsLocation = new OverlayLocation();
 		 
 		  for (int i = 0; i < buffer.length(); ++i) {
 			  boolean evaluated = false;
@@ -284,7 +285,7 @@ public class VOImageDesc extends VOAnyDesc {
 		                    }
 		                }
 		              // Assign an ID to every location
-		              for (OverlayLoc loc : anOverlay.location) {
+		              for (OverlayLocation loc : anOverlay.location) {
 		                  loc.ID = getNextId(anOverlay.type);
 		              }
 		              overlayList.add(anOverlay);
@@ -360,13 +361,15 @@ public class VOImageDesc extends VOAnyDesc {
 		                  String stringStart = buffer.substring(i);
 		                  int pos = 0;
 		               
-		                  int endPtr = anOverlay.minVal.setFromString(stringStart);
-		                  if (endPtr != pos && stringStart.charAt(endPtr) == '-')
-		                    {
+		                  DeltaNumber number = new DeltaNumber();
+		                  int endPtr = number.setFromString(stringStart);
+		                  anOverlay.minVal = number.asString();
+		                  
+		                  if (endPtr != pos && stringStart.charAt(endPtr) == '-')  {
 		                      pos = endPtr + 1;
-		                      
-		                      endPtr = anOverlay.maxVal.setFromString(stringStart.substring(pos));
-		                    }
+		                      endPtr = number.setFromString(stringStart.substring(pos));
+		                      anOverlay.maxVal = number.asString();
+		                  }
 		                  if (endPtr != 0)
 		                    i += --endPtr;
 		                  break;
@@ -645,7 +648,7 @@ public class VOImageDesc extends VOAnyDesc {
 
 	public List<ImageOverlay> readAllOverlays() {
 		synchronized (getVOP()) {
-			List<ImageOverlay> dest = new ArrayList<VOImageDesc.ImageOverlay>();
+			List<ImageOverlay> dest = new ArrayList<ImageOverlay>();
 			usedIds = new HashSet<Integer>();
 			if (_fixedData.nOverlays > 0) {
 				// Skip over name...
@@ -661,9 +664,9 @@ public class VOImageDesc extends VOAnyDesc {
 				for (ImageOverlay overlay : dest) {
 
 					if (overlay.location.size() == 0) {
-						overlay.location.add(new OverlayLoc());
+						overlay.location.add(new OverlayLocation());
 					}
-					for (OverlayLoc loc : overlay.location) {
+					for (OverlayLocation loc : overlay.location) {
 						if (loc.ID == 0) {
 							newIds = true;
 							loc.ID = getNextId(overlay.type);
@@ -690,11 +693,11 @@ public class VOImageDesc extends VOAnyDesc {
 		}
 	}
 
-	public OverlayLoc readLocation(int Id) {
+	public OverlayLocation readLocation(int Id) {
 		ImageOverlay overlay = readOverlay(Id);
 
 		if (overlay != null) {
-			for (OverlayLoc loc : overlay.location) {
+			for (OverlayLocation loc : overlay.location) {
 				if (loc.ID == Id) {
 					return loc;
 				}
@@ -730,7 +733,7 @@ public class VOImageDesc extends VOAnyDesc {
 	public boolean replaceOverlay(ImageOverlay src, boolean frontOnly) {
 		synchronized(getVOP()) {
 		if (src.location.size() == 0) {
-	        OverlayLoc emptyLocation = new OverlayLoc();
+	        OverlayLocation emptyLocation = new OverlayLocation();
 	        src.location.add(emptyLocation);
 	    }
 	    int srcId = src.location.get(0).ID;
@@ -760,12 +763,12 @@ public class VOImageDesc extends VOAnyDesc {
 	    }
 
 	    Set<Integer> oldIds = new HashSet<Integer>();
-	    for (OverlayLoc loc : oldOl.location) {
+	    for (OverlayLocation loc : oldOl.location) {
 	    	oldIds.add(loc.ID);
 	    }
 	  
 	    // Check the IDs in the new version. We might need to add some new ones.
-	    for (OverlayLoc loc : src.location) {
+	    for (OverlayLocation loc : src.location) {
 	        // If it's not in the old set, make it zero, so a new ID will
 	        // be allocated when it's written.
 	        // Otherwise, remove the value from the list of "old" IDs
@@ -795,7 +798,7 @@ public class VOImageDesc extends VOAnyDesc {
 		}
 	}
 
-	public boolean replaceLocation(OverlayLoc src) {
+	public boolean replaceLocation(OverlayLocation src) {
 		synchronized (getVOP()) {
 		int startLoc = getOverlayStart(src.ID);
 		if (startLoc == -1) {
@@ -858,7 +861,7 @@ public class VOImageDesc extends VOAnyDesc {
 		byte[] trailerBuf = dupTrailingData(startLoc);
 		
 		if (src.location.size() == 0) {
-		    OverlayLoc emptyLocation = new OverlayLoc();
+		    OverlayLocation emptyLocation = new OverlayLocation();
 		    src.location.add(emptyLocation);
 		}
 
@@ -875,7 +878,7 @@ public class VOImageDesc extends VOAnyDesc {
 		}
 	}
 
-	public int insertLocation(OverlayLoc src, int placeId) {
+	public int insertLocation(OverlayLocation src, int placeId) {
 		synchronized(getVOP()) {
 		int retVal = 0;
 		int startLoc = getOverlayStart(placeId);
@@ -953,7 +956,7 @@ public class VOImageDesc extends VOAnyDesc {
 		    }
 		    _fixedData.nOverlays--;
 		    setDirty();
-		    for (OverlayLoc loc : olDel.location) {
+		    for (OverlayLocation loc : olDel.location) {
 		        usedIds.remove(loc.ID);
 		    }
 		
@@ -1093,7 +1096,7 @@ public class VOImageDesc extends VOAnyDesc {
 		dest.type = valBuf[0];
 
 		for (int j = 0; j < valBuf[1]; ++j) {
-			OverlayLoc olLoc = new OverlayLoc();
+			OverlayLocation olLoc = new OverlayLocation();
 
 			// Starts with a 4-byte value. Lowest byte indicates the draw type
 			// Highest three bytes contain the ID
@@ -1130,8 +1133,8 @@ public class VOImageDesc extends VOAnyDesc {
 		if (dest.type == OverlayType.OLSTATE) {
 			dest.stateId = readInt();
 		} else if (dest.type == OverlayType.OLVALUE) {
-			dest.minVal = readNumber();
-			dest.maxVal = readNumber();
+			dest.minVal = readNumber().asString();
+			dest.maxVal = readNumber().asString();
 		} else if (dest.type == OverlayType.OLKEYWORD) {
 			short textLen = readShort();
 			dest.keywords = readString(textLen);
@@ -1154,7 +1157,7 @@ public class VOImageDesc extends VOAnyDesc {
 		valBuf[3] = (short)anOverlay.comment.length();
 		dataWrite(valBuf);
 		
-		for (OverlayLoc olLoc : anOverlay.location) {
+		for (OverlayLocation olLoc : anOverlay.location) {
 		  
 		    if (olLoc.ID == 0 || (!reuseIds && usedIds.contains(olLoc.ID)))
 		        olLoc.ID = getNextId(anOverlay.type, false);
@@ -1174,8 +1177,8 @@ public class VOImageDesc extends VOAnyDesc {
 		  if (anOverlay.type == OverlayType.OLSTATE)
 		      dataWrite(anOverlay.stateId);
 		  else if (anOverlay.type == OverlayType.OLVALUE) {
-		      dataWrite(anOverlay.minVal.toBinary());
-		      dataWrite(anOverlay.maxVal.toBinary());
+		      dataWrite(new DeltaNumber(anOverlay.minVal).toBinary());
+		      dataWrite(new DeltaNumber(anOverlay.maxVal).toBinary());
 		  }
 		  else if (anOverlay.type == OverlayType.OLKEYWORD) {
 		      short textLen = (short)anOverlay.keywords.length();
@@ -1317,230 +1320,6 @@ public class VOImageDesc extends VOAnyDesc {
 		public static final int ALIGN_NONE = 0;
 		public static final int ALIGN_VERTICAL = 1;
 		public static final int ALIGN_HORIZONTAL = 2;
-	}
-
-	public class ImageOverlay {
-
-		public static final int OVERLAY_TYPE_COUNT = OverlayType.LIST_END; // Total number of Overlay types we know about (+ 1)
-
-		public static final int OLOC_FLAG_COLOUR_MASK = 0x00ffffff;
-		public static final int OLOC_FLAG_HOTSPOT = 0x01000000;
-		public static final int OLOC_FLAG_POPUP = 0x02000000;
-		public static final int OLOC_FLAG_COLOUR = 0x04000000;
-
-		public static final byte OL_OMIT_DESCRIPTION = 0x1;
-		public static final byte OL_INCLUDE_COMMENTS = 0x2;
-		public static final byte OL_CENTER_TEXT = 0x4;
-		public static final byte OL_INTEGRAL_HEIGHT = 0x8;
-
-		public static final int OLSHOW_CONTROL = 0x80000000;
-		public static final int OLSHOW_HOTSPOT = 0x40000000;
-		public static final int OLSHOW_POPUPS = 0x20000000;
-		public static final int OLSHOW_ALL = (OLSHOW_CONTROL | OLSHOW_HOTSPOT | OLSHOW_POPUPS);
-		public static final int OLSHOW_IDMASK = ~(OLSHOW_CONTROL | OLSHOW_HOTSPOT | OLSHOW_POPUPS);
-		public static final int ID_OVERLAY_FIRST = 0x100;
-
-		public static final int ID_OK = 1;
-		public static final int ID_CANCEL = 2;
-		public static final int ID_NOTES = 8;
-		public static final int ID_OUTLINE = 9;
-		public static final int ID_BUTTON_BLOCK = 0xA;
-		public static final int ID_IMAGE_NOTES = 0XB;
-
-		public int type;
-		public String overlayText;
-		public String comment;
-
-		public List<OverlayLoc> location; // List of locations - first is that of the "main" overlay
-		// object, (required for all overlay objects except comments)
-		// then (optionally) those of any associated "hotspots"
-
-		public int stateId; // Might be appropriate to use a "union" here, but
-		public DeltaNumber minVal; // since TDeltaNumber has a constructor, it is not allowable
-		public DeltaNumber maxVal; // But for any given overlay, depending on type, we really
-		public String keywords; // need only 1 of stateId, (minVal && maxVal), or keywords
-		public String displayText; // Buffer for constructing entire text string
-
-		public ImageOverlay() {
-			this(OverlayType.OLNONE);
-		}
-
-		public String toString() {
-			return String.format("Overlay: Type=%d, overlayText=%s, Comment=%s, StateID=%d, minVal=%d, maxVal=%d, KeyWords=%s, displayText=%s\nLocations: %s", type, overlayText, comment, stateId,
-					minVal, maxVal, keywords, displayText, location);
-		}
-
-		public ImageOverlay(int aType) {
-			type = aType;
-			location = new ArrayList<VOImageDesc.OverlayLoc>();
-		}
-
-		// Should "keywords" be a string? eventually I think this information will be a set of
-		// group IDs. But this "group" mechanism doesn't yet exist...
-
-		// These next members are used for drawing purposes, rather than for
-		// storing actual information about the overlay.
-		// TImageWindow* parent; // Pointer to "owner" window
-		// void SetParent(TImageWindow* newParent) { Destroy(); parent = newParent; }
-
-		// void Hide(unsigned long id = OLSHOW_ALL);
-		// void Show(unsigned long id = OLSHOW_ALL, HDC hDCPaint = 0, TOverlayLoc::visibility how=TOverlayLoc::yes, bool isErasure = false);
-		// void Destroy(unsigned long id = OLSHOW_ALL);
-		// void Recreate(unsigned long id = OLSHOW_ALL, bool doCreate=true);
-		// //void Refresh();
-		// void Rescale(unsigned long id = OLSHOW_ALL, unsigned int flags = 0);
-		// void Deselect();
-		// void ChangeFont();
-		// void ValidateControl(TControl* control);
-		// OverlayFontType GetFontType();
-		// bool HasVisibleElement() const { return !location.empty(); }
-		public boolean hasVisibleElement() {
-			return !(type == OverlayType.OLCOMMENT || type == OverlayType.OLSUBJECT || type == OverlayType.OLSOUND || location.isEmpty());
-		}
-
-		public boolean hasTextBox() {
-			throw new NotImplementedException();
-		}
-
-		public int getNHotSpots() {
-			return Math.max(0, (int) location.size() - 1);
-		}
-
-		public boolean IsButton() {
-			return type == OverlayType.OLOK || type == OverlayType.OLCANCEL || type == OverlayType.OLNOTES || type == OverlayType.OLIMAGENOTES;
-		}
-
-		public int getX() {
-			return getX(OLSHOW_CONTROL);
-		}
-
-		public int getX(int id) {
-			throw new NotImplementedException();
-		}
-
-		public int getY() {
-			return getY(OLSHOW_CONTROL);
-		}
-
-		public int getY(int id) {
-			throw new NotImplementedException();
-		}
-
-		public int getHeight(int id, double yscale) {
-			throw new NotImplementedException();
-		}
-
-		public int getWidth(int id) {
-			throw new NotImplementedException();
-		}
-
-		public OverlayLoc getLocation(int Id) {
-			throw new NotImplementedException();
-		}
-
-		// TControl* GetBaseControl() const;
-		public int containsPointInHotspot(Point testPt) {
-			throw new NotImplementedException();
-		}
-
-		public boolean containsId(int id) {
-			throw new NotImplementedException();
-		}
-
-		public boolean canSelect() {
-			return type == OverlayType.OLSTATE || type == OverlayType.OLVALUE;
-		}
-
-		public String getValueString() {
-			throw new NotImplementedException();
-		}
-
-		public String getDisplayText() {
-			throw new NotImplementedException();
-		}
-
-		public void updateText() {
-			throw new NotImplementedException();
-		}
-
-		// static const char const * punct;
-
-		public void clearAll() {
-			overlayText = "";
-			comment = "";
-			location.clear();
-			keywords = "";
-			minVal.setFromValue(0);
-			maxVal.setFromValue(0);
-
-			stateId = 0;
-			type = OverlayType.OLNONE;
-		}
-
-	}
-
-	public class OverlayLoc {
-
-		public OLDrawType drawType;
-		public int flags;
-		public int ID;
-		short X;
-		short Y;
-		short W;
-		short H;
-
-		public OverlayLoc() {
-		}
-
-		public void clearAll() {
-			drawType = OLDrawType.Unknown;
-			ID = flags = 0;
-			X = Y = W = H = 0;
-		}
-
-		@Override
-		public String toString() {
-			return String.format("OverlayLoc: drawType=%s, flags=%d, ID=%d, X=%d, Y=%d, W=%d, H=%d", drawType, flags, ID, X, Y, W, H);
-		}
-
-	}
-
-	public enum OLDrawType {
-		Unknown, frame, rectangle, line, arrow, ellipse;
-
-		public static OLDrawType fromOrdinal(int ord) {
-			return values()[ord];
-		}
-	}
-
-	public class OverlayType {
-		// NOTE! Changes here must be made to both array OLKeywords and enum OverlayType
-		// They MUST have entries "in parallel".
-		// The negative values are used for "unnamed" overlay types, that are used
-		// internally for editing.
-		public static final int OLBUTTONBLOCK = -3; // Used only when modifying aligned push-buttons
-		public static final int OLHOTSPOT = -2; // Not a "real" overlay type; used for convenience in editing
-		public static final int OLNONE = -1; // Undefined; the remaining values MUST correspond
-												// with array OLKeywords.
-		public static final int OLTEXT = 0; // Use a literal text string
-		public static final int OLITEM = 1; // Use name of the item
-		public static final int OLFEATURE = 2; // Use name of the character
-		public static final int OLSTATE = 3; // Use name of the state (selectable)
-		public static final int OLVALUE = 4; // Use specified values or ranges (selectable)
-		public static final int OLUNITS = 5; // Use units (for numeric characters)
-		public static final int OLENTER = 6; // Create edit box for data entry
-		public static final int OLSUBJECT = 7; // Has text for menu entry
-		public static final int OLSOUND = 8; // Has name of .WAV sound file
-		public static final int OLHEADING = 9; // Using heading string for the data-set
-		public static final int OLKEYWORD = 10; // Use specified keyword(s)
-		public static final int OLOK = 11; // Create OK pushbutton
-		public static final int OLCANCEL = 12; // Create Cancel pushbutton
-		public static final int OLNOTES = 13; // Create Notes pushbutton (for character notes)
-		public static final int OLIMAGENOTES = 14; // Create Notes pushbutton (for notes about the image)
-		public static final int OLCOMMENT = 15; // Not a "real" overlay type, but used to save comments addressed
-		// to images rather than overlays
-		public static final int LIST_END = 16; // Insert new overlay types just BEFORE this!
-
 	}
 
 }

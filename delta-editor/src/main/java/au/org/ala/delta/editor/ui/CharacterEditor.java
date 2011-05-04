@@ -36,7 +36,6 @@ import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterType;
-import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.ui.rtf.RtfEditor;
 import au.org.ala.delta.ui.util.IconHelper;
@@ -49,7 +48,7 @@ public class CharacterEditor extends JDialog {
 	private static final long serialVersionUID = 9193388605723396077L;
 
 	/** Contains the items we can edit */
-	private DeltaDataSet _dataSet;
+	private EditorDataModel _dataSet;
 	
 	/** The currently selected character */
 	private Character _selectedCharacter;
@@ -311,6 +310,7 @@ public class CharacterEditor extends JDialog {
 	public void bind(EditorDataModel dataSet) {
 		_dataSet = dataSet;
 		_selectedCharacter = dataSet.getSelectedCharacter();
+		
 		updateUI();
 	}
 	

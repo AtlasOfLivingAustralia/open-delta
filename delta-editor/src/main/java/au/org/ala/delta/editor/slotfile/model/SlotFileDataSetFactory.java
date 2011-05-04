@@ -109,6 +109,7 @@ public class SlotFileDataSetFactory implements DeltaDataSetFactory {
 		return character;
 	}
 	
+	
 	private VOCharBaseDesc newVOCharDesc(CharacterType type, int characterNumber) {
 		VOCharBaseDesc.CharBaseFixedData characterFixedData = new VOCharBaseDesc.CharBaseFixedData();
 		VOCharBaseDesc characterBase = (VOCharBaseDesc)_vop.insertObject(characterFixedData, VOCharBaseDesc.CharBaseFixedData.SIZE, null, 0, 0);

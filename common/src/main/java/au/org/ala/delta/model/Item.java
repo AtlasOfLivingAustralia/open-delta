@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
+import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.impl.ItemData;
 import au.org.ala.delta.model.observer.AttributeObserver;
 import au.org.ala.delta.model.observer.ItemObserver;
@@ -27,7 +28,7 @@ import au.org.ala.delta.model.observer.ItemObserver;
  * Represents an Item in the DELTA system.
  * An item usually corresponds to a Taxon, but a 1-1 relationship is not required.
  */
-public class Item implements AttributeObserver {
+public class Item implements AttributeObserver, Illustratable {
 
 	private ItemData _impl;
 
@@ -127,8 +128,14 @@ public class Item implements AttributeObserver {
         _impl.setLinkFileDataNoSubjects(linkFileData);
     }
     
+    @Override
     public void addImage(String fileName, String comments) {
     	_impl.addImage(fileName, comments);
+    }
+    
+    @Override
+    public List<Image> getImages() {
+    	return _impl.getImages();
     }
     
 	

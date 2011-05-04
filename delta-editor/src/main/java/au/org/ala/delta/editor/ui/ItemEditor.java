@@ -33,7 +33,6 @@ import org.jdesktop.application.Application;
 import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 
-import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.ui.rtf.RtfEditor;
 import au.org.ala.delta.ui.util.IconHelper;
@@ -46,7 +45,7 @@ public class ItemEditor extends JDialog {
 	private static final long serialVersionUID = 9193388605723396077L;
 
 	/** Contains the items we can edit */
-	private DeltaDataSet _dataSet;
+	private EditorDataModel _dataSet;
 	
 	/** The currently selected Item */
 	private Item _selectedItem;
@@ -62,6 +61,7 @@ public class ItemEditor extends JDialog {
 	private JToggleButton btnSelect;
 	private ItemList taxonSelectionList;
 	private JScrollPane editorScroller;
+	private ImageDetailsPanel imageDetails;
 	
 	@Resource
 	private String titleSuffix;
@@ -70,14 +70,16 @@ public class ItemEditor extends JDialog {
 	@Resource
 	private String selectTaxonLabelText;
 	
-	public ItemEditor(Window parent) {	
+	public ItemEditor(Window parent, EditorDataModel model) {	
 		super(parent);
 		setName("ItemEditorDialog");
+		
 		ResourceMap resources = Application.getInstance().getContext().getResourceMap(ItemEditor.class);
 		resources.injectFields(this);
 		ActionMap map = Application.getInstance().getContext().getActionMap(this);
 		createUI();
 		addEventHandlers(map);
+		bind(model);
 	}
 
 	/**
@@ -258,7 +260,7 @@ public class ItemEditor extends JDialog {
 		
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
-		ImageDetailsPanel imageDetails = new ImageDetailsPanel();
+		imageDetails = new ImageDetailsPanel();
 		imageDetails.setEnabled(false);
 		tabbedPane.addTab("Images", imageDetails);
 		panel.add(tabbedPane);
@@ -276,6 +278,7 @@ public class ItemEditor extends JDialog {
 	public void bind(EditorDataModel dataSet) {
 		_dataSet = dataSet;
 		taxonSelectionList.setDataSet(dataSet);
+		imageDetails.setDataSet(dataSet);
 		_selectedItem = dataSet.getSelectedItem();
 		updateUI();
 	}
@@ -306,7 +309,7 @@ public class ItemEditor extends JDialog {
 		rtfEditor.setText(_selectedItem.getDescription());
 		
 		chckbxTreatAsVariant.setSelected(_selectedItem.isVariant());
-		
+		imageDetails.bind(_selectedItem);
 		_editsDisabled = false;
 	}
 }

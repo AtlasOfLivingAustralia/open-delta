@@ -14,7 +14,7 @@ import org.jdesktop.application.ApplicationContext;
 
 import au.org.ala.delta.editor.ui.EditorDataModel;
 import au.org.ala.delta.editor.ui.ReorderableItemList;
-import au.org.ala.delta.editor.ui.dnd.ItemTransferHandler;
+import au.org.ala.delta.editor.ui.dnd.SimpleTransferHandler;
 import au.org.ala.delta.editor.ui.util.MenuBuilder;
 import au.org.ala.delta.editor.ui.util.PopupMenuListener;
 import au.org.ala.delta.model.Item;
@@ -36,7 +36,7 @@ public class ItemController {
 		
 		JComponent viewComponent = (JComponent)_view;
 		
-		viewComponent.setTransferHandler(new ListItemTransferHandler());
+		viewComponent.setTransferHandler(new ItemTransferHandler());
 		
 		new PopupBuilder();
 	}
@@ -149,15 +149,20 @@ public class ItemController {
 		return result == JOptionPane.OK_OPTION;
 	}
 	
+	
 	/**
 	 * Handles drag and drop of Items in the ItemList.
 	 */
-	class ListItemTransferHandler extends ItemTransferHandler {
+	class ItemTransferHandler extends SimpleTransferHandler<Item> {
 		
 		private static final long serialVersionUID = 889705892088002277L;
 		
+		public ItemTransferHandler() {
+			super(Item.class);
+		}
+		
 		@Override
-		protected Item getItem() {
+		protected Item getTransferObject() {
 			return _view.getSelectedItem();
 		}
 		
@@ -177,12 +182,12 @@ public class ItemController {
 		}
 
 		@Override
-		protected void moveItem(Item item, int targetIndex) {
+		protected void move(Item item, int targetIndex) {
 			ItemController.this.moveItem(item, targetIndex);
 		}
 
 		@Override
-		protected void copyItem(Item item, int targetIndex) {
+		protected void copy(Item item, int targetIndex) {
 			ItemController.this.copyItem(item, targetIndex);
 		}
 	}

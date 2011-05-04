@@ -32,7 +32,7 @@ import au.org.ala.delta.util.Utils;
 /**
  * Adapts a slot file VOItemDesc to the model Item interface.
  */
-public class VOItemAdaptor extends ImageHolderAdatptor implements ItemData {
+public class VOItemAdaptor extends ImageHolderAdaptor implements ItemData {
 
 	private VOItemDesc _voItemDesc;
 	private DeltaVOP _vop;

@@ -1,54 +1,55 @@
 package au.org.ala.delta.editor.ui.dnd;
 
+import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DnDConstants;
 
 import javax.swing.JComponent;
 import javax.swing.TransferHandler;
 
-import au.org.ala.delta.model.Item;
-
 
 /**
  * Transfer handler for dragging and dropping items.
  */
-public abstract class ItemTransferHandler extends TransferHandler {
+public abstract class SimpleTransferHandler<T> extends TransferHandler {
 	
 	private static final long serialVersionUID = 889705892088002277L;
 	private int sourceIndex;
 	
+	private DataFlavor _flavour;
 	
-	public ItemTransferHandler() {
-		
+	public SimpleTransferHandler(Class<T> clazz) {
+		_flavour = new DataFlavor(clazz, clazz.getName());
 	}
 	
 	public boolean canImport(TransferHandler.TransferSupport info) {
 		
-		return info.isDataFlavorSupported(ItemTransferrable.ITEM_DATA_FLAVOUR);
+		return info.isDataFlavorSupported(_flavour);
 	}
 	
 	protected Transferable createTransferable(JComponent c) {
-		Item item = getItem();
+		T transferObject = getTransferObject();
 		sourceIndex = getStartIndex();
 		
-		return new ItemTransferrable(item);
+		return new SimpleTransferrable<T>(transferObject);
 		
 	}
 	protected abstract int getStartIndex();
-	protected abstract Item getItem();
+	protected abstract T getTransferObject();
 	
 	public int getSourceActions(JComponent c) {
 		return TransferHandler.COPY_OR_MOVE;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public boolean importData(TransferHandler.TransferSupport info) {
 		
 		
 		Transferable transferrable = info.getTransferable();
 		
-		Item item = null;
+		T transferObject = null;
 		try {
-			item = (Item)transferrable.getTransferData(ItemTransferrable.ITEM_DATA_FLAVOUR);
+			transferObject = (T)transferrable.getTransferData(_flavour);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -61,19 +62,19 @@ public abstract class ItemTransferHandler extends TransferHandler {
 		}
 		
 		if (info.getUserDropAction() == DnDConstants.ACTION_MOVE) {
-			moveItem(item, targetIndex);
+			move(transferObject, targetIndex);
 		}
 		else if (info.getUserDropAction() == DnDConstants.ACTION_COPY) {
-			copyItem(item, targetIndex);
+			copy(transferObject, targetIndex);
 		}
 		return true;
 	}
 	
 	protected abstract int getDropLocationIndex();
 	
-	protected abstract void moveItem(Item item, int targetIndex);
+	protected abstract void move(T transferObject, int targetIndex);
 	
-	protected abstract void copyItem(Item item, int targetIndex);
+	protected abstract void copy(T transferObject, int targetIndex);
 	
 
 }

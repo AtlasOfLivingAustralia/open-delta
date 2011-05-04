@@ -4,8 +4,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
-import java.io.File;
-
+import java.net.URL;
 
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
@@ -21,18 +20,18 @@ public class ImagePanel extends JPanel {
 	
 	/**
 	 * Displays this image in this panel.
-	 * @param imageFile the location on the file system of the image to display.
+	 * @param imageFileLocation the location on the file system of the image to display.
 	 */
-	public void displayImage(File imageFile) {
+	public void displayImage(URL imageFileLocation) {
 		
 		try {
-			_image = ImageIO.read(imageFile);
+			_image = ImageIO.read(imageFileLocation);
 			_scaledImage = _image;
 			
 			setPreferredSize(new Dimension(_image.getWidth(), _image.getHeight()));
 		}
 		catch (Exception e) {
-			throw new RuntimeException("Unable to load image: "+imageFile);
+			throw new RuntimeException("Unable to load image: "+imageFileLocation);
 		}
 	}
 	

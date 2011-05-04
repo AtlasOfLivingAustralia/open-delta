@@ -8,6 +8,7 @@ import org.apache.commons.lang.NotImplementedException;
 
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.image.Image;
 
 /**
  * Implements ItemData and stores the data in memory.
@@ -102,4 +103,8 @@ public class DefaultItemData implements ItemData {
     	throw new NotImplementedException();
     }
 
+	@Override
+	public List<Image> getImages() {
+		throw new NotImplementedException();
+	}
 }

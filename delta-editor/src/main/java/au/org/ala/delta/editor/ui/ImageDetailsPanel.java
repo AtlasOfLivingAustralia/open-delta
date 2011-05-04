@@ -1,18 +1,35 @@
 package au.org.ala.delta.editor.ui;
 
 import java.awt.Component;
+import java.awt.Window;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
 
+import javax.swing.ActionMap;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
+import org.jdesktop.application.Action;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.SingleFrameApplication;
+
+import au.org.ala.delta.model.Illustratable;
+import au.org.ala.delta.model.image.Image;
+import au.org.ala.delta.model.image.ImageOverlay;
+import au.org.ala.delta.model.image.OverlayType;
+import au.org.ala.delta.ui.image.ImageViewer;
 import au.org.ala.delta.ui.rtf.RtfEditorPane;
 
 /**
@@ -21,8 +38,24 @@ import au.org.ala.delta.ui.rtf.RtfEditorPane;
 public class ImageDetailsPanel extends JPanel {
 	
 	private static final long serialVersionUID = -1973824161019895786L;
+	
+	private EditorDataModel _dataSet;
+	
+	/** The object that any images will be attached to */
+	private Illustratable _illustratable;
+	
+	/** The path to prepend to images with a relative file name */
+	private String _imagePath;
+	
+	/** The currently selected image */
+	private Image _selectedImage;
+	private ImageList imageList;
+	private RtfEditorPane subjectTextPane;
+	private RtfEditorPane developerNotesTextPane;
 
 	public ImageDetailsPanel() {
+		
+		ActionMap actions = Application.getInstance().getContext().getActionMap(this);
 		
 		JPanel panel = new JPanel();
 		
@@ -57,6 +90,7 @@ public class ImageDetailsPanel extends JPanel {
 		JButton btnDisplay = new JButton("Display");
 		
 		JButton btnAdd = new JButton("Add");
+		btnAdd.setAction(actions.get("addImage"));
 		
 		JButton btnDelete = new JButton("Delete");
 		GroupLayout gl_buttonPanel = new GroupLayout(buttonPanel);
@@ -127,11 +161,11 @@ public class ImageDetailsPanel extends JPanel {
 					.addContainerGap())
 		);
 		
-		RtfEditorPane rtfEditorPane_1 = new RtfEditorPane();
-		scrollPane_2.setViewportView(rtfEditorPane_1);
+		developerNotesTextPane = new RtfEditorPane();
+		scrollPane_2.setViewportView(developerNotesTextPane);
 		
-		RtfEditorPane rtfEditorPane = new RtfEditorPane();
-		scrollPane_1.setViewportView(rtfEditorPane);
+		subjectTextPane = new RtfEditorPane();
+		scrollPane_1.setViewportView(subjectTextPane);
 		
 		JComboBox comboBox = new JComboBox();
 		
@@ -190,9 +224,93 @@ public class ImageDetailsPanel extends JPanel {
 					.addContainerGap())
 		);
 		
-		JList list = new JList();
-		scrollPane.setViewportView(list);
+		imageList = new ImageList();
+	
+		imageList.addListSelectionListener(new ListSelectionListener() {
+			
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				_selectedImage = (Image)imageList.getSelectedValue();
+				updateDisplay();
+			}
+		});
+		scrollPane.setViewportView(imageList);
 		panel.setLayout(gl_panel);
 		setLayout(groupLayout);
 	}
+	
+	/**
+	 * Binds the supplied Illustratable to the user interface provided by this 
+	 * class.
+	 * @param target
+	 */
+	public void bind(Illustratable target) {
+		_illustratable = target;
+		List<Image> images = _illustratable.getImages();
+		imageList.setImages(images);
+	}
+	
+	public File getImageFile() {
+		JFileChooser chooser = new JFileChooser();
+		if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+			return chooser.getSelectedFile();
+		}
+		return null;
+	}
+	
+	@Action
+	public void addImage() {
+		File file = getImageFile();
+		if (file == null) {
+			return;
+		}
+		
+		_illustratable.addImage(file.getAbsolutePath(), "");
+		
+	}
+	
+	private void determineImagePath() {
+		String basePath;
+		try {
+			basePath = new File(_dataSet.getName()).getCanonicalPath();
+			basePath = basePath.substring(0, basePath.lastIndexOf(File.separator));
+			_imagePath = basePath+File.separator+"images";
+		} catch (IOException e) {
+			throw new RuntimeException("Error determining image path.", e);
+		}
+		
+	}
+	
+	private void updateDisplay() {
+		if (_selectedImage == null) {
+			subjectTextPane.setText("");
+			developerNotesTextPane.setText("");
+		}
+		else {
+			List<ImageOverlay> overlays = _selectedImage.getOverlays();
+			for (ImageOverlay overlay : overlays) {
+			
+				if (overlay.isType(OverlayType.OLSUBJECT)) {
+					subjectTextPane.setText(overlay.overlayText);
+				}
+				else if (overlay.isType(OverlayType.OLCOMMENT)) {
+					developerNotesTextPane.setText(overlay.overlayText);
+				}
+				else if (overlay.isType(OverlayType.OLSOUND)) {
+					
+				}
+			}
+			Window parent = ((SingleFrameApplication)Application.getInstance()).getMainFrame();
+			
+			JDialog dialog = ImageViewer.asDialog(parent, _imagePath, _selectedImage);
+			dialog.setVisible(true);
+		}
+	}
+
+	public void setDataSet(EditorDataModel dataSet) {
+		_dataSet = dataSet;
+		determineImagePath();
+	}
+	
+	
 }
