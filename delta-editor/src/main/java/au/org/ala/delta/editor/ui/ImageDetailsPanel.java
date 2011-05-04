@@ -29,6 +29,9 @@ import au.org.ala.delta.model.Illustratable;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageOverlay;
 import au.org.ala.delta.model.image.OverlayType;
+import au.org.ala.delta.model.observer.AbstractDataSetObserver;
+import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
+import au.org.ala.delta.model.observer.DeltaDataSetObserver;
 import au.org.ala.delta.ui.image.ImageViewer;
 import au.org.ala.delta.ui.rtf.RtfEditorPane;
 
@@ -78,6 +81,8 @@ public class ImageDetailsPanel extends JPanel {
 			}
 		});
 		imageList.setSelectionAction(actions.get("displayImage"));
+		
+		
 	}
 
 	private void createUI() {
@@ -350,8 +355,30 @@ public class ImageDetailsPanel extends JPanel {
 		}
 	}
 
+	private DeltaDataSetObserver observer = new AbstractDataSetObserver() {
+		@Override
+		public void itemEdited(DeltaDataSetChangeEvent event) {
+			if (event.getItem().equals(_illustratable)) {
+				int selection = -1;
+				if (_selectedImage != null) {
+					selection = imageList.getSelectedIndex();
+				}
+				bind(_illustratable);
+				if (selection != -1) {
+					imageList.setSelectedIndex(selection);
+				}
+				
+			}
+		}
+	};
 	public void setDataSet(EditorDataModel dataSet) {
+		
+		if (_dataSet != null) {
+			_dataSet.removeDeltaDataSetObserver(observer);
+		}
 		_dataSet = dataSet;
+		_dataSet.addDeltaDataSetObserver(observer);
+		
 		determineImagePath();
 	}
 	

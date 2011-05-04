@@ -1275,6 +1275,7 @@ public class VOImageDesc extends VOAnyDesc {
 
 		public ImageFixedData() {
 			super("Image Desc");
+			this.TypeID = VODescFactory.VOImageDesc_TypeId;
 		}
 		public ImageFixedData(int ownerId, int imageType) {
 			this();
@@ -1292,7 +1293,7 @@ public class VOImageDesc extends VOAnyDesc {
 		@Override
 		public void read(BinFile file) {
 			super.read(file);
-			ByteBuffer b = file.readByteBuffer(SIZE);
+			ByteBuffer b = file.readByteBuffer(SIZE - FixedData.SIZE);
 
 			fixedSize = b.getShort();
 			ownerId = b.getInt();

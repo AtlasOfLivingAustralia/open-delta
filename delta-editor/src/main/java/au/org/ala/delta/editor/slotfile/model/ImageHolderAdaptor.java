@@ -29,6 +29,11 @@ public abstract class ImageHolderAdaptor {
 	 */
 	protected abstract DeltaVOP getVOP();
 	
+	/**
+	 * Adds a new image to the image holder returned by getImageHolder().
+	 * @param fileName the path to the image.
+	 * @param comments encoded overlay data.
+	 */
 	public void addImage(String fileName, String comments) {
 		if (StringUtils.isEmpty(fileName)) {
 			throw new IllegalArgumentException("Image file name cannot be null");

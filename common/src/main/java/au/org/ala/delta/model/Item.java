@@ -131,6 +131,7 @@ public class Item implements AttributeObserver, Illustratable {
     @Override
     public void addImage(String fileName, String comments) {
     	_impl.addImage(fileName, comments);
+    	notifyObservers();
     }
     
     @Override

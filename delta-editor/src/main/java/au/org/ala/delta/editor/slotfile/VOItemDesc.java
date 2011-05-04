@@ -562,7 +562,7 @@ public class VOItemDesc extends VOImageHolderDesc implements INameHolder {
 		@Override
 		public void read(BinFile file) {
 			super.read(file);
-			ByteBuffer b = file.readByteBuffer(SIZE);
+			ByteBuffer b = file.readByteBuffer(SIZE-FixedData.SIZE);
 
 			fixedSize = b.getShort();
 			nBlocks = b.getInt();
