@@ -34,7 +34,11 @@ public class TableRowHeader extends JTable implements ReorderableItemList {
 		
 		_dataModel = dataModel;
 		setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+		
+		// These lines are required to enable initiating a drag and drop operation
+		// on an unselected cell.
 		getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		getColumnModel().getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		
 		setBackground(SystemColor.control);
 		FixedColumnRenderer renderer = new FixedColumnRenderer();
@@ -62,6 +66,9 @@ public class TableRowHeader extends JTable implements ReorderableItemList {
 		return getDropLocation().getRow();
 	}
 
+	/**
+	 * Renderer that renders the header component like the cells.
+	 */
 	class HeaderRenderer extends DefaultTableCellRenderer {
 		
 		private static final long serialVersionUID = 2624649501223462614L;
@@ -134,6 +141,9 @@ public class TableRowHeader extends JTable implements ReorderableItemList {
 			return false;
 		}
 		
+		/**
+		 * Keeps this model in sync with changes to the DataSet.
+		 */
 		class ItemAddedListener extends AbstractDataSetObserver {
 			@Override
 			public void itemAdded(DeltaDataSetChangeEvent event) {
