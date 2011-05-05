@@ -24,6 +24,8 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 
 import javax.swing.ActionMap;
 import javax.swing.DropMode;
@@ -156,7 +158,18 @@ public class MatrixViewer extends JInternalFrame {
 				
 			}
 		});
-
+		
+		// This enables mouse wheeling scrolling works over the table row header
+		// (it won't by default because the vertical scroll bar policy is never).
+		fixedScrollPane.setWheelScrollingEnabled(false);
+		fixedScrollPane.addMouseWheelListener(new MouseWheelListener() {
+			@Override
+			public void mouseWheelMoved(MouseWheelEvent e) {
+				e.setSource(scrollpane);
+				Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(e);
+			}
+		});
+		
 		JSplitPane content = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		// JPanel content = new JPanel(new BorderLayout());
 		content.add(scrollpane, JSplitPane.RIGHT);
