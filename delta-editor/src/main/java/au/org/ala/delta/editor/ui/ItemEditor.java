@@ -79,7 +79,7 @@ public class ItemEditor extends JDialog {
 		ActionMap map = Application.getInstance().getContext().getActionMap(this);
 		createUI();
 		addEventHandlers(map);
-		bind(model);
+		bind(model);		
 	}
 
 	/**
@@ -312,4 +312,15 @@ public class ItemEditor extends JDialog {
 		imageDetails.bind(_selectedItem);
 		_editsDisabled = false;
 	}
+
+	/**
+	 * Overrides pack() to give focus to the rtfEditor by default.
+	 */
+	@Override
+	public void pack() {
+		super.pack();
+		rtfEditor.requestFocusInWindow();
+	}
+	
+	
 }
