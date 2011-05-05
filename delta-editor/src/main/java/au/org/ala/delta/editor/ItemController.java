@@ -28,22 +28,24 @@ public class ItemController {
 	private ReorderableItemList _view;
 	private EditorDataModel _model;
 	private ApplicationContext _context;
+	private ActionMap _itemActions;
 	
 	public ItemController(ReorderableItemList view, EditorDataModel model) {
 		_view = view;
 		_model = model;
 		_context = Application.getInstance().getContext();
-		
 		JComponent viewComponent = (JComponent)_view;
 		
 		viewComponent.setTransferHandler(new ItemTransferHandler());
+		_itemActions = _context.getActionMap(ItemController.class, this);
+		_view.setSelectionAction(_itemActions.get("editItem"));
+		
 		
 		new PopupBuilder();
 	}
 	
 	public JPopupMenu buildPopup() {
 		JPopupMenu popup = new JPopupMenu();
-		ActionMap itemActions = _context.getActionMap(ItemController.class, this);
 		
 		String[] itemsPopupActions;
 		if (_model.getMaximumNumberOfItems() == 0) {
@@ -52,7 +54,7 @@ public class ItemController {
 		else {
 		    itemsPopupActions = new String[] {"editItem", "addItem", "insertItem", "deleteItem", "-", "cancel"};
 		}
-		MenuBuilder.buildMenu(popup, itemsPopupActions, itemActions);
+		MenuBuilder.buildMenu(popup, itemsPopupActions, _itemActions);
 		
 		return popup;
 	}

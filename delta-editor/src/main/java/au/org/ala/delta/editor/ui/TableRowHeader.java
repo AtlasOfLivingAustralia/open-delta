@@ -3,9 +3,16 @@ package au.org.ala.delta.editor.ui;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.SystemColor;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
+import javax.swing.Action;
 import javax.swing.JTable;
+import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -27,6 +34,8 @@ import au.org.ala.delta.ui.AboutBox;
 public class TableRowHeader extends JTable implements ReorderableItemList {
 
 	private static final long serialVersionUID = 4631242294243331000L;
+	private static final String SELECTION_ACTION_NAME = "selectionAction";
+	
 	private EditorDataModel _dataModel;
 	
 	public TableRowHeader(EditorDataModel dataModel) {
@@ -64,6 +73,35 @@ public class TableRowHeader extends JTable implements ReorderableItemList {
 	@Override
 	public int getDropLocationIndex() {
 		return getDropLocation().getRow();
+	}
+	
+	/**
+	 * Registers the action to take when a selection (double click or Enter key) has been made on
+	 * this list.
+	 * @param action the action that will be invoked on selection.
+	 */
+	public void setSelectionAction(Action action) {
+		addMouseListener(new DoubleClickToAction());
+		getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), SELECTION_ACTION_NAME);
+		getActionMap().put(SELECTION_ACTION_NAME, action);
+	}
+	
+	/**
+	 * Detects double clicks and treats them as a different type of selection event.
+	 */
+	public class DoubleClickToAction extends MouseAdapter {
+		public void mouseClicked(MouseEvent e) {
+			if (e.getClickCount() == 2 && SwingUtilities.isLeftMouseButton(e)) {
+				int index = rowAtPoint(e.getPoint());
+				getSelectionModel().setSelectionInterval(index, index);
+				Action action = getActionMap().get(SELECTION_ACTION_NAME);
+	
+				if (action != null) {
+					ActionEvent event = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "");
+					action.actionPerformed(event);
+				}
+			}
+		}
 	}
 
 	/**

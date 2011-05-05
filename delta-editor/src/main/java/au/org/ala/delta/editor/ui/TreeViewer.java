@@ -101,8 +101,6 @@ public class TreeViewer extends JInternalFrame {
 		_itemList.setDragEnabled(true);
 		_itemList.setDropMode(DropMode.INSERT);
 		final ActionMap actionMap = context.getActionMap();
-		_itemList.setSelectionAction(actionMap.get("viewTaxonEditor"));
-		
 
 		_tree = new JTree();
 		final CharacterTreeModel treeModel = new CharacterTreeModel(_dataModel);
