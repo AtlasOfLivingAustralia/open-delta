@@ -2,6 +2,7 @@ package au.org.ala.delta.editor.support;
 
 import java.awt.Dimension;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.SystemColor;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -77,7 +78,12 @@ public abstract class InternalFrameApplication extends DeltaSingleFrameApplicati
 		// Restore session state
 		restoreSession(frame);
 		boolean maximum = frame.isMaximum();
+
+		Rectangle bounds = frame.getBounds();
+		Dimension size = frame.getPreferredSize();
+		frame.setBounds(new Rectangle(bounds.x, bounds.y, size.width, size.height));
 		
+
 		frame.setVisible(true);
 		
 		// This is to work around a strange bit of code (looks like a bug) that gets invoked in the 

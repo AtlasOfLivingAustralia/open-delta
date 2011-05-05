@@ -3,15 +3,13 @@ package au.org.ala.delta.editor.ui;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Window;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.ActionMap;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JDialog;
+import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -35,12 +33,11 @@ import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.ui.rtf.RtfEditor;
-import au.org.ala.delta.ui.util.IconHelper;
 
 /**
  * Provides a user interface that allows an item description and images to be edited.
  */
-public class ItemEditor extends JDialog {
+public class ItemEditor extends JInternalFrame {
 	
 	private static final long serialVersionUID = 9193388605723396077L;
 
@@ -71,7 +68,7 @@ public class ItemEditor extends JDialog {
 	private String selectTaxonLabelText;
 	
 	public ItemEditor(Window parent, EditorDataModel model) {	
-		super(parent);
+		super();
 		setName("ItemEditorDialog");
 		
 		ResourceMap resources = Application.getInstance().getContext().getResourceMap(ItemEditor.class);
@@ -93,16 +90,10 @@ public class ItemEditor extends JDialog {
 					return;
 				}
 				_selectedItem = _dataSet.getItem((Integer)spinner.getValue());
-				updateUI();
+				updateDisplay();
 			}
 		});
 		
-		chckbxTreatAsVariant.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				
-			}
-		});
 		rtfEditor.getDocument().addDocumentListener(new DocumentListener() {
 			@Override
 			public void removeUpdate(DocumentEvent e) {
@@ -127,7 +118,7 @@ public class ItemEditor extends JDialog {
 					return;
 				}
 				_selectedItem = _dataSet.getItem(taxonSelectionList.getSelectedIndex()+1);
-				updateUI();
+				updateDisplay();
 			}
 		});
 		
@@ -174,7 +165,7 @@ public class ItemEditor extends JDialog {
 	 * Creates the user interface components of this dialog.
 	 */
 	private void createUI() {
-		setIconImages(IconHelper.getBlueIconList());
+		
 		JLabel lblTaxonNumber = new JLabel("Taxon Number:");
 		lblTaxonNumber.setName("taxonNumberLabel");
 		
@@ -265,9 +256,9 @@ public class ItemEditor extends JDialog {
 		tabbedPane.addTab("Images", imageDetails);
 		panel.add(tabbedPane);
 		getContentPane().setLayout(groupLayout);
+	
 		setPreferredSize(new Dimension(827, 500));
 		setMinimumSize(new Dimension(748, 444));
-		setModal(true);
 	}
 	
 	/**
@@ -280,7 +271,7 @@ public class ItemEditor extends JDialog {
 		taxonSelectionList.setDataSet(dataSet);
 		imageDetails.setDataSet(dataSet);
 		_selectedItem = dataSet.getSelectedItem();
-		updateUI();
+		updateDisplay();
 	}
 	
 	private void itemEditPerformed() {
@@ -293,7 +284,7 @@ public class ItemEditor extends JDialog {
 	/**
 	 * Synchronizes the state of the UI with the currently selected Item.
 	 */
-	private void updateUI() {
+	private void updateDisplay() {
 		
 		_editsDisabled = true;
 		setTitle(_dataSet.getName() + " "+titleSuffix);
