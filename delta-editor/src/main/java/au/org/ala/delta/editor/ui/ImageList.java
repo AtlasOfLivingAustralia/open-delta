@@ -10,6 +10,9 @@ import javax.swing.ListSelectionModel;
 
 import au.org.ala.delta.model.image.Image;
 
+/**
+ * A JList that displays a list of Image objects.
+ */
 public class ImageList extends SelectionList {
  
 	private static final long serialVersionUID = 3022295073432330518L;
@@ -19,6 +22,10 @@ public class ImageList extends SelectionList {
 		setCellRenderer(new ImageListRenderer());
 	}
 	
+	/**
+	 * Sets the images that will be displayed in the list.
+	 * @param images the images to display.
+	 */
 	public void setImages(List<Image> images) {
 		setModel(new ImageListModel(images));
 		
@@ -27,6 +34,9 @@ public class ImageList extends SelectionList {
 		}	
 	}
 	
+	/**
+	 * A ListModel that works with Image objects.
+	 */
 	class ImageListModel extends AbstractListModel {
 
 		private static final long serialVersionUID = 8138974771050262084L;
@@ -50,6 +60,9 @@ public class ImageList extends SelectionList {
 		
 	}
 	
+	/**
+	 * Renders an Image as it's file name.
+	 */
 	class ImageListRenderer extends DefaultListCellRenderer {
 
 		private static final long serialVersionUID = -5158573248085323517L;

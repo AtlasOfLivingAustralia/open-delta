@@ -271,6 +271,7 @@ public class ImageDetailsPanel extends JPanel {
 	
 	public File getImageFile() {
 		JFileChooser chooser = new JFileChooser();
+		
 		if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
 			return chooser.getSelectedFile();
 		}
