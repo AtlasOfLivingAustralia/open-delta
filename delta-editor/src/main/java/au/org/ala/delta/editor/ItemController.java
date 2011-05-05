@@ -7,7 +7,6 @@ import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 
-import org.apache.commons.lang.StringUtils;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ApplicationContext;
@@ -30,6 +29,11 @@ public class ItemController {
 	private ApplicationContext _context;
 	private ActionMap _itemActions;
 	
+	/**
+	 * Creates a new ItemController.
+	 * @param view the view of the Items.
+	 * @param model the model containing Item data.
+	 */
 	public ItemController(ReorderableItemList view, EditorDataModel model) {
 		_view = view;
 		_model = model;
@@ -44,6 +48,10 @@ public class ItemController {
 		new PopupBuilder();
 	}
 	
+	/**
+	 * Builds the Item-related popup menu based on the current selection.
+	 * @return a JPopupMenu configured for the current selection.
+	 */
 	public JPopupMenu buildPopup() {
 		JPopupMenu popup = new JPopupMenu();
 		
@@ -119,11 +127,6 @@ public class ItemController {
 		_view.setSelectedItem(selectedItem);
 		
 		editItem(e);
-		
-		if (StringUtils.isEmpty(newItem.getDescription())) {
-			_model.deleteItem(newItem);
-			updateSelection(selectedItem);
-		}
 	}
 	
 	private void updateSelection(int itemNum) {

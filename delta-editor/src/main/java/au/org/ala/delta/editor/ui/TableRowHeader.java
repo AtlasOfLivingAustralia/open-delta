@@ -40,7 +40,7 @@ public class TableRowHeader extends JTable implements ReorderableItemList {
 	
 	public TableRowHeader(EditorDataModel dataModel) {
 		super(new ItemColumnModel(dataModel));
-		
+		((ItemColumnModel)getModel()).setTable(this);
 		_dataModel = dataModel;
 		setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
 		
@@ -66,7 +66,9 @@ public class TableRowHeader extends JTable implements ReorderableItemList {
 
 	@Override
 	public void setSelectedItem(int itemNumber) {
-		getSelectionModel().setSelectionInterval(itemNumber-1, itemNumber-1);
+		int index = itemNumber - 1;
+		getSelectionModel().setSelectionInterval(index, index);
+		scrollRectToVisible(getCellRect(index, 0, true));
 		
 	}
 	
@@ -129,6 +131,7 @@ public class TableRowHeader extends JTable implements ReorderableItemList {
 
 		private static final long serialVersionUID = 1L;
 
+		private JTable _table;
 		private EditorDataModel _dataSet;
 		private ItemFormatter _formatter;
 
@@ -146,6 +149,10 @@ public class TableRowHeader extends JTable implements ReorderableItemList {
 			boolean stripRtf = true;
 			boolean useShortFormOfVariant = true;
 			_formatter = new ItemFormatter(includeNumber, stripComments, replaceAngleBrackets, stripRtf, useShortFormOfVariant);
+		}
+		
+		public void setTable(JTable table) {
+			_table = table;
 		}
 
 		@Override
@@ -193,7 +200,13 @@ public class TableRowHeader extends JTable implements ReorderableItemList {
 			}
 			@Override
 			public void itemDeleted(DeltaDataSetChangeEvent event) {
-				fireTableRowsDeleted(getRowIndex(event), getRowIndex(event));
+				int rowIndex = getRowIndex(event);
+				int selection = _table.getSelectedRow();
+				fireTableRowsDeleted(rowIndex, rowIndex);
+				if (selection == rowIndex) {
+					selection = Math.min(selection, getRowCount()-1);
+					_table.getSelectionModel().setSelectionInterval(selection, selection);
+				}
 			}
 			
 			private int getRowIndex(DeltaDataSetChangeEvent event) {

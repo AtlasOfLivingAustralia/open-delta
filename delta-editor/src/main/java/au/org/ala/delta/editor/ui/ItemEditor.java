@@ -16,6 +16,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
 import javax.swing.JToggleButton;
+import javax.swing.JToolBar;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ListSelectionModel;
 import javax.swing.SpinnerNumberModel;
@@ -26,6 +27,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.apache.commons.lang.StringUtils;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.Resource;
@@ -49,6 +51,12 @@ public class ItemEditor extends JInternalFrame {
 	
 	/** Flag to allow updates to the model to be disabled during new item selection */
 	private boolean _editsDisabled;
+	
+	/** 
+	 * The behavior is slightly different editing a new Item - instead of disallowing
+	 * a blank description the item is deleted if the edit finishes with a blank.
+	 */
+	private boolean _editingNewItem;
 	
 	private JSpinner spinner;
 	private RtfEditor rtfEditor;
@@ -130,6 +138,9 @@ public class ItemEditor extends JInternalFrame {
 	
 	@Action
 	public void itemEditDone() {
+		if (_editingNewItem && StringUtils.isEmpty(_selectedItem.getDescription())) {
+			_dataSet.deleteItem(_selectedItem);
+		}
 		setVisible(false);
 	}
 	
@@ -166,6 +177,7 @@ public class ItemEditor extends JInternalFrame {
 	 */
 	private void createUI() {
 		
+		JPanel content = new JPanel();
 		JLabel lblTaxonNumber = new JLabel("Taxon Number:");
 		lblTaxonNumber.setName("taxonNumberLabel");
 		
@@ -193,7 +205,7 @@ public class ItemEditor extends JInternalFrame {
 		
 		taxonSelectionList = new ItemList();
 		
-		GroupLayout groupLayout = new GroupLayout(getContentPane());
+		GroupLayout groupLayout = new GroupLayout(content);
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup()
@@ -255,10 +267,14 @@ public class ItemEditor extends JInternalFrame {
 		imageDetails.setEnabled(false);
 		tabbedPane.addTab("Images", imageDetails);
 		panel.add(tabbedPane);
-		getContentPane().setLayout(groupLayout);
+		content.setLayout(groupLayout);
 	
 		setPreferredSize(new Dimension(827, 500));
 		setMinimumSize(new Dimension(748, 444));
+		
+		JToolBar toolbar = rtfEditor.buildAndInstallToolbar();
+		getContentPane().add(toolbar, BorderLayout.NORTH);
+		getContentPane().add(content, BorderLayout.CENTER);
 	}
 	
 	/**
@@ -271,6 +287,8 @@ public class ItemEditor extends JInternalFrame {
 		taxonSelectionList.setDataSet(dataSet);
 		imageDetails.setDataSet(dataSet);
 		_selectedItem = dataSet.getSelectedItem();
+		_editingNewItem = StringUtils.isEmpty(_selectedItem.getDescription());
+	
 		updateDisplay();
 	}
 	

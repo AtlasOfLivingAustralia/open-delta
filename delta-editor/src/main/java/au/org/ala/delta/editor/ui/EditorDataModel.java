@@ -205,7 +205,7 @@ public class EditorDataModel implements DeltaDataSet, DeltaDataSetObserver {
 	@Override
 	public void deleteItem(Item item) {
 		_currentDataSet.deleteItem(item);
-		if (_selectedItem.equals(item)) {
+		if (_selectedItem != null && _selectedItem.equals(item)) {
 			_selectedItem = null;
 		}
 	}

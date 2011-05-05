@@ -29,7 +29,7 @@ public class ItemList extends SelectionList implements ReorderableItemList {
 		
 		public ItemListModel(EditorDataModel dataSet) {
 			_dataSet = dataSet;
-			_dataSet.addDeltaDataSetObserver(new NewItemListener());
+			_dataSet.addDeltaDataSetObserver(new ItemListener());
 		}
 		
 		@Override
@@ -43,7 +43,7 @@ public class ItemList extends SelectionList implements ReorderableItemList {
 			return _dataSet.getMaximumNumberOfItems();
 		}
 		
-		class NewItemListener extends AbstractDataSetObserver {
+		class ItemListener extends AbstractDataSetObserver {
 
 			@Override
 			public void itemAdded(DeltaDataSetChangeEvent event) {
@@ -53,8 +53,13 @@ public class ItemList extends SelectionList implements ReorderableItemList {
 			
 			@Override
 			public void itemDeleted(DeltaDataSetChangeEvent event) {
+				int selection = getSelectedIndex();
 				int deletedItem = event.getItem().getItemNumber();
 				fireIntervalRemoved(ItemListModel.this, deletedItem-1, deletedItem-1);
+				if (selection == deletedItem -1) {
+					selection = Math.min(selection, getSize()-1);
+					setSelectedIndex(Math.max(selection, 0));
+				}
 			}
 			
 			@Override

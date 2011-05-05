@@ -96,7 +96,6 @@ public class DeltaEditor extends InternalFrameApplication {
 
 	private ActionMap _actionMap;
 
-	// Yuk
 	private DeltaDataSetRepository _dataSetRepository;
 
 	private boolean _saveEnabled;
