@@ -128,7 +128,9 @@ public class ItemController {
 		if (itemNum > _model.getMaximumNumberOfItems()) {
 			itemNum = _model.getMaximumNumberOfItems();
 		}
-		_view.setSelectedItem(itemNum);
+		if (itemNum > 0) {
+			_view.setSelectedItem(itemNum);
+		}
 	}
 	
 	public void moveItem(Item item, int newIndex) {
