@@ -80,9 +80,10 @@ public abstract class InternalFrameApplication extends DeltaSingleFrameApplicati
 		boolean maximum = frame.isMaximum();
 
 		Rectangle bounds = frame.getBounds();
-		Dimension size = frame.getPreferredSize();
-		frame.setBounds(new Rectangle(bounds.x, bounds.y, size.width, size.height));
-		
+		if ((bounds.height == 0) || (bounds.width == 0)) {
+			Dimension size = frame.getPreferredSize();
+			frame.setBounds(new Rectangle(bounds.x, bounds.y, size.width, size.height));
+		}
 
 		frame.setVisible(true);
 		
