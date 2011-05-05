@@ -310,10 +310,10 @@ public class ItemEditor extends JInternalFrame implements ValidationListener {
 		if (_editsDisabled) {
 			return;
 		}
-		if (_validator.verify(rtfEditor)) {
-		
-			_selectedItem.setDescription(rtfEditor.getRtfTextBody());
+		if (!_editingNewItem) {
+			_validator.verify(rtfEditor);
 		}
+		_selectedItem.setDescription(rtfEditor.getRtfTextBody());	
 	}
 	
 	/**
