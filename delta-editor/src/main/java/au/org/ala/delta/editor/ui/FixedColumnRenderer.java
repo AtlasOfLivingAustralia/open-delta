@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.SystemColor;
 
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTable;
@@ -25,6 +26,12 @@ public class FixedColumnRenderer extends DefaultTableCellRenderer {
 
 		_renderer.setRowIndex(row);
 		_renderer.setText(value == null ? "" : value.toString());
+		if (isSelected) {
+			_renderer.setBorder(BorderFactory.createLineBorder(SystemColor.controlShadow));
+		}
+		else {
+			_renderer.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
+		}
 
 		return _renderer;
 	}
@@ -37,7 +44,8 @@ public class FixedColumnRenderer extends DefaultTableCellRenderer {
 
 		public RowHeaderPanel() {
 			this.setLayout(new BorderLayout());
-			_rowIndexLabel.setPreferredSize(new Dimension(40, 30));
+			Dimension d = _rowIndexLabel.getPreferredSize();
+			_rowIndexLabel.setPreferredSize(new Dimension(40, d.height));
 			_rowIndexLabel.setHorizontalAlignment(CENTER);
 			_rowIndexLabel.setVerticalAlignment(TOP);
 
@@ -46,6 +54,7 @@ public class FixedColumnRenderer extends DefaultTableCellRenderer {
 
 			this.add(_rowIndexLabel, BorderLayout.WEST);
 			this.add(_textLabel, BorderLayout.CENTER);
+			setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
 		}
 
 		public void setRowIndex(int rowIndex) {
