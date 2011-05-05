@@ -37,7 +37,8 @@ public class TableRowHeader extends JTable implements ReorderableItemList {
 		getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		
 		setBackground(SystemColor.control);
-		setDefaultRenderer(Object.class, new FixedColumnRenderer());
+		FixedColumnRenderer renderer = new FixedColumnRenderer();
+		setDefaultRenderer(Object.class, renderer);
 	}
 	
 	public void setTable(JTable table) {
@@ -136,12 +137,21 @@ public class TableRowHeader extends JTable implements ReorderableItemList {
 		class ItemAddedListener extends AbstractDataSetObserver {
 			@Override
 			public void itemAdded(DeltaDataSetChangeEvent event) {
-				fireTableRowsInserted(event.getItem().getItemNumber()-1, event.getItem().getItemNumber()-1);
+				fireTableRowsInserted(getRowIndex(event), getRowIndex(event));
 			}
 			@Override
 			public void itemEdited(DeltaDataSetChangeEvent event) {
-				fireTableCellUpdated(event.getItem().getItemNumber()-1, 0);
+				fireTableCellUpdated(getRowIndex(event), 0);
 			}
+			@Override
+			public void itemDeleted(DeltaDataSetChangeEvent event) {
+				fireTableRowsDeleted(getRowIndex(event), getRowIndex(event));
+			}
+			
+			private int getRowIndex(DeltaDataSetChangeEvent event) {
+				return event.getItem().getItemNumber()-1;
+			}
+			
 		}
 
 	}

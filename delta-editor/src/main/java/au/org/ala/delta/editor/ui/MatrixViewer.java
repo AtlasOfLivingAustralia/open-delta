@@ -35,6 +35,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.border.LineBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.TableCellRenderer;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
@@ -79,6 +80,7 @@ public class MatrixViewer extends JInternalFrame {
 		_fixedColumns = new TableRowHeader(dataSet);
 		_fixedColumns.setDragEnabled(true);
 		_fixedColumns.setDropMode(DropMode.INSERT_ROWS);
+		_fixedColumns.setFillsViewportHeight(true);
 		new ItemController(_fixedColumns, dataSet);
 		
 		_table = new DropIndicationTable(_model, _fixedColumns);
@@ -109,16 +111,16 @@ public class MatrixViewer extends JInternalFrame {
 				_fixedColumns.getSelectionModel().setSelectionInterval(row, row);
 				int charId = _table.getSelectedColumn() + 1;
 				int itemId = _table.getSelectedRow() + 1;
-
 				
-				
-				if (charId > 0 && itemId > 0) {
-					au.org.ala.delta.model.Character selectedCharacter = _dataSet.getCharacter(charId);
+				if (itemId > 0) {
 					Item selectedItem = _dataSet.getItem(itemId);
 					_dataSet.setSelectedItem(selectedItem);
-					_stateEditor.bind(selectedCharacter, selectedItem);
+				
+					if (charId > 0) {
+						au.org.ala.delta.model.Character selectedCharacter = _dataSet.getCharacter(charId);
+						_stateEditor.bind(selectedCharacter, selectedItem);
+					}
 				}
-
 			}
 		};
 
@@ -201,6 +203,7 @@ public class MatrixViewer extends JInternalFrame {
 		if ((_dataSet.getMaximumNumberOfItems() > 0) && (_dataSet.getNumberOfCharacters() > 0)) {
 			selectCell(0, 0);
 		}
+		configureDefaultRowHeight();
 	}
 	
 	/**
@@ -233,7 +236,14 @@ public class MatrixViewer extends JInternalFrame {
 		_table.getSelectionModel().setSelectionInterval(rowIndex, rowIndex);
 		_table.getColumnModel().getSelectionModel().setSelectionInterval(colIndex, colIndex);		
 	}
-
+	
+	private void configureDefaultRowHeight() {
+		TableCellRenderer renderer = _fixedColumns.getDefaultRenderer(Object.class);
+		Component comp = renderer.getTableCellRendererComponent(_fixedColumns, "Example Text", true, true, 0, 0);
+		_fixedColumns.setRowHeight(comp.getPreferredSize().height);
+		_table.setRowHeight(comp.getPreferredSize().height);
+	}
+	
 	@Action(block = BlockingScope.APPLICATION)
 	public Task<Void, Void> copy() {
 		return new CopySelectedTask(Application.getInstance());
