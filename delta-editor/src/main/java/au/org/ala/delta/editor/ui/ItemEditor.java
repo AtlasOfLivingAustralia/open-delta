@@ -33,13 +33,17 @@ import org.jdesktop.application.Application;
 import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 
+import au.org.ala.delta.editor.ui.validator.ItemValidator;
+import au.org.ala.delta.editor.ui.validator.TextComponentValidator;
+import au.org.ala.delta.editor.ui.validator.ValidationListener;
+import au.org.ala.delta.editor.ui.validator.ValidationResult;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.ui.rtf.RtfEditor;
 
 /**
  * Provides a user interface that allows an item description and images to be edited.
  */
-public class ItemEditor extends JInternalFrame {
+public class ItemEditor extends JInternalFrame implements ValidationListener {
 	
 	private static final long serialVersionUID = 9193388605723396077L;
 
@@ -57,6 +61,9 @@ public class ItemEditor extends JInternalFrame {
 	 * a blank description the item is deleted if the edit finishes with a blank.
 	 */
 	private boolean _editingNewItem;
+	
+	/** Validates the item description */
+	private TextComponentValidator _validator;
 	
 	private JSpinner spinner;
 	private RtfEditor rtfEditor;
@@ -134,6 +141,7 @@ public class ItemEditor extends JInternalFrame {
 		chckbxTreatAsVariant.setAction(map.get("itemVarianceChanged"));
 		btnSelect.setAction(map.get("selectItemByName"));
 		taxonSelectionList.setSelectionAction(map.get("taxonSelected"));
+		_validator = new TextComponentValidator(new ItemValidator(), this);
 	}
 	
 	@Action
@@ -288,6 +296,12 @@ public class ItemEditor extends JInternalFrame {
 		imageDetails.setDataSet(dataSet);
 		_selectedItem = dataSet.getSelectedItem();
 		_editingNewItem = StringUtils.isEmpty(_selectedItem.getDescription());
+		if (!_editingNewItem) {
+			rtfEditor.setInputVerifier(_validator);
+		}
+		else {
+			rtfEditor.setInputVerifier(null);
+		}
 	
 		updateDisplay();
 	}
@@ -296,7 +310,10 @@ public class ItemEditor extends JInternalFrame {
 		if (_editsDisabled) {
 			return;
 		}
-		_selectedItem.setDescription(rtfEditor.getRtfTextBody());
+		if (_validator.verify(rtfEditor)) {
+		
+			_selectedItem.setDescription(rtfEditor.getRtfTextBody());
+		}
 	}
 	
 	/**
@@ -330,6 +347,15 @@ public class ItemEditor extends JInternalFrame {
 		super.pack();
 		rtfEditor.requestFocusInWindow();
 	}
-	
-	
+
+	@Override
+	public void validationSuceeded(ValidationResult results) {
+		btnDone.setEnabled(true);
+	}
+
+	@Override
+	public void validationFailed(ValidationResult results) {
+		btnDone.setEnabled(false);
+		
+	}
 }
