@@ -13,6 +13,9 @@ import org.apache.commons.lang.math.FloatRange;
 import org.apache.commons.lang.math.IntRange;
 
 import au.org.ala.delta.intkey.model.specimen.Specimen;
+import au.org.ala.delta.intkey.ui.IntegerInputDialog;
+import au.org.ala.delta.intkey.ui.MultiStateInputDialog;
+import au.org.ala.delta.intkey.ui.RealInputDialog;
 import au.org.ala.delta.intkey.ui.TextInputDialog;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.IntegerCharacter;
@@ -28,8 +31,11 @@ public class UseDirective extends IntkeyDirective {
     // available - need to do anything else when this happens?
 
     private static Pattern COMMA_SEPARATED_VALUE_PATTERN = Pattern.compile("^.+,.*$");
-    private static Pattern RANGE_VALUE_PATTERN = Pattern.compile("^\\d+-\\d+$");
+    private static Pattern INT_RANGE_PATTERN = Pattern.compile("^\\d+-\\d+$");
     private static Pattern INT_VALUE_PATTERN = Pattern.compile("^\\d+$");
+    private static Pattern STATE_SET_PATTERN = Pattern.compile("^\\d+(/\\d+)+$");
+    private static Pattern REAL_VALUE_PATTERN = Pattern.compile("^\\d+(\\.\\d+)?$");
+    private static Pattern REAL_RANGE_PATTERN = Pattern.compile("^\\d+(\\.\\d+)?-$\\d+(\\.\\d+)?");
 
     public UseDirective() {
         super("use");
@@ -58,9 +64,12 @@ public class UseDirective extends IntkeyDirective {
                 // If no character numbers (or keywords) were specified, then
                 // the user needs to
                 // be prompted to select which character(s) they want to use.
+                
+                // set characterNumbers list in here.
             }
 
             UseDirectiveInvocation invoc = new UseDirectiveInvocation(suppressAlreadySetWarning);
+            
             Specimen specimen = context.getSpecimen();
             for (int i = 0; i < characterNumbers.size(); i++) {
                 int charNum = characterNumbers.get(i);
@@ -80,29 +89,31 @@ public class UseDirective extends IntkeyDirective {
                     }
                 }
 
+                // Parse the supplied value for each character, or prompt for one if no value was supplied
+                
                 String charValue = specifiedValues.get(i);
 
                 Object parsedCharValue = null;
 
                 if (charValue != null) {
                     if (ch instanceof MultiStateCharacter) {
-
+                        parsedCharValue = ParsingUtils.parseMultiStateCharacterValue(charValue);
                     } else if (ch instanceof IntegerCharacter) {
-
+                        parsedCharValue = ParsingUtils.parseIntegerCharacterValue(charValue);
                     } else if (ch instanceof RealCharacter) {
-
+                        parsedCharValue = ParsingUtils.parseRealCharacterValue(charValue);
                     } else if (ch instanceof TextCharacter) {
-                        parsedCharValue = parseTextValue(charValue);
+                        parsedCharValue = ParsingUtils.parseTextCharacterValue(charValue);
                     } else {
                         throw new IllegalArgumentException("Unrecognized character type");
                     }
                 } else {
                     if (ch instanceof MultiStateCharacter) {
-
+                        parsedCharValue = promptForMultiStateValue(context.getMainFrame(), (MultiStateCharacter) ch); 
                     } else if (ch instanceof IntegerCharacter) {
-
+                        parsedCharValue = promptForIntegerValue(context.getMainFrame(), (IntegerCharacter) ch);
                     } else if (ch instanceof RealCharacter) {
-
+                        parsedCharValue = promptForRealValue(context.getMainFrame(), (RealCharacter) ch);
                     } else if (ch instanceof TextCharacter) {
                         parsedCharValue = promptForTextValue(context.getMainFrame(), (TextCharacter) ch);
                     } else {
@@ -227,59 +238,38 @@ public class UseDirective extends IntkeyDirective {
 
     private List<Integer> parseLHS(String lhs) {
         List<Integer> retList = new ArrayList<Integer>();
-
-        if (INT_VALUE_PATTERN.matcher(lhs).matches()) {
-            int val = Integer.parseInt(lhs);
-            retList.add(val);
-        } else if (RANGE_VALUE_PATTERN.matcher(lhs).matches()) {
-            IntRange range = parseRange(lhs);
+        
+        IntRange range = ParsingUtils.parseIntRange(lhs);
+        if (range != null) {
             for (int i : range.toArray()) {
                 retList.add(i);
             }
         } else {
             // TODO need to implement directive that defines character keywords.
-            System.out.println("Keyword: " + lhs);
+            // TODO if no keyword match then throw error.
+            System.out.println("Keyword: " + lhs); 
         }
 
         return retList;
     }
 
-    private List<Integer> parseMultiStateValue(String charValue) {
-        return null;
+
+    private List<Integer> promptForMultiStateValue(Frame frame, MultiStateCharacter ch) {
+        MultiStateInputDialog dlg = new MultiStateInputDialog(frame, ch);
+        dlg.setVisible(true);
+        return dlg.getInputData();
     }
 
-    private IntRange parseIntegerValue(String charValue) {
-        return null;
+    private IntRange promptForIntegerValue(Frame frame, IntegerCharacter ch) {
+        IntegerInputDialog dlg = new IntegerInputDialog(frame, ch);
+        dlg.setVisible(true);
+        return dlg.getInputData();
     }
 
-    private FloatRange parseRealValue(String charValue) {
-        return null;
-    }
-
-    private List<String> parseTextValue(String charValue) {
-        // Remove surrounding quotes if they are present
-        if (charValue.charAt(0) == '"' && charValue.charAt(charValue.length() - 1) == '"') {
-            charValue = charValue.substring(1, charValue.length() - 2);
-        }
-
-        List<String> retList = new ArrayList<String>();
-        for (String s : charValue.split("/")) {
-            retList.add(s);
-        }
-
-        return retList;
-    }
-
-    private List<Integer> promptForMultiStateValue(MultiStateCharacter ch) {
-        return null;
-    }
-
-    private IntRange promptForIntegerValue(IntegerCharacter ch) {
-        return null;
-    }
-
-    private FloatRange promptForRealValue(RealCharacter ch) {
-        return null;
+    private FloatRange promptForRealValue(Frame frame, RealCharacter ch) {
+        RealInputDialog dlg = new RealInputDialog(frame, ch);
+        dlg.setVisible(true);
+        return dlg.getInputData();
     }
 
     private List<String> promptForTextValue(Frame frame, TextCharacter ch) {

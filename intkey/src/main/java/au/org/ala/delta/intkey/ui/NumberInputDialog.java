@@ -9,35 +9,42 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import javax.swing.border.EmptyBorder;
 
-public class NumberInputDialog extends CharacterValueInputDialog {
-    private JTextField txtFo;
+import au.org.ala.delta.model.NumericCharacter;
 
-    public NumberInputDialog(Frame owner) {
+public abstract class NumberInputDialog extends CharacterValueInputDialog {
+    protected JTextField _txtInput;
+    private JLabel _lblCharacterDescription;
+    private JLabel _lblUnits;
+    protected NumericCharacter _char;
+    
+    public NumberInputDialog(Frame owner, NumericCharacter ch) {
         super(owner);
         setTitle("Enter value or range of values");
         
-        JLabel lblEnterNumberValue = new JLabel("Enter number value");
-        lblEnterNumberValue.setBorder(new EmptyBorder(0, 0, 5, 0));
-        _pnlMain.add(lblEnterNumberValue, BorderLayout.NORTH);
+        _lblCharacterDescription = new JLabel();
+        _lblCharacterDescription.setBorder(new EmptyBorder(0, 0, 5, 0));
+        _pnlMain.add(_lblCharacterDescription, BorderLayout.NORTH);
         
         JPanel panel = new JPanel();
         _pnlMain.add(panel, BorderLayout.CENTER);
         panel.setLayout(new GridLayout(0, 2, 5, 0));
         
-        txtFo = new JTextField();
-        txtFo.setText("fo");
-        panel.add(txtFo);
-        txtFo.setColumns(10);
+        _txtInput = new JTextField();
+        _txtInput.setText("fo");
+        panel.add(_txtInput);
+        _txtInput.setColumns(10);
         
-        JLabel lblUnits = new JLabel("units");
-        panel.add(lblUnits);
-        // TODO Auto-generated constructor stub
-    }
-
-    @Override
-    void handleBtnOKClicked() {
-        // TODO Auto-generated method stub
+        _lblUnits = new JLabel();
+        panel.add(_lblUnits);
         
+        _char = ch;
+        _lblCharacterDescription.setText(_char.getDescription());
+        
+        if (_char.getUnits() != null) {
+            _lblUnits.setText(_char.getUnits());
+        } else {
+            _lblUnits.setVisible(false);
+        }
     }
 
 }

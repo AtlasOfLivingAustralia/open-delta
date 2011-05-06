@@ -51,4 +51,7 @@ public class DataSetTest extends TestCase {
         IntkeyDataset ds = new IntkeyDatasetFileBuilder().readDataSet(new File("C:/Users/Chris/DELTA resources/samples/grasses/grasses/YCHARS"),
                 new File("C:/Users/Chris/DELTA resources/samples/grasses/grasses/YITEMS"));
     }*/
+    
+    //TODO - Test dataset with excluded characters in the middle of the character
+    // range, e.g. dataset with 10 characters, exclude 5 and 6 in CONFOR.
 }

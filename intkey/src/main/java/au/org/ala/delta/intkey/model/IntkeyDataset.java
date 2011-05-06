@@ -145,6 +145,13 @@ public class IntkeyDataset {
     }
     
     public Character getCharacter(int charNum) {
+        if (charNum < 1 || charNum > _characters.size()) {
+            throw new IllegalArgumentException("Invalid character number");
+        }
         return _characters.get(charNum - 1);
+    }
+    
+    public int getNumberOfCharacters() {
+        return _characters.size();
     }
 }
