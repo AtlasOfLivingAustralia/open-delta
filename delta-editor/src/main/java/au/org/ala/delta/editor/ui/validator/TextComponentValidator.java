@@ -2,6 +2,8 @@ package au.org.ala.delta.editor.ui.validator;
 
 import java.awt.Dimension;
 import java.awt.Point;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
@@ -29,7 +31,7 @@ public class TextComponentValidator extends InputVerifier {
 	/**
 	 * Responsible for hiding the popup when a key is pressed.
 	 */
-	class ErrorDisplayHider extends KeyAdapter implements FocusListener {
+	class ErrorDisplayHider extends KeyAdapter implements FocusListener, ComponentListener {
 
 		private JComponent _component;
 		public ErrorDisplayHider(JComponent component) {
@@ -56,6 +58,16 @@ public class TextComponentValidator extends InputVerifier {
 		
 		@Override
 		public void focusLost(FocusEvent e) {
+			cleanup();
+		}
+		@Override
+		public void componentResized(ComponentEvent e) {}
+		@Override
+		public void componentMoved(ComponentEvent e) {}
+		@Override
+		public void componentShown(ComponentEvent e) {}
+		@Override
+		public void componentHidden(ComponentEvent e) {
 			cleanup();
 		}
 	}
@@ -94,11 +106,16 @@ public class TextComponentValidator extends InputVerifier {
 		 */
 		public void showAbove(JComponent component) {
 
-			Point p = component.getLocationOnScreen();
-			Dimension size = _messageLabel.getPreferredSize();
-			setLocation(p.x, p.y-size.height);
-			
-			setVisible(true);
+			if (component.isShowing()) {
+				Point p = component.getLocationOnScreen();
+				Dimension size = _messageLabel.getPreferredSize();
+				setLocation(p.x, p.y-size.height);
+				
+				setVisible(true);
+			}
+			else {
+				setVisible(false);
+			}
 		}
 
 	}
