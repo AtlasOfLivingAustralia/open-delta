@@ -33,6 +33,7 @@ import org.jdesktop.application.Application;
 import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 
+import au.org.ala.delta.editor.DeltaView;
 import au.org.ala.delta.editor.ui.validator.ItemValidator;
 import au.org.ala.delta.editor.ui.validator.TextComponentValidator;
 import au.org.ala.delta.editor.ui.validator.ValidationListener;
@@ -43,7 +44,7 @@ import au.org.ala.delta.ui.rtf.RtfEditor;
 /**
  * Provides a user interface that allows an item description and images to be edited.
  */
-public class ItemEditor extends JInternalFrame implements ValidationListener {
+public class ItemEditor extends JInternalFrame implements ValidationListener, DeltaView {
 	
 	private static final long serialVersionUID = 9193388605723396077L;
 
@@ -357,5 +358,16 @@ public class ItemEditor extends JInternalFrame implements ValidationListener {
 	public void validationFailed(ValidationResult results) {
 		btnDone.setEnabled(false);
 		
+	}
+	
+	@Override
+	public void open() {}
+
+	@Override
+	public void close() {}
+
+	@Override
+	public String getViewTitle() {
+		return titleSuffix;
 	}
 }

@@ -51,6 +51,7 @@ import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 
+import au.org.ala.delta.editor.DeltaView;
 import au.org.ala.delta.editor.EditorPreferences;
 import au.org.ala.delta.editor.ItemController;
 import au.org.ala.delta.editor.ui.util.EditorUIUtils;
@@ -71,7 +72,7 @@ import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
 import au.org.ala.delta.rtf.RTFUtils;
 import au.org.ala.delta.ui.AboutBox;
 
-public class TreeViewer extends JInternalFrame {
+public class TreeViewer extends JInternalFrame implements DeltaView {
 
 	private static final long serialVersionUID = 1L;
 
@@ -95,7 +96,6 @@ public class TreeViewer extends JInternalFrame {
 		this.setSize(new Dimension(800, 500));
 
 		_dataModel = dataModel;
-		new InternalFrameDataModelListener(this, dataModel, windowTitle);
 
 		_itemList = new ItemList(_dataModel);
 		_itemList.setDragEnabled(true);
@@ -228,6 +228,17 @@ public class TreeViewer extends JInternalFrame {
 		}
 		
 		return 0;
+	}
+	
+	@Override
+	public void open() {}
+
+	@Override
+	public void close() {}
+
+	@Override
+	public String getViewTitle() {
+		return windowTitle;
 	}
 	
 	class NewCharacterListener extends AbstractDataSetObserver {

@@ -4,8 +4,8 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import javax.swing.JInternalFrame;
+import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
-import javax.swing.event.InternalFrameListener;
 
 import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
 import au.org.ala.delta.model.observer.DeltaDataSetObserver;
@@ -14,7 +14,7 @@ import au.org.ala.delta.model.observer.DeltaDataSetObserver;
 /**
  * Keeps an instance of EditorDataModel in sync with a JInternalFrame.
  */
-public class InternalFrameDataModelListener implements PropertyChangeListener, InternalFrameListener, DeltaDataSetObserver {
+public class InternalFrameDataModelListener extends InternalFrameAdapter implements PropertyChangeListener, DeltaDataSetObserver {
 
 	private JInternalFrame _frame;
 	private EditorDataModel _model;
@@ -42,32 +42,8 @@ public class InternalFrameDataModelListener implements PropertyChangeListener, I
 	}
 
 	@Override
-	public void internalFrameOpened(InternalFrameEvent e) {
-	}
-
-	@Override
-	public void internalFrameClosing(InternalFrameEvent e) {
-	}
-
-	@Override
 	public void internalFrameClosed(InternalFrameEvent e) {
-		_model.close();
-	}
-
-	@Override
-	public void internalFrameIconified(InternalFrameEvent e) {
-	}
-
-	@Override
-	public void internalFrameDeiconified(InternalFrameEvent e) {
-	}
-
-	@Override
-	public void internalFrameActivated(InternalFrameEvent e) {
-	}
-
-	@Override
-	public void internalFrameDeactivated(InternalFrameEvent e) {
+		_model.removePropertyChangeListener(this);
 	}
 	
 	@Override

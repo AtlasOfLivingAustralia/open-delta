@@ -46,12 +46,13 @@ import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.Task;
 import org.jdesktop.application.Task.BlockingScope;
 
+import au.org.ala.delta.editor.DeltaView;
 import au.org.ala.delta.editor.EditorPreferences;
 import au.org.ala.delta.editor.ItemController;
 import au.org.ala.delta.editor.ui.dnd.DropIndicationTable;
 import au.org.ala.delta.model.Item;
 
-public class MatrixViewer extends JInternalFrame {
+public class MatrixViewer extends JInternalFrame implements DeltaView {
 
 	private static final long serialVersionUID = 1L;
 
@@ -74,7 +75,7 @@ public class MatrixViewer extends JInternalFrame {
 		this.setTitle(String.format(windowTitle, dataSet.getName()));
 
 		_dataSet = dataSet;
-		new InternalFrameDataModelListener(this, dataSet, windowTitle);
+		
 		_model = new MatrixTableModel(dataSet);
 
 		this.setSize(new Dimension(600, 500));
@@ -265,6 +266,18 @@ public class MatrixViewer extends JInternalFrame {
 	@Action(block = BlockingScope.APPLICATION)
 	public Task<Void, Void> copyAll() {
 		return new CopyAllTask(Application.getInstance());
+	}
+	
+	
+	@Override
+	public void open() {}
+
+	@Override
+	public void close() {}
+
+	@Override
+	public String getViewTitle() {
+		return windowTitle;
 	}
 
 	abstract class ClipboardCopyTask extends Task<Void, Void> {

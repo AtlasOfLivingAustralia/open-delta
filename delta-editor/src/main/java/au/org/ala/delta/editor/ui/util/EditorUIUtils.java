@@ -98,5 +98,5 @@ public class EditorUIUtils {
     public static ImageIcon iconForCharacter(au.org.ala.delta.model.Character ch) {
     	return iconForCharacter(ch, false);
     }
-    
+   
 }
