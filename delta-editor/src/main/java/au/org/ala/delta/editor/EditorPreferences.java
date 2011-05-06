@@ -3,6 +3,7 @@ package au.org.ala.delta.editor;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.prefs.BackingStoreException;
+import java.util.prefs.PreferenceChangeListener;
 import java.util.prefs.Preferences;
 
 import org.apache.commons.lang.StringUtils;
@@ -14,7 +15,7 @@ import au.org.ala.delta.editor.ui.EditorAdvanceMode;
  */
 public class EditorPreferences {
 
-	private static String MRU_PREF_KEY = "MRU";
+	public static String MRU_PREF_KEY = "MRU";
 	
 	/** Character used to separate the most recently used filenames */
 	private static String MRU_SEPARATOR = "\n";
@@ -110,6 +111,18 @@ public class EditorPreferences {
 		if (prefs != null) {
 			prefs.put(ADVANCE_MODE_KEY, mode.toString());
 		}		
+	}
+	
+	/**
+	 * Allows the supplied PreferenceChangeListener to be notified of changes made to
+	 * preferences managed by this class.
+	 * @param listener the PreferenceChangeListener to add.
+	 */
+	public static void addPreferencesChangeListener(PreferenceChangeListener listener) {
+		Preferences prefs = Preferences.userNodeForPackage(DeltaEditor.class);
+		if (prefs != null) {
+			prefs.addPreferenceChangeListener(listener);
+		}	
 	}
 
 }
