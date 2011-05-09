@@ -21,6 +21,7 @@ import org.apache.commons.lang.NotImplementedException;
 import au.org.ala.delta.editor.slotfile.AttrChunk;
 import au.org.ala.delta.editor.slotfile.Attribute;
 import au.org.ala.delta.editor.slotfile.DeltaVOP;
+import au.org.ala.delta.editor.slotfile.TextType;
 import au.org.ala.delta.editor.slotfile.VOCharBaseDesc;
 import au.org.ala.delta.editor.slotfile.VOImageHolderDesc;
 import au.org.ala.delta.editor.slotfile.VOItemDesc;
@@ -59,6 +60,10 @@ public class VOItemAdaptor extends ImageHolderAdaptor implements ItemData {
 
 
 	public String getDescription() {
+		return _voItemDesc.readAttributeAsText(VOItemDesc.VOUID_NAME, TextType.RTF);
+	}
+	
+	public String getUnformattedDescription() {
 		return _voItemDesc.getAnsiName();	
 	}
 

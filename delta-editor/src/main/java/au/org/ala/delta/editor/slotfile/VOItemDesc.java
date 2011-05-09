@@ -252,7 +252,6 @@ public class VOItemDesc extends VOImageHolderDesc implements INameHolder {
 		Attribute attr = readAttribute(charId);
 		if (attr != null) {
 			if (charId == VOUID_NAME) {
-				// if (deltaDoc && showComments)
 				dest.append(Utils.removeComments(attr.begin().get().getString(), showComments));
 			} else {
 
