@@ -111,7 +111,7 @@ public class ImportControllerTest extends TestCase {
 		// At the moment getDescription() strips RTF... probably should leave that to the formatter.
 		//assertEquals("\\i{}Cynodon\\i0{} <Rich.>", item.getDescription());
 		
-		assertEquals("Cynodon <Rich.>", item.getDescription());
+		assertEquals("\\i{}Cynodon\\i0{} <Rich.>", item.getDescription());
 		assertEquals("4-60(-100)", item.getAttribute(_dataSet.getCharacter(2)).getValue());
 		assertEquals("3", item.getAttribute(_dataSet.getCharacter(60)).getValue());
 		
