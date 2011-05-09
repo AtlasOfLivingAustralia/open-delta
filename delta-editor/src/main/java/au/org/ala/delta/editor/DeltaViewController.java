@@ -63,6 +63,7 @@ public class DeltaViewController extends InternalFrameAdapter implements Vetoabl
 		_closingAll = false;
 		_newDataSetName = "";
 		_activeViews = new ArrayList<JInternalFrame>();
+		_observers = new ArrayList<DeltaViewStatusObserver>();
 	}
 
 	public void setNewDataSetName(String newDataSetName) {
@@ -100,13 +101,13 @@ public class DeltaViewController extends InternalFrameAdapter implements Vetoabl
 	 * Notifies this controller there is a new view interested in the model.
 	 * @param view the new view of the model.
 	 */
-	public void viewerOpened(JInternalFrame view) {
-		_activeViews.add(view);
-		view.addVetoableChangeListener(this);
-		view.addInternalFrameListener(this);
-		if (view instanceof DeltaView) {
-			new InternalFrameDataModelListener(view, _dataSet, ((DeltaView)view).getViewTitle());
-		}
+	public void viewerOpened(DeltaView view) {
+		JInternalFrame frameView = (JInternalFrame)view;
+		_activeViews.add(frameView);
+		frameView.addVetoableChangeListener(this);
+		frameView.addInternalFrameListener(this);
+		
+		new InternalFrameDataModelListener(frameView, _dataSet, view.getViewTitle());
 	}
 	
 	
@@ -118,7 +119,14 @@ public class DeltaViewController extends InternalFrameAdapter implements Vetoabl
 		if (!_closingAll) {
 			_activeViews.remove(e.getInternalFrame());
 		}
+		fireViewClosed((DeltaView)e.getInternalFrame());
 	}
+	
+	@Override
+	public void internalFrameActivated(InternalFrameEvent e) {
+		fireViewSelected((DeltaView)e.getInternalFrame());
+	}
+
 
 
 	/**
@@ -236,5 +244,23 @@ public class DeltaViewController extends InternalFrameAdapter implements Vetoabl
 		return _activeViews.size();
 	}
 	
+	
+	private List<DeltaViewStatusObserver> _observers;
+	public void addDeltaViewStatusObserver(DeltaViewStatusObserver observer) {
+		_observers.add(observer);
+	}
+	
+	
+	protected void fireViewClosed(DeltaView view) {
+		for (int i=_observers.size()-1; i>=0; i--) {
+			_observers.get(i).viewClosed(this, view);
+		}
+	}
+	
+	protected void fireViewSelected(DeltaView view) {
+		for (int i=_observers.size()-1; i>=0; i--) {
+			_observers.get(i).viewSelected(this, view);
+		}
+	}
 }
  

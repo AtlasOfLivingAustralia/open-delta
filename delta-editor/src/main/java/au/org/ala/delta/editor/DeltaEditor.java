@@ -40,8 +40,6 @@ import javax.swing.JOptionPane;
 import javax.swing.LookAndFeel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import javax.swing.event.InternalFrameAdapter;
-import javax.swing.event.InternalFrameEvent;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
@@ -58,10 +56,7 @@ import au.org.ala.delta.editor.slotfile.model.SlotFileRepository;
 import au.org.ala.delta.editor.support.InternalFrameApplication;
 import au.org.ala.delta.editor.ui.CharacterEditor;
 import au.org.ala.delta.editor.ui.EditorDataModel;
-import au.org.ala.delta.editor.ui.ItemEditor;
-import au.org.ala.delta.editor.ui.MatrixViewer;
 import au.org.ala.delta.editor.ui.StatusBar;
-import au.org.ala.delta.editor.ui.TreeViewer;
 import au.org.ala.delta.editor.ui.help.HelpConstants;
 import au.org.ala.delta.editor.ui.util.MenuBuilder;
 import au.org.ala.delta.model.AbstractObservableDataSet;
@@ -76,7 +71,7 @@ import au.org.ala.delta.util.IProgressObserver;
  */
 @ProxyActions("copyAll")
 public class DeltaEditor extends InternalFrameApplication implements
-		PreferenceChangeListener {
+		PreferenceChangeListener, DeltaViewStatusObserver {
 
 	private static final String DELTA_FILE_EXTENSION = "dlt";
 
@@ -89,8 +84,12 @@ public class DeltaEditor extends InternalFrameApplication implements
 
 	private ActionMap _actionMap;
 
+	/** Used to create/find/save data sets */
 	private DeltaDataSetRepository _dataSetRepository;
 
+	/** Creates views of data sets */
+	private DeltaViewFactory _viewFactory;
+	
 	private boolean _saveEnabled;
 	private boolean _saveAsEnabled;
 	
@@ -172,11 +171,8 @@ public class DeltaEditor extends InternalFrameApplication implements
 
 			@Override
 			public boolean canExit(EventObject event) {
-				
-
-				boolean canClose = true;
-
-				canClose = closeAll();
+			
+				boolean canClose = closeAll();
 				
 				return canClose;
 			}
@@ -184,7 +180,8 @@ public class DeltaEditor extends InternalFrameApplication implements
 
 		_helpController = new HelpController("help/delta_editor/DeltaEditor");
 		_dataSetRepository = new SlotFileRepository();
-
+		_viewFactory = new DeltaViewFactory();
+		
 		_statusBar = new StatusBar();
 		getMainView().setStatusBar(_statusBar);
 
@@ -418,22 +415,21 @@ public class DeltaEditor extends InternalFrameApplication implements
 
 	private void newMatrix() {
 
-		MatrixViewer matrixViewer = new MatrixViewer(getCurrentDataSet());
+		DeltaView matrixViewer = _viewFactory.createGridView(getCurrentDataSet());
 		newView(matrixViewer, HelpConstants.GRID_VIEW_HELP_KEY);
 	}
 
 	private void newTree() {
-		TreeViewer treeViewer = new TreeViewer(getCurrentDataSet());
+		DeltaView treeViewer = _viewFactory.createTreeView(getCurrentDataSet());
 		newView(treeViewer, HelpConstants.TREE_VIEW_HELP_KEY);
 	}
 
-	private void newView(JInternalFrame view, String helpKey) {
+	private void newView(DeltaView view, String helpKey) {
 		
-		ViewerFrameListener listener = new ViewerFrameListener(_activeController, DeltaEditor.this);
-		view.addInternalFrameListener(listener);
 		_activeController.viewerOpened(view);
-		_helpController.setHelpKeyForComponent(view, helpKey);
-		show(view);
+		_helpController.setHelpKeyForComponent((JComponent)view, helpKey);
+		// TODO need to remove this dependency on JInternalFrame....
+		show((JInternalFrame)view);
 		
 		updateTitle();
 	}
@@ -452,7 +448,6 @@ public class DeltaEditor extends InternalFrameApplication implements
 
 		@Override
 		public void progress(String message, int percentComplete) {
-			// message(message);
 			setProgress(percentComplete);
 		}
 
@@ -491,11 +486,9 @@ public class DeltaEditor extends InternalFrameApplication implements
 
 		@Override
 		protected void succeeded(AbstractObservableDataSet result) {
-			EditorDataModel model = new EditorDataModel(result);
+			
 			EditorPreferences.addFileToMRU(_deltaFile.getAbsolutePath());
-			_activeController = new DeltaViewController(model, DeltaEditor.this, _dataSetRepository);
-			_activeController.setNewDataSetName(newDataSetName);
-			_activeController.setCloseWithoutSavingMessage(closeWithoutSavingMessage);
+			_activeController = createController(result);
 			newTree();
 		}
 
@@ -514,8 +507,22 @@ public class DeltaEditor extends InternalFrameApplication implements
 		}
 	}
 
+	/**
+	 * Creates a controller to manage the supplied data set.
+	 * @param dataSet the data set that requires a controller.
+	 * @return a controller for the supplied dataset.
+	 */
+	private DeltaViewController createController(AbstractObservableDataSet dataSet) {
+		EditorDataModel model = new EditorDataModel(dataSet);
+		DeltaViewController controller = new DeltaViewController(model, DeltaEditor.this, _dataSetRepository);
+		controller.setNewDataSetName(newDataSetName);
+		controller.setCloseWithoutSavingMessage(closeWithoutSavingMessage);
+		controller.addDeltaViewStatusObserver(this);
+		_controllers.add(controller);
+		return controller;
+	}
 
-	public void viewerClosed(DeltaViewController controller) {
+	public void viewClosed(DeltaViewController controller, DeltaView view) {
 		
 		if (controller.getViewCount() == 0) {
 		
@@ -531,7 +538,7 @@ public class DeltaEditor extends InternalFrameApplication implements
 	}
 
 	
-	public void viewerFocusGained(DeltaViewController controller) {
+	public void viewSelected(DeltaViewController controller, DeltaView view) {
 		_activeController = controller;
 		updateTitle();
 		setSaveEnabled(true);
@@ -607,8 +614,7 @@ public class DeltaEditor extends InternalFrameApplication implements
 
 	@Action(enabledProperty = "saveAsEnabled")
 	public void viewTaxonEditor() {
-		ItemEditor editor = new ItemEditor(this.getMainFrame(),
-				getCurrentDataSet());
+		DeltaView editor = _viewFactory.createItemEditView(getCurrentDataSet());
 		newView(editor, "T");
 	}
 
@@ -633,9 +639,10 @@ public class DeltaEditor extends InternalFrameApplication implements
 
 	@Action
 	public void newFile() {
-		EditorDataModel model = new EditorDataModel(
-				(AbstractObservableDataSet) _dataSetRepository.newDataSet());
-		_activeController = new DeltaViewController(model, this, _dataSetRepository);
+		
+		AbstractObservableDataSet dataSet = (AbstractObservableDataSet) _dataSetRepository.newDataSet();
+		_activeController = createController(dataSet);
+		
 		newTree();
 	}
 
@@ -717,45 +724,5 @@ class LookAndFeelAction extends AbstractAction {
 		} catch (Exception ex) {
 			System.err.println(ex);
 		}
-
 	}
-
-}
-
-/**
- * Used to alert the DeltaEditor when grid and matrix views are closed or
- * brought into focus.
- * 
- * @author Chris
- * 
- */
-class ViewerFrameListener extends InternalFrameAdapter {
-
-	DeltaViewController _controller;
-	DeltaEditor _deltaEditor;
-
-	/**
-	 * ctor
-	 * 
-	 * @param dataSet
-	 *            The data set associated with the viewer
-	 * @param deltaEditor
-	 *            Reference to the instance of DeltaEditor that created the
-	 *            viewer
-	 */
-	public ViewerFrameListener(DeltaViewController controller, DeltaEditor deltaEditor) {
-		_controller = controller;
-		_deltaEditor = deltaEditor;
-	}
-
-	public void internalFrameActivated(InternalFrameEvent e) {
-		_deltaEditor.viewerFocusGained(_controller);
-	}
-
-	@Override
-	public void internalFrameClosed(InternalFrameEvent e) {
-		_deltaEditor.viewerClosed(_controller);
-	}
-
-	
 }

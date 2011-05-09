@@ -2,7 +2,7 @@ package au.org.ala.delta.editor.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.Window;
+import java.beans.PropertyVetoException;
 
 import javax.swing.ActionMap;
 import javax.swing.GroupLayout;
@@ -24,6 +24,8 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.event.InternalFrameAdapter;
+import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -83,7 +85,7 @@ public class ItemEditor extends JInternalFrame implements ValidationListener, De
 	@Resource
 	private String selectTaxonLabelText;
 	
-	public ItemEditor(Window parent, EditorDataModel model) {	
+	public ItemEditor(EditorDataModel model) {	
 		super();
 		setName("ItemEditorDialog");
 		
@@ -143,6 +145,14 @@ public class ItemEditor extends JInternalFrame implements ValidationListener, De
 		btnSelect.setAction(map.get("selectItemByName"));
 		taxonSelectionList.setSelectionAction(map.get("taxonSelected"));
 		_validator = new TextComponentValidator(new ItemValidator(), this);
+		
+		// Give the item description text area focus.
+		addInternalFrameListener(new InternalFrameAdapter() {
+			@Override
+			public void internalFrameActivated(InternalFrameEvent e) {
+				rtfEditor.requestFocusInWindow();
+			}
+		});
 	}
 	
 	@Action
@@ -150,7 +160,10 @@ public class ItemEditor extends JInternalFrame implements ValidationListener, De
 		if (_editingNewItem && StringUtils.isEmpty(_selectedItem.getDescription())) {
 			_dataSet.deleteItem(_selectedItem);
 		}
-		setVisible(false);
+		try {
+			setClosed(true);
+		}
+		catch (PropertyVetoException e) {}
 	}
 	
 	@Action
@@ -338,15 +351,6 @@ public class ItemEditor extends JInternalFrame implements ValidationListener, De
 		chckbxTreatAsVariant.setSelected(_selectedItem.isVariant());
 		imageDetails.bind(_selectedItem);
 		_editsDisabled = false;
-	}
-
-	/**
-	 * Overrides pack() to give focus to the rtfEditor by default.
-	 */
-	@Override
-	public void pack() {
-		super.pack();
-		rtfEditor.requestFocusInWindow();
 	}
 
 	@Override
