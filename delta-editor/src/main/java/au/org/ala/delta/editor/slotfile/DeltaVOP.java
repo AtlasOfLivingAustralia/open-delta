@@ -113,6 +113,7 @@ public class DeltaVOP extends VOP {
 			          bakFile.copyFile(slotFile, size);
 			          
 			          bakFile.setFileTime(slotFile.getFileTime());
+			          bakFile.close();
 			     }
 			     catch (Exception e) {
 			          //::MessageBox(NULL, "Error creating backup of data file", "File Error", MB_OK);
