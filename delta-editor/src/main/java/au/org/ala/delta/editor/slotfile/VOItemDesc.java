@@ -486,6 +486,7 @@ public class VOItemDesc extends VOImageHolderDesc implements INameHolder {
 				}
 			}
 			_attributeMap = newAttribMap;
+			_deletedAttributes = new ArrayList<Integer>();
 
 			if (trailerBuf != null) {
 				dataWrite(trailerBuf);
