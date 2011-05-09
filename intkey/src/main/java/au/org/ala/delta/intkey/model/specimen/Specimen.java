@@ -1,5 +1,7 @@
 package au.org.ala.delta.intkey.model.specimen;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -7,6 +9,7 @@ import java.util.Map;
 import org.apache.commons.lang.math.FloatRange;
 import org.apache.commons.lang.math.IntRange;
 
+import au.org.ala.delta.intkey.model.CharacterComparator;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.IntegerCharacter;
 import au.org.ala.delta.model.MultiStateCharacter;
@@ -86,5 +89,15 @@ public class Specimen {
         } else {
             throw new RuntimeException("Unrecognized character type");
         }        
+    }
+    
+    public List<Character> getUsedCharacters() {
+        List<Character> usedCharacters = new ArrayList<Character>();
+        usedCharacters.addAll(_integerValues.keySet());
+        usedCharacters.addAll(_multistateValues.keySet());
+        usedCharacters.addAll(_realValues.keySet());
+        usedCharacters.addAll(_textValues.keySet());
+        Collections.sort(usedCharacters, new CharacterComparator());
+        return usedCharacters;
     }
 }

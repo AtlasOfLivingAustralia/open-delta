@@ -1,7 +1,5 @@
 package au.org.ala.delta.intkey.directives;
 
-import java.io.IOException;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -26,7 +24,7 @@ public class IntkeyDirectiveParser extends DirectiveParser<IntkeyContext> {
         instance.registerDirective(new FileTaxaDirective());
         instance.registerDirective(new NewDatasetDirective());
         instance.registerDirective(new UseDirective());
-
+        instance.registerDirective(new DefineCharactersDirective());
         return instance;
     }
 

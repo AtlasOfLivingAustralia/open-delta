@@ -13,7 +13,7 @@ public abstract class IntkeyDirective extends AbstractDirective<IntkeyContext> {
         IntkeyDirectiveInvocation invoc = doProcess(context, data);
         
         if (invoc != null) {
-            context.executeFunctor(invoc);
+            context.executeDirective(invoc);
         }
     }
     

@@ -7,6 +7,8 @@ import junit.framework.TestCase;
 
 import org.junit.Test;
 
+import au.org.ala.delta.intkey.Intkey;
+import au.org.ala.delta.intkey.directives.IntkeyContext;
 import au.org.ala.delta.intkey.model.IntkeyDataset;
 import au.org.ala.delta.intkey.model.IntkeyDatasetFileBuilder;
 
@@ -39,11 +41,21 @@ public class DataSetTest extends TestCase {
         dataSet.init(new File(icharsFileUrl.toURI()), new File(iitemsFileUrl.toURI()));
     }*/
     
-    @Test
+    /*@Test
     public void testDataSetFileReader() throws Exception {
         URL icharsFileUrl = getClass().getResource("/dataset/sample/ichars");        
         URL iitemsFileUrl = getClass().getResource("/dataset/sample/iitems");    
         IntkeyDataset ds = new IntkeyDatasetFileBuilder().readDataSet(new File(icharsFileUrl.toURI()), new File(iitemsFileUrl.toURI()));
+    }*/
+    
+    @Test
+    public void testOpenDataSetFile() throws Exception {
+        IntkeyContext cxt = new IntkeyContext(null);
+        cxt.newDataSetFile("C:\\Users\\ChrisF\\My Documents\\sample\\intkey.ink");
+        for (String keyword: cxt.getCharacterKeywords()) {
+            System.out.println(keyword);
+        }
+        
     }
     
     /*@Test

@@ -43,6 +43,7 @@ import au.org.ala.delta.intkey.directives.IntkeyDirective;
 import au.org.ala.delta.intkey.directives.IntkeyDirectiveParser;
 import au.org.ala.delta.intkey.directives.NewDatasetDirective;
 import au.org.ala.delta.intkey.model.IntkeyDataset;
+import au.org.ala.delta.intkey.ui.ReExecuteDialog;
 import au.org.ala.delta.intkey.ui.TextInputDialog;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
@@ -51,6 +52,8 @@ import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.ui.AboutBox;
 import au.org.ala.delta.ui.DeltaSingleFrameApplication;
 import au.org.ala.delta.ui.util.IconHelper;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class Intkey extends DeltaSingleFrameApplication {
 
@@ -70,6 +73,7 @@ public class Intkey extends DeltaSingleFrameApplication {
 
     @Resource
     String windowTitleWithDatasetTitle;
+    private JMenu _mnuReExecute;
 
     public static void main(String[] args) {
         setupMacSystemProperties(Intkey.class);
@@ -82,9 +86,6 @@ public class Intkey extends DeltaSingleFrameApplication {
         resourceMap.injectFields(this);
     }
 
-    /**
-     * @wbp.parser.entryPoint
-     */
     @Override
     protected void startup() {
         JFrame mainFrame = getMainFrame();
@@ -250,6 +251,9 @@ public class Intkey extends DeltaSingleFrameApplication {
         super.shutdown();
     }
 
+    /**
+     * @wbp.parser.entryPoint
+     */
     private JMenuBar buildMenus() {
 
         ActionMap actionMap = getContext().getActionMap();
@@ -279,11 +283,10 @@ public class Intkey extends DeltaSingleFrameApplication {
         mnuFileCmds.setName("mnuFileCmds");
 
         JMenuItem mnuItFileCharactersCmd = buildMenuItemForDirective(new FileCharactersDirective(), "mnuDirectiveFileCharacters");
-        mnuFileCmds.add(mnuItFileCharactersCmd);
+        //mnuFileCmds.add(mnuItFileCharactersCmd);
 
         JMenuItem mnuItFileTaxaCmd = buildMenuItemForDirective(new FileTaxaDirective(), "mnuDirectiveFileTaxa");
-
-        mnuFileCmds.add(mnuItFileTaxaCmd);
+        //mnuFileCmds.add(mnuItFileTaxaCmd);
 
         mnuFile.add(mnuFileCmds);
 
@@ -300,6 +303,16 @@ public class Intkey extends DeltaSingleFrameApplication {
         mnuItFileExit.setAction(actionMap.get("exitApplication"));
         mnuFile.add(mnuItFileExit);
         menuBar.add(mnuFile);
+        
+        _mnuReExecute = new JMenu("ReExecute...");
+        _mnuReExecute.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                new ReExecuteDialog(_context.getMainFrame(), _context.getExecutedDirectives()).setVisible(true);
+                _mnuReExecute.setSelected(false);
+            }
+        });
+        menuBar.add(_mnuReExecute);
 
         // Window menu
         JMenu mnuWindow = new JMenu();

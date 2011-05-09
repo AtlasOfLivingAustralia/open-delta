@@ -2,15 +2,24 @@ package au.org.ala.delta.intkey.directives;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Set;
 
 import javax.swing.JFrame;
 
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.directives.AbstractDeltaContext;
 import au.org.ala.delta.intkey.Intkey;
+import au.org.ala.delta.intkey.model.CharacterComparator;
 import au.org.ala.delta.intkey.model.IntkeyDataset;
 import au.org.ala.delta.intkey.model.IntkeyDatasetFileBuilder;
 import au.org.ala.delta.intkey.model.specimen.Specimen;
+import au.org.ala.delta.model.Character;
 
 /**
  * Controller? Handles input and updates UI, model accordingly.
@@ -33,12 +42,31 @@ public class IntkeyContext extends AbstractDeltaContext {
     private File _datasetInitFile;
 
     private Intkey _appUI;
-    
+
     private Specimen _specimen;
+
+    // Use linked hashmap so that the keys list will be returned in
+    // order of insertion.
+    private LinkedHashMap<String, Set<Integer>> _characterKeywords;
+    private static final String CHARACTER_KEYWORD_ALL = "all";
+    private static final String CHARACTER_KEYWORD_USED = "used";
+    private static final String CHARACTER_KEYWORD_AVAILABLE = "available";
+
+    private static final String TAXON_KEYWORD_ALL = "all";
+    private static final String TAXON_KEYWORD_ELIMINATED = "eliminated";
+    private static final String TAXON_KEYWORD_REMAINING = "remaining";
+
+    private List<IntkeyDirectiveInvocation> _executedDirectives;
 
     public IntkeyContext(Intkey appUI) {
         _appUI = appUI;
         _specimen = new Specimen();
+
+        // Use linked hashmap so that the keys list will be returned in
+        // order of insertion.
+        _characterKeywords = new LinkedHashMap<String, Set<Integer>>();
+
+        _executedDirectives = new ArrayList<IntkeyDirectiveInvocation>();
     }
 
     public void setFileCharacters(String fileName) {
@@ -72,7 +100,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         } else {
             _taxaFile = new File(fileName);
         }
-        
+
         if (!_taxaFile.exists()) {
             String absoluteFileName = _taxaFile.getAbsolutePath();
             _taxaFile = null;
@@ -89,7 +117,11 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     private void createNewDataSet() {
         _dataset = new IntkeyDatasetFileBuilder().readDataSet(_charactersFile, _taxaFile);
-        _appUI.handleNewDataSet(_dataset);
+
+        // TODO really need a proper listener pattern here
+        if (_appUI != null) {
+            _appUI.handleNewDataSet(_dataset);
+        }
     }
 
     public void newDataSetFile(String fileName) {
@@ -105,8 +137,9 @@ public class IntkeyContext extends AbstractDeltaContext {
         }
     }
 
-    public void executeFunctor(IntkeyDirectiveInvocation invoc) {
+    public void executeDirective(IntkeyDirectiveInvocation invoc) {
         invoc.execute(this);
+        _executedDirectives.add(invoc);
     }
 
     public JFrame getMainFrame() {
@@ -120,9 +153,65 @@ public class IntkeyContext extends AbstractDeltaContext {
     public void useCharacters() {
         Logger.log("Using characters");
     }
-    
+
     public Specimen getSpecimen() {
         return _specimen;
+    }
+
+    public void addCharacterKeyword(String keyword, Set<Integer> characterNumbers) {
+        keyword = keyword.toLowerCase();
+        if (keyword.equals(CHARACTER_KEYWORD_ALL) || keyword.equals(CHARACTER_KEYWORD_USED) || keyword.equals(CHARACTER_KEYWORD_AVAILABLE)) {
+            throw new IllegalArgumentException(String.format("'%s' is a system keyword and cannot be redefined", keyword));
+        }
+        _characterKeywords.put(keyword.toLowerCase(), characterNumbers);
+    }
+
+    public List<Integer> getCharacterNumbersForKeyword(String keyword) {
+        keyword = keyword.toLowerCase();
+
+        if (keyword.equals(CHARACTER_KEYWORD_ALL)) {
+            //TODO complete this
+            return null;
+            /*return new ArrayList<Character>(_dataset.getCharacters());
+        } else if (keyword.equals(CHARACTER_KEYWORD_USED)) {
+            return _specimen.getUsedCharacters();
+        } else if (keyword.equals(CHARACTER_KEYWORD_AVAILABLE)) {
+            List<Character> availableCharacters = new ArrayList<Character>(_dataset.getCharacters());
+            availableCharacters.removeAll(_specimen.getUsedCharacters());
+            return availableCharacters;*/
+        } else {
+            Set<Integer> characterNumbersSet = _characterKeywords.get(keyword.toLowerCase());
+            if (characterNumbersSet == null) {
+                List<String> matches = new ArrayList<String>();
+                for (String savedKeyword: _characterKeywords.keySet()) {
+                    if (savedKeyword.startsWith(keyword)) {
+                        matches.add(savedKeyword);
+                    }
+                }
+                
+                if (matches.size() == 1) {
+                    characterNumbersSet = _characterKeywords.get(matches.get(0));
+                } else {
+                    throw new IllegalArgumentException(String.format("Keyword '%s' is ambiguous", keyword));
+                }
+            } 
+            
+            if (characterNumbersSet != null) {
+                List<Integer> retList = new ArrayList<Integer>();
+                Collections.sort(retList);
+                return retList;
+            } else {
+                throw new IllegalArgumentException(String.format("Keyword '%s' not found", keyword));
+            }
+        }
+    }
+
+    public List<String> getCharacterKeywords() {
+        return new ArrayList<String>(_characterKeywords.keySet());
+    }
+
+    public List<IntkeyDirectiveInvocation> getExecutedDirectives() {
+        return _executedDirectives;
     }
 
 }

@@ -23,9 +23,10 @@ public abstract class CharacterValueInputDialog extends JDialog {
     protected JPanel _pnlMain;
     public CharacterValueInputDialog(Frame owner) {
         super(owner, true);
-        setLocationRelativeTo(owner);
         setSize(new Dimension(500, 150));
         setResizable(false);
+        setLocationRelativeTo(owner);
+        
         getContentPane().setLayout(new BorderLayout(0, 0));
         
         _buttonPanel = new JPanel();

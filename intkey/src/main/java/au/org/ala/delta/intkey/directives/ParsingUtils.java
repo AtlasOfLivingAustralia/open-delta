@@ -1,5 +1,6 @@
 package au.org.ala.delta.intkey.directives;
 
+import java.awt.Frame;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -8,6 +9,15 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.math.FloatRange;
 import org.apache.commons.lang.math.IntRange;
+
+import au.org.ala.delta.intkey.ui.IntegerInputDialog;
+import au.org.ala.delta.intkey.ui.MultiStateInputDialog;
+import au.org.ala.delta.intkey.ui.RealInputDialog;
+import au.org.ala.delta.intkey.ui.TextInputDialog;
+import au.org.ala.delta.model.IntegerCharacter;
+import au.org.ala.delta.model.MultiStateCharacter;
+import au.org.ala.delta.model.RealCharacter;
+import au.org.ala.delta.model.TextCharacter;
 
 public class ParsingUtils {
     private static Pattern INT_RANGE_PATTERN = Pattern.compile("^(\\d+)-(\\d+)$");
@@ -69,9 +79,7 @@ public class ParsingUtils {
 
     public static List<String> parseTextCharacterValue(String charValue) {
         // Remove surrounding quotes if they are present
-        if (charValue.charAt(0) == '"' && charValue.charAt(charValue.length() - 1) == '"') {
-            charValue = charValue.substring(1, charValue.length() - 2);
-        }
+        charValue = removeEnclosingQuotes(charValue);
 
         List<String> retList = new ArrayList<String>();
         for (String s : charValue.split("/")) {
@@ -81,6 +89,8 @@ public class ParsingUtils {
         return retList;
     }
 
+    //TODO this method is the same as a method on the AbstractDirective
+    //class. Need to refactor that one out to avoid duplication here.
     public static IntRange parseIntRange(String text) {
         try {
             Matcher m = INT_RANGE_PATTERN.matcher(text);
@@ -128,5 +138,92 @@ public class ParsingUtils {
         }
 
         return retList;
+    }
+    
+    public static List<String> splitDataIntoSubCommands(String data) {
+        List<String> subCommands = new ArrayList<String>();
+
+        boolean inQuotedString = false;
+        int endLastSubcommand = 0;
+        for (int i = 0; i < data.length(); i++) {
+            boolean isEndSubcommand = false;
+
+            char c = data.charAt(i);
+
+            if (c == '"') {
+                // TODO ignore quote if it is in the middle of a string
+                // don't throw error for unmatched quotes.
+                // this is the behaviour in the legacy intkey - may change this
+                // later.
+
+                if (i == 0) {
+                    inQuotedString = true;
+                } else if (i != data.length() - 1) {
+                    char preceedingChar = data.charAt(i - 1);
+                    char followingChar = data.charAt(i + 1);
+                    if (inQuotedString && (followingChar == ' ' || followingChar == ',')) {
+                        inQuotedString = false;
+                    } else if (!inQuotedString && (preceedingChar == ' ' || preceedingChar == ',')) {
+                        inQuotedString = true;
+                    }
+                }
+            } else if (c == ' ' && !inQuotedString) {
+                // if we're not inside a quoted string, then a space designates
+                // the end of a subcommand
+                isEndSubcommand = true;
+            }
+
+            if (i == (data.length() - 1)) {
+                // end of data string always designates the end of a subcommand
+                isEndSubcommand = true;
+            }
+
+            if (isEndSubcommand) {
+                String subCommand = null;
+                if (endLastSubcommand == 0) {
+                    subCommand = data.substring(endLastSubcommand, i + 1);
+                } else {
+                    subCommand = data.substring(endLastSubcommand + 1, i + 1);
+                }
+                
+                //use trim to remove spaces
+                subCommands.add(subCommand.trim());
+                endLastSubcommand = i;
+            }
+        }
+
+        return subCommands;
+    }
+    
+    public static String removeEnclosingQuotes(String str) {
+        if (str.charAt(0) == '"' && str.charAt(str.length() - 1) == '"') {
+            return(str.substring(1, str.length() - 1));
+        }
+        return str;
+    }
+    
+    
+    public static List<Integer> promptForMultiStateValue(Frame frame, MultiStateCharacter ch) {
+        MultiStateInputDialog dlg = new MultiStateInputDialog(frame, ch);
+        dlg.setVisible(true);
+        return dlg.getInputData();
+    }
+
+    public static IntRange promptForIntegerValue(Frame frame, IntegerCharacter ch) {
+        IntegerInputDialog dlg = new IntegerInputDialog(frame, ch);
+        dlg.setVisible(true);
+        return dlg.getInputData();
+    }
+
+    public static FloatRange promptForRealValue(Frame frame, RealCharacter ch) {
+        RealInputDialog dlg = new RealInputDialog(frame, ch);
+        dlg.setVisible(true);
+        return dlg.getInputData();
+    }
+
+    public static List<String> promptForTextValue(Frame frame, TextCharacter ch) {
+        TextInputDialog dlg = new TextInputDialog(frame, ch);
+        dlg.setVisible(true);
+        return dlg.getInputData();
     }
 }
