@@ -205,13 +205,19 @@ public class VOP {
 	   int n = _uniIdCont.size();
   
        int dataSize = (n + 1) * 4 /*size of int*/;
-       int hdrPtr = file.allocSlot (dataSize, VOAnyDesc.SID_UIDS, dataSize, 0 );
+       int hdrPtr = file.allocSlot (dataSize+SlotHeader.SIZE, VOAnyDesc.SID_UIDS, dataSize, 0 );
+       
+       SlotHeader header = new SlotHeader();
+       file.seek(hdrPtr);
+       header.read(file);
+       
        file.writeInt(_lastUniId);
        
        for ( int u : _uniIdCont ) {
          file.writeInt(u);
        }
-       file.freeSlot(hdrPtr, dataSize);    // FreeSlot
+       
+       file.freeSlot(hdrPtr, header.SlotSize);    // FreeSlot
    
 	   // there are currently no important data in the FileHeader (might come later)
 	   file.writeFileHeader();
