@@ -42,21 +42,58 @@ public class VOItemAdaptorTest extends DeltaTestCase {
 	public void testAddImage() {
 		
 		int itemNumber = 4;
-		int id = _vop.getDeltaMaster().uniIdFromItemNo(itemNumber);
-		VOItemDesc itemDesc = (VOItemDesc)_vop.getDescFromId(id);
-			
-		VOItemAdaptor adaptor = new VOItemAdaptor(_vop, itemDesc, 4);
+		VOItemDesc itemDesc = getItemDesc(itemNumber);
+		VOItemAdaptor adapter = getItemAdaptor(itemDesc);
+		
 		List<Integer> imageIdsBefore = itemDesc.readImageList();
 		
-		adaptor.addImage("test", "");
+		adapter.addImage("test", "");
 		
 		List<Integer> imageIds = itemDesc.readImageList();
 		assertEquals(imageIdsBefore.size()+1, imageIds.size());
 	
-		List<Image> images = adaptor.getImages();
+		List<Image> images = adapter.getImages();
 		assertEquals(imageIdsBefore.size()+1, images.size());
 		
 		assertEquals("test", images.get(imageIdsBefore.size()).getFileName());
 	}
+	
+	@Test
+	public void testSetDescription() {
+		int itemNumber = 1;
+		VOItemAdaptor adapter = getItemAdaptor(itemNumber);
 		
+		String description = adapter.getDescription();
+		
+		adapter.setDescription(description + "now even longer!");
+		
+		assertEquals(description+"now even longer!", adapter.getDescription());
+		
+		_vop.commit(_vop.getPermSlotFile());
+		
+		adapter.setDescription(description+"even longer still.  isn't that great?");
+		assertEquals(description+"even longer still.  isn't that great?", adapter.getDescription());
+		
+		_vop.commit(_vop.getPermSlotFile());
+		
+		adapter.getDescription();
+		
+	}
+		
+	
+	protected VOItemDesc getItemDesc(int itemNumber) {
+		int id = _vop.getDeltaMaster().uniIdFromItemNo(itemNumber);
+		VOItemDesc itemDesc = (VOItemDesc)_vop.getDescFromId(id);
+		
+		return itemDesc;
+	}
+	
+	protected VOItemAdaptor getItemAdaptor(VOItemDesc desc) {
+		int itemNumber = _vop.getDeltaMaster().itemNoFromUniId(desc.getUniId());
+		return new VOItemAdaptor(_vop, desc, itemNumber);
+	}
+	
+	protected VOItemAdaptor getItemAdaptor(int itemNumber) {
+		return getItemAdaptor(getItemDesc(itemNumber));
+	}
 }
