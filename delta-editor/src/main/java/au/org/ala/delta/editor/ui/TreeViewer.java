@@ -108,7 +108,21 @@ public class TreeViewer extends JInternalFrame implements DeltaView {
 		_itemList.setDropMode(DropMode.INSERT);
 		final ActionMap actionMap = context.getActionMap();
 
-		_tree = new JTree();
+		_tree = new JTree() {
+			private static final long serialVersionUID = 1820027028505870889L;
+
+			/**
+			 * This is a done to initiate a cell edit from a single click with
+			 * drag and drop enabled.
+			 */
+			protected void processMouseEvent(MouseEvent e) {
+				super.processMouseEvent(e);
+				DefaultMutableTreeNode node = (DefaultMutableTreeNode)getSelectionPath().getLastPathComponent();
+				if (node.isLeaf()) {
+					super.processMouseEvent(e);
+				}
+			}
+		};
 		final CharacterTreeModel treeModel = new CharacterTreeModel(_dataModel);
 		_tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		_tree.setModel(treeModel);
