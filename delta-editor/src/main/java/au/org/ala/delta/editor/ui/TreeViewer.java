@@ -38,6 +38,8 @@ import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.event.CellEditorListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TreeSelectionEvent;
@@ -404,6 +406,7 @@ public class TreeViewer extends JInternalFrame implements DeltaView {
 			editor.setFocusable(false);
 			editor.setLayout(null);
 			textField = new JTextField();
+			
 			editor.add(textField);
 			unitsLabel = new JLabel();
 			unitsLabel.setOpaque(false);
@@ -419,9 +422,11 @@ public class TreeViewer extends JInternalFrame implements DeltaView {
 			
 			if ((character != null) && (character instanceof NumericCharacter<?>)) {
 				unitsLabel.setText(((NumericCharacter<?>)character).getUnits());
+				textField.setColumns(10);
 			}
 			else {
 				unitsLabel.setText("");
+				textField.setColumns(30);
 			}
 			
 			_validator = new TextComponentValidator(new AttributeValidator(_dataModel, character), this);
