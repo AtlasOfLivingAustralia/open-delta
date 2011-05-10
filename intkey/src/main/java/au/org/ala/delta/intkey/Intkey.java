@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.MouseListener;
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -40,8 +41,10 @@ import au.org.ala.delta.intkey.directives.FileCharactersDirective;
 import au.org.ala.delta.intkey.directives.FileTaxaDirective;
 import au.org.ala.delta.intkey.directives.IntkeyContext;
 import au.org.ala.delta.intkey.directives.IntkeyDirective;
+import au.org.ala.delta.intkey.directives.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.IntkeyDirectiveParser;
 import au.org.ala.delta.intkey.directives.NewDatasetDirective;
+import au.org.ala.delta.intkey.directives.UseDirective;
 import au.org.ala.delta.intkey.model.IntkeyDataset;
 import au.org.ala.delta.intkey.ui.ReExecuteDialog;
 import au.org.ala.delta.intkey.ui.TextInputDialog;
@@ -79,7 +82,7 @@ public class Intkey extends DeltaSingleFrameApplication {
         setupMacSystemProperties(Intkey.class);
         launch(Intkey.class, args);
     }
-    
+
     @Override
     protected void initialize(String[] args) {
         ResourceMap resourceMap = getContext().getResourceMap(Intkey.class);
@@ -135,6 +138,48 @@ public class Intkey extends DeltaSingleFrameApplication {
         pnlBestCharacters.add(sclPaneBestCharacters, BorderLayout.CENTER);
 
         _listBestCharacters = new JList();
+        _listBestCharacters.addMouseListener(new MouseListener() {
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() >= 2) {
+                    int selectedIndex = _listBestCharacters.getSelectedIndex();
+                    if (selectedIndex >= 0) {
+                        try {
+                            IntkeyDirectiveInvocation invoc = new UseDirective().doProcess(_context, Integer.toString(selectedIndex + 1));
+                            _context.executeDirective(invoc);
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                }
+            }
+        });
+
         sclPaneBestCharacters.setViewportView(_listBestCharacters);
 
         JPanel pnlBestCharactersHeader = new JPanel();
@@ -206,7 +251,7 @@ public class Intkey extends DeltaSingleFrameApplication {
         pnlEliminatedTaxaHeader.add(lblNewLabel, BorderLayout.WEST);
 
         getMainView().setMenuBar(buildMenus());
-        
+
         _txtFldCmdBar = new JTextField();
         _txtFldCmdBar.setCaretColor(Color.WHITE);
         _txtFldCmdBar.addActionListener(new ActionListener() {
@@ -234,7 +279,7 @@ public class Intkey extends DeltaSingleFrameApplication {
         _txtFldCmdBar.setBackground(Color.BLACK);
         _rootPanel.add(_txtFldCmdBar, BorderLayout.SOUTH);
         _txtFldCmdBar.setColumns(10);
-        
+
         show(_rootPanel);
     }
 
@@ -283,33 +328,39 @@ public class Intkey extends DeltaSingleFrameApplication {
         mnuFileCmds.setName("mnuFileCmds");
 
         JMenuItem mnuItFileCharactersCmd = buildMenuItemForDirective(new FileCharactersDirective(), "mnuDirectiveFileCharacters");
-        //mnuFileCmds.add(mnuItFileCharactersCmd);
+        // mnuFileCmds.add(mnuItFileCharactersCmd);
 
         JMenuItem mnuItFileTaxaCmd = buildMenuItemForDirective(new FileTaxaDirective(), "mnuDirectiveFileTaxa");
-        //mnuFileCmds.add(mnuItFileTaxaCmd);
+        // mnuFileCmds.add(mnuItFileTaxaCmd);
 
         mnuFile.add(mnuFileCmds);
 
         mnuFile.addSeparator();
 
-        /*JMenuItem mnuItAdvancedMode = new JMenuItem();
-        mnuItAdvancedMode.setAction(actionMap.get("switchAdvancedMode"));
-        mnuItAdvancedMode.setEnabled(false);
-        mnuFile.add(mnuItAdvancedMode);
-
-        mnuFile.addSeparator();*/
+        /*
+         * JMenuItem mnuItAdvancedMode = new JMenuItem();
+         * mnuItAdvancedMode.setAction(actionMap.get("switchAdvancedMode"));
+         * mnuItAdvancedMode.setEnabled(false); mnuFile.add(mnuItAdvancedMode);
+         * 
+         * mnuFile.addSeparator();
+         */
 
         JMenuItem mnuItFileExit = new JMenuItem();
         mnuItFileExit.setAction(actionMap.get("exitApplication"));
         mnuFile.add(mnuItFileExit);
         menuBar.add(mnuFile);
-        
+
         _mnuReExecute = new JMenu("ReExecute...");
         _mnuReExecute.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                new ReExecuteDialog(_context.getMainFrame(), _context.getExecutedDirectives()).setVisible(true);
+                ReExecuteDialog dlg = new ReExecuteDialog(_context.getMainFrame(), _context.getExecutedDirectives());
+                dlg.setVisible(true);
                 _mnuReExecute.setSelected(false);
+                IntkeyDirectiveInvocation directive = dlg.getDirectiveToExecute();
+                if (directive != null) {
+                    _context.executeDirective(directive);
+                }
             }
         });
         menuBar.add(_mnuReExecute);

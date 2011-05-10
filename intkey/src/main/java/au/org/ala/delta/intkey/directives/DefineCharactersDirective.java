@@ -46,8 +46,9 @@ public class DefineCharactersDirective extends IntkeyDirective {
         }
 
         @Override
-        public void execute(IntkeyContext context) {
+        public boolean execute(IntkeyContext context) {
             context.addCharacterKeyword(_keyword, _characterNumbers);
+            return true;
         }
 
         @Override

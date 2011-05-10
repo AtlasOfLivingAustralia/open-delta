@@ -1,17 +1,21 @@
 package au.org.ala.delta.intkey.directives;
 
+import java.awt.Frame;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import javax.swing.JOptionPane;
-
 import org.apache.commons.lang.math.FloatRange;
 import org.apache.commons.lang.math.IntRange;
 
 import au.org.ala.delta.intkey.model.specimen.Specimen;
+import au.org.ala.delta.intkey.ui.CharacterKeywordSelectionDialog;
+import au.org.ala.delta.intkey.ui.IntegerInputDialog;
+import au.org.ala.delta.intkey.ui.MultiStateInputDialog;
+import au.org.ala.delta.intkey.ui.RealInputDialog;
+import au.org.ala.delta.intkey.ui.TextInputDialog;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.IntegerCharacter;
 import au.org.ala.delta.model.MultiStateCharacter;
@@ -35,54 +39,41 @@ public class UseDirective extends IntkeyDirective {
     @Override
     public IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
         if (context.getDataset() != null) {
-
-            List<String> subCommands = ParsingUtils.splitDataIntoSubCommands(data);
-
             boolean suppressAlreadySetWarning = false;
 
             List<Integer> characterNumbers = new ArrayList<Integer>();
             List<String> specifiedValues = new ArrayList<String>();
 
-            for (String subCmd : subCommands) {
-                if (subCmd.equalsIgnoreCase("/M")) {
-                    suppressAlreadySetWarning = true;
-                } else {
-                    parseSubcommands(subCmd, characterNumbers, specifiedValues, context);
+            if (data != null && data.trim().length() > 0) {
+                List<String> subCommands = ParsingUtils.splitDataIntoSubCommands(data);
+
+                for (String subCmd : subCommands) {
+                    // TODO need to handle additional undocumented flags
+                    if (subCmd.equalsIgnoreCase("/M")) {
+                        suppressAlreadySetWarning = true;
+                    } else {
+                        parseSubcommands(subCmd, characterNumbers, specifiedValues, context);
+                    }
                 }
-            }
 
-            if (characterNumbers.size() == 0) {
-                // If no character numbers (or keywords) were specified, then
-                // the user needs to
-                // be prompted to select which character(s) they want to use.
-
-                // set characterNumbers list in here.
+            } else {
+                // No characters specified, prompt the user to select characters
+                CharacterKeywordSelectionDialog dlg = new CharacterKeywordSelectionDialog(context.getMainFrame(), context);
+                dlg.setVisible(true);
+                if (dlg.getOkButtonPressed()) {
+                    List<Character> selectedCharacters = dlg.getSelectedCharacters();
+                    for (Character ch : selectedCharacters) {
+                        characterNumbers.add(ch.getCharacterId());
+                        specifiedValues.add(null);
+                    }
+                }
             }
 
             UseDirectiveInvocation invoc = new UseDirectiveInvocation(suppressAlreadySetWarning);
 
-            Specimen specimen = context.getSpecimen();
             for (int i = 0; i < characterNumbers.size(); i++) {
                 int charNum = characterNumbers.get(i);
                 au.org.ala.delta.model.Character ch = context.getDataset().getCharacter(charNum);
-
-                if (!suppressAlreadySetWarning) {
-                    if (specimen.hasValueFor(ch)) {
-                        String msg = String.format("Character %d has already been used. Do you want to change the value(s) you entered?", ch.getCharacterId());
-                        int dlgSelection = JOptionPane.showConfirmDialog(context.getMainFrame(), msg, "Information", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
-                        if (dlgSelection == JOptionPane.NO_OPTION) {
-                            continue;
-                        } else {
-                            // Remove the value that is already set in the
-                            // specimen for this character. This will stop the
-                            // same prompt being
-                            // shown when the UseDirectiveInvocation is
-                            // executed. The check needs to be done in two
-                            // places because commands can be re-executed.
-                            specimen.removeValueForCharacter(ch);
-                        }
-                    }
-                }
 
                 // Parse the supplied value for each character, or prompt for
                 // one if no value was supplied
@@ -103,20 +94,7 @@ public class UseDirective extends IntkeyDirective {
                     } else {
                         throw new IllegalArgumentException("Unrecognized character type");
                     }
-                } else {
-                    if (ch instanceof MultiStateCharacter) {
-                        parsedCharValue = ParsingUtils.promptForMultiStateValue(context.getMainFrame(), (MultiStateCharacter) ch);
-                    } else if (ch instanceof IntegerCharacter) {
-                        parsedCharValue = ParsingUtils.promptForIntegerValue(context.getMainFrame(), (IntegerCharacter) ch);
-                    } else if (ch instanceof RealCharacter) {
-                        parsedCharValue = ParsingUtils.promptForRealValue(context.getMainFrame(), (RealCharacter) ch);
-                    } else if (ch instanceof TextCharacter) {
-                        parsedCharValue = ParsingUtils.promptForTextValue(context.getMainFrame(), (TextCharacter) ch);
-                    } else {
-                        throw new IllegalArgumentException("Unrecognized character type");
-                    }
                 }
-
                 invoc.addCharacterValue(ch, parsedCharValue);
             }
             return invoc;
@@ -134,14 +112,6 @@ public class UseDirective extends IntkeyDirective {
         // use character
 
         // PROCESS CHARACTERS WITHOUT ATTRIBUTES NEXT
-    }
-
-    public UseDirectiveInvocation createUseDirectiveInvocation(boolean suppessAlreadyUsedWarning, List<Character> characters, List<Object> charValues) {
-        UseDirectiveInvocation invoc = new UseDirectiveInvocation(suppessAlreadyUsedWarning);
-        for (int i = 0; i < characters.size(); i++) {
-            invoc.addCharacterValue(characters.get(i), charValues.get(i));
-        }
-        return invoc;
     }
 
     private void parseSubcommands(String subCmd, List<Integer> characterNumbers, List<String> specifiedValues, IntkeyContext context) throws Exception {
@@ -189,7 +159,10 @@ public class UseDirective extends IntkeyDirective {
             }
         } else {
             // TODO handle exception if not valid keyword passed.
-            retList = context.getCharacterNumbersForKeyword(lhs);
+            List<Character> charList = context.getCharactersForKeyword(lhs);
+            for (Character c : charList) {
+                retList.add(c.getCharacterId());
+            }
         }
 
         return retList;
@@ -206,22 +179,46 @@ public class UseDirective extends IntkeyDirective {
         }
 
         @Override
-        public void execute(IntkeyContext context) {
+        public boolean execute(IntkeyContext context) {
             Specimen specimen = context.getSpecimen();
 
+            // First pass - perform validation, and prompt for any character values that were
+            // not specified by the user
             for (Character ch : _characterValues.keySet()) {
                 Object characterVal = _characterValues.get(ch);
 
-                if (!_suppressAlreadySetWarning) {
-                    if (specimen.hasValueFor(ch)) {
-                        String msg = String.format("Character %d has already been used. Do you want to change the value(s) you entered?", ch.getCharacterId());
-                        int dlgSelection = JOptionPane.showConfirmDialog(context.getMainFrame(), msg, "Information", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
-                        if (dlgSelection == JOptionPane.NO_OPTION) {
-                            continue;
-                        }
-                    }
+                if (!checkCharacterUsable(ch, context)) {
+                    continue;
                 }
 
+                if (characterVal == null) {
+                    if (ch instanceof MultiStateCharacter) {
+                        characterVal = promptForMultiStateValue(context.getMainFrame(), (MultiStateCharacter) ch);
+                    } else if (ch instanceof IntegerCharacter) {
+                        characterVal = promptForIntegerValue(context.getMainFrame(), (IntegerCharacter) ch);
+                    } else if (ch instanceof RealCharacter) {
+                        characterVal = promptForRealValue(context.getMainFrame(), (RealCharacter) ch);
+                    } else if (ch instanceof TextCharacter) {
+                        characterVal = promptForTextValue(context.getMainFrame(), (TextCharacter) ch);
+                    } else {
+                        throw new IllegalArgumentException("Unrecognized character type");
+                    }
+
+                    if (characterVal == null) {
+                        //User did not enter a value in prompt dialog, or hit "cancel"
+                        // - do not set a value for this character
+                        _characterValues.remove(ch);
+                    } else {
+                        // store this value so that the prompt does not need to
+                        // be done for subsequent invocations
+                        _characterValues.put(ch, characterVal);
+                    }
+                }
+            }
+            
+            
+            for (Character ch : _characterValues.keySet()) {
+                Object characterVal = _characterValues.get(ch);
                 if (ch instanceof MultiStateCharacter) {
                     specimen.setMultiStateValue((MultiStateCharacter) ch, (List<Integer>) characterVal);
                 } else if (ch instanceof IntegerCharacter) {
@@ -235,11 +232,53 @@ public class UseDirective extends IntkeyDirective {
                 }
             }
 
+            return true;
         }
 
         void addCharacterValue(au.org.ala.delta.model.Character ch, Object val) {
             _characterValues.put(ch, val);
         }
+
+        private boolean checkCharacterUsable(Character ch, IntkeyContext context) {
+            // is character fixed?
+
+            // is character already used?
+
+            // is character unavailable?
+            // is character excluded?
+
+            return true;
+        }
+
+        private List<Integer> promptForMultiStateValue(Frame frame, MultiStateCharacter ch) {
+            MultiStateInputDialog dlg = new MultiStateInputDialog(frame, ch);
+            dlg.setVisible(true);
+            return dlg.getInputData();
+        }
+
+        private IntRange promptForIntegerValue(Frame frame, IntegerCharacter ch) {
+            IntegerInputDialog dlg = new IntegerInputDialog(frame, ch);
+            dlg.setVisible(true);
+            return dlg.getInputData();
+        }
+
+        private FloatRange promptForRealValue(Frame frame, RealCharacter ch) {
+            RealInputDialog dlg = new RealInputDialog(frame, ch);
+            dlg.setVisible(true);
+            return dlg.getInputData();
+        }
+
+        private List<String> promptForTextValue(Frame frame, TextCharacter ch) {
+            TextInputDialog dlg = new TextInputDialog(frame, ch);
+            dlg.setVisible(true);
+            return dlg.getInputData();
+        }
+
+        @Override
+        public String toString() {
+            return String.format("USE %s", _characterValues.toString());
+        }
+
     }
 
 }

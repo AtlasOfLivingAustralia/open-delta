@@ -60,11 +60,13 @@ public class FileTaxaDirective extends IntkeyDirective {
         }
 
         @Override
-        public void execute(IntkeyContext context) {
+        public boolean execute(IntkeyContext context) {
             try {
                 context.setFileTaxa(_fileName);
+                return true;
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(context.getMainFrame(), ex.getMessage(), "", JOptionPane.ERROR_MESSAGE);
+                return false;
             }
         }
 

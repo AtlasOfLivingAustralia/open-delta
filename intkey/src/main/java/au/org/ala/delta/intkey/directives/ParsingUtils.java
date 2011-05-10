@@ -201,29 +201,5 @@ public class ParsingUtils {
         }
         return str;
     }
-    
-    
-    public static List<Integer> promptForMultiStateValue(Frame frame, MultiStateCharacter ch) {
-        MultiStateInputDialog dlg = new MultiStateInputDialog(frame, ch);
-        dlg.setVisible(true);
-        return dlg.getInputData();
-    }
 
-    public static IntRange promptForIntegerValue(Frame frame, IntegerCharacter ch) {
-        IntegerInputDialog dlg = new IntegerInputDialog(frame, ch);
-        dlg.setVisible(true);
-        return dlg.getInputData();
-    }
-
-    public static FloatRange promptForRealValue(Frame frame, RealCharacter ch) {
-        RealInputDialog dlg = new RealInputDialog(frame, ch);
-        dlg.setVisible(true);
-        return dlg.getInputData();
-    }
-
-    public static List<String> promptForTextValue(Frame frame, TextCharacter ch) {
-        TextInputDialog dlg = new TextInputDialog(frame, ch);
-        dlg.setVisible(true);
-        return dlg.getInputData();
-    }
 }

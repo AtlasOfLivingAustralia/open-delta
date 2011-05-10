@@ -54,8 +54,9 @@ public class NewDatasetDirective extends IntkeyDirective {
         }
         
         @Override
-        public void execute(IntkeyContext context) {
+        public boolean execute(IntkeyContext context) {
             context.newDataSetFile(_fileName);
+            return true;
         }
         
         @Override

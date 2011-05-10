@@ -21,19 +21,20 @@ public abstract class CharacterValueInputDialog extends JDialog {
     protected JButton _btnNotes;
     protected JButton _btnHelp;
     protected JPanel _pnlMain;
+
     public CharacterValueInputDialog(Frame owner) {
         super(owner, true);
         setSize(new Dimension(500, 150));
         setResizable(false);
         setLocationRelativeTo(owner);
-        
+
         getContentPane().setLayout(new BorderLayout(0, 0));
-        
+
         _buttonPanel = new JPanel();
         _buttonPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
         getContentPane().add(_buttonPanel, BorderLayout.SOUTH);
         _buttonPanel.setLayout(new GridLayout(0, 4, 5, 5));
-        
+
         JButton _btnOk = new JButton("OK");
         _btnOk.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -41,31 +42,36 @@ public abstract class CharacterValueInputDialog extends JDialog {
             }
         });
         _buttonPanel.add(_btnOk);
-        
+
         _btnImages = new JButton("Images");
+        _btnImages.setEnabled(false);
         _buttonPanel.add(_btnImages);
-        
+
         _btnFullText = new JButton("Full Text");
+        _btnFullText.setEnabled(false);
         _buttonPanel.add(_btnFullText);
-        
+
         _btnSearch = new JButton("Search");
+        _btnSearch.setEnabled(false);
         _buttonPanel.add(_btnSearch);
-        
+
         _btnCancel = new JButton("Cancel");
         _buttonPanel.add(_btnCancel);
-        
+
         _btnNotes = new JButton("Notes");
+        _btnNotes.setEnabled(false);
         _buttonPanel.add(_btnNotes);
-        
+
         _btnHelp = new JButton("Help");
+        _btnHelp.setEnabled(false);
         _buttonPanel.add(_btnHelp);
-        
+
         _pnlMain = new JPanel();
         _pnlMain.setBorder(new EmptyBorder(10, 10, 10, 10));
         getContentPane().add(_pnlMain, BorderLayout.CENTER);
         _pnlMain.setLayout(new BorderLayout(0, 0));
     }
-    
+
     abstract void handleBtnOKClicked();
 
 }

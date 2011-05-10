@@ -10,6 +10,11 @@ package au.org.ala.delta.intkey.directives;
  */
 public interface IntkeyDirectiveInvocation {
     
-    public abstract void execute(IntkeyContext context);
+    /**
+     * Perform execution
+     * @param context State object to set values on
+     * @return success
+     */
+    public abstract boolean execute(IntkeyContext context);
     
 }

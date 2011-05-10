@@ -1,6 +1,7 @@
 package au.org.ala.delta.intkey.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,20 +14,26 @@ import javax.swing.JScrollPane;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
+import java.awt.Dimension;
 
 public abstract class KeywordSelectionDialog extends JDialog {
-    private boolean _okPressed = false;
-    private JPanel _panelButtons;
-    private JButton _btnOk;
-    private JButton _btnDeselectAll;
-    private JButton _btnList;
-    private JButton _btnImages;
-    private JButton _btnSearch;
-    private JButton _btnCancel;
-    private JButton _btnHelp;
-    private JScrollPane _scrollPane;
-    private JList _list;
-    public KeywordSelectionDialog() {
+    protected boolean _okPressed = false;
+    protected JPanel _panelButtons;
+    protected JButton _btnOk;
+    protected JButton _btnDeselectAll;
+    protected JButton _btnList;
+    protected JButton _btnImages;
+    protected JButton _btnSearch;
+    protected JButton _btnCancel;
+    protected JButton _btnHelp;
+    protected JScrollPane _scrollPane;
+    protected JList _list;
+    
+    public KeywordSelectionDialog(Frame owner) {
+        super(owner, true);
+        setResizable(false);
+        setSize(new Dimension(700, 500));
+        
         _panelButtons = new JPanel();
         _panelButtons.setBorder(new EmptyBorder(0, 100, 10, 100));
         getContentPane().add(_panelButtons, BorderLayout.SOUTH);
@@ -58,6 +65,7 @@ public abstract class KeywordSelectionDialog extends JDialog {
         _panelButtons.add(_btnList);
         
         _btnImages = new JButton("Images");
+        _btnImages.setEnabled(false);
         _btnImages.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
             }
@@ -65,6 +73,7 @@ public abstract class KeywordSelectionDialog extends JDialog {
         _panelButtons.add(_btnImages);
         
         _btnSearch = new JButton("Search");
+        _btnSearch.setEnabled(false);
         _btnSearch.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
             }
@@ -74,12 +83,14 @@ public abstract class KeywordSelectionDialog extends JDialog {
         _btnCancel = new JButton("Cancel");
         _btnCancel.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                _okPressed = false;
                 KeywordSelectionDialog.this.setVisible(false);
             }
         });
         _panelButtons.add(_btnCancel);
         
         _btnHelp = new JButton("Help");
+        _btnHelp.setEnabled(false);
         _btnHelp.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 KeywordSelectionDialog.this._okPressed = false;
@@ -94,16 +105,18 @@ public abstract class KeywordSelectionDialog extends JDialog {
         
         _list = new JList();
         _scrollPane.setViewportView(_list);
+        
+        setLocationRelativeTo(owner);
     }
     
     public boolean getOkButtonPressed() {
         return _okPressed;
     }
     
-    abstract void okBtnPressed();
-    abstract void listBtnPressed();
-    abstract void imagesBtnPressed();
-    abstract void searchBtnPressed();
-    abstract void helpBtnPressed();
+    abstract protected void okBtnPressed();
+    abstract protected void listBtnPressed();
+    abstract protected void imagesBtnPressed();
+    abstract protected void searchBtnPressed();
+    abstract protected void helpBtnPressed();
 
 }

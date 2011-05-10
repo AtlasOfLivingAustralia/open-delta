@@ -30,7 +30,6 @@ public abstract class NumberInputDialog extends CharacterValueInputDialog {
         panel.setLayout(new GridLayout(0, 2, 5, 0));
         
         _txtInput = new JTextField();
-        _txtInput.setText("fo");
         panel.add(_txtInput);
         _txtInput.setColumns(10);
         
