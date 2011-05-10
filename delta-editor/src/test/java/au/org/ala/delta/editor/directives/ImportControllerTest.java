@@ -26,8 +26,11 @@ import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.UnorderedMultiStateCharacter;
 
 /**
- * Tests the ImportController class.
+ * Tests the ImportController class.  The SuppressWarnings annotation is to prevent warnings
+ * about accessing the AppContext which is required to do the thread synchronization 
+ * necessary to make the tests run in a repeatable manner.
  */
+@SuppressWarnings("restriction")
 public class ImportControllerTest extends TestCase {
 
 	/**
@@ -122,7 +125,7 @@ public class ImportControllerTest extends TestCase {
 	 * to the ImportController just for the unit test.
 	 */
 	private void waitForTaskCompletion() throws Exception {
-		 final AppContext appContext = AppContext.getAppContext();
+		final AppContext appContext = AppContext.getAppContext();
 	     ExecutorService executorService =
 	            (ExecutorService) appContext.get(SwingWorker.class);
 	     executorService.shutdown();
