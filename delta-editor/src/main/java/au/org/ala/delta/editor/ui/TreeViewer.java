@@ -275,7 +275,7 @@ public class TreeViewer extends JInternalFrame implements DeltaView {
 		private static final long serialVersionUID = 2155436614741771060L;
 		
 		public MultiStateAttributeCellEditor() {
-			super(new JCheckBox());
+			super(new MultiStateCheckbox());
 			
 			editorComponent.setOpaque(false);
 		}

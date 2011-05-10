@@ -103,6 +103,7 @@ public class AttributeEditor extends JPanel implements ValidationListener {
 
 		_textPane = new RtfEditor();
 		_characterDetailsTable = new JTable();
+		_characterDetailsTable.setShowGrid(false);
 
 		JScrollPane scrollPane = new JScrollPane(_textPane);
 		split.setLeftComponent(scrollPane);
@@ -378,12 +379,17 @@ public class AttributeEditor extends JPanel implements ValidationListener {
 		}
 	}
 	
+	/**
+	 * Allows a state of a multistate attribute to be marked as present / absent using
+	 * a checkbox.
+	 */
 	class StateEditor extends DefaultCellEditor {
 		
 		private static final long serialVersionUID = 8431473832073654661L;
-
+		
+		
 		public StateEditor() {
-			super(new JCheckBox());
+			super(new MultiStateCheckbox());
 		}
 
 		@Override
