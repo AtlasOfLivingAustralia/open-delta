@@ -52,6 +52,9 @@ import au.org.ala.delta.editor.ItemController;
 import au.org.ala.delta.editor.ui.dnd.DropIndicationTable;
 import au.org.ala.delta.model.Item;
 
+/**
+ * The MatrixViewer presents the attributes of the data set in a tabular format.
+ */
 public class MatrixViewer extends JInternalFrame implements DeltaView {
 
 	private static final long serialVersionUID = 1L;
