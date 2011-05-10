@@ -17,6 +17,7 @@ package au.org.ala.delta.ui.rtf;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
@@ -29,17 +30,21 @@ import java.util.Properties;
 
 import javax.swing.Action;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.event.UndoableEditListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.MutableAttributeSet;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledEditorKit;
+import javax.swing.undo.UndoManager;
 
 import au.org.ala.delta.ui.util.IconHelper;
 
@@ -59,6 +64,7 @@ public class RtfEditor extends RtfEditorPane {
 	private JToggleButton _btnSubScript;
 	private List<SpecialCharHandler> _specialCharHandlers = new ArrayList<SpecialCharHandler>();	
 	private SpecialCharHandler _currentCharHandler;
+	private UndoManager _undoManager;
 	
 	public RtfEditor() {
 		super();		
@@ -128,6 +134,7 @@ public class RtfEditor extends RtfEditorPane {
 						
 		});
 		
+		
 	}
 	
 	protected void registerKeyStrokeAction(String actionMapKey, Action action, KeyStroke keyStroke) {
@@ -181,7 +188,28 @@ public class RtfEditor extends RtfEditorPane {
 			}
 		});
 
+		addUndoSupport();
+		
 		return _toolBar;
+	}
+	
+	protected void addUndoSupport() {
+		_undoManager = new UndoManager();
+		getDocument().addUndoableEditListener(new UndoListener());
+		
+		JButton undo = new JButton("U");
+		undo.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				while (_undoManager.canUndo()) {
+					_undoManager.undo();
+				}
+			}
+		});
+		undo.setFocusable(false);
+		
+		_toolBar.add(undo);
 	}
 	
 	private void enableToolbarButtons(boolean enable) {
@@ -222,6 +250,15 @@ public class RtfEditor extends RtfEditorPane {
 		b.setHideActionText(true);
 	
 		return b;
+	}
+	
+	/**
+	 * Overrides setText to reset our undo list.
+	 */
+	@Override
+	public void setText(String t) {
+		super.setText(t);
+		_undoManager.discardAllEdits();
 	}
 
 	/**
@@ -290,6 +327,16 @@ public class RtfEditor extends RtfEditorPane {
 			// Turn off subscript if it's on
 			StyleConstants.setSubscript(characterAttributes, false);		
 		}
+	}
+	
+	class UndoListener implements UndoableEditListener {
+
+		@Override
+		public void undoableEditHappened(UndoableEditEvent e) {
+
+			_undoManager.addEdit(e.getEdit());
+		}
+		
 	}
 
 }
