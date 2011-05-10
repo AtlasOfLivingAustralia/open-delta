@@ -28,7 +28,10 @@ import javax.swing.ActionMap;
 import javax.swing.DefaultCellEditor;
 import javax.swing.DropMode;
 import javax.swing.JCheckBox;
+import javax.swing.JComponent;
 import javax.swing.JInternalFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
@@ -72,6 +75,10 @@ import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
 import au.org.ala.delta.rtf.RTFUtils;
 import au.org.ala.delta.ui.AboutBox;
 
+/**
+ * The TreeViewer presents the data model as a list of items and a tree containing the
+ * character attributes of the item selected from the list.
+ */
 public class TreeViewer extends JInternalFrame implements DeltaView {
 
 	private static final long serialVersionUID = 1L;
@@ -80,7 +87,6 @@ public class TreeViewer extends JInternalFrame implements DeltaView {
 	private AttributeEditor _stateEditor; 
 	private JTree _tree;
 	private ItemList _itemList;
-	
 
 	@Resource
 	String windowTitle;
@@ -111,6 +117,7 @@ public class TreeViewer extends JInternalFrame implements DeltaView {
 		_tree.setShowsRootHandles(true);
 		DeltaTreeCellRenderer renderer = new DeltaTreeCellRenderer(_dataModel);
 		_tree.setCellRenderer(renderer);
+		_tree.setDragEnabled(true);
 		_tree.setCellEditor(new DeltaTreeEditor(_tree, renderer));
 		_tree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
 
@@ -134,9 +141,13 @@ public class TreeViewer extends JInternalFrame implements DeltaView {
 		});
 		_tree.addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
-				int selectedRow = _tree.getClosestRowForLocation(e.getX(), e.getY());
-				if ((selectedRow >= 0) && (e.getClickCount() == 2)) {
-					actionMap.get("viewCharacterEditor").actionPerformed(new ActionEvent(_tree, -1, ""));
+				
+				if (!_tree.isEditing()) {
+					int selectedRow = _tree.getClosestRowForLocation(e.getX(), e.getY());
+					
+					if ((selectedRow >= 0) && (e.getClickCount() == 2)) {
+						actionMap.get("viewCharacterEditor").actionPerformed(new ActionEvent(_tree, -1, ""));
+					}
 				}
 			}
 		});
@@ -302,32 +313,117 @@ public class TreeViewer extends JInternalFrame implements DeltaView {
 		
 		private static final long serialVersionUID = -6054961593128043309L;
 
+		private JPanel editor;
+		private JTextField textField;
+		private JLabel unitsLabel;
+		
 		private boolean _valid;
 		private TextComponentValidator _validator;
-		
+
+		class EditorPanel extends JPanel {
+			
+			private static final long serialVersionUID = -18749588943959204L;
+
+			/**
+			 * Lays out this <code>Container</code>.  If editing,
+		     * the editor will be placed at
+			 * <code>offset</code> in the x direction and 0 for y.
+			 */
+			@Override
+			public void doLayout() {
+				Dimension size = getSize();
+
+				int textFieldWidth = textField.getPreferredSize().width;
+				textField.setLocation(0, 0);
+				textField.setBounds(0, 0, textFieldWidth, size.height);
+				unitsLabel.setBounds(textFieldWidth, 0, size.width-textFieldWidth, size.height);
+			}
+			
+			@Override
+			public Dimension getPreferredSize() {
+				Dimension preferredSize = textField.getPreferredSize();
+				preferredSize.width += unitsLabel.getPreferredSize().width;
+				
+				return preferredSize;
+			}
+			
+			@Override
+			public Component getComponentAt(int x, int y) {
+				Component comp = super.getComponentAt(x, y);
+				if ((comp == textField) || (comp == unitsLabel)) {
+					return textField;
+				}
+				return comp;
+			}
+			
+			@Override
+			public boolean isFocusCycleRoot() {
+				return false;
+			}
+			
+			
+		}
 		public NumericTextAttributeCellEditor() {
 			super(new JTextField());	
-			_valid = true;
 			
+			createEditorComponent();
+				
+			delegate = new EditorDelegate() {
+				private static final long serialVersionUID = 2456039012400902726L;
+
+				public void setValue(Object value) {
+				    textField.setText((value != null) ? value.toString() : "");
+		        }
+
+			    public Object getCellEditorValue() {
+				    return textField.getText();
+			    }
+		    };
+			textField.addActionListener(delegate);
+			editorComponent = editor;
+		}
+		
+		private void createEditorComponent() {
+			editor = new EditorPanel();
+			editor.setOpaque(false);
+			editor.setFocusCycleRoot(true);
+			editor.setFocusable(false);
+			editor.setLayout(null);
+			textField = new JTextField();
+			editor.add(textField);
+			unitsLabel = new JLabel();
+			unitsLabel.setOpaque(false);
+			unitsLabel.setFont(_tree.getFont());
+			
+			editor.add(unitsLabel);
 		}
 
 		@Override
 		protected Component configureEditingComponent(Attribute attribute, DefaultMutableTreeNode nodeUserObject) {
 			getTextField().setText(attribute.getValue());
-			_validator = new TextComponentValidator(new AttributeValidator(_dataModel, attribute.getCharacter()), this);
-			//getTextField().setInputVerifier(_validator);
+			Character character = attribute.getCharacter();
+			
+			if ((character != null) && (character instanceof NumericCharacter<?>)) {
+				unitsLabel.setText(((NumericCharacter<?>)character).getUnits());
+			}
+			else {
+				unitsLabel.setText("");
+			}
+			
+			_validator = new TextComponentValidator(new AttributeValidator(_dataModel, character), this);
+			getTextField().setInputVerifier(_validator);
 			_valid = true;
+			
 			return editorComponent;
 		}
 		
 		private JTextField getTextField() {
-			return (JTextField)editorComponent;
+			return textField;
 		}
 
 		@Override
 		public void validationSuceeded(ValidationResult results) {
 			_valid = true;
-			
 		}
 
 		@Override
@@ -343,8 +439,6 @@ public class TreeViewer extends JInternalFrame implements DeltaView {
 			}
 			return _valid;
 		}
-		
-		
 	}
 	
 	/**
@@ -373,7 +467,8 @@ public class TreeViewer extends JInternalFrame implements DeltaView {
 				Character ch = getCharacterFor(node);
 				if (ch != null) {
 					Attribute attribute = _dataModel.getSelectedItem().getAttribute(ch);
-					return configureEditingComponent(attribute, node);
+					JComponent editor = (JComponent)configureEditingComponent(attribute, node);
+					return editor;
 				}
 			}
 			
@@ -401,7 +496,7 @@ public class TreeViewer extends JInternalFrame implements DeltaView {
 		@Override
 		public boolean isCellEditable(EventObject anEvent) {
 			if (anEvent == null) {
-			    return false;
+				return false;
 			}
 		                   
             if (anEvent instanceof MouseEvent) {
