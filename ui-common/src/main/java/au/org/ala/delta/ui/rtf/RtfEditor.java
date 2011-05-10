@@ -17,7 +17,6 @@ package au.org.ala.delta.ui.rtf;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
@@ -28,7 +27,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import javax.swing.AbstractAction;
+import javax.swing.AbstractButton;
 import javax.swing.Action;
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JToggleButton;
@@ -65,6 +67,7 @@ public class RtfEditor extends RtfEditorPane {
 	private List<SpecialCharHandler> _specialCharHandlers = new ArrayList<SpecialCharHandler>();	
 	private SpecialCharHandler _currentCharHandler;
 	private UndoManager _undoManager;
+	private UndoAction _undoAction;
 	
 	public RtfEditor() {
 		super();		
@@ -151,11 +154,11 @@ public class RtfEditor extends RtfEditorPane {
 	public JToolBar buildAndInstallToolbar() {
 
 		_toolBar = new JToolBar();
-		_btnBold = decorateToolbarAction(new StyledEditorKit.BoldAction(), "text_bold.png");
-		_btnItalic = decorateToolbarAction(new StyledEditorKit.ItalicAction(), "text_italic.png");
-		_btnUnderline = decorateToolbarAction(new StyledEditorKit.UnderlineAction(), "text_underline.png");
-		_btnSuperScript = decorateToolbarAction(new SuperscriptAction(), "text_superscript.png");
-		_btnSubScript = decorateToolbarAction(new SubscriptAction(), "text_subscript.png");
+		_btnBold = toolbarButtonForAction(new StyledEditorKit.BoldAction(), "text_bold.png");
+		_btnItalic = toolbarButtonForAction(new StyledEditorKit.ItalicAction(), "text_italic.png");
+		_btnUnderline = toolbarButtonForAction(new StyledEditorKit.UnderlineAction(), "text_underline.png");
+		_btnSuperScript = toolbarButtonForAction(new SuperscriptAction(), "text_superscript.png");
+		_btnSubScript = toolbarButtonForAction(new SubscriptAction(), "text_subscript.png");
 		
 		_toolBar.add(_btnBold);
 		_toolBar.add(_btnItalic);
@@ -193,23 +196,22 @@ public class RtfEditor extends RtfEditorPane {
 		return _toolBar;
 	}
 	
+	/**
+	 * Adds undo support to the editor, including the addition of an undo button to the toolbar.
+	 */
 	protected void addUndoSupport() {
 		_undoManager = new UndoManager();
 		getDocument().addUndoableEditListener(new UndoListener());
 		
-		JButton undo = new JButton("U");
-		undo.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				while (_undoManager.canUndo()) {
-					_undoManager.undo();
-				}
-			}
-		});
-		undo.setFocusable(false);
+		_undoAction = new UndoAction();
+		_undoAction.setEnabled(false);
+		JButton undoButton = new JButton();
+		decorateToolbarButton(undoButton, _undoAction, "arrow_undo.png");
+		undoButton.setFocusable(false);
+		undoButton.setBorder(BorderFactory.createEmptyBorder(3, 5, 3, 5));
 		
-		_toolBar.add(undo);
+		_toolBar.addSeparator();
+		_toolBar.add(undoButton);
 	}
 	
 	private void enableToolbarButtons(boolean enable) {
@@ -240,16 +242,20 @@ public class RtfEditor extends RtfEditorPane {
 		_btnSuperScript.setSelected(StyleConstants.isSuperscript(attr));
 		_btnSubScript.setSelected(StyleConstants.isSubscript(attr));
 	}
+	
+	private JToggleButton toolbarButtonForAction(Action action, String iconName) {
+		JToggleButton button = new JToggleButton();
+		decorateToolbarButton(button, action, iconName);
+		
+		return button;
+	}
 
-	private JToggleButton decorateToolbarAction(Action action, String iconName) {
+	private void decorateToolbarButton(AbstractButton button, Action action, String iconName) {
 		ImageIcon icon = IconHelper.createImageIcon(iconName);
 		action.putValue(Action.SMALL_ICON, icon);
-		JToggleButton b = new JToggleButton(action);
-		
-		b.setFocusable(false);
-		b.setHideActionText(true);
-	
-		return b;
+		button.setAction(action);
+		button.setFocusable(false);
+		button.setHideActionText(true);
 	}
 	
 	/**
@@ -329,11 +335,25 @@ public class RtfEditor extends RtfEditorPane {
 		}
 	}
 	
+	/**
+	 * Undoes all changes made to the document since the last invocation of "setText".
+	 */
+	class UndoAction extends AbstractAction {
+		private static final long serialVersionUID = 1L;
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			while (_undoManager.canUndo()) {
+				_undoManager.undo();
+			}
+			setEnabled(false);
+		}
+	}
+	
 	class UndoListener implements UndoableEditListener {
 
 		@Override
 		public void undoableEditHappened(UndoableEditEvent e) {
-
+			_undoAction.setEnabled(true);
 			_undoManager.addEdit(e.getEdit());
 		}
 		
