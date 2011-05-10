@@ -247,6 +247,7 @@ public class AttributeEditor extends JPanel implements ValidationListener {
 
 			}
 			_modified = false;
+			_textPane.requestFocusInWindow();
 		} finally {
 			// Re-enable the change listener
 			_editListener.setDisabled(false);
