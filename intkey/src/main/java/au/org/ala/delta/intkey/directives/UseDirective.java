@@ -10,7 +10,11 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.math.FloatRange;
 import org.apache.commons.lang.math.IntRange;
 
+import au.org.ala.delta.intkey.model.specimen.IntegerValue;
+import au.org.ala.delta.intkey.model.specimen.MultiStateValue;
+import au.org.ala.delta.intkey.model.specimen.RealValue;
 import au.org.ala.delta.intkey.model.specimen.Specimen;
+import au.org.ala.delta.intkey.model.specimen.TextValue;
 import au.org.ala.delta.intkey.ui.CharacterKeywordSelectionDialog;
 import au.org.ala.delta.intkey.ui.IntegerInputDialog;
 import au.org.ala.delta.intkey.ui.MultiStateInputDialog;
@@ -220,13 +224,13 @@ public class UseDirective extends IntkeyDirective {
             for (Character ch : _characterValues.keySet()) {
                 Object characterVal = _characterValues.get(ch);
                 if (ch instanceof MultiStateCharacter) {
-                    specimen.setMultiStateValue((MultiStateCharacter) ch, (List<Integer>) characterVal);
+                    specimen.addValueForCharacter(ch, new MultiStateValue((MultiStateCharacter) ch, (List<Integer>) characterVal));
                 } else if (ch instanceof IntegerCharacter) {
-                    specimen.setIntegerValue((IntegerCharacter) ch, (IntRange) characterVal);
+                    specimen.addValueForCharacter(ch, new IntegerValue((IntegerCharacter) ch, (IntRange) characterVal));
                 } else if (ch instanceof RealCharacter) {
-                    specimen.setRealValue((RealCharacter) ch, (FloatRange) characterVal);
+                    specimen.addValueForCharacter(ch, new RealValue((RealCharacter) ch, (FloatRange) characterVal));
                 } else if (ch instanceof TextCharacter) {
-                    specimen.setTextValue((TextCharacter) ch, (List<String>) characterVal);
+                    specimen.addValueForCharacter(ch, new TextValue((TextCharacter) ch, (List<String>) characterVal));
                 } else {
                     throw new RuntimeException("Unrecognized character type");
                 }
