@@ -69,6 +69,9 @@ public class ItemEditor extends JInternalFrame implements ValidationListener, De
 	/** Validates the item description */
 	private TextComponentValidator _validator;
 	
+	/** Keeps track of whether the data entered for the Item is valid */
+	private boolean _valid;
+	
 	private JSpinner spinner;
 	private RtfEditor rtfEditor;
 	private JCheckBox chckbxTreatAsVariant;
@@ -307,6 +310,7 @@ public class ItemEditor extends JInternalFrame implements ValidationListener, De
 	 */
 	public void bind(EditorViewModel dataSet) {
 		_dataSet = dataSet;
+		_valid = true;
 		taxonSelectionList.setDataSet(dataSet);
 		imageDetails.setDataSet(dataSet);
 		_selectedItem = dataSet.getSelectedItem();
@@ -357,19 +361,22 @@ public class ItemEditor extends JInternalFrame implements ValidationListener, De
 	@Override
 	public void validationSuceeded(ValidationResult results) {
 		btnDone.setEnabled(true);
+		_valid = true;
 	}
 
 	@Override
 	public void validationFailed(ValidationResult results) {
 		btnDone.setEnabled(false);
-		
+		_valid = false;
 	}
 	
 	@Override
 	public void open() {}
 
 	@Override
-	public void close() {}
+	public boolean editsValid() {
+		return _valid;
+	}
 
 	@Override
 	public String getViewTitle() {

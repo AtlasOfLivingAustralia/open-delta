@@ -337,6 +337,10 @@ public class AttributeEditor extends JPanel implements ValidationListener {
 		_valid = false;
 	}
 
+	public boolean isAttributeValid() {
+		return _valid;
+	}
+	
 	class EditListener implements DocumentListener {
 
 		private boolean _disabled;

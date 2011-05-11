@@ -9,6 +9,5 @@ public interface DeltaView {
 
 	public String getViewTitle();
 	public void open();
-	public void close();
-	public boolean isValid();
+	public boolean editsValid();
 }

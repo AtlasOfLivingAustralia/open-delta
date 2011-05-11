@@ -277,7 +277,9 @@ public class MatrixViewer extends JInternalFrame implements DeltaView {
 	public void open() {}
 
 	@Override
-	public void close() {}
+	public boolean editsValid() {
+		return _stateEditor.isAttributeValid();
+	}
 
 	@Override
 	public String getViewTitle() {

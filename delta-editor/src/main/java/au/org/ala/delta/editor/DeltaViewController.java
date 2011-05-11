@@ -101,8 +101,14 @@ public class DeltaViewController extends InternalFrameAdapter implements Vetoabl
 				}
 			}
 		}
-		else if (JInternalFrame.IS_SELECTED_PROPERTY.equals(e.getPropertyName()) && (e.getNewValue().equals(Boolean.FALSE))) {
-			// Veto change if the frame is invalid.
+		else if (JInternalFrame.IS_SELECTED_PROPERTY.equals(e.getPropertyName())) {
+			
+			for (JInternalFrame frame : _activeViews) {
+				DeltaView view = (DeltaView)frame;
+				if (!view.editsValid()) {
+					throw new PropertyVetoException("Select cancelled", e);
+				}
+			}
 		}
 	}
 	
