@@ -9,6 +9,10 @@ import javax.swing.JButton;
 import javax.swing.border.EmptyBorder;
 import java.awt.Dimension;
 import javax.swing.JLabel;
+
+import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.format.CharacterFormatter;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
@@ -21,15 +25,20 @@ public abstract class CharacterValueInputDialog extends JDialog {
     protected JButton _btnNotes;
     protected JButton _btnHelp;
     protected JPanel _pnlMain;
+    protected JLabel _lblCharacterDescription;
+    protected Character _ch;
+    protected CharacterFormatter _formatter;
 
-    public CharacterValueInputDialog(Frame owner) {
+    public CharacterValueInputDialog(Frame owner, Character ch) {
         super(owner, true);
         setSize(new Dimension(500, 150));
         setResizable(false);
         setLocationRelativeTo(owner);
 
         getContentPane().setLayout(new BorderLayout(0, 0));
-
+        
+        _ch = ch;
+        
         _buttonPanel = new JPanel();
         _buttonPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
         getContentPane().add(_buttonPanel, BorderLayout.SOUTH);
@@ -70,6 +79,12 @@ public abstract class CharacterValueInputDialog extends JDialog {
         _pnlMain.setBorder(new EmptyBorder(10, 10, 10, 10));
         getContentPane().add(_pnlMain, BorderLayout.CENTER);
         _pnlMain.setLayout(new BorderLayout(0, 0));
+        
+        _lblCharacterDescription = new JLabel();
+        _lblCharacterDescription.setBorder(new EmptyBorder(0, 0, 5, 0));
+        _formatter = new CharacterFormatter(false, false, true, true);
+        _lblCharacterDescription.setText(_formatter.formatCharacterDescription(_ch));
+        _pnlMain.add(_lblCharacterDescription, BorderLayout.NORTH);
     }
 
     abstract void handleBtnOKClicked();
