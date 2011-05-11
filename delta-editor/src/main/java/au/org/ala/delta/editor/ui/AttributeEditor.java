@@ -24,6 +24,8 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.ActionMap;
+import javax.swing.ButtonGroup;
 import javax.swing.DefaultCellEditor;
 import javax.swing.InputVerifier;
 import javax.swing.JCheckBox;
@@ -31,6 +33,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
+import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -38,6 +41,9 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 
+import org.jdesktop.application.Application;
+
+import au.org.ala.delta.editor.EditorPreferences;
 import au.org.ala.delta.editor.ui.util.EditorUIUtils;
 import au.org.ala.delta.editor.ui.validator.AttributeValidator;
 import au.org.ala.delta.editor.ui.validator.RtfEditorValidator;
@@ -79,11 +85,27 @@ public class AttributeEditor extends JPanel implements ValidationListener {
 	private List<AttributeEditorListener> _listeners = new ArrayList<AttributeEditorListener>();
 
 	private boolean _inapplicable;
-
+	
+	/**
+	 * Creates a new AttributeEditor using the supplied EditorDataModel.
+	 * @param dataSet the model for the AttributeEditor.
+	 */
 	public AttributeEditor(EditorDataModel dataSet) {
 
+		ActionMap actions = Application.getInstance().getContext().getActionMap(this);
+		
 		_dataSet = dataSet;
 		_committing = false;
+		
+		createUI(actions);
+		addEventHandlers();		
+	}
+
+	/**
+	 * Adds event handles to the user interface.
+	 */
+	private void addEventHandlers() {
+		
 		_dataSet.addDeltaDataSetObserver(new AbstractDataSetObserver() {
 			@Override
 			public void itemEdited(DeltaDataSetChangeEvent event) {
@@ -97,28 +119,8 @@ public class AttributeEditor extends JPanel implements ValidationListener {
 			
 		});
 		
-		setLayout(new BorderLayout());
-		this.setPreferredSize(new Dimension(200, 150));
-		JSplitPane split = new JSplitPane();
-
-		_textPane = new RtfEditor();
-		_characterDetailsTable = new JTable();
-		_characterDetailsTable.setShowGrid(false);
-
-		JScrollPane scrollPane = new JScrollPane(_textPane);
-		split.setLeftComponent(scrollPane);
-
-		split.setRightComponent(_characterDetailsTable);
-
-		split.setDividerLocation(300);
-		split.setResizeWeight(0.5);
-
-		JToolBar toolbar = _textPane.buildAndInstallToolbar();
-		add(toolbar, BorderLayout.NORTH);
-
 		_editListener = new EditListener();
 		_textPane.getDocument().addDocumentListener(_editListener);
-
 		_textPane.addFocusListener(new EditCommitter());
 		_textPane.addKeyListener(new KeyAdapter() {
 			
@@ -163,9 +165,52 @@ public class AttributeEditor extends JPanel implements ValidationListener {
 			}
 
 		});
-
-		add(split, BorderLayout.CENTER);
 	}
+	
+	private void createUI(ActionMap actions) {
+		setLayout(new BorderLayout());
+		JSplitPane split = new JSplitPane();
+
+		_textPane = new RtfEditor();
+		_characterDetailsTable = new JTable();
+		_characterDetailsTable.setShowGrid(false);
+
+		JScrollPane scrollPane = new JScrollPane(_textPane);
+		split.setLeftComponent(scrollPane);
+
+		split.setRightComponent(_characterDetailsTable);
+
+		split.setDividerLocation(300);
+		split.setResizeWeight(0.5);
+
+		JToolBar toolbar = _textPane.buildAndInstallToolbar();
+		add(toolbar, BorderLayout.NORTH);
+		
+		add(split, BorderLayout.CENTER);
+		
+		
+		JToggleButton advanceItem = new JToggleButton();
+		advanceItem.setAction(actions.get("advanceItem"));
+		advanceItem.setFocusable(false);
+		JToggleButton advanceCharacter = new JToggleButton();
+	    advanceCharacter.setAction(actions.get("advanceCharacter"));
+		advanceCharacter.setFocusable(false);
+		ButtonGroup buttons = new ButtonGroup();
+		buttons.add(advanceItem);
+		buttons.add(advanceCharacter);
+		
+		
+		if (EditorPreferences.getEditorAdvanceMode().equals(EditorAdvanceMode.Item)) {
+			advanceItem.setSelected(true);
+		}
+		else {
+			advanceCharacter.setSelected(true);
+		}
+		toolbar.addSeparator();
+		toolbar.add(advanceItem);
+		toolbar.add(advanceCharacter);
+	}
+	
 
 	public void add(AttributeEditorListener listener) {
 		if (!_listeners.contains(listener)) {
@@ -191,6 +236,11 @@ public class AttributeEditor extends JPanel implements ValidationListener {
 		}
 	}
 
+	/**
+	 * Updates the state of the AttributeEditor to match the supplied Item and Character.
+	 * @param ch the character that identifies the attribute.
+	 * @param item the Item to edit.
+	 */
 	public void bind(Character ch, Item item) {
 		if (!_valid) {
 			return;
@@ -255,6 +305,26 @@ public class AttributeEditor extends JPanel implements ValidationListener {
 		}
 	}
 
+	/**
+	 * Changes the behaviour of Enter/Shift-Enter such that it will advance the 
+	 * selection to the next Item.
+	 */
+	@org.jdesktop.application.Action
+	public void advanceItem() {
+		
+		EditorPreferences.setEditorAdvanceMode(EditorAdvanceMode.Item);
+	}
+	
+	/**
+	 * Changes the behaviour of Enter/Shift-Enter such that it will advance the 
+	 * selection to the next Character.
+	 */
+	@org.jdesktop.application.Action
+	public void advanceCharacter() {
+		EditorPreferences.setEditorAdvanceMode(EditorAdvanceMode.Character);
+	}
+	
+	
 	@Override
 	public void validationSuceeded(ValidationResult results) {
 		_valid = true;

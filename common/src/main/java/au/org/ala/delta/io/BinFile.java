@@ -42,11 +42,9 @@ public class BinFile {
 
 	protected FileChannel _channel;
 
-	public BinFile() {
-	}
-
 	public BinFile(String filename, BinFileMode mode) {
 
+		System.out.println("*** NEW BinFile: "+filename+" mode="+mode);
 		if (filename == null) {
 			filename = makeTempFileName();
 			mode = BinFileMode.FM_TEMPORARY;
@@ -115,6 +113,7 @@ public class BinFile {
 		 * if (_file != null) { try { _file.close(); _file = null; } catch
 		 * (IOException ioex) { throw new RuntimeException(ioex); } }
 		 */
+		System.out.println("******** CLOSING : "+_filename);
 		if (_channel != null) {
 			try {
 				_channel.close();
@@ -147,7 +146,7 @@ public class BinFile {
 			try {
 				// _file.seek(offset);
 				_channel.position(offset);
-			} catch (IOException ioex) {
+			} catch (Exception ioex) {
 				throw new RuntimeException(ioex);
 			}
 		}
