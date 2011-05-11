@@ -16,10 +16,11 @@ import au.org.ala.delta.intkey.Intkey;
 import au.org.ala.delta.intkey.model.CharacterComparator;
 import au.org.ala.delta.intkey.model.IntkeyDataset;
 import au.org.ala.delta.intkey.model.IntkeyDatasetFileBuilder;
+import au.org.ala.delta.intkey.model.specimen.CharacterValue;
 import au.org.ala.delta.intkey.model.specimen.Specimen;
 
 /**
- * Controller? Handles input and updates UI, model accordingly.
+ * Model. Maintains global application state.
  * 
  * @author Chris
  * 
@@ -153,12 +154,10 @@ public class IntkeyContext extends AbstractDeltaContext {
         return _dataset;
     }
 
-    public void useCharacters() {
-        Logger.log("Using characters");
-    }
-
-    public Specimen getSpecimen() {
-        return _specimen;
+    public void setValueForCharacter(au.org.ala.delta.model.Character ch, CharacterValue value) {
+        Logger.log("Using character");
+        _specimen.setValueForCharacter(ch, value);
+        _appUI.handleCharacterUsed(ch, value);
     }
 
     public void addCharacterKeyword(String keyword, Set<Integer> characterNumbers) {

@@ -17,6 +17,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -33,6 +34,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
+import javax.swing.event.MouseInputAdapter;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Resource;
@@ -48,6 +50,7 @@ import au.org.ala.delta.intkey.directives.IntkeyDirectiveParser;
 import au.org.ala.delta.intkey.directives.NewDatasetDirective;
 import au.org.ala.delta.intkey.directives.UseDirective;
 import au.org.ala.delta.intkey.model.IntkeyDataset;
+import au.org.ala.delta.intkey.model.specimen.CharacterValue;
 import au.org.ala.delta.intkey.ui.ReExecuteDialog;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
@@ -68,14 +71,22 @@ public class Intkey extends DeltaSingleFrameApplication {
     private Map<String, JMenu> _cmdMenus;
 
     private IntkeyContext _context;
-    private JList _listBestCharacters;
+    private JList _listAvailableCharacters;
     private JList _listUsedCharacters;
     private JList _listRemainingTaxa;
     private JList _listEliminatedTaxa;
+    
+    private AvailableCharacterListModel _availableCharacterListModel;
+    private UsedCharacterListModel _usedCharacterListModel;
+    private ItemListModel _itemListModel;
+    
+    private JMenu _mnuReExecute;
+    private JLabel _lblNumAvailableCharacters;
+    private JLabel _lblNumUsedCharacters;
 
     @Resource
     String windowTitleWithDatasetTitle;
-    private JMenu _mnuReExecute;
+
 
     public static void main(String[] args) {
         setupMacSystemProperties(Intkey.class);
@@ -136,40 +147,17 @@ public class Intkey extends DeltaSingleFrameApplication {
         JScrollPane sclPaneBestCharacters = new JScrollPane();
         pnlBestCharacters.add(sclPaneBestCharacters, BorderLayout.CENTER);
 
-        _listBestCharacters = new JList();
-        _listBestCharacters.addMouseListener(new MouseListener() {
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void mousePressed(MouseEvent e) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                // TODO Auto-generated method stub
-
-            }
+        _listAvailableCharacters = new JList();
+        _listAvailableCharacters.addMouseListener(new MouseInputAdapter() {
 
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() >= 2) {
-                    int selectedIndex = _listBestCharacters.getSelectedIndex();
+                    int selectedIndex = _listAvailableCharacters.getSelectedIndex();
                     if (selectedIndex >= 0) {
                         try {
-                            IntkeyDirectiveInvocation invoc = new UseDirective().doProcess(_context, Integer.toString(selectedIndex + 1));
+                            Character ch = _availableCharacterListModel.getCharacterAt(selectedIndex);
+                            IntkeyDirectiveInvocation invoc = new UseDirective().doProcess(_context, Integer.toString(ch.getCharacterId()));
                             _context.executeDirective(invoc);
                         } catch (Exception ex) {
                             ex.printStackTrace();
@@ -179,15 +167,15 @@ public class Intkey extends DeltaSingleFrameApplication {
             }
         });
 
-        sclPaneBestCharacters.setViewportView(_listBestCharacters);
+        sclPaneBestCharacters.setViewportView(_listAvailableCharacters);
 
         JPanel pnlBestCharactersHeader = new JPanel();
         pnlBestCharacters.add(pnlBestCharactersHeader, BorderLayout.NORTH);
         pnlBestCharactersHeader.setLayout(new BorderLayout(0, 0));
 
-        JLabel lblNumBestCharacters = new JLabel("Best Characters");
-        lblNumBestCharacters.setFont(new Font("Tahoma", Font.PLAIN, 15));
-        pnlBestCharactersHeader.add(lblNumBestCharacters, BorderLayout.WEST);
+        _lblNumAvailableCharacters = new JLabel("Available Characters");
+        _lblNumAvailableCharacters.setFont(new Font("Tahoma", Font.PLAIN, 15));
+        pnlBestCharactersHeader.add(_lblNumAvailableCharacters, BorderLayout.WEST);
 
         JPanel pnlUsedCharacters = new JPanel();
         _innerSplitPaneLeft.setRightComponent(pnlUsedCharacters);
@@ -203,9 +191,9 @@ public class Intkey extends DeltaSingleFrameApplication {
         pnlUsedCharacters.add(pnlUsedCharactersHeader, BorderLayout.NORTH);
         pnlUsedCharactersHeader.setLayout(new BorderLayout(0, 0));
 
-        JLabel lblNumUsedCharacters = new JLabel("Used Characters");
-        lblNumUsedCharacters.setFont(new Font("Tahoma", Font.PLAIN, 15));
-        pnlUsedCharactersHeader.add(lblNumUsedCharacters, BorderLayout.WEST);
+        _lblNumUsedCharacters = new JLabel("Used Characters");
+        _lblNumUsedCharacters.setFont(new Font("Tahoma", Font.PLAIN, 15));
+        pnlUsedCharactersHeader.add(_lblNumUsedCharacters, BorderLayout.WEST);
 
         _innerSplitPaneRight = new JSplitPane();
         _innerSplitPaneRight.setResizeWeight(0.5);
@@ -486,16 +474,38 @@ public class Intkey extends DeltaSingleFrameApplication {
 
     public void handleNewDataSet(IntkeyDataset dataset) {
         getMainFrame().setTitle(String.format(windowTitleWithDatasetTitle, dataset.getHeading()));
-        _listBestCharacters.setModel(new CharacterListModel(dataset.getCharacters()));
+        
+        _availableCharacterListModel = new AvailableCharacterListModel(dataset.getCharacters());
+        _usedCharacterListModel = new UsedCharacterListModel();
+        _itemListModel = new ItemListModel(dataset.getTaxa());
+        
+        _listAvailableCharacters.setModel(_availableCharacterListModel);
+        _listUsedCharacters.setModel(_usedCharacterListModel);
         _listRemainingTaxa.setModel(new ItemListModel(dataset.getTaxa()));
     }
 
-    private class CharacterListModel extends AbstractListModel {
+    public void handleCharacterUsed(Character ch, CharacterValue value) {
+        // remove from top list
+        _availableCharacterListModel.removeCharacter(ch);
+        
+        // add to bottom list
+        _usedCharacterListModel.addCharacterValue(ch, value);
+    }
 
-        List<Character> _characters;
-        CharacterFormatter _formatter;
+    public void handleCharacterChanged(Character ch, CharacterValue value) {
 
-        public CharacterListModel(List<Character> characters) {
+    }
+
+    public void handleCharacterDeleted(Character ch) {
+
+    }
+
+    private class AvailableCharacterListModel extends AbstractListModel {
+
+        private List<Character> _characters;
+        private CharacterFormatter _formatter;
+
+        public AvailableCharacterListModel(List<Character> characters) {
             _characters = new ArrayList<Character>(characters);
             _formatter = new CharacterFormatter(false, false, true, true);
         }
@@ -509,6 +519,58 @@ public class Intkey extends DeltaSingleFrameApplication {
         public Object getElementAt(int index) {
             return _formatter.formatCharacterDescription(_characters.get(index));
         }
+
+        public Character getCharacterAt(int index) {
+            return _characters.get(index);
+        }
+
+        public void addCharacter(Character ch) {
+
+        }
+
+        public void removeCharacter(Character ch) {
+            int charIndex = _characters.indexOf(ch);
+            if (charIndex > -1) {
+                _characters.remove(charIndex);
+                fireIntervalRemoved(this, charIndex, charIndex);
+            }
+        }
+    }
+
+    private class UsedCharacterListModel extends AbstractListModel {
+
+        private List<CharacterValue> _values;
+        private HashMap<Character, CharacterValue> _characterValueMap;
+        
+        public UsedCharacterListModel() {
+            _values = new ArrayList<CharacterValue>();
+            _characterValueMap = new HashMap<Character, CharacterValue>();
+        }
+
+        @Override
+        public int getSize() {
+            return _values.size();
+        }
+
+        @Override
+        public Object getElementAt(int index) {
+            return _values.get(index).toString();
+        }
+
+        public CharacterValue getCharacterValueAt(int index) {
+            return _values.get(index);
+        }
+
+        public void addCharacterValue(Character ch, CharacterValue value) {
+            _values.add(value);
+            _characterValueMap.put(ch, value);
+            fireIntervalAdded(this, _values.size() - 1, _values.size() - 1);
+        }
+
+        public void removeValueForCharacter(Character ch) {
+
+        }
+
     }
 
     private class ItemListModel extends AbstractListModel {

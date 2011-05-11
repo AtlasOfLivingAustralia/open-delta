@@ -31,7 +31,7 @@ public class Specimen {
         return usedCharacters;
     }
     
-    public void addValueForCharacter(Character ch, CharacterValue value) {
+    public void setValueForCharacter(Character ch, CharacterValue value) {
         if (!ch.equals(value.getCharacter())) {
             throw new IllegalArgumentException(String.format("Invalid value for character %s", ch.getDescription()));
         }

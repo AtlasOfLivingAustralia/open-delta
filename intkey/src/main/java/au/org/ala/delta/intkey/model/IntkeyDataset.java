@@ -46,10 +46,10 @@ public class IntkeyDataset {
         return _charactersFileHeader;
     }
     public List<au.org.ala.delta.model.Character> getCharacters() {
-        return _characters;
+        return new ArrayList<Character>(_characters);
     }
     public List<Item> getTaxa() {
-        return _taxa;
+        return new ArrayList<Item>(_taxa);
     }
     public String getHeading() {
         return _heading;

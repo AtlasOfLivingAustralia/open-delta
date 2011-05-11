@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.math.FloatRange;
 import org.apache.commons.lang.math.IntRange;
 
+import au.org.ala.delta.intkey.model.specimen.CharacterValue;
 import au.org.ala.delta.intkey.model.specimen.IntegerValue;
 import au.org.ala.delta.intkey.model.specimen.MultiStateValue;
 import au.org.ala.delta.intkey.model.specimen.RealValue;
@@ -184,7 +185,6 @@ public class UseDirective extends IntkeyDirective {
 
         @Override
         public boolean execute(IntkeyContext context) {
-            Specimen specimen = context.getSpecimen();
 
             // First pass - perform validation, and prompt for any character values that were
             // not specified by the user
@@ -222,18 +222,22 @@ public class UseDirective extends IntkeyDirective {
             
             
             for (Character ch : _characterValues.keySet()) {
-                Object characterVal = _characterValues.get(ch);
+                Object parsedCharacterVal = _characterValues.get(ch);
+                
+                CharacterValue value;
                 if (ch instanceof MultiStateCharacter) {
-                    specimen.addValueForCharacter(ch, new MultiStateValue((MultiStateCharacter) ch, (List<Integer>) characterVal));
+                    value = new MultiStateValue((MultiStateCharacter) ch, (List<Integer>) parsedCharacterVal);
                 } else if (ch instanceof IntegerCharacter) {
-                    specimen.addValueForCharacter(ch, new IntegerValue((IntegerCharacter) ch, (IntRange) characterVal));
+                    value = new IntegerValue((IntegerCharacter) ch, (IntRange) parsedCharacterVal);
                 } else if (ch instanceof RealCharacter) {
-                    specimen.addValueForCharacter(ch, new RealValue((RealCharacter) ch, (FloatRange) characterVal));
+                    value = new RealValue((RealCharacter) ch, (FloatRange) parsedCharacterVal);
                 } else if (ch instanceof TextCharacter) {
-                    specimen.addValueForCharacter(ch, new TextValue((TextCharacter) ch, (List<String>) characterVal));
+                    value = new TextValue((TextCharacter) ch, (List<String>) parsedCharacterVal);
                 } else {
                     throw new RuntimeException("Unrecognized character type");
                 }
+                
+                context.setValueForCharacter(ch, value);
             }
 
             return true;
