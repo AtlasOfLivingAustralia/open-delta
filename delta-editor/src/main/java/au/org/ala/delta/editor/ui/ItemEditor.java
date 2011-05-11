@@ -36,6 +36,7 @@ import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.editor.DeltaView;
+import au.org.ala.delta.editor.model.EditorDataModel;
 import au.org.ala.delta.editor.ui.validator.ItemValidator;
 import au.org.ala.delta.editor.ui.validator.TextComponentValidator;
 import au.org.ala.delta.editor.ui.validator.ValidationListener;

@@ -49,6 +49,7 @@ import org.jdesktop.application.Task.BlockingScope;
 import au.org.ala.delta.editor.DeltaView;
 import au.org.ala.delta.editor.EditorPreferences;
 import au.org.ala.delta.editor.ItemController;
+import au.org.ala.delta.editor.model.EditorDataModel;
 import au.org.ala.delta.editor.ui.dnd.DropIndicationTable;
 import au.org.ala.delta.model.Item;
 

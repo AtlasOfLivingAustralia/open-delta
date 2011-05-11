@@ -1,4 +1,4 @@
-package au.org.ala.delta.editor.ui;
+package au.org.ala.delta.editor.model;
 
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;

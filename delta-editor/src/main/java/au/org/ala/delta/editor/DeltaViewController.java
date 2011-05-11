@@ -14,7 +14,7 @@ import javax.swing.event.InternalFrameEvent;
 
 import org.apache.commons.lang.StringUtils;
 
-import au.org.ala.delta.editor.ui.EditorDataModel;
+import au.org.ala.delta.editor.model.EditorDataModel;
 import au.org.ala.delta.editor.ui.InternalFrameDataModelListener;
 import au.org.ala.delta.model.DeltaDataSetRepository;
 import au.org.ala.delta.ui.MessageDialogHelper;

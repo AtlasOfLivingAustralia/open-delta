@@ -1,4 +1,4 @@
-package au.org.ala.delta.editor.ui;
+package au.org.ala.delta.editor.model;
 
 import java.util.ArrayList;
 import java.util.List;

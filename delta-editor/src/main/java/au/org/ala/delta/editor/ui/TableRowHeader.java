@@ -21,6 +21,7 @@ import org.jdesktop.application.Application;
 import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 
+import au.org.ala.delta.editor.model.EditorDataModel;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.model.observer.AbstractDataSetObserver;

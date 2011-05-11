@@ -52,10 +52,10 @@ import org.jdesktop.application.Task;
 import org.jdesktop.application.Task.BlockingScope;
 
 import au.org.ala.delta.editor.directives.ImportController;
+import au.org.ala.delta.editor.model.EditorDataModel;
 import au.org.ala.delta.editor.slotfile.model.SlotFileRepository;
 import au.org.ala.delta.editor.support.InternalFrameApplication;
 import au.org.ala.delta.editor.ui.CharacterEditor;
-import au.org.ala.delta.editor.ui.EditorDataModel;
 import au.org.ala.delta.editor.ui.StatusBar;
 import au.org.ala.delta.editor.ui.help.HelpConstants;
 import au.org.ala.delta.editor.ui.util.MenuBuilder;

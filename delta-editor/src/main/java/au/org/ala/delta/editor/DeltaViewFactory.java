@@ -1,6 +1,6 @@
 package au.org.ala.delta.editor;
 
-import au.org.ala.delta.editor.ui.EditorDataModel;
+import au.org.ala.delta.editor.model.EditorDataModel;
 import au.org.ala.delta.editor.ui.ItemEditor;
 import au.org.ala.delta.editor.ui.MatrixViewer;
 import au.org.ala.delta.editor.ui.TreeViewer;

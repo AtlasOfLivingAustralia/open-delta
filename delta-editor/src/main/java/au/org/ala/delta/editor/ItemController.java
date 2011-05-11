@@ -11,7 +11,7 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ApplicationContext;
 
-import au.org.ala.delta.editor.ui.EditorDataModel;
+import au.org.ala.delta.editor.model.EditorDataModel;
 import au.org.ala.delta.editor.ui.ReorderableItemList;
 import au.org.ala.delta.editor.ui.dnd.SimpleTransferHandler;
 import au.org.ala.delta.editor.ui.util.MenuBuilder;

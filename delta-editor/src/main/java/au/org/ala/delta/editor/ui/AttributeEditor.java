@@ -44,6 +44,7 @@ import javax.swing.table.TableColumn;
 import org.jdesktop.application.Application;
 
 import au.org.ala.delta.editor.EditorPreferences;
+import au.org.ala.delta.editor.model.EditorDataModel;
 import au.org.ala.delta.editor.ui.util.EditorUIUtils;
 import au.org.ala.delta.editor.ui.validator.AttributeValidator;
 import au.org.ala.delta.editor.ui.validator.RtfEditorValidator;

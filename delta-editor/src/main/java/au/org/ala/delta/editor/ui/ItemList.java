@@ -3,6 +3,7 @@ package au.org.ala.delta.editor.ui;
 import javax.swing.AbstractListModel;
 import javax.swing.ListSelectionModel;
 
+import au.org.ala.delta.editor.model.EditorDataModel;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.model.observer.AbstractDataSetObserver;
