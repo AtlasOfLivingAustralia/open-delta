@@ -57,7 +57,7 @@ import org.jdesktop.application.ResourceMap;
 import au.org.ala.delta.editor.DeltaView;
 import au.org.ala.delta.editor.EditorPreferences;
 import au.org.ala.delta.editor.ItemController;
-import au.org.ala.delta.editor.model.EditorDataModel;
+import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.ui.util.EditorUIUtils;
 import au.org.ala.delta.editor.ui.validator.AttributeValidator;
 import au.org.ala.delta.editor.ui.validator.TextComponentValidator;
@@ -84,7 +84,7 @@ public class TreeViewer extends JInternalFrame implements DeltaView {
 
 	private static final long serialVersionUID = 1L;
 
-	private EditorDataModel _dataModel;
+	private EditorViewModel _dataModel;
 	private AttributeEditor _stateEditor; 
 	private JTree _tree;
 	private ItemList _itemList;
@@ -92,7 +92,7 @@ public class TreeViewer extends JInternalFrame implements DeltaView {
 	@Resource
 	String windowTitle;
 
-	public TreeViewer(EditorDataModel dataModel) {
+	public TreeViewer(EditorViewModel dataModel) {
 		super();
 
 		setName(dataModel.getShortName()+ "-tree");
@@ -602,10 +602,10 @@ public class TreeViewer extends JInternalFrame implements DeltaView {
 class CharacterTreeModel extends DefaultTreeModel {
 
 	private static final long serialVersionUID = 1L;
-	private EditorDataModel _dataModel;
+	private EditorViewModel _dataModel;
 	
 	private Set<Integer> _variableLengthCharacterIndicies;
-	public CharacterTreeModel(EditorDataModel dataModel) {
+	public CharacterTreeModel(EditorViewModel dataModel) {
 		super(new ContextRootNode(dataModel), false);
 		_dataModel = dataModel;
 		_variableLengthCharacterIndicies = new HashSet<Integer>();
@@ -657,9 +657,9 @@ class ContextRootNode extends DefaultMutableTreeNode {
 
 	private static final long serialVersionUID = 1L;
 
-	private EditorDataModel _dataModel;
+	private EditorViewModel _dataModel;
 
-	public ContextRootNode(EditorDataModel dataModel) {
+	public ContextRootNode(EditorViewModel dataModel) {
 		_dataModel = dataModel;
 		for (int i = 0; i < _dataModel.getNumberOfCharacters(); ++i) {
 			au.org.ala.delta.model.Character ch = _dataModel.getCharacter(i + 1);
@@ -672,10 +672,10 @@ class ContextRootNode extends DefaultMutableTreeNode {
 
 class CharStateHolder {
 
-	private EditorDataModel _dataModel;
+	private EditorViewModel _dataModel;
 	private Character _character;
 
-	public CharStateHolder(EditorDataModel dataModel, Character character) {
+	public CharStateHolder(EditorViewModel dataModel, Character character) {
 		_dataModel = dataModel;
 		_character = character;
 	}
@@ -700,10 +700,10 @@ class DeltaTreeCellRenderer extends DefaultTreeCellRenderer  {
 
 	private static final long serialVersionUID = 1L;
 
-	private EditorDataModel _dataModel;
+	private EditorViewModel _dataModel;
 	private MultiStateCheckbox stateValueRenderer = new MultiStateCheckbox();
 
-	public DeltaTreeCellRenderer(EditorDataModel dataModel) {
+	public DeltaTreeCellRenderer(EditorViewModel dataModel) {
 		_dataModel = dataModel;
 	}
 
@@ -769,10 +769,10 @@ class CharacterTreeNode extends DefaultMutableTreeNode {
 	private static final long serialVersionUID = 1L;
 
 	private Character _character;
-	private EditorDataModel _dataModel;
+	private EditorViewModel _dataModel;
 	private boolean _inapplicable;
 
-	public CharacterTreeNode(EditorDataModel dataModel, Character ch) {
+	public CharacterTreeNode(EditorViewModel dataModel, Character ch) {
 		super(ch);
 		_dataModel = dataModel;
 		_character = ch;

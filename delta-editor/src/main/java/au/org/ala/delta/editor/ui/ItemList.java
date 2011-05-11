@@ -3,7 +3,7 @@ package au.org.ala.delta.editor.ui;
 import javax.swing.AbstractListModel;
 import javax.swing.ListSelectionModel;
 
-import au.org.ala.delta.editor.model.EditorDataModel;
+import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.model.observer.AbstractDataSetObserver;
@@ -26,9 +26,9 @@ public class ItemList extends SelectionList implements ReorderableItemList {
 	class ItemListModel extends AbstractListModel {
 
 		private static final long serialVersionUID = 3730613528594711922L;
-		private EditorDataModel _dataSet;
+		private EditorViewModel _dataSet;
 		
-		public ItemListModel(EditorDataModel dataSet) {
+		public ItemListModel(EditorViewModel dataSet) {
 			_dataSet = dataSet;
 			_dataSet.addDeltaDataSetObserver(new ItemListener());
 		}
@@ -104,7 +104,7 @@ public class ItemList extends SelectionList implements ReorderableItemList {
 	 * Creates an ItemList backed by the supplied dataSet.
 	 * @param dataSet the data set to act as the model for this List.
 	 */
-	public ItemList(EditorDataModel dataSet) {
+	public ItemList(EditorViewModel dataSet) {
 		this();
 		setDataSet(dataSet);
 	}
@@ -120,7 +120,7 @@ public class ItemList extends SelectionList implements ReorderableItemList {
 	}
 	
 	
-	public void setDataSet(EditorDataModel dataSet) {
+	public void setDataSet(EditorViewModel dataSet) {
 		setModel(new ItemListModel(dataSet));
 		
 	}

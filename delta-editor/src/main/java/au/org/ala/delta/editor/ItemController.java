@@ -11,7 +11,7 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ApplicationContext;
 
-import au.org.ala.delta.editor.model.EditorDataModel;
+import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.ui.ReorderableItemList;
 import au.org.ala.delta.editor.ui.dnd.SimpleTransferHandler;
 import au.org.ala.delta.editor.ui.util.MenuBuilder;
@@ -25,7 +25,7 @@ import au.org.ala.delta.ui.MessageDialogHelper;
 public class ItemController {
 
 	private ReorderableItemList _view;
-	private EditorDataModel _model;
+	private EditorViewModel _model;
 	private ApplicationContext _context;
 	private ActionMap _itemActions;
 	
@@ -34,7 +34,7 @@ public class ItemController {
 	 * @param view the view of the Items.
 	 * @param model the model containing Item data.
 	 */
-	public ItemController(ReorderableItemList view, EditorDataModel model) {
+	public ItemController(ReorderableItemList view, EditorViewModel model) {
 		_view = view;
 		_model = model;
 		_context = Application.getInstance().getContext();

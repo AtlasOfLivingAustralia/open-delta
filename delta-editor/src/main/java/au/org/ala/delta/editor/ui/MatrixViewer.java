@@ -49,7 +49,7 @@ import org.jdesktop.application.Task.BlockingScope;
 import au.org.ala.delta.editor.DeltaView;
 import au.org.ala.delta.editor.EditorPreferences;
 import au.org.ala.delta.editor.ItemController;
-import au.org.ala.delta.editor.model.EditorDataModel;
+import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.ui.dnd.DropIndicationTable;
 import au.org.ala.delta.model.Item;
 
@@ -60,7 +60,7 @@ public class MatrixViewer extends JInternalFrame implements DeltaView {
 
 	private static final long serialVersionUID = 1L;
 
-	private EditorDataModel _dataSet;
+	private EditorViewModel _dataSet;
 	private DropIndicationTable _table;
 	private TableRowHeader _fixedColumns;
 	private MatrixTableModel _model;
@@ -70,7 +70,7 @@ public class MatrixViewer extends JInternalFrame implements DeltaView {
 	@Resource
 	String windowTitle;
 
-	public MatrixViewer(EditorDataModel dataSet) {
+	public MatrixViewer(EditorViewModel dataSet) {
 		super();
 		setName(dataSet.getShortName()+"-grid");
 		ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(MatrixViewer.class);

@@ -44,7 +44,7 @@ import javax.swing.table.TableColumn;
 import org.jdesktop.application.Application;
 
 import au.org.ala.delta.editor.EditorPreferences;
-import au.org.ala.delta.editor.model.EditorDataModel;
+import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.ui.util.EditorUIUtils;
 import au.org.ala.delta.editor.ui.validator.AttributeValidator;
 import au.org.ala.delta.editor.ui.validator.RtfEditorValidator;
@@ -73,7 +73,7 @@ public class AttributeEditor extends JPanel implements ValidationListener {
 
 	private Character _character;
 	private Item _item;
-	private EditorDataModel _dataSet;
+	private EditorViewModel _dataSet;
 
 	/** Tracks whether the attribute has been modified since it was displayed */
 	private boolean _modified;
@@ -91,7 +91,7 @@ public class AttributeEditor extends JPanel implements ValidationListener {
 	 * Creates a new AttributeEditor using the supplied EditorDataModel.
 	 * @param dataSet the model for the AttributeEditor.
 	 */
-	public AttributeEditor(EditorDataModel dataSet) {
+	public AttributeEditor(EditorViewModel dataSet) {
 
 		ActionMap actions = Application.getInstance().getContext().getActionMap(this);
 		

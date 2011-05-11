@@ -25,7 +25,7 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.SingleFrameApplication;
 
-import au.org.ala.delta.editor.model.EditorDataModel;
+import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.model.Illustratable;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageOverlay;
@@ -43,7 +43,7 @@ public class ImageDetailsPanel extends JPanel {
 	
 	private static final long serialVersionUID = -1973824161019895786L;
 	
-	private EditorDataModel _dataSet;
+	private EditorViewModel _dataSet;
 	
 	/** The object that any images will be attached to */
 	private Illustratable _illustratable;
@@ -373,7 +373,7 @@ public class ImageDetailsPanel extends JPanel {
 			}
 		}
 	};
-	public void setDataSet(EditorDataModel dataSet) {
+	public void setDataSet(EditorViewModel dataSet) {
 		
 		if (_dataSet != null) {
 			_dataSet.removeDeltaDataSetObserver(observer);

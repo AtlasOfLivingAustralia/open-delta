@@ -36,7 +36,7 @@ import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.editor.DeltaView;
-import au.org.ala.delta.editor.model.EditorDataModel;
+import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.ui.validator.ItemValidator;
 import au.org.ala.delta.editor.ui.validator.TextComponentValidator;
 import au.org.ala.delta.editor.ui.validator.ValidationListener;
@@ -52,7 +52,7 @@ public class ItemEditor extends JInternalFrame implements ValidationListener, De
 	private static final long serialVersionUID = 9193388605723396077L;
 
 	/** Contains the items we can edit */
-	private EditorDataModel _dataSet;
+	private EditorViewModel _dataSet;
 	
 	/** The currently selected Item */
 	private Item _selectedItem;
@@ -86,7 +86,7 @@ public class ItemEditor extends JInternalFrame implements ValidationListener, De
 	@Resource
 	private String selectTaxonLabelText;
 	
-	public ItemEditor(EditorDataModel model) {	
+	public ItemEditor(EditorViewModel model) {	
 		super();
 		setName("ItemEditorDialog");
 		
@@ -305,7 +305,7 @@ public class ItemEditor extends JInternalFrame implements ValidationListener, De
 	 * @param dataSet the data set the dialog operates from.
 	 * @param itemNumber the currently selected item
 	 */
-	public void bind(EditorDataModel dataSet) {
+	public void bind(EditorViewModel dataSet) {
 		_dataSet = dataSet;
 		taxonSelectionList.setDataSet(dataSet);
 		imageDetails.setDataSet(dataSet);

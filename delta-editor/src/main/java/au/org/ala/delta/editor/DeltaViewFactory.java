@@ -1,6 +1,6 @@
 package au.org.ala.delta.editor;
 
-import au.org.ala.delta.editor.model.EditorDataModel;
+import au.org.ala.delta.editor.model.DeltaViewModel;
 import au.org.ala.delta.editor.ui.ItemEditor;
 import au.org.ala.delta.editor.ui.MatrixViewer;
 import au.org.ala.delta.editor.ui.TreeViewer;
@@ -15,15 +15,15 @@ import au.org.ala.delta.editor.ui.TreeViewer;
 public class DeltaViewFactory {
 
 	
-	public DeltaView createTreeView(EditorDataModel model) {
+	public DeltaView createTreeView(DeltaViewModel model) {
 		return new TreeViewer(model);
 	}
 	
-	public DeltaView createGridView(EditorDataModel model) {
+	public DeltaView createGridView(DeltaViewModel model) {
 		return new MatrixViewer(model);
 	}
 	
-	public DeltaView createItemEditView(EditorDataModel model) {
+	public DeltaView createItemEditView(DeltaViewModel model) {
 		return new ItemEditor(model);
 	}
 	

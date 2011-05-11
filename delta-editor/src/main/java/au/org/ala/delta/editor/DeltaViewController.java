@@ -5,7 +5,9 @@ import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.JInternalFrame;
 import javax.swing.JOptionPane;
@@ -14,6 +16,7 @@ import javax.swing.event.InternalFrameEvent;
 
 import org.apache.commons.lang.StringUtils;
 
+import au.org.ala.delta.editor.model.DeltaViewModel;
 import au.org.ala.delta.editor.model.EditorDataModel;
 import au.org.ala.delta.editor.ui.InternalFrameDataModelListener;
 import au.org.ala.delta.model.DeltaDataSetRepository;
@@ -44,6 +47,8 @@ public class DeltaViewController extends InternalFrameAdapter implements Vetoabl
 	
 	private DeltaViewFactory _viewFactory;
 	
+	private Map<DeltaView, DeltaViewModel> _models;
+	
 	/** 
 	 * Set while the closeAll method is being invoked, this flag modifies the behavior of 
 	 * the close operations.
@@ -66,6 +71,7 @@ public class DeltaViewController extends InternalFrameAdapter implements Vetoabl
 		_newDataSetName = "";
 		_viewFactory = new DeltaViewFactory();
 		_activeViews = new ArrayList<JInternalFrame>();
+		_models = new HashMap<DeltaView, DeltaViewModel>();
 		_observers = new ArrayList<DeltaViewStatusObserver>();
 	}
 
@@ -104,12 +110,12 @@ public class DeltaViewController extends InternalFrameAdapter implements Vetoabl
 	 * Notifies this controller there is a new view interested in the model.
 	 * @param view the new view of the model.
 	 */
-	public void viewerOpened(DeltaView view) {
+	public void viewerOpened(DeltaView view, DeltaViewModel model) {
 		JInternalFrame frameView = (JInternalFrame)view;
 		_activeViews.add(frameView);
 		frameView.addVetoableChangeListener(this);
 		frameView.addInternalFrameListener(this);
-		
+		_models.put(view, model);
 		new InternalFrameDataModelListener(frameView, _dataSet, view.getViewTitle());
 	}
 	
@@ -119,10 +125,14 @@ public class DeltaViewController extends InternalFrameAdapter implements Vetoabl
 	 */
 	@Override
 	public void internalFrameClosed(InternalFrameEvent e) {
+		JInternalFrame frame = e.getInternalFrame();
 		if (!_closingAll) {
-			_activeViews.remove(e.getInternalFrame());
+			_activeViews.remove(frame);
 		}
-		fireViewClosed((DeltaView)e.getInternalFrame());
+		DeltaView view = (DeltaView)frame;
+		DeltaViewModel model = _models.remove(view);
+		_dataSet.removeDeltaDataSetObserver(model);
+		fireViewClosed(view);
 	}
 	
 	@Override
@@ -249,26 +259,33 @@ public class DeltaViewController extends InternalFrameAdapter implements Vetoabl
 	
 
 	public DeltaView createTreeView() {
-		DeltaView view = _viewFactory.createTreeView(_dataSet);
-		viewerOpened(view);
+		DeltaViewModel model = createViewModel();
+		DeltaView view = _viewFactory.createTreeView(model);
+		viewerOpened(view, model);
 		
 		return view;
 	}
 	
 	public DeltaView createGridView() {
-		DeltaView view = _viewFactory.createGridView(_dataSet);
-		viewerOpened(view);
+		DeltaViewModel model = createViewModel();
+		DeltaView view = _viewFactory.createGridView(model);
+		
+		viewerOpened(view, model);
 		
 		return view;
 	}
 	
 	public DeltaView createItemEditView() {
-		DeltaView view = _viewFactory.createItemEditView(_dataSet);
-		viewerOpened(view);
+		DeltaViewModel model = createViewModel();
+		DeltaView view = _viewFactory.createItemEditView(model);
+		viewerOpened(view, model);
 		
 		return view;
 	}
 
+	private DeltaViewModel createViewModel() {
+		return new DeltaViewModel(_dataSet);
+	}
 	
 	private List<DeltaViewStatusObserver> _observers;
 	public void addDeltaViewStatusObserver(DeltaViewStatusObserver observer) {

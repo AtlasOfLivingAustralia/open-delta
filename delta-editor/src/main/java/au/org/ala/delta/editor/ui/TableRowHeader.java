@@ -21,7 +21,7 @@ import org.jdesktop.application.Application;
 import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 
-import au.org.ala.delta.editor.model.EditorDataModel;
+import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.model.observer.AbstractDataSetObserver;
@@ -37,9 +37,9 @@ public class TableRowHeader extends JTable implements ReorderableItemList {
 	private static final long serialVersionUID = 4631242294243331000L;
 	private static final String SELECTION_ACTION_NAME = "selectionAction";
 	
-	private EditorDataModel _dataModel;
+	private EditorViewModel _dataModel;
 	
-	public TableRowHeader(EditorDataModel dataModel) {
+	public TableRowHeader(EditorViewModel dataModel) {
 		super(new ItemColumnModel(dataModel));
 		((ItemColumnModel)getModel()).setTable(this);
 		_dataModel = dataModel;
@@ -133,13 +133,13 @@ public class TableRowHeader extends JTable implements ReorderableItemList {
 		private static final long serialVersionUID = 1L;
 
 		private JTable _table;
-		private EditorDataModel _dataSet;
+		private EditorViewModel _dataSet;
 		private ItemFormatter _formatter;
 
 		@Resource
 		String columnName;
 
-		public ItemColumnModel(EditorDataModel dataSet) {
+		public ItemColumnModel(EditorViewModel dataSet) {
 			ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(AboutBox.class);
 			resourceMap.injectFields(this);
 			_dataSet = dataSet;
