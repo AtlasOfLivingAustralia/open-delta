@@ -48,6 +48,9 @@ import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledEditorKit;
 import javax.swing.undo.UndoManager;
 
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ResourceMap;
+
 import au.org.ala.delta.ui.util.IconHelper;
 
 /**
@@ -68,6 +71,7 @@ public class RtfEditor extends RtfEditorPane {
 	private SpecialCharHandler _currentCharHandler;
 	private UndoManager _undoManager;
 	private UndoAction _undoAction;
+	private ResourceMap _resources = Application.getInstance().getContext().getResourceManager().getResourceMap();
 	
 	public RtfEditor() {
 		super();		
@@ -154,11 +158,11 @@ public class RtfEditor extends RtfEditorPane {
 	public JToolBar buildAndInstallToolbar() {
 
 		_toolBar = new JToolBar();
-		_btnBold = toolbarButtonForAction(new StyledEditorKit.BoldAction(), "text_bold.png");
-		_btnItalic = toolbarButtonForAction(new StyledEditorKit.ItalicAction(), "text_italic.png");
-		_btnUnderline = toolbarButtonForAction(new StyledEditorKit.UnderlineAction(), "text_underline.png");
-		_btnSuperScript = toolbarButtonForAction(new SuperscriptAction(), "text_superscript.png");
-		_btnSubScript = toolbarButtonForAction(new SubscriptAction(), "text_subscript.png");
+		_btnBold = toolbarButtonForAction(new StyledEditorKit.BoldAction(), "text_bold");
+		_btnItalic = toolbarButtonForAction(new StyledEditorKit.ItalicAction(), "text_italic");
+		_btnUnderline = toolbarButtonForAction(new StyledEditorKit.UnderlineAction(), "text_underline");
+		_btnSuperScript = toolbarButtonForAction(new SuperscriptAction(), "text_superscript");
+		_btnSubScript = toolbarButtonForAction(new SubscriptAction(), "text_subscript");
 		
 		_toolBar.add(_btnBold);
 		_toolBar.add(_btnItalic);
@@ -206,7 +210,7 @@ public class RtfEditor extends RtfEditorPane {
 		_undoAction = new UndoAction();
 		_undoAction.setEnabled(false);
 		JButton undoButton = new JButton();
-		decorateToolbarButton(undoButton, _undoAction, "arrow_undo.png");
+		decorateToolbarButton(undoButton, _undoAction, "undo");
 		undoButton.setFocusable(false);
 		undoButton.setBorder(BorderFactory.createEmptyBorder(3, 5, 3, 5));
 		
@@ -250,9 +254,13 @@ public class RtfEditor extends RtfEditorPane {
 		return button;
 	}
 
-	private void decorateToolbarButton(AbstractButton button, Action action, String iconName) {
+	private void decorateToolbarButton(AbstractButton button, Action action, String name) {
+		
+		String keyPrefix = name + ".Action.";
+		String iconName = _resources.getString(keyPrefix+"icon");
 		ImageIcon icon = IconHelper.createImageIcon(iconName);
 		action.putValue(Action.SMALL_ICON, icon);
+		action.putValue(Action.SHORT_DESCRIPTION, _resources.getString(keyPrefix+"shortDescription"));
 		button.setAction(action);
 		button.setFocusable(false);
 		button.setHideActionText(true);
