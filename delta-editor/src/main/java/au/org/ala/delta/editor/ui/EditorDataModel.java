@@ -7,6 +7,7 @@ import java.io.File;
 import au.org.ala.delta.model.AbstractObservableDataSet;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.ObservableDeltaDataSet;
 
 
 /**
@@ -15,7 +16,7 @@ import au.org.ala.delta.model.Item;
  * to allow clean removal of listeners from the backing DeltaDataSet when a view of the model is 
  * closed. 
  */
-public class EditorDataModel extends DataSetWrapper {
+public class EditorDataModel extends DataSetWrapper implements EditorViewModel {
 
 	/** The number of the currently selected character */
 	private Character _selectedCharacter;
@@ -44,23 +45,30 @@ public class EditorDataModel extends DataSetWrapper {
 	}
 	
 	
+	@Override
 	public void setSelectedItem(Item selectedItem) {
 		_selectedItem = selectedItem;
 	}
 	
+	
+	@Override
 	public void setSelectedCharacter(Character selectedCharacter) {
 		_selectedCharacter = selectedCharacter;
 	}
 	
+	
+	@Override
 	public Item getSelectedItem() {
 		return _selectedItem;
 	}
 	
+	
+	@Override
 	public Character getSelectedCharacter() {
 		return _selectedCharacter;
 	}
 	
-	public AbstractObservableDataSet getCurrentDataSet() {
+	public ObservableDeltaDataSet getDeltaDataSet() {
 		return _wrappedDataSet;
 	}
 	
@@ -72,7 +80,6 @@ public class EditorDataModel extends DataSetWrapper {
 		}
 	}
 	
-
 	@Override
 	public String getName() {
 		String name = _wrappedDataSet.getName();
@@ -81,6 +88,8 @@ public class EditorDataModel extends DataSetWrapper {
 		}
 		return name;
 	}
+	
+	@Override
 	public String getShortName() {
 		String name = _wrappedDataSet.getName();
 		if (name == null) {
@@ -90,6 +99,8 @@ public class EditorDataModel extends DataSetWrapper {
 		return name;
 	}
 	
+	
+	@Override
 	public void setName(String name) {
 		
 		_wrappedDataSet.setName(name);

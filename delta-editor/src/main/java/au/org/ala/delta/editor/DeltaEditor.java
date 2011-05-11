@@ -86,9 +86,6 @@ public class DeltaEditor extends InternalFrameApplication implements
 
 	/** Used to create/find/save data sets */
 	private DeltaDataSetRepository _dataSetRepository;
-
-	/** Creates views of data sets */
-	private DeltaViewFactory _viewFactory;
 	
 	private boolean _saveEnabled;
 	private boolean _saveAsEnabled;
@@ -180,7 +177,6 @@ public class DeltaEditor extends InternalFrameApplication implements
 
 		_helpController = new HelpController("help/delta_editor/DeltaEditor");
 		_dataSetRepository = new SlotFileRepository();
-		_viewFactory = new DeltaViewFactory();
 		
 		_statusBar = new StatusBar();
 		getMainView().setStatusBar(_statusBar);
@@ -415,18 +411,17 @@ public class DeltaEditor extends InternalFrameApplication implements
 
 	private void newMatrix() {
 
-		DeltaView matrixViewer = _viewFactory.createGridView(getCurrentDataSet());
+		DeltaView matrixViewer = _activeController.createGridView();
 		newView(matrixViewer, HelpConstants.GRID_VIEW_HELP_KEY);
 	}
 
 	private void newTree() {
-		DeltaView treeViewer = _viewFactory.createTreeView(getCurrentDataSet());
+		DeltaView treeViewer = _activeController.createTreeView();
 		newView(treeViewer, HelpConstants.TREE_VIEW_HELP_KEY);
 	}
 
 	private void newView(DeltaView view, String helpKey) {
 		
-		_activeController.viewerOpened(view);
 		_helpController.setHelpKeyForComponent((JComponent)view, helpKey);
 		// TODO need to remove this dependency on JInternalFrame....
 		show((JInternalFrame)view);
@@ -614,7 +609,7 @@ public class DeltaEditor extends InternalFrameApplication implements
 
 	@Action(enabledProperty = "saveAsEnabled")
 	public void viewTaxonEditor() {
-		DeltaView editor = _viewFactory.createItemEditView(getCurrentDataSet());
+		DeltaView editor = _activeController.createItemEditView();
 		newView(editor, "T");
 	}
 

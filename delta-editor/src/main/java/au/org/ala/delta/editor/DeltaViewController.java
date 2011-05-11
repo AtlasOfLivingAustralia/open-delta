@@ -42,6 +42,8 @@ public class DeltaViewController extends InternalFrameAdapter implements Vetoabl
 	
 	private String _closeWithoutSavingMessage;
 	
+	private DeltaViewFactory _viewFactory;
+	
 	/** 
 	 * Set while the closeAll method is being invoked, this flag modifies the behavior of 
 	 * the close operations.
@@ -62,6 +64,7 @@ public class DeltaViewController extends InternalFrameAdapter implements Vetoabl
 		_repository = repository;
 		_closingAll = false;
 		_newDataSetName = "";
+		_viewFactory = new DeltaViewFactory();
 		_activeViews = new ArrayList<JInternalFrame>();
 		_observers = new ArrayList<DeltaViewStatusObserver>();
 	}
@@ -165,7 +168,7 @@ public class DeltaViewController extends InternalFrameAdapter implements Vetoabl
 			saveAs();
 		}
 		else {
-			_repository.save(_dataSet.getCurrentDataSet(), null);
+			_repository.save(_dataSet.getDeltaDataSet(), null);
 		}
 	}
 	
@@ -211,7 +214,7 @@ public class DeltaViewController extends InternalFrameAdapter implements Vetoabl
 			}
 			
 			
-			_repository.saveAsName(_dataSet.getCurrentDataSet(), newFile.getAbsolutePath(), null);
+			_repository.saveAsName(_dataSet.getDeltaDataSet(), newFile.getAbsolutePath(), null);
 			_dataSet.setName(newFile.getAbsolutePath());
 			EditorPreferences.addFileToMRU(newFile.getAbsolutePath());
 			
@@ -244,6 +247,28 @@ public class DeltaViewController extends InternalFrameAdapter implements Vetoabl
 		return _activeViews.size();
 	}
 	
+
+	public DeltaView createTreeView() {
+		DeltaView view = _viewFactory.createTreeView(_dataSet);
+		viewerOpened(view);
+		
+		return view;
+	}
+	
+	public DeltaView createGridView() {
+		DeltaView view = _viewFactory.createGridView(_dataSet);
+		viewerOpened(view);
+		
+		return view;
+	}
+	
+	public DeltaView createItemEditView() {
+		DeltaView view = _viewFactory.createItemEditView(_dataSet);
+		viewerOpened(view);
+		
+		return view;
+	}
+
 	
 	private List<DeltaViewStatusObserver> _observers;
 	public void addDeltaViewStatusObserver(DeltaViewStatusObserver observer) {

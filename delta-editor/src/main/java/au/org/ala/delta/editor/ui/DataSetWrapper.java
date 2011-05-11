@@ -3,12 +3,11 @@ package au.org.ala.delta.editor.ui;
 import java.util.ArrayList;
 import java.util.List;
 
-import au.org.ala.delta.model.AbstractObservableDataSet;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterType;
-import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.ObservableDeltaDataSet;
 import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
 import au.org.ala.delta.model.observer.DeltaDataSetObserver;
 
@@ -17,14 +16,14 @@ import au.org.ala.delta.model.observer.DeltaDataSetObserver;
  * be isolated from the actual data set so that references to closed views don't 
  * hang around in the model and prevent garbage collection.
  */
-public class DataSetWrapper implements DeltaDataSet, DeltaDataSetObserver {
+public class DataSetWrapper implements ObservableDeltaDataSet, DeltaDataSetObserver {
 
 	/** The data set we are wrapping */
-	protected AbstractObservableDataSet _wrappedDataSet;
+	protected ObservableDeltaDataSet _wrappedDataSet;
 	/** Maintains a list of objects interested in being notified of changes to this model */
 	private List<DeltaDataSetObserver> _observerList = new ArrayList<DeltaDataSetObserver>();
 
-	public DataSetWrapper(AbstractObservableDataSet dataSet) {
+	public DataSetWrapper(ObservableDeltaDataSet dataSet) {
 		_wrappedDataSet = dataSet;
 		_wrappedDataSet.addDeltaDataSetObserver(this);
 	}

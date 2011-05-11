@@ -14,7 +14,7 @@ import au.org.ala.delta.model.observer.ItemObserver;
  * Subclasses should implement the "doXXX" methods where they exist instead of overriding the
  * equivalent interface method.
  */
-public abstract class AbstractObservableDataSet implements DeltaDataSet, ItemObserver, CharacterObserver {
+public abstract class AbstractObservableDataSet implements ObservableDeltaDataSet, ItemObserver, CharacterObserver {
 
 	/** Maintains a list of objects interested in being notified of changes to this data set */
 	protected List<DeltaDataSetObserver> _observerList = new ArrayList<DeltaDataSetObserver>();
