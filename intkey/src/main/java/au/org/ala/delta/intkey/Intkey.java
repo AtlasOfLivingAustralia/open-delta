@@ -34,6 +34,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 import javax.swing.event.MouseInputAdapter;
 
 import org.jdesktop.application.Action;
@@ -43,12 +44,12 @@ import org.jdesktop.application.ResourceMap;
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.intkey.directives.FileCharactersDirective;
 import au.org.ala.delta.intkey.directives.FileTaxaDirective;
-import au.org.ala.delta.intkey.directives.IntkeyContext;
 import au.org.ala.delta.intkey.directives.IntkeyDirective;
 import au.org.ala.delta.intkey.directives.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.IntkeyDirectiveParser;
 import au.org.ala.delta.intkey.directives.NewDatasetDirective;
 import au.org.ala.delta.intkey.directives.UseDirective;
+import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.model.IntkeyDataset;
 import au.org.ala.delta.intkey.model.specimen.CharacterValue;
 import au.org.ala.delta.intkey.ui.ReExecuteDialog;
@@ -86,6 +87,23 @@ public class Intkey extends DeltaSingleFrameApplication {
 
     @Resource
     String windowTitleWithDatasetTitle;
+    
+    @Resource
+    String availableCharactersCaption;
+    
+    @Resource 
+    String bestCharactersCaption;
+    
+    @Resource 
+    String usedCharactersCaption;    
+    
+    @Resource
+    String remainingTaxaCaption;
+    
+    @Resource
+    String eliminatedTaxaCaption;
+    private JLabel _lblNumRemainingTaxa;
+    private JLabel _lblEliminatedTaxa;
 
 
     public static void main(String[] args) {
@@ -148,6 +166,7 @@ public class Intkey extends DeltaSingleFrameApplication {
         pnlBestCharacters.add(sclPaneBestCharacters, BorderLayout.CENTER);
 
         _listAvailableCharacters = new JList();
+        _listAvailableCharacters.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         _listAvailableCharacters.addMouseListener(new MouseInputAdapter() {
 
             @Override
@@ -173,8 +192,9 @@ public class Intkey extends DeltaSingleFrameApplication {
         pnlBestCharacters.add(pnlBestCharactersHeader, BorderLayout.NORTH);
         pnlBestCharactersHeader.setLayout(new BorderLayout(0, 0));
 
-        _lblNumAvailableCharacters = new JLabel("Available Characters");
+        _lblNumAvailableCharacters = new JLabel();
         _lblNumAvailableCharacters.setFont(new Font("Tahoma", Font.PLAIN, 15));
+        _lblNumAvailableCharacters.setText(String.format(availableCharactersCaption, 0));
         pnlBestCharactersHeader.add(_lblNumAvailableCharacters, BorderLayout.WEST);
 
         JPanel pnlUsedCharacters = new JPanel();
@@ -185,14 +205,16 @@ public class Intkey extends DeltaSingleFrameApplication {
         pnlUsedCharacters.add(sclPnUsedCharacters, BorderLayout.CENTER);
 
         _listUsedCharacters = new JList();
+        _listUsedCharacters.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         sclPnUsedCharacters.setViewportView(_listUsedCharacters);
 
         JPanel pnlUsedCharactersHeader = new JPanel();
         pnlUsedCharacters.add(pnlUsedCharactersHeader, BorderLayout.NORTH);
         pnlUsedCharactersHeader.setLayout(new BorderLayout(0, 0));
 
-        _lblNumUsedCharacters = new JLabel("Used Characters");
+        _lblNumUsedCharacters = new JLabel();
         _lblNumUsedCharacters.setFont(new Font("Tahoma", Font.PLAIN, 15));
+        _lblNumUsedCharacters.setText(String.format(usedCharactersCaption, 0));
         pnlUsedCharactersHeader.add(_lblNumUsedCharacters, BorderLayout.WEST);
 
         _innerSplitPaneRight = new JSplitPane();
@@ -215,9 +237,10 @@ public class Intkey extends DeltaSingleFrameApplication {
         pnlRemainingTaxa.add(pnlRemainingTaxaHeader, BorderLayout.NORTH);
         pnlRemainingTaxaHeader.setLayout(new BorderLayout(0, 0));
 
-        JLabel lblNumRemainingTaxa = new JLabel("Remaining Taxa");
-        lblNumRemainingTaxa.setFont(new Font("Tahoma", Font.PLAIN, 15));
-        pnlRemainingTaxaHeader.add(lblNumRemainingTaxa, BorderLayout.WEST);
+        _lblNumRemainingTaxa = new JLabel();
+        _lblNumRemainingTaxa.setFont(new Font("Tahoma", Font.PLAIN, 15));
+        _lblNumRemainingTaxa.setText(String.format(remainingTaxaCaption, 0));
+        pnlRemainingTaxaHeader.add(_lblNumRemainingTaxa, BorderLayout.WEST);
 
         JPanel pnlEliminatedTaxa = new JPanel();
         _innerSplitPaneRight.setRightComponent(pnlEliminatedTaxa);
@@ -233,9 +256,10 @@ public class Intkey extends DeltaSingleFrameApplication {
         pnlEliminatedTaxa.add(pnlEliminatedTaxaHeader, BorderLayout.NORTH);
         pnlEliminatedTaxaHeader.setLayout(new BorderLayout(0, 0));
 
-        JLabel lblNewLabel = new JLabel("Eliminated Taxa");
-        lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 15));
-        pnlEliminatedTaxaHeader.add(lblNewLabel, BorderLayout.WEST);
+        _lblEliminatedTaxa = new JLabel();
+        _lblEliminatedTaxa.setFont(new Font("Tahoma", Font.PLAIN, 15));
+        _lblEliminatedTaxa.setText(String.format(eliminatedTaxaCaption, 0));
+        pnlEliminatedTaxaHeader.add(_lblEliminatedTaxa, BorderLayout.WEST);
 
         getMainView().setMenuBar(buildMenus());
 
@@ -482,6 +506,8 @@ public class Intkey extends DeltaSingleFrameApplication {
         _listAvailableCharacters.setModel(_availableCharacterListModel);
         _listUsedCharacters.setModel(_usedCharacterListModel);
         _listRemainingTaxa.setModel(new ItemListModel(dataset.getTaxa()));
+        
+        updateListCaptions();
     }
 
     public void handleCharacterUsed(Character ch, CharacterValue value) {
@@ -490,6 +516,8 @@ public class Intkey extends DeltaSingleFrameApplication {
         
         // add to bottom list
         _usedCharacterListModel.addCharacterValue(ch, value);
+        
+        updateListCaptions();
     }
 
     public void handleCharacterChanged(Character ch, CharacterValue value) {
@@ -498,6 +526,17 @@ public class Intkey extends DeltaSingleFrameApplication {
 
     public void handleCharacterDeleted(Character ch) {
 
+    }
+    
+    public void handleRestartIdentification() {
+        //TODO do this properly
+        handleNewDataSet(_context.getDataset());
+    }
+    
+    private void updateListCaptions() {
+        _lblNumAvailableCharacters.setText(String.format(availableCharactersCaption, _availableCharacterListModel.getSize()));
+        _lblNumUsedCharacters.setText(String.format(usedCharactersCaption, _usedCharacterListModel.getSize()));
+        _lblNumRemainingTaxa.setText(String.format(remainingTaxaCaption, _itemListModel.getSize()));
     }
 
     private class AvailableCharacterListModel extends AbstractListModel {

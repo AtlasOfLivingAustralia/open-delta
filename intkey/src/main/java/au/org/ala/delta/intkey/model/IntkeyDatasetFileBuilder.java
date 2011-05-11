@@ -9,7 +9,6 @@ import java.util.Set;
 
 import org.apache.commons.lang.math.IntRange;
 
-import au.org.ala.delta.intkey.model.ported.Constants;
 import au.org.ala.delta.io.BinFile;
 import au.org.ala.delta.io.BinFileEncoding;
 import au.org.ala.delta.io.BinFileMode;

@@ -1,4 +1,4 @@
-package au.org.ala.delta.intkey.directives;
+package au.org.ala.delta.intkey.model;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,9 +13,8 @@ import javax.swing.JFrame;
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.directives.AbstractDeltaContext;
 import au.org.ala.delta.intkey.Intkey;
-import au.org.ala.delta.intkey.model.CharacterComparator;
-import au.org.ala.delta.intkey.model.IntkeyDataset;
-import au.org.ala.delta.intkey.model.IntkeyDatasetFileBuilder;
+import au.org.ala.delta.intkey.directives.IntkeyDirectiveInvocation;
+import au.org.ala.delta.intkey.directives.IntkeyDirectiveParser;
 import au.org.ala.delta.intkey.model.specimen.CharacterValue;
 import au.org.ala.delta.intkey.model.specimen.Specimen;
 
@@ -136,10 +135,11 @@ public class IntkeyContext extends AbstractDeltaContext {
     }
 
     public void executeDirective(IntkeyDirectiveInvocation invoc) {
-        //record correct insertion index in case execution of directive results in further directives being
-        //run (such as in the case of the NewDataSet directive).
+        // record correct insertion index in case execution of directive results
+        // in further directives being
+        // run (such as in the case of the NewDataSet directive).
         int insertionIndex = _executedDirectives.size();
-        
+
         boolean success = invoc.execute(this);
         if (success) {
             _executedDirectives.add(insertionIndex, invoc);
@@ -221,4 +221,11 @@ public class IntkeyContext extends AbstractDeltaContext {
         return new ArrayList<IntkeyDirectiveInvocation>(_executedDirectives);
     }
 
+    public void restartIdentification() {
+        // TODO need to account for fixed characters etc here.
+
+        // Create a new blank specimen
+        _specimen = new Specimen();
+        _appUI.handleRestartIdentification();
+    }
 }

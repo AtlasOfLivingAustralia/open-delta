@@ -10,6 +10,7 @@ import au.org.ala.delta.Logger;
 import au.org.ala.delta.directives.DirectiveParser;
 import au.org.ala.delta.directives.DirectiveSearchResult;
 import au.org.ala.delta.directives.ParsingContext;
+import au.org.ala.delta.intkey.model.IntkeyContext;
 
 public class IntkeyDirectiveParser extends DirectiveParser<IntkeyContext> {
 
@@ -25,6 +26,7 @@ public class IntkeyDirectiveParser extends DirectiveParser<IntkeyContext> {
         instance.registerDirective(new NewDatasetDirective());
         instance.registerDirective(new UseDirective());
         instance.registerDirective(new DefineCharactersDirective());
+        instance.registerDirective(new RestartDirective());
         return instance;
     }
 

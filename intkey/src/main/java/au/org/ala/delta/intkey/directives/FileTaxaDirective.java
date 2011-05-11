@@ -8,6 +8,8 @@ import javax.swing.filechooser.FileFilter;
 
 import org.apache.commons.lang.StringUtils;
 
+import au.org.ala.delta.intkey.model.IntkeyContext;
+
 public class FileTaxaDirective extends IntkeyDirective {
 
     public FileTaxaDirective() {

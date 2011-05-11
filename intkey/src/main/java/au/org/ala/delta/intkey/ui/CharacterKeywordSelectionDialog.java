@@ -7,8 +7,8 @@ import java.util.List;
 
 import javax.swing.DefaultListModel;
 
-import au.org.ala.delta.intkey.directives.IntkeyContext;
 import au.org.ala.delta.intkey.model.CharacterComparator;
+import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.model.Character;
 
 public class CharacterKeywordSelectionDialog extends KeywordSelectionDialog {

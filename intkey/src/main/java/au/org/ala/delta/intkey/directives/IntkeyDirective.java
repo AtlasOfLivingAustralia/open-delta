@@ -1,6 +1,7 @@
 package au.org.ala.delta.intkey.directives;
 
 import au.org.ala.delta.directives.AbstractDirective;
+import au.org.ala.delta.intkey.model.IntkeyContext;
 
 public abstract class IntkeyDirective extends AbstractDirective<IntkeyContext> {
     

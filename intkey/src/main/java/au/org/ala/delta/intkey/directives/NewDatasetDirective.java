@@ -7,6 +7,7 @@ import org.apache.commons.lang.StringUtils;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.SingleFrameApplication;
 
+import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.ui.SelectDataSetDialog;
 
 public class NewDatasetDirective extends IntkeyDirective {

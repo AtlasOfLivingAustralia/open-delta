@@ -1,6 +1,5 @@
 package au.org.ala.delta.intkey.model;
 
-import au.org.ala.delta.intkey.model.ported.Params;
 
 public class ItemsFileHeader {
     

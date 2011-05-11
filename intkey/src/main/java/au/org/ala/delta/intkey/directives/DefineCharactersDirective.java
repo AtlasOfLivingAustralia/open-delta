@@ -6,6 +6,8 @@ import java.util.Set;
 
 import org.apache.commons.lang.math.IntRange;
 
+import au.org.ala.delta.intkey.model.IntkeyContext;
+
 //TODO smashed out quickly to help with implementation of the USE directive.
 //need to revisit in order to make it complete.
 

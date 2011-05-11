@@ -1,4 +1,4 @@
-package au.org.ala.delta.intkey.model.ported;
+package au.org.ala.delta.intkey.model;
 
 public class Constants {
 
