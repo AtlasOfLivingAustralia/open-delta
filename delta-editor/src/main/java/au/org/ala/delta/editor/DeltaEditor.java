@@ -194,6 +194,7 @@ public class DeltaEditor extends InternalFrameApplication implements
 	@Override
 	protected void ready() {
 
+		EditorPreferences.addPreferencesChangeListener(this);
 		JOptionPane.showConfirmDialog(getMainFrame(), warning, warningTitle,
 				JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE);
 		super.ready();
