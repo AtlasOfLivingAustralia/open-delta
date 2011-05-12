@@ -12,12 +12,10 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -60,6 +58,10 @@ import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.ui.AboutBox;
 import au.org.ala.delta.ui.DeltaSingleFrameApplication;
 import au.org.ala.delta.ui.util.IconHelper;
+import java.awt.Dimension;
+import javax.swing.border.LineBorder;
+import javax.swing.border.MatteBorder;
+import javax.swing.UIManager;
 
 public class Intkey extends DeltaSingleFrameApplication {
 
@@ -117,6 +119,9 @@ public class Intkey extends DeltaSingleFrameApplication {
         resourceMap.injectFields(this);
     }
 
+    /**
+     * @wbp.parser.entryPoint
+     */
     @Override
     protected void startup() {
         JFrame mainFrame = getMainFrame();
@@ -136,6 +141,8 @@ public class Intkey extends DeltaSingleFrameApplication {
         globalOptionBar.setLayout(new BorderLayout(0, 0));
 
         JButton btnContextHelp = new JButton(IconHelper.createImageIconFromAbsolutePath("/au/org/ala/delta/intkey/resources/icons/helpa.png"));
+        btnContextHelp.setEnabled(false);
+        btnContextHelp.setPreferredSize(new Dimension(30, 30));
         btnContextHelp.setMargin(new Insets(2, 5, 2, 5));
         globalOptionBar.add(btnContextHelp, BorderLayout.EAST);
 
@@ -158,12 +165,12 @@ public class Intkey extends DeltaSingleFrameApplication {
         _innerSplitPaneLeft.setOrientation(JSplitPane.VERTICAL_SPLIT);
         _rootSplitPane.setLeftComponent(_innerSplitPaneLeft);
 
-        JPanel pnlBestCharacters = new JPanel();
-        _innerSplitPaneLeft.setLeftComponent(pnlBestCharacters);
-        pnlBestCharacters.setLayout(new BorderLayout(0, 0));
+        JPanel pnlAvailableCharacters = new JPanel();
+        _innerSplitPaneLeft.setLeftComponent(pnlAvailableCharacters);
+        pnlAvailableCharacters.setLayout(new BorderLayout(0, 0));
 
-        JScrollPane sclPaneBestCharacters = new JScrollPane();
-        pnlBestCharacters.add(sclPaneBestCharacters, BorderLayout.CENTER);
+        JScrollPane sclPaneAvailableCharacters = new JScrollPane();
+        pnlAvailableCharacters.add(sclPaneAvailableCharacters, BorderLayout.CENTER);
 
         _listAvailableCharacters = new JList();
         _listAvailableCharacters.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -186,16 +193,63 @@ public class Intkey extends DeltaSingleFrameApplication {
             }
         });
 
-        sclPaneBestCharacters.setViewportView(_listAvailableCharacters);
+        sclPaneAvailableCharacters.setViewportView(_listAvailableCharacters);
 
-        JPanel pnlBestCharactersHeader = new JPanel();
-        pnlBestCharacters.add(pnlBestCharactersHeader, BorderLayout.NORTH);
-        pnlBestCharactersHeader.setLayout(new BorderLayout(0, 0));
+        JPanel pnlAvailableCharactersHeader = new JPanel();
+        pnlAvailableCharacters.add(pnlAvailableCharactersHeader, BorderLayout.NORTH);
+        pnlAvailableCharactersHeader.setLayout(new BorderLayout(0, 0));
 
         _lblNumAvailableCharacters = new JLabel();
         _lblNumAvailableCharacters.setFont(new Font("Tahoma", Font.PLAIN, 15));
         _lblNumAvailableCharacters.setText(String.format(availableCharactersCaption, 0));
-        pnlBestCharactersHeader.add(_lblNumAvailableCharacters, BorderLayout.WEST);
+        pnlAvailableCharactersHeader.add(_lblNumAvailableCharacters, BorderLayout.WEST);
+        
+        JPanel pnlAvailableCharactersButtons = new JPanel();
+        pnlAvailableCharactersHeader.add(pnlAvailableCharactersButtons, BorderLayout.EAST);
+        
+        JButton btnRestart = new JButton(IconHelper.createImageIconFromAbsolutePath("/au/org/ala/delta/intkey/resources/icons/restarts.png"));
+        btnRestart.setPreferredSize(new Dimension(30, 30));
+        pnlAvailableCharactersButtons.add(btnRestart);
+        
+        JButton btnBestOrder = new JButton(IconHelper.createImageIconFromAbsolutePath("/au/org/ala/delta/intkey/resources/icons/obests.png"));
+        btnBestOrder.setEnabled(false);
+        btnBestOrder.setPreferredSize(new Dimension(30, 30));
+        pnlAvailableCharactersButtons.add(btnBestOrder);
+        
+        JButton btnSeparate = new JButton(IconHelper.createImageIconFromAbsolutePath("/au/org/ala/delta/intkey/resources/icons/oseps.png"));
+        btnSeparate.setEnabled(false);
+        btnSeparate.setPreferredSize(new Dimension(30, 30));
+        pnlAvailableCharactersButtons.add(btnSeparate);
+        
+        JButton btnBtnNaturalOrder = new JButton(IconHelper.createImageIconFromAbsolutePath("/au/org/ala/delta/intkey/resources/icons/onats.png"));
+        btnBtnNaturalOrder.setEnabled(false);
+        btnBtnNaturalOrder.setPreferredSize(new Dimension(30, 30));
+        pnlAvailableCharactersButtons.add(btnBtnNaturalOrder);
+        
+        JButton btnDiffSpecimenTaxa = new JButton(IconHelper.createImageIconFromAbsolutePath("/au/org/ala/delta/intkey/resources/icons/diff_ss.png"));
+        btnDiffSpecimenTaxa.setEnabled(false);
+        btnDiffSpecimenTaxa.setPreferredSize(new Dimension(30, 30));
+        pnlAvailableCharactersButtons.add(btnDiffSpecimenTaxa);
+        
+        JButton btnSetTolerance = new JButton(IconHelper.createImageIconFromAbsolutePath("/au/org/ala/delta/intkey/resources/icons/set_tols.png"));
+        btnSetTolerance.setEnabled(false);
+        btnSetTolerance.setPreferredSize(new Dimension(30, 30));
+        pnlAvailableCharactersButtons.add(btnSetTolerance);
+        
+        JButton btnSetMatch = new JButton(IconHelper.createImageIconFromAbsolutePath("/au/org/ala/delta/intkey/resources/icons/set_mats.png"));
+        btnSetMatch.setEnabled(false);
+        btnSetMatch.setPreferredSize(new Dimension(30, 30));
+        pnlAvailableCharactersButtons.add(btnSetMatch);
+        
+        JButton btnUseSubset = new JButton(IconHelper.createImageIconFromAbsolutePath("/au/org/ala/delta/intkey/resources/icons/inc_cs.png"));
+        btnUseSubset.setEnabled(false);
+        btnUseSubset.setPreferredSize(new Dimension(30, 30));
+        pnlAvailableCharactersButtons.add(btnUseSubset);
+        
+        JButton btnFindCharacter = new JButton(IconHelper.createImageIconFromAbsolutePath("/au/org/ala/delta/intkey/resources/icons/finds.png"));
+        btnFindCharacter.setEnabled(false);
+        btnFindCharacter.setPreferredSize(new Dimension(30, 30));
+        pnlAvailableCharactersButtons.add(btnFindCharacter);
 
         JPanel pnlUsedCharacters = new JPanel();
         _innerSplitPaneLeft.setRightComponent(pnlUsedCharacters);
@@ -241,6 +295,29 @@ public class Intkey extends DeltaSingleFrameApplication {
         _lblNumRemainingTaxa.setFont(new Font("Tahoma", Font.PLAIN, 15));
         _lblNumRemainingTaxa.setText(String.format(remainingTaxaCaption, 0));
         pnlRemainingTaxaHeader.add(_lblNumRemainingTaxa, BorderLayout.WEST);
+        
+        JPanel pnlRemainingTaxaButtons = new JPanel();
+        pnlRemainingTaxaHeader.add(pnlRemainingTaxaButtons, BorderLayout.EAST);
+        
+        JButton btnTaxonInfo = new JButton(IconHelper.createImageIconFromAbsolutePath("/au/org/ala/delta/intkey/resources/icons/infos.png"));
+        btnTaxonInfo.setEnabled(false);
+        btnTaxonInfo.setPreferredSize(new Dimension(30, 30));
+        pnlRemainingTaxaButtons.add(btnTaxonInfo);
+        
+        JButton btnDiffTaxa = new JButton(IconHelper.createImageIconFromAbsolutePath("/au/org/ala/delta/intkey/resources/icons/diff_ts.png"));
+        btnDiffTaxa.setEnabled(false);
+        btnDiffTaxa.setPreferredSize(new Dimension(30, 30));
+        pnlRemainingTaxaButtons.add(btnDiffTaxa);
+        
+        JButton btnSubsetTaxa = new JButton(IconHelper.createImageIconFromAbsolutePath("/au/org/ala/delta/intkey/resources/icons/inc_ts.png"));
+        btnSubsetTaxa.setEnabled(false);
+        btnSubsetTaxa.setPreferredSize(new Dimension(30, 30));
+        pnlRemainingTaxaButtons.add(btnSubsetTaxa);
+        
+        JButton btnFindTaxon = new JButton(IconHelper.createImageIconFromAbsolutePath("/au/org/ala/delta/intkey/resources/icons/finds.png"));
+        btnFindTaxon.setEnabled(false);
+        btnFindTaxon.setPreferredSize(new Dimension(30, 30));
+        pnlRemainingTaxaButtons.add(btnFindTaxon);
 
         JPanel pnlEliminatedTaxa = new JPanel();
         _innerSplitPaneRight.setRightComponent(pnlEliminatedTaxa);
@@ -307,9 +384,6 @@ public class Intkey extends DeltaSingleFrameApplication {
         super.shutdown();
     }
 
-    /**
-     * @wbp.parser.entryPoint
-     */
     private JMenuBar buildMenus() {
 
         ActionMap actionMap = getContext().getActionMap();

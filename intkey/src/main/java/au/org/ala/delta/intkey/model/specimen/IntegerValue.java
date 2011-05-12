@@ -25,6 +25,8 @@ public class IntegerValue extends CharacterValue {
     
     @Override
     public String toString() {
+        //TODO - need to take character maximum and minimum value into account here
+        //output should be foo less than x or foo greater than y
         StringBuilder builder = new StringBuilder();
         builder.append(_formatter.formatCharacterDescription(_character));
         builder.append(" ");
