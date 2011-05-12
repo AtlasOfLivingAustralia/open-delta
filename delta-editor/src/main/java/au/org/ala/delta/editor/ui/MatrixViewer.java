@@ -24,6 +24,8 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 
@@ -64,7 +66,7 @@ public class MatrixViewer extends JInternalFrame implements DeltaView {
 	private DropIndicationTable _table;
 	private TableRowHeader _fixedColumns;
 	private MatrixTableModel _model;
-	private AttributeEditor _stateEditor;
+	private AttributeEditor _attributeEditor;
 
 	
 	@Resource
@@ -125,7 +127,7 @@ public class MatrixViewer extends JInternalFrame implements DeltaView {
 				
 					if (charId > 0) {
 						au.org.ala.delta.model.Character selectedCharacter = _dataSet.getCharacter(charId);
-						_stateEditor.bind(selectedCharacter, selectedItem);
+						_attributeEditor.bind(selectedCharacter, selectedItem);
 					}
 				}
 			}
@@ -182,19 +184,19 @@ public class MatrixViewer extends JInternalFrame implements DeltaView {
 		content.setDividerSize(4);
 		content.setDividerLocation(180);
 
-		_stateEditor = new AttributeEditor(_dataSet);
+		_attributeEditor = new AttributeEditor(_dataSet);
 
 		JSplitPane divider = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		divider.setDividerLocation(getHeight() - 200);
 		divider.setResizeWeight(1);
 
 		divider.setTopComponent(content);
-		divider.setBottomComponent(_stateEditor);
+		divider.setBottomComponent(_attributeEditor);
 
 		this.getContentPane().setLayout(new BorderLayout());
 		this.getContentPane().add(divider, BorderLayout.CENTER);
 		
-		_stateEditor.add(new AttributeEditorListener() {
+		_attributeEditor.add(new AttributeEditorListener() {
 			
 			@Override
 			public void advance() {
@@ -222,7 +224,9 @@ public class MatrixViewer extends JInternalFrame implements DeltaView {
 			selectCell(0, 0);
 		}
 		configureDefaultRowHeight();
-	}
+		
+		_table.addKeyListener(new KeyProxy());
+	}	
 	
 	/**
 	 * Updates the current table selection index.  
@@ -278,7 +282,7 @@ public class MatrixViewer extends JInternalFrame implements DeltaView {
 
 	@Override
 	public boolean editsValid() {
-		return _stateEditor.isAttributeValid();
+		return _attributeEditor.isAttributeValid();
 	}
 
 	@Override
@@ -398,6 +402,56 @@ public class MatrixViewer extends JInternalFrame implements DeltaView {
 
 	}
 
+	/**
+	 * This listener class is responsible for transferring focus to the 
+	 * AttributeEditor when the user starts typing in a focused cell.
+	 * Command type events (e.g. cut/copy/paste) will not initiate a focus transfer
+	 * but any other key events will.	 *
+	 */
+	class KeyProxy extends KeyAdapter {
+
+		@Override
+		public void keyTyped(KeyEvent e) {
+			checkAndForwardKey(e);
+		}
+		
+		private void checkAndForwardKey(KeyEvent e) {
+			if (shouldForwardKey(e)) {
+				_attributeEditor.acceptKeyEvent(e);
+			}
+		}
+		
+		/**
+		 * Checks a key event and determines whether it represents a command
+		 * (e.g. cut/copy/paste).
+		 * @param e the KeyEvent to check.
+		 * @return true if the KeyEvent is a command.
+		 */
+		private boolean isCommand(KeyEvent e) {
+			int commandKeyMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
+            return ((e.getModifiers() & commandKeyMask) != 0);
+		}
+		
+		/** 
+		 * @return true if the table has a only one selected cell.
+		 */
+		private boolean isSingleCellSelected() {
+			return (_table.getSelectedColumnCount() == 1 && _table.getSelectedRowCount() == 1);
+		}
+		
+		/**
+		 * A key will be forwarded if: 
+		 * a) it's not a command (cut/copy/paste)
+		 * b) there is a single selected cell in the table (so it is clear
+		 * which attribute is being edited).
+		 * @param e the KeyEvent that was generated.
+		 * @return true if the KeyEvent should be forwarded to the AttributeEditor for
+		 * processing.
+		 */
+		private boolean shouldForwardKey(KeyEvent e) {
+			return isSingleCellSelected() && !isCommand(e);
+		}
+	}
 	
 }
 

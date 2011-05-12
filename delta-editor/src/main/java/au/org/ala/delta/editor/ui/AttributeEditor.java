@@ -69,7 +69,7 @@ public class AttributeEditor extends JPanel implements ValidationListener, Prefe
 
 	private static final long serialVersionUID = 1L;
 
-	private RtfEditor _textPane;
+	public RtfEditor _textPane;
 	private JTable _characterDetailsTable;
 	private JToggleButton advanceItem;
 	private JToggleButton advanceCharacter;
@@ -317,7 +317,7 @@ public class AttributeEditor extends JPanel implements ValidationListener, Prefe
 
 			}
 			_modified = false;
-			_textPane.requestFocusInWindow();
+			
 		} finally {
 			// Re-enable the change listener
 			_editListener.setDisabled(false);
@@ -473,6 +473,15 @@ public class AttributeEditor extends JPanel implements ValidationListener, Prefe
 			
 			return stateRenderer.getPreferredSize();
 		}
+	}
+	
+	/**
+	 * Allows other components to transfer focus manually to the AttributeEditor.
+	 * @param e the key event to forward to the rtf editor component.
+	 */
+	public void acceptKeyEvent(KeyEvent e) {
+		_textPane.requestFocusInWindow();
+		_textPane.dispatchEvent(e);
 	}
 	
 	/**
