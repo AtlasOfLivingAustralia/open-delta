@@ -252,7 +252,11 @@ public class VOItemDesc extends VOImageHolderDesc implements INameHolder {
 		Attribute attr = readAttribute(charId);
 		if (attr != null) {
 			if (charId == VOUID_NAME) {
-				dest.append(Utils.removeComments(attr.begin().get().getString(), showComments));
+				String name = attr.begin().get().getString();
+				if (name != null) {
+					name = Utils.removeComments(name, showComments);
+				}
+				dest.append(name);
 			} else {
 
 				VOCharBaseDesc charBase = (VOCharBaseDesc) getVOP().getDescFromId(charId);
@@ -261,7 +265,6 @@ public class VOItemDesc extends VOImageHolderDesc implements INameHolder {
 						dest.append(chunk.getAsText(charBase));
 					}
 				}
-
 			}
 
 			if (textType == TextType.ANSI) {

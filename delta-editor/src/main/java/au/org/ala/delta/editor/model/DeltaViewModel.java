@@ -69,4 +69,8 @@ public class DeltaViewModel extends DataSetWrapper implements EditorViewModel, P
 			listener.preferenceChange(evt);
 		}
 	}
+
+	public String getImagePath() {
+		return _editorDataModel.getImagePath();
+	}
 }

@@ -3,10 +3,10 @@ package au.org.ala.delta.editor.ui;
 import java.awt.Component;
 import java.awt.Window;
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 import javax.swing.ActionMap;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
@@ -34,6 +34,7 @@ import au.org.ala.delta.model.observer.AbstractDataSetObserver;
 import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
 import au.org.ala.delta.model.observer.DeltaDataSetObserver;
 import au.org.ala.delta.ui.image.ImageViewer;
+import au.org.ala.delta.ui.image.SupportedFileTypes;
 import au.org.ala.delta.ui.rtf.RtfEditorPane;
 
 /**
@@ -47,10 +48,7 @@ public class ImageDetailsPanel extends JPanel {
 	
 	/** The object that any images will be attached to */
 	private Illustratable _illustratable;
-	
-	/** The path to prepend to images with a relative file name */
-	private String _imagePath;
-	
+
 	/** The currently selected image */
 	private Image _selectedImage;
 	
@@ -61,7 +59,10 @@ public class ImageDetailsPanel extends JPanel {
 	private JButton btnDelete;
 	private JButton btnSettings;
 	private JButton btnAdd;
-
+	private JButton deleteSoundButton;
+	private JButton playSoundButton;
+	private JComboBox soundComboBox;
+	
 	public ImageDetailsPanel() {
 		createUI();
 		addEventHandlers();
@@ -197,7 +198,7 @@ public class ImageDetailsPanel extends JPanel {
 		subjectTextPane = new RtfEditorPane();
 		scrollPane_1.setViewportView(subjectTextPane);
 		
-		JComboBox comboBox = new JComboBox();
+		soundComboBox = new JComboBox();
 		
 		deleteSoundButton = new JButton();
 		
@@ -208,7 +209,7 @@ public class ImageDetailsPanel extends JPanel {
 		gl_panel_3.setHorizontalGroup(
 			gl_panel_3.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panel_3.createSequentialGroup()
-					.addComponent(comboBox, 0, 0, Short.MAX_VALUE)
+					.addComponent(soundComboBox, 0, 0, Short.MAX_VALUE)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(deleteSoundButton)
 					.addPreferredGap(ComponentPlacement.RELATED)
@@ -222,7 +223,7 @@ public class ImageDetailsPanel extends JPanel {
 				.addGroup(gl_panel_3.createSequentialGroup()
 					.addContainerGap(5, Short.MAX_VALUE)
 					.addGroup(gl_panel_3.createParallelGroup(Alignment.BASELINE)
-						.addComponent(comboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(soundComboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(deleteSoundButton)
 						.addComponent(playSoundButton)
 						.addComponent(btnInsert)))
@@ -274,11 +275,25 @@ public class ImageDetailsPanel extends JPanel {
 	}
 	
 	public File getImageFile() {
-		JFileChooser chooser = new JFileChooser();
+		String imagePath = _dataSet.getImagePath();
+		JFileChooser chooser = new JFileChooser(imagePath);
+		chooser.setFileFilter(SupportedFileTypes.getSupportedImageFilesFilter());
 		
 		if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-			return chooser.getSelectedFile();
+			File imageFile = chooser.getSelectedFile();
+			
+			String parent = imageFile.getParent();
+			if (imagePath.equals(parent)) {
+				// Turn the file into a relative one.
+				imageFile = new File(imageFile.getName());
+			}
+			else {
+				// Ask about it or copy it to the image path.
+			}
+			
+			return imageFile;
 		}
+		
 		return null;
 	}
 	
@@ -294,7 +309,7 @@ public class ImageDetailsPanel extends JPanel {
 		
 		Window parent = ((SingleFrameApplication)Application.getInstance()).getMainFrame();
 		
-		JDialog dialog = ImageViewer.asDialog(parent, _imagePath, _selectedImage);
+		JDialog dialog = ImageViewer.asDialog(parent, _dataSet.getImagePath(), _selectedImage);
 		dialog.setVisible(true);
 	}
 	
@@ -308,7 +323,7 @@ public class ImageDetailsPanel extends JPanel {
 			return;
 		}
 		
-		_illustratable.addImage(file.getAbsolutePath(), "");
+		_illustratable.addImage(file.getPath(), "");
 		
 	}
 	
@@ -338,24 +353,18 @@ public class ImageDetailsPanel extends JPanel {
 		
 	}
 	
-	private void determineImagePath() {
-		String basePath;
-		try {
-			basePath = new File(_dataSet.getName()).getCanonicalPath();
-			basePath = basePath.substring(0, basePath.lastIndexOf(File.separator));
-			_imagePath = basePath+File.separator+"images";
-		} catch (IOException e) {
-			throw new RuntimeException("Error determining image path.", e);
-		}
-		
-	}
-	
 	private void updateDisplay() {
+		
+		DefaultComboBoxModel model = (DefaultComboBoxModel)soundComboBox.getModel();
+		model.removeAllElements();
 		if (_selectedImage == null) {
 			subjectTextPane.setText("");
 			developerNotesTextPane.setText("");
 			btnDisplay.setEnabled(false);
 			btnDelete.setEnabled(false);
+			
+			playSoundButton.setEnabled(false);
+			deleteSoundButton.setEnabled(false);
 		}
 		else {
 			btnDisplay.setEnabled(true);
@@ -370,7 +379,7 @@ public class ImageDetailsPanel extends JPanel {
 					developerNotesTextPane.setText(overlay.overlayText);
 				}
 				else if (overlay.isType(OverlayType.OLSOUND)) {
-					
+					soundComboBox.addItem(overlay.overlayText);
 				}
 			}
 		}
@@ -392,8 +401,7 @@ public class ImageDetailsPanel extends JPanel {
 			}
 		}
 	};
-	private JButton deleteSoundButton;
-	private JButton playSoundButton;
+	
 	public void setDataSet(EditorViewModel dataSet) {
 		
 		if (_dataSet != null) {
@@ -401,9 +409,5 @@ public class ImageDetailsPanel extends JPanel {
 		}
 		_dataSet = dataSet;
 		_dataSet.addDeltaDataSetObserver(observer);
-		
-		determineImagePath();
 	}
-	
-	
 }

@@ -113,6 +113,14 @@ public class EditorDataModel extends DataSetWrapper implements EditorViewModel, 
 		return name;
 	}
 	
+	@Override
+	public String getImagePath() {
+		if (getName().equals("")) {
+			return "";
+		}
+		
+		return new File(getName()).getParent();
+	}
 	
 	@Override
 	public void setName(String name) {
