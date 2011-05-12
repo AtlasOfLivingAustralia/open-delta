@@ -7,6 +7,9 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import javax.swing.border.EmptyBorder;
 
 import au.org.ala.delta.model.NumericCharacter;
@@ -24,6 +27,13 @@ public abstract class NumberInputDialog extends CharacterValueInputDialog {
         panel.setLayout(new GridLayout(0, 2, 5, 0));
         
         _txtInput = new JTextField();
+        _txtInput.addActionListener(new ActionListener() {
+            
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                NumberInputDialog.this.handleBtnOKClicked();
+            }
+        });
         panel.add(_txtInput);
         _txtInput.setColumns(10);
         

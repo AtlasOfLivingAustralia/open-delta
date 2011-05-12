@@ -198,13 +198,15 @@ public class UseDirective extends IntkeyDirective {
 
                 if (characterVal == null) {
                     if (ch instanceof MultiStateCharacter) {
-                        characterVal = promptForMultiStateValue(context.getMainFrame(), (MultiStateCharacter) ch);
+                        List<Integer> stateList = promptForMultiStateValue(context.getMainFrame(), (MultiStateCharacter) ch);
+                        characterVal = stateList.size() > 0 ? stateList : null;
                     } else if (ch instanceof IntegerCharacter) {
                         characterVal = promptForIntegerValue(context.getMainFrame(), (IntegerCharacter) ch);
                     } else if (ch instanceof RealCharacter) {
                         characterVal = promptForRealValue(context.getMainFrame(), (RealCharacter) ch);
                     } else if (ch instanceof TextCharacter) {
-                        characterVal = promptForTextValue(context.getMainFrame(), (TextCharacter) ch);
+                        List<String> stringList = promptForTextValue(context.getMainFrame(), (TextCharacter) ch);
+                        characterVal = stringList.size() > 0 ? stringList : null;
                     } else {
                         throw new IllegalArgumentException("Unrecognized character type");
                     }
@@ -221,6 +223,11 @@ public class UseDirective extends IntkeyDirective {
                 }
             }
             
+            if (_characterValues.size() == 0) {
+                // Directive was not successfully run because the user did not enter any information when prompted.
+                // directive should not be entered in the re-execution history
+                return false;
+            }
             
             for (Character ch : _characterValues.keySet()) {
                 Object parsedCharacterVal = _characterValues.get(ch);

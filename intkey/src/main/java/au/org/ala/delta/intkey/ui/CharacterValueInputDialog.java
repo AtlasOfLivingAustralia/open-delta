@@ -65,6 +65,14 @@ public abstract class CharacterValueInputDialog extends JDialog {
         _buttonPanel.add(_btnSearch);
 
         _btnCancel = new JButton("Cancel");
+        _btnCancel.addActionListener(new ActionListener() {
+            
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                CharacterValueInputDialog.this.handleBtnCancelClicked();
+            }
+        });
+        
         _buttonPanel.add(_btnCancel);
 
         _btnNotes = new JButton("Notes");
@@ -88,5 +96,5 @@ public abstract class CharacterValueInputDialog extends JDialog {
     }
 
     abstract void handleBtnOKClicked();
-
+    abstract void handleBtnCancelClicked();
 }

@@ -22,7 +22,11 @@ public class RestartDirective extends IntkeyDirective {
             context.restartIdentification();
             return true;
         }
-        
+
+        @Override
+        public String toString() {
+            return "restart";
+        }
     }
 }
 

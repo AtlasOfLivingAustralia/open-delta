@@ -3,6 +3,8 @@ package au.org.ala.delta.intkey;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Insets;
 import java.awt.SystemColor;
@@ -21,6 +23,7 @@ import java.util.Map;
 
 import javax.swing.AbstractListModel;
 import javax.swing.ActionMap;
+import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -33,9 +36,11 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.MouseInputAdapter;
 
 import org.jdesktop.application.Action;
+import org.jdesktop.application.Application;
 import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 
@@ -46,10 +51,12 @@ import au.org.ala.delta.intkey.directives.IntkeyDirective;
 import au.org.ala.delta.intkey.directives.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.IntkeyDirectiveParser;
 import au.org.ala.delta.intkey.directives.NewDatasetDirective;
+import au.org.ala.delta.intkey.directives.RestartDirective;
 import au.org.ala.delta.intkey.directives.UseDirective;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.model.IntkeyDataset;
 import au.org.ala.delta.intkey.model.specimen.CharacterValue;
+import au.org.ala.delta.intkey.ui.DirectiveAction;
 import au.org.ala.delta.intkey.ui.ReExecuteDialog;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
@@ -58,10 +65,6 @@ import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.ui.AboutBox;
 import au.org.ala.delta.ui.DeltaSingleFrameApplication;
 import au.org.ala.delta.ui.util.IconHelper;
-import java.awt.Dimension;
-import javax.swing.border.LineBorder;
-import javax.swing.border.MatteBorder;
-import javax.swing.UIManager;
 
 public class Intkey extends DeltaSingleFrameApplication {
 
@@ -78,35 +81,47 @@ public class Intkey extends DeltaSingleFrameApplication {
     private JList _listUsedCharacters;
     private JList _listRemainingTaxa;
     private JList _listEliminatedTaxa;
-    
+
     private AvailableCharacterListModel _availableCharacterListModel;
     private UsedCharacterListModel _usedCharacterListModel;
     private ItemListModel _itemListModel;
-    
+
     private JMenu _mnuReExecute;
     private JLabel _lblNumAvailableCharacters;
     private JLabel _lblNumUsedCharacters;
 
     @Resource
     String windowTitleWithDatasetTitle;
-    
+
     @Resource
     String availableCharactersCaption;
-    
-    @Resource 
+
+    @Resource
     String bestCharactersCaption;
-    
-    @Resource 
-    String usedCharactersCaption;    
-    
+
+    @Resource
+    String usedCharactersCaption;
+
     @Resource
     String remainingTaxaCaption;
-    
+
     @Resource
     String eliminatedTaxaCaption;
     private JLabel _lblNumRemainingTaxa;
     private JLabel _lblEliminatedTaxa;
-
+    private JButton _btnRestart;
+    private JButton _btnBestOrder;
+    private JButton _btnSeparate;
+    private JButton _btnBtnNaturalOrder;
+    private JButton _btnDiffSpecimenTaxa;
+    private JButton _btnSetTolerance;
+    private JButton _btnSetMatch;
+    private JButton _btnUseSubset;
+    private JButton _btnFindCharacter;
+    private JButton _btnTaxonInfo;
+    private JButton _btnDiffTaxa;
+    private JButton _btnSubsetTaxa;
+    private JButton _btnFindTaxon;
 
     public static void main(String[] args) {
         setupMacSystemProperties(Intkey.class);
@@ -203,53 +218,58 @@ public class Intkey extends DeltaSingleFrameApplication {
         _lblNumAvailableCharacters.setFont(new Font("Tahoma", Font.PLAIN, 15));
         _lblNumAvailableCharacters.setText(String.format(availableCharactersCaption, 0));
         pnlAvailableCharactersHeader.add(_lblNumAvailableCharacters, BorderLayout.WEST);
-        
+
         JPanel pnlAvailableCharactersButtons = new JPanel();
+        FlowLayout flowLayout = (FlowLayout) pnlAvailableCharactersButtons.getLayout();
+        flowLayout.setVgap(2);
+        flowLayout.setHgap(2);
         pnlAvailableCharactersHeader.add(pnlAvailableCharactersButtons, BorderLayout.EAST);
-        
-        JButton btnRestart = new JButton(IconHelper.createImageIconFromAbsolutePath("/au/org/ala/delta/intkey/resources/icons/restarts.png"));
-        btnRestart.setPreferredSize(new Dimension(30, 30));
-        pnlAvailableCharactersButtons.add(btnRestart);
-        
-        JButton btnBestOrder = new JButton(IconHelper.createImageIconFromAbsolutePath("/au/org/ala/delta/intkey/resources/icons/obests.png"));
-        btnBestOrder.setEnabled(false);
-        btnBestOrder.setPreferredSize(new Dimension(30, 30));
-        pnlAvailableCharactersButtons.add(btnBestOrder);
-        
-        JButton btnSeparate = new JButton(IconHelper.createImageIconFromAbsolutePath("/au/org/ala/delta/intkey/resources/icons/oseps.png"));
-        btnSeparate.setEnabled(false);
-        btnSeparate.setPreferredSize(new Dimension(30, 30));
-        pnlAvailableCharactersButtons.add(btnSeparate);
-        
-        JButton btnBtnNaturalOrder = new JButton(IconHelper.createImageIconFromAbsolutePath("/au/org/ala/delta/intkey/resources/icons/onats.png"));
-        btnBtnNaturalOrder.setEnabled(false);
-        btnBtnNaturalOrder.setPreferredSize(new Dimension(30, 30));
-        pnlAvailableCharactersButtons.add(btnBtnNaturalOrder);
-        
-        JButton btnDiffSpecimenTaxa = new JButton(IconHelper.createImageIconFromAbsolutePath("/au/org/ala/delta/intkey/resources/icons/diff_ss.png"));
-        btnDiffSpecimenTaxa.setEnabled(false);
-        btnDiffSpecimenTaxa.setPreferredSize(new Dimension(30, 30));
-        pnlAvailableCharactersButtons.add(btnDiffSpecimenTaxa);
-        
-        JButton btnSetTolerance = new JButton(IconHelper.createImageIconFromAbsolutePath("/au/org/ala/delta/intkey/resources/icons/set_tols.png"));
-        btnSetTolerance.setEnabled(false);
-        btnSetTolerance.setPreferredSize(new Dimension(30, 30));
-        pnlAvailableCharactersButtons.add(btnSetTolerance);
-        
-        JButton btnSetMatch = new JButton(IconHelper.createImageIconFromAbsolutePath("/au/org/ala/delta/intkey/resources/icons/set_mats.png"));
-        btnSetMatch.setEnabled(false);
-        btnSetMatch.setPreferredSize(new Dimension(30, 30));
-        pnlAvailableCharactersButtons.add(btnSetMatch);
-        
-        JButton btnUseSubset = new JButton(IconHelper.createImageIconFromAbsolutePath("/au/org/ala/delta/intkey/resources/icons/inc_cs.png"));
-        btnUseSubset.setEnabled(false);
-        btnUseSubset.setPreferredSize(new Dimension(30, 30));
-        pnlAvailableCharactersButtons.add(btnUseSubset);
-        
-        JButton btnFindCharacter = new JButton(IconHelper.createImageIconFromAbsolutePath("/au/org/ala/delta/intkey/resources/icons/finds.png"));
-        btnFindCharacter.setEnabled(false);
-        btnFindCharacter.setPreferredSize(new Dimension(30, 30));
-        pnlAvailableCharactersButtons.add(btnFindCharacter);
+
+        _btnRestart = new JButton();
+        Icon restartIcon = IconHelper.createImageIconFromAbsolutePath("/au/org/ala/delta/intkey/resources/icons/restarts.png");
+        _btnRestart.setAction(new DirectiveAction(new RestartDirective(), _context, null, restartIcon));
+        _btnRestart.setPreferredSize(new Dimension(30, 30));
+        pnlAvailableCharactersButtons.add(_btnRestart);
+
+        _btnBestOrder = new JButton(IconHelper.createImageIconFromAbsolutePath("/au/org/ala/delta/intkey/resources/icons/obests.png"));
+        _btnBestOrder.setEnabled(false);
+        _btnBestOrder.setPreferredSize(new Dimension(30, 30));
+        pnlAvailableCharactersButtons.add(_btnBestOrder);
+
+        _btnSeparate = new JButton(IconHelper.createImageIconFromAbsolutePath("/au/org/ala/delta/intkey/resources/icons/oseps.png"));
+        _btnSeparate.setEnabled(false);
+        _btnSeparate.setPreferredSize(new Dimension(30, 30));
+        pnlAvailableCharactersButtons.add(_btnSeparate);
+
+        _btnBtnNaturalOrder = new JButton(IconHelper.createImageIconFromAbsolutePath("/au/org/ala/delta/intkey/resources/icons/onats.png"));
+        _btnBtnNaturalOrder.setEnabled(false);
+        _btnBtnNaturalOrder.setPreferredSize(new Dimension(30, 30));
+        pnlAvailableCharactersButtons.add(_btnBtnNaturalOrder);
+
+        _btnDiffSpecimenTaxa = new JButton(IconHelper.createImageIconFromAbsolutePath("/au/org/ala/delta/intkey/resources/icons/diff_ss.png"));
+        _btnDiffSpecimenTaxa.setEnabled(false);
+        _btnDiffSpecimenTaxa.setPreferredSize(new Dimension(30, 30));
+        pnlAvailableCharactersButtons.add(_btnDiffSpecimenTaxa);
+
+        _btnSetTolerance = new JButton(IconHelper.createImageIconFromAbsolutePath("/au/org/ala/delta/intkey/resources/icons/set_tols.png"));
+        _btnSetTolerance.setEnabled(false);
+        _btnSetTolerance.setPreferredSize(new Dimension(30, 30));
+        pnlAvailableCharactersButtons.add(_btnSetTolerance);
+
+        _btnSetMatch = new JButton(IconHelper.createImageIconFromAbsolutePath("/au/org/ala/delta/intkey/resources/icons/set_mats.png"));
+        _btnSetMatch.setEnabled(false);
+        _btnSetMatch.setPreferredSize(new Dimension(30, 30));
+        pnlAvailableCharactersButtons.add(_btnSetMatch);
+
+        _btnUseSubset = new JButton(IconHelper.createImageIconFromAbsolutePath("/au/org/ala/delta/intkey/resources/icons/inc_cs.png"));
+        _btnUseSubset.setEnabled(false);
+        _btnUseSubset.setPreferredSize(new Dimension(30, 30));
+        pnlAvailableCharactersButtons.add(_btnUseSubset);
+
+        _btnFindCharacter = new JButton(IconHelper.createImageIconFromAbsolutePath("/au/org/ala/delta/intkey/resources/icons/finds.png"));
+        _btnFindCharacter.setEnabled(false);
+        _btnFindCharacter.setPreferredSize(new Dimension(30, 30));
+        pnlAvailableCharactersButtons.add(_btnFindCharacter);
 
         JPanel pnlUsedCharacters = new JPanel();
         _innerSplitPaneLeft.setRightComponent(pnlUsedCharacters);
@@ -267,6 +287,7 @@ public class Intkey extends DeltaSingleFrameApplication {
         pnlUsedCharactersHeader.setLayout(new BorderLayout(0, 0));
 
         _lblNumUsedCharacters = new JLabel();
+        _lblNumUsedCharacters.setBorder(new EmptyBorder(7, 0, 7, 0));
         _lblNumUsedCharacters.setFont(new Font("Tahoma", Font.PLAIN, 15));
         _lblNumUsedCharacters.setText(String.format(usedCharactersCaption, 0));
         pnlUsedCharactersHeader.add(_lblNumUsedCharacters, BorderLayout.WEST);
@@ -295,29 +316,32 @@ public class Intkey extends DeltaSingleFrameApplication {
         _lblNumRemainingTaxa.setFont(new Font("Tahoma", Font.PLAIN, 15));
         _lblNumRemainingTaxa.setText(String.format(remainingTaxaCaption, 0));
         pnlRemainingTaxaHeader.add(_lblNumRemainingTaxa, BorderLayout.WEST);
-        
+
         JPanel pnlRemainingTaxaButtons = new JPanel();
+        FlowLayout flowLayout_1 = (FlowLayout) pnlRemainingTaxaButtons.getLayout();
+        flowLayout_1.setVgap(2);
+        flowLayout_1.setHgap(2);
         pnlRemainingTaxaHeader.add(pnlRemainingTaxaButtons, BorderLayout.EAST);
-        
-        JButton btnTaxonInfo = new JButton(IconHelper.createImageIconFromAbsolutePath("/au/org/ala/delta/intkey/resources/icons/infos.png"));
-        btnTaxonInfo.setEnabled(false);
-        btnTaxonInfo.setPreferredSize(new Dimension(30, 30));
-        pnlRemainingTaxaButtons.add(btnTaxonInfo);
-        
-        JButton btnDiffTaxa = new JButton(IconHelper.createImageIconFromAbsolutePath("/au/org/ala/delta/intkey/resources/icons/diff_ts.png"));
-        btnDiffTaxa.setEnabled(false);
-        btnDiffTaxa.setPreferredSize(new Dimension(30, 30));
-        pnlRemainingTaxaButtons.add(btnDiffTaxa);
-        
-        JButton btnSubsetTaxa = new JButton(IconHelper.createImageIconFromAbsolutePath("/au/org/ala/delta/intkey/resources/icons/inc_ts.png"));
-        btnSubsetTaxa.setEnabled(false);
-        btnSubsetTaxa.setPreferredSize(new Dimension(30, 30));
-        pnlRemainingTaxaButtons.add(btnSubsetTaxa);
-        
-        JButton btnFindTaxon = new JButton(IconHelper.createImageIconFromAbsolutePath("/au/org/ala/delta/intkey/resources/icons/finds.png"));
-        btnFindTaxon.setEnabled(false);
-        btnFindTaxon.setPreferredSize(new Dimension(30, 30));
-        pnlRemainingTaxaButtons.add(btnFindTaxon);
+
+        _btnTaxonInfo = new JButton(IconHelper.createImageIconFromAbsolutePath("/au/org/ala/delta/intkey/resources/icons/infos.png"));
+        _btnTaxonInfo.setEnabled(false);
+        _btnTaxonInfo.setPreferredSize(new Dimension(30, 30));
+        pnlRemainingTaxaButtons.add(_btnTaxonInfo);
+
+        _btnDiffTaxa = new JButton(IconHelper.createImageIconFromAbsolutePath("/au/org/ala/delta/intkey/resources/icons/diff_ts.png"));
+        _btnDiffTaxa.setEnabled(false);
+        _btnDiffTaxa.setPreferredSize(new Dimension(30, 30));
+        pnlRemainingTaxaButtons.add(_btnDiffTaxa);
+
+        _btnSubsetTaxa = new JButton(IconHelper.createImageIconFromAbsolutePath("/au/org/ala/delta/intkey/resources/icons/inc_ts.png"));
+        _btnSubsetTaxa.setEnabled(false);
+        _btnSubsetTaxa.setPreferredSize(new Dimension(30, 30));
+        pnlRemainingTaxaButtons.add(_btnSubsetTaxa);
+
+        _btnFindTaxon = new JButton(IconHelper.createImageIconFromAbsolutePath("/au/org/ala/delta/intkey/resources/icons/finds.png"));
+        _btnFindTaxon.setEnabled(false);
+        _btnFindTaxon.setPreferredSize(new Dimension(30, 30));
+        pnlRemainingTaxaButtons.add(_btnFindTaxon);
 
         JPanel pnlEliminatedTaxa = new JPanel();
         _innerSplitPaneRight.setRightComponent(pnlEliminatedTaxa);
@@ -334,11 +358,13 @@ public class Intkey extends DeltaSingleFrameApplication {
         pnlEliminatedTaxaHeader.setLayout(new BorderLayout(0, 0));
 
         _lblEliminatedTaxa = new JLabel();
+        _lblEliminatedTaxa.setBorder(new EmptyBorder(7, 0, 7, 0));
         _lblEliminatedTaxa.setFont(new Font("Tahoma", Font.PLAIN, 15));
         _lblEliminatedTaxa.setText(String.format(eliminatedTaxaCaption, 0));
         pnlEliminatedTaxaHeader.add(_lblEliminatedTaxa, BorderLayout.WEST);
 
-        getMainView().setMenuBar(buildMenus());
+        JMenuBar menuBar = buildMenus(true);
+        getMainView().setMenuBar(menuBar);
 
         _txtFldCmdBar = new JTextField();
         _txtFldCmdBar.setCaretColor(Color.WHITE);
@@ -384,7 +410,9 @@ public class Intkey extends DeltaSingleFrameApplication {
         super.shutdown();
     }
 
-    private JMenuBar buildMenus() {
+    private JMenuBar buildMenus(boolean advancedMode) {
+
+        _cmdMenus = new HashMap<String, JMenu>();
 
         ActionMap actionMap = getContext().getActionMap();
 
@@ -397,58 +425,111 @@ public class Intkey extends DeltaSingleFrameApplication {
         JMenuItem mnuItNewDataSet = buildMenuItemForDirective(new NewDatasetDirective(), "mnuDirectiveNewDataSet");
         mnuFile.add(mnuItNewDataSet);
 
-        JMenuItem mnuItPreferences = new JMenuItem();
-        mnuItPreferences.setAction(actionMap.get("setPreferences"));
-        mnuItPreferences.setEnabled(false);
-        mnuFile.add(mnuItPreferences);
+        if (advancedMode) {
+            JMenuItem mnuItPreferences = new JMenuItem();
+            mnuItPreferences.setAction(actionMap.get("setPreferences"));
+            mnuItPreferences.setEnabled(false);
+            mnuFile.add(mnuItPreferences);
 
-        JMenuItem mnuItContents = new JMenuItem();
-        mnuItContents.setAction(actionMap.get("setContents"));
-        mnuItContents.setEnabled(false);
-        mnuFile.add(mnuItContents);
+            JMenuItem mnuItContents = new JMenuItem();
+            mnuItContents.setAction(actionMap.get("setContents"));
+            mnuItContents.setEnabled(false);
+            mnuFile.add(mnuItContents);
+
+            mnuFile.addSeparator();
+
+            JMenu mnuFileCmds = new JMenu();
+            mnuFileCmds.setName("mnuFileCmds");
+
+            JMenuItem mnuItFileCharactersCmd = new JMenuItem();
+            mnuItFileCharactersCmd.setAction(new DirectiveAction(new FileCharactersDirective(), _context, "mnuDirectiveFileCharacters"));
+            mnuFileCmds.add(mnuItFileCharactersCmd);
+
+            JMenuItem mnuItFileTaxaCmd = new JMenuItem();
+            mnuItFileTaxaCmd.setAction(new DirectiveAction(new FileTaxaDirective(), _context, "mnuDirectiveFileTaxa"));
+            mnuFileCmds.add(mnuItFileTaxaCmd);
+
+            mnuFile.add(mnuFileCmds);
+
+            JMenu mnuOutput = new JMenu("Output");
+            mnuOutput.setEnabled(false);
+            mnuFile.add(mnuOutput);
+
+            mnuFile.addSeparator();
+
+            JMenuItem mnuItComment = new JMenuItem("Comment...");
+            mnuItComment.setEnabled(false);
+            mnuFile.add(mnuItComment);
+
+            JMenuItem mnuItShow = new JMenuItem("Show...");
+            mnuItShow.setEnabled(false);
+            mnuFile.add(mnuItShow);
+
+            mnuFile.addSeparator();
+
+            JMenuItem mnuItNormalMode = new JMenuItem("Normal Mode");
+            mnuItNormalMode.addActionListener(new ActionListener() {
+                
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    toggleAdvancedMode(true);
+                }
+            });
+            mnuFile.add(mnuItNormalMode);
+
+            mnuFile.addSeparator();
+
+            JMenuItem mnuItEditIndex = new JMenuItem("Edit Index...");
+            mnuItEditIndex.setEnabled(false);
+            mnuFile.add(mnuItEditIndex);
+
+            _cmdMenus.put("file", mnuFileCmds);
+        } else {
+            JMenuItem mnuItAdvancedMode = new JMenuItem("Advanced Mode");
+            mnuItAdvancedMode.addActionListener(new ActionListener() {
+                
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    toggleAdvancedMode(true);
+                }
+            });
+            mnuFile.add(mnuItAdvancedMode);
+        }
 
         mnuFile.addSeparator();
-
-        JMenu mnuFileCmds = new JMenu();
-        mnuFileCmds.setName("mnuFileCmds");
-
-        JMenuItem mnuItFileCharactersCmd = buildMenuItemForDirective(new FileCharactersDirective(), "mnuDirectiveFileCharacters");
-        // mnuFileCmds.add(mnuItFileCharactersCmd);
-
-        JMenuItem mnuItFileTaxaCmd = buildMenuItemForDirective(new FileTaxaDirective(), "mnuDirectiveFileTaxa");
-        // mnuFileCmds.add(mnuItFileTaxaCmd);
-
-        mnuFile.add(mnuFileCmds);
-
-        mnuFile.addSeparator();
-
-        /*
-         * JMenuItem mnuItAdvancedMode = new JMenuItem();
-         * mnuItAdvancedMode.setAction(actionMap.get("switchAdvancedMode"));
-         * mnuItAdvancedMode.setEnabled(false); mnuFile.add(mnuItAdvancedMode);
-         * 
-         * mnuFile.addSeparator();
-         */
 
         JMenuItem mnuItFileExit = new JMenuItem();
         mnuItFileExit.setAction(actionMap.get("exitApplication"));
         mnuFile.add(mnuItFileExit);
         menuBar.add(mnuFile);
 
-        _mnuReExecute = new JMenu("ReExecute...");
-        _mnuReExecute.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                ReExecuteDialog dlg = new ReExecuteDialog(_context.getMainFrame(), _context.getExecutedDirectives());
-                dlg.setVisible(true);
-                _mnuReExecute.setSelected(false);
-                IntkeyDirectiveInvocation directive = dlg.getDirectiveToExecute();
-                if (directive != null) {
-                    _context.executeDirective(directive);
+        if (advancedMode) {
+            _mnuReExecute = new JMenu("ReExecute...");
+            _mnuReExecute.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    ReExecuteDialog dlg = new ReExecuteDialog(_context.getMainFrame(), _context.getExecutedDirectives());
+                    dlg.setVisible(true);
+                    _mnuReExecute.setSelected(false);
+                    IntkeyDirectiveInvocation directive = dlg.getDirectiveToExecute();
+                    if (directive != null) {
+                        _context.executeDirective(directive);
+                    }
                 }
-            }
-        });
-        menuBar.add(_mnuReExecute);
+            });
+            menuBar.add(_mnuReExecute);
+
+            JMenu mnuQuery = new JMenu("Queries");
+            menuBar.add(mnuQuery);
+
+            JMenu mnuBrowsing = new JMenu("Browsing");
+            mnuBrowsing.setEnabled(false);
+            menuBar.add(mnuBrowsing);
+
+            JMenu mnuSettings = new JMenu("Settings");
+            mnuSettings.setEnabled(false);
+            menuBar.add(mnuSettings);
+        }
 
         // Window menu
         JMenu mnuWindow = new JMenu();
@@ -481,6 +562,12 @@ public class Intkey extends DeltaSingleFrameApplication {
         mnuHelp.add(mnuItHelpIntroduction);
         // mnuItHelpContents.addActionListener(_helpController.helpAction());
 
+        if (advancedMode) {
+            JMenuItem mnuItCommands = new JMenuItem("Commands...");
+            mnuItCommands.setEnabled(false);
+            mnuHelp.add(mnuItCommands);
+        }
+
         if (isMac()) {
             configureMacAboutBox(actionMap.get("openAbout"));
         } else {
@@ -491,15 +578,18 @@ public class Intkey extends DeltaSingleFrameApplication {
 
         menuBar.add(mnuHelp);
 
-        _cmdMenus = new HashMap<String, JMenu>();
-        _cmdMenus.put("file", mnuFileCmds);
-
         return menuBar;
     }
 
     // File menu actions
     @Action
-    public void switchAdvancedMode() {
+    public void setAdvancedMode() {
+        toggleAdvancedMode(true);
+    }
+
+    @Action
+    public void setNormalMode() {
+        toggleAdvancedMode(false);
     }
 
     @Action
@@ -541,56 +631,35 @@ public class Intkey extends DeltaSingleFrameApplication {
     }
 
     private JMenuItem buildMenuItemForDirective(IntkeyDirective dir, String itemName) {
-        JMenuItem mnuIt = new JMenuItem();
-        mnuIt.setName(itemName);
+        JMenuItem mnuItNewDataSet = new JMenuItem();
+        mnuItNewDataSet.setName(itemName);
 
-        mnuIt.addActionListener(new DirectiveMenuActionListener(dir, _context));
+        mnuItNewDataSet.setAction(new DirectiveAction(dir, _context, "insert caption here"));
 
-        return mnuIt;
-    }
-
-    private class DirectiveMenuActionListener implements ActionListener {
-
-        private IntkeyDirective _dir;
-        private IntkeyContext _context;
-
-        public DirectiveMenuActionListener(IntkeyDirective dir, IntkeyContext context) {
-            _dir = dir;
-            _context = context;
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            try {
-                _dir.process(_context, null);
-            } catch (Exception ex) {
-                Logger.log("Error while running directive from menu - %s %s", _dir.toString(), ex.getMessage());
-                ex.printStackTrace();
-            }
-        }
+        return mnuItNewDataSet;
     }
 
     public void handleNewDataSet(IntkeyDataset dataset) {
         getMainFrame().setTitle(String.format(windowTitleWithDatasetTitle, dataset.getHeading()));
-        
+
         _availableCharacterListModel = new AvailableCharacterListModel(dataset.getCharacters());
         _usedCharacterListModel = new UsedCharacterListModel();
         _itemListModel = new ItemListModel(dataset.getTaxa());
-        
+
         _listAvailableCharacters.setModel(_availableCharacterListModel);
         _listUsedCharacters.setModel(_usedCharacterListModel);
         _listRemainingTaxa.setModel(new ItemListModel(dataset.getTaxa()));
-        
+
         updateListCaptions();
     }
 
     public void handleCharacterUsed(Character ch, CharacterValue value) {
         // remove from top list
         _availableCharacterListModel.removeCharacter(ch);
-        
+
         // add to bottom list
         _usedCharacterListModel.addCharacterValue(ch, value);
-        
+
         updateListCaptions();
     }
 
@@ -601,16 +670,25 @@ public class Intkey extends DeltaSingleFrameApplication {
     public void handleCharacterDeleted(Character ch) {
 
     }
-    
+
     public void handleRestartIdentification() {
-        //TODO do this properly
+        // TODO do this properly
         handleNewDataSet(_context.getDataset());
     }
-    
+
     private void updateListCaptions() {
         _lblNumAvailableCharacters.setText(String.format(availableCharactersCaption, _availableCharacterListModel.getSize()));
         _lblNumUsedCharacters.setText(String.format(usedCharactersCaption, _usedCharacterListModel.getSize()));
         _lblNumRemainingTaxa.setText(String.format(remainingTaxaCaption, _itemListModel.getSize()));
+    }
+
+    private void toggleAdvancedMode(boolean advancedMode) {
+        _btnSeparate.setVisible(advancedMode);
+        _btnSetMatch.setVisible(advancedMode);
+        _txtFldCmdBar.setVisible(advancedMode);
+        JMenuBar menuBar = buildMenus(advancedMode);
+        getMainView().setMenuBar(menuBar);
+        show(_rootPanel);
     }
 
     private class AvailableCharacterListModel extends AbstractListModel {
@@ -654,7 +732,7 @@ public class Intkey extends DeltaSingleFrameApplication {
 
         private List<CharacterValue> _values;
         private HashMap<Character, CharacterValue> _characterValueMap;
-        
+
         public UsedCharacterListModel() {
             _values = new ArrayList<CharacterValue>();
             _characterValueMap = new HashMap<Character, CharacterValue>();

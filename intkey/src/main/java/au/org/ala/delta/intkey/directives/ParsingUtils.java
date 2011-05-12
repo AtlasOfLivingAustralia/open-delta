@@ -70,7 +70,7 @@ public class ParsingUtils {
         //TODO - make it so that floats can be parsed using the "/" separator
         
         if (r == null) {
-            throw new IllegalArgumentException("Invalid integer value");
+            throw new IllegalArgumentException("Invalid real value");
         }
 
         return r;

@@ -42,6 +42,8 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     private Specimen _specimen;
 
+    private boolean _recordDirectiveHistory;
+
     // Use linked hashmap so that the keys list will be returned in
     // order of insertion.
     private LinkedHashMap<String, Set<Integer>> _characterKeywords;
@@ -64,6 +66,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         _characterKeywords = new LinkedHashMap<String, Set<Integer>>();
 
         _executedDirectives = new ArrayList<IntkeyDirectiveInvocation>();
+        _recordDirectiveHistory = false;
     }
 
     public void setFileCharacters(String fileName) {
@@ -113,9 +116,11 @@ public class IntkeyContext extends AbstractDeltaContext {
     }
 
     private void createNewDataSet() {
+        _executedDirectives = new ArrayList<IntkeyDirectiveInvocation>();
+
         _dataset = new IntkeyDatasetFileBuilder().readDataSet(_charactersFile, _taxaFile);
 
-        // TODO really need a proper listener pattern here
+        // TODO need a proper listener pattern here?
         if (_appUI != null) {
             _appUI.handleNewDataSet(_dataset);
         }
@@ -123,6 +128,9 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     public void newDataSetFile(String fileName) {
         Logger.log("Reading in new Data Set file from: %s", fileName);
+
+        // Don't record directive executed while
+        _recordDirectiveHistory = false;
 
         IntkeyDirectiveParser parser = IntkeyDirectiveParser.createInstance();
 
@@ -132,6 +140,9 @@ public class IntkeyContext extends AbstractDeltaContext {
         } catch (IOException ex) {
             Logger.log(ex.getMessage());
         }
+
+        // re enable recording of directives executed
+        _recordDirectiveHistory = true;
     }
 
     public void executeDirective(IntkeyDirectiveInvocation invoc) {
@@ -141,7 +152,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         int insertionIndex = _executedDirectives.size();
 
         boolean success = invoc.execute(this);
-        if (success) {
+        if (success && _recordDirectiveHistory) {
             _executedDirectives.add(insertionIndex, invoc);
         }
     }
@@ -224,8 +235,10 @@ public class IntkeyContext extends AbstractDeltaContext {
     public void restartIdentification() {
         // TODO need to account for fixed characters etc here.
 
-        // Create a new blank specimen
-        _specimen = new Specimen();
-        _appUI.handleRestartIdentification();
+        if (_dataset != null) {
+            // Create a new blank specimen
+            _specimen = new Specimen();
+            _appUI.handleRestartIdentification();
+        }
     }
 }
