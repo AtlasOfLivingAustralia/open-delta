@@ -688,6 +688,9 @@ public class DeltaEditor extends InternalFrameApplication implements
 		_propertyChangeSupport.firePropertyChange("saveEnabled",
 				oldSaveEnabled, _saveEnabled);
 		updateTitle();
+		if ((saveEnabled) && isMac()) {
+			getMainFrame().getRootPane().putClientProperty("Window.documentModified", saveEnabled);
+		}
 	}
 
 	public boolean isSaveEnabled() {
@@ -699,9 +702,6 @@ public class DeltaEditor extends InternalFrameApplication implements
 		_saveAsEnabled = saveEnabled;
 		_propertyChangeSupport.firePropertyChange("saveAsEnabled",
 				oldSaveAsEnabled, _saveAsEnabled);
-		if ((saveEnabled) && isMac()) {
-			getMainFrame().getRootPane().putClientProperty("Window.documentModified", saveEnabled);
-		}
 	}
 
 	public boolean isSaveAsEnabled() {
