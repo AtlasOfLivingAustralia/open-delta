@@ -26,7 +26,7 @@ public class EditorPreferences {
 	/** Default value for the import file filter */
 	private static String DEFAULT_IMPORT_FILE_FILTER = "*.bak;*.box;tidy*.;reorder*.";
 	
-	private static String ADVANCE_MODE_KEY = "EditorAdvanceMode";
+	public static String ADVANCE_MODE_KEY = "EditorAdvanceMode";
 	
 	private static EditorAdvanceMode DEFAULT_EDITOR_ADVANCE_MODE = EditorAdvanceMode.Character;
 
@@ -123,6 +123,14 @@ public class EditorPreferences {
 		if (prefs != null) {
 			prefs.addPreferenceChangeListener(listener);
 		}	
+	}
+
+	public static void removePreferenceChangeListener(PreferenceChangeListener listener) {
+		Preferences prefs = Preferences.userNodeForPackage(DeltaEditor.class);
+		if (prefs != null) {
+			prefs.removePreferenceChangeListener(listener);
+		}	
+		
 	}
 
 }

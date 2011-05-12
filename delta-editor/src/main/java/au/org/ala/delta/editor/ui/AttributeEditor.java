@@ -23,6 +23,8 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.prefs.PreferenceChangeEvent;
+import java.util.prefs.PreferenceChangeListener;
 
 import javax.swing.ActionMap;
 import javax.swing.ButtonGroup;
@@ -63,12 +65,15 @@ import au.org.ala.delta.ui.rtf.RtfEditor;
 /**
  * The AttributeEditor allows a user to change the value of an attribute.
  */
-public class AttributeEditor extends JPanel implements ValidationListener {
+public class AttributeEditor extends JPanel implements ValidationListener, PreferenceChangeListener {
 
 	private static final long serialVersionUID = 1L;
 
 	private RtfEditor _textPane;
 	private JTable _characterDetailsTable;
+	private JToggleButton advanceItem;
+	private JToggleButton advanceCharacter;
+	
 	private boolean _valid = true;
 
 	private Character _character;
@@ -119,6 +124,7 @@ public class AttributeEditor extends JPanel implements ValidationListener {
 			}
 			
 		});
+		_dataSet.addPreferenceChangeListener(this);
 		
 		_editListener = new EditListener();
 		_textPane.getDocument().addDocumentListener(_editListener);
@@ -190,10 +196,10 @@ public class AttributeEditor extends JPanel implements ValidationListener {
 		add(split, BorderLayout.CENTER);
 		
 		
-		JToggleButton advanceItem = new JToggleButton();
+		advanceItem = new JToggleButton();
 		advanceItem.setAction(actions.get("advanceItem"));
 		advanceItem.setFocusable(false);
-		JToggleButton advanceCharacter = new JToggleButton();
+		advanceCharacter = new JToggleButton();
 	    advanceCharacter.setAction(actions.get("advanceCharacter"));
 		advanceCharacter.setFocusable(false);
 		ButtonGroup buttons = new ButtonGroup();
@@ -234,6 +240,18 @@ public class AttributeEditor extends JPanel implements ValidationListener {
 	protected void fireReverse() {
 		for (AttributeEditorListener l : _listeners) {
 			l.reverse();
+		}
+	}
+	
+	@Override
+	public void preferenceChange(PreferenceChangeEvent evt) {
+		if (EditorPreferences.ADVANCE_MODE_KEY.equals(evt.getKey())) {
+			if (EditorAdvanceMode.Character.equals(EditorPreferences.getEditorAdvanceMode())) {
+				advanceCharacter.setSelected(true);
+			}
+			else {
+				advanceItem.setSelected(true);
+			}
 		}
 	}
 
@@ -312,8 +330,9 @@ public class AttributeEditor extends JPanel implements ValidationListener {
 	 */
 	@org.jdesktop.application.Action
 	public void advanceItem() {
-		
-		EditorPreferences.setEditorAdvanceMode(EditorAdvanceMode.Item);
+		if (advanceItem.isSelected()) {
+			EditorPreferences.setEditorAdvanceMode(EditorAdvanceMode.Item);
+		}
 	}
 	
 	/**
@@ -322,7 +341,9 @@ public class AttributeEditor extends JPanel implements ValidationListener {
 	 */
 	@org.jdesktop.application.Action
 	public void advanceCharacter() {
-		EditorPreferences.setEditorAdvanceMode(EditorAdvanceMode.Character);
+		if (advanceCharacter.isSelected()) {
+			EditorPreferences.setEditorAdvanceMode(EditorAdvanceMode.Character);
+		}
 	}
 	
 	

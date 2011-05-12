@@ -3,7 +3,12 @@ package au.org.ala.delta.editor.model;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.prefs.PreferenceChangeEvent;
+import java.util.prefs.PreferenceChangeListener;
 
+import au.org.ala.delta.editor.EditorPreferences;
 import au.org.ala.delta.model.AbstractObservableDataSet;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
@@ -16,7 +21,7 @@ import au.org.ala.delta.model.ObservableDeltaDataSet;
  * to allow clean removal of listeners from the backing DeltaDataSet when a view of the model is 
  * closed. 
  */
-public class EditorDataModel extends DataSetWrapper implements EditorViewModel {
+public class EditorDataModel extends DataSetWrapper implements EditorViewModel, PreferenceChangeListener {
 
 	/** The number of the currently selected character */
 	private Character _selectedCharacter;
@@ -27,9 +32,15 @@ public class EditorDataModel extends DataSetWrapper implements EditorViewModel {
 	/** Helper class for notifying interested parties of property changes */
 	private PropertyChangeSupport _propertyChangeSupport;
 	
+	private List<PreferenceChangeListener> _preferenceChangeListeners;
+	
+	
 	public EditorDataModel(AbstractObservableDataSet dataSet) {
 		super(dataSet);
 		_propertyChangeSupport = new PropertyChangeSupport(this);
+		_preferenceChangeListeners = new ArrayList<PreferenceChangeListener>();
+		
+		EditorPreferences.addPreferencesChangeListener(this);
 	}
 	
 	public void addPropertyChangeListener(PropertyChangeListener listener) {
@@ -110,7 +121,25 @@ public class EditorDataModel extends DataSetWrapper implements EditorViewModel {
 
 	@Override
 	public void close() {
+		EditorPreferences.removePreferenceChangeListener(this);
 		_wrappedDataSet.removeDeltaDataSetObserver(this);
 		_wrappedDataSet.close();
 	}
+	
+	public void addPreferenceChangeListener(PreferenceChangeListener listener) {
+		_preferenceChangeListeners.add(listener);
+	}
+	
+	public void removePreferenceChangeListener(PreferenceChangeListener listener) {
+		_preferenceChangeListeners.remove(listener);
+	}
+
+	@Override
+	public void preferenceChange(PreferenceChangeEvent evt) {
+		for (PreferenceChangeListener listener : _preferenceChangeListeners) {
+			listener.preferenceChange(evt);
+		}
+	}
+	
+	
 }

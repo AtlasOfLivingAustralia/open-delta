@@ -138,6 +138,7 @@ public class DeltaViewController extends InternalFrameAdapter implements Vetoabl
 		DeltaView view = (DeltaView)frame;
 		DeltaViewModel model = _models.remove(view);
 		_dataSet.removeDeltaDataSetObserver(model);
+		_dataSet.removePreferenceChangeListener(model);
 		fireViewClosed(view);
 	}
 	
