@@ -529,10 +529,10 @@ public class DeltaEditor extends InternalFrameApplication implements
 			_controllers.remove(controller);
 			
 			if (_controllers.isEmpty()) {
-				getMainFrame().setTitle(windowTitleWithoutFilename);
+				_activeController = null;
 				setSaveAsEnabled(false);
 				setSaveEnabled(false);
-				_activeController = null;
+				
 			}
 		}
 	}
@@ -552,6 +552,14 @@ public class DeltaEditor extends InternalFrameApplication implements
 	 * selected view.
 	 */
 	private void updateTitle() {
+		
+		if (_activeController == null) {
+			if (isMac()) {
+				getMainFrame().getRootPane().putClientProperty("Window.documentModified", Boolean.FALSE);
+			}
+			getMainFrame().setTitle(windowTitleWithoutFilename);
+			return;
+		}
 		String dataSetName = getCurrentDataSet().getName();
 		String title = String.format(windowTitleWithFilename,dataSetName);
 		

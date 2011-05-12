@@ -83,6 +83,9 @@ public class ImageDetailsPanel extends JPanel {
 		});
 		imageList.setSelectionAction(actions.get("displayImage"));
 		
+		playSoundButton.setAction(actions.get("playSound"));
+		deleteSoundButton.setAction(actions.get("delete" +
+				"Sound"));
 		
 	}
 
@@ -196,9 +199,9 @@ public class ImageDetailsPanel extends JPanel {
 		
 		JComboBox comboBox = new JComboBox();
 		
-		JButton button = new JButton("..");
+		deleteSoundButton = new JButton();
 		
-		JButton button_1 = new JButton("..");
+		playSoundButton = new JButton();
 		
 		JButton btnInsert = new JButton("Insert");
 		GroupLayout gl_panel_3 = new GroupLayout(panel_3);
@@ -207,9 +210,9 @@ public class ImageDetailsPanel extends JPanel {
 				.addGroup(gl_panel_3.createSequentialGroup()
 					.addComponent(comboBox, 0, 0, Short.MAX_VALUE)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(button)
+					.addComponent(deleteSoundButton)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(button_1)
+					.addComponent(playSoundButton)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(btnInsert)
 					.addContainerGap())
@@ -220,8 +223,8 @@ public class ImageDetailsPanel extends JPanel {
 					.addContainerGap(5, Short.MAX_VALUE)
 					.addGroup(gl_panel_3.createParallelGroup(Alignment.BASELINE)
 						.addComponent(comboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(button)
-						.addComponent(button_1)
+						.addComponent(deleteSoundButton)
+						.addComponent(playSoundButton)
 						.addComponent(btnInsert)))
 		);
 		panel_3.setLayout(gl_panel_3);
@@ -319,6 +322,22 @@ public class ImageDetailsPanel extends JPanel {
 		}
 	}
 	
+	/**
+	 * Deletes the sound currently selected in the image sound combo box.
+	 */
+	@Action
+	public void deleteSound() {
+		
+	}
+	
+	/**
+	 * Plays the sound currently selected in the image sound combo box.
+	 */
+	@Action
+	public void playSound() {
+		
+	}
+	
 	private void determineImagePath() {
 		String basePath;
 		try {
@@ -373,6 +392,8 @@ public class ImageDetailsPanel extends JPanel {
 			}
 		}
 	};
+	private JButton deleteSoundButton;
+	private JButton playSoundButton;
 	public void setDataSet(EditorViewModel dataSet) {
 		
 		if (_dataSet != null) {

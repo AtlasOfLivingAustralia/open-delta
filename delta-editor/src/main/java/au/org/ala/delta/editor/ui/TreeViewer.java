@@ -118,9 +118,15 @@ public class TreeViewer extends JInternalFrame implements DeltaView {
 			 */
 			protected void processMouseEvent(MouseEvent e) {
 				super.processMouseEvent(e);
-				DefaultMutableTreeNode node = (DefaultMutableTreeNode)getSelectionPath().getLastPathComponent();
-				if (node.isLeaf()) {
-					super.processMouseEvent(e);
+				TreePath selectedPath = getSelectionPath();
+				if (selectedPath != null) {
+					Object lastComponent = selectedPath.getLastPathComponent();
+					if (lastComponent instanceof DefaultMutableTreeNode) {
+						DefaultMutableTreeNode node = (DefaultMutableTreeNode)lastComponent;
+						if (node.isLeaf()) {
+							super.processMouseEvent(e);
+						}
+					}
 				}
 			}
 		};
