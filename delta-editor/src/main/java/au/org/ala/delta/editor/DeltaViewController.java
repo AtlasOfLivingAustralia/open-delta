@@ -26,7 +26,7 @@ import au.org.ala.delta.ui.MessageDialogHelper;
  * The DeltaViewControllers is responsible for managing a single instance of the EditorDataModel
  * and any associated views.
  */
-public class DeltaViewController extends InternalFrameAdapter implements VetoableChangeListener {
+public class DeltaViewController extends InternalFrameAdapter implements VetoableChangeListener{
 
 	private static final String DELTA_FILE_EXTENSION = "dlt";
 	
@@ -186,6 +186,7 @@ public class DeltaViewController extends InternalFrameAdapter implements Vetoabl
 		}
 		else {
 			_repository.save(_dataSet.getDeltaDataSet(), null);
+			_dataSet.setModified(false);
 		}
 	}
 	
@@ -311,5 +312,6 @@ public class DeltaViewController extends InternalFrameAdapter implements Vetoabl
 			_observers.get(i).viewSelected(this, view);
 		}
 	}
+	
 }
  

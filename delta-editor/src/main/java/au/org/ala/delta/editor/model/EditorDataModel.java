@@ -13,6 +13,7 @@ import au.org.ala.delta.model.AbstractObservableDataSet;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.ObservableDeltaDataSet;
+import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
 
 
 /**
@@ -34,6 +35,8 @@ public class EditorDataModel extends DataSetWrapper implements EditorViewModel, 
 	
 	private List<PreferenceChangeListener> _preferenceChangeListeners;
 	
+	/** Keeps track of whether this data set has been modified */
+	private boolean _modified;
 	
 	public EditorDataModel(AbstractObservableDataSet dataSet) {
 		super(dataSet);
@@ -126,6 +129,18 @@ public class EditorDataModel extends DataSetWrapper implements EditorViewModel, 
 		_wrappedDataSet.close();
 	}
 	
+	public boolean isModified() {
+		return _wrappedDataSet.isModified();
+	}
+	
+	public void setModified(boolean modified) {
+		
+		if (modified != _modified) {
+			_propertyChangeSupport.firePropertyChange("modified", _modified, modified);
+		}
+		_modified = modified;
+	}
+	
 	public void addPreferenceChangeListener(PreferenceChangeListener listener) {
 		_preferenceChangeListeners.add(listener);
 	}
@@ -140,6 +155,52 @@ public class EditorDataModel extends DataSetWrapper implements EditorViewModel, 
 			listener.preferenceChange(evt);
 		}
 	}
-	
-	
+
+	@Override
+	public void itemAdded(DeltaDataSetChangeEvent event) {
+		setModified(true);
+		super.itemAdded(event);
+	}
+
+	@Override
+	public void itemDeleted(DeltaDataSetChangeEvent event) {
+		setModified(true);
+		super.itemDeleted(event);
+	}
+
+	@Override
+	public void itemMoved(DeltaDataSetChangeEvent event) {
+		setModified(true);
+		super.itemMoved(event);
+	}
+
+	@Override
+	public void itemEdited(DeltaDataSetChangeEvent event) {
+		setModified(true);
+		super.itemEdited(event);
+	}
+
+	@Override
+	public void characterAdded(DeltaDataSetChangeEvent event) {
+		setModified(true);
+		super.characterAdded(event);
+	}
+
+	@Override
+	public void characterDeleted(DeltaDataSetChangeEvent event) {
+		setModified(true);
+		super.characterDeleted(event);
+	}
+
+	@Override
+	public void characterMoved(DeltaDataSetChangeEvent event) {
+		setModified(true);
+		super.characterMoved(event);
+	}
+
+	@Override
+	public void characterEdited(DeltaDataSetChangeEvent event) {
+		setModified(true);
+		super.characterEdited(event);
+	}
 }

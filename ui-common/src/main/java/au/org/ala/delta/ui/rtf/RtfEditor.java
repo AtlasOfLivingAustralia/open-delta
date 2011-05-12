@@ -74,7 +74,7 @@ public class RtfEditor extends RtfEditorPane {
 	private ResourceMap _resources = Application.getInstance().getContext().getResourceManager().getResourceMap();
 	
 	public RtfEditor() {
-		super();		
+		super();	
 		try {
 			URL url = this.getClass().getResource("/au/org/ala/delta/ui/resources/RTFSpecialBindings.properties");
 			Properties p = new Properties();
@@ -205,6 +205,7 @@ public class RtfEditor extends RtfEditorPane {
 	 */
 	protected void addUndoSupport() {
 		_undoManager = new UndoManager();
+		
 		getDocument().addUndoableEditListener(new UndoListener());
 		
 		_undoAction = new UndoAction();
@@ -272,7 +273,9 @@ public class RtfEditor extends RtfEditorPane {
 	@Override
 	public void setText(String t) {
 		super.setText(t);
-		_undoManager.discardAllEdits();
+		if (_undoManager != null) {
+			_undoManager.discardAllEdits();
+		}
 	}
 
 	/**

@@ -18,6 +18,7 @@ import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
@@ -71,7 +72,7 @@ import au.org.ala.delta.util.IProgressObserver;
  */
 @ProxyActions("copyAll")
 public class DeltaEditor extends InternalFrameApplication implements
-		PreferenceChangeListener, DeltaViewStatusObserver {
+		PreferenceChangeListener, DeltaViewStatusObserver, PropertyChangeListener {
 
 	private static final String DELTA_FILE_EXTENSION = "dlt";
 
@@ -509,6 +510,7 @@ public class DeltaEditor extends InternalFrameApplication implements
 	 */
 	private DeltaViewController createController(AbstractObservableDataSet dataSet) {
 		EditorDataModel model = new EditorDataModel(dataSet);
+		model.addPropertyChangeListener(this);
 		DeltaViewController controller = new DeltaViewController(model, DeltaEditor.this, _dataSetRepository);
 		controller.setNewDataSetName(newDataSetName);
 		controller.setCloseWithoutSavingMessage(closeWithoutSavingMessage);
@@ -536,7 +538,7 @@ public class DeltaEditor extends InternalFrameApplication implements
 	public void viewSelected(DeltaViewController controller, DeltaView view) {
 		_activeController = controller;
 		updateTitle();
-		setSaveEnabled(true);
+		setSaveEnabled(controller.getModel().isModified());
 		setSaveAsEnabled(true);
 	}
 	
@@ -658,6 +660,19 @@ public class DeltaEditor extends InternalFrameApplication implements
 		return true;
 	}
 	
+	
+
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		if (_activeController == null) {
+			return;
+		}
+		if (evt.getSource() == _activeController.getModel()) {
+			if ("modified".equals(evt.getPropertyName())) {
+				setSaveEnabled((Boolean)evt.getNewValue());
+			}
+		}
+	}
 
 	public void addPropertyChangeListener(PropertyChangeListener listener) {
 		_propertyChangeSupport.addPropertyChangeListener(listener);
@@ -679,6 +694,9 @@ public class DeltaEditor extends InternalFrameApplication implements
 		_saveAsEnabled = saveEnabled;
 		_propertyChangeSupport.firePropertyChange("saveAsEnabled",
 				oldSaveAsEnabled, _saveAsEnabled);
+		if ((saveEnabled) && isMac()) {
+			getMainFrame().getRootPane().putClientProperty("Window.documentModified", saveEnabled);
+		}
 	}
 
 	public boolean isSaveAsEnabled() {
