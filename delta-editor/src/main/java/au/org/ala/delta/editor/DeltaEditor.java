@@ -538,13 +538,17 @@ public class DeltaEditor extends InternalFrameApplication implements
 	public void viewSelected(DeltaViewController controller, DeltaView view) {
 		_activeController = controller;
 		updateTitle();
-		setSaveEnabled(controller.getModel().isModified());
+		setSaveEnabled(getCurrentDataSet().isModified());
 		setSaveAsEnabled(true);
 	}
 	
 	private void updateTitle() {
 		String dataSetName = getCurrentDataSet().getName();
-		getMainFrame().setTitle(String.format(windowTitleWithFilename,dataSetName));
+		String title = String.format(windowTitleWithFilename,dataSetName);
+		if (getCurrentDataSet().isModified() && !isMac()) {
+			title = title + "*";
+		}
+		getMainFrame().setTitle(title);
 	}
 
 	@Action(block = BlockingScope.APPLICATION)
@@ -683,6 +687,7 @@ public class DeltaEditor extends InternalFrameApplication implements
 		_saveEnabled = saveEnabled;
 		_propertyChangeSupport.firePropertyChange("saveEnabled",
 				oldSaveEnabled, _saveEnabled);
+		updateTitle();
 	}
 
 	public boolean isSaveEnabled() {
