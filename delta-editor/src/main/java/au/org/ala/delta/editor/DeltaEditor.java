@@ -519,6 +519,9 @@ public class DeltaEditor extends InternalFrameApplication implements
 		return controller;
 	}
 
+	/**
+	 * Called when any view is closed.  Does tidy up if there are no remaining views.
+	 */
 	public void viewClosed(DeltaViewController controller, DeltaView view) {
 		
 		if (controller.getViewCount() == 0) {
@@ -534,7 +537,9 @@ public class DeltaEditor extends InternalFrameApplication implements
 		}
 	}
 
-	
+	/**
+	 * Called when a view is selected.  Updates the title and the state of the save/save as menus.
+	 */
 	public void viewSelected(DeltaViewController controller, DeltaView view) {
 		_activeController = controller;
 		updateTitle();
@@ -542,11 +547,26 @@ public class DeltaEditor extends InternalFrameApplication implements
 		setSaveAsEnabled(true);
 	}
 	
+	/**
+	 * Updates the main window title with the name of the data set displayed by the currently
+	 * selected view.
+	 */
 	private void updateTitle() {
 		String dataSetName = getCurrentDataSet().getName();
 		String title = String.format(windowTitleWithFilename,dataSetName);
-		if (getCurrentDataSet().isModified() && !isMac()) {
-			title = title + "*";
+		
+		boolean modified = getCurrentDataSet().isModified();
+		if (modified) {
+			if (isMac()) {
+				getMainFrame().getRootPane().putClientProperty("Window.documentModified", Boolean.TRUE);
+			}
+			else {
+				title = title + "*";
+			}
+		} else  {
+			if (isMac()) {
+				getMainFrame().getRootPane().putClientProperty("Window.documentModified", Boolean.FALSE);
+			}
 		}
 		getMainFrame().setTitle(title);
 	}
@@ -688,9 +708,7 @@ public class DeltaEditor extends InternalFrameApplication implements
 		_propertyChangeSupport.firePropertyChange("saveEnabled",
 				oldSaveEnabled, _saveEnabled);
 		updateTitle();
-		if ((saveEnabled) && isMac()) {
-			getMainFrame().getRootPane().putClientProperty("Window.documentModified", saveEnabled);
-		}
+		
 	}
 
 	public boolean isSaveEnabled() {
