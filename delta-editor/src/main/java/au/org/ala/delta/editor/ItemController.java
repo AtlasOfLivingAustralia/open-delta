@@ -12,7 +12,7 @@ import org.jdesktop.application.Application;
 import org.jdesktop.application.ApplicationContext;
 
 import au.org.ala.delta.editor.model.EditorViewModel;
-import au.org.ala.delta.editor.ui.ReorderableItemList;
+import au.org.ala.delta.editor.ui.ReorderableList;
 import au.org.ala.delta.editor.ui.dnd.SimpleTransferHandler;
 import au.org.ala.delta.editor.ui.util.MenuBuilder;
 import au.org.ala.delta.editor.ui.util.PopupMenuListener;
@@ -24,7 +24,7 @@ import au.org.ala.delta.ui.MessageDialogHelper;
  */
 public class ItemController {
 
-	private ReorderableItemList _view;
+	private ReorderableList<Item> _view;
 	private EditorViewModel _model;
 	private ApplicationContext _context;
 	private ActionMap _itemActions;
@@ -34,7 +34,7 @@ public class ItemController {
 	 * @param view the view of the Items.
 	 * @param model the model containing Item data.
 	 */
-	public ItemController(ReorderableItemList view, EditorViewModel model) {
+	public ItemController(ReorderableList<Item> view, EditorViewModel model) {
 		_view = view;
 		_model = model;
 		_context = Application.getInstance().getContext();
@@ -83,7 +83,7 @@ public class ItemController {
 	@Action
 	public void deleteItem() {
 		
-		Item toDelete = _view.getSelectedItem();
+		Item toDelete = _view.getSelected();
 		
 		if (toDelete == null) {
 			return;
@@ -107,7 +107,7 @@ public class ItemController {
 	
 	@Action
 	public void insertItem() {
-		Item selectedItem = _view.getSelectedItem();
+		Item selectedItem = _view.getSelected();
 		int itemNumber = 1;
 		if (selectedItem != null) {
 			itemNumber = selectedItem.getItemNumber();
@@ -124,7 +124,7 @@ public class ItemController {
 	
 	public void editNewItem(Item newItem, ActionEvent e) {
 		int selectedItem = newItem.getItemNumber();
-		_view.setSelectedItem(selectedItem);
+		_view.setSelectedIndex(selectedItem-1);
 		
 		editItem(e);
 	}
@@ -134,13 +134,13 @@ public class ItemController {
 			itemNum = _model.getMaximumNumberOfItems();
 		}
 		if (itemNum > 0) {
-			_view.setSelectedItem(itemNum);
+			_view.setSelectedIndex(itemNum-1);
 		}
 	}
 	
 	public void moveItem(Item item, int newIndex) {
 		_model.moveItem(item, newIndex+1);
-		_view.setSelectedItem(newIndex+1);
+		_view.setSelectedIndex(newIndex);
 	}
 	
 	public void copyItem(Item item, int copyLocation) {
@@ -170,13 +170,13 @@ public class ItemController {
 		
 		@Override
 		protected Item getTransferObject() {
-			return _view.getSelectedItem();
+			return _view.getSelected();
 		}
 		
 		@Override
 		protected int getStartIndex() {
 			int startIndex = 0;
-			Item selected = _view.getSelectedItem();
+			Item selected = _view.getSelected();
 			if (selected != null) {
 				startIndex = selected.getItemNumber()-1;
 			}

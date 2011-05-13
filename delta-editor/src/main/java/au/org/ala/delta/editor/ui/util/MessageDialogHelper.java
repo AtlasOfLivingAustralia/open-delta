@@ -30,4 +30,10 @@ public class MessageDialogHelper {
 		int result = au.org.ala.delta.ui.MessageDialogHelper.showConfirmDialog(_dialogParent, title, message, message.length());
 		return (result == JOptionPane.YES_OPTION);
 	}
+	
+	public void errorLoadingImage(String fileName) {
+		String title = _messages.getString("errorLoadingImage.title");
+		String message = _messages.getString("errorLoadingImage.message", fileName);
+		JOptionPane.showMessageDialog(_dialogParent, message, title, JOptionPane.ERROR_MESSAGE);
+	}
 }

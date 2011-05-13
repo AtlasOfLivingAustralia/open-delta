@@ -2,13 +2,11 @@ package au.org.ala.delta.editor.ui;
 
 import javax.swing.Action;
 
-import au.org.ala.delta.model.Item;
-
-public interface ReorderableItemList {
+public interface ReorderableList<T> {
 	
-	public Item getSelectedItem();
+	public T getSelected();
 	
-	public void setSelectedItem(int itemNumber);
+	public void setSelectedIndex(int index);
 	
 	public int getDropLocationIndex();
 	

@@ -7,16 +7,19 @@ import java.util.List;
 
 import javax.swing.ActionMap;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.DropMode;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.TransferHandler;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -26,6 +29,7 @@ import org.jdesktop.application.Application;
 import org.jdesktop.application.SingleFrameApplication;
 
 import au.org.ala.delta.editor.model.EditorViewModel;
+import au.org.ala.delta.editor.ui.dnd.SimpleTransferHandler;
 import au.org.ala.delta.editor.ui.util.MessageDialogHelper;
 import au.org.ala.delta.model.Illustratable;
 import au.org.ala.delta.model.image.Image;
@@ -91,6 +95,9 @@ public class ImageDetailsPanel extends JPanel {
 			}
 		});
 		imageList.setSelectionAction(actions.get("displayImage"));
+		imageList.setDragEnabled(true);
+		imageList.setDropMode(DropMode.INSERT);
+		imageList.setTransferHandler(new ImageTransferHandler());
 		
 		playSoundButton.setAction(actions.get("playSound"));
 		deleteSoundButton.setAction(actions.get("delete" +
@@ -316,9 +323,13 @@ public class ImageDetailsPanel extends JPanel {
 		}
 		
 		Window parent = ((SingleFrameApplication)Application.getInstance()).getMainFrame();
-		
-		JDialog dialog = ImageViewer.asDialog(parent, _dataSet.getImagePath(), _selectedImage);
-		dialog.setVisible(true);
+		try {
+			JDialog dialog = ImageViewer.asDialog(parent, _dataSet.getImagePath(), _selectedImage);
+			dialog.setVisible(true);
+		}
+		catch (Exception e) {
+			_messageHelper.errorLoadingImage(_selectedImage.getFileName());
+		}
 	}
 	
 	/**
@@ -394,6 +405,48 @@ public class ImageDetailsPanel extends JPanel {
 					soundComboBox.addItem(overlay.overlayText);
 				}
 			}
+		}
+	}
+	
+	/**
+	 * Handles drag and drop of Items in the ItemList.
+	 */
+	class ImageTransferHandler extends SimpleTransferHandler<Image> {
+		
+		private static final long serialVersionUID = 889705892088002277L;
+		
+		public ImageTransferHandler() {
+			super(Image.class);
+		}
+		
+		public int getSourceActions(JComponent c) {
+			return TransferHandler.MOVE;
+		}
+		
+		@Override
+		protected Image getTransferObject() {
+			return (Image)imageList.getSelectedValue();
+		}
+		
+		@Override
+		protected int getStartIndex() {
+			return imageList.getSelectedIndex();
+		}
+		
+		@Override
+		protected int getDropLocationIndex() {
+			return imageList.getDropLocation().getIndex();
+		}
+
+		@Override
+		protected void move(Image image, int targetIndex) {
+			_illustratable.moveImage(image, targetIndex);
+			imageList.setSelectedIndex(targetIndex);
+		}
+
+		@Override
+		protected void copy(Image item, int targetIndex) {
+			throw new UnsupportedOperationException();
 		}
 	}
 

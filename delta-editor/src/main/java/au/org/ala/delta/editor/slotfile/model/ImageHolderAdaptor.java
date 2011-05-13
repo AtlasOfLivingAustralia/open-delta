@@ -100,8 +100,24 @@ public abstract class ImageHolderAdaptor implements Illustratable {
 		getVOP().deleteObject(imageDesc);
 	}
 	
+	private int getImageId(Image image) {
+		VOImageAdaptor imageAdaptor = (VOImageAdaptor)image.getImageData();
+		return imageAdaptor.getId();
+	}
+	
 	@Override
 	public void moveImage(Image image, int position) {
 		
+		List<Integer> images = getImageHolder().readImageList();
+		int id = getImageId(image);
+		
+		for (int i=0; i<images.size(); i++) {
+			if (images.get(i) == id) {
+				images.remove(i);
+				images.add(position, id);
+				break;
+			}
+		}
+		getImageHolder().writeImageList(images);
 	}
 }
