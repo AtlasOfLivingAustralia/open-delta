@@ -36,4 +36,12 @@ public class MessageDialogHelper {
 		String message = _messages.getString("errorLoadingImage.message", fileName);
 		JOptionPane.showMessageDialog(_dialogParent, message, title, JOptionPane.ERROR_MESSAGE);
 	}
+
+	public void errorPlayingSound(String soundFile) {
+		String title = _messages.getString("errorPlayingSound.title");
+		String message = _messages.getString("errorPlayingSound.message", soundFile);
+		JOptionPane.showMessageDialog(_dialogParent, message, title, JOptionPane.ERROR_MESSAGE);
+
+		
+	}
 }

@@ -3,6 +3,7 @@ package au.org.ala.delta.editor.ui;
 import java.awt.Component;
 import java.awt.Window;
 import java.io.File;
+import java.net.URL;
 import java.util.List;
 
 import javax.swing.ActionMap;
@@ -38,6 +39,7 @@ import au.org.ala.delta.model.image.OverlayType;
 import au.org.ala.delta.model.observer.AbstractDataSetObserver;
 import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
 import au.org.ala.delta.model.observer.DeltaDataSetObserver;
+import au.org.ala.delta.ui.image.AudioPlayer;
 import au.org.ala.delta.ui.image.ImageViewer;
 import au.org.ala.delta.ui.image.SupportedFileTypes;
 import au.org.ala.delta.ui.rtf.RtfEditorPane;
@@ -373,7 +375,18 @@ public class ImageDetailsPanel extends JPanel {
 	 */
 	@Action
 	public void playSound() {
-		
+		String soundFile = (String)soundComboBox.getSelectedItem();
+		try {
+			File file = new File(soundFile);
+			if (!file.isAbsolute()) {
+				file = new File(_dataSet.getImagePath()+File.separator+soundFile);
+			}
+			URL sound = file.toURI().toURL();
+			AudioPlayer.playClip(sound);
+		}
+		catch (Exception e) {
+			_messageHelper.errorPlayingSound(soundFile);
+		}
 	}
 	
 	private void updateDisplay() {
