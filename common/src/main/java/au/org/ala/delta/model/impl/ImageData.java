@@ -9,4 +9,10 @@ public interface ImageData {
 	public List<ImageOverlay> getOverlays();
 
 	public String getFileName();
+	
+	public void addOverlay(ImageOverlay overlay);
+	
+	public void updateOverlay(ImageOverlay overlay);
+	
+	public void deleteOverlay(ImageOverlay overlay);
 }

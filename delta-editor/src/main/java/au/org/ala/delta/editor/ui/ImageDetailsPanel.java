@@ -2,6 +2,8 @@ package au.org.ala.delta.editor.ui;
 
 import java.awt.Component;
 import java.awt.Window;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.io.File;
 import java.net.URL;
 import java.util.List;
@@ -25,6 +27,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.apache.commons.lang.StringUtils;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.SingleFrameApplication;
@@ -104,7 +107,21 @@ public class ImageDetailsPanel extends JPanel {
 		playSoundButton.setAction(actions.get("playSound"));
 		deleteSoundButton.setAction(actions.get("delete" +
 				"Sound"));
+		FocusAdapter focusAdaptor = new FocusAdapter() {
+
+			@Override
+			public void focusLost(FocusEvent e) {
+				if (e.getComponent() == subjectTextPane) {
+					updateSubjectText();
+				}
+				else if (e.getComponent() == developerNotesTextPane) {
+					updateDeveloperNotes();
+				}
+			}
 		
+		};
+		subjectTextPane.addFocusListener(focusAdaptor);
+		developerNotesTextPane.addFocusListener(focusAdaptor);
 	}
 
 	private void createUI() {
@@ -386,6 +403,52 @@ public class ImageDetailsPanel extends JPanel {
 		}
 		catch (Exception e) {
 			_messageHelper.errorPlayingSound(soundFile);
+		}
+	}
+	
+	private void updateSubjectText() {
+		
+		String subjectText = subjectTextPane.getText();
+		
+		updateOverlayText(OverlayType.OLSUBJECT, subjectText);
+	}
+	
+	
+	private void updateDeveloperNotes() {
+		
+		String subjectText = developerNotesTextPane.getText();
+		
+		updateOverlayText(OverlayType.OLCOMMENT, subjectText);
+	}
+	
+	/**
+	 * Updates the overlay text of the supplied overlay.  If the overlay is null,
+	 * a new one of the supplied type is created.  If the text is null and the overlay
+	 * is not, the overlay is deleted.
+	 * @param type the type of overlay to edit.
+	 * @param overlay the overlay to edit.
+	 * @param text the new text for the overlay.
+	 */
+	private void updateOverlayText(int type, String text) {
+		if (_selectedImage == null) {
+			return;
+		}
+		ImageOverlay overlay = _selectedImage.getOverlay(type);
+		if (overlay == null) {
+			if (StringUtils.isNotEmpty(text)) {
+				overlay = new ImageOverlay(type);
+				overlay.overlayText = text;
+				_selectedImage.addOverlay(overlay);
+			}
+		}
+		else {
+			if (StringUtils.isNotEmpty(text)) {
+				overlay.overlayText = text;
+				_selectedImage.updateOverlay(overlay);
+			}
+			else {
+				_selectedImage.deleteOverlay(overlay);
+			}	
 		}
 	}
 	

@@ -66,4 +66,34 @@ public class Image {
 		
 		return imageURL;
 	}
+	
+	public void addOverlay(ImageOverlay overlay) {
+		_impl.addOverlay(overlay);
+	}
+	
+	public void updateOverlay(ImageOverlay overlay) {
+		_impl.updateOverlay(overlay);
+	}
+	
+	public void deleteOverlay(ImageOverlay overlay) {
+		_impl.addOverlay(overlay);
+	}
+	
+	/**
+	 * Returns the first overlay of the specified type or null if there is no such overlay.
+	 * @param overlayType the type of image overlay to get.
+	 * @return the first overlay of the supplied type or null if there is none.
+	 */
+	public ImageOverlay getOverlay(int overlayType) {
+		List<ImageOverlay> overlays = getOverlays();
+		
+		for (ImageOverlay overlay : overlays) {
+			if (overlayType == overlay.type) {
+				return overlay;
+			}
+		}
+		return null;
+	}
+	
+	
 }

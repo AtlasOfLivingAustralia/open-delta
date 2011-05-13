@@ -37,4 +37,16 @@ public class VOImageAdaptor implements ImageData {
 		return _imageDesc.readFileName();
 	}
 	
+	public void addOverlay(ImageOverlay overlay) {
+		_imageDesc.insertOverlay(overlay, 0);
+	}
+	
+	public void updateOverlay(ImageOverlay overlay) {
+		_imageDesc.replaceOverlay(overlay, true);
+	}
+	
+	public void deleteOverlay(ImageOverlay overlay) {
+		_imageDesc.removeOverlay(overlay.getId());
+	}
+	
 }

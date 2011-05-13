@@ -61,11 +61,20 @@ public class ImageOverlay {
 	public ImageOverlay(int aType) {
 		type = aType;
 		location = new ArrayList<OverlayLocation>();
+		overlayText = "";
+		comment = "";
 	}
 
 	public boolean isType(int overlayType) {
 		return type == overlayType;
 	}
+	
+    public int getId() {
+    	if (location.size() == 0) {
+    		return -1;
+    	}
+    	return location.get(0).ID;
+    }
 	
 	// Should "keywords" be a string? eventually I think this information will be a set of
 	// group IDs. But this "group" mechanism doesn't yet exist...

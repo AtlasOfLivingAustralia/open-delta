@@ -583,27 +583,31 @@ public class VOImageDesc extends VOAnyDesc {
 	 * @param fileName the name of the image file.
 	 */
 	public void writeFileName(String fileName) {
-	    byte[] trailerBuf = null;
-		int trailerLeng = 0;
-
-		if (fileName.length() != _fixedData.nameLen) { // Save a copy of any following data!
-		    trailerBuf = dupTrailingData(_fixedData.nameLen);
-		    if (trailerBuf != null) {
-		    	trailerLeng = trailerBuf.length;
-		    }
-		}
-
-		// Seek to force allocation of large enough slot
-		dataSeek(fileName.length() + trailerLeng);
-		dataSeek(0);
-		dataWrite(stringToBytes(fileName));
-		if (fileName.length() != _fixedData.nameLen) {
-		    _fixedData.nameLen = (short)fileName.length();
-		    setDirty();
-		    if (trailerBuf != null) {
-		        dataWrite(trailerBuf);
-		        dataTruncate();
-		    }
+	    synchronized (getVOP()) {
+		
+			byte[] trailerBuf = null;
+			int trailerLeng = 0;
+	
+			if (fileName.length() != _fixedData.nameLen) { // Save a copy of any following data!
+			    trailerBuf = dupTrailingData(_fixedData.nameLen);
+			    if (trailerBuf != null) {
+			    	trailerLeng = trailerBuf.length;
+			    }
+			}
+	
+			// Seek to force allocation of large enough slot
+			dataSeek(fileName.length() + trailerLeng);
+			dataSeek(0);
+			dataWrite(stringToBytes(fileName));
+			if (fileName.length() != _fixedData.nameLen) {
+			    _fixedData.nameLen = (short)fileName.length();
+			    setDirty();
+			    if (trailerBuf != null) {
+			        dataWrite(trailerBuf);
+			        dataTruncate();
+			    }
+			}
+		
 		}
 	}
 

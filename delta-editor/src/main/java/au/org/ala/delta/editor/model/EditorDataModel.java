@@ -119,7 +119,9 @@ public class EditorDataModel extends DataSetWrapper implements EditorViewModel, 
 			return "";
 		}
 		
-		return new File(getName()).getParent();
+		String imagePath = new ImageSettings().getImagePath();
+		String dataSetFolder = new File(getName()).getParent();
+		return dataSetFolder+File.separator+imagePath;
 	}
 	
 	@Override
@@ -211,4 +213,5 @@ public class EditorDataModel extends DataSetWrapper implements EditorViewModel, 
 		setModified(true);
 		super.characterEdited(event);
 	}
+
 }

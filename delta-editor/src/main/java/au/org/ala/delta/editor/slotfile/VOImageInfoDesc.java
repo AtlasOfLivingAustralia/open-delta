@@ -20,6 +20,9 @@ import au.org.ala.delta.io.BinFile;
 import au.org.ala.delta.io.BinFileEncoding;
 import au.org.ala.delta.util.Pair;
 
+/**
+ * Maintains settings related to the creation of image and image overlays.
+ */
 public class VOImageInfoDesc extends VOAnyDesc {
 
 	private ImageInfoFixedData _fixedData;

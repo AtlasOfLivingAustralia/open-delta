@@ -2,7 +2,7 @@ package au.org.ala.delta.model.image;
 
 
 public class OverlayLocation {
-	public OLDrawType drawType;
+	public OLDrawType drawType = OLDrawType.Unknown;
 	public int flags;
 	public int ID;
 	public short X;
