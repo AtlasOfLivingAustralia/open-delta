@@ -20,4 +20,19 @@ public interface Illustratable {
 	 * @return a list of images associated with this object.
 	 */
 	public List<Image> getImages();
+	
+	/**
+	 * Deletes the supplied image from the data set.
+	 * @param image the image to delete.
+	 */
+	public void deleteImage(Image image);
+	
+	/**
+	 * Changes the position of an Image in the list of images.
+	 * @param image the image to move.
+	 * @param position the new position for the image in the list.  The position should be
+	 * between 1 (the first position in the list) and the number of images (the last position 
+	 * in the list).
+	 */
+	public void moveImage(Image image, int position);
 }

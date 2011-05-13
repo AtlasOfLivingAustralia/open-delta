@@ -107,4 +107,14 @@ public class DefaultItemData implements ItemData {
 	public List<Image> getImages() {
 		throw new NotImplementedException();
 	}
+
+	@Override
+	public void deleteImage(Image image) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public void moveImage(Image image, int position) {
+		throw new NotImplementedException();
+	}
 }

@@ -151,7 +151,4 @@ public class DefaultDataSet extends AbstractObservableDataSet {
 		}
 		_items.putAll(tempItems);
 	}
-	
-	
-	
 }

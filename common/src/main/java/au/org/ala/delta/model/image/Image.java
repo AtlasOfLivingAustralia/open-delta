@@ -8,12 +8,23 @@ import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.model.impl.ImageData;
 
+/**
+ * DELTA data sets support the inclusion of images to illustrate Taxa and Characters.
+ * Images can be decorated by descriptive text, sounds and in the case of MultistateCharacters
+ * "hot spot" sections that distinguish Character states.  These "hot spots" are used
+ * for interactive identification in the IntKey program.
+ * The Image class represents an image attached to an Item or Character.
+ */
 public class Image {
 
 	private ImageData _impl;
 	
 	public Image(ImageData data) {
 		_impl = data;
+	}
+	
+	public ImageData getImageData() {
+		return _impl;
 	}
 	
 	public List<ImageOverlay> getOverlays() {

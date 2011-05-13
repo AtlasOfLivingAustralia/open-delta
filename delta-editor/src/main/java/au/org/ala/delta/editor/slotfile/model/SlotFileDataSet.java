@@ -3,16 +3,14 @@ package au.org.ala.delta.editor.slotfile.model;
 import java.util.List;
 
 import au.org.ala.delta.editor.slotfile.DeltaVOP;
-import au.org.ala.delta.editor.slotfile.ImageType;
 import au.org.ala.delta.editor.slotfile.TextType;
-import au.org.ala.delta.editor.slotfile.VOAnyDesc;
 import au.org.ala.delta.editor.slotfile.VOCharBaseDesc;
-import au.org.ala.delta.editor.slotfile.VOImageDesc;
 import au.org.ala.delta.editor.slotfile.VOItemDesc;
 import au.org.ala.delta.model.AbstractObservableDataSet;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.image.Image;
 
 /**
  * Implementation of a DELTA DataSet that uses the random access slotfile to read data on demand rather
@@ -151,12 +149,9 @@ public class SlotFileDataSet extends AbstractObservableDataSet {
 				return;
 			}
 			
-			List<Integer> imageIds = itemDesc.readImageList();
-			for (int imageId : imageIds) {
-				VOImageDesc imageDesc = (VOImageDesc)_vop.getDescFromId(imageId);
-				if (imageDesc.getOwnerId() == itemId) {
-					deleteImage(imageDesc.getUniId());
-				}
+			List<Image> images = item.getImages();
+			for (Image image : images) {
+				item.deleteImage(image);
 			}
 			
 			// TODO delete from directive files....
@@ -168,38 +163,6 @@ public class SlotFileDataSet extends AbstractObservableDataSet {
 			fireItemDeleted(item);
 		}
 	}
-	
-	protected void deleteImage(int imageId) {
-		if (imageId == VOAnyDesc.VOUID_NULL) {
-			return;
-		}
-		
-		VOImageDesc imageDesc = (VOImageDesc)_vop.getDescFromId(imageId);
-		int imageType = imageDesc.getImageType();
-		int ownerId = imageDesc.getOwnerId();
-		if (ownerId != VOAnyDesc.VOUID_NULL) {
-			
-		    if (imageType == ImageType.IMAGE_TAXON) { // Should be owned by a TVOItemDesc
-		        
-		        VOItemDesc item = (VOItemDesc)_vop.getDescFromId(ownerId);
-		        if (item != null) {   
-		            item.deleteImage(imageId);
-		        }
-		    }
-		    else if (imageType == ImageType.IMAGE_CHARACTER) { // Should be owned by a TVOCharBaseDesc
-		 
-		        VOCharBaseDesc charBase = (VOCharBaseDesc)_vop.getDescFromId(ownerId);
-		        if (charBase != null) {           
-		            charBase.deleteImage(imageId);
-		        }
-		    }
-		}
-
-	    // Finally, delete the descriptor from the VOP
-		_vop.deleteObject(imageDesc);
-	    // TODO fireImageDeleted();
-	}	
-	
 	
 	@Override
 	public void moveItem(Item item, int newItemNumber) {

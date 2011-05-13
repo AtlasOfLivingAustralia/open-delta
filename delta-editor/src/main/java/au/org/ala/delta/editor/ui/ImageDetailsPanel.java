@@ -26,6 +26,7 @@ import org.jdesktop.application.Application;
 import org.jdesktop.application.SingleFrameApplication;
 
 import au.org.ala.delta.editor.model.EditorViewModel;
+import au.org.ala.delta.editor.ui.util.MessageDialogHelper;
 import au.org.ala.delta.model.Illustratable;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageOverlay;
@@ -52,6 +53,10 @@ public class ImageDetailsPanel extends JPanel {
 	/** The currently selected image */
 	private Image _selectedImage;
 	
+	/** Helper class for displaying messages */
+	private MessageDialogHelper _messageHelper;
+	
+	// UI components
 	private ImageList imageList;
 	private RtfEditorPane subjectTextPane;
 	private RtfEditorPane developerNotesTextPane;
@@ -62,8 +67,11 @@ public class ImageDetailsPanel extends JPanel {
 	private JButton deleteSoundButton;
 	private JButton playSoundButton;
 	private JComboBox soundComboBox;
+
 	
 	public ImageDetailsPanel() {
+		
+		_messageHelper = new MessageDialogHelper();
 		createUI();
 		addEventHandlers();
 	}
@@ -335,6 +343,10 @@ public class ImageDetailsPanel extends JPanel {
 		if (_selectedImage == null) {
 			return;
 		}
+		boolean delete = _messageHelper.confirmDeleteImage();
+		if (delete) {
+			_illustratable.deleteImage(_selectedImage);
+		}	
 	}
 	
 	/**

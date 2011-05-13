@@ -17,6 +17,17 @@ public class VOImageAdaptor implements ImageData {
 		_imageDesc = imageDesc;
 	}
 	
+	/**
+	 * @return the unique (slotfile) id of the underlying VOImageDesc.
+	 */
+	public int getId() {
+		return _imageDesc.getUniId();
+	}
+	
+	public VOImageDesc getImageDesc() {
+		return _imageDesc;
+	}
+	
 	@Override
 	public List<ImageOverlay> getOverlays() {
 		return _imageDesc.readAllOverlays();

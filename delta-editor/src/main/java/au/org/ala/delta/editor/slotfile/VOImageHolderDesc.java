@@ -24,19 +24,16 @@ public abstract class VOImageHolderDesc extends VOAnyDesc {
 
 	@Override
 	public int getTypeId() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public String getStringId() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public int getNumberOfItems() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 	
@@ -46,4 +43,5 @@ public abstract class VOImageHolderDesc extends VOAnyDesc {
 	
 	public abstract int getImageType();
 
+	public abstract void deleteImage(int imageId);
 }

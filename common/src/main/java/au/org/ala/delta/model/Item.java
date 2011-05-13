@@ -135,6 +135,18 @@ public class Item implements AttributeObserver, Illustratable {
     }
     
     @Override
+	public void deleteImage(Image image) {
+    	_impl.deleteImage(image);
+    	notifyObservers();
+	}
+
+	@Override
+	public void moveImage(Image image, int position) {
+		_impl.moveImage(image, position);
+    	notifyObservers();
+	}
+
+	@Override
     public List<Image> getImages() {
     	return _impl.getImages();
     }

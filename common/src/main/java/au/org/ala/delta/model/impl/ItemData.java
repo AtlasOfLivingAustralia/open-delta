@@ -35,6 +35,10 @@ public interface ItemData {
     void setLinkFileDataNoSubjects(String linkFileData);
 
 	void addImage(String fileName, String comments);
+	
+	void deleteImage(Image image);
+	
+	void moveImage(Image image, int position);
 
 	List<Image> getImages(); 
 }
