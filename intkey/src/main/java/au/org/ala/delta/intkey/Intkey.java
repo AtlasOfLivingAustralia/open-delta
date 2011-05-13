@@ -40,7 +40,6 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.MouseInputAdapter;
 
 import org.jdesktop.application.Action;
-import org.jdesktop.application.Application;
 import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 
@@ -56,12 +55,11 @@ import au.org.ala.delta.intkey.directives.UseDirective;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.model.IntkeyDataset;
 import au.org.ala.delta.intkey.model.specimen.CharacterValue;
+import au.org.ala.delta.intkey.ui.CharacterListModel;
 import au.org.ala.delta.intkey.ui.DirectiveAction;
+import au.org.ala.delta.intkey.ui.ItemListModel;
 import au.org.ala.delta.intkey.ui.ReExecuteDialog;
 import au.org.ala.delta.model.Character;
-import au.org.ala.delta.model.Item;
-import au.org.ala.delta.model.format.CharacterFormatter;
-import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.ui.AboutBox;
 import au.org.ala.delta.ui.DeltaSingleFrameApplication;
 import au.org.ala.delta.ui.util.IconHelper;
@@ -82,7 +80,7 @@ public class Intkey extends DeltaSingleFrameApplication {
     private JList _listRemainingTaxa;
     private JList _listEliminatedTaxa;
 
-    private AvailableCharacterListModel _availableCharacterListModel;
+    private CharacterListModel _availableCharacterListModel;
     private UsedCharacterListModel _usedCharacterListModel;
     private ItemListModel _itemListModel;
 
@@ -468,6 +466,7 @@ public class Intkey extends DeltaSingleFrameApplication {
             mnuFile.addSeparator();
 
             JMenuItem mnuItNormalMode = new JMenuItem("Normal Mode");
+            mnuItNormalMode.setEnabled(false);
             mnuItNormalMode.addActionListener(new ActionListener() {
                 
                 @Override
@@ -520,6 +519,7 @@ public class Intkey extends DeltaSingleFrameApplication {
             menuBar.add(_mnuReExecute);
 
             JMenu mnuQuery = new JMenu("Queries");
+            mnuQuery.setEnabled(false);
             menuBar.add(mnuQuery);
 
             JMenu mnuBrowsing = new JMenu("Browsing");
@@ -642,7 +642,7 @@ public class Intkey extends DeltaSingleFrameApplication {
     public void handleNewDataSet(IntkeyDataset dataset) {
         getMainFrame().setTitle(String.format(windowTitleWithDatasetTitle, dataset.getHeading()));
 
-        _availableCharacterListModel = new AvailableCharacterListModel(dataset.getCharacters());
+        _availableCharacterListModel = new CharacterListModel(dataset.getCharacters());
         _usedCharacterListModel = new UsedCharacterListModel();
         _itemListModel = new ItemListModel(dataset.getTaxa());
 
@@ -688,44 +688,7 @@ public class Intkey extends DeltaSingleFrameApplication {
         _txtFldCmdBar.setVisible(advancedMode);
         JMenuBar menuBar = buildMenus(advancedMode);
         getMainView().setMenuBar(menuBar);
-        show(_rootPanel);
-    }
-
-    private class AvailableCharacterListModel extends AbstractListModel {
-
-        private List<Character> _characters;
-        private CharacterFormatter _formatter;
-
-        public AvailableCharacterListModel(List<Character> characters) {
-            _characters = new ArrayList<Character>(characters);
-            _formatter = new CharacterFormatter(false, false, true, true);
-        }
-
-        @Override
-        public int getSize() {
-            return _characters.size();
-        }
-
-        @Override
-        public Object getElementAt(int index) {
-            return _formatter.formatCharacterDescription(_characters.get(index));
-        }
-
-        public Character getCharacterAt(int index) {
-            return _characters.get(index);
-        }
-
-        public void addCharacter(Character ch) {
-
-        }
-
-        public void removeCharacter(Character ch) {
-            int charIndex = _characters.indexOf(ch);
-            if (charIndex > -1) {
-                _characters.remove(charIndex);
-                fireIntervalRemoved(this, charIndex, charIndex);
-            }
-        }
+        getMainFrame().getRootPane().revalidate();
     }
 
     private class UsedCharacterListModel extends AbstractListModel {
@@ -762,27 +725,6 @@ public class Intkey extends DeltaSingleFrameApplication {
 
         }
 
-    }
-
-    private class ItemListModel extends AbstractListModel {
-
-        List<Item> _items;
-        ItemFormatter _formatter;
-
-        public ItemListModel(List<Item> items) {
-            _items = new ArrayList<Item>(items);
-            _formatter = new ItemFormatter(false, true, false, true, false);
-        }
-
-        @Override
-        public int getSize() {
-            return _items.size();
-        }
-
-        @Override
-        public Object getElementAt(int index) {
-            return _formatter.formatItemDescription(_items.get(index));
-        }
     }
 
 }

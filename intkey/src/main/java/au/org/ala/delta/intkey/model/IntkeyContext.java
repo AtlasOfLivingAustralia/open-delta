@@ -46,7 +46,7 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     // Use linked hashmap so that the keys list will be returned in
     // order of insertion.
-    private LinkedHashMap<String, Set<Integer>> _characterKeywords;
+    private LinkedHashMap<String, Set<Integer>> _userDefinedCharacterKeywords;
     private static final String CHARACTER_KEYWORD_ALL = "all";
     private static final String CHARACTER_KEYWORD_USED = "used";
     private static final String CHARACTER_KEYWORD_AVAILABLE = "available";
@@ -63,7 +63,7 @@ public class IntkeyContext extends AbstractDeltaContext {
 
         // Use linked hashmap so that the keys list will be returned in
         // order of insertion.
-        _characterKeywords = new LinkedHashMap<String, Set<Integer>>();
+        _userDefinedCharacterKeywords = new LinkedHashMap<String, Set<Integer>>();
 
         _executedDirectives = new ArrayList<IntkeyDirectiveInvocation>();
         _recordDirectiveHistory = false;
@@ -176,7 +176,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         if (keyword.equals(CHARACTER_KEYWORD_ALL) || keyword.equals(CHARACTER_KEYWORD_USED) || keyword.equals(CHARACTER_KEYWORD_AVAILABLE)) {
             throw new IllegalArgumentException(String.format("'%s' is a system keyword and cannot be redefined", keyword));
         }
-        _characterKeywords.put(keyword.toLowerCase(), characterNumbers);
+        _userDefinedCharacterKeywords.put(keyword.toLowerCase(), characterNumbers);
     }
 
     public List<au.org.ala.delta.model.Character> getCharactersForKeyword(String keyword) {
@@ -191,21 +191,21 @@ public class IntkeyContext extends AbstractDeltaContext {
             availableCharacters.removeAll(_specimen.getUsedCharacters());
             return availableCharacters;
         } else {
-            Set<Integer> characterNumbersSet = _characterKeywords.get(keyword.toLowerCase());
+            Set<Integer> characterNumbersSet = _userDefinedCharacterKeywords.get(keyword.toLowerCase());
 
             // If there is no exact match for the specified keyword text, try
             // and match a single
             // keyword that begins with the text
             if (characterNumbersSet == null) {
                 List<String> matches = new ArrayList<String>();
-                for (String savedKeyword : _characterKeywords.keySet()) {
+                for (String savedKeyword : _userDefinedCharacterKeywords.keySet()) {
                     if (savedKeyword.startsWith(keyword)) {
                         matches.add(savedKeyword);
                     }
                 }
 
                 if (matches.size() == 1) {
-                    characterNumbersSet = _characterKeywords.get(matches.get(0));
+                    characterNumbersSet = _userDefinedCharacterKeywords.get(matches.get(0));
                 } else {
                     throw new IllegalArgumentException(String.format("Keyword '%s' is ambiguous", keyword));
                 }
@@ -225,7 +225,17 @@ public class IntkeyContext extends AbstractDeltaContext {
     }
 
     public List<String> getCharacterKeywords() {
-        return new ArrayList<String>(_characterKeywords.keySet());
+        List<String> retList = new ArrayList<String>();
+        retList.add(CHARACTER_KEYWORD_ALL);
+        
+        if (_specimen.getUsedCharacters().size() > 0) {
+            retList.add(CHARACTER_KEYWORD_USED);
+        }
+        
+        retList.add(CHARACTER_KEYWORD_AVAILABLE);
+        retList.addAll(_userDefinedCharacterKeywords.keySet());
+        
+        return retList;
     }
 
     public List<IntkeyDirectiveInvocation> getExecutedDirectives() {
@@ -240,5 +250,9 @@ public class IntkeyContext extends AbstractDeltaContext {
             _specimen = new Specimen();
             _appUI.handleRestartIdentification();
         }
+    }
+    
+    public Specimen getSpecimen() {
+        return _specimen;
     }
 }

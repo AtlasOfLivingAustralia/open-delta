@@ -2,22 +2,26 @@ package au.org.ala.delta.intkey.directives;
 
 import java.awt.Frame;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import javax.swing.JOptionPane;
+
 import org.apache.commons.lang.math.FloatRange;
 import org.apache.commons.lang.math.IntRange;
 
+import au.org.ala.delta.intkey.model.CharacterComparator;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.model.specimen.CharacterValue;
 import au.org.ala.delta.intkey.model.specimen.IntegerValue;
 import au.org.ala.delta.intkey.model.specimen.MultiStateValue;
 import au.org.ala.delta.intkey.model.specimen.RealValue;
-import au.org.ala.delta.intkey.model.specimen.Specimen;
 import au.org.ala.delta.intkey.model.specimen.TextValue;
 import au.org.ala.delta.intkey.ui.CharacterKeywordSelectionDialog;
+import au.org.ala.delta.intkey.ui.CharacterSelectionDialog;
 import au.org.ala.delta.intkey.ui.IntegerInputDialog;
 import au.org.ala.delta.intkey.ui.MultiStateInputDialog;
 import au.org.ala.delta.intkey.ui.RealInputDialog;
@@ -66,8 +70,8 @@ public class UseDirective extends IntkeyDirective {
                 // No characters specified, prompt the user to select characters
                 CharacterKeywordSelectionDialog dlg = new CharacterKeywordSelectionDialog(context.getMainFrame(), context);
                 dlg.setVisible(true);
-                if (dlg.getOkButtonPressed()) {
-                    List<Character> selectedCharacters = dlg.getSelectedCharacters();
+                List<Character> selectedCharacters = dlg.getSelectedCharacters();
+                if (selectedCharacters.size() > 0) {
                     for (Character ch : selectedCharacters) {
                         characterNumbers.add(ch.getCharacterId());
                         specifiedValues.add(null);
@@ -86,26 +90,29 @@ public class UseDirective extends IntkeyDirective {
 
                 String charValue = specifiedValues.get(i);
 
-                Object parsedCharValue = null;
-
                 if (charValue != null) {
                     if (ch instanceof MultiStateCharacter) {
-                        parsedCharValue = ParsingUtils.parseMultiStateCharacterValue(charValue);
+                        List<Integer> stateValues = ParsingUtils.parseMultiStateCharacterValue(charValue);
+                        invoc.addCharacterValue((MultiStateCharacter) ch, new MultiStateValue((MultiStateCharacter) ch, stateValues));
                     } else if (ch instanceof IntegerCharacter) {
-                        parsedCharValue = ParsingUtils.parseIntegerCharacterValue(charValue);
+                        IntRange intRange = ParsingUtils.parseIntegerCharacterValue(charValue);
+                        invoc.addCharacterValue((IntegerCharacter) ch, new IntegerValue((IntegerCharacter) ch, intRange));
                     } else if (ch instanceof RealCharacter) {
-                        parsedCharValue = ParsingUtils.parseRealCharacterValue(charValue);
+                        FloatRange floatRange = ParsingUtils.parseRealCharacterValue(charValue);
+                        invoc.addCharacterValue((RealCharacter) ch, new RealValue((RealCharacter) ch, floatRange));
                     } else if (ch instanceof TextCharacter) {
-                        parsedCharValue = ParsingUtils.parseTextCharacterValue(charValue);
+                        List<String> stringList = ParsingUtils.parseTextCharacterValue(charValue);
+                        invoc.addCharacterValue((TextCharacter) ch, new TextValue((TextCharacter) ch, stringList));
                     } else {
                         throw new IllegalArgumentException("Unrecognized character type");
                     }
+                } else {
+                    invoc.addCharacterValue(ch, null);
                 }
-                invoc.addCharacterValue(ch, parsedCharValue);
             }
             return invoc;
         } else {
-            throw new RuntimeException("Need to have a dataset loaded before USE can be called.");
+            throw new IntkeyDirectiveParseException("Need to have a dataset loaded before USE can be called.");
         }
 
         // TODO Auto-generated method stub
@@ -176,82 +183,116 @@ public class UseDirective extends IntkeyDirective {
 
     class UseDirectiveInvocation implements IntkeyDirectiveInvocation {
 
-        private Map<au.org.ala.delta.model.Character, Object> _characterValues;
+        private Map<au.org.ala.delta.model.Character, CharacterValue> _characterValues;
         private boolean _suppressAlreadySetWarning;
 
         public UseDirectiveInvocation(boolean suppressAlreadySetWarning) {
             _suppressAlreadySetWarning = suppressAlreadySetWarning;
-            _characterValues = new HashMap<Character, Object>();
+            _characterValues = new HashMap<Character, CharacterValue>();
         }
 
         @Override
         public boolean execute(IntkeyContext context) {
+            // These are the values that will be stored in the specimen
+            // Each time execute() is called some values may be omitted from
+            // this list...
+            // TODO finish comment
+            List<Character> charactersToUse = new ArrayList<Character>();
 
-            // First pass - perform validation, and prompt for any character values that were
-            // not specified by the user
+            // Split up characters that have had their values specified and
+            // those that
+            // haven't. They need to be processed differently.
+            List<Character> charsWithValues = new ArrayList<Character>();
+            List<Character> charsNoValues = new ArrayList<Character>();
+
             for (Character ch : _characterValues.keySet()) {
-                Object characterVal = _characterValues.get(ch);
-
-                if (!checkCharacterUsable(ch, context)) {
-                    continue;
+                if (_characterValues.get(ch) == null) {
+                    charsNoValues.add(ch);
+                } else {
+                    charsWithValues.add(ch);
                 }
+            }
 
-                if (characterVal == null) {
-                    if (ch instanceof MultiStateCharacter) {
-                        List<Integer> stateList = promptForMultiStateValue(context.getMainFrame(), (MultiStateCharacter) ch);
-                        characterVal = stateList.size() > 0 ? stateList : null;
-                    } else if (ch instanceof IntegerCharacter) {
-                        characterVal = promptForIntegerValue(context.getMainFrame(), (IntegerCharacter) ch);
-                    } else if (ch instanceof RealCharacter) {
-                        characterVal = promptForRealValue(context.getMainFrame(), (RealCharacter) ch);
-                    } else if (ch instanceof TextCharacter) {
-                        List<String> stringList = promptForTextValue(context.getMainFrame(), (TextCharacter) ch);
-                        characterVal = stringList.size() > 0 ? stringList : null;
-                    } else {
-                        throw new IllegalArgumentException("Unrecognized character type");
-                    }
+            // Validate each of the character values that has been specified.
+            for (Character ch : charsWithValues) {
+                if (checkCharacterUsable(ch, context)) {
+                    charactersToUse.add(ch);
+                } 
+            }
 
-                    if (characterVal == null) {
-                        //User did not enter a value in prompt dialog, or hit "cancel"
-                        // - do not set a value for this character
-                        _characterValues.remove(ch);
-                    } else {
-                        // store this value so that the prompt does not need to
+            if (charsNoValues.size() == 1) {
+                Character ch = charsNoValues.get(0);
+                if (checkCharacterUsable(ch, context)) {
+                    CharacterValue characterVal = promptForCharacterValue(context.getMainFrame(), ch);
+                    if (characterVal != null) {
+                        // store this value so that the prompt does not need
+                        // to
                         // be done for subsequent invocations
                         _characterValues.put(ch, characterVal);
+                        charactersToUse.add(ch);
+                    } else {
+                        // User hit cancel or did not enter a value when
+                        // prompted.
+                        // Abort execution when this happens
+                        return false;
+                    }
+                } else {
+                    // remove this value so that the user will not be prompted about it when the command is
+                    // run additional times.
+                    _characterValues.remove(ch);
+                }
+            } else {
+                Collections.sort(charsNoValues, new CharacterComparator());
+                while (!charsNoValues.isEmpty()) {
+
+                    CharacterSelectionDialog selectDlg = new CharacterSelectionDialog(context.getMainFrame(), charsNoValues);
+                    selectDlg.setVisible(true);
+
+                    List<Character> selectedCharacters = selectDlg.getSelectedCharacters();
+
+                    if (selectedCharacters.isEmpty()) {
+                        // User hit cancel or did not select any characters.
+                        // Abort
+                        // execution when this happens.
+                        // Directive should not be stored in
+                        // Execution history
+                        return false;
+                    }
+
+                    for (Character ch : selectedCharacters) {
+
+                        CharacterValue characterVal = null;
+
+                        if (checkCharacterUsable(ch, context)) {
+                            characterVal = promptForCharacterValue(context.getMainFrame(), ch);
+                        } else {
+                            // remove this value so that the user will not be prompted about it when the command is
+                            // run additional times.
+                            _characterValues.remove(ch);
+                        }
+
+                        if (characterVal != null) {
+                            // store this value so that the prompt does not need
+                            // to
+                            // be done for subsequent invocations
+                            _characterValues.put(ch, characterVal);
+                            charactersToUse.add(ch);
+                            charsNoValues.remove(ch);
+                        }
                     }
                 }
             }
-            
-            if (_characterValues.size() == 0) {
-                // Directive was not successfully run because the user did not enter any information when prompted.
-                // directive should not be entered in the re-execution history
-                return false;
-            }
-            
-            for (Character ch : _characterValues.keySet()) {
-                Object parsedCharacterVal = _characterValues.get(ch);
-                
-                CharacterValue value;
-                if (ch instanceof MultiStateCharacter) {
-                    value = new MultiStateValue((MultiStateCharacter) ch, (List<Integer>) parsedCharacterVal);
-                } else if (ch instanceof IntegerCharacter) {
-                    value = new IntegerValue((IntegerCharacter) ch, (IntRange) parsedCharacterVal);
-                } else if (ch instanceof RealCharacter) {
-                    value = new RealValue((RealCharacter) ch, (FloatRange) parsedCharacterVal);
-                } else if (ch instanceof TextCharacter) {
-                    value = new TextValue((TextCharacter) ch, (List<String>) parsedCharacterVal);
-                } else {
-                    throw new RuntimeException("Unrecognized character type");
-                }
-                
-                context.setValueForCharacter(ch, value);
+
+            for (Character ch : charactersToUse) {
+                CharacterValue characterVal = _characterValues.get(ch);
+
+                context.setValueForCharacter(ch, characterVal);
             }
 
             return true;
         }
 
-        void addCharacterValue(au.org.ala.delta.model.Character ch, Object val) {
+        void addCharacterValue(au.org.ala.delta.model.Character ch, CharacterValue val) {
             _characterValues.put(ch, val);
         }
 
@@ -259,11 +300,52 @@ public class UseDirective extends IntkeyDirective {
             // is character fixed?
 
             // is character already used?
+            if (!_suppressAlreadySetWarning) {
+                if (context.getSpecimen().hasValueFor(ch)) {
+                    String msg = String.format("Character %s has already used. Do you want to change the value(s) you entered?", ch.getCharacterId());
+                    int choice = JOptionPane.showConfirmDialog(context.getMainFrame(), msg, "Information", JOptionPane.YES_NO_OPTION);
+                    if (choice == JOptionPane.YES_OPTION) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            }
 
             // is character unavailable?
             // is character excluded?
 
             return true;
+        }
+
+        private CharacterValue promptForCharacterValue(Frame frame, Character ch) {
+            CharacterValue characterVal = null;
+
+            if (ch instanceof MultiStateCharacter) {
+                List<Integer> stateValues = promptForMultiStateValue(frame, (MultiStateCharacter) ch);
+                if (stateValues.size() > 0) {
+                    characterVal = new MultiStateValue((MultiStateCharacter) ch, stateValues);
+                }
+            } else if (ch instanceof IntegerCharacter) {
+                IntRange intRange = promptForIntegerValue(frame, (IntegerCharacter) ch);
+                if (intRange != null) {
+                    characterVal = new IntegerValue((IntegerCharacter) ch, intRange);
+                }
+            } else if (ch instanceof RealCharacter) {
+                FloatRange floatRange = promptForRealValue(frame, (RealCharacter) ch);
+                if (floatRange != null) {
+                    characterVal = new RealValue((RealCharacter) ch, floatRange);
+                }
+            } else if (ch instanceof TextCharacter) {
+                List<String> stringList = promptForTextValue(frame, (TextCharacter) ch);
+                if (stringList.size() > 0) {
+                    characterVal = new TextValue((TextCharacter) ch, stringList);
+                }
+            } else {
+                throw new IllegalArgumentException("Unrecognized character type");
+            }
+
+            return characterVal;
         }
 
         private List<Integer> promptForMultiStateValue(Frame frame, MultiStateCharacter ch) {
@@ -294,7 +376,5 @@ public class UseDirective extends IntkeyDirective {
         public String toString() {
             return String.format("USE %s", _characterValues.toString());
         }
-
     }
-
 }
