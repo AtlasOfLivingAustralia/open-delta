@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Test;
 
 import au.org.ala.delta.DeltaTestCase;
 import au.org.ala.delta.model.image.ImageOverlay;
@@ -36,15 +37,10 @@ public class VOImageDescTest extends DeltaTestCase {
 	/**
 	 * Since we are working with the sample data set we know which taxa have images.
 	 */
+	@Test
 	public void testReadWriteImageDesc() {
-		//for (int i=1; i<14; i++) {
-			int id = _vop.getDeltaMaster().uniIdFromItemNo(4);
-			VOItemDesc item = (VOItemDesc)_vop.getDescFromId(id);
-			List<Integer> imageIds = item.readImageList();
-			//System.out.println("Item: "+i+ " has "+ imageIds.size());
-		//}
 		
-		VOImageDesc desc = (VOImageDesc)_vop.getDescFromId(imageIds.get(0));
+		VOImageDesc desc = getImageDesc(4, 0);
 		List<ImageOverlay> overlays = desc.readAllOverlays();
 		
 		overlays.get(0).comment = "blah";
@@ -52,5 +48,36 @@ public class VOImageDescTest extends DeltaTestCase {
 		
 		overlays = desc.readAllOverlays();
 		assertEquals("blah", overlays.get(0).comment);
+	}
+	
+	/**
+	 * Tests an overlay can updated correctly.
+	 */
+	@Test
+	public void testReplaceOverlay() {
+		
+		VOImageDesc desc = getImageDesc(7, 0);
+		List<ImageOverlay> overlays = desc.readAllOverlays();
+		ImageOverlay overlay = overlays.get(0);
+		overlay.overlayText = "Test";
+		
+		desc.replaceOverlay(overlay, true);
+		
+		overlay = desc.readOverlay(overlay.getId());
+		
+		assertEquals(desc.readAllOverlays().size(), overlays.size());
+		
+		assertEquals("Test", overlay.overlayText);
+		
+	}
+	
+	private VOImageDesc getImageDesc(int itemNumber, int imageNumber) {
+		int id = _vop.getDeltaMaster().uniIdFromItemNo(itemNumber);
+		VOItemDesc item = (VOItemDesc)_vop.getDescFromId(id);
+		List<Integer> imageIds = item.readImageList();
+		
+		VOImageDesc desc = (VOImageDesc)_vop.getDescFromId(imageIds.get(imageNumber));
+		
+		return desc;
 	}
 }
