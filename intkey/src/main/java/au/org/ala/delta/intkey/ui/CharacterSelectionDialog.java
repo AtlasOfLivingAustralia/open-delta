@@ -36,8 +36,6 @@ public class CharacterSelectionDialog extends ListSelectionDialog {
      */
     public CharacterSelectionDialog(Dialog owner, List<Character> characters) {
         super(owner);
-        setResizable(false);
-        setSize(new Dimension(500, 300));
         init(characters);
     }
 
@@ -48,7 +46,7 @@ public class CharacterSelectionDialog extends ListSelectionDialog {
 
     private void init(List<Character> characters) {
         _panelButtons.setBorder(new EmptyBorder(0, 20, 10, 20));
-        _panelButtons.setLayout(new GridLayout(0, 5, 5, 0));
+        _panelButtons.setLayout(new GridLayout(0, 5, 5, 2));
 
         _btnOk = new JButton("OK");
         _btnOk.addActionListener(new ActionListener() {

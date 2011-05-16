@@ -40,9 +40,9 @@ public abstract class CharacterValueInputDialog extends JDialog {
         _ch = ch;
         
         _buttonPanel = new JPanel();
-        _buttonPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+        _buttonPanel.setBorder(new EmptyBorder(0, 20, 10, 20));
         getContentPane().add(_buttonPanel, BorderLayout.SOUTH);
-        _buttonPanel.setLayout(new GridLayout(0, 4, 5, 5));
+        _buttonPanel.setLayout(new GridLayout(0, 4, 5, 2));
 
         JButton _btnOk = new JButton("OK");
         _btnOk.addActionListener(new ActionListener() {

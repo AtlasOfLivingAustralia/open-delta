@@ -11,14 +11,22 @@ import javax.swing.DefaultListModel;
 import au.org.ala.delta.intkey.model.CharacterComparator;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.model.Character;
+import java.awt.GridLayout;
+import javax.swing.border.EmptyBorder;
 
 public class CharacterKeywordSelectionDialog extends KeywordSelectionDialog {
 
     private List<Character> _selectedCharacters;
     private IntkeyContext _context;
 
+    /**
+     * @wbp.parser.constructor
+     */
     public CharacterKeywordSelectionDialog(Dialog owner, IntkeyContext context) {
         super(owner);
+        _panelButtons.setBorder(new EmptyBorder(0, 20, 10, 20));
+        GridLayout gridLayout = (GridLayout) _panelButtons.getLayout();
+        gridLayout.setVgap(2);
         init(context);
     }
 
