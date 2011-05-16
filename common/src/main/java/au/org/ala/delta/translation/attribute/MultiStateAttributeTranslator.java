@@ -1,6 +1,7 @@
 package au.org.ala.delta.translation.attribute;
 
 import au.org.ala.delta.model.MultiStateCharacter;
+import au.org.ala.delta.model.format.AttributeFormatter;
 import au.org.ala.delta.model.format.CharacterFormatter;
 
 /**
@@ -15,9 +16,10 @@ public class MultiStateAttributeTranslator extends AttributeTranslator {
 	/** Knows how to format character states */
 	private CharacterFormatter _formatter;
 	
-	public MultiStateAttributeTranslator(MultiStateCharacter character) {
+	public MultiStateAttributeTranslator(MultiStateCharacter character, CharacterFormatter characterFormatter, AttributeFormatter formatter) {
+		super(formatter);
 		_character = character;
-		_formatter = new CharacterFormatter(false, true, false, true);
+		_formatter = characterFormatter;
 	}
 
 	@Override

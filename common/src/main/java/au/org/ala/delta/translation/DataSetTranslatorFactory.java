@@ -2,6 +2,9 @@ package au.org.ala.delta.translation;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.TranslateType;
+import au.org.ala.delta.model.format.AttributeFormatter;
+import au.org.ala.delta.model.format.CharacterFormatter;
+import au.org.ala.delta.model.format.ItemFormatter;
 
 
 /**
@@ -18,7 +21,11 @@ public class DataSetTranslatorFactory {
 		if (translation.equals(TranslateType.NaturalLanguage) && context.getOutputHtml() == false) {
 		
 			TypeSetter typeSetter = createTypeSetter(context, printer);
-			translator = new NaturalLanguageTranslator(context, typeSetter, printer);
+			
+			ItemFormatter itemFormatter  = createItemFormatter(context, typeSetter);
+			CharacterFormatter characterFormatter = createCharacterFormatter(context);
+			AttributeFormatter attributeFormatter = createAttributeFormatter(context);
+			translator = new NaturalLanguageTranslator(context, typeSetter, printer, itemFormatter, characterFormatter, attributeFormatter);
 		}
 		else {
 			throw new RuntimeException("Only natural language without typesetting is currently supported.");
@@ -54,5 +61,22 @@ public class DataSetTranslatorFactory {
 			return new FormattedTextTypeSetter(context.getTypeSettingMarks(), printer);
 		}
 		
+	}
+	
+	private ItemFormatter createItemFormatter(DeltaContext context, TypeSetter typeSetter) {
+		if (context.isOmitTypeSettingMarks()) {
+			return new ItemFormatter(false, false, false, true, false);
+		}
+		else {
+			return new TypeSettingItemFormatter(typeSetter);
+		}
+	}
+	
+	private CharacterFormatter createCharacterFormatter(DeltaContext context) {
+		return new CharacterFormatter(false, true, false, context.isOmitTypeSettingMarks());
+	}
+	
+	private AttributeFormatter createAttributeFormatter(DeltaContext context) {
+		return new AttributeFormatter(false, context.isOmitTypeSettingMarks());
 	}
 }

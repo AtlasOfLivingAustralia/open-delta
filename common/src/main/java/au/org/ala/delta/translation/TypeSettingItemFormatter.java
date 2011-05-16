@@ -10,7 +10,7 @@ public class TypeSettingItemFormatter extends ItemFormatter {
 	private TypeSetter _typeSetter;
 	
 	public TypeSettingItemFormatter(TypeSetter typeSetter) {
-		super(false, false, false, true, false);
+		super(false, false, false, false, false);
 		_typeSetter = typeSetter;
 	}
 

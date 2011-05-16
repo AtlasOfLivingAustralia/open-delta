@@ -8,6 +8,8 @@ import org.junit.Test;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DefaultDataSetFactory;
 import au.org.ala.delta.model.MultiStateCharacter;
+import au.org.ala.delta.model.format.AttributeFormatter;
+import au.org.ala.delta.model.format.CharacterFormatter;
 
 /**
  * Tests the MultiStateAttributeTranslator class.
@@ -32,8 +34,9 @@ public class MultiStateAttributeTranslatorTest extends TestCase {
 		_multiStateCharacter.setState(4, "<State 4>");
 		_multiStateCharacter.setState(5, "State 5");
 		_multiStateCharacter.setState(6, "State 6");
-		
-		_translator = new MultiStateAttributeTranslator(_multiStateCharacter);
+		AttributeFormatter attributeFormatter = new AttributeFormatter(false, true);
+		CharacterFormatter characterFormatter = new CharacterFormatter(false, true, false, true);
+		_translator = new MultiStateAttributeTranslator(_multiStateCharacter, characterFormatter, attributeFormatter);
 	}
 	
 	/**

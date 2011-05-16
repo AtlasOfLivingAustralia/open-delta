@@ -3,6 +3,8 @@ package au.org.ala.delta.directives;
 import java.io.Reader;
 import java.io.StringReader;
 import java.text.ParseException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.model.TypeSettingMark;
@@ -106,22 +108,29 @@ public class TypeSettingMarks extends AbstractDirective<DeltaContext> {
 			else {
 				consumeWhiteSpace();
 				
-				expect(_delimiter);
-				
-				// Consume the delimiter.
-				readNext();
-				
-				mark = readToNext(_delimiter);
-				
-				expect(_delimiter);
-				
-				readNext();
-				
-				consumeWhiteSpace();
-				
-				expect(MARK_IDENTIFIER, true);
-				
-				allowWhiteSpace = mark.startsWith(" ");
+				// A typesetting mark may contain only a comment and no value.
+				if (_currentChar == MARK_IDENTIFIER || _currentInt < 0) {
+					mark = "";
+					allowWhiteSpace = false;
+				}
+				else {
+					expect(_delimiter);
+					
+					// Consume the delimiter.
+					readNext();
+					
+					mark = cleanWhiteSpace(readToNext(_delimiter));
+					
+					expect(_delimiter);
+					
+					readNext();
+					
+					consumeWhiteSpace();
+					
+					expect(MARK_IDENTIFIER, true);
+					
+					allowWhiteSpace = mark.startsWith(" ");
+				}
 					
 			}
 			return new TypeSettingMark(MarkPosition.fromId(markNumber), mark.trim(), allowWhiteSpace);
@@ -198,6 +207,26 @@ public class TypeSettingMarks extends AbstractDirective<DeltaContext> {
 			}
 		}
 		
+		protected String cleanWhiteSpace(String input) {
+			input = super.cleanWhiteSpace(input);
+			Pattern p = Pattern.compile("(\\W)\\s(\\W)");
+			Matcher m = p.matcher(input);
+			input = m.replaceAll("$1$2");
+			
+			m = p.matcher(input);
+			input = m.replaceAll("$1$2");
+			
+			p = Pattern.compile("(\\W)\\s(\\w)");
+			m = p.matcher(input);
+			input = m.replaceAll("$1$2");
+			
+			p = Pattern.compile("(\\w)\\s(\\W)");
+			m = p.matcher(input);
+			input = m.replaceAll("$1$2");
+			
+			return input;
+		}
+	
 	}
 	
 }

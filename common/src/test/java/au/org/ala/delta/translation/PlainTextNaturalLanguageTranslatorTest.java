@@ -10,6 +10,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.model.format.AttributeFormatter;
+import au.org.ala.delta.model.format.CharacterFormatter;
+import au.org.ala.delta.model.format.ItemFormatter;
 
 /**
  * Tests the production of plain text natural language.  This test is more of an integration
@@ -26,7 +29,10 @@ public class PlainTextNaturalLanguageTranslatorTest extends NaturalLangaugeTrans
 		_printer = new Printer(pout, 78);
 		_typeSetter = new PlainTextTypeSetter(_printer);
 		_context = new DeltaContext();
-		_dataSetTranslator = new NaturalLanguageTranslator(_context, _typeSetter, _printer);
+		ItemFormatter itemFormatter = new ItemFormatter(false, false, false, true, false);
+		CharacterFormatter characterFormatter = new CharacterFormatter(false, true, false, true);
+		AttributeFormatter attributeFormatter = new AttributeFormatter(false, true);
+		_dataSetTranslator = new NaturalLanguageTranslator(_context, _typeSetter, _printer, itemFormatter, characterFormatter, attributeFormatter);
 	}
 	
 	public void testBasicTranslation() throws Exception {

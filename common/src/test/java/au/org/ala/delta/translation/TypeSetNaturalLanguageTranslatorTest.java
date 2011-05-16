@@ -6,10 +6,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Before;
+import org.junit.Test;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.model.TypeSettingMark;
 import au.org.ala.delta.model.TypeSettingMark.MarkPosition;
+import au.org.ala.delta.model.format.AttributeFormatter;
+import au.org.ala.delta.model.format.CharacterFormatter;
+import au.org.ala.delta.model.format.ItemFormatter;
 
 /**
  * Tests the production of type set natural language.  This test is more of an integration
@@ -32,9 +36,8 @@ public class TypeSetNaturalLanguageTranslatorTest extends
 	protected void initialiseContext(String path) throws Exception {
 		super.initialiseContext(path);
 		
-		_typeSetter = new FormattedTextTypeSetter(createMarks(), _printer);
-		_dataSetTranslator = new NaturalLanguageTranslator(_context, _typeSetter, _printer);
-	}
+		
+			}
 	
 	protected Map<MarkPosition, TypeSettingMark> createMarks() {
 		HashMap<MarkPosition, TypeSettingMark> marks = new HashMap<TypeSettingMark.MarkPosition, TypeSettingMark>();
@@ -46,13 +49,38 @@ public class TypeSetNaturalLanguageTranslatorTest extends
 		return marks;
 	}
 	
+	/**
+	 * Tests the type setting mark insertion used in a simple data set.
+	 */
+	@Test
 	public void testSimpleDataSetWithTypesetting() throws Exception {
 		initialiseContext(DEFAULT_DATASET_PATH);
+		
+		_typeSetter = new FormattedTextTypeSetter(createMarks(), _printer);
+		ItemFormatter itemFormatter = new TypeSettingItemFormatter(_typeSetter);
+		CharacterFormatter characterFormatter = new CharacterFormatter(false, true, false, false);
+		AttributeFormatter attributeFormatter = new AttributeFormatter(false, false);
+		_dataSetTranslator = new NaturalLanguageTranslator(_context, _typeSetter, _printer, itemFormatter, characterFormatter, attributeFormatter);
 		
 		_dataSetTranslator.translate();
 		checkResult("typeset.txt");
 	}
 	
-	
+	/**
+	 * Tests the type setting mark insertion using the sample data set.
+	 */
+	@Test
+	public void testSampleDataSetWithTypesetting() throws Exception {
+		initialiseContext("/dataset/sample/tonatr_simple");
+
+		_typeSetter = new FormattedTextTypeSetter(_context.getTypeSettingMarks(), _printer);
+		ItemFormatter itemFormatter = new TypeSettingItemFormatter(_typeSetter);
+		CharacterFormatter characterFormatter = new CharacterFormatter(false, true, false, false);
+		AttributeFormatter attributeFormatter = new AttributeFormatter(false, false);
+		_dataSetTranslator = new NaturalLanguageTranslator(_context, _typeSetter, _printer, itemFormatter, characterFormatter, attributeFormatter);
+
+		_dataSetTranslator.translate();
+		//checkResult("/dataset/sample/expected_results/withtypesetting.txt");
+	}
 	
 }

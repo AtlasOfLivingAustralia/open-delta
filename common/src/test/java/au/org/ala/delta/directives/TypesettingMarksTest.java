@@ -66,7 +66,7 @@ public class TypesettingMarksTest extends TestCase {
 		
 		TypeSettingMark mark = _context.getTypeSettingMark(MarkPosition.fromId(1));
 		assertEquals(1, mark.getMark().getId());
-		assertEquals("mark <comment> #1 1", mark.getMarkText());
+		assertEquals("mark<comment>#1 1", mark.getMarkText());
 		assertEquals(false, mark.getAllowLineBreaks());
 		
 		mark = _context.getTypeSettingMark(MarkPosition.fromId(2));
@@ -94,7 +94,20 @@ public class TypesettingMarksTest extends TestCase {
 		assertEquals(false, mark.getAllowLineBreaks());
 	}
 	
-	
+	@Test
+	public void testMarkWithCommentOnly() throws Exception {
+		String data = "! \n #1. <test> \n#2. <test 2> !mark 2!\n";
+		_directive.process(_context, data);
+		TypeSettingMark mark = _context.getTypeSettingMark(MarkPosition.fromId(1));
+		assertEquals(1, mark.getMark().getId());
+		assertEquals("", mark.getMarkText());
+		assertEquals(false, mark.getAllowLineBreaks());
+		
+		mark = _context.getTypeSettingMark(MarkPosition.fromId(2));
+		assertEquals(2, mark.getMark().getId());
+		assertEquals("mark 2", mark.getMarkText());
+		assertEquals(false, mark.getAllowLineBreaks());
+	}
 	/**
 	 * Tests processing of the directive with correct data and an invalid
 	 * delimiter.
@@ -112,9 +125,7 @@ public class TypesettingMarksTest extends TestCase {
 				fail("Invalid delimeter should have caused an exception");
 			} catch (Exception e) {
 			}
-
 		}
-
 	}
 	
 }

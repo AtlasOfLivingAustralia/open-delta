@@ -3,6 +3,8 @@ package au.org.ala.delta.translation;
 import java.text.ParseException;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
+
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.TypeSettingMark;
@@ -38,9 +40,13 @@ public class FormattedTextTypeSetter extends PlainTextTypeSetter {
 
 	@Override
 	public void afterItem(Item item) {
-		// The prepended space here seems unnecessary but it makes it match the CONFOR 
-		// output which simplifies my testing.
-		writeTypeSettingMark(" "+_typeSettingMarks.get(MarkPosition.AFTER_ITEM).getMarkText());
+		
+		String afterItemMark = _typeSettingMarks.get(MarkPosition.AFTER_ITEM).getMarkText();
+		if (StringUtils.isNotEmpty(afterItemMark)) {
+			// The prepended space here seems unnecessary but it makes it match the CONFOR 
+			// output which simplifies my testing.
+			writeTypeSettingMark(" "+afterItemMark);
+		}
 
 	}
 

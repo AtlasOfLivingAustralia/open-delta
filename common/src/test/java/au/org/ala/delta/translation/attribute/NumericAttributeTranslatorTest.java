@@ -8,6 +8,7 @@ import org.junit.Test;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DefaultDataSetFactory;
 import au.org.ala.delta.model.RealCharacter;
+import au.org.ala.delta.model.format.AttributeFormatter;
 import au.org.ala.delta.translation.PlainTextTypeSetter;
 
 /**
@@ -24,7 +25,9 @@ public class NumericAttributeTranslatorTest extends TestCase {
 		_realCharacter = (RealCharacter)_factory.createCharacter(CharacterType.RealNumeric, 2);
 		_realCharacter.setUnits("units");
 		PlainTextTypeSetter typeSetter = new PlainTextTypeSetter(null);
-		_translator = new NumericAttributeTranslator(_realCharacter, typeSetter);
+		AttributeFormatter attributeFormatter = new AttributeFormatter(false, true);
+		
+		_translator = new NumericAttributeTranslator(_realCharacter, typeSetter, attributeFormatter);
 	}
 	
 	/**

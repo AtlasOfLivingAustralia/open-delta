@@ -21,11 +21,11 @@ public abstract class AttributeTranslator {
 	protected StringBuilder _translatedValue;
 	protected AttributeFormatter _attributeFormatter;
 	
-	public AttributeTranslator() {
+	public AttributeTranslator(AttributeFormatter formatter) {
 		_separators = new HashMap<String, String>();
 		_separators.put("&", "and");
 		_separators.put("-", "to");
-		_attributeFormatter = new AttributeFormatter(false, true);
+		_attributeFormatter = formatter;
 	}
 	
 	/**

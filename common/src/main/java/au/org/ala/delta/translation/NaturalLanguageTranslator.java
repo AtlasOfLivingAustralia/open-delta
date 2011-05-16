@@ -14,6 +14,7 @@ import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.NumericCharacter;
+import au.org.ala.delta.model.format.AttributeFormatter;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.translation.Words.Word;
@@ -38,16 +39,23 @@ public class NaturalLanguageTranslator extends AbstractDataSetTranslator impleme
 	private TypeSetter _typeSetter;
 	private ItemFormatter _itemFormatter;
 	private CharacterFormatter _characterFormatter;
+	private AttributeFormatter _attributeFormatter;
 	
-	
-	public NaturalLanguageTranslator(DeltaContext context, TypeSetter typeSetter, Printer printer) {
+	public NaturalLanguageTranslator(
+			DeltaContext context, 
+			TypeSetter typeSetter, 
+			Printer printer,
+			ItemFormatter itemFormatter,
+			CharacterFormatter characterFormatter,
+			AttributeFormatter attributeFormatter) {
 		super(context, new NaturalLanguageDataSetFilter(context));
 		_context = context;
 		_printer = printer;
 		_dataSet = _context.getDataSet();
 		_typeSetter = typeSetter;
-		_itemFormatter = new TypeSettingItemFormatter(_typeSetter);
-		_characterFormatter = new CharacterFormatter(false, true, false, true);
+		_itemFormatter = itemFormatter;
+		_characterFormatter = characterFormatter;
+		_attributeFormatter = attributeFormatter;
 	}
 	
 	
@@ -301,13 +309,13 @@ public class NaturalLanguageTranslator extends AbstractDataSetTranslator impleme
 	
 	private AttributeTranslator translatorFor(Character character) {
 		if (character instanceof MultiStateCharacter) {
-			return new MultiStateAttributeTranslator((MultiStateCharacter)character);
+			return new MultiStateAttributeTranslator((MultiStateCharacter)character, _characterFormatter, _attributeFormatter);
 		}
 		if (character instanceof NumericCharacter<?>) {
-			return new NumericAttributeTranslator((NumericCharacter<?>)character, _typeSetter);
+			return new NumericAttributeTranslator((NumericCharacter<?>)character, _typeSetter, _attributeFormatter);
 		}
 		
-		return new TextAttributeTranslator();
+		return new TextAttributeTranslator(_attributeFormatter);
 	}
 	
 	private boolean _newParagraph;
@@ -363,6 +371,9 @@ public class NaturalLanguageTranslator extends AbstractDataSetTranslator impleme
 		}
 		if (!_context.omitCharacterNumbers()) {
 			_printer.writeJustifiedText("(" + characterNumber + ")", -1);
+			if (characterNumber == 89) {
+				System.out.println("Breakpoint time!");
+			}
 		}
 
 		int ioffset = 0;

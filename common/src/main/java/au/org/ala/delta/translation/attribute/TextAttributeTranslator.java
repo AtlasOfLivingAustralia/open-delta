@@ -1,5 +1,7 @@
 package au.org.ala.delta.translation.attribute;
 
+import au.org.ala.delta.model.format.AttributeFormatter;
+
 
 
 
@@ -9,8 +11,8 @@ package au.org.ala.delta.translation.attribute;
  */
 public class TextAttributeTranslator extends AttributeTranslator {
 
-	public TextAttributeTranslator() {
-		super();
+	public TextAttributeTranslator(AttributeFormatter formatter) {
+		super(formatter);
 	}
 	
 	@Override

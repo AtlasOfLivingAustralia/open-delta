@@ -80,6 +80,10 @@ public abstract class NaturalLangaugeTranslatorTest extends TestCase {
 		expectedResults = expectedResults.trim();
 		String actualResults = actualResults().trim();
 		
+		// Replace windows code page chars
+		
+		actualResults = actualResults.replaceAll("\\\\emdash\\{\\}", "\u2014");
+		actualResults = actualResults.replaceAll("\\\\endash\\{\\}", "\u2013");
 		
 		if (vide) {
 			// Our RTF stripping doesn't remove keywords that translate to a single unicode character.
@@ -88,6 +92,7 @@ public abstract class NaturalLangaugeTranslatorTest extends TestCase {
 			actualResults = actualResults.replaceAll("\\s+", " ");
 			actualResults = actualResults.replaceAll("\\s\\.", ".");
 			actualResults = actualResults.replaceAll("\\s,", ",");
+			
 			expectedResults = expectedResults.replaceAll("\\s+", " ");
 			expectedResults = expectedResults.replaceAll("\\s,", ",");
 			expectedResults = expectedResults.replaceAll("\\s\\.", ".");
