@@ -157,10 +157,6 @@ public class IntkeyContext extends AbstractDeltaContext {
         }
     }
 
-    public JFrame getMainFrame() {
-        return _appUI.getMainFrame();
-    }
-
     public IntkeyDataset getDataset() {
         return _dataset;
     }

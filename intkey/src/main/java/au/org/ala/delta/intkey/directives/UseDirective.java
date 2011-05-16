@@ -13,6 +13,7 @@ import javax.swing.JOptionPane;
 
 import org.apache.commons.lang.math.FloatRange;
 import org.apache.commons.lang.math.IntRange;
+import org.jdesktop.application.Application;
 
 import au.org.ala.delta.intkey.model.CharacterComparator;
 import au.org.ala.delta.intkey.model.IntkeyContext;
@@ -23,15 +24,18 @@ import au.org.ala.delta.intkey.model.specimen.RealValue;
 import au.org.ala.delta.intkey.model.specimen.TextValue;
 import au.org.ala.delta.intkey.ui.CharacterKeywordSelectionDialog;
 import au.org.ala.delta.intkey.ui.CharacterSelectionDialog;
+import au.org.ala.delta.intkey.ui.CharacterValueInputDialog;
 import au.org.ala.delta.intkey.ui.IntegerInputDialog;
 import au.org.ala.delta.intkey.ui.MultiStateInputDialog;
 import au.org.ala.delta.intkey.ui.RealInputDialog;
 import au.org.ala.delta.intkey.ui.TextInputDialog;
+import au.org.ala.delta.intkey.ui.UIUtils;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.IntegerCharacter;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.RealCharacter;
 import au.org.ala.delta.model.TextCharacter;
+import au.org.ala.delta.ui.AboutBox;
 
 public class UseDirective extends IntkeyDirective {
 
@@ -69,7 +73,7 @@ public class UseDirective extends IntkeyDirective {
 
             } else {
                 // No characters specified, prompt the user to select characters
-                CharacterKeywordSelectionDialog dlg = new CharacterKeywordSelectionDialog(context.getMainFrame(), context);
+                CharacterKeywordSelectionDialog dlg = new CharacterKeywordSelectionDialog(UIUtils.getMainFrame(), context);
                 dlg.setVisible(true);
                 List<Character> selectedCharacters = dlg.getSelectedCharacters();
                 if (selectedCharacters.size() > 0) {
@@ -227,7 +231,7 @@ public class UseDirective extends IntkeyDirective {
             if (charsNoValues.size() == 1) {
                 Character ch = charsNoValues.get(0);
                 if (checkCharacterUsable(ch, context)) {
-                    CharacterValue characterVal = promptForCharacterValue(context.getMainFrame(), ch);
+                    CharacterValue characterVal = promptForCharacterValue(UIUtils.getMainFrame(), ch);
                     if (characterVal != null) {
                         // store this value so that the prompt does not need
                         // to
@@ -249,7 +253,7 @@ public class UseDirective extends IntkeyDirective {
                 Collections.sort(charsNoValues, new CharacterComparator());
                 while (!charsNoValues.isEmpty()) {
 
-                    CharacterSelectionDialog selectDlg = new CharacterSelectionDialog(context.getMainFrame(), charsNoValues);
+                    CharacterSelectionDialog selectDlg = new CharacterSelectionDialog(UIUtils.getMainFrame(), charsNoValues);
                     selectDlg.setVisible(true);
 
                     List<Character> selectedCharacters = selectDlg.getSelectedCharacters();
@@ -268,7 +272,7 @@ public class UseDirective extends IntkeyDirective {
                         CharacterValue characterVal = null;
 
                         if (checkCharacterUsable(ch, context)) {
-                            characterVal = promptForCharacterValue(context.getMainFrame(), ch);
+                            characterVal = promptForCharacterValue(UIUtils.getMainFrame(), ch);
                         } else {
                             // remove this value so that the user will not be prompted about it when the command is
                             // run additional times.
@@ -307,7 +311,7 @@ public class UseDirective extends IntkeyDirective {
             if (!_suppressAlreadySetWarning) {
                 if (context.getSpecimen().hasValueFor(ch)) {
                     String msg = String.format("Character %s has already used. Do you want to change the value(s) you entered?", ch.getCharacterId());
-                    int choice = JOptionPane.showConfirmDialog(context.getMainFrame(), msg, "Information", JOptionPane.YES_NO_OPTION);
+                    int choice = JOptionPane.showConfirmDialog(UIUtils.getMainFrame(), msg, "Information", JOptionPane.YES_NO_OPTION);
                     if (choice == JOptionPane.YES_OPTION) {
                         return true;
                     } else {
@@ -354,25 +358,25 @@ public class UseDirective extends IntkeyDirective {
 
         private List<Integer> promptForMultiStateValue(Frame frame, MultiStateCharacter ch) {
             MultiStateInputDialog dlg = new MultiStateInputDialog(frame, ch);
-            dlg.setVisible(true);
+            UIUtils.showDialog(dlg);
             return dlg.getInputData();
         }
 
         private IntRange promptForIntegerValue(Frame frame, IntegerCharacter ch) {
             IntegerInputDialog dlg = new IntegerInputDialog(frame, ch);
-            dlg.setVisible(true);
+            UIUtils.showDialog(dlg);
             return dlg.getInputData();
         }
 
         private FloatRange promptForRealValue(Frame frame, RealCharacter ch) {
             RealInputDialog dlg = new RealInputDialog(frame, ch);
-            dlg.setVisible(true);
+            UIUtils.showDialog(dlg);
             return dlg.getInputData();
         }
 
         private List<String> promptForTextValue(Frame frame, TextCharacter ch) {
             TextInputDialog dlg = new TextInputDialog(frame, ch);
-            dlg.setVisible(true);
+            UIUtils.showDialog(dlg);
             return dlg.getInputData();
         }
 

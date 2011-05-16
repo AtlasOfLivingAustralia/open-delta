@@ -4,14 +4,16 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
+import javax.swing.ActionMap;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import org.jdesktop.application.Action;
+import org.jdesktop.application.Application;
 
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.format.CharacterFormatter;
@@ -31,8 +33,12 @@ public abstract class CharacterValueInputDialog extends JDialog {
 
     public CharacterValueInputDialog(Frame owner, Character ch) {
         super(owner, true);
-        setSize(new Dimension(500, 150));
+
+        ActionMap actionMap = Application.getInstance().getContext().getActionMap(CharacterValueInputDialog.class, this);
+
         setResizable(false);
+        setSize(new Dimension(600, 200));
+
         setLocationRelativeTo(owner);
 
         getContentPane().setLayout(new BorderLayout(0, 0));
@@ -43,43 +49,37 @@ public abstract class CharacterValueInputDialog extends JDialog {
         _buttonPanel.setBorder(new EmptyBorder(0, 20, 10, 20));
         getContentPane().add(_buttonPanel, BorderLayout.SOUTH);
         _buttonPanel.setLayout(new GridLayout(0, 4, 5, 2));
-
-        JButton _btnOk = new JButton("OK");
-        _btnOk.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                CharacterValueInputDialog.this.handleBtnOKClicked();
-            }
-        });
+        
+        JButton _btnOk = new JButton();
+        _btnOk.setAction(actionMap.get("characterValueInputDialog_OK"));
         _buttonPanel.add(_btnOk);
 
-        _btnImages = new JButton("Images");
+        _btnImages = new JButton();
+        _btnImages.setAction(actionMap.get("characterValueInputDialog_Images"));
         _btnImages.setEnabled(false);
         _buttonPanel.add(_btnImages);
 
-        _btnFullText = new JButton("Full Text");
+        _btnFullText = new JButton();
+        _btnFullText.setAction(actionMap.get("characterValueInputDialog_FullText"));
         _btnFullText.setEnabled(false);
         _buttonPanel.add(_btnFullText);
 
-        _btnSearch = new JButton("Search");
+        _btnSearch = new JButton();
+        _btnSearch.setAction(actionMap.get("characterValueInputDialog_Search"));
         _btnSearch.setEnabled(false);
         _buttonPanel.add(_btnSearch);
 
-        _btnCancel = new JButton("Cancel");
-        _btnCancel.addActionListener(new ActionListener() {
-            
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                CharacterValueInputDialog.this.handleBtnCancelClicked();
-            }
-        });
-        
+        _btnCancel = new JButton();
+        _btnCancel.setAction(actionMap.get("characterValueInputDialog_Cancel"));        
         _buttonPanel.add(_btnCancel);
 
-        _btnNotes = new JButton("Notes");
+        _btnNotes = new JButton();
+        _btnNotes.setAction(actionMap.get("characterValueInputDialog_Notes"));
         _btnNotes.setEnabled(false);
         _buttonPanel.add(_btnNotes);
 
-        _btnHelp = new JButton("Help");
+        _btnHelp = new JButton();
+        _btnHelp.setAction(actionMap.get("characterValueInputDialog_Help"));
         _btnHelp.setEnabled(false);
         _buttonPanel.add(_btnHelp);
 
@@ -97,4 +97,36 @@ public abstract class CharacterValueInputDialog extends JDialog {
 
     abstract void handleBtnOKClicked();
     abstract void handleBtnCancelClicked();
+    
+    // Button action handlers
+    
+    @Action
+    public void characterValueInputDialog_OK() {
+        handleBtnOKClicked();
+    }
+    
+    @Action
+    public void characterValueInputDialog_Images() {
+    }
+    
+    @Action
+    public void characterValueInputDialog_FullText() {
+    }
+    
+    @Action
+    public void characterValueInputDialog_Search() {
+    }
+    
+    @Action
+    public void characterValueInputDialog_Cancel() {
+        handleBtnCancelClicked();
+    }
+    
+    @Action
+    public void characterValueInputDialog_Notes() {
+    }
+    
+    @Action
+    public void characterValueInputDialog_Help() {
+    }
 }

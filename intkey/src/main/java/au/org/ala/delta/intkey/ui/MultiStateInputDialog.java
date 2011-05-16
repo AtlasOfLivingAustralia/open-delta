@@ -23,7 +23,7 @@ public class MultiStateInputDialog extends CharacterValueInputDialog {
     public MultiStateInputDialog(Frame owner, MultiStateCharacter ch) {
         super(owner, ch);
         setTitle("Select state or states");
-        setSize(new Dimension(500, 300));
+        setSize(new Dimension(600, 350));
 
         _scrollPane = new JScrollPane();
         _pnlMain.add(_scrollPane, BorderLayout.CENTER);

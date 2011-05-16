@@ -33,7 +33,7 @@ public class ListSelectionDialog extends JDialog {
 
     private void init() {
         setResizable(false);
-        setSize(new Dimension(500, 300));
+        setSize(new Dimension(600, 350));
         
         _panelButtons = new JPanel();
         getContentPane().add(_panelButtons, BorderLayout.SOUTH);

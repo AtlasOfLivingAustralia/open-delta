@@ -9,6 +9,7 @@ import org.jdesktop.application.SingleFrameApplication;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.ui.SelectDataSetDialog;
+import au.org.ala.delta.intkey.ui.UIUtils;
 
 public class NewDatasetDirective extends IntkeyDirective {
 
@@ -33,7 +34,7 @@ public class NewDatasetDirective extends IntkeyDirective {
         JFileChooser chooser = new JFileChooser();
         FileNameExtensionFilter filter = new FileNameExtensionFilter("Data Initialization Files (*.ini, *.ink)", "ini", "ink");
         chooser.setFileFilter(filter);
-        int returnVal = chooser.showOpenDialog(context.getMainFrame());
+        int returnVal = chooser.showOpenDialog(UIUtils.getMainFrame());
         if(returnVal == JFileChooser.APPROVE_OPTION) {
            filePath = chooser.getSelectedFile().getAbsolutePath();
         }

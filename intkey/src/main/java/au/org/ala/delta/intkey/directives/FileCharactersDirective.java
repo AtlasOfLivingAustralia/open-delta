@@ -9,6 +9,7 @@ import javax.swing.filechooser.FileFilter;
 import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.intkey.ui.UIUtils;
 
 public class FileCharactersDirective extends IntkeyDirective {
 
@@ -38,7 +39,7 @@ public class FileCharactersDirective extends IntkeyDirective {
             };
 
             chooser.setFileFilter(filter);
-            int returnVal = chooser.showOpenDialog(context.getMainFrame());
+            int returnVal = chooser.showOpenDialog(UIUtils.getMainFrame());
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                 fileName = chooser.getSelectedFile().getAbsolutePath();
             } else {
@@ -67,7 +68,7 @@ public class FileCharactersDirective extends IntkeyDirective {
                 context.setFileCharacters(_fileName);
                 return true;
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(context.getMainFrame(), ex.getMessage(), "", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(UIUtils.getMainFrame(), ex.getMessage(), "", JOptionPane.ERROR_MESSAGE);
                 return false;
             } 
         }

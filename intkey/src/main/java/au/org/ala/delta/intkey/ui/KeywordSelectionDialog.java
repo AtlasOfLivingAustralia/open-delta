@@ -6,10 +6,13 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.ActionMap;
 import javax.swing.JButton;
 
+import org.jdesktop.application.Action;
+import org.jdesktop.application.Application;
+
 public abstract class KeywordSelectionDialog extends ListSelectionDialog {
-    protected boolean _okPressed = false;
     protected JButton _btnOk;
     protected JButton _btnDeselectAll;
     protected JButton _btnList;
@@ -29,67 +32,76 @@ public abstract class KeywordSelectionDialog extends ListSelectionDialog {
     }
      
     private void init() {
+        ActionMap actionMap = Application.getInstance().getContext().getActionMap(KeywordSelectionDialog.class, this);
+        
         _panelButtons.setLayout(new GridLayout(0, 5, 5, 5));
         
-        _btnOk = new JButton("OK");
-        _btnOk.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                KeywordSelectionDialog.this._okPressed = true;
-                KeywordSelectionDialog.this.okBtnPressed();
-                KeywordSelectionDialog.this.setVisible(false);
-            }
-        });
+        _btnOk = new JButton();
+        _btnOk.setAction(actionMap.get("keywordSelectionDialog_OK"));
         _panelButtons.add(_btnOk);
         
         _btnDeselectAll = new JButton("Deselect All");
-        _btnDeselectAll.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                _list.clearSelection();
-            }
-        });
+        _btnDeselectAll.setAction(actionMap.get("keywordSelectionDialog_DeselectAll"));
         _panelButtons.add(_btnDeselectAll);
         
-        _btnList = new JButton("List");
-        _btnList.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                listBtnPressed();
-            }
-        });
+        _btnList = new JButton();
+        _btnList.setEnabled(false);
+        _btnList.setAction(actionMap.get("keywordSelectionDialog_List"));
         _panelButtons.add(_btnList);
         
-        _btnImages = new JButton("Images");
+        _btnImages = new JButton();
+        _btnImages.setAction(actionMap.get("keywordSelectionDialog_Images"));
         _btnImages.setEnabled(false);
-        _btnImages.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-            }
-        });
         _panelButtons.add(_btnImages);
         
-        _btnSearch = new JButton("Search");
+        _btnSearch = new JButton();
+        _btnSearch.setAction(actionMap.get("keywordSelectionDialog_Search"));
         _btnSearch.setEnabled(false);
-        _btnSearch.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-            }
-        });
         _panelButtons.add(_btnSearch);
         
-        _btnCancel = new JButton("Cancel");
-        _btnCancel.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                cancelBtnPressed();
-            }
-        });
+        _btnCancel = new JButton();
+        _btnCancel.setAction(actionMap.get("keywordSelectionDialog_Cancel"));
         _panelButtons.add(_btnCancel);
         
-        _btnHelp = new JButton("Help");
+        _btnHelp = new JButton();
+        _btnHelp.setAction(actionMap.get("keywordSelectionDialog_Help"));
         _btnHelp.setEnabled(false);
-        _btnHelp.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                KeywordSelectionDialog.this._okPressed = false;
-                KeywordSelectionDialog.this.setVisible(false);
-            }
-        });
         _panelButtons.add(_btnHelp);
+    }
+    
+    @Action
+    public void keywordSelectionDialog_OK() {
+        okBtnPressed();
+    }
+    
+    @Action
+    public void keywordSelectionDialog_Cancel() {
+        cancelBtnPressed();
+    }
+    
+    @Action
+    public void keywordSelectionDialog_List() {
+        listBtnPressed();
+    }
+    
+    @Action
+    public void keywordSelectionDialog_Images() {
+        imagesBtnPressed();
+    }
+    
+    @Action
+    public void keywordSelectionDialog_Search() {
+        searchBtnPressed();
+    }
+    
+    @Action
+    public void keywordSelectionDialog_Help() {
+        helpBtnPressed();
+    }
+    
+    @Action
+    public void keywordSelectionDialog_DeselectAll() {
+        _list.clearSelection();
     }
     
     abstract protected void okBtnPressed();
