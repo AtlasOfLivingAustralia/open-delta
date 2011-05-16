@@ -41,4 +41,18 @@ public class MultiStateValue extends CharacterValue {
         return builder.toString().trim();
     }
 
+    @Override
+    public String toShortString() {
+        StringBuilder builder = new StringBuilder();
+        for (int i=0; i < _stateValues.size(); i++) {
+            if (i > 0) {
+                builder.append("/");
+            }
+            
+            builder.append(_stateValues.get(i));
+        }
+        
+        return builder.toString();
+    }
+
 }

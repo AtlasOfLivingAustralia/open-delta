@@ -12,4 +12,6 @@ public abstract class CharacterValue {
     }
     
     public abstract Character getCharacter();
+    
+    public abstract String toShortString();
 }

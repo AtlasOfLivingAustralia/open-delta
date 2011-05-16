@@ -4,6 +4,7 @@ import java.awt.Frame;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -188,7 +189,10 @@ public class UseDirective extends IntkeyDirective {
 
         public UseDirectiveInvocation(boolean suppressAlreadySetWarning) {
             _suppressAlreadySetWarning = suppressAlreadySetWarning;
-            _characterValues = new HashMap<Character, CharacterValue>();
+            
+            //Use LinkedHashMap so that keys can be iterated over in the order that they
+            //were inserted.
+            _characterValues = new LinkedHashMap<Character, CharacterValue>();
         }
 
         @Override
@@ -374,7 +378,16 @@ public class UseDirective extends IntkeyDirective {
 
         @Override
         public String toString() {
-            return String.format("USE %s", _characterValues.toString());
+            StringBuilder builder = new StringBuilder();
+            builder.append("USE ");
+            for (Character ch: _characterValues.keySet()) {
+                CharacterValue val = _characterValues.get(ch);
+                builder.append(" ");
+                builder.append(ch.getCharacterId());
+                builder.append(",");
+                builder.append(val.toShortString());
+            }
+            return builder.toString();
         }
     }
 }

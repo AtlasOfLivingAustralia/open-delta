@@ -716,13 +716,22 @@ public class Intkey extends DeltaSingleFrameApplication {
         }
 
         public void addCharacterValue(Character ch, CharacterValue value) {
+            //remove any existing value for this character
+            removeValueForCharacter(ch);
+            
             _values.add(value);
             _characterValueMap.put(ch, value);
             fireIntervalAdded(this, _values.size() - 1, _values.size() - 1);
         }
 
         public void removeValueForCharacter(Character ch) {
-
+            if (_characterValueMap.containsKey(ch)) {
+                CharacterValue val = _characterValueMap.get(ch);
+                int valueIndex = _values.indexOf(val);
+                _values.remove(val);
+                _characterValueMap.remove(ch);
+                fireIntervalRemoved(this, valueIndex, valueIndex);
+            }
         }
 
     }

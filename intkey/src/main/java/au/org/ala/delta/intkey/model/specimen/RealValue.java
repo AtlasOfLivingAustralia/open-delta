@@ -30,6 +30,19 @@ public class RealValue extends CharacterValue {
         builder.append(_formatter.formatCharacterDescription(_character));
         builder.append(" ");
         
+        builder.append(this.toShortString());
+        
+        if (_character.hasUnits()) {
+            builder.append(" ");
+            builder.append(_character.getUnits());
+        }
+        
+        return builder.toString();
+    }
+
+    @Override
+    public String toShortString() {
+        StringBuilder builder = new StringBuilder();
         float minimumValue = _range.getMinimumFloat();
         float maximumValue = _range.getMaximumFloat();
         if (minimumValue == maximumValue) {
@@ -38,11 +51,6 @@ public class RealValue extends CharacterValue {
             builder.append(minimumValue);
             builder.append("-");
             builder.append(maximumValue);
-        }
-        
-        if (_character.hasUnits()) {
-            builder.append(" ");
-            builder.append(_character.getUnits());
         }
         
         return builder.toString();
