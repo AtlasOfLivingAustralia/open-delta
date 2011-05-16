@@ -26,7 +26,7 @@ public class InputFile extends ConforDirective {
 	}
 
 	@Override
-	public void process(DeltaContext context, String data) {
+	protected void doProcess(DeltaContext context, String data) {
 		
 		File file = new File(context.getCurrentParsingContext().getFile().getParent(), data.trim());
 		 

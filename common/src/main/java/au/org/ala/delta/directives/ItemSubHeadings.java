@@ -19,7 +19,7 @@ public class ItemSubHeadings extends ConforDirective {
 	}
 
 	@Override
-	public void process(DeltaContext context, String data) throws Exception {
+	protected void doProcess(DeltaContext context, String data) throws Exception {
 		StringReader reader = new StringReader(data);
 		ItemSubHeadingParser parser = new ItemSubHeadingParser(context, reader);
 		parser.parse();

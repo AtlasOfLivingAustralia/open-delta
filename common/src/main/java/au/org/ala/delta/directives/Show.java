@@ -23,7 +23,7 @@ public class Show extends ConforDirective {
 	}
 
 	@Override
-	public void process(DeltaContext context, String data) {
+	protected void doProcess(DeltaContext context, String data) {
 		context.ErrorMessage("%s", replaceVariables(context, data.trim()));
 	}
 

@@ -72,7 +72,7 @@ public class DeltaContext extends AbstractDeltaContext {
 	private int _maxNumberOfStates;
 	private int _maxNumberOfItems;
 	private boolean _omitTypeSettingMarks = false;
-	private int _printWidth;
+	private int _printWidth = 80;
 	private boolean _replaceAngleBrackets;
 	private boolean _omitCharacterNumbers = false;
 	private boolean _omitInnerComments = false;

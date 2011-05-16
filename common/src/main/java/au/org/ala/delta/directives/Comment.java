@@ -24,7 +24,7 @@ public class Comment extends ConforDirective {
 	}
 	
 	@Override
-	public void process(DeltaContext context, String data) throws Exception {
+	public void doProcess(DeltaContext context, String data) throws Exception {
 		Logger.debug("Comment: %s", data);
 	}
 

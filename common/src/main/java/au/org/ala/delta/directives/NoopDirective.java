@@ -23,7 +23,7 @@ public abstract class NoopDirective extends ConforDirective {
 	}
 	
 	@Override
-	public void process(DeltaContext context, String data) throws Exception {
+	protected void doProcess(DeltaContext context, String data) throws Exception {
 		// Do nothing - deprecated directive
 	}
 

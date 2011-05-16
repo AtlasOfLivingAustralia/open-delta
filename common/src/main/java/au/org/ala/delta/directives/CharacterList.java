@@ -30,7 +30,7 @@ public class CharacterList extends ConforDirective {
 	}
 
 	@Override
-	public void process(DeltaContext context, String data) throws Exception {
+	public void doProcess(DeltaContext context, String data) throws Exception {
 		StringReader reader = new StringReader(data);
 		CharacterListParser parser = new CharacterListParser(context, reader);
 		parser.parse();

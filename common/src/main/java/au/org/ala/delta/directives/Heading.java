@@ -24,7 +24,7 @@ public class Heading extends ConforDirective {
 	}
 	
 	@Override
-	public void process(DeltaContext context, String data) {
+	protected void doProcess(DeltaContext context, String data) {
 		String heading = replaceVariables(context, data.trim());
 		context.setVariable("heading", heading);
 		Logger.log("HEADING: %s", heading);

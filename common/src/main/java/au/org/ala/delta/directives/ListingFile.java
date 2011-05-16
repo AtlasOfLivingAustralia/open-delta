@@ -26,7 +26,7 @@ public class ListingFile extends ConforDirective {
 	}
 	
 	@Override
-	public void process(DeltaContext context, String data) throws Exception {
+	protected void doProcess(DeltaContext context, String data) throws Exception {
 		String filename = data.trim() + ".new"; // TODO: kill the .new once stable...
 		File file = new File(context.getCurrentParsingContext().getFile().getParentFile(), filename);		
 		PrintStream stream = new PrintStream(file);

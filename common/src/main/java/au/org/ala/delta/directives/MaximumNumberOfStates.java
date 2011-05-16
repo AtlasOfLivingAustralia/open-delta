@@ -24,7 +24,7 @@ public class MaximumNumberOfStates extends ConforDirective {
 	}
 	
 	@Override
-	public void process(DeltaContext context, String data) throws Exception {	
+	protected void doProcess(DeltaContext context, String data) throws Exception {	
 		Logger.debug("Setting max number of states to %s", data);
 		context.setMaximumNumberOfStates(Integer.parseInt(data));
 	}

@@ -17,6 +17,10 @@ package au.org.ala.delta.directives;
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.Logger;
 
+/**
+ * @see http://delta-intkey.com/www/uguide.htm#_*PRINT_WIDTH__1
+ *
+ */
 public class PrintWidth extends ConforDirective {
 	
 	public PrintWidth() {
@@ -24,8 +28,9 @@ public class PrintWidth extends ConforDirective {
 	}
 	
 	@Override
-	public void process(DeltaContext context, String data) throws Exception {
+	protected void doProcess(DeltaContext context, String data) throws Exception {
 		Logger.debug("Setting the print width to %s", data);
+		
 		context.setPrintWidth(Integer.parseInt(data));
 	}
 

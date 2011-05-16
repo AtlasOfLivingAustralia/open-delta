@@ -24,7 +24,7 @@ public class MaximumNumberOfItems extends ConforDirective {
 	}
 	
 	@Override
-	public void process(DeltaContext context, String data) throws Exception {
+	protected void doProcess(DeltaContext context, String data) throws Exception {
 		Logger.debug("Setting max number of items to %s", data);
 		context.setMaximumNumberOfItems(Integer.parseInt(data));
 	}

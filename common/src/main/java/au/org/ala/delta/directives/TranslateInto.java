@@ -44,7 +44,7 @@ public class TranslateInto extends ConforDirective {
 	}
 
 	@Override
-	public void process(DeltaContext context, String data) {
+	protected void doProcess(DeltaContext context, String data) {
 		
 		String[] bits = data.split(" ");
 		assert bits.length == 2;		
@@ -72,6 +72,8 @@ public class TranslateInto extends ConforDirective {
 
 	}
 	
-	
+	protected boolean ignoreEmptyArguments() {
+		return false;
+	}
 
 }

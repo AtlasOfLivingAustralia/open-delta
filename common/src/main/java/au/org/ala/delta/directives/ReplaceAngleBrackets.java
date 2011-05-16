@@ -23,7 +23,7 @@ public class ReplaceAngleBrackets extends ConforDirective {
 	}
 	
 	@Override
-	public void process(DeltaContext context, String data) throws Exception {
+	protected void doProcess(DeltaContext context, String data) throws Exception {
 		context.setReplaceAngleBrackets(true);
 	}
 	

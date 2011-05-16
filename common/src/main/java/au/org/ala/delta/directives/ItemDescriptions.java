@@ -31,7 +31,7 @@ public class ItemDescriptions extends ConforDirective {
 	}
 
 	@Override
-	public void process(DeltaContext context, String data) throws Exception {
+	protected void doProcess(DeltaContext context, String data) throws Exception {
 		StringReader reader = new StringReader(data);
 		ItemsParser parser = new ItemsParser(context, reader);
 		parser.parse();

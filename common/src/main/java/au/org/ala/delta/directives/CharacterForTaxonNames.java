@@ -27,7 +27,7 @@ public class CharacterForTaxonNames extends ConforDirective {
 	}
 	
 	@Override
-	public void process(DeltaContext context, String data) throws Exception {
+	public void doProcess(DeltaContext context, String data) throws Exception {
 		int character = Integer.parseInt(data);
 		if (context.getDataSet().getCharacter(character).getCharacterType() != CharacterType.Text) {
 			throw new RuntimeException("149,1");

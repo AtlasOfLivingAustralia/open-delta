@@ -24,7 +24,7 @@ public class NumberOfCharacters extends ConforDirective {
 	}
 
 	@Override
-	public void process(DeltaContext context, String data) throws Exception {
+	protected void doProcess(DeltaContext context, String data) throws Exception {
 		Logger.debug("Setting number of characters to %s", data);
 		context.setNumberOfCharacters(Integer.parseInt(data));
 	}

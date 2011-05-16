@@ -14,10 +14,14 @@
  ******************************************************************************/
 package au.org.ala.delta.directives;
 
+import au.org.ala.delta.DeltaContext;
+
 public class DataBufferSize extends NoopDirective {
 	
 	public DataBufferSize() {
 		super("data", "buffer", "size");
 	}
+	
+	protected void doProcess(DeltaContext context, String data) {}
 
 }
