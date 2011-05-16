@@ -19,7 +19,7 @@ import junit.framework.TestCase;
 
 public class DeltaContextTests extends TestCase {
 	
-	public void testVars() {
+	public void testVars() throws Exception {
 		DeltaContext context = new DeltaContext();
 		Show s = new Show();
 		s.process(context, "This time #TIME and #DATE");		
