@@ -371,9 +371,6 @@ public class NaturalLanguageTranslator extends AbstractDataSetTranslator impleme
 		}
 		if (!_context.omitCharacterNumbers()) {
 			_printer.writeJustifiedText("(" + characterNumber + ")", -1);
-			if (characterNumber == 89) {
-				System.out.println("Breakpoint time!");
-			}
 		}
 
 		int ioffset = 0;

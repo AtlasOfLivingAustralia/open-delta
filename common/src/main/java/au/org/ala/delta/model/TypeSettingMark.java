@@ -12,7 +12,7 @@ public class TypeSettingMark {
 
 	public static enum MarkPosition {
 		// Common marks.
-		RANGE_SYBOL(1),
+		RANGE_SYMBOL(1),
 		
 		// Marks used by PRINT CHARACTER LIST
 		BEFORE_CHARACTER_OR_HEADING(2), BEFORE_FIRST_CHARACTER_OR_HEADING(3), BEFORE_CHARACTER_HEADING(4),

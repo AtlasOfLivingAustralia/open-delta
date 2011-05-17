@@ -114,7 +114,7 @@ public class FormattedTextTypeSetter extends PlainTextTypeSetter {
 	
 	@Override
 	public String rangeSeparator() {
-		return _typeSettingMarks.get(MarkPosition.RANGE_SYBOL).getMarkText();
+		return _typeSettingMarks.get(MarkPosition.RANGE_SYMBOL).getMarkText();
 	}
 		
 	/**

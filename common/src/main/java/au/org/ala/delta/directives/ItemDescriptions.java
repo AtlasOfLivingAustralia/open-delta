@@ -76,6 +76,7 @@ class ItemsParser extends AbstractStreamParser {
 		skipWhitespace();
 		while (_currentChar != '#' && _currentInt >= 0) {
 			int charIdx = readInteger();
+			
 			au.org.ala.delta.model.Character ch = _context.getCharacter(charIdx);
 			String strValue = null;
 			String comment = null;

@@ -24,7 +24,7 @@ public class DataSetTranslatorFactory {
 			
 			ItemFormatter itemFormatter  = createItemFormatter(context, typeSetter);
 			CharacterFormatter characterFormatter = createCharacterFormatter(context);
-			AttributeFormatter attributeFormatter = createAttributeFormatter(context);
+			AttributeFormatter attributeFormatter = createAttributeFormatter(context, typeSetter);
 			translator = new NaturalLanguageTranslator(context, typeSetter, printer, itemFormatter, characterFormatter, attributeFormatter);
 		}
 		else {
@@ -76,7 +76,12 @@ public class DataSetTranslatorFactory {
 		return new CharacterFormatter(false, true, false, context.isOmitTypeSettingMarks());
 	}
 	
-	private AttributeFormatter createAttributeFormatter(DeltaContext context) {
-		return new AttributeFormatter(false, context.isOmitTypeSettingMarks());
+	private AttributeFormatter createAttributeFormatter(DeltaContext context, TypeSetter typeSetter) {
+		if (context.isOmitTypeSettingMarks()) {
+			return new AttributeFormatter(false, true);
+		}
+		else {
+			return new TypeSettingAttributeFormatter();
+		}
 	}
 }

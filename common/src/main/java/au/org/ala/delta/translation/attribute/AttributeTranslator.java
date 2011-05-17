@@ -90,6 +90,11 @@ public abstract class AttributeTranslator {
 		StringBuilder output = new StringBuilder();
 		if (StringUtils.isNotEmpty(comment)) {
 			output.append(" ");
+			if (comment.startsWith("<the slender")) {
+				for (int i=0;i<comment.length();i++) {
+					System.out.println(comment.charAt(i)+":"+(int)comment.charAt(i));
+				}
+			}
 			output.append(comment);
 		}
 		return output.toString();
