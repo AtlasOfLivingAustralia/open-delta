@@ -17,6 +17,7 @@ import au.org.ala.delta.intkey.directives.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.IntkeyDirectiveParser;
 import au.org.ala.delta.intkey.model.specimen.CharacterValue;
 import au.org.ala.delta.intkey.model.specimen.Specimen;
+import au.org.ala.delta.intkey.ui.UIUtils;
 
 /**
  * Model. Maintains global application state.
@@ -81,7 +82,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         if (!_charactersFile.exists()) {
             String absoluteFileName = _charactersFile.getAbsolutePath();
             _charactersFile = null;
-            throw new IllegalArgumentException(String.format("Characters file '%s' could not be found", absoluteFileName));
+            throw new IllegalArgumentException(String.format(UIUtils.getResourceString("CharactersFileNotFound.error"), absoluteFileName));
         }
 
         if (_dataset == null && _taxaFile != null) {
@@ -104,7 +105,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         if (!_taxaFile.exists()) {
             String absoluteFileName = _taxaFile.getAbsolutePath();
             _taxaFile = null;
-            throw new IllegalArgumentException(String.format("Taxa file '%s' could not be found", absoluteFileName));
+            throw new IllegalArgumentException(String.format(UIUtils.getResourceString("TaxaFileNotFound.error"), absoluteFileName));
         }
 
         if (_dataset == null && _charactersFile != null) {
@@ -170,7 +171,7 @@ public class IntkeyContext extends AbstractDeltaContext {
     public void addCharacterKeyword(String keyword, Set<Integer> characterNumbers) {
         keyword = keyword.toLowerCase();
         if (keyword.equals(CHARACTER_KEYWORD_ALL) || keyword.equals(CHARACTER_KEYWORD_USED) || keyword.equals(CHARACTER_KEYWORD_AVAILABLE)) {
-            throw new IllegalArgumentException(String.format("'%s' is a system keyword and cannot be redefined", keyword));
+            throw new IllegalArgumentException(String.format(UIUtils.getResourceString("RedefineSystemKeyword.error"), keyword));
         }
         _userDefinedCharacterKeywords.put(keyword.toLowerCase(), characterNumbers);
     }
@@ -203,11 +204,11 @@ public class IntkeyContext extends AbstractDeltaContext {
                 }
 
                 if (matches.size() == 0) {
-                    throw new IllegalArgumentException(String.format("Keyword '%s' not found", keyword));
+                    throw new IllegalArgumentException(String.format(UIUtils.getResourceString("KeywordNotFound.error"), keyword));
                 } else if (matches.size() == 1) {
                     characterNumbersSet = _userDefinedCharacterKeywords.get(matches.get(0));
                 } else {
-                    throw new IllegalArgumentException(String.format("Keyword '%s' is ambiguous", keyword));
+                    throw new IllegalArgumentException(String.format(UIUtils.getResourceString("KeywordAmbiguous.error"), keyword));
                 }
             }
 
