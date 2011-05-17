@@ -161,6 +161,7 @@ public class Intkey extends DeltaSingleFrameApplication {
         globalOptionBar.add(btnContextHelp, BorderLayout.EAST);
 
         _rootSplitPane = new JSplitPane();
+        _rootSplitPane.setDividerSize(3);
         _rootSplitPane.setResizeWeight(0.5);
         _rootSplitPane.addComponentListener(new ComponentAdapter() {
             @Override
@@ -173,6 +174,7 @@ public class Intkey extends DeltaSingleFrameApplication {
         _rootPanel.add(_rootSplitPane);
 
         _innerSplitPaneLeft = new JSplitPane();
+        _innerSplitPaneLeft.setDividerSize(3);
         _innerSplitPaneLeft.setResizeWeight(0.5);
 
         _innerSplitPaneLeft.setContinuousLayout(true);
@@ -299,6 +301,7 @@ public class Intkey extends DeltaSingleFrameApplication {
         pnlUsedCharactersHeader.add(_lblNumUsedCharacters, BorderLayout.WEST);
 
         _innerSplitPaneRight = new JSplitPane();
+        _innerSplitPaneRight.setDividerSize(3);
         _innerSplitPaneRight.setResizeWeight(0.5);
         _innerSplitPaneRight.setContinuousLayout(true);
         _innerSplitPaneRight.setOrientation(JSplitPane.VERTICAL_SPLIT);
