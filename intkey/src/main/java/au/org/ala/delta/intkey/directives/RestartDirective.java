@@ -1,5 +1,7 @@
 package au.org.ala.delta.intkey.directives;
 
+import org.apache.commons.lang.StringUtils;
+
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
 public class RestartDirective extends IntkeyDirective {
@@ -25,7 +27,7 @@ public class RestartDirective extends IntkeyDirective {
 
         @Override
         public String toString() {
-            return "restart";
+            return StringUtils.join(_controlWords, " ").toUpperCase();
         }
     }
 }

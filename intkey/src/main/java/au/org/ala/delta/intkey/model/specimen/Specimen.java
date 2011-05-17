@@ -37,7 +37,5 @@ public class Specimen {
         }
         
         _characterValues.put(ch, value);
-        
-        System.out.println(value.toString());
     }
 }

@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.IntRange;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
@@ -55,7 +56,7 @@ public class DefineCharactersDirective extends IntkeyDirective {
 
         @Override
         public String toString() {
-            return String.format("define characters %s %s", _keyword, _characterNumbers.toString());
+            return String.format("%s %s %s", StringUtils.join(_controlWords, " ").toUpperCase(), _keyword, _characterNumbers.toString());
         }
         
         

@@ -75,7 +75,7 @@ public class FileCharactersDirective extends IntkeyDirective {
 
         @Override
         public String toString() {
-            return String.format("%s %s", StringUtils.join(_controlWords, " "), _fileName);
+            return String.format("%s %s", StringUtils.join(_controlWords, " ").toUpperCase(), _fileName);
         }
     }
 }

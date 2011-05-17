@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 
 import javax.swing.JOptionPane;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.FloatRange;
 import org.apache.commons.lang.math.IntRange;
 
@@ -380,7 +381,8 @@ public class UseDirective extends IntkeyDirective {
         @Override
         public String toString() {
             StringBuilder builder = new StringBuilder();
-            builder.append("USE ");
+            builder.append(StringUtils.join(_controlWords, " ").toUpperCase());
+            builder.append(" ");
             for (Character ch: _characterValues.keySet()) {
                 CharacterValue val = _characterValues.get(ch);
                 builder.append(" ");
