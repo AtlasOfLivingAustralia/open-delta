@@ -23,4 +23,8 @@ public class UIUtils {
     public static JFrame getMainFrame() {
         return ((SingleFrameApplication)Application.getInstance()).getMainFrame();
     }
+    
+    public static String getResourceString(String key) {
+        return Application.getInstance().getContext().getResourceMap().getString(key);
+    }
 }

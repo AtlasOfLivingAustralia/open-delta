@@ -11,6 +11,10 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 
+import org.jdesktop.application.Application;
+import org.jdesktop.application.Resource;
+import org.jdesktop.application.ResourceMap;
+
 import au.org.ala.delta.model.MultiStateCharacter;
 
 public class MultiStateInputDialog extends CharacterValueInputDialog {
@@ -20,10 +24,23 @@ public class MultiStateInputDialog extends CharacterValueInputDialog {
     private JList _list;
     private JScrollPane _scrollPane;
 
+    @Resource
+    String title;
+    
+    @Resource
+    String selectionConfirmationMessage;
+    
+    @Resource
+    String selectionConfirmationTitle;    
+
     public MultiStateInputDialog(Frame owner, MultiStateCharacter ch) {
         super(owner, ch);
-        setTitle("Select state or states");
-        setSize(new Dimension(600, 350));
+        
+        ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(MultiStateInputDialog.class);
+        resourceMap.injectFields(this);
+        
+        setTitle(title);
+        setPreferredSize(new Dimension(600, 350));
 
         _scrollPane = new JScrollPane();
         _pnlMain.add(_scrollPane, BorderLayout.CENTER);
@@ -48,7 +65,7 @@ public class MultiStateInputDialog extends CharacterValueInputDialog {
         // Show confirmation dialog if all of the states have been
         // selected.
         if (selectedIndicies.length == _list.getModel().getSize()) {
-            int dlgSelection = JOptionPane.showConfirmDialog(this, "You have selected all of the character states. Is that what you want?", "Confirm selection", JOptionPane.YES_NO_OPTION);
+            int dlgSelection = JOptionPane.showConfirmDialog(this, selectionConfirmationMessage, selectionConfirmationTitle, JOptionPane.YES_NO_OPTION);
             if (dlgSelection == JOptionPane.NO_OPTION) {
                 return;
             }

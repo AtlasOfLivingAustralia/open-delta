@@ -3,8 +3,6 @@ package au.org.ala.delta.intkey.ui;
 import java.awt.Dialog;
 import java.awt.Frame;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,13 +12,13 @@ import javax.swing.border.EmptyBorder;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
+import org.jdesktop.application.Resource;
+import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.model.Character;
-import java.awt.Dimension;
 
 public class CharacterSelectionDialog extends ListSelectionDialog {
 
-    private List<Character> _allCharacters;
     private List<Character> _selectedCharacters;
     private JButton _btnOk;
     private JButton _btnSelectAll;
@@ -35,22 +33,49 @@ public class CharacterSelectionDialog extends ListSelectionDialog {
 
     private CharacterListModel _listModel;
 
-    /**
-     * @wbp.parser.constructor
-     */
-    public CharacterSelectionDialog(Dialog owner, List<Character> characters) {
+    // The name of the directive being processed
+    private String _directiveName;
+
+    // The name of the keyword that these characters belong to
+    private String _keyword;
+
+    @Resource
+    String title;
+
+    @Resource
+    String titleFromKeyword;
+
+    public CharacterSelectionDialog(Dialog owner, List<Character> characters, String directiveName, String keyword) {
+        this(owner, characters, directiveName);
+        _keyword = keyword;
+        setTitle(String.format(titleFromKeyword, _directiveName, _keyword));
+    }
+
+    public CharacterSelectionDialog(Frame owner, List<Character> characters, String directiveName, String keyword) {
+        this(owner, characters, directiveName);
+        _keyword = keyword;
+        setTitle(String.format(titleFromKeyword, _directiveName, _keyword));
+    }
+
+    public CharacterSelectionDialog(Dialog owner, List<Character> characters, String directiveName) {
         super(owner);
+        _directiveName = directiveName;
         init(characters);
     }
 
-    public CharacterSelectionDialog(Frame owner, List<Character> characters) {
+    public CharacterSelectionDialog(Frame owner, List<Character> characters, String directiveName) {
         super(owner);
+        _directiveName = directiveName;
         init(characters);
     }
 
     private void init(List<Character> characters) {
+        ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(CharacterSelectionDialog.class);
+        resourceMap.injectFields(this);
         ActionMap actionMap = Application.getInstance().getContext().getActionMap(CharacterSelectionDialog.class, this);
-        
+
+        setTitle(String.format(title, _directiveName));
+
         _panelButtons.setBorder(new EmptyBorder(0, 20, 10, 20));
         _panelButtons.setLayout(new GridLayout(0, 5, 5, 2));
 
@@ -107,62 +132,61 @@ public class CharacterSelectionDialog extends ListSelectionDialog {
             _list.setModel(_listModel);
         }
     }
-    
-    
+
     @Action
     public void characterSelectionDialog_OK() {
-        for (int i: _list.getSelectedIndices()) {
+        for (int i : _list.getSelectedIndices()) {
             _selectedCharacters.add(_listModel.getCharacterAt(i));
         }
 
         this.setVisible(false);
     }
-    
+
     @Action
     public void characterSelectionDialog_SelectAll() {
         _list.setSelectionInterval(0, _listModel.getSize());
     }
-    
+
     @Action
     public void characterSelectionDialog_Keywords() {
-        
+
     }
-    
+
     @Action
     public void characterSelectionDialog_Images() {
-        
+
     }
-    
+
     @Action
     public void characterSelectionDialog_Search() {
-        
+
     }
-    
+
     @Action
     public void characterSelectionDialog_Cancel() {
         this.setVisible(false);
     }
-    
+
     @Action
     public void characterSelectionDialog_DeselectAll() {
         _list.clearSelection();
     }
-    
+
     @Action
     public void characterSelectionDialog_FullText() {
-        
+
     }
-    
+
     @Action
     public void characterSelectionDialog_Notes() {
-        
+
     }
-    
+
     @Action
     public void characterSelectionDialog_Help() {
-        
+
     }
-    
+
     public List<Character> getSelectedCharacters() {
         return new ArrayList<Character>(_selectedCharacters);
     }

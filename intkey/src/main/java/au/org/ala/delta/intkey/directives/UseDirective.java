@@ -3,7 +3,6 @@ package au.org.ala.delta.intkey.directives;
 import java.awt.Frame;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +12,6 @@ import javax.swing.JOptionPane;
 
 import org.apache.commons.lang.math.FloatRange;
 import org.apache.commons.lang.math.IntRange;
-import org.jdesktop.application.Application;
 
 import au.org.ala.delta.intkey.model.CharacterComparator;
 import au.org.ala.delta.intkey.model.IntkeyContext;
@@ -24,7 +22,6 @@ import au.org.ala.delta.intkey.model.specimen.RealValue;
 import au.org.ala.delta.intkey.model.specimen.TextValue;
 import au.org.ala.delta.intkey.ui.CharacterKeywordSelectionDialog;
 import au.org.ala.delta.intkey.ui.CharacterSelectionDialog;
-import au.org.ala.delta.intkey.ui.CharacterValueInputDialog;
 import au.org.ala.delta.intkey.ui.IntegerInputDialog;
 import au.org.ala.delta.intkey.ui.MultiStateInputDialog;
 import au.org.ala.delta.intkey.ui.RealInputDialog;
@@ -35,7 +32,6 @@ import au.org.ala.delta.model.IntegerCharacter;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.RealCharacter;
 import au.org.ala.delta.model.TextCharacter;
-import au.org.ala.delta.ui.AboutBox;
 
 public class UseDirective extends IntkeyDirective {
 
@@ -73,7 +69,7 @@ public class UseDirective extends IntkeyDirective {
 
             } else {
                 // No characters specified, prompt the user to select characters
-                CharacterKeywordSelectionDialog dlg = new CharacterKeywordSelectionDialog(UIUtils.getMainFrame(), context);
+                CharacterKeywordSelectionDialog dlg = new CharacterKeywordSelectionDialog(UIUtils.getMainFrame(), context, "USE");
                 dlg.setVisible(true);
                 List<Character> selectedCharacters = dlg.getSelectedCharacters();
                 if (selectedCharacters.size() > 0) {
@@ -117,7 +113,8 @@ public class UseDirective extends IntkeyDirective {
             }
             return invoc;
         } else {
-            throw new IntkeyDirectiveParseException("Need to have a dataset loaded before USE can be called.");
+            JOptionPane.showMessageDialog(UIUtils.getMainFrame(), UIUtils.getResourceString("UseDirective.NoDataSetMsg"));
+            return null;
         }
 
         // TODO Auto-generated method stub
@@ -253,7 +250,7 @@ public class UseDirective extends IntkeyDirective {
                 Collections.sort(charsNoValues, new CharacterComparator());
                 while (!charsNoValues.isEmpty()) {
 
-                    CharacterSelectionDialog selectDlg = new CharacterSelectionDialog(UIUtils.getMainFrame(), charsNoValues);
+                    CharacterSelectionDialog selectDlg = new CharacterSelectionDialog(UIUtils.getMainFrame(), charsNoValues, "USE");
                     selectDlg.setVisible(true);
 
                     List<Character> selectedCharacters = selectDlg.getSelectedCharacters();
@@ -310,7 +307,7 @@ public class UseDirective extends IntkeyDirective {
             // is character already used?
             if (!_suppressAlreadySetWarning) {
                 if (context.getSpecimen().hasValueFor(ch)) {
-                    String msg = String.format("Character %s has already used. Do you want to change the value(s) you entered?", ch.getCharacterId());
+                    String msg = String.format(UIUtils.getResourceString("UseDirective.CharacterAlreadyUsed"), ch.getCharacterId());
                     int choice = JOptionPane.showConfirmDialog(UIUtils.getMainFrame(), msg, "Information", JOptionPane.YES_NO_OPTION);
                     if (choice == JOptionPane.YES_OPTION) {
                         return true;

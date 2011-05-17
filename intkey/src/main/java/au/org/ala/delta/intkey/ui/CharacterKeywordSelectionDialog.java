@@ -14,27 +14,42 @@ import au.org.ala.delta.model.Character;
 import java.awt.GridLayout;
 import javax.swing.border.EmptyBorder;
 
+import org.jdesktop.application.Application;
+import org.jdesktop.application.Resource;
+import org.jdesktop.application.ResourceMap;
+
 public class CharacterKeywordSelectionDialog extends KeywordSelectionDialog {
 
     private List<Character> _selectedCharacters;
     private IntkeyContext _context;
+    
+    // The name of the directive being processed
+    private String _directiveName;
+    
+    @Resource
+    String title;
 
-    public CharacterKeywordSelectionDialog(Dialog owner, IntkeyContext context) {
+    public CharacterKeywordSelectionDialog(Dialog owner, IntkeyContext context, String directiveName) {
         super(owner);
+        _directiveName = directiveName;
         init(context);
     }
 
-    public CharacterKeywordSelectionDialog(Frame owner, IntkeyContext context) {
+    public CharacterKeywordSelectionDialog(Frame owner, IntkeyContext context, String directiveName) {
         super(owner);
+        _directiveName = directiveName;
         init(context);
     }
 
     private void init(IntkeyContext context) {
+        ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(CharacterKeywordSelectionDialog.class);
+        resourceMap.injectFields(this);
+        
         _panelButtons.setBorder(new EmptyBorder(0, 20, 10, 20));
         GridLayout gridLayout = (GridLayout) _panelButtons.getLayout();
         gridLayout.setVgap(2);
-        
-        setTitle("Select Character Keywords");
+
+        setTitle(String.format(title, _directiveName));
         List<String> characterKeywords = context.getCharacterKeywords();
 
         DefaultListModel model = new DefaultListModel();
@@ -54,6 +69,7 @@ public class CharacterKeywordSelectionDialog extends KeywordSelectionDialog {
             _selectedCharacters.addAll(_context.getCharactersForKeyword(keyword));
         }
         Collections.sort(_selectedCharacters, new CharacterComparator());
+        this.setVisible(false);
     }
 
     @Override
@@ -63,23 +79,21 @@ public class CharacterKeywordSelectionDialog extends KeywordSelectionDialog {
 
     @Override
     protected void listBtnPressed() {
-        List<String> selectedKeywords = new ArrayList<String>();
-        List<Character> characters = new ArrayList<Character>();
+        if (_list.getSelectedValue() != null) {
+            
+            List<Character> characters = new ArrayList<Character>();
+            String selectedKeyword = (String) _list.getSelectedValue();
+            characters.addAll(_context.getCharactersForKeyword(selectedKeyword));
 
-        for (Object o : _list.getSelectedValues()) {
-            String keyword = (String) o;
-            characters.addAll(_context.getCharactersForKeyword(keyword));
-            selectedKeywords.add(keyword);
-        }
+            CharacterSelectionDialog charDlg = new CharacterSelectionDialog(this, characters, _directiveName, selectedKeyword);
+            charDlg.setVisible(true);
 
-        CharacterSelectionDialog charDlg = new CharacterSelectionDialog(this, characters);
-        charDlg.setVisible(true);
-
-        List<Character> charsSelectedInDlg = charDlg.getSelectedCharacters();
-        if (charsSelectedInDlg.size() > 0) {
-            _selectedCharacters.clear();
-            _selectedCharacters.addAll(charsSelectedInDlg);
-            this.setVisible(false);
+            List<Character> charsSelectedInDlg = charDlg.getSelectedCharacters();
+            if (charsSelectedInDlg.size() > 0) {
+                _selectedCharacters.clear();
+                _selectedCharacters.addAll(charsSelectedInDlg);
+                this.setVisible(false);
+            }
         }
     }
 

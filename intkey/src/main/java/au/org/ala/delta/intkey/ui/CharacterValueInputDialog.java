@@ -33,15 +33,12 @@ public abstract class CharacterValueInputDialog extends JDialog {
 
     public CharacterValueInputDialog(Frame owner, Character ch) {
         super(owner, true);
-
-        ActionMap actionMap = Application.getInstance().getContext().getActionMap(CharacterValueInputDialog.class, this);
+        ActionMap actionMap = Application.getInstance().getContext().getActionMap(CharacterValueInputDialog.class, this); 
+        
+        getContentPane().setLayout(new BorderLayout(0, 0));
 
         setResizable(false);
-        setSize(new Dimension(600, 200));
-
-        setLocationRelativeTo(owner);
-
-        getContentPane().setLayout(new BorderLayout(0, 0));
+        setPreferredSize(new Dimension(600, 200));
         
         _ch = ch;
         
@@ -93,6 +90,8 @@ public abstract class CharacterValueInputDialog extends JDialog {
         _formatter = new CharacterFormatter(false, false, true, true);
         _lblCharacterDescription.setText(_formatter.formatCharacterDescription(_ch));
         _pnlMain.add(_lblCharacterDescription, BorderLayout.NORTH);
+        
+        setLocationRelativeTo(owner);
     }
 
     abstract void handleBtnOKClicked();

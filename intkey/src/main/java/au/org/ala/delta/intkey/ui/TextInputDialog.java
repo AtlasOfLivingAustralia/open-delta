@@ -10,16 +10,27 @@ import java.util.List;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import org.jdesktop.application.Application;
+import org.jdesktop.application.Resource;
+import org.jdesktop.application.ResourceMap;
+
 import au.org.ala.delta.model.TextCharacter;
 
 public class TextInputDialog extends CharacterValueInputDialog {
     private JPanel _pnlTxtFld;
     private JTextField _txtInput;
     private List<String> _inputData;
+    
+    @Resource
+    String title;
 
     public TextInputDialog(Frame owner, TextCharacter ch) {
         super(owner, ch);
-        setTitle("Enter text");
+        
+        ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(TextInputDialog.class);
+        resourceMap.injectFields(this);
+        
+        setTitle(title);
 
         _pnlTxtFld = new JPanel();
         _pnlMain.add(_pnlTxtFld, BorderLayout.CENTER);

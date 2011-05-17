@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.ActionMap;
 import javax.swing.JButton;
+import javax.swing.ListSelectionModel;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
@@ -67,6 +68,8 @@ public abstract class KeywordSelectionDialog extends ListSelectionDialog {
         _btnHelp.setAction(actionMap.get("keywordSelectionDialog_Help"));
         _btnHelp.setEnabled(false);
         _panelButtons.add(_btnHelp);
+        
+        _list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     }
     
     @Action

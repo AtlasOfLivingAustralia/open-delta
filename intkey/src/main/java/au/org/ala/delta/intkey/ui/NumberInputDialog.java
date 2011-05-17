@@ -12,6 +12,10 @@ import java.awt.event.ActionListener;
 
 import javax.swing.border.EmptyBorder;
 
+import org.jdesktop.application.Application;
+import org.jdesktop.application.Resource;
+import org.jdesktop.application.ResourceMap;
+
 import au.org.ala.delta.model.NumericCharacter;
 
 public abstract class NumberInputDialog extends CharacterValueInputDialog {
@@ -20,11 +24,12 @@ public abstract class NumberInputDialog extends CharacterValueInputDialog {
     
     public NumberInputDialog(Frame owner, NumericCharacter ch) {
         super(owner, ch);
-        setTitle("Enter value or range of values");
+        
+        ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(NumberInputDialog.class);
+        resourceMap.injectFields(this);
         
         JPanel panel = new JPanel();
         _pnlMain.add(panel, BorderLayout.CENTER);
-        panel.setLayout(new GridLayout(0, 2, 5, 0));
         
         _txtInput = new JTextField();
         _txtInput.addActionListener(new ActionListener() {
@@ -34,8 +39,9 @@ public abstract class NumberInputDialog extends CharacterValueInputDialog {
                 NumberInputDialog.this.handleBtnOKClicked();
             }
         });
+        panel.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
         panel.add(_txtInput);
-        _txtInput.setColumns(10);
+        _txtInput.setColumns(30);
         
         _lblUnits = new JLabel();
         panel.add(_lblUnits);
