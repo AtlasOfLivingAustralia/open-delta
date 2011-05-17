@@ -4,7 +4,6 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.ActionMap;
 import javax.swing.JComponent;
-import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 
 import org.jdesktop.application.Action;
@@ -17,7 +16,7 @@ import au.org.ala.delta.editor.ui.dnd.SimpleTransferHandler;
 import au.org.ala.delta.editor.ui.util.MenuBuilder;
 import au.org.ala.delta.editor.ui.util.PopupMenuListener;
 import au.org.ala.delta.model.Item;
-import au.org.ala.delta.ui.MessageDialogHelper;
+import au.org.ala.delta.model.format.ItemFormatter;
 
 /**
  * Handles actions performed on the ItemList.
@@ -28,6 +27,7 @@ public class ItemController {
 	private EditorViewModel _model;
 	private ApplicationContext _context;
 	private ActionMap _itemActions;
+	private au.org.ala.delta.editor.ui.util.MessageDialogHelper _dialogHelper;
 	
 	/**
 	 * Creates a new ItemController.
@@ -43,7 +43,7 @@ public class ItemController {
 		viewComponent.setTransferHandler(new ItemTransferHandler());
 		_itemActions = _context.getActionMap(ItemController.class, this);
 		_view.setSelectionAction(_itemActions.get("editItem"));
-		
+		_dialogHelper = new au.org.ala.delta.editor.ui.util.MessageDialogHelper();
 		
 		new PopupBuilder();
 	}
@@ -150,10 +150,11 @@ public class ItemController {
 	}
 	
 	private boolean confirmDelete(Item toDelete) {
-		JComponent viewComponent = (JComponent)_view;
-		int result = MessageDialogHelper.showConfirmDialog(viewComponent, "CONFIRM", 
-				"Please confirm that you really wish to delete this taxon:\n" + toDelete.getDescription(), 50);
-		return result == JOptionPane.OK_OPTION;
+		ItemFormatter formatter = new ItemFormatter(true, false, false, true, false);
+		
+		String itemDescription = formatter.formatItemDescription(toDelete);
+		
+		return _dialogHelper.confirmDeleteItem(itemDescription);
 	}
 	
 	

@@ -31,6 +31,13 @@ public class MessageDialogHelper {
 		return (result == JOptionPane.YES_OPTION);
 	}
 	
+	public boolean confirmDeleteItem(String itemDescription) {
+		String title = _messages.getString("deleteItem.title");
+		String message = _messages.getString("deleteItem.message", itemDescription);
+		int result = au.org.ala.delta.ui.MessageDialogHelper.showConfirmDialog(_dialogParent, title, message, 50);
+		return result == JOptionPane.OK_OPTION;
+	}
+	
 	public void errorLoadingImage(String fileName) {
 		String title = _messages.getString("errorLoadingImage.title");
 		String message = _messages.getString("errorLoadingImage.message", fileName);
