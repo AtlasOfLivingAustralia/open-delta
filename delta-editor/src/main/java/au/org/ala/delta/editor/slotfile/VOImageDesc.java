@@ -1040,7 +1040,7 @@ public class VOImageDesc extends VOAnyDesc {
 					int curPos = dataTell();
 					// First part gives type of the overlay,
 					// followed by the lengths of remaining info
-					short[] valBuf = readShortArray(4);
+					short[] valBuf = dataReadShorts(4);
 					// Reads in:
 					// 0 : overlay type
 					// 1 : length of location list
@@ -1050,7 +1050,7 @@ public class VOImageDesc extends VOAnyDesc {
 					// Starts with a 4-byte value. Lowest byte indicates the draw type
 					// Highest three bytes contain the ID
 					for (int j = 0; j < valBuf[1]; ++j) {
-						int aValue = readInt();
+						int aValue = dataReadInt();
 
 						int curId = aValue >> 8;
 						if (basePtr != null && basePtr.length > 0 && j == 0) {

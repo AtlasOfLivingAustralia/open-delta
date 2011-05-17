@@ -262,6 +262,14 @@ public abstract class VOAnyDesc {
 		return ByteBuffer.allocate(0);		
 	}
 
+	protected short[] dataReadShorts(int numShorts) {
+		ByteBuffer b = dataReadBuffer(numShorts*2);
+		short[] shorts = new short[numShorts];
+		for (int i=0; i<shorts.length; i++) {
+			shorts[i] = b.getShort();
+		}
+		return shorts;
+	}
 	protected int dataRead(byte[] dest, int len) {
 		if (len > 0) {
 			int endPos = getDataSize();

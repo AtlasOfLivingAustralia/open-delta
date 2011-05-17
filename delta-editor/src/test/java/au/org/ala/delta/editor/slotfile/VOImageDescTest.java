@@ -19,11 +19,13 @@ public class VOImageDescTest extends DeltaTestCase {
 	/** Holds the instance of the class we are testing */
 	private DeltaVOP _vop;
 	
+	private File _slotFile;
+	
 	@Before
 	public void setUp() throws Exception {
-		File f = copyURLToFile("/SAMPLE.DLT");
+		_slotFile = copyURLToFile("/SAMPLE.DLT");
 			
-		_vop = new DeltaVOP(f.getAbsolutePath(), false);
+		_vop = new DeltaVOP(_slotFile.getAbsolutePath(), false);
 	}
 
 	@After
@@ -69,6 +71,49 @@ public class VOImageDescTest extends DeltaTestCase {
 		
 		assertEquals("Test", overlay.overlayText);
 		
+		_vop.commit(_vop.getPermSlotFile());
+		_vop.close();
+		
+		_vop = new DeltaVOP(_slotFile.getAbsolutePath(), false);
+		
+		desc = getImageDesc(7, 0);
+		overlay = desc.readOverlay(overlay.getId());
+		assertEquals("Test", overlay.overlayText);
+	}
+	
+	@Test
+	public void testWriteAllOverlays() {
+		VOImageDesc desc = getImageDesc(7, 0);
+		List<ImageOverlay> overlays = desc.readAllOverlays();
+		
+		desc.writeAllOverlays(overlays);
+		
+		List<ImageOverlay> overlays2 = desc.readAllOverlays();
+		
+		compareOverlayList(overlays, overlays2);
+		
+		_vop.commit(_vop.getPermSlotFile());
+		_vop.close();
+		
+		_vop = new DeltaVOP(_slotFile.getAbsolutePath(), false);
+		
+		desc = getImageDesc(7, 0);
+		overlays2 = desc.readAllOverlays();
+		
+		compareOverlayList(overlays, overlays2);
+		
+	}
+
+	private void compareOverlayList(List<ImageOverlay> overlays,
+			List<ImageOverlay> overlays2) {
+		assertEquals(overlays.size(), overlays2.size());
+		
+		for (int i=0; i<overlays.size(); i++) {
+			ImageOverlay overlay = overlays.get(i);
+			ImageOverlay overlay2 = overlays2.get(i);
+			
+			assertEquals(overlay.getId(), overlay2.getId());
+		}
 	}
 	
 	private VOImageDesc getImageDesc(int itemNumber, int imageNumber) {
