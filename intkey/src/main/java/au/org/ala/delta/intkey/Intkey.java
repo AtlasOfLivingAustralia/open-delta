@@ -478,18 +478,21 @@ public class Intkey extends DeltaSingleFrameApplication {
 
         JMenuItem mnuItShow = new JMenuItem();
         mnuItShow.setAction(actionMap.get("mnuItShow"));
+        mnuItShow.setEnabled(false);
         mnuFile.add(mnuItShow);
 
         mnuFile.addSeparator();
 
         JMenuItem mnuItNormalMode = new JMenuItem();
         mnuItNormalMode.setAction(actionMap.get("mnuItNormalMode"));
+        mnuItNormalMode.setEnabled(false);
         mnuFile.add(mnuItNormalMode);
 
         mnuFile.addSeparator();
 
         JMenuItem mnuItEditIndex = new JMenuItem("Edit Index...");
         mnuItEditIndex.setAction(actionMap.get("mnuItEditIndex"));
+        mnuItEditIndex.setEnabled(false);
         mnuFile.add(mnuItEditIndex);
 
         _cmdMenus.put("file", mnuFileCmds);

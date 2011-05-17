@@ -74,6 +74,7 @@ Section -Main SEC0000
     ; Output sample dlt into sample subdirectory
     SetOutPath "$INSTDIR\sample"
     File "${SAMPLE-DLT-PATH}"
+    File "${SAMPLE-INTKEY-PATH}\*"
     
     ; Output JAR files to lib subdirectory
     SetOutPath "$INSTDIR\lib"
@@ -134,7 +135,7 @@ Section /o -un.Main UNSEC0000
     ; Do With JRE/No JRE specific stuff here    
     Call un.CustomRemoveFiles
     
-    Delete /REBOOTOK "$INSTDIR\sample\sample.dlt"
+    Delete /REBOOTOK "$INSTDIR\sample\*"
     RmDir /REBOOTOK "$INSTDIR\sample"
     
     FlushINI "$INSTDIR\uninstall.ini"
