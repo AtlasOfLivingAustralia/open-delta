@@ -195,42 +195,42 @@ public class IntkeyContext extends AbstractDeltaContext {
             if (characterNumbersSet == null) {
                 List<String> matches = new ArrayList<String>();
                 for (String savedKeyword : _userDefinedCharacterKeywords.keySet()) {
-                    if (savedKeyword.startsWith(keyword)) {
+                    // ignore leading and trailing whitespace when matching
+                    // against a keyword
+                    if (savedKeyword.trim().startsWith(keyword.trim())) {
                         matches.add(savedKeyword);
                     }
                 }
 
-                if (matches.size() == 1) {
+                if (matches.size() == 0) {
+                    throw new IllegalArgumentException(String.format("Keyword '%s' not found", keyword));
+                } else if (matches.size() == 1) {
                     characterNumbersSet = _userDefinedCharacterKeywords.get(matches.get(0));
                 } else {
                     throw new IllegalArgumentException(String.format("Keyword '%s' is ambiguous", keyword));
                 }
             }
 
-            if (characterNumbersSet != null) {
-                List<au.org.ala.delta.model.Character> retList = new ArrayList<au.org.ala.delta.model.Character>();
-                for (int charNum : characterNumbersSet) {
-                    retList.add(_dataset.getCharacter(charNum));
-                }
-                Collections.sort(retList, new CharacterComparator());
-                return retList;
-            } else {
-                throw new IllegalArgumentException(String.format("Keyword '%s' not found", keyword));
+            List<au.org.ala.delta.model.Character> retList = new ArrayList<au.org.ala.delta.model.Character>();
+            for (int charNum : characterNumbersSet) {
+                retList.add(_dataset.getCharacter(charNum));
             }
+            Collections.sort(retList, new CharacterComparator());
+            return retList;
         }
     }
 
     public List<String> getCharacterKeywords() {
         List<String> retList = new ArrayList<String>();
         retList.add(CHARACTER_KEYWORD_ALL);
-        
+
         if (_specimen.getUsedCharacters().size() > 0) {
             retList.add(CHARACTER_KEYWORD_USED);
         }
-        
+
         retList.add(CHARACTER_KEYWORD_AVAILABLE);
         retList.addAll(_userDefinedCharacterKeywords.keySet());
-        
+
         return retList;
     }
 
@@ -247,7 +247,7 @@ public class IntkeyContext extends AbstractDeltaContext {
             _appUI.handleRestartIdentification();
         }
     }
-    
+
     public Specimen getSpecimen() {
         return _specimen;
     }

@@ -4,10 +4,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.swing.JOptionPane;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.IntRange;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.intkey.ui.UIUtils;
 
 //TODO smashed out quickly to help with implementation of the USE directive.
 //need to revisit in order to make it complete.
@@ -25,12 +28,26 @@ public class DefineCharactersDirective extends IntkeyDirective {
         List<String> tokens = ParsingUtils.splitDataIntoSubCommands(data);
 
         for (int i = 0; i < tokens.size(); i++) {
+            String token = tokens.get(i);
+
             if (i == 0) {
-                keyword = ParsingUtils.removeEnclosingQuotes(tokens.get(i));
+                keyword = ParsingUtils.removeEnclosingQuotes(token);
             } else {
-                IntRange r = parseRange(tokens.get(i));
-                for (int charNum : r.toArray()) {
-                    characterNumbers.add(charNum);
+                IntRange r = ParsingUtils.parseIntRange(token);
+                if (r != null)
+                    for (int charNum : r.toArray()) {
+                        characterNumbers.add(charNum);
+                    }
+                else {
+                    try {
+                        List<au.org.ala.delta.model.Character> charList = context.getCharactersForKeyword(token);
+                        for (au.org.ala.delta.model.Character c : charList) {
+                            characterNumbers.add(c.getCharacterId());
+                        }
+                    } catch (IllegalArgumentException ex) {
+                        JOptionPane.showMessageDialog(UIUtils.getMainFrame(), ex.getMessage());
+                        return null;
+                    }
                 }
             }
         }
@@ -58,8 +75,6 @@ public class DefineCharactersDirective extends IntkeyDirective {
         public String toString() {
             return String.format("%s %s %s", StringUtils.join(_controlWords, " ").toUpperCase(), _keyword, _characterNumbers.toString());
         }
-        
-        
 
     }
 

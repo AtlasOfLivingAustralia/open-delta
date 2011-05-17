@@ -1,6 +1,5 @@
 package au.org.ala.delta.intkey.directives;
 
-import java.awt.Frame;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -10,39 +9,31 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.math.FloatRange;
 import org.apache.commons.lang.math.IntRange;
 
-import au.org.ala.delta.intkey.ui.IntegerInputDialog;
-import au.org.ala.delta.intkey.ui.MultiStateInputDialog;
-import au.org.ala.delta.intkey.ui.RealInputDialog;
-import au.org.ala.delta.intkey.ui.TextInputDialog;
-import au.org.ala.delta.model.IntegerCharacter;
-import au.org.ala.delta.model.MultiStateCharacter;
-import au.org.ala.delta.model.RealCharacter;
-import au.org.ala.delta.model.TextCharacter;
-
 public class ParsingUtils {
     private static Pattern INT_RANGE_PATTERN = Pattern.compile("^(\\d+)-(\\d+)$");
     private static Pattern FLOAT_RANGE_PATTERN = Pattern.compile("^(\\d+(\\.\\d+)?)-(\\d+(\\.\\d+)?)$");
     private static Pattern INT_LIST_PATTERN = Pattern.compile("^\\d+(/\\d+)+$");
-    
-    //private static Pattern FLOAT_LIST_PATTERN = Pattern.compile("^(\\d+(\\.\\d+)?)-(\\d+(\\.\\d+)?)$");
+
+    // private static Pattern FLOAT_LIST_PATTERN =
+    // Pattern.compile("^(\\d+(\\.\\d+)?)-(\\d+(\\.\\d+)?)$");
 
     public static List<Integer> parseMultiStateCharacterValue(String charValue) {
         List<Integer> retList = parseIntList(charValue);
-        
+
         if (retList == null) {
             IntRange range = parseIntRange(charValue);
             retList = new ArrayList<Integer>();
             if (range != null) {
-                for (int i: range.toArray()) {
+                for (int i : range.toArray()) {
                     retList.add(i);
                 }
             }
         }
-        
+
         if (retList == null) {
             throw new IllegalArgumentException("Invalid multistate value");
         }
-        
+
         return retList;
     }
 
@@ -56,7 +47,7 @@ public class ParsingUtils {
                 r = new IntRange(list.get(0), list.get(list.size() - 1));
             }
         }
-        
+
         if (r == null) {
             throw new IllegalArgumentException("Invalid integer value");
         }
@@ -67,8 +58,8 @@ public class ParsingUtils {
     public static FloatRange parseRealCharacterValue(String charValue) {
         FloatRange r = parseFloatRange(charValue);
 
-        //TODO - make it so that floats can be parsed using the "/" separator
-        
+        // TODO - make it so that floats can be parsed using the "/" separator
+
         if (r == null) {
             throw new IllegalArgumentException("Invalid real value");
         }
@@ -89,8 +80,8 @@ public class ParsingUtils {
         return retList;
     }
 
-    //TODO this method is the same as a method on the AbstractDirective
-    //class. Need to refactor that one out to avoid duplication here.
+    // TODO this method is the same as a method on the AbstractDirective
+    // class. Need to refactor that one out to avoid duplication here.
     public static IntRange parseIntRange(String text) {
         try {
             Matcher m = INT_RANGE_PATTERN.matcher(text);
@@ -139,7 +130,7 @@ public class ParsingUtils {
 
         return retList;
     }
-    
+
     public static List<String> splitDataIntoSubCommands(String data) {
         List<String> subCommands = new ArrayList<String>();
 
@@ -185,19 +176,23 @@ public class ParsingUtils {
                 } else {
                     subCommand = data.substring(endLastSubcommand + 1, i + 1);
                 }
-                
-                //use trim to remove spaces
-                subCommands.add(subCommand.trim());
+
+                // use trim to remove any remaining whitespace. Tokens that
+                // consist solely of whitespace should be completely omitted.
+                String trimmedSubcommand = subCommand.trim();
+                if (trimmedSubcommand.length() > 0) {
+                    subCommands.add(subCommand.trim());
+                }
                 endLastSubcommand = i;
             }
         }
 
         return subCommands;
     }
-    
+
     public static String removeEnclosingQuotes(String str) {
         if (str.charAt(0) == '"' && str.charAt(str.length() - 1) == '"') {
-            return(str.substring(1, str.length() - 1));
+            return (str.substring(1, str.length() - 1));
         }
         return str;
     }
