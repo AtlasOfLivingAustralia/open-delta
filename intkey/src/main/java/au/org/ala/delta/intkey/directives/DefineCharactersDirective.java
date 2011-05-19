@@ -70,7 +70,8 @@ public class DefineCharactersDirective extends IntkeyDirective {
 
         @Override
         public String toString() {
-            return String.format("%s %s %s", StringUtils.join(_controlWords, " ").toUpperCase(), _keyword, _characterNumbers.toString());
+            StringBuilder builder = new StringBuilder();
+            return String.format("%s %s %s", StringUtils.join(_controlWords, " ").toUpperCase(), _keyword, StringUtils.join(_characterNumbers, " "));
         }
 
     }
