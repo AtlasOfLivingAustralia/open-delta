@@ -18,6 +18,7 @@ import au.org.ala.delta.editor.slotfile.VOCharBaseDesc;
 import au.org.ala.delta.editor.slotfile.VOCharTextDesc;
 import au.org.ala.delta.editor.slotfile.VOControllingDesc;
 import au.org.ala.delta.editor.slotfile.VODeltaMasterDesc;
+import au.org.ala.delta.editor.slotfile.VOImageHolderDesc;
 import au.org.ala.delta.editor.slotfile.VOItemDesc;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.impl.CharacterData;
@@ -27,7 +28,7 @@ import au.org.ala.delta.model.impl.ControllingInfo.ControlledStateType;
 /**
  * Adapts the CharacterData interface to the VOCharBaseDesc and VOCharTextDesc slot file classes.
  */
-public class VOCharacterAdaptor implements CharacterData {
+public class VOCharacterAdaptor extends ImageHolderAdaptor implements CharacterData {
 
 	/** If they've been specified, units are stored as state text for state number 1. */
 	private static final int UNITS_TEXT_STATE_NUMBER = 1;
@@ -36,12 +37,14 @@ public class VOCharacterAdaptor implements CharacterData {
 
 	private VOCharBaseDesc _charDesc;
 	private VOCharTextDesc _textDesc;
+	private DeltaVOP _vop;
 
-	public VOCharacterAdaptor(VOCharBaseDesc charBase) {
-		this(charBase, null);
+	public VOCharacterAdaptor(DeltaVOP vop, VOCharBaseDesc charBase) {
+		this(vop, charBase, null);
 	}
 
-	public VOCharacterAdaptor(VOCharBaseDesc charBase, VOCharTextDesc textDesc) {
+	public VOCharacterAdaptor(DeltaVOP vop, VOCharBaseDesc charBase, VOCharTextDesc textDesc) {
+		_vop = vop;
 		_charDesc = charBase;
 		_textDesc = textDesc;
 	}
@@ -497,7 +500,16 @@ public class VOCharacterAdaptor implements CharacterData {
     public void setNonAutoCc(boolean nonAutoCc) {
         throw new NotImplementedException();
     }
-
+    
+    @Override
+	protected DeltaVOP getVOP() {
+		return _vop;
+	}
+    
+    @Override
+	protected VOImageHolderDesc getImageHolder() {
+		return _charDesc;
+	}
 }
 
 class CircularDependencyException extends RuntimeException {

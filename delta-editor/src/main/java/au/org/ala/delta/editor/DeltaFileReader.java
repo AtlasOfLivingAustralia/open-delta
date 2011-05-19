@@ -126,7 +126,7 @@ public class DeltaFileReader {
 				throw new RuntimeException("Unrecognized character type: " + charType);
 			}
 
-			chr.setImpl(new VOCharacterAdaptor(charDesc, textDesc));
+			chr.setImpl(new VOCharacterAdaptor(vop, charDesc, textDesc));
 			if (chr instanceof MultiStateCharacter) {
 				populateStates(charDesc, (MultiStateCharacter) chr, states);
 			} else if (chr instanceof NumericCharacter) {

@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.lang.NotImplementedException;
 
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.image.Image;
 
 /**
  * An implementation of CharacterData that maintains the data in-memory.
@@ -261,6 +262,24 @@ public class DefaultCharacterData implements CharacterData {
         _nonAutoCc = nonAutoCc;
     }
 
+    @Override
+    public void addImage(String fileName, String comments) {
+    	throw new NotImplementedException();
+    }
 
+	@Override
+	public List<Image> getImages() {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public void deleteImage(Image image) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public void moveImage(Image image, int position) {
+		throw new NotImplementedException();
+	}
 	
 }

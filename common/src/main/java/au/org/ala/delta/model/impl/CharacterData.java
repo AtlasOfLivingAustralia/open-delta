@@ -2,9 +2,10 @@ package au.org.ala.delta.model.impl;
 
 import java.util.List;
 
+import au.org.ala.delta.model.Illustratable;
 import au.org.ala.delta.model.Item;
 
-public interface CharacterData {
+public interface CharacterData extends Illustratable {
 	
 	String getDescription();
 	

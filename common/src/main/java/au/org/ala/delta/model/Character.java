@@ -17,11 +17,12 @@ package au.org.ala.delta.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.impl.CharacterData;
 import au.org.ala.delta.model.impl.ControllingInfo;
 import au.org.ala.delta.model.observer.CharacterObserver;
 
-public abstract class Character {
+public abstract class Character implements Illustratable {
 
     private int _number;
     private List<CharacterDependency> _dependentCharacters = new ArrayList<CharacterDependency>();
@@ -185,8 +186,28 @@ public abstract class Character {
     public void validateAttributeText(String text) {
         _impl.validateAttributeText(text);
     }
+    
+    @Override
+	public void addImage(String fileName, String comments) {
+		_impl.addImage(fileName, comments);
+	}
 
-    /**
+	@Override
+	public List<Image> getImages() {
+		return _impl.getImages();
+	}
+
+	@Override
+	public void deleteImage(Image image) {
+		_impl.deleteImage(image);
+	}
+
+	@Override
+	public void moveImage(Image image, int position) {
+		_impl.moveImage(image, position);
+	}
+
+	/**
      * Registers interest in being notified of changes to this Character.
      * 
      * @param observer
