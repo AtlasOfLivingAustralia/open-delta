@@ -73,8 +73,7 @@ Section -Main SEC0000
   
     ; Output sample dlt into sample subdirectory
     SetOutPath "$INSTDIR\sample"
-    File "${SAMPLE-DLT-PATH}"
-    File "${SAMPLE-INTKEY-PATH}\*"
+    File /r "${SAMPLE-DATASET-PATH}"
     
     ; Output JAR files to lib subdirectory
     SetOutPath "$INSTDIR\lib"

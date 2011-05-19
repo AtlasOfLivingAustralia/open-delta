@@ -18,14 +18,11 @@
 			</includes>
 		</fileSet>
 		<fileSet>
-			<directory>${project.basedir}/common/target/test-classes/dataset/sample</directory>
+			<directory>${project.basedir}/intkey/src/test/resources/dataset/sample</directory>
 			<outputDirectory>/sample</outputDirectory>
 			<includes>
 				<include>*</include>
 			</includes>
-			<excludes>
-				<exclude>expected_results</exclude>
-			</excludes>
 		</fileSet>		
 		<fileSet>
 			<directory>${project.basedir}/delta-editor/target</directory>

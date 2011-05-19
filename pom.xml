@@ -44,8 +44,7 @@
 
 									<define name="JARPATH" value="..\target\installer-jars" />
 
-									<define name="SAMPLE-DLT-PATH" value="..\sampledata\sample.dlt" />
-									<define name="SAMPLE-INTKEY-PATH" value="..\common\target\test-classes\dataset\sample" />
+									<define name="SAMPLE-DATASET-PATH" value="..\intkey\src\test\resources\dataset\sample" />
 
 									<define name="DELTA-EDITOR-EXEPATH" value="..\delta-editor\target\DeltaEditor.exe" />
 									<define name="DELTA-EDITOR-EXEOUTPUTNAME" value="DeltaEditor.exe" />
@@ -79,8 +78,7 @@
 									<define name="LICENSE-TEXT-PATH"
 										value="..\common\src\main\resources\au\org\ala\delta\resources\MPL-1.1.txt" />
 
-									<define name="SAMPLE-DLT-PATH" value="..\sampledata\sample.dlt" />
-									<define name="SAMPLE-INTKEY-PATH" value="..\common\target\test-classes\dataset\sample" />
+									<define name="SAMPLE-DATASET-PATH" value="..\intkey\src\test\resources\dataset\sample" />
 
 									<define name="JARPATH" value="..\target\installer-jars" />
 
