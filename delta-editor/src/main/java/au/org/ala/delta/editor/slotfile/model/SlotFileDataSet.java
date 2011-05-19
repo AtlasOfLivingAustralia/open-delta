@@ -3,8 +3,6 @@ package au.org.ala.delta.editor.slotfile.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.NotImplementedException;
-
 import au.org.ala.delta.editor.slotfile.Attribute;
 import au.org.ala.delta.editor.slotfile.DeltaVOP;
 import au.org.ala.delta.editor.slotfile.TextType;
@@ -174,8 +172,9 @@ public class SlotFileDataSet extends AbstractObservableDataSet {
 	@Override
 	public void moveItem(Item item, int newItemNumber) {
 		synchronized (_vop) {
-			_vop.getDeltaMaster().moveItem(item.getItemNumber(), newItemNumber);	
-			fireItemMoved(item, newItemNumber);
+			int oldNumber = item.getItemNumber();
+			_vop.getDeltaMaster().moveItem(oldNumber, newItemNumber);	
+			fireItemMoved(item, oldNumber);
 		}
 	}
 
@@ -285,7 +284,11 @@ public class SlotFileDataSet extends AbstractObservableDataSet {
 
 	@Override
 	public void moveCharacter(Character character, int newCharacterNumber) {
-		throw new NotImplementedException();
+		synchronized (_vop) {
+			int oldNumber = character.getCharacterId();
+			_vop.getDeltaMaster().moveCharacter(oldNumber, newCharacterNumber);	
+			fireCharacterMoved(character, oldNumber);
+		}
 	}
 	
 	private boolean deleteControlling(int ctlId) {

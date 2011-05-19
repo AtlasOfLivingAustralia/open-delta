@@ -149,8 +149,8 @@ public abstract class AbstractObservableDataSet implements ObservableDeltaDataSe
 		fireDeltaDataSetEvent(null, character, new CharacterDeletedDispatcher());
 	}
 	
-	protected void fireCharacterMoved(Character character) {
-		fireDeltaDataSetEvent(null, character, new CharacterMovedDispatcher());
+	protected void fireCharacterMoved(Character character, int oldCharacterNumber) {
+		fireDeltaDataSetEvent(null, character, oldCharacterNumber, new CharacterMovedDispatcher());
 	}
 	
 	protected void fireItemMoved(Item item, int oldItemNumber) {

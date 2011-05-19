@@ -65,8 +65,8 @@ public class ItemList extends SelectionList implements ReorderableList<Item> {
 			
 			@Override
 			public void itemMoved(DeltaDataSetChangeEvent event) {
-				int oldIndex = event.getItem().getItemNumber();
-				int newIndex = (Integer)event.getExtraInformation();
+				int newIndex = event.getItem().getItemNumber();
+				int oldIndex = (Integer)event.getExtraInformation();
 				
 				fireContentsChanged(ItemListModel.this, Math.min(oldIndex, newIndex)-1, Math.max(oldIndex, newIndex)-1);
 			}
