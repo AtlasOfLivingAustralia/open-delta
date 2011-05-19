@@ -651,7 +651,7 @@ public class IntkeyDatasetFileBuilder {
 
                             Set<Integer> dependentChars = new HashSet<Integer>();
 
-                            for (int k = 0; k < numDependentCharRanges; k = k + 2) {
+                            for (int k = 0; k < numDependentCharRanges * 2; k = k + 2) {
                                 int lowerBound = rangeNumbers.get(k);
                                 int upperBound = rangeNumbers.get(k + 1);
 

@@ -48,13 +48,13 @@ public class IntkeyContext extends AbstractDeltaContext {
     // Use linked hashmap so that the keys list will be returned in
     // order of insertion.
     private LinkedHashMap<String, Set<Integer>> _userDefinedCharacterKeywords;
-    private static final String CHARACTER_KEYWORD_ALL = "all";
-    private static final String CHARACTER_KEYWORD_USED = "used";
-    private static final String CHARACTER_KEYWORD_AVAILABLE = "available";
+    public static final String CHARACTER_KEYWORD_ALL = "all";
+    public static final String CHARACTER_KEYWORD_USED = "used";
+    public static final String CHARACTER_KEYWORD_AVAILABLE = "available";
 
-    private static final String TAXON_KEYWORD_ALL = "all";
-    private static final String TAXON_KEYWORD_ELIMINATED = "eliminated";
-    private static final String TAXON_KEYWORD_REMAINING = "remaining";
+    public static final String TAXON_KEYWORD_ALL = "all";
+    public static final String TAXON_KEYWORD_ELIMINATED = "eliminated";
+    public static final String TAXON_KEYWORD_REMAINING = "remaining";
 
     private List<IntkeyDirectiveInvocation> _executedDirectives;
 

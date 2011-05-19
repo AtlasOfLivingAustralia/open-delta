@@ -46,9 +46,11 @@ public class IntkeyDataset {
         return _charactersFileHeader;
     }
     public List<au.org.ala.delta.model.Character> getCharacters() {
+        // defensive copy
         return new ArrayList<Character>(_characters);
     }
     public List<Item> getTaxa() {
+        // defensive copy
         return new ArrayList<Item>(_taxa);
     }
     public String getHeading() {
@@ -153,5 +155,16 @@ public class IntkeyDataset {
     
     public int getNumberOfCharacters() {
         return _characters.size();
+    }
+    
+    public Item getTaxon(int taxonNum) {
+        if (taxonNum < 1 || taxonNum > _characters.size()) {
+            throw new IllegalArgumentException("Invalid taxon number");
+        }
+        return _taxa.get(taxonNum - 1);
+    }
+    
+    public int getNumberOfTaxa() {
+        return _taxa.size();
     }
 }
