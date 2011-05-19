@@ -132,6 +132,11 @@ public class DataSetWrapper implements ObservableDeltaDataSet, DeltaDataSetObser
 	public void deleteItem(Item item) {
 		_wrappedDataSet.deleteItem(item);
 	}
+	
+	@Override
+	public void deleteCharacter(Character character) {
+		_wrappedDataSet.deleteCharacter(character);
+	}
 
 	@Override
 	public Attribute getAttribute(int itemNumber, int characterNumber) {
@@ -141,6 +146,11 @@ public class DataSetWrapper implements ObservableDeltaDataSet, DeltaDataSetObser
 	@Override
 	public void moveItem(Item item, int newItemNumber) {
 		_wrappedDataSet.moveItem(item, newItemNumber);
+	}
+	
+	@Override
+	public void moveCharacter(Character character, int newCharacterNumber) {
+		_wrappedDataSet.moveCharacter(character, newCharacterNumber);
 	}
 
 	@Override

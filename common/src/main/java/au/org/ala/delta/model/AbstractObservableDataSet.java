@@ -145,6 +145,14 @@ public abstract class AbstractObservableDataSet implements ObservableDeltaDataSe
 		fireDeltaDataSetEvent(null, character, new CharacterAddedDispatcher());
 	}
 	
+	protected void fireCharacterDeleted(Character character) {
+		fireDeltaDataSetEvent(null, character, new CharacterDeletedDispatcher());
+	}
+	
+	protected void fireCharacterMoved(Character character) {
+		fireDeltaDataSetEvent(null, character, new CharacterMovedDispatcher());
+	}
+	
 	protected void fireItemMoved(Item item, int oldItemNumber) {
 		fireDeltaDataSetEvent(item, null, oldItemNumber, new ItemMovedDispatcher());
 	}
@@ -152,7 +160,6 @@ public abstract class AbstractObservableDataSet implements ObservableDeltaDataSe
 	@Override
 	public void characterChanged(Character character) {
 		fireDeltaDataSetEvent(null, character, new CharacterEditedDispatcher());
-
 	}
 
 	@Override
@@ -224,6 +231,20 @@ public abstract class AbstractObservableDataSet implements ObservableDeltaDataSe
 		@Override
 		public void doFireEvent(DeltaDataSetObserver observer, DeltaDataSetChangeEvent event) {
 			observer.characterAdded(event);
+		}
+	}
+	
+	protected class CharacterDeletedDispatcher extends DataSetEventDispatcher {
+		@Override
+		public void doFireEvent(DeltaDataSetObserver observer, DeltaDataSetChangeEvent event) {
+			observer.characterDeleted(event);
+		}
+	}
+	
+	protected class CharacterMovedDispatcher extends DataSetEventDispatcher {
+		@Override
+		public void doFireEvent(DeltaDataSetObserver observer, DeltaDataSetChangeEvent event) {
+			observer.characterMoved(event);
 		}
 	}
 }

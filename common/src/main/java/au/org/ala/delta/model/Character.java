@@ -41,6 +41,15 @@ public abstract class Character {
     public int getCharacterId() {
         return _number;
     }
+    
+    /**
+	 * This needs to be done when Characters are inserted or deleted - the remaining Characters
+	 * may need to be renumbered to account for the change.
+	 * @param number the new number for this Character.
+	 */
+	public void setCharacterNumber(int number) {
+		_number = number;
+	}
 
     public String getDescription() {
         return _impl.getDescription();

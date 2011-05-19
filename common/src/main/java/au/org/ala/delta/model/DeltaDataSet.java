@@ -63,6 +63,20 @@ public interface DeltaDataSet {
 	public Character addCharacter(int characterNumber, CharacterType type);
 	
 	/**
+	 * Deletes the supplied Character from the data set.
+	 * @param character the character to delete.
+	 */
+	public void deleteCharacter(Character character);
+	
+	/**
+	 * Changes the position in the data set of a specific Character.  The Character, and all
+	 * subsequent Characters will be renumbered.
+	 * @param character the Character to move.
+	 * @param newCharacterNumber the new character number for the Item.
+	 */
+	public void moveCharacter(Character character, int newCharacterNumber);
+	
+	/**
 	 * Creates a new Item and adds it to this DeltaDataSet.
 	 * @return the new Item.
 	 */

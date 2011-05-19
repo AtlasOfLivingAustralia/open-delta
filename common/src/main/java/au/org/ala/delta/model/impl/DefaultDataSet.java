@@ -85,6 +85,34 @@ public class DefaultDataSet extends AbstractObservableDataSet {
 	}
 	
 	@Override
+	public void deleteCharacter(Character character) {
+		
+		int numCharacters = _characters.size();
+		_characters.remove(character);
+		
+		renumberCharacters(character.getCharacterId()+1, numCharacters, -1);
+		
+		fireCharacterDeleted(character);
+	}
+	
+	@Override
+	public void moveCharacter(Character character, int newCharacterNumber) {
+		int oldCharacterNumber = character.getCharacterId();
+		
+		_characters.remove(oldCharacterNumber);
+		if (newCharacterNumber < oldCharacterNumber) {
+			renumberCharacters(newCharacterNumber, oldCharacterNumber-1, 1);
+		}
+		else if (newCharacterNumber > oldCharacterNumber ){
+			renumberCharacters(oldCharacterNumber+1, newCharacterNumber, -1);
+		}
+		character.setCharacterNumber(newCharacterNumber);
+		_characters.put(newCharacterNumber,character);
+		
+	}
+	
+	
+	@Override
 	protected Item doAddItem(int itemNumber) {
 		
 		Item item = _factory.createItem(itemNumber);
@@ -150,5 +178,17 @@ public class DefaultDataSet extends AbstractObservableDataSet {
 			tempItems.put(i+change, tmp);		
 		}
 		_items.putAll(tempItems);
+	}
+	
+	private void renumberCharacters(int from, int to, int change) {
+		Map<Integer, Character> tempItems = new HashMap<Integer, Character>();
+		for (int i=from; i<=to; i++) {
+			
+			Character tmp = doGetCharacter(i);
+			tmp.setCharacterNumber(i+change);
+			_items.remove(i);
+			tempItems.put(i+change, tmp);		
+		}
+		_characters.putAll(tempItems);
 	}
 }

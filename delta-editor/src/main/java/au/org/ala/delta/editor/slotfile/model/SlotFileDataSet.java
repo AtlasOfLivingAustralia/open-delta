@@ -2,6 +2,8 @@ package au.org.ala.delta.editor.slotfile.model;
 
 import java.util.List;
 
+import org.apache.commons.lang.NotImplementedException;
+
 import au.org.ala.delta.editor.slotfile.DeltaVOP;
 import au.org.ala.delta.editor.slotfile.TextType;
 import au.org.ala.delta.editor.slotfile.VOCharBaseDesc;
@@ -170,5 +172,15 @@ public class SlotFileDataSet extends AbstractObservableDataSet {
 			_vop.getDeltaMaster().moveItem(item.getItemNumber(), newItemNumber);	
 			fireItemMoved(item, newItemNumber);
 		}
+	}
+
+	@Override
+	public void deleteCharacter(Character character) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public void moveCharacter(Character character, int newCharacterNumber) {
+		throw new NotImplementedException();
 	}
 }
