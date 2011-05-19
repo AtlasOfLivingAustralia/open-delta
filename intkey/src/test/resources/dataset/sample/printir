@@ -1,0 +1,14 @@
+*SHOW Print the DELTA-format descriptions - RTF.
+
+*LISTING FILE printir.lst  *OUTPUT DIRECTORY rtf  *PRINT FILE items.rtf
+
+*INPUT FILE specs
+
+*PRINT ITEM DESCRIPTIONS
+
+*INPUT FILE markrtf
+
+*PRINT COMMENT
+\pard\plain\s2\qc\sb500\sa400\keepn\b\f2\fs28\kerning28{}Item Descriptions
+
+*INPUT FILE items

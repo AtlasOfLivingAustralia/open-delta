@@ -1,0 +1,27 @@
+*COMMENT ~ Taxon images.
+
+*TAXON IMAGES
+# \i{}Agrostis\i0{} <L.>/
+     ag01.gif
+          <@text x=96 y=650 w=800 h=-2 m
+           t=\i{}Agrostis eriantha\i0{} var. \i{}eriantha\i0{}>
+          <@item x=172 y=554 w=637 h=-1 c m>
+          <@subject Habit - \i{}Agrostis eriantha\i0{} (plus call of peewee)>
+          <@sound peewee.wav>
+     ag25.gif
+          <@subject Floret (plus call of magpie)>
+          <@sound magpie.wav>
+
+# \i{}Chloris\i0{} <O. Swartz>/
+     ch19.gif
+          <@subject Inflorescences>
+
+# \i{}Cynodon\i0{} <Rich.>/
+     cy01.gif
+          <@subject Habit and ligule - \i{}Cynodon dactylon\i0{}>
+          <@text x=120 y=898 w=350 h=-2 m
+           t=\i{}Cynodon dactylon\i0{}>
+
+# \i{}Eleusine\i0{} <Gaertn.>/
+     el01.gif
+          <@subject Habit and spikelet - \i{}Eleusine coracana\i0{}>

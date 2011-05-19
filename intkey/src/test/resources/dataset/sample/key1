@@ -1,0 +1,5 @@
+*COMMENT Default parameter values.
+
+*HEADING Key 1. Default parameters
+*COMMENT Non-default value for PRINT WIDTH.
+*PRINT WIDTH 78

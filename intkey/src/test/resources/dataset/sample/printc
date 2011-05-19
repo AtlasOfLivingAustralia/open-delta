@@ -1,0 +1,17 @@
+*SHOW Print the character list - plain text.
+
+*HEADING Grass Genera #TIME #DATE
+*LISTING FILE printc.lst  *PRINT FILE printc.prt
+
+*INPUT FILE specs
+
+*PRINT CHARACTER LIST
+*OMIT TYPESETTING MARKS
+
+*INPUT FILE headc
+*INPUT FILE cnotes
+
+*PRINT HEADING
+*PRINT COMMENT CHARACTER LIST
+
+*INPUT FILE chars

@@ -1,0 +1,6 @@
+*COMMENT Minimize average number of steps.
+
+*HEADING Key 2. RBASE = 1
+*RBASE 1.0
+*NO BRACKETTED KEY
+*PRINT WIDTH 78

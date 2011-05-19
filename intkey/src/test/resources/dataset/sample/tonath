@@ -1,0 +1,146 @@
+*SHOW Translate into natural language - HTML.
+ 
+*LISTING FILE tonath.lst  *OUTPUT DIRECTORY www  *PRINT FILE implicit.htm
+
+*INPUT FILE specs 
+ 
+*TRANSLATE INTO NATURAL LANGUAGE 
+
+*INPUT FILE markhtm
+
+*IMAGE DIRECTORY ..\images
+
+*INPUT FILE ofiles
+*INPUT FILE layout 
+*INPUT FILE empchari 
+*INPUT FILE empcharm 
+*INPUT FILE timages
+
+*INDEX OUTPUT FILE .\index.htm
+
+*INDEX TEXT
+<html>
+<head>
+<title>
+DELTA Sample Data
+- Index
+</title>
+<meta name="description"
+content="DELTA Sample Data:
+Descriptions, Illustrations, Identification, and Information Retrieval.
+L. Watson and M. J. Dallwitz.">
+<meta name="keywords"
+content="classification, DELTA, Intkey, key, keys">
+</head>
+
+<body>
+
+<a href="http://biodiversity.uno.edu/delta/">
+<img align=right border=0 src="www/deltlogo.gif"></a>
+<h1><b>
+DELTA Sample Data
+</b></h1>
+
+<h2>
+L. Watson and M. J. Dallwitz
+</h2>
+
+<p><hr noshade>
+
+<p><h2>Index</h2>
+
+<h3>
+<a href="www/intro.htm">Introduction</a>
+&#149;&nbsp;<a href="#citation">Citation</a> 
+&#149;&nbsp;<a href="www/ack.htm">Acknowledgements</a>
+&#149;&nbsp;<a href="www/refs.htm">References</a>
+</h3>
+<h3><a href="www/ident.htm">Identification and Information Retrieval</a> (Windows 95/NT or later)</h3>
+<h3><a href="www/word.htm"> MS-Word Documents</a></h3>
+<h3><a href="www/chars.htm">Character List</a></h3>
+<h3><a href="www/implicit.htm">Implicit Attributes</a></h3>
+
+<h3><b>Descriptions</b></h3>
+
+<p>The bold-italic parts are diagnostic descriptions, generated with the aid of
+Intkey (Dallwitz, Paine and Zurcher 1995, 2000). They distinguish each taxon in at least
+two respects from every other taxon.
+
+<p> <center> <b>
+<a href="#A">A</a>
+<a href="#B">B</a>
+<a href="#C">C</a>
+<a href="#E">E</a>
+<a href="#F">F</a>
+<a href="#O">O</a>
+<a href="#P">P</a>
+<a href="#Z">Z</a>
+</b> </center>
+
+*INDEX HEADINGS !
+# Agrostis <L.>/ !<a name="A"><p><font size=+2>A</font><br>!
+# Bambusa <Schreber>/ !<a name="B"><p><font size=+2>B</font><br>!
+# Chloris <O. Swartz>/ !<a name="C"><p><font size=+2>C</font><br>!
+# Echinochloa <P. Beauv.>/ !<a name="E"><p><font size=+2>E</font><br>!
+# Festuca <L.>/ !<a name="F"><p><font size=+2>F</font><br>!
+# Oryza <L.>/ !<a name="O"><p><font size=+2>O</font><br>!
+# Panicum <L.>/ !<a name="P"><p><font size=+2>P</font><br>!
+# Zea <L.>/ !<a name="Z"><p><font size=+2>Z</font><br>!
+
+*INPUT FILE chars 
+
+*PRINT COMMENT
+<head>
+<title>
+DELTA Sample Data
+- Implicit Attributes
+</title>
+<meta name="description"
+content="Implicit attributes for 
+DELTA Sample Data,
+generated from a DELTA database.">
+</head>
+
+<body>
+
+<a href="http://biodiversity.uno.edu/delta/">
+<img align=right border=0 src="deltlogo.gif"></a>
+<h1><b>
+DELTA Sample Data
+</b></h1>
+
+<h2>
+L. Watson and M. J. Dallwitz
+</h2>
+
+<p><hr noshade>
+
+<h2>Implicit Attributes</h2>
+<p>Unless indicated otherwise, the following attributes are implicit
+throughout the descriptions, except where the characters concerned are
+inapplicable.
+
+*TRANSLATE IMPLICIT VALUES
+
+*INPUT FILE items 
+
+*INDEX TEXT
+<p> <a name="citation"></a> <hr noshade>
+
+<p> Cite this publication as:
+‘L. Watson and M. J. Dallwitz (1998 onwards).
+DELTA Sample Data:
+Descriptions, Illustrations, Identification, and Information Retrieval.
+Version: 21st September 2000.
+<a href="http://biodiversity.uno.edu/delta/">
+http://biodiversity.uno.edu/delta/</a>’.
+Dallwitz (1980) and
+Dallwitz, Paine and Zurcher (1993, 1995, 2000)
+should also be cited (see <a href="www/refs.htm"> References</a>).
+
+<p><a href="http://biodiversity.uno.edu/delta/">
+<img align=middle border=0 src="www/deltlogo.gif"
+><b>DELTA Home Page</b></a>
+
+</body>
+</html>

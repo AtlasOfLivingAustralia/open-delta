@@ -1,0 +1,15 @@
+*SHOW Tidy the main data files (using Delfor - cannot be used with Confor).
+
+*LISTING FILE tidy.lst
+
+*COMMENT This directives file cannot be used with CONFOR.
+
+*INPUT FILE specs
+
+*OUTPUT WIDTH 80
+
+*INPUT DELTA FILE confor.cph
+
+*REFORMAT specs
+*REFORMAT chars
+*REFORMAT items

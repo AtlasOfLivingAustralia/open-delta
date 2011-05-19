@@ -1,0 +1,15 @@
+*SHOW Translate into INTKEY format for SPSUMM.
+
+*COMMENT See comments in SPSUMM.BOX for details.
+
+*LISTING FILE toint.lst
+
+*INPUT FILE specs
+
+*TRANSLATE INTO INTKEY FORMAT
+
+*INTKEY OUTPUT FILE ichars
+*INPUT FILE chars
+
+*INTKEY OUTPUT FILE spiitems
+*INPUT FILE spitems

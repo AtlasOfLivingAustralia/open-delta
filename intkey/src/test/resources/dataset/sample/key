@@ -1,0 +1,7 @@
+*COMMENT Default parameter values (set explicitly).
+
+*RBASE 1.40
+*VARYWT 0.8
+*COMMENT Non-default value for PRINT WIDTH.
+*PRINT WIDTH 78
+*NUMBER OF CONFIRMATORY CHARACTERS 0

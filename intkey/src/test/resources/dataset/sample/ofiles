@@ -1,0 +1,6 @@
+*COMMENT ~ Specify character containing names of output files.
+
+*CHARACTER FOR OUTPUT FILES 89
+
+*COMMENT Text used in Intkey 'Information' dialog.
+*SUBJECT FOR OUTPUT FILES Full description

@@ -1,0 +1,40 @@
+*SHOW Print the character list - HTML. 
+
+*LISTING FILE printch.lst  *PRINT FILE www\chars.htm 
+
+*INPUT FILE specs 
+
+*PRINT CHARACTER LIST
+
+*INPUT FILE markhtm 
+
+*INPUT FILE headc
+*INPUT FILE cnotes
+
+*PRINT COMMENT
+<head>
+<title>
+DELTA Sample Data 
+- Character List
+</title>
+<meta name="description"
+content="Character list for 
+DELTA Sample Data, 
+generated from a DELTA database.">
+</head>
+
+<body>
+<a href="http://biodiversity.uno.edu/delta/">
+<img align=right border=0 src="deltlogo.gif"></a>
+<h1><b>
+DELTA Sample Data 
+</b></h1>
+<h2>
+L. Watson and M. J. Dallwitz
+</h2>
+<p><hr noshade>
+
+<h2>Character List</h2> 
+<dl> 
+
+*INPUT FILE chars

@@ -1,0 +1,31 @@
+*SHOW Print the character list - RTF.
+
+*LISTING FILE printcr.lst  *OUTPUT DIRECTORY rtf  *PRINT FILE chars.rtf
+
+*INPUT FILE specs
+
+*PRINT CHARACTER LIST
+
+*INPUT FILE markrtf
+
+*OMIT INNER COMMENTS
+
+*INPUT FILE headc
+*INPUT FILE cnotes
+
+*PRINT COMMENT
+\pard\plain\s1\qc\sb0\sa100\keepn\b\f2\fs32\kerning28{} DELTA Sample Data
+\par\pard\plain\qc\sb0\sa500\fs24{} L. Watson and M. J. Dallwitz
+\par\pard\plain\ql\fs22{}Cite this publication as:
+‘L. Watson and M. J. Dallwitz (1998 onwards).
+DELTA Sample Data:
+Descriptions, Illustrations, Identification, and Information Retrieval.
+Version: 21st September 2000.
+http://biodiversity.uno.edu/delta/’.
+Dallwitz (1980) and
+Dallwitz, Paine and Zurcher (1993, 1995, 2000)
+should also be cited (see References).
+
+\par\pard\plain\s2\qc\sb600\sa100\keepn\b\f2\fs28\kerning28{}Character List
+
+*INPUT FILE chars

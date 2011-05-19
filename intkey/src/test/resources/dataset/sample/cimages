@@ -1,0 +1,65 @@
+*COMMENT ~ Character images.
+
+*CHARACTER IMAGES
+#6. nod01.gif <@feature x=49 y=270 w=135 h=-2 m>
+              <@state 1 x=802 y=294 w=160 h=-1
+                        x=488 y=0 w=262 h=320
+                        x=541 y=316 w=262 h=241
+                        x=600 y=552 w=200 h=446
+                        x=520 y=298 w=310 h=300 e p f=4080FF c m>
+              <@state 2 x=49 y=617 w=202 h=-1
+                        x=204 y=0 w=199 h=392
+                        x=251 y=387 w=216 h=209
+                        x=300 y=591 w=210 h=407
+                        x=290 y=552 w=217 h=210 e p f=4080FF c m>
+              <@ok x=49 y=796>
+              <@cancel x=49 y=877>
+#9. pet01.gif <@subject Drawings>
+              <@feature x=8 y=8 w=170 h=-1 m>
+              <@state 1 x=233 y=40 w=233 h=-1
+                        x=30 y=106 w=573 h=880 p f=4080FF m>
+              <@state 2 x=711 y=40 w=266 h=-1
+                        x=713 y=106 w=267 h=880 p f=4080FF m>
+              <@ok x=608 y=304>
+              <@cancel x=608 y=380>
+    pet02.gif <@subject Photo>
+              <@feature x=150 y=31 w=170 h=-1 m>
+              <@state 1 x=17 y=529 w=225 h=-1
+                        x=5 y=6 w=486 h=990 p f=4080FF m>
+              <@state 2 x=611 y=510 w=266 h=-2 m
+                        t=(not illustrated)>
+              <@ok x=632 y=850>
+              <@cancel x=768 y=850>
+#10. lig01.gif <@feature x=703 y=296 w=119 h=-2 m>
+               <@state 1 x=250 y=700 w=209 h=-2
+                         x=3 y=5 w=520 h=993 p f=4080FF c m>
+               <@state 2 x=577 y=700 w=368 h=-2
+                         x=572 y=694 w=381 h=104 p f=4080FF c m
+                         t=(not illustrated)>
+               <@ok x=638 y=865>
+               <@cancel x=784 y=865>
+#11. lig01.gif <@feature x=17 y=17 w=100 h=-1 m>
+               <@state 1 x=159 y=700 w=322 h=-1
+                         x=3 y=5 w=520 h=993 p f=4080FF>
+               <@text x=665 y=400 w=205 h=-1 m
+                      t=Not illustrated:>
+               <@state 2 x=610 y=500 w=310 h=-1>
+               <@state 3 x=610 y=600 w=310 h=-1>
+               <@state 4 x=610 y=700 w=310 h=-1>
+               <@ok x=718 y=150>
+               <@cancel x=718 y=233>
+#13. inf01.gif <@feature x=344 y=4 w=205 h=-1 m>
+               <@state 1 x=38 y=465 w=186 h=-1
+                         x=50 y=24 w=165 h=431 p f=4080FF m>
+               <@state 2 x=285 y=465 w=322 h=-1
+                         x=247 y=59 w=400 h=396 p f=4080FF m>
+               <@state 3 x=666 y=425 w=302 h=-2
+                         x=675 y=24 w=286 h=392 p f=4080FF n m
+                         t=a false spike, with spike- lets on contracted axes>
+               <@state 4 x=24 y=943 w=213 h=-1
+                         x=40 y=525 w=184 h=411 p f=4080FF m>
+               <@state 5 x=593 y=945 w=154 h=-1
+                         x=421 y=525 w=549 h=412 p f=4080FF m>
+               <@ok x=278 y=639>
+               <@cancel x=278 y=718>
+               <@notes x=278 y=794>

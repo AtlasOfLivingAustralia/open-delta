@@ -1,0 +1,14 @@
+*SHOW Print the taxon names - RTF.
+
+*LISTING FILE printnr.lst  *OUTPUT DIRECTORY rtf  *PRINT FILE names.rtf
+
+*INPUT FILE specs
+
+*PRINT ITEM NAMES
+
+*INPUT FILE markrtf
+
+*PRINT COMMENT
+\pard\plain\s2\qc\sb500\sa400\keepn\b\f2\fs28\kerning28{}Item Names
+
+*INPUT FILE items
