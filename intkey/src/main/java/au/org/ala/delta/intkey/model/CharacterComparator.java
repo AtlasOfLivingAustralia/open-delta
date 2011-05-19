@@ -6,7 +6,6 @@ public class CharacterComparator implements Comparator<au.org.ala.delta.model.Ch
 
     @Override
     public int compare(au.org.ala.delta.model.Character c1, au.org.ala.delta.model.Character c2) {
-        // TODO Auto-generated method stub
         return Integer.valueOf(c1.getCharacterId()).compareTo(Integer.valueOf(c2.getCharacterId()));
     }
 }

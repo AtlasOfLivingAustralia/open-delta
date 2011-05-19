@@ -12,9 +12,6 @@ import org.apache.commons.lang.math.IntRange;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.ui.UIUtils;
 
-//TODO smashed out quickly to help with implementation of the USE directive.
-//need to revisit in order to make it complete.
-
 public class DefineCharactersDirective extends IntkeyDirective {
 
     public DefineCharactersDirective() {

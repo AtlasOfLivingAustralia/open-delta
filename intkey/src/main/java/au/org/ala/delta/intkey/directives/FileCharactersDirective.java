@@ -27,7 +27,6 @@ public class FileCharactersDirective extends IntkeyDirective {
 
                 @Override
                 public boolean accept(File f) {
-                    // TODO Auto-generated method stub
                     return f.isDirectory() || f.getName().toLowerCase().startsWith("iitems");
                 }
 

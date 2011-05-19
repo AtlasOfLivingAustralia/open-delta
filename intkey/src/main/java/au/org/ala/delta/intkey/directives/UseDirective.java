@@ -36,8 +36,6 @@ import au.org.ala.delta.model.TextCharacter;
 
 public class UseDirective extends IntkeyDirective {
 
-    // TODO complete parsing for non-text character values
-    // TODO do "toString()" for invocation class
     // TODO show message box when try to set a character value but it fails due
     // to it not
     // available - need to do anything else when this happens?
@@ -117,8 +115,6 @@ public class UseDirective extends IntkeyDirective {
             JOptionPane.showMessageDialog(UIUtils.getMainFrame(), UIUtils.getResourceString("UseDirective.NoDataSetMsg"));
             return null;
         }
-
-        // TODO Auto-generated method stub
 
         // INITALIZE
 

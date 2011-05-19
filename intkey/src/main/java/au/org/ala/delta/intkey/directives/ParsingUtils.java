@@ -142,7 +142,7 @@ public class ParsingUtils {
             char c = data.charAt(i);
 
             if (c == '"') {
-                // TODO ignore quote if it is in the middle of a string
+                // Ignore quote if it is in the middle of a string
                 // don't throw error for unmatched quotes.
                 // this is the behaviour in the legacy intkey - may change this
                 // later.

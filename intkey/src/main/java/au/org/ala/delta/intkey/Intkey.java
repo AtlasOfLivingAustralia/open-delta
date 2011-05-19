@@ -773,7 +773,9 @@ public class Intkey extends DeltaSingleFrameApplication {
     }
 
     public void handleRestartIdentification() {
-        // TODO do this properly
+        // TODO - do this properly, not as simple as just throwing everything
+        // away and building the lists from scratch. Need to take into account any 
+        // characters that have been fixed using the SET FIX directive.
         handleNewDataSet(_context.getDataset());
     }
 
