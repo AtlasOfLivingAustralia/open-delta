@@ -2,14 +2,13 @@ package au.org.ala.delta.editor.ui.dnd;
 
 import java.awt.Graphics;
 import java.awt.Rectangle;
-import java.awt.dnd.DropTargetDragEvent;
-import java.awt.dnd.DropTargetDropEvent;
-import java.awt.dnd.DropTargetEvent;
-import java.awt.dnd.DropTargetListener;
-import java.util.TooManyListenersException;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 import javax.swing.JTable;
 import javax.swing.table.TableModel;
+
+import au.org.ala.delta.editor.ui.DropIndicationTableHeader;
 
 /**
  * The DropIndicationTable is able to provide an indication of the of the drop location of a
@@ -18,18 +17,21 @@ import javax.swing.table.TableModel;
  * is simulated on the main content table to provide a better visual indication of the drop 
  * location to the user.
  */
-public class DropIndicationTable extends JTable implements DropTargetListener {
+public class DropIndicationTable extends JTable {
 
 	private static final long serialVersionUID = -3467217705935460965L;
-	
-	/** True during the time this table paints a drop indication */
-	private boolean _fakingDrop = false;
 	
 	/** The row the drop will occur at */
 	private int _dropRow = -1;
 	
+	/** The column the drop will occur at */
+	private int _dropColumn = -1;
+	
 	/** The index of the drop row the last time we painted a drop location */
-	public int _lastPainted = -1;
+	public int _lastPaintedRow = -1;
+	
+	/** The index of the drop column the last time we painted a drop location */
+	public int _lastPaintedColumn = -1;
 	
 	/** The JTable that the drag and drop operation is actually occurring on */
 	private JTable _dropEventSource;
@@ -41,15 +43,29 @@ public class DropIndicationTable extends JTable implements DropTargetListener {
 	 * @param dropEventSource this table will react to drop target events from this table.
 	 */
 	public DropIndicationTable(TableModel model, JTable dropEventSource) {
-		super(model);
+		super();
+		DropIndicationTableHeader header = new DropIndicationTableHeader(columnModel);
+		setTableHeader(header);
+		header.addPropertyChangeListener(new PropertyChangeListener() {
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				if ("dropColumn".equals(evt.getPropertyName())) {
+					updateColumnDropIndication();
+				}
+			}
+		});
+		setModel(model);
 		_dropEventSource = dropEventSource;
-		
-		try {
-			_dropEventSource.getDropTarget().addDropTargetListener(this);
-		} catch (TooManyListenersException e) {
-			throw new RuntimeException("Unable to install drop target listener on "+dropEventSource, e);
-		}
+		_dropEventSource.addPropertyChangeListener(new PropertyChangeListener() {
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				if ("dropLocation".equals(evt.getPropertyName())) {
+					updateRowDropIndication();
+				}
+			}
+		});
 	}
+	
 	
 	/**
 	 * Overrides paintComponent to paint the drop location indication if necessary.
@@ -60,38 +76,44 @@ public class DropIndicationTable extends JTable implements DropTargetListener {
 		super.paintComponent(g);
 		
 		// Draw drop lines.
-		if (_fakingDrop) {
+		if (_dropRow >= 0) {
 			
 			Rectangle rect = getCellRect(_dropRow, 0, true);
 			if (g.getClip().intersects(rect.x, rect.y-2, getWidth(), 3)) {
 				g.fillRect(rect.x, rect.y-2, getWidth(), 3);
-				_lastPainted = _dropRow;
+				_lastPaintedRow = _dropRow;
+			}
+		}
+		if (_dropColumn >= 0) {
+			Rectangle rect = getCellRect(0, _dropColumn, true);
+			if (g.getClip().intersects(rect.x, rect.y-2, 3, getHeight())) {
+				g.fillRect(rect.x, rect.y-2, 3, getHeight());
+				_lastPaintedColumn = _dropColumn;
 			}
 		}
 	}
-	@Override
-	public void dragEnter(DropTargetDragEvent dtde) {
-		_fakingDrop = true;
-		updateDropIndication();
-	}
-	@Override
-	public void dragOver(DropTargetDragEvent dtde) {
-		updateDropIndication();
-	}
 	
-	private void updateDropIndication() {
+	private void updateRowDropIndication() {
 		JTable.DropLocation dl = _dropEventSource.getDropLocation();
-		_dropRow = dl.getRow();
-		paintImmediately(getDropIndicationBounds());
+		// The drop location will be null if the drag was initiated by the column
+		// header but dragged over the row header.
+		if (dl != null) {
+			_dropRow = dl.getRow();
+			paintImmediately(getRowDropIndicationBounds());
+		}
+		else {
+			_dropRow = -1;
+			repaint();
+		}
 	}
 	
 	/**
 	 * Works out the bounds in which our customized painting should occur.
 	 * @return a rectangle containing the clip bounds for our paint.
 	 */
-	private Rectangle getDropIndicationBounds() {
+	private Rectangle getRowDropIndicationBounds() {
 		
-		Rectangle previousRec = getCellRect(_lastPainted, 0, true);
+		Rectangle previousRec = getCellRect(_lastPaintedRow, 0, true);
 		Rectangle rect = getCellRect(_dropRow, 0, true);
 		
 		int minY = Math.min(previousRec.y, rect.y);
@@ -102,23 +124,36 @@ public class DropIndicationTable extends JTable implements DropTargetListener {
 		return new Rectangle(rect.x, minY-2, getWidth(), height); 
 	}
 	
-	@Override
-	public void dropActionChanged(DropTargetDragEvent dtde) {}
-	
-	@Override
-	public void dragExit(DropTargetEvent dte) {
-		finishDrop();
+	private void updateColumnDropIndication() {
+		_dropColumn = getHeader().getDropColumn();
+		if (_dropColumn != -1) {
+			repaint(getColumnDropIndicationBounds());
+		}
+		else {
+			repaint();
+		}
 	}
 	
-	@Override
-	public void drop(DropTargetDropEvent dtde) {
-		finishDrop();
+	/**
+	 * Works out the bounds in which our customized column painting should occur.
+	 * @return a rectangle containing the clip bounds for our paint.
+	 */
+	private Rectangle getColumnDropIndicationBounds() {
+		
+		Rectangle previousRec = getCellRect(0, _lastPaintedColumn, true);
+		Rectangle rect = getCellRect(0, _dropColumn, true);
+		
+		int minX = Math.min(previousRec.x, rect.x);
+		int maxX = Math.max(previousRec.x, rect.x);
+		
+		int width = maxX-minX+3;
+		
+		return new Rectangle(minX-1, rect.y, width, getHeight()); 
 	}
 	
-	private void finishDrop() {
-		_dropRow = -1;
-		_lastPainted = -1;
-		_fakingDrop = false;
-		repaint();
+	
+	private DropIndicationTableHeader getHeader() {
+		return (DropIndicationTableHeader)getTableHeader();
 	}
+
 }

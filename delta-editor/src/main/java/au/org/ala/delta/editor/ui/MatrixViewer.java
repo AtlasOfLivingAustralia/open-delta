@@ -19,6 +19,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
@@ -36,9 +37,11 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.TransferHandler;
 import javax.swing.border.LineBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
 import org.jdesktop.application.Action;
@@ -53,6 +56,7 @@ import au.org.ala.delta.editor.EditorPreferences;
 import au.org.ala.delta.editor.ItemController;
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.ui.dnd.DropIndicationTable;
+import au.org.ala.delta.editor.ui.dnd.SimpleTransferHandler;
 import au.org.ala.delta.model.Item;
 
 /**
@@ -111,6 +115,8 @@ public class MatrixViewer extends JInternalFrame implements DeltaView {
 		_table.getSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		_table.setCellSelectionEnabled(true);
 		_table.setDefaultRenderer(Object.class, new AttributeCellRenderer());
+		_table.getTableHeader().setReorderingAllowed(false);
+		_table.getTableHeader().setTransferHandler(new TransferHandler("columnModel"));
 		
 		ListSelectionListener listener = new ListSelectionListener() {
 
@@ -135,18 +141,18 @@ public class MatrixViewer extends JInternalFrame implements DeltaView {
 
 		_table.getSelectionModel().addListSelectionListener(listener);
 		_table.getColumnModel().getSelectionModel().addListSelectionListener(listener);
-
+		
 		_table.getTableHeader().setDefaultRenderer(new TableHeaderRenderer());
 
 		final JScrollPane scrollpane = new JScrollPane(_table);
 		scrollpane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		scrollpane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-
+		
 		final JScrollPane fixedScrollPane = new JScrollPane(_fixedColumns);
 		fixedScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
 		fixedScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 		fixedScrollPane.setPreferredSize(new Dimension(120, 200));
-
+		new TableHeaderResizer((DropIndicationTableHeader)_table.getTableHeader(), _fixedColumns, scrollpane, fixedScrollPane);
 		scrollpane.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
 
 			@Override
