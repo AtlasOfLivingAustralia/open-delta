@@ -53,12 +53,12 @@ implements DragGestureListener, ListSelectionListener, ReorderableList<au.org.al
         dragSource.createDefaultDragGestureRecognizer(this,DnDConstants.ACTION_COPY_OR_MOVE,this);
          
 		addMouseListener(new MouseAdapter() {
-			public void mouseReleased(MouseEvent e) {
+			public void mousePressed(MouseEvent e) {
 				int selection = columnAtPoint(e.getPoint());
 				// Updating the table selection will cause our selection to be updated also via
 				// the selection listener we installed.
 				updateTableColumnSelection(selection);
-							}
+			}
 		});
 		
 	}

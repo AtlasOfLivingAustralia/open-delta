@@ -130,12 +130,12 @@ public class CharacterController {
 		editCharacter(e);
 	}
 	
-	private void updateSelection(int itemNum) {
-		if (itemNum > _model.getMaximumNumberOfItems()) {
-			itemNum = _model.getMaximumNumberOfItems();
+	private void updateSelection(int charNum) {
+		if (charNum > _model.getNumberOfCharacters()) {
+			charNum = _model.getNumberOfCharacters();
 		}
-		if (itemNum > 0) {
-			_view.setSelectedIndex(itemNum-1);
+		if (charNum > 0) {
+			_view.setSelectedIndex(charNum-1);
 		}
 	}
 	

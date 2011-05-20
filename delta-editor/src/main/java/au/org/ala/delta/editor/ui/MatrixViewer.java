@@ -19,7 +19,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
@@ -37,11 +36,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
-import javax.swing.TransferHandler;
 import javax.swing.border.LineBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
 import org.jdesktop.application.Action;
@@ -57,8 +54,9 @@ import au.org.ala.delta.editor.EditorPreferences;
 import au.org.ala.delta.editor.ItemController;
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.ui.dnd.DropIndicationTable;
-import au.org.ala.delta.editor.ui.dnd.SimpleTransferHandler;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.observer.AbstractDataSetObserver;
+import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
 
 /**
  * The MatrixViewer presents the attributes of the data set in a tabular format.
@@ -86,6 +84,22 @@ public class MatrixViewer extends JInternalFrame implements DeltaView {
 		this.setTitle(String.format(windowTitle, dataSet.getName()));
 
 		_dataSet = dataSet;
+		// It's important that this observer is added before the table model is created
+		// as it corrects the selection after the table model fires a tableStructureChanged
+		// event (which clears the selection). (Listeners are notified in reverse order of 
+		// being added).
+		_dataSet.addDeltaDataSetObserver(new AbstractDataSetObserver() {
+
+			@Override
+			public void characterAdded(DeltaDataSetChangeEvent event) {
+				int row = _fixedColumns.getSelectedRow();
+				int column = event.getCharacter().getCharacterId()-1;
+				_table.getSelectionModel().setSelectionInterval(row, row);
+				_table.getColumnModel().getSelectionModel().setSelectionInterval(column, column);
+				scrollCellToVisible(row, column);
+			}
+			
+		});
 		
 		_model = new MatrixTableModel(dataSet);
 
@@ -117,7 +131,7 @@ public class MatrixViewer extends JInternalFrame implements DeltaView {
 		_table.setCellSelectionEnabled(true);
 		_table.setDefaultRenderer(Object.class, new AttributeCellRenderer());
 		_table.getTableHeader().setReorderingAllowed(false);
-		_table.getTableHeader().setTransferHandler(new TransferHandler("columnModel"));
+		
 		new CharacterController((DropIndicationTableHeader)_table.getTableHeader(), dataSet);
 		ListSelectionListener listener = new ListSelectionListener() {
 
@@ -134,6 +148,7 @@ public class MatrixViewer extends JInternalFrame implements DeltaView {
 				
 					if (charId > 0) {
 						au.org.ala.delta.model.Character selectedCharacter = _dataSet.getCharacter(charId);
+						_dataSet.setSelectedCharacter(selectedCharacter);
 						_attributeEditor.bind(selectedCharacter, selectedItem);
 					}
 				}

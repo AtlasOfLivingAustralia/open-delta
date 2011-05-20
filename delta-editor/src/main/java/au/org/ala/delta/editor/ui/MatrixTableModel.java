@@ -114,15 +114,12 @@ public class MatrixTableModel extends AbstractTableModel {
 		
 		return vm;
 	}
-
-	@Override
-	public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-	}
 	
 	class ModelUpdater extends AbstractDataSetObserver {
 
 		@Override
 		public void characterAdded(DeltaDataSetChangeEvent event) {
+			
 			fireTableStructureChanged();
 		}
 		
