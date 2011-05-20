@@ -143,8 +143,9 @@ public class MatrixViewer extends JInternalFrame implements DeltaView {
 		_table.setCellSelectionEnabled(true);
 		_table.setDefaultRenderer(Object.class, new AttributeCellRenderer());
 		_table.getTableHeader().setReorderingAllowed(false);
+		DropIndicationTableHeader header = (DropIndicationTableHeader)_table.getTableHeader();
+		new CharacterController(header, dataSet);
 		
-		new CharacterController((DropIndicationTableHeader)_table.getTableHeader(), dataSet);
 		ListSelectionListener listener = new ListSelectionListener() {
 
 			@Override

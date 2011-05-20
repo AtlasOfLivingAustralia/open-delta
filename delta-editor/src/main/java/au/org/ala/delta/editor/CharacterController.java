@@ -43,7 +43,7 @@ public class CharacterController {
 		
 		viewComponent.setTransferHandler(new CharacterTransferHandler());
 		_characterActions = _context.getActionMap(CharacterController.class, this);
-		_view.setSelectionAction(_characterActions.get("editItem"));
+		_view.setSelectionAction(_characterActions.get("editCharacter"));
 		_dialogHelper = new au.org.ala.delta.editor.ui.util.MessageDialogHelper();
 		
 		new PopupBuilder();

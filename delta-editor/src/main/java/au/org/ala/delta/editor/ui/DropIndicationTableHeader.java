@@ -14,12 +14,16 @@ import java.awt.dnd.DropTargetAdapter;
 import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.TooManyListenersException;
 
 import javax.swing.Action;
 import javax.swing.JTable;
+import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
 import javax.swing.TransferHandler;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -37,6 +41,8 @@ implements DragGestureListener, ListSelectionListener, ReorderableList<au.org.al
 
 	private static final long serialVersionUID = 6903527328137944112L;
 
+	private static final String SELECTION_ACTION_NAME = "selectionAction";
+	
 	private boolean _dragEnabled;
 	private int _selectedColumn;
 	private int _dropLocation;
@@ -56,11 +62,24 @@ implements DragGestureListener, ListSelectionListener, ReorderableList<au.org.al
         dragSource.createDefaultDragGestureRecognizer(this,DnDConstants.ACTION_COPY_OR_MOVE,this);
          
 		addMouseListener(new MouseAdapter() {
+			@Override
 			public void mousePressed(MouseEvent e) {
 				int selection = columnAtPoint(e.getPoint());
 				// Updating the table selection will cause our selection to be updated also via
 				// the selection listener we installed.
 				updateTableColumnSelection(selection);
+			}
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2 && e.getButton() == MouseEvent.BUTTON1) {
+					
+					Action action = getActionMap().get(SELECTION_ACTION_NAME);
+		
+					if (action != null) {
+						ActionEvent event = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "");
+						action.actionPerformed(event);
+					}
+				}
 			}
 		});
 		
@@ -195,10 +214,20 @@ implements DragGestureListener, ListSelectionListener, ReorderableList<au.org.al
 		return _dropLocation;
 	}
 
-	@Override
-	public void setSelectionAction(Action action) { }
+	/**
+	 * Registers the action to take when a selection (double click or Enter key) has been made on
+	 * this list.
+	 * @param action the action that will be invoked on selection.
+	 */
+	public void setSelectionAction(Action action) {
+		getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), SELECTION_ACTION_NAME);
+		getActionMap().put(SELECTION_ACTION_NAME, action);
+	}
 
-
+	private void scrollTo(int column) {
+		getTable().scrollRectToVisible(getTable().getCellRect(0, column, true));
+	}
+	
 	class DropWatcher extends DropTargetAdapter {
 		
 		@Override
@@ -211,6 +240,13 @@ implements DragGestureListener, ListSelectionListener, ReorderableList<au.org.al
 			}
 			else {
 				setDropColumn(column);
+			}
+			p = SwingUtilities.convertPoint(DropIndicationTableHeader.this, p, getParent());			System.out.println(p.x);
+			if (p.x > getParent().getWidth()-5) {
+				scrollTo(column+1);
+			}
+			else if (p.x < 5) {
+				scrollTo(column-1);
 			}
 		}
 		
