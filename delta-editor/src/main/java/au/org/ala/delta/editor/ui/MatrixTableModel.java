@@ -125,6 +125,11 @@ public class MatrixTableModel extends AbstractTableModel {
 		@Override
 		public void characterMoved(DeltaDataSetChangeEvent event) {
 			fireTableStructureChanged();
-		}	
+		}
+		
+		@Override
+		public void characterDeleted(DeltaDataSetChangeEvent event) {
+			fireTableStructureChanged();
+		}
 	}
 }
