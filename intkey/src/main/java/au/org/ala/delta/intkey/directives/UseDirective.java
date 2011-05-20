@@ -43,6 +43,9 @@ public class UseDirective extends IntkeyDirective {
     // TODO show message box when try to set a character value but it fails due
     // to it not
     // available - need to do anything else when this happens?
+    
+    // TODO UI should only update once at the end - should not update for each controlling
+    // character that is prompted for.
 
     private static Pattern COMMA_SEPARATED_VALUE_PATTERN = Pattern.compile("^.+,.*$");
 
@@ -356,11 +359,11 @@ public class UseDirective extends IntkeyDirective {
                     throw new RuntimeException(String.format("There are no states for character %s that will make character %s applicable", cc.getCharacterId(), ch.getCharacterId()));
                 }
                 
-                // Prompt the user to set the value of the controlling character if it has been supplied as an argument to the
+                // If not processing an input file, prompt the user to set the value of the controlling character if it has been supplied as an argument to the
                 // NON AUTOMATIC CONTROLLING CHARACTERS confor directive, if the dependent character has been supplied as an argument
                 // to the USE CONTROLLING CHARACTERS FIRST confor directive, or if there are multiple states that the controlling character
                 // can be set to for which the dependent character will be inapplicable.
-                if (cc.getNonAutoCc() || ch.getUseCc() || !cc.getNonAutoCc() && !cc.getUseCc() && applicableStates.size() > 1) {
+                if (!context.isProcessingInputFile() && (cc.getNonAutoCc() || ch.getUseCc() || !cc.getNonAutoCc() && !cc.getUseCc() && applicableStates.size() > 1)) {
                     List<Integer> userSetStates = promptForMultiStateValue(UIUtils.getMainFrame(), (MultiStateCharacter) cc);
                     MultiStateValue val = new MultiStateValue((MultiStateCharacter) cc, new ArrayList<Integer>(userSetStates));
                     context.setValueForCharacter(cc, val);                    

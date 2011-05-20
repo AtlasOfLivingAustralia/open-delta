@@ -38,4 +38,8 @@ public class Specimen {
         
         _characterValues.put(ch, value);
     }
+    
+    public CharacterValue getValueForCharacter(Character ch) {
+        return _characterValues.get(ch);
+    }
 }

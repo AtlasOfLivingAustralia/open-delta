@@ -43,7 +43,15 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     private Specimen _specimen;
 
+    /**
+     * Should executed directives be recorded in the history?
+     */
     private boolean _recordDirectiveHistory;
+    
+    /**
+     * Is an input file currently being processed?
+     */
+    private boolean _processingInputFile;
 
     // Use linked hashmap so that the keys list will be returned in
     // order of insertion.
@@ -68,6 +76,7 @@ public class IntkeyContext extends AbstractDeltaContext {
 
         _executedDirectives = new ArrayList<IntkeyDirectiveInvocation>();
         _recordDirectiveHistory = false;
+        _processingInputFile = false;
     }
 
     public void setFileCharacters(String fileName) {
@@ -130,8 +139,9 @@ public class IntkeyContext extends AbstractDeltaContext {
     public void newDataSetFile(String fileName) {
         Logger.log("Reading in new Data Set file from: %s", fileName);
 
-        // Don't record directive executed while
+        // Don't record directive history while processing the data set file
         _recordDirectiveHistory = false;
+        _processingInputFile = true;
 
         IntkeyDirectiveParser parser = IntkeyDirectiveParser.createInstance();
 
@@ -144,6 +154,7 @@ public class IntkeyContext extends AbstractDeltaContext {
 
         // re enable recording of directives executed
         _recordDirectiveHistory = true;
+        _processingInputFile = false;
     }
 
     public void executeDirective(IntkeyDirectiveInvocation invoc) {
@@ -155,7 +166,8 @@ public class IntkeyContext extends AbstractDeltaContext {
         boolean success = invoc.execute(this);
         if (success && _recordDirectiveHistory) {
             if (_executedDirectives.size() < insertionIndex) {
-                // executed directives list has been cleared, just add this directive to the end of the list
+                // executed directives list has been cleared, just add this
+                // directive to the end of the list
                 _executedDirectives.add(invoc);
             } else {
                 _executedDirectives.add(insertionIndex, invoc);
@@ -170,7 +182,9 @@ public class IntkeyContext extends AbstractDeltaContext {
     public void setValueForCharacter(au.org.ala.delta.model.Character ch, CharacterValue value) {
         Logger.log("Using character");
         _specimen.setValueForCharacter(ch, value);
-        _appUI.handleCharacterUsed(ch, value);
+        if (_appUI != null) {
+            _appUI.handleCharacterUsed(ch, value);
+        }
     }
 
     public void addCharacterKeyword(String keyword, Set<Integer> characterNumbers) {
@@ -256,5 +270,9 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     public Specimen getSpecimen() {
         return _specimen;
+    }
+    
+    public boolean isProcessingInputFile() {
+        return _processingInputFile;
     }
 }
