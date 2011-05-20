@@ -54,6 +54,7 @@ import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 
+import au.org.ala.delta.editor.CharacterController;
 import au.org.ala.delta.editor.DeltaView;
 import au.org.ala.delta.editor.EditorPreferences;
 import au.org.ala.delta.editor.ItemController;
@@ -86,7 +87,7 @@ public class TreeViewer extends JInternalFrame implements DeltaView {
 
 	private EditorViewModel _dataModel;
 	private AttributeEditor _stateEditor; 
-	private JTree _tree;
+	private CharacterTree _tree;
 	private ItemList _itemList;
 
 	@Resource
@@ -109,27 +110,7 @@ public class TreeViewer extends JInternalFrame implements DeltaView {
 		_itemList.setDropMode(DropMode.INSERT);
 		final ActionMap actionMap = context.getActionMap();
 
-		_tree = new JTree() {
-			private static final long serialVersionUID = 1820027028505870889L;
-
-			/**
-			 * This is a done to initiate a cell edit from a single click with
-			 * drag and drop enabled.
-			 */
-			protected void processMouseEvent(MouseEvent e) {
-				super.processMouseEvent(e);
-				TreePath selectedPath = getSelectionPath();
-				if (selectedPath != null) {
-					Object lastComponent = selectedPath.getLastPathComponent();
-					if (lastComponent instanceof DefaultMutableTreeNode) {
-						DefaultMutableTreeNode node = (DefaultMutableTreeNode)lastComponent;
-						if (node.isLeaf()) {
-							super.processMouseEvent(e);
-						}
-					}
-				}
-			}
-		};
+		_tree = new CharacterTree();
 		final CharacterTreeModel treeModel = new CharacterTreeModel(_dataModel);
 		_tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		_tree.setModel(treeModel);
@@ -139,6 +120,7 @@ public class TreeViewer extends JInternalFrame implements DeltaView {
 		DeltaTreeCellRenderer renderer = new DeltaTreeCellRenderer(_dataModel);
 		_tree.setCellRenderer(renderer);
 		_tree.setDragEnabled(true);
+		_tree.setDropMode(DropMode.INSERT);
 		_tree.setCellEditor(new DeltaTreeEditor(_tree, renderer));
 		_tree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
 
@@ -172,7 +154,7 @@ public class TreeViewer extends JInternalFrame implements DeltaView {
 				}
 			}
 		});
-
+		new CharacterController(_tree, _dataModel);
 		_itemList.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 
 			@Override
@@ -289,7 +271,14 @@ public class TreeViewer extends JInternalFrame implements DeltaView {
 		public void characterEdited(DeltaDataSetChangeEvent event) {
 			updateTree();
 		}
-		
+		@Override
+		public void characterDeleted(DeltaDataSetChangeEvent event) {
+			updateTree();
+		}
+		@Override
+		public void characterMoved(DeltaDataSetChangeEvent event) {
+			updateTree();
+		}
 		private void updateTree() {
 			// This is a bit lazy and will probably need to be fixed when we can do edit's directly
 			// on the tree.
