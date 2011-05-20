@@ -19,11 +19,10 @@ public abstract class SimpleTransferHandler<T> extends TransferHandler {
 	private DataFlavor _flavour;
 	
 	public SimpleTransferHandler(Class<T> clazz) {
-		_flavour = new DataFlavor(clazz, clazz.getName());
+		_flavour = new SimpleFlavor(clazz, clazz.getName());
 	}
 	
 	public boolean canImport(TransferHandler.TransferSupport info) {
-		
 		return info.isDataFlavorSupported(_flavour);
 	}
 	

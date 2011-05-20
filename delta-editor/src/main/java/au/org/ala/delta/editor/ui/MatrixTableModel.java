@@ -119,10 +119,12 @@ public class MatrixTableModel extends AbstractTableModel {
 
 		@Override
 		public void characterAdded(DeltaDataSetChangeEvent event) {
-			
 			fireTableStructureChanged();
 		}
 		
+		@Override
+		public void characterMoved(DeltaDataSetChangeEvent event) {
+			fireTableStructureChanged();
+		}	
 	}
-
 }

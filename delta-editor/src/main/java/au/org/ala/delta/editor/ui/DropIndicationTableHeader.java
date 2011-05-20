@@ -37,16 +37,19 @@ implements DragGestureListener, ListSelectionListener, ReorderableList<au.org.al
 
 	private static final long serialVersionUID = 6903527328137944112L;
 
-	private boolean _dragEnabled = true;
-	private int _selectedColumn = -1;
-	private int _dropLocation = -1;
+	private boolean _dragEnabled;
+	private int _selectedColumn;
+	private int _dropLocation;
 	
 	/** Updates the drop location during a drag and drop operation */
 	private DropWatcher _dropWatcher;
 	
 	public DropIndicationTableHeader(TableColumnModel model) {
 		super(model);
-		
+		_dragEnabled = true;
+		_selectedColumn = -1;
+		_dropLocation = -1;
+		_dropWatcher = new DropWatcher();
 		
 		DragSource dragSource = DragSource.getDefaultDragSource();
          

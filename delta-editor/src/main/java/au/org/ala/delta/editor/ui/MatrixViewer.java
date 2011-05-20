@@ -92,6 +92,14 @@ public class MatrixViewer extends JInternalFrame implements DeltaView {
 
 			@Override
 			public void characterAdded(DeltaDataSetChangeEvent event) {
+				restoreSelection(event);
+			}
+			@Override
+			public void characterMoved(DeltaDataSetChangeEvent event) {
+				restoreSelection(event);
+			}
+			
+			private void restoreSelection(DeltaDataSetChangeEvent event) {
 				int row = _fixedColumns.getSelectedRow();
 				int column = event.getCharacter().getCharacterId()-1;
 				_table.getSelectionModel().setSelectionInterval(row, row);

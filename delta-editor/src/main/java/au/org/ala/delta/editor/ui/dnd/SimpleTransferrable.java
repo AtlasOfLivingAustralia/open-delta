@@ -15,13 +15,13 @@ public class SimpleTransferrable<T> implements Transferable {
 	
 	@Override
 	public DataFlavor[] getTransferDataFlavors() {
-		return new DataFlavor[] {new DataFlavor(_toTransfer.getClass(), _toTransfer.getClass().getName())};
+		return new SimpleFlavor[] {new SimpleFlavor(_toTransfer.getClass(), _toTransfer.getClass().getName())};
 	}
 
 	@Override
 	public boolean isDataFlavorSupported(DataFlavor flavor) {
 		
-		return flavor.getRepresentationClass().equals(_toTransfer.getClass());
+		return flavor.getRepresentationClass().isAssignableFrom(_toTransfer.getClass());
 	}
 
 	@Override
@@ -32,6 +32,4 @@ public class SimpleTransferrable<T> implements Transferable {
 		}
 		return _toTransfer;
 	}
-	
-
 }
