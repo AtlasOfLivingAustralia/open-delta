@@ -1,0 +1,59 @@
+ 
+CONFOR version 2.25 Windows
+ 
+M.J. Dallwitz, T.A. Paine and E.J. Zurcher
+ 
+CSIRO Division of Entomology, GPO Box 1700, Canberra, ACT 2601, Australia
+Phone +61 2 6246 4075. Fax +61 2 6246 4000. Email delta@ento.csiro.au
+ 
+Translate into INTKEY format. 
+ 
+..mple\toint,3 *LISTING FILE toint.lst
+..mple\toint,4  
+..mple\toint,5 *HEADING Chris' Test Data
+..mple\toint,6 *REGISTRATION SUBHEADING Test "non automatic controlling characters" directive
+..mple\toint,7  
+..mple\toint,8 *INPUT FILE specs
+..mple\specs,1 *SHOW ~ Chris Test - specifications.
+..mple\specs,2  
+..mple\specs,3 *NUMBER OF CHARACTERS 9
+..mple\specs,4 *MAXIMUM NUMBER OF STATES 5
+..mple\specs,5 *MAXIMUM NUMBER OF ITEMS 5
+..mple\specs,6 *DATA BUFFER SIZE 4000
+..mple\specs,7  
+..mple\specs,8 *CHARACTER TYPES 1,RN 4,RN 5,IN 6,OM 7,RN 8,TE 9,TE
+..mple\specs,9  
+..ple\specs,10 *NUMBERS OF STATES 2,2 3,2 6,5
+..ple\specs,11  
+..ple\specs,12 *DEPENDENT CHARACTERS 2,2:3:5 3,2:4
+..ple\specs,13 *PREVIOUS INPUT FILE
+..mple\toint,9  
+..ple\toint,10 *TRANSLATE INTO INTKEY FORMAT
+..ple\toint,11 *COMMENT CHARACTER FOR SYNONOMY 1
+..ple\toint,12  
+..ple\toint,13 *EXCLUDE CHARACTERS 8
+..ple\toint,14  
+..ple\toint,15 *NONAUTOMATIC CONTROLLING CHARACTERS 2 3
+..ple\toint,16  
+..ple\toint,17 *COMMENT CHARACTER RELIABILITIES
+..ple\toint,18  
+..ple\toint,19 *INTKEY OUTPUT FILE ichars
+..ple\toint,20 *INPUT FILE chars
+..mple\chars,1 *SHOW ~ Chris Test - character list.
+..mple\chars,2  
+..mple\chars,3 *CHARACTER LIST
+..ple\chars,34 *PREVIOUS INPUT FILE
+..ple\toint,21  
+..ple\toint,22 *INTKEY OUTPUT FILE iitems
+..ple\toint,23 *INPUT FILE items
+..mple\items,1 *SHOW ~ Chris Test - item descriptions.
+..mple\items,2  
+..mple\items,3 *ITEM DESCRIPTIONS
+..ple\items,19 *PREVIOUS INPUT FILE
+..ple\toint,24 *END
+Normal Termination.
+ 
+Output files - 
+   C:\delta\chris_test_sample\toint.lst
+   C:\delta\chris_test_sample\ichars
+   C:\delta\chris_test_sample\iitems

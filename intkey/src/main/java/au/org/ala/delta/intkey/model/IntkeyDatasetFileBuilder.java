@@ -670,6 +670,12 @@ public class IntkeyDatasetFileBuilder {
                             stateSet.add(stateId);
                             CharacterDependency charDep = new CharacterDependency(c.getCharacterId(), stateSet, dependentChars);
                             c.addDependentCharacters(charDep);
+                            for (int idxDependentChar: dependentChars) {
+                                // need to subtract one from the index because the data file uses 1 based indexes while
+                                // java uses zero based indexes.
+                                Character dependentCharacter = _characters.get(idxDependentChar - 1);
+                                dependentCharacter.addControllingCharacters(charDep);
+                            }
                         }
                     }
                 }

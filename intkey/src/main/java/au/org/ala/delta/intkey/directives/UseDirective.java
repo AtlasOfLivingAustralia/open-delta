@@ -3,9 +3,11 @@ package au.org.ala.delta.intkey.directives;
 import java.awt.Frame;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import javax.swing.JOptionPane;
@@ -16,6 +18,7 @@ import org.apache.commons.lang.math.IntRange;
 
 import au.org.ala.delta.intkey.model.CharacterComparator;
 import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.intkey.model.IntkeyDataset;
 import au.org.ala.delta.intkey.model.specimen.CharacterValue;
 import au.org.ala.delta.intkey.model.specimen.IntegerValue;
 import au.org.ala.delta.intkey.model.specimen.MultiStateValue;
@@ -29,6 +32,7 @@ import au.org.ala.delta.intkey.ui.RealInputDialog;
 import au.org.ala.delta.intkey.ui.TextInputDialog;
 import au.org.ala.delta.intkey.ui.UIUtils;
 import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.CharacterDependency;
 import au.org.ala.delta.model.IntegerCharacter;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.RealCharacter;
@@ -206,6 +210,10 @@ public class UseDirective extends IntkeyDirective {
             // haven't. They need to be processed differently.
             List<Character> charsWithValues = new ArrayList<Character>();
             List<Character> charsNoValues = new ArrayList<Character>();
+            
+            for (Character ch: _characterValues.keySet()) {
+                processControllingCharacters(ch, context, false);
+            }
 
             for (Character ch : _characterValues.keySet()) {
                 if (_characterValues.get(ch) == null) {
@@ -288,6 +296,7 @@ public class UseDirective extends IntkeyDirective {
             for (Character ch : charactersToUse) {
                 CharacterValue characterVal = _characterValues.get(ch);
 
+                processControllingCharacters(ch, context, true);
                 context.setValueForCharacter(ch, characterVal);
             }
 
@@ -318,6 +327,67 @@ public class UseDirective extends IntkeyDirective {
             // is character excluded?
 
             return true;
+        }
+        
+        private void processControllingCharacters(Character ch, IntkeyContext context, boolean autoSetPermitted) {
+            List<CharacterDependency> allControllingChars = getFullControllingCharactersList(ch, context.getDataset());
+            
+            for (CharacterDependency cd: allControllingChars) {
+                MultiStateCharacter cc = (MultiStateCharacter) context.getDataset().getCharacter(cd.getControllingCharacterId());
+                
+                if (context.getSpecimen().hasValueFor(cc)) {
+                    continue;
+                }
+                
+                // states for the controlling character that will make dependent characters inapplicable
+                Set<Integer> inapplicableStates = cd.getStates();
+                
+                // states for the controlling character that will make dependent characters applicable. At least one of these states needs to be
+                // set on the controlling character.
+                Set<Integer> applicableStates = new HashSet<Integer>();
+                
+                for (int i=1; i < cc.getStates().length; i++) {
+                    if (!inapplicableStates.contains(i)) {
+                        applicableStates.add(i);
+                    }
+                }
+                
+                if (applicableStates.size() == cc.getStates().length) {
+                    throw new RuntimeException(String.format("There are no states for character %s that will make character %s applicable", cc.getCharacterId(), ch.getCharacterId()));
+                }
+                
+                // Prompt the user to set the value of the controlling character if it has been supplied as an argument to the
+                // NON AUTOMATIC CONTROLLING CHARACTERS confor directive, if the dependent character has been supplied as an argument
+                // to the USE CONTROLLING CHARACTERS FIRST confor directive, or if there are multiple states that the controlling character
+                // can be set to for which the dependent character will be inapplicable.
+                if (cc.getNonAutoCc() || ch.getUseCc() || !cc.getNonAutoCc() && !cc.getUseCc() && applicableStates.size() > 1) {
+                    List<Integer> userSetStates = promptForMultiStateValue(UIUtils.getMainFrame(), (MultiStateCharacter) cc);
+                    MultiStateValue val = new MultiStateValue((MultiStateCharacter) cc, new ArrayList<Integer>(userSetStates));
+                    context.setValueForCharacter(cc, val);                    
+                } else if (autoSetPermitted) {
+                    // let intkey automatically use the character
+                    MultiStateValue val = new MultiStateValue((MultiStateCharacter) cc, new ArrayList<Integer>(applicableStates));
+                    context.setValueForCharacter(cc, val);
+                }
+                
+            }
+        }
+        
+        //For the given character, recursively build a list CharacterDependency objects describing
+        //all characters that control it, directly and indirectly. 
+        private List<CharacterDependency> getFullControllingCharactersList(Character ch, IntkeyDataset ds) {
+            List<CharacterDependency> retList = new ArrayList<CharacterDependency>();
+            
+            List<CharacterDependency> directControllingChars = ch.getControllingCharacters();
+            if (directControllingChars != null) {
+                for (CharacterDependency cd: directControllingChars) {
+                    Character controllingChar = ds.getCharacter(cd.getControllingCharacterId());
+                    retList.add(0, cd);
+                    retList.addAll(0, getFullControllingCharactersList(controllingChar, ds));
+                }
+            }
+            
+            return retList;
         }
 
         private CharacterValue promptForCharacterValue(Frame frame, Character ch) {

@@ -65,11 +65,14 @@ public class DataSetLoadTest extends TestCase {
      */
     @Test
     public void testLoadControllingCharsDataset() throws Exception {
-        URL initFileUrl = getClass().getResource("/dataset/controlling_characters/intkey.ink");
+        URL initFileUrl = getClass().getResource("/dataset/controlling_characters_simple/intkey.ink");
         IntkeyContext context = new IntkeyContext(null);
         context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
         
         IntkeyDataset ds = context.getDataset();
+        
+        assertEquals("Chris' Test Data", ds.getHeading());
+        assertEquals("Test transitive dependencies", ds.getSubHeading());
         
         assertEquals(8, context.getDataset().getNumberOfCharacters());
         assertEquals(5, context.getDataset().getNumberOfTaxa());
@@ -141,6 +144,72 @@ public class DataSetLoadTest extends TestCase {
         
         TextCharacter charMoreComments = (TextCharacter) ds.getCharacter(8);
         assertEquals("more comments", charMoreComments.getDescription());
+    }
+    
+    @Test
+    public void testNonAutomaticControllingCharacters() throws Exception {
+        URL initFileUrl = getClass().getResource("/dataset/controlling_characters_non_auto/intkey.ink");
+        IntkeyContext context = new IntkeyContext(null);
+        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+        
+        IntkeyDataset ds = context.getDataset();
+        
+        RealCharacter charAvgWeight = (RealCharacter) ds.getCharacter(1);
+        assertFalse(charAvgWeight.getNonAutoCc());
+        
+        UnorderedMultiStateCharacter charSeedPresence = (UnorderedMultiStateCharacter) ds.getCharacter(2);
+        assertTrue(charSeedPresence.getNonAutoCc());
+        
+        UnorderedMultiStateCharacter charSeedInShell = (UnorderedMultiStateCharacter) ds.getCharacter(3);
+        assertTrue(charSeedInShell.getNonAutoCc());
+        
+        RealCharacter charAvgThickness = (RealCharacter) ds.getCharacter(4);
+        assertFalse(charAvgThickness.getNonAutoCc());
+        
+        IntegerCharacter charAvgNumberOfSeeds = (IntegerCharacter) ds.getCharacter(5);
+        assertFalse(charAvgNumberOfSeeds.getNonAutoCc());
+        
+        OrderedMultiStateCharacter charColor = (OrderedMultiStateCharacter) ds.getCharacter(6);
+        assertFalse(charColor.getNonAutoCc());
+        
+        RealCharacter charAvgLength = (RealCharacter) ds.getCharacter(7);
+        assertFalse(charAvgLength.getNonAutoCc());
+        
+        TextCharacter charMoreComments = (TextCharacter) ds.getCharacter(8);
+        assertFalse(charMoreComments.getNonAutoCc());
+    }
+    
+    @Test
+    public void testUseControllingCharactersFirst() throws Exception {
+        URL initFileUrl = getClass().getResource("/dataset/controlling_characters_use_first/intkey.ink");
+        IntkeyContext context = new IntkeyContext(null);
+        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+        
+        IntkeyDataset ds = context.getDataset();
+        
+        RealCharacter charAvgWeight = (RealCharacter) ds.getCharacter(1);
+        assertFalse(charAvgWeight.getUseCc());
+        
+        UnorderedMultiStateCharacter charSeedPresence = (UnorderedMultiStateCharacter) ds.getCharacter(2);
+        assertFalse(charSeedPresence.getUseCc());
+        
+        UnorderedMultiStateCharacter charSeedInShell = (UnorderedMultiStateCharacter) ds.getCharacter(3);
+        assertTrue(charSeedInShell.getUseCc());
+        
+        RealCharacter charAvgThickness = (RealCharacter) ds.getCharacter(4);
+        assertTrue(charAvgThickness.getUseCc());
+        
+        IntegerCharacter charAvgNumberOfSeeds = (IntegerCharacter) ds.getCharacter(5);
+        assertTrue(charAvgNumberOfSeeds.getUseCc());
+        
+        OrderedMultiStateCharacter charColor = (OrderedMultiStateCharacter) ds.getCharacter(6);
+        assertFalse(charColor.getUseCc());
+        
+        RealCharacter charAvgLength = (RealCharacter) ds.getCharacter(7);
+        assertFalse(charAvgLength.getUseCc());
+        
+        TextCharacter charMoreComments = (TextCharacter) ds.getCharacter(8);
+        assertFalse(charMoreComments.getUseCc());
     }
     
 

@@ -26,6 +26,7 @@ public abstract class Character implements Illustratable {
 
     private int _number;
     private List<CharacterDependency> _dependentCharacters = new ArrayList<CharacterDependency>();
+    private List<CharacterDependency> _controllingCharacters = new ArrayList<CharacterDependency>();
     protected CharacterData _impl;
     private CharacterType _characterType;
     private List<CharacterObserver> _observers;
@@ -67,6 +68,14 @@ public abstract class Character implements Illustratable {
 
     public List<CharacterDependency> getDependentCharacters() {
         return _dependentCharacters;
+    }
+    
+    public void addControllingCharacters(CharacterDependency dependency) {
+        _controllingCharacters.add(dependency);
+    }
+
+    public List<CharacterDependency> getControllingCharacters() {
+        return _controllingCharacters;
     }
 
     public void setMandatory(boolean b) {

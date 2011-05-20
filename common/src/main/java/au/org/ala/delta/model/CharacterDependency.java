@@ -19,31 +19,45 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 
+/**
+ * Describes the relationship between a set of controlling characters and its dependent characters
+ */
 public class CharacterDependency {
 
 	private int _controllingCharacterId;
 	private Set<Integer> _dependentCharacterIds;
 	private Set<Integer> _states = new HashSet<Integer>();
 
+	/**
+	 * constructor
+	 * @param controllingCharacterId id of the controlling character
+	 * @param states the ids of the states which when set on the controlling character, make the dependent characters <b>inapplicable</b>
+	 * @param dependentCharacterIds ids of the dependent characters
+	 */
 	public CharacterDependency(int controllingCharacterId, Set<Integer> states, Set<Integer> dependentCharacterIds) {
 		_controllingCharacterId = controllingCharacterId;
 		_dependentCharacterIds = new HashSet<Integer>(dependentCharacterIds);
 		_states = new HashSet<Integer>(states);
 	}
 
+	/**
+	 * @return the id of the controlling character
+	 */
 	public int getControllingCharacterId() {
 		return _controllingCharacterId;
 	}
 
+	/**
+	 * @return the ids of the dependent characters
+	 */
 	public Set<Integer>  getDependentCharacterIds() {
 	    //return defensive copy
 		return new HashSet<Integer>(_dependentCharacterIds);
 	}
 
-	public void addStateValueId(int stateId) {
-		_states.add(stateId);
-	}
-
+	/**
+	 * @return the states which when set on the controlling character, make the dependent characters <b>inapplicable</b>
+	 */
 	public Set<Integer> getStates() {
 	    //return defensive copy
 		return new HashSet<Integer>(_states);
