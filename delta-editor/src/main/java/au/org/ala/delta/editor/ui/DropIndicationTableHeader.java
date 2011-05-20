@@ -18,6 +18,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.TooManyListenersException;
 
+import javax.swing.Action;
 import javax.swing.JTable;
 import javax.swing.TransferHandler;
 import javax.swing.event.ListSelectionEvent;
@@ -32,7 +33,7 @@ import javax.swing.table.TableColumnModel;
  * synchronized with the table selection.
  */
 public class DropIndicationTableHeader extends JTableHeader
-implements DragGestureListener, ListSelectionListener {
+implements DragGestureListener, ListSelectionListener, ReorderableList<au.org.ala.delta.model.Character> {
 
 	private static final long serialVersionUID = 6903527328137944112L;
 
@@ -56,12 +57,14 @@ implements DragGestureListener, ListSelectionListener {
 				int selection = columnAtPoint(e.getPoint());
 				// Updating the table selection will cause our selection to be updated also via
 				// the selection listener we installed.
-				getTable().getColumnModel().getSelectionModel().setSelectionInterval(selection, selection);
-			}
+				updateTableColumnSelection(selection);
+							}
 		});
 		
-		_dropWatcher = new DropWatcher();
-		
+	}
+	
+	private void updateTableColumnSelection(int column) {
+		getTable().getColumnModel().getSelectionModel().setSelectionInterval(column, column);
 	}
 	
 	/**
@@ -142,11 +145,13 @@ implements DragGestureListener, ListSelectionListener {
 		}
 		super.setDropTarget(dt);
 
-		try {
-		    dt.addDropTargetListener(_dropWatcher);
-		
-		}catch (TooManyListenersException e) {
-			throw new RuntimeException(e);
+		if (dt != null) {
+			try {
+			    dt.addDropTargetListener(_dropWatcher);
+			
+			}catch (TooManyListenersException e) {
+				throw new RuntimeException(e);
+			}
 		}
 	}
 
@@ -172,6 +177,25 @@ implements DragGestureListener, ListSelectionListener {
 		
 	}
 	
+	@Override
+	public int getSelectedIndex() {
+		return _selectedColumn;
+	}
+	
+	@Override
+	public void setSelectedIndex(int index) {
+		updateTableColumnSelection(index);
+	}
+
+	@Override
+	public int getDropLocationIndex() {
+		return _dropLocation;
+	}
+
+	@Override
+	public void setSelectionAction(Action action) { }
+
+
 	class DropWatcher extends DropTargetAdapter {
 		
 		@Override

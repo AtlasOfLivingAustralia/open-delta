@@ -18,7 +18,6 @@ import au.org.ala.delta.editor.ui.util.PopupMenuListener;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.format.CharacterFormatter;
-import au.org.ala.delta.model.format.ItemFormatter;
 
 /**
  * Handles actions performed on the Characters.
@@ -85,7 +84,7 @@ public class CharacterController {
 	@Action
 	public void deleteCharacter() {
 		
-		Character toDelete = _view.getSelected();
+		Character toDelete = _model.getCharacter(_view.getSelectedIndex()+1);
 		
 		if (toDelete == null) {
 			return;
@@ -102,14 +101,14 @@ public class CharacterController {
 	 * Displays the Item editor for the currently selected Item.
 	 */
 	@Action
-	public void editItem(ActionEvent e) {
-		_context.getActionMap().get("viewTaxonEditor").actionPerformed(e);
+	public void editCharacter(ActionEvent e) {
+		_context.getActionMap().get("viewCharacterEditor").actionPerformed(e);
 		
 	}
 	
 	@Action
 	public void insertCharacter() {
-		Character selectedItem = _view.getSelected();
+		Character selectedItem = _model.getCharacter(_view.getSelectedIndex()+1);
 		int characterNumber = 1;
 		if (selectedItem != null) {
 			characterNumber = selectedItem.getCharacterId();
@@ -128,7 +127,7 @@ public class CharacterController {
 		int selectedItem = newItem.getCharacterId();
 		_view.setSelectedIndex(selectedItem-1);
 		
-		editItem(e);
+		editCharacter(e);
 	}
 	
 	private void updateSelection(int itemNum) {
@@ -173,13 +172,13 @@ public class CharacterController {
 		
 		@Override
 		protected Character getTransferObject() {
-			return _view.getSelected();
+			return _model.getCharacter(_view.getSelectedIndex()+1);
 		}
 		
 		@Override
 		protected int getStartIndex() {
 			int startIndex = 0;
-			Character selected = _view.getSelected();
+			Character selected = _model.getCharacter(_view.getSelectedIndex()+1);
 			if (selected != null) {
 				startIndex = selected.getCharacterId()-1;
 			}

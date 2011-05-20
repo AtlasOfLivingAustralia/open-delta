@@ -14,26 +14,34 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.ui;
 
-import javax.swing.event.TableModelListener;
-import javax.swing.table.TableModel;
+import javax.swing.table.AbstractTableModel;
 
 import org.apache.commons.lang.StringUtils;
 
+import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
-import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.TextCharacter;
 import au.org.ala.delta.model.impl.ControllingInfo;
+import au.org.ala.delta.model.observer.AbstractDataSetObserver;
+import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
 import au.org.ala.delta.rtf.RTFUtils;
 
-public class MatrixTableModel implements TableModel {
+/**
+ * Exposes the contents of a DeltaDataSet as a TableModel for use by the MatrixView.
+ */
+public class MatrixTableModel extends AbstractTableModel {
 
-	private DeltaDataSet _dataSet;
+	private static final long serialVersionUID = 89670522368359600L;
+	
+	/** The data set we are adapting to the TableModel interface */
+	private EditorViewModel _dataSet;
 
-	public MatrixTableModel(DeltaDataSet dataSet) {
+	public MatrixTableModel(EditorViewModel dataSet) {
 		_dataSet = dataSet;
+		_dataSet.addDeltaDataSetObserver(new ModelUpdater());
 	}
 		
 	@Override
@@ -110,13 +118,14 @@ public class MatrixTableModel implements TableModel {
 	@Override
 	public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
 	}
+	
+	class ModelUpdater extends AbstractDataSetObserver {
 
-	@Override
-	public void addTableModelListener(TableModelListener l) {
-	}
-
-	@Override
-	public void removeTableModelListener(TableModelListener l) {
+		@Override
+		public void characterAdded(DeltaDataSetChangeEvent event) {
+			fireTableStructureChanged();
+		}
+		
 	}
 
 }

@@ -52,9 +52,12 @@ public class SlotFileDataSet extends AbstractObservableDataSet {
 	@Override
 	protected Character doGetCharacter(int number) {
 		synchronized (_vop) {
+			if (number > getNumberOfCharacters()) {
+				throw new IndexOutOfBoundsException("No such Character ("+number+">"+getNumberOfCharacters());
+			}
 			int charId = _vop.getDeltaMaster().uniIdFromCharNo(number);	
 			VOCharBaseDesc characterDesc = (VOCharBaseDesc)_vop.getDescFromId(charId);
-			return _factory.createCharacter(CharacterTypeConverter.fromCharType(characterDesc.getCharType()), number);
+			return _factory.wrapCharacter(characterDesc, number);
 		}
 	}
 

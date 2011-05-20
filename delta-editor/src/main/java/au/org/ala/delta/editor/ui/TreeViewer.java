@@ -178,7 +178,7 @@ public class TreeViewer extends JInternalFrame implements DeltaView {
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
 
-				_dataModel.setSelectedItem(_itemList.getSelected());
+				_dataModel.setSelectedItem(_dataModel.getItem(_itemList.getSelectedIndex()+1));
 				
 				treeModel.itemChanged();
 				_tree.repaint();

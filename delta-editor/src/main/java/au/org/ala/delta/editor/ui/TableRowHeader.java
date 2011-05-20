@@ -36,13 +36,11 @@ public class TableRowHeader extends JTable implements ReorderableList<Item> {
 
 	private static final long serialVersionUID = 4631242294243331000L;
 	private static final String SELECTION_ACTION_NAME = "selectionAction";
-	
-	private EditorViewModel _dataModel;
+
 	
 	public TableRowHeader(EditorViewModel dataModel) {
 		super(new ItemColumnModel(dataModel));
 		((ItemColumnModel)getModel()).setTable(this);
-		_dataModel = dataModel;
 		setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
 		
 		// These lines are required to enable initiating a drag and drop operation
@@ -60,9 +58,9 @@ public class TableRowHeader extends JTable implements ReorderableList<Item> {
 		getTableHeader().setDefaultRenderer(new HeaderRenderer());
 	}
 	@Override
-	public Item getSelected() {
+	public int getSelectedIndex() {
 		int selectedRow = getSelectionModel().getMinSelectionIndex();
-		return _dataModel.getItem(selectedRow+1);
+		return selectedRow;
 	}
 
 	@Override

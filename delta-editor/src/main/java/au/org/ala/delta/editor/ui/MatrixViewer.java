@@ -51,6 +51,7 @@ import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.Task;
 import org.jdesktop.application.Task.BlockingScope;
 
+import au.org.ala.delta.editor.CharacterController;
 import au.org.ala.delta.editor.DeltaView;
 import au.org.ala.delta.editor.EditorPreferences;
 import au.org.ala.delta.editor.ItemController;
@@ -117,7 +118,7 @@ public class MatrixViewer extends JInternalFrame implements DeltaView {
 		_table.setDefaultRenderer(Object.class, new AttributeCellRenderer());
 		_table.getTableHeader().setReorderingAllowed(false);
 		_table.getTableHeader().setTransferHandler(new TransferHandler("columnModel"));
-		
+		new CharacterController((DropIndicationTableHeader)_table.getTableHeader(), dataSet);
 		ListSelectionListener listener = new ListSelectionListener() {
 
 			@Override

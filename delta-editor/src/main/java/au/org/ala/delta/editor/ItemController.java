@@ -83,7 +83,7 @@ public class ItemController {
 	@Action
 	public void deleteItem() {
 		
-		Item toDelete = _view.getSelected();
+		Item toDelete = _model.getItem(_view.getSelectedIndex()+1);
 		
 		if (toDelete == null) {
 			return;
@@ -107,7 +107,7 @@ public class ItemController {
 	
 	@Action
 	public void insertItem() {
-		Item selectedItem = _view.getSelected();
+		Item selectedItem = _model.getItem(_view.getSelectedIndex()+1);
 		int itemNumber = 1;
 		if (selectedItem != null) {
 			itemNumber = selectedItem.getItemNumber();
@@ -171,17 +171,12 @@ public class ItemController {
 		
 		@Override
 		protected Item getTransferObject() {
-			return _view.getSelected();
+			return _model.getItem(_view.getSelectedIndex()+1);
 		}
 		
 		@Override
 		protected int getStartIndex() {
-			int startIndex = 0;
-			Item selected = _view.getSelected();
-			if (selected != null) {
-				startIndex = selected.getItemNumber()-1;
-			}
-			return startIndex;
+			return _view.getSelectedIndex();
 		}
 		
 		@Override

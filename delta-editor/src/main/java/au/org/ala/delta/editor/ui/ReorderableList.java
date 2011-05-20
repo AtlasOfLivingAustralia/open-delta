@@ -4,7 +4,7 @@ import javax.swing.Action;
 
 public interface ReorderableList<T> {
 	
-	public T getSelected();
+	public int getSelectedIndex();
 	
 	public void setSelectedIndex(int index);
 	

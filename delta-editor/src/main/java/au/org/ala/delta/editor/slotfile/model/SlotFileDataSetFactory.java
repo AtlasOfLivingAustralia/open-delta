@@ -82,9 +82,8 @@ public class SlotFileDataSetFactory implements DeltaDataSetFactory {
 	}
 
 	/**
-	 * Creates a new Character of the specified type backed by a VOCharacterAdaptor.
-	 * If the supplied character number exists in the model, it will be wrapped in a 
-	 * model Character object and returned, otherwise it will be created first.
+	 * Creates a new Character of the specified type backed by a new VOCharBaseDesc in the
+	 * SlotFile.
 	 * 
 	 * @param type the type of character to create.
 	 * @param number identifies the character. Characters in a DeltaDataSet must have unique numbers.
@@ -92,21 +91,11 @@ public class SlotFileDataSetFactory implements DeltaDataSetFactory {
 	@Override
 	public Character createCharacter(CharacterType type, int number) {
 		
-		Character character = CharacterFactory.newCharacter(type, number);
 		VOCharBaseDesc characterDesc = null;
 		
-		if (number > _vop.getDeltaMaster().getNChars()) {
-			characterDesc = newVOCharDesc(type, number);
-		}
-		else {
-			int charId = _vop.getDeltaMaster().uniIdFromCharNo(number);	
-			characterDesc = (VOCharBaseDesc)_vop.getDescFromId(charId);
-			
-		}
-		VOCharTextDesc textDesc = characterDesc.readCharTextInfo(0, (short) 0);
-		VOCharacterAdaptor characterAdaptor = new VOCharacterAdaptor(_vop, characterDesc, textDesc);		
-		character.setImpl(characterAdaptor);	
-		return character;
+		characterDesc = newVOCharDesc(type, number);
+		
+		return wrapCharacter(characterDesc, number);
 	}
 	
 	
@@ -119,6 +108,23 @@ public class SlotFileDataSetFactory implements DeltaDataSetFactory {
 		characterBase.setCharType((short)CharacterTypeConverter.toCharType(type));
 		
 		return characterBase;
+	}
+	
+	/**
+	 * Creates an instance of the appropriate model Character class that delegates to the 
+	 * supplied VOCharBaseDesc.
+	 * @param characterDesc the slot file character descriptor to wrap.
+	 * @param number the character number of the new character.
+	 * @return a new Character that delegates to the supplied VOCharBaseDesc.
+	 */
+	public Character wrapCharacter(VOCharBaseDesc characterDesc, int number) {
+		
+		CharacterType type = CharacterTypeConverter.fromCharType(characterDesc.getCharType());
+		Character character = CharacterFactory.newCharacter(type, number);
+		VOCharTextDesc textDesc = characterDesc.readCharTextInfo(0, (short) 0);
+		VOCharacterAdaptor characterAdaptor = new VOCharacterAdaptor(_vop, characterDesc, textDesc);		
+		character.setImpl(characterAdaptor);	
+		return character;
 	}
 	
 	/**

@@ -109,17 +109,6 @@ public class ItemList extends SelectionList implements ReorderableList<Item> {
 		setDataSet(dataSet);
 	}
 	
-	@Override
-	public Item getSelected() {
-		Item selectedItem = null;
-		ItemViewModel item = (ItemViewModel)getSelectedValue();
-		if (item != null) {
-			selectedItem = item.getItem();
-		}
-		return selectedItem;
-	}
-	
-	
 	public void setDataSet(EditorViewModel dataSet) {
 		setModel(new ItemListModel(dataSet));
 		
