@@ -149,12 +149,17 @@ public class IntkeyContext extends AbstractDeltaContext {
     public void executeDirective(IntkeyDirectiveInvocation invoc) {
         // record correct insertion index in case execution of directive results
         // in further directives being
-        // run (such as in the case of the NewDataSet directive).
+        // run (such as in the case of the File Input directive).
         int insertionIndex = _executedDirectives.size();
 
         boolean success = invoc.execute(this);
         if (success && _recordDirectiveHistory) {
-            _executedDirectives.add(insertionIndex, invoc);
+            if (_executedDirectives.size() < insertionIndex) {
+                // executed directives list has been cleared, just add this directive to the end of the list
+                _executedDirectives.add(invoc);
+            } else {
+                _executedDirectives.add(insertionIndex, invoc);
+            }
         }
     }
 
