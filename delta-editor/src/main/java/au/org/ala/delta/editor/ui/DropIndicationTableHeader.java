@@ -241,7 +241,7 @@ implements DragGestureListener, ListSelectionListener, ReorderableList<au.org.al
 			else {
 				setDropColumn(column);
 			}
-			p = SwingUtilities.convertPoint(DropIndicationTableHeader.this, p, getParent());			System.out.println(p.x);
+			p = SwingUtilities.convertPoint(DropIndicationTableHeader.this, p, getParent());
 			if (p.x > getParent().getWidth()-5) {
 				scrollTo(column+1);
 			}

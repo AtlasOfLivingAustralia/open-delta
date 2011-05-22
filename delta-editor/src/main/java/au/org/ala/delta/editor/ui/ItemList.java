@@ -122,7 +122,11 @@ public class ItemList extends SelectionList implements ReorderableList<Item> {
 	
 	@Override
 	public int getDropLocationIndex() {
-		return getDropLocation().getIndex();
+		DropLocation dropLocation = getDropLocation();
+		if (dropLocation != null) {
+			return dropLocation.getIndex();
+		}
+		return -1;
 	}
 	
 }

@@ -22,8 +22,18 @@ public abstract class SimpleTransferHandler<T> extends TransferHandler {
 		_flavour = new SimpleFlavor(clazz, clazz.getName());
 	}
 	
+	/**
+	 * Returns true if the transferable flavour is supported and the transferable has been 
+	 * dragged away from it's initial position.
+	 * @param info provides information about the drag.
+	 * @return true if the current transferable can be imported into the current drop target.
+	 */
 	public boolean canImport(TransferHandler.TransferSupport info) {
-		return info.isDataFlavorSupported(_flavour);
+		if (!info.isDataFlavorSupported(_flavour)) {
+			return false;
+		}
+		int dropIndex = getDropLocationIndex();
+		return ((dropIndex != sourceIndex) && (dropIndex != sourceIndex+1));
 	}
 	
 	protected Transferable createTransferable(JComponent c) {
@@ -33,7 +43,18 @@ public abstract class SimpleTransferHandler<T> extends TransferHandler {
 		return new SimpleTransferrable<T>(transferObject);
 		
 	}
+	
+	/**
+	 * Should be overridden to provide the index at which the transferable was located when
+	 * the drag operation began.
+	 * @return the starting point of the drag.
+	 */
 	protected abstract int getStartIndex();
+	
+	/**
+	 * Should be overriden to provide the actual object being dragged.
+	 * @return the object being dragged.
+	 */
 	protected abstract T getTransferObject();
 	
 	public int getSourceActions(JComponent c) {
