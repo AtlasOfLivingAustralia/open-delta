@@ -5,11 +5,7 @@ import java.io.IOException;
 
 import au.org.ala.delta.DeltaTestCase;
 import au.org.ala.delta.editor.DeltaFileReader;
-import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DeltaDataSet;
-import au.org.ala.delta.model.Item;
-import au.org.ala.delta.model.MultiStateCharacter;
-import au.org.ala.delta.rtf.RTFUtils;
 import au.org.ala.delta.util.CodeTimer;
 
 public class ReaderTests extends DeltaTestCase {
@@ -36,47 +32,6 @@ public class ReaderTests extends DeltaTestCase {
 			deepRead(ds);
 			t.stop(true);
 		}
-	}
-
-	private void deepRead(DeltaDataSet ds) {
-		// Chars...
-		System.out.println("Processing " + ds.getNumberOfCharacters() + " characters");
-		for (int i = 1; i <= ds.getNumberOfCharacters(); ++i) {
-			au.org.ala.delta.model.Character ch = ds.getCharacter(i);
-
-			ch.getDescription();
-			ch.getNotes();
-			ch.isExclusive();
-			ch.isMandatory();
-
-			switch (ch.getCharacterType()) {
-			case UnorderedMultiState:
-			case OrderedMultiState:
-				MultiStateCharacter msc = (MultiStateCharacter) ch;
-				msc.getStates();
-				break;
-			default:
-
-			}
-		}
-
-		System.out.println("Processing " + ds.getMaximumNumberOfItems() + " Items");
-		for (int i = 1; i <= ds.getMaximumNumberOfItems(); ++i) {
-			Item item = ds.getItem(i);
-
-			for (int j = 1; j <= ds.getNumberOfCharacters(); ++j) {
-				au.org.ala.delta.model.Character ch = ds.getCharacter(j);
-				au.org.ala.delta.model.Attribute a = item.getAttribute(ch);
-				if (a != null) {
-				
-					String strValue = a.getValue();
-					if (ch.getCharacterType() == CharacterType.Text) {
-						RTFUtils.stripFormatting(strValue);
-					}
-				}
-			}
-		}
-
 	}
 
 //	public void testBasicRead2() throws IOException {

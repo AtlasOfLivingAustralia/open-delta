@@ -10,6 +10,11 @@ import org.apache.commons.io.FileUtils;
 
 import au.org.ala.delta.editor.slotfile.SlotFile;
 import au.org.ala.delta.io.BinFileMode;
+import au.org.ala.delta.model.CharacterType;
+import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.MultiStateCharacter;
+import au.org.ala.delta.rtf.RTFUtils;
 import junit.framework.TestCase;
 
 public abstract class DeltaTestCase extends TestCase {
@@ -64,6 +69,54 @@ public abstract class DeltaTestCase extends TestCase {
 			System.out.println("Deleting temp file: " + f.getAbsolutePath());
 			f.delete();
 		}
+	}
+
+	/**
+	 * Reads all of the Characters and Items from a data set.  Makes a good double check
+	 * for tests that appear to work yet have the side effect of corrupting the slot file 
+	 * in some way.
+	 * @param ds the data set to read.
+	 */
+	protected void deepRead(DeltaDataSet ds) {
+		// Chars...
+		System.out.println("Processing " + ds.getNumberOfCharacters() + " characters");
+		for (int i = 1; i <= ds.getNumberOfCharacters(); ++i) {
+			System.out.println("Processing character: "+i);
+			au.org.ala.delta.model.Character ch = ds.getCharacter(i);
+	
+			ch.getDescription();
+			ch.getNotes();
+			ch.isExclusive();
+			ch.isMandatory();
+	
+			switch (ch.getCharacterType()) {
+			case UnorderedMultiState:
+			case OrderedMultiState:
+				MultiStateCharacter msc = (MultiStateCharacter) ch;
+				msc.getStates();
+				break;
+			default:
+	
+			}
+		}
+	
+		System.out.println("Processing " + ds.getMaximumNumberOfItems() + " Items");
+		for (int i = 1; i <= ds.getMaximumNumberOfItems(); ++i) {
+			Item item = ds.getItem(i);
+	
+			for (int j = 1; j <= ds.getNumberOfCharacters(); ++j) {
+				au.org.ala.delta.model.Character ch = ds.getCharacter(j);
+				au.org.ala.delta.model.Attribute a = item.getAttribute(ch);
+				if (a != null) {
+				
+					String strValue = a.getValue();
+					if (ch.getCharacterType() == CharacterType.Text) {
+						RTFUtils.stripFormatting(strValue);
+					}
+				}
+			}
+		}
+	
 	}
 
 }

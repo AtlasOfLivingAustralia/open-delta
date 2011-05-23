@@ -483,7 +483,7 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 		byte[] trailerBuf = null;
 		int trailerLeng = 0;
 		int startPos = _fixedData.nStates * SIZE_OF_INT_IN_BYTES +
-		               _fixedData.nDescriptors * SIZE_OF_INT_IN_BYTES;
+		               _fixedData.nDescriptors * CharTextInfo.SIZE;
 
 		if (src.size() != _fixedData.nControlling) {// Save a copy of any following data!
 		    trailerBuf = dupTrailingData(startPos + _fixedData.nControlling * SIZE_OF_INT_IN_BYTES);
@@ -515,7 +515,7 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 		byte[] trailerBuf = null;
 		int trailerLeng = 0;
 		int startPos = _fixedData.nStates * SIZE_OF_INT_IN_BYTES +
-		               _fixedData.nDescriptors * SIZE_OF_INT_IN_BYTES +
+		               _fixedData.nDescriptors * CharTextInfo.SIZE +
 		               _fixedData.nControlling * SIZE_OF_INT_IN_BYTES;
 
 		// Sort, and remove duplicates before storing.

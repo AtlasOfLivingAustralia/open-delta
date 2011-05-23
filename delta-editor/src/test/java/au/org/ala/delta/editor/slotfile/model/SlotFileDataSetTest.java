@@ -397,6 +397,8 @@ public class SlotFileDataSetTest  extends DeltaTestCase {
 		assertEquals(1, character.getNumberOfStates());
 		assertEquals(description, character.getDescription());
 		
+		deepRead(dataSet);
+		
 		
 	}
 	
