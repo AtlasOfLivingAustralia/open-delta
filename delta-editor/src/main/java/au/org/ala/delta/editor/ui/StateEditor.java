@@ -1,15 +1,17 @@
 package au.org.ala.delta.editor.ui;
 
+import javax.swing.AbstractListModel;
 import javax.swing.ActionMap;
-import javax.swing.DefaultListModel;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.ListModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -19,8 +21,9 @@ import org.jdesktop.application.Application;
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.format.CharacterFormatter;
+import au.org.ala.delta.model.observer.AbstractDataSetObserver;
+import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
 import au.org.ala.delta.ui.rtf.RtfEditor;
-import javax.swing.JList;
 
 /**
  * The StateEditor provides a user with the ability to add / delete / edit / reorder the states
@@ -152,10 +155,7 @@ public class StateEditor extends JPanel {
 	public void bind(EditorViewModel model, MultiStateCharacter character) {
 		_character = character;
 		_model = model;
-		DefaultListModel listModel = new DefaultListModel();
-		for (int i=1; i<=_character.getNumberOfStates(); i++) {
-			listModel.addElement(_formatter.formatState(_character, i));
-		}
+		ListModel listModel = new StateListModel(_model, _character);
 		stateList.setModel(listModel);
 		stateList.setSelectedIndex(0);
 		updateScreen();
@@ -184,6 +184,38 @@ public class StateEditor extends JPanel {
 	@Action
 	public void toggleStateImplicit() {
 		
+	}
+	
+	class StateListModel extends AbstractListModel {
+
+		private static final long serialVersionUID = -8487636933835456688L;
+		private MultiStateCharacter _character;
+		
+		public StateListModel(EditorViewModel model, MultiStateCharacter character) {
+			model.addDeltaDataSetObserver(new CharacterChangeListener());
+			_character = character;
+		}
+		
+		@Override
+		public int getSize() {
+			return _character.getNumberOfStates();
+		}
+
+		@Override
+		public Object getElementAt(int index) {
+			return _formatter.formatState(_character, index+1);
+		}
+		
+		class CharacterChangeListener extends AbstractDataSetObserver {
+
+			@Override
+			public void characterEdited(DeltaDataSetChangeEvent event) {
+				if (event.getCharacter().equals(_character)) {
+					fireContentsChanged(this, 0, _character.getNumberOfStates());
+				}
+			}
+			
+		}
 	}
 	
 	

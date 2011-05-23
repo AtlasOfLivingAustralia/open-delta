@@ -286,7 +286,7 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 		    List<Integer> newContVect = new ArrayList<Integer>(oldContVect);
 		    for (int id : src) {
 		    	if (newContVect.contains(id)) {
-		    		newContVect.remove(id);
+		    		newContVect.remove((Integer)id);
 		    	}
 		    }
 		     
@@ -322,7 +322,7 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 		  
 		List<Integer> contVect = readDependentContAttrs();
 		if (contVect.contains(attrId)) {
-		    contVect.remove(attrId);
+		    contVect.remove((Integer)attrId);
 		    writeDependentContAttrs(contVect);
 		    retVal = true;
 		}
@@ -623,7 +623,7 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 		// Then re-insert it in the (sorted) "available IDs" list at the end
 		for (int i=_fixedData.nStatesUsed; i<_stateNumberMappingVector.size(); i++) {
 			if (stateId < _stateNumberMappingVector.get(i)) {
-				_stateNumberMappingVector.set(i, stateId);
+				_stateNumberMappingVector.add(i, stateId);
 			}
 		}
 		

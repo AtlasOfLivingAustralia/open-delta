@@ -392,7 +392,7 @@ public class SlotFileDataSet extends AbstractObservableDataSet {
     	    VOControllingDesc ctlDesc = (VOControllingDesc)getVOP().getDescFromId(id);
     	    if (compare(charId, stateId, ctlDesc)) {
     	        List<Integer> ctlStates = ctlDesc.readStateIds();
-    	        ctlStates.remove(stateId);
+    	        ctlStates.remove((Integer)stateId);
  
     	        changeControllingStates(ctlDesc, ctlStates);
     	    }

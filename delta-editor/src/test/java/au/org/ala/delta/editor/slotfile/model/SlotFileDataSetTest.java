@@ -382,4 +382,22 @@ public class SlotFileDataSetTest  extends DeltaTestCase {
 		
 	}
 	
+	/**
+	 * Tests that a state can be deleted when it is part of a controlling character.
+	 */
+	@Test
+	public void testDeleteStateThatControls() throws Exception {
+		File f = copyURLToFile("/SAMPLE.DLT");
+		DeltaDataSet dataSet = _repo.findByName(f.getAbsolutePath(), null);
+		
+		MultiStateCharacter character = (MultiStateCharacter)dataSet.getCharacter(10);
+		String description = character.getDescription();
+		dataSet.deleteState(character, 2);
+		
+		assertEquals(1, character.getNumberOfStates());
+		assertEquals(description, character.getDescription());
+		
+		
+	}
+	
 }

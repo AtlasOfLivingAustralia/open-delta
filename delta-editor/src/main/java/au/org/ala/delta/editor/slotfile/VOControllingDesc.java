@@ -16,11 +16,11 @@ package au.org.ala.delta.editor.slotfile;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.lang.NotImplementedException;
-
 import au.org.ala.delta.io.BinFile;
+import au.org.ala.delta.io.BinFileEncoding;
 
 public class VOControllingDesc extends VOAnyDesc {
 
@@ -66,9 +66,34 @@ public class VOControllingDesc extends VOAnyDesc {
 		return 0;
 	}
 
-	public void StoreQData() {
-		// Write the cached data
-		throw new NotImplementedException();
+	@Override
+	public void storeQData() {
+		makeTemp();
+		byte[] trailerBuf = null;
+		int trailerLeng = 0;
+        
+		// If the size of TFixedData has been increased (due to a newer program version)
+		// re-write the whole slot, using the new size.
+		if (_fixedData.fixedSize < ControllingFixedData.SIZE) {
+		      // Save a copy of all "variable" data
+		      trailerBuf = dupTrailingData(0);
+		      if (trailerBuf != null) {
+		    	  trailerLeng = trailerBuf.length;
+		      }
+		      _dataOffs = SlotFile.SlotHeader.SIZE + ControllingFixedData.SIZE; ///// Adjust DataOffs accordingly
+		      _fixedData.fixedSize = ControllingFixedData.SIZE;
+		      // Do seek to force allocation of large enough slot
+		      dataSeek(trailerLeng);
+		}
+
+		_slotFile.seek(_slotHdrPtr + SlotFile.SlotHeader.SIZE);
+		_fixedData.write(_slotFile);
+
+		if (trailerBuf != null) {// If fixedData was resized, re-write the saved, variable-length data
+		    dataSeek(0);
+		    dataWrite(trailerBuf);
+		    dataTruncate();
+		}
 	}
 
 	public int getCharId() {
@@ -118,27 +143,102 @@ public class VOControllingDesc extends VOAnyDesc {
 	}
 
 	public void writeLabel(String aLabel) {
-		throw new NotImplementedException();
+		byte[] trailerBuf = null;
+		int trailerLeng = 0;
+		int seekPos = _fixedData.nStates * SIZE_OF_INT_IN_BYTES;
+
+		if (aLabel.length() != _fixedData.labelLeng) {// Save a copy of any following data!
+		    trailerBuf = dupTrailingData(seekPos + _fixedData.labelLeng);
+		    if (trailerBuf != null) {
+		    	trailerLeng = trailerBuf.length;
+		    }
+		}
+		dataSeek(seekPos + aLabel.length() + trailerLeng);
+		dataSeek(seekPos);
+		dataWrite(BinFileEncoding.encode(aLabel));
+		if (aLabel.length() != _fixedData.labelLeng) {
+		    _fixedData.labelLeng = aLabel.length();
+		    setDirty();
+		    if (trailerBuf != null) {
+		        dataWrite(trailerBuf);
+		        dataTruncate();
+		    }
+		}
 	}
 
 	public void writeStateIds(List<Integer> src) {
-		throw new NotImplementedException();
+		byte[] trailerBuf = null;
+		int trailerLeng = 0;
+		int startPos = 0;
+		if (src.size() != _fixedData.nStates) { // Save a copy of any following data!
+		    trailerBuf = dupTrailingData(_fixedData.nStates * SIZE_OF_INT_IN_BYTES);
+		    if (trailerBuf != null) {
+		    	trailerLeng = trailerBuf.length;
+		    }
+		
+		}
+
+		// Seek to force allocation of large enough slot
+		dataSeek(SIZE_OF_INT_IN_BYTES * src.size() + trailerLeng);
+		dataSeek(startPos);
+
+		Collections.sort(src);
+		for (int id : src) {
+		    dataWrite(id);
+		}
+		if (src.size() != _fixedData.nStates) {
+		    _fixedData.nStates = src.size();
+		    setDirty();
+		    if (trailerBuf != null) {
+		        dataWrite(trailerBuf);
+		        dataTruncate();
+		    }
+		}
 	}
 
 	public void writeControlledChars(List<Integer> src) {
-		throw new NotImplementedException();
+		int seekPos = _fixedData.nStates * SIZE_OF_INT_IN_BYTES + _fixedData.labelLeng;
+		dataSeek(seekPos + src.size() * SIZE_OF_INT_IN_BYTES);
+        dataSeek(seekPos);
+
+        for (int id : src) {
+        	dataWrite(id);
+        }
+        if (src.size() != _fixedData.nControlled) {
+		    dataTruncate();
+		    _fixedData.nControlled = src.size();
+		    setDirty();
+		}
 	}
 
-	public boolean AddControlledChar(int charId) {
-		throw new NotImplementedException();
+	public boolean addControlledChar(int charId) {
+		boolean retVal = false;
+		List<Integer> contVect = readControlledChars();
+		// Disallow duplicate entries...
+		if (!contVect.contains(charId)) {
+		    contVect.add(charId);
+		    writeControlledChars(contVect);
+		    retVal = true;
+		}
+		return retVal;
 	}
 
 	public boolean removeControlledChar(int charId) {
-		throw new NotImplementedException();
+		boolean retVal = false;
+		List<Integer> contVect= readControlledChars();
+		if (contVect.contains(charId)) {
+		    contVect.remove((Integer)charId);
+		    writeControlledChars(contVect);
+		    retVal = true;
+		}
+		return retVal;
 	}
 
 	public void setControllingInfo(int charId, List<Integer> stateIdVect, String aLabel) {
-		throw new NotImplementedException();
+		_fixedData.controlChar = charId;
+		writeStateIds(stateIdVect);
+		writeLabel(aLabel);
+		setDirty();
 	}
 
 	// Fixed data
@@ -150,8 +250,10 @@ public class VOControllingDesc extends VOAnyDesc {
 
 	public class ControllingFixedData extends FixedData {
 
-		public static final int SIZE = FixedData.SIZE + 2 + 4 + 4 + 4 + 4;
-
+		
+		private static final int CONTROLLING_FIXED_DATA_SIZE = 2 + 4 + 4 + 4 + 4;
+		public static final int SIZE = FixedData.SIZE + CONTROLLING_FIXED_DATA_SIZE;
+		
 		public ControllingFixedData() {
 			super("Cont Attr");
 		}
@@ -165,7 +267,7 @@ public class VOControllingDesc extends VOAnyDesc {
 		@Override
 		public void read(BinFile file) {
 			super.read(file);
-			ByteBuffer b = file.readByteBuffer(SIZE);
+			ByteBuffer b = file.readByteBuffer(CONTROLLING_FIXED_DATA_SIZE);
 			fixedSize = b.getShort();
 			controlChar = b.getInt();
 			nStates = b.getInt();
