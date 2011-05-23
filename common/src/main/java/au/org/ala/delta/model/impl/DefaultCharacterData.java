@@ -1,6 +1,7 @@
 package au.org.ala.delta.model.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang.NotImplementedException;
@@ -261,8 +262,22 @@ public class DefaultCharacterData implements CharacterData {
     public void setNonAutoCc(boolean nonAutoCc) {
         _nonAutoCc = nonAutoCc;
     }
-
+    
     @Override
+	public void addState() {
+		List<String> states = Arrays.asList(_states);
+		states.add("");
+		_states = states.toArray(new String[states.size()]);
+	}
+    
+    @Override
+	public void moveState(int stateNumber, int newStateNumber) {
+		List<String> states = Arrays.asList(_states);
+		String text = states.remove(stateNumber-1);
+		states.add(newStateNumber-1, text);
+	}
+
+	@Override
     public void addImage(String fileName, String comments) {
     	throw new NotImplementedException();
     }

@@ -376,8 +376,20 @@ public class VOCharacterAdaptor extends ImageHolderAdaptor implements CharacterD
 			return !contChars.isEmpty();
 		}
 	}
-
+	
     @Override
+	public void addState() {
+		_charDesc.insertState(getNumberOfStates()+1, getVOP());
+	}
+    
+    @Override
+	public void moveState(int stateNumber, int newNumber) {
+		_charDesc.moveState(stateNumber, newNumber);
+	}
+    
+    
+    
+	@Override
     public float getReliability() {
         throw new NotImplementedException();
     }

@@ -163,7 +163,7 @@ public class StateEditor extends JPanel {
 	 */
 	@Action
 	public void addState() {
-	
+		_character.addState();
 	}
 	
 	/**

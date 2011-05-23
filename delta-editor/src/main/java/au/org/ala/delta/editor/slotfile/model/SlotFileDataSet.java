@@ -1,6 +1,7 @@
 package au.org.ala.delta.editor.slotfile.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import au.org.ala.delta.editor.slotfile.Attribute;
@@ -10,12 +11,16 @@ import au.org.ala.delta.editor.slotfile.VOCharBaseDesc;
 import au.org.ala.delta.editor.slotfile.VOCharBaseDesc.CharTextInfo;
 import au.org.ala.delta.editor.slotfile.VOCharTextDesc;
 import au.org.ala.delta.editor.slotfile.VOControllingDesc;
+import au.org.ala.delta.editor.slotfile.VOImageDesc;
 import au.org.ala.delta.editor.slotfile.VOItemDesc;
 import au.org.ala.delta.model.AbstractObservableDataSet;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.image.Image;
+import au.org.ala.delta.model.image.ImageOverlay;
+import au.org.ala.delta.model.image.OverlayType;
 
 /**
  * Implementation of a DELTA DataSet that uses the random access slotfile to read data on demand rather
@@ -316,7 +321,7 @@ public class SlotFileDataSet extends AbstractObservableDataSet {
 		// Then remove the attribute from the list of attributes "owned" by it's character
 		VOCharBaseDesc charBase = (VOCharBaseDesc)_vop.getDescFromId(charId);
 			  
-	    charBase.RemoveDependentContAttr(ctlId);
+	    charBase.removeDependentContAttr(ctlId);
 
 		// Then remove the controlling attribute from the master list
 		if (_vop.getDeltaMaster().removeContAttr(ctlId)) {
@@ -328,9 +333,138 @@ public class SlotFileDataSet extends AbstractObservableDataSet {
 		return false;
 	}
 	
+	// Deleting a state is actually a fairly complicated operation.
+    // First we should check to be sure the state is not in use, either
+    // in an item description or in a "controlling attribute" and allow for
+    // user interaction to correct potential problems. For now, we assume this
+    // will be handled elsewhere. However, we will look for "controlling attributes"
+    // which use this state, and adjust or remove them.
 
-	private boolean removeDependency (VOControllingDesc controlling, int charId) {
-	   
-	    return controlling.removeControlledChar(charId);
-	}
+    // This also needs to be extended to delete any reference to the state from
+    // item descriptions, from internal directives "files", and from image overlays!!!
+    public void deleteState(MultiStateCharacter character, int stateNumber) {
+    	
+    	VOCharBaseDesc charDesc = ((VOCharacterAdaptor)character.getImpl()).getCharBaseDesc();
+    	int stateId = charDesc.uniIdFromStateNo(stateNumber);
+    	int charId = charDesc.getUniId();
+    	// Find all items that encode this state, and turn the state "off".
+        // This should actually be done by the user before reaching this stage, but we
+        // do it here anywhere to guarantee consistency. However, at this stage we would
+        // have to second-guess the user about whether any leading or trailing comments
+        // should also be deleted....
+        List<Integer> itemVect = getEncodedItems(charDesc, stateId);
+        if (itemVect.size() > 0) {
+            for (int id : itemVect) {
+            	VOItemDesc itemDesc = (VOItemDesc)_vop.getDescFromId(id);
+                deleteStateFromAttribute(itemDesc, charDesc, stateId);
+            }
+          }
+
+        // TODO Next, make sure that all references to this state are removed from the directives "files"
+        // (The only non-internal directive which currently uses state id is the KEY STATES directive...)
+//        for (int i = 1; i <= getNDirFiles(); ++i)
+//          {
+//            TVODirFileDesc* dirFile = DescFromId<TVODirFileDesc*>(Vop, GetDeltaMaster()->UniIdFromDirFileNo(i));
+//            //dirFile->MakeTemp(Vop);
+//            dirFile->DeleteState(Vop, charBase, stateId);
+//          }
+
+        // Now delete any associated image overlays.
+        List<Integer> imageList = charDesc.readImageList();
+        for (int id : imageList) {
+            VOImageDesc image = (VOImageDesc)_vop.getDescFromId(id);
+            if (image.getOwnerId() == charId) {
+                List<ImageOverlay> overlays = image.readAllOverlays();
+                for (ImageOverlay overlay : overlays) {
+                    if (overlay.isType(OverlayType.OLSTATE) && overlay.stateId == stateId) {
+                        deleteImageOverlay(image, overlay.getId(), OverlayType.OLSTATE);
+                    }
+                }
+            }
+        }     
+
+        // Should now be possible to use vector of controlled attributes,
+        // rather than scan thru the whole map....
+        // Check how much of this has already been handled by the descriptor....
+    	List<Integer> contAttrVector = charDesc.readDependentContAttrs();
+    	for (int id : contAttrVector) {
+    	  
+    	    VOControllingDesc ctlDesc = (VOControllingDesc)getVOP().getDescFromId(id);
+    	    if (compare(charId, stateId, ctlDesc)) {
+    	        List<Integer> ctlStates = ctlDesc.readStateIds();
+    	        ctlStates.remove(stateId);
+ 
+    	        changeControllingStates(ctlDesc, ctlStates);
+    	    }
+    	}
+    	if (!charDesc.deleteState(stateId, getVOP())) {
+    	    throw new RuntimeException("Unable to delete state: "+stateNumber+" from Character: "+character.getDescription());
+    	}
+    }
+    
+    private void deleteImageOverlay(VOImageDesc desc, int overlayId, int overlayType) {
+    	if (overlayType == OverlayType.OLHOTSPOT) {
+    		desc.removeLocation(overlayId);
+    	}
+    	else {
+    		desc.removeOverlay(overlayId);
+    	}
+    }
+    
+    private void deleteStateFromAttribute(VOItemDesc itemDesc, VOCharBaseDesc charBaseDesc, int stateId) {
+    	
+    	if (itemDesc == null || charBaseDesc == null) {
+    	    return;
+    	}
+    	// Use only for multistate characters.
+    	int charId = charBaseDesc.getUniId();
+    	Attribute attr = itemDesc.readAttribute(charId);
+    	if (attr != null) {
+    	    attr.deleteState(charBaseDesc, stateId);
+    	}
+    	itemDesc.writeAttribute(attr);
+    }
+   
+    
+	private void changeControllingStates(VOControllingDesc controlling, List<Integer> stateIds) {
+    	int attrId = controlling.getUniId();
+  
+    	if (stateIds.size() == 0) {
+    	    deleteControlling(attrId);
+    	}
+
+    	int attrNo = getVOP().getDeltaMaster().attrNoFromUniId(attrId);
+    	if (attrNo > 0) {
+    	    List<Integer> oldStateIds = controlling.readStateIds();
+    	    Collections.sort(stateIds);
+    	    
+    	    if (!stateIds.equals(oldStateIds)) {
+    	        controlling.writeStateIds(stateIds);
+    	    }
+    	}
+    }
+    
+    private void removeDependency(VOControllingDesc controlling, int charId) {
+    	removeDependency(controlling, (VOCharBaseDesc)_vop.getDescFromId(charId));
+    }
+    
+    private void removeDependency(VOControllingDesc controlling, VOCharBaseDesc charBase) {
+    	int charId = charBase.getUniId();
+    	
+    	int attrId = controlling.getUniId();
+    	 
+    	controlling.removeControlledChar(charId);
+    	  
+    	charBase.removeControllingInfo(attrId);
+    }
+    
+    private boolean compare(int testCharId, int testStateId, VOControllingDesc testDesc) {
+    	if (testDesc != null && testDesc.getCharId() == testCharId) {
+          List<Integer> allStates = testDesc.readStateIds();
+          return allStates.contains(testStateId);
+        }
+      else
+        return false;
+    }
+
 }

@@ -317,7 +317,7 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 		return retVal;
 	}
 
-	public boolean RemoveDependentContAttr(int attrId) {
+	public boolean removeDependentContAttr(int attrId) {
 		boolean retVal = false;
 		  
 		List<Integer> contVect = readDependentContAttrs();
@@ -586,7 +586,7 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 		newNo--;
 		int oldId = _stateNumberMappingVector.get(oldNo);
 		_stateNumberMappingVector.remove(oldNo);	  
-		_stateNumberMappingVector.set(newNo, oldId);
+		_stateNumberMappingVector.add(newNo, oldId);
 	     setDirty();
 		return true;
 	}

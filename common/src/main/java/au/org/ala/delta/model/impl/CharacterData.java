@@ -94,4 +94,8 @@ public interface CharacterData extends Illustratable {
     boolean getNonAutoCc();
     
     void setNonAutoCc(boolean nonAutoCc);
+
+	void addState();
+
+	void moveState(int stateNumber, int newNumber);
 }

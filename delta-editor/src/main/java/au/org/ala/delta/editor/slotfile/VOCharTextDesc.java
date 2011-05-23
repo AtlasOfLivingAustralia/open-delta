@@ -20,6 +20,7 @@ import java.util.List;
 
 import au.org.ala.delta.io.BinFile;
 import au.org.ala.delta.rtf.RTFUtils;
+import au.org.ala.delta.util.ArrayUtils;
 import au.org.ala.delta.util.Utils;
 
 public class VOCharTextDesc extends VOAnyDesc {
@@ -344,6 +345,7 @@ public class VOCharTextDesc extends VOAnyDesc {
 			int newLen = 0;
 			int oldLen = 0;
 			List<Integer> newLengs = new ArrayList<Integer>(_stateLengs);
+			ArrayUtils.resize(newLengs, src.size(), 0);
 			for (int i = 0; i < _fixedData.nStateLengs; ++i) {
 				oldLen += _stateLengs.get(i);
 			}
@@ -454,18 +456,8 @@ public class VOCharTextDesc extends VOAnyDesc {
 	
 	public void resize(int numberOfStates) {
 		List<String> stateText = readAllStates(TextType.RTF);
-		List<String> newStates = new ArrayList<String>();
-		if (numberOfStates <= stateText.size()) {
-			newStates.addAll(stateText.subList(0, numberOfStates));
-		}
-		else {
-			newStates.addAll(stateText);
-			
-		    for (int i=newStates.size(); i<numberOfStates; i++) {
-				newStates.add("");
-			}
-		}
-		writeAllStates(newStates);
+		ArrayUtils.resize(stateText, numberOfStates, "");
+		writeAllStates(stateText);
 	}
 
 	// Fixed data offsets

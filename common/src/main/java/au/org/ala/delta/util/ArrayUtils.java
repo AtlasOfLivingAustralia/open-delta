@@ -1,5 +1,7 @@
 package au.org.ala.delta.util;
 
+import java.util.List;
+
 /**
  * Utility methods for working with Arrays.
  */
@@ -32,6 +34,19 @@ public class ArrayUtils {
 		
 		return newData;
 
+	}
+	
+	public static <T> void resize(List<T> list, int newSize, T newValue) {
+		if (list.size() <= newSize) {
+			for (int i=0; i<newSize-list.size(); i++) {
+				list.add(newValue);
+			}
+		}
+		else {
+			for (int i=list.size()-1; i>newSize; i--) {
+				list.remove(i);
+			}
+		}
 	}
 
 }

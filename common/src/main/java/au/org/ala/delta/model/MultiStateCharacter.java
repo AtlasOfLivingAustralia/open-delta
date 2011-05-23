@@ -37,6 +37,25 @@ public abstract class MultiStateCharacter extends Character {
 	public String getState(int stateNumber) {
 		return _impl.getStateText(stateNumber);
 	}
+	
+	/**
+	 * Adds a new state (with an empty description) to this character.
+	 */
+	public void addState() {
+		_impl.addState();
+		notifyObservers();
+	}
+	
+	/**
+	 * Moves the state with number stateNumber to a new position identified by newStateNumber.
+	 * The remaining states will be reordered as necessary.
+	 * @param stateNumber the number of the state to move.
+	 * @param newStateNumber the new position for the state.
+	 */
+	public void moveState(int stateNumber, int newStateNumber) {
+		_impl.moveState(stateNumber, newStateNumber);
+		notifyObservers();
+	}
 
 	public String[] getStates() {
 		String[] states = new String[_impl.getNumberOfStates()];
