@@ -7,6 +7,7 @@ import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.ObservableDeltaDataSet;
 import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
 import au.org.ala.delta.model.observer.DeltaDataSetObserver;
@@ -148,6 +149,11 @@ public class DataSetWrapper implements ObservableDeltaDataSet, DeltaDataSetObser
 		_wrappedDataSet.moveItem(item, newItemNumber);
 	}
 	
+	@Override
+	public void deleteState(MultiStateCharacter character, int stateNumber) {
+		_wrappedDataSet.deleteState(character, stateNumber);
+	}
+
 	@Override
 	public void moveCharacter(Character character, int newCharacterNumber) {
 		_wrappedDataSet.moveCharacter(character, newCharacterNumber);

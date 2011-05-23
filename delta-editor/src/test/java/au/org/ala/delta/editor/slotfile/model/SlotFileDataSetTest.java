@@ -370,5 +370,16 @@ public class SlotFileDataSetTest  extends DeltaTestCase {
 		}
 	}
 	
+	@Test
+	public void testDeleteState() throws Exception {
+		File f = copyURLToFile("/SAMPLE.DLT");
+		DeltaDataSet dataSet = _repo.findByName(f.getAbsolutePath(), null);
+		
+		MultiStateCharacter character = (MultiStateCharacter)dataSet.getCharacter(79);
+		dataSet.deleteState(character, 3);
+		
+		assertEquals(5, character.getNumberOfStates());
+		
+	}
 	
 }

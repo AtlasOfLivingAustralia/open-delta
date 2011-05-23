@@ -20,8 +20,6 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.lang.NotImplementedException;
-
 import au.org.ala.delta.io.BinFileEncoding;
 import au.org.ala.delta.model.DeltaParseException;
 import au.org.ala.delta.util.ArrayUtils;
@@ -825,7 +823,143 @@ public class Attribute implements Iterable<AttrChunk> {
 	}
 
 	public boolean deleteState(VOCharBaseDesc charBase, int stateId) {
-		throw new NotImplementedException();
+	    boolean retVal = false; // assume failure
+		if (_charId == VOCharBaseDesc.VOUID_NULL || _charId != charBase.getUniId() ||
+		    charBase == null || stateId == VOCharBaseDesc.STATEID_NULL) {
+		    return retVal;
+		}
+		int charType = charBase.getCharType();
+		if (!CharType.isMultistate(charType)) {
+		    return retVal;
+		}
+		boolean isOrdered = (charType == CharType.ORDERED);
+		int stateNo = charBase.stateNoFromUniId(stateId);
+
+		while (encodesState(charBase, stateId, false)) {
+		    AttrIterator iter = new AttrIterator(this);
+		    AttrIterator otherStateIter = new AttrIterator(this, end());
+		    AttrIterator matchIter =  new AttrIterator(this, end());
+		    AttrIterator prevSeparator =  begin();
+		    AttrIterator nextSeparator = new AttrIterator(this, end());
+		    boolean found = false;
+		    // Find where within the attribute the state is found, and the separators
+		    // occuring before and after it
+		    for (iter = begin(); iter.getPos() != end() && nextSeparator.getPos() == end(); iter.increment()) {
+		        switch (iter.getChunkType()) {
+		            case ChunkType.CHUNK_STATE:
+		                found |= (iter.get().getStateId() == stateId);
+		                if (found)
+		                  matchIter.setPos(iter.getPos());
+		                else
+		                  otherStateIter.setPos(iter.getPos());
+		                break;
+
+		              // ?? case CHUNK_STOP:
+		              case ChunkType.CHUNK_TO:
+		              case ChunkType.CHUNK_OR:
+		              case ChunkType.CHUNK_AND:
+		                if (found)
+		                  nextSeparator.setPos(iter.getPos());
+		                else
+		                  prevSeparator.setPos(iter.getPos());
+		                break;
+
+		              default:
+		                break;
+		            }
+		        }
+		      if (!found)
+		        return false;
+		      AttrIterator delStart = new AttrIterator(this, prevSeparator.getPos());
+		      AttrIterator delEnd = new AttrIterator(this, nextSeparator.getPos());
+		      if (isOrdered &&
+		        (prevSeparator.getChunkType() == ChunkType.CHUNK_TO ||
+		         nextSeparator.getChunkType() == ChunkType.CHUNK_TO))
+		        // We have encountered one end or the other of a range
+		        // of an ordered multistate character. When this occurs,
+		        // we don't so much want to erase anything as replace the
+		        // end value.
+		        {
+		          boolean atRangeEnd = (prevSeparator.getChunkType() == ChunkType.CHUNK_TO);
+		          if (!atRangeEnd) // If at start of a range, need to find the other end
+		            {
+		              otherStateIter = new AttrIterator(this, end());
+		              for (iter = nextSeparator; iter.getPos() != end(); iter.increment())
+		                {
+		                  if (iter.getChunkType() == ChunkType.CHUNK_STATE)
+		                    {
+		                      otherStateIter.setPos(iter.getPos());
+		                      break;
+		                    }
+		                }
+		            }
+		          int startState = charBase.stateNoFromUniId(otherStateIter.get().getStateId());
+		          int endState = stateNo;
+		          if (startState > 0 && endState > 0)
+		            {
+		              if (endState > startState)  // Adjust the value to be nearer to the other end of the range
+		                --endState;
+		              else if (endState < startState)
+		                ++endState;
+		              if (endState == startState)  // We longer have a range, just a single value
+		                {
+		                  if (atRangeEnd && nextSeparator.getChunkType() != ChunkType.CHUNK_TO) {
+		                	  matchIter.increment();
+		                      delEnd.setPos(matchIter.getPos());
+		                  }
+		                  if (!atRangeEnd)
+		                    {
+		                      if (prevSeparator.getChunkType() != ChunkType.CHUNK_TO)
+		                        delStart.setPos(matchIter.getPos());
+		                        delEnd.increment();
+		                    }
+		                  erase(delStart.getPos(), delEnd.getPos()); // Should trailing comments be erased or not???
+		                  retVal = true;
+		                }
+		              else
+		                {
+		                  int newStateId = charBase.uniIdFromStateNo(endState);
+		                  if (newStateId != VOCharBaseDesc.STATEID_NULL)
+		                    {
+		                      erase(matchIter.getPos());
+		                      insert(matchIter.getPos(), new AttrChunk(ChunkType.CHUNK_STATE, newStateId));
+		                      retVal = true;
+		                    }
+		                }
+		            }
+		        }
+		      else
+		        {
+		          if (prevSeparator == begin())
+		            {
+		              if (nextSeparator.getPos() != end())
+		                  delEnd.increment();
+		            }
+		          else if (prevSeparator.getChunkType() == ChunkType.CHUNK_TO)
+		            {
+		              // No changes
+		            }
+		          else if (prevSeparator.getChunkType() == ChunkType.CHUNK_OR)
+		            {
+		              if (nextSeparator.getPos() != end())
+		                {
+		                    delStart.increment();
+		                    delEnd.increment();
+		                }
+		            }
+		          else if (prevSeparator.getChunkType() == ChunkType.CHUNK_AND)
+		            {
+		              if (nextSeparator.getChunkType() == ChunkType.CHUNK_TO)
+		                {
+		            	    delStart.increment();
+		                    delEnd.increment();
+		                }
+		            }
+		          erase(delStart.getPos(), delEnd.getPos());
+		          retVal = true;
+		        }
+		    }
+		  return retVal;  // Make sure we always exit, even after errors...
 	}
 
 	public boolean getEncodedStates(VOCharBaseDesc charBase, List<Integer> stateIds, short[] pseudoValues) {
@@ -1189,7 +1323,7 @@ public class Attribute implements Iterable<AttrChunk> {
 
 		@Override
 		public void remove() {
-			throw new NotImplementedException();
+			throw new UnsupportedOperationException();
 
 		}
 

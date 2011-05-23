@@ -108,4 +108,11 @@ public interface DeltaDataSet {
 	 * @param newItemNumber the new item number for the Item.
 	 */
 	public void moveItem(Item item, int newItemNumber);
+	
+	/**
+	 * Deletes the state numbered stateNumber from the supplied MultiStateCharacter. 
+	 * @param character the character to delete the state from.
+	 * @param stateNumber the state number to delete.
+	 */
+	public void deleteState(MultiStateCharacter character, int stateNumber);
 }

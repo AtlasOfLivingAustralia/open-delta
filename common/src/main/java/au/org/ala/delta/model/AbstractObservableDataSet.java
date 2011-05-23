@@ -105,6 +105,15 @@ public abstract class AbstractObservableDataSet implements ObservableDeltaDataSe
 		return getItem(itemNumber).getAttribute(getCharacter(characterNumber));
 	}
 	
+	@Override
+	public void deleteState(MultiStateCharacter character, int stateNumber) {
+		doDeleteState(character, stateNumber);
+	
+		characterChanged(character);
+	}
+	
+	protected abstract void doDeleteState(MultiStateCharacter character, int stateNumber);
+	
 	/**
 	 * Adds an observer interested in receiving notification of changes to this data set.
 	 * Duplicate observers are ignored.

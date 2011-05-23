@@ -16,6 +16,7 @@ import javax.swing.event.ListSelectionListener;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 
+import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.ui.rtf.RtfEditor;
@@ -36,6 +37,7 @@ public class StateEditor extends JPanel {
 	private MultiStateCharacter _character;
 	
 	private CharacterFormatter _formatter;
+	private EditorViewModel _model;
 
 	public StateEditor() {
 		_formatter = new CharacterFormatter(true, false, false, true);
@@ -147,13 +149,14 @@ public class StateEditor extends JPanel {
 	 * Updates the character being displayed by this StateEditor.
 	 * @param character the character to display/edit.
 	 */
-	public void bind(MultiStateCharacter character) {
+	public void bind(EditorViewModel model, MultiStateCharacter character) {
 		_character = character;
-		DefaultListModel model = new DefaultListModel();
+		_model = model;
+		DefaultListModel listModel = new DefaultListModel();
 		for (int i=1; i<=_character.getNumberOfStates(); i++) {
-			model.addElement(_formatter.formatState(_character, i));
+			listModel.addElement(_formatter.formatState(_character, i));
 		}
-		stateList.setModel(model);
+		stateList.setModel(listModel);
 		stateList.setSelectedIndex(0);
 		updateScreen();
 	}
@@ -171,7 +174,7 @@ public class StateEditor extends JPanel {
 	 */
 	@Action
 	public void deleteState() {
-		
+		_model.deleteState(_character, stateList.getSelectedIndex()+1);
 	}
 	
 	/**

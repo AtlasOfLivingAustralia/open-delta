@@ -342,7 +342,7 @@ public class SlotFileDataSet extends AbstractObservableDataSet {
 
     // This also needs to be extended to delete any reference to the state from
     // item descriptions, from internal directives "files", and from image overlays!!!
-    public void deleteState(MultiStateCharacter character, int stateNumber) {
+    public void doDeleteState(MultiStateCharacter character, int stateNumber) {
     	
     	VOCharBaseDesc charDesc = ((VOCharacterAdaptor)character.getImpl()).getCharBaseDesc();
     	int stateId = charDesc.uniIdFromStateNo(stateNumber);

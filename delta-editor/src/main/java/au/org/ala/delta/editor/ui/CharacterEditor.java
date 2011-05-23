@@ -354,7 +354,7 @@ public class CharacterEditor extends JDialog {
 		
 		if (_selectedCharacter instanceof MultiStateCharacter) {
 			
-			stateEditor.bind((MultiStateCharacter)_selectedCharacter);
+			stateEditor.bind(_dataSet, (MultiStateCharacter)_selectedCharacter);
 			tabbedPane.insertTab("States", null, stateEditor, "", 0);
 			tabbedPane.setSelectedComponent(stateEditor);
 		}

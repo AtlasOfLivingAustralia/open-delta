@@ -8,6 +8,7 @@ import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DeltaDataSetFactory;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.MultiStateCharacter;
 
 
 /**
@@ -190,5 +191,10 @@ public class DefaultDataSet extends AbstractObservableDataSet {
 			tempItems.put(i+change, tmp);		
 		}
 		_characters.putAll(tempItems);
+	}
+
+	@Override
+	protected void doDeleteState(MultiStateCharacter character, int stateNumber) {
+		throw new UnsupportedOperationException();
 	}
 }
