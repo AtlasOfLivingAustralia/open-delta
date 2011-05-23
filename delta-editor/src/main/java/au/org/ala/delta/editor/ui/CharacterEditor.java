@@ -293,9 +293,15 @@ public class CharacterEditor extends JDialog {
 		
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
+		
+		StateEditor stateEditor = new StateEditor();
+		tabbedPane.addTab("States", stateEditor);
+		
 		ImageDetailsPanel imageDetails = new ImageDetailsPanel();
 		imageDetails.setEnabled(false);
 		tabbedPane.addTab("Images", imageDetails);
+		
+		
 		panel.add(tabbedPane);
 		getContentPane().setLayout(groupLayout);
 		setPreferredSize(new Dimension(827, 500));
