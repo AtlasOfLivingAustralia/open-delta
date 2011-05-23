@@ -16,6 +16,7 @@ import java.awt.event.MouseEvent;
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,6 +54,7 @@ import au.org.ala.delta.intkey.directives.UseDirective;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.model.IntkeyDataset;
 import au.org.ala.delta.intkey.model.specimen.CharacterValue;
+import au.org.ala.delta.intkey.model.specimen.Specimen;
 import au.org.ala.delta.intkey.ui.CharacterListModel;
 import au.org.ala.delta.intkey.ui.ItemListModel;
 import au.org.ala.delta.intkey.ui.ReExecuteDialog;
@@ -736,15 +738,11 @@ public class Intkey extends DeltaSingleFrameApplication {
         }
     }
 
-    private String getResourceString(String key) {
-        return getContext().getResourceMap(Intkey.class).getString(key);
-    }
-
     public void handleNewDataSet(IntkeyDataset dataset) {
         getMainFrame().setTitle(String.format(windowTitleWithDatasetTitle, dataset.getHeading()));
 
         _availableCharacterListModel = new CharacterListModel(dataset.getCharacters());
-        _usedCharacterListModel = new UsedCharacterListModel();
+        _usedCharacterListModel = new UsedCharacterListModel(Collections.EMPTY_LIST);
         _itemListModel = new ItemListModel(dataset.getTaxa());
 
         _listAvailableCharacters.setModel(_availableCharacterListModel);
@@ -754,29 +752,24 @@ public class Intkey extends DeltaSingleFrameApplication {
         updateListCaptions();
     }
 
-    public void handleCharacterUsed(Character ch, CharacterValue value) {
-        // remove from top list
-        _availableCharacterListModel.removeCharacter(ch);
+    public void handleSpecimenUpdated() {
+        Specimen specimen = _context.getSpecimen();
 
-        // add to bottom list
-        _usedCharacterListModel.addCharacterValue(ch, value);
+        List<Character> usedCharacters = specimen.getUsedCharacters();
 
-        updateListCaptions();
-    }
-
-    public void handleCharacterChanged(Character ch, CharacterValue value) {
-
-    }
-
-    public void handleCharacterDeleted(Character ch) {
-
-    }
-
-    public void handleRestartIdentification() {
-        // TODO - do this properly, not as simple as just throwing everything
-        // away and building the lists from scratch. Need to take into account any 
-        // characters that have been fixed using the SET FIX directive.
-        handleNewDataSet(_context.getDataset());
+        List<CharacterValue> usedCharacterValues = new ArrayList<CharacterValue>();
+        for (Character ch: usedCharacters) {
+            usedCharacterValues.add(specimen.getValueForCharacter(ch));
+        }
+        
+        List<Character> availableCharacters = _context.getDataset().getCharacters();
+        availableCharacters.removeAll(usedCharacters);
+        
+        _availableCharacterListModel = new CharacterListModel(availableCharacters);
+        _usedCharacterListModel = new UsedCharacterListModel(usedCharacterValues);
+        
+        _listAvailableCharacters.setModel(_availableCharacterListModel);
+        _listUsedCharacters.setModel(_usedCharacterListModel);
     }
 
     private void updateListCaptions() {
@@ -788,11 +781,9 @@ public class Intkey extends DeltaSingleFrameApplication {
     private class UsedCharacterListModel extends AbstractListModel {
 
         private List<CharacterValue> _values;
-        private HashMap<Character, CharacterValue> _characterValueMap;
 
-        public UsedCharacterListModel() {
-            _values = new ArrayList<CharacterValue>();
-            _characterValueMap = new HashMap<Character, CharacterValue>();
+        public UsedCharacterListModel(List<CharacterValue> values) {
+            _values = new ArrayList<CharacterValue>(values);
         }
 
         @Override
@@ -807,25 +798,6 @@ public class Intkey extends DeltaSingleFrameApplication {
 
         public CharacterValue getCharacterValueAt(int index) {
             return _values.get(index);
-        }
-
-        public void addCharacterValue(Character ch, CharacterValue value) {
-            // remove any existing value for this character
-            removeValueForCharacter(ch);
-
-            _values.add(value);
-            _characterValueMap.put(ch, value);
-            fireIntervalAdded(this, _values.size() - 1, _values.size() - 1);
-        }
-
-        public void removeValueForCharacter(Character ch) {
-            if (_characterValueMap.containsKey(ch)) {
-                CharacterValue val = _characterValueMap.get(ch);
-                int valueIndex = _values.indexOf(val);
-                _values.remove(val);
-                _characterValueMap.remove(ch);
-                fireIntervalRemoved(this, valueIndex, valueIndex);
-            }
         }
 
     }

@@ -48,4 +48,32 @@ public class UseDirectiveTest extends TestCase {
         RealValue charAvgThicknessValue = (RealValue) specimen.getValueForCharacter(charAvgThickness);
         assertEquals(new FloatRange(1.0, 1.0), charAvgThicknessValue.getRange());
     }
+    
+    @Test
+    public void testDependentCharactersRemoved() throws Exception {
+        URL initFileUrl = getClass().getResource("/dataset/controlling_characters_simple/intkey.ink");
+        IntkeyContext context = new IntkeyContext(null);
+        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+        
+        IntkeyDataset ds = context.getDataset();
+        
+        UnorderedMultiStateCharacter charSeedPresence = (UnorderedMultiStateCharacter) ds.getCharacter(2);
+        UnorderedMultiStateCharacter charSeedInShell = (UnorderedMultiStateCharacter) ds.getCharacter(3);
+        RealCharacter charAvgThickness = (RealCharacter) ds.getCharacter(4);
+        
+        IntkeyDirectiveInvocation invoc = new UseDirective().doProcess(context, "4,1");
+        context.executeDirective(invoc);
+        
+        IntkeyDirectiveInvocation invoc2 = new UseDirective().doProcess(context, "/M 2,2");
+        context.executeDirective(invoc2);
+        
+        Specimen specimen = context.getSpecimen();
+        
+        MultiStateValue charSeedPresenceValue = (MultiStateValue) specimen.getValueForCharacter(charSeedPresence);
+        assertEquals(1, charSeedPresenceValue.getStateValues().size());
+        assertEquals(2, (int) charSeedPresenceValue.getStateValues().get(0));
+        
+        assertFalse(specimen.hasValueFor(charSeedInShell));
+        assertFalse(specimen.hasValueFor(charAvgThickness));
+    }
 }

@@ -43,8 +43,9 @@ public class UseDirective extends IntkeyDirective {
     // TODO show message box when try to set a character value but it fails due
     // to it not
     // available - need to do anything else when this happens?
-    
-    // TODO UI should only update once at the end - should not update for each controlling
+
+    // TODO UI should only update once at the end - should not update for each
+    // controlling
     // character that is prompted for.
 
     private static Pattern COMMA_SEPARATED_VALUE_PATTERN = Pattern.compile("^.+,.*$");
@@ -194,9 +195,10 @@ public class UseDirective extends IntkeyDirective {
 
         public UseDirectiveInvocation(boolean suppressAlreadySetWarning) {
             _suppressAlreadySetWarning = suppressAlreadySetWarning;
-            
-            //Use LinkedHashMap so that keys can be iterated over in the order that they
-            //were inserted.
+
+            // Use LinkedHashMap so that keys can be iterated over in the order
+            // that they
+            // were inserted.
             _characterValues = new LinkedHashMap<Character, CharacterValue>();
         }
 
@@ -213,8 +215,8 @@ public class UseDirective extends IntkeyDirective {
             // haven't. They need to be processed differently.
             List<Character> charsWithValues = new ArrayList<Character>();
             List<Character> charsNoValues = new ArrayList<Character>();
-            
-            for (Character ch: _characterValues.keySet()) {
+
+            for (Character ch : _characterValues.keySet()) {
                 processControllingCharacters(ch, context, false);
             }
 
@@ -230,7 +232,7 @@ public class UseDirective extends IntkeyDirective {
             for (Character ch : charsWithValues) {
                 if (checkCharacterUsable(ch, context)) {
                     charactersToUse.add(ch);
-                } 
+                }
             }
 
             if (charsNoValues.size() == 1) {
@@ -250,7 +252,8 @@ public class UseDirective extends IntkeyDirective {
                         return false;
                     }
                 } else {
-                    // remove this value so that the user will not be prompted about it when the command is
+                    // remove this value so that the user will not be prompted
+                    // about it when the command is
                     // run additional times.
                     _characterValues.remove(ch);
                 }
@@ -279,7 +282,8 @@ public class UseDirective extends IntkeyDirective {
                         if (checkCharacterUsable(ch, context)) {
                             characterVal = promptForCharacterValue(UIUtils.getMainFrame(), ch);
                         } else {
-                            // remove this value so that the user will not be prompted about it when the command is
+                            // remove this value so that the user will not be
+                            // prompted about it when the command is
                             // run additional times.
                             _characterValues.remove(ch);
                         }
@@ -331,65 +335,75 @@ public class UseDirective extends IntkeyDirective {
 
             return true;
         }
-        
+
         private void processControllingCharacters(Character ch, IntkeyContext context, boolean autoSetPermitted) {
-            List<CharacterDependency> allControllingChars = getFullControllingCharactersList(ch, context.getDataset());
-            
-            for (CharacterDependency cd: allControllingChars) {
+            List<CharacterDependency> allControllingChars = getFullControllingCharacterDependenciesList(ch, context.getDataset());
+
+            for (CharacterDependency cd : allControllingChars) {
                 MultiStateCharacter cc = (MultiStateCharacter) context.getDataset().getCharacter(cd.getControllingCharacterId());
-                
+
                 if (context.getSpecimen().hasValueFor(cc)) {
                     continue;
                 }
-                
-                // states for the controlling character that will make dependent characters inapplicable
+
+                // states for the controlling character that will make dependent
+                // characters inapplicable
                 Set<Integer> inapplicableStates = cd.getStates();
-                
-                // states for the controlling character that will make dependent characters applicable. At least one of these states needs to be
+
+                // states for the controlling character that will make dependent
+                // characters applicable. At least one of these states needs to
+                // be
                 // set on the controlling character.
                 Set<Integer> applicableStates = new HashSet<Integer>();
-                
-                for (int i=1; i < cc.getStates().length; i++) {
+
+                for (int i = 1; i < cc.getStates().length; i++) {
                     if (!inapplicableStates.contains(i)) {
                         applicableStates.add(i);
                     }
                 }
-                
+
                 if (applicableStates.size() == cc.getStates().length) {
                     throw new RuntimeException(String.format("There are no states for character %s that will make character %s applicable", cc.getCharacterId(), ch.getCharacterId()));
                 }
-                
-                // If not processing an input file, prompt the user to set the value of the controlling character if it has been supplied as an argument to the
-                // NON AUTOMATIC CONTROLLING CHARACTERS confor directive, if the dependent character has been supplied as an argument
-                // to the USE CONTROLLING CHARACTERS FIRST confor directive, or if there are multiple states that the controlling character
-                // can be set to for which the dependent character will be inapplicable.
+
+                // If not processing an input file, prompt the user to set the
+                // value of the controlling character if it has been supplied as
+                // an argument to the
+                // NON AUTOMATIC CONTROLLING CHARACTERS confor directive, if the
+                // dependent character has been supplied as an argument
+                // to the USE CONTROLLING CHARACTERS FIRST confor directive, or
+                // if there are multiple states that the controlling character
+                // can be set to for which the dependent character will be
+                // inapplicable.
                 if (!context.isProcessingInputFile() && (cc.getNonAutoCc() || ch.getUseCc() || !cc.getNonAutoCc() && !cc.getUseCc() && applicableStates.size() > 1)) {
                     List<Integer> userSetStates = promptForMultiStateValue(UIUtils.getMainFrame(), (MultiStateCharacter) cc);
                     MultiStateValue val = new MultiStateValue((MultiStateCharacter) cc, new ArrayList<Integer>(userSetStates));
-                    context.setValueForCharacter(cc, val);                    
+                    context.setValueForCharacter(cc, val);
                 } else if (autoSetPermitted) {
                     // let intkey automatically use the character
                     MultiStateValue val = new MultiStateValue((MultiStateCharacter) cc, new ArrayList<Integer>(applicableStates));
                     context.setValueForCharacter(cc, val);
                 }
-                
+
             }
         }
-        
-        //For the given character, recursively build a list CharacterDependency objects describing
-        //all characters that control it, directly and indirectly. 
-        private List<CharacterDependency> getFullControllingCharactersList(Character ch, IntkeyDataset ds) {
+
+
+        // For the given character, recursively build a list of
+        // CharacterDependency objects describing
+        // all characters that control it, directly and indirectly.
+        private List<CharacterDependency> getFullControllingCharacterDependenciesList(Character ch, IntkeyDataset ds) {
             List<CharacterDependency> retList = new ArrayList<CharacterDependency>();
-            
+
             List<CharacterDependency> directControllingChars = ch.getControllingCharacters();
             if (directControllingChars != null) {
-                for (CharacterDependency cd: directControllingChars) {
+                for (CharacterDependency cd : directControllingChars) {
                     Character controllingChar = ds.getCharacter(cd.getControllingCharacterId());
                     retList.add(0, cd);
-                    retList.addAll(0, getFullControllingCharactersList(controllingChar, ds));
+                    retList.addAll(0, getFullControllingCharacterDependenciesList(controllingChar, ds));
                 }
             }
-            
+
             return retList;
         }
 
@@ -452,7 +466,7 @@ public class UseDirective extends IntkeyDirective {
             StringBuilder builder = new StringBuilder();
             builder.append(StringUtils.join(_controlWords, " ").toUpperCase());
             builder.append(" ");
-            for (Character ch: _characterValues.keySet()) {
+            for (Character ch : _characterValues.keySet()) {
                 CharacterValue val = _characterValues.get(ch);
                 builder.append(" ");
                 builder.append(ch.getCharacterId());

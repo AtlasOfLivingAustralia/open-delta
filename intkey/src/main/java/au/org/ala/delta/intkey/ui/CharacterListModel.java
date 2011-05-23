@@ -32,15 +32,4 @@ public class CharacterListModel extends AbstractListModel {
         return _characters.get(index);
     }
 
-    public void addCharacter(Character ch) {
-
-    }
-
-    public void removeCharacter(Character ch) {
-        int charIndex = _characters.indexOf(ch);
-        if (charIndex > -1) {
-            _characters.remove(charIndex);
-            fireIntervalRemoved(this, charIndex, charIndex);
-        }
-    }
 }

@@ -212,5 +212,55 @@ public class DataSetLoadTest extends TestCase {
         assertFalse(charMoreComments.getUseCc());
     }
     
+    @Test
+    public void testApplicableCharactersDirective() throws Exception {
+        URL initFileUrl = getClass().getResource("/dataset/controlling_characters_applicable_directive/intkey.ink");
+        IntkeyContext context = new IntkeyContext(null);
+        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+        
+        IntkeyDataset ds = context.getDataset();
+        
+        UnorderedMultiStateCharacter charSeedPresence = (UnorderedMultiStateCharacter) ds.getCharacter(2);
+        List<CharacterDependency> charSeedDependencies = charSeedPresence.getDependentCharacters();
+
+        assertEquals(2, charSeedDependencies.size());
+        CharacterDependency cd1 = charSeedDependencies.get(0);
+        CharacterDependency cd2 = charSeedDependencies.get(1);
+        
+        assertEquals(1, cd1.getStates().size());
+        assertTrue(cd1.getStates().contains(2));
+        
+        assertEquals(1, cd2.getStates().size());
+        assertTrue(cd2.getStates().contains(3));
+        
+        assertEquals(2, cd1.getDependentCharacterIds().size());
+        assertTrue(cd1.getDependentCharacterIds().contains(3));
+        assertTrue(cd1.getDependentCharacterIds().contains(5)); 
+        
+        assertEquals(2, cd2.getDependentCharacterIds().size());
+        assertTrue(cd2.getDependentCharacterIds().contains(3));
+        assertTrue(cd2.getDependentCharacterIds().contains(5));    
+        
+        UnorderedMultiStateCharacter charSeedInShell = (UnorderedMultiStateCharacter) ds.getCharacter(3);
+        List<CharacterDependency> charSeedInShellCharacterDependencies = charSeedInShell.getDependentCharacters();
+        
+        assertEquals(2, charSeedInShellCharacterDependencies.size());
+        CharacterDependency cd3 = charSeedInShellCharacterDependencies.get(0);      
+        CharacterDependency cd4 = charSeedInShellCharacterDependencies.get(1); 
+        
+        assertEquals(1, cd3.getStates().size());
+        assertTrue(cd3.getStates().contains(2));
+        
+        assertEquals(1, cd4.getStates().size());
+        assertTrue(cd4.getStates().contains(3));
+        
+        assertEquals(1, cd3.getDependentCharacterIds().size());
+        assertTrue(cd3.getDependentCharacterIds().contains(4));
+        
+        assertEquals(1, cd4.getDependentCharacterIds().size());
+        assertTrue(cd4.getDependentCharacterIds().contains(4));
+        
+    }
+    
 
 }

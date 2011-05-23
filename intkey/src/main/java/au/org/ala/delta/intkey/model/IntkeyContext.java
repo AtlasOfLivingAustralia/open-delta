@@ -18,6 +18,7 @@ import au.org.ala.delta.intkey.directives.IntkeyDirectiveParser;
 import au.org.ala.delta.intkey.model.specimen.CharacterValue;
 import au.org.ala.delta.intkey.model.specimen.Specimen;
 import au.org.ala.delta.intkey.ui.UIUtils;
+import au.org.ala.delta.model.Character;
 
 /**
  * Model. Maintains global application state.
@@ -68,7 +69,6 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     public IntkeyContext(Intkey appUI) {
         _appUI = appUI;
-        _specimen = new Specimen();
 
         // Use linked hashmap so that the keys list will be returned in
         // order of insertion.
@@ -129,6 +129,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         _executedDirectives = new ArrayList<IntkeyDirectiveInvocation>();
 
         _dataset = new IntkeyDatasetFileBuilder().readDataSet(_charactersFile, _taxaFile);
+        _specimen = new Specimen(_dataset);
 
         // TODO need a proper listener pattern here?
         if (_appUI != null) {
@@ -183,10 +184,18 @@ public class IntkeyContext extends AbstractDeltaContext {
         Logger.log("Using character");
         _specimen.setValueForCharacter(ch, value);
         if (_appUI != null) {
-            _appUI.handleCharacterUsed(ch, value);
+            _appUI.handleSpecimenUpdated();
         }
     }
-
+    
+    public void removeValueForCharacter(Character ch) {
+        Logger.log("Deleting character");
+        _specimen.removeValueForCharacter(ch);
+        if (_appUI != null) {
+            _appUI.handleSpecimenUpdated();
+        }
+    }
+    
     public void addCharacterKeyword(String keyword, Set<Integer> characterNumbers) {
         keyword = keyword.toLowerCase();
         if (keyword.equals(CHARACTER_KEYWORD_ALL) || keyword.equals(CHARACTER_KEYWORD_USED) || keyword.equals(CHARACTER_KEYWORD_AVAILABLE)) {
@@ -263,8 +272,8 @@ public class IntkeyContext extends AbstractDeltaContext {
 
         if (_dataset != null) {
             // Create a new blank specimen
-            _specimen = new Specimen();
-            _appUI.handleRestartIdentification();
+            _specimen = new Specimen(_dataset);
+            _appUI.handleSpecimenUpdated();
         }
     }
 
