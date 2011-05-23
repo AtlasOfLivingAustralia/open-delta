@@ -125,7 +125,9 @@ public class StateEditor extends JPanel {
 		setLayout(groupLayout);
 	}
 	
-	
+	/**
+	 * Updates the contents of the screen based on the selected state.
+	 */
 	public void updateScreen() {
 		
 		int selectedIndex = stateList.getSelectedIndex();
@@ -141,6 +143,10 @@ public class StateEditor extends JPanel {
 		
 	}
 	
+	/**
+	 * Updates the character being displayed by this StateEditor.
+	 * @param character the character to display/edit.
+	 */
 	public void bind(MultiStateCharacter character) {
 		_character = character;
 		DefaultListModel model = new DefaultListModel();
@@ -157,7 +163,7 @@ public class StateEditor extends JPanel {
 	 */
 	@Action
 	public void addState() {
-		
+	
 	}
 	
 	/**

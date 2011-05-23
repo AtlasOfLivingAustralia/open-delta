@@ -451,6 +451,22 @@ public class VOCharTextDesc extends VOAnyDesc {
 		dataTruncate();
 		setDirty();
 	}
+	
+	public void resize(int numberOfStates) {
+		List<String> stateText = readAllStates(TextType.RTF);
+		List<String> newStates = new ArrayList<String>();
+		if (numberOfStates <= stateText.size()) {
+			newStates.addAll(stateText.subList(0, numberOfStates));
+		}
+		else {
+			newStates.addAll(stateText);
+			
+		    for (int i=newStates.size(); i<numberOfStates; i++) {
+				newStates.add("");
+			}
+		}
+		writeAllStates(newStates);
+	}
 
 	// Fixed data offsets
 	public static final int fixedSizeOffs = SlotFile.SlotHeader.SIZE + FixedData.SIZE + 0;

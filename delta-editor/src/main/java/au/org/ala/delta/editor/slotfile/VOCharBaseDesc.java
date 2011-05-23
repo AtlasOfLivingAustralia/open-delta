@@ -16,9 +16,10 @@ package au.org.ala.delta.editor.slotfile;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
-
-import org.apache.commons.lang.NotImplementedException;
+import java.util.Set;
 
 import au.org.ala.delta.editor.slotfile.VOCharTextDesc.CharTextFixedData;
 import au.org.ala.delta.io.BinFile;
@@ -231,12 +232,12 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 		return (_fixedData.charFlags & flag) != 0;
 	}
 
-	public void setUncodedImplicit(short stateNo) {
+	public void setUncodedImplicit(int stateNo) {
 		_fixedData.uncodedImplicit = stateNo;
 		setDirty();
 	}
 
-	public void setCodedImplicit(short stateNo) {
+	public void setCodedImplicit(int stateNo) {
 		_fixedData.codedImplicit = stateNo;
 		setDirty();
 	}
@@ -251,7 +252,23 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 	}
 
 	public boolean addControllingInfo(List<Integer> src) {
-		throw new NotImplementedException();
+		boolean retVal = false;
+		if (src.size() > 0)  {
+		    List<Integer> oldContVect = readControllingInfo();
+		    List<Integer> newContVect = new ArrayList<Integer>(oldContVect.size()+src.size());
+		    newContVect.addAll(oldContVect);
+		    for (int i : src) {
+		    	if (!oldContVect.contains(i)) {
+		    		newContVect.add(i);
+		    	}
+		    }
+		  
+		    if (newContVect.size() > oldContVect.size()) { // Wasn't a duplicate...
+		        writeControllingInfo(newContVect);
+		        retVal = true;
+		    }
+		}
+		return retVal;
 	}
 
 	public boolean AddControllingInfo(int oneId) {
@@ -261,7 +278,24 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 	}
 
 	public boolean removeControllingInfo(List<Integer> src) {
-		throw new NotImplementedException();
+		boolean retVal = false;
+		if (src.size() > 0) {
+		      
+		    List<Integer> oldContVect = readControllingInfo();
+		    
+		    List<Integer> newContVect = new ArrayList<Integer>(oldContVect);
+		    for (int id : src) {
+		    	if (newContVect.contains(id)) {
+		    		newContVect.remove(id);
+		    	}
+		    }
+		     
+		    if (newContVect.size() < oldContVect.size()) { // Was able to remove something
+		        writeControllingInfo(newContVect);
+		        retVal = true;
+		    }
+		}
+		return retVal;
 	}
 
 	public boolean removeControllingInfo(int oneId) {
@@ -271,11 +305,28 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 	}
 
 	public boolean addDependentContAttr(int attrId) {
-		throw new NotImplementedException();
+
+		boolean retVal = false;
+		  
+		List<Integer> contVect = readDependentContAttrs();
+		if (!contVect.contains(attrId)) {
+		    contVect.add(attrId);
+		    writeDependentContAttrs(contVect);
+		    retVal = true;
+		}
+		return retVal;
 	}
 
 	public boolean RemoveDependentContAttr(int attrId) {
-		throw new NotImplementedException();
+		boolean retVal = false;
+		  
+		List<Integer> contVect = readDependentContAttrs();
+		if (contVect.contains(attrId)) {
+		    contVect.remove(attrId);
+		    writeDependentContAttrs(contVect);
+		    retVal = true;
+		}
+		return retVal;
 	}
 
 	public VOCharTextDesc cacheCharTextInfo(int langDesc, short variantNo) {
@@ -429,11 +480,74 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 	}
 
 	public void writeControllingInfo(List<Integer> src) {
-		throw new NotImplementedException();
+		byte[] trailerBuf = null;
+		int trailerLeng = 0;
+		int startPos = _fixedData.nStates * SIZE_OF_INT_IN_BYTES +
+		               _fixedData.nDescriptors * SIZE_OF_INT_IN_BYTES;
+
+		if (src.size() != _fixedData.nControlling) {// Save a copy of any following data!
+		    trailerBuf = dupTrailingData(startPos + _fixedData.nControlling * SIZE_OF_INT_IN_BYTES);
+		    if (trailerBuf != null) {
+		    	trailerLeng = trailerBuf.length;
+		    }
+		}
+
+		// Seek to force allocation of large enough slot
+		dataSeek(startPos + SIZE_OF_INT_IN_BYTES * src.size() + trailerLeng);
+		dataSeek(startPos);
+
+		Collections.sort(src);
+		for (int id: src) {
+			dataWrite(id);
+		}
+		 
+		if (src.size() != _fixedData.nControlling) {
+		    _fixedData.nControlling = src.size();
+		    setDirty();
+		    if (trailerBuf != null) {
+		        dataWrite(trailerBuf);
+		        dataTruncate();
+		    }
+		}
 	}
 
 	public void writeDependentContAttrs(List<Integer> src) {
-		throw new NotImplementedException();
+		byte[] trailerBuf = null;
+		int trailerLeng = 0;
+		int startPos = _fixedData.nStates * SIZE_OF_INT_IN_BYTES +
+		               _fixedData.nDescriptors * SIZE_OF_INT_IN_BYTES +
+		               _fixedData.nControlling * SIZE_OF_INT_IN_BYTES;
+
+		// Sort, and remove duplicates before storing.
+		// Overkill, actually. For a while, a was storing the IDs of controlled
+		// _characters_, not _controlling attributes_, and duplicates were more
+		// likely to be a problem.
+		Set<Integer> ids = new HashSet<Integer>(src);
+		src = new ArrayList<Integer>(ids);
+		Collections.sort(src);
+
+		if (src.size() != _fixedData.nControls) { // Save a copy of any following data!
+		    trailerBuf = dupTrailingData(startPos + _fixedData.nControls * SIZE_OF_INT_IN_BYTES);
+		    if (trailerBuf != null) {
+		    	trailerLeng = trailerBuf.length;
+		    }
+		}
+
+		// Seek to force allocation of large enough slot
+		dataSeek(startPos + SIZE_OF_INT_IN_BYTES * src.size() + trailerLeng);
+		dataSeek(startPos);
+
+		for (int id : src) {
+		    dataWrite(id);
+		}
+		if (src.size() != _fixedData.nControls) {
+		    _fixedData.nControls = src.size();
+		    setDirty();
+		    if (trailerBuf != null) {
+		        dataWrite(trailerBuf);
+		        dataTruncate();
+		    }
+		}
 	}
 
 	public int uniIdFromStateNo(int stateNo) {
@@ -450,20 +564,127 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 		return 0;
 	}
 
+	// Receives a list of state numbers (external representation), in
+	// src and places the complement of that list in dest
 	public void invertStateNos(List<Integer> src, List<Integer> dest) {
-		throw new NotImplementedException();
+		int nStates = getNStatesUsed();
+		  
+	    for (int i = 1; i <= nStates; ++i) {
+		    if (!src.contains(i)) {
+		    	dest.add(i);
+		    }
+	    }
 	}
 
 	public boolean moveState(int oldNo, int newNo) {
-		throw new NotImplementedException();
+		if (oldNo == 0 || newNo == 0 ||
+			oldNo > _fixedData.nStatesUsed || newNo > _fixedData.nStatesUsed ||
+			oldNo == newNo) {
+		    return false;
+		}
+		oldNo--;  // Convert to zero-based, rather than 1-based, numbering
+		newNo--;
+		int oldId = _stateNumberMappingVector.get(oldNo);
+		_stateNumberMappingVector.remove(oldNo);	  
+		_stateNumberMappingVector.set(newNo, oldId);
+	     setDirty();
+		return true;
 	}
 
-	public boolean deleteState(short stateId, DeltaVOP Vop) {
-		throw new NotImplementedException();
+	
+	// Deleting a state is actually a fairly complicated operation.
+	// First we should check to be sure the state is not in use, either
+	// in an item description or in a "controlling attribute" and allow for
+	// user interaction to correct potential problems. For now, however, we assume this
+	// will be handled elsewhere. We can then set the corresponding
+	// text for the state to an empty string. Finally, because of the way state ids
+	// are handled, we can't just "delete" an id; we first move it to
+	// the list of "available" ids, kept at the end of the state id vector.
+	// The "available" ids are kept in sorted order. Only state ids that have been
+	// made "available" AND lie at the end of the list of all state ids can actually
+	// be deleted (that is, the id list can be shortened). If we do this, the text
+	// descriptor's list should also be shortened. (And remember also that there
+	// may be more than one text descriptor; all must be changed appropriately).
+	// Return true if deletion concludes successfully.
+	public boolean deleteState(int stateId, DeltaVOP Vop) {
+		if (stateId == STATEID_NULL || stateId > _stateNumberMappingVector.size()) {
+		    return false;
+		}
+
+		int pos = _stateNumberMappingVector.indexOf(stateId);
+		
+		if (pos == -1 || pos >= _fixedData.nStatesUsed) {
+		    return false;  // probably better to throw something ... internal error.
+		}
+		// Remove the stateId from the list
+		_stateNumberMappingVector.remove(pos);
+		--_fixedData.nStatesUsed;
+
+		// Then re-insert it in the (sorted) "available IDs" list at the end
+		for (int i=_fixedData.nStatesUsed; i<_stateNumberMappingVector.size(); i++) {
+			if (stateId < _stateNumberMappingVector.get(i)) {
+				_stateNumberMappingVector.set(i, stateId);
+			}
+		}
+		
+		// Check the "available IDs" at the end of the list to see which can truly
+		// be removed. This will actually only happen when the state ID currently being
+		// deleted is the largest of the entire set.
+		int nRemoved = 0;
+		int i = _stateNumberMappingVector.size() - 1;
+		while (i >= _fixedData.nStatesUsed && _stateNumberMappingVector.get(i) == i) {
+		    _stateNumberMappingVector.remove(i);
+		    ++nRemoved;
+		    --i;
+		}
+
+		List<CharTextInfo> allText = readCharTextInfo(); // NOTE: Must do this BEFORE changing fixedData.nStates !
+
+		for (CharTextInfo info : allText) {
+		      
+		    VOCharTextDesc charText = (VOCharTextDesc)Vop.getDescFromId(info.charDesc);
+		    if (charText != null && charText.getCharBaseId() == getUniId()) {
+		         
+		        if (nRemoved > 0) {
+		            charText.resize(_stateNumberMappingVector.size());
+		        }
+		        else {
+		            charText.writeStateText("", stateId);
+		        }
+		    }
+		}
+		if (getCodedImplicit() == stateId) {
+		    setCodedImplicit(STATEID_NULL);
+		}
+		if (getUncodedImplicit() == stateId) {
+		    setUncodedImplicit(STATEID_NULL);
+		}
+		setDirty();
+		return true;
 	}
 
-	public short insertState(int stateNo, Object vopDoc) {
-		throw new NotImplementedException();
+	// Append a new state, then move it to the indicated stateNo (or just leave it
+	// at the end if stateNo == 0)
+	public int insertState(int stateNo, VOP vop) {
+		int stateId;
+		if (_fixedData.nStatesUsed < _stateNumberMappingVector.size()) {
+		    stateId = _stateNumberMappingVector.get(_fixedData.nStatesUsed);
+		}
+		else {
+		    List<CharTextInfo> allText = readCharTextInfo();
+		    stateId = _fixedData.nStatesUsed;
+		    _stateNumberMappingVector.add(stateId);
+		    for (CharTextInfo info : allText) {
+		        VOCharTextDesc charText = (VOCharTextDesc)vop.getDescFromId(info.charDesc);
+		        if (charText != null && charText.getCharBaseId() == getUniId()) {
+		            charText.resize(_stateNumberMappingVector.size());
+		        }
+		    }
+		}
+		++_fixedData.nStatesUsed;
+		moveState(_fixedData.nStatesUsed, stateNo);
+		setDirty();
+		return stateId;
 	}
 
 	// Fixed data offsets etc...
