@@ -1,6 +1,7 @@
 package au.org.ala.delta.editor.ui;
 
 import javax.swing.ActionMap;
+import javax.swing.DefaultListModel;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
@@ -9,10 +10,14 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 
+import au.org.ala.delta.model.MultiStateCharacter;
+import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.ui.rtf.RtfEditor;
 import javax.swing.JList;
 
@@ -28,9 +33,12 @@ public class StateEditor extends JPanel {
 	private JCheckBox chckbxImplicit;
 	private JList stateList;
 	private RtfEditor stateDescriptionPane;
+	private MultiStateCharacter _character;
+	
+	private CharacterFormatter _formatter;
 
 	public StateEditor() {
-		
+		_formatter = new CharacterFormatter(true, false, false, true);
 		createUI();
 		addEventHandlers();
 	}
@@ -43,6 +51,13 @@ public class StateEditor extends JPanel {
 		btnAdd.setAction(actions.get("addState"));
 		btnDelete.setAction(actions.get("deleteState"));
 		chckbxImplicit.setAction(actions.get("toggleStateImplicit"));
+		
+		stateList.addListSelectionListener(new ListSelectionListener() {
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				updateScreen();
+			}
+		});
 	}
 	
 	/**
@@ -85,8 +100,8 @@ public class StateEditor extends JPanel {
 					.addGap(27)
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addComponent(stateDescriptionLabel)
-						.addComponent(descriptionScroller, GroupLayout.PREFERRED_SIZE, 324, GroupLayout.PREFERRED_SIZE))
-					.addContainerGap(202, Short.MAX_VALUE))
+						.addComponent(descriptionScroller, GroupLayout.DEFAULT_SIZE, 324, Short.MAX_VALUE))
+					.addContainerGap())
 		);
 		groupLayout.setVerticalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
@@ -96,18 +111,45 @@ public class StateEditor extends JPanel {
 						.addComponent(lblDefinedStates)
 						.addComponent(stateDescriptionLabel))
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
-						.addGroup(groupLayout.createSequentialGroup()
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addGroup(Alignment.TRAILING, groupLayout.createSequentialGroup()
 							.addComponent(chckbxImplicit)
-							.addGap(67)
+							.addGap(96)
 							.addComponent(btnAdd)
-							.addPreferredGap(ComponentPlacement.RELATED)
+							.addPreferredGap(ComponentPlacement.UNRELATED)
 							.addComponent(btnDelete))
 						.addComponent(listScroller, GroupLayout.DEFAULT_SIZE, 162, Short.MAX_VALUE)
-						.addComponent(descriptionScroller, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-					.addContainerGap(215, Short.MAX_VALUE))
+						.addComponent(descriptionScroller))
+					.addContainerGap())
 		);
 		setLayout(groupLayout);
+	}
+	
+	
+	public void updateScreen() {
+		
+		int selectedIndex = stateList.getSelectedIndex();
+		
+		int selectedState = selectedIndex + 1;
+		if ((_character.getNumberOfStates() > 0) && (selectedState > 0)) {
+			stateDescriptionPane.setText(_character.getState(selectedState));
+		}
+		else {
+			stateDescriptionPane.setText("");
+		}
+		chckbxImplicit.setSelected(_character.getUncodedImplicitState() == selectedState);
+		
+	}
+	
+	public void bind(MultiStateCharacter character) {
+		_character = character;
+		DefaultListModel model = new DefaultListModel();
+		for (int i=1; i<=_character.getNumberOfStates(); i++) {
+			model.addElement(_formatter.formatState(_character, i));
+		}
+		stateList.setModel(model);
+		stateList.setSelectedIndex(0);
+		updateScreen();
 	}
 	
 	/**

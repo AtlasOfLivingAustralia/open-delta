@@ -37,6 +37,7 @@ import org.jdesktop.application.ResourceMap;
 import au.org.ala.delta.editor.model.EditorDataModel;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterType;
+import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.ui.rtf.RtfEditor;
 import au.org.ala.delta.ui.util.IconHelper;
@@ -67,6 +68,7 @@ public class CharacterEditor extends JDialog {
 	private JScrollPane editorScroller;
 	private JCheckBox exclusiveCheckBox; 
 	private JLabel characterNumberLabel;
+	private StateEditor stateEditor;
 	
 	@Resource
 	private String titleSuffix;
@@ -75,6 +77,7 @@ public class CharacterEditor extends JDialog {
 	@Resource
 	private String selectCharacterLabelText;
 	private JComboBox comboBox;
+	private JTabbedPane tabbedPane;
 	
 	public CharacterEditor(Window parent) {	
 		super(parent);
@@ -97,7 +100,7 @@ public class CharacterEditor extends JDialog {
 					return;
 				}
 				_selectedCharacter = _dataSet.getCharacter((Integer)spinner.getValue());
-				updateUI();
+				updateScreen();
 			}
 		});
 		
@@ -126,7 +129,7 @@ public class CharacterEditor extends JDialog {
 					return;
 				}
 				_selectedCharacter = _dataSet.getCharacter(characterSelectionList.getSelectedIndex()+1);
-				updateUI();
+				updateScreen();
 			}
 		});
 		
@@ -291,11 +294,10 @@ public class CharacterEditor extends JDialog {
 		);
 		panel.setLayout(new BorderLayout(0, 0));
 		
-		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
 		
-		StateEditor stateEditor = new StateEditor();
-		tabbedPane.addTab("States", stateEditor);
+		stateEditor = new StateEditor();
 		
 		ImageDetailsPanel imageDetails = new ImageDetailsPanel();
 		imageDetails.setEnabled(false);
@@ -318,7 +320,7 @@ public class CharacterEditor extends JDialog {
 		_dataSet = dataSet;
 		_selectedCharacter = dataSet.getSelectedCharacter();
 		
-		updateUI();
+		updateScreen();
 	}
 	
 	private void characterEditPerformed() {
@@ -331,7 +333,7 @@ public class CharacterEditor extends JDialog {
 	/**
 	 * Synchronizes the state of the UI with the currently selected Item.
 	 */
-	private void updateUI() {
+	private void updateScreen() {
 		
 		_editsDisabled = true;
 		setTitle(_dataSet.getName() + " "+titleSuffix);
@@ -350,6 +352,15 @@ public class CharacterEditor extends JDialog {
 		exclusiveCheckBox.setSelected(_selectedCharacter.isExclusive());
 		comboBox.setSelectedItem(_selectedCharacter.getCharacterType());
 		
+		if (_selectedCharacter instanceof MultiStateCharacter) {
+			
+			stateEditor.bind((MultiStateCharacter)_selectedCharacter);
+			tabbedPane.insertTab("States", null, stateEditor, "", 0);
+			tabbedPane.setSelectedComponent(stateEditor);
+		}
+		else {
+			tabbedPane.remove(stateEditor);
+		}
 		_editsDisabled = false;
 	}
 	
