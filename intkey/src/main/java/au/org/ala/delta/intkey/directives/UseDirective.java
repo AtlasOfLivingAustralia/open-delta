@@ -101,6 +101,7 @@ public class UseDirective extends IntkeyDirective {
                 if (charValue != null) {
                     if (ch instanceof MultiStateCharacter) {
                         List<Integer> stateValues = ParsingUtils.parseMultiStateCharacterValue(charValue);
+                        //TODO need error if non existent state values are listed
                         invoc.addCharacterValue((MultiStateCharacter) ch, new MultiStateValue((MultiStateCharacter) ch, stateValues));
                     } else if (ch instanceof IntegerCharacter) {
                         IntRange intRange = ParsingUtils.parseIntegerCharacterValue(charValue);
@@ -217,6 +218,9 @@ public class UseDirective extends IntkeyDirective {
             List<Character> charsNoValues = new ArrayList<Character>();
 
             for (Character ch : _characterValues.keySet()) {
+                // first call to processControllingCharacters() - prompt
+                // user to enter values for controlling characters if
+                // appropriate
                 processControllingCharacters(ch, context, false);
             }
 
@@ -303,7 +307,11 @@ public class UseDirective extends IntkeyDirective {
             for (Character ch : charactersToUse) {
                 CharacterValue characterVal = _characterValues.get(ch);
 
+                // second call to processControllingCharacters() -
+                // automatically set the value for controlling characters if
+                // their values have not already been set.
                 processControllingCharacters(ch, context, true);
+                
                 context.setValueForCharacter(ch, characterVal);
             }
 

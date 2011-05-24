@@ -12,6 +12,8 @@ import au.org.ala.delta.model.CharacterDependency;
 
 public class Specimen {
     
+    //TODO characters applicable/inapplicable
+    
     IntkeyDataset _dataset;
     
     // Use a linked hash map so that character can be returned in the
