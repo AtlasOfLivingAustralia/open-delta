@@ -2,7 +2,6 @@ package au.org.ala.delta.editor.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.Window;
 
 import javax.swing.AbstractListModel;
 import javax.swing.ActionMap;
@@ -12,7 +11,7 @@ import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
+import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -34,28 +33,28 @@ import org.jdesktop.application.Application;
 import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 
-import au.org.ala.delta.editor.model.EditorDataModel;
+import au.org.ala.delta.editor.DeltaView;
+import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.ui.rtf.RtfEditor;
-import au.org.ala.delta.ui.util.IconHelper;
 
 /**
  * Provides a user interface that allows a character to be edited.
  */
-public class CharacterEditor extends JDialog {
+public class CharacterEditor extends JInternalFrame implements DeltaView {
 	
 	private static final long serialVersionUID = 9193388605723396077L;
 
 	/** Contains the items we can edit */
-	private EditorDataModel _dataSet;
+	private EditorViewModel _dataSet;
 	
 	/** The currently selected character */
 	private Character _selectedCharacter;
 	
-	/** Flag to allow updates to the model to be disabled during new item selection */
+	/** Flag to allow updates to the model to be disabled during new character selection */
 	private boolean _editsDisabled;
 	
 	private JSpinner spinner;
@@ -79,14 +78,14 @@ public class CharacterEditor extends JDialog {
 	private JComboBox comboBox;
 	private JTabbedPane tabbedPane;
 	
-	public CharacterEditor(Window parent) {	
-		super(parent);
+	public CharacterEditor(EditorViewModel model) {	
 		setName("CharacterEditorDialog");
 		ResourceMap resources = Application.getInstance().getContext().getResourceMap(CharacterEditor.class);
 		resources.injectFields(this);
 		ActionMap map = Application.getInstance().getContext().getActionMap(this);
 		createUI();
 		addEventHandlers(map);
+		bind(model);
 	}
 
 	/**
@@ -188,7 +187,7 @@ public class CharacterEditor extends JDialog {
 	 * Creates the user interface components of this dialog.
 	 */
 	private void createUI() {
-		setIconImages(IconHelper.getBlueIconList());
+		
 		characterNumberLabel = new JLabel("Character Number:");
 		characterNumberLabel.setName("characterNumberLabel");
 		
@@ -308,7 +307,6 @@ public class CharacterEditor extends JDialog {
 		getContentPane().setLayout(groupLayout);
 		setPreferredSize(new Dimension(827, 500));
 		setMinimumSize(new Dimension(748, 444));
-		setModal(true);
 	}
 	
 	/**
@@ -316,7 +314,7 @@ public class CharacterEditor extends JDialog {
 	 * @param dataSet the data set the dialog operates from.
 	 * @param itemNumber the currently selected item
 	 */
-	public void bind(EditorDataModel dataSet) {
+	public void bind(EditorViewModel dataSet) {
 		_dataSet = dataSet;
 		_selectedCharacter = dataSet.getSelectedCharacter();
 		
@@ -362,6 +360,19 @@ public class CharacterEditor extends JDialog {
 			tabbedPane.remove(stateEditor);
 		}
 		_editsDisabled = false;
+	}
+	
+	@Override
+	public void open() {}
+
+	@Override
+	public boolean editsValid() {
+		return true;
+	}
+
+	@Override
+	public String getViewTitle() {
+		return titleSuffix;
 	}
 	
 	class CharacterListModel extends AbstractListModel {

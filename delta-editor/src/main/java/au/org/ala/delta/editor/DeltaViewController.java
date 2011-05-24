@@ -289,6 +289,14 @@ public class DeltaViewController extends InternalFrameAdapter implements Vetoabl
 		
 		return view;
 	}
+	
+	public DeltaView createCharacterEditView() {
+		DeltaViewModel model = createViewModel();
+		DeltaView view = _viewFactory.createCharacterEditView(model);
+		viewerOpened(view, model);
+		
+		return view;
+	}
 
 	private DeltaViewModel createViewModel() {
 		return new DeltaViewModel(_dataSet);
@@ -311,6 +319,8 @@ public class DeltaViewController extends InternalFrameAdapter implements Vetoabl
 			_observers.get(i).viewSelected(this, view);
 		}
 	}
+
+	
 	
 }
  

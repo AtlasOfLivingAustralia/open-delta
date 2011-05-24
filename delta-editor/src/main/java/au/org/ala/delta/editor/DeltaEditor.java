@@ -56,7 +56,6 @@ import au.org.ala.delta.editor.directives.ImportController;
 import au.org.ala.delta.editor.model.EditorDataModel;
 import au.org.ala.delta.editor.slotfile.model.SlotFileRepository;
 import au.org.ala.delta.editor.support.InternalFrameApplication;
-import au.org.ala.delta.editor.ui.CharacterEditor;
 import au.org.ala.delta.editor.ui.StatusBar;
 import au.org.ala.delta.editor.ui.help.HelpConstants;
 import au.org.ala.delta.editor.ui.util.MenuBuilder;
@@ -637,9 +636,9 @@ public class DeltaEditor extends InternalFrameApplication implements
 
 	@Action(enabledProperty = "saveAsEnabled")
 	public void viewCharacterEditor() {
-		CharacterEditor editor = new CharacterEditor(this.getMainFrame());
-		editor.bind(getCurrentDataSet());
-		show(editor);
+		
+		DeltaView editor = _activeController.createCharacterEditView();
+		newView(editor, "T");
 	}
 
 	@Action(enabledProperty = "saveAsEnabled")
