@@ -140,6 +140,10 @@ public class DeltaViewController extends InternalFrameAdapter implements Vetoabl
 		_dataSet.removeDeltaDataSetObserver(model);
 		_dataSet.removePreferenceChangeListener(model);
 		fireViewClosed(view);
+		
+		if (_activeViews.size() == 0) {
+			_dataSet.close();
+		}
 	}
 	
 	@Override
@@ -204,6 +208,7 @@ public class DeltaViewController extends InternalFrameAdapter implements Vetoabl
 					view.setClosed(true);
 				}
 				_activeViews.clear();
+				_dataSet.close();
 				return true;
 			}
 			catch (PropertyVetoException e) {}

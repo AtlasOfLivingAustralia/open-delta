@@ -52,10 +52,6 @@ public class EditorDataModel extends DataSetWrapper implements EditorViewModel, 
 	
 	public void removePropertyChangeListener(PropertyChangeListener listener) {
 		_propertyChangeSupport.removePropertyChangeListener(listener);
-		
-		if (_propertyChangeSupport.getPropertyChangeListeners().length == 0) {
-			close();
-		}
 	}
 	
 	
