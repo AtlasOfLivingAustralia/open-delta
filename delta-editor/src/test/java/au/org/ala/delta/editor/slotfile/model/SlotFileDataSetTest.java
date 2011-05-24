@@ -157,13 +157,13 @@ public class SlotFileDataSetTest  extends DeltaTestCase {
 		
 		item = _dataSet.getItem(item.getItemNumber());
 		assertEquals(description, item.getDescription());
-		assertEquals(attributeText, item.getAttribute(textChar).getValue());
+		assertEquals(attributeText, item.getAttribute(textChar).getValueAsString());
 		assertTrue(item.isVariant());
 		
 		item = _dataSet.addItem();
 		attributeText = "\\i{}Ornithospermum\\i0{} Dumoulin, \\i{}Tema\\i0{} Adans.";
 		item.addAttribute(textChar,"<"+attributeText+">");
-		assertEquals(attributeText, item.getAttribute(textChar).getValue());
+		assertEquals(attributeText, item.getAttribute(textChar).getValueAsString());
 		assertFalse(item.isVariant());
 	}
 	

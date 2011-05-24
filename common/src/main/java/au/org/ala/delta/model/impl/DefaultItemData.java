@@ -7,6 +7,7 @@ import java.util.Map;
 import org.apache.commons.lang.NotImplementedException;
 
 import au.org.ala.delta.model.Attribute;
+import au.org.ala.delta.model.AttributeFactory;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.image.Image;
 
@@ -44,7 +45,7 @@ public class DefaultItemData implements ItemData {
 
         Attribute attribute = _attributes.get(character);
         if (attribute == null) {
-            attribute = new Attribute(character, new DefaultAttributeData());
+            attribute = AttributeFactory.newAttribute(character, new DefaultAttributeData());
         }
 
         return attribute;
@@ -54,7 +55,7 @@ public class DefaultItemData implements ItemData {
     public void addAttribute(Character character, String value) {
         DefaultAttributeData attributeData = new DefaultAttributeData();
         attributeData.setValue(value);
-        Attribute attribute = new Attribute(character, attributeData);
+        Attribute attribute = AttributeFactory.newAttribute(character, attributeData);
         _attributes.put(character, attribute);
     }
 

@@ -37,7 +37,7 @@ public class VariantItem extends Item {
 	 */
 	public boolean isInherited(Character character) {
 		Attribute attribute = super.doGetAttribute(character);
-		return ((attribute == null) || StringUtils.isEmpty(attribute.getValue()));
+		return ((attribute == null) || StringUtils.isEmpty(attribute.getValueAsString()));
 	}
 
 

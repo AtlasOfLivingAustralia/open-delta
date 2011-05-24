@@ -67,6 +67,7 @@ import au.org.ala.delta.editor.ui.validator.ValidationResult;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.MultiStateAttribute;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.NumericCharacter;
 import au.org.ala.delta.model.TextCharacter;
@@ -304,12 +305,14 @@ public class TreeViewer extends JInternalFrame implements DeltaView {
 		}
 		@Override
 		protected Component configureEditingComponent(Attribute attribute, DefaultMutableTreeNode node) {
+		    MultiStateAttribute multiStateAttr = (MultiStateAttribute) attribute;
 			MultistateStateNode nodeValue = (MultistateStateNode)node;
 			
-			MultiStateCharacter character = (MultiStateCharacter)attribute.getCharacter();
+			MultiStateCharacter character = (MultiStateCharacter)multiStateAttr.getCharacter();
 			int stateNum = nodeValue.getStateNo();
 			getEditingCheckBox().setText(character.getState(stateNum));
-			getEditingCheckBox().setSelected(attribute.isPresent(stateNum));
+			
+			getEditingCheckBox().setSelected(multiStateAttr.isStatePresent(stateNum));
 			return editorComponent;
 		}	
 		
@@ -413,7 +416,7 @@ public class TreeViewer extends JInternalFrame implements DeltaView {
 
 		@Override
 		protected Component configureEditingComponent(Attribute attribute, DefaultMutableTreeNode nodeUserObject) {
-			getTextField().setText(attribute.getValue());
+			getTextField().setText(attribute.getValueAsString());
 			Character character = attribute.getCharacter();
 			
 			if ((character != null) && (character instanceof NumericCharacter<?>)) {
@@ -625,13 +628,13 @@ class CharacterTreeModel extends DefaultTreeModel {
 	   if (aNode instanceof MultistateStateNode) {
 		   MultistateStateNode node = (MultistateStateNode)aNode;
 		   
-		   Attribute attribute = item.getAttribute(node.getCharacter());
+		   MultiStateAttribute attribute = (MultiStateAttribute) item.getAttribute(node.getCharacter());
 		   attribute.setStatePresent(node.getStateNo(), (Boolean)newValue);
 	   }
 	   else {
 		   CharStateHolder holder = (CharStateHolder)aNode.getUserObject();
 		   Attribute attribute = item.getAttribute(holder.getCharacter());
-		   attribute.setValue((String)newValue);
+		   attribute.setValueFromString((String)newValue);
 	   }
       
        nodeChanged(aNode);

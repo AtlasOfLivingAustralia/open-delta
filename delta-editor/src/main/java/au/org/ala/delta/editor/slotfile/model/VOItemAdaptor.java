@@ -25,6 +25,7 @@ import au.org.ala.delta.editor.slotfile.TextType;
 import au.org.ala.delta.editor.slotfile.VOCharBaseDesc;
 import au.org.ala.delta.editor.slotfile.VOImageHolderDesc;
 import au.org.ala.delta.editor.slotfile.VOItemDesc;
+import au.org.ala.delta.model.AttributeFactory;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.impl.AttributeData;
 import au.org.ala.delta.model.impl.ItemData;
@@ -81,7 +82,7 @@ public class VOItemAdaptor extends ImageHolderAdaptor implements ItemData {
 		}
 		
 		AttributeData impl = new VOAttributeAdaptor(_voItemDesc, getVOCharBaseDesc(character));
-		return new au.org.ala.delta.model.Attribute(character, impl);
+		return AttributeFactory.newAttribute(character, impl);
 	}
 
 	/**

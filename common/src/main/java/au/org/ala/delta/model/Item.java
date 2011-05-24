@@ -92,7 +92,7 @@ public class Item implements AttributeObserver, Illustratable {
 	
 	public boolean hasAttribute(Character character) {
 		Attribute attribute = getAttribute(character);
-		return ((attribute != null) && StringUtils.isNotEmpty(attribute.getValue()));
+		return ((attribute != null) && StringUtils.isNotEmpty(attribute.getValueAsString()));
 	}
 	
 	public boolean isVariant() {

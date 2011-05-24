@@ -53,7 +53,7 @@ public class DefaultDataSet extends AbstractObservableDataSet {
 
 	@Override
 	public String getAttributeAsString(int itemNumber, int characterNumber) {
-		return getItem(itemNumber).getAttribute(getCharacter(characterNumber)).getValue();
+		return getItem(itemNumber).getAttribute(getCharacter(characterNumber)).getValueAsString();
 	}
 
 	@Override

@@ -55,6 +55,7 @@ import au.org.ala.delta.editor.ui.validator.ValidationResult;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.MultiStateAttribute;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.NumericCharacter;
 import au.org.ala.delta.model.format.CharacterFormatter;
@@ -280,7 +281,7 @@ public class AttributeEditor extends JPanel implements ValidationListener, Prefe
 				_inapplicable = _character.checkApplicability(_item).isInapplicable();
 				Attribute attr = _item.getAttribute(_character);
 				if (attr != null) {
-					String value = attr.getValue();
+					String value = attr.getValueAsString();
 					if (value != null) {
 						if (!value.startsWith("{\\rtf1")) {
 							value = String.format("{\\rtf1\\ansi\\ansicpg1252 %s }", value);
@@ -409,7 +410,7 @@ public class AttributeEditor extends JPanel implements ValidationListener, Prefe
 				String attributeText = _textPane.getRtfTextBody();
 				Attribute attr = _item.getAttribute(_character);
 				if (attr != null) {
-					attr.setValue(attributeText);
+					attr.setValueFromString(attributeText);
 				} else {
 					System.err.println("No Attribute! should I be allowed to edit this?");
 				}
@@ -503,7 +504,8 @@ public class AttributeEditor extends JPanel implements ValidationListener, Prefe
 			
 			JCheckBox checkBox = (JCheckBox)super.getTableCellEditorComponent(table, value, isSelected, row, column);
 			checkBox.setOpaque(false);
-			checkBox.setSelected(_item.getAttribute(_character).isPresent(row+1));
+			MultiStateAttribute attr = (MultiStateAttribute) _item.getAttribute(_character);
+			checkBox.setSelected(attr.isStatePresent(row+1));
 			checkBox.setText((String)value);
 			return checkBox;
 		}
@@ -574,7 +576,8 @@ public class AttributeEditor extends JPanel implements ValidationListener, Prefe
 	
 		@Override
 		public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-			_item.getAttribute(_character).setStatePresent(rowIndex+1, (Boolean)aValue);
+		    MultiStateAttribute attr = (MultiStateAttribute) _item.getAttribute(_character); 
+		    attr.setStatePresent(rowIndex+1, (Boolean)aValue);
 		}
 		
 	}

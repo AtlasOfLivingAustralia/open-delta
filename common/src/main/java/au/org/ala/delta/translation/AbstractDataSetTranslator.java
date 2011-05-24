@@ -59,7 +59,7 @@ public abstract class AbstractDataSetTranslator implements DataSetTranslator {
 			Attribute attribute = item.getAttribute(character);
 			
 			if (_filter.filter(item, character)) {
-				logger.fine(item.getItemNumber() + ", "+character.getCharacterId()+" = "+attribute.getValue());
+				logger.fine(item.getItemNumber() + ", "+character.getCharacterId()+" = "+attribute.getValueAsString());
 				beforeAttribute(attribute);
 				
 				afterAttribute(attribute);

@@ -207,7 +207,7 @@ public class NaturalLanguageTranslator extends AbstractDataSetTranslator impleme
 		// comments are treated
 		// as I don't yet understand how item descriptions are broken into the
 		// subgroups.
-		String itemDescription = attribute.getValue();
+		String itemDescription = attribute.getValueAsString();
 		_printer.writeJustifiedText(itemDescription, 0);
 
 		
@@ -296,7 +296,7 @@ public class NaturalLanguageTranslator extends AbstractDataSetTranslator impleme
 		AttributeParser parser = new AttributeParser();
 		AttributeTranslator translator = translatorFor(character);
 		
-		String value = attribute.getValue();
+		String value = attribute.getValueAsString();
 		if (attribute.isImplicit()) {
 			value = attribute.getImplicitValue();
 		}

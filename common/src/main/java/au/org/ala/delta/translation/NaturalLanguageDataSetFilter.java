@@ -40,7 +40,7 @@ public class NaturalLanguageDataSetFilter implements DataSetFilter {
 			return false;
 		}
 		// TODO - need to implement controlling chars in the default data model.
-		if ("-".equals(attribute.getValue())) {
+		if ("-".equals(attribute.getValueAsString())) {
 			return false;
 		}
 		if (item.isVariant()) {
@@ -85,7 +85,7 @@ public class NaturalLanguageDataSetFilter implements DataSetFilter {
 				return false;
 			}
 			Attribute attribute = item.getAttribute(character);
-			return !(attribute.getValue().equals(item.getParentAttribute(character).getValue()));
+			return !(attribute.getValueAsString().equals(item.getParentAttribute(character).getValueAsString()));
 				
 		}
 		

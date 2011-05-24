@@ -8,6 +8,7 @@ import javax.swing.JCheckBox;
 
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.MultiStateAttribute;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.ui.util.IconHelper;
 
@@ -55,8 +56,8 @@ public class MultiStateCheckbox extends JCheckBox {
 				setDisabledIcon(_inapplicable_icon);
 			} else {
 				setDisabledIcon(_disabled_icon);
-				Attribute attr = _item.getAttribute(_character);
-				setSelected(attr.isPresent(_stateNo));
+				MultiStateAttribute attr = (MultiStateAttribute) _item.getAttribute(_character);
+				setSelected(attr.isStatePresent(_stateNo));
 				if (attr.isImplicit()) {
 					setSelectedIcon(_implicit_icon);
 				}

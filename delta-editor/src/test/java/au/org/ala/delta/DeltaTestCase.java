@@ -109,7 +109,7 @@ public abstract class DeltaTestCase extends TestCase {
 				au.org.ala.delta.model.Attribute a = item.getAttribute(ch);
 				if (a != null) {
 				
-					String strValue = a.getValue();
+					String strValue = a.getValueAsString();
 					if (ch.getCharacterType() == CharacterType.Text) {
 						RTFUtils.stripFormatting(strValue);
 					}

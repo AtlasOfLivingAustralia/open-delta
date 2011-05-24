@@ -115,8 +115,8 @@ public class ImportControllerTest extends TestCase {
 		//assertEquals("\\i{}Cynodon\\i0{} <Rich.>", item.getDescription());
 		
 		assertEquals("\\i{}Cynodon\\i0{} <Rich.>", item.getDescription());
-		assertEquals("4-60(-100)", item.getAttribute(_dataSet.getCharacter(2)).getValue());
-		assertEquals("3", item.getAttribute(_dataSet.getCharacter(60)).getValue());
+		assertEquals("4-60(-100)", item.getAttribute(_dataSet.getCharacter(2)).getValueAsString());
+		assertEquals("3", item.getAttribute(_dataSet.getCharacter(60)).getValueAsString());
 		
 	}
 	

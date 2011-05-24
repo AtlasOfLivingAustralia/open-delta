@@ -26,9 +26,9 @@ import au.org.ala.delta.model.observer.AttributeObserver;
 /**
  * An attribute is the value of a single character associated with an item.
  */
-public class Attribute {
+public abstract class Attribute {
 
-	private AttributeData _impl;
+	protected AttributeData _impl;
 	
 	protected Character _character;
 	protected Item _item;
@@ -51,32 +51,6 @@ public class Attribute {
 		return _item;
 	}
 	
-	public boolean isPresent(int stateNumber) {
-		
-		if (!(_character instanceof MultiStateCharacter)) {
-			return false;
-		}
-		
-		
-		boolean statePresent = _impl.isStatePresent(stateNumber);
-		
-		if ((statePresent == false) && (StringUtils.isEmpty(getValue()))) {
-			MultiStateCharacter multiStateChar = (MultiStateCharacter)_character;
-			statePresent = (stateNumber == multiStateChar.getUncodedImplicitState());
-		}
-		return statePresent;
-	}
-	
-	public void setStatePresent(int stateNumber, boolean present) {
-		if (!(_character instanceof MultiStateCharacter)) {
-			return;
-		}
-		
-		_impl.setStatePresent(stateNumber, present);
-		
-		notifyObservers();
-	}
-	
 	/**
 	 * An implicit value is one for which no attribute value is coded but an implicit value
 	 * has been specified for the attributes character.
@@ -87,7 +61,7 @@ public class Attribute {
 			return false;
 		}
 		MultiStateCharacter multiStateChar = (MultiStateCharacter)_character;
-		return (StringUtils.isEmpty(getValue()) && multiStateChar.getUncodedImplicitState() > 0);
+		return (StringUtils.isEmpty(getValueAsString()) && multiStateChar.getUncodedImplicitState() > 0);
 	}
 	
 	/**
@@ -96,7 +70,7 @@ public class Attribute {
 	 * @return true if the value of this attribute is unknown.
 	 */
 	public boolean isUnknown() {
-		String value = getValue();
+		String value = getValueAsString();
 		return ("U".equals(value) || (StringUtils.isEmpty(value) && !isImplicit()));
 	}
 	
@@ -104,11 +78,11 @@ public class Attribute {
 		return _impl.isSimple();
 	}
 	
-	public String getValue() {
+	public String getValueAsString() {
 		return _impl.getValue();
 	}
 	
-	public void setValue(String value) {
+	public void setValueFromString(String value) {
 		_impl.setValue(value);
 		notifyObservers();
 	}
