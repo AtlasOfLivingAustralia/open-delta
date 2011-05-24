@@ -1,6 +1,7 @@
 package au.org.ala.delta.editor.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 
 import javax.swing.AbstractListModel;
@@ -13,6 +14,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
@@ -27,6 +29,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.plaf.basic.BasicComboBoxRenderer;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
@@ -78,10 +81,12 @@ public class CharacterEditor extends JInternalFrame implements DeltaView {
 	private JComboBox comboBox;
 	private JTabbedPane tabbedPane;
 	
+	private ResourceMap _resources;
+	
 	public CharacterEditor(EditorViewModel model) {	
 		setName("CharacterEditorDialog");
-		ResourceMap resources = Application.getInstance().getContext().getResourceMap(CharacterEditor.class);
-		resources.injectFields(this);
+		_resources = Application.getInstance().getContext().getResourceMap(CharacterEditor.class);
+		_resources.injectFields(this);
 		ActionMap map = Application.getInstance().getContext().getActionMap(this);
 		createUI();
 		addEventHandlers(map);
@@ -220,6 +225,7 @@ public class CharacterEditor extends JInternalFrame implements DeltaView {
 		
 		comboBox = new JComboBox();
 		comboBox.setModel(new CharacterTypeComboModel());
+		comboBox.setRenderer(new CharacterTypeRenderer());
 		
 		JLabel lblCharacterType = new JLabel("Character Type:");
 		
@@ -418,5 +424,23 @@ public class CharacterEditor extends JInternalFrame implements DeltaView {
 			return _selected;
 		}
 		
+	}
+	
+	class CharacterTypeRenderer extends BasicComboBoxRenderer {
+
+		private static final long serialVersionUID = 7953163275755684592L;
+
+		private static final String PREFIX = "characterType.";
+		
+		@Override
+		public Component getListCellRendererComponent(JList list, Object value,
+				int index, boolean isSelected, boolean cellHasFocus) {
+			super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+			
+			String key = PREFIX+value;
+			setText(_resources.getString(key));
+			
+			return this;
+		}
 	}
 }
