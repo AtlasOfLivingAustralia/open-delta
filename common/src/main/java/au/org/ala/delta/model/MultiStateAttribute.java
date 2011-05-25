@@ -1,5 +1,7 @@
 package au.org.ala.delta.model;
 
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.model.impl.AttributeData;
@@ -36,5 +38,16 @@ public class MultiStateAttribute extends Attribute {
         
         notifyObservers();
     }
+    
+    public List<Integer> getPresentStates() {
+    	return _impl.getPresentStates();
+    }
+
+    /**
+     * @return true if this attribute has been coded as "V" (variable).
+     */
+	public boolean isVariable() {
+		return _impl.isVariable();
+	}
 
 }

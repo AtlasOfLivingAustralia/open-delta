@@ -82,7 +82,12 @@ public class VOCharacterAdaptor extends ImageHolderAdaptor implements CharacterD
 
 	@Override
 	public void setExclusive(boolean b) {
-		_charDesc.setCharFlag(VOCharBaseDesc.CHAR_EXCLUSIVE);
+		if (b) {
+			_charDesc.setCharFlag(VOCharBaseDesc.CHAR_EXCLUSIVE);
+		}
+		else {
+			_charDesc.clearCharFlag(VOCharBaseDesc.CHAR_EXCLUSIVE);
+		}
 	}
 
 	@Override

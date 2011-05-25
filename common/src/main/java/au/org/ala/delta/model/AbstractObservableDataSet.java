@@ -131,6 +131,23 @@ public abstract class AbstractObservableDataSet implements ObservableDeltaDataSe
 		return uncodedItems;
 	}
 	
+	@Override
+	public List<Item> getItemsWithMultipleStatesCoded(MultiStateCharacter character) {
+		List<Item> items = new ArrayList<Item>();
+		for (int i=1; i<=getMaximumNumberOfItems(); i++) {
+			Item item = getItem(i);
+			MultiStateAttribute attribute = (MultiStateAttribute)item.getAttribute(character);
+			if (attribute == null) {
+				continue;
+			}
+			List<Integer> states = attribute.getPresentStates();
+			if (states.size() > 1 || attribute.isVariable()) {
+				items.add(item);
+			}
+		}
+		return items;
+	}
+	
 	/**
 	 * Adds an observer interested in receiving notification of changes to this data set.
 	 * Duplicate observers are ignored.

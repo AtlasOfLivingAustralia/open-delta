@@ -1,5 +1,7 @@
 package au.org.ala.delta.model.impl;
 
+import java.util.List;
+
 
 /**
  * A simple implementation of AttributeData that stores attribute data in-memory.
@@ -32,5 +34,17 @@ public class DefaultAttributeData implements AttributeData {
 	public boolean isSimple() {
 		return false;
 	}
+	
+	@Override
+	public List<Integer> getPresentStates() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public boolean isVariable() {
+		return "V".equals(_value);
+	}
+	
+	
 
 }

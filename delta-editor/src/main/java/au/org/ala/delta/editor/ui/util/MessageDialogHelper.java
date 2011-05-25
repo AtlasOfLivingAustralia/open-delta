@@ -55,4 +55,10 @@ public class MessageDialogHelper {
 		String message = _messages.getString("uncodedMandatoryItems.message");
 		JOptionPane.showMessageDialog(_dialogParent, message, title, JOptionPane.WARNING_MESSAGE);
 	}
+
+	public void cannotMakeCharacterExclusive() {
+		String title = _messages.getString("cannotMakeCharacterExclusive.title");
+		String message = _messages.getString("cannotMakeCharacterExclusive.message");
+		JOptionPane.showMessageDialog(_dialogParent, message, title, JOptionPane.ERROR_MESSAGE);
+	}
 }

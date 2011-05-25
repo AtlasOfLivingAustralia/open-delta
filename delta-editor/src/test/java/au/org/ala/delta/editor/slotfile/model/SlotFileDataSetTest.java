@@ -396,4 +396,62 @@ public class SlotFileDataSetTest  extends DeltaTestCase {
 		
 	}
 	
+	@Test
+	public void testGetUncodedItems() throws Exception {
+		File f = copyURLToFile("/SAMPLE.DLT");
+		DeltaDataSet dataSet = _repo.findByName(f.getAbsolutePath(), null);
+		
+		au.org.ala.delta.model.Character character = dataSet.getCharacter(2);
+		List<Item> uncodedItems = dataSet.getUncodedItems(character);
+		
+		assertEquals(0, uncodedItems.size());
+		
+		character = dataSet.getCharacter(5);
+		uncodedItems = dataSet.getUncodedItems(character);
+		
+		assertEquals(6, uncodedItems.size());
+		
+		assertEquals(2, uncodedItems.get(0).getItemNumber());
+		assertEquals(4, uncodedItems.get(1).getItemNumber());
+		assertEquals(5, uncodedItems.get(2).getItemNumber());
+		assertEquals(8, uncodedItems.get(3).getItemNumber());
+		assertEquals(10, uncodedItems.get(4).getItemNumber());
+		assertEquals(14, uncodedItems.get(5).getItemNumber());
+	}
+	
+	@Test
+	public void testGetItemsWithMultipleStatesCoded() throws Exception {
+		File f = copyURLToFile("/SAMPLE.DLT");
+		DeltaDataSet dataSet = _repo.findByName(f.getAbsolutePath(), null);
+		
+		MultiStateCharacter character = (MultiStateCharacter)dataSet.getCharacter(10);
+		List<Item> items = dataSet.getItemsWithMultipleStatesCoded(character);
+		
+		assertEquals(1, items.size());
+		assertEquals(1, items.get(0).getItemNumber());
+		
+		character = (MultiStateCharacter)dataSet.getCharacter(8);
+		items = dataSet.getItemsWithMultipleStatesCoded(character);
+		
+		assertEquals(4, items.size());
+		assertEquals(9, items.get(0).getItemNumber());
+		assertEquals(10, items.get(1).getItemNumber());
+		assertEquals(12, items.get(2).getItemNumber());
+		assertEquals(13, items.get(3).getItemNumber());
+		
+		dataSet.getItem(11).addAttribute(character, "V");
+		items = dataSet.getItemsWithMultipleStatesCoded(character);
+		
+		assertEquals(5, items.size());
+		assertEquals(11, items.get(2).getItemNumber());
+		
+		character = (MultiStateCharacter)dataSet.getCharacter(16);
+		items = dataSet.getItemsWithMultipleStatesCoded(character);
+		
+		assertEquals(0, items.size());
+		
+		
+		
+	}
+	
 }

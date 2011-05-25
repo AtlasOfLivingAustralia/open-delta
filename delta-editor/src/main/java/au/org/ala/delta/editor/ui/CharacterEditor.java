@@ -45,6 +45,8 @@ import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.format.CharacterFormatter;
+import au.org.ala.delta.model.observer.AbstractDataSetObserver;
+import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
 import au.org.ala.delta.ui.rtf.RtfEditor;
 
 /**
@@ -172,7 +174,25 @@ public class CharacterEditor extends JInternalFrame implements DeltaView {
 	@Action
 	public void exclusiveChanged() {
 		if (_selectedCharacter.getCharacterType().isMultistate()) {
-			((MultiStateCharacter)_selectedCharacter).setExclusive(mandatoryCheckBox.isSelected());
+			
+			MultiStateCharacter multiStateChar = (MultiStateCharacter)_selectedCharacter;
+			if (!multiStateChar.isExclusive()) {
+				// We are making the Character exclusive, need to check if there are any
+				// attributes coded with more than one state.
+				if (_dataSet.getItemsWithMultipleStatesCoded(multiStateChar).size() == 0) {
+					multiStateChar.setExclusive(true);	
+				}
+				else {
+					multiStateChar.setExclusive(false);
+					_dialogHelper.cannotMakeCharacterExclusive();
+				}
+			}
+			else {
+				multiStateChar.setExclusive(false);
+			}
+		}
+		else {
+			throw new UnsupportedOperationException("Only MultiStateCharacters can be exclusive");
 		}
 	}
 	
@@ -340,6 +360,16 @@ public class CharacterEditor extends JInternalFrame implements DeltaView {
 		_dataSet = dataSet;
 		_selectedCharacter = dataSet.getSelectedCharacter();
 		
+		_dataSet.addDeltaDataSetObserver(new AbstractDataSetObserver() {
+
+			@Override
+			public void characterEdited(DeltaDataSetChangeEvent event) {
+				if (event.getCharacter().equals(_selectedCharacter)) {
+					updateScreen();
+				}
+			}
+		});
+		
 		updateScreen();
 	}
 	
@@ -381,7 +411,8 @@ public class CharacterEditor extends JInternalFrame implements DeltaView {
 			exclusiveCheckBox.setSelected(multistateChar.isExclusive());
 		}
 		else {
-			exclusiveCheckBox.setEnabled(true);
+			exclusiveCheckBox.setEnabled(false);
+			exclusiveCheckBox.setSelected(false);
 			tabbedPane.remove(stateEditor);
 		}
 		_editsDisabled = false;

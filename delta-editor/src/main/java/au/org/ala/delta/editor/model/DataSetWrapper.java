@@ -163,6 +163,12 @@ public class DataSetWrapper implements ObservableDeltaDataSet, DeltaDataSetObser
 	public List<Item> getUncodedItems(Character character) {
 		return _wrappedDataSet.getUncodedItems(character);
 	}
+	
+	@Override
+	public List<Item> getItemsWithMultipleStatesCoded(
+			MultiStateCharacter character) {
+		return _wrappedDataSet.getItemsWithMultipleStatesCoded(character);
+	}
 
 	@Override
 	public void itemAdded(DeltaDataSetChangeEvent event) {

@@ -1,5 +1,8 @@
 package au.org.ala.delta.editor.slotfile.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import au.org.ala.delta.editor.slotfile.AttrChunk;
 import au.org.ala.delta.editor.slotfile.Attribute;
 import au.org.ala.delta.editor.slotfile.Attribute.AttrIterator;
@@ -154,7 +157,33 @@ public class VOAttributeAdaptor implements AttributeData {
 		
 		return true;
 	}
-	
-	
 
+	@Override
+	public List<Integer> getPresentStates() {
+		Attribute attribute = _itemDesc.readAttribute(_charBaseDesc.getUniId());
+		List<Integer> stateIds = new ArrayList<Integer>();
+		short[] pseudoValues = new short[1];
+		if (attribute != null) {
+			attribute.getEncodedStates(_charBaseDesc, stateIds, pseudoValues);
+		}
+		List<Integer> states = new ArrayList<Integer>(stateIds.size());
+		for (int id : stateIds) {
+			states.add(_charBaseDesc.stateNoFromUniId(id));
+		}
+		return states;
+	}
+
+	@Override
+	public boolean isVariable() {
+		boolean variable = false;
+		Attribute attribute = _itemDesc.readAttribute(_charBaseDesc.getUniId());
+		if (attribute != null) {
+			List<Integer> stateIds = new ArrayList<Integer>();
+			short[] pseudoValues = new short[1];
+			attribute.getEncodedStates(_charBaseDesc, stateIds, pseudoValues);
+			variable = ((pseudoValues[0] & VOItemDesc.PSEUDO_VARIABLE) != 0);
+		}
+		
+		return variable;
+	}
 }

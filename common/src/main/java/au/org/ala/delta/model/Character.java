@@ -254,5 +254,23 @@ public abstract class Character implements Illustratable {
     public ControllingInfo checkApplicability(Item item) {
         return _impl.checkApplicability(item);
     }
+    
+    /**
+	 * Items are equal if they have the same item number.
+	 */
+	public boolean equals(Object character) {
+		if ((character == null) || !(character instanceof Character)) {
+			return false;
+		}
+		
+		return _number == ((Character)character).getCharacterId();
+	}
+	
+	/**
+	 * The character number is unique so makes a decent hashcode.
+	 */
+	public int hashCode() {
+		return _number;
+	}
 
 }

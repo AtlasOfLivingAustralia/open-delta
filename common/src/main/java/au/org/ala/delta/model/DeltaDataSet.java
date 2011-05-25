@@ -123,6 +123,18 @@ public interface DeltaDataSet {
 	 * not been made inapplicable.
 	 * If the character has an implicit value no Items will be returned as the implicit value
 	 * is sufficient to treat as coded.
+	 * @param character the character to check the coding for.
+	 * @return a List of items that do not have a coded attribute for the supplied Character.  
+	 * If all Items are coded an empty List will be returned.
 	 */
 	public List<Item> getUncodedItems(Character character);
+
+	/**
+	 * Returns Items that have more than one state of the supplied Character present.
+	 * Items with a variable attribute will also be returned.
+	 * @param character the Character to check the coding for.
+	 * @return a List of Items with more than one state coded for the supplied Character.
+	 * If no Items meet the criteria, an empty List will be returned.
+	 */
+	public List<Item> getItemsWithMultipleStatesCoded(MultiStateCharacter character);
 }
