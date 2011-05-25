@@ -9,12 +9,13 @@ import org.apache.commons.lang.math.FloatRange;
 import au.org.ala.delta.model.impl.AttributeData;
 
 public class IntkeyAttributeData implements AttributeData {
-    
+
     private String _textValue;
     private Set<Integer> _stateOrIntegerValues;
     private FloatRange _realRange;
+
     private boolean _inapplicable;
-    
+
     public IntkeyAttributeData(boolean inapplicable) {
         _stateOrIntegerValues = new HashSet<Integer>();
         _inapplicable = inapplicable;
@@ -51,8 +52,7 @@ public class IntkeyAttributeData implements AttributeData {
 
     @Override
     public boolean isUnknown() {
-        // TODO Auto-generated method stub
-        return false;
+        return StringUtils.isEmpty(_textValue) && _realRange == null && _stateOrIntegerValues.isEmpty();
     }
 
     @Override
@@ -83,7 +83,7 @@ public class IntkeyAttributeData implements AttributeData {
 
     @Override
     public boolean isVariable() {
-        //TODO does this have any relevant in intkey?
+        // TODO does this have any relevant in intkey?
         return false;
     }
 

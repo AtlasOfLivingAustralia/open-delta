@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.math.FloatRange;
 import org.apache.commons.lang.math.IntRange;
 
 import au.org.ala.delta.io.BinFile;
@@ -17,11 +18,14 @@ import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterDependency;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DefaultDataSetFactory;
+import au.org.ala.delta.model.IntegerAttribute;
 import au.org.ala.delta.model.IntegerCharacter;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateAttribute;
 import au.org.ala.delta.model.MultiStateCharacter;
+import au.org.ala.delta.model.RealAttribute;
 import au.org.ala.delta.model.RealCharacter;
+import au.org.ala.delta.model.TextAttribute;
 import au.org.ala.delta.model.TextCharacter;
 
 public class IntkeyDatasetFileBuilder {
@@ -719,17 +723,29 @@ public class IntkeyDatasetFileBuilder {
 
                     List<Boolean> taxonData = taxaData.subList(startIndex, endIndex);
                     
-                    //boolean inapplicable = taxonData.get(taxonData.size() - 1);
-                    //IntkeyAttributeData attrData = new IntkeyAttributeData(inapplicable);
-                    //MultiStateAttribute msAttr = new MultiStateAttribute(multiStateChar, attrData);
-                    //t.addAttribute(multiStateChar, msAttr);
+                    // Taxon data consists of a bit for each state, indicating the states presence, followed by
+                    // a final bit signifying whether or not the character is inapplicable for the taxon.
+                    boolean inapplicable = taxonData.get(taxonData.size() - 1);
+                    IntkeyAttributeData attrData = new IntkeyAttributeData(inapplicable);
+                    MultiStateAttribute msAttr = new MultiStateAttribute(multiStateChar, attrData);
+                    msAttr.setItem(t);
                     
-                    // System.out.println(c.getDescription() + " " +
-                    // t.getDescription() + " " + taxonData.toString());
+                    HashSet<Integer> presentStates = new HashSet<Integer>();
+                    for (int k=0; k < taxonData.size() - 1; k++) {
+                        boolean statePresent = taxonData.get(k);
+                        if (statePresent) {
+                            presentStates.add(k + 1);
+                        }
+                    }
+                    msAttr.setPresentStates(presentStates);
+                    
+                    t.addAttribute(multiStateChar, msAttr);
                 }
 
             } else if (c instanceof IntegerCharacter) {
                 IntegerCharacter intChar = (IntegerCharacter) c;
+                int charMinValue = intChar.getMinimumValue();
+                int charMaxValue = intChar.getMaximumValue();
 
                 int bitsPerTaxon = intChar.getMaximumValue() - intChar.getMinimumValue() + 4;
                 int totalBitsNeeded = bitsPerTaxon * _taxa.size();
@@ -747,10 +763,21 @@ public class IntkeyDatasetFileBuilder {
                     int endIndex = startIndex + bitsPerTaxon;
 
                     List<Boolean> taxonData = taxaData.subList(startIndex, endIndex);
-                    if (taxonData.get(0) || taxonData.get(taxonData.size() - 2)) {
-                        System.out.println(String.format("%s (%s) %s (%s) %s", c.getDescription(), c.getCharacterId(), t.getDescription(), t.getItemNumber(), taxonData.toString()));
-                        System.out.println(String.format("Min: %s Max: %s", ((IntegerCharacter)c).getMinimumValue(), ((IntegerCharacter)c).getMaximumValue()));
+                    
+                    boolean inapplicable = taxonData.get(taxonData.size() - 1);
+                    
+                    Set<Integer> presentValues = new HashSet<Integer>();
+                    for (int k=0; k < taxonData.size() - 1; k++) {
+                        boolean present = taxonData.get(k);
+                        if (present) {
+                            presentValues.add(k + charMinValue - 1);
+                        }
                     }
+                    
+                    IntegerAttribute intAttr = new IntegerAttribute(intChar, new IntkeyAttributeData(inapplicable));
+                    intAttr.setItem(t);
+                    intAttr.setPresentValues(presentValues);
+                    t.addAttribute(intChar, intAttr);
                 }
 
             } else if (c instanceof RealCharacter) {
@@ -758,7 +785,6 @@ public class IntkeyDatasetFileBuilder {
                 int bytesToRead = Double.valueOf(Math.ceil(Double.valueOf(_taxa.size()) / Double.valueOf(Byte.SIZE))).intValue();
                 byte[] bytes = new byte[bytesToRead];
                 _itemBinFile.readBytes(bytes);
-
                 List<Boolean> taxaInapplicabilityData = byteArrayToBooleanList(bytes);
 
                 int recordsSpannedByInapplicabilityData = recordsSpannedByBytes(bytesToRead);
@@ -774,7 +800,16 @@ public class IntkeyDatasetFileBuilder {
                     float lowerFloat = taxonData.get(j * 2);
                     float upperFloat = taxonData.get((j * 2) + 1);
 
-                    //System.out.println(String.format("%s %s %f %f", c.getDescription(), t.getDescription(), lowerFloat, upperFloat));
+                    boolean inapplicable = taxaInapplicabilityData.get(j);
+                    RealAttribute realAttr = new RealAttribute((RealCharacter)c, new IntkeyAttributeData(inapplicable));
+                    if (!inapplicable) {
+                        if (lowerFloat <= upperFloat) {
+                            FloatRange range = new FloatRange(lowerFloat, upperFloat);
+                            realAttr.setPresentRange(range);
+                        }
+                    }
+                    realAttr.setItem(t);
+                    t.addAttribute(c, realAttr);
                 }
 
             } else if (c instanceof TextCharacter) {
@@ -784,7 +819,6 @@ public class IntkeyDatasetFileBuilder {
                 int bytesToRead = Double.valueOf(Math.ceil(Double.valueOf(_taxa.size()) / Double.valueOf(Byte.SIZE))).intValue();
                 byte[] bytes = new byte[bytesToRead];
                 _itemBinFile.readBytes(bytes);
-
                 List<Boolean> taxaInapplicabilityData = byteArrayToBooleanList(bytes);
 
                 int recordsSpannedByInapplicabilityData = recordsSpannedByBytes(bytesToRead);
@@ -806,14 +840,19 @@ public class IntkeyDatasetFileBuilder {
                     int upperOffset = taxonTextDataOffsets.get(j + 1);
                     int textLength = upperOffset - lowerOffset;
 
+                    String txt = "";
                     if (textLength > 0) {
                         byte[] textBytes = new byte[textLength];
                         taxonTextData.get(textBytes);
 
-                        String txt = BinFileEncoding.decode(textBytes);
-                        // System.out.println(txt);
-                        // System.out.println();
+                        txt = BinFileEncoding.decode(textBytes);
                     }
+                    
+                    boolean inapplicable = taxaInapplicabilityData.get(j);
+                    TextAttribute txtAttr = new TextAttribute(textChar, new IntkeyAttributeData(inapplicable));
+                    txtAttr.setText(txt);
+                    txtAttr.setItem(t);
+                    t.addAttribute(textChar, txtAttr);
                 }
             }
         }

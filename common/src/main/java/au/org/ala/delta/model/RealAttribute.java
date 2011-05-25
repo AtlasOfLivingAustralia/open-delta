@@ -25,7 +25,11 @@ public class RealAttribute extends Attribute {
     }
     
     public FloatRange getPresentRange() {
-        return null;
+        return _impl.getRealRange();
+    }
+    
+    public void setPresentRange(FloatRange range) {
+        _impl.setRealRange(range);
     }
 
 }
