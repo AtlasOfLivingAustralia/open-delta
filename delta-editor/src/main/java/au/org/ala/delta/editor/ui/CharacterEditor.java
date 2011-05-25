@@ -151,6 +151,8 @@ public class CharacterEditor extends JInternalFrame implements DeltaView {
 		
 		btnSelect.setAction(map.get("selectCharacterByName"));
 		characterSelectionList.setSelectionAction(map.get("characterSelected"));
+		
+		comboBox.setAction(map.get("characterTypeChanged"));
 	}
 	
 	@Action
@@ -222,6 +224,22 @@ public class CharacterEditor extends JInternalFrame implements DeltaView {
 	public void characterSelected() {
 		btnSelect.setSelected(false);
 		selectCharacterByName();
+	}
+	
+	@Action
+	public void characterTypeChanged() {
+		CharacterType type = (CharacterType)comboBox.getSelectedItem();
+		CharacterType existingType = _selectedCharacter.getCharacterType();
+		if (type.equals(existingType)) {
+			return;
+		}
+		
+		if (_dataSet.canChangeCharacterType(_selectedCharacter, type)) {
+			_dataSet.changeCharacterType(_selectedCharacter, type);
+		}
+		else {
+			comboBox.getModel().setSelectedItem(existingType);
+		}
 	}
 	
 	/**
@@ -365,6 +383,9 @@ public class CharacterEditor extends JInternalFrame implements DeltaView {
 			@Override
 			public void characterEdited(DeltaDataSetChangeEvent event) {
 				if (event.getCharacter().equals(_selectedCharacter)) {
+					// This is to handle CharacterType changes.
+					_selectedCharacter = _dataSet.getCharacter(_selectedCharacter.getCharacterId());
+					
 					updateScreen();
 				}
 			}
@@ -395,13 +416,15 @@ public class CharacterEditor extends JInternalFrame implements DeltaView {
 		model.setMaximum(_dataSet.getNumberOfCharacters());
 		model.setValue(_selectedCharacter.getCharacterId());
 		
-		
-		rtfEditor.setText(_selectedCharacter.getDescription());
-		
+		// This check prevents update errors on the editor pane Document.
+		if (!_selectedCharacter.getDescription().equals(rtfEditor.getRtfTextBody())) {
+			rtfEditor.setText(_selectedCharacter.getDescription());
+		}
 		mandatoryCheckBox.setSelected(_selectedCharacter.isMandatory());
 		
-		comboBox.setSelectedItem(_selectedCharacter.getCharacterType());
-		
+		if (!_selectedCharacter.getCharacterType().equals(comboBox.getSelectedItem())) {
+			comboBox.setSelectedItem(_selectedCharacter.getCharacterType());
+		}
 		if (_selectedCharacter instanceof MultiStateCharacter) {
 			MultiStateCharacter multistateChar = (MultiStateCharacter)_selectedCharacter;
 			stateEditor.bind(_dataSet, multistateChar);

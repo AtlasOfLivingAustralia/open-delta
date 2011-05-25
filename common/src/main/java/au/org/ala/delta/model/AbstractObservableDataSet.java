@@ -168,7 +168,6 @@ public abstract class AbstractObservableDataSet implements ObservableDeltaDataSe
 		_observerList.remove(observer);
 	}
 	
-	
 	protected void fireDeltaDataSetEvent(Item item, Character character, DataSetEventDispatcher dispatcher) {
 		dispatcher.fireDataSetEvent(item, character);
 	}

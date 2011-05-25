@@ -31,4 +31,6 @@ public interface AttributeData {
 	public boolean hasValueSet();
 	
 
+
+	public boolean isRangeEncoded();
 }

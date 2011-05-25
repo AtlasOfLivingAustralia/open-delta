@@ -169,6 +169,18 @@ public class DataSetWrapper implements ObservableDeltaDataSet, DeltaDataSetObser
 			MultiStateCharacter character) {
 		return _wrappedDataSet.getItemsWithMultipleStatesCoded(character);
 	}
+	
+	@Override
+	public Character changeCharacterType(Character character,
+			CharacterType newType) {
+		return _wrappedDataSet.changeCharacterType(character, newType);
+	}
+	
+	@Override
+	public boolean canChangeCharacterType(Character character, CharacterType newType) {
+		return _wrappedDataSet.canChangeCharacterType(character, newType);
+	}
+	
 
 	@Override
 	public void itemAdded(DeltaDataSetChangeEvent event) {

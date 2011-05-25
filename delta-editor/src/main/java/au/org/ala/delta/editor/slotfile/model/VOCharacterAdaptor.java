@@ -20,6 +20,7 @@ import au.org.ala.delta.editor.slotfile.VOControllingDesc;
 import au.org.ala.delta.editor.slotfile.VODeltaMasterDesc;
 import au.org.ala.delta.editor.slotfile.VOImageHolderDesc;
 import au.org.ala.delta.editor.slotfile.VOItemDesc;
+import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.impl.CharacterData;
 import au.org.ala.delta.model.impl.ControllingInfo;
@@ -397,8 +398,22 @@ public class VOCharacterAdaptor extends ImageHolderAdaptor implements CharacterD
 		_charDesc.moveState(stateNumber, newNumber);
 	}
     
-    
-    
+    /**
+     * Changes the character type.
+     * If the Character is a multistate Character, all of the states will be deleted before
+     * changing the type.
+     * @param newType the new type for this character.
+     */
+	public void setCharacterType(CharacterType newType) {
+		
+		if (CharType.isMultistate(_charDesc.getCharType()) && (!newType.isMultistate())) {
+			_charDesc.setCodedImplicit(VOCharBaseDesc.STATEID_NULL);
+			_charDesc.setUncodedImplicit(VOCharBaseDesc.STATEID_NULL);
+		}
+		
+		_charDesc.setCharType(CharacterTypeConverter.toCharType(newType));		
+	}
+
 	@Override
     public float getReliability() {
         throw new NotImplementedException();

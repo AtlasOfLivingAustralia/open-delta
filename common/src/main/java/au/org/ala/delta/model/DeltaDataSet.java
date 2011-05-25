@@ -139,4 +139,29 @@ public interface DeltaDataSet {
 	 * If no Items meet the criteria, an empty List will be returned.
 	 */
 	public List<Item> getItemsWithMultipleStatesCoded(MultiStateCharacter character);
+	
+	/**
+	 * Changes the type of the supplied Character.  A Character of the new type will be returned
+	 * and should be used instead of any references to the previous Character that still may
+	 * exist.
+	 * @param character the Character to change.
+	 * @param newType the new CharacterType for the character.
+	 * @return a Character of the new type.
+	 */
+	public Character changeCharacterType(Character character, CharacterType newType);
+	
+	/**
+     * Character type changes are allowed as follows:
+     * If the character has no data coded, it's type can be changed.
+     * If the character is a text character, it's type can be changed.
+     * If the character is a multistate character, it's type can be changed to another 
+     * multistate character only.
+     * If the character is a numeric character, it's type can be changed to another numeric
+     * character only.
+     * @param character the character thats type is to be changed.
+     * @param newType the new type for the character
+     * @return true if the changeCharacterType operation will succeed.
+     */
+	public boolean canChangeCharacterType(Character character, CharacterType newType);
+	
 }

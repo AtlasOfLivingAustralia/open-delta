@@ -80,5 +80,10 @@ public class DefaultAttributeData implements AttributeData {
         return !StringUtils.isEmpty(_value);
     }
 	
+	@Override
+	public boolean isRangeEncoded() {
+		return (_value != null) && (_value.indexOf("-") >= 0);
+	}
+	
 	
 }

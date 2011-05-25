@@ -91,5 +91,10 @@ public class IntkeyAttributeData implements AttributeData {
     public boolean hasValueSet() {
         return StringUtils.isEmpty(_textValue) && _realRange == null && _stateOrIntegerValues.isEmpty();
     }
+    
+    @Override
+    public boolean isRangeEncoded() {
+    	return false;
+    }
 
 }

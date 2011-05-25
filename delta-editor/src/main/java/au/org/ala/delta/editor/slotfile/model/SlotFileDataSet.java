@@ -17,7 +17,9 @@ import au.org.ala.delta.model.AbstractObservableDataSet;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.MultiStateAttribute;
 import au.org.ala.delta.model.MultiStateCharacter;
+import au.org.ala.delta.model.NumericCharacter;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageOverlay;
 import au.org.ala.delta.model.image.OverlayType;
@@ -466,6 +468,76 @@ public class SlotFileDataSet extends AbstractObservableDataSet {
       else
         return false;
     }
+    
+    private boolean canChangeMultiStateCharacterType(MultiStateCharacter character, CharacterType newType) {
+    	if (!newType.isMultistate()) {
+	    	for (int i=1; i<=getMaximumNumberOfItems(); i++) {
+	    		Item item = doGetItem(i);
+	    		MultiStateAttribute attribute = (MultiStateAttribute)item.getAttribute(character);
+	    		if (attribute != null && attribute.getPresentStates().size() > 0) {
+	    			return false;
+	    		}
+	    	}
+    	}
+    	return true;
+    }
+    
+    private boolean canChangeNumericCharacterType(NumericCharacter<?> character, CharacterType newType) {
+    	if (!newType.isNumeric()) {
+    		for (int i=1; i<=getMaximumNumberOfItems(); i++) {
+	    		Item item = doGetItem(i);
+	    		if (item.hasAttribute(character)) {
+	    			//TODO should allow changes when attributes that are only comments
+	    			// exist.
+	    			return false;
+	    		}
+	    	}
+    	}
+    	return true;
+    }
+    
+    @Override
+    public boolean canChangeCharacterType(Character character, CharacterType newType) {
+    	List<Item> items = getUncodedItems(character);
+    	if (items.size() == getMaximumNumberOfItems()) {
+    		return true;
+    	}
+    	
+    	if (character.getCharacterType().isMultistate()) {
+    		return canChangeMultiStateCharacterType((MultiStateCharacter)character, newType);
+    	}
+    	else if (character.getCharacterType().isNumeric()) {
+    		return canChangeNumericCharacterType((NumericCharacter<?>)character, newType);
+    	}
+    	
+    	return true;
+    }
+    
+    /**
+     * The SlotFile VOCharBaseDesc only requires minor modification when changing character
+     * type, however a new instance of the model Character class needs to be created of
+     * the correct type.
+     */
+	@Override
+	public Character changeCharacterType(Character character, CharacterType newType) {
+		if (!canChangeCharacterType(character, newType)) {
+			throw new IllegalArgumentException("Cannot change Character type from :"
+					+character.getCharacterType()+ " to "+newType);
+		}
+		VOCharacterAdaptor impl = (VOCharacterAdaptor)character.getImpl();
+		if (character.getCharacterType().isMultistate() && !newType.isMultistate()) {
+			MultiStateCharacter multiStateChar = (MultiStateCharacter)character;
+			while (multiStateChar.getNumberOfStates() > 0) {
+				deleteState(multiStateChar, 1);
+			}
+		}
+		impl.setCharacterType(newType);
+		VOCharBaseDesc charBaseDesc = impl.getCharBaseDesc();
+		Character newCharacter = _factory.wrapCharacter(charBaseDesc, character.getCharacterId());
+		characterChanged(character);
+		
+		return newCharacter;
+	}
 
     @Override
     public au.org.ala.delta.model.Attribute addAttribute(int itemNumber, int characterNumber) {

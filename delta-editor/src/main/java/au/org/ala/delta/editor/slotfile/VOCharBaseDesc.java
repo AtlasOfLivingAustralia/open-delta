@@ -204,7 +204,7 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 		return _fixedData.codedImplicit;
 	}
 
-	public void setCharType(short charType) {
+	public void setCharType(int charType) {
 		_fixedData.charType = charType;
 		setDirty();
 	}

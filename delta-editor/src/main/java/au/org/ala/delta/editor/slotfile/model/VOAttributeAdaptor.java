@@ -219,4 +219,18 @@ public class VOAttributeAdaptor implements AttributeData {
         return !getPresentStateOrIntegerValues().isEmpty() || !StringUtils.isEmpty(getValueAsString());
     }
 
+	@Override
+	public boolean isRangeEncoded() {
+		 Attribute attribute = _itemDesc.readAttribute(_charBaseDesc.getUniId());
+	     if (attribute != null) {
+	         for (AttrChunk chunk : attribute) {
+	        	if (chunk.getType() == ChunkType.CHUNK_TO) {
+	        		return true;
+	        	}
+	         }
+	     }
+	     return false;
+	}
+
+    
 }

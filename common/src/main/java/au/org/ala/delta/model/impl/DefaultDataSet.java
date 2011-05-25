@@ -198,8 +198,8 @@ public class DefaultDataSet extends AbstractObservableDataSet {
 	protected void doDeleteState(MultiStateCharacter character, int stateNumber) {
 		throw new UnsupportedOperationException();
 	}
-
-    @Override
+	
+	@Override
     public Attribute addAttribute(int itemNumber, int characterNumber) {
         Item item = getItem(itemNumber);
         Character character = getCharacter(characterNumber);
@@ -207,4 +207,16 @@ public class DefaultDataSet extends AbstractObservableDataSet {
         item.addAttribute(character, attribute);
         return attribute;
     }
+	
+	@Override
+	public Character changeCharacterType(Character character,
+			CharacterType newType) {
+		throw new UnsupportedOperationException();
+	}
+	
+	@Override
+	public boolean canChangeCharacterType(Character character,
+			CharacterType newType) {
+		throw new UnsupportedOperationException();
+	}
 }

@@ -3,8 +3,6 @@ package au.org.ala.delta.model;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
-
 import au.org.ala.delta.model.impl.AttributeData;
 
 public class MultiStateAttribute extends Attribute {
@@ -77,12 +75,18 @@ public class MultiStateAttribute extends Attribute {
 	public boolean isVariable() {
 		return _impl.isVariable();
 	}
+	
+	/**
+	 * @return true if this encoding for this attribute includes a range of states.
+	 */
+	public boolean isRangeEncoded() {
+		return _impl.isRangeEncoded();
+	}
 
     @Override
     public boolean isUnknown() {
         return _impl.isUnknown() && !isImplicit();
     }
-	
 	
 
 }
