@@ -22,6 +22,7 @@ import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.MultiStateAttribute;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.TextCharacter;
 import au.org.ala.delta.model.impl.ControllingInfo;
@@ -79,7 +80,7 @@ public class MatrixTableModel extends AbstractTableModel {
 		Character character = _dataSet.getCharacter(columnIndex+1);				
 		if (character instanceof MultiStateCharacter) {
 			MultiStateCharacter msc = (MultiStateCharacter) character;					
-			Attribute attr = _dataSet.getItem(rowIndex + 1).getAttribute(character);
+			MultiStateAttribute attr = (MultiStateAttribute) _dataSet.getItem(rowIndex + 1).getAttribute(character);
 			if (attr == null || attr.isImplicit()) {
 				int implicit = msc.getUncodedImplicitState();
 				if (implicit > 0) {

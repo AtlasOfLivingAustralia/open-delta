@@ -6,7 +6,20 @@ public class TextAttribute extends Attribute {
 
     public TextAttribute(TextCharacter character, AttributeData impl) {
         super(character, impl);
-        // TODO Auto-generated constructor stub
+    }
+    
+    @Override
+    public TextCharacter getCharacter() {
+        return (TextCharacter) super.getCharacter();
+    }
+
+    public String getText() {
+        return getValueAsString();
+    }
+    
+    public void setText(String text) {
+        setValueFromString(text);
+        notifyObservers();
     }
 
 }

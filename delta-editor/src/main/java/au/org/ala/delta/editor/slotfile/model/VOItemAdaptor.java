@@ -90,10 +90,9 @@ public class VOItemAdaptor extends ImageHolderAdaptor implements ItemData {
 	 * when requested by getAttribute. 
 	 */
 	@Override
-	public void addAttribute(Character character, String value) {
-		
-		Attribute attribute = new Attribute(value, getVOCharBaseDesc(character));
-		_voItemDesc.writeAttribute(attribute);
+	public void addAttribute(Character character, au.org.ala.delta.model.Attribute attribute) {
+	    Attribute slotFileAttribute = new Attribute(attribute.getValueAsString(), getVOCharBaseDesc(character));
+		_voItemDesc.writeAttribute(slotFileAttribute);
 	}
 	
 	private VOCharBaseDesc getVOCharBaseDesc(Character character) {

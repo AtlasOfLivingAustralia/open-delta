@@ -33,6 +33,14 @@ public interface DeltaDataSetFactory {
 	 * @return a new Character of the specified type.
 	 */
 	public Character createCharacter(CharacterType type, int number);
+	
+	/**
+	 * Creates a new Attribute for the supplied Character and Item
+	 * @param character the Character that the Attribute will reference
+	 * @param item the Item that the Character will reference
+	 * @return a new Attribute
+	 */
+	public Attribute createAttribute(Character character, Item item);
 
 	
 }

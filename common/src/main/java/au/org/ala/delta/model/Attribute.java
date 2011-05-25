@@ -18,8 +18,6 @@ package au.org.ala.delta.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
-
 import au.org.ala.delta.model.impl.AttributeData;
 import au.org.ala.delta.model.observer.AttributeObserver;
 
@@ -52,26 +50,21 @@ public abstract class Attribute {
 	}
 	
 	/**
-	 * An implicit value is one for which no attribute value is coded but an implicit value
-	 * has been specified for the attributes character.
-	 * @return true if the value of this attribute is derived from the Characters implicit value.
-	 */
-	public boolean isImplicit() {
-		if (!(_character instanceof MultiStateCharacter)) {
-			return false;
-		}
-		MultiStateCharacter multiStateChar = (MultiStateCharacter)_character;
-		return (StringUtils.isEmpty(getValueAsString()) && multiStateChar.getUncodedImplicitState() > 0);
-	}
-	
-	/**
 	 * An unknown attribute is one that has not been coded, or has been coded explicitly with 
 	 * the value "U".
 	 * @return true if the value of this attribute is unknown.
 	 */
 	public boolean isUnknown() {
-		String value = getValueAsString();
-		return ("U".equals(value) || (StringUtils.isEmpty(value) && !isImplicit()));
+	    return _impl.isUnknown();
+	}
+	
+	/**
+	 * An inapplicable value is one that has been explicitly coded as inapplicable 
+	 * - with the value "-"
+	 * @return true if this attribute is inapplicable
+	 */
+	public boolean isInapplicable() {
+	    return _impl.isInapplicable();
 	}
 	
 	public boolean isSimple() {
@@ -79,14 +72,13 @@ public abstract class Attribute {
 	}
 	
 	public String getValueAsString() {
-		return _impl.getValue();
+		return _impl.getValueAsString();
 	}
 	
 	public void setValueFromString(String value) {
-		_impl.setValue(value);
+		_impl.setValueFromString(value);
 		notifyObservers();
 	}
-	
 	
 	/**
 	 * Registers interest in being notified of changes to this Attribute.
@@ -123,18 +115,6 @@ public abstract class Attribute {
 		for (int i=_observers.size()-1; i>=0; i--) {
 			_observers.get(i).attributeChanged(this);
 		}
-	}
-
-	/**
-	 * @return the implicit value of this attribute.
-	 */
-	public String getImplicitValue() {
-		if (!isImplicit()) {
-			throw new RuntimeException("Cannot get an implict value on an attribute that is not implicit.");
-		}
-		MultiStateCharacter multiStateChar = (MultiStateCharacter)_character;
-		int implicitState = multiStateChar.getUncodedImplicitState();
-		return Integer.toString(implicitState);
 	}
 	
 }

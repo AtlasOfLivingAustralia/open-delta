@@ -16,7 +16,7 @@ public interface ItemData {
 	
 	Attribute getAttribute(Character character);
 
-	void addAttribute(Character character, String value);
+	void addAttribute(Character character, Attribute attribute);
 
 	boolean isVariant();
 	

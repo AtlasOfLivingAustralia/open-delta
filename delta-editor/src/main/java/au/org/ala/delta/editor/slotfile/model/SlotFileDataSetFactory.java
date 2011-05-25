@@ -5,6 +5,8 @@ import au.org.ala.delta.editor.slotfile.VOCharBaseDesc;
 import au.org.ala.delta.editor.slotfile.VOCharTextDesc;
 import au.org.ala.delta.editor.slotfile.VOItemDesc;
 import au.org.ala.delta.editor.slotfile.VOItemDesc.ItemFixedData;
+import au.org.ala.delta.model.Attribute;
+import au.org.ala.delta.model.AttributeFactory;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterFactory;
 import au.org.ala.delta.model.CharacterType;
@@ -12,6 +14,7 @@ import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.DeltaDataSetFactory;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.VariantItem;
+import au.org.ala.delta.model.impl.DefaultAttributeData;
 
 
 /**
@@ -218,4 +221,17 @@ public class SlotFileDataSetFactory implements DeltaDataSetFactory {
 	          Commit(); */
 		
 	}
+
+    @Override
+    public Attribute createAttribute(Character character, Item item) {
+        
+        VOCharacterAdaptor characterAdaptor = (VOCharacterAdaptor) character.getImpl();
+        VOItemAdaptor itemAdaptor = (VOItemAdaptor) item.getItemData();
+        
+        VOAttributeAdaptor attrAdaptor = new VOAttributeAdaptor(itemAdaptor.getItemDesc(), characterAdaptor.getCharBaseDesc());
+        
+        Attribute attribute = AttributeFactory.newAttribute(character, attrAdaptor);
+        attribute.setItem(item);
+        return attribute;
+    }
 }

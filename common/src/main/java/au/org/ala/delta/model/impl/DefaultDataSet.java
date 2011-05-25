@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import au.org.ala.delta.model.AbstractObservableDataSet;
+import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DeltaDataSetFactory;
@@ -197,4 +198,13 @@ public class DefaultDataSet extends AbstractObservableDataSet {
 	protected void doDeleteState(MultiStateCharacter character, int stateNumber) {
 		throw new UnsupportedOperationException();
 	}
+
+    @Override
+    public Attribute addAttribute(int itemNumber, int characterNumber) {
+        Item item = getItem(itemNumber);
+        Character character = getCharacter(characterNumber);
+        Attribute attribute = _factory.createAttribute(character, item);
+        item.addAttribute(character, attribute);
+        return attribute;
+    }
 }

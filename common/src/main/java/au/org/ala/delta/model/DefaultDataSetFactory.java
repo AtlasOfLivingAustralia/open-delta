@@ -1,5 +1,6 @@
 package au.org.ala.delta.model;
 
+import au.org.ala.delta.model.impl.DefaultAttributeData;
 import au.org.ala.delta.model.impl.DefaultCharacterData;
 import au.org.ala.delta.model.impl.DefaultDataSet;
 import au.org.ala.delta.model.impl.DefaultItemData;
@@ -24,8 +25,6 @@ public class DefaultDataSetFactory implements DeltaDataSetFactory {
 		return item;
 	}
 	
-	
-
 	@Override
 	public Item createVariantItem(Item parent, int itemNumber) {
 		ItemData defaultData = new DefaultItemData();
@@ -41,5 +40,12 @@ public class DefaultDataSetFactory implements DeltaDataSetFactory {
 		
 		return character;
 	}
+
+    @Override
+    public Attribute createAttribute(Character character, Item item) {
+        Attribute attribute = AttributeFactory.newAttribute(character, new DefaultAttributeData());
+        attribute.setItem(item);
+        return attribute;
+    }
 
 }

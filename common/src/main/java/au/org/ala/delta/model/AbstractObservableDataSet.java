@@ -2,6 +2,7 @@ package au.org.ala.delta.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import au.org.ala.delta.model.observer.CharacterObserver;
 import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
@@ -99,7 +100,6 @@ public abstract class AbstractObservableDataSet implements ObservableDeltaDataSe
 	}
 	protected abstract Item doAddVariantItem(int parentItemNumber, int itemNumber);
 	
-	
 	@Override
 	public Attribute getAttribute(int itemNumber, int characterNumber) {
 		return getItem(itemNumber).getAttribute(getCharacter(characterNumber));
@@ -140,7 +140,7 @@ public abstract class AbstractObservableDataSet implements ObservableDeltaDataSe
 			if (attribute == null) {
 				continue;
 			}
-			List<Integer> states = attribute.getPresentStates();
+			Set<Integer> states = attribute.getPresentStates();
 			if (states.size() > 1 || attribute.isVariable()) {
 				items.add(item);
 			}

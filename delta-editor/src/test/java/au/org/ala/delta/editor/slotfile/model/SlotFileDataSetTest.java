@@ -7,12 +7,17 @@ import java.util.List;
 import org.junit.Test;
 
 import au.org.ala.delta.DeltaTestCase;
+import au.org.ala.delta.model.Attribute;
+import au.org.ala.delta.model.AttributeFactory;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.IntegerCharacter;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.MultiStateAttribute;
 import au.org.ala.delta.model.MultiStateCharacter;
+import au.org.ala.delta.model.TextAttribute;
 import au.org.ala.delta.model.TextCharacter;
+import au.org.ala.delta.model.impl.DefaultAttributeData;
 
 /**
  * Tests the SlotFileDataSet class.
@@ -141,7 +146,9 @@ public class SlotFileDataSetTest  extends DeltaTestCase {
 		item.setVariant(true);
 		
 		String attributeText = "I am a new item attribute";
-		item.addAttribute(textChar,"<"+attributeText+">");
+		
+		TextAttribute textAttr = (TextAttribute) _dataSet.addAttribute(item.getItemNumber(), textChar.getCharacterId());
+		textAttr.setText("<"+attributeText+">");
 		
 		File temp = File.createTempFile("test", ".dlt");
 		_repo.saveAsName(_dataSet, temp.getAbsolutePath(), null);
@@ -156,7 +163,8 @@ public class SlotFileDataSetTest  extends DeltaTestCase {
 		
 		item = _dataSet.addItem();
 		attributeText = "\\i{}Ornithospermum\\i0{} Dumoulin, \\i{}Tema\\i0{} Adans.";
-		item.addAttribute(textChar,"<"+attributeText+">");
+		textAttr = (TextAttribute) _dataSet.addAttribute(item.getItemNumber(), textChar.getCharacterId());
+        textAttr.setText("<"+attributeText+">");
 		assertEquals(attributeText, item.getAttribute(textChar).getValueAsString());
 		assertFalse(item.isVariant());
 	}
@@ -439,7 +447,9 @@ public class SlotFileDataSetTest  extends DeltaTestCase {
 		assertEquals(12, items.get(2).getItemNumber());
 		assertEquals(13, items.get(3).getItemNumber());
 		
-		dataSet.getItem(11).addAttribute(character, "V");
+		
+		MultiStateAttribute attr = (MultiStateAttribute) dataSet.addAttribute(dataSet.getItem(11).getItemNumber(), character.getCharacterId());
+		attr.setValueFromString("V");
 		items = dataSet.getItemsWithMultipleStatesCoded(character);
 		
 		assertEquals(5, items.size());

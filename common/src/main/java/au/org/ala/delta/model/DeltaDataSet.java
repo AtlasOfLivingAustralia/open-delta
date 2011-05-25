@@ -95,6 +95,8 @@ public interface DeltaDataSet {
 	
 	public Item addVariantItem(int parentItemNumber, int itemNumber);
 	
+	public Attribute addAttribute(int itemNumber, int characterNumber);
+	
 	public Attribute getAttribute(int itemNumber, int characterNumber);
 
 	/**

@@ -19,6 +19,7 @@ import java.io.StringReader;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.Logger;
+import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.StateValue;
@@ -104,7 +105,9 @@ class ItemsParser extends AbstractStreamParser {
 			if (strValue != null) {
 				value.append(strValue);
 			}
-			item.addAttribute(ch, cleanWhiteSpace(value.toString().trim()));
+			
+			Attribute attribute = _context.getDataSet().addAttribute(item.getItemNumber(), ch.getCharacterId());
+			attribute.setValueFromString(cleanWhiteSpace(value.toString().trim()));
 			
 			_context.getMatrix().setValue(charIdx, itemIndex, stateValue);
 		

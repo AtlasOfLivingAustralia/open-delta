@@ -467,4 +467,13 @@ public class SlotFileDataSet extends AbstractObservableDataSet {
         return false;
     }
 
+    @Override
+    public au.org.ala.delta.model.Attribute addAttribute(int itemNumber, int characterNumber) {
+        Item item = getItem(itemNumber);
+        Character character = getCharacter(characterNumber);
+        au.org.ala.delta.model.Attribute attribute = _factory.createAttribute(character, item);
+        item.addAttribute(character, attribute);
+        return attribute;
+    }
+
 }

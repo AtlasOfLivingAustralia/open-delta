@@ -52,10 +52,7 @@ public class DefaultItemData implements ItemData {
     }
 
     @Override
-    public void addAttribute(Character character, String value) {
-        DefaultAttributeData attributeData = new DefaultAttributeData();
-        attributeData.setValue(value);
-        Attribute attribute = AttributeFactory.newAttribute(character, attributeData);
+    public void addAttribute(Character character, Attribute attribute) {
         _attributes.put(character, attribute);
     }
 

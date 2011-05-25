@@ -85,8 +85,16 @@ public class Item implements AttributeObserver, Illustratable {
 		return _impl.getAttribute(character);
 	}
 	
-	public void addAttribute(Character character, String value) {
-		_impl.addAttribute(character, value);
+	public void addAttribute(Character character, Attribute attribute) {
+	    if (!attribute.getItem().equals(this)) {
+	        throw new IllegalArgumentException("Supplied attribute does not reference this item");
+	    }
+	    
+	    if (!attribute.getCharacter().equals(character)) {
+	        throw new IllegalArgumentException("Supplied attribute does not reference the supplied character");
+	    }
+	    
+		_impl.addAttribute(character, attribute);
 		notifyObservers();
 	}
 	

@@ -12,12 +12,14 @@ import org.apache.commons.lang.math.IntRange;
 import au.org.ala.delta.io.BinFile;
 import au.org.ala.delta.io.BinFileEncoding;
 import au.org.ala.delta.io.BinFileMode;
+import au.org.ala.delta.model.AttributeFactory;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterDependency;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DefaultDataSetFactory;
 import au.org.ala.delta.model.IntegerCharacter;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.MultiStateAttribute;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.RealCharacter;
 import au.org.ala.delta.model.TextCharacter;
@@ -716,6 +718,12 @@ public class IntkeyDatasetFileBuilder {
                     int endIndex = startIndex + bitsPerTaxon;
 
                     List<Boolean> taxonData = taxaData.subList(startIndex, endIndex);
+                    
+                    //boolean inapplicable = taxonData.get(taxonData.size() - 1);
+                    //IntkeyAttributeData attrData = new IntkeyAttributeData(inapplicable);
+                    //MultiStateAttribute msAttr = new MultiStateAttribute(multiStateChar, attrData);
+                    //t.addAttribute(multiStateChar, msAttr);
+                    
                     // System.out.println(c.getDescription() + " " +
                     // t.getDescription() + " " + taxonData.toString());
                 }
@@ -739,8 +747,10 @@ public class IntkeyDatasetFileBuilder {
                     int endIndex = startIndex + bitsPerTaxon;
 
                     List<Boolean> taxonData = taxaData.subList(startIndex, endIndex);
-                    // System.out.println(c.getDescription() + " " +
-                    // t.getDescription() + " " + taxonData.toString());
+                    if (taxonData.get(0) || taxonData.get(taxonData.size() - 2)) {
+                        System.out.println(String.format("%s (%s) %s (%s) %s", c.getDescription(), c.getCharacterId(), t.getDescription(), t.getItemNumber(), taxonData.toString()));
+                        System.out.println(String.format("Min: %s Max: %s", ((IntegerCharacter)c).getMinimumValue(), ((IntegerCharacter)c).getMaximumValue()));
+                    }
                 }
 
             } else if (c instanceof RealCharacter) {
@@ -764,9 +774,7 @@ public class IntkeyDatasetFileBuilder {
                     float lowerFloat = taxonData.get(j * 2);
                     float upperFloat = taxonData.get((j * 2) + 1);
 
-                    // System.out.println(String.format("%s %s %f %f",
-                    // c.getDescription(), t.getDescription(), lowerFloat,
-                    // upperFloat));
+                    //System.out.println(String.format("%s %s %f %f", c.getDescription(), t.getDescription(), lowerFloat, upperFloat));
                 }
 
             } else if (c instanceof TextCharacter) {

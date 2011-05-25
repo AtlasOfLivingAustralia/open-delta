@@ -4,6 +4,7 @@ import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.MultiStateAttribute;
 import au.org.ala.delta.model.VariantItem;
 
 /**
@@ -47,7 +48,7 @@ public class NaturalLanguageDataSetFilter implements DataSetFilter {
 			return outputVariantAttribute((VariantItem)item, character);
 		}
 		
-		if (attribute.isImplicit()) {
+		if (attribute instanceof MultiStateAttribute && ((MultiStateAttribute)attribute).isImplicit()) {
 			return outputImplictValue(attribute);
 		}
 		

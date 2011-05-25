@@ -40,12 +40,12 @@ public class VOAttributeAdaptorTest extends TestCase {
 	@Test
 	public void testIsStatePresent() {
 		
-		_attributeAdaptor.setValue("1/2");
+		_attributeAdaptor.setValueFromString("1/2");
 		assertTrue(_attributeAdaptor.isStatePresent(1));
 		assertTrue(_attributeAdaptor.isStatePresent(2));
 		assertFalse(_attributeAdaptor.isStatePresent(3));
 		
-		_attributeAdaptor.setValue("3");
+		_attributeAdaptor.setValueFromString("3");
 		assertFalse(_attributeAdaptor.isStatePresent(1));
 		assertFalse(_attributeAdaptor.isStatePresent(2));
 		assertTrue(_attributeAdaptor.isStatePresent(3));
@@ -53,22 +53,22 @@ public class VOAttributeAdaptorTest extends TestCase {
 	
 	@Test
 	public void testSetStatePresent() {
-		_attributeAdaptor.setValue("2");
+		_attributeAdaptor.setValueFromString("2");
 		
 		_attributeAdaptor.setStatePresent(3, true);
-		assertEquals("2/3", _attributeAdaptor.getValue());
+		assertEquals("2/3", _attributeAdaptor.getValueAsString());
 		
-		_attributeAdaptor.setValue("1/2");
+		_attributeAdaptor.setValueFromString("1/2");
 		_attributeAdaptor.setStatePresent(3, true);
-		assertEquals("1/2/3", _attributeAdaptor.getValue());
+		assertEquals("1/2/3", _attributeAdaptor.getValueAsString());
 		
-		_attributeAdaptor.setValue("2");
+		_attributeAdaptor.setValueFromString("2");
 		_attributeAdaptor.setStatePresent(1, true);
-		assertEquals("1/2", _attributeAdaptor.getValue());
+		assertEquals("1/2", _attributeAdaptor.getValueAsString());
 		
-		_attributeAdaptor.setValue("1/3");
+		_attributeAdaptor.setValueFromString("1/3");
 		_attributeAdaptor.setStatePresent(2, true);
-		assertEquals("1/2/3", _attributeAdaptor.getValue());
+		assertEquals("1/2/3", _attributeAdaptor.getValueAsString());
 		
 	}
 	
@@ -76,53 +76,53 @@ public class VOAttributeAdaptorTest extends TestCase {
 	public void testSetStatePresentEmptyAttribute() {
 		
 		_attributeAdaptor.setStatePresent(1, true);
-		assertEquals("1", _attributeAdaptor.getValue());
+		assertEquals("1", _attributeAdaptor.getValueAsString());
 	}
 	
 	@Test
 	public void testSetStatePresentExclusiveCharacter() {
 		
 		_character.setExclusive(true);
-		_attributeAdaptor.setValue("2");
+		_attributeAdaptor.setValueFromString("2");
 		
 		_attributeAdaptor.setStatePresent(3, true);
-		assertEquals("3", _attributeAdaptor.getValue());
+		assertEquals("3", _attributeAdaptor.getValueAsString());
 		
-		_attributeAdaptor.setValue("3");
+		_attributeAdaptor.setValueFromString("3");
 		_attributeAdaptor.setStatePresent(1, true);
-		assertEquals("1", _attributeAdaptor.getValue());
+		assertEquals("1", _attributeAdaptor.getValueAsString());
 	}
 	
 	@Test 
 	public void testSetStatePresentRemoveAttribute() {
 		
-		_attributeAdaptor.setValue("1");
+		_attributeAdaptor.setValueFromString("1");
 		_attributeAdaptor.setStatePresent(1, false);
-		assertEquals("", _attributeAdaptor.getValue());
+		assertEquals("", _attributeAdaptor.getValueAsString());
 		
 		_attributeAdaptor.setStatePresent(1, true);
-		assertEquals("1", _attributeAdaptor.getValue());
+		assertEquals("1", _attributeAdaptor.getValueAsString());
 		
-		_attributeAdaptor.setValue("1/2/3");
+		_attributeAdaptor.setValueFromString("1/2/3");
 		_attributeAdaptor.setStatePresent(1, false);
-		assertEquals("2/3", _attributeAdaptor.getValue());
+		assertEquals("2/3", _attributeAdaptor.getValueAsString());
 		
-		_attributeAdaptor.setValue("1/2/3");
+		_attributeAdaptor.setValueFromString("1/2/3");
 		_attributeAdaptor.setStatePresent(2, false);
-		assertEquals("1/3", _attributeAdaptor.getValue());
+		assertEquals("1/3", _attributeAdaptor.getValueAsString());
 	}
 	
 	
 	@Test 
 	public void testSetStatePresentRemoveLastState() {
 		
-		_attributeAdaptor.setValue("1/2/3");
+		_attributeAdaptor.setValueFromString("1/2/3");
 		_attributeAdaptor.setStatePresent(3, false);
-		assertEquals("1/2", _attributeAdaptor.getValue());
+		assertEquals("1/2", _attributeAdaptor.getValueAsString());
 		
-		_attributeAdaptor.setValue("1/2");
+		_attributeAdaptor.setValueFromString("1/2");
 		_attributeAdaptor.setStatePresent(2, false);
-		assertEquals("1", _attributeAdaptor.getValue());
+		assertEquals("1", _attributeAdaptor.getValueAsString());
 	}
 
 }
