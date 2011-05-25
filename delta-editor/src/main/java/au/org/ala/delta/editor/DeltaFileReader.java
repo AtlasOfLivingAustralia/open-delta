@@ -142,8 +142,9 @@ public class DeltaFileReader {
 
 			chr.setDescription(textDesc.readFeatureText(TextType.RTF));
 			chr.setMandatory(charDesc.testCharFlag(VOCharBaseDesc.CHAR_MANDATORY));
-			chr.setExclusive(charDesc.testCharFlag(VOCharBaseDesc.CHAR_EXCLUSIVE));
-			
+			if (chr.getCharacterType().isMultistate()) {
+				((MultiStateCharacter)chr).setExclusive(charDesc.testCharFlag(VOCharBaseDesc.CHAR_EXCLUSIVE));
+			}
 			progress++;
 			if (observer != null && progress % 10 == 0) {
 				int percent = (int) (((double) progress / (double) progmax) * 100);

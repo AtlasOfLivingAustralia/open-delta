@@ -31,12 +31,10 @@ public class SlotFileDataSetTest  extends DeltaTestCase {
 		
 		String description = "I am a new text character";
 		String notes = "This is a really great character";
-		boolean exclusive = true;
 		boolean mandatory = true;
 		
 		TextCharacter textChar = (TextCharacter)_dataSet.addCharacter(CharacterType.Text);
 		textChar.setDescription(description);
-		textChar.setExclusive(exclusive);
 		textChar.setMandatory(mandatory);
 		textChar.setNotes(notes);
 		
@@ -50,7 +48,6 @@ public class SlotFileDataSetTest  extends DeltaTestCase {
 		textChar = (TextCharacter)_dataSet.getCharacter(number);
 		assertEquals(description, textChar.getDescription());
 		assertEquals(mandatory, textChar.isMandatory());
-		assertEquals(exclusive, textChar.isExclusive());
 		assertEquals(notes, textChar.getNotes());
 	}
 	
@@ -63,12 +60,10 @@ public class SlotFileDataSetTest  extends DeltaTestCase {
 		String description = "I am a new integer character";
 		String notes = "This is a really great character";
 		String units = "mm";
-		boolean exclusive = true;
 		boolean mandatory = true;
 		
 		IntegerCharacter intChar = (IntegerCharacter)_dataSet.addCharacter(CharacterType.IntegerNumeric);
 		intChar.setDescription(description);
-		intChar.setExclusive(exclusive);
 		intChar.setMandatory(mandatory);
 		intChar.setNotes(notes);
 		intChar.setUnits(units);
@@ -77,7 +72,6 @@ public class SlotFileDataSetTest  extends DeltaTestCase {
 		intChar = (IntegerCharacter)_dataSet.getCharacter(number);
 		assertEquals(description, intChar.getDescription());
 		assertEquals(mandatory, intChar.isMandatory());
-		assertEquals(exclusive, intChar.isExclusive());
 		assertEquals(notes, intChar.getNotes());
 		assertEquals(units, intChar.getUnits());
 		

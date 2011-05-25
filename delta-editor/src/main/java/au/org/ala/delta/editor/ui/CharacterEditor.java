@@ -369,16 +369,19 @@ public class CharacterEditor extends JInternalFrame implements DeltaView {
 		rtfEditor.setText(_selectedCharacter.getDescription());
 		
 		mandatoryCheckBox.setSelected(_selectedCharacter.isMandatory());
-		exclusiveCheckBox.setSelected(_selectedCharacter.isExclusive());
+		
 		comboBox.setSelectedItem(_selectedCharacter.getCharacterType());
 		
 		if (_selectedCharacter instanceof MultiStateCharacter) {
-			
-			stateEditor.bind(_dataSet, (MultiStateCharacter)_selectedCharacter);
+			MultiStateCharacter multistateChar = (MultiStateCharacter)_selectedCharacter;
+			stateEditor.bind(_dataSet, multistateChar);
 			tabbedPane.insertTab("States", null, stateEditor, "", 0);
 			tabbedPane.setSelectedComponent(stateEditor);
+			exclusiveCheckBox.setEnabled(true);
+			exclusiveCheckBox.setSelected(multistateChar.isExclusive());
 		}
 		else {
+			exclusiveCheckBox.setEnabled(true);
 			tabbedPane.remove(stateEditor);
 		}
 		_editsDisabled = false;

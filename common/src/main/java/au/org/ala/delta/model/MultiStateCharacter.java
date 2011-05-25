@@ -82,5 +82,14 @@ public abstract class MultiStateCharacter extends Character {
 		_impl.setUncodedImplicitState(stateId);
 		notifyObservers();
 	}
+	
+	public void setExclusive(boolean exclusive) {
+	    _impl.setExclusive(exclusive);
+	    notifyObservers();
+	}
+
+	public boolean isExclusive() {
+	    return _impl.isExclusive();
+	}
 
 }

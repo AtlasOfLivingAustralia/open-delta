@@ -87,15 +87,6 @@ public abstract class Character implements Illustratable {
         return _impl.isMandatory();
     }
 
-    public void setExclusive(boolean exclusive) {
-        _impl.setExclusive(exclusive);
-        notifyObservers();
-    }
-
-    public boolean isExclusive() {
-        return _impl.isExclusive();
-    }
-
     public void setNotes(String notes) {
         _impl.setNotes(notes);
         notifyObservers();

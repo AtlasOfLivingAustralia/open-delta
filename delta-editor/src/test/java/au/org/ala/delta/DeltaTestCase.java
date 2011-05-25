@@ -86,7 +86,6 @@ public abstract class DeltaTestCase extends TestCase {
 	
 			ch.getDescription();
 			ch.getNotes();
-			ch.isExclusive();
 			ch.isMandatory();
 	
 			switch (ch.getCharacterType()) {
@@ -94,6 +93,7 @@ public abstract class DeltaTestCase extends TestCase {
 			case OrderedMultiState:
 				MultiStateCharacter msc = (MultiStateCharacter) ch;
 				msc.getStates();
+				msc.isExclusive();
 				break;
 			default:
 	
