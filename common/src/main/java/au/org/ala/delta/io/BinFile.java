@@ -75,6 +75,7 @@ public class BinFile {
 	}
 
 	public void open(BinFileMode mode) {
+		System.out.println("opening "+_filename);
 		_fileMode = mode;
 		File f = new File(_filename);
 		_filename = f.getAbsolutePath();
@@ -108,6 +109,7 @@ public class BinFile {
 	}
 
 	public void close() {
+		System.out.println("closing "+_filename);
 		/*
 		 * if (_file != null) { try { _file.close(); _file = null; } catch
 		 * (IOException ioex) { throw new RuntimeException(ioex); } }

@@ -158,6 +158,11 @@ public class DataSetWrapper implements ObservableDeltaDataSet, DeltaDataSetObser
 	public void moveCharacter(Character character, int newCharacterNumber) {
 		_wrappedDataSet.moveCharacter(character, newCharacterNumber);
 	}
+	
+	@Override
+	public List<Item> getUncodedItems(Character character) {
+		return _wrappedDataSet.getUncodedItems(character);
+	}
 
 	@Override
 	public void itemAdded(DeltaDataSetChangeEvent event) {

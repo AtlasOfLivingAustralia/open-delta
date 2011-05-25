@@ -48,7 +48,11 @@ public class MessageDialogHelper {
 		String title = _messages.getString("errorPlayingSound.title");
 		String message = _messages.getString("errorPlayingSound.message", soundFile);
 		JOptionPane.showMessageDialog(_dialogParent, message, title, JOptionPane.ERROR_MESSAGE);
+	}
 
-		
+	public void showUncodedMandatoryItemsWarning() {
+		String title = _messages.getString("uncodedMandatoryItems.title");
+		String message = _messages.getString("uncodedMandatoryItems.message");
+		JOptionPane.showMessageDialog(_dialogParent, message, title, JOptionPane.WARNING_MESSAGE);
 	}
 }

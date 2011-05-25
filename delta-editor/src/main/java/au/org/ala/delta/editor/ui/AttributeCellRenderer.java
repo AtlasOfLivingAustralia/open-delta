@@ -7,18 +7,32 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.SystemColor;
 
+import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import au.org.ala.delta.ui.util.IconHelper;
+
+/**
+ * The AttributeCellRenderer is responsible for rendering the table cells in the grid view.
+ * Attributes are rendered based on whether they are inapplicable, simple, implicit or 
+ * are missing a value (if the character is mandatory).
+ */
 public class AttributeCellRenderer extends DefaultTableCellRenderer {
 
 	private static final long serialVersionUID = 1L;
 
+	private static final String MANDATORY_ATTRIBUTE_ICON_PATH = "/au/org/ala/delta/editor/resources/icons/error.png";
 	private static Color NON_SIMPLE_BACKGROUND = new Color(0xE8, 0xE8, 0xE8);
 	private static Color IMPLICT_BACKGROUND = new Color(0xA8, 0xA8, 0xA8);
 	
+	private Icon _mandatoryAttributeMissingIcon;
 	private boolean _inapplicable;
+	
+	public AttributeCellRenderer() {
+		_mandatoryAttributeMissingIcon = IconHelper.createImageIconFromAbsolutePath(MANDATORY_ATTRIBUTE_ICON_PATH);
+	}
 
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 
@@ -59,6 +73,12 @@ public class AttributeCellRenderer extends DefaultTableCellRenderer {
 					setBackground(NON_SIMPLE_BACKGROUND);
 				}
 			}
+		}
+		if (!_inapplicable && viewModel.isUncodedMandatory()) {
+			setIcon(_mandatoryAttributeMissingIcon);
+		}
+		else {
+			setIcon(null);
 		}
 		return comp;
 	}

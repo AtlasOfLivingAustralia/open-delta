@@ -95,7 +95,8 @@ public class MatrixTableModel extends AbstractTableModel {
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		String tmp = _dataSet.getAttributeAsString(rowIndex+1, columnIndex+1);
 		Item item = _dataSet.getItem(rowIndex + 1);
-		ControllingInfo cont = _dataSet.getCharacter(columnIndex+1).checkApplicability(item);
+		Character character = _dataSet.getCharacter(columnIndex+1);
+		ControllingInfo cont = character.checkApplicability(item);
 		
 		MatrixCellViewModel vm = new MatrixCellViewModel();
 		vm.setInapplicable(cont.isInapplicable());
@@ -110,6 +111,9 @@ public class MatrixTableModel extends AbstractTableModel {
 			}						
 		} else {
 			vm.setText(RTFUtils.stripFormatting(tmp));
+		}
+		if (character.isMandatory() && (!item.hasAttribute(character))) {
+			vm.setUncodedMandatory(true);
 		}
 		
 		return vm;

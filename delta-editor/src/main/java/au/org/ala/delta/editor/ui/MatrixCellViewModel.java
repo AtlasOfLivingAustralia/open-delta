@@ -5,6 +5,7 @@ public class MatrixCellViewModel {
 	private String _text;
 	private boolean _implicit;
 	private boolean _inapplicable;
+	private boolean _uncodedMandatory;
 
 	public MatrixCellViewModel() {
 	}
@@ -40,6 +41,14 @@ public class MatrixCellViewModel {
 
 	public boolean isInapplicable() {
 		return _inapplicable;
+	}
+	
+	public void setUncodedMandatory(boolean uncodedMandatory) {
+		_uncodedMandatory = uncodedMandatory;
+	}
+	
+	public boolean isUncodedMandatory() {
+		return _uncodedMandatory;
 	}
 
 	@Override

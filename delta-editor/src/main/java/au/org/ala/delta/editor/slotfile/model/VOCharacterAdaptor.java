@@ -92,7 +92,12 @@ public class VOCharacterAdaptor extends ImageHolderAdaptor implements CharacterD
 
 	@Override
 	public void setMandatory(boolean b) {
-		_charDesc.setCharFlag(VOCharBaseDesc.CHAR_MANDATORY);
+		if (b) {
+			_charDesc.setCharFlag(VOCharBaseDesc.CHAR_MANDATORY);
+		}
+		else {
+			_charDesc.clearCharFlag(VOCharBaseDesc.CHAR_MANDATORY);
+		}
 	}
 
 	public VOCharBaseDesc getCharBaseDesc() {

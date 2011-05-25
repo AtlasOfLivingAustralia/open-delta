@@ -14,6 +14,8 @@
  ******************************************************************************/
 package au.org.ala.delta.model;
 
+import java.util.List;
+
 
 /**
  * Represents a single DELTA data set, consisting of a List of characters and a List of Items.
@@ -115,4 +117,12 @@ public interface DeltaDataSet {
 	 * @param stateNumber the state number to delete.
 	 */
 	public void deleteState(MultiStateCharacter character, int stateNumber);
+	
+	/**
+	 * Returns Items that do not have an attribute coded for the supplied Character and have
+	 * not been made inapplicable.
+	 * If the character has an implicit value no Items will be returned as the implicit value
+	 * is sufficient to treat as coded.
+	 */
+	public List<Item> getUncodedItems(Character character);
 }

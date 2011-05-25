@@ -3,6 +3,7 @@ package au.org.ala.delta.editor.ui;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.util.List;
 
 import javax.swing.AbstractListModel;
 import javax.swing.ActionMap;
@@ -38,8 +39,10 @@ import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.editor.DeltaView;
 import au.org.ala.delta.editor.model.EditorViewModel;
+import au.org.ala.delta.editor.ui.util.MessageDialogHelper;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterType;
+import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.ui.rtf.RtfEditor;
@@ -83,8 +86,11 @@ public class CharacterEditor extends JInternalFrame implements DeltaView {
 	
 	private ResourceMap _resources;
 	
+	private MessageDialogHelper _dialogHelper;
+	
 	public CharacterEditor(EditorViewModel model) {	
 		setName("CharacterEditorDialog");
+		_dialogHelper = new MessageDialogHelper();
 		_resources = Application.getInstance().getContext().getResourceMap(CharacterEditor.class);
 		_resources.injectFields(this);
 		ActionMap map = Application.getInstance().getContext().getActionMap(this);
@@ -153,11 +159,21 @@ public class CharacterEditor extends JInternalFrame implements DeltaView {
 	@Action
 	public void mandatoryChanged() {
 		_selectedCharacter.setMandatory(mandatoryCheckBox.isSelected());
+		
+		// check for and give warnings for uncoded mandatory characters.
+		if (_selectedCharacter.isMandatory()) {
+			List<Item> uncodedItems = _dataSet.getUncodedItems(_selectedCharacter);
+			if (uncodedItems.size() > 0) {
+				_dialogHelper.showUncodedMandatoryItemsWarning();
+			}
+		}
 	}
 	
 	@Action
 	public void exclusiveChanged() {
-		_selectedCharacter.setExclusive(mandatoryCheckBox.isSelected());
+		if (_selectedCharacter.getCharacterType().isMultistate()) {
+			((MultiStateCharacter)_selectedCharacter).setExclusive(mandatoryCheckBox.isSelected());
+		}
 	}
 	
 	@Action
