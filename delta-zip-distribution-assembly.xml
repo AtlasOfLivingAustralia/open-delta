@@ -11,13 +11,6 @@
 	</formats>
 	<fileSets>
 		<fileSet>
-			<directory>${project.basedir}/sampledata</directory>
-			<outputDirectory>/sample</outputDirectory>
-			<includes>
-				<include>sample.dlt</include>
-			</includes>
-		</fileSet>
-		<fileSet>
 			<directory>${project.basedir}/intkey/src/test/resources/dataset/sample</directory>
 			<outputDirectory>/sample</outputDirectory>
 			<includes>
