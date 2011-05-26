@@ -7,8 +7,6 @@ import java.util.List;
 import org.junit.Test;
 
 import au.org.ala.delta.DeltaTestCase;
-import au.org.ala.delta.model.Attribute;
-import au.org.ala.delta.model.AttributeFactory;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.IntegerCharacter;
@@ -17,7 +15,6 @@ import au.org.ala.delta.model.MultiStateAttribute;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.TextAttribute;
 import au.org.ala.delta.model.TextCharacter;
-import au.org.ala.delta.model.impl.DefaultAttributeData;
 
 /**
  * Tests the SlotFileDataSet class.
