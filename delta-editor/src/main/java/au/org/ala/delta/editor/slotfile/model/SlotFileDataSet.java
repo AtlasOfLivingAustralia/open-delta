@@ -25,8 +25,8 @@ import au.org.ala.delta.model.image.ImageOverlay;
 import au.org.ala.delta.model.image.OverlayType;
 
 /**
- * Implementation of a DELTA DataSet that uses the random access slotfile to read data on demand rather
- * than storing it in memory.
+ * Implementation of a DELTA DataSet that uses the SlotFile class to read data on demand 
+ * from disk rather than storing it in memory.
  */
 public class SlotFileDataSet extends AbstractObservableDataSet {
 
@@ -469,6 +469,15 @@ public class SlotFileDataSet extends AbstractObservableDataSet {
         return false;
     }
     
+    
+    /**
+     * MultiState types can be changed into other MultiState types.
+     * MultiState types can only be changed to a non-MultiState type if the only attribute values that
+     * have been coded are comments.
+     * @param character the Character to be changed.
+     * @param newType the type to change the Character to.
+     * @return true if the changeCharacterType operation will succeed.
+     */
     private boolean canChangeMultiStateCharacterType(MultiStateCharacter character, CharacterType newType) {
     	if (!newType.isMultistate()) {
 	    	for (int i=1; i<=getMaximumNumberOfItems(); i++) {
@@ -482,14 +491,22 @@ public class SlotFileDataSet extends AbstractObservableDataSet {
     	return true;
     }
     
+    /**
+     * Numeric types can be changed into other Numeric types.
+     * Numeric types can only be changed to a non-numeric type if the only attribute values that
+     * have been coded are comments.
+     * @param character the Character to be changed.
+     * @param newType the type to change the Character to.
+     * @return true if the changeCharacterType operation will succeed.
+     */
     private boolean canChangeNumericCharacterType(NumericCharacter<?> character, CharacterType newType) {
     	if (!newType.isNumeric()) {
     		for (int i=1; i<=getMaximumNumberOfItems(); i++) {
 	    		Item item = doGetItem(i);
 	    		if (item.hasAttribute(character)) {
-	    			//TODO should allow changes when attributes that are only comments
-	    			// exist.
-	    			return false;
+	    			if (!item.getAttribute(character).isComment()) {
+	    				return false;
+	    			}
 	    		}
 	    	}
     	}

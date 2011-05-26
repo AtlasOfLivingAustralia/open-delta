@@ -3,7 +3,6 @@ package au.org.ala.delta.editor.ui;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.util.List;
 
 import javax.swing.AbstractListModel;
 import javax.swing.ActionMap;
@@ -40,9 +39,10 @@ import org.jdesktop.application.ResourceMap;
 import au.org.ala.delta.editor.DeltaView;
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.ui.util.MessageDialogHelper;
+import au.org.ala.delta.editor.ui.validator.CharacterValidator;
+import au.org.ala.delta.editor.ui.validator.ValidationResult;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterType;
-import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.observer.AbstractDataSetObserver;
@@ -90,6 +90,8 @@ public class CharacterEditor extends JInternalFrame implements DeltaView {
 	
 	private MessageDialogHelper _dialogHelper;
 	
+	private CharacterValidator _validator;
+	
 	public CharacterEditor(EditorViewModel model) {	
 		setName("CharacterEditorDialog");
 		_dialogHelper = new MessageDialogHelper();
@@ -112,6 +114,7 @@ public class CharacterEditor extends JInternalFrame implements DeltaView {
 					return;
 				}
 				_selectedCharacter = _dataSet.getCharacter((Integer)spinner.getValue());
+				_validator = new CharacterValidator(_dataSet, _selectedCharacter);
 				updateScreen();
 			}
 		});
@@ -162,34 +165,32 @@ public class CharacterEditor extends JInternalFrame implements DeltaView {
 	
 	@Action
 	public void mandatoryChanged() {
-		_selectedCharacter.setMandatory(mandatoryCheckBox.isSelected());
 		
-		// check for and give warnings for uncoded mandatory characters.
-		if (_selectedCharacter.isMandatory()) {
-			List<Item> uncodedItems = _dataSet.getUncodedItems(_selectedCharacter);
-			if (uncodedItems.size() > 0) {
-				_dialogHelper.showUncodedMandatoryItemsWarning();
-			}
+		boolean mandatory = !_selectedCharacter.isMandatory();
+		ValidationResult result = _validator.validateMandatory(mandatory);
+		
+		if (!result.isValid()) {
+			_dialogHelper.displayValidationResult(result);
+		}
+		if (!result.isError()) {
+			_selectedCharacter.setMandatory(mandatory);
 		}
 	}
 	
 	@Action
 	public void exclusiveChanged() {
 		if (_selectedCharacter.getCharacterType().isMultistate()) {
-			
 			MultiStateCharacter multiStateChar = (MultiStateCharacter)_selectedCharacter;
-			if (!multiStateChar.isExclusive()) {
-				// We are making the Character exclusive, need to check if there are any
-				// attributes coded with more than one state.
-				if (_dataSet.getItemsWithMultipleStatesCoded(multiStateChar).size() == 0) {
-					multiStateChar.setExclusive(true);	
-				}
-				else {
-					multiStateChar.setExclusive(false);
-					_dialogHelper.cannotMakeCharacterExclusive();
-				}
+			boolean currentlyExclusive = multiStateChar.isExclusive();
+			
+			ValidationResult result = _validator.validateExclusive(!currentlyExclusive);
+			if (result.isValid()) {
+				multiStateChar.setExclusive(!currentlyExclusive);
 			}
 			else {
+				_dialogHelper.displayValidationResult(result);
+				// This is done to reset the checkbox as a result of the event this is
+				// fired by the model.
 				multiStateChar.setExclusive(false);
 			}
 		}
@@ -377,7 +378,7 @@ public class CharacterEditor extends JInternalFrame implements DeltaView {
 	public void bind(EditorViewModel dataSet) {
 		_dataSet = dataSet;
 		_selectedCharacter = dataSet.getSelectedCharacter();
-		
+		_validator = new CharacterValidator(_dataSet, _selectedCharacter);
 		_dataSet.addDeltaDataSetObserver(new AbstractDataSetObserver() {
 
 			@Override

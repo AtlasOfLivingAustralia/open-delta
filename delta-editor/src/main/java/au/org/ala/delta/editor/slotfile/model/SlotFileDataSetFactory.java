@@ -14,7 +14,6 @@ import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.DeltaDataSetFactory;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.VariantItem;
-import au.org.ala.delta.model.impl.DefaultAttributeData;
 
 
 /**

@@ -84,6 +84,9 @@ public class DefaultAttributeData implements AttributeData {
 	public boolean isRangeEncoded() {
 		return (_value != null) && (_value.indexOf("-") >= 0);
 	}
-	
-	
+
+	@Override
+	public boolean isCommentOnly() {
+		throw new UnsupportedOperationException();
+	}	
 }

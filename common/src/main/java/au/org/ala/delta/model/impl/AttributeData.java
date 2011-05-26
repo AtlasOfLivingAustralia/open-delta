@@ -29,8 +29,8 @@ public interface AttributeData {
 	public void setPresentStateOrIntegerValues(Set<Integer> values);
 	
 	public boolean hasValueSet();
-	
-
 
 	public boolean isRangeEncoded();
+
+	boolean isCommentOnly();
 }

@@ -8,6 +8,8 @@ import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.SingleFrameApplication;
 
+import au.org.ala.delta.editor.ui.validator.ValidationResult;
+
 /**
  * Helper class for displaying message dialogs using messages from resource bundles.
  */
@@ -60,5 +62,20 @@ public class MessageDialogHelper {
 		String title = _messages.getString("cannotMakeCharacterExclusive.title");
 		String message = _messages.getString("cannotMakeCharacterExclusive.message");
 		JOptionPane.showMessageDialog(_dialogParent, message, title, JOptionPane.ERROR_MESSAGE);
+	}
+
+	/**
+	 * Displays an error or warning dialog (using JOptionPane) containing the result of a validation.
+	 * The title and message of the dialog are derived from the message key.  
+	 * @param result the validation result to display.
+	 */
+	public void displayValidationResult(ValidationResult result) {
+		
+		String title = _messages.getString(result.getMessageKey()+".title");
+		String message = result.getMessage();
+		
+		int type = result.isError() ? JOptionPane.ERROR_MESSAGE : JOptionPane.WARNING_MESSAGE;
+		JOptionPane.showMessageDialog(_dialogParent, message, title, type);
+		
 	}
 }

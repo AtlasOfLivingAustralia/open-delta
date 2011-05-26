@@ -97,4 +97,8 @@ public class IntkeyAttributeData implements AttributeData {
     	return false;
     }
 
+    @Override
+    public boolean isCommentOnly() {
+    	return ((_stateOrIntegerValues.size() == 0) && (_realRange == null));
+    }
 }

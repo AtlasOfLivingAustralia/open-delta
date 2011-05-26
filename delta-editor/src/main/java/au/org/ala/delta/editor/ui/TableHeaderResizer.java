@@ -1,18 +1,18 @@
 package au.org.ala.delta.editor.ui;
 
-import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 
 import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.ScrollPaneConstants;
 import javax.swing.event.MouseInputAdapter;
-import javax.swing.table.JTableHeader;
 
+/**
+ * The TableHeaderResizer listens for mouse events on the grid view table header component
+ * and responds to a press and drag operation within 3 pixels of the bottom of the component
+ * with a resize operation.
+ */
 public class TableHeaderResizer extends MouseInputAdapter {
 
 	public static Cursor resizeCursor = Cursor.getPredefinedCursor(Cursor.N_RESIZE_CURSOR);
@@ -20,49 +20,56 @@ public class TableHeaderResizer extends MouseInputAdapter {
 	private int mouseYOffset;
 	boolean resizing = false;
 	private Cursor otherCursor = resizeCursor;
-	private DropIndicationTableHeader _fixedColumnsTable;
-	private JTable _mainTable;
+	private DropIndicationTableHeader _tableHeader;
 	private JScrollPane _scrollPane;
-	private JScrollPane _fixedScrollPane;
+	private JScrollPane _tableRowHeaderScrollPane;
 
-	public TableHeaderResizer(DropIndicationTableHeader fixedTable, JTable mainTable, JScrollPane scrollPane, JScrollPane fixedScrollPane) {
-		this._fixedColumnsTable = fixedTable;
-		_fixedColumnsTable.addMouseListener(this);
-		_fixedColumnsTable.addMouseMotionListener(this);
-		_mainTable = mainTable;
+	/**
+	 * Creates a new TableHeaderResizer capable of resizing the table header in the context
+	 * of the grid view.
+	 * @param tableHeader the table header to make resizable.
+	 * @param scrollPane the scrollpane the main table is in.  This is required so the table 
+	 * header viewport preferred size can be adjusted.
+	 * @param tableRowScrollPane the scrollpane the table row header is in.  This is required
+	 * so the header of the table row header can be resized consistently with the main table header.
+	 */
+	public TableHeaderResizer(DropIndicationTableHeader tableHeader, JScrollPane scrollPane, JScrollPane tableRowScrollPane) {
+		this._tableHeader = tableHeader;
+		_tableHeader.addMouseListener(this);
+		_tableHeader.addMouseMotionListener(this);
 		_scrollPane = scrollPane;
-		_fixedScrollPane = fixedScrollPane;
+		_tableRowHeaderScrollPane = tableRowScrollPane;
 	}
 
 
 	public void mousePressed(MouseEvent e) {
 		if (inResizeZone(e)) {
 			resizing = true;
-			_fixedColumnsTable.setDragEnabled(false);
+			_tableHeader.setDragEnabled(false);
 			Point p = e.getPoint();
-			mouseYOffset = p.y - _fixedColumnsTable.getPreferredSize().height;
+			mouseYOffset = p.y - _tableHeader.getPreferredSize().height;
 		}
 		
 	}
 
 	private void swapCursor() {
-		Cursor tmp = _fixedColumnsTable.getCursor();
-		_fixedColumnsTable.setCursor(otherCursor);
+		Cursor tmp = _tableHeader.getCursor();
+		_tableHeader.setCursor(otherCursor);
 		otherCursor = tmp;
 	}
 
 	public void mouseMoved(MouseEvent e) {
 		
 		if (inResizeZone(e)) {
-			if (!(_fixedColumnsTable.getCursor() == resizeCursor)) {
+			if (!(_tableHeader.getCursor() == resizeCursor)) {
 				swapCursor();
-				_fixedColumnsTable.setDragEnabled(false);
+				_tableHeader.setDragEnabled(false);
 			}
 		}
 		else {
-			if (_fixedColumnsTable.getCursor() == resizeCursor) {
+			if (_tableHeader.getCursor() == resizeCursor) {
 				swapCursor();
-				_fixedColumnsTable.setDragEnabled(true);
+				_tableHeader.setDragEnabled(true);
 			}
 		}
 	}
@@ -70,12 +77,12 @@ public class TableHeaderResizer extends MouseInputAdapter {
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		resizing = false;
-		_fixedColumnsTable.setDragEnabled(true);
+		_tableHeader.setDragEnabled(true);
 		
 	}
 	
 	private boolean inResizeZone(MouseEvent e) {
-		if (e.getSource() == _fixedColumnsTable) {
+		if (e.getSource() == _tableHeader) {
 			return e.getY() >= _scrollPane.getColumnHeader().getHeight()-3;
 		}
 		else {
@@ -91,11 +98,11 @@ public class TableHeaderResizer extends MouseInputAdapter {
 			int newHeight = mouseY - mouseYOffset;
 			if (newHeight > 0) {
 				
-				_fixedColumnsTable.setPreferredSize(new Dimension(1000, newHeight));
+				_tableHeader.setPreferredSize(new Dimension(1000, newHeight));
 				_scrollPane.getColumnHeader().setPreferredSize(new Dimension(1000, newHeight));
-				_fixedScrollPane.getColumnHeader().setPreferredSize(new Dimension(10000, newHeight));
+				_tableRowHeaderScrollPane.getColumnHeader().setPreferredSize(new Dimension(10000, newHeight));
 				_scrollPane.revalidate();
-				_fixedScrollPane.revalidate();
+				_tableRowHeaderScrollPane.revalidate();
 			}
 
 		}

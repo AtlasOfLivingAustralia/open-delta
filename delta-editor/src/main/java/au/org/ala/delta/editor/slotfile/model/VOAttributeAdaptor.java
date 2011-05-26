@@ -18,6 +18,10 @@ import au.org.ala.delta.editor.slotfile.VOCharBaseDesc;
 import au.org.ala.delta.editor.slotfile.VOItemDesc;
 import au.org.ala.delta.model.impl.AttributeData;
 
+/**
+ * Implements AttributeData using the functionality provided by the VOItemDesc, VOCharBaseDesc
+ * and Attribute classes.
+ */
 public class VOAttributeAdaptor implements AttributeData {
 
     private VOItemDesc _itemDesc;
@@ -232,5 +236,17 @@ public class VOAttributeAdaptor implements AttributeData {
 	     return false;
 	}
 
-    
+	@Override
+    public boolean isCommentOnly() {
+    	Attribute attribute = _itemDesc.readAttribute(_charBaseDesc.getUniId());
+	     if (attribute != null) {
+	         for (AttrChunk chunk : attribute) {
+	        	if ((chunk.getType() != ChunkType.CHUNK_TEXT) &&
+	        	    (chunk.getType() != ChunkType.CHUNK_LONGTEXT)) {
+	        		return false;
+	        	}
+	         }
+	     }
+	     return true;
+    }
 }

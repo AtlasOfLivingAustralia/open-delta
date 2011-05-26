@@ -6,7 +6,6 @@ import java.beans.PropertyChangeListener;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 
-import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateAttribute;
 import au.org.ala.delta.model.MultiStateCharacter;

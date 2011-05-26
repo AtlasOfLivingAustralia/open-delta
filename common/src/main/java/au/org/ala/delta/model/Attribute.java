@@ -81,6 +81,13 @@ public abstract class Attribute {
 	}
 	
 	/**
+	 * @return true if this Attribute has no encoded data other than a comment.
+	 */
+	public boolean isComment() {
+		return _impl.isCommentOnly();
+	}
+	
+	/**
 	 * Registers interest in being notified of changes to this Attribute.
 	 * @param observer the object interested in receiving notification of changes.
 	 */

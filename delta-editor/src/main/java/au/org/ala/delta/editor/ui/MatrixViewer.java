@@ -182,7 +182,7 @@ public class MatrixViewer extends JInternalFrame implements DeltaView {
 		fixedScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
 		fixedScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 		fixedScrollPane.setPreferredSize(new Dimension(120, 200));
-		new TableHeaderResizer((DropIndicationTableHeader)_table.getTableHeader(), _fixedColumns, scrollpane, fixedScrollPane);
+		new TableHeaderResizer((DropIndicationTableHeader)_table.getTableHeader(), scrollpane, fixedScrollPane);
 		scrollpane.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
 
 			@Override
