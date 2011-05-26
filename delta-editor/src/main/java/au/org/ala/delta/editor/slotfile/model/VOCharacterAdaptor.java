@@ -67,9 +67,6 @@ public class VOCharacterAdaptor extends ImageHolderAdaptor implements CharacterD
 
 	@Override
 	public void setUnits(String units) {
-		if (_charDesc.getNStatesUsed() > 0) {
-			throw new NotImplementedException("Deleting existing states not implemented!");
-		}
 		_charDesc.setInitialStateNumber(1);
 		int stateId = _charDesc.uniIdFromStateNo(1);
 		_textDesc.makeTemp();

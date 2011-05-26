@@ -14,13 +14,10 @@ import au.org.ala.delta.model.Character;
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.model.MultiStateCharacter;
 
-public class ControllingAttributeEditor extends JPanel {
+public class ControllingAttributeEditor extends CharacterEditTab {
 	
 	private static final long serialVersionUID = -1550092824029396438L;
 
-	private EditorViewModel _model;
-	private MultiStateCharacter _character;
-	
 	public ControllingAttributeEditor() {
 		
 		createUI();
@@ -155,8 +152,9 @@ public class ControllingAttributeEditor extends JPanel {
 	
 		if (character.getCharacterType().isMultistate()) {
 			_character = (MultiStateCharacter)character;
-			
-		
+		}
+		else {
+			_character = null;
 		}
 	}
 	

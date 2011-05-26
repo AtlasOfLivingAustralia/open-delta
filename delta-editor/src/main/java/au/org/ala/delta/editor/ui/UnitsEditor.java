@@ -5,26 +5,19 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import au.org.ala.delta.model.Character;
+import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.model.NumericCharacter;
 import au.org.ala.delta.ui.rtf.RtfEditor;
 
 /**
  * Allows the user to add or edit the units of a NumericCharacter.
  */
-public class UnitsEditor extends JPanel {
+public class UnitsEditor extends CharacterEditTab {
 
 	private static final long serialVersionUID = 8286423277647757100L;
 
-	private RtfEditor editor;
-	
-	/** The character that will receive any changes to the units */
-	private NumericCharacter<?> _character;
-	
-	
 	public UnitsEditor() {
 		createUI();
 		addEventListeners();
@@ -46,7 +39,7 @@ public class UnitsEditor extends JPanel {
 			@Override
 			public void focusLost(FocusEvent e) {
 				if (_character != null) {
-					_character.setUnits(editor.getRtfTextBody());
+					getCharacter().setUnits(editor.getRtfTextBody());
 				}
 			}
 			
@@ -59,15 +52,21 @@ public class UnitsEditor extends JPanel {
 	 * Sets the Character for editing.
 	 * @param character the Character to edit.
 	 */
-	public void bind(Character character) {
+	public void bind(EditorViewModel _model, au.org.ala.delta.model.Character character) {
+		
 		if (character.getCharacterType().isNumeric()) {
-			_character = (NumericCharacter<?>)character;
-			editor.setText(_character.getUnits());
+			_character = character;
+			
+			editor.setText(getCharacter().getUnits());
 		}
 		else {
 			_character = null;
 			editor.setText("");
 		}
 		
+	}
+	
+	private NumericCharacter<?> getCharacter() {
+		return (NumericCharacter<?>)_character;
 	}
 }

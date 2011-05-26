@@ -5,24 +5,20 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.ui.rtf.RtfEditor;
 
 /**
  * Allows the user to add or edit notes for a Character.
  */
-public class CharacterNotesEditor extends JPanel {
+public class CharacterNotesEditor extends CharacterEditTab {
 
 	private static final long serialVersionUID = 8286423277647757100L;
 
 	private RtfEditor editor;
-	
-	/** The character that will receive any changes to the Character notes */
-	private Character _character;
-	
 	
 	public CharacterNotesEditor() {
 		createUI();
@@ -56,7 +52,8 @@ public class CharacterNotesEditor extends JPanel {
 	 * Sets the Character for editing.
 	 * @param character the Character to edit.
 	 */
-	public void bind(Character character) {
+	public void bind(EditorViewModel model, Character character) {
+		_model = model;
 		_character = character;
 		editor.setText(_character.getNotes());
 	}

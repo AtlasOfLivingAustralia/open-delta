@@ -235,9 +235,10 @@ public class CharacterEditor extends JInternalFrame implements DeltaView {
 	
 	public void setSelectedCharacter(Character character) {
 		_selectedCharacter = character;
-		characterNotesEditor.bind(_selectedCharacter);
+		characterNotesEditor.bind(_dataSet, _selectedCharacter);
 		imageDetails.bind(_selectedCharacter);
-		
+		unitsEditor.bind(_dataSet, character);
+	
 		_validator = new CharacterValidator(_dataSet, _selectedCharacter);
 		
 		updateScreen();
@@ -393,6 +394,9 @@ public class CharacterEditor extends JInternalFrame implements DeltaView {
 		
 		ControllingAttributeEditor controllingAttributeEditor = new ControllingAttributeEditor();
 		addTab("controls", controllingAttributeEditor);
+		
+		ControlledByEditor controlledByEditor = new ControlledByEditor();
+		addTab("controlledBy", controlledByEditor);
 		
 		panel.add(tabbedPane);
 		getContentPane().setLayout(groupLayout);
