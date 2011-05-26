@@ -22,84 +22,6 @@
 
 	<build>
 		<plugins>
-			<plugin>
-				<artifactId>maven-antrun-plugin</artifactId>
-				<version>1.6</version>
-				<executions>
-					<execution>
-						<id>InstallerWithJRE</id>
-						<phase>install</phase>
-						<configuration>
-							<target>
-								<taskdef name="nsis" classname="com.danielreese.nsisant.Task">
-									<classpath location="./installer/nsisant-1.3.jar" />
-								</taskdef>
-								<nsis script="./installer/DeltaEditorWithJRE.nsi">
-									<define name="OUTPUT-FILE-NAME" value="${project.build.finalName}-Installer.exe" />
-
-									<define name="VERSION" value="${project.version}" />
-
-									<define name="LICENSE-TEXT-PATH"
-										value="..\common\src\main\resources\au\org\ala\delta\resources\MPL-1.1.txt" />
-
-									<define name="JARPATH" value="..\target\installer-jars" />
-
-									<define name="SAMPLE-DATASET-PATH" value="..\intkey\src\test\resources\dataset\sample" />
-
-									<define name="DELTA-EDITOR-EXEPATH" value="..\delta-editor\target\DeltaEditor.exe" />
-									<define name="DELTA-EDITOR-EXEOUTPUTNAME" value="DeltaEditor.exe" />
-
-									<define name="INTKEY-EXEPATH" value="..\intkey\target\Intkey.exe" />
-									<define name="INTKEY-EXEOUTPUTNAME" value="Intkey.exe" />
-
-									<define name="CONFOR-EXEPATH" value="..\confor\target\CONFOR-NOJRE.exe" />
-									<define name="CONFOR-EXEOUTPUTNAME" value="CONFOR.exe" />
-								</nsis>
-							</target>
-						</configuration>
-						<goals>
-							<goal>run</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>InstallerNOJRE</id>
-						<phase>install</phase>
-						<configuration>
-							<target>
-								<taskdef name="nsis" classname="com.danielreese.nsisant.Task">
-									<classpath location="./installer/nsisant-1.3.jar" />
-								</taskdef>
-								<nsis script="./installer/DeltaEditorNoJRE.nsi">
-									<define name="OUTPUT-FILE-NAME"
-										value="${project.build.finalName}-Installer-NOJRE.exe" />
-
-									<define name="VERSION" value="${project.version}" />
-
-									<define name="LICENSE-TEXT-PATH"
-										value="..\common\src\main\resources\au\org\ala\delta\resources\MPL-1.1.txt" />
-
-									<define name="SAMPLE-DATASET-PATH" value="..\intkey\src\test\resources\dataset\sample" />
-
-									<define name="JARPATH" value="..\target\installer-jars" />
-
-									<define name="DELTA-EDITOR-EXEPATH"
-										value="..\delta-editor\target\DeltaEditor-NOJRE.exe" />
-									<define name="DELTA-EDITOR-EXEOUTPUTNAME" value="DeltaEditor.exe" />
-
-									<define name="INTKEY-EXEPATH" value="..\intkey\target\Intkey-NOJRE.exe" />
-									<define name="INTKEY-EXEOUTPUTNAME" value="Intkey.exe" />
-
-									<define name="CONFOR-EXEPATH" value="..\confor\target\CONFOR-NOJRE.exe" />
-									<define name="CONFOR-EXEOUTPUTNAME" value="CONFOR.exe" />
-								</nsis>
-							</target>
-						</configuration>
-						<goals>
-							<goal>run</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
 
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
@@ -115,8 +37,8 @@
 							<descriptors>
 								<descriptor>delta-installer-jar-dir-assembly.xml</descriptor>
 							</descriptors>
-	                        <finalName>installer-jars</finalName>
-                            <appendAssemblyId>false</appendAssemblyId>
+							<finalName>installer-jars</finalName>
+							<appendAssemblyId>false</appendAssemblyId>
 						</configuration>
 					</execution>
 					<execution>
@@ -157,5 +79,97 @@
 			<url>${ala.repository.url}</url>
 		</snapshotRepository>
 	</distributionManagement>
+
+	<profiles>
+		<profile>
+			<id>win-installer</id>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<version>1.6</version>
+						<executions>
+							<execution>
+								<id>InstallerWithJRE</id>
+								<phase>install</phase>
+								<configuration>
+									<target>
+										<taskdef name="nsis" classname="com.danielreese.nsisant.Task">
+											<classpath location="./installer/nsisant-1.3.jar" />
+										</taskdef>
+										<nsis script="./installer/DeltaEditorWithJRE.nsi">
+											<define name="OUTPUT-FILE-NAME"
+												value="${project.build.finalName}-Installer.exe" />
+
+											<define name="VERSION" value="${project.version}" />
+
+											<define name="LICENSE-TEXT-PATH"
+												value="..\common\src\main\resources\au\org\ala\delta\resources\MPL-1.1.txt" />
+
+											<define name="JARPATH" value="..\target\installer-jars" />
+
+											<define name="SAMPLE-DATASET-PATH"
+												value="..\intkey\src\test\resources\dataset\sample" />
+
+											<define name="DELTA-EDITOR-EXEPATH" value="..\delta-editor\target\DeltaEditor.exe" />
+											<define name="DELTA-EDITOR-EXEOUTPUTNAME" value="DeltaEditor.exe" />
+
+											<define name="INTKEY-EXEPATH" value="..\intkey\target\Intkey.exe" />
+											<define name="INTKEY-EXEOUTPUTNAME" value="Intkey.exe" />
+
+											<define name="CONFOR-EXEPATH" value="..\confor\target\CONFOR-NOJRE.exe" />
+											<define name="CONFOR-EXEOUTPUTNAME" value="CONFOR.exe" />
+										</nsis>
+									</target>
+								</configuration>
+								<goals>
+									<goal>run</goal>
+								</goals>
+							</execution>
+							<execution>
+								<id>InstallerNOJRE</id>
+								<phase>install</phase>
+								<configuration>
+									<target>
+										<taskdef name="nsis" classname="com.danielreese.nsisant.Task">
+											<classpath location="./installer/nsisant-1.3.jar" />
+										</taskdef>
+										<nsis script="./installer/DeltaEditorNoJRE.nsi">
+											<define name="OUTPUT-FILE-NAME"
+												value="${project.build.finalName}-Installer-NOJRE.exe" />
+
+											<define name="VERSION" value="${project.version}" />
+
+											<define name="LICENSE-TEXT-PATH"
+												value="..\common\src\main\resources\au\org\ala\delta\resources\MPL-1.1.txt" />
+
+											<define name="SAMPLE-DATASET-PATH"
+												value="..\intkey\src\test\resources\dataset\sample" />
+
+											<define name="JARPATH" value="..\target\installer-jars" />
+
+											<define name="DELTA-EDITOR-EXEPATH"
+												value="..\delta-editor\target\DeltaEditor-NOJRE.exe" />
+											<define name="DELTA-EDITOR-EXEOUTPUTNAME" value="DeltaEditor.exe" />
+
+											<define name="INTKEY-EXEPATH" value="..\intkey\target\Intkey-NOJRE.exe" />
+											<define name="INTKEY-EXEOUTPUTNAME" value="Intkey.exe" />
+
+											<define name="CONFOR-EXEPATH" value="..\confor\target\CONFOR-NOJRE.exe" />
+											<define name="CONFOR-EXEOUTPUTNAME" value="CONFOR.exe" />
+										</nsis>
+									</target>
+								</configuration>
+								<goals>
+									<goal>run</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
 </project>

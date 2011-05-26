@@ -133,8 +133,8 @@
 						<unix>.sh</unix>
 					</binFileExtensions>
 					<generateRepository>false</generateRepository>
-				    <repositoryName>lib</repositoryName>
-				    <repositoryLayout>flat</repositoryLayout>
+					<repositoryName>lib</repositoryName>
+					<repositoryLayout>flat</repositoryLayout>
 					<showConsoleWindow>false</showConsoleWindow>
 					<includeConfigurationDirectoryInClasspath>false</includeConfigurationDirectoryInClasspath>
 				</configuration>
@@ -144,50 +144,6 @@
 						<goals>
 							<goal>assemble</goal>
 						</goals>
-					</execution>
-				</executions>
-			</plugin>
-
-			<plugin>
-				<groupId>org.bluestemsoftware.open.maven.plugin</groupId>
-				<artifactId>launch4j-plugin</artifactId>
-				<version>1.5.0.0</version>
-				<executions>
-					<execution>
-						<id>IntkeyWithJRE</id>
-						<phase>install</phase>
-						<goals>
-							<goal>launch4j</goal>
-						</goals>
-						<configuration>
-							<dontWrapJar>true</dontWrapJar>
-							<headerType>gui</headerType>
-							<outfile>target/Intkey.exe</outfile>
-							<jar>lib\${project.build.finalName}.jar</jar>
-							<errTitle>Error</errTitle>
-							<icon>installer\resources\delta_intkey.ico</icon>
-							<jre>
-								<path>jre</path>
-							</jre>
-						</configuration>
-					</execution>
-					<execution>
-						<id>IntkeyNOJRE</id>
-						<phase>install</phase>
-						<goals>
-							<goal>launch4j</goal>
-						</goals>
-						<configuration>
-							<dontWrapJar>true</dontWrapJar>
-							<headerType>gui</headerType>
-							<outfile>target/Intkey-NOJRE.exe</outfile>
-							<jar>lib\${project.build.finalName}.jar</jar>
-							<errTitle>Error</errTitle>
-							<icon>installer\resources\delta_intkey.ico</icon>
-							<jre>
-								<minVersion>1.6.0_10</minVersion>
-							</jre>
-						</configuration>
 					</execution>
 				</executions>
 			</plugin>
@@ -247,5 +203,58 @@
 			<url>${ala.repository.url}</url>
 		</snapshotRepository>
 	</distributionManagement>
+
+	<profiles>
+		<profile>
+			<id>win-installer</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.bluestemsoftware.open.maven.plugin</groupId>
+						<artifactId>launch4j-plugin</artifactId>
+						<version>1.5.0.0</version>
+						<executions>
+							<execution>
+								<id>IntkeyWithJRE</id>
+								<phase>install</phase>
+								<goals>
+									<goal>launch4j</goal>
+								</goals>
+								<configuration>
+									<dontWrapJar>true</dontWrapJar>
+									<headerType>gui</headerType>
+									<outfile>target/Intkey.exe</outfile>
+									<jar>lib\${project.build.finalName}.jar</jar>
+									<errTitle>Error</errTitle>
+									<icon>installer\resources\delta_intkey.ico</icon>
+									<jre>
+										<path>jre</path>
+									</jre>
+								</configuration>
+							</execution>
+							<execution>
+								<id>IntkeyNOJRE</id>
+								<phase>install</phase>
+								<goals>
+									<goal>launch4j</goal>
+								</goals>
+								<configuration>
+									<dontWrapJar>true</dontWrapJar>
+									<headerType>gui</headerType>
+									<outfile>target/Intkey-NOJRE.exe</outfile>
+									<jar>lib\${project.build.finalName}.jar</jar>
+									<errTitle>Error</errTitle>
+									<icon>installer\resources\delta_intkey.ico</icon>
+									<jre>
+										<minVersion>1.6.0_10</minVersion>
+									</jre>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
 </project>

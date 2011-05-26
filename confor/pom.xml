@@ -128,50 +128,6 @@
 					</execution>
 				</executions>
 			</plugin>
-
-			<plugin>
-				<groupId>org.bluestemsoftware.open.maven.plugin</groupId>
-				<artifactId>launch4j-plugin</artifactId>
-				<version>1.5.0.0</version>
-				<executions>
-					<execution>
-						<id>ConforWithJRE</id>
-						<phase>install</phase>
-						<goals>
-							<goal>launch4j</goal>
-						</goals>
-						<configuration>
-							<dontWrapJar>true</dontWrapJar>
-							<headerType>console</headerType>
-							<outfile>target/CONFOR.exe</outfile>
-							<jar>lib/${project.build.finalName}.jar</jar>
-							<errTitle>Error</errTitle>
-							<icon>installer/resources/Delta_CONFOR.ico</icon>
-							<jre>
-								<path>jre</path>
-							</jre>
-						</configuration>
-					</execution>
-					<execution>
-						<id>ConforNOJRE</id>
-						<phase>install</phase>
-						<goals>
-							<goal>launch4j</goal>
-						</goals>
-						<configuration>
-							<dontWrapJar>true</dontWrapJar>
-							<headerType>console</headerType>
-							<outfile>target/CONFOR-NOJRE.exe</outfile>
-							<jar>lib/${project.build.finalName}.jar</jar>
-							<errTitle>Error</errTitle>
-							<icon>installer/resources/Delta_CONFOR.ico</icon>
-							<jre>
-								<minVersion>1.6.0_10</minVersion>
-							</jre>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
 		</plugins>
 		<extensions>
 			<extension>
@@ -238,4 +194,57 @@
 			<url>${ala.repository.url}</url>
 		</snapshotRepository>
 	</distributionManagement>
+
+	<profiles>
+		<profile>
+			<id>win-installer</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.bluestemsoftware.open.maven.plugin</groupId>
+						<artifactId>launch4j-plugin</artifactId>
+						<version>1.5.0.0</version>
+						<executions>
+							<execution>
+								<id>ConforWithJRE</id>
+								<phase>install</phase>
+								<goals>
+									<goal>launch4j</goal>
+								</goals>
+								<configuration>
+									<dontWrapJar>true</dontWrapJar>
+									<headerType>console</headerType>
+									<outfile>target/CONFOR.exe</outfile>
+									<jar>lib/${project.build.finalName}.jar</jar>
+									<errTitle>Error</errTitle>
+									<icon>installer/resources/Delta_CONFOR.ico</icon>
+									<jre>
+										<path>jre</path>
+									</jre>
+								</configuration>
+							</execution>
+							<execution>
+								<id>ConforNOJRE</id>
+								<phase>install</phase>
+								<goals>
+									<goal>launch4j</goal>
+								</goals>
+								<configuration>
+									<dontWrapJar>true</dontWrapJar>
+									<headerType>console</headerType>
+									<outfile>target/CONFOR-NOJRE.exe</outfile>
+									<jar>lib/${project.build.finalName}.jar</jar>
+									<errTitle>Error</errTitle>
+									<icon>installer/resources/Delta_CONFOR.ico</icon>
+									<jre>
+										<minVersion>1.6.0_10</minVersion>
+									</jre>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>
