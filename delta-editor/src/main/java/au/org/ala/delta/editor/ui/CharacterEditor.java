@@ -12,6 +12,7 @@ import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -45,6 +46,7 @@ import au.org.ala.delta.editor.ui.validator.ValidationResult;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.MultiStateCharacter;
+import au.org.ala.delta.model.NumericCharacter;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.observer.AbstractDataSetObserver;
 import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
@@ -55,6 +57,12 @@ import au.org.ala.delta.ui.rtf.RtfEditor;
  */
 public class CharacterEditor extends JInternalFrame implements DeltaView {
 	
+	private static final int CONTROLS_EDITOR_TAB_INDEX = 4;
+
+	private static final int UNITS_EDITOR_TAB_INDEX = 1;
+
+	private static final int STATE_EDITOR_TAB_INDEX = 0;
+
 	private static final long serialVersionUID = 9193388605723396077L;
 
 	/** Contains the items we can edit */
@@ -94,6 +102,7 @@ public class CharacterEditor extends JInternalFrame implements DeltaView {
 	
 	private CharacterValidator _validator;
 	private CharacterNotesEditor characterNotesEditor;
+	private UnitsEditor unitsEditor;
 	private ImageDetailsPanel imageDetails;
 	
 	public CharacterEditor(EditorViewModel model) {	
@@ -371,21 +380,30 @@ public class CharacterEditor extends JInternalFrame implements DeltaView {
 		tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
 		
 		stateEditor = new StateEditor();
-		tabbedPane.addTab(_resources.getString("states.tab.title"), stateEditor);
+		addTab("states", stateEditor);
+		
+		unitsEditor = new UnitsEditor();
+		addTab("units", unitsEditor);
 		
 		imageDetails = new ImageDetailsPanel();
-		imageDetails.setEnabled(false);
-		tabbedPane.addTab(_resources.getString("images.tab.title"), imageDetails);
+		addTab("images", imageDetails);
 		
 		characterNotesEditor = new CharacterNotesEditor();
-		_context.getResourceMap(CharacterNotesEditor.class).injectComponents(characterNotesEditor);
-		tabbedPane.addTab(_resources.getString("notes.tab.title"), characterNotesEditor);
+		addTab("notes", characterNotesEditor);
 		
+		ControllingAttributeEditor controllingAttributeEditor = new ControllingAttributeEditor();
+		addTab("controls", controllingAttributeEditor);
 		
 		panel.add(tabbedPane);
 		getContentPane().setLayout(groupLayout);
 		setPreferredSize(new Dimension(827, 500));
 		setMinimumSize(new Dimension(748, 444));
+	}
+	
+	private void addTab(String titleKeyPrefix, JComponent tab) {
+		_context.getResourceMap(tab.getClass()).injectComponents(tab);
+		String title = _resources.getString(titleKeyPrefix+".tab.title");
+		tabbedPane.addTab(title, tab);
 	}
 	
 	/**
@@ -447,16 +465,26 @@ public class CharacterEditor extends JInternalFrame implements DeltaView {
 		if (_selectedCharacter instanceof MultiStateCharacter) {
 			MultiStateCharacter multistateChar = (MultiStateCharacter)_selectedCharacter;
 			stateEditor.bind(_dataSet, multistateChar);
-			tabbedPane.setEnabledAt(0, true);
+			tabbedPane.setEnabledAt(STATE_EDITOR_TAB_INDEX, true);
+			tabbedPane.setEnabledAt(UNITS_EDITOR_TAB_INDEX, false);
+			tabbedPane.setEnabledAt(CONTROLS_EDITOR_TAB_INDEX, true);
+			if (!tabbedPane.isEnabledAt(tabbedPane.getSelectedIndex())) {
+				tabbedPane.setSelectedIndex(0);
+			}
 			exclusiveCheckBox.setEnabled(true);
 			exclusiveCheckBox.setSelected(multistateChar.isExclusive());
 		}
 		else {
 			exclusiveCheckBox.setEnabled(false);
 			exclusiveCheckBox.setSelected(false);
-			tabbedPane.setEnabledAt(0, false);
-			if (tabbedPane.getSelectedIndex() == 0) {
-				tabbedPane.setSelectedIndex(1);
+			tabbedPane.setEnabledAt(STATE_EDITOR_TAB_INDEX, false);
+			tabbedPane.setEnabledAt(CONTROLS_EDITOR_TAB_INDEX, false);
+			if (_selectedCharacter instanceof NumericCharacter<?>) {
+				tabbedPane.setEnabledAt(UNITS_EDITOR_TAB_INDEX, true);
+			}
+			
+			if (!tabbedPane.isEnabledAt(tabbedPane.getSelectedIndex())) {
+				tabbedPane.setSelectedIndex(UNITS_EDITOR_TAB_INDEX);
 			}
 		}
 		_editsDisabled = false;
