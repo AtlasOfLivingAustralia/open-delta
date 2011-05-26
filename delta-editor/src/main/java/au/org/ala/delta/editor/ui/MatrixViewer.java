@@ -214,7 +214,7 @@ public class MatrixViewer extends JInternalFrame implements DeltaView {
 		});
 		
 		JSplitPane content = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-		// JPanel content = new JPanel(new BorderLayout());
+		content.setBorder(null);
 		content.add(scrollpane, JSplitPane.RIGHT);
 		content.add(fixedScrollPane, JSplitPane.LEFT);
 		content.setDividerSize(4);

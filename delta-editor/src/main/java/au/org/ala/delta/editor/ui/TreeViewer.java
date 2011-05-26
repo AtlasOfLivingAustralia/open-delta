@@ -187,6 +187,7 @@ public class TreeViewer extends JInternalFrame implements DeltaView {
 
 		divider.setTopComponent(content);
 		divider.setBottomComponent(_stateEditor);
+		divider.setBorder(null);
 		
 		_stateEditor.add(new AttributeEditorListener() {					
 			@Override
