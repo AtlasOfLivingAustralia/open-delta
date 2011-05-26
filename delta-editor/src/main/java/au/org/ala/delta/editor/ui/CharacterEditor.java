@@ -33,6 +33,7 @@ import javax.swing.plaf.basic.BasicComboBoxRenderer;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
+import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 
@@ -86,16 +87,20 @@ public class CharacterEditor extends JInternalFrame implements DeltaView {
 	private JComboBox comboBox;
 	private JTabbedPane tabbedPane;
 	
+	private ApplicationContext _context;
 	private ResourceMap _resources;
 	
 	private MessageDialogHelper _dialogHelper;
 	
 	private CharacterValidator _validator;
+	private CharacterNotesEditor characterNotesEditor;
+	private ImageDetailsPanel imageDetails;
 	
 	public CharacterEditor(EditorViewModel model) {	
 		setName("CharacterEditorDialog");
 		_dialogHelper = new MessageDialogHelper();
-		_resources = Application.getInstance().getContext().getResourceMap(CharacterEditor.class);
+		_context = Application.getInstance().getContext();
+		_resources = _context.getResourceMap(CharacterEditor.class);
 		_resources.injectFields(this);
 		ActionMap map = Application.getInstance().getContext().getActionMap(this);
 		createUI();
@@ -113,9 +118,7 @@ public class CharacterEditor extends JInternalFrame implements DeltaView {
 				if (_editsDisabled) {
 					return;
 				}
-				_selectedCharacter = _dataSet.getCharacter((Integer)spinner.getValue());
-				_validator = new CharacterValidator(_dataSet, _selectedCharacter);
-				updateScreen();
+				setSelectedCharacter(_dataSet.getCharacter((Integer)spinner.getValue()));
 			}
 		});
 		
@@ -143,8 +146,8 @@ public class CharacterEditor extends JInternalFrame implements DeltaView {
 				if (_editsDisabled) {
 					return;
 				}
-				_selectedCharacter = _dataSet.getCharacter(characterSelectionList.getSelectedIndex()+1);
-				updateScreen();
+				setSelectedCharacter(_dataSet.getCharacter(characterSelectionList.getSelectedIndex()+1));
+				
 			}
 		});
 		
@@ -219,6 +222,16 @@ public class CharacterEditor extends JInternalFrame implements DeltaView {
 			lblEditCharacterName.setText(editCharacterLabelText);
 			editorScroller.setViewportView(rtfEditor);
 		}
+	}
+	
+	public void setSelectedCharacter(Character character) {
+		_selectedCharacter = character;
+		characterNotesEditor.bind(_selectedCharacter);
+		imageDetails.bind(_selectedCharacter);
+		
+		_validator = new CharacterValidator(_dataSet, _selectedCharacter);
+		
+		updateScreen();
 	}
 	
 	@Action
@@ -358,10 +371,15 @@ public class CharacterEditor extends JInternalFrame implements DeltaView {
 		tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
 		
 		stateEditor = new StateEditor();
+		tabbedPane.addTab(_resources.getString("states.tab.title"), stateEditor);
 		
-		ImageDetailsPanel imageDetails = new ImageDetailsPanel();
+		imageDetails = new ImageDetailsPanel();
 		imageDetails.setEnabled(false);
-		tabbedPane.addTab("Images", imageDetails);
+		tabbedPane.addTab(_resources.getString("images.tab.title"), imageDetails);
+		
+		characterNotesEditor = new CharacterNotesEditor();
+		_context.getResourceMap(CharacterNotesEditor.class).injectComponents(characterNotesEditor);
+		tabbedPane.addTab(_resources.getString("notes.tab.title"), characterNotesEditor);
 		
 		
 		panel.add(tabbedPane);
@@ -377,7 +395,7 @@ public class CharacterEditor extends JInternalFrame implements DeltaView {
 	 */
 	public void bind(EditorViewModel dataSet) {
 		_dataSet = dataSet;
-		_selectedCharacter = dataSet.getSelectedCharacter();
+		setSelectedCharacter(dataSet.getSelectedCharacter());
 		_validator = new CharacterValidator(_dataSet, _selectedCharacter);
 		_dataSet.addDeltaDataSetObserver(new AbstractDataSetObserver() {
 
@@ -429,15 +447,17 @@ public class CharacterEditor extends JInternalFrame implements DeltaView {
 		if (_selectedCharacter instanceof MultiStateCharacter) {
 			MultiStateCharacter multistateChar = (MultiStateCharacter)_selectedCharacter;
 			stateEditor.bind(_dataSet, multistateChar);
-			tabbedPane.insertTab("States", null, stateEditor, "", 0);
-			tabbedPane.setSelectedComponent(stateEditor);
+			tabbedPane.setEnabledAt(0, true);
 			exclusiveCheckBox.setEnabled(true);
 			exclusiveCheckBox.setSelected(multistateChar.isExclusive());
 		}
 		else {
 			exclusiveCheckBox.setEnabled(false);
 			exclusiveCheckBox.setSelected(false);
-			tabbedPane.remove(stateEditor);
+			tabbedPane.setEnabledAt(0, false);
+			if (tabbedPane.getSelectedIndex() == 0) {
+				tabbedPane.setSelectedIndex(1);
+			}
 		}
 		_editsDisabled = false;
 	}
