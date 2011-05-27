@@ -5,6 +5,7 @@ import java.util.List;
 
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.CharacterDependency;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
@@ -170,6 +171,11 @@ public class DataSetWrapper implements ObservableDeltaDataSet, DeltaDataSetObser
 		return _wrappedDataSet.getItemsWithMultipleStatesCoded(character);
 	}
 	
+	@Override
+	public List<CharacterDependency> getAllCharacterDependencies() {
+		return _wrappedDataSet.getAllCharacterDependencies();
+	}
+
 	@Override
 	public Character changeCharacterType(Character character,
 			CharacterType newType) {

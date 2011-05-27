@@ -14,6 +14,11 @@
  ******************************************************************************/
 package au.org.ala.delta.model;
 
+
+/**
+ * A MultiStateCharacter is defined by a set of states that may be present in a Taxon.
+ * MultiStateCharacters can be ordered or unordered.
+ */
 public abstract class MultiStateCharacter extends Character {
 
 	public MultiStateCharacter(int number, CharacterType characterType) {
@@ -91,5 +96,4 @@ public abstract class MultiStateCharacter extends Character {
 	public boolean isExclusive() {
 	    return _impl.isExclusive();
 	}
-
 }

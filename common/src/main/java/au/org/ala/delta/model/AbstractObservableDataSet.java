@@ -148,6 +148,19 @@ public abstract class AbstractObservableDataSet implements ObservableDeltaDataSe
 		return items;
 	}
 	
+	
+	
+	@Override
+	public List<CharacterDependency> getAllCharacterDependencies() {
+		List<CharacterDependency> characterDependencies = new ArrayList<CharacterDependency>();
+		for (int i=1; i<getNumberOfCharacters(); i++) {
+			Character character = doGetCharacter(i);
+			if (character.getCharacterType().isMultistate()) {
+				characterDependencies.addAll(((MultiStateCharacter)character).getControllingCharacters());
+			}
+		}
+		return characterDependencies;
+	}
 	/**
 	 * Adds an observer interested in receiving notification of changes to this data set.
 	 * Duplicate observers are ignored.

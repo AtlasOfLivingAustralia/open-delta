@@ -27,6 +27,7 @@ public class CharacterDependency {
 	private int _controllingCharacterId;
 	private Set<Integer> _dependentCharacterIds;
 	private Set<Integer> _states = new HashSet<Integer>();
+	private String _description;
 
 	/**
 	 * constructor
@@ -61,6 +62,24 @@ public class CharacterDependency {
 	public Set<Integer> getStates() {
 	    //return defensive copy
 		return new HashSet<Integer>(_states);
+	}
+	
+	/**
+	 * @return a description of this CharacterDependency.
+	 */
+	public String getDescription() {
+		if (_description == null) {
+			return toString();
+		}
+		return _description;
+	}
+	
+	/**
+	 * Provides a description of this CharacterDependency.
+	 * @param description a description of this CharacterDependency.
+	 */
+	public void setDescription(String description) {
+		_description = description;
 	}
 
 	@Override

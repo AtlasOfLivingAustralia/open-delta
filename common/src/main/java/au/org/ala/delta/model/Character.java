@@ -25,8 +25,7 @@ import au.org.ala.delta.model.observer.CharacterObserver;
 public abstract class Character implements Illustratable {
 
     private int _number;
-    private List<CharacterDependency> _dependentCharacters = new ArrayList<CharacterDependency>();
-    private List<CharacterDependency> _controllingCharacters = new ArrayList<CharacterDependency>();
+    
     protected CharacterData _impl;
     private CharacterType _characterType;
     private List<CharacterObserver> _observers;
@@ -63,19 +62,19 @@ public abstract class Character implements Illustratable {
     }
 
     public void addDependentCharacters(CharacterDependency dependency) {
-        _dependentCharacters.add(dependency);
+        _impl.addDependentCharacters(dependency);
     }
 
     public List<CharacterDependency> getDependentCharacters() {
-        return _dependentCharacters;
+        return _impl.getDependentCharacters();
     }
     
     public void addControllingCharacters(CharacterDependency dependency) {
-        _controllingCharacters.add(dependency);
+       _impl.addControllingCharacters(dependency);
     }
 
     public List<CharacterDependency> getControllingCharacters() {
-        return _controllingCharacters;
+        return _impl.getControllingCharacters();
     }
 
     public void setMandatory(boolean b) {

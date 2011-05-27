@@ -2,6 +2,7 @@ package au.org.ala.delta.model.impl;
 
 import java.util.List;
 
+import au.org.ala.delta.model.CharacterDependency;
 import au.org.ala.delta.model.Illustratable;
 import au.org.ala.delta.model.Item;
 
@@ -98,4 +99,12 @@ public interface CharacterData extends Illustratable {
 	void addState();
 
 	void moveState(int stateNumber, int newNumber);
+
+	void addDependentCharacters(CharacterDependency dependency);
+
+    List<CharacterDependency> getDependentCharacters();
+    
+    void addControllingCharacters(CharacterDependency dependency);
+
+    List<CharacterDependency> getControllingCharacters();
 }

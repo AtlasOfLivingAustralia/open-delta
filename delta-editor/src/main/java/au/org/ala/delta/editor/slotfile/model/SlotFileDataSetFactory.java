@@ -43,6 +43,10 @@ public class SlotFileDataSetFactory implements DeltaDataSetFactory {
 		_vop = vop;
 	}
 	
+	public DeltaVOP getVOP() {
+		return _vop;
+	}
+	
 	/**
 	 * Creates a new DeltaDataSet backed by our VOP.
 	 * @param name ignored in this case as the VOP already has a file name associated with it.

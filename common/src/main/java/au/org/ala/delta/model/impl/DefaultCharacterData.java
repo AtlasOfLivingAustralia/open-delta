@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.commons.lang.NotImplementedException;
 
+import au.org.ala.delta.model.CharacterDependency;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.image.Image;
 
@@ -34,6 +35,8 @@ public class DefaultCharacterData implements CharacterData {
 	private boolean _omitPeriod;
 	private boolean _newParagraph;
 	private boolean _nonAutoCc;
+	private List<CharacterDependency> _dependentCharacters = new ArrayList<CharacterDependency>();
+    private List<CharacterDependency> _controllingCharacters = new ArrayList<CharacterDependency>();
 
 	@Override
 	public String getDescription() {
@@ -297,4 +300,19 @@ public class DefaultCharacterData implements CharacterData {
 		throw new NotImplementedException();
 	}
 	
+	public void addDependentCharacters(CharacterDependency dependency) {
+        _dependentCharacters.add(dependency);
+    }
+
+    public List<CharacterDependency> getDependentCharacters() {
+        return _dependentCharacters;
+    }
+    
+    public void addControllingCharacters(CharacterDependency dependency) {
+        _controllingCharacters.add(dependency);
+    }
+
+    public List<CharacterDependency> getControllingCharacters() {
+        return _controllingCharacters;
+    }
 }

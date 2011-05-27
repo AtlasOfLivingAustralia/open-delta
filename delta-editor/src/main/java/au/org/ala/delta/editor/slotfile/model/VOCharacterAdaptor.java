@@ -3,7 +3,9 @@ package au.org.ala.delta.editor.slotfile.model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -20,6 +22,7 @@ import au.org.ala.delta.editor.slotfile.VOControllingDesc;
 import au.org.ala.delta.editor.slotfile.VODeltaMasterDesc;
 import au.org.ala.delta.editor.slotfile.VOImageHolderDesc;
 import au.org.ala.delta.editor.slotfile.VOItemDesc;
+import au.org.ala.delta.model.CharacterDependency;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.impl.CharacterData;
@@ -39,10 +42,6 @@ public class VOCharacterAdaptor extends ImageHolderAdaptor implements CharacterD
 	private VOCharBaseDesc _charDesc;
 	private VOCharTextDesc _textDesc;
 	private DeltaVOP _vop;
-
-	public VOCharacterAdaptor(DeltaVOP vop, VOCharBaseDesc charBase) {
-		this(vop, charBase, null);
-	}
 
 	public VOCharacterAdaptor(DeltaVOP vop, VOCharBaseDesc charBase, VOCharTextDesc textDesc) {
 		_vop = vop;
@@ -383,6 +382,68 @@ public class VOCharacterAdaptor extends ImageHolderAdaptor implements CharacterD
 			}
 			return !contChars.isEmpty();
 		}
+	}
+	
+	
+	
+	@Override
+	public void addDependentCharacters(CharacterDependency dependency) {
+		throw new NotImplementedException();
+		
+	}
+
+	@Override
+	public List<CharacterDependency> getDependentCharacters() {
+		
+		List<CharacterDependency> controllingAttributes = new ArrayList<CharacterDependency>();
+		List<Integer> controllingInfoIds = _charDesc.readControllingInfo();
+		for (int id : controllingInfoIds) {
+			VOControllingDesc controllingDesc = (VOControllingDesc)getDescFromId(id);
+			
+			CharacterDependency dependency = characterDependencyFromControllingInfo(controllingDesc);
+			controllingAttributes.add(dependency);	
+		}
+		return controllingAttributes;
+	}
+
+	
+	/**
+	 * Creates and returns a CharacterDependency populated from the supplied VOControllingDesc.
+	 * @param controllingDesc the source of data for the CharacterDependency.
+	 * @return a new CharacterDependency.
+	 */
+	private CharacterDependency characterDependencyFromControllingInfo(
+			VOControllingDesc controllingDesc) {
+		String label = controllingDesc.readLabel();
+		List<Integer> controlledCharIds = controllingDesc.readControlledChars();
+		List<Integer> states = controllingDesc.readStateIds();
+		
+		Set<Integer> controlledCharNumbers = new HashSet<Integer>(controlledCharIds.size());
+		for (int charId : controlledCharIds) {
+			controlledCharNumbers.add(getVOP().getDeltaMaster().charNoFromUniId(charId));
+		}
+		
+		Set<Integer> stateNumbers = new HashSet<Integer>(states.size());
+		for (int stateId : states) {
+			stateNumbers.add(_charDesc.stateNoFromUniId(stateId));
+		}
+		
+		int number = getVOP().getDeltaMaster().charNoFromUniId(_charDesc.getUniId());
+		
+		CharacterDependency dependency = new CharacterDependency(number, stateNumbers, controlledCharNumbers);
+		dependency.setDescription(label);
+		return dependency;
+	}
+
+	@Override
+	public void addControllingCharacters(CharacterDependency dependency) {
+		throw new NotImplementedException();
+		
+	}
+
+	@Override
+	public List<CharacterDependency> getControllingCharacters() {
+		throw new NotImplementedException();
 	}
 	
     @Override

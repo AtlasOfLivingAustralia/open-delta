@@ -164,4 +164,6 @@ public interface DeltaDataSet {
      */
 	public boolean canChangeCharacterType(Character character, CharacterType newType);
 	
+	public List<CharacterDependency> getAllCharacterDependencies();
+	
 }
