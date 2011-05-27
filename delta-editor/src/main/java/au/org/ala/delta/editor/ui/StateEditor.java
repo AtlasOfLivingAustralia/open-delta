@@ -12,6 +12,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ListModel;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -41,8 +43,12 @@ public class StateEditor extends JPanel {
 	
 	private CharacterFormatter _formatter;
 	private EditorViewModel _model;
+	
+	private boolean _ignoreUpdates;
+	private int _selectedState;
 
 	public StateEditor() {
+		_ignoreUpdates = false;
 		_formatter = new CharacterFormatter(true, false, false, true);
 		createUI();
 		addEventHandlers();
@@ -61,6 +67,24 @@ public class StateEditor extends JPanel {
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
 				updateScreen();
+			}
+		});
+		
+		stateDescriptionPane.getDocument().addDocumentListener(new DocumentListener() {
+			
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				updateStateText();
+			}
+			
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				updateStateText();
+			}
+			
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+				updateStateText();
 			}
 		});
 	}
@@ -134,17 +158,29 @@ public class StateEditor extends JPanel {
 	 * Updates the contents of the screen based on the selected state.
 	 */
 	public void updateScreen() {
-		
-		int selectedIndex = stateList.getSelectedIndex();
-		
-		int selectedState = selectedIndex + 1;
-		if ((_character.getNumberOfStates() > 0) && (selectedState > 0)) {
-			stateDescriptionPane.setText(_character.getState(selectedState));
+		if (_ignoreUpdates) {
+			return;
 		}
-		else {
-			stateDescriptionPane.setText("");
+		try {
+			_ignoreUpdates = true;
+			int selectedIndex = stateList.getSelectedIndex();
+			
+			_selectedState = selectedIndex + 1;
+			
+			if ((_character.getNumberOfStates() > 0) && (_selectedState > 0)) {
+				stateDescriptionPane.setText(_character.getState(_selectedState));
+			}
+			else {
+				stateDescriptionPane.setText("");
+			}
+			if (_selectedState > 0) {
+				chckbxImplicit.setSelected(_character.getUncodedImplicitState() == _selectedState);
+			}
+			chckbxImplicit.setEnabled(_selectedState > 0);
 		}
-		chckbxImplicit.setSelected(_character.getUncodedImplicitState() == selectedState);
+		finally {
+			_ignoreUpdates = false;
+		}
 		
 	}
 	
@@ -153,6 +189,9 @@ public class StateEditor extends JPanel {
 	 * @param character the character to display/edit.
 	 */
 	public void bind(EditorViewModel model, MultiStateCharacter character) {
+		if (character.equals(_character)) {
+			return;
+		}
 		_character = character;
 		_model = model;
 		ListModel listModel = new StateListModel(_model, _character);
@@ -167,6 +206,8 @@ public class StateEditor extends JPanel {
 	@Action
 	public void addState() {
 		_character.addState();
+		stateList.setSelectedIndex(_character.getNumberOfStates()-1);
+		stateDescriptionPane.requestFocusInWindow();
 	}
 	
 	/**
@@ -183,7 +224,15 @@ public class StateEditor extends JPanel {
 	 */
 	@Action
 	public void toggleStateImplicit() {
+		_character.setUncodedImplicitState(_selectedState);
+	}
+	
+	public void updateStateText() {
+		if (!_ignoreUpdates && _selectedState > 0) {
+			String text = stateDescriptionPane.getRtfTextBody();
+			_character.setState(_selectedState, text);
 		
+		}
 	}
 	
 	class StateListModel extends AbstractListModel {

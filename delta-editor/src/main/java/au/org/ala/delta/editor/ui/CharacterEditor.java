@@ -1,6 +1,5 @@
 package au.org.ala.delta.editor.ui;
 
-import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 
@@ -16,7 +15,6 @@ import javax.swing.JComponent;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
@@ -289,8 +287,6 @@ public class CharacterEditor extends JInternalFrame implements DeltaView {
 		mandatoryCheckBox = new JCheckBox();
 		mandatoryCheckBox.setName("mandatoryCheckbox");
 		
-		JPanel panel = new JPanel();
-		
 		btnDone = new JButton("Done");
 		btnDone.setName("doneEditingTaxonButton");
 		
@@ -306,6 +302,8 @@ public class CharacterEditor extends JInternalFrame implements DeltaView {
 		comboBox.setRenderer(new CharacterTypeRenderer());
 		
 		JLabel lblCharacterType = new JLabel("Character Type:");
+		
+		createTabbedPane();
 		
 		GroupLayout groupLayout = new GroupLayout(getContentPane());
 		groupLayout.setHorizontalGroup(
@@ -330,17 +328,17 @@ public class CharacterEditor extends JInternalFrame implements DeltaView {
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 								.addComponent(lblEditCharacterName)
-								.addComponent(editorScroller, GroupLayout.DEFAULT_SIZE, 506, Short.MAX_VALUE)))
+								.addComponent(editorScroller, GroupLayout.DEFAULT_SIZE, 482, Short.MAX_VALUE)))
 						.addGroup(groupLayout.createSequentialGroup()
 							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 								.addGroup(groupLayout.createSequentialGroup()
-									.addGap(0, 567, Short.MAX_VALUE)
+									.addGap(0, 543, Short.MAX_VALUE)
 									.addComponent(btnDone)
 									.addGap(5)
 									.addComponent(btnHelp))
-								.addComponent(panel, GroupLayout.DEFAULT_SIZE, 722, Short.MAX_VALUE))
+								.addComponent(tabbedPane, GroupLayout.DEFAULT_SIZE, 698, Short.MAX_VALUE))
 							.addGap(1)))
-					.addGap(19))
+					.addContainerGap())
 		);
 		groupLayout.setVerticalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
@@ -368,16 +366,22 @@ public class CharacterEditor extends JInternalFrame implements DeltaView {
 									.addComponent(mandatoryCheckBox))))
 						.addComponent(editorScroller, GroupLayout.DEFAULT_SIZE, 113, Short.MAX_VALUE))
 					.addGap(9)
-					.addComponent(panel, GroupLayout.DEFAULT_SIZE, 214, Short.MAX_VALUE)
+					.addComponent(tabbedPane)
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
 						.addComponent(btnDone)
 						.addComponent(btnHelp))
 					.addGap(17))
 		);
-		panel.setLayout(new BorderLayout(0, 0));
-		
+	
+		getContentPane().setLayout(groupLayout);
+		setPreferredSize(new Dimension(827, 500));
+		setMinimumSize(new Dimension(748, 444));
+	}
+
+	private void createTabbedPane() {
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		tabbedPane.setBorder(null);
 		tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
 		
 		stateEditor = new StateEditor();
@@ -397,11 +401,6 @@ public class CharacterEditor extends JInternalFrame implements DeltaView {
 		
 		ControlledByEditor controlledByEditor = new ControlledByEditor();
 		addTab("controlledBy", controlledByEditor);
-		
-		panel.add(tabbedPane);
-		getContentPane().setLayout(groupLayout);
-		setPreferredSize(new Dimension(827, 500));
-		setMinimumSize(new Dimension(748, 444));
 	}
 	
 	private void addTab(String titleKeyPrefix, JComponent tab) {
