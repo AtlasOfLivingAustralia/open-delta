@@ -75,7 +75,6 @@ import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.impl.ControllingInfo;
 import au.org.ala.delta.model.observer.AbstractDataSetObserver;
 import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
-import au.org.ala.delta.rtf.RTFUtils;
 import au.org.ala.delta.ui.AboutBox;
 
 /**
@@ -149,7 +148,7 @@ public class TreeViewer extends JInternalFrame implements DeltaView {
 				if (!_tree.isEditing()) {
 					int selectedRow = _tree.getClosestRowForLocation(e.getX(), e.getY());
 					
-					if ((selectedRow >= 0) && (e.getClickCount() == 2)) {
+					if ((selectedRow >= 0) && (e.getClickCount() == 2) && SwingUtilities.isLeftMouseButton(e)) {
 						actionMap.get("viewCharacterEditor").actionPerformed(new ActionEvent(_tree, -1, ""));
 					}
 				}
@@ -205,9 +204,6 @@ public class TreeViewer extends JInternalFrame implements DeltaView {
 		
 		_itemList.setSelectedIndex(0);
 		_tree.setSelectionRow(0);
-		
-		_dataModel.addDeltaDataSetObserver(new NewCharacterListener(_tree));
-
 	}
 	
 	private void updateSelection(int increment) {
@@ -257,39 +253,6 @@ public class TreeViewer extends JInternalFrame implements DeltaView {
 	@Override
 	public String getViewTitle() {
 		return windowTitle;
-	}
-	
-	class NewCharacterListener extends AbstractDataSetObserver {
-
-		private JTree tree;
-		public NewCharacterListener(JTree tree) {
-			this.tree = tree;
-		}
-		@Override
-		public void characterAdded(DeltaDataSetChangeEvent event) {
-			updateTree();
-		}
-		@Override
-		public void characterEdited(DeltaDataSetChangeEvent event) {
-			updateTree();
-		}
-		@Override
-		public void characterDeleted(DeltaDataSetChangeEvent event) {
-			updateTree();
-		}
-		@Override
-		public void characterMoved(DeltaDataSetChangeEvent event) {
-			updateTree();
-		}
-		private void updateTree() {
-			// This is a bit lazy and will probably need to be fixed when we can do edit's directly
-			// on the tree.
-			SwingUtilities.invokeLater(new Runnable() {
-				public void run() {
-					tree.setModel(new CharacterTreeModel(_dataModel));
-				}
-			});
-		}
 	}
 	
 	/**
@@ -498,7 +461,7 @@ public class TreeViewer extends JInternalFrame implements DeltaView {
 			Character ch = null;
 			if (node.getParent() instanceof CharacterTreeNode) {
 				CharacterTreeNode parentNode = (CharacterTreeNode) node.getParent();
-				ch = (Character) parentNode.getUserObject();				
+				ch = parentNode.getCharacter();			
 			}
 			return ch;
 		}
@@ -609,6 +572,7 @@ class CharacterTreeModel extends DefaultTreeModel {
 	public CharacterTreeModel(EditorViewModel dataModel) {
 		super(new ContextRootNode(dataModel), false);
 		_dataModel = dataModel;
+		_dataModel.addDeltaDataSetObserver(new TreeModelCharacterListener());
 		_variableLengthCharacterIndicies = new HashSet<Integer>();
 		for (int i=1; i<=dataModel.getNumberOfCharacters(); i++) {
 			Character character = dataModel.getCharacter(i);
@@ -651,6 +615,70 @@ class CharacterTreeModel extends DefaultTreeModel {
 			nodeChanged(((ContextRootNode)getRoot()).getChildAt(i).getChildAt(0));
 		}
 	}
+	
+
+	class TreeModelCharacterListener extends AbstractDataSetObserver {
+
+		@Override
+		public void characterAdded(DeltaDataSetChangeEvent event) {
+			ContextRootNode root = (ContextRootNode)getRoot();
+			int charNumber = event.getCharacter().getCharacterId();
+			CharacterTreeNode node = root.add(charNumber);
+			fireTreeNodesInserted(this, new Object[]{root}, new int[] {charNumber-1}, new Object[]{node});
+			
+			for (int i=charNumber; i<root.getChildCount(); i++) {
+				node = (CharacterTreeNode)root.getChildAt(i);
+				updateNode(node, i+1);
+			}
+		}
+		@Override
+		public void characterEdited(DeltaDataSetChangeEvent event) {
+			ContextRootNode root = (ContextRootNode)getRoot();
+			int charNumber = event.getCharacter().getCharacterId();
+			fireTreeNodesChanged(this, new Object[]{root}, new int[] {charNumber-1}, new Object[] {root.getChildAt(charNumber-1)});
+			updateNode((CharacterTreeNode)root.getChildAt(charNumber-1), charNumber);
+		}
+		@Override
+		public void characterDeleted(DeltaDataSetChangeEvent event) {
+			ContextRootNode root = (ContextRootNode)getRoot();
+			int charNumber = event.getCharacter().getCharacterId();
+			CharacterTreeNode node = root.removeCharacter(charNumber);
+			fireTreeNodesRemoved(this, new Object[]{root}, new int[] {charNumber-1}, new Object[] {node});
+			
+			for (int i=charNumber; i<=root.getChildCount(); i++) {
+				node = (CharacterTreeNode)root.getChildAt(i-1);
+				
+				updateNode(node, i);
+			}
+		}
+		@Override
+		public void characterMoved(DeltaDataSetChangeEvent event) {
+			ContextRootNode root = (ContextRootNode)getRoot();
+			int charNumber = event.getCharacter().getCharacterId();
+			int oldNumber = (Integer)event.getExtraInformation();
+			
+			root.moveCharacter(oldNumber, charNumber);
+			
+			int minIndex = Math.min(charNumber, oldNumber) - 1;
+			int maxIndex = Math.max(charNumber, oldNumber) - 1;
+			
+			for (int i=minIndex; i<maxIndex; i++) {
+				CharacterTreeNode node = (CharacterTreeNode)root.getChildAt(i);
+				updateNode(node, i+1);
+			}
+		}
+		
+		private void updateNode(CharacterTreeNode node, int newCharacterNumber) {
+			node.setCharacterNumber(newCharacterNumber);
+			fireTreeStructureChanged(this, pathToNode(node), new int[]{-1}, new Object[]{null});
+		}
+		
+		private Object[] pathToNode(CharacterTreeNode node) {
+			return new Object[] {getRoot(), node};
+		}
+	}
+	
+	
 }
 
 
@@ -663,10 +691,36 @@ class ContextRootNode extends DefaultMutableTreeNode {
 	public ContextRootNode(EditorViewModel dataModel) {
 		_dataModel = dataModel;
 		for (int i = 0; i < _dataModel.getNumberOfCharacters(); ++i) {
-			au.org.ala.delta.model.Character ch = _dataModel.getCharacter(i + 1);
-			add(new CharacterTreeNode(_dataModel, ch));
+			add(i+1);
 		}
-
+	}
+	
+	/**
+	 * Adds a new node that represents the character identified by the supplied character number.
+	 * @param characterNumber the number of the character to add.
+	 * @return the new node that was added.
+	 */
+	public CharacterTreeNode add(int characterNumber) {
+		CharacterTreeNode node = new CharacterTreeNode(_dataModel, characterNumber);
+		insert(node, characterNumber -1);
+		
+		return node;
+	}
+	
+	/**
+	 * Removes the node that represents the character identified by the supplied character number.
+	 * @param characterNumber the number of the character to remove.
+	 * @return the node that was removed.
+	 */
+	public CharacterTreeNode removeCharacter(int characterNumber) {
+		CharacterTreeNode node = (CharacterTreeNode)getChildAt(characterNumber-1);
+		remove(characterNumber-1);
+		return node;
+	}
+	
+	public void moveCharacter(int characterNumber, int newNumber) {
+		CharacterTreeNode node = removeCharacter(characterNumber-1);
+		insert(node, newNumber-1);
 	}
 
 }
@@ -674,25 +728,25 @@ class ContextRootNode extends DefaultMutableTreeNode {
 class CharStateHolder {
 
 	private EditorViewModel _dataModel;
-	private Character _character;
+	private int _characterNumber;
 
-	public CharStateHolder(EditorViewModel dataModel, Character character) {
+	public CharStateHolder(EditorViewModel dataModel, int characterNumber) {
 		_dataModel = dataModel;
-		_character = character;
+		_characterNumber = characterNumber;
 	}
 
 	@Override
 	public String toString() {
 		if (_dataModel.getSelectedItem() != null) {
-			return _dataModel.getAttributeAsString(_dataModel.getSelectedItem().getItemNumber(), _character.getCharacterId());
+			return _dataModel.getAttributeAsString(_dataModel.getSelectedItem().getItemNumber(), _characterNumber);
 		} else {
 			return "---";
 		}
 	}
 	
 	public Character getCharacter() {
-		return _character;
-	}
+		return _dataModel.getCharacter(_characterNumber)
+;	}
 
 }
 
@@ -703,9 +757,11 @@ class DeltaTreeCellRenderer extends DefaultTreeCellRenderer  {
 
 	private EditorViewModel _dataModel;
 	private MultiStateCheckbox stateValueRenderer = new MultiStateCheckbox();
+	private CharacterFormatter _formatter;
 
 	public DeltaTreeCellRenderer(EditorViewModel dataModel) {
 		_dataModel = dataModel;
+		_formatter = new CharacterFormatter(true, false, false, true);
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -716,7 +772,7 @@ class DeltaTreeCellRenderer extends DefaultTreeCellRenderer  {
 		Item item = _dataModel.getSelectedItem();
 		if (value instanceof CharacterTreeNode) {
 			CharacterTreeNode node = (CharacterTreeNode) value;
-			Character ch = (Character) node.getUserObject();
+			Character ch = node.getCharacter();
 			// The selected item can be null when adding characters to a new dataset.
 			boolean inapplicable = false;
 			if (item != null) {
@@ -726,6 +782,8 @@ class DeltaTreeCellRenderer extends DefaultTreeCellRenderer  {
 				
 			node.setInapplicable(inapplicable);
 			setIcon(EditorUIUtils.iconForCharacter(ch, inapplicable));
+			
+			setText(_formatter.formatCharacterDescription(ch));
 			
 		} else if (leaf) {
 			DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
@@ -738,7 +796,7 @@ class DeltaTreeCellRenderer extends DefaultTreeCellRenderer  {
 			
 			if (node.getParent() instanceof CharacterTreeNode) {
 				CharacterTreeNode parentNode = (CharacterTreeNode) node.getParent();
-				Character ch = (Character) parentNode.getUserObject();				
+				Character ch = parentNode.getCharacter();			
 				if (node instanceof MultistateStateNode) {
 					MultistateStateNode msnode = (MultistateStateNode) node;						
 					stateValueRenderer.setText(name);
@@ -769,26 +827,38 @@ class CharacterTreeNode extends DefaultMutableTreeNode {
 
 	private static final long serialVersionUID = 1L;
 
-	private Character _character;
+	private int _characterNumber;
 	private EditorViewModel _dataModel;
 	private boolean _inapplicable;
+	
 
-	public CharacterTreeNode(EditorViewModel dataModel, Character ch) {
-		super(ch);
+	public CharacterTreeNode(EditorViewModel dataModel, int characterNumber) {
+		super(characterNumber);
 		_dataModel = dataModel;
-		_character = ch;
-		if (_character instanceof MultiStateCharacter) {
-			MultiStateCharacter ms = (MultiStateCharacter) _character;
+		setCharacterNumber(characterNumber);
+	}
+	
+	public void setCharacterNumber(int characterNumber) {
+		_characterNumber = characterNumber;
+		removeAllChildren();
+		
+		Character character = _dataModel.getCharacter(_characterNumber);
+		if (character instanceof MultiStateCharacter) {
+			MultiStateCharacter ms = (MultiStateCharacter) character;
 			for (int i = 0; i < ms.getNumberOfStates(); ++i) {
 				add(new MultistateStateNode(ms, i + 1));
 			}
 		} else {
-			add(new DefaultMutableTreeNode(new CharStateHolder(_dataModel, ch)));
+			add(new DefaultMutableTreeNode(new CharStateHolder(_dataModel, _characterNumber)));
 		}
+	}
+	
+	public int getCharacterNumber() {
+		return _characterNumber;
 	}
 
 	public Character getCharacter() {
-		return _character;
+		return _dataModel.getCharacter(_characterNumber);
 	}
 
 	@Override
@@ -806,7 +876,7 @@ class CharacterTreeNode extends DefaultMutableTreeNode {
 
 	@Override
 	public String toString() {
-		return String.format("%d. %s", _character.getCharacterId(), RTFUtils.stripFormatting(_character.getDescription()));
+		return Integer.toString(_characterNumber);
 	}
 
 }
