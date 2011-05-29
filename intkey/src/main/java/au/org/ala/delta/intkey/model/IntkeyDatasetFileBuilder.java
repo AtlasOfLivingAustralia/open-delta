@@ -30,12 +30,6 @@ import au.org.ala.delta.model.TextCharacter;
 
 public class IntkeyDatasetFileBuilder {
 
-    private static final int sizeIntInBytes = Integer.SIZE / Byte.SIZE;
-    private static final int sizeFloatInBytes = Float.SIZE / Byte.SIZE;
-
-    private static final int datasetMajorVersion = 5;
-    private static final int datasetMinorVersion = 2;
-
     private IntkeyDataset _ds;
     private BinFile _charBinFile;
     private BinFile _itemBinFile;
@@ -75,7 +69,7 @@ public class IntkeyDatasetFileBuilder {
         // "fparam[last_used+1] != 0", where
         // last_used was set to 26. fparam was the array holding all of the
         // integers in the record. CPF 4/4/2011.
-        if (_itemFileHeader.getMajorVer() != datasetMajorVersion || (_itemFileHeader.getMinorVer() != datasetMinorVersion && _itemFileHeader.getRpOmitOr() != 0)) {
+        if (_itemFileHeader.getMajorVer() != Constants.DATASET_MAJOR_VERSION || (_itemFileHeader.getMinorVer() != Constants.DATASET_MINOR_VERSION && _itemFileHeader.getRpOmitOr() != 0)) {
             throw new RuntimeException("Incorrect file version");
         }
 
@@ -365,7 +359,7 @@ public class IntkeyDatasetFileBuilder {
         // delta output is disabled.
         readEnableDeltaOutput(charTypeSum);
 
-        int recordsSpannedByCharTypes = recordsSpannedByBytes(numChars * sizeIntInBytes);
+        int recordsSpannedByCharTypes = recordsSpannedByBytes(numChars * Constants.SIZE_INT_IN_BYTES);
 
         // read numbers of states from items file and check for compatability
         // (only compare multistates because if ICHARS and IITEMS are generated
@@ -384,7 +378,7 @@ public class IntkeyDatasetFileBuilder {
             }
         }
 
-        int recordsSpannedByNumCharStates = recordsSpannedByBytes(numChars * sizeIntInBytes);
+        int recordsSpannedByNumCharStates = recordsSpannedByBytes(numChars * Constants.SIZE_INT_IN_BYTES);
 
         // READ CHARACTER RELIABILITIES
         seekToRecord(_itemBinFile, _itemFileHeader.getRpSpec() + (recordsSpannedByCharTypes + recordsSpannedByNumCharStates));
@@ -496,7 +490,7 @@ public class IntkeyDatasetFileBuilder {
                 lengthTotal += charDescriptionLength;
             }
 
-            int recordsSpannedByDescLengths = recordsSpannedByBytes((numStatesForChar + 1) * sizeIntInBytes);
+            int recordsSpannedByDescLengths = recordsSpannedByBytes((numStatesForChar + 1) * Constants.SIZE_INT_IN_BYTES);
 
             List<String> charStateDescriptions = new ArrayList<String>();
 
@@ -581,7 +575,7 @@ public class IntkeyDatasetFileBuilder {
 
         List<Integer> minimumValues = readIntegerList(_itemBinFile, numChars);
 
-        int recordsSpannedByMinimumValues = recordsSpannedByBytes(numChars * sizeIntInBytes);
+        int recordsSpannedByMinimumValues = recordsSpannedByBytes(numChars * Constants.SIZE_INT_IN_BYTES);
 
         seekToRecord(_itemBinFile, _itemFileHeader.getRpMini() + recordsSpannedByMinimumValues);
 
@@ -676,8 +670,9 @@ public class IntkeyDatasetFileBuilder {
                             stateSet.add(stateId);
                             CharacterDependency charDep = new CharacterDependency(c.getCharacterId(), stateSet, dependentChars);
                             c.addDependentCharacters(charDep);
-                            for (int idxDependentChar: dependentChars) {
-                                // need to subtract one from the index because the data file uses 1 based indexes while
+                            for (int idxDependentChar : dependentChars) {
+                                // need to subtract one from the index because
+                                // the data file uses 1 based indexes while
                                 // java uses zero based indexes.
                                 Character dependentCharacter = _characters.get(idxDependentChar - 1);
                                 dependentCharacter.addControllingCharacters(charDep);
@@ -722,24 +717,28 @@ public class IntkeyDatasetFileBuilder {
                     int endIndex = startIndex + bitsPerTaxon;
 
                     List<Boolean> taxonData = taxaData.subList(startIndex, endIndex);
-                    
-                    // Taxon data consists of a bit for each state, indicating the states presence, followed by
-                    // a final bit signifying whether or not the character is inapplicable for the taxon.
+
+                    // Taxon data consists of a bit for each state, indicating
+                    // the states presence, followed by
+                    // a final bit signifying whether or not the character is
+                    // inapplicable for the taxon.
                     boolean inapplicable = taxonData.get(taxonData.size() - 1);
-                    IntkeyAttributeData attrData = new IntkeyAttributeData(inapplicable);
-                    MultiStateAttribute msAttr = new MultiStateAttribute(multiStateChar, attrData);
-                    msAttr.setItem(t);
-                    
-                    HashSet<Integer> presentStates = new HashSet<Integer>();
-                    for (int k=0; k < taxonData.size() - 1; k++) {
-                        boolean statePresent = taxonData.get(k);
-                        if (statePresent) {
-                            presentStates.add(k + 1);
+                    if (!inapplicable) {
+                        IntkeyAttributeData attrData = new IntkeyAttributeData(inapplicable);
+                        MultiStateAttribute msAttr = new MultiStateAttribute(multiStateChar, attrData);
+                        msAttr.setItem(t);
+
+                        HashSet<Integer> presentStates = new HashSet<Integer>();
+                        for (int k = 0; k < taxonData.size() - 1; k++) {
+                            boolean statePresent = taxonData.get(k);
+                            if (statePresent) {
+                                presentStates.add(k + 1);
+                            }
                         }
+                        msAttr.setPresentStates(presentStates);
+
+                        t.addAttribute(multiStateChar, msAttr);
                     }
-                    msAttr.setPresentStates(presentStates);
-                    
-                    t.addAttribute(multiStateChar, msAttr);
                 }
 
             } else if (c instanceof IntegerCharacter) {
@@ -763,21 +762,23 @@ public class IntkeyDatasetFileBuilder {
                     int endIndex = startIndex + bitsPerTaxon;
 
                     List<Boolean> taxonData = taxaData.subList(startIndex, endIndex);
-                    
+
                     boolean inapplicable = taxonData.get(taxonData.size() - 1);
-                    
-                    Set<Integer> presentValues = new HashSet<Integer>();
-                    for (int k=0; k < taxonData.size() - 1; k++) {
-                        boolean present = taxonData.get(k);
-                        if (present) {
-                            presentValues.add(k + charMinValue - 1);
+                    if (!inapplicable) {
+                        Set<Integer> presentValues = new HashSet<Integer>();
+                        for (int k = 0; k < taxonData.size() - 1; k++) {
+                            boolean present = taxonData.get(k);
+                            if (present) {
+                                presentValues.add(k + charMinValue - 1);
+                            }
                         }
+
+                        IntegerAttribute intAttr = new IntegerAttribute(intChar, new IntkeyAttributeData(inapplicable));
+                        intAttr.setItem(t);
+                        intAttr.setPresentValues(presentValues);
+
+                        t.addAttribute(intChar, intAttr);
                     }
-                    
-                    IntegerAttribute intAttr = new IntegerAttribute(intChar, new IntkeyAttributeData(inapplicable));
-                    intAttr.setItem(t);
-                    intAttr.setPresentValues(presentValues);
-                    t.addAttribute(intChar, intAttr);
                 }
 
             } else if (c instanceof RealCharacter) {
@@ -801,15 +802,18 @@ public class IntkeyDatasetFileBuilder {
                     float upperFloat = taxonData.get((j * 2) + 1);
 
                     boolean inapplicable = taxaInapplicabilityData.get(j);
-                    RealAttribute realAttr = new RealAttribute((RealCharacter)c, new IntkeyAttributeData(inapplicable));
                     if (!inapplicable) {
-                        if (lowerFloat <= upperFloat) {
-                            FloatRange range = new FloatRange(lowerFloat, upperFloat);
-                            realAttr.setPresentRange(range);
+                        RealAttribute realAttr = new RealAttribute((RealCharacter) c, new IntkeyAttributeData(inapplicable));
+                        if (!inapplicable) {
+                            if (lowerFloat <= upperFloat) {
+                                FloatRange range = new FloatRange(lowerFloat, upperFloat);
+                                realAttr.setPresentRange(range);
+                            }
                         }
+                        realAttr.setItem(t);
+
+                        t.addAttribute(c, realAttr);
                     }
-                    realAttr.setItem(t);
-                    t.addAttribute(c, realAttr);
                 }
 
             } else if (c instanceof TextCharacter) {
@@ -827,7 +831,7 @@ public class IntkeyDatasetFileBuilder {
 
                 List<Integer> taxonTextDataOffsets = readIntegerList(_itemBinFile, numTaxa + 1);
 
-                int recordsSpannedByOffsets = recordsSpannedByBytes((numTaxa + 1) * sizeIntInBytes);
+                int recordsSpannedByOffsets = recordsSpannedByBytes((numTaxa + 1) * Constants.SIZE_INT_IN_BYTES);
 
                 seekToRecord(_itemBinFile, charTaxonDataRecordIndex + recordsSpannedByInapplicabilityData + recordsSpannedByOffsets);
 
@@ -847,12 +851,15 @@ public class IntkeyDatasetFileBuilder {
 
                         txt = BinFileEncoding.decode(textBytes);
                     }
-                    
+
                     boolean inapplicable = taxaInapplicabilityData.get(j);
-                    TextAttribute txtAttr = new TextAttribute(textChar, new IntkeyAttributeData(inapplicable));
-                    txtAttr.setText(txt);
-                    txtAttr.setItem(t);
-                    t.addAttribute(textChar, txtAttr);
+                    if (!inapplicable) {
+                        TextAttribute txtAttr = new TextAttribute(textChar, new IntkeyAttributeData(inapplicable));
+                        txtAttr.setText(txt);
+                        txtAttr.setItem(t);
+                        t.addAttribute(textChar, txtAttr);
+                    }
+
                 }
             }
         }
@@ -872,7 +879,7 @@ public class IntkeyDatasetFileBuilder {
 
         List<Integer> taxonNameOffsets = readIntegerList(_itemBinFile, numItems + 1);
 
-        int recordsSpannedByOffsets = recordsSpannedByBytes(numItems * sizeIntInBytes);
+        int recordsSpannedByOffsets = recordsSpannedByBytes(numItems * Constants.SIZE_INT_IN_BYTES);
 
         seekToRecord(_itemBinFile, _itemFileHeader.getRpTnam() + recordsSpannedByOffsets);
 
@@ -985,7 +992,7 @@ public class IntkeyDatasetFileBuilder {
                 totalFontsLength += fontLength;
             }
 
-            int recordsSpannedByFontTextLengths = recordsSpannedByBytes(numFonts * sizeIntInBytes);
+            int recordsSpannedByFontTextLengths = recordsSpannedByBytes(numFonts * Constants.SIZE_INT_IN_BYTES);
             seekToRecord(_charBinFile, recordNo + recordsSpannedByFontTextLengths);
 
             List<String> fonts = new ArrayList<String>();
@@ -1090,13 +1097,13 @@ public class IntkeyDatasetFileBuilder {
 
     // Note that records are 1 indexed.
     private static void seekToRecord(BinFile bFile, int recordNumber) {
-        bFile.seek((recordNumber - 1) * Constants.RECORD_LENGTH_INTEGERS * sizeIntInBytes);
+        bFile.seek((recordNumber - 1) * Constants.RECORD_LENGTH_INTEGERS * Constants.SIZE_INT_IN_BYTES);
     }
 
     // Read the designed record from the file. Note that records are 1 indexed.
     private static ByteBuffer readRecord(BinFile bFile, int recordNumber) {
         seekToRecord(bFile, recordNumber);
-        return bFile.readByteBuffer(Constants.RECORD_LENGTH_INTEGERS * sizeIntInBytes);
+        return bFile.readByteBuffer(Constants.RECORD_LENGTH_INTEGERS * Constants.SIZE_INT_IN_BYTES);
     }
 
     private static String readString(BinFile bFile, int numBytes) {
@@ -1139,7 +1146,7 @@ public class IntkeyDatasetFileBuilder {
     }
 
     private static List<Integer> readIntegerList(BinFile bFile, int numInts) {
-        ByteBuffer bb = bFile.readByteBuffer(numInts * sizeIntInBytes);
+        ByteBuffer bb = bFile.readByteBuffer(numInts * Constants.SIZE_INT_IN_BYTES);
 
         List<Integer> retList = new ArrayList<Integer>();
         for (int i = 0; i < numInts; i++) {
@@ -1149,7 +1156,7 @@ public class IntkeyDatasetFileBuilder {
     }
 
     private static List<Float> readFloatList(BinFile bFile, int numFloats) {
-        ByteBuffer bb = bFile.readByteBuffer(numFloats * sizeFloatInBytes);
+        ByteBuffer bb = bFile.readByteBuffer(numFloats * Constants.SIZE_INT_IN_BYTES);
 
         List<Float> retList = new ArrayList<Float>();
         for (int i = 0; i < numFloats; i++) {
