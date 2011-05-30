@@ -8,8 +8,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 
-import javax.swing.JFrame;
-
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.directives.AbstractDeltaContext;
 import au.org.ala.delta.intkey.Intkey;
@@ -128,7 +126,7 @@ public class IntkeyContext extends AbstractDeltaContext {
     private void createNewDataSet() {
         _executedDirectives = new ArrayList<IntkeyDirectiveInvocation>();
 
-        _dataset = new IntkeyDatasetFileBuilder().readDataSet(_charactersFile, _taxaFile);
+        _dataset = IntkeyDatasetFileReader.readDataSet(_charactersFile, _taxaFile);
         _specimen = new Specimen(_dataset);
 
         // TODO need a proper listener pattern here?

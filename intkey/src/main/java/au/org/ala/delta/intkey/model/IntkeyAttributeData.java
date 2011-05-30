@@ -13,7 +13,7 @@ public class IntkeyAttributeData implements AttributeData {
     private String _textValue;
     private Set<Integer> _stateOrIntegerValues;
     private FloatRange _realRange;
-
+    
     private boolean _inapplicable;
 
     public IntkeyAttributeData(boolean inapplicable) {
@@ -83,7 +83,7 @@ public class IntkeyAttributeData implements AttributeData {
 
     @Override
     public boolean isVariable() {
-        // TODO does this have any relevant in intkey?
+        // TODO does this have any relevance in intkey?
         return false;
     }
 

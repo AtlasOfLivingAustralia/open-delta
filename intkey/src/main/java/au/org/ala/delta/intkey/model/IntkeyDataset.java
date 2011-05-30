@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import au.org.ala.delta.io.BinFile;
+import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
 
@@ -15,6 +17,7 @@ public class IntkeyDataset {
     private CharactersFileHeader _charactersFileHeader;
     private List<au.org.ala.delta.model.Character> _characters;
     private List<Item> _taxa;
+    private BinFile _itemsBinFile;
     
     private String _heading;
     private String _subHeading;
@@ -166,5 +169,19 @@ public class IntkeyDataset {
     
     public int getNumberOfTaxa() {
         return _taxa.size();
+    }
+    
+    void setItemsBinFile(BinFile itemsBinFile) {
+        _itemsBinFile = itemsBinFile;
+    }
+    
+    public List<Attribute> getAttributesForCharacter(int charNo) {
+        List<Attribute> attrList = IntkeyDatasetFileReader.readAttributesForCharacter(_itemsFileHeader, _itemsBinFile, _characters, _taxa, charNo);
+        return attrList;
+    }
+    
+    public Attribute getAttribute(int itemNo, int charNo) {
+        List<Attribute> attrList = IntkeyDatasetFileReader.readAttributesForCharacter(_itemsFileHeader, _itemsBinFile, _characters, _taxa, charNo);
+        return attrList.get(itemNo - 1);
     }
 }
