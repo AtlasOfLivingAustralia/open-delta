@@ -13,7 +13,6 @@ import org.apache.commons.lang.math.IntRange;
 import au.org.ala.delta.io.BinFile;
 import au.org.ala.delta.io.BinFileEncoding;
 import au.org.ala.delta.io.BinFileMode;
-import au.org.ala.delta.model.AttributeFactory;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterDependency;
 import au.org.ala.delta.model.CharacterType;
@@ -1050,7 +1049,7 @@ public class IntkeyDatasetFileBuilder {
     // integers used to specify the character types, delta output is enabled.
     // Otherwise
     // delta output is disabled.
-    public void readEnableDeltaOutput(int calculatedChecksum) {
+    private void readEnableDeltaOutput(int calculatedChecksum) {
         boolean deltaOutputEnabled = false;
 
         int fileChecksum = _itemFileHeader.getEnableDeltaOutput();
@@ -1064,7 +1063,7 @@ public class IntkeyDatasetFileBuilder {
         _ds.setDeltaOutputPermitted(deltaOutputEnabled);
     }
 
-    public void readTaxonLinksFiles() {
+    private void readTaxonLinksFiles() {
         int numItems = _itemFileHeader.getNItem();
 
         List<String> linksFileDataWithSubjects = null;
