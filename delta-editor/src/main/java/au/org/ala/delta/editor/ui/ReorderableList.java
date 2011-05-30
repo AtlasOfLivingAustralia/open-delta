@@ -2,7 +2,7 @@ package au.org.ala.delta.editor.ui;
 
 import javax.swing.Action;
 
-public interface ReorderableList<T> {
+public interface ReorderableList {
 	
 	public int getSelectedIndex();
 	

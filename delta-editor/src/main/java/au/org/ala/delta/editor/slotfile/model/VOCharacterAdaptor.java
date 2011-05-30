@@ -396,7 +396,8 @@ public class VOCharacterAdaptor extends ImageHolderAdaptor implements CharacterD
 	public List<CharacterDependency> getDependentCharacters() {
 		
 		List<CharacterDependency> controllingAttributes = new ArrayList<CharacterDependency>();
-		List<Integer> controllingInfoIds = _charDesc.readControllingInfo();
+		List<Integer> controllingInfoIds = _charDesc.readDependentContAttrs();
+		
 		for (int id : controllingInfoIds) {
 			VOControllingDesc controllingDesc = (VOControllingDesc)getDescFromId(id);
 			
@@ -414,7 +415,7 @@ public class VOCharacterAdaptor extends ImageHolderAdaptor implements CharacterD
 	 */
 	private CharacterDependency characterDependencyFromControllingInfo(
 			VOControllingDesc controllingDesc) {
-		String label = controllingDesc.readLabel();
+		
 		List<Integer> controlledCharIds = controllingDesc.readControlledChars();
 		List<Integer> states = controllingDesc.readStateIds();
 		
@@ -431,6 +432,7 @@ public class VOCharacterAdaptor extends ImageHolderAdaptor implements CharacterD
 		int number = getVOP().getDeltaMaster().charNoFromUniId(_charDesc.getUniId());
 		
 		CharacterDependency dependency = new CharacterDependency(number, stateNumbers, controlledCharNumbers);
+		String label = controllingDesc.readLabel();
 		dependency.setDescription(label);
 		return dependency;
 	}

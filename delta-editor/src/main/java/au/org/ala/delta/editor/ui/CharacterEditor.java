@@ -20,7 +20,6 @@ import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
 import javax.swing.JToggleButton;
 import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.ListSelectionModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -45,7 +44,6 @@ import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.NumericCharacter;
-import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.observer.AbstractDataSetObserver;
 import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
 import au.org.ala.delta.ui.rtf.RtfEditor;
@@ -78,7 +76,7 @@ public class CharacterEditor extends JInternalFrame implements DeltaView {
 	private JButton btnDone;
 	private JLabel lblEditCharacterName;
 	private JToggleButton btnSelect;
-	private SelectionList characterSelectionList;
+	private CharacterList characterSelectionList;
 	private JScrollPane editorScroller;
 	private JCheckBox exclusiveCheckBox; 
 	private JLabel characterNumberLabel;
@@ -102,6 +100,10 @@ public class CharacterEditor extends JInternalFrame implements DeltaView {
 	private CharacterNotesEditor characterNotesEditor;
 	private UnitsEditor unitsEditor;
 	private ImageDetailsPanel imageDetails;
+
+	private ControllingAttributeEditor controllingAttributeEditor;
+
+	private ControlledByEditor controlledByEditor;
 	
 	public CharacterEditor(EditorViewModel model) {	
 		setName("CharacterEditorDialog");
@@ -145,8 +147,8 @@ public class CharacterEditor extends JInternalFrame implements DeltaView {
 				characterEditPerformed();
 			}
 		});
-		characterSelectionList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		characterSelectionList.setModel(new CharacterListModel());
+		characterSelectionList.setSelectionAction(map.get("characterSelected"));
+		
 		characterSelectionList.addListSelectionListener(new ListSelectionListener() {
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
@@ -163,7 +165,6 @@ public class CharacterEditor extends JInternalFrame implements DeltaView {
 		exclusiveCheckBox.setAction(map.get("exclusiveChanged"));
 		
 		btnSelect.setAction(map.get("selectCharacterByName"));
-		characterSelectionList.setSelectionAction(map.get("characterSelected"));
 		
 		comboBox.setAction(map.get("characterTypeChanged"));
 	}
@@ -236,7 +237,8 @@ public class CharacterEditor extends JInternalFrame implements DeltaView {
 		characterNotesEditor.bind(_dataSet, _selectedCharacter);
 		imageDetails.bind(_selectedCharacter);
 		unitsEditor.bind(_dataSet, character);
-	
+		controlledByEditor.bind(_dataSet, character);
+		controllingAttributeEditor.bind(_dataSet, character);
 		_validator = new CharacterValidator(_dataSet, _selectedCharacter);
 		
 		updateScreen();
@@ -293,7 +295,7 @@ public class CharacterEditor extends JInternalFrame implements DeltaView {
 		JButton btnHelp = new JButton("Help");
 		btnHelp.setName("helpWithTaxonEditorButton");
 		
-		characterSelectionList = new ItemList();
+		characterSelectionList = new CharacterList();
 		
 	    exclusiveCheckBox = new JCheckBox("Exclusive");
 		
@@ -396,10 +398,10 @@ public class CharacterEditor extends JInternalFrame implements DeltaView {
 		characterNotesEditor = new CharacterNotesEditor();
 		addTab("notes", characterNotesEditor);
 		
-		ControllingAttributeEditor controllingAttributeEditor = new ControllingAttributeEditor();
+		controllingAttributeEditor = new ControllingAttributeEditor();
 		addTab("controls", controllingAttributeEditor);
 		
-		ControlledByEditor controlledByEditor = new ControlledByEditor();
+		controlledByEditor = new ControlledByEditor();
 		addTab("controlledBy", controlledByEditor);
 	}
 	
@@ -416,6 +418,7 @@ public class CharacterEditor extends JInternalFrame implements DeltaView {
 	 */
 	public void bind(EditorViewModel dataSet) {
 		_dataSet = dataSet;
+		characterSelectionList.setModel(dataSet);
 		setSelectedCharacter(dataSet.getSelectedCharacter());
 		_validator = new CharacterValidator(_dataSet, _selectedCharacter);
 		_dataSet.addDeltaDataSetObserver(new AbstractDataSetObserver() {
@@ -506,22 +509,6 @@ public class CharacterEditor extends JInternalFrame implements DeltaView {
 		return titleSuffix;
 	}
 	
-	class CharacterListModel extends AbstractListModel {
-
-		private CharacterFormatter _formatter = new CharacterFormatter();
-		private static final long serialVersionUID = 6573565854830718124L;
-
-		@Override
-		public int getSize() {
-			return _dataSet.getNumberOfCharacters();
-		}
-
-		@Override
-		public Object getElementAt(int index) {
-			return _formatter.formatCharacterDescription(_dataSet.getCharacter(index+1));
-		}
-		
-	}
 	
 	class CharacterTypeComboModel extends AbstractListModel implements ComboBoxModel {
 

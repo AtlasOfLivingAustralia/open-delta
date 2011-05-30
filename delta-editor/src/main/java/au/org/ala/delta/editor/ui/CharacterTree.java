@@ -11,7 +11,7 @@ import javax.swing.tree.TreePath;
  * The CharacterTree extends JTree to provide 1-click cell editing and to implement the
  * ReorderableList interface to help our Drag and Drop implementation.
  */
-public class CharacterTree extends JTree implements ReorderableList<au.org.ala.delta.model.Character> {
+public class CharacterTree extends JTree implements ReorderableList {
 
 	private static final long serialVersionUID = 1462521823171738637L;
 	/**

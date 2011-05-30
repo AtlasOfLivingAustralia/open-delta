@@ -24,7 +24,7 @@ import au.org.ala.delta.model.format.CharacterFormatter;
  */
 public class CharacterController {
 
-	private ReorderableList<Character> _view;
+	private ReorderableList _view;
 	private EditorViewModel _model;
 	private ApplicationContext _context;
 	private ActionMap _characterActions;
@@ -35,7 +35,7 @@ public class CharacterController {
 	 * @param view the view of the Items.
 	 * @param model the model containing Item data.
 	 */
-	public CharacterController(ReorderableList<Character> view, EditorViewModel model) {
+	public CharacterController(ReorderableList view, EditorViewModel model) {
 		_view = view;
 		_model = model;
 		_context = Application.getInstance().getContext();

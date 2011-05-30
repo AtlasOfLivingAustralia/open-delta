@@ -32,7 +32,7 @@ import au.org.ala.delta.ui.AboutBox;
 /**
  * The TableRowHeader is a JTable suitable for use as a row header for another table.
  */
-public class TableRowHeader extends JTable implements ReorderableList<Item> {
+public class TableRowHeader extends JTable implements ReorderableList {
 
 	private static final long serialVersionUID = 4631242294243331000L;
 	private static final String SELECTION_ACTION_NAME = "selectionAction";

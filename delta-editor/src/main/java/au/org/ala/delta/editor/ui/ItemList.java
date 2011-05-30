@@ -16,7 +16,7 @@ import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
  * or the Enter key. To respond to this kind of selection event, register an Action using the 
  * setSelectionAction method.
  */
-public class ItemList extends SelectionList implements ReorderableList<Item> {
+public class ItemList extends SelectionList {
 
 	private static final long serialVersionUID = -5233281885631132020L;
 
@@ -114,19 +114,6 @@ public class ItemList extends SelectionList implements ReorderableList<Item> {
 		
 	}
 	
-	@Override
-	public void setSelectedIndex(int index) {
-		super.setSelectedIndex(index);
-		ensureIndexIsVisible(index);
-	}
 	
-	@Override
-	public int getDropLocationIndex() {
-		DropLocation dropLocation = getDropLocation();
-		if (dropLocation != null) {
-			return dropLocation.getIndex();
-		}
-		return -1;
-	}
 	
 }

@@ -38,8 +38,13 @@ public class CharacterFormatter extends Formatter {
 
 	public String formatCharacterDescription(Character character) {
 		
+		return formatCharacterDescription(character, _stripComments);
+	}
+	
+	public String formatCharacterDescription(Character character, boolean stripComments) {
+
 		String description = character.getDescription();
-		String formattedDescription = defaultFormat(description);
+		String formattedDescription = defaultFormat(description, stripComments, _stripFormatting);
 		
 		if (_includeNumber) {
 			formattedDescription = character.getCharacterId()+". "+formattedDescription;

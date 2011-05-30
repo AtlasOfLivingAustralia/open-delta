@@ -37,7 +37,7 @@ import javax.swing.table.TableColumnModel;
  * synchronized with the table selection.
  */
 public class DropIndicationTableHeader extends JTableHeader
-implements DragGestureListener, ListSelectionListener, ReorderableList<au.org.ala.delta.model.Character> {
+implements DragGestureListener, ListSelectionListener, ReorderableList {
 
 	private static final long serialVersionUID = 6903527328137944112L;
 

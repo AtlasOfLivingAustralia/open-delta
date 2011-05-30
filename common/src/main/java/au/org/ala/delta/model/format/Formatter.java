@@ -17,9 +17,9 @@ public class Formatter {
 	protected static Pattern EMPTY_COMMENT_PATTERN = Pattern.compile("<\\s*>");
 	
 	
-	private boolean _stripComments;
-	private boolean _stripFormatting;
-	private boolean _replaceAngleBrackets;
+	protected boolean _stripComments;
+	protected boolean _stripFormatting;
+	protected boolean _replaceAngleBrackets;
 	
 	public Formatter(boolean stripComments, boolean replaceAngleBrackets, boolean stripFormatting) {
 		_stripComments = stripComments;
@@ -34,17 +34,21 @@ public class Formatter {
 	 */
 	public String defaultFormat(String text) {
 	
+		return defaultFormat(text, _stripComments, _stripFormatting);
+	}
+	
+	public String defaultFormat(String text, boolean stripComments, boolean stripFormatting) {
 		if (StringUtils.isEmpty(text)) {
 			return "";
 		}
 		
-		if (_stripFormatting) {
+		if (stripFormatting) {
 			text = RTFUtils.stripFormatting(text);
 		}
-		if (_stripComments) {
+		if (stripComments) {
 			text = stripComments(text);
 		}
-		if (!_stripComments && _replaceAngleBrackets) {
+		if (!stripComments && _replaceAngleBrackets) {
 		    text = replaceAngleBrackets(text);
 		}
 		// Stripping formatting can leave extra whitespace lying around sometimes.

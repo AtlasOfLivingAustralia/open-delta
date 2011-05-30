@@ -68,9 +68,6 @@ public class CharacterDependency {
 	 * @return a description of this CharacterDependency.
 	 */
 	public String getDescription() {
-		if (_description == null) {
-			return toString();
-		}
 		return _description;
 	}
 	

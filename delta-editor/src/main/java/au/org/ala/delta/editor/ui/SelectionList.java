@@ -14,7 +14,7 @@ import javax.swing.KeyStroke;
  * A SelectionList is a JList that responds to a double click or enter key press to 
  * signify a selection.
  */
-public class SelectionList extends JList {
+public class SelectionList extends JList implements ReorderableList {
 
 	private static final long serialVersionUID = 5432779887537902393L;
 	private static final String SELECTION_ACTION_NAME = "selectionAction";
@@ -50,6 +50,19 @@ public class SelectionList extends JList {
 		}
 	}
 	
+	@Override
+	public void setSelectedIndex(int index) {
+		super.setSelectedIndex(index);
+		ensureIndexIsVisible(index);
+	}
 	
+	@Override
+	public int getDropLocationIndex() {
+		DropLocation dropLocation = getDropLocation();
+		if (dropLocation != null) {
+			return dropLocation.getIndex();
+		}
+		return -1;
+	}
 
 }

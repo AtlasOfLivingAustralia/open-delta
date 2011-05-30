@@ -409,7 +409,6 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 	public List<Integer> readDependentContAttrs() {
 		synchronized (getVOP()) {
 			List<Integer> dest = new ArrayList<Integer>();
-
 			dataSeek(_fixedData.nStates * 4 + _fixedData.nDescriptors * CharTextInfo.SIZE + _fixedData.nControlling * 4);
 			ByteBuffer b = readBuffer(_fixedData.nControls * 4);
 			for (int i = 0; i < _fixedData.nControls; ++i) {
@@ -764,6 +763,22 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 			file.write(nControlling);
 			file.write(nControls);
 			file.write(nImages);
+		}
+		
+		public String toString() {
+			StringBuilder sb = new StringBuilder();
+			sb.append("charType: "+charType).append(",");
+			sb.append("nStates: "+nStates).append(",");
+			sb.append("nStatesUsed: "+nStatesUsed).append(",");
+			sb.append("Char flags: "+charFlags).append(",");
+			sb.append("nDescriptors: "+nDescriptors).append(",");
+			sb.append("Uncoded implicit: "+uncodedImplicit).append(",");
+			sb.append("Coded implicit: "+codedImplicit).append(",");
+			sb.append("nControlling: "+nControlling).append(",");
+			sb.append("nControls: "+nControls).append(",");
+			sb.append("nImages: "+nImages).append(",");
+			
+			return sb.toString();
 		}
 
 	}

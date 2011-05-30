@@ -23,7 +23,7 @@ import au.org.ala.delta.model.format.ItemFormatter;
  */
 public class ItemController {
 
-	private ReorderableList<Item> _view;
+	private ReorderableList _view;
 	private EditorViewModel _model;
 	private ApplicationContext _context;
 	private ActionMap _itemActions;
@@ -34,7 +34,7 @@ public class ItemController {
 	 * @param view the view of the Items.
 	 * @param model the model containing Item data.
 	 */
-	public ItemController(ReorderableList<Item> view, EditorViewModel model) {
+	public ItemController(ReorderableList view, EditorViewModel model) {
 		_view = view;
 		_model = model;
 		_context = Application.getInstance().getContext();
