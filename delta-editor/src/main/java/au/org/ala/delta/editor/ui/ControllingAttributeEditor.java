@@ -43,6 +43,8 @@ public class ControllingAttributeEditor extends CharacterEditTab {
 	private JList stateList;
 	private JList controlledCharacterList;
 	private JList remainingCharacterList;
+	private JButton moveRightButton;
+	private JButton moveLeftButton;
 
 	public ControllingAttributeEditor() {
 		
@@ -53,6 +55,9 @@ public class ControllingAttributeEditor extends CharacterEditTab {
 	private void addEventHandlers() {
 		ActionMap actions = Application.getInstance().getContext().getActionMap(this);
 		attributeCombo.addActionListener(actions.get("selectedAttributeChanged"));
+		moveLeftButton.setAction(actions.get("moveToControlledList"));
+		moveRightButton.setAction(actions.get("moveFromControlledList"));
+		
 	}
 
 	private void createUI() {
@@ -126,9 +131,9 @@ public class ControllingAttributeEditor extends CharacterEditTab {
 		
 		JScrollPane scrollPane = new JScrollPane();
 		
-		JButton button = new JButton("");
+		moveRightButton = new JButton("");
 		
-		JButton button_1 = new JButton("");
+		moveLeftButton = new JButton("");
 		
 		JLabel lblNewLabel_1 = new JLabel("Character list:");
 		
@@ -143,8 +148,8 @@ public class ControllingAttributeEditor extends CharacterEditTab {
 							.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 213, Short.MAX_VALUE)
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
-								.addComponent(button_1)
-								.addComponent(button)))
+								.addComponent(moveLeftButton)
+								.addComponent(moveRightButton)))
 						.addComponent(lblNewLabel))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
@@ -167,9 +172,9 @@ public class ControllingAttributeEditor extends CharacterEditTab {
 								.addComponent(scrollPane, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 171, Short.MAX_VALUE)))
 						.addGroup(gl_panel.createSequentialGroup()
 							.addGap(72)
-							.addComponent(button)
+							.addComponent(moveRightButton)
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(button_1)))
+							.addComponent(moveLeftButton)))
 					.addContainerGap())
 		);
 		
@@ -217,6 +222,18 @@ public class ControllingAttributeEditor extends CharacterEditTab {
 		Collections.sort(_controlledCharacters);
 		updateScreen();
 	}
+	
+	@Action
+	public void moveToControlledList() {
+		
+	}
+	
+	@Action
+	public void moveFromControlledList() {
+		
+	}
+	
+	
 	
 	private void updateScreen() {
 		if (_controllingAttribute != null) {
