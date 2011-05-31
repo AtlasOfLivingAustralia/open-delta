@@ -2,6 +2,7 @@ package au.org.ala.delta.editor.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
@@ -185,6 +186,14 @@ public class DataSetWrapper implements ObservableDeltaDataSet, DeltaDataSetObser
 	@Override
 	public boolean canChangeCharacterType(Character character, CharacterType newType) {
 		return _wrappedDataSet.canChangeCharacterType(character, newType);
+	}
+
+	
+	@Override
+	public CharacterDependency addCharacterDependency(
+			MultiStateCharacter owningCharacter, Set<Integer> states,
+			Set<Integer> dependentCharacters) {
+		return _wrappedDataSet.addCharacterDependency(owningCharacter, states, dependentCharacters);
 	}
 
 	@Override
