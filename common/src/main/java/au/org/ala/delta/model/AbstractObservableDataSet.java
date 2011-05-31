@@ -20,6 +20,12 @@ public abstract class AbstractObservableDataSet implements ObservableDeltaDataSe
 	/** Maintains a list of objects interested in being notified of changes to this data set */
 	protected List<DeltaDataSetObserver> _observerList = new ArrayList<DeltaDataSetObserver>();
 
+	/** Used to create elements of the data set */
+	protected DeltaDataSetFactory _factory;
+	
+	public AbstractObservableDataSet(DeltaDataSetFactory factory) {
+		_factory = factory;
+	}
 	
 	/**
 	 * Adds this AbstractObservableDataSet as an observer of the character.  The actual work

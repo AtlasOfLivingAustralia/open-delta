@@ -2,10 +2,12 @@ package au.org.ala.delta.model.impl;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import au.org.ala.delta.model.AbstractObservableDataSet;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.CharacterDependency;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DeltaDataSetFactory;
 import au.org.ala.delta.model.Item;
@@ -26,12 +28,10 @@ public class DefaultDataSet extends AbstractObservableDataSet {
 	
 	private Map<Integer, Character> _characters;
 	
-	private DeltaDataSetFactory _factory;
-	
 	private boolean _modified;
 	
 	public DefaultDataSet(DeltaDataSetFactory factory) {
-		_factory = factory;
+		super(factory);
 		_items = new HashMap<Integer, Item>();
 		_characters = new HashMap<Integer, Character>();
 		_modified = false;
@@ -218,5 +218,12 @@ public class DefaultDataSet extends AbstractObservableDataSet {
 	public boolean canChangeCharacterType(Character character,
 			CharacterType newType) {
 		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public CharacterDependency addCharacterDependency(
+			MultiStateCharacter owningCharacter, Set<Integer> states,
+			Set<Integer> dependentCharacters) {
+		return _factory.createCharacterDependency(owningCharacter, states, dependentCharacters);
 	}
 }

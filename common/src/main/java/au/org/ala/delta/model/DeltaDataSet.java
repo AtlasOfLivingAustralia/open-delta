@@ -15,6 +15,7 @@
 package au.org.ala.delta.model;
 
 import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -165,4 +166,7 @@ public interface DeltaDataSet {
 	public boolean canChangeCharacterType(Character character, CharacterType newType);
 	
 	public List<CharacterDependency> getAllCharacterDependencies();
+	
+	
+	public CharacterDependency addCharacterDependency(MultiStateCharacter owningCharacter, Set<Integer> states, Set<Integer> dependentCharacters);
 }

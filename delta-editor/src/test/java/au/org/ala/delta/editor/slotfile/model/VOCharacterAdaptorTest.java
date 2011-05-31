@@ -12,6 +12,7 @@ import au.org.ala.delta.DeltaTestCase;
 import au.org.ala.delta.editor.slotfile.DeltaVOP;
 import au.org.ala.delta.editor.slotfile.VOCharBaseDesc;
 import au.org.ala.delta.editor.slotfile.VOCharTextDesc;
+import au.org.ala.delta.model.CharacterDependency;
 
 /**
  * Tests the VOCharacterAdaptor class.
@@ -72,6 +73,37 @@ public class VOCharacterAdaptorTest extends DeltaTestCase {
 		assertEquals(states.get(4), adaptor.getStateText(6));
 		assertEquals(states.get(5), adaptor.getStateText(4));
 	}
+	
+	
+	@Test
+	public void testGetDependentCharacters() {
+		VOCharacterAdaptor characterAdapter = getCharacterAdaptor(10);
+		
+		List<CharacterDependency> dependentChars = characterAdapter.getDependentCharacters();
+	
+		assertEquals(1, dependentChars.size());
+		
+		CharacterDependency charDependency = dependentChars.get(0);
+		assertEquals(10, charDependency.getControllingCharacterId());
+	}
+	
+	@Test
+	public void testGetControlledCharacterNumbers() {
+		VOCharacterAdaptor characterAdapter = getCharacterAdaptor(10);
+		
+		List<Integer> controlledChars = characterAdapter.getControlledCharacterNumbers(false);
+		assertEquals(1, controlledChars.size());
+		assertEquals(new Integer(11), controlledChars.get(0));
+	}
+	
+	@Test
+	public void testAddDependentCharacters() {
+		VOCharacterAdaptor characterAdapter = getCharacterAdaptor(11);
+		
+		
+		
+	}
+	                                          
 	
 	/**
 	 * Creates and returns a VOCharacterAdaptor for the supplied character number.

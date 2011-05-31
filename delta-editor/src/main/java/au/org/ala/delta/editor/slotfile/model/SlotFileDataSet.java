@@ -3,6 +3,7 @@ package au.org.ala.delta.editor.slotfile.model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import au.org.ala.delta.editor.slotfile.Attribute;
 import au.org.ala.delta.editor.slotfile.DeltaVOP;
@@ -15,6 +16,7 @@ import au.org.ala.delta.editor.slotfile.VOImageDesc;
 import au.org.ala.delta.editor.slotfile.VOItemDesc;
 import au.org.ala.delta.model.AbstractObservableDataSet;
 import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.CharacterDependency;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateAttribute;
@@ -31,15 +33,18 @@ import au.org.ala.delta.model.image.OverlayType;
 public class SlotFileDataSet extends AbstractObservableDataSet {
 
 	private DeltaVOP _vop;
-	private SlotFileDataSetFactory _factory;
 
 	public SlotFileDataSet(DeltaVOP vop, SlotFileDataSetFactory factory) {
+		super(factory);
 		_vop = vop;
-		_factory = factory;
 	}
 	
 	public DeltaVOP getVOP() {
 		return _vop;
+	}
+	
+	private SlotFileDataSetFactory getFactory() {
+		return (SlotFileDataSetFactory)_factory;
 	}
 	
 	@Override
@@ -64,7 +69,7 @@ public class SlotFileDataSet extends AbstractObservableDataSet {
 			}
 			int charId = _vop.getDeltaMaster().uniIdFromCharNo(number);	
 			VOCharBaseDesc characterDesc = (VOCharBaseDesc)_vop.getDescFromId(charId);
-			return _factory.wrapCharacter(characterDesc, number);
+			return getFactory().wrapCharacter(characterDesc, number);
 		}
 	}
 
@@ -550,7 +555,7 @@ public class SlotFileDataSet extends AbstractObservableDataSet {
 		}
 		impl.setCharacterType(newType);
 		VOCharBaseDesc charBaseDesc = impl.getCharBaseDesc();
-		Character newCharacter = _factory.wrapCharacter(charBaseDesc, character.getCharacterId());
+		Character newCharacter = getFactory().wrapCharacter(charBaseDesc, character.getCharacterId());
 		characterChanged(character);
 		
 		return newCharacter;
@@ -565,4 +570,10 @@ public class SlotFileDataSet extends AbstractObservableDataSet {
         return attribute;
     }
 
+	@Override
+	public CharacterDependency addCharacterDependency(
+			MultiStateCharacter owningCharacter, Set<Integer> states,
+			Set<Integer> dependentCharacters) {
+		return _factory.createCharacterDependency(owningCharacter, states, dependentCharacters);
+	}
 }
