@@ -392,6 +392,9 @@ public class UseDirective extends IntkeyDirective {
                     MultiStateValue val = new MultiStateValue((MultiStateCharacter) cc, new ArrayList<Integer>(applicableStates));
                     context.setValueForCharacter(cc, val);
                 }
+                
+                // output USEd controlling characters directly to the log window
+                // set the "used type" - by user or auto for the controlling character
 
             }
         }

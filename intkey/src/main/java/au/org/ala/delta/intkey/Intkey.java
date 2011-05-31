@@ -59,6 +59,8 @@ import au.org.ala.delta.intkey.ui.CharacterListModel;
 import au.org.ala.delta.intkey.ui.ItemListModel;
 import au.org.ala.delta.intkey.ui.ReExecuteDialog;
 import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.ui.AboutBox;
 import au.org.ala.delta.ui.DeltaSingleFrameApplication;
 import au.org.ala.delta.ui.util.IconHelper;
@@ -770,6 +772,23 @@ public class Intkey extends DeltaSingleFrameApplication {
         
         _listAvailableCharacters.setModel(_availableCharacterListModel);
         _listUsedCharacters.setModel(_usedCharacterListModel);
+        
+        int tolerance = _context.getTolerance();
+        Map<Item, Integer> taxaDifferenceCounts = specimen.getTaxonDifferences();
+        List<Item> availableTaxa = new ArrayList(_context.getDataset().getTaxa());
+        List<Item> eliminatedTaxa = new ArrayList(_context.getDataset().getTaxa());
+        
+        for (Item taxon: taxaDifferenceCounts.keySet()) {
+            int diffCount = taxaDifferenceCounts.get(taxon);
+            if (diffCount > tolerance) {
+                availableTaxa.remove(taxon);
+            } else {
+                eliminatedTaxa.remove(taxon);
+            }
+        }
+        
+        _listRemainingTaxa.setModel(new ItemListModel(availableTaxa));
+        _listEliminatedTaxa.setModel(new EliminatedTaxaListModel(eliminatedTaxa, taxaDifferenceCounts));
     }
 
     private void updateListCaptions() {
@@ -800,6 +819,31 @@ public class Intkey extends DeltaSingleFrameApplication {
             return _values.get(index);
         }
 
+    }
+    
+    private class EliminatedTaxaListModel extends AbstractListModel {
+        List<Item> _items;
+        private Map<Item, Integer> _differenceCounts;
+        private ItemFormatter _formatter;
+        
+        public EliminatedTaxaListModel(List<Item> items, Map<Item, Integer> differenceCounts) {
+            _items = items;
+            _differenceCounts = differenceCounts;
+            _formatter = new ItemFormatter(false, true, false, true, false);
+        }
+
+        @Override
+        public int getSize() {
+            return _items.size();
+        }
+
+        @Override
+        public Object getElementAt(int index) {
+            Item taxon = _items.get(index);
+            int differences = _differenceCounts.get(taxon);
+            return String.format("(%s) %s", differences, _formatter.formatItemDescription(taxon));
+        }
+        
     }
 
 }
