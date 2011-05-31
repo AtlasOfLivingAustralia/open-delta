@@ -1,5 +1,9 @@
 package au.org.ala.delta.editor.slotfile.model;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import au.org.ala.delta.editor.slotfile.DeltaVOP;
 import au.org.ala.delta.editor.slotfile.VOCharBaseDesc;
 import au.org.ala.delta.editor.slotfile.VOCharTextDesc;
@@ -8,11 +12,13 @@ import au.org.ala.delta.editor.slotfile.VOItemDesc.ItemFixedData;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.AttributeFactory;
 import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.CharacterDependency;
 import au.org.ala.delta.model.CharacterFactory;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.DeltaDataSetFactory;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.VariantItem;
 
 
@@ -237,4 +243,35 @@ public class SlotFileDataSetFactory implements DeltaDataSetFactory {
         attribute.setItem(item);
         return attribute;
     }
+
+	@Override
+	public CharacterDependency createCharacterDependency(
+			MultiStateCharacter owningCharacter, Set<Integer> states,
+			Set<Integer> dependentCharacters) {
+		
+//		
+//		List<Integer> controlledCharIds = controllingDesc.readControlledChars();
+//		List<Integer> states = controllingDesc.readStateIds();
+//		
+//		Set<Integer> controlledCharNumbers = new HashSet<Integer>(controlledCharIds.size());
+//		for (int charId : controlledCharIds) {
+//			controlledCharNumbers.add(getVOP().getDeltaMaster().charNoFromUniId(charId));
+//		}
+//		
+//		Set<Integer> stateNumbers = new HashSet<Integer>(states.size());
+//		for (int stateId : states) {
+//			stateNumbers.add(_charDesc.stateNoFromUniId(stateId));
+//		}
+//		
+//		int number = getVOP().getDeltaMaster().charNoFromUniId(_charDesc.getUniId());
+//		
+//		CharacterDependency dependency = new CharacterDependency(number, stateNumbers, controlledCharNumbers);
+//		String label = controllingDesc.readLabel();
+//		dependency.setDescription(label);
+//		return dependency;
+		return null;
+//			
+	}
+    
+    
 }

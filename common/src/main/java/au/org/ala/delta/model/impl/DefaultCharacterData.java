@@ -315,4 +315,16 @@ public class DefaultCharacterData implements CharacterData {
     public List<CharacterDependency> getControllingCharacters() {
         return _controllingCharacters;
     }
+
+	@Override
+	public List<Integer> getControlledCharacterNumbers(boolean indirect) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public void removeControllingCharacter(CharacterDependency dependency) {
+		_controllingCharacters.remove(dependency);
+		
+	}
+    
 }

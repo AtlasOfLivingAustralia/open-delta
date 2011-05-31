@@ -186,7 +186,6 @@ public class DataSetWrapper implements ObservableDeltaDataSet, DeltaDataSetObser
 	public boolean canChangeCharacterType(Character character, CharacterType newType) {
 		return _wrappedDataSet.canChangeCharacterType(character, newType);
 	}
-	
 
 	@Override
 	public void itemAdded(DeltaDataSetChangeEvent event) {

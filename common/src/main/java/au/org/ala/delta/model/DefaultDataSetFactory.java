@@ -1,7 +1,10 @@
 package au.org.ala.delta.model;
 
+import java.util.Set;
+
 import au.org.ala.delta.model.impl.DefaultAttributeData;
 import au.org.ala.delta.model.impl.DefaultCharacterData;
+import au.org.ala.delta.model.impl.DefaultCharacterDependencyData;
 import au.org.ala.delta.model.impl.DefaultDataSet;
 import au.org.ala.delta.model.impl.DefaultItemData;
 import au.org.ala.delta.model.impl.ItemData;
@@ -47,5 +50,19 @@ public class DefaultDataSetFactory implements DeltaDataSetFactory {
         attribute.setItem(item);
         return attribute;
     }
+
+	@Override
+	public CharacterDependency createCharacterDependency(
+			MultiStateCharacter owningCharacter, Set<Integer> states,
+			Set<Integer> dependentCharacters) {
+
+		DefaultCharacterDependencyData impl = new DefaultCharacterDependencyData(
+				owningCharacter.getCharacterId(), states, dependentCharacters);
+		
+		return new CharacterDependency(impl);
+	}
+    
+    
+    
 
 }

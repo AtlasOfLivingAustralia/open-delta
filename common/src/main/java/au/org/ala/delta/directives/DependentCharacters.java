@@ -60,7 +60,8 @@ public class DependentCharacters extends AbstractCharacterListDirective<DeltaCon
                 dependentCharacterIds.add(dependentChar);
             }
 
-            CharacterDependency d = new CharacterDependency(charIndex, states, dependentCharacterIds);
+            //CharacterDependency d = new CharacterDependency(charIndex, states, dependentCharacterIds);
+            
             /*
              * forEach(r, context, new IntegerFunctor<DeltaContext>() {
              * 

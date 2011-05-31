@@ -14,6 +14,8 @@
  ******************************************************************************/
 package au.org.ala.delta.model;
 
+import java.util.List;
+
 
 /**
  * A MultiStateCharacter is defined by a set of states that may be present in a Taxon.
@@ -95,5 +97,9 @@ public abstract class MultiStateCharacter extends Character {
 
 	public boolean isExclusive() {
 	    return _impl.isExclusive();
+	}
+	
+	public List<Integer> getControlledCharacterNumbers(boolean includeIndirectlyControlled) {
+		return _impl.getControlledCharacterNumbers(includeIndirectlyControlled);
 	}
 }

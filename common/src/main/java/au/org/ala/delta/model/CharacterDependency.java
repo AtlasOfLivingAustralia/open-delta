@@ -14,20 +14,16 @@
  ******************************************************************************/
 package au.org.ala.delta.model;
 
-import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
+import au.org.ala.delta.model.impl.CharacterDependencyData;
 
 /**
  * Describes the relationship between a set of controlling characters and its dependent characters
  */
 public class CharacterDependency {
 
-	private int _controllingCharacterId;
-	private Set<Integer> _dependentCharacterIds;
-	private Set<Integer> _states = new HashSet<Integer>();
-	private String _description;
+	private CharacterDependencyData _impl;
 
 	/**
 	 * constructor
@@ -35,40 +31,40 @@ public class CharacterDependency {
 	 * @param states the ids of the states which when set on the controlling character, make the dependent characters <b>inapplicable</b>
 	 * @param dependentCharacterIds ids of the dependent characters
 	 */
-	public CharacterDependency(int controllingCharacterId, Set<Integer> states, Set<Integer> dependentCharacterIds) {
-		_controllingCharacterId = controllingCharacterId;
-		_dependentCharacterIds = new HashSet<Integer>(dependentCharacterIds);
-		_states = new HashSet<Integer>(states);
+	public CharacterDependency(CharacterDependencyData impl) {
+		_impl = impl;
+	}
+	
+	public CharacterDependencyData getImpl() {
+		return _impl;
 	}
 
-	/**
+	/** 
 	 * @return the id of the controlling character
 	 */
 	public int getControllingCharacterId() {
-		return _controllingCharacterId;
+		return _impl.getControllingCharacterId();
 	}
 
 	/**
 	 * @return the ids of the dependent characters
 	 */
 	public Set<Integer>  getDependentCharacterIds() {
-	    //return defensive copy
-		return new HashSet<Integer>(_dependentCharacterIds);
+	   return _impl.getDependentCharacterIds();
 	}
 
 	/**
 	 * @return the states which when set on the controlling character, make the dependent characters <b>inapplicable</b>
 	 */
 	public Set<Integer> getStates() {
-	    //return defensive copy
-		return new HashSet<Integer>(_states);
+	    return _impl.getStates();
 	}
 	
 	/**
 	 * @return a description of this CharacterDependency.
 	 */
 	public String getDescription() {
-		return _description;
+		return _impl.getDescription();
 	}
 	
 	/**
@@ -76,12 +72,30 @@ public class CharacterDependency {
 	 * @param description a description of this CharacterDependency.
 	 */
 	public void setDescription(String description) {
-		_description = description;
+		_impl.setDescription(description);
 	}
 
-	@Override
-	public String toString() {
-		String states = StringUtils.join(_states, ", ");
-		return String.format("Char. %d controls chars. [%s] for states [%s]", _controllingCharacterId, _dependentCharacterIds, states);
+	public void addDependentCharacter(Character toAdd) {
+		
+		if (getControllingCharacterId() == toAdd.getCharacterId()) {
+			throw new CircularDependencyException();
+		}
+		if (toAdd.getCharacterType().isMultistate()) {
+			MultiStateCharacter multiStateChar = (MultiStateCharacter)toAdd;
+			if (multiStateChar.getControlledCharacterNumbers(true).contains(getControllingCharacterId())) {
+				throw new CircularDependencyException();
+			}
+		}
+		
+		_impl.addDependentCharacter(toAdd);
+		
+		toAdd.addControllingCharacters(this);
+	}
+	
+	public void removeDependentCharacter(Character toRemove) {
+		_impl.removeDependentCharacter(toRemove);
+		
+		//toRemove.removeControllingAttribute(this);
+		
 	}
 }

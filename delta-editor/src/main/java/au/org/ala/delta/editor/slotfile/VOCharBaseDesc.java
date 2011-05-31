@@ -271,7 +271,7 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 		return retVal;
 	}
 
-	public boolean AddControllingInfo(int oneId) {
+	public boolean addControllingInfo(int oneId) {
 		List<Integer> unitVector = new ArrayList<Integer>();
 		unitVector.add(oneId);
 		return addControllingInfo(unitVector);

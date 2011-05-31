@@ -3,9 +3,7 @@ package au.org.ala.delta.editor.slotfile.model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -24,6 +22,7 @@ import au.org.ala.delta.editor.slotfile.VOImageHolderDesc;
 import au.org.ala.delta.editor.slotfile.VOItemDesc;
 import au.org.ala.delta.model.CharacterDependency;
 import au.org.ala.delta.model.CharacterType;
+import au.org.ala.delta.model.CircularDependencyException;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.impl.CharacterData;
 import au.org.ala.delta.model.impl.ControllingInfo;
@@ -339,6 +338,20 @@ public class VOCharacterAdaptor extends ImageHolderAdaptor implements CharacterD
 		}
 		return unknownOk ? new ControllingInfo(ControlledStateType.InapplicableOrUnknown, controllingId) : new ControllingInfo();
 	}
+	
+	@Override
+	public List<Integer> getControlledCharacterNumbers(boolean indirect) {
+		List<Integer> controlledCharacterIds = new ArrayList<Integer>();
+		List<Integer> testedCharacterIds = new ArrayList<Integer>();
+		
+		getControlledChars(testedCharacterIds, _charDesc, controlledCharacterIds, indirect);
+		
+		List<Integer> controlledCharacterNos = new ArrayList<Integer>();
+		for (int id : controlledCharacterIds) {
+			controlledCharacterNos.add(getVOP().getDeltaMaster().charNoFromUniId(id));
+		}
+		return controlledCharacterNos;
+	}
 
 	private boolean getControlledChars(List<Integer> testedControlling, VOCharBaseDesc charBase, List<Integer> contChars, boolean includeIndirect) {
 		return getControlledChars(testedControlling, charBase, contChars, includeIndirect, 0);
@@ -388,7 +401,8 @@ public class VOCharacterAdaptor extends ImageHolderAdaptor implements CharacterD
 	
 	@Override
 	public void addDependentCharacters(CharacterDependency dependency) {
-		throw new NotImplementedException();
+		VOControllingAdapter impl = (VOControllingAdapter)dependency.getImpl();
+		_charDesc.addControllingInfo(impl.getId());
 		
 	}
 
@@ -415,31 +429,19 @@ public class VOCharacterAdaptor extends ImageHolderAdaptor implements CharacterD
 	 */
 	private CharacterDependency characterDependencyFromControllingInfo(
 			VOControllingDesc controllingDesc) {
-		
-		List<Integer> controlledCharIds = controllingDesc.readControlledChars();
-		List<Integer> states = controllingDesc.readStateIds();
-		
-		Set<Integer> controlledCharNumbers = new HashSet<Integer>(controlledCharIds.size());
-		for (int charId : controlledCharIds) {
-			controlledCharNumbers.add(getVOP().getDeltaMaster().charNoFromUniId(charId));
-		}
-		
-		Set<Integer> stateNumbers = new HashSet<Integer>(states.size());
-		for (int stateId : states) {
-			stateNumbers.add(_charDesc.stateNoFromUniId(stateId));
-		}
-		
-		int number = getVOP().getDeltaMaster().charNoFromUniId(_charDesc.getUniId());
-		
-		CharacterDependency dependency = new CharacterDependency(number, stateNumbers, controlledCharNumbers);
-		String label = controllingDesc.readLabel();
-		dependency.setDescription(label);
-		return dependency;
+		return new CharacterDependency(new VOControllingAdapter(getVOP(), controllingDesc));
 	}
 
 	@Override
 	public void addControllingCharacters(CharacterDependency dependency) {
 		throw new NotImplementedException();
+		
+	}
+	
+	@Override
+	public void removeControllingCharacter(CharacterDependency dependency) {
+		VOControllingAdapter impl = (VOControllingAdapter)dependency.getImpl();
+		_charDesc.removeControllingInfo(impl.getId());
 		
 	}
 
@@ -607,10 +609,4 @@ public class VOCharacterAdaptor extends ImageHolderAdaptor implements CharacterD
 	protected VOImageHolderDesc getImageHolder() {
 		return _charDesc;
 	}
-}
-
-class CircularDependencyException extends RuntimeException {
-
-	private static final long serialVersionUID = 1L;
-
 }

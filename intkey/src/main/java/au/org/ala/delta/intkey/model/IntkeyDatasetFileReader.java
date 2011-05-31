@@ -19,6 +19,7 @@ import au.org.ala.delta.model.CharacterDependency;
 import au.org.ala.delta.model.CharacterFactory;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DefaultDataSetFactory;
+import au.org.ala.delta.model.DeltaDataSetFactory;
 import au.org.ala.delta.model.IntegerAttribute;
 import au.org.ala.delta.model.IntegerCharacter;
 import au.org.ala.delta.model.Item;
@@ -30,7 +31,6 @@ import au.org.ala.delta.model.TextAttribute;
 import au.org.ala.delta.model.TextCharacter;
 import au.org.ala.delta.model.impl.CharacterData;
 import au.org.ala.delta.model.impl.DefaultCharacterData;
-import au.org.ala.delta.model.impl.DefaultItemData;
 import au.org.ala.delta.model.impl.ItemData;
 
 public final class IntkeyDatasetFileReader {
@@ -599,7 +599,8 @@ public final class IntkeyDatasetFileReader {
     }
 
     private static void readCharacterDependencies(ItemsFileHeader itemFileHeader, BinFile itemBinFile, List<Character> characters) {
-        int numChars = itemFileHeader.getNChar();
+        DeltaDataSetFactory factory = new DefaultDataSetFactory();
+    	int numChars = itemFileHeader.getNChar();
 
         // If LDep is 0, there are no dependencies. Otherwise dependency data
         // consists of LDep integers, starting at record
@@ -670,7 +671,7 @@ public final class IntkeyDatasetFileReader {
 
                             Set<Integer> stateSet = new HashSet<Integer>();
                             stateSet.add(stateId);
-                            CharacterDependency charDep = new CharacterDependency(c.getCharacterId(), stateSet, dependentChars);
+                            CharacterDependency charDep = factory.createCharacterDependency(controllingChar, stateSet, dependentChars);
                             c.addDependentCharacters(charDep);
                             for (int idxDependentChar : dependentChars) {
                                 // need to subtract one from the index because

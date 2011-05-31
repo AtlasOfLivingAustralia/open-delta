@@ -105,6 +105,10 @@ public interface CharacterData extends Illustratable {
     List<CharacterDependency> getDependentCharacters();
     
     void addControllingCharacters(CharacterDependency dependency);
+    
+    void removeControllingCharacter(CharacterDependency dependency);
 
     List<CharacterDependency> getControllingCharacters();
+
+	List<Integer> getControlledCharacterNumbers(boolean indirect);
 }

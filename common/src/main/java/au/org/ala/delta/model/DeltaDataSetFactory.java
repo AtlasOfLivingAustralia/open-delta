@@ -1,5 +1,7 @@
 package au.org.ala.delta.model;
 
+import java.util.Set;
+
 
 /**
  * An abstract factory for creating DELTA model objects.
@@ -42,5 +44,8 @@ public interface DeltaDataSetFactory {
 	 */
 	public Attribute createAttribute(Character character, Item item);
 
+	
+	public CharacterDependency createCharacterDependency(
+			MultiStateCharacter owningCharacter, Set<Integer> states, Set<Integer> dependentCharacters);
 	
 }
