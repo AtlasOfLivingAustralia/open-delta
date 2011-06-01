@@ -16,7 +16,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.FloatRange;
 import org.apache.commons.lang.math.IntRange;
 
-import au.org.ala.delta.intkey.model.CharacterComparator;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.model.IntkeyDataset;
 import au.org.ala.delta.intkey.model.specimen.CharacterValue;
@@ -262,7 +261,7 @@ public class UseDirective extends IntkeyDirective {
                     _characterValues.remove(ch);
                 }
             } else {
-                Collections.sort(charsNoValues, new CharacterComparator());
+                Collections.sort(charsNoValues);
                 while (!charsNoValues.isEmpty()) {
 
                     CharacterSelectionDialog selectDlg = new CharacterSelectionDialog(UIUtils.getMainFrame(), charsNoValues, "USE");

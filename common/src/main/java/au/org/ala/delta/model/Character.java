@@ -22,7 +22,7 @@ import au.org.ala.delta.model.impl.CharacterData;
 import au.org.ala.delta.model.impl.ControllingInfo;
 import au.org.ala.delta.model.observer.CharacterObserver;
 
-public abstract class Character implements Illustratable {
+public abstract class Character implements Illustratable, Comparable<Character> {
 
     private int _number;
     
@@ -294,6 +294,11 @@ public abstract class Character implements Illustratable {
 	public int hashCode() {
 		return _number;
 	}
+	
+    @Override
+    public int compareTo(Character o) {
+        return Integer.valueOf(this.getCharacterId()).compareTo(Integer.valueOf(o.getCharacterId()));
+    }
 
 
 }

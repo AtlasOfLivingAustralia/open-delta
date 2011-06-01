@@ -254,7 +254,7 @@ public class IntkeyContext extends AbstractDeltaContext {
             for (int charNum : characterNumbersSet) {
                 retList.add(_dataset.getCharacter(charNum));
             }
-            Collections.sort(retList, new CharacterComparator());
+            Collections.sort(retList);
             return retList;
         }
     }

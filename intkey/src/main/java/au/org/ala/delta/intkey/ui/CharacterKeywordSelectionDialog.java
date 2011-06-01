@@ -2,21 +2,20 @@ package au.org.ala.delta.intkey.ui;
 
 import java.awt.Dialog;
 import java.awt.Frame;
+import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import javax.swing.DefaultListModel;
-
-import au.org.ala.delta.intkey.model.CharacterComparator;
-import au.org.ala.delta.intkey.model.IntkeyContext;
-import au.org.ala.delta.model.Character;
-import java.awt.GridLayout;
 import javax.swing.border.EmptyBorder;
 
 import org.jdesktop.application.Application;
 import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
+
+import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.model.Character;
 
 public class CharacterKeywordSelectionDialog extends KeywordSelectionDialog {
 
@@ -68,7 +67,7 @@ public class CharacterKeywordSelectionDialog extends KeywordSelectionDialog {
             String keyword = (String) o;
             _selectedCharacters.addAll(_context.getCharactersForKeyword(keyword));
         }
-        Collections.sort(_selectedCharacters, new CharacterComparator());
+        Collections.sort(_selectedCharacters);
         this.setVisible(false);
     }
 

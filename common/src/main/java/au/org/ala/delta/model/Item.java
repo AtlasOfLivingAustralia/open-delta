@@ -28,7 +28,7 @@ import au.org.ala.delta.model.observer.ItemObserver;
  * Represents an Item in the DELTA system.
  * An item usually corresponds to a Taxon, but a 1-1 relationship is not required.
  */
-public class Item implements AttributeObserver, Illustratable {
+public class Item implements AttributeObserver, Illustratable, Comparable<Item> {
 
 	private ItemData _impl;
 
@@ -235,4 +235,9 @@ public class Item implements AttributeObserver, Illustratable {
 	public int hashCode() {
 		return _itemNumber;
 	}
+
+    @Override
+    public int compareTo(Item o) {
+        return Integer.valueOf(this.getItemNumber()).compareTo(Integer.valueOf(o.getItemNumber()));
+    }
 }

@@ -17,6 +17,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -83,7 +84,9 @@ public class Intkey extends DeltaSingleFrameApplication {
 
     private CharacterListModel _availableCharacterListModel;
     private UsedCharacterListModel _usedCharacterListModel;
-    private ItemListModel _itemListModel;
+    private ItemListModel _availableTaxaListModel;
+    private EliminatedTaxaListModel _eliminatedTaxaListModel;
+    
 
     private JLabel _lblNumAvailableCharacters;
     private JLabel _lblNumUsedCharacters;
@@ -745,7 +748,8 @@ public class Intkey extends DeltaSingleFrameApplication {
 
         _availableCharacterListModel = new CharacterListModel(dataset.getCharacters());
         _usedCharacterListModel = new UsedCharacterListModel(Collections.EMPTY_LIST);
-        _itemListModel = new ItemListModel(dataset.getTaxa());
+        _availableTaxaListModel = new ItemListModel(dataset.getTaxa());
+        _eliminatedTaxaListModel = new EliminatedTaxaListModel(Collections.EMPTY_LIST, Collections.EMPTY_MAP);
 
         _listAvailableCharacters.setModel(_availableCharacterListModel);
         _listUsedCharacters.setModel(_usedCharacterListModel);
@@ -764,8 +768,8 @@ public class Intkey extends DeltaSingleFrameApplication {
             usedCharacterValues.add(specimen.getValueForCharacter(ch));
         }
         
-        List<Character> availableCharacters = _context.getDataset().getCharacters();
-        availableCharacters.removeAll(usedCharacters);
+        List<Character> availableCharacters = new ArrayList<Character>(specimen.getAvailableCharacters());
+        Collections.sort(availableCharacters);
         
         _availableCharacterListModel = new CharacterListModel(availableCharacters);
         _usedCharacterListModel = new UsedCharacterListModel(usedCharacterValues);
@@ -775,26 +779,31 @@ public class Intkey extends DeltaSingleFrameApplication {
         
         int tolerance = _context.getTolerance();
         Map<Item, Integer> taxaDifferenceCounts = specimen.getTaxonDifferences();
-        List<Item> availableTaxa = new ArrayList(_context.getDataset().getTaxa());
-        List<Item> eliminatedTaxa = new ArrayList(_context.getDataset().getTaxa());
+        List<Item> availableTaxa = new ArrayList<Item>(_context.getDataset().getTaxa());
+        List<Item> eliminatedTaxa = new ArrayList<Item>();
         
         for (Item taxon: taxaDifferenceCounts.keySet()) {
             int diffCount = taxaDifferenceCounts.get(taxon);
             if (diffCount > tolerance) {
                 availableTaxa.remove(taxon);
-            } else {
-                eliminatedTaxa.remove(taxon);
-            }
+                eliminatedTaxa.add(taxon);
+            } 
         }
         
-        _listRemainingTaxa.setModel(new ItemListModel(availableTaxa));
-        _listEliminatedTaxa.setModel(new EliminatedTaxaListModel(eliminatedTaxa, taxaDifferenceCounts));
+        _availableTaxaListModel = new ItemListModel(availableTaxa);
+        _eliminatedTaxaListModel = new EliminatedTaxaListModel(eliminatedTaxa, taxaDifferenceCounts);
+        
+        _listRemainingTaxa.setModel(_availableTaxaListModel);
+        _listEliminatedTaxa.setModel(_eliminatedTaxaListModel);
+        
+        updateListCaptions();
     }
 
     private void updateListCaptions() {
         _lblNumAvailableCharacters.setText(String.format(availableCharactersCaption, _availableCharacterListModel.getSize()));
         _lblNumUsedCharacters.setText(String.format(usedCharactersCaption, _usedCharacterListModel.getSize()));
-        _lblNumRemainingTaxa.setText(String.format(remainingTaxaCaption, _itemListModel.getSize()));
+        _lblNumRemainingTaxa.setText(String.format(remainingTaxaCaption, _availableTaxaListModel.getSize()));
+        _lblEliminatedTaxa.setText(String.format(eliminatedTaxaCaption, _eliminatedTaxaListModel.getSize()));
     }
 
     private class UsedCharacterListModel extends AbstractListModel {
@@ -830,6 +839,23 @@ public class Intkey extends DeltaSingleFrameApplication {
             _items = items;
             _differenceCounts = differenceCounts;
             _formatter = new ItemFormatter(false, true, false, true, false);
+            
+            //Sort taxa by number of differences, then by 
+            //taxon number
+            Collections.sort(_items, new Comparator<Item>() {
+
+                @Override
+                public int compare(Item t1, Item t2) {
+                    int diffT1 = _differenceCounts.get(t1);
+                    int diffT2 = _differenceCounts.get(t2);
+
+                    if (diffT1 == diffT2) {
+                        return t1.compareTo(t2);
+                    } else {
+                        return Integer.valueOf(diffT1).compareTo(Integer.valueOf(diffT2));
+                    }
+                }
+            });
         }
 
         @Override
@@ -840,8 +866,8 @@ public class Intkey extends DeltaSingleFrameApplication {
         @Override
         public Object getElementAt(int index) {
             Item taxon = _items.get(index);
-            int differences = _differenceCounts.get(taxon);
-            return String.format("(%s) %s", differences, _formatter.formatItemDescription(taxon));
+
+            return String.format("(%s) %s", _differenceCounts.get(taxon), _formatter.formatItemDescription(taxon));
         }
         
     }
