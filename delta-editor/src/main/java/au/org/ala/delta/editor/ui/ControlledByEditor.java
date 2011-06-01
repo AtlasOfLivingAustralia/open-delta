@@ -1,5 +1,11 @@
 package au.org.ala.delta.editor.ui;
 
+import java.awt.Component;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.AbstractListModel;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
@@ -9,6 +15,8 @@ import javax.swing.JScrollPane;
 import javax.swing.LayoutStyle.ComponentPlacement;
 
 import au.org.ala.delta.editor.model.EditorViewModel;
+import au.org.ala.delta.model.CharacterDependency;
+import au.org.ala.delta.model.format.CharacterDependencyFormatter;
 
 /**
  * The ControlledByEditor provides users with an interface for changes which characters 
@@ -21,9 +29,12 @@ public class ControlledByEditor extends CharacterEditTab {
 	private JList controllingAttributesList;
 	private JButton moveToRightButton;
 	private JButton moveToLeftButton;
+	private CharacterDependencyFormatter _formatter;
+	
+	private List<CharacterDependency> _allControllingAttributes;
 	
 	public ControlledByEditor() {
-		
+		_allControllingAttributes = new ArrayList<CharacterDependency>();
 		createUI();
 	}
 	
@@ -87,6 +98,7 @@ public class ControlledByEditor extends CharacterEditTab {
 		
 		controllingAttributesList = new JList();
 		scrollPane_1.setViewportView(controllingAttributesList);
+		controllingAttributesList.setCellRenderer(new ControllingAttributeRenderer());
 		
 		madeInapplicableList = new JList();
 		scrollPane.setViewportView(madeInapplicableList);
@@ -100,6 +112,41 @@ public class ControlledByEditor extends CharacterEditTab {
 	public void bind(EditorViewModel model, au.org.ala.delta.model.Character character) {
 		_model = model;
 		_character = character;
+		
+		_formatter = new CharacterDependencyFormatter(_model);
+		
+		_allControllingAttributes = _model.getAllCharacterDependencies();
+		controllingAttributesList.setModel(new ControllingAttributeListModel());
+	}
+	
+	class ControllingAttributeListModel extends AbstractListModel {
+
+		private static final long serialVersionUID = 6479256123027870457L;
+
+		@Override
+		public int getSize() {
+			return _allControllingAttributes.size();
+		}
+
+		@Override
+		public Object getElementAt(int index) {
+			return _allControllingAttributes.get(index);
+		}
+		
+	}
+	
+	class ControllingAttributeRenderer extends DefaultListCellRenderer {
+
+		private static final long serialVersionUID = -5583376161387170367L;
+
+		@Override
+		public Component getListCellRendererComponent(JList list, Object value,
+				int index, boolean isSelected, boolean cellHasFocus) {
+			
+			String description = _formatter.formatCharacterDependency((CharacterDependency)value);
+			return super.getListCellRendererComponent(list, description, index, isSelected,
+					cellHasFocus);
+		}
 	}
 
 }

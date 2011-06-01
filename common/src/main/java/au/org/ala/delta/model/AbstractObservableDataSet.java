@@ -162,7 +162,7 @@ public abstract class AbstractObservableDataSet implements ObservableDeltaDataSe
 		for (int i=1; i<getNumberOfCharacters(); i++) {
 			Character character = doGetCharacter(i);
 			if (character.getCharacterType().isMultistate()) {
-				characterDependencies.addAll(((MultiStateCharacter)character).getControllingCharacters());
+				characterDependencies.addAll(((MultiStateCharacter)character).getDependentCharacters());
 			}
 		}
 		return characterDependencies;

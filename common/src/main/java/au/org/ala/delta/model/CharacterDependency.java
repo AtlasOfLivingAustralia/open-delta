@@ -14,6 +14,9 @@
  ******************************************************************************/
 package au.org.ala.delta.model;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import au.org.ala.delta.model.impl.CharacterDependencyData;
@@ -58,6 +61,16 @@ public class CharacterDependency {
 	 */
 	public Set<Integer> getStates() {
 	    return _impl.getStates();
+	}
+	
+	/**
+	 * @return the states returned by getStates as List, ordered by state number.
+	 */
+	public List<Integer> getStatesAsList() {
+		List<Integer> states = new ArrayList<Integer>(getStates());
+		Collections.sort(states);
+		
+		return states;
 	}
 	
 	/**
