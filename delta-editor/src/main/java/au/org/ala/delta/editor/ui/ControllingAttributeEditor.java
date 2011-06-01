@@ -203,7 +203,7 @@ public class ControllingAttributeEditor extends CharacterDepencencyEditor {
 		if (character.getCharacterType().isMultistate()) {
 			_character = (MultiStateCharacter)character;
 			attributeCombo.setModel(new ControllingAttributeModel());
-			
+			attributeCombo.setRenderer(new ControllingAttributeRenderer());
 			_remainingCharacters = new ArrayList<Integer>(_model.getNumberOfCharacters());
 			for (int i=1; i<=_model.getNumberOfCharacters(); i++) {
 				if (i != _character.getCharacterId()) {
@@ -217,8 +217,9 @@ public class ControllingAttributeEditor extends CharacterDepencencyEditor {
 			
 		}
 		else {
-			_character = null;
 			attributeCombo.setModel(new DefaultComboBoxModel());
+			attributeCombo.setRenderer(new DefaultListCellRenderer());
+			_character = null;
 			_controlledCharacters = new ArrayList<Integer>(0);
 		}	
 	}
@@ -284,7 +285,6 @@ public class ControllingAttributeEditor extends CharacterDepencencyEditor {
 		}
 		@Override
 		public int getSize() {
-			System.out.println(_character.getDependentCharacters().size());
 			return _controllingAttributes.size();
 		}
 
@@ -316,7 +316,10 @@ public class ControllingAttributeEditor extends CharacterDepencencyEditor {
 				int index, boolean isSelected, boolean cellHasFocus) {
 			
 			CharacterDependency dependency = (CharacterDependency)value;
-			String description = _formatter.formatCharacterDependency(dependency);
+			String description = "";
+			if (value != null) {
+				description = _formatter.formatCharacterDependency(dependency);
+			}
 			
 			return super.getListCellRendererComponent(list, description, index, isSelected, cellHasFocus);
 		}
