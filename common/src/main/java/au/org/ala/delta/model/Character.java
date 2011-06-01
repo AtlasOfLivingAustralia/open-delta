@@ -63,16 +63,39 @@ public abstract class Character implements Illustratable {
 
     public void addDependentCharacters(CharacterDependency dependency) {
         _impl.addDependentCharacters(dependency);
+        notifyObservers();
     }
 
     public List<CharacterDependency> getDependentCharacters() {
         return _impl.getDependentCharacters();
     }
     
-    public void addControllingCharacters(CharacterDependency dependency) {
+    /**
+     * Adds the supplied CharacterDependency to the list of attributes
+     * that control (or make inapplicable) this Character.
+     * 
+     * Use CharacterDependency.addDependentCharacter instead of this method!
+     * @param dependency the CharacterDependency that controls this Character.
+     */
+    public void addControllingCharacter(CharacterDependency dependency) {
        _impl.addControllingCharacters(dependency);
+       notifyObservers();
     }
 
+    /**
+     * Removes the supplied CharacterDependency to the list of attributes
+     * that control (or make inapplicable) this Character.
+     * 
+     * Use CharacterDependency.removeDependentCharacter instead of this method!
+     * @param dependency the CharacterDependency that controls this Character.
+     */
+	public void removeControllingCharacter(
+			CharacterDependency characterDependency) {
+		_impl.removeControllingCharacter(characterDependency);
+		notifyObservers();
+	}
+
+    
     public List<CharacterDependency> getControllingCharacters() {
         return _impl.getControllingCharacters();
     }
@@ -271,5 +294,6 @@ public abstract class Character implements Illustratable {
 	public int hashCode() {
 		return _number;
 	}
+
 
 }

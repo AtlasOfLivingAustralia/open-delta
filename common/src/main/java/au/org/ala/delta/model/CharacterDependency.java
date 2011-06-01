@@ -102,13 +102,13 @@ public class CharacterDependency {
 		
 		_impl.addDependentCharacter(toAdd);
 		
-		toAdd.addControllingCharacters(this);
+		toAdd.addControllingCharacter(this);
 	}
 	
 	public void removeDependentCharacter(Character toRemove) {
 		_impl.removeDependentCharacter(toRemove);
 		
-		//toRemove.removeControllingAttribute(this);
+		toRemove.removeControllingCharacter(this);
 		
 	}
 	

@@ -678,7 +678,7 @@ public final class IntkeyDatasetFileReader {
                                 // the data file uses 1 based indexes while
                                 // java uses zero based indexes.
                                 Character dependentCharacter = characters.get(idxDependentChar - 1);
-                                dependentCharacter.addControllingCharacters(charDep);
+                                dependentCharacter.addControllingCharacter(charDep);
                             }
                         }
                     }

@@ -426,14 +426,15 @@ public class VOCharacterAdaptor extends ImageHolderAdaptor implements CharacterD
 
 	@Override
 	public void addControllingCharacters(CharacterDependency dependency) {
-		throw new NotImplementedException();
+		int id = VOControllingAdapter.getId(dependency);
+		_charDesc.addControllingInfo(id);
 		
 	}
 	
 	@Override
 	public void removeControllingCharacter(CharacterDependency dependency) {
-		VOControllingAdapter impl = (VOControllingAdapter)dependency.getImpl();
-		_charDesc.removeControllingInfo(impl.getId());
+		int id = VOControllingAdapter.getId(dependency);
+		_charDesc.removeControllingInfo(id);
 		
 	}
 

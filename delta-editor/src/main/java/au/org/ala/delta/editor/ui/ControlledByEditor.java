@@ -5,6 +5,7 @@ import java.awt.Component;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.AbstractButton;
 import javax.swing.AbstractListModel;
 import javax.swing.ActionMap;
 import javax.swing.DefaultListCellRenderer;
@@ -16,6 +17,8 @@ import javax.swing.JList;
 import javax.swing.JScrollPane;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.UIManager;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
@@ -53,6 +56,35 @@ public class ControlledByEditor extends CharacterEditTab {
 		
 		moveToLeftButton.setAction(actions.get("moveToInapplicableList"));
 		moveToRightButton.setAction(actions.get("moveFromInapplicableList"));
+		
+		new ButtonEnabler(moveToLeftButton, controllingAttributesList);
+		new ButtonEnabler(moveToRightButton, madeInapplicableList);
+		
+		controllingAttributesList.addListSelectionListener(new ListSelectionListener() {
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				int[] indices = controllingAttributesList.getSelectedIndices();
+				List<Integer> newSelection = new ArrayList<Integer>();
+				for (int i : indices) {
+					newSelection.add(i);
+				}
+				for (int index : indices) {
+					for (CharacterDependency controllingAttribute : _controllingAttributes) {
+						if (_allControllingAttributes.indexOf(controllingAttribute) == index) {
+							newSelection.remove(index);
+						}
+					}
+				}
+				if (newSelection.size() != indices.length) {
+					int[] selection = new int[newSelection.size()];
+					int i = 0;
+					for (int index : newSelection) {
+						selection[i++] = index;
+					}
+					controllingAttributesList.setSelectedIndices(selection);
+				}
+			}
+		});
 	}
 	
 	private void createUI() {
@@ -132,22 +164,42 @@ public class ControlledByEditor extends CharacterEditTab {
 		_character = character;
 		
 		_formatter = new CharacterDependencyFormatter(_model);
-		
 		_allControllingAttributes = _model.getAllCharacterDependencies();
-		_controllingAttributes = character.getControllingCharacters();
 		
+		
+		updateScreen();
+	}
+	
+	private void updateScreen() {
+		_controllingAttributes = _character.getControllingCharacters();
+
 		controllingAttributesList.setModel(new ControllingAttributeListModel(_allControllingAttributes));
 		madeInapplicableList.setModel(new ControllingAttributeListModel(_controllingAttributes));
+
 	}
 	
 	@Action
 	public void moveToInapplicableList() {
+		Object[] selectedDependencies = controllingAttributesList.getSelectedValues();
 		
+		for (Object selected : selectedDependencies) {
+			CharacterDependency controllingChar = (CharacterDependency)selected;
+			controllingChar.addDependentCharacter(_character);
+		}
+		
+		updateScreen();
 	}
 	
 	@Action
 	public void moveFromInapplicableList() {
+		Object[] selectedDependencies = madeInapplicableList.getSelectedValues();
 		
+		for (Object selected : selectedDependencies) {
+			CharacterDependency controllingChar = (CharacterDependency)selected;
+			controllingChar.removeDependentCharacter(_character);
+		}
+		
+		updateScreen();
 	}
 	
 	class ControllingAttributeListModel extends AbstractListModel {
@@ -204,6 +256,24 @@ public class ControlledByEditor extends CharacterEditTab {
 			}
 			return this;
 		}
+	}
+	
+	class ButtonEnabler implements ListSelectionListener {
+
+		private AbstractButton _button;
+		private JList _list;
+		
+		public ButtonEnabler(AbstractButton button, JList list) {
+			_list = list;
+			_button = button;
+			list.addListSelectionListener(this);
+			valueChanged(null);
+		}
+		@Override
+		public void valueChanged(ListSelectionEvent e) {
+			_button.setEnabled(_list.getSelectedValues().length > 0);
+		}
+		
 	}
 
 }

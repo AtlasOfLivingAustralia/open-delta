@@ -8,6 +8,7 @@ import au.org.ala.delta.editor.slotfile.DeltaVOP;
 import au.org.ala.delta.editor.slotfile.VOCharBaseDesc;
 import au.org.ala.delta.editor.slotfile.VOControllingDesc;
 import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.CharacterDependency;
 import au.org.ala.delta.model.impl.CharacterDependencyData;
 
 /**
@@ -88,4 +89,14 @@ public class VOControllingAdapter implements CharacterDependencyData {
 		return _vop.getDeltaMaster().uniIdFromCharNo(character.getCharacterId());
 	}
 
+	/**
+	 * Returns the slot file unique id of the VOControlingDesc that is backing
+	 * the supplied CharacterDependency object.
+	 * @param dependency the object to get the id of.
+	 * @return the unique id of the backing VOControllingDesc.
+	 */
+	public static int getId(CharacterDependency dependency) {
+		VOControllingAdapter impl = (VOControllingAdapter)dependency.getImpl();
+		return impl.getId();
+	}
 }
