@@ -1,14 +1,10 @@
 package au.org.ala.delta.editor.ui;
 
-import java.awt.Color;
-import java.awt.Component;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.AbstractButton;
 import javax.swing.AbstractListModel;
 import javax.swing.ActionMap;
-import javax.swing.DefaultListCellRenderer;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
@@ -16,7 +12,6 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
 import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.UIManager;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -32,7 +27,7 @@ import au.org.ala.delta.model.format.CharacterDependencyFormatter;
  * The ControlledByEditor provides users with an interface for changes which characters 
  * control the selected character.
  */
-public class ControlledByEditor extends CharacterEditTab {
+public class ControlledByEditor extends CharacterDepencencyEditor {
 
 	private static final long serialVersionUID = -2474020595227842958L;
 	private JList madeInapplicableList;
@@ -147,10 +142,9 @@ public class ControlledByEditor extends CharacterEditTab {
 		
 		controllingAttributesList = new JList();
 		scrollPane_1.setViewportView(controllingAttributesList);
-		controllingAttributesList.setCellRenderer(new AllControllingAttributesRenderer());
 		
 		madeInapplicableList = new JList();
-		madeInapplicableList.setCellRenderer(new ControllingAttributeRenderer());
+		madeInapplicableList.setCellRenderer(new ControllingAttributeRenderer(new ArrayList<CharacterDependency>()));
 		scrollPane.setViewportView(madeInapplicableList);
 		setLayout(groupLayout);
 	}
@@ -175,9 +169,14 @@ public class ControlledByEditor extends CharacterEditTab {
 
 		controllingAttributesList.setModel(new ControllingAttributeListModel(_allControllingAttributes));
 		madeInapplicableList.setModel(new ControllingAttributeListModel(_controllingAttributes));
-
+		controllingAttributesList.setCellRenderer(new ControllingAttributeRenderer(_controllingAttributes));
+		
 	}
 	
+	/**
+	 * Called when the "left arrow" button is clicked.  Adds the Character to the list 
+	 * of the characters controlled by the selected controlling attributes.
+	 */
 	@Action
 	public void moveToInapplicableList() {
 		Object[] selectedDependencies = controllingAttributesList.getSelectedValues();
@@ -223,57 +222,18 @@ public class ControlledByEditor extends CharacterEditTab {
 		}
 	}
 	
-	class ControllingAttributeRenderer extends DefaultListCellRenderer {
+	class ControllingAttributeRenderer extends GreyOutValuesRenderer {
 
 		private static final long serialVersionUID = -5583376161387170367L;
-
+		
+		public ControllingAttributeRenderer(List<? extends Object> valuesToGreyOut) {
+			super(valuesToGreyOut);
+		}
+		
 		@Override
-		public Component getListCellRendererComponent(JList list, Object value,
-				int index, boolean isSelected, boolean cellHasFocus) {
-			
-			String description = _formatter.formatCharacterDependency((CharacterDependency)value);
-			return super.getListCellRendererComponent(list, description, index, isSelected,
-					cellHasFocus);
+		public String formatValue(Object value) {
+			return _formatter.formatCharacterDependency((CharacterDependency)value);
 		}
 	}
 	
-	class AllControllingAttributesRenderer extends ControllingAttributeRenderer {
-
-		private static final long serialVersionUID = 8322653405800736584L;
-		
-		private Color _usedForeground = Color.LIGHT_GRAY;
-		private Color _normalForeground = UIManager.getColor("Label.foreground");
-	
-		@Override
-		public Component getListCellRendererComponent(JList list, Object value,
-				int index, boolean isSelected, boolean cellHasFocus) {
-			super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-			if (_controllingAttributes.contains(value)) {
-				setForeground(_usedForeground);
-			}
-			else {
-				setForeground(_normalForeground);
-			}
-			return this;
-		}
-	}
-	
-	class ButtonEnabler implements ListSelectionListener {
-
-		private AbstractButton _button;
-		private JList _list;
-		
-		public ButtonEnabler(AbstractButton button, JList list) {
-			_list = list;
-			_button = button;
-			list.addListSelectionListener(this);
-			valueChanged(null);
-		}
-		@Override
-		public void valueChanged(ListSelectionEvent e) {
-			_button.setEnabled(_list.getSelectedValues().length > 0);
-		}
-		
-	}
-
 }

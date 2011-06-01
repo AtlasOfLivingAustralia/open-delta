@@ -1,6 +1,7 @@
 package au.org.ala.delta.editor.ui;
 
 import java.awt.Component;
+import java.awt.Font;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -9,10 +10,10 @@ import java.util.Set;
 import javax.swing.AbstractListModel;
 import javax.swing.ActionMap;
 import javax.swing.ComboBoxModel;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -20,18 +21,19 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.UIManager;
 
-import org.apache.commons.lang.StringUtils;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 
+import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterDependency;
-import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.model.MultiStateCharacter;
+import au.org.ala.delta.model.format.CharacterDependencyFormatter;
 import au.org.ala.delta.model.format.CharacterFormatter;
 
-public class ControllingAttributeEditor extends CharacterEditTab {
+public class ControllingAttributeEditor extends CharacterDepencencyEditor {
 	
 	private static final long serialVersionUID = -1550092824029396438L;
 	private JComboBox attributeCombo;
@@ -39,6 +41,9 @@ public class ControllingAttributeEditor extends CharacterEditTab {
 	private CharacterDependency _controllingAttribute;
 	private List<Integer> _remainingCharacters;
 	private List<Integer> _controlledCharacters;
+	private CharacterDependencyFormatter _formatter;
+	private CharacterFormatter _characterFormatter = new CharacterFormatter(true, false, false, true);
+	
 	
 	private JList stateList;
 	private JList controlledCharacterList;
@@ -58,6 +63,8 @@ public class ControllingAttributeEditor extends CharacterEditTab {
 		moveLeftButton.setAction(actions.get("moveToControlledList"));
 		moveRightButton.setAction(actions.get("moveFromControlledList"));
 		
+		new ButtonEnabler(moveLeftButton, remainingCharacterList);
+		new ButtonEnabler(moveRightButton, controlledCharacterList);
 	}
 
 	private void createUI() {
@@ -112,7 +119,7 @@ public class ControllingAttributeEditor extends CharacterEditTab {
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup()
-					.addComponent(controllingAttributes, GroupLayout.PREFERRED_SIZE, 388, Short.MAX_VALUE)
+					.addComponent(controllingAttributes, GroupLayout.PREFERRED_SIZE, 300, Short.MAX_VALUE)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(panel, GroupLayout.DEFAULT_SIZE, 522, Short.MAX_VALUE)
 					.addContainerGap())
@@ -145,7 +152,7 @@ public class ControllingAttributeEditor extends CharacterEditTab {
 					.addContainerGap()
 					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_panel.createSequentialGroup()
-							.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 213, Short.MAX_VALUE)
+							.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
 								.addComponent(moveLeftButton)
@@ -154,7 +161,7 @@ public class ControllingAttributeEditor extends CharacterEditTab {
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
 						.addComponent(lblNewLabel_1)
-						.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 197, Short.MAX_VALUE))
+						.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE))
 					.addContainerGap())
 		);
 		gl_panel.setVerticalGroup(
@@ -169,7 +176,7 @@ public class ControllingAttributeEditor extends CharacterEditTab {
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addGroup(gl_panel.createParallelGroup(Alignment.TRAILING)
 								.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 208, Short.MAX_VALUE)
-								.addComponent(scrollPane, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 171, Short.MAX_VALUE)))
+								.addComponent(scrollPane, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 208, Short.MAX_VALUE)))
 						.addGroup(gl_panel.createSequentialGroup()
 							.addGap(72)
 							.addComponent(moveRightButton)
@@ -179,9 +186,11 @@ public class ControllingAttributeEditor extends CharacterEditTab {
 		);
 		
 		remainingCharacterList = new JList();
+		remainingCharacterList.setCellRenderer(new CharacterListRenderer());
 		scrollPane_1.setViewportView(remainingCharacterList);
 		
 		controlledCharacterList = new JList();
+		controlledCharacterList.setCellRenderer(new CharacterListRenderer());
 		scrollPane.setViewportView(controlledCharacterList);
 		panel.setLayout(gl_panel);
 		setLayout(groupLayout);
@@ -189,7 +198,7 @@ public class ControllingAttributeEditor extends CharacterEditTab {
 	
 	public void bind(EditorViewModel model, Character character) {
 		_model = model;
-		
+		_formatter = new CharacterDependencyFormatter(_model);
 	
 		if (character.getCharacterType().isMultistate()) {
 			_character = (MultiStateCharacter)character;
@@ -217,26 +226,42 @@ public class ControllingAttributeEditor extends CharacterEditTab {
 	@Action
 	public void selectedAttributeChanged() { 
 		_controllingAttribute = (CharacterDependency)attributeCombo.getSelectedItem();
-		_remainingCharacters.removeAll(_controllingAttribute.getDependentCharacterIds());
 		_controlledCharacters = new ArrayList<Integer>(_controllingAttribute.getDependentCharacterIds());
+		_remainingCharacters.removeAll(_controllingAttribute.getDependentCharacterIds());
+		
 		Collections.sort(_controlledCharacters);
 		updateScreen();
 	}
 	
 	@Action
 	public void moveToControlledList() {
+		Object[] selectedDependencies = remainingCharacterList.getSelectedValues();
 		
+		for (Object selected : selectedDependencies) {
+			Character dependent = (Character)selected;
+			_controllingAttribute.addDependentCharacter(dependent);
+		}
+		
+		selectedAttributeChanged();
 	}
 	
 	@Action
 	public void moveFromControlledList() {
+		Object[] selectedDependencies = controlledCharacterList.getSelectedValues();
 		
+		for (Object selected : selectedDependencies) {
+			Character dependent = (Character)selected;
+			_controllingAttribute.removeDependentCharacter(dependent);
+		}
+		
+		selectedAttributeChanged();
 	}
 	
 	
 	
 	private void updateScreen() {
 		if (_controllingAttribute != null) {
+			
 			stateList.setModel(new StateListModel());
 			stateList.setCellRenderer(new StateListRenderer());
 			
@@ -286,45 +311,21 @@ public class ControllingAttributeEditor extends CharacterEditTab {
 
 		private static final long serialVersionUID = -3556946058778276619L;
 		
-
-		private CharacterFormatter _formatter;
-		
-		public ControllingAttributeRenderer() {
-			_formatter = new CharacterFormatter(false, true, false, true);
-		}
-		
 		@Override
 		public Component getListCellRendererComponent(JList list, Object value,
 				int index, boolean isSelected, boolean cellHasFocus) {
 			
 			CharacterDependency dependency = (CharacterDependency)value;
-			String description = "";
-			if (dependency != null) {
-				description = dependency.getDescription();
-			}
-			if (StringUtils.isEmpty(description)) {
-				description = defaultDescription(dependency);
-			}
+			String description = _formatter.formatCharacterDependency(dependency);
+			
 			return super.getListCellRendererComponent(list, description, index, isSelected, cellHasFocus);
-		}
-		
-		private String defaultDescription(CharacterDependency dependency) {
-			
-			StringBuilder description = new StringBuilder();
-			String charDescription = _formatter.formatCharacterDescription(_character);
-			if (StringUtils.isEmpty(charDescription)) {
-				charDescription = _formatter.formatCharacterDescription(_character, false);
-			}
-			description.append(charDescription);
-			
-			return description.toString();
 		}
 	}
 	
 	class StateListModel extends AbstractListModel {
 
 		private static final long serialVersionUID = 1101093504477435463L;
-
+		
 		@Override
 		public int getSize() {
 			MultiStateCharacter character = (MultiStateCharacter)_character;
@@ -334,7 +335,7 @@ public class ControllingAttributeEditor extends CharacterEditTab {
 		@Override
 		public Object getElementAt(int index) {
 			MultiStateCharacter character = (MultiStateCharacter)_character;
-			return character.getState(index+1);
+			return _characterFormatter.formatState(character, index+1);
 		}
 		
 	}
@@ -343,6 +344,7 @@ public class ControllingAttributeEditor extends CharacterEditTab {
 		
 		private static final long serialVersionUID = -4761565917553288888L;
 
+		private Font _defaultFont = UIManager.getFont("Label.font");
 		@Override
 		public Component getListCellRendererComponent(JList list, Object value,
 				int index, boolean isSelected, boolean cellHasFocus) {
@@ -350,25 +352,18 @@ public class ControllingAttributeEditor extends CharacterEditTab {
 			Set<Integer> states = _controllingAttribute.getStates();
 			
 			if (states.contains(index+1)) {
-				setText("<html>"+makeBold(getText()));
+				setFont(getFont().deriveFont(Font.BOLD));
+			}
+			else {
+				setFont(_defaultFont);
 			}
 			
 			return this;
 		}
-		
-		private String makeBold(String text) {
-			return "<b>"+text+"</b>";
-		}
-		
-		private String makeItalic(String text) {
-			return "<i>"+text+"</i>";
-		}
-		
 	}
 	
 	class CharacterListModel extends AbstractListModel {
 
-		private CharacterFormatter _formatter = new CharacterFormatter();
 		private static final long serialVersionUID = 6573565854830718124L;
 		
 		private List<Integer> _characters;
@@ -385,7 +380,21 @@ public class ControllingAttributeEditor extends CharacterEditTab {
 		@Override
 		public Object getElementAt(int index) {
 			int characterNumber = _characters.get(index);
-			return _formatter.formatCharacterDescription(_model.getCharacter(characterNumber));
+			return _model.getCharacter(characterNumber);
 		}
+	}
+	
+	class CharacterListRenderer extends DefaultListCellRenderer {
+
+		private static final long serialVersionUID = 865677225829236016L;
+
+		@Override
+		public Component getListCellRendererComponent(JList list, Object value,
+				int index, boolean isSelected, boolean cellHasFocus) {
+			
+			String description = _characterFormatter.formatCharacterDescription((Character)value);
+			return super.getListCellRendererComponent(list, description, index, isSelected, cellHasFocus);
+		}
+		
 	}
 }
