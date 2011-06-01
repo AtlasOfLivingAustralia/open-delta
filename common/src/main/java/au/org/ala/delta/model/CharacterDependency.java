@@ -111,4 +111,28 @@ public class CharacterDependency {
 		//toRemove.removeControllingAttribute(this);
 		
 	}
+	
+	/**
+	 * CharacterDependencies are considered equal if they have the same controlling
+	 * character and states.  (It is not allowed to have two CharacterDependencies defined
+	 * with the same controlling character and states but different controlled characters).
+	 */
+	@Override
+	public boolean equals(Object other) {
+		if (other == null || !(other instanceof CharacterDependency)) {
+			return false;
+		}
+		CharacterDependency otherDependency = (CharacterDependency)other;
+		
+		return otherDependency.getControllingCharacterId() == getControllingCharacterId() &&
+		       otherDependency.getStates().equals(getStates());
+	}
+	
+	@Override
+	public int hashCode() {
+		// This will produce some collisions for characters with multiple
+		// controlling attributes defined.  But the states field is mutable so
+		// it seems safer not to include it in the hash code.
+		return getControllingCharacterId();
+	}
 }

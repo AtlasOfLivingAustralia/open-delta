@@ -2,6 +2,8 @@ package au.org.ala.delta.model.format;
 
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 import au.org.ala.delta.model.CharacterDependency;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.MultiStateCharacter;
@@ -47,8 +49,14 @@ public class CharacterDependencyFormatter {
 
 	private void appendText(CharacterDependency characterDependency,
 			MultiStateCharacter controllingCharacter, StringBuilder description) {
-		description.append(_characterFormatter.formatCharacterDescription(controllingCharacter));
-		description.append(":");
+		
+		String charDescription = _characterFormatter.formatCharacterDescription(controllingCharacter);
+		
+		if (StringUtils.isEmpty(charDescription)) {
+			charDescription = _characterFormatter.formatCharacterDescription(controllingCharacter, false);
+		}
+		description.append(charDescription);
+		description.append(": ");
 		
 		List<Integer> stateNumbers = characterDependency.getStatesAsList();
 		for (int i=0; i<stateNumbers.size()-1; i++) {

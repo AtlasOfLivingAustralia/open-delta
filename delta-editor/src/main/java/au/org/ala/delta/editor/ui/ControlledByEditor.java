@@ -1,10 +1,12 @@
 package au.org.ala.delta.editor.ui;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.AbstractListModel;
+import javax.swing.ActionMap;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -13,6 +15,11 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.UIManager;
+
+import org.jdesktop.application.Action;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ApplicationContext;
 
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.model.CharacterDependency;
@@ -32,10 +39,20 @@ public class ControlledByEditor extends CharacterEditTab {
 	private CharacterDependencyFormatter _formatter;
 	
 	private List<CharacterDependency> _allControllingAttributes;
+	private List<CharacterDependency> _controllingAttributes;
 	
 	public ControlledByEditor() {
 		_allControllingAttributes = new ArrayList<CharacterDependency>();
 		createUI();
+		addEventHandlers();
+	}
+	
+	private void addEventHandlers() {
+		ApplicationContext context = Application.getInstance().getContext();
+		ActionMap actions = context.getActionMap(this);
+		
+		moveToLeftButton.setAction(actions.get("moveToInapplicableList"));
+		moveToRightButton.setAction(actions.get("moveFromInapplicableList"));
 	}
 	
 	private void createUI() {
@@ -98,9 +115,10 @@ public class ControlledByEditor extends CharacterEditTab {
 		
 		controllingAttributesList = new JList();
 		scrollPane_1.setViewportView(controllingAttributesList);
-		controllingAttributesList.setCellRenderer(new ControllingAttributeRenderer());
+		controllingAttributesList.setCellRenderer(new AllControllingAttributesRenderer());
 		
 		madeInapplicableList = new JList();
+		madeInapplicableList.setCellRenderer(new ControllingAttributeRenderer());
 		scrollPane.setViewportView(madeInapplicableList);
 		setLayout(groupLayout);
 	}
@@ -116,23 +134,41 @@ public class ControlledByEditor extends CharacterEditTab {
 		_formatter = new CharacterDependencyFormatter(_model);
 		
 		_allControllingAttributes = _model.getAllCharacterDependencies();
-		controllingAttributesList.setModel(new ControllingAttributeListModel());
+		_controllingAttributes = character.getControllingCharacters();
+		
+		controllingAttributesList.setModel(new ControllingAttributeListModel(_allControllingAttributes));
+		madeInapplicableList.setModel(new ControllingAttributeListModel(_controllingAttributes));
+	}
+	
+	@Action
+	public void moveToInapplicableList() {
+		
+	}
+	
+	@Action
+	public void moveFromInapplicableList() {
+		
 	}
 	
 	class ControllingAttributeListModel extends AbstractListModel {
 
 		private static final long serialVersionUID = 6479256123027870457L;
 
+		private List<CharacterDependency> _characterDependencies;
+		
+		public ControllingAttributeListModel(List<CharacterDependency> dependencies) {
+			_characterDependencies = dependencies;
+		}
+		
 		@Override
 		public int getSize() {
-			return _allControllingAttributes.size();
+			return _characterDependencies.size();
 		}
 
 		@Override
 		public Object getElementAt(int index) {
-			return _allControllingAttributes.get(index);
+			return _characterDependencies.get(index);
 		}
-		
 	}
 	
 	class ControllingAttributeRenderer extends DefaultListCellRenderer {
@@ -146,6 +182,27 @@ public class ControlledByEditor extends CharacterEditTab {
 			String description = _formatter.formatCharacterDependency((CharacterDependency)value);
 			return super.getListCellRendererComponent(list, description, index, isSelected,
 					cellHasFocus);
+		}
+	}
+	
+	class AllControllingAttributesRenderer extends ControllingAttributeRenderer {
+
+		private static final long serialVersionUID = 8322653405800736584L;
+		
+		private Color _usedForeground = Color.LIGHT_GRAY;
+		private Color _normalForeground = UIManager.getColor("Label.foreground");
+	
+		@Override
+		public Component getListCellRendererComponent(JList list, Object value,
+				int index, boolean isSelected, boolean cellHasFocus) {
+			super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+			if (_controllingAttributes.contains(value)) {
+				setForeground(_usedForeground);
+			}
+			else {
+				setForeground(_normalForeground);
+			}
+			return this;
 		}
 	}
 
