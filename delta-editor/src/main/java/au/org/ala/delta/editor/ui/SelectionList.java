@@ -57,10 +57,10 @@ public class SelectionList extends JList implements ReorderableList {
 	}
 	
 	@Override
-	public int getDropLocationIndex() {
-		DropLocation dropLocation = getDropLocation();
+	public int getDropLocationIndex(javax.swing.TransferHandler.DropLocation dropLocation) {
+		
 		if (dropLocation != null) {
-			return dropLocation.getIndex();
+			return ((DropLocation)dropLocation).getIndex();
 		}
 		return -1;
 	}

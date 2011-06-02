@@ -288,6 +288,8 @@ public class DeltaViewController extends InternalFrameAdapter implements Vetoabl
 	}
 	
 	public DeltaView createItemEditView() {
+		
+		
 		DeltaViewModel model = createViewModel();
 		DeltaView view = _viewFactory.createItemEditView(model);
 		viewerOpened(view, model);
@@ -304,7 +306,24 @@ public class DeltaViewController extends InternalFrameAdapter implements Vetoabl
 	}
 
 	private DeltaViewModel createViewModel() {
-		return new DeltaViewModel(_dataSet);
+		
+		DeltaViewModel model = new DeltaViewModel(_dataSet);
+		DeltaViewModel selectedModel = selectedViewModel();
+		if (selectedModel != null) {
+			model.setSelectedCharacter(selectedModel.getSelectedCharacter());
+			model.setSelectedItem(selectedModel.getSelectedItem());
+		}
+		return model;
+	}
+	
+	private DeltaViewModel selectedViewModel() {
+		for (JInternalFrame view : _activeViews) {
+			if (view.isSelected()) {
+				DeltaView deltaView = (DeltaView)view;
+				return _models.get(deltaView);
+			}
+		}
+		return null;
 	}
 	
 	private List<DeltaViewStatusObserver> _observers;

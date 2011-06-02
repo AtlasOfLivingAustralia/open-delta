@@ -25,6 +25,7 @@ import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.TransferHandler;
+import javax.swing.TransferHandler.DropLocation;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.JTableHeader;
@@ -210,7 +211,7 @@ implements DragGestureListener, ListSelectionListener, ReorderableList {
 	}
 
 	@Override
-	public int getDropLocationIndex() {
+	public int getDropLocationIndex(DropLocation dropLocation) {
 		return _dropLocation;
 	}
 

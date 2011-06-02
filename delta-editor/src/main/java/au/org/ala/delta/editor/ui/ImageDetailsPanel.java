@@ -510,8 +510,8 @@ public class ImageDetailsPanel extends JPanel {
 		}
 		
 		@Override
-		protected int getDropLocationIndex() {
-			return imageList.getDropLocation().getIndex();
+		protected int getDropLocationIndex(DropLocation dropLocation) {
+			return ((javax.swing.JList.DropLocation)dropLocation).getIndex();
 		}
 
 		@Override

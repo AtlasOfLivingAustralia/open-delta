@@ -1,6 +1,7 @@
 package au.org.ala.delta.editor.ui;
 
 import javax.swing.Action;
+import javax.swing.TransferHandler.DropLocation;
 
 public interface ReorderableList {
 	
@@ -8,7 +9,7 @@ public interface ReorderableList {
 	
 	public void setSelectedIndex(int index);
 	
-	public int getDropLocationIndex();
+	public int getDropLocationIndex(DropLocation dropLocation);
 	
 	public void setSelectionAction(Action action);
 }

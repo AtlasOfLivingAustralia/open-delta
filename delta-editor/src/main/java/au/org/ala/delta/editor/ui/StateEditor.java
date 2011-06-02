@@ -2,12 +2,12 @@ package au.org.ala.delta.editor.ui;
 
 import javax.swing.AbstractListModel;
 import javax.swing.ActionMap;
+import javax.swing.DropMode;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.LayoutStyle.ComponentPlacement;
@@ -20,6 +20,7 @@ import javax.swing.event.ListSelectionListener;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 
+import au.org.ala.delta.editor.StateController;
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.format.CharacterFormatter;
@@ -37,12 +38,13 @@ public class StateEditor extends JPanel {
 	private JButton btnAdd;
 	private JButton btnDelete;
 	private JCheckBox chckbxImplicit;
-	private JList stateList;
+	private SelectionList stateList;
 	private RtfEditor stateDescriptionPane;
 	private MultiStateCharacter _character;
 	
 	private CharacterFormatter _formatter;
 	private EditorViewModel _model;
+	private StateController _stateController;
 	
 	private boolean _ignoreUpdates;
 	private int _selectedState;
@@ -53,12 +55,18 @@ public class StateEditor extends JPanel {
 		createUI();
 		addEventHandlers();
 	}
+	
+	public void setModel(EditorViewModel model) {
+		_model = model;
+		_stateController.setModel(model);
+	}
 
 	/**
 	 * Adds the event handlers to the UI components.
 	 */
 	private void addEventHandlers() {
-		ActionMap actions = Application.getInstance().getContext().getActionMap(this);
+		_stateController = new StateController(stateList, _model);
+		ActionMap actions = Application.getInstance().getContext().getActionMap(_stateController);
 		btnAdd.setAction(actions.get("addState"));
 		btnDelete.setAction(actions.get("deleteState"));
 		chckbxImplicit.setAction(actions.get("toggleStateImplicit"));
@@ -98,7 +106,9 @@ public class StateEditor extends JPanel {
 		lblDefinedStates.setName("definedStatesLabel");
 		
 		
-		stateList = new JList();
+		stateList = new SelectionList();
+		stateList.setDragEnabled(true);
+		stateList.setDropMode(DropMode.INSERT);
 		JScrollPane listScroller = new JScrollPane(stateList);
 		
 		chckbxImplicit = new JCheckBox("Implicit");
@@ -120,16 +130,22 @@ public class StateEditor extends JPanel {
 					.addContainerGap()
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addComponent(lblDefinedStates)
-						.addComponent(listScroller, GroupLayout.PREFERRED_SIZE, 270, GroupLayout.PREFERRED_SIZE))
+						.addComponent(listScroller, GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE))
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addComponent(chckbxImplicit)
-						.addComponent(btnDelete)
-						.addComponent(btnAdd))
-					.addGap(27)
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
+						.addGroup(groupLayout.createSequentialGroup()
+							.addComponent(chckbxImplicit, GroupLayout.PREFERRED_SIZE, 88, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addComponent(btnDelete, GroupLayout.PREFERRED_SIZE, 80, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addComponent(btnAdd, GroupLayout.PREFERRED_SIZE, 80, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+					.addGap(0)
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addComponent(stateDescriptionLabel)
-						.addComponent(descriptionScroller, GroupLayout.DEFAULT_SIZE, 324, Short.MAX_VALUE))
+						.addComponent(descriptionScroller, GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE))
 					.addContainerGap())
 		);
 		groupLayout.setVerticalGroup(
@@ -140,15 +156,15 @@ public class StateEditor extends JPanel {
 						.addComponent(lblDefinedStates)
 						.addComponent(stateDescriptionLabel))
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addGroup(Alignment.TRAILING, groupLayout.createSequentialGroup()
+					.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
+						.addGroup(groupLayout.createSequentialGroup()
 							.addComponent(chckbxImplicit)
 							.addGap(96)
 							.addComponent(btnAdd)
 							.addPreferredGap(ComponentPlacement.UNRELATED)
 							.addComponent(btnDelete))
-						.addComponent(listScroller, GroupLayout.DEFAULT_SIZE, 162, Short.MAX_VALUE)
-						.addComponent(descriptionScroller))
+						.addComponent(listScroller, GroupLayout.DEFAULT_SIZE, 189, Short.MAX_VALUE)
+						.addComponent(descriptionScroller, GroupLayout.DEFAULT_SIZE, 192, Short.MAX_VALUE))
 					.addContainerGap())
 		);
 		setLayout(groupLayout);
@@ -193,7 +209,7 @@ public class StateEditor extends JPanel {
 			return;
 		}
 		_character = character;
-		_model = model;
+		setModel(model);
 		ListModel listModel = new StateListModel(_model, _character);
 		stateList.setModel(listModel);
 		stateList.setSelectedIndex(0);
@@ -210,22 +226,6 @@ public class StateEditor extends JPanel {
 		stateDescriptionPane.requestFocusInWindow();
 	}
 	
-	/**
-	 * Deletes the selected state from the character.
-	 */
-	@Action
-	public void deleteState() {
-		_model.deleteState(_character, stateList.getSelectedIndex()+1);
-	}
-	
-	/**
-	 * Toggles the "implicit" property of the current state.  Only one state may be implicit
-	 * in a multistate character.
-	 */
-	@Action
-	public void toggleStateImplicit() {
-		_character.setUncodedImplicitState(_selectedState);
-	}
 	
 	public void updateStateText() {
 		if (!_ignoreUpdates && _selectedState > 0) {

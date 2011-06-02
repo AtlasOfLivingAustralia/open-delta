@@ -180,8 +180,8 @@ public class ItemController {
 		}
 		
 		@Override
-		protected int getDropLocationIndex() {
-			return _view.getDropLocationIndex();
+		protected int getDropLocationIndex(DropLocation dropLocation) {
+			return _view.getDropLocationIndex(dropLocation);
 		}
 
 		@Override

@@ -23,6 +23,12 @@ public class DeltaViewModel extends DataSetWrapper implements EditorViewModel, P
 	/** A list of objects interested in being notified of preference changes */
 	private List<PreferenceChangeListener> _preferenceChangeListeners;
 	
+	/** The number of the currently selected character */
+	private Character _selectedCharacter;
+	
+	/** The number of the currently selected item */
+	private Item _selectedItem;
+	
 	public DeltaViewModel(EditorDataModel model) {
 		super(model);
 		_editorDataModel = model;
@@ -32,22 +38,22 @@ public class DeltaViewModel extends DataSetWrapper implements EditorViewModel, P
 	
 	@Override
 	public void setSelectedItem(Item selectedItem) {
-		_editorDataModel.setSelectedItem(selectedItem);
+		_selectedItem = selectedItem;
 	}
 
 	@Override
 	public void setSelectedCharacter(Character selectedCharacter) {
-		_editorDataModel.setSelectedCharacter(selectedCharacter);
+		_selectedCharacter = selectedCharacter;
 	}
 
 	@Override
 	public Item getSelectedItem() {
-		return _editorDataModel.getSelectedItem();
+		return _selectedItem;
 	}
 
 	@Override
 	public Character getSelectedCharacter() {
-		return _editorDataModel.getSelectedCharacter();
+		return _selectedCharacter;
 	}
 
 	@Override

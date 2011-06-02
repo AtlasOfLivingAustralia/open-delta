@@ -71,10 +71,9 @@ public class TableRowHeader extends JTable implements ReorderableList {
 	}
 	
 	@Override
-	public int getDropLocationIndex() {
-		DropLocation dropLocation = getDropLocation();
+	public int getDropLocationIndex(javax.swing.TransferHandler.DropLocation dropLocation) {
 		if (dropLocation != null) {
-			return dropLocation.getRow();
+			return ((DropLocation)dropLocation).getRow();
 		}
 		return -1;
 	}

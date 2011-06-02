@@ -49,12 +49,12 @@ public class CharacterTree extends JTree implements ReorderableList {
 		
 	}
 	@Override
-	public int getDropLocationIndex() {
-		DropLocation location = getDropLocation();
-		if (location == null) {
+	public int getDropLocationIndex(javax.swing.TransferHandler.DropLocation dropLocation) {
+		
+		if (dropLocation == null) {
 			return -1;
 		}
-		return dropLocationToCharacterNumber(location)-1;
+		return dropLocationToCharacterNumber((DropLocation)dropLocation)-1;
 	}
 	@Override
 	public void setSelectionAction(Action action) {}

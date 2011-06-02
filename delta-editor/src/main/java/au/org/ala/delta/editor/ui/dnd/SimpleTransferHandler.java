@@ -32,8 +32,10 @@ public abstract class SimpleTransferHandler<T> extends TransferHandler {
 		if (!info.isDataFlavorSupported(_flavour)) {
 			return false;
 		}
-		int dropIndex = getDropLocationIndex();
-		return ((dropIndex != sourceIndex) && (dropIndex != sourceIndex+1));
+		
+		int dropIndex = getDropLocationIndex(info.getDropLocation());
+		
+		return ((dropIndex >= 0) && (dropIndex != sourceIndex) && (dropIndex != sourceIndex+1));
 	}
 	
 	protected Transferable createTransferable(JComponent c) {
@@ -76,7 +78,7 @@ public abstract class SimpleTransferHandler<T> extends TransferHandler {
 			return false;
 		}
 		
-		int targetIndex = getDropLocationIndex();
+		int targetIndex = getDropLocationIndex(info.getDropLocation());
 		if (targetIndex > sourceIndex) {
 			targetIndex--;
 		}
@@ -90,7 +92,7 @@ public abstract class SimpleTransferHandler<T> extends TransferHandler {
 		return true;
 	}
 	
-	protected abstract int getDropLocationIndex();
+	protected abstract int getDropLocationIndex(DropLocation dropLocation);
 	
 	protected abstract void move(T transferObject, int targetIndex);
 	
