@@ -86,10 +86,11 @@ public class Intkey extends DeltaSingleFrameApplication {
     private UsedCharacterListModel _usedCharacterListModel;
     private ItemListModel _availableTaxaListModel;
     private EliminatedTaxaListModel _eliminatedTaxaListModel;
-    
 
     private JLabel _lblNumAvailableCharacters;
     private JLabel _lblNumUsedCharacters;
+
+    boolean normalMode = false;
 
     @Resource
     String windowTitleWithDatasetTitle;
@@ -124,6 +125,8 @@ public class Intkey extends DeltaSingleFrameApplication {
     private JButton _btnDiffTaxa;
     private JButton _btnSubsetTaxa;
     private JButton _btnFindTaxon;
+    private JPanel _pnlAvailableCharacters;
+    private JPanel _pnlAvailableCharactersButtons;
 
     public static void main(String[] args) {
         setupMacSystemProperties(Intkey.class);
@@ -147,7 +150,7 @@ public class Intkey extends DeltaSingleFrameApplication {
         mainFrame.setIconImages(IconHelper.getRedIconList());
 
         _context = new IntkeyContext(this);
-        
+
         ActionMap actionMap = getContext().getActionMap();
 
         _rootPanel = new JPanel();
@@ -181,6 +184,7 @@ public class Intkey extends DeltaSingleFrameApplication {
         _rootPanel.add(_rootSplitPane);
 
         _innerSplitPaneLeft = new JSplitPane();
+        _innerSplitPaneLeft.setAlignmentX(Component.CENTER_ALIGNMENT);
         _innerSplitPaneLeft.setDividerSize(3);
         _innerSplitPaneLeft.setResizeWeight(0.5);
 
@@ -188,12 +192,12 @@ public class Intkey extends DeltaSingleFrameApplication {
         _innerSplitPaneLeft.setOrientation(JSplitPane.VERTICAL_SPLIT);
         _rootSplitPane.setLeftComponent(_innerSplitPaneLeft);
 
-        JPanel pnlAvailableCharacters = new JPanel();
-        _innerSplitPaneLeft.setLeftComponent(pnlAvailableCharacters);
-        pnlAvailableCharacters.setLayout(new BorderLayout(0, 0));
+        _pnlAvailableCharacters = new JPanel();
+        _innerSplitPaneLeft.setLeftComponent(_pnlAvailableCharacters);
+        _pnlAvailableCharacters.setLayout(new BorderLayout(0, 0));
 
         JScrollPane sclPaneAvailableCharacters = new JScrollPane();
-        pnlAvailableCharacters.add(sclPaneAvailableCharacters, BorderLayout.CENTER);
+        _pnlAvailableCharacters.add(sclPaneAvailableCharacters, BorderLayout.CENTER);
 
         _listAvailableCharacters = new JList();
         _listAvailableCharacters.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -219,7 +223,7 @@ public class Intkey extends DeltaSingleFrameApplication {
         sclPaneAvailableCharacters.setViewportView(_listAvailableCharacters);
 
         JPanel pnlAvailableCharactersHeader = new JPanel();
-        pnlAvailableCharacters.add(pnlAvailableCharactersHeader, BorderLayout.NORTH);
+        _pnlAvailableCharacters.add(pnlAvailableCharactersHeader, BorderLayout.NORTH);
         pnlAvailableCharactersHeader.setLayout(new BorderLayout(0, 0));
 
         _lblNumAvailableCharacters = new JLabel();
@@ -227,64 +231,64 @@ public class Intkey extends DeltaSingleFrameApplication {
         _lblNumAvailableCharacters.setText(String.format(availableCharactersCaption, 0));
         pnlAvailableCharactersHeader.add(_lblNumAvailableCharacters, BorderLayout.WEST);
 
-        JPanel pnlAvailableCharactersButtons = new JPanel();
-        FlowLayout flowLayout = (FlowLayout) pnlAvailableCharactersButtons.getLayout();
+        _pnlAvailableCharactersButtons = new JPanel();
+        FlowLayout flowLayout = (FlowLayout) _pnlAvailableCharactersButtons.getLayout();
         flowLayout.setVgap(2);
         flowLayout.setHgap(2);
-        pnlAvailableCharactersHeader.add(pnlAvailableCharactersButtons, BorderLayout.EAST);
+        pnlAvailableCharactersHeader.add(_pnlAvailableCharactersButtons, BorderLayout.EAST);
 
         _btnRestart = new JButton();
         _btnRestart.setAction(actionMap.get("btnRestart"));
         _btnRestart.setPreferredSize(new Dimension(30, 30));
-        pnlAvailableCharactersButtons.add(_btnRestart);
+        _pnlAvailableCharactersButtons.add(_btnRestart);
 
         _btnBestOrder = new JButton();
         _btnBestOrder.setAction(actionMap.get("btnBestOrder"));
         _btnBestOrder.setEnabled(false);
         _btnBestOrder.setPreferredSize(new Dimension(30, 30));
-        pnlAvailableCharactersButtons.add(_btnBestOrder);
+        _pnlAvailableCharactersButtons.add(_btnBestOrder);
 
         _btnSeparate = new JButton();
         _btnSeparate.setAction(actionMap.get("btnSeparate"));
         _btnSeparate.setEnabled(false);
         _btnSeparate.setPreferredSize(new Dimension(30, 30));
-        pnlAvailableCharactersButtons.add(_btnSeparate);
+        _pnlAvailableCharactersButtons.add(_btnSeparate);
 
         _btnNaturalOrder = new JButton();
         _btnNaturalOrder.setAction(actionMap.get("btnNaturalOrder"));
         _btnNaturalOrder.setEnabled(false);
         _btnNaturalOrder.setPreferredSize(new Dimension(30, 30));
-        pnlAvailableCharactersButtons.add(_btnNaturalOrder);
+        _pnlAvailableCharactersButtons.add(_btnNaturalOrder);
 
         _btnDiffSpecimenTaxa = new JButton();
         _btnDiffSpecimenTaxa.setAction(actionMap.get("btnDiffSpecimenTaxa"));
         _btnDiffSpecimenTaxa.setEnabled(false);
         _btnDiffSpecimenTaxa.setPreferredSize(new Dimension(30, 30));
-        pnlAvailableCharactersButtons.add(_btnDiffSpecimenTaxa);
+        _pnlAvailableCharactersButtons.add(_btnDiffSpecimenTaxa);
 
         _btnSetTolerance = new JButton();
         _btnSetTolerance.setAction(actionMap.get("btnSetTolerance"));
         _btnSetTolerance.setEnabled(false);
         _btnSetTolerance.setPreferredSize(new Dimension(30, 30));
-        pnlAvailableCharactersButtons.add(_btnSetTolerance);
+        _pnlAvailableCharactersButtons.add(_btnSetTolerance);
 
         _btnSetMatch = new JButton();
         _btnSetMatch.setAction(actionMap.get("btnSetMatch"));
         _btnSetMatch.setEnabled(false);
         _btnSetMatch.setPreferredSize(new Dimension(30, 30));
-        pnlAvailableCharactersButtons.add(_btnSetMatch);
+        _pnlAvailableCharactersButtons.add(_btnSetMatch);
 
         _btnUseSubset = new JButton();
         _btnUseSubset.setAction(actionMap.get("btnUseSubset"));
         _btnUseSubset.setEnabled(false);
         _btnUseSubset.setPreferredSize(new Dimension(30, 30));
-        pnlAvailableCharactersButtons.add(_btnUseSubset);
+        _pnlAvailableCharactersButtons.add(_btnUseSubset);
 
         _btnFindCharacter = new JButton();
         _btnFindCharacter.setAction(actionMap.get("btnFindCharacter"));
         _btnFindCharacter.setEnabled(false);
         _btnFindCharacter.setPreferredSize(new Dimension(30, 30));
-        pnlAvailableCharactersButtons.add(_btnFindCharacter);
+        _pnlAvailableCharactersButtons.add(_btnFindCharacter);
 
         JPanel pnlUsedCharacters = new JPanel();
         _innerSplitPaneLeft.setRightComponent(pnlUsedCharacters);
@@ -492,7 +496,7 @@ public class Intkey extends DeltaSingleFrameApplication {
 
         JMenuItem mnuItNormalMode = new JMenuItem();
         mnuItNormalMode.setAction(actionMap.get("mnuItNormalMode"));
-        mnuItNormalMode.setEnabled(false);
+        // mnuItNormalMode.setEnabled(false);
         mnuFile.add(mnuItNormalMode);
 
         mnuFile.addSeparator();
@@ -618,6 +622,17 @@ public class Intkey extends DeltaSingleFrameApplication {
 
     @Action
     public void mnuItNormalMode() {
+        if (!normalMode) {
+            _pnlAvailableCharactersButtons.remove(_btnSeparate);
+            _pnlAvailableCharactersButtons.remove(_btnSetTolerance);
+            _rootPanel.remove(_txtFldCmdBar);
+            _rootPanel.revalidate();
+            normalMode = true;
+        } else {
+            _rootPanel.add(_txtFldCmdBar, BorderLayout.SOUTH);
+            _rootPanel.revalidate();
+            normalMode = false;
+        }
     }
 
     @Action
@@ -629,7 +644,8 @@ public class Intkey extends DeltaSingleFrameApplication {
         exit();
     }
 
-    // ============================ ReExecute menu actions ===========================
+    // ============================ ReExecute menu actions
+    // ===========================
 
     @Action
     public void mnuItReExecute() {
@@ -641,7 +657,8 @@ public class Intkey extends DeltaSingleFrameApplication {
         }
     }
 
-    // ============================= Window menu actions ==============================
+    // ============================= Window menu actions
+    // ==============================
     @Action
     public void mnuItCascadeWindows() {
     }
@@ -654,11 +671,12 @@ public class Intkey extends DeltaSingleFrameApplication {
     public void mnuItCloseAllWindows() {
     }
 
-    // ====================== Help menu actions ====================================
+    // ====================== Help menu actions
+    // ====================================
     @Action
     public void mnuItHelpIntroduction() {
-    }    
-    
+    }
+
     @Action
     public void mnuItHelpCommands() {
     }
@@ -668,15 +686,17 @@ public class Intkey extends DeltaSingleFrameApplication {
         AboutBox aboutBox = new AboutBox(getMainFrame());
         show(aboutBox);
     }
-    
-    // ============================== Global option buttons ================================
-    
+
+    // ============================== Global option buttons
+    // ================================
+
     @Action
     public void btnContextHelp() {
     }
-    
-    // ========================= Character toolbar button actions ===================
-    
+
+    // ========================= Character toolbar button actions
+    // ===================
+
     @Action
     public void btnRestart() {
         executeDirective(new RestartDirective());
@@ -685,53 +705,54 @@ public class Intkey extends DeltaSingleFrameApplication {
     @Action
     public void btnBestOrder() {
     }
-    
+
     @Action
     public void btnSeparate() {
     }
-    
+
     @Action
     public void btnNaturalOrder() {
     }
-    
+
     @Action
     public void btnDiffSpecimenTaxa() {
     }
-    
+
     @Action
     public void btnSetTolerance() {
     }
-    
+
     @Action
     public void btnSetMatch() {
     }
-    
+
     @Action
     public void btnUseSubset() {
     }
-    
+
     @Action
     public void btnFindCharacter() {
     }
-    
-    // ============================= Taxon toolbar button actions ===========================
-    
+
+    // ============================= Taxon toolbar button actions
+    // ===========================
+
     @Action
     public void btnTaxonInfo() {
     }
-    
+
     @Action
     public void btnDiffTaxa() {
     }
-    
+
     @Action
     public void btnSubsetTaxa() {
     }
-    
+
     @Action
     public void btnFindTaxon() {
     }
-    
+
     // =========================================================================================
 
     private void executeDirective(IntkeyDirective dir) {
@@ -764,38 +785,47 @@ public class Intkey extends DeltaSingleFrameApplication {
         List<Character> usedCharacters = specimen.getUsedCharacters();
 
         List<CharacterValue> usedCharacterValues = new ArrayList<CharacterValue>();
-        for (Character ch: usedCharacters) {
+        for (Character ch : usedCharacters) {
             usedCharacterValues.add(specimen.getValueForCharacter(ch));
         }
-        
+
         List<Character> availableCharacters = new ArrayList<Character>(specimen.getAvailableCharacters());
         Collections.sort(availableCharacters);
-        
-        _availableCharacterListModel = new CharacterListModel(availableCharacters);
-        _usedCharacterListModel = new UsedCharacterListModel(usedCharacterValues);
-        
-        _listAvailableCharacters.setModel(_availableCharacterListModel);
-        _listUsedCharacters.setModel(_usedCharacterListModel);
-        
+
         int tolerance = _context.getTolerance();
         Map<Item, Integer> taxaDifferenceCounts = specimen.getTaxonDifferences();
         List<Item> availableTaxa = new ArrayList<Item>(_context.getDataset().getTaxa());
         List<Item> eliminatedTaxa = new ArrayList<Item>();
-        
-        for (Item taxon: taxaDifferenceCounts.keySet()) {
+
+        for (Item taxon : taxaDifferenceCounts.keySet()) {
             int diffCount = taxaDifferenceCounts.get(taxon);
             if (diffCount > tolerance) {
                 availableTaxa.remove(taxon);
                 eliminatedTaxa.add(taxon);
-            } 
+            }
         }
-        
+
+//        if (availableTaxa.size() == 1) {
+//            _pnlAvailableCharacters.removeAll();
+//            _pnlAvailableCharacters.revalidate();
+//            JLabel lbl = new JLabel("<html><center>Investigation Complete</html></center>");
+//            _pnlAvailableCharacters.add(lbl, BorderLayout.EAST);
+//            _pnlAvailableCharacters.revalidate();
+//        } else {
+            _availableCharacterListModel = new CharacterListModel(availableCharacters);
+            _listAvailableCharacters.setModel(_availableCharacterListModel);
+//        }
+
+        _usedCharacterListModel = new UsedCharacterListModel(usedCharacterValues);
+
+        _listUsedCharacters.setModel(_usedCharacterListModel);
+
         _availableTaxaListModel = new ItemListModel(availableTaxa);
         _eliminatedTaxaListModel = new EliminatedTaxaListModel(eliminatedTaxa, taxaDifferenceCounts);
-        
+
         _listRemainingTaxa.setModel(_availableTaxaListModel);
         _listEliminatedTaxa.setModel(_eliminatedTaxaListModel);
-        
+
         updateListCaptions();
     }
 
@@ -829,19 +859,19 @@ public class Intkey extends DeltaSingleFrameApplication {
         }
 
     }
-    
+
     private class EliminatedTaxaListModel extends AbstractListModel {
         List<Item> _items;
         private Map<Item, Integer> _differenceCounts;
         private ItemFormatter _formatter;
-        
+
         public EliminatedTaxaListModel(List<Item> items, Map<Item, Integer> differenceCounts) {
             _items = items;
             _differenceCounts = differenceCounts;
             _formatter = new ItemFormatter(false, true, false, true, false);
-            
-            //Sort taxa by number of differences, then by 
-            //taxon number
+
+            // Sort taxa by number of differences, then by
+            // taxon number
             Collections.sort(_items, new Comparator<Item>() {
 
                 @Override
@@ -869,7 +899,7 @@ public class Intkey extends DeltaSingleFrameApplication {
 
             return String.format("(%s) %s", _differenceCounts.get(taxon), _formatter.formatItemDescription(taxon));
         }
-        
+
     }
 
 }

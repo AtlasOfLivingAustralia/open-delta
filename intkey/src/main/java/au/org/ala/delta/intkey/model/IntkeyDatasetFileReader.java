@@ -93,11 +93,11 @@ public final class IntkeyDatasetFileReader {
         ds.setItemsFileHeader(itemFileHeader);
         ds.setCharacters(characters);
         ds.setTaxa(taxa);
-        
+
         // Dataset needs a reference to the open items file so that
         // attribute data can be read on demand later.
         ds.setItemsBinFile(itemBinFile);
-        
+
         // Close the open characters file as it is no longer needed
         charBinFile.close();
 
@@ -573,34 +573,36 @@ public final class IntkeyDatasetFileReader {
     private static void readCharacterMinimumsAndMaximums(ItemsFileHeader itemFileHeader, BinFile itemBinFile, List<Character> characters) {
         int numChars = itemFileHeader.getNChar();
 
-        seekToRecord(itemBinFile, itemFileHeader.getRpMini());
+        if (itemFileHeader.getRpMini() != 0) {
+            seekToRecord(itemBinFile, itemFileHeader.getRpMini());
 
-        List<Integer> minimumValues = readIntegerList(itemBinFile, numChars);
+            List<Integer> minimumValues = readIntegerList(itemBinFile, numChars);
 
-        int recordsSpannedByMinimumValues = recordsSpannedByBytes(numChars * Constants.SIZE_INT_IN_BYTES);
+            int recordsSpannedByMinimumValues = recordsSpannedByBytes(numChars * Constants.SIZE_INT_IN_BYTES);
 
-        seekToRecord(itemBinFile, itemFileHeader.getRpMini() + recordsSpannedByMinimumValues);
+            seekToRecord(itemBinFile, itemFileHeader.getRpMini() + recordsSpannedByMinimumValues);
 
-        List<Integer> maximumValues = readIntegerList(itemBinFile, numChars);
+            List<Integer> maximumValues = readIntegerList(itemBinFile, numChars);
 
-        for (int i = 0; i < numChars; i++) {
-            Character c = characters.get(i);
+            for (int i = 0; i < numChars; i++) {
+                Character c = characters.get(i);
 
-            if (c instanceof IntegerCharacter) {
-                IntegerCharacter intChar = (IntegerCharacter) c;
+                if (c instanceof IntegerCharacter) {
+                    IntegerCharacter intChar = (IntegerCharacter) c;
 
-                int minValue = minimumValues.get(i);
-                int maxValue = maximumValues.get(i);
+                    int minValue = minimumValues.get(i);
+                    int maxValue = maximumValues.get(i);
 
-                intChar.setMinimumValue(minValue);
-                intChar.setMaximumValue(maxValue);
+                    intChar.setMinimumValue(minValue);
+                    intChar.setMaximumValue(maxValue);
+                }
             }
         }
     }
 
     private static void readCharacterDependencies(ItemsFileHeader itemFileHeader, BinFile itemBinFile, List<Character> characters) {
         DeltaDataSetFactory factory = new DefaultDataSetFactory();
-    	int numChars = itemFileHeader.getNChar();
+        int numChars = itemFileHeader.getNChar();
 
         // If LDep is 0, there are no dependencies. Otherwise dependency data
         // consists of LDep integers, starting at record
@@ -924,7 +926,8 @@ public final class IntkeyDatasetFileReader {
         seekToRecord(itemBinFile, itemFileHeader.getRpCdat());
         List<Integer> charAttributeDataRecordIndicies = readIntegerList(itemBinFile, numChars);
 
-        // Subtract 1 from the charNo because characters are zero indexed in intkey API
+        // Subtract 1 from the charNo because characters are zero indexed in
+        // intkey API
         int charTaxonDataRecordIndex = charAttributeDataRecordIndicies.get(charNo - 1);
         au.org.ala.delta.model.Character c = characters.get(charNo - 1);
 
@@ -1087,7 +1090,7 @@ public final class IntkeyDatasetFileReader {
                 TextAttribute txtAttr = new TextAttribute(textChar, new IntkeyAttributeData(inapplicable));
                 txtAttr.setText(txt);
                 txtAttr.setItem(t);
-                
+
                 retList.add(txtAttr);
 
             }
