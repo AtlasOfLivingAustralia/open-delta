@@ -53,7 +53,9 @@ public class StateController {
 	 */
 	@Action
 	public void addState(ActionEvent e) {
-		
+		MultiStateCharacter character = getSelectedCharacter();
+		character.addState();
+		updateSelection(character.getNumberOfStates());
 	}
 	
 	/**

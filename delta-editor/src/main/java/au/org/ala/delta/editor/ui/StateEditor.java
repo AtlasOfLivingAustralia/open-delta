@@ -1,5 +1,8 @@
 package au.org.ala.delta.editor.ui;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import javax.swing.AbstractListModel;
 import javax.swing.ActionMap;
 import javax.swing.DropMode;
@@ -17,7 +20,6 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 
 import au.org.ala.delta.editor.StateController;
@@ -67,6 +69,12 @@ public class StateEditor extends JPanel {
 	private void addEventHandlers() {
 		_stateController = new StateController(stateList, _model);
 		ActionMap actions = Application.getInstance().getContext().getActionMap(_stateController);
+		btnAdd.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				stateDescriptionPane.requestFocusInWindow();
+			}
+		});
 		btnAdd.setAction(actions.get("addState"));
 		btnDelete.setAction(actions.get("deleteState"));
 		chckbxImplicit.setAction(actions.get("toggleStateImplicit"));
@@ -215,17 +223,6 @@ public class StateEditor extends JPanel {
 		stateList.setSelectedIndex(0);
 		updateScreen();
 	}
-	
-	/**
-	 * Adds a new state to the character.
-	 */
-	@Action
-	public void addState() {
-		_character.addState();
-		stateList.setSelectedIndex(_character.getNumberOfStates()-1);
-		stateDescriptionPane.requestFocusInWindow();
-	}
-	
 	
 	public void updateStateText() {
 		if (!_ignoreUpdates && _selectedState > 0) {
