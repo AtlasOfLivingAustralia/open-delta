@@ -17,7 +17,7 @@ import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.format.CharacterFormatter;
 
 /**
- * Handles actions performed on the Characters.
+ * Handles actions performed on Character states.
  */
 public class StateController {
 
@@ -77,12 +77,6 @@ public class StateController {
 		}
 		updateSelection(stateNumToDelete);
 	}
-	
-	@Action
-	public void insertState() {
-		
-	}
-	
 	
 	private void updateSelection(int stateNum) {
 		_view.setSelectedIndex(stateNum-1);	
