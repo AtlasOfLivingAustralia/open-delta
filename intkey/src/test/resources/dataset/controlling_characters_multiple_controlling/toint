@@ -1,0 +1,19 @@
+*SHOW Translate into INTKEY format. 
+
+*LISTING FILE toint.lst 
+
+*HEADING Chris' Test Data 2
+*REGISTRATION SUBHEADING Test multiple controlling characters for a single character
+
+*INPUT FILE specs 
+
+*TRANSLATE INTO INTKEY FORMAT 
+*COMMENT CHARACTER FOR SYNONOMY 1
+
+*COMMENT CHARACTER RELIABILITIES 
+
+*INTKEY OUTPUT FILE ichars 
+*INPUT FILE chars 
+
+*INTKEY OUTPUT FILE iitems 
+*INPUT FILE items
