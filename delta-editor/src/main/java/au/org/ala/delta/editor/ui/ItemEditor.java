@@ -16,7 +16,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
 import javax.swing.JToggleButton;
-import javax.swing.JToolBar;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ListSelectionModel;
 import javax.swing.SpinnerNumberModel;
@@ -43,6 +42,7 @@ import au.org.ala.delta.editor.ui.validator.ValidationListener;
 import au.org.ala.delta.editor.ui.validator.ValidationResult;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.ui.rtf.RtfEditor;
+import au.org.ala.delta.ui.rtf.RtfToolBar;
 
 /**
  * Provides a user interface that allows an item description and images to be edited.
@@ -298,7 +298,8 @@ public class ItemEditor extends JInternalFrame implements ValidationListener, De
 		setPreferredSize(new Dimension(827, 500));
 		setMinimumSize(new Dimension(748, 444));
 		
-		JToolBar toolbar = rtfEditor.buildAndInstallToolbar();
+		RtfToolBar toolbar = new RtfToolBar();
+		toolbar.addEditor(rtfEditor);
 		getContentPane().add(toolbar, BorderLayout.NORTH);
 		getContentPane().add(content, BorderLayout.CENTER);
 	}

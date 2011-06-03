@@ -36,7 +36,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JToggleButton;
-import javax.swing.JToolBar;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.AbstractTableModel;
@@ -62,6 +61,7 @@ import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.observer.AbstractDataSetObserver;
 import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
 import au.org.ala.delta.ui.rtf.RtfEditor;
+import au.org.ala.delta.ui.rtf.RtfToolBar;
 
 /**
  * The AttributeEditor allows a user to change the value of an attribute.
@@ -191,7 +191,8 @@ public class AttributeEditor extends JPanel implements ValidationListener, Prefe
 		split.setDividerLocation(300);
 		split.setResizeWeight(0.5);
 
-		JToolBar toolbar = _textPane.buildAndInstallToolbar();
+		RtfToolBar toolbar = new RtfToolBar();
+		toolbar.addEditor(_textPane);
 		add(toolbar, BorderLayout.NORTH);
 		
 		add(split, BorderLayout.CENTER);

@@ -101,8 +101,9 @@ public class DeltaEditor extends InternalFrameApplication implements
 	
 	private HelpController _helpController;
 
-	JMenu _fileMenu;
-
+	private JMenu _fileMenu;
+	private JMenu _windowMenu;
+	
 	@Resource
 	String windowTitleWithoutFilename;
 
@@ -224,9 +225,45 @@ public class DeltaEditor extends InternalFrameApplication implements
 
 		menuBar.add(mnuView);
 
-		// Window Menu
-		JMenu mnuWindow = new JMenu();
-		mnuWindow.setName("mnuWindow");
+		// Window menu
+		_windowMenu = new JMenu();
+		_windowMenu.setName("mnuWindow");
+		buildWindowMenu(_windowMenu);
+		menuBar.add(_windowMenu);
+
+		JMenu mnuHelp = new JMenu();
+		mnuHelp.setName("mnuHelp");
+		JMenuItem mnuItHelpContents = new JMenuItem();
+		mnuItHelpContents.setName("mnuItHelpContents");
+		mnuHelp.add(mnuItHelpContents);
+		mnuItHelpContents.addActionListener(_helpController.helpAction());
+
+		JMenuItem mnuItHelpOnSelection = new JMenuItem(
+				IconHelper.createImageIcon("help_cursor.png"));
+		mnuItHelpOnSelection.setName("mnuItHelpOnSelection");
+
+		mnuItHelpOnSelection.addActionListener(_helpController
+				.helpOnSelectionAction());
+		mnuHelp.add(mnuItHelpOnSelection);
+
+		javax.swing.Action openAboutAction = _actionMap.get("openAbout");
+
+		if (isMac()) {
+			configureMacAboutBox(openAboutAction);
+		} else {
+			JMenuItem mnuItAbout = new JMenuItem();
+			mnuItAbout.setAction(openAboutAction);
+			mnuHelp.addSeparator();
+			mnuHelp.add(mnuItAbout);
+		}
+		menuBar.add(mnuHelp);
+
+		return menuBar;
+	}
+
+	private void buildWindowMenu(JMenu mnuWindow) {
+		mnuWindow.removeAll();
+		
 		JMenuItem mnuItTile = new JMenuItem();
 		mnuItTile.setAction(_actionMap.get("tileFrames"));
 		mnuWindow.add(mnuItTile);
@@ -265,37 +302,14 @@ public class DeltaEditor extends InternalFrameApplication implements
 		} catch (Exception e) {
 			// The Nimbus L&F is not available, no matter.
 		}
-		menuBar.add(mnuWindow);
-
-		JMenu mnuHelp = new JMenu();
-		mnuHelp.setName("mnuHelp");
-		JMenuItem mnuItHelpContents = new JMenuItem();
-		mnuItHelpContents.setName("mnuItHelpContents");
-		mnuHelp.add(mnuItHelpContents);
-		mnuItHelpContents.addActionListener(_helpController.helpAction());
-
-		JMenuItem mnuItHelpOnSelection = new JMenuItem(
-				IconHelper.createImageIcon("help_cursor.png"));
-		mnuItHelpOnSelection.setName("mnuItHelpOnSelection");
-
-		mnuItHelpOnSelection.addActionListener(_helpController
-				.helpOnSelectionAction());
-		mnuHelp.add(mnuItHelpOnSelection);
-
-		javax.swing.Action openAboutAction = _actionMap.get("openAbout");
-
-		if (isMac()) {
-			configureMacAboutBox(openAboutAction);
-		} else {
-			JMenuItem mnuItAbout = new JMenuItem();
-			mnuItAbout.setAction(openAboutAction);
-			mnuHelp.addSeparator();
-			mnuHelp.add(mnuItAbout);
-		}
-		menuBar.add(mnuHelp);
-
-		return menuBar;
+		mnuWindow.addSeparator();
+		
+		
+		
 	}
+	
+	
+	
 
 	private void buildFileMenu(JMenu mnuFile) {
 
@@ -332,6 +346,7 @@ public class DeltaEditor extends InternalFrameApplication implements
 		}
 
 	}
+	
 
 	/**
 	 * Loads a previously loaded delta file from the Most Recently Used list. It

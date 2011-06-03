@@ -15,10 +15,6 @@
 
 package au.org.ala.delta.ui.rtf;
 
-import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
@@ -27,14 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import javax.swing.AbstractAction;
-import javax.swing.AbstractButton;
 import javax.swing.Action;
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JToggleButton;
-import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.event.CaretEvent;
@@ -42,16 +31,8 @@ import javax.swing.event.CaretListener;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
 import javax.swing.text.BadLocationException;
-import javax.swing.text.MutableAttributeSet;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledEditorKit;
 import javax.swing.undo.UndoManager;
-
-import org.jdesktop.application.Application;
-import org.jdesktop.application.ResourceMap;
-
-import au.org.ala.delta.ui.util.IconHelper;
 
 /**
  * Extends the RtfEditorPane to provide the facility to create a toolbar with
@@ -61,17 +42,12 @@ import au.org.ala.delta.ui.util.IconHelper;
 public class RtfEditor extends RtfEditorPane {
 
 	private static final long serialVersionUID = -6629395451399732726L;
-	private JToolBar _toolBar;
-	private JToggleButton _btnBold;
-	private JToggleButton _btnItalic;
-	private JToggleButton _btnUnderline;
-	private JToggleButton _btnSuperScript;
-	private JToggleButton _btnSubScript;
+	private RtfToolBar _toolBar;
+	
 	private List<SpecialCharHandler> _specialCharHandlers = new ArrayList<SpecialCharHandler>();	
 	private SpecialCharHandler _currentCharHandler;
 	private UndoManager _undoManager;
-	private UndoAction _undoAction;
-	private ResourceMap _resources = Application.getInstance().getContext().getResourceManager().getResourceMap();
+	
 	
 	public RtfEditor() {
 		super();	
@@ -90,6 +66,12 @@ public class RtfEditor extends RtfEditorPane {
 			throw new RuntimeException(ioex);
 		}
 		
+		_undoManager = new UndoManager();
+		
+		addEventHandlers();
+	}
+	
+	private void addEventHandlers() {
 		_specialCharHandlers.add(new AcuteCharacterHandler());
 		_specialCharHandlers.add(new GraveAccentCharacterHandler());
 		_specialCharHandlers.add(new CircumflexCharacterHandler());
@@ -141,7 +123,22 @@ public class RtfEditor extends RtfEditorPane {
 						
 		});
 		
+		addCaretListener(new CaretListener() {
+
+			@Override
+			public void caretUpdate(CaretEvent e) {
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						if (_toolBar != null) {
+							_toolBar.updateToolbarForCurrentStyle((StyledEditorKit)RtfEditor.this.getEditorKit());
+						}
+					}
+				});
+			}
+		});
 		
+		getDocument().addUndoableEditListener(new UndoListener());
 	}
 	
 	protected void registerKeyStrokeAction(String actionMapKey, Action action, KeyStroke keyStroke) {
@@ -155,74 +152,8 @@ public class RtfEditor extends RtfEditorPane {
 	 * for those buttons so they reflect the state of the currently selected text.
 	 * @return the newly created JToolBar so that it can be positioned out by the client.
 	 */
-	public JToolBar buildAndInstallToolbar() {
-
-		_toolBar = new JToolBar();
-		_btnBold = toolbarButtonForAction(new StyledEditorKit.BoldAction(), "text_bold");
-		_btnItalic = toolbarButtonForAction(new StyledEditorKit.ItalicAction(), "text_italic");
-		_btnUnderline = toolbarButtonForAction(new StyledEditorKit.UnderlineAction(), "text_underline");
-		_btnSuperScript = toolbarButtonForAction(new SuperscriptAction(), "text_superscript");
-		_btnSubScript = toolbarButtonForAction(new SubscriptAction(), "text_subscript");
-		
-		_toolBar.add(_btnBold);
-		_toolBar.add(_btnItalic);
-		_toolBar.add(_btnUnderline);
-		_toolBar.add(_btnSuperScript);
-		_toolBar.add(_btnSubScript);
-
-		addCaretListener(new CaretListener() {
-
-			@Override
-			public void caretUpdate(CaretEvent e) {
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						updateToolbarForCurrentStyle();
-					}
-				});
-			}
-		});
-		// Enable/Disable the toolbar buttons when this pane gains/loses focus.
-		addFocusListener(new FocusListener() {
-			@Override
-			public void focusLost(FocusEvent e) {
-				enableToolbarButtons(false);
-			}
-			
-			@Override
-			public void focusGained(FocusEvent e) {
-				enableToolbarButtons(true);
-			}
-		});
-
-		addUndoSupport();
-		
-		return _toolBar;
-	}
-	
-	/**
-	 * Adds undo support to the editor, including the addition of an undo button to the toolbar.
-	 */
-	protected void addUndoSupport() {
-		_undoManager = new UndoManager();
-		
-		getDocument().addUndoableEditListener(new UndoListener());
-		
-		_undoAction = new UndoAction();
-		_undoAction.setEnabled(false);
-		JButton undoButton = new JButton();
-		decorateToolbarButton(undoButton, _undoAction, "undo");
-		undoButton.setFocusable(false);
-		undoButton.setBorder(BorderFactory.createEmptyBorder(3, 5, 3, 5));
-		
-		_toolBar.addSeparator();
-		_toolBar.add(undoButton);
-	}
-	
-	private void enableToolbarButtons(boolean enable) {
-		for (Component comp :_toolBar.getComponents()) {
-			comp.setEnabled(enable);
-		}
+	public void installToolbar(RtfToolBar toolBar) {
+		_toolBar = toolBar;
 	}
 	
 	public void insertCharAtCaret(char ch) {
@@ -234,37 +165,11 @@ public class RtfEditor extends RtfEditorPane {
 		}		
 	}
 	
-	/**
-	 * Updates the state of the style buttons in the toolbar to match the style of the currently
-	 * selected text in the editor kit.
-	 */
-	private void updateToolbarForCurrentStyle() {
-		StyledEditorKit kit = (StyledEditorKit) getEditorKit();
-		MutableAttributeSet attr = kit.getInputAttributes();
-		_btnBold.setSelected(StyleConstants.isBold(attr));
-		_btnItalic.setSelected(StyleConstants.isItalic(attr));
-		_btnUnderline.setSelected(StyleConstants.isUnderline(attr));
-		_btnSuperScript.setSelected(StyleConstants.isSuperscript(attr));
-		_btnSubScript.setSelected(StyleConstants.isSubscript(attr));
-	}
-	
-	private JToggleButton toolbarButtonForAction(Action action, String iconName) {
-		JToggleButton button = new JToggleButton();
-		decorateToolbarButton(button, action, iconName);
-		
-		return button;
-	}
-
-	private void decorateToolbarButton(AbstractButton button, Action action, String name) {
-		
-		String keyPrefix = name + ".Action.";
-		String iconName = _resources.getString(keyPrefix+"icon");
-		ImageIcon icon = IconHelper.createImageIcon(iconName);
-		action.putValue(Action.SMALL_ICON, icon);
-		action.putValue(Action.SHORT_DESCRIPTION, _resources.getString(keyPrefix+"shortDescription"));
-		button.setAction(action);
-		button.setFocusable(false);
-		button.setHideActionText(true);
+	public void undo() {
+		while (_undoManager.canUndo()) {
+			_undoManager.undo();
+		}
+		_toolBar.disableUndo();
 	}
 	
 	/**
@@ -276,87 +181,8 @@ public class RtfEditor extends RtfEditorPane {
 		if (_undoManager != null) {
 			_undoManager.discardAllEdits();
 		}
-	}
-
-	/**
-	 * An action used by the tool bar buttons to modify the current attributes of the text in this
-	 * text pane.
-	 */
-	private abstract class StyleChangeAction extends StyledEditorKit.StyledTextAction {
-		
-		private static final long serialVersionUID = 5480559734108757527L;
-
-		public StyleChangeAction(String text) {
-			super(text);
-		}
-		
-		public void actionPerformed(ActionEvent ae) {
-
-			StyledEditorKit kit = getStyledEditorKit(RtfEditor.this);
-			MutableAttributeSet inputAttributes = kit.getInputAttributes();
-			SimpleAttributeSet characterAttributes = new SimpleAttributeSet();
-			updateCharacterAttributes(inputAttributes, characterAttributes);
-			
-			setCharacterAttributes(RtfEditor.this, characterAttributes, false);
-			
-			// Update the state of the toolbar to refect this change.
-			updateToolbarForCurrentStyle();
-		}
-		
-		protected abstract void updateCharacterAttributes(MutableAttributeSet inputAttributes, MutableAttributeSet characterAttributes);
-
-	}
-	
-	/**
-	 * Handles the subscript button press.
-	 */
-	class SubscriptAction extends StyleChangeAction {
-
-		private static final long serialVersionUID = 1L;
-
-		public SubscriptAction() {
-			super(StyleConstants.Subscript.toString());
-		}
-
-		protected void updateCharacterAttributes(MutableAttributeSet inputAttributes, MutableAttributeSet characterAttributes) {
-			boolean subscript = (StyleConstants.isSubscript(inputAttributes)) ? false : true;
-			StyleConstants.setSubscript(characterAttributes, subscript);
-			// Turn off superscript if it's on
-			StyleConstants.setSuperscript(characterAttributes, false);
-		}
-	}
-
-	/**
-	 * Handles the superscript button press.
-	 */
-	class SuperscriptAction extends StyleChangeAction {
-
-		private static final long serialVersionUID = 1L;
-
-		public SuperscriptAction() {
-			super(StyleConstants.Superscript.toString());
-		}
-		
-		protected void updateCharacterAttributes(MutableAttributeSet inputAttributes, MutableAttributeSet characterAttributes) {
-			boolean superscript = (StyleConstants.isSuperscript(inputAttributes)) ? false : true;
-			
-			StyleConstants.setSuperscript(characterAttributes, superscript);
-			// Turn off subscript if it's on
-			StyleConstants.setSubscript(characterAttributes, false);		
-		}
-	}
-	
-	/**
-	 * Undoes all changes made to the document since the last invocation of "setText".
-	 */
-	class UndoAction extends AbstractAction {
-		private static final long serialVersionUID = 1L;
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			while (_undoManager.canUndo()) {
-				_undoManager.undo();
-			}
-			setEnabled(false);
+		if (_toolBar != null) {
+			_toolBar.disableUndo();
 		}
 	}
 	
@@ -364,10 +190,8 @@ public class RtfEditor extends RtfEditorPane {
 
 		@Override
 		public void undoableEditHappened(UndoableEditEvent e) {
-			_undoAction.setEnabled(true);
 			_undoManager.addEdit(e.getEdit());
 		}
-		
 	}
 
 }
