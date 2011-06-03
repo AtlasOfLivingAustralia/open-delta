@@ -127,6 +127,20 @@ public class Intkey extends DeltaSingleFrameApplication {
     private JButton _btnFindTaxon;
     private JPanel _pnlAvailableCharacters;
     private JPanel _pnlAvailableCharactersButtons;
+    private JPanel _pnlUsedCharacters;
+    private JScrollPane _sclPnUsedCharacters;
+    private JPanel _pnlUsedCharactersHeader;
+    private JPanel _pnlRemainingTaxa;
+    private JScrollPane _sclPnRemainingTaxa;
+    private JPanel _pnlRemainingTaxaHeader;
+    private JPanel _pnlRemainingTaxaButtons;
+    private JPanel _pnlEliminatedTaxa;
+    private JScrollPane _sclPnEliminatedTaxa;
+    private JPanel _pnlEliminatedTaxaHeader;
+    private JButton _btnContextHelp;
+    private JPanel _globalOptionBar;
+    private JScrollPane _sclPaneAvailableCharacters;
+    private JPanel _pnlAvailableCharactersHeader;
 
     public static void main(String[] args) {
         setupMacSystemProperties(Intkey.class);
@@ -158,17 +172,17 @@ public class Intkey extends DeltaSingleFrameApplication {
         _rootPanel.setBackground(SystemColor.control);
         _rootPanel.setLayout(new BorderLayout(0, 0));
 
-        JPanel globalOptionBar = new JPanel();
-        globalOptionBar.setBorder(new EmptyBorder(0, 5, 0, 5));
-        _rootPanel.add(globalOptionBar, BorderLayout.NORTH);
-        globalOptionBar.setLayout(new BorderLayout(0, 0));
+        _globalOptionBar = new JPanel();
+        _globalOptionBar.setBorder(new EmptyBorder(0, 5, 0, 5));
+        _rootPanel.add(_globalOptionBar, BorderLayout.NORTH);
+        _globalOptionBar.setLayout(new BorderLayout(0, 0));
 
-        JButton btnContextHelp = new JButton();
-        btnContextHelp.setAction(actionMap.get("btnContextHelp"));
-        btnContextHelp.setEnabled(false);
-        btnContextHelp.setPreferredSize(new Dimension(30, 30));
-        btnContextHelp.setMargin(new Insets(2, 5, 2, 5));
-        globalOptionBar.add(btnContextHelp, BorderLayout.EAST);
+        _btnContextHelp = new JButton();
+        _btnContextHelp.setAction(actionMap.get("btnContextHelp"));
+        _btnContextHelp.setEnabled(false);
+        _btnContextHelp.setPreferredSize(new Dimension(30, 30));
+        _btnContextHelp.setMargin(new Insets(2, 5, 2, 5));
+        _globalOptionBar.add(_btnContextHelp, BorderLayout.EAST);
 
         _rootSplitPane = new JSplitPane();
         _rootSplitPane.setDividerSize(3);
@@ -196,8 +210,8 @@ public class Intkey extends DeltaSingleFrameApplication {
         _innerSplitPaneLeft.setLeftComponent(_pnlAvailableCharacters);
         _pnlAvailableCharacters.setLayout(new BorderLayout(0, 0));
 
-        JScrollPane sclPaneAvailableCharacters = new JScrollPane();
-        _pnlAvailableCharacters.add(sclPaneAvailableCharacters, BorderLayout.CENTER);
+        _sclPaneAvailableCharacters = new JScrollPane();
+        _pnlAvailableCharacters.add(_sclPaneAvailableCharacters, BorderLayout.CENTER);
 
         _listAvailableCharacters = new JList();
         _listAvailableCharacters.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -220,22 +234,22 @@ public class Intkey extends DeltaSingleFrameApplication {
             }
         });
 
-        sclPaneAvailableCharacters.setViewportView(_listAvailableCharacters);
+        _sclPaneAvailableCharacters.setViewportView(_listAvailableCharacters);
 
-        JPanel pnlAvailableCharactersHeader = new JPanel();
-        _pnlAvailableCharacters.add(pnlAvailableCharactersHeader, BorderLayout.NORTH);
-        pnlAvailableCharactersHeader.setLayout(new BorderLayout(0, 0));
+        _pnlAvailableCharactersHeader = new JPanel();
+        _pnlAvailableCharacters.add(_pnlAvailableCharactersHeader, BorderLayout.NORTH);
+        _pnlAvailableCharactersHeader.setLayout(new BorderLayout(0, 0));
 
         _lblNumAvailableCharacters = new JLabel();
         _lblNumAvailableCharacters.setFont(new Font("Tahoma", Font.PLAIN, 15));
         _lblNumAvailableCharacters.setText(String.format(availableCharactersCaption, 0));
-        pnlAvailableCharactersHeader.add(_lblNumAvailableCharacters, BorderLayout.WEST);
+        _pnlAvailableCharactersHeader.add(_lblNumAvailableCharacters, BorderLayout.WEST);
 
         _pnlAvailableCharactersButtons = new JPanel();
         FlowLayout flowLayout = (FlowLayout) _pnlAvailableCharactersButtons.getLayout();
         flowLayout.setVgap(2);
         flowLayout.setHgap(2);
-        pnlAvailableCharactersHeader.add(_pnlAvailableCharactersButtons, BorderLayout.EAST);
+        _pnlAvailableCharactersHeader.add(_pnlAvailableCharactersButtons, BorderLayout.EAST);
 
         _btnRestart = new JButton();
         _btnRestart.setAction(actionMap.get("btnRestart"));
@@ -290,26 +304,26 @@ public class Intkey extends DeltaSingleFrameApplication {
         _btnFindCharacter.setPreferredSize(new Dimension(30, 30));
         _pnlAvailableCharactersButtons.add(_btnFindCharacter);
 
-        JPanel pnlUsedCharacters = new JPanel();
-        _innerSplitPaneLeft.setRightComponent(pnlUsedCharacters);
-        pnlUsedCharacters.setLayout(new BorderLayout(0, 0));
+        _pnlUsedCharacters = new JPanel();
+        _innerSplitPaneLeft.setRightComponent(_pnlUsedCharacters);
+        _pnlUsedCharacters.setLayout(new BorderLayout(0, 0));
 
-        JScrollPane sclPnUsedCharacters = new JScrollPane();
-        pnlUsedCharacters.add(sclPnUsedCharacters, BorderLayout.CENTER);
+        _sclPnUsedCharacters = new JScrollPane();
+        _pnlUsedCharacters.add(_sclPnUsedCharacters, BorderLayout.CENTER);
 
         _listUsedCharacters = new JList();
         _listUsedCharacters.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        sclPnUsedCharacters.setViewportView(_listUsedCharacters);
+        _sclPnUsedCharacters.setViewportView(_listUsedCharacters);
 
-        JPanel pnlUsedCharactersHeader = new JPanel();
-        pnlUsedCharacters.add(pnlUsedCharactersHeader, BorderLayout.NORTH);
-        pnlUsedCharactersHeader.setLayout(new BorderLayout(0, 0));
+        _pnlUsedCharactersHeader = new JPanel();
+        _pnlUsedCharacters.add(_pnlUsedCharactersHeader, BorderLayout.NORTH);
+        _pnlUsedCharactersHeader.setLayout(new BorderLayout(0, 0));
 
         _lblNumUsedCharacters = new JLabel();
         _lblNumUsedCharacters.setBorder(new EmptyBorder(7, 0, 7, 0));
         _lblNumUsedCharacters.setFont(new Font("Tahoma", Font.PLAIN, 15));
         _lblNumUsedCharacters.setText(String.format(usedCharactersCaption, 0));
-        pnlUsedCharactersHeader.add(_lblNumUsedCharacters, BorderLayout.WEST);
+        _pnlUsedCharactersHeader.add(_lblNumUsedCharacters, BorderLayout.WEST);
 
         _innerSplitPaneRight = new JSplitPane();
         _innerSplitPaneRight.setDividerSize(3);
@@ -318,74 +332,74 @@ public class Intkey extends DeltaSingleFrameApplication {
         _innerSplitPaneRight.setOrientation(JSplitPane.VERTICAL_SPLIT);
         _rootSplitPane.setRightComponent(_innerSplitPaneRight);
 
-        JPanel pnlRemainingTaxa = new JPanel();
-        _innerSplitPaneRight.setLeftComponent(pnlRemainingTaxa);
-        pnlRemainingTaxa.setLayout(new BorderLayout(0, 0));
+        _pnlRemainingTaxa = new JPanel();
+        _innerSplitPaneRight.setLeftComponent(_pnlRemainingTaxa);
+        _pnlRemainingTaxa.setLayout(new BorderLayout(0, 0));
 
-        JScrollPane sclPnRemainingTaxa = new JScrollPane();
-        pnlRemainingTaxa.add(sclPnRemainingTaxa, BorderLayout.CENTER);
+        _sclPnRemainingTaxa = new JScrollPane();
+        _pnlRemainingTaxa.add(_sclPnRemainingTaxa, BorderLayout.CENTER);
 
         _listRemainingTaxa = new JList();
-        sclPnRemainingTaxa.setViewportView(_listRemainingTaxa);
+        _sclPnRemainingTaxa.setViewportView(_listRemainingTaxa);
 
-        JPanel pnlRemainingTaxaHeader = new JPanel();
-        pnlRemainingTaxa.add(pnlRemainingTaxaHeader, BorderLayout.NORTH);
-        pnlRemainingTaxaHeader.setLayout(new BorderLayout(0, 0));
+        _pnlRemainingTaxaHeader = new JPanel();
+        _pnlRemainingTaxa.add(_pnlRemainingTaxaHeader, BorderLayout.NORTH);
+        _pnlRemainingTaxaHeader.setLayout(new BorderLayout(0, 0));
 
         _lblNumRemainingTaxa = new JLabel();
         _lblNumRemainingTaxa.setFont(new Font("Tahoma", Font.PLAIN, 15));
         _lblNumRemainingTaxa.setText(String.format(remainingTaxaCaption, 0));
-        pnlRemainingTaxaHeader.add(_lblNumRemainingTaxa, BorderLayout.WEST);
+        _pnlRemainingTaxaHeader.add(_lblNumRemainingTaxa, BorderLayout.WEST);
 
-        JPanel pnlRemainingTaxaButtons = new JPanel();
-        FlowLayout flowLayout_1 = (FlowLayout) pnlRemainingTaxaButtons.getLayout();
-        flowLayout_1.setVgap(2);
-        flowLayout_1.setHgap(2);
-        pnlRemainingTaxaHeader.add(pnlRemainingTaxaButtons, BorderLayout.EAST);
+        _pnlRemainingTaxaButtons = new JPanel();
+        FlowLayout fl_pnlRemainingTaxaButtons = (FlowLayout) _pnlRemainingTaxaButtons.getLayout();
+        fl_pnlRemainingTaxaButtons.setVgap(2);
+        fl_pnlRemainingTaxaButtons.setHgap(2);
+        _pnlRemainingTaxaHeader.add(_pnlRemainingTaxaButtons, BorderLayout.EAST);
 
         _btnTaxonInfo = new JButton();
         _btnTaxonInfo.setAction(actionMap.get("btnTaxonInfo"));
         _btnTaxonInfo.setEnabled(false);
         _btnTaxonInfo.setPreferredSize(new Dimension(30, 30));
-        pnlRemainingTaxaButtons.add(_btnTaxonInfo);
+        _pnlRemainingTaxaButtons.add(_btnTaxonInfo);
 
         _btnDiffTaxa = new JButton();
         _btnDiffTaxa.setAction(actionMap.get("btnDiffTaxa"));
         _btnDiffTaxa.setEnabled(false);
         _btnDiffTaxa.setPreferredSize(new Dimension(30, 30));
-        pnlRemainingTaxaButtons.add(_btnDiffTaxa);
+        _pnlRemainingTaxaButtons.add(_btnDiffTaxa);
 
         _btnSubsetTaxa = new JButton();
         _btnSubsetTaxa.setAction(actionMap.get("btnSubsetTaxa"));
         _btnSubsetTaxa.setEnabled(false);
         _btnSubsetTaxa.setPreferredSize(new Dimension(30, 30));
-        pnlRemainingTaxaButtons.add(_btnSubsetTaxa);
+        _pnlRemainingTaxaButtons.add(_btnSubsetTaxa);
 
         _btnFindTaxon = new JButton();
         _btnFindTaxon.setAction(actionMap.get("btnFindTaxon"));
         _btnFindTaxon.setEnabled(false);
         _btnFindTaxon.setPreferredSize(new Dimension(30, 30));
-        pnlRemainingTaxaButtons.add(_btnFindTaxon);
+        _pnlRemainingTaxaButtons.add(_btnFindTaxon);
 
-        JPanel pnlEliminatedTaxa = new JPanel();
-        _innerSplitPaneRight.setRightComponent(pnlEliminatedTaxa);
-        pnlEliminatedTaxa.setLayout(new BorderLayout(0, 0));
+        _pnlEliminatedTaxa = new JPanel();
+        _innerSplitPaneRight.setRightComponent(_pnlEliminatedTaxa);
+        _pnlEliminatedTaxa.setLayout(new BorderLayout(0, 0));
 
-        JScrollPane sclPnEliminatedTaxa = new JScrollPane();
-        pnlEliminatedTaxa.add(sclPnEliminatedTaxa, BorderLayout.CENTER);
+        _sclPnEliminatedTaxa = new JScrollPane();
+        _pnlEliminatedTaxa.add(_sclPnEliminatedTaxa, BorderLayout.CENTER);
 
         _listEliminatedTaxa = new JList();
-        sclPnEliminatedTaxa.setViewportView(_listEliminatedTaxa);
+        _sclPnEliminatedTaxa.setViewportView(_listEliminatedTaxa);
 
-        JPanel pnlEliminatedTaxaHeader = new JPanel();
-        pnlEliminatedTaxa.add(pnlEliminatedTaxaHeader, BorderLayout.NORTH);
-        pnlEliminatedTaxaHeader.setLayout(new BorderLayout(0, 0));
+        _pnlEliminatedTaxaHeader = new JPanel();
+        _pnlEliminatedTaxa.add(_pnlEliminatedTaxaHeader, BorderLayout.NORTH);
+        _pnlEliminatedTaxaHeader.setLayout(new BorderLayout(0, 0));
 
         _lblEliminatedTaxa = new JLabel();
         _lblEliminatedTaxa.setBorder(new EmptyBorder(7, 0, 7, 0));
         _lblEliminatedTaxa.setFont(new Font("Tahoma", Font.PLAIN, 15));
         _lblEliminatedTaxa.setText(String.format(eliminatedTaxaCaption, 0));
-        pnlEliminatedTaxaHeader.add(_lblEliminatedTaxa, BorderLayout.WEST);
+        _pnlEliminatedTaxaHeader.add(_lblEliminatedTaxa, BorderLayout.WEST);
 
         JMenuBar menuBar = buildMenus();
         getMainView().setMenuBar(menuBar);
@@ -805,16 +819,29 @@ public class Intkey extends DeltaSingleFrameApplication {
             }
         }
 
-//        if (availableTaxa.size() == 1) {
-//            _pnlAvailableCharacters.removeAll();
-//            _pnlAvailableCharacters.revalidate();
-//            JLabel lbl = new JLabel("<html><center>Investigation Complete</html></center>");
-//            _pnlAvailableCharacters.add(lbl, BorderLayout.EAST);
-//            _pnlAvailableCharacters.revalidate();
-//        } else {
+        if (availableTaxa.size() == 0) {
+            JLabel lbl = new JLabel("No matching taxa remain.");
+            lbl.setHorizontalAlignment(JLabel.CENTER);
+            lbl.setBackground(Color.WHITE);
+            lbl.setOpaque(true);
+            _sclPaneAvailableCharacters.setViewportView(lbl);
+            _sclPaneAvailableCharacters.revalidate();
+        } else if (availableTaxa.size() == 1) {
+            JLabel lbl = new JLabel("Identification Complete.");
+            lbl.setHorizontalAlignment(JLabel.CENTER);
+            lbl.setBackground(Color.WHITE);
+            lbl.setOpaque(true);
+            _sclPaneAvailableCharacters.setViewportView(lbl);
+            _sclPaneAvailableCharacters.revalidate();
+        } else {
             _availableCharacterListModel = new CharacterListModel(availableCharacters);
             _listAvailableCharacters.setModel(_availableCharacterListModel);
-//        }
+
+            if (!_sclPaneAvailableCharacters.getViewport().getView().equals(_listAvailableCharacters)) {
+                _sclPaneAvailableCharacters.setViewportView(_listAvailableCharacters);
+                _sclPaneAvailableCharacters.revalidate();
+            }
+        }
 
         _usedCharacterListModel = new UsedCharacterListModel(usedCharacterValues);
 
