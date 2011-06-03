@@ -3,8 +3,10 @@ package au.org.ala.delta.intkey.model;
 import java.io.File;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.math.FloatRange;
@@ -638,6 +640,15 @@ public final class IntkeyDatasetFileReader {
                     int stateDepIndiciesEnd = charDepIndex - 1 + numStates;
                     List<Integer> stateDepRecordIndicies = dependencyData.subList(stateDepIndiciesStart, stateDepIndiciesEnd);
 
+                    // We need to coalesce the dependency data so that we have
+                    // one CharacterDependency object per
+                    // controlling character and set of states that make a set
+                    // of dependent characters inapplicable.
+                    // Use this map to keep track of the state ids that make the
+                    // same set of dependent characters
+                    // inapplicable.
+                    Map<Set<Integer>, Set<Integer>> depCharsToStateIds = new HashMap<Set<Integer>, Set<Integer>>();
+
                     for (int j = 0; j < numStates; j++) {
                         Integer stateId = j + 1;
 
@@ -665,23 +676,33 @@ public final class IntkeyDatasetFileReader {
                                 for (int dependentChar : r.toArray()) {
                                     dependentChars.add(dependentChar);
                                 }
-
-                                // System.out.println(String.format("Character: %s State: %d Range lower bound: %d, Range upper bound: %d",
-                                // c.getDescription(), stateId, lowerBound,
-                                // upperBound));
                             }
 
-                            Set<Integer> stateSet = new HashSet<Integer>();
-                            stateSet.add(stateId);
-                            CharacterDependency charDep = factory.createCharacterDependency(controllingChar, stateSet, dependentChars);
-                            c.addDependentCharacters(charDep);
-                            for (int idxDependentChar : dependentChars) {
-                                // need to subtract one from the index because
-                                // the data file uses 1 based indexes while
-                                // java uses zero based indexes.
-                                Character dependentCharacter = characters.get(idxDependentChar - 1);
-                                dependentCharacter.addControllingCharacter(charDep);
+                            if (depCharsToStateIds.containsKey(dependentChars)) {
+                                Set<Integer> stateSet = depCharsToStateIds.get(dependentChars);
+                                stateSet.add(stateId);
+                            } else {
+                                Set<Integer> stateSet = new HashSet<Integer>();
+                                stateSet.add(stateId);
+                                depCharsToStateIds.put(dependentChars, stateSet);
                             }
+                        }
+                    }
+
+                    // Now that we have coalesced the dependency data into the
+                    // form we need, we can
+                    // create the CharacterDependency objects.
+                    for (Set<Integer> depCharsSet : depCharsToStateIds.keySet()) {
+                        Set<Integer> stateSet = depCharsToStateIds.get(depCharsSet);
+                        CharacterDependency charDep = factory.createCharacterDependency(controllingChar, stateSet, depCharsSet);
+                        c.addDependentCharacters(charDep);
+                        for (int idxDependentChar : depCharsSet) {
+                            // need to subtract one from the index because
+                            // the data file uses 1 based indexes while
+                            // java uses zero based indexes.
+                            Character dependentCharacter = characters.get(idxDependentChar - 1);
+
+                            dependentCharacter.addControllingCharacter(charDep);
                         }
                     }
                 }
@@ -972,6 +993,10 @@ public final class IntkeyDatasetFileReader {
                     }
                 }
                 msAttr.setPresentStates(presentStates);
+                
+//                if (inapplicable && presentStates.size() > 0) {
+//                    System.out.println(t.getItemNumber() + " " + c.getCharacterId());
+//                }
 
                 retList.add(msAttr);
             }
@@ -1007,6 +1032,10 @@ public final class IntkeyDatasetFileReader {
                         presentValues.add(k + charMinValue - 1);
                     }
                 }
+
+//                if (inapplicable && presentValues.size() > 0) {
+//                    System.out.println(t.getItemNumber() + " " + c.getCharacterId());
+//                }
 
                 IntegerAttribute intAttr = new IntegerAttribute(intChar, new IntkeyAttributeData(inapplicable));
                 intAttr.setItem(t);
@@ -1045,6 +1074,10 @@ public final class IntkeyDatasetFileReader {
                     }
                 }
                 realAttr.setItem(t);
+                
+//                if (inapplicable && lowerFloat > 0 && upperFloat > 0 ) {
+//                    System.out.println(t.getItemNumber() + " " + c.getCharacterId());
+//                }
 
                 retList.add(realAttr);
             }
@@ -1090,6 +1123,10 @@ public final class IntkeyDatasetFileReader {
                 TextAttribute txtAttr = new TextAttribute(textChar, new IntkeyAttributeData(inapplicable));
                 txtAttr.setText(txt);
                 txtAttr.setItem(t);
+                
+//                if (inapplicable && !txt.equals("")) {
+//                    System.out.println(t.getItemNumber() + " " + c.getCharacterId());
+//                }
 
                 retList.add(txtAttr);
 

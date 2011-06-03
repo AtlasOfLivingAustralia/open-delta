@@ -363,7 +363,7 @@ public class UseDirective extends IntkeyDirective {
                 // set on the controlling character.
                 Set<Integer> applicableStates = new HashSet<Integer>();
 
-                for (int i = 1; i < cc.getStates().length; i++) {
+                for (int i = 1; i < cc.getStates().length + 1; i++) {
                     if (!inapplicableStates.contains(i)) {
                         applicableStates.add(i);
                     }

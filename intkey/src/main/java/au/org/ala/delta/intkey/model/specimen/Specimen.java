@@ -193,7 +193,6 @@ public class Specimen {
             } else if (attr.isUnknown()) {
                 match = _matchUnknowns;
             } else {
-
                 if (val instanceof MultiStateValue) {
                     MultiStateValue msVal = (MultiStateValue) val;
                     MultiStateAttribute msAttr = (MultiStateAttribute) attr;
