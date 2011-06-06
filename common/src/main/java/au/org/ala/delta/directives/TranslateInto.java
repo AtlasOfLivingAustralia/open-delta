@@ -20,7 +20,7 @@ import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.TranslateType;
 
-public class TranslateInto extends ConforDirective {
+public class TranslateInto extends AbstractTextDirective {
 	
 	private static HashMap<String, TranslateType>  TRANSLATE_TYPE_MAP = new HashMap<String, TranslateType>();
 	
@@ -44,7 +44,8 @@ public class TranslateInto extends ConforDirective {
 	}
 
 	@Override
-	protected void doProcess(DeltaContext context, String data) {
+	public void process(DeltaContext context, String data) throws Exception {
+		super.process(context, data);
 		
 		String[] bits = data.split(" ");
 		assert bits.length == 2;		

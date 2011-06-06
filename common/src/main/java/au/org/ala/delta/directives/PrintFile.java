@@ -19,14 +19,16 @@ import java.io.PrintStream;
 
 import au.org.ala.delta.DeltaContext;
 
-public class PrintFile extends ConforDirective {
+public class PrintFile extends AbstractTextDirective {
 		
 	public PrintFile() {
 		super("print", "file");
 	}
 	
 	@Override
-	protected void doProcess(DeltaContext context, String data) throws Exception {
+	public void process(DeltaContext context, String data) throws Exception {
+		super.process(context, data);
+		
 		String filename = data.trim() + ".new"; // TODO: kill the .new once stable...
 		File file = new File(context.getCurrentParsingContext().getFile().getParentFile(), filename);		
 		PrintStream stream = new PrintStream(file);

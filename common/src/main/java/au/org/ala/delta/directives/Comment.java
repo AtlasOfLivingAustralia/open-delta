@@ -16,15 +16,22 @@ package au.org.ala.delta.directives;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.Logger;
+import au.org.ala.delta.directives.args.DirectiveArgType;
 
-public class Comment extends ConforDirective {
+public class Comment extends AbstractTextDirective {
 	
 	public Comment() {
 		super("comment");
 	}
 	
 	@Override
-	public void doProcess(DeltaContext context, String data) throws Exception {
+	public int getArgType() {
+		return DirectiveArgType.DIRARG_COMMENT;
+	}
+	
+	@Override
+	public void process(DeltaContext context, String data) throws Exception {
+		super.process(context, data);
 		Logger.debug("Comment: %s", data);
 	}
 

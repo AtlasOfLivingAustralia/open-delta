@@ -15,11 +15,17 @@
 package au.org.ala.delta.directives;
 
 import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.directives.args.DirectiveArgType;
 
 public class NewParagraphAtCharacters extends AbstractRangeListDirective<DeltaContext> {
 	
 	public NewParagraphAtCharacters() {
 		super("new", "paragraph", "at", "characters");		
+	}
+	
+	@Override
+	public int getArgType() {
+		return DirectiveArgType.DIRARG_CHARLIST;
 	}
 
 	@Override

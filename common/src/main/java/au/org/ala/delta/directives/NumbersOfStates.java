@@ -16,12 +16,18 @@ package au.org.ala.delta.directives;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.Logger;
+import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.model.MultiStateCharacter;
 
 public class NumbersOfStates extends AbstractCharacterListDirective<DeltaContext, Integer> {
 	
 	public NumbersOfStates() {
 		super("numbers", "of", "states");
+	}
+	
+	@Override
+	public int getArgType() {
+		return DirectiveArgType.DIRARG_INTERNAL;
 	}
 
 	@Override

@@ -16,6 +16,7 @@ package au.org.ala.delta.directives;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.Logger;
+import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.ImplicitValue;
 import au.org.ala.delta.model.MultiStateCharacter;
@@ -37,6 +38,11 @@ public class ImplicitValues extends AbstractCharacterListDirective<DeltaContext,
 			ret.setUncoded(Integer.parseInt(rhs));
 		}
 		return ret;
+	}
+	
+	@Override
+	public int getArgType() {
+		return DirectiveArgType.DIRARG_INTERNAL;
 	}
 
 	@Override

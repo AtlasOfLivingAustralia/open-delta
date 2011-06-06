@@ -15,11 +15,17 @@
 package au.org.ala.delta.directives;
 
 import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.directives.args.DirectiveArgType;
 
 public class ExcludeCharacters extends AbstractRangeListDirective<DeltaContext> {
 	
 	public ExcludeCharacters() {
 		super("exclude", "characters");
+	}
+	
+	@Override
+	public int getArgType() {
+		return DirectiveArgType.DIRARG_CHARLIST;
 	}
 
 	@Override

@@ -1,6 +1,7 @@
 package au.org.ala.delta.editor.directives;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JOptionPane;
@@ -10,11 +11,13 @@ import org.jdesktop.application.TaskEvent;
 import org.jdesktop.application.TaskListener;
 
 import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.directives.AbstractDirective;
 import au.org.ala.delta.directives.ConforDirectiveFileParser;
 import au.org.ala.delta.editor.DeltaEditor;
 import au.org.ala.delta.editor.directives.ui.ImportExportDialog;
 import au.org.ala.delta.editor.directives.ui.ImportExportDialog.DirectiveFile;
 import au.org.ala.delta.editor.directives.ui.ImportExportStatusDialog;
+import au.org.ala.delta.editor.slotfile.VODirFileDesc.Dir;
 import au.org.ala.delta.model.DeltaDataSet;
 
 /**
@@ -114,6 +117,16 @@ public class ImportController {
 			cause.printStackTrace();
 			super.failed(cause);
 		}	
+		
+		private List<Dir> dirs = new ArrayList<Dir>();
+		
+		private void storeDirective(AbstractDirective<DeltaContext> directive) {
+			
+			DirectiveArgConverter yeah = new DirectiveArgConverter();
+			
+			Dir dir = yeah.fromDirective(directive);
+			dirs.add(dir);
+		}
 	}
 	
 	/**

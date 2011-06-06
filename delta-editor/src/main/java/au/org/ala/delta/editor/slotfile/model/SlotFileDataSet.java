@@ -9,6 +9,7 @@ import au.org.ala.delta.editor.slotfile.Attribute;
 import au.org.ala.delta.editor.slotfile.DeltaVOP;
 import au.org.ala.delta.editor.slotfile.TextType;
 import au.org.ala.delta.editor.slotfile.VOCharBaseDesc;
+import au.org.ala.delta.editor.slotfile.VODirFileDesc;
 import au.org.ala.delta.editor.slotfile.VOCharBaseDesc.CharTextInfo;
 import au.org.ala.delta.editor.slotfile.VOCharTextDesc;
 import au.org.ala.delta.editor.slotfile.VOControllingDesc;
@@ -575,5 +576,14 @@ public class SlotFileDataSet extends AbstractObservableDataSet {
 			MultiStateCharacter owningCharacter, Set<Integer> states,
 			Set<Integer> dependentCharacters) {
 		return _factory.createCharacterDependency(owningCharacter, states, dependentCharacters);
+	}
+	
+	
+	public void addDirectiveFile(String fileName, int flags) {
+		VODirFileDesc.DirFileFixedData fixed = new VODirFileDesc.DirFileFixedData();
+		VODirFileDesc dirFile = (VODirFileDesc)_vop.insertObject(fixed, 0, null, 0, 0);
+		dirFile.setFileName(fileName);
+		dirFile.setFileFlags(flags);
+		
 	}
 }

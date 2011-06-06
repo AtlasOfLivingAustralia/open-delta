@@ -16,17 +16,22 @@ package au.org.ala.delta.directives;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.Logger;
+import au.org.ala.delta.directives.args.DirectiveArgType;
 
-public class NumberOfCharacters extends ConforDirective {
+public class NumberOfCharacters extends AbstractIntegerDirective {
 
 	public NumberOfCharacters() {
 		super("number", "of", "characters");
 	}
+	@Override
+	public int getArgType() {
+		return DirectiveArgType.DIRARG_INTERNAL;
+	}
 
 	@Override
-	protected void doProcess(DeltaContext context, String data) throws Exception {
-		Logger.debug("Setting number of characters to %s", data);
-		context.setNumberOfCharacters(Integer.parseInt(data));
+	protected void processInteger(DeltaContext context, int value) throws Exception {
+		Logger.debug("Setting number of characters to %s", value);
+		context.setNumberOfCharacters(value);
 	}
 
 }

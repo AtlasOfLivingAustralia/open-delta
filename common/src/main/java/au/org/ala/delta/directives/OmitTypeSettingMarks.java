@@ -17,14 +17,14 @@ package au.org.ala.delta.directives;
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.Logger;
 
-public class OmitTypeSettingMarks extends ConforDirective {
+public class OmitTypeSettingMarks extends AbstractNoArgDirective {
 	
 	public OmitTypeSettingMarks() {
 		super("omit", "typesetting", "marks");
 	}
 	
 	@Override
-	protected void doProcess(DeltaContext context, String data) throws Exception {
+	public void process(DeltaContext context, String data) throws Exception {
 		Logger.debug("Omitting type setting marks");
 		context.setOmitTypeSettingMarks(true);
 	}

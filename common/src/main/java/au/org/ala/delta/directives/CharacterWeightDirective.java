@@ -1,6 +1,7 @@
 package au.org.ala.delta.directives;
 
 import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.directives.args.DirectiveArgType;
 
 
 /**
@@ -24,6 +25,11 @@ public abstract class CharacterWeightDirective extends AbstractCharacterListDire
 		_minimumWeight = minimumWeight;
 		_maximumWeight = maximumWeight;
 		_defaultWeight = defaultWeight;
+	}
+	
+	@Override
+	public int getArgType() {
+		return DirectiveArgType.DIRARG_CHARREALLIST;
 	}
 	
 	/**

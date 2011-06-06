@@ -14,6 +14,7 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.slotfile;
 
+
 public class DirectiveArgType {
 
 	public static final int DIRARG_NONE = 0; // No argument
@@ -52,7 +53,4 @@ public class DirectiveArgType {
 	public static final int DIRARG_INTKEY_ATTRIBUTES = 33; // Set of ((character or keyword) + attribute-like values)
 	public static final int DIRARG_INTKEY_INCOMPLETE = 34; // An incomplete Intkey directive
 	public static final int DIRARG_LISTEND = 35; // Dummy value to keep at end of list;
-	
-	
-
 }

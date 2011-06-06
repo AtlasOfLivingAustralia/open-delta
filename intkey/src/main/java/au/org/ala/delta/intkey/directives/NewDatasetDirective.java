@@ -4,11 +4,10 @@ import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.apache.commons.lang.StringUtils;
-import org.jdesktop.application.Application;
-import org.jdesktop.application.SingleFrameApplication;
 
+import au.org.ala.delta.directives.args.DirectiveArgType;
+import au.org.ala.delta.directives.args.DirectiveArgs;
 import au.org.ala.delta.intkey.model.IntkeyContext;
-import au.org.ala.delta.intkey.ui.SelectDataSetDialog;
 import au.org.ala.delta.intkey.ui.UIUtils;
 
 public class NewDatasetDirective extends IntkeyDirective {
@@ -16,6 +15,16 @@ public class NewDatasetDirective extends IntkeyDirective {
     public NewDatasetDirective() {
         super("newdataset");
     }
+    
+    @Override
+	public DirectiveArgs getDirectiveArgs() {
+		return null;
+	}
+
+	@Override
+	public int getArgType() {
+		return DirectiveArgType.DIRARG_NONE;
+	}
 
     @Override
     public IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {

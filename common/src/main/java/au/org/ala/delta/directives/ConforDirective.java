@@ -24,22 +24,12 @@ import au.org.ala.delta.DeltaContext;
 
 public abstract class ConforDirective extends AbstractDirective<DeltaContext> {
 	
-	private static Pattern VAR_PATTERN = Pattern.compile("[#]([A-Z]+)");
+	
 	
     protected ConforDirective(String... controlWords) {
         super(controlWords);
     }
 
-	protected String replaceVariables(DeltaContext context, String str) {
-		String result = str;
-		Matcher m = VAR_PATTERN.matcher(str);	
-		while (m.find()) {
-			String varname = m.group(1);
-			String value = context.getVariable(varname, "#" + varname).toString();
-			result = result.replaceAll("[#]" + varname, value);			
-		}
-		return result;		
-	}
 	
 	/**
 	 * Overrides process to allow empty data to be handled in a consistent manner.
@@ -60,23 +50,6 @@ public abstract class ConforDirective extends AbstractDirective<DeltaContext> {
 	 */
 	protected abstract void doProcess(DeltaContext context, String data) throws Exception;
 	
-	protected void startFile(DeltaContext context, PrintStream stream) {
-		if (stream != null) {
-			String credits = context.getCredits(); 
-			if (StringUtils.isNotEmpty(credits)) {
-				stream.println(credits);
-			}
-			String heading = (String) context.getVariable("HEADING", null);
-			if (heading != null) {
-				stream.println(heading);
-			}
-			
-			for (String message : context.getErrorMessages()) {
-				stream.println(message);
-			}
-			stream.println();
-		}
-	}
 	
 	/**
 	 * The default behaviour of a CONFOR directive is to accept the use of a directive

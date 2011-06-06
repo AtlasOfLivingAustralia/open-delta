@@ -8,18 +8,34 @@ import javax.swing.filechooser.FileFilter;
 
 import org.apache.commons.lang.StringUtils;
 
+import au.org.ala.delta.directives.args.DirectiveArgType;
+import au.org.ala.delta.directives.args.DirectiveArgs;
+import au.org.ala.delta.directives.args.TextArg;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.ui.UIUtils;
 
 public class FileCharactersDirective extends IntkeyDirective {
 
+	private String _data;
+	
     public FileCharactersDirective() {
         super("file", "characters");
     }
+    
+    @Override
+	public DirectiveArgs getDirectiveArgs() {
+		return new TextArg(_data);
+	}
+
+	@Override
+	public int getArgType() {
+		return DirectiveArgType.DIRARG_TEXT;
+	}
 
     @Override
     public IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) {
-        String fileName = data;
+        _data = data;
+    	String fileName = data;
 
         if (fileName == null) {
             JFileChooser chooser = new JFileChooser();

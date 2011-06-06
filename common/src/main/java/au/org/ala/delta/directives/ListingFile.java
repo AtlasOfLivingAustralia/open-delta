@@ -17,22 +17,43 @@ package au.org.ala.delta.directives;
 import java.io.File;
 import java.io.PrintStream;
 
+import org.apache.commons.lang.StringUtils;
+
 import au.org.ala.delta.DeltaContext;
 
-public class ListingFile extends ConforDirective {
+public class ListingFile extends AbstractTextDirective {
 	
 	public ListingFile() {
 		super("listing", "file");
 	}
 	
 	@Override
-	protected void doProcess(DeltaContext context, String data) throws Exception {
+	public void process(DeltaContext context, String data) throws Exception {
+		super.process(context, data);
 		String filename = data.trim() + ".new"; // TODO: kill the .new once stable...
 		File file = new File(context.getCurrentParsingContext().getFile().getParentFile(), filename);		
 		PrintStream stream = new PrintStream(file);
 		startFile(context, stream);
 		context.setListingStream(stream);
 		context.ListMessage(data);
+	}
+	
+	protected void startFile(DeltaContext context, PrintStream stream) {
+		if (stream != null) {
+			String credits = context.getCredits(); 
+			if (StringUtils.isNotEmpty(credits)) {
+				stream.println(credits);
+			}
+			String heading = (String) context.getVariable("HEADING", null);
+			if (heading != null) {
+				stream.println(heading);
+			}
+			
+			for (String message : context.getErrorMessages()) {
+				stream.println(message);
+			}
+			stream.println();
+		}
 	}
 
 }

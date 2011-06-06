@@ -20,9 +20,7 @@ import java.util.Set;
 import org.apache.commons.lang.math.IntRange;
 
 import au.org.ala.delta.DeltaContext;
-import au.org.ala.delta.Logger;
-import au.org.ala.delta.model.CharacterDependency;
-import au.org.ala.delta.util.IntegerFunctor;
+import au.org.ala.delta.directives.args.DirectiveArgType;
 
 public class DependentCharacters extends AbstractCharacterListDirective<DeltaContext, String> {
 
@@ -34,6 +32,11 @@ public class DependentCharacters extends AbstractCharacterListDirective<DeltaCon
     protected String interpretRHS(DeltaContext context, String rhs) {
         return rhs;
     }
+    
+    @Override
+	public int getArgType() {
+		return DirectiveArgType.DIRARG_INTERNAL;
+	}
 
     @Override
     protected void processCharacter(DeltaContext context, final int charIndex, String rhs) {

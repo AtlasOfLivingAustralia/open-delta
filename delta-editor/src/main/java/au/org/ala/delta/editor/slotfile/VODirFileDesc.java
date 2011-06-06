@@ -1344,7 +1344,7 @@ public class VODirFileDesc extends VOAnyDesc implements WindowsConstants {
 	public static final int nDirsOffs = fileModifyTimeOffs + 8;
 	public static final int nFileFlagsOffs = nDirsOffs + 4;
 
-	public class DirFileFixedData extends FixedData {
+	public static class DirFileFixedData extends FixedData {
 
 		public static final int SIZE = FixedData.SIZE + 2 + MAX_PATH + 8 + 4 + 4;
 
@@ -1386,7 +1386,7 @@ public class VODirFileDesc extends VOAnyDesc implements WindowsConstants {
 
 	}
 
-	public class Dir {
+	public static class Dir {
 		public int dirType;
 		public List<DirArgs> args = new ArrayList<DirArgs>();
 
@@ -1411,7 +1411,7 @@ public class VODirFileDesc extends VOAnyDesc implements WindowsConstants {
 		}
 	}
 
-	public class DirArgs {
+	public static class DirArgs {
 
 		public DirArgs() {
 			this(0);
@@ -1435,6 +1435,14 @@ public class VODirFileDesc extends VOAnyDesc implements WindowsConstants {
 				dataVect.add(new DirListData());
 			}
 		}
+		
+		public void setText(String aText) {
+			text = aText;
+		}
+		
+		public void setValue(int aValue) {
+			value = new DeltaNumber((float)aValue);
+		}
 
 		@Override
 		public String toString() {
@@ -1450,7 +1458,7 @@ public class VODirFileDesc extends VOAnyDesc implements WindowsConstants {
 	 * @author baird
 	 * 
 	 */
-	public class DirListData implements IOObject {
+	public static class DirListData implements IOObject {
 
 		private byte[] _bytes = new byte[4];
 		private byte _decimal;

@@ -20,6 +20,9 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.math.IntRange;
 
+import au.org.ala.delta.directives.args.CharacterSetArgs;
+import au.org.ala.delta.directives.args.DirectiveArgs;
+
 /**
  * An AbstractCharacterSetDirective is a directive that takes a space separated list of 
  * character sets of the form: c1:c2:...cn where cn is a character number or a range of numbers.
@@ -28,12 +31,20 @@ public abstract class AbstractCharacterSetDirective<C extends AbstractDeltaConte
 
 	private static Pattern CHAR_SET_PATTERN = Pattern.compile("^(\\d+)[:-](.*)$");
 
+	protected CharacterSetArgs args;
+	
 	public AbstractCharacterSetDirective(String... controlWords) {
 		super(controlWords);
+	}
+	
+	@Override
+	public DirectiveArgs getDirectiveArgs() {
+		return args;
 	}
 
 	@Override
 	public void process(C context, String data) throws Exception {
+		args = new CharacterSetArgs();
 		String[] typeDescriptors = data.split(" |\\n");
 		for (String typeDescriptor : typeDescriptors) {
 			typeDescriptor = typeDescriptor.trim();
@@ -47,7 +58,7 @@ public abstract class AbstractCharacterSetDirective<C extends AbstractDeltaConte
 						characters.add(i);
 					}
 				}
-				
+				args.add(characters);
 				processCharacterSet(context, characters);
 			}
 			

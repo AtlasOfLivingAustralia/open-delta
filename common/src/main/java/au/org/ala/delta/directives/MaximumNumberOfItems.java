@@ -16,17 +16,23 @@ package au.org.ala.delta.directives;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.Logger;
+import au.org.ala.delta.directives.args.DirectiveArgType;
 
-public class MaximumNumberOfItems extends ConforDirective {
+public class MaximumNumberOfItems extends AbstractIntegerDirective {
 	
 	public MaximumNumberOfItems() {
 		super("maximum", "number", "of", "items");
 	}
 	
 	@Override
-	protected void doProcess(DeltaContext context, String data) throws Exception {
-		Logger.debug("Setting max number of items to %s", data);
-		context.setMaximumNumberOfItems(Integer.parseInt(data));
+	public int getArgType() {
+		return DirectiveArgType.DIRARG_INTERNAL;
+	}
+	
+	@Override
+	protected void processInteger(DeltaContext context, int value) throws Exception {
+		Logger.debug("Setting max number of items to %s", value);
+		context.setMaximumNumberOfItems(value);
 	}
 
 }

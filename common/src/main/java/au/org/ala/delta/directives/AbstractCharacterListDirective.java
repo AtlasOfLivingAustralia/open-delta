@@ -18,16 +18,27 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.math.IntRange;
 
+import au.org.ala.delta.directives.args.CharacterValueArgs;
+import au.org.ala.delta.directives.args.DirectiveArgs;
+
 public abstract class AbstractCharacterListDirective<C extends AbstractDeltaContext, T> extends AbstractDirective<C> {
 
 	private static Pattern CHAR_LIST_ITEM_PATTERN = Pattern.compile("^(\\d+),(.*)$|^(\\d+[-]\\d+),(.*)$");
 
+	private CharacterValueArgs<T> args;
+	
 	public AbstractCharacterListDirective(String... controlWords) {
 		super(controlWords);
+	}
+	
+	@Override
+	public DirectiveArgs getDirectiveArgs() {
+		return args;
 	}
 
 	@Override
 	public void process(C context, String data) throws Exception {
+		args = new CharacterValueArgs<T>();
 		String[] typeDescriptors = data.split(" |\\n");
 		for (String typeDescriptor : typeDescriptors) {
 			typeDescriptor = typeDescriptor.trim();
@@ -36,6 +47,7 @@ public abstract class AbstractCharacterListDirective<C extends AbstractDeltaCont
 				IntRange r = parseRange(bits[0]);
 				T rhs = interpretRHS(context, bits[1]);
 				for (int charIndex = r.getMinimumInteger(); charIndex <= r.getMaximumInteger(); ++charIndex) {
+					args.add(charIndex, rhs);
 					processCharacter(context, charIndex, rhs);
 				}
 			}

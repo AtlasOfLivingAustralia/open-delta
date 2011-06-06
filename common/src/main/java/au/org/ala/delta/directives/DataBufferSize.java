@@ -21,7 +21,7 @@ public class DataBufferSize extends NoopDirective {
 	public DataBufferSize() {
 		super("data", "buffer", "size");
 	}
-	
+
 	protected void doProcess(DeltaContext context, String data) {}
 
 }

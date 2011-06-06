@@ -16,14 +16,14 @@ package au.org.ala.delta.directives;
 
 import au.org.ala.delta.DeltaContext;
 
-public class OmitInnerComments extends ConforDirective {
+public class OmitInnerComments extends AbstractNoArgDirective {
 	
 	public OmitInnerComments() {
 		super("omit", "inner", "comments");		
 	}
 	
 	@Override
-	protected void doProcess(DeltaContext context, String data) throws Exception {
+	public void process(DeltaContext context, String data) throws Exception {
 		context.setOmitInnerComments(true);
 	}
 

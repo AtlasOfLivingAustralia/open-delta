@@ -24,7 +24,7 @@ import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.StateValue;
 
-public class ItemDescriptions extends ConforDirective {
+public class ItemDescriptions extends AbstractCustomDirective {
 
 	
 	public ItemDescriptions() {
@@ -32,7 +32,7 @@ public class ItemDescriptions extends ConforDirective {
 	}
 
 	@Override
-	protected void doProcess(DeltaContext context, String data) throws Exception {
+	public void process(DeltaContext context, String data) throws Exception {
 		StringReader reader = new StringReader(data);
 		ItemsParser parser = new ItemsParser(context, reader);
 		parser.parse();

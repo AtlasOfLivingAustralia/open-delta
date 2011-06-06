@@ -7,17 +7,24 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.model.TypeSettingMark;
 import au.org.ala.delta.model.TypeSettingMark.MarkPosition;
 
 /**
  * Processes the TYPESETTING MARKS directive.
  */
-public class TypeSettingMarks extends AbstractDirective<DeltaContext> {
+public class TypeSettingMarks extends AbstractTextListDirective {
 
 	public TypeSettingMarks() {
 		super("typesetting", "marks");
 	}
+	
+	@Override
+	public int getArgType() {
+		return DirectiveArgType.DIRARG_TEXTLIST;
+	}
+	
 	@Override
 	public void process(DeltaContext context, String data) throws Exception {
 		TypeSettingMarksParser parser = new TypeSettingMarksParser(context, new StringReader(data));

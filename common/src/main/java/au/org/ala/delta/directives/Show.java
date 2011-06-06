@@ -16,14 +16,15 @@ package au.org.ala.delta.directives;
 
 import au.org.ala.delta.DeltaContext;
 
-public class Show extends ConforDirective {
+public class Show extends AbstractTextDirective {
 
 	public Show() {
 		super("show");
 	}
 
 	@Override
-	protected void doProcess(DeltaContext context, String data) {
+	public void process(DeltaContext context, String data) throws Exception {
+		super.process(context, data);
 		context.ErrorMessage("%s", replaceVariables(context, data.trim()));
 	}
 

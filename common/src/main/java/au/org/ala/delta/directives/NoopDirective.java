@@ -15,11 +15,24 @@
 package au.org.ala.delta.directives;
 
 import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.directives.args.DirectiveArgType;
+import au.org.ala.delta.directives.args.DirectiveArgs;
 
 public abstract class NoopDirective extends ConforDirective {
 	
 	public NoopDirective(String ...controlwords) {
 		super(controlwords);
+	}
+	
+	
+	@Override
+	public DirectiveArgs getDirectiveArgs() {
+		return null;
+	}
+	
+	@Override
+	public int getArgType() {
+		return DirectiveArgType.DIRARG_NONE;
 	}
 	
 	@Override

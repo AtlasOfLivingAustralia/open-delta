@@ -20,17 +20,24 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.NumericCharacter;
 
-public class CharacterList extends ConforDirective {
+public class CharacterList extends AbstractCustomDirective {
 
 	public CharacterList() {
 		super("character", "list");
 	}
+	
+	@Override
+	public int getArgType() {
+		return DirectiveArgType.DIRARG_CHARLIST;
+	}
 
 	@Override
-	public void doProcess(DeltaContext context, String data) throws Exception {
+	public void process(DeltaContext context, String data) throws Exception {
+		super.process(context, data);
 		StringReader reader = new StringReader(data);
 		CharacterListParser parser = new CharacterListParser(context, reader);
 		parser.parse();

@@ -17,14 +17,16 @@ package au.org.ala.delta.directives;
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.Logger;
 
-public class Heading extends ConforDirective {
+public class Heading extends AbstractTextDirective {
 	
 	public Heading() {
 		super("heading");
 	}
 	
 	@Override
-	protected void doProcess(DeltaContext context, String data) {
+	public void process(DeltaContext context, String data) throws Exception {
+		super.process(context, data);
+		
 		String heading = replaceVariables(context, data.trim());
 		context.setVariable("heading", heading);
 		Logger.log("HEADING: %s", heading);

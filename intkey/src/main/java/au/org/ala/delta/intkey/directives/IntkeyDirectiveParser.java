@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.Logger;
+import au.org.ala.delta.directives.AbstractDirective;
 import au.org.ala.delta.directives.DirectiveParser;
 import au.org.ala.delta.directives.DirectiveSearchResult;
 import au.org.ala.delta.directives.ParsingContext;
@@ -31,7 +32,8 @@ public class IntkeyDirectiveParser extends DirectiveParser<IntkeyContext> {
     }
 
     @Override
-    protected void processDirective(StringBuilder data, IntkeyContext context) {
+    @SuppressWarnings("unchecked")
+    protected AbstractDirective<IntkeyContext> processDirective(StringBuilder data, IntkeyContext context) {
         if (data.length() > 0) {
             ParsingContext pc = context.getCurrentParsingContext();
             char ch = data.charAt(0);
@@ -49,10 +51,12 @@ public class IntkeyDirectiveParser extends DirectiveParser<IntkeyContext> {
                                 pc.getCurrentDirectiveStartOffset()), ex);
                     }
                 }
+                return useDirective;
             } else {
-                super.processDirective(data, context);
+                return super.processDirective(data, context);
             }
         }
+        return null;
     }
 
     @Override

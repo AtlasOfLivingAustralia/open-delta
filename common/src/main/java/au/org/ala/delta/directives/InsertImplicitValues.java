@@ -8,21 +8,15 @@ import au.org.ala.delta.DeltaContext;
  * 
  * @see http://delta-intkey.com/www/uguide.htm#_*INSERT_IMPLICIT_VALUES
  */
-public class InsertImplicitValues extends ConforDirective {
+public class InsertImplicitValues extends AbstractNoArgDirective {
 
 	public InsertImplicitValues() {
 		super("insert", "implicit", "values");
 	}
 	
 	@Override
-	protected void doProcess(DeltaContext context, String data)
-			throws Exception {
+	public void process(DeltaContext context, String data) throws Exception {
 		
 		context.setInsertImplicitValues(true);
-	}
-
-	@Override
-	protected boolean ignoreEmptyArguments() {
-		return false;
 	}
 }

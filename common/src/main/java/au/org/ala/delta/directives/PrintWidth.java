@@ -16,22 +16,28 @@ package au.org.ala.delta.directives;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.Logger;
+import au.org.ala.delta.directives.args.DirectiveArgType;
 
 /**
  * @see http://delta-intkey.com/www/uguide.htm#_*PRINT_WIDTH__1
  *
  */
-public class PrintWidth extends ConforDirective {
+public class PrintWidth extends AbstractIntegerDirective {
 	
 	public PrintWidth() {
 		super("print", "width");
 	}
 	
 	@Override
-	protected void doProcess(DeltaContext context, String data) throws Exception {
-		Logger.debug("Setting the print width to %s", data);
+	public int getArgType() {
+		return DirectiveArgType.DIRARG_INTEGER;
+	}
+	
+	@Override
+	protected void processInteger(DeltaContext context, int value) throws Exception {
+		Logger.debug("Setting the print width to %s", value);
 		
-		context.setPrintWidth(Integer.parseInt(data));
+		context.setPrintWidth(value);
 	}
 
 }

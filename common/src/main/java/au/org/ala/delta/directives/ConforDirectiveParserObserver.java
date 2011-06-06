@@ -17,7 +17,7 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
     }
 
     @Override
-    public void postProcess() {
+    public void postProcess(AbstractDirective<? extends AbstractDeltaContext> directive) {
         // do nothing
     }
     

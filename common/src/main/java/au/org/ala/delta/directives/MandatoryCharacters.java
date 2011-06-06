@@ -16,11 +16,17 @@ package au.org.ala.delta.directives;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.Logger;
+import au.org.ala.delta.directives.args.DirectiveArgType;
 
 public class MandatoryCharacters extends AbstractRangeListDirective<DeltaContext> {
 
 	public MandatoryCharacters() {
 		super("mandatory", "characters");
+	}
+	
+	@Override
+	public int getArgType() {
+		return DirectiveArgType.DIRARG_INTERNAL;
 	}
 
 	@Override

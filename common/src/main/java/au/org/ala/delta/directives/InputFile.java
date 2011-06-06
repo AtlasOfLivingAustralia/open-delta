@@ -19,14 +19,15 @@ import java.io.FileNotFoundException;
 
 import au.org.ala.delta.DeltaContext;
 
-public class InputFile extends ConforDirective {
+public class InputFile extends AbstractTextDirective {
 
 	public InputFile() {
 		super("input", "file");
 	}
 
 	@Override
-	protected void doProcess(DeltaContext context, String data) {
+	public void process(DeltaContext context, String data) throws Exception {
+		super.process(context, data);
 		
 		File file = new File(context.getCurrentParsingContext().getFile().getParent(), data.trim());
 		 

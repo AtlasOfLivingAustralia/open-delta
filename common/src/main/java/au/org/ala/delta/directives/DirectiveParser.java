@@ -96,10 +96,10 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
             pc.incrementCurrentOffset();
         }
 
-        processDirective(currentData, context);
+        AbstractDirective<?> directive = processDirective(currentData, context);
         
         for (DirectiveParserObserver o: _observers) {
-            o.postProcess();
+            o.postProcess(directive);
         }
         
         Logger.log("Finished!");
@@ -107,7 +107,7 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
-    protected void processDirective(StringBuilder data, C context) {
+    protected AbstractDirective processDirective(StringBuilder data, C context) {
         if (data.length() > 0) {
 
             // Try and find the directive handler for this data...
@@ -140,15 +140,16 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
                                     pc.getCurrentDirectiveStartOffset()), ex);
                         }
                     }
-                    return;
+                    return d;
 
                 } else if (result.getResultType() == ResultType.NotFound) {
                     handleUnrecognizedDirective(pc, controlWords);
-                    return;
+                    return null;
                 }
                 i += word.length() + 1;
             }
         }
+        return null;
     }
     
     protected abstract void handleUnrecognizedDirective(ParsingContext pc, List<String> controlWords);

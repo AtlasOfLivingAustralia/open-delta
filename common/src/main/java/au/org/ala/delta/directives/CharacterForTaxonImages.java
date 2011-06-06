@@ -15,16 +15,33 @@
 package au.org.ala.delta.directives;
 
 import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.directives.args.CharacterArg;
+import au.org.ala.delta.directives.args.DirectiveArgType;
+import au.org.ala.delta.directives.args.DirectiveArgs;
 
 public class CharacterForTaxonImages extends ConforDirective {
+	
+	private int _characterNum;
 	
 	public CharacterForTaxonImages() {
 		super("character", "for", "taxon", "images");
 	}
 	
 	@Override
+	public DirectiveArgs getDirectiveArgs() {
+		return new CharacterArg(_characterNum);
+	}
+
+	@Override
+	public int getArgType() {
+		return DirectiveArgType.DIRARG_CHAR;
+	}
+
+	@Override
 	protected void doProcess(DeltaContext context, String data) throws Exception {
-		context.setCharacterForTaxonImages(Integer.parseInt(data));
+		_characterNum = Integer.parseInt(data);
+		
+		context.setCharacterForTaxonImages(_characterNum);
 	}
 
 }

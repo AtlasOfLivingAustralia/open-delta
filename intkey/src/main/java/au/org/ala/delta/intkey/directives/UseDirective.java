@@ -12,10 +12,13 @@ import java.util.regex.Pattern;
 
 import javax.swing.JOptionPane;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.FloatRange;
 import org.apache.commons.lang.math.IntRange;
 
+import au.org.ala.delta.directives.args.DirectiveArgType;
+import au.org.ala.delta.directives.args.DirectiveArgs;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.model.IntkeyDataset;
 import au.org.ala.delta.intkey.model.specimen.CharacterValue;
@@ -52,6 +55,16 @@ public class UseDirective extends IntkeyDirective {
     public UseDirective() {
         super("use");
     }
+    
+    @Override
+	public DirectiveArgs getDirectiveArgs() {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public int getArgType() {
+		return DirectiveArgType.DIRARG_INTKEY_ATTRIBUTES;
+	}
 
     @Override
     public IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {

@@ -15,20 +15,26 @@
 package au.org.ala.delta.directives;
 
 import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.model.CharacterType;
 
 /**
  * Allows the value of an Item attribute to be used instead of the Item description.
  */
-public class CharacterForTaxonNames extends ConforDirective {
+public class CharacterForTaxonNames extends AbstractCharacterDirective {
 	
 	public CharacterForTaxonNames() {
 		super("character", "for", "taxon", "names");
 	}
 	
 	@Override
-	public void doProcess(DeltaContext context, String data) throws Exception {
-		int character = Integer.parseInt(data);
+	public int getArgType() {
+		return DirectiveArgType.DIRARG_CHAR;
+	}
+	
+	@Override
+	public void processCharacter(DeltaContext context, int character) throws Exception {
+		
 		if (context.getDataSet().getCharacter(character).getCharacterType() != CharacterType.Text) {
 			throw new RuntimeException("149,1");
 		}

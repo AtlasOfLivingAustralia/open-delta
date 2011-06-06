@@ -16,14 +16,14 @@ package au.org.ala.delta.directives;
 
 import au.org.ala.delta.DeltaContext;
 
-public class OmitCharacterNumbers extends ConforDirective {
+public class OmitCharacterNumbers extends AbstractNoArgDirective {
 	
 	public OmitCharacterNumbers() {
 		super("omit", "character", "numbers");
 	}
 	
 	@Override
-	protected void doProcess(DeltaContext context, String data) throws Exception {
+	public void process(DeltaContext context, String data) throws Exception {
 		context.setOmitCharacterNumbers(true);
 	}
 
