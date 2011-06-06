@@ -10,7 +10,6 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import org.apache.commons.lang.math.FloatRange;
-import org.apache.commons.lang.math.IntRange;
 import org.junit.Test;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
@@ -253,7 +252,7 @@ public class DataSetLoadTest extends TestCase {
         CharacterDependency cd1 = charSeedDependencies.get(0);
 
         assertEquals(2, cd1.getControllingCharacterId());
-        
+
         assertEquals(2, cd1.getStates().size());
         assertTrue(cd1.getStates().contains(2));
         assertTrue(cd1.getStates().contains(3));
@@ -267,7 +266,7 @@ public class DataSetLoadTest extends TestCase {
 
         assertEquals(1, charSeedInShellCharacterDependencies.size());
         CharacterDependency cd2 = charSeedInShellCharacterDependencies.get(0);
-        
+
         assertEquals(3, cd2.getControllingCharacterId());
 
         assertEquals(2, cd2.getStates().size());
@@ -495,8 +494,8 @@ public class DataSetLoadTest extends TestCase {
     }
 
     /**
-     * Second test for reading attributes. Test reading of integer ranges, and multistates
-     * with multiple valid states.
+     * Second test for reading attributes. Test reading of integer ranges, and
+     * multistates with multiple valid states.
      * 
      * @throws Exception
      */
@@ -507,16 +506,16 @@ public class DataSetLoadTest extends TestCase {
         context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
 
         IntkeyDataset ds = context.getDataset();
-        
+
         Character charLongevityPlants = ds.getCharacter(2);
         Character charUpperGlumeMidZoneNerveNo = ds.getCharacter(38);
         Character charNumberOfSpecies = ds.getCharacter(85);
         Character charFloristicKingdoms = ds.getCharacter(86);
-        
+
         MultiStateAttribute attrLongevityPlants = (MultiStateAttribute) ds.getAttribute(7, 2);
         IntegerAttribute attrUpperGlumeMidZoneNerveNo = (IntegerAttribute) ds.getAttribute(8, 38);
         MultiStateAttribute attrFloristicKingdoms = (MultiStateAttribute) ds.getAttribute(7, 86);
-        
+
         assertEquals(new HashSet(Arrays.asList(1, 2)), attrLongevityPlants.getPresentStates());
         assertEquals(new HashSet(Arrays.asList(3, 4, 5, 6, 7)), attrUpperGlumeMidZoneNerveNo.getPresentValues());
         assertEquals(new HashSet(Arrays.asList(1, 2, 3, 5)), attrFloristicKingdoms.getPresentStates());

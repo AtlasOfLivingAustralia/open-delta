@@ -55,8 +55,6 @@ public class Specimen {
         _matchInapplicables = matchInapplicables;
         _matchUnknowns = matchUnknowns;
         _matchType = matchType;
-
-        _taxonDifferences = new HashMap<Item, Integer>();
     }
 
     public boolean hasValueFor(Character ch) {
@@ -111,6 +109,15 @@ public class Specimen {
     public void setValueForCharacter(Character ch, CharacterValue value) {
         if (!ch.equals(value.getCharacter())) {
             throw new IllegalArgumentException(String.format("Invalid value for character %s", ch.getDescription()));
+        }
+
+        // initialise the taxon differences table if it has not already been
+        // initialized.
+        if (_taxonDifferences == null) {
+            _taxonDifferences = new HashMap<Item, Integer>();
+            for (Item taxon : _dataset.getTaxa()) {
+                _taxonDifferences.put(taxon, 0);
+            }
         }
 
         if (hasValueFor(ch)) {
@@ -208,19 +215,15 @@ public class Specimen {
                 throw new RuntimeException(String.format("Unrecognised CharacterValue subtype %s", val.getClass().getName()));
             }
 
-            if (!match) {
-                int currentDiffCount = 0;
-                if (_taxonDifferences.containsKey(taxon)) {
-                    currentDiffCount = _taxonDifferences.get(taxon);
-                }
+            int currentDiffCount = 0;
+            if (_taxonDifferences.containsKey(taxon)) {
+                currentDiffCount = _taxonDifferences.get(taxon);
+            }
 
-                int newDiffCount = currentDiffCount;
-                if (removed) {
-                    newDiffCount--;
-                } else {
-                    newDiffCount++;
-                }
-                _taxonDifferences.put(taxon, newDiffCount);
+            if (removed && match) {
+                _taxonDifferences.put(taxon, Math.max(0, currentDiffCount - 1));
+            } else if (!removed && !match) {
+                _taxonDifferences.put(taxon, currentDiffCount + 1);
             }
         }
     }
@@ -382,6 +385,11 @@ public class Specimen {
 
     public Map<Item, Integer> getTaxonDifferences() {
         // defensive copy
+
+        if (_characterValues.size() == 0) {
+            throw new IllegalStateException("Cannot get taxon differences when no values have been set for specimen");
+        }
+
         return new HashMap<Item, Integer>(_taxonDifferences);
     }
 

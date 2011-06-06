@@ -68,6 +68,10 @@ public class UseDirective extends IntkeyDirective {
 
     @Override
     public IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
+        return doProcess(context, data, false);
+    }
+
+    public IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data, boolean change) throws Exception {
         if (context.getDataset() != null) {
             boolean suppressAlreadySetWarning = false;
 
@@ -88,7 +92,8 @@ public class UseDirective extends IntkeyDirective {
 
             } else {
                 // No characters specified, prompt the user to select characters
-                CharacterKeywordSelectionDialog dlg = new CharacterKeywordSelectionDialog(UIUtils.getMainFrame(), context, "USE");
+                String directiveName = change ? directiveName = StringUtils.join(new ChangeDirective().getControlWords(), " ").toUpperCase() : StringUtils.join(_controlWords, " ").toUpperCase();
+                CharacterKeywordSelectionDialog dlg = new CharacterKeywordSelectionDialog(UIUtils.getMainFrame(), context, directiveName);
                 dlg.setVisible(true);
                 List<Character> selectedCharacters = dlg.getSelectedCharacters();
                 if (selectedCharacters.size() > 0) {
@@ -99,7 +104,7 @@ public class UseDirective extends IntkeyDirective {
                 }
             }
 
-            UseDirectiveInvocation invoc = new UseDirectiveInvocation(suppressAlreadySetWarning);
+            UseDirectiveInvocation invoc = new UseDirectiveInvocation(change, suppressAlreadySetWarning);
 
             for (int i = 0; i < characterNumbers.size(); i++) {
                 int charNum = characterNumbers.get(i);
@@ -113,7 +118,8 @@ public class UseDirective extends IntkeyDirective {
                 if (charValue != null) {
                     if (ch instanceof MultiStateCharacter) {
                         List<Integer> stateValues = ParsingUtils.parseMultiStateCharacterValue(charValue);
-                        //TODO need error if non existent state values are listed
+                        // TODO need error if non existent state values are
+                        // listed
                         invoc.addCharacterValue((MultiStateCharacter) ch, new MultiStateValue((MultiStateCharacter) ch, stateValues));
                     } else if (ch instanceof IntegerCharacter) {
                         IntRange intRange = ParsingUtils.parseIntegerCharacterValue(charValue);
@@ -204,9 +210,11 @@ public class UseDirective extends IntkeyDirective {
     class UseDirectiveInvocation implements IntkeyDirectiveInvocation {
 
         private Map<au.org.ala.delta.model.Character, CharacterValue> _characterValues;
+        private boolean _change;
         private boolean _suppressAlreadySetWarning;
 
-        public UseDirectiveInvocation(boolean suppressAlreadySetWarning) {
+        public UseDirectiveInvocation(boolean change, boolean suppressAlreadySetWarning) {
+            _change = change;
             _suppressAlreadySetWarning = suppressAlreadySetWarning;
 
             // Use LinkedHashMap so that keys can be iterated over in the order
@@ -276,8 +284,9 @@ public class UseDirective extends IntkeyDirective {
             } else {
                 Collections.sort(charsNoValues);
                 while (!charsNoValues.isEmpty()) {
+                    String directiveName = _change ? directiveName = StringUtils.join(new ChangeDirective().getControlWords(), " ").toUpperCase() : StringUtils.join(_controlWords, " ").toUpperCase();
 
-                    CharacterSelectionDialog selectDlg = new CharacterSelectionDialog(UIUtils.getMainFrame(), charsNoValues, "USE");
+                    CharacterSelectionDialog selectDlg = new CharacterSelectionDialog(UIUtils.getMainFrame(), charsNoValues, directiveName);
                     selectDlg.setVisible(true);
 
                     List<Character> selectedCharacters = selectDlg.getSelectedCharacters();
@@ -323,7 +332,7 @@ public class UseDirective extends IntkeyDirective {
                 // automatically set the value for controlling characters if
                 // their values have not already been set.
                 processControllingCharacters(ch, context, true);
-                
+
                 context.setValueForCharacter(ch, characterVal);
             }
 
@@ -338,7 +347,7 @@ public class UseDirective extends IntkeyDirective {
             // is character fixed?
 
             // is character already used?
-            if (!_suppressAlreadySetWarning) {
+            if (!_suppressAlreadySetWarning && !_change) {
                 if (context.getSpecimen().hasValueFor(ch)) {
                     String msg = String.format(UIUtils.getResourceString("UseDirective.CharacterAlreadyUsed"), ch.getCharacterId());
                     int choice = JOptionPane.showConfirmDialog(UIUtils.getMainFrame(), msg, "Information", JOptionPane.YES_NO_OPTION);
@@ -404,13 +413,13 @@ public class UseDirective extends IntkeyDirective {
                     MultiStateValue val = new MultiStateValue((MultiStateCharacter) cc, new ArrayList<Integer>(applicableStates));
                     context.setValueForCharacter(cc, val);
                 }
-                
+
                 // output USEd controlling characters directly to the log window
-                // set the "used type" - by user or auto for the controlling character
+                // set the "used type" - by user or auto for the controlling
+                // character
 
             }
         }
-
 
         // For the given character, recursively build a list of
         // CharacterDependency objects describing
@@ -487,7 +496,11 @@ public class UseDirective extends IntkeyDirective {
         @Override
         public String toString() {
             StringBuilder builder = new StringBuilder();
-            builder.append(StringUtils.join(_controlWords, " ").toUpperCase());
+            if (_change) {
+                builder.append(StringUtils.join(new ChangeDirective().getControlWords(), "").toUpperCase());
+            } else {
+                builder.append(StringUtils.join(_controlWords, " ").toUpperCase());
+            }
             builder.append(" ");
             for (Character ch : _characterValues.keySet()) {
                 CharacterValue val = _characterValues.get(ch);

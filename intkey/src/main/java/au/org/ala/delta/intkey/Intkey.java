@@ -13,6 +13,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -44,6 +45,7 @@ import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.Logger;
+import au.org.ala.delta.intkey.directives.ChangeDirective;
 import au.org.ala.delta.intkey.directives.FileCharactersDirective;
 import au.org.ala.delta.intkey.directives.FileTaxaDirective;
 import au.org.ala.delta.intkey.directives.IntkeyDirective;
@@ -313,6 +315,25 @@ public class Intkey extends DeltaSingleFrameApplication {
 
         _listUsedCharacters = new JList();
         _listUsedCharacters.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        _listUsedCharacters.addMouseListener(new MouseInputAdapter() {
+            
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() >= 2) {
+                    int selectedIndex = _listUsedCharacters.getSelectedIndex();
+                    if (selectedIndex >= 0) {
+                        try {
+                            Character ch = _usedCharacterListModel.getCharacterAt(selectedIndex);
+                            IntkeyDirectiveInvocation invoc = new ChangeDirective().doProcess(_context, Integer.toString(ch.getCharacterId()));
+                            _context.executeDirective(invoc);
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                }
+            }
+        });
+            
         _sclPnUsedCharacters.setViewportView(_listUsedCharacters);
 
         _pnlUsedCharactersHeader = new JPanel();
@@ -788,7 +809,8 @@ public class Intkey extends DeltaSingleFrameApplication {
 
         _listAvailableCharacters.setModel(_availableCharacterListModel);
         _listUsedCharacters.setModel(_usedCharacterListModel);
-        _listRemainingTaxa.setModel(new ItemListModel(dataset.getTaxa()));
+        _listRemainingTaxa.setModel(_availableTaxaListModel);
+        _listEliminatedTaxa.setModel(_eliminatedTaxaListModel);
 
         updateListCaptions();
     }
@@ -883,6 +905,10 @@ public class Intkey extends DeltaSingleFrameApplication {
 
         public CharacterValue getCharacterValueAt(int index) {
             return _values.get(index);
+        }
+        
+        public Character getCharacterAt(int index) {
+            return _values.get(index).getCharacter();
         }
 
     }

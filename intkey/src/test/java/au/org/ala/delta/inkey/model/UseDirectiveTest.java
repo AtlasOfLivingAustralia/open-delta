@@ -3,6 +3,7 @@ package au.org.ala.delta.inkey.model;
 import java.io.File;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Map;
 
 import junit.framework.TestCase;
 
@@ -16,6 +17,7 @@ import au.org.ala.delta.intkey.model.IntkeyDataset;
 import au.org.ala.delta.intkey.model.specimen.MultiStateValue;
 import au.org.ala.delta.intkey.model.specimen.RealValue;
 import au.org.ala.delta.intkey.model.specimen.Specimen;
+import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.RealCharacter;
 import au.org.ala.delta.model.UnorderedMultiStateCharacter;
 
@@ -178,9 +180,10 @@ public class UseDirectiveTest extends TestCase {
     }
 
     /**
-     * Test that a taxon that has an attribute that has both values specified and 
-     * the inapplicability flag set to true in the data file is handled correctly
-     * by the USE command. 
+     * Test that a taxon that has an attribute that has both values specified
+     * and the inapplicability flag set to true in the data file is handled
+     * correctly by the USE command.
+     * 
      * @throws Exception
      */
     @Test
@@ -190,19 +193,36 @@ public class UseDirectiveTest extends TestCase {
         context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
 
         IntkeyDataset ds = context.getDataset();
-        
-        // Check that the taxon "Oryza" - number 10 - is eliminated when character 38 is given a value
-        // of 5. Oryza is listed in the data file as both having a value for character 38 - 0 - and 
+
+        // Check that the taxon "Oryza" - number 10 - is eliminated when
+        // character 38 is given a value
+        // of 5. Oryza is listed in the data file as both having a value for
+        // character 38 - 0 - and
         // having the inapplicability flag set to true for character 38.
-        
+
         IntkeyDirectiveInvocation invoc = new UseDirective().doProcess(context, "38,5");
         context.executeDirective(invoc);
-        
+
         Specimen specimen = context.getSpecimen();
         assertEquals(Arrays.asList(ds.getCharacter(32), ds.getCharacter(38)), specimen.getUsedCharacters());
+
+        Map<Item, Integer> taxonDifferences = specimen.getTaxonDifferences(); 
+        assertEquals(14, taxonDifferences.size());
         
-        assertEquals(8, specimen.getTaxonDifferences().size());
-        assertTrue(specimen.getTaxonDifferences().containsKey(ds.getTaxon(10)));
+        assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(1)));
+        assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(2)));
+        assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(3)));
+        assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(4)));
+        assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(5)));
+        assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(6)));
+        assertEquals(0, (int) taxonDifferences.get(ds.getTaxon(7)));
+        assertEquals(0, (int) taxonDifferences.get(ds.getTaxon(8)));
+        assertEquals(0, (int) taxonDifferences.get(ds.getTaxon(9)));
+        assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(10)));
+        assertEquals(0, (int) taxonDifferences.get(ds.getTaxon(11)));
+        assertEquals(0, (int) taxonDifferences.get(ds.getTaxon(12)));
+        assertEquals(0, (int) taxonDifferences.get(ds.getTaxon(13)));
+        assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(14)));
     }
 
 }
