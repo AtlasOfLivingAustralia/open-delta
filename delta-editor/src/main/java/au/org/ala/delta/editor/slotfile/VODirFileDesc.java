@@ -125,6 +125,9 @@ public class VODirFileDesc extends VOAnyDesc implements WindowsConstants {
 	public void setFileName(String newFileName) {
 		int leng = Math.min(MAX_PATH - 1, newFileName.length());
 		_fixedData.fileName = newFileName.substring(0, leng);
+		// Because the length isn't stored anywhere we need to null terminate 
+		// the string.
+		_fixedData.fileName = _fixedData.fileName + Character.toString((char)0);
 		setDirty();
 	}
 
@@ -1368,7 +1371,12 @@ public class VODirFileDesc extends VOAnyDesc implements WindowsConstants {
 			fixedSize = b.getShort();
 			byte[] sbytes = new byte[MAX_PATH];
 			b.get(sbytes);
-			fileName = new String(sbytes).trim();
+			// The c++ system relied on null termination in the file name...
+			int i = 0;
+			while (i<MAX_PATH && sbytes[i] != 0) {
+				i++;
+			}
+			fileName = BinFileEncoding.decode(Arrays.copyOfRange(sbytes, 0, i));
 			fileModifyTime = b.getLong();
 			nDirs = b.getInt();
 			fileFlags = b.getInt();
