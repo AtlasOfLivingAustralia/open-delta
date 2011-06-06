@@ -2,6 +2,7 @@ package au.org.ala.delta.inkey.model;
 
 import java.io.File;
 import java.net.URL;
+import java.util.Arrays;
 
 import junit.framework.TestCase;
 
@@ -134,7 +135,14 @@ public class UseDirectiveTest extends TestCase {
         // characters 1 and 2
         // instead of changing their values
     }
-    
+
+    /**
+     * Test that when a controlling character is set, dependent characters are
+     * available/not available as appropriate, and that previously set values
+     * for characters that are now inapplicable are removed from the specimen
+     * 
+     * @throws Exception
+     */
     @Test
     public void testAvailabilityControlHierarchy() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/controlling_characters_simple/intkey.ink");
@@ -151,22 +159,50 @@ public class UseDirectiveTest extends TestCase {
         context.executeDirective(invoc);
 
         Specimen specimen = context.getSpecimen();
-        
+
         IntkeyDirectiveInvocation invoc2 = new UseDirective().doProcess(context, "/M 2,2");
-        context.executeDirective(invoc2);        
-        
+        context.executeDirective(invoc2);
+
         assertFalse(specimen.getAvailableCharacters().contains(charSeedInShell));
         assertFalse(specimen.getAvailableCharacters().contains(charAvgThickness));
         assertFalse(specimen.hasValueFor(charSeedInShell));
         assertFalse(specimen.hasValueFor(charAvgThickness));
-        
+
         IntkeyDirectiveInvocation invoc3 = new UseDirective().doProcess(context, "/M 2,1");
         context.executeDirective(invoc3);
-        
+
         assertTrue(specimen.getAvailableCharacters().contains(charSeedInShell));
         assertTrue(specimen.getAvailableCharacters().contains(charAvgThickness));
         assertFalse(specimen.hasValueFor(charSeedInShell));
         assertFalse(specimen.hasValueFor(charAvgThickness));
+    }
+
+    /**
+     * Test that a taxon that has an attribute that has both values specified and 
+     * the inapplicability flag set to true in the data file is handled correctly
+     * by the USE command. 
+     * @throws Exception
+     */
+    @Test
+    public void testAttributeWithValuesAndInapplicabilityFlag() throws Exception {
+        URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
+        IntkeyContext context = new IntkeyContext(null);
+        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+
+        IntkeyDataset ds = context.getDataset();
+        
+        // Check that the taxon "Oryza" - number 10 - is eliminated when character 38 is given a value
+        // of 5. Oryza is listed in the data file as both having a value for character 38 - 0 - and 
+        // having the inapplicability flag set to true for character 38.
+        
+        IntkeyDirectiveInvocation invoc = new UseDirective().doProcess(context, "38,5");
+        context.executeDirective(invoc);
+        
+        Specimen specimen = context.getSpecimen();
+        assertEquals(Arrays.asList(ds.getCharacter(32), ds.getCharacter(38)), specimen.getUsedCharacters());
+        
+        assertEquals(8, specimen.getTaxonDifferences().size());
+        assertTrue(specimen.getTaxonDifferences().containsKey(ds.getTaxon(10)));
     }
 
 }

@@ -993,10 +993,6 @@ public final class IntkeyDatasetFileReader {
                     }
                 }
                 msAttr.setPresentStates(presentStates);
-                
-//                if (inapplicable && presentStates.size() > 0) {
-//                    System.out.println(t.getItemNumber() + " " + c.getCharacterId());
-//                }
 
                 retList.add(msAttr);
             }
@@ -1033,10 +1029,6 @@ public final class IntkeyDatasetFileReader {
                     }
                 }
 
-//                if (inapplicable && presentValues.size() > 0) {
-//                    System.out.println(t.getItemNumber() + " " + c.getCharacterId());
-//                }
-
                 IntegerAttribute intAttr = new IntegerAttribute(intChar, new IntkeyAttributeData(inapplicable));
                 intAttr.setItem(t);
                 intAttr.setPresentValues(presentValues);
@@ -1067,17 +1059,14 @@ public final class IntkeyDatasetFileReader {
                 boolean inapplicable = taxaInapplicabilityData.get(j);
 
                 RealAttribute realAttr = new RealAttribute((RealCharacter) c, new IntkeyAttributeData(inapplicable));
-                if (!inapplicable) {
-                    if (lowerFloat <= upperFloat) {
-                        FloatRange range = new FloatRange(lowerFloat, upperFloat);
-                        realAttr.setPresentRange(range);
-                    }
+
+                // Character is unknown for the corresponding taxon if
+                // lowerfloat > upperfloat
+                if (lowerFloat <= upperFloat) {
+                    FloatRange range = new FloatRange(lowerFloat, upperFloat);
+                    realAttr.setPresentRange(range);
                 }
                 realAttr.setItem(t);
-                
-//                if (inapplicable && lowerFloat > 0 && upperFloat > 0 ) {
-//                    System.out.println(t.getItemNumber() + " " + c.getCharacterId());
-//                }
 
                 retList.add(realAttr);
             }
@@ -1123,10 +1112,6 @@ public final class IntkeyDatasetFileReader {
                 TextAttribute txtAttr = new TextAttribute(textChar, new IntkeyAttributeData(inapplicable));
                 txtAttr.setText(txt);
                 txtAttr.setItem(t);
-                
-//                if (inapplicable && !txt.equals("")) {
-//                    System.out.println(t.getItemNumber() + " " + c.getCharacterId());
-//                }
 
                 retList.add(txtAttr);
 

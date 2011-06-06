@@ -188,30 +188,24 @@ public class Specimen {
             // Subtract 1 as taxa are 1 indexed in the dataset
             Attribute attr = attrs.get(taxon.getItemNumber() - 1);
 
-            if (attr.isInapplicable()) {
-                match = _matchInapplicables;
-            } else if (attr.isUnknown()) {
-                match = _matchUnknowns;
+            if (val instanceof MultiStateValue) {
+                MultiStateValue msVal = (MultiStateValue) val;
+                MultiStateAttribute msAttr = (MultiStateAttribute) attr;
+                match = compareMultistate(msVal, msAttr);
+            } else if (val instanceof IntegerValue) {
+                IntegerValue intVal = (IntegerValue) val;
+                IntegerAttribute intAttr = (IntegerAttribute) attr;
+                match = compareInteger(intVal, intAttr);
+            } else if (val instanceof RealValue) {
+                RealValue realVal = (RealValue) val;
+                RealAttribute realAttr = (RealAttribute) attr;
+                match = compareReal(realVal, realAttr);
+            } else if (val instanceof TextValue) {
+                TextValue txtVal = (TextValue) val;
+                TextAttribute txtAttr = (TextAttribute) attr;
+                match = compareText(txtVal, txtAttr);
             } else {
-                if (val instanceof MultiStateValue) {
-                    MultiStateValue msVal = (MultiStateValue) val;
-                    MultiStateAttribute msAttr = (MultiStateAttribute) attr;
-                    match = compareMultistate(msVal, msAttr);
-                } else if (val instanceof IntegerValue) {
-                    IntegerValue intVal = (IntegerValue) val;
-                    IntegerAttribute intAttr = (IntegerAttribute) attr;
-                    match = compareInteger(intVal, intAttr);
-                } else if (val instanceof RealValue) {
-                    RealValue realVal = (RealValue) val;
-                    RealAttribute realAttr = (RealAttribute) attr;
-                    match = compareReal(realVal, realAttr);
-                } else if (val instanceof TextValue) {
-                    TextValue txtVal = (TextValue) val;
-                    TextAttribute txtAttr = (TextAttribute) attr;
-                    match = compareText(txtVal, txtAttr);
-                } else {
-                    throw new RuntimeException(String.format("Unrecognised CharacterValue subtype %s", val.getClass().getName()));
-                }
+                throw new RuntimeException(String.format("Unrecognised CharacterValue subtype %s", val.getClass().getName()));
             }
 
             if (!match) {
@@ -232,11 +226,11 @@ public class Specimen {
     }
 
     private boolean compareMultistate(MultiStateValue val, MultiStateAttribute attr) {
-        if (attr.isInapplicable()) {
+        if ((!hasValueFor(val.getCharacter()) && isInapplicable(val.getCharacter())) || (attr.isUnknown() && attr.isInapplicable())) {
             return _matchInapplicables;
         }
 
-        if (attr.isUnknown()) {
+        if ((!hasValueFor(val.getCharacter()) && !isInapplicable(val.getCharacter())) || (attr.isUnknown() && !attr.isInapplicable())) {
             return _matchUnknowns;
         }
 
@@ -265,11 +259,11 @@ public class Specimen {
     }
 
     private boolean compareInteger(IntegerValue val, IntegerAttribute attr) {
-        if (attr.isInapplicable()) {
+        if ((!hasValueFor(val.getCharacter()) && isInapplicable(val.getCharacter())) || (attr.isUnknown() && attr.isInapplicable())) {
             return _matchInapplicables;
         }
 
-        if (attr.isUnknown()) {
+        if ((!hasValueFor(val.getCharacter()) && !isInapplicable(val.getCharacter())) || (attr.isUnknown() && !attr.isInapplicable())) {
             return _matchUnknowns;
         }
 
@@ -303,11 +297,11 @@ public class Specimen {
     }
 
     private boolean compareReal(RealValue val, RealAttribute attr) {
-        if (attr.isInapplicable()) {
+        if ((!hasValueFor(val.getCharacter()) && isInapplicable(val.getCharacter())) || (attr.isUnknown() && attr.isInapplicable())) {
             return _matchInapplicables;
         }
 
-        if (attr.isUnknown()) {
+        if ((!hasValueFor(val.getCharacter()) && !isInapplicable(val.getCharacter())) || (attr.isUnknown() && !attr.isInapplicable())) {
             return _matchUnknowns;
         }
 
@@ -347,7 +341,11 @@ public class Specimen {
      */
     private boolean compareText(TextValue val, TextAttribute attr) {
 
-        if (attr.isInapplicable() || attr.isUnknown()) {
+        if ((!hasValueFor(val.getCharacter()) && isInapplicable(val.getCharacter())) || (attr.isUnknown() && attr.isInapplicable())) {
+            return false;
+        }
+
+        if ((!hasValueFor(val.getCharacter()) && !isInapplicable(val.getCharacter())) || (attr.isUnknown() && !attr.isInapplicable())) {
             return false;
         }
 
@@ -392,5 +390,9 @@ public class Specimen {
         retSet.removeAll(_characterValues.keySet());
         retSet.removeAll(_characterInapplicabilityCounts.keySet());
         return retSet;
+    }
+
+    private boolean isInapplicable(Character ch) {
+        return _characterInapplicabilityCounts.containsKey(ch) && _characterInapplicabilityCounts.get(ch) > 0;
     }
 }
