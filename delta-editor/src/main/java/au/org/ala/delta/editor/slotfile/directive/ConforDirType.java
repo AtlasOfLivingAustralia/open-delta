@@ -39,6 +39,7 @@ import au.org.ala.delta.directives.MaximumNumberOfStates;
 import au.org.ala.delta.directives.NewParagraphAtCharacters;
 import au.org.ala.delta.directives.NumberOfCharacters;
 import au.org.ala.delta.directives.NumbersOfStates;
+import au.org.ala.delta.directives.OmitCharacterNumbers;
 import au.org.ala.delta.directives.OmitInapplicables;
 import au.org.ala.delta.directives.OmitInnerComments;
 import au.org.ala.delta.directives.OmitTypeSettingMarks;
@@ -295,7 +296,7 @@ public class ConforDirType {
         new Directive(new String[] {"NUMBER", "OF", "CHARACTERS", ""}, 1, ConforDirType.NUMBER_OF_CHARACTERS, DirectiveArgType.DIRARG_INTERNAL, NumberOfCharacters.class, new DirInNumberChars(), new DirOutNumberChars()),
         new Directive(new String[] {"NUMBER", "STATES", "FROM", "ZERO"}, 4, ConforDirType.NUMBER_STATES_FROM_ZERO, DirectiveArgType.DIRARG_NONE, new DirInDefault(), new DirOutDefault()),
         new Directive(new String[] {"NUMBERS", "OF", "STATES", ""}, 3, ConforDirType.NUMBERS_OF_STATES, DirectiveArgType.DIRARG_INTERNAL, NumbersOfStates.class, new DirInNumberStates(), new DirOutNumberStates()),
-        new Directive(new String[] {"OMIT", "CHARACTER", "NUMBERS", ""}, 4, ConforDirType.OMIT_CHARACTER_NUMBERS, DirectiveArgType.DIRARG_NONE, new DirInDefault(), new DirOutDefault()),
+        new Directive(new String[] {"OMIT", "CHARACTER", "NUMBERS", ""}, 4, ConforDirType.OMIT_CHARACTER_NUMBERS, DirectiveArgType.DIRARG_NONE, OmitCharacterNumbers.class, new DirInDefault(), new DirOutDefault()),
         new Directive(new String[] {"OMIT", "COMMENTS", "", ""}, 4, ConforDirType.OMIT_COMMENTS, DirectiveArgType.DIRARG_NONE, new DirInDefault(), new DirOutDefault()),
         new Directive(new String[] {"OMIT", "FINAL", "COMMA", ""}, 4, ConforDirType.OMIT_FINAL_COMMA, DirectiveArgType.DIRARG_CHARLIST, new DirInDefault(), new DirOutDefault()),
         new Directive(new String[] {"OMIT", "INAPPLICABLES", "", ""}, 4, ConforDirType.OMIT_INAPPLICABLES, DirectiveArgType.DIRARG_NONE, OmitInapplicables.class, new DirInDefault(), new DirOutDefault()),

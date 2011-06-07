@@ -11,6 +11,10 @@ import au.org.ala.delta.directives.MaximumNumberOfItems;
 import au.org.ala.delta.directives.MaximumNumberOfStates;
 import au.org.ala.delta.directives.NumberOfCharacters;
 import au.org.ala.delta.directives.NumbersOfStates;
+import au.org.ala.delta.directives.OmitCharacterNumbers;
+import au.org.ala.delta.directives.OmitInapplicables;
+import au.org.ala.delta.directives.OmitInnerComments;
+import au.org.ala.delta.directives.ReplaceAngleBrackets;
 import au.org.ala.delta.editor.slotfile.VODirFileDesc.Dir;
 import au.org.ala.delta.editor.slotfile.VODirFileDescTest;
 import au.org.ala.delta.editor.slotfile.directive.ConforDirType;
@@ -55,6 +59,29 @@ public class DirectiveArgConverterTest extends VODirFileDescTest {
 			assertEquals(0, dir.args.size());
 		}
 		
+	}
+	
+	@Test
+	@SuppressWarnings("unchecked")
+	public void testNoArgDirectives() throws Exception {
+		Object[] directives = new Object[] {
+				new ReplaceAngleBrackets(), "", ConforDirType.REPLACE_ANGLE_BRACKETS,
+				new OmitCharacterNumbers(), "", ConforDirType.OMIT_CHARACTER_NUMBERS,
+				new OmitInnerComments(),"", ConforDirType.OMIT_INNER_COMMENTS,
+				new OmitInapplicables(), "", ConforDirType.OMIT_INAPPLICABLES
+		};
+		
+		
+		for (int i=0; i<directives.length; i+=3) {
+			AbstractDirective<DeltaContext> directive = (AbstractDirective<DeltaContext>)directives[i];
+			
+			System.out.println("Checking: "+directive.getClass());
+			directive.process(_context, (String)directives[i+1]);
+			Dir dir = _converter.fromDirective(directive);
+			
+			assertEquals(directives[i+2], dir.dirType);
+			assertEquals(0, dir.args.size());
+		}
 	}
 	
 }
