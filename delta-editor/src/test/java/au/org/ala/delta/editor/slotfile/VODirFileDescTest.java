@@ -17,7 +17,7 @@ import au.org.ala.delta.editor.slotfile.VODirFileDesc.Dir;
 public class VODirFileDescTest extends DeltaTestCase {
 
 	/** Holds the data set we obtain the data from to back our test*/
-	private DeltaVOP _vop;
+	protected DeltaVOP _vop;
 	
 	@Before
 	public void setUp() throws Exception {
@@ -87,17 +87,17 @@ public class VODirFileDescTest extends DeltaTestCase {
 		
 	}
 	
-	private List<String> getDirName(Dir directive, VODirFileDesc fileDesc) {
+	protected List<String> getDirName(Dir directive, VODirFileDesc fileDesc) {
 		List<Directive> allDirectives = fileDesc.getDirArray();
 		return Arrays.asList(allDirectives.get(directive.getDirType()).getName());
 	}
 	
-	private VODirFileDesc getDirFileDesc(int dirFileNum) {
+	protected VODirFileDesc getDirFileDesc(int dirFileNum) {
 		int id = _vop.getDeltaMaster().uniIdFromDirFileNo(dirFileNum);
 		return (VODirFileDesc)_vop.getDescFromId(id);
 	}
 	
-	private VODirFileDesc getDirFileDesc(String fileName) {
+	protected VODirFileDesc getDirFileDesc(String fileName) {
 		for (int i=1; i<=_vop.getDeltaMaster().getNDirFiles(); i++) {
 			VODirFileDesc dirFile = getDirFileDesc(i);
 			System.out.println(dirFile.getFileName());

@@ -14,6 +14,7 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.slotfile;
 
+import au.org.ala.delta.directives.AbstractDirective;
 import au.org.ala.delta.editor.slotfile.directive.DirectiveFunctor;
 
 public class Directive {
@@ -24,15 +25,22 @@ public class Directive {
 	private int _argType;
 	private DirectiveFunctor _inFunc;
 	private DirectiveFunctor _outFunc;
+	private Class<? extends AbstractDirective<?>> _implementationClass;
 	
-	public Directive(String[] name, int level, int number, int argType, DirectiveFunctor inFunc, DirectiveFunctor outFunc) {
+	public Directive(String[] name, int level, int number, int argType, Class<? extends AbstractDirective<?>> implClass, DirectiveFunctor inFunc, DirectiveFunctor outFunc) {
 		_name = name;
 		_level = level;
 		_number = number;
 		_argType = argType;
 		_inFunc = inFunc;
 		_outFunc = outFunc;
+		_implementationClass = implClass;
 	}
+	
+	public Directive(String[] name, int level, int number, int argType, DirectiveFunctor inFunc, DirectiveFunctor outFunc) {
+		this(name, level, number, argType, null, inFunc, outFunc);
+	}
+	
 	
 	public String[] getName() {
 		return _name;
@@ -58,4 +66,7 @@ public class Directive {
 		return _outFunc;
 	}
 
+	public Class<? extends AbstractDirective<?>> getImplementationClass() {
+		return _implementationClass;
+	}
 }

@@ -19,6 +19,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.math.IntRange;
 
 import au.org.ala.delta.directives.args.CharacterValueArgs;
+import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.directives.args.DirectiveArgs;
 
 public abstract class AbstractCharacterListDirective<C extends AbstractDeltaContext, T> extends AbstractDirective<C> {
@@ -33,6 +34,9 @@ public abstract class AbstractCharacterListDirective<C extends AbstractDeltaCont
 	
 	@Override
 	public DirectiveArgs getDirectiveArgs() {
+		if (getArgType() == DirectiveArgType.DIRARG_INTERNAL) {
+			return null;
+		}
 		return args;
 	}
 

@@ -11,13 +11,15 @@ import au.org.ala.delta.directives.args.TextArg;
 import au.org.ala.delta.editor.slotfile.DirectiveArgType;
 import au.org.ala.delta.editor.slotfile.VODirFileDesc.Dir;
 import au.org.ala.delta.editor.slotfile.VODirFileDesc.DirArgs;
+import au.org.ala.delta.editor.slotfile.directive.ConforDirType;
 
 public class DirectiveArgConverter {
 
 	public Dir fromDirective(AbstractDirective<DeltaContext> directive) {
 
 		Dir dir = new Dir();
-		// dir.setDirType(aDirType);
+		int type = ConforDirType.typeOf(directive);
+		dir.setDirType(type);
 
 		PopulateArgs populateArgs = argsPopulatorFor(directive);
 		populateArgs.populateArgs(dir, directive);
@@ -36,7 +38,7 @@ public class DirectiveArgConverter {
 
 			DirectiveArgs args = directive.getDirectiveArgs();
 			String text = ((TextArg) args).getText();
-
+			
 			dir.resizeArgs(1);
 			dir.args.get(0).text = text;
 
@@ -72,21 +74,22 @@ public class DirectiveArgConverter {
 				AbstractDirective<DeltaContext> directive) {
 		}
 	}
-
+ 
+	
 	private PopulateArgs argsPopulatorFor(AbstractDirective<DeltaContext> directive) {
-
-		int type = 1;// directive.getType();
-		switch (type) {
+		int argType = directive.getArgType();
+		switch (argType) {
 		case DirectiveArgType.DIRARG_NONE:
 		case DirectiveArgType.DIRARG_TRANSLATION:
 		case DirectiveArgType.DIRARG_INTKEY_INCOMPLETE:
+		case DirectiveArgType.DIRARG_INTERNAL: // Not sure about this - existing code treats it like text.
 			return new NoArgs();
 		case DirectiveArgType.DIRARG_COMMENT: // Will actually be handled within DirInComment
 		case DirectiveArgType.DIRARG_TEXT: // What about multiple lines of text? Should line breaks ALWAYS be
 											// preserved?
 		case DirectiveArgType.DIRARG_FILE:
 		case DirectiveArgType.DIRARG_OTHER:
-		case DirectiveArgType.DIRARG_INTERNAL:
+		
 			return new GetTextArgs();
 		
 		case DirectiveArgType.DIRARG_INTEGER:

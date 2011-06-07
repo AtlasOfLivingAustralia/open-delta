@@ -17,6 +17,7 @@ package au.org.ala.delta.directives;
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.directives.args.DirectiveArgType;
+import au.org.ala.delta.directives.args.DirectiveArgs;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DeltaDataSet;
 
@@ -30,6 +31,11 @@ public class CharacterTypes extends AbstractCharacterListDirective<DeltaContext,
 	
 	public CharacterTypes() {
 		super("character", "types");
+	}
+	
+	@Override
+	public DirectiveArgs getDirectiveArgs() {
+		return null;
 	}
 
 	@Override
