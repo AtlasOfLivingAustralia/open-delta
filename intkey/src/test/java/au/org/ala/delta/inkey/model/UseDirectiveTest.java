@@ -224,5 +224,13 @@ public class UseDirectiveTest extends TestCase {
         assertEquals(0, (int) taxonDifferences.get(ds.getTaxon(13)));
         assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(14)));
     }
+    
+    //set twice
+    //remove twice
+    //weird behavior with change ???
+    //open two datasets in succession, ensure that keywords etc from first dataset are cleared out
+    //Integer above and below maximum
+    //Dependent characters like 210, 213 and 230 in grasses
+    
 
 }

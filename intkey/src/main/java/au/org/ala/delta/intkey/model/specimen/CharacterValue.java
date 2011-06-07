@@ -14,4 +14,10 @@ public abstract class CharacterValue {
     public abstract Character getCharacter();
     
     public abstract String toShortString();
+    
+    @Override
+    public abstract int hashCode();
+    
+    @Override
+    public abstract boolean equals(Object obj);
 }

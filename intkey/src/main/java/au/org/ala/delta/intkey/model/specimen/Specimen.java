@@ -111,6 +111,13 @@ public class Specimen {
             throw new IllegalArgumentException(String.format("Invalid value for character %s", ch.getDescription()));
         }
 
+        // do nothing if the supplied value is identical to the current value
+        // for
+        // the character.
+        if (hasValueFor(ch) && getValueForCharacter(ch).equals(value)) {
+            return;
+        }
+
         // initialise the taxon differences table if it has not already been
         // initialized.
         if (_taxonDifferences == null) {
@@ -229,11 +236,11 @@ public class Specimen {
     }
 
     private boolean compareMultistate(MultiStateValue val, MultiStateAttribute attr) {
-        if ((!hasValueFor(val.getCharacter()) && isInapplicable(val.getCharacter())) || (attr.isUnknown() && attr.isInapplicable())) {
+        if ((!hasValueFor(val.getCharacter()) && isCharacterInapplicable(val.getCharacter())) || (attr.isUnknown() && attr.isInapplicable())) {
             return _matchInapplicables;
         }
 
-        if ((!hasValueFor(val.getCharacter()) && !isInapplicable(val.getCharacter())) || (attr.isUnknown() && !attr.isInapplicable())) {
+        if ((!hasValueFor(val.getCharacter()) && !isCharacterInapplicable(val.getCharacter())) || (attr.isUnknown() && !attr.isInapplicable())) {
             return _matchUnknowns;
         }
 
@@ -262,11 +269,11 @@ public class Specimen {
     }
 
     private boolean compareInteger(IntegerValue val, IntegerAttribute attr) {
-        if ((!hasValueFor(val.getCharacter()) && isInapplicable(val.getCharacter())) || (attr.isUnknown() && attr.isInapplicable())) {
+        if ((!hasValueFor(val.getCharacter()) && isCharacterInapplicable(val.getCharacter())) || (attr.isUnknown() && attr.isInapplicable())) {
             return _matchInapplicables;
         }
 
-        if ((!hasValueFor(val.getCharacter()) && !isInapplicable(val.getCharacter())) || (attr.isUnknown() && !attr.isInapplicable())) {
+        if ((!hasValueFor(val.getCharacter()) && !isCharacterInapplicable(val.getCharacter())) || (attr.isUnknown() && !attr.isInapplicable())) {
             return _matchUnknowns;
         }
 
@@ -300,11 +307,11 @@ public class Specimen {
     }
 
     private boolean compareReal(RealValue val, RealAttribute attr) {
-        if ((!hasValueFor(val.getCharacter()) && isInapplicable(val.getCharacter())) || (attr.isUnknown() && attr.isInapplicable())) {
+        if ((!hasValueFor(val.getCharacter()) && isCharacterInapplicable(val.getCharacter())) || (attr.isUnknown() && attr.isInapplicable())) {
             return _matchInapplicables;
         }
 
-        if ((!hasValueFor(val.getCharacter()) && !isInapplicable(val.getCharacter())) || (attr.isUnknown() && !attr.isInapplicable())) {
+        if ((!hasValueFor(val.getCharacter()) && !isCharacterInapplicable(val.getCharacter())) || (attr.isUnknown() && !attr.isInapplicable())) {
             return _matchUnknowns;
         }
 
@@ -344,11 +351,11 @@ public class Specimen {
      */
     private boolean compareText(TextValue val, TextAttribute attr) {
 
-        if ((!hasValueFor(val.getCharacter()) && isInapplicable(val.getCharacter())) || (attr.isUnknown() && attr.isInapplicable())) {
+        if ((!hasValueFor(val.getCharacter()) && isCharacterInapplicable(val.getCharacter())) || (attr.isUnknown() && attr.isInapplicable())) {
             return false;
         }
 
-        if ((!hasValueFor(val.getCharacter()) && !isInapplicable(val.getCharacter())) || (attr.isUnknown() && !attr.isInapplicable())) {
+        if ((!hasValueFor(val.getCharacter()) && !isCharacterInapplicable(val.getCharacter())) || (attr.isUnknown() && !attr.isInapplicable())) {
             return false;
         }
 
@@ -400,7 +407,7 @@ public class Specimen {
         return retSet;
     }
 
-    private boolean isInapplicable(Character ch) {
+    public boolean isCharacterInapplicable(Character ch) {
         return _characterInapplicabilityCounts.containsKey(ch) && _characterInapplicabilityCounts.get(ch) > 0;
     }
 }

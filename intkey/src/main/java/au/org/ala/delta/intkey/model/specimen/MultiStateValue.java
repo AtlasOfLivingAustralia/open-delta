@@ -54,5 +54,36 @@ public class MultiStateValue extends CharacterValue {
         
         return builder.toString();
     }
+    
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((_character == null) ? 0 : _character.hashCode());
+        result = prime * result + ((_stateValues == null) ? 0 : _stateValues.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        MultiStateValue other = (MultiStateValue) obj;
+        if (_character == null) {
+            if (other._character != null)
+                return false;
+        } else if (!_character.equals(other._character))
+            return false;
+        if (_stateValues == null) {
+            if (other._stateValues != null)
+                return false;
+        } else if (!_stateValues.equals(other._stateValues))
+            return false;
+        return true;
+    }
 
 }

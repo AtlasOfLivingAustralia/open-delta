@@ -3,6 +3,7 @@ package au.org.ala.delta.intkey.directives;
 import java.awt.Frame;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -39,6 +40,7 @@ import au.org.ala.delta.model.IntegerCharacter;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.RealCharacter;
 import au.org.ala.delta.model.TextCharacter;
+import au.org.ala.delta.model.format.CharacterFormatter;
 
 public class UseDirective extends IntkeyDirective {
 
@@ -55,16 +57,16 @@ public class UseDirective extends IntkeyDirective {
     public UseDirective() {
         super("use");
     }
-    
-    @Override
-	public DirectiveArgs getDirectiveArgs() {
-		throw new NotImplementedException();
-	}
 
-	@Override
-	public int getArgType() {
-		return DirectiveArgType.DIRARG_INTKEY_ATTRIBUTES;
-	}
+    @Override
+    public DirectiveArgs getDirectiveArgs() {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public int getArgType() {
+        return DirectiveArgType.DIRARG_INTKEY_ATTRIBUTES;
+    }
 
     @Override
     public IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
@@ -252,11 +254,10 @@ public class UseDirective extends IntkeyDirective {
                 }
             }
 
-            // Validate each of the character values that has been specified.
+            // No need to prompt the user about characters whose values have
+            // been specified in the command
             for (Character ch : charsWithValues) {
-                if (checkCharacterUsable(ch, context)) {
-                    charactersToUse.add(ch);
-                }
+                charactersToUse.add(ch);
             }
 
             if (charsNoValues.size() == 1) {
@@ -326,16 +327,21 @@ public class UseDirective extends IntkeyDirective {
             }
 
             for (Character ch : charactersToUse) {
-                CharacterValue characterVal = _characterValues.get(ch);
 
-                // second call to processControllingCharacters() -
-                // automatically set the value for controlling characters if
-                // their values have not already been set.
-                processControllingCharacters(ch, context, true);
+                if (checkCharacterUsable(ch, context)) {
+                    CharacterValue characterVal = _characterValues.get(ch);
 
-                context.setValueForCharacter(ch, characterVal);
+                    // second call to processControllingCharacters() -
+                    // automatically set the value for controlling characters if
+                    // their values have not already been set.
+
+                    processControllingCharacters(ch, context, true);
+
+                    context.setValueForCharacter(ch, characterVal);
+                }
             }
 
+            context.specimenUpdateComplete();
             return true;
         }
 
@@ -344,12 +350,14 @@ public class UseDirective extends IntkeyDirective {
         }
 
         private boolean checkCharacterUsable(Character ch, IntkeyContext context) {
+            CharacterFormatter formatter = new CharacterFormatter(false, false, true, true);
+
             // is character fixed?
 
             // is character already used?
             if (!_suppressAlreadySetWarning && !_change) {
                 if (context.getSpecimen().hasValueFor(ch)) {
-                    String msg = String.format(UIUtils.getResourceString("UseDirective.CharacterAlreadyUsed"), ch.getCharacterId());
+                    String msg = String.format(UIUtils.getResourceString("UseDirective.CharacterAlreadyUsed"), formatter.formatCharacterDescription(ch));
                     int choice = JOptionPane.showConfirmDialog(UIUtils.getMainFrame(), msg, "Information", JOptionPane.YES_NO_OPTION);
                     if (choice == JOptionPane.YES_OPTION) {
                         return true;
@@ -360,6 +368,12 @@ public class UseDirective extends IntkeyDirective {
             }
 
             // is character unavailable?
+            if (context.getSpecimen().isCharacterInapplicable(ch)) {
+                String msg = String.format(UIUtils.getResourceString("UseDirective.CharacterUnavailable"), formatter.formatCharacterDescription(ch));
+                JOptionPane.showMessageDialog(UIUtils.getMainFrame(), msg, "Information", JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
+
             // is character excluded?
 
             return true;
@@ -368,16 +382,37 @@ public class UseDirective extends IntkeyDirective {
         private void processControllingCharacters(Character ch, IntkeyContext context, boolean autoSetPermitted) {
             List<CharacterDependency> allControllingChars = getFullControllingCharacterDependenciesList(ch, context.getDataset());
 
+            // Used a linked hashmap as it we need to set values for the
+            // controlling characters in the order they were returned by
+            // getFullControllingCharacterDependenciesList()
+            Map<MultiStateCharacter, Set<Integer>> controllingCharInapplicableStates = new LinkedHashMap<MultiStateCharacter, Set<Integer>>();
+
+            // Look through all the CharacterDependency objects for the
+            // character and for each controlling character, collect the list of
+            // all states for the controlling character that will make the
+            // dependent character inapplicable
             for (CharacterDependency cd : allControllingChars) {
                 MultiStateCharacter cc = (MultiStateCharacter) context.getDataset().getCharacter(cd.getControllingCharacterId());
 
-                if (context.getSpecimen().hasValueFor(cc)) {
+                if (context.getSpecimen().hasValueFor(cc) || _characterValues.containsKey(cc)) {
                     continue;
                 }
 
                 // states for the controlling character that will make dependent
                 // characters inapplicable
                 Set<Integer> inapplicableStates = cd.getStates();
+
+                if (controllingCharInapplicableStates.containsKey(cc)) {
+                    controllingCharInapplicableStates.get(cc).addAll(inapplicableStates);
+                } else {
+                    controllingCharInapplicableStates.put(cc, new HashSet<Integer>(inapplicableStates));
+                }
+            }
+
+            // For each controlling character, set its value or prompt the user
+            // for its value as appropriate
+            for (MultiStateCharacter cc : controllingCharInapplicableStates.keySet()) {
+                Set<Integer> inapplicableStates = controllingCharInapplicableStates.get(cc);
 
                 // states for the controlling character that will make dependent
                 // characters applicable. At least one of these states needs to

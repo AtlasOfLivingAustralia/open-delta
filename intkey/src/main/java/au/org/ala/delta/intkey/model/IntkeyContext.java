@@ -73,7 +73,10 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     public IntkeyContext(Intkey appUI) {
         _appUI = appUI;
-
+        initialize();
+    }
+    
+    private void initialize() {
         // Use linked hashmap so that the keys list will be returned in
         // order of insertion.
         _userDefinedCharacterKeywords = new LinkedHashMap<String, Set<Integer>>();
@@ -136,11 +139,11 @@ public class IntkeyContext extends AbstractDeltaContext {
     }
 
     private void createNewDataSet() {
-        _executedDirectives = new ArrayList<IntkeyDirectiveInvocation>();
+        initialize();
 
         _dataset = IntkeyDatasetFileReader.readDataSet(_charactersFile, _taxaFile);
         _specimen = new Specimen(_dataset, _matchInapplicables, _matchInapplicables, _matchType);
-
+        
         // TODO need a proper listener pattern here?
         if (_appUI != null) {
             _appUI.handleNewDataSet(_dataset);
@@ -193,17 +196,17 @@ public class IntkeyContext extends AbstractDeltaContext {
     public void setValueForCharacter(au.org.ala.delta.model.Character ch, CharacterValue value) {
         Logger.log("Using character");
         _specimen.setValueForCharacter(ch, value);
-        if (_appUI != null) {
-            _appUI.handleSpecimenUpdated();
-        }
     }
     
     public void removeValueForCharacter(Character ch) {
         Logger.log("Deleting character");
         _specimen.removeValueForCharacter(ch);
+    }
+    
+    public void specimenUpdateComplete() {
         if (_appUI != null) {
             _appUI.handleSpecimenUpdated();
-        }
+        }        
     }
     
     public void addCharacterKeyword(String keyword, Set<Integer> characterNumbers) {
@@ -283,7 +286,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         if (_dataset != null) {
             // Create a new blank specimen
             _specimen = new Specimen(_dataset, _matchInapplicables, _matchInapplicables, _matchType);
-            _appUI.handleSpecimenUpdated();
+            _appUI.handleIdentificationRestarted();
         }
     }
 

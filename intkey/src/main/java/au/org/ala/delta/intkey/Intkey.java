@@ -316,7 +316,7 @@ public class Intkey extends DeltaSingleFrameApplication {
         _listUsedCharacters = new JList();
         _listUsedCharacters.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         _listUsedCharacters.addMouseListener(new MouseInputAdapter() {
-            
+
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() >= 2) {
@@ -333,7 +333,7 @@ public class Intkey extends DeltaSingleFrameApplication {
                 }
             }
         });
-            
+
         _sclPnUsedCharacters.setViewportView(_listUsedCharacters);
 
         _pnlUsedCharactersHeader = new JPanel();
@@ -801,18 +801,7 @@ public class Intkey extends DeltaSingleFrameApplication {
 
     public void handleNewDataSet(IntkeyDataset dataset) {
         getMainFrame().setTitle(String.format(windowTitleWithDatasetTitle, dataset.getHeading()));
-
-        _availableCharacterListModel = new CharacterListModel(dataset.getCharacters());
-        _usedCharacterListModel = new UsedCharacterListModel(Collections.EMPTY_LIST);
-        _availableTaxaListModel = new ItemListModel(dataset.getTaxa());
-        _eliminatedTaxaListModel = new EliminatedTaxaListModel(Collections.EMPTY_LIST, Collections.EMPTY_MAP);
-
-        _listAvailableCharacters.setModel(_availableCharacterListModel);
-        _listUsedCharacters.setModel(_usedCharacterListModel);
-        _listRemainingTaxa.setModel(_availableTaxaListModel);
-        _listEliminatedTaxa.setModel(_eliminatedTaxaListModel);
-
-        updateListCaptions();
+        initializeIdentification();
     }
 
     public void handleSpecimenUpdated() {
@@ -840,7 +829,7 @@ public class Intkey extends DeltaSingleFrameApplication {
                 eliminatedTaxa.add(taxon);
             }
         }
-
+        
         if (availableTaxa.size() == 0) {
             JLabel lbl = new JLabel("No matching taxa remain.");
             lbl.setHorizontalAlignment(JLabel.CENTER);
@@ -855,16 +844,11 @@ public class Intkey extends DeltaSingleFrameApplication {
             lbl.setOpaque(true);
             _sclPaneAvailableCharacters.setViewportView(lbl);
             _sclPaneAvailableCharacters.revalidate();
-        } else {
-            _availableCharacterListModel = new CharacterListModel(availableCharacters);
-            _listAvailableCharacters.setModel(_availableCharacterListModel);
+        } 
 
-            if (!_sclPaneAvailableCharacters.getViewport().getView().equals(_listAvailableCharacters)) {
-                _sclPaneAvailableCharacters.setViewportView(_listAvailableCharacters);
-                _sclPaneAvailableCharacters.revalidate();
-            }
-        }
-
+        _availableCharacterListModel = new CharacterListModel(availableCharacters);
+        _listAvailableCharacters.setModel(_availableCharacterListModel);
+        
         _usedCharacterListModel = new UsedCharacterListModel(usedCharacterValues);
 
         _listUsedCharacters.setModel(_usedCharacterListModel);
@@ -874,6 +858,33 @@ public class Intkey extends DeltaSingleFrameApplication {
 
         _listRemainingTaxa.setModel(_availableTaxaListModel);
         _listEliminatedTaxa.setModel(_eliminatedTaxaListModel);
+
+        updateListCaptions();
+    }
+
+    public void handleIdentificationRestarted() {
+        initializeIdentification();
+    }
+
+    private void initializeIdentification() {
+        IntkeyDataset dataset = _context.getDataset();
+        _availableCharacterListModel = new CharacterListModel(dataset.getCharacters());
+        _usedCharacterListModel = new UsedCharacterListModel(Collections.EMPTY_LIST);
+        _availableTaxaListModel = new ItemListModel(dataset.getTaxa());
+        _eliminatedTaxaListModel = new EliminatedTaxaListModel(Collections.EMPTY_LIST, Collections.EMPTY_MAP);
+
+        _listAvailableCharacters.setModel(_availableCharacterListModel);
+        _listUsedCharacters.setModel(_usedCharacterListModel);
+        _listRemainingTaxa.setModel(_availableTaxaListModel);
+        _listEliminatedTaxa.setModel(_eliminatedTaxaListModel);
+
+        // Make sure that list is visible again. It will not be visible if the
+        // previous investigation ended with a taxon being identified or the
+        // available charaters being exhausted
+        if (!_sclPaneAvailableCharacters.getViewport().getView().equals(_listAvailableCharacters)) {
+            _sclPaneAvailableCharacters.setViewportView(_listAvailableCharacters);
+            _sclPaneAvailableCharacters.revalidate();
+        }
 
         updateListCaptions();
     }
@@ -906,7 +917,7 @@ public class Intkey extends DeltaSingleFrameApplication {
         public CharacterValue getCharacterValueAt(int index) {
             return _values.get(index);
         }
-        
+
         public Character getCharacterAt(int index) {
             return _values.get(index).getCharacter();
         }

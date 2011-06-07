@@ -57,4 +57,36 @@ public class IntegerValue extends CharacterValue {
         return builder.toString();
     }
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((_character == null) ? 0 : _character.hashCode());
+        result = prime * result + ((_range == null) ? 0 : _range.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        IntegerValue other = (IntegerValue) obj;
+        if (_character == null) {
+            if (other._character != null)
+                return false;
+        } else if (!_character.equals(other._character))
+            return false;
+        if (_range == null) {
+            if (other._range != null)
+                return false;
+        } else if (!_range.equals(other._range))
+            return false;
+        return true;
+    }
+
+
 }

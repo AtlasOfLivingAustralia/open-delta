@@ -1032,7 +1032,17 @@ public final class IntkeyDatasetFileReader {
                 IntegerAttribute intAttr = new IntegerAttribute(intChar, new IntkeyAttributeData(inapplicable));
                 intAttr.setItem(t);
                 intAttr.setPresentValues(presentValues);
+                
+                if (taxonData.get(0)) {
+                    System.out.println(String.format("below minimum %s (%s %s) [%s]", c.getCharacterId(), charMinValue, charMaxValue, t.getItemNumber()));
+                    System.out.println(presentValues.toString());
+                }
 
+                if (taxonData.get(taxonData.size() - 2)) {
+                    System.out.println(String.format("above maximum %s (%s %s) [%s]", c.getCharacterId(), charMinValue, charMaxValue, t.getItemNumber()));
+                    System.out.println(presentValues.toString());
+                }
+                
                 retList.add(intAttr);
             }
 
