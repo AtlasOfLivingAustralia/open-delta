@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.math.IntRange;
 
-import au.org.ala.delta.directives.args.CharacterValueArgs;
+import au.org.ala.delta.directives.args.IdValueArgs;
 import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.directives.args.DirectiveArgs;
 
@@ -26,7 +26,7 @@ public abstract class AbstractCharacterListDirective<C extends AbstractDeltaCont
 
 	private static Pattern CHAR_LIST_ITEM_PATTERN = Pattern.compile("^(\\d+),(.*)$|^(\\d+[-]\\d+),(.*)$");
 
-	private CharacterValueArgs<T> args;
+	private IdValueArgs<T> args;
 	
 	public AbstractCharacterListDirective(String... controlWords) {
 		super(controlWords);
@@ -42,7 +42,7 @@ public abstract class AbstractCharacterListDirective<C extends AbstractDeltaCont
 
 	@Override
 	public void process(C context, String data) throws Exception {
-		args = new CharacterValueArgs<T>();
+		args = new IdValueArgs<T>();
 		String[] typeDescriptors = data.split(" |\\n");
 		for (String typeDescriptor : typeDescriptors) {
 			typeDescriptor = typeDescriptor.trim();

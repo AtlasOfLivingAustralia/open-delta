@@ -26,6 +26,11 @@ import au.org.ala.delta.editor.slotfile.directive.ConforDirType;
  */
 public class DirectiveArgConverter {
 
+	
+	private ItemDescriptionConverter _itemDescriptionConverter = new ItemDescriptionConverter();
+	private CharacterNumberConverter _characterNumberConverter = new CharacterNumberConverter();
+	private ItemNumberConverter _itemNumberConverter = new ItemNumberConverter();
+	
 	private DeltaVOP _vop;
 	public DirectiveArgConverter(DeltaVOP vop) {
 		_vop = vop;
@@ -83,7 +88,13 @@ public class DirectiveArgConverter {
 		public void populateArgs(Dir dir, DirectiveArgs args) {}
 	}
 	
-	abstract class PopulateIdList implements PopulateArgs {
+	class PopulateIdListArg implements PopulateArgs {
+		
+		private IdConverter<Integer> _idConverter;
+		public PopulateIdListArg(IdConverter<Integer> idConverter) {
+			_idConverter = idConverter;
+		}
+		
 		public void populateArgs(Dir dir, DirectiveArgs args) {
 			
 			List<Integer> argList = ((IntegerList) args).getArgList();
@@ -92,55 +103,34 @@ public class DirectiveArgConverter {
 		
 		public void processArgList(List<Integer> args, Dir dir) {
 			for (int number : args) {
-				int id = idFromNumber(number);
+				int id = _idConverter.convertId(number);
 				DirArgs dirArgs = new DirArgs();
 				dirArgs.setId(id);
 				dir.args.add(dirArgs);
 			}
 		}
+	}
+	
+	class PopulateIdArg implements PopulateArgs  {
 		
-		public abstract int idFromNumber(int number);
-	}
-	
-	abstract class PopulateId extends PopulateIdList {
+		private IdConverter<Integer> _idConverter;
+		public PopulateIdArg(IdConverter<Integer> idConverter) {
+			_idConverter = idConverter;
+		}
 		public void populateArgs(Dir dir, DirectiveArgs args) {
-			
 			int value = ((IntegerArg) args).getValue();
-			List<Integer> argsList = new ArrayList<Integer>();
-			argsList.add(value);
-			processArgList(argsList, dir);
+			int id = _idConverter.convertId(value);
+			
+			dir.args.add(new DirArgs(id));
 		}
 	}
 	
-	class PopulateCharacterIdArg extends PopulateId {
-		@Override
-		public int idFromNumber(int number) {
-			return _vop.getDeltaMaster().uniIdFromCharNo(number);
+	class PopulateIdTextListArg<T> implements PopulateArgs {
+		
+		private IdConverter<T> _idConverter;
+		public PopulateIdTextListArg(IdConverter<T> idConverter) {
+			_idConverter = idConverter;
 		}
-	}
-	
-	class PopulateCharacterIdListArg extends PopulateIdList {
-		@Override
-		public int idFromNumber(int number) {
-			return _vop.getDeltaMaster().uniIdFromCharNo(number);
-		}
-	}
-	
-	class PopulateItemIdArg extends PopulateId {
-		@Override
-		public int idFromNumber(int number) {
-			return _vop.getDeltaMaster().uniIdFromItemNo(number);
-		}
-	}
-	
-	class PopulateItemIdListArg extends PopulateIdList {
-		@Override
-		public int idFromNumber(int number) {
-			return _vop.getDeltaMaster().uniIdFromItemNo(number);
-		}
-	}
-	
-	abstract class PopulateIdTextListArg<T> implements PopulateArgs {
 		public void populateArgs(Dir dir, DirectiveArgs args) {
 			@SuppressWarnings("unchecked")
 			IdTextList<T> idTextList = (IdTextList<T>)args;
@@ -150,38 +140,48 @@ public class DirectiveArgConverter {
 			dir.args.add(arg);
 			
 			for (IdTextArg<T> charText : idTextList.getCharacterTextList()) {
-				int id = convertId(charText.getId());
+				int id = _idConverter.convertId(charText.getId());
 				arg = new DirArgs(id);
 				arg.comment = charText.getComment();
 				arg.text = charText.getText();
 				dir.args.add(arg);
 			}
 		}
-		
-		protected abstract int convertId(T id);
+	}
+ 
+	interface IdConverter<T> {
+		public int convertId(T id);
 	}
 	
-	class PopulateCharacterTextListArg extends PopulateIdTextListArg<Integer> {
-		
-		protected int convertId(Integer id) {
+	class CharacterNumberConverter implements IdConverter<Integer> {
+		@Override
+		public int convertId(Integer id) {
 			return _vop.getDeltaMaster().uniIdFromCharNo(id);
 		}
 	}
 	
-	class PopulateItemTextListArg extends PopulateIdTextListArg<String> {
-		
-		protected int convertId(String id) {
+	class ItemNumberConverter implements IdConverter<Integer> {
+		@Override
+		public int convertId(Integer id) {
+			return _vop.getDeltaMaster().uniIdFromItemNo(id);
+		}
+	}
+	
+	class ItemDescriptionConverter implements IdConverter<String> {
+		@Override
+		public int convertId(String id) {
 			throw new NotImplementedException();
 		}
 	}
 	
-	class PopulateNumberTextListArg extends PopulateIdTextListArg<Integer> {
-		
-		protected int convertId(Integer id) {
+	class NoopConverter implements IdConverter<Integer> {
+		@Override
+		public int convertId(Integer id) {
 			return id;
 		}
 	}
- 
+	
+	
  
 	
 	private PopulateArgs argsPopulatorFor(AbstractDirective<? extends AbstractDeltaContext> directive) {
@@ -205,21 +205,22 @@ public class DirectiveArgConverter {
 			return new PopulateNumberArg();
 			
 		case DirectiveArgType.DIRARG_CHAR:
-			return new PopulateCharacterIdArg();
+			return new PopulateIdArg(_characterNumberConverter);
 		case DirectiveArgType.DIRARG_ITEM:
-			return new PopulateItemIdArg();
+			return new PopulateIdArg(_itemNumberConverter);
 		case DirectiveArgType.DIRARG_CHARLIST:
-			return new PopulateCharacterIdListArg();
+			return new PopulateIdListArg(_characterNumberConverter);
 		case DirectiveArgType.DIRARG_ITEMLIST:
-			return new PopulateItemIdListArg();
+			return new PopulateIdListArg(_itemNumberConverter);
 		case DirectiveArgType.DIRARG_TEXTLIST:
-			return new PopulateNumberTextListArg();
+			return new PopulateIdTextListArg<Integer>(new NoopConverter());
 		case DirectiveArgType.DIRARG_CHARTEXTLIST:
-			return new PopulateCharacterTextListArg();
+			return new PopulateIdTextListArg<Integer>(_characterNumberConverter);
 		case DirectiveArgType.DIRARG_ITEMTEXTLIST:
 		case DirectiveArgType.DIRARG_ITEMFILELIST:
-			return new PopulateItemTextListArg();
+			return new PopulateIdTextListArg<String>(_itemDescriptionConverter);
 		case DirectiveArgType.DIRARG_CHARINTEGERLIST:
+			
 		case DirectiveArgType.DIRARG_CHARREALLIST:
 		case DirectiveArgType.DIRARG_ITEMREALLIST:
 
