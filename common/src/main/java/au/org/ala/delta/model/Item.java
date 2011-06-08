@@ -30,7 +30,7 @@ import au.org.ala.delta.model.observer.ItemObserver;
  */
 public class Item implements AttributeObserver, Illustratable, Comparable<Item> {
 
-	private ItemData _impl;
+    private ItemData _impl;
 
 	private int _itemNumber;
 	
@@ -239,5 +239,10 @@ public class Item implements AttributeObserver, Illustratable, Comparable<Item> 
     @Override
     public int compareTo(Item o) {
         return Integer.valueOf(this.getItemNumber()).compareTo(Integer.valueOf(o.getItemNumber()));
+    }
+    
+    @Override
+    public String toString() {
+        return _itemNumber + ". " + getDescription();
     }
 }
