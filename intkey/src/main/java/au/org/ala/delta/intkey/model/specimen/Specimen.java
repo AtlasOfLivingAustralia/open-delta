@@ -70,9 +70,12 @@ public class Specimen {
 
         // Do nothing if no value recorded for the supplied character
         if (valToRemove != null) {
+            
+            // IMPORTANT - differences table must be updated first, if _characterValues
+            // is modified first then the differences table will be updated incorrectly! 
+            updateDifferencesTable(valToRemove, true);            
+            
             _characterValues.remove(ch);
-
-            updateDifferencesTable(valToRemove, true);
 
             // If this is a controlling character, also need to remove values
             // for
@@ -227,7 +230,7 @@ public class Specimen {
                 currentDiffCount = _taxonDifferences.get(taxon);
             }
 
-            if (removed && match) {
+            if (removed && !match) {
                 _taxonDifferences.put(taxon, Math.max(0, currentDiffCount - 1));
             } else if (!removed && !match) {
                 _taxonDifferences.put(taxon, currentDiffCount + 1);
@@ -351,6 +354,8 @@ public class Specimen {
      */
     private boolean compareText(TextValue val, TextAttribute attr) {
 
+        // Unknown and inapplicable always equate to no match for text
+        // attributes
         if ((!hasValueFor(val.getCharacter()) && isCharacterInapplicable(val.getCharacter())) || (attr.isUnknown() && attr.isInapplicable())) {
             return false;
         }

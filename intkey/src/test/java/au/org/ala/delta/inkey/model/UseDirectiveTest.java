@@ -225,6 +225,8 @@ public class UseDirectiveTest extends TestCase {
         assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(14)));
     }
     
+    //Set multistate, real integer etc
+    
     //set twice
     //remove twice
     //weird behavior with change ???
