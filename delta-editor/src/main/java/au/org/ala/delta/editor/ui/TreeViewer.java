@@ -37,6 +37,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.event.CellEditorListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -819,6 +820,19 @@ class DeltaTreeCellRenderer extends DefaultTreeCellRenderer  {
 			}
 		}
 		return this;
+	}
+	
+	@Override
+	public void updateUI() {
+		setLeafIcon(UIManager.getIcon("Tree.leafIcon"));
+		setClosedIcon(UIManager.getIcon("Tree.closedIcon"));
+		setOpenIcon(UIManager.getIcon("Tree.openIcon"));
+		setTextSelectionColor(UIManager.getColor("Tree.selectionForeground"));
+		setTextNonSelectionColor(UIManager.getColor("Tree.textForeground"));
+		setBackgroundSelectionColor(UIManager.getColor("Tree.selectionBackground"));
+		setBackgroundNonSelectionColor(UIManager.getColor("Tree.textBackground"));
+		setBorderSelectionColor(UIManager.getColor("Tree.selectionBorderColor"));
+		super.updateUI();
 	}
 	
 }
