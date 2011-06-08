@@ -36,6 +36,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
 import javax.swing.border.LineBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -247,15 +248,22 @@ public class MatrixViewer extends JInternalFrame implements DeltaView {
 		_table.getActionMap().getParent().remove("paste");
 
 		ActionMap actionMap = Application.getInstance().getContext().getActionMap(this);
-		javax.swing.Action copyAll = actionMap.get("copyAll");
-		if (copyAll != null) {
-			_table.getActionMap().put("copyAll", copyAll);
+				
+		javax.swing.Action copySelectedWithHeaders = actionMap.get("copySelectedWithHeaders");
+		if (copySelectedWithHeaders != null) {
+			_table.getActionMap().put("copySelectedWithHeaders", copySelectedWithHeaders);
 		}
 
 		javax.swing.Action copySelection = actionMap.get("copy");
 		if (copySelection != null) {
 			_table.getActionMap().put("copy", copySelection);
 		}
+		
+		javax.swing.Action selectAll = actionMap.get("selectAll");
+		if (selectAll != null) {
+			_table.getActionMap().put("selectAll", selectAll);
+		}
+		
 		if ((_dataSet.getMaximumNumberOfItems() > 0) && (_dataSet.getNumberOfCharacters() > 0)) {
 			selectCell(0, 0);
 		}
@@ -306,12 +314,17 @@ public class MatrixViewer extends JInternalFrame implements DeltaView {
 	public Task<Void, Void> copy() {
 		return new CopySelectedTask(Application.getInstance());
 	}
-
+	
 	@Action(block = BlockingScope.APPLICATION)
-	public Task<Void, Void> copyAll() {
-		return new CopyAllTask(Application.getInstance());
+	public Task<Void, Void> selectAll() {
+		return new SelectAllTask(Application.getInstance());
+	
 	}
 	
+	@Action(block = BlockingScope.APPLICATION)
+	public Task<Void, Void> copySelectedWithHeaders() {
+		return new CopySelectedWithHeadersTask(Application.getInstance());
+	}
 	
 	@Override
 	public void open() {}
@@ -324,6 +337,26 @@ public class MatrixViewer extends JInternalFrame implements DeltaView {
 	@Override
 	public String getViewTitle() {
 		return windowTitle;
+	}
+	
+	class SelectAllTask extends Task<Void, Void> {
+
+		public SelectAllTask(Application application) {
+			super(application);
+		}
+
+		@Override
+		protected Void doInBackground() throws Exception {
+			
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					_table.selectAll();					
+				}				
+			});			
+			return null;
+		}
+		
 	}
 
 	abstract class ClipboardCopyTask extends Task<Void, Void> {
@@ -394,10 +427,13 @@ public class MatrixViewer extends JInternalFrame implements DeltaView {
 		}
 
 	}
+	
+	/**
+	 * Copies the selected rows and columns, including the selected row and column headers...
+	 */
+	class CopySelectedWithHeadersTask extends CopySelectedTask {
 
-	class CopyAllTask extends CopySelectedTask {
-
-		public CopyAllTask(Application application) {
+		public CopySelectedWithHeadersTask(Application application) {
 			super(application);
 		}
 
@@ -408,23 +444,31 @@ public class MatrixViewer extends JInternalFrame implements DeltaView {
 
 			StringBuilder b = new StringBuilder();
 
-			setTotalCells(_model.getColumnCount() * _model.getRowCount());
+			int[] cols = _table.getSelectedColumns();
+			int[] rows = _table.getSelectedRows();
 
-			// First do row headers, which are item descriptions
-			b.append("(Items)");
-			for (int i = 0; i < _model.getColumnCount(); i++) {
-				b.append(CELL_SEPERATOR).append(_model.getColumnName(i));
+			setTotalCells(cols.length * rows.length);
+			
+			// For each column emit the column header...			
+			b.append(CELL_SEPERATOR);  // the top left corner has nothing...			
+			for (int i = 0; i < cols.length; ++i) {
+				b.append(_table.getColumnName(cols[i])).append(CELL_SEPERATOR);
 			}
 			b.append(EOL);
 
 			// Now for each row...
-
-			for (int row = 0; row < _model.getRowCount(); ++row) {
+			for (int i = 0; i < rows.length; ++i) {
+				int row = rows[i];
+				// Emit the row header...
 				b.append(_fixedColumns.getModel().getValueAt(row, 0));
-				// and for each data item (column)
-				for (int col = 0; col < _model.getColumnCount(); ++col) {
+				b.append(CELL_SEPERATOR);
+				for (int j = 0; j < cols.length; ++j) {
+					int col = cols[j];
 					String value = ((MatrixCellViewModel) _model.getValueAt(row, col)).getText();
-					b.append(CELL_SEPERATOR).append(value);
+					if (j > 0) {
+						b.append(CELL_SEPERATOR);
+					}
+					b.append(value);
 					incrementCellsCopied();
 				}
 				b.append(EOL);
@@ -437,6 +481,7 @@ public class MatrixViewer extends JInternalFrame implements DeltaView {
 		}
 
 	}
+	
 
 	/**
 	 * This listener class is responsible for transferring focus to the 

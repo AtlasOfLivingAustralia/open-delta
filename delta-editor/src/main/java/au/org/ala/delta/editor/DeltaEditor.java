@@ -69,7 +69,7 @@ import au.org.ala.delta.util.IProgressObserver;
 /**
  * The main class for the DELTA Editor.
  */
-@ProxyActions("copyAll")
+@ProxyActions({"copySelectedWithHeaders", "selectAll"})
 public class DeltaEditor extends InternalFrameApplication implements
 		PreferenceChangeListener, DeltaViewStatusObserver, PropertyChangeListener {
 
@@ -375,7 +375,7 @@ public class DeltaEditor extends InternalFrameApplication implements
 		JMenu mnuEdit = new JMenu();
 		mnuEdit.setName("mnuEdit");
 
-		String[] editMenuActions = { "copy", "paste", "-", "copyAll" };
+		String[] editMenuActions = { "copy", "paste", "-", "selectAll", "-", "copySelectedWithHeaders" };
 
 		MenuBuilder.buildMenu(mnuEdit, editMenuActions, _actionMap);
 
