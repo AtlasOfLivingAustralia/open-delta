@@ -1,6 +1,5 @@
 package au.org.ala.delta.editor.directives;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.NotImplementedException;
@@ -10,6 +9,7 @@ import au.org.ala.delta.directives.AbstractDirective;
 import au.org.ala.delta.directives.args.DirectiveArgs;
 import au.org.ala.delta.directives.args.IdTextList;
 import au.org.ala.delta.directives.args.IdTextList.IdTextArg;
+import au.org.ala.delta.directives.args.IdValueArgs;
 import au.org.ala.delta.directives.args.IntegerArg;
 import au.org.ala.delta.directives.args.IntegerList;
 import au.org.ala.delta.directives.args.TextArg;
@@ -20,6 +20,7 @@ import au.org.ala.delta.editor.slotfile.VODirFileDesc;
 import au.org.ala.delta.editor.slotfile.VODirFileDesc.Dir;
 import au.org.ala.delta.editor.slotfile.VODirFileDesc.DirArgs;
 import au.org.ala.delta.editor.slotfile.directive.ConforDirType;
+import au.org.ala.delta.util.Pair;
 
 /**
  * Creates and populates a Dir object from the arguments supplied to a AbstractDirective.
@@ -139,11 +140,34 @@ public class DirectiveArgConverter {
 			arg.text = idTextList.getDelimiter();
 			dir.args.add(arg);
 			
-			for (IdTextArg<T> charText : idTextList.getCharacterTextList()) {
+			for (IdTextArg<T> charText : idTextList.getIdTextList()) {
 				int id = _idConverter.convertId(charText.getId());
 				arg = new DirArgs(id);
 				arg.comment = charText.getComment();
 				arg.text = charText.getText();
+				dir.args.add(arg);
+			}
+		}
+	}
+	
+	class PopulateIdValueArgs<T> implements PopulateArgs {
+		private IdConverter<Integer> _idConverter;
+		public PopulateIdValueArgs(IdConverter<Integer> idConverter) {
+			_idConverter = idConverter;
+		}
+		public void populateArgs(Dir dir, DirectiveArgs args) {
+			@SuppressWarnings("unchecked")
+			IdValueArgs<T> idValueArgs = (IdValueArgs<T>) args;
+			List<Pair<Integer, T>> idValuePairs = idValueArgs.getArgs();
+			for (Pair<Integer, T> idValue : idValuePairs) {
+				int id = _idConverter.convertId(idValue.getFirst());
+				DirArgs arg = new DirArgs(id);
+				if (idValue.getSecond() instanceof Number) {
+					//arg.setValue(aValue)
+				}
+				else if (idValue.getSecond() instanceof String) {
+					arg.setText((String)idValue.getSecond());
+				}
 				dir.args.add(arg);
 			}
 		}
