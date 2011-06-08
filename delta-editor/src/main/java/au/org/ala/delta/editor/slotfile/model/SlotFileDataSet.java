@@ -579,11 +579,12 @@ public class SlotFileDataSet extends AbstractObservableDataSet {
 	}
 	
 	
-	public void addDirectiveFile(String fileName, int flags) {
+	public DirectiveFile addDirectiveFile(String fileName, int flags) {
 		VODirFileDesc.DirFileFixedData fixed = new VODirFileDesc.DirFileFixedData();
 		VODirFileDesc dirFile = (VODirFileDesc)_vop.insertObject(fixed, 0, null, 0, 0);
 		dirFile.setFileName(fileName);
 		dirFile.setFileFlags(flags);
 		
+		return new DirectiveFile(dirFile);
 	}
 }

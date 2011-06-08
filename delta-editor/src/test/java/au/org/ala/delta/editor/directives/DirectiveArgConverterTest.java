@@ -31,7 +31,7 @@ public class DirectiveArgConverterTest extends VODirFileDescTest {
 	@Before
 	public void setUp() throws Exception {
 		super.setUp();
-		_converter = new DirectiveArgConverter();
+		_converter = new DirectiveArgConverter(_vop);
 		_context = new DeltaContext();
 	}
 	

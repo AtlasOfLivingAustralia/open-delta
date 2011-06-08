@@ -372,15 +372,16 @@ public class ConforDirType {
     };
  
     @SuppressWarnings({ "rawtypes" })
-	public static int typeOf(AbstractDirective<?> directive) {
+	public static Directive typeOf(AbstractDirective<?> directive) {
 		Class<? extends AbstractDirective> directiveClass = directive.getClass();
 		for (Directive dir : ConforDirArray) {
 			if (directiveClass.equals(dir.getImplementationClass())) {
-				return dir.getNumber();
+				return dir;
 			}
 		}
-		return ConforDirType.XXX_XXX_XXX_XXX;
+		return ConforDirArray[0];
 	}
+    
 	static {
 		Arrays.sort(ConforDirArray, new Comparator<Directive>() {
 

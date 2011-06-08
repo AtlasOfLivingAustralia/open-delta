@@ -1451,6 +1451,10 @@ public class VODirFileDesc extends VOAnyDesc implements WindowsConstants {
 		public void setValue(int aValue) {
 			value = new DeltaNumber((float)aValue);
 		}
+		
+		public void setId(int anId) {
+			id = anId;
+		}
 
 		@Override
 		public String toString() {

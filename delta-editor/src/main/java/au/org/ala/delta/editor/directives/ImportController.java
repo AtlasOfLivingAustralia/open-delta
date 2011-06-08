@@ -11,8 +11,10 @@ import org.jdesktop.application.TaskEvent;
 import org.jdesktop.application.TaskListener;
 
 import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.directives.AbstractDeltaContext;
 import au.org.ala.delta.directives.AbstractDirective;
 import au.org.ala.delta.directives.ConforDirectiveFileParser;
+import au.org.ala.delta.directives.DirectiveParserObserver;
 import au.org.ala.delta.editor.DeltaEditor;
 import au.org.ala.delta.editor.directives.ui.ImportExportDialog;
 import au.org.ala.delta.editor.directives.ui.ImportExportDialog.DirectiveFile;
@@ -66,7 +68,7 @@ public class ImportController {
 	}
 
 	
-	public class DoImportTask extends Task<Void, ImportExportStatus> {
+	public class DoImportTask extends Task<Void, ImportExportStatus> implements DirectiveParserObserver {
 
 		private String _directoryName;
 		private List<DirectiveFile> _files;
@@ -117,15 +119,13 @@ public class ImportController {
 			cause.printStackTrace();
 			super.failed(cause);
 		}	
-		
-		private List<Dir> dirs = new ArrayList<Dir>();
-		
-		private void storeDirective(AbstractDirective<DeltaContext> directive) {
 			
-			DirectiveArgConverter yeah = new DirectiveArgConverter();
-			
-			Dir dir = yeah.fromDirective(directive);
-			dirs.add(dir);
+		@Override
+		public void preProcess(String data) {}
+
+		@Override
+		public void postProcess(AbstractDirective<? extends AbstractDeltaContext> directive) {
+			//storeDirective(directive);
 		}
 	}
 	
