@@ -18,7 +18,7 @@ public class IdTextList<T> implements DirectiveArgs {
 		return _delimeter;
 	}
 	
-	public List<IdTextArg<T>> getCharacterTextList() {
+	public List<IdTextArg<T>> getIdTextList() {
 		return _characterList;
 	}
 	
