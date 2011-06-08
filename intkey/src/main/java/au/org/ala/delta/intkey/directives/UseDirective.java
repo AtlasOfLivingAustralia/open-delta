@@ -243,35 +243,46 @@ public class UseDirective extends IntkeyDirective {
 
             // Process characters with values specified first
             for (Character ch : charsWithValues) {
-                processControllingCharacters(ch, context);
-                if (checkCharacterUsable(ch, context)) {
-                    CharacterValue characterVal = _characterValues.get(ch);
-                    context.setValueForCharacter(ch, characterVal);
+                if (checkCharacterUsable(ch, context, !_suppressAlreadySetWarning && !_change)) {
+                    processControllingCharacters(ch, context);
+                    // second call to checkCharacterUsable() to ensure that character has not been
+                    // made inapplicable by the value given to one or more of its controlling 
+                    // characters
+                    if (checkCharacterUsable(ch, context, false)) {
+                        CharacterValue characterVal = _characterValues.get(ch);
+                        context.setValueForCharacter(ch, characterVal);
+                    }
                 }
             }
 
             if (charsNoValues.size() == 1) {
                 Character ch = charsNoValues.get(0);
-                processControllingCharacters(ch, context);
-                if (checkCharacterUsable(ch, context)) {
-                    CharacterValue characterVal = promptForCharacterValue(UIUtils.getMainFrame(), ch);
-                    if (characterVal != null) {
-                        // store this value so that the prompt does not need
-                        // to
-                        // be done for subsequent invocations
-                        _characterValues.put(ch, characterVal);
-                        context.setValueForCharacter(ch, characterVal);
+                if (checkCharacterUsable(ch, context, !_suppressAlreadySetWarning && !_change)) {
+                    processControllingCharacters(ch, context);
+                    // second call to checkCharacterUsable() to ensure that character has not been
+                    // made inapplicable by the value given to one or more of its controlling 
+                    // characters
+                    if (checkCharacterUsable(ch, context, false)) {
+                        CharacterValue characterVal = promptForCharacterValue(UIUtils.getMainFrame(), ch);
+                        if (characterVal != null) {
+                            // store this value so that the prompt does not need
+                            // to
+                            // be done for subsequent invocations
+                            _characterValues.put(ch, characterVal);
+                            context.setValueForCharacter(ch, characterVal);
+                        } else {
+                            // User hit cancel or did not enter a value when
+                            // prompted.
+                            // Abort execution when this happens
+                            return false;
+                        }
                     } else {
-                        // User hit cancel or did not enter a value when
-                        // prompted.
-                        // Abort execution when this happens
-                        return false;
+                        // remove this value so that the user will not be
+                        // prompted
+                        // about it when the command is
+                        // run additional times.
+                        _characterValues.remove(ch);
                     }
-                } else {
-                    // remove this value so that the user will not be prompted
-                    // about it when the command is
-                    // run additional times.
-                    _characterValues.remove(ch);
                 }
             } else {
                 Collections.sort(charsNoValues);
@@ -296,23 +307,30 @@ public class UseDirective extends IntkeyDirective {
 
                         CharacterValue characterVal = null;
 
-                        processControllingCharacters(ch, context);
-                        if (checkCharacterUsable(ch, context)) {
-                            characterVal = promptForCharacterValue(UIUtils.getMainFrame(), ch);
-                        } else {
-                            // remove this value so that the user will not be
-                            // prompted about it when the command is
-                            // run additional times.
-                            _characterValues.remove(ch);
-                        }
+                        if (checkCharacterUsable(ch, context, !_suppressAlreadySetWarning && !_change)) {
+                            processControllingCharacters(ch, context);
+                            // second call to checkCharacterUsable() to ensure that character has not been
+                            // made inapplicable by the value given to one or more of its controlling 
+                            // characters
+                            if (checkCharacterUsable(ch, context, false)) {
+                                characterVal = promptForCharacterValue(UIUtils.getMainFrame(), ch);
+                            } else {
+                                // remove this value so that the user will not
+                                // be
+                                // prompted about it when the command is
+                                // run additional times.
+                                _characterValues.remove(ch);
+                            }
 
-                        if (characterVal != null) {
-                            // store this value so that the prompt does not need
-                            // to
-                            // be done for subsequent invocations
-                            _characterValues.put(ch, characterVal);
-                            context.setValueForCharacter(ch, characterVal);
-                            charsNoValues.remove(ch);
+                            if (characterVal != null) {
+                                // store this value so that the prompt does not
+                                // need
+                                // to
+                                // be done for subsequent invocations
+                                _characterValues.put(ch, characterVal);
+                                context.setValueForCharacter(ch, characterVal);
+                                charsNoValues.remove(ch);
+                            }
                         }
                     }
                 }
@@ -326,13 +344,13 @@ public class UseDirective extends IntkeyDirective {
             _characterValues.put(ch, val);
         }
 
-        private boolean checkCharacterUsable(Character ch, IntkeyContext context) {
+        private boolean checkCharacterUsable(Character ch, IntkeyContext context, boolean warnAlreadySet) {
             CharacterFormatter formatter = new CharacterFormatter(false, false, true, true);
 
             // is character fixed?
 
             // is character already used?
-            if (!_suppressAlreadySetWarning && !_change) {
+            if (warnAlreadySet) {
                 if (context.getSpecimen().hasValueFor(ch)) {
                     String msg = String.format(UIUtils.getResourceString("UseDirective.CharacterAlreadyUsed"), formatter.formatCharacterDescription(ch));
                     int choice = JOptionPane.showConfirmDialog(UIUtils.getMainFrame(), msg, "Information", JOptionPane.YES_NO_OPTION);
@@ -448,18 +466,21 @@ public class UseDirective extends IntkeyDirective {
                     // dependencies.
                     List<CharacterDependency> ancestorCharacterDependencies = getFullControllingCharacterDependenciesList(controllingChar, ds);
                     for (CharacterDependency ancestorCd : ancestorCharacterDependencies) {
-                        // If an "ancestor" dependency is already in the list, remove it and reinsert it at 
-                        // the front of the list. Need to ensure that values for the furthermost ancestors
-                        // are set first, otherwise the Specimen will throw IllegalStateExceptions...
+                        // If an "ancestor" dependency is already in the list,
+                        // remove it and reinsert it at
+                        // the front of the list. Need to ensure that values for
+                        // the furthermost ancestors
+                        // are set first, otherwise the Specimen will throw
+                        // IllegalStateExceptions...
                         if (retList.contains(ancestorCd)) {
                             retList.remove(ancestorCd);
                         }
-                        
+
                         retList.add(0, ancestorCd);
                     }
                 }
             }
-            
+
             return retList;
         }
 

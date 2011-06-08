@@ -111,7 +111,11 @@ public class Specimen {
 
     public void setValueForCharacter(Character ch, CharacterValue value) {
         if (!ch.equals(value.getCharacter())) {
-            throw new IllegalArgumentException(String.format("Invalid value for character %s", ch.getDescription()));
+            throw new IllegalArgumentException(String.format("Invalid value for character %s", ch.toString()));
+        }
+        
+        if (isCharacterInapplicable(ch)) {
+            throw new IllegalArgumentException(String.format("Cannot set character %s - this character is inapplicable", ch.toString()));
         }
 
         // do nothing if the supplied value is identical to the current value
