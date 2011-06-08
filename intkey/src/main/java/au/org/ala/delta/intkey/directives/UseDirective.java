@@ -243,9 +243,9 @@ public class UseDirective extends IntkeyDirective {
 
             // Process characters with values specified first
             for (Character ch : charsWithValues) {
+                processControllingCharacters(ch, context);
                 if (checkCharacterUsable(ch, context)) {
                     CharacterValue characterVal = _characterValues.get(ch);
-                    processControllingCharacters(ch, context);
                     context.setValueForCharacter(ch, characterVal);
                 }
             }
@@ -370,7 +370,7 @@ public class UseDirective extends IntkeyDirective {
             for (CharacterDependency cd : allControllingChars) {
                 MultiStateCharacter cc = (MultiStateCharacter) context.getDataset().getCharacter(cd.getControllingCharacterId());
 
-                if (context.getSpecimen().hasValueFor(cc) || _characterValues.containsKey(cc)) {
+                if (context.getSpecimen().hasValueFor(cc)) {
                     continue;
                 }
 
