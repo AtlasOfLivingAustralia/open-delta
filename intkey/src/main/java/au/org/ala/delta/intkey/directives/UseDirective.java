@@ -3,7 +3,6 @@ package au.org.ala.delta.intkey.directives;
 import java.awt.Frame;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -227,24 +226,12 @@ public class UseDirective extends IntkeyDirective {
 
         @Override
         public boolean execute(IntkeyContext context) {
-            // These are the values that will be stored in the specimen
-            // Each time execute() is called some values may be omitted from
-            // this list...
-            // TODO finish comment
-            List<Character> charactersToUse = new ArrayList<Character>();
 
             // Split up characters that have had their values specified and
             // those that
             // haven't. They need to be processed differently.
             List<Character> charsWithValues = new ArrayList<Character>();
             List<Character> charsNoValues = new ArrayList<Character>();
-
-            for (Character ch : _characterValues.keySet()) {
-                // first call to processControllingCharacters() - prompt
-                // user to enter values for controlling characters if
-                // appropriate
-                processControllingCharacters(ch, context, false);
-            }
 
             for (Character ch : _characterValues.keySet()) {
                 if (_characterValues.get(ch) == null) {
@@ -254,14 +241,18 @@ public class UseDirective extends IntkeyDirective {
                 }
             }
 
-            // No need to prompt the user about characters whose values have
-            // been specified in the command
+            // Process characters with values specified first
             for (Character ch : charsWithValues) {
-                charactersToUse.add(ch);
+                if (checkCharacterUsable(ch, context)) {
+                    CharacterValue characterVal = _characterValues.get(ch);
+                    processControllingCharacters(ch, context);
+                    context.setValueForCharacter(ch, characterVal);
+                }
             }
 
             if (charsNoValues.size() == 1) {
                 Character ch = charsNoValues.get(0);
+                processControllingCharacters(ch, context);
                 if (checkCharacterUsable(ch, context)) {
                     CharacterValue characterVal = promptForCharacterValue(UIUtils.getMainFrame(), ch);
                     if (characterVal != null) {
@@ -269,7 +260,7 @@ public class UseDirective extends IntkeyDirective {
                         // to
                         // be done for subsequent invocations
                         _characterValues.put(ch, characterVal);
-                        charactersToUse.add(ch);
+                        context.setValueForCharacter(ch, characterVal);
                     } else {
                         // User hit cancel or did not enter a value when
                         // prompted.
@@ -305,6 +296,7 @@ public class UseDirective extends IntkeyDirective {
 
                         CharacterValue characterVal = null;
 
+                        processControllingCharacters(ch, context);
                         if (checkCharacterUsable(ch, context)) {
                             characterVal = promptForCharacterValue(UIUtils.getMainFrame(), ch);
                         } else {
@@ -319,25 +311,10 @@ public class UseDirective extends IntkeyDirective {
                             // to
                             // be done for subsequent invocations
                             _characterValues.put(ch, characterVal);
-                            charactersToUse.add(ch);
+                            context.setValueForCharacter(ch, characterVal);
                             charsNoValues.remove(ch);
                         }
                     }
-                }
-            }
-
-            for (Character ch : charactersToUse) {
-
-                if (checkCharacterUsable(ch, context)) {
-                    CharacterValue characterVal = _characterValues.get(ch);
-
-                    // second call to processControllingCharacters() -
-                    // automatically set the value for controlling characters if
-                    // their values have not already been set.
-
-                    processControllingCharacters(ch, context, true);
-
-                    context.setValueForCharacter(ch, characterVal);
                 }
             }
 
@@ -379,12 +356,11 @@ public class UseDirective extends IntkeyDirective {
             return true;
         }
 
-        private void processControllingCharacters(Character ch, IntkeyContext context, boolean autoSetPermitted) {
+        private void processControllingCharacters(Character ch, IntkeyContext context) {
             List<CharacterDependency> allControllingChars = getFullControllingCharacterDependenciesList(ch, context.getDataset());
 
-            // Used a linked hashmap as it we need to set values for the
-            // controlling characters in the order they were returned by
-            // getFullControllingCharacterDependenciesList()
+            // Used a linked hashmap as need to maintain the ordering returned
+            // by getFullControllingCharacterDependenciesList()
             Map<MultiStateCharacter, Set<Integer>> controllingCharInapplicableStates = new LinkedHashMap<MultiStateCharacter, Set<Integer>>();
 
             // Look through all the CharacterDependency objects for the
@@ -443,7 +419,7 @@ public class UseDirective extends IntkeyDirective {
                     List<Integer> userSetStates = promptForMultiStateValue(UIUtils.getMainFrame(), (MultiStateCharacter) cc);
                     MultiStateValue val = new MultiStateValue((MultiStateCharacter) cc, new ArrayList<Integer>(userSetStates));
                     context.setValueForCharacter(cc, val);
-                } else if (autoSetPermitted) {
+                } else {
                     // let intkey automatically use the character
                     MultiStateValue val = new MultiStateValue((MultiStateCharacter) cc, new ArrayList<Integer>(applicableStates));
                     context.setValueForCharacter(cc, val);
@@ -466,11 +442,24 @@ public class UseDirective extends IntkeyDirective {
             if (directControllingChars != null) {
                 for (CharacterDependency cd : directControllingChars) {
                     Character controllingChar = ds.getCharacter(cd.getControllingCharacterId());
-                    retList.add(0, cd);
-                    retList.addAll(0, getFullControllingCharacterDependenciesList(controllingChar, ds));
+                    retList.add(cd);
+
+                    // Add all the indirect or "ancestor" character
+                    // dependencies.
+                    List<CharacterDependency> ancestorCharacterDependencies = getFullControllingCharacterDependenciesList(controllingChar, ds);
+                    for (CharacterDependency ancestorCd : ancestorCharacterDependencies) {
+                        // If an "ancestor" dependency is already in the list, remove it and reinsert it at 
+                        // the front of the list. Need to ensure that values for the furthermost ancestors
+                        // are set first, otherwise the Specimen will throw IllegalStateExceptions...
+                        if (retList.contains(ancestorCd)) {
+                            retList.remove(ancestorCd);
+                        }
+                        
+                        retList.add(0, ancestorCd);
+                    }
                 }
             }
-
+            
             return retList;
         }
 
