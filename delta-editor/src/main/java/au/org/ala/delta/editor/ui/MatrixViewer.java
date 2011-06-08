@@ -36,7 +36,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
-import javax.swing.SwingUtilities;
 import javax.swing.border.LineBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -132,9 +131,12 @@ public class MatrixViewer extends JInternalFrame implements DeltaView {
 
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
-				int row = _fixedColumns.getSelectedRow();
-				_table.getSelectionModel().setSelectionInterval(row, row);
+				if (!e.getValueIsAdjusting()) {
+					int row = _fixedColumns.getSelectedRow();
+					_table.getSelectionModel().setSelectionInterval(row, row);
+				}
 			}
+			
 		});
 				
 		new TableRowResizer(_fixedColumns, _table);
@@ -316,9 +318,15 @@ public class MatrixViewer extends JInternalFrame implements DeltaView {
 	}
 	
 	@Action(block = BlockingScope.APPLICATION)
-	public Task<Void, Void> selectAll() {
-		return new SelectAllTask(Application.getInstance());
-	
+	public void selectAll() {
+		try {
+			// First select the top left cell so as to not confuse the row header listener code...
+			_table.getSelectionModel().setSelectionInterval(0, 0);
+			// Then select all...
+			_table.selectAll();			
+		} catch (Exception ex) {
+			System.err.println(ex);
+		}
 	}
 	
 	@Action(block = BlockingScope.APPLICATION)
@@ -339,26 +347,6 @@ public class MatrixViewer extends JInternalFrame implements DeltaView {
 		return windowTitle;
 	}
 	
-	class SelectAllTask extends Task<Void, Void> {
-
-		public SelectAllTask(Application application) {
-			super(application);
-		}
-
-		@Override
-		protected Void doInBackground() throws Exception {
-			
-			SwingUtilities.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-					_table.selectAll();					
-				}				
-			});			
-			return null;
-		}
-		
-	}
-
 	abstract class ClipboardCopyTask extends Task<Void, Void> {
 
 		protected String CELL_SEPERATOR = "\t";
