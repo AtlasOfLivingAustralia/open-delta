@@ -32,9 +32,11 @@ public class ParsingUtils {
     }
 
     public static FloatRange parseRealCharacterValue(String charValue) {
+        //The "/" character is interpreted as the range separator when 
+        //parsing a real value.
+        charValue = charValue.replace("/", "-");
+        
         FloatRange r = parseFloatRange(charValue);
-
-        // TODO - make it so that floats can be parsed using the "/" separator
 
         if (r == null) {
             throw new IllegalArgumentException("Invalid real value");

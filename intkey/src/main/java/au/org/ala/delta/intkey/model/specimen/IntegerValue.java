@@ -20,6 +20,14 @@ public class IntegerValue extends CharacterValue {
         int charMinimum = _character.getMinimumValue();
         int charMaximum = _character.getMaximumValue();
 
+        // All values below the character minimum are treated as the
+        // same value by intkey. Similarly, all values above the character
+        // maximum are
+        // treated as the same value. This leads to descriptions ".... or less"
+        // and "... or more".
+        // Use the values character minimum - 1 and character maximum + 1 the
+        // indicate the presence
+        // of values that fall into either of the aforementioned groups.
         boolean belowMinimumPresent = false;
         boolean aboveMaximumPresent = false;
 
@@ -87,9 +95,6 @@ public class IntegerValue extends CharacterValue {
 
     @Override
     public String toString() {
-        // TODO - need to take character maximum and minimum value into account
-        // here
-        // output should be foo less than x or foo greater than y
         StringBuilder builder = new StringBuilder();
         builder.append(_formatter.formatCharacterDescription(_character));
         builder.append(" ");
@@ -108,10 +113,17 @@ public class IntegerValue extends CharacterValue {
     public String toShortString() {
         return buildValuesString(true);
     }
-    
+
+    /**
+     * Build a string listing the integer values in sets of ranges
+     * 
+     * @param shortVersion
+     *            use a shorter, more concise format
+     * @return
+     */
     public String buildValuesString(boolean shortVersion) {
         StringBuilder builder = new StringBuilder();
-        
+
         int belowMinimum = _character.getMinimumValue() - 1;
         int aboveMaximum = _character.getMaximumValue() + 1;
 
@@ -120,6 +132,9 @@ public class IntegerValue extends CharacterValue {
 
         List<Integer> valuesCopy = new ArrayList<Integer>(_values);
 
+        // One below the character minimum and one above the character
+        // maximum are special cases. They should always be written out
+        // on their own.
         if (valuesCopy.contains(belowMinimum)) {
             belowMinimumPresent = true;
             valuesCopy.remove((Integer) belowMinimum);
@@ -149,9 +164,9 @@ public class IntegerValue extends CharacterValue {
             } else {
                 startCurrentRange = num;
             }
-            
+
         }
-        
+
         String orSeparator;
         if (shortVersion) {
             orSeparator = "/";
@@ -182,14 +197,14 @@ public class IntegerValue extends CharacterValue {
                 builder.append(orSeparator);
             }
         }
-        
+
         if (aboveMaximumPresent) {
             builder.append(Integer.toString(aboveMaximum));
             if (!shortVersion) {
                 builder.append(" or more");
             }
         }
-        
+
         return builder.toString();
     }
 
