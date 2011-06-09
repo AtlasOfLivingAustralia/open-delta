@@ -1,8 +1,9 @@
 package au.org.ala.delta.intkey.directives;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -14,45 +15,20 @@ public class ParsingUtils {
     private static Pattern FLOAT_RANGE_PATTERN = Pattern.compile("^(\\d+(\\.\\d+)?)-(\\d+(\\.\\d+)?)$");
     private static Pattern INT_LIST_PATTERN = Pattern.compile("^\\d+(/\\d+)+$");
 
-    // private static Pattern FLOAT_LIST_PATTERN =
-    // Pattern.compile("^(\\d+(\\.\\d+)?)-(\\d+(\\.\\d+)?)$");
-
-    public static List<Integer> parseMultiStateCharacterValue(String charValue) {
-        List<Integer> retList = parseIntList(charValue);
-
-        if (retList == null) {
-            IntRange range = parseIntRange(charValue);
-            retList = new ArrayList<Integer>();
-            if (range != null) {
-                for (int i : range.toArray()) {
-                    retList.add(i);
-                }
+    public static Set<Integer> parseMultistateOrIntegerCharacterValue(String charValue) {
+        Set<Integer> selectedStates = new HashSet<Integer>();
+        
+        //split on "/" character to get a list of ranges
+        String[] tokens = charValue.split("/");
+        
+        for (String token: tokens) {
+            IntRange r = parseIntRange(token);
+            for (int i: r.toArray()) {
+                selectedStates.add(i);
             }
         }
-
-        if (retList == null) {
-            throw new IllegalArgumentException("Invalid multistate value");
-        }
-
-        return retList;
-    }
-
-    public static IntRange parseIntegerCharacterValue(String charValue) {
-        IntRange r = parseIntRange(charValue);
-
-        if (r == null) {
-            List<Integer> list = parseIntList(charValue);
-            if (list != null) {
-                Collections.sort(list);
-                r = new IntRange(list.get(0), list.get(list.size() - 1));
-            }
-        }
-
-        if (r == null) {
-            throw new IllegalArgumentException("Invalid integer value");
-        }
-
-        return r;
+        
+        return selectedStates;
     }
 
     public static FloatRange parseRealCharacterValue(String charValue) {

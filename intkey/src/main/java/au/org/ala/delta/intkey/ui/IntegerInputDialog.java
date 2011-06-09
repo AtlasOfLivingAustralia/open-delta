@@ -1,6 +1,8 @@
 package au.org.ala.delta.intkey.ui;
 
 import java.awt.Frame;
+import java.util.List;
+import java.util.Set;
 
 import javax.swing.JOptionPane;
 
@@ -14,7 +16,7 @@ import au.org.ala.delta.model.IntegerCharacter;
 
 public class IntegerInputDialog extends NumberInputDialog {
 
-    private IntRange _inputData;
+    private Set<Integer> _inputData;
     
     @Resource
     String title;
@@ -41,7 +43,7 @@ public class IntegerInputDialog extends NumberInputDialog {
         String inputTxt = _txtInput.getText();
         if (inputTxt.length() > 0) {
             try {
-                _inputData = ParsingUtils.parseIntegerCharacterValue(inputTxt);
+                _inputData = ParsingUtils.parseMultistateOrIntegerCharacterValue(inputTxt);
                 this.setVisible(false);
             } catch (IllegalArgumentException ex) {
                 JOptionPane.showMessageDialog(this, validationErrorMessage, validationErrorTitle, JOptionPane.ERROR_MESSAGE);
@@ -51,7 +53,7 @@ public class IntegerInputDialog extends NumberInputDialog {
         }
     }
 
-    public IntRange getInputData() {
+    public Set<Integer> getInputData() {
         return _inputData;
     }
 

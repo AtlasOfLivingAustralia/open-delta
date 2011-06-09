@@ -1,7 +1,9 @@
 package au.org.ala.delta.intkey.model.specimen;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import au.org.ala.delta.model.MultiStateCharacter;
 
@@ -10,9 +12,10 @@ public class MultiStateValue extends CharacterValue {
     private MultiStateCharacter _character;
     private List<Integer> _stateValues;
     
-    public MultiStateValue(MultiStateCharacter character, List<Integer> stateValues) {
+    public MultiStateValue(MultiStateCharacter character, Set<Integer> stateValues) {
         _character = character;
         _stateValues = new ArrayList<Integer>(stateValues);
+        Collections.sort(_stateValues);
     }
 
     @Override

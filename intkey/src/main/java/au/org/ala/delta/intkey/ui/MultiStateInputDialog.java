@@ -4,7 +4,9 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
@@ -19,7 +21,7 @@ import au.org.ala.delta.model.MultiStateCharacter;
 
 public class MultiStateInputDialog extends CharacterValueInputDialog {
 
-    List<Integer> _inputData;
+    Set<Integer> _inputData;
 
     private JList _list;
     private JScrollPane _scrollPane;
@@ -55,7 +57,7 @@ public class MultiStateInputDialog extends CharacterValueInputDialog {
 
         _list.setModel(listModel);
         
-        _inputData = new ArrayList<Integer>();
+        _inputData = new HashSet<Integer>();
     }
 
     @Override
@@ -78,7 +80,7 @@ public class MultiStateInputDialog extends CharacterValueInputDialog {
         setVisible(false);
     }
 
-    public List<Integer> getInputData() {
+    public Set<Integer> getInputData() {
         return _inputData;
     }
 

@@ -286,10 +286,7 @@ public class Specimen {
 
         boolean match = false;
 
-        List<Integer> valList = new ArrayList<Integer>();
-        for (int i : val.getRange().toArray()) {
-            valList.add(i);
-        }
+        List<Integer> valList = val.getValues();
 
         switch (_matchType) {
         case EXACT:

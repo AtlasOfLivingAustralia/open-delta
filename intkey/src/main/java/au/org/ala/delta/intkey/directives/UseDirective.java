@@ -118,13 +118,13 @@ public class UseDirective extends IntkeyDirective {
 
                 if (charValue != null) {
                     if (ch instanceof MultiStateCharacter) {
-                        List<Integer> stateValues = ParsingUtils.parseMultiStateCharacterValue(charValue);
+                        Set<Integer> stateValues = ParsingUtils.parseMultistateOrIntegerCharacterValue(charValue);
                         // TODO need error if non existent state values are
                         // listed
                         invoc.addCharacterValue((MultiStateCharacter) ch, new MultiStateValue((MultiStateCharacter) ch, stateValues));
                     } else if (ch instanceof IntegerCharacter) {
-                        IntRange intRange = ParsingUtils.parseIntegerCharacterValue(charValue);
-                        invoc.addCharacterValue((IntegerCharacter) ch, new IntegerValue((IntegerCharacter) ch, intRange));
+                        Set<Integer> intValues = ParsingUtils.parseMultistateOrIntegerCharacterValue(charValue);
+                        invoc.addCharacterValue((IntegerCharacter) ch, new IntegerValue((IntegerCharacter) ch, intValues));
                     } else if (ch instanceof RealCharacter) {
                         FloatRange floatRange = ParsingUtils.parseRealCharacterValue(charValue);
                         invoc.addCharacterValue((RealCharacter) ch, new RealValue((RealCharacter) ch, floatRange));
@@ -434,12 +434,12 @@ public class UseDirective extends IntkeyDirective {
                 // can be set to for which the dependent character will be
                 // inapplicable.
                 if (!context.isProcessingInputFile() && (cc.getNonAutoCc() || ch.getUseCc() || !cc.getNonAutoCc() && !cc.getUseCc() && applicableStates.size() > 1)) {
-                    List<Integer> userSetStates = promptForMultiStateValue(UIUtils.getMainFrame(), (MultiStateCharacter) cc);
-                    MultiStateValue val = new MultiStateValue((MultiStateCharacter) cc, new ArrayList<Integer>(userSetStates));
+                    Set<Integer> userSetStates = promptForMultiStateValue(UIUtils.getMainFrame(), (MultiStateCharacter) cc);
+                    MultiStateValue val = new MultiStateValue((MultiStateCharacter) cc, new HashSet<Integer>(userSetStates));
                     context.setValueForCharacter(cc, val);
                 } else {
                     // let intkey automatically use the character
-                    MultiStateValue val = new MultiStateValue((MultiStateCharacter) cc, new ArrayList<Integer>(applicableStates));
+                    MultiStateValue val = new MultiStateValue((MultiStateCharacter) cc, new HashSet<Integer>(applicableStates));
                     context.setValueForCharacter(cc, val);
                 }
 
@@ -488,14 +488,14 @@ public class UseDirective extends IntkeyDirective {
             CharacterValue characterVal = null;
 
             if (ch instanceof MultiStateCharacter) {
-                List<Integer> stateValues = promptForMultiStateValue(frame, (MultiStateCharacter) ch);
+                Set<Integer> stateValues = promptForMultiStateValue(frame, (MultiStateCharacter) ch);
                 if (stateValues.size() > 0) {
                     characterVal = new MultiStateValue((MultiStateCharacter) ch, stateValues);
                 }
             } else if (ch instanceof IntegerCharacter) {
-                IntRange intRange = promptForIntegerValue(frame, (IntegerCharacter) ch);
-                if (intRange != null) {
-                    characterVal = new IntegerValue((IntegerCharacter) ch, intRange);
+                Set<Integer> intValue = promptForIntegerValue(frame, (IntegerCharacter) ch);
+                if (intValue != null) {
+                    characterVal = new IntegerValue((IntegerCharacter) ch, intValue);
                 }
             } else if (ch instanceof RealCharacter) {
                 FloatRange floatRange = promptForRealValue(frame, (RealCharacter) ch);
@@ -514,13 +514,13 @@ public class UseDirective extends IntkeyDirective {
             return characterVal;
         }
 
-        private List<Integer> promptForMultiStateValue(Frame frame, MultiStateCharacter ch) {
+        private Set<Integer> promptForMultiStateValue(Frame frame, MultiStateCharacter ch) {
             MultiStateInputDialog dlg = new MultiStateInputDialog(frame, ch);
             UIUtils.showDialog(dlg);
             return dlg.getInputData();
         }
 
-        private IntRange promptForIntegerValue(Frame frame, IntegerCharacter ch) {
+        private Set<Integer> promptForIntegerValue(Frame frame, IntegerCharacter ch) {
             IntegerInputDialog dlg = new IntegerInputDialog(frame, ch);
             UIUtils.showDialog(dlg);
             return dlg.getInputData();
