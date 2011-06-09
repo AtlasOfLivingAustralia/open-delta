@@ -589,4 +589,18 @@ public class SlotFileDataSet extends AbstractObservableDataSet {
 		
 		return new DirectiveFile(dirFile);
 	}
+	
+	public int getDirectiveFileCount() {
+		return _vop.getDeltaMaster().getNDirFiles();
+	}
+	
+	public DirectiveFile getDirectiveFile(int fileNumber) {
+		if (fileNumber <= 0 || fileNumber > getDirectiveFileCount()) {
+			throw new IllegalArgumentException("No such file: "+fileNumber);
+		}
+		int id = _vop.getDeltaMaster().uniIdFromDirFileNo(fileNumber);
+		VODirFileDesc dirFile = (VODirFileDesc)_vop.getDescFromId(id);
+		
+		return new DirectiveFile(dirFile);
+	}
 }
