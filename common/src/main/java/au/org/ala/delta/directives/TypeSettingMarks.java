@@ -1,7 +1,6 @@
 package au.org.ala.delta.directives;
 
 import java.io.StringReader;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -9,8 +8,8 @@ import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.args.DirectiveArgType;
-import au.org.ala.delta.directives.args.IdTextList;
-import au.org.ala.delta.directives.args.IdTextList.IdTextArg;
+import au.org.ala.delta.directives.args.DirectiveArgument;
+import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.model.TypeSettingMark;
 import au.org.ala.delta.model.TypeSettingMark.MarkPosition;
 
@@ -34,15 +33,13 @@ public class TypeSettingMarks extends AbstractTextListDirective {
 		
 		parser.parse();
 		
-		IdTextList<Integer> args = parser.getDirectiveArgs();
+		DirectiveArguments args = parser.getDirectiveArgs();
 	
-		boolean hasDelimiter = !StringUtils.isEmpty(args.getDelimiter());
+		boolean hasDelimiter = !StringUtils.isEmpty(args.get(0).getText());
 		
-		List<IdTextArg<Integer>> list = args.getIdTextList();
-		
-		for (IdTextArg<Integer> arg : list) {
+		for (DirectiveArgument<?> arg : args.getDirectiveArguments()) {
 			
-			MarkPosition markPos = MarkPosition.fromId(arg.getId());
+			MarkPosition markPos = MarkPosition.fromId((Integer)arg.getId());
 			String markText = cleanWhiteSpace(arg.getText());
 			boolean allowWhiteSpace = hasDelimiter && markText.startsWith(" ");
 			TypeSettingMark mark = new TypeSettingMark(markPos, markText.trim(), allowWhiteSpace);

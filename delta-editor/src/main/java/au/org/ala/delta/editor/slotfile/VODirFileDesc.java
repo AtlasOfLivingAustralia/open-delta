@@ -1349,11 +1349,13 @@ public class VODirFileDesc extends VOAnyDesc implements WindowsConstants {
 
 	public static class DirFileFixedData extends FixedData {
 
-		public static final int SIZE = FixedData.SIZE + 2 + MAX_PATH + 8 + 4 + 4;
-
+		private static final int DIR_FILE_DATA_SIZE = 2 + MAX_PATH + 8 + 4 + 4;
+		public static final int SIZE = FixedData.SIZE + DIR_FILE_DATA_SIZE;
+			
 		public DirFileFixedData() {
 			super("DirFile Desc");
 			this.TypeID = VODescFactory.VODirFileDesc_TypeId;
+			this.fixedSize = SIZE;
 		}
 
 		public short fixedSize;
@@ -1366,7 +1368,7 @@ public class VODirFileDesc extends VOAnyDesc implements WindowsConstants {
 		@Override
 		public void read(BinFile file) {
 			super.read(file);
-			ByteBuffer b = file.readByteBuffer(SIZE);
+			ByteBuffer b = file.readByteBuffer(DIR_FILE_DATA_SIZE);
 
 			fixedSize = b.getShort();
 			byte[] sbytes = new byte[MAX_PATH];

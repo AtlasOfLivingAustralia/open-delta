@@ -4,8 +4,8 @@ import java.io.Reader;
 import java.text.ParseException;
 
 import au.org.ala.delta.DeltaContext;
-import au.org.ala.delta.directives.args.IdTextList;
-import au.org.ala.delta.directives.args.IdTextList.IdTextArg;
+import au.org.ala.delta.directives.args.DirectiveArgument;
+import au.org.ala.delta.directives.args.DirectiveArguments;
 
 /**
  * Parser for directives of the form:
@@ -26,18 +26,20 @@ public abstract class TextListParser<T> extends AbstractStreamParser {
 	
 	private char _delimiter;
 	
-	private IdTextList<T> _args;
+	private DirectiveArguments _args;
 	
 	public TextListParser(DeltaContext context, Reader reader) {
 		super(context, reader);
 	}
 	
-	public IdTextList<T> getDirectiveArgs() {
+	public DirectiveArguments getDirectiveArgs() {
 		return _args;
 	}
 	
 	@Override
 	public void parse() throws Exception {
+		
+		_args = new DirectiveArguments();
 		
 		_delimiter = readDelimiter();
 		
@@ -45,22 +47,19 @@ public abstract class TextListParser<T> extends AbstractStreamParser {
 		if (_delimiter != 0) {
 			delimiter = Character.toString(_delimiter);
 		}
-		_args = new IdTextList<T>(delimiter);
+		checkDelimiter(_delimiter);
 		
-	   	checkDelimiter(_delimiter);
+		DirectiveArgument<Integer> delimiterArg = new DirectiveArgument<Integer>(Integer.MIN_VALUE);
+		delimiterArg.setText(delimiter);
+		_args.add(delimiterArg);
 		
 	    while (_currentChar == MARK_IDENTIFIER) {
 	    	
 	    	T id = readId();
-	    	
-	    	// read and throw away the comment...
 	    	String comment = readOptionalComment();
-		    
-	    	// read the typesetting mark.
 	    	String value = readValue();
 	    	
-	    	IdTextArg<T> arg = new IdTextArg<T>(comment, value, id);
-	    	_args.add(arg);
+	    	_args.addDirectiveArgument(id, comment, value);
 	    }
 	}
 	

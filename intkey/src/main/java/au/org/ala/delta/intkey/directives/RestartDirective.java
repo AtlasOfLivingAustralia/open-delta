@@ -3,8 +3,7 @@ package au.org.ala.delta.intkey.directives;
 import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.directives.args.DirectiveArgType;
-import au.org.ala.delta.directives.args.DirectiveArgs;
-import au.org.ala.delta.directives.args.TextArg;
+import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
 public class RestartDirective extends IntkeyDirective {
@@ -14,8 +13,8 @@ public class RestartDirective extends IntkeyDirective {
     }
     
     @Override
-	public DirectiveArgs getDirectiveArgs() {
-		return new TextArg(_data);
+	public DirectiveArguments getDirectiveArgs() {
+    	return DirectiveArguments.textArgument(_data);
 	}
 
 	@Override

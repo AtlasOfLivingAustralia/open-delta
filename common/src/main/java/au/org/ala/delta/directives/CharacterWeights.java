@@ -14,6 +14,7 @@
  ******************************************************************************/
 package au.org.ala.delta.directives;
 
+
 /**
  * Processes the CHARACTER RELIABILITES directive.
  */
@@ -31,5 +32,4 @@ public class CharacterWeights extends CharacterWeightDirective {
 	public CharacterWeights() {
 		super(MIN_WEIGHT, MAX_WEIGHT, DEFAULT_WEIGHT, "character", "weights");
 	}
-
 }

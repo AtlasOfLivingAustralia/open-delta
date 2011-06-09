@@ -1,26 +1,17 @@
 package au.org.ala.delta.editor.directives;
 
-import java.util.List;
-
 import org.apache.commons.lang.NotImplementedException;
 
 import au.org.ala.delta.directives.AbstractDeltaContext;
 import au.org.ala.delta.directives.AbstractDirective;
-import au.org.ala.delta.directives.args.DirectiveArgs;
-import au.org.ala.delta.directives.args.IdTextList;
-import au.org.ala.delta.directives.args.IdTextList.IdTextArg;
-import au.org.ala.delta.directives.args.IdValueArgs;
-import au.org.ala.delta.directives.args.IntegerArg;
-import au.org.ala.delta.directives.args.IntegerList;
-import au.org.ala.delta.directives.args.TextArg;
+import au.org.ala.delta.directives.args.DirectiveArgument;
+import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.editor.slotfile.DeltaVOP;
 import au.org.ala.delta.editor.slotfile.Directive;
 import au.org.ala.delta.editor.slotfile.DirectiveArgType;
-import au.org.ala.delta.editor.slotfile.VODirFileDesc;
 import au.org.ala.delta.editor.slotfile.VODirFileDesc.Dir;
 import au.org.ala.delta.editor.slotfile.VODirFileDesc.DirArgs;
 import au.org.ala.delta.editor.slotfile.directive.ConforDirType;
-import au.org.ala.delta.util.Pair;
 
 /**
  * Creates and populates a Dir object from the arguments supplied to a AbstractDirective.
@@ -43,206 +34,103 @@ public class DirectiveArgConverter {
 		Directive directiveDescription = ConforDirType.typeOf(directive);
 		dir.setDirType(directiveDescription.getNumber());
 
-		PopulateArgs populateArgs = argsPopulatorFor(directive);
-		populateArgs.populateArgs(dir, directive.getDirectiveArgs());
+		populateArgs(dir, directive.getDirectiveArgs(), directive.getArgType());
 
 		return dir;
 	}
-
-	interface PopulateArgs {
-		public void populateArgs(Dir dir, DirectiveArgs args);	
-	}
-
-	class PopulateTextArgs implements PopulateArgs {
-		@Override
-		public void populateArgs(Dir dir, DirectiveArgs args) {
-			String text = ((TextArg) args).getText();
-			dir.resizeArgs(1);
-			dir.args.get(0).text = text;
-		}
-	}
 	
-	class PopulateNumberArg implements PopulateArgs {
-		@Override
-		public void populateArgs(Dir dir, DirectiveArgs args) {
-
-			int value = ((IntegerArg) args).getValue();
-			dir.resizeArgs(1);
-			dir.args.get(0).setValue(value);
+	private void populateArgs(Dir dir, DirectiveArguments args, int directiveType) {
+		if (args == null || directiveType == DirectiveArgType.DIRARG_INTERNAL) {
+			dir.resizeArgs(0);
 		}
-	}
-	
-	class PopulateNumberListArg implements PopulateArgs {
-		@Override
-		public void populateArgs(Dir dir, DirectiveArgs args) {
-			
-			List<Integer> values = ((IntegerList) args).getArgList();
-			for (int value : values) {
-				DirArgs dirArgs = new DirArgs();
-				dirArgs.setValue(value);
-				dir.args.add(dirArgs);
+		else {
+			for (DirectiveArgument<?> arg : args.getDirectiveArguments()) {
+				IdConverter converter = idConverterFor(directiveType);
+				DirArgs dirArg = new DirArgs(converter.convertId(arg.getId()));
+				dirArg.setText(arg.getText());
+				dirArg.comment = arg.getComment();
+				
+				dir.args.add(dirArg);
 			}
 		}
+		
 	}
 
-	class NoArgs implements PopulateArgs {
-		public void populateArgs(Dir dir, DirectiveArgs args) {}
-	}
-	
-	class PopulateIdListArg implements PopulateArgs {
-		
-		private IdConverter<Integer> _idConverter;
-		public PopulateIdListArg(IdConverter<Integer> idConverter) {
-			_idConverter = idConverter;
-		}
-		
-		public void populateArgs(Dir dir, DirectiveArgs args) {
-			
-			List<Integer> argList = ((IntegerList) args).getArgList();
-			processArgList(argList, dir);
-		}
-		
-		public void processArgList(List<Integer> args, Dir dir) {
-			for (int number : args) {
-				int id = _idConverter.convertId(number);
-				DirArgs dirArgs = new DirArgs();
-				dirArgs.setId(id);
-				dir.args.add(dirArgs);
-			}
-		}
-	}
-	
-	class PopulateIdArg implements PopulateArgs  {
-		
-		private IdConverter<Integer> _idConverter;
-		public PopulateIdArg(IdConverter<Integer> idConverter) {
-			_idConverter = idConverter;
-		}
-		public void populateArgs(Dir dir, DirectiveArgs args) {
-			int value = ((IntegerArg) args).getValue();
-			int id = _idConverter.convertId(value);
-			
-			dir.args.add(new DirArgs(id));
-		}
-	}
-	
-	class PopulateIdTextListArg<T> implements PopulateArgs {
-		
-		private IdConverter<T> _idConverter;
-		public PopulateIdTextListArg(IdConverter<T> idConverter) {
-			_idConverter = idConverter;
-		}
-		public void populateArgs(Dir dir, DirectiveArgs args) {
-			@SuppressWarnings("unchecked")
-			IdTextList<T> idTextList = (IdTextList<T>)args;
-			
-			DirArgs arg = new DirArgs(VODirFileDesc.VOUID_NAME);
-			arg.text = idTextList.getDelimiter();
-			dir.args.add(arg);
-			
-			for (IdTextArg<T> charText : idTextList.getIdTextList()) {
-				int id = _idConverter.convertId(charText.getId());
-				arg = new DirArgs(id);
-				arg.comment = charText.getComment();
-				arg.text = charText.getText();
-				dir.args.add(arg);
-			}
-		}
-	}
-	
-	class PopulateIdValueArgs<T> implements PopulateArgs {
-		private IdConverter<Integer> _idConverter;
-		public PopulateIdValueArgs(IdConverter<Integer> idConverter) {
-			_idConverter = idConverter;
-		}
-		public void populateArgs(Dir dir, DirectiveArgs args) {
-			@SuppressWarnings("unchecked")
-			IdValueArgs<T> idValueArgs = (IdValueArgs<T>) args;
-			List<Pair<Integer, T>> idValuePairs = idValueArgs.getArgs();
-			for (Pair<Integer, T> idValue : idValuePairs) {
-				int id = _idConverter.convertId(idValue.getFirst());
-				DirArgs arg = new DirArgs(id);
-				if (idValue.getSecond() instanceof Number) {
-					//arg.setValue(aValue)
-				}
-				else if (idValue.getSecond() instanceof String) {
-					arg.setText((String)idValue.getSecond());
-				}
-				dir.args.add(arg);
-			}
-		}
-	}
  
-	interface IdConverter<T> {
-		public int convertId(T id);
+	interface IdConverter {
+		public int convertId(Object id);
 	}
 	
-	class CharacterNumberConverter implements IdConverter<Integer> {
+	class CharacterNumberConverter implements IdConverter {
 		@Override
-		public int convertId(Integer id) {
-			return _vop.getDeltaMaster().uniIdFromCharNo(id);
+		public int convertId(Object id) {
+			return _vop.getDeltaMaster().uniIdFromCharNo((Integer)id);
 		}
 	}
 	
-	class ItemNumberConverter implements IdConverter<Integer> {
+	class ItemNumberConverter implements IdConverter {
 		@Override
-		public int convertId(Integer id) {
-			return _vop.getDeltaMaster().uniIdFromItemNo(id);
+		public int convertId(Object id) {
+			return _vop.getDeltaMaster().uniIdFromItemNo((Integer)id);
 		}
 	}
 	
-	class ItemDescriptionConverter implements IdConverter<String> {
+	class ItemDescriptionConverter implements IdConverter {
 		@Override
-		public int convertId(String id) {
+		public int convertId(Object id) {
 			throw new NotImplementedException();
 		}
 	}
 	
-	class NoopConverter implements IdConverter<Integer> {
+	class DirectConverter implements IdConverter {
 		@Override
-		public int convertId(Integer id) {
-			return id;
+		public int convertId(Object id) {
+			return (Integer)id;
 		}
 	}
 	
-	
+	class NullConverter implements IdConverter {
+		@Override
+		public int convertId(Object id) {
+			return 0;
+		}
+	}
  
 	
-	private PopulateArgs argsPopulatorFor(AbstractDirective<? extends AbstractDeltaContext> directive) {
-		int argType = directive.getArgType();
+	private IdConverter idConverterFor(int argType) {
+		
 		switch (argType) {
 		case DirectiveArgType.DIRARG_NONE:
 		case DirectiveArgType.DIRARG_TRANSLATION:
 		case DirectiveArgType.DIRARG_INTKEY_INCOMPLETE:
 		case DirectiveArgType.DIRARG_INTERNAL: // Not sure about this - existing code treats it like text.
-			return new NoArgs();
+			return new NullConverter();
 		case DirectiveArgType.DIRARG_COMMENT: // Will actually be handled within DirInComment
 		case DirectiveArgType.DIRARG_TEXT: // What about multiple lines of text? Should line breaks ALWAYS be
 											// preserved?
 		case DirectiveArgType.DIRARG_FILE:
 		case DirectiveArgType.DIRARG_OTHER:
-		
-			return new PopulateTextArgs();
+			return new NullConverter();
 		
 		case DirectiveArgType.DIRARG_INTEGER:
 		case DirectiveArgType.DIRARG_REAL:
-			return new PopulateNumberArg();
+			return new DirectConverter();
 			
 		case DirectiveArgType.DIRARG_CHAR:
-			return new PopulateIdArg(_characterNumberConverter);
+			return _characterNumberConverter;
 		case DirectiveArgType.DIRARG_ITEM:
-			return new PopulateIdArg(_itemNumberConverter);
+			return _itemNumberConverter;
 		case DirectiveArgType.DIRARG_CHARLIST:
-			return new PopulateIdListArg(_characterNumberConverter);
+			return _characterNumberConverter;
 		case DirectiveArgType.DIRARG_ITEMLIST:
-			return new PopulateIdListArg(_itemNumberConverter);
+			return _itemNumberConverter;
 		case DirectiveArgType.DIRARG_TEXTLIST:
-			return new PopulateIdTextListArg<Integer>(new NoopConverter());
+			return new DirectConverter();
 		case DirectiveArgType.DIRARG_CHARTEXTLIST:
-			return new PopulateIdTextListArg<Integer>(_characterNumberConverter);
+			return _characterNumberConverter;
 		case DirectiveArgType.DIRARG_ITEMTEXTLIST:
 		case DirectiveArgType.DIRARG_ITEMFILELIST:
-			return new PopulateIdTextListArg<String>(_itemDescriptionConverter);
+			return _itemDescriptionConverter;
 		case DirectiveArgType.DIRARG_CHARINTEGERLIST:
 			
 		case DirectiveArgType.DIRARG_CHARREALLIST:
@@ -299,6 +187,6 @@ public class DirectiveArgConverter {
 		
 			
 		}
-		return new NoArgs();
+		return new NullConverter();
 	}
 }

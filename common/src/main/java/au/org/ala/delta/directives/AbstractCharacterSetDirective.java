@@ -14,14 +14,13 @@
  ******************************************************************************/
 package au.org.ala.delta.directives;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.math.IntRange;
 
-import au.org.ala.delta.directives.args.CharacterSetArgs;
-import au.org.ala.delta.directives.args.DirectiveArgs;
+import au.org.ala.delta.directives.args.DirectiveArguments;
 
 /**
  * An AbstractCharacterSetDirective is a directive that takes a space separated list of 
@@ -31,40 +30,40 @@ public abstract class AbstractCharacterSetDirective<C extends AbstractDeltaConte
 
 	private static Pattern CHAR_SET_PATTERN = Pattern.compile("^(\\d+)[:-](.*)$");
 
-	protected CharacterSetArgs args;
+	protected DirectiveArguments args;
 	
 	public AbstractCharacterSetDirective(String... controlWords) {
 		super(controlWords);
 	}
 	
 	@Override
-	public DirectiveArgs getDirectiveArgs() {
+	public DirectiveArguments getDirectiveArgs() {
 		return args;
 	}
 
 	@Override
 	public void process(C context, String data) throws Exception {
-		args = new CharacterSetArgs();
+		args = new DirectiveArguments();
 		String[] typeDescriptors = data.split(" |\\n");
 		for (String typeDescriptor : typeDescriptors) {
 			typeDescriptor = typeDescriptor.trim();
 			if (CHAR_SET_PATTERN.matcher(typeDescriptor).matches()) {
 				String[] bits = typeDescriptor.trim().split(":");
 				
-				Set<Integer> characters = new HashSet<Integer>();
+				List<Integer> characters = new ArrayList<Integer>();
 				for (String bit : bits) {
 					IntRange r = parseRange(bit);
 					for (int i : r.toArray()) {
 						characters.add(i);
 					}
 				}
-				args.add(characters);
+				args.addDirectiveArgument(characters);
 				processCharacterSet(context, characters);
 			}
 			
 		}
 	}
 
-	protected abstract void processCharacterSet(C context, Set<Integer> characters);
+	protected abstract void processCharacterSet(C context, List<Integer> characters);
 
 }

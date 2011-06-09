@@ -1,19 +1,18 @@
 package au.org.ala.delta.directives;
 
 import au.org.ala.delta.DeltaContext;
-import au.org.ala.delta.directives.args.DirectiveArgs;
-import au.org.ala.delta.directives.args.TextListArg;
+import au.org.ala.delta.directives.args.DirectiveArguments;
 
 public abstract class AbstractTextListDirective extends AbstractDirective<DeltaContext> {
 	
-	protected TextListArg _args;
+	protected DirectiveArguments _args;
 	
 	protected AbstractTextListDirective(String... controlWords) {
 		super(controlWords);
 	}
 	
 	@Override
-	public DirectiveArgs getDirectiveArgs() {
+	public DirectiveArguments getDirectiveArgs() {
 
 		return _args;
 	}

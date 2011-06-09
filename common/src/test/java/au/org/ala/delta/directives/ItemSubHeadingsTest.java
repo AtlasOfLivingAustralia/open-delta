@@ -15,7 +15,7 @@ public class ItemSubHeadingsTest extends TestCase {
 	 */
 	@Test
 	public void testItemSubHeadingsProcessing() throws Exception {
-		String data = "*ITEM SUBHEADINGS\n" + "#87. Transverse section of lamina.\n" + "#96. Leaf epidermis.\n"
+		String data = "#87. Transverse section of lamina.\n" + "#96. Leaf epidermis.\n"
 				+ "#124. Pollen ultrastructure.";
 
 		ItemSubHeadings directive = new ItemSubHeadings();
@@ -40,7 +40,7 @@ public class ItemSubHeadingsTest extends TestCase {
 	 */
 	@Test
 	public void testItemSubHeadingsProcessingWithDelimiter() throws Exception {
-		String data = "*ITEM SUBHEADINGS !\n" + "#87. !Transverse section of lamina.!\n" + "#96. !Leaf epidermis.!\n"
+		String data = "!\n" + "#87. !Transverse section of lamina.!\n" + "#96. !Leaf epidermis.!\n"
 				+ "#124. !Pollen ultrastructure.!";
 
 		ItemSubHeadings directive = new ItemSubHeadings();
@@ -49,9 +49,9 @@ public class ItemSubHeadingsTest extends TestCase {
 
 		directive.process(context, data);
 
-		assertEquals("!Transverse section of lamina.!", context.getItemSubheading(87));
-		assertEquals("!Leaf epidermis.!", context.getItemSubheading(96));
-		assertEquals("!Pollen ultrastructure.!", context.getItemSubheading(124));
+		assertEquals("Transverse section of lamina.", context.getItemSubheading(87));
+		assertEquals("Leaf epidermis.", context.getItemSubheading(96));
+		assertEquals("Pollen ultrastructure.", context.getItemSubheading(124));
 		for (int i = 1; i <= 124; i++) {
 			boolean expectedResult = (i == 87 || i == 96 || i == 124);
 			assertEquals(Integer.toString(i), expectedResult, context.getItemSubheading(i) != null);
@@ -69,7 +69,7 @@ public class ItemSubHeadingsTest extends TestCase {
 		String[] invalidDelimiters = new String[] { "*", "#", "<", ">" };
 
 		for (String delimeter : invalidDelimiters) {
-			String data = "*ITEM SUBHEADINGS " + delimeter + "\n #1. ";
+			String data = " " + delimeter + "\n #1. ";
 
 			ItemSubHeadings directive = new ItemSubHeadings();
 

@@ -18,22 +18,21 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.math.IntRange;
 
-import au.org.ala.delta.directives.args.IdValueArgs;
 import au.org.ala.delta.directives.args.DirectiveArgType;
-import au.org.ala.delta.directives.args.DirectiveArgs;
+import au.org.ala.delta.directives.args.DirectiveArguments;
 
 public abstract class AbstractCharacterListDirective<C extends AbstractDeltaContext, T> extends AbstractDirective<C> {
 
 	private static Pattern CHAR_LIST_ITEM_PATTERN = Pattern.compile("^(\\d+),(.*)$|^(\\d+[-]\\d+),(.*)$");
 
-	private IdValueArgs<T> args;
+	private DirectiveArguments args;
 	
 	public AbstractCharacterListDirective(String... controlWords) {
 		super(controlWords);
 	}
 	
 	@Override
-	public DirectiveArgs getDirectiveArgs() {
+	public DirectiveArguments getDirectiveArgs() {
 		if (getArgType() == DirectiveArgType.DIRARG_INTERNAL) {
 			return null;
 		}
@@ -42,7 +41,7 @@ public abstract class AbstractCharacterListDirective<C extends AbstractDeltaCont
 
 	@Override
 	public void process(C context, String data) throws Exception {
-		args = new IdValueArgs<T>();
+		args = new DirectiveArguments();
 		String[] typeDescriptors = data.split(" |\\n");
 		for (String typeDescriptor : typeDescriptors) {
 			typeDescriptor = typeDescriptor.trim();
@@ -51,13 +50,15 @@ public abstract class AbstractCharacterListDirective<C extends AbstractDeltaCont
 				IntRange r = parseRange(bits[0]);
 				T rhs = interpretRHS(context, bits[1]);
 				for (int charIndex = r.getMinimumInteger(); charIndex <= r.getMaximumInteger(); ++charIndex) {
-					args.add(charIndex, rhs);
+					addArgument(args, charIndex, bits[1]);
 					processCharacter(context, charIndex, rhs);
 				}
 			}
 		}
 	}
 
+	protected abstract void addArgument(DirectiveArguments args, int charIndex, String value);
+	
 	protected abstract T interpretRHS(C context, String rhs);
 
 	protected abstract void processCharacter(C context, int charIndex, T rhs);

@@ -1,7 +1,6 @@
 package au.org.ala.delta.editor.directives;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JOptionPane;
@@ -19,8 +18,7 @@ import au.org.ala.delta.editor.DeltaEditor;
 import au.org.ala.delta.editor.directives.ui.ImportExportDialog;
 import au.org.ala.delta.editor.directives.ui.ImportExportDialog.DirectiveFile;
 import au.org.ala.delta.editor.directives.ui.ImportExportStatusDialog;
-import au.org.ala.delta.editor.slotfile.VODirFileDesc.Dir;
-import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.editor.model.EditorDataModel;
 
 /**
  * The ImportController manages the process of importing a set of directives files
@@ -29,16 +27,16 @@ import au.org.ala.delta.model.DeltaDataSet;
 public class ImportController {
 
 	private DeltaEditor _context;
-	private DeltaDataSet _dataSet;
+	private EditorDataModel _model;
 	
 	public ImportController(DeltaEditor context) {
 		_context = context;
-		_dataSet = context.getCurrentDataSet();
+		_model = context.getCurrentDataSet();
 	}
 	
 	public void begin() {
 		
-		if ((_dataSet.getNumberOfCharacters() > 0) || (_dataSet.getMaximumNumberOfItems() > 0)) {
+		if ((_model.getNumberOfCharacters() > 0) || (_model.getMaximumNumberOfItems() > 0)) {
 			JOptionPane.showMessageDialog(_context.getMainFrame(), "Imports are only currently supported for new data sets.");
 			return;
 		}
@@ -89,10 +87,12 @@ public class ImportController {
 			ImportExportStatus status = new ImportExportStatus();
 			publish(status);
 						
-			DeltaContext context = new DeltaContext(_dataSet);
+			DeltaContext context = new DeltaContext(_model);
 			ConforDirectiveFileParser parser = ConforDirectiveFileParser.createInstance();
+			int fileNumber = 1;
 			for (DirectiveFile file : _files) {
 				
+				_model.addDirectiveFile(fileNumber++, file._fileName, 0);
 				// First check if the existing dataset has a directives file with the same name
 				// and same last modified date.  If so, skip it.
 				status.setCurrentFile(file._fileName);

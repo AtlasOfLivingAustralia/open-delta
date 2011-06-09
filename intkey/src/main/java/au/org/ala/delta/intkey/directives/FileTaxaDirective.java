@@ -10,7 +10,7 @@ import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.directives.args.DirectiveArgType;
-import au.org.ala.delta.directives.args.DirectiveArgs;
+import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.ui.UIUtils;
 
@@ -21,7 +21,7 @@ public class FileTaxaDirective extends IntkeyDirective {
     }
     
     @Override
-	public DirectiveArgs getDirectiveArgs() {
+	public DirectiveArguments getDirectiveArgs() {
 		throw new NotImplementedException();
 	}
 

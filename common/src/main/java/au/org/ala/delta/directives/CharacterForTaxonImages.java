@@ -16,20 +16,11 @@ package au.org.ala.delta.directives;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.args.DirectiveArgType;
-import au.org.ala.delta.directives.args.DirectiveArgs;
-import au.org.ala.delta.directives.args.IntegerArg;
 
-public class CharacterForTaxonImages extends ConforDirective {
-	
-	private int _characterNum;
+public class CharacterForTaxonImages extends AbstractIntegerDirective {
 	
 	public CharacterForTaxonImages() {
 		super("character", "for", "taxon", "images");
-	}
-	
-	@Override
-	public DirectiveArgs getDirectiveArgs() {
-		return new IntegerArg(_characterNum);
 	}
 
 	@Override
@@ -37,11 +28,11 @@ public class CharacterForTaxonImages extends ConforDirective {
 		return DirectiveArgType.DIRARG_CHAR;
 	}
 
-	@Override
-	protected void doProcess(DeltaContext context, String data) throws Exception {
-		_characterNum = Integer.parseInt(data);
-		
-		context.setCharacterForTaxonImages(_characterNum);
-	}
 
+	@Override
+	protected void processInteger(DeltaContext context, int character)
+			throws Exception {
+		context.setCharacterForTaxonImages(character);
+		
+	}
 }

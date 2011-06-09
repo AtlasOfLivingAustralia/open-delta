@@ -17,7 +17,7 @@ package au.org.ala.delta.directives;
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.directives.args.DirectiveArgType;
-import au.org.ala.delta.directives.args.DirectiveArgs;
+import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DeltaDataSet;
 
@@ -34,7 +34,7 @@ public class CharacterTypes extends AbstractCharacterListDirective<DeltaContext,
 	}
 	
 	@Override
-	public DirectiveArgs getDirectiveArgs() {
+	public DirectiveArguments getDirectiveArgs() {
 		return null;
 	}
 
@@ -76,10 +76,17 @@ public class CharacterTypes extends AbstractCharacterListDirective<DeltaContext,
 		}
 		
 		dataSet.addCharacter(charNumber, type);
+		System.out.println("Created: "+charNumber);
 		_lastCharacterNumber = charNumber;
 	}
 	
 	private void createDefaultCharacter(DeltaDataSet dataSet, int number) {
 		dataSet.addCharacter(number, CharacterType.UnorderedMultiState);
 	}
+
+	@Override
+	protected void addArgument(DirectiveArguments args, int charIndex, String value) {
+	}
+	
+	
 }

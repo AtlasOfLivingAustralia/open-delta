@@ -16,7 +16,7 @@ package au.org.ala.delta.directives;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.args.DirectiveArgType;
-import au.org.ala.delta.directives.args.DirectiveArgs;
+import au.org.ala.delta.directives.args.DirectiveArguments;
 
 public abstract class NoopDirective extends ConforDirective {
 	
@@ -26,7 +26,7 @@ public abstract class NoopDirective extends ConforDirective {
 	
 	
 	@Override
-	public DirectiveArgs getDirectiveArgs() {
+	public DirectiveArguments getDirectiveArgs() {
 		return null;
 	}
 	

@@ -1,6 +1,7 @@
 package au.org.ala.delta.directives;
 
-import java.util.Set;
+import java.util.HashSet;
+import java.util.List;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.args.DirectiveArgType;
@@ -21,7 +22,7 @@ public class LinkCharacters extends AbstractCharacterSetDirective<DeltaContext> 
 	}
 	
 	@Override
-	protected void processCharacterSet(DeltaContext context, Set<Integer> characters) {
-		context.linkCharacters(characters);
+	protected void processCharacterSet(DeltaContext context, List<Integer> characters) {
+		context.linkCharacters(new HashSet<Integer>(characters));
 	}	
 }

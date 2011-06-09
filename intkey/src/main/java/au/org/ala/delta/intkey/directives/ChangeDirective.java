@@ -3,7 +3,7 @@ package au.org.ala.delta.intkey.directives;
 import org.apache.commons.lang.NotImplementedException;
 
 import au.org.ala.delta.directives.args.DirectiveArgType;
-import au.org.ala.delta.directives.args.DirectiveArgs;
+import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
 public class ChangeDirective extends IntkeyDirective {
@@ -18,7 +18,7 @@ public class ChangeDirective extends IntkeyDirective {
     }
 
     @Override
-    public DirectiveArgs getDirectiveArgs() {
+    public DirectiveArguments getDirectiveArgs() {
         throw new NotImplementedException();
     }
 

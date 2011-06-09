@@ -16,26 +16,25 @@ package au.org.ala.delta.directives;
 
 import org.apache.commons.lang.math.IntRange;
 
-import au.org.ala.delta.directives.args.DirectiveArgs;
-import au.org.ala.delta.directives.args.IntegerList;
+import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.util.IntegerFunctor;
 
 public abstract class AbstractRangeListDirective<C extends AbstractDeltaContext> extends AbstractDirective<C> {
 
-	protected IntegerList _args;
+	protected DirectiveArguments _args;
 	
 	protected AbstractRangeListDirective(String ...controlWords) {
 		super(controlWords);
 	}
 	
 	@Override
-	public DirectiveArgs getDirectiveArgs() {
+	public DirectiveArguments getDirectiveArgs() {
 		return _args;
 	}
 
 	@Override
 	public void process(C context, String data) throws Exception {
-		_args = new IntegerList();
+		_args = new DirectiveArguments();
 		// data is a space separate list of ranges...
 		String[] ranges = data.split(" ");
 		for (String range : ranges) {
@@ -43,7 +42,7 @@ public abstract class AbstractRangeListDirective<C extends AbstractDeltaContext>
 			forEach(r, context, new IntegerFunctor<C>() {
 				@Override
 				public void invoke(C context, int number) {
-					_args.add(number);
+					_args.addDirectiveArgument(number);
 					processNumber(context, number);
 				}
 			});

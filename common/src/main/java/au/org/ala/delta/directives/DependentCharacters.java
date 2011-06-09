@@ -21,6 +21,7 @@ import org.apache.commons.lang.math.IntRange;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.args.DirectiveArgType;
+import au.org.ala.delta.directives.args.DirectiveArguments;
 
 public class DependentCharacters extends AbstractCharacterListDirective<DeltaContext, String> {
 
@@ -76,5 +77,10 @@ public class DependentCharacters extends AbstractCharacterListDirective<DeltaCon
         }
 
     }
+
+	@Override
+	protected void addArgument(DirectiveArguments args, int charIndex, String value) {}
+    
+    
 
 }

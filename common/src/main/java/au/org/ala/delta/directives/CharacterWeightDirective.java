@@ -2,6 +2,7 @@ package au.org.ala.delta.directives;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.args.DirectiveArgType;
+import au.org.ala.delta.directives.args.DirectiveArguments;
 
 
 /**
@@ -60,5 +61,11 @@ public abstract class CharacterWeightDirective extends AbstractCharacterListDire
 			throw new IllegalArgumentException("The weight must be less than "+ _maximumWeight);
 		}
 		context.setCharacterWeight(charIndex, weight);
+	}
+	
+	@Override
+	protected void addArgument(DirectiveArguments args, int charIndex, String value) {
+		
+		args.addNumericArgument(charIndex, value);	
 	}
 }

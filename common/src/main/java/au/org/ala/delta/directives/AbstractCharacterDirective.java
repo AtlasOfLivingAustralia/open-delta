@@ -1,8 +1,7 @@
 package au.org.ala.delta.directives;
 
 import au.org.ala.delta.DeltaContext;
-import au.org.ala.delta.directives.args.DirectiveArgs;
-import au.org.ala.delta.directives.args.IntegerArg;
+import au.org.ala.delta.directives.args.DirectiveArguments;
 
 public abstract class AbstractCharacterDirective extends AbstractDirective<DeltaContext> {
 
@@ -13,9 +12,10 @@ public abstract class AbstractCharacterDirective extends AbstractDirective<Delta
 	}
 
 	@Override
-	public DirectiveArgs getDirectiveArgs() {
-
-		return new IntegerArg(_characterNum);
+	public DirectiveArguments getDirectiveArgs() {
+		DirectiveArguments args = new DirectiveArguments();
+		args.addDirectiveArgument(_characterNum);
+		return args;
 	}
 
 	public void process(DeltaContext context, String data) throws Exception {

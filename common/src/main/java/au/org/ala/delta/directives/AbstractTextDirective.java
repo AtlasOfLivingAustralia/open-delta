@@ -5,8 +5,7 @@ import java.util.regex.Pattern;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.args.DirectiveArgType;
-import au.org.ala.delta.directives.args.DirectiveArgs;
-import au.org.ala.delta.directives.args.TextArg;
+import au.org.ala.delta.directives.args.DirectiveArguments;
 
 public abstract class AbstractTextDirective extends AbstractDirective<DeltaContext> {
 
@@ -19,9 +18,10 @@ public abstract class AbstractTextDirective extends AbstractDirective<DeltaConte
 	}
 
 	@Override
-	public DirectiveArgs getDirectiveArgs() {
-
-		return new TextArg(_args);
+	public DirectiveArguments getDirectiveArgs() {
+		DirectiveArguments args = new DirectiveArguments();
+		args.addTextArgument(_args);
+		return args;
 	}
 
 	@Override

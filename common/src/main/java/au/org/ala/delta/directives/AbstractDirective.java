@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.IntRange;
 
-import au.org.ala.delta.directives.args.DirectiveArgs;
+import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.util.IntegerFunctor;
 
 public abstract class AbstractDirective<C extends AbstractDeltaContext> {
@@ -27,7 +27,7 @@ public abstract class AbstractDirective<C extends AbstractDeltaContext> {
         return _controlWords;
     }
     
-    public abstract DirectiveArgs getDirectiveArgs();
+    public abstract DirectiveArguments getDirectiveArgs();
     
     public abstract int getArgType();
 

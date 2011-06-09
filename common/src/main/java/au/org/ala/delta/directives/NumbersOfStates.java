@@ -17,6 +17,7 @@ package au.org.ala.delta.directives;
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.directives.args.DirectiveArgType;
+import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.model.MultiStateCharacter;
 
 public class NumbersOfStates extends AbstractCharacterListDirective<DeltaContext, Integer> {
@@ -50,4 +51,7 @@ public class NumbersOfStates extends AbstractCharacterListDirective<DeltaContext
 		}
 	}
 
+	@Override
+	protected void addArgument(DirectiveArguments args, int charIndex, String value) {}
+	
 }

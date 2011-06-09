@@ -9,6 +9,8 @@ import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
 
 import au.org.ala.delta.editor.EditorPreferences;
+import au.org.ala.delta.editor.slotfile.model.DirectiveFile;
+import au.org.ala.delta.editor.slotfile.model.SlotFileDataSet;
 import au.org.ala.delta.model.AbstractObservableDataSet;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
@@ -133,6 +135,10 @@ public class EditorDataModel extends DataSetWrapper implements EditorViewModel, 
 		EditorPreferences.removePreferenceChangeListener(this);
 		_wrappedDataSet.removeDeltaDataSetObserver(this);
 		_wrappedDataSet.close();
+	}
+	
+	public DirectiveFile addDirectiveFile(int fileNumber, String fileName, int flags) {
+		return ((SlotFileDataSet)_wrappedDataSet).addDirectiveFile(fileNumber, fileName, flags);
 	}
 	
 	public boolean isModified() {

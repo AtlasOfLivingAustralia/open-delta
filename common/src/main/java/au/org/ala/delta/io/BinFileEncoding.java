@@ -12,6 +12,9 @@ public class BinFileEncoding {
 	public static final Charset BIN_FILE_CHAR_ENCODING = Charset.forName("Cp1252");
 	
 	public static byte[] encode(String str) {
+		if (str == null) {
+			return new byte[0];
+		}
 		return str.getBytes(BIN_FILE_CHAR_ENCODING);
 	}
 	
