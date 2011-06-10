@@ -120,7 +120,7 @@ public class VOCharacterAdaptor extends ImageHolderAdaptor implements CharacterD
 			return "";
 		}
 		int stateId = _charDesc.uniIdFromStateNo(stateNumber);
-		return _textDesc.readStateText(stateId, TextType.UTF8);
+		return _textDesc.readStateText(stateId, TextType.RTF);
 	}
 
 	@Override

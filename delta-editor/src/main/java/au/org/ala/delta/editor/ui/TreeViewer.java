@@ -263,9 +263,11 @@ public class TreeViewer extends JInternalFrame implements DeltaView {
 		
 		private static final long serialVersionUID = 2155436614741771060L;
 		
+		private CharacterFormatter _formatter;
+		
 		public MultiStateAttributeCellEditor() {
 			super(new MultiStateCheckbox());
-			
+			_formatter = new CharacterFormatter(true, false, false, true);
 			editorComponent.setOpaque(false);
 		}
 		@Override
@@ -275,7 +277,7 @@ public class TreeViewer extends JInternalFrame implements DeltaView {
 			
 			MultiStateCharacter character = (MultiStateCharacter)multiStateAttr.getCharacter();
 			int stateNum = nodeValue.getStateNo();
-			getEditingCheckBox().setText(character.getState(stateNum));
+			getEditingCheckBox().setText(_formatter.formatState(character, stateNum));
 			
 			getEditingCheckBox().setSelected(multiStateAttr.isStatePresent(stateNum));
 			return editorComponent;
@@ -898,7 +900,7 @@ class CharacterTreeNode extends DefaultMutableTreeNode {
 class MultistateStateNode extends DefaultMutableTreeNode {
 
 	private static final long serialVersionUID = 1L;
-	private static CharacterFormatter _characterFormatter = new CharacterFormatter();
+	private static CharacterFormatter _characterFormatter = new CharacterFormatter(true, false, false, true);
 	
 	private MultiStateCharacter _character;
 	private int _stateNo;
