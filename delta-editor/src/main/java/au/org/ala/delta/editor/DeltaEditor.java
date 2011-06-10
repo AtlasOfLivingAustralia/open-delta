@@ -55,7 +55,6 @@ import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.Task;
 import org.jdesktop.application.Task.BlockingScope;
-import org.omg.stub.java.rmi._Remote_Stub;
 
 import au.org.ala.delta.editor.directives.ImportController;
 import au.org.ala.delta.editor.model.EditorDataModel;
