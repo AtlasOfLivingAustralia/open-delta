@@ -266,6 +266,9 @@ public class DeltaViewController extends InternalFrameAdapter implements Vetoabl
 	 * @return the number of active views of the model being controlled by this controller.
 	 */
 	public int getViewCount() {
+		if (_closingAll) {
+			return 0;
+		}
 		return _activeViews.size();
 	}
 	

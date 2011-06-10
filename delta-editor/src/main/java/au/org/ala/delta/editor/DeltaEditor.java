@@ -15,7 +15,6 @@
 package au.org.ala.delta.editor;
 
 import java.awt.Dimension;
-import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -30,7 +29,6 @@ import java.util.List;
 import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
 
-import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
@@ -583,7 +581,6 @@ public class DeltaEditor extends InternalFrameApplication implements
 	public void viewClosed(DeltaViewController controller, DeltaView view) {
 		
 		if (controller.getViewCount() == 0) {
-		
 			_controllers.remove(controller);
 			
 			if (_controllers.isEmpty()) {
@@ -822,26 +819,3 @@ public class DeltaEditor extends InternalFrameApplication implements
 	
 }
 
-class LookAndFeelAction extends AbstractAction {
-
-	private static final long serialVersionUID = 1L;
-
-	private LookAndFeel _laf;
-	private Frame _frame;
-
-	public LookAndFeelAction(Frame frame, LookAndFeel laf) {
-		super(laf.getName());
-		_laf = laf;
-		_frame = frame;
-	}
-
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		try {
-			UIManager.setLookAndFeel(_laf);
-			SwingUtilities.updateComponentTreeUI(_frame);
-		} catch (Exception ex) {
-			System.err.println(ex);
-		}
-	}
-}
