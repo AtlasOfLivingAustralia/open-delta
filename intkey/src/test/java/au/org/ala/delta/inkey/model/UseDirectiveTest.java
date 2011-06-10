@@ -437,19 +437,11 @@ public class UseDirectiveTest extends TestCase {
         assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(14)));
     }
 
-    // Set multistate, real integer etc
-
     // set twice
     // remove twice
-    // weird behavior with change ???
-    // open two datasets in succession, ensure that keywords etc from first
-    // dataset are cleared out
-    // Integer above and below maximum
+
     // Dependent characters like 210, 213 and 230 in grasses
     // Dependent characters like 153,154,155 in salix
 
-    // and, or and range operators
-
-    // invalid input - ensure behaves correctly
 
 }

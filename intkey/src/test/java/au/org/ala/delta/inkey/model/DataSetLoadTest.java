@@ -521,6 +521,33 @@ public class DataSetLoadTest extends TestCase {
         assertEquals(new HashSet(Arrays.asList(1, 2, 3, 5)), attrFloristicKingdoms.getPresentStates());
     }
     
+    /**
+     * Test reading two datasets in succession. Ensure that number of characters, keywords etc is
+     * correct after reading the second dataset.
+     * @throws Exception
+     */
+    @Test
+    public void testReadTwoDatasets() throws Exception {
+        URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
+        IntkeyContext context = new IntkeyContext(null);
+        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+        
+        IntkeyDataset ds = context.getDataset();
+        
+        assertEquals(87, ds.getNumberOfCharacters());
+        assertEquals(14, ds.getNumberOfTaxa());
+        assertEquals(38, context.getCharacterKeywords().size());
+        
+        initFileUrl = getClass().getResource("/dataset/controlling_characters_simple/intkey.ink");
+        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+        
+        ds = context.getDataset();
+        
+        assertEquals(8, ds.getNumberOfCharacters());
+        assertEquals(5, ds.getNumberOfTaxa());
+        assertEquals(2, context.getCharacterKeywords().size());        
+    }
+    
     //TODO more specific tests for NewDataset, File Characters and File Taxa Directives
 
 }
