@@ -11,6 +11,8 @@ import javax.swing.UIManager;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import au.org.ala.delta.ui.rtf.RtfToolBar;
+
 /**
  * Contains functionality common to the ControlledByEditor and the ControllingAttributeEditor
  */
@@ -18,6 +20,11 @@ public abstract class CharacterDepencencyEditor extends CharacterEditTab {
 
 	private static final long serialVersionUID = 6353749833335368389L;
 
+	
+	public CharacterDepencencyEditor(RtfToolBar toolbar) {
+		super(toolbar);
+	}
+	
 	class ButtonEnabler implements ListSelectionListener {
 
 		private AbstractButton _button;

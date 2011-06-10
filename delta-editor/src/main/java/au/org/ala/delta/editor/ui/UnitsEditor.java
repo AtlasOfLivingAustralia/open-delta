@@ -10,6 +10,7 @@ import javax.swing.JScrollPane;
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.model.NumericCharacter;
 import au.org.ala.delta.ui.rtf.RtfEditor;
+import au.org.ala.delta.ui.rtf.RtfToolBar;
 
 /**
  * Allows the user to add or edit the units of a NumericCharacter.
@@ -18,7 +19,8 @@ public class UnitsEditor extends CharacterEditTab {
 
 	private static final long serialVersionUID = 8286423277647757100L;
 
-	public UnitsEditor() {
+	public UnitsEditor(RtfToolBar toolbar) {
+		super(toolbar);
 		createUI();
 		addEventListeners();
 	}
@@ -27,6 +29,7 @@ public class UnitsEditor extends CharacterEditTab {
 		setName("CharacterUnitsEditor");
 		setLayout(new BorderLayout());
 		editor = new RtfEditor();
+		_toolbar.addEditor(editor);
 		add(new JScrollPane(editor), BorderLayout.CENTER);
 		JLabel characterNotesLabel = new JLabel();
 		characterNotesLabel.setName("characterUnitsLabel");

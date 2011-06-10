@@ -1,5 +1,6 @@
 package au.org.ala.delta.editor.ui;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 
@@ -15,6 +16,7 @@ import javax.swing.JComponent;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
@@ -47,6 +49,7 @@ import au.org.ala.delta.model.NumericCharacter;
 import au.org.ala.delta.model.observer.AbstractDataSetObserver;
 import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
 import au.org.ala.delta.ui.rtf.RtfEditor;
+import au.org.ala.delta.ui.rtf.RtfToolBar;
 
 /**
  * Provides a user interface that allows a character to be edited.
@@ -307,9 +310,12 @@ public class CharacterEditor extends JInternalFrame implements DeltaView {
 		JLabel lblCharacterType = new JLabel("Character Type:");
 		lblCharacterType.setName("characterTypeLabel");
 		
-		createTabbedPane();
+		RtfToolBar toolbar = new RtfToolBar();
+		createTabbedPane(toolbar);
 		
-		GroupLayout groupLayout = new GroupLayout(getContentPane());
+		JPanel mainPanel = new JPanel();
+		
+		GroupLayout groupLayout = new GroupLayout(mainPanel);
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup()
@@ -378,32 +384,36 @@ public class CharacterEditor extends JInternalFrame implements DeltaView {
 					.addGap(17))
 		);
 	
-		getContentPane().setLayout(groupLayout);
+		mainPanel.setLayout(groupLayout);
 		setPreferredSize(new Dimension(827, 500));
 		setMinimumSize(new Dimension(748, 444));
+		
+		toolbar.addEditor(rtfEditor);
+		getContentPane().add(toolbar, BorderLayout.NORTH);
+		getContentPane().add(mainPanel, BorderLayout.CENTER);
 	}
 
-	private void createTabbedPane() {
+	private void createTabbedPane(RtfToolBar toolbar) {
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane.setBorder(null);
 		tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
 		
-		stateEditor = new StateEditor();
+		stateEditor = new StateEditor(toolbar);
 		addTab("states", stateEditor);
 		
-		unitsEditor = new UnitsEditor();
+		unitsEditor = new UnitsEditor(toolbar);
 		addTab("units", unitsEditor);
 		
 		imageDetails = new ImageDetailsPanel();
 		addTab("images", imageDetails);
 		
-		characterNotesEditor = new CharacterNotesEditor();
+		characterNotesEditor = new CharacterNotesEditor(toolbar);
 		addTab("notes", characterNotesEditor);
 		
-		controllingAttributeEditor = new ControllingAttributeEditor();
+		controllingAttributeEditor = new ControllingAttributeEditor(toolbar);
 		addTab("controls", controllingAttributeEditor);
 		
-		controlledByEditor = new ControlledByEditor();
+		controlledByEditor = new ControlledByEditor(toolbar);
 		addTab("controlledBy", controlledByEditor);
 	}
 	

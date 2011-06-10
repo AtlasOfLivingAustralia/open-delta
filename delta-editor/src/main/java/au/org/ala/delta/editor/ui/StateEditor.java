@@ -11,7 +11,6 @@ import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ListModel;
@@ -29,12 +28,13 @@ import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.observer.AbstractDataSetObserver;
 import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
 import au.org.ala.delta.ui.rtf.RtfEditor;
+import au.org.ala.delta.ui.rtf.RtfToolBar;
 
 /**
  * The StateEditor provides a user with the ability to add / delete / edit / reorder the states
  * of a multistate character.
  */
-public class StateEditor extends JPanel {
+public class StateEditor extends CharacterEditTab {
 	
 	private static final long serialVersionUID = 7879506441983307844L;
 	private JButton btnAdd;
@@ -51,7 +51,8 @@ public class StateEditor extends JPanel {
 	private boolean _ignoreUpdates;
 	private int _selectedState;
 
-	public StateEditor() {
+	public StateEditor(RtfToolBar toolbar) {
+		super(toolbar);
 		_ignoreUpdates = false;
 		_formatter = new CharacterFormatter(true, false, false, true);
 		createUI();
@@ -129,6 +130,7 @@ public class StateEditor extends JPanel {
 		stateDescriptionLabel.setName("stateDescriptionLabel");
 		
 		stateDescriptionPane = new RtfEditor();
+		_toolbar.addEditor(stateDescriptionPane);
 		JScrollPane descriptionScroller = new JScrollPane(stateDescriptionPane);
 		
 		GroupLayout groupLayout = new GroupLayout(this);
@@ -212,11 +214,12 @@ public class StateEditor extends JPanel {
 	 * Updates the character being displayed by this StateEditor.
 	 * @param character the character to display/edit.
 	 */
-	public void bind(EditorViewModel model, MultiStateCharacter character) {
+	@Override
+	public void bind(EditorViewModel model, au.org.ala.delta.model.Character character) {
 		if (character.equals(_character)) {
 			return;
 		}
-		_character = character;
+		_character = (MultiStateCharacter)character;
 		setModel(model);
 		ListModel listModel = new StateListModel(_model, _character);
 		stateList.setModel(listModel);

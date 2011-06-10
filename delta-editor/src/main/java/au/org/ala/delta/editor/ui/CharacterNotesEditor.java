@@ -10,6 +10,7 @@ import javax.swing.JScrollPane;
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.ui.rtf.RtfEditor;
+import au.org.ala.delta.ui.rtf.RtfToolBar;
 
 /**
  * Allows the user to add or edit notes for a Character.
@@ -20,7 +21,8 @@ public class CharacterNotesEditor extends CharacterEditTab {
 
 	private RtfEditor editor;
 	
-	public CharacterNotesEditor() {
+	public CharacterNotesEditor(RtfToolBar toolbar) {
+		super(toolbar);
 		createUI();
 		addEventListeners();
 	}
@@ -29,6 +31,7 @@ public class CharacterNotesEditor extends CharacterEditTab {
 		setName("CharacterNotesEditor");
 		setLayout(new BorderLayout());
 		editor = new RtfEditor();
+		_toolbar.addEditor(editor);
 		add(new JScrollPane(editor), BorderLayout.CENTER);
 		JLabel characterNotesLabel = new JLabel();
 		characterNotesLabel.setName("characterNotesLabel");

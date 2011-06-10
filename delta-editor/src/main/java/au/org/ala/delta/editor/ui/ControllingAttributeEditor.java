@@ -32,6 +32,7 @@ import au.org.ala.delta.model.CharacterDependency;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.format.CharacterDependencyFormatter;
 import au.org.ala.delta.model.format.CharacterFormatter;
+import au.org.ala.delta.ui.rtf.RtfToolBar;
 
 public class ControllingAttributeEditor extends CharacterDepencencyEditor {
 	
@@ -52,8 +53,8 @@ public class ControllingAttributeEditor extends CharacterDepencencyEditor {
 	private JButton moveLeftButton;
 	private JButton btnRedefine;
 
-	public ControllingAttributeEditor() {
-		
+	public ControllingAttributeEditor(RtfToolBar toolbar) {
+		super(toolbar);
 		createUI();
 		addEventHandlers();
 	}

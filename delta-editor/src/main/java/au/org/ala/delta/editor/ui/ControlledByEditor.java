@@ -22,6 +22,7 @@ import org.jdesktop.application.ApplicationContext;
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.model.CharacterDependency;
 import au.org.ala.delta.model.format.CharacterDependencyFormatter;
+import au.org.ala.delta.ui.rtf.RtfToolBar;
 
 /**
  * The ControlledByEditor provides users with an interface for changes which characters 
@@ -39,7 +40,8 @@ public class ControlledByEditor extends CharacterDepencencyEditor {
 	private List<CharacterDependency> _allControllingAttributes;
 	private List<CharacterDependency> _controllingAttributes;
 	
-	public ControlledByEditor() {
+	public ControlledByEditor(RtfToolBar toolbar) {
+		super(toolbar);
 		_allControllingAttributes = new ArrayList<CharacterDependency>();
 		createUI();
 		addEventHandlers();
