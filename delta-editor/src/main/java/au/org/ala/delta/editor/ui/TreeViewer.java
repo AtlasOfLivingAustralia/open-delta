@@ -137,6 +137,9 @@ public class TreeViewer extends JInternalFrame implements DeltaView {
 					_dataModel.setSelectedCharacter(((CharacterTreeNode) node).getCharacter());
 				} else if (node.getParent() instanceof CharacterTreeNode) {
 					_dataModel.setSelectedCharacter(((CharacterTreeNode) node.getParent()).getCharacter());
+					if (node instanceof MultistateStateNode) {
+						_dataModel.setSelectedState(((MultistateStateNode)node).getStateNo());
+					}
 				} else {
 					_dataModel.setSelectedCharacter(null);
 				}

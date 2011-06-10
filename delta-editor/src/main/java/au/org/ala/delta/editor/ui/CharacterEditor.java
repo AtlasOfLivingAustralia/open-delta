@@ -432,6 +432,7 @@ public class CharacterEditor extends JInternalFrame implements DeltaView {
 		_dataSet = dataSet;
 		characterSelectionList.setModel(dataSet);
 		setSelectedCharacter(dataSet.getSelectedCharacter());
+		
 		_validator = new CharacterValidator(_dataSet, _selectedCharacter);
 		_dataSet.addDeltaDataSetObserver(new AbstractDataSetObserver() {
 

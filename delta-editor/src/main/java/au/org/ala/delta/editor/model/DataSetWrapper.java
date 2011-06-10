@@ -270,5 +270,4 @@ public class DataSetWrapper implements ObservableDeltaDataSet, DeltaDataSetObser
     public Attribute addAttribute(int itemNumber, int characterNumber) {
         return _wrappedDataSet.addAttribute(itemNumber, characterNumber);
     }
-
 }

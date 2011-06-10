@@ -7,6 +7,7 @@ import java.util.prefs.PreferenceChangeListener;
 
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.MultiStateCharacter;
 
 /**
  * The DeltaViewModel is designed to provide each view with a separate instance of
@@ -26,6 +27,11 @@ public class DeltaViewModel extends DataSetWrapper implements EditorViewModel, P
 	/** The number of the currently selected character */
 	private Character _selectedCharacter;
 	
+	/** The number of the selected state.  Only valid when the selected
+	 * character is a multistate character (otherwise it's -1).
+	 */
+	private int _selectedState;
+	
 	/** The number of the currently selected item */
 	private Item _selectedItem;
 	
@@ -43,7 +49,25 @@ public class DeltaViewModel extends DataSetWrapper implements EditorViewModel, P
 
 	@Override
 	public void setSelectedCharacter(Character selectedCharacter) {
+		if (_selectedCharacter == null || selectedCharacter == null || 
+				!_selectedCharacter.equals(selectedCharacter)) {
+			_selectedState = -1;
+		}
+		
 		_selectedCharacter = selectedCharacter;
+	}
+	
+	@Override
+	public void setSelectedState(int state) {
+		if (!(_selectedCharacter instanceof MultiStateCharacter)) {
+			_selectedState = -1;
+		}
+		_selectedState = state;
+	}
+	
+	@Override
+	public int getSelectedState() {
+		return _selectedState;
 	}
 
 	@Override

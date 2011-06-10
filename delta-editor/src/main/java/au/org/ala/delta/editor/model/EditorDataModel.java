@@ -14,6 +14,7 @@ import au.org.ala.delta.editor.slotfile.model.SlotFileDataSet;
 import au.org.ala.delta.model.AbstractObservableDataSet;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.ObservableDeltaDataSet;
 import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
 
@@ -32,6 +33,11 @@ public class EditorDataModel extends DataSetWrapper implements EditorViewModel, 
 	/** The number of the currently selected item */
 	private Item _selectedItem;
 	
+	/** The number of the selected state.  Only valid when the selected
+	 * character is a multistate character (otherwise it's -1).
+	 */
+	private int _selectedState;
+	
 	/** Helper class for notifying interested parties of property changes */
 	private PropertyChangeSupport _propertyChangeSupport;
 	
@@ -44,7 +50,9 @@ public class EditorDataModel extends DataSetWrapper implements EditorViewModel, 
 		super(dataSet);
 		_propertyChangeSupport = new PropertyChangeSupport(this);
 		_preferenceChangeListeners = new ArrayList<PreferenceChangeListener>();
-		
+		_selectedState = -1;
+		_selectedCharacter = null;
+		_selectedItem = null;
 		EditorPreferences.addPreferencesChangeListener(this);
 	}
 	
@@ -65,9 +73,26 @@ public class EditorDataModel extends DataSetWrapper implements EditorViewModel, 
 	
 	@Override
 	public void setSelectedCharacter(Character selectedCharacter) {
+		if (_selectedCharacter == null || selectedCharacter == null || 
+				!_selectedCharacter.equals(selectedCharacter)) {
+			_selectedState = -1;
+		}
+		
 		_selectedCharacter = selectedCharacter;
 	}
 	
+	@Override
+	public void setSelectedState(int state) {
+		if (!(_selectedCharacter instanceof MultiStateCharacter)) {
+			_selectedState = -1;
+		}
+		_selectedState = state;
+	}
+	
+	@Override
+	public int getSelectedState() {
+		return _selectedState;
+	}
 	
 	@Override
 	public Item getSelectedItem() {

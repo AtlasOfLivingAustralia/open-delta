@@ -220,10 +220,16 @@ public class StateEditor extends CharacterEditTab {
 			return;
 		}
 		_character = (MultiStateCharacter)character;
+		
 		setModel(model);
 		ListModel listModel = new StateListModel(_model, _character);
 		stateList.setModel(listModel);
-		stateList.setSelectedIndex(0);
+		if (model.getSelectedState() > 0) {
+			stateList.setSelectedIndex(model.getSelectedState()-1);
+		}
+		else {
+			stateList.setSelectedIndex(0);
+		}
 		updateScreen();
 	}
 	

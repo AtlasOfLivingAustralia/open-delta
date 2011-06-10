@@ -31,4 +31,8 @@ public interface EditorViewModel extends ObservableDeltaDataSet {
 	public void removePreferenceChangeListener(PreferenceChangeListener listener);
 
 	public abstract String getImagePath();
+
+	public void setSelectedState(int stateNo);
+	
+	public int getSelectedState();
 }
