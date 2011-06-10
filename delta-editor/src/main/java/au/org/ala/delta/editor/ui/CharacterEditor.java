@@ -305,6 +305,7 @@ public class CharacterEditor extends JInternalFrame implements DeltaView {
 		comboBox.setRenderer(new CharacterTypeRenderer());
 		
 		JLabel lblCharacterType = new JLabel("Character Type:");
+		lblCharacterType.setName("characterTypeLabel");
 		
 		createTabbedPane();
 		

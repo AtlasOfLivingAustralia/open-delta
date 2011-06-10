@@ -50,6 +50,7 @@ public class ControllingAttributeEditor extends CharacterDepencencyEditor {
 	private JList remainingCharacterList;
 	private JButton moveRightButton;
 	private JButton moveLeftButton;
+	private JButton btnRedefine;
 
 	public ControllingAttributeEditor() {
 		
@@ -62,6 +63,7 @@ public class ControllingAttributeEditor extends CharacterDepencencyEditor {
 		attributeCombo.addActionListener(actions.get("selectedAttributeChanged"));
 		moveLeftButton.setAction(actions.get("moveToControlledList"));
 		moveRightButton.setAction(actions.get("moveFromControlledList"));
+		btnRedefine.setAction(actions.get("redefineControllingAttribute"));
 		
 		new ButtonEnabler(moveLeftButton, remainingCharacterList);
 		new ButtonEnabler(moveRightButton, controlledCharacterList);
@@ -69,16 +71,18 @@ public class ControllingAttributeEditor extends CharacterDepencencyEditor {
 
 	private void createUI() {
 		JPanel controllingAttributes = new JPanel();
-		JLabel lblControllingAttribute = new JLabel("Controlling attribute");
+		JLabel lblControllingAttribute = new JLabel("Controlling attribute*");
+		lblControllingAttribute.setName("controllingAttributeLabel");
 		
 		attributeCombo = new JComboBox();
 		attributeCombo.setRenderer(new ControllingAttributeRenderer());
 		
-		JLabel lblDefinedByStates = new JLabel("Defined by states:");
+		JLabel lblDefinedByStates = new JLabel("Defined by states:*");
+		lblDefinedByStates.setName("definedByStatesLabel");
 		
 		JScrollPane stateListScroller = new JScrollPane();
 		
-		JButton btnRedefine = new JButton("Redefine");
+		btnRedefine = new JButton("Redefine");
 		GroupLayout gl_controllingAttributes = new GroupLayout(controllingAttributes);
 		gl_controllingAttributes.setHorizontalGroup(
 			gl_controllingAttributes.createParallelGroup(Alignment.LEADING)
@@ -134,7 +138,8 @@ public class ControllingAttributeEditor extends CharacterDepencencyEditor {
 					.addContainerGap())
 		);
 		
-		JLabel lblNewLabel = new JLabel("Makes inapplicable:");
+		JLabel lblMakesInapplicable = new JLabel("Makes inapplicable:*");
+		lblMakesInapplicable.setName("makesInapplicableLabel");
 		
 		JScrollPane scrollPane = new JScrollPane();
 		
@@ -142,7 +147,8 @@ public class ControllingAttributeEditor extends CharacterDepencencyEditor {
 		
 		moveLeftButton = new JButton("");
 		
-		JLabel lblNewLabel_1 = new JLabel("Character list:");
+		JLabel characterListLabel = new JLabel("Character list:*");
+		characterListLabel.setName("characterListLabel");
 		
 		JScrollPane scrollPane_1 = new JScrollPane();
 		GroupLayout gl_panel = new GroupLayout(panel);
@@ -157,10 +163,10 @@ public class ControllingAttributeEditor extends CharacterDepencencyEditor {
 							.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
 								.addComponent(moveLeftButton)
 								.addComponent(moveRightButton)))
-						.addComponent(lblNewLabel))
+						.addComponent(lblMakesInapplicable))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
-						.addComponent(lblNewLabel_1)
+						.addComponent(characterListLabel)
 						.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE))
 					.addContainerGap())
 		);
@@ -171,8 +177,8 @@ public class ControllingAttributeEditor extends CharacterDepencencyEditor {
 						.addGroup(gl_panel.createSequentialGroup()
 							.addContainerGap()
 							.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
-								.addComponent(lblNewLabel)
-								.addComponent(lblNewLabel_1))
+								.addComponent(lblMakesInapplicable)
+								.addComponent(characterListLabel))
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addGroup(gl_panel.createParallelGroup(Alignment.TRAILING)
 								.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 208, Short.MAX_VALUE)
@@ -258,7 +264,10 @@ public class ControllingAttributeEditor extends CharacterDepencencyEditor {
 		selectedAttributeChanged();
 	}
 	
-	
+	@Action
+	public void redefineControllingAttribute() {
+		
+	}
 	
 	private void updateScreen() {
 		if (_controllingAttribute != null) {

@@ -84,7 +84,8 @@ public class ControlledByEditor extends CharacterDepencencyEditor {
 	
 	private void createUI() {
 
-		JLabel lblNewLabel = new JLabel("Made inapplicable by:");
+		JLabel madeInapplicableByLabel = new JLabel("Made inapplicable by:*");
+		madeInapplicableByLabel.setName("madeInapplicableByLabel");
 		
 		JScrollPane scrollPane = new JScrollPane();
 		
@@ -92,7 +93,8 @@ public class ControlledByEditor extends CharacterDepencencyEditor {
 		
 		JScrollPane scrollPane_1 = new JScrollPane();
 		
-		JLabel lblDefinedControllingAttributes = new JLabel("Defined controlling attributes:");
+		JLabel lblDefinedControllingAttributes = new JLabel("Defined controlling attributes:*");
+		lblDefinedControllingAttributes.setName("definedControllingAttributesLabel");
 		
 		moveToLeftButton = new JButton("<<");
 		GroupLayout groupLayout = new GroupLayout(this);
@@ -107,7 +109,7 @@ public class ControlledByEditor extends CharacterDepencencyEditor {
 							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 								.addComponent(moveToLeftButton)
 								.addComponent(moveToRightButton)))
-						.addComponent(lblNewLabel))
+						.addComponent(madeInapplicableByLabel))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addGroup(groupLayout.createSequentialGroup()
@@ -129,7 +131,7 @@ public class ControlledByEditor extends CharacterDepencencyEditor {
 						.addGroup(groupLayout.createSequentialGroup()
 							.addContainerGap()
 							.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-								.addComponent(lblNewLabel)
+								.addComponent(madeInapplicableByLabel)
 								.addComponent(lblDefinedControllingAttributes))
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
