@@ -101,8 +101,9 @@ public class ItemController {
 	 */
 	@Action
 	public void editItem(ActionEvent e) {
-		_context.getActionMap().get("viewTaxonEditor").actionPerformed(e);
-		
+		if (_model.getSelectedItem() != null) {
+			_context.getActionMap().get("viewTaxonEditor").actionPerformed(e);
+		}
 	}
 	
 	@Action

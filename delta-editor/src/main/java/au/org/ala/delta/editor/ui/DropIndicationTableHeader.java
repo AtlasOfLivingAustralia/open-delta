@@ -132,7 +132,7 @@ implements DragGestureListener, ListSelectionListener, ReorderableList {
 	
 	@Override
 	public void dragGestureRecognized(DragGestureEvent dge) {
-		if (_dragEnabled) {
+		if (_dragEnabled && getResizingColumn() == null) {
 			getTransferHandler().exportAsDrag(DropIndicationTableHeader.this, dge.getTriggerEvent(), TransferHandler.COPY);
 		}
 	}
