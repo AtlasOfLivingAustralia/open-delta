@@ -37,7 +37,7 @@ public class TypeSetNaturalLanguageTranslatorTest extends
 		super.initialiseContext(path);
 		
 		
-			}
+	}
 	
 	protected Map<MarkPosition, TypeSettingMark> createMarks() {
 		HashMap<MarkPosition, TypeSettingMark> marks = new HashMap<TypeSettingMark.MarkPosition, TypeSettingMark>();

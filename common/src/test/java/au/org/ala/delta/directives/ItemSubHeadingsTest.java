@@ -22,7 +22,7 @@ public class ItemSubHeadingsTest extends TestCase {
 
 		DeltaContext context = new DeltaContext();
 
-		directive.process(context, data);
+		directive.parseAndProcess(context, data);
 
 		assertEquals("Transverse section of lamina.", context.getItemSubheading(87));
 		assertEquals("Leaf epidermis.", context.getItemSubheading(96));
@@ -47,7 +47,7 @@ public class ItemSubHeadingsTest extends TestCase {
 
 		DeltaContext context = new DeltaContext();
 
-		directive.process(context, data);
+		directive.parseAndProcess(context, data);
 
 		assertEquals("Transverse section of lamina.", context.getItemSubheading(87));
 		assertEquals("Leaf epidermis.", context.getItemSubheading(96));
@@ -76,7 +76,7 @@ public class ItemSubHeadingsTest extends TestCase {
 			DeltaContext context = new DeltaContext();
 
 			try {
-				directive.process(context, data);
+				directive.parseAndProcess(context, data);
 				fail("Invalid delimeter should have caused an exception");
 			} catch (Exception e) {
 			}

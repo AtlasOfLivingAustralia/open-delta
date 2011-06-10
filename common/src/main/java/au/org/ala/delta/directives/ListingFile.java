@@ -20,6 +20,7 @@ import java.io.PrintStream;
 import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.directives.args.DirectiveArguments;
 
 public class ListingFile extends AbstractTextDirective {
 	
@@ -28,8 +29,9 @@ public class ListingFile extends AbstractTextDirective {
 	}
 	
 	@Override
-	public void process(DeltaContext context, String data) throws Exception {
-		super.process(context, data);
+	public void process(DeltaContext context, DirectiveArguments args) throws Exception {
+		
+		String data = args.getFirstArgumentText();
 		String filename = data.trim() + ".new"; // TODO: kill the .new once stable...
 		File file = new File(context.getCurrentParsingContext().getFile().getParentFile(), filename);		
 		PrintStream stream = new PrintStream(file);

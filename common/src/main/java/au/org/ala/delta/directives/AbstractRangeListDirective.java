@@ -14,8 +14,11 @@
  ******************************************************************************/
 package au.org.ala.delta.directives;
 
+import java.text.ParseException;
+
 import org.apache.commons.lang.math.IntRange;
 
+import au.org.ala.delta.directives.args.DirectiveArgument;
 import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.util.IntegerFunctor;
 
@@ -32,8 +35,10 @@ public abstract class AbstractRangeListDirective<C extends AbstractDeltaContext>
 		return _args;
 	}
 
+	
+	
 	@Override
-	public void process(C context, String data) throws Exception {
+	public void parse(C context, String data) throws ParseException {
 		_args = new DirectiveArguments();
 		// data is a space separate list of ranges...
 		String[] ranges = data.split(" ");
@@ -43,11 +48,18 @@ public abstract class AbstractRangeListDirective<C extends AbstractDeltaContext>
 				@Override
 				public void invoke(C context, int number) {
 					_args.addDirectiveArgument(number);
-					processNumber(context, number);
 				}
 			});
 		}
+	}
 
+	@Override
+	public void process(C context, DirectiveArguments directiveArguments)
+			throws Exception {
+		for (DirectiveArgument<?> arg : directiveArguments.getDirectiveArguments()) {
+			processNumber(context, (Integer)arg.getId());
+		}
+		
 	}
 
 	protected abstract void processNumber(C context, int number);

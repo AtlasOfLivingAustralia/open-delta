@@ -1,6 +1,7 @@
 package au.org.ala.delta.directives;
 
 import java.io.StringReader;
+import java.text.ParseException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -10,13 +11,15 @@ import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.directives.args.DirectiveArgument;
 import au.org.ala.delta.directives.args.DirectiveArguments;
+import au.org.ala.delta.directives.args.IntegerTextListParser;
+import au.org.ala.delta.directives.args.TextListParser;
 import au.org.ala.delta.model.TypeSettingMark;
 import au.org.ala.delta.model.TypeSettingMark.MarkPosition;
 
 /**
  * Processes the TYPESETTING MARKS directive.
  */
-public class TypeSettingMarks extends AbstractTextListDirective {
+public class TypeSettingMarks extends AbstractCustomDirective {
 
 	public TypeSettingMarks() {
 		super("typesetting", "marks");
@@ -27,13 +30,14 @@ public class TypeSettingMarks extends AbstractTextListDirective {
 		return DirectiveArgType.DIRARG_TEXTLIST;
 	}
 	
+	
 	@Override
-	public void process(DeltaContext context, String data) throws Exception {
-		IntegerTextListParser parser = new IntegerTextListParser(context, new StringReader(data));
-		
-		parser.parse();
-		
-		DirectiveArguments args = parser.getDirectiveArgs();
+	protected TextListParser<?> createParser(DeltaContext context, StringReader reader) {
+		return new IntegerTextListParser(context, reader);
+	}
+
+	@Override
+	public void process(DeltaContext context, DirectiveArguments args) throws Exception {
 	
 		boolean hasDelimiter = !StringUtils.isEmpty(args.get(0).getText());
 		

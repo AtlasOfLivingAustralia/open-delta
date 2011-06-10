@@ -15,6 +15,7 @@
 package au.org.ala.delta.directives;
 
 import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.directives.args.DirectiveArguments;
 
 public class OmitInapplicables extends AbstractNoArgDirective {
 	
@@ -23,7 +24,7 @@ public class OmitInapplicables extends AbstractNoArgDirective {
 	}
 	
 	@Override
-	public void process(DeltaContext context, String data) throws Exception {
+	public void process(DeltaContext context, DirectiveArguments data) throws Exception {
 		context.setOmitInapplicables(true);
 	}
 

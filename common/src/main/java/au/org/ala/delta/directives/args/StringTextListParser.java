@@ -1,4 +1,4 @@
-package au.org.ala.delta.directives;
+package au.org.ala.delta.directives.args;
 import java.io.Reader;
 
 import au.org.ala.delta.DeltaContext;

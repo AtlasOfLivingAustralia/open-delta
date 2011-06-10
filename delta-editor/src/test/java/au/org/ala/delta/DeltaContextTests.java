@@ -22,7 +22,7 @@ public class DeltaContextTests extends TestCase {
 	public void testVars() throws Exception {
 		DeltaContext context = new DeltaContext();
 		Show s = new Show();
-		s.process(context, "This time #TIME and #DATE");		
+		s.parseAndProcess(context, "This time #TIME and #DATE");		
 	}
 	
 	

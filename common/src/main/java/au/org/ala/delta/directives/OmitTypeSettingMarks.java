@@ -16,6 +16,7 @@ package au.org.ala.delta.directives;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.Logger;
+import au.org.ala.delta.directives.args.DirectiveArguments;
 
 public class OmitTypeSettingMarks extends AbstractNoArgDirective {
 	
@@ -24,7 +25,7 @@ public class OmitTypeSettingMarks extends AbstractNoArgDirective {
 	}
 	
 	@Override
-	public void process(DeltaContext context, String data) throws Exception {
+	public void process(DeltaContext context, DirectiveArguments data) throws Exception {
 		Logger.debug("Omitting type setting marks");
 		context.setOmitTypeSettingMarks(true);
 	}

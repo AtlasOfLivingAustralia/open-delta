@@ -37,13 +37,13 @@ public abstract class CharacterWeightDirective extends AbstractCharacterListDire
 	 * Initialises character weights to 5.0 before invoking the super class processing.
 	 */
 	@Override
-	public void process(DeltaContext context, String data) throws Exception {
+	public void process(DeltaContext context, DirectiveArguments args) throws Exception {
 		
 		for (int i=1; i<=context.getNumberOfCharacters(); i++) {
 			context.setCharacterWeight(i, _defaultWeight);
 		}
 		
-		super.process(context, data);
+		super.process(context, args);
 	}
 
 	@Override

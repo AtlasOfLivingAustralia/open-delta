@@ -19,6 +19,7 @@ import java.util.HashMap;
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.TranslateType;
+import au.org.ala.delta.directives.args.DirectiveArguments;
 
 public class TranslateInto extends AbstractTextDirective {
 	
@@ -44,8 +45,9 @@ public class TranslateInto extends AbstractTextDirective {
 	}
 
 	@Override
-	public void process(DeltaContext context, String data) throws Exception {
-		super.process(context, data);
+	public void process(DeltaContext context, DirectiveArguments args) throws Exception {
+		
+		String data = args.getFirstArgumentText();
 		
 		String[] bits = data.split(" ");
 		assert bits.length == 2;		

@@ -1,5 +1,6 @@
 package au.org.ala.delta.directives;
 
+import java.text.ParseException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -36,7 +37,15 @@ public abstract class AbstractDirective<C extends AbstractDeltaContext> {
         return String.format("Directive: %s", StringUtils.join(_controlWords, " "));
     }
     
-    public abstract void process(C context, String data) throws Exception;
+    public void parseAndProcess(C context, String data) throws Exception {
+    	parse(context, data);
+    	DirectiveArguments args = getDirectiveArgs();
+    	process(context, args);
+    }
+    
+    public abstract void parse(C context, String data) throws ParseException;
+    
+    public abstract void process(C context, DirectiveArguments directiveArguments) throws Exception;
     
     public Object getName() {
         return StringUtils.join(_controlWords, " ").toUpperCase();

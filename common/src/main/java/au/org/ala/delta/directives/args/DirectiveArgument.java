@@ -63,6 +63,24 @@ public class DirectiveArgument<T> {
 		_value = bigDecimal;
 	}
 	
+	public List<Integer> getDataList() {
+		
+		List<Integer> values = new ArrayList<Integer>(_dataVect.size());
+		for (BigDecimal value : _dataVect) {
+			values.add(value.intValue());
+		}
+		return values;
+	}
+	
+	public String valueAsString() {
+		if (_value != null) {
+			return _value.toString();
+		}
+		else {
+			return _text;
+		}
+	}
+	
 	@Override
 	public String toString() {
 		return String.format("ArgId=%d, text=%s comment=%s value=%s, dataVect=%s", _id, _text, _comment, _value, _dataVect == null ? "null" : _dataVect);

@@ -14,6 +14,8 @@
  ******************************************************************************/
 package au.org.ala.delta.directives;
 
+import java.text.ParseException;
+
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.directives.args.DirectiveArguments;
@@ -35,9 +37,15 @@ public abstract class NoopDirective extends ConforDirective {
 		return DirectiveArgType.DIRARG_NONE;
 	}
 	
+	
+	
+	@Override
+	public void parse(DeltaContext context, String data) throws ParseException {	
+	}
+
+
 	@Override
 	protected void doProcess(DeltaContext context, String data) throws Exception {
-		// Do nothing - deprecated directive
 	}
 
 }

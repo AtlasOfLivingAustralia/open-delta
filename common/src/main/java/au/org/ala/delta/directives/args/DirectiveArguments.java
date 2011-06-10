@@ -49,6 +49,7 @@ public class DirectiveArguments {
 	public <T,V> void addNumericArgument(T id, String value) {
 		DirectiveArgument<T> arg = new DirectiveArgument<T>(id);
 		arg.setValue(new BigDecimal(value));
+		_args.add(arg);
 	}
 	
 	public <T> void addDirectiveArgument(List<Integer> ids) {
@@ -57,11 +58,28 @@ public class DirectiveArguments {
 		for (int id : ids) {
 			arg.add(id);
 		}
+		_args.add(arg);
 	}
 
 	public <T> void addDirectiveArgument(T id) {
 		DirectiveArgument<T> arg = new DirectiveArgument<T>(id);
 		_args.add(arg);
+	}
+	
+	/**
+	 * A convenience method for directives that have a single text argument.
+	 * @return the text of the first argument.
+	 */
+	public String getFirstArgumentText() {
+		return _args.get(0).getText();
+	}
+	
+	/**
+	 * A convenience method for directives that have a single numeric argument.
+	 * @return the text of the first argument.
+	 */
+	public int getFirstArgumentValue() {
+		return _args.get(0).getValue().intValue();
 	}
 	
 	public static DirectiveArguments textArgument(String text) {

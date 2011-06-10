@@ -63,6 +63,8 @@ public class ImplicitValues extends AbstractCharacterListDirective<DeltaContext,
 	}
 
 	@Override
-	protected void addArgument(DirectiveArguments args, int charIndex, String value) {}
+	protected void addArgument(DirectiveArguments args, int charIndex, String value) {
+		args.addTextArgument(charIndex, value);
+	}
 	
 }

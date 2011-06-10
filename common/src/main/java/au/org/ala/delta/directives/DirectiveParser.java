@@ -11,6 +11,7 @@ import java.util.List;
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.Tree;
 import au.org.ala.delta.directives.DirectiveSearchResult.ResultType;
+import au.org.ala.delta.directives.args.DirectiveArguments;
 
 /**
  * Parser for directive files and input streams
@@ -130,7 +131,9 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
                         }
                         // String dd = data.substring(i + word.length() +
                         // 1).trim();
-                        d.process(context, dd);
+                        d.parse(context, dd);
+                        DirectiveArguments args = d.getDirectiveArgs();
+                        d.process(context, args);
                     } catch (Exception ex) {
                         if (pc.getFile() != null) {
                             throw new RuntimeException(String.format("Exception occured trying to process directive: %s (%s %d:%d)", d.getName(), pc.getFile().getName(),

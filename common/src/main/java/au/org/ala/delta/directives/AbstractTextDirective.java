@@ -1,5 +1,6 @@
 package au.org.ala.delta.directives;
 
+import java.text.ParseException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -29,11 +30,12 @@ public abstract class AbstractTextDirective extends AbstractDirective<DeltaConte
 		return DirectiveArgType.DIRARG_TEXT;
 	}
 	
-	@Override
-	public void process(DeltaContext context, String data) throws Exception {
-		_args = data;
-	}
 	
+	@Override
+	public void parse(DeltaContext context, String data) throws ParseException {
+		_args = data;
+		
+	}
 
 	protected String replaceVariables(DeltaContext context, String str) {
 		String result = str;

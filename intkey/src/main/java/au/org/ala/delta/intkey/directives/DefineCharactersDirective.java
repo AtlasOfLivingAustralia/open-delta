@@ -6,12 +6,10 @@ import java.util.Set;
 
 import javax.swing.JOptionPane;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.IntRange;
 
 import au.org.ala.delta.directives.args.DirectiveArgType;
-import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.ui.UIUtils;
 
@@ -20,11 +18,6 @@ public class DefineCharactersDirective extends IntkeyDirective {
     public DefineCharactersDirective() {
         super("define", "characters");
     }
-
-    @Override
-	public DirectiveArguments getDirectiveArgs() {
-		throw new NotImplementedException();
-	}
 
 	@Override
 	public int getArgType() {
@@ -83,7 +76,6 @@ public class DefineCharactersDirective extends IntkeyDirective {
 
         @Override
         public String toString() {
-            StringBuilder builder = new StringBuilder();
             return String.format("%s %s %s", StringUtils.join(_controlWords, " ").toUpperCase(), _keyword, StringUtils.join(_characterNumbers, " "));
         }
 

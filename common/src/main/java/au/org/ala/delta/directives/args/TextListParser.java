@@ -1,11 +1,9 @@
-package au.org.ala.delta.directives;
+package au.org.ala.delta.directives.args;
 
 import java.io.Reader;
 import java.text.ParseException;
 
 import au.org.ala.delta.DeltaContext;
-import au.org.ala.delta.directives.args.DirectiveArgument;
-import au.org.ala.delta.directives.args.DirectiveArguments;
 
 /**
  * Parser for directives of the form:
@@ -16,7 +14,7 @@ import au.org.ala.delta.directives.args.DirectiveArguments;
  * ...
  * for example, TYPESETTING MARKS uses this format.
  */
-public abstract class TextListParser<T> extends AbstractStreamParser {
+public abstract class TextListParser<T> extends DirectiveArgsParser {
 	
 	/** These characters may not be used as delimiters in the directive */
 	private static final char[] INVALID_DELIMITERS = new char[] { '*', '#', '<', '>' };
@@ -26,14 +24,8 @@ public abstract class TextListParser<T> extends AbstractStreamParser {
 	
 	private char _delimiter;
 	
-	private DirectiveArguments _args;
-	
 	public TextListParser(DeltaContext context, Reader reader) {
 		super(context, reader);
-	}
-	
-	public DirectiveArguments getDirectiveArgs() {
-		return _args;
 	}
 	
 	@Override

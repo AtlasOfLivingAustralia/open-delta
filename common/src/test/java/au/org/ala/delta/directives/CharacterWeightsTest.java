@@ -20,7 +20,7 @@ public class CharacterWeightsTest extends TestCase {
 		DeltaContext context = new DeltaContext();
 		context.setNumberOfCharacters(88);
 		
-		directive.process(context, data);
+		directive.parseAndProcess(context, data);
 		
 		assertEquals(0.0, context.getCharacterWeight(1));
 		
@@ -49,7 +49,7 @@ public class CharacterWeightsTest extends TestCase {
 		context.setNumberOfCharacters(88);
 		
 		try {
-			directive.process(context, data);
+			directive.parseAndProcess(context, data);
 			fail("should have thrown an exception");
 		}
 		catch (IllegalArgumentException e) {}
@@ -57,7 +57,7 @@ public class CharacterWeightsTest extends TestCase {
 		data = "1,10.01";
 		
 		try {
-			directive.process(context, data);
+			directive.parseAndProcess(context, data);
 			fail("should have thrown an exception");
 		}
 		catch (IllegalArgumentException e) {}
@@ -74,7 +74,7 @@ public class CharacterWeightsTest extends TestCase {
 		DeltaContext context = new DeltaContext();
 		context.setNumberOfCharacters(13);
 		
-		directive.process(context, data);
+		directive.parseAndProcess(context, data);
 		
 		assertEquals(3.0, context.getCharacterWeight(1));
 		
@@ -102,7 +102,7 @@ public class CharacterWeightsTest extends TestCase {
 		context.setNumberOfCharacters(13);
 		
 		try {
-			directive.process(context, data);
+			directive.parseAndProcess(context, data);
 			fail("should have thrown an exception");
 		}
 		catch (IllegalArgumentException e) {}
@@ -110,7 +110,7 @@ public class CharacterWeightsTest extends TestCase {
 		data = "1,32.001";
 		
 		try {
-			directive.process(context, data);
+			directive.parseAndProcess(context, data);
 			fail("should have thrown an exception");
 		}
 		catch (IllegalArgumentException e) {}

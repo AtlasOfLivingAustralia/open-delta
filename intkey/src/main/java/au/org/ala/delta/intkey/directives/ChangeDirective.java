@@ -1,9 +1,6 @@
 package au.org.ala.delta.intkey.directives;
 
-import org.apache.commons.lang.NotImplementedException;
-
 import au.org.ala.delta.directives.args.DirectiveArgType;
-import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
 public class ChangeDirective extends IntkeyDirective {
@@ -17,10 +14,6 @@ public class ChangeDirective extends IntkeyDirective {
         return new UseDirective().doProcess(context, data, true);
     }
 
-    @Override
-    public DirectiveArguments getDirectiveArgs() {
-        throw new NotImplementedException();
-    }
 
     @Override
     public int getArgType() {

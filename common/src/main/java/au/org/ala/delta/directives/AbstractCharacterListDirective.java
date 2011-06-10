@@ -14,11 +14,12 @@
  ******************************************************************************/
 package au.org.ala.delta.directives;
 
+import java.text.ParseException;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.math.IntRange;
 
-import au.org.ala.delta.directives.args.DirectiveArgType;
+import au.org.ala.delta.directives.args.DirectiveArgument;
 import au.org.ala.delta.directives.args.DirectiveArguments;
 
 public abstract class AbstractCharacterListDirective<C extends AbstractDeltaContext, T> extends AbstractDirective<C> {
@@ -33,14 +34,11 @@ public abstract class AbstractCharacterListDirective<C extends AbstractDeltaCont
 	
 	@Override
 	public DirectiveArguments getDirectiveArgs() {
-		if (getArgType() == DirectiveArgType.DIRARG_INTERNAL) {
-			return null;
-		}
 		return args;
 	}
 
 	@Override
-	public void process(C context, String data) throws Exception {
+	public void parse(C context, String data) throws ParseException {
 		args = new DirectiveArguments();
 		String[] typeDescriptors = data.split(" |\\n");
 		for (String typeDescriptor : typeDescriptors) {
@@ -48,13 +46,22 @@ public abstract class AbstractCharacterListDirective<C extends AbstractDeltaCont
 			if (CHAR_LIST_ITEM_PATTERN.matcher(typeDescriptor).matches()) {
 				String[] bits = typeDescriptor.trim().split(",");
 				IntRange r = parseRange(bits[0]);
-				T rhs = interpretRHS(context, bits[1]);
+				
 				for (int charIndex = r.getMinimumInteger(); charIndex <= r.getMaximumInteger(); ++charIndex) {
 					addArgument(args, charIndex, bits[1]);
-					processCharacter(context, charIndex, rhs);
 				}
 			}
 		}
+	}
+
+	@Override
+	public void process(C context, DirectiveArguments directiveArguments) throws Exception {
+		for (DirectiveArgument<?> arg : directiveArguments.getDirectiveArguments()) {
+			
+			T rhs = interpretRHS(context, arg.valueAsString());
+			processCharacter(context, (Integer)arg.getId(), rhs);
+		}
+		
 	}
 
 	protected abstract void addArgument(DirectiveArguments args, int charIndex, String value);

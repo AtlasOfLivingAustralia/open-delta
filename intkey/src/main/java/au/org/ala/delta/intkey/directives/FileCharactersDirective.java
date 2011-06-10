@@ -9,23 +9,15 @@ import javax.swing.filechooser.FileFilter;
 import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.directives.args.DirectiveArgType;
-import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.ui.UIUtils;
 
 public class FileCharactersDirective extends IntkeyDirective {
 
-	private String _data;
-	
     public FileCharactersDirective() {
         super("file", "characters");
     }
     
-    @Override
-	public DirectiveArguments getDirectiveArgs() {
-		return DirectiveArguments.textArgument(_data);
-	}
-
 	@Override
 	public int getArgType() {
 		return DirectiveArgType.DIRARG_TEXT;

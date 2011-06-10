@@ -13,7 +13,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -226,7 +225,7 @@ public class Intkey extends DeltaSingleFrameApplication {
                     if (selectedIndex >= 0) {
                         try {
                             Character ch = _availableCharacterListModel.getCharacterAt(selectedIndex);
-                            new UseDirective().process(_context, Integer.toString(ch.getCharacterId()));
+                            new UseDirective().parseAndProcess(_context, Integer.toString(ch.getCharacterId()));
                         } catch (Exception ex) {
                             ex.printStackTrace();
                         }
@@ -323,7 +322,7 @@ public class Intkey extends DeltaSingleFrameApplication {
                     if (selectedIndex >= 0) {
                         try {
                             Character ch = _usedCharacterListModel.getCharacterAt(selectedIndex);
-                            new ChangeDirective().process(_context, Integer.toString(ch.getCharacterId()));
+                            new ChangeDirective().parseAndProcess(_context, Integer.toString(ch.getCharacterId()));
                         } catch (Exception ex) {
                             ex.printStackTrace();
                         }

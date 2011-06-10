@@ -16,6 +16,9 @@ public abstract class AbstractNoArgDirective extends AbstractDirective<DeltaCont
 	}
 	
 	@Override
+	public void parse(DeltaContext context, String data) {}
+	
+	@Override
 	public int getArgType() {
 		return DirectiveArgType.DIRARG_NONE;
 	}

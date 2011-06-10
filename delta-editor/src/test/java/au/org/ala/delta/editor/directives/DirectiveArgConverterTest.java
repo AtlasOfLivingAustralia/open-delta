@@ -52,7 +52,7 @@ public class DirectiveArgConverterTest extends VODirFileDescTest {
 			AbstractDirective<DeltaContext> directive = (AbstractDirective<DeltaContext>)directives[i];
 			
 			System.out.println("Checking: "+directive.getClass());
-			directive.process(_context, (String)directives[i+1]);
+			directive.parseAndProcess(_context, (String)directives[i+1]);
 			Dir dir = _converter.fromDirective(directive);
 			
 			assertEquals(directives[i+2], dir.dirType);
@@ -76,7 +76,7 @@ public class DirectiveArgConverterTest extends VODirFileDescTest {
 			AbstractDirective<DeltaContext> directive = (AbstractDirective<DeltaContext>)directives[i];
 			
 			System.out.println("Checking: "+directive.getClass());
-			directive.process(_context, (String)directives[i+1]);
+			directive.parseAndProcess(_context, (String)directives[i+1]);
 			Dir dir = _converter.fromDirective(directive);
 			
 			assertEquals(directives[i+2], dir.dirType);

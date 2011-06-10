@@ -16,7 +16,7 @@ public class LinkCharactersTest extends TestCase {
 		
 		String data = "*LINK CHARACTERS 1-3 6:10-11 7-9";
 		
-		directive.process(context, data);
+		directive.parseAndProcess(context, data);
 		
 	
 		Set<Integer> set1 = new HashSet<Integer>();

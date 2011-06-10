@@ -21,10 +21,12 @@ import java.util.regex.Pattern;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.args.DirectiveArgType;
+import au.org.ala.delta.directives.args.DirectiveArgsParser;
+import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.NumericCharacter;
 
-public class CharacterList extends AbstractCustomDirective {
+public class CharacterList extends AbstractTextDirective {
 
 	public CharacterList() {
 		super("character", "list");
@@ -34,10 +36,12 @@ public class CharacterList extends AbstractCustomDirective {
 	public int getArgType() {
 		return DirectiveArgType.DIRARG_CHARLIST;
 	}
-
+	
 	@Override
-	public void process(DeltaContext context, String data) throws Exception {
-		super.process(context, data);
+	public void process(DeltaContext context, DirectiveArguments args) throws Exception {
+		
+		String data = args.getFirstArgumentText();
+		
 		StringReader reader = new StringReader(data);
 		CharacterListParser parser = new CharacterListParser(context, reader);
 		parser.parse();
@@ -45,7 +49,7 @@ public class CharacterList extends AbstractCustomDirective {
 
 }
 
-class CharacterListParser extends AbstractStreamParser {
+class CharacterListParser extends DirectiveArgsParser {
 
 	private static Pattern FEAT_DESC_PATTERN = Pattern.compile("^(\\d+)\\s*[.] (.*)$", Pattern.DOTALL);
 

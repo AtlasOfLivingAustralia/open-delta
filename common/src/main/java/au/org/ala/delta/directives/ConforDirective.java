@@ -14,13 +14,8 @@
  ******************************************************************************/
 package au.org.ala.delta.directives;
 
-import java.io.PrintStream;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.apache.commons.lang.StringUtils;
-
 import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.directives.args.DirectiveArguments;
 
 public abstract class ConforDirective extends AbstractDirective<DeltaContext> {
 	
@@ -35,7 +30,11 @@ public abstract class ConforDirective extends AbstractDirective<DeltaContext> {
 	 * Overrides process to allow empty data to be handled in a consistent manner.
 	 */
 	@Override
-	public void process(DeltaContext context, String data) throws Exception {
+	public void process(DeltaContext context, DirectiveArguments args) throws Exception {
+		String data = null;
+		if (args != null) {
+		    data = args.getFirstArgumentText();
+		}
 		if ((data == null) || (data.trim().length() == 0) && ignoreEmptyArguments()) {
 			return;
 		}

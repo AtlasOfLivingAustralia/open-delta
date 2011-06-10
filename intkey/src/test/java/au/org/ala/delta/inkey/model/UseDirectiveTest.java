@@ -37,32 +37,32 @@ public class UseDirectiveTest extends TestCase {
         MultiStateCharacter charSubfamily = (MultiStateCharacter) context.getDataset().getCharacter(78);
 
         // Set single state
-        new UseDirective().process(context, "78,3");
+        new UseDirective().parseAndProcess(context, "78,3");
 
         MultiStateValue val1 = (MultiStateValue) context.getSpecimen().getValueForCharacter(charSubfamily);
         assertEquals(Arrays.asList(3), val1.getStateValues());
 
         // Set multiple states with "/" (or) character
-        new UseDirective().process(context, "/M 78,1/3/5");
+        new UseDirective().parseAndProcess(context, "/M 78,1/3/5");
 
         MultiStateValue val2 = (MultiStateValue) context.getSpecimen().getValueForCharacter(charSubfamily);
         assertEquals(Arrays.asList(1, 3, 5), val2.getStateValues());
 
         // Set multiple states with "-" (range) character
-        new UseDirective().process(context, "/M 78,2-4");
+        new UseDirective().parseAndProcess(context, "/M 78,2-4");
 
         MultiStateValue val3 = (MultiStateValue) context.getSpecimen().getValueForCharacter(charSubfamily);
         assertEquals(Arrays.asList(2, 3, 4), val3.getStateValues());
 
         // Set multiple states with both "/" and "-" characters
-        new UseDirective().process(context, "/M 78,1-2/3/4-5");
+        new UseDirective().parseAndProcess(context, "/M 78,1-2/3/4-5");
 
         MultiStateValue val4 = (MultiStateValue) context.getSpecimen().getValueForCharacter(charSubfamily);
         assertEquals(Arrays.asList(1, 2, 3, 4, 5), val4.getStateValues());
 
         // Attempt to set states using incorrect format
         try {
-            new UseDirective().process(context, "/M 78,blah");
+            new UseDirective().parseAndProcess(context, "/M 78,blah");
         } catch (IllegalArgumentException ex) {
             return;
         }
@@ -119,7 +119,7 @@ public class UseDirectiveTest extends TestCase {
         UnorderedMultiStateCharacter charSeedInShell = (UnorderedMultiStateCharacter) ds.getCharacter(3);
         RealCharacter charAvgThickness = (RealCharacter) ds.getCharacter(4);
 
-        new UseDirective().process(context, "4,1");
+        new UseDirective().parseAndProcess(context, "4,1");
 
         Specimen specimen = context.getSpecimen();
 
@@ -153,9 +153,9 @@ public class UseDirectiveTest extends TestCase {
         UnorderedMultiStateCharacter charSeedInShell = (UnorderedMultiStateCharacter) ds.getCharacter(3);
         RealCharacter charAvgThickness = (RealCharacter) ds.getCharacter(4);
 
-        new UseDirective().process(context, "4,1");
+        new UseDirective().parseAndProcess(context, "4,1");
 
-        new UseDirective().process(context, "/M 2,2");
+        new UseDirective().parseAndProcess(context, "/M 2,2");
 
         Specimen specimen = context.getSpecimen();
 
@@ -187,19 +187,19 @@ public class UseDirectiveTest extends TestCase {
 
         assertTrue(context.getSpecimen().getAvailableCharacters().contains(charThree));
 
-        new UseDirective().process(context, "1,2");
+        new UseDirective().parseAndProcess(context, "1,2");
 
         assertFalse(context.getSpecimen().getAvailableCharacters().contains(charThree));
 
-        new UseDirective().process(context, "2,2");
+        new UseDirective().parseAndProcess(context, "2,2");
 
         assertFalse(context.getSpecimen().getAvailableCharacters().contains(charThree));
 
-        new UseDirective().process(context, "/M 2,1");
+        new UseDirective().parseAndProcess(context, "/M 2,1");
 
         assertFalse(context.getSpecimen().getAvailableCharacters().contains(charThree));
 
-        new UseDirective().process(context, "/M 1,1");
+        new UseDirective().parseAndProcess(context, "/M 1,1");
 
         assertTrue(context.getSpecimen().getAvailableCharacters().contains(charThree));
 
@@ -227,18 +227,18 @@ public class UseDirectiveTest extends TestCase {
         UnorderedMultiStateCharacter charSeedInShell = (UnorderedMultiStateCharacter) ds.getCharacter(3);
         RealCharacter charAvgThickness = (RealCharacter) ds.getCharacter(4);
 
-        new UseDirective().process(context, "4,1");
+        new UseDirective().parseAndProcess(context, "4,1");
 
         Specimen specimen = context.getSpecimen();
 
-        new UseDirective().process(context, "/M 2,2");
+        new UseDirective().parseAndProcess(context, "/M 2,2");
 
         assertFalse(specimen.getAvailableCharacters().contains(charSeedInShell));
         assertFalse(specimen.getAvailableCharacters().contains(charAvgThickness));
         assertFalse(specimen.hasValueFor(charSeedInShell));
         assertFalse(specimen.hasValueFor(charAvgThickness));
 
-        new UseDirective().process(context, "/M 2,1");
+        new UseDirective().parseAndProcess(context, "/M 2,1");
 
         assertTrue(specimen.getAvailableCharacters().contains(charSeedInShell));
         assertTrue(specimen.getAvailableCharacters().contains(charAvgThickness));
@@ -267,7 +267,7 @@ public class UseDirectiveTest extends TestCase {
         // character 38 - 0 - and
         // having the inapplicability flag set to true for character 38.
 
-        new UseDirective().process(context, "38,5");
+        new UseDirective().parseAndProcess(context, "38,5");
 
         Specimen specimen = context.getSpecimen();
         assertEquals(Arrays.asList(ds.getCharacter(32), ds.getCharacter(38)), specimen.getUsedCharacters());

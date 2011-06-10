@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 
 import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.directives.args.DirectiveArguments;
 
 public class InputFile extends AbstractTextDirective {
 
@@ -26,8 +27,9 @@ public class InputFile extends AbstractTextDirective {
 	}
 
 	@Override
-	public void process(DeltaContext context, String data) throws Exception {
-		super.process(context, data);
+	public void process(DeltaContext context, DirectiveArguments args) throws Exception {
+		
+		String data = args.getFirstArgumentText();
 		
 		File file = new File(context.getCurrentParsingContext().getFile().getParent(), data.trim());
 		 

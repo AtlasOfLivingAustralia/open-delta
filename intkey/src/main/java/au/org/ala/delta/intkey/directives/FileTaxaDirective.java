@@ -6,11 +6,9 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.directives.args.DirectiveArgType;
-import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.ui.UIUtils;
 
@@ -20,11 +18,6 @@ public class FileTaxaDirective extends IntkeyDirective {
         super("file", "taxa");
     }
     
-    @Override
-	public DirectiveArguments getDirectiveArgs() {
-		throw new NotImplementedException();
-	}
-
 	@Override
 	public int getArgType() {
 		return DirectiveArgType.DIRARG_FILE;

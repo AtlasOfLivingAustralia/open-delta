@@ -14,12 +14,14 @@
  ******************************************************************************/
 package au.org.ala.delta.directives;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.math.IntRange;
 
+import au.org.ala.delta.directives.args.DirectiveArgument;
 import au.org.ala.delta.directives.args.DirectiveArguments;
 
 /**
@@ -42,8 +44,8 @@ public abstract class AbstractCharacterSetDirective<C extends AbstractDeltaConte
 	}
 
 	@Override
-	public void process(C context, String data) throws Exception {
-		args = new DirectiveArguments();
+	public void parse(C context, String data) throws ParseException {
+		args = new DirectiveArguments();	
 		String[] typeDescriptors = data.split(" |\\n");
 		for (String typeDescriptor : typeDescriptors) {
 			typeDescriptor = typeDescriptor.trim();
@@ -58,12 +60,19 @@ public abstract class AbstractCharacterSetDirective<C extends AbstractDeltaConte
 					}
 				}
 				args.addDirectiveArgument(characters);
-				processCharacterSet(context, characters);
 			}
+		}
+	}
+
+	@Override
+	public void process(C context, DirectiveArguments directiveArguments) throws Exception {
+		for (DirectiveArgument<?> arg : directiveArguments.getDirectiveArguments()) {
 			
+			List<Integer> characters = arg.getDataList();
+			
+			processCharacterSet(context, characters);
 		}
 	}
 
 	protected abstract void processCharacterSet(C context, List<Integer> characters);
-
 }

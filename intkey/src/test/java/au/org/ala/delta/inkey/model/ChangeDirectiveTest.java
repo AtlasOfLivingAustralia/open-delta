@@ -39,7 +39,7 @@ public class ChangeDirectiveTest extends TestCase {
 
         UnorderedMultiStateCharacter charLongevity = (UnorderedMultiStateCharacter) ds.getCharacter(2);
 
-        new UseDirective().process(context, "2,1");
+        new UseDirective().parseAndProcess(context, "2,1");
 
         assertEquals(Arrays.asList(charLongevity), specimen.getUsedCharacters());
         Map<Item, Integer> taxonDifferences = specimen.getTaxonDifferences();
@@ -59,7 +59,7 @@ public class ChangeDirectiveTest extends TestCase {
         assertEquals(0, (int) taxonDifferences.get(ds.getTaxon(13)));
         assertEquals(0, (int) taxonDifferences.get(ds.getTaxon(14)));
 
-        new ChangeDirective().process(context, "2,2");
+        new ChangeDirective().parseAndProcess(context, "2,2");
 
         assertEquals(Arrays.asList(charLongevity), specimen.getUsedCharacters());
 
@@ -106,7 +106,7 @@ public class ChangeDirectiveTest extends TestCase {
         UnorderedMultiStateCharacter charLeafBladesPseudo = (UnorderedMultiStateCharacter) ds.getCharacter(9);
         UnorderedMultiStateCharacter charLigulePresence = (UnorderedMultiStateCharacter) ds.getCharacter(10);
 
-        new UseDirective().process(context, "1-10,1");
+        new UseDirective().parseAndProcess(context, "1-10,1");
 
         assertEquals(Arrays.asList(charIncluding, charLongevity, charCulmsMaxHeight, charCulmsWoodyHerbacious, charCulmsBranchedAbove, charCulmNodesHairyGlabrous, charLeafBladesShape,
                 charLeafBladesMidWidth, charLeafBladesPseudo, charLigulePresence), specimen.getUsedCharacters());
@@ -128,7 +128,7 @@ public class ChangeDirectiveTest extends TestCase {
         assertEquals(4, (int) taxonDifferences.get(ds.getTaxon(13)));
         assertEquals(5, (int) taxonDifferences.get(ds.getTaxon(14)));
 
-        new ChangeDirective().process(context, "10,2");
+        new ChangeDirective().parseAndProcess(context, "10,2");
 
         assertEquals(Arrays.asList(charIncluding, charLongevity, charCulmsMaxHeight, charCulmsWoodyHerbacious, charCulmsBranchedAbove, charCulmNodesHairyGlabrous, charLeafBladesShape,
                 charLeafBladesMidWidth, charLeafBladesPseudo, charLigulePresence), specimen.getUsedCharacters());
@@ -165,7 +165,7 @@ public class ChangeDirectiveTest extends TestCase {
         IntkeyDataset ds = context.getDataset();
         Specimen specimen = context.getSpecimen();
 
-        new UseDirective().process(context, "16,1");
+        new UseDirective().parseAndProcess(context, "16,1");
         
         Map<Item, Integer> taxonDifferences = specimen.getTaxonDifferences();
         assertEquals(14, taxonDifferences.size());
@@ -184,7 +184,7 @@ public class ChangeDirectiveTest extends TestCase {
         assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(13)));
         assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(14)));
 
-        new ChangeDirective().process(context, "16,2");
+        new ChangeDirective().parseAndProcess(context, "16,2");
         
         Map<Item, Integer> taxonDifferences2 = specimen.getTaxonDifferences();
         assertEquals(14, taxonDifferences2.size());

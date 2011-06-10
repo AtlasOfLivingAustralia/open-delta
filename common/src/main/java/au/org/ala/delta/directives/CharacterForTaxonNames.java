@@ -21,7 +21,7 @@ import au.org.ala.delta.model.CharacterType;
 /**
  * Allows the value of an Item attribute to be used instead of the Item description.
  */
-public class CharacterForTaxonNames extends AbstractCharacterDirective {
+public class CharacterForTaxonNames extends AbstractIntegerDirective {
 	
 	public CharacterForTaxonNames() {
 		super("character", "for", "taxon", "names");
@@ -33,7 +33,7 @@ public class CharacterForTaxonNames extends AbstractCharacterDirective {
 	}
 	
 	@Override
-	public void processCharacter(DeltaContext context, int character) throws Exception {
+	public void processInteger(DeltaContext context, int character) throws Exception {
 		
 		if (context.getDataSet().getCharacter(character).getCharacterType() != CharacterType.Text) {
 			throw new RuntimeException("149,1");

@@ -29,7 +29,7 @@ public class TypesettingMarksTest extends TestCase {
 	@Test
 	public void testSingleMarkWithDelimiter() throws Exception {
 		String data = " ! \n #1. <test> !mark 1!";
-		_directive.process(_context, data);
+		_directive.parseAndProcess(_context, data);
 		
 		TypeSettingMark mark = _context.getTypeSettingMark(MarkPosition.fromId(1));
 		assertEquals(1, mark.getMark().getId());
@@ -43,7 +43,7 @@ public class TypesettingMarksTest extends TestCase {
 	@Test
 	public void testMultipleMarksWithDelimiter() throws Exception {
 		String data = " ! \n #1. <test> !mark 1!\n#2. ! mark 2!\n";
-		_directive.process(_context, data);
+		_directive.parseAndProcess(_context, data);
 		
 		TypeSettingMark mark = _context.getTypeSettingMark(MarkPosition.fromId(1));
 		assertEquals(1, mark.getMark().getId());
@@ -62,7 +62,7 @@ public class TypesettingMarksTest extends TestCase {
 	@Test
 	public void testSpecialCharactersInMark() throws Exception {
 		String data = " ! \n #1. <test> !mark <comment> #1 1!\n#2. ! mark 2!\n";
-		_directive.process(_context, data);
+		_directive.parseAndProcess(_context, data);
 		
 		TypeSettingMark mark = _context.getTypeSettingMark(MarkPosition.fromId(1));
 		assertEquals(1, mark.getMark().getId());
@@ -81,7 +81,7 @@ public class TypesettingMarksTest extends TestCase {
 	@Test
 	public void testMultipleMarksWithNoDelimiter() throws Exception {
 		String data = "\n #1. <test> mark 1\n#2.  mark 2\n";
-		_directive.process(_context, data);
+		_directive.parseAndProcess(_context, data);
 		
 		TypeSettingMark mark = _context.getTypeSettingMark(MarkPosition.fromId(1));
 		assertEquals(1, mark.getMark().getId());
@@ -97,7 +97,7 @@ public class TypesettingMarksTest extends TestCase {
 	@Test
 	public void testMarkWithCommentOnly() throws Exception {
 		String data = "! \n #1. <test> \n#2. <test 2> !mark 2!\n";
-		_directive.process(_context, data);
+		_directive.parseAndProcess(_context, data);
 		TypeSettingMark mark = _context.getTypeSettingMark(MarkPosition.fromId(1));
 		assertEquals(1, mark.getMark().getId());
 		assertEquals("", mark.getMarkText());
@@ -121,7 +121,7 @@ public class TypesettingMarksTest extends TestCase {
 			String data = " " + delimeter + "\n #1. ";
 
 			try {
-				_directive.process(_context, data);
+				_directive.parseAndProcess(_context, data);
 				fail("Invalid delimeter should have caused an exception");
 			} catch (Exception e) {
 			}

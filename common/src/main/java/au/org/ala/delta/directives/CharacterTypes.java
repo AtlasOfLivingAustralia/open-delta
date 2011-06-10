@@ -32,11 +32,6 @@ public class CharacterTypes extends AbstractCharacterListDirective<DeltaContext,
 	public CharacterTypes() {
 		super("character", "types");
 	}
-	
-	@Override
-	public DirectiveArguments getDirectiveArgs() {
-		return null;
-	}
 
 	@Override
 	protected CharacterType interpretRHS(DeltaContext context, String rhs) {
@@ -53,9 +48,9 @@ public class CharacterTypes extends AbstractCharacterListDirective<DeltaContext,
 	 * the last explicitly typed one.
 	 */
 	@Override
-	public void process(DeltaContext context, String data) throws Exception {
+	public void process(DeltaContext context, DirectiveArguments args) throws Exception {
 		
-		super.process(context, data);
+		super.process(context, args);
 		
 		for (int i=_lastCharacterNumber+1; i<context.getNumberOfCharacters(); i++) {
 			createDefaultCharacter(context.getDataSet(), i);
@@ -86,6 +81,7 @@ public class CharacterTypes extends AbstractCharacterListDirective<DeltaContext,
 
 	@Override
 	protected void addArgument(DirectiveArguments args, int charIndex, String value) {
+		args.addTextArgument(charIndex, value);
 	}
 	
 	
