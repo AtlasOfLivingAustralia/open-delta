@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.swing.JOptionPane;
+
 import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.Logger;
@@ -12,6 +14,7 @@ import au.org.ala.delta.directives.DirectiveParser;
 import au.org.ala.delta.directives.DirectiveSearchResult;
 import au.org.ala.delta.directives.ParsingContext;
 import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.intkey.ui.UIUtils;
 
 public class IntkeyDirectiveParser extends DirectiveParser<IntkeyContext> {
 
@@ -36,7 +39,6 @@ public class IntkeyDirectiveParser extends DirectiveParser<IntkeyContext> {
     @SuppressWarnings("unchecked")
     protected AbstractDirective<IntkeyContext> processDirective(StringBuilder data, IntkeyContext context) {
         if (data.length() > 0) {
-            ParsingContext pc = context.getCurrentParsingContext();
             char ch = data.charAt(0);
             if (Character.isDigit(ch)) {
                 DirectiveSearchResult r = getDirectiveTree().findDirective(new ArrayList<String>(Arrays.asList("use")));
@@ -44,13 +46,7 @@ public class IntkeyDirectiveParser extends DirectiveParser<IntkeyContext> {
                 try {
                     useDirective.parseAndProcess(context, data.toString());
                 } catch (Exception ex) {
-                    if (pc.getFile() != null) {
-                        throw new RuntimeException(String.format("Exception occured trying to process directive: %s (%s %d:%d)", useDirective.getName(), pc.getFile().getName(),
-                                pc.getCurrentDirectiveStartLine(), pc.getCurrentDirectiveStartOffset()), ex);
-                    } else {
-                        throw new RuntimeException(String.format("Exception occured trying to process directive: %s (%d:%d)", useDirective.getName(), pc.getCurrentDirectiveStartLine(),
-                                pc.getCurrentDirectiveStartOffset()), ex);
-                    }
+                    handleDirectiveProcessingException(context, useDirective, ex);
                 }
                 return useDirective;
             } else {
@@ -61,13 +57,31 @@ public class IntkeyDirectiveParser extends DirectiveParser<IntkeyContext> {
     }
 
     @Override
-    protected void handleUnrecognizedDirective(ParsingContext pc, List<String> controlWords) {
+    protected void handleUnrecognizedDirective(IntkeyContext context, List<String> controlWords) {
         // TODO eventually all unrecognized directives need to be properly
         // handled. This is here so that
         // intkey dataset can be used with milestone release without implemented
         // directives causing
         // errors
         Logger.log("Ignoring unrecognized directive: %s ", StringUtils.join(controlWords, " "));
+    }
+
+    @Override
+    protected void handleDirectiveProcessingException(IntkeyContext context, AbstractDirective<IntkeyContext> d, Exception ex) {
+        String msg;
+        if (ex instanceof IntkeyDirectiveParseException) {
+            msg = ex.getMessage();
+        } else {
+            msg = String.format("Error occurred while processing '%s' command: %s", StringUtils.join(d.getControlWords(), " ").toUpperCase(), ex.getMessage());
+            Logger.error(ex);
+        }
+
+        Logger.log(msg);
+
+        if (!context.isProcessingInputFile()) {
+            JOptionPane.showMessageDialog(UIUtils.getMainFrame(), msg, "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
     }
 
 }

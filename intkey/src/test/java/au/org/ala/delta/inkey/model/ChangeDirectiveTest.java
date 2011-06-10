@@ -10,7 +10,6 @@ import junit.framework.TestCase;
 import org.junit.Test;
 
 import au.org.ala.delta.intkey.directives.ChangeDirective;
-import au.org.ala.delta.intkey.directives.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.UseDirective;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.model.IntkeyDataset;

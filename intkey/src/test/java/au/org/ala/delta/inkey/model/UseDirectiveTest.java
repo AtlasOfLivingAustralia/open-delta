@@ -10,15 +10,20 @@ import junit.framework.TestCase;
 import org.apache.commons.lang.math.FloatRange;
 import org.junit.Test;
 
+import au.org.ala.delta.intkey.directives.IntkeyDirectiveParseException;
 import au.org.ala.delta.intkey.directives.UseDirective;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.model.IntkeyDataset;
+import au.org.ala.delta.intkey.model.specimen.IntegerValue;
 import au.org.ala.delta.intkey.model.specimen.MultiStateValue;
 import au.org.ala.delta.intkey.model.specimen.RealValue;
 import au.org.ala.delta.intkey.model.specimen.Specimen;
+import au.org.ala.delta.intkey.model.specimen.TextValue;
+import au.org.ala.delta.model.IntegerCharacter;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.RealCharacter;
+import au.org.ala.delta.model.TextCharacter;
 import au.org.ala.delta.model.UnorderedMultiStateCharacter;
 
 public class UseDirectiveTest extends TestCase {
@@ -60,14 +65,24 @@ public class UseDirectiveTest extends TestCase {
         MultiStateValue val4 = (MultiStateValue) context.getSpecimen().getValueForCharacter(charSubfamily);
         assertEquals(Arrays.asList(1, 2, 3, 4, 5), val4.getStateValues());
 
+        // Attempt to set an invalid state number
+        boolean exception1Thrown = false;
+        try {
+            new UseDirective().parseAndProcess(context, "/M 78,10");
+        } catch (IntkeyDirectiveParseException ex) {
+            exception1Thrown = true;
+        }
+        assertTrue("Expected exception when setting state value with incorrect format", exception1Thrown);
+
         // Attempt to set states using incorrect format
+        boolean exception2Thrown = false;
         try {
             new UseDirective().parseAndProcess(context, "/M 78,blah");
-        } catch (IllegalArgumentException ex) {
-            return;
+        } catch (IntkeyDirectiveParseException ex) {
+            exception2Thrown = true;
         }
-        
-        fail("Expected exception from last invocation of USE directive");
+
+        assertTrue("Expected exception when setting state value with incorrect format", exception2Thrown);
     }
 
     /**
@@ -77,7 +92,53 @@ public class UseDirectiveTest extends TestCase {
      */
     @Test
     public void testSetInteger() throws Exception {
+        URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
+        IntkeyContext context = new IntkeyContext(null);
+        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
 
+        IntegerCharacter charStamens = (IntegerCharacter) context.getDataset().getCharacter(60);
+
+        // set single value
+        new UseDirective().parseAndProcess(context, "60,3");
+        IntegerValue val1 = (IntegerValue) context.getSpecimen().getValueForCharacter(charStamens);
+        assertEquals(Arrays.asList(3), val1.getValues());
+
+        // set a range of values
+        new UseDirective().parseAndProcess(context, "/M 60,2-5");
+        IntegerValue val2 = (IntegerValue) context.getSpecimen().getValueForCharacter(charStamens);
+        assertEquals(Arrays.asList(2, 3, 4, 5), val2.getValues());
+
+        // set more than one value using the "/" (or) separator
+        new UseDirective().parseAndProcess(context, "/M 60,2/5");
+        IntegerValue val3 = (IntegerValue) context.getSpecimen().getValueForCharacter(charStamens);
+        assertEquals(Arrays.asList(2, 5), val3.getValues());
+
+        // use a combination of single values, and ranges
+        new UseDirective().parseAndProcess(context, "/M 60,1-3/4/5-6");
+        IntegerValue val4 = (IntegerValue) context.getSpecimen().getValueForCharacter(charStamens);
+        assertEquals(Arrays.asList(1, 2, 3, 4, 5, 6), val4.getValues());
+
+        // set a value below the character minimum - the value set for the
+        // character should be
+        // one below the minimum - this value represents any values below the
+        // character minimum
+        new UseDirective().parseAndProcess(context, "/M 60,-100");
+        IntegerValue val5 = (IntegerValue) context.getSpecimen().getValueForCharacter(charStamens);
+        assertEquals(Arrays.asList(charStamens.getMinimumValue() - 1), val5.getValues());
+
+        // set a value above the character maximum - the value set for the
+        // character should be
+        // one above the maximum - this value represents any values below the
+        // character maximum
+        new UseDirective().parseAndProcess(context, "/M 60,100");
+        IntegerValue val6 = (IntegerValue) context.getSpecimen().getValueForCharacter(charStamens);
+        assertEquals(Arrays.asList(charStamens.getMaximumValue() + 1), val6.getValues());
+
+        // set a large range that span both below and above the characters
+        // minimum and maximum
+        new UseDirective().parseAndProcess(context, "/M 60,-100-100");
+        IntegerValue val7 = (IntegerValue) context.getSpecimen().getValueForCharacter(charStamens);
+        assertEquals(Arrays.asList(charStamens.getMinimumValue() - 1, 0, 1, 2, 3, 4, 5, 6, charStamens.getMaximumValue() + 1), val7.getValues());
     }
 
     /**
@@ -87,6 +148,40 @@ public class UseDirectiveTest extends TestCase {
      */
     @Test
     public void testSetReal() throws Exception {
+        URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
+        IntkeyContext context = new IntkeyContext(null);
+        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+
+        RealCharacter charCulmsMaxHeight = (RealCharacter) context.getDataset().getCharacter(3);
+
+        // Set single value
+        new UseDirective().parseAndProcess(context, "3,10");
+
+        RealValue val1 = (RealValue) context.getSpecimen().getValueForCharacter(charCulmsMaxHeight);
+        assertEquals(new FloatRange(10, 10), val1.getRange());
+
+        // Set range
+        new UseDirective().parseAndProcess(context, "/M 3,15-20");
+
+        RealValue val2 = (RealValue) context.getSpecimen().getValueForCharacter(charCulmsMaxHeight);
+        assertEquals(new FloatRange(15, 20), val2.getRange());
+
+        // Set range using "/" character - for a real character, this should be
+        // treated
+        // the same as the "-" character.
+        new UseDirective().parseAndProcess(context, "/M 3,50/100");
+
+        RealValue val3 = (RealValue) context.getSpecimen().getValueForCharacter(charCulmsMaxHeight);
+        assertEquals(new FloatRange(50, 100), val3.getRange());
+
+        // Attempt to set real character using incorrect format
+        boolean exceptionThrown = false;
+        try {
+            new UseDirective().parseAndProcess(context, "/M 3,50-foo");
+        } catch (IntkeyDirectiveParseException ex) {
+            exceptionThrown = true;
+        }
+        assertTrue("Expected exception when setting real value with incorrect format", exceptionThrown);
 
     }
 
@@ -97,7 +192,58 @@ public class UseDirectiveTest extends TestCase {
      */
     @Test
     public void testSetText() throws Exception {
+        URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
+        IntkeyContext context = new IntkeyContext(null);
+        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
 
+        TextCharacter charIncluding = (TextCharacter) context.getDataset().getCharacter(1);
+
+        // Set simple text value
+        new UseDirective().parseAndProcess(context, "1,foo");
+        TextValue val1 = (TextValue) context.getSpecimen().getValueForCharacter(charIncluding);
+        assertEquals(Arrays.asList("foo"), val1.getValues());
+
+        // Set text value containing spaces
+        new UseDirective().parseAndProcess(context, "/M 1,\"foo and bar\"");
+        TextValue val2 = (TextValue) context.getSpecimen().getValueForCharacter(charIncluding);
+        assertEquals(Arrays.asList("foo and bar"), val2.getValues());
+
+        // Set multiple text values
+        new UseDirective().parseAndProcess(context, "/M 1,foo/bar");
+        TextValue val3 = (TextValue) context.getSpecimen().getValueForCharacter(charIncluding);
+        assertEquals(Arrays.asList("foo", "bar"), val3.getValues());
+
+        // Multiple text values containing spaces
+        new UseDirective().parseAndProcess(context, "/M 1,\"foo and bar/one/two and three\"");
+        TextValue val4 = (TextValue) context.getSpecimen().getValueForCharacter(charIncluding);
+        assertEquals(Arrays.asList("foo and bar", "one", "two and three"), val4.getValues());
+
+        // Mismatched quotes
+        new UseDirective().parseAndProcess(context, "/M 1,\"one and two\"three");
+        TextValue val5 = (TextValue) context.getSpecimen().getValueForCharacter(charIncluding);
+        assertEquals(Arrays.asList("\"one and two\"three"), val5.getValues());
+    }
+
+    /**
+     * Test setting a value for a non existent character, i.e. supply an invalid
+     * character number.
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testSetNonExistentCharacter() throws Exception {
+        URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
+        IntkeyContext context = new IntkeyContext(null);
+        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+
+        boolean exceptionThrown = false;
+        try {
+            new UseDirective().parseAndProcess(context, "666,1");
+        } catch (IntkeyDirectiveParseException ex) {
+            exceptionThrown = true;
+        }
+        
+        assertTrue("Expecting exception thrown for non-existent character number", exceptionThrown);
     }
 
     /**

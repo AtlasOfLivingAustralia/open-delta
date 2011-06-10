@@ -14,19 +14,33 @@
  ******************************************************************************/
 package au.org.ala.delta;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 public class Logger {
-	
-	private static java.util.logging.Logger _logger = java.util.logging.Logger.getLogger("au.org.ala.delta"); 
-	
-	public static void log(String format, Object ...args) {
-		String message = String.format(format, args);
-		_logger.fine(message);
-	}
-	
-	public static void debug(String format, Object ...args) {
-		String message = String.format(format, args);
-		_logger.fine(message);
-		
-	}
+
+    private static java.util.logging.Logger _logger = java.util.logging.Logger.getLogger("au.org.ala.delta");
+
+    public static void log(String format, Object... args) {
+        String message = String.format(format, args);
+        _logger.fine(message);
+    }
+
+    public static void debug(String format, Object... args) {
+        String message = String.format(format, args);
+        _logger.fine(message);
+    }
+
+    public static void error(String format, Object... args) {
+        String message = String.format(format, args);
+        _logger.fine(message);
+    }
+    
+    public static void error(Throwable th) {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        th.printStackTrace(pw);
+        _logger.fine(sw.toString());
+    }
 
 }

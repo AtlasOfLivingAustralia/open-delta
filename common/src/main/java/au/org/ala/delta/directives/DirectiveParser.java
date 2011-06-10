@@ -135,18 +135,12 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
                         DirectiveArguments args = d.getDirectiveArgs();
                         d.process(context, args);
                     } catch (Exception ex) {
-                        if (pc.getFile() != null) {
-                            throw new RuntimeException(String.format("Exception occured trying to process directive: %s (%s %d:%d)", d.getName(), pc.getFile().getName(),
-                                    pc.getCurrentDirectiveStartLine(), pc.getCurrentDirectiveStartOffset()), ex);
-                        } else {
-                            throw new RuntimeException(String.format("Exception occured trying to process directive: %s (%d:%d)", d.getName(), pc.getCurrentDirectiveStartLine(),
-                                    pc.getCurrentDirectiveStartOffset()), ex);
-                        }
+                        handleDirectiveProcessingException(context, d, ex);
                     }
                     return d;
 
                 } else if (result.getResultType() == ResultType.NotFound) {
-                    handleUnrecognizedDirective(pc, controlWords);
+                    handleUnrecognizedDirective(context, controlWords);
                     return null;
                 }
                 i += word.length() + 1;
@@ -155,7 +149,10 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
         return null;
     }
     
-    protected abstract void handleUnrecognizedDirective(ParsingContext pc, List<String> controlWords);
+    protected abstract void handleUnrecognizedDirective(C context, List<String> controlWords);
+    
+    protected abstract void handleDirectiveProcessingException(C context, AbstractDirective<C> d, Exception ex);
+    
 
     private String readWord(StringBuilder buf, int start) {
         int i = start;

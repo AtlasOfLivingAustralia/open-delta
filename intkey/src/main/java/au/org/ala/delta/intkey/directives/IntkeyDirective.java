@@ -39,8 +39,6 @@ public abstract class IntkeyDirective extends AbstractDirective<IntkeyContext> {
         }
     }
     
-    
-    
     protected abstract IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception;
 
 }

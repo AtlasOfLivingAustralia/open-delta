@@ -65,7 +65,7 @@ public class UseDirective extends IntkeyDirective {
         return doProcess(context, data, false);
     }
 
-    public IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data, boolean change) throws Exception {
+    protected IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data, boolean change) throws Exception {
         if (context.getDataset() != null) {
             boolean suppressAlreadySetWarning = false;
 
@@ -102,7 +102,13 @@ public class UseDirective extends IntkeyDirective {
 
             for (int i = 0; i < characterNumbers.size(); i++) {
                 int charNum = characterNumbers.get(i);
-                au.org.ala.delta.model.Character ch = context.getDataset().getCharacter(charNum);
+                au.org.ala.delta.model.Character ch;
+                try {
+                    ch = context.getDataset().getCharacter(charNum);
+                } catch (IllegalArgumentException ex) {
+                    throw new IntkeyDirectiveParseException(String.format("Invalid character number '%s'. Valid numbers are in the range 1-%s", charNum, context.getDataset().getNumberOfCharacters()),
+                            ex);
+                }
 
                 // Parse the supplied value for each character, or prompt for
                 // one if no value was supplied
@@ -110,22 +116,32 @@ public class UseDirective extends IntkeyDirective {
                 String charValue = specifiedValues.get(i);
 
                 if (charValue != null) {
-                    if (ch instanceof MultiStateCharacter) {
-                        Set<Integer> stateValues = ParsingUtils.parseMultistateOrIntegerCharacterValue(charValue);
-                        // TODO need error if non existent state values are
-                        // listed
-                        invoc.addCharacterValue((MultiStateCharacter) ch, new MultiStateValue((MultiStateCharacter) ch, stateValues));
-                    } else if (ch instanceof IntegerCharacter) {
-                        Set<Integer> intValues = ParsingUtils.parseMultistateOrIntegerCharacterValue(charValue);
-                        invoc.addCharacterValue((IntegerCharacter) ch, new IntegerValue((IntegerCharacter) ch, intValues));
-                    } else if (ch instanceof RealCharacter) {
-                        FloatRange floatRange = ParsingUtils.parseRealCharacterValue(charValue);
-                        invoc.addCharacterValue((RealCharacter) ch, new RealValue((RealCharacter) ch, floatRange));
-                    } else if (ch instanceof TextCharacter) {
-                        List<String> stringList = ParsingUtils.parseTextCharacterValue(charValue);
-                        invoc.addCharacterValue((TextCharacter) ch, new TextValue((TextCharacter) ch, stringList));
-                    } else {
-                        throw new IllegalArgumentException("Unrecognized character type");
+                    try {
+                        if (ch instanceof MultiStateCharacter) {
+                            MultiStateCharacter msCh = (MultiStateCharacter) ch;
+                            Set<Integer> setStateValues = ParsingUtils.parseMultistateOrIntegerCharacterValue(charValue);
+
+                            for (int val : setStateValues) {
+                                if (val < 0 || val > msCh.getNumberOfStates()) {
+                                    throw new IntkeyDirectiveParseException(String.format("Invalid state value %s. Character %s has %s states.", val, msCh.getCharacterId(), msCh.getNumberOfStates()));
+                                }
+                            }
+
+                            invoc.addCharacterValue((MultiStateCharacter) ch, new MultiStateValue((MultiStateCharacter) ch, setStateValues));
+                        } else if (ch instanceof IntegerCharacter) {
+                            Set<Integer> intValues = ParsingUtils.parseMultistateOrIntegerCharacterValue(charValue);
+                            invoc.addCharacterValue((IntegerCharacter) ch, new IntegerValue((IntegerCharacter) ch, intValues));
+                        } else if (ch instanceof RealCharacter) {
+                            FloatRange floatRange = ParsingUtils.parseRealCharacterValue(charValue);
+                            invoc.addCharacterValue((RealCharacter) ch, new RealValue((RealCharacter) ch, floatRange));
+                        } else if (ch instanceof TextCharacter) {
+                            List<String> stringList = ParsingUtils.parseTextCharacterValue(charValue);
+                            invoc.addCharacterValue((TextCharacter) ch, new TextValue((TextCharacter) ch, stringList));
+                        } else {
+                            throw new RuntimeException("Unrecognized character type");
+                        }
+                    } catch (IllegalArgumentException ex) {
+                        throw new IntkeyDirectiveParseException(ex.getMessage());
                     }
                 } else {
                     invoc.addCharacterValue(ch, null);
@@ -201,7 +217,7 @@ public class UseDirective extends IntkeyDirective {
         return retList;
     }
 
-    class UseDirectiveInvocation implements IntkeyDirectiveInvocation {
+    public class UseDirectiveInvocation implements IntkeyDirectiveInvocation {
 
         private Map<au.org.ala.delta.model.Character, CharacterValue> _characterValues;
         private boolean _change;
@@ -238,8 +254,10 @@ public class UseDirective extends IntkeyDirective {
             for (Character ch : charsWithValues) {
                 if (checkCharacterUsable(ch, context, !_suppressAlreadySetWarning && !_change)) {
                     processControllingCharacters(ch, context);
-                    // second call to checkCharacterUsable() to ensure that character has not been
-                    // made inapplicable by the value given to one or more of its controlling 
+                    // second call to checkCharacterUsable() to ensure that
+                    // character has not been
+                    // made inapplicable by the value given to one or more of
+                    // its controlling
                     // characters
                     if (checkCharacterUsable(ch, context, false)) {
                         CharacterValue characterVal = _characterValues.get(ch);
@@ -252,8 +270,10 @@ public class UseDirective extends IntkeyDirective {
                 Character ch = charsNoValues.get(0);
                 if (checkCharacterUsable(ch, context, !_suppressAlreadySetWarning && !_change)) {
                     processControllingCharacters(ch, context);
-                    // second call to checkCharacterUsable() to ensure that character has not been
-                    // made inapplicable by the value given to one or more of its controlling 
+                    // second call to checkCharacterUsable() to ensure that
+                    // character has not been
+                    // made inapplicable by the value given to one or more of
+                    // its controlling
                     // characters
                     if (checkCharacterUsable(ch, context, false)) {
                         CharacterValue characterVal = promptForCharacterValue(UIUtils.getMainFrame(), ch);
@@ -302,8 +322,10 @@ public class UseDirective extends IntkeyDirective {
 
                         if (checkCharacterUsable(ch, context, !_suppressAlreadySetWarning && !_change)) {
                             processControllingCharacters(ch, context);
-                            // second call to checkCharacterUsable() to ensure that character has not been
-                            // made inapplicable by the value given to one or more of its controlling 
+                            // second call to checkCharacterUsable() to ensure
+                            // that character has not been
+                            // made inapplicable by the value given to one or
+                            // more of its controlling
                             // characters
                             if (checkCharacterUsable(ch, context, false)) {
                                 characterVal = promptForCharacterValue(UIUtils.getMainFrame(), ch);

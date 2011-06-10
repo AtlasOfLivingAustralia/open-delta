@@ -11,9 +11,8 @@ import org.apache.commons.lang.math.FloatRange;
 import org.apache.commons.lang.math.IntRange;
 
 public class ParsingUtils {
-    private static Pattern INT_RANGE_PATTERN = Pattern.compile("^(\\d+)-(\\d+)$");
-    private static Pattern FLOAT_RANGE_PATTERN = Pattern.compile("^(\\d+(\\.\\d+)?)-(\\d+(\\.\\d+)?)$");
-    private static Pattern INT_LIST_PATTERN = Pattern.compile("^\\d+(/\\d+)+$");
+    private static Pattern INT_RANGE_PATTERN = Pattern.compile("^(-?\\d+)-(-?\\d+)$");
+    private static Pattern FLOAT_RANGE_PATTERN = Pattern.compile("^(-?\\d+(\\.\\d+)?)-(-?\\d+(\\.\\d+)?)$");
 
     public static Set<Integer> parseMultistateOrIntegerCharacterValue(String charValue) {
         Set<Integer> selectedStates = new HashSet<Integer>();
@@ -93,25 +92,6 @@ public class ParsingUtils {
         } catch (NumberFormatException ex) {
             return null;
         }
-    }
-
-    public static List<Integer> parseIntList(String text) {
-        List<Integer> retList = null;
-
-        try {
-            Matcher m = INT_LIST_PATTERN.matcher(text);
-            if (m.matches()) {
-                retList = new ArrayList<Integer>();
-                String[] tokens = text.split("/");
-                for (String token : tokens) {
-                    retList.add(Integer.parseInt(token));
-                }
-            }
-        } catch (NumberFormatException ex) {
-            return null;
-        }
-
-        return retList;
     }
 
     public static List<String> splitDataIntoSubCommands(String data) {

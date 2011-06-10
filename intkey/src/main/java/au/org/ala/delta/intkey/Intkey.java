@@ -31,6 +31,7 @@ import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -39,6 +40,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.MouseInputAdapter;
 
+import org.apache.commons.lang.StringUtils;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
@@ -49,6 +51,7 @@ import au.org.ala.delta.intkey.directives.FileCharactersDirective;
 import au.org.ala.delta.intkey.directives.FileTaxaDirective;
 import au.org.ala.delta.intkey.directives.IntkeyDirective;
 import au.org.ala.delta.intkey.directives.IntkeyDirectiveInvocation;
+import au.org.ala.delta.intkey.directives.IntkeyDirectiveParseException;
 import au.org.ala.delta.intkey.directives.IntkeyDirectiveParser;
 import au.org.ala.delta.intkey.directives.NewDatasetDirective;
 import au.org.ala.delta.intkey.directives.RestartDirective;
@@ -60,6 +63,7 @@ import au.org.ala.delta.intkey.model.specimen.Specimen;
 import au.org.ala.delta.intkey.ui.CharacterListModel;
 import au.org.ala.delta.intkey.ui.ItemListModel;
 import au.org.ala.delta.intkey.ui.ReExecuteDialog;
+import au.org.ala.delta.intkey.ui.UIUtils;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.format.ItemFormatter;
@@ -87,6 +91,8 @@ public class Intkey extends DeltaSingleFrameApplication {
     private UsedCharacterListModel _usedCharacterListModel;
     private ItemListModel _availableTaxaListModel;
     private EliminatedTaxaListModel _eliminatedTaxaListModel;
+
+    private IntkeyDirectiveParser _directiveParser;
 
     private JLabel _lblNumAvailableCharacters;
     private JLabel _lblNumUsedCharacters;
@@ -165,6 +171,7 @@ public class Intkey extends DeltaSingleFrameApplication {
         mainFrame.setIconImages(IconHelper.getRedIconList());
 
         _context = new IntkeyContext(this);
+        _directiveParser = IntkeyDirectiveParser.createInstance();
 
         ActionMap actionMap = getContext().getActionMap();
 
@@ -434,7 +441,7 @@ public class Intkey extends DeltaSingleFrameApplication {
                     cmdMenu.doClick();
                 } else {
                     try {
-                        IntkeyDirectiveParser.createInstance().parse(new InputStreamReader(new ByteArrayInputStream(cmdStr.getBytes())), _context);
+                        _directiveParser.parse(new InputStreamReader(new ByteArrayInputStream(cmdStr.getBytes())), _context);
                     } catch (Exception ex) {
                         Logger.log("Exception thrown while processing directive \"%s\"", cmdStr);
                         ex.printStackTrace();
@@ -731,7 +738,11 @@ public class Intkey extends DeltaSingleFrameApplication {
 
     @Action
     public void btnRestart() {
-        executeDirective(new RestartDirective());
+        try {
+            new RestartDirective().parseAndProcess(_context, null);
+        } catch (Exception ex) {
+            Logger.error(ex);
+        }
     }
 
     @Action
@@ -789,10 +800,16 @@ public class Intkey extends DeltaSingleFrameApplication {
 
     private void executeDirective(IntkeyDirective dir) {
         try {
-            dir.process(_context, null);
+            dir.parseAndProcess(_context, null);
+        } catch (IntkeyDirectiveParseException ex) {
+            String msg = ex.getMessage();
+            JOptionPane.showMessageDialog(UIUtils.getMainFrame(), msg, "Error", JOptionPane.ERROR_MESSAGE);
+            Logger.error(msg);
         } catch (Exception ex) {
-            Logger.log("Error while running directive from action - %s %s", dir.toString(), ex.getMessage());
-            ex.printStackTrace();
+            String msg = String.format("Error occurred while processing '%s' command: %s", StringUtils.join(dir.getControlWords(), " ").toUpperCase(), ex.getMessage());
+            JOptionPane.showMessageDialog(UIUtils.getMainFrame(), msg, "Error", JOptionPane.ERROR_MESSAGE);
+            Logger.error(msg);
+            Logger.error(ex);
         }
     }
 
@@ -826,7 +843,7 @@ public class Intkey extends DeltaSingleFrameApplication {
                 eliminatedTaxa.add(taxon);
             }
         }
-        
+
         if (availableTaxa.size() == 0) {
             JLabel lbl = new JLabel("No matching taxa remain.");
             lbl.setHorizontalAlignment(JLabel.CENTER);
@@ -841,11 +858,11 @@ public class Intkey extends DeltaSingleFrameApplication {
             lbl.setOpaque(true);
             _sclPaneAvailableCharacters.setViewportView(lbl);
             _sclPaneAvailableCharacters.revalidate();
-        } 
+        }
 
         _availableCharacterListModel = new CharacterListModel(availableCharacters);
         _listAvailableCharacters.setModel(_availableCharacterListModel);
-        
+
         _usedCharacterListModel = new UsedCharacterListModel(usedCharacterValues);
 
         _listUsedCharacters.setModel(_usedCharacterListModel);
