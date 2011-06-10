@@ -17,10 +17,12 @@ package au.org.ala.delta.editor;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.beans.PropertyVetoException;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.EventObject;
@@ -30,6 +32,7 @@ import java.util.prefs.PreferenceChangeListener;
 
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -41,6 +44,7 @@ import javax.swing.JOptionPane;
 import javax.swing.LookAndFeel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.event.InternalFrameEvent;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
@@ -51,6 +55,7 @@ import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.Task;
 import org.jdesktop.application.Task.BlockingScope;
+import org.omg.stub.java.rmi._Remote_Stub;
 
 import au.org.ala.delta.editor.directives.ImportController;
 import au.org.ala.delta.editor.model.EditorDataModel;
@@ -83,6 +88,7 @@ public class DeltaEditor extends InternalFrameApplication implements
 	private StatusBar _statusBar;
 
 	private ActionMap _actionMap;
+	private ResourceMap _resourceMap;
 
 	/** Used to create/find/save data sets */
 	private DeltaDataSetRepository _dataSetRepository;
@@ -126,9 +132,8 @@ public class DeltaEditor extends InternalFrameApplication implements
 
 	@Override
 	protected void initialize(String[] args) {
-		ResourceMap resourceMap = getContext()
-				.getResourceMap(DeltaEditor.class);
-		resourceMap.injectFields(this);
+		_resourceMap = getContext() .getResourceMap(DeltaEditor.class);
+		_resourceMap.injectFields(this);
 	}
 
 	public boolean getSaveEnabled() {
@@ -272,44 +277,47 @@ public class DeltaEditor extends InternalFrameApplication implements
 
 		JMenu mnuLF = new JMenu();
 		mnuLF.setName("mnuLF");
+		mnuLF.setText(_resourceMap.getString("mnuLF.text"));
 		mnuWindow.add(mnuLF);
 
-		JMenuItem mnuItMetalLF = new JMenuItem(new LookAndFeelAction(
-				getMainFrame(), new MetalLookAndFeel()));
-		mnuItMetalLF.setName("mnuItMetalLF");
+		JMenuItem mnuItMetalLF = new JMenuItem();
+		mnuItMetalLF.setAction(_actionMap.get("metalLookAndFeel"));
 		mnuLF.add(mnuItMetalLF);
 
-		try {
-			Class<?> c = Class.forName(UIManager
-					.getSystemLookAndFeelClassName());
-			LookAndFeel sysLaf = (LookAndFeel) c.newInstance();
-			JMenuItem mnuItWindowsLF = new JMenuItem(new LookAndFeelAction(
-					getMainFrame(), sysLaf));
-			mnuItWindowsLF.setName("mnuItWindowsLF");
-			mnuLF.add(mnuItWindowsLF);
-		} catch (Exception ex) {
-			// do nothing
-		}
+		
+		JMenuItem mnuItWindowsLF = new JMenuItem();
+		mnuItWindowsLF.setAction(_actionMap.get("systemLookAndFeel"));
+		mnuLF.add(mnuItWindowsLF);
+		
 		try {
 			// Nimbus L&F was added in update java 6 update 10.
-			LookAndFeel nimbusLaF = (LookAndFeel) Class.forName(
-					"com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel")
-					.newInstance();
-			JMenuItem mnuItNimbusLF = new JMenuItem(new LookAndFeelAction(
-					getMainFrame(), nimbusLaF));
-			mnuItNimbusLF.setName("mnuItNimbusLF");
+			Class.forName( "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel").newInstance();
+			JMenuItem mnuItNimbusLF = new JMenuItem();
+			mnuItNimbusLF.setAction(_actionMap.get("nimbusLookAndFeel"));
 			mnuLF.add(mnuItNimbusLF);
 		} catch (Exception e) {
 			// The Nimbus L&F is not available, no matter.
 		}
 		mnuWindow.addSeparator();
 		
-		
+		for (final JInternalFrame frame : _frames) {
+			JMenuItem windowItem = new JCheckBoxMenuItem();
+			windowItem.setText(frame.getTitle());
+			windowItem.setSelected(frame.isSelected());
+			windowItem.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					try {
+						frame.setSelected(true);
+					} catch (PropertyVetoException e1) {
+					}
+				}
+			});
+			mnuWindow.add(windowItem);
+		}
 		
 	}
-	
-	
-	
 
 	private void buildFileMenu(JMenu mnuFile) {
 
@@ -345,6 +353,42 @@ public class DeltaEditor extends InternalFrameApplication implements
 			mnuFile.add(mnuItFileExit);
 		}
 
+	}
+	@Action
+	public void systemLookAndFeel() {
+		try {
+			Class<?> c = Class.forName(UIManager
+					.getSystemLookAndFeelClassName());
+			LookAndFeel sysLaf = (LookAndFeel) c.newInstance();
+			changeLookAndFeel(sysLaf);
+		}
+		catch (Exception e) {}
+	}
+	
+	@Action
+	public void metalLookAndFeel() {
+		changeLookAndFeel(new MetalLookAndFeel());
+	}
+	
+	@Action
+	public void nimbusLookAndFeel() {
+		// Nimbus L&F was added in update java 6 update 10.
+		LookAndFeel nimbusLaF;
+		try {
+			nimbusLaF = (LookAndFeel) Class.forName(
+					"com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel")
+					.newInstance();
+			changeLookAndFeel(nimbusLaF);
+		} catch (Exception e) {} 
+	}
+	
+	private void changeLookAndFeel(LookAndFeel laf) {
+		try {
+			UIManager.setLookAndFeel(laf);
+			SwingUtilities.updateComponentTreeUI(getMainFrame());
+		} catch (Exception ex) {
+			System.err.println(ex);
+		}
 	}
 	
 
@@ -760,6 +804,23 @@ public class DeltaEditor extends InternalFrameApplication implements
 		}
 	}
 
+	/**
+     * Invoked when an internal frame is activated.
+     */
+    public void internalFrameActivated(InternalFrameEvent e) {
+    	buildWindowMenu(_windowMenu);
+    }
+
+	@Override
+	public void internalFrameOpened(InternalFrameEvent e) {
+		buildWindowMenu(_windowMenu);
+	}
+
+	@Override
+	public void internalFrameClosed(InternalFrameEvent e) {
+		buildWindowMenu(_windowMenu);
+	}
+	
 }
 
 class LookAndFeelAction extends AbstractAction {

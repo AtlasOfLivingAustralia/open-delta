@@ -8,11 +8,13 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
-import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
+import javax.swing.event.InternalFrameListener;
 
 import au.org.ala.delta.editor.ui.util.EditorUIUtils;
 import au.org.ala.delta.ui.DeltaSingleFrameApplication;
@@ -20,11 +22,13 @@ import au.org.ala.delta.ui.DeltaSingleFrameApplication;
 /**
  * Extends the SingleFrameApplication to include support for InternalFrames.
  */
-public abstract class InternalFrameApplication extends DeltaSingleFrameApplication {
+public abstract class InternalFrameApplication extends DeltaSingleFrameApplication implements InternalFrameListener {
 
 	/** The desktop we are working with */
 	protected JDesktopPane _desktop;
 
+	protected List<JInternalFrame> _frames = new ArrayList<JInternalFrame>();
+	
 	/**
 	 * Initialises the desktop.
 	 */
@@ -43,8 +47,8 @@ public abstract class InternalFrameApplication extends DeltaSingleFrameApplicati
 		if (!_desktop.isVisible()) {
 			show(_desktop);
 		}
-
-		frame.addInternalFrameListener(new FrameListener());
+		_frames.add(frame);
+		frame.addInternalFrameListener(this);
 		addToDesktop(frame);
 
 	}
@@ -71,8 +75,7 @@ public abstract class InternalFrameApplication extends DeltaSingleFrameApplicati
 				}
 			}
 		});
-
-		
+	
 		_desktop.add(frame);
 		
 		// Restore session state
@@ -203,13 +206,36 @@ public abstract class InternalFrameApplication extends DeltaSingleFrameApplicati
 		return taken;
 	}
 
-	class FrameListener extends InternalFrameAdapter {
 
-		@Override
-		public void internalFrameClosing(InternalFrameEvent e) {
-			saveSession(e.getInternalFrame());
-		}
+	@Override
+	public void internalFrameClosing(InternalFrameEvent e) {
+		_frames.remove(e.getInternalFrame());
+		saveSession(e.getInternalFrame());
+	}
+	
+	 /**
+     * Invoked when an internal frame is activated.
+     */
+    public void internalFrameActivated(InternalFrameEvent e) {}
 
+    /**
+     * Invoked when an internal frame is de-activated.
+     */
+    public void internalFrameDeactivated(InternalFrameEvent e) {}
+
+	@Override
+	public void internalFrameOpened(InternalFrameEvent e) {
 	}
 
+	@Override
+	public void internalFrameClosed(InternalFrameEvent e) {
+	}
+
+	@Override
+	public void internalFrameIconified(InternalFrameEvent e) {
+	}
+
+	@Override
+	public void internalFrameDeiconified(InternalFrameEvent e) {
+	}
 }
