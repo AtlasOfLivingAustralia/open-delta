@@ -10,7 +10,6 @@ import junit.framework.TestCase;
 import org.apache.commons.lang.math.FloatRange;
 import org.junit.Test;
 
-import au.org.ala.delta.intkey.directives.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.UseDirective;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.model.IntkeyDataset;
@@ -18,10 +17,88 @@ import au.org.ala.delta.intkey.model.specimen.MultiStateValue;
 import au.org.ala.delta.intkey.model.specimen.RealValue;
 import au.org.ala.delta.intkey.model.specimen.Specimen;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.RealCharacter;
 import au.org.ala.delta.model.UnorderedMultiStateCharacter;
 
 public class UseDirectiveTest extends TestCase {
+
+    /**
+     * Test setting a value for a multi state character
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testSetMultiState() throws Exception {
+        URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
+        IntkeyContext context = new IntkeyContext(null);
+        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+
+        MultiStateCharacter charSubfamily = (MultiStateCharacter) context.getDataset().getCharacter(78);
+
+        // Set single state
+        new UseDirective().process(context, "78,3");
+
+        MultiStateValue val1 = (MultiStateValue) context.getSpecimen().getValueForCharacter(charSubfamily);
+        assertEquals(Arrays.asList(3), val1.getStateValues());
+
+        // Set multiple states with "/" (or) character
+        new UseDirective().process(context, "/M 78,1/3/5");
+
+        MultiStateValue val2 = (MultiStateValue) context.getSpecimen().getValueForCharacter(charSubfamily);
+        assertEquals(Arrays.asList(1, 3, 5), val2.getStateValues());
+
+        // Set multiple states with "-" (range) character
+        new UseDirective().process(context, "/M 78,2-4");
+
+        MultiStateValue val3 = (MultiStateValue) context.getSpecimen().getValueForCharacter(charSubfamily);
+        assertEquals(Arrays.asList(2, 3, 4), val3.getStateValues());
+
+        // Set multiple states with both "/" and "-" characters
+        new UseDirective().process(context, "/M 78,1-2/3/4-5");
+
+        MultiStateValue val4 = (MultiStateValue) context.getSpecimen().getValueForCharacter(charSubfamily);
+        assertEquals(Arrays.asList(1, 2, 3, 4, 5), val4.getStateValues());
+
+        // Attempt to set states using incorrect format
+        try {
+            new UseDirective().process(context, "/M 78,blah");
+        } catch (IllegalArgumentException ex) {
+            return;
+        }
+        
+        fail("Expected exception from last invocation of USE directive");
+    }
+
+    /**
+     * Test setting a value for an integer character
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testSetInteger() throws Exception {
+
+    }
+
+    /**
+     * Test setting a value for a real character
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testSetReal() throws Exception {
+
+    }
+
+    /**
+     * Test setting a value for a text character
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testSetText() throws Exception {
+
+    }
 
     /**
      * Test that when a character is used, values are set for its controlling
@@ -42,8 +119,7 @@ public class UseDirectiveTest extends TestCase {
         UnorderedMultiStateCharacter charSeedInShell = (UnorderedMultiStateCharacter) ds.getCharacter(3);
         RealCharacter charAvgThickness = (RealCharacter) ds.getCharacter(4);
 
-        IntkeyDirectiveInvocation invoc = new UseDirective().doProcess(context, "4,1");
-        context.executeDirective(invoc);
+        new UseDirective().process(context, "4,1");
 
         Specimen specimen = context.getSpecimen();
 
@@ -77,11 +153,9 @@ public class UseDirectiveTest extends TestCase {
         UnorderedMultiStateCharacter charSeedInShell = (UnorderedMultiStateCharacter) ds.getCharacter(3);
         RealCharacter charAvgThickness = (RealCharacter) ds.getCharacter(4);
 
-        IntkeyDirectiveInvocation invoc = new UseDirective().doProcess(context, "4,1");
-        context.executeDirective(invoc);
+        new UseDirective().process(context, "4,1");
 
-        IntkeyDirectiveInvocation invoc2 = new UseDirective().doProcess(context, "/M 2,2");
-        context.executeDirective(invoc2);
+        new UseDirective().process(context, "/M 2,2");
 
         Specimen specimen = context.getSpecimen();
 
@@ -113,23 +187,19 @@ public class UseDirectiveTest extends TestCase {
 
         assertTrue(context.getSpecimen().getAvailableCharacters().contains(charThree));
 
-        IntkeyDirectiveInvocation invoc = new UseDirective().doProcess(context, "1,2");
-        context.executeDirective(invoc);
+        new UseDirective().process(context, "1,2");
 
         assertFalse(context.getSpecimen().getAvailableCharacters().contains(charThree));
 
-        IntkeyDirectiveInvocation invoc2 = new UseDirective().doProcess(context, "2,2");
-        context.executeDirective(invoc2);
+        new UseDirective().process(context, "2,2");
 
         assertFalse(context.getSpecimen().getAvailableCharacters().contains(charThree));
 
-        IntkeyDirectiveInvocation invoc3 = new UseDirective().doProcess(context, "/M 2,1");
-        context.executeDirective(invoc3);
+        new UseDirective().process(context, "/M 2,1");
 
         assertFalse(context.getSpecimen().getAvailableCharacters().contains(charThree));
 
-        IntkeyDirectiveInvocation invoc4 = new UseDirective().doProcess(context, "/M 1,1");
-        context.executeDirective(invoc4);
+        new UseDirective().process(context, "/M 1,1");
 
         assertTrue(context.getSpecimen().getAvailableCharacters().contains(charThree));
 
@@ -157,21 +227,18 @@ public class UseDirectiveTest extends TestCase {
         UnorderedMultiStateCharacter charSeedInShell = (UnorderedMultiStateCharacter) ds.getCharacter(3);
         RealCharacter charAvgThickness = (RealCharacter) ds.getCharacter(4);
 
-        IntkeyDirectiveInvocation invoc = new UseDirective().doProcess(context, "4,1");
-        context.executeDirective(invoc);
+        new UseDirective().process(context, "4,1");
 
         Specimen specimen = context.getSpecimen();
 
-        IntkeyDirectiveInvocation invoc2 = new UseDirective().doProcess(context, "/M 2,2");
-        context.executeDirective(invoc2);
+        new UseDirective().process(context, "/M 2,2");
 
         assertFalse(specimen.getAvailableCharacters().contains(charSeedInShell));
         assertFalse(specimen.getAvailableCharacters().contains(charAvgThickness));
         assertFalse(specimen.hasValueFor(charSeedInShell));
         assertFalse(specimen.hasValueFor(charAvgThickness));
 
-        IntkeyDirectiveInvocation invoc3 = new UseDirective().doProcess(context, "/M 2,1");
-        context.executeDirective(invoc3);
+        new UseDirective().process(context, "/M 2,1");
 
         assertTrue(specimen.getAvailableCharacters().contains(charSeedInShell));
         assertTrue(specimen.getAvailableCharacters().contains(charAvgThickness));
@@ -200,15 +267,14 @@ public class UseDirectiveTest extends TestCase {
         // character 38 - 0 - and
         // having the inapplicability flag set to true for character 38.
 
-        IntkeyDirectiveInvocation invoc = new UseDirective().doProcess(context, "38,5");
-        context.executeDirective(invoc);
+        new UseDirective().process(context, "38,5");
 
         Specimen specimen = context.getSpecimen();
         assertEquals(Arrays.asList(ds.getCharacter(32), ds.getCharacter(38)), specimen.getUsedCharacters());
 
-        Map<Item, Integer> taxonDifferences = specimen.getTaxonDifferences(); 
+        Map<Item, Integer> taxonDifferences = specimen.getTaxonDifferences();
         assertEquals(14, taxonDifferences.size());
-        
+
         assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(1)));
         assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(2)));
         assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(3)));
@@ -224,20 +290,20 @@ public class UseDirectiveTest extends TestCase {
         assertEquals(0, (int) taxonDifferences.get(ds.getTaxon(13)));
         assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(14)));
     }
-    
-    //Set multistate, real integer etc
-    
-    //set twice
-    //remove twice
-    //weird behavior with change ???
-    //open two datasets in succession, ensure that keywords etc from first dataset are cleared out
-    //Integer above and below maximum
-    //Dependent characters like 210, 213 and 230 in grasses
-    //Dependent characters like 153,154,155 in salix
-    
-    //and, or and range operators
-    
-    //invalid input - ensure behaves correctly
-    
+
+    // Set multistate, real integer etc
+
+    // set twice
+    // remove twice
+    // weird behavior with change ???
+    // open two datasets in succession, ensure that keywords etc from first
+    // dataset are cleared out
+    // Integer above and below maximum
+    // Dependent characters like 210, 213 and 230 in grasses
+    // Dependent characters like 153,154,155 in salix
+
+    // and, or and range operators
+
+    // invalid input - ensure behaves correctly
 
 }

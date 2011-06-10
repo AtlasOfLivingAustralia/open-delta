@@ -226,8 +226,7 @@ public class Intkey extends DeltaSingleFrameApplication {
                     if (selectedIndex >= 0) {
                         try {
                             Character ch = _availableCharacterListModel.getCharacterAt(selectedIndex);
-                            IntkeyDirectiveInvocation invoc = new UseDirective().doProcess(_context, Integer.toString(ch.getCharacterId()));
-                            _context.executeDirective(invoc);
+                            new UseDirective().process(_context, Integer.toString(ch.getCharacterId()));
                         } catch (Exception ex) {
                             ex.printStackTrace();
                         }
@@ -324,8 +323,7 @@ public class Intkey extends DeltaSingleFrameApplication {
                     if (selectedIndex >= 0) {
                         try {
                             Character ch = _usedCharacterListModel.getCharacterAt(selectedIndex);
-                            IntkeyDirectiveInvocation invoc = new ChangeDirective().doProcess(_context, Integer.toString(ch.getCharacterId()));
-                            _context.executeDirective(invoc);
+                            new ChangeDirective().process(_context, Integer.toString(ch.getCharacterId()));
                         } catch (Exception ex) {
                             ex.printStackTrace();
                         }

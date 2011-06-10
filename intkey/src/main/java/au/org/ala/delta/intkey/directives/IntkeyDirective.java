@@ -20,6 +20,6 @@ public abstract class IntkeyDirective extends AbstractDirective<IntkeyContext> {
     
     
     
-    public abstract IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception;
+    protected abstract IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception;
 
 }

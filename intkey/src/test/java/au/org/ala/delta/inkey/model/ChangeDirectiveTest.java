@@ -39,8 +39,7 @@ public class ChangeDirectiveTest extends TestCase {
 
         UnorderedMultiStateCharacter charLongevity = (UnorderedMultiStateCharacter) ds.getCharacter(2);
 
-        IntkeyDirectiveInvocation invoc = new UseDirective().doProcess(context, "2,1");
-        context.executeDirective(invoc);
+        new UseDirective().process(context, "2,1");
 
         assertEquals(Arrays.asList(charLongevity), specimen.getUsedCharacters());
         Map<Item, Integer> taxonDifferences = specimen.getTaxonDifferences();
@@ -60,8 +59,7 @@ public class ChangeDirectiveTest extends TestCase {
         assertEquals(0, (int) taxonDifferences.get(ds.getTaxon(13)));
         assertEquals(0, (int) taxonDifferences.get(ds.getTaxon(14)));
 
-        IntkeyDirectiveInvocation invoc2 = new ChangeDirective().doProcess(context, "2,2");
-        context.executeDirective(invoc2);
+        new ChangeDirective().process(context, "2,2");
 
         assertEquals(Arrays.asList(charLongevity), specimen.getUsedCharacters());
 
@@ -83,6 +81,11 @@ public class ChangeDirectiveTest extends TestCase {
         assertEquals(1, (int) taxonDifferences2.get(ds.getTaxon(14)));
     }
 
+    /**
+     * This unit test tests the fix for a bug that was found with updating the 
+     * specimen after a character value is changed. It was fixed in revision 736.
+     * @throws Exception
+     */
     @Test
     public void testChangeDirective2() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
@@ -103,8 +106,7 @@ public class ChangeDirectiveTest extends TestCase {
         UnorderedMultiStateCharacter charLeafBladesPseudo = (UnorderedMultiStateCharacter) ds.getCharacter(9);
         UnorderedMultiStateCharacter charLigulePresence = (UnorderedMultiStateCharacter) ds.getCharacter(10);
 
-        IntkeyDirectiveInvocation invoc = new UseDirective().doProcess(context, "1-10,1");
-        context.executeDirective(invoc);
+        new UseDirective().process(context, "1-10,1");
 
         assertEquals(Arrays.asList(charIncluding, charLongevity, charCulmsMaxHeight, charCulmsWoodyHerbacious, charCulmsBranchedAbove, charCulmNodesHairyGlabrous, charLeafBladesShape,
                 charLeafBladesMidWidth, charLeafBladesPseudo, charLigulePresence), specimen.getUsedCharacters());
@@ -126,8 +128,7 @@ public class ChangeDirectiveTest extends TestCase {
         assertEquals(4, (int) taxonDifferences.get(ds.getTaxon(13)));
         assertEquals(5, (int) taxonDifferences.get(ds.getTaxon(14)));
 
-        IntkeyDirectiveInvocation invoc2 = new ChangeDirective().doProcess(context, "10,2");
-        context.executeDirective(invoc2);
+        new ChangeDirective().process(context, "10,2");
 
         assertEquals(Arrays.asList(charIncluding, charLongevity, charCulmsMaxHeight, charCulmsWoodyHerbacious, charCulmsBranchedAbove, charCulmNodesHairyGlabrous, charLeafBladesShape,
                 charLeafBladesMidWidth, charLeafBladesPseudo, charLigulePresence), specimen.getUsedCharacters());
@@ -150,6 +151,11 @@ public class ChangeDirectiveTest extends TestCase {
         assertEquals(6, (int) taxonDifferences2.get(ds.getTaxon(14)));
     }
     
+    /**
+     * This unit test tests the fix for a bug that was found with updating the 
+     * specimen after a character value is changed. It was fixed in revision 736.
+     * @throws Exception
+     */
     @Test
     public void testChangeDirective3() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
@@ -159,8 +165,7 @@ public class ChangeDirectiveTest extends TestCase {
         IntkeyDataset ds = context.getDataset();
         Specimen specimen = context.getSpecimen();
 
-        IntkeyDirectiveInvocation invoc = new UseDirective().doProcess(context, "16,1");
-        context.executeDirective(invoc);
+        new UseDirective().process(context, "16,1");
         
         Map<Item, Integer> taxonDifferences = specimen.getTaxonDifferences();
         assertEquals(14, taxonDifferences.size());
@@ -179,8 +184,7 @@ public class ChangeDirectiveTest extends TestCase {
         assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(13)));
         assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(14)));
 
-        IntkeyDirectiveInvocation invoc2 = new ChangeDirective().doProcess(context, "16,2");
-        context.executeDirective(invoc2);
+        new ChangeDirective().process(context, "16,2");
         
         Map<Item, Integer> taxonDifferences2 = specimen.getTaxonDifferences();
         assertEquals(14, taxonDifferences2.size());

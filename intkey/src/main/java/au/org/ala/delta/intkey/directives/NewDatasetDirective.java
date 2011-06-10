@@ -27,7 +27,7 @@ public class NewDatasetDirective extends IntkeyDirective {
 	}
 
     @Override
-    public IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
+    protected IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
         String filePath = data;
 
         /*if (filePath == null) {

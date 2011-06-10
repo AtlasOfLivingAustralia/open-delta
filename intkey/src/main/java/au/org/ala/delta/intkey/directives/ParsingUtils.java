@@ -23,6 +23,11 @@ public class ParsingUtils {
         
         for (String token: tokens) {
             IntRange r = parseIntRange(token);
+            
+            if (r == null) {
+                throw new IllegalArgumentException("Invalid integer value");
+            }
+            
             for (int i: r.toArray()) {
                 selectedStates.add(i);
             }

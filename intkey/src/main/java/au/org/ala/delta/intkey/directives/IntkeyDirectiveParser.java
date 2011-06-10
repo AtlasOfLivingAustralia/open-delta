@@ -42,7 +42,7 @@ public class IntkeyDirectiveParser extends DirectiveParser<IntkeyContext> {
                 DirectiveSearchResult r = getDirectiveTree().findDirective(new ArrayList<String>(Arrays.asList("use")));
                 IntkeyDirective useDirective = (IntkeyDirective) r.getDirective();
                 try {
-                    useDirective.doProcess(context, data.toString());
+                    useDirective.process(context, data.toString());
                 } catch (Exception ex) {
                     if (pc.getFile() != null) {
                         throw new RuntimeException(String.format("Exception occured trying to process directive: %s (%s %d:%d)", useDirective.getName(), pc.getFile().getName(),

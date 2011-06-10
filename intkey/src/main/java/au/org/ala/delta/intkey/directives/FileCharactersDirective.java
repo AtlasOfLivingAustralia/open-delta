@@ -32,7 +32,7 @@ public class FileCharactersDirective extends IntkeyDirective {
 	}
 
     @Override
-    public IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) {
+    protected IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) {
         _data = data;
     	String fileName = data;
 

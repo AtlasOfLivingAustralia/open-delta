@@ -23,7 +23,7 @@ public class RestartDirective extends IntkeyDirective {
 	}
 
     @Override
-    public IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
+    protected IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
         // TODO this is a stub, need to handle optional switches here.
         
         return new RestartDirectiveInvocation();

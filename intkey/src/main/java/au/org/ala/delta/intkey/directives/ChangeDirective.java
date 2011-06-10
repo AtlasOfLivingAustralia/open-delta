@@ -13,7 +13,7 @@ public class ChangeDirective extends IntkeyDirective {
     }
 
     @Override
-    public IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
+    protected IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
         return new UseDirective().doProcess(context, data, true);
     }
 

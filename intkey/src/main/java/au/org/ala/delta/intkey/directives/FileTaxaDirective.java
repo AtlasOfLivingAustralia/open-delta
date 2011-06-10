@@ -31,7 +31,7 @@ public class FileTaxaDirective extends IntkeyDirective {
 	}
 
     @Override
-    public IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) {
+    protected IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) {
         String fileName = data;
 
         if (fileName == null) {

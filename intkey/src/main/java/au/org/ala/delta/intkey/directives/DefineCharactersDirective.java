@@ -32,7 +32,7 @@ public class DefineCharactersDirective extends IntkeyDirective {
 	}
 
 	@Override
-    public IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
+    protected IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
         String keyword = null;
         Set<Integer> characterNumbers = new HashSet<Integer>();
         List<String> tokens = ParsingUtils.splitDataIntoSubCommands(data);

@@ -68,7 +68,7 @@ public class UseDirective extends IntkeyDirective {
     }
 
     @Override
-    public IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
+    protected IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
         return doProcess(context, data, false);
     }
 
