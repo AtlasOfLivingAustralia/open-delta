@@ -79,7 +79,7 @@ public class IntkeyDirectiveParser extends DirectiveParser<IntkeyContext> {
         Logger.log(msg);
 
         if (!context.isProcessingInputFile()) {
-            JOptionPane.showMessageDialog(UIUtils.getMainFrame(), msg, "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(UIUtils.getMainFrame(), msg, UIUtils.getResourceString("Intkey.errorDlgTitle"), JOptionPane.ERROR_MESSAGE);
         }
 
     }

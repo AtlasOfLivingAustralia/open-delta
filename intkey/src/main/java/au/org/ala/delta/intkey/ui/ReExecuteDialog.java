@@ -15,6 +15,7 @@ import javax.swing.JDialog;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
@@ -22,7 +23,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import au.org.ala.delta.intkey.directives.IntkeyDirectiveInvocation;
-import javax.swing.ListSelectionModel;
 
 public class ReExecuteDialog extends JDialog {
     private JPanel _pnlButtons;

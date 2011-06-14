@@ -51,8 +51,11 @@ public class UseDirective extends IntkeyDirective {
 
     private static Pattern COMMA_SEPARATED_VALUE_PATTERN = Pattern.compile("^.+,.*$");
 
+    private CharacterFormatter _charFormatter;
+
     public UseDirective() {
         super("use");
+        _charFormatter = new CharacterFormatter(false, false, true, true);
     }
 
     @Override
@@ -106,8 +109,7 @@ public class UseDirective extends IntkeyDirective {
                 try {
                     ch = context.getDataset().getCharacter(charNum);
                 } catch (IllegalArgumentException ex) {
-                    throw new IntkeyDirectiveParseException(String.format("Invalid character number '%s'. Valid numbers are in the range 1-%s", charNum, context.getDataset().getNumberOfCharacters()),
-                            ex);
+                    throw new IntkeyDirectiveParseException(String.format(UIUtils.getResourceString("UseDirective.InvalidCharacterNumber"), charNum, context.getDataset().getNumberOfCharacters()), ex);
                 }
 
                 // Parse the supplied value for each character, or prompt for
@@ -119,21 +121,40 @@ public class UseDirective extends IntkeyDirective {
                     try {
                         if (ch instanceof MultiStateCharacter) {
                             MultiStateCharacter msCh = (MultiStateCharacter) ch;
-                            Set<Integer> setStateValues = ParsingUtils.parseMultistateOrIntegerCharacterValue(charValue);
 
-                            for (int val : setStateValues) {
-                                if (val < 0 || val > msCh.getNumberOfStates()) {
-                                    throw new IntkeyDirectiveParseException(String.format("Invalid state value %s. Character %s has %s states.", val, msCh.getCharacterId(), msCh.getNumberOfStates()));
+                            try {
+                                Set<Integer> setStateValues = ParsingUtils.parseMultistateOrIntegerCharacterValue(charValue);
+
+                                for (int val : setStateValues) {
+                                    if (val < 0 || val > msCh.getNumberOfStates()) {
+                                        throw new IntkeyDirectiveParseException(String.format(UIUtils.getResourceString("UseDirective.InvalidStateValue"), charValue,
+                                                _charFormatter.formatCharacterDescription(ch), Integer.toString(ch.getCharacterId(), msCh.getNumberOfStates())));
+                                    }
                                 }
-                            }
 
-                            invoc.addCharacterValue((MultiStateCharacter) ch, new MultiStateValue((MultiStateCharacter) ch, setStateValues));
+                                invoc.addCharacterValue((MultiStateCharacter) ch, new MultiStateValue((MultiStateCharacter) ch, setStateValues));
+                            } catch (IllegalArgumentException ex) {
+                                throw new IntkeyDirectiveParseException(String.format(UIUtils.getResourceString("UseDirective.InvalidStateValue"), charValue, Integer.toString(ch.getCharacterId()),
+                                        _charFormatter.formatCharacterDescription(ch), msCh.getNumberOfStates()), ex);
+                            }
                         } else if (ch instanceof IntegerCharacter) {
-                            Set<Integer> intValues = ParsingUtils.parseMultistateOrIntegerCharacterValue(charValue);
-                            invoc.addCharacterValue((IntegerCharacter) ch, new IntegerValue((IntegerCharacter) ch, intValues));
+
+                            try {
+                                Set<Integer> intValues = ParsingUtils.parseMultistateOrIntegerCharacterValue(charValue);
+                                invoc.addCharacterValue((IntegerCharacter) ch, new IntegerValue((IntegerCharacter) ch, intValues));
+                            } catch (IllegalArgumentException ex) {
+                                throw new IntkeyDirectiveParseException(String.format(UIUtils.getResourceString("UseDirective.InvalidIntegerValue"), charValue, Integer.toString(ch.getCharacterId()),
+                                        _charFormatter.formatCharacterDescription(ch)), ex);
+                            }
                         } else if (ch instanceof RealCharacter) {
-                            FloatRange floatRange = ParsingUtils.parseRealCharacterValue(charValue);
-                            invoc.addCharacterValue((RealCharacter) ch, new RealValue((RealCharacter) ch, floatRange));
+
+                            try {
+                                FloatRange floatRange = ParsingUtils.parseRealCharacterValue(charValue);
+                                invoc.addCharacterValue((RealCharacter) ch, new RealValue((RealCharacter) ch, floatRange));
+                            } catch (IllegalArgumentException ex) {
+                                throw new IntkeyDirectiveParseException(String.format(UIUtils.getResourceString("UseDirective.InvalidRealValue"), charValue, Integer.toString(ch.getCharacterId()),
+                                        _charFormatter.formatCharacterDescription(ch)), ex);
+                            }
                         } else if (ch instanceof TextCharacter) {
                             List<String> stringList = ParsingUtils.parseTextCharacterValue(charValue);
                             invoc.addCharacterValue((TextCharacter) ch, new TextValue((TextCharacter) ch, stringList));
@@ -149,18 +170,8 @@ public class UseDirective extends IntkeyDirective {
             }
             return invoc;
         } else {
-            JOptionPane.showMessageDialog(UIUtils.getMainFrame(), UIUtils.getResourceString("UseDirective.NoDataSetMsg"));
-            return null;
+            throw new IntkeyDirectiveParseException(UIUtils.getResourceString("UseDirective.NoDataSetMsg"));
         }
-
-        // INITALIZE
-
-        // PROCESS CHARACTERS WITH ATTRIBUTES FIRST
-        // for each character specified
-        // process controlling characters of the character (dataset.cc_process)
-        // use character
-
-        // PROCESS CHARACTERS WITHOUT ATTRIBUTES NEXT
     }
 
     private void parseSubcommands(String subCmd, List<Integer> characterNumbers, List<String> specifiedValues, IntkeyContext context) throws Exception {
@@ -253,7 +264,12 @@ public class UseDirective extends IntkeyDirective {
             // Process characters with values specified first
             for (Character ch : charsWithValues) {
                 if (checkCharacterUsable(ch, context, !_suppressAlreadySetWarning && !_change)) {
-                    processControllingCharacters(ch, context);
+                    // halt execution if values not sucessfully set for all
+                    // controlling characters
+                    if (!processControllingCharacters(ch, context)) {
+                        return false;
+                    }
+                    
                     // second call to checkCharacterUsable() to ensure that
                     // character has not been
                     // made inapplicable by the value given to one or more of
@@ -269,7 +285,14 @@ public class UseDirective extends IntkeyDirective {
             if (charsNoValues.size() == 1) {
                 Character ch = charsNoValues.get(0);
                 if (checkCharacterUsable(ch, context, !_suppressAlreadySetWarning && !_change)) {
-                    processControllingCharacters(ch, context);
+                    
+                    // halt execution if values not sucessfully set for all
+                    // controlling characters
+                    if (!processControllingCharacters(ch, context)) {
+                        return false;
+                    }
+                    
+                    
                     // second call to checkCharacterUsable() to ensure that
                     // character has not been
                     // made inapplicable by the value given to one or more of
@@ -321,7 +344,23 @@ public class UseDirective extends IntkeyDirective {
                         CharacterValue characterVal = null;
 
                         if (checkCharacterUsable(ch, context, !_suppressAlreadySetWarning && !_change)) {
-                            processControllingCharacters(ch, context);
+                            
+                            // halt execution if values not sucessfully set for all
+                            // controlling characters
+                            if (!processControllingCharacters(ch, context)) {
+                                return false;
+                            }
+                            
+                            // As the character's controlling characters have been successfully
+                            // set, remove all of them from the list of characters needing to have
+                            // their values set.
+                            IntkeyDataset dataset = context.getDataset();
+                            List<CharacterDependency> charDeps = getFullControllingCharacterDependenciesList(ch, dataset);
+                            for (CharacterDependency cd : charDeps) {
+                                Character controllingChar = dataset.getCharacter(cd.getControllingCharacterId());
+                                charsNoValues.remove(controllingChar);
+                            }
+                            
                             // second call to checkCharacterUsable() to ensure
                             // that character has not been
                             // made inapplicable by the value given to one or
@@ -371,7 +410,8 @@ public class UseDirective extends IntkeyDirective {
                         return true;
                     } else {
                         String msg = String.format(UIUtils.getResourceString("UseDirective.CharacterAlreadyUsed"), formatter.formatCharacterDescription(ch));
-                        int choice = JOptionPane.showConfirmDialog(UIUtils.getMainFrame(), msg, "Information", JOptionPane.YES_NO_OPTION);
+                        String title = String.format(UIUtils.getResourceString("Intkey.informationDlgTitle"), formatter.formatCharacterDescription(ch));
+                        int choice = JOptionPane.showConfirmDialog(UIUtils.getMainFrame(), msg, title, JOptionPane.YES_NO_OPTION);
                         if (choice == JOptionPane.YES_OPTION) {
                             return true;
                         } else {
@@ -385,7 +425,8 @@ public class UseDirective extends IntkeyDirective {
             if (context.getSpecimen().isCharacterInapplicable(ch)) {
                 if (!context.isProcessingInputFile()) {
                     String msg = String.format(UIUtils.getResourceString("UseDirective.CharacterUnavailable"), formatter.formatCharacterDescription(ch));
-                    JOptionPane.showMessageDialog(UIUtils.getMainFrame(), msg, "Information", JOptionPane.ERROR_MESSAGE);
+                    String title = String.format(UIUtils.getResourceString("Intkey.informationDlgTitle"), formatter.formatCharacterDescription(ch));
+                    JOptionPane.showMessageDialog(UIUtils.getMainFrame(), msg, title, JOptionPane.ERROR_MESSAGE);
                 }
                 return false;
             }
@@ -395,7 +436,13 @@ public class UseDirective extends IntkeyDirective {
             return true;
         }
 
-        private void processControllingCharacters(Character ch, IntkeyContext context) {
+        /**
+         * Set values for all controlling characters for the specified character, prompting if necessary
+         * @param ch 
+         * @param context
+         * @return true if values were set successfully for all controlling characters
+         */
+        private boolean processControllingCharacters(Character ch, IntkeyContext context) {
             List<CharacterDependency> allControllingChars = getFullControllingCharacterDependenciesList(ch, context.getDataset());
 
             // Used a linked hashmap as need to maintain the ordering returned
@@ -455,20 +502,28 @@ public class UseDirective extends IntkeyDirective {
                 // can be set to for which the dependent character will be
                 // inapplicable.
                 if (!context.isProcessingInputFile() && (cc.getNonAutoCc() || ch.getUseCc() || !cc.getNonAutoCc() && !cc.getUseCc() && applicableStates.size() > 1)) {
-                    Set<Integer> userSetStates = promptForMultiStateValue(UIUtils.getMainFrame(), (MultiStateCharacter) cc);
-                    MultiStateValue val = new MultiStateValue((MultiStateCharacter) cc, new HashSet<Integer>(userSetStates));
-                    context.setValueForCharacter(cc, val);
+                    CharacterValue val = promptForCharacterValue(UIUtils.getMainFrame(), cc);
+                    if (val != null) {
+                        context.setValueForCharacter(cc, val);
+                    } else {
+                        // No values selected or cancel pressed. Return as values have not been set for all
+                        // controlling characters
+                        return false;
+                    }
                 } else {
                     // let intkey automatically use the character
                     MultiStateValue val = new MultiStateValue((MultiStateCharacter) cc, new HashSet<Integer>(applicableStates));
                     context.setValueForCharacter(cc, val);
                 }
 
-                // output USEd controlling characters directly to the log window
+                // TODO output USEd controlling characters directly to the log
+                // window
                 // set the "used type" - by user or auto for the controlling
                 // character
 
             }
+            
+            return true;
         }
 
         // For the given character, recursively build a list of
