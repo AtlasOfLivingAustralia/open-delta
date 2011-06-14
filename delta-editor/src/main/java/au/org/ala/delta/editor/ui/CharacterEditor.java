@@ -58,6 +58,7 @@ public class CharacterEditor extends JInternalFrame implements DeltaView {
 	
 	private static final int CONTROLS_EDITOR_TAB_INDEX = 4;
 
+	private static final int NOTES_EDITOR_TAB_INDEX = 3;
 	private static final int UNITS_EDITOR_TAB_INDEX = 1;
 
 	private static final int STATE_EDITOR_TAB_INDEX = 0;
@@ -498,12 +499,16 @@ public class CharacterEditor extends JInternalFrame implements DeltaView {
 			exclusiveCheckBox.setSelected(false);
 			tabbedPane.setEnabledAt(STATE_EDITOR_TAB_INDEX, false);
 			tabbedPane.setEnabledAt(CONTROLS_EDITOR_TAB_INDEX, false);
-			if (_selectedCharacter instanceof NumericCharacter<?>) {
-				tabbedPane.setEnabledAt(UNITS_EDITOR_TAB_INDEX, true);
-			}
+			
+			tabbedPane.setEnabledAt(UNITS_EDITOR_TAB_INDEX, _selectedCharacter instanceof NumericCharacter<?>);
 			
 			if (!tabbedPane.isEnabledAt(tabbedPane.getSelectedIndex())) {
-				tabbedPane.setSelectedIndex(UNITS_EDITOR_TAB_INDEX);
+				if (tabbedPane.isEnabledAt(UNITS_EDITOR_TAB_INDEX)) {
+					tabbedPane.setSelectedIndex(UNITS_EDITOR_TAB_INDEX);
+				}
+				else {
+					tabbedPane.setSelectedIndex(NOTES_EDITOR_TAB_INDEX);
+				}
 			}
 		}
 		_editsDisabled = false;
