@@ -496,7 +496,7 @@ public class TreeViewer extends JInternalFrame implements DeltaView {
 					if ( _tree.getModel().isLeaf(value)) {
 						Character ch = getCharacterFor((DefaultMutableTreeNode)value);
 						Item item = _dataModel.getSelectedItem();
-						if (!ch.checkApplicability(item).isInapplicable()) {
+						if (item != null && !ch.checkApplicability(item).isInapplicable()) {
 							Attribute attribute = _dataModel.getSelectedItem().getAttribute(ch);
 							return attribute.isSimple();
 						}
@@ -814,7 +814,7 @@ class DeltaTreeCellRenderer extends DefaultTreeCellRenderer  {
 					}
 					stateValueRenderer.setEnabled(parentNode.isInapplicable());
 					stateValueRenderer.bind( msnode.getCharacter(), item, msnode.getStateNo(), parentNode.isInapplicable());
-					if (!parentNode.isInapplicable()) {
+					if (!parentNode.isInapplicable() && item != null) {
 						Attribute attribute = item.getAttribute(ch);
 						stateValueRenderer.setEnabled(attribute.isSimple());
 					}
