@@ -17,14 +17,12 @@ package au.org.ala.delta.editor.ui;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.MouseAdapter;
+import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.util.EventObject;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.swing.ActionMap;
 import javax.swing.DefaultCellEditor;
 import javax.swing.DropMode;
 import javax.swing.JCheckBox;
@@ -36,7 +34,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
 import javax.swing.JTree;
-import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.event.CellEditorListener;
 import javax.swing.event.ListSelectionEvent;
@@ -109,7 +106,6 @@ public class TreeViewer extends JInternalFrame implements DeltaView {
 		_itemList = new ItemList(_dataModel);
 		_itemList.setDragEnabled(true);
 		_itemList.setDropMode(DropMode.INSERT);
-		final ActionMap actionMap = context.getActionMap();
 
 		_tree = new CharacterTree();
 		final CharacterTreeModel treeModel = new CharacterTreeModel(_dataModel);
@@ -146,18 +142,7 @@ public class TreeViewer extends JInternalFrame implements DeltaView {
 				_stateEditor.bind(_dataModel.getSelectedCharacter(), _dataModel.getSelectedItem());
 			}
 		});
-		_tree.addMouseListener(new MouseAdapter() {
-			public void mousePressed(MouseEvent e) {
-				
-				if (!_tree.isEditing()) {
-					int selectedRow = _tree.getClosestRowForLocation(e.getX(), e.getY());
-					
-					if ((selectedRow >= 0) && (e.getClickCount() == 2) && SwingUtilities.isLeftMouseButton(e)) {
-						actionMap.get("viewCharacterEditor").actionPerformed(new ActionEvent(_tree, -1, ""));
-					}
-				}
-			}
-		});
+		
 		new CharacterController(_tree, _dataModel);
 		_itemList.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 
@@ -545,7 +530,23 @@ public class TreeViewer extends JInternalFrame implements DeltaView {
 
 		@Override
 		protected boolean canEditImmediately(EventObject e) {
-			return true;
+			if (e instanceof MouseEvent) {
+				MouseEvent me = (MouseEvent)e;
+				return inHitRegion(me.getX(), me.getY());
+			}
+			return false;
+		}
+		
+		@Override
+		protected boolean inHitRegion(int x, int y) {
+			if(lastRow != -1 && tree != null) {
+			    Rectangle bounds = tree.getRowBounds(lastRow);
+			   
+				if (bounds != null && x <= (bounds.x + 20) && x > bounds.x) {
+				    return true;
+				}
+			}
+			return false;
 		}
 		
 		/**

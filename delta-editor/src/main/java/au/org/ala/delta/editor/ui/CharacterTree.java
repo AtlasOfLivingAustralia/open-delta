@@ -1,9 +1,13 @@
 package au.org.ala.delta.editor.ui;
 
+import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.Action;
 import javax.swing.JTree;
+import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
@@ -14,19 +18,53 @@ import javax.swing.tree.TreePath;
 public class CharacterTree extends JTree implements ReorderableList {
 
 	private static final long serialVersionUID = 1462521823171738637L;
+	private boolean _doubleProcessingMouseEvent = false;
+	
+	
+	public CharacterTree() {
+		setToggleClickCount(0);
+		addMouseListener(new MouseAdapter() {
+
+			public void mousePressed(MouseEvent e) {
+				if (_doubleProcessingMouseEvent) {
+					return;
+				}
+				if (!isEditing()) {
+					int selectedRow = getClosestRowForLocation(e.getX(), e.getY());
+					
+					if ((selectedRow >= 0) && (e.getClickCount() == 2) && SwingUtilities.isLeftMouseButton(e)) {
+						Action action = getActionMap().get("SelectionAction");
+						if (action != null) {
+							action.actionPerformed(new ActionEvent(this, -1, ""));
+						}
+					}
+				}
+			}
+		});
+	}
+	
 	/**
 	 * This is a done to initiate a cell edit from a single click with
 	 * drag and drop enabled.
 	 */
 	protected void processMouseEvent(MouseEvent e) {
+		
 		super.processMouseEvent(e);
+		_doubleProcessingMouseEvent = false;
 		TreePath selectedPath = getSelectionPath();
 		if (selectedPath != null) {
 			Object lastComponent = selectedPath.getLastPathComponent();
 			if (lastComponent instanceof DefaultMutableTreeNode) {
 				DefaultMutableTreeNode node = (DefaultMutableTreeNode)lastComponent;
+				
 				if (node.isLeaf()) {
-					super.processMouseEvent(e);
+					int row = getRowForPath(selectedPath);
+					Rectangle bounds = getRowBounds(row);
+					int pos = e.getX()-bounds.x;
+					if (pos >= 0 && pos < 20) {						
+						_doubleProcessingMouseEvent = true;
+						super.processMouseEvent(e);
+					}
 				}
 			}
 		}
@@ -56,8 +94,11 @@ public class CharacterTree extends JTree implements ReorderableList {
 		}
 		return dropLocationToCharacterNumber((DropLocation)dropLocation)-1;
 	}
+	
 	@Override
-	public void setSelectionAction(Action action) {}
+	public void setSelectionAction(Action action) {
+		getActionMap().put("SelectionAction", action);		
+	}
 	
 	/**
 	 * Turns a DropLocation into the character number of the character at the location.
