@@ -98,6 +98,9 @@ public class UseDirective extends IntkeyDirective {
                         characterNumbers.add(ch.getCharacterId());
                         specifiedValues.add(null);
                     }
+                } else {
+                    // User has hit cancel, nothing to execute
+                    return null;
                 }
             }
 
