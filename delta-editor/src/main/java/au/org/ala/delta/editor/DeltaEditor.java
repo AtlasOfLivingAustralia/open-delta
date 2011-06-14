@@ -93,6 +93,9 @@ public class DeltaEditor extends InternalFrameApplication implements
 	private boolean _saveEnabled;
 	private boolean _saveAsEnabled;
 	
+	/** Flag to prevent concurrent modification exception on close all */
+	private boolean _closingAll;
+	
 	/**
 	 * There is one DeltaViewController for each open DeltaDataSet.  Each controller
 	 * is responsible for one or more DeltaViews.
@@ -152,6 +155,7 @@ public class DeltaEditor extends InternalFrameApplication implements
 		_controllers = new ArrayList<DeltaViewController>();
 		_saveEnabled = false;
 		_saveAsEnabled = false;
+		_closingAll = false;
 		
 		_propertyChangeSupport = new PropertyChangeSupport(this);
 		
@@ -579,15 +583,16 @@ public class DeltaEditor extends InternalFrameApplication implements
 	 * Called when any view is closed.  Does tidy up if there are no remaining views.
 	 */
 	public void viewClosed(DeltaViewController controller, DeltaView view) {
-		
-		if (controller.getViewCount() == 0) {
-			_controllers.remove(controller);
-			
-			if (_controllers.isEmpty()) {
-				_activeController = null;
-				setSaveAsEnabled(false);
-				setSaveEnabled(false);
+		if (!_closingAll) {
+			if (controller.getViewCount() == 0) {
+				_controllers.remove(controller);
 				
+				if (_controllers.isEmpty()) {
+					_activeController = null;
+					setSaveAsEnabled(false);
+					setSaveEnabled(false);
+					
+				}
 			}
 		}
 	}
@@ -739,6 +744,7 @@ public class DeltaEditor extends InternalFrameApplication implements
 	 * @param dataSet
 	 */
 	private boolean closeAll() {
+		_closingAll = true;
 		for (DeltaViewController controller : _controllers) {
 			if (!controller.closeAll()) {
 				return false;
@@ -747,8 +753,6 @@ public class DeltaEditor extends InternalFrameApplication implements
 		return true;
 	}
 	
-	
-
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 		if (_activeController == null) {
