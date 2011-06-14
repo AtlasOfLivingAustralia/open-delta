@@ -4,11 +4,13 @@ import java.io.File;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Set;
 
 import junit.framework.TestCase;
 
 import org.apache.commons.lang.math.FloatRange;
 import org.junit.Test;
+import org.omg.PortableInterceptor.SUCCESSFUL;
 
 import au.org.ala.delta.intkey.directives.IntkeyDirectiveParseException;
 import au.org.ala.delta.intkey.directives.UseDirective;
@@ -184,6 +186,75 @@ public class UseDirectiveTest extends TestCase {
         assertTrue("Expected exception when setting real value with incorrect format", exceptionThrown);
 
     }
+    
+    /**
+     * Test setting the value of a character twice. The character is both a controlling
+     * and dependent character.
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testSetTwice() throws Exception {
+        URL initFileUrl = getClass().getResource("/dataset/controlling_characters_simple/intkey.ink");
+        IntkeyContext context = new IntkeyContext(null);
+        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+        
+        IntkeyDataset ds = context.getDataset();
+        
+        // Set processing input file flag to true so that Intkey will
+        // automatically
+        // set the values of controlling characters as opposed to prompting for
+        // them using
+        // modal dialogs.
+        context.setProcessingInputFile(true);
+        
+        new UseDirective().parseAndProcess(context, "3,2");
+        
+        Specimen specimen = context.getSpecimen();
+        assertEquals(Arrays.asList(ds.getCharacter(2), ds.getCharacter(3)), specimen.getUsedCharacters());
+        
+        Map<Item, Integer> taxonDifferences = specimen.getTaxonDifferences();
+        assertEquals(5, taxonDifferences.size());
+
+        assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(1)));
+        assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(2)));
+        assertEquals(0, (int) taxonDifferences.get(ds.getTaxon(3)));
+        assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(4)));
+        assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(5)));
+        
+        Set<au.org.ala.delta.model.Character> availableCharacters = specimen.getAvailableCharacters();
+        assertTrue(availableCharacters.contains(ds.getCharacter(1)));
+        assertFalse(availableCharacters.contains(ds.getCharacter(2)));
+        assertFalse(availableCharacters.contains(ds.getCharacter(3)));
+        assertFalse(availableCharacters.contains(ds.getCharacter(4)));
+        assertTrue(availableCharacters.contains(ds.getCharacter(5)));
+        assertTrue(availableCharacters.contains(ds.getCharacter(6)));
+        assertTrue(availableCharacters.contains(ds.getCharacter(7)));
+        assertTrue(availableCharacters.contains(ds.getCharacter(8)));
+        
+        new UseDirective().parseAndProcess(context, "3,2");
+        
+        assertEquals(Arrays.asList(ds.getCharacter(2), ds.getCharacter(3)), specimen.getUsedCharacters());
+        
+        taxonDifferences = specimen.getTaxonDifferences();
+        assertEquals(5, taxonDifferences.size());
+
+        assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(1)));
+        assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(2)));
+        assertEquals(0, (int) taxonDifferences.get(ds.getTaxon(3)));
+        assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(4)));
+        assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(5)));
+        
+        availableCharacters = specimen.getAvailableCharacters();
+        assertTrue(availableCharacters.contains(ds.getCharacter(1)));
+        assertFalse(availableCharacters.contains(ds.getCharacter(2)));
+        assertFalse(availableCharacters.contains(ds.getCharacter(3)));
+        assertFalse(availableCharacters.contains(ds.getCharacter(4)));
+        assertTrue(availableCharacters.contains(ds.getCharacter(5)));
+        assertTrue(availableCharacters.contains(ds.getCharacter(6)));
+        assertTrue(availableCharacters.contains(ds.getCharacter(7)));
+        assertTrue(availableCharacters.contains(ds.getCharacter(8)));
+    }
 
     /**
      * Test setting a value for a text character
@@ -242,7 +313,7 @@ public class UseDirectiveTest extends TestCase {
         } catch (IntkeyDirectiveParseException ex) {
             exceptionThrown = true;
         }
-        
+
         assertTrue("Expecting exception thrown for non-existent character number", exceptionThrown);
     }
 
@@ -437,11 +508,96 @@ public class UseDirectiveTest extends TestCase {
         assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(14)));
     }
 
-    // set twice
-    // remove twice
+    /**
+     * Set values for both a controlling character and its dependent, when there
+     * is another character that controls both of them
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testSetCCAndDependentShareControllingCharacter() throws Exception {
+        URL initFileUrl = getClass().getResource("/dataset/controlling_characters_shared_cc/intkey.ink");
+        IntkeyContext context = new IntkeyContext(null);
+        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
 
-    // Dependent characters like 210, 213 and 230 in grasses
-    // Dependent characters like 153,154,155 in salix
+        // Set processing input file flag to true so that Intkey will
+        // automatically
+        // set the values of controlling characters as opposed to prompting for
+        // them using
+        // modal dialogs.
+        context.setProcessingInputFile(true);
 
+        IntkeyDataset ds = context.getDataset();
+
+        new UseDirective().parseAndProcess(context, "3-4,1");
+
+        Specimen specimen = context.getSpecimen();
+        assertEquals(Arrays.asList(ds.getCharacter(2), ds.getCharacter(3), ds.getCharacter(4)), specimen.getUsedCharacters());
+
+        Map<Item, Integer> taxonDifferences = specimen.getTaxonDifferences();
+        assertEquals(5, taxonDifferences.size());
+
+        assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(1)));
+        assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(2)));
+        assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(3)));
+        assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(4)));
+        assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(5)));
+    }
+
+    /**
+     * Attempt to set values for both a controlling character and its dependent
+     * when both of these character are inapplicable due to the value of their
+     * shared controlling character.
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testValuesForInapplicableCharactersWithSharedCC() throws Exception {
+        URL initFileUrl = getClass().getResource("/dataset/controlling_characters_shared_cc/intkey.ink");
+        IntkeyContext context = new IntkeyContext(null);
+        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+
+        // Set processing input file flag to true so that Intkey will
+        // automatically
+        // set the values of controlling characters as opposed to prompting for
+        // them using
+        // modal dialogs.
+        context.setProcessingInputFile(true);
+
+        IntkeyDataset ds = context.getDataset();
+
+        new UseDirective().parseAndProcess(context, "2-4,2");
+
+        Specimen specimen = context.getSpecimen();
+        assertEquals(Arrays.asList(ds.getCharacter(2)), specimen.getUsedCharacters());
+
+        Map<Item, Integer> taxonDifferences = specimen.getTaxonDifferences();
+        assertEquals(5, taxonDifferences.size());
+
+        assertEquals(0, (int) taxonDifferences.get(ds.getTaxon(1)));
+        assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(2)));
+        assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(3)));
+        assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(4)));
+        assertEquals(0, (int) taxonDifferences.get(ds.getTaxon(5)));
+    }
+
+    /**
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testNoValidationPromptDialogsWhenProcessingInputFile() throws Exception {
+        URL initFileUrl = getClass().getResource("/dataset/controlling_characters_simple/testNoValidationPromptDialogsWhenProcessingInputFile.ink");
+        IntkeyContext context = new IntkeyContext(null);
+        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+        IntkeyDataset ds = context.getDataset();
+
+        Specimen specimen = context.getSpecimen();
+        assertEquals(Arrays.asList(ds.getCharacter(2), ds.getCharacter(8)), specimen.getUsedCharacters());
+
+        // if test reaches this point, no modal dialogs must have been shown
+        // while loading the data set file, so the test is
+        // successful
+    }
 
 }

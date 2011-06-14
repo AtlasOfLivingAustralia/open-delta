@@ -362,29 +362,35 @@ public class UseDirective extends IntkeyDirective {
         private boolean checkCharacterUsable(Character ch, IntkeyContext context, boolean warnAlreadySet) {
             CharacterFormatter formatter = new CharacterFormatter(false, false, true, true);
 
-            // is character fixed?
+            // TODO is character fixed?
 
             // is character already used?
             if (warnAlreadySet) {
                 if (context.getSpecimen().hasValueFor(ch)) {
-                    String msg = String.format(UIUtils.getResourceString("UseDirective.CharacterAlreadyUsed"), formatter.formatCharacterDescription(ch));
-                    int choice = JOptionPane.showConfirmDialog(UIUtils.getMainFrame(), msg, "Information", JOptionPane.YES_NO_OPTION);
-                    if (choice == JOptionPane.YES_OPTION) {
+                    if (context.isProcessingInputFile()) {
                         return true;
                     } else {
-                        return false;
+                        String msg = String.format(UIUtils.getResourceString("UseDirective.CharacterAlreadyUsed"), formatter.formatCharacterDescription(ch));
+                        int choice = JOptionPane.showConfirmDialog(UIUtils.getMainFrame(), msg, "Information", JOptionPane.YES_NO_OPTION);
+                        if (choice == JOptionPane.YES_OPTION) {
+                            return true;
+                        } else {
+                            return false;
+                        }
                     }
                 }
             }
 
             // is character unavailable?
             if (context.getSpecimen().isCharacterInapplicable(ch)) {
-                String msg = String.format(UIUtils.getResourceString("UseDirective.CharacterUnavailable"), formatter.formatCharacterDescription(ch));
-                JOptionPane.showMessageDialog(UIUtils.getMainFrame(), msg, "Information", JOptionPane.ERROR_MESSAGE);
+                if (!context.isProcessingInputFile()) {
+                    String msg = String.format(UIUtils.getResourceString("UseDirective.CharacterUnavailable"), formatter.formatCharacterDescription(ch));
+                    JOptionPane.showMessageDialog(UIUtils.getMainFrame(), msg, "Information", JOptionPane.ERROR_MESSAGE);
+                }
                 return false;
             }
 
-            // is character excluded?
+            // TODO is character excluded?
 
             return true;
         }

@@ -1,0 +1,18 @@
+*SHOW ~ Chris Test - item descriptions.
+
+*ITEM DESCRIPTIONS
+
+# Carrot/
+1,50.0 2,2 6,3 7,20.0 9<carrot>
+
+# Apricot/
+1,10.0-20.0 2,1 3,1 4,3.0 5,1 6,3 7,5.0-10.0 9<apricot>
+
+# Strawberry/
+1,5.0-10.0 2,1 3,2 5,20 6,2 7,3.0-6.0 9<strawberry>
+
+# Plum/
+1,8.5-15.0 2,1 3,1 4,5.0 5,(1-)5-10-15(-100) 6,1 7,6.0-10.0 9<plum>
+
+# Potato/
+1,100.0-200.0 2,2 6,4 7,10.0-20.0 9<potato>

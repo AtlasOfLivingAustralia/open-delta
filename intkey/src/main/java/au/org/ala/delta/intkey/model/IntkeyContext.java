@@ -73,17 +73,17 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     public IntkeyContext(Intkey appUI) {
         _appUI = appUI;
-        initialize();
+        _recordDirectiveHistory = false;
+        _processingInputFile = false;
+        initializeInvestigation();
     }
     
-    private void initialize() {
+    private void initializeInvestigation() {
         // Use linked hashmap so that the keys list will be returned in
         // order of insertion.
         _userDefinedCharacterKeywords = new LinkedHashMap<String, Set<Integer>>();
 
         _executedDirectives = new ArrayList<IntkeyDirectiveInvocation>();
-        _recordDirectiveHistory = false;
-        _processingInputFile = false;
         
         _matchInapplicables = true;
         _matchUnknowns = true;
@@ -139,7 +139,7 @@ public class IntkeyContext extends AbstractDeltaContext {
     }
 
     private void createNewDataSet() {
-        initialize();
+        initializeInvestigation();
 
         _dataset = IntkeyDatasetFileReader.readDataSet(_charactersFile, _taxaFile);
         _specimen = new Specimen(_dataset, _matchInapplicables, _matchInapplicables, _matchType);
@@ -294,8 +294,16 @@ public class IntkeyContext extends AbstractDeltaContext {
         return _specimen;
     }
     
-    public boolean isProcessingInputFile() {
+    public synchronized boolean isProcessingInputFile() {
         return _processingInputFile;
+    }
+    
+    /**
+     * FOR UNIT TESTING ONLY
+     * @param processing
+     */
+    public void setProcessingInputFile(boolean processing) {
+        _processingInputFile = processing;
     }
     
     public int getTolerance() {
