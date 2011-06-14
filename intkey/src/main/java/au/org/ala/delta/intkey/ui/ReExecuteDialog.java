@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import java.util.Collections;
 import java.util.List;
 
+import javax.swing.ActionMap;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -22,6 +23,11 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.jdesktop.application.Action;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.Resource;
+import org.jdesktop.application.ResourceMap;
+
 import au.org.ala.delta.intkey.directives.IntkeyDirectiveInvocation;
 
 public class ReExecuteDialog extends JDialog {
@@ -33,14 +39,22 @@ public class ReExecuteDialog extends JDialog {
     private JList _listDirectives;
 
     private IntkeyDirectiveInvocation _directiveToExecute = null;
+    
+    @Resource
+    String windowTitle;
 
     public ReExecuteDialog(Frame owner, List<IntkeyDirectiveInvocation> directives) {
         super(owner, true);
+        
+        ActionMap actionMap = Application.getInstance().getContext().getActionMap(this);
+        ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(ReExecuteDialog.class);
+        resourceMap.injectFields(this);
+        
         setResizable(false);
         setSize(new Dimension(450, 300));
         setLocationRelativeTo(owner);
 
-        setTitle("Select command to re-execute");
+        setTitle(windowTitle);
 
         _pnlButtons = new JPanel();
         FlowLayout flowLayout = (FlowLayout) _pnlButtons.getLayout();
@@ -48,6 +62,8 @@ public class ReExecuteDialog extends JDialog {
         getContentPane().add(_pnlButtons, BorderLayout.SOUTH);
 
         _btnExecute = new JButton("Execute");
+        _btnExecute.setAction(actionMap.get("reExecuteDialog_Execute"));
+        
         _btnExecute.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 IntkeyDirectiveInvocation selectedDirective = (IntkeyDirectiveInvocation) _listDirectives.getSelectedValue();
@@ -61,15 +77,14 @@ public class ReExecuteDialog extends JDialog {
         _pnlButtons.add(_btnExecute);
 
         _btnCancel = new JButton("Cancel");
-        _btnCancel.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                ReExecuteDialog.this.setVisible(false);
-            }
-        });
+        _btnCancel.setAction(actionMap.get("reExecuteDialog_Cancel"));
+        
         _pnlButtons.add(_btnCancel);
 
         _btnEdit = new JButton("Edit");
+        _btnEdit.setAction(actionMap.get("reExecuteDialog_Edit"));
         _btnEdit.setEnabled(false);
+        
         _pnlButtons.add(_btnEdit);
 
         _scrollPane = new JScrollPane();
@@ -105,5 +120,21 @@ public class ReExecuteDialog extends JDialog {
     public IntkeyDirectiveInvocation getDirectiveToExecute() {
         return _directiveToExecute;
     }
+    
+    @Action
+    public void reExecuteDialog_Execute() {
+        // TODO
+    }
+    
+    @Action
+    public void reExecuteDialog_Cancel() {
+        this.setVisible(false);
+    }
+    
+    @Action
+    public void reExecuteDialog_Edit() {
+        // TODO
+    }
+    
 
 }

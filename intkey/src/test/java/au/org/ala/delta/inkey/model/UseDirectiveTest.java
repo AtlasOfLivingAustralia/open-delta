@@ -611,5 +611,8 @@ public class UseDirectiveTest extends TestCase {
         // while loading the data set file, so the test is
         // successful
     }
+    
+    // USE CC
+    // Non auto cc
 
 }
