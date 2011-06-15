@@ -698,7 +698,7 @@ public class DeltaEditor extends InternalFrameApplication implements
 	public void viewCharacterEditor() {
 		
 		DeltaView editor = _activeController.createCharacterEditView();
-		newView(editor, "T");
+		newView(editor, "C");
 	}
 
 	@Action(enabledProperty = "saveAsEnabled")

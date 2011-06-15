@@ -100,6 +100,16 @@ public class ItemEditor extends JInternalFrame implements ValidationListener, De
 		addEventHandlers(map);
 		bind(model);		
 	}
+	
+	@Override
+	public ReorderableList getCharacterListView() {
+		return null;
+	}
+
+	@Override
+	public ReorderableList getItemListView() {
+		return null;
+	}
 
 	/**
 	 * Adds the event handlers to the UI components.

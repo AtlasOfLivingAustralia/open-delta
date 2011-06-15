@@ -48,10 +48,8 @@ import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.Task;
 import org.jdesktop.application.Task.BlockingScope;
 
-import au.org.ala.delta.editor.CharacterController;
 import au.org.ala.delta.editor.DeltaView;
 import au.org.ala.delta.editor.EditorPreferences;
-import au.org.ala.delta.editor.ItemController;
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.ui.dnd.DropIndicationTable;
 import au.org.ala.delta.model.Item;
@@ -121,7 +119,6 @@ public class MatrixViewer extends JInternalFrame implements DeltaView {
 		_fixedColumns.setDragEnabled(true);
 		_fixedColumns.setDropMode(DropMode.INSERT_ROWS);
 		_fixedColumns.setFillsViewportHeight(true);
-		new ItemController(_fixedColumns, dataSet);
 		
 		_table = new DropIndicationTable(_model, _fixedColumns);
 		_fixedColumns.setTable(_table);
@@ -147,8 +144,6 @@ public class MatrixViewer extends JInternalFrame implements DeltaView {
 		_table.setCellSelectionEnabled(true);
 		_table.setDefaultRenderer(Object.class, new AttributeCellRenderer());
 		_table.getTableHeader().setReorderingAllowed(false);
-		DropIndicationTableHeader header = (DropIndicationTableHeader)_table.getTableHeader();
-		new CharacterController(header, dataSet);
 		
 		ListSelectionListener listener = new ListSelectionListener() {
 
@@ -162,12 +157,13 @@ public class MatrixViewer extends JInternalFrame implements DeltaView {
 				if (itemId > 0) {
 					Item selectedItem = _dataSet.getItem(itemId);
 					_dataSet.setSelectedItem(selectedItem);
-				
-					if (charId > 0) {
-						au.org.ala.delta.model.Character selectedCharacter = _dataSet.getCharacter(charId);
-						_dataSet.setSelectedCharacter(selectedCharacter);
-						_attributeEditor.bind(selectedCharacter, selectedItem);
-					}
+				}
+				if (charId > 0) {
+					au.org.ala.delta.model.Character selectedCharacter = _dataSet.getCharacter(charId);
+					_dataSet.setSelectedCharacter(selectedCharacter);	
+				}
+				if ((itemId > 0) && (charId > 0)) {
+					_attributeEditor.bind(_dataSet.getSelectedCharacter(), _dataSet.getSelectedItem());
 				}
 			}
 		};
@@ -273,6 +269,16 @@ public class MatrixViewer extends JInternalFrame implements DeltaView {
 		
 		_table.addKeyListener(new KeyProxy());
 	}	
+	
+	@Override
+	public ReorderableList getCharacterListView() {
+		return (DropIndicationTableHeader)_table.getTableHeader();
+	}
+	
+	@Override
+	public ReorderableList getItemListView() {
+		return _fixedColumns;
+	}
 	
 	/**
 	 * Updates the current table selection index.  

@@ -52,10 +52,8 @@ import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 
-import au.org.ala.delta.editor.CharacterController;
 import au.org.ala.delta.editor.DeltaView;
 import au.org.ala.delta.editor.EditorPreferences;
-import au.org.ala.delta.editor.ItemController;
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.ui.util.EditorUIUtils;
 import au.org.ala.delta.editor.ui.validator.AttributeValidator;
@@ -143,7 +141,7 @@ public class TreeViewer extends JInternalFrame implements DeltaView {
 			}
 		});
 		
-		new CharacterController(_tree, _dataModel);
+		
 		_itemList.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 
 			@Override
@@ -156,8 +154,6 @@ public class TreeViewer extends JInternalFrame implements DeltaView {
 				_stateEditor.bind(_dataModel.getSelectedCharacter(), _dataModel.getSelectedItem());
 			}
 		});
-		
-		new ItemController(_itemList, _dataModel);
 		
 		JSplitPane content = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		content.setDividerSize(4);
@@ -193,6 +189,16 @@ public class TreeViewer extends JInternalFrame implements DeltaView {
 		
 		_itemList.setSelectedIndex(0);
 		_tree.setSelectionRow(0);
+	}
+	
+	@Override
+	public ReorderableList getCharacterListView() {
+		return _tree;
+	}
+
+	@Override
+	public ReorderableList getItemListView() {
+		return _itemList;
 	}
 	
 	private void updateSelection(int increment) {
@@ -664,20 +670,21 @@ class CharacterTreeModel extends DefaultTreeModel {
 			int charNumber = event.getCharacter().getCharacterId();
 			int oldNumber = (Integer)event.getExtraInformation();
 			
-			root.moveCharacter(oldNumber, charNumber);
-			
-			int minIndex = Math.min(charNumber, oldNumber) - 1;
-			int maxIndex = Math.max(charNumber, oldNumber) - 1;
-			
-			for (int i=minIndex; i<maxIndex; i++) {
-				CharacterTreeNode node = (CharacterTreeNode)root.getChildAt(i);
-				updateNode(node, i+1);
-			}
+			CharacterTreeNode toMove = (CharacterTreeNode)root.getChildAt(oldNumber-1);	
+			removeNodeFromParent(toMove);
+			insertNodeInto(toMove, root, charNumber -1);
 		}
 		
 		private void updateNode(CharacterTreeNode node, int newCharacterNumber) {
-			node.setCharacterNumber(newCharacterNumber);
-			fireTreeStructureChanged(this, pathToNode(node), new int[]{-1}, new Object[]{null});
+			
+			int[] childIndicies = new int[node.getChildCount()];
+			Object[] children = new Object[node.getChildCount()];
+			for (int i=0; i<childIndicies.length; i++) {
+				childIndicies[i] = i;
+				children[i] = node.getChildAt(i);
+			}
+			
+			fireTreeStructureChanged(this, pathToNode(node), childIndicies, children);
 		}
 		
 		private Object[] pathToNode(CharacterTreeNode node) {
@@ -726,7 +733,7 @@ class ContextRootNode extends DefaultMutableTreeNode {
 	}
 	
 	public void moveCharacter(int characterNumber, int newNumber) {
-		CharacterTreeNode node = removeCharacter(characterNumber-1);
+		CharacterTreeNode node = removeCharacter(characterNumber);
 		insert(node, newNumber-1);
 	}
 
@@ -735,25 +742,26 @@ class ContextRootNode extends DefaultMutableTreeNode {
 class CharStateHolder {
 
 	private EditorViewModel _dataModel;
-	private int _characterNumber;
-
-	public CharStateHolder(EditorViewModel dataModel, int characterNumber) {
+	private CharacterTreeNode _parent;
+	
+	public CharStateHolder(EditorViewModel dataModel, CharacterTreeNode parent) {
 		_dataModel = dataModel;
-		_characterNumber = characterNumber;
+		_parent = parent;
 	}
 
 	@Override
 	public String toString() {
 		if (_dataModel.getSelectedItem() != null) {
-			return _dataModel.getAttributeAsString(_dataModel.getSelectedItem().getItemNumber(), _characterNumber);
+			return _dataModel.getAttributeAsString(_dataModel.getSelectedItem().getItemNumber(), _parent.getCharacterNumber());
 		} else {
 			return "---";
 		}
 	}
 	
 	public Character getCharacter() {
-		return _dataModel.getCharacter(_characterNumber)
-;	}
+		int characterNumber = _parent.getCharacterNumber();
+		return _dataModel.getCharacter(characterNumber);	
+	}
 
 }
 
@@ -847,7 +855,6 @@ class CharacterTreeNode extends DefaultMutableTreeNode {
 
 	private static final long serialVersionUID = 1L;
 
-	private int _characterNumber;
 	private EditorViewModel _dataModel;
 	private boolean _inapplicable;
 	
@@ -859,26 +866,26 @@ class CharacterTreeNode extends DefaultMutableTreeNode {
 	}
 	
 	public void setCharacterNumber(int characterNumber) {
-		_characterNumber = characterNumber;
+		
 		removeAllChildren();
 		
-		Character character = _dataModel.getCharacter(_characterNumber);
+		Character character = _dataModel.getCharacter(characterNumber);
 		if (character instanceof MultiStateCharacter) {
 			MultiStateCharacter ms = (MultiStateCharacter) character;
 			for (int i = 0; i < ms.getNumberOfStates(); ++i) {
 				add(new MultistateStateNode(ms, i + 1));
 			}
 		} else {
-			add(new DefaultMutableTreeNode(new CharStateHolder(_dataModel, _characterNumber)));
+			add(new DefaultMutableTreeNode(new CharStateHolder(_dataModel, this)));
 		}
 	}
 	
 	public int getCharacterNumber() {
-		return _characterNumber;
+		return getParent().getIndex(this)+1;
 	}
 
 	public Character getCharacter() {
-		return _dataModel.getCharacter(_characterNumber);
+		return _dataModel.getCharacter(getCharacterNumber());
 	}
 
 	@Override
@@ -896,7 +903,7 @@ class CharacterTreeNode extends DefaultMutableTreeNode {
 
 	@Override
 	public String toString() {
-		return Integer.toString(_characterNumber);
+		return Integer.toString(getCharacterNumber());
 	}
 
 }

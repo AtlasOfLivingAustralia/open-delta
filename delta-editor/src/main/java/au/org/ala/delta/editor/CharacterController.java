@@ -69,13 +69,21 @@ public class CharacterController {
 	}
 	
 	/**
-	 * Adds a new Item to the dataset after the last existing one.
+	 * Adds a new Character to the dataset after the last existing one.
 	 */
 	@Action
 	public void addCharacter(ActionEvent e) {
-		Character newItem = _model.addCharacter(CharacterType.UnorderedMultiState);
 		
-		editNewCharacter(newItem, e);
+		Character newCharacter = addCharacter();
+		editNewCharacter(newCharacter, e);
+	}
+	
+	/**
+	 * Adds a new Character to the data set.
+	 * @return the new Character.
+	 */
+	public Character addCharacter() {
+		return _model.addCharacter(CharacterType.UnorderedMultiState);
 	}
 	
 	/**
@@ -153,9 +161,32 @@ public class CharacterController {
 	private boolean confirmDelete(Character toDelete) {
 		CharacterFormatter formatter = new CharacterFormatter(true, false, false, true);
 		
-		String itemDescription = formatter.formatCharacterDescription(toDelete);
+		String characterDescription = formatter.formatCharacterDescription(toDelete);
 		
-		return _dialogHelper.confirmDeleteItem(itemDescription);
+		return _dialogHelper.confirmDeleteCharacter(characterDescription);
+	}
+	
+	/**
+	 * Changes the type of the currently selected character.
+	 * @param type the type to change to.
+	 * @return true if the type was changed, false otherwise.
+	 */
+	public boolean changeCharacterType(CharacterType type) {
+		
+		Character _selectedCharacter = _model.getSelectedCharacter();
+		
+		CharacterType existingType = _selectedCharacter.getCharacterType();
+		if (type.equals(existingType)) {
+			return false;
+		}
+		
+		if (_model.canChangeCharacterType(_selectedCharacter, type)) {
+			_model.changeCharacterType(_selectedCharacter, type);
+		}
+		else {
+			return false;
+		}
+		return true;
 	}
 	
 	

@@ -303,6 +303,7 @@ public class SlotFileDataSet extends AbstractObservableDataSet {
 		synchronized (_vop) {
 			int oldNumber = character.getCharacterId();
 			_vop.getDeltaMaster().moveCharacter(oldNumber, newCharacterNumber);	
+			character.setCharacterNumber(newCharacterNumber);
 			fireCharacterMoved(character, oldNumber);
 		}
 	}

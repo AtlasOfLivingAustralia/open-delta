@@ -14,6 +14,7 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.ui;
 
+import javax.swing.event.TableModelEvent;
 import javax.swing.table.AbstractTableModel;
 
 import org.apache.commons.lang.StringUtils;
@@ -57,6 +58,7 @@ public class MatrixTableModel extends AbstractTableModel {
 
 	@Override
 	public String getColumnName(int column) {
+		
 		Character ch = _dataSet.getCharacter(column + 1);
 		return RTFUtils.stripFormatting(ch.getDescription());
 	}
@@ -136,5 +138,12 @@ public class MatrixTableModel extends AbstractTableModel {
 		public void characterDeleted(DeltaDataSetChangeEvent event) {
 			fireTableStructureChanged();
 		}
+
+		@Override
+		public void characterEdited(DeltaDataSetChangeEvent event) {
+			fireTableCellUpdated(TableModelEvent.HEADER_ROW, event.getCharacter().getCharacterId()-1);
+		}
+		
+		
 	}
 }

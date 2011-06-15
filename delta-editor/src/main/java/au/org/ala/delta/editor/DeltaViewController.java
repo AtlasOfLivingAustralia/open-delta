@@ -276,6 +276,11 @@ public class DeltaViewController extends InternalFrameAdapter implements Vetoabl
 	public DeltaView createTreeView() {
 		DeltaViewModel model = createViewModel();
 		DeltaView view = _viewFactory.createTreeView(model);
+		
+		new CharacterController(view.getCharacterListView(), model);
+		new StateController(view.getCharacterListView(), model);
+		new ItemController(view.getItemListView(), model);
+		
 		viewerOpened(view, model);
 		
 		return view;
@@ -284,14 +289,14 @@ public class DeltaViewController extends InternalFrameAdapter implements Vetoabl
 	public DeltaView createGridView() {
 		DeltaViewModel model = createViewModel();
 		DeltaView view = _viewFactory.createGridView(model);
-		
+		new CharacterController(view.getCharacterListView(), model);
+		new ItemController(view.getItemListView(), model);
 		viewerOpened(view, model);
 		
 		return view;
 	}
 	
 	public DeltaView createItemEditView() {
-		
 		
 		DeltaViewModel model = createViewModel();
 		DeltaView view = _viewFactory.createItemEditView(model);

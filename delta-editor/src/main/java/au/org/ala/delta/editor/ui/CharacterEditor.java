@@ -3,6 +3,7 @@ package au.org.ala.delta.editor.ui;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.beans.PropertyVetoException;
 
 import javax.swing.AbstractListModel;
 import javax.swing.ActionMap;
@@ -37,6 +38,7 @@ import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 
+import au.org.ala.delta.editor.CharacterController;
 import au.org.ala.delta.editor.DeltaView;
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.ui.util.MessageDialogHelper;
@@ -109,16 +111,31 @@ public class CharacterEditor extends JInternalFrame implements DeltaView {
 
 	private ControlledByEditor controlledByEditor;
 	
+	/** Handles significant edits performed using this CharacterEditor */
+	private CharacterController _controller;
+	
 	public CharacterEditor(EditorViewModel model) {	
 		setName("CharacterEditorDialog");
+		
 		_dialogHelper = new MessageDialogHelper();
 		_context = Application.getInstance().getContext();
 		_resources = _context.getResourceMap(CharacterEditor.class);
 		_resources.injectFields(this);
 		ActionMap map = Application.getInstance().getContext().getActionMap(this);
 		createUI();
+		
+		_controller = new CharacterController(characterSelectionList, model);
+		
+		createCharacterForEmptyDataSet(model);
 		addEventHandlers(map);
 		bind(model);
+	}
+
+	private void createCharacterForEmptyDataSet(EditorViewModel model) {
+		if (model.getNumberOfCharacters() == 0) {
+			Character character = _controller.addCharacter();
+			model.setSelectedCharacter(character);
+		}
 	}
 
 	/**
@@ -173,9 +190,25 @@ public class CharacterEditor extends JInternalFrame implements DeltaView {
 		comboBox.setAction(map.get("characterTypeChanged"));
 	}
 	
+	
+	
+	@Override
+	public ReorderableList getCharacterListView() {
+		return null;
+	}
+
+	@Override
+	public ReorderableList getItemListView() {
+		return null;
+	}
+
 	@Action
 	public void characterEditDone() {
-		setVisible(false);
+		try {
+			setClosed(true);
+		} catch (PropertyVetoException e) {
+			
+		}
 	}
 	
 	@Action
@@ -255,18 +288,19 @@ public class CharacterEditor extends JInternalFrame implements DeltaView {
 		selectCharacterByName();
 	}
 	
+	/**
+	 * Invoked in response to a change in the character type combo box.
+	 * Will change the type of the Character being edited if that is 
+	 * allowed.
+	 */
 	@Action
 	public void characterTypeChanged() {
-		CharacterType type = (CharacterType)comboBox.getSelectedItem();
 		CharacterType existingType = _selectedCharacter.getCharacterType();
-		if (type.equals(existingType)) {
-			return;
-		}
+		CharacterType type = (CharacterType)comboBox.getSelectedItem();
 		
-		if (_dataSet.canChangeCharacterType(_selectedCharacter, type)) {
-			_dataSet.changeCharacterType(_selectedCharacter, type);
-		}
-		else {
+		boolean result = _controller.changeCharacterType(type);
+		
+		if (!result) {
 			comboBox.getModel().setSelectedItem(existingType);
 		}
 	}

@@ -2,13 +2,10 @@ package au.org.ala.delta.editor;
 
 import java.awt.event.ActionEvent;
 
-import javax.swing.ActionMap;
 import javax.swing.JComponent;
 import javax.swing.TransferHandler;
 
 import org.jdesktop.application.Action;
-import org.jdesktop.application.Application;
-import org.jdesktop.application.ApplicationContext;
 
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.ui.ReorderableList;
@@ -23,8 +20,6 @@ public class StateController {
 
 	private ReorderableList _view;
 	private EditorViewModel _model;
-	private ApplicationContext _context;
-	private ActionMap _stateActions;
 	private au.org.ala.delta.editor.ui.util.MessageDialogHelper _dialogHelper;
 	
 	/**
@@ -35,12 +30,9 @@ public class StateController {
 	public StateController(ReorderableList view, EditorViewModel model) {
 		_view = view;
 		setModel(model);
-		_context = Application.getInstance().getContext();
 		JComponent viewComponent = (JComponent)_view;
 		
 		viewComponent.setTransferHandler(new StateTransferHandler());
-		_stateActions = _context.getActionMap(StateController.class, this);
-		_view.setSelectionAction(_stateActions.get("editCharacter"));
 		_dialogHelper = new au.org.ala.delta.editor.ui.util.MessageDialogHelper();
 	}
 	
