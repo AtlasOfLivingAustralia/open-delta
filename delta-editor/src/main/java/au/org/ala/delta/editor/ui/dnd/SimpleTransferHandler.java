@@ -15,11 +15,16 @@ public abstract class SimpleTransferHandler<T> extends TransferHandler {
 	
 	private static final long serialVersionUID = 889705892088002277L;
 	private int sourceIndex;
-	
+	private Class<T> _transferClass;
 	private DataFlavor _flavour;
 	
 	public SimpleTransferHandler(Class<T> clazz) {
 		_flavour = new SimpleFlavor(clazz, clazz.getName());
+		_transferClass = clazz;
+	}
+	
+	public Class<T> getTransferClass() {
+		return _transferClass;
 	}
 	
 	/**
