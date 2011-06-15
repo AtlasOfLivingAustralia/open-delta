@@ -35,6 +35,7 @@ public class MultiStateValue extends CharacterValue {
         
         for (int i=0; i < _stateValues.size(); i++) {
             if (i > 0) {
+                // TODO "or" needs to be internationalized
                 builder.append("; or ");
             }
             

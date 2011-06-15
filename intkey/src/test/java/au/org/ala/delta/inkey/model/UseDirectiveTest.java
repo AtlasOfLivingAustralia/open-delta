@@ -3,6 +3,7 @@ package au.org.ala.delta.inkey.model;
 import java.io.File;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -278,7 +279,7 @@ public class UseDirectiveTest extends TestCase {
         assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(4)));
         assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(5)));
 
-        Set<au.org.ala.delta.model.Character> availableCharacters = specimen.getAvailableCharacters();
+        List<au.org.ala.delta.model.Character> availableCharacters = specimen.getAvailableCharacters();
         assertTrue(availableCharacters.contains(ds.getCharacter(1)));
         assertFalse(availableCharacters.contains(ds.getCharacter(2)));
         assertFalse(availableCharacters.contains(ds.getCharacter(3)));

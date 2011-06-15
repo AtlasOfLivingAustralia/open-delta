@@ -41,18 +41,18 @@ public class IntkeyContext extends AbstractDeltaContext {
     private Intkey _appUI;
 
     private Specimen _specimen;
-    
+
     private boolean _matchInapplicables;
     private boolean _matchUnknowns;
     private MatchType _matchType;
-    
+
     private int _tolerance;
 
     /**
      * Should executed directives be recorded in the history?
      */
     private boolean _recordDirectiveHistory;
-    
+
     /**
      * Is an input file currently being processed?
      */
@@ -77,18 +77,18 @@ public class IntkeyContext extends AbstractDeltaContext {
         _processingInputFile = false;
         initializeInvestigation();
     }
-    
+
     private void initializeInvestigation() {
         // Use linked hashmap so that the keys list will be returned in
         // order of insertion.
         _userDefinedCharacterKeywords = new LinkedHashMap<String, Set<Integer>>();
 
         _executedDirectives = new ArrayList<IntkeyDirectiveInvocation>();
-        
+
         _matchInapplicables = true;
         _matchUnknowns = true;
         _matchType = MatchType.OVERLAP;
-        
+
         _tolerance = 0;
     }
 
@@ -143,7 +143,7 @@ public class IntkeyContext extends AbstractDeltaContext {
 
         _dataset = IntkeyDatasetFileReader.readDataSet(_charactersFile, _taxaFile);
         _specimen = new Specimen(_dataset, _matchInapplicables, _matchInapplicables, _matchType);
-        
+
         // TODO need a proper listener pattern here?
         if (_appUI != null) {
             _appUI.handleNewDataSet(_dataset);
@@ -197,18 +197,18 @@ public class IntkeyContext extends AbstractDeltaContext {
         Logger.log("Using character");
         _specimen.setValueForCharacter(ch, value);
     }
-    
+
     public void removeValueForCharacter(Character ch) {
         Logger.log("Deleting character");
         _specimen.removeValueForCharacter(ch);
     }
-    
+
     public void specimenUpdateComplete() {
         if (_appUI != null) {
             _appUI.handleSpecimenUpdated();
-        }        
+        }
     }
-    
+
     public void addCharacterKeyword(String keyword, Set<Integer> characterNumbers) {
         keyword = keyword.toLowerCase();
         if (keyword.equals(CHARACTER_KEYWORD_ALL) || keyword.equals(CHARACTER_KEYWORD_USED) || keyword.equals(CHARACTER_KEYWORD_AVAILABLE)) {
@@ -286,36 +286,40 @@ public class IntkeyContext extends AbstractDeltaContext {
         if (_dataset != null) {
             // Create a new blank specimen
             _specimen = new Specimen(_dataset, _matchInapplicables, _matchInapplicables, _matchType);
-            _appUI.handleIdentificationRestarted();
+
+            if (_appUI != null) {
+                _appUI.handleIdentificationRestarted();
+            }
         }
     }
 
     public Specimen getSpecimen() {
         return _specimen;
     }
-    
+
     public synchronized boolean isProcessingInputFile() {
         return _processingInputFile;
     }
-    
+
     /**
      * FOR UNIT TESTING ONLY
+     * 
      * @param processing
      */
     public void setProcessingInputFile(boolean processing) {
         _processingInputFile = processing;
     }
-    
+
     public int getTolerance() {
         return _tolerance;
     }
-    
+
     public File getTaxaFile() {
         return _taxaFile;
     }
-    
+
     public File getCharactersFile() {
         return _charactersFile;
     }
-    
+
 }

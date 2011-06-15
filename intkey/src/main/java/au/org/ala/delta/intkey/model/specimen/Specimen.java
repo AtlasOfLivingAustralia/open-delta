@@ -404,11 +404,11 @@ public class Specimen {
         return new HashMap<Item, Integer>(_taxonDifferences);
     }
 
-    public Set<Character> getAvailableCharacters() {
-        Set<Character> retSet = new HashSet<Character>(_dataset.getCharacters());
-        retSet.removeAll(_characterValues.keySet());
-        retSet.removeAll(_characterInapplicabilityCounts.keySet());
-        return retSet;
+    public List<Character> getAvailableCharacters() {
+        List<Character> retList = new ArrayList<Character>(_dataset.getCharacters());
+        retList.removeAll(_characterValues.keySet());
+        retList.removeAll(_characterInapplicabilityCounts.keySet());
+        return retList;
     }
 
     public boolean isCharacterInapplicable(Character ch) {
