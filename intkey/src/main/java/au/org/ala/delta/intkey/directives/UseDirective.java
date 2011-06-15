@@ -39,15 +39,13 @@ import au.org.ala.delta.model.RealCharacter;
 import au.org.ala.delta.model.TextCharacter;
 import au.org.ala.delta.model.format.CharacterFormatter;
 
+/**
+ * The USE directive - allow the user to enter information about a specimen
+ * 
+ * @author ChrisF
+ * 
+ */
 public class UseDirective extends IntkeyDirective {
-
-    // TODO show message box when try to set a character value but it fails due
-    // to it not
-    // available - need to do anything else when this happens?
-
-    // TODO UI should only update once at the end - should not update for each
-    // controlling
-    // character that is prompted for.
 
     private static Pattern COMMA_SEPARATED_VALUE_PATTERN = Pattern.compile("^.+,.*$");
 
@@ -76,7 +74,7 @@ public class UseDirective extends IntkeyDirective {
             List<String> specifiedValues = new ArrayList<String>();
 
             if (data != null && data.trim().length() > 0) {
-                List<String> subCommands = ParsingUtils.splitDataIntoSubCommands(data);
+                List<String> subCommands = ParsingUtils.tokenizeDirectiveCall(data);
 
                 for (String subCmd : subCommands) {
                     // TODO need to handle additional undocumented flags
@@ -272,7 +270,7 @@ public class UseDirective extends IntkeyDirective {
                     if (!processControllingCharacters(ch, context)) {
                         return false;
                     }
-                    
+
                     // second call to checkCharacterUsable() to ensure that
                     // character has not been
                     // made inapplicable by the value given to one or more of
@@ -288,14 +286,13 @@ public class UseDirective extends IntkeyDirective {
             if (charsNoValues.size() == 1) {
                 Character ch = charsNoValues.get(0);
                 if (checkCharacterUsable(ch, context, !_suppressAlreadySetWarning && !_change)) {
-                    
+
                     // halt execution if values not sucessfully set for all
                     // controlling characters
                     if (!processControllingCharacters(ch, context)) {
                         return false;
                     }
-                    
-                    
+
                     // second call to checkCharacterUsable() to ensure that
                     // character has not been
                     // made inapplicable by the value given to one or more of
@@ -347,15 +344,18 @@ public class UseDirective extends IntkeyDirective {
                         CharacterValue characterVal = null;
 
                         if (checkCharacterUsable(ch, context, !_suppressAlreadySetWarning && !_change)) {
-                            
-                            // halt execution if values not sucessfully set for all
+
+                            // halt execution if values not sucessfully set for
+                            // all
                             // controlling characters
                             if (!processControllingCharacters(ch, context)) {
                                 return false;
                             }
-                            
-                            // As the character's controlling characters have been successfully
-                            // set, remove all of them from the list of characters needing to have
+
+                            // As the character's controlling characters have
+                            // been successfully
+                            // set, remove all of them from the list of
+                            // characters needing to have
                             // their values set.
                             IntkeyDataset dataset = context.getDataset();
                             List<CharacterDependency> charDeps = getFullControllingCharacterDependenciesList(ch, dataset);
@@ -363,7 +363,7 @@ public class UseDirective extends IntkeyDirective {
                                 Character controllingChar = dataset.getCharacter(cd.getControllingCharacterId());
                                 charsNoValues.remove(controllingChar);
                             }
-                            
+
                             // second call to checkCharacterUsable() to ensure
                             // that character has not been
                             // made inapplicable by the value given to one or
@@ -440,10 +440,13 @@ public class UseDirective extends IntkeyDirective {
         }
 
         /**
-         * Set values for all controlling characters for the specified character, prompting if necessary
-         * @param ch 
+         * Set values for all controlling characters for the specified
+         * character, prompting if necessary
+         * 
+         * @param ch
          * @param context
-         * @return true if values were set successfully for all controlling characters
+         * @return true if values were set successfully for all controlling
+         *         characters
          */
         private boolean processControllingCharacters(Character ch, IntkeyContext context) {
             List<CharacterDependency> allControllingChars = getFullControllingCharacterDependenciesList(ch, context.getDataset());
@@ -509,7 +512,8 @@ public class UseDirective extends IntkeyDirective {
                     if (val != null) {
                         context.setValueForCharacter(cc, val);
                     } else {
-                        // No values selected or cancel pressed. Return as values have not been set for all
+                        // No values selected or cancel pressed. Return as
+                        // values have not been set for all
                         // controlling characters
                         return false;
                     }
@@ -525,7 +529,7 @@ public class UseDirective extends IntkeyDirective {
                 // character
 
             }
-            
+
             return true;
         }
 

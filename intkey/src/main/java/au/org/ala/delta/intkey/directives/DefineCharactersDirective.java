@@ -28,7 +28,7 @@ public class DefineCharactersDirective extends IntkeyDirective {
     protected IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
         String keyword = null;
         Set<Integer> characterNumbers = new HashSet<Integer>();
-        List<String> tokens = ParsingUtils.splitDataIntoSubCommands(data);
+        List<String> tokens = ParsingUtils.tokenizeDirectiveCall(data);
 
         for (int i = 0; i < tokens.size(); i++) {
             String token = tokens.get(i);

@@ -28,6 +28,12 @@ import au.org.ala.delta.model.TextAttribute;
 import au.org.ala.delta.model.TextCharacter;
 import au.org.ala.delta.model.UnorderedMultiStateCharacter;
 
+/**
+ * Unit tests for the loading of dataset information from the items and 
+ * characters files.
+ * @author ChrisF
+ *
+ */
 public class DataSetLoadTest extends TestCase {
 
     /**

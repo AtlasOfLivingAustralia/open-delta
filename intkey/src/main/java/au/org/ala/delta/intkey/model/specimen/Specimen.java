@@ -23,8 +23,6 @@ import au.org.ala.delta.model.TextAttribute;
 
 public class Specimen {
 
-    // TODO characters applicable/inapplicable
-
     private IntkeyDataset _dataset;
 
     boolean _matchInapplicables;

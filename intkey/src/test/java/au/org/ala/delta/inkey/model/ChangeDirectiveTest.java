@@ -20,6 +20,11 @@ import au.org.ala.delta.model.RealCharacter;
 import au.org.ala.delta.model.TextCharacter;
 import au.org.ala.delta.model.UnorderedMultiStateCharacter;
 
+/**
+ * Unit tests for the CHANGE directive
+ * @author ChrisF
+ *
+ */
 public class ChangeDirectiveTest extends TestCase {
 
     /**

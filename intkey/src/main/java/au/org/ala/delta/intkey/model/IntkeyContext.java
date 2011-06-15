@@ -309,4 +309,13 @@ public class IntkeyContext extends AbstractDeltaContext {
     public int getTolerance() {
         return _tolerance;
     }
+    
+    public File getTaxaFile() {
+        return _taxaFile;
+    }
+    
+    public File getCharactersFile() {
+        return _charactersFile;
+    }
+    
 }

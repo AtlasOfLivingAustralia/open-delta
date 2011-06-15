@@ -94,7 +94,7 @@ public class ParsingUtils {
         }
     }
 
-    public static List<String> splitDataIntoSubCommands(String data) {
+    public static List<String> tokenizeDirectiveCall(String data) {
         List<String> subCommands = new ArrayList<String>();
 
         boolean inQuotedString = false;
@@ -105,7 +105,7 @@ public class ParsingUtils {
             char c = data.charAt(i);
 
             if (c == '"') {
-                // Ignore quote if it is in the middle of a string
+                // Ignore quote if it is in the middle of a string - 
                 // don't throw error for unmatched quotes.
                 // this is the behaviour in the legacy intkey - may change this
                 // later.
@@ -115,14 +115,14 @@ public class ParsingUtils {
                 } else if (i != data.length() - 1) {
                     char preceedingChar = data.charAt(i - 1);
                     char followingChar = data.charAt(i + 1);
-                    if (inQuotedString && (followingChar == ' ' || followingChar == ',')) {
+                    if (inQuotedString && (followingChar == ' ' || followingChar == ',' || followingChar == '\n')) {
                         inQuotedString = false;
-                    } else if (!inQuotedString && (preceedingChar == ' ' || preceedingChar == ',')) {
+                    } else if (!inQuotedString && (preceedingChar == ' ' || preceedingChar == ',' || preceedingChar == '\n')) {
                         inQuotedString = true;
                     }
                 }
-            } else if (c == ' ' && !inQuotedString) {
-                // if we're not inside a quoted string, then a space designates
+            } else if ((c == ' ' || c == '\n') && !inQuotedString) {
+                // if we're not inside a quoted string, then a space or newline designates
                 // the end of a subcommand
                 isEndSubcommand = true;
             }

@@ -12,16 +12,23 @@ import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.ui.UIUtils;
 
+/**
+ * The FILE TAXA directive - specifies the name of the intkey taxa (items) file.
+ * It is normally only used in the initialization file - intkey.ini.
+ * 
+ * @author ChrisF
+ * 
+ */
 public class FileTaxaDirective extends IntkeyDirective {
 
     public FileTaxaDirective() {
         super("file", "taxa");
     }
-    
-	@Override
-	public int getArgType() {
-		return DirectiveArgType.DIRARG_FILE;
-	}
+
+    @Override
+    public int getArgType() {
+        return DirectiveArgType.DIRARG_FILE;
+    }
 
     @Override
     protected IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) {

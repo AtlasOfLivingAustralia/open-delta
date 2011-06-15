@@ -28,6 +28,11 @@ import au.org.ala.delta.model.RealCharacter;
 import au.org.ala.delta.model.TextCharacter;
 import au.org.ala.delta.model.UnorderedMultiStateCharacter;
 
+/**
+ * Unit tests for the USE directive
+ * @author ChrisF
+ *
+ */
 public class UseDirectiveTest extends TestCase {
 
     /**
@@ -330,6 +335,42 @@ public class UseDirectiveTest extends TestCase {
     }
 
     /**
+     * Test the use of the USE directive using a character keyword in place of
+     * character numbers
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testKeyword() throws Exception {
+        URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
+        IntkeyContext context = new IntkeyContext(null);
+        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+        IntkeyDataset ds = context.getDataset();
+
+        UnorderedMultiStateCharacter charLongevity = (UnorderedMultiStateCharacter) ds.getCharacter(2);
+        RealCharacter charCulmsMaxHeight = (RealCharacter) ds.getCharacter(3);
+        UnorderedMultiStateCharacter charCulmsWoodyHerbacious = (UnorderedMultiStateCharacter) ds.getCharacter(4);
+        UnorderedMultiStateCharacter charCulmsBranchedAbove = (UnorderedMultiStateCharacter) ds.getCharacter(5);
+        UnorderedMultiStateCharacter charInfloresence = (UnorderedMultiStateCharacter) ds.getCharacter(13);
+
+        new UseDirective().parseAndProcess(context, "habit,1");
+        Specimen specimen = context.getSpecimen();
+
+        MultiStateValue valLongevity = (MultiStateValue) specimen.getValueForCharacter(charLongevity);
+        RealValue valCulmsMaxHeight = (RealValue) specimen.getValueForCharacter(charCulmsMaxHeight);
+        MultiStateValue valCulmsWoodyHerbacious = (MultiStateValue) specimen.getValueForCharacter(charCulmsWoodyHerbacious);
+        MultiStateValue valCulmsBranchedAbove = (MultiStateValue) specimen.getValueForCharacter(charCulmsBranchedAbove);
+        MultiStateValue valInfloresence = (MultiStateValue) specimen.getValueForCharacter(charInfloresence);
+
+        assertEquals(Arrays.asList(1), valLongevity.getStateValues());
+        assertEquals(new FloatRange(1.0, 1.0), valCulmsMaxHeight.getRange());
+        assertEquals(Arrays.asList(1), valCulmsWoodyHerbacious.getStateValues());
+        assertEquals(Arrays.asList(1), valCulmsBranchedAbove.getStateValues());
+        assertEquals(Arrays.asList(1), valInfloresence.getStateValues());
+
+    }
+
+    /**
      * Test that when a character is used, values are set for its controlling
      * characters (when the NONAUTOMATIC CONTROLLING CHARACTERS and USE
      * CONTROLLING CHARACTERS FIRST directives are not used)
@@ -611,7 +652,7 @@ public class UseDirectiveTest extends TestCase {
         // while loading the data set file, so the test is
         // successful
     }
-    
+
     // USE CC
     // Non auto cc
 

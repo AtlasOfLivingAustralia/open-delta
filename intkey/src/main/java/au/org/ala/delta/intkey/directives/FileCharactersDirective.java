@@ -12,21 +12,28 @@ import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.ui.UIUtils;
 
+/**
+ * The FILE CHARACTERS directive - specifies the name of the intkey characters
+ * file. It is normally only used in the initialization file - intkey.ini.
+ * 
+ * @author ChrisF
+ * 
+ */
 public class FileCharactersDirective extends IntkeyDirective {
 
     public FileCharactersDirective() {
         super("file", "characters");
     }
-    
-	@Override
-	public int getArgType() {
-		return DirectiveArgType.DIRARG_TEXT;
-	}
+
+    @Override
+    public int getArgType() {
+        return DirectiveArgType.DIRARG_TEXT;
+    }
 
     @Override
     protected IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) {
         _data = data;
-    	String fileName = data;
+        String fileName = data;
 
         if (fileName == null) {
             JFileChooser chooser = new JFileChooser();
@@ -76,7 +83,7 @@ public class FileCharactersDirective extends IntkeyDirective {
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(UIUtils.getMainFrame(), ex.getMessage(), "", JOptionPane.ERROR_MESSAGE);
                 return false;
-            } 
+            }
         }
 
         @Override
