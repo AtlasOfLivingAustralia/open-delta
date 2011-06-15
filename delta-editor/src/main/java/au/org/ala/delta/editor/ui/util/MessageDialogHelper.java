@@ -40,6 +40,13 @@ public class MessageDialogHelper {
 		return result == JOptionPane.OK_OPTION;
 	}
 	
+	public boolean confirmDeleteCharacter(String characterDescription) {
+		String title = _messages.getString("deleteCharacter.title");
+		String message = _messages.getString("deleteCharacter.message", characterDescription);
+		int result = au.org.ala.delta.ui.MessageDialogHelper.showConfirmDialog(_dialogParent, title, message, 50);
+		return result == JOptionPane.OK_OPTION;
+	}
+	
 	public boolean confirmDeleteState(String stateDescription) {
 		String title = _messages.getString("deleteState.title");
 		String message = _messages.getString("deleteState.message", stateDescription);
