@@ -12,25 +12,26 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
 
 /**
  * Unit tests for the FILE TAXA directive
+ * 
  * @author ChrisF
- *
+ * 
  */
 public class FileTaxaDirectiveTest extends TestCase {
 
-    @Test 
+    @Test
     public void testSetValidTaxaFile() throws Exception {
         IntkeyContext context = new IntkeyContext(null);
         URL iitemsFileUrl = getClass().getResource("/dataset/sample/iitems");
-        
+
         File fileTaxa = new File(iitemsFileUrl.toURI());
-        
+
         new FileTaxaDirective().parseAndProcess(context, fileTaxa.getAbsolutePath());
-        
+
         assertEquals(fileTaxa, context.getTaxaFile());
     }
-    
-    
-   @Test
+
+    @Test
     public void testSetInvalidCharactersFile() throws Exception {
+        // TODO
     }
 }
