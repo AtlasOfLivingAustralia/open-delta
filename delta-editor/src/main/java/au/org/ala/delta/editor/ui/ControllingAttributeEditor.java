@@ -229,7 +229,7 @@ public class ControllingAttributeEditor extends CharacterDepencencyEditor {
 		_controlledCharacters = new ArrayList<Character>(0);
 		
 		if (character.getCharacterType().isMultistate()) {
-			_character = (MultiStateCharacter)character;
+			_character = character;
 			attributeCombo.setModel(new ControllingAttributeModel());
 			attributeCombo.setRenderer(new ControllingAttributeRenderer());
 			attributeCombo.setSelectedItem(attributeCombo.getItemAt(0));
@@ -418,13 +418,20 @@ public class ControllingAttributeEditor extends CharacterDepencencyEditor {
 				int index, boolean isSelected, boolean cellHasFocus) {
 			super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 			setFont(_defaultFont);
+			int fontModifier = Font.PLAIN;
 			if (_controllingAttribute != null) {
 				Set<Integer> states = _controllingAttribute.getStates();
 				if (states.contains(index+1)) {
-					setFont(getFont().deriveFont(Font.BOLD));
+					fontModifier = fontModifier | Font.BOLD;
 				}
 			}
-			
+			if (_character != null) {
+				int implicitState = ((MultiStateCharacter)_character).getUncodedImplicitState();
+				if (index+1 == implicitState) {
+					fontModifier = fontModifier | Font.ITALIC;
+				}
+			}
+			setFont(getFont().deriveFont(fontModifier));
 			return this;
 		}
 	}
