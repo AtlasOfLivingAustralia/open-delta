@@ -1,6 +1,7 @@
 package au.org.ala.delta.editor.ui;
 
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,18 +11,23 @@ import java.util.Set;
 import javax.swing.AbstractListModel;
 import javax.swing.ActionMap;
 import javax.swing.ComboBoxModel;
+import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.UIManager;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
@@ -52,13 +58,14 @@ public class ControllingAttributeEditor extends CharacterDepencencyEditor {
 	private CharacterDependencyFormatter _formatter;
 	private CharacterFormatter _characterFormatter = new CharacterFormatter(true, false, false, true);
 	private ResourceMap _resources;
+	private List<StateViewModel> _states;
 	
-	private JList stateList;
+	private JTable stateList;
 	private JList controlledCharacterList;
 	private JList remainingCharacterList;
 	private JButton moveRightButton;
 	private JButton moveLeftButton;
-	private JButton btnRedefine;
+	private JButton btnDefine;
 
 	public ControllingAttributeEditor(RtfToolBar toolbar) {
 		super(toolbar);
@@ -76,7 +83,8 @@ public class ControllingAttributeEditor extends CharacterDepencencyEditor {
 		attributeCombo.addActionListener(actions.get("selectedAttributeChanged"));
 		moveLeftButton.setAction(actions.get("moveToControlledList"));
 		moveRightButton.setAction(actions.get("moveFromControlledList"));
-		btnRedefine.setAction(actions.get("redefineControllingAttribute"));
+		btnDefine.setAction(actions.get("defineControllingAttribute"));
+		btnDefine.setEnabled(false);
 		
 		new ButtonEnabler(moveLeftButton, remainingCharacterList);
 		new ButtonEnabler(moveRightButton, controlledCharacterList);
@@ -95,7 +103,7 @@ public class ControllingAttributeEditor extends CharacterDepencencyEditor {
 		
 		JScrollPane stateListScroller = new JScrollPane();
 		
-		btnRedefine = new JButton("Redefine");
+		btnDefine = new JButton("Redefine");
 		GroupLayout gl_controllingAttributes = new GroupLayout(controllingAttributes);
 		gl_controllingAttributes.setHorizontalGroup(
 			gl_controllingAttributes.createParallelGroup(Alignment.LEADING)
@@ -106,7 +114,7 @@ public class ControllingAttributeEditor extends CharacterDepencencyEditor {
 						.addGroup(gl_controllingAttributes.createSequentialGroup()
 							.addComponent(lblDefinedByStates)
 							.addPreferredGap(ComponentPlacement.RELATED, 164, Short.MAX_VALUE)
-							.addComponent(btnRedefine))
+							.addComponent(btnDefine))
 						.addComponent(stateListScroller, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 367, Short.MAX_VALUE)
 						.addComponent(lblControllingAttribute))
 					.addContainerGap())
@@ -121,13 +129,14 @@ public class ControllingAttributeEditor extends CharacterDepencencyEditor {
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addGroup(gl_controllingAttributes.createParallelGroup(Alignment.BASELINE)
 						.addComponent(lblDefinedByStates)
-						.addComponent(btnRedefine))
+						.addComponent(btnDefine))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(stateListScroller, GroupLayout.DEFAULT_SIZE, 97, Short.MAX_VALUE)
 					.addContainerGap())
 		);
 		
-		stateList = new JList();
+		stateList = new JTable();
+		stateList.setShowGrid(false);
 		stateListScroller.setViewportView(stateList);
 		controllingAttributes.setLayout(gl_controllingAttributes);
 		
@@ -214,6 +223,11 @@ public class ControllingAttributeEditor extends CharacterDepencencyEditor {
 		setLayout(groupLayout);
 	}
 	
+	private void enableListEditing(boolean enabled) {
+		controlledCharacterList.setEnabled(enabled);
+		remainingCharacterList.setEnabled(enabled);
+	}
+	
 	/**
 	 * Updates the model and character that this user interface is 
 	 * centered on.
@@ -244,10 +258,38 @@ public class ControllingAttributeEditor extends CharacterDepencencyEditor {
 		
 	}
 	
+	private void updateStateViewModel() {
+		_states = new ArrayList<StateViewModel>();
+		if (_character != null) {
+			MultiStateCharacter multiStateCharacter = (MultiStateCharacter)_character;
+			
+			for (int i=0; i<multiStateCharacter.getNumberOfStates(); i++) {
+				StateViewModel state = new StateViewModel();
+			
+				if (_controllingAttribute != null) {
+					Set<Integer> states = _controllingAttribute.getStates();
+					if (states.contains(i+1)) {
+						state.present = true;
+					}
+				}
+				if (_character != null) {
+					int implicitState = ((MultiStateCharacter)_character).getUncodedImplicitState();
+					if (i+1 == implicitState) {
+						state.implicit = true;
+					}
+				}
+			
+				state.description = _characterFormatter.formatState(((MultiStateCharacter)_character), i + 1);
+				_states.add(state);
+			}
+		}
+	}
+	
 	@Action
 	public void selectedAttributeChanged() { 
 		
 		Object selected = attributeCombo.getSelectedItem();
+		_controlledCharacters = new ArrayList<Character>();
 		
 		// The [New] option could be selected.
 		if (selected instanceof CharacterDependency) {
@@ -256,20 +298,20 @@ public class ControllingAttributeEditor extends CharacterDepencencyEditor {
 			List<Integer> numbers = new ArrayList<Integer>(_controllingAttribute.getDependentCharacterIds());
 			Collections.sort(numbers);
 		
-			_controlledCharacters = new ArrayList<Character>();
+			
 			for (int number: numbers) {
 				_controlledCharacters.add(_model.getCharacter(number));
 			}
 			
-			_remainingCharacters.removeAll(_controllingAttribute.getDependentCharacterIds());
-			
 			Collections.sort(_controlledCharacters);
 			
-			btnRedefine.setText(_resources.getString("defineControllingAttributeButton.editText"));
+			btnDefine.setText(_resources.getString("defineControllingAttributeButton.editText"));
+			enableListEditing(true);
 		}
 		else {
-			btnRedefine.setText(_resources.getString("defineControllingAttributeButton.newText"));
+			btnDefine.setText(_resources.getString("defineControllingAttributeButton.newText"));
 			_controllingAttribute = null;
+			enableListEditing(false);
 		}
 		updateScreen();
 	}
@@ -299,14 +341,18 @@ public class ControllingAttributeEditor extends CharacterDepencencyEditor {
 	}
 	
 	@Action
-	public void redefineControllingAttribute() {
+	public void defineControllingAttribute() {
 		
 	}
 	
 	private void updateScreen() {
 		
+		updateStateViewModel();
 		stateList.setModel(new StateListModel());
-		stateList.setCellRenderer(new StateListRenderer());
+		stateList.getColumnModel().getColumn(0).setCellRenderer(new StateRenderer());
+		stateList.getColumnModel().getColumn(0).setCellEditor(new StateEditor());
+		
+		stateList.setTableHeader(null);
 		
 		List<Character> unselectables = new ArrayList<Character>(_controlledCharacters);
 		if (_character != null) {
@@ -387,53 +433,41 @@ public class ControllingAttributeEditor extends CharacterDepencencyEditor {
 		}
 	}
 	
-	class StateListModel extends AbstractListModel {
-
-		private static final long serialVersionUID = 1101093504477435463L;
+	class StateListModel extends AbstractTableModel {
+		
+		private static final long serialVersionUID = 1L;
 		
 		@Override
-		public int getSize() {
-			if (_character == null) {
-				return 0;
-			}
-			MultiStateCharacter character = (MultiStateCharacter)_character;
-			return character.getNumberOfStates();
+		public int getRowCount() {
+			return _states.size();
 		}
-
+	
 		@Override
-		public Object getElementAt(int index) {
-			MultiStateCharacter character = (MultiStateCharacter)_character;
-			return _characterFormatter.formatState(character, index+1);
+		public int getColumnCount() {
+			return 1;
+		}
+	
+		@Override
+		public Object getValueAt(int rowIndex, int columnIndex) {
+			return _states.get(rowIndex);
+		}
+	
+		@Override
+		public boolean isCellEditable(int rowIndex, int columnIndex) {	
+	    	return true;
+		}
+	
+		@Override
+		public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+		    _states.get(rowIndex).present = (Boolean)aValue;
 		}
 		
 	}
 	
-	class StateListRenderer extends DefaultListCellRenderer {
-		
-		private static final long serialVersionUID = -4761565917553288888L;
-
-		private Font _defaultFont = UIManager.getFont("Label.font");
-		@Override
-		public Component getListCellRendererComponent(JList list, Object value,
-				int index, boolean isSelected, boolean cellHasFocus) {
-			super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-			setFont(_defaultFont);
-			int fontModifier = Font.PLAIN;
-			if (_controllingAttribute != null) {
-				Set<Integer> states = _controllingAttribute.getStates();
-				if (states.contains(index+1)) {
-					fontModifier = fontModifier | Font.BOLD;
-				}
-			}
-			if (_character != null) {
-				int implicitState = ((MultiStateCharacter)_character).getUncodedImplicitState();
-				if (index+1 == implicitState) {
-					fontModifier = fontModifier | Font.ITALIC;
-				}
-			}
-			setFont(getFont().deriveFont(fontModifier));
-			return this;
-		}
+	class StateViewModel {
+		public boolean present;
+		public boolean implicit;
+		public String description;
 	}
 	
 	class CharacterListModel extends AbstractListModel {
@@ -472,6 +506,77 @@ public class ControllingAttributeEditor extends CharacterDepencencyEditor {
 		@Override
 		public String formatValue(Object value) {
 			return _characterFormatter.formatCharacterDescription((Character)value);
+		}
+	}
+	
+	class StateRenderer extends DefaultTableCellRenderer {
+
+		private static final long serialVersionUID = 1L;
+
+		private JCheckBox stateRenderer = new JCheckBox();
+		private Font _defaultFont = UIManager.getFont("Label.font");
+		
+		@Override
+		public Component getTableCellRendererComponent(JTable table,
+				Object value, boolean isSelected, boolean hasFocus, int row,
+				int column) {
+			
+			StateViewModel state = (StateViewModel)value;
+			super.getTableCellRendererComponent(table, state.description, isSelected, hasFocus,
+					row, column);
+			
+			stateRenderer.setBackground(getBackground());
+			stateRenderer.setForeground(getForeground());
+			stateRenderer.setText(state.description);
+			stateRenderer.setSelected(state.present);
+			
+			stateRenderer.setFont(_defaultFont);
+			int fontModifier = Font.PLAIN;
+			
+			if (state.present) {
+				fontModifier = fontModifier | Font.BOLD;
+				
+			}
+			if (state.implicit) {
+				fontModifier = fontModifier | Font.ITALIC;
+			}
+			stateRenderer.setFont(getFont().deriveFont(fontModifier));
+			
+			
+			return stateRenderer;
+		}
+
+		@Override
+		public Dimension getPreferredSize() {
+			
+			return stateRenderer.getPreferredSize();
+		}
+	}
+	
+	/**
+	 * Allows a state to be marked as present / absent from the
+	 * controlling attribute using a checkbox.
+	 */
+	class StateEditor extends DefaultCellEditor {
+		
+		private static final long serialVersionUID = 8431473832073654661L;
+		
+		
+		public StateEditor() {
+			super(new JCheckBox());
+		}
+
+		@Override
+		public Component getTableCellEditorComponent(JTable table,
+				Object value, boolean isSelected, int row, int column) {
+			
+			StateViewModel state = (StateViewModel)value;
+			JCheckBox checkBox = (JCheckBox)super.getTableCellEditorComponent(table, value, isSelected, row, column);
+			checkBox.setOpaque(false);
+			
+			checkBox.setSelected(state.present);
+
+			return checkBox;
 		}
 	}
 }
