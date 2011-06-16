@@ -25,6 +25,7 @@ import javax.swing.UIManager;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
+import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.model.Character;
@@ -34,6 +35,12 @@ import au.org.ala.delta.model.format.CharacterDependencyFormatter;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.ui.rtf.RtfToolBar;
 
+/**
+ * The ControllingAttributeEditor provides a user interface for the creation
+ * and modification of controlling attributes / character dependencies.
+ * It appears on the Character Editor as a tab with the (english) name of
+ * "Controls".
+ */
 public class ControllingAttributeEditor extends CharacterDepencencyEditor {
 	
 	private static final long serialVersionUID = -1550092824029396438L;
@@ -44,7 +51,7 @@ public class ControllingAttributeEditor extends CharacterDepencencyEditor {
 	private List<Character> _controlledCharacters;
 	private CharacterDependencyFormatter _formatter;
 	private CharacterFormatter _characterFormatter = new CharacterFormatter(true, false, false, true);
-	
+	private ResourceMap _resources;
 	
 	private JList stateList;
 	private JList controlledCharacterList;
@@ -56,6 +63,7 @@ public class ControllingAttributeEditor extends CharacterDepencencyEditor {
 	public ControllingAttributeEditor(RtfToolBar toolbar) {
 		super(toolbar);
 		
+		_resources = Application.getInstance().getContext().getResourceMap();
 		_controlledCharacters = new ArrayList<Character>();
 		_remainingCharacters = new ArrayList<Character>();
 		
@@ -206,6 +214,10 @@ public class ControllingAttributeEditor extends CharacterDepencencyEditor {
 		setLayout(groupLayout);
 	}
 	
+	/**
+	 * Updates the model and character that this user interface is 
+	 * centered on.
+	 */
 	public void bind(EditorViewModel model, Character character) {
 		_model = model;
 		_formatter = new CharacterDependencyFormatter(_model);
@@ -219,15 +231,8 @@ public class ControllingAttributeEditor extends CharacterDepencencyEditor {
 		if (character.getCharacterType().isMultistate()) {
 			_character = (MultiStateCharacter)character;
 			attributeCombo.setModel(new ControllingAttributeModel());
-			attributeCombo.setRenderer(new ControllingAttributeRenderer());	
-			
-			if (attributeCombo.getItemCount() > 0) {
-				attributeCombo.setSelectedItem(attributeCombo.getItemAt(0));
-			}
-			else {
-				updateScreen();
-			}
-			
+			attributeCombo.setRenderer(new ControllingAttributeRenderer());
+			attributeCombo.setSelectedItem(attributeCombo.getItemAt(0));
 		}
 		else {
 			attributeCombo.setModel(new DefaultComboBoxModel());
@@ -241,19 +246,31 @@ public class ControllingAttributeEditor extends CharacterDepencencyEditor {
 	
 	@Action
 	public void selectedAttributeChanged() { 
-		_controllingAttribute = (CharacterDependency)attributeCombo.getSelectedItem();
 		
-		List<Integer> numbers = new ArrayList<Integer>(_controllingAttribute.getDependentCharacterIds());
-		Collections.sort(numbers);
+		Object selected = attributeCombo.getSelectedItem();
 		
-		_controlledCharacters = new ArrayList<Character>();
-		for (int number: numbers) {
-			_controlledCharacters.add(_model.getCharacter(number));
+		// The [New] option could be selected.
+		if (selected instanceof CharacterDependency) {
+			_controllingAttribute = (CharacterDependency)attributeCombo.getSelectedItem();
+		
+			List<Integer> numbers = new ArrayList<Integer>(_controllingAttribute.getDependentCharacterIds());
+			Collections.sort(numbers);
+		
+			_controlledCharacters = new ArrayList<Character>();
+			for (int number: numbers) {
+				_controlledCharacters.add(_model.getCharacter(number));
+			}
+			
+			_remainingCharacters.removeAll(_controllingAttribute.getDependentCharacterIds());
+			
+			Collections.sort(_controlledCharacters);
+			
+			btnRedefine.setText(_resources.getString("defineControllingAttributeButton.editText"));
 		}
-		
-		_remainingCharacters.removeAll(_controllingAttribute.getDependentCharacterIds());
-		
-		Collections.sort(_controlledCharacters);
+		else {
+			btnRedefine.setText(_resources.getString("defineControllingAttributeButton.newText"));
+			_controllingAttribute = null;
+		}
 		updateScreen();
 	}
 	
@@ -307,18 +324,27 @@ public class ControllingAttributeEditor extends CharacterDepencencyEditor {
 		private List<CharacterDependency> _controllingAttributes;
 		
 		public ControllingAttributeModel() {
-			_controllingAttributes = _character.getDependentCharacters();
-			if (_controllingAttributes.size() > 0) {
-				_selected = _controllingAttributes.get(0);
+			if (_character != null) {
+				_controllingAttributes = _character.getDependentCharacters();
+				if (_controllingAttributes.size() > 0) {
+					_selected = _controllingAttributes.get(0);
+				}
+			}
+			else {
+				_controllingAttributes = new ArrayList<CharacterDependency>(0);
 			}
 		}
 		@Override
 		public int getSize() {
-			return _controllingAttributes.size();
+			
+			return _controllingAttributes.size() + 1;
 		}
 
 		@Override
 		public Object getElementAt(int index) {
+			if (index == _controllingAttributes.size()) {
+				return "[New]";
+			}
 			return _controllingAttributes.get(index);
 		}
 
@@ -344,10 +370,17 @@ public class ControllingAttributeEditor extends CharacterDepencencyEditor {
 		public Component getListCellRendererComponent(JList list, Object value,
 				int index, boolean isSelected, boolean cellHasFocus) {
 			
-			CharacterDependency dependency = (CharacterDependency)value;
 			String description = "";
-			if (value != null) {
-				description = _formatter.formatCharacterDependency(dependency);
+			// The combo contains one special entry that is a string, "[New]".
+			if (value instanceof CharacterDependency) {
+				CharacterDependency dependency = (CharacterDependency)value;
+				
+				if (value != null) {
+					description = _formatter.formatCharacterDependency(dependency);
+				}
+			}
+			else {
+				description = (String)value;
 			}
 			
 			return super.getListCellRendererComponent(list, description, index, isSelected, cellHasFocus);
