@@ -40,8 +40,8 @@ public class ControllingAttributeEditor extends CharacterDepencencyEditor {
 	private JComboBox attributeCombo;
 	
 	private CharacterDependency _controllingAttribute;
-	private List<Integer> _remainingCharacters;
-	private List<Integer> _controlledCharacters;
+	private List<Character> _remainingCharacters;
+	private List<Character> _controlledCharacters;
 	private CharacterDependencyFormatter _formatter;
 	private CharacterFormatter _characterFormatter = new CharacterFormatter(true, false, false, true);
 	
@@ -55,6 +55,10 @@ public class ControllingAttributeEditor extends CharacterDepencencyEditor {
 
 	public ControllingAttributeEditor(RtfToolBar toolbar) {
 		super(toolbar);
+		
+		_controlledCharacters = new ArrayList<Character>();
+		_remainingCharacters = new ArrayList<Character>();
+		
 		createUI();
 		addEventHandlers();
 	}
@@ -193,7 +197,6 @@ public class ControllingAttributeEditor extends CharacterDepencencyEditor {
 		);
 		
 		remainingCharacterList = new JList();
-		remainingCharacterList.setCellRenderer(new CharacterListRenderer());
 		scrollPane_1.setViewportView(remainingCharacterList);
 		
 		controlledCharacterList = new JList();
@@ -207,13 +210,11 @@ public class ControllingAttributeEditor extends CharacterDepencencyEditor {
 		_model = model;
 		_formatter = new CharacterDependencyFormatter(_model);
 	
-		_remainingCharacters = new ArrayList<Integer>(_model.getNumberOfCharacters());
+		_remainingCharacters = new ArrayList<Character>(_model.getNumberOfCharacters());
 		for (int i=1; i<=_model.getNumberOfCharacters(); i++) {
-			if (character != null && i != character.getCharacterId()) {
-				_remainingCharacters.add(i);
-			}
+			_remainingCharacters.add(_model.getCharacter(i));
 		}
-		_controlledCharacters = new ArrayList<Integer>(0);
+		_controlledCharacters = new ArrayList<Character>(0);
 		
 		if (character.getCharacterType().isMultistate()) {
 			_character = (MultiStateCharacter)character;
@@ -241,7 +242,15 @@ public class ControllingAttributeEditor extends CharacterDepencencyEditor {
 	@Action
 	public void selectedAttributeChanged() { 
 		_controllingAttribute = (CharacterDependency)attributeCombo.getSelectedItem();
-		_controlledCharacters = new ArrayList<Integer>(_controllingAttribute.getDependentCharacterIds());
+		
+		List<Integer> numbers = new ArrayList<Integer>(_controllingAttribute.getDependentCharacterIds());
+		Collections.sort(numbers);
+		
+		_controlledCharacters = new ArrayList<Character>();
+		for (int number: numbers) {
+			_controlledCharacters.add(_model.getCharacter(number));
+		}
+		
 		_remainingCharacters.removeAll(_controllingAttribute.getDependentCharacterIds());
 		
 		Collections.sort(_controlledCharacters);
@@ -282,7 +291,12 @@ public class ControllingAttributeEditor extends CharacterDepencencyEditor {
 		stateList.setModel(new StateListModel());
 		stateList.setCellRenderer(new StateListRenderer());
 		
+		List<Character> unselectables = new ArrayList<Character>(_controlledCharacters);
+		if (_character != null) {
+			unselectables.add(_character);
+		}
 		controlledCharacterList.setModel(new CharacterListModel(_controlledCharacters));
+		remainingCharacterList.setCellRenderer(new CharacterListRenderer(unselectables));
 		remainingCharacterList.setModel(new CharacterListModel(_remainingCharacters));
 	}
 	
@@ -386,9 +400,9 @@ public class ControllingAttributeEditor extends CharacterDepencencyEditor {
 
 		private static final long serialVersionUID = 6573565854830718124L;
 		
-		private List<Integer> _characters;
+		private List<Character> _characters;
 		
-		public CharacterListModel(List<Integer> characters) {
+		public CharacterListModel(List<Character> characters) {
 			_characters = characters;
 		}
 		
@@ -399,22 +413,25 @@ public class ControllingAttributeEditor extends CharacterDepencencyEditor {
 
 		@Override
 		public Object getElementAt(int index) {
-			int characterNumber = _characters.get(index);
-			return _model.getCharacter(characterNumber);
+			return _characters.get(index);
 		}
 	}
 	
-	class CharacterListRenderer extends DefaultListCellRenderer {
+	class CharacterListRenderer extends GreyOutValuesRenderer {
 
 		private static final long serialVersionUID = 865677225829236016L;
 
-		@Override
-		public Component getListCellRendererComponent(JList list, Object value,
-				int index, boolean isSelected, boolean cellHasFocus) {
-			
-			String description = _characterFormatter.formatCharacterDescription((Character)value);
-			return super.getListCellRendererComponent(list, description, index, isSelected, cellHasFocus);
+		public CharacterListRenderer() {
+			super(new ArrayList<Character>());
 		}
 		
+		public CharacterListRenderer(List<Character> toGreyOut) {
+			super(toGreyOut);
+		}
+	
+		@Override
+		public String formatValue(Object value) {
+			return _characterFormatter.formatCharacterDescription((Character)value);
+		}
 	}
 }
