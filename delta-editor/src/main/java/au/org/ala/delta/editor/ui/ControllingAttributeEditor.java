@@ -207,19 +207,24 @@ public class ControllingAttributeEditor extends CharacterDepencencyEditor {
 		_model = model;
 		_formatter = new CharacterDependencyFormatter(_model);
 	
+		_remainingCharacters = new ArrayList<Integer>(_model.getNumberOfCharacters());
+		for (int i=1; i<=_model.getNumberOfCharacters(); i++) {
+			if (character != null && i != character.getCharacterId()) {
+				_remainingCharacters.add(i);
+			}
+		}
+		_controlledCharacters = new ArrayList<Integer>(0);
+		
 		if (character.getCharacterType().isMultistate()) {
 			_character = (MultiStateCharacter)character;
 			attributeCombo.setModel(new ControllingAttributeModel());
-			attributeCombo.setRenderer(new ControllingAttributeRenderer());
-			_remainingCharacters = new ArrayList<Integer>(_model.getNumberOfCharacters());
-			for (int i=1; i<=_model.getNumberOfCharacters(); i++) {
-				if (i != _character.getCharacterId()) {
-					_remainingCharacters.add(i);
-				}
-			}
+			attributeCombo.setRenderer(new ControllingAttributeRenderer());	
 			
 			if (attributeCombo.getItemCount() > 0) {
 				attributeCombo.setSelectedItem(attributeCombo.getItemAt(0));
+			}
+			else {
+				updateScreen();
 			}
 			
 		}
@@ -227,8 +232,10 @@ public class ControllingAttributeEditor extends CharacterDepencencyEditor {
 			attributeCombo.setModel(new DefaultComboBoxModel());
 			attributeCombo.setRenderer(new DefaultListCellRenderer());
 			_character = null;
-			_controlledCharacters = new ArrayList<Integer>(0);
-		}	
+			
+			updateScreen();
+		}
+		
 	}
 	
 	@Action
@@ -271,14 +278,12 @@ public class ControllingAttributeEditor extends CharacterDepencencyEditor {
 	}
 	
 	private void updateScreen() {
-		if (_controllingAttribute != null) {
-			
-			stateList.setModel(new StateListModel());
-			stateList.setCellRenderer(new StateListRenderer());
-			
-			controlledCharacterList.setModel(new CharacterListModel(_controlledCharacters));
-			remainingCharacterList.setModel(new CharacterListModel(_remainingCharacters));
-		}
+		
+		stateList.setModel(new StateListModel());
+		stateList.setCellRenderer(new StateListRenderer());
+		
+		controlledCharacterList.setModel(new CharacterListModel(_controlledCharacters));
+		remainingCharacterList.setModel(new CharacterListModel(_remainingCharacters));
 	}
 	
 	class ControllingAttributeModel extends AbstractListModel implements ComboBoxModel {
@@ -341,6 +346,9 @@ public class ControllingAttributeEditor extends CharacterDepencencyEditor {
 		
 		@Override
 		public int getSize() {
+			if (_character == null) {
+				return 0;
+			}
 			MultiStateCharacter character = (MultiStateCharacter)_character;
 			return character.getNumberOfStates();
 		}
@@ -362,13 +370,12 @@ public class ControllingAttributeEditor extends CharacterDepencencyEditor {
 		public Component getListCellRendererComponent(JList list, Object value,
 				int index, boolean isSelected, boolean cellHasFocus) {
 			super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-			Set<Integer> states = _controllingAttribute.getStates();
-			
-			if (states.contains(index+1)) {
-				setFont(getFont().deriveFont(Font.BOLD));
-			}
-			else {
-				setFont(_defaultFont);
+			setFont(_defaultFont);
+			if (_controllingAttribute != null) {
+				Set<Integer> states = _controllingAttribute.getStates();
+				if (states.contains(index+1)) {
+					setFont(getFont().deriveFont(Font.BOLD));
+				}
 			}
 			
 			return this;
