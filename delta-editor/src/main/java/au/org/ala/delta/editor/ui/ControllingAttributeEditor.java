@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -33,6 +34,7 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 
+import au.org.ala.delta.editor.CharacterDependencyController;
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterDependency;
@@ -59,6 +61,7 @@ public class ControllingAttributeEditor extends CharacterDepencencyEditor {
 	private CharacterFormatter _characterFormatter = new CharacterFormatter(true, false, false, true);
 	private ResourceMap _resources;
 	private List<StateViewModel> _states;
+	private CharacterDependencyController _controller;
 	
 	private JTable stateList;
 	private JList controlledCharacterList;
@@ -235,6 +238,7 @@ public class ControllingAttributeEditor extends CharacterDepencencyEditor {
 	public void bind(EditorViewModel model, Character character) {
 		_model = model;
 		_formatter = new CharacterDependencyFormatter(_model);
+		_controller = new CharacterDependencyController(_model);
 	
 		_remainingCharacters = new ArrayList<Character>(_model.getNumberOfCharacters());
 		for (int i=1; i<=_model.getNumberOfCharacters(); i++) {
@@ -264,22 +268,22 @@ public class ControllingAttributeEditor extends CharacterDepencencyEditor {
 			MultiStateCharacter multiStateCharacter = (MultiStateCharacter)_character;
 			
 			for (int i=0; i<multiStateCharacter.getNumberOfStates(); i++) {
-				StateViewModel state = new StateViewModel();
+				StateViewModel state = new StateViewModel(i+1);
 			
 				if (_controllingAttribute != null) {
 					Set<Integer> states = _controllingAttribute.getStates();
 					if (states.contains(i+1)) {
-						state.present = true;
+						state.setPresent(true);
 					}
 				}
 				if (_character != null) {
 					int implicitState = ((MultiStateCharacter)_character).getUncodedImplicitState();
 					if (i+1 == implicitState) {
-						state.implicit = true;
+						state.setImplicit(true);
 					}
 				}
 			
-				state.description = _characterFormatter.formatState(((MultiStateCharacter)_character), i + 1);
+				state.setDescription(_characterFormatter.formatState(((MultiStateCharacter)_character), i + 1));
 				_states.add(state);
 			}
 		}
@@ -343,6 +347,20 @@ public class ControllingAttributeEditor extends CharacterDepencencyEditor {
 	@Action
 	public void defineControllingAttribute() {
 		
+		Set<Integer> states = new HashSet<Integer>();
+		for (StateViewModel state : _states) {
+			if (state.isPresent()) {
+				states.add(state.getStateNumber());
+			}
+		}
+		if (_controllingAttribute == null) {
+			_controller.defineCharacterDependency((MultiStateCharacter)_character, states);
+		}
+		else {
+			_controller.redefineCharacterDependency(_controllingAttribute, states);
+		}
+		// Force a refresh.
+		bind(_model, _character);
 	}
 	
 	private void updateScreen() {
@@ -459,15 +477,72 @@ public class ControllingAttributeEditor extends CharacterDepencencyEditor {
 	
 		@Override
 		public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-		    _states.get(rowIndex).present = (Boolean)aValue;
+		    _states.get(rowIndex).setPresent((Boolean)aValue);
+		    
+		    boolean modified = false;
+		    for (StateViewModel state : _states) {
+		    	if (state.isModified()) {
+		    		modified = true;
+		    		break;
+		    	}
+		    }
+		    btnDefine.setEnabled(modified);
+		    enableListEditing(_controllingAttribute != null && !modified);
 		}
 		
 	}
 	
 	class StateViewModel {
-		public boolean present;
-		public boolean implicit;
-		public String description;
+		public boolean _present;
+		public boolean _implicit;
+		public String _description;
+		public int _stateNumber;
+		
+		public StateViewModel(int stateNumber) {
+			_stateNumber = stateNumber;
+			_description = "";
+			_present = false;
+			_implicit = false;
+		}
+		
+		public Integer getStateNumber() {
+			return _stateNumber;
+		}
+
+		public void setPresent(boolean present) {
+			_present = present;
+		}
+		
+		public void setImplicit(boolean implicit) {
+			_implicit = implicit;
+		}
+		
+		public void setDescription(String description) {
+			_description = description;
+		}
+		
+		public boolean isPresent() {
+			return _present;
+		}
+		
+		public boolean isImplicit() {
+			return _implicit;
+		}
+		
+		public String getDescription() {
+			return _description;
+		}
+		
+		public boolean isModified() {
+			
+			if (_controllingAttribute == null) {
+				return _present;
+			}
+			else {
+				return _present != _controllingAttribute.getStates().contains(_stateNumber);
+			}
+		}
+		
 	}
 	
 	class CharacterListModel extends AbstractListModel {
@@ -522,22 +597,22 @@ public class ControllingAttributeEditor extends CharacterDepencencyEditor {
 				int column) {
 			
 			StateViewModel state = (StateViewModel)value;
-			super.getTableCellRendererComponent(table, state.description, isSelected, hasFocus,
+			super.getTableCellRendererComponent(table, state.getDescription(), isSelected, hasFocus,
 					row, column);
 			
 			stateRenderer.setBackground(getBackground());
 			stateRenderer.setForeground(getForeground());
-			stateRenderer.setText(state.description);
-			stateRenderer.setSelected(state.present);
+			stateRenderer.setText(state.getDescription());
+			stateRenderer.setSelected(state.isPresent());
 			
 			stateRenderer.setFont(_defaultFont);
 			int fontModifier = Font.PLAIN;
 			
-			if (state.present) {
+			if (state.isPresent()) {
 				fontModifier = fontModifier | Font.BOLD;
 				
 			}
-			if (state.implicit) {
+			if (state.isImplicit()) {
 				fontModifier = fontModifier | Font.ITALIC;
 			}
 			stateRenderer.setFont(getFont().deriveFont(fontModifier));
@@ -573,8 +648,8 @@ public class ControllingAttributeEditor extends CharacterDepencencyEditor {
 			StateViewModel state = (StateViewModel)value;
 			JCheckBox checkBox = (JCheckBox)super.getTableCellEditorComponent(table, value, isSelected, row, column);
 			checkBox.setOpaque(false);
-			
-			checkBox.setSelected(state.present);
+			checkBox.setText(state.getDescription());
+			checkBox.setSelected(state.isPresent());
 
 			return checkBox;
 		}

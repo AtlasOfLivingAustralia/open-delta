@@ -308,6 +308,12 @@ public class SlotFileDataSet extends AbstractObservableDataSet {
 		}
 	}
 	
+	@Override
+	public void deleteCharacterDependency(CharacterDependency characterDependency) {
+		VOControllingAdapter controlling = (VOControllingAdapter)characterDependency.getImpl();
+		deleteControlling(controlling.getId());
+	}
+	
 	private boolean deleteControlling(int ctlId) {
 			 
 		// Get a pointer to the controlling attribute's descriptor, for general use.

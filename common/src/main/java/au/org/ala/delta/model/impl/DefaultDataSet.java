@@ -1,6 +1,7 @@
 package au.org.ala.delta.model.impl;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -28,12 +29,15 @@ public class DefaultDataSet extends AbstractObservableDataSet {
 	
 	private Map<Integer, Character> _characters;
 	
+	private Set<CharacterDependency> _characterDependencies;
+	
 	private boolean _modified;
 	
 	public DefaultDataSet(DeltaDataSetFactory factory) {
 		super(factory);
 		_items = new HashMap<Integer, Item>();
 		_characters = new HashMap<Integer, Character>();
+		_characterDependencies = new HashSet<CharacterDependency>();
 		_modified = false;
 	}
 	
@@ -224,6 +228,14 @@ public class DefaultDataSet extends AbstractObservableDataSet {
 	public CharacterDependency addCharacterDependency(
 			MultiStateCharacter owningCharacter, Set<Integer> states,
 			Set<Integer> dependentCharacters) {
-		return _factory.createCharacterDependency(owningCharacter, states, dependentCharacters);
+		CharacterDependency characterDependency = _factory.createCharacterDependency(owningCharacter, states, dependentCharacters);
+		_characterDependencies.add(characterDependency);
+		return characterDependency;
+	}
+
+	@Override
+	public void deleteCharacterDependency(
+			CharacterDependency characterDependency) {
+		_characterDependencies.remove(characterDependency);	
 	}
 }

@@ -197,6 +197,12 @@ public class DataSetWrapper implements ObservableDeltaDataSet, DeltaDataSetObser
 	}
 
 	@Override
+	public void deleteCharacterDependency(
+			CharacterDependency characterDependency) {
+		_wrappedDataSet.deleteCharacterDependency(characterDependency);
+	}
+
+	@Override
 	public void itemAdded(DeltaDataSetChangeEvent event) {
 		for (int i=_observerList.size()-1; i>=0; i--) {
 			_observerList.get(i).itemAdded(event);

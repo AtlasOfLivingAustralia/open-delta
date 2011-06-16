@@ -54,6 +54,14 @@ public class MessageDialogHelper {
 		return result == JOptionPane.OK_OPTION;
 	}
 	
+
+	public boolean confirmDeleteCharacterDependency(String dependencyDescription) {
+		String title = _messages.getString("deleteDependency.title");
+		String message = _messages.getString("deleteDependency.message", dependencyDescription);
+		int result = au.org.ala.delta.ui.MessageDialogHelper.showConfirmDialog(_dialogParent, title, message, 50);
+		return result == JOptionPane.OK_OPTION;
+	}
+	
 	public void errorLoadingImage(String fileName) {
 		String title = _messages.getString("errorLoadingImage.title");
 		String message = _messages.getString("errorLoadingImage.message", fileName);
@@ -92,6 +100,7 @@ public class MessageDialogHelper {
 		JOptionPane.showMessageDialog(_dialogParent, message, title, type);
 		
 	}
+
 
 	
 }

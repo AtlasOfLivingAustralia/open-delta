@@ -170,4 +170,5 @@ public interface DeltaDataSet {
 	
 	public CharacterDependency addCharacterDependency(MultiStateCharacter owningCharacter, Set<Integer> states, Set<Integer> dependentCharacters);
 
+	public void deleteCharacterDependency(CharacterDependency characterDependency);
 }
