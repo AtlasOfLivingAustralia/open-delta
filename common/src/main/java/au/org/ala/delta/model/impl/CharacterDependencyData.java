@@ -10,4 +10,5 @@ public interface CharacterDependencyData {
 	public abstract Set<Integer> getStates();
 	public abstract Set<Integer> getDependentCharacterIds();
 	public abstract int getControllingCharacterId();
+	public void setStates(Set<Integer> states);
 }

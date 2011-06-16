@@ -63,6 +63,10 @@ public class CharacterDependency {
 	    return _impl.getStates();
 	}
 	
+	public void setStates(Set<Integer> states) {
+		_impl.setStates(states);
+	}
+	
 	/**
 	 * @return the states returned by getStates as List, ordered by state number.
 	 */

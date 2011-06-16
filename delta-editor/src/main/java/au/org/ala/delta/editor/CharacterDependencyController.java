@@ -25,20 +25,30 @@ public class CharacterDependencyController {
 		_formatter = new CharacterDependencyFormatter(_model);
 	}
 	
+	/**
+	 * Creates a new CharacterDependency.
+	 * @param controllingCharacter the controlling character.
+	 * @param states the set of states for the new CharacterDependency.
+	 */
 	public void defineCharacterDependency(MultiStateCharacter controllingCharacter, Set<Integer> states) {
-		// Validate first.
+		// TODO Validate first.
 		
 		_model.addCharacterDependency(controllingCharacter, states, new HashSet<Integer>());
 	}
-	
+
+	/**
+	 * Updates the states that make up the supplied Character dependency.
+	 * @param characterDependency the CharacterDependency to update
+	 * @param states the new set of states.
+	 */
 	public void redefineCharacterDependency(CharacterDependency characterDependency, Set<Integer> states) {
 		
 		if (states.isEmpty()) {
 			deleteCharacterDependency(characterDependency);
 			return;
 		}
-		
-		
+		// TODO validate first.
+		characterDependency.setStates(states);
 	}
 	
 	/**

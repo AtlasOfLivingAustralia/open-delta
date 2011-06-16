@@ -1,5 +1,7 @@
 package au.org.ala.delta.editor.slotfile.model;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -62,6 +64,19 @@ public class VOControllingAdapter implements CharacterDependencyData {
 		}
 		
 		return stateNumbers;
+	}
+	
+	@Override
+	public void setStates(Set<Integer> states) {
+		
+		List<Integer> stateIds = new ArrayList<Integer>();
+		VOCharBaseDesc charBase = charBaseForId(_controllingDesc.getCharId());
+		for (int stateNumber : states) {
+			stateIds.add(charBase.uniIdFromStateNo(stateNumber));
+		}
+		Collections.sort(stateIds);
+		
+		_controllingDesc.writeStateIds(stateIds);
 	}
 
 	@Override

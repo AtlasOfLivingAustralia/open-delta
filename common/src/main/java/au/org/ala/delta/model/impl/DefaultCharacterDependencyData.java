@@ -68,6 +68,13 @@ public class DefaultCharacterDependencyData implements CharacterDependencyData {
 		// return defensive copy
 		return new HashSet<Integer>(_states);
 	}
+	
+	
+
+	@Override
+	public void setStates(Set<Integer> states) {
+		_states = new HashSet<Integer>(states);
+	}
 
 	/**
 	 * @return a description of this CharacterDependency.
