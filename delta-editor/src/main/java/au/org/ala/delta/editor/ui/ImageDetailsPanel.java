@@ -343,10 +343,11 @@ public class ImageDetailsPanel extends JPanel {
 		
 		Window parent = ((SingleFrameApplication)Application.getInstance()).getMainFrame();
 		try {
-			JDialog dialog = ImageViewer.asDialog(parent, _dataSet.getImagePath(), _selectedImage);
+			JDialog dialog = ImageViewer.asDialog(parent, _dataSet.getImagePath(), _selectedImage, _dataSet);
 			dialog.setVisible(true);
 		}
 		catch (Exception e) {
+			e.printStackTrace();
 			_messageHelper.errorLoadingImage(_selectedImage.getFileName());
 		}
 	}

@@ -15,8 +15,8 @@ import javax.swing.JPanel;
 public class ImagePanel extends JPanel {
 
 	private static final long serialVersionUID = -1203009970081375666L;
-	private BufferedImage _image;
-	private Image _scaledImage;
+	protected BufferedImage _image;
+	protected Image _scaledImage;
 	
 	/**
 	 * Displays this image in this panel.
@@ -50,5 +50,27 @@ public class ImagePanel extends JPanel {
 	protected void scaleImage() {
 		// TODO change to progressive bilinear scaling...
 		_scaledImage = _image.getScaledInstance(getWidth(), getHeight(), 0);
+	}
+	
+	public int getPreferredImageWidth() {
+		return _image.getWidth();
+	}
+	
+	public int getPreferredImageHeight() {
+		return _image.getHeight();
+	}
+	
+	public int getImageWidth() {
+		if (_scaledImage == null) {
+			return getPreferredImageWidth();
+		}
+		return _scaledImage.getWidth(null);
+	}
+	
+	public int getImageHeight() {
+		if (_scaledImage == null) {
+			return getPreferredImageHeight();
+		}
+		return _scaledImage.getHeight(null);
 	}
 }

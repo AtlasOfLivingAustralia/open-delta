@@ -112,27 +112,28 @@ public class ImageOverlay {
 	}
 
 	public int getX() {
-		return getX(OLSHOW_CONTROL);
+		return getX(0);
 	}
 
 	public int getX(int id) {
-		throw new NotImplementedException();
+		return location.get(id).X;
 	}
 
 	public int getY() {
-		return getY(OLSHOW_CONTROL);
+		return getY(0);
 	}
 
 	public int getY(int id) {
-		throw new NotImplementedException();
+		return location.get(id).Y;
 	}
 
 	public int getHeight(int id, double yscale) {
-		throw new NotImplementedException();
+		return location.get(id).H;
+		
 	}
 
 	public int getWidth(int id) {
-		throw new NotImplementedException();
+		return location.get(id).W;
 	}
 
 	public OverlayLocation getLocation(int Id) {
