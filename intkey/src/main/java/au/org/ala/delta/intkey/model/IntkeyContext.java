@@ -47,6 +47,8 @@ public class IntkeyContext extends AbstractDeltaContext {
     private MatchType _matchType;
 
     private int _tolerance;
+    
+    private double _varyWeight;
 
     /**
      * Should executed directives be recorded in the history?
@@ -76,6 +78,8 @@ public class IntkeyContext extends AbstractDeltaContext {
         _recordDirectiveHistory = false;
         _processingInputFile = false;
         initializeInvestigation();
+        
+        
     }
 
     private void initializeInvestigation() {
@@ -90,6 +94,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         _matchType = MatchType.OVERLAP;
 
         _tolerance = 0;
+        _varyWeight = 1.1;
     }
 
     public void setFileCharacters(String fileName) {
@@ -312,6 +317,10 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     public int getTolerance() {
         return _tolerance;
+    }
+    
+    public double getVaryWeight() {
+        return _varyWeight;
     }
 
     public File getTaxaFile() {
