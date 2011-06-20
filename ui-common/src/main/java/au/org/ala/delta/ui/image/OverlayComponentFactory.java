@@ -1,6 +1,5 @@
 package au.org.ala.delta.ui.image;
 
-import javax.swing.JButton;
 import javax.swing.JComponent;
 
 import org.jdesktop.application.ResourceMap;
@@ -16,6 +15,7 @@ import au.org.ala.delta.model.image.OverlayLocation.OLDrawType;
 import au.org.ala.delta.model.image.OverlayType;
 import au.org.ala.delta.ui.image.overlay.HotSpot;
 import au.org.ala.delta.ui.image.overlay.OvalHotSpot;
+import au.org.ala.delta.ui.image.overlay.OverlayButton;
 import au.org.ala.delta.ui.image.overlay.RectangleHotSpot;
 import au.org.ala.delta.ui.image.overlay.RichTextLabel;
 
@@ -69,9 +69,13 @@ public class OverlayComponentFactory {
 		case OverlayType.OLHEADING: // Using heading string for the data-set
 		case OverlayType.OLKEYWORD: // Use specified keyword(s)
 		case OverlayType.OLOK: // Create OK pushbutton
+			component = new OverlayButton(overlay, _resources.getString("imageOverlay.okButton.text"));
+			break;
 		case OverlayType.OLCANCEL: // Create Cancel pushbutton
+			component = new OverlayButton(overlay, _resources.getString("imageOverlay.cancelButton.text"));
+			break;
 		case OverlayType.OLNOTES: // Create Notes pushbutton (for character notes)
-			component = new JButton("Notes");
+			component = new OverlayButton(overlay, _resources.getString("imageOverlay.notesButton.text"));
 			break;
 		case OverlayType.OLIMAGENOTES: // Create Notes pushbutton (for notes about the image)
 		case OverlayType.OLCOMMENT: // Not a "real" overlay type, but used to save comments addressed

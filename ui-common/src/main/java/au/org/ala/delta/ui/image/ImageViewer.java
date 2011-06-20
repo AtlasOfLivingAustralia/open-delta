@@ -22,7 +22,9 @@ import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Illustratable;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageOverlay;
+import au.org.ala.delta.ui.image.overlay.FixedCentreOverlayLocation;
 import au.org.ala.delta.ui.image.overlay.OverlayLocation;
+import au.org.ala.delta.ui.image.overlay.OverlayLocationProvider;
 
 /**
  * Displays a single DELTA Image.
@@ -87,14 +89,14 @@ public class ImageViewer extends ImagePanel implements LayoutManager2 {
 	 */
 	private void layoutOverlays() {
 		 
-	
 		for (JComponent overlayComp : _components) {
 			
-			au.org.ala.delta.model.image.OverlayLocation overlay = _overlayComponents.get(overlayComp);
-			OverlayLocation location = new OverlayLocation(this, overlayComp, overlay);
+			OverlayLocationProvider locationProvider = (OverlayLocationProvider)overlayComp;
+			
+			OverlayLocation location = locationProvider.location(this);
 			
 			Rectangle bounds = new Rectangle(location.getX(), location.getY(), 
-					location.preferredWidth(), location.preferredHeight()); 
+					location.getWidth(), location.getHeight()); 
 			overlayComp.setBounds(bounds);
 		}
 		

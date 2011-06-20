@@ -1,15 +1,15 @@
 package au.org.ala.delta.ui.image.overlay;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Graphics;
 
 import javax.swing.JPanel;
 
 import au.org.ala.delta.model.image.ImageOverlay;
+import au.org.ala.delta.ui.image.ImageViewer;
 
 
-public abstract class HotSpot extends JPanel {
+public abstract class HotSpot extends JPanel implements OverlayLocationProvider {
 
 	private static final long serialVersionUID = 603361088992199888L;
 
@@ -47,17 +47,15 @@ public abstract class HotSpot extends JPanel {
 	protected void setMouseInHotSpotRegion(boolean inHotSpot) {
 		_drawHotspot = true;
 	}
-	
-	@Override
-	public Dimension getPreferredSize() {
-		// Returning null means the OverlayLocation class will calculate
-		// it.
-		return null;
-	}
 
 	@Override
 	public void setForeground(Color fg) {
 		super.setForeground(fg);
 		_foregroundSet = true;
+	}
+	
+	@Override
+	public OverlayLocation location(ImageViewer viewer) {
+		return new ScaledOverlayLocation(viewer, _overlay.getLocation(_index));
 	}
 }
