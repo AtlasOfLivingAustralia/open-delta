@@ -14,16 +14,14 @@ public class RichTextLabel extends RtfEditorPane {
 	private static final long serialVersionUID = -8231701667247672309L;
 	private ImageOverlay _overlay;
 	
-	public RichTextLabel(ImageOverlay overlay) {
-		
+	public RichTextLabel(ImageOverlay overlay, String text) {
 		_overlay = overlay;
-		
 		setEditable(false);
 
 		setBackground(UIManager.getColor("Label.background"));
 		setFont(UIManager.getFont("Label.font"));
 		
-		setText(overlay.overlayText);
+		setText(text);
 	}
 	
 	@Override

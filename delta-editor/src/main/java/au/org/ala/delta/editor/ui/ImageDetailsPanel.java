@@ -302,8 +302,9 @@ public class ImageDetailsPanel extends JPanel {
 	 * class.
 	 * @param target
 	 */
-	public void bind(Illustratable target) {
+	public void bind(EditorViewModel model, Illustratable target) {
 		_illustratable = target;
+		_dataSet = model;
 		List<Image> images = _illustratable.getImages();
 		imageList.setImages(images);
 	}
@@ -343,7 +344,7 @@ public class ImageDetailsPanel extends JPanel {
 		
 		Window parent = ((SingleFrameApplication)Application.getInstance()).getMainFrame();
 		try {
-			JDialog dialog = ImageViewer.asDialog(parent, _dataSet.getImagePath(), _selectedImage, _dataSet);
+			JDialog dialog = ImageViewer.asDialog(parent, _dataSet.getImagePath(), _selectedImage, _dataSet, _illustratable);
 			dialog.setVisible(true);
 		}
 		catch (Exception e) {
@@ -535,7 +536,7 @@ public class ImageDetailsPanel extends JPanel {
 				if (_selectedImage != null) {
 					selection = imageList.getSelectedIndex();
 				}
-				bind(_illustratable);
+				bind(_dataSet, _illustratable);
 				if (selection != -1) {
 					imageList.setSelectedIndex(selection);
 				}

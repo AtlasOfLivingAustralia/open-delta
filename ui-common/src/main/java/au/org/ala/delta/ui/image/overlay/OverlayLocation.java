@@ -1,20 +1,21 @@
 package au.org.ala.delta.ui.image.overlay;
 
+import java.awt.Dimension;
+
 import javax.swing.JComponent;
 
-import au.org.ala.delta.model.image.ImageOverlay;
 import au.org.ala.delta.ui.image.ImageViewer;
 
 public class OverlayLocation {
 
 	private JComponent _component;
-	private ImageOverlay _overlay;
 	private ImageViewer _image;
+	private au.org.ala.delta.model.image.OverlayLocation _location;
 	
-	public OverlayLocation(ImageViewer image, JComponent component, ImageOverlay overlay) {
+	public OverlayLocation(ImageViewer image, JComponent component, au.org.ala.delta.model.image.OverlayLocation location) {
 		_component = component;
-		_overlay = overlay;
 		_image = image;
+		_location = location;
 	}
 	
 	public int getX() {
@@ -24,7 +25,7 @@ public class OverlayLocation {
 		double toPixels = width / 1000d;
 		
 		double halfComponentWidth = 0.5 * preferredWidth();
-		double midPointXInPixels = _overlay.getX()*toPixels + halfComponentWidth;
+		double midPointXInPixels = _location.X*toPixels + halfComponentWidth;
 		
 		double imageScale = scaledWidth/width;
 		
@@ -38,7 +39,7 @@ public class OverlayLocation {
 		double toPixels = height / 1000d;
 		
 		double halfComponentHeight = 0.5 * preferredHeight();
-		double midPointYInPixels = _overlay.getY()*toPixels + halfComponentHeight;
+		double midPointYInPixels = _location.Y*toPixels + halfComponentHeight;
 		
 		double imageScale = scaledHeight/height;
 		
@@ -47,11 +48,26 @@ public class OverlayLocation {
 	}
 	
 	public int preferredHeight() {
-		return _component.getPreferredSize().height;
+		Dimension preferredSize = _component.getPreferredSize();
+		if (preferredSize != null) {
+			return preferredSize.height;
+		}
+		double scaledHeight = _image.getImageHeight();
+		
+		return (int)(_location.H / 1000d * scaledHeight);
+		
+		
 	}
 	
 	public int preferredWidth() {
-		return _component.getPreferredSize().width;
+		Dimension preferredSize = _component.getPreferredSize();
+		if (preferredSize != null) {
+			return preferredSize.width;
+		}
+		
+		double scaledWidth = _image.getImageWidth();
+		
+		return (int)(_location.W / 1000d * scaledWidth);
 	}
 	
 }

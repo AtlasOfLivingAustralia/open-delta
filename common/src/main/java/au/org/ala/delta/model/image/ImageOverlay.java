@@ -1,6 +1,5 @@
 package au.org.ala.delta.model.image;
 
-import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -136,13 +135,8 @@ public class ImageOverlay {
 		return location.get(id).W;
 	}
 
-	public OverlayLocation getLocation(int Id) {
-		throw new NotImplementedException();
-	}
-
-	// TControl* GetBaseControl() const;
-	public int containsPointInHotspot(Point testPt) {
-		throw new NotImplementedException();
+	public OverlayLocation getLocation(int id) {
+		return location.get(id);
 	}
 
 	public boolean containsId(int id) {

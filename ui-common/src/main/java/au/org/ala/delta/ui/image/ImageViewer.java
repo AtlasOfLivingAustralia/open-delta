@@ -19,6 +19,7 @@ import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.model.Illustratable;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageOverlay;
 import au.org.ala.delta.ui.image.overlay.OverlayLocation;
@@ -33,12 +34,15 @@ public class ImageViewer extends ImagePanel implements LayoutManager2 {
 	/** The Image we are displaying */
 	private Image _image;
 	
+	/** The owner (Character or Item) of the image we are displaying */
+	private Illustratable _illustratable;
+	
 	/** Creates image overlays */
 	private OverlayComponentFactory _factory;
 	
 	private List<ImageOverlay> _overlays;
 	
-	private Map<JComponent, ImageOverlay> _overlayComponents;
+	private Map<JComponent, au.org.ala.delta.model.image.OverlayLocation> _overlayComponents;
 	
 	private List<JComponent> _components;
 	
@@ -47,14 +51,15 @@ public class ImageViewer extends ImagePanel implements LayoutManager2 {
 	 * @param imagePath the path to find relative images on.
 	 * @param image the image to view.
 	 */
-	public ImageViewer(String imagePath, Image image, DeltaDataSet dataSet) {
+	public ImageViewer(String imagePath, Image image, DeltaDataSet dataSet, Illustratable imageOwner) {
 		_image = image;
+		_illustratable = imageOwner;
 		
 		ResourceMap resources = Application.getInstance().getContext().getResourceMap();
 		_factory = new OverlayComponentFactory(dataSet, resources);
 		setLayout(this);
 		displayImage(image.getImageLocation(imagePath));
-		_overlayComponents = new HashMap<JComponent, ImageOverlay>();
+		_overlayComponents = new HashMap<JComponent, au.org.ala.delta.model.image.OverlayLocation>();
 		_components = new ArrayList<JComponent>();
 		addOverlays();
 	}
@@ -62,11 +67,18 @@ public class ImageViewer extends ImagePanel implements LayoutManager2 {
 	private void addOverlays() {
 		_overlays = _image.getOverlays();
 		for (ImageOverlay overlay : _overlays) {
-			JComponent overlayComp = _factory.createOverlayComponent(overlay);
+			JComponent overlayComp = _factory.createOverlayComponent(overlay, _illustratable);
 			if (overlayComp == null) {
 				continue;
 			}
-			add(overlayComp, overlay);
+			add(overlayComp, overlay.getLocation(0));
+			
+			// If the overlay has associated hotspots, add them also.
+			for (int i=1; i<=overlay.getNHotSpots(); i++) {
+				overlay.getLocation(i);
+				add(_factory.createHotSpot(overlay, i), overlay.getLocation(i));
+			}
+			
 		}
 	}
 	
@@ -78,7 +90,7 @@ public class ImageViewer extends ImagePanel implements LayoutManager2 {
 	
 		for (JComponent overlayComp : _components) {
 			
-			ImageOverlay overlay = _overlayComponents.get(overlayComp);
+			au.org.ala.delta.model.image.OverlayLocation overlay = _overlayComponents.get(overlayComp);
 			OverlayLocation location = new OverlayLocation(this, overlayComp, overlay);
 			
 			Rectangle bounds = new Rectangle(location.getX(), location.getY(), 
@@ -96,9 +108,9 @@ public class ImageViewer extends ImagePanel implements LayoutManager2 {
 	 * @param image the image to view.
 	 * @return an instance of JDialog containing the ImageViewer.
 	 */
-	public static JDialog asDialog(Window parent, String imagePath, Image image, DeltaDataSet dataSet) {
+	public static JDialog asDialog(Window parent, String imagePath, Image image, DeltaDataSet dataSet, Illustratable imageOwner) {
 		JDialog dialog = new JDialog(parent);
-		ImageViewer viewer = new ImageViewer(imagePath, image, dataSet);
+		ImageViewer viewer = new ImageViewer(imagePath, image, dataSet, imageOwner);
 
 		dialog.getContentPane().add(viewer, BorderLayout.CENTER);
 		dialog.setSize(viewer.getPreferredSize());
@@ -113,8 +125,11 @@ public class ImageViewer extends ImagePanel implements LayoutManager2 {
 
 	@Override
 	public void addLayoutComponent(Component comp, Object constraints) {
+		if (constraints == null) {
+			throw new IllegalArgumentException("Cannot use null constraints");
+		}
 		_components.add((JComponent)comp);
-		_overlayComponents.put((JComponent)comp, (ImageOverlay)constraints);
+		_overlayComponents.put((JComponent)comp, (au.org.ala.delta.model.image.OverlayLocation)constraints);
 		
 	}
 

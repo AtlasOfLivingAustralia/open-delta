@@ -273,7 +273,7 @@ public class CharacterEditor extends JInternalFrame implements DeltaView {
 		_dataSet.setSelectedCharacter(character);
 		_selectedCharacter = character;
 		characterNotesEditor.bind(_dataSet, _selectedCharacter);
-		imageDetails.bind(_selectedCharacter);
+		imageDetails.bind(_dataSet, _selectedCharacter);
 		unitsEditor.bind(_dataSet, character);
 		controlledByEditor.bind(_dataSet, character);
 		controllingAttributeEditor.bind(_dataSet, character);

@@ -323,8 +323,9 @@ public class ItemEditor extends JInternalFrame implements ValidationListener, De
 		_dataSet = dataSet;
 		_valid = true;
 		taxonSelectionList.setDataSet(dataSet);
-		imageDetails.setDataSet(dataSet);
+		
 		_selectedItem = dataSet.getSelectedItem();
+		imageDetails.bind(dataSet, _selectedItem);
 		_editingNewItem = StringUtils.isEmpty(_selectedItem.getDescription());
 		if (!_editingNewItem) {
 			rtfEditor.setInputVerifier(_validator);
@@ -365,7 +366,7 @@ public class ItemEditor extends JInternalFrame implements ValidationListener, De
 		rtfEditor.setText(_selectedItem.getDescription());
 		
 		chckbxTreatAsVariant.setSelected(_selectedItem.isVariant());
-		imageDetails.bind(_selectedItem);
+		imageDetails.bind(_dataSet, _selectedItem);
 		_editsDisabled = false;
 	}
 
