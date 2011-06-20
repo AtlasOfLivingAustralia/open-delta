@@ -84,9 +84,9 @@ public class OverlayComponentFactory {
 			System.out.println("Unsupported overlay type: "+overlay.type);
 		}
 		
-		if (component != null) {
-			component.setOpaque(false);
-		}
+//		if (component != null) {
+//			component.setOpaque(false);
+//		}
 		return component;
 	}
 	

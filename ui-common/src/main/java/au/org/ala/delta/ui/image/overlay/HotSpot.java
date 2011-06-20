@@ -1,7 +1,9 @@
 package au.org.ala.delta.ui.image.overlay;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 
 import javax.swing.JPanel;
 
@@ -23,8 +25,15 @@ public abstract class HotSpot extends JPanel implements OverlayLocationProvider 
 	
 	public HotSpot(ImageOverlay overlay, int index) {
 		_overlay = overlay;
-		_foregroundSet = false;
 		_index = index;
+		
+		au.org.ala.delta.model.image.OverlayLocation loc = _overlay.getLocation(_index);
+		
+		_foregroundSet = loc.colorSet();
+		if (_foregroundSet){
+			setForeground(new Color(loc.getColor()));
+		}
+		
 		setOpaque(false);
 	}
 
@@ -33,6 +42,8 @@ public abstract class HotSpot extends JPanel implements OverlayLocationProvider 
 		if (_drawHotspot) {
 			
 			if (_foregroundSet) {
+				Graphics2D g2 = (Graphics2D)g;
+				g2.setStroke(new BasicStroke(2f));
 				g.setColor(getForeground());
 			}
 			else {

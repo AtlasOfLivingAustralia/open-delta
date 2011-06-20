@@ -22,7 +22,6 @@ import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Illustratable;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageOverlay;
-import au.org.ala.delta.ui.image.overlay.FixedCentreOverlayLocation;
 import au.org.ala.delta.ui.image.overlay.OverlayLocation;
 import au.org.ala.delta.ui.image.overlay.OverlayLocationProvider;
 
@@ -44,8 +43,6 @@ public class ImageViewer extends ImagePanel implements LayoutManager2 {
 	
 	private List<ImageOverlay> _overlays;
 	
-	private Map<JComponent, au.org.ala.delta.model.image.OverlayLocation> _overlayComponents;
-	
 	private List<JComponent> _components;
 	
 	/**
@@ -61,7 +58,6 @@ public class ImageViewer extends ImagePanel implements LayoutManager2 {
 		_factory = new OverlayComponentFactory(dataSet, resources);
 		setLayout(this);
 		displayImage(image.getImageLocation(imagePath));
-		_overlayComponents = new HashMap<JComponent, au.org.ala.delta.model.image.OverlayLocation>();
 		_components = new ArrayList<JComponent>();
 		addOverlays();
 	}
@@ -131,8 +127,6 @@ public class ImageViewer extends ImagePanel implements LayoutManager2 {
 			throw new IllegalArgumentException("Cannot use null constraints");
 		}
 		_components.add((JComponent)comp);
-		_overlayComponents.put((JComponent)comp, (au.org.ala.delta.model.image.OverlayLocation)constraints);
-		
 	}
 
 	@Override
@@ -158,7 +152,6 @@ public class ImageViewer extends ImagePanel implements LayoutManager2 {
 	@Override
 	public void removeLayoutComponent(Component comp) {
 		_components.remove((JComponent)comp);
-		_overlayComponents.remove((JComponent)comp);
 	}
 
 	@Override
