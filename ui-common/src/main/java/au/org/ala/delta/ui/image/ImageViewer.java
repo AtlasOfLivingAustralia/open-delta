@@ -1,19 +1,16 @@
 package au.org.ala.delta.ui.image;
 
-import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.LayoutManager2;
 import java.awt.Rectangle;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JComponent;
-import javax.swing.JDialog;
 
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
@@ -38,14 +35,14 @@ public class ImageViewer extends ImagePanel implements LayoutManager2, HotSpotOb
 	private static final long serialVersionUID = -6735023009826819178L;
 	
 	/** The Image we are displaying */
-	private Image _image;
+	protected Image _image;
 	
 	/** Creates image overlays */
 	private OverlayComponentFactory _factory;
 	
-	private List<ImageOverlay> _overlays;
+	protected List<ImageOverlay> _overlays;
 	
-	private List<JComponent> _components;
+	protected List<JComponent> _components;
 	
 	private List<OverlaySelectionObserver> _observers;
 	
@@ -112,24 +109,6 @@ public class ImageViewer extends ImagePanel implements LayoutManager2, HotSpotOb
 			overlayComp.setBounds(bounds);
 		}
 		
-	}
-
-	
-	/**
-	 * Returns a new ImageViewer housed in a JDialog.
-	 * @param parent the parent Window for the dialog.
-	 * @param imagePath the path to find relative images on.
-	 * @param image the image to view.
-	 * @return an instance of JDialog containing the ImageViewer.
-	 */
-	public static JDialog asDialog(Window parent, String imagePath, Image image, DeltaDataSet dataSet, Illustratable imageOwner) {
-		JDialog dialog = new JDialog(parent);
-		ImageViewer viewer = new ImageViewer(imagePath, image, dataSet);
-
-		dialog.getContentPane().add(viewer, BorderLayout.CENTER);
-		dialog.pack();
-		
-		return dialog;
 	}
 
 	@Override

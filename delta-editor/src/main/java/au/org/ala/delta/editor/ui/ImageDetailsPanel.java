@@ -1,7 +1,6 @@
 package au.org.ala.delta.editor.ui;
 
 import java.awt.Component;
-import java.awt.Window;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.io.File;
@@ -16,7 +15,6 @@ import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
-import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -30,9 +28,7 @@ import javax.swing.event.ListSelectionListener;
 import org.apache.commons.lang.StringUtils;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
-import org.jdesktop.application.SingleFrameApplication;
 
-import au.org.ala.delta.editor.DeltaEditor;
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.ui.dnd.SimpleTransferHandler;
 import au.org.ala.delta.editor.ui.util.MessageDialogHelper;
@@ -44,7 +40,6 @@ import au.org.ala.delta.model.observer.AbstractDataSetObserver;
 import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
 import au.org.ala.delta.model.observer.DeltaDataSetObserver;
 import au.org.ala.delta.ui.image.AudioPlayer;
-import au.org.ala.delta.ui.image.ImageViewer;
 import au.org.ala.delta.ui.image.SupportedFileTypes;
 import au.org.ala.delta.ui.rtf.RtfEditorPane;
 
@@ -343,18 +338,6 @@ public class ImageDetailsPanel extends JPanel {
 		if (_selectedImage == null) {
 			return;
 		}
-		
-//		Window parent = ((SingleFrameApplication)Application.getInstance()).getMainFrame();
-//		try {
-//			
-//			JDialog dialog = ImageViewer.asDialog(parent, _dataSet.getImagePath(), _selectedImage, _dataSet, _illustratable);
-//			dialog.setVisible(true);
-//		}
-//		catch (Exception e) {
-//			e.printStackTrace();
-//			_messageHelper.errorLoadingImage(_selectedImage.getFileName());
-//		}
-		
 		
 		ActionMap actions = Application.getInstance().getContext().getActionMap();
 		actions.get("viewImageEditor").actionPerformed(null);
