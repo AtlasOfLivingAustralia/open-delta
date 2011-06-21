@@ -7,6 +7,10 @@ import java.awt.event.MouseListener;
 
 import au.org.ala.delta.model.image.ImageOverlay;
 
+/**
+ * An RectangleHotSpot draws and implements detection based on an rectangular shaped
+ * HotSpot.
+ */
 public class RectangleHotSpot extends HotSpot implements MouseListener {
 
 	private static final long serialVersionUID = 1190841871644406245L;
@@ -20,16 +24,7 @@ public class RectangleHotSpot extends HotSpot implements MouseListener {
 		Rectangle bounds = getBounds();
 		g.drawRect(0, 0, bounds.width-1, bounds.height-1);
 	}
-
-	@Override
-	public void mouseClicked(MouseEvent e) {}
-
-	@Override
-	public void mousePressed(MouseEvent e) {}
-
-	@Override
-	public void mouseReleased(MouseEvent e) {}
-
+	
 	@Override
 	public void mouseEntered(MouseEvent e) {
 		fireHotSpotEntered();
@@ -39,4 +34,14 @@ public class RectangleHotSpot extends HotSpot implements MouseListener {
 	public void mouseExited(MouseEvent e) {
 		fireHotSpotExited();
 	}
+	
+	@Override
+	public void mouseClicked(MouseEvent e) {}
+
+	@Override
+	public void mousePressed(MouseEvent e) {}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {}
+
 }

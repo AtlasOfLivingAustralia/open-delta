@@ -28,13 +28,16 @@ public class RichTextLabel extends RtfEditorPane implements OverlayLocationProvi
 	public RichTextLabel(ImageOverlay overlay, String text) {
 		_overlay = overlay;
 		setEditable(false);
-
 		setBackground(Color.WHITE);
 		setBorder(BorderFactory.createLineBorder(Color.BLACK));
 		setOpaque(true);
 		setFont(UIManager.getFont("Label.font"));
 		
 		setText(text);	
+		if (overlay.centreText()) {
+			centreText();
+		}
+		
 	}
 	
 	public void centreText() {

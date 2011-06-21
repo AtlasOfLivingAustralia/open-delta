@@ -11,7 +11,8 @@ import java.awt.geom.Ellipse2D;
 import au.org.ala.delta.model.image.ImageOverlay;
 
 /**
- * An OvalHotSpot draws an oval shaped hotspot.
+ * An OvalHotSpot draws and implements detection based on an oval shaped
+ * HotSpot.
  */
 public class OvalHotSpot extends HotSpot implements MouseMotionListener, MouseListener {
 

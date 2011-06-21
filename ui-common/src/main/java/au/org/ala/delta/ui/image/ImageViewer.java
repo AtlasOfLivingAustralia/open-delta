@@ -7,6 +7,8 @@ import java.awt.Dimension;
 import java.awt.LayoutManager2;
 import java.awt.Rectangle;
 import java.awt.Window;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,13 +24,15 @@ import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageOverlay;
 import au.org.ala.delta.ui.image.overlay.HotSpot;
 import au.org.ala.delta.ui.image.overlay.HotSpotGroup;
+import au.org.ala.delta.ui.image.overlay.HotSpotObserver;
+import au.org.ala.delta.ui.image.overlay.OverlayButton;
 import au.org.ala.delta.ui.image.overlay.OverlayLocation;
 import au.org.ala.delta.ui.image.overlay.OverlayLocationProvider;
 
 /**
  * Displays a single DELTA Image.
  */
-public class ImageViewer extends ImagePanel implements LayoutManager2 {
+public class ImageViewer extends ImagePanel implements LayoutManager2, HotSpotObserver, ActionListener {
 
 	private static final long serialVersionUID = -6735023009826819178L;
 	
@@ -45,6 +49,8 @@ public class ImageViewer extends ImagePanel implements LayoutManager2 {
 	
 	private List<JComponent> _components;
 	
+	private List<OverlaySelectionObserver> _observers;
+	
 	/**
 	 * Creates a new ImageViewer for the supplied Image.
 	 * @param imagePath the path to find relative images on.
@@ -55,7 +61,7 @@ public class ImageViewer extends ImagePanel implements LayoutManager2 {
 		_illustratable = imageOwner;
 		
 		ResourceMap resources = Application.getInstance().getContext().getResourceMap();
-		_factory = new OverlayComponentFactory(dataSet, resources);
+		_factory = new OverlayComponentFactory(resources);
 		setLayout(this);
 		displayImage(image.getImageLocation(imagePath));
 		_components = new ArrayList<JComponent>();
@@ -70,6 +76,11 @@ public class ImageViewer extends ImagePanel implements LayoutManager2 {
 				continue;
 			}
 			add(overlayComp, overlay.getLocation(0));
+			
+			if (overlayComp instanceof OverlayButton) {
+				overlayComp.putClientProperty("ImageOverlay", overlay);
+				((OverlayButton)overlayComp).addActionListener(this);
+			}
 			
 			// If the overlay has associated hotspots, add them also.
 			int hotSpotCount = overlay.getNHotSpots();
@@ -178,6 +189,41 @@ public class ImageViewer extends ImagePanel implements LayoutManager2 {
 		layoutOverlays();
 	}
 	
+	protected void fireOverlaySelected(ImageOverlay overlay) {
+		for (int i=_observers.size()-1; i>=0; i--) {
+			_observers.get(i).overlaySelected(overlay);
+		}
+	}
 	
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		JComponent comp = (JComponent)e.getSource();
+		ImageOverlay overlay = (ImageOverlay)comp.getClientProperty("ImageOverlay");
+		if (overlay != null) {
+			fireOverlaySelected(overlay);
+		}
+	}
 	
+	@Override
+	public void hotSpotEntered(ImageOverlay overlay) {
+		
+	}
+
+	@Override
+	public void hotSpotExited(ImageOverlay overlay) {
+		
+	}
+
+	@Override
+	public void hotSpotSelected(ImageOverlay overlay) {
+		fireOverlaySelected(overlay);
+	}
+
+	public void addOverlaySelectionObserver(OverlaySelectionObserver observer) {
+		_observers.add(observer);
+	}
+	
+	public void removeOverlaySelectionObserver(OverlaySelectionObserver observer) {
+		_observers.remove(observer);
+	}
 }

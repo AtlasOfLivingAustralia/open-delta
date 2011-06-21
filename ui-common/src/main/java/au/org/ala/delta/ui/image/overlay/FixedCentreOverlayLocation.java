@@ -2,8 +2,10 @@ package au.org.ala.delta.ui.image.overlay;
 
 import java.awt.Font;
 import java.awt.FontMetrics;
+import java.awt.Insets;
 
 import javax.swing.JComponent;
+import javax.swing.border.Border;
 
 import au.org.ala.delta.ui.image.ImageViewer;
 
@@ -56,19 +58,27 @@ public class FixedCentreOverlayLocation implements OverlayLocation {
 		if (_location.H == 0) {
 			return _component.getPreferredSize().height;
 		}
+		
+		int height = 0;
 		if (_location.H < 0) {
 			Font f = _component.getFont();
 			FontMetrics m = _component.getFontMetrics(f);
 			int lineHeight = m.getHeight();
-			return lineHeight * -_location.H;
+			
+			height = lineHeight * -_location.H;
+		}
+		else {
+			// Fonts don't scale with the image so the height should use the
+			// original image height.
+			double scaledHeight = _image.getPreferredImageHeight();
+			height = (int)(_location.H / 1000d * scaledHeight);
 		}
 		
+		// Add room for the border.
+		Insets insets = borderInsets(_component);
+		height += insets.top + insets.bottom;
 		
-		// Fonts don't scale with the image so the height should use the
-		// original image height.
-		double scaledHeight = _image.getPreferredImageHeight();
-		
-		return (int)(_location.H / 1000d * scaledHeight);
+		return height; 
 	}
 	
 	
@@ -82,7 +92,24 @@ public class FixedCentreOverlayLocation implements OverlayLocation {
 		// original image width.
 		double scaledWidth = _image.getPreferredImageWidth();
 		
-		return (int)(_location.W / 1000d * scaledWidth);
+		int width = (int)(_location.W / 1000d * scaledWidth);
+		
+		// Add room for the border.
+		Insets insets = borderInsets(_component);
+		width += insets.left + insets.right;
+		return width;
 	}
 	
+	
+	public Insets borderInsets(JComponent component) {
+		Border b = _component.getBorder();
+		Insets insets = null;
+		if (b != null) {
+			insets = b.getBorderInsets(_component);
+		}
+		else {
+			insets = new Insets(0, 0, 0, 0);
+		}
+		return insets;
+	}
 }

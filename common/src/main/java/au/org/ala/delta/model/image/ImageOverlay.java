@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang.StringUtils;
 
 
 
@@ -142,13 +143,22 @@ public class ImageOverlay {
 	public boolean containsId(int id) {
 		throw new NotImplementedException();
 	}
+	
+	public boolean centreText() {
+		return (location.size() > 0 && (location.get(0).flags & OL_CENTER_TEXT) > 0);
+	}
 
 	public boolean canSelect() {
 		return type == OverlayType.OLSTATE || type == OverlayType.OLVALUE;
 	}
 
 	public String getValueString() {
-		throw new NotImplementedException();
+		StringBuilder value = new StringBuilder();
+		value.append(minVal);
+		if (StringUtils.isNotEmpty(maxVal)) {
+			value.append("-").append(maxVal);
+		}
+		return value.toString();
 	}
 
 	public String getDisplayText() {
