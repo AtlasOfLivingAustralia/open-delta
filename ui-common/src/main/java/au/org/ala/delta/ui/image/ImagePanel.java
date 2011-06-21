@@ -49,7 +49,7 @@ public class ImagePanel extends JPanel {
 	 */
 	protected void scaleImage() {
 		// TODO change to progressive bilinear scaling...
-		_scaledImage = _image.getScaledInstance(getWidth(), getHeight(), 0);
+		_scaledImage = _image;//_image.getScaledInstance(getWidth(), getHeight(), 0);
 	}
 	
 	public int getPreferredImageWidth() {
