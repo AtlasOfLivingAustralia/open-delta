@@ -312,6 +312,14 @@ public class DeltaViewController extends InternalFrameAdapter implements Vetoabl
 		
 		return view;
 	}
+	
+	public DeltaView createImageEditorView() {
+		DeltaViewModel model = createViewModel();
+		DeltaView view = _viewFactory.createImageEditorView(model);
+		viewerOpened(view, model);
+		
+		return view;
+	}
 
 	private DeltaViewModel createViewModel() {
 		

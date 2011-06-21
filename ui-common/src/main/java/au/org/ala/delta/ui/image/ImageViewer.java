@@ -40,9 +40,6 @@ public class ImageViewer extends ImagePanel implements LayoutManager2, HotSpotOb
 	/** The Image we are displaying */
 	private Image _image;
 	
-	/** The owner (Character or Item) of the image we are displaying */
-	private Illustratable _illustratable;
-	
 	/** Creates image overlays */
 	private OverlayComponentFactory _factory;
 	
@@ -57,9 +54,8 @@ public class ImageViewer extends ImagePanel implements LayoutManager2, HotSpotOb
 	 * @param imagePath the path to find relative images on.
 	 * @param image the image to view.
 	 */
-	public ImageViewer(String imagePath, Image image, DeltaDataSet dataSet, Illustratable imageOwner) {
+	public ImageViewer(String imagePath, Image image, DeltaDataSet dataSet) {
 		_image = image;
-		_illustratable = imageOwner;
 		
 		ResourceMap resources = Application.getInstance().getContext().getResourceMap();
 		_factory = new OverlayComponentFactory(resources);
@@ -71,8 +67,9 @@ public class ImageViewer extends ImagePanel implements LayoutManager2, HotSpotOb
 	
 	private void addOverlays() {
 		_overlays = _image.getOverlays();
+		Illustratable subject = _image.getSubject();
 		for (ImageOverlay overlay : _overlays) {
-			JComponent overlayComp = _factory.createOverlayComponent(overlay, _illustratable);
+			JComponent overlayComp = _factory.createOverlayComponent(overlay, subject);
 			if (overlayComp == null) {
 				continue;
 			}
@@ -127,7 +124,7 @@ public class ImageViewer extends ImagePanel implements LayoutManager2, HotSpotOb
 	 */
 	public static JDialog asDialog(Window parent, String imagePath, Image image, DeltaDataSet dataSet, Illustratable imageOwner) {
 		JDialog dialog = new JDialog(parent);
-		ImageViewer viewer = new ImageViewer(imagePath, image, dataSet, imageOwner);
+		ImageViewer viewer = new ImageViewer(imagePath, image, dataSet);
 
 		dialog.getContentPane().add(viewer, BorderLayout.CENTER);
 		dialog.pack();

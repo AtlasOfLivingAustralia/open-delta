@@ -715,6 +715,13 @@ public class DeltaEditor extends InternalFrameApplication implements
 	public void viewImageSettings() {
 	}
 
+	@Action
+	public void viewImageEditor() {
+		DeltaView editor = _activeController.createImageEditorView();
+		newView(editor, "I");
+	}
+	
+	
 	@Action(enabledProperty = "saveAsEnabled")
 	public void importDirectives() {
 		new ImportController(this).begin();

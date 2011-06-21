@@ -32,6 +32,7 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.SingleFrameApplication;
 
+import au.org.ala.delta.editor.DeltaEditor;
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.ui.dnd.SimpleTransferHandler;
 import au.org.ala.delta.editor.ui.util.MessageDialogHelper;
@@ -343,15 +344,20 @@ public class ImageDetailsPanel extends JPanel {
 			return;
 		}
 		
-		Window parent = ((SingleFrameApplication)Application.getInstance()).getMainFrame();
-		try {
-			JDialog dialog = ImageViewer.asDialog(parent, _dataSet.getImagePath(), _selectedImage, _dataSet, _illustratable);
-			dialog.setVisible(true);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-			_messageHelper.errorLoadingImage(_selectedImage.getFileName());
-		}
+//		Window parent = ((SingleFrameApplication)Application.getInstance()).getMainFrame();
+//		try {
+//			
+//			JDialog dialog = ImageViewer.asDialog(parent, _dataSet.getImagePath(), _selectedImage, _dataSet, _illustratable);
+//			dialog.setVisible(true);
+//		}
+//		catch (Exception e) {
+//			e.printStackTrace();
+//			_messageHelper.errorLoadingImage(_selectedImage.getFileName());
+//		}
+		
+		
+		ActionMap actions = Application.getInstance().getContext().getActionMap();
+		actions.get("viewImageEditor").actionPerformed(null);
 	}
 	
 	/**
