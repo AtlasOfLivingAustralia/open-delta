@@ -16,6 +16,7 @@ import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.ObservableDeltaDataSet;
+import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
 
 
@@ -37,6 +38,9 @@ public class EditorDataModel extends DataSetWrapper implements EditorViewModel, 
 	 * character is a multistate character (otherwise it's -1).
 	 */
 	private int _selectedState;
+	
+	/** the currently selected image */ 
+	private Image _selectedImage;
 	
 	/** Helper class for notifying interested parties of property changes */
 	private PropertyChangeSupport _propertyChangeSupport;
@@ -103,6 +107,16 @@ public class EditorDataModel extends DataSetWrapper implements EditorViewModel, 
 	@Override
 	public Character getSelectedCharacter() {
 		return _selectedCharacter;
+	}
+	
+	@Override
+	public Image getSelectedImage() {
+		return _selectedImage;
+	}
+	
+	@Override
+	public void setSelectedImage(Image image) {
+		_selectedImage = image;
 	}
 	
 	public ObservableDeltaDataSet getDeltaDataSet() {

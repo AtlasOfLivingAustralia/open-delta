@@ -281,7 +281,7 @@ public class DefaultCharacterData implements CharacterData {
 	}
 
 	@Override
-    public void addImage(String fileName, String comments) {
+    public Image addImage(String fileName, String comments) {
     	throw new NotImplementedException();
     }
 

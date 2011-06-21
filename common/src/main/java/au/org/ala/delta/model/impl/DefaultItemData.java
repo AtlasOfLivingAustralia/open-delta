@@ -97,7 +97,7 @@ public class DefaultItemData implements ItemData {
     }
     
     @Override
-    public void addImage(String fileName, String comments) {
+    public Image addImage(String fileName, String comments) {
     	throw new NotImplementedException();
     }
 

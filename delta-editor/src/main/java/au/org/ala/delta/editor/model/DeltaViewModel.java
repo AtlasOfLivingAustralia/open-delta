@@ -8,6 +8,7 @@ import java.util.prefs.PreferenceChangeListener;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
+import au.org.ala.delta.model.image.Image;
 
 /**
  * The DeltaViewModel is designed to provide each view with a separate instance of
@@ -24,15 +25,18 @@ public class DeltaViewModel extends DataSetWrapper implements EditorViewModel, P
 	/** A list of objects interested in being notified of preference changes */
 	private List<PreferenceChangeListener> _preferenceChangeListeners;
 	
-	/** The number of the currently selected character */
+	/** The currently selected character */
 	private Character _selectedCharacter;
+	
+	/** the currently selected image */ 
+	private Image _selectedImage;
 	
 	/** The number of the selected state.  Only valid when the selected
 	 * character is a multistate character (otherwise it's -1).
 	 */
 	private int _selectedState;
 	
-	/** The number of the currently selected item */
+	/** The currently selected item */
 	private Item _selectedItem;
 	
 	public DeltaViewModel(EditorDataModel model) {
@@ -78,6 +82,16 @@ public class DeltaViewModel extends DataSetWrapper implements EditorViewModel, P
 	@Override
 	public Character getSelectedCharacter() {
 		return _selectedCharacter;
+	}
+	
+	@Override
+	public Image getSelectedImage() {
+		return _selectedImage;
+	}
+	
+	@Override
+	public void setSelectedImage(Image image) {
+		_selectedImage = image;
 	}
 
 	@Override

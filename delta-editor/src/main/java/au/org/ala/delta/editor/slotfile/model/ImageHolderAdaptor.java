@@ -36,7 +36,7 @@ public abstract class ImageHolderAdaptor implements Illustratable {
 	 * @param comments encoded overlay data.
 	 */
 	@Override
-	public void addImage(String fileName, String comments) {
+	public Image addImage(String fileName, String comments) {
 		if (StringUtils.isEmpty(fileName)) {
 			throw new IllegalArgumentException("Image file name cannot be null");
 		}
@@ -56,7 +56,11 @@ public abstract class ImageHolderAdaptor implements Illustratable {
 			List<Integer> images = getImageHolder().readImageList();
 			images.add(imageId);
 			getImageHolder().writeImageList(images);
+			
+			return new Image(new VOImageAdaptor(imageDesc));
 		}
+		
+		return null;
 	}
 	
 	/**

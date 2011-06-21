@@ -137,9 +137,12 @@ public class Item implements AttributeObserver, Illustratable, Comparable<Item> 
     }
     
     @Override
-    public void addImage(String fileName, String comments) {
-    	_impl.addImage(fileName, comments);
+    public Image addImage(String fileName, String comments) {
+    	Image image = _impl.addImage(fileName, comments);
+    	image.setSubject(this);
     	notifyObservers();
+    	
+    	return image;
     }
     
     @Override
@@ -156,7 +159,13 @@ public class Item implements AttributeObserver, Illustratable, Comparable<Item> 
 
 	@Override
     public List<Image> getImages() {
-    	return _impl.getImages();
+    	List<Image> images = _impl.getImages();
+    	
+    	for (Image image : images) {
+    		image.setSubject(this);
+    	}
+    	
+    	return images;
     }
     
 	

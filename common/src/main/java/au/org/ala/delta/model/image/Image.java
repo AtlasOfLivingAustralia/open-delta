@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
+import au.org.ala.delta.model.Illustratable;
 import au.org.ala.delta.model.impl.ImageData;
 
 /**
@@ -18,6 +19,7 @@ import au.org.ala.delta.model.impl.ImageData;
 public class Image {
 
 	private ImageData _impl;
+	private Illustratable _subject;
 	
 	public Image(ImageData data) {
 		_impl = data;
@@ -33,6 +35,14 @@ public class Image {
 
 	public String getFileName() {
 		return _impl.getFileName();
+	}
+	
+	public Illustratable getSubject() {
+		return _subject;
+	}
+	
+	public void setSubject(Illustratable subject) {
+		_subject = subject;
 	}
 	
 	public URL getImageLocation(String imagePath) {

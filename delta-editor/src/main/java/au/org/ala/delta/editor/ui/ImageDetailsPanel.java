@@ -96,6 +96,7 @@ public class ImageDetailsPanel extends JPanel {
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
 				_selectedImage = (Image)imageList.getSelectedValue();
+				_dataSet.setSelectedImage(_selectedImage);
 				updateDisplay();
 			}
 		});

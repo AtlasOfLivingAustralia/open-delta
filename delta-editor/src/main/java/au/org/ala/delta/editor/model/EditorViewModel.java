@@ -5,6 +5,7 @@ import java.util.prefs.PreferenceChangeListener;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.ObservableDeltaDataSet;
+import au.org.ala.delta.model.image.Image;
 
 public interface EditorViewModel extends ObservableDeltaDataSet {
 
@@ -35,4 +36,8 @@ public interface EditorViewModel extends ObservableDeltaDataSet {
 	public void setSelectedState(int stateNo);
 	
 	public int getSelectedState();
+
+	void setSelectedImage(Image image);
+
+	Image getSelectedImage();
 }

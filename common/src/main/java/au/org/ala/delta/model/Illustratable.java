@@ -14,7 +14,7 @@ public interface Illustratable {
 	 * @param fileName identifies the image.
 	 * @param comments details about the image. (parsed into hotspots etc.).
 	 */
-	public void addImage(String fileName, String comments);
+	public Image addImage(String fileName, String comments);
 	
 	/**
 	 * @return a list of images associated with this object.

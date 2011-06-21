@@ -5,6 +5,7 @@ import au.org.ala.delta.editor.ui.CharacterEditor;
 import au.org.ala.delta.editor.ui.ItemEditor;
 import au.org.ala.delta.editor.ui.MatrixViewer;
 import au.org.ala.delta.editor.ui.TreeViewer;
+import au.org.ala.delta.editor.ui.image.ImageEditor;
 
 
 /**
@@ -30,6 +31,10 @@ public class DeltaViewFactory {
 
 	public DeltaView createCharacterEditView(DeltaViewModel model) {
 		return new CharacterEditor(model);
+	}
+	
+	public DeltaView createImageEditorView(DeltaViewModel model) {
+		return new ImageEditor(model);
 	}
 	
 }

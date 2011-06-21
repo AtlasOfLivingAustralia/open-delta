@@ -321,6 +321,7 @@ public class DeltaViewController extends InternalFrameAdapter implements Vetoabl
 			model.setSelectedCharacter(selectedModel.getSelectedCharacter());
 			model.setSelectedItem(selectedModel.getSelectedItem());
 			model.setSelectedState(selectedModel.getSelectedState());
+			model.setSelectedImage(selectedModel.getSelectedImage());
 		}
 		return model;
 	}
