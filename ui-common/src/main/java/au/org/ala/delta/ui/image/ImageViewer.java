@@ -28,6 +28,7 @@ import au.org.ala.delta.ui.image.overlay.HotSpotObserver;
 import au.org.ala.delta.ui.image.overlay.OverlayButton;
 import au.org.ala.delta.ui.image.overlay.OverlayLocation;
 import au.org.ala.delta.ui.image.overlay.OverlayLocationProvider;
+import au.org.ala.delta.ui.image.overlay.SelectableTextOverlay;
 
 /**
  * Displays a single DELTA Image.
@@ -82,15 +83,17 @@ public class ImageViewer extends ImagePanel implements LayoutManager2, HotSpotOb
 				((OverlayButton)overlayComp).addActionListener(this);
 			}
 			
-			// If the overlay has associated hotspots, add them also.
-			int hotSpotCount = overlay.getNHotSpots();
-			if (hotSpotCount > 0) {
-				HotSpotGroup group = new HotSpotGroup();
-				for (int i=1; i<=hotSpotCount; i++) {
-					overlay.getLocation(i);
-					HotSpot hotSpot = _factory.createHotSpot(overlay, i);
-					group.add(hotSpot);
-					add(hotSpot, overlay.getLocation(i));
+			if (overlayComp instanceof SelectableTextOverlay) {
+				// If the overlay has associated hotspots, add them also.
+				int hotSpotCount = overlay.getNHotSpots();
+				if (hotSpotCount > 0) {
+					HotSpotGroup group = new HotSpotGroup((SelectableTextOverlay)overlayComp);
+					for (int i=1; i<=hotSpotCount; i++) {
+						overlay.getLocation(i);
+						HotSpot hotSpot = _factory.createHotSpot(overlay, i);
+						group.add(hotSpot);
+						add(hotSpot, overlay.getLocation(i));
+					}
 				}
 			}
 		}
@@ -127,7 +130,7 @@ public class ImageViewer extends ImagePanel implements LayoutManager2, HotSpotOb
 		ImageViewer viewer = new ImageViewer(imagePath, image, dataSet, imageOwner);
 
 		dialog.getContentPane().add(viewer, BorderLayout.CENTER);
-		dialog.setSize(viewer.getPreferredSize());
+		dialog.pack();
 		
 		return dialog;
 	}

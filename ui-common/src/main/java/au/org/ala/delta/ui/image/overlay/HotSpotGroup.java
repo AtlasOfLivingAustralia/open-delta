@@ -14,10 +14,12 @@ public class HotSpotGroup implements HotSpotObserver {
 
 	private Set<HotSpot> _hotspots;
 	private List<HotSpotObserver> _observers;
+	private SelectableTextOverlay _overlay;
 	
-	public HotSpotGroup() {
+	public HotSpotGroup(SelectableTextOverlay overlay) {
 		_hotspots = new HashSet<HotSpot>();
 		_observers = new ArrayList<HotSpotObserver>();
+		_overlay = overlay;
 	}
 	
 	public void add(HotSpot hotSpot) {
@@ -52,6 +54,7 @@ public class HotSpotGroup implements HotSpotObserver {
 		for (int i=_observers.size()-1; i>=0; i--) {
 			_observers.get(i).hotSpotSelected(overlay);
 		}
+		_overlay.setSelected(!_overlay.isSelected());
 	}
 	
 	public void addHotSpotObserver(HotSpotObserver observer) {

@@ -36,6 +36,8 @@ public class SelectableTextOverlay extends RichTextLabel implements MouseListene
 		return _selected;
 	}
 
+	
+	
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		setSelected(!_selected);

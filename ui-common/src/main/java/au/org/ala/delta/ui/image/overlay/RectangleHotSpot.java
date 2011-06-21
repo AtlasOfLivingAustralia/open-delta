@@ -34,14 +34,4 @@ public class RectangleHotSpot extends HotSpot implements MouseListener {
 	public void mouseExited(MouseEvent e) {
 		fireHotSpotExited();
 	}
-	
-	@Override
-	public void mouseClicked(MouseEvent e) {}
-
-	@Override
-	public void mousePressed(MouseEvent e) {}
-
-	@Override
-	public void mouseReleased(MouseEvent e) {}
-
 }

@@ -3,7 +3,6 @@ package au.org.ala.delta.ui.image;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
-import java.awt.image.BufferedImage;
 import java.net.URL;
 
 import javax.imageio.ImageIO;
@@ -15,7 +14,7 @@ import javax.swing.JPanel;
 public class ImagePanel extends JPanel {
 
 	private static final long serialVersionUID = -1203009970081375666L;
-	protected BufferedImage _image;
+	protected Image _image;
 	protected Image _scaledImage;
 	
 	/**
@@ -28,7 +27,7 @@ public class ImagePanel extends JPanel {
 			_image = ImageIO.read(imageFileLocation);
 			_scaledImage = _image;
 			
-			setPreferredSize(new Dimension(_image.getWidth(), _image.getHeight()));
+			setPreferredSize(new Dimension(_image.getWidth(null), _image.getHeight(null)));
 		}
 		catch (Exception e) {
 			throw new RuntimeException("Unable to load image: "+imageFileLocation);
@@ -49,15 +48,15 @@ public class ImagePanel extends JPanel {
 	 */
 	protected void scaleImage() {
 		// TODO change to progressive bilinear scaling...
-		_scaledImage = _image;//_image.getScaledInstance(getWidth(), getHeight(), 0);
+		_scaledImage = _image.getScaledInstance(getWidth(), getHeight(), 0);
 	}
 	
 	public int getPreferredImageWidth() {
-		return _image.getWidth();
+		return _image.getWidth(null);
 	}
 	
 	public int getPreferredImageHeight() {
-		return _image.getHeight();
+		return _image.getHeight(null);
 	}
 	
 	public int getImageWidth() {
