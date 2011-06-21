@@ -8,9 +8,7 @@ import java.awt.LayoutManager2;
 import java.awt.Rectangle;
 import java.awt.Window;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.swing.JComponent;
 import javax.swing.JDialog;
@@ -22,6 +20,8 @@ import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Illustratable;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageOverlay;
+import au.org.ala.delta.ui.image.overlay.HotSpot;
+import au.org.ala.delta.ui.image.overlay.HotSpotGroup;
 import au.org.ala.delta.ui.image.overlay.OverlayLocation;
 import au.org.ala.delta.ui.image.overlay.OverlayLocationProvider;
 
@@ -72,11 +72,16 @@ public class ImageViewer extends ImagePanel implements LayoutManager2 {
 			add(overlayComp, overlay.getLocation(0));
 			
 			// If the overlay has associated hotspots, add them also.
-			for (int i=1; i<=overlay.getNHotSpots(); i++) {
-				overlay.getLocation(i);
-				add(_factory.createHotSpot(overlay, i), overlay.getLocation(i));
+			int hotSpotCount = overlay.getNHotSpots();
+			if (hotSpotCount > 0) {
+				HotSpotGroup group = new HotSpotGroup();
+				for (int i=1; i<=hotSpotCount; i++) {
+					overlay.getLocation(i);
+					HotSpot hotSpot = _factory.createHotSpot(overlay, i);
+					group.add(hotSpot);
+					add(hotSpot, overlay.getLocation(i));
+				}
 			}
-			
 		}
 	}
 	

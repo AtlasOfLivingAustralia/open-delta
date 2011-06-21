@@ -27,7 +27,7 @@ public class OverlayLocation {
 		return String.format("OverlayLoc: drawType=%s, flags=%d, ID=%d, X=%d, Y=%d, W=%d, H=%d", drawType, flags, ID, X, Y, W, H);
 	}
 	
-	public boolean colorSet() {
+	public boolean isColorSet() {
 		return (flags & OLOC_FLAG_COLOUR) > 0;
 	}
 	
