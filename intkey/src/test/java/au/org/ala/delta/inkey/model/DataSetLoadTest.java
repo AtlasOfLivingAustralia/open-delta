@@ -553,7 +553,5 @@ public class DataSetLoadTest extends TestCase {
         assertEquals(5, ds.getNumberOfTaxa());
         assertEquals(2, context.getCharacterKeywords().size());        
     }
-    
-    //TODO more specific tests for NewDataset, File Characters and File Taxa Directives
 
 }

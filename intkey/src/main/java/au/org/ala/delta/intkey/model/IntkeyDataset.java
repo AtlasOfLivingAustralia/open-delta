@@ -184,4 +184,8 @@ public class IntkeyDataset {
         List<Attribute> attrList = IntkeyDatasetFileReader.readAttributesForCharacter(_itemsFileHeader, _itemsBinFile, _characters, _taxa, charNo);
         return attrList.get(itemNo - 1);
     }
+    
+    public boolean realCharacterKeyStateBoundariesPresent() {
+        return _itemsFileHeader.getLSbnd() > 0;
+    }
 }
