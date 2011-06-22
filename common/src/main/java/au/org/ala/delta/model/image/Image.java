@@ -45,6 +45,22 @@ public class Image {
 		_subject = subject;
 	}
 	
+	/**
+	 * If this image has an overlay of type OverlayType.OLSUBJECT the
+	 * text from this overlay will be returned, otherwise an empty string.
+	 * @return any subject text specified for this image.
+	 */
+	public String getSubjectText() {
+		List<ImageOverlay> overlays = getOverlays();
+		
+		for (ImageOverlay overlay : overlays) {
+			if (overlay.isType(OverlayType.OLSUBJECT)) {
+				return overlay.overlayText;
+			}
+		}
+		return "";
+	}
+	
 	public URL getImageLocation(String imagePath) {
 		
 		String fileName = getFileName();
@@ -105,5 +121,18 @@ public class Image {
 		return null;
 	}
 	
+	@Override
+	public boolean equals(Object other) {
+		if (other == null || !(other instanceof Image)) {
+			return false;
+		}
+		Image otherImage = (Image)other;
+		
+		return getFileName().equals(otherImage.getFileName());
+	}
 	
+	@Override
+	public int hashCode() {
+		return getFileName().hashCode();
+	}
 }

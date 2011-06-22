@@ -67,6 +67,12 @@ public class ImageEditorPanel extends ImageViewer {
 		}
 	}
 	
+	public void stopMove() {
+		_dragging = false;
+		setLayout(this);
+		revalidate();
+	}
+	
 	
 	class GrowBaby extends MouseAdapter implements MouseMotionListener {
 
@@ -83,6 +89,14 @@ public class ImageEditorPanel extends ImageViewer {
 		public void mousePressed(MouseEvent e) {
 			select(_overlayComp);
 			_pressedEvent = SwingUtilities.convertMouseEvent(_overlayComp, e, ImageEditorPanel.this);
+		}
+		
+		@Override
+		public void mouseReleased(MouseEvent e) {
+			if (_pressedEvent != null) {
+				_pressedEvent = null;
+				stopMove();
+			}
 		}
 		
 		@Override

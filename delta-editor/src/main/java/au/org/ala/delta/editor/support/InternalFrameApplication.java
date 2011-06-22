@@ -47,6 +47,7 @@ public abstract class InternalFrameApplication extends DeltaSingleFrameApplicati
 		if (!_desktop.isVisible()) {
 			show(_desktop);
 		}
+		getContext().getResourceMap().injectComponents(frame);
 		_frames.add(frame);
 		frame.addInternalFrameListener(this);
 		addToDesktop(frame);
