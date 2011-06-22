@@ -1,8 +1,13 @@
 package au.org.ala.delta.editor.ui.image;
 
+import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.GraphicsDevice;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +19,7 @@ import javax.swing.JInternalFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.SwingUtilities;
 
 import org.apache.commons.lang.StringUtils;
 import org.jdesktop.application.Action;
@@ -235,8 +241,10 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 		getContentPane().removeAll();
 		
 		_imageEditors = new HashMap<String, ImageEditorPanel>();
-		buildSubjectMenu();
+		
 		displayImage(image);
+		
+		buildSubjectMenu();
 	}
 	
 	/**
@@ -388,13 +396,45 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 	public void replayVideo() {}
 	
 	@Action
-	public void reloadImage() {}
+	public void reloadImage() {
+		String key = subjectTextOrFileName(_selectedImage);
+		ImageEditorPanel editor = _imageEditors.get(key);
+		_imageEditors.remove(key);
+		remove(editor);
+		
+		displayImage(_selectedImage);
+		revalidate();
+	}
 	
 	@Action
-	public void fitToImage() {}
+	public void fitToImage() {
+		pack();
+	}
 	
 	@Action
-	public void fullScreen() {}
+	public void fullScreen() {
+		Window parent = SwingUtilities.getWindowAncestor(this);
+		final Window w = new Window(parent);
+		w.setLayout(new BorderLayout());
+		
+		final String key = subjectTextOrFileName(_selectedImage);
+		final ImageEditorPanel editor = _imageEditors.get(key);
+		w.add(editor, BorderLayout.CENTER);
+		final GraphicsDevice gd = parent.getGraphicsConfiguration().getDevice();
+		
+		w.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+						
+				w.dispose();
+				gd.setFullScreenWindow(null);
+				add(editor, key);
+				_layout.show(getContentPane(), key);
+				revalidate();
+			}
+		});
+		
+		gd.setFullScreenWindow(w);
+	}
 	
 	@Action
 	public void togglePreviewMode() {}

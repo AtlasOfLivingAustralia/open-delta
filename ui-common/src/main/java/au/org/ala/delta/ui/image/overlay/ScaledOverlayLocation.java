@@ -1,5 +1,7 @@
 package au.org.ala.delta.ui.image.overlay;
 
+import java.awt.Point;
+
 import au.org.ala.delta.ui.image.ImageViewer;
 
 
@@ -19,12 +21,14 @@ public class ScaledOverlayLocation implements OverlayLocation {
 	
 	public int getX() {
 		double scaledWidth = _image.getImageWidth();
-		return (int)Math.round(_location.X / 1000d * scaledWidth);
+		Point p = _image.getImageOrigin();
+		return (int)Math.round(_location.X / 1000d * scaledWidth)+p.x;
 	}
 	
 	public int getY() {
 		double scaledHeight = _image.getImageHeight();
-		return (int)Math.round(_location.Y / 1000d * scaledHeight);
+		Point p = _image.getImageOrigin();
+		return (int)Math.round(_location.Y / 1000d * scaledHeight)+p.y;
 	}
 	
 	public int getHeight() {

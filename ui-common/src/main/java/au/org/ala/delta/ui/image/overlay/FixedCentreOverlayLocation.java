@@ -3,6 +3,7 @@ package au.org.ala.delta.ui.image.overlay;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Insets;
+import java.awt.Point;
 
 import javax.swing.JComponent;
 import javax.swing.border.Border;
@@ -33,7 +34,8 @@ public class FixedCentreOverlayLocation implements OverlayLocation {
 		
 		double imageScale = scaledWidth/width;
 		
-		return (int)Math.round(midPointXInPixels*imageScale - halfComponentWidth);
+		Point p = _image.getImageOrigin();
+		return (int)Math.round(midPointXInPixels*imageScale - halfComponentWidth)+p.x;
 	}
 	
 	@Override
@@ -48,8 +50,8 @@ public class FixedCentreOverlayLocation implements OverlayLocation {
 		
 		double imageScale = scaledHeight/height;
 		
-		
-		return (int)Math.round(midPointYInPixels*imageScale - halfComponentHeight);
+		Point p = _image.getImageOrigin();
+		return (int)Math.round(midPointYInPixels*imageScale - halfComponentHeight)+p.y;
 	}
 	
 	

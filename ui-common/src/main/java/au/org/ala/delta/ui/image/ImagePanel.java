@@ -1,8 +1,13 @@
 package au.org.ala.delta.ui.image;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
 import java.net.URL;
 
 import javax.imageio.ImageIO;
@@ -14,8 +19,15 @@ import javax.swing.JPanel;
 public class ImagePanel extends JPanel {
 
 	private static final long serialVersionUID = -1203009970081375666L;
-	protected Image _image;
+	protected BufferedImage _image;
 	protected Image _scaledImage;
+	/** Ratio of width to height of the unscaled image */
+	private double _unscaledRatio;
+	
+	public ImagePanel() {
+		setBackground(Color.WHITE);
+		setOpaque(true);
+	}
 	
 	/**
 	 * Displays this image in this panel.
@@ -27,6 +39,8 @@ public class ImagePanel extends JPanel {
 			_image = ImageIO.read(imageFileLocation);
 			_scaledImage = _image;
 			
+			_unscaledRatio = (double)getPreferredImageWidth()/(double)getPreferredImageHeight();
+			dumpImageDetails();
 			setPreferredSize(new Dimension(_image.getWidth(null), _image.getHeight(null)));
 		}
 		catch (Exception e) {
@@ -36,19 +50,27 @@ public class ImagePanel extends JPanel {
 	
 	@Override
 	protected void paintComponent(Graphics g) {
+		super.paintComponent(g);
 		
 		if (_scaledImage == null || _scaledImage.getWidth(null) != getWidth() || _scaledImage.getHeight(null) != getHeight()) {
 			scaleImage();
 		}
-		g.drawImage(_scaledImage, 0, 0, null);
+		Point origin = getImageOrigin();
+		
+		g.drawImage(_scaledImage, origin.x, origin.y, null);
 	}
 	
 	/**
 	 * Scales the image to the size of this panel and caches it.
 	 */
 	protected void scaleImage() {
-		// TODO change to progressive bilinear scaling...
-		_scaledImage = _image.getScaledInstance(getWidth(), getHeight(), 0);
+		
+		if (widthLimited()) {
+			_scaledImage = _image.getScaledInstance(getWidth(), -1, 0);
+		}
+		else {
+			_scaledImage = _image.getScaledInstance(-1, getHeight(), 0);
+		}
 	}
 	
 	public int getPreferredImageWidth() {
@@ -59,17 +81,52 @@ public class ImagePanel extends JPanel {
 		return _image.getHeight(null);
 	}
 	
-	public int getImageWidth() {
-		if (_scaledImage == null) {
-			return getPreferredImageWidth();
+	
+	
+	public Point getImageOrigin() {
+		int x = 0;
+		int y = 0;
+		
+		if (widthLimited()) {
+			y = (getHeight() - getImageHeight())/2;
 		}
-		return _scaledImage.getWidth(null);
+		else {
+			x = (getWidth() - getImageWidth())/2;	
+		}
+		
+		return new Point(Math.abs(x), Math.abs(y));
+	}
+	
+	public int getImageWidth() {
+		
+		if (widthLimited()) {
+			return getWidth();
+		}
+		else {
+			return (int)(getHeight() * _unscaledRatio);
+		}
 	}
 	
 	public int getImageHeight() {
-		if (_scaledImage == null) {
-			return getPreferredImageHeight();
+		
+		if (widthLimited()) {
+			return (int)(getWidth() / _unscaledRatio);
 		}
-		return _scaledImage.getHeight(null);
+		else {
+			return getHeight();
+		}
+	}
+	
+	private boolean widthLimited() {
+		Rectangle bounds = getBounds();
+		double actualRatio = (double)bounds.width/(double)bounds.height;
+		
+		return _unscaledRatio > actualRatio;
+	}
+	
+	private void dumpImageDetails() {
+		System.out.println(_image.getColorModel().getNumColorComponents());
+		ColorModel mc = _image.getColorModel();
+		System.out.println(mc);
 	}
 }
