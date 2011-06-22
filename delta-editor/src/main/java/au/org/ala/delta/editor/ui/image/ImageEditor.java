@@ -57,7 +57,14 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 		_subjectMenu.setName("subjectMenu");
 		
 		Image image =  model.getSelectedImage();
-		displaySubject(image.getSubject(), image);
+		Illustratable subject = image.getSubject();
+		if (subject instanceof Character) {
+			displaySubject((Character)subject, image);
+		}
+		else {
+			displaySubject((Item)subject, image);
+		}
+		
 		
 		setName("ImageEditor-"+_subject.toString());
 		
@@ -201,7 +208,28 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 		return text;
 	}
 
-	public void displaySubject(Illustratable subject, Image image) {
+	
+	private void displaySubject(Character subject, Image image) {
+		displaySubject((Illustratable)subject, image);
+		
+		Character character = getNextCharacterWithImage();
+		_actionMap.get("nextCharacterWithImage").setEnabled(character != null);
+		
+		character = getPreviousCharacterWithImage();
+		_actionMap.get("previousCharacterWithImage").setEnabled(character != null);
+	}
+	
+	private void displaySubject(Item subject, Image image) {
+		displaySubject((Illustratable)subject, image);
+		
+		Item item = getNextItemWithImage();
+		_actionMap.get("nextItemWithImage").setEnabled(item != null);
+		
+		item = getPreviousItemWithImage();
+		_actionMap.get("previousItemWithImage").setEnabled(item != null);
+	}
+	
+	private void displaySubject(Illustratable subject, Image image) {
 		_subject = image.getSubject();
 		_images = _subject.getImages();
 		getContentPane().removeAll();
@@ -255,60 +283,87 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 	
 	@Action
 	public void nextItemWithImage() {
+		Item item = getNextItemWithImage();
+		if (item != null) {
+			displaySubject(item, item.getImages().get(0));
+		}	
+	}
+	
+	private Item getNextItemWithImage() {
 		Item item = (Item)_subject;
 		int itemNumber = item.getItemNumber();
 		
 		for (int i=itemNumber+1; i<=_model.getMaximumNumberOfItems(); i++) {
 			Item next = _model.getItem(i);
 			if (next.getImageCount() > 0) {
-				displaySubject(next, next.getImages().get(0));
-				return;
+				return next;
 			}	
 		}
+		return null;
 	}
 	
 	@Action
 	public void previousItemWithImage() {
+		
+		Item item = getPreviousItemWithImage();
+		if (item != null) {
+			displaySubject(item, item.getImages().get(0));
+		}	
+	}
+	
+	private Item getPreviousItemWithImage() {
 		Item item = (Item)_subject;
 		int itemNumber = item.getItemNumber();
 		
 		for (int i=itemNumber-1; i>0; i--) {
 			Item next = _model.getItem(i);
 			if (next.getImageCount() > 0) {
-				displaySubject(next, next.getImages().get(0));
-				return;
-			}	
+				return next;
+			}
 		}
+		return null;
 	}
 	
 	@Action
 	public void nextCharacterWithImage() {
+		Character character = getNextCharacterWithImage();
+		if (character != null) {
+			displaySubject(character, character.getImages().get(0));	
+		}
+	}
+	
+	private Character getNextCharacterWithImage() {
 		Character character = (Character)_subject;
 		int characterNumber = character.getCharacterId();
 		
 		for (int i=characterNumber+1; i<=_model.getNumberOfCharacters(); i++) {
 			Character next = _model.getCharacter(i);
-			System.out.println("Char: "+i+", "+next.getImageCount());
 			if (next.getImageCount() > 0) {
-				displaySubject(next, next.getImages().get(0));
-				return;
+				return next;
 			}	
 		}
+		return null;
 	}
 	
 	@Action
 	public void previousCharacterWithImage() {
+		Character character = getPreviousCharacterWithImage();
+		if (character != null) {
+			displaySubject(character, character.getImages().get(0));	
+		}
+	}
+	
+	private Character getPreviousCharacterWithImage() {
 		Character character = (Character)_subject;
 		int characterNumber = character.getCharacterId();
 		
 		for (int i=characterNumber-1; i>0; i--) {
 			Character next = _model.getCharacter(i);
-			System.out.println("Char: "+i+", "+next.getImageCount());
 			if (next.getImageCount() > 0) {
-				displaySubject(next, next.getImages().get(0));
-				return;
+				return next;
 			}	
 		}
+		return null;
 	}
 	
 	@Action
