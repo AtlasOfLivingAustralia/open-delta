@@ -35,4 +35,9 @@ public interface Illustratable {
 	 * in the list).
 	 */
 	public void moveImage(Image image, int position);
+	
+	/**
+	 * @return the number of images associated with this Illustratable.
+	 */
+	public int getImageCount();
 }

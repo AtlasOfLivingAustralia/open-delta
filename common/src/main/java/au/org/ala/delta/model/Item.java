@@ -167,6 +167,11 @@ public class Item implements AttributeObserver, Illustratable, Comparable<Item> 
     	
     	return images;
     }
+	
+	@Override
+	public int getImageCount() {
+		return _impl.getImageCount();
+	}
     
 	
 	@Override

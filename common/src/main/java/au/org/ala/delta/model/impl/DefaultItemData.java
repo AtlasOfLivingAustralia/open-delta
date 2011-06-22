@@ -107,6 +107,12 @@ public class DefaultItemData implements ItemData {
 	}
 
 	@Override
+	public int getImageCount() {
+		throw new NotImplementedException();
+	}
+
+	
+	@Override
 	public void deleteImage(Image image) {
 		throw new NotImplementedException();
 	}

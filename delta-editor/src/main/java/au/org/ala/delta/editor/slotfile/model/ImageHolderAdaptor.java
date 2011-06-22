@@ -80,6 +80,11 @@ public abstract class ImageHolderAdaptor implements Illustratable {
 		return images;
 	}
 	
+	@Override
+	public int getImageCount() {
+		return getImageHolder().getNImages();
+	}
+	
 	/**
 	 * Wraps a VOImageDesc in a new Image.
 	 * @param id the id of the VOImageDesc.

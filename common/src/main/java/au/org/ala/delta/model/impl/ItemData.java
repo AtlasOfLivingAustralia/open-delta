@@ -40,5 +40,7 @@ public interface ItemData {
 	
 	void moveImage(Image image, int position);
 
-	List<Image> getImages(); 
+	List<Image> getImages();
+
+	int getImageCount(); 
 }

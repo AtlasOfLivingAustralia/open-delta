@@ -44,4 +44,6 @@ public abstract class VOImageHolderDesc extends VOAnyDesc {
 	public abstract int getImageType();
 
 	public abstract void deleteImage(int imageId);
+	
+	public abstract int getNImages();
 }

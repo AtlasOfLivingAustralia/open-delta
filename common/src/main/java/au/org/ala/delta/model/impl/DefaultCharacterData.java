@@ -289,6 +289,11 @@ public class DefaultCharacterData implements CharacterData {
 	public List<Image> getImages() {
 		throw new NotImplementedException();
 	}
+	
+	@Override
+	public int getImageCount() {
+		throw new NotImplementedException();
+	}
 
 	@Override
 	public void deleteImage(Image image) {

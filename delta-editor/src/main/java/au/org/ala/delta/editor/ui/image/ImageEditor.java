@@ -246,7 +246,16 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 	
 	
 	@Action
-	public void nextItemWithImage() {}
+	public void nextItemWithImage() {
+		Item item = (Item)_subject;
+		int itemNumber = item.getItemNumber();
+		
+		for (int i=itemNumber+1; i<=_model.getMaximumNumberOfItems(); i++) {
+			Item next = _model.getItem(i);
+			
+		}
+		
+	}
 	
 	@Action
 	public void previousItemWithImage() {}

@@ -228,6 +228,11 @@ public abstract class Character implements Illustratable, Comparable<Character> 
     	
     	return images;
 	}
+	
+	@Override
+	public int getImageCount() {
+		return _impl.getImageCount();
+	}
 
 	@Override
 	public void deleteImage(Image image) {
