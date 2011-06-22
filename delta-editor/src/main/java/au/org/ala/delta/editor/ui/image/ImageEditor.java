@@ -23,6 +23,7 @@ import au.org.ala.delta.editor.DeltaView;
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.ui.ReorderableList;
 import au.org.ala.delta.editor.ui.util.MenuBuilder;
+import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Illustratable;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.image.Image;
@@ -41,24 +42,24 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 	private CardLayout _layout;
 	private EditorViewModel _model;
 	private List<Image> _images;
+	private JMenu _subjectMenu;
 	
 	private Map<String, ImageEditorPanel> _imageEditors;
 	
 	public ImageEditor(EditorViewModel model) {
-	
-		_selectedImage = model.getSelectedImage();
+
 		_model = model;
-		_subject = _selectedImage.getSubject();
-		_images = _subject.getImages();
-		_imageEditors = new HashMap<String, ImageEditorPanel>();
-		
-		setName("ImageEditor-"+_subject.toString());
 		_actionMap = Application.getInstance().getContext().getActionMap(this);
-		
 		_layout = new CardLayout();
 		getContentPane().setLayout(_layout);
 		
-		displayImage(_selectedImage);
+		_subjectMenu = new JMenu();
+		_subjectMenu.setName("subjectMenu");
+		
+		Image image =  model.getSelectedImage();
+		displaySubject(image.getSubject(), image);
+		
+		setName("ImageEditor-"+_subject.toString());
 		
 		buildMenus();
 	}
@@ -66,7 +67,7 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 	private void buildMenus() {
 		JMenuBar menuBar = new JMenuBar();
 		
-		menuBar.add(buildSubjectMenu());
+		menuBar.add(_subjectMenu);
 		menuBar.add(buildControlMenu());
 		menuBar.add(buildWindowMenu());
 		
@@ -97,10 +98,8 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 	 * 
 	 * @return a new JMenu ready to be added to the menu bar.
 	 */
-	private JMenu buildSubjectMenu() {
-		JMenu subjectMenu = new JMenu();
-		subjectMenu.setName("subjectMenu");
-
+	private void buildSubjectMenu() {
+		_subjectMenu.removeAll();
 		ButtonGroup group = new ButtonGroup();
 		for (final Image image : _images) {
 			String text = subjectTextOrFileName(image);
@@ -115,10 +114,8 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 			if (image.equals(_selectedImage)) {
 				subject.setSelected(true);
 			}
-			subjectMenu.add(subject);
+			_subjectMenu.add(subject);
 		}
-		
-		return subjectMenu;
 	}
 	
 	/**
@@ -204,6 +201,16 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 		return text;
 	}
 
+	public void displaySubject(Illustratable subject, Image image) {
+		_subject = image.getSubject();
+		_images = _subject.getImages();
+		getContentPane().removeAll();
+		
+		_imageEditors = new HashMap<String, ImageEditorPanel>();
+		buildSubjectMenu();
+		displayImage(image);
+	}
+	
 	/**
 	 * Creates an ImageEditorPanel to display the image if necessary then
 	 * switches the layout to display the image.
@@ -219,6 +226,7 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 		_actionMap.get("nextImage").setEnabled(index < (_images.size()-1));
 		_actionMap.get("previousImage").setEnabled(index > 0);
 		_layout.show(getContentPane(), text);
+		revalidate();
 	}
 	
 	
@@ -252,19 +260,56 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 		
 		for (int i=itemNumber+1; i<=_model.getMaximumNumberOfItems(); i++) {
 			Item next = _model.getItem(i);
-			
+			if (next.getImageCount() > 0) {
+				displaySubject(next, next.getImages().get(0));
+				return;
+			}	
 		}
-		
 	}
 	
 	@Action
-	public void previousItemWithImage() {}
+	public void previousItemWithImage() {
+		Item item = (Item)_subject;
+		int itemNumber = item.getItemNumber();
+		
+		for (int i=itemNumber-1; i>0; i--) {
+			Item next = _model.getItem(i);
+			if (next.getImageCount() > 0) {
+				displaySubject(next, next.getImages().get(0));
+				return;
+			}	
+		}
+	}
 	
 	@Action
-	public void nextCharacterWithImage() {}
+	public void nextCharacterWithImage() {
+		Character character = (Character)_subject;
+		int characterNumber = character.getCharacterId();
+		
+		for (int i=characterNumber+1; i<=_model.getNumberOfCharacters(); i++) {
+			Character next = _model.getCharacter(i);
+			System.out.println("Char: "+i+", "+next.getImageCount());
+			if (next.getImageCount() > 0) {
+				displaySubject(next, next.getImages().get(0));
+				return;
+			}	
+		}
+	}
 	
 	@Action
-	public void previousCharacterWithImage() {}
+	public void previousCharacterWithImage() {
+		Character character = (Character)_subject;
+		int characterNumber = character.getCharacterId();
+		
+		for (int i=characterNumber-1; i>0; i--) {
+			Character next = _model.getCharacter(i);
+			System.out.println("Char: "+i+", "+next.getImageCount());
+			if (next.getImageCount() > 0) {
+				displaySubject(next, next.getImages().get(0));
+				return;
+			}	
+		}
+	}
 	
 	@Action
 	public void showFullImageText() {}
