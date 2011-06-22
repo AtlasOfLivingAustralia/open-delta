@@ -40,6 +40,7 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 	private ActionMap _actionMap;
 	private CardLayout _layout;
 	private EditorViewModel _model;
+	private List<Image> _images;
 	
 	private Map<String, ImageEditorPanel> _imageEditors;
 	
@@ -48,6 +49,7 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 		_selectedImage = model.getSelectedImage();
 		_model = model;
 		_subject = _selectedImage.getSubject();
+		_images = _subject.getImages();
 		_imageEditors = new HashMap<String, ImageEditorPanel>();
 		
 		setName("ImageEditor-"+_subject.toString());
@@ -56,7 +58,7 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 		_layout = new CardLayout();
 		getContentPane().setLayout(_layout);
 		
-		addCardFor(_selectedImage);
+		displayImage(_selectedImage);
 		
 		buildMenus();
 	}
@@ -68,17 +70,26 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 		menuBar.add(buildControlMenu());
 		menuBar.add(buildWindowMenu());
 		
+		if (_subject.getImages().size() <= 1) {
+			_actionMap.get("nextImage").setEnabled(false);
+			_actionMap.get("previousImage").setEnabled(false);
+		}
+		
 		setJMenuBar(menuBar);
 	}
 	
+	/**
+	 * Creates an ImageEditorPanel for the supplied Image and adds it to the
+	 * layout.
+	 * @param image the image to add.
+	 */
 	private void addCardFor(Image image) {
 		ImageEditorPanel viewer = new ImageEditorPanel(_model.getImagePath(), image, _model);
 		String text = subjectTextOrFileName(image);
 		
 		_imageEditors.put(text, viewer);
 		
-		getContentPane().add(viewer, text);
-		
+		getContentPane().add(viewer, text);	
 	}
 	
 	/**
@@ -90,9 +101,8 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 		JMenu subjectMenu = new JMenu();
 		subjectMenu.setName("subjectMenu");
 
-		List<Image> images = _subject.getImages();
 		ButtonGroup group = new ButtonGroup();
-		for (final Image image : images) {
+		for (final Image image : _images) {
 			String text = subjectTextOrFileName(image);
 			JMenuItem subject = new JCheckBoxMenuItem(text);
 			group.add(subject);
@@ -180,28 +190,59 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 	public ReorderableList getItemListView() {
 		return null;
 	}
-
-	public void displayImage(Image image) {
-		String text = subjectTextOrFileName(image);
-		if (!_imageEditors.containsKey(text)) {
-			addCardFor(image);
-		}
-		_layout.show(getContentPane(), text);
-	}
 	
-	public String subjectTextOrFileName(Image image) {
+	/**
+	 * @param image the image to get the text for.
+	 * @return the subject text of an image, or the filename if none has
+	 * been specified.
+	 */
+	private String subjectTextOrFileName(Image image) {
 		String text = image.getSubjectText();
 		if (StringUtils.isEmpty(text)) {
 			text = image.getFileName();
 		}
 		return text;
 	}
+
+	/**
+	 * Creates an ImageEditorPanel to display the image if necessary then
+	 * switches the layout to display the image.
+	 * @param image the image to display.
+	 */
+	public void displayImage(Image image) {
+		String text = subjectTextOrFileName(image);
+		if (!_imageEditors.containsKey(text)) {
+			addCardFor(image);
+		}
+		_selectedImage = image;
+		int index = _images.indexOf(_selectedImage);
+		_actionMap.get("nextImage").setEnabled(index < (_images.size()-1));
+		_actionMap.get("previousImage").setEnabled(index > 0);
+		_layout.show(getContentPane(), text);
+	}
 	
-	@Action
-	public void nextImage() {}
 	
+	/**
+	 * Displays the next image of the current subject (Character or Item)
+	 */
 	@Action
-	public void previousImage() {}
+	public void nextImage() {
+		int nextIndex = _images.indexOf(_selectedImage) + 1;
+		if (nextIndex < _images.size()) {
+			displayImage(_images.get(nextIndex));
+		}
+	}
+	
+	/**
+	 * Displays the previous image of the current subject (Character or Item)
+	 */
+	@Action
+	public void previousImage() {
+		int prevIndex = _images.indexOf(_selectedImage) -1;
+		if (prevIndex >= 0) {
+			displayImage(_images.get(prevIndex));
+		}
+	}
 	
 	
 	@Action
