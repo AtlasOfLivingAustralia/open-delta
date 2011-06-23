@@ -28,4 +28,27 @@ public class OverlayType {
 	// to images rather than overlays
 	public static final int LIST_END = 16; // Insert new overlay types just BEFORE this!
 
+	
+	public static boolean isTextOverlay(ImageOverlay overlay) {
+		int overlayType = overlay.type;
+		switch (overlayType) {
+		case OLTEXT:
+		case OLITEM:
+		case OLFEATURE:
+		case OLSTATE:
+		case OLVALUE:
+		case OLUNITS:
+		case OLENTER:
+		case OLKEYWORD:
+		case OLOK:
+		case OLCANCEL:
+		case OLNOTES:
+		case OLIMAGENOTES:
+		case OLCOMMENT :
+			return true;
+		default:
+			return false;
+		}
+	}
+	
 }

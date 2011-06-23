@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.beans.PropertyVetoException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +56,8 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 	private JMenu _subjectMenu;
 	private ScalingMode _scalingMode;
 	private JPanel _contentPanel;
-	private boolean _displayHotSpots;
+	private boolean _hideHotSpots;
+	private boolean _hideTextOverlays;
 	private Map<String, ImageEditorPanel> _imageEditors;
 	private DataSetHelper _helper;
 	
@@ -68,7 +70,8 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 		_contentPanel = new JPanel();
 		_contentPanel.setLayout(_layout);
 		_scalingMode = ScalingMode.FIXED_ASPECT_RATIO;
-		_displayHotSpots = true;
+		_hideHotSpots = false;
+		_hideTextOverlays = false;
 		getContentPane().setLayout(new BorderLayout());
 		getContentPane().add(_contentPanel, BorderLayout.CENTER);
 		
@@ -370,18 +373,29 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 	}
 	
 	@Action
-	public void toggleHideText() {}
+	public void toggleHideText() {
+		setHideTextOverlays(!_hideTextOverlays);
+	}
+	
+	private void setHideTextOverlays(boolean hideTextOverlays) {
+		if (_hideTextOverlays != hideTextOverlays) {
+			_hideTextOverlays = hideTextOverlays;
+			for (ImageEditorPanel editor : _imageEditors.values()) {
+				editor.setDisplayTextOverlays(!hideTextOverlays);
+			}
+		}
+	}
 	
 	@Action
 	public void toggleHideHotSpots() {
-		setDisplayHotSpots(!_displayHotSpots);
+		setHideHotSpots(!_hideHotSpots);
 	}
 	
-	public void setDisplayHotSpots(boolean displayHotSpots) {
-		if (_displayHotSpots != displayHotSpots) {
-			_displayHotSpots = displayHotSpots;
+	public void setHideHotSpots(boolean hideHotSpots) {
+		if (_hideHotSpots != hideHotSpots) {
+			_hideHotSpots = hideHotSpots;
 			for (ImageEditorPanel editor : _imageEditors.values()) {
-				editor.setDisplayHotSpots(displayHotSpots);
+				editor.setDisplayHotSpots(!hideHotSpots);
 			}
 		}
 	}
@@ -451,5 +465,10 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 	public void aboutImage() {}
 	
 	@Action
-	public void closeImage() {}
+	public void closeImage() {
+		try {
+			setClosed(true);
+		}
+		catch (PropertyVetoException e) {}
+	}
 }

@@ -19,6 +19,7 @@ import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Illustratable;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageOverlay;
+import au.org.ala.delta.model.image.OverlayType;
 import au.org.ala.delta.ui.image.overlay.HotSpot;
 import au.org.ala.delta.ui.image.overlay.HotSpotGroup;
 import au.org.ala.delta.ui.image.overlay.HotSpotObserver;
@@ -31,6 +32,8 @@ import au.org.ala.delta.ui.image.overlay.SelectableTextOverlay;
  * Displays a single DELTA Image.
  */
 public class ImageViewer extends ImagePanel implements LayoutManager2, HotSpotObserver, ActionListener {
+
+	private static final String IMAGE_OVERLAY_PROPERTY = "ImageOverlay";
 
 	private static final long serialVersionUID = -6735023009826819178L;
 	
@@ -71,13 +74,15 @@ public class ImageViewer extends ImagePanel implements LayoutManager2, HotSpotOb
 		_hotSpotGroups = new ArrayList<HotSpotGroup>();
 		for (ImageOverlay overlay : _overlays) {
 			JComponent overlayComp = _factory.createOverlayComponent(overlay, subject);
+			
 			if (overlayComp == null) {
 				continue;
 			}
+			overlayComp.putClientProperty(IMAGE_OVERLAY_PROPERTY, overlay);
 			add(overlayComp, overlay.getLocation(0));
 			
 			if (overlayComp instanceof OverlayButton) {
-				overlayComp.putClientProperty("ImageOverlay", overlay);
+				
 				((OverlayButton)overlayComp).addActionListener(this);
 			}
 			
@@ -103,6 +108,23 @@ public class ImageViewer extends ImagePanel implements LayoutManager2, HotSpotOb
 			group.setDisplayHotSpots(displayHotSpots);
 		}
 		repaint();
+	}
+	
+	public void setDisplayTextOverlays(boolean displayText) {
+		for (JComponent overlayComp : _components) {
+			if (isTextOverlay(overlayComp)) {
+				overlayComp.setVisible(displayText);
+			}
+		}
+	}
+	
+	private boolean isTextOverlay(JComponent overlayComp) {
+		boolean isText = false;
+		ImageOverlay overlay = (ImageOverlay)overlayComp.getClientProperty(IMAGE_OVERLAY_PROPERTY);
+		if (overlay != null) {
+			isText = OverlayType.isTextOverlay(overlay);
+		}
+		return isText;
 	}
 	
 	/**
@@ -189,7 +211,7 @@ public class ImageViewer extends ImagePanel implements LayoutManager2, HotSpotOb
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		JComponent comp = (JComponent)e.getSource();
-		ImageOverlay overlay = (ImageOverlay)comp.getClientProperty("ImageOverlay");
+		ImageOverlay overlay = (ImageOverlay)comp.getClientProperty(IMAGE_OVERLAY_PROPERTY);
 		if (overlay != null) {
 			fireOverlaySelected(overlay);
 		}
