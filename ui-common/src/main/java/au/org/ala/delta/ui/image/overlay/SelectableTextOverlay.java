@@ -7,16 +7,20 @@ import java.awt.event.MouseListener;
 import javax.swing.BorderFactory;
 
 import au.org.ala.delta.model.image.ImageOverlay;
+import au.org.ala.delta.ui.image.OverlaySelectionObserver;
+import au.org.ala.delta.ui.image.SelectableOverlay;
 
-public class SelectableTextOverlay extends RichTextLabel implements MouseListener {
+public class SelectableTextOverlay extends RichTextLabel implements MouseListener, SelectableOverlay {
 
 	private static final long serialVersionUID = 2451885327158264330L;
 
 	private boolean _selected;
+	private SelectableOverlaySupport _support;
 	
 	public SelectableTextOverlay(ImageOverlay overlay, String text) {
 		super(overlay, text);
 		_selected = false;
+		_support = new SelectableOverlaySupport();
 		addMouseListener(this);
 	}
 	
@@ -36,11 +40,25 @@ public class SelectableTextOverlay extends RichTextLabel implements MouseListene
 		return _selected;
 	}
 
-	
+
+	@Override
+	public ImageOverlay getImageOverlay() {
+		return _overlay;
+	}
+
+	@Override
+	public void addOverlaySelectionObserver(OverlaySelectionObserver observer) {
+		_support.addOverlaySelectionObserver(observer);
+	}
+
+	@Override
+	public void removeOverlaySelectionObserver(OverlaySelectionObserver observer) {
+		_support.removeOverlaySelectionObserver(observer);
+	}
 	
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		setSelected(!_selected);
+		_support.fireOverlaySelected(this);
 	}
 
 	@Override

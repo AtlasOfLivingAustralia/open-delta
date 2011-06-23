@@ -23,7 +23,7 @@ import au.org.ala.delta.ui.rtf.RtfEditorPane;
 public class RichTextLabel extends RtfEditorPane implements OverlayLocationProvider {
 
 	private static final long serialVersionUID = -8231701667247672309L;
-	private ImageOverlay _overlay;
+	protected ImageOverlay _overlay;
 	
 	public RichTextLabel(ImageOverlay overlay, String text) {
 		_overlay = overlay;

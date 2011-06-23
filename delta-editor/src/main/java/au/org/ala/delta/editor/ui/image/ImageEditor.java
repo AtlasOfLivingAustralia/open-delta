@@ -37,6 +37,8 @@ import au.org.ala.delta.model.Illustratable;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.ui.image.ImagePanel.ScalingMode;
+import au.org.ala.delta.ui.image.OverlaySelectionObserver;
+import au.org.ala.delta.ui.image.SelectableOverlay;
 import au.org.ala.delta.util.DataSetHelper;
 
 /**
@@ -60,6 +62,7 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 	private boolean _hideTextOverlays;
 	private Map<String, ImageEditorPanel> _imageEditors;
 	private DataSetHelper _helper;
+	private PreviewController _previewController;
 	
 	public ImageEditor(EditorViewModel model) {
 
@@ -72,6 +75,7 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 		_scalingMode = ScalingMode.FIXED_ASPECT_RATIO;
 		_hideHotSpots = false;
 		_hideTextOverlays = false;
+		_previewController = new PreviewController();
 		getContentPane().setLayout(new BorderLayout());
 		getContentPane().add(_contentPanel, BorderLayout.CENTER);
 		
@@ -459,7 +463,12 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 	}
 	
 	@Action
-	public void togglePreviewMode() {}
+	public void togglePreviewMode() {
+		setHideHotSpots(true);
+		for (ImageEditorPanel editor : _imageEditors.values()) {
+			editor.addOverlaySelectionObserver(_previewController);
+		}
+	}
 	
 	@Action
 	public void aboutImage() {}
@@ -470,5 +479,14 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 			setClosed(true);
 		}
 		catch (PropertyVetoException e) {}
+	}
+	
+	class PreviewController implements OverlaySelectionObserver {
+
+		@Override
+		public void overlaySelected(SelectableOverlay overlay) {
+			overlay.setSelected(!overlay.isSelected());
+		}
+		
 	}
 }

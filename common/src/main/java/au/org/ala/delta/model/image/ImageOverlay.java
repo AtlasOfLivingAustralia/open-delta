@@ -161,14 +161,6 @@ public class ImageOverlay {
 		return value.toString();
 	}
 
-	public String getDisplayText() {
-		throw new NotImplementedException();
-	}
-
-	public void updateText() {
-		throw new NotImplementedException();
-	}
-
 	// static const char const * punct;
 
 	public void clearAll() {

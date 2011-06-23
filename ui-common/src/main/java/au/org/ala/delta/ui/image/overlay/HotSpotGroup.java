@@ -1,24 +1,24 @@
 package au.org.ala.delta.ui.image.overlay;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import au.org.ala.delta.model.image.ImageOverlay;
+import au.org.ala.delta.ui.image.OverlaySelectionObserver;
+import au.org.ala.delta.ui.image.SelectableOverlay;
 
 /**
  * Aggregates a set of HotSpots to allow them to act as a single region.
  */
-public class HotSpotGroup implements HotSpotObserver {
+public class HotSpotGroup implements HotSpotObserver, SelectableOverlay {
 
 	private Set<HotSpot> _hotspots;
-	private List<HotSpotObserver> _observers;
 	private SelectableTextOverlay _overlay;
+	private SelectableOverlaySupport _support;
 	
 	public HotSpotGroup(SelectableTextOverlay overlay) {
 		_hotspots = new HashSet<HotSpot>();
-		_observers = new ArrayList<HotSpotObserver>();
+		_support = new SelectableOverlaySupport();
 		_overlay = overlay;
 	}
 	
@@ -43,34 +43,42 @@ public class HotSpotGroup implements HotSpotObserver {
 	@Override
 	public void hotSpotEntered(ImageOverlay overlay) {
 		setMouseInHotSpotRegion(true);
-		for (int i=_observers.size()-1; i>=0; i--) {
-			_observers.get(i).hotSpotEntered(overlay);
-		}
 	}
 
 	@Override
 	public void hotSpotExited(ImageOverlay overlay) {
 		setMouseInHotSpotRegion(false);
-		for (int i=_observers.size()-1; i>=0; i--) {
-			_observers.get(i).hotSpotExited(overlay);
-		}
 	}
 
 	@Override
 	public void hotSpotSelected(ImageOverlay overlay) {
-		for (int i=_observers.size()-1; i>=0; i--) {
-			_observers.get(i).hotSpotSelected(overlay);
-		}
-		_overlay.setSelected(!_overlay.isSelected());
+		_support.fireOverlaySelected(_overlay);
 	}
 	
-	public void addHotSpotObserver(HotSpotObserver observer) {
-		_observers.add(observer);
-	}
-	
-	public void removeHotSpotObserver(HotSpotObserver observer) {
-		_observers.remove(observer);
+	@Override
+	public void addOverlaySelectionObserver(OverlaySelectionObserver observer) {
+		_support.addOverlaySelectionObserver(observer);
 	}
 
+	@Override
+	public void removeOverlaySelectionObserver(OverlaySelectionObserver observer) {
+		_support.removeOverlaySelectionObserver(observer);
+	}
+
+	@Override
+	public boolean isSelected() {
+		return _overlay.isSelected();
+	}
+
+	@Override
+	public void setSelected(boolean selected) {
+		_overlay.setSelected(selected);
+	}
+
+	@Override
+	public ImageOverlay getImageOverlay() {
+		return _overlay.getImageOverlay();
+	}
+	
 	
 }

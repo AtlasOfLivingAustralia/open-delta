@@ -22,7 +22,6 @@ import au.org.ala.delta.model.image.ImageOverlay;
 import au.org.ala.delta.model.image.OverlayType;
 import au.org.ala.delta.ui.image.overlay.HotSpot;
 import au.org.ala.delta.ui.image.overlay.HotSpotGroup;
-import au.org.ala.delta.ui.image.overlay.HotSpotObserver;
 import au.org.ala.delta.ui.image.overlay.OverlayButton;
 import au.org.ala.delta.ui.image.overlay.OverlayLocation;
 import au.org.ala.delta.ui.image.overlay.OverlayLocationProvider;
@@ -31,7 +30,7 @@ import au.org.ala.delta.ui.image.overlay.SelectableTextOverlay;
 /**
  * Displays a single DELTA Image.
  */
-public class ImageViewer extends ImagePanel implements LayoutManager2, HotSpotObserver, ActionListener {
+public class ImageViewer extends ImagePanel implements LayoutManager2, ActionListener, OverlaySelectionObserver {
 
 	private static final String IMAGE_OVERLAY_PROPERTY = "ImageOverlay";
 
@@ -88,11 +87,15 @@ public class ImageViewer extends ImagePanel implements LayoutManager2, HotSpotOb
 			}
 			
 			if (overlayComp instanceof SelectableTextOverlay) {
+				SelectableTextOverlay selectable = (SelectableTextOverlay)overlayComp;
+				selectable.addOverlaySelectionObserver(this);
 				// If the overlay has associated hotspots, add them also.
 				int hotSpotCount = overlay.getNHotSpots();
 				if (hotSpotCount > 0) {
-					HotSpotGroup group = new HotSpotGroup((SelectableTextOverlay)overlayComp);
+					HotSpotGroup group = new HotSpotGroup(selectable);
+					group.addOverlaySelectionObserver(this);
 					_hotSpotGroups.add(group);
+					
 					for (int i=1; i<=hotSpotCount; i++) {
 						overlay.getLocation(i);
 						HotSpot hotSpot = _factory.createHotSpot(overlay, i);
@@ -203,7 +206,7 @@ public class ImageViewer extends ImagePanel implements LayoutManager2, HotSpotOb
 		layoutOverlays();
 	}
 	
-	protected void fireOverlaySelected(ImageOverlay overlay) {
+	protected void fireOverlaySelected(SelectableOverlay overlay) {
 		for (int i=_observers.size()-1; i>=0; i--) {
 			_observers.get(i).overlaySelected(overlay);
 		}
@@ -211,25 +214,12 @@ public class ImageViewer extends ImagePanel implements LayoutManager2, HotSpotOb
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		JComponent comp = (JComponent)e.getSource();
-		ImageOverlay overlay = (ImageOverlay)comp.getClientProperty(IMAGE_OVERLAY_PROPERTY);
-		if (overlay != null) {
-			fireOverlaySelected(overlay);
-		}
-	}
-	
-	@Override
-	public void hotSpotEntered(ImageOverlay overlay) {
-		
+		SelectableOverlay comp = (SelectableOverlay)e.getSource();
+		fireOverlaySelected(comp);
 	}
 
 	@Override
-	public void hotSpotExited(ImageOverlay overlay) {
-		
-	}
-
-	@Override
-	public void hotSpotSelected(ImageOverlay overlay) {
+	public void overlaySelected(SelectableOverlay overlay) {
 		fireOverlaySelected(overlay);
 	}
 
