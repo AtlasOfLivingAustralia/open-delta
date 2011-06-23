@@ -10,11 +10,15 @@ import javax.swing.border.Border;
 
 import au.org.ala.delta.ui.image.ImageViewer;
 
+/**
+ * The FixedCentreOverlayLocation adjusts the centre position of the overlay
+ * component as the image resizes but does not modify the size.
+ */
 public class FixedCentreOverlayLocation implements OverlayLocation {
 
-	private JComponent _component;
-	private ImageViewer _image;
-	private au.org.ala.delta.model.image.OverlayLocation _location;
+	protected JComponent _component;
+	protected ImageViewer _image;
+	protected au.org.ala.delta.model.image.OverlayLocation _location;
 	
 	public FixedCentreOverlayLocation(ImageViewer image, JComponent component, au.org.ala.delta.model.image.OverlayLocation location) {
 		_component = component;
@@ -57,7 +61,7 @@ public class FixedCentreOverlayLocation implements OverlayLocation {
 	
 	@Override
 	public int getHeight() {
-		if (_location.H == 0) {
+		if (_location.H <= 0) {
 			return _component.getPreferredSize().height;
 		}
 		
@@ -86,7 +90,7 @@ public class FixedCentreOverlayLocation implements OverlayLocation {
 	
 	@Override
 	public int getWidth() {
-		if (_location.W == 0) {
+		if (_location.W <= 0) {
 			return _component.getPreferredSize().width;
 		}
 		

@@ -30,6 +30,6 @@ public class OverlayButton extends JButton implements ActionListener, OverlayLoc
 
 	@Override
 	public OverlayLocation location(ImageViewer viewer) {
-		return new ScaledOverlayLocation(viewer, _overlay.getLocation(0));
+		return new PreferredSizeFixedCentreOverlayLocation(viewer, this, _overlay.getLocation(0));
 	}
 }

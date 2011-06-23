@@ -65,6 +65,7 @@ public class ImageViewer extends ImagePanel implements LayoutManager2, HotSpotOb
 		setLayout(this);
 		displayImage(image.getImageLocation(imagePath));
 		_components = new ArrayList<JComponent>();
+		_observers = new ArrayList<OverlaySelectionObserver>();
 		addOverlays();
 	}
 	
