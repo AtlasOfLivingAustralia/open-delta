@@ -19,6 +19,8 @@ import javax.swing.JInternalFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 
 import org.apache.commons.lang.StringUtils;
@@ -33,6 +35,8 @@ import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Illustratable;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.image.Image;
+import au.org.ala.delta.ui.image.ImagePanel.ScalingMode;
+import au.org.ala.delta.util.DataSetHelper;
 
 /**
  * Displays Character and Taxon images and allows the addition of 
@@ -49,15 +53,23 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 	private EditorViewModel _model;
 	private List<Image> _images;
 	private JMenu _subjectMenu;
+	private ScalingMode _scalingMode;
+	private JPanel _contentPanel;
 	
 	private Map<String, ImageEditorPanel> _imageEditors;
+	private DataSetHelper _helper;
 	
 	public ImageEditor(EditorViewModel model) {
 
 		_model = model;
+		_helper = new DataSetHelper(model);
 		_actionMap = Application.getInstance().getContext().getActionMap(this);
 		_layout = new CardLayout();
-		getContentPane().setLayout(_layout);
+		_contentPanel = new JPanel();
+		_contentPanel.setLayout(_layout);
+		_scalingMode = ScalingMode.FIXED_ASPECT_RATIO;
+		getContentPane().setLayout(new BorderLayout());
+		getContentPane().add(_contentPanel, BorderLayout.CENTER);
 		
 		_subjectMenu = new JMenu();
 		_subjectMenu.setName("subjectMenu");
@@ -103,7 +115,7 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 		
 		_imageEditors.put(text, viewer);
 		
-		getContentPane().add(viewer, text);	
+		_contentPanel.add(viewer, text);	
 	}
 	
 	/**
@@ -166,15 +178,16 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 		windowMenu.setName("windowMenu");
 
 		String[] windowMenuActions = { 
-				"toggleScaling", "toggleHideText", "toggleHideHotSpots", 
+				"*toggleScaling", "*toggleHideText", "*toggleHideHotSpots", 
 				"replaySound", "replayVideo", "-", 
 				"reloadImage", "fitToImage", "fullScreen", "-",
-				"togglePreviewMode", "-",
+				"*togglePreviewMode", "-",
 				"aboutImage", "-",
 				"closeImage"};
 
-		MenuBuilder.buildMenu(windowMenu, windowMenuActions, _actionMap);
-
+		JMenuItem[] items = MenuBuilder.buildMenu(windowMenu, windowMenuActions, _actionMap);
+		((JCheckBoxMenuItem)items[0]).setSelected(true);
+		
 		return windowMenu;
 	}
 	
@@ -218,27 +231,27 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 	private void displaySubject(Character subject, Image image) {
 		displaySubject((Illustratable)subject, image);
 		
-		Character character = getNextCharacterWithImage();
+		Character character = _helper.getNextCharacterWithImage((Character)_subject);
 		_actionMap.get("nextCharacterWithImage").setEnabled(character != null);
 		
-		character = getPreviousCharacterWithImage();
+		character = _helper.getPreviousCharacterWithImage((Character)_subject);
 		_actionMap.get("previousCharacterWithImage").setEnabled(character != null);
 	}
 	
 	private void displaySubject(Item subject, Image image) {
 		displaySubject((Illustratable)subject, image);
 		
-		Item item = getNextItemWithImage();
+		Item item = _helper.getNextItemWithImage((Item)_subject);
 		_actionMap.get("nextItemWithImage").setEnabled(item != null);
 		
-		item = getPreviousItemWithImage();
+		item = _helper.getPreviousItemWithImage((Item)_subject);
 		_actionMap.get("previousItemWithImage").setEnabled(item != null);
 	}
 	
 	private void displaySubject(Illustratable subject, Image image) {
 		_subject = image.getSubject();
 		_images = _subject.getImages();
-		getContentPane().removeAll();
+		_contentPanel.removeAll();
 		
 		_imageEditors = new HashMap<String, ImageEditorPanel>();
 		
@@ -261,7 +274,7 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 		int index = _images.indexOf(_selectedImage);
 		_actionMap.get("nextImage").setEnabled(index < (_images.size()-1));
 		_actionMap.get("previousImage").setEnabled(index > 0);
-		_layout.show(getContentPane(), text);
+		_layout.show(_contentPanel, text);
 		revalidate();
 	}
 	
@@ -291,87 +304,36 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 	
 	@Action
 	public void nextItemWithImage() {
-		Item item = getNextItemWithImage();
+		Item item = _helper.getNextItemWithImage((Item)_subject);
 		if (item != null) {
 			displaySubject(item, item.getImages().get(0));
 		}	
-	}
-	
-	private Item getNextItemWithImage() {
-		Item item = (Item)_subject;
-		int itemNumber = item.getItemNumber();
-		
-		for (int i=itemNumber+1; i<=_model.getMaximumNumberOfItems(); i++) {
-			Item next = _model.getItem(i);
-			if (next.getImageCount() > 0) {
-				return next;
-			}	
-		}
-		return null;
 	}
 	
 	@Action
 	public void previousItemWithImage() {
 		
-		Item item = getPreviousItemWithImage();
+		Item item = _helper.getPreviousItemWithImage((Item)_subject);
 		if (item != null) {
 			displaySubject(item, item.getImages().get(0));
 		}	
 	}
 	
-	private Item getPreviousItemWithImage() {
-		Item item = (Item)_subject;
-		int itemNumber = item.getItemNumber();
-		
-		for (int i=itemNumber-1; i>0; i--) {
-			Item next = _model.getItem(i);
-			if (next.getImageCount() > 0) {
-				return next;
-			}
-		}
-		return null;
-	}
 	
 	@Action
 	public void nextCharacterWithImage() {
-		Character character = getNextCharacterWithImage();
+		Character character = _helper.getNextCharacterWithImage((Character)_subject);
 		if (character != null) {
 			displaySubject(character, character.getImages().get(0));	
 		}
 	}
-	
-	private Character getNextCharacterWithImage() {
-		Character character = (Character)_subject;
-		int characterNumber = character.getCharacterId();
-		
-		for (int i=characterNumber+1; i<=_model.getNumberOfCharacters(); i++) {
-			Character next = _model.getCharacter(i);
-			if (next.getImageCount() > 0) {
-				return next;
-			}	
-		}
-		return null;
-	}
-	
+
 	@Action
 	public void previousCharacterWithImage() {
-		Character character = getPreviousCharacterWithImage();
+		Character character = _helper.getPreviousCharacterWithImage((Character)_subject);
 		if (character != null) {
 			displaySubject(character, character.getImages().get(0));	
 		}
-	}
-	
-	private Character getPreviousCharacterWithImage() {
-		Character character = (Character)_subject;
-		int characterNumber = character.getCharacterId();
-		
-		for (int i=characterNumber-1; i>0; i--) {
-			Character next = _model.getCharacter(i);
-			if (next.getImageCount() > 0) {
-				return next;
-			}	
-		}
-		return null;
 	}
 	
 	@Action
@@ -381,7 +343,30 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 	public void showImageNotes() {}
 	
 	@Action
-	public void toggleScaling() {}
+	public void toggleScaling() {
+		if (_scalingMode == ScalingMode.NO_SCALING) {
+			setScalingMode(ScalingMode.FIXED_ASPECT_RATIO);
+		}
+		else {
+			setScalingMode(ScalingMode.NO_SCALING);
+		}
+	}
+	
+	private void setScalingMode(ScalingMode mode) {
+		if (mode == ScalingMode.NO_SCALING) {
+			getContentPane().remove(_contentPanel);
+			getContentPane().add(new JScrollPane(_contentPanel), BorderLayout.CENTER);
+		}
+		else if (_scalingMode == ScalingMode.NO_SCALING){
+			getContentPane().removeAll();
+			getContentPane().add(_contentPanel, BorderLayout.CENTER);
+		}
+		_scalingMode = mode;
+		for (ImageEditorPanel editor : _imageEditors.values()) {
+			editor.setScalingMode(mode);
+		}
+		revalidate();
+	}
 	
 	@Action
 	public void toggleHideText() {}
@@ -395,6 +380,9 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 	@Action
 	public void replayVideo() {}
 	
+	/**
+	 * Reloads the image from disk in response to the menu selection.
+	 */
 	@Action
 	public void reloadImage() {
 		String key = subjectTextOrFileName(_selectedImage);
@@ -406,11 +394,19 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 		revalidate();
 	}
 	
+	/**
+	 * Resizes this JInternalFrame so that the image is displayed at 
+	 * it's natural size.
+	 */
 	@Action
 	public void fitToImage() {
 		pack();
 	}
 	
+	/**
+	 * Displays the image in a full screen window.  Clicking the mouse
+	 * will dismiss the window and return to normal mode.
+	 */
 	@Action
 	public void fullScreen() {
 		Window parent = SwingUtilities.getWindowAncestor(this);
@@ -428,7 +424,7 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 				w.dispose();
 				gd.setFullScreenWindow(null);
 				add(editor, key);
-				_layout.show(getContentPane(), key);
+				_layout.show(_contentPanel, key);
 				revalidate();
 			}
 		});
