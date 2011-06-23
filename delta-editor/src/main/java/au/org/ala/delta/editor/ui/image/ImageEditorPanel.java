@@ -25,33 +25,54 @@ public class ImageEditorPanel extends ImageViewer {
 
 	private JComponent _selectedOverlayComp;
 	private boolean _dragging;
+	private boolean _editingEnabled;
 	
 	public ImageEditorPanel(String imagePath, Image image, DeltaDataSet dataSet) {
 		super(imagePath, image, dataSet);
-		
+		_editingEnabled = true;
 		addEventHandlers();
+	}
+	
+	public void setEditingEnabled(boolean enabled) {
+		_editingEnabled = enabled;
+		if (!_editingEnabled) {
+			resetBorder();
+		}
 	}
 	
 	private void addEventHandlers() {
 		for (JComponent overlayComp : _components) {
-			new GrowBaby(overlayComp);
+			new OverlayComponentListener(overlayComp);
 		}
 	}
 	
-	
 	public void select(JComponent overlayComp) {
+		if (!_editingEnabled) {
+			return;
+		}
+		
 		if (_selectedOverlayComp != overlayComp) {
 			Border border = overlayComp.getBorder();
 			overlayComp.putClientProperty("OldBorder", border);
 			if (_selectedOverlayComp != null) {
-				_selectedOverlayComp.setBorder((Border)_selectedOverlayComp.getClientProperty("OldBorder"));
+				resetBorder();
 			}
 			_selectedOverlayComp = overlayComp;
 			_selectedOverlayComp.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
 		}
 	}
 	
+	private void resetBorder() {
+		if (_selectedOverlayComp != null) {
+			_selectedOverlayComp.setBorder((Border)_selectedOverlayComp.getClientProperty("OldBorder"));
+		}
+	}
+	
 	public void move(JComponent overlayComp, int dx, int dy) {
+		if (!_editingEnabled) {
+			return;
+		}
+		
 		if (_selectedOverlayComp == overlayComp) {
 			if (!_dragging) {
 				_dragging = true;
@@ -68,18 +89,21 @@ public class ImageEditorPanel extends ImageViewer {
 	}
 	
 	public void stopMove() {
+		if (!_editingEnabled) {
+			return;
+		}
 		_dragging = false;
 		setLayout(this);
 		revalidate();
 	}
 	
 	
-	class GrowBaby extends MouseAdapter implements MouseMotionListener {
+	class OverlayComponentListener extends MouseAdapter implements MouseMotionListener {
 
 		private JComponent _overlayComp;
 		private MouseEvent _pressedEvent;
 		
-		public GrowBaby(JComponent overlayComp) {
+		public OverlayComponentListener(JComponent overlayComp) {
 			_overlayComp = overlayComp;
 			_overlayComp.addMouseListener(this);
 			_overlayComp.addMouseMotionListener(this);
@@ -111,10 +135,6 @@ public class ImageEditorPanel extends ImageViewer {
 		}
 
 		@Override
-		public void mouseMoved(MouseEvent e) {
-			// TODO Auto-generated method stub
-			
-		}
-		
+		public void mouseMoved(MouseEvent e) {}
 	}
 }

@@ -36,6 +36,8 @@ import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Illustratable;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.image.Image;
+import au.org.ala.delta.model.image.ImageOverlay;
+import au.org.ala.delta.model.image.OverlayType;
 import au.org.ala.delta.ui.image.ImagePanel.ScalingMode;
 import au.org.ala.delta.ui.image.OverlaySelectionObserver;
 import au.org.ala.delta.ui.image.SelectableOverlay;
@@ -60,6 +62,7 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 	private JPanel _contentPanel;
 	private boolean _hideHotSpots;
 	private boolean _hideTextOverlays;
+	private boolean _previewMode;
 	private Map<String, ImageEditorPanel> _imageEditors;
 	private DataSetHelper _helper;
 	private PreviewController _previewController;
@@ -75,6 +78,7 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 		_scalingMode = ScalingMode.FIXED_ASPECT_RATIO;
 		_hideHotSpots = false;
 		_hideTextOverlays = false;
+		_previewMode = false;
 		_previewController = new PreviewController();
 		getContentPane().setLayout(new BorderLayout());
 		getContentPane().add(_contentPanel, BorderLayout.CENTER);
@@ -464,9 +468,23 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 	
 	@Action
 	public void togglePreviewMode() {
-		setHideHotSpots(true);
-		for (ImageEditorPanel editor : _imageEditors.values()) {
-			editor.addOverlaySelectionObserver(_previewController);
+		setPreviewMode(!_previewMode);
+	}
+	
+	private void setPreviewMode(boolean preview) {
+		if (_previewMode != preview) {
+			_previewMode = preview;
+					
+			setHideHotSpots(preview);
+			for (ImageEditorPanel editor : _imageEditors.values()) {
+				editor.setEditingEnabled(!preview);
+				if (!preview) {
+					editor.removeOverlaySelectionObserver(_previewController);
+				}
+				else {
+					editor.addOverlaySelectionObserver(_previewController);
+				}
+			}
 		}
 	}
 	
@@ -486,6 +504,12 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 		@Override
 		public void overlaySelected(SelectableOverlay overlay) {
 			overlay.setSelected(!overlay.isSelected());
+			ImageOverlay imageOverlay = overlay.getImageOverlay();
+			if (imageOverlay.isType(OverlayType.OLOK) ||
+				imageOverlay.isType(OverlayType.OLCANCEL)) {
+				closeImage();
+			}
+					
 		}
 		
 	}
