@@ -33,9 +33,8 @@ public class DisplayCharacterOrderBestTest extends TestCase {
 
     @Test
     public void testBestOrder() throws Exception {
-        // URL initFileUrl =
-        // getClass().getResource("/dataset/controlling_characters_simple/intkey.ink");
-        URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
+        URL initFileUrl = getClass().getResource("/dataset/controlling_characters_simple/intkey.ink");
+        //URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
         IntkeyContext context = new IntkeyContext(null);
         context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
 
@@ -124,6 +123,10 @@ public class DisplayCharacterOrderBestTest extends TestCase {
         List<Character> availableCharacters = new ArrayList<Character>(specimen.getAvailableCharacters());
         List<Character> ignoredCharacters = new ArrayList<Character>();
         for (Character ch : availableCharacters) {
+            if (ch.getCharacterId() == 33) {
+                System.out.println("foo");
+            }
+
             // TODO ignore EXACT characters that have been eliminated
             // TODO ignore characters not "masked in" - excluded characters?
 
@@ -165,11 +168,14 @@ public class DisplayCharacterOrderBestTest extends TestCase {
 
         // sort available characters by reliability (descending)
         Collections.sort(availableCharacters, new ReliabilityComparator());
-        
+
         List<Character> unsuitableCharacters = new ArrayList<Character>();
 
         for (Character ch : availableCharacters) {
-            
+            if (ch.getCharacterId() == 33) {
+                System.out.println("bar");
+            }
+
             Map<Integer, Integer> subgroupsNumTaxa = new HashMap<Integer, Integer>();
             Map<Integer, Double> subgroupFrequencies = new HashMap<Integer, Double>();
             int sumNumTaxaInSubgroups = 0;
@@ -198,16 +204,16 @@ public class DisplayCharacterOrderBestTest extends TestCase {
 
             int totalNumStates = 0;
             if (ch instanceof MultiStateCharacter) {
-                totalNumStates = ((MultiStateCharacter) ch).getNumberOfStates(); 
+                totalNumStates = ((MultiStateCharacter) ch).getNumberOfStates();
             } else if (ch instanceof IntegerCharacter) {
                 IntegerCharacter intChar = (IntegerCharacter) ch;
                 totalNumStates = intChar.getMaximumValue() - intChar.getMinimumValue() + 3;
             } else if (ch instanceof RealCharacter) {
-                totalNumStates = ((RealCharacter) ch).getKeyStateBoundaries().size(); 
+                totalNumStates = ((RealCharacter) ch).getKeyStateBoundaries().size();
             } else {
                 throw new RuntimeException("Invalid character type " + ch.toString());
             }
-            
+
             List<Attribute> charAttributes = dataset.getAttributesForCharacter(ch.getCharacterId());
 
             for (Attribute attr : charAttributes) {
@@ -317,14 +323,16 @@ public class DisplayCharacterOrderBestTest extends TestCase {
             // reading from two
             boolean allTaxaInOneGroup = false;
             for (int stateValue : subgroupsNumTaxa.keySet()) {
-                if (subgroupsNumTaxa.get(stateValue) == sumNumTaxaInSubgroups) {
+                int numTaxaInSubgroup = subgroupsNumTaxa.get(stateValue);
+
+                if (numTaxaInSubgroup == sumNumTaxaInSubgroups) {
                     System.out.println(String.format("%s all taxa in one group", ch.toString()));
                     allTaxaInOneGroup = true;
                 } else {
-                    if (subgroupsNumTaxa.get(stateValue) == availableTaxa.size()) {
-
+                    if (numTaxaInSubgroup == availableTaxa.size()) {
                         numSubgroupsSameSizeAsOriginalGroup++;
                     }
+
                     sup0 += (subgroupFrequencies.get(stateValue) * log2(subgroupsNumTaxa.get(stateValue)));
                 }
             }
@@ -336,9 +344,9 @@ public class DisplayCharacterOrderBestTest extends TestCase {
 
             // TODO something about control characters here???
             boolean isControllingChar = !ch.getDependentCharacters().isEmpty();
-            //WTF is this test for???
-            if (!isControllingChar && (subgroupsNumTaxa.keySet().size() == numSubgroupsSameSizeAsOriginalGroup 
-                    || sumNumTaxaInSubgroups > availableTaxa.size() && sumNumTaxaInSubgroups == totalNumStates)) {
+            // WTF is this test for???
+            if (!isControllingChar
+                    && (subgroupsNumTaxa.keySet().size() == numSubgroupsSameSizeAsOriginalGroup || (sumNumTaxaInSubgroups > availableTaxa.size() && sumNumTaxaInSubgroups == totalNumStates))) {
                 unsuitableCharacters.add(ch);
                 continue;
             }
@@ -355,7 +363,7 @@ public class DisplayCharacterOrderBestTest extends TestCase {
             sep = -sup0 + log2(availableTaxa.size());
 
             // TODO some stuff about rounding errors
-            
+
             // TODO don't display controlling characters with 0 separation
             if (isControllingChar && sep == 0) {
                 continue;
@@ -369,23 +377,22 @@ public class DisplayCharacterOrderBestTest extends TestCase {
             suMap.put(ch, su);
         }
 
-        
         availableCharacters.removeAll(unsuitableCharacters);
-        
+
         List<Character> sortedChars = new ArrayList<Character>(availableCharacters);
         Collections.sort(sortedChars, new Comparator<Character>() {
 
             @Override
             public int compare(Character c1, Character c2) {
                 // TODO had to make suMap final - dodgy
-                
+
                 return suMap.get(c1).compareTo(suMap.get(c2));
             }
         });
 
         System.out.println(availableCharacters.size());
         for (Character ch : sortedChars) {
-            System.out.println(String.format("%s. %s - cost: %s su: %s sep: %s", ch.getCharacterId(), ch.getDescription(), costMap.get(ch), suMap.get(ch), sepMap.get(ch)));
+            System.out.println(String.format("%s. %s - cost: %s su: %s sep: %.2f", ch.getCharacterId(), ch.getDescription(), costMap.get(ch), suMap.get(ch), sepMap.get(ch)));
         }
 
         return Collections.EMPTY_LIST;
