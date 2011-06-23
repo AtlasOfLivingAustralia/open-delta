@@ -22,6 +22,13 @@ public class HotSpotGroup implements HotSpotObserver {
 		_overlay = overlay;
 	}
 	
+	public void setDisplayHotSpots(boolean displayHotSpots) {
+		
+		for (HotSpot hotSpot : _hotspots) {
+			hotSpot.setAlwaysDrawHotSpot(displayHotSpots);
+		}
+	}
+	
 	public void add(HotSpot hotSpot) {
 		_hotspots.add(hotSpot);
 		hotSpot.addHotSpotObserver(this);
@@ -64,4 +71,6 @@ public class HotSpotGroup implements HotSpotObserver {
 	public void removeHotSpotObserver(HotSpotObserver observer) {
 		_observers.remove(observer);
 	}
+
+	
 }

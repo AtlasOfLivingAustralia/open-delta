@@ -46,6 +46,9 @@ public class ImageViewer extends ImagePanel implements LayoutManager2, HotSpotOb
 	
 	private List<OverlaySelectionObserver> _observers;
 	
+	/** Kept for convenience when toggling the display of hotspots */
+	private List<HotSpotGroup> _hotSpotGroups;
+	
 	/**
 	 * Creates a new ImageViewer for the supplied Image.
 	 * @param imagePath the path to find relative images on.
@@ -65,6 +68,7 @@ public class ImageViewer extends ImagePanel implements LayoutManager2, HotSpotOb
 	private void addOverlays() {
 		_overlays = _image.getOverlays();
 		Illustratable subject = _image.getSubject();
+		_hotSpotGroups = new ArrayList<HotSpotGroup>();
 		for (ImageOverlay overlay : _overlays) {
 			JComponent overlayComp = _factory.createOverlayComponent(overlay, subject);
 			if (overlayComp == null) {
@@ -82,6 +86,7 @@ public class ImageViewer extends ImagePanel implements LayoutManager2, HotSpotOb
 				int hotSpotCount = overlay.getNHotSpots();
 				if (hotSpotCount > 0) {
 					HotSpotGroup group = new HotSpotGroup((SelectableTextOverlay)overlayComp);
+					_hotSpotGroups.add(group);
 					for (int i=1; i<=hotSpotCount; i++) {
 						overlay.getLocation(i);
 						HotSpot hotSpot = _factory.createHotSpot(overlay, i);
@@ -91,6 +96,13 @@ public class ImageViewer extends ImagePanel implements LayoutManager2, HotSpotOb
 				}
 			}
 		}
+	}
+	
+	public void setDisplayHotSpots(boolean displayHotSpots) {
+		for (HotSpotGroup group : _hotSpotGroups) {
+			group.setDisplayHotSpots(displayHotSpots);
+		}
+		repaint();
 	}
 	
 	/**

@@ -55,7 +55,7 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 	private JMenu _subjectMenu;
 	private ScalingMode _scalingMode;
 	private JPanel _contentPanel;
-	
+	private boolean _displayHotSpots;
 	private Map<String, ImageEditorPanel> _imageEditors;
 	private DataSetHelper _helper;
 	
@@ -68,6 +68,7 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 		_contentPanel = new JPanel();
 		_contentPanel.setLayout(_layout);
 		_scalingMode = ScalingMode.FIXED_ASPECT_RATIO;
+		_displayHotSpots = true;
 		getContentPane().setLayout(new BorderLayout());
 		getContentPane().add(_contentPanel, BorderLayout.CENTER);
 		
@@ -372,7 +373,18 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 	public void toggleHideText() {}
 	
 	@Action
-	public void toggleHideHotSpots() {}
+	public void toggleHideHotSpots() {
+		setDisplayHotSpots(!_displayHotSpots);
+	}
+	
+	public void setDisplayHotSpots(boolean displayHotSpots) {
+		if (_displayHotSpots != displayHotSpots) {
+			_displayHotSpots = displayHotSpots;
+			for (ImageEditorPanel editor : _imageEditors.values()) {
+				editor.setDisplayHotSpots(displayHotSpots);
+			}
+		}
+	}
 	
 	@Action
 	public void replaySound() {}
