@@ -428,6 +428,12 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 		revalidate();
 	}
 	
+	private ImageEditorPanel visibleEditor() {
+		String key = subjectTextOrFileName(_selectedImage);
+		ImageEditorPanel editor = _imageEditors.get(key);
+		return editor;
+	}
+	
 	/**
 	 * Resizes this JInternalFrame so that the image is displayed at 
 	 * it's natural size.
@@ -489,7 +495,12 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 	}
 	
 	@Action
-	public void aboutImage() {}
+	public void aboutImage() {
+		AboutImageDialog about = new AboutImageDialog(
+				this, "", _selectedImage.getImageLocation(_model.getImagePath()),
+				visibleEditor().getImage(), visibleEditor().getImageFormatName());
+		
+	}
 	
 	@Action
 	public void closeImage() {

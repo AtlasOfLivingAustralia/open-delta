@@ -8,9 +8,14 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
+import java.io.InputStream;
 import java.net.URL;
+import java.util.Iterator;
 
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReadParam;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 import javax.swing.JPanel;
 import javax.swing.Scrollable;
 import javax.swing.SwingConstants;
@@ -27,6 +32,7 @@ public class ImagePanel extends JPanel implements Scrollable {
 	protected Image _scaledImage;
 	private ScalingMode _scalingMode;
 	private ScalingStrategy _scalingStrategy;
+	private String _imageType;
 	
 	public enum ScalingMode {NO_SCALING, FIXED_ASPECT_RATIO, FILL_AVAILABLE_SPACE};
 	
@@ -43,7 +49,7 @@ public class ImagePanel extends JPanel implements Scrollable {
 	public void displayImage(URL imageFileLocation) {
 		
 		try {
-			_image = ImageIO.read(imageFileLocation);
+			_image = read(imageFileLocation);
 			_scaledImage = _image;
 			
 			setScalingMode(_scalingMode);
@@ -54,6 +60,45 @@ public class ImagePanel extends JPanel implements Scrollable {
 		catch (Exception e) {
 			throw new RuntimeException("Unable to load image: "+imageFileLocation);
 		}
+	}
+	
+	private BufferedImage read(URL imageFileLocation) throws Exception {
+		InputStream inputStream = imageFileLocation.openStream();
+       
+        ImageInputStream stream = ImageIO.createImageInputStream(inputStream);
+        BufferedImage image;
+        try {
+        	Iterator<ImageReader> iter = ImageIO.getImageReaders(stream);
+            if (!iter.hasNext()) {
+                return null;
+            }
+
+            ImageReader reader = (ImageReader)iter.next();
+            ImageReadParam param = reader.getDefaultReadParam();
+            reader.setInput(stream, true, true);
+            _imageType = reader.getFormatName();
+            try {
+                image = reader.read(0, param);
+            } finally {
+                reader.dispose();
+                stream.close();
+            }
+           
+            if (image == null) {
+                stream.close();
+            }
+        } finally {
+        	inputStream.close();
+        }
+        return image;
+	}
+	
+	public BufferedImage getImage() {
+		return _image;
+	}
+	
+	public String getImageFormatName() {
+		return _imageType;
 	}
 	
 	public void setScalingMode(ScalingMode mode) {
