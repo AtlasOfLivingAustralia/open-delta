@@ -33,8 +33,8 @@ public class DisplayCharacterOrderBestTest extends TestCase {
 
     @Test
     public void testBestOrder() throws Exception {
-        URL initFileUrl = getClass().getResource("/dataset/controlling_characters_simple/intkey.ink");
-        //URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
+        //URL initFileUrl = getClass().getResource("/dataset/controlling_characters_simple/intkey.ink");
+        URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
         IntkeyContext context = new IntkeyContext(null);
         context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
 
@@ -123,7 +123,7 @@ public class DisplayCharacterOrderBestTest extends TestCase {
         List<Character> availableCharacters = new ArrayList<Character>(specimen.getAvailableCharacters());
         List<Character> ignoredCharacters = new ArrayList<Character>();
         for (Character ch : availableCharacters) {
-            if (ch.getCharacterId() == 33) {
+            if (ch.getCharacterId() == 38) {
                 System.out.println("foo");
             }
 
@@ -172,7 +172,7 @@ public class DisplayCharacterOrderBestTest extends TestCase {
         List<Character> unsuitableCharacters = new ArrayList<Character>();
 
         for (Character ch : availableCharacters) {
-            if (ch.getCharacterId() == 33) {
+            if (ch.getCharacterId() == 38) {
                 System.out.println("bar");
             }
 
@@ -207,7 +207,7 @@ public class DisplayCharacterOrderBestTest extends TestCase {
                 totalNumStates = ((MultiStateCharacter) ch).getNumberOfStates();
             } else if (ch instanceof IntegerCharacter) {
                 IntegerCharacter intChar = (IntegerCharacter) ch;
-                totalNumStates = intChar.getMaximumValue() - intChar.getMinimumValue() + 3;
+                totalNumStates = intChar.getMaximumValue() - intChar.getMinimumValue() + 2;
             } else if (ch instanceof RealCharacter) {
                 totalNumStates = ((RealCharacter) ch).getKeyStateBoundaries().size();
             } else {
@@ -217,14 +217,6 @@ public class DisplayCharacterOrderBestTest extends TestCase {
             List<Attribute> charAttributes = dataset.getAttributesForCharacter(ch.getCharacterId());
 
             for (Attribute attr : charAttributes) {
-                sup0 = 0; // THEORETICAL PARTITION COMPONENT OF SUP.
-                dupf = 0; // ARBITRARY INTRA-TAXON VARIABILITY COMPONENT OF SUP.
-                sep = 0; // SEPARATION????
-                sup = 0; // SUP: TOTAL PARTITION COMPONENT OF SU. SUP = SUP0 +
-                         // DUPF.
-
-                su = 0; // character suitability
-
                 Item taxon = attr.getItem();
                 if (!availableTaxa.contains(taxon)) {
                     continue;
@@ -232,8 +224,9 @@ public class DisplayCharacterOrderBestTest extends TestCase {
 
                 // Treat attribute unknown or not applicable as variable
                 boolean variable = false;
-                if (attr.isUnknown() || attr.isInapplicable()) {
+                if (attr.isUnknown()) {
                     variable = true;
+                    //System.out.println(String.format("Variable - character: %s taxon: %s", ch.getCharacterId(), taxon.getItemNumber()));
                 }
 
                 List<Integer> stateValues = null;
@@ -304,6 +297,13 @@ public class DisplayCharacterOrderBestTest extends TestCase {
                         stateFrequency += subgroupFrequencies.get(stateValue);
                     }
                     subgroupFrequencies.put(stateValue, stateFrequency);
+                    
+                    if (ch.getCharacterId() == 38) {
+                        /*System.out.println(String.format("Taxon: %s State Value: %s subgroupSize: %s frequency: %s", taxon.getItemNumber(), stateValue, subgroupSize, stateFrequency));
+                        System.out.println(subgroupsNumTaxa.toString());
+                        System.out.println(subgroupFrequencies.toString());
+                        System.out.println();*/
+                    }
                 }
 
             }
@@ -392,7 +392,9 @@ public class DisplayCharacterOrderBestTest extends TestCase {
 
         System.out.println(availableCharacters.size());
         for (Character ch : sortedChars) {
-            System.out.println(String.format("%s. %s - cost: %s su: %s sep: %.2f", ch.getCharacterId(), ch.getDescription(), costMap.get(ch), suMap.get(ch), sepMap.get(ch)));
+          //System.out.println(String.format("%s. %s - cost: %s su: %s sep: %.2f", ch.getCharacterId(), ch.getDescription(), costMap.get(ch), suMap.get(ch), sepMap.get(ch)));
+          System.out.println(String.format("%.2f %s. %s", sepMap.get(ch), ch.getCharacterId(), ch.getDescription()));
+          //System.out.println(String.format("%s;%.2f", ch.getCharacterId(), sepMap.get(ch)));
         }
 
         return Collections.EMPTY_LIST;
