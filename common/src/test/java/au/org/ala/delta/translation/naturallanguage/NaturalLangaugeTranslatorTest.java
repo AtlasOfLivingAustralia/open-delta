@@ -1,25 +1,16 @@
-package au.org.ala.delta.translation;
+package au.org.ala.delta.translation.naturallanguage;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.charset.Charset;
+import au.org.ala.delta.translation.AbstractDataSetTranslator;
+import au.org.ala.delta.translation.Printer;
+import au.org.ala.delta.translation.TranslatorTest;
+import au.org.ala.delta.translation.TypeSetter;
 
-import org.apache.commons.io.FileUtils;
-
-import au.org.ala.delta.DeltaContext;
-import au.org.ala.delta.directives.ConforDirectiveFileParser;
-import junit.framework.TestCase;
-
-public abstract class NaturalLangaugeTranslatorTest extends TestCase {
+public abstract class NaturalLangaugeTranslatorTest extends TranslatorTest {
 
 	protected AbstractDataSetTranslator _dataSetTranslator;
 	protected TypeSetter _typeSetter;
-	protected DeltaContext _context;
 	protected Printer _printer;
-	protected ByteArrayOutputStream _bytes;
+
 	protected static final String DEFAULT_DATASET_PATH = "/dataset/simple/tonat";
 	protected static final String SAMPLE_DATASET_PATH = "/dataset/sample/tonat_simple";
 	protected static final String PONERINI_DATASET_PATH = "/dataset/ponerini/tonats";
@@ -34,18 +25,6 @@ public abstract class NaturalLangaugeTranslatorTest extends TestCase {
 		super(name);
 	}
 
-	/**
-	 * Reads in specs/chars/items from the simple test data set but no other configuration.
-	 * Test cases can manually configure the DeltaContext before doing the translation.
-	 * @throws Exception if there was an error reading the input files.
-	 */
-	protected void initialiseContext(String path) throws Exception {
-		
-		File specs = classloaderPathToFile(path);
-	
-		ConforDirectiveFileParser parser = ConforDirectiveFileParser.createInstance();
-		parser.parse(specs, _context);
-	}
 
 	protected void checkResult(String expectedResultsFileName) throws Exception {
 		checkResult(expectedResultsFileName, false);
@@ -142,22 +121,4 @@ public abstract class NaturalLangaugeTranslatorTest extends TestCase {
 		
 		assertEquals(expectedResults, actualResults);
 	}
-
-	private File classloaderPathToFile(String path)
-			throws URISyntaxException {
-				URL resource = getClass().getResource(path);
-				return new File(resource.toURI());
-			}
-
-	private String classLoaderPathToString(String path) throws Exception {
-		File file = classloaderPathToFile(path);
-		
-		return FileUtils.readFileToString(file, "Cp1252");
-	}
-
-	private String actualResults() throws IOException {
-		_bytes.flush();
-		return new String(_bytes.toByteArray(), Charset.forName("UTF-8"));
-	}
-
 }

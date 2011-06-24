@@ -1,4 +1,4 @@
-package au.org.ala.delta.translation;
+package au.org.ala.delta.translation.naturallanguage;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -14,6 +14,10 @@ import au.org.ala.delta.model.TypeSettingMark.MarkPosition;
 import au.org.ala.delta.model.format.AttributeFormatter;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.ItemFormatter;
+import au.org.ala.delta.translation.FormattedTextTypeSetter;
+import au.org.ala.delta.translation.Printer;
+import au.org.ala.delta.translation.TypeSettingAttributeFormatter;
+import au.org.ala.delta.translation.TypeSettingItemFormatter;
 import au.org.ala.delta.translation.naturallanguage.NaturalLanguageTranslator;
 
 /**
