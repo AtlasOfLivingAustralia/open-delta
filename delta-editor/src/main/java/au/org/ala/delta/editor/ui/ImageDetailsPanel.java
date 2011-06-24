@@ -9,6 +9,7 @@ import java.util.List;
 
 import javax.swing.ActionMap;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.DropMode;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -17,6 +18,7 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.LayoutStyle.ComponentPlacement;
@@ -230,6 +232,21 @@ public class ImageDetailsPanel extends JPanel {
 		scrollPane_1.setViewportView(subjectTextPane);
 		
 		soundComboBox = new JComboBox();
+		soundComboBox.setRenderer(new DefaultListCellRenderer() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public Component getListCellRendererComponent(JList list, Object value,
+					int index, boolean isSelected, boolean cellHasFocus) {
+				String text = "";
+				ImageOverlay overlay = (ImageOverlay)value;
+				if (overlay != null) {
+					text = overlay.overlayText;
+				}
+				super.getListCellRendererComponent(list, text, index, isSelected, cellHasFocus);
+				return this;
+			}
+		});
 		
 		deleteSoundButton = new JButton();
 		
@@ -384,17 +401,13 @@ public class ImageDetailsPanel extends JPanel {
 	 */
 	@Action
 	public void playSound() {
-		String soundFile = (String)soundComboBox.getSelectedItem();
+		ImageOverlay soundFile = (ImageOverlay)soundComboBox.getSelectedItem();
 		try {
-			File file = new File(soundFile);
-			if (!file.isAbsolute()) {
-				file = new File(_dataSet.getImagePath()+File.separator+soundFile);
-			}
-			URL sound = file.toURI().toURL();
-			AudioPlayer.playClip(sound);
+			URL soundUrl = _selectedImage.soundToURL(soundFile, _dataSet.getImagePath());
+			AudioPlayer.playClip(soundUrl);
 		}
 		catch (Exception e) {
-			_messageHelper.errorPlayingSound(soundFile);
+			_messageHelper.errorPlayingSound(soundFile.overlayText);
 		}
 	}
 	
@@ -470,7 +483,7 @@ public class ImageDetailsPanel extends JPanel {
 					developerNotesTextPane.setText(overlay.overlayText);
 				}
 				else if (overlay.isType(OverlayType.OLSOUND)) {
-					soundComboBox.addItem(overlay.overlayText);
+					soundComboBox.addItem(overlay);
 				}
 			}
 		}
@@ -543,4 +556,6 @@ public class ImageDetailsPanel extends JPanel {
 		_dataSet = dataSet;
 		_dataSet.addDeltaDataSetObserver(observer);
 	}
+	
+	
 }

@@ -86,37 +86,40 @@ public class Image {
 		return results;
 	}
 	
+	public URL soundToURL(ImageOverlay soundOverlay, String imagePath) {
+		return relativePathToURL(imagePath, soundOverlay.overlayText);
+	}
 	
-	public URL getImageLocation(String imagePath) {
+	private URL relativePathToURL(String imagePath, String relativePath) {
 		
-		String fileName = getFileName();
-		if (StringUtils.isEmpty(fileName)) {
+		if (StringUtils.isEmpty(relativePath)) {
 			return null;
 		}
 		URL imageURL = null;
 		try {
 		
-		if (fileName.startsWith("http")) {
+		if (relativePath.startsWith("http")) {
 			
-			imageURL = new URL(fileName);
+			imageURL = new URL(relativePath);
 			
 		}
-		else if (fileName.contains("/") || fileName.contains("\\")) {
-			File f = new File(fileName);
+		else if (relativePath.contains("/") || relativePath.contains("\\")) {
+			File f = new File(relativePath);
 			imageURL = f.toURI().toURL();
 		}
 		else {
-			// need the image path - what is a nice way to get it?  could 
-			// put this method in the dataset instead?
-			
-			File f = new File(imagePath+File.separator+fileName);
+			File f = new File(imagePath+File.separator+relativePath);
 			imageURL = f.toURI().toURL();
 		}
 		} catch (Exception e) {
-			throw new RuntimeException("Invalid image file path specified: "+fileName, e);
+			throw new RuntimeException("Invalid image file path specified: "+relativePath, e);
 		}
 		
 		return imageURL;
+	}
+	
+	public URL getImageLocation(String imagePath) {
+		return relativePathToURL(imagePath, getFileName());
 	}
 	
 	public void addOverlay(ImageOverlay overlay) {

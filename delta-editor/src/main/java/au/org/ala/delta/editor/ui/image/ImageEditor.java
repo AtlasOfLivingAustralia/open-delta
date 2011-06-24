@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyVetoException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,12 +34,14 @@ import au.org.ala.delta.editor.DeltaView;
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.ui.ReorderableList;
 import au.org.ala.delta.editor.ui.util.MenuBuilder;
+import au.org.ala.delta.editor.ui.util.MessageDialogHelper;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Illustratable;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageOverlay;
 import au.org.ala.delta.model.image.OverlayType;
+import au.org.ala.delta.ui.image.AudioPlayer;
 import au.org.ala.delta.ui.image.ImagePanel.ScalingMode;
 import au.org.ala.delta.ui.image.OverlaySelectionObserver;
 import au.org.ala.delta.ui.image.SelectableOverlay;
@@ -68,6 +71,7 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 	private DataSetHelper _helper;
 	private PreviewController _previewController;
 	private DeltaEditor editor;
+	private MessageDialogHelper _messageHelper;
 	
 	public ImageEditor(EditorViewModel model) {
 
@@ -83,6 +87,7 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 		_hideTextOverlays = false;
 		_previewMode = false;
 		_previewController = new PreviewController();
+		_messageHelper = new MessageDialogHelper();
 		getContentPane().setLayout(new BorderLayout());
 		getContentPane().add(_contentPanel, BorderLayout.CENTER);
 		
@@ -98,7 +103,7 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 			displaySubject((Item)subject, image);
 		}
 		
-		
+		_actionMap.get("replayVideo").setEnabled(false);
 		setName("ImageEditor-"+_subject.toString());
 		
 		buildMenus();
@@ -291,6 +296,7 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 		_actionMap.get("previousImage").setEnabled(index > 0);
 		_layout.show(_contentPanel, text);
 		revalidate();
+		replaySound();
 	}
 	
 	
@@ -412,7 +418,20 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 	}
 	
 	@Action
-	public void replaySound() {}
+	public void replaySound() {
+		List<ImageOverlay> sounds = _selectedImage.getSounds();
+		for (ImageOverlay sound : sounds) {
+			
+			try {
+				URL soundUrl = _selectedImage.soundToURL(sound, _model.getImagePath());
+				AudioPlayer.playClip(soundUrl);
+			}
+			catch (Exception e) {
+				_messageHelper.errorPlayingSound(sound.overlayText);
+				e.printStackTrace();
+			}
+		}
+	}
 	
 	@Action
 	public void replayVideo() {}
