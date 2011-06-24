@@ -32,6 +32,7 @@ public class IntkeyDirectiveParser extends DirectiveParser<IntkeyContext> {
         instance.registerDirective(new DefineCharactersDirective());
         instance.registerDirective(new RestartDirective());
         instance.registerDirective(new ChangeDirective());
+        instance.registerDirective(new SetRBaseDirective());
         return instance;
     }
 
@@ -63,7 +64,7 @@ public class IntkeyDirectiveParser extends DirectiveParser<IntkeyContext> {
         // intkey dataset can be used with milestone release without implemented
         // directives causing
         // errors
-        Logger.log("Ignoring unrecognized directive: %s ", StringUtils.join(controlWords, " "));
+        System.out.println(String.format("Ignoring unrecognized directive: %s ", StringUtils.join(controlWords, " ")));
     }
 
     @Override

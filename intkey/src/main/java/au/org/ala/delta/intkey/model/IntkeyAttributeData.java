@@ -14,11 +14,14 @@ public class IntkeyAttributeData implements AttributeData {
     private Set<Integer> _stateOrIntegerValues;
     private FloatRange _realRange;
     
+    private boolean _unknown;
     private boolean _inapplicable;
 
-    public IntkeyAttributeData(boolean inapplicable) {
+    public IntkeyAttributeData(boolean unknown, boolean inapplicable) {
         _stateOrIntegerValues = new HashSet<Integer>();
+        _unknown = unknown;
         _inapplicable = inapplicable;
+        
     }
 
     @Override
@@ -52,7 +55,7 @@ public class IntkeyAttributeData implements AttributeData {
 
     @Override
     public boolean isUnknown() {
-        return StringUtils.isEmpty(_textValue) && _realRange == null && _stateOrIntegerValues.isEmpty();
+        return _unknown;
     }
 
     @Override

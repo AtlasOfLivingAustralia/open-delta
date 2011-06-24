@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.FloatRange;
 import org.apache.commons.lang.math.IntRange;
 
@@ -981,10 +982,6 @@ public final class IntkeyDatasetFileReader {
                 // inapplicable for the taxon.
                 boolean inapplicable = taxonData.get(taxonData.size() - 1);
 
-                IntkeyAttributeData attrData = new IntkeyAttributeData(inapplicable);
-                MultiStateAttribute msAttr = new MultiStateAttribute(multiStateChar, attrData);
-                msAttr.setItem(t);
-
                 HashSet<Integer> presentStates = new HashSet<Integer>();
                 for (int k = 0; k < taxonData.size() - 1; k++) {
                     boolean statePresent = taxonData.get(k);
@@ -992,6 +989,11 @@ public final class IntkeyDatasetFileReader {
                         presentStates.add(k + 1);
                     }
                 }
+                
+                IntkeyAttributeData attrData = new IntkeyAttributeData(presentStates.isEmpty(), inapplicable);
+                MultiStateAttribute msAttr = new MultiStateAttribute(multiStateChar, attrData);
+                msAttr.setItem(t);
+                
                 msAttr.setPresentStates(presentStates);
 
                 retList.add(msAttr);
@@ -1029,7 +1031,7 @@ public final class IntkeyDatasetFileReader {
                     }
                 }
 
-                IntegerAttribute intAttr = new IntegerAttribute(intChar, new IntkeyAttributeData(inapplicable));
+                IntegerAttribute intAttr = new IntegerAttribute(intChar, new IntkeyAttributeData(presentValues.isEmpty(), inapplicable));
                 intAttr.setItem(t);
                 intAttr.setPresentValues(presentValues);
                 
@@ -1058,11 +1060,13 @@ public final class IntkeyDatasetFileReader {
 
                 boolean inapplicable = taxaInapplicabilityData.get(j);
 
-                RealAttribute realAttr = new RealAttribute((RealCharacter) c, new IntkeyAttributeData(inapplicable));
-
                 // Character is unknown for the corresponding taxon if
                 // lowerfloat > upperfloat
-                if (lowerFloat <= upperFloat) {
+                boolean unknown = lowerFloat > upperFloat;
+                
+                RealAttribute realAttr = new RealAttribute((RealCharacter) c, new IntkeyAttributeData(unknown, inapplicable));
+
+                if (!unknown) {
                     FloatRange range = new FloatRange(lowerFloat, upperFloat);
                     realAttr.setPresentRange(range);
                 }
@@ -1108,8 +1112,9 @@ public final class IntkeyDatasetFileReader {
                 }
 
                 boolean inapplicable = taxaInapplicabilityData.get(j);
+                boolean unknown = StringUtils.isEmpty(txt);
 
-                TextAttribute txtAttr = new TextAttribute(textChar, new IntkeyAttributeData(inapplicable));
+                TextAttribute txtAttr = new TextAttribute(textChar, new IntkeyAttributeData(unknown, inapplicable));
                 txtAttr.setText(txt);
                 txtAttr.setItem(t);
 
@@ -1220,6 +1225,7 @@ public final class IntkeyDatasetFileReader {
     }
 
     private static int recordsSpannedByBytes(int numBytes) {
-        return Double.valueOf(Math.ceil(Integer.valueOf(numBytes).doubleValue() / Integer.valueOf(Constants.RECORD_LENGTH_BYTES).doubleValue())).intValue();
+        return (int) (Math.ceil((double)numBytes / (double) Constants.RECORD_LENGTH_BYTES));
+        //return Double.valueOf(Math.ceil(Integer.valueOf(numBytes).doubleValue() / Integer.valueOf(Constants.RECORD_LENGTH_BYTES).doubleValue())).intValue();
     }
 }

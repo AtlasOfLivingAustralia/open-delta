@@ -13,13 +13,16 @@ import junit.framework.TestCase;
 
 import org.apache.commons.lang.math.FloatRange;
 import org.apache.commons.lang.math.IntRange;
+import org.junit.Ignore;
 import org.junit.Test;
 
+import au.org.ala.delta.intkey.directives.UseDirective;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.model.IntkeyDataset;
 import au.org.ala.delta.intkey.model.specimen.Specimen;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.IntegerAttribute;
 import au.org.ala.delta.model.IntegerCharacter;
 import au.org.ala.delta.model.Item;
@@ -31,79 +34,45 @@ import au.org.ala.delta.model.TextCharacter;
 
 public class DisplayCharacterOrderBestTest extends TestCase {
 
+    @Ignore
     @Test
     public void testBestOrder() throws Exception {
-        //URL initFileUrl = getClass().getResource("/dataset/controlling_characters_simple/intkey.ink");
+        // URL initFileUrl = getClass().getResource("/dataset/controlling_characters_simple/intkey.ink");
         URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
+
         IntkeyContext context = new IntkeyContext(null);
         context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+        //context.newDataSetFile(new File("C:\\Users\\ChrisF\\Documents\\grasses\\intkey.ini").getAbsolutePath());
+        // context.newDataSetFile(new
+        // File("C:\\Users\\ChrisF\\Documents\\salix\\intkey.ini").getAbsolutePath());
 
-        List<Character> bestChars = orderBestOther(context, context.getDataset().getCharacters());
-        // System.out.println(bestChars.toString());
+        long startTime = System.currentTimeMillis();
+        
+        List<Character> bestChars = orderBestOther(context);
+        
+        long endTime = System.currentTimeMillis();
+        
+        long duration = endTime - startTime;
+        long durationSeconds = duration / 1000;
+        
+        System.out.println("Duration: " + durationSeconds + " seconds");
+        
+        //System.out.println(bestChars.toString());
     }
 
-    /*
-     * private List<au.org.ala.delta.model.Character> orderBest(IntkeyContext
-     * context, List<Character> chars) { Map<Character, Boolean>
-     * unsuitabilityMap = new HashMap<Character, Boolean>();
-     * 
-     * for (Character ch : chars) { unsuitabilityMap.put(ch, false); }
-     * 
-     * List<Double> costList = new ArrayList<Double>();
-     * 
-     * for (Character ch : chars) { double charCost =
-     * Math.pow(context.getRBase(), 5.0 - Math.min(10.0, ch.getReliability()));
-     * costList.add(charCost); }
-     * 
-     * double varw = (1 - context.getVaryWeight() /
-     * Math.max(context.getVaryWeight(), 0.01));
-     * 
-     * List<Character> charsSortedByReliabilities = new
-     * ArrayList<Character>(chars); Collections.sort(charsSortedByReliabilities,
-     * new ReliabilityComparator());
-     * 
-     * // MAIN FOR LOOP for (Character ch : chars) {
-     * 
-     * // Ignore character if it has been used if
-     * (context.getSpecimen().hasValueFor(ch)) { continue; }
-     * 
-     * // Ignore character if its reliability is zero if (ch.getReliability() ==
-     * 0) { continue; }
-     * 
-     * // Ignore character if it is a text character if (ch instanceof
-     * TextCharacter) { continue; }
-     * 
-     * // TODO ignore EXACT characters that have been eliminated
-     * 
-     * // TODO ignore characters not "masked in" - excluded characters?
-     * 
-     * // Ignore unsuitable characters if (unsuitabilityMap.get(ch)) { continue;
-     * }
-     * 
-     * if (ch instanceof UnorderedMultiStateCharacter || ch instanceof
-     * MultiStateCharacter) {
-     * 
-     * } else if (ch instanceof IntegerCharacter) {
-     * 
-     * } else if (ch instanceof RealCharacter) {
-     * 
-     * }
-     * 
-     * for (Item taxon : context.getDataset().getTaxa()) { // TODO skip if taxon
-     * is not included
-     * 
-     * if (context.getSpecimen().getTaxonDifferences().get(taxon) >
-     * context.getTolerance()) { continue; }
-     * 
-     * // TODO skip if there are EXACT characters and this taxon has // been
-     * eliminated
-     * 
-     * } }
-     * 
-     * return Collections.EMPTY_LIST; }
-     */
+//    @Test
+//    public void testBestOrder2() throws Exception {
+//        URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
+//
+//        IntkeyContext context = new IntkeyContext(null);
+//        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+//
+//        new UseDirective().parseAndProcess(context, "38,5");
+//
+//        List<Character> bestChars = orderBestOther(context);
+//    }
 
-    private List<au.org.ala.delta.model.Character> orderBestOther(IntkeyContext context, List<Character> chars) {
+    private List<au.org.ala.delta.model.Character> orderBestOther(IntkeyContext context) {
         IntkeyDataset dataset = context.getDataset();
         Specimen specimen = context.getSpecimen();
 
@@ -123,9 +92,6 @@ public class DisplayCharacterOrderBestTest extends TestCase {
         List<Character> availableCharacters = new ArrayList<Character>(specimen.getAvailableCharacters());
         List<Character> ignoredCharacters = new ArrayList<Character>();
         for (Character ch : availableCharacters) {
-            if (ch.getCharacterId() == 38) {
-                System.out.println("foo");
-            }
 
             // TODO ignore EXACT characters that have been eliminated
             // TODO ignore characters not "masked in" - excluded characters?
@@ -150,20 +116,29 @@ public class DisplayCharacterOrderBestTest extends TestCase {
 
         // Build list of remaining taxa
         List<Item> availableTaxa = new ArrayList<Item>();
-        // TODO comment back in Map<Item, Integer> taxonDifferences =
-        // specimen.getTaxonDifferences();
+        Map<Item, Boolean> taxaAvailability = new HashMap<Item, Boolean>();
+        
+        // TODO this line throws exception if no characters have been USEd yet
+        //Map<Item, Integer> taxonDifferences = specimen.getTaxonDifferences();
         for (Item taxon : dataset.getTaxa()) {
-            /*
-             * if (taxonDifferences.get(taxon) > context.getTolerance()) {
-             * continue; }
-             */
+
+            boolean ignore = false;
+            //if (taxonDifferences.get(taxon) > context.getTolerance()) {
+            //    continue;
+            //}
 
             // TODO skip if taxon is not included
 
             // TODO skip if there are EXACT characters and this taxon has
             // been eliminated
 
-            availableTaxa.add(taxon);
+            if (ignore) {
+                taxaAvailability.put(taxon, false);
+            } else {
+                availableTaxa.add(taxon);
+                taxaAvailability.put(taxon, true);                
+            }
+
         }
 
         // sort available characters by reliability (descending)
@@ -172,10 +147,6 @@ public class DisplayCharacterOrderBestTest extends TestCase {
         List<Character> unsuitableCharacters = new ArrayList<Character>();
 
         for (Character ch : availableCharacters) {
-            if (ch.getCharacterId() == 38) {
-                System.out.println("bar");
-            }
-
             Map<Integer, Integer> subgroupsNumTaxa = new HashMap<Integer, Integer>();
             Map<Integer, Double> subgroupFrequencies = new HashMap<Integer, Double>();
             int sumNumTaxaInSubgroups = 0;
@@ -218,20 +189,19 @@ public class DisplayCharacterOrderBestTest extends TestCase {
 
             for (Attribute attr : charAttributes) {
                 Item taxon = attr.getItem();
-                if (!availableTaxa.contains(taxon)) {
+                if (!taxaAvailability.get(taxon)) {
                     continue;
                 }
 
-                // Treat attribute unknown or not applicable as variable
+                // Treat attribute unknown as variable
                 boolean variable = false;
                 if (attr.isUnknown()) {
                     variable = true;
-                    //System.out.println(String.format("Variable - character: %s taxon: %s", ch.getCharacterId(), taxon.getItemNumber()));
                 }
 
                 List<Integer> stateValues = null;
 
-                if (ch instanceof MultiStateCharacter) {
+                if (ch.getCharacterType() == CharacterType.OrderedMultiState || ch.getCharacterType() == CharacterType.UnorderedMultiState ) {
                     MultiStateCharacter msChar = (MultiStateCharacter) ch;
                     if (variable) {
                         IntRange r = new IntRange(1, msChar.getStates().length);
@@ -244,7 +214,7 @@ public class DisplayCharacterOrderBestTest extends TestCase {
                         stateValues = new ArrayList<Integer>(multiStateAttr.getPresentStates());
                         Collections.sort(stateValues);
                     }
-                } else if (ch instanceof IntegerCharacter) {
+                } else if (ch.getCharacterType() == CharacterType.IntegerNumeric) {
                     IntegerCharacter intChar = (IntegerCharacter) ch;
                     if (variable) {
                         IntRange r = new IntRange(intChar.getMinimumValue() - 1, intChar.getMaximumValue() + 1);
@@ -257,7 +227,7 @@ public class DisplayCharacterOrderBestTest extends TestCase {
                         stateValues = new ArrayList<Integer>(intAttr.getPresentValues());
                         Collections.sort(stateValues);
                     }
-                } else if (ch instanceof RealCharacter) {
+                } else if (ch.getCharacterType() == CharacterType.RealNumeric) {
                     RealCharacter realChar = (RealCharacter) ch;
                     if (variable) {
                         List<Float> keyStateBoundaries = realChar.getKeyStateBoundaries();
@@ -291,19 +261,12 @@ public class DisplayCharacterOrderBestTest extends TestCase {
 
                     // frequency of items with current state of current
                     // character
-                    double stateFrequency = Integer.valueOf(1).doubleValue() / Integer.valueOf(stateValues.size()).doubleValue();
+                    double stateFrequency = 1.0 / (double) stateValues.size();
 
                     if (subgroupFrequencies.containsKey(stateValue)) {
                         stateFrequency += subgroupFrequencies.get(stateValue);
                     }
                     subgroupFrequencies.put(stateValue, stateFrequency);
-                    
-                    if (ch.getCharacterId() == 38) {
-                        /*System.out.println(String.format("Taxon: %s State Value: %s subgroupSize: %s frequency: %s", taxon.getItemNumber(), stateValue, subgroupSize, stateFrequency));
-                        System.out.println(subgroupsNumTaxa.toString());
-                        System.out.println(subgroupFrequencies.toString());
-                        System.out.println();*/
-                    }
                 }
 
             }
@@ -326,7 +289,6 @@ public class DisplayCharacterOrderBestTest extends TestCase {
                 int numTaxaInSubgroup = subgroupsNumTaxa.get(stateValue);
 
                 if (numTaxaInSubgroup == sumNumTaxaInSubgroups) {
-                    System.out.println(String.format("%s all taxa in one group", ch.toString()));
                     allTaxaInOneGroup = true;
                 } else {
                     if (numTaxaInSubgroup == availableTaxa.size()) {
@@ -392,12 +354,15 @@ public class DisplayCharacterOrderBestTest extends TestCase {
 
         System.out.println(availableCharacters.size());
         for (Character ch : sortedChars) {
-          //System.out.println(String.format("%s. %s - cost: %s su: %s sep: %.2f", ch.getCharacterId(), ch.getDescription(), costMap.get(ch), suMap.get(ch), sepMap.get(ch)));
-          System.out.println(String.format("%.2f %s. %s", sepMap.get(ch), ch.getCharacterId(), ch.getDescription()));
-          //System.out.println(String.format("%s;%.2f", ch.getCharacterId(), sepMap.get(ch)));
+            // System.out.println(String.format("%s. %s - cost: %s su: %s sep: %.2f",
+            // ch.getCharacterId(), ch.getDescription(), costMap.get(ch),
+            // suMap.get(ch), sepMap.get(ch)));
+            System.out.println(String.format("(%s) %.2f %s. %s", suMap.get(ch), sepMap.get(ch), ch.getCharacterId(), ch.getDescription()));
+            // System.out.println(String.format("%s;%.2f", ch.getCharacterId(),
+            // sepMap.get(ch)));
         }
 
-        return Collections.EMPTY_LIST;
+        return sortedChars;
     }
 
     private double log2(double x) {

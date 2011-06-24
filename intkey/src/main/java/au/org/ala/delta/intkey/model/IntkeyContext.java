@@ -325,8 +325,16 @@ public class IntkeyContext extends AbstractDeltaContext {
         return _varyWeight;
     }
     
+    public void setVaryWeight(double varyWeight) {
+        _varyWeight = varyWeight;
+    }
+    
     public double getRBase() {
         return _rbase;
+    }
+    
+    public void setRBase(double rbase) {
+        _rbase = rbase;
     }
 
     public File getTaxaFile() {
