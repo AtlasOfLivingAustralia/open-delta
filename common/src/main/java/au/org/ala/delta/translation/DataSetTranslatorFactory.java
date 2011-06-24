@@ -5,6 +5,7 @@ import au.org.ala.delta.TranslateType;
 import au.org.ala.delta.model.format.AttributeFormatter;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.ItemFormatter;
+import au.org.ala.delta.translation.naturallanguage.NaturalLanguageTranslator;
 
 
 /**

@@ -1,4 +1,4 @@
-package au.org.ala.delta.translation;
+package au.org.ala.delta.translation.naturallanguage;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.model.Attribute;
@@ -6,6 +6,7 @@ import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateAttribute;
 import au.org.ala.delta.model.VariantItem;
+import au.org.ala.delta.translation.DataSetFilter;
 
 /**
  * The DataSetFilter is responsible for determining whether elements of a DeltaDataSet

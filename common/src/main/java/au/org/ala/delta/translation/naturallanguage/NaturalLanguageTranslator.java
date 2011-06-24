@@ -1,4 +1,4 @@
-package au.org.ala.delta.translation;
+package au.org.ala.delta.translation.naturallanguage;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -18,6 +18,11 @@ import au.org.ala.delta.model.NumericCharacter;
 import au.org.ala.delta.model.format.AttributeFormatter;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.ItemFormatter;
+import au.org.ala.delta.translation.AbstractDataSetTranslator;
+import au.org.ala.delta.translation.DataSetTranslator;
+import au.org.ala.delta.translation.Printer;
+import au.org.ala.delta.translation.TypeSetter;
+import au.org.ala.delta.translation.Words;
 import au.org.ala.delta.translation.Words.Word;
 import au.org.ala.delta.translation.attribute.AttributeParser;
 import au.org.ala.delta.translation.attribute.AttributeTranslator;

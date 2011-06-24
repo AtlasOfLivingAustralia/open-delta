@@ -14,6 +14,7 @@ import au.org.ala.delta.model.TypeSettingMark.MarkPosition;
 import au.org.ala.delta.model.format.AttributeFormatter;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.ItemFormatter;
+import au.org.ala.delta.translation.naturallanguage.NaturalLanguageTranslator;
 
 /**
  * Tests the production of type set natural language.  This test is more of an integration
