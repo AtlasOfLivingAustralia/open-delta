@@ -3,11 +3,13 @@ package au.org.ala.delta.inkey.model;
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import junit.framework.TestCase;
 
@@ -37,8 +39,8 @@ public class DisplayCharacterOrderBestTest extends TestCase {
     @Ignore
     @Test
     public void testBestOrder() throws Exception {
-        // URL initFileUrl = getClass().getResource("/dataset/controlling_characters_simple/intkey.ink");
-        URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
+        URL initFileUrl = getClass().getResource("/dataset/controlling_characters_simple/intkey.ink");
+        //URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
 
         IntkeyContext context = new IntkeyContext(null);
         context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
@@ -47,43 +49,49 @@ public class DisplayCharacterOrderBestTest extends TestCase {
         // File("C:\\Users\\ChrisF\\Documents\\salix\\intkey.ini").getAbsolutePath());
 
         long startTime = System.currentTimeMillis();
-        
+
         List<Character> bestChars = orderBestOther(context);
-        
+
         long endTime = System.currentTimeMillis();
-        
+
         long duration = endTime - startTime;
         long durationSeconds = duration / 1000;
-        
+
         System.out.println("Duration: " + durationSeconds + " seconds");
-        
-        //System.out.println(bestChars.toString());
+
+        // System.out.println(bestChars.toString());
     }
 
-//    @Test
-//    public void testBestOrder2() throws Exception {
-//        URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
-//
-//        IntkeyContext context = new IntkeyContext(null);
-//        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
-//
-//        new UseDirective().parseAndProcess(context, "38,5");
-//
-//        List<Character> bestChars = orderBestOther(context);
-//    }
+    // @Test
+    // public void testBestOrder2() throws Exception {
+    // URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
+    //
+    // IntkeyContext context = new IntkeyContext(null);
+    // context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+    //
+    // new UseDirective().parseAndProcess(context, "38,5");
+    //
+    // List<Character> bestChars = orderBestOther(context);
+    // }
 
     private List<au.org.ala.delta.model.Character> orderBestOther(IntkeyContext context) {
         IntkeyDataset dataset = context.getDataset();
         Specimen specimen = context.getSpecimen();
 
-        final Map<Character, Double> suMap = new HashMap<Character, Double>();
-        Map<Character, Double> sepMap = new HashMap<Character, Double>();
+        // final Map<Character, Double> suMap = new HashMap<Character,
+        // Double>();
+        // Map<Character, Double> sepMap = new HashMap<Character, Double>();
+        List<Character> allCharacters = dataset.getCharacters();
+        final double[] suVals = new double[allCharacters.size()];
+        double[] sepVals = new double[allCharacters.size()];
 
         // Calculate costs of characters
-        Map<Character, Double> costMap = new HashMap<Character, Double>();
+        // Map<Character, Double> costMap = new HashMap<Character, Double>();
+        double[] charCosts = new double[allCharacters.size()];
+
         for (Character ch : dataset.getCharacters()) {
             double charCost = Math.pow(context.getRBase(), 5.0 - Math.min(10.0, ch.getReliability()));
-            costMap.put(ch, charCost);
+            charCosts[ch.getCharacterId() - 1] = charCost;
         }
 
         double varw = (1 - context.getVaryWeight()) / context.getVaryWeight();
@@ -115,17 +123,17 @@ public class DisplayCharacterOrderBestTest extends TestCase {
         availableCharacters.removeAll(ignoredCharacters);
 
         // Build list of remaining taxa
-        List<Item> availableTaxa = new ArrayList<Item>();
+        int numAvailableTaxa = 0;
         Map<Item, Boolean> taxaAvailability = new HashMap<Item, Boolean>();
-        
+
         // TODO this line throws exception if no characters have been USEd yet
-        //Map<Item, Integer> taxonDifferences = specimen.getTaxonDifferences();
+        // Map<Item, Integer> taxonDifferences = specimen.getTaxonDifferences();
         for (Item taxon : dataset.getTaxa()) {
 
             boolean ignore = false;
-            //if (taxonDifferences.get(taxon) > context.getTolerance()) {
-            //    continue;
-            //}
+            // if (taxonDifferences.get(taxon) > context.getTolerance()) {
+            // continue;
+            // }
 
             // TODO skip if taxon is not included
 
@@ -135,8 +143,8 @@ public class DisplayCharacterOrderBestTest extends TestCase {
             if (ignore) {
                 taxaAvailability.put(taxon, false);
             } else {
-                availableTaxa.add(taxon);
-                taxaAvailability.put(taxon, true);                
+                numAvailableTaxa++;
+                taxaAvailability.put(taxon, true);
             }
 
         }
@@ -147,8 +155,12 @@ public class DisplayCharacterOrderBestTest extends TestCase {
         List<Character> unsuitableCharacters = new ArrayList<Character>();
 
         for (Character ch : availableCharacters) {
-            Map<Integer, Integer> subgroupsNumTaxa = new HashMap<Integer, Integer>();
-            Map<Integer, Double> subgroupFrequencies = new HashMap<Integer, Double>();
+
+            // Map<Integer, Integer> subgroupsNumTaxa = new HashMap<Integer,
+            // Integer>();
+            // Map<Integer, Double> subgroupFrequencies = new HashMap<Integer,
+            // Double>();
+
             int sumNumTaxaInSubgroups = 0;
             double sumSubgroupsFrequencies = 0;
             int numSubgroupsSameSizeAsOriginalGroup = 0;
@@ -159,18 +171,18 @@ public class DisplayCharacterOrderBestTest extends TestCase {
             double sup = 0; // SUP: TOTAL PARTITION COMPONENT OF SU. SUP = SUP0
                             // +
                             // DUPF.
-            double cmin = costMap.get(availableCharacters.get(0)); // minimum
-                                                                   // cost -
-                                                                   // this will
-                                                                   // always be
-                                                                   // the
-                                                                   // cost of
-                                                                   // the
-                                                                   // character
-                                                                   // with
-                                                                   // the
-                                                                   // greatest
-                                                                   // reliability
+            double cmin = charCosts[0]; // minimum
+                                        // cost -
+                                        // this will
+                                        // always be
+                                        // the
+                                        // cost of
+                                        // the
+                                        // character
+                                        // with
+                                        // the
+                                        // greatest
+                                        // reliability
             double su = 0; // character suitability
 
             int totalNumStates = 0;
@@ -185,6 +197,9 @@ public class DisplayCharacterOrderBestTest extends TestCase {
                 throw new RuntimeException("Invalid character type " + ch.toString());
             }
 
+            int[] subgroupsNumTaxa = new int[totalNumStates];
+            double[] subgroupFrequencies = new double[totalNumStates];
+
             List<Attribute> charAttributes = dataset.getAttributesForCharacter(ch.getCharacterId());
 
             for (Attribute attr : charAttributes) {
@@ -193,90 +208,80 @@ public class DisplayCharacterOrderBestTest extends TestCase {
                     continue;
                 }
 
+                // List<Integer> stateValues = null;
+                boolean[] statePresence = new boolean[totalNumStates];
+                int numStatesPresent = 0;
+
                 // Treat attribute unknown as variable
-                boolean variable = false;
                 if (attr.isUnknown()) {
-                    variable = true;
-                }
+                    Arrays.fill(statePresence, true);
+                    numStatesPresent = totalNumStates;
+                } else {
+                    Arrays.fill(statePresence, false);
 
-                List<Integer> stateValues = null;
-
-                if (ch.getCharacterType() == CharacterType.OrderedMultiState || ch.getCharacterType() == CharacterType.UnorderedMultiState ) {
-                    MultiStateCharacter msChar = (MultiStateCharacter) ch;
-                    if (variable) {
-                        IntRange r = new IntRange(1, msChar.getStates().length);
-                        stateValues = new ArrayList<Integer>();
-                        for (int val : r.toArray()) {
-                            stateValues.add(val);
-                        }
-                    } else {
+                    if (ch.getCharacterType() == CharacterType.OrderedMultiState || ch.getCharacterType() == CharacterType.UnorderedMultiState) {
                         MultiStateAttribute multiStateAttr = (MultiStateAttribute) attr;
-                        stateValues = new ArrayList<Integer>(multiStateAttr.getPresentStates());
-                        Collections.sort(stateValues);
-                    }
-                } else if (ch.getCharacterType() == CharacterType.IntegerNumeric) {
-                    IntegerCharacter intChar = (IntegerCharacter) ch;
-                    if (variable) {
-                        IntRange r = new IntRange(intChar.getMinimumValue() - 1, intChar.getMaximumValue() + 1);
-                        stateValues = new ArrayList<Integer>();
-                        for (int val : r.toArray()) {
-                            stateValues.add(val);
-                        }
-                    } else {
-                        IntegerAttribute intAttr = (IntegerAttribute) attr;
-                        stateValues = new ArrayList<Integer>(intAttr.getPresentValues());
-                        Collections.sort(stateValues);
-                    }
-                } else if (ch.getCharacterType() == CharacterType.RealNumeric) {
-                    RealCharacter realChar = (RealCharacter) ch;
-                    if (variable) {
-                        List<Float> keyStateBoundaries = realChar.getKeyStateBoundaries();
-                        Collections.sort(keyStateBoundaries);
-                        float rangeLowerBound = keyStateBoundaries.get(0) - 1;
-                        float rangeUpperBound = keyStateBoundaries.get(keyStateBoundaries.size() - 1) + 1;
+                        Set<Integer> attrPresentStates = multiStateAttr.getPresentStates();
 
-                        stateValues = generateKeyStatesForRealCharacter(realChar, new FloatRange(rangeLowerBound, rangeUpperBound));
-                    } else {
+                        for (int i = 0; i < totalNumStates; i++) {
+                            if (attrPresentStates.contains(i + 1)) {
+                                statePresence[i] = true;
+                                numStatesPresent++;
+                            }
+                        }
+
+                    } else if (ch.getCharacterType() == CharacterType.IntegerNumeric) {
+                        IntegerCharacter intChar = (IntegerCharacter) ch;
+                        IntegerAttribute intAttr = (IntegerAttribute) attr;
+
+                        Set<Integer> attrPresentStates = intAttr.getPresentValues();
+
+                        int offset = intChar.getMinimumValue() - 1;
+                        
+                        for (int i = 0; i < totalNumStates; i++) {
+                            if (attrPresentStates.contains(i + offset)) {
+                                statePresence[i] = true;
+                                numStatesPresent++;
+                            }
+                        }
+
+                    } else if (ch.getCharacterType() == CharacterType.RealNumeric) {
+                        RealCharacter realChar = (RealCharacter) ch;
                         RealAttribute realAttr = (RealAttribute) attr;
                         FloatRange presentRange = realAttr.getPresentRange();
 
-                        stateValues = generateKeyStatesForRealCharacter(realChar, presentRange);
+                        numStatesPresent = generateKeyStatesForRealCharacter(realChar, presentRange, statePresence);
+                    } else {
+                        throw new RuntimeException("Invalid character type " + ch.toString());
                     }
-                } else {
-                    throw new RuntimeException("Invalid character type " + ch.toString());
                 }
 
                 // work out size of character subgroups
-                for (int stateValue : stateValues) {
+                for (int i = 0; i < totalNumStates; i++) {
 
-                    int subgroupSize = 0;
-                    if (subgroupsNumTaxa.containsKey(stateValue)) {
-                        subgroupSize = subgroupsNumTaxa.get(stateValue);
-                        subgroupSize++;
-                        subgroupsNumTaxa.put(stateValue, subgroupSize);
-                    } else {
-                        subgroupSize = 1;
+                    if (statePresence[i] == true) {
+                        subgroupsNumTaxa[i]++;
+
+                        // frequency of items with current state of current
+                        // character
+                        double stateFrequency = 1.0 / (double) numStatesPresent;
+                        stateFrequency += subgroupFrequencies[i];
+                        subgroupFrequencies[i] = stateFrequency;
                     }
-                    subgroupsNumTaxa.put(stateValue, subgroupSize);
-
-                    // frequency of items with current state of current
-                    // character
-                    double stateFrequency = 1.0 / (double) stateValues.size();
-
-                    if (subgroupFrequencies.containsKey(stateValue)) {
-                        stateFrequency += subgroupFrequencies.get(stateValue);
-                    }
-                    subgroupFrequencies.put(stateValue, stateFrequency);
                 }
 
             }
+            
+            int totalNumSubgroups = 0;
+            
             // work out sum of subgroup sizes and frequencies
-            for (int stateValue : subgroupsNumTaxa.keySet()) {
-                sumNumTaxaInSubgroups += subgroupsNumTaxa.get(stateValue);
-            }
-
-            for (int stateValue : subgroupFrequencies.keySet()) {
-                sumSubgroupsFrequencies += subgroupFrequencies.get(stateValue);
+            for (int i = 0; i < totalNumStates; i++) {
+                sumNumTaxaInSubgroups += subgroupsNumTaxa[i];
+                sumSubgroupsFrequencies += subgroupFrequencies[i];
+                
+                if (subgroupsNumTaxa[i] > 0) {
+                    totalNumSubgroups++;
+                }
             }
 
             // character is unsuitable if it divides the characters into a
@@ -285,17 +290,17 @@ public class DisplayCharacterOrderBestTest extends TestCase {
             // TODO slightly dodgy there recurising over keys of one map but
             // reading from two
             boolean allTaxaInOneGroup = false;
-            for (int stateValue : subgroupsNumTaxa.keySet()) {
-                int numTaxaInSubgroup = subgroupsNumTaxa.get(stateValue);
+            for (int i=0; i < totalNumStates; i++) {
+                int numTaxaInSubgroup = subgroupsNumTaxa[i];
 
                 if (numTaxaInSubgroup == sumNumTaxaInSubgroups) {
                     allTaxaInOneGroup = true;
                 } else {
-                    if (numTaxaInSubgroup == availableTaxa.size()) {
+                    if (numTaxaInSubgroup == numAvailableTaxa) {
                         numSubgroupsSameSizeAsOriginalGroup++;
                     }
 
-                    sup0 += (subgroupFrequencies.get(stateValue) * log2(subgroupsNumTaxa.get(stateValue)));
+                    sup0 += (subgroupFrequencies[i] * log2(subgroupsNumTaxa[i]));
                 }
             }
 
@@ -308,21 +313,21 @@ public class DisplayCharacterOrderBestTest extends TestCase {
             boolean isControllingChar = !ch.getDependentCharacters().isEmpty();
             // WTF is this test for???
             if (!isControllingChar
-                    && (subgroupsNumTaxa.keySet().size() == numSubgroupsSameSizeAsOriginalGroup || (sumNumTaxaInSubgroups > availableTaxa.size() && sumNumTaxaInSubgroups == totalNumStates))) {
+                    && (totalNumSubgroups == numSubgroupsSameSizeAsOriginalGroup || (sumNumTaxaInSubgroups > numAvailableTaxa && sumNumTaxaInSubgroups == totalNumStates))) {
                 unsuitableCharacters.add(ch);
                 continue;
             }
 
             sup0 = sup0 / sumSubgroupsFrequencies;
 
-            if (availableTaxa.size() > 1 && sumNumTaxaInSubgroups > availableTaxa.size()) {
-                dupf = varw * (1 + 100 * numSubgroupsSameSizeAsOriginalGroup) * (sumNumTaxaInSubgroups - availableTaxa.size())
-                        * ((availableTaxa.size() + 8) / (availableTaxa.size() * log2(availableTaxa.size())));
+            if (numAvailableTaxa > 1 && sumNumTaxaInSubgroups > numAvailableTaxa) {
+                dupf = varw * (1 + 100 * numSubgroupsSameSizeAsOriginalGroup) * (sumNumTaxaInSubgroups - numAvailableTaxa)
+                        * ((numAvailableTaxa + 8) / (numAvailableTaxa * log2(numAvailableTaxa)));
             } else {
                 dupf = 0;
             }
 
-            sep = -sup0 + log2(availableTaxa.size());
+            sep = -sup0 + log2(numAvailableTaxa);
 
             // TODO some stuff about rounding errors
 
@@ -333,10 +338,10 @@ public class DisplayCharacterOrderBestTest extends TestCase {
 
             sup = sup0 + dupf;
 
-            su = costMap.get(ch) + cmin * sup;
+            su = charCosts[ch.getCharacterId()] + cmin * sup;
 
-            sepMap.put(ch, sep);
-            suMap.put(ch, su);
+            sepVals[ch.getCharacterId()] = sep;
+            suVals[ch.getCharacterId()] = su;
         }
 
         availableCharacters.removeAll(unsuitableCharacters);
@@ -348,7 +353,7 @@ public class DisplayCharacterOrderBestTest extends TestCase {
             public int compare(Character c1, Character c2) {
                 // TODO had to make suMap final - dodgy
 
-                return suMap.get(c1).compareTo(suMap.get(c2));
+                return Double.valueOf(suVals[c1.getCharacterId()]).compareTo(Double.valueOf(suVals[c2.getCharacterId()]));
             }
         });
 
@@ -357,7 +362,7 @@ public class DisplayCharacterOrderBestTest extends TestCase {
             // System.out.println(String.format("%s. %s - cost: %s su: %s sep: %.2f",
             // ch.getCharacterId(), ch.getDescription(), costMap.get(ch),
             // suMap.get(ch), sepMap.get(ch)));
-            System.out.println(String.format("(%s) %.2f %s. %s", suMap.get(ch), sepMap.get(ch), ch.getCharacterId(), ch.getDescription()));
+            System.out.println(String.format("(%s) %.2f %s. %s", suVals[ch.getCharacterId()], sepVals[ch.getCharacterId()], ch.getCharacterId(), ch.getDescription()));
             // System.out.println(String.format("%s;%.2f", ch.getCharacterId(),
             // sepMap.get(ch)));
         }
@@ -369,8 +374,8 @@ public class DisplayCharacterOrderBestTest extends TestCase {
         return Math.log(x) / Math.log(2);
     }
 
-    private List<Integer> generateKeyStatesForRealCharacter(RealCharacter realChar, FloatRange presentRange) {
-        List<Integer> retList = new ArrayList<Integer>();
+    private int generateKeyStatesForRealCharacter(RealCharacter realChar, FloatRange presentRange, boolean[] statePresence) {
+        int numStatesPresent = 0;
 
         List<Float> boundaries = realChar.getKeyStateBoundaries();
 
@@ -380,18 +385,20 @@ public class DisplayCharacterOrderBestTest extends TestCase {
         int i = 0;
         for (; i < boundaries.size(); i++) {
             if (rangeMin <= boundaries.get(i)) {
-                retList.add(i);
+                statePresence[i] = true;
+                numStatesPresent++;
                 break;
             }
         }
 
         for (; i < boundaries.size() - 1; i++) {
             if (rangeMax > boundaries.get(i)) {
-                retList.add(i + 1);
+                statePresence[i + 1] = true;
+                numStatesPresent++;
             }
         }
 
-        return retList;
+        return numStatesPresent;
     }
 
     private class ReliabilityComparator implements Comparator<Character> {
