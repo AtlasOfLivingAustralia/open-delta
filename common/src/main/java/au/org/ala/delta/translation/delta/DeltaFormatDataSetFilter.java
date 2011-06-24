@@ -1,4 +1,4 @@
-package au.org.ala.delta.translation.naturallanguage;
+package au.org.ala.delta.translation.delta;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.model.Attribute;
@@ -13,13 +13,13 @@ import au.org.ala.delta.translation.DataSetFilter;
  * The DataSetFilter is responsible for determining whether elements of a DeltaDataSet
  * should be included in a translation operation.
  */
-public class NaturalLanguageDataSetFilter extends AbstractDataSetFilter implements DataSetFilter {
+public class DeltaFormatDataSetFilter extends AbstractDataSetFilter implements DataSetFilter {
 
 	/**
 	 * Creates a new DataSetFilter
 	 * @param context
 	 */
-	public NaturalLanguageDataSetFilter(DeltaContext context) {
+	public DeltaFormatDataSetFilter(DeltaContext context) {
 		_context = context;
 	}
 	
@@ -39,10 +39,7 @@ public class NaturalLanguageDataSetFilter extends AbstractDataSetFilter implemen
 		if (attribute.isUnknown()) { 
 			return false;
 		}
-		// TODO - need to implement controlling chars in the default data model.
-		if ("-".equals(attribute.getValueAsString())) {
-			return false;
-		}
+		
 		if (item.isVariant()) {
 			return outputVariantAttribute((VariantItem)item, character);
 		}
