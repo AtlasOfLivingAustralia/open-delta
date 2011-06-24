@@ -2,6 +2,7 @@ package au.org.ala.delta.model.image;
 
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -51,15 +52,40 @@ public class Image {
 	 * @return any subject text specified for this image.
 	 */
 	public String getSubjectText() {
-		List<ImageOverlay> overlays = getOverlays();
-		
-		for (ImageOverlay overlay : overlays) {
-			if (overlay.isType(OverlayType.OLSUBJECT)) {
-				return overlay.overlayText;
-			}
+		ImageOverlay subjectOverlay = getFirstOverlayOfType(OverlayType.OLSUBJECT);
+		if (subjectOverlay != null) {
+			return subjectOverlay.overlayText;
 		}
 		return "";
 	}
+	
+	private ImageOverlay getFirstOverlayOfType(int type) {
+		List<ImageOverlay> overlays = getOverlays();
+		
+		for (ImageOverlay overlay : overlays) {
+			if (overlay.isType(type)) {
+				return overlay;
+			}
+		}
+		return null;
+	}
+	
+	public List<ImageOverlay> getSounds() {
+		return getOverlaysOfType(OverlayType.OLSOUND);
+	}
+	
+	private List<ImageOverlay> getOverlaysOfType(int type) {
+		List<ImageOverlay> results = new ArrayList<ImageOverlay>();
+		List<ImageOverlay> overlays = getOverlays();
+		
+		for (ImageOverlay overlay : overlays) {
+			if (overlay.isType(type)) {
+				results.add(overlay);
+			}
+		}
+		return results;
+	}
+	
 	
 	public URL getImageLocation(String imagePath) {
 		

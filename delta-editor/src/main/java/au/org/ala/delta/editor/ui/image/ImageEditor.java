@@ -28,6 +28,7 @@ import org.apache.commons.lang.StringUtils;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 
+import au.org.ala.delta.editor.DeltaEditor;
 import au.org.ala.delta.editor.DeltaView;
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.ui.ReorderableList;
@@ -66,10 +67,12 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 	private Map<String, ImageEditorPanel> _imageEditors;
 	private DataSetHelper _helper;
 	private PreviewController _previewController;
+	private DeltaEditor editor;
 	
 	public ImageEditor(EditorViewModel model) {
 
 		_model = model;
+		editor = (DeltaEditor)Application.getInstance();
 		_helper = new DataSetHelper(model);
 		_actionMap = Application.getInstance().getContext().getActionMap(this);
 		_layout = new CardLayout();
@@ -497,9 +500,10 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 	@Action
 	public void aboutImage() {
 		AboutImageDialog about = new AboutImageDialog(
-				this, "", _selectedImage.getImageLocation(_model.getImagePath()),
+				this, subjectTextOrFileName(_selectedImage), _selectedImage.getImageLocation(_model.getImagePath()),
 				visibleEditor().getImage(), visibleEditor().getImageFormatName());
 		
+		editor.show(about);
 	}
 	
 	@Action
