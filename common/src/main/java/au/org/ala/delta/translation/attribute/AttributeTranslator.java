@@ -35,7 +35,7 @@ public abstract class AttributeTranslator {
 	 */
 	public String translate(ParsedAttribute attribute) {
 		_translatedValue = new StringBuilder();
-		_translatedValue.append(characterComment(attribute.getCharacterComment()));
+		_translatedValue.append(translateCharacterComment(attribute.getCharacterComment()));
 		
 		List<CommentedValues> commentedValues = attribute.getCommentedValues();
 		boolean valueOutput = false;
@@ -75,7 +75,7 @@ public abstract class AttributeTranslator {
 			
 	}
 	
-	public String characterComment(String comment) {
+	public String translateCharacterComment(String comment) {
 		StringBuilder output = new StringBuilder();
 		comment = _attributeFormatter.formatComment(comment);
 		if (StringUtils.isNotEmpty(comment)) {
