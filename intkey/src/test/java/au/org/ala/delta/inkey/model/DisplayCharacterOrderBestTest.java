@@ -39,107 +39,104 @@ import au.org.ala.delta.model.TextCharacter;
 
 public class DisplayCharacterOrderBestTest extends TestCase {
 
-     @Test
-     public void testSimpleDataSet() throws Exception {
-     URL initFileUrl =
-     getClass().getResource("/dataset/controlling_characters_simple/intkey.ink");
-    
-     IntkeyContext context = new IntkeyContext(null);
-     context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
-    
-     Map<Character, Double> bestMap = orderBestOther(context);
-     List<Character> orderedCharList = new
-     ArrayList<Character>(bestMap.keySet());
-    
-     assertEquals(7, bestMap.keySet().size());
-    
-     bestTestHelper(0, 6, 1.92, orderedCharList, bestMap);
-     bestTestHelper(1, 1, 1.74, orderedCharList, bestMap);
-     bestTestHelper(2, 7, 1.10, orderedCharList, bestMap);
-     bestTestHelper(3, 2, 0.97, orderedCharList, bestMap);
-     bestTestHelper(4, 5, 0.79, orderedCharList, bestMap);
-     bestTestHelper(5, 3, 0.49, orderedCharList, bestMap);
-     bestTestHelper(6, 4, 0.45, orderedCharList, bestMap);
-     }
+    @Test
+    public void testSimpleDataSet() throws Exception {
+        URL initFileUrl = getClass().getResource("/dataset/controlling_characters_simple/intkey.ink");
 
-     @Test
-     public void testDeltaSampleDataSet() throws Exception {
-     URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
-    
-     IntkeyContext context = new IntkeyContext(null);
-     context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
-    
-     Map<Character, Double> bestMap = orderBestOther(context);
-     List<Character> orderedCharList = new
-     ArrayList<Character>(bestMap.keySet());
-    
-     bestTestHelper(0, 38, 1.70, orderedCharList, bestMap);
-     bestTestHelper(1, 54, 1.18, orderedCharList, bestMap);
-     bestTestHelper(2, 11, 0.96, orderedCharList, bestMap);
-     bestTestHelper(3, 28, 1.16, orderedCharList, bestMap);
-     bestTestHelper(4, 40, 1.15, orderedCharList, bestMap);
-     bestTestHelper(5, 60, 1.11, orderedCharList, bestMap);
-     bestTestHelper(6, 26, 1.08, orderedCharList, bestMap);
-     bestTestHelper(7, 66, 0.86, orderedCharList, bestMap);
-     bestTestHelper(8, 44, 0.83, orderedCharList, bestMap);
-     bestTestHelper(9, 27, 0.82, orderedCharList, bestMap);
-     bestTestHelper(10, 13, 0.81, orderedCharList, bestMap);
-     bestTestHelper(11, 3, 0.88, orderedCharList, bestMap);
-     bestTestHelper(12, 35, 0.87, orderedCharList, bestMap);
-     bestTestHelper(13, 52, 0.87, orderedCharList, bestMap);
-     bestTestHelper(14, 34, 0.81, orderedCharList, bestMap);
-     bestTestHelper(15, 58, 0.81, orderedCharList, bestMap);
-     bestTestHelper(16, 19, 0.81, orderedCharList, bestMap);
-     bestTestHelper(17, 30, 0.79, orderedCharList, bestMap);
-     bestTestHelper(18, 63, 0.78, orderedCharList, bestMap);
-     bestTestHelper(19, 31, 0.75, orderedCharList, bestMap);
-     bestTestHelper(20, 47, 0.71, orderedCharList, bestMap);
-     bestTestHelper(21, 48, 0.51, orderedCharList, bestMap);
-     bestTestHelper(22, 56, 0.71, orderedCharList, bestMap);
-     bestTestHelper(23, 12, 0.50, orderedCharList, bestMap);
-     bestTestHelper(24, 7, 0.68, orderedCharList, bestMap);
-     bestTestHelper(25, 67, 0.64, orderedCharList, bestMap);
-     bestTestHelper(26, 61, 0.58, orderedCharList, bestMap);
-     bestTestHelper(27, 45, 0.51, orderedCharList, bestMap);
-     bestTestHelper(28, 41, 0.49, orderedCharList, bestMap);
-     bestTestHelper(29, 49, 0.46, orderedCharList, bestMap);
-     bestTestHelper(30, 50, 0.41, orderedCharList, bestMap);
-     bestTestHelper(31, 9, 0.41, orderedCharList, bestMap);
-     bestTestHelper(32, 4, 0.41, orderedCharList, bestMap);
-     bestTestHelper(33, 20, 0.40, orderedCharList, bestMap);
-     bestTestHelper(34, 59, 0.40, orderedCharList, bestMap);
-     bestTestHelper(35, 15, 0.40, orderedCharList, bestMap);
-     bestTestHelper(36, 62, 0.40, orderedCharList, bestMap);
-     bestTestHelper(37, 64, 0.64, orderedCharList, bestMap);
-     bestTestHelper(38, 77, 0.37, orderedCharList, bestMap);
-     bestTestHelper(39, 16, 0.37, orderedCharList, bestMap);
-     bestTestHelper(40, 57, 0.37, orderedCharList, bestMap);
-     bestTestHelper(41, 65, 0.37, orderedCharList, bestMap);
-     bestTestHelper(42, 37, 0.34, orderedCharList, bestMap);
-     bestTestHelper(43, 53, 0.34, orderedCharList, bestMap);
-     bestTestHelper(44, 2, 0.30, orderedCharList, bestMap);
-     bestTestHelper(45, 18, 0.24, orderedCharList, bestMap);
-     bestTestHelper(46, 43, 0.23, orderedCharList, bestMap);
-     bestTestHelper(47, 8, 0.23, orderedCharList, bestMap);
-     bestTestHelper(48, 51, 0.22, orderedCharList, bestMap);
-     bestTestHelper(49, 5, 0.21, orderedCharList, bestMap);
-     bestTestHelper(50, 46, 0.21, orderedCharList, bestMap);
-     bestTestHelper(51, 29, 0.20, orderedCharList, bestMap);
-     bestTestHelper(52, 36, 0.20, orderedCharList, bestMap);
-     bestTestHelper(53, 70, 0.71, orderedCharList, bestMap);
-     bestTestHelper(54, 14, 0.17, orderedCharList, bestMap);
-     bestTestHelper(55, 42, 0.17, orderedCharList, bestMap);
-     bestTestHelper(56, 10, 0.14, orderedCharList, bestMap);
-     bestTestHelper(57, 32, 0.14, orderedCharList, bestMap);
-     bestTestHelper(58, 23, 0.07, orderedCharList, bestMap);
-     bestTestHelper(59, 17, 0.05, orderedCharList, bestMap);
-     bestTestHelper(60, 21, 0.05, orderedCharList, bestMap);
-     bestTestHelper(61, 22, 0.05, orderedCharList, bestMap);
-     bestTestHelper(62, 24, 0.05, orderedCharList, bestMap);
-     bestTestHelper(63, 39, 0.40, orderedCharList, bestMap);
-     bestTestHelper(64, 6, 0.24, orderedCharList, bestMap);
-     bestTestHelper(65, 68, 0.90, orderedCharList, bestMap);
-     }
+        IntkeyContext context = new IntkeyContext(null);
+        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+
+        Map<Character, Double> bestMap = orderBestOther(context);
+        List<Character> orderedCharList = new ArrayList<Character>(bestMap.keySet());
+
+        assertEquals(7, bestMap.keySet().size());
+
+        bestTestHelper(0, 6, 1.92, orderedCharList, bestMap);
+        bestTestHelper(1, 1, 1.74, orderedCharList, bestMap);
+        bestTestHelper(2, 7, 1.10, orderedCharList, bestMap);
+        bestTestHelper(3, 2, 0.97, orderedCharList, bestMap);
+        bestTestHelper(4, 5, 0.79, orderedCharList, bestMap);
+        bestTestHelper(5, 3, 0.49, orderedCharList, bestMap);
+        bestTestHelper(6, 4, 0.45, orderedCharList, bestMap);
+    }
+
+    @Test
+    public void testDeltaSampleDataSet() throws Exception {
+        URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
+
+        IntkeyContext context = new IntkeyContext(null);
+        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+
+        Map<Character, Double> bestMap = orderBestOther(context);
+        List<Character> orderedCharList = new ArrayList<Character>(bestMap.keySet());
+
+        bestTestHelper(0, 38, 1.70, orderedCharList, bestMap);
+        bestTestHelper(1, 54, 1.18, orderedCharList, bestMap);
+        bestTestHelper(2, 11, 0.96, orderedCharList, bestMap);
+        bestTestHelper(3, 28, 1.16, orderedCharList, bestMap);
+        bestTestHelper(4, 40, 1.15, orderedCharList, bestMap);
+        bestTestHelper(5, 60, 1.11, orderedCharList, bestMap);
+        bestTestHelper(6, 26, 1.08, orderedCharList, bestMap);
+        bestTestHelper(7, 66, 0.86, orderedCharList, bestMap);
+        bestTestHelper(8, 44, 0.83, orderedCharList, bestMap);
+        bestTestHelper(9, 27, 0.82, orderedCharList, bestMap);
+        bestTestHelper(10, 13, 0.81, orderedCharList, bestMap);
+        bestTestHelper(11, 3, 0.88, orderedCharList, bestMap);
+        bestTestHelper(12, 35, 0.87, orderedCharList, bestMap);
+        bestTestHelper(13, 52, 0.87, orderedCharList, bestMap);
+        bestTestHelper(14, 34, 0.81, orderedCharList, bestMap);
+        bestTestHelper(15, 58, 0.81, orderedCharList, bestMap);
+        bestTestHelper(16, 19, 0.81, orderedCharList, bestMap);
+        bestTestHelper(17, 30, 0.79, orderedCharList, bestMap);
+        bestTestHelper(18, 63, 0.78, orderedCharList, bestMap);
+        bestTestHelper(19, 31, 0.75, orderedCharList, bestMap);
+        bestTestHelper(20, 47, 0.71, orderedCharList, bestMap);
+        bestTestHelper(21, 48, 0.51, orderedCharList, bestMap);
+        bestTestHelper(22, 56, 0.71, orderedCharList, bestMap);
+        bestTestHelper(23, 12, 0.50, orderedCharList, bestMap);
+        bestTestHelper(24, 7, 0.68, orderedCharList, bestMap);
+        bestTestHelper(25, 67, 0.64, orderedCharList, bestMap);
+        bestTestHelper(26, 61, 0.58, orderedCharList, bestMap);
+        bestTestHelper(27, 45, 0.51, orderedCharList, bestMap);
+        bestTestHelper(28, 41, 0.49, orderedCharList, bestMap);
+        bestTestHelper(29, 49, 0.46, orderedCharList, bestMap);
+        bestTestHelper(30, 50, 0.41, orderedCharList, bestMap);
+        bestTestHelper(31, 9, 0.41, orderedCharList, bestMap);
+        bestTestHelper(32, 4, 0.41, orderedCharList, bestMap);
+        bestTestHelper(33, 20, 0.40, orderedCharList, bestMap);
+        bestTestHelper(34, 59, 0.40, orderedCharList, bestMap);
+        bestTestHelper(35, 15, 0.40, orderedCharList, bestMap);
+        bestTestHelper(36, 62, 0.40, orderedCharList, bestMap);
+        bestTestHelper(37, 64, 0.64, orderedCharList, bestMap);
+        bestTestHelper(38, 77, 0.37, orderedCharList, bestMap);
+        bestTestHelper(39, 16, 0.37, orderedCharList, bestMap);
+        bestTestHelper(40, 57, 0.37, orderedCharList, bestMap);
+        bestTestHelper(41, 65, 0.37, orderedCharList, bestMap);
+        bestTestHelper(42, 37, 0.34, orderedCharList, bestMap);
+        bestTestHelper(43, 53, 0.34, orderedCharList, bestMap);
+        bestTestHelper(44, 2, 0.30, orderedCharList, bestMap);
+        bestTestHelper(45, 18, 0.24, orderedCharList, bestMap);
+        bestTestHelper(46, 43, 0.23, orderedCharList, bestMap);
+        bestTestHelper(47, 8, 0.23, orderedCharList, bestMap);
+        bestTestHelper(48, 51, 0.22, orderedCharList, bestMap);
+        bestTestHelper(49, 5, 0.21, orderedCharList, bestMap);
+        bestTestHelper(50, 46, 0.21, orderedCharList, bestMap);
+        bestTestHelper(51, 29, 0.20, orderedCharList, bestMap);
+        bestTestHelper(52, 36, 0.20, orderedCharList, bestMap);
+        bestTestHelper(53, 70, 0.71, orderedCharList, bestMap);
+        bestTestHelper(54, 14, 0.17, orderedCharList, bestMap);
+        bestTestHelper(55, 42, 0.17, orderedCharList, bestMap);
+        bestTestHelper(56, 10, 0.14, orderedCharList, bestMap);
+        bestTestHelper(57, 32, 0.14, orderedCharList, bestMap);
+        bestTestHelper(58, 23, 0.07, orderedCharList, bestMap);
+        bestTestHelper(59, 17, 0.05, orderedCharList, bestMap);
+        bestTestHelper(60, 21, 0.05, orderedCharList, bestMap);
+        bestTestHelper(61, 22, 0.05, orderedCharList, bestMap);
+        bestTestHelper(62, 24, 0.05, orderedCharList, bestMap);
+        bestTestHelper(63, 39, 0.40, orderedCharList, bestMap);
+        bestTestHelper(64, 6, 0.24, orderedCharList, bestMap);
+        bestTestHelper(65, 68, 0.90, orderedCharList, bestMap);
+    }
 
 //    @Test
 //    public void testGrassesDataset() throws Exception {
