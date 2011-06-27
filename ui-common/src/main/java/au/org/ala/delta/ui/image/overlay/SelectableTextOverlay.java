@@ -10,6 +10,12 @@ import au.org.ala.delta.model.image.ImageOverlay;
 import au.org.ala.delta.ui.image.OverlaySelectionObserver;
 import au.org.ala.delta.ui.image.SelectableOverlay;
 
+/**
+ * A SelectableTextOverlay is a specialized version of a RichTextLabel which
+ * also has a "selected" property.  It indicates the state of the selected
+ * property by inverting the foregound and background colours.
+ *
+ */
 public class SelectableTextOverlay extends RichTextLabel implements MouseListener, SelectableOverlay {
 
 	private static final long serialVersionUID = 2451885327158264330L;

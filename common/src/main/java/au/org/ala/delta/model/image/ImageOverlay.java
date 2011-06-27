@@ -76,6 +76,13 @@ public class ImageOverlay {
     	return location.get(0).ID;
     }
 	
+    public void addLocation(OverlayLocation aLocation) {
+    	if (location == null) {
+    		location =  new ArrayList<OverlayLocation>();
+    	}
+    	location.add(aLocation);
+    }
+    
 	// Should "keywords" be a string? eventually I think this information will be a set of
 	// group IDs. But this "group" mechanism doesn't yet exist...
 
@@ -140,8 +147,12 @@ public class ImageOverlay {
 		return location.get(id);
 	}
 
-	public boolean containsId(int id) {
-		throw new NotImplementedException();
+	public boolean omitDescription() {
+		return ((location.get(0).flags & OL_OMIT_DESCRIPTION) > 0);
+	}
+	
+	public boolean includeComments() {
+		return ((location.get(0).flags & OL_INCLUDE_COMMENTS) > 0);
 	}
 	
 	public boolean centreText() {

@@ -90,19 +90,23 @@ public class ImageViewer extends ImagePanel implements LayoutManager2, ActionLis
 				SelectableTextOverlay selectable = (SelectableTextOverlay)overlayComp;
 				selectable.addOverlaySelectionObserver(this);
 				// If the overlay has associated hotspots, add them also.
-				int hotSpotCount = overlay.getNHotSpots();
-				if (hotSpotCount > 0) {
-					HotSpotGroup group = new HotSpotGroup(selectable);
-					group.addOverlaySelectionObserver(this);
-					_hotSpotGroups.add(group);
-					
-					for (int i=1; i<=hotSpotCount; i++) {
-						overlay.getLocation(i);
-						HotSpot hotSpot = _factory.createHotSpot(overlay, i);
-						group.add(hotSpot);
-						add(hotSpot, overlay.getLocation(i));
-					}
-				}
+				addHotSpots(overlay, selectable);
+			}
+		}
+	}
+
+	private void addHotSpots(ImageOverlay overlay, SelectableTextOverlay selectable) {
+		int hotSpotCount = overlay.getNHotSpots();
+		if (hotSpotCount > 0) {
+			HotSpotGroup group = new HotSpotGroup(selectable);
+			group.addOverlaySelectionObserver(this);
+			_hotSpotGroups.add(group);
+			
+			for (int i=1; i<=hotSpotCount; i++) {
+				overlay.getLocation(i);
+				HotSpot hotSpot = _factory.createHotSpot(overlay, i);
+				group.add(hotSpot);
+				add(hotSpot, overlay.getLocation(i));
 			}
 		}
 	}
