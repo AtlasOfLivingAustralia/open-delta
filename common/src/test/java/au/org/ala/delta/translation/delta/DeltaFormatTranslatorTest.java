@@ -54,6 +54,17 @@ public class DeltaFormatTranslatorTest extends TranslatorTest {
 		checkResult("/dataset/sample/expected_results/deltaformatitem-omittypesettingmarks.txt");
 		
 	}
+	
+	public void testItemsTranslationNoImplicitValues() throws Exception {
+		initialiseContext(DEFAULT_DATASET_PATH);
+		_context.setInsertImplicitValues(false);
+		
+		_dataSetTranslator = _factory.createTranslator(_context);
+		_dataSetTranslator.translate();
+		
+		checkResult("/dataset/sample/expected_results/deltaformatitem-noimplicitvalues.txt");
+		
+	}
 
 	/**
 	 * Checks the result of the translation is identical to the contents of the supplied file.
