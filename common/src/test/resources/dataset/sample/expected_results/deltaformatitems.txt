@@ -1,6 +1,6 @@
 *ITEM DESCRIPTIONS
- 
- 
+
+
 # \i{}Echinochloa\i0{} <P. Beauv.>/
 1<\i{}Ornithospermum\i0{} Dumoulin, \i{}Tema\i0{} Adans.> 2,40-360 3,2 4,1/2
 5,1/2 6,2 7,2 10,1/2 11<when present,>,3 12,2 13,2<the spikelets often hispid>
@@ -9,8 +9,8 @@
 39,2 40,1 41,1 42,1<<10%> rarely>/2 43,1/2 44,1 45,1 47,1<obtuse to apiculate>
 52,2 53,1 54,5 55,1<the tip reflexed> 56,1 57,1 58,1 59,2 60,3 61,1 62,2 63,2
 64,1 65,2 66,1 67,3 68,1 69,3<3 species> 70,2 71,2 72,2 73,1 74,2 75,1 76,1 77,2
-78,5 79,5 84,2 85,30-40 86,1&2&3&5 87<Metcalfe 1960; this project> 89<echinoch> 
- 
+78,5 79,5 84,2 85,30-40 86,1&2&3&5 87<Metcalfe 1960; this project> 89<echinoch>
+
 # \i{}Anisopogon\i0{} <R.Br.>/
 2,60-110 3,2 4<oat-like>,2 6,2 7,2 8,2 9,2-3 10,1 11,2<the membrane short to
 relatively long, hairy on the back> 12,2 13,5 14,1 15,2 16,2 18,- 19,2 20,2
@@ -21,8 +21,8 @@ floret> 40,2 44,1 45,2 47,3 48,3 49,1 50,2 51,3<up to 8 cm long> 52,2<rounded on
 the back> 53,2 54,3 55,1 56,1<narrow, lanceolate> 57,1 58,2<two ‘stipoid’ and
 larger, the third smaller and flimsier> 59,2 60,3 61,2<sparingly so, towards the
 apex> 62,2/3 63,1 64,2 65,2 66,2 67,1/2 68,2 70,1 71,2 72,2 73,2 74,1 75,2 76,2
-77,2 78,3 82,2 85,1 86,5 87<this project> 89<anisopog> 
- 
+77,2 78,3 82,2 85,1 86,5 87<this project> 89<anisopog>
+
 # \i{}Bambusa\i0{} <Schreber>/
 1<\i{}Arundarbor\i0{} Kuntze, \i{}Bonia\i0{} Balansa, \i{}Criciuma\i0{}
 Soderstrom & Londoño, \i{}Dendrocalamopsis\i0{} (Chia & Fung) Keng f.,
@@ -40,8 +40,8 @@ these solitary or in tufts, fascicles or capitula on leafless branches> 14,1
 45,1 46,2 47,1<usually>/2<\i{}Guadua\i0{}> 52,1-2 54,9-22 55,1 56,1 57,1 58,2
 59,1 60,6 61,2 62,3<usually?> 65,2 66,2 67,3 68,2 70,1 71,1 72,1 73,1 74,3 75,2
 76,2 77,2 78,2 79,4 81,15 85<about>,120 86,1&2&3&5 87<Metcalfe 1960; this
-project> 89<bambusa> 
- 
+project> 89<bambusa>
+
 # \i{}Chloris\i0{} <O. Swartz>/
 1<\i{}Actinochloris\i0{} Steud., \i{}Agrostomia\i0{} Cerv., \i{}Apogon\i0{}
 Steud., \i{}Chloridopsis\i0{} Hack., \i{}Chloropsis\i0{} Kuntze,
@@ -55,8 +55,8 @@ these conspicuous – the spikelet ‘with two florets’> 44,1<rarely 2>
 45,1<truncate>/2 47,3 48,1<usually>/3<<5%>> 49,1/3 50,1 52,1 53,2 54,1-7 55,1
 56,1 57,1 58,1 59,2 60,3 61,1 62,2 63,1/2 64,1 65,2 66,1 67,1-3 68,1 69,1<6
 species> 70,1 71,2 72,2 73,1 74,1/2 75,1/2 76,1/2 77,2 78,4 83,4 85<about>,55
-86,1&2&3&5 87<Metcalfe 1960; this project> 89<chloris> 
- 
+86,1&2&3&5 87<Metcalfe 1960; this project> 89<chloris>
+
 # \i{}Cynodon\i0{} <Rich.>/
 1<\i{}Capriola\i0{} Adans., \i{}Dactilon\i0{} Vill., \i{}Fibichia\i0{} Koel.>
 2,4-60(-100) 3,2 4,2 6,2 7,2 8,1<test> 10,1 11,2-3 12,2 13,2 14,- 15,2 16,2 18,1
@@ -64,8 +64,8 @@ species> 70,1 71,2 72,2 73,1 74,1/2 75,1/2 76,1/2 77,2 78,4 83,4 85<about>,55
 34,1-2 35,1 36,2 37,1 38,1/1-3 39,1<normally>/2 40<(when present)>,2 44,1 45,1
 46,1/2 47,1 52,1 54,1-4 55,1 56,1 57,1 58,1 59,2 60,3 61,1 62,2 63,2 64,1 65,2
 66,1 67,3 68,1 69,2<2 species> 70,1 71,2 72,2 73,1 74,1/2 75,2 76,2 77,2 78,4
-83,4 85,10 86,1&2&3&4&5&6 87<this project> 89<cynodon> 
- 
+83,4 85,10 86,1&2&3&4&5&6 87<this project> 89<cynodon>
+
 # \i{}Andropogon\i0{} <L.>/
 1<\i{}Anatherum\i0{} P. Beauv., \i{}Arthrostachys\i0{} Desv.,
 \i{}Arthrolophis\i0{} (Trin.) Chiov., \i{}Dimeiostemon\i0{} Raf.,
@@ -80,8 +80,8 @@ aristate> 38,1-3 39,2 40,1 41,1 42,2 43,2 44,1 45,2<usually bifid> 47,3 48,1
 49,1 50,2 51,2-3 52,2 54,1-3 55,1 56,3<hyaline> 57,1<tiny> 58,1 59,1/2 60,1-3
 61,1 62,2 64,1 65,2 66,1 67,3 68,1 69,3<3 species> 70,2 71,2 72,2 73,1 74,2 75,1
 76,1/2 77,2 78,5 79,6 84,5 85<about>,100 86,1&2&3&4 87<Metcalfe 1960; this
-project> 89<andropog> 
- 
+project> 89<andropog>
+
 # \i{}Agrostis\i0{} <L.>/
 1<\i{}Agraulus\i0{} P. Beauv., \i{}Agrestis\i0{} Bub., \i{}Anomalotis\i0{}
 Steud., \i{}Bromidium\i0{} Nees, \i{}Candollea\i0{} Steud.,
@@ -97,8 +97,8 @@ toothed via excurrent veins> 47,1/2/3 48<when
 present,>,1/3<\i{}Bromidium\i0{}>/5<rarely> 49,2 50,2 51,1-2/3<<2%> rarely> 52,2
 53,2 54,3-5 55<nearly always>,1 56,1/2/3 57,1 58,2 59,2 60,3 61,1 62,2 63,1 64,1
 65,2 66,1 67,3 68,2 70,1 71,2 72,2 73,1/2 74,1 75,2 76,1/2 77,2 78,1 79,2 80,4
-85<about>,220 86,1&2&3&4&5&6 87<Metcalfe 1960; this project> 89<agrostis> 
- 
+85<about>,220 86,1&2&3&4&5&6 87<Metcalfe 1960; this project> 89<agrostis>
+
 # \i{}Eleusine\i0{} <Gaertn.>/
 2,10-150 3,2 4,1/2<the culms flattened> 6,2 7,2 8,1 10,1 11,2 12,2 13,2
 14,1/2<sometimes forming a capitulum> 15,2 16,2 19,1 20,- 26,3.5-11 27,1
@@ -106,8 +106,8 @@ present,>,1/3<\i{}Bromidium\i0{}>/5<rarely> 49,2 50,2 51,1-2/3<<2%> rarely> 52,2
 33,2 34,1 35,1 36,2 37,1 38,3-5(-7) 39,1/2 40,2 44,3-15 45,1 46,1/2 47,1-2 52,1
 54,3 55,1 57,1 58,1/2 59,2 60,3 61,1 62,2 63,1/3 64,1<0.9-2 mm long> 65,1 66,1
 67,1 68,1 69,2<2 species> 70,1 71,2 72,2 73,1 74,1 75,2 76,2 77,2 78,4 83,4 85,9
-86,1&2&3&4&6 87<Metcalfe 1960; this project> 89<eleusine> 
- 
+86,1&2&3&4&6 87<Metcalfe 1960; this project> 89<eleusine>
+
 # \i{}Festuca\i0{} <L.>/
 1<\i{}Amphigenes\i0{} Janka, \i{}Anatherum\i0{} Nabelek, \i{}Argillochloa\i0{}
 Weber, \i{}Bucetum\i0{} Parnell, \i{}Drymochloa\i0{} Holub, \i{}Drymonaetes\i0{}
@@ -123,8 +123,8 @@ somewhat longer> 52,2 54,3-7 55,1 56,1 57,1 58,2 59,1/2 60,3 61,1/2 62,2 63,1
 64,1/2/3 65,2 66,2<usually about as long as the grain, but sometimes elliptical
 and only half as long> 67,3 68,2 70,1 71,2 72,2 73,1/2 74,1 75,2 76,1/2 77,2
 78,1 79,2 80,7 85,360<or more> 86,1&2&3&4&5&6 87<Metcalfe 1960; this project;
-Aiken \i{}et al.\i0{} 1985> 89<festuca> 
- 
+Aiken \i{}et al.\i0{} 1985> 89<festuca>
+
 # \i{}Oryza\i0{} <L.>/
 1<\i{}Padia\i0{} Moritzi> 2,30-300 3,2 4,1/2 6,1/2 7,2 8,1-2 10,1 11,1 12,2
 13,5<axes usually wavy, the spikelets appressed>/2<the primary branches often
@@ -136,8 +136,8 @@ length, sometimes only bristles> 42,2 43,2 44,1 45,1 46,1 47,1/2/3 48<when
 present,>,1 49,3 50,1 51,1-3 52<strongly>,1 54,3-9 55,1 56,1<but narrower than
 the lemma> 57,1 58,2<but the membranous flange may be narrow> 59,2 60,6 61,1
 62,2 64,1/2/3 65,2 66,2 67,3 68,2 70,1 71,1 72,2 73,1 74,3 75,2 76,2 77,2 78,2
-79,3 81,1 85,25 86,1&2&3 87<Metcalfe 1960; this project> 89<oryza> 
- 
+79,3 81,1 85,25 86,1&2&3 87<Metcalfe 1960; this project> 89<oryza>
+
 # \i{}Panicum\i0{} <L.>/
 1<\i{}Chasea\i0{} Nieuw., \i{}Coleataenia\i0{} Griseb., \i{}Dileucaden\i0{}
 (Raf.) Steud., \i{}Eatonia\i0{} Raf., \i{}Eriolytrum\i0{} Kunth, \i{}Milium\i0{}
@@ -161,8 +161,8 @@ awn-tipped> 38,3-9 39<nearly always>,2 40,1 41,1<rarely 2> 42,1/2 43,2 44,1 45,1
 tested,>,1<C\sub{}3\nosupersub{}, or C\sub{}4\nosupersub{} NAD-ME or
 PCK>/2<NADP-ME> 71,2 72,2 73,1/2 74,1/2 75,1/2 76,1/2<rarely> 77,2 78,5 79,5
 84,2 85<about>,370 86,1&2&3&5&6 87<mainly Metcalfe 1960 and this project>
-89<panicum> 
- 
+89<panicum>
+
 # \i{}Phragmites\i0{} <Adans.>/
 1<\i{}Czernya\i0{} Presl, \i{}Miphragtes\i0{} Nieuwland, \i{}Oxyanthe\i0{}
 Steud., \i{}Trichoon\i0{} Roth, \i{}Xenochloa\i0{} Roem. & Schult.>
@@ -176,8 +176,8 @@ back> 38,3-5 39,2 40,3 41,1 42,1<the stamens often 2>/2 43,2 44,(2-)3-10 45,1
 aristulate> 48<(if lemmas aristulate)>,1 49,3 50,1 51,1 52,2 54,1-3 55,1 56,2
 57,1 58,1 59,1/2 60,3 61,1 62,2 63,3 64,1 65,2 66,1 67,3 68,2 70,1 71,1 72,2
 73,1 74,2 75,2 76,2 77,2 78,3 82,5 85,3 86,1&2&3&5&6 87<Metcalfe 1960; this
-project> 89<phragmit> 
- 
+project> 89<phragmit>
+
 # \i{}Poa\i0{} <L.>/
 1<\i{}Arctopoa\i0{} (Griseb.) Probat., \i{}Neuropoa\i0{} Clayton,
 \i{}Oreopoa\i0{} Grand., \i{}Paneion\i0{} Lunell, \i{}Parodiochloa\i0{} C.E.
@@ -193,8 +193,8 @@ in the southern South American \i{}P. flabellata\i0{}> 52,1 53,2
 54,(3-)5/7-11<<2%> rarely, e.g. in the Australian \i{}Neuropoa\i0{}> 55,1 56,1/2
 57,1 58,2 59<nearly always>,2<occasionally ciliolate> 60,3 61,1 62,2 63,1 64,1
 65,2 66,1 67,3 68,2 70,1 71,2 72,2 73,1 74,1 75,2 76,1/2 77,2 78,1 79,2 80,7
-85<about>,500 86,1&2&3&5&6 87<mainly Metcalfe 1960; this project> 89<poa> 
- 
+85<about>,500 86,1&2&3&5&6 87<mainly Metcalfe 1960; this project> 89<poa>
+
 # \i{}Zea\i0{} <L.>/
 1<\i{}Mays\i0{} Miller, \i{}Mayzea\i0{} Raf., \i{}Reana\i0{} Brignoli,
 \i{}Thalysia\i0{} Kuntze. = \i{}Zea mays\i0{} subsp. \i{}mays\i0{}> 2,200-450
@@ -208,4 +208,4 @@ two cuneate lodicules> 27,2-3 28,4 30,2 31,2 32,1 33,2 34,2 35,2 36,2 37,- 38,0
 39,2 40,1 41,1 42,2 43,2 44,1 47,1 52,2 54,3 55,1 56,1 57,2 60,0 61,1 62,2<at
 tip of style> 63,1-2<or green> 64,2 65,2 66,1 67,3 68,1 69,3 70,2 71,2 72,2 73,1
 74,2 75,1 76,1 77,1 78,5 79,6 84,6 85,1 86,3 87<Metcalfe 1960; this project>
-89<zea> 
+89<zea>
