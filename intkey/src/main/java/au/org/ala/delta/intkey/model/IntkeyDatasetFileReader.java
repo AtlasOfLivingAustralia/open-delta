@@ -989,11 +989,11 @@ public final class IntkeyDatasetFileReader {
                         presentStates.add(k + 1);
                     }
                 }
-                
+
                 IntkeyAttributeData attrData = new IntkeyAttributeData(presentStates.isEmpty(), inapplicable);
                 MultiStateAttribute msAttr = new MultiStateAttribute(multiStateChar, attrData);
                 msAttr.setItem(t);
-                
+
                 msAttr.setPresentStates(presentStates);
 
                 retList.add(msAttr);
@@ -1004,6 +1004,9 @@ public final class IntkeyDatasetFileReader {
             int charMinValue = intChar.getMinimumValue();
             int charMaxValue = intChar.getMaximumValue();
 
+            // 1 bit for all values below minimum, 1 bit for each value between
+            // minimum and maximum (inclusive),
+            // 1 bit for all values above maximum, 1 inapplicability bit.
             int bitsPerTaxon = intChar.getMaximumValue() - intChar.getMinimumValue() + 4;
             int totalBitsNeeded = bitsPerTaxon * taxa.size();
 
@@ -1034,7 +1037,7 @@ public final class IntkeyDatasetFileReader {
                 IntegerAttribute intAttr = new IntegerAttribute(intChar, new IntkeyAttributeData(presentValues.isEmpty(), inapplicable));
                 intAttr.setItem(t);
                 intAttr.setPresentValues(presentValues);
-                
+
                 retList.add(intAttr);
             }
 
@@ -1063,7 +1066,7 @@ public final class IntkeyDatasetFileReader {
                 // Character is unknown for the corresponding taxon if
                 // lowerfloat > upperfloat
                 boolean unknown = lowerFloat > upperFloat;
-                
+
                 RealAttribute realAttr = new RealAttribute((RealCharacter) c, new IntkeyAttributeData(unknown, inapplicable));
 
                 if (!unknown) {
@@ -1203,21 +1206,12 @@ public final class IntkeyDatasetFileReader {
         List<Boolean> boolList = new ArrayList<Boolean>();
 
         for (byte b : bArray) {
-            List<Boolean> l = byteToBooleanList(b);
-            boolList.addAll(l);
-        }
-
-        return boolList;
-    }
-
-    private static List<Boolean> byteToBooleanList(byte b) {
-        List<Boolean> boolList = new ArrayList<Boolean>();
-
-        for (int i = 0; i < Byte.SIZE; i++) {
-            if ((b & (1 << i)) > 0) {
-                boolList.add(true);
-            } else {
-                boolList.add(false);
+            for (int i = 0; i < Byte.SIZE; i++) {
+                if ((b & (1 << i)) > 0) {
+                    boolList.add(true);
+                } else {
+                    boolList.add(false);
+                }
             }
         }
 
@@ -1225,7 +1219,6 @@ public final class IntkeyDatasetFileReader {
     }
 
     private static int recordsSpannedByBytes(int numBytes) {
-        return (int) (Math.ceil((double)numBytes / (double) Constants.RECORD_LENGTH_BYTES));
-        //return Double.valueOf(Math.ceil(Integer.valueOf(numBytes).doubleValue() / Integer.valueOf(Constants.RECORD_LENGTH_BYTES).doubleValue())).intValue();
+        return (int) (Math.ceil((double) numBytes / (double) Constants.RECORD_LENGTH_BYTES));
     }
 }

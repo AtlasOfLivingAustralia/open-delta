@@ -395,12 +395,12 @@ public class Specimen {
     }
 
     public Map<Item, Integer> getTaxonDifferences() {
-        // defensive copy
 
         if (_characterValues.size() == 0) {
-            throw new IllegalStateException("Cannot get taxon differences when no values have been set for specimen");
+            return null;
         }
 
+        // defensive copy
         return new HashMap<Item, Integer>(_taxonDifferences);
     }
 
