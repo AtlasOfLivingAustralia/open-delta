@@ -5,6 +5,7 @@ import au.org.ala.delta.TranslateType;
 import au.org.ala.delta.model.format.AttributeFormatter;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.ItemFormatter;
+import au.org.ala.delta.translation.delta.DeltaFormatTranslator;
 import au.org.ala.delta.translation.naturallanguage.NaturalLanguageTranslator;
 
 
@@ -20,18 +21,32 @@ public class DataSetTranslatorFactory {
 		Printer printer = createPrinter(context);
 		
 		if (translation.equals(TranslateType.NaturalLanguage) && context.getOutputHtml() == false) {
-		
-			TypeSetter typeSetter = createTypeSetter(context, printer);
-			
-			ItemFormatter itemFormatter  = createItemFormatter(context, typeSetter);
-			CharacterFormatter characterFormatter = createCharacterFormatter(context);
-			AttributeFormatter attributeFormatter = createAttributeFormatter(context, typeSetter);
-			translator = new NaturalLanguageTranslator(context, typeSetter, printer, itemFormatter, characterFormatter, attributeFormatter);
+			translator = createNaturalLanguageTranslator(context, printer);
+		}
+		else if (translation.equals(TranslateType.Delta)) {
+			translator = createDeltaFormatTranslator(context, printer);
 		}
 		else {
 			throw new RuntimeException("Only natural language without typesetting is currently supported.");
 		}
 		return translator;
+	}
+
+	private AbstractDataSetTranslator createNaturalLanguageTranslator(
+			DeltaContext context, Printer printer) {
+		AbstractDataSetTranslator translator;
+		TypeSetter typeSetter = createTypeSetter(context, printer);
+		
+		ItemFormatter itemFormatter  = createItemFormatter(context, typeSetter);
+		CharacterFormatter characterFormatter = createCharacterFormatter(context);
+		AttributeFormatter attributeFormatter = createAttributeFormatter(context, typeSetter);
+		translator = new NaturalLanguageTranslator(context, typeSetter, printer, itemFormatter, characterFormatter, attributeFormatter);
+		return translator;
+	}
+	
+	private AbstractDataSetTranslator createDeltaFormatTranslator(DeltaContext context, Printer printer) {
+		ItemFormatter itemFormatter  = createItemFormatter(context, null);
+		return new DeltaFormatTranslator(context, printer, itemFormatter);
 	}
 	
 	/**
@@ -67,6 +82,9 @@ public class DataSetTranslatorFactory {
 	private ItemFormatter createItemFormatter(DeltaContext context, TypeSetter typeSetter) {
 		if (context.isOmitTypeSettingMarks()) {
 			return new ItemFormatter(false, false, false, true, false);
+		}
+		else if (typeSetter == null) {
+			return new ItemFormatter(false, false, false, false, false);
 		}
 		else {
 			return new TypeSettingItemFormatter(typeSetter);

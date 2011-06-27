@@ -24,11 +24,11 @@ public class DeltaFormatTranslator extends AbstractDataSetTranslator {
 	private ItemFormatter _itemFormatter;
 	private AttributeParser _parser;
 	
-	public DeltaFormatTranslator(DeltaContext context, Printer printer) {
+	public DeltaFormatTranslator(DeltaContext context, Printer printer, ItemFormatter itemFormatter) {
 		super(context, new DeltaFormatDataSetFilter(context));
 		
 		_printer = printer;
-		_itemFormatter = new ItemFormatter(false, false, false, false, false);
+		_itemFormatter = itemFormatter;
 		 _parser = new AttributeParser();
 	}
 	
@@ -62,6 +62,7 @@ public class DeltaFormatTranslator extends AbstractDataSetTranslator {
 		attributeValue.append(Integer.toString(character.getCharacterId()));
 		
 		String value = getAttributeValue(attribute);
+	    value = _itemFormatter.defaultFormat(value);
 		if (StringUtils.isNotEmpty(value)) {
 			ParsedAttribute parsedAttribute = _parser.parse(value);
 			String charComment = parsedAttribute.getCharacterComment();

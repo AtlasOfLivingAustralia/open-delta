@@ -6,6 +6,8 @@ import java.io.PrintStream;
 import org.junit.Before;
 
 import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.translation.AbstractDataSetTranslator;
+import au.org.ala.delta.translation.DataSetTranslatorFactory;
 import au.org.ala.delta.translation.Printer;
 import au.org.ala.delta.translation.TranslatorTest;
 
@@ -16,25 +18,40 @@ public class DeltaFormatTranslatorTest extends TranslatorTest {
 
 	protected static final String DEFAULT_DATASET_PATH = "/dataset/sample/fillin";
 	
-	protected DeltaFormatTranslator _dataSetTranslator;
+	protected AbstractDataSetTranslator _dataSetTranslator;
 	protected Printer _printer;
+	protected DataSetTranslatorFactory _factory;
 	
 	@Before
 	public void setUp() throws Exception {
 		
 		_bytes = new ByteArrayOutputStream();
 		PrintStream pout = new PrintStream(_bytes, false, "UTF-8");
-		_printer = new Printer(pout, 80);
-		_context = new DeltaContext();
 		
-		_dataSetTranslator = new DeltaFormatTranslator(_context, _printer);
+		_context = new DeltaContext();
+		_context.setPrintStream(pout);
+		_context.setPrintWidth(80);
+		_factory = new DataSetTranslatorFactory();
+		
 	}
 	
 	public void testItemsTranslation() throws Exception {
 		initialiseContext(DEFAULT_DATASET_PATH);
+		_context.setOmitTypeSettingMarks(false);
+		_dataSetTranslator = _factory.createTranslator(_context);
 		_dataSetTranslator.translate();
 		
 		checkResult("/dataset/sample/expected_results/deltaformatitems.txt");
+		
+	}
+	
+	public void testItemsTranslationOmitTypeSettingMarks() throws Exception {
+		initialiseContext(DEFAULT_DATASET_PATH);
+		_context.setOmitTypeSettingMarks(true);
+		_dataSetTranslator = _factory.createTranslator(_context);
+		_dataSetTranslator.translate();
+		
+		checkResult("/dataset/sample/expected_results/deltaformatitem-omittypesettingmarks.txt");
 		
 	}
 
