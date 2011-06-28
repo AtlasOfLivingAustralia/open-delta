@@ -21,5 +21,11 @@ public class TypeSettingItemFormatter extends ItemFormatter {
 		return _typeSetter.typeSetItemDescription(formatted);
 	}
 	
+	@Override
+	public String defaultFormat(String text, boolean stripComments, boolean stripFormatting) {
+		
+		String formatted = super.defaultFormat(text, stripComments, stripFormatting);
+		return _typeSetter.typeSetItemDescription(formatted);
+	}
 	
 }
