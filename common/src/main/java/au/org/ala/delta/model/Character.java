@@ -17,6 +17,8 @@ package au.org.ala.delta.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.impl.CharacterData;
 import au.org.ala.delta.model.impl.ControllingInfo;
@@ -116,6 +118,10 @@ public abstract class Character implements Illustratable, Comparable<Character> 
 
     public String getNotes() {
         return _impl.getNotes();
+    }
+    
+    public boolean hasNotes() {
+    	return StringUtils.isNotEmpty(getNotes());
     }
     
     public float getReliability() {

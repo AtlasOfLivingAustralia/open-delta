@@ -10,6 +10,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyVetoException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,9 +39,13 @@ import au.org.ala.delta.editor.ui.util.MessageDialogHelper;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Illustratable;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.MultiStateCharacter;
+import au.org.ala.delta.model.NumericCharacter;
+import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageOverlay;
 import au.org.ala.delta.model.image.OverlayType;
+import au.org.ala.delta.ui.RichTextDialog;
 import au.org.ala.delta.ui.image.AudioPlayer;
 import au.org.ala.delta.ui.image.ImagePanel.ScalingMode;
 import au.org.ala.delta.ui.image.OverlaySelectionObserver;
@@ -172,18 +177,24 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 		JMenu controlMenu = new JMenu();
 		controlMenu.setName("controlMenu");
 		
-		String[] controlMenuActions = { 
-				"nextImage", "previousImage", "-",
-				"nextCharacterWithImage", "previousCharacterWithImage", "-",
-				"showFullImageText", "showImageNotes"};
-		
-		
+		List<String> controlMenuActions = new ArrayList<String>();
+		controlMenuActions.add("nextImage");
+		controlMenuActions.add("previousImage");
+		controlMenuActions.add("-");
 		if (_selectedImage.getSubject() instanceof Item) {
-			controlMenuActions[4] = "nextItemWithImage";
-			controlMenuActions[5] = "previousItemWithImage";
+			controlMenuActions.add("nextItemWithImage");
+			controlMenuActions.add("previousItemWithImage");
+			controlMenuActions.add("showImageNotes");
 		}
-
-		MenuBuilder.buildMenu(controlMenu, controlMenuActions, _actionMap);
+		else {
+			controlMenuActions.add("nextCharacterWithImage");
+			controlMenuActions.add("previousCharacterWithImage");
+			controlMenuActions.add("-");
+			controlMenuActions.add("showCharacterDetails");
+			controlMenuActions.add("showCharacterNotes");
+		}
+		
+		MenuBuilder.buildMenu(controlMenu, controlMenuActions.toArray(new String[0]), _actionMap);
 
 		return controlMenu;
 	}
@@ -256,6 +267,8 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 		
 		character = _helper.getPreviousCharacterWithImage((Character)_subject);
 		_actionMap.get("previousCharacterWithImage").setEnabled(character != null);
+		
+		_actionMap.get("showCharacterNotes").setEnabled(subject.hasNotes());
 	}
 	
 	private void displaySubject(Item subject, Image image) {
@@ -266,6 +279,8 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 		
 		item = _helper.getPreviousItemWithImage((Item)_subject);
 		_actionMap.get("previousItemWithImage").setEnabled(item != null);
+		
+		
 	}
 	
 	private void displaySubject(Illustratable subject, Image image) {
@@ -276,7 +291,6 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 		_imageEditors = new HashMap<String, ImageEditorPanel>();
 		
 		displayImage(image);
-		
 		buildSubjectMenu();
 	}
 	
@@ -294,6 +308,7 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 		int index = _images.indexOf(_selectedImage);
 		_actionMap.get("nextImage").setEnabled(index < (_images.size()-1));
 		_actionMap.get("previousImage").setEnabled(index > 0);
+		_actionMap.get("showImageNotes").setEnabled(image.hasNotes());
 		_layout.show(_contentPanel, text);
 		revalidate();
 		replaySound();
@@ -358,10 +373,27 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 	}
 	
 	@Action
-	public void showFullImageText() {}
-	
-	@Action
-	public void showImageNotes() {}
+	public void showCharacterDetails() {
+		Character character = (Character)_subject;
+		CharacterFormatter formatter = new CharacterFormatter();
+		StringBuilder text = new StringBuilder();
+		text.append(formatter.formatCharacterDescription(character));
+		
+		if (character instanceof MultiStateCharacter) {
+			MultiStateCharacter multiStateChar = (MultiStateCharacter)character;
+			for (int i=1; i<=multiStateChar.getNumberOfStates(); i++) {
+				text.append("\\par ");
+				text.append(formatter.formatState(multiStateChar, i));
+			}
+		}
+		else if (character instanceof NumericCharacter<?>) {
+			NumericCharacter<?> numericChar = (NumericCharacter<?>)character;
+			text.append("\\par ");
+			text.append(numericChar.getUnits());
+		}
+		RichTextDialog dialog = new RichTextDialog(text.toString());
+		editor.show(dialog);
+	}
 	
 	@Action
 	public void toggleScaling() {
@@ -533,6 +565,19 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 		catch (PropertyVetoException e) {}
 	}
 	
+	@Action
+	public void showImageNotes() {
+		RichTextDialog dialog = new RichTextDialog(_selectedImage.getNotes());
+		editor.show(dialog);
+	}
+	
+	@Action
+	public void showCharacterNotes() {
+		Character character = (Character)_subject;
+		RichTextDialog dialog = new RichTextDialog(character.getNotes());
+		editor.show(dialog);
+	}
+	
 	class PreviewController implements OverlaySelectionObserver {
 
 		@Override
@@ -543,8 +588,12 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 				imageOverlay.isType(OverlayType.OLCANCEL)) {
 				closeImage();
 			}
-					
+			else if (imageOverlay.isType(OverlayType.OLNOTES)) {
+				showCharacterNotes();
+			}
+			else if (imageOverlay.isType(OverlayType.OLIMAGENOTES)) {
+				showImageNotes();
+			}
 		}
-		
 	}
 }

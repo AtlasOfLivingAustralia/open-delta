@@ -176,4 +176,17 @@ public class Image {
 	public int hashCode() {
 		return getFileName().hashCode();
 	}
+
+	public String getNotes() {
+		ImageOverlay notesOverlay = getFirstOverlayOfType(OverlayType.OLIMAGENOTES);
+		if (notesOverlay != null) {
+			return notesOverlay.overlayText;
+		}
+		return "";
+	}
+	
+	public boolean hasNotes() {
+		ImageOverlay notesOverlay = getFirstOverlayOfType(OverlayType.OLIMAGENOTES);
+		return notesOverlay != null;
+	}
 }
