@@ -10,8 +10,8 @@ import au.org.ala.delta.model.format.CharacterFormatter;
 
 public class CharacterListModel extends AbstractListModel {
 
-    private List<Character> _characters;
-    private CharacterFormatter _formatter;
+    protected List<Character> _characters;
+    protected CharacterFormatter _formatter;
 
     public CharacterListModel(List<Character> characters) {
         _characters = new ArrayList<Character>(characters);

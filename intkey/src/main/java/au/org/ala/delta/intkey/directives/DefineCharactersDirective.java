@@ -1,5 +1,6 @@
 package au.org.ala.delta.intkey.directives;
 
+//TODO need error if no dataset loaded
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;

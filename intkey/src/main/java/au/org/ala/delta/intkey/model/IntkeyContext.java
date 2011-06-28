@@ -32,6 +32,8 @@ public class IntkeyContext extends AbstractDeltaContext {
     // set of commands that have been run
     // other stuff
 
+    private boolean _isAdvancedMode;
+
     private File _taxaFile;
     private File _charactersFile;
 
@@ -47,9 +49,13 @@ public class IntkeyContext extends AbstractDeltaContext {
     private MatchType _matchType;
 
     private int _tolerance;
-    
+
     private double _varyWeight;
     private double _rbase;
+
+    private IntkeyCharacterOrder _characterOrder;
+
+    private LinkedHashMap<Character, Double> _bestCharacters;
 
     /**
      * Should executed directives be recorded in the history?
@@ -79,8 +85,6 @@ public class IntkeyContext extends AbstractDeltaContext {
         _recordDirectiveHistory = false;
         _processingInputFile = false;
         initializeInvestigation();
-        
-        
     }
 
     private void initializeInvestigation() {
@@ -97,6 +101,16 @@ public class IntkeyContext extends AbstractDeltaContext {
         _tolerance = 0;
         _rbase = 1.1;
         _varyWeight = 1;
+
+        _characterOrder = IntkeyCharacterOrder.BEST;
+    }
+
+    public boolean isAdvancedMode() {
+        return _isAdvancedMode;
+    }
+
+    public void setAdvancedMode(boolean isAdvancedMode) {
+        this._isAdvancedMode = isAdvancedMode;
     }
 
     public void setFileCharacters(String fileName) {
@@ -147,17 +161,22 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     private void createNewDataSet() {
         initializeInvestigation();
-
+        
         _dataset = IntkeyDatasetFileReader.readDataSet(_charactersFile, _taxaFile);
+        
         _specimen = new Specimen(_dataset, _matchInapplicables, _matchInapplicables, _matchType);
 
+        _bestCharacters = SortingUtils.orderBest(this);
+        
         // TODO need a proper listener pattern here?
         if (_appUI != null) {
             _appUI.handleNewDataSet(_dataset);
         }
+
     }
 
     public void newDataSetFile(String fileName) {
+        
         Logger.log("Reading in new Data Set file from: %s", fileName);
 
         // Don't record directive history while processing the data set file
@@ -211,12 +230,20 @@ public class IntkeyContext extends AbstractDeltaContext {
     }
 
     public void specimenUpdateComplete() {
+        if (_characterOrder == IntkeyCharacterOrder.BEST) {
+            _bestCharacters = SortingUtils.orderBest(this);
+        }
+
         if (_appUI != null) {
             _appUI.handleSpecimenUpdated();
         }
     }
 
     public void addCharacterKeyword(String keyword, Set<Integer> characterNumbers) {
+        if (_dataset == null) {
+            throw new IllegalStateException("Cannot define a character keyword if no dataset loaded");
+        }
+
         keyword = keyword.toLowerCase();
         if (keyword.equals(CHARACTER_KEYWORD_ALL) || keyword.equals(CHARACTER_KEYWORD_USED) || keyword.equals(CHARACTER_KEYWORD_AVAILABLE)) {
             throw new IllegalArgumentException(String.format(UIUtils.getResourceString("RedefineSystemKeyword.error"), keyword));
@@ -294,6 +321,8 @@ public class IntkeyContext extends AbstractDeltaContext {
             // Create a new blank specimen
             _specimen = new Specimen(_dataset, _matchInapplicables, _matchInapplicables, _matchType);
 
+            _bestCharacters = SortingUtils.orderBest(this);
+            
             if (_appUI != null) {
                 _appUI.handleIdentificationRestarted();
             }
@@ -320,19 +349,19 @@ public class IntkeyContext extends AbstractDeltaContext {
     public int getTolerance() {
         return _tolerance;
     }
-    
+
     public double getVaryWeight() {
         return _varyWeight;
     }
-    
+
     public void setVaryWeight(double varyWeight) {
         _varyWeight = varyWeight;
     }
-    
+
     public double getRBase() {
         return _rbase;
     }
-    
+
     public void setRBase(double rbase) {
         _rbase = rbase;
     }
@@ -343,6 +372,18 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     public File getCharactersFile() {
         return _charactersFile;
+    }
+
+    public IntkeyCharacterOrder getCharacterOrder() {
+        return _characterOrder;
+    }
+
+    public void setCharacterOrder(IntkeyCharacterOrder characterOrder) {
+        this._characterOrder = characterOrder;
+    }
+
+    public LinkedHashMap<Character, Double> getBestCharacters() {
+        return _bestCharacters;
     }
 
 }

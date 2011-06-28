@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -56,16 +57,19 @@ import au.org.ala.delta.intkey.directives.IntkeyDirectiveParser;
 import au.org.ala.delta.intkey.directives.NewDatasetDirective;
 import au.org.ala.delta.intkey.directives.RestartDirective;
 import au.org.ala.delta.intkey.directives.UseDirective;
+import au.org.ala.delta.intkey.model.IntkeyCharacterOrder;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.model.IntkeyDataset;
 import au.org.ala.delta.intkey.model.specimen.CharacterValue;
 import au.org.ala.delta.intkey.model.specimen.Specimen;
+import au.org.ala.delta.intkey.ui.BestCharacterListModel;
 import au.org.ala.delta.intkey.ui.CharacterListModel;
 import au.org.ala.delta.intkey.ui.ItemListModel;
 import au.org.ala.delta.intkey.ui.ReExecuteDialog;
 import au.org.ala.delta.intkey.ui.UIUtils;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.ui.AboutBox;
 import au.org.ala.delta.ui.DeltaSingleFrameApplication;
@@ -802,10 +806,12 @@ public class Intkey extends DeltaSingleFrameApplication {
         try {
             dir.parseAndProcess(_context, null);
         } catch (IntkeyDirectiveParseException ex) {
+            ex.printStackTrace();
             String msg = ex.getMessage();
             JOptionPane.showMessageDialog(UIUtils.getMainFrame(), msg, "Error", JOptionPane.ERROR_MESSAGE);
             Logger.error(msg);
         } catch (Exception ex) {
+            ex.printStackTrace();
             String msg = String.format("Error occurred while processing '%s' command: %s", StringUtils.join(dir.getControlWords(), " ").toUpperCase(), ex.getMessage());
             JOptionPane.showMessageDialog(UIUtils.getMainFrame(), msg, "Error", JOptionPane.ERROR_MESSAGE);
             Logger.error(msg);
@@ -820,16 +826,6 @@ public class Intkey extends DeltaSingleFrameApplication {
 
     public void handleSpecimenUpdated() {
         Specimen specimen = _context.getSpecimen();
-
-        List<Character> usedCharacters = specimen.getUsedCharacters();
-
-        List<CharacterValue> usedCharacterValues = new ArrayList<CharacterValue>();
-        for (Character ch : usedCharacters) {
-            usedCharacterValues.add(specimen.getValueForCharacter(ch));
-        }
-
-        List<Character> availableCharacters = new ArrayList<Character>(specimen.getAvailableCharacters());
-        Collections.sort(availableCharacters);
 
         int tolerance = _context.getTolerance();
         Map<Item, Integer> taxaDifferenceCounts = specimen.getTaxonDifferences();
@@ -859,8 +855,23 @@ public class Intkey extends DeltaSingleFrameApplication {
             _sclPaneAvailableCharacters.setViewportView(lbl);
             _sclPaneAvailableCharacters.revalidate();
         }
+        
+        List<Character> usedCharacters = specimen.getUsedCharacters();
 
-        _availableCharacterListModel = new CharacterListModel(availableCharacters);
+        List<CharacterValue> usedCharacterValues = new ArrayList<CharacterValue>();
+        for (Character ch : usedCharacters) {
+            usedCharacterValues.add(specimen.getValueForCharacter(ch));
+        }
+
+        if (_context.getCharacterOrder() == IntkeyCharacterOrder.BEST) {
+            LinkedHashMap bestCharactersMap = _context.getBestCharacters();
+            _availableCharacterListModel = new BestCharacterListModel(new ArrayList<Character>(bestCharactersMap.keySet()), bestCharactersMap);
+        } else {
+            List<Character> availableCharacters = new ArrayList<Character>(specimen.getAvailableCharacters());
+            Collections.sort(availableCharacters);
+            _availableCharacterListModel = new CharacterListModel(availableCharacters);
+        }
+        
         _listAvailableCharacters.setModel(_availableCharacterListModel);
 
         _usedCharacterListModel = new UsedCharacterListModel(usedCharacterValues);
@@ -882,7 +893,14 @@ public class Intkey extends DeltaSingleFrameApplication {
 
     private void initializeIdentification() {
         IntkeyDataset dataset = _context.getDataset();
-        _availableCharacterListModel = new CharacterListModel(dataset.getCharacters());
+
+        if (_context.getCharacterOrder() == IntkeyCharacterOrder.BEST) {
+            LinkedHashMap bestCharactersMap = _context.getBestCharacters();
+            _availableCharacterListModel = new BestCharacterListModel(new ArrayList<Character>(bestCharactersMap.keySet()), bestCharactersMap);
+        } else {
+            _availableCharacterListModel = new CharacterListModel(dataset.getCharacters());
+        }
+
         _usedCharacterListModel = new UsedCharacterListModel(Collections.EMPTY_LIST);
         _availableTaxaListModel = new ItemListModel(dataset.getTaxa());
         _eliminatedTaxaListModel = new EliminatedTaxaListModel(Collections.EMPTY_LIST, Collections.EMPTY_MAP);
