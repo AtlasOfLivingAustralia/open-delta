@@ -1,7 +1,6 @@
 package au.org.ala.delta.ui.image.overlay;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.WordUtils;
 import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.model.Illustratable;
@@ -36,27 +35,37 @@ public class OverlayTextBuilder {
 		case OverlayType.OLTEXT: // Use a literal text string
 			break;
 		case OverlayType.OLITEM: // Use name of the item
-			text = _itemFormatter.formatItemDescription((Item) imageOwner, !overlay.includeComments());
+			if (!overlay.omitDescription()) {
+				text = _itemFormatter.formatItemDescription((Item) imageOwner, !overlay.includeComments());
+			}
 			break;
 		case OverlayType.OLFEATURE: // Use name of the character
-			String description = _characterFormatter
-					.formatCharacterDescription((au.org.ala.delta.model.Character) imageOwner);
-			text = WordUtils.capitalize(description);
+			if (!overlay.omitDescription()) {
+				String description = _characterFormatter
+						.formatCharacterDescription((au.org.ala.delta.model.Character) imageOwner, !overlay.includeComments());
+				text = StringUtils.capitalize(description);
+			}
 			break;
 		case OverlayType.OLSTATE: // Use name of the state (selectable)
-			text = _stateFormatter.formatState(
-					(MultiStateCharacter) imageOwner, overlay.stateId + 1); // TODO convert from id to number inside slotfile code
+			if (!overlay.omitDescription()) {
+				text = _stateFormatter.formatState(
+						(MultiStateCharacter) imageOwner, overlay.stateId + 1, !overlay.includeComments()); // TODO convert from id to number inside slotfile code
+			}
 			break;
 		case OverlayType.OLVALUE: // Use specified values or ranges (selectable)
-			String value = overlay.getValueString();
-			String units = getUnits(imageOwner);
-			if (StringUtils.isNotEmpty(units)) {
-				value += " " + units;
+			if (!overlay.omitDescription()) {
+				String value = overlay.getValueString();
+				String units = getUnits(imageOwner, overlay);
+				if (StringUtils.isNotEmpty(units)) {
+					value += " " + units;
+				}
+				text = value;
 			}
-			text = value;
 			break;
 		case OverlayType.OLUNITS: // Use units (for numeric characters)
-			text = getUnits(imageOwner);
+			if (!overlay.omitDescription()) {
+				text = getUnits(imageOwner, overlay);
+			}
 			break;
 		case OverlayType.OLENTER: // Create edit box for data entry
 		case OverlayType.OLOK: // Create OK pushbutton
@@ -84,14 +93,15 @@ public class OverlayTextBuilder {
 		default:
 			text = "";
 		}
+		if (StringUtils.isNotEmpty(text)) {
+			text += " ";
+		}
 		text += overlay.overlayText;
-		
 		return text;
 	}
 
-	private String getUnits(Illustratable imageOwner) {
-		String units = ((NumericCharacter<?>) imageOwner).getUnits();
-		return units;
+	private String getUnits(Illustratable imageOwner, ImageOverlay overlay) {
+		return _characterFormatter.formatUnits((NumericCharacter<?>) imageOwner, !overlay.includeComments());
 	}
 
 }
