@@ -103,6 +103,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         _varyWeight = 1;
 
         _characterOrder = IntkeyCharacterOrder.BEST;
+        _bestCharacters = null;
     }
 
     public boolean isAdvancedMode() {
@@ -161,13 +162,11 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     private void createNewDataSet() {
         initializeInvestigation();
-        
+
         _dataset = IntkeyDatasetFileReader.readDataSet(_charactersFile, _taxaFile);
-        
+
         _specimen = new Specimen(_dataset, _matchInapplicables, _matchInapplicables, _matchType);
 
-        _bestCharacters = SortingUtils.orderBest(this);
-        
         // TODO need a proper listener pattern here?
         if (_appUI != null) {
             _appUI.handleNewDataSet(_dataset);
@@ -176,7 +175,7 @@ public class IntkeyContext extends AbstractDeltaContext {
     }
 
     public void newDataSetFile(String fileName) {
-        
+
         Logger.log("Reading in new Data Set file from: %s", fileName);
 
         // Don't record directive history while processing the data set file
@@ -230,9 +229,11 @@ public class IntkeyContext extends AbstractDeltaContext {
     }
 
     public void specimenUpdateComplete() {
-        if (_characterOrder == IntkeyCharacterOrder.BEST) {
-            _bestCharacters = SortingUtils.orderBest(this);
-        }
+
+        // As character values have been set, the currently cached best
+        // characters are no longer valid and
+        // need to be cleared.
+        _bestCharacters = null;
 
         if (_appUI != null) {
             _appUI.handleSpecimenUpdated();
@@ -321,8 +322,10 @@ public class IntkeyContext extends AbstractDeltaContext {
             // Create a new blank specimen
             _specimen = new Specimen(_dataset, _matchInapplicables, _matchInapplicables, _matchType);
 
-            _bestCharacters = SortingUtils.orderBest(this);
-            
+            // As we are starting from the beginning, best characters must be
+            // cleared as they are no longer valid
+            _bestCharacters = null;
+
             if (_appUI != null) {
                 _appUI.handleIdentificationRestarted();
             }
@@ -380,9 +383,23 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     public void setCharacterOrder(IntkeyCharacterOrder characterOrder) {
         this._characterOrder = characterOrder;
+        
+        if (_appUI != null) {
+            //TODO should we have separate method for this?
+            _appUI.handleCharacterOrderChanged();
+        }
     }
 
+    /**
+     * @return The current best characters if they are cached. If they are not
+     *         cached, this method blocks while they are calculated.
+     */
     public LinkedHashMap<Character, Double> getBestCharacters() {
+
+        if (_bestCharacters == null) {
+            _bestCharacters = SortingUtils.orderBest(this);
+        }
+
         return _bestCharacters;
     }
 

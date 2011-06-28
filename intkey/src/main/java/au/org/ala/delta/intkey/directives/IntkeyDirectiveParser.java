@@ -34,6 +34,8 @@ public class IntkeyDirectiveParser extends DirectiveParser<IntkeyContext> {
         instance.registerDirective(new ChangeDirective());
         instance.registerDirective(new SetRBaseDirective());
         instance.registerDirective(new SetReliabilitiesDirective());
+        instance.registerDirective(new DisplayCharacterOrderBestDirective());
+        instance.registerDirective(new DisplayCharacterOrderNaturalDirective());
         return instance;
     }
 
@@ -65,7 +67,7 @@ public class IntkeyDirectiveParser extends DirectiveParser<IntkeyContext> {
         // intkey dataset can be used with milestone release without implemented
         // directives causing
         // errors
-        System.out.println(String.format("Ignoring unrecognized directive: %s ", StringUtils.join(controlWords, " ")));
+        Logger.log(String.format("Ignoring unrecognized directive: %s ", StringUtils.join(controlWords, " ")));
     }
 
     @Override
@@ -83,9 +85,6 @@ public class IntkeyDirectiveParser extends DirectiveParser<IntkeyContext> {
         if (!context.isProcessingInputFile()) {
             JOptionPane.showMessageDialog(UIUtils.getMainFrame(), msg, UIUtils.getResourceString("Intkey.errorDlgTitle"), JOptionPane.ERROR_MESSAGE);
         }
-        
-        ex.printStackTrace();
-
     }
 
 }

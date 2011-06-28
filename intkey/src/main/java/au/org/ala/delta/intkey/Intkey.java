@@ -41,13 +41,18 @@ import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.MouseInputAdapter;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
 import org.jdesktop.application.Action;
+import org.jdesktop.application.Application;
 import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
+import org.jdesktop.application.Task;
 
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.intkey.directives.ChangeDirective;
+import au.org.ala.delta.intkey.directives.DisplayCharacterOrderBestDirective;
+import au.org.ala.delta.intkey.directives.DisplayCharacterOrderNaturalDirective;
 import au.org.ala.delta.intkey.directives.FileCharactersDirective;
 import au.org.ala.delta.intkey.directives.FileTaxaDirective;
 import au.org.ala.delta.intkey.directives.IntkeyDirective;
@@ -69,7 +74,6 @@ import au.org.ala.delta.intkey.ui.ReExecuteDialog;
 import au.org.ala.delta.intkey.ui.UIUtils;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
-import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.ui.AboutBox;
 import au.org.ala.delta.ui.DeltaSingleFrameApplication;
@@ -269,7 +273,6 @@ public class Intkey extends DeltaSingleFrameApplication {
 
         _btnBestOrder = new JButton();
         _btnBestOrder.setAction(actionMap.get("btnBestOrder"));
-        _btnBestOrder.setEnabled(false);
         _btnBestOrder.setPreferredSize(new Dimension(30, 30));
         _pnlAvailableCharactersButtons.add(_btnBestOrder);
 
@@ -281,7 +284,6 @@ public class Intkey extends DeltaSingleFrameApplication {
 
         _btnNaturalOrder = new JButton();
         _btnNaturalOrder.setAction(actionMap.get("btnNaturalOrder"));
-        _btnNaturalOrder.setEnabled(false);
         _btnNaturalOrder.setPreferredSize(new Dimension(30, 30));
         _pnlAvailableCharactersButtons.add(_btnNaturalOrder);
 
@@ -742,15 +744,12 @@ public class Intkey extends DeltaSingleFrameApplication {
 
     @Action
     public void btnRestart() {
-        try {
-            new RestartDirective().parseAndProcess(_context, null);
-        } catch (Exception ex) {
-            Logger.error(ex);
-        }
+        executeDirective(new RestartDirective());
     }
 
     @Action
     public void btnBestOrder() {
+        executeDirective(new DisplayCharacterOrderBestDirective());
     }
 
     @Action
@@ -759,6 +758,7 @@ public class Intkey extends DeltaSingleFrameApplication {
 
     @Action
     public void btnNaturalOrder() {
+        executeDirective(new DisplayCharacterOrderNaturalDirective());
     }
 
     @Action
@@ -806,12 +806,10 @@ public class Intkey extends DeltaSingleFrameApplication {
         try {
             dir.parseAndProcess(_context, null);
         } catch (IntkeyDirectiveParseException ex) {
-            ex.printStackTrace();
             String msg = ex.getMessage();
             JOptionPane.showMessageDialog(UIUtils.getMainFrame(), msg, "Error", JOptionPane.ERROR_MESSAGE);
             Logger.error(msg);
         } catch (Exception ex) {
-            ex.printStackTrace();
             String msg = String.format("Error occurred while processing '%s' command: %s", StringUtils.join(dir.getControlWords(), " ").toUpperCase(), ex.getMessage());
             JOptionPane.showMessageDialog(UIUtils.getMainFrame(), msg, "Error", JOptionPane.ERROR_MESSAGE);
             Logger.error(msg);
@@ -863,16 +861,7 @@ public class Intkey extends DeltaSingleFrameApplication {
             usedCharacterValues.add(specimen.getValueForCharacter(ch));
         }
 
-        if (_context.getCharacterOrder() == IntkeyCharacterOrder.BEST) {
-            LinkedHashMap bestCharactersMap = _context.getBestCharacters();
-            _availableCharacterListModel = new BestCharacterListModel(new ArrayList<Character>(bestCharactersMap.keySet()), bestCharactersMap);
-        } else {
-            List<Character> availableCharacters = new ArrayList<Character>(specimen.getAvailableCharacters());
-            Collections.sort(availableCharacters);
-            _availableCharacterListModel = new CharacterListModel(availableCharacters);
-        }
-        
-        _listAvailableCharacters.setModel(_availableCharacterListModel);
+        updateAvailableCharacters();
 
         _usedCharacterListModel = new UsedCharacterListModel(usedCharacterValues);
 
@@ -920,12 +909,66 @@ public class Intkey extends DeltaSingleFrameApplication {
 
         updateListCaptions();
     }
+    
+    public void handleCharacterOrderChanged() {
+        updateAvailableCharacters();
+        updateListCaptions();
+    }
 
     private void updateListCaptions() {
-        _lblNumAvailableCharacters.setText(String.format(availableCharactersCaption, _availableCharacterListModel.getSize()));
+        IntkeyCharacterOrder charOrder = _context.getCharacterOrder();
+        switch (charOrder) {
+        case NATURAL:
+            _lblNumAvailableCharacters.setText(String.format(availableCharactersCaption, _availableCharacterListModel.getSize()));
+            break;
+        case BEST:
+            _lblNumAvailableCharacters.setText(String.format(bestCharactersCaption, _availableCharacterListModel.getSize()));
+            break;
+        case SEPARATE:
+            throw new NotImplementedException();
+        default:
+            throw new RuntimeException("Unrecognized character order");
+        }
+        
         _lblNumUsedCharacters.setText(String.format(usedCharactersCaption, _usedCharacterListModel.getSize()));
         _lblNumRemainingTaxa.setText(String.format(remainingTaxaCaption, _availableTaxaListModel.getSize()));
         _lblEliminatedTaxa.setText(String.format(eliminatedTaxaCaption, _eliminatedTaxaListModel.getSize()));
+    }
+    
+    private void updateAvailableCharacters() {
+        if (_context.getCharacterOrder() == IntkeyCharacterOrder.BEST) {
+            LinkedHashMap bestCharactersMap = _context.getBestCharacters();
+            _availableCharacterListModel = new BestCharacterListModel(new ArrayList<Character>(bestCharactersMap.keySet()), bestCharactersMap);
+        } else {
+            Specimen specimen = _context.getSpecimen();
+            List<Character> availableCharacters = new ArrayList<Character>(specimen.getAvailableCharacters());
+            Collections.sort(availableCharacters);
+            _availableCharacterListModel = new CharacterListModel(availableCharacters);
+        }
+        
+        _listAvailableCharacters.setModel(_availableCharacterListModel);
+    }
+    
+    private LinkedHashMap<Character, Double> getBestCharacters() {
+        
+        return null;
+    }
+    
+    private class GetBestCharactersTask extends Task<LinkedHashMap, Void> {
+
+        private IntkeyContext _context;
+        
+        public GetBestCharactersTask(Application application, IntkeyContext context) {
+            super(application);
+            _context = context;
+        }
+        
+        @Override
+        protected LinkedHashMap doInBackground() throws Exception {
+            LinkedHashMap<Character, Double> bestChars = _context.getBestCharacters();
+            return bestChars;
+        }
+        
     }
 
     private class UsedCharacterListModel extends AbstractListModel {

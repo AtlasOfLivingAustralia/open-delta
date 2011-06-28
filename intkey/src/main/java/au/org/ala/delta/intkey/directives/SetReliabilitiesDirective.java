@@ -1,5 +1,7 @@
 package au.org.ala.delta.intkey.directives;
 
+//TODO need to prompt user for reliability value for each subcommand if the 
+//value is not supplied by the user.
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,31 +28,31 @@ public class SetReliabilitiesDirective extends IntkeyDirective {
     @Override
     protected IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
         IntkeyDataset dataset = context.getDataset();
-        
+
         List<String> subCmds = ParsingUtils.tokenizeDirectiveCall(data);
-        
+
         Map<Character, Float> reliabilitiesMap = new HashMap<Character, Float>();
 
         for (String subCmd : subCmds) {
             String[] tokens = subCmd.split(",");
-            
+
             String strCharacters = tokens[0];
             String strReliability = tokens[1];
-            
+
             List<Character> characters = new ArrayList<Character>();
-            
+
             IntRange charRange = ParsingUtils.parseIntRange(strCharacters);
             if (charRange != null) {
-                for (int index: charRange.toArray()) {
+                for (int index : charRange.toArray()) {
                     characters.add(dataset.getCharacter(index));
                 }
             } else {
                 characters = context.getCharactersForKeyword(strCharacters);
             }
-            
+
             float reliability = Float.parseFloat(strReliability);
-            
-            for (Character ch: characters) {
+
+            for (Character ch : characters) {
                 reliabilitiesMap.put(ch, reliability);
             }
         }
@@ -60,17 +62,17 @@ public class SetReliabilitiesDirective extends IntkeyDirective {
 
     private class SetReliabilitiesDirectiveInvocation implements IntkeyDirectiveInvocation {
         private Map<Character, Float> _reliabilitiesMap;
-        
+
         public SetReliabilitiesDirectiveInvocation(Map<Character, Float> reliabilitiesMap) {
             _reliabilitiesMap = reliabilitiesMap;
         }
-        
+
         @Override
         public boolean execute(IntkeyContext context) {
-            for (Character ch: _reliabilitiesMap.keySet()) {
+            for (Character ch : _reliabilitiesMap.keySet()) {
                 ch.setReliability(_reliabilitiesMap.get(ch));
             }
-            
+
             return true;
         }
 

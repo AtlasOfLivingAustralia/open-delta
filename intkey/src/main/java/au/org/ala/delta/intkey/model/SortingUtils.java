@@ -27,6 +27,9 @@ import au.org.ala.delta.model.TextCharacter;
 
 public class SortingUtils {
     
+    private static double minimumSeparatingPower = 0.0001;
+
+    // TODO change arguments, pass in something other than the entire context.
     public static LinkedHashMap<au.org.ala.delta.model.Character, Double> orderBest(IntkeyContext context) {
         IntkeyDataset dataset = context.getDataset();
         Specimen specimen = context.getSpecimen();
@@ -81,9 +84,10 @@ public class SortingUtils {
         for (Item taxon : dataset.getTaxa()) {
 
             boolean ignore = false;
-            
+
             if (taxonDifferences != null && taxonDifferences.get(taxon) > context.getTolerance()) {
-                ignore = true;;
+                ignore = true;
+                ;
             }
 
             // TODO skip if taxon is not included
@@ -159,7 +163,7 @@ public class SortingUtils {
 
             for (Attribute attr : charAttributes) {
                 Item taxon = attr.getItem();
-                
+
                 // Skip any attributes that pertain to taxa that are not
                 // available
                 if (!taxaAvailability.get(taxon)) {
@@ -301,10 +305,14 @@ public class SortingUtils {
 
             sep = -sup0 + log2(numAvailableTaxa);
 
-            // TODO some stuff about rounding errors
+            // TODO handle rounding errors?
+            if (Math.abs(sep) <= minimumSeparatingPower) {
+                sep = 0.0;
+            }
 
             // TODO don't display controlling characters with 0 separation
             if (isControllingChar && sep == 0) {
+                unsuitableCharacters.add(ch);
                 continue;
             }
 
@@ -325,11 +333,11 @@ public class SortingUtils {
             public int compare(Character c1, Character c2) {
                 // TODO had to make suMap final - dodgy
 
-                //float c1Su = (float) suVals[c1.getCharacterId() - 1];
-                //float c2Su = (float) suVals[c2.getCharacterId() - 1];
-                
-                //return Float.valueOf(c1Su).compareTo(Float.valueOf(c2Su));
-                
+                // float c1Su = (float) suVals[c1.getCharacterId() - 1];
+                // float c2Su = (float) suVals[c2.getCharacterId() - 1];
+
+                // return Float.valueOf(c1Su).compareTo(Float.valueOf(c2Su));
+
                 return Double.valueOf(suVals[c1.getCharacterId() - 1]).compareTo(Double.valueOf(suVals[c2.getCharacterId() - 1]));
             }
         });
