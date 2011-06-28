@@ -1,11 +1,15 @@
 package au.org.ala.delta.ui.image.overlay;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
+import java.awt.event.MouseListener;
 
 import javax.swing.BorderFactory;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.UIManager;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
@@ -20,28 +24,37 @@ import au.org.ala.delta.ui.rtf.RtfEditorPane;
  * the image overlay types:
  * Text, Feature, State, Units and Subject.
  */
-public class RichTextLabel extends RtfEditorPane implements OverlayLocationProvider {
+public class RichTextLabel extends JPanel implements OverlayLocationProvider {
 
 	private static final long serialVersionUID = -8231701667247672309L;
 	protected ImageOverlay _overlay;
+	protected RtfEditorPane _editor;
 	
 	public RichTextLabel(ImageOverlay overlay, String text) {
 		_overlay = overlay;
-		setEditable(false);
-		setBackground(Color.WHITE);
-		setBorder(BorderFactory.createLineBorder(Color.BLACK));
-		setOpaque(true);
-		setFont(UIManager.getFont("Label.font"));
+		_editor = new RtfEditorPane();
 		
-		setText(text);	
+		_editor.setEditable(false);
+		_editor.setBackground(Color.WHITE);
+		_editor.setBorder(null);
+		_editor.setOpaque(true);
+		_editor.setFont(UIManager.getFont("Label.font"));
+		
+		_editor.setText(text);	
 		if (overlay.centreText()) {
 			centreText();
 		}
+		setBorder(BorderFactory.createLineBorder(Color.BLACK));
+		setLayout(new BorderLayout());
+		JScrollPane scroller = new JScrollPane(_editor);
+		scroller.setViewportBorder(null);
+		scroller.setBorder(null);
+		add(scroller, BorderLayout.CENTER);
 		
 	}
 	
 	public void centreText() {
-		StyledDocument doc = getStyledDocument();
+		StyledDocument doc = _editor.getStyledDocument();
 		SimpleAttributeSet center = new SimpleAttributeSet();
 		StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
 		doc.setParagraphAttributes(0, doc.getLength(), center, false);
@@ -59,6 +72,15 @@ public class RichTextLabel extends RtfEditorPane implements OverlayLocationProvi
 		return super.getPreferredSize();
 	}
 	
+	@Override
+	public void addMouseListener(MouseListener l) {
+		_editor.addMouseListener(l);
+	}
+	
+	@Override
+	public void removeMouseListener(MouseListener l) {
+		_editor.removeMouseListener(l);
+	}
 	
 	@Override
 	public OverlayLocation location(ImageViewer viewer) {

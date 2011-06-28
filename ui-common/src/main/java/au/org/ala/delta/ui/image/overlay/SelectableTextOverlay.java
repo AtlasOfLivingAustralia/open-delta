@@ -27,7 +27,7 @@ public class SelectableTextOverlay extends RichTextLabel implements MouseListene
 		super(overlay, text);
 		_selected = false;
 		_support = new SelectableOverlaySupport();
-		addMouseListener(this);
+		_editor.addMouseListener(this);
 	}
 	
 	public void setSelected(boolean selected) {
@@ -35,10 +35,10 @@ public class SelectableTextOverlay extends RichTextLabel implements MouseListene
 			_selected = selected;
 			// Toggle the foreground and background to indicate selection
 			// state.
-			Color foreground = getForeground();
-			setForeground(getBackground());
-			setBackground(foreground);
-			setBorder(BorderFactory.createLineBorder(getForeground()));
+			Color foreground = _editor.getForeground();
+			_editor.setForeground(_editor.getBackground());
+			_editor.setBackground(foreground);
+			setBorder(BorderFactory.createLineBorder(_editor.getForeground()));
 		}
 	}
 	

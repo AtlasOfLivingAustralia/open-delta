@@ -3,6 +3,7 @@ package au.org.ala.delta.ui.image;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Insets;
 import java.awt.LayoutManager2;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -165,8 +166,8 @@ public class ImageViewer extends ImagePanel implements LayoutManager2, ActionLis
 	/**
 	 * Lays out the Image overlays in this container.
 	 */
-	private void layoutOverlays() {
-		 
+	protected void layoutOverlays() {
+		 System.out.println("Layout.");
 		for (JComponent overlayComp : _components) {
 			
 			OverlayLocationProvider locationProvider = (OverlayLocationProvider)overlayComp;
@@ -176,6 +177,8 @@ public class ImageViewer extends ImagePanel implements LayoutManager2, ActionLis
 			Rectangle bounds = new Rectangle(location.getX(), location.getY(), 
 					location.getWidth(), location.getHeight()); 
 			overlayComp.setBounds(bounds);
+			Insets border = overlayComp.getBorder().getBorderInsets(overlayComp);
+			System.out.println(bounds+" for "+overlayComp.getClass().getSimpleName()+" Insets: "+border);
 		}
 		
 	}

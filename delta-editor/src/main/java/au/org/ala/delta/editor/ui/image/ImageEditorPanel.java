@@ -1,5 +1,6 @@
 package au.org.ala.delta.editor.ui.image;
 
+import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -10,6 +11,7 @@ import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
 
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.image.Image;
@@ -53,18 +55,41 @@ public class ImageEditorPanel extends ImageViewer {
 		
 		if (_selectedOverlayComp != overlayComp) {
 			Border border = overlayComp.getBorder();
-			overlayComp.putClientProperty("OldBorder", border);
+			
 			if (_selectedOverlayComp != null) {
 				resetBorder();
 			}
+			Border selectedBorder = BorderFactory.createBevelBorder(BevelBorder.RAISED);
+			CompoundBorder compoundBorder = BorderFactory.createCompoundBorder(selectedBorder, border);
+			overlayComp.putClientProperty("Opaque", overlayComp.isOpaque());
+			// Have to do this or buttons on the MAC don't render properly 
+			// with a compound border.
+			overlayComp.setOpaque(true);
 			_selectedOverlayComp = overlayComp;
-			_selectedOverlayComp.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
+			_selectedOverlayComp.setBorder(compoundBorder);
 		}
+	}
+	
+
+	public Insets borderInsets() {
+		CompoundBorder compoundBorder = (CompoundBorder)_selectedOverlayComp.getBorder();
+		Border b = compoundBorder.getOutsideBorder();
+		Insets insets = null;
+		if (b != null) {
+			insets = b.getBorderInsets(_selectedOverlayComp);
+		}
+		else {
+			insets = new Insets(0, 0, 0, 0);
+		}
+		return insets;
 	}
 	
 	private void resetBorder() {
 		if (_selectedOverlayComp != null) {
-			_selectedOverlayComp.setBorder((Border)_selectedOverlayComp.getClientProperty("OldBorder"));
+			boolean opaque = (Boolean)_selectedOverlayComp.getClientProperty("Opaque");
+			_selectedOverlayComp.setOpaque(opaque);
+			CompoundBorder compoundBorder = (CompoundBorder)_selectedOverlayComp.getBorder();
+			_selectedOverlayComp.setBorder(compoundBorder.getInsideBorder());
 		}
 	}
 	
@@ -95,6 +120,25 @@ public class ImageEditorPanel extends ImageViewer {
 		_dragging = false;
 		setLayout(this);
 		revalidate();
+	}
+	
+	/**
+	 * Overrides layoutOverlays to adjust the bounds of the selected component
+	 * to handle the compound border that indicates selection.
+	 */
+	@Override
+	protected void layoutOverlays() { 
+		super.layoutOverlays();
+		if (_selectedOverlayComp != null) {
+			Insets insets = borderInsets();
+			Rectangle bounds = _selectedOverlayComp.getBounds();
+			bounds.x -= insets.left;
+			bounds.width += insets.left + insets.right;
+			bounds.y -= insets.top;
+			bounds.height += insets.bottom+insets.top;
+			
+			_selectedOverlayComp.setBounds(bounds);
+		}
 	}
 	
 	

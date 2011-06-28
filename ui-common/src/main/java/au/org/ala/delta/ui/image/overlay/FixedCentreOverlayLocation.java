@@ -2,11 +2,9 @@ package au.org.ala.delta.ui.image.overlay;
 
 import java.awt.Font;
 import java.awt.FontMetrics;
-import java.awt.Insets;
 import java.awt.Point;
 
 import javax.swing.JComponent;
-import javax.swing.border.Border;
 
 import au.org.ala.delta.ui.image.ImageViewer;
 
@@ -80,10 +78,6 @@ public class FixedCentreOverlayLocation implements OverlayLocation {
 			height = (int)(_location.H / 1000d * scaledHeight);
 		}
 		
-		// Add room for the border.
-		Insets insets = borderInsets(_component);
-		height += insets.top + insets.bottom;
-		
 		return height; 
 	}
 	
@@ -100,22 +94,6 @@ public class FixedCentreOverlayLocation implements OverlayLocation {
 		
 		int width = (int)(_location.W / 1000d * scaledWidth);
 		
-		// Add room for the border.
-		Insets insets = borderInsets(_component);
-		width += insets.left + insets.right;
 		return width;
-	}
-	
-	
-	public Insets borderInsets(JComponent component) {
-		Border b = _component.getBorder();
-		Insets insets = null;
-		if (b != null) {
-			insets = b.getBorderInsets(_component);
-		}
-		else {
-			insets = new Insets(0, 0, 0, 0);
-		}
-		return insets;
 	}
 }
