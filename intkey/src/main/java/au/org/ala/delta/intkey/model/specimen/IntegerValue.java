@@ -145,27 +145,30 @@ public class IntegerValue extends CharacterValue {
             valuesCopy.remove((Integer) aboveMaximum);
         }
 
-        int startCurrentRange = 0;
         List<IntRange> intRanges = new ArrayList<IntRange>();
 
-        for (int i = 0; i < valuesCopy.size(); i++) {
-            int num = valuesCopy.get(i);
-            if (i > 0) {
-                int prevNum = valuesCopy.get(i - 1);
+        if (valuesCopy.size() == 1) {
+            intRanges.add(new IntRange(valuesCopy.get(0), valuesCopy.get(0)));
+        } else {
+            int startCurrentRange = 0;
+            for (int i = 0; i < valuesCopy.size(); i++) {
+                int num = valuesCopy.get(i);
+                if (i > 0) {
+                    int prevNum = valuesCopy.get(i - 1);
 
-                if (num != prevNum + 1) {
-                    intRanges.add(new IntRange(startCurrentRange, prevNum));
+                    if (num != prevNum + 1) {
+                        intRanges.add(new IntRange(startCurrentRange, prevNum));
+                        startCurrentRange = num;
+                    }
+
+                    if (i == valuesCopy.size() - 1) {
+                        intRanges.add(new IntRange(startCurrentRange, num));
+                    }
+                } else {
                     startCurrentRange = num;
                 }
-
-                if (i == valuesCopy.size() - 1) {
-                    intRanges.add(new IntRange(startCurrentRange, num));
-                }
-            } else {
-                startCurrentRange = num;
             }
-
-        }
+        } 
 
         String orSeparator;
         if (shortVersion) {
