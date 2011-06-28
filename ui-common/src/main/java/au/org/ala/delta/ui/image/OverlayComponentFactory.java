@@ -5,6 +5,7 @@ import javax.swing.JComponent;
 import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.model.Illustratable;
+import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageOverlay;
 import au.org.ala.delta.model.image.OverlayLocation.OLDrawType;
 import au.org.ala.delta.model.image.OverlayType;
@@ -13,6 +14,7 @@ import au.org.ala.delta.ui.image.overlay.OvalHotSpot;
 import au.org.ala.delta.ui.image.overlay.OverlayButton;
 import au.org.ala.delta.ui.image.overlay.OverlayTextBuilder;
 import au.org.ala.delta.ui.image.overlay.RectangleHotSpot;
+import au.org.ala.delta.ui.image.overlay.RelativePositionedTextOverlay;
 import au.org.ala.delta.ui.image.overlay.RichTextLabel;
 import au.org.ala.delta.ui.image.overlay.SelectableTextOverlay;
 import au.org.ala.delta.ui.image.overlay.TextFieldOverlay;
@@ -38,16 +40,18 @@ public class OverlayComponentFactory {
 	 * @param imageOwner the Character/Item that is being Illustrated.
 	 * @return a component capable of displaying the ImageOverlay.
 	 */
-	public JComponent createOverlayComponent(ImageOverlay overlay, Illustratable imageOwner) {
-		
+	public JComponent createOverlayComponent(ImageOverlay overlay, Image image) {
+		Illustratable imageOwner = image.getSubject();
 		JComponent component = null;
 		String text = _textBuilder.getText(overlay, imageOwner);
 		switch (overlay.type) {
 		case OverlayType.OLTEXT: // Use a literal text string
 		case OverlayType.OLITEM: // Use name of the item
 		case OverlayType.OLFEATURE: // Use name of the character
-		case OverlayType.OLUNITS: // Use units (for numeric characters)
 			component = new RichTextLabel(overlay, text);
+			break;
+		case OverlayType.OLUNITS: // Use units (for numeric characters)
+			component = new RelativePositionedTextOverlay(overlay, text);
 			break;
 		case OverlayType.OLSTATE: // Use name of the state (selectable)
 		case OverlayType.OLVALUE: // Use specified values or ranges (selectable)

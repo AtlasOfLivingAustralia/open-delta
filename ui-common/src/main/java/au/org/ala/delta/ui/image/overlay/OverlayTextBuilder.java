@@ -31,13 +31,16 @@ public class OverlayTextBuilder {
 
 	public String getText(ImageOverlay overlay, Illustratable imageOwner) {
 		String text = "";
+		boolean includeExtraText = false;
 		switch (overlay.type) {
 		case OverlayType.OLTEXT: // Use a literal text string
+			includeExtraText = true;
 			break;
 		case OverlayType.OLITEM: // Use name of the item
 			if (!overlay.omitDescription()) {
 				text = _itemFormatter.formatItemDescription((Item) imageOwner, !overlay.includeComments());
 			}
+			includeExtraText = true;
 			break;
 		case OverlayType.OLFEATURE: // Use name of the character
 			if (!overlay.omitDescription()) {
@@ -45,12 +48,14 @@ public class OverlayTextBuilder {
 						.formatCharacterDescription((au.org.ala.delta.model.Character) imageOwner, !overlay.includeComments());
 				text = StringUtils.capitalize(description);
 			}
+			includeExtraText = true;
 			break;
 		case OverlayType.OLSTATE: // Use name of the state (selectable)
 			if (!overlay.omitDescription()) {
 				text = _stateFormatter.formatState(
 						(MultiStateCharacter) imageOwner, overlay.stateId + 1, !overlay.includeComments()); // TODO convert from id to number inside slotfile code
 			}
+			includeExtraText = true;
 			break;
 		case OverlayType.OLVALUE: // Use specified values or ranges (selectable)
 			if (!overlay.omitDescription()) {
@@ -61,13 +66,14 @@ public class OverlayTextBuilder {
 				}
 				text = value;
 			}
+			includeExtraText = true;
 			break;
 		case OverlayType.OLUNITS: // Use units (for numeric characters)
 			if (!overlay.omitDescription()) {
 				text = getUnits(imageOwner, overlay);
 			}
+			includeExtraText = true;
 			break;
-		case OverlayType.OLENTER: // Create edit box for data entry
 		case OverlayType.OLOK: // Create OK pushbutton
 			text = _resources.getString("imageOverlay.okButton.text");
 			break;
@@ -80,6 +86,7 @@ public class OverlayTextBuilder {
 		case OverlayType.OLIMAGENOTES: // Create Notes pushbutton (for notes about the image)
 			text = _resources.getString("imageOverlay.imageNotesButton.text");
 			break;
+		case OverlayType.OLENTER: // Create edit box for data entry
 		case OverlayType.OLCOMMENT: // Not a "real" overlay type, but used to
 									// save comments addressed to images rather than overlays
 		case OverlayType.OLBUTTONBLOCK: // Used only when modifying aligned push-buttons
@@ -93,10 +100,13 @@ public class OverlayTextBuilder {
 		default:
 			text = "";
 		}
-		if (StringUtils.isNotEmpty(text)) {
-			text += " ";
+		
+		if (includeExtraText) {
+			if (StringUtils.isNotEmpty(text)) {
+				text += " ";
+			}
+			text += overlay.overlayText;
 		}
-		text += overlay.overlayText;
 		return text;
 	}
 

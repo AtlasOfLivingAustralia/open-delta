@@ -70,6 +70,18 @@ public class Image {
 		return null;
 	}
 	
+	/**
+	 * @return the overlay of type OLENTER associated with this Image, or
+	 * null if this image has no overlay of this type.
+	 */
+	public ImageOverlay getEnterOverlay() {
+		return getFirstOverlayOfType(OverlayType.OLENTER);
+	}
+	
+	/**
+	 * @return a new List containing all of the sounds overlays associated
+	 * with this image.
+	 */
 	public List<ImageOverlay> getSounds() {
 		return getOverlaysOfType(OverlayType.OLSOUND);
 	}

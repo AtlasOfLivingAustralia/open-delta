@@ -16,7 +16,6 @@ import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.model.DeltaDataSet;
-import au.org.ala.delta.model.Illustratable;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageOverlay;
 import au.org.ala.delta.model.image.OverlayType;
@@ -25,6 +24,7 @@ import au.org.ala.delta.ui.image.overlay.HotSpotGroup;
 import au.org.ala.delta.ui.image.overlay.OverlayButton;
 import au.org.ala.delta.ui.image.overlay.OverlayLocation;
 import au.org.ala.delta.ui.image.overlay.OverlayLocationProvider;
+import au.org.ala.delta.ui.image.overlay.RelativePositionedTextOverlay;
 import au.org.ala.delta.ui.image.overlay.SelectableTextOverlay;
 
 /**
@@ -70,10 +70,10 @@ public class ImageViewer extends ImagePanel implements LayoutManager2, ActionLis
 	
 	private void addOverlays() {
 		_overlays = _image.getOverlays();
-		Illustratable subject = _image.getSubject();
+		
 		_hotSpotGroups = new ArrayList<HotSpotGroup>();
 		for (ImageOverlay overlay : _overlays) {
-			JComponent overlayComp = _factory.createOverlayComponent(overlay, subject);
+			JComponent overlayComp = _factory.createOverlayComponent(overlay, _image);
 			
 			if (overlayComp == null) {
 				continue;
@@ -82,7 +82,6 @@ public class ImageViewer extends ImagePanel implements LayoutManager2, ActionLis
 			add(overlayComp, overlay.getLocation(0));
 			
 			if (overlayComp instanceof OverlayButton) {
-				
 				((OverlayButton)overlayComp).addActionListener(this);
 			}
 			
@@ -91,6 +90,34 @@ public class ImageViewer extends ImagePanel implements LayoutManager2, ActionLis
 				selectable.addOverlaySelectionObserver(this);
 				// If the overlay has associated hotspots, add them also.
 				addHotSpots(overlay, selectable);
+			}
+		}
+		
+		assignRelativeComponents();
+	}
+
+	/**
+	 * The Units overlay component is by default positioned relative to 
+	 * the Enter overlay component.   To make the layout work, the 
+	 * relatively positioned components need access to the position of the
+	 * Enter component but since the order the layouts are created in 
+	 * is arbitrary it's easier to do the assignment after they are all 
+	 * created.
+	 */
+	private void assignRelativeComponents() {
+		OverlayLocationProvider parent = null;
+		// Assign the parent to the relative overlay components
+		for (JComponent overlayComp : _components) {
+			ImageOverlay overlay = (ImageOverlay)overlayComp.getClientProperty(IMAGE_OVERLAY_PROPERTY);
+			if (overlay != null && overlay.isType(OverlayType.OLENTER)) {
+				parent = (OverlayLocationProvider)overlayComp;
+				break;
+			}
+		}
+		
+		for (JComponent overlayComp : _components) {
+			if (overlayComp instanceof RelativePositionedTextOverlay) {
+				((RelativePositionedTextOverlay)overlayComp).makeRelativeTo(parent);
 			}
 		}
 	}
