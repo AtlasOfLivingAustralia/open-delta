@@ -132,6 +132,11 @@ public class IntkeyContext extends AbstractDeltaContext {
         if (_dataset == null && _taxaFile != null) {
             createNewDataSet();
         } else {
+            // cleanup the old dataset, e.g. items file needs to be closed.
+            if (_dataset != null) {
+                _dataset.cleanup();
+            }
+
             _dataset = null;
             _taxaFile = null;
         }
@@ -155,12 +160,18 @@ public class IntkeyContext extends AbstractDeltaContext {
         if (_dataset == null && _charactersFile != null) {
             createNewDataSet();
         } else {
+            // cleanup the old dataset, e.g. items file needs to be closed.
+            if (_dataset != null) {
+                _dataset.cleanup();
+            }
+
             _dataset = null;
             _charactersFile = null;
         }
     }
 
     private void createNewDataSet() {
+
         initializeInvestigation();
 
         _dataset = IntkeyDatasetFileReader.readDataSet(_charactersFile, _taxaFile);
@@ -383,9 +394,9 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     public void setCharacterOrder(IntkeyCharacterOrder characterOrder) {
         this._characterOrder = characterOrder;
-        
+
         if (_appUI != null) {
-            //TODO should we have separate method for this?
+            // TODO should we have separate method for this?
             _appUI.handleCharacterOrderChanged();
         }
     }
@@ -402,9 +413,9 @@ public class IntkeyContext extends AbstractDeltaContext {
 
         return _bestCharacters;
     }
-    
+
     /**
-     * Called prior to application shutdown. 
+     * Called prior to application shutdown.
      */
     public void cleanupForShutdown() {
         _dataset.cleanup();
