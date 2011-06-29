@@ -118,22 +118,6 @@ public class DisplayCharacterOrderBestTest extends TestCase {
         bestTestHelper(65, 68, 0.90, orderedCharList, bestMap);
     }
 
-    // @Test
-    // public void testGrassesDataset() throws Exception {
-    //
-    // IntkeyContext context = new IntkeyContext(null);
-    // context.newDataSetFile(new
-    // File("C:\\Users\\ChrisF\\Documents\\grasses\\intkey.ini").getAbsolutePath());
-    //
-    // new UseDirective().parseAndProcess(context, "531,5");
-    //
-    // long startTime = System.currentTimeMillis();
-    // Map<Character, Double> bestMap = SortingUtils.orderBest(context);
-    // long endTime = System.currentTimeMillis();
-    // long duration = (endTime - startTime) / 1000;
-    // System.out.println(duration + " seconds");
-    // }
-
     @Test
     public void testBestOrder2() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");

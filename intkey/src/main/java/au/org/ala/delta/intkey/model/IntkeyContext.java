@@ -179,7 +179,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         _specimen = new Specimen(_dataset, _matchInapplicables, _matchInapplicables, _matchType);
 
         // TODO need a proper listener pattern here?
-        if (_appUI != null) {
+        if (!_processingInputFile && _appUI != null) {
             _appUI.handleNewDataSet(_dataset);
         }
 
@@ -205,6 +205,11 @@ public class IntkeyContext extends AbstractDeltaContext {
         // re enable recording of directives executed
         _recordDirectiveHistory = true;
         _processingInputFile = false;
+        
+        // TODO need a proper listener pattern here?
+        if (_appUI != null) {
+            _appUI.handleNewDataSet(_dataset);
+        }
     }
 
     public void executeDirective(IntkeyDirectiveInvocation invoc) {
