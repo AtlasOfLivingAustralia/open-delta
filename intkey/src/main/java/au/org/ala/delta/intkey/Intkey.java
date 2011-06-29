@@ -476,6 +476,7 @@ public class Intkey extends DeltaSingleFrameApplication {
 
     @Override
     protected void shutdown() {
+        _context.cleanupForShutdown();
         super.shutdown();
     }
 

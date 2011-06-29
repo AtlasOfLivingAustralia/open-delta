@@ -188,4 +188,11 @@ public class IntkeyDataset {
     public boolean realCharacterKeyStateBoundariesPresent() {
         return _itemsFileHeader.getLSbnd() > 0;
     }
+    
+    /**
+     * Called prior to application shutdown. 
+     */
+    public void cleanup() {
+        _itemsBinFile.close();
+    }
 }

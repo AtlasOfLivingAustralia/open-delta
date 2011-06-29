@@ -372,22 +372,24 @@ public class SortingUtils {
     private static int generateKeyStatesForRealCharacter(RealCharacter realChar, FloatRange realValue, boolean[] statePresence) {
         int numStatesPresent = 0;
 
-        List<Float> boundaries = realChar.getKeyStateBoundaries();
+        List<Float> boundariesList = realChar.getKeyStateBoundaries();
+        Float[] boundaries = new Float[boundariesList.size()];
+        boundariesList.toArray(boundaries);
 
         float rangeMin = realValue.getMinimumFloat();
         float rangeMax = realValue.getMaximumFloat();
 
         int i = 0;
-        for (; i < boundaries.size(); i++) {
-            if (rangeMin <= boundaries.get(i)) {
+        for (; i < boundaries.length; i++) {
+            if (rangeMin <= boundaries[i]) {
                 statePresence[i] = true;
                 numStatesPresent++;
                 break;
             }
         }
 
-        for (; i < boundaries.size() - 1; i++) {
-            if (rangeMax > boundaries.get(i)) {
+        for (; i < boundaries.length - 1; i++) {
+            if (rangeMax > boundaries[i]) {
                 statePresence[i + 1] = true;
                 numStatesPresent++;
             }

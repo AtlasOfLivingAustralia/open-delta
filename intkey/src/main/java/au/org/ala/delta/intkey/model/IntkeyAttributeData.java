@@ -75,13 +75,14 @@ public class IntkeyAttributeData implements AttributeData {
 
     @Override
     public Set<Integer> getPresentStateOrIntegerValues() {
-        // defensive copy
-        return new HashSet<Integer>(_stateOrIntegerValues);
+     // no defensive copy here for efficiency when creating attributes after reading file
+        return _stateOrIntegerValues;
     }
 
     @Override
     public void setPresentStateOrIntegerValues(Set<Integer> values) {
-        _stateOrIntegerValues = new HashSet<Integer>(values);
+        // no defensive copy here for efficiency when creating attributes after reading file
+        _stateOrIntegerValues = values;
     }
 
     @Override

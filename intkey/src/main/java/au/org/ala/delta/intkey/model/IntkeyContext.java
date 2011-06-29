@@ -402,5 +402,12 @@ public class IntkeyContext extends AbstractDeltaContext {
 
         return _bestCharacters;
     }
+    
+    /**
+     * Called prior to application shutdown. 
+     */
+    public void cleanupForShutdown() {
+        _dataset.cleanup();
+    }
 
 }

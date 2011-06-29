@@ -3,6 +3,7 @@ package au.org.ala.delta.intkey.model;
 import java.io.File;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -966,7 +967,7 @@ public final class IntkeyDatasetFileReader {
 
             byte[] bytes = new byte[bytesToRead];
             itemBinFile.readBytes(bytes);
-            List<Boolean> taxaData = byteArrayToBooleanList(bytes);
+            boolean[] taxaData = byteArrayToBooleanArray(bytes);
 
             for (int j = 0; j < numTaxa; j++) {
                 Item t = taxa.get(j);
@@ -974,17 +975,18 @@ public final class IntkeyDatasetFileReader {
                 int startIndex = j * bitsPerTaxon;
                 int endIndex = startIndex + bitsPerTaxon;
 
-                List<Boolean> taxonData = taxaData.subList(startIndex, endIndex);
+                
+                boolean[] taxonData = Arrays.copyOfRange(taxaData, startIndex, endIndex);
 
                 // Taxon data consists of a bit for each state, indicating
                 // the states presence, followed by
                 // a final bit signifying whether or not the character is
                 // inapplicable for the taxon.
-                boolean inapplicable = taxonData.get(taxonData.size() - 1);
+                boolean inapplicable = taxonData[taxonData.length - 1];
 
                 HashSet<Integer> presentStates = new HashSet<Integer>();
-                for (int k = 0; k < taxonData.size() - 1; k++) {
-                    boolean statePresent = taxonData.get(k);
+                for (int k = 0; k < taxonData.length - 1; k++) {
+                    boolean statePresent = taxonData[k];
                     if (statePresent) {
                         presentStates.add(k + 1);
                     }
@@ -1003,18 +1005,18 @@ public final class IntkeyDatasetFileReader {
             IntegerCharacter intChar = (IntegerCharacter) c;
             int charMinValue = intChar.getMinimumValue();
             int charMaxValue = intChar.getMaximumValue();
-
+            
             // 1 bit for all values below minimum, 1 bit for each value between
             // minimum and maximum (inclusive),
             // 1 bit for all values above maximum, 1 inapplicability bit.
             int bitsPerTaxon = intChar.getMaximumValue() - intChar.getMinimumValue() + 4;
-            int totalBitsNeeded = bitsPerTaxon * taxa.size();
+            int totalBitsNeeded = bitsPerTaxon * numTaxa;
 
             int bytesToRead = Double.valueOf(Math.ceil(Double.valueOf(totalBitsNeeded) / Double.valueOf(Byte.SIZE))).intValue();
 
             byte[] bytes = new byte[bytesToRead];
             itemBinFile.readBytes(bytes);
-            List<Boolean> taxaData = byteArrayToBooleanList(bytes);
+            boolean[] taxaData = byteArrayToBooleanArray(bytes);
 
             for (int j = 0; j < numTaxa; j++) {
                 Item t = taxa.get(j);
@@ -1022,13 +1024,13 @@ public final class IntkeyDatasetFileReader {
                 int startIndex = j * bitsPerTaxon;
                 int endIndex = startIndex + bitsPerTaxon;
 
-                List<Boolean> taxonData = taxaData.subList(startIndex, endIndex);
+                boolean[] taxonData = Arrays.copyOfRange(taxaData, startIndex, endIndex);
 
-                boolean inapplicable = taxonData.get(taxonData.size() - 1);
+                boolean inapplicable = taxonData[taxonData.length - 1];
 
                 Set<Integer> presentValues = new HashSet<Integer>();
-                for (int k = 0; k < taxonData.size() - 1; k++) {
-                    boolean present = taxonData.get(k);
+                for (int k = 0; k < taxonData.length - 1; k++) {
+                    boolean present = taxonData[k];
                     if (present) {
                         presentValues.add(k + charMinValue - 1);
                     }
@@ -1043,10 +1045,10 @@ public final class IntkeyDatasetFileReader {
 
         } else if (c instanceof RealCharacter) {
             // Read NI inapplicability bits
-            int bytesToRead = Double.valueOf(Math.ceil(Double.valueOf(taxa.size()) / Double.valueOf(Byte.SIZE))).intValue();
+            int bytesToRead = Double.valueOf(Math.ceil(Double.valueOf(numTaxa) / Double.valueOf(Byte.SIZE))).intValue();
             byte[] bytes = new byte[bytesToRead];
             itemBinFile.readBytes(bytes);
-            List<Boolean> taxaInapplicabilityData = byteArrayToBooleanList(bytes);
+            boolean[] taxaInapplicabilityData = byteArrayToBooleanArray(bytes);
 
             int recordsSpannedByInapplicabilityData = recordsSpannedByBytes(bytesToRead);
 
@@ -1061,7 +1063,7 @@ public final class IntkeyDatasetFileReader {
                 float lowerFloat = taxonData.get(j * 2);
                 float upperFloat = taxonData.get((j * 2) + 1);
 
-                boolean inapplicable = taxaInapplicabilityData.get(j);
+                boolean inapplicable = taxaInapplicabilityData[j];
 
                 // Character is unknown for the corresponding taxon if
                 // lowerfloat > upperfloat
@@ -1082,10 +1084,10 @@ public final class IntkeyDatasetFileReader {
             TextCharacter textChar = (TextCharacter) c;
 
             // Read NI inapplicability bits
-            int bytesToRead = Double.valueOf(Math.ceil(Double.valueOf(taxa.size()) / Double.valueOf(Byte.SIZE))).intValue();
+            int bytesToRead = Double.valueOf(Math.ceil(Double.valueOf(numTaxa) / Double.valueOf(Byte.SIZE))).intValue();
             byte[] bytes = new byte[bytesToRead];
             itemBinFile.readBytes(bytes);
-            List<Boolean> taxaInapplicabilityData = byteArrayToBooleanList(bytes);
+            boolean[] taxaInapplicabilityData = byteArrayToBooleanArray(bytes);
 
             int recordsSpannedByInapplicabilityData = recordsSpannedByBytes(bytesToRead);
 
@@ -1114,7 +1116,7 @@ public final class IntkeyDatasetFileReader {
                     txt = BinFileEncoding.decode(textBytes);
                 }
 
-                boolean inapplicable = taxaInapplicabilityData.get(j);
+                boolean inapplicable = taxaInapplicabilityData[j];
                 boolean unknown = StringUtils.isEmpty(txt);
 
                 TextAttribute txtAttr = new TextAttribute(textChar, new IntkeyAttributeData(unknown, inapplicable));
@@ -1202,22 +1204,25 @@ public final class IntkeyDatasetFileReader {
         return retList;
     }
 
-    private static List<Boolean> byteArrayToBooleanList(byte[] bArray) {
-        List<Boolean> boolList = new ArrayList<Boolean>();
+    // Use the values of the bits in the supplied array of bytes to create a
+    // single array of boolean values
+    private static boolean[] byteArrayToBooleanArray(byte[] bArray) {
+        boolean[] boolArray = new boolean[bArray.length * Byte.SIZE];
 
-        for (byte b : bArray) {
-            for (int i = 0; i < Byte.SIZE; i++) {
-                if ((b & (1 << i)) > 0) {
-                    boolList.add(true);
+        for (int i=0; i < bArray.length; i++) {
+            byte b = bArray[i];
+            for (int j = 0; j < Byte.SIZE; j++) {
+                if ((b & (1 << j)) > 0) {
+                    boolArray[i * Byte.SIZE + j] = true;
                 } else {
-                    boolList.add(false);
+                    boolArray[i * Byte.SIZE + j] = false;
                 }
             }
         }
 
-        return boolList;
+        return boolArray;
     }
-
+    
     private static int recordsSpannedByBytes(int numBytes) {
         return (int) (Math.ceil((double) numBytes / (double) Constants.RECORD_LENGTH_BYTES));
     }
