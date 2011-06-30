@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DirectiveArgument<T> implements Comparable<DirectiveArgument<T>>{
+public class DirectiveArgument<T> implements Comparable<DirectiveArgument<?>>{
 
 
 	private String _text;
@@ -96,7 +96,7 @@ public class DirectiveArgument<T> implements Comparable<DirectiveArgument<T>>{
 
 	@Override
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public int compareTo(DirectiveArgument<T> o) {
+	public int compareTo(DirectiveArgument<?> o) {
 		// We can get away with this case cause T will be an Integer or a String.
 		return ((Comparable)_id).compareTo((Comparable)o.getId());
 	}
