@@ -3,6 +3,8 @@ package au.org.ala.delta.intkey.directives;
 import java.awt.Frame;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -358,9 +360,8 @@ public class UseDirective extends IntkeyDirective {
                             // characters needing to have
                             // their values set.
                             IntkeyDataset dataset = context.getDataset();
-                            List<CharacterDependency> charDeps = getFullControllingCharacterDependenciesList(ch, dataset);
-                            for (CharacterDependency cd : charDeps) {
-                                Character controllingChar = dataset.getCharacter(cd.getControllingCharacterId());
+                            Map<MultiStateCharacter, Set<Integer>> charDeps = getAllControllingCharacterDependencies(ch, dataset);
+                            for (MultiStateCharacter controllingChar : charDeps.keySet()) {
                                 charsNoValues.remove(controllingChar);
                             }
 
@@ -449,37 +450,17 @@ public class UseDirective extends IntkeyDirective {
          *         characters
          */
         private boolean processControllingCharacters(Character ch, IntkeyContext context) {
-            List<CharacterDependency> allControllingChars = getFullControllingCharacterDependenciesList(ch, context.getDataset());
 
-            // Used a linked hashmap as need to maintain the ordering returned
-            // by getFullControllingCharacterDependenciesList()
-            Map<MultiStateCharacter, Set<Integer>> controllingCharInapplicableStates = new LinkedHashMap<MultiStateCharacter, Set<Integer>>();
-
-            // Look through all the CharacterDependency objects for the
-            // character and for each controlling character, collect the list of
-            // all states for the controlling character that will make the
-            // dependent character inapplicable
-            for (CharacterDependency cd : allControllingChars) {
-                MultiStateCharacter cc = (MultiStateCharacter) context.getDataset().getCharacter(cd.getControllingCharacterId());
-
-                if (context.getSpecimen().hasValueFor(cc)) {
-                    continue;
-                }
-
-                // states for the controlling character that will make dependent
-                // characters inapplicable
-                Set<Integer> inapplicableStates = cd.getStates();
-
-                if (controllingCharInapplicableStates.containsKey(cc)) {
-                    controllingCharInapplicableStates.get(cc).addAll(inapplicableStates);
-                } else {
-                    controllingCharInapplicableStates.put(cc, new HashSet<Integer>(inapplicableStates));
-                }
-            }
-
+            //Map of controlling characters to states of these controlling characters that will cause this character to be inapplicable
+            Map<MultiStateCharacter, Set<Integer>> controllingCharInapplicableStates = getAllControllingCharacterDependencies(ch, context.getDataset());
+            
+            //Sort the controlling characters such that any character in the list is after all characters in the list that control it.
+            List<MultiStateCharacter> controllingCharsList = new ArrayList<MultiStateCharacter>(controllingCharInapplicableStates.keySet());
+            Collections.sort(controllingCharsList, new ControllingCharacterComparator());
+            
             // For each controlling character, set its value or prompt the user
             // for its value as appropriate
-            for (MultiStateCharacter cc : controllingCharInapplicableStates.keySet()) {
+            for (MultiStateCharacter cc : controllingCharsList) {
                 Set<Integer> inapplicableStates = controllingCharInapplicableStates.get(cc);
 
                 // states for the controlling character that will make dependent
@@ -533,39 +514,72 @@ public class UseDirective extends IntkeyDirective {
             return true;
         }
 
-        // For the given character, recursively build a list of
-        // CharacterDependency objects describing
-        // all characters that control it, directly and indirectly.
-        private List<CharacterDependency> getFullControllingCharacterDependenciesList(Character ch, IntkeyDataset ds) {
-            List<CharacterDependency> retList = new ArrayList<CharacterDependency>();
+        /**
+         * For the given character, build a map of all its controlling characters, and the states of these controlling
+         * characters that will make the supplied character inapplicable.
+         * @param ch
+         * @param ds
+         * @return
+         */
+        private Map<MultiStateCharacter, Set<Integer>> getAllControllingCharacterDependencies(Character ch, IntkeyDataset ds) {
+            HashMap<MultiStateCharacter, Set<Integer>> retMap = new HashMap<MultiStateCharacter, Set<Integer>>();
 
-            List<CharacterDependency> directControllingChars = ch.getControllingCharacters();
-            if (directControllingChars != null) {
-                for (CharacterDependency cd : directControllingChars) {
-                    Character controllingChar = ds.getCharacter(cd.getControllingCharacterId());
-                    retList.add(cd);
+            List<CharacterDependency> controllingDependencies = ch.getControllingCharacters();
 
-                    // Add all the indirect or "ancestor" character
-                    // dependencies.
-                    List<CharacterDependency> ancestorCharacterDependencies = getFullControllingCharacterDependenciesList(controllingChar, ds);
-                    for (CharacterDependency ancestorCd : ancestorCharacterDependencies) {
-                        // If an "ancestor" dependency is already in the list,
-                        // remove it and reinsert it at
-                        // the front of the list. Need to ensure that values for
-                        // the furthermost ancestors
-                        // are set first, otherwise the Specimen will throw
-                        // IllegalStateExceptions...
-                        if (retList.contains(ancestorCd)) {
-                            retList.remove(ancestorCd);
-                        }
+            for (CharacterDependency cd : controllingDependencies) {
+                
+                // A controlling character must be a multistate character
+                MultiStateCharacter cc = (MultiStateCharacter) ds.getCharacter(cd.getControllingCharacterId());
+                
+                // states for the controlling character that will make dependent
+                // characters inapplicable
+                Set<Integer> inapplicableStates = cd.getStates();
 
-                        retList.add(0, ancestorCd);
-                    }
+                if (retMap.containsKey(cc)) {
+                    retMap.get(cc).addAll(inapplicableStates);
+                } else {
+                    retMap.put(cc, new HashSet<Integer>(inapplicableStates));
                 }
+                
+                retMap.putAll(getAllControllingCharacterDependencies(cc, ds));
             }
 
-            return retList;
+            return retMap;
         }
+
+//        // For the given character, recursively build a list of
+//        // CharacterDependency objects describing
+//        // all characters that control it, directly and indirectly.
+//        private List<CharacterDependency> getFullControllingCharacterDependenciesList(Character ch, IntkeyDataset ds) {
+//            List<CharacterDependency> retList = new ArrayList<CharacterDependency>();
+//
+//            List<CharacterDependency> directControllingChars = ch.getControllingCharacters();
+//            if (directControllingChars != null) {
+//                for (CharacterDependency cd : directControllingChars) {
+//                    Character controllingChar = ds.getCharacter(cd.getControllingCharacterId());
+//                    retList.add(cd);
+//
+//                    // Add all the indirect or "ancestor" character
+//                    // dependencies.
+//                    List<CharacterDependency> ancestorCharacterDependencies = getFullControllingCharacterDependenciesList(controllingChar, ds);
+//                    for (CharacterDependency ancestorCd : ancestorCharacterDependencies) {
+//                        // If an "ancestor" dependency is already in the list,
+//                        // remove it and reinsert it at
+//                        // the front of the list. Need to ensure that values for
+//                        // the furthermost ancestors
+//                        // are set first, otherwise the Specimen will throw
+//                        // IllegalStateExceptions...
+//                        if (retList.contains(ancestorCd)) {
+//                            retList.remove(ancestorCd);
+//                        }
+//
+//                        retList.add(0, ancestorCd);
+//                    }
+//                }
+//            }
+//
+//            return retList;
+//        }
 
         private CharacterValue promptForCharacterValue(Frame frame, Character ch) {
             CharacterValue characterVal = null;
@@ -638,6 +652,40 @@ public class UseDirective extends IntkeyDirective {
                 builder.append(val.toShortString());
             }
             return builder.toString();
+        }
+    }
+    
+    /**
+     * Comparator used to sort a list of characters such that all of a character's controlling
+     * characters will appear before it in the sorted order.
+     * @author ChrisF
+     *
+     */
+    private static class ControllingCharacterComparator implements Comparator<Character> {
+        @Override
+        public int compare(Character c1, Character c2) {
+            if (isControlledBy(c1, c2)) {
+                return 1;
+            } else if (isControlledBy(c2, c2)) {
+                return -1;
+            } else {
+                return 0;
+            }
+        }
+
+        private boolean isControlledBy(Character c1, Character c2) {
+            boolean result = false;
+
+            List<CharacterDependency> controllingDependencies = c1.getControllingCharacters();
+
+            for (CharacterDependency cd : controllingDependencies) {
+                if (cd.getControllingCharacterId() == c2.getCharacterId()) {
+                    result = true;
+                    break;
+                }
+            }
+
+            return result;
         }
     }
 }
