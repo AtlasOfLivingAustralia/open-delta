@@ -31,6 +31,10 @@ public enum CharacterType {
 		return (this.equals(IntegerNumeric) || (this.equals(RealNumeric)));
 	}
 	
+	public boolean isText() {
+		return (this.equals(Text));
+	}
+	
 	public static CharacterType parse(String str) {
 		String s = str.substring(0,2).toUpperCase();
 		if (TYPE_MAP.containsKey(s)) {

@@ -8,29 +8,26 @@ import java.util.concurrent.TimeUnit;
 
 import javax.swing.SwingWorker;
 
-import junit.framework.TestCase;
-
 import org.junit.Before;
 
 import sun.awt.AppContext;
+import au.org.ala.delta.DeltaTestCase;
 import au.org.ala.delta.editor.DeltaEditor;
 import au.org.ala.delta.editor.model.EditorDataModel;
+import au.org.ala.delta.editor.slotfile.DeltaVOP;
+import au.org.ala.delta.editor.slotfile.model.DirectiveFile;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile.DirectiveType;
+import au.org.ala.delta.editor.slotfile.model.SlotFileDataSet;
 import au.org.ala.delta.editor.slotfile.model.SlotFileDataSetFactory;
 import au.org.ala.delta.model.AbstractObservableDataSet;
-import au.org.ala.delta.model.Character;
-import au.org.ala.delta.model.CharacterType;
-import au.org.ala.delta.model.IntegerCharacter;
-import au.org.ala.delta.model.Item;
-import au.org.ala.delta.model.UnorderedMultiStateCharacter;
 
 /**
- * Tests the ImportController class.  The SuppressWarnings annotation is to prevent warnings
+ * Tests the ExportController class.  The SuppressWarnings annotation is to prevent warnings
  * about accessing the AppContext which is required to do the thread synchronization 
  * necessary to make the tests run in a repeatable manner.
  */
 @SuppressWarnings("restriction")
-public class ImportControllerTest extends TestCase {
+public class ExportControllerTest extends DeltaTestCase {
 
 	/**
 	 * Allows us to manually set the data set to be returned from the
@@ -50,37 +47,49 @@ public class ImportControllerTest extends TestCase {
 	
 	
 	/** The instance of the class we are testing */
-	private ImportController importer;
+	private ExportController exporter;
 	
-	/** The data set we are importing into */
-	private AbstractObservableDataSet _dataSet;
+	/** The data set we are exporting */
+	private SlotFileDataSet _dataSet;
 	
 	@Before
-	public void setUp() {
+	public void setUp() throws Exception {
 		// Sure hope this won't throw a headless exception at some point...
 		DeltaEditorTestHelper helper = new DeltaEditorTestHelper();
-		_dataSet = (AbstractObservableDataSet)new SlotFileDataSetFactory().createDataSet("test");
+	
+		File f = copyURLToFile("/SAMPLE.DLT");
+			
+		DeltaVOP vop = new DeltaVOP(f.getAbsolutePath(), false);
+		
+		SlotFileDataSetFactory factory = new SlotFileDataSetFactory(vop);
+		
+		_dataSet = (SlotFileDataSet)factory.createDataSet("test");
 		EditorDataModel model = new EditorDataModel(_dataSet);
 		helper.setModel(model);
 		
-		importer = new ImportController(helper);
+		exporter = new ExportController(helper);
 	}
 	
-	public void testSilentImport() throws Exception {
+	public void testSilentExport() throws Exception {
 		
-		File datasetDirectory = new File(getClass().getResource("/dataset").toURI());
+		
 		DirectiveFileInfo specs = new DirectiveFileInfo("specs", DirectiveType.CONFOR);
 		DirectiveFileInfo chars = new DirectiveFileInfo("chars", DirectiveType.CONFOR);
 		DirectiveFileInfo items = new DirectiveFileInfo("items", DirectiveType.CONFOR);
 		
-		List<DirectiveFileInfo> files = Arrays.asList(new DirectiveFileInfo[] {specs, chars, items});
+		DirectiveFile directiveFile = _dataSet.getDirectiveFile(1);
+		DirectiveFileInfo test = new DirectiveFileInfo(directiveFile.getFileName(), DirectiveType.CONFOR, directiveFile);
 		
-		importer.doSilentImport(datasetDirectory, files);
+		List<DirectiveFileInfo> files = Arrays.asList(new DirectiveFileInfo[] {test});
+		File tempDir = new File("/tmp");
+		//exporter.doSilentExport(tempDir, files);
+		
 		
 		// Because the import happens on a background (daemon) thread, we have to wait until 
 		// the import is finished before doing our assertions.
-		waitForTaskCompletion();
+		//waitForTaskCompletion();
 		
+		/*
 		assertEquals(89, _dataSet.getNumberOfCharacters());
 		// do a few random assertions
 		Character character = _dataSet.getCharacter(10);
@@ -116,7 +125,7 @@ public class ImportControllerTest extends TestCase {
 		assertEquals("\\i{}Cynodon\\i0{} <Rich.>", item.getDescription());
 		assertEquals("4-60(-100)", item.getAttribute(_dataSet.getCharacter(2)).getValueAsString());
 		assertEquals("3", item.getAttribute(_dataSet.getCharacter(60)).getValueAsString());
-		
+		*/
 	}
 	
 	/**

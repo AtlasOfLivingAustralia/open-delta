@@ -1,6 +1,7 @@
 package au.org.ala.delta.editor.directives;
 
 import java.io.File;
+import java.io.PrintStream;
 import java.util.List;
 
 import javax.swing.JOptionPane;
@@ -9,16 +10,18 @@ import org.jdesktop.application.Task;
 import org.jdesktop.application.TaskEvent;
 import org.jdesktop.application.TaskListener;
 
-import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.AbstractDeltaContext;
 import au.org.ala.delta.directives.AbstractDirective;
-import au.org.ala.delta.directives.ConforDirectiveFileParser;
 import au.org.ala.delta.directives.DirectiveParserObserver;
 import au.org.ala.delta.editor.DeltaEditor;
 import au.org.ala.delta.editor.directives.ui.ImportExportDialog;
-import au.org.ala.delta.editor.directives.ui.ImportExportDialog.DirectiveFile;
 import au.org.ala.delta.editor.directives.ui.ImportExportStatusDialog;
 import au.org.ala.delta.editor.model.EditorDataModel;
+import au.org.ala.delta.editor.slotfile.Directive;
+import au.org.ala.delta.editor.slotfile.VODirFileDesc;
+import au.org.ala.delta.editor.slotfile.VODirFileDesc.Dir;
+import au.org.ala.delta.editor.slotfile.directive.ConforDirType;
+import au.org.ala.delta.editor.slotfile.model.DirectiveFile;
 
 public class ExportController {
 	private DeltaEditor _context;
@@ -39,14 +42,14 @@ public class ExportController {
 		_context.show(dialog);
 		
 		if (dialog.proceed()) {
-			List<DirectiveFile> files = dialog.getSelectedFiles();
+			List<DirectiveFileInfo> files = dialog.getSelectedFiles();
 			File selectedDirectory = dialog.getSelectedDirectory();
 			
-			doImport(selectedDirectory, files);
+			doExport(selectedDirectory, files);
 		}
 	}
 	
-	public void doImport(File selectedDirectory, List<DirectiveFile> files) {
+	public void doExport(File selectedDirectory, List<DirectiveFileInfo> files) {
 		ImportExportStatusDialog statusDialog = new ImportExportStatusDialog(_context.getMainFrame());
 		_context.show(statusDialog);
 		
@@ -56,13 +59,17 @@ public class ExportController {
 		importTask.execute();
 	}
 	
+	public void doSilentExport(File selectedDirectory, List<DirectiveFileInfo> files) {
+		new DoExportTask(selectedDirectory, files).execute();
+	}
+	
 	
 	public class DoExportTask extends Task<Void, ImportExportStatus> implements DirectiveParserObserver {
 
 		private String _directoryName;
-		private List<DirectiveFile> _files;
+		private List<DirectiveFileInfo> _files;
 		
-		public DoExportTask(File directory, List<DirectiveFile> files) {
+		public DoExportTask(File directory, List<DirectiveFileInfo> files) {
 			super(_context);
 			String directoryName = directory.getAbsolutePath();
 			if (!directoryName.endsWith(File.separator)) {
@@ -77,26 +84,14 @@ public class ExportController {
 			ImportExportStatus status = new ImportExportStatus();
 			publish(status);
 						
-			DeltaContext context = new DeltaContext(_model);
-			ConforDirectiveFileParser parser = ConforDirectiveFileParser.createInstance();
-			int fileNumber = 1;
-			for (DirectiveFile file : _files) {
+			for (DirectiveFileInfo file : _files) {
 				
 				
-				// First check if the existing dataset has a directives file with the same name
-				// and same last modified date.  If so, skip it.
-				status.setCurrentFile(file._fileName);
-				publish(status);
-				// Looks like we skip the specs file if we have non zero items or chars.....
-				try {
-				
-					File directiveFile = new File(_directoryName+file._fileName);
-					parser.parse(directiveFile, context);
+				DirectiveFile dirFile = file.getDirectiveFile();
+				if (dirFile != null) {
+					writeDirectivesFile(dirFile, _directoryName);
 				}
-				catch (Exception e) {
-					status.setTotalErrors(status.getTotalErrors()+1);
-					e.printStackTrace();
-				}
+				
 				status.setTotalLines(status.getTotalLines()+1);
 				publish(status);
 			}
@@ -136,4 +131,54 @@ public class ExportController {
 		}
 		
 	}
+	
+	File temp; 
+	PrintStream out;
+	private void writeDirectivesFile(DirectiveFile file, String directoryPath) {
+		try {
+		String fileName = file.getFileName();
+		temp = new File(directoryPath+fileName);
+		out = new PrintStream(temp);
+		
+		List<Dir> directives = file.getDirectives();
+		for (Dir directive : directives) {
+			writeDirective(directive);
+		}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		finally {
+			if (out != null) {
+				out.close();
+			}
+		}
+	}
+	
+	private void writeDirective(Dir directive) {
+		
+		StringBuilder textBuffer = new StringBuilder();
+		
+	    textBuffer.append('*');
+	    int dirType = directive.getDirType();
+	    if ((dirType & VODirFileDesc.DIRARG_COMMENT_FLAG) > 0) {
+	    	  textBuffer.append("COMMENT ");
+	          dirType &= ~VODirFileDesc.DIRARG_COMMENT_FLAG;
+	    }
+	    
+	    Directive directiveInfo = ConforDirType.ConforDirArray[dirType];
+	    textBuffer.append(directiveInfo.joinNameComponents());
+	    
+	    OutputTextBuffer(textBuffer.toString(), 0, 0, false);
+	    
+	    textBuffer = new StringBuilder();
+	    	     
+	    directiveInfo.getOutFunc().process(null);
+	}
+	
+	private void OutputTextBuffer(String buffer, int startIndex, int indent, boolean terminate) {
+		// TODO consider adapting the common "Printer" so it's useful here.
+		out.println(buffer);
+	}
+	
 }

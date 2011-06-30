@@ -16,6 +16,10 @@ public class DirectiveArguments {
 		_args.add(arg);
 	}
 	
+	public int size() {
+		return _args.size();
+	}
+	
 	public List<DirectiveArgument<?>> getDirectiveArguments() {
 		return _args;
 	}
@@ -82,9 +86,20 @@ public class DirectiveArguments {
 		return _args.get(0).getValue().intValue();
 	}
 	
+	public int getFirstArgumentIdAsInt() {
+		return (Integer)_args.get(0).getId();
+	}
+	
+	
+	
 	public static DirectiveArguments textArgument(String text) {
 		DirectiveArguments args = new DirectiveArguments();
 		args.addTextArgument(text);
 		return args;
+	}
+
+	public String getFirstArgumentValueAsString() {
+		return _args.get(0).getValue().toString();
+		
 	}
 }

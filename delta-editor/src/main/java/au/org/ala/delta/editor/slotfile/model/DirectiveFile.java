@@ -33,7 +33,25 @@ public class DirectiveFile {
 	}
 	
 	public DirectiveType getType() {
-		return DirectiveType.CONFOR;
+		short progType = _dirFileDesc.getProgType();
+		DirectiveType type;
+		switch (progType) {
+		case VODirFileDesc.PROGTYPE_CONFOR:
+			type = DirectiveType.CONFOR;
+			break;
+		case VODirFileDesc.PROGTYPE_INTKEY:
+			type = DirectiveType.INTKEY;
+			break;
+		case VODirFileDesc.PROGTYPE_DIST:
+			type = DirectiveType.DIST;
+			break;
+		case VODirFileDesc.PROGTYPE_KEY:
+			type = DirectiveType.KEY;
+			break;
+		default:
+			throw new IllegalStateException("This file has an unknown type! "+progType);
+		}
+		return type;
 	}
 	
 	public String getFileName() {
@@ -63,5 +81,14 @@ public class DirectiveFile {
 	
 	public void execute() {
 		
+	}
+	
+	public List<Dir> getDirectives() {
+		return _dirFileDesc.readAllDirectives();
+	}
+	
+
+	public String toString() {
+		return getFileName()+" ("+getType().getAbbreviation()+")";
 	}
 }

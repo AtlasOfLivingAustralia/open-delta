@@ -16,7 +16,6 @@ import au.org.ala.delta.directives.ConforDirectiveFileParser;
 import au.org.ala.delta.directives.DirectiveParserObserver;
 import au.org.ala.delta.editor.DeltaEditor;
 import au.org.ala.delta.editor.directives.ui.ImportExportDialog;
-import au.org.ala.delta.editor.directives.ui.ImportExportDialog.DirectiveFile;
 import au.org.ala.delta.editor.directives.ui.ImportExportStatusDialog;
 import au.org.ala.delta.editor.model.EditorDataModel;
 
@@ -44,14 +43,14 @@ public class ImportController {
 		_context.show(dialog);
 		
 		if (dialog.proceed()) {
-			List<DirectiveFile> files = dialog.getSelectedFiles();
+			List<DirectiveFileInfo> files = dialog.getSelectedFiles();
 			File selectedDirectory = dialog.getSelectedDirectory();
 			
 			doImport(selectedDirectory, files);
 		}
 	}
 	
-	public void doImport(File selectedDirectory, List<DirectiveFile> files) {
+	public void doImport(File selectedDirectory, List<DirectiveFileInfo> files) {
 		ImportExportStatusDialog statusDialog = new ImportExportStatusDialog(_context.getMainFrame());
 		_context.show(statusDialog);
 		
@@ -61,7 +60,7 @@ public class ImportController {
 		importTask.execute();
 	}
 	
-	public void doSilentImport(File selectedDirectory, List<DirectiveFile> files) {
+	public void doSilentImport(File selectedDirectory, List<DirectiveFileInfo> files) {
 		new DoImportTask(selectedDirectory, files).execute();
 	}
 
@@ -69,9 +68,9 @@ public class ImportController {
 	public class DoImportTask extends Task<Void, ImportExportStatus> implements DirectiveParserObserver {
 
 		private String _directoryName;
-		private List<DirectiveFile> _files;
+		private List<DirectiveFileInfo> _files;
 		
-		public DoImportTask(File directory, List<DirectiveFile> files) {
+		public DoImportTask(File directory, List<DirectiveFileInfo> files) {
 			super(_context);
 			String directoryName = directory.getAbsolutePath();
 			if (!directoryName.endsWith(File.separator)) {
@@ -90,17 +89,17 @@ public class ImportController {
 			DeltaContext context = new DeltaContext(_model);
 			ConforDirectiveFileParser parser = ConforDirectiveFileParser.createInstance();
 			int fileNumber = 1;
-			for (DirectiveFile file : _files) {
+			for (DirectiveFileInfo file : _files) {
 				
-				_model.addDirectiveFile(fileNumber++, file._fileName, 0);
+				_model.addDirectiveFile(fileNumber++, file.getFileName(), 0);
 				// First check if the existing dataset has a directives file with the same name
 				// and same last modified date.  If so, skip it.
-				status.setCurrentFile(file._fileName);
+				status.setCurrentFile(file.getFileName());
 				publish(status);
 				// Looks like we skip the specs file if we have non zero items or chars.....
 				try {
 				
-					File directiveFile = new File(_directoryName+file._fileName);
+					File directiveFile = new File(_directoryName+file.getFileName());
 					parser.parse(directiveFile, context);
 				}
 				catch (Exception e) {

@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DirectiveArgument<T> {
+public class DirectiveArgument<T> implements Comparable<DirectiveArgument<T>>{
 
 
 	private String _text;
@@ -37,6 +37,10 @@ public class DirectiveArgument<T> {
 	
 	public BigDecimal getValue() {
 		return _value;
+	}
+	
+	public int getValueAsInt() {
+		return _value.intValue();
 	}
 	
 	public void setId(T id) {
@@ -72,6 +76,10 @@ public class DirectiveArgument<T> {
 		return values;
 	}
 	
+	public List<BigDecimal> getData() {
+		return _dataVect;
+	}
+	
 	public String valueAsString() {
 		if (_value != null) {
 			return _value.toString();
@@ -85,4 +93,13 @@ public class DirectiveArgument<T> {
 	public String toString() {
 		return String.format("ArgId=%d, text=%s comment=%s value=%s, dataVect=%s", _id, _text, _comment, _value, _dataVect == null ? "null" : _dataVect);
 	}
+
+	@Override
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public int compareTo(DirectiveArgument<T> o) {
+		// We can get away with this case cause T will be an Integer or a String.
+		return ((Comparable)_id).compareTo((Comparable)o.getId());
+	}
+
+	
 }

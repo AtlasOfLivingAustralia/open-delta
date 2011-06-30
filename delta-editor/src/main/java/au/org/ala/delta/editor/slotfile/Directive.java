@@ -14,6 +14,8 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.slotfile;
 
+import org.apache.commons.lang.StringUtils;
+
 import au.org.ala.delta.directives.AbstractDirective;
 import au.org.ala.delta.editor.slotfile.directive.DirectiveFunctor;
 
@@ -44,6 +46,20 @@ public class Directive {
 	
 	public String[] getName() {
 		return _name;
+	}
+	
+	public String joinNameComponents() {
+		StringBuilder name = new StringBuilder();
+		for (int i=0; i<_name.length; i++) {
+			
+			if (StringUtils.isNotEmpty(_name[i])) {
+				if (name.length() > 0) {
+					name.append(" ");
+				}
+				name.append(_name[i]);
+			}
+		}
+		return name.toString();
 	}
 	
 	public int getLevel() {

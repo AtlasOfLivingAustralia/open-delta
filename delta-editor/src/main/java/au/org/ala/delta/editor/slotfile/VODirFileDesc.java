@@ -1421,7 +1421,7 @@ public class VODirFileDesc extends VOAnyDesc implements WindowsConstants {
 		}
 	}
 
-	public static class DirArgs {
+	public static class DirArgs implements Comparable<DirArgs>{
 
 		public DirArgs() {
 			this(0);
@@ -1431,6 +1431,13 @@ public class VODirFileDesc extends VOAnyDesc implements WindowsConstants {
 			this.id = id;
 			dataVect = new ArrayList<DirListData>();
 		}
+
+		
+		@Override
+		public int compareTo(DirArgs o) {
+			return new Integer(id).compareTo(o.getId());
+		}
+
 
 		public String text;
 		public String comment;
@@ -1454,10 +1461,34 @@ public class VODirFileDesc extends VOAnyDesc implements WindowsConstants {
 			value = new DeltaNumber((float)aValue);
 		}
 		
+		public void setValue(String aValue) {
+			value = new DeltaNumber(aValue);
+		}
+		
 		public void setId(int anId) {
 			id = anId;
 		}
+		
+		public int getId() {
+			return id;
+		}
+		
+		public List<DirListData> getData() {
+			return dataVect;
+		}
+		
+		public List<Integer> getDataAsInts() {
+			List<Integer> data = new ArrayList<Integer>();
+			for (DirListData item : dataVect) {
+				data.add(item.getAsInt());
+			}
+			
+			return data;
+		}
 
+		public DeltaNumber getValue() {
+			return value;
+		}
 		@Override
 		public String toString() {
 			return String.format("ArgId=%d, text=%s comment=%s value=%s, dataVect=%s", id, text, comment, value, dataVect == null ? "null" : dataVect);
@@ -1550,6 +1581,10 @@ public class VODirFileDesc extends VOAnyDesc implements WindowsConstants {
 		@Override
 		public int size() {
 			return SIZE;
+		}
+		
+		public String asString() {
+			return new DeltaNumber(getAsFloat(), _decimal).asString();
 		}
 	}
 
