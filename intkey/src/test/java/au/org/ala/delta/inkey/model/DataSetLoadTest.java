@@ -45,7 +45,7 @@ public class DataSetLoadTest extends TestCase {
         URL icharsFileUrl = getClass().getResource("/dataset/sample/ichars");
         URL iitemsFileUrl = getClass().getResource("/dataset/sample/iitems");
 
-        IntkeyContext context = new IntkeyContext(null);
+        IntkeyContext context = new IntkeyContext(new MockIntkeyUI());
         context.setFileCharacters(new File(icharsFileUrl.toURI()).getAbsolutePath());
         context.setFileTaxa(new File(iitemsFileUrl.toURI()).getAbsolutePath());
 
@@ -60,7 +60,7 @@ public class DataSetLoadTest extends TestCase {
     @Test
     public void testReadSampleFromInitializationFile() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
-        IntkeyContext context = new IntkeyContext(null);
+        IntkeyContext context = new IntkeyContext(new MockIntkeyUI());
         context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
 
         List<String> keywordsWithoutSystemDefinedOnes = new ArrayList<String>(context.getCharacterKeywords());
@@ -81,7 +81,7 @@ public class DataSetLoadTest extends TestCase {
     @Test
     public void testLoadControllingCharsDataset() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/controlling_characters_simple/intkey.ink");
-        IntkeyContext context = new IntkeyContext(null);
+        IntkeyContext context = new IntkeyContext(new MockIntkeyUI());
         context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
 
         IntkeyDataset ds = context.getDataset();
@@ -169,7 +169,7 @@ public class DataSetLoadTest extends TestCase {
     @Test
     public void testNonAutomaticControllingCharacters() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/controlling_characters_non_auto/intkey.ink");
-        IntkeyContext context = new IntkeyContext(null);
+        IntkeyContext context = new IntkeyContext(new MockIntkeyUI());
         context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
 
         IntkeyDataset ds = context.getDataset();
@@ -246,7 +246,7 @@ public class DataSetLoadTest extends TestCase {
     @Test
     public void testApplicableCharactersDirective() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/controlling_characters_applicable_directive/intkey.ink");
-        IntkeyContext context = new IntkeyContext(null);
+        IntkeyContext context = new IntkeyContext(new MockIntkeyUI());
         context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
 
         IntkeyDataset ds = context.getDataset();
@@ -293,7 +293,7 @@ public class DataSetLoadTest extends TestCase {
     @Test
     public void testReadAttributes() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/controlling_characters_simple/intkey.ink");
-        IntkeyContext context = new IntkeyContext(null);
+        IntkeyContext context = new IntkeyContext(new MockIntkeyUI());
         context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
 
         IntkeyDataset ds = context.getDataset();
@@ -508,7 +508,7 @@ public class DataSetLoadTest extends TestCase {
     @Test
     public void testReadAttributes2() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
-        IntkeyContext context = new IntkeyContext(null);
+        IntkeyContext context = new IntkeyContext(new MockIntkeyUI());
         context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
 
         IntkeyDataset ds = context.getDataset();
@@ -535,7 +535,7 @@ public class DataSetLoadTest extends TestCase {
     @Test
     public void testReadTwoDatasets() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
-        IntkeyContext context = new IntkeyContext(null);
+        IntkeyContext context = new IntkeyContext(new MockIntkeyUI());
         context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
         
         IntkeyDataset ds = context.getDataset();

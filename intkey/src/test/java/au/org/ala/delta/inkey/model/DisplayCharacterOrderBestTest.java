@@ -23,7 +23,7 @@ public class DisplayCharacterOrderBestTest extends TestCase {
     public void testSimpleDataSet() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/controlling_characters_simple/intkey.ink");
 
-        IntkeyContext context = new IntkeyContext(null);
+        IntkeyContext context = new IntkeyContext(new MockIntkeyUI());
         context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
 
         Map<Character, Double> bestMap = SortingUtils.orderBest(context);
@@ -44,7 +44,7 @@ public class DisplayCharacterOrderBestTest extends TestCase {
     public void testDeltaSampleDataSet() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
 
-        IntkeyContext context = new IntkeyContext(null);
+        IntkeyContext context = new IntkeyContext(new MockIntkeyUI());
         context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
 
         Map<Character, Double> bestMap = SortingUtils.orderBest(context);
@@ -122,7 +122,7 @@ public class DisplayCharacterOrderBestTest extends TestCase {
     public void testBestOrder2() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
 
-        IntkeyContext context = new IntkeyContext(null);
+        IntkeyContext context = new IntkeyContext(new MockIntkeyUI());
         context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
 
         new UseDirective().parseAndProcess(context, "38,5");
@@ -155,8 +155,13 @@ public class DisplayCharacterOrderBestTest extends TestCase {
         bestTestHelper(20, 3, 0.55, orderedCharList, bestMap);
         bestTestHelper(21, 48, 0.33, orderedCharList, bestMap);
         bestTestHelper(22, 47, 0.44, orderedCharList, bestMap);
+
+        // TODO these appear in the result in incorrect order. Almost certainly
+        // because of the extra precision being used in the ported BEST
+        // algorithm - doubles are being used.
         // bestTestHelper(23, 12, 0.22, orderedCharList, bestMap);
         // bestTestHelper(24, 41, 0.42, orderedCharList, bestMap);
+
         bestTestHelper(25, 37, 0.40, orderedCharList, bestMap);
         bestTestHelper(26, 53, 0.40, orderedCharList, bestMap);
         bestTestHelper(27, 4, 0.26, orderedCharList, bestMap);
@@ -189,7 +194,7 @@ public class DisplayCharacterOrderBestTest extends TestCase {
     public void testBestOrder3() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
 
-        IntkeyContext context = new IntkeyContext(null);
+        IntkeyContext context = new IntkeyContext(new MockIntkeyUI());
         context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
 
         new UseDirective().parseAndProcess(context, "38,5");

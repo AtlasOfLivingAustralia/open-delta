@@ -27,7 +27,7 @@ public class DefineCharactersDirectiveTest extends TestCase {
     @Test
     public void testSingleCharacter() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
-        IntkeyContext context = new IntkeyContext(null);
+        IntkeyContext context = new IntkeyContext(new MockIntkeyUI());
         context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
         IntkeyDataset ds = context.getDataset();
 
@@ -45,7 +45,7 @@ public class DefineCharactersDirectiveTest extends TestCase {
     @Test
     public void testMultipleCharacters() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
-        IntkeyContext context = new IntkeyContext(null);
+        IntkeyContext context = new IntkeyContext(new MockIntkeyUI());
         context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
         IntkeyDataset ds = context.getDataset();
 
@@ -63,7 +63,7 @@ public class DefineCharactersDirectiveTest extends TestCase {
     @Test
     public void testCharacterRange() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
-        IntkeyContext context = new IntkeyContext(null);
+        IntkeyContext context = new IntkeyContext(new MockIntkeyUI());
         context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
         IntkeyDataset ds = context.getDataset();
 
@@ -82,7 +82,7 @@ public class DefineCharactersDirectiveTest extends TestCase {
     @Test
     public void testMultipleRanges() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
-        IntkeyContext context = new IntkeyContext(null);
+        IntkeyContext context = new IntkeyContext(new MockIntkeyUI());
         context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
         IntkeyDataset ds = context.getDataset();
 
@@ -100,7 +100,7 @@ public class DefineCharactersDirectiveTest extends TestCase {
     @Test
     public void testKeyword() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
-        IntkeyContext context = new IntkeyContext(null);
+        IntkeyContext context = new IntkeyContext(new MockIntkeyUI());
         context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
         IntkeyDataset ds = context.getDataset();
 
@@ -119,7 +119,7 @@ public class DefineCharactersDirectiveTest extends TestCase {
     @Test
     public void testPartialKeyword() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
-        IntkeyContext context = new IntkeyContext(null);
+        IntkeyContext context = new IntkeyContext(new MockIntkeyUI());
         context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
         IntkeyDataset ds = context.getDataset();
 
@@ -138,7 +138,7 @@ public class DefineCharactersDirectiveTest extends TestCase {
     @Test
     public void testCombination() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
-        IntkeyContext context = new IntkeyContext(null);
+        IntkeyContext context = new IntkeyContext(new MockIntkeyUI());
         context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
         IntkeyDataset ds = context.getDataset();
 

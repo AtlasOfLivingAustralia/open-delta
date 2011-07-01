@@ -38,6 +38,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingWorker;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.MouseInputAdapter;
 
@@ -68,6 +69,7 @@ import au.org.ala.delta.intkey.model.IntkeyDataset;
 import au.org.ala.delta.intkey.model.specimen.CharacterValue;
 import au.org.ala.delta.intkey.model.specimen.Specimen;
 import au.org.ala.delta.intkey.ui.BestCharacterListModel;
+import au.org.ala.delta.intkey.ui.BusyGlassPane;
 import au.org.ala.delta.intkey.ui.CharacterListModel;
 import au.org.ala.delta.intkey.ui.ItemListModel;
 import au.org.ala.delta.intkey.ui.ReExecuteDialog;
@@ -79,7 +81,7 @@ import au.org.ala.delta.ui.AboutBox;
 import au.org.ala.delta.ui.DeltaSingleFrameApplication;
 import au.org.ala.delta.ui.util.IconHelper;
 
-public class Intkey extends DeltaSingleFrameApplication {
+public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI {
 
     private JPanel _rootPanel;
     private JSplitPane _rootSplitPane;
@@ -105,6 +107,8 @@ public class Intkey extends DeltaSingleFrameApplication {
     private JLabel _lblNumAvailableCharacters;
     private JLabel _lblNumUsedCharacters;
 
+    private BusyGlassPane _glassPane = null;
+
     boolean normalMode = false;
 
     @Resource
@@ -124,6 +128,9 @@ public class Intkey extends DeltaSingleFrameApplication {
 
     @Resource
     String eliminatedTaxaCaption;
+
+    @Resource
+    String calculatingBestCaption;
 
     private JLabel _lblNumRemainingTaxa;
     private JLabel _lblEliminatedTaxa;
@@ -240,7 +247,7 @@ public class Intkey extends DeltaSingleFrameApplication {
                     if (selectedIndex >= 0) {
                         try {
                             Character ch = _availableCharacterListModel.getCharacterAt(selectedIndex);
-                            new UseDirective().parseAndProcess(_context, Integer.toString(ch.getCharacterId()));
+                            executeDirective(new UseDirective(), Integer.toString(ch.getCharacterId()));
                         } catch (Exception ex) {
                             ex.printStackTrace();
                         }
@@ -335,7 +342,7 @@ public class Intkey extends DeltaSingleFrameApplication {
                     if (selectedIndex >= 0) {
                         try {
                             Character ch = _usedCharacterListModel.getCharacterAt(selectedIndex);
-                            new ChangeDirective().parseAndProcess(_context, Integer.toString(ch.getCharacterId()));
+                            executeDirective(new ChangeDirective(), Integer.toString(ch.getCharacterId()));
                         } catch (Exception ex) {
                             ex.printStackTrace();
                         }
@@ -478,6 +485,19 @@ public class Intkey extends DeltaSingleFrameApplication {
     protected void shutdown() {
         _context.cleanupForShutdown();
         super.shutdown();
+    }
+
+    private void showBusyMessage(String message) {
+        _glassPane = new BusyGlassPane(message);
+        getMainFrame().setGlassPane(_glassPane);
+        _glassPane.setVisible(true);
+    }
+
+    private void removeBusyMessage() {
+        if (_glassPane != null) {
+            _glassPane.setVisible(false);
+            _glassPane = null;
+        }
     }
 
     private JMenuBar buildMenus() {
@@ -635,7 +655,7 @@ public class Intkey extends DeltaSingleFrameApplication {
     // ============== File menu actions ==============================
     @Action
     public void mnuItNewDataSet() {
-        executeDirective(new NewDatasetDirective());
+        executeDirective(new NewDatasetDirective(), null);
     }
 
     @Action
@@ -650,12 +670,12 @@ public class Intkey extends DeltaSingleFrameApplication {
 
     @Action
     public void mnuItFileCharacters() {
-        executeDirective(new FileCharactersDirective());
+        executeDirective(new FileCharactersDirective(), null);
     }
 
     @Action
     public void mnuItFileTaxa() {
-        executeDirective(new FileTaxaDirective());
+        executeDirective(new FileTaxaDirective(), null);
     }
 
     @Action
@@ -745,12 +765,12 @@ public class Intkey extends DeltaSingleFrameApplication {
 
     @Action
     public void btnRestart() {
-        executeDirective(new RestartDirective());
+        executeDirective(new RestartDirective(), null);
     }
 
     @Action
     public void btnBestOrder() {
-        executeDirective(new DisplayCharacterOrderBestDirective());
+        executeDirective(new DisplayCharacterOrderBestDirective(), null);
     }
 
     @Action
@@ -759,7 +779,7 @@ public class Intkey extends DeltaSingleFrameApplication {
 
     @Action
     public void btnNaturalOrder() {
-        executeDirective(new DisplayCharacterOrderNaturalDirective());
+        executeDirective(new DisplayCharacterOrderNaturalDirective(), null);
     }
 
     @Action
@@ -803,9 +823,9 @@ public class Intkey extends DeltaSingleFrameApplication {
 
     // =========================================================================================
 
-    private void executeDirective(IntkeyDirective dir) {
+    private void executeDirective(IntkeyDirective dir, String data) {
         try {
-            dir.parseAndProcess(_context, null);
+            dir.parseAndProcess(_context, data);
         } catch (IntkeyDirectiveParseException ex) {
             String msg = ex.getMessage();
             JOptionPane.showMessageDialog(UIUtils.getMainFrame(), msg, "Error", JOptionPane.ERROR_MESSAGE);
@@ -818,11 +838,13 @@ public class Intkey extends DeltaSingleFrameApplication {
         }
     }
 
-    public void handleNewDataSet(IntkeyDataset dataset) {
+    @Override
+    public void handleNewDataset(IntkeyDataset dataset) {
         getMainFrame().setTitle(String.format(windowTitleWithDatasetTitle, dataset.getHeading()));
         initializeIdentification();
     }
 
+    @Override
     public void handleSpecimenUpdated() {
         Specimen specimen = _context.getSpecimen();
 
@@ -854,7 +876,7 @@ public class Intkey extends DeltaSingleFrameApplication {
             _sclPaneAvailableCharacters.setViewportView(lbl);
             _sclPaneAvailableCharacters.revalidate();
         }
-        
+
         List<Character> usedCharacters = specimen.getUsedCharacters();
 
         List<CharacterValue> usedCharacterValues = new ArrayList<CharacterValue>();
@@ -877,25 +899,26 @@ public class Intkey extends DeltaSingleFrameApplication {
         updateListCaptions();
     }
 
+    @Override
     public void handleIdentificationRestarted() {
         initializeIdentification();
+    }
+
+    @Override
+    public void handleCharacterOrderChanged() {
+        updateListCaptions();
+        updateAvailableCharacters();
     }
 
     private void initializeIdentification() {
         IntkeyDataset dataset = _context.getDataset();
 
-        if (_context.getCharacterOrder() == IntkeyCharacterOrder.BEST) {
-            LinkedHashMap bestCharactersMap = _context.getBestCharacters();
-            _availableCharacterListModel = new BestCharacterListModel(new ArrayList<Character>(bestCharactersMap.keySet()), bestCharactersMap);
-        } else {
-            _availableCharacterListModel = new CharacterListModel(dataset.getCharacters());
-        }
+        updateAvailableCharacters();
 
         _usedCharacterListModel = new UsedCharacterListModel(Collections.EMPTY_LIST);
         _availableTaxaListModel = new ItemListModel(dataset.getTaxa());
         _eliminatedTaxaListModel = new EliminatedTaxaListModel(Collections.EMPTY_LIST, Collections.EMPTY_MAP);
 
-        _listAvailableCharacters.setModel(_availableCharacterListModel);
         _listUsedCharacters.setModel(_usedCharacterListModel);
         _listRemainingTaxa.setModel(_availableTaxaListModel);
         _listEliminatedTaxa.setModel(_eliminatedTaxaListModel);
@@ -910,11 +933,6 @@ public class Intkey extends DeltaSingleFrameApplication {
 
         updateListCaptions();
     }
-    
-    public void handleCharacterOrderChanged() {
-        updateAvailableCharacters();
-        updateListCaptions();
-    }
 
     private void updateListCaptions() {
         IntkeyCharacterOrder charOrder = _context.getCharacterOrder();
@@ -923,53 +941,98 @@ public class Intkey extends DeltaSingleFrameApplication {
             _lblNumAvailableCharacters.setText(String.format(availableCharactersCaption, _availableCharacterListModel.getSize()));
             break;
         case BEST:
-            _lblNumAvailableCharacters.setText(String.format(bestCharactersCaption, _availableCharacterListModel.getSize()));
+            // If the best characters are currently being calcuated, the
+            // BestCharactersWorker will update the caption once its background
+            // operation has completed
+            if (_availableCharacterListModel != null) {
+                _lblNumAvailableCharacters.setText(String.format(bestCharactersCaption, _availableCharacterListModel.getSize()));
+            }
             break;
         case SEPARATE:
             throw new NotImplementedException();
         default:
             throw new RuntimeException("Unrecognized character order");
         }
-        
+
         _lblNumUsedCharacters.setText(String.format(usedCharactersCaption, _usedCharacterListModel.getSize()));
         _lblNumRemainingTaxa.setText(String.format(remainingTaxaCaption, _availableTaxaListModel.getSize()));
         _lblEliminatedTaxa.setText(String.format(eliminatedTaxaCaption, _eliminatedTaxaListModel.getSize()));
     }
-    
+
     private void updateAvailableCharacters() {
         if (_context.getCharacterOrder() == IntkeyCharacterOrder.BEST) {
             LinkedHashMap bestCharactersMap = _context.getBestCharacters();
-            _availableCharacterListModel = new BestCharacterListModel(new ArrayList<Character>(bestCharactersMap.keySet()), bestCharactersMap);
+            if (bestCharactersMap != null) {
+                _availableCharacterListModel = new BestCharacterListModel(new ArrayList<Character>(bestCharactersMap.keySet()), bestCharactersMap);
+                _listAvailableCharacters.setModel(_availableCharacterListModel);
+            } else {
+                _availableCharacterListModel = null;
+
+                // The best characters list is not cached and needs to be
+                // calculated. This is a
+                // long-running operation so use a
+                // SwingWorker to do it on a different thread, and update the
+                // available characters list when
+                // it is complete.
+                GetBestCharactersWorker worker = new GetBestCharactersWorker(_context);
+                worker.execute();
+
+                // Show the busy glass pane with a message if worker has not
+                // completed within
+                // 250 milliseconds. This avoids "flickering" of the glasspane
+                // when it takes a
+                // very short time to calculate the best characters.
+                try {
+                    Thread.sleep(250);
+                    if (!worker.isDone()) {
+                        showBusyMessage(calculatingBestCaption);
+                    }
+                } catch (InterruptedException ex) {
+                    // do nothing
+                }
+
+            }
         } else {
             Specimen specimen = _context.getSpecimen();
             List<Character> availableCharacters = new ArrayList<Character>(specimen.getAvailableCharacters());
             Collections.sort(availableCharacters);
             _availableCharacterListModel = new CharacterListModel(availableCharacters);
+            _listAvailableCharacters.setModel(_availableCharacterListModel);
         }
-        
-        _listAvailableCharacters.setModel(_availableCharacterListModel);
     }
-    
-    private LinkedHashMap<Character, Double> getBestCharacters() {
-        
-        return null;
-    }
-    
-    private class GetBestCharactersTask extends Task<LinkedHashMap, Void> {
+
+    /**
+     * Used to calculate the best characters in a separate thread, then update
+     * the UI accordingly when the operation is finished
+     * 
+     * @author ChrisF
+     * 
+     */
+    private class GetBestCharactersWorker extends SwingWorker<Void, Void> {
 
         private IntkeyContext _context;
-        
-        public GetBestCharactersTask(Application application, IntkeyContext context) {
-            super(application);
+
+        public GetBestCharactersWorker(IntkeyContext context) {
+            super();
             _context = context;
         }
-        
+
         @Override
-        protected LinkedHashMap doInBackground() throws Exception {
-            LinkedHashMap<Character, Double> bestChars = _context.getBestCharacters();
-            return bestChars;
+        protected Void doInBackground() throws Exception {
+            _context.calculateBestCharacters();
+            return null;
         }
-        
+
+        @Override
+        protected void done() {
+            LinkedHashMap bestCharactersMap = _context.getBestCharacters();
+            _availableCharacterListModel = new BestCharacterListModel(new ArrayList<Character>(bestCharactersMap.keySet()), bestCharactersMap);
+            _listAvailableCharacters.setModel(_availableCharacterListModel);
+
+            _lblNumAvailableCharacters.setText(String.format(bestCharactersCaption, _availableCharacterListModel.getSize()));
+
+            removeBusyMessage();
+        }
     }
 
     private class UsedCharacterListModel extends AbstractListModel {

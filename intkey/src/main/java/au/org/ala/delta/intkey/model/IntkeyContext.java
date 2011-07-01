@@ -10,7 +10,7 @@ import java.util.Set;
 
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.directives.AbstractDeltaContext;
-import au.org.ala.delta.intkey.Intkey;
+import au.org.ala.delta.intkey.IntkeyUI;
 import au.org.ala.delta.intkey.directives.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.IntkeyDirectiveParser;
 import au.org.ala.delta.intkey.model.specimen.CharacterValue;
@@ -20,6 +20,7 @@ import au.org.ala.delta.model.Character;
 
 /**
  * Model. Maintains global application state.
+ * THIS CLASS IS NOT THREAD SAFE
  * 
  * @author Chris
  * 
@@ -40,7 +41,7 @@ public class IntkeyContext extends AbstractDeltaContext {
     private IntkeyDataset _dataset;
     private File _datasetInitFile;
 
-    private Intkey _appUI;
+    private IntkeyUI _appUI;
 
     private Specimen _specimen;
 
@@ -80,7 +81,11 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     private List<IntkeyDirectiveInvocation> _executedDirectives;
 
-    public IntkeyContext(Intkey appUI) {
+    public IntkeyContext(IntkeyUI appUI) {
+        if (appUI == null) {
+            throw new IllegalArgumentException("UI Reference cannot be null");
+        }
+
         _appUI = appUI;
         _recordDirectiveHistory = false;
         _processingInputFile = false;
@@ -179,8 +184,8 @@ public class IntkeyContext extends AbstractDeltaContext {
         _specimen = new Specimen(_dataset, _matchInapplicables, _matchInapplicables, _matchType);
 
         // TODO need a proper listener pattern here?
-        if (!_processingInputFile && _appUI != null) {
-            _appUI.handleNewDataSet(_dataset);
+        if (!_processingInputFile) {
+            _appUI.handleNewDataset(_dataset);
         }
 
     }
@@ -197,19 +202,15 @@ public class IntkeyContext extends AbstractDeltaContext {
 
         try {
             _datasetInitFile = new File(fileName);
-            parser.parse(new File(fileName), this);
+            parser.parse(new File(fileName), IntkeyContext.this);
         } catch (IOException ex) {
             Logger.log(ex.getMessage());
         }
-
-        // re enable recording of directives executed
+        
         _recordDirectiveHistory = true;
         _processingInputFile = false;
         
-        // TODO need a proper listener pattern here?
-        if (_appUI != null) {
-            _appUI.handleNewDataSet(_dataset);
-        }
+        _appUI.handleNewDataset(_dataset);
     }
 
     public void executeDirective(IntkeyDirectiveInvocation invoc) {
@@ -245,15 +246,12 @@ public class IntkeyContext extends AbstractDeltaContext {
     }
 
     public void specimenUpdateComplete() {
-
-        // As character values have been set, the currently cached best
-        // characters are no longer valid and
-        // need to be cleared.
+        // the specimen has been updated so the currently cached best characters
+        // are no longer
+        // valid
         _bestCharacters = null;
 
-        if (_appUI != null) {
-            _appUI.handleSpecimenUpdated();
-        }
+        _appUI.handleSpecimenUpdated();
     }
 
     public void addCharacterKeyword(String keyword, Set<Integer> characterNumbers) {
@@ -342,9 +340,7 @@ public class IntkeyContext extends AbstractDeltaContext {
             // cleared as they are no longer valid
             _bestCharacters = null;
 
-            if (_appUI != null) {
-                _appUI.handleIdentificationRestarted();
-            }
+            _appUI.handleIdentificationRestarted();
         }
     }
 
@@ -352,7 +348,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         return _specimen;
     }
 
-    public synchronized boolean isProcessingInputFile() {
+    public boolean isProcessingInputFile() {
         return _processingInputFile;
     }
 
@@ -399,24 +395,18 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     public void setCharacterOrder(IntkeyCharacterOrder characterOrder) {
         this._characterOrder = characterOrder;
-
-        if (_appUI != null) {
-            // TODO should we have separate method for this?
-            _appUI.handleCharacterOrderChanged();
-        }
+        _appUI.handleCharacterOrderChanged();
     }
 
     /**
-     * @return The current best characters if they are cached. If they are not
-     *         cached, this method blocks while they are calculated.
+     * @return The current best characters if they are cached
      */
     public LinkedHashMap<Character, Double> getBestCharacters() {
-
-        if (_bestCharacters == null) {
-            _bestCharacters = SortingUtils.orderBest(this);
-        }
-
         return _bestCharacters;
+    }
+
+    public void calculateBestCharacters() {
+        _bestCharacters = SortingUtils.orderBest(IntkeyContext.this);
     }
 
     /**
