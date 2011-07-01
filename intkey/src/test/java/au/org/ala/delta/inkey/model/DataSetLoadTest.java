@@ -208,7 +208,7 @@ public class DataSetLoadTest extends TestCase {
     @Test
     public void testUseControllingCharactersFirst() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/controlling_characters_use_first/intkey.ink");
-        IntkeyContext context = new IntkeyContext(null);
+        IntkeyContext context = new IntkeyContext(new MockIntkeyUI());
         context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
 
         IntkeyDataset ds = context.getDataset();

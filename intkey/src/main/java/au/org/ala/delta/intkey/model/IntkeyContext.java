@@ -19,8 +19,7 @@ import au.org.ala.delta.intkey.ui.UIUtils;
 import au.org.ala.delta.model.Character;
 
 /**
- * Model. Maintains global application state.
- * THIS CLASS IS NOT THREAD SAFE
+ * Model. Maintains global application state. THIS CLASS IS NOT THREAD SAFE
  * 
  * @author Chris
  * 
@@ -81,6 +80,12 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     private List<IntkeyDirectiveInvocation> _executedDirectives;
 
+    /**
+     * Constructor
+     * 
+     * @param appUI
+     *            A reference to the main Intkey UI
+     */
     public IntkeyContext(IntkeyUI appUI) {
         if (appUI == null) {
             throw new IllegalArgumentException("UI Reference cannot be null");
@@ -89,10 +94,14 @@ public class IntkeyContext extends AbstractDeltaContext {
         _appUI = appUI;
         _recordDirectiveHistory = false;
         _processingInputFile = false;
-        initializeInvestigation();
+        initializeIdentification();
     }
 
-    private void initializeInvestigation() {
+    /**
+     * Called to set the initial state at the beginning of the identification of
+     * a specimen
+     */
+    private void initializeIdentification() {
         // Use linked hashmap so that the keys list will be returned in
         // order of insertion.
         _userDefinedCharacterKeywords = new LinkedHashMap<String, Set<Integer>>();
@@ -111,14 +120,31 @@ public class IntkeyContext extends AbstractDeltaContext {
         _bestCharacters = null;
     }
 
+    /**
+     * @return Is Intkey currently running in advanced mode?
+     */
     public boolean isAdvancedMode() {
         return _isAdvancedMode;
     }
 
+    /**
+     * Set whether or not Intkey is running in advanced mode
+     * 
+     * @param isAdvancedMode
+     *            true if Intkey is running in advanced mode
+     */
     public void setAdvancedMode(boolean isAdvancedMode) {
         this._isAdvancedMode = isAdvancedMode;
     }
 
+    /**
+     * Set the current characters file. If a new taxa file has previously been
+     * set, calling this method will result in the new dataset being loaded. The
+     * calling thread will block while the dataset is loaded.
+     * 
+     * @param fileName
+     *            Path to the characters file
+     */
     public void setFileCharacters(String fileName) {
         Logger.log("Setting characters file to: %s", fileName);
 
@@ -147,6 +173,14 @@ public class IntkeyContext extends AbstractDeltaContext {
         }
     }
 
+    /**
+     * Set the current taxa (items) file. If a new characters file has previously been
+     * set, calling this method will result in the new dataset being loaded. The
+     * calling thread will block while the dataset is loaded.
+     * 
+     * @param fileName
+     *            Path to the taxa (items) file
+     */
     public void setFileTaxa(String fileName) {
         Logger.log("Setting taxa file to: %s", fileName);
 
@@ -175,9 +209,14 @@ public class IntkeyContext extends AbstractDeltaContext {
         }
     }
 
+    /**
+     * Called to read the characters and taxa files and create a new dataset.
+     * This method will block while the dataset information is read from the
+     * character and taxa files
+     */
     private void createNewDataSet() {
 
-        initializeInvestigation();
+        initializeIdentification();
 
         _dataset = IntkeyDatasetFileReader.readDataSet(_charactersFile, _taxaFile);
 
@@ -190,6 +229,14 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     }
 
+    /**
+     * Read and execute the specified dataset initialization file. This method
+     * will block while the calling thread while the file is read, the dataset
+     * is loaded, and other directives in the file are executed.
+     * 
+     * @param fileName
+     *            Path to the dataset initialization file
+     */
     public void newDataSetFile(String fileName) {
 
         Logger.log("Reading in new Data Set file from: %s", fileName);
@@ -206,13 +253,21 @@ public class IntkeyContext extends AbstractDeltaContext {
         } catch (IOException ex) {
             Logger.log(ex.getMessage());
         }
-        
+
         _recordDirectiveHistory = true;
         _processingInputFile = false;
-        
+
         _appUI.handleNewDataset(_dataset);
     }
 
+    /**
+     * Execute the supplied command pattern object representing the invocation
+     * of a directive
+     * 
+     * @param invoc
+     *            a command pattern object representing the invocation of a
+     *            directive
+     */
     public void executeDirective(IntkeyDirectiveInvocation invoc) {
         // record correct insertion index in case execution of directive results
         // in further directives being
@@ -231,20 +286,40 @@ public class IntkeyContext extends AbstractDeltaContext {
         }
     }
 
+    /**
+     * @return the currently loaded dataset
+     */
     public IntkeyDataset getDataset() {
         return _dataset;
     }
 
+    /**
+     * Set the value for a character in the current specimen
+     * 
+     * @param ch
+     *            the character
+     * @param value
+     *            the character value
+     */
     public void setValueForCharacter(au.org.ala.delta.model.Character ch, CharacterValue value) {
         Logger.log("Using character");
         _specimen.setValueForCharacter(ch, value);
     }
 
+    /**
+     * Remove the value for a character from the current specimen
+     * 
+     * @param ch
+     */
     public void removeValueForCharacter(Character ch) {
         Logger.log("Deleting character");
         _specimen.removeValueForCharacter(ch);
     }
 
+    /**
+     * Called at the end of a series of updates to the current specimen to
+     * inform the context that all updates have been performed
+     */
     public void specimenUpdateComplete() {
         // the specimen has been updated so the currently cached best characters
         // are no longer
@@ -254,6 +329,15 @@ public class IntkeyContext extends AbstractDeltaContext {
         _appUI.handleSpecimenUpdated();
     }
 
+    /**
+     * Add a new character keyword
+     * 
+     * @param keyword
+     *            The keyword. Note that the system-defined keywords "all",
+     *            "used" and "available" cannot be used.
+     * @param characterNumbers
+     *            The set of characters to be represented by the keyword
+     */
     public void addCharacterKeyword(String keyword, Set<Integer> characterNumbers) {
         if (_dataset == null) {
             throw new IllegalStateException("Cannot define a character keyword if no dataset loaded");
@@ -266,6 +350,14 @@ public class IntkeyContext extends AbstractDeltaContext {
         _userDefinedCharacterKeywords.put(keyword.toLowerCase(), characterNumbers);
     }
 
+    /**
+     * Get the list of characters that are represented by the supplied keyword
+     * 
+     * @param keyword
+     *            the keyword.
+     * @return the list of characters that are represented by the supplied
+     *         keyword
+     */
     public List<au.org.ala.delta.model.Character> getCharactersForKeyword(String keyword) {
         keyword = keyword.toLowerCase();
 
@@ -311,6 +403,11 @@ public class IntkeyContext extends AbstractDeltaContext {
         }
     }
 
+    /**
+     * @return A list of all character keywords. Includes the system defined
+     *         keyords "all" and "available", as well as "used" if any
+     *         characters have been used.
+     */
     public List<String> getCharacterKeywords() {
         List<String> retList = new ArrayList<String>();
         retList.add(CHARACTER_KEYWORD_ALL);
@@ -325,10 +422,17 @@ public class IntkeyContext extends AbstractDeltaContext {
         return retList;
     }
 
+    /**
+     * @return A list of command pattern objects representing all directives
+     *         that have been executed
+     */
     public List<IntkeyDirectiveInvocation> getExecutedDirectives() {
         return new ArrayList<IntkeyDirectiveInvocation>(_executedDirectives);
     }
 
+    /**
+     * Resets the context state to prepare for a new identification
+     */
     public void restartIdentification() {
         // TODO need to account for fixed characters etc here.
 
@@ -344,10 +448,16 @@ public class IntkeyContext extends AbstractDeltaContext {
         }
     }
 
+    /**
+     * @return The current specimen
+     */
     public Specimen getSpecimen() {
         return _specimen;
     }
 
+    /**
+     * @return true if an input file is current being processed
+     */
     public boolean isProcessingInputFile() {
         return _processingInputFile;
     }
@@ -361,38 +471,83 @@ public class IntkeyContext extends AbstractDeltaContext {
         _processingInputFile = processing;
     }
 
+    /**
+     * @return The current error tolerance. This is used when determining which
+     *         taxa to eliminate following characters being used.
+     */
     public int getTolerance() {
         return _tolerance;
     }
 
+    /**
+     * @return The current vary weight. This is used by the BEST algorithm
+     */
     public double getVaryWeight() {
         return _varyWeight;
     }
 
+    /**
+     * Set the current vary weight. This is used by the BEST algorithm.
+     * 
+     * @param varyWeight
+     *            The current vary weight
+     */
     public void setVaryWeight(double varyWeight) {
         _varyWeight = varyWeight;
     }
 
+    /**
+     * Gets the rbase - the base of the logarithmic character-reliability scale,
+     * which is used in determining the BEST characters during an identification
+     * 
+     * @return the current rbase value
+     */
     public double getRBase() {
         return _rbase;
     }
 
+    /**
+     * Sets the rbase - the base of the logarithmic character-reliability scale,
+     * which is used in determining the BEST characters during an identification
+     * 
+     * @param rbase
+     *            the current rbase value
+     */
     public void setRBase(double rbase) {
         _rbase = rbase;
     }
 
+    /**
+     * @return a reference to the current taxa file, or null if one has not been
+     *         set
+     */
     public File getTaxaFile() {
         return _taxaFile;
     }
 
+    /**
+     * @return a reference to the current characters file, or null if one has
+     *         not been set
+     */
     public File getCharactersFile() {
         return _charactersFile;
     }
 
+    /**
+     * @return The current character order being used to list available
+     *         characters in the application
+     */
     public IntkeyCharacterOrder getCharacterOrder() {
         return _characterOrder;
     }
 
+    /**
+     * Set the character order used to list available characters in the
+     * application
+     * 
+     * @param characterOrder
+     *            the new character order
+     */
     public void setCharacterOrder(IntkeyCharacterOrder characterOrder) {
         this._characterOrder = characterOrder;
         _appUI.handleCharacterOrderChanged();
@@ -405,6 +560,10 @@ public class IntkeyContext extends AbstractDeltaContext {
         return _bestCharacters;
     }
 
+    /**
+     * Calculates the best characters using the BEST algorithm. This method will
+     * block the calling thread while the calculation is performed
+     */
     public void calculateBestCharacters() {
         _bestCharacters = SortingUtils.orderBest(IntkeyContext.this);
     }
