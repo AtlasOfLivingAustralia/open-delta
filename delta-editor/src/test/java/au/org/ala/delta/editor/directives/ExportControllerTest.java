@@ -3,14 +3,9 @@ package au.org.ala.delta.editor.directives;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.TimeUnit;
-
-import javax.swing.SwingWorker;
 
 import org.junit.Before;
 
-import sun.awt.AppContext;
 import au.org.ala.delta.DeltaTestCase;
 import au.org.ala.delta.editor.DeltaEditor;
 import au.org.ala.delta.editor.model.EditorDataModel;
@@ -19,14 +14,12 @@ import au.org.ala.delta.editor.slotfile.model.DirectiveFile;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile.DirectiveType;
 import au.org.ala.delta.editor.slotfile.model.SlotFileDataSet;
 import au.org.ala.delta.editor.slotfile.model.SlotFileDataSetFactory;
-import au.org.ala.delta.model.AbstractObservableDataSet;
 
 /**
  * Tests the ExportController class.  The SuppressWarnings annotation is to prevent warnings
  * about accessing the AppContext which is required to do the thread synchronization 
  * necessary to make the tests run in a repeatable manner.
  */
-@SuppressWarnings("restriction")
 public class ExportControllerTest extends DeltaTestCase {
 
 	/**
@@ -72,18 +65,13 @@ public class ExportControllerTest extends DeltaTestCase {
 	
 	public void testSilentExport() throws Exception {
 		
-		
-		DirectiveFileInfo specs = new DirectiveFileInfo("specs", DirectiveType.CONFOR);
-		DirectiveFileInfo chars = new DirectiveFileInfo("chars", DirectiveType.CONFOR);
-		DirectiveFileInfo items = new DirectiveFileInfo("items", DirectiveType.CONFOR);
-		
 		for (int i=1; i<=_dataSet.getDirectiveFileCount(); i++) {
 			DirectiveFile directiveFile = _dataSet.getDirectiveFile(i);
 			DirectiveFileInfo test = new DirectiveFileInfo(directiveFile.getFileName(), DirectiveType.CONFOR, directiveFile);
 			
 			List<DirectiveFileInfo> files = Arrays.asList(new DirectiveFileInfo[] {test});
 			File tempDir = new File("/tmp");
-			System.out.println(directiveFile.getFileName());
+			System.out.println(directiveFile.getShortFileName());
 			exporter.new DoExportTask(tempDir, files).doInBackground();
 			//exporter.doSilentExport(tempDir, files);
 			
@@ -129,18 +117,6 @@ public class ExportControllerTest extends DeltaTestCase {
 		assertEquals("4-60(-100)", item.getAttribute(_dataSet.getCharacter(2)).getValueAsString());
 		assertEquals("3", item.getAttribute(_dataSet.getCharacter(60)).getValueAsString());
 		*/
-	}
-	
-	/**
-	 * This is a way we can wait for the import task to complete without adding extra methods
-	 * to the ImportController just for the unit test.
-	 */
-	private void waitForTaskCompletion() throws Exception {
-		final AppContext appContext = AppContext.getAppContext();
-	     ExecutorService executorService =
-	            (ExecutorService) appContext.get(SwingWorker.class);
-	     executorService.shutdown();
-	     executorService.awaitTermination(10, TimeUnit.SECONDS);
 	}
 	
 }

@@ -10,6 +10,7 @@ public class DirectiveInstance {
 
 	private Directive _directive;
 	private DirectiveArguments _args;
+	private boolean _commented;
 	
 	public DirectiveInstance(Directive directive, DirectiveArguments args) {
 		_directive = directive;
@@ -22,5 +23,13 @@ public class DirectiveInstance {
 	
 	public DirectiveArguments getDirectiveArguments() {
 		return _args;
+	}
+	
+	public void setCommented(boolean commented) {
+		_commented = commented;
+	}
+	
+	public boolean isCommented() {
+		return _commented;
 	}
 }

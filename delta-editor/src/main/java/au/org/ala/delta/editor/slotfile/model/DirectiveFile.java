@@ -1,7 +1,10 @@
 package au.org.ala.delta.editor.slotfile.model;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.commons.io.FilenameUtils;
 
 import au.org.ala.delta.directives.AbstractDeltaContext;
 import au.org.ala.delta.directives.AbstractDirective;
@@ -67,12 +70,14 @@ public class DirectiveFile {
 		return _dirFileDesc.getFileName();
 	}
 	
-	public void setFileType(short type) {
-		_dirFileDesc.setFileType(type);
+	public String getShortFileName() {
+		String fileName = getFileName();
+		File file = new File(FilenameUtils.separatorsToSystem(fileName));
+		return file.getName();
 	}
 	
-	public void setProgramType(int type) {
-		
+	public void setFileType(short type) {
+		_dirFileDesc.setFileType(type);
 	}
 	
 	public int getDirectiveCount() {
@@ -95,12 +100,13 @@ public class DirectiveFile {
 		List<Dir> directives = _dirFileDesc.readAllDirectives();
 		List<DirectiveInstance> toReturn = new ArrayList<DirectiveInstance>(directives.size());
 		for (Dir dir : directives) {
-			System.out.println(dir.getDirType());
 			
 			Directive directive = getDirective(dir);
 			DirectiveArguments args = _converter.convertArgs(
 					dir, directive.getArgType());
-			toReturn.add(new DirectiveInstance(directive, args));
+			DirectiveInstance dirInstance = new DirectiveInstance(directive, args);
+			dirInstance.setCommented((dir.getDirType() & VODirFileDesc.DIRARG_COMMENT_FLAG) > 0);
+			toReturn.add( dirInstance);
 		}
 		return toReturn;
 	}
@@ -130,6 +136,7 @@ public class DirectiveFile {
 		}
 		return directive;
 	}
+
 	
 
 	public String toString() {
