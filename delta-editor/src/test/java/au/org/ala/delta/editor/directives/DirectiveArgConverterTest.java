@@ -15,6 +15,8 @@ import au.org.ala.delta.directives.OmitCharacterNumbers;
 import au.org.ala.delta.directives.OmitInapplicables;
 import au.org.ala.delta.directives.OmitInnerComments;
 import au.org.ala.delta.directives.ReplaceAngleBrackets;
+import au.org.ala.delta.directives.args.DirectiveArgType;
+import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.editor.slotfile.VODirFileDesc.Dir;
 import au.org.ala.delta.editor.slotfile.VODirFileDescTest;
 import au.org.ala.delta.editor.slotfile.directive.ConforDirType;
@@ -84,4 +86,16 @@ public class DirectiveArgConverterTest extends VODirFileDescTest {
 		}
 	}
 	
+	
+	@Test
+	public void testTextArgConversion() {
+		Dir dir = new Dir();
+		dir.setDirType(ConforDirType.HEADING);
+		dir.resizeArgs(1);
+		dir.args.get(0).text = "This is a heading";
+		 
+		DirectiveArguments args = _converter.convertArgs(dir, DirectiveArgType.DIRARG_TEXT);
+		assertEquals("This is a heading", args.getFirstArgumentText());
+		
+	}
 }

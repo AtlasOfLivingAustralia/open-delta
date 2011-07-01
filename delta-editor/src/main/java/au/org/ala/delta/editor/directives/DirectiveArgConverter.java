@@ -1,5 +1,8 @@
 package au.org.ala.delta.editor.directives;
 
+import java.math.BigDecimal;
+import java.util.List;
+
 import org.apache.commons.lang.NotImplementedException;
 
 import au.org.ala.delta.directives.AbstractDeltaContext;
@@ -9,6 +12,7 @@ import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.editor.slotfile.DeltaVOP;
 import au.org.ala.delta.editor.slotfile.Directive;
 import au.org.ala.delta.editor.slotfile.DirectiveArgType;
+import au.org.ala.delta.editor.slotfile.VOItemDesc;
 import au.org.ala.delta.editor.slotfile.VODirFileDesc.Dir;
 import au.org.ala.delta.editor.slotfile.VODirFileDesc.DirArgs;
 import au.org.ala.delta.editor.slotfile.directive.ConforDirType;
@@ -39,6 +43,49 @@ public class DirectiveArgConverter {
 		return dir;
 	}
 	
+	/**
+	 * Converts the arguments encoded in the slotfile Dir into the
+	 * model DirectiveArguments.
+	 * @param directive the directive to convert.
+	 * @return a new instance of DirectiveArguments populated from the 
+	 * supplied Dir object.
+	 */
+	public DirectiveArguments convertArgs(Dir directive, int argType) {
+		
+		DirectiveArguments directiveArgs = new DirectiveArguments();
+		List<DirArgs> args = directive.args;
+		for (DirArgs arg : args) {
+			DirectiveArgument<?> directiveArgument = directiveArgumentFromDirArgs(argType, arg);
+			directiveArgs.add(directiveArgument);
+		}
+		
+		return directiveArgs;
+		
+	}
+	
+	
+	private DirectiveArgument<?> directiveArgumentFromDirArgs(int argType, DirArgs arg) {
+		IdConverter converter = idConverterFor(argType);
+		Object id = converter.convertId(arg.getId());
+		DirectiveArgument<?> directiveArgument = null;
+		if (id == null) {
+			directiveArgument = new DirectiveArgument<Integer>();
+		}
+		else if (id instanceof String) {
+			directiveArgument = new DirectiveArgument<String>((String)id);
+		}
+		else {
+			directiveArgument = new DirectiveArgument<Integer>((Integer)id);
+		}
+		
+		directiveArgument.setText(arg.text);
+		directiveArgument.setComment(arg.comment);
+		directiveArgument.setValue(new BigDecimal(arg.getValue().asString()));
+		
+		
+		return directiveArgument;
+	}
+
 	private void populateArgs(Dir dir, DirectiveArguments args, int directiveType) {
 		if (args == null || directiveType == DirectiveArgType.DIRARG_INTERNAL) {
 			dir.resizeArgs(0);
@@ -59,12 +106,18 @@ public class DirectiveArgConverter {
  
 	interface IdConverter {
 		public int convertId(Object id);
+		
+		public Object convertId(int id);
 	}
 	
 	class CharacterNumberConverter implements IdConverter {
 		@Override
 		public int convertId(Object id) {
 			return _vop.getDeltaMaster().uniIdFromCharNo((Integer)id);
+		}
+		@Override
+		public Object convertId(int id) {
+			return _vop.getDeltaMaster().charNoFromUniId(id);
 		}
 	}
 	
@@ -73,12 +126,20 @@ public class DirectiveArgConverter {
 		public int convertId(Object id) {
 			return _vop.getDeltaMaster().uniIdFromItemNo((Integer)id);
 		}
+		@Override
+		public Object convertId(int id) {
+			return _vop.getDeltaMaster().itemNoFromUniId(id);
+		}
 	}
 	
 	class ItemDescriptionConverter implements IdConverter {
 		@Override
 		public int convertId(Object id) {
 			throw new NotImplementedException();
+		}
+		@Override
+		public Object convertId(int id) {
+			return ((VOItemDesc)_vop.getDescFromId(id)).getAnsiName();
 		}
 	}
 	
@@ -87,12 +148,20 @@ public class DirectiveArgConverter {
 		public int convertId(Object id) {
 			return (Integer)id;
 		}
+		@Override
+		public Object convertId(int id) {
+			return Integer.valueOf(id);
+		}
 	}
 	
 	class NullConverter implements IdConverter {
 		@Override
 		public int convertId(Object id) {
 			return 0;
+		}
+		@Override
+		public Object convertId(int id) {
+			return null;
 		}
 	}
  
