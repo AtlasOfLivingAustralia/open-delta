@@ -1577,6 +1577,11 @@ public class VODirFileDesc extends VOAnyDesc implements WindowsConstants {
 			file.writeBytes(_bytes);
 			file.writeByte(_decimal);
 		}
+		
+		public void setAsDeltaNumber(DeltaNumber number) {
+			_decimal = number.getDecimal();
+			_bytes = number.toBinary();
+		}
 
 		@Override
 		public int size() {

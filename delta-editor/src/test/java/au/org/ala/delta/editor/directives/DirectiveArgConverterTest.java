@@ -1,5 +1,8 @@
 package au.org.ala.delta.editor.directives;
 
+import java.math.BigDecimal;
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -17,7 +20,9 @@ import au.org.ala.delta.directives.OmitInnerComments;
 import au.org.ala.delta.directives.ReplaceAngleBrackets;
 import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.directives.args.DirectiveArguments;
+import au.org.ala.delta.editor.slotfile.DeltaNumber;
 import au.org.ala.delta.editor.slotfile.VODirFileDesc.Dir;
+import au.org.ala.delta.editor.slotfile.VODirFileDesc.DirListData;
 import au.org.ala.delta.editor.slotfile.VODirFileDescTest;
 import au.org.ala.delta.editor.slotfile.directive.ConforDirType;
 
@@ -96,6 +101,56 @@ public class DirectiveArgConverterTest extends VODirFileDescTest {
 		 
 		DirectiveArguments args = _converter.convertArgs(dir, DirectiveArgType.DIRARG_TEXT);
 		assertEquals("This is a heading", args.getFirstArgumentText());
+		
+	}
+	
+	@Test
+	public void testCharArgConversion() {
+		int id = _vop.getDeltaMaster().uniIdFromCharNo(3);		
+		Dir dir = createDirWithId(id, ConforDirType.CHARACTER_FOR_TAXON_IMAGES);
+		 
+		DirectiveArguments args = _converter.convertArgs(dir, DirectiveArgType.DIRARG_CHAR);
+		assertEquals(3, args.getFirstArgumentIdAsInt());
+		
+	}
+	
+	private Dir createDirWithId(int id, int dirType) { 
+		Dir dir = new Dir();
+		dir.setDirType(dirType);
+		dir.resizeArgs(1);
+		dir.args.get(0).setId(id);
+		return dir;
+	}
+	
+	@Test 
+	public void testItemArgConversion() {
+	
+		int id = _vop.getDeltaMaster().uniIdFromItemNo(2);
+		Dir dir = createDirWithId(id, ConforDirType.STOP_AFTER_ITEM);
+		DirectiveArguments args = _converter.convertArgs(dir, DirectiveArgType.DIRARG_ITEM);
+		assertEquals(2, args.getFirstArgumentIdAsInt());
+	}
+	
+	@Test
+	public void testItemRealListConversion() {
+		int id = _vop.getDeltaMaster().uniIdFromItemNo(2);
+		Dir dir = createDirWithId(id, ConforDirType.ITEM_WEIGHTS);
+		
+		float[] weights = new float[]{1f, 2.2f, 3.3f, 4.4f};
+		for (int i=0; i<weights.length; i++) {
+			DirListData data = new DirListData();
+			data.setAsDeltaNumber(new DeltaNumber(Float.toString(weights[i])));
+			dir.args.get(0).getData().add(data);
+		}
+		
+		DirectiveArguments args = _converter.convertArgs(dir, DirectiveArgType.DIRARG_ITEMREALLIST);
+		
+		assertEquals(2, args.getFirstArgumentIdAsInt());
+		List<BigDecimal> weightsData = args.getDirectiveArguments().get(0).getData();
+		assertEquals(weights.length, weightsData.size());
+		for (int i=0; i<weights.length; i++) {
+			assertEquals(weights[i], weightsData.get(i).floatValue());
+		}
 		
 	}
 }

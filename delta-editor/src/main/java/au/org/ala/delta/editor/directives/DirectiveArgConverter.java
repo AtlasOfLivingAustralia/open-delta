@@ -9,12 +9,14 @@ import au.org.ala.delta.directives.AbstractDeltaContext;
 import au.org.ala.delta.directives.AbstractDirective;
 import au.org.ala.delta.directives.args.DirectiveArgument;
 import au.org.ala.delta.directives.args.DirectiveArguments;
+import au.org.ala.delta.editor.slotfile.DeltaNumber;
 import au.org.ala.delta.editor.slotfile.DeltaVOP;
 import au.org.ala.delta.editor.slotfile.Directive;
 import au.org.ala.delta.editor.slotfile.DirectiveArgType;
 import au.org.ala.delta.editor.slotfile.VOItemDesc;
 import au.org.ala.delta.editor.slotfile.VODirFileDesc.Dir;
 import au.org.ala.delta.editor.slotfile.VODirFileDesc.DirArgs;
+import au.org.ala.delta.editor.slotfile.VODirFileDesc.DirListData;
 import au.org.ala.delta.editor.slotfile.directive.ConforDirType;
 
 /**
@@ -81,7 +83,9 @@ public class DirectiveArgConverter {
 		directiveArgument.setText(arg.text);
 		directiveArgument.setComment(arg.comment);
 		directiveArgument.setValue(new BigDecimal(arg.getValue().asString()));
-		
+		for (DirListData data : arg.getData()) {
+			directiveArgument.getData().add(new BigDecimal(data.asString()));
+		}
 		
 		return directiveArgument;
 	}
@@ -96,7 +100,11 @@ public class DirectiveArgConverter {
 				DirArgs dirArg = new DirArgs(converter.convertId(arg.getId()));
 				dirArg.setText(arg.getText());
 				dirArg.comment = arg.getComment();
-				
+				for (BigDecimal value : arg.getData()) {
+					DirListData data = new DirListData();
+					data.setAsDeltaNumber(new DeltaNumber(value.toPlainString()));
+					dirArg.getData().add(data);
+				}
 				dir.args.add(dirArg);
 			}
 		}
@@ -188,6 +196,7 @@ public class DirectiveArgConverter {
 		case DirectiveArgType.DIRARG_CHAR:
 			return _characterNumberConverter;
 		case DirectiveArgType.DIRARG_ITEM:
+		case DirectiveArgType.DIRARG_ITEMREALLIST:
 			return _itemNumberConverter;
 		case DirectiveArgType.DIRARG_CHARLIST:
 			return _characterNumberConverter;
@@ -203,7 +212,7 @@ public class DirectiveArgConverter {
 		case DirectiveArgType.DIRARG_CHARINTEGERLIST:
 			
 		case DirectiveArgType.DIRARG_CHARREALLIST:
-		case DirectiveArgType.DIRARG_ITEMREALLIST:
+		
 
 			break;
 
