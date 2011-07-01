@@ -14,6 +14,27 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.slotfile.directive;
 
+import au.org.ala.delta.editor.slotfile.DirectiveInstance;
+import au.org.ala.delta.translation.Printer;
+
 public class DirectiveInOutState {
 
+	private DirectiveInstance _currentDirective;
+	private Printer _printer;
+	
+	public void setCurrentDirective(DirectiveInstance directive) {
+		_currentDirective = directive;
+	}
+	
+	public DirectiveInstance getCurrentDirective() {
+		return _currentDirective;
+	}
+	
+	public void setPrinter(Printer printer) {
+		_printer = printer;
+	}
+	
+	public Printer getPrinter() {
+		return _printer;
+	}
 }

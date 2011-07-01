@@ -77,17 +77,20 @@ public class ExportControllerTest extends DeltaTestCase {
 		DirectiveFileInfo chars = new DirectiveFileInfo("chars", DirectiveType.CONFOR);
 		DirectiveFileInfo items = new DirectiveFileInfo("items", DirectiveType.CONFOR);
 		
-		DirectiveFile directiveFile = _dataSet.getDirectiveFile(1);
-		DirectiveFileInfo test = new DirectiveFileInfo(directiveFile.getFileName(), DirectiveType.CONFOR, directiveFile);
-		
-		List<DirectiveFileInfo> files = Arrays.asList(new DirectiveFileInfo[] {test});
-		File tempDir = new File("/tmp");
-		//exporter.doSilentExport(tempDir, files);
-		
-		
-		// Because the import happens on a background (daemon) thread, we have to wait until 
-		// the import is finished before doing our assertions.
-		//waitForTaskCompletion();
+		for (int i=1; i<=_dataSet.getDirectiveFileCount(); i++) {
+			DirectiveFile directiveFile = _dataSet.getDirectiveFile(i);
+			DirectiveFileInfo test = new DirectiveFileInfo(directiveFile.getFileName(), DirectiveType.CONFOR, directiveFile);
+			
+			List<DirectiveFileInfo> files = Arrays.asList(new DirectiveFileInfo[] {test});
+			File tempDir = new File("/tmp");
+			System.out.println(directiveFile.getFileName());
+			exporter.new DoExportTask(tempDir, files).doInBackground();
+			//exporter.doSilentExport(tempDir, files);
+			
+		}
+			// Because the import happens on a background (daemon) thread, we have to wait until 
+			// the import is finished before doing our assertions.
+			//waitForTaskCompletion();
 		
 		/*
 		assertEquals(89, _dataSet.getNumberOfCharacters());

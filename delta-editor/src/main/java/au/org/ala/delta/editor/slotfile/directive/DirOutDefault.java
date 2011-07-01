@@ -19,33 +19,34 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.lang.NotImplementedException;
-
 import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.directives.args.DirectiveArgument;
 import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.editor.slotfile.DeltaNumber;
 import au.org.ala.delta.editor.slotfile.Directive;
-import au.org.ala.delta.editor.slotfile.VODirFileDesc.Dir;
-import au.org.ala.delta.editor.slotfile.VODirFileDesc.DirArgs;
-import au.org.ala.delta.editor.slotfile.VODirFileDesc.DirListData;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile.DirectiveType;
-import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.translation.Printer;
 
 /**
  * Writes the directive to the output.
  */
 public class DirOutDefault implements DirectiveFunctor {
 
+	private Printer _printer;
+	private StringBuilder _textBuffer;
+	
 	@Override
 	public void process(DirectiveInOutState state) {
+		
+		_printer = state.getPrinter();
+		_textBuffer = new StringBuilder();
 		int lineIndent = 2;
-		Directive curDirective = null;
+		Directive curDirective = state.getCurrentDirective().getDirective();
 		//Dir directive;
-		DirectiveArguments directiveArgs = null;
+		DirectiveArguments directiveArgs = state.getCurrentDirective().getDirectiveArguments();
 		
 		int argType = curDirective.getArgType();
 		String temp = "";
@@ -53,10 +54,9 @@ public class DirOutDefault implements DirectiveFunctor {
 		List<Integer> dataList = null;;
 		int prevNo, curNo;
 		DeltaDataSet dataSet = null;
-		List<DirectiveArgument<?>> args = null;
+		List<DirectiveArgument<?>> args = null;;
 		List<Integer> data = null;
 
-		StringBuilder textBuffer = new StringBuilder();
 		switch (argType) {
 		      case DirectiveArgType.DIRARG_NONE:
 		      case DirectiveArgType.DIRARG_TRANSLATION:
@@ -72,11 +72,11 @@ public class DirOutDefault implements DirectiveFunctor {
 		      case DirectiveArgType.DIRARG_INTERNAL:
 		        if (directiveArgs.size() > 0)
 		          {
-		            textBuffer.append(' ');
+		            _textBuffer.append(' ');
 		            temp = directiveArgs.getFirstArgumentText();
 		            if (argType != DirectiveArgType.DIRARG_FILE)
-		              DespaceRTF(temp);  /// SHOULD THIS BE DONE???
-		            textBuffer.append(temp);
+		              despaceRTF(temp);  /// SHOULD THIS BE DONE???
+		            _textBuffer.append(temp);
 		          }
 		        break;
 
@@ -84,8 +84,8 @@ public class DirOutDefault implements DirectiveFunctor {
 		      case DirectiveArgType.DIRARG_REAL:
 		        if (directiveArgs.size() > 0)
 		          {
-		            textBuffer.append(' ');
-		            textBuffer.append(directiveArgs.getFirstArgumentValueAsString());
+		            _textBuffer.append(' ');
+		            _textBuffer.append(directiveArgs.getFirstArgumentValueAsString());
 		          }
 		        break;
 
@@ -93,9 +93,9 @@ public class DirOutDefault implements DirectiveFunctor {
 		      case DirectiveArgType.DIRARG_ITEM:
 		        if (directiveArgs.size() > 0)
 		          {
-		            textBuffer.append(' ');
+		            _textBuffer.append(' ');
 		            curNo = directiveArgs.getFirstArgumentIdAsInt();
-		            textBuffer.append(curNo);
+		            _textBuffer.append(curNo);
 		          }
 		        break;
 
@@ -106,8 +106,8 @@ public class DirOutDefault implements DirectiveFunctor {
 		            dataList = new ArrayList<Integer>();
 		            for (DirectiveArgument<?> vectIter : directiveArgs.getDirectiveArguments())
 		              dataList.add((Integer)vectIter.getId());
-		            textBuffer.append(' ');
-		            AppendRange(dataList, ' ', true, textBuffer);
+		            _textBuffer.append(' ');
+		            AppendRange(dataList, ' ', true, _textBuffer);
 		          }
 		        break;
 
@@ -146,42 +146,42 @@ public class DirOutDefault implements DirectiveFunctor {
 		                    delim = vectIter.getText().charAt(0);
 		                    if (delim != 0)
 		                      {
-		                        textBuffer.append(' ');
-		                        textBuffer.append(delim);
+		                        _textBuffer.append(' ');
+		                        _textBuffer.append(delim);
 		                      }
 		                  }
-		                OutputTextBuffer(0, 0, true);
+		                outputTextBuffer(0, 0, true);
 		                if (delimSupported)
 		                  continue;
 		              }
-		            textBuffer.append("#");
+		            _textBuffer.append("#");
 		            if ((argType == DirectiveArgType.DIRARG_TEXTLIST) ||
 		                (argType == DirectiveArgType.DIRARG_CHARTEXTLIST))
 		              {
-		                textBuffer.append(vectIter.getId());
-		                textBuffer.append(".");
+		                _textBuffer.append(vectIter.getId());
+		                _textBuffer.append(".");
 		              }
 		            else
 		              {
 		                Item item = dataSet.getItem((Integer)vectIter.getId());
 		                temp = item.getDescription();
-		                DespaceRTF(temp, true); ////
-		                textBuffer.append(' ');
-		                textBuffer.append(temp);
-		                textBuffer.append("/");
+		                despaceRTF(temp, true); ////
+		                _textBuffer.append(' ');
+		                _textBuffer.append(temp);
+		                _textBuffer.append("/");
 		              }
 		            boolean hasComment = vectIter.getComment().length() > 0;
 		            if (hasComment)
 		              {
-		                textBuffer.append(" <");
-		                textBuffer.append(vectIter.getComment());
-		                textBuffer.append('>');
-		                OutputTextBuffer (0, 0, true);
+		                _textBuffer.append(" <");
+		                _textBuffer.append(vectIter.getComment());
+		                _textBuffer.append('>');
+		                outputTextBuffer (0, 0, true);
 		              }
 		            temp = vectIter.getText();
 		            if (!temp.isEmpty())
 		              {
-		                textBuffer.append(' ');
+		                _textBuffer.append(' ');
 		                /// SHOULD RTF be "handled" here or not???
 		                ////if (argType != DIRARG_ITEMFILELIST)
 		                ////  DespaceRTF(temp);
@@ -192,12 +192,12 @@ public class DirOutDefault implements DirectiveFunctor {
 		                                 commentsSupported
 		                                 );
 		                if (useDelim)
-		                  textBuffer.append(delim);
-		                textBuffer.append(temp);
+		                  _textBuffer.append(delim);
+		                _textBuffer.append(temp);
 		                if (useDelim)
-		                  textBuffer.append(delim);
+		                  _textBuffer.append(delim);
 		              }
-		            OutputTextBuffer(/* hasComment ? 7 : */ 0, 0, true);
+		            outputTextBuffer(/* hasComment ? 7 : */ 0, 0, true);
 		          }
 		        break;
 		        }
@@ -228,11 +228,11 @@ public class DirOutDefault implements DirectiveFunctor {
 		                  dataList.add(curNo);
 		                else
 		                  {
-		                    textBuffer.append(' ');
-		                    AppendRange(dataList, ' ', false, textBuffer);
+		                    _textBuffer.append(' ');
+		                    AppendRange(dataList, ' ', false, _textBuffer);
 		                    temp = Integer.toString(prevVal);
-		                    textBuffer.append(',');
-		                    textBuffer.append(temp);
+		                    _textBuffer.append(',');
+		                    _textBuffer.append(temp);
 		                    dataList = new ArrayList<Integer>();
 		                    dataList.add(curNo);
 		                  }
@@ -246,37 +246,37 @@ public class DirOutDefault implements DirectiveFunctor {
 		        for (DirectiveArgument<?> vectIter : directiveArgs.getDirectiveArguments())
 		          {
 		            dataList = new ArrayList<Integer>(vectIter.getDataList());
-		            textBuffer.append(' ');
-		            AppendRange(dataList, ':', true, textBuffer);
+		            _textBuffer.append(' ');
+		            AppendRange(dataList, ':', true, _textBuffer);
 		          }
 		        break;
 
 		      case DirectiveArgType.DIRARG_ITEMCHARLIST:
-		        OutputTextBuffer(0, 2, true);
+		        outputTextBuffer(0, 2, true);
 		        args = directiveArgs.getDirectiveArguments(); 
 		        Collections.sort(args);
 		        for (DirectiveArgument<?> vectIter : directiveArgs.getDirectiveArguments())
 		          {
-		            textBuffer.append("#");
+		            _textBuffer.append("#");
 		            if (directiveType == DirectiveType.CONFOR) /// Use names for Confor, but not for Key
 		              {
 		                Item item = dataSet.getItem((Integer)vectIter.getId());
 		                temp = item.getDescription();
-		                DespaceRTF(temp, true); ////
-		                textBuffer.append(' ');
-		                textBuffer.append(temp);
-		                textBuffer.append("/ ");
+		                despaceRTF(temp, true); ////
+		                _textBuffer.append(' ');
+		                _textBuffer.append(temp);
+		                _textBuffer.append("/ ");
 		              }
 		            else
 		              {
 		                curNo = (Integer)vectIter.getId();
-		                textBuffer.append(curNo);
-		                textBuffer.append(". ");
+		                _textBuffer.append(curNo);
+		                _textBuffer.append(". ");
 		              }
 		            dataList = new ArrayList<Integer>(vectIter.getDataList());
 		           
-		            AppendRange(dataList,' ', true, textBuffer);
-		            OutputTextBuffer(0, 2, true);
+		            AppendRange(dataList,' ', true, _textBuffer);
+		            outputTextBuffer(0, 2, true);
 		          }
 		        break;
 
@@ -286,19 +286,19 @@ public class DirOutDefault implements DirectiveFunctor {
 		        for (DirectiveArgument<?> vectIter : directiveArgs.getDirectiveArguments())
 		          {
 		            curNo = (Integer)vectIter.getId();
-		            textBuffer.append(' ');
-		            textBuffer.append(curNo);
-		            textBuffer.append(',');
+		            _textBuffer.append(' ');
+		            _textBuffer.append(curNo);
+		            _textBuffer.append(',');
 		            DeltaNumber aNumber;
 		            List<Integer> tmpData = vectIter.getDataList();
 		            if (tmpData.size() < 3)
 		              throw new RuntimeException("ED_INTERNAL_ERROR");
 		            temp = Integer.toString(tmpData.get(0));
-		            textBuffer.append(temp + ':');
+		            _textBuffer.append(temp + ':');
 		            temp = Integer.toString(tmpData.get(1));
-		            textBuffer.append(temp + ':');
+		            _textBuffer.append(temp + ':');
 		            temp = Integer.toString(tmpData.get(2));
-		            textBuffer.append(temp);
+		            _textBuffer.append(temp);
 		          }
 		        break;
 
@@ -316,11 +316,11 @@ public class DirOutDefault implements DirectiveFunctor {
 		            curNo = charBase.getCharacterId();
 		            if (curNo != prevNo)
 		              {
-		                textBuffer.append(" ").append(curNo);
+		                _textBuffer.append(" ").append(curNo);
 		                prevNo = curNo;
 		              }
 		            else
-		              textBuffer.append('/');
+		              _textBuffer.append('/');
 		           
 		            switch (charType)
 		              {
@@ -330,8 +330,8 @@ public class DirOutDefault implements DirectiveFunctor {
 		                  for (int j=0; j<data.size(); j++)
 		                    {
 		                      if (j != 0)
-		                        textBuffer.append('&');
-		                      textBuffer.append(data.get(j));
+		                        _textBuffer.append('&');
+		                      _textBuffer.append(data.get(j));
 		                    }
 		                  break;
 
@@ -347,11 +347,11 @@ public class DirOutDefault implements DirectiveFunctor {
 		                    hiState =  data.get(1);
 		                    loState = Math.min(aState, hiState);
 		                    hiState = Math.max(aState, hiState);
-		                    textBuffer.append(loState);
+		                    _textBuffer.append(loState);
 		                    if (hiState > loState)
 		                      {
-		                        textBuffer.append('-');
-		                        textBuffer.append(hiState);
+		                        _textBuffer.append('-');
+		                        _textBuffer.append(hiState);
 		                      }
 		                  }
 		                  break;
@@ -366,19 +366,19 @@ public class DirOutDefault implements DirectiveFunctor {
 		                    loNumb = bigDecimals.get(0);
 		                    hiNumb = bigDecimals.get(1);
 		                    if (loNumb.floatValue() == Float.MIN_VALUE)
-		                      textBuffer.append('~');
+		                      _textBuffer.append('~');
 		                    else
 		                      {
-		                        textBuffer.append(loNumb.toPlainString());
+		                        _textBuffer.append(loNumb.toPlainString());
 		                      }
 		                    if (hiNumb.floatValue() == Float.MAX_VALUE)
-		                      textBuffer.append('~');
+		                      _textBuffer.append('~');
 		                    else if (loNumb.compareTo(hiNumb) < 0)
 		                      {
 		                        if (!(loNumb.floatValue() == Float.MIN_VALUE))
-		                          textBuffer.append('-');
+		                          _textBuffer.append('-');
 		                       
-		                        textBuffer.append(hiNumb.toPlainString());
+		                        _textBuffer.append(hiNumb.toPlainString());
 		                      }
 		                  }
 		                  break;
@@ -394,25 +394,25 @@ public class DirOutDefault implements DirectiveFunctor {
 		        for (DirectiveArgument<?> vectIter : directiveArgs.getDirectiveArguments())
 		          {
 		            curNo = (Integer)vectIter.getId();
-		            textBuffer.append(' ');
-		            textBuffer.append(curNo);
-		            textBuffer.append(',');
+		            _textBuffer.append(' ');
+		            _textBuffer.append(curNo);
+		            _textBuffer.append(',');
 		            if (vectIter.getData().size() < 2)
 		              throw new RuntimeException("ED_INTERNAL_ERROR");
-		            textBuffer.append(vectIter.getDataList().get(0));
-		            textBuffer.append(':');
-		            textBuffer.append(vectIter.getDataList().get(1));
+		            _textBuffer.append(vectIter.getDataList().get(0));
+		            _textBuffer.append(':');
+		            _textBuffer.append(vectIter.getDataList().get(1));
 		          }
 		        break;
 
 		      case DirectiveArgType.DIRARG_INTKEY_ONOFF:
 		        if (directiveArgs.size() > 0 && directiveArgs.getFirstArgumentValue() != 0.0)
 		          {
-		            textBuffer.append(' ');
+		            _textBuffer.append(' ');
 		            if (directiveArgs.getFirstArgumentValue() < 0.0)
-		              textBuffer.append("Off");
+		              _textBuffer.append("Off");
 		            else if (directiveArgs.getFirstArgumentValue() > 0.0)
-		              textBuffer.append("On");
+		              _textBuffer.append("On");
 		          }
 		        break;
 
@@ -421,12 +421,12 @@ public class DirOutDefault implements DirectiveFunctor {
 		          {
 		            if (directiveArgs.getFirstArgumentIdAsInt() > 0)
 		              {
-		                textBuffer.append(' ');
+		                _textBuffer.append(' ');
 		                curNo = directiveArgs.getFirstArgumentIdAsInt();
-		                textBuffer.append(curNo);
+		                _textBuffer.append(curNo);
 		              }
 		            else
-		              AppendKeyword(directiveArgs.getFirstArgumentText());
+		              appendKeyword(directiveArgs.getFirstArgumentText());
 		          }
 		        break;
 
@@ -440,15 +440,15 @@ public class DirOutDefault implements DirectiveFunctor {
 		            if ((Integer)vectIter.getId() > 0)
 		              dataList.add((Integer)vectIter.getId());
 		            else
-		              AppendKeyword(vectIter.getText(),
+		              appendKeyword(vectIter.getText(),
 		                 (argType == DirectiveArgType.DIRARG_KEYWORD_CHARLIST ||
 		                  argType == DirectiveArgType.DIRARG_KEYWORD_ITEMLIST) &&
 		                  vectIter == directiveArgs.get(0));
 		          }
 		        if (dataList.size() > 0)
 		          {
-		            textBuffer.append(' ');
-		            AppendRange(dataList, ' ', true, textBuffer);
+		            _textBuffer.append(' ');
+		            AppendRange(dataList, ' ', true, _textBuffer);
 		          }
 		        break;
 
@@ -475,11 +475,11 @@ public class DirOutDefault implements DirectiveFunctor {
 		                    curVal = vectIter.getValue();
 		                    if ((Integer)vectIter.getId() <= 0)
 		                      {
-		                        AppendKeyword(vectIter.getText());
+		                        appendKeyword(vectIter.getText());
 		                        if (!(curVal.compareTo(BigDecimal.ZERO) < 0.0))
 		                          {
-		                            textBuffer.append(',');
-		                            textBuffer.append(curVal.toPlainString());
+		                            _textBuffer.append(',');
+		                            _textBuffer.append(curVal.toPlainString());
 		                          }
 		                        continue;
 		                      }
@@ -492,13 +492,13 @@ public class DirOutDefault implements DirectiveFunctor {
 		                  }
 		                else if (dataList.size() > 0)
 		                  {
-		                    textBuffer.append(' ');
-		                    AppendRange(dataList, ' ', false, textBuffer);
+		                    _textBuffer.append(' ');
+		                    AppendRange(dataList, ' ', false, _textBuffer);
 		                    if (!(prevVal.compareTo(BigDecimal.ZERO) < 0.0))
 		                      {
 		                       
-		                        textBuffer.append(',');
-		                        textBuffer.append(prevVal.toPlainString());
+		                        _textBuffer.append(',');
+		                        _textBuffer.append(prevVal.toPlainString());
 		                      }
 		                    dataList = new ArrayList<Integer>();
 		                    dataList.add(curNo);
@@ -510,11 +510,11 @@ public class DirOutDefault implements DirectiveFunctor {
 		        break;
 
 		      case DirectiveArgType.DIRARG_INTKEY_ITEMCHARSET:
-		        writeIntItemCharSetArgs(directiveArgs, textBuffer);
+		        writeIntItemCharSetArgs(directiveArgs, _textBuffer);
 		        break;
 
 		      case DirectiveArgType.DIRARG_INTKEY_ATTRIBUTES:
-		        writeIntkeyAttributesArgs(directiveArgs, textBuffer);
+		        writeIntkeyAttributesArgs(directiveArgs, _textBuffer);
 		        break;
 
 		      default:
@@ -522,28 +522,29 @@ public class DirOutDefault implements DirectiveFunctor {
 		    }
 		}
 
-	private void AppendKeyword(String text, boolean b) {
+	private void appendKeyword(String text, boolean b) {
 		// TODO Auto-generated method stub
 
 	}
 
-	private void AppendKeyword(String firstArgumentText) {
+	private void appendKeyword(String firstArgumentText) {
 		// TODO Auto-generated method stub
 
 	}
 
-	private void DespaceRTF(String temp, boolean b) {
+	private void despaceRTF(String temp, boolean b) {
 		// TODO Auto-generated method stub
 
 	}
 
-	private void OutputTextBuffer(int i, int j, boolean b) {
-		// TODO Auto-generated method stub
+	private void outputTextBuffer(int i, int j, boolean b) {
+		_printer.writeJustifiedText(_textBuffer.toString(), -1);
+		_textBuffer = new StringBuilder();
 
 	}
 
-	private void DespaceRTF(String temp) {
-		// TODO Auto-generated method stub
+	private void despaceRTF(String temp) {
+		despaceRTF(temp, false);
 
 	}
 

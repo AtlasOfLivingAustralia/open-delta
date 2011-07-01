@@ -18,10 +18,12 @@ import au.org.ala.delta.editor.directives.ui.ImportExportDialog;
 import au.org.ala.delta.editor.directives.ui.ImportExportStatusDialog;
 import au.org.ala.delta.editor.model.EditorDataModel;
 import au.org.ala.delta.editor.slotfile.Directive;
+import au.org.ala.delta.editor.slotfile.DirectiveInstance;
 import au.org.ala.delta.editor.slotfile.VODirFileDesc;
-import au.org.ala.delta.editor.slotfile.VODirFileDesc.Dir;
-import au.org.ala.delta.editor.slotfile.directive.ConforDirType;
+import au.org.ala.delta.editor.slotfile.directive.DirOutDefault;
+import au.org.ala.delta.editor.slotfile.directive.DirectiveInOutState;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile;
+import au.org.ala.delta.translation.Printer;
 
 public class ExportController {
 	private DeltaEditor _context;
@@ -139,10 +141,12 @@ public class ExportController {
 		String fileName = file.getFileName();
 		temp = new File(directoryPath+fileName);
 		out = new PrintStream(temp);
-		
-		List<Dir> directives = file.getDirectives();
-		for (Dir directive : directives) {
-			writeDirective(directive);
+		Printer printer = new Printer(out, 80);
+		DirectiveInOutState state = new DirectiveInOutState();
+		state.setPrinter(printer);
+		List<DirectiveInstance> directives = file.getDirectives();
+		for (DirectiveInstance directive : directives) {
+			writeDirective(directive, state);
 		}
 		}
 		catch (Exception e) {
@@ -155,30 +159,33 @@ public class ExportController {
 		}
 	}
 	
-	private void writeDirective(Dir directive) {
+	private void writeDirective(DirectiveInstance directive, DirectiveInOutState state) {
 		
 		StringBuilder textBuffer = new StringBuilder();
+		state.setCurrentDirective(directive);
+		
 		
 	    textBuffer.append('*');
-	    int dirType = directive.getDirType();
-	    if ((dirType & VODirFileDesc.DIRARG_COMMENT_FLAG) > 0) {
+	    int dirArgType = directive.getDirective().getArgType();
+	    if ((dirArgType & VODirFileDesc.DIRARG_COMMENT_FLAG) > 0) {
 	    	  textBuffer.append("COMMENT ");
-	          dirType &= ~VODirFileDesc.DIRARG_COMMENT_FLAG;
+	    	  dirArgType &= ~VODirFileDesc.DIRARG_COMMENT_FLAG;
 	    }
 	    
-	    Directive directiveInfo = ConforDirType.ConforDirArray[dirType];
+	    Directive directiveInfo =directive.getDirective();
 	    textBuffer.append(directiveInfo.joinNameComponents());
 	    
-	    OutputTextBuffer(textBuffer.toString(), 0, 0, false);
-	    
-	    textBuffer = new StringBuilder();
-	    	     
-	    directiveInfo.getOutFunc().process(null);
+	    outputTextBuffer(state, textBuffer.toString());
+	   
+	    if (directiveInfo.getOutFunc() instanceof DirOutDefault) {
+	    	directiveInfo.getOutFunc().process(state);
+	    }
+	  
 	}
 	
-	private void OutputTextBuffer(String buffer, int startIndex, int indent, boolean terminate) {
-		// TODO consider adapting the common "Printer" so it's useful here.
-		out.println(buffer);
+	private void outputTextBuffer(DirectiveInOutState state, String buffer) {
+		state.getPrinter().writeJustifiedText(buffer, -1);
+		state.getPrinter().printBufferLine();
 	}
 	
 }
