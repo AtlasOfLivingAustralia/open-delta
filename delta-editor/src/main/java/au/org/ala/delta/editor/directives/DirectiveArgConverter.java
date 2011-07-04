@@ -145,12 +145,17 @@ public class DirectiveArgConverter {
 		public int convertId(Object id) {
 			throw new NotImplementedException();
 		}
+		/**
+		 * The conversion in this direction converts into an integer
+		 * (item number) not description for compatibility with the existing
+		 * code.
+		 */
 		@Override
 		public Object convertId(int id) {
 			if (id > 0) {
-				return ((VOItemDesc)_vop.getDescFromId(id)).getAnsiName();
+				return _vop.getDeltaMaster().itemNoFromUniId(id);
 			}
-			return "";
+			return id;
 		}
 	}
 	
@@ -189,6 +194,7 @@ public class DirectiveArgConverter {
 											// preserved?
 		case DirectiveArgType.DIRARG_FILE:
 		case DirectiveArgType.DIRARG_OTHER:
+		case DirectiveArgType.DIRARG_INTKEY_ONOFF:
 			return new NullConverter();
 		
 		case DirectiveArgType.DIRARG_INTEGER:
@@ -200,6 +206,10 @@ public class DirectiveArgConverter {
 		case DirectiveArgType.DIRARG_ITEMREALLIST:
 		case DirectiveArgType.DIRARG_ITEMLIST:
 		case DirectiveArgType.DIRARG_ITEMCHARLIST:
+		case DirectiveArgType.DIRARG_INTKEY_ITEMLIST:
+		case DirectiveArgType.DIRARG_INTKEY_ITEM:
+		case DirectiveArgType.DIRARG_INTKEY_ITEMCHARSET:
+		case DirectiveArgType.DIRARG_KEYWORD_ITEMLIST:
 			return _itemNumberConverter;
 			
 		case DirectiveArgType.DIRARG_CHARLIST:
@@ -209,9 +219,11 @@ public class DirectiveArgConverter {
 		
 		case DirectiveArgType.DIRARG_CHAR:
 		case DirectiveArgType.DIRARG_CHARGROUPS:
-			return _characterNumberConverter;
-		
+		case DirectiveArgType.DIRARG_INTKEY_CHARLIST:
+		case DirectiveArgType.DIRARG_INTKEY_CHARREALLIST:
 		case DirectiveArgType.DIRARG_KEYSTATE:
+		case DirectiveArgType.DIRARG_KEYWORD_CHARLIST:
+		case DirectiveArgType.DIRARG_PRESET:
 			return _characterNumberConverter;
 			
 		case DirectiveArgType.DIRARG_ITEMTEXTLIST:
@@ -219,42 +231,11 @@ public class DirectiveArgConverter {
 			return _itemDescriptionConverter;
 
 		case DirectiveArgType.DIRARG_ALLOWED:
-
-			break;
-
-		
-		case DirectiveArgType.DIRARG_PRESET:
-
-			break;
-
-		case DirectiveArgType.DIRARG_INTKEY_ONOFF:
-
-			break;
-
-		case DirectiveArgType.DIRARG_INTKEY_ITEM:
-
-			break;
-
-		case DirectiveArgType.DIRARG_KEYWORD_CHARLIST:
-		case DirectiveArgType.DIRARG_KEYWORD_ITEMLIST:
-			break;
-		case DirectiveArgType.DIRARG_INTKEY_CHARLIST:
-		case DirectiveArgType.DIRARG_INTKEY_ITEMLIST:
-
-			break;
-
-		case DirectiveArgType.DIRARG_INTKEY_CHARREALLIST:
-
-			break;
-
-		case DirectiveArgType.DIRARG_INTKEY_ITEMCHARSET:
-
-			break;
+			throw new NotImplementedException();
 
 		case DirectiveArgType.DIRARG_INTKEY_ATTRIBUTES:
-			break;
-		
-			
+			throw new NotImplementedException();
+	
 		}
 		return new NullConverter();
 	}

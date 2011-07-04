@@ -22,9 +22,11 @@ import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.editor.slotfile.DeltaNumber;
 import au.org.ala.delta.editor.slotfile.VODirFileDesc.Dir;
+import au.org.ala.delta.editor.slotfile.VODirFileDesc.DirArgs;
 import au.org.ala.delta.editor.slotfile.VODirFileDesc.DirListData;
 import au.org.ala.delta.editor.slotfile.VODirFileDescTest;
 import au.org.ala.delta.editor.slotfile.directive.ConforDirType;
+import au.org.ala.delta.editor.slotfile.directive.IntkeyDirType;
 
 
 /**
@@ -178,9 +180,18 @@ public class DirectiveArgConverterTest extends VODirFileDescTest {
 	}
 	
 	@Test
-	public void testIndexHeadingsConversion() {
+	public void testDefineCharactersConversion() {
+		Dir dir = createDirWithId(0, IntkeyDirType.DEFINE_CHARACTERS);
+		dir.args.get(0).text = "nomenclature";
+		int id = _vop.getDeltaMaster().uniIdFromCharNo(1);
+		dir.args.add(new DirArgs(id));
 		
+		DirectiveArguments args = _converter.convertArgs(dir, DirectiveArgType.DIRARG_CHARREALLIST);
+		assertEquals(2, args.size());
 		
+		assertEquals(0, args.getFirstArgumentIdAsInt());
+		assertEquals("nomenclature", args.getFirstArgumentText());
+		assertEquals(1, args.get(1).getId());
 	}
 	
 }
