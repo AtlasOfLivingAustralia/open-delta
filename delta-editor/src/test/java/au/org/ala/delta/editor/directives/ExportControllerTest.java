@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -95,10 +94,10 @@ public class ExportControllerTest extends DeltaTestCase {
 		actual = actual.replace("\r\n", "\n");
 		String[] actualDirectives = actual.split("\\*");
 		
-//		int i=0;
-//		for (String directive : directives) {
-//			assertEquals(directive, actualDirectives[i++]);
-//		}
+		int i=0;
+		for (String directive : directives) {
+			assertEquals(directive, actualDirectives[i++]);
+		}
 	}
 	
 	private void export(File directory, int directiveFileNum) throws Exception {

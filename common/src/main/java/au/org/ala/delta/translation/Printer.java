@@ -19,6 +19,7 @@ public class Printer {
 	
 	private StringBuilder _outputBuffer;
 	private boolean _indented;
+	private boolean _indentOnLineWrap;
 	
 	/**
 	 * Creates a new Printer that will print to the supplied PrintStream.
@@ -31,12 +32,21 @@ public class Printer {
 		_outputBuffer = new StringBuilder();
 		_indented = false;
 		_printWidth = lineWidth;
+		_indentOnLineWrap = false;
 	}
 
 	public void insertTypeSettingMarks(int number) {
 
 	}
 
+	/**
+	 * If the indentOnLineWrap property is set to true if a statement
+	 * is automatically wrapped, its continuation will be indented.
+	 */
+	public void setIndentOnLineWrap(boolean indent) {
+		_indentOnLineWrap = indent;
+	}
+	
 	public void setIndent(int numSpaces) {
 
 		_currentIndent = numSpaces;
@@ -64,7 +74,9 @@ public class Printer {
 	
 	public void writeBlankLines(int numLines, int requiredNumLinesLeftOnPage) {
 		
-		printBufferLine();
+		if (_outputBuffer.length() > 0) {
+			printBufferLine();
+		}
 		for (int i = 0; i < numLines; i++) {
 			_output.println();
 		}
@@ -103,7 +115,7 @@ public class Printer {
 		}
 		
 		if (willFitOnLine() == false) {
-			printBufferLine();
+			printBufferLine(_indentOnLineWrap);
 		}
 		
 		// Insert a space if one is required.
@@ -122,7 +134,7 @@ public class Printer {
 			
 			String trailingText = _outputBuffer.substring(wrappingPos);
 			_outputBuffer.delete(wrappingPos, _outputBuffer.length());
-			printBufferLine();
+			printBufferLine(_indentOnLineWrap);
 			
 			_outputBuffer.append(trailingText.trim());
 		}

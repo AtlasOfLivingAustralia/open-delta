@@ -35,7 +35,7 @@ public class DeltaFormatTranslator extends AbstractDataSetTranslator {
 	@Override
 	public void beforeFirstItem() {
 		outputLine("*ITEM DESCRIPTIONS");
-		_printer.writeBlankLines(1, 0);
+		_printer.writeBlankLines(2, 0);
 	}
 
 	@Override

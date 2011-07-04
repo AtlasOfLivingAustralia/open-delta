@@ -20,15 +20,15 @@
 
 *EXCLUDE CHARACTERS 88-89
 
-*CHARACTER RELIABILITIES 1,0 2-5,7 6,5 7-10,7 11-13,8 14-24,7 25,0 26,7 27,8
+*CHARACTER RELIABILITIES 1,0 2-6,7 7,5 8-10,7 11-13,8 14-24,7 25,0 26,7 27,8
   28-38,7 39,5 40-43,7 44,8 45-47,7 48,8 49-63,7 64,6 65,7 66,8 67,7 68,3 69,0
   70,5 71-76,0 77,7.1 78-87,0
 
-*NEW PARAGRAPHS AT CHARACTERS 1-2 12 25-26 68 77-78 87-89
+*NEW PARAGRAPHS AT CHARACTERS 1 4 12 25-26 68 77-78 87-89
 
 *ITEM SUBHEADINGS
 #1. \pard\li0\fi340
-#2. \pard\li0\fi340\b{}Habit, vegetative morphology.\b0{}
+#4. \pard\li0\fi340\b{}Habit, vegetative morphology.\b0{}
 #12. \pard\li0\fi340\b{}Inflorescence.\b0{}
 #25. \pard\li0\fi340\b{}Female-sterile spikelets.\b0{}
 #26. \pard\li0\fi340\b{}Female-fertile spikelets, florets, fruit.\b0{}

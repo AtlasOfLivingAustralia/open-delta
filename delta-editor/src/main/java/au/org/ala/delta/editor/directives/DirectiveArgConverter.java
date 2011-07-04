@@ -60,7 +60,6 @@ public class DirectiveArgConverter {
 			DirectiveArgument<?> directiveArgument = directiveArgumentFromDirArgs(argType, arg);
 			directiveArgs.add(directiveArgument);
 		}
-		
 		return directiveArgs;
 		
 	}

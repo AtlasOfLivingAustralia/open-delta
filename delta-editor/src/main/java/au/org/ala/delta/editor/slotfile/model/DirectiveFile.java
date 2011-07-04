@@ -105,7 +105,7 @@ public class DirectiveFile {
 			DirectiveArguments args = _converter.convertArgs(
 					dir, directive.getArgType());
 			DirectiveInstance dirInstance = new DirectiveInstance(directive, args);
-			dirInstance.setCommented((dir.getDirType() & VODirFileDesc.DIRARG_COMMENT_FLAG) > 0);
+			dirInstance.setCommented((dir.getDirType() & VODirFileDesc.DIRARG_COMMENT_FLAG) != 0);
 			toReturn.add( dirInstance);
 		}
 		return toReturn;

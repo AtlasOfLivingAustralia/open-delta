@@ -22,7 +22,6 @@ import java.util.List;
 import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.directives.args.DirectiveArgument;
 import au.org.ala.delta.directives.args.DirectiveArguments;
-import au.org.ala.delta.editor.slotfile.DeltaNumber;
 import au.org.ala.delta.editor.slotfile.Directive;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile.DirectiveType;
 import au.org.ala.delta.model.CharacterType;
@@ -42,9 +41,9 @@ public class DirOutDefault implements DirectiveFunctor {
 	public void process(DirectiveInOutState state) {
 
 		_printer = state.getPrinter();
+		_printer.setIndent(2);
 		_textBuffer = new StringBuilder();
 		DeltaDataSet dataSet = state.getDataSet();
-		int lineIndent = 2;
 		Directive curDirective = state.getCurrentDirective().getDirective();
 		// Dir directive;
 		DirectiveArguments directiveArgs = state.getCurrentDirective()
@@ -73,7 +72,7 @@ public class DirOutDefault implements DirectiveFunctor {
 											// preserved?
 		case DirectiveArgType.DIRARG_COMMENT: // Will actually be handled within
 												// DirComment
-			lineIndent = 0;
+			_printer.setIndent(0);
 		case DirectiveArgType.DIRARG_FILE:
 		case DirectiveArgType.DIRARG_OTHER:
 		case DirectiveArgType.DIRARG_INTERNAL:
@@ -200,41 +199,7 @@ public class DirOutDefault implements DirectiveFunctor {
 		case DirectiveArgType.DIRARG_CHARINTEGERLIST:
 		case DirectiveArgType.DIRARG_CHARREALLIST:
 		case DirectiveArgType.DIRARG_ITEMREALLIST:
-			if (directiveArgs.size() > 0) {
-				args = directiveArgs.getDirectiveArguments();
-				Collections.sort(args);
-				curNo = prevNo = Integer.MAX_VALUE;
-				dataList = new ArrayList<Integer>();
-				int curVal = -1;
-				int prevVal = -1;
-				for (int i = 0; i <= args.size(); i++)
-				// Note that i is allowed to go up to directiveArgs.size()
-				// This allows the last value to be handled correctly within the
-				// loop.
-				// Be careful not to de-reference vectIter when this happens.
-				{
-
-					if (i != args.size()) {
-						DirectiveArgument<Integer> vectIter = (DirectiveArgument<Integer>) args
-								.get(i);
-						curNo = vectIter.getId();
-						curVal = vectIter.getValueAsInt();
-					}
-					if (i == 0 || (prevNo == curNo - 1 && prevVal == curVal))
-						dataList.add(curNo);
-					else {
-						_textBuffer.append(' ');
-						AppendRange(dataList, ' ', false, _textBuffer);
-						temp = Integer.toString(prevVal);
-						_textBuffer.append(',');
-						_textBuffer.append(temp);
-						dataList = new ArrayList<Integer>();
-						dataList.add(curNo);
-					}
-					prevNo = curNo;
-					prevVal = curVal;
-				}
-			}
+			writeNumberList(directiveArgs);
 			break;
 
 		case DirectiveArgType.DIRARG_CHARGROUPS:
@@ -284,7 +249,7 @@ public class DirOutDefault implements DirectiveFunctor {
 				_textBuffer.append(' ');
 				_textBuffer.append(curNo);
 				_textBuffer.append(',');
-				DeltaNumber aNumber;
+				
 				List<Integer> tmpData = vectIter.getDataList();
 				if (tmpData.size() < 3)
 					throw new RuntimeException("ED_INTERNAL_ERROR");
@@ -502,6 +467,43 @@ public class DirOutDefault implements DirectiveFunctor {
 		outputTextBuffer();
 	}
 
+	private void writeNumberList(DirectiveArguments directiveArgs) {
+		
+		int prevNo = Integer.MAX_VALUE;
+		int curNo = Integer.MAX_VALUE;
+		List<DirectiveArgument<?>> args;
+		if (directiveArgs.size() > 0) {
+			args = directiveArgs.getDirectiveArguments();
+			Collections.sort(args);
+			List<Integer> dataList = new ArrayList<Integer>();
+			BigDecimal curVal = BigDecimal.ZERO;
+			BigDecimal prevVal = BigDecimal.ZERO;
+			for (int i = 0; i <= args.size(); i++) {
+			// Note that i is allowed to go up to directiveArgs.size()
+			// This allows the last value to be handled correctly within the
+			// loop.
+			    if (i != args.size()) {
+					DirectiveArgument<?> arg = args.get(i);
+					curNo = (Integer)arg.getId();
+					curVal = arg.getValue();
+				}
+				if (i == 0 || (prevNo == curNo - 1 && prevVal.equals(curVal))) {
+					dataList.add(curNo);
+				}
+				else {
+					_textBuffer.append(' ');
+					AppendRange(dataList, ' ', false, _textBuffer);
+					_textBuffer.append(',');
+					_textBuffer.append(prevVal.toPlainString());
+					dataList = new ArrayList<Integer>();
+					dataList.add(curNo);
+				}
+				prevNo = curNo;
+				prevVal = curVal;
+			}
+		}
+	}
+
 	private void appendKeyword(String text, boolean b) {
 		// TODO Auto-generated method stub
 
@@ -524,8 +526,8 @@ public class DirOutDefault implements DirectiveFunctor {
 
 	private void outputTextBuffer(int i, int j, boolean b) {
 		_printer.writeJustifiedText(_textBuffer.toString(), -1);
+		_printer.printBufferLine();
 		_textBuffer = new StringBuilder();
-
 	}
 
 	private void despaceRTF(String temp) {

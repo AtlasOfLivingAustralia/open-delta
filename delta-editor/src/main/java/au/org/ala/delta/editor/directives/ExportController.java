@@ -20,7 +20,6 @@ import au.org.ala.delta.editor.directives.ui.ImportExportStatusDialog;
 import au.org.ala.delta.editor.model.EditorDataModel;
 import au.org.ala.delta.editor.slotfile.Directive;
 import au.org.ala.delta.editor.slotfile.DirectiveInstance;
-import au.org.ala.delta.editor.slotfile.VODirFileDesc;
 import au.org.ala.delta.editor.slotfile.directive.DirOutDefault;
 import au.org.ala.delta.editor.slotfile.directive.DirectiveInOutState;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile;
@@ -87,9 +86,7 @@ public class ExportController {
 			ImportExportStatus status = new ImportExportStatus();
 			publish(status);
 						
-			for (DirectiveFileInfo file : _files) {
-				
-				
+			for (DirectiveFileInfo file : _files) {				
 				DirectiveFile dirFile = file.getDirectiveFile();
 				if (dirFile != null) {
 					writeDirectivesFile(dirFile, _directoryName);
@@ -139,18 +136,28 @@ public class ExportController {
 	PrintStream out;
 	private void writeDirectivesFile(DirectiveFile file, String directoryPath) {
 		try {
-		String fileName = file.getShortFileName();
-		FilenameUtils.concat(directoryPath, fileName);
-		temp = new File(directoryPath+fileName);
-		out = new PrintStream(temp);
-		Printer printer = new Printer(out, 80);
-		DirectiveInOutState state = new DirectiveInOutState();
-		state.setPrinter(printer);
-		state.setDataSet(_model);
-		List<DirectiveInstance> directives = file.getDirectives();
-		for (DirectiveInstance directive : directives) {
-			writeDirective(directive, state);
-		}
+			String fileName = file.getShortFileName();
+			FilenameUtils.concat(directoryPath, fileName);
+			temp = new File(directoryPath+fileName);
+			out = new PrintStream(temp);
+			Printer printer = new Printer(out, 80);
+			printer.setIndentOnLineWrap(true);
+			printer.setIndent(2);
+			DirectiveInOutState state = new DirectiveInOutState();
+			state.setPrinter(printer);
+			state.setDataSet(_model);
+			List<DirectiveInstance> directives = file.getDirectives();
+			
+			for (int i=0; i<directives.size(); i++) {
+				writeDirective(directives.get(i), state);
+				if (i != directives.size()-1) {
+					printer.writeBlankLines(1, 0);
+				}
+				else {
+					printer.printBufferLine();
+				}
+			}
+			
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -169,10 +176,8 @@ public class ExportController {
 		
 		
 	    textBuffer.append('*');
-	    int dirArgType = directive.getDirective().getArgType();
-	    if ((dirArgType & VODirFileDesc.DIRARG_COMMENT_FLAG) > 0) {
-	    	  textBuffer.append("COMMENT ");
-	    	  dirArgType &= ~VODirFileDesc.DIRARG_COMMENT_FLAG;
+	    if (directive.isCommented()) {
+	    	textBuffer.append("COMMENT ");
 	    }
 	    
 	    Directive directiveInfo =directive.getDirective();
@@ -183,8 +188,7 @@ public class ExportController {
 	    if (directiveInfo.getOutFunc() instanceof DirOutDefault) {
 	    	directiveInfo.getOutFunc().process(state);
 	    }
-	    state.getPrinter().printBufferLine();
-	    state.getPrinter().printBufferLine();
+	    
 	}
 	
 	private void outputTextBuffer(DirectiveInOutState state, String buffer) {
