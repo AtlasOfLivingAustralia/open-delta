@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -83,28 +84,30 @@ public class ExportControllerTest extends DeltaTestCase {
 	@Test
 	public void testExportCharacterReliabilities() throws Exception {
 		// toint is directive file 13 in the sample dataset.
-		export(13);
+		File directory = FileUtils.getTempDirectory();
 		
-		String[] directives = read("toint");
+		export(directory, 13);
 		
-		String actual = FileUtils.readFileToString(new File("/tmp/toint"));
+		String fileName = "toint";
+		String[] directives = read(fileName);
+		
+		String actual = FileUtils.readFileToString(new File(directory, fileName));
 		actual = actual.replace("\r\n", "\n");
 		String[] actualDirectives = actual.split("\\*");
 		
-		int i=0;
-		for (String directive : directives) {
-			//assertEquals(directive, actualDirectives[i++]);
-		}
+//		int i=0;
+//		for (String directive : directives) {
+//			assertEquals(directive, actualDirectives[i++]);
+//		}
 	}
 	
-	private void export(int directiveFileNum) throws Exception {
+	private void export(File directory, int directiveFileNum) throws Exception {
 		DirectiveFile directiveFile = _dataSet.getDirectiveFile(directiveFileNum);
 		DirectiveFileInfo test = new DirectiveFileInfo(directiveFile.getFileName(), DirectiveType.CONFOR, directiveFile);
 		
 		List<DirectiveFileInfo> files = Arrays.asList(new DirectiveFileInfo[] {test});
-		File tempDir = new File("/tmp");
 		
-		exporter.new DoExportTask(tempDir, files).doInBackground();
+		exporter.new DoExportTask(directory, files).doInBackground();
 	}
 	
 	private String[] read(String fileName) throws Exception {
