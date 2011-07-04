@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Before;
+import org.junit.Test;
 
 import au.org.ala.delta.DeltaTestCase;
 import au.org.ala.delta.editor.DeltaEditor;
@@ -63,6 +64,7 @@ public class ExportControllerTest extends DeltaTestCase {
 		exporter = new ExportController(helper);
 	}
 	
+	@Test
 	public void testSilentExport() throws Exception {
 		
 		for (int i=1; i<=_dataSet.getDirectiveFileCount(); i++) {
@@ -71,7 +73,7 @@ public class ExportControllerTest extends DeltaTestCase {
 			
 			List<DirectiveFileInfo> files = Arrays.asList(new DirectiveFileInfo[] {test});
 			File tempDir = new File("/tmp");
-			System.out.println(directiveFile.getShortFileName());
+			System.out.println(i+" : "+directiveFile.getShortFileName());
 			exporter.new DoExportTask(tempDir, files).doInBackground();
 			//exporter.doSilentExport(tempDir, files);
 			
@@ -117,6 +119,22 @@ public class ExportControllerTest extends DeltaTestCase {
 		assertEquals("4-60(-100)", item.getAttribute(_dataSet.getCharacter(2)).getValueAsString());
 		assertEquals("3", item.getAttribute(_dataSet.getCharacter(60)).getValueAsString());
 		*/
+	}
+	
+	@Test
+	public void testExportCharacterReliabilities() throws Exception {
+		// toint is directive file 13 in the sample dataset.
+		export(13);
+	}
+	
+	private void export(int directiveFileNum) throws Exception {
+		DirectiveFile directiveFile = _dataSet.getDirectiveFile(directiveFileNum);
+		DirectiveFileInfo test = new DirectiveFileInfo(directiveFile.getFileName(), DirectiveType.CONFOR, directiveFile);
+		
+		List<DirectiveFileInfo> files = Arrays.asList(new DirectiveFileInfo[] {test});
+		File tempDir = new File("/tmp");
+		
+		exporter.new DoExportTask(tempDir, files).doInBackground();
 	}
 	
 }

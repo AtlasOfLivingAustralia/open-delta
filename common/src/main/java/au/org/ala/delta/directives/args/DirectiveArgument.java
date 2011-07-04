@@ -97,7 +97,13 @@ public class DirectiveArgument<T> implements Comparable<DirectiveArgument<?>>{
 	@Override
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public int compareTo(DirectiveArgument<?> o) {
-		// We can get away with this case cause T will be an Integer or a String.
+		// We can get away with this case cause T will be an Integer or a String. 
+		if (_id == null) {
+			return -1;
+		}
+		if (o.getId() == null) {
+			return 1;
+		}
 		return ((Comparable)_id).compareTo((Comparable)o.getId());
 	}
 

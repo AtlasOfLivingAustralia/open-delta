@@ -15,12 +15,14 @@
 package au.org.ala.delta.editor.slotfile.directive;
 
 import au.org.ala.delta.editor.slotfile.DirectiveInstance;
+import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.translation.Printer;
 
 public class DirectiveInOutState {
 
 	private DirectiveInstance _currentDirective;
 	private Printer _printer;
+	private DeltaDataSet _dataSet;
 	
 	public void setCurrentDirective(DirectiveInstance directive) {
 		_currentDirective = directive;
@@ -36,5 +38,13 @@ public class DirectiveInOutState {
 	
 	public Printer getPrinter() {
 		return _printer;
+	}
+	
+	public DeltaDataSet getDataSet() {
+		return _dataSet;
+	}
+	
+	public void setDataSet(DeltaDataSet dataSet) {
+		_dataSet = dataSet;
 	}
 }

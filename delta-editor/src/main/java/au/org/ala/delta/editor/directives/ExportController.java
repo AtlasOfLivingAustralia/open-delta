@@ -144,6 +144,7 @@ public class ExportController {
 		Printer printer = new Printer(out, 80);
 		DirectiveInOutState state = new DirectiveInOutState();
 		state.setPrinter(printer);
+		state.setDataSet(_model);
 		List<DirectiveInstance> directives = file.getDirectives();
 		for (DirectiveInstance directive : directives) {
 			writeDirective(directive, state);

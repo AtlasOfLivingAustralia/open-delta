@@ -43,6 +43,7 @@ public class DirOutDefault implements DirectiveFunctor {
 		
 		_printer = state.getPrinter();
 		_textBuffer = new StringBuilder();
+		DeltaDataSet dataSet = state.getDataSet();
 		int lineIndent = 2;
 		Directive curDirective = state.getCurrentDirective().getDirective();
 		//Dir directive;
@@ -53,7 +54,7 @@ public class DirOutDefault implements DirectiveFunctor {
 		DirectiveType directiveType = DirectiveType.CONFOR;
 		List<Integer> dataList = null;;
 		int prevNo, curNo;
-		DeltaDataSet dataSet = null;
+		
 		List<DirectiveArgument<?>> args = null;;
 		List<Integer> data = null;
 
@@ -212,13 +213,13 @@ public class DirOutDefault implements DirectiveFunctor {
 		            dataList = new ArrayList<Integer>();
 		            int curVal = -1;
 		            int prevVal = -1;
-		            for (int i=0; i <= directiveArgs.size(); i++)
+		            for (int i=0; i <= args.size(); i++)
 		            // Note that i is allowed to go up to directiveArgs.size()
 		            // This allows the last value to be handled correctly within the loop.
 		            // Be careful not to de-reference vectIter when this happens.
 		              {
 		            	
-		                if (i != directiveArgs.size())
+		                if (i != args.size())
 		                  {
 		                	DirectiveArgument<Integer> vectIter = (DirectiveArgument<Integer>)args.get(i);
 		                    curNo = vectIter.getId();
@@ -361,7 +362,7 @@ public class DirOutDefault implements DirectiveFunctor {
 		                  {
 		                	List<BigDecimal> bigDecimals = vectIter.getData();
 		                    BigDecimal loNumb, hiNumb;
-		                    if (data.size() < 2)
+		                    if (bigDecimals.size() < 2)
 		                      throw new RuntimeException("ED_INTERNAL_ERROR");
 		                    loNumb = bigDecimals.get(0);
 		                    hiNumb = bigDecimals.get(1);

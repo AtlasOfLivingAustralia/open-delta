@@ -147,7 +147,10 @@ public class DirectiveArgConverter {
 		}
 		@Override
 		public Object convertId(int id) {
-			return ((VOItemDesc)_vop.getDescFromId(id)).getAnsiName();
+			if (id > 0) {
+				return ((VOItemDesc)_vop.getDescFromId(id)).getAnsiName();
+			}
+			return "";
 		}
 	}
 	
@@ -181,7 +184,6 @@ public class DirectiveArgConverter {
 		case DirectiveArgType.DIRARG_TRANSLATION:
 		case DirectiveArgType.DIRARG_INTKEY_INCOMPLETE:
 		case DirectiveArgType.DIRARG_INTERNAL: // Not sure about this - existing code treats it like text.
-			return new NullConverter();
 		case DirectiveArgType.DIRARG_COMMENT: // Will actually be handled within DirInComment
 		case DirectiveArgType.DIRARG_TEXT: // What about multiple lines of text? Should line breaks ALWAYS be
 											// preserved?
@@ -191,47 +193,36 @@ public class DirectiveArgConverter {
 		
 		case DirectiveArgType.DIRARG_INTEGER:
 		case DirectiveArgType.DIRARG_REAL:
-			return new DirectConverter();
-			
-		case DirectiveArgType.DIRARG_CHAR:
-			return _characterNumberConverter;
-		case DirectiveArgType.DIRARG_ITEM:
-		case DirectiveArgType.DIRARG_ITEMREALLIST:
-			return _itemNumberConverter;
-		case DirectiveArgType.DIRARG_CHARLIST:
-			return _characterNumberConverter;
-		case DirectiveArgType.DIRARG_ITEMLIST:
-			return _itemNumberConverter;
 		case DirectiveArgType.DIRARG_TEXTLIST:
 			return new DirectConverter();
+			
+		case DirectiveArgType.DIRARG_ITEM:
+		case DirectiveArgType.DIRARG_ITEMREALLIST:
+		case DirectiveArgType.DIRARG_ITEMLIST:
+		case DirectiveArgType.DIRARG_ITEMCHARLIST:
+			return _itemNumberConverter;
+			
+		case DirectiveArgType.DIRARG_CHARLIST:
+		case DirectiveArgType.DIRARG_CHARREALLIST:
+		case DirectiveArgType.DIRARG_CHARINTEGERLIST:
 		case DirectiveArgType.DIRARG_CHARTEXTLIST:
+		
+		case DirectiveArgType.DIRARG_CHAR:
+		case DirectiveArgType.DIRARG_CHARGROUPS:
 			return _characterNumberConverter;
+		
+		case DirectiveArgType.DIRARG_KEYSTATE:
+			return _characterNumberConverter;
+			
 		case DirectiveArgType.DIRARG_ITEMTEXTLIST:
 		case DirectiveArgType.DIRARG_ITEMFILELIST:
 			return _itemDescriptionConverter;
-		case DirectiveArgType.DIRARG_CHARINTEGERLIST:
-			
-		case DirectiveArgType.DIRARG_CHARREALLIST:
-		
-
-			break;
-
-		case DirectiveArgType.DIRARG_CHARGROUPS:
-
-			break;
-
-		case DirectiveArgType.DIRARG_ITEMCHARLIST:
-
-			break;
 
 		case DirectiveArgType.DIRARG_ALLOWED:
 
 			break;
 
-		case DirectiveArgType.DIRARG_KEYSTATE:
-
-			break;
-
+		
 		case DirectiveArgType.DIRARG_PRESET:
 
 			break;

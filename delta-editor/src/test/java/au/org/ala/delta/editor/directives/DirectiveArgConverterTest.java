@@ -153,4 +153,34 @@ public class DirectiveArgConverterTest extends VODirFileDescTest {
 		}
 		
 	}
+	
+	@Test
+	public void testCharacterRealListConversion() {
+		
+		Dir dir = new Dir();
+		dir.setDirType(ConforDirType.CHARACTER_RELIABILITIES);
+		dir.resizeArgs(5);
+		float[] reliabilities = new float[]{1f, 2.2f, 3.3f, 4.4f, 5.5f};
+		for (int i=1; i<=5; i++) {
+			int id = _vop.getDeltaMaster().uniIdFromCharNo(i);
+			dir.args.get(i-1).setId(id);
+			dir.args.get(i-1).setValue(Float.toString(reliabilities[i-1]));
+		}
+		
+		DirectiveArguments args = _converter.convertArgs(dir, DirectiveArgType.DIRARG_CHARREALLIST);
+		
+		assertEquals(5, args.size());
+		for (int i=0; i<5; i++) {
+			assertEquals(i+1, args.get(i).getId());
+			assertEquals(reliabilities[i], args.get(i).getValue().floatValue());
+		}
+		
+	}
+	
+	@Test
+	public void testIndexHeadingsConversion() {
+		
+		
+	}
+	
 }
