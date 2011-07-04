@@ -1,9 +1,11 @@
 package au.org.ala.delta.editor.directives;
 
 import java.io.File;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -75,56 +77,24 @@ public class ExportControllerTest extends DeltaTestCase {
 			File tempDir = new File("/tmp");
 			System.out.println(i+" : "+directiveFile.getShortFileName());
 			exporter.new DoExportTask(tempDir, files).doInBackground();
-			//exporter.doSilentExport(tempDir, files);
-			
 		}
-			// Because the import happens on a background (daemon) thread, we have to wait until 
-			// the import is finished before doing our assertions.
-			//waitForTaskCompletion();
-		
-		/*
-		assertEquals(89, _dataSet.getNumberOfCharacters());
-		// do a few random assertions
-		Character character = _dataSet.getCharacter(10);
-		assertEquals(10, character.getCharacterId());
-		assertEquals("<adaxial> ligule <presence>", character.getDescription());
-		assertEquals(CharacterType.UnorderedMultiState, character.getCharacterType());
-		UnorderedMultiStateCharacter multiStateChar = (UnorderedMultiStateCharacter)character;
-		assertEquals(2, multiStateChar.getNumberOfStates());
-		assertEquals("<consistently> present <<implicit>>", multiStateChar.getState(1));
-		assertEquals("absent <at least from upper leaves>", multiStateChar.getState(2));
-		
-		character = _dataSet.getCharacter(48);
-		assertEquals("awns <of female-fertile lemmas, if present, number>", character.getDescription());
-		assertEquals(CharacterType.IntegerNumeric, character.getCharacterType());
-		assertEquals(48, character.getCharacterId());
-		
-		character = _dataSet.getCharacter(85);
-		assertEquals(85, character.getCharacterId());
-		assertEquals("<number of species>", character.getDescription());
-		assertEquals(CharacterType.IntegerNumeric, character.getCharacterType());
-		IntegerCharacter integerCharacter = (IntegerCharacter)character;
-		assertEquals("species", integerCharacter.getUnits());
-		
-		
-		assertEquals(14, _dataSet.getMaximumNumberOfItems());
-		
-		Item item = _dataSet.getItem(5);
-		assertEquals(5, item.getItemNumber());
-		
-		// At the moment getDescription() strips RTF... probably should leave that to the formatter.
-		//assertEquals("\\i{}Cynodon\\i0{} <Rich.>", item.getDescription());
-		
-		assertEquals("\\i{}Cynodon\\i0{} <Rich.>", item.getDescription());
-		assertEquals("4-60(-100)", item.getAttribute(_dataSet.getCharacter(2)).getValueAsString());
-		assertEquals("3", item.getAttribute(_dataSet.getCharacter(60)).getValueAsString());
-		*/
 	}
 	
 	@Test
 	public void testExportCharacterReliabilities() throws Exception {
 		// toint is directive file 13 in the sample dataset.
 		export(13);
+		
+		String[] directives = read("toint");
+		
+		String actual = FileUtils.readFileToString(new File("/tmp/toint"));
+		actual = actual.replace("\r\n", "\n");
+		String[] actualDirectives = actual.split("\\*");
+		
+		int i=0;
+		for (String directive : directives) {
+			//assertEquals(directive, actualDirectives[i++]);
+		}
 	}
 	
 	private void export(int directiveFileNum) throws Exception {
@@ -135,6 +105,16 @@ public class ExportControllerTest extends DeltaTestCase {
 		File tempDir = new File("/tmp");
 		
 		exporter.new DoExportTask(tempDir, files).doInBackground();
+	}
+	
+	private String[] read(String fileName) throws Exception {
+		
+		URL expected = getClass().getResource("expected_results/"+fileName);
+	
+		File f = new File(expected.toURI());
+		String buffer = FileUtils.readFileToString(f);
+		buffer = buffer.replace("\r\n", "\n");
+		return buffer.toString().split("\\*");
 	}
 	
 }

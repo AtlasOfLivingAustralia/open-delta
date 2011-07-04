@@ -76,7 +76,12 @@ public class Printer {
 	
 	public void printBufferLine(boolean indentNewLine) {
 	
-		_output.println(_outputBuffer.toString());
+		int i=_outputBuffer.length()-1;
+		while (i>0 && _outputBuffer.charAt(i) == ' ') {
+			i--;
+		}
+		
+		_output.println(_outputBuffer.substring(0, i+1));
 		_indented = false;
 		_outputBuffer = new StringBuilder();
 		if (indentNewLine) {

@@ -13,14 +13,14 @@ import au.org.ala.delta.editor.slotfile.DeltaNumber;
 import au.org.ala.delta.editor.slotfile.DeltaVOP;
 import au.org.ala.delta.editor.slotfile.Directive;
 import au.org.ala.delta.editor.slotfile.DirectiveArgType;
-import au.org.ala.delta.editor.slotfile.VOItemDesc;
 import au.org.ala.delta.editor.slotfile.VODirFileDesc.Dir;
 import au.org.ala.delta.editor.slotfile.VODirFileDesc.DirArgs;
 import au.org.ala.delta.editor.slotfile.VODirFileDesc.DirListData;
 import au.org.ala.delta.editor.slotfile.directive.ConforDirType;
 
 /**
- * Creates and populates a Dir object from the arguments supplied to a AbstractDirective.
+ * Creates and populates a Dir object from the arguments supplied to a 
+ * AbstractDirective.
  */
 public class DirectiveArgConverter {
 

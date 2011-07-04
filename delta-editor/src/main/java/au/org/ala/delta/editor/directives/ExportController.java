@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.swing.JOptionPane;
 
+import org.apache.commons.io.FilenameUtils;
 import org.jdesktop.application.Task;
 import org.jdesktop.application.TaskEvent;
 import org.jdesktop.application.TaskListener;
@@ -138,7 +139,8 @@ public class ExportController {
 	PrintStream out;
 	private void writeDirectivesFile(DirectiveFile file, String directoryPath) {
 		try {
-		String fileName = file.getFileName();
+		String fileName = file.getShortFileName();
+		FilenameUtils.concat(directoryPath, fileName);
 		temp = new File(directoryPath+fileName);
 		out = new PrintStream(temp);
 		Printer printer = new Printer(out, 80);
@@ -160,7 +162,7 @@ public class ExportController {
 		}
 	}
 	
-	private void writeDirective(DirectiveInstance directive, DirectiveInOutState state) {
+	protected void writeDirective(DirectiveInstance directive, DirectiveInOutState state) {
 		
 		StringBuilder textBuffer = new StringBuilder();
 		state.setCurrentDirective(directive);
@@ -181,12 +183,13 @@ public class ExportController {
 	    if (directiveInfo.getOutFunc() instanceof DirOutDefault) {
 	    	directiveInfo.getOutFunc().process(state);
 	    }
-	  
+	    state.getPrinter().printBufferLine();
+	    state.getPrinter().printBufferLine();
 	}
 	
 	private void outputTextBuffer(DirectiveInOutState state, String buffer) {
 		state.getPrinter().writeJustifiedText(buffer, -1);
-		state.getPrinter().printBufferLine();
+		
 	}
 	
 }
