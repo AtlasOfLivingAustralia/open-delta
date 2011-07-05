@@ -9,10 +9,12 @@ import au.org.ala.delta.directives.AbstractDeltaContext;
 import au.org.ala.delta.directives.AbstractDirective;
 import au.org.ala.delta.directives.args.DirectiveArgument;
 import au.org.ala.delta.directives.args.DirectiveArguments;
+import au.org.ala.delta.editor.slotfile.CharType;
 import au.org.ala.delta.editor.slotfile.DeltaNumber;
 import au.org.ala.delta.editor.slotfile.DeltaVOP;
 import au.org.ala.delta.editor.slotfile.Directive;
 import au.org.ala.delta.editor.slotfile.DirectiveArgType;
+import au.org.ala.delta.editor.slotfile.VOCharBaseDesc;
 import au.org.ala.delta.editor.slotfile.VODirFileDesc.Dir;
 import au.org.ala.delta.editor.slotfile.VODirFileDesc.DirArgs;
 import au.org.ala.delta.editor.slotfile.VODirFileDesc.DirListData;
@@ -82,7 +84,7 @@ public class DirectiveArgConverter {
 		directiveArgument.setText(arg.text);
 		directiveArgument.setComment(arg.comment);
 		directiveArgument.setValue(new BigDecimal(arg.getValue().asString()));
-		converter = idConverterForData(argType);
+		converter = idConverterForData(directiveArgument, argType);
 		for (DirListData data : arg.getData()) {
 			directiveArgument.getData().add(converter.convertData(data));
 		}
@@ -222,6 +224,28 @@ public class DirectiveArgConverter {
 			return null;
 		}
 	}
+	
+	/**
+	 * The KeyStates directive is difficult because the encoding of the
+	 * data array depends on the type of character represented by the current
+	 * arg.
+	 */
+	class KeyStatesConverter extends CharacterNumberConverter {
+		private int _characterNumber;
+		public KeyStatesConverter(int charNumber) {
+			_characterNumber = charNumber;
+		}
+		@Override
+		public BigDecimal convertData(DirListData data) {
+			int charBaseId = _vop.getDeltaMaster().uniIdFromCharNo(_characterNumber);
+			VOCharBaseDesc charBase = (VOCharBaseDesc)_vop.getDescFromId(charBaseId);
+			if (CharType.isMultistate(charBase.getCharType())) {
+				int stateId = data.getIntNumb();
+				return new BigDecimal(charBase.stateNoFromUniId(stateId));
+			}
+			return new BigDecimal(data.asString());
+		}
+	}
  
 	
 	private IdConverter idConverterFor(int argType) {
@@ -284,7 +308,7 @@ public class DirectiveArgConverter {
 		return new NullConverter();
 	}
 	
-	private IdConverter idConverterForData(int argType) {
+	private IdConverter idConverterForData(DirectiveArgument<?> arg, int argType) {
 		
 		switch (argType) {
 		case DirectiveArgType.DIRARG_NONE:
@@ -325,6 +349,8 @@ public class DirectiveArgConverter {
 			return new DirectRealConverter();
 			
 		case DirectiveArgType.DIRARG_KEYSTATE:
+			return new KeyStatesConverter((Integer)arg.getId());
+		
 		case DirectiveArgType.DIRARG_PRESET:
 		case DirectiveArgType.DIRARG_CHARINTEGERLIST:
 			return new DirectIntegerConverter();

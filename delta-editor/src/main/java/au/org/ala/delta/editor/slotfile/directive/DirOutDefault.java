@@ -168,84 +168,7 @@ public class DirOutDefault implements DirectiveFunctor {
 			break;
 
 		case DirectiveArgType.DIRARG_KEYSTATE:
-			// The comparison function will sort all the key states, grouping
-			// all those belonging to a single character, sorted in order by
-			// there pseudo-value.
-			args = directiveArgs.getDirectiveArguments();
-			Collections.sort(args);
-			prevNo = 0;
-			for (DirectiveArgument<?> vectIter : directiveArgs
-					.getDirectiveArguments()) {
-				au.org.ala.delta.model.Character charBase = dataSet
-						.getCharacter((Integer) vectIter.getId());
-				CharacterType charType = charBase.getCharacterType();
-				curNo = charBase.getCharacterId();
-				if (curNo != prevNo) {
-					_textBuffer.append(" ").append(curNo);
-					prevNo = curNo;
-				} else
-					_textBuffer.append('/');
-
-				switch (charType) {
-				case UnorderedMultiState:
-					data = vectIter.getDataList();
-					Collections.sort(data);
-					for (int j = 0; j < data.size(); j++) {
-						if (j != 0)
-							_textBuffer.append('&');
-						_textBuffer.append(data.get(j));
-					}
-					break;
-
-				case OrderedMultiState:
-
-				{
-					data = vectIter.getDataList();
-					int loState, hiState, aState;
-
-					if (data.size() < 2)
-						throw new RuntimeException("ED_INTERNAL_ERROR");
-					aState = data.get(0);
-					hiState = data.get(1);
-					loState = Math.min(aState, hiState);
-					hiState = Math.max(aState, hiState);
-					_textBuffer.append(loState);
-					if (hiState > loState) {
-						_textBuffer.append('-');
-						_textBuffer.append(hiState);
-					}
-				}
-					break;
-
-				case IntegerNumeric:
-				case RealNumeric: {
-					List<BigDecimal> bigDecimals = vectIter.getData();
-					BigDecimal loNumb, hiNumb;
-					if (bigDecimals.size() < 2)
-						throw new RuntimeException("ED_INTERNAL_ERROR");
-					loNumb = bigDecimals.get(0);
-					hiNumb = bigDecimals.get(1);
-					if (loNumb.floatValue() == Float.MIN_VALUE)
-						_textBuffer.append('~');
-					else {
-						_textBuffer.append(loNumb.toPlainString());
-					}
-					if (hiNumb.floatValue() == Float.MAX_VALUE)
-						_textBuffer.append('~');
-					else if (loNumb.compareTo(hiNumb) < 0) {
-						if (!(loNumb.floatValue() == Float.MIN_VALUE))
-							_textBuffer.append('-');
-
-						_textBuffer.append(hiNumb.toPlainString());
-					}
-				}
-					break;
-
-				default:
-					throw new RuntimeException("ED_INAPPROPRIATE_TYPE");
-					// break;
-				}
-			}
+			writeKeyStates(dataSet, directiveArgs);
 			break;
 
 		case DirectiveArgType.DIRARG_PRESET:
@@ -370,6 +293,89 @@ public class DirOutDefault implements DirectiveFunctor {
 			break;
 		}
 		outputTextBuffer(0, 2, false);
+	}
+
+	private void writeKeyStates(DeltaDataSet dataSet, DirectiveArguments directiveArgs) {
+		int prevNo;
+		int curNo;
+		List<DirectiveArgument<?>> args;
+		List<Integer> data;
+		// The comparison function will sort all the key states, grouping
+		// all those belonging to a single character, sorted in order by
+		// there pseudo-value.
+		args = directiveArgs.getDirectiveArguments();
+		Collections.sort(args);
+		prevNo = 0;
+		for (DirectiveArgument<?> vectIter : directiveArgs.getDirectiveArguments()) {
+			au.org.ala.delta.model.Character charBase = dataSet.getCharacter((Integer) vectIter.getId());
+			CharacterType charType = charBase.getCharacterType();
+			curNo = charBase.getCharacterId();
+			if (curNo != prevNo) {
+				_textBuffer.append(" ").append(curNo).append(",");
+				prevNo = curNo;
+			} else
+				_textBuffer.append('/');
+
+			switch (charType) {
+			case UnorderedMultiState:
+				data = vectIter.getDataList();
+				Collections.sort(data);
+				for (int j = 0; j < data.size(); j++) {
+					if (j != 0)
+						_textBuffer.append('&');
+					_textBuffer.append(data.get(j));
+				}
+				break;
+
+			case OrderedMultiState:
+
+			{
+				data = vectIter.getDataList();
+				int loState, hiState, aState;
+
+				if (data.size() < 2)
+					throw new RuntimeException("ED_INTERNAL_ERROR");
+				aState = data.get(0);
+				hiState = data.get(1);
+				loState = Math.min(aState, hiState);
+				hiState = Math.max(aState, hiState);
+				_textBuffer.append(loState);
+				if (hiState > loState) {
+					_textBuffer.append('-');
+					_textBuffer.append(hiState);
+				}
+			}
+				break;
+
+			case IntegerNumeric:
+			case RealNumeric: {
+				List<BigDecimal> bigDecimals = vectIter.getData();
+				BigDecimal loNumb, hiNumb;
+				if (bigDecimals.size() < 2)
+					throw new RuntimeException("ED_INTERNAL_ERROR");
+				loNumb = bigDecimals.get(0);
+				hiNumb = bigDecimals.get(1);
+				if (loNumb.floatValue() == -Float.MAX_VALUE)
+					_textBuffer.append('~');
+				else {
+					_textBuffer.append(loNumb.toPlainString());
+				}
+				if (hiNumb.floatValue() == Float.MAX_VALUE)
+					_textBuffer.append('~');
+				else if (loNumb.compareTo(hiNumb) < 0) {
+					if (!(loNumb.floatValue() == -Float.MAX_VALUE))
+						_textBuffer.append('-');
+
+					_textBuffer.append(hiNumb.toPlainString());
+				}
+			}
+				break;
+
+			default:
+				throw new RuntimeException("ED_INAPPROPRIATE_TYPE");
+				// break;
+			}
+		}
 	}
 
 	private void writeItemCharacterList(DeltaDataSet dataSet,

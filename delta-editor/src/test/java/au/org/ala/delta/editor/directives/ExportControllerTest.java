@@ -186,6 +186,21 @@ public class ExportControllerTest extends DeltaTestCase {
 	}
 	
 	/**
+	 * This tests the summary directives file which has:
+	 * COMMENT (DIRARG_COMMENT)
+	 * HEADING (DIRARG_TEXT)
+	 * RBASE (DIRARG_REAL)
+	 * VARWT (DIRARG_REAL)
+	 * NUMBER OF CONFIRMATORY CHARACTERS (DIRARG_INTEGER)
+	 * TREAT CHARACTERS AS VARIABLE (DIRARG_ITEM_CHARLIST)
+	
+	 */
+	@Test
+	public void testSummary() throws Exception {
+		exportAndCheck(45, "summary");
+	}
+	
+	/**
 	 * This tests the layout directives file which has:
 	 * COMMENT (DIRARG_COMMENT)
 	 * REPLACE ANGLE BRACKETS (DIRARG_NONE)
