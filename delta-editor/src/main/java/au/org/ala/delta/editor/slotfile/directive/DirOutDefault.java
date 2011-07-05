@@ -76,13 +76,7 @@ public class DirOutDefault implements DirectiveFunctor {
 		case DirectiveArgType.DIRARG_FILE:
 		case DirectiveArgType.DIRARG_OTHER:
 		case DirectiveArgType.DIRARG_INTERNAL:
-			if (directiveArgs.size() > 0) {
-				_textBuffer.append(' ');
-				temp = directiveArgs.getFirstArgumentText();
-				if (argType != DirectiveArgType.DIRARG_FILE)
-					despaceRTF(temp); // / SHOULD THIS BE DONE???
-				_textBuffer.append(temp);
-			}
+			writeText(directiveArgs, argType);
 			break;
 
 		case DirectiveArgType.DIRARG_INTEGER:
@@ -122,78 +116,15 @@ public class DirOutDefault implements DirectiveFunctor {
 			if (directiveArgs.size() == 1
 					&& directiveArgs.getFirstArgumentIdAsInt() <= 0
 					&& directiveArgs.getFirstArgumentText().length() > 1) {
-				// argType == DirectiveArgType.DIRARG_TEXT;
-				// TODO goto WriteAsText;
+				writeText(directiveArgs, DirectiveArgType.DIRARG_TEXT);
+				break;
 			}
 			// Otherwise drop through...
 		case DirectiveArgType.DIRARG_CHARTEXTLIST:
 		case DirectiveArgType.DIRARG_ITEMTEXTLIST:
-		case DirectiveArgType.DIRARG_ITEMFILELIST: {
-			Collections.sort(directiveArgs.getDirectiveArguments());
-			char delim = 0;
-
-			for (DirectiveArgument<?> vectIter : directiveArgs
-					.getDirectiveArguments()) {
-				boolean commentsSupported = false; // Flags changes in format,
-													// August 2000
-				if (vectIter == directiveArgs.get(0)) {
-					commentsSupported = (Integer) vectIter.getId() == Integer.MIN_VALUE;
-					// Check for optional delimiter...
-					boolean delimSupported = (/*
-											 * (argType == DIRARG_ITEMTEXTLIST
-											 * || argType ==
-											 * DIRARG_ITEMFILELIST) &&
-											 */
-					(Integer) vectIter.getId() <= 0 || commentsSupported);
-					if (delimSupported && vectIter.getText().length() > 0) {
-						delim = vectIter.getText().charAt(0);
-						if (delim != 0) {
-							_textBuffer.append(' ');
-							_textBuffer.append(delim);
-						}
-					}
-					outputTextBuffer(0, 0, true);
-					if (delimSupported)
-						continue;
-				}
-				_textBuffer.append("#");
-				if ((argType == DirectiveArgType.DIRARG_TEXTLIST)
-						|| (argType == DirectiveArgType.DIRARG_CHARTEXTLIST)) {
-					_textBuffer.append(vectIter.getId());
-					_textBuffer.append(".");
-				} else {
-					Item item = dataSet.getItem((Integer) vectIter.getId());
-					temp = item.getDescription();
-					despaceRTF(temp, true); // //
-					_textBuffer.append(' ');
-					_textBuffer.append(temp);
-					_textBuffer.append("/");
-				}
-				boolean hasComment = vectIter.getComment().length() > 0;
-				if (hasComment) {
-					_textBuffer.append(" <");
-					_textBuffer.append(vectIter.getComment());
-					_textBuffer.append('>');
-					outputTextBuffer(0, 0, true);
-				}
-				temp = vectIter.getText();
-				if (!temp.isEmpty()) {
-					_textBuffer.append(' ');
-					// / SHOULD RTF be "handled" here or not???
-					// //if (argType != DIRARG_ITEMFILELIST)
-					// // DespaceRTF(temp);
-					// If an optional delimitor is defined, and doesn't appear
-					// within
-					// the string, quote the string with the delimitor
-					boolean useDelim = (delim != 0 && temp.indexOf(delim) == -1 && commentsSupported);
-					if (useDelim)
-						_textBuffer.append(delim);
-					_textBuffer.append(temp);
-					if (useDelim)
-						_textBuffer.append(delim);
-				}
-				outputTextBuffer(/* hasComment ? 7 : */0, 0, true);
-			}
+		case DirectiveArgType.DIRARG_ITEMFILELIST: 
+		{
+			writeTextList(dataSet, directiveArgs, argType, temp);
 			break;
 		}
 		case DirectiveArgType.DIRARG_CHARINTEGERLIST:
@@ -467,6 +398,84 @@ public class DirOutDefault implements DirectiveFunctor {
 		outputTextBuffer();
 	}
 
+	private void writeText(DirectiveArguments directiveArgs, int argType) {
+		String temp;
+		if (directiveArgs.size() > 0) {
+			_textBuffer.append(' ');
+			temp = directiveArgs.getFirstArgumentText();
+			if (argType != DirectiveArgType.DIRARG_FILE)
+				despaceRTF(temp); // / SHOULD THIS BE DONE???
+			_textBuffer.append(temp);
+		}
+	}
+
+	private void writeTextList(DeltaDataSet dataSet,
+			DirectiveArguments directiveArgs, int argType, String temp) {
+		Collections.sort(directiveArgs.getDirectiveArguments());
+		char delim = 0;
+		boolean commentsSupported = false; // Flags changes in format, August 2000
+		for (DirectiveArgument<?> vectIter : directiveArgs
+				.getDirectiveArguments()) {
+			
+			if (vectIter == directiveArgs.get(0)) {
+				commentsSupported = (Integer) vectIter.getId() == Integer.MIN_VALUE;
+				// Check for optional delimiter...
+				boolean delimSupported = (/*
+										 * (argType == DIRARG_ITEMTEXTLIST
+										 * || argType ==
+										 * DIRARG_ITEMFILELIST) &&
+										 */
+				(Integer) vectIter.getId() <= 0 || commentsSupported);
+				if (delimSupported && vectIter.getText().length() > 0) {
+					delim = vectIter.getText().charAt(0);
+					if (delim != 0) {
+						_textBuffer.append(delim);
+					}
+				}
+				outputTextBuffer(1, 0, true);
+				if (delimSupported)
+					continue;
+			}
+			_textBuffer.append("#");
+			if ((argType == DirectiveArgType.DIRARG_TEXTLIST)
+					|| (argType == DirectiveArgType.DIRARG_CHARTEXTLIST)) {
+				_textBuffer.append(vectIter.getId());
+				_textBuffer.append(".");
+			} else {
+				Item item = dataSet.getItem((Integer) vectIter.getId());
+				temp = item.getDescription();
+				despaceRTF(temp, true); // //
+				_textBuffer.append(' ');
+				_textBuffer.append(temp);
+				_textBuffer.append("/");
+			}
+			boolean hasComment = vectIter.getComment().length() > 0;
+			if (hasComment) {
+				_textBuffer.append(" <");
+				_textBuffer.append(vectIter.getComment());
+				_textBuffer.append('>');
+				outputTextBuffer(0, 0, true);
+			}
+			temp = vectIter.getText();
+			if (!temp.isEmpty()) {
+				_textBuffer.append(' ');
+				// / SHOULD RTF be "handled" here or not???
+				// //if (argType != DIRARG_ITEMFILELIST)
+				// // DespaceRTF(temp);
+				// If an optional delimitor is defined, and doesn't appear
+				// within the string, quote the string with the delimitor
+				boolean useDelim = (delim != 0 && temp.indexOf(delim) == -1 && commentsSupported);
+				if (useDelim)
+					_textBuffer.append(delim);
+				_textBuffer.append(temp);
+				if (useDelim)
+					_textBuffer.append(delim);
+			}
+			
+			outputTextBuffer(/* hasComment ? 7 : */0, 0, true);
+		}
+	}
+
 	private void writeNumberList(DirectiveArguments directiveArgs) {
 		
 		int prevNo = Integer.MAX_VALUE;
@@ -525,7 +534,14 @@ public class DirOutDefault implements DirectiveFunctor {
 	}
 
 	private void outputTextBuffer(int i, int j, boolean b) {
-		_printer.writeJustifiedText(_textBuffer.toString(), -1);
+		_printer.setIndent(i);
+		_printer.indent();
+		_printer.setIndent(j);
+		String[] lines = _textBuffer.toString().split("\n");
+		for (String line : lines) {
+			_printer.writeJustifiedText(line, -1);
+			_printer.printBufferLine();
+		}
 		_printer.printBufferLine();
 		_textBuffer = new StringBuilder();
 	}

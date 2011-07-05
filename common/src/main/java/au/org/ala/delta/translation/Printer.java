@@ -20,6 +20,7 @@ public class Printer {
 	private StringBuilder _outputBuffer;
 	private boolean _indented;
 	private boolean _indentOnLineWrap;
+	private boolean _softWrap;
 	
 	/**
 	 * Creates a new Printer that will print to the supplied PrintStream.
@@ -33,6 +34,11 @@ public class Printer {
 		_indented = false;
 		_printWidth = lineWidth;
 		_indentOnLineWrap = false;
+		_softWrap = false;
+	}
+	
+	public void setSoftWrap(boolean softWrap) {
+		_softWrap = softWrap;
 	}
 
 	public void insertTypeSettingMarks(int number) {
@@ -92,17 +98,18 @@ public class Printer {
 		while (i>0 && _outputBuffer.charAt(i) == ' ') {
 			i--;
 		}
-		
-		_output.println(_outputBuffer.substring(0, i+1));
-		_indented = false;
-		_outputBuffer = new StringBuilder();
-		if (indentNewLine) {
-			indent();
+		if (_outputBuffer.length() > 0) {
+			_output.println(_outputBuffer.substring(0, i+1));
+			_indented = false;
+			_outputBuffer = new StringBuilder();
+			if (indentNewLine) {
+				indent();
+			}
 		}
 	}
 	
 	public void writeJustifiedText(String text, int completionAction) {
-		text = text.trim(); 
+		text = text.trim();
 		writeJustifiedText(text, completionAction, true);
 	}
 	
@@ -126,11 +133,8 @@ public class Printer {
 		_outputBuffer.append(text);
 		
 		while (willFitOnLine() == false) {
-			int numSpaces = numLeadingSpaces(_outputBuffer);
-			int wrappingPos = _outputBuffer.lastIndexOf(" ", _printWidth);
-			if (wrappingPos <= numSpaces) {
-				wrappingPos = _printWidth;
-			}
+			
+			int wrappingPos = findWrapPosition();
 			
 			String trailingText = _outputBuffer.substring(wrappingPos);
 			_outputBuffer.delete(wrappingPos, _outputBuffer.length());
@@ -139,6 +143,24 @@ public class Printer {
 			_outputBuffer.append(trailingText.trim());
 		}
 		complete(completionAction);
+	}
+
+	private int findWrapPosition() {
+		int numSpaces = numLeadingSpaces(_outputBuffer);
+		int wrappingPos = _outputBuffer.lastIndexOf(" ", _printWidth);
+		
+		if (wrappingPos <= numSpaces) {
+			if (_softWrap) {
+				wrappingPos = _outputBuffer.indexOf(" ", _printWidth);
+				if (wrappingPos < 0) {
+					wrappingPos = _outputBuffer.length();
+				}
+			}
+			else {
+				wrappingPos = _printWidth;
+			}
+		}
+		return wrappingPos;
 	}
 	
 	public void writeTypeSettingMark(String mark) {

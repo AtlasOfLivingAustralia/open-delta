@@ -80,17 +80,52 @@ public class ExportControllerTest extends DeltaTestCase {
 		}
 	}
 	
+	/**
+	 * This tests the toint directives file which has:
+	 * SHOW (DIRARG_TEXT)
+	 * LISTING FILE (DIRARG FILE)
+	 * HEADING (DIRARG_TEXT)
+	 * REGISTRATION SUBHEADING (DIRARG_TEXT)
+	 * TRANSLATE INTO (DIRARG_TRANSLATION)
+	 * CHARACTERS FOR SYNONYMY (DIRARG_CHARLIST)
+	 * OMIT PERIOD FOR CHARACTERS (DIRARG_CHARLIST)
+	 * OMIT OR FOR CHARACTERS (DIRARG_CHARLIST)
+	 * OMIT INNER COMMENTS (DIRARG_NONE)
+	 * EXCLUDE CHARACTERS (DIRARG_CHARLIST)
+	 * CHARACTER RELIABILIITES (DIRARG_CHARREALLIST)
+	 * NEW PARAGRAPHS AT CHARACTERS (DIRARG_CHARLIST)
+	 * ITEM SUBHEADINGS (DIRARG_CHARTEXTLIST)
+	 * INPUT FILE (DIRARG_FILE)
+	 * INTKEY OUTPUT FILE (DIRARG_FILE)
+	 * 
+	 * It also includes a commented out directive.
+	 * 
+	 */
 	@Test
-	public void testExportCharacterReliabilities() throws Exception {
+	public void testExportToInt() throws Exception {
 		// toint is directive file 13 in the sample dataset.
+		exportAndCheck(13, "toint");
+	}
+	
+	/**
+	 * This tests the toint directives file which has:
+	 * COMMENT (DIRARG_COMMENT)
+	 * PRINT WIDTH (DIRARG_INTEGER)
+	 * TYPESETTING MARKS (DIRARG_TEXTLIST)
+	 */
+	@Test
+	public void testExportMarkRtf() throws Exception {
+		exportAndCheck(6, "markrtf");
+	}
+	
+	private void exportAndCheck(int directiveFileNum, String directiveFileName) throws Exception {
 		File directory = FileUtils.getTempDirectory();
 		
-		export(directory, 13);
+		export(directory, directiveFileNum);
 		
-		String fileName = "toint";
-		String[] directives = read(fileName);
+		String[] directives = read(directiveFileName);
 		
-		String actual = FileUtils.readFileToString(new File(directory, fileName));
+		String actual = FileUtils.readFileToString(new File(directory, directiveFileName));
 		actual = actual.replace("\r\n", "\n");
 		String[] actualDirectives = actual.split("\\*");
 		
@@ -100,6 +135,13 @@ public class ExportControllerTest extends DeltaTestCase {
 		}
 	}
 	
+	/**
+	 * Exports the directive file identified by directiveFileNum into the
+	 * supplied directory.
+	 * @param directory the directory to export the directives to.
+	 * @param directiveFileNum the directives file to export.
+	 * @throws Exception if there is an error.
+	 */
 	private void export(File directory, int directiveFileNum) throws Exception {
 		DirectiveFile directiveFile = _dataSet.getDirectiveFile(directiveFileNum);
 		DirectiveFileInfo test = new DirectiveFileInfo(directiveFile.getFileName(), DirectiveType.CONFOR, directiveFile);

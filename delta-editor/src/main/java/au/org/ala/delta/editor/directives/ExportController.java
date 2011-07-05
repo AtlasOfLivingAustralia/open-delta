@@ -142,6 +142,7 @@ public class ExportController {
 			out = new PrintStream(temp);
 			Printer printer = new Printer(out, 80);
 			printer.setIndentOnLineWrap(true);
+			printer.setSoftWrap(true);
 			printer.setIndent(2);
 			DirectiveInOutState state = new DirectiveInOutState();
 			state.setPrinter(printer);
@@ -153,10 +154,8 @@ public class ExportController {
 				if (i != directives.size()-1) {
 					printer.writeBlankLines(1, 0);
 				}
-				else {
-					printer.printBufferLine();
-				}
 			}
+			printer.printBufferLine();
 			
 		}
 		catch (Exception e) {

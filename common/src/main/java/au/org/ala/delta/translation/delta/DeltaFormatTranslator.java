@@ -50,7 +50,7 @@ public class DeltaFormatTranslator extends AbstractDataSetTranslator {
 	@Override
 	public void afterItem(Item item) {
 		_printer.printBufferLine();
-		outputLine("");		
+		_printer.writeBlankLines(1, 0);
 	}
 
 	@Override
