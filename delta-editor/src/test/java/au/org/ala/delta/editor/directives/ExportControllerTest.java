@@ -185,6 +185,26 @@ public class ExportControllerTest extends DeltaTestCase {
 		exportAndCheck(37, "key6");
 	}
 	
+	/**
+	 * This tests the layout directives file which has:
+	 * COMMENT (DIRARG_COMMENT)
+	 * REPLACE ANGLE BRACKETS (DIRARG_NONE)
+	 * OMIT CHARACTER NUMBERS (DIRARG_NONE)
+	 * OMIT INNER COMMENTS (DIRARG_NONE)
+	 * OMIT INAPPLICABLES (DIRARG_NONE)
+	 * OMIT PERIOD FOR CHARACTERS 1 (DIRARG_CHARLIST)
+	 * CHARACTER FOR TAXON IMAGES 88 (DIRARG_CHAR)
+	 * EXCLUDE CHARACTERS 89 (DIRARG_CHARLIST)
+	 * NEW PARAGRAPHS AT CHARACTERS (DIRARG_CHARLIST)
+	 * LINK CHARACTERS (DIRARG_CHARGROUPS)
+	 * EMPHASIZE FEATURES (DIRARG_CHARLIST)
+	 * ITEM SUBHEADINGS (DIRARG_CHARTEXTLIST)
+	 */
+	@Test
+	public void testLayout() throws Exception {
+		exportAndCheck(4, "layout");
+	}
+	
 	private void exportAndCheck(int directiveFileNum, String directiveFileName) throws Exception {
 		File directory = FileUtils.getTempDirectory();
 		
