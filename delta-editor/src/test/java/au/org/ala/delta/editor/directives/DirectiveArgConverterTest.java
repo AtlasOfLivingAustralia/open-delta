@@ -151,7 +151,7 @@ public class DirectiveArgConverterTest extends VODirFileDescTest {
 		List<BigDecimal> weightsData = args.getDirectiveArguments().get(0).getData();
 		assertEquals(weights.length, weightsData.size());
 		for (int i=0; i<weights.length; i++) {
-			assertEquals(weights[i], weightsData.get(i).floatValue());
+			assertEquals(weights[i], weightsData.get(i).floatValue(), 0.001f);
 		}
 		
 	}

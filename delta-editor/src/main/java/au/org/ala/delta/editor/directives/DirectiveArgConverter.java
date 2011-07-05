@@ -179,7 +179,7 @@ public class DirectiveArgConverter {
 		}
 	}
 	
-	class DirectConverter implements IdConverter {
+	class DirectIntegerConverter implements IdConverter {
 		@Override
 		public int convertId(Object id) {
 			return (Integer)id;
@@ -191,6 +191,20 @@ public class DirectiveArgConverter {
 		@Override
 		public BigDecimal convertData(DirListData data) {
 			return new BigDecimal(data.getIntNumb());
+		}
+	}
+	class DirectRealConverter extends DirectIntegerConverter {
+		@Override
+		public int convertId(Object id) {
+			return (Integer)id;
+		}
+		@Override
+		public Object convertId(int id) {
+			return Integer.valueOf(id);
+		}
+		@Override
+		public BigDecimal convertData(DirListData data) {
+			return new BigDecimal(data.asString());
 		}
 	}
 	
@@ -226,9 +240,11 @@ public class DirectiveArgConverter {
 			return new NullConverter();
 		
 		case DirectiveArgType.DIRARG_INTEGER:
-		case DirectiveArgType.DIRARG_REAL:
 		case DirectiveArgType.DIRARG_TEXTLIST:
-			return new DirectConverter();
+			return new DirectIntegerConverter();
+			
+		case DirectiveArgType.DIRARG_REAL:
+			return new DirectRealConverter();
 			
 		case DirectiveArgType.DIRARG_ITEM:
 		case DirectiveArgType.DIRARG_ITEMREALLIST:
@@ -305,12 +321,14 @@ public class DirectiveArgConverter {
 			
 		case DirectiveArgType.DIRARG_ITEMREALLIST:
 		case DirectiveArgType.DIRARG_CHARREALLIST:
-		case DirectiveArgType.DIRARG_CHARINTEGERLIST:
 		case DirectiveArgType.DIRARG_INTKEY_CHARREALLIST:
+			return new DirectRealConverter();
+			
 		case DirectiveArgType.DIRARG_KEYSTATE:
 		case DirectiveArgType.DIRARG_PRESET:
-			return new DirectConverter();
-
+		case DirectiveArgType.DIRARG_CHARINTEGERLIST:
+			return new DirectIntegerConverter();
+			
 		case DirectiveArgType.DIRARG_ALLOWED:
 			throw new NotImplementedException();
 
