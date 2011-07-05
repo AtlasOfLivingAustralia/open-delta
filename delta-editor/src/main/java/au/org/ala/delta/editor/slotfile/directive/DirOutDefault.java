@@ -28,6 +28,7 @@ import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.translation.Printer;
+import au.org.ala.delta.util.Utils;
 
 /**
  * Writes the directive to the output.
@@ -66,7 +67,6 @@ public class DirOutDefault implements DirectiveFunctor {
 		case DirectiveArgType.DIRARG_INTKEY_INCOMPLETE:
 			break;
 
-		// TODO handle this label WriteAsText:
 		case DirectiveArgType.DIRARG_TEXT: // What about multiple lines of text?
 											// Should line breaks ALWAYS be
 											// preserved?
@@ -105,7 +105,7 @@ public class DirOutDefault implements DirectiveFunctor {
 						.getDirectiveArguments())
 					dataList.add((Integer) vectIter.getId());
 				_textBuffer.append(' ');
-				AppendRange(dataList, ' ', true, _textBuffer);
+				appendRange(dataList, ' ', true, _textBuffer);
 			}
 			break;
 
@@ -138,37 +138,12 @@ public class DirOutDefault implements DirectiveFunctor {
 					.getDirectiveArguments()) {
 				dataList = new ArrayList<Integer>(vectIter.getDataList());
 				_textBuffer.append(' ');
-				AppendRange(dataList, ':', true, _textBuffer);
+				appendRange(dataList, ':', true, _textBuffer);
 			}
 			break;
 
 		case DirectiveArgType.DIRARG_ITEMCHARLIST:
-			outputTextBuffer(0, 2, true);
-			args = directiveArgs.getDirectiveArguments();
-			Collections.sort(args);
-			for (DirectiveArgument<?> vectIter : directiveArgs
-					.getDirectiveArguments()) {
-				_textBuffer.append("#");
-				if (directiveType == DirectiveType.CONFOR) // / Use names for
-															// Confor, but not
-															// for Key
-				{
-					Item item = dataSet.getItem((Integer) vectIter.getId());
-					temp = item.getDescription();
-					despaceRTF(temp, true); // //
-					_textBuffer.append(' ');
-					_textBuffer.append(temp);
-					_textBuffer.append("/ ");
-				} else {
-					curNo = (Integer) vectIter.getId();
-					_textBuffer.append(curNo);
-					_textBuffer.append(". ");
-				}
-				dataList = new ArrayList<Integer>(vectIter.getDataList());
-
-				AppendRange(dataList, ' ', true, _textBuffer);
-				outputTextBuffer(0, 2, true);
-			}
+			writeItemCharacterList(dataSet, directiveArgs, directiveType);
 			break;
 
 		case DirectiveArgType.DIRARG_ALLOWED:
@@ -328,7 +303,7 @@ public class DirOutDefault implements DirectiveFunctor {
 			}
 			if (dataList.size() > 0) {
 				_textBuffer.append(' ');
-				AppendRange(dataList, ' ', true, _textBuffer);
+				appendRange(dataList, ' ', true, _textBuffer);
 			}
 			break;
 
@@ -369,7 +344,7 @@ public class DirOutDefault implements DirectiveFunctor {
 						firstChar = false;
 					} else if (dataList.size() > 0) {
 						_textBuffer.append(' ');
-						AppendRange(dataList, ' ', false, _textBuffer);
+						appendRange(dataList, ' ', false, _textBuffer);
 						if (!(prevVal.compareTo(BigDecimal.ZERO) < 0.0)) {
 
 							_textBuffer.append(',');
@@ -398,13 +373,44 @@ public class DirOutDefault implements DirectiveFunctor {
 		outputTextBuffer();
 	}
 
+	private void writeItemCharacterList(DeltaDataSet dataSet,
+			DirectiveArguments directiveArgs, DirectiveType directiveType) {
+		String temp;
+		List<Integer> dataList;
+		int curNo;
+		List<DirectiveArgument<?>> args;
+		outputTextBuffer(0, 2, true);
+		args = directiveArgs.getDirectiveArguments();
+		Collections.sort(args);
+		for (DirectiveArgument<?> vectIter : directiveArgs
+				.getDirectiveArguments()) {
+			_textBuffer.append("#");
+			if (directiveType == DirectiveType.CONFOR) { // Use names for  Confor, but not for Key
+				Item item = dataSet.getItem((Integer) vectIter.getId());
+				temp = item.getDescription();
+				temp = despaceRTF(temp, true); // //
+				_textBuffer.append(' ');
+				_textBuffer.append(temp);
+				_textBuffer.append("/ ");
+			} else {
+				curNo = (Integer) vectIter.getId();
+				_textBuffer.append(curNo);
+				_textBuffer.append(". ");
+			}
+			dataList = new ArrayList<Integer>(vectIter.getDataList());
+
+			appendRange(dataList, ' ', true, _textBuffer);
+			outputTextBuffer(0, 2, true);
+		}
+	}
+
 	private void writeText(DirectiveArguments directiveArgs, int argType) {
 		String temp;
 		if (directiveArgs.size() > 0) {
 			_textBuffer.append(' ');
 			temp = directiveArgs.getFirstArgumentText();
 			if (argType != DirectiveArgType.DIRARG_FILE)
-				despaceRTF(temp); // / SHOULD THIS BE DONE???
+				temp = despaceRTF(temp); // / SHOULD THIS BE DONE???
 			_textBuffer.append(temp);
 		}
 	}
@@ -444,7 +450,7 @@ public class DirOutDefault implements DirectiveFunctor {
 			} else {
 				Item item = dataSet.getItem((Integer) vectIter.getId());
 				temp = item.getDescription();
-				despaceRTF(temp, true); // //
+				temp = despaceRTF(temp, true); // //
 				_textBuffer.append(' ');
 				_textBuffer.append(temp);
 				_textBuffer.append("/");
@@ -501,7 +507,7 @@ public class DirOutDefault implements DirectiveFunctor {
 				}
 				else {
 					_textBuffer.append(' ');
-					AppendRange(dataList, ' ', false, _textBuffer);
+					appendRange(dataList, ' ', false, _textBuffer);
 					_textBuffer.append(',');
 					_textBuffer.append(prevVal.toPlainString());
 					dataList = new ArrayList<Integer>();
@@ -523,9 +529,12 @@ public class DirOutDefault implements DirectiveFunctor {
 
 	}
 
-	private void despaceRTF(String temp, boolean b) {
-		// TODO Auto-generated method stub
 
+	private String despaceRTF(String temp) {
+		return despaceRTF(temp, false);
+	}
+	private String despaceRTF(String text, boolean quoteDelimiters) {
+		return Utils.despaceRtf(text, quoteDelimiters);
 	}
 	
 	private void outputTextBuffer() {
@@ -546,12 +555,8 @@ public class DirOutDefault implements DirectiveFunctor {
 		_textBuffer = new StringBuilder();
 	}
 
-	private void despaceRTF(String temp) {
-		despaceRTF(temp, false);
 
-	}
-
-	void AppendRange(List<Integer> data, char separator, boolean doSort,
+	void appendRange(List<Integer> data, char separator, boolean doSort,
 			StringBuilder textBuffer) {
 		if (doSort) {
 			Collections.sort(data);

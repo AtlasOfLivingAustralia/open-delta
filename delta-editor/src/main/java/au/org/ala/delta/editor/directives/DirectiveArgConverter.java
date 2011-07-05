@@ -83,7 +83,9 @@ public class DirectiveArgConverter {
 		directiveArgument.setComment(arg.comment);
 		directiveArgument.setValue(new BigDecimal(arg.getValue().asString()));
 		for (DirListData data : arg.getData()) {
-			directiveArgument.getData().add(new BigDecimal(data.asString()));
+			converter = idConverterForData(argType);
+			
+			directiveArgument.getData().add(converter.convertData(data));
 		}
 		
 		return directiveArgument;
@@ -115,6 +117,8 @@ public class DirectiveArgConverter {
 		public int convertId(Object id);
 		
 		public Object convertId(int id);
+		
+		public BigDecimal convertData(DirListData data);
 	}
 	
 	class CharacterNumberConverter implements IdConverter {
@@ -124,6 +128,13 @@ public class DirectiveArgConverter {
 		}
 		@Override
 		public Object convertId(int id) {
+			return convert(id);
+		}
+		@Override
+		public BigDecimal convertData(DirListData data) {
+			return new BigDecimal(convert(data.getIntNumb()));
+		}
+		private int convert(int id) {
 			return _vop.getDeltaMaster().charNoFromUniId(id);
 		}
 	}
@@ -135,6 +146,13 @@ public class DirectiveArgConverter {
 		}
 		@Override
 		public Object convertId(int id) {
+			return convert(id);
+		}
+		@Override
+		public BigDecimal convertData(DirListData data) {
+			return new BigDecimal(convert(data.getIntNumb()));
+		}
+		private int convert(int id) {
 			return _vop.getDeltaMaster().itemNoFromUniId(id);
 		}
 	}
@@ -156,6 +174,10 @@ public class DirectiveArgConverter {
 			}
 			return id;
 		}
+		@Override
+		public BigDecimal convertData(DirListData data) {
+			throw new UnsupportedOperationException();
+		}
 	}
 	
 	class DirectConverter implements IdConverter {
@@ -167,6 +189,10 @@ public class DirectiveArgConverter {
 		public Object convertId(int id) {
 			return Integer.valueOf(id);
 		}
+		@Override
+		public BigDecimal convertData(DirListData data) {
+			return new BigDecimal(data.asString());
+		}
 	}
 	
 	class NullConverter implements IdConverter {
@@ -176,6 +202,10 @@ public class DirectiveArgConverter {
 		}
 		@Override
 		public Object convertId(int id) {
+			return null;
+		}
+		@Override
+		public BigDecimal convertData(DirListData data) {
 			return null;
 		}
 	}
@@ -228,6 +258,58 @@ public class DirectiveArgConverter {
 		case DirectiveArgType.DIRARG_ITEMTEXTLIST:
 		case DirectiveArgType.DIRARG_ITEMFILELIST:
 			return _itemDescriptionConverter;
+
+		case DirectiveArgType.DIRARG_ALLOWED:
+			throw new NotImplementedException();
+
+		case DirectiveArgType.DIRARG_INTKEY_ATTRIBUTES:
+			throw new NotImplementedException();
+	
+		}
+		return new NullConverter();
+	}
+	
+	private IdConverter idConverterForData(int argType) {
+		
+		switch (argType) {
+		case DirectiveArgType.DIRARG_NONE:
+		case DirectiveArgType.DIRARG_TRANSLATION:
+		case DirectiveArgType.DIRARG_INTKEY_INCOMPLETE:
+		case DirectiveArgType.DIRARG_INTERNAL: // Not sure about this - existing code treats it like text.
+		case DirectiveArgType.DIRARG_COMMENT: // Will actually be handled within DirInComment
+		case DirectiveArgType.DIRARG_TEXT: // What about multiple lines of text? Should line breaks ALWAYS be								// preserved?
+		case DirectiveArgType.DIRARG_FILE:
+		case DirectiveArgType.DIRARG_OTHER:
+		case DirectiveArgType.DIRARG_INTKEY_ONOFF:
+		case DirectiveArgType.DIRARG_INTEGER:
+		case DirectiveArgType.DIRARG_REAL:
+		case DirectiveArgType.DIRARG_TEXTLIST:
+		case DirectiveArgType.DIRARG_CHAR:
+		case DirectiveArgType.DIRARG_ITEM:
+		case DirectiveArgType.DIRARG_ITEMLIST:
+		case DirectiveArgType.DIRARG_INTKEY_ITEMLIST:
+		case DirectiveArgType.DIRARG_INTKEY_ITEM:
+		case DirectiveArgType.DIRARG_CHARLIST:
+		case DirectiveArgType.DIRARG_KEYWORD_ITEMLIST:
+		case DirectiveArgType.DIRARG_CHARTEXTLIST:
+		case DirectiveArgType.DIRARG_INTKEY_CHARLIST:
+		case DirectiveArgType.DIRARG_KEYWORD_CHARLIST:
+		case DirectiveArgType.DIRARG_PRESET:
+		case DirectiveArgType.DIRARG_ITEMTEXTLIST:
+		case DirectiveArgType.DIRARG_ITEMFILELIST:
+			return new NullConverter();
+			
+		case DirectiveArgType.DIRARG_INTKEY_ITEMCHARSET:
+		case DirectiveArgType.DIRARG_ITEMCHARLIST:
+		case DirectiveArgType.DIRARG_CHARGROUPS:
+			return _characterNumberConverter;
+			
+		case DirectiveArgType.DIRARG_ITEMREALLIST:
+		case DirectiveArgType.DIRARG_CHARREALLIST:
+		case DirectiveArgType.DIRARG_CHARINTEGERLIST:
+		case DirectiveArgType.DIRARG_INTKEY_CHARREALLIST:
+		case DirectiveArgType.DIRARG_KEYSTATE:
+			return new DirectConverter();
 
 		case DirectiveArgType.DIRARG_ALLOWED:
 			throw new NotImplementedException();

@@ -194,4 +194,29 @@ public class DirectiveArgConverterTest extends VODirFileDescTest {
 		assertEquals(1, args.get(1).getId());
 	}
 	
+	@Test
+	public void testEmphasizeCharactersConverstion() {
+		
+		int id = _vop.getDeltaMaster().uniIdFromItemNo(2);
+		Dir dir = createDirWithId(id, ConforDirType.EMPHASIZE_CHARACTERS);
+		
+		List<DirListData> charList = dir.args.get(0).getData();
+		
+		int[] charNos = new int[] {1,3};
+		for (int charNo : charNos) {
+			id = _vop.getDeltaMaster().uniIdFromCharNo(charNo);
+			DirListData data = new DirListData();
+			data.setIntNumb(id);
+			charList.add(data);
+		}
+		
+		DirectiveArguments args = _converter.convertArgs(dir, DirectiveArgType.DIRARG_ITEMCHARLIST);
+		assertEquals(1, args.size());
+		
+		assertEquals(2, args.getFirstArgumentIdAsInt());
+		List<Integer> charNoList = args.get(0).getDataList();
+		assertEquals(2, charNoList.size());
+		assertEquals(1, charNoList.get(0).intValue());
+		assertEquals(3, charNoList.get(1).intValue());
+	}
 }

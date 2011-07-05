@@ -118,6 +118,16 @@ public class ExportControllerTest extends DeltaTestCase {
 		exportAndCheck(6, "markrtf");
 	}
 	
+	/**
+	 * This tests the empchari directives file which has:
+	 * COMMENT (DIRARG_COMMENT)
+	 * EMPHASIZE CHARACTERS (DIRARG_ITEMCHARLIST)
+	 */
+	@Test
+	public void testExportEmpChari() throws Exception {
+		exportAndCheck(28, "empchari");
+	}
+	
 	private void exportAndCheck(int directiveFileNum, String directiveFileName) throws Exception {
 		File directory = FileUtils.getTempDirectory();
 		

@@ -25,6 +25,8 @@ import java.util.Locale;
 
 import javax.swing.JFrame;
 
+import org.apache.commons.lang.StringUtils;
+
 import au.org.ala.delta.rtf.RTFUtils;
 
 public class Utils {
@@ -609,5 +611,129 @@ public class Utils {
 		versionInfo.append(System.getProperty("user.region"));
 
 		return versionInfo.toString();
+	}
+	
+	/**
+	 * The main job of this method is to terminate RTF control words with
+	 * {} instead of a space.  
+	 */
+	// Not all cases are handled correctly in the current code.
+	// For example, text with \bin might not always give correct results
+	// A few other things, such as \'xx, should perhaps also be given
+	// explicit treatment, but should not substantially affect the outcome.
+	public static String despaceRtf(String text, boolean quoteDelims) {
+		if (StringUtils.isEmpty(text)) {
+		    return "";
+		}
+		int srcPos;
+		boolean inRTF = false;
+		boolean inParam = false;
+		boolean inUnicode = false;
+		boolean bracketed = text.charAt(0) == '<' && text.charAt(text.length() - 1) == '>';
+		  
+		StringBuilder outputText = new StringBuilder(text);
+		if (bracketed) // If a "comment", temporarily chop off the terminating bracket
+			outputText.setLength(outputText.length() - 1);
+		for (srcPos = 0; srcPos < outputText.length(); ++srcPos) {
+		    char ch = outputText.charAt(srcPos);
+		    // Always convert a tab character into a \tab control word
+		    if (ch == '\t')  {
+		        outputText.replace(srcPos, 1, "\\tab{}");
+		        ch = '\\';
+		    }
+		    if (inRTF) {
+		        if (Character.isDigit(ch) || (!inParam && ch == '-')) {
+		            if (!inParam && outputText.charAt(srcPos - 1) == 'u' && outputText.charAt(srcPos - 2) == '\\')
+		                inUnicode = true;
+		                inParam = true;
+		            }
+		            else if (inParam || !Character.isLetter(ch))
+		            {
+		              boolean wasInUnicode = inUnicode;
+		              inUnicode = inParam = inRTF = false;
+		              if (Character.isSpaceChar(ch)) {
+		                  // Check for the absence of a control; when this happens,
+		                  // the terminating character IS the control word!
+		                  if (srcPos > 0 && outputText.charAt(srcPos - 1) == '\\')
+		                    {
+		                      // \<NEWLINE> is treated as a \par control. We make this
+		                      // change here explicitly, to make it more apparent.
+		                      // But should we keep the <NEWLINE> character around as well,
+		                      // as a clue for breaking lines during output?
+		                      if (ch == '\n' || ch == '\r')
+		                        {
+		                          //text.replace(--srcPos, 2, "\\par{}");
+		                    	  outputText.insert(srcPos, "par{}");
+		                          srcPos += 5;
+		                        }
+		                      // (Note that if we don't catch this here, replacing "\ " could yield
+		                      // "\{}" which is WRONG. But rather than just get rid of this, it
+		                      // is probably better to replace with {} to ensure that any preceding
+		                      // RTF is terminated)
+		                      else if (ch == ' ') {
+		                    	  outputText.replace(srcPos - 1, 2, "{}");
+		                        }
+		                    }
+		                  // This is the chief condition we are trying to fix. Terminate the RTF
+		                  // control phrase with {} instead of white space...
+		                  // But if the terminator is a new line, we keep it around
+		                  // for assistance in wrapping output lines.
+		                  //else if (ch == '\n')
+		                  //  {
+		                  //    text.insert(srcPos, "{}");
+		                  //    srcPos += 2;
+		                  //  }
+		                  else if (ch != '\n')
+		                    {
+		                	  outputText.setCharAt(srcPos, '{');
+		                      outputText.insert(++srcPos, '}');
+		                    }
+		                }
+		              // No reason to do the following. Probably better to leave the
+		              // character quoted.
+		              // Reinstated 8 December 1999 because we need to be sure
+		              // all text is in a consistent state when linking characters
+		              // One exception - if the quoted character is a Unicode "replacement"
+		              // character, we'd better leave it quoted.
+		              else if (ch == '\'' && !wasInUnicode && srcPos + 2 < outputText.length())
+		                {
+		                  char[] buff = new char[3];
+		                  buff[0] = outputText.charAt(srcPos+1);
+		                  buff[1] = outputText.charAt(srcPos+2);
+		                  buff[2] = 0;
+		                
+		                  int[] endPos = new int[1];
+		                  int value = strtol(new String(buff), endPos, 16);
+		                  if ((endPos[0] == 2) && value > 127 && outputText.charAt(srcPos - 1) == '\\')
+		                		  outputText.replace(--srcPos, 4, new String(new char[]{(char)value}));
+		                }
+		              else if (ch == '\\' && outputText.charAt(srcPos - 1) != '\\')  // Terminates RTF, but starts new RTF
+		                {
+		                  inRTF = true;
+		                  if (wasInUnicode && srcPos + 1 < outputText.length() && outputText.charAt(srcPos + 1) == '\'')
+		                    inUnicode = true;
+		                }
+		            }
+		        }
+		      else if (ch == '\\')
+		        inRTF = true;
+		      // TEST - to allow outputting of a "*" or "#" character in arbitrary text...
+		      else if (quoteDelims && (ch == '*' || ch == '#') && (srcPos == 0 || Character.isSpaceChar(outputText.charAt(srcPos - 1))))
+		        {
+		          ////char buffer[5];
+		          // Always build a 4-character replacement string, like:
+		          // \'20
+		          ////sprintf(buffer, "\\\'%2.2x", (int)ch);
+		          ////text.replace(srcPos, buffer, 4);
+		          ////srcPos += 3;
+		    	  outputText.insert(srcPos, "{}");
+		          srcPos += 2;
+		        }
+		    }
+		  if (inRTF)
+			  outputText.append("{}");
+		  if (bracketed)
+			  outputText.append('>');
+		  return outputText.toString();
 	}
 }
