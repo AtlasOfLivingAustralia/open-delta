@@ -82,9 +82,8 @@ public class DirectiveArgConverter {
 		directiveArgument.setText(arg.text);
 		directiveArgument.setComment(arg.comment);
 		directiveArgument.setValue(new BigDecimal(arg.getValue().asString()));
+		converter = idConverterForData(argType);
 		for (DirListData data : arg.getData()) {
-			converter = idConverterForData(argType);
-			
 			directiveArgument.getData().add(converter.convertData(data));
 		}
 		
@@ -191,7 +190,7 @@ public class DirectiveArgConverter {
 		}
 		@Override
 		public BigDecimal convertData(DirListData data) {
-			return new BigDecimal(data.asString());
+			return new BigDecimal(data.getIntNumb());
 		}
 	}
 	
@@ -294,7 +293,7 @@ public class DirectiveArgConverter {
 		case DirectiveArgType.DIRARG_CHARTEXTLIST:
 		case DirectiveArgType.DIRARG_INTKEY_CHARLIST:
 		case DirectiveArgType.DIRARG_KEYWORD_CHARLIST:
-		case DirectiveArgType.DIRARG_PRESET:
+
 		case DirectiveArgType.DIRARG_ITEMTEXTLIST:
 		case DirectiveArgType.DIRARG_ITEMFILELIST:
 			return new NullConverter();
@@ -309,6 +308,7 @@ public class DirectiveArgConverter {
 		case DirectiveArgType.DIRARG_CHARINTEGERLIST:
 		case DirectiveArgType.DIRARG_INTKEY_CHARREALLIST:
 		case DirectiveArgType.DIRARG_KEYSTATE:
+		case DirectiveArgType.DIRARG_PRESET:
 			return new DirectConverter();
 
 		case DirectiveArgType.DIRARG_ALLOWED:

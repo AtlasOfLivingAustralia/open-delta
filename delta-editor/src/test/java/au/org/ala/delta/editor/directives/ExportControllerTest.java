@@ -128,6 +128,32 @@ public class ExportControllerTest extends DeltaTestCase {
 		exportAndCheck(28, "empchari");
 	}
 	
+
+	/**
+	 * This tests the dist directives file which has:
+	 * LISTING FILE (DIRARG FILE)
+	 * ITEMS FILE (DIRARG FILE)
+	 * OUTPUT FILE (DIRAG FILE)
+	 * MINIMUM NUMBER OF COMPARISONS 7
+	 */
+	@Test
+	public void testExportDist() throws Exception {
+		exportAndCheck(19, "dist");
+	}
+	
+	/**
+	 * This tests the dist directives file which has:
+	 * COMMENT (DIRARG_COMMENT)
+	 * HEADING (DIRARG_TEXT)
+	 * PRESET CHARACTERS (DIRARG_PRESET)
+	 * NO BRACKETTED KEY (DIRARG_NONE)
+	 * PRINT WIDTH (DIRARG_INTEGER)
+	 */
+	@Test
+	public void testExportKey4() throws Exception {
+		exportAndCheck(36, "key4");
+	}
+	
 	private void exportAndCheck(int directiveFileNum, String directiveFileName) throws Exception {
 		File directory = FileUtils.getTempDirectory();
 		
