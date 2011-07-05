@@ -47,14 +47,13 @@ public class DirOutDefault implements DirectiveFunctor {
 		DeltaDataSet dataSet = state.getDataSet();
 		Directive curDirective = state.getCurrentDirective().getDirective();
 		// Dir directive;
-		DirectiveArguments directiveArgs = state.getCurrentDirective()
-				.getDirectiveArguments();
+		DirectiveArguments directiveArgs = state.getCurrentDirective() .getDirectiveArguments();
 
 		int argType = curDirective.getArgType();
 		String temp = "";
-		DirectiveType directiveType = DirectiveType.CONFOR;
+		DirectiveType directiveType = state.getCurrentDirective().getType();
 		List<Integer> dataList = null;
-		;
+		
 		int prevNo, curNo;
 
 		List<DirectiveArgument<?>> args = null;
@@ -370,7 +369,7 @@ public class DirOutDefault implements DirectiveFunctor {
 		default:
 			break;
 		}
-		outputTextBuffer();
+		outputTextBuffer(0, 2, false);
 	}
 
 	private void writeItemCharacterList(DeltaDataSet dataSet,
@@ -538,15 +537,22 @@ public class DirOutDefault implements DirectiveFunctor {
 	}
 	
 	private void outputTextBuffer() {
-		_printer.writeJustifiedText(_textBuffer.toString(), -1);
-		_textBuffer = new StringBuilder();
+		outputTextBuffer(0, 2, false);
 	}
 
 	private void outputTextBuffer(int i, int j, boolean b) {
 		_printer.setIndent(i);
 		_printer.indent();
 		_printer.setIndent(j);
-		String[] lines = _textBuffer.toString().split("\n");
+		String[] lines;
+		if (b) {
+			lines = _textBuffer.toString().split("\n");
+		}
+		else {
+			String text = _textBuffer.toString().replaceAll("\\s", " ");
+			lines = new String[] {text};
+		}
+		
 		for (String line : lines) {
 			_printer.writeJustifiedText(line, -1);
 			_printer.printBufferLine();

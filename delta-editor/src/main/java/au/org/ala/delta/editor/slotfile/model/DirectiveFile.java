@@ -99,6 +99,7 @@ public class DirectiveFile {
 	public List<DirectiveInstance> getDirectives() {
 		List<Dir> directives = _dirFileDesc.readAllDirectives();
 		List<DirectiveInstance> toReturn = new ArrayList<DirectiveInstance>(directives.size());
+		DirectiveType type = getType();
 		for (Dir dir : directives) {
 			
 			Directive directive = getDirective(dir);
@@ -106,6 +107,7 @@ public class DirectiveFile {
 					dir, directive.getArgType());
 			DirectiveInstance dirInstance = new DirectiveInstance(directive, args);
 			dirInstance.setCommented((dir.getDirType() & VODirFileDesc.DIRARG_COMMENT_FLAG) != 0);
+			dirInstance.setDirectiveType(type);
 			toReturn.add( dirInstance);
 		}
 		return toReturn;

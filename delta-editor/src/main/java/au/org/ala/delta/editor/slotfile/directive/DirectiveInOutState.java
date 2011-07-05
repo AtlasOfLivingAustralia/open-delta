@@ -47,4 +47,5 @@ public class DirectiveInOutState {
 	public void setDataSet(DeltaDataSet dataSet) {
 		_dataSet = dataSet;
 	}
+	
 }

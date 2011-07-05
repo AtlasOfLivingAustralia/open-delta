@@ -1,0 +1,20 @@
+*COMMENT Avoid characters which are unreliable for particular taxa.
+
+*HEADING Key 6. Some characters treated as variable.
+
+*RBASE 1.40
+
+*VARYWT 0.8
+
+*PRINT WIDTH 78
+
+*NUMBER OF CONFIRMATORY CHARACTERS 0
+
+*COMMENT The effect of the TREAT CHARACTERS AS VARIABLE directive is to change
+  the values of the specified characters to `variable'. In this example, item 1
+  (Agrostis) is effectively coded 44,V 66,V and item 4 (Bambusa) is effectively
+  coded 4,V.
+
+*TREAT CHARACTERS AS VARIABLE
+#3. 3
+#7. 44 66

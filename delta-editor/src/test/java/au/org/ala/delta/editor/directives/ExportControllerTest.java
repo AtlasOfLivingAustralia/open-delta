@@ -142,7 +142,7 @@ public class ExportControllerTest extends DeltaTestCase {
 	}
 	
 	/**
-	 * This tests the dist directives file which has:
+	 * This tests the key4 directives file which has:
 	 * COMMENT (DIRARG_COMMENT)
 	 * HEADING (DIRARG_TEXT)
 	 * PRESET CHARACTERS (DIRARG_PRESET)
@@ -152,6 +152,37 @@ public class ExportControllerTest extends DeltaTestCase {
 	@Test
 	public void testExportKey4() throws Exception {
 		exportAndCheck(36, "key4");
+	}
+	
+	/**
+	 * This tests the key2 directives file which has:
+	 * COMMENT (DIRARG_COMMENT)
+	 * HEADING (DIRARG_TEXT)
+	 * RBASE (DIRARG_REAL)
+	 * NO BRACKETTED KEY (DIRARG_NONE)
+	 * PRINT WIDTH (DIRARG_INTEGER)
+	 */
+	@Test
+	public void testExportKey2() throws Exception {
+		exportAndCheck(34, "key2");
+	}
+	
+	/**
+	 * This tests the key6 directives file which has:
+	 * COMMENT (DIRARG_COMMENT)
+	 * HEADING (DIRARG_TEXT)
+	 * RBASE (DIRARG_REAL)
+	 * VARWT (DIRARG_REAL)
+	 * NUMBER OF CONFIRMATORY CHARACTERS (DIRARG_INTEGER)
+	 * TREAT CHARACTERS AS VARIABLE (DIRARG_ITEM_CHARLIST)
+	 * 
+	 * It also tests the behaviour of the itemcharlist export with a 
+	 * directive file type of Key (item descriptions are output for CONFOR
+	 * types, but the item number is used for KEY).
+	 */
+	@Test
+	public void testExportKey6() throws Exception {
+		exportAndCheck(37, "key6");
 	}
 	
 	private void exportAndCheck(int directiveFileNum, String directiveFileName) throws Exception {
