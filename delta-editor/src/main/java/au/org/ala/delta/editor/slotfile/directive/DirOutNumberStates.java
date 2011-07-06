@@ -14,30 +14,32 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.slotfile.directive;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.MultiStateCharacter;
+import au.org.ala.delta.util.Pair;
 
-
+/**
+ * Exports the NUMBERS OF STATES directive.
+ */
 public class DirOutNumberStates extends AbstractDirOutFunctor {
 
 	@Override
 	public void writeDirectiveArguments(DirectiveInOutState state) {
 		DeltaDataSet dataSet = state.getDataSet();
 		
-		StringBuilder types = new StringBuilder();
-		for (int i=1; i<dataSet.getNumberOfCharacters(); i++) {
+		List<Pair<Integer, Integer>> numbersOfStates = new ArrayList<Pair<Integer,Integer>>();
+		for (int i=1; i<=dataSet.getNumberOfCharacters(); i++) {
 			Character character = dataSet.getCharacter(i);
 			if (character.getCharacterType().isMultistate()) {
 				MultiStateCharacter multiStateChar = (MultiStateCharacter)character;
-				types.append(Integer.toString(multiStateChar.getNumberOfStates()));
-				types.append(",");
+				numbersOfStates.add(new Pair<Integer, Integer>(i, multiStateChar.getNumberOfStates()));
 			}
 		}
-		if (types.charAt(types.length()-1) == ',') {
-			types.setLength(types.length()-1);
-		}
-		writeLine(state, types.toString());
+		writeLine(state, rangeToString(numbersOfStates));
 	}
 
 }

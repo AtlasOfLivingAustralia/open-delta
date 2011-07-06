@@ -2,25 +2,25 @@ package au.org.ala.delta.editor.directives;
 
 import au.org.ala.delta.editor.slotfile.Directive;
 import au.org.ala.delta.editor.slotfile.directive.ConforDirType;
-import au.org.ala.delta.editor.slotfile.directive.DirOutMaxNumberStates;
+import au.org.ala.delta.editor.slotfile.directive.DirOutNumberStates;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.MultiStateCharacter;
 
 /**
- * Tests the DirOutMaxNumberOfStates class.
+ * Tests the DirOutNumberOfStates class.
  */
-public class DirOutMaxNumberOfStatesTest extends DirOutTest {
+public class DirOutNumberOfStatesTest extends DirOutTest {
 
 	protected Directive getDirective() {
-		return ConforDirType.ConforDirArray[ConforDirType.MAXIMUM_NUMBER_OF_STATES];
+		return ConforDirType.ConforDirArray[ConforDirType.NUMBERS_OF_STATES];
 	}
 	
 	/**
-	 * Tests the export of the MAXIMUM NUMBER OF STATES directive using our 
+	 * Tests the export of the NUMBERS OF STATES directive using our 
 	 * sample dataset.
 	 */
-	public void testDirOutMaximumNumberOfStates() throws Exception {
+	public void testDirOutNumbersOfStates() throws Exception {
 		
 		CharacterType[] characterTypes = new CharacterType[] {
 				CharacterType.Text, 
@@ -29,10 +29,11 @@ public class DirOutMaxNumberOfStatesTest extends DirOutTest {
 				CharacterType.UnorderedMultiState,
 				CharacterType.RealNumeric,
 				CharacterType.IntegerNumeric,
-				CharacterType.OrderedMultiState
+				CharacterType.OrderedMultiState,
+				CharacterType.UnorderedMultiState
 		};
 		
-		int[] numbersOfStates = new int[] {1, 3, 1};
+		int[] numbersOfStates = new int[] {1, 3, 1, 1};
 		
 		int j = 0;
 		for (int i=0; i<characterTypes.length; i++) {
@@ -42,11 +43,11 @@ public class DirOutMaxNumberOfStatesTest extends DirOutTest {
 			}
 			
 		}
-		DirOutMaxNumberStates dirOut = new DirOutMaxNumberStates();
+		DirOutNumberStates dirOut = new DirOutNumberStates();
 		
 		dirOut.process(_state);
 		
-		assertEquals("*MAXIMUM NUMBER OF STATES 3\n", output());
+		assertEquals("*NUMBERS OF STATES 3,1 4,3 7-8,1\n", output());
 		
 	}
 }

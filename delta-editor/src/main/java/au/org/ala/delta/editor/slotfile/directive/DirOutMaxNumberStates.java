@@ -25,7 +25,7 @@ public class DirOutMaxNumberStates extends AbstractDirOutFunctor {
 		DeltaDataSet dataSet = state.getDataSet();
 		
 		int maxNumStates = 0;
-		for (int i=1; i<dataSet.getNumberOfCharacters(); i++) {
+		for (int i=1; i<=dataSet.getNumberOfCharacters(); i++) {
 			Character character = dataSet.getCharacter(i);
 			if (character.getCharacterType().isMultistate()) {
 				MultiStateCharacter multiStateChar = (MultiStateCharacter)character;

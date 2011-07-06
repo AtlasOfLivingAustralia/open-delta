@@ -16,7 +16,10 @@ package au.org.ala.delta.editor.slotfile.directive;
 
 import au.org.ala.delta.model.DeltaDataSet;
 
-public class DirOutMaxNumberItems  extends AbstractDirOutFunctor {
+/**
+ * Exports the MAXIMUM NUMBER OF ITEMS directive.
+ */
+public class DirOutMaxNumberItems extends AbstractDirOutFunctor {
 
 	@Override
 	public void writeDirectiveArguments(DirectiveInOutState state) {

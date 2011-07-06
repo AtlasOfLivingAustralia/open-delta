@@ -14,35 +14,36 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.slotfile.directive;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.MultiStateCharacter;
+import au.org.ala.delta.util.Pair;
 
+/**
+ * Exports the IMPLICIT VALUES directive.
+ */
 public class DirOutImplicitValues extends AbstractDirOutFunctor {
 
 	@Override
 	public void writeDirectiveArguments(DirectiveInOutState state) {
 		DeltaDataSet dataSet = state.getDataSet();
 		
-		StringBuilder types = new StringBuilder();
-		
-		for (int i=1; i<dataSet.getNumberOfCharacters(); i++) {
+		List<Pair<Integer, Integer>> implicitStates = new ArrayList<Pair<Integer,Integer>>();
+		for (int i=1; i<=dataSet.getNumberOfCharacters(); i++) {
 			Character character = dataSet.getCharacter(i);
 			if (character.getCharacterType().isMultistate()) {
 				
 				MultiStateCharacter multiStateChar = (MultiStateCharacter)character;
 				int implicit = multiStateChar.getUncodedImplicitState();
 				if (implicit > 0) {
-					
+					implicitStates.add(new Pair<Integer, Integer>(i, implicit));
 				}
-				types.append(Integer.toString(multiStateChar.getNumberOfStates()));
-				types.append(",");
 			}
 		}
-		if (types.charAt(types.length()-1) == ',') {
-			types.setLength(types.length()-1);
-		}
-		writeLine(state, types.toString());
+		writeLine(state, rangeToString(implicitStates));
 	}
 
 }
