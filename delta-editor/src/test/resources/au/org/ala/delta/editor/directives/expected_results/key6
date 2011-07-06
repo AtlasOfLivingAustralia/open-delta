@@ -10,10 +10,10 @@
 
 *NUMBER OF CONFIRMATORY CHARACTERS 0
 
-*COMMENT The effect of the TREAT CHARACTERS AS VARIABLE directive is to change
-  the values of the specified characters to `variable'. In this example, item 1
-  (Agrostis) is effectively coded 44,V 66,V and item 4 (Bambusa) is effectively
-  coded 4,V.
+*COMMENT The effect of the TREAT CHARACTERS AS VARIABLE directive is to
+change the values of the specified characters to `variable'. In this example,
+item 1 (Agrostis) is effectively coded 44,V 66,V and item 4 (Bambusa) is
+effectively coded 4,V.
 
 *TREAT CHARACTERS AS VARIABLE
 #3. 3

@@ -16,8 +16,11 @@ package au.org.ala.delta.editor.slotfile.directive;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.directives.args.DirectiveArgument;
@@ -384,7 +387,7 @@ public class DirOutDefault implements DirectiveFunctor {
 		List<Integer> dataList;
 		int curNo;
 		List<DirectiveArgument<?>> args;
-		outputTextBuffer(0, 2, true);
+		outputTextBuffer(0, 2, false);
 		args = directiveArgs.getDirectiveArguments();
 		Collections.sort(args);
 		for (DirectiveArgument<?> vectIter : directiveArgs
@@ -418,6 +421,7 @@ public class DirOutDefault implements DirectiveFunctor {
 				temp = despaceRTF(temp); // / SHOULD THIS BE DONE???
 			_textBuffer.append(temp);
 		}
+		outputTextBuffer(0, 0, true);
 	}
 
 	private void writeTextList(DeltaDataSet dataSet,
@@ -443,7 +447,7 @@ public class DirOutDefault implements DirectiveFunctor {
 						_textBuffer.append(delim);
 					}
 				}
-				outputTextBuffer(1, 0, true);
+				outputTextBuffer(1, 0, false);
 				if (delimSupported)
 					continue;
 			}
@@ -541,27 +545,30 @@ public class DirOutDefault implements DirectiveFunctor {
 	private String despaceRTF(String text, boolean quoteDelimiters) {
 		return Utils.despaceRtf(text, quoteDelimiters);
 	}
-	
-	private void outputTextBuffer() {
-		outputTextBuffer(0, 2, false);
-	}
 
-	private void outputTextBuffer(int i, int j, boolean b) {
-		_printer.setIndent(i);
+	private void outputTextBuffer(int startIndent, int wrapIndent, boolean preserveNewLines) {
+		_printer.setIndent(startIndent);
 		_printer.indent();
-		_printer.setIndent(j);
+		_printer.setIndent(wrapIndent);
 		String[] lines;
-		if (b) {
+		if (preserveNewLines) {
 			lines = _textBuffer.toString().split("\n");
+			System.out.println(Arrays.asList(lines));
 		}
 		else {
 			String text = _textBuffer.toString().replaceAll("\\s", " ");
 			lines = new String[] {text};
 		}
 		
-		for (String line : lines) {
-			_printer.writeJustifiedText(line, -1);
-			_printer.printBufferLine();
+		for (int i=0; i<lines.length; i++) {
+			
+			if (preserveNewLines && i != 0 && StringUtils.isBlank(lines[i])) {
+				_printer.writeBlankLines(1, 0);
+			}
+			else {
+				_printer.writeJustifiedText(lines[i], -1);
+				_printer.printBufferLine();
+			}
 		}
 		_printer.printBufferLine();
 		_textBuffer = new StringBuilder();

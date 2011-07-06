@@ -201,6 +201,24 @@ public class ExportControllerTest extends DeltaTestCase {
 	}
 	
 	/**
+	 * This tests the tonath directives file which has a bunch of 
+	 * directives already tested plus:
+	 * OUTPUT DIRECTORY (DIRARG_FILE)
+	 * IMAGE DIRECTORY (DIRARG_FILE)
+	 * INDEX OUTPUT FILE (DIRARG_FILE)
+	 * INDEX TEXT (DIRARG_TEXT)
+	 * INDEX HEADINGS (DIRARG_ITEMTEXTLIST)
+	 * PRINT COMMENT (DIRARG_TEXT)
+	 * TRANSLATE IMPLICIT VALUE (DIRARG_NONE)
+	 * 
+	 * 
+	 */
+	@Test
+	public void testToNatH() throws Exception {
+		exportAndCheck(15, "tonath");
+	}
+	
+	/**
 	 * This tests the layout directives file which has:
 	 * COMMENT (DIRARG_COMMENT)
 	 * REPLACE ANGLE BRACKETS (DIRARG_NONE)
@@ -219,6 +237,8 @@ public class ExportControllerTest extends DeltaTestCase {
 	public void testLayout() throws Exception {
 		exportAndCheck(4, "layout");
 	}
+	
+	
 	
 	private void exportAndCheck(int directiveFileNum, String directiveFileName) throws Exception {
 		File directory = FileUtils.getTempDirectory();
