@@ -14,13 +14,30 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.slotfile.directive;
 
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang.StringUtils;
 
-public class DirOutCharNotes implements DirectiveFunctor {
+import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.DeltaDataSet;
+
+/**
+ * Exports the CHARACTER NOTES directive
+ *
+ */
+public class DirOutCharNotes extends AbstractDirOutFunctor {
 
 	@Override
-	public void process(DirectiveInOutState state) {
-		throw new NotImplementedException();
+	public void writeDirectiveArguments(DirectiveInOutState state) {
+
+		DeltaDataSet dataSet = state.getDataSet();
+		writeLine(state, "");
+		
+		for (int i=1; i<=dataSet.getNumberOfCharacters(); i++) {
+			Character character = dataSet.getCharacter(i);
+			String notes = character.getNotes();
+			if (StringUtils.isNotEmpty(notes)) {
+				writeLine(state, "#"+i+". "+notes);
+			}
+		}
 	}
 
 }

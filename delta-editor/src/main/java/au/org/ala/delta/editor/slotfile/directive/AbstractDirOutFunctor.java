@@ -51,7 +51,7 @@ public abstract class AbstractDirOutFunctor implements DirectiveFunctor {
 	 * the list have the same value, they will be condensed in the form
 	 * <id1-idx>,<value1>.
 	 */
-	protected <T> String rangeToString(List<Pair<Integer, T>> values) {
+	protected <T> String valueRangeToString(List<Pair<Integer, T>> values) {
 		
 		if (values.isEmpty()) {
 			return "";
@@ -62,8 +62,8 @@ public abstract class AbstractDirOutFunctor implements DirectiveFunctor {
 		int firstInRange = -1;
 		int previousNum = -1;
 		for (Pair<Integer, T> value : values) {
-			
-			if (!value.getSecond().equals(previousValue)) {
+			int id = value.getFirst();
+			if (!value.getSecond().equals(previousValue) || (id != previousNum+1)) {
 				
 				if (firstInRange > 0) {
 					appendRange(builder, previousValue, firstInRange,
@@ -75,21 +75,48 @@ public abstract class AbstractDirOutFunctor implements DirectiveFunctor {
 			previousNum = value.getFirst();
 		}
 		appendRange(builder, previousValue, firstInRange, previousNum);
-		if (builder.charAt(builder.length()-1) == ' ') {
-			builder.setLength(builder.length() - 1);
-		}
+		
 		return builder.toString();
 	}
-
+	
+	protected String rangeToString(List<Integer> values) {
+		if (values.isEmpty()) {
+			return "";
+		}
+		StringBuilder builder = new StringBuilder();
+		int firstInRange = -1;
+		int previousNum = -1;
+		for (int value : values) {
+			if (value != previousNum+1) {
+				
+				if (firstInRange > 0) {
+					appendRange(builder, firstInRange, previousNum);
+				}
+				firstInRange = value;
+			}
+			previousNum = value;
+		}
+		appendRange(builder, firstInRange, previousNum);
+		
+		return builder.toString();
+	}
+  
 	private <T> void appendRange(StringBuilder builder, T value,
 			int firstInRange, int lastInRange) {
+		appendRange(builder, firstInRange, lastInRange);
+		
+		builder.append(",").append(value);
+	}
+	
+	private void appendRange(StringBuilder builder, int firstInRange, int lastInRange) {
+		if (builder.length() > 0) {
+			builder.append(" ");
+		}
 		builder.append(firstInRange);
 		if (firstInRange != lastInRange) {
 			builder.append("-").append(lastInRange);
 		}
 		
-		builder.append(",").append(value);
-		builder.append(" ");
 	}
 	
 }

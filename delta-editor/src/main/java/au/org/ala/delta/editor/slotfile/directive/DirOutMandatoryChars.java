@@ -14,13 +14,30 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.slotfile.directive;
 
-import org.apache.commons.lang.NotImplementedException;
+import java.util.ArrayList;
+import java.util.List;
 
-public class DirOutMandatoryChars implements DirectiveFunctor {
+import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.DeltaDataSet;
+
+/**
+ * Exports the MANDATORY CHARACTERS directive.
+ */
+public class DirOutMandatoryChars extends AbstractDirOutFunctor {
 
 	@Override
-	public void process(DirectiveInOutState state) {
-		throw new NotImplementedException();
+	public void writeDirectiveArguments(DirectiveInOutState state) {
+		DeltaDataSet dataSet = state.getDataSet();
+		
+		List<Integer> mandatoryChars = new ArrayList<Integer>();
+		
+		for (int i=1; i<=dataSet.getNumberOfCharacters(); i++) {
+			Character character = dataSet.getCharacter(i);
+			if (character.isMandatory()) {
+				mandatoryChars.add(i);
+			}
+		}
+		writeLine(state, rangeToString(mandatoryChars));
 	}
 
 }

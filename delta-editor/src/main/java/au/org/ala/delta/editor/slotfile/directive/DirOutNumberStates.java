@@ -39,7 +39,7 @@ public class DirOutNumberStates extends AbstractDirOutFunctor {
 				numbersOfStates.add(new Pair<Integer, Integer>(i, multiStateChar.getNumberOfStates()));
 			}
 		}
-		writeLine(state, rangeToString(numbersOfStates));
+		writeLine(state, valueRangeToString(numbersOfStates));
 	}
 
 }

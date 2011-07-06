@@ -3,7 +3,6 @@ package au.org.ala.delta.editor.directives;
 import au.org.ala.delta.editor.slotfile.Directive;
 import au.org.ala.delta.editor.slotfile.directive.ConforDirType;
 import au.org.ala.delta.editor.slotfile.directive.DirOutImplicitValues;
-import au.org.ala.delta.editor.slotfile.directive.DirOutNumberStates;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.MultiStateCharacter;
