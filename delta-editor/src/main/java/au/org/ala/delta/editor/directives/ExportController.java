@@ -139,7 +139,7 @@ public class ExportController {
 			String fileName = file.getShortFileName();
 			FilenameUtils.concat(directoryPath, fileName);
 			temp = new File(directoryPath+fileName);
-			out = new PrintStream(temp);
+			out = new PrintStream(temp, "utf-8");
 			Printer printer = new Printer(out, 80);
 			printer.setIndentOnLineWrap(true);
 			printer.setSoftWrap(true);

@@ -5,6 +5,8 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 
+import junit.framework.AssertionFailedError;
+
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -247,13 +249,31 @@ public class ExportControllerTest extends DeltaTestCase {
 		
 		String[] directives = read(directiveFileName);
 		
-		String actual = FileUtils.readFileToString(new File(directory, directiveFileName));
+		String actual = FileUtils.readFileToString(new File(directory, directiveFileName), "utf-8");
 		actual = actual.replace("\r\n", "\n");
 		String[] actualDirectives = actual.split("\\*");
 		
 		int i=0;
 		for (String directive : directives) {
+			try {
 			assertEquals(directive, actualDirectives[i++]);
+			}
+			catch (AssertionFailedError e) {
+				for (int j=0; j<directive.length(); j++) {
+					int char1 = (int)directive.charAt(j);
+					int char2 = (int)actualDirectives[i-1].charAt(j);
+					
+					System.out.print(Integer.toHexString(char1)+",");
+					System.out.print(Integer.toHexString(char2)+",");
+					if (char1 != char2) {
+						System.out.print("******");
+					}
+					System.out.println();
+					
+				}
+				
+				
+			}
 		}
 	}
 	
@@ -278,7 +298,7 @@ public class ExportControllerTest extends DeltaTestCase {
 		URL expected = getClass().getResource("expected_results/"+fileName);
 	
 		File f = new File(expected.toURI());
-		String buffer = FileUtils.readFileToString(f);
+		String buffer = FileUtils.readFileToString(f, "utf-8");
 		buffer = buffer.replace("\r\n", "\n");
 		return buffer.toString().split("\\*");
 	}
