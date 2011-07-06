@@ -29,7 +29,7 @@ public class DirOutNumberOfCharactersTest extends DirOutTest {
 		
 		dirOut.process(_state);
 		
-		assertEquals("*NUMBER OF CHARACTERS 7\n", output());
+		assertEquals("*NUMBER OF CHARACTERS 7"+System.getProperty("line.separator"), output());
 		
 	}
 }

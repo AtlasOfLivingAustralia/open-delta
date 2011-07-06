@@ -51,7 +51,8 @@ public abstract class DirOutTest extends TestCase {
 
 	protected String output() throws Exception {
 		_bytesOut.flush();
-		return new String(_bytesOut.toByteArray(), "utf-8");
+		String output = new String(_bytesOut.toByteArray(), "utf-8");
+		return output.replace("\r\n", "\n");
 	}
 
 }
