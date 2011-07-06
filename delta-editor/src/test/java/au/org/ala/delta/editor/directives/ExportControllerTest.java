@@ -271,7 +271,7 @@ public class ExportControllerTest extends DeltaTestCase {
 					System.out.println();
 					
 				}
-				
+				throw e;
 				
 			}
 		}

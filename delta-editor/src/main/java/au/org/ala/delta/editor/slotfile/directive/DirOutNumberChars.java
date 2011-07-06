@@ -14,13 +14,15 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.slotfile.directive;
 
-import org.apache.commons.lang.NotImplementedException;
 
-public class DirOutNumberChars implements DirectiveFunctor {
+public class DirOutNumberChars extends AbstractDirOutFunctor {
 
 	@Override
-	public void process(DirectiveInOutState state) {
-		throw new NotImplementedException();
+	public void writeDirectiveArguments(DirectiveInOutState state) {
+		
+		int numChars = state.getDataSet().getNumberOfCharacters();
+		
+		writeLine(state, Integer.toString(numChars));
 	}
 
 }

@@ -14,13 +14,36 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.slotfile.directive;
 
-import org.apache.commons.lang.NotImplementedException;
+import java.util.ArrayList;
+import java.util.List;
 
-public class DirOutCharTypes implements DirectiveFunctor {
+import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.CharacterType;
+import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.util.Pair;
+
+/**
+ * Exports the CHARACTER TYPES directive.
+ */
+public class DirOutCharTypes extends AbstractDirOutFunctor {
 
 	@Override
-	public void process(DirectiveInOutState state) {
-		throw new NotImplementedException();
+	public void writeDirectiveArguments(DirectiveInOutState state) {
+		DeltaDataSet dataSet = state.getDataSet();
+		List<Pair<Integer, String>> charTypes = new ArrayList<Pair<Integer,String>>();
+		
+		for (int i=1; i<=dataSet.getNumberOfCharacters(); i++) {
+			Character character = dataSet.getCharacter(i);
+			CharacterType type = character.getCharacterType();
+			if (!type.equals(CharacterType.UnorderedMultiState)) {
+				charTypes.add(new Pair<Integer, String>(i, type.toTypeCode()));
+			}
+			
+		}
+		writeLine(state, rangeToString(charTypes));
+		
 	}
+	
+	
 
 }

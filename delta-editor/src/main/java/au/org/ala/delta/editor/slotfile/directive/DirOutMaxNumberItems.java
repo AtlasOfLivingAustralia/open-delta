@@ -14,13 +14,14 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.slotfile.directive;
 
-import org.apache.commons.lang.NotImplementedException;
+import au.org.ala.delta.model.DeltaDataSet;
 
-public class DirOutMaxNumberItems implements DirectiveFunctor {
+public class DirOutMaxNumberItems  extends AbstractDirOutFunctor {
 
 	@Override
-	public void process(DirectiveInOutState state) {
-		throw new NotImplementedException();
+	public void writeDirectiveArguments(DirectiveInOutState state) {
+		DeltaDataSet dataSet = state.getDataSet();
+		writeLine(state, Integer.toString(dataSet.getMaximumNumberOfItems()));
 	}
 
 }

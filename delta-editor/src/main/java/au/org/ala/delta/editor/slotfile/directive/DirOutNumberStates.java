@@ -14,13 +14,30 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.slotfile.directive;
 
-import org.apache.commons.lang.NotImplementedException;
+import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.model.MultiStateCharacter;
 
-public class DirOutNumberStates implements DirectiveFunctor {
+
+public class DirOutNumberStates extends AbstractDirOutFunctor {
 
 	@Override
-	public void process(DirectiveInOutState state) {
-		throw new NotImplementedException();
+	public void writeDirectiveArguments(DirectiveInOutState state) {
+		DeltaDataSet dataSet = state.getDataSet();
+		
+		StringBuilder types = new StringBuilder();
+		for (int i=1; i<dataSet.getNumberOfCharacters(); i++) {
+			Character character = dataSet.getCharacter(i);
+			if (character.getCharacterType().isMultistate()) {
+				MultiStateCharacter multiStateChar = (MultiStateCharacter)character;
+				types.append(Integer.toString(multiStateChar.getNumberOfStates()));
+				types.append(",");
+			}
+		}
+		if (types.charAt(types.length()-1) == ',') {
+			types.setLength(types.length()-1);
+		}
+		writeLine(state, types.toString());
 	}
 
 }

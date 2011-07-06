@@ -43,6 +43,15 @@ public enum CharacterType {
 		throw new RuntimeException("Unrecognized character type literal: " + str);
 	}
 	
+	public String toTypeCode() {
+		for (String key : TYPE_MAP.keySet()) {
+			if (TYPE_MAP.get(key).equals(this)) {
+				return key;
+			}
+		}
+		throw new IllegalStateException("The type map doesn't contain this type");
+	}
+	
 	private static HashMap<String, CharacterType> TYPE_MAP = new HashMap<String, CharacterType>();
 	
 	static {
