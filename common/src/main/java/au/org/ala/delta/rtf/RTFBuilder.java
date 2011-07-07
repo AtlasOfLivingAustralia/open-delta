@@ -8,7 +8,7 @@ public class RTFBuilder {
     private int _indentWidth = 720;
     private int _currentIndent = 0;
 
-    private RTFBuilder() {
+    public RTFBuilder() {
         _strBuilder = new StringBuilder();
     }
 
