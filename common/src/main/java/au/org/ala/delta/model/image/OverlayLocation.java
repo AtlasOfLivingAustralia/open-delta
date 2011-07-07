@@ -35,6 +35,32 @@ public class OverlayLocation {
 		return (flags & OLOC_FLAG_POPUP) > 0;
 	}
 	
+	public void setPopup(boolean popup) {
+		if (popup) {
+			flags |= OLOC_FLAG_POPUP;
+		}
+		else {
+			flags &= ~OLOC_FLAG_POPUP;
+		}
+	}
+	
+	public void setColor(int rgb) {
+		
+		int r = (rgb & 0xff0000) >> 16;
+		int g = rgb & 0x00ff00;
+		int b = (rgb & 0x0000ff) << 16;
+		
+		clearColor();
+		
+		flags |= b | g | r;
+		
+		flags |= OLOC_FLAG_COLOUR;
+	}
+	
+	public void clearColor() {
+		flags &= ~(OLOC_FLAG_COLOUR_MASK | OLOC_FLAG_COLOUR_MASK);
+	}
+	
 	public int getColor() {
 		// not sure why it's not rgb
 		int bgr = (flags & OLOC_FLAG_COLOUR_MASK);

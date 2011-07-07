@@ -32,8 +32,7 @@ public class VOImageDesc extends VOAnyDesc {
 
 	private ImageFixedData _fixedData;
 
-	public static String[] OLKeywords = new String[] { "text", "item", "feature", "state", "value", "units", "enter", "subject", "sound", "heading", "keyword", "ok", "cancel", "notes", "imagenotes",
-			"comment" };
+	
 	
 	public static final int HAS_X = 1;
 	public static final int HAS_Y = 2;
@@ -309,14 +308,7 @@ public class VOImageDesc extends VOAnyDesc {
 		            ++j;
 		          String keyWord = buffer.substring(i + 1, --j);
 		          i = j;
-		          for (int k = 0; k < OverlayType.LIST_END; ++k)
-		            {
-		              if(keyWord == OLKeywords[k])
-		                {
-		                  anOverlay.type = k;
-		                  break;
-		                }
-		            }
+		          anOverlay.type = OverlayType.typeFromKeyword(keyWord);
 
 		          switch (anOverlay.type)
 		            {

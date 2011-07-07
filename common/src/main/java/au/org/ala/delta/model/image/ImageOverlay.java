@@ -3,7 +3,6 @@ package au.org.ala.delta.model.image;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
 
 
@@ -106,10 +105,6 @@ public class ImageOverlay {
 		return !(type == OverlayType.OLCOMMENT || type == OverlayType.OLSUBJECT || type == OverlayType.OLSOUND || location.isEmpty());
 	}
 
-	public boolean hasTextBox() {
-		throw new NotImplementedException();
-	}
-
 	public int getNHotSpots() {
 		return Math.max(0, (int) location.size() - 1);
 	}
@@ -151,12 +146,40 @@ public class ImageOverlay {
 		return ((location.get(0).flags & OL_OMIT_DESCRIPTION) > 0);
 	}
 	
+	public void setOmitDescription(boolean omitDescription) {
+		
+		if (omitDescription) {
+			location.get(0).flags |= OL_OMIT_DESCRIPTION;
+		}
+		else {
+			location.get(0).flags &= ~OL_OMIT_DESCRIPTION;
+		}
+	}
+	
 	public boolean includeComments() {
 		return ((location.get(0).flags & OL_INCLUDE_COMMENTS) > 0);
 	}
 	
+	public void setIncludeComments(boolean includeComments) {
+		if (includeComments) {
+			location.get(0).flags |= OL_INCLUDE_COMMENTS;
+		}
+		else {
+			location.get(0).flags &= ~OL_INCLUDE_COMMENTS;
+		}
+	}
+	
 	public boolean centreText() {
 		return (location.size() > 0 && (location.get(0).flags & OL_CENTER_TEXT) > 0);
+	}
+	
+	public void setCentreText(boolean centreText) {
+		if (centreText) {
+			location.get(0).flags |= OL_CENTER_TEXT;
+		}
+		else {
+			location.get(0).flags &= ~OL_CENTER_TEXT;
+		}
 	}
 
 	public boolean canSelect() {

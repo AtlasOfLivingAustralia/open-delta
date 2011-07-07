@@ -44,6 +44,10 @@ public class Printer {
 	public void insertTypeSettingMarks(int number) {
 
 	}
+	
+	public void close() {
+		_output.close();
+	}
 
 	/**
 	 * If the indentOnLineWrap property is set to true if a statement

@@ -38,6 +38,8 @@ public class DefaultCharacterData implements CharacterData {
 	private List<CharacterDependency> _dependentCharacters = new ArrayList<CharacterDependency>();
     private List<CharacterDependency> _controllingCharacters = new ArrayList<CharacterDependency>();
 
+    private List<Image> _images = new ArrayList<Image>();
+    
 	@Override
 	public String getDescription() {
 		return _description;
@@ -282,27 +284,32 @@ public class DefaultCharacterData implements CharacterData {
 
 	@Override
     public Image addImage(String fileName, String comments) {
-    	throw new NotImplementedException();
+		DefaultImageData imageData = new DefaultImageData(fileName);
+		Image image = new Image(imageData);
+    	_images.add(image);
+    	return image;
     }
 
 	@Override
 	public List<Image> getImages() {
-		throw new NotImplementedException();
+		return _images;
 	}
 	
 	@Override
 	public int getImageCount() {
-		throw new NotImplementedException();
+		return _images.size();
 	}
 
 	@Override
 	public void deleteImage(Image image) {
-		throw new NotImplementedException();
+		_images.remove(image);
 	}
 
 	@Override
 	public void moveImage(Image image, int position) {
-		throw new NotImplementedException();
+		int imageIndex = _images.indexOf(image);
+		_images.remove(imageIndex);
+		_images.add(position, image);
 	}
 	
 	public void addDependentCharacters(CharacterDependency dependency) {

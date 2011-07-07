@@ -14,13 +14,49 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.slotfile.directive;
 
-import org.apache.commons.lang.NotImplementedException;
+import java.util.List;
 
-public class DirOutCharImages implements DirectiveFunctor {
+import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.model.image.Image;
+
+/**
+ * Exports the CHARACTER IMAGES directive.
+ */
+public class DirOutCharImages extends DirOutImageOverlay {
 
 	@Override
-	public void process(DirectiveInOutState state) {
-		throw new NotImplementedException();
+	public void writeDirectiveArguments(DirectiveInOutState state) {
+
+		int fileIndent;
+		DeltaDataSet dataSet = state.getDataSet();
+
+		for (int i = 1; i <= dataSet.getNumberOfCharacters(); ++i) {
+			Character character = dataSet.getCharacter(i);
+
+			if (character.getImageCount() == 0)
+				continue;
+
+			outputTextBuffer(0, 10, true);
+
+			_textBuffer.append("#").append(i).append(". ");
+			fileIndent = _textBuffer.length();
+
+			List<Image> imageList = character.getImages();
+
+			for (int j = 0; j < imageList.size(); j++) {
+
+				Image image = imageList.get(j);
+				if (!image.getSubject().equals(character)) {
+					throw new RuntimeException("TDirInOutEx(ED_INTERNAL_ERROR");
+				}
+				_textBuffer.append(image.getFileName());
+
+				outputTextBuffer(j == 0 ? 0 : fileIndent, 2, true);
+
+				writeOverlays(image.getOverlays(), fileIndent + 5, image.getSubject());
+			}
+		}
 	}
 
 }

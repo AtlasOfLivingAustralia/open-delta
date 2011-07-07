@@ -28,6 +28,8 @@ public class OverlayType {
 	// to images rather than overlays
 	public static final int LIST_END = 16; // Insert new overlay types just BEFORE this!
 
+	public static String[] OLKeywords = new String[] { "text", "item", "feature", "state", "value", "units", "enter", "subject", "sound", "heading", "keyword", "ok", "cancel", "notes", "imagenotes",
+	"comment" };
 	
 	public static boolean isTextOverlay(ImageOverlay overlay) {
 		int overlayType = overlay.type;
@@ -49,6 +51,19 @@ public class OverlayType {
 		default:
 			return false;
 		}
+	}
+	
+	public static String keywordFromType(int overlayType) {
+		return OLKeywords[overlayType];
+	}
+	
+	public static int typeFromKeyword(String keyword) {
+		for (int i=0; i<OLKeywords.length; i++) {
+			if (OLKeywords[i].equals(keyword)) {
+				return i;
+			}
+		}
+		throw new IllegalArgumentException("Invalid keyword : "+keyword);
 	}
 	
 }

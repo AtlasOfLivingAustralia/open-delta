@@ -1,7 +1,9 @@
 package au.org.ala.delta.editor.directives;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import javax.swing.JOptionPane;
@@ -132,67 +134,56 @@ public class ExportController {
 		
 	}
 	
-	File temp; 
-	PrintStream out;
 	private void writeDirectivesFile(DirectiveFile file, String directoryPath) {
+		DirectiveInOutState state = new DirectiveInOutState();
 		try {
-			String fileName = file.getShortFileName();
-			FilenameUtils.concat(directoryPath, fileName);
-			temp = new File(directoryPath+fileName);
-			out = new PrintStream(temp, "utf-8");
-			Printer printer = new Printer(out, 80);
-			printer.setIndentOnLineWrap(true);
-			printer.setSoftWrap(true);
-			printer.setIndent(2);
-			DirectiveInOutState state = new DirectiveInOutState();
-			state.setPrinter(printer);
-			state.setDataSet(_model);
+			state = createExportState(file, directoryPath);
 			List<DirectiveInstance> directives = file.getDirectives();
 			
 			for (int i=0; i<directives.size(); i++) {
 				writeDirective(directives.get(i), state);
 				if (i != directives.size()-1) {
-					printer.writeBlankLines(1, 0);
+					state.getPrinter().writeBlankLines(1, 0);
 				}
 			}
-			printer.printBufferLine();
+			state.getPrinter().printBufferLine();
 			
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
 		finally {
-			if (out != null) {
-				out.close();
-			}
+			state.getPrinter().close();
 		}
+	}
+
+	private DirectiveInOutState createExportState(DirectiveFile file,
+			String directoryPath) throws FileNotFoundException,
+			UnsupportedEncodingException {
+		DirectiveInOutState state;
+		String fileName = file.getShortFileName();
+		FilenameUtils.concat(directoryPath, fileName);
+		File temp = new File(directoryPath+fileName);
+		PrintStream out = new PrintStream(temp, "utf-8");
+		Printer printer = new Printer(out, 80);
+		printer.setIndentOnLineWrap(true);
+		printer.setSoftWrap(true);
+		printer.setIndent(2);
+		state = new DirectiveInOutState();
+		state.setPrinter(printer);
+		state.setDataSet(_model);
+		return state;
 	}
 	
 	protected void writeDirective(DirectiveInstance directive, DirectiveInOutState state) {
 		
-		StringBuilder textBuffer = new StringBuilder();
 		state.setCurrentDirective(directive);
-		
-		
-	    textBuffer.append('*');
-	    if (directive.isCommented()) {
-	    	textBuffer.append("COMMENT ");
-	    }
-	    
-	    Directive directiveInfo =directive.getDirective();
-	    textBuffer.append(directiveInfo.joinNameComponents());
-	    
-	    outputTextBuffer(state, textBuffer.toString());
+	    Directive directiveInfo = directive.getDirective();
 	   
 	    if (directiveInfo.getOutFunc() instanceof DirOutDefault) {
 	    	directiveInfo.getOutFunc().process(state);
 	    }
 	    
-	}
-	
-	private void outputTextBuffer(DirectiveInOutState state, String buffer) {
-		state.getPrinter().writeJustifiedText(buffer, -1);
-		
 	}
 	
 }

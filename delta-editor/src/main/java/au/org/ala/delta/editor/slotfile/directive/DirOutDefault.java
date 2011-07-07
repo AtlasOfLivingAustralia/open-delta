@@ -16,11 +16,8 @@ package au.org.ala.delta.editor.slotfile.directive;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.directives.args.DirectiveArgument;
@@ -30,23 +27,18 @@ import au.org.ala.delta.editor.slotfile.model.DirectiveFile.DirectiveType;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Item;
-import au.org.ala.delta.translation.Printer;
-import au.org.ala.delta.util.Utils;
 
 /**
  * Writes the directive to the output.
  */
-public class DirOutDefault implements DirectiveFunctor {
+public class DirOutDefault extends AbstractDirOutFunctor {
 
-	private Printer _printer;
-	private StringBuilder _textBuffer;
+	
 
 	@Override
-	public void process(DirectiveInOutState state) {
+	public void writeDirectiveArguments(DirectiveInOutState state) {
 
-		_printer = state.getPrinter();
 		_printer.setIndent(2);
-		_textBuffer = new StringBuilder();
 		DeltaDataSet dataSet = state.getDataSet();
 		Directive curDirective = state.getCurrentDirective().getDirective();
 		// Dir directive;
@@ -60,9 +52,7 @@ public class DirOutDefault implements DirectiveFunctor {
 		int prevNo, curNo;
 
 		List<DirectiveArgument<?>> args = null;
-		;
-		List<Integer> data = null;
-
+		
 		switch (argType) {
 		case DirectiveArgType.DIRARG_NONE:
 		case DirectiveArgType.DIRARG_TRANSLATION:
@@ -536,42 +526,6 @@ public class DirOutDefault implements DirectiveFunctor {
 	private void appendKeyword(String firstArgumentText) {
 		// TODO Auto-generated method stub
 
-	}
-
-
-	private String despaceRTF(String temp) {
-		return despaceRTF(temp, false);
-	}
-	private String despaceRTF(String text, boolean quoteDelimiters) {
-		return Utils.despaceRtf(text, quoteDelimiters);
-	}
-
-	private void outputTextBuffer(int startIndent, int wrapIndent, boolean preserveNewLines) {
-		_printer.setIndent(startIndent);
-		_printer.indent();
-		_printer.setIndent(wrapIndent);
-		String[] lines;
-		if (preserveNewLines) {
-			lines = _textBuffer.toString().split("\n");
-			System.out.println(Arrays.asList(lines));
-		}
-		else {
-			String text = _textBuffer.toString().replaceAll("\\s", " ");
-			lines = new String[] {text};
-		}
-		
-		for (int i=0; i<lines.length; i++) {
-			
-			if (preserveNewLines && i != 0 && StringUtils.isBlank(lines[i])) {
-				_printer.writeBlankLines(1, 0);
-			}
-			else {
-				_printer.writeJustifiedText(lines[i], -1);
-				_printer.printBufferLine();
-			}
-		}
-		_printer.printBufferLine();
-		_textBuffer = new StringBuilder();
 	}
 
 

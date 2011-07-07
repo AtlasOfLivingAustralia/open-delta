@@ -1,9 +1,15 @@
 package au.org.ala.delta.editor.slotfile.directive;
 
+import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
+import au.org.ala.delta.editor.slotfile.Directive;
+import au.org.ala.delta.editor.slotfile.DirectiveInstance;
 import au.org.ala.delta.translation.Printer;
 import au.org.ala.delta.util.Pair;
+import au.org.ala.delta.util.Utils;
 
 /**
  * Base class for directive export functors.  Provides utility methods
@@ -11,12 +17,17 @@ import au.org.ala.delta.util.Pair;
  */
 public abstract class AbstractDirOutFunctor implements DirectiveFunctor {
 	
+	protected Printer _printer;
+	protected StringBuilder _textBuffer;
+	
 	/**
 	 * Writes the directive name then delegates to subclass to supply the
 	 * arguments.
 	 */
 	@Override
 	public void process(DirectiveInOutState state) {
+		_printer = state.getPrinter();
+		_textBuffer = new StringBuilder();
 		writeDirective(state);
 		writeDirectiveArguments(state);
 	}
@@ -31,8 +42,17 @@ public abstract class AbstractDirOutFunctor implements DirectiveFunctor {
 	 * DirectiveInOutState.
 	 */
 	protected void writeDirective(DirectiveInOutState state) {
-		String directive = state.getCurrentDirective().getDirective().joinNameComponents();
-		state.getPrinter().writeJustifiedText("*"+directive, -1);
+		
+		_textBuffer.append('*');
+		DirectiveInstance directive = state.getCurrentDirective();
+	    if (directive.isCommented()) {
+	    	_textBuffer.append("COMMENT ");
+	    }
+	    
+	    Directive directiveInfo = directive.getDirective();
+	    _textBuffer.append(directiveInfo.joinNameComponents());
+		state.getPrinter().writeJustifiedText(_textBuffer.toString(), -1);
+		_textBuffer = new StringBuilder();
 	}
 	
 	/**
@@ -117,6 +137,42 @@ public abstract class AbstractDirOutFunctor implements DirectiveFunctor {
 			builder.append("-").append(lastInRange);
 		}
 		
+	}
+
+	protected String despaceRTF(String temp) {
+		return despaceRTF(temp, false);
+	}
+
+	protected String despaceRTF(String text, boolean quoteDelimiters) {
+		return Utils.despaceRtf(text, quoteDelimiters);
+	}
+
+	protected void outputTextBuffer(int startIndent, int wrapIndent, boolean preserveNewLines) {
+		_printer.setIndent(startIndent);
+		_printer.indent();
+		_printer.setIndent(wrapIndent);
+		String[] lines;
+		if (preserveNewLines) {
+			lines = _textBuffer.toString().split("\n");
+			System.out.println(Arrays.asList(lines));
+		}
+		else {
+			String text = _textBuffer.toString().replaceAll("\\s", " ");
+			lines = new String[] {text};
+		}
+		
+		for (int i=0; i<lines.length; i++) {
+			
+			if (preserveNewLines && i != 0 && StringUtils.isBlank(lines[i])) {
+				_printer.writeBlankLines(1, 0);
+			}
+			else {
+				_printer.writeJustifiedText(lines[i], -1);
+				_printer.printBufferLine();
+			}
+		}
+		_printer.printBufferLine();
+		_textBuffer = new StringBuilder();
 	}
 	
 }
