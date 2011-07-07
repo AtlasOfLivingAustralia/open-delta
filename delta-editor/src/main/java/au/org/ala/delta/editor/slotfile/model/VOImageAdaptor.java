@@ -2,8 +2,11 @@ package au.org.ala.delta.editor.slotfile.model;
 
 import java.util.List;
 
+import au.org.ala.delta.editor.slotfile.DeltaVOP;
+import au.org.ala.delta.editor.slotfile.VOCharBaseDesc;
 import au.org.ala.delta.editor.slotfile.VOImageDesc;
 import au.org.ala.delta.model.image.ImageOverlay;
+import au.org.ala.delta.model.image.OverlayType;
 import au.org.ala.delta.model.impl.ImageData;
 
 /**
@@ -12,9 +15,11 @@ import au.org.ala.delta.model.impl.ImageData;
 public class VOImageAdaptor implements ImageData {
 
 	private VOImageDesc _imageDesc;
+	private DeltaVOP _vop;
 	
-	public VOImageAdaptor(VOImageDesc imageDesc) {
+	public VOImageAdaptor(DeltaVOP vop, VOImageDesc imageDesc) {
 		_imageDesc = imageDesc;
+		_vop = vop;
 	}
 	
 	/**
@@ -30,7 +35,17 @@ public class VOImageAdaptor implements ImageData {
 	
 	@Override
 	public List<ImageOverlay> getOverlays() {
-		return _imageDesc.readAllOverlays();
+		List<ImageOverlay> overlays = _imageDesc.readAllOverlays();
+		
+		for (ImageOverlay overlay : overlays) {
+			if (overlay.isType(OverlayType.OLSTATE)) {
+				int id = _imageDesc.getOwnerId();
+				VOCharBaseDesc charBase = (VOCharBaseDesc)_vop.getDescFromId(id);
+				overlay.stateId = charBase.stateNoFromUniId(overlay.stateId);
+			}
+		}
+		
+		return overlays;
 	}
 
 	public String getFileName() {

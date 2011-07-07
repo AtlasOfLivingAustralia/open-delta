@@ -48,10 +48,11 @@ public abstract class DirOutImageOverlay extends AbstractDirOutFunctor {
 					|| curType == OverlayType.OLSOUND
 					|| curType == OverlayType.OLCOMMENT) {
 
-				if (curType == OverlayType.OLCOMMENT
-						|| curType == OverlayType.OLSUBJECT)
-
-					_textBuffer.append(despaceRTF(overlay.overlayText, true));
+				String text = overlay.overlayText;
+				if (curType == OverlayType.OLCOMMENT || curType == OverlayType.OLSUBJECT) {
+					text = despaceRTF(text, true);
+				}
+				_textBuffer.append(text);
 				_textBuffer.append('>');
 				outputTextBuffer(indent, indent + 5, true);
 				continue;
@@ -122,10 +123,11 @@ public abstract class DirOutImageOverlay extends AbstractDirOutFunctor {
 			}
 
 			// Output hotspot information
+			int tmpIndent = indent;
 			for (int loc = 1; loc<overlay.location.size(); loc++) {
 				OverlayLocation hsLoc = overlay.location.get(loc);
-				outputTextBuffer(indent, indent, true);
-				indent = xIndent;
+				outputTextBuffer(tmpIndent, tmpIndent, true);
+				tmpIndent = xIndent;
 
 				_textBuffer.append(" x=").append(hsLoc.X);
 				_textBuffer.append(" y=").append(hsLoc.Y);
@@ -138,7 +140,7 @@ public abstract class DirOutImageOverlay extends AbstractDirOutFunctor {
 				if (hsLoc.isColorSet()) {
 					_textBuffer.append(" f=");
 					Formatter formatter = new Formatter(_textBuffer);
-					formatter.format("%06X", hsLoc.getColor());
+					formatter.format("%06X", hsLoc.getColorAsBGR());
 				}
 			}
 
@@ -150,14 +152,18 @@ public abstract class DirOutImageOverlay extends AbstractDirOutFunctor {
 			if (overlay.centreText())
 				_textBuffer.append(" m");
 
+			boolean hasText = false;
 			if (overlay.overlayText.length() > 0) {
-				outputTextBuffer(indent, indent, true);
+				outputTextBuffer(tmpIndent, indent, true);
 				_textBuffer.append(" t=");
 				_textBuffer.append(despaceRTF(overlay.overlayText, true));
+				hasText = true;
 			}
-
+			if (hasText) {
+				tmpIndent = indent +1; 
+			}
 			_textBuffer.append('>');
-			outputTextBuffer(indent, indent, true);
+			outputTextBuffer(tmpIndent, indent, true);
 		}
 
 	}

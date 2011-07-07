@@ -240,7 +240,23 @@ public class ExportControllerTest extends DeltaTestCase {
 		exportAndCheck(4, "layout");
 	}
 	
+	/**
+	 * This tests the cimages directives file which has:
+	 * CHARACTER IMAGES (DIRARG_INTERNAL)
+	 */
+	@Test
+	public void testCImages() throws Exception {
+		exportAndCheck(1, "cimages");
+	}
 	
+	/**
+	 * This tests the timages directives file which has:
+	 * TAXON IMAGES (DIRARG_INTERNAL)
+	 */
+	@Test
+	public void testTImages() throws Exception {
+		exportAndCheck(11, "timages");
+	}
 	
 	private void exportAndCheck(int directiveFileNum, String directiveFileName) throws Exception {
 		File directory = FileUtils.getTempDirectory();
@@ -259,18 +275,18 @@ public class ExportControllerTest extends DeltaTestCase {
 			assertEquals(directive, actualDirectives[i++]);
 			}
 			catch (AssertionFailedError e) {
-				for (int j=0; j<directive.length(); j++) {
-					int char1 = (int)directive.charAt(j);
-					int char2 = (int)actualDirectives[i-1].charAt(j);
-					
-					System.out.print(Integer.toHexString(char1)+",");
-					System.out.print(Integer.toHexString(char2)+",");
-					if (char1 != char2) {
-						System.out.print("******");
-					}
-					System.out.println();
-					
-				}
+//				for (int j=0; j<directive.length(); j++) {
+//					int char1 = (int)directive.charAt(j);
+//					int char2 = (int)actualDirectives[i-1].charAt(j);
+//					
+//					System.out.print(Integer.toHexString(char1)+",");
+//					System.out.print(Integer.toHexString(char2)+",");
+//					if (char1 != char2) {
+//						System.out.print("******");
+//					}
+//					System.out.println();
+//					
+//				}
 				throw e;
 				
 			}

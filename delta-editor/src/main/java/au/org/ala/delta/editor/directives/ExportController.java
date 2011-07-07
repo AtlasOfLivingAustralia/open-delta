@@ -22,7 +22,6 @@ import au.org.ala.delta.editor.directives.ui.ImportExportStatusDialog;
 import au.org.ala.delta.editor.model.EditorDataModel;
 import au.org.ala.delta.editor.slotfile.Directive;
 import au.org.ala.delta.editor.slotfile.DirectiveInstance;
-import au.org.ala.delta.editor.slotfile.directive.DirOutDefault;
 import au.org.ala.delta.editor.slotfile.directive.DirectiveInOutState;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile;
 import au.org.ala.delta.translation.Printer;
@@ -182,9 +181,7 @@ public class ExportController {
 		state.setCurrentDirective(directive);
 	    Directive directiveInfo = directive.getDirective();
 	   
-	    if (directiveInfo.getOutFunc() instanceof DirOutDefault) {
-	    	directiveInfo.getOutFunc().process(state);
-	    }
+	    directiveInfo.getOutFunc().process(state);
 	    
 	}
 	

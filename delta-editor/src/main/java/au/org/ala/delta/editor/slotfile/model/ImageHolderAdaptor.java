@@ -57,7 +57,7 @@ public abstract class ImageHolderAdaptor implements Illustratable {
 			images.add(imageId);
 			getImageHolder().writeImageList(images);
 			
-			return new Image(new VOImageAdaptor(imageDesc));
+			return new Image(new VOImageAdaptor(getVOP(), imageDesc));
 		}
 		
 		return null;
@@ -94,7 +94,7 @@ public abstract class ImageHolderAdaptor implements Illustratable {
 	protected Image createImage(int id) {
 		VOImageDesc imageDesc = (VOImageDesc)getVOP().getDescFromId(id);
 		
-		return new Image(new VOImageAdaptor(imageDesc));
+		return new Image(new VOImageAdaptor(getVOP(), imageDesc));
 	}
 	
 	@Override

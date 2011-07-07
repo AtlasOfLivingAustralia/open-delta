@@ -70,6 +70,10 @@ public class OverlayLocation {
 		
 		return r | g | b;
 	}
+	
+	public int getColorAsBGR() {
+		return flags & OLOC_FLAG_COLOUR_MASK;
+	}
 
 
 	public static enum OLDrawType {

@@ -3,7 +3,6 @@ package au.org.ala.delta.editor.directives;
 import au.org.ala.delta.editor.slotfile.Directive;
 import au.org.ala.delta.editor.slotfile.directive.ConforDirType;
 import au.org.ala.delta.editor.slotfile.directive.DirOutTaxonImages;
-import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageOverlay;
@@ -33,10 +32,10 @@ public class DirOutTaxonImagesTest extends DirOutImageOverlayTest {
 	}
 	
 	/**
-	 * Tests the export of a single image with a feature overlay to a 
-	 * CHARACTER IMAGES directive using our sample dataset.
+	 * Tests the export of a single image with a subject overlay to a 
+	 * TAXON IMAGES directive using our sample dataset.
 	 */
-	public void testDirOutCharImagesFeatureOverlay() throws Exception {
+	public void testDirOutCharImagesSubjectOverlay() throws Exception {
 		
 		initialiseDataSet();
 		
@@ -52,5 +51,24 @@ public class DirOutTaxonImagesTest extends DirOutImageOverlayTest {
 				"          <@subject Subject>\n", output());
 	}
 	
+	/**
+	 * Tests the export of a single image with a sound overlay to a 
+	 * TAXON IMAGES directive using our sample dataset.
+	 */
+	public void testDirOutCharImagesSoundOverlay() throws Exception {
+		
+		initialiseDataSet();
+		
+		Image image = addImage("image 1", 3);
+		ImageOverlay overlay = addOverlay(image, OverlayType.OLSOUND);
+		overlay.overlayText="sound file name.wav";
+		DirOutTaxonImages dirOut = new DirOutTaxonImages();
+		
+		dirOut.process(_state);
+		
+		assertEquals("*TAXON IMAGES\n# item 3/\n"+
+				"     image 1\n"+
+				"          <@sound sound file name.wav>\n", output());
+	}
 	
 }
