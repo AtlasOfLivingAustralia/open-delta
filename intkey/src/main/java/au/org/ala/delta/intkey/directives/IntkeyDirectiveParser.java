@@ -12,7 +12,6 @@ import au.org.ala.delta.Logger;
 import au.org.ala.delta.directives.AbstractDirective;
 import au.org.ala.delta.directives.DirectiveParser;
 import au.org.ala.delta.directives.DirectiveSearchResult;
-import au.org.ala.delta.directives.ParsingContext;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.ui.UIUtils;
 
@@ -36,6 +35,7 @@ public class IntkeyDirectiveParser extends DirectiveParser<IntkeyContext> {
         instance.registerDirective(new SetReliabilitiesDirective());
         instance.registerDirective(new DisplayCharacterOrderBestDirective());
         instance.registerDirective(new DisplayCharacterOrderNaturalDirective());
+        instance.registerDirective(new DifferencesDirective());
         return instance;
     }
 

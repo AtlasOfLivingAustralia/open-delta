@@ -231,7 +231,7 @@ public class UseDirective extends IntkeyDirective {
         return retList;
     }
 
-    public class UseDirectiveInvocation implements IntkeyDirectiveInvocation {
+    private class UseDirectiveInvocation implements IntkeyDirectiveInvocation {
 
         private Map<au.org.ala.delta.model.Character, CharacterValue> _characterValues;
         private boolean _change;
