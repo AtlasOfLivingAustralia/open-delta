@@ -14,13 +14,27 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.slotfile.directive;
 
-import org.apache.commons.lang.NotImplementedException;
+import au.org.ala.delta.directives.args.DirectiveArguments;
+import au.org.ala.delta.model.DeltaDataSet;
 
-public class DirOutDataBufferSize implements DirectiveFunctor {
+
+/**
+ * Exports the DATA BUFFER SIZE directive.
+ */
+public class DirOutDataBufferSize extends AbstractDirOutFunctor {
 
 	@Override
-	public void process(DirectiveInOutState state) {
-		throw new NotImplementedException();
+	public void writeDirectiveArguments(DirectiveInOutState state) {
+		DeltaDataSet dataSet = state.getDataSet();
+		DirectiveArguments args = state.getCurrentDirective().getDirectiveArguments();
+		_textBuffer.append(' ');
+		float val = 0;
+		if (args.size() > 0) {
+		    val = args.get(0).getValue().floatValue();
+		}
+		val = Math.max(val, 4000);
+		_textBuffer.append((int)Math.max(val, dataSet.getNumberOfCharacters() * 50));
+		writeLine(state, _textBuffer.toString());
 	}
 
 }
