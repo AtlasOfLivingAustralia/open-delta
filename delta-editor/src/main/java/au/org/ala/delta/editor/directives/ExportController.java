@@ -153,7 +153,9 @@ public class ExportController {
 			e.printStackTrace();
 		}
 		finally {
-			state.getPrinter().close();
+			if (state.getPrinter() != null) {
+				state.getPrinter().close();
+			}
 		}
 	}
 
