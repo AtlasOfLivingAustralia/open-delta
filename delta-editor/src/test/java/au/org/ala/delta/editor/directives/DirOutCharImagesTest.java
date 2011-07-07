@@ -105,7 +105,7 @@ public class DirOutCharImagesTest extends DirOutImageOverlayTest {
 		dirOut.process(_state);
 		
 		assertEquals("*CHARACTER IMAGES\n#4. image 1\n"+
-             "         <@state 1 x=1 y=2 w=3 h=4 n c m\n         t=extra>\n", output());
+             "         <@state 1 x=1 y=2 w=3 h=4 n c m\n          t=extra>\n", output());
 	}
 	
 	/**
@@ -131,7 +131,7 @@ public class DirOutCharImagesTest extends DirOutImageOverlayTest {
 		assertEquals("*CHARACTER IMAGES\n#5. image 1\n"+
              "         <@value 1-3 x=1 y=2 w=3 h=4\n"+
              "                     x=2 y=3 w=4 h=5\n"+
-             "                     t=extra>\n", output());
+             "          t=extra>\n", output());
 	}
 	
 	/**
@@ -157,8 +157,8 @@ public class DirOutCharImagesTest extends DirOutImageOverlayTest {
 		
 		assertEquals("*CHARACTER IMAGES\n#4. image 1\n"+
              "         <@state 2 x=1 y=2 w=3 h=4\n"+
-             "                   x=2 y=3 w=4 h=5 p f=0121FF\n"+
-             "                   t=extra>\n", output());
+             "                   x=2 y=3 w=4 h=5 p f=FF2101\n"+
+             "          t=extra>\n", output());
 	}
 	
 	/**
@@ -185,8 +185,8 @@ public class DirOutCharImagesTest extends DirOutImageOverlayTest {
 		
 		assertEquals("*CHARACTER IMAGES\n#4. image 1\n"+
              "         <@state 2 x=1 y=2 w=3 h=4\n"+
-             "                   x=2 y=3 w=4 h=5 p f=0121FF\n"+
-             "                   t=extra>\n"+
+             "                   x=2 y=3 w=4 h=5 p f=FF2101\n"+
+             "          t=extra>\n"+
              "         <@subject Subject>\n", output());
 	}
 	
@@ -215,8 +215,8 @@ public class DirOutCharImagesTest extends DirOutImageOverlayTest {
 		
 		assertEquals("*CHARACTER IMAGES\n#4. image 1\n"+
              "         <@state 2 x=1 y=2 w=3 h=4\n"+
-             "                   x=2 y=3 w=4 h=5 p f=0121FF\n"+
-             "                   t=extra>\n"+
+             "                   x=2 y=3 w=4 h=5 p f=FF2101\n"+
+             "          t=extra>\n"+
              "#7. image 2\n"+
              "         <@subject Subject>\n", output());
 	}
