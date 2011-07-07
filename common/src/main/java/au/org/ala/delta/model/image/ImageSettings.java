@@ -1,4 +1,4 @@
-package au.org.ala.delta.editor.model;
+package au.org.ala.delta.model.image;
 
 import java.awt.Color;
 import java.awt.Font;

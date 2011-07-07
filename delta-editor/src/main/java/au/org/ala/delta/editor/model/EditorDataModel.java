@@ -17,6 +17,7 @@ import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.ObservableDeltaDataSet;
 import au.org.ala.delta.model.image.Image;
+import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
 
 
