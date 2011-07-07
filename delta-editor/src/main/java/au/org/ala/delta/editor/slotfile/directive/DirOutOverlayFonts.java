@@ -14,13 +14,61 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.slotfile.directive;
 
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang.StringUtils;
 
-public class DirOutOverlayFonts implements DirectiveFunctor {
+import au.org.ala.delta.editor.slotfile.VOImageInfoDesc.OverlayFontType;
+import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.model.image.ImageSettings;
+import au.org.ala.delta.model.image.ImageSettings.FontInfo;
+
+public class DirOutOverlayFonts extends AbstractDirOutFunctor {
 
 	@Override
-	public void process(DirectiveInOutState state) {
-		throw new NotImplementedException();
+	public void writeDirectiveArguments(DirectiveInOutState state) {
+		outputTextBuffer(0, 0, true);
+		
+		DeltaDataSet dataSet = state.getDataSet();
+
+		ImageSettings settings = dataSet.getImageSettings();
+		if (settings != null) {
+
+			for (OverlayFontType fontType : OverlayFontType.values()) {
+				int indent = 2;
+				_textBuffer.append("#").append(fontType.ordinal() + 1).append(". ");
+				FontInfo fontInfo;
+				if (fontType == OverlayFontType.OF_DEFAULT) {
+					fontInfo = settings.getDefaultFontInfo();
+				}
+				else if (fontType == OverlayFontType.OF_FEATURE) {
+					fontInfo = settings.getDefaultFeatureFontInfo();
+				}
+				else {
+					fontInfo = settings.getDefaultButtonFontInfo();
+				}
+				
+				String comment = fontInfo.comment;
+				if (StringUtils.isNotEmpty(comment)) {
+					_textBuffer.append(" <");
+					_textBuffer.append(comment);
+					_textBuffer.append('>');
+					outputTextBuffer(indent, indent, true);
+					indent = 10;
+				}
+				if (StringUtils.isNotEmpty(fontInfo.name)) {
+
+					String buffer = String.format("%d %d %d %d %d %d %s",
+							fontInfo.size,
+							fontInfo.weight, 
+							fontInfo.italic ? 1 : 0, 
+							fontInfo.pitch,
+							fontInfo.family,
+							fontInfo.charSet, fontInfo.name);
+					_textBuffer.append(buffer);
+					outputTextBuffer(indent, 10, true);
+				} else
+					_textBuffer = new StringBuilder();
+			}
+		}
 	}
 
 }

@@ -14,6 +14,7 @@ import au.org.ala.delta.editor.slotfile.VOCharBaseDesc.CharTextInfo;
 import au.org.ala.delta.editor.slotfile.VOCharTextDesc;
 import au.org.ala.delta.editor.slotfile.VOControllingDesc;
 import au.org.ala.delta.editor.slotfile.VOImageDesc;
+import au.org.ala.delta.editor.slotfile.VOImageInfoDesc;
 import au.org.ala.delta.editor.slotfile.VOItemDesc;
 import au.org.ala.delta.model.AbstractObservableDataSet;
 import au.org.ala.delta.model.Character;
@@ -25,6 +26,7 @@ import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.NumericCharacter;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageOverlay;
+import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.model.image.OverlayType;
 
 /**
@@ -312,6 +314,20 @@ public class SlotFileDataSet extends AbstractObservableDataSet {
 	public void deleteCharacterDependency(CharacterDependency characterDependency) {
 		VOControllingAdapter controlling = (VOControllingAdapter)characterDependency.getImpl();
 		deleteControlling(controlling.getId());
+	}
+	
+	@Override
+	public ImageSettings getImageSettings() {
+		VOImageInfoDesc imageInfo = _vop.getImageInfo();
+		ImageSettings settings = new ImageSettings();
+		ImageSettingsHelper.copyToImageSettings(imageInfo, settings);
+		return settings;
+	}
+	
+	@Override
+	public void setImageSettings(ImageSettings imageSettings) {
+		VOImageInfoDesc imageInfo = _vop.getImageInfo();
+		ImageSettingsHelper.copyFromImageSettings(imageInfo, imageSettings);
 	}
 	
 	private boolean deleteControlling(int ctlId) {

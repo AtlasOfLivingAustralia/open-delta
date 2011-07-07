@@ -13,6 +13,7 @@ import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DeltaDataSetFactory;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
+import au.org.ala.delta.model.image.ImageSettings;
 
 
 /**
@@ -30,6 +31,8 @@ public class DefaultDataSet extends AbstractObservableDataSet {
 	private Map<Integer, Character> _characters;
 	
 	private Set<CharacterDependency> _characterDependencies;
+	
+	private ImageSettings _imageSettings;
 	
 	private boolean _modified;
 	
@@ -237,5 +240,19 @@ public class DefaultDataSet extends AbstractObservableDataSet {
 	public void deleteCharacterDependency(
 			CharacterDependency characterDependency) {
 		_characterDependencies.remove(characterDependency);	
+	}
+	
+	/**
+	 * Returns information about how character and taxon images are displayed.
+	 */
+	public ImageSettings getImageSettings() {
+		return _imageSettings;
+	}
+	
+	/**
+	 * Specifies information about how character and taxon images are displayed.
+	 */
+	public void setImageSettings(ImageSettings imageSettings) {
+		_imageSettings = imageSettings;
 	}
 }

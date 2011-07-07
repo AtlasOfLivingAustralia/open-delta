@@ -15,6 +15,8 @@
 package au.org.ala.delta.editor.slotfile;
 
 import java.awt.Font;
+import java.awt.font.TextAttribute;
+import java.util.Map;
 
 import au.org.ala.delta.io.BinFile;
 import au.org.ala.delta.io.BinFileEncoding;
@@ -381,6 +383,16 @@ public class VOImageInfoDesc extends VOAnyDesc {
 			int style = (lfItalic != 0) ? Font.ITALIC : 0;
 			style = style | (lfWeight > 500 ? Font.BOLD : 0); 
 			return new Font(BinFileEncoding.decode(lfFaceName), style, Math.abs(lfHeight));
+		}
+		
+		public void fromFont(Font font) {
+			
+			Map<TextAttribute, ?> attributes = font.getAttributes();
+			lfFaceName = BinFileEncoding.encode((String)attributes.get(TextAttribute.FAMILY));
+			int style = font.getStyle();
+			lfItalic = (style & Font.ITALIC) > 0 ? (byte)1 : (byte)0;
+			lfWeight = (Integer)attributes.get(TextAttribute.WEIGHT);
+			
 		}
 	}
 

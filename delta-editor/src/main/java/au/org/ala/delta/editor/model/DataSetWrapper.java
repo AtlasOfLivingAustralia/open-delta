@@ -11,6 +11,7 @@ import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.ObservableDeltaDataSet;
+import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
 import au.org.ala.delta.model.observer.DeltaDataSetObserver;
 
@@ -276,4 +277,16 @@ public class DataSetWrapper implements ObservableDeltaDataSet, DeltaDataSetObser
     public Attribute addAttribute(int itemNumber, int characterNumber) {
         return _wrappedDataSet.addAttribute(itemNumber, characterNumber);
     }
+
+	@Override
+	public ImageSettings getImageSettings() {
+		return _wrappedDataSet.getImageSettings();
+	}
+
+	@Override
+	public void setImageSettings(ImageSettings imageSettings) {
+		_wrappedDataSet.setImageSettings(imageSettings);	
+	}
+    
+    
 }

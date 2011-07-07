@@ -17,6 +17,8 @@ package au.org.ala.delta.model;
 import java.util.List;
 import java.util.Set;
 
+import au.org.ala.delta.model.image.ImageSettings;
+
 
 /**
  * Represents a single DELTA data set, consisting of a List of characters and a List of Items.
@@ -171,4 +173,14 @@ public interface DeltaDataSet {
 	public CharacterDependency addCharacterDependency(MultiStateCharacter owningCharacter, Set<Integer> states, Set<Integer> dependentCharacters);
 
 	public void deleteCharacterDependency(CharacterDependency characterDependency);
+	
+	/**
+	 * Returns information about how character and taxon images are displayed.
+	 */
+	public ImageSettings getImageSettings();
+	
+	/**
+	 * Specifies information about how character and taxon images are displayed.
+	 */
+	public void setImageSettings(ImageSettings imageSettings);
 }
