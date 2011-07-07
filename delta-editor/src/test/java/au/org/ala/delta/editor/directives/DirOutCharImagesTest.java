@@ -13,7 +13,7 @@ import au.org.ala.delta.model.image.OverlayType;
 /**
  * Tests the DirOutCharImages class.
  */
-public class DirOutCharImagesTest extends DirOutTest {
+public class DirOutCharImagesTest extends DirOutImageOverlayTest {
 
 	protected Directive getDirective() {
 		return ConforDirType.ConforDirArray[ConforDirType.CHARACTER_IMAGES];
@@ -41,30 +41,6 @@ public class DirOutCharImagesTest extends DirOutTest {
 		Character character = _dataSet.getCharacter(toCharacter);
 		Image image = character.addImage(fileName, "");
 		return image;
-	}
-	
-	protected ImageOverlay addOverlay(Image image, int type) {
-		ImageOverlay overlay = new ImageOverlay(type);
-		image.addOverlay(overlay);
-		return overlay;
-	}
-	
-	protected ImageOverlay addOverlay(Image image, int type, int x, int y, int w, int h) {
-		ImageOverlay overlay = addOverlay(image, type);
-		
-		addLocation(overlay, x, y, w, h);
-		return overlay;
-	}
-	
-	protected OverlayLocation addLocation(ImageOverlay overlay, int x, int y, int w, int h) {
-		OverlayLocation location = new OverlayLocation();
-		location.X = (short)x;
-		location.Y = (short)y;
-		location.W = (short)w;
-		location.H = (short)h;
-		
-		overlay.addLocation(location);
-		return location;
 	}
 	
 	/**
@@ -183,5 +159,65 @@ public class DirOutCharImagesTest extends DirOutTest {
              "         <@state 2 x=1 y=2 w=3 h=4\n"+
              "                   x=2 y=3 w=4 h=5 p f=0121FF\n"+
              "                   t=extra>\n", output());
+	}
+	
+	/**
+	 * Tests the export of a single image with more than one overlay.
+	 */
+	public void testDirOutCharImagesMulitpleOverlays() throws Exception {
+		
+		initialiseDataSet();
+		
+		Image image = addImage("image 1", 4);
+		ImageOverlay overlay = addOverlay(image, OverlayType.OLSTATE, 1, 2, 3, 4);
+		overlay.stateId = 2;
+		overlay.overlayText="extra";
+		OverlayLocation hotSpot = addLocation(overlay, 2, 3, 4, 5);
+		hotSpot.setPopup(true);
+		hotSpot.setColor(0x121ff);
+		
+		overlay = addOverlay(image, OverlayType.OLSUBJECT);
+		overlay.overlayText = "Subject";
+		
+		DirOutCharImages dirOut = new DirOutCharImages();
+		
+		dirOut.process(_state);
+		
+		assertEquals("*CHARACTER IMAGES\n#4. image 1\n"+
+             "         <@state 2 x=1 y=2 w=3 h=4\n"+
+             "                   x=2 y=3 w=4 h=5 p f=0121FF\n"+
+             "                   t=extra>\n"+
+             "         <@subject Subject>\n", output());
+	}
+	
+	/**
+	 * Tests the export of a single image with more than one image.
+	 */
+	public void testDirOutCharImagesMulitpleImages() throws Exception {
+		
+		initialiseDataSet();
+		
+		Image image = addImage("image 1", 4);
+		ImageOverlay overlay = addOverlay(image, OverlayType.OLSTATE, 1, 2, 3, 4);
+		overlay.stateId = 2;
+		overlay.overlayText="extra";
+		OverlayLocation hotSpot = addLocation(overlay, 2, 3, 4, 5);
+		hotSpot.setPopup(true);
+		hotSpot.setColor(0x121ff);
+		
+		image = addImage("image 2", 7);
+		overlay = addOverlay(image, OverlayType.OLSUBJECT);
+		overlay.overlayText = "Subject";
+		
+		DirOutCharImages dirOut = new DirOutCharImages();
+		
+		dirOut.process(_state);
+		
+		assertEquals("*CHARACTER IMAGES\n#4. image 1\n"+
+             "         <@state 2 x=1 y=2 w=3 h=4\n"+
+             "                   x=2 y=3 w=4 h=5 p f=0121FF\n"+
+             "                   t=extra>\n"+
+             "#7. image 2\n"+
+             "         <@subject Subject>\n", output());
 	}
 }

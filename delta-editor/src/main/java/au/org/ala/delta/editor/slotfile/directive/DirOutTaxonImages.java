@@ -14,13 +14,48 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.slotfile.directive;
 
-import org.apache.commons.lang.NotImplementedException;
+import java.util.List;
 
-public class DirOutTaxonImages implements DirectiveFunctor {
+import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.image.Image;
+
+/**
+ * Exports the TAXON IMAGES directive.
+ */
+public class DirOutTaxonImages extends DirOutImageOverlay {
 
 	@Override
-	public void process(DirectiveInOutState state) {
-		throw new NotImplementedException();
+	public void writeDirectiveArguments(DirectiveInOutState state) {
+
+		DeltaDataSet dataSet = state.getDataSet();
+
+		for (int i = 1; i <= dataSet.getMaximumNumberOfItems(); ++i) {
+			Item item = dataSet.getItem(i);
+
+			if (item.getImageCount() == 0)
+				continue;
+			String description = item.getDescription();
+
+			_textBuffer.append("\n");
+			outputTextBuffer(0, 0, true);
+			_textBuffer.append("# ");
+			_textBuffer.append(despaceRTF(description, true));
+			_textBuffer.append('/');
+			outputTextBuffer(0, 0, true);
+
+			List<Image> imageList = item.getImages();
+			for (int j = 0; j < imageList.size(); j++) {
+				Image image = imageList.get(j);
+				if (!image.getSubject().equals(item)) {
+					throw new RuntimeException("TDirInOutEx(ED_INTERNAL_ERROR");
+				}
+				_textBuffer.append(image.getFileName());
+				outputTextBuffer(5, 2, true);
+
+				writeOverlays(image.getOverlays(), 10, image.getSubject());
+			}
+		}
 	}
 
 }

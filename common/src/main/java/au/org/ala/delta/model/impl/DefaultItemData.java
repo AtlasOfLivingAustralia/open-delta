@@ -1,10 +1,9 @@
 package au.org.ala.delta.model.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.lang.NotImplementedException;
 
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.AttributeFactory;
@@ -23,7 +22,8 @@ public class DefaultItemData implements ItemData {
     private String _linkFileDataNoSubjects;
 
     private Map<Character, Attribute> _attributes = new HashMap<Character, Attribute>();
-
+    private List<Image> _images = new ArrayList<Image>();
+    
     @Override
     public String getDescription() {
         return _description;
@@ -98,27 +98,31 @@ public class DefaultItemData implements ItemData {
     
     @Override
     public Image addImage(String fileName, String comments) {
-    	throw new NotImplementedException();
+    	DefaultImageData imageData = new DefaultImageData(fileName);
+		Image image = new Image(imageData);
+    	_images.add(image);
+    	return image;
     }
 
 	@Override
 	public List<Image> getImages() {
-		throw new NotImplementedException();
+		return _images;
 	}
 
 	@Override
 	public int getImageCount() {
-		throw new NotImplementedException();
+		return _images.size();
 	}
 
-	
 	@Override
 	public void deleteImage(Image image) {
-		throw new NotImplementedException();
+		_images.remove(image);
 	}
 
 	@Override
 	public void moveImage(Image image, int position) {
-		throw new NotImplementedException();
+		int imageIndex = _images.indexOf(image);
+		_images.remove(imageIndex);
+		_images.add(position, image);
 	}
 }
