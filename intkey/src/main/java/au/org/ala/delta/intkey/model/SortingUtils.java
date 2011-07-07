@@ -25,11 +25,30 @@ import au.org.ala.delta.model.RealAttribute;
 import au.org.ala.delta.model.RealCharacter;
 import au.org.ala.delta.model.TextCharacter;
 
+/**
+ * Utilities for sorting characters
+ * 
+ * @author ChrisF
+ * 
+ */
 public class SortingUtils {
-    
+
+    /**
+     * A separating power below this is treated as zero
+     */
     private static double minimumSeparatingPower = 0.0001;
 
     // TODO change arguments, pass in something other than the entire context.
+    /**
+     * Determines best order and separating power of all characters in the
+     * supplied context's dataset
+     * 
+     * @param context
+     *            the application's global state
+     * @return a map of characters to their separating powers. The best order of
+     *         the characters can be obtained by getting the keyset of the
+     *         supplied map
+     */
     public static LinkedHashMap<au.org.ala.delta.model.Character, Double> orderBest(IntkeyContext context) {
         IntkeyDataset dataset = context.getDataset();
         Specimen specimen = context.getSpecimen();
@@ -398,6 +417,13 @@ public class SortingUtils {
         return numStatesPresent;
     }
 
+    /**
+     * Comparator used by orderBest() method to sort characters in descending
+     * order using their reliabilities
+     * 
+     * @author ChrisF
+     * 
+     */
     private static class ReliabilityComparator implements Comparator<Character> {
 
         @Override

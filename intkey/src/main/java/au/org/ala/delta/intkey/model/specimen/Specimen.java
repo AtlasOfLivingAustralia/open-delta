@@ -10,6 +10,7 @@ import java.util.Set;
 
 import org.apache.commons.lang.math.FloatRange;
 
+import au.org.ala.delta.intkey.model.DiffUtils;
 import au.org.ala.delta.intkey.model.IntkeyDataset;
 import au.org.ala.delta.intkey.model.MatchType;
 import au.org.ala.delta.model.Attribute;
@@ -210,19 +211,19 @@ public class Specimen {
             if (val instanceof MultiStateValue) {
                 MultiStateValue msVal = (MultiStateValue) val;
                 MultiStateAttribute msAttr = (MultiStateAttribute) attr;
-                match = compareMultistate(msVal, msAttr);
+                match = DiffUtils.compareMultistate(this, msVal, msAttr, _matchUnknowns, _matchInapplicables, _matchType);
             } else if (val instanceof IntegerValue) {
                 IntegerValue intVal = (IntegerValue) val;
                 IntegerAttribute intAttr = (IntegerAttribute) attr;
-                match = compareInteger(intVal, intAttr);
+                match = DiffUtils.compareInteger(this, intVal, intAttr, _matchUnknowns, _matchInapplicables, _matchType);
             } else if (val instanceof RealValue) {
                 RealValue realVal = (RealValue) val;
                 RealAttribute realAttr = (RealAttribute) attr;
-                match = compareReal(realVal, realAttr);
+                match = DiffUtils.compareReal(this, realVal, realAttr, _matchUnknowns, _matchInapplicables, _matchType);
             } else if (val instanceof TextValue) {
                 TextValue txtVal = (TextValue) val;
                 TextAttribute txtAttr = (TextAttribute) attr;
-                match = compareText(txtVal, txtAttr);
+                match = DiffUtils.compareText(this, txtVal, txtAttr, _matchUnknowns, _matchInapplicables, _matchType);
             } else {
                 throw new RuntimeException(String.format("Unrecognised CharacterValue subtype %s", val.getClass().getName()));
             }
@@ -238,160 +239,6 @@ public class Specimen {
                 _taxonDifferences.put(taxon, currentDiffCount + 1);
             }
         }
-    }
-
-    private boolean compareMultistate(MultiStateValue val, MultiStateAttribute attr) {
-        if ((!hasValueFor(val.getCharacter()) && isCharacterInapplicable(val.getCharacter())) || (attr.isUnknown() && attr.isInapplicable())) {
-            return _matchInapplicables;
-        }
-
-        if ((!hasValueFor(val.getCharacter()) && !isCharacterInapplicable(val.getCharacter())) || (attr.isUnknown() && !attr.isInapplicable())) {
-            return _matchUnknowns;
-        }
-
-        boolean match = false;
-
-        switch (_matchType) {
-        case EXACT:
-            match = val.getStateValues().equals(new ArrayList<Integer>(attr.getPresentStates()));
-            break;
-        case SUBSET:
-            match = val.getStateValues().containsAll(attr.getPresentStates());
-            break;
-        case OVERLAP:
-            for (int stateVal : val.getStateValues()) {
-                if (attr.getPresentStates().contains(stateVal)) {
-                    match = true;
-                    break;
-                }
-            }
-            break;
-        default:
-            throw new RuntimeException(String.format("Unrecognized match type %s", _matchType.toString()));
-        }
-
-        return match;
-    }
-
-    private boolean compareInteger(IntegerValue val, IntegerAttribute attr) {
-        if ((!hasValueFor(val.getCharacter()) && isCharacterInapplicable(val.getCharacter())) || (attr.isUnknown() && attr.isInapplicable())) {
-            return _matchInapplicables;
-        }
-
-        if ((!hasValueFor(val.getCharacter()) && !isCharacterInapplicable(val.getCharacter())) || (attr.isUnknown() && !attr.isInapplicable())) {
-            return _matchUnknowns;
-        }
-
-        boolean match = false;
-
-        List<Integer> valList = val.getValues();
-
-        switch (_matchType) {
-        case EXACT:
-            match = valList.equals(new ArrayList<Integer>(attr.getPresentValues()));
-            break;
-        case SUBSET:
-            match = valList.containsAll(attr.getPresentValues());
-            break;
-        case OVERLAP:
-            for (int intVal : valList) {
-                if (attr.getPresentValues().contains(intVal)) {
-                    match = true;
-                    break;
-                }
-            }
-            break;
-        default:
-            throw new RuntimeException(String.format("Unrecognized match type %s", _matchType.toString()));
-        }
-
-        return match;
-    }
-
-    private boolean compareReal(RealValue val, RealAttribute attr) {
-        if ((!hasValueFor(val.getCharacter()) && isCharacterInapplicable(val.getCharacter())) || (attr.isUnknown() && attr.isInapplicable())) {
-            return _matchInapplicables;
-        }
-
-        if ((!hasValueFor(val.getCharacter()) && !isCharacterInapplicable(val.getCharacter())) || (attr.isUnknown() && !attr.isInapplicable())) {
-            return _matchUnknowns;
-        }
-
-        FloatRange valRange = val.getRange();
-        FloatRange attrRange = attr.getPresentRange();
-
-        boolean match = false;
-
-        switch (_matchType) {
-        case EXACT:
-            match = valRange.equals(attrRange);
-            break;
-        case SUBSET:
-            match = attrRange.containsRange(valRange);
-            break;
-        case OVERLAP:
-            match = valRange.overlapsRange(attrRange);
-            break;
-        default:
-            throw new RuntimeException(String.format("Unrecognized match type %s", _matchType.toString()));
-        }
-
-        return match;
-    }
-
-    /**
-     * compares two text characters applying the following rules - 1. MATCH
-     * INAPPLICABLE and MATCH UNKNOWN are ignored. Inapplicables and unknowns
-     * are treated as a mismatch. 2. The text to be found may consist of a
-     * number of sub-strings separated by '/'. In the cases of MATCH EXACT and
-     * MATCH SUBSET, each sub-string must exist separately in the searched text.
-     * For MATCH OVERLAP, the presence of any sub-string will result in a match.
-     * 
-     * @param val
-     * @param attr
-     * @return
-     */
-    private boolean compareText(TextValue val, TextAttribute attr) {
-
-        // Unknown and inapplicable always equate to no match for text
-        // attributes
-        if ((!hasValueFor(val.getCharacter()) && isCharacterInapplicable(val.getCharacter())) || (attr.isUnknown() && attr.isInapplicable())) {
-            return false;
-        }
-
-        if ((!hasValueFor(val.getCharacter()) && !isCharacterInapplicable(val.getCharacter())) || (attr.isUnknown() && !attr.isInapplicable())) {
-            return false;
-        }
-
-        boolean match = false;
-
-        // Remove surrounding angle brackets from attribute text.
-        String txtAttr = attr.getText().substring(1, attr.getText().length() - 1).toLowerCase();
-
-        switch (_matchType) {
-        case EXACT:
-        case SUBSET:
-            match = true;
-            for (String txtVal : val.getValues()) {
-                if (!txtAttr.contains(txtVal.toLowerCase())) {
-                    match = false;
-                    break;
-                }
-            }
-            break;
-        case OVERLAP:
-            for (String txtVal : val.getValues()) {
-                if (txtAttr.contains(txtVal.toLowerCase())) {
-                    match = true;
-                    break;
-                }
-            }
-            break;
-        default:
-            throw new RuntimeException(String.format("Unrecognized match type %s", _matchType.toString()));
-        }
-
-        return match;
     }
 
     public Map<Item, Integer> getTaxonDifferences() {

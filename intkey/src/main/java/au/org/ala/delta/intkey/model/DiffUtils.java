@@ -397,9 +397,13 @@ public class DiffUtils {
      * @return true if the specimen value matches the attribute
      */
     public static boolean compareMultistate(Specimen specimen, MultiStateValue val, MultiStateAttribute attr, boolean matchUnknowns, boolean matchInapplicables, MatchType matchType) {
+        if (!val.getCharacter().equals(attr.getCharacter())) {
+            throw new IllegalArgumentException(String.format("Specimen value character %s does not match attribute character %s", val.getCharacter(), attr.getCharacter()));
+        }
+        
         Set<Integer> attr1Values = new HashSet<Integer>(val.getStateValues());
         Set<Integer> attr2Values = attr.getPresentStates();
-        boolean attr1Unknown = specimen.hasValueFor(val.getCharacter());
+        boolean attr1Unknown = !specimen.hasValueFor(val.getCharacter());
         boolean attr2Unknown = attr.isUnknown();
         boolean attr1Inapplicable = specimen.isCharacterInapplicable(val.getCharacter());
         boolean attr2Inapplicable = attr.isInapplicable();
@@ -437,9 +441,13 @@ public class DiffUtils {
      * @return true if the specimen value matches the attribute
      */
     public static boolean compareInteger(Specimen specimen, IntegerValue val, IntegerAttribute attr, boolean matchUnknowns, boolean matchInapplicables, MatchType matchType) {
+        if (!val.getCharacter().equals(attr.getCharacter())) {
+            throw new IllegalArgumentException(String.format("Specimen value character %s does not match attribute character %s", val.getCharacter(), attr.getCharacter()));
+        }
+        
         Set<Integer> attr1Values = new HashSet<Integer>(val.getValues());
         Set<Integer> attr2Values = attr.getPresentValues();
-        boolean attr1Unknown = specimen.hasValueFor(val.getCharacter());
+        boolean attr1Unknown = !specimen.hasValueFor(val.getCharacter());
         boolean attr2Unknown = attr.isUnknown();
         boolean attr1Inapplicable = specimen.isCharacterInapplicable(val.getCharacter());
         boolean attr2Inapplicable = attr.isInapplicable();
@@ -449,7 +457,7 @@ public class DiffUtils {
 
     private static boolean doCompareMultiStateOrInteger(Set<Integer> attr1Values, Set<Integer> attr2Values, boolean attr1Unknown, boolean attr2Unknown, boolean attr1Inapplicable,
             boolean attr2Inapplicable, boolean matchUnknowns, boolean matchInapplicables, MatchType matchType) {
-        if ((attr1Unknown && attr1Inapplicable) || (attr1Unknown && attr1Inapplicable)) {
+        if ((attr1Unknown && attr1Inapplicable) || (attr2Unknown && attr2Inapplicable)) {
             return matchInapplicables;
         }
 
@@ -500,9 +508,13 @@ public class DiffUtils {
      * @return true if the specimen value matches the attribute
      */
     public static boolean compareReal(Specimen specimen, RealValue val, RealAttribute attr, boolean matchUnknowns, boolean matchInapplicables, MatchType matchType) {
+        if (!val.getCharacter().equals(attr.getCharacter())) {
+            throw new IllegalArgumentException(String.format("Specimen value character %s does not match attribute character %s", val.getCharacter(), attr.getCharacter()));
+        }
+        
         FloatRange attr1Range = val.getRange();
         FloatRange attr2Range = attr.getPresentRange();
-        boolean attr1Unknown = specimen.hasValueFor(val.getCharacter());
+        boolean attr1Unknown = !specimen.hasValueFor(val.getCharacter());
         boolean attr2Unknown = attr.isUnknown();
         boolean attr1Inapplicable = specimen.isCharacterInapplicable(val.getCharacter());
         boolean attr2Inapplicable = attr.isInapplicable();
@@ -523,7 +535,7 @@ public class DiffUtils {
 
     private static boolean doCompareRange(FloatRange attr1Range, FloatRange attr2Range, boolean attr1Unknown, boolean attr2Unknown, boolean attr1Inapplicable, boolean attr2Inapplicable,
             boolean matchUnknowns, boolean matchInapplicables, MatchType matchType) {
-        if ((attr1Unknown && attr1Inapplicable) || (attr1Unknown && attr1Inapplicable)) {
+        if ((attr1Unknown && attr1Inapplicable) || (attr2Unknown && attr2Inapplicable)) {
             return matchInapplicables;
         }
 
@@ -576,10 +588,14 @@ public class DiffUtils {
      * @return true if the specimen value matches the attribute
      */
     public static boolean compareText(Specimen specimen, TextValue val, TextAttribute attr, boolean matchUnknowns, boolean matchInapplicables, MatchType matchType) {
+        if (!val.getCharacter().equals(attr.getCharacter())) {
+            throw new IllegalArgumentException(String.format("Specimen value character %s does not match attribute character %s", val.getCharacter(), attr.getCharacter()));
+        }
+        
         List<String> specimenTextValues = val.getValues();
         String attrText = attr.getText();
 
-        boolean attr1Unknown = specimen.hasValueFor(val.getCharacter());
+        boolean attr1Unknown = !specimen.hasValueFor(val.getCharacter());
         boolean attr2Unknown = attr.isUnknown();
         boolean attr1Inapplicable = specimen.isCharacterInapplicable(val.getCharacter());
         boolean attr2Inapplicable = attr.isInapplicable();
@@ -620,7 +636,7 @@ public class DiffUtils {
 
         // Unknown and inapplicable always equate to no match for text
         // attributes
-        if ((attr1Unknown && attr1Inapplicable) || (attr1Unknown && attr1Inapplicable)) {
+        if ((attr1Unknown && attr1Inapplicable) || (attr2Unknown && attr2Inapplicable)) {
             return false;
         }
 
