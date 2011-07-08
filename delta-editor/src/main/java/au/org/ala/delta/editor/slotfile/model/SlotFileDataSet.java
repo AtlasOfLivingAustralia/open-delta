@@ -177,7 +177,12 @@ public class SlotFileDataSet extends AbstractObservableDataSet {
 				item.deleteImage(image);
 			}
 			
-			// TODO delete from directive files....
+			// Remove any references to the item occurring in the directives "files".
+		    int dirFileCount = _vop.getDeltaMaster().getNDirFiles();
+			for (int i = 1; i <= dirFileCount; ++i) {
+			    VODirFileDesc dirFile = (VODirFileDesc)_vop.getDescFromId(_vop.getDeltaMaster().uniIdFromDirFileNo(i));
+			    dirFile.deleteItem(_vop, itemId);
+		    }
 		
 			if (_vop.getDeltaMaster().removeItem(itemId)) {
 				_vop.deleteObject(itemDesc);
@@ -230,11 +235,12 @@ public class SlotFileDataSet extends AbstractObservableDataSet {
 		        itemDesc.deleteAttribute(charDesc.getUniId());
 		    }
 
-		    // TODO Delete this character from all directives "files"....
-		    //for (unsigned int i = 1; i <= GetNDirFiles(); ++i) {
-		    //      TVODirFileDesc* dirFile = DescFromId<TVODirFileDesc*>(Vop, GetDeltaMaster()->UniIdFromDirFileNo(i));
-		    //      dirFile->DeleteChar(Vop, charId);
-		    //    }
+		    // Delete this character from all directives "files"....
+		    int dirFileCount = _vop.getDeltaMaster().getNDirFiles();
+		    for (int i = 1; i <= dirFileCount; ++i) {
+		        VODirFileDesc dirFile = (VODirFileDesc)_vop.getDescFromId(_vop.getDeltaMaster().uniIdFromDirFileNo(i));
+		        dirFile.deleteChar(_vop, characterId);
+		    }
 		      
 		    // Delete controlling attributes based on this character...
 		    List<Integer> contAttrs = charDesc.readDependentContAttrs();
@@ -391,14 +397,13 @@ public class SlotFileDataSet extends AbstractObservableDataSet {
             }
           }
 
-        // TODO Next, make sure that all references to this state are removed from the directives "files"
+        // Next, make sure that all references to this state are removed from the directives "files"
         // (The only non-internal directive which currently uses state id is the KEY STATES directive...)
-//        for (int i = 1; i <= getNDirFiles(); ++i)
-//          {
-//            TVODirFileDesc* dirFile = DescFromId<TVODirFileDesc*>(Vop, GetDeltaMaster()->UniIdFromDirFileNo(i));
-//            //dirFile->MakeTemp(Vop);
-//            dirFile->DeleteState(Vop, charBase, stateId);
-//          }
+        int dirFileCount = _vop.getDeltaMaster().getNDirFiles();
+		for (int i = 1; i <= dirFileCount; ++i) {
+			VODirFileDesc dirFile = (VODirFileDesc)_vop.getDescFromId(_vop.getDeltaMaster().uniIdFromDirFileNo(i));
+            dirFile.deleteState(_vop, charDesc, stateId);
+        }
 
         // Now delete any associated image overlays.
         List<Integer> imageList = charDesc.readImageList();
