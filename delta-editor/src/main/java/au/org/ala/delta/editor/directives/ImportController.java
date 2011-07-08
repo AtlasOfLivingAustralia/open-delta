@@ -17,6 +17,7 @@ import au.org.ala.delta.directives.DirectiveParserObserver;
 import au.org.ala.delta.editor.DeltaEditor;
 import au.org.ala.delta.editor.directives.ui.ImportExportDialog;
 import au.org.ala.delta.editor.directives.ui.ImportExportStatusDialog;
+import au.org.ala.delta.editor.directives.ui.ImportExportViewModel;
 import au.org.ala.delta.editor.model.EditorDataModel;
 
 /**
@@ -39,12 +40,13 @@ public class ImportController {
 			JOptionPane.showMessageDialog(_context.getMainFrame(), "Imports are only currently supported for new data sets.");
 			return;
 		}
-		ImportExportDialog dialog = new ImportExportDialog(_context.getMainFrame());
+		ImportExportViewModel model = new ImportExportViewModel();
+		ImportExportDialog dialog = new ImportExportDialog(_context.getMainFrame(), model);
 		_context.show(dialog);
 		
 		if (dialog.proceed()) {
-			List<DirectiveFileInfo> files = dialog.getSelectedFiles();
-			File selectedDirectory = dialog.getSelectedDirectory();
+			List<DirectiveFileInfo> files = model.getSelectedFiles();
+			File selectedDirectory = model.getCurrentDirectory();
 			
 			doImport(selectedDirectory, files);
 		}

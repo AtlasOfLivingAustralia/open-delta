@@ -29,7 +29,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
-import org.apache.commons.lang.StringUtils;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.Resource;
@@ -49,17 +48,10 @@ import au.org.ala.delta.ui.util.IconHelper;
  */
 public class ImportExportDialog extends JDialog {
 	
-	private static final String DEFAULT_ITEMS_DIRECTIVE_FILE = "items";
-	private static final String DEFAULT_CHARS_DIRECTIVE_FILE = "chars";
-	private static final String DEFAULT_SPECS_DIRECTIVE_FILE = "specs";
 	
-	private DirectiveType _selectedDirectiveType = DirectiveType.CONFOR;
-	private File _currentDirectory;
-	private String _specsFile;
-	private String _charactersFile;
-	private String _itemsFile;
-	private List<DirectiveFileInfo> _otherDirectivesFiles;
-	private List<String> _possibleDirectiveFiles;
+	
+	private ImportExportViewModel _model;
+	
 	private boolean _okPressed;
 	private String _currentFilter;
 	
@@ -107,16 +99,14 @@ public class ImportExportDialog extends JDialog {
 	private JButton excludeFilterButton;
 	private JTextField currentImportFilterTextField;
 	
-	public ImportExportDialog(Window parent) {
+	public ImportExportDialog(Window parent, ImportExportViewModel model) {
 		
 		super(parent);
+		_model = model;
 		setName("ImportExportDialogBox");
 		ResourceMap resources = Application.getInstance().getContext().getResourceMap(ImportExportDialog.class);
 		resources.injectFields(this);
 		
-		_specsFile = DEFAULT_SPECS_DIRECTIVE_FILE;
-		_otherDirectivesFiles = new ArrayList<DirectiveFileInfo>();
-		_possibleDirectiveFiles = new ArrayList<String>();
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setModal(true);
 		createUI();
@@ -527,15 +517,15 @@ public class ImportExportDialog extends JDialog {
 	
 	@Action
 	public void directorySelected() {
-		JFileChooser directorySelector = new JFileChooser(_currentDirectory);
+		JFileChooser directorySelector = new JFileChooser(_model.getCurrentDirectory());
 		directorySelector.setDialogTitle(directoryChooserTitle);
 		directorySelector.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		directorySelector.setAcceptAllFileFilterUsed(false);
 		
 		int result = directorySelector.showOpenDialog(this);
 		if (result == JFileChooser.APPROVE_OPTION) {
-			_currentDirectory = directorySelector.getSelectedFile();
-			updateModelForNewCurrentDirectory();
+			_model.setCurrentDirectory(directorySelector.getSelectedFile());
+			updateUI();
 		}
 	}
 	
@@ -557,17 +547,14 @@ public class ImportExportDialog extends JDialog {
 	
 	public void updateSelectedDirectiveType(JRadioButton selected) {
 		if (selected.isSelected()) {
-			_selectedDirectiveType = (DirectiveType)selected.getClientProperty(DirectiveType.class);
+			 _model.setSelectedDirectiveType((DirectiveType)selected.getClientProperty(DirectiveType.class));
 		}
 	}
 	
 	public void moveFromPossibleToOther() {
 		
 		for (Object file : possibleDirectivesList.getSelectedValues()) {
-			DirectiveFileInfo directiveFile = new DirectiveFileInfo((String)file, _selectedDirectiveType);
-			
-			_otherDirectivesFiles.add(directiveFile);
-			_possibleDirectiveFiles.remove(file);
+			_model.include((String)file);
 		}
 		updateUI();
 	}
@@ -575,110 +562,46 @@ public class ImportExportDialog extends JDialog {
 	public void moveFromOtherToPossible() {
 		
 		for (Object file : otherDirectivesList.getSelectedValues()) {
-			DirectiveFileInfo directiveFile = (DirectiveFileInfo)file;
-			_possibleDirectiveFiles.add(directiveFile.getFileName());
-			_otherDirectivesFiles.remove(file);
+			_model.exclude((DirectiveFileInfo)file);
 		}
 		updateUI();
 	}
 	
 	public void moveToSpecs() {
 		String file = (String)possibleDirectivesList.getSelectedValue();
-		if (StringUtils.isNotEmpty(_specsFile)) {
-			_possibleDirectiveFiles.add(_specsFile);
-		}
-		_possibleDirectiveFiles.remove(file);
-		_specsFile = file;
-		
+		_model.moveToSpecs(file);
 		updateUI();
 	}
 	
 	public void moveToChars() {
 		String file = (String)possibleDirectivesList.getSelectedValue();
-		if (StringUtils.isNotEmpty(_charactersFile)) {
-			_possibleDirectiveFiles.add(_charactersFile);
-		}
-		_possibleDirectiveFiles.remove(file);
-		_charactersFile = file;
+		_model.moveToChars(file);
 		updateUI();
 	}
 	
 	public void moveToItems() {
 		String file = (String)possibleDirectivesList.getSelectedValue();
-		if (StringUtils.isNotEmpty(_itemsFile)) {
-			_possibleDirectiveFiles.add(_itemsFile);
-		}
-		_possibleDirectiveFiles.remove(file);
-		_itemsFile = file;
+		_model.moveToItems(file);
 		updateUI();
-	}
-	
-	private void updateModelForNewCurrentDirectory() {
-		_otherDirectivesFiles = new ArrayList<DirectiveFileInfo>();
-		_possibleDirectiveFiles = new ArrayList<String>();
-		
-		for (File file : _currentDirectory.listFiles(new ImportFileNameFilter(_currentFilter))) {
-			_possibleDirectiveFiles.add(file.getName());
-			
-		}
-		if (_possibleDirectiveFiles.contains(DEFAULT_SPECS_DIRECTIVE_FILE)) {
-			_specsFile = DEFAULT_SPECS_DIRECTIVE_FILE;
-			_possibleDirectiveFiles.remove(DEFAULT_SPECS_DIRECTIVE_FILE);
-		}
-		if (_possibleDirectiveFiles.contains(DEFAULT_CHARS_DIRECTIVE_FILE)) {
-			_charactersFile = DEFAULT_CHARS_DIRECTIVE_FILE;
-			_possibleDirectiveFiles.remove(DEFAULT_CHARS_DIRECTIVE_FILE);
-		}
-		if (_possibleDirectiveFiles.contains(DEFAULT_ITEMS_DIRECTIVE_FILE)) {
-			_itemsFile = DEFAULT_ITEMS_DIRECTIVE_FILE;
-			_possibleDirectiveFiles.remove(DEFAULT_ITEMS_DIRECTIVE_FILE);
-		}
-		
-		updateUI();
-		
 	}
 	
 	private void updateUI() {
-		currentDirectoryTextField.setText(_currentDirectory.getAbsolutePath());
-		charactersFileTextField.setText(_charactersFile);
-		itemsFileTextField.setText(_itemsFile);
-		specificationsFileTextField.setText(_specsFile);
+		currentDirectoryTextField.setText(_model.getCurrentDirectory().getAbsolutePath());
+		charactersFileTextField.setText(_model.getCharactersFile());
+		itemsFileTextField.setText(_model.getItemsFile());
+		specificationsFileTextField.setText(_model.getSpecsFile());
 		currentImportFilterTextField.setText(_currentFilter);
 		FilteredListModel possibleDirectivesModel = new FilteredListModel(_currentFilter);
 		possibleDirectivesList.setModel(possibleDirectivesModel);
 		
 		DefaultListModel otherDirectivesModel = new DefaultListModel();
-		for (DirectiveFileInfo file : _otherDirectivesFiles) {
+		for (DirectiveFileInfo file : _model.getIncludedDirectivesFiles()) {
 			otherDirectivesModel.addElement(file);
 		}
 		otherDirectivesList.setModel(otherDirectivesModel);
 		
 		
-		btnOk.setEnabled((_currentDirectory != null) && 
-			(!_otherDirectivesFiles.isEmpty() || StringUtils.isNotEmpty(_charactersFile) || StringUtils.isNotEmpty(_itemsFile)));
-	}
-	
-	public List<DirectiveFileInfo> getSelectedFiles() {
-		
-		List<DirectiveFileInfo> files = new ArrayList<DirectiveFileInfo>();
-		addIfNotEmpty(_specsFile, files);
-		addIfNotEmpty(_charactersFile, files);
-		addIfNotEmpty(_itemsFile, files);
-		
-		files.addAll(_otherDirectivesFiles);
-		
-		return files;
-	}
-	
-	private void addIfNotEmpty(String fileName, List<DirectiveFileInfo> files) {
-		if (StringUtils.isNotEmpty(fileName)) {
-			DirectiveFileInfo specsFile = new DirectiveFileInfo(fileName, DirectiveType.CONFOR);
-			files.add(specsFile);
-		}
-	}
-	
-	public File getSelectedDirectory() {
-		return _currentDirectory;
+		btnOk.setEnabled(_model.isImportable());
 	}
 	
 	@Action
@@ -705,7 +628,7 @@ public class ImportExportDialog extends JDialog {
 		
 		public FilteredListModel(String filter) {
 			ImportFileNameFilter importFilter = new ImportFileNameFilter(_currentFilter);
-			for (String file : _possibleDirectiveFiles) {
+			for (String file : _model.getExcludedDirectiveFiles()) {
 				if (importFilter.accept(new File(file))) {
 					_filteredList.add(file);
 				}

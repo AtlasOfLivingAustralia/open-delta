@@ -6,8 +6,6 @@ import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
-import javax.swing.JOptionPane;
-
 import org.apache.commons.io.FilenameUtils;
 import org.jdesktop.application.Task;
 import org.jdesktop.application.TaskEvent;
@@ -19,6 +17,7 @@ import au.org.ala.delta.directives.DirectiveParserObserver;
 import au.org.ala.delta.editor.DeltaEditor;
 import au.org.ala.delta.editor.directives.ui.ImportExportDialog;
 import au.org.ala.delta.editor.directives.ui.ImportExportStatusDialog;
+import au.org.ala.delta.editor.directives.ui.ImportExportViewModel;
 import au.org.ala.delta.editor.model.EditorDataModel;
 import au.org.ala.delta.editor.slotfile.Directive;
 import au.org.ala.delta.editor.slotfile.DirectiveInstance;
@@ -26,6 +25,10 @@ import au.org.ala.delta.editor.slotfile.directive.DirectiveInOutState;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile;
 import au.org.ala.delta.translation.Printer;
 
+/**
+ * The ExportController manages the process of exporting a set of directives files
+ * from the data set to the file system.
+ */
 public class ExportController {
 	private DeltaEditor _context;
 	private EditorDataModel _model;
@@ -36,17 +39,13 @@ public class ExportController {
 	}
 	
 	public void begin() {
-		
-		if ((_model.getNumberOfCharacters() > 0) || (_model.getMaximumNumberOfItems() > 0)) {
-			JOptionPane.showMessageDialog(_context.getMainFrame(), "Imports are only currently supported for new data sets.");
-			return;
-		}
-		ImportExportDialog dialog = new ImportExportDialog(_context.getMainFrame());
+		ImportExportViewModel model = new ImportExportViewModel();
+		ImportExportDialog dialog = new ImportExportDialog(_context.getMainFrame(), model);
 		_context.show(dialog);
 		
 		if (dialog.proceed()) {
-			List<DirectiveFileInfo> files = dialog.getSelectedFiles();
-			File selectedDirectory = dialog.getSelectedDirectory();
+			List<DirectiveFileInfo> files = model.getSelectedFiles();
+			File selectedDirectory = model.getCurrentDirectory();
 			
 			doExport(selectedDirectory, files);
 		}
