@@ -19,12 +19,12 @@ import au.org.ala.delta.model.TextAttribute;
  */
 public class AttributeFormatter extends CharacterFormatter {
 
-    public AttributeFormatter(boolean includeNumber, boolean stripFormatting) {
-        super(includeNumber, true, false, stripFormatting);
+    public AttributeFormatter(boolean includeNumber, boolean stripFormatting, boolean stripComments) {
+        super(includeNumber, stripComments, false, stripFormatting);
     }
 
-    public AttributeFormatter(boolean includeNumber, boolean stripFormatting, boolean replaceBrackets) {
-        super(includeNumber, true, replaceBrackets, stripFormatting);
+    public AttributeFormatter(boolean includeNumber, boolean stripFormatting, boolean stripComments, boolean replaceBrackets) {
+        super(includeNumber, stripComments, replaceBrackets, stripFormatting);
     }
 
     /**

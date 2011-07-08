@@ -102,7 +102,7 @@ public class DataSetTranslatorFactory {
 	
 	private AttributeFormatter createAttributeFormatter(DeltaContext context, TypeSetter typeSetter) {
 		if (context.isOmitTypeSettingMarks()) {
-			return new AttributeFormatter(false, true);
+			return new AttributeFormatter(false, true, false);
 		}
 		else {
 			return new TypeSettingAttributeFormatter();

@@ -25,7 +25,7 @@ public class NumericAttributeTranslatorTest extends TestCase {
 		_realCharacter = (RealCharacter)_factory.createCharacter(CharacterType.RealNumeric, 2);
 		_realCharacter.setUnits("units");
 		PlainTextTypeSetter typeSetter = new PlainTextTypeSetter(null);
-		AttributeFormatter attributeFormatter = new AttributeFormatter(false, true);
+		AttributeFormatter attributeFormatter = new AttributeFormatter(false, true, false);
 		
 		_translator = new NumericAttributeTranslator(_realCharacter, typeSetter, attributeFormatter);
 	}

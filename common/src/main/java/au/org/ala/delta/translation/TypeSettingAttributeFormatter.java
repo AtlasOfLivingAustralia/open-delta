@@ -9,7 +9,7 @@ import au.org.ala.delta.model.format.AttributeFormatter;
 public class TypeSettingAttributeFormatter extends AttributeFormatter {
 
 	public TypeSettingAttributeFormatter() {
-		super(false, false);
+		super(false, false, false);
 	}
 
 	@Override

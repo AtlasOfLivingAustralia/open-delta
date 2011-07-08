@@ -27,6 +27,8 @@ public class RTFBuilder {
         _strBuilder.append("\n");
         _strBuilder.append("{\\colortbl ;\\red255\\green0\\blue0;}");
         _strBuilder.append("\n");
+        _strBuilder.append("\\fs24");
+        _strBuilder.append("\n");
     }
 
     public void endDocument() {

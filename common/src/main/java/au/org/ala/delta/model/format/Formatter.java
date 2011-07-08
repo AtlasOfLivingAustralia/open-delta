@@ -15,6 +15,7 @@ import au.org.ala.delta.rtf.RTFUtils;
 public class Formatter {
 
     protected static Pattern EMPTY_COMMENT_PATTERN = Pattern.compile("<\\s*>");
+    private static Pattern SINGLE_SURROUNDING_ANGLE_BRACKET_PATTERN = Pattern.compile("^<[^<>]>$");
 
     protected boolean _stripComments;
     protected boolean _stripFormatting;
@@ -69,12 +70,12 @@ public class Formatter {
      * @return the text with angle brackets replaced.
      */
     public String replaceAngleBrackets(String text) {
-        if (text.indexOf('<') == 0 && text.indexOf('>') == text.length() - 1) {
+        if (SINGLE_SURROUNDING_ANGLE_BRACKET_PATTERN.matcher(text).matches()) {
             text = text.substring(1, text.length() - 1);
+        } else {
+            text = text.replace('<', '(');
+            text = text.replace('>', ')');
         }
-
-        text = text.replace('<', '(');
-        text = text.replace('>', ')');
         return text;
     }
 
@@ -86,8 +87,8 @@ public class Formatter {
      * @return the text without comments.
      */
     public String stripComments(String text) {
-        if (text.indexOf('<') == 0 && text.indexOf('>') == text.length() - 1) {
-            text = text.substring(1, text.length() - 1);
+        if (SINGLE_SURROUNDING_ANGLE_BRACKET_PATTERN.matcher(text).matches()) {
+            text = text.substring(1, text.length() - 2);
         }
 
         CommentStripper stripper = new CommentStripper(text);

@@ -34,7 +34,7 @@ public class PlainTextNaturalLanguageTranslatorTest extends NaturalLangaugeTrans
 		_context = new DeltaContext();
 		ItemFormatter itemFormatter = new ItemFormatter(false, false, false, true, false);
 		CharacterFormatter characterFormatter = new CharacterFormatter(false, true, false, true);
-		AttributeFormatter attributeFormatter = new AttributeFormatter(false, true);
+		AttributeFormatter attributeFormatter = new AttributeFormatter(false, true, false);
 		_dataSetTranslator = new NaturalLanguageTranslator(_context, _typeSetter, _printer, itemFormatter, characterFormatter, attributeFormatter);
 	}
 	

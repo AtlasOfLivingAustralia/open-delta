@@ -6,11 +6,18 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JScrollPane;
+import javax.swing.JTextPane;
+import javax.swing.text.rtf.RTFEditorKit;
+
 import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.intkey.model.DiffUtils;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.model.MatchType;
+import au.org.ala.delta.intkey.ui.UIUtils;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
@@ -18,6 +25,7 @@ import au.org.ala.delta.model.format.AttributeFormatter;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.rtf.RTFBuilder;
+import au.org.ala.delta.ui.rtf.RtfEditorPane;
 
 public class DifferencesDirective extends IntkeyDirective {
 
@@ -70,7 +78,7 @@ public class DifferencesDirective extends IntkeyDirective {
             _taxa = new ArrayList<Item>(taxa);
             _characterFormatter = new CharacterFormatter(false, true, true, false);
             _taxonFormatter = new ItemFormatter(false, true, true, false, false);
-            _attributeFormatter = new AttributeFormatter(false, false);
+            _attributeFormatter = new AttributeFormatter(false, false, false);
         }
 
         @Override
@@ -123,6 +131,15 @@ public class DifferencesDirective extends IntkeyDirective {
             builder.appendText(String.format("%s differences", differences.size()));
 
             builder.endDocument();
+            
+            /*JTextPane rtfEditorPane = new JTextPane();
+            rtfEditorPane.setEditorKit(new RTFEditorKit());
+            rtfEditorPane.setText(builder.toString());
+            JDialog dlg = new JDialog();
+            JScrollPane sclPn = new JScrollPane();
+            sclPn.setViewportView(rtfEditorPane);
+            dlg.add(sclPn);
+            UIUtils.showDialog(dlg);*/
 
             return true;
         }
