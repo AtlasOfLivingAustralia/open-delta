@@ -258,6 +258,16 @@ public class ExportControllerTest extends DeltaTestCase {
 		exportAndCheck(11, "timages");
 	}
 	
+	/**
+	 * This tests the specs directives file which has many of the 
+	 * DIRARGS_INTERNAL directives.
+	 */
+	@Test
+	public void testSpecs() throws Exception {
+		exportAndCheck(24, "specs");
+	}
+	
+	
 	private void exportAndCheck(int directiveFileNum, String directiveFileName) throws Exception {
 		File directory = FileUtils.getTempDirectory();
 		

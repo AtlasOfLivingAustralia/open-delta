@@ -24,7 +24,7 @@ import au.org.ala.delta.model.impl.CharacterDependencyData;
 /**
  * Describes the relationship between a set of controlling characters and its dependent characters
  */
-public class CharacterDependency {
+public class CharacterDependency implements Comparable<CharacterDependency>{
 
 	private CharacterDependencyData _impl;
 
@@ -54,6 +54,10 @@ public class CharacterDependency {
 	 */
 	public Set<Integer>  getDependentCharacterIds() {
 	   return _impl.getDependentCharacterIds();
+	}
+	
+	public int getDependentCharacterCount() {
+		return getDependentCharacterIds().size();
 	}
 
 	/**
@@ -139,4 +143,13 @@ public class CharacterDependency {
 		// it seems safer not to include it in the hash code.
 		return getControllingCharacterId();
 	}
+
+	@Override
+	public int compareTo(CharacterDependency o) {
+		
+		return Integer.valueOf(_impl.getControllingCharacterId()).compareTo(
+				Integer.valueOf(o.getControllingCharacterId()));
+	}
+	
+	
 }

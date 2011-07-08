@@ -100,6 +100,10 @@ public abstract class AbstractDirOutFunctor implements DirectiveFunctor {
 	}
 	
 	protected String rangeToString(List<Integer> values) {
+		return rangeToString(values, ' ');
+	}
+	
+	protected String rangeToString(List<Integer> values, char separator) {
 		if (values.isEmpty()) {
 			return "";
 		}
@@ -110,13 +114,13 @@ public abstract class AbstractDirOutFunctor implements DirectiveFunctor {
 			if (value != previousNum+1) {
 				
 				if (firstInRange > 0) {
-					appendRange(builder, firstInRange, previousNum);
+					appendRange(builder, firstInRange, previousNum, separator);
 				}
 				firstInRange = value;
 			}
 			previousNum = value;
 		}
-		appendRange(builder, firstInRange, previousNum);
+		appendRange(builder, firstInRange, previousNum, separator);
 		
 		return builder.toString();
 	}
@@ -129,8 +133,12 @@ public abstract class AbstractDirOutFunctor implements DirectiveFunctor {
 	}
 	
 	private void appendRange(StringBuilder builder, int firstInRange, int lastInRange) {
+		appendRange(builder, firstInRange, lastInRange, ' ');
+	}
+	
+	private void appendRange(StringBuilder builder, int firstInRange, int lastInRange, char separator) {
 		if (builder.length() > 0) {
-			builder.append(" ");
+			builder.append(separator);
 		}
 		builder.append(firstInRange);
 		if (firstInRange != lastInRange) {

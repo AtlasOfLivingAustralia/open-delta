@@ -27,6 +27,7 @@ import au.org.ala.delta.util.Pair;
  */
 public class DirOutNumberStates extends AbstractDirOutFunctor {
 
+	private static final int DEFAULT_NUMBER_OF_STATES = 2;
 	@Override
 	public void writeDirectiveArguments(DirectiveInOutState state) {
 		DeltaDataSet dataSet = state.getDataSet();
@@ -36,7 +37,10 @@ public class DirOutNumberStates extends AbstractDirOutFunctor {
 			Character character = dataSet.getCharacter(i);
 			if (character.getCharacterType().isMultistate()) {
 				MultiStateCharacter multiStateChar = (MultiStateCharacter)character;
-				numbersOfStates.add(new Pair<Integer, Integer>(i, multiStateChar.getNumberOfStates()));
+				int stateCount = multiStateChar.getNumberOfStates();
+				if (stateCount != DEFAULT_NUMBER_OF_STATES) {
+					numbersOfStates.add(new Pair<Integer, Integer>(i, stateCount));
+				}
 			}
 		}
 		writeLine(state, valueRangeToString(numbersOfStates));

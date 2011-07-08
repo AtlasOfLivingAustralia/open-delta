@@ -48,4 +48,12 @@ public class DirectiveInOutState {
 		_dataSet = dataSet;
 	}
 	
+	public void error(String messageKey) {
+		
+	}
+	
+	public void warning(String messageKey) {
+		
+	}
+	
 }
