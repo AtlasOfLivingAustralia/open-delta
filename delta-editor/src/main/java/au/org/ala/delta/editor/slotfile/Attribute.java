@@ -1334,4 +1334,12 @@ public class Attribute implements Iterable<AttrChunk> {
 		return begin();
 	}
 
+	public boolean isUnknown() {
+		
+		for (AttrChunk chunk : this)
+			if (chunk.getType() == ChunkType.CHUNK_UNKNOWN) {
+				return true;
+		}
+		return false;
+	}
 }

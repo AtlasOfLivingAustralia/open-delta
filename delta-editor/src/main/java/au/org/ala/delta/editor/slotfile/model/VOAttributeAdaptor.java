@@ -166,7 +166,8 @@ public class VOAttributeAdaptor implements AttributeData {
 
     @Override
     public boolean isUnknown() {
-        throw new NotImplementedException();
+    	 Attribute attribute = _itemDesc.readAttribute(_charBaseDesc.getUniId());
+    	 return attribute == null || attribute.isUnknown();
     }
 
     @Override

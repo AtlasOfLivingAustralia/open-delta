@@ -13,12 +13,15 @@ import au.org.ala.delta.translation.naturallanguage.NaturalLanguageTranslator;
  * Creates appropriate instances of DataSetTranslator for the supplied DeltaContext.
  */
 public class DataSetTranslatorFactory {
-
+	
 	public AbstractDataSetTranslator createTranslator(DeltaContext context) {
+		return createTranslator(context, createPrinter(context));
+	}
+	
+	public AbstractDataSetTranslator createTranslator(DeltaContext context, Printer printer) {
 		
 		AbstractDataSetTranslator translator = null;
 		TranslateType translation = context.getTranslateType();
-		Printer printer = createPrinter(context);
 		
 		if (translation.equals(TranslateType.NaturalLanguage) && context.getOutputHtml() == false) {
 			translator = createNaturalLanguageTranslator(context, printer);
@@ -31,6 +34,8 @@ public class DataSetTranslatorFactory {
 		}
 		return translator;
 	}
+	
+	
 
 	private AbstractDataSetTranslator createNaturalLanguageTranslator(
 			DeltaContext context, Printer printer) {
