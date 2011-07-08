@@ -145,6 +145,7 @@ public class OverlayTextBuilderTest extends TestCase {
 	public void testStateOverlay() {
 		_overlay.overlayText = "Additional text";
 		_overlay.type = OverlayType.OLSTATE;
+		_overlay.stateId = 1;
 		MultiStateCharacterStub character = new MultiStateCharacterStub(1, "state description <Comment>");
 		
 		// Defaults. (no comments, use item description).
