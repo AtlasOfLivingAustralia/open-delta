@@ -327,6 +327,10 @@ public class DeltaContext extends AbstractDeltaContext {
 	public void excludeCharacter(int charIndex) {
 		_excludedCharacters.add(charIndex);
 	}
+	
+	public boolean isCharacterExcluded(int charNumber) {
+		return _excludedCharacters.contains(charNumber);
+	}
 
 	public Set<Integer> getExcludedCharacters() {
 		return _excludedCharacters;

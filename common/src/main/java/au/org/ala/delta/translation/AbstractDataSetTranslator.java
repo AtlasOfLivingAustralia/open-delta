@@ -4,8 +4,10 @@ import java.util.logging.Logger;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.model.Attribute;
+import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Item;
+
 
 /**
  * The DataSetTranslator iterates through the Items and Attributes of a DeltaDataSet, raising
@@ -44,6 +46,26 @@ public abstract class AbstractDataSetTranslator implements DataSetTranslator {
 		afterLastItem();
 	}
 	
+	public void translateCharacters() {
+		DeltaDataSet dataSet = _context.getDataSet();
+		
+		beforeFirstCharacter();
+		
+		int numChars = dataSet.getNumberOfCharacters();
+		for (int i=1; i<=numChars; i++) {
+			
+			Character character = dataSet.getCharacter(i);
+			
+			if (_filter.filter(character)) {
+				beforeCharacter(character);
+			
+				afterCharacter(character);
+			}	
+		}
+		
+		afterLastItem();
+	}
+	
 	/**
 	 * Iterates through the attributes of an Item.
 	 * @param item the item to translate.
@@ -67,5 +89,16 @@ public abstract class AbstractDataSetTranslator implements DataSetTranslator {
 		}
 	}
 	
+	@Override
+	public void beforeFirstCharacter() {}
+
+	@Override
+	public void beforeCharacter(Character character) {}
+
+	@Override
+	public void afterCharacter(Character character) {}
+
+	@Override
+	public void afterLastCharacter() {}
 
 }

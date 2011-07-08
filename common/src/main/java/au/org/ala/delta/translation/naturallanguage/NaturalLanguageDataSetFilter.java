@@ -28,7 +28,6 @@ public class NaturalLanguageDataSetFilter extends AbstractDataSetFilter implemen
 		return !_context.isExcluded(item.getItemNumber());
 	}
 	
-	
 	@Override
 	public boolean filter(Item item, Character character) {
 		
@@ -56,5 +55,10 @@ public class NaturalLanguageDataSetFilter extends AbstractDataSetFilter implemen
 			return false;
 		}
 		return true;
+	}
+
+	@Override
+	public boolean filter(Character character) {
+		return !_context.isCharacterExcluded(character.getCharacterId());
 	}
 }

@@ -408,4 +408,5 @@ public class NaturalLanguageTranslator extends AbstractDataSetTranslator impleme
         _printer.insertPunctuationMark(punctuationMark);
         _characterOutputSinceLastPuntuation = false;
     }
+
 }

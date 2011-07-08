@@ -4,8 +4,12 @@ import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.model.Attribute;
+import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateAttribute;
+import au.org.ala.delta.model.MultiStateCharacter;
+import au.org.ala.delta.model.NumericCharacter;
+import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.translation.AbstractDataSetTranslator;
 import au.org.ala.delta.translation.Printer;
@@ -22,6 +26,7 @@ public class DeltaFormatTranslator extends AbstractDataSetTranslator {
 
 	private Printer _printer;
 	private ItemFormatter _itemFormatter;
+	private CharacterFormatter _characterFormatter;
 	private AttributeParser _parser;
 	
 	public DeltaFormatTranslator(DeltaContext context, Printer printer, ItemFormatter itemFormatter) {
@@ -29,6 +34,7 @@ public class DeltaFormatTranslator extends AbstractDataSetTranslator {
 		
 		_printer = printer;
 		_itemFormatter = itemFormatter;
+		_characterFormatter = new CharacterFormatter();
 		 _parser = new AttributeParser();
 	}
 	
@@ -113,7 +119,47 @@ public class DeltaFormatTranslator extends AbstractDataSetTranslator {
 	}
 	
 	private void outputLine(String value) {
+		_printer.indent();
 		_printer.writeJustifiedText(value, -1);
 		_printer.printBufferLine();
+	}
+
+	@Override
+	public void beforeFirstCharacter() {
+		outputLine("*CHARACTER LIST");
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public void beforeCharacter(Character character) {
+		_printer.setIndent(0);
+		StringBuilder charDescription = new StringBuilder();
+		charDescription.append("#");
+		charDescription.append(_characterFormatter.formatCharacterDescription(character));
+		charDescription.append("/");
+		outputLine(charDescription.toString());
+		
+		if (character.getCharacterType().isMultistate()) {
+			outputCharacterStates((MultiStateCharacter)character);
+		}
+		else if (character.getCharacterType().isNumeric()) {
+			outputUnits((NumericCharacter<? extends Number>)character);
+		}
+	}
+	
+	public void afterCharacter(Character character) {
+		_printer.writeBlankLines(1, 0);
+	}
+	
+	private void outputCharacterStates(MultiStateCharacter character) {
+		_printer.setIndent(7);
+		for (int i=1; i<=character.getNumberOfStates(); i++) {
+			outputLine(_characterFormatter.formatState(character, i)+"/");
+		}
+	}
+	
+	private void outputUnits(NumericCharacter<? extends Number> character) {
+		_printer.setIndent(7);
+		outputLine(_characterFormatter.formatUnits(character)+"/");
 	}
 }

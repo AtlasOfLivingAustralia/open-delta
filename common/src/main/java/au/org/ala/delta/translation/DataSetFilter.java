@@ -10,13 +10,20 @@ public interface DataSetFilter {
 	 * @param item the Item to filter.
 	 * @return true if the item should be included in the translation.
 	 */
-	public abstract boolean filter(Item item);
+	public boolean filter(Item item);
 
 	/**
 	 * Filters the supplied Attribute.
 	 * @param attribute the Attribute to filter.
 	 * @return true if the attribute should be included in the translation.
 	 */
-	public abstract boolean filter(Item item, Character character);
+	public boolean filter(Item item, Character character);
+	
+	/**
+	 * Filters the supplied Character during a Character translation operation.
+	 * @param character the character to filter.
+	 * @return true if the character should be translated, false otherwise.
+	 */
+	public boolean filter(Character character);
 
 }
