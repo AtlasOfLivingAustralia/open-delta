@@ -53,7 +53,7 @@ public class OverlayTextBuilder {
 		case OverlayType.OLSTATE: // Use name of the state (selectable)
 			if (!overlay.omitDescription()) {
 				text = _stateFormatter.formatState(
-						(MultiStateCharacter) imageOwner, overlay.stateId + 1, !overlay.includeComments()); // TODO convert from id to number inside slotfile code
+						(MultiStateCharacter) imageOwner, overlay.stateId, !overlay.includeComments()); // TODO convert from id to number inside slotfile code
 			}
 			includeExtraText = true;
 			break;
