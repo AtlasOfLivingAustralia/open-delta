@@ -1,6 +1,7 @@
 package au.org.ala.delta.editor.directives;
 
 import java.io.File;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -10,6 +11,8 @@ import javax.swing.SwingWorker;
 
 import junit.framework.TestCase;
 
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ApplicationContext;
 import org.junit.Before;
 
 import sun.awt.AppContext;
@@ -46,6 +49,20 @@ public class ImportControllerTest extends TestCase {
 		public EditorDataModel getCurrentDataSet() {
 			return _model;
 		}
+		
+		
+	}
+	
+	public DeltaEditorTestHelper createTestHelper() throws Exception {
+		
+		DeltaEditorTestHelper helper = new DeltaEditorTestHelper();
+		ApplicationContext context = helper.getContext();
+		context.setApplicationClass(DeltaEditor.class);
+		Method method = ApplicationContext.class.getDeclaredMethod("setApplication", Application.class);
+		method.setAccessible(true);
+		method.invoke(context, helper);
+	
+		return helper;
 	}
 	
 	
@@ -55,14 +72,15 @@ public class ImportControllerTest extends TestCase {
 	/** The data set we are importing into */
 	private AbstractObservableDataSet _dataSet;
 	
+	
 	@Before
-	public void setUp() {
+	public void setUp() throws Exception {
 		// Sure hope this won't throw a headless exception at some point...
-		DeltaEditorTestHelper helper = new DeltaEditorTestHelper();
+		DeltaEditorTestHelper helper = createTestHelper();
 		_dataSet = (AbstractObservableDataSet)new SlotFileDataSetFactory().createDataSet("test");
 		EditorDataModel model = new EditorDataModel(_dataSet);
 		helper.setModel(model);
-		
+
 		importer = new ImportController(helper);
 	}
 	

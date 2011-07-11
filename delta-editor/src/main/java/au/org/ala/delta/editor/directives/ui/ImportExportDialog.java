@@ -17,7 +17,6 @@ import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -25,10 +24,10 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
+import org.apache.commons.lang.StringUtils;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.Resource;
@@ -47,8 +46,6 @@ import au.org.ala.delta.ui.util.IconHelper;
  * 2) In export mode: export the DELTA Editor data set to DELTA directives files.
  */
 public class ImportExportDialog extends JDialog {
-	
-	
 	
 	private ImportExportViewModel _model;
 	
@@ -76,8 +73,6 @@ public class ImportExportDialog extends JDialog {
 	private String filterDialogTitle;
 	@Resource
 	private String filterDialogMessage;
-	@Resource
-	private String directoryChooserTitle;
 	@Resource
 	private String dialogTitle;
 	@Resource
@@ -115,15 +110,7 @@ public class ImportExportDialog extends JDialog {
 		
 		addEventListeners();
 		
-		// This is necessary as if we bring up the chooser dialog before this dialog is visible
-		// the JFileChooser cannot be shown relative to this dialog and hence will always appear
-		// on the default monitor in a multi monitor configuration.
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				directorySelected();
-			}
-		});
+		updateUI();
 	}
 
 	private void addEventListeners() {
@@ -426,7 +413,7 @@ public class ImportExportDialog extends JDialog {
 		currentDirectoryTextField.setColumns(10);
 		currentDirectoryTextField.setEditable(false);
 		
-		btnChange = new JButton("Change...");
+		btnChange = new JButton();
 		
 		JPanel buttonBar = new JPanel();
 		buttonBar.setBorder(new EmptyBorder(5, 0, 5, 0));
@@ -515,19 +502,10 @@ public class ImportExportDialog extends JDialog {
 		setPreferredSize(new Dimension(600,600));
 	}
 	
-	@Action
-	public void directorySelected() {
-		JFileChooser directorySelector = new JFileChooser(_model.getCurrentDirectory());
-		directorySelector.setDialogTitle(directoryChooserTitle);
-		directorySelector.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		directorySelector.setAcceptAllFileFilterUsed(false);
-		
-		int result = directorySelector.showOpenDialog(this);
-		if (result == JFileChooser.APPROVE_OPTION) {
-			_model.setCurrentDirectory(directorySelector.getSelectedFile());
-			updateUI();
-		}
+	public void setDirectorySelectionAction(javax.swing.Action action) {
+		btnChange.setAction(action);
 	}
+	
 	
 	@Action
 	public void okPressed() {
@@ -585,8 +563,12 @@ public class ImportExportDialog extends JDialog {
 		updateUI();
 	}
 	
-	private void updateUI() {
-		currentDirectoryTextField.setText(_model.getCurrentDirectory().getAbsolutePath());
+	public void updateUI() {
+		String path = _model.getCurrentDirectory().getAbsolutePath();
+		if (StringUtils.isEmpty(path)) {
+			path = "";
+		}
+		currentDirectoryTextField.setText(path);
 		charactersFileTextField.setText(_model.getCharactersFile());
 		itemsFileTextField.setText(_model.getItemsFile());
 		specificationsFileTextField.setText(_model.getSpecsFile());

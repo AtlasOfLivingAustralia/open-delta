@@ -40,4 +40,6 @@ public interface EditorViewModel extends ObservableDeltaDataSet {
 	void setSelectedImage(Image image);
 
 	Image getSelectedImage();
+
+	String getDataSetPath();
 }

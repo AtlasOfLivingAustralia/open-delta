@@ -83,6 +83,9 @@ public class DirectiveArgConverter {
 		
 		directiveArgument.setText(arg.text);
 		directiveArgument.setComment(arg.comment);
+		if (arg.getValue().asString().equals("7,1")) {
+			System.err.println(arg.getValue().asString());
+		}
 		directiveArgument.setValue(new BigDecimal(arg.getValue().asString()));
 		converter = idConverterForData(directiveArgument, argType);
 		for (DirListData data : arg.getData()) {

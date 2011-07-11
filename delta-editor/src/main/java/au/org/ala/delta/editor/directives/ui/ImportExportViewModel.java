@@ -84,9 +84,11 @@ public class ImportExportViewModel {
 
 	public void setCurrentDirectory(File currentDirectory) {
 		this._currentDirectory = currentDirectory;
+	}
+	
+	public void populateExcludedFromCurrentDirectory() {
 		_includedDirectivesFiles = new ArrayList<DirectiveFileInfo>();
 		_excludedDirectiveFiles = new ArrayList<String>();
-
 		for (File file : _currentDirectory.listFiles()) {
 			_excludedDirectiveFiles.add(file.getName());
 
@@ -103,7 +105,6 @@ public class ImportExportViewModel {
 			_itemsFile = DEFAULT_ITEMS_DIRECTIVE_FILE;
 			_excludedDirectiveFiles.remove(DEFAULT_ITEMS_DIRECTIVE_FILE);
 		}
-
 	}
 
 	public List<DirectiveFileInfo> getSelectedFiles() {

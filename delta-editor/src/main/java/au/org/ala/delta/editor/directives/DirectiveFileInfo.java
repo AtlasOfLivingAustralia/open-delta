@@ -46,6 +46,8 @@ public class DirectiveFileInfo {
 		_directiveFile = directiveFile;
 	}
 	
-	
+	public String toString() {
+		return _fileName + " (" + _type.getAbbreviation() + ")";
+	}
 	
 }

@@ -117,4 +117,8 @@ public class DeltaViewModel extends DataSetWrapper implements EditorViewModel, P
 	public String getImagePath() {
 		return _editorDataModel.getImagePath();
 	}
+	
+	public String getDataSetPath() {
+		return _editorDataModel.getDataSetPath();
+	}
 }

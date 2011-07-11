@@ -130,6 +130,16 @@ public class DeltaEditor extends InternalFrameApplication implements
 		setupMacSystemProperties(DeltaEditor.class);
 		launch(DeltaEditor.class, args);
 	}
+	
+	public DeltaEditor() {
+		_controllers = new ArrayList<DeltaViewController>();
+		_saveEnabled = false;
+		_saveAsEnabled = false;
+		_closingAll = false;
+		
+		_propertyChangeSupport = new PropertyChangeSupport(this);
+		
+	}
 
 	@Override
 	protected void initialize(String[] args) {
@@ -153,12 +163,6 @@ public class DeltaEditor extends InternalFrameApplication implements
 	@Override
 	protected void startup() {
 
-		_controllers = new ArrayList<DeltaViewController>();
-		_saveEnabled = false;
-		_saveAsEnabled = false;
-		_closingAll = false;
-		
-		_propertyChangeSupport = new PropertyChangeSupport(this);
 		
 		_actionMap = getContext().getActionMap(this);
 

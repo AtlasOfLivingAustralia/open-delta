@@ -66,6 +66,18 @@ public class DirectiveFile {
 		return type;
 	}
 	
+	public boolean isSpecsFile() {
+		return (_dirFileDesc.getFileFlags() & VODirFileDesc.FILEFLAG_SPECS) > 0;
+	}
+	
+	public boolean isItemsFile() {
+		return (_dirFileDesc.getFileFlags() & VODirFileDesc.FILEFLAG_ITEMS) > 0;
+	}
+	
+	public boolean isCharsFile() {
+		return (_dirFileDesc.getFileFlags() & VODirFileDesc.FILEFLAG_CHARS) > 0;
+	}
+	
 	public String getFileName() {
 		return _dirFileDesc.getFileName();
 	}

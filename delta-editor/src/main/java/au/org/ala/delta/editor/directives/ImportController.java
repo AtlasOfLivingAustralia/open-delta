@@ -3,8 +3,12 @@ package au.org.ala.delta.editor.directives;
 import java.io.File;
 import java.util.List;
 
+import javax.swing.ActionMap;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
+import org.jdesktop.application.Action;
+import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.Task;
 import org.jdesktop.application.TaskEvent;
 import org.jdesktop.application.TaskListener;
@@ -28,9 +32,15 @@ public class ImportController {
 
 	private DeltaEditor _context;
 	private EditorDataModel _model;
+	private ImportExportViewModel _importModel;
+	private ImportExportDialog _importDialog;
+	private ResourceMap _resources;
+	private ActionMap _actions;
 	
 	public ImportController(DeltaEditor context) {
 		_context = context;
+		_resources = _context.getContext().getResourceMap();
+		_actions = _context.getContext().getActionMap(this);
 		_model = context.getCurrentDataSet();
 	}
 	
@@ -40,15 +50,33 @@ public class ImportController {
 			JOptionPane.showMessageDialog(_context.getMainFrame(), "Imports are only currently supported for new data sets.");
 			return;
 		}
-		ImportExportViewModel model = new ImportExportViewModel();
-		ImportExportDialog dialog = new ImportExportDialog(_context.getMainFrame(), model);
-		_context.show(dialog);
+		_importModel = new ImportExportViewModel();
+		_importModel.setCurrentDirectory(new File(_model.getDataSetPath()));
+		_importDialog = new ImportExportDialog(_context.getMainFrame(), _importModel);
+		_importDialog.setDirectorySelectionAction(_actions.get("changeImportDirectory"));
+		_context.show(_importDialog);
 		
-		if (dialog.proceed()) {
-			List<DirectiveFileInfo> files = model.getSelectedFiles();
-			File selectedDirectory = model.getCurrentDirectory();
+		
+		if (_importDialog.proceed()) {
+			List<DirectiveFileInfo> files = _importModel.getSelectedFiles();
+			File selectedDirectory = _importModel.getCurrentDirectory();
 			
 			doImport(selectedDirectory, files);
+		}
+	}
+	
+	@Action
+	public void changeImportDirectory() {
+		JFileChooser directorySelector = new JFileChooser(_importModel.getCurrentDirectory());
+		String directoryChooserTitle = _resources.getString("ImportExportDialog.directoryChooserTitle");
+		directorySelector.setDialogTitle(directoryChooserTitle);
+		directorySelector.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		directorySelector.setAcceptAllFileFilterUsed(false);
+		
+		int result = directorySelector.showOpenDialog(_importDialog);
+		if (result == JFileChooser.APPROVE_OPTION) {
+			_importModel.setCurrentDirectory(directorySelector.getSelectedFile());
+			_importDialog.updateUI();
 		}
 	}
 	

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
@@ -39,7 +40,8 @@ public class ExportController {
 	}
 	
 	public void begin() {
-		ImportExportViewModel model = new ImportExportViewModel();
+		ImportExportViewModel model = getExistingDirectives();
+		
 		ImportExportDialog dialog = new ImportExportDialog(_context.getMainFrame(), model);
 		_context.show(dialog);
 		
@@ -49,6 +51,39 @@ public class ExportController {
 			
 			doExport(selectedDirectory, files);
 		}
+	}
+	
+	private ImportExportViewModel getExistingDirectives() {
+		
+		ImportExportViewModel model = new ImportExportViewModel();
+		int directiveFileCount = _model.getDirectiveFileCount();
+		
+		List<DirectiveFileInfo> files = new ArrayList<DirectiveFileInfo>(directiveFileCount);
+		
+		for (int i=1; i<=directiveFileCount; i++) {
+			DirectiveFile dirFile = _model.getDirectiveFile(i);
+			
+			DirectiveFileInfo info = new DirectiveFileInfo(
+					dirFile.getShortFileName(), dirFile.getType());
+			info.setDirectiveFile(dirFile);
+			
+			if (dirFile.isSpecsFile()) {
+				model.setSpecsFile(info.getFileName());
+			}
+			else if (dirFile.isItemsFile()) {
+				model.setItemsFile(info.getFileName());
+			}
+			else if (dirFile.isCharsFile()) {
+				model.setCharactersFile(info.getFileName());
+			}
+			else {
+				files.add(info);
+			}
+		}
+		model.setIncludedDirectivesFiles(files);
+		model.setCurrentDirectory(new File(_model.getDataSetPath()));
+		
+		return model;
 	}
 	
 	public void doExport(File selectedDirectory, List<DirectiveFileInfo> files) {
@@ -160,19 +195,28 @@ public class ExportController {
 	private DirectiveInOutState createExportState(DirectiveFile file,
 			String directoryPath) throws FileNotFoundException,
 			UnsupportedEncodingException {
-		DirectiveInOutState state;
 		String fileName = file.getShortFileName();
 		FilenameUtils.concat(directoryPath, fileName);
-		File temp = new File(directoryPath+fileName);
-		PrintStream out = new PrintStream(temp, "utf-8");
+		File directivesFile = new File(directoryPath+fileName);
+		if (directivesFile.exists()) {
+			rename(directivesFile);
+			directivesFile = new File(directoryPath+fileName);
+		}
+		PrintStream out = new PrintStream(directivesFile, "utf-8");
 		Printer printer = new Printer(out, 80);
 		printer.setIndentOnLineWrap(true);
 		printer.setSoftWrap(true);
 		printer.setIndent(2);
-		state = new DirectiveInOutState();
+		
+		DirectiveInOutState state = new DirectiveInOutState();
 		state.setPrinter(printer);
 		state.setDataSet(_model);
 		return state;
+	}
+	
+	private void rename(File directivesFile) {
+		File bakFile = new File(directivesFile.getAbsolutePath()+".bak");
+		directivesFile.renameTo(bakFile);
 	}
 	
 	protected void writeDirective(DirectiveInstance directive, DirectiveInOutState state) {
@@ -183,5 +227,4 @@ public class ExportController {
 	    directiveInfo.getOutFunc().process(state);
 	    
 	}
-	
 }

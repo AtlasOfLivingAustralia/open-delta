@@ -17,7 +17,6 @@ import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.ObservableDeltaDataSet;
 import au.org.ala.delta.model.image.Image;
-import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
 
 
@@ -157,16 +156,22 @@ public class EditorDataModel extends DataSetWrapper implements EditorViewModel, 
 			return "";
 		}
 		
-		String imagePath = new ImageSettings().getImagePath();
+		String imagePath = getImageSettings().getImagePath();
 		String dataSetFolder = new File(getName()).getParent();
 		return dataSetFolder+File.separator+imagePath;
+	}
+	
+	
+	@Override
+	public String getDataSetPath() {
+		String dataSetFolder = new File(getName()).getParent();
+		return dataSetFolder+File.separator;
 	}
 	
 	@Override
 	public void setName(String name) {
 		
 		_wrappedDataSet.setName(name);
-		
 		_propertyChangeSupport.firePropertyChange("name", null, name);
 	}
 
@@ -179,6 +184,14 @@ public class EditorDataModel extends DataSetWrapper implements EditorViewModel, 
 	
 	public DirectiveFile addDirectiveFile(int fileNumber, String fileName, int flags) {
 		return ((SlotFileDataSet)_wrappedDataSet).addDirectiveFile(fileNumber, fileName, flags);
+	}
+	
+	public int getDirectiveFileCount() {
+		return ((SlotFileDataSet)_wrappedDataSet).getDirectiveFileCount();
+	}
+	
+	public DirectiveFile getDirectiveFile(int fileNumber) {
+		return ((SlotFileDataSet)_wrappedDataSet).getDirectiveFile(fileNumber);
 	}
 	
 	public boolean isModified() {
