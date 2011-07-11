@@ -73,6 +73,16 @@ public class RichTextLabel extends JPanel implements OverlayLocationProvider {
 	}
 	
 	@Override
+	public void setFont(Font font) {
+		super.setFont(font);
+		// setFont gets called during the panels constructor when setting
+		// UI defaults so _editor can be null.
+		if (_editor != null) {
+			_editor.setFont(font);
+		}
+	}
+	
+	@Override
 	public void addMouseListener(MouseListener l) {
 		_editor.addMouseListener(l);
 	}

@@ -60,7 +60,7 @@ public class ImageViewer extends ImagePanel implements LayoutManager2, ActionLis
 		_image = image;
 		
 		ResourceMap resources = Application.getInstance().getContext().getResourceMap();
-		_factory = new OverlayComponentFactory(resources);
+		_factory = new OverlayComponentFactory(resources, dataSet.getImageSettings());
 		setLayout(this);
 		displayImage(image.getImageLocation(imagePath));
 		_components = new ArrayList<JComponent>();

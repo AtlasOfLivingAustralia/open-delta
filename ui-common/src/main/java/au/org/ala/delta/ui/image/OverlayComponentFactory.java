@@ -7,6 +7,7 @@ import org.jdesktop.application.ResourceMap;
 import au.org.ala.delta.model.Illustratable;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageOverlay;
+import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.model.image.OverlayLocation.OLDrawType;
 import au.org.ala.delta.model.image.OverlayType;
 import au.org.ala.delta.ui.image.overlay.HotSpot;
@@ -28,8 +29,12 @@ public class OverlayComponentFactory {
 	/** Knows how to generate appropriate text for the overlay */
 	private OverlayTextBuilder _textBuilder;
 	
+	/** Tells us what Fonts to use for the components we create */
+	private ImageSettings _imageSettings;
 	
-	public OverlayComponentFactory(ResourceMap resources) {	
+	
+	public OverlayComponentFactory(ResourceMap resources, ImageSettings imageSettings) {
+		_imageSettings = imageSettings;
 		_textBuilder = new OverlayTextBuilder(resources);
 	}
 	
@@ -47,8 +52,11 @@ public class OverlayComponentFactory {
 		switch (overlay.type) {
 		case OverlayType.OLTEXT: // Use a literal text string
 		case OverlayType.OLITEM: // Use name of the item
+			component = new RichTextLabel(overlay, text);
+			break;
 		case OverlayType.OLFEATURE: // Use name of the character
 			component = new RichTextLabel(overlay, text);
+			component.setFont(_imageSettings.getDefaultFeatureFont());
 			break;
 		case OverlayType.OLUNITS: // Use units (for numeric characters)
 			component = new RelativePositionedTextOverlay(overlay, text);
@@ -65,6 +73,7 @@ public class OverlayComponentFactory {
 		case OverlayType.OLNOTES: // Create Notes pushbutton (for character notes)
 		case OverlayType.OLIMAGENOTES: // Create Notes pushbutton (for notes about the image)
 			component = new OverlayButton(overlay, text);
+			component.setFont(_imageSettings.getDefaultButtonFont());
 			break;
 		case OverlayType.OLCOMMENT: // Not a "real" overlay type, but used to save comments addressed
 		// to images rather than overlays
@@ -79,8 +88,20 @@ public class OverlayComponentFactory {
 		default : 
 			System.out.println("Unsupported overlay type: "+overlay.type);
 		}
-		
+		setFont(overlay.type, component);
 		return component;
+	}
+	
+	private void setFont(int overlayType, JComponent overlayComp) {
+		if (overlayType == OverlayType.OLFEATURE) {
+			overlayComp.setFont(_imageSettings.getDefaultFeatureFont());
+		}
+		else if (overlayComp instanceof OverlayButton) {
+			overlayComp.setFont(_imageSettings.getDefaultButtonFont());
+		}
+		else {
+			overlayComp.setFont(_imageSettings.getDefaultFont());
+		}
 	}
 	
 	public HotSpot createHotSpot(ImageOverlay overlay, int index) {
