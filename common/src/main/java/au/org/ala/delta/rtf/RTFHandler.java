@@ -14,6 +14,11 @@ public interface RTFHandler {
 	
 	void onCharacterAttributeChange(List<AttributeValue> changes);
 	
+	void onParagraphAttributeChange(List<AttributeValue> changes);
+	
+	void startParagraph();
+	
+	void endParagraph();
+	
 	void endParse();
-
 }

@@ -4,13 +4,12 @@ public class AttributeKeyword extends Keyword {
 	
 	private int _default;
 	private boolean _useDefault;
-	private CharacterAttributeType _type;
 
-	public AttributeKeyword(String keyword, CharacterAttributeType type, int defval, boolean useDefault) {
+
+	public AttributeKeyword(String keyword, int defval, boolean useDefault) {
 		super(keyword, KeywordType.Attribute);
 		_default = defval;
 		_useDefault = useDefault;
-		_type = type;
 	}
 	
 	public int getDefaultValue() {
@@ -19,10 +18,6 @@ public class AttributeKeyword extends Keyword {
 	
 	public boolean useDefault() {
 		return _useDefault;
-	}
-	
-	public CharacterAttributeType getAttributeType() {
-		return _type;
 	}
 
 }

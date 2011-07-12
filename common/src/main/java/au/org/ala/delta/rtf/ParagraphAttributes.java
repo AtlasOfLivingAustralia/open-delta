@@ -1,20 +1,31 @@
 package au.org.ala.delta.rtf;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class ParagraphAttributes {
 	
-	public int LeftIndent = 0;
-	public int RightIndent = 0;
-	public int FirstLineIndent = 0;
-	JustificationType Justification = JustificationType.Left;
-	
-	public ParagraphAttributes() {		
-	}
-	
-	public ParagraphAttributes(ParagraphAttributes other) {
-		LeftIndent = other.LeftIndent;
-		RightIndent = other.RightIndent;
-		FirstLineIndent = other.FirstLineIndent;
-		Justification = other.Justification;
-	}
+    private Map<ParagraphAttributeType, Integer> _attrMap = new HashMap<ParagraphAttributeType, Integer>();
+    
+    public ParagraphAttributes() {
+        for (ParagraphAttributeType attrType : ParagraphAttributeType.values()) {
+            _attrMap.put(attrType, 0);
+        }
+    }
+    
+    public ParagraphAttributes(ParagraphAttributes other) {
+        for (ParagraphAttributeType attrType : ParagraphAttributeType.values()) {
+            _attrMap.put(attrType, other.get(attrType));
+            
+        }
+    }
+    
+    public int get(ParagraphAttributeType attrType) {
+        return _attrMap.get(attrType);      
+    }
+    
+    public void set(ParagraphAttributeType attrType, int value) {
+        _attrMap.put(attrType, value);
+    }
 	
 }

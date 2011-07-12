@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
 
 public class RTFUtils {
@@ -64,10 +65,6 @@ class FilteringRTFHandler implements RTFHandler {
 	@Override
 	public void onKeyword(String keyword, boolean hasParam, int param) {
 
-		if (_newlinesToSpace && keyword.equals("par")) {
-			_buffer.append(" ");
-		}
-
 		if (_allowedKeywords.contains(keyword)) {
 			_buffer.append("\\").append(keyword);
 			if (hasParam) {
@@ -96,19 +93,39 @@ class FilteringRTFHandler implements RTFHandler {
 
 	@Override
 	public void onCharacterAttributeChange(List<AttributeValue> values) {
-		boolean atLeastOneAllowed = false;
-		for (AttributeValue val : values) {
-			if (_allowedKeywords.contains(val.getKeyword())) {
-				atLeastOneAllowed = true;
-				_buffer.append("\\").append(val.getKeyword());
-				if (val.hasParam()) {
-					_buffer.append(val.getParam());
-				}
-			}
-		}
-		if (atLeastOneAllowed) {
-			_buffer.append(" "); // terminate the string of control words...
-		}
+	    handleAttributeChange(values);
 	}
+
+    @Override
+    public void onParagraphAttributeChange(List<AttributeValue> values) {
+        handleAttributeChange(values);
+    }
+    
+    private void handleAttributeChange(List<AttributeValue> values) {
+        boolean atLeastOneAllowed = false;
+        for (AttributeValue val : values) {
+            if (_allowedKeywords.contains(val.getKeyword())) {
+                atLeastOneAllowed = true;
+                _buffer.append("\\").append(val.getKeyword());
+                if (val.hasParam()) {
+                    _buffer.append(val.getParam());
+                }
+            }
+        }
+        if (atLeastOneAllowed) {
+            _buffer.append(" "); // terminate the string of control words...
+        }        
+    }
+
+    @Override
+    public void startParagraph() {
+    }
+
+    @Override
+    public void endParagraph() {
+        if (_newlinesToSpace) {
+            _buffer.append(" ");
+        }
+    }
 
 }

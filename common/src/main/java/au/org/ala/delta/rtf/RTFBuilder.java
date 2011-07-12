@@ -10,6 +10,12 @@ public class RTFBuilder {
     private int _indentWidth = 720;
     private int _currentIndent = 0;
 
+    public static enum Alignment {
+        LEFT, RIGHT, CENTER, JUSTIFY
+    }
+
+    private Alignment _alignment = Alignment.LEFT;
+
     public RTFBuilder() {
         _strBuilder = new StringBuilder();
     }
@@ -27,7 +33,7 @@ public class RTFBuilder {
         _strBuilder.append("\n");
         _strBuilder.append("{\\colortbl ;\\red255\\green0\\blue0;}");
         _strBuilder.append("\n");
-        _strBuilder.append("\\fs24");
+        _strBuilder.append("\\fs36");
         _strBuilder.append("\n");
     }
 
@@ -43,7 +49,11 @@ public class RTFBuilder {
     public void decreaseIndent() {
         _currentIndent--;
     }
-    
+
+    public void setAlignment(Alignment alignment) {
+        _alignment = alignment;
+    }
+
     public void setTextColor(Color color) {
         if (color.equals(Color.BLACK)) {
             _strBuilder.append("\\cf0");
@@ -53,7 +63,7 @@ public class RTFBuilder {
             throw new IllegalArgumentException("Unsupported color");
         }
     }
-    
+
     public void setFont(int fontNumber) {
         if (fontNumber == 0) {
             _strBuilder.append("\\f0");
@@ -63,9 +73,27 @@ public class RTFBuilder {
             throw new IllegalArgumentException("Unrecognised font number");
         }
     }
-    
+
     public void appendText(String str) {
         _strBuilder.append("\\pard ");
+
+        if (_alignment != null) {
+            switch (_alignment) {
+            case LEFT:
+                _strBuilder.append("\\ql ");
+                break;
+            case RIGHT:
+                _strBuilder.append("\\qr ");
+                break;
+            case CENTER:
+                _strBuilder.append("\\qc ");
+                break;
+            case JUSTIFY:
+                _strBuilder.append("\\qj ");
+                break;
+            }
+        }
+
         int indentTwips = _currentIndent * _indentWidth;
         _strBuilder.append(String.format("\\li%s ", indentTwips));
         _strBuilder.append(str);
