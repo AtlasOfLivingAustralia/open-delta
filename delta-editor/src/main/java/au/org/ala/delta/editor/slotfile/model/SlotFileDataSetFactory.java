@@ -267,6 +267,7 @@ public class SlotFileDataSetFactory implements DeltaDataSetFactory {
 		}
 	
 		controllingDesc.setControllingInfo(charId, stateIds, "");
+		controllingDesc.writeControlledChars(controlledCharIds);
 		charDesc.addDependentContAttr(controllingDesc.getUniId());
 		
 		return new CharacterDependency(new VOControllingAdapter(getVOP(), controllingDesc));

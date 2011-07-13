@@ -512,7 +512,10 @@ public class DeltaContext extends AbstractDeltaContext {
 		Item item = getDataSet().getItem(itemNum);
 		String description = RTFUtils.stripFormatting(item.getDescription());
 		Set<Integer> chars =  _addedCharactersByDescription.get(description);
-		return chars.contains(characterNum);
+		if (chars != null) {
+			return chars.contains(characterNum);
+		}
+		return false;
 	}
 	
 	private boolean entryExists(Map<Integer, Set<Integer>> map, int itemNum, int characterNum) {
