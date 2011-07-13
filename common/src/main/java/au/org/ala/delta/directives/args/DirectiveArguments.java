@@ -102,4 +102,16 @@ public class DirectiveArguments {
 		return _args.get(0).getValue().toString();
 		
 	}
+
+	public void addValueArgument(BigDecimal value) {
+		DirectiveArgument<Integer> arg = new DirectiveArgument<Integer>();
+		arg.setValue(value);
+		_args.add(arg);
+	}
+
+	public void addDirectiveArgument(int id, BigDecimal value) {
+		DirectiveArgument<Integer> arg = new DirectiveArgument<Integer>(id);
+		arg.setValue(value);
+		_args.add(arg);
+	}
 }

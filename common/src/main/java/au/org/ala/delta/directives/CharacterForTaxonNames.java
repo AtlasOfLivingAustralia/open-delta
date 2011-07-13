@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2011 Atlas of Living Australia
+Abstr * Copyright (C) 2011 Atlas of Living Australia
  * All Rights Reserved.
  * 
  * The contents of this file are subject to the Mozilla Public

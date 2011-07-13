@@ -14,7 +14,9 @@
  ******************************************************************************/
 package au.org.ala.delta.directives;
 
+import java.io.IOException;
 import java.io.Reader;
+import java.text.ParseException;
 
 import au.org.ala.delta.DeltaContext;
 
@@ -43,14 +45,19 @@ public abstract class AbstractStreamParser {
 
 	// protected static final String WHITESPACE = " \t\r\n";
 
-	protected int readNext() throws Exception {
-		_currentInt = _reader.read();
-		_position++;
-		_currentChar = (char) _currentInt;
-		return _currentInt;
+	protected int readNext() throws ParseException {
+		try {
+			_currentInt = _reader.read();
+			_position++;
+			_currentChar = (char) _currentInt;
+			return _currentInt;
+		}
+		catch (IOException e) {
+			throw new ParseException("Failed to read next char. "+e.getMessage(), _position);
+		}
 	}
 
-	protected boolean skipWhitespace() throws Exception {
+	protected boolean skipWhitespace() throws ParseException {
 
 		while (_currentInt > 0 && isWhiteSpace(_currentChar)) {
 			readNext();
@@ -70,7 +77,7 @@ public abstract class AbstractStreamParser {
 		return _currentInt == find;
 	}
 
-	protected String readToNextEndSlashSpace() throws Exception {
+	protected String readToNextEndSlashSpace() throws ParseException {
 		StringBuilder b = new StringBuilder();
 
 		char prev = 0;

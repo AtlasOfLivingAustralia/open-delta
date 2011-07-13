@@ -1444,7 +1444,7 @@ public class VODirFileDesc extends VOAnyDesc implements WindowsConstants {
 		DeltaNumber value = new DeltaNumber();
 		int id;
 		List<DirListData> dataVect;
-		Attribute attrib = new Attribute();
+		public Attribute attrib = new Attribute();
 
 		public void resizeDataVect(int size) {
 			dataVect = new ArrayList<DirListData>(size);

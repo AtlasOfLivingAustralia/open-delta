@@ -176,7 +176,7 @@ public class Formatter {
         }
 
         @Override
-        protected int readNext() throws Exception {
+        protected int readNext() throws ParseException {
             _previousChar = _currentChar;
             return super.readNext();
         }

@@ -49,7 +49,7 @@ public abstract class TextListParser<T> extends DirectiveArgsParser {
 	    	
 	    	T id = readId();
 	    	String comment = readOptionalComment();
-	    	String value = readValue();
+	    	String value = readText();
 	    	
 	    	_args.addDirectiveArgument(id, comment, value);
 	    }
@@ -82,7 +82,7 @@ public abstract class TextListParser<T> extends DirectiveArgsParser {
 	 */
 	protected abstract T readId() throws Exception;
 	
-	protected String readValue() throws Exception {
+	protected String readText() throws Exception {
 		
 		String value = "";
 		
@@ -175,16 +175,5 @@ public abstract class TextListParser<T> extends DirectiveArgsParser {
 		}
 	}
 	
-	protected void expect(char token) throws ParseException {
-		expect(token, false);
-	}
 	
-	protected void expect(char token, boolean allowEndOfStream) throws ParseException {
-		if (allowEndOfStream && _currentInt < 0) {
-			return;
-		}
-		if (_currentChar != token) {
-			throw new ParseException("Invalid character found.", _position);
-		}
-	}
 }

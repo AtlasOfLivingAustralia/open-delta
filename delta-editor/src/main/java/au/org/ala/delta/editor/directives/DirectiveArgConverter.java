@@ -83,9 +83,12 @@ public class DirectiveArgConverter {
 		
 		directiveArgument.setText(arg.text);
 		directiveArgument.setComment(arg.comment);
-		if (arg.getValue().asString().equals("7,1")) {
-			System.err.println(arg.getValue().asString());
+		
+		// This is a special case - the actual attribute data is stored.
+		if (argType == DirectiveArgType.DIRARG_INTKEY_ATTRIBUTES) {
+			directiveArgument.setText(getAttributeText(arg));
 		}
+		
 		directiveArgument.setValue(new BigDecimal(arg.getValue().asString()));
 		converter = idConverterForData(directiveArgument, argType);
 		for (DirListData data : arg.getData()) {
@@ -93,6 +96,13 @@ public class DirectiveArgConverter {
 		}
 		
 		return directiveArgument;
+	}
+	
+	private String getAttributeText(DirArgs arg) {
+		VOCharBaseDesc desc = (VOCharBaseDesc)_vop.getDescFromId(arg.getId());
+		desc.getCharType();
+		int showComments = CharType.isText(desc.getCharType()) ? 0 : 1;
+		return arg.attrib.getAsText(showComments, _vop);
 	}
 
 	private void populateArgs(Dir dir, DirectiveArguments args, int directiveType) {
@@ -249,7 +259,6 @@ public class DirectiveArgConverter {
 			return new BigDecimal(data.asString());
 		}
 	}
- 
 	
 	private IdConverter idConverterFor(int argType) {
 		

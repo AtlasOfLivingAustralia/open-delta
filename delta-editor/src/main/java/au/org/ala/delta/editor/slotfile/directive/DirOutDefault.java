@@ -19,11 +19,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.directives.args.DirectiveArgument;
 import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.editor.slotfile.Directive;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile.DirectiveType;
+import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Item;
@@ -197,7 +200,7 @@ public class DirOutDefault extends AbstractDirOutFunctor {
 					curNo = directiveArgs.getFirstArgumentIdAsInt();
 					_textBuffer.append(curNo);
 				} else
-					appendKeyword(directiveArgs.getFirstArgumentText());
+					appendKeyword(_textBuffer, directiveArgs.getFirstArgumentText());
 			}
 			break;
 
@@ -211,7 +214,7 @@ public class DirOutDefault extends AbstractDirOutFunctor {
 				if ((Integer) vectIter.getId() > 0)
 					dataList.add((Integer) vectIter.getId());
 				else
-					appendKeyword(
+					appendKeyword(_textBuffer,
 							vectIter.getText(),
 							(argType == DirectiveArgType.DIRARG_KEYWORD_CHARLIST || argType == DirectiveArgType.DIRARG_KEYWORD_ITEMLIST)
 									&& vectIter == directiveArgs.get(0));
@@ -244,7 +247,7 @@ public class DirOutDefault extends AbstractDirOutFunctor {
 						DirectiveArgument<?> vectIter = args.get(i);
 						curVal = vectIter.getValue();
 						if ((Integer) vectIter.getId() <= 0) {
-							appendKeyword(vectIter.getText());
+							appendKeyword(_textBuffer, vectIter.getText());
 							if (!(curVal.compareTo(BigDecimal.ZERO) < 0.0)) {
 								_textBuffer.append(',');
 								_textBuffer.append(curVal.toPlainString());
@@ -275,11 +278,11 @@ public class DirOutDefault extends AbstractDirOutFunctor {
 			break;
 
 		case DirectiveArgType.DIRARG_INTKEY_ITEMCHARSET:
-			writeIntItemCharSetArgs(directiveArgs, _textBuffer);
+			writeIntItemCharSetArgs(argType, directiveArgs, _textBuffer);
 			break;
 
 		case DirectiveArgType.DIRARG_INTKEY_ATTRIBUTES:
-			writeIntkeyAttributesArgs(directiveArgs, _textBuffer);
+			writeIntkeyAttributesArgs(directiveArgs, _textBuffer, dataSet);
 			break;
 
 		default:
@@ -518,14 +521,25 @@ public class DirOutDefault extends AbstractDirOutFunctor {
 		}
 	}
 
-	private void appendKeyword(String text, boolean b) {
-		// TODO Auto-generated method stub
+	private void appendKeyword(StringBuilder textBuffer, String text) {
+		appendKeyword(textBuffer, text, false, true);
 
 	}
-
-	private void appendKeyword(String firstArgumentText) {
-		// TODO Auto-generated method stub
-
+	
+	private void appendKeyword(StringBuilder textBuffer, String text, boolean forceQuote) {
+		appendKeyword(textBuffer, text, forceQuote, true);
+	}
+	
+	private void appendKeyword(StringBuilder textBuffer, String text, boolean forceQuote, boolean prependSpace) {
+		if (StringUtils.isEmpty(text)) {
+		    return;
+		}
+		if (prependSpace)
+		    textBuffer.append(' ');
+		if (forceQuote || text.indexOf(' ') >=0)
+		    textBuffer.append("\"").append(text).append("\"");
+		else
+		    textBuffer.append(text);
 	}
 
 
@@ -560,88 +574,72 @@ public class DirOutDefault extends AbstractDirOutFunctor {
 			textBuffer.append(curNo);
 	}
 
-	private void writeIntItemCharSetArgs(DirectiveArguments directiveArgs,
-			StringBuilder textBuffer) {
-		// if (directiveArgs.size() > 0)
-		// {
-		// enum state
-		// { IN_MODIFIERS,
-		// IN_TAXA,
-		// IN_CHARS
-		// } curState = IN_MODIFIERS;
-		// dataList.resize(0);
-		// for (DirectiveArgument<?> vectIter :
-		// directiveArgs.getDirectiveArguments())
-		// {
-		// TDeltaNumber curVal = vectIter.value;
-		// if (curState == IN_MODIFIERS && curVal != 0.0)
-		// {
-		// if (!(curVal < 0.0))
-		// break; // No taxa present, so nothing else matters
-		// curState = IN_TAXA;
-		// dataList.resize(0);
-		// textBuffer.append(" (");
-		// }
-		// if (curState == IN_TAXA && curVal > 0.0)
-		// {
-		// if (dataList.size() > 0)
-		// AppendRange(dataList, ' ', true, textBuffer);
-		// textBuffer.append(')');
-		// curState = IN_CHARS;
-		// dataList.resize(0);
-		// }
-		// if (curState == IN_CHARS && !(curVal > 0.0))
-		// break; // Should never happen, unless arguments were somehow
-		// reordered
-		// if (vectIter.getId() != VOUID_NULL)
-		// dataList.add(vectIter.getId());
-		// else
-		// AppendKeyword(vectIter.text,
-		// (argType == DIRARG_KEYWORD_CHARLIST ||
-		// argType == DIRARG_KEYWORD_ITEMLIST) &&
-		// vectIter == directiveArgs.begin(),
-		// !(curState == IN_TAXA && textBuffer[textBuffer.size() - 1] == '('));
-		// }
-		// if (dataList.size() > 0)
-		// {
-		// textBuffer.append(' ');
-		// AppendRange(dataList, ' ', true, textBuffer);
-		// }
-		// }
+	enum State { IN_MODIFIERS,
+		 IN_TAXA,
+		 IN_CHARS
+		 };
+	private void writeIntItemCharSetArgs(int argType, DirectiveArguments directiveArgs, StringBuilder textBuffer) {
+		 if (directiveArgs.size() > 0) {
+		
+			 State curState = State.IN_MODIFIERS;
+			 List<Integer> dataList = new ArrayList<Integer>();
+			 for (DirectiveArgument<?> vectIter : directiveArgs.getDirectiveArguments()) {
+				 BigDecimal curVal = vectIter.getValue();
+				 if (curState == State.IN_MODIFIERS && !BigDecimal.ZERO.equals(curVal)) {
+					 if (curVal.compareTo(BigDecimal.ZERO) > 0)
+						 break; // No taxa present, so nothing else matters
+					 curState = State.IN_TAXA;
+					 dataList.clear();
+					 textBuffer.append(" (");
+				 }
+				 if (curState == State.IN_TAXA && curVal.compareTo(BigDecimal.ZERO) > 0) {
+					 if (vectIter.getData().size() >= 0)
+						 appendRange(dataList, ' ', true, textBuffer);
+					 textBuffer.append(')');
+					 curState = State.IN_CHARS;
+					 dataList.clear();
+				 }
+				 if (curState == State.IN_CHARS && curVal.compareTo(BigDecimal.ZERO) >= 0)
+					 break; // Should never happen, unless arguments were somehow reordered
+				 if ((Integer)vectIter.getId() > 0)
+					 dataList.add((Integer)vectIter.getId());
+				 else
+					 appendKeyword(textBuffer, vectIter.getText(),  false,
+							 !(curState == State.IN_TAXA && textBuffer.charAt(textBuffer.length() - 1) == '('));
+			 }
+			 if (dataList.size() > 0) {
+				 textBuffer.append(' ');
+				 appendRange(dataList, ' ', true, textBuffer);
+			 }
+		 }
 	}
 
-	private void writeIntkeyAttributesArgs(DirectiveArguments directiveArgs,
-			StringBuilder textBuffer) {
-		// for (DirectiveArgument<?> vectIter :
-		// directiveArgs.getDirectiveArguments())
-		// {
-		// Character charBase = null;
-		// if (vectIter.getId() == VOUID_NULL)
-		// AppendKeyword(vectIter.text);
-		// else
-		// {
-		// curNo = vectIter.getId();
-		// textBuffer.append(' ');
-		// textBuffer.append(curNo);
-		// charBase = dataSet.getCharacter(curNo);
-		//
-		// temp = "";
-		// String text;
-		// for (TAttribute::iterator iter = vectIter.attrib.begin(); iter !=
-		// vectIter.attrib.end(); ++iter)
-		// {
-		// (*iter).GetAsText(text, charBase.getCharacterType().isText() ? null :
-		// charBase);
-		// temp += text;
-		// }
-		// if (temp.size() > 0)
-		// {
-		// if (temp.find(' ') != temp.npos)
-		// temp = "\"" + temp + "\"";
-		// textBuffer.append(',');
-		// textBuffer.append(temp);
-		// }
-		// }
-		// }
+	private void writeIntkeyAttributesArgs(
+			DirectiveArguments directiveArgs, StringBuilder textBuffer, DeltaDataSet dataSet) {
+		 for (DirectiveArgument<?> vectIter : directiveArgs.getDirectiveArguments()) {
+			 au.org.ala.delta.model.Character charBase = null;
+			 String temp;
+			 if ((Integer)vectIter.getId() == 0) {
+			      appendKeyword(textBuffer, vectIter.getText());
+			 }
+			 else  {
+				 int curNo = (Integer)vectIter.getId();
+				 textBuffer.append(' ');
+				 textBuffer.append(curNo);
+				 charBase = dataSet.getCharacter(curNo);
+			
+				 temp = "";
+				 
+				 Attribute attribute = dataSet.getItem(vectIter.getValueAsInt()).getAttribute(charBase);
+				 temp += attribute.getValueAsString();
+				
+				 if (temp.length() > 0)  {
+					 if (temp.indexOf(' ') >= 0)
+						 temp = "\"" + temp + "\"";
+					 textBuffer.append(',');
+					 textBuffer.append(temp);
+			 	 }
+			 }
+		 }
 	}
 }
