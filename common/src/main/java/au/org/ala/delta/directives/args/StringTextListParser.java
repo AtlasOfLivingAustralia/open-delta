@@ -12,18 +12,7 @@ public class StringTextListParser extends TextListParser<String> {
 	
 	@Override
 	protected String readId() throws Exception {
-		expect(MARK_IDENTIFIER);
-		
-		readNext();
-		
-		StringBuilder id = new StringBuilder();
-		while (_currentChar != '/') {
-			id.append(_currentChar);
-		}
-		
-		expect('/');
-	    readNext();  // consume the / character.
-	    return id.toString();
+		return readItemDescription();
 	}
 
 }

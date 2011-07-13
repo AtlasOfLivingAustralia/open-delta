@@ -33,7 +33,7 @@ public class IdValueListParser extends DirectiveArgsParser {
 		while (_currentInt > 0) {
 			
 			IntRange ids = readIds();
-			readComma();
+			readValueSeparator();
 			BigDecimal value = readValue();
 			
 			for (int id : ids.toArray()) {

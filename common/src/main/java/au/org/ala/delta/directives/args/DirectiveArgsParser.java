@@ -1,5 +1,6 @@
 package au.org.ala.delta.directives.args;
 
+import java.io.IOException;
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -15,7 +16,11 @@ import au.org.ala.delta.directives.AbstractStreamParser;
  */
 public abstract class DirectiveArgsParser extends AbstractStreamParser {
 
+	protected static final char MARK_IDENTIFIER = '#';
+	protected static final char VALUE_SEPARATOR = ',';
+	
 	protected DirectiveArguments _args;
+	protected int _markedInt;
 	
 	public DirectiveArgsParser(DeltaContext context, Reader reader) {
 		super(context, reader);
@@ -44,7 +49,7 @@ public abstract class DirectiveArgsParser extends AbstractStreamParser {
 			return;
 		}
 		if (_currentChar != token) {
-			throw new ParseException("Invalid character found.", _position-1);
+			throw new ParseException("Invalid character found.  Expected: "+token+" Found: "+_currentChar, _position-1);
 		}
 	}
 	
@@ -86,10 +91,59 @@ public abstract class DirectiveArgsParser extends AbstractStreamParser {
 		}
 	}
 	
-	protected void readComma() throws ParseException {
-		expect(',');
+	protected void readValueSeparator() throws ParseException {
+		expect(VALUE_SEPARATOR);
 		// consume the comma.
 		readNext();
 	}
 	
+	protected String readItemDescription() throws ParseException {
+		expect(MARK_IDENTIFIER);
+		
+		readNext();
+		
+		StringBuilder id = new StringBuilder();
+		while (_currentChar != '/') {
+			id.append(_currentChar);
+			readNext();
+		}
+		
+		expect('/');
+	    readNext();  // consume the / character.
+	    return id.toString().trim();
+	}
+	
+	protected int readListId() throws ParseException {
+		expect(MARK_IDENTIFIER);
+		
+		readNext();
+		
+		int id = readInteger();
+		
+		expect('.');
+	    readNext();  // consume the . character.
+	    return id;
+	}
+	
+	
+	protected void mark() throws ParseException {
+		try {
+			_reader.mark(2);
+			_markedInt = _currentInt;
+		}
+		catch (IOException e) {
+			throw new ParseException(e.getMessage(), _position);
+		}
+	}
+	
+	protected void reset() throws ParseException {
+		try {
+			_reader.reset();
+			_currentChar = (char)_markedInt;
+			_currentInt = _markedInt;
+		}
+		catch (IOException e) {
+			throw new ParseException(e.getMessage(), _position);
+		}
+	}
 }

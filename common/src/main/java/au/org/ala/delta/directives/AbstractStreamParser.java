@@ -22,7 +22,7 @@ import au.org.ala.delta.DeltaContext;
 
 public abstract class AbstractStreamParser {
 
-	private Reader _reader;
+	protected Reader _reader;
 	protected DeltaContext _context;
 	protected char _currentChar;
 	protected int _currentInt;
@@ -100,14 +100,14 @@ public abstract class AbstractStreamParser {
 		return (result.endsWith("/") ? result.substring(0, result.length() - 1) : result);
 	}
 
-	protected int readInteger() throws Exception {
+	protected int readInteger() throws ParseException {
 		StringBuilder b = new StringBuilder();
 		while (Character.isDigit(_currentChar)) {
 			b.append(_currentChar);
 			readNext();
 		}
 		if (b.length() == 0) {
-			throw new RuntimeException("Expected a number, got '" + _currentChar + "'");
+			throw new ParseException("Expected a number, got '" + _currentChar + "'", _position-1);
 		}
 
 		return Integer.parseInt(b.toString());
@@ -177,5 +177,4 @@ public abstract class AbstractStreamParser {
 	protected String cleanWhiteSpace(String description) {
 		return description.replaceAll("\\s+", " ");
 	}
-
 }

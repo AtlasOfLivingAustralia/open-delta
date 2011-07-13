@@ -19,7 +19,6 @@ public abstract class TextListParser<T> extends DirectiveArgsParser {
 	/** These characters may not be used as delimiters in the directive */
 	private static final char[] INVALID_DELIMITERS = new char[] { '*', '#', '<', '>' };
 
-	protected static final char MARK_IDENTIFIER = '#';
 	private static final char COMMENT_DELIMITER = '<';
 	
 	private char _delimiter;

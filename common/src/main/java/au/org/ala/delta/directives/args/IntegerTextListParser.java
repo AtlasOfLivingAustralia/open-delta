@@ -1,5 +1,6 @@
 package au.org.ala.delta.directives.args;
 import java.io.Reader;
+import java.text.ParseException;
 
 import au.org.ala.delta.DeltaContext;
 
@@ -11,16 +12,8 @@ public class IntegerTextListParser extends TextListParser<Integer> {
 	}
 	
 	@Override
-	protected Integer readId() throws Exception {
-		expect(MARK_IDENTIFIER);
-		
-		readNext();
-		
-		int id = readInteger();
-		
-		expect('.');
-	    readNext();  // consume the . character.
-	    return id;
+	protected Integer readId() throws ParseException {
+		return readListId();
 	}
 
 }
