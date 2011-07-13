@@ -37,7 +37,7 @@ public class SimpleRtfEditorKitTest extends TestCase {
 		bout.flush();
 		String documentAsString = new String(bout.toByteArray());
 		
-		assertEquals(WRITER_HEADER_TEXT+"This is plain text.\\par }", documentAsString);
+		assertEquals(WRITER_HEADER_TEXT+"This is plain text.\\par \\par }", documentAsString);
 		
 	}
 	
