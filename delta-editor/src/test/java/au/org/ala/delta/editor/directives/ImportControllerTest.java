@@ -4,23 +4,19 @@ import java.io.File;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.TimeUnit;
-
-import javax.swing.SwingWorker;
 
 import junit.framework.TestCase;
 
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ApplicationContext;
 import org.junit.Before;
+import org.junit.Test;
 
-import sun.awt.AppContext;
 import au.org.ala.delta.editor.DeltaEditor;
 import au.org.ala.delta.editor.model.EditorDataModel;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile.DirectiveType;
+import au.org.ala.delta.editor.slotfile.model.SlotFileDataSet;
 import au.org.ala.delta.editor.slotfile.model.SlotFileDataSetFactory;
-import au.org.ala.delta.model.AbstractObservableDataSet;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.IntegerCharacter;
@@ -32,7 +28,6 @@ import au.org.ala.delta.model.UnorderedMultiStateCharacter;
  * about accessing the AppContext which is required to do the thread synchronization 
  * necessary to make the tests run in a repeatable manner.
  */
-@SuppressWarnings("restriction")
 public class ImportControllerTest extends TestCase {
 
 	/**
@@ -70,20 +65,21 @@ public class ImportControllerTest extends TestCase {
 	private ImportController importer;
 	
 	/** The data set we are importing into */
-	private AbstractObservableDataSet _dataSet;
+	private SlotFileDataSet _dataSet;
 	
 	
 	@Before
 	public void setUp() throws Exception {
 		// Sure hope this won't throw a headless exception at some point...
 		DeltaEditorTestHelper helper = createTestHelper();
-		_dataSet = (AbstractObservableDataSet)new SlotFileDataSetFactory().createDataSet("test");
+		_dataSet = (SlotFileDataSet)new SlotFileDataSetFactory().createDataSet("test");
 		EditorDataModel model = new EditorDataModel(_dataSet);
 		helper.setModel(model);
 
 		importer = new ImportController(helper);
 	}
 	
+	@Test
 	public void testSilentImport() throws Exception {
 		
 		File datasetDirectory = new File(getClass().getResource("/dataset").toURI());
@@ -93,11 +89,7 @@ public class ImportControllerTest extends TestCase {
 		
 		List<DirectiveFileInfo> files = Arrays.asList(new DirectiveFileInfo[] {specs, chars, items});
 		
-		importer.doSilentImport(datasetDirectory, files);
-		
-		// Because the import happens on a background (daemon) thread, we have to wait until 
-		// the import is finished before doing our assertions.
-		waitForTaskCompletion();
+		importer.new DoImportTask(datasetDirectory, files).doInBackground();
 		
 		assertEquals(89, _dataSet.getNumberOfCharacters());
 		// do a few random assertions
@@ -137,16 +129,21 @@ public class ImportControllerTest extends TestCase {
 		
 	}
 	
-	/**
-	 * This is a way we can wait for the import task to complete without adding extra methods
-	 * to the ImportController just for the unit test.
-	 */
-	private void waitForTaskCompletion() throws Exception {
-		final AppContext appContext = AppContext.getAppContext();
-	     ExecutorService executorService =
-	            (ExecutorService) appContext.get(SwingWorker.class);
-	     executorService.shutdown();
-	     executorService.awaitTermination(10, TimeUnit.SECONDS);
+	@Test
+	public void testToIntImport() throws Exception {
+		String toIntPath = "/au/org/ala/delta/editor/directives/expected_results";
+		File datasetDirectory = new File(getClass().getResource(toIntPath).toURI());
+		DirectiveFileInfo toint = new DirectiveFileInfo("toint", DirectiveType.CONFOR);
+		
+		List<DirectiveFileInfo> files = Arrays.asList(new DirectiveFileInfo[] {toint});
+		
+		importer.new DoImportTask(datasetDirectory, files).doInBackground();
+
+		assertEquals(1, _dataSet.getDirectiveFileCount());
+		
+		//DirectiveFile file = _dataSet.getDirectiveFile(1);
+		
+		//assertEquals(24, file.getDirectiveCount());
 	}
 	
 }

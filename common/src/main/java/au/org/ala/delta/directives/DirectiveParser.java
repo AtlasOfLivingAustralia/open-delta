@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -114,7 +115,7 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
             // Try and find the directive handler for this data...
             int i = 0;
             List<String> controlWords = new ArrayList<String>();
-            ParsingContext pc = context.getCurrentParsingContext();
+          
             while (i < data.length()) {
                 String word = readWord(data, i);
                 controlWords.add(word);
@@ -131,9 +132,7 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
                         }
                         // String dd = data.substring(i + word.length() +
                         // 1).trim();
-                        d.parse(context, dd);
-                        DirectiveArguments args = d.getDirectiveArgs();
-                        d.process(context, args);
+                        doProcess(context, d, dd);
                     } catch (Exception ex) {
                         handleDirectiveProcessingException(context, d, ex);
                     }
@@ -148,6 +147,16 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
         }
         return null;
     }
+
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    protected void doProcess(C context, AbstractDirective d, String dd)
+			throws ParseException, Exception {
+		d.parse(context, dd);
+		DirectiveArguments args = d.getDirectiveArgs();
+		d.process(context, args);
+	}
+    
+   
     
     protected abstract void handleUnrecognizedDirective(C context, List<String> controlWords);
     
