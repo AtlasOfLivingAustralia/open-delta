@@ -183,4 +183,13 @@ public interface DeltaDataSet {
 	 * Specifies information about how character and taxon images are displayed.
 	 */
 	public void setImageSettings(ImageSettings imageSettings);
+
+	/**
+	 * Returns the item with the supplied description.  Descriptions are 
+	 * matched after any RTF formatting has been removed.
+	 * @param description the description of the Item to return.
+	 * @return the first item found with the supplied description, null if
+	 * no such Item can be found.
+	 */
+	public Item itemForDescription(String description);
 }

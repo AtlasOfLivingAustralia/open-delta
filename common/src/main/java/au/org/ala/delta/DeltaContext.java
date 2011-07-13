@@ -36,6 +36,7 @@ import au.org.ala.delta.model.StateValueMatrix;
 import au.org.ala.delta.model.TypeSettingMark;
 import au.org.ala.delta.model.TypeSettingMark.MarkPosition;
 import au.org.ala.delta.model.UnorderedMultiStateCharacter;
+import au.org.ala.delta.rtf.RTFUtils;
 import au.org.ala.delta.util.Functor;
 import au.org.ala.delta.util.Utils;
 
@@ -64,7 +65,11 @@ public class DeltaContext extends AbstractDeltaContext {
 	
 	private Set<Set<Integer>> _linkedCharacters = new HashSet<Set<Integer>>();
 	private Map<Integer,Set<Integer>> _emphasizedCharacters = new HashMap<Integer, Set<Integer>>();
+	private Map<String,Set<Integer>> _emphasizedCharactersByDescription = new HashMap<String, Set<Integer>>();
+	
 	private Map<Integer,Set<Integer>> _addedCharacters = new HashMap<Integer, Set<Integer>>();
+	private Map<String,Set<Integer>> _addedCharactersByDescription = new HashMap<String, Set<Integer>>();
+	
 	private Set<Integer> _emphasizedFeatures = new HashSet<Integer>();
 	private Integer _characterForTaxonNames = null;
 	
@@ -472,11 +477,42 @@ public class DeltaContext extends AbstractDeltaContext {
 	}
 	
 	public boolean isCharacterEmphasized(int itemNum, int characterNum) {
-		return entryExists(_emphasizedCharacters, itemNum, characterNum);
+		boolean emphasized = entryExists(_emphasizedCharacters, itemNum, characterNum);
+		if (!emphasized) {
+			emphasized = itemDescriptionEntryExists(_emphasizedCharactersByDescription, itemNum, characterNum);
+		}
+		return emphasized;
+	}
+	
+	public void emphasizeCharacters(int itemNum, Set<Integer> characters) {
+		_emphasizedCharacters.put(itemNum, characters);
+	}
+	
+	public void emphasizeCharacters(String itemDescription, Set<Integer> characters) {
+		_emphasizedCharactersByDescription.put(RTFUtils.stripFormatting(itemDescription), characters);
+	}
+	
+	public void addCharacters(int itemNum, Set<Integer> characters) {
+		_addedCharacters.put(itemNum, characters);
+	}
+	
+	public void addCharacters(String itemDescription, Set<Integer> characters) {
+		_addedCharactersByDescription.put(RTFUtils.stripFormatting(itemDescription), characters);
 	}
 	
 	public boolean isCharacterAdded(int itemNum, int characterNum) {
-		return entryExists(_addedCharacters, itemNum, characterNum);
+		boolean added = entryExists(_addedCharacters, itemNum, characterNum);
+		if (!added) {
+			itemDescriptionEntryExists(_addedCharactersByDescription, itemNum, characterNum);
+		}
+		return added;
+	}
+	
+	private boolean itemDescriptionEntryExists(Map<String, Set<Integer>> map, int itemNum, int characterNum) {
+		Item item = getDataSet().getItem(itemNum);
+		String description = RTFUtils.stripFormatting(item.getDescription());
+		Set<Integer> chars =  _addedCharactersByDescription.get(description);
+		return chars.contains(characterNum);
 	}
 	
 	private boolean entryExists(Map<Integer, Set<Integer>> map, int itemNum, int characterNum) {
@@ -486,8 +522,9 @@ public class DeltaContext extends AbstractDeltaContext {
 		}
 		return false;
 	}
+	
 
-	public boolean emphasizeFeature(int i) {
+	public boolean isFeatureEmphasized(int i) {
 		return _emphasizedFeatures.contains(i);
 	}
 

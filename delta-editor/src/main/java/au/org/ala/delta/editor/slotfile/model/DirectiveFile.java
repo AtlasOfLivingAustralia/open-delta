@@ -70,12 +70,42 @@ public class DirectiveFile {
 		return (_dirFileDesc.getFileFlags() & VODirFileDesc.FILEFLAG_SPECS) > 0;
 	}
 	
+	public void setSpecsFile(boolean isSpecsFile) {
+		int flags = _dirFileDesc.getFileFlags();
+		if (isSpecsFile) {
+			_dirFileDesc.setFileFlags(flags | VODirFileDesc.FILEFLAG_SPECS);
+		}
+		else {
+			_dirFileDesc.setFileFlags(flags & ~VODirFileDesc.FILEFLAG_SPECS);
+		}
+	}
+	
 	public boolean isItemsFile() {
 		return (_dirFileDesc.getFileFlags() & VODirFileDesc.FILEFLAG_ITEMS) > 0;
 	}
 	
+	public void setItemsFile(boolean isItemsFile) {
+		int flags = _dirFileDesc.getFileFlags();
+		if (isItemsFile) {
+			_dirFileDesc.setFileFlags(flags | VODirFileDesc.FILEFLAG_ITEMS);
+		}
+		else {
+			_dirFileDesc.setFileFlags(flags & ~VODirFileDesc.FILEFLAG_ITEMS);
+		}
+	}
+	
 	public boolean isCharsFile() {
 		return (_dirFileDesc.getFileFlags() & VODirFileDesc.FILEFLAG_CHARS) > 0;
+	}
+	
+	public void setCharsFile(boolean isCharsFile) {
+		int flags = _dirFileDesc.getFileFlags();
+		if (isCharsFile) {
+			_dirFileDesc.setFileFlags(flags | VODirFileDesc.FILEFLAG_CHARS);
+		}
+		else {
+			_dirFileDesc.setFileFlags(flags & ~VODirFileDesc.FILEFLAG_CHARS);
+		}
 	}
 	
 	public String getFileName() {

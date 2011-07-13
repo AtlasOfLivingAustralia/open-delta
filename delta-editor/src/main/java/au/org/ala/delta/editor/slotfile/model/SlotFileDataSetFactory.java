@@ -1,10 +1,13 @@
 package au.org.ala.delta.editor.slotfile.model;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import au.org.ala.delta.editor.slotfile.DeltaVOP;
 import au.org.ala.delta.editor.slotfile.VOCharBaseDesc;
 import au.org.ala.delta.editor.slotfile.VOCharTextDesc;
+import au.org.ala.delta.editor.slotfile.VOControllingDesc;
 import au.org.ala.delta.editor.slotfile.VOItemDesc;
 import au.org.ala.delta.editor.slotfile.VOItemDesc.ItemFixedData;
 import au.org.ala.delta.model.Attribute;
@@ -247,28 +250,27 @@ public class SlotFileDataSetFactory implements DeltaDataSetFactory {
 			MultiStateCharacter owningCharacter, Set<Integer> states,
 			Set<Integer> dependentCharacters) {
 		
-//		
-//		List<Integer> controlledCharIds = controllingDesc.readControlledChars();
-//		List<Integer> states = controllingDesc.readStateIds();
-//		
-//		Set<Integer> controlledCharNumbers = new HashSet<Integer>(controlledCharIds.size());
-//		for (int charId : controlledCharIds) {
-//			controlledCharNumbers.add(getVOP().getDeltaMaster().charNoFromUniId(charId));
-//		}
-//		
-//		Set<Integer> stateNumbers = new HashSet<Integer>(states.size());
-//		for (int stateId : states) {
-//			stateNumbers.add(_charDesc.stateNoFromUniId(stateId));
-//		}
-//		
-//		int number = getVOP().getDeltaMaster().charNoFromUniId(_charDesc.getUniId());
-//		
-//		CharacterDependency dependency = new CharacterDependency(number, stateNumbers, controlledCharNumbers);
-//		String label = controllingDesc.readLabel();
-//		dependency.setDescription(label);
-//		return dependency;
-		return null;
-//			
+		VOControllingDesc.ControllingFixedData controllingData = new VOControllingDesc.ControllingFixedData();
+		VOControllingDesc controllingDesc = (VOControllingDesc)getVOP().insertObject(controllingData, 0, null, 0, 0);
+		
+		int charId = getVOP().getDeltaMaster().uniIdFromCharNo(owningCharacter.getCharacterId());
+		VOCharBaseDesc charDesc = (VOCharBaseDesc)getVOP().getDescFromId(charId);
+		
+		List<Integer> stateIds = new ArrayList<Integer>(states.size());
+		for (int stateNum : states) {
+			stateIds.add(charDesc.uniIdFromStateNo(stateNum));
+		}
+		
+		List<Integer> controlledCharIds = new ArrayList<Integer>(dependentCharacters.size());
+		for (int charNum : dependentCharacters) {
+			controlledCharIds.add(getVOP().getDeltaMaster().uniIdFromCharNo(charNum));
+		}
+	
+		controllingDesc.setControllingInfo(charId, stateIds, "");
+		charDesc.addDependentContAttr(controllingDesc.getUniId());
+		
+		return new CharacterDependency(new VOControllingAdapter(getVOP(), controllingDesc));
+		
 	}
     
     

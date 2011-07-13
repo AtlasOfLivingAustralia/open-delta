@@ -76,6 +76,7 @@ public class ImportController {
 		int result = directorySelector.showOpenDialog(_importDialog);
 		if (result == JFileChooser.APPROVE_OPTION) {
 			_importModel.setCurrentDirectory(directorySelector.getSelectedFile());
+			_importModel.populateExcludedFromCurrentDirectory();
 			_importDialog.updateUI();
 		}
 	}

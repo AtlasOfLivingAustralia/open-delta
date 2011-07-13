@@ -8,6 +8,7 @@ import au.org.ala.delta.model.observer.CharacterObserver;
 import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
 import au.org.ala.delta.model.observer.DeltaDataSetObserver;
 import au.org.ala.delta.model.observer.ItemObserver;
+import au.org.ala.delta.rtf.RTFUtils;
 
 /**
  * An implementation of the DeltaDataSet interface designed to support notification of changes to the
@@ -167,6 +168,21 @@ public abstract class AbstractObservableDataSet implements ObservableDeltaDataSe
 		}
 		return characterDependencies;
 	}
+	
+	@Override
+	public Item itemForDescription(String description) {
+		
+		String strippedDescription = RTFUtils.stripFormatting(description);
+		for (int i=1; i<getMaximumNumberOfItems(); i++) {
+			Item item = getItem(i);
+			
+			if (strippedDescription.equals(RTFUtils.stripFormatting(item.getDescription()))) {
+				return item;
+			}
+		}
+		return null;
+	}
+	
 	/**
 	 * Adds an observer interested in receiving notification of changes to this data set.
 	 * Duplicate observers are ignored.

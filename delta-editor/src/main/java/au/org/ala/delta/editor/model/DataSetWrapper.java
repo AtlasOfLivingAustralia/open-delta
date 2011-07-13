@@ -202,6 +202,11 @@ public class DataSetWrapper implements ObservableDeltaDataSet, DeltaDataSetObser
 			CharacterDependency characterDependency) {
 		_wrappedDataSet.deleteCharacterDependency(characterDependency);
 	}
+	
+	@Override
+	public Item itemForDescription(String description) {
+		return _wrappedDataSet.itemForDescription(description);
+	}
 
 	@Override
 	public void itemAdded(DeltaDataSetChangeEvent event) {

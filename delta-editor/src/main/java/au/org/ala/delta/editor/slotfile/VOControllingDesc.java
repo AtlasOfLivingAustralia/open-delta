@@ -248,7 +248,7 @@ public class VOControllingDesc extends VOAnyDesc {
 	public static final int labelLengOffs = nStatesOffs + 4;
 	public static final int nControlledOffs = labelLengOffs + 4;
 
-	public class ControllingFixedData extends FixedData {
+	public static class ControllingFixedData extends FixedData {
 
 		
 		private static final int CONTROLLING_FIXED_DATA_SIZE = 2 + 4 + 4 + 4 + 4;
