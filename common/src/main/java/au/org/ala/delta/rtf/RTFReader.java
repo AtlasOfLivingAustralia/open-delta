@@ -16,6 +16,7 @@ public class RTFReader {
     private ParserState _parserState;
     private long _cbBin = 0;
     private StringBuilder _headerGroupBuffer = new StringBuilder();
+    private String _headerGroupKeyword = null;
 
     private RTFHandler _handler;
 
@@ -190,40 +191,52 @@ public class RTFReader {
             case Destination:
                 _parserState.rds = ((DestinationKeyword) kwd).getDestinationState();
                 if (_parserState.rds == DestinationState.Header) {
-                    _headerGroupBuffer = new StringBuilder(keyword);
+                    _headerGroupBuffer = new StringBuilder();
+                    _headerGroupKeyword = keyword;
                 }
                 break;
             case Attribute:
-                if (kwd instanceof CharacterAttributeKeyword) {
-                    CharacterAttributeKeyword charAttrKwd = (CharacterAttributeKeyword) kwd;
-
+                // Attributes are not applicable with we are currently
+                // processing a header group.
+                // In this situation simply append to the header group buffer.
+                if (_parserState.rds == DestinationState.Header) {
+                    _headerGroupBuffer.append("\\").append(keyword);
                     if (hasParam) {
-                        _parserState.CharacterAttributes.set(charAttrKwd.getType(), param);
-                    } else {
-                        _parserState.CharacterAttributes.set(charAttrKwd.getType(), charAttrKwd.getDefaultValue());
+                        _headerGroupBuffer.append(param);
                     }
-
-                    AttributeValue val = new AttributeValue(charAttrKwd.getKeyword(), hasParam, param);
-                    if (_handler != null) {
-                        List<AttributeValue> values = new ArrayList<AttributeValue>();
-                        values.add(val);
-                        _handler.onCharacterAttributeChange(values);
-                    }
+                    _headerGroupBuffer.append(" ");
                 } else {
-                    // keyword must be a paragraph attribute keyword
-                    ParagraphAttributeKeyword paraAttrKwd = (ParagraphAttributeKeyword) kwd;
+                    if (kwd instanceof CharacterAttributeKeyword) {
+                        CharacterAttributeKeyword charAttrKwd = (CharacterAttributeKeyword) kwd;
 
-                    if (hasParam) {
-                        _parserState.ParagraphAttributes.set(paraAttrKwd.getType(), param);
+                        if (hasParam) {
+                            _parserState.CharacterAttributes.set(charAttrKwd.getType(), param);
+                        } else {
+                            _parserState.CharacterAttributes.set(charAttrKwd.getType(), charAttrKwd.getDefaultValue());
+                        }
+
+                        AttributeValue val = new AttributeValue(charAttrKwd.getKeyword(), hasParam, param);
+                        if (_handler != null) {
+                            List<AttributeValue> values = new ArrayList<AttributeValue>();
+                            values.add(val);
+                            _handler.onCharacterAttributeChange(values);
+                        }
                     } else {
-                        _parserState.ParagraphAttributes.set(paraAttrKwd.getType(), paraAttrKwd.getDefaultValue());
-                    }
+                        // keyword must be a paragraph attribute keyword
+                        ParagraphAttributeKeyword paraAttrKwd = (ParagraphAttributeKeyword) kwd;
 
-                    AttributeValue val = new AttributeValue(paraAttrKwd.getKeyword(), hasParam, param);
-                    if (_handler != null) {
-                        List<AttributeValue> values = new ArrayList<AttributeValue>();
-                        values.add(val);
-                        _handler.onParagraphAttributeChange(values);
+                        if (hasParam) {
+                            _parserState.ParagraphAttributes.set(paraAttrKwd.getType(), param);
+                        } else {
+                            _parserState.ParagraphAttributes.set(paraAttrKwd.getType(), paraAttrKwd.getDefaultValue());
+                        }
+
+                        AttributeValue val = new AttributeValue(paraAttrKwd.getKeyword(), hasParam, param);
+                        if (_handler != null) {
+                            List<AttributeValue> values = new ArrayList<AttributeValue>();
+                            values.add(val);
+                            _handler.onParagraphAttributeChange(values);
+                        }
                     }
                 }
                 break;
@@ -242,6 +255,7 @@ public class RTFReader {
                 if (hasParam) {
                     _headerGroupBuffer.append(param);
                 }
+                _headerGroupBuffer.append(" ");
             } else {
                 if (keyword.equals("pard")) {
                     startParagraphAction();
@@ -303,12 +317,13 @@ public class RTFReader {
         }
 
         ParserState prevState = _stateStack.pop();
-        if (_parserState.rds == DestinationState.Normal) {
+        if (_parserState.rds == DestinationState.Normal || _parserState.rds == DestinationState.Header) {
             endGroupAction(_parserState, prevState);
         }
 
         _parserState = prevState;
         _cGroup--;
+
         if (_parserState.rds == DestinationState.Header) {
             _headerGroupBuffer.append("}");
         }
@@ -318,8 +333,11 @@ public class RTFReader {
     private void endGroupAction(ParserState currentState, ParserState previousState) {
         switch (currentState.rds) {
         case Header:
-            emitHeaderGroup(_headerGroupBuffer.toString());
-            _headerGroupBuffer = new StringBuilder();
+            if (previousState.rds == DestinationState.Normal) {
+                emitHeaderGroup(_headerGroupKeyword, _headerGroupBuffer.toString());
+                _headerGroupBuffer = new StringBuilder();
+                _headerGroupBuffer = null;
+            }
             break;
         default:
             List<AttributeValue> changes = new ArrayList<AttributeValue>();
@@ -342,9 +360,9 @@ public class RTFReader {
         }
     }
 
-    private void emitHeaderGroup(String group) {
+    private void emitHeaderGroup(String keyword, String content) {
         if (_handler != null) {
-            _handler.onHeaderGroup(group);
+            _handler.onHeaderGroup(keyword, content);
         }
     }
 
@@ -365,10 +383,10 @@ public class RTFReader {
             changes.add(new AttributeValue(Keyword.findParagraphAttributeKeyword(ParagraphAttributeType.RightBlockIndent).getKeyword(), true, 0));
             _handler.onParagraphAttributeChange(changes);
         }
-        
+
         if (_handler != null) {
             _handler.startParagraph();
-        }        
+        }
     }
 
     // par

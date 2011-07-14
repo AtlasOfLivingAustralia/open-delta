@@ -75,7 +75,7 @@ class FilteringRTFHandler implements RTFHandler {
 	}
 
 	@Override
-	public void onHeaderGroup(String group) {
+	public void onHeaderGroup(String keyword, String content) {
 	}
 
 	@Override

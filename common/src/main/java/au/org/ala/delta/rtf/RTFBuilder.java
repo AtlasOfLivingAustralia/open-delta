@@ -29,9 +29,9 @@ public class RTFBuilder {
     }
 
     public void startDocument() {
-        _strBuilder.append("{\\rtf1\\ansi\\deff0 {\\fonttbl {\\f0\\froman;}{\\f1\\fswiss;}}");
+        _strBuilder.append("{\\rtf1\\ansi\\deff0 {\\fonttbl{\\f0\\froman Times New Roman;}{\\f1\\fswiss MS Sans Serif;}}");
         _strBuilder.append("\n");
-        _strBuilder.append("{\\colortbl ;\\red255\\green0\\blue0;}");
+        _strBuilder.append("{\\colortbl;\\red255\\green0\\blue0;}");
         _strBuilder.append("\n");
         _strBuilder.append("\\fs36");
         _strBuilder.append("\n");

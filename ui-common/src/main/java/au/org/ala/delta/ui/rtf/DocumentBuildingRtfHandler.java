@@ -1,6 +1,7 @@
 package au.org.ala.delta.ui.rtf;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +39,19 @@ public class DocumentBuildingRtfHandler extends RTFHandlerAdapter {
 
     /** Handlers for RTF attributes */
     private Map<String, AttributeHandler> _attributeHandlers = new HashMap<String, AttributeHandler>();
+
+    private char _previousChar;
+
+    private List<String> _fontFamilyNames = new ArrayList<String>();
+
+    private List<Color> _colors = new ArrayList<Color>();
+    
+    private static Color _defaultColor = Color.BLACK;
+    
+    /**
+     * Set by the "deffN" keyword
+     */
+    private int _defaultFont = 0;
 
     public void configureAttributeHandlers() {
         _attributeHandlers.put(CharacterAttributeType.Bold.keyword(), new SimpleBooleanAttributeHandler(StyleConstants.Bold));
@@ -84,13 +98,24 @@ public class DocumentBuildingRtfHandler extends RTFHandlerAdapter {
         }
     }
 
-    public static class FontAttributeHandler implements AttributeHandler {
+    /**
+     * Handler for the font attribute "\fN"
+     * @author ChrisF
+     *
+     */
+    public class FontAttributeHandler implements AttributeHandler {
         @Override
         public void handleAttribute(AttributeValue attr, MutableAttributeSet newAttributes) {
-            newAttributes.addAttribute(StyleConstants.FontFamily, "Roman");
+            int fontNumber = attr.getParam();
+            newAttributes.addAttribute(StyleConstants.FontFamily, _fontFamilyNames.get(fontNumber));
         }
     }
 
+    /**
+     * Handler for the font size attribute "\fsN"
+     * @author ChrisF
+     *
+     */
     public static class FontSizeAttributeHandler implements AttributeHandler {
 
         @Override
@@ -101,13 +126,24 @@ public class DocumentBuildingRtfHandler extends RTFHandlerAdapter {
 
     }
 
-    public static class FontColorAttributeHandler implements AttributeHandler {
+    /**
+     * Handler for the font foreground color attribute "\cfN"
+     * @author ChrisF
+     *
+     */
+    public class FontColorAttributeHandler implements AttributeHandler {
         @Override
         public void handleAttribute(AttributeValue attr, MutableAttributeSet newAttributes) {
-            newAttributes.addAttribute(StyleConstants.Foreground, Color.RED);
+            int colorIndex = attr.getParam();
+            newAttributes.addAttribute(StyleConstants.Foreground, _colors.get(colorIndex));
         }
     }
 
+    /**
+     * Handler for the paragraph indent hander "\liN"
+     * @author ChrisF
+     *
+     */
     public static class ParagraphIndentAttributeHandler implements AttributeHandler {
         private Object _styleAttribute;
 
@@ -123,6 +159,11 @@ public class DocumentBuildingRtfHandler extends RTFHandlerAdapter {
         }
     }
 
+    /**
+     * Handler for the paragraph alignment attributes - "\ql", "\qr", "\qc" or "\qj"
+     * @author ChrisF
+     *
+     */
     public static class ParagraphAlignmentAttributeHandler implements AttributeHandler {
         private int _alignmentAttribute;
 
@@ -136,11 +177,6 @@ public class DocumentBuildingRtfHandler extends RTFHandlerAdapter {
         }
     }
 
-    @Override
-    public void onKeyword(String keyword, boolean hasParam, int param) {
-
-    }
-
     public DocumentBuildingRtfHandler(DefaultStyledDocument document) {
         configureAttributeHandlers();
         _currentCharacterAttributes = new SimpleAttributeSet();
@@ -149,7 +185,22 @@ public class DocumentBuildingRtfHandler extends RTFHandlerAdapter {
         _textBuffer = new StringBuilder();
     }
 
-    private char _previousChar;
+    @Override
+    public void onKeyword(String keyword, boolean hasParam, int param) {
+        //default font keyword
+        if (keyword.equals("deff")) {
+            _defaultFont = param;
+        }
+    }
+
+    @Override
+    public void onHeaderGroup(String keyword, String content) {
+        if (keyword.equals("fonttbl")) {
+            handleFontTable(content);
+        } else if (keyword.equals("colortbl")) {
+            handleColorTable(content);
+        }
+    }
 
     @Override
     public void onTextCharacter(char ch) {
@@ -189,12 +240,15 @@ public class DocumentBuildingRtfHandler extends RTFHandlerAdapter {
 
         MutableAttributeSet newAttributes = new SimpleAttributeSet();
         newAttributes.addAttributes(_currentCharacterAttributes);
-
+        
         handleAttributeChanges(values, newAttributes);
+
         if (!newAttributes.equals(_currentCharacterAttributes)) {
             appendToDocument();
             _currentCharacterAttributes = newAttributes;
         }
+        
+        
     }
 
     @Override
@@ -241,7 +295,20 @@ public class DocumentBuildingRtfHandler extends RTFHandlerAdapter {
      */
     private void appendToDocument(String text) {
         try {
-            _document.insertString(_document.getLength(), text, _currentCharacterAttributes);
+            MutableAttributeSet copyAttributes = new SimpleAttributeSet();
+            copyAttributes.addAttributes(_currentCharacterAttributes);
+            
+            //Use the default font if one has not been set
+            if (copyAttributes.getAttribute(StyleConstants.FontFamily) == null) {
+                copyAttributes.addAttribute(StyleConstants.FontFamily, _fontFamilyNames.get(_defaultFont));
+            }
+            
+            //Use the default color if one has not been set
+            if (copyAttributes.getAttribute(StyleConstants.Foreground) == null) {
+                copyAttributes.addAttribute(StyleConstants.Foreground, _defaultColor);
+            }            
+            
+            _document.insertString(_document.getLength(), text, copyAttributes);
             _textBuffer = new StringBuilder();
         } catch (BadLocationException e) {
             throw new RuntimeException("Parsing the RTF document failed!", e);
@@ -253,6 +320,72 @@ public class DocumentBuildingRtfHandler extends RTFHandlerAdapter {
         _document.setParagraphAttributes(_document.getLength(), 1, _currentParagraphAttributes, true);
         _textBuffer.append("\n");
         appendToDocument();
+    }
+
+    /**
+     * Parse the content of the font table, indicated by the "fonttbl" keyword
+     * @param content content of font table to be parsed
+     */
+    private void handleFontTable(String content) {
+
+        String[] fontDefs = content.split("[;{}]");
+        for (String fontDef : fontDefs) {
+            if (fontDef.length() > 0) {
+                int fontNumber = 0;
+                StringBuilder fontNameBuilder = new StringBuilder();
+
+                String[] tokens = fontDef.split(" ");
+                for (String token : tokens) {
+                    if (token.length() > 0) {
+                        if (token.startsWith("\\")) {
+                            if (token.matches("\\\\f\\d+")) {
+                                fontNumber = Integer.parseInt(token.substring(2));
+                            }
+                        } else {
+                            fontNameBuilder.append(" ");
+                            fontNameBuilder.append(token);
+                        }
+                    }
+                }
+
+                String fontName = fontNameBuilder.toString().trim();
+
+                _fontFamilyNames.add(fontNumber, fontName);
+            }
+        }
+    }
+
+    /**
+     * Parse the content of the color table, indicated by the "colortbl" keyword
+     * @param content content of color table to be parsed
+     */
+    private void handleColorTable(String content) {
+        String[] colorDefs = content.split(";");
+        
+        for (String colorDef: colorDefs) {
+            if (colorDef.length() > 0) {
+                int red = 0;
+                int green = 0;
+                int blue = 0;
+                
+                String[] tokens = colorDef.split(" ");
+                for (String token: tokens) {
+                    if (token.matches("\\\\red\\d+")) {
+                        red = Integer.parseInt(token.substring(4));
+                    } else if (token.matches("\\\\green\\d+")) {
+                        green = Integer.parseInt(token.substring(6));
+                    } else if (token.matches("\\\\blue\\d+")) {
+                        blue = Integer.parseInt(token.substring(5));
+                    }
+                }
+                
+                _colors.add(new Color(red, green, blue));
+            } else {
+                //omitted color def indicates that the default color should be used for this
+                //position.
+                _colors.add(_defaultColor);
+            }
+        }
     }
 
 }

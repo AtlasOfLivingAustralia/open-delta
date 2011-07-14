@@ -8,7 +8,7 @@ public interface RTFHandler {
 	
 	void onKeyword(String keyword, boolean hasParam, int param);
 	
-	void onHeaderGroup(String group);
+	void onHeaderGroup(String keyword, String content);
 	
 	void onTextCharacter(char ch);
 	
