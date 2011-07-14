@@ -8,7 +8,8 @@ public enum CharacterAttributeType {
 	Subscript("sub"),
 	Font("f"),
 	FontSize("fs"),
-	FontColor("cf");
+	FontColor("cf"),
+	NoSuperscriptOrSubscript("nosupersub");
 	
 	private String _keyword;
 	private CharacterAttributeType(String keyword) {
