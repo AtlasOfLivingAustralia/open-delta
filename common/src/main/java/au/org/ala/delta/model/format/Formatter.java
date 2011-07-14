@@ -146,7 +146,7 @@ public class Formatter {
         }
 
         @Override
-        public void parse() throws Exception {
+        public void parse() throws ParseException {
             readNext();
 
             while (_currentInt >= 0) {
@@ -159,7 +159,7 @@ public class Formatter {
             }
         }
 
-        public String readValue() throws Exception {
+        public String readValue() throws ParseException {
             StringBuffer value = new StringBuffer();
             while (_currentInt >= 0 && !matchesComment()) {
                 value.append(_currentChar);

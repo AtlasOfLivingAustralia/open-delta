@@ -1,6 +1,7 @@
 package au.org.ala.delta.translation.attribute;
 
 import java.io.StringReader;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,11 +52,11 @@ public class AttributeParser {
 		
 		
 		@Override
-		public void parse() throws Exception {
+		public void parse() throws ParseException {
 			_parsedAttribute = readParsedAttribute();
 		}
 		
-		public ParsedAttribute readParsedAttribute() throws Exception {
+		public ParsedAttribute readParsedAttribute() throws ParseException {
 			
 			readNext();
 			String characterComment = "";
@@ -75,7 +76,7 @@ public class AttributeParser {
 			return new ParsedAttribute(characterComment, commentedValues);
 		}
 		
-		public CommentedValues readCommentedValues() throws Exception {
+		public CommentedValues readCommentedValues() throws ParseException {
 			
 			Values values = readValues();
 			String comment = "";
@@ -86,7 +87,7 @@ public class AttributeParser {
 			return new CommentedValues(values, comment);
 		}
 		
-		public Values readValues() throws Exception {
+		public Values readValues() throws ParseException {
 			StringBuilder valuesBuilder = new StringBuilder();
 			while (_currentInt >= 0 && _currentChar != COMMENT_START && _currentChar != OR_SEPARATOR) {
 				valuesBuilder.append(_currentChar);

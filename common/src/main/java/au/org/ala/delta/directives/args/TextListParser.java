@@ -28,7 +28,7 @@ public abstract class TextListParser<T> extends DirectiveArgsParser {
 	}
 	
 	@Override
-	public void parse() throws Exception {
+	public void parse() throws ParseException {
 		
 		_args = new DirectiveArguments();
 		
@@ -59,7 +59,7 @@ public abstract class TextListParser<T> extends DirectiveArgsParser {
 	 * surround an item subheading.
 	 * @return the delimiter or an empty String if none was specified.
 	 */
-	private char readDelimiter() throws Exception {
+	private char readDelimiter() throws ParseException {
 		
 		String possibleDelimiter = readToNext(MARK_IDENTIFIER).trim();
 		if (possibleDelimiter.length() > 1) {
@@ -79,9 +79,9 @@ public abstract class TextListParser<T> extends DirectiveArgsParser {
 	 * @return the number.
 	 * @throws Exception if there was a problem reading the number.
 	 */
-	protected abstract T readId() throws Exception;
+	protected abstract T readId() throws ParseException;
 	
-	protected String readText() throws Exception {
+	protected String readText() throws ParseException {
 		
 		String value = "";
 		
@@ -116,7 +116,7 @@ public abstract class TextListParser<T> extends DirectiveArgsParser {
 		return value;
 	}
 	
-	protected String readOptionalComment() throws Exception {
+	protected String readOptionalComment() throws ParseException {
 		String comment = "";
 		consumeWhiteSpace();
 		if (_currentChar == COMMENT_DELIMITER) {
@@ -125,7 +125,7 @@ public abstract class TextListParser<T> extends DirectiveArgsParser {
 		return comment;
 	}
 	
-	private void consumeWhiteSpace() throws Exception {
+	private void consumeWhiteSpace() throws ParseException {
 
 		while (Character.isWhitespace(_currentChar)) {
 			readNext();
@@ -139,7 +139,7 @@ public abstract class TextListParser<T> extends DirectiveArgsParser {
 	 * @return the contents of the stream up to (but not including) the supplied character.
 	 * @throws Exception if there is an error reading from the stream.
 	 */
-	private String readToNext(char character) throws Exception {
+	private String readToNext(char character) throws ParseException {
 		if (_currentChar == character) {
 			return "";
 		}

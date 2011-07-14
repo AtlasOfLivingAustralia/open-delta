@@ -46,7 +46,7 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
         return directiveTree;
     }
 
-    protected void registerDirective(AbstractDirective<C> dir) {
+    protected void registerDirective(AbstractDirective<?> dir) {
         directiveTree.addDirective(dir);
     }
 

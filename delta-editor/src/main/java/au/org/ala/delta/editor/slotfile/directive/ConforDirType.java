@@ -18,8 +18,11 @@ import java.util.Arrays;
 import java.util.Comparator;
 
 import au.org.ala.delta.directives.AbstractDirective;
+import au.org.ala.delta.directives.ApplicableCharacters;
 import au.org.ala.delta.directives.CharacterForTaxonImages;
+import au.org.ala.delta.directives.CharacterImages;
 import au.org.ala.delta.directives.CharacterList;
+import au.org.ala.delta.directives.CharacterNotes;
 import au.org.ala.delta.directives.CharacterReliabilities;
 import au.org.ala.delta.directives.CharacterTypes;
 import au.org.ala.delta.directives.CharacterWeights;
@@ -29,6 +32,7 @@ import au.org.ala.delta.directives.DependentCharacters;
 import au.org.ala.delta.directives.ExcludeCharacters;
 import au.org.ala.delta.directives.Heading;
 import au.org.ala.delta.directives.ImplicitValues;
+import au.org.ala.delta.directives.InapplicableCharacters;
 import au.org.ala.delta.directives.InputFile;
 import au.org.ala.delta.directives.InsertImplicitValues;
 import au.org.ala.delta.directives.ItemDescriptions;
@@ -44,10 +48,12 @@ import au.org.ala.delta.directives.OmitInapplicables;
 import au.org.ala.delta.directives.OmitInnerComments;
 import au.org.ala.delta.directives.OmitTypeSettingMarks;
 import au.org.ala.delta.directives.OutputFormatHtml;
+import au.org.ala.delta.directives.OverlayFonts;
 import au.org.ala.delta.directives.PrintFile;
 import au.org.ala.delta.directives.PrintWidth;
 import au.org.ala.delta.directives.ReplaceAngleBrackets;
 import au.org.ala.delta.directives.Show;
+import au.org.ala.delta.directives.TaxonImages;
 import au.org.ala.delta.directives.TypeSettingMarks;
 import au.org.ala.delta.editor.slotfile.Directive;
 import au.org.ala.delta.editor.slotfile.DirectiveArgType;
@@ -220,15 +226,15 @@ public class ConforDirType {
         new Directive(new String[] {"ALLOWED", "VALUES", "", ""}, 4, ConforDirType.ALLOWED_VALUES, DirectiveArgType.DIRARG_ALLOWED, new DirInDefault(), new DirOutDefault()),
         new Directive(new String[] {"ALTERNATE", "COMMA", "", ""}, 4, ConforDirType.ALTERNATE_COMMA, DirectiveArgType.DIRARG_CHARLIST, new DirInDefault(), new DirOutDefault()),
         new Directive(new String[] {"ALTERNATIVE", "LANGUAGES", "", ""}, 4, ConforDirType.ALTERNATIVE_LANGUAGES, DirectiveArgType.DIRARG_TEXT, new DirInDefault(), new DirOutDefault()),
-        new Directive(new String[] {"APPLICABLE", "CHARACTERS", "", ""}, 4, ConforDirType.APPLICABLE_CHARACTERS, DirectiveArgType.DIRARG_INTERNAL, new DirInApplicableChars(), new DirOutApplicableChars()),
+        new Directive(new String[] {"APPLICABLE", "CHARACTERS", "", ""}, 4, ConforDirType.APPLICABLE_CHARACTERS, DirectiveArgType.DIRARG_INTERNAL, ApplicableCharacters.class, new DirInApplicableChars(), new DirOutApplicableChars()),
         new Directive(new String[] {"CHARACTER", "FOR", "OUTPUT", "FILES"}, 4, ConforDirType.CHARACTER_FOR_OUTPUT_FILES, DirectiveArgType.DIRARG_CHAR, new DirInDefault(), new DirOutDefault()),
         new Directive(new String[] {"CHARACTER", "FOR", "TAXON", "IMAGES"}, 4, ConforDirType.CHARACTER_FOR_TAXON_IMAGES, DirectiveArgType.DIRARG_CHAR, new DirInDefault(), new DirOutDefault()),
         new Directive(new String[] {"CHARACTER", "FOR", "TAXON", "NAMES"}, 4, ConforDirType.CHARACTER_FOR_TAXON_NAMES, DirectiveArgType.DIRARG_CHAR, CharacterForTaxonImages.class, new DirInDefault(), new DirOutDefault()),
         new Directive(new String[] {"CHARACTER", "HEADINGS", "", ""}, 4, ConforDirType.CHARACTER_HEADINGS, DirectiveArgType.DIRARG_CHARTEXTLIST, new DirInDefault(), new DirOutDefault()),
-        new Directive(new String[] {"CHARACTER", "IMAGES", "", ""}, 4, ConforDirType.CHARACTER_IMAGES, DirectiveArgType.DIRARG_INTERNAL, new DirInCharImages(), new DirOutCharImages()),
+        new Directive(new String[] {"CHARACTER", "IMAGES", "", ""}, 4, ConforDirType.CHARACTER_IMAGES, DirectiveArgType.DIRARG_INTERNAL, CharacterImages.class, new DirInCharImages(), new DirOutCharImages()),
         new Directive(new String[] {"CHARACTER", "KEYWORD", "IMAGES", ""}, 4, ConforDirType.CHARACTER_KEYWORD_IMAGES, DirectiveArgType.DIRARG_TEXT, new DirInDefault(), new DirOutDefault()),
         new Directive(new String[] {"CHARACTER", "LIST", "", ""}, 5, ConforDirType.CHARACTER_LIST, DirectiveArgType.DIRARG_INTERNAL, CharacterList.class, new DirInCharacterList(), new DirOutCharacterList()),
-        new Directive(new String[] {"CHARACTER", "NOTES", "", ""}, 4, ConforDirType.CHARACTER_NOTES, DirectiveArgType.DIRARG_INTERNAL, new DirInCharNotes(), new DirOutCharNotes()),
+        new Directive(new String[] {"CHARACTER", "NOTES", "", ""}, 4, ConforDirType.CHARACTER_NOTES, DirectiveArgType.DIRARG_INTERNAL, CharacterNotes.class, new DirInCharNotes(), new DirOutCharNotes()),
         new Directive(new String[] {"CHARACTER", "RELIABILITIES", "", ""}, 4, ConforDirType.CHARACTER_RELIABILITIES, DirectiveArgType.DIRARG_CHARREALLIST, CharacterReliabilities.class, new DirInDefault(), new DirOutDefault()),
         new Directive(new String[] {"CHARACTER", "TYPES", "", ""}, 2, ConforDirType.CHARACTER_TYPES, DirectiveArgType.DIRARG_INTERNAL, CharacterTypes.class, new DirInCharTypes(), new DirOutCharTypes()),
         new Directive(new String[] {"CHARACTER", "WEIGHTS", "", ""}, 4, ConforDirType.CHARACTER_WEIGHTS, DirectiveArgType.DIRARG_CHARREALLIST, CharacterWeights.class, new DirInDefault(), new DirOutDefault()),
@@ -254,7 +260,7 @@ public class ConforDirType {
         new Directive(new String[] {"HEADING", "", "", ""}, 0, ConforDirType.HEADING, DirectiveArgType.DIRARG_TEXT, Heading.class, new DirInDefault(), new DirOutDefault()),
         new Directive(new String[] {"IMAGE", "DIRECTORY", "", ""}, 0, ConforDirType.IMAGE_DIRECTORY, DirectiveArgType.DIRARG_FILE, new DirInDefault(), new DirOutDefault()),
         new Directive(new String[] {"IMPLICIT", "VALUES", "", ""}, 4, ConforDirType.IMPLICIT_VALUES, DirectiveArgType.DIRARG_INTERNAL, ImplicitValues.class, new DirInImplicitValues(), new DirOutImplicitValues()),
-        new Directive(new String[] {"INAPPLICABLE", "CHARACTERS", "", ""}, 4, ConforDirType.INAPPLICABLE_CHARACTERS, DirectiveArgType.DIRARG_INTERNAL, new DirInDependentChars(), new DirOutDependentChars()),
+        new Directive(new String[] {"INAPPLICABLE", "CHARACTERS", "", ""}, 4, ConforDirType.INAPPLICABLE_CHARACTERS, DirectiveArgType.DIRARG_INTERNAL, InapplicableCharacters.class, new DirInDependentChars(), new DirOutDependentChars()),
         new Directive(new String[] {"INCLUDE", "CHARACTERS", "", ""}, 4, ConforDirType.INCLUDE_CHARACTERS, DirectiveArgType.DIRARG_CHARLIST, new DirInDefault(), new DirOutDefault()),
         new Directive(new String[] {"INCLUDE", "ITEMS", "", ""}, 4, ConforDirType.INCLUDE_ITEMS, DirectiveArgType.DIRARG_ITEMLIST, new DirInDefault(), new DirOutDefault()),
         new Directive(new String[] {"INDEX", "OUTPUT", "FILE", ""}, 0, ConforDirType.INDEX_OUTPUT_FILE, DirectiveArgType.DIRARG_FILE, new DirInDefault(), new DirOutDefault()),
@@ -313,7 +319,7 @@ public class ConforDirType {
         new Directive(new String[] {"OUTPUT", "FORMAT", "RTF", ""}, 4, ConforDirType.OUTPUT_FORMAT_RTF, DirectiveArgType.DIRARG_NONE, new DirInDefault(), new DirOutDefault()),
         new Directive(new String[] {"OUTPUT", "PARAMETERS", "", ""}, 0, ConforDirType.OUTPUT_PARAMETERS, DirectiveArgType.DIRARG_TEXT, new DirInDefault(), new DirOutDefault()),
         new Directive(new String[] {"OUTPUT", "WIDTH", "", ""}, 0, ConforDirType.OUTPUT_WIDTH, DirectiveArgType.DIRARG_INTEGER, new DirInDefault(), new DirOutDefault()),
-        new Directive(new String[] {"OVERLAY", "FONTS", "", ""}, 4, ConforDirType.OVERLAY_FONTS, DirectiveArgType.DIRARG_INTERNAL, new DirInOverlayFonts(), new DirOutOverlayFonts()),
+        new Directive(new String[] {"OVERLAY", "FONTS", "", ""}, 4, ConforDirType.OVERLAY_FONTS, DirectiveArgType.DIRARG_INTERNAL, OverlayFonts.class, new DirInOverlayFonts(), new DirOutOverlayFonts()),
         new Directive(new String[] {"PAGE", "LENGTH", "", ""}, 0, ConforDirType.PAGE_LENGTH, DirectiveArgType.DIRARG_INTEGER, new DirInDefault(), new DirOutDefault()),
         new Directive(new String[] {"PERCENT", "ERROR", "", ""}, 4, ConforDirType.PERCENT_ERROR, DirectiveArgType.DIRARG_CHARREALLIST, new DirInDefault(), new DirOutDefault()),
         new Directive(new String[] {"PREVIOUS", "INPUT", "FILE", ""}, 0, ConforDirType.PREVIOUS_INPUT_FILE, DirectiveArgType.DIRARG_NONE, new DirInPrevInputFile(), new DirOutDefault()),
@@ -343,7 +349,7 @@ public class ConforDirType {
         new Directive(new String[] {"STATE", "CODES", "", ""}, 1, ConforDirType.STATE_CODES, DirectiveArgType.DIRARG_TEXT, new DirInStateCodes(), new DirOutDefault()),
         new Directive(new String[] {"STOP", "AFTER", "ITEM", ""}, 4, ConforDirType.STOP_AFTER_ITEM, DirectiveArgType.DIRARG_ITEM, new DirInDefault(), new DirOutDefault()),
         new Directive(new String[] {"SUBJECT", "FOR", "OUTPUT", "FILES"}, 4, ConforDirType.SUBJECT_FOR_OUTPUT_FILES, DirectiveArgType.DIRARG_TEXT, new DirInDefault(), new DirOutDefault()),
-        new Directive(new String[] {"TAXON", "IMAGES", "", ""}, 4, ConforDirType.TAXON_IMAGES, DirectiveArgType.DIRARG_INTERNAL, null, new DirOutTaxonImages()),
+        new Directive(new String[] {"TAXON", "IMAGES", "", ""}, 4, ConforDirType.TAXON_IMAGES, DirectiveArgType.DIRARG_INTERNAL, TaxonImages.class, new DirInDefault(), new DirOutTaxonImages()),
         new Directive(new String[] {"TAXON", "KEYWORD", "IMAGES", ""}, 4, ConforDirType.TAXON_KEYWORD_IMAGES, DirectiveArgType.DIRARG_TEXT, new DirInDefault(), new DirOutDefault()),
         new Directive(new String[] {"TAXON", "LINKS", "", ""}, 4, ConforDirType.TAXON_LINKS, DirectiveArgType.DIRARG_ITEMFILELIST, null, null),
         new Directive(new String[] {"TRANSLATE", "IMPLICIT", "VALUES", ""}, 4, ConforDirType.TRANSLATE_IMPLICIT_VALUES, DirectiveArgType.DIRARG_NONE, new DirInDefault(), new DirOutDefault()),

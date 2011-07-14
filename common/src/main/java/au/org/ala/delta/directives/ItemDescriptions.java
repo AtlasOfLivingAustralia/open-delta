@@ -16,6 +16,7 @@ package au.org.ala.delta.directives;
 
 import java.io.Reader;
 import java.io.StringReader;
+import java.text.ParseException;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.Logger;
@@ -51,7 +52,7 @@ class ItemsParser extends AbstractStreamParser {
 	}
 
 	@Override
-	public void parse() throws Exception {
+	public void parse() throws ParseException {
 
 		_context.initializeMatrix();
 
@@ -62,7 +63,7 @@ class ItemsParser extends AbstractStreamParser {
 		}
 	}
 
-	private void parseItem(int itemIndex) throws Exception {
+	private void parseItem(int itemIndex) throws ParseException {
 
 		assert _currentChar == '#';
 		readNext();
@@ -116,7 +117,7 @@ class ItemsParser extends AbstractStreamParser {
 		}
 	}
 
-	private Item createItem(int itemIndex) throws Exception {
+	private Item createItem(int itemIndex) throws ParseException {
 		Item item;
 		if (_currentChar == '+') {
 			if (itemIndex == 1) {
@@ -132,7 +133,7 @@ class ItemsParser extends AbstractStreamParser {
 		return item;
 	}
 
-	private String readStateValue(Character character) throws Exception {
+	private String readStateValue(Character character) throws ParseException {
 		String value = readToNextSpaceComments();
 		return value;
 	}

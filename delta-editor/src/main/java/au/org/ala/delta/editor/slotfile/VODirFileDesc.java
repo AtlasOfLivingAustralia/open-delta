@@ -1604,7 +1604,7 @@ public class VODirFileDesc extends VOAnyDesc implements WindowsConstants {
 			this(0, 0);
 		}
 
-		public DirSummary(int loc, int type) {
+		public DirSummary(int type, int loc) {
 			_loc = loc;
 			_type = type;
 		}

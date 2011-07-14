@@ -28,6 +28,10 @@ public class DependentCharacters extends AbstractCharacterListDirective<DeltaCon
     public DependentCharacters() {
         super("dependent", "characters");
     }
+    
+    public DependentCharacters(String... controlWords) {
+		super(controlWords);
+	}
 
     @Override
     protected String interpretRHS(DeltaContext context, String rhs) {

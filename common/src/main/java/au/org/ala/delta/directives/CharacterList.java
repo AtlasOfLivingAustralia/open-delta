@@ -16,6 +16,7 @@ package au.org.ala.delta.directives;
 
 import java.io.Reader;
 import java.io.StringReader;
+import java.text.ParseException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -57,7 +58,7 @@ class CharacterListParser extends DirectiveArgsParser {
 		super(context, reader);
 	}
 
-	public void parse() throws Exception {
+	public void parse() throws ParseException {
 		while (skipTo('#')) {
 			// parseCharacter will consume all characters up until the last / of
 			// the feature description or last state,
@@ -65,7 +66,7 @@ class CharacterListParser extends DirectiveArgsParser {
 		}
 	}
 
-	private void parseCharacter() throws Exception {
+	private void parseCharacter() throws ParseException {
 		// Current char should be '#'
 		assert _currentChar == '#';
 		// read the next character
@@ -122,7 +123,7 @@ class CharacterListParser extends DirectiveArgsParser {
 
 	}
 
-	private void parseState(MultiStateCharacter ch) throws Exception {
+	private void parseState(MultiStateCharacter ch) throws ParseException {
 		String state = readToNextEndSlashSpace();
 		Matcher m = FEAT_DESC_PATTERN.matcher(state);
 		if (m.matches()) {

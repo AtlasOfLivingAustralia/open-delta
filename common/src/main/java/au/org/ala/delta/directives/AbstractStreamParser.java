@@ -33,7 +33,7 @@ public abstract class AbstractStreamParser {
 		_context = context;
 	}
 
-	public abstract void parse() throws Exception;
+	public abstract void parse() throws ParseException;
 
 	protected DeltaContext getContext() {
 		return _context;
@@ -66,7 +66,7 @@ public abstract class AbstractStreamParser {
 
 	}
 
-	protected boolean skipTo(char find) throws Exception {
+	protected boolean skipTo(char find) throws ParseException {
 		if (_currentChar == find) {
 			return true;
 		}
@@ -113,7 +113,7 @@ public abstract class AbstractStreamParser {
 		return Integer.parseInt(b.toString());
 	}
 
-	protected String readComment() throws Exception {
+	protected String readComment() throws ParseException {
 		assert _currentChar == '<';
 		
 		StringBuilder b = new StringBuilder("" + _currentChar);
@@ -142,7 +142,7 @@ public abstract class AbstractStreamParser {
 		return Character.isWhitespace(ch);
 	}
 
-	protected String readToNextSpaceComments() throws Exception {
+	protected String readToNextSpaceComments() throws ParseException {
 		StringBuilder b = new StringBuilder(_currentChar);
 		int commentNestLevel = 0;
 		

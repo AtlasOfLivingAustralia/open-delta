@@ -24,9 +24,7 @@ import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.UnorderedMultiStateCharacter;
 
 /**
- * Tests the ImportController class.  The SuppressWarnings annotation is to prevent warnings
- * about accessing the AppContext which is required to do the thread synchronization 
- * necessary to make the tests run in a repeatable manner.
+ * Tests the ImportController class. 
  */
 public class ImportControllerTest extends TestCase {
 

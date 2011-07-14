@@ -1,5 +1,6 @@
 package au.org.ala.delta.directives.args;
 import java.io.Reader;
+import java.text.ParseException;
 
 import au.org.ala.delta.DeltaContext;
 
@@ -11,7 +12,7 @@ public class StringTextListParser extends TextListParser<String> {
 	}
 	
 	@Override
-	protected String readId() throws Exception {
+	protected String readId() throws ParseException {
 		return readItemDescription();
 	}
 
