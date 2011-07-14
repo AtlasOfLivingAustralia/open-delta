@@ -21,6 +21,8 @@ import au.org.ala.delta.directives.ReplaceAngleBrackets;
 import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.editor.slotfile.DeltaNumber;
+import au.org.ala.delta.editor.slotfile.Directive;
+import au.org.ala.delta.editor.slotfile.DirectiveInstance;
 import au.org.ala.delta.editor.slotfile.VODirFileDesc.Dir;
 import au.org.ala.delta.editor.slotfile.VODirFileDesc.DirArgs;
 import au.org.ala.delta.editor.slotfile.VODirFileDesc.DirListData;
@@ -62,7 +64,11 @@ public class DirectiveArgConverterTest extends VODirFileDescTest {
 			
 			System.out.println("Checking: "+directive.getClass());
 			directive.parseAndProcess(_context, (String)directives[i+1]);
-			Dir dir = _converter.fromDirective(directive);
+			
+			Directive directiveInfo = ConforDirType.ConforDirArray[(Integer)(directives[i+2])];
+			DirectiveInstance instance = new DirectiveInstance(directiveInfo, directive.getDirectiveArgs());
+			
+			Dir dir = _converter.fromDirective(instance);
 			
 			assertEquals(directives[i+2], dir.dirType);
 			assertEquals(0, dir.args.size());
@@ -86,7 +92,12 @@ public class DirectiveArgConverterTest extends VODirFileDescTest {
 			
 			System.out.println("Checking: "+directive.getClass());
 			directive.parseAndProcess(_context, (String)directives[i+1]);
-			Dir dir = _converter.fromDirective(directive);
+			
+			Directive directiveInfo = ConforDirType.ConforDirArray[(Integer)(directives[i+2])];
+			DirectiveInstance instance = new DirectiveInstance(directiveInfo, directive.getDirectiveArgs());
+			
+			
+			Dir dir = _converter.fromDirective(instance);
 			
 			assertEquals(directives[i+2], dir.dirType);
 			assertEquals(0, dir.args.size());

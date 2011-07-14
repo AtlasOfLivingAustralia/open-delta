@@ -8,6 +8,7 @@ import au.org.ala.delta.directives.DirectiveParser;
 import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.editor.slotfile.Directive;
 import au.org.ala.delta.editor.slotfile.DirectiveArgType;
+import au.org.ala.delta.editor.slotfile.DirectiveInstance;
 import au.org.ala.delta.editor.slotfile.directive.ConforDirType;
 
 public class DirectiveFileImporter extends DirectiveParser<ImportContext> {
@@ -37,9 +38,13 @@ public class DirectiveFileImporter extends DirectiveParser<ImportContext> {
     protected void doProcess(ImportContext context, AbstractDirective d, String dd)
 			throws ParseException, Exception {
 		
-    	d.parse(context, dd);
+		Directive directive = ConforDirType.typeOf(d);
 		
-		context.getDirectiveFile().add(d);
+    	d.parse(context, dd);
+    	
+    	DirectiveInstance instance = new DirectiveInstance(directive, d.getDirectiveArgs());
+		
+		context.getDirectiveFile().add(instance);
 		
 		if (d.getArgType() == DirectiveArgType.DIRARG_INTERNAL) {
 			d.process(context, d.getDirectiveArgs());

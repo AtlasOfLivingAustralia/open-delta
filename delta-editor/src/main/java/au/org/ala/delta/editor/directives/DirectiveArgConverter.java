@@ -5,8 +5,6 @@ import java.util.List;
 
 import org.apache.commons.lang.NotImplementedException;
 
-import au.org.ala.delta.directives.AbstractDeltaContext;
-import au.org.ala.delta.directives.AbstractDirective;
 import au.org.ala.delta.directives.args.DirectiveArgument;
 import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.editor.slotfile.CharType;
@@ -14,11 +12,11 @@ import au.org.ala.delta.editor.slotfile.DeltaNumber;
 import au.org.ala.delta.editor.slotfile.DeltaVOP;
 import au.org.ala.delta.editor.slotfile.Directive;
 import au.org.ala.delta.editor.slotfile.DirectiveArgType;
+import au.org.ala.delta.editor.slotfile.DirectiveInstance;
 import au.org.ala.delta.editor.slotfile.VOCharBaseDesc;
 import au.org.ala.delta.editor.slotfile.VODirFileDesc.Dir;
 import au.org.ala.delta.editor.slotfile.VODirFileDesc.DirArgs;
 import au.org.ala.delta.editor.slotfile.VODirFileDesc.DirListData;
-import au.org.ala.delta.editor.slotfile.directive.ConforDirType;
 
 /**
  * Creates and populates a Dir object from the arguments supplied to a 
@@ -36,13 +34,13 @@ public class DirectiveArgConverter {
 		_vop = vop;
 	}
 	
-	public Dir fromDirective(AbstractDirective<? extends AbstractDeltaContext> directive) {
+	public Dir fromDirective(DirectiveInstance directive) {
 
 		Dir dir = new Dir();
-		Directive directiveDescription = ConforDirType.typeOf(directive);
+		Directive directiveDescription = directive.getDirective();
 		dir.setDirType(directiveDescription.getNumber());
 
-		populateArgs(dir, directive.getDirectiveArgs(), directive.getArgType());
+		populateArgs(dir, directive.getDirectiveArguments(), directiveDescription.getArgType());
 
 		return dir;
 	}

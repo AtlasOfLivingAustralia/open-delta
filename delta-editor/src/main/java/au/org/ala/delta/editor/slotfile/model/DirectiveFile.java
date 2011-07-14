@@ -6,8 +6,6 @@ import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
 
-import au.org.ala.delta.directives.AbstractDeltaContext;
-import au.org.ala.delta.directives.AbstractDirective;
 import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.editor.directives.DirectiveArgConverter;
 import au.org.ala.delta.editor.slotfile.DeltaVOP;
@@ -126,7 +124,7 @@ public class DirectiveFile {
 		return _dirFileDesc.getNDirectives();
 	}
 	
-	public void add(AbstractDirective<? extends AbstractDeltaContext> directive) {
+	public void add(DirectiveInstance directive) {
 		Dir dir = _converter.fromDirective(directive);
 		
 		List<Dir> directives = _dirFileDesc.readAllDirectives();

@@ -14,6 +14,8 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.slotfile;
 
+import java.util.Arrays;
+
 import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.directives.AbstractDirective;
@@ -30,13 +32,23 @@ public class Directive {
 	private Class<? extends AbstractDirective<?>> _implementationClass;
 	
 	public Directive(String[] name, int level, int number, int argType, Class<? extends AbstractDirective<?>> implClass, DirectiveFunctor inFunc, DirectiveFunctor outFunc) {
-		_name = name;
+		setName(name);
 		_level = level;
 		_number = number;
 		_argType = argType;
 		_inFunc = inFunc;
 		_outFunc = outFunc;
 		_implementationClass = implClass;
+	}
+	
+	public void setName(String[] name) {
+		int i = 0;
+		for (i=0; i<name.length; i++) {
+			if (StringUtils.isEmpty(name[i])) {
+				break;
+			}
+		}
+		_name = Arrays.copyOfRange(name, 0, i);
 	}
 	
 	public Directive(String[] name, int level, int number, int argType, DirectiveFunctor inFunc, DirectiveFunctor outFunc) {

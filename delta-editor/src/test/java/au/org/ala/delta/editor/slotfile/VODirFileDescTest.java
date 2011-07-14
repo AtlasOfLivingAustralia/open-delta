@@ -55,14 +55,14 @@ public class VODirFileDescTest extends DeltaTestCase {
 		List<Dir> directives = specs.readAllDirectives();
 
 		Dir directive = directives.get(0);
-		assertEquals(Arrays.asList(new String[] { "SHOW", "", "", "" }), getDirName(directive, specs));
+		assertEquals(Arrays.asList(new String[] { "SHOW"}), getDirName(directive, specs));
 		assertEquals("~ Grass Genera - specifications.", directive.args.get(0).text);
 
 		// These are all "internal" directives so don't have args as their data
 		// is
 		// a part of the data set.
 		directive = directives.get(1);
-		assertEquals(Arrays.asList(new String[] { "NUMBER", "OF", "CHARACTERS", "" }), getDirName(directive, specs));
+		assertEquals(Arrays.asList(new String[] { "NUMBER", "OF", "CHARACTERS"}), getDirName(directive, specs));
 		assertEquals(0, directive.args.size());
 
 		directive = directives.get(2);
@@ -74,15 +74,15 @@ public class VODirFileDescTest extends DeltaTestCase {
 		assertEquals(0, directive.args.size());
 
 		directive = directives.get(4);
-		assertEquals(Arrays.asList(new String[] { "CHARACTER", "TYPES", "", "" }), getDirName(directive, specs));
+		assertEquals(Arrays.asList(new String[] { "CHARACTER", "TYPES",}), getDirName(directive, specs));
 		assertEquals(0, directive.args.size());
 
 		directive = directives.get(5);
-		assertEquals(Arrays.asList(new String[] { "NUMBERS", "OF", "STATES", "" }), getDirName(directive, specs));
+		assertEquals(Arrays.asList(new String[] { "NUMBERS", "OF", "STATES"}), getDirName(directive, specs));
 		assertEquals(0, directive.args.size());
 
 		directive = directives.get(6);
-		assertEquals(Arrays.asList(new String[] { "IMPLICIT", "VALUES", "", "" }), getDirName(directive, specs));
+		assertEquals(Arrays.asList(new String[] { "IMPLICIT", "VALUES"}), getDirName(directive, specs));
 		assertEquals(0, directive.args.size());
 
 	}
@@ -131,23 +131,23 @@ public class VODirFileDescTest extends DeltaTestCase {
 		
 		List<Dir> directives = layout.readAllDirectives();
 		Dir directive = directives.get(0);
-		assertEquals(Arrays.asList(new String[] { "COMMENT", "", "", "" }), getDirName(directive, layout));
+		assertEquals(Arrays.asList(new String[] { "COMMENT"}), getDirName(directive, layout));
 		assertEquals("~ Layout for natural-language descriptions.", directive.args.get(0).text);
 
 		directive = directives.get(1);
-		assertEquals(Arrays.asList(new String[] {"REPLACE", "ANGLE", "BRACKETS", "" }), getDirName(directive, layout));
+		assertEquals(Arrays.asList(new String[] {"REPLACE", "ANGLE", "BRACKETS" }), getDirName(directive, layout));
 		assertEquals(0, directive.args.size());
 
 		directive = directives.get(2);
-		assertEquals(Arrays.asList(new String[] {"OMIT", "CHARACTER", "NUMBERS", "" }), getDirName(directive, layout));
+		assertEquals(Arrays.asList(new String[] {"OMIT", "CHARACTER", "NUMBERS" }), getDirName(directive, layout));
 		assertEquals(0, directive.args.size());
 
 		directive = directives.get(3);
-		assertEquals(Arrays.asList(new String[] {"OMIT", "INNER", "COMMENTS", "" }), getDirName(directive, layout));
+		assertEquals(Arrays.asList(new String[] {"OMIT", "INNER", "COMMENTS"}), getDirName(directive, layout));
 		assertEquals(0, directive.args.size());
 
 		directive = directives.get(4);
-		assertEquals(Arrays.asList(new String[] {"OMIT", "INAPPLICABLES", "", "" }), getDirName(directive, layout));
+		assertEquals(Arrays.asList(new String[] {"OMIT", "INAPPLICABLES"}), getDirName(directive, layout));
 		assertEquals(0, directive.args.size());
 	}
 
