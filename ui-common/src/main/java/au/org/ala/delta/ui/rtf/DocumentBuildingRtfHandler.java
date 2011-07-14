@@ -61,6 +61,7 @@ public class DocumentBuildingRtfHandler extends RTFHandlerAdapter {
         _attributeHandlers.put(CharacterAttributeType.Underline.keyword(), new SimpleBooleanAttributeHandler(StyleConstants.Underline));
         _attributeHandlers.put(CharacterAttributeType.Subscript.keyword(), new SimpleBooleanAttributeHandler(StyleConstants.Subscript));
         _attributeHandlers.put(CharacterAttributeType.Superscript.keyword(), new SimpleBooleanAttributeHandler(StyleConstants.Superscript));
+        _attributeHandlers.put(CharacterAttributeType.NoSuperscriptOrSubscript.keyword(), new NoSuperscriptSubscriptHandler());
         _attributeHandlers.put(CharacterAttributeType.Font.keyword(), new FontAttributeHandler());
         _attributeHandlers.put(CharacterAttributeType.FontSize.keyword(), new FontSizeAttributeHandler());
         _attributeHandlers.put(CharacterAttributeType.FontColor.keyword(), new FontColorAttributeHandler());
@@ -99,7 +100,22 @@ public class DocumentBuildingRtfHandler extends RTFHandlerAdapter {
             newAttributes.addAttribute(_styleAttribute, Boolean.valueOf(!attr.hasParam()));
         }
     }
+    
+    /**
+     * Handler for the "\nosupersub" attribute
+     * @author ChrisF
+     *
+     */
+    public static class NoSuperscriptSubscriptHandler implements AttributeHandler
+    {
 
+        @Override
+        public void handleAttribute(AttributeValue attr, MutableAttributeSet newAttributes) {
+            newAttributes.addAttribute(StyleConstants.Subscript, false);
+            newAttributes.addAttribute(StyleConstants.Superscript, false);
+        }
+        
+    }
     /**
      * Handler for the font attribute "\fN"
      * 
