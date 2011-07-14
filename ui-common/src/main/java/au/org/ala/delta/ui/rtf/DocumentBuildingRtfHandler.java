@@ -100,22 +100,23 @@ public class DocumentBuildingRtfHandler extends RTFHandlerAdapter {
             newAttributes.addAttribute(_styleAttribute, Boolean.valueOf(!attr.hasParam()));
         }
     }
-    
+
     /**
      * Handler for the "\nosupersub" attribute
+     * 
      * @author ChrisF
-     *
+     * 
      */
-    public static class NoSuperscriptSubscriptHandler implements AttributeHandler
-    {
+    public static class NoSuperscriptSubscriptHandler implements AttributeHandler {
 
         @Override
         public void handleAttribute(AttributeValue attr, MutableAttributeSet newAttributes) {
             newAttributes.addAttribute(StyleConstants.Subscript, false);
             newAttributes.addAttribute(StyleConstants.Superscript, false);
         }
-        
+
     }
+
     /**
      * Handler for the font attribute "\fN"
      * 
@@ -333,7 +334,12 @@ public class DocumentBuildingRtfHandler extends RTFHandlerAdapter {
 
             // Use the default font if one has not been set
             if (copyAttributes.getAttribute(StyleConstants.FontFamily) == null) {
-                copyAttributes.addAttribute(StyleConstants.FontFamily, _fontFamilyNames.get(_defaultFont));
+                // ensure that the index for the default font is a valid index
+                // for a color specified
+                // in the color table
+                if (_fontFamilyNames.size() - 1 >= _defaultFont) {
+                    copyAttributes.addAttribute(StyleConstants.FontFamily, _fontFamilyNames.get(_defaultFont));
+                }
             }
 
             // Use the default color if one has not been set
