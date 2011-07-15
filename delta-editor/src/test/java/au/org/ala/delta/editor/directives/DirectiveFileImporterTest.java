@@ -81,7 +81,7 @@ public class DirectiveFileImporterTest extends TestCase {
 		
 		file = _dataSet.getDirectiveFile(1);
 		
-		//assertEquals(24, file.getDirectiveCount());
+		assertEquals(24, file.getDirectiveCount());
 	}
 	
 }

@@ -377,11 +377,10 @@ public class ConforDirType {
         new Directive(new String[] {"VOCABULARY", "", "", ""}, 4, ConforDirType.VOCABULARY, DirectiveArgType.DIRARG_TEXTLIST, new DirInDefault(), new DirOutDefault())
     };
  
-    @SuppressWarnings({ "rawtypes" })
 	public static Directive typeOf(AbstractDirective<?> directive) {
-		Class<? extends AbstractDirective> directiveClass = directive.getClass();
+		String[] directiveName = directive.getControlWords();
 		for (Directive dir : ConforDirArray) {
-			if (directiveClass.equals(dir.getImplementationClass())) {
+			if (directiveName.equals(dir.getName())) {
 				return dir;
 			}
 		}
