@@ -6,7 +6,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+
+import org.apache.commons.lang.NotImplementedException;
 
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.directives.AbstractDeltaContext;
@@ -17,6 +20,7 @@ import au.org.ala.delta.intkey.model.specimen.CharacterValue;
 import au.org.ala.delta.intkey.model.specimen.Specimen;
 import au.org.ala.delta.intkey.ui.UIUtils;
 import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.Item;
 
 /**
  * Model. Maintains global application state. THIS CLASS IS NOT THREAD SAFE
@@ -421,6 +425,44 @@ public class IntkeyContext extends AbstractDeltaContext {
 
         return retList;
     }
+    
+    public void addTaxaKeyword(String keyword, Set<Integer> taxaNumbers) {
+        throw new NotImplementedException();
+    }
+    
+    public List<Item> getTaxaForKeyword(String keyword) {
+        List<Item> retList = new ArrayList<Item>();
+        
+        if (keyword.equals(TAXON_KEYWORD_ALL)) {
+            return _dataset.getTaxa();
+        } else if (keyword.equals(TAXON_KEYWORD_ELIMINATED)) {
+            Map<Item, Integer> diffTable = _specimen.getTaxonDifferences();
+            for (Item taxon: diffTable.keySet()) {
+                int diffCount = diffTable.get(taxon);
+                if (diffCount > _tolerance) {
+                    retList.add(taxon);
+                }
+            }
+        } else if (keyword.equals(TAXON_KEYWORD_REMAINING)) {
+            Map<Item, Integer> diffTable = _specimen.getTaxonDifferences();
+            for (Item taxon: diffTable.keySet()) {
+                int diffCount = diffTable.get(taxon);
+                if (diffCount <= _tolerance) {
+                    retList.add(taxon);
+                }
+            } 
+        } else {
+            throw new NotImplementedException();
+        }
+        
+        Collections.sort(retList);
+        
+        return retList;
+    }
+    
+    public List<String> getTaxaKeywords() {
+        throw new NotImplementedException();
+    }
 
     /**
      * @return A list of command pattern objects representing all directives
@@ -566,6 +608,18 @@ public class IntkeyContext extends AbstractDeltaContext {
      */
     public void calculateBestCharacters() {
         _bestCharacters = SortingUtils.orderBest(IntkeyContext.this);
+    }
+    
+    public boolean getMatchInapplicables() {
+        return _matchInapplicables;
+    }
+    
+    public boolean getMatchUnkowns() {
+        return _matchUnknowns;
+    }
+    
+    public MatchType getMatchType() {
+        return _matchType;
     }
 
     /**

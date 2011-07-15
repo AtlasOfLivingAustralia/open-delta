@@ -13,6 +13,8 @@ import org.apache.commons.lang.math.IntRange;
 public class ParsingUtils {
     private static Pattern INT_RANGE_PATTERN = Pattern.compile("^(-?\\d+)-(-?\\d+)$");
     private static Pattern FLOAT_RANGE_PATTERN = Pattern.compile("^(-?\\d+(\\.\\d+)?)-(-?\\d+(\\.\\d+)?)$");
+    
+    public static final String KEYWORD_SPECIMEN = "specimen";
 
     public static Set<Integer> parseMultistateOrIntegerCharacterValue(String charValue) {
         Set<Integer> selectedStates = new HashSet<Integer>();
@@ -95,16 +97,33 @@ public class ParsingUtils {
     }
 
     public static List<String> tokenizeDirectiveCall(String data) {
-        List<String> subCommands = new ArrayList<String>();
+        List<String> tokens = new ArrayList<String>();
 
         boolean inQuotedString = false;
-        int endLastSubcommand = 0;
+        int endLastToken = -1;
         for (int i = 0; i < data.length(); i++) {
-            boolean isEndSubcommand = false;
+            boolean isEndToken = false;
 
             char c = data.charAt(i);
+            
+            char prevChar = 0;
+            if (i > 0) {
+                prevChar = data.charAt(i - 1);
+            }
+            
+            char nextChar = 0;
+            if (i < data.length() - 1) {
+                nextChar = data.charAt(i + 1);
+            }
 
-            if (c == '"') {
+            // open and close parentheses are tokens on their own (provided we are not inside a quoted string)
+            if ((c == '(' || c == ')') && !inQuotedString) {
+                isEndToken = true;
+            // If the next character is an open or end parenthesis, we are at the end of the curent token
+            // (provided we are not inside a quoted string)
+            } else if ((nextChar == '(' || nextChar == ')') && !inQuotedString) {
+                isEndToken = true;
+            } else if (c == '"') {
                 // Ignore quote if it is in the middle of a string - 
                 // don't throw error for unmatched quotes.
                 // this is the behaviour in the legacy intkey - may change this
@@ -113,44 +132,42 @@ public class ParsingUtils {
                 if (i == 0) {
                     inQuotedString = true;
                 } else if (i != data.length() - 1) {
-                    char preceedingChar = data.charAt(i - 1);
-                    char followingChar = data.charAt(i + 1);
-                    if (inQuotedString && (followingChar == ' ' || followingChar == ',' || followingChar == '\n')) {
+                    if (inQuotedString && (nextChar == ' ' || nextChar == ',' || nextChar == '\n')) {
                         inQuotedString = false;
-                    } else if (!inQuotedString && (preceedingChar == ' ' || preceedingChar == ',' || preceedingChar == '\n')) {
+                    } else if (!inQuotedString && (prevChar == ' ' || prevChar == ',' || prevChar == '\n')) {
                         inQuotedString = true;
                     }
                 }
             } else if ((c == ' ' || c == '\n') && !inQuotedString) {
                 // if we're not inside a quoted string, then a space or newline designates
                 // the end of a subcommand
-                isEndSubcommand = true;
+                isEndToken = true;
             }
 
             if (i == (data.length() - 1)) {
                 // end of data string always designates the end of a subcommand
-                isEndSubcommand = true;
+                isEndToken = true;
             }
 
-            if (isEndSubcommand) {
-                String subCommand = null;
-                if (endLastSubcommand == 0) {
-                    subCommand = data.substring(endLastSubcommand, i + 1);
+            if (isEndToken) {
+                String token = null;
+                if (endLastToken == -1) {
+                    token = data.substring(0, i + 1);
                 } else {
-                    subCommand = data.substring(endLastSubcommand + 1, i + 1);
+                    token = data.substring(endLastToken + 1, i + 1);
                 }
 
                 // use trim to remove any remaining whitespace. Tokens that
                 // consist solely of whitespace should be completely omitted.
-                String trimmedSubcommand = subCommand.trim();
-                if (trimmedSubcommand.length() > 0) {
-                    subCommands.add(subCommand.trim());
+                String trimmedToken = token.trim();
+                if (trimmedToken.length() > 0) {
+                    tokens.add(token.trim());
                 }
-                endLastSubcommand = i;
+                endLastToken = i;
             }
         }
 
-        return subCommands;
+        return tokens;
     }
 
     public static String removeEnclosingQuotes(String str) {

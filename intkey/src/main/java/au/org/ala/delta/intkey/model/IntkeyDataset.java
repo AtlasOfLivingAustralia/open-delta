@@ -161,7 +161,7 @@ public class IntkeyDataset {
     }
     
     public Item getTaxon(int taxonNum) {
-        if (taxonNum < 1 || taxonNum > _characters.size()) {
+        if (taxonNum < 1 || taxonNum > _taxa.size()) {
             throw new IllegalArgumentException("Invalid taxon number");
         }
         return _taxa.get(taxonNum - 1);

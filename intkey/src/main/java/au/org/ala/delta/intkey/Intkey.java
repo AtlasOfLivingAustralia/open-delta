@@ -52,6 +52,7 @@ import org.jdesktop.application.Task;
 
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.intkey.directives.ChangeDirective;
+import au.org.ala.delta.intkey.directives.DifferencesDirective;
 import au.org.ala.delta.intkey.directives.DisplayCharacterOrderBestDirective;
 import au.org.ala.delta.intkey.directives.DisplayCharacterOrderNaturalDirective;
 import au.org.ala.delta.intkey.directives.FileCharactersDirective;
@@ -403,7 +404,6 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI {
 
         _btnDiffTaxa = new JButton();
         _btnDiffTaxa.setAction(actionMap.get("btnDiffTaxa"));
-        _btnDiffTaxa.setEnabled(false);
         _btnDiffTaxa.setPreferredSize(new Dimension(30, 30));
         _pnlRemainingTaxaButtons.add(_btnDiffTaxa);
 
@@ -784,6 +784,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI {
 
     @Action
     public void btnDiffSpecimenTaxa() {
+        executeDirective(new DifferencesDirective(), "/E (specimen remaining) all");
     }
 
     @Action
@@ -811,6 +812,25 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI {
 
     @Action
     public void btnDiffTaxa() {
+        List<Item> selectedTaxa = new ArrayList<Item>();
+        
+        for (int i: _listRemainingTaxa.getSelectedIndices()) {
+            selectedTaxa.add(_availableTaxaListModel.getItemAt(i));
+        }
+
+        for (int i: _listEliminatedTaxa.getSelectedIndices()) {
+            selectedTaxa.add(_eliminatedTaxaListModel.getItemAt(i));
+        }
+        
+        StringBuilder directiveTextBuilder = new StringBuilder();
+        directiveTextBuilder.append("/E /I /U /X (");
+        for (Item taxon: selectedTaxa) {
+            directiveTextBuilder.append(" ");
+            directiveTextBuilder.append(taxon.getItemNumber());
+        }
+        directiveTextBuilder.append(") all");
+        
+        executeDirective(new DifferencesDirective(), directiveTextBuilder.toString());
     }
 
     @Action
@@ -827,10 +847,12 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI {
         try {
             dir.parseAndProcess(_context, data);
         } catch (IntkeyDirectiveParseException ex) {
+            ex.printStackTrace();
             String msg = ex.getMessage();
             JOptionPane.showMessageDialog(UIUtils.getMainFrame(), msg, "Error", JOptionPane.ERROR_MESSAGE);
             Logger.error(msg);
         } catch (Exception ex) {
+            ex.printStackTrace();
             String msg = String.format("Error occurred while processing '%s' command: %s", StringUtils.join(dir.getControlWords(), " ").toUpperCase(), ex.getMessage());
             JOptionPane.showMessageDialog(UIUtils.getMainFrame(), msg, "Error", JOptionPane.ERROR_MESSAGE);
             Logger.error(msg);
@@ -846,6 +868,8 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI {
 
     @Override
     public void handleSpecimenUpdated() {
+        _btnDiffSpecimenTaxa.setEnabled(true);
+        
         Specimen specimen = _context.getSpecimen();
 
         int tolerance = _context.getTolerance();
@@ -901,6 +925,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI {
 
     @Override
     public void handleIdentificationRestarted() {
+        _btnDiffSpecimenTaxa.setEnabled(false);
         initializeIdentification();
     }
 
@@ -1101,6 +1126,10 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI {
             Item taxon = _items.get(index);
 
             return String.format("(%s) %s", _differenceCounts.get(taxon), _formatter.formatItemDescription(taxon));
+        }
+        
+        public Item getItemAt(int index) {
+            return _items.get(index);
         }
 
     }

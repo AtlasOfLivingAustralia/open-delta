@@ -27,4 +27,8 @@ public class ItemListModel extends AbstractListModel {
     public Object getElementAt(int index) {
         return _formatter.formatItemDescription(_items.get(index));
     }
+    
+    public Item getItemAt(int index) {
+        return _items.get(index);
+    }
 }
