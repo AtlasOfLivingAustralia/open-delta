@@ -14,6 +14,7 @@ import au.org.ala.delta.editor.slotfile.DirectiveInstance;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile;
 import au.org.ala.delta.editor.slotfile.model.SlotFileDataSet;
 import au.org.ala.delta.editor.slotfile.model.SlotFileDataSetFactory;
+import au.org.ala.delta.model.CharacterType;
 
 /**
  * Tests the DirectiveFileImporter class. 
@@ -63,6 +64,7 @@ public class DirectiveFileImporterTest extends TestCase {
 	public void setUp() throws Exception {
 		
 		_dataSet = (SlotFileDataSet)new SlotFileDataSetFactory().createDataSet("test");
+		_dataSet.addCharacter(CharacterType.Text);
 		_context = new ImportContext(_dataSet);
 		_importHandler = new DirectiveImportHandlerStub();
 		_importer = new DirectiveFileImporter(_importHandler);
@@ -86,10 +88,34 @@ public class DirectiveFileImporterTest extends TestCase {
 		
 		List<DirectiveInstance> directives = file.getDirectives();
 		
-		DirectiveInstance show = directives.get(0);
-		assertEquals("SHOW", show.getDirective().joinNameComponents());
+		DirectiveInstance directive = directives.get(0);
+		assertEquals("SHOW", directive.getDirective().joinNameComponents());
+		assertEquals("Translate into INTKEY format.", directive.getDirectiveArguments().getFirstArgumentText());
 		
-		assertEquals("Translate into INTKEY format.", show.getDirectiveArguments().getFirstArgumentText());
+		directive = directives.get(1);
+		assertEquals("LISTING FILE", directive.getDirective().joinNameComponents());
+		assertEquals("toint.lst", directive.getDirectiveArguments().getFirstArgumentText());
+		
+		directive = directives.get(2);
+		assertEquals("HEADING", directive.getDirective().joinNameComponents());
+		assertEquals("DELTA Sample Data", directive.getDirectiveArguments().getFirstArgumentText());
+		
+		directive = directives.get(3);
+		assertEquals("REGISTRATION SUBHEADING", directive.getDirective().joinNameComponents());
+		assertEquals("Version: 21st September 2000.", directive.getDirectiveArguments().getFirstArgumentText());
+		
+		directive = directives.get(4);
+		assertEquals("INPUT FILE", directive.getDirective().joinNameComponents());
+		assertEquals("specs", directive.getDirectiveArguments().getFirstArgumentText());
+		
+		directive = directives.get(5);
+		assertEquals("TRANSLATE INTO INTKEY FORMAT", directive.getDirective().joinNameComponents());
+		assertEquals(0, directive.getDirectiveArguments().size());
+		
+		directive = directives.get(6);
+		assertEquals("CHARACTERS FOR SYNONYMY", directive.getDirective().joinNameComponents());
+		assertEquals(1, directive.getDirectiveArguments().getFirstArgumentIdAsInt());
+		
 		
 	}
 	

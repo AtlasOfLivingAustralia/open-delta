@@ -110,6 +110,7 @@ public class DirectiveArgConverter {
 		else {
 			for (DirectiveArgument<?> arg : args.getDirectiveArguments()) {
 				IdConverter converter = idConverterFor(directiveType);
+				
 				DirArgs dirArg = new DirArgs(converter.convertId(arg.getId()));
 				dirArg.setText(arg.getText());
 				dirArg.comment = arg.getComment();
