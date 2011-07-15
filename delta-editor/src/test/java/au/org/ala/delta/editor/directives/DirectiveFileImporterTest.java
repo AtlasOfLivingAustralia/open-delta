@@ -6,6 +6,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
+import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -142,6 +143,35 @@ public class DirectiveFileImporterTest extends TestCase {
 		assertEquals(87, directive.getDirectiveArguments().size());
 		assertEquals(8, directive.getDirectiveArguments().get(43).getValueAsInt());
 		assertEquals(new BigDecimal("7.1"), directive.getDirectiveArguments().get(76).getValue());
+	
+		directive = directives.get(12);
+		assertEquals("NEW PARAGRAPHS AT CHARACTERS", directive.getDirective().joinNameComponents());
+		assertEquals(11, directive.getDirectiveArguments().size());
+		int[] ids = {1, 4, 12, 25, 26, 68, 77, 78, 87, 88, 89};
+		for (int i=0; i<ids.length; i++) {
+			assertEquals(Integer.valueOf(ids[i]), (Integer)directive.getDirectiveArguments().get(i).getId());
+		}
+	
+		directive = directives.get(13);
+		assertEquals("ITEM SUBHEADINGS", directive.getDirective().joinNameComponents());
+		assertEquals(11, directive.getDirectiveArguments().size());
+		
+		ids = new int[] {0, 1, 4, 12, 25, 26, 68, 77, 78, 87, 88};
+		// First arg is the delimiter, if present.
+		for (int i=1; i<ids.length; i++) {
+			assertEquals(Integer.valueOf(ids[i]), (Integer)directive.getDirectiveArguments().get(i).getId());
+			assertTrue(StringUtils.isNotEmpty(directive.getDirectiveArguments().get(i).getText()));
+		}
+		assertEquals("\\pard\\li0\\fi340\\b{}Taxonomy, distribution.\\b0{}\n", directive.getDirectiveArguments().get(8).getText());
+		
+		// Next 5 are "INPUT FILE".
+		String[] files = {"cnotes", "ofonts", "cimages", "timages", "ofiles"};
+		for (int i=0; i<files.length; i++) {
+			directive = directives.get(14+i);
+			assertEquals("INPUT FILE", directive.getDirective().joinNameComponents());
+			assertEquals(files[i], directive.getDirectiveArguments().getFirstArgumentText());
+		}
+		
 	}
 	
 }
