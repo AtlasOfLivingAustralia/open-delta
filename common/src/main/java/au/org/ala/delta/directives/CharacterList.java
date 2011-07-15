@@ -79,12 +79,9 @@ class CharacterListParser extends DirectiveArgsParser {
 			int charId = Integer.parseInt(m.group(1));
 			au.org.ala.delta.model.Character ch = getContext().getCharacter(charId);
 			String description = cleanWhiteSpace(m.group(2));
-			try {
+			
 			ch.setDescription(description);
-			}
-			catch (NullPointerException e) {
-				System.out.println("Breakpoint!");
-			}
+			
 			if (skipWhitespace()) {
 				if (_currentChar != '#') {
 					if (ch instanceof MultiStateCharacter) {

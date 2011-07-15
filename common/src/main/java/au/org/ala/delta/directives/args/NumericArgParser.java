@@ -15,6 +15,7 @@ public class NumericArgParser extends DirectiveArgsParser {
 	@Override
 	public void parse() throws ParseException {
 		BigDecimal value;
+		_args = new DirectiveArguments();
 		try {
 			value = new BigDecimal(readFully());
 			_args.addValueArgument(value);

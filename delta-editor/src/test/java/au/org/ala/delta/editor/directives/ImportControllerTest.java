@@ -78,7 +78,7 @@ public class ImportControllerTest extends TestCase {
 	}
 	
 	@Test
-	public void testSilentImport() throws Exception {
+	public void zztestSilentImport() throws Exception {
 		
 		File datasetDirectory = new File(getClass().getResource("/dataset").toURI());
 		DirectiveFileInfo specs = new DirectiveFileInfo("specs", DirectiveType.CONFOR);

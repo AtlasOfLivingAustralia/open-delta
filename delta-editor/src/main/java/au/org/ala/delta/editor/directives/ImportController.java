@@ -13,16 +13,20 @@ import org.jdesktop.application.Task;
 import org.jdesktop.application.TaskEvent;
 import org.jdesktop.application.TaskListener;
 
-import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.AbstractDeltaContext;
 import au.org.ala.delta.directives.AbstractDirective;
-import au.org.ala.delta.directives.ConforDirectiveFileParser;
-import au.org.ala.delta.directives.DirectiveParserObserver;
 import au.org.ala.delta.editor.DeltaEditor;
 import au.org.ala.delta.editor.directives.ui.ImportExportDialog;
 import au.org.ala.delta.editor.directives.ui.ImportExportStatusDialog;
 import au.org.ala.delta.editor.directives.ui.ImportExportViewModel;
 import au.org.ala.delta.editor.model.EditorDataModel;
+import au.org.ala.delta.editor.slotfile.Directive;
+import au.org.ala.delta.editor.slotfile.directive.ConforDirType;
+import au.org.ala.delta.editor.slotfile.directive.DistDirType;
+import au.org.ala.delta.editor.slotfile.directive.IntkeyDirType;
+import au.org.ala.delta.editor.slotfile.directive.KeyDirType;
+import au.org.ala.delta.editor.slotfile.model.DirectiveFile;
+import au.org.ala.delta.editor.slotfile.model.DirectiveFile.DirectiveType;
 
 /**
  * The ImportController manages the process of importing a set of directives files
@@ -96,7 +100,8 @@ public class ImportController {
 	}
 
 	
-	public class DoImportTask extends Task<Void, ImportExportStatus> implements DirectiveParserObserver {
+	public class DoImportTask extends Task<Void, ImportExportStatus>
+	implements DirectiveImportHandler  {
 
 		private String _directoryName;
 		private List<DirectiveFileInfo> _files;
@@ -117,12 +122,15 @@ public class ImportController {
 			ImportExportStatus status = new ImportExportStatus();
 			publish(status);
 						
-			DeltaContext context = new DeltaContext(_model);
-			ConforDirectiveFileParser parser = ConforDirectiveFileParser.createInstance();
+			ImportContext context = new ImportContext(_model);
+
 			int fileNumber = 1;
 			for (DirectiveFileInfo file : _files) {
 				
-				_model.addDirectiveFile(fileNumber++, file.getFileName(), 0);
+				DirectiveFileImporter parser = new DirectiveFileImporter(this, directivesOfType(file.getType()));
+				
+				DirectiveFile directiveFile = _model.addDirectiveFile(fileNumber++, file.getFileName(), file.getType());
+				context.setDirectiveFile(directiveFile);
 				// First check if the existing dataset has a directives file with the same name
 				// and same last modified date.  If so, skip it.
 				status.setCurrentFile(file.getFileName());
@@ -130,8 +138,8 @@ public class ImportController {
 				// Looks like we skip the specs file if we have non zero items or chars.....
 				try {
 				
-					File directiveFile = new File(_directoryName+file.getFileName());
-					parser.parse(directiveFile, context);
+					File toParse = new File(_directoryName+file.getFileName());
+					parser.parse(toParse, context);
 				}
 				catch (Exception e) {
 					status.setTotalErrors(status.getTotalErrors()+1);
@@ -154,8 +162,32 @@ public class ImportController {
 		public void preProcess(String data) {}
 
 		@Override
-		public void postProcess(AbstractDirective<? extends AbstractDeltaContext> directive) {
-			//storeDirective(directive);
+		public void postProcess(AbstractDirective<? extends AbstractDeltaContext> directive) { }
+
+		@Override
+		public void handleUnrecognizedDirective(ImportContext context, List<String> controlWords) { }
+
+		@Override
+		public void handleDirectiveProcessingException(
+				ImportContext context, AbstractDirective<ImportContext> d, Exception ex) {}
+		
+		private Directive[] directivesOfType(DirectiveType type) {
+			Directive[] directives = null;
+			switch(type) {
+			case CONFOR:
+				directives = ConforDirType.ConforDirArray;
+				break;
+			case INTKEY:
+				directives = IntkeyDirType.IntkeyDirArray;
+				break;
+			case KEY:
+				directives = KeyDirType.KeyDirArray;
+				break;
+			case DIST:
+				directives = DistDirType.DistDirArray;
+				break;
+			}
+			return directives;
 		}
 	}
 	
@@ -176,4 +208,6 @@ public class ImportController {
 		}
 		
 	}
+	
+	
 }

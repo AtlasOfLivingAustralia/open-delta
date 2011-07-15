@@ -30,7 +30,7 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
 
     public static char DIRECTIVE_DELIMITER = '*';
     private final static String _blank = " \n\r";
-    private Tree directiveTree = new Tree();
+    protected Tree directiveTree = new Tree();
     
     private List<DirectiveParserObserver> _observers = new ArrayList<DirectiveParserObserver>();
     

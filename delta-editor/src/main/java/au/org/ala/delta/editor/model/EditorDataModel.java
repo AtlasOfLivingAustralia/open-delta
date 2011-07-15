@@ -10,6 +10,7 @@ import java.util.prefs.PreferenceChangeListener;
 
 import au.org.ala.delta.editor.EditorPreferences;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile;
+import au.org.ala.delta.editor.slotfile.model.DirectiveFile.DirectiveType;
 import au.org.ala.delta.editor.slotfile.model.SlotFileDataSet;
 import au.org.ala.delta.model.AbstractObservableDataSet;
 import au.org.ala.delta.model.Character;
@@ -182,8 +183,8 @@ public class EditorDataModel extends DataSetWrapper implements EditorViewModel, 
 		_wrappedDataSet.close();
 	}
 	
-	public DirectiveFile addDirectiveFile(int fileNumber, String fileName, int flags) {
-		return ((SlotFileDataSet)_wrappedDataSet).addDirectiveFile(fileNumber, fileName, flags);
+	public DirectiveFile addDirectiveFile(int fileNumber, String fileName, DirectiveType type) {
+		return ((SlotFileDataSet)_wrappedDataSet).addDirectiveFile(fileNumber, fileName, type);
 	}
 	
 	public int getDirectiveFileCount() {

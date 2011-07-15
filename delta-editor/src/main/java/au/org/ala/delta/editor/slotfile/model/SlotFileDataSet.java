@@ -16,6 +16,7 @@ import au.org.ala.delta.editor.slotfile.VOControllingDesc;
 import au.org.ala.delta.editor.slotfile.VOImageDesc;
 import au.org.ala.delta.editor.slotfile.VOImageInfoDesc;
 import au.org.ala.delta.editor.slotfile.VOItemDesc;
+import au.org.ala.delta.editor.slotfile.model.DirectiveFile.DirectiveType;
 import au.org.ala.delta.model.AbstractObservableDataSet;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterDependency;
@@ -607,11 +608,27 @@ public class SlotFileDataSet extends AbstractObservableDataSet {
 	}
 	
 	
-	public DirectiveFile addDirectiveFile(int fileNumber, String fileName, int flags) {
+	public DirectiveFile addDirectiveFile(int fileNumber, String fileName, DirectiveType type) {
 		VODirFileDesc.DirFileFixedData fixed = new VODirFileDesc.DirFileFixedData();
 		VODirFileDesc dirFile = (VODirFileDesc)_vop.insertObject(fixed, 0, null, 0, 0);
+		
 		dirFile.setFileName(fileName);
-		dirFile.setFileFlags(flags);
+		int progType = 0;
+		switch (type) {
+		case CONFOR:
+			progType = VODirFileDesc.PROGTYPE_CONFOR;
+			break;
+		case INTKEY:
+			progType = VODirFileDesc.PROGTYPE_INTKEY;
+			break;
+		case DIST:
+			progType = VODirFileDesc.PROGTYPE_DIST;
+			break;
+		case KEY:
+			progType = VODirFileDesc.PROGTYPE_KEY;
+			break;
+		}
+		dirFile.setProgType((short)progType);
 		
 		_vop.getDeltaMaster().InsertDirFile(dirFile.getUniId(), fileNumber);
 		

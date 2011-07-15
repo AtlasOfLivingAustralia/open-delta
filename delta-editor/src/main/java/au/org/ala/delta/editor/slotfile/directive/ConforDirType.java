@@ -17,7 +17,6 @@ package au.org.ala.delta.editor.slotfile.directive;
 import java.util.Arrays;
 import java.util.Comparator;
 
-import au.org.ala.delta.directives.AbstractDirective;
 import au.org.ala.delta.directives.ApplicableCharacters;
 import au.org.ala.delta.directives.CharacterForTaxonImages;
 import au.org.ala.delta.directives.CharacterImages;
@@ -376,16 +375,7 @@ public class ConforDirType {
         new Directive(new String[] {"USE", "NORMAL", "VALUES", ""}, 4, ConforDirType.USE_NORMAL_VALUES, DirectiveArgType.DIRARG_CHARLIST, new DirInDefault(), new DirOutDefault()),
         new Directive(new String[] {"VOCABULARY", "", "", ""}, 4, ConforDirType.VOCABULARY, DirectiveArgType.DIRARG_TEXTLIST, new DirInDefault(), new DirOutDefault())
     };
- 
-	public static Directive typeOf(AbstractDirective<?> directive) {
-		String[] directiveName = directive.getControlWords();
-		for (Directive dir : ConforDirArray) {
-			if (directiveName.equals(dir.getName())) {
-				return dir;
-			}
-		}
-		return ConforDirArray[0];
-	}
+
     
 	static {
 		Arrays.sort(ConforDirArray, new Comparator<Directive>() {

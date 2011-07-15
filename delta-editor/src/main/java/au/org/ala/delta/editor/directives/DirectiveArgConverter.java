@@ -277,9 +277,9 @@ public class DirectiveArgConverter {
 		case DirectiveArgType.DIRARG_FILE:
 		case DirectiveArgType.DIRARG_OTHER:
 		case DirectiveArgType.DIRARG_INTKEY_ONOFF:
-			return new NullConverter();
-		
 		case DirectiveArgType.DIRARG_INTEGER:
+			return new NullConverter();
+
 		case DirectiveArgType.DIRARG_TEXTLIST:
 			return new DirectIntegerConverter();
 			

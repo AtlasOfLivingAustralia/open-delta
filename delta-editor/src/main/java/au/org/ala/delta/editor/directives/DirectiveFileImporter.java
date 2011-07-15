@@ -10,7 +10,6 @@ import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.editor.slotfile.Directive;
 import au.org.ala.delta.editor.slotfile.DirectiveArgType;
 import au.org.ala.delta.editor.slotfile.DirectiveInstance;
-import au.org.ala.delta.editor.slotfile.directive.ConforDirType;
 
 
 /**
@@ -20,10 +19,12 @@ import au.org.ala.delta.editor.slotfile.directive.ConforDirType;
 public class DirectiveFileImporter extends DirectiveParser<ImportContext> {
 
 	private DirectiveImportHandler _handler;
+	private Directive[] _directives; 
 	
-	public DirectiveFileImporter(DirectiveImportHandler handler) {
+	public DirectiveFileImporter(DirectiveImportHandler handler, Directive[] directives) {
 		_handler = handler;
-		registerDirectives();
+		_directives = directives;
+		registerDirectives(directives);
 		registerObserver(handler);
 	}
 	
@@ -44,7 +45,7 @@ public class DirectiveFileImporter extends DirectiveParser<ImportContext> {
     protected void doProcess(ImportContext context, AbstractDirective d, String dd)
 			throws ParseException, Exception {
 		
-		Directive directive = ConforDirType.typeOf(d);
+		Directive directive = typeOf(d);
 		
     	d.parse(context, dd);
     	
@@ -53,16 +54,18 @@ public class DirectiveFileImporter extends DirectiveParser<ImportContext> {
 		context.getDirectiveFile().add(instance);
 		
 		if (d.getArgType() == DirectiveArgType.DIRARG_INTERNAL) {
+		
 			d.process(context, d.getDirectiveArgs());
 		}
 	}
 
-    
-    private void registerDirectives() { 
-    	Directive directive = null;
+
+	private void registerDirectives(Directive[] directives) {
+		Directive directive = null;
     	try {
-	    	for (int i=0; i<ConforDirType.ConforDirArray.length; i++) {
-	    		directive = ConforDirType.ConforDirArray[i];
+    		
+	    	for (int i=0; i<directives.length; i++) {
+	    		directive = directives[i];
 	    		if (directive.getArgType() == DirectiveArgType.DIRARG_INTERNAL) {
 	    			Class<? extends AbstractDirective<?>> dirClass = directive.getImplementationClass();
 	    			registerDirective(dirClass.newInstance());
@@ -75,7 +78,26 @@ public class DirectiveFileImporter extends DirectiveParser<ImportContext> {
     	catch (Exception e) {
     		throw new RuntimeException("Failed to find directive for: "+directive.joinNameComponents(), e);
     	}
-    }
+	}
+	
+	public Directive typeOf(AbstractDirective<?> directive) {
+		String[] directiveName = directive.getControlWords();
+		for (Directive dir : _directives) {
+			if (directiveName.length == dir.getName().length) {
+				
+				boolean match = true;
+				for (int i=0; i<directiveName.length; i++) {
+					if (!directiveName[i].toUpperCase().equals(dir.getName()[i])) {
+						match = false;
+					}
+				}
+				if (match) {
+					return dir;
+				}
+			}
+		}
+		return null;
+	}
     
     class ImportDirective extends AbstractDirective<ImportContext>{
 

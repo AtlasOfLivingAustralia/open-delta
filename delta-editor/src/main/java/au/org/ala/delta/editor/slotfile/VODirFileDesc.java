@@ -558,8 +558,9 @@ public class VODirFileDesc extends VOAnyDesc implements WindowsConstants {
 		      case DirectiveArgType.DIRARG_FILE:
 		      case DirectiveArgType.DIRARG_COMMENT:
 		        size += SIZE_OF_INT_IN_BYTES;
-		        if (directive.args.size() > 0)
-		          size += directive.args.get(0).text.length();
+		        if (directive.args.size() > 0) {
+		        	size += directive.args.get(0).text.length();
+		        }
 		        break;
 
 		      case DirectiveArgType.DIRARG_INTEGER:

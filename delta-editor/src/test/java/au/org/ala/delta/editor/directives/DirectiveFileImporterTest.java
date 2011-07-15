@@ -1,7 +1,9 @@
 package au.org.ala.delta.editor.directives;
 
 import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.URISyntaxException;
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -13,7 +15,10 @@ import org.junit.Test;
 import au.org.ala.delta.directives.AbstractDeltaContext;
 import au.org.ala.delta.directives.AbstractDirective;
 import au.org.ala.delta.editor.slotfile.DirectiveInstance;
+import au.org.ala.delta.editor.slotfile.directive.ConforDirType;
+import au.org.ala.delta.editor.slotfile.directive.DistDirType;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile;
+import au.org.ala.delta.editor.slotfile.model.DirectiveFile.DirectiveType;
 import au.org.ala.delta.editor.slotfile.model.SlotFileDataSet;
 import au.org.ala.delta.editor.slotfile.model.SlotFileDataSetFactory;
 import au.org.ala.delta.model.CharacterType;
@@ -71,19 +76,14 @@ public class DirectiveFileImporterTest extends TestCase {
 		}
 		_context = new ImportContext(_dataSet);
 		_importHandler = new DirectiveImportHandlerStub();
-		_importer = new DirectiveFileImporter(_importHandler);
+		
 	}
 	
 	@Test
 	public void testToIntImport() throws Exception {
-		String toIntPath = "/au/org/ala/delta/editor/directives/expected_results/toint";
-		File toint = new File(getClass().getResource(toIntPath).toURI());
-		
-		DirectiveFile file = _dataSet.addDirectiveFile(1, "toint", 0);
-		
-		_context.setDirectiveFile(file);
-		_importer.parse(toint, _context);
-
+	
+		_importer = new DirectiveFileImporter(_importHandler, ConforDirType.ConforDirArray);
+		DirectiveFile file = importFile("toint", DirectiveType.CONFOR);
 		assertEquals(1, _dataSet.getDirectiveFileCount());
 		
 		file = _dataSet.getDirectiveFile(1);
@@ -174,4 +174,48 @@ public class DirectiveFileImporterTest extends TestCase {
 		
 	}
 	
+	
+	@Test
+	public void testDistImport() throws Exception {
+		_importer = new DirectiveFileImporter(_importHandler, DistDirType.DistDirArray);
+		importFile("dist", DirectiveType.DIST);
+		DirectiveFile file = _dataSet.getDirectiveFile(1);
+		
+		assertEquals(1, _dataSet.getDirectiveFileCount());
+		
+		List<DirectiveInstance> directives = file.getDirectives();
+		
+		assertEquals(5, directives.size());
+		
+		DirectiveInstance directive = directives.get(0);
+		assertEquals("COMMENT", directive.getDirective().joinNameComponents());
+		assertEquals("Generate distance matrix.", directive.getDirectiveArguments().getFirstArgumentText());
+		
+		directive = directives.get(1);
+		assertEquals("LISTING FILE", directive.getDirective().joinNameComponents());
+		assertEquals("dist.lst", directive.getDirectiveArguments().getFirstArgumentText());
+		
+		directive = directives.get(2);
+		assertEquals("ITEMS FILE", directive.getDirective().joinNameComponents());
+		assertEquals("ditems", directive.getDirectiveArguments().getFirstArgumentText());
+		
+		directive = directives.get(3);
+		assertEquals("OUTPUT FILE", directive.getDirective().joinNameComponents());
+		assertEquals("grass.dis", directive.getDirectiveArguments().getFirstArgumentText());
+		
+		directive = directives.get(4);
+		assertEquals("MINIMUM NUMBER OF COMPARISONS", directive.getDirective().joinNameComponents());
+		assertEquals(7, directive.getDirectiveArguments().getFirstArgumentValue());
+	}
+
+	private DirectiveFile importFile(String fileName, DirectiveType type) throws URISyntaxException, IOException {
+		String path = "/au/org/ala/delta/editor/directives/expected_results/"+fileName;
+		File toint = new File(getClass().getResource(path).toURI());
+		
+		DirectiveFile file = _dataSet.addDirectiveFile(1, fileName, type);
+		
+		_context.setDirectiveFile(file);
+		_importer.parse(toint, _context);
+		return file;
+	}
 }
