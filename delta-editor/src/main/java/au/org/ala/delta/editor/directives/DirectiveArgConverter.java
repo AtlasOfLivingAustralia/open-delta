@@ -114,9 +114,14 @@ public class DirectiveArgConverter {
 				DirArgs dirArg = new DirArgs(converter.convertId(arg.getId()));
 				dirArg.setText(arg.getText());
 				dirArg.comment = arg.getComment();
-				for (BigDecimal value : arg.getData()) {
+				BigDecimal value = arg.getValue();
+				if (value != null) {
+					dirArg.setValue(value.toPlainString());
+				}
+				
+				for (BigDecimal dataValue : arg.getData()) {
 					DirListData data = new DirListData();
-					data.setAsDeltaNumber(new DeltaNumber(value.toPlainString()));
+					data.setAsDeltaNumber(new DeltaNumber(dataValue.toPlainString()));
 					dirArg.getData().add(data);
 				}
 				dir.args.add(dirArg);

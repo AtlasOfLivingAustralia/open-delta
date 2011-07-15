@@ -1,6 +1,7 @@
 package au.org.ala.delta.editor.directives;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -64,7 +65,9 @@ public class DirectiveFileImporterTest extends TestCase {
 	public void setUp() throws Exception {
 		
 		_dataSet = (SlotFileDataSet)new SlotFileDataSetFactory().createDataSet("test");
-		_dataSet.addCharacter(CharacterType.Text);
+		for (int i=0; i<89; i++) {
+			_dataSet.addCharacter(CharacterType.Text);
+		}
 		_context = new ImportContext(_dataSet);
 		_importHandler = new DirectiveImportHandlerStub();
 		_importer = new DirectiveFileImporter(_importHandler);
@@ -116,7 +119,29 @@ public class DirectiveFileImporterTest extends TestCase {
 		assertEquals("CHARACTERS FOR SYNONYMY", directive.getDirective().joinNameComponents());
 		assertEquals(1, directive.getDirectiveArguments().getFirstArgumentIdAsInt());
 		
+		directive = directives.get(7);
+		assertEquals("OMIT PERIOD FOR CHARACTERS", directive.getDirective().joinNameComponents());
+		assertEquals(1, directive.getDirectiveArguments().getFirstArgumentIdAsInt());
 		
+		directive = directives.get(8);
+		assertEquals("OMIT OR FOR CHARACTERS", directive.getDirective().joinNameComponents());
+		assertEquals(86, directive.getDirectiveArguments().getFirstArgumentIdAsInt());
+		
+		directive = directives.get(9);
+		assertEquals("OMIT INNER COMMENTS", directive.getDirective().joinNameComponents());
+		assertEquals(0, directive.getDirectiveArguments().size());
+		
+		directive = directives.get(10);
+		assertEquals("EXCLUDE CHARACTERS", directive.getDirective().joinNameComponents());
+		assertEquals(2, directive.getDirectiveArguments().size());
+		assertEquals(Integer.valueOf(88), directive.getDirectiveArguments().get(0).getId());
+		assertEquals(Integer.valueOf(89), directive.getDirectiveArguments().get(1).getId());
+		
+		directive = directives.get(11);
+		assertEquals("CHARACTER RELIABILITIES", directive.getDirective().joinNameComponents());
+		assertEquals(87, directive.getDirectiveArguments().size());
+		assertEquals(8, directive.getDirectiveArguments().get(43).getValueAsInt());
+		assertEquals(new BigDecimal("7.1"), directive.getDirectiveArguments().get(76).getValue());
 	}
 	
 }
