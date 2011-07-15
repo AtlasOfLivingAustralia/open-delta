@@ -18,24 +18,22 @@ import java.io.IOException;
 import java.io.Reader;
 import java.text.ParseException;
 
-import au.org.ala.delta.DeltaContext;
-
 public abstract class AbstractStreamParser {
 
 	protected Reader _reader;
-	protected DeltaContext _context;
+	protected AbstractDeltaContext _context;
 	protected char _currentChar;
 	protected int _currentInt;
 	protected int _position;
 
-	public AbstractStreamParser(DeltaContext context, Reader reader) {
+	public AbstractStreamParser(AbstractDeltaContext context, Reader reader) {
 		_reader = reader;
 		_context = context;
 	}
 
 	public abstract void parse() throws ParseException;
 
-	protected DeltaContext getContext() {
+	protected AbstractDeltaContext getContext() {
 		return _context;
 	}
 

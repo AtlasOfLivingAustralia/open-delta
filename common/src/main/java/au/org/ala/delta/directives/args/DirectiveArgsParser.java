@@ -7,7 +7,7 @@ import java.text.ParseException;
 
 import org.apache.commons.lang.math.IntRange;
 
-import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.directives.AbstractDeltaContext;
 import au.org.ala.delta.directives.AbstractStreamParser;
 
 /**
@@ -22,7 +22,7 @@ public abstract class DirectiveArgsParser extends AbstractStreamParser {
 	protected DirectiveArguments _args;
 	protected int _markedInt;
 	
-	public DirectiveArgsParser(DeltaContext context, Reader reader) {
+	public DirectiveArgsParser(AbstractDeltaContext context, Reader reader) {
 		super(context, reader);
 	}
 	

@@ -4,11 +4,11 @@ import java.io.Reader;
 import java.math.BigDecimal;
 import java.text.ParseException;
 
-import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.directives.AbstractDeltaContext;
 
-public abstract class NumericArgParser extends DirectiveArgsParser {
+public class NumericArgParser extends DirectiveArgsParser {
 
-	public NumericArgParser(DeltaContext context, Reader reader) {
+	public NumericArgParser(AbstractDeltaContext context, Reader reader) {
 		super(context, reader);
 	}
 	
@@ -16,7 +16,7 @@ public abstract class NumericArgParser extends DirectiveArgsParser {
 	public void parse() throws ParseException {
 		BigDecimal value;
 		try {
-			value = new BigDecimal(readToNextEndSlashSpace());
+			value = new BigDecimal(readFully());
 			_args.addValueArgument(value);
 		}
 		catch (Exception e) {
@@ -24,6 +24,4 @@ public abstract class NumericArgParser extends DirectiveArgsParser {
 		}
 		
 	}
-	
-	protected abstract void createArgs(BigDecimal value);
 }

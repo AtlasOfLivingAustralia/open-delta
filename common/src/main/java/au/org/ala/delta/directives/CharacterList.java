@@ -77,7 +77,7 @@ class CharacterListParser extends DirectiveArgsParser {
 
 		if (m.matches()) {
 			int charId = Integer.parseInt(m.group(1));
-			au.org.ala.delta.model.Character ch = _context.getCharacter(charId);
+			au.org.ala.delta.model.Character ch = getContext().getCharacter(charId);
 			String description = cleanWhiteSpace(m.group(2));
 			try {
 			ch.setDescription(description);
@@ -123,6 +123,10 @@ class CharacterListParser extends DirectiveArgsParser {
 
 	}
 
+	protected DeltaContext getContext() {
+		return (DeltaContext)_context;
+	}
+	
 	private void parseState(MultiStateCharacter ch) throws ParseException {
 		String state = readToNextEndSlashSpace();
 		Matcher m = FEAT_DESC_PATTERN.matcher(state);

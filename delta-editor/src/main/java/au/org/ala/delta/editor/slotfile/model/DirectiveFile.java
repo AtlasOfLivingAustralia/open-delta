@@ -143,8 +143,7 @@ public class DirectiveFile {
 		for (Dir dir : directives) {
 			
 			Directive directive = getDirective(dir);
-			DirectiveArguments args = _converter.convertArgs(
-					dir, directive.getArgType());
+			DirectiveArguments args = _converter.convertArgs(dir, directive.getArgType());
 			DirectiveInstance dirInstance = new DirectiveInstance(directive, args);
 			dirInstance.setCommented((dir.getDirType() & VODirFileDesc.DIRARG_COMMENT_FLAG) != 0);
 			dirInstance.setDirectiveType(type);
@@ -153,7 +152,7 @@ public class DirectiveFile {
 		return toReturn;
 	}
 	
-	public Directive getDirective(Dir dir) {
+	private Directive getDirective(Dir dir) {
 		DirectiveType progType = getType();
 		int type = dir.getDirType();
 		type &= VODirFileDesc.DIRARG_DIRTYPE_MASK;

@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import au.org.ala.delta.directives.AbstractDeltaContext;
 import au.org.ala.delta.directives.AbstractDirective;
+import au.org.ala.delta.editor.slotfile.DirectiveInstance;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile;
 import au.org.ala.delta.editor.slotfile.model.SlotFileDataSet;
 import au.org.ala.delta.editor.slotfile.model.SlotFileDataSetFactory;
@@ -82,6 +83,14 @@ public class DirectiveFileImporterTest extends TestCase {
 		file = _dataSet.getDirectiveFile(1);
 		
 		assertEquals(24, file.getDirectiveCount());
+		
+		List<DirectiveInstance> directives = file.getDirectives();
+		
+		DirectiveInstance show = directives.get(0);
+		assertEquals("SHOW", show.getDirective().joinNameComponents());
+		
+		assertEquals("Translate into INTKEY format.", show.getDirectiveArguments().getFirstArgumentText());
+		
 	}
 	
 }

@@ -54,7 +54,7 @@ class ItemsParser extends AbstractStreamParser {
 	@Override
 	public void parse() throws ParseException {
 
-		_context.initializeMatrix();
+		getContext().initializeMatrix();
 
 		int itemIndex = 1;
 		while (skipTo('#') && _currentInt >= 0) {
@@ -80,7 +80,7 @@ class ItemsParser extends AbstractStreamParser {
 		while (_currentChar != '#' && _currentInt >= 0) {
 			int charIdx = readInteger();
 			
-			au.org.ala.delta.model.Character ch = _context.getCharacter(charIdx);
+			au.org.ala.delta.model.Character ch = getContext().getCharacter(charIdx);
 			String strValue = null;
 			String comment = null;
 
@@ -108,10 +108,10 @@ class ItemsParser extends AbstractStreamParser {
 				value.append(strValue);
 			}
 			
-			Attribute attribute = _context.getDataSet().addAttribute(item.getItemNumber(), ch.getCharacterId());
+			Attribute attribute = getContext().getDataSet().addAttribute(item.getItemNumber(), ch.getCharacterId());
 			attribute.setValueFromString(cleanWhiteSpace(value.toString().trim()));
 			
-			_context.getMatrix().setValue(charIdx, itemIndex, stateValue);
+			getContext().getMatrix().setValue(charIdx, itemIndex, stateValue);
 		
 			skipWhitespace();
 		}
@@ -123,14 +123,18 @@ class ItemsParser extends AbstractStreamParser {
 			if (itemIndex == 1) {
 				throw new RuntimeException("The first item cannot be a variant item!");
 			}
-		    item = _context.getDataSet().addVariantItem(_lastMaster, itemIndex);
+		    item = getContext().getDataSet().addVariantItem(_lastMaster, itemIndex);
 			readNext();
 		}
 		else {
-			item = _context.getDataSet().addItem(itemIndex);
+			item = getContext().getDataSet().addItem(itemIndex);
 			_lastMaster = itemIndex;
 		}
 		return item;
+	}
+	
+	protected DeltaContext getContext() {
+		return (DeltaContext)_context;
 	}
 
 	private String readStateValue(Character character) throws ParseException {

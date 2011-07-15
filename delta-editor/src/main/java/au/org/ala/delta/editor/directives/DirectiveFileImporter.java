@@ -1,11 +1,21 @@
 package au.org.ala.delta.editor.directives;
 
+import java.io.StringReader;
 import java.text.ParseException;
 import java.util.List;
 
 import au.org.ala.delta.directives.AbstractDirective;
 import au.org.ala.delta.directives.DirectiveParser;
+import au.org.ala.delta.directives.args.DirectiveArgsParser;
 import au.org.ala.delta.directives.args.DirectiveArguments;
+import au.org.ala.delta.directives.args.IdListParser;
+import au.org.ala.delta.directives.args.IdValueListParser;
+import au.org.ala.delta.directives.args.IdWithIdListParser;
+import au.org.ala.delta.directives.args.IntegerIdArgParser;
+import au.org.ala.delta.directives.args.IntegerTextListParser;
+import au.org.ala.delta.directives.args.NumericArgParser;
+import au.org.ala.delta.directives.args.StringTextListParser;
+import au.org.ala.delta.directives.args.TextArgParser;
 import au.org.ala.delta.editor.slotfile.Directive;
 import au.org.ala.delta.editor.slotfile.DirectiveArgType;
 import au.org.ala.delta.editor.slotfile.DirectiveInstance;
@@ -74,6 +84,7 @@ public class DirectiveFileImporter extends DirectiveParser<ImportContext> {
     class ImportDirective extends AbstractDirective<ImportContext>{
 
     	private Directive _directive;
+    	private DirectiveArguments _args;
     	
     	public ImportDirective(Directive directive) {
     		super(directive.getName());
@@ -82,7 +93,7 @@ public class DirectiveFileImporter extends DirectiveParser<ImportContext> {
     
 		@Override
 		public DirectiveArguments getDirectiveArgs() {
-			return null;
+			return _args;
 		}
 
 		@Override
@@ -93,9 +104,50 @@ public class DirectiveFileImporter extends DirectiveParser<ImportContext> {
 		@Override
 		public void parse(ImportContext context, String data) throws ParseException {
 			
+			DirectiveArgsParser parser = null;
+			StringReader reader = new StringReader(data);
 			switch (_directive.getArgType()) {
 			
+			case DirectiveArgType.DIRARG_COMMENT:
+			case DirectiveArgType.DIRARG_TRANSLATION:
+			case DirectiveArgType.DIRARG_TEXT:
+			case DirectiveArgType.DIRARG_FILE:
+				parser = new TextArgParser(context, reader);
+				break;
+			case DirectiveArgType.DIRARG_INTEGER:
+			case DirectiveArgType.DIRARG_REAL:
+				parser = new NumericArgParser(context, reader);
+				break;
+			case DirectiveArgType.DIRARG_CHAR:
+			case DirectiveArgType.DIRARG_ITEM:
+				parser = new IntegerIdArgParser(context, reader);
+				break;
+			case DirectiveArgType.DIRARG_CHARLIST:
+			case DirectiveArgType.DIRARG_ITEMLIST:
+				parser = new IdListParser(context, reader);
+				break;
+			case DirectiveArgType.DIRARG_TEXTLIST:
+			case DirectiveArgType.DIRARG_CHARTEXTLIST:
+				parser = new IntegerTextListParser(context, reader);
+				break;
+			case DirectiveArgType.DIRARG_CHARINTEGERLIST:
+			case DirectiveArgType.DIRARG_CHARREALLIST:
+			case DirectiveArgType.DIRARG_ITEMREALLIST:
+				parser = new IdValueListParser(context, reader);
+				break;
+			case DirectiveArgType.DIRARG_ITEMTEXTLIST:
+			case DirectiveArgType.DIRARG_ITEMFILELIST:
+				parser = new StringTextListParser(context, reader);
+				break;
+			case DirectiveArgType.DIRARG_ITEMCHARLIST:
+				parser = new IdWithIdListParser(context, reader);
+				break;
 			}
+			if (_directive.getArgType() != DirectiveArgType.DIRARG_NONE) {
+				parser.parse(); 
+				_args = parser.getDirectiveArgs();
+			}
+			
 			System.out.println("Directive: "+_directive.joinNameComponents()+" Arg type: "+_directive.getArgType());
 		}
 
