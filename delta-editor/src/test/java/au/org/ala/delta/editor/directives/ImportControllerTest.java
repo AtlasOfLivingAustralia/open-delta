@@ -14,6 +14,7 @@ import org.junit.Test;
 
 import au.org.ala.delta.editor.DeltaEditor;
 import au.org.ala.delta.editor.model.EditorDataModel;
+import au.org.ala.delta.editor.slotfile.model.DirectiveFile;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile.DirectiveType;
 import au.org.ala.delta.editor.slotfile.model.SlotFileDataSet;
 import au.org.ala.delta.editor.slotfile.model.SlotFileDataSetFactory;
@@ -78,7 +79,7 @@ public class ImportControllerTest extends TestCase {
 	}
 	
 	@Test
-	public void zztestSilentImport() throws Exception {
+	public void testSilentImport() throws Exception {
 		
 		File datasetDirectory = new File(getClass().getResource("/dataset").toURI());
 		DirectiveFileInfo specs = new DirectiveFileInfo("specs", DirectiveType.CONFOR);
@@ -139,9 +140,9 @@ public class ImportControllerTest extends TestCase {
 
 		assertEquals(1, _dataSet.getDirectiveFileCount());
 		
-		//DirectiveFile file = _dataSet.getDirectiveFile(1);
+		DirectiveFile file = _dataSet.getDirectiveFile(1);
 		
-		//assertEquals(24, file.getDirectiveCount());
+		assertEquals(24, file.getDirectiveCount());
 	}
 	
 }

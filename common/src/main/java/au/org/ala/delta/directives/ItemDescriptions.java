@@ -20,17 +20,26 @@ import java.text.ParseException;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.Logger;
+import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.StateValue;
 
+/**
+ * Parses and processes the ITEM DESCRIPTIONS directive.
+ */
 public class ItemDescriptions extends AbstractTextDirective {
 
 	
 	public ItemDescriptions() {
 		super("item", "descriptions");
+	}
+	
+	@Override
+	public int getArgType() {
+		return DirectiveArgType.DIRARG_INTERNAL;
 	}
 
 	@Override

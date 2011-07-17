@@ -35,7 +35,7 @@ public class CharacterList extends AbstractTextDirective {
 	
 	@Override
 	public int getArgType() {
-		return DirectiveArgType.DIRARG_CHARLIST;
+		return DirectiveArgType.DIRARG_INTERNAL;
 	}
 	
 	@Override

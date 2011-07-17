@@ -46,15 +46,11 @@ public class DirectiveFileImporter extends DirectiveParser<ImportContext> {
 			throws ParseException, Exception {
 		
 		Directive directive = typeOf(d);
-		
     	d.parse(context, dd);
-    	
     	DirectiveInstance instance = new DirectiveInstance(directive, d.getDirectiveArgs());
-		
 		context.getDirectiveFile().add(instance);
 		
 		if (d.getArgType() == DirectiveArgType.DIRARG_INTERNAL) {
-		
 			d.process(context, d.getDirectiveArgs());
 		}
 	}
@@ -69,6 +65,7 @@ public class DirectiveFileImporter extends DirectiveParser<ImportContext> {
 	    		if (directive.getArgType() == DirectiveArgType.DIRARG_INTERNAL) {
 	    			Class<? extends AbstractDirective<?>> dirClass = directive.getImplementationClass();
 	    			registerDirective(dirClass.newInstance());
+	    			System.out.println("Registered: "+dirClass+" for directive: "+directive.joinNameComponents());
 	    		}
 	    		else {
 	    			registerDirective(new ImportDirective(directive));
