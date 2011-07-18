@@ -1,6 +1,7 @@
 package au.org.ala.delta.intkey.directives;
 
 //TODO need error if no dataset loaded
+//TODO need to prompt if characters/keyword not supplied
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -11,6 +12,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.IntRange;
 
 import au.org.ala.delta.directives.args.DirectiveArgType;
+import au.org.ala.delta.intkey.IntkeyUI;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.ui.UIUtils;
 

@@ -19,6 +19,7 @@ import org.apache.commons.lang.math.FloatRange;
 import org.apache.commons.lang.math.IntRange;
 
 import au.org.ala.delta.directives.args.DirectiveArgType;
+import au.org.ala.delta.intkey.IntkeyUI;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.model.IntkeyDataset;
 import au.org.ala.delta.intkey.model.specimen.CharacterValue;
@@ -546,40 +547,6 @@ public class UseDirective extends IntkeyDirective {
 
             return retMap;
         }
-
-//        // For the given character, recursively build a list of
-//        // CharacterDependency objects describing
-//        // all characters that control it, directly and indirectly.
-//        private List<CharacterDependency> getFullControllingCharacterDependenciesList(Character ch, IntkeyDataset ds) {
-//            List<CharacterDependency> retList = new ArrayList<CharacterDependency>();
-//
-//            List<CharacterDependency> directControllingChars = ch.getControllingCharacters();
-//            if (directControllingChars != null) {
-//                for (CharacterDependency cd : directControllingChars) {
-//                    Character controllingChar = ds.getCharacter(cd.getControllingCharacterId());
-//                    retList.add(cd);
-//
-//                    // Add all the indirect or "ancestor" character
-//                    // dependencies.
-//                    List<CharacterDependency> ancestorCharacterDependencies = getFullControllingCharacterDependenciesList(controllingChar, ds);
-//                    for (CharacterDependency ancestorCd : ancestorCharacterDependencies) {
-//                        // If an "ancestor" dependency is already in the list,
-//                        // remove it and reinsert it at
-//                        // the front of the list. Need to ensure that values for
-//                        // the furthermost ancestors
-//                        // are set first, otherwise the Specimen will throw
-//                        // IllegalStateExceptions...
-//                        if (retList.contains(ancestorCd)) {
-//                            retList.remove(ancestorCd);
-//                        }
-//
-//                        retList.add(0, ancestorCd);
-//                    }
-//                }
-//            }
-//
-//            return retList;
-//        }
 
         private CharacterValue promptForCharacterValue(Frame frame, Character ch) {
             CharacterValue characterVal = null;

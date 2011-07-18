@@ -10,6 +10,7 @@ import java.util.Map;
 import org.apache.commons.lang.math.IntRange;
 
 import au.org.ala.delta.directives.args.DirectiveArgType;
+import au.org.ala.delta.intkey.IntkeyUI;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.model.IntkeyDataset;
 import au.org.ala.delta.model.Character;

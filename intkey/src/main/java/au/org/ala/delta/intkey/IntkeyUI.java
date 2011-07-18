@@ -11,5 +11,10 @@ public interface IntkeyUI {
     void handleSpecimenUpdated();
     
     void handleIdentificationRestarted();
-
+    
+    void displayRTFReport(String rtfSource, String title);
+    
+    void displayErrorMessage(String message);
+    
+    void displayWarningMessage(String message);
 }

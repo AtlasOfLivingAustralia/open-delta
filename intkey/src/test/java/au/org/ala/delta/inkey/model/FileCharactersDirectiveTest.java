@@ -20,7 +20,7 @@ public class FileCharactersDirectiveTest extends TestCase {
 
     @Test
     public void testSetValidCharactersFile() throws Exception {
-        IntkeyContext context = new IntkeyContext(new MockIntkeyUI());
+        IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
         URL icharsFileUrl = getClass().getResource("/dataset/sample/ichars");
 
         File fileCharacters = new File(icharsFileUrl.toURI());

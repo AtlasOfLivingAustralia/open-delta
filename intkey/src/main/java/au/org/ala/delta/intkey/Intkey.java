@@ -45,14 +45,13 @@ import javax.swing.event.MouseInputAdapter;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
 import org.jdesktop.application.Action;
-import org.jdesktop.application.Application;
 import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
-import org.jdesktop.application.Task;
 
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.intkey.directives.ChangeDirective;
 import au.org.ala.delta.intkey.directives.DifferencesDirective;
+import au.org.ala.delta.intkey.directives.DirectivePopulator;
 import au.org.ala.delta.intkey.directives.DisplayCharacterOrderBestDirective;
 import au.org.ala.delta.intkey.directives.DisplayCharacterOrderNaturalDirective;
 import au.org.ala.delta.intkey.directives.FileCharactersDirective;
@@ -74,15 +73,17 @@ import au.org.ala.delta.intkey.ui.BusyGlassPane;
 import au.org.ala.delta.intkey.ui.CharacterListModel;
 import au.org.ala.delta.intkey.ui.ItemListModel;
 import au.org.ala.delta.intkey.ui.ReExecuteDialog;
+import au.org.ala.delta.intkey.ui.TextReportDisplayDialog;
 import au.org.ala.delta.intkey.ui.UIUtils;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.ui.AboutBox;
 import au.org.ala.delta.ui.DeltaSingleFrameApplication;
+import au.org.ala.delta.ui.rtf.SimpleRtfEditorKit;
 import au.org.ala.delta.ui.util.IconHelper;
 
-public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI {
+public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, DirectivePopulator {
 
     private JPanel _rootPanel;
     private JSplitPane _rootSplitPane;
@@ -186,7 +187,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI {
         mainFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         mainFrame.setIconImages(IconHelper.getRedIconList());
 
-        _context = new IntkeyContext(this);
+        _context = new IntkeyContext(this, this);
         _directiveParser = IntkeyDirectiveParser.createInstance();
 
         ActionMap actionMap = getContext().getActionMap();
@@ -813,23 +814,23 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI {
     @Action
     public void btnDiffTaxa() {
         List<Item> selectedTaxa = new ArrayList<Item>();
-        
-        for (int i: _listRemainingTaxa.getSelectedIndices()) {
+
+        for (int i : _listRemainingTaxa.getSelectedIndices()) {
             selectedTaxa.add(_availableTaxaListModel.getItemAt(i));
         }
 
-        for (int i: _listEliminatedTaxa.getSelectedIndices()) {
+        for (int i : _listEliminatedTaxa.getSelectedIndices()) {
             selectedTaxa.add(_eliminatedTaxaListModel.getItemAt(i));
         }
-        
+
         StringBuilder directiveTextBuilder = new StringBuilder();
         directiveTextBuilder.append("/E /I /U /X (");
-        for (Item taxon: selectedTaxa) {
+        for (Item taxon : selectedTaxa) {
             directiveTextBuilder.append(" ");
             directiveTextBuilder.append(taxon.getItemNumber());
         }
         directiveTextBuilder.append(") all");
-        
+
         executeDirective(new DifferencesDirective(), directiveTextBuilder.toString());
     }
 
@@ -869,7 +870,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI {
     @Override
     public void handleSpecimenUpdated() {
         _btnDiffSpecimenTaxa.setEnabled(true);
-        
+
         Specimen specimen = _context.getSpecimen();
 
         int tolerance = _context.getTolerance();
@@ -933,6 +934,12 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI {
     public void handleCharacterOrderChanged() {
         updateListCaptions();
         updateAvailableCharacters();
+    }
+
+    @Override
+    public void displayRTFReport(String rtfSource, String title) {
+        TextReportDisplayDialog dlg = new TextReportDisplayDialog(new SimpleRtfEditorKit(), rtfSource, title);
+        show(dlg);
     }
 
     private void initializeIdentification() {
@@ -1127,11 +1134,47 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI {
 
             return String.format("(%s) %s", _differenceCounts.get(taxon), _formatter.formatItemDescription(taxon));
         }
-        
+
         public Item getItemAt(int index) {
             return _items.get(index);
         }
 
+    }
+
+    @Override
+    public List<Character> promptForCharacters() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<Item> promptForTaxa() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public boolean promptForYesNoOption(String message) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean promptForString(String message) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public void displayErrorMessage(String message) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void displayWarningMessage(String message) {
+        // TODO Auto-generated method stub
+        
     }
 
 }

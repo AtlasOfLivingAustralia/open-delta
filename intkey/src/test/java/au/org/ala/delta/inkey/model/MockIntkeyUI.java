@@ -25,4 +25,19 @@ public class MockIntkeyUI implements IntkeyUI {
         // do nothing
     }
 
+    @Override
+    public void displayRTFReport(String rtfSource, String title) {
+        // do nothing
+    }
+
+    @Override
+    public void displayErrorMessage(String message) {
+        // do nothing
+    }
+
+    @Override
+    public void displayWarningMessage(String message) {
+        // do nothing
+    }
+
 }

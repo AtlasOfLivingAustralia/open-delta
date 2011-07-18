@@ -31,7 +31,7 @@ public class RestartDirectiveTest extends TestCase {
     @Test
     public void testRestart() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
-        IntkeyContext context = new IntkeyContext(new MockIntkeyUI());
+        IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
         context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
         IntkeyDataset ds = context.getDataset();
 
@@ -53,7 +53,7 @@ public class RestartDirectiveTest extends TestCase {
     @Test
     public void testRestartImmediately() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
-        IntkeyContext context = new IntkeyContext(new MockIntkeyUI());
+        IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
         context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
         IntkeyDataset ds = context.getDataset();
 

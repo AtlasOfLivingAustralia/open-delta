@@ -23,7 +23,7 @@ public class DisplayCharacterOrderBestTest extends TestCase {
     public void testSimpleDataSet() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/controlling_characters_simple/intkey.ink");
 
-        IntkeyContext context = new IntkeyContext(new MockIntkeyUI());
+        IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
         context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
 
         Map<Character, Double> bestMap = SortingUtils.orderBest(context);
@@ -44,7 +44,7 @@ public class DisplayCharacterOrderBestTest extends TestCase {
     public void testDeltaSampleDataSet() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
 
-        IntkeyContext context = new IntkeyContext(new MockIntkeyUI());
+        IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
         context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
 
         Map<Character, Double> bestMap = SortingUtils.orderBest(context);
@@ -122,7 +122,7 @@ public class DisplayCharacterOrderBestTest extends TestCase {
     public void testBestOrder2() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
 
-        IntkeyContext context = new IntkeyContext(new MockIntkeyUI());
+        IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
         context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
 
         new UseDirective().parseAndProcess(context, "38,5");
@@ -194,7 +194,7 @@ public class DisplayCharacterOrderBestTest extends TestCase {
     public void testBestOrder3() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
 
-        IntkeyContext context = new IntkeyContext(new MockIntkeyUI());
+        IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
         context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
 
         new UseDirective().parseAndProcess(context, "38,5");

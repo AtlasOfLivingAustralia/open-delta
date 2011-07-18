@@ -20,7 +20,7 @@ public class FileTaxaDirectiveTest extends TestCase {
 
     @Test
     public void testSetValidTaxaFile() throws Exception {
-        IntkeyContext context = new IntkeyContext(new MockIntkeyUI());
+        IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
         URL iitemsFileUrl = getClass().getResource("/dataset/sample/iitems");
 
         File fileTaxa = new File(iitemsFileUrl.toURI());

@@ -14,6 +14,7 @@ import org.apache.commons.lang.NotImplementedException;
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.directives.AbstractDeltaContext;
 import au.org.ala.delta.intkey.IntkeyUI;
+import au.org.ala.delta.intkey.directives.DirectivePopulator;
 import au.org.ala.delta.intkey.directives.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.IntkeyDirectiveParser;
 import au.org.ala.delta.intkey.model.specimen.CharacterValue;
@@ -45,6 +46,7 @@ public class IntkeyContext extends AbstractDeltaContext {
     private File _datasetInitFile;
 
     private IntkeyUI _appUI;
+    private DirectivePopulator _directivePopulator;
 
     private Specimen _specimen;
 
@@ -81,6 +83,8 @@ public class IntkeyContext extends AbstractDeltaContext {
     public static final String TAXON_KEYWORD_ALL = "all";
     public static final String TAXON_KEYWORD_ELIMINATED = "eliminated";
     public static final String TAXON_KEYWORD_REMAINING = "remaining";
+    
+    public static final String SPECIMEN_KEYWORD = "specimen";
 
     private List<IntkeyDirectiveInvocation> _executedDirectives;
 
@@ -90,12 +94,17 @@ public class IntkeyContext extends AbstractDeltaContext {
      * @param appUI
      *            A reference to the main Intkey UI
      */
-    public IntkeyContext(IntkeyUI appUI) {
+    public IntkeyContext(IntkeyUI appUI, DirectivePopulator directivePopulator) {
         if (appUI == null) {
             throw new IllegalArgumentException("UI Reference cannot be null");
         }
+        
+        if (directivePopulator == null) {
+            throw new IllegalArgumentException("Directive populator cannot be null");
+        }        
 
         _appUI = appUI;
+        _directivePopulator = directivePopulator;
         _recordDirectiveHistory = false;
         _processingInputFile = false;
         initializeIdentification();
@@ -627,6 +636,14 @@ public class IntkeyContext extends AbstractDeltaContext {
      */
     public void cleanupForShutdown() {
         _dataset.cleanup();
+    }
+    
+    public IntkeyUI getUI() {
+        return _appUI;
+    }
+    
+    public DirectivePopulator getDirectivePopulator() {
+        return _directivePopulator;
     }
 
 }
