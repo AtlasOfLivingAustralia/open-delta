@@ -6,9 +6,9 @@ import au.org.ala.delta.model.Item;
 
 public interface DirectivePopulator {
     
-    List<au.org.ala.delta.model.Character> promptForCharacters();
+    List<au.org.ala.delta.model.Character> promptForCharacters(String directiveName);
     
-    List<Item> promptForTaxa();
+    List<Item> promptForTaxa(String directiveName);
     
     boolean promptForYesNoOption(String message);
     

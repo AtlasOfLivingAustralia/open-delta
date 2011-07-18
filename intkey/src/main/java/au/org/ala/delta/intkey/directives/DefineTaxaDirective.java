@@ -29,31 +29,41 @@ public class DefineTaxaDirective extends IntkeyDirective {
     protected IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
         String keyword = null;
         Set<Integer> taxonNumbers = new HashSet<Integer>();
-        List<String> tokens = ParsingUtils.tokenizeDirectiveCall(data);
+        if (data != null) {
+            List<String> tokens = ParsingUtils.tokenizeDirectiveCall(data);
 
-        for (int i = 0; i < tokens.size(); i++) {
-            String token = tokens.get(i);
+            for (int i = 0; i < tokens.size(); i++) {
+                String token = tokens.get(i);
 
-            if (i == 0) {
-                keyword = ParsingUtils.removeEnclosingQuotes(token);
-            } else {
-                IntRange r = ParsingUtils.parseIntRange(token);
-                if (r != null) {
-                    for (int charNum : r.toArray()) {
-                        taxonNumbers.add(charNum);
-                    }
+                if (i == 0) {
+                    keyword = ParsingUtils.removeEnclosingQuotes(token);
                 } else {
-                    try {
-                        List<Item> taxonList = context.getTaxaForKeyword(token);
-                        for (Item taxon : taxonList) {
-                            taxonNumbers.add(taxon.getItemNumber());
+                    IntRange r = ParsingUtils.parseIntRange(token);
+                    if (r != null) {
+                        for (int charNum : r.toArray()) {
+                            taxonNumbers.add(charNum);
                         }
-                    } catch (IllegalArgumentException ex) {
-                        JOptionPane.showMessageDialog(UIUtils.getMainFrame(), ex.getMessage());
-                        return null;
+                    } else {
+                        try {
+                            List<Item> taxonList = context.getTaxaForKeyword(token);
+                            for (Item taxon : taxonList) {
+                                taxonNumbers.add(taxon.getItemNumber());
+                            }
+                        } catch (IllegalArgumentException ex) {
+                            throw new IntkeyDirectiveParseException(String.format("Invalid taxon keyword %s", token));
+                        }
                     }
                 }
             }
+        }
+        
+        if (keyword == null) {
+            keyword = "foo";
+        }
+
+        if (taxonNumbers.size() == 0) {
+            List<Item> taxa = context.getDirectivePopulator().promptForTaxa("DEFINE TAXA");
+            System.out.println(taxa);
         }
 
         return new DefineTaxaDirectiveInvocation(keyword, taxonNumbers);

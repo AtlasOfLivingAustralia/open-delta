@@ -76,6 +76,11 @@ public class IntkeyContext extends AbstractDeltaContext {
     // Use linked hashmap so that the keys list will be returned in
     // order of insertion.
     private LinkedHashMap<String, Set<Integer>> _userDefinedCharacterKeywords;
+    
+    // Use linked hashmap so that the keys list will be returned in
+    // order of insertion.
+    private LinkedHashMap<String, Set<Integer>> _userDefinedTaxonKeywords;
+    
     public static final String CHARACTER_KEYWORD_ALL = "all";
     public static final String CHARACTER_KEYWORD_USED = "used";
     public static final String CHARACTER_KEYWORD_AVAILABLE = "available";
@@ -436,7 +441,7 @@ public class IntkeyContext extends AbstractDeltaContext {
     }
     
     public void addTaxaKeyword(String keyword, Set<Integer> taxaNumbers) {
-        throw new NotImplementedException();
+        _userDefinedTaxonKeywords.put(keyword, taxaNumbers);
     }
     
     public List<Item> getTaxaForKeyword(String keyword) {
@@ -461,7 +466,8 @@ public class IntkeyContext extends AbstractDeltaContext {
                 }
             } 
         } else {
-            throw new NotImplementedException();
+            //Set<Integer> taxonNumbers = 
+            //retList.addAll(_userDefinedTaxonKeywords.get)
         }
         
         Collections.sort(retList);
@@ -470,7 +476,32 @@ public class IntkeyContext extends AbstractDeltaContext {
     }
     
     public List<String> getTaxaKeywords() {
-        throw new NotImplementedException();
+        List<String> retList = new ArrayList<String>();
+        retList.add(TAXON_KEYWORD_ALL);
+        
+        Map<Item, Integer> taxonDifferences = _specimen.getTaxonDifferences();
+        
+        int remainingTaxaCount = 0;
+        
+        for (Item taxon: taxonDifferences.keySet()) {
+            int diffCount = taxonDifferences.get(taxon);
+            if (diffCount <= _tolerance) {
+                remainingTaxaCount++;
+            }
+        }
+
+        if (remainingTaxaCount > 0) {
+            retList.add(TAXON_KEYWORD_REMAINING);
+        }
+        
+        if (remainingTaxaCount < _dataset.getNumberOfTaxa()) {
+            retList.add(TAXON_KEYWORD_ELIMINATED);
+        }
+
+        retList.add(CHARACTER_KEYWORD_AVAILABLE);
+        retList.addAll(_userDefinedCharacterKeywords.keySet());
+
+        return retList;
     }
 
     /**

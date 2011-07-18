@@ -70,8 +70,10 @@ import au.org.ala.delta.intkey.model.specimen.CharacterValue;
 import au.org.ala.delta.intkey.model.specimen.Specimen;
 import au.org.ala.delta.intkey.ui.BestCharacterListModel;
 import au.org.ala.delta.intkey.ui.BusyGlassPane;
+import au.org.ala.delta.intkey.ui.CharacterKeywordSelectionDialog;
 import au.org.ala.delta.intkey.ui.CharacterListModel;
-import au.org.ala.delta.intkey.ui.ItemListModel;
+import au.org.ala.delta.intkey.ui.TaxonKeywordSelectionDialog;
+import au.org.ala.delta.intkey.ui.TaxonListModel;
 import au.org.ala.delta.intkey.ui.ReExecuteDialog;
 import au.org.ala.delta.intkey.ui.TextReportDisplayDialog;
 import au.org.ala.delta.intkey.ui.UIUtils;
@@ -101,7 +103,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     private CharacterListModel _availableCharacterListModel;
     private UsedCharacterListModel _usedCharacterListModel;
-    private ItemListModel _availableTaxaListModel;
+    private TaxonListModel _availableTaxaListModel;
     private EliminatedTaxaListModel _eliminatedTaxaListModel;
 
     private IntkeyDirectiveParser _directiveParser;
@@ -915,7 +917,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
         _listUsedCharacters.setModel(_usedCharacterListModel);
 
-        _availableTaxaListModel = new ItemListModel(availableTaxa);
+        _availableTaxaListModel = new TaxonListModel(availableTaxa);
         _eliminatedTaxaListModel = new EliminatedTaxaListModel(eliminatedTaxa, taxaDifferenceCounts);
 
         _listRemainingTaxa.setModel(_availableTaxaListModel);
@@ -948,7 +950,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         updateAvailableCharacters();
 
         _usedCharacterListModel = new UsedCharacterListModel(Collections.EMPTY_LIST);
-        _availableTaxaListModel = new ItemListModel(dataset.getTaxa());
+        _availableTaxaListModel = new TaxonListModel(dataset.getTaxa());
         _eliminatedTaxaListModel = new EliminatedTaxaListModel(Collections.EMPTY_LIST, Collections.EMPTY_MAP);
 
         _listUsedCharacters.setModel(_usedCharacterListModel);
@@ -1142,15 +1144,16 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     }
 
     @Override
-    public List<Character> promptForCharacters() {
+    public List<Character> promptForCharacters(String directiveName) {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public List<Item> promptForTaxa() {
-        // TODO Auto-generated method stub
-        return null;
+    public List<Item> promptForTaxa(String directiveName) {
+        TaxonKeywordSelectionDialog dlg = new TaxonKeywordSelectionDialog(getMainFrame(), _context, directiveName);
+        show(dlg);
+        return dlg.getSelectedTaxa();
     }
 
     @Override

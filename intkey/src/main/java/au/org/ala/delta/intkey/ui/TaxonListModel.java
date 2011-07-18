@@ -8,12 +8,12 @@ import javax.swing.AbstractListModel;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.format.ItemFormatter;
 
-public class ItemListModel extends AbstractListModel {
+public class TaxonListModel extends AbstractListModel {
 
     List<Item> _items;
     ItemFormatter _formatter;
 
-    public ItemListModel(List<Item> items) {
+    public TaxonListModel(List<Item> items) {
         _items = new ArrayList<Item>(items);
         _formatter = new ItemFormatter(false, true, false, true, false);
     }
