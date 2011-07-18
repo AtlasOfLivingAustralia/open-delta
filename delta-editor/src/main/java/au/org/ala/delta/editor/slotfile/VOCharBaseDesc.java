@@ -696,9 +696,9 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 	public static final int nDescriptorsOffs = SlotFile.SlotHeader.SIZE + FixedData.SIZE + 15;
 	public static final int uncodedImplicitOffs = SlotFile.SlotHeader.SIZE + FixedData.SIZE + 19;
 	public static final int codedImplicitOffs = SlotFile.SlotHeader.SIZE + FixedData.SIZE + 23;
-	public static final int nControllingOffs = SlotFile.SlotHeader.SIZE + FixedData.SIZE + 25;
-	public static final int nControlsOffs = SlotFile.SlotHeader.SIZE + FixedData.SIZE + 29;
-	public static final int nImagesOffs = SlotFile.SlotHeader.SIZE + FixedData.SIZE + 33;
+	public static final int nControllingOffs = SlotFile.SlotHeader.SIZE + FixedData.SIZE + 27;
+	public static final int nControlsOffs = SlotFile.SlotHeader.SIZE + FixedData.SIZE + 31;
+	public static final int nImagesOffs = SlotFile.SlotHeader.SIZE + FixedData.SIZE + 35;
 
 	public static class CharBaseFixedData extends FixedData {
 
@@ -792,7 +792,7 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 
 		@Override
 		public void read(BinFile file) {
-			ByteBuffer b = file.readByteBuffer(8);
+			ByteBuffer b = file.readByteBuffer(SIZE);
 
 			langDesc = b.getInt();
 			charDesc = b.getInt();
@@ -812,6 +812,14 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 		@Override
 		public int size() {
 			return SIZE;
+		}
+		
+		@Override
+		public String toString() {
+			StringBuilder text = new StringBuilder();
+			text.append("CharTextInfo: langDesc=");
+			text.append(langDesc).append(", charDesc=").append(charDesc);
+			return text.toString();
 		}
 
 	}

@@ -61,7 +61,6 @@ public class CharacterTypes extends AbstractCharacterListDirective<DeltaContext,
 	@Override
 	protected void processCharacter(DeltaContext context, int charNumber, CharacterType type) {
 		Logger.debug("Setting type for character %d to %s", charNumber, type);
-		
 		DeltaDataSet dataSet = context.getDataSet();
 		
 		// CG - this is making an assumption that character types are in ascending numerical order.

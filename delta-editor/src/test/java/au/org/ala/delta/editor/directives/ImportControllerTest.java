@@ -17,12 +17,12 @@ import au.org.ala.delta.editor.model.EditorDataModel;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile.DirectiveType;
 import au.org.ala.delta.editor.slotfile.model.SlotFileDataSet;
-import au.org.ala.delta.editor.slotfile.model.SlotFileDataSetFactory;
+import au.org.ala.delta.editor.slotfile.model.SlotFileRepository;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.IntegerCharacter;
 import au.org.ala.delta.model.Item;
-import au.org.ala.delta.model.UnorderedMultiStateCharacter;
+import au.org.ala.delta.model.MultiStateCharacter;
 
 /**
  * Tests the ImportController class. 
@@ -66,16 +66,28 @@ public class ImportControllerTest extends TestCase {
 	/** The data set we are importing into */
 	private SlotFileDataSet _dataSet;
 	
+	private SlotFileRepository _repository;
 	
 	@Before
 	public void setUp() throws Exception {
-		// Sure hope this won't throw a headless exception at some point...
+		
 		DeltaEditorTestHelper helper = createTestHelper();
-		_dataSet = (SlotFileDataSet)new SlotFileDataSetFactory().createDataSet("test");
+		_repository = new SlotFileRepository();
+		_dataSet = (SlotFileDataSet)_repository.newDataSet();
 		EditorDataModel model = new EditorDataModel(_dataSet);
 		helper.setModel(model);
 
 		importer = new ImportController(helper);
+	}
+	
+	private void reload() throws Exception {
+		File tmp = File.createTempFile("dataSet", ".dlt");
+		tmp.deleteOnExit();
+		_repository.saveAsName(_dataSet, tmp.getAbsolutePath(), null);
+		_dataSet.close();
+		
+		_dataSet = (SlotFileDataSet)_repository.findByName(tmp.getAbsolutePath(), null);
+		
 	}
 	
 	@Test
@@ -96,7 +108,7 @@ public class ImportControllerTest extends TestCase {
 		assertEquals(10, character.getCharacterId());
 		assertEquals("<adaxial> ligule <presence>", character.getDescription());
 		assertEquals(CharacterType.UnorderedMultiState, character.getCharacterType());
-		UnorderedMultiStateCharacter multiStateChar = (UnorderedMultiStateCharacter)character;
+		MultiStateCharacter multiStateChar = (MultiStateCharacter)character;
 		assertEquals(2, multiStateChar.getNumberOfStates());
 		assertEquals("<consistently> present <<implicit>>", multiStateChar.getState(1));
 		assertEquals("absent <at least from upper leaves>", multiStateChar.getState(2));
@@ -124,7 +136,23 @@ public class ImportControllerTest extends TestCase {
 		
 		assertEquals("\\i{}Cynodon\\i0{} <Rich.>", item.getDescription());
 		assertEquals("4-60(-100)", item.getAttribute(_dataSet.getCharacter(2)).getValueAsString());
-		assertEquals("3", item.getAttribute(_dataSet.getCharacter(60)).getValueAsString());
+		assertEquals("3", item.getAttribute(_dataSet.getCharacter(60)).getValueAsString()); 
+		
+		character = _dataSet.getCharacter(11);
+		assertEquals("<adaxial> ligule <form; avoid seedlings>", character.getDescription());
+		multiStateChar = (MultiStateCharacter)character;
+		assertEquals(4, multiStateChar.getNumberOfStates());
+		assertEquals("an unfringed membrane <may be variously hairy or ciliolate>", multiStateChar.getState(1));
+		assertEquals("a fringed membrane", multiStateChar.getState(2));
+		assertEquals("a fringe of hairs", multiStateChar.getState(3));
+		assertEquals("a rim of minute papillae", multiStateChar.getState(4));
+		
+		reload();
+		
+		assertEquals(89, _dataSet.getNumberOfCharacters());
+		character = _dataSet.getCharacter(10);
+		assertEquals(10, character.getCharacterId());
+		assertEquals("<adaxial> ligule <presence>", character.getDescription());
 		
 	}
 	

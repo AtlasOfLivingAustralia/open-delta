@@ -319,7 +319,7 @@ public class VOP {
 	  
 	  // Save SlotHdrPtr to construct the Descriptor. 
 	  int slotPtr = file.tell(); // - sizeof(TSlotFile::TSlotHeader);
-	  
+	 
 	  // Write Fixed descriptor data. 
 	  fixed.write(file);
 	  
@@ -331,7 +331,7 @@ public class VOP {
 	  
 	  // Construct the descriptor 
 	  file.seek(slotPtr);
-	  
+	 
 	  VOAnyDesc desc = VOAnyDesc.CreateAnyDesc(this,true); 
 	  
 	  // Insert desc in desclist 
