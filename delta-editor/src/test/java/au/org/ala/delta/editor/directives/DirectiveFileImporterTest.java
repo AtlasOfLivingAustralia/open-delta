@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -14,9 +15,12 @@ import org.junit.Test;
 
 import au.org.ala.delta.directives.AbstractDeltaContext;
 import au.org.ala.delta.directives.AbstractDirective;
+import au.org.ala.delta.directives.DirectiveSearchResult;
+import au.org.ala.delta.directives.DirectiveSearchResult.ResultType;
 import au.org.ala.delta.editor.slotfile.DirectiveInstance;
 import au.org.ala.delta.editor.slotfile.directive.ConforDirType;
 import au.org.ala.delta.editor.slotfile.directive.DistDirType;
+import au.org.ala.delta.editor.slotfile.directive.IntkeyDirType;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile.DirectiveType;
 import au.org.ala.delta.editor.slotfile.model.SlotFileDataSet;
@@ -217,5 +221,21 @@ public class DirectiveFileImporterTest extends TestCase {
 		_context.setDirectiveFile(file);
 		_importer.parse(toint, _context);
 		return file;
+	}
+	
+	@Test
+	public void testIntkeyFileImport() throws Exception {
+		
+		_importer = new DirectiveFileImporter(_importHandler, IntkeyDirType.IntkeyDirArray);
+		List<String> directiveControlWords = Arrays.asList(IntkeyDirType.IntkeyDirArray[IntkeyDirType.DEFINE_BUTTON].getName());
+		DirectiveSearchResult result = _importer.getDirectiveTree().findDirective(directiveControlWords);
+		assertEquals(ResultType.Found, result.getResultType());
+		assertEquals(directiveControlWords, Arrays.asList(result.getDirective().getControlWords()));
+		
+		directiveControlWords = Arrays.asList(IntkeyDirType.IntkeyDirArray[IntkeyDirType.COMMENT].getName());
+		result = _importer.getDirectiveTree().findDirective(directiveControlWords);
+		assertEquals(ResultType.Found, result.getResultType());
+		assertEquals(directiveControlWords, Arrays.asList(result.getDirective().getControlWords()));
+		
 	}
 }

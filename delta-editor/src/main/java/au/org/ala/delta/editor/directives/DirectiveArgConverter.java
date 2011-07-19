@@ -38,8 +38,12 @@ public class DirectiveArgConverter {
 
 		Dir dir = new Dir();
 		Directive directiveDescription = directive.getDirective();
+		try {
 		dir.setDirType(directiveDescription.getNumber());
-
+		}
+		catch (NullPointerException e) {
+			e.printStackTrace();
+		}
 		populateArgs(dir, directive.getDirectiveArguments(), directiveDescription.getArgType());
 
 		return dir;

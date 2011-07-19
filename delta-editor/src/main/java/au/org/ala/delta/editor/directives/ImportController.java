@@ -41,11 +41,11 @@ public class ImportController {
 	private ResourceMap _resources;
 	private ActionMap _actions;
 	
-	public ImportController(DeltaEditor context) {
+	public ImportController(DeltaEditor context, EditorDataModel model) {
 		_context = context;
 		_resources = _context.getContext().getResourceMap();
 		_actions = _context.getContext().getActionMap(this);
-		_model = context.getCurrentDataSet();
+		_model = model;
 	}
 	
 	public void begin() {
@@ -129,7 +129,7 @@ public class ImportController {
 				
 				DirectiveFileImporter parser = new DirectiveFileImporter(this, directivesOfType(file.getType()));
 				
-				DirectiveFile directiveFile = _model.addDirectiveFile(fileNumber++, file.getFileName(), file.getType());
+				DirectiveFile directiveFile = _model.addDirectiveFile(fileNumber++, file.getName(), file.getType());
 				context.setDirectiveFile(directiveFile);
 				// First check if the existing dataset has a directives file with the same name
 				// and same last modified date.  If so, skip it.

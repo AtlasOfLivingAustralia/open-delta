@@ -327,6 +327,9 @@ public class SlotFileDataSet extends AbstractObservableDataSet {
 	@Override
 	public ImageSettings getImageSettings() {
 		VOImageInfoDesc imageInfo = _vop.getImageInfo();
+		if (imageInfo == null) {
+			return null;
+		}
 		ImageSettings settings = new ImageSettings();
 		ImageSettingsHelper.copyToImageSettings(imageInfo, settings);
 		return settings;

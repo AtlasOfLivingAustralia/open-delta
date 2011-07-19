@@ -42,7 +42,7 @@ public class Tree {
 
             if (p.getChildren().containsKey(key)) {
                 TreeNode n = p.getChildren().get(key);
-                if (n instanceof DirectiveTreeNode) {
+                if (n instanceof DirectiveTreeNode && i == words.length-1) {
                     throw new RuntimeException("Directive tree already contains directive: " + directive.toString());
                 } else {
                     p = (TreeNodeList) n;
@@ -58,11 +58,12 @@ public class Tree {
 
     public DirectiveSearchResult findDirective(List<String> controlWords) {
         TreeNodeList p = _toplevel;
-        for (String cw : controlWords) {
-            String key = makeKey(cw);
+        for (int i=0; i<controlWords.size(); i++) {
+     
+            String key = makeKey(controlWords.get(i));
             if (p.getChildren().containsKey(key)) {
                 TreeNode n = p.getChildren().get(key);
-                if (n instanceof DirectiveTreeNode) {
+                if (i == controlWords.size()-1 && n instanceof DirectiveTreeNode) {
                     return new DirectiveSearchResult(ResultType.Found, ((DirectiveTreeNode) n).getDirective());
                 } else {
                     p = (TreeNodeList) n;
@@ -121,7 +122,7 @@ class TreeNode {
 }
 
 @SuppressWarnings("rawtypes")
-class DirectiveTreeNode extends TreeNode {
+class DirectiveTreeNode extends TreeNodeList {
     private AbstractDirective _directive;
 
     public DirectiveTreeNode(TreeNode parent, String name, AbstractDirective directive) {

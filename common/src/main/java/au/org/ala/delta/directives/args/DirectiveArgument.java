@@ -8,7 +8,7 @@ public class DirectiveArgument<T> implements Comparable<DirectiveArgument<?>>{
 
 
 	private String _text;
-	private String _comment;
+	private String _comment = "";
 	private BigDecimal _value;
 	private T _id;
 	private List<BigDecimal> _dataVect;

@@ -77,7 +77,7 @@ public class ImportControllerTest extends TestCase {
 		EditorDataModel model = new EditorDataModel(_dataSet);
 		helper.setModel(model);
 
-		importer = new ImportController(helper);
+		importer = new ImportController(helper, model);
 	}
 
 	@Test

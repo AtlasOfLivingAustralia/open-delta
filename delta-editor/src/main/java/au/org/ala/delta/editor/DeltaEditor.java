@@ -54,9 +54,11 @@ import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.Task;
 import org.jdesktop.application.Task.BlockingScope;
 
+import au.org.ala.delta.editor.directives.DirectiveFileInfo;
 import au.org.ala.delta.editor.directives.ExportController;
 import au.org.ala.delta.editor.directives.ImportController;
 import au.org.ala.delta.editor.model.EditorDataModel;
+import au.org.ala.delta.editor.slotfile.model.DirectiveFile.DirectiveType;
 import au.org.ala.delta.editor.slotfile.model.SlotFileRepository;
 import au.org.ala.delta.editor.support.InternalFrameApplication;
 import au.org.ala.delta.editor.ui.StatusBar;
@@ -729,7 +731,7 @@ public class DeltaEditor extends InternalFrameApplication implements
 	
 	@Action(enabledProperty = "saveAsEnabled")
 	public void importDirectives() {
-		new ImportController(this).begin();
+		new ImportController(this, getCurrentDataSet()).begin();
 
 	}
 
@@ -742,10 +744,57 @@ public class DeltaEditor extends InternalFrameApplication implements
 	public void newFile() {
 		
 		AbstractObservableDataSet dataSet = (AbstractObservableDataSet) _dataSetRepository.newDataSet();
+		
 		_activeController = createController(dataSet);
+		
+		initialiseNewDataSet(_activeController.getModel());
 		
 		newTree();
 	}
+	
+	/**
+	 * Populates the VOP with the set of template directives files that are distributed
+	 * with the DELTA suite.  These templates take the form of _<type>_<filename> where type
+	 * can be one of "c" (confor), "i" (intkey), "k" (key) or "d" (dist).
+	 */
+	private void initialiseNewDataSet(EditorDataModel dataSet) {
+		
+		File workingDirectory = new File(".");
+		File[] templateFiles = workingDirectory.listFiles();
+		List<DirectiveFileInfo> toImport = new ArrayList<DirectiveFileInfo>();
+		for (File file : templateFiles) {
+			String fileName = file.getName();
+			if (fileName.length() <= 3) {
+				continue;
+			}
+			DirectiveType type = null;
+			if (fileName.startsWith("_")) {
+				switch (fileName.charAt(1)) {
+				case 'c':
+					type = DirectiveType.CONFOR;
+					break;
+				case 'i':
+					type = DirectiveType.INTKEY;
+					break;
+				case 'k':
+					type = DirectiveType.KEY;
+					break;
+				case 'd':
+					type = DirectiveType.DIST;
+					break;
+				default:
+					continue;
+				}
+				
+				String name = fileName.substring(3);
+				toImport.add(new DirectiveFileInfo(name, fileName, type));
+			}
+		}
+		
+		ImportController controller = new ImportController(this, dataSet);
+		controller.doSilentImport(workingDirectory, toImport);
+	}
+		
 
 	@Action(enabledProperty = "saveAsEnabled")
 	public void closeFile() {

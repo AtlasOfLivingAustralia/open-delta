@@ -51,6 +51,7 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
     }
 
     public void parse(File file, C context) throws IOException {
+    	System.out.println("Parsing: "+file);
         FileInputStream fileIn = new FileInputStream(file);
     	InputStreamReader reader = new InputStreamReader(fileIn, context.getFileEncoding());
         ParsingContext pc = context.newParsingContext();

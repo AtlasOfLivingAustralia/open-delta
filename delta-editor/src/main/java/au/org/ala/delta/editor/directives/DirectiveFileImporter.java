@@ -1,6 +1,7 @@
 package au.org.ala.delta.editor.directives;
 
 import java.text.ParseException;
+import java.util.Arrays;
 import java.util.List;
 
 import au.org.ala.delta.directives.AbstractDirective;
@@ -46,6 +47,7 @@ public class DirectiveFileImporter extends DirectiveParser<ImportContext> {
 			throws ParseException, Exception {
 		
 		Directive directive = typeOf(d);
+		
     	d.parse(context, dd);
     	DirectiveInstance instance = new DirectiveInstance(directive, d.getDirectiveArgs());
 		context.getDirectiveFile().add(instance);
@@ -65,7 +67,6 @@ public class DirectiveFileImporter extends DirectiveParser<ImportContext> {
 	    		if (directive.getArgType() == DirectiveArgType.DIRARG_INTERNAL) {
 	    			Class<? extends AbstractDirective<?>> dirClass = directive.getImplementationClass();
 	    			registerDirective(dirClass.newInstance());
-	    			System.out.println("Registered: "+dirClass+" for directive: "+directive.joinNameComponents());
 	    		}
 	    		else {
 	    			registerDirective(new ImportDirective(directive));
@@ -84,7 +85,7 @@ public class DirectiveFileImporter extends DirectiveParser<ImportContext> {
 				
 				boolean match = true;
 				for (int i=0; i<directiveName.length; i++) {
-					if (!directiveName[i].toUpperCase().equals(dir.getName()[i])) {
+					if (!directiveName[i].toUpperCase().equals(dir.getName()[i].toUpperCase())) {
 						match = false;
 					}
 				}
@@ -93,7 +94,7 @@ public class DirectiveFileImporter extends DirectiveParser<ImportContext> {
 				}
 			}
 		}
-		return null;
+		throw new RuntimeException("Cannot find a directive matching: "+Arrays.asList(directiveName));
 	}
     
     class ImportDirective extends AbstractDirective<ImportContext>{

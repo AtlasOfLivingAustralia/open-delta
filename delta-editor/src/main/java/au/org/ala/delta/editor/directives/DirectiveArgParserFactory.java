@@ -25,6 +25,8 @@ public class DirectiveArgParserFactory {
 		case DirectiveArgType.DIRARG_TRANSLATION:
 		case DirectiveArgType.DIRARG_TEXT:
 		case DirectiveArgType.DIRARG_FILE:
+		case DirectiveArgType.DIRARG_NONE:
+		case DirectiveArgType.DIRARG_INTKEY_INCOMPLETE:
 			parser = new TextArgParser(context, reader);
 			break;
 		case DirectiveArgType.DIRARG_INTEGER:
@@ -55,6 +57,9 @@ public class DirectiveArgParserFactory {
 		case DirectiveArgType.DIRARG_ITEMCHARLIST:
 			parser = new IdWithIdListParser(context, reader);
 			break;
+		default:
+			throw new RuntimeException("No parser for :"+directive.joinNameComponents()+
+					", type="+directive.getArgType()+", data="+data);
 		}
 		return parser;
 	}

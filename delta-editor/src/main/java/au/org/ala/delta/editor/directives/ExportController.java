@@ -360,7 +360,7 @@ public class ExportController {
 		int origDirCount = curDirectives.size();
 		int dirIter = 0;
 		for (int curLevel = 1; curLevel < 5; ++curLevel) {
-		    while (dirIter != curDirectives.size())  {
+		    while (dirIter < curDirectives.size())  {
 		        int dirType = curDirectives.get(dirIter).getDirective().getNumber();
 		        if (ConforDirType.ConforDirArray[dirType].getLevel() > curLevel)
 		            break;

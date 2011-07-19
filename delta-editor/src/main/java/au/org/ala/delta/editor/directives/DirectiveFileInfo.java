@@ -15,17 +15,35 @@ public class DirectiveFileInfo {
 	private String _fileName;
 	private DirectiveType _type;
 	private DirectiveFile _directiveFile;
+	private String _name;
 	
 	public DirectiveFileInfo(String fileName, DirectiveType type) {
-		this(fileName, type, null);
+		this(fileName, fileName, type, null);
+	}
+	
+	public DirectiveFileInfo(String name, String fileName, DirectiveType type) {
+		this(name, fileName, type, null);
 	}
 	
 	public DirectiveFileInfo(String fileName, DirectiveType type, DirectiveFile file) {
+		this(fileName, fileName, type, file);
+	}
+	
+	public DirectiveFileInfo(String name, String fileName, DirectiveType type, DirectiveFile file) {
+		_name = name;
 		setFileName(fileName);
 		setType(type);
 		setDirectiveFile(file);
 	}
 	
+	/**
+	 * @return the desired name of the DirectiveFile, which may be different
+	 * to the fileName (in the case of importing template directive files
+	 * when creating a new dataset.
+	 */
+	public String getName() {
+		return _name;
+	}
 	
 	public String getFileName() {
 		return _fileName;
