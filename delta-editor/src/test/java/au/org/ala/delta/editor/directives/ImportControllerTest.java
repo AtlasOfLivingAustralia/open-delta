@@ -79,17 +79,7 @@ public class ImportControllerTest extends TestCase {
 
 		importer = new ImportController(helper);
 	}
-	
-	private void reload() throws Exception {
-		File tmp = File.createTempFile("dataSet", ".dlt");
-		tmp.deleteOnExit();
-		_repository.saveAsName(_dataSet, tmp.getAbsolutePath(), null);
-		_dataSet.close();
-		
-		_dataSet = (SlotFileDataSet)_repository.findByName(tmp.getAbsolutePath(), null);
-		
-	}
-	
+
 	@Test
 	public void testSilentImport() throws Exception {
 		
@@ -145,15 +135,7 @@ public class ImportControllerTest extends TestCase {
 		assertEquals("an unfringed membrane <may be variously hairy or ciliolate>", multiStateChar.getState(1));
 		assertEquals("a fringed membrane", multiStateChar.getState(2));
 		assertEquals("a fringe of hairs", multiStateChar.getState(3));
-		assertEquals("a rim of minute papillae", multiStateChar.getState(4));
-		
-		reload();
-		
-		assertEquals(89, _dataSet.getNumberOfCharacters());
-		character = _dataSet.getCharacter(10);
-		assertEquals(10, character.getCharacterId());
-		assertEquals("<adaxial> ligule <presence>", character.getDescription());
-		
+		assertEquals("a rim of minute papillae", multiStateChar.getState(4));	
 	}
 	
 	@Test

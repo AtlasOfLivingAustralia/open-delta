@@ -72,6 +72,20 @@ public class ImageSettings {
 		_defaultButtonFont = fontInfo;
 	}
 	
+	public int getFontCount() {
+		int count = 0;
+		if (_defaultButtonFont != null) {
+			count++;
+		}
+		if (_defaultFontInfo != null) {
+			count++;
+		}
+		if (_defaultFontInfo != null) {
+			count++;
+		}
+		return count;
+	}
+	
 	public boolean getCentreInBox() {
 		return false;
 	}

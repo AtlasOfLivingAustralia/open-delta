@@ -1,6 +1,7 @@
 package au.org.ala.delta.editor.slotfile.model;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -125,11 +126,42 @@ public class DirectiveFile {
 	}
 	
 	public void add(DirectiveInstance directive) {
+		add(getDirectiveCount(), directive);
+	}
+	
+	public void add(int index, DirectiveInstance directive) {
 		Dir dir = _converter.fromDirective(directive);
 		
 		List<Dir> directives = _dirFileDesc.readAllDirectives();
-		directives.add(dir);
+		directives.add(index, dir);
 		_dirFileDesc.writeAllDirectives(directives);
+	}
+	
+	public void deleteDirective(int directiveNum) {
+		_dirFileDesc.deleteDirective(directiveNum);
+	}
+	
+	public DirectiveInstance addTextDirective(int index, Directive directiveType, String text) {
+		DirectiveArguments args = new DirectiveArguments();
+		args.addTextArgument(text);
+		DirectiveInstance directive = new DirectiveInstance(directiveType, args);
+		add(index, directive);
+		return directive;
+	}
+	
+	public DirectiveInstance addIntegerDirective(int index, Directive directiveType, int value) {
+		DirectiveArguments args = new DirectiveArguments();
+		args.addValueArgument(new BigDecimal(value));
+		DirectiveInstance directive = new DirectiveInstance(directiveType, args);
+		add(index, directive);
+		return directive;
+	}
+	
+	public DirectiveInstance addNoArgDirective(int index, Directive directiveType) {
+		DirectiveArguments args = new DirectiveArguments();
+		DirectiveInstance directive = new DirectiveInstance(directiveType, args);
+		add(index, directive);
+		return directive;
 	}
 	
 	public void execute() {

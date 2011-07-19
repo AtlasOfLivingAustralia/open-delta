@@ -376,6 +376,9 @@ public class ConforDirType {
         new Directive(new String[] {"VOCABULARY", "", "", ""}, 4, ConforDirType.VOCABULARY, DirectiveArgType.DIRARG_TEXTLIST, new DirInDefault(), new DirOutDefault())
     };
 
+    public static Directive get(int index) {
+    	return ConforDirArray[index];
+    }
     
 	static {
 		Arrays.sort(ConforDirArray, new Comparator<Directive>() {
