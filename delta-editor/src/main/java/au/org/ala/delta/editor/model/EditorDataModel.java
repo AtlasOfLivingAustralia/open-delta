@@ -164,8 +164,12 @@ public class EditorDataModel extends DataSetWrapper implements EditorViewModel, 
 	
 	@Override
 	public String getDataSetPath() {
-		String dataSetFolder = new File(getName()).getParent();
-		return dataSetFolder+File.separator;
+		File name = new File(getName());
+		String dataSetFolder = "";
+		if (name.isAbsolute()) {
+			dataSetFolder = name.getParent()+File.separator;
+		}
+		return dataSetFolder;
 	}
 	
 	@Override

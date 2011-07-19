@@ -49,7 +49,7 @@ public class ExportController {
 		ImportExportViewModel model = getExistingDirectives();
 
 		ImportExportDialog dialog = new ImportExportDialog(
-				_context.getMainFrame(), model);
+				_context.getMainFrame(), model, "ExportDialog");
 		_context.show(dialog);
 
 		if (dialog.proceed()) {

@@ -30,7 +30,6 @@ import javax.swing.border.TitledBorder;
 import org.apache.commons.lang.StringUtils;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
-import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.editor.EditorPreferences;
@@ -48,9 +47,9 @@ import au.org.ala.delta.ui.util.IconHelper;
 public class ImportExportDialog extends JDialog {
 	
 	private ImportExportViewModel _model;
-	
 	private boolean _okPressed;
 	private String _currentFilter;
+	private ResourceMap _resources;
 	
 	private static final long serialVersionUID = 8695641918190503720L;
 	private JTextField currentDirectoryTextField;
@@ -69,24 +68,16 @@ public class ImportExportDialog extends JDialog {
 	private JButton moveToOtherButton;
 	private JButton moveToPossibleButton;
 	
-	@Resource
 	private String filterDialogTitle;
-	@Resource
 	private String filterDialogMessage;
-	@Resource
 	private String dialogTitle;
-	@Resource
 	private String specificationsPanelTitle;
-	@Resource
 	private String charsPanelTitle;
-	@Resource
 	private String itemsPanelTitle;
-	@Resource
 	private String otherPanelTitle;
-	@Resource
 	private String possiblePanelTitle;
-	@Resource
 	private String directiveTypePanelTitle;
+	
 	private JButton moveToSpecsButton;
 	private JButton moveToCharsButton;
 	private JButton moveToItemsButton;
@@ -94,13 +85,13 @@ public class ImportExportDialog extends JDialog {
 	private JButton excludeFilterButton;
 	private JTextField currentImportFilterTextField;
 	
-	public ImportExportDialog(Window parent, ImportExportViewModel model) {
+	public ImportExportDialog(Window parent, ImportExportViewModel model, String resourcePrefix) {
 		
 		super(parent);
 		_model = model;
 		setName("ImportExportDialogBox");
-		ResourceMap resources = Application.getInstance().getContext().getResourceMap(ImportExportDialog.class);
-		resources.injectFields(this);
+		_resources = Application.getInstance().getContext().getResourceMap(ImportExportDialog.class);
+		loadResources(resourcePrefix);
 		
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setModal(true);
@@ -111,6 +102,19 @@ public class ImportExportDialog extends JDialog {
 		addEventListeners();
 		
 		updateUI();
+	}
+	
+	private void loadResources(String resourcePrefix) {
+		filterDialogTitle = _resources.getString(resourcePrefix+".filterDialogTitle");
+		filterDialogMessage = _resources.getString(resourcePrefix+".filterDialogMessage");
+		dialogTitle = _resources.getString(resourcePrefix+".dialogTitle");
+		specificationsPanelTitle = _resources.getString(resourcePrefix+".specificationsPanelTitle");
+		charsPanelTitle = _resources.getString(resourcePrefix+".charsPanelTitle");
+		itemsPanelTitle = _resources.getString(resourcePrefix+".itemsPanelTitle");
+		otherPanelTitle = _resources.getString(resourcePrefix+".otherPanelTitle");
+		possiblePanelTitle = _resources.getString(resourcePrefix+".possiblePanelTitle");
+		directiveTypePanelTitle = _resources.getString(resourcePrefix+".directiveTypePanelTitle");
+		
 	}
 
 	private void addEventListeners() {

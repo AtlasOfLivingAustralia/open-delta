@@ -56,7 +56,7 @@ public class ImportController {
 		}
 		_importModel = new ImportExportViewModel();
 		_importModel.setCurrentDirectory(new File(_model.getDataSetPath()));
-		_importDialog = new ImportExportDialog(_context.getMainFrame(), _importModel);
+		_importDialog = new ImportExportDialog(_context.getMainFrame(), _importModel, "ImportDialog");
 		_importDialog.setDirectorySelectionAction(_actions.get("changeImportDirectory"));
 		_context.show(_importDialog);
 		
