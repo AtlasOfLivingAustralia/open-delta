@@ -24,8 +24,8 @@ public class MockDirectivePopulator implements DirectivePopulator {
     }
 
     @Override
-    public boolean promptForString(String message) {
-        return false;
+    public String promptForString(String message) {
+        return null;
     }
 
 }

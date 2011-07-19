@@ -26,7 +26,7 @@ public class NumericAttributeTranslator extends AttributeTranslator {
 	public NumericAttributeTranslator(NumericCharacter<?> character, TypeSetter typeSetter, AttributeFormatter formatter) {
 		super(formatter);
 		_character = character;
-		_formatter = new CharacterFormatter(false, true, false, true);
+		_formatter = new CharacterFormatter(false, true, false, false, true);
 		_typeSetter = typeSetter;
 	}
 	

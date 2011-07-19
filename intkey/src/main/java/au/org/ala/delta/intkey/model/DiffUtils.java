@@ -342,8 +342,9 @@ public class DiffUtils {
 
     // Helper method to create an attribute containing the value held in a specimen for a particular character. This is used to simplify 
     // the comparsion methods, allowing them to only handle the one data type (attributes)
-    private static Attribute createAttributeForSpecimenValue(Specimen specimen, Character ch) {
-        boolean unknown = specimen.hasValueFor(ch);
+    // TODO refactor specimen class to take attributes so that we don't need this method anymore.
+    public static Attribute createAttributeForSpecimenValue(Specimen specimen, Character ch) {
+        boolean unknown = !specimen.hasValueFor(ch);
         boolean inapplicable = specimen.isCharacterInapplicable(ch);
 
         IntkeyAttributeData attrData = new IntkeyAttributeData(unknown, inapplicable);

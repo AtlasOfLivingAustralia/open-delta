@@ -75,7 +75,7 @@ import au.org.ala.delta.intkey.ui.CharacterListModel;
 import au.org.ala.delta.intkey.ui.TaxonKeywordSelectionDialog;
 import au.org.ala.delta.intkey.ui.TaxonListModel;
 import au.org.ala.delta.intkey.ui.ReExecuteDialog;
-import au.org.ala.delta.intkey.ui.TextReportDisplayDialog;
+import au.org.ala.delta.intkey.ui.RtfReportDisplayDialog;
 import au.org.ala.delta.intkey.ui.UIUtils;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
@@ -940,7 +940,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     @Override
     public void displayRTFReport(String rtfSource, String title) {
-        TextReportDisplayDialog dlg = new TextReportDisplayDialog(new SimpleRtfEditorKit(), rtfSource, title);
+        RtfReportDisplayDialog dlg = new RtfReportDisplayDialog(getMainFrame(), new SimpleRtfEditorKit(), rtfSource, title);
         show(dlg);
     }
 
@@ -1105,7 +1105,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         public EliminatedTaxaListModel(List<Item> items, Map<Item, Integer> differenceCounts) {
             _items = items;
             _differenceCounts = differenceCounts;
-            _formatter = new ItemFormatter(false, true, false, true, false);
+            _formatter = new ItemFormatter(false, true, false, false, true, false);
 
             // Sort taxa by number of differences, then by
             // taxon number
@@ -1145,8 +1145,9 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     @Override
     public List<Character> promptForCharacters(String directiveName) {
-        // TODO Auto-generated method stub
-        return null;
+        CharacterKeywordSelectionDialog dlg = new CharacterKeywordSelectionDialog(getMainFrame(), _context, directiveName);
+        show(dlg);
+        return dlg.getSelectedCharacters();
     }
 
     @Override
@@ -1158,26 +1159,29 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     @Override
     public boolean promptForYesNoOption(String message) {
-        // TODO Auto-generated method stub
-        return false;
+        int selectedOption = JOptionPane.showConfirmDialog(getMainFrame(), message, null, JOptionPane.YES_NO_OPTION);
+        if (selectedOption == JOptionPane.YES_OPTION) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
-    public boolean promptForString(String message) {
-        // TODO Auto-generated method stub
-        return false;
+    public String promptForString(String message) {
+        return JOptionPane.showInputDialog(getMainFrame(), message);
     }
 
     @Override
     public void displayErrorMessage(String message) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void displayWarningMessage(String message) {
         // TODO Auto-generated method stub
-        
+
     }
 
 }

@@ -73,6 +73,7 @@ public class IntkeyDirectiveParser extends DirectiveParser<IntkeyContext> {
 
     @Override
     protected void handleDirectiveProcessingException(IntkeyContext context, AbstractDirective<IntkeyContext> d, Exception ex) {
+        ex.printStackTrace();
         String msg;
         if (ex instanceof IntkeyDirectiveParseException) {
             msg = ex.getMessage();

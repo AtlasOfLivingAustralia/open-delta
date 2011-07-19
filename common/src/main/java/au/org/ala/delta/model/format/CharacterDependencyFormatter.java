@@ -18,7 +18,7 @@ public class CharacterDependencyFormatter {
 	
 	public CharacterDependencyFormatter(DeltaDataSet dataSet) {
 		_dataSet = dataSet;
-		_characterFormatter = new CharacterFormatter(false, true, false, true);
+		_characterFormatter = new CharacterFormatter(false, true, false, false, true);
 	}
 	
 	public String formatCharacterDependency(CharacterDependency characterDependency) {

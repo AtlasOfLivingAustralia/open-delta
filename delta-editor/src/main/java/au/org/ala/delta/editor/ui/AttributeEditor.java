@@ -543,7 +543,7 @@ public class AttributeEditor extends JPanel implements ValidationListener, Prefe
 	class StateListModel extends AbstractTableModel {
 	
 		private static final long serialVersionUID = 1L;
-		private CharacterFormatter _characterFormatter = new CharacterFormatter(true, false, false, true);
+		private CharacterFormatter _characterFormatter = new CharacterFormatter(true, false, false, false, true);
 		
 		private Item _item;
 		private MultiStateCharacter _character;

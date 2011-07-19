@@ -83,7 +83,7 @@ public class ItemList extends SelectionList {
 		
 		public ItemViewModel(Item item) {
 			_model = item;
-			_formatter = new ItemFormatter(true, false, false, true, true);
+			_formatter = new ItemFormatter(true, false, false, false, true, true);
 		}
 
 		@Override

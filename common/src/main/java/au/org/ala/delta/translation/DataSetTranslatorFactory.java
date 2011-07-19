@@ -86,10 +86,10 @@ public class DataSetTranslatorFactory {
 	
 	private ItemFormatter createItemFormatter(DeltaContext context, TypeSetter typeSetter) {
 		if (context.isOmitTypeSettingMarks()) {
-			return new ItemFormatter(false, false, false, true, false);
+			return new ItemFormatter(false, false, false, false, true, false);
 		}
 		else if (typeSetter == null) {
-			return new ItemFormatter(false, false, false, false, false);
+			return new ItemFormatter(false, false, false, false, false, false);
 		}
 		else {
 			return new TypeSettingItemFormatter(typeSetter);
@@ -97,7 +97,7 @@ public class DataSetTranslatorFactory {
 	}
 	
 	private CharacterFormatter createCharacterFormatter(DeltaContext context) {
-		return new CharacterFormatter(false, true, false, context.isOmitTypeSettingMarks());
+		return new CharacterFormatter(false, true, false, false, context.isOmitTypeSettingMarks());
 	}
 	
 	private AttributeFormatter createAttributeFormatter(DeltaContext context, TypeSetter typeSetter) {

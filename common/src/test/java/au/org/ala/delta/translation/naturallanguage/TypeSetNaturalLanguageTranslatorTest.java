@@ -63,7 +63,7 @@ public class TypeSetNaturalLanguageTranslatorTest extends
 		
 		_typeSetter = new FormattedTextTypeSetter(createMarks(), _printer);
 		ItemFormatter itemFormatter = new TypeSettingItemFormatter(_typeSetter);
-		CharacterFormatter characterFormatter = new CharacterFormatter(false, true, false, false);
+		CharacterFormatter characterFormatter = new CharacterFormatter(false, true, false, false, false);
 		AttributeFormatter attributeFormatter = new TypeSettingAttributeFormatter();
 		_dataSetTranslator = new NaturalLanguageTranslator(_context, _typeSetter, _printer, itemFormatter, characterFormatter, attributeFormatter);
 		
@@ -80,7 +80,7 @@ public class TypeSetNaturalLanguageTranslatorTest extends
 
 		_typeSetter = new FormattedTextTypeSetter(_context.getTypeSettingMarks(), _printer);
 		ItemFormatter itemFormatter = new TypeSettingItemFormatter(_typeSetter);
-		CharacterFormatter characterFormatter = new CharacterFormatter(false, true, false, false);
+		CharacterFormatter characterFormatter = new CharacterFormatter(false, true, false, false, false);
 		AttributeFormatter attributeFormatter = new TypeSettingAttributeFormatter();
 		_dataSetTranslator = new NaturalLanguageTranslator(_context, _typeSetter, _printer, itemFormatter, characterFormatter, attributeFormatter);
 

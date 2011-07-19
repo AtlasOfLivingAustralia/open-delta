@@ -15,7 +15,7 @@ public class TaxonListModel extends AbstractListModel {
 
     public TaxonListModel(List<Item> items) {
         _items = new ArrayList<Item>(items);
-        _formatter = new ItemFormatter(false, true, false, true, false);
+        _formatter = new ItemFormatter(false, true, false, false, true, false);
     }
 
     @Override

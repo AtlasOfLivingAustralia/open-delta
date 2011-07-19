@@ -89,7 +89,7 @@ public class StateController {
 	}
 	
 	private boolean confirmDelete(int toDelete) {
-		CharacterFormatter formatter = new CharacterFormatter(true, false, false, true);
+		CharacterFormatter formatter = new CharacterFormatter(true, false, false, false, true);
 		
 		String itemDescription = formatter.formatState(getSelectedCharacter(), toDelete);
 		

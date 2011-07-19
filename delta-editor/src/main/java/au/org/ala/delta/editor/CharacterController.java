@@ -159,7 +159,7 @@ public class CharacterController {
 	}
 	
 	private boolean confirmDelete(Character toDelete) {
-		CharacterFormatter formatter = new CharacterFormatter(true, false, false, true);
+		CharacterFormatter formatter = new CharacterFormatter(true, false, false, false, true);
 		
 		String characterDescription = formatter.formatCharacterDescription(toDelete);
 		

@@ -24,9 +24,9 @@ public class OverlayTextBuilder {
 
 	public OverlayTextBuilder(ResourceMap resources) {
 		_resources = resources;
-		_itemFormatter = new ItemFormatter(false, false, false, false, false);
-		_characterFormatter = new CharacterFormatter(false, true, false, false);
-		_stateFormatter = new CharacterFormatter(true, true, false, false);
+		_itemFormatter = new ItemFormatter(false, false, false, false, false, false);
+		_characterFormatter = new CharacterFormatter(false, true, false, false, false);
+		_stateFormatter = new CharacterFormatter(true, true, false, false, false);
 	}
 
 	public String getText(ImageOverlay overlay, Illustratable imageOwner) {

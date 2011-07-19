@@ -58,7 +58,7 @@ public class ControllingAttributeEditor extends CharacterDepencencyEditor {
 	private List<Character> _remainingCharacters;
 	private List<Character> _controlledCharacters;
 	private CharacterDependencyFormatter _formatter;
-	private CharacterFormatter _characterFormatter = new CharacterFormatter(true, false, false, true);
+	private CharacterFormatter _characterFormatter = new CharacterFormatter(true, false, false, false, true);
 	private ResourceMap _resources;
 	private List<StateViewModel> _states;
 	private CharacterDependencyController _controller;

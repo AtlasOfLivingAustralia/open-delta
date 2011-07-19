@@ -15,7 +15,7 @@ public class CharacterListModel extends AbstractListModel {
 
     public CharacterListModel(List<Character> characters) {
         _characters = new ArrayList<Character>(characters);
-        _formatter = new CharacterFormatter(false, false, true, true);
+        _formatter = new CharacterFormatter(false, false, false, true, true);
     }
 
     @Override

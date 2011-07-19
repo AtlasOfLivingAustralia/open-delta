@@ -93,7 +93,7 @@ public class DifferencesDirective extends IntkeyDirective {
                         taxa.add(t);
                     }
                 } else {
-                    if (taxonToken.equalsIgnoreCase("specimen")) {
+                    if (taxonToken.equalsIgnoreCase(IntkeyContext.SPECIMEN_KEYWORD)) {
                         includeSpecimen = true;
                     } else {
                         List<Item> keywordTaxa = context.getTaxaForKeyword(taxonToken);
@@ -117,7 +117,17 @@ public class DifferencesDirective extends IntkeyDirective {
         }
         
         if (taxa.size() == 0) {
-            //prompt for taxa
+            taxa = context.getDirectivePopulator().promptForTaxa("DIFFERENCES");
+            if (taxa.size() == 0) {
+                //user hit cancel or did not select anything
+                return null;
+            }
+            
+            //If specimen values have been entered, ask the user if they want the specimen
+            //included in the comparison
+            if (context.getSpecimen().getUsedCharacters().size() > 0) {
+                includeSpecimen = context.getDirectivePopulator().promptForYesNoOption("Compare specimen against selected taxa?");
+            }
         }
 
         if (taxa.size() < 2) {
@@ -125,7 +135,11 @@ public class DifferencesDirective extends IntkeyDirective {
         }
         
         if (characters.size() == 0) {
-            //prompt for characters
+            characters = context.getDirectivePopulator().promptForCharacters("DIFFERENCES");
+            if (characters.size() == 0) {
+                //user hit cancel or did not select anything
+                return null;
+            }
         }
         
         Collections.sort(taxa);

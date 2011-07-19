@@ -8,7 +8,7 @@ public abstract class CharacterValue {
     CharacterFormatter _formatter;
     
     public CharacterValue() {
-        _formatter = new CharacterFormatter(false, true, true, true);
+        _formatter = new CharacterFormatter(false, true, false, true, true);
     }
     
     public abstract Character getCharacter();

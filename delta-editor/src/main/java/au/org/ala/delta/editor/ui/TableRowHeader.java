@@ -149,7 +149,7 @@ public class TableRowHeader extends JTable implements ReorderableList {
 			boolean replaceAngleBrackets = false;
 			boolean stripRtf = true;
 			boolean useShortFormOfVariant = true;
-			_formatter = new ItemFormatter(includeNumber, stripComments, replaceAngleBrackets, stripRtf, useShortFormOfVariant);
+			_formatter = new ItemFormatter(includeNumber, stripComments, false, replaceAngleBrackets, stripRtf, useShortFormOfVariant);
 		}
 		
 		public void setTable(JTable table) {

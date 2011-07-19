@@ -15,14 +15,15 @@ import au.org.ala.delta.rtf.RTFUtils;
 public class Formatter {
 
     protected static Pattern EMPTY_COMMENT_PATTERN = Pattern.compile("<\\s*>");
-    private static Pattern SINGLE_SURROUNDING_ANGLE_BRACKET_PATTERN = Pattern.compile("^<[^<>]>$");
 
     protected boolean _stripComments;
+    protected boolean _stripNestedCommentsOnly;
     protected boolean _stripFormatting;
     protected boolean _replaceAngleBrackets;
 
-    public Formatter(boolean stripComments, boolean replaceAngleBrackets, boolean stripFormatting) {
+    public Formatter(boolean stripComments, boolean stripNestedCommentsOnly, boolean replaceAngleBrackets, boolean stripFormatting) {
         _stripComments = stripComments;
+        _stripNestedCommentsOnly = stripNestedCommentsOnly;
         _stripFormatting = stripFormatting;
         _replaceAngleBrackets = replaceAngleBrackets;
     }
@@ -61,34 +62,75 @@ public class Formatter {
     }
 
     /**
-     * Replace angle brackets with parentheses in the supplied text, or simply
-     * remove them from the text if a single pair of angle brackets encloses the
-     * entire text.
+     * @param text
+     * @return true if the supplied text is surrounded by a pair of angle
+     *         brackets, ignoring any nested pairs of angle brackets.
+     */
+    private boolean textSurroundedByAngleBrackets(String text) {
+        if (text.charAt(0) == '<' && text.charAt(text.length() - 1) == '>') {
+            int openBrackets = 0;
+            boolean entireStringEnclosed = true;
+            for (int i = 0; i < text.length(); i++) {
+                char c = text.charAt(i);
+
+                if (c == '<') {
+                    openBrackets++;
+                }
+
+                if (c == '>') {
+                    openBrackets--;
+                }
+
+                if (openBrackets == 0 && i < text.length() - 1) {
+                    entireStringEnclosed = false;
+                    break;
+                }
+            }
+
+            return entireStringEnclosed;
+        }
+
+        return false;
+    }
+
+    /**
+     * Replace angle brackets with parentheses in the supplied text. If the text
+     * is completely surrounded by a pair of angle brackets, these brackets will
+     * be stripped off. The text contained by the angle brackets will then be
+     * returned, with any nested angle brackets substituted for parentheses.
      * 
      * @param text
      *            the text to replace angle brackets in
      * @return the text with angle brackets replaced.
      */
     public String replaceAngleBrackets(String text) {
-        if (SINGLE_SURROUNDING_ANGLE_BRACKET_PATTERN.matcher(text).matches()) {
+        if (textSurroundedByAngleBrackets(text)) {
             text = text.substring(1, text.length() - 1);
-        } else {
-            text = text.replace('<', '(');
-            text = text.replace('>', ')');
         }
+
+        text = text.replace('<', '(');
+        text = text.replace('>', ')');
         return text;
     }
 
     /**
-     * Removes the comments from the supplied text.
+     * Removes the comments which are areas of text enclosed in angle brackets.
+     * 
+     * If the formatter has been created with the "stripNestedCommentsOnly"
+     * parameter set to true, only nested comments will be stripped in the case
+     * that the full text is a single comment. In this case, the comment text
+     * will be return with any nested comments removed, and the surrounding
+     * angle brackets removed.
      * 
      * @param text
      *            the text to remove comments from.
      * @return the text without comments.
      */
     public String stripComments(String text) {
-        if (SINGLE_SURROUNDING_ANGLE_BRACKET_PATTERN.matcher(text).matches()) {
-            text = text.substring(1, text.length() - 2);
+        if (_stripNestedCommentsOnly) {
+            if (textSurroundedByAngleBrackets(text)) {
+                text = text.substring(1, text.length() - 1);
+            }
         }
 
         CommentStripper stripper = new CommentStripper(text);

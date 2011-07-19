@@ -87,7 +87,7 @@ public abstract class CharacterValueInputDialog extends JDialog {
         
         _lblCharacterDescription = new JLabel();
         _lblCharacterDescription.setBorder(new EmptyBorder(0, 0, 5, 0));
-        _formatter = new CharacterFormatter(false, false, true, true);
+        _formatter = new CharacterFormatter(false, false, false, true, true);
         _lblCharacterDescription.setText(_formatter.formatCharacterDescription(_ch));
         _pnlMain.add(_lblCharacterDescription, BorderLayout.NORTH);
         

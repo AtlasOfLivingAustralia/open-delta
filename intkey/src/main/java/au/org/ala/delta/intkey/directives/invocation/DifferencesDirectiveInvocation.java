@@ -4,16 +4,13 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
-
-import au.org.ala.delta.intkey.IntkeyUI;
 import au.org.ala.delta.intkey.directives.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.DiffUtils;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.model.MatchType;
 import au.org.ala.delta.intkey.model.specimen.Specimen;
-import au.org.ala.delta.intkey.ui.TextReportDisplayDialog;
 import au.org.ala.delta.model.Attribute;
+import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.TextCharacter;
 import au.org.ala.delta.model.format.AttributeFormatter;
@@ -37,8 +34,8 @@ public class DifferencesDirectiveInvocation implements IntkeyDirectiveInvocation
 
     private boolean _includeSpecimen;
 
-    public DifferencesDirectiveInvocation(boolean matchUnknowns, boolean matchInapplicables, MatchType matchType, boolean omitTextCharacters, boolean includeSpecimen, List<au.org.ala.delta.model.Character> characters,
-            List<Item> taxa) {
+    public DifferencesDirectiveInvocation(boolean matchUnknowns, boolean matchInapplicables, MatchType matchType, boolean omitTextCharacters, boolean includeSpecimen,
+            List<au.org.ala.delta.model.Character> characters, List<Item> taxa) {
         _matchUnknowns = matchUnknowns;
         _matchInapplicables = matchInapplicables;
         _matchType = matchType;
@@ -46,9 +43,9 @@ public class DifferencesDirectiveInvocation implements IntkeyDirectiveInvocation
         _omitTextCharacters = omitTextCharacters;
         _characters = new ArrayList<au.org.ala.delta.model.Character>(characters);
         _taxa = new ArrayList<Item>(taxa);
-        _characterFormatter = new CharacterFormatter(false, false, false, false);
-        _taxonFormatter = new ItemFormatter(false, false, false, false, false);
-        _attributeFormatter = new AttributeFormatter(false, false, false);
+        _characterFormatter = new CharacterFormatter(false, true, true, false, false);
+        _taxonFormatter = new ItemFormatter(false, true, true, false, false, false);
+        _attributeFormatter = new AttributeFormatter(false, false, true, true, false);
     }
 
     @Override
@@ -59,11 +56,16 @@ public class DifferencesDirectiveInvocation implements IntkeyDirectiveInvocation
         if (_includeSpecimen) {
             specimen = context.getSpecimen();
         }
-        
+
         for (au.org.ala.delta.model.Character ch : _characters) {
+            if (_includeSpecimen && !specimen.hasValueFor(ch)) {
+                continue;
+            }
+            
             if (ch instanceof TextCharacter && _omitTextCharacters) {
                 continue;
             }
+            
             boolean match = DiffUtils.compareForTaxa(context.getDataset(), ch, _taxa, specimen, _matchUnknowns, _matchInapplicables, _matchType);
             if (!match) {
                 differences.add(ch);
@@ -74,12 +76,26 @@ public class DifferencesDirectiveInvocation implements IntkeyDirectiveInvocation
         builder.startDocument();
 
         for (au.org.ala.delta.model.Character ch : differences) {
+
             List<Attribute> attrs = context.getDataset().getAttributesForCharacter(ch.getCharacterId());
 
             String charDescription = _characterFormatter.formatCharacterDescription(ch);
             builder.appendText(charDescription);
-
+            
             builder.increaseIndent();
+
+            if (_includeSpecimen) {
+                builder.appendText("Specimen");
+                // TODO need to refactor specimen class to take attribute
+                // values directly.
+                Attribute attr = DiffUtils.createAttributeForSpecimenValue(specimen, ch);
+
+                builder.increaseIndent();
+                
+                printAttributeValue(attr, builder);
+
+                builder.decreaseIndent();
+            }
 
             for (Item taxon : _taxa) {
                 Attribute taxonAttr = attrs.get(taxon.getItemNumber() - 1);
@@ -89,13 +105,7 @@ public class DifferencesDirectiveInvocation implements IntkeyDirectiveInvocation
 
                 builder.increaseIndent();
 
-                String attributeDescription = _attributeFormatter.formatAttribute(taxonAttr);
-
-                if (StringUtils.isBlank(attributeDescription)) {
-                    builder.appendText("not recorded");
-                } else {
-                    builder.appendText(attributeDescription);
-                }
+                printAttributeValue(taxonAttr, builder);
 
                 builder.decreaseIndent();
 
@@ -122,4 +132,64 @@ public class DifferencesDirectiveInvocation implements IntkeyDirectiveInvocation
 
         return true;
     }
+    
+    private void printAttributeValue(Attribute attr, RTFBuilder builder) {
+        if (attr.isInapplicable() && attr.isUnknown()) {
+            builder.appendText("not applicable");
+        } else if (attr.isUnknown() ){
+            builder.appendText("not recorded");
+        } else {
+            String attributeDescription = _attributeFormatter.formatAttribute(attr);
+            builder.appendText(attributeDescription);
+        }
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("DIFFERENCES ");
+
+        switch (_matchType) {
+        case OVERLAP:
+            builder.append("/O ");
+            break;
+        case SUBSET:
+            builder.append("/S ");
+            break;
+        case EXACT:
+            builder.append("/E ");
+            break;
+        default:
+            throw new RuntimeException("Unrecognised match type");
+        }
+
+        if (_matchUnknowns) {
+            builder.append("/U ");
+        }
+
+        if (_matchInapplicables) {
+            builder.append("/I ");
+        }
+
+        builder.append("(");
+
+        if (_includeSpecimen) {
+            builder.append(" ");
+            builder.append(IntkeyContext.SPECIMEN_KEYWORD);
+        }
+
+        for (Item taxon : _taxa) {
+            builder.append(" ");
+            builder.append(taxon.getItemNumber());
+        }
+        builder.append(" )");
+
+        for (Character ch : _characters) {
+            builder.append(" ");
+            builder.append(ch.getCharacterId());
+        }
+
+        return builder.toString();
+    }
+
 }

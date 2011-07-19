@@ -56,7 +56,7 @@ public class UseDirective extends IntkeyDirective {
 
     public UseDirective() {
         super("use");
-        _charFormatter = new CharacterFormatter(false, false, true, true);
+        _charFormatter = new CharacterFormatter(false, false, false, true, true);
     }
 
     @Override
@@ -404,7 +404,7 @@ public class UseDirective extends IntkeyDirective {
         }
 
         private boolean checkCharacterUsable(Character ch, IntkeyContext context, boolean warnAlreadySet) {
-            CharacterFormatter formatter = new CharacterFormatter(false, false, true, true);
+            CharacterFormatter formatter = new CharacterFormatter(false, false, false, true, true);
 
             // TODO is character fixed?
 

@@ -76,11 +76,11 @@ public class IntkeyContext extends AbstractDeltaContext {
     // Use linked hashmap so that the keys list will be returned in
     // order of insertion.
     private LinkedHashMap<String, Set<Integer>> _userDefinedCharacterKeywords;
-    
+
     // Use linked hashmap so that the keys list will be returned in
     // order of insertion.
     private LinkedHashMap<String, Set<Integer>> _userDefinedTaxonKeywords;
-    
+
     public static final String CHARACTER_KEYWORD_ALL = "all";
     public static final String CHARACTER_KEYWORD_USED = "used";
     public static final String CHARACTER_KEYWORD_AVAILABLE = "available";
@@ -88,7 +88,7 @@ public class IntkeyContext extends AbstractDeltaContext {
     public static final String TAXON_KEYWORD_ALL = "all";
     public static final String TAXON_KEYWORD_ELIMINATED = "eliminated";
     public static final String TAXON_KEYWORD_REMAINING = "remaining";
-    
+
     public static final String SPECIMEN_KEYWORD = "specimen";
 
     private List<IntkeyDirectiveInvocation> _executedDirectives;
@@ -103,10 +103,10 @@ public class IntkeyContext extends AbstractDeltaContext {
         if (appUI == null) {
             throw new IllegalArgumentException("UI Reference cannot be null");
         }
-        
+
         if (directivePopulator == null) {
             throw new IllegalArgumentException("Directive populator cannot be null");
-        }        
+        }
 
         _appUI = appUI;
         _directivePopulator = directivePopulator;
@@ -123,6 +123,10 @@ public class IntkeyContext extends AbstractDeltaContext {
         // Use linked hashmap so that the keys list will be returned in
         // order of insertion.
         _userDefinedCharacterKeywords = new LinkedHashMap<String, Set<Integer>>();
+
+        // Use linked hashmap so that the keys list will be returned in
+        // order of insertion.
+        _userDefinedTaxonKeywords = new LinkedHashMap<String, Set<Integer>>();
 
         _executedDirectives = new ArrayList<IntkeyDirectiveInvocation>();
 
@@ -192,9 +196,9 @@ public class IntkeyContext extends AbstractDeltaContext {
     }
 
     /**
-     * Set the current taxa (items) file. If a new characters file has previously been
-     * set, calling this method will result in the new dataset being loaded. The
-     * calling thread will block while the dataset is loaded.
+     * Set the current taxa (items) file. If a new characters file has
+     * previously been set, calling this method will result in the new dataset
+     * being loaded. The calling thread will block while the dataset is loaded.
      * 
      * @param fileName
      *            Path to the taxa (items) file
@@ -439,19 +443,19 @@ public class IntkeyContext extends AbstractDeltaContext {
 
         return retList;
     }
-    
+
     public void addTaxaKeyword(String keyword, Set<Integer> taxaNumbers) {
         _userDefinedTaxonKeywords.put(keyword, taxaNumbers);
     }
-    
+
     public List<Item> getTaxaForKeyword(String keyword) {
         List<Item> retList = new ArrayList<Item>();
-        
+
         if (keyword.equals(TAXON_KEYWORD_ALL)) {
             return _dataset.getTaxa();
         } else if (keyword.equals(TAXON_KEYWORD_ELIMINATED)) {
             Map<Item, Integer> diffTable = _specimen.getTaxonDifferences();
-            for (Item taxon: diffTable.keySet()) {
+            for (Item taxon : diffTable.keySet()) {
                 int diffCount = diffTable.get(taxon);
                 if (diffCount > _tolerance) {
                     retList.add(taxon);
@@ -459,47 +463,59 @@ public class IntkeyContext extends AbstractDeltaContext {
             }
         } else if (keyword.equals(TAXON_KEYWORD_REMAINING)) {
             Map<Item, Integer> diffTable = _specimen.getTaxonDifferences();
-            for (Item taxon: diffTable.keySet()) {
-                int diffCount = diffTable.get(taxon);
-                if (diffCount <= _tolerance) {
-                    retList.add(taxon);
+            if (diffTable == null) {
+                retList.addAll(_dataset.getTaxa());
+            } else {
+                for (Item taxon : diffTable.keySet()) {
+                    int diffCount = diffTable.get(taxon);
+                    if (diffCount <= _tolerance) {
+                        retList.add(taxon);
+                    }
                 }
-            } 
+            }
         } else {
-            //Set<Integer> taxonNumbers = 
-            //retList.addAll(_userDefinedTaxonKeywords.get)
+            Set<Integer> taxonNumbers = _userDefinedTaxonKeywords.get(keyword);
+
+            if (taxonNumbers != null) {
+                for (int taxonNumber : taxonNumbers) {
+                    retList.add(_dataset.getTaxon(taxonNumber));
+                }
+            } else {
+                throw new IllegalArgumentException("bad taxon keyword");
+            }
         }
-        
+
         Collections.sort(retList);
-        
+
         return retList;
     }
-    
+
     public List<String> getTaxaKeywords() {
         List<String> retList = new ArrayList<String>();
         retList.add(TAXON_KEYWORD_ALL);
-        
+
         Map<Item, Integer> taxonDifferences = _specimen.getTaxonDifferences();
-        
+
         int remainingTaxaCount = 0;
-        
-        for (Item taxon: taxonDifferences.keySet()) {
-            int diffCount = taxonDifferences.get(taxon);
-            if (diffCount <= _tolerance) {
-                remainingTaxaCount++;
+
+        if (taxonDifferences == null) {
+            remainingTaxaCount = _dataset.getNumberOfTaxa();
+        } else {
+            for (Item taxon : taxonDifferences.keySet()) {
+                int diffCount = taxonDifferences.get(taxon);
+                if (diffCount <= _tolerance) {
+                    remainingTaxaCount++;
+                }
             }
         }
 
         if (remainingTaxaCount > 0) {
             retList.add(TAXON_KEYWORD_REMAINING);
         }
-        
+
         if (remainingTaxaCount < _dataset.getNumberOfTaxa()) {
             retList.add(TAXON_KEYWORD_ELIMINATED);
         }
-
-        retList.add(CHARACTER_KEYWORD_AVAILABLE);
-        retList.addAll(_userDefinedCharacterKeywords.keySet());
 
         return retList;
     }
@@ -649,15 +665,15 @@ public class IntkeyContext extends AbstractDeltaContext {
     public void calculateBestCharacters() {
         _bestCharacters = SortingUtils.orderBest(IntkeyContext.this);
     }
-    
+
     public boolean getMatchInapplicables() {
         return _matchInapplicables;
     }
-    
+
     public boolean getMatchUnkowns() {
         return _matchUnknowns;
     }
-    
+
     public MatchType getMatchType() {
         return _matchType;
     }
@@ -668,11 +684,11 @@ public class IntkeyContext extends AbstractDeltaContext {
     public void cleanupForShutdown() {
         _dataset.cleanup();
     }
-    
+
     public IntkeyUI getUI() {
         return _appUI;
     }
-    
+
     public DirectivePopulator getDirectivePopulator() {
         return _directivePopulator;
     }

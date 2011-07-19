@@ -54,7 +54,7 @@ public class StateEditor extends CharacterEditTab {
 	public StateEditor(RtfToolBar toolbar) {
 		super(toolbar);
 		_ignoreUpdates = false;
-		_formatter = new CharacterFormatter(true, false, false, true);
+		_formatter = new CharacterFormatter(true, false, false, false, true);
 		createUI();
 		addEventHandlers();
 	}

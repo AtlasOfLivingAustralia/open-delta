@@ -14,7 +14,7 @@ public class TableHeaderModel extends AbstractTableModel {
 	
 	public TableHeaderModel(EditorViewModel model) {
 		_model = model;
-		_formatter = new CharacterFormatter(false, false, false, true);
+		_formatter = new CharacterFormatter(false, false, false, false, true);
 	}
 	
 	@Override

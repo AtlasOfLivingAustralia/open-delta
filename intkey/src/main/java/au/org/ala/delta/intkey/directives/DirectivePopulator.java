@@ -12,5 +12,5 @@ public interface DirectivePopulator {
     
     boolean promptForYesNoOption(String message);
     
-    boolean promptForString(String message);
+    String promptForString(String message);
 }

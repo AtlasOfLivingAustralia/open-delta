@@ -151,7 +151,7 @@ public class ItemController {
 	}
 	
 	private boolean confirmDelete(Item toDelete) {
-		ItemFormatter formatter = new ItemFormatter(true, false, false, true, false);
+		ItemFormatter formatter = new ItemFormatter(true, false, false, false, true, false);
 		
 		String itemDescription = formatter.formatItemDescription(toDelete);
 		
