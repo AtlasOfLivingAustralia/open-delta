@@ -1,6 +1,7 @@
 package au.org.ala.delta.editor.directives;
 
 import java.io.File;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
@@ -8,6 +9,8 @@ import java.util.List;
 import junit.framework.AssertionFailedError;
 
 import org.apache.commons.io.FileUtils;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ApplicationContext;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -43,6 +46,18 @@ public class ExportControllerTest extends DeltaTestCase {
 		}
 	}
 	
+	public DeltaEditorTestHelper createTestHelper() throws Exception {
+		
+		DeltaEditorTestHelper helper = new DeltaEditorTestHelper();
+		ApplicationContext context = helper.getContext();
+		context.setApplicationClass(DeltaEditor.class);
+		Method method = ApplicationContext.class.getDeclaredMethod("setApplication", Application.class);
+		method.setAccessible(true);
+		method.invoke(context, helper);
+	
+		return helper;
+	}
+	
 	
 	/** The instance of the class we are testing */
 	private ExportController exporter;
@@ -53,7 +68,7 @@ public class ExportControllerTest extends DeltaTestCase {
 	@Before
 	public void setUp() throws Exception {
 		// Sure hope this won't throw a headless exception at some point...
-		DeltaEditorTestHelper helper = new DeltaEditorTestHelper();
+		DeltaEditorTestHelper helper = createTestHelper();
 	
 		File f = copyURLToFile("/SAMPLE.DLT");
 			
