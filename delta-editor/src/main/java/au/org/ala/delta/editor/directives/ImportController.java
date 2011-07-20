@@ -55,11 +55,14 @@ public class ImportController {
 			return;
 		}
 		_importModel = new ImportExportViewModel();
-		_importModel.setCurrentDirectory(new File(_model.getDataSetPath()));
+		File dataSetPath = new File(_model.getDataSetPath());
+		if (dataSetPath.exists()) {
+			_importModel.populateExcludedFromCurrentDirectory();
+		}
+		
 		_importDialog = new ImportExportDialog(_context.getMainFrame(), _importModel, "ImportDialog");
 		_importDialog.setDirectorySelectionAction(_actions.get("changeImportDirectory"));
 		_context.show(_importDialog);
-		
 		
 		if (_importDialog.proceed()) {
 			List<DirectiveFileInfo> files = _importModel.getSelectedFiles();
@@ -72,7 +75,7 @@ public class ImportController {
 	@Action
 	public void changeImportDirectory() {
 		JFileChooser directorySelector = new JFileChooser(_importModel.getCurrentDirectory());
-		String directoryChooserTitle = _resources.getString("ImportExportDialog.directoryChooserTitle");
+		String directoryChooserTitle = _resources.getString("ImportDialog.directoryChooserTitle");
 		directorySelector.setDialogTitle(directoryChooserTitle);
 		directorySelector.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		directorySelector.setAcceptAllFileFilterUsed(false);

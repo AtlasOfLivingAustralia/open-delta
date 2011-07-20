@@ -7,8 +7,13 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.ActionMap;
+import javax.swing.JFileChooser;
+
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
+import org.jdesktop.application.Action;
+import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.Task;
 import org.jdesktop.application.TaskEvent;
 import org.jdesktop.application.TaskListener;
@@ -39,22 +44,29 @@ import au.org.ala.delta.translation.Printer;
 public class ExportController {
 	private DeltaEditor _context;
 	private EditorDataModel _model;
-
+	private ImportExportViewModel _exportModel;
+	private ImportExportDialog _exportDialog;
+	private ResourceMap _resources;
+	private ActionMap _actions;
+	
 	public ExportController(DeltaEditor context) {
 		_context = context;
 		_model = context.getCurrentDataSet();
+		_resources = _context.getContext().getResourceMap();
+		_actions = _context.getContext().getActionMap(this);
 	}
 
 	public void begin() {
-		ImportExportViewModel model = getExistingDirectives();
+		_exportModel = getExistingDirectives();
 
-		ImportExportDialog dialog = new ImportExportDialog(
-				_context.getMainFrame(), model, "ExportDialog");
-		_context.show(dialog);
+		_exportDialog = new ImportExportDialog(_context.getMainFrame(), _exportModel, "ExportDialog");
+		_exportDialog.setDirectorySelectionAction(_actions.get("changeExportDirectory"));
+		
+		_context.show(_exportDialog);
 
-		if (dialog.proceed()) {
-			List<DirectiveFileInfo> files = model.getSelectedFiles();
-			File selectedDirectory = model.getCurrentDirectory();
+		if (_exportDialog.proceed()) {
+			List<DirectiveFileInfo> files = _exportModel.getSelectedFiles();
+			File selectedDirectory = _exportModel.getCurrentDirectory();
 
 			doExport(selectedDirectory, files);
 		}
@@ -110,6 +122,21 @@ public class ExportController {
 		DoExportTask importTask = new DoExportTask(selectedDirectory, files);
 		importTask.addTaskListener(new StatusUpdater(statusDialog));
 		importTask.execute();
+	}
+	
+	@Action
+	public void changeExportDirectory() {
+		JFileChooser directorySelector = new JFileChooser(_exportModel.getCurrentDirectory());
+		String directoryChooserTitle = _resources.getString("ExportDialog.directoryChooserTitle");
+		directorySelector.setDialogTitle(directoryChooserTitle);
+		directorySelector.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		directorySelector.setAcceptAllFileFilterUsed(false);
+		
+		int result = directorySelector.showOpenDialog(_exportDialog);
+		if (result == JFileChooser.APPROVE_OPTION) {
+			_exportModel.setCurrentDirectory(directorySelector.getSelectedFile());
+			_exportDialog.updateUI();
+		}
 	}
 
 	public void doSilentExport(File selectedDirectory,

@@ -23,11 +23,11 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
-import org.apache.commons.lang.StringUtils;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
@@ -50,6 +50,7 @@ public class ImportExportDialog extends JDialog {
 	private boolean _okPressed;
 	private String _currentFilter;
 	private ResourceMap _resources;
+	private ActionMap _actionMap;
 	
 	private static final long serialVersionUID = 8695641918190503720L;
 	private JTextField currentDirectoryTextField;
@@ -77,6 +78,7 @@ public class ImportExportDialog extends JDialog {
 	private String otherPanelTitle;
 	private String possiblePanelTitle;
 	private String directiveTypePanelTitle;
+	private String directoryLabelText;
 	
 	private JButton moveToSpecsButton;
 	private JButton moveToCharsButton;
@@ -114,16 +116,16 @@ public class ImportExportDialog extends JDialog {
 		otherPanelTitle = _resources.getString(resourcePrefix+".otherPanelTitle");
 		possiblePanelTitle = _resources.getString(resourcePrefix+".possiblePanelTitle");
 		directiveTypePanelTitle = _resources.getString(resourcePrefix+".directiveTypePanelTitle");
-		
+		directoryLabelText = _resources.getString(resourcePrefix+".directoryLabel");
 	}
 
 	private void addEventListeners() {
-		ActionMap actionMap = Application.getInstance().getContext().getActionMap(this);
-		btnChange.setAction(actionMap.get("directorySelected"));
-		btnOk.setAction(actionMap.get("okPressed"));
+		_actionMap = Application.getInstance().getContext().getActionMap(this);
+		btnChange.setAction(_actionMap.get("directorySelected"));
+		btnOk.setAction(_actionMap.get("okPressed"));
 		btnOk.setEnabled(false);
-		btnCancel.setAction(actionMap.get("cancelPressed"));
-		excludeFilterButton.setAction(actionMap.get("updateFilter"));
+		btnCancel.setAction(_actionMap.get("cancelPressed"));
+		excludeFilterButton.setAction(_actionMap.get("updateFilter"));
 		
 		ActionListener typeSelectionListener = new ActionListener() {
 			@Override
@@ -411,7 +413,7 @@ public class ImportExportDialog extends JDialog {
 		
 		JPanel topPanel = new JPanel();
 		
-		JLabel lblImportDirectory = new JLabel("Import directory:");
+		JLabel lblImportDirectory = new JLabel(directoryLabelText);
 		
 		currentDirectoryTextField = new JTextField();
 		currentDirectoryTextField.setColumns(10);
@@ -568,9 +570,10 @@ public class ImportExportDialog extends JDialog {
 	}
 	
 	public void updateUI() {
-		String path = _model.getCurrentDirectory().getAbsolutePath();
-		if (StringUtils.isEmpty(path)) {
-			path = "";
+		File directory = _model.getCurrentDirectory();
+		String path = "";
+		if (directory != null) {
+			path = directory.getAbsolutePath();
 		}
 		currentDirectoryTextField.setText(path);
 		charactersFileTextField.setText(_model.getCharactersFile());
@@ -588,6 +591,21 @@ public class ImportExportDialog extends JDialog {
 		
 		
 		btnOk.setEnabled(_model.isImportable());
+	}
+	
+	@Override
+	public void setVisible(boolean visible) {
+	    if (!isVisible() && visible == true) {
+			if (_model.getCurrentDirectory() == null) {
+				SwingUtilities.invokeLater(new Runnable() {
+					public void run() {
+						btnChange.getAction().actionPerformed(new ActionEvent(this, 0,""));;
+					}
+				});
+			}
+		}
+		super.setVisible(visible);
+		
 	}
 	
 	@Action

@@ -53,8 +53,8 @@ public class ImportExportStatusDialog extends JDialog {
 	
 	private void addEventListeners() {
 		ActionMap actions = Application.getInstance().getContext().getActionMap(this);
-		btnDone.setAction(actions.get("importDone"));
-		btnCancel.setAction(actions.get("cancelImport"));
+		btnDone.setAction(actions.get("importExportFinished"));
+		btnCancel.setAction(actions.get("cancelImportExport"));
 	}
 
 	private void createUI() {
@@ -296,12 +296,12 @@ public class ImportExportStatusDialog extends JDialog {
 	}
 	
 	@Action
-	public void importDone() {
+	public void importExportFinished() {
 		setVisible(false);
 	}
 	
 	@Action
-	public void cancelImport() {
+	public void cancelImportExport() {
 		setVisible(false);
 	}
 	

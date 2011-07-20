@@ -27,7 +27,6 @@ public class ImportExportViewModel {
 	private List<String> _excludedDirectiveFiles;
 
 	public ImportExportViewModel() {
-		_specsFile = DEFAULT_SPECS_DIRECTIVE_FILE;
 		_includedDirectivesFiles = new ArrayList<DirectiveFileInfo>();
 		_excludedDirectiveFiles = new ArrayList<String>();
 	}
@@ -90,8 +89,9 @@ public class ImportExportViewModel {
 		_includedDirectivesFiles = new ArrayList<DirectiveFileInfo>();
 		_excludedDirectiveFiles = new ArrayList<String>();
 		for (File file : _currentDirectory.listFiles()) {
-			_excludedDirectiveFiles.add(file.getName());
-
+			if (!file.isDirectory()) {
+				_excludedDirectiveFiles.add(file.getName());
+			}
 		}
 		if (_excludedDirectiveFiles.contains(DEFAULT_SPECS_DIRECTIVE_FILE)) {
 			_specsFile = DEFAULT_SPECS_DIRECTIVE_FILE;
