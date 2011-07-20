@@ -15,8 +15,8 @@ import au.org.ala.delta.Logger;
 import au.org.ala.delta.directives.AbstractDeltaContext;
 import au.org.ala.delta.intkey.IntkeyUI;
 import au.org.ala.delta.intkey.directives.DirectivePopulator;
-import au.org.ala.delta.intkey.directives.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.IntkeyDirectiveParser;
+import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.specimen.CharacterValue;
 import au.org.ala.delta.intkey.model.specimen.Specimen;
 import au.org.ala.delta.intkey.ui.UIUtils;
@@ -128,7 +128,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         // order of insertion.
         _userDefinedTaxonKeywords = new LinkedHashMap<String, Set<Integer>>();
 
-        _executedDirectives = new ArrayList<IntkeyDirectiveInvocation>();
+        _executedDirectives = new ArrayList<au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation>();
 
         _matchInapplicables = true;
         _matchUnknowns = true;

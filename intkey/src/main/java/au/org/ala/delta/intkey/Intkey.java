@@ -40,6 +40,8 @@ import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingWorker;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.event.MouseInputAdapter;
 
 import org.apache.commons.lang.NotImplementedException;
@@ -57,12 +59,12 @@ import au.org.ala.delta.intkey.directives.DisplayCharacterOrderNaturalDirective;
 import au.org.ala.delta.intkey.directives.FileCharactersDirective;
 import au.org.ala.delta.intkey.directives.FileTaxaDirective;
 import au.org.ala.delta.intkey.directives.IntkeyDirective;
-import au.org.ala.delta.intkey.directives.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.IntkeyDirectiveParseException;
 import au.org.ala.delta.intkey.directives.IntkeyDirectiveParser;
 import au.org.ala.delta.intkey.directives.NewDatasetDirective;
 import au.org.ala.delta.intkey.directives.RestartDirective;
 import au.org.ala.delta.intkey.directives.UseDirective;
+import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyCharacterOrder;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.model.IntkeyDataset;
@@ -72,10 +74,10 @@ import au.org.ala.delta.intkey.ui.BestCharacterListModel;
 import au.org.ala.delta.intkey.ui.BusyGlassPane;
 import au.org.ala.delta.intkey.ui.CharacterKeywordSelectionDialog;
 import au.org.ala.delta.intkey.ui.CharacterListModel;
-import au.org.ala.delta.intkey.ui.TaxonKeywordSelectionDialog;
-import au.org.ala.delta.intkey.ui.TaxonListModel;
 import au.org.ala.delta.intkey.ui.ReExecuteDialog;
 import au.org.ala.delta.intkey.ui.RtfReportDisplayDialog;
+import au.org.ala.delta.intkey.ui.TaxonKeywordSelectionDialog;
+import au.org.ala.delta.intkey.ui.TaxonListModel;
 import au.org.ala.delta.intkey.ui.UIUtils;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
@@ -382,6 +384,14 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         _pnlRemainingTaxa.add(_sclPnRemainingTaxa, BorderLayout.CENTER);
 
         _listRemainingTaxa = new JList();
+        _listRemainingTaxa.addListSelectionListener(new ListSelectionListener() {
+
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                taxonSelectionChanged();
+            }
+        });
+
         _sclPnRemainingTaxa.setViewportView(_listRemainingTaxa);
 
         _pnlRemainingTaxaHeader = new JPanel();
@@ -408,6 +418,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         _btnDiffTaxa = new JButton();
         _btnDiffTaxa.setAction(actionMap.get("btnDiffTaxa"));
         _btnDiffTaxa.setPreferredSize(new Dimension(30, 30));
+        _btnDiffTaxa.setEnabled(false);
         _pnlRemainingTaxaButtons.add(_btnDiffTaxa);
 
         _btnSubsetTaxa = new JButton();
@@ -430,6 +441,14 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         _pnlEliminatedTaxa.add(_sclPnEliminatedTaxa, BorderLayout.CENTER);
 
         _listEliminatedTaxa = new JList();
+        _listEliminatedTaxa.addListSelectionListener(new ListSelectionListener() {
+
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                taxonSelectionChanged();
+            }
+        });
+
         _sclPnEliminatedTaxa.setViewportView(_listEliminatedTaxa);
 
         _pnlEliminatedTaxaHeader = new JPanel();
@@ -850,12 +869,10 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         try {
             dir.parseAndProcess(_context, data);
         } catch (IntkeyDirectiveParseException ex) {
-            ex.printStackTrace();
             String msg = ex.getMessage();
             JOptionPane.showMessageDialog(UIUtils.getMainFrame(), msg, "Error", JOptionPane.ERROR_MESSAGE);
             Logger.error(msg);
         } catch (Exception ex) {
-            ex.printStackTrace();
             String msg = String.format("Error occurred while processing '%s' command: %s", StringUtils.join(dir.getControlWords(), " ").toUpperCase(), ex.getMessage());
             JOptionPane.showMessageDialog(UIUtils.getMainFrame(), msg, "Error", JOptionPane.ERROR_MESSAGE);
             Logger.error(msg);
@@ -871,7 +888,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     @Override
     public void handleSpecimenUpdated() {
-        _btnDiffSpecimenTaxa.setEnabled(true);
+        
 
         Specimen specimen = _context.getSpecimen();
 
@@ -887,6 +904,8 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
                 eliminatedTaxa.add(taxon);
             }
         }
+        
+        _btnDiffSpecimenTaxa.setEnabled(availableTaxa.size() > 0);
 
         if (availableTaxa.size() == 0) {
             JLabel lbl = new JLabel("No matching taxa remain.");
@@ -940,8 +959,54 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     @Override
     public void displayRTFReport(String rtfSource, String title) {
-        RtfReportDisplayDialog dlg = new RtfReportDisplayDialog(getMainFrame(), new SimpleRtfEditorKit(), rtfSource, title);
-        show(dlg);
+        DisplayRTFWorker worker = new DisplayRTFWorker(rtfSource, title);
+        worker.execute();
+        
+        // Show the busy glass pane with a message if worker has not
+        // completed within
+        // 250 milliseconds. This avoids "flickering" of the glasspane
+        // when it takes a
+        // very short time to display the RTF report
+        try {
+            Thread.sleep(250);
+            if (!worker.isDone()) {
+                showBusyMessage("Loading " + title);
+            }
+        } catch (InterruptedException ex) {
+            // do nothing
+        }
+    }
+    
+    private class DisplayRTFWorker extends SwingWorker<Void, Void> {
+        
+        private String _rtfSource;
+        private String _title;
+        private RtfReportDisplayDialog _dlg; 
+        
+        public DisplayRTFWorker(String rtfSource, String title) {
+            _rtfSource = rtfSource;
+            _title = title;
+        }
+
+        @Override
+        public Void doInBackground() {
+            _dlg = new RtfReportDisplayDialog(getMainFrame(), new SimpleRtfEditorKit(), _rtfSource, _title);
+            return null;
+        }
+
+        @Override
+        protected void done() {
+            Intkey.this.show(_dlg);
+            removeBusyMessage();
+        }
+        
+    }
+
+    private void taxonSelectionChanged() {
+        int[] remainingTaxaSelectedIndicies = _listRemainingTaxa.getSelectedIndices();
+        int[] eliminatedTaxaSelectedIndicies = _listEliminatedTaxa.getSelectedIndices();
+
+        _btnDiffTaxa.setEnabled((remainingTaxaSelectedIndicies.length + eliminatedTaxaSelectedIndicies.length) >= 2);
     }
 
     private void initializeIdentification() {
@@ -1182,6 +1247,18 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     public void displayWarningMessage(String message) {
         // TODO Auto-generated method stub
 
+    }
+
+    @Override
+    public void displayBusyMessage(String message) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void removeBusyMessage(String message) {
+        // TODO Auto-generated method stub
+        
     }
 
 }

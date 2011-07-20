@@ -28,7 +28,7 @@ import org.jdesktop.application.Application;
 import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 
-import au.org.ala.delta.intkey.directives.IntkeyDirectiveInvocation;
+import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 
 public class ReExecuteDialog extends JDialog {
     private JPanel _pnlButtons;

@@ -40,4 +40,16 @@ public class MockIntkeyUI implements IntkeyUI {
         // do nothing
     }
 
+    @Override
+    public void displayBusyMessage(String message) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void removeBusyMessage(String message) {
+        // TODO Auto-generated method stub
+        
+    }
+
 }

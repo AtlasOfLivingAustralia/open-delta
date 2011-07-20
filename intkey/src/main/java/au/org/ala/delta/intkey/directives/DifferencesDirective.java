@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.commons.lang.math.IntRange;
 
 import au.org.ala.delta.intkey.directives.invocation.DifferencesDirectiveInvocation;
+import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.model.IntkeyDataset;
 import au.org.ala.delta.intkey.model.MatchType;

@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
-import au.org.ala.delta.intkey.directives.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.DiffUtils;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.model.MatchType;

@@ -17,4 +17,8 @@ public interface IntkeyUI {
     void displayErrorMessage(String message);
     
     void displayWarningMessage(String message);
+    
+    void displayBusyMessage(String message);
+    
+    void removeBusyMessage(String message);
 }
