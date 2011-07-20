@@ -50,27 +50,13 @@ public class DifferencesDirectiveInvocation implements IntkeyDirectiveInvocation
 
     @Override
     public boolean execute(IntkeyContext context) {
-        List<au.org.ala.delta.model.Character> differences = new ArrayList<au.org.ala.delta.model.Character>();
-
+        
         Specimen specimen = null;
         if (_includeSpecimen) {
             specimen = context.getSpecimen();
         }
 
-        for (au.org.ala.delta.model.Character ch : _characters) {
-            if (_includeSpecimen && !specimen.hasValueFor(ch)) {
-                continue;
-            }
-            
-            if (ch instanceof TextCharacter && _omitTextCharacters) {
-                continue;
-            }
-            
-            boolean match = DiffUtils.compareForTaxa(context.getDataset(), ch, _taxa, specimen, _matchUnknowns, _matchInapplicables, _matchType);
-            if (!match) {
-                differences.add(ch);
-            }
-        }
+        List<au.org.ala.delta.model.Character> differences = DiffUtils.determineDifferingCharactersForTaxa(context.getDataset(), _characters, _taxa, specimen, _matchUnknowns, _matchInapplicables, _matchType, _omitTextCharacters);
 
         RTFBuilder builder = new RTFBuilder();
         builder.startDocument();

@@ -41,6 +41,30 @@ import au.org.ala.delta.model.TextCharacter;
  */
 public class DiffUtils {
 
+    //TODO method documentation
+    //This is the logic used by the differences directive. It is located here to aid
+    //unit testing.
+    public static List<Character> determineDifferingCharactersForTaxa(IntkeyDataset dataset, List<Character> characters, List<Item> taxa, Specimen specimen, boolean matchUnknowns, boolean matchInapplicables, MatchType matchType, boolean omitTextCharacters) {
+        List<Character> differencesList = new ArrayList<Character>();
+
+        for (au.org.ala.delta.model.Character ch : characters) {
+            if (specimen != null && !specimen.hasValueFor(ch)) {
+                continue;
+            }
+
+            if (ch instanceof TextCharacter && omitTextCharacters) {
+                continue;
+            }
+
+            boolean match = DiffUtils.compareForTaxa(dataset, ch, taxa, specimen, matchUnknowns, matchInapplicables, matchType);
+            if (!match) {
+                differencesList.add(ch);
+            }
+        }
+
+        return differencesList;
+    }
+
     /**
      * Compare the values coded for the supplied character for each of the
      * supplied taxa. If supplied, also include the specimen in the comparison
@@ -340,9 +364,12 @@ public class DiffUtils {
 
     }
 
-    // Helper method to create an attribute containing the value held in a specimen for a particular character. This is used to simplify 
-    // the comparsion methods, allowing them to only handle the one data type (attributes)
-    // TODO refactor specimen class to take attributes so that we don't need this method anymore.
+    // Helper method to create an attribute containing the value held in a
+    // specimen for a particular character. This is used to simplify
+    // the comparsion methods, allowing them to only handle the one data type
+    // (attributes)
+    // TODO refactor specimen class to take attributes so that we don't need
+    // this method anymore.
     public static Attribute createAttributeForSpecimenValue(Specimen specimen, Character ch) {
         boolean unknown = !specimen.hasValueFor(ch);
         boolean inapplicable = specimen.isCharacterInapplicable(ch);
@@ -401,7 +428,7 @@ public class DiffUtils {
         if (!val.getCharacter().equals(attr.getCharacter())) {
             throw new IllegalArgumentException(String.format("Specimen value character %s does not match attribute character %s", val.getCharacter(), attr.getCharacter()));
         }
-        
+
         Set<Integer> attr1Values = new HashSet<Integer>(val.getStateValues());
         Set<Integer> attr2Values = attr.getPresentStates();
         boolean attr1Unknown = !specimen.hasValueFor(val.getCharacter());
@@ -445,7 +472,7 @@ public class DiffUtils {
         if (!val.getCharacter().equals(attr.getCharacter())) {
             throw new IllegalArgumentException(String.format("Specimen value character %s does not match attribute character %s", val.getCharacter(), attr.getCharacter()));
         }
-        
+
         Set<Integer> attr1Values = new HashSet<Integer>(val.getValues());
         Set<Integer> attr2Values = attr.getPresentValues();
         boolean attr1Unknown = !specimen.hasValueFor(val.getCharacter());
@@ -512,7 +539,7 @@ public class DiffUtils {
         if (!val.getCharacter().equals(attr.getCharacter())) {
             throw new IllegalArgumentException(String.format("Specimen value character %s does not match attribute character %s", val.getCharacter(), attr.getCharacter()));
         }
-        
+
         FloatRange attr1Range = val.getRange();
         FloatRange attr2Range = attr.getPresentRange();
         boolean attr1Unknown = !specimen.hasValueFor(val.getCharacter());
@@ -592,7 +619,7 @@ public class DiffUtils {
         if (!val.getCharacter().equals(attr.getCharacter())) {
             throw new IllegalArgumentException(String.format("Specimen value character %s does not match attribute character %s", val.getCharacter(), attr.getCharacter()));
         }
-        
+
         List<String> specimenTextValues = val.getValues();
         String attrText = attr.getText();
 

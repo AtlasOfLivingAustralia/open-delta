@@ -58,6 +58,11 @@ public class DifferencesDirective extends IntkeyDirective {
                     matchType = MatchType.SUBSET;
                 } else if (token.equalsIgnoreCase("/E")) {
                     matchType = MatchType.EXACT;
+                    
+                    // if match type is set to exact, match inapplicables and
+                    // unknown will always be false
+                    matchInapplicables = false;
+                    matchUnknowns = false;
                 } else if (token.equalsIgnoreCase("/U")) {
                     matchUnknowns = true;
                 } else if (token.equalsIgnoreCase("/I")) {
@@ -68,14 +73,14 @@ public class DifferencesDirective extends IntkeyDirective {
                     if (processingTaxa) {
                         inBracket = true;
                     } else {
-                        // throw exception
+                        // TODO throw exception
                     }
                 } else if (token.equals(")")) {
                     if (processingTaxa && inBracket) {
                         inBracket = false;
                         processingTaxa = false;
                     } else {
-                        // throw exception
+                        // TODO throw exception
                     }
                 } else {
                     if (processingTaxa) {
