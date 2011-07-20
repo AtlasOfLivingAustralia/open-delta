@@ -682,7 +682,9 @@ public class IntkeyContext extends AbstractDeltaContext {
      * Called prior to application shutdown.
      */
     public void cleanupForShutdown() {
-        _dataset.cleanup();
+        if (_dataset != null) {
+            _dataset.cleanup();
+        }
     }
 
     public IntkeyUI getUI() {
