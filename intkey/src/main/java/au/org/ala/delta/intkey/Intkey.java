@@ -137,6 +137,9 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     @Resource
     String calculatingBestCaption;
+    
+    @Resource
+    String loadingReportCaption;
 
     private JLabel _lblNumRemainingTaxa;
     private JLabel _lblEliminatedTaxa;
@@ -970,7 +973,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         try {
             Thread.sleep(250);
             if (!worker.isDone()) {
-                showBusyMessage("Loading " + title);
+                showBusyMessage(loadingReportCaption);
             }
         } catch (InterruptedException ex) {
             // do nothing

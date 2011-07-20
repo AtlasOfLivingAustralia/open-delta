@@ -8,6 +8,7 @@ import au.org.ala.delta.intkey.model.DiffUtils;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.model.MatchType;
 import au.org.ala.delta.intkey.model.specimen.Specimen;
+import au.org.ala.delta.intkey.ui.UIUtils;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
@@ -84,7 +85,7 @@ public class DifferencesDirectiveInvocation implements IntkeyDirectiveInvocation
             builder.increaseIndent();
 
             if (_includeSpecimen) {
-                builder.appendText("Specimen");
+                builder.appendText(UIUtils.getResourceString("DifferencesDirective.Specimen"));
                 // TODO need to refactor specimen class to take attribute
                 // values directly.
                 Attribute attr = DiffUtils.createAttributeForSpecimenValue(specimen, ch);
@@ -118,11 +119,11 @@ public class DifferencesDirectiveInvocation implements IntkeyDirectiveInvocation
         builder.setFont(1);
 
         if (differences.size() == 0) {
-            builder.appendText("No differences");
+            builder.appendText(UIUtils.getResourceString("DifferencesDirective.NoDifferences"));
         } else if (differences.size() == 1) {
-            builder.appendText(String.format("%s difference", differences.size()));
+            builder.appendText(UIUtils.getResourceString("DifferencesDirective.OneDifference"));
         } else {
-            builder.appendText(String.format("%s differences", differences.size()));
+            builder.appendText(String.format(UIUtils.getResourceString("DifferencesDirective.ManyDifferences"), differences.size()));
         }
 
         builder.endDocument();
@@ -134,9 +135,9 @@ public class DifferencesDirectiveInvocation implements IntkeyDirectiveInvocation
     
     private void printAttributeValue(Attribute attr, RTFBuilder builder) {
         if (attr.isInapplicable() && attr.isUnknown()) {
-            builder.appendText("not applicable");
+            builder.appendText(UIUtils.getResourceString("DifferencesDirective.NotApplicable"));
         } else if (attr.isUnknown() ){
-            builder.appendText("not recorded");
+            builder.appendText(UIUtils.getResourceString("DifferencesDirective.NotRecorded"));
         } else {
             String attributeDescription = _attributeFormatter.formatAttribute(attr);
             builder.appendText(attributeDescription);

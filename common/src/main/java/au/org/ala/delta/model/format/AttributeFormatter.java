@@ -159,7 +159,7 @@ public class AttributeFormatter extends CharacterFormatter {
             builder.append(units);
         }
 
-        return builder.toString();
+        return defaultFormat(builder.toString());
     }
 
     private String formatRealAttribute(RealAttribute attribute) {
@@ -179,7 +179,7 @@ public class AttributeFormatter extends CharacterFormatter {
             builder.append(" ");
             builder.append(attribute.getCharacter().getUnits());
 
-            return builder.toString();
+            return defaultFormat(builder.toString());
         } else {
             return null;
         }
