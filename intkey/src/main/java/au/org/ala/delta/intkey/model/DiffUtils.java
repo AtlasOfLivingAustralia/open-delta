@@ -500,7 +500,8 @@ public class DiffUtils {
             match = attr1Values.equals(attr2Values);
             break;
         case SUBSET:
-            match = attr1Values.containsAll(attr2Values);
+            //is the first a subset of the second
+            match = attr2Values.containsAll(attr1Values);
             break;
         case OVERLAP:
             for (int stateVal : attr1Values) {
@@ -578,7 +579,8 @@ public class DiffUtils {
             match = attr1Range.equals(attr2Range);
             break;
         case SUBSET:
-            match = attr1Range.containsRange(attr2Range);
+            // is the first a subset of the second
+            match = attr2Range.containsRange(attr1Range);
             break;
         case OVERLAP:
             match = attr1Range.overlapsRange(attr2Range);
