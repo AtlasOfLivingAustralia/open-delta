@@ -289,6 +289,15 @@ public class BinFile {
 		b.putInt(value);
 		writeBytes(b);
 	}
+	
+	public void writeInts(int[] values) {
+		ByteBuffer b = ByteBuffer.allocate(values.length * 4);
+		b.order(ByteOrder.LITTLE_ENDIAN);
+		for (int value : values) {
+			b.putInt(value);
+		}
+		writeBytes(b);
+	}
 
 	public void writeLong(long value) {
 		ByteBuffer b = ByteBuffer.allocate(8);

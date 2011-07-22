@@ -17,7 +17,7 @@ public abstract class AbstractDataSetTranslator implements DataSetTranslator {
 
 	private static Logger logger = Logger.getLogger(AbstractDataSetTranslator.class.getName());
 	
-	private DeltaContext _context;
+	protected DeltaContext _context;
 	private DataSetFilter _filter;
 	
 	public AbstractDataSetTranslator(DeltaContext context, DataSetFilter filter) {
