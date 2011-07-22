@@ -541,6 +541,8 @@ public class IntkeyContext extends AbstractDeltaContext {
             // As we are starting from the beginning, best characters must be
             // cleared as they are no longer valid
             _bestCharacters = null;
+            
+            _tolerance = 0;
 
             _appUI.handleIdentificationRestarted();
         }
@@ -575,6 +577,16 @@ public class IntkeyContext extends AbstractDeltaContext {
      */
     public int getTolerance() {
         return _tolerance;
+    }
+    
+    /**
+     * Set the current error tolerance. This is used when determining which taxa
+     * to eliminate following characters being used.
+     * @param toleranceValue
+     */
+    public void setTolerance(int toleranceValue) {
+        _tolerance = toleranceValue;
+        _appUI.handleSpecimenUpdated();
     }
 
     /**

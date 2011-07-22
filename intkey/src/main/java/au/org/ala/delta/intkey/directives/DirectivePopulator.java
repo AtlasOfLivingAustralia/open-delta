@@ -10,7 +10,14 @@ public interface DirectivePopulator {
     
     List<Item> promptForTaxa(String directiveName);
     
-    boolean promptForYesNoOption(String message);
+    /**
+     * Null denotes cancellation
+     * @param message
+     * @return
+     */
+    Boolean promptForYesNoOption(String message);
     
-    String promptForString(String message);
+    String promptForString(String message, String initialSelectionValue);
+    
+
 }

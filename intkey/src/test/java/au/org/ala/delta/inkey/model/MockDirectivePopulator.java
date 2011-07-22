@@ -19,12 +19,12 @@ public class MockDirectivePopulator implements DirectivePopulator {
     }
 
     @Override
-    public boolean promptForYesNoOption(String message) {
+    public Boolean promptForYesNoOption(String message) {
         return false;
     }
 
     @Override
-    public String promptForString(String message) {
+    public String promptForString(String message, String initialValue) {
         return null;
     }
 

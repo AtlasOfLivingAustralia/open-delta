@@ -10,8 +10,8 @@ import au.org.ala.delta.model.format.ItemFormatter;
 
 public class TaxonListModel extends AbstractListModel {
 
-    List<Item> _items;
-    ItemFormatter _formatter;
+    protected List<Item> _items;
+    protected ItemFormatter _formatter;
 
     public TaxonListModel(List<Item> items) {
         _items = new ArrayList<Item>(items);
@@ -28,7 +28,7 @@ public class TaxonListModel extends AbstractListModel {
         return _formatter.formatItemDescription(_items.get(index));
     }
     
-    public Item getItemAt(int index) {
+    public Item getTaxonAt(int index) {
         return _items.get(index);
     }
 }

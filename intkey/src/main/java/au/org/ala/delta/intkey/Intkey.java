@@ -17,7 +17,6 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -63,6 +62,7 @@ import au.org.ala.delta.intkey.directives.IntkeyDirectiveParseException;
 import au.org.ala.delta.intkey.directives.IntkeyDirectiveParser;
 import au.org.ala.delta.intkey.directives.NewDatasetDirective;
 import au.org.ala.delta.intkey.directives.RestartDirective;
+import au.org.ala.delta.intkey.directives.SetToleranceDirective;
 import au.org.ala.delta.intkey.directives.UseDirective;
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyCharacterOrder;
@@ -78,14 +78,15 @@ import au.org.ala.delta.intkey.ui.ReExecuteDialog;
 import au.org.ala.delta.intkey.ui.RtfReportDisplayDialog;
 import au.org.ala.delta.intkey.ui.TaxonKeywordSelectionDialog;
 import au.org.ala.delta.intkey.ui.TaxonListModel;
+import au.org.ala.delta.intkey.ui.TaxonWithDifferenceCountListModel;
 import au.org.ala.delta.intkey.ui.UIUtils;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
-import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.ui.AboutBox;
 import au.org.ala.delta.ui.DeltaSingleFrameApplication;
 import au.org.ala.delta.ui.rtf.SimpleRtfEditorKit;
 import au.org.ala.delta.ui.util.IconHelper;
+import au.org.ala.delta.util.IntegerFunctor;
 
 public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, DirectivePopulator {
 
@@ -106,7 +107,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     private CharacterListModel _availableCharacterListModel;
     private UsedCharacterListModel _usedCharacterListModel;
     private TaxonListModel _availableTaxaListModel;
-    private EliminatedTaxaListModel _eliminatedTaxaListModel;
+    private TaxonListModel _eliminatedTaxaListModel;
 
     private IntkeyDirectiveParser _directiveParser;
 
@@ -137,7 +138,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     @Resource
     String calculatingBestCaption;
-    
+
     @Resource
     String loadingReportCaption;
 
@@ -311,7 +312,6 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
         _btnSetTolerance = new JButton();
         _btnSetTolerance.setAction(actionMap.get("btnSetTolerance"));
-        _btnSetTolerance.setEnabled(false);
         _btnSetTolerance.setPreferredSize(new Dimension(30, 30));
         _pnlAvailableCharactersButtons.add(_btnSetTolerance);
 
@@ -814,6 +814,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     @Action
     public void btnSetTolerance() {
+        executeDirective(new SetToleranceDirective(), null);
     }
 
     @Action
@@ -840,11 +841,11 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         List<Item> selectedTaxa = new ArrayList<Item>();
 
         for (int i : _listRemainingTaxa.getSelectedIndices()) {
-            selectedTaxa.add(_availableTaxaListModel.getItemAt(i));
+            selectedTaxa.add(_availableTaxaListModel.getTaxonAt(i));
         }
 
         for (int i : _listEliminatedTaxa.getSelectedIndices()) {
-            selectedTaxa.add(_eliminatedTaxaListModel.getItemAt(i));
+            selectedTaxa.add(_eliminatedTaxaListModel.getTaxonAt(i));
         }
 
         StringBuilder directiveTextBuilder = new StringBuilder();
@@ -872,15 +873,21 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         try {
             dir.parseAndProcess(_context, data);
         } catch (IntkeyDirectiveParseException ex) {
+            ex.printStackTrace();
             String msg = ex.getMessage();
             JOptionPane.showMessageDialog(UIUtils.getMainFrame(), msg, "Error", JOptionPane.ERROR_MESSAGE);
             Logger.error(msg);
         } catch (Exception ex) {
+            ex.printStackTrace();
             String msg = String.format("Error occurred while processing '%s' command: %s", StringUtils.join(dir.getControlWords(), " ").toUpperCase(), ex.getMessage());
             JOptionPane.showMessageDialog(UIUtils.getMainFrame(), msg, "Error", JOptionPane.ERROR_MESSAGE);
             Logger.error(msg);
             Logger.error(ex);
         }
+    }
+
+    private void executeDirectiveInvocation(IntkeyDirectiveInvocation invoc) {
+        _context.executeDirective(invoc);
     }
 
     @Override
@@ -891,7 +898,6 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     @Override
     public void handleSpecimenUpdated() {
-        
 
         Specimen specimen = _context.getSpecimen();
 
@@ -900,14 +906,16 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         List<Item> availableTaxa = new ArrayList<Item>(_context.getDataset().getTaxa());
         List<Item> eliminatedTaxa = new ArrayList<Item>();
 
-        for (Item taxon : taxaDifferenceCounts.keySet()) {
-            int diffCount = taxaDifferenceCounts.get(taxon);
-            if (diffCount > tolerance) {
-                availableTaxa.remove(taxon);
-                eliminatedTaxa.add(taxon);
+        if (taxaDifferenceCounts != null) {
+            for (Item taxon : taxaDifferenceCounts.keySet()) {
+                int diffCount = taxaDifferenceCounts.get(taxon);
+                if (diffCount > tolerance) {
+                    availableTaxa.remove(taxon);
+                    eliminatedTaxa.add(taxon);
+                }
             }
         }
-        
+
         _btnDiffSpecimenTaxa.setEnabled(availableTaxa.size() > 0);
 
         if (availableTaxa.size() == 0) {
@@ -939,8 +947,13 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
         _listUsedCharacters.setModel(_usedCharacterListModel);
 
-        _availableTaxaListModel = new TaxonListModel(availableTaxa);
-        _eliminatedTaxaListModel = new EliminatedTaxaListModel(eliminatedTaxa, taxaDifferenceCounts);
+        if (tolerance > 0) {
+            _availableTaxaListModel = new TaxonWithDifferenceCountListModel(availableTaxa, taxaDifferenceCounts);
+        } else {
+            _availableTaxaListModel = new TaxonListModel(availableTaxa);
+        }
+
+        _eliminatedTaxaListModel = new TaxonWithDifferenceCountListModel(eliminatedTaxa, taxaDifferenceCounts);
 
         _listRemainingTaxa.setModel(_availableTaxaListModel);
         _listEliminatedTaxa.setModel(_eliminatedTaxaListModel);
@@ -964,7 +977,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     public void displayRTFReport(String rtfSource, String title) {
         DisplayRTFWorker worker = new DisplayRTFWorker(rtfSource, title);
         worker.execute();
-        
+
         // Show the busy glass pane with a message if worker has not
         // completed within
         // 250 milliseconds. This avoids "flickering" of the glasspane
@@ -979,13 +992,13 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             // do nothing
         }
     }
-    
+
     private class DisplayRTFWorker extends SwingWorker<Void, Void> {
-        
+
         private String _rtfSource;
         private String _title;
-        private RtfReportDisplayDialog _dlg; 
-        
+        private RtfReportDisplayDialog _dlg;
+
         public DisplayRTFWorker(String rtfSource, String title) {
             _rtfSource = rtfSource;
             _title = title;
@@ -1002,7 +1015,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             Intkey.this.show(_dlg);
             removeBusyMessage();
         }
-        
+
     }
 
     private void taxonSelectionChanged() {
@@ -1019,7 +1032,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
         _usedCharacterListModel = new UsedCharacterListModel(Collections.EMPTY_LIST);
         _availableTaxaListModel = new TaxonListModel(dataset.getTaxa());
-        _eliminatedTaxaListModel = new EliminatedTaxaListModel(Collections.EMPTY_LIST, Collections.EMPTY_MAP);
+        _eliminatedTaxaListModel = new TaxonWithDifferenceCountListModel(Collections.EMPTY_LIST, Collections.EMPTY_MAP);
 
         _listUsedCharacters.setModel(_usedCharacterListModel);
         _listRemainingTaxa.setModel(_availableTaxaListModel);
@@ -1165,52 +1178,6 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     }
 
-    private class EliminatedTaxaListModel extends AbstractListModel {
-        List<Item> _items;
-        private Map<Item, Integer> _differenceCounts;
-        private ItemFormatter _formatter;
-
-        public EliminatedTaxaListModel(List<Item> items, Map<Item, Integer> differenceCounts) {
-            _items = items;
-            _differenceCounts = differenceCounts;
-            _formatter = new ItemFormatter(false, true, false, false, true, false);
-
-            // Sort taxa by number of differences, then by
-            // taxon number
-            Collections.sort(_items, new Comparator<Item>() {
-
-                @Override
-                public int compare(Item t1, Item t2) {
-                    int diffT1 = _differenceCounts.get(t1);
-                    int diffT2 = _differenceCounts.get(t2);
-
-                    if (diffT1 == diffT2) {
-                        return t1.compareTo(t2);
-                    } else {
-                        return Integer.valueOf(diffT1).compareTo(Integer.valueOf(diffT2));
-                    }
-                }
-            });
-        }
-
-        @Override
-        public int getSize() {
-            return _items.size();
-        }
-
-        @Override
-        public Object getElementAt(int index) {
-            Item taxon = _items.get(index);
-
-            return String.format("(%s) %s", _differenceCounts.get(taxon), _formatter.formatItemDescription(taxon));
-        }
-
-        public Item getItemAt(int index) {
-            return _items.get(index);
-        }
-
-    }
-
     @Override
     public List<Character> promptForCharacters(String directiveName) {
         CharacterKeywordSelectionDialog dlg = new CharacterKeywordSelectionDialog(getMainFrame(), _context, directiveName);
@@ -1226,18 +1193,20 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     }
 
     @Override
-    public boolean promptForYesNoOption(String message) {
-        int selectedOption = JOptionPane.showConfirmDialog(getMainFrame(), message, null, JOptionPane.YES_NO_OPTION);
+    public Boolean promptForYesNoOption(String message) {
+        int selectedOption = JOptionPane.showConfirmDialog(getMainFrame(), message, null, JOptionPane.YES_NO_CANCEL_OPTION);
         if (selectedOption == JOptionPane.YES_OPTION) {
             return true;
-        } else {
+        } else if (selectedOption == JOptionPane.NO_OPTION) {
             return false;
+        } else {
+            return null;
         }
     }
 
     @Override
-    public String promptForString(String message) {
-        return JOptionPane.showInputDialog(getMainFrame(), message);
+    public String promptForString(String message, String initialValue) {
+        return JOptionPane.showInputDialog(getMainFrame(), message, initialValue);
     }
 
     @Override
@@ -1255,13 +1224,13 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     @Override
     public void displayBusyMessage(String message) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void removeBusyMessage(String message) {
         // TODO Auto-generated method stub
-        
+
     }
 
 }

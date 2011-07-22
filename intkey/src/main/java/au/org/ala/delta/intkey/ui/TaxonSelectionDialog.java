@@ -129,7 +129,7 @@ public class TaxonSelectionDialog extends ListSelectionDialog {
     @Action
     public void taxonSelectionDialog_OK() {
         for (int i : _list.getSelectedIndices()) {
-            _selectedTaxa.add(_listModel.getItemAt(i));
+            _selectedTaxa.add(_listModel.getTaxonAt(i));
         }
 
         this.setVisible(false);
