@@ -181,6 +181,19 @@ public class ImageOverlay {
 			location.get(0).flags &= ~OL_CENTER_TEXT;
 		}
 	}
+	
+	public boolean integralHeight() {
+		return (location.size() > 0 && (location.get(0).flags & OL_INTEGRAL_HEIGHT) > 0);
+	}
+	
+	public void setIntegeralHeight(boolean integralHeight) {
+		if (integralHeight) {
+			location.get(0).flags |= OL_INTEGRAL_HEIGHT;
+		}
+		else {
+			location.get(0).flags &= ~OL_INTEGRAL_HEIGHT;
+		}
+	}
 
 	public boolean canSelect() {
 		return type == OverlayType.OLSTATE || type == OverlayType.OLVALUE;
@@ -193,6 +206,19 @@ public class ImageOverlay {
 			value.append("-").append(maxVal);
 		}
 		return value.toString();
+	}
+	
+	public void setValueString(String value) {
+		int rangeIndex = value.indexOf("-");
+		if (rangeIndex >= 0) {
+			minVal = value.substring(0, rangeIndex);
+			if (rangeIndex < value.length()-1) {
+				maxVal = value.substring(rangeIndex+1);
+			}
+		}
+		else {
+			minVal = value;
+		}
 	}
 
 	// static const char const * punct;

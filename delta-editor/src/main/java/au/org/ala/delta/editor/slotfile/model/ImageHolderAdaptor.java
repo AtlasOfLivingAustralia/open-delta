@@ -7,11 +7,11 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.editor.slotfile.DeltaVOP;
-import au.org.ala.delta.editor.slotfile.ImageType;
 import au.org.ala.delta.editor.slotfile.VOImageDesc;
 import au.org.ala.delta.editor.slotfile.VOImageHolderDesc;
 import au.org.ala.delta.model.Illustratable;
 import au.org.ala.delta.model.image.Image;
+import au.org.ala.delta.model.image.ImageType;
 
 /**
  * Helper class for working with VOImageHolderDesc objects.

@@ -24,6 +24,7 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import au.org.ala.delta.io.BinFile;
+import au.org.ala.delta.model.image.ImageType;
 import au.org.ala.delta.rtf.RTFUtils;
 import au.org.ala.delta.util.Utils;
 

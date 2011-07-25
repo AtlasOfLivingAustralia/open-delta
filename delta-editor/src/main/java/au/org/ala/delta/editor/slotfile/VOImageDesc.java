@@ -23,6 +23,7 @@ import java.util.Set;
 
 import au.org.ala.delta.io.BinFile;
 import au.org.ala.delta.model.image.ImageOverlay;
+import au.org.ala.delta.model.image.ImageType;
 import au.org.ala.delta.model.image.OverlayLocation;
 import au.org.ala.delta.model.image.OverlayLocation.OLDrawType;
 import au.org.ala.delta.model.image.OverlayType;

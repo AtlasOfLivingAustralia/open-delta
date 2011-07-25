@@ -33,6 +33,10 @@ public class Image {
 	public List<ImageOverlay> getOverlays() {
 		return _impl.getOverlays();
 	}
+	
+	public void setOverlays(List<ImageOverlay> overlays) {
+		_impl.setOverlays(overlays);
+	}
 
 	public String getFileName() {
 		return _impl.getFileName();

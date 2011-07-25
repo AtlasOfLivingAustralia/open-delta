@@ -75,6 +75,26 @@ public abstract class DirectiveArgsParser extends AbstractStreamParser {
 		
 		return text.toString();
 	}
+	
+	/**
+	 * Reads from the stream up the next character of the specified type or until the
+	 * end of the stream is reached.
+	 * @param character the character to read up to.
+	 * @return the contents of the stream up to (but not including) the supplied character.
+	 * @throws Exception if there is an error reading from the stream.
+	 */
+	protected String readToNext(char next) throws ParseException {
+		
+		StringBuilder text = new StringBuilder();
+		while (_currentInt >= 0 && _currentChar != next) {
+			text.append(_currentChar);
+			readNext();
+		}
+		
+		return text.toString();
+	}
+	
+	
 
 	protected IntRange readIds() throws ParseException {
 		try {

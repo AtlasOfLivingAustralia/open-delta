@@ -133,35 +133,6 @@ public abstract class TextListParser<T> extends DirectiveArgsParser {
 	}
 	
 	/**
-	 * Reads from the stream up the next character of the specified type or until the
-	 * end of the stream is reached.
-	 * @param character the character to read up to.
-	 * @return the contents of the stream up to (but not including) the supplied character.
-	 * @throws Exception if there is an error reading from the stream.
-	 */
-	private String readToNext(char character) throws ParseException {
-		if (_currentChar == character) {
-			return "";
-		}
-		StringBuilder text = new StringBuilder();
-		
-		boolean finished = false;
-		
-		while (!finished && _currentInt >= 0) {
-			
-			if (_currentChar == character) {
-				finished = true;
-			}
-			else {
-				text.append(_currentChar);
-				readNext();
-			}
-			
-		}
-		return text.toString();
-	}
-	
-	/**
 	 * Checks if the supplied delimiter is valid for this directive and throws a
 	 * ParseException if not.
 	 * @param delimeter the delimiter to check

@@ -17,6 +17,7 @@ package au.org.ala.delta.util;
 import java.awt.Dimension;
 import java.awt.Window;
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -99,6 +100,24 @@ public class Utils {
 			return 0;
 		}
 
+	}
+	
+	/**
+	 * A slightly more tolerant version of the BigDecimal constructor - we allow the valid number to be followed
+	 * by non-numeric characters at the end of the string. 
+	 * @param src the String to parse into a BigDecimal.
+	 * @return the length of the portion of the string containing a parsable number.
+	 */
+	public static BigDecimal stringToBigDecimal(String src, int[] endPos) {
+		
+		int endIndex = src.length();
+		while (!Character.isDigit(src.charAt(endIndex-1))) {
+			endIndex--;
+		}
+		BigDecimal value = new BigDecimal(src.substring(0, endIndex));
+		
+		endPos[0] = endIndex;
+		return value;
 	}
 
 	/**

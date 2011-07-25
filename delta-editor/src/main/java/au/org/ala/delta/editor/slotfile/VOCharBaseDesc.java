@@ -23,6 +23,7 @@ import java.util.Set;
 
 import au.org.ala.delta.editor.slotfile.VOCharTextDesc.CharTextFixedData;
 import au.org.ala.delta.io.BinFile;
+import au.org.ala.delta.model.image.ImageType;
 
 public class VOCharBaseDesc extends VOImageHolderDesc {
 

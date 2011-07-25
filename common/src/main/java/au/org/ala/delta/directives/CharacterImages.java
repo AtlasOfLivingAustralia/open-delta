@@ -1,18 +1,26 @@
 package au.org.ala.delta.directives;
 
 import java.text.ParseException;
+import java.util.List;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.directives.args.DirectiveArguments;
+import au.org.ala.delta.model.image.ImageOverlay;
+import au.org.ala.delta.model.image.ImageOverlayParser;
+import au.org.ala.delta.model.image.ImageType;
 
-
+/**
+ * Processes the CHARACTER IMAGES directive.
+ */
 public class CharacterImages extends AbstractDirective<DeltaContext> {
 
 	private DirectiveArguments _args;
+	private ImageOverlayParser _parser;
 	
 	public CharacterImages() {
-		super("taxon", "images");
+		super("character", "images");
+		_parser = new ImageOverlayParser();
 	}
 	
 	@Override
@@ -35,6 +43,8 @@ public class CharacterImages extends AbstractDirective<DeltaContext> {
 	public void process(DeltaContext context,
 			DirectiveArguments directiveArguments) throws Exception {
 		
+		String data = directiveArguments.getFirstArgumentText();
+		List<ImageOverlay> overlays = _parser.parseOverlays(data, ImageType.IMAGE_CHARACTER);
 		
 	}
 

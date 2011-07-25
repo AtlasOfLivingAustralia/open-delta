@@ -12,7 +12,7 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  ******************************************************************************/
-package au.org.ala.delta.editor.slotfile;
+package au.org.ala.delta.model.image;
 
 public class ImageType {
 	

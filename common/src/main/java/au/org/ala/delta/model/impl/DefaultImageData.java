@@ -19,6 +19,12 @@ public class DefaultImageData implements ImageData {
 	public List<ImageOverlay> getOverlays() {
 		return _overlays;
 	}
+	
+	@Override
+	public void setOverlays(List<ImageOverlay> overlays) {
+		_overlays = new ArrayList<ImageOverlay>(overlays);
+	}
+
 
 	@Override
 	public String getFileName() {
