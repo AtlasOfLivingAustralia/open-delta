@@ -3,15 +3,12 @@ package au.org.ala.delta.directives.args;
 import java.io.Reader;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.model.image.ImageInfo;
 import au.org.ala.delta.model.image.ImageOverlay;
 import au.org.ala.delta.model.image.ImageOverlayParser;
-import au.org.ala.delta.util.Pair;
 
 /**
  * Parses the arguments to the CHARACTER IMAGES, TAXON IMAGES and STARTUP IMAGES

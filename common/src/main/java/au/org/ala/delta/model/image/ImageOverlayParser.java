@@ -82,7 +82,7 @@ public class ImageOverlayParser {
 					inParam = false;
 				}
 			}
-			if (Character.isSpaceChar(ch))
+			if (Character.isWhitespace(ch))
 				continue;
 			else if (ch == '<' && (i == 0 || buffer.charAt(i - 1) != '|')) {
 				if (++commentLevel == 2) {

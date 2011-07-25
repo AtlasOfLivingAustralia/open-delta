@@ -35,6 +35,7 @@ import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.StateValueMatrix;
 import au.org.ala.delta.model.TypeSettingMark;
 import au.org.ala.delta.model.TypeSettingMark.MarkPosition;
+import au.org.ala.delta.model.image.ImageInfo;
 import au.org.ala.delta.model.UnorderedMultiStateCharacter;
 import au.org.ala.delta.rtf.RTFUtils;
 import au.org.ala.delta.util.Functor;
@@ -72,6 +73,7 @@ public class DeltaContext extends AbstractDeltaContext {
 	
 	private Set<Integer> _emphasizedFeatures = new HashSet<Integer>();
 	private Integer _characterForTaxonNames = null;
+	private Map<Integer, List<ImageInfo>> _images = new HashMap<Integer, List<ImageInfo>>();
 	
 	private int _numberOfCharacters;
 	private int _maxNumberOfStates;
@@ -574,5 +576,19 @@ public class DeltaContext extends AbstractDeltaContext {
 	public TypeSettingMark getTypeSettingMark(MarkPosition mark) {
 		return _typeSettingMarks.get(mark);
 	}
+	
+	public void setImages(int imageType, List<ImageInfo> images) {
+		_images.put(imageType, images);
+	}
+	
+	public List<ImageInfo> getImages(int imageType) {
+		List<ImageInfo> images = _images.get(imageType);
+		if (images == null) {
+			images = new ArrayList<ImageInfo>();
+		}
+		return images;
+	}
+	
+	 
 	
 }
