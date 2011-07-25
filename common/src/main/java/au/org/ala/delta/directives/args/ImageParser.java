@@ -2,11 +2,13 @@ package au.org.ala.delta.directives.args;
 
 import java.io.Reader;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.model.image.ImageInfo;
 import au.org.ala.delta.model.image.ImageOverlay;
 import au.org.ala.delta.model.image.ImageOverlayParser;
 import au.org.ala.delta.util.Pair;
@@ -19,7 +21,7 @@ public class ImageParser extends DirectiveArgsParser {
 
 	private ImageOverlayParser _overlayParser;
 	private int _imageType;
-	private Map<Object, Pair<String, List<ImageOverlay>>> _imageInfo;
+	private List<ImageInfo> _imageInfo;
 	
 	public ImageParser(DeltaContext context, Reader reader, int imageType) {
 		super(context, reader);
@@ -33,14 +35,15 @@ public class ImageParser extends DirectiveArgsParser {
 	 * parsed.  Hence we store the data in a form that can be used when
 	 * the characters and taxa are created.
 	 */
-	public Map<Object, Pair<String, List<ImageOverlay>>> getImageInfo() {
+	public List<ImageInfo> getImageInfo() {
 		return _imageInfo;
 	}
 	@Override
 	public void parse() throws ParseException {
 		
 		_args = new DirectiveArguments();
-		_imageInfo = new HashMap<Object, Pair<String,List<ImageOverlay>>>();
+		_imageInfo = new ArrayList<ImageInfo>();
+		readNext();
 		skipWhitespace();
 		
 		while (_currentChar == '#') {
@@ -55,7 +58,7 @@ public class ImageParser extends DirectiveArgsParser {
 			
 			List<ImageOverlay> overlays = _overlayParser.parseOverlays(overlayText, _imageType);
 		
-			_imageInfo.put(id, new Pair<String, List<ImageOverlay>>(fileName, overlays));
+			_imageInfo.add(new ImageInfo(id, _imageType, fileName, overlays));
 		}
 		
 	}

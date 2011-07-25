@@ -152,9 +152,9 @@ public class ImageOverlayParser {
 					}
 					overlayList.add(anOverlay);
 				}
-				anOverlay.clearAll();
-				// hsLocation.ClearAll(true);
-				olLocation.clearAll();
+				anOverlay = new ImageOverlay();
+				hsLocation = new OverlayLocation();
+				olLocation = new OverlayLocation();
 				dims = 0;
 				inHotspot = false;
 				// If we jumped here because we hit a closing bracket, tidy up
@@ -169,8 +169,8 @@ public class ImageOverlayParser {
 				int j = i + 1;
 				while (j < buffer.length() && Character.isLetter(buffer.charAt(j)))
 					++j;
-				String keyWord = buffer.substring(i + 1, --j);
-				i = j;
+				String keyWord = buffer.substring(i + 1, j);
+				i = --j;
 				anOverlay.type = OverlayType.typeFromKeyword(keyWord);
 
 				switch (anOverlay.type) {
@@ -191,7 +191,9 @@ public class ImageOverlayParser {
 				case OverlayType.OLSTATE: {
 					if (imageType != ImageType.IMAGE_CHARACTER)
 						throw new ParseException("EIP_BAD_OVERLAY_TYPE", i - nHidden);
-					int stateNo = readIntegerValue(buffer, ++i, false, false, 10);
+					int[] result = readIntegerValue(buffer, ++i, false, false, 10);
+					int stateNo = result[0];
+					i = result[1];
 					anOverlay.stateId = stateNo;
 					break;
 				}
@@ -294,8 +296,10 @@ public class ImageOverlayParser {
 
 				int val = 0;
 				if (ch == 'X' || ch == 'Y' || ch == 'W' || ch == 'H') {
-					val = readIntegerValue(buffer, ++i, anOverlay.type == OverlayType.OLUNITS
+					int[] result = readIntegerValue(buffer, ++i, anOverlay.type == OverlayType.OLUNITS
 							&& (ch == 'X' || ch == 'Y'), true, 10);
+					val = result[0];
+					i = result[1];
 					if (dims == HAS_ALL_DIMS
 							&& (anOverlay.type == OverlayType.OLSTATE || anOverlay.type == OverlayType.OLVALUE || anOverlay.type == OverlayType.OLKEYWORD)) {
 						if (inHotspot)
@@ -345,7 +349,7 @@ public class ImageOverlayParser {
 					else {
 						olLocation.H = (short) val;
 						if (val <= 0)
-							anOverlay.setIntegeralHeight(true);
+							olLocation.setIntegeralHeight(true);
 					}
 					break;
 
@@ -374,7 +378,9 @@ public class ImageOverlayParser {
 					break;
 
 				case 'F':
-					val = readIntegerValue(buffer, ++i, false, true, 16);
+					int[] result = readIntegerValue(buffer, ++i, false, true, 16);
+					val = result[0];
+					i = result[1];
 					hsLocation.setColor(val);
 					
 					break;
@@ -438,19 +444,19 @@ public class ImageOverlayParser {
 		return i;
 	}
 	
-	protected int readIntegerValue(String buffer, int pos) {
+	protected int[] readIntegerValue(String buffer, int pos) {
 		return readIntegerValue(buffer, pos, false, true, 10);
 	}
 
-	protected int readIntegerValue(String buffer, int pos, boolean allowTilde) {
+	protected int[] readIntegerValue(String buffer, int pos, boolean allowTilde) {
 		return readIntegerValue(buffer, pos, allowTilde, true, 10);
 	}
 
-	protected int readIntegerValue(String buffer, int pos, boolean allowTilde, boolean allowEquals) {
+	protected int[] readIntegerValue(String buffer, int pos, boolean allowTilde, boolean allowEquals) {
 		return readIntegerValue(buffer, pos, allowTilde, allowEquals, 10);
 	}
 
-	protected int readIntegerValue(String buffer, int pos, boolean allowTilde, boolean allowEquals, int base) {
+	protected int[] readIntegerValue(String buffer, int pos, boolean allowTilde, boolean allowEquals, int base) {
 		// Eat up any leading white-space
 		while (pos < buffer.length() && Character.isWhitespace(buffer.charAt(pos))) {
 			++pos;
@@ -466,16 +472,16 @@ public class ImageOverlayParser {
 		}
 
 		if (allowTilde && buffer.charAt(pos) == '~')
-			return Short.MIN_VALUE;
+			return new int[] {Short.MIN_VALUE, pos};
 
-		String candidate = buffer.substring(pos, buffer.length() - 1);
+		String candidate = buffer.substring(pos, buffer.length());
 		int[] endPtr = new int[] { 0 };
 		int retVal = Utils.strtol(candidate, endPtr);
 		if (endPtr[0] == 0) {
 			throw new RuntimeException("Bad symbol: " + candidate);
 		} else {
-			// pos += --endPtr - string;
+			pos += --endPtr[0];
 		}
-		return retVal;
+		return new int[] {retVal, pos};
 	}
 }

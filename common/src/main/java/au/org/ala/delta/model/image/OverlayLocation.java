@@ -15,6 +15,7 @@ public class OverlayLocation {
 	private static final int OLOC_FLAG_COLOUR_MASK = 0x00ffffff;
 	private static final int OLOC_FLAG_POPUP    =   0x02000000;
 	private static final int OLOC_FLAG_COLOUR   =   0x04000000;
+	public static final byte OL_INTEGRAL_HEIGHT = 0x8;
 	
 	public void clearAll() {
 		drawType = OLDrawType.Unknown;
@@ -73,6 +74,19 @@ public class OverlayLocation {
 	
 	public int getColorAsBGR() {
 		return flags & OLOC_FLAG_COLOUR_MASK;
+	}
+	
+	public boolean integralHeight() {
+		return ((flags & OL_INTEGRAL_HEIGHT) > 0);
+	}
+	
+	public void setIntegeralHeight(boolean integralHeight) {
+		if (integralHeight) {
+			flags |= OL_INTEGRAL_HEIGHT;
+		}
+		else {
+			flags &= ~OL_INTEGRAL_HEIGHT;
+		}
 	}
 
 
