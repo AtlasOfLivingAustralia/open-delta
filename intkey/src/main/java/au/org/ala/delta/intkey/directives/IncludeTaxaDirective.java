@@ -8,14 +8,14 @@ import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.directives.args.DirectiveArgType;
-import au.org.ala.delta.intkey.directives.invocation.IncludeCharactersDirectiveInvocation;
+import au.org.ala.delta.intkey.directives.invocation.IncludeTaxaDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.model.Item;
 
-public class IncludeCharactersDirective extends IntkeyDirective {
-    
-    public IncludeCharactersDirective() {
-        super("include", "characters");
+public class IncludeTaxaDirective extends IntkeyDirective {
+    public IncludeTaxaDirective() {
+        super("include", "taxa");
     }
 
     @Override
@@ -25,21 +25,21 @@ public class IncludeCharactersDirective extends IntkeyDirective {
     
     @Override
     protected IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
-        Set<Integer> includeCharacterNumbers = new HashSet<Integer>();
+        Set<Integer> includeTaxaNumbers = new HashSet<Integer>();
         
         if (StringUtils.isBlank(data)) {
-            List<au.org.ala.delta.model.Character> selectedCharacters = context.getDirectivePopulator().promptForCharacters("INCLUDE CHARACTERS");
-            for (au.org.ala.delta.model.Character ch: selectedCharacters) {
-                includeCharacterNumbers.add(ch.getCharacterId());
+            List<Item> selectedTaxa = context.getDirectivePopulator().promptForTaxa("INCLUDE TAXA");
+            for (Item taxon: selectedTaxa) {
+                includeTaxaNumbers.add(taxon.getItemNumber());
             }
         } else {
             throw new NotImplementedException();
         }
         
-        if (includeCharacterNumbers.size() == 0) {
+        if (includeTaxaNumbers.size() == 0) {
             return null;
         }
         
-        return new IncludeCharactersDirectiveInvocation(includeCharacterNumbers);
+        return new IncludeTaxaDirectiveInvocation(includeTaxaNumbers);
     }
 }

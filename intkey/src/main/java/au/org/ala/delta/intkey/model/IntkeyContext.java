@@ -4,12 +4,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang.math.IntRange;
 
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.directives.AbstractDeltaContext;
@@ -62,6 +63,9 @@ public class IntkeyContext extends AbstractDeltaContext {
     private IntkeyCharacterOrder _characterOrder;
 
     private LinkedHashMap<Character, Double> _bestCharacters;
+
+    private Set<Integer> _includedCharacters;
+    private Set<Integer> _includedTaxa;
 
     /**
      * Should executed directives be recorded in the history?
@@ -244,6 +248,18 @@ public class IntkeyContext extends AbstractDeltaContext {
 
         _specimen = new Specimen(_dataset, _matchInapplicables, _matchInapplicables, _matchType);
 
+        _includedCharacters = new HashSet<Integer>();
+        IntRange charNumRange = new IntRange(1, _dataset.getNumberOfCharacters());
+        for (int i : charNumRange.toArray()) {
+            _includedCharacters.add(i);
+        }
+        
+        _includedTaxa = new HashSet<Integer>();
+        IntRange taxaNumRange = new IntRange(1, _dataset.getNumberOfTaxa());
+        for (int i : taxaNumRange.toArray()) {
+            _includedTaxa.add(i);
+        }        
+
         // TODO need a proper listener pattern here?
         if (!_processingInputFile) {
             _appUI.handleNewDataset(_dataset);
@@ -323,6 +339,7 @@ public class IntkeyContext extends AbstractDeltaContext {
      * @param value
      *            the character value
      */
+    // TODO take a character number rather than a character object?
     public void setValueForCharacter(au.org.ala.delta.model.Character ch, CharacterValue value) {
         Logger.log("Using character");
         _specimen.setValueForCharacter(ch, value);
@@ -333,6 +350,7 @@ public class IntkeyContext extends AbstractDeltaContext {
      * 
      * @param ch
      */
+    // TODO take a character number rather than a character object?
     public void removeValueForCharacter(Character ch) {
         Logger.log("Deleting character");
         _specimen.removeValueForCharacter(ch);
@@ -360,6 +378,7 @@ public class IntkeyContext extends AbstractDeltaContext {
      * @param characterNumbers
      *            The set of characters to be represented by the keyword
      */
+    // TODO check character number is a valid character number
     public void addCharacterKeyword(String keyword, Set<Integer> characterNumbers) {
         if (_dataset == null) {
             throw new IllegalStateException("Cannot define a character keyword if no dataset loaded");
@@ -445,6 +464,7 @@ public class IntkeyContext extends AbstractDeltaContext {
     }
 
     public void addTaxaKeyword(String keyword, Set<Integer> taxaNumbers) {
+        // TODO check supplied numbers are valid taxa numbers
         _userDefinedTaxonKeywords.put(keyword, taxaNumbers);
     }
 
@@ -474,6 +494,8 @@ public class IntkeyContext extends AbstractDeltaContext {
                 }
             }
         } else {
+            // TODO match if supplied text matches the beginning of a taxon name
+
             Set<Integer> taxonNumbers = _userDefinedTaxonKeywords.get(keyword);
 
             if (taxonNumbers != null) {
@@ -541,7 +563,7 @@ public class IntkeyContext extends AbstractDeltaContext {
             // As we are starting from the beginning, best characters must be
             // cleared as they are no longer valid
             _bestCharacters = null;
-            
+
             _tolerance = 0;
 
             _appUI.handleIdentificationRestarted();
@@ -578,10 +600,11 @@ public class IntkeyContext extends AbstractDeltaContext {
     public int getTolerance() {
         return _tolerance;
     }
-    
+
     /**
      * Set the current error tolerance. This is used when determining which taxa
      * to eliminate following characters being used.
+     * 
      * @param toleranceValue
      */
     public void setTolerance(int toleranceValue) {
@@ -688,6 +711,62 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     public MatchType getMatchType() {
         return _matchType;
+    }
+
+    public Set<Character> getIncludedCharacters() {
+        Set<Character> retSet = new HashSet<Character>();
+
+        for (int charNum : _includedCharacters) {
+            retSet.add(_dataset.getCharacter(charNum));
+        }
+
+        return retSet;
+    }
+
+    public Set<Item> getIncludedTaxa() {
+        Set<Item> retSet = new HashSet<Item>();
+
+        for (int charNum : _includedTaxa) {
+            retSet.add(_dataset.getTaxon(charNum));
+        }
+
+        return retSet;
+    }
+
+    public void setIncludedCharacters(Set<Integer> includedCharacters) {
+        // defensive copy
+        _includedCharacters = new HashSet<Integer>(includedCharacters);
+        
+        // best characters need to be recalculated to account for characters that
+        // have been included/excluded
+        _bestCharacters = null;
+        
+        _appUI.handleSpecimenUpdated();
+    }
+
+    public void setIncludedTaxa(Set<Integer> includedTaxa) {
+        // defensive copy
+        _includedTaxa = new HashSet<Integer>(includedTaxa);
+        
+        // best characters need to be recalculated to account for taxa that
+        // have been included/excluded
+        _bestCharacters = null;
+        
+        _appUI.handleSpecimenUpdated();
+    }
+    
+    // The currently included characters minus the characters
+    // that have values set in the specimen
+    public Set<Character> getAvailableCharacters() {
+        Set<Character> retSet = getIncludedCharacters();
+        
+        // Used characters are not available
+        retSet.removeAll(_specimen.getUsedCharacters());
+        
+        // Neither are characters that have been made inapplicable
+        retSet.removeAll(_specimen.getInapplicableCharacters());
+        
+        return retSet;
     }
 
     /**

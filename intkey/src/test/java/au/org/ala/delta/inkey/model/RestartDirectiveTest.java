@@ -41,7 +41,6 @@ public class RestartDirectiveTest extends TestCase {
 
         Specimen specimen = context.getSpecimen();
         assertEquals(Collections.EMPTY_LIST, specimen.getUsedCharacters());
-        assertEquals(ds.getCharacters(), specimen.getAvailableCharacters());
     }
 
     /**
@@ -61,7 +60,6 @@ public class RestartDirectiveTest extends TestCase {
 
         Specimen specimen = context.getSpecimen();
         assertEquals(Collections.EMPTY_LIST, specimen.getUsedCharacters());
-        assertEquals(ds.getCharacters(), specimen.getAvailableCharacters());
     }
 
     // TODO check that characters that have had their values fixed using SET FIX

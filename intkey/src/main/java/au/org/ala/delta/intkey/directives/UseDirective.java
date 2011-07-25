@@ -437,7 +437,15 @@ public class UseDirective extends IntkeyDirective {
                 return false;
             }
 
-            // TODO is character excluded?
+            // is character excluded?
+            if (!context.getIncludedCharacters().contains(ch)) {
+                if (!context.isProcessingInputFile()) {
+                    String msg = String.format(UIUtils.getResourceString("UseDirective.CharacterExcluded"), formatter.formatCharacterDescription(ch));
+                    String title = String.format(UIUtils.getResourceString("Intkey.informationDlgTitle"), formatter.formatCharacterDescription(ch));
+                    JOptionPane.showMessageDialog(UIUtils.getMainFrame(), msg, title, JOptionPane.ERROR_MESSAGE);
+                }
+                return false;
+            }
 
             return true;
         }

@@ -279,7 +279,7 @@ public class UseDirectiveTest extends TestCase {
         assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(4)));
         assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(5)));
 
-        List<au.org.ala.delta.model.Character> availableCharacters = specimen.getAvailableCharacters();
+        Set<au.org.ala.delta.model.Character> availableCharacters = context.getAvailableCharacters();
         assertTrue(availableCharacters.contains(ds.getCharacter(1)));
         assertFalse(availableCharacters.contains(ds.getCharacter(2)));
         assertFalse(availableCharacters.contains(ds.getCharacter(3)));
@@ -302,7 +302,7 @@ public class UseDirectiveTest extends TestCase {
         assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(4)));
         assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(5)));
 
-        availableCharacters = specimen.getAvailableCharacters();
+        availableCharacters = context.getAvailableCharacters();
         assertTrue(availableCharacters.contains(ds.getCharacter(1)));
         assertFalse(availableCharacters.contains(ds.getCharacter(2)));
         assertFalse(availableCharacters.contains(ds.getCharacter(3)));
@@ -456,23 +456,23 @@ public class UseDirectiveTest extends TestCase {
 
         au.org.ala.delta.model.Character charThree = ds.getCharacter(3);
 
-        assertTrue(context.getSpecimen().getAvailableCharacters().contains(charThree));
+        assertTrue(context.getAvailableCharacters().contains(charThree));
 
         new UseDirective().parseAndProcess(context, "1,2");
 
-        assertFalse(context.getSpecimen().getAvailableCharacters().contains(charThree));
+        assertFalse(context.getAvailableCharacters().contains(charThree));
 
         new UseDirective().parseAndProcess(context, "2,2");
 
-        assertFalse(context.getSpecimen().getAvailableCharacters().contains(charThree));
+        assertFalse(context.getAvailableCharacters().contains(charThree));
 
         new UseDirective().parseAndProcess(context, "/M 2,1");
 
-        assertFalse(context.getSpecimen().getAvailableCharacters().contains(charThree));
+        assertFalse(context.getAvailableCharacters().contains(charThree));
 
         new UseDirective().parseAndProcess(context, "/M 1,1");
 
-        assertTrue(context.getSpecimen().getAvailableCharacters().contains(charThree));
+        assertTrue(context.getAvailableCharacters().contains(charThree));
 
         // TODO do restart and follow same process but delete values for
         // characters 1 and 2
@@ -504,15 +504,17 @@ public class UseDirectiveTest extends TestCase {
 
         new UseDirective().parseAndProcess(context, "/M 2,2");
 
-        assertFalse(specimen.getAvailableCharacters().contains(charSeedInShell));
-        assertFalse(specimen.getAvailableCharacters().contains(charAvgThickness));
+        Set<au.org.ala.delta.model.Character> availableCharacters = context.getAvailableCharacters();
+        assertFalse(availableCharacters.contains(charSeedInShell));
+        assertFalse(availableCharacters.contains(charAvgThickness));
         assertFalse(specimen.hasValueFor(charSeedInShell));
         assertFalse(specimen.hasValueFor(charAvgThickness));
 
         new UseDirective().parseAndProcess(context, "/M 2,1");
 
-        assertTrue(specimen.getAvailableCharacters().contains(charSeedInShell));
-        assertTrue(specimen.getAvailableCharacters().contains(charAvgThickness));
+        availableCharacters = context.getAvailableCharacters();
+        assertTrue(availableCharacters.contains(charSeedInShell));
+        assertTrue(availableCharacters.contains(charAvgThickness));
         assertFalse(specimen.hasValueFor(charSeedInShell));
         assertFalse(specimen.hasValueFor(charAvgThickness));
     }

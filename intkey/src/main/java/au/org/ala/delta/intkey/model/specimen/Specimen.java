@@ -250,12 +250,9 @@ public class Specimen {
         // defensive copy
         return new HashMap<Item, Integer>(_taxonDifferences);
     }
-
-    public List<Character> getAvailableCharacters() {
-        List<Character> retList = new ArrayList<Character>(_dataset.getCharacters());
-        retList.removeAll(_characterValues.keySet());
-        retList.removeAll(_characterInapplicabilityCounts.keySet());
-        return retList;
+    
+    public Set<Character> getInapplicableCharacters() {
+        return new HashSet<Character>(_characterInapplicabilityCounts.keySet());
     }
 
     public boolean isCharacterInapplicable(Character ch) {

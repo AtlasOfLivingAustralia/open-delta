@@ -1,6 +1,7 @@
 package au.org.ala.delta.intkey.ui;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.swing.AbstractListModel;
@@ -15,6 +16,7 @@ public class TaxonListModel extends AbstractListModel {
 
     public TaxonListModel(List<Item> items) {
         _items = new ArrayList<Item>(items);
+        Collections.sort(_items);
         _formatter = new ItemFormatter(false, true, false, false, true, false);
     }
 

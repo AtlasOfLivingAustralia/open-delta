@@ -61,7 +61,7 @@ public class SortingUtils {
 
         double[] charCosts = new double[allCharacters.size()];
 
-        for (Character ch : dataset.getCharacters()) {
+        for (Character ch : allCharacters) {
             double charCost = Math.pow(context.getRBase(), 5.0 - Math.min(10.0, ch.getReliability()));
             charCosts[ch.getCharacterId() - 1] = charCost;
         }
@@ -69,7 +69,8 @@ public class SortingUtils {
         double varw = (1 - context.getVaryWeight()) / context.getVaryWeight();
 
         // Build list of available characters
-        List<Character> availableCharacters = new ArrayList<Character>(specimen.getAvailableCharacters());
+        List<Character> availableCharacters = new ArrayList<Character>(context.getAvailableCharacters());
+        Collections.sort(availableCharacters);
         List<Character> ignoredCharacters = new ArrayList<Character>();
         for (Character ch : availableCharacters) {
 
@@ -96,6 +97,7 @@ public class SortingUtils {
 
         // Build list of remaining taxa
         int numAvailableTaxa = 0;
+        Set<Item> includedTaxa = context.getIncludedTaxa();
         Map<Item, Boolean> taxaAvailability = new HashMap<Item, Boolean>();
 
         // TODO this line throws exception if no characters have been USEd yet
@@ -106,10 +108,12 @@ public class SortingUtils {
 
             if (taxonDifferences != null && taxonDifferences.get(taxon) > context.getTolerance()) {
                 ignore = true;
-                ;
             }
 
-            // TODO skip if taxon is not included
+            // skip if taxon is not included
+            if (!includedTaxa.contains(taxon)) {
+                ignore = true;
+            }
 
             // TODO skip if there are EXACT characters and this taxon has
             // been eliminated

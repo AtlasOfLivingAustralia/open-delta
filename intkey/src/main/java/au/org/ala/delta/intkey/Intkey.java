@@ -21,7 +21,9 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import javax.naming.Context;
 import javax.swing.AbstractListModel;
 import javax.swing.ActionMap;
 import javax.swing.JButton;
@@ -57,6 +59,8 @@ import au.org.ala.delta.intkey.directives.DisplayCharacterOrderBestDirective;
 import au.org.ala.delta.intkey.directives.DisplayCharacterOrderNaturalDirective;
 import au.org.ala.delta.intkey.directives.FileCharactersDirective;
 import au.org.ala.delta.intkey.directives.FileTaxaDirective;
+import au.org.ala.delta.intkey.directives.IncludeCharactersDirective;
+import au.org.ala.delta.intkey.directives.IncludeTaxaDirective;
 import au.org.ala.delta.intkey.directives.IntkeyDirective;
 import au.org.ala.delta.intkey.directives.IntkeyDirectiveParseException;
 import au.org.ala.delta.intkey.directives.IntkeyDirectiveParser;
@@ -142,6 +146,21 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     @Resource
     String loadingReportCaption;
 
+    @Resource
+    String identificationCompleteCaption;
+
+    @Resource
+    String availableCharactersCannotSeparateCaption;
+
+    @Resource
+    String noMatchingTaxaRemainCaption;
+
+    @Resource
+    String charactersExcludedCannotSeparateCaption;
+
+    @Resource
+    String mismatchesAllowCannotSeparateCaption;
+
     private JLabel _lblNumRemainingTaxa;
     private JLabel _lblEliminatedTaxa;
     private JButton _btnRestart;
@@ -151,7 +170,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     private JButton _btnDiffSpecimenTaxa;
     private JButton _btnSetTolerance;
     private JButton _btnSetMatch;
-    private JButton _btnUseSubset;
+    private JButton _btnSubsetCharacters;
     private JButton _btnFindCharacter;
     private JButton _btnTaxonInfo;
     private JButton _btnDiffTaxa;
@@ -321,11 +340,10 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         _btnSetMatch.setPreferredSize(new Dimension(30, 30));
         _pnlAvailableCharactersButtons.add(_btnSetMatch);
 
-        _btnUseSubset = new JButton();
-        _btnUseSubset.setAction(actionMap.get("btnUseSubset"));
-        _btnUseSubset.setEnabled(false);
-        _btnUseSubset.setPreferredSize(new Dimension(30, 30));
-        _pnlAvailableCharactersButtons.add(_btnUseSubset);
+        _btnSubsetCharacters = new JButton();
+        _btnSubsetCharacters.setAction(actionMap.get("btnSubsetCharacters"));
+        _btnSubsetCharacters.setPreferredSize(new Dimension(30, 30));
+        _pnlAvailableCharactersButtons.add(_btnSubsetCharacters);
 
         _btnFindCharacter = new JButton();
         _btnFindCharacter.setAction(actionMap.get("btnFindCharacter"));
@@ -426,7 +444,6 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
         _btnSubsetTaxa = new JButton();
         _btnSubsetTaxa.setAction(actionMap.get("btnSubsetTaxa"));
-        _btnSubsetTaxa.setEnabled(false);
         _btnSubsetTaxa.setPreferredSize(new Dimension(30, 30));
         _pnlRemainingTaxaButtons.add(_btnSubsetTaxa);
 
@@ -822,7 +839,8 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     }
 
     @Action
-    public void btnUseSubset() {
+    public void btnSubsetCharacters() {
+        executeDirective(new IncludeCharactersDirective(), null);
     }
 
     @Action
@@ -861,6 +879,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     @Action
     public void btnSubsetTaxa() {
+        executeDirective(new IncludeTaxaDirective(), null);
     }
 
     @Action
@@ -901,9 +920,14 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
         Specimen specimen = _context.getSpecimen();
 
+        // Build the lists of available and eliminated taxa. The tolerance
+        // setting
+        // needs to be accounted for
         int tolerance = _context.getTolerance();
         Map<Item, Integer> taxaDifferenceCounts = specimen.getTaxonDifferences();
-        List<Item> availableTaxa = new ArrayList<Item>(_context.getDataset().getTaxa());
+
+        Set<Item> includedTaxa = _context.getIncludedTaxa();
+        List<Item> availableTaxa = new ArrayList<Item>(includedTaxa);
         List<Item> eliminatedTaxa = new ArrayList<Item>();
 
         if (taxaDifferenceCounts != null) {
@@ -915,22 +939,24 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
                 }
             }
         }
-        _btnDiffSpecimenTaxa.setEnabled(availableTaxa.size() > 0  && eliminatedTaxa.size() > 0);
+        _btnDiffSpecimenTaxa.setEnabled(availableTaxa.size() > 0 && eliminatedTaxa.size() > 0);
 
         if (availableTaxa.size() == 0) {
-            JLabel lbl = new JLabel("No matching taxa remain.");
+            JLabel lbl = new JLabel(noMatchingTaxaRemainCaption);
             lbl.setHorizontalAlignment(JLabel.CENTER);
             lbl.setBackground(Color.WHITE);
             lbl.setOpaque(true);
             _sclPaneAvailableCharacters.setViewportView(lbl);
             _sclPaneAvailableCharacters.revalidate();
         } else if (availableTaxa.size() == 1) {
-            JLabel lbl = new JLabel("Identification Complete.");
+            JLabel lbl = new JLabel(identificationCompleteCaption);
             lbl.setHorizontalAlignment(JLabel.CENTER);
             lbl.setBackground(Color.WHITE);
             lbl.setOpaque(true);
             _sclPaneAvailableCharacters.setViewportView(lbl);
             _sclPaneAvailableCharacters.revalidate();
+        } else {
+            updateAvailableCharacters();
         }
 
         List<Character> usedCharacters = specimen.getUsedCharacters();
@@ -939,8 +965,6 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         for (Character ch : usedCharacters) {
             usedCharacterValues.add(specimen.getValueForCharacter(ch));
         }
-
-        updateAvailableCharacters();
 
         _usedCharacterListModel = new UsedCharacterListModel(usedCharacterValues);
 
@@ -968,8 +992,8 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     @Override
     public void handleCharacterOrderChanged() {
-        updateListCaptions();
         updateAvailableCharacters();
+        updateListCaptions();
     }
 
     @Override
@@ -1030,7 +1054,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         updateAvailableCharacters();
 
         _usedCharacterListModel = new UsedCharacterListModel(Collections.EMPTY_LIST);
-        _availableTaxaListModel = new TaxonListModel(dataset.getTaxa());
+        _availableTaxaListModel = new TaxonListModel(new ArrayList<Item>(_context.getIncludedTaxa()));
         _eliminatedTaxaListModel = new TaxonWithDifferenceCountListModel(Collections.EMPTY_LIST, Collections.EMPTY_MAP);
 
         _listUsedCharacters.setModel(_usedCharacterListModel);
@@ -1074,44 +1098,70 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     }
 
     private void updateAvailableCharacters() {
-        if (_context.getCharacterOrder() == IntkeyCharacterOrder.BEST) {
-            LinkedHashMap bestCharactersMap = _context.getBestCharacters();
-            if (bestCharactersMap != null) {
-                _availableCharacterListModel = new BestCharacterListModel(new ArrayList<Character>(bestCharactersMap.keySet()), bestCharactersMap);
-                _listAvailableCharacters.setModel(_availableCharacterListModel);
+        List<Character> availableCharacters = new ArrayList<Character>(_context.getIncludedCharacters());
+        availableCharacters.removeAll(_context.getSpecimen().getUsedCharacters());
+        Collections.sort(availableCharacters);
+
+        if (availableCharacters.size() == 0) {
+            String message = null;
+
+            if (_context.getIncludedCharacters().size() < _context.getDataset().getNumberOfCharacters()) { // characters
+                                                                                                           // excluded?
+                message = charactersExcludedCannotSeparateCaption;
             } else {
-                _availableCharacterListModel = null;
-
-                // The best characters list is not cached and needs to be
-                // calculated. This is a
-                // long-running operation so use a
-                // SwingWorker to do it on a different thread, and update the
-                // available characters list when
-                // it is complete.
-                GetBestCharactersWorker worker = new GetBestCharactersWorker(_context);
-                worker.execute();
-
-                // Show the busy glass pane with a message if worker has not
-                // completed within
-                // 250 milliseconds. This avoids "flickering" of the glasspane
-                // when it takes a
-                // very short time to calculate the best characters.
-                try {
-                    Thread.sleep(250);
-                    if (!worker.isDone()) {
-                        showBusyMessage(calculatingBestCaption);
-                    }
-                } catch (InterruptedException ex) {
-                    // do nothing
+                if (_context.getTolerance() > 0) {
+                    message = mismatchesAllowCannotSeparateCaption;
+                } else {
+                    message = availableCharactersCannotSeparateCaption;
                 }
-
             }
+
+            JLabel lbl = new JLabel(message);
+            lbl.setHorizontalAlignment(JLabel.CENTER);
+            lbl.setBackground(Color.WHITE);
+            lbl.setOpaque(true);
+            _sclPaneAvailableCharacters.setViewportView(lbl);
+            _sclPaneAvailableCharacters.revalidate();
         } else {
-            Specimen specimen = _context.getSpecimen();
-            List<Character> availableCharacters = new ArrayList<Character>(specimen.getAvailableCharacters());
-            Collections.sort(availableCharacters);
-            _availableCharacterListModel = new CharacterListModel(availableCharacters);
-            _listAvailableCharacters.setModel(_availableCharacterListModel);
+            if (_context.getCharacterOrder() == IntkeyCharacterOrder.BEST) {
+                LinkedHashMap bestCharactersMap = _context.getBestCharacters();
+                if (bestCharactersMap != null) {
+                    _availableCharacterListModel = new BestCharacterListModel(new ArrayList<Character>(bestCharactersMap.keySet()), bestCharactersMap);
+                    _listAvailableCharacters.setModel(_availableCharacterListModel);
+                } else {
+                    _availableCharacterListModel = null;
+
+                    // The best characters list is not cached and needs to be
+                    // calculated. This is a
+                    // long-running operation so use a
+                    // SwingWorker to do it on a different thread, and update
+                    // the
+                    // available characters list when
+                    // it is complete.
+                    GetBestCharactersWorker worker = new GetBestCharactersWorker(_context);
+                    worker.execute();
+
+                    // Show the busy glass pane with a message if worker has not
+                    // completed within
+                    // 250 milliseconds. This avoids "flickering" of the
+                    // glasspane
+                    // when it takes a
+                    // very short time to calculate the best characters.
+                    try {
+                        Thread.sleep(250);
+                        if (!worker.isDone()) {
+                            showBusyMessage(calculatingBestCaption);
+                        }
+                    } catch (InterruptedException ex) {
+                        // do nothing
+                    }
+
+                }
+            } else {
+                Specimen specimen = _context.getSpecimen();
+                _availableCharacterListModel = new CharacterListModel(availableCharacters);
+                _listAvailableCharacters.setModel(_availableCharacterListModel);
+            }
         }
     }
 
