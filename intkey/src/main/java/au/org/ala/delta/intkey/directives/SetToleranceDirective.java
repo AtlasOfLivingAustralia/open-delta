@@ -8,6 +8,10 @@ import au.org.ala.delta.intkey.directives.invocation.SetToleranceDirectiveInvoca
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
 public class SetToleranceDirective extends IntkeyDirective {
+    
+    public SetToleranceDirective() {
+        super("set", "tolerance");
+    }
 
     @Override
     public int getArgType() {
