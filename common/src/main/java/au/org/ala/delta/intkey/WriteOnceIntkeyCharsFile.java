@@ -9,13 +9,16 @@ import au.org.ala.delta.io.BinFileMode;
 /**
  * Encapsulates the way the various bits of data in the character file
  * are stored and accessed.
+ * It does not support random access - it primarily supports the use case
+ * of CONFOR creating the intkey characters file.
  */
-public class IntkeyCharsFile extends IntkeyFile {
+public class WriteOnceIntkeyCharsFile extends IntkeyFile {
 
 	private CharactersFileHeader _header;
 	
-	public IntkeyCharsFile(String fileName, BinFileMode mode) {
+	public WriteOnceIntkeyCharsFile(String fileName, BinFileMode mode) {
 		super(fileName, mode);
+		createHeader();
 	}
 	
 	public void createHeader() {
@@ -32,18 +35,28 @@ public class IntkeyCharsFile extends IntkeyFile {
 		writeIndexedValues(notesIndexRecord, notes);
 	}
 	
-	
+	/**
+	 * Writes the list of character features to this intkey chars file.
+	 * @param features the features to write.
+	 */
 	public void writeCharacterFeatures(List<List<String>> features) {
 		checkEmpty(_header.getRpCdes());
 		int indexRecord = newRecord();
 		int[] indicies = new int[features.size()];
+		int[] numStates = new int[features.size()];
 		_header.setRpCdes(indexRecord);
 		
 		int recordNum = newRecord();
 		for (int i=0; i<features.size(); i++) {
 			indicies[i] = recordNum;
+			// The first value is always the feature description (hence the -1)
+			numStates[i] = features.get(i).size()-1;
 			recordNum += writeAsContinousString(recordNum, features.get(i).toArray(new String[0]));
 		}
+		writeToRecord(indexRecord, indicies);
+		
+		_header.setRpStat(recordNum);
+		writeToRecord(recordNum, numStates);
 	}
 	
 	public void writeCharacterNotesFormat(String format) {

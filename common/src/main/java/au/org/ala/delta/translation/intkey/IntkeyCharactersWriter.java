@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import au.org.ala.delta.DeltaContext;
-import au.org.ala.delta.intkey.IntkeyCharsFile;
+import au.org.ala.delta.intkey.WriteOnceIntkeyCharsFile;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.MultiStateCharacter;
@@ -15,11 +15,11 @@ import au.org.ala.delta.model.NumericCharacter;
  */
 public class IntkeyCharactersWriter {
 
-	private IntkeyCharsFile _charsFile;
+	private WriteOnceIntkeyCharsFile _charsFile;
 	private DeltaDataSet _dataSet;
 	private DeltaContext _context;
 	
-	public IntkeyCharactersWriter(DeltaContext context, IntkeyCharsFile charsFile) {
+	public IntkeyCharactersWriter(DeltaContext context, WriteOnceIntkeyCharsFile charsFile) {
 		_charsFile = charsFile;
 		_dataSet = context.getDataSet();
 		_context = context;

@@ -103,7 +103,7 @@ public class IntkeyFile extends BinFile {
 		seekToRecord(recordNumber, offset);
 		write(values);
 		
-		return numRecords;
+		return numRecords+1;
 	}
 
 	public int getRecordCount() {
@@ -111,7 +111,7 @@ public class IntkeyFile extends BinFile {
 	}
 	
 	public int newRecord() {
-		return _recordCount++;
+		return ++_recordCount;
 	}
 	
 	// Note that records are 1 indexed.
