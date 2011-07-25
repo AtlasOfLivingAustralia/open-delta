@@ -587,7 +587,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
         JMenuItem mnuItNormalMode = new JMenuItem();
         mnuItNormalMode.setAction(actionMap.get("mnuItNormalMode"));
-        // mnuItNormalMode.setEnabled(false);
+        mnuItNormalMode.setEnabled(false);
         mnuFile.add(mnuItNormalMode);
 
         mnuFile.addSeparator();
@@ -915,8 +915,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
                 }
             }
         }
-
-        _btnDiffSpecimenTaxa.setEnabled(availableTaxa.size() > 0);
+        _btnDiffSpecimenTaxa.setEnabled(availableTaxa.size() > 0  && eliminatedTaxa.size() > 0);
 
         if (availableTaxa.size() == 0) {
             JLabel lbl = new JLabel("No matching taxa remain.");
