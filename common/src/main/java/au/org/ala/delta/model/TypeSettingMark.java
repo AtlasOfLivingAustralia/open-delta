@@ -44,12 +44,15 @@ public class TypeSettingMark {
 		SUBSEQUENT_LEAD_OF_NODE(44), FIRST_DESTINATION_OF_LEAD(45), SUBSEQUENT_DESTINATION_OF_LEAD(46),
 		AFTER_TAZXON_NAME(47), DESTINATION_OF_LEAD_NODE(48), AFTER_NODE(49), END_OF_KEY(50);
 		
-		private static Map<Integer, MarkPosition> _markIds = new HashMap<Integer, TypeSettingMark.MarkPosition>();
+		
+		
+		private static Map<Integer, MarkPosition> _markIds = new HashMap<Integer, MarkPosition>();
 		static {
 			for (MarkPosition mark : MarkPosition.values()) {
-				_markIds.put(mark.getId(), mark);
+			    _markIds.put(mark.getId(), mark);
 			}
 		}
+		
 		private int _id;
 		private MarkPosition(int id) {
 			_id = id;
@@ -64,8 +67,20 @@ public class TypeSettingMark {
 		}
 	} 
 	
+	public static enum CharacterNoteMarks {
+		// Marks used by the FORMATTING MARKS directive
+		CHARACTER_NOTES_FORMAT(2), CHARACTER_NOTES_HELP_FORMAT(3);
+		private int _id;
+		private CharacterNoteMarks(int id) {
+			_id = id;
+		};
+		public int getId() {
+			return _id;
+		}
+	}
 	
-	private MarkPosition _mark;
+	
+	private int _id;
 	private String _text;
 	private boolean _allowLineBreaks;
 	
@@ -75,14 +90,14 @@ public class TypeSettingMark {
 	 * @param text the text to be output.
 	 * @param allowLineBreaks whether or not the text can be split over more than one line.
 	 */
-	public TypeSettingMark(MarkPosition mark, String text, boolean allowLineBreaks) {
-		_mark = mark;
+	public TypeSettingMark(int id, String text, boolean allowLineBreaks) {
+		_id = id;
 		_text = text;
 		_allowLineBreaks = allowLineBreaks;
 	}
 	
-	public MarkPosition getMark() {
-		return _mark;
+	public int getId() {
+		return _id;
 	}
 	
 	public String getMarkText() {

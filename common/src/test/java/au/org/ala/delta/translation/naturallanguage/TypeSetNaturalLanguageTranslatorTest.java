@@ -44,11 +44,11 @@ public class TypeSetNaturalLanguageTranslatorTest extends
 		
 	}
 	
-	protected Map<MarkPosition, TypeSettingMark> createMarks() {
-		HashMap<MarkPosition, TypeSettingMark> marks = new HashMap<TypeSettingMark.MarkPosition, TypeSettingMark>();
+	protected Map<Integer, TypeSettingMark> createMarks() {
+		HashMap<Integer, TypeSettingMark> marks = new HashMap<Integer, TypeSettingMark>();
 		
 		for (MarkPosition position: MarkPosition.values()) {
-			marks.put(position, new TypeSettingMark(position, "mark "+position.getId(), false));
+			marks.put(position.getId(), new TypeSettingMark(position.getId(), "mark "+position.getId(), false));
 		}
 		
 		return marks;

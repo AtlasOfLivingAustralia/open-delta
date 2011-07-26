@@ -32,7 +32,7 @@ public class TypesettingMarksTest extends TestCase {
 		_directive.parseAndProcess(_context, data);
 		
 		TypeSettingMark mark = _context.getTypeSettingMark(MarkPosition.fromId(1));
-		assertEquals(1, mark.getMark().getId());
+		assertEquals(1, mark.getId());
 		assertEquals("mark 1", mark.getMarkText());
 		assertEquals(false, mark.getAllowLineBreaks());
 	}
@@ -46,12 +46,12 @@ public class TypesettingMarksTest extends TestCase {
 		_directive.parseAndProcess(_context, data);
 		
 		TypeSettingMark mark = _context.getTypeSettingMark(MarkPosition.fromId(1));
-		assertEquals(1, mark.getMark().getId());
+		assertEquals(1, mark.getId());
 		assertEquals("mark 1", mark.getMarkText());
 		assertEquals(false, mark.getAllowLineBreaks());
 		
 		mark = _context.getTypeSettingMark(MarkPosition.fromId(2));
-		assertEquals(2, mark.getMark().getId());
+		assertEquals(2, mark.getId());
 		assertEquals("mark 2", mark.getMarkText());
 		assertEquals(true, mark.getAllowLineBreaks());
 	}
@@ -65,12 +65,12 @@ public class TypesettingMarksTest extends TestCase {
 		_directive.parseAndProcess(_context, data);
 		
 		TypeSettingMark mark = _context.getTypeSettingMark(MarkPosition.fromId(1));
-		assertEquals(1, mark.getMark().getId());
+		assertEquals(1, mark.getId());
 		assertEquals("mark<comment>#1 1", mark.getMarkText());
 		assertEquals(false, mark.getAllowLineBreaks());
 		
 		mark = _context.getTypeSettingMark(MarkPosition.fromId(2));
-		assertEquals(2, mark.getMark().getId());
+		assertEquals(2, mark.getId());
 		assertEquals("mark 2", mark.getMarkText());
 		assertEquals(true, mark.getAllowLineBreaks());
 	}
@@ -84,12 +84,12 @@ public class TypesettingMarksTest extends TestCase {
 		_directive.parseAndProcess(_context, data);
 		
 		TypeSettingMark mark = _context.getTypeSettingMark(MarkPosition.fromId(1));
-		assertEquals(1, mark.getMark().getId());
+		assertEquals(1, mark.getId());
 		assertEquals("mark 1", mark.getMarkText());
 		assertEquals(false, mark.getAllowLineBreaks());
 		
 		mark = _context.getTypeSettingMark(MarkPosition.fromId(2));
-		assertEquals(2, mark.getMark().getId());
+		assertEquals(2, mark.getId());
 		assertEquals("mark 2", mark.getMarkText());
 		assertEquals(false, mark.getAllowLineBreaks());
 	}
@@ -99,12 +99,12 @@ public class TypesettingMarksTest extends TestCase {
 		String data = "! \n #1. <test> \n#2. <test 2> !mark 2!\n";
 		_directive.parseAndProcess(_context, data);
 		TypeSettingMark mark = _context.getTypeSettingMark(MarkPosition.fromId(1));
-		assertEquals(1, mark.getMark().getId());
+		assertEquals(1, mark.getId());
 		assertEquals("", mark.getMarkText());
 		assertEquals(false, mark.getAllowLineBreaks());
 		
 		mark = _context.getTypeSettingMark(MarkPosition.fromId(2));
-		assertEquals(2, mark.getMark().getId());
+		assertEquals(2, mark.getId());
 		assertEquals("mark 2", mark.getMarkText());
 		assertEquals(false, mark.getAllowLineBreaks());
 	}
