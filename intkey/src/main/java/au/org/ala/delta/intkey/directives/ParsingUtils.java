@@ -10,38 +10,81 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.math.FloatRange;
 import org.apache.commons.lang.math.IntRange;
 
+import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.Item;
+
 public class ParsingUtils {
     private static Pattern INT_RANGE_PATTERN = Pattern.compile("^(-?\\d+)-(-?\\d+)$");
     private static Pattern FLOAT_RANGE_PATTERN = Pattern.compile("^(-?\\d+(\\.\\d+)?)-(-?\\d+(\\.\\d+)?)$");
-    
+
     public static final String KEYWORD_SPECIMEN = "specimen";
+
+    // Take an individual number, number range or keyword and return the
+    // corresponding characters
+    public static List<Character> parseCharacterToken(String characterToken, IntkeyContext context) {
+        List<Character> characters = new ArrayList<Character>();
+
+        IntRange range = ParsingUtils.parseIntRange(characterToken);
+        if (range != null) {
+            for (int i : range.toArray()) {
+                Character c = context.getDataset().getCharacter(i);
+                characters.add(c);
+            }
+        } else {
+            List<Character> keywordCharacters = context.getCharactersForKeyword(characterToken);
+            characters.addAll(keywordCharacters);
+        }
+
+        return characters;
+    }
+
+    // Take an individual number, number range or keyword and return the
+    // corresponding taxa
+    public static List<Item> parseTaxonToken(String taxonToken, IntkeyContext context) {
+        List<Item> taxa = new ArrayList<Item>();
+
+        IntRange range = ParsingUtils.parseIntRange(taxonToken);
+
+        if (range != null) {
+            for (int i : range.toArray()) {
+                Item t = context.getDataset().getTaxon(i);
+                taxa.add(t);
+            }
+        } else {
+            List<Item> keywordTaxa = context.getTaxaForKeyword(taxonToken);
+            taxa.addAll(keywordTaxa);
+        }
+
+        return taxa;
+    }
 
     public static Set<Integer> parseMultistateOrIntegerCharacterValue(String charValue) {
         Set<Integer> selectedStates = new HashSet<Integer>();
-        
-        //split on "/" character to get a list of ranges
+
+        // split on "/" character to get a list of ranges
         String[] tokens = charValue.split("/");
-        
-        for (String token: tokens) {
+
+        for (String token : tokens) {
             IntRange r = parseIntRange(token);
-            
+
             if (r == null) {
                 throw new IllegalArgumentException("Invalid integer value");
             }
-            
-            for (int i: r.toArray()) {
+
+            for (int i : r.toArray()) {
                 selectedStates.add(i);
             }
         }
-        
+
         return selectedStates;
     }
 
     public static FloatRange parseRealCharacterValue(String charValue) {
-        //The "/" character is interpreted as the range separator when 
-        //parsing a real value.
+        // The "/" character is interpreted as the range separator when
+        // parsing a real value.
         charValue = charValue.replace("/", "-");
-        
+
         FloatRange r = parseFloatRange(charValue);
 
         if (r == null) {
@@ -98,6 +141,9 @@ public class ParsingUtils {
 
     public static List<String> tokenizeDirectiveCall(String data) {
         List<String> tokens = new ArrayList<String>();
+        if (data == null) {
+            return tokens;
+        }
 
         boolean inQuotedString = false;
         int endLastToken = -1;
@@ -105,26 +151,28 @@ public class ParsingUtils {
             boolean isEndToken = false;
 
             char c = data.charAt(i);
-            
+
             char prevChar = 0;
             if (i > 0) {
                 prevChar = data.charAt(i - 1);
             }
-            
+
             char nextChar = 0;
             if (i < data.length() - 1) {
                 nextChar = data.charAt(i + 1);
             }
 
-            // open and close parentheses are tokens on their own (provided we are not inside a quoted string)
+            // open and close parentheses are tokens on their own (provided we
+            // are not inside a quoted string)
             if ((c == '(' || c == ')') && !inQuotedString) {
                 isEndToken = true;
-            // If the next character is an open or end parenthesis, we are at the end of the curent token
-            // (provided we are not inside a quoted string)
+                // If the next character is an open or end parenthesis, we are
+                // at the end of the curent token
+                // (provided we are not inside a quoted string)
             } else if ((nextChar == '(' || nextChar == ')') && !inQuotedString) {
                 isEndToken = true;
             } else if (c == '"') {
-                // Ignore quote if it is in the middle of a string - 
+                // Ignore quote if it is in the middle of a string -
                 // don't throw error for unmatched quotes.
                 // this is the behaviour in the legacy intkey - may change this
                 // later.
@@ -139,7 +187,8 @@ public class ParsingUtils {
                     }
                 }
             } else if ((c == ' ' || c == '\n') && !inQuotedString) {
-                // if we're not inside a quoted string, then a space or newline designates
+                // if we're not inside a quoted string, then a space or newline
+                // designates
                 // the end of a subcommand
                 isEndToken = true;
             }

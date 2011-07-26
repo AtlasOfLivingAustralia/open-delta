@@ -4,15 +4,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.swing.JOptionPane;
-
 import org.apache.commons.lang.math.IntRange;
 
 import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.intkey.directives.invocation.DefineTaxaDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
-import au.org.ala.delta.intkey.ui.UIUtils;
 import au.org.ala.delta.model.Item;
 
 public class DefineTaxaDirective extends IntkeyDirective {
@@ -30,6 +27,7 @@ public class DefineTaxaDirective extends IntkeyDirective {
     protected IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
         String keyword = null;
         Set<Integer> taxonNumbers = new HashSet<Integer>();
+        
         if (data != null) {
             List<String> tokens = ParsingUtils.tokenizeDirectiveCall(data);
 
@@ -59,12 +57,14 @@ public class DefineTaxaDirective extends IntkeyDirective {
         }
         
         if (keyword == null) {
-            keyword = "foo";
+            keyword = context.getDirectivePopulator().promptForString("Enter keyword", null, "DEFINE TAXA");
         }
 
         if (taxonNumbers.size() == 0) {
             List<Item> taxa = context.getDirectivePopulator().promptForTaxa("DEFINE TAXA");
-            System.out.println(taxa);
+            for (Item taxon: taxa) {
+                taxonNumbers.add(taxon.getItemNumber());
+            }
         }
 
         return new DefineTaxaDirectiveInvocation(keyword, taxonNumbers);

@@ -4,9 +4,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang.NotImplementedException;
-import org.apache.commons.lang.StringUtils;
-
 import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.intkey.directives.invocation.IncludeCharactersDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
@@ -27,13 +24,20 @@ public class IncludeCharactersDirective extends IntkeyDirective {
     protected IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
         Set<Integer> includeCharacterNumbers = new HashSet<Integer>();
         
-        if (StringUtils.isBlank(data)) {
+        List<String> tokens = ParsingUtils.tokenizeDirectiveCall(data);
+        
+        if (tokens.isEmpty()) {
             List<au.org.ala.delta.model.Character> selectedCharacters = context.getDirectivePopulator().promptForCharacters("INCLUDE CHARACTERS");
             for (au.org.ala.delta.model.Character ch: selectedCharacters) {
                 includeCharacterNumbers.add(ch.getCharacterId());
             }
         } else {
-            throw new NotImplementedException();
+            for (String token: tokens) {
+                List<au.org.ala.delta.model.Character> tokenCharacters = ParsingUtils.parseCharacterToken(token, context);
+                for (au.org.ala.delta.model.Character ch: tokenCharacters) {
+                    includeCharacterNumbers.add(ch.getCharacterId());
+                }
+            }
         }
         
         if (includeCharacterNumbers.size() == 0) {

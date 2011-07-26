@@ -388,6 +388,13 @@ public class IntkeyContext extends AbstractDeltaContext {
         if (keyword.equals(CHARACTER_KEYWORD_ALL) || keyword.equals(CHARACTER_KEYWORD_USED) || keyword.equals(CHARACTER_KEYWORD_AVAILABLE)) {
             throw new IllegalArgumentException(String.format(UIUtils.getResourceString("RedefineSystemKeyword.error"), keyword));
         }
+        
+        for (int chNum: characterNumbers) {
+            if (chNum < 1 || chNum > _dataset.getNumberOfCharacters()) {
+                throw new IllegalArgumentException(String.format("Invalid character number %s", chNum));
+            }
+        }
+        
         _userDefinedCharacterKeywords.put(keyword.toLowerCase(), characterNumbers);
     }
 
@@ -464,12 +471,28 @@ public class IntkeyContext extends AbstractDeltaContext {
     }
 
     public void addTaxaKeyword(String keyword, Set<Integer> taxaNumbers) {
-        // TODO check supplied numbers are valid taxa numbers
+        if (_dataset == null) {
+            throw new IllegalStateException("Cannot define a taxa keyword if no dataset loaded");
+        }
+        
+        keyword = keyword.toLowerCase();
+        if (keyword.equals(TAXON_KEYWORD_ALL) || keyword.equals(TAXON_KEYWORD_ELIMINATED) || keyword.equals(TAXON_KEYWORD_REMAINING)) {
+            throw new IllegalArgumentException(String.format(UIUtils.getResourceString("RedefineSystemKeyword.error"), keyword));
+        }
+        
+        for (int taxonNum: taxaNumbers) {
+            if (taxonNum < 1 || taxonNum > _dataset.getNumberOfTaxa()) {
+                throw new IllegalArgumentException(String.format("Invalid taxon number %s", taxonNum));
+            }
+        }
+        
         _userDefinedTaxonKeywords.put(keyword, taxaNumbers);
     }
 
     public List<Item> getTaxaForKeyword(String keyword) {
         List<Item> retList = new ArrayList<Item>();
+        
+        keyword = keyword.toLowerCase();
 
         if (keyword.equals(TAXON_KEYWORD_ALL)) {
             return _dataset.getTaxa();
@@ -495,16 +518,34 @@ public class IntkeyContext extends AbstractDeltaContext {
             }
         } else {
             // TODO match if supplied text matches the beginning of a taxon name
+            Set<Integer> taxaNumbersSet = _userDefinedCharacterKeywords.get(keyword);
 
-            Set<Integer> taxonNumbers = _userDefinedTaxonKeywords.get(keyword);
-
-            if (taxonNumbers != null) {
-                for (int taxonNumber : taxonNumbers) {
-                    retList.add(_dataset.getTaxon(taxonNumber));
+            // If there is no exact match for the specified keyword text, try
+            // and match a single
+            // keyword that begins with the text
+            if (taxaNumbersSet == null) {
+                List<String> matches = new ArrayList<String>();
+                for (String savedKeyword : _userDefinedTaxonKeywords.keySet()) {
+                    // ignore leading and trailing whitespace when matching
+                    // against a keyword
+                    if (savedKeyword.trim().startsWith(keyword.trim())) {
+                        matches.add(savedKeyword);
+                    }
                 }
-            } else {
-                throw new IllegalArgumentException("bad taxon keyword");
+
+                if (matches.size() == 0) {
+                    throw new IllegalArgumentException(String.format(UIUtils.getResourceString("KeywordNotFound.error"), keyword));
+                } else if (matches.size() == 1) {
+                    taxaNumbersSet = _userDefinedTaxonKeywords.get(matches.get(0));
+                } else {
+                    throw new IllegalArgumentException(String.format(UIUtils.getResourceString("KeywordAmbiguous.error"), keyword));
+                }
             }
+            
+            for (int taxonNumber: taxaNumbersSet) {
+                retList.add(_dataset.getTaxon(taxonNumber));
+            }
+
         }
 
         Collections.sort(retList);
@@ -538,6 +579,8 @@ public class IntkeyContext extends AbstractDeltaContext {
         if (remainingTaxaCount < _dataset.getNumberOfTaxa()) {
             retList.add(TAXON_KEYWORD_ELIMINATED);
         }
+        
+        retList.addAll(_userDefinedTaxonKeywords.keySet());
 
         return retList;
     }

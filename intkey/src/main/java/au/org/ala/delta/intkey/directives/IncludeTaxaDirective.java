@@ -4,9 +4,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang.NotImplementedException;
-import org.apache.commons.lang.StringUtils;
-
 import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.intkey.directives.invocation.IncludeTaxaDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
@@ -27,13 +24,20 @@ public class IncludeTaxaDirective extends IntkeyDirective {
     protected IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
         Set<Integer> includeTaxaNumbers = new HashSet<Integer>();
         
-        if (StringUtils.isBlank(data)) {
+        List<String> tokens = ParsingUtils.tokenizeDirectiveCall(data);
+        
+        if (tokens.isEmpty()) {
             List<Item> selectedTaxa = context.getDirectivePopulator().promptForTaxa("INCLUDE TAXA");
             for (Item taxon: selectedTaxa) {
                 includeTaxaNumbers.add(taxon.getItemNumber());
             }
         } else {
-            throw new NotImplementedException();
+            for (String token: tokens) {
+                List<Item> tokenTaxa = ParsingUtils.parseTaxonToken(token, context);
+                for (Item taxon: tokenTaxa) {
+                    includeTaxaNumbers.add(taxon.getItemNumber());
+                }
+            }
         }
         
         if (includeTaxaNumbers.size() == 0) {

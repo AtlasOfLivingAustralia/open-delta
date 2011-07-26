@@ -21,7 +21,7 @@ public class DefineTaxaDirectiveInvocation implements IntkeyDirectiveInvocation 
 
     @Override
     public boolean execute(IntkeyContext context) {
-        context.addCharacterKeyword(_keyword, _taxaNumbers);
+        context.addTaxaKeyword(_keyword, _taxaNumbers);
         return true;
     }
 

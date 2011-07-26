@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.naming.Context;
 import javax.swing.AbstractListModel;
 import javax.swing.ActionMap;
 import javax.swing.JButton;
@@ -90,7 +89,6 @@ import au.org.ala.delta.ui.AboutBox;
 import au.org.ala.delta.ui.DeltaSingleFrameApplication;
 import au.org.ala.delta.ui.rtf.SimpleRtfEditorKit;
 import au.org.ala.delta.ui.util.IconHelper;
-import au.org.ala.delta.util.IntegerFunctor;
 
 public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, DirectivePopulator {
 
@@ -1189,12 +1187,14 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
         @Override
         protected void done() {
-            LinkedHashMap bestCharactersMap = _context.getBestCharacters();
-            _availableCharacterListModel = new BestCharacterListModel(new ArrayList<Character>(bestCharactersMap.keySet()), bestCharactersMap);
-            _listAvailableCharacters.setModel(_availableCharacterListModel);
+//            LinkedHashMap bestCharactersMap = _context.getBestCharacters();
+//            _availableCharacterListModel = new BestCharacterListModel(new ArrayList<Character>(bestCharactersMap.keySet()), bestCharactersMap);
+//            _listAvailableCharacters.setModel(_availableCharacterListModel);
+//
+//            _lblNumAvailableCharacters.setText(String.format(bestCharactersCaption, _availableCharacterListModel.getSize()));
 
-            _lblNumAvailableCharacters.setText(String.format(bestCharactersCaption, _availableCharacterListModel.getSize()));
-
+            updateAvailableCharacters();
+            updateListCaptions();
             removeBusyMessage();
         }
     }
@@ -1254,8 +1254,8 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     }
 
     @Override
-    public String promptForString(String message, String initialValue) {
-        return JOptionPane.showInputDialog(getMainFrame(), message, initialValue);
+    public String promptForString(String message, String initialValue, String directiveName) {
+        return (String) JOptionPane.showInputDialog(getMainFrame(), message, directiveName, JOptionPane.PLAIN_MESSAGE, null, null, initialValue);
     }
 
     @Override

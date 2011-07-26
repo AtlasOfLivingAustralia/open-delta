@@ -25,7 +25,7 @@ public class SetToleranceDirective extends IntkeyDirective {
         int currentTolerance = context.getTolerance();
 
         if (StringUtils.isBlank(data)) {
-            String inputText = context.getDirectivePopulator().promptForString("Input tolerance value", Integer.toString(currentTolerance));
+            String inputText = context.getDirectivePopulator().promptForString("Input tolerance value", Integer.toString(currentTolerance), "SET TOLERANCE");
 
             if (StringUtils.isBlank(inputText)) {
                 // Cancel hit or blank text entered
