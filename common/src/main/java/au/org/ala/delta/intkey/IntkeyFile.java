@@ -49,7 +49,7 @@ public class IntkeyFile extends BinFile {
 	public int writeStringWithLength(int recordNumber, String value) {
 		
 		writeToRecord(recordNumber, value.length());
-		int numRecords = writeToRecord(recordNumber++, 0, value);
+		int numRecords = writeToRecord(recordNumber+1, 0, value);
 		return numRecords+1;
 	}
 	
@@ -130,7 +130,7 @@ public class IntkeyFile extends BinFile {
     }
     
     private int recordOffset(int recordNum) {
-    	return (recordNum - 1) * RECORD_LENGTH_INTEGERS * SIZE_INT_IN_BYTES;
+    	return (recordNum - 1) * RECORD_LENGTH_BYTES;
     }
     
     
