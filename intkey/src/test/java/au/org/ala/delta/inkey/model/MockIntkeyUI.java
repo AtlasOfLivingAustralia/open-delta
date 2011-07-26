@@ -11,12 +11,7 @@ public class MockIntkeyUI implements IntkeyUI {
     }
 
     @Override
-    public void handleCharacterOrderChanged() {
-        // do nothing
-    }
-
-    @Override
-    public void handleSpecimenUpdated() {
+    public void handleUpdateAll() {
         // do nothing
     }
 

@@ -50,6 +50,8 @@ public class SortingUtils {
      *         supplied map
      */
     public static LinkedHashMap<au.org.ala.delta.model.Character, Double> orderBest(IntkeyContext context) {
+        LinkedHashMap<Character, Double> retMap = new LinkedHashMap<Character, Double>();
+        
         IntkeyDataset dataset = context.getDataset();
         Specimen specimen = context.getSpecimen();
 
@@ -94,6 +96,11 @@ public class SortingUtils {
             }
         }
         availableCharacters.removeAll(ignoredCharacters);
+        
+        if (availableCharacters.isEmpty()) {
+            // no available characters, so just return an empty map.
+            return retMap;
+        }
 
         // Build list of remaining taxa
         int numAvailableTaxa = 0;
@@ -125,6 +132,11 @@ public class SortingUtils {
                 taxaAvailability.put(taxon, true);
             }
 
+        }
+        
+        if (numAvailableTaxa == 0) {
+            // no taxa are available - return empty map
+            return retMap;
         }
 
         // sort available characters by reliability (descending)
@@ -364,8 +376,6 @@ public class SortingUtils {
                 return Double.valueOf(suVals[c1.getCharacterId() - 1]).compareTo(Double.valueOf(suVals[c2.getCharacterId() - 1]));
             }
         });
-
-        LinkedHashMap<Character, Double> retMap = new LinkedHashMap<Character, Double>();
 
         for (Character ch : sortedChars) {
             retMap.put(ch, sepVals[ch.getCharacterId() - 1]);

@@ -366,7 +366,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         // valid
         _bestCharacters = null;
 
-        _appUI.handleSpecimenUpdated();
+        _appUI.handleUpdateAll();
     }
 
     /**
@@ -652,7 +652,7 @@ public class IntkeyContext extends AbstractDeltaContext {
      */
     public void setTolerance(int toleranceValue) {
         _tolerance = toleranceValue;
-        _appUI.handleSpecimenUpdated();
+        _appUI.handleUpdateAll();
     }
 
     /**
@@ -726,7 +726,7 @@ public class IntkeyContext extends AbstractDeltaContext {
      */
     public void setCharacterOrder(IntkeyCharacterOrder characterOrder) {
         this._characterOrder = characterOrder;
-        _appUI.handleCharacterOrderChanged();
+        _appUI.handleUpdateAll();
     }
 
     /**
@@ -777,6 +777,10 @@ public class IntkeyContext extends AbstractDeltaContext {
     }
 
     public void setIncludedCharacters(Set<Integer> includedCharacters) {
+        if (includedCharacters == null || includedCharacters.isEmpty()) {
+            throw new IllegalArgumentException("Cannot exclude all characters");
+        }
+        
         // defensive copy
         _includedCharacters = new HashSet<Integer>(includedCharacters);
         
@@ -784,10 +788,14 @@ public class IntkeyContext extends AbstractDeltaContext {
         // have been included/excluded
         _bestCharacters = null;
         
-        _appUI.handleSpecimenUpdated();
+        _appUI.handleUpdateAll();
     }
 
     public void setIncludedTaxa(Set<Integer> includedTaxa) {
+        if (includedTaxa == null || includedTaxa.isEmpty()) {
+            throw new IllegalArgumentException("Cannot exclude all taxa");
+        }
+        
         // defensive copy
         _includedTaxa = new HashSet<Integer>(includedTaxa);
         
@@ -795,7 +803,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         // have been included/excluded
         _bestCharacters = null;
         
-        _appUI.handleSpecimenUpdated();
+        _appUI.handleUpdateAll();
     }
     
     // The currently included characters minus the characters

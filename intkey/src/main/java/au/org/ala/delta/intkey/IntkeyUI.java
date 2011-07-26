@@ -6,9 +6,7 @@ public interface IntkeyUI {
 
     void handleNewDataset(IntkeyDataset dataset);
     
-    void handleCharacterOrderChanged();
-    
-    void handleSpecimenUpdated();
+    void handleUpdateAll();
     
     void handleIdentificationRestarted();
     

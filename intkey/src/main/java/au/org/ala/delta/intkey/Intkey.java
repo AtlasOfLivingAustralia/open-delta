@@ -83,6 +83,7 @@ import au.org.ala.delta.intkey.ui.TaxonKeywordSelectionDialog;
 import au.org.ala.delta.intkey.ui.TaxonListModel;
 import au.org.ala.delta.intkey.ui.TaxonWithDifferenceCountListModel;
 import au.org.ala.delta.intkey.ui.UIUtils;
+import au.org.ala.delta.intkey.ui.UsedCharacterListModel;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.ui.AboutBox;
@@ -907,56 +908,165 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         _context.executeDirective(invoc);
     }
 
-    @Override
-    public void handleNewDataset(IntkeyDataset dataset) {
-        getMainFrame().setTitle(String.format(windowTitleWithDatasetTitle, dataset.getHeading()));
-        initializeIdentification();
+    private void taxonSelectionChanged() {
+        int[] remainingTaxaSelectedIndicies = _listRemainingTaxa.getSelectedIndices();
+        int[] eliminatedTaxaSelectedIndicies = _listEliminatedTaxa.getSelectedIndices();
+
+        _btnDiffTaxa.setEnabled((remainingTaxaSelectedIndicies.length + eliminatedTaxaSelectedIndicies.length) >= 2);
     }
 
-    @Override
-    public void handleSpecimenUpdated() {
+    private void initializeIdentification() {
+        IntkeyDataset dataset = _context.getDataset();
 
-        Specimen specimen = _context.getSpecimen();
+        updateAvailableCharacters();
 
-        // Build the lists of available and eliminated taxa. The tolerance
-        // setting
-        // needs to be accounted for
-        int tolerance = _context.getTolerance();
-        Map<Item, Integer> taxaDifferenceCounts = specimen.getTaxonDifferences();
+        _usedCharacterListModel = new UsedCharacterListModel(Collections.EMPTY_LIST);
+        _availableTaxaListModel = new TaxonListModel(new ArrayList<Item>(_context.getIncludedTaxa()));
+        _eliminatedTaxaListModel = new TaxonWithDifferenceCountListModel(Collections.EMPTY_LIST, Collections.EMPTY_MAP);
 
-        Set<Item> includedTaxa = _context.getIncludedTaxa();
-        List<Item> availableTaxa = new ArrayList<Item>(includedTaxa);
-        List<Item> eliminatedTaxa = new ArrayList<Item>();
+        _listUsedCharacters.setModel(_usedCharacterListModel);
+        _listRemainingTaxa.setModel(_availableTaxaListModel);
+        _listEliminatedTaxa.setModel(_eliminatedTaxaListModel);
+    }
 
-        if (taxaDifferenceCounts != null) {
-            for (Item taxon : taxaDifferenceCounts.keySet()) {
-                int diffCount = taxaDifferenceCounts.get(taxon);
-                if (diffCount > tolerance) {
-                    availableTaxa.remove(taxon);
-                    eliminatedTaxa.add(taxon);
+    private void updateAvailableCharacters() {
+
+        IntkeyCharacterOrder charOrder = _context.getCharacterOrder();
+
+        switch (charOrder) {
+
+        case BEST:
+            LinkedHashMap<Character, Double> bestCharactersMap = _context.getBestCharacters();
+            if (bestCharactersMap != null) {
+                if (bestCharactersMap.isEmpty()) {
+                    handleNoAvailableCharacters();
+                    _lblNumAvailableCharacters.setText(String.format(bestCharactersCaption, bestCharactersMap.keySet().size()));
+                    return;
+                } else {
+                    _availableCharacterListModel = new BestCharacterListModel(new ArrayList<Character>(bestCharactersMap.keySet()), bestCharactersMap);
+                    _listAvailableCharacters.setModel(_availableCharacterListModel);
+                    _lblNumAvailableCharacters.setText(String.format(bestCharactersCaption, bestCharactersMap.keySet().size()));
                 }
+
+            } else {
+                _availableCharacterListModel = null;
+
+                // The best characters list is not cached and needs to be
+                // calculated. This is a
+                // long-running operation so use a
+                // SwingWorker to do it on a different thread, and update
+                // the
+                // available characters list when
+                // it is complete.
+                GetBestCharactersWorker worker = new GetBestCharactersWorker(_context);
+                worker.execute();
+
+                // Show the busy glass pane with a message if worker has not
+                // completed within
+                // 250 milliseconds. This avoids "flickering" of the
+                // glasspane
+                // when it takes a
+                // very short time to calculate the best characters.
+                try {
+                    Thread.sleep(250);
+                    if (!worker.isDone()) {
+                        showBusyMessage(calculatingBestCaption);
+                    }
+                } catch (InterruptedException ex) {
+                    // do nothing
+                }
+
+                return;
+            }
+
+            break;
+        case NATURAL:
+            List<Character> availableCharacters = new ArrayList<Character>(_context.getIncludedCharacters());
+            availableCharacters.removeAll(_context.getSpecimen().getUsedCharacters());
+            Collections.sort(availableCharacters);
+            if (availableCharacters.size() == 0) {
+                handleNoAvailableCharacters();
+            } else {
+                _availableCharacterListModel = new CharacterListModel(availableCharacters);
+                _listAvailableCharacters.setModel(_availableCharacterListModel);
+            }
+            _lblNumAvailableCharacters.setText(String.format(availableCharactersCaption, availableCharacters.size()));
+            break;
+        case SEPARATE:
+            throw new NotImplementedException();
+        default:
+            throw new RuntimeException("Unrecognized character order");
+        }
+
+        // The viewport of the available characters scroll pane may be
+        // displaying a
+        // message due to an investigation finishing, or no characters being
+        // available
+        // previously. Ensure that the available characters list is now
+        // displayed again.
+        if (!_sclPaneAvailableCharacters.getViewport().getView().equals(_listAvailableCharacters)) {
+            _sclPaneAvailableCharacters.setViewportView(_listAvailableCharacters);
+            _sclPaneAvailableCharacters.revalidate();
+        }
+    }
+
+    private void handleNoAvailableCharacters() {
+        String message = null;
+
+        if (_context.getIncludedCharacters().size() < _context.getDataset().getNumberOfCharacters()) { // characters
+                                                                                                       // excluded?
+            message = charactersExcludedCannotSeparateCaption;
+        } else {
+            if (_context.getTolerance() > 0) {
+                message = mismatchesAllowCannotSeparateCaption;
+            } else {
+                message = availableCharactersCannotSeparateCaption;
             }
         }
-        _btnDiffSpecimenTaxa.setEnabled(availableTaxa.size() > 0 && eliminatedTaxa.size() > 0);
 
-        if (availableTaxa.size() == 0) {
-            JLabel lbl = new JLabel(noMatchingTaxaRemainCaption);
-            lbl.setHorizontalAlignment(JLabel.CENTER);
-            lbl.setBackground(Color.WHITE);
-            lbl.setOpaque(true);
-            _sclPaneAvailableCharacters.setViewportView(lbl);
-            _sclPaneAvailableCharacters.revalidate();
-        } else if (availableTaxa.size() == 1) {
-            JLabel lbl = new JLabel(identificationCompleteCaption);
-            lbl.setHorizontalAlignment(JLabel.CENTER);
-            lbl.setBackground(Color.WHITE);
-            lbl.setOpaque(true);
-            _sclPaneAvailableCharacters.setViewportView(lbl);
-            _sclPaneAvailableCharacters.revalidate();
-        } else {
-            updateAvailableCharacters();
+        JLabel lbl = new JLabel(message);
+        lbl.setHorizontalAlignment(JLabel.CENTER);
+        lbl.setBackground(Color.WHITE);
+        lbl.setOpaque(true);
+        _sclPaneAvailableCharacters.setViewportView(lbl);
+        _sclPaneAvailableCharacters.revalidate();
+    }
+
+    /**
+     * Used to calculate the best characters in a separate thread, then update
+     * the UI accordingly when the operation is finished
+     * 
+     * @author ChrisF
+     * 
+     */
+    /**
+     * @author ChrisF
+     * 
+     */
+    private class GetBestCharactersWorker extends SwingWorker<Void, Void> {
+
+        private IntkeyContext _context;
+
+        public GetBestCharactersWorker(IntkeyContext context) {
+            super();
+            _context = context;
         }
 
+        @Override
+        protected Void doInBackground() throws Exception {
+            _context.calculateBestCharacters();
+            return null;
+        }
+
+        @Override
+        protected void done() {
+            updateAvailableCharacters();
+            removeBusyMessage();
+        }
+    }
+
+    private void updateUsedCharacters() {
+        Specimen specimen = _context.getSpecimen();
         List<Character> usedCharacters = specimen.getUsedCharacters();
 
         List<CharacterValue> usedCharacterValues = new ArrayList<CharacterValue>();
@@ -968,30 +1078,118 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
         _listUsedCharacters.setModel(_usedCharacterListModel);
 
-        if (tolerance > 0) {
+        _lblNumUsedCharacters.setText(String.format(usedCharactersCaption, _usedCharacterListModel.getSize()));
+    }
+
+    private void updateAvailableTaxa(List<Item> availableTaxa, Map<Item, Integer> taxaDifferenceCounts) {
+        if (_context.getTolerance() > 0) {
             _availableTaxaListModel = new TaxonWithDifferenceCountListModel(availableTaxa, taxaDifferenceCounts);
         } else {
             _availableTaxaListModel = new TaxonListModel(availableTaxa);
         }
 
-        _eliminatedTaxaListModel = new TaxonWithDifferenceCountListModel(eliminatedTaxa, taxaDifferenceCounts);
-
         _listRemainingTaxa.setModel(_availableTaxaListModel);
+
+        _lblNumRemainingTaxa.setText(String.format(remainingTaxaCaption, _availableTaxaListModel.getSize()));
+    }
+
+    private void updateUsedTaxa(List<Item> eliminatedTaxa, Map<Item, Integer> taxaDifferenceCounts) {
+        _eliminatedTaxaListModel = new TaxonWithDifferenceCountListModel(eliminatedTaxa, taxaDifferenceCounts);
         _listEliminatedTaxa.setModel(_eliminatedTaxaListModel);
 
-        updateListCaptions();
+        _lblEliminatedTaxa.setText(String.format(eliminatedTaxaCaption, _eliminatedTaxaListModel.getSize()));
+    }
+
+    // ================================== IntkeyUI methods
+    // ===========================================================
+
+    @Override
+    public void handleNewDataset(IntkeyDataset dataset) {
+        getMainFrame().setTitle(String.format(windowTitleWithDatasetTitle, dataset.getHeading()));
+        initializeIdentification();
+    }
+
+    @Override
+    public void handleUpdateAll() {
+
+        Specimen specimen = _context.getSpecimen();
+
+        // Build the lists of available and eliminated taxa. The tolerance
+        // setting
+        // needs to be accounted for
+        int tolerance = _context.getTolerance();
+        Map<Item, Integer> taxaDifferenceCounts = specimen.getTaxonDifferences();
+
+        Set<Item> includedTaxa = _context.getIncludedTaxa();
+        List<Item> availableTaxa = new ArrayList<Item>();
+        List<Item> eliminatedTaxa = new ArrayList<Item>();
+
+        if (taxaDifferenceCounts != null) {
+            for (Item taxon : includedTaxa) {
+                if (taxaDifferenceCounts.containsKey(taxon)) {
+                    int diffCount = taxaDifferenceCounts.get(taxon);
+                    if (diffCount > tolerance) {
+                        eliminatedTaxa.add(taxon);
+                    } else {
+                        availableTaxa.add(taxon);
+                    }
+                } else {
+                    availableTaxa.add(taxon);
+                }
+            }
+        } else {
+            availableTaxa.addAll(includedTaxa);
+        }
+
+        _btnDiffSpecimenTaxa.setEnabled(availableTaxa.size() > 0 && eliminatedTaxa.size() > 0);
+
+        // Need to display a message in place of the list of available
+        // characters
+        // if there are no remaining taxa (no matching taxa remain), or only 1
+        // remaining taxon (identification complete)
+        if (availableTaxa.size() > 1) {
+            updateAvailableCharacters();
+        } else {
+            if (availableTaxa.size() == 0) {
+                JLabel lbl = new JLabel(noMatchingTaxaRemainCaption);
+                lbl.setHorizontalAlignment(JLabel.CENTER);
+                lbl.setBackground(Color.WHITE);
+                lbl.setOpaque(true);
+
+                _sclPaneAvailableCharacters.setViewportView(lbl);
+                _sclPaneAvailableCharacters.revalidate();
+            } else if (availableTaxa.size() == 1) {
+                JLabel lbl = new JLabel(identificationCompleteCaption);
+                lbl.setHorizontalAlignment(JLabel.CENTER);
+                lbl.setBackground(Color.WHITE);
+                lbl.setOpaque(true);
+                _sclPaneAvailableCharacters.setViewportView(lbl);
+                _sclPaneAvailableCharacters.revalidate();
+            }
+
+            switch (_context.getCharacterOrder()) {
+            case NATURAL:
+                _lblNumAvailableCharacters.setText(String.format(availableCharactersCaption, 0));
+                break;
+            case BEST:
+                _lblNumAvailableCharacters.setText(String.format(bestCharactersCaption, 0));
+                break;
+            case SEPARATE:
+                throw new NotImplementedException();
+            default:
+                throw new RuntimeException("Unrecognized character order");
+            }
+        }
+
+        updateUsedCharacters();
+        updateAvailableTaxa(availableTaxa, taxaDifferenceCounts);
+        updateUsedTaxa(eliminatedTaxa, taxaDifferenceCounts);
     }
 
     @Override
     public void handleIdentificationRestarted() {
         _btnDiffSpecimenTaxa.setEnabled(false);
         initializeIdentification();
-    }
-
-    @Override
-    public void handleCharacterOrderChanged() {
-        updateAvailableCharacters();
-        updateListCaptions();
     }
 
     @Override
@@ -1039,193 +1237,31 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     }
 
-    private void taxonSelectionChanged() {
-        int[] remainingTaxaSelectedIndicies = _listRemainingTaxa.getSelectedIndices();
-        int[] eliminatedTaxaSelectedIndicies = _listEliminatedTaxa.getSelectedIndices();
-
-        _btnDiffTaxa.setEnabled((remainingTaxaSelectedIndicies.length + eliminatedTaxaSelectedIndicies.length) >= 2);
-    }
-
-    private void initializeIdentification() {
-        IntkeyDataset dataset = _context.getDataset();
-
-        updateAvailableCharacters();
-
-        _usedCharacterListModel = new UsedCharacterListModel(Collections.EMPTY_LIST);
-        _availableTaxaListModel = new TaxonListModel(new ArrayList<Item>(_context.getIncludedTaxa()));
-        _eliminatedTaxaListModel = new TaxonWithDifferenceCountListModel(Collections.EMPTY_LIST, Collections.EMPTY_MAP);
-
-        _listUsedCharacters.setModel(_usedCharacterListModel);
-        _listRemainingTaxa.setModel(_availableTaxaListModel);
-        _listEliminatedTaxa.setModel(_eliminatedTaxaListModel);
-
-        // Make sure that list is visible again. It will not be visible if the
-        // previous investigation ended with a taxon being identified or the
-        // available charaters being exhausted
-        if (!_sclPaneAvailableCharacters.getViewport().getView().equals(_listAvailableCharacters)) {
-            _sclPaneAvailableCharacters.setViewportView(_listAvailableCharacters);
-            _sclPaneAvailableCharacters.revalidate();
-        }
-
-        updateListCaptions();
-    }
-
-    private void updateListCaptions() {
-        IntkeyCharacterOrder charOrder = _context.getCharacterOrder();
-        switch (charOrder) {
-        case NATURAL:
-            _lblNumAvailableCharacters.setText(String.format(availableCharactersCaption, _availableCharacterListModel.getSize()));
-            break;
-        case BEST:
-            // If the best characters are currently being calcuated, the
-            // BestCharactersWorker will update the caption once its background
-            // operation has completed
-            if (_availableCharacterListModel != null) {
-                _lblNumAvailableCharacters.setText(String.format(bestCharactersCaption, _availableCharacterListModel.getSize()));
-            }
-            break;
-        case SEPARATE:
-            throw new NotImplementedException();
-        default:
-            throw new RuntimeException("Unrecognized character order");
-        }
-
-        _lblNumUsedCharacters.setText(String.format(usedCharactersCaption, _usedCharacterListModel.getSize()));
-        _lblNumRemainingTaxa.setText(String.format(remainingTaxaCaption, _availableTaxaListModel.getSize()));
-        _lblEliminatedTaxa.setText(String.format(eliminatedTaxaCaption, _eliminatedTaxaListModel.getSize()));
-    }
-
-    private void updateAvailableCharacters() {
-        List<Character> availableCharacters = new ArrayList<Character>(_context.getIncludedCharacters());
-        availableCharacters.removeAll(_context.getSpecimen().getUsedCharacters());
-        Collections.sort(availableCharacters);
-
-        if (availableCharacters.size() == 0) {
-            String message = null;
-
-            if (_context.getIncludedCharacters().size() < _context.getDataset().getNumberOfCharacters()) { // characters
-                                                                                                           // excluded?
-                message = charactersExcludedCannotSeparateCaption;
-            } else {
-                if (_context.getTolerance() > 0) {
-                    message = mismatchesAllowCannotSeparateCaption;
-                } else {
-                    message = availableCharactersCannotSeparateCaption;
-                }
-            }
-
-            JLabel lbl = new JLabel(message);
-            lbl.setHorizontalAlignment(JLabel.CENTER);
-            lbl.setBackground(Color.WHITE);
-            lbl.setOpaque(true);
-            _sclPaneAvailableCharacters.setViewportView(lbl);
-            _sclPaneAvailableCharacters.revalidate();
-        } else {
-            if (_context.getCharacterOrder() == IntkeyCharacterOrder.BEST) {
-                LinkedHashMap bestCharactersMap = _context.getBestCharacters();
-                if (bestCharactersMap != null) {
-                    _availableCharacterListModel = new BestCharacterListModel(new ArrayList<Character>(bestCharactersMap.keySet()), bestCharactersMap);
-                    _listAvailableCharacters.setModel(_availableCharacterListModel);
-                } else {
-                    _availableCharacterListModel = null;
-
-                    // The best characters list is not cached and needs to be
-                    // calculated. This is a
-                    // long-running operation so use a
-                    // SwingWorker to do it on a different thread, and update
-                    // the
-                    // available characters list when
-                    // it is complete.
-                    GetBestCharactersWorker worker = new GetBestCharactersWorker(_context);
-                    worker.execute();
-
-                    // Show the busy glass pane with a message if worker has not
-                    // completed within
-                    // 250 milliseconds. This avoids "flickering" of the
-                    // glasspane
-                    // when it takes a
-                    // very short time to calculate the best characters.
-                    try {
-                        Thread.sleep(250);
-                        if (!worker.isDone()) {
-                            showBusyMessage(calculatingBestCaption);
-                        }
-                    } catch (InterruptedException ex) {
-                        // do nothing
-                    }
-
-                }
-            } else {
-                Specimen specimen = _context.getSpecimen();
-                _availableCharacterListModel = new CharacterListModel(availableCharacters);
-                _listAvailableCharacters.setModel(_availableCharacterListModel);
-            }
-        }
-    }
-
-    /**
-     * Used to calculate the best characters in a separate thread, then update
-     * the UI accordingly when the operation is finished
-     * 
-     * @author ChrisF
-     * 
-     */
-    private class GetBestCharactersWorker extends SwingWorker<Void, Void> {
-
-        private IntkeyContext _context;
-
-        public GetBestCharactersWorker(IntkeyContext context) {
-            super();
-            _context = context;
-        }
-
-        @Override
-        protected Void doInBackground() throws Exception {
-            _context.calculateBestCharacters();
-            return null;
-        }
-
-        @Override
-        protected void done() {
-//            LinkedHashMap bestCharactersMap = _context.getBestCharacters();
-//            _availableCharacterListModel = new BestCharacterListModel(new ArrayList<Character>(bestCharactersMap.keySet()), bestCharactersMap);
-//            _listAvailableCharacters.setModel(_availableCharacterListModel);
-//
-//            _lblNumAvailableCharacters.setText(String.format(bestCharactersCaption, _availableCharacterListModel.getSize()));
-
-            updateAvailableCharacters();
-            updateListCaptions();
-            removeBusyMessage();
-        }
-    }
-
-    private class UsedCharacterListModel extends AbstractListModel {
-
-        private List<CharacterValue> _values;
-
-        public UsedCharacterListModel(List<CharacterValue> values) {
-            _values = new ArrayList<CharacterValue>(values);
-        }
-
-        @Override
-        public int getSize() {
-            return _values.size();
-        }
-
-        @Override
-        public Object getElementAt(int index) {
-            return _values.get(index).toString();
-        }
-
-        public CharacterValue getCharacterValueAt(int index) {
-            return _values.get(index);
-        }
-
-        public Character getCharacterAt(int index) {
-            return _values.get(index).getCharacter();
-        }
+    @Override
+    public void displayErrorMessage(String message) {
+        // TODO Auto-generated method stub
 
     }
+
+    @Override
+    public void displayWarningMessage(String message) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void displayBusyMessage(String message) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void removeBusyMessage(String message) {
+        // TODO Auto-generated method stub
+    }
+
+    // ================================== DirectivePopulator methods
+    // ===================================================================
 
     @Override
     public List<Character> promptForCharacters(String directiveName) {
@@ -1256,30 +1292,6 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     @Override
     public String promptForString(String message, String initialValue, String directiveName) {
         return (String) JOptionPane.showInputDialog(getMainFrame(), message, directiveName, JOptionPane.PLAIN_MESSAGE, null, null, initialValue);
-    }
-
-    @Override
-    public void displayErrorMessage(String message) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void displayWarningMessage(String message) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void displayBusyMessage(String message) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void removeBusyMessage(String message) {
-        // TODO Auto-generated method stub
-
     }
 
 }
