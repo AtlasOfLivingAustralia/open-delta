@@ -5,8 +5,10 @@ import java.awt.Frame;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.DefaultListModel;
+import javax.swing.JOptionPane;
 
 import org.jdesktop.application.Application;
 import org.jdesktop.application.Resource;
@@ -17,30 +19,39 @@ import au.org.ala.delta.model.Character;
 
 public class CharacterKeywordSelectionDialog extends KeywordSelectionDialog {
 
+    private Set<Character> _includedCharacters;
     private List<Character> _selectedCharacters;
 
-    
     @Resource
     String title;
 
-    public CharacterKeywordSelectionDialog(Dialog owner, IntkeyContext context, String directiveName) {
+    @Resource
+    String selectFromAllCharactersCaption;
+
+    @Resource
+    String selectFromIncludedCharactersCaption;
+    
+    @Resource
+    String allCharactersInSelectedSetExcludedCaption;
+
+    public CharacterKeywordSelectionDialog(Dialog owner, IntkeyContext context, String directiveName, boolean permitSelectionFromIncludedCharactersOnly) {
         super(owner, context, directiveName);
-        init(context);
+        init(context, permitSelectionFromIncludedCharactersOnly);
     }
 
-    public CharacterKeywordSelectionDialog(Frame owner, IntkeyContext context, String directiveName) {
+    public CharacterKeywordSelectionDialog(Frame owner, IntkeyContext context, String directiveName, boolean permitSelectionFromIncludedCharactersOnly) {
         super(owner, context, directiveName);
         _directiveName = directiveName;
-        init(context);
+        init(context, permitSelectionFromIncludedCharactersOnly);
     }
 
-    private void init(IntkeyContext context) {
+    private void init(IntkeyContext context, boolean permitSelectionFromIncludedCharactersOnly) {
         ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(CharacterKeywordSelectionDialog.class);
         resourceMap.injectFields(this);
 
         setTitle(String.format(title, _directiveName));
         _selectedCharacters = new ArrayList<Character>();
-        
+
         List<String> characterKeywords = context.getCharacterKeywords();
 
         DefaultListModel model = new DefaultListModel();
@@ -48,13 +59,33 @@ public class CharacterKeywordSelectionDialog extends KeywordSelectionDialog {
             model.addElement(keyword);
         }
         _list.setModel(model);
+
+        _includedCharacters = context.getIncludedCharacters();
+
+        _rdbtnSelectFromAll.setText(selectFromAllCharactersCaption);
+        _rdbtnSelectFromIncluded.setText(selectFromIncludedCharactersCaption);
+
+        if (!permitSelectionFromIncludedCharactersOnly || _includedCharacters.size() == context.getDataset().getNumberOfCharacters()) {
+            _panelRadioButtons.setVisible(false);
+            _selectFromIncluded = false;
+        } else {
+            _rdbtnSelectFromIncluded.setSelected(true);
+            _selectFromIncluded = true;
+        }
     }
 
     @Override
     protected void okBtnPressed() {
         for (Object o : _list.getSelectedValues()) {
             String keyword = (String) o;
-            _selectedCharacters.addAll(_context.getCharactersForKeyword(keyword));
+
+            List<Character> characters = _context.getCharactersForKeyword(keyword);
+            
+            if (_selectFromIncluded) {
+                characters.retainAll(_includedCharacters);
+            }            
+            
+            _selectedCharacters.addAll(characters);
         }
         Collections.sort(_selectedCharacters);
         this.setVisible(false);
@@ -68,19 +99,27 @@ public class CharacterKeywordSelectionDialog extends KeywordSelectionDialog {
     @Override
     protected void listBtnPressed() {
         if (_list.getSelectedValue() != null) {
-            
+
             List<Character> characters = new ArrayList<Character>();
             String selectedKeyword = (String) _list.getSelectedValue();
             characters.addAll(_context.getCharactersForKeyword(selectedKeyword));
+            
+            if (_selectFromIncluded) {
+                characters.retainAll(_includedCharacters);
+            }
 
-            CharacterSelectionDialog charDlg = new CharacterSelectionDialog(this, characters, _directiveName, selectedKeyword);
-            charDlg.setVisible(true);
+            if (characters.isEmpty()) {
+                JOptionPane.showMessageDialog(this, allCharactersInSelectedSetExcludedCaption, title, JOptionPane.ERROR_MESSAGE);
+            } else {
+                CharacterSelectionDialog charDlg = new CharacterSelectionDialog(this, characters, _directiveName, selectedKeyword);
+                charDlg.setVisible(true);
 
-            List<Character> charsSelectedInDlg = charDlg.getSelectedCharacters();
-            if (charsSelectedInDlg.size() > 0) {
-                _selectedCharacters.clear();
-                _selectedCharacters.addAll(charsSelectedInDlg);
-                this.setVisible(false);
+                List<Character> charsSelectedInDlg = charDlg.getSelectedCharacters();
+                if (charsSelectedInDlg.size() > 0) {
+                    _selectedCharacters.clear();
+                    _selectedCharacters.addAll(charsSelectedInDlg);
+                    this.setVisible(false);
+                }
             }
         }
     }
@@ -106,5 +145,4 @@ public class CharacterKeywordSelectionDialog extends KeywordSelectionDialog {
     public List<Character> getSelectedCharacters() {
         return _selectedCharacters;
     }
-
 }

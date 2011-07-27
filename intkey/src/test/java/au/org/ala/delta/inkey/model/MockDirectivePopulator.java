@@ -9,12 +9,12 @@ import au.org.ala.delta.model.Item;
 public class MockDirectivePopulator implements DirectivePopulator {
 
     @Override
-    public List<Character> promptForCharacters(String directiveName) {
+    public List<Character> promptForCharacters(String directiveName, boolean permitSelectionFromIncludedCharactersOnly) {
         return null;
     }
 
     @Override
-    public List<Item> promptForTaxa(String directiveName) {
+    public List<Item> promptForTaxa(String directiveName, boolean permitSelectionFromIncludedTaxaOnly) {
         return null;
     }
 

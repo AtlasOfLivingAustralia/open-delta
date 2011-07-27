@@ -916,17 +916,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     }
 
     private void initializeIdentification() {
-        IntkeyDataset dataset = _context.getDataset();
-
-        updateAvailableCharacters();
-
-        _usedCharacterListModel = new UsedCharacterListModel(Collections.EMPTY_LIST);
-        _availableTaxaListModel = new TaxonListModel(new ArrayList<Item>(_context.getIncludedTaxa()));
-        _eliminatedTaxaListModel = new TaxonWithDifferenceCountListModel(Collections.EMPTY_LIST, Collections.EMPTY_MAP);
-
-        _listUsedCharacters.setModel(_usedCharacterListModel);
-        _listRemainingTaxa.setModel(_availableTaxaListModel);
-        _listEliminatedTaxa.setModel(_eliminatedTaxaListModel);
+        handleUpdateAll();
     }
 
     private void updateAvailableCharacters() {
@@ -1261,15 +1251,15 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     // ===================================================================
 
     @Override
-    public List<Character> promptForCharacters(String directiveName) {
-        CharacterKeywordSelectionDialog dlg = new CharacterKeywordSelectionDialog(getMainFrame(), _context, directiveName);
+    public List<Character> promptForCharacters(String directiveName, boolean permitSelectionFromIncludedCharactersOnly) {
+        CharacterKeywordSelectionDialog dlg = new CharacterKeywordSelectionDialog(getMainFrame(), _context, directiveName, permitSelectionFromIncludedCharactersOnly);
         show(dlg);
         return dlg.getSelectedCharacters();
     }
 
     @Override
-    public List<Item> promptForTaxa(String directiveName) {
-        TaxonKeywordSelectionDialog dlg = new TaxonKeywordSelectionDialog(getMainFrame(), _context, directiveName);
+    public List<Item> promptForTaxa(String directiveName, boolean permitSelectionFromIncludedTaxaOnly) {
+        TaxonKeywordSelectionDialog dlg = new TaxonKeywordSelectionDialog(getMainFrame(), _context, directiveName, permitSelectionFromIncludedTaxaOnly);
         show(dlg);
         return dlg.getSelectedTaxa();
     }

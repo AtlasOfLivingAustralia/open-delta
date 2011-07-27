@@ -2,7 +2,9 @@ package au.org.ala.delta.intkey.directives;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.math.IntRange;
 
@@ -58,7 +60,7 @@ public class DifferencesDirective extends IntkeyDirective {
                     matchType = MatchType.SUBSET;
                 } else if (token.equalsIgnoreCase("/E")) {
                     matchType = MatchType.EXACT;
-                    
+
                     // if match type is set to exact, match inapplicables and
                     // unknown will always be false
                     matchInapplicables = false;
@@ -121,33 +123,52 @@ public class DifferencesDirective extends IntkeyDirective {
                 }
             }
         }
-        
+
         if (taxa.size() == 0) {
-            taxa = context.getDirectivePopulator().promptForTaxa("DIFFERENCES");
+            taxa = context.getDirectivePopulator().promptForTaxa("DIFFERENCES", true);
             if (taxa.size() == 0) {
-                //user hit cancel or did not select anything
+                // user hit cancel or did not select anything
                 return null;
             }
-            
-            //If specimen values have been entered, ask the user if they want the specimen
-            //included in the comparison
+
+            // If specimen values have been entered, ask the user if they want
+            // the specimen
+            // included in the comparison
             if (context.getSpecimen().getUsedCharacters().size() > 0) {
                 includeSpecimen = context.getDirectivePopulator().promptForYesNoOption("Compare specimen against selected taxa?");
+            }
+        } else {
+            // If taxa not input using dialog, filter any taxa that are not
+            // currently included
+            Set<Item> includedTaxa = context.getIncludedTaxa();
+            taxa.retainAll(includedTaxa);
+            if (taxa.isEmpty()) {
+                context.getUI().displayErrorMessage("All selected taxa have been excluded");
+                return null;
             }
         }
 
         if (taxa.size() < 2) {
             throw new IllegalStateException("At least two taxa required for comparison");
         }
-        
+
         if (characters.size() == 0) {
-            characters = context.getDirectivePopulator().promptForCharacters("DIFFERENCES");
+            characters = context.getDirectivePopulator().promptForCharacters("DIFFERENCES", true);
             if (characters.size() == 0) {
-                //user hit cancel or did not select anything
+                // user hit cancel or did not select anything
+                return null;
+            }
+        } else {
+            // If characters not input using dialog, filter any characters that
+            // are not currently included
+            Set<Character> includedCharacters = context.getIncludedCharacters();
+            characters.retainAll(includedCharacters);
+            if (characters.isEmpty()) {
+                context.getUI().displayErrorMessage("All selected characters have been excluded");
                 return null;
             }
         }
-        
+
         Collections.sort(taxa);
         Collections.sort(characters);
 

@@ -275,5 +275,8 @@ public class DifferencesDirectiveTest extends TestCase {
         assertFalse(differingChars.contains(ds.getCharacter(36)));
         assertFalse(differingChars.contains(ds.getCharacter(55)));
     }
+    
+    //TODO test include/exclude characters
+    //TODO test include/exclude taxa
 
 }

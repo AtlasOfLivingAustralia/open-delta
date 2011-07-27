@@ -5,8 +5,10 @@ import java.awt.Frame;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.DefaultListModel;
+import javax.swing.JOptionPane;
 
 import org.jdesktop.application.Application;
 import org.jdesktop.application.Resource;
@@ -16,25 +18,35 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.model.Item;
 
 public class TaxonKeywordSelectionDialog extends KeywordSelectionDialog {
-    
+
     @Resource
     String title;
-    
+
+    @Resource
+    String selectFromAllTaxaCaption;
+
+    @Resource
+    String selectFromIncludedTaxaCaption;
+
+    @Resource
+    String allTaxaInSelectedSetExcludedCaption;
+
+    private Set<Item> _includedTaxa;
     private List<Item> _selectedTaxa;
 
-    public TaxonKeywordSelectionDialog(Dialog owner, IntkeyContext context, String directiveName) {
+    public TaxonKeywordSelectionDialog(Dialog owner, IntkeyContext context, String directiveName, boolean permitSelectionFromIncludedTaxaOnly) {
         super(owner, context, directiveName);
         _directiveName = directiveName;
-        init(context);
+        init(context, permitSelectionFromIncludedTaxaOnly);
     }
 
-    public TaxonKeywordSelectionDialog(Frame owner, IntkeyContext context, String directiveName) {
+    public TaxonKeywordSelectionDialog(Frame owner, IntkeyContext context, String directiveName, boolean permitSelectionFromIncludedTaxaOnly) {
         super(owner, context, directiveName);
         _directiveName = directiveName;
-        init(context);
+        init(context, permitSelectionFromIncludedTaxaOnly);
     }
-    
-    private void init(IntkeyContext context) {
+
+    private void init(IntkeyContext context, boolean permitSelectionFromIncludedTaxaOnly) {
         ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(TaxonKeywordSelectionDialog.class);
         resourceMap.injectFields(this);
 
@@ -49,13 +61,33 @@ public class TaxonKeywordSelectionDialog extends KeywordSelectionDialog {
 
         _selectedTaxa = new ArrayList<Item>();
         _context = context;
+
+        _includedTaxa = context.getIncludedTaxa();
+
+        _rdbtnSelectFromAll.setText(selectFromAllTaxaCaption);
+        _rdbtnSelectFromIncluded.setText(selectFromIncludedTaxaCaption);
+
+        if (!permitSelectionFromIncludedTaxaOnly || _includedTaxa.size() == context.getDataset().getNumberOfTaxa()) {
+            _panelRadioButtons.setVisible(false);
+            _selectFromIncluded = false;
+        } else {
+            _rdbtnSelectFromIncluded.setSelected(true);
+            _selectFromIncluded = true;
+        }
     }
 
     @Override
     protected void okBtnPressed() {
         for (Object o : _list.getSelectedValues()) {
             String keyword = (String) o;
-            _selectedTaxa.addAll(_context.getTaxaForKeyword(keyword));
+            
+            List<Item> taxa =  _context.getTaxaForKeyword(keyword);
+            
+            if (_selectFromIncluded) {
+                taxa.retainAll(_includedTaxa);
+            }
+            
+            _selectedTaxa.addAll(taxa);
         }
         Collections.sort(_selectedTaxa);
         this.setVisible(false);
@@ -69,19 +101,27 @@ public class TaxonKeywordSelectionDialog extends KeywordSelectionDialog {
     @Override
     protected void listBtnPressed() {
         if (_list.getSelectedValue() != null) {
-            
+
             List<Item> taxa = new ArrayList<Item>();
             String selectedKeyword = (String) _list.getSelectedValue();
             taxa.addAll(_context.getTaxaForKeyword(selectedKeyword));
+            
+            if (_selectFromIncluded) {
+                taxa.retainAll(_includedTaxa);
+            }
 
-            TaxonSelectionDialog taxonDlg = new TaxonSelectionDialog(this, taxa, _directiveName, selectedKeyword);
-            taxonDlg.setVisible(true);
+            if (taxa.isEmpty()) {
+                JOptionPane.showMessageDialog(this, allTaxaInSelectedSetExcludedCaption, title, JOptionPane.ERROR_MESSAGE);
+            } else {
+                TaxonSelectionDialog taxonDlg = new TaxonSelectionDialog(this, taxa, _directiveName, selectedKeyword);
+                taxonDlg.setVisible(true);
 
-            List<Item> taxaSelectedInDlg = taxonDlg.getSelectedTaxa();
-            if (taxaSelectedInDlg.size() > 0) {
-                _selectedTaxa.clear();
-                _selectedTaxa.addAll(taxaSelectedInDlg);
-                this.setVisible(false);
+                List<Item> taxaSelectedInDlg = taxonDlg.getSelectedTaxa();
+                if (taxaSelectedInDlg.size() > 0) {
+                    _selectedTaxa.clear();
+                    _selectedTaxa.addAll(taxaSelectedInDlg);
+                    this.setVisible(false);
+                }
             }
         }
     }
@@ -89,21 +129,21 @@ public class TaxonKeywordSelectionDialog extends KeywordSelectionDialog {
     @Override
     protected void imagesBtnPressed() {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     protected void searchBtnPressed() {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     protected void helpBtnPressed() {
         // TODO Auto-generated method stub
-        
+
     }
-    
+
     public List<Item> getSelectedTaxa() {
         return _selectedTaxa;
     }

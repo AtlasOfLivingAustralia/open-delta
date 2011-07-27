@@ -27,7 +27,7 @@ public class IncludeCharactersDirective extends IntkeyDirective {
         List<String> tokens = ParsingUtils.tokenizeDirectiveCall(data);
         
         if (tokens.isEmpty()) {
-            List<au.org.ala.delta.model.Character> selectedCharacters = context.getDirectivePopulator().promptForCharacters("INCLUDE CHARACTERS");
+            List<au.org.ala.delta.model.Character> selectedCharacters = context.getDirectivePopulator().promptForCharacters("INCLUDE CHARACTERS", false);
             for (au.org.ala.delta.model.Character ch: selectedCharacters) {
                 includeCharacterNumbers.add(ch.getCharacterId());
             }
