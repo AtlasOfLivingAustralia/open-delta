@@ -1,5 +1,10 @@
 package au.org.ala.delta.inkey.model;
 
-public class IncludeCharactersTest {
+import junit.framework.TestCase;
+
+import org.junit.Ignore;
+
+@Ignore
+public class IncludeCharactersTest extends TestCase {
     //TODO
 }
