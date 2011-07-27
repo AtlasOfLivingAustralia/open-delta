@@ -19,6 +19,7 @@ import java.util.List;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.image.Image;
+import au.org.ala.delta.util.Utils;
 
 /**
  * Exports the TAXON IMAGES directive.
@@ -40,7 +41,7 @@ public class DirOutTaxonImages extends DirOutImageOverlay {
 			_textBuffer.append("\n");
 			outputTextBuffer(0, 0, true);
 			_textBuffer.append("# ");
-			_textBuffer.append(despaceRTF(description, true));
+			_textBuffer.append(Utils.despaceRtf(description, true));
 			_textBuffer.append('/');
 			outputTextBuffer(0, 0, true);
 

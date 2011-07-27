@@ -30,6 +30,7 @@ import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.util.Utils;
 
 /**
  * Writes the directive to the output.
@@ -41,7 +42,7 @@ public class DirOutDefault extends AbstractDirOutFunctor {
 	@Override
 	public void writeDirectiveArguments(DirectiveInOutState state) {
 
-		_printer.setIndent(2);
+		_deltaWriter.setIndent(2);
 		DeltaDataSet dataSet = state.getDataSet();
 		Directive curDirective = state.getCurrentDirective().getDirective();
 		// Dir directive;
@@ -67,7 +68,7 @@ public class DirOutDefault extends AbstractDirOutFunctor {
 											// preserved?
 		case DirectiveArgType.DIRARG_COMMENT: // Will actually be handled within
 												// DirComment
-			_printer.setIndent(0);
+			_deltaWriter.setIndent(0);
 		case DirectiveArgType.DIRARG_FILE:
 		case DirectiveArgType.DIRARG_OTHER:
 		case DirectiveArgType.DIRARG_INTERNAL:
@@ -389,7 +390,7 @@ public class DirOutDefault extends AbstractDirOutFunctor {
 			if (directiveType == DirectiveType.CONFOR) { // Use names for  Confor, but not for Key
 				Item item = dataSet.getItem((Integer) vectIter.getId());
 				temp = item.getDescription();
-				temp = despaceRTF(temp, true); // //
+				temp = Utils.despaceRtf(temp, true); // //
 				_textBuffer.append(' ');
 				_textBuffer.append(temp);
 				_textBuffer.append("/ ");
@@ -411,7 +412,7 @@ public class DirOutDefault extends AbstractDirOutFunctor {
 			_textBuffer.append(' ');
 			temp = directiveArgs.getFirstArgumentText();
 			if (argType != DirectiveArgType.DIRARG_FILE)
-				temp = despaceRTF(temp); // / SHOULD THIS BE DONE???
+				temp = Utils.despaceRtf(temp, false); // / SHOULD THIS BE DONE???
 			_textBuffer.append(temp);
 		}
 		outputTextBuffer(0, 0, true);
@@ -452,7 +453,7 @@ public class DirOutDefault extends AbstractDirOutFunctor {
 			} else {
 				Item item = dataSet.getItem((Integer) vectIter.getId());
 				temp = item.getDescription();
-				temp = despaceRTF(temp, true); // //
+				temp = Utils.despaceRtf(temp, true); // //
 				_textBuffer.append(' ');
 				_textBuffer.append(temp);
 				_textBuffer.append("/");

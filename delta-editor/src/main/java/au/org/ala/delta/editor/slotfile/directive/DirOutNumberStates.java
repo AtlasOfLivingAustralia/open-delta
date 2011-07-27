@@ -43,7 +43,7 @@ public class DirOutNumberStates extends AbstractDirOutFunctor {
 				}
 			}
 		}
-		writeLine(state, valueRangeToString(numbersOfStates));
+		writeLine(state, _deltaWriter.valueRangeToString(numbersOfStates));
 	}
 
 }

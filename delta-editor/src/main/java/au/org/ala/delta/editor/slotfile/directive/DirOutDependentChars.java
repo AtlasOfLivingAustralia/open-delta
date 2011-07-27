@@ -60,7 +60,7 @@ public class DirOutDependentChars extends AbstractDirOutFunctor {
 			Collections.sort(controlledCharacters);
 
 			_textBuffer.append(':');
-			_textBuffer.append(rangeToString(controlledCharacters, ':'));
+			_textBuffer.append(_deltaWriter.rangeToString(controlledCharacters, ':'));
 			
 		}
 		writeLine(state, _textBuffer.toString());

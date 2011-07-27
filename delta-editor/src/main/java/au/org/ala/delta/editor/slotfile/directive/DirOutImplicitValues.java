@@ -43,7 +43,7 @@ public class DirOutImplicitValues extends AbstractDirOutFunctor {
 				}
 			}
 		}
-		writeLine(state, valueRangeToString(implicitStates));
+		writeLine(state, _deltaWriter.valueRangeToString(implicitStates));
 	}
 
 }

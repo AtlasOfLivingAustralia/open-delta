@@ -37,7 +37,7 @@ public class DirOutMandatoryChars extends AbstractDirOutFunctor {
 				mandatoryChars.add(i);
 			}
 		}
-		writeLine(state, rangeToString(mandatoryChars));
+		writeLine(state, _deltaWriter.rangeToString(mandatoryChars));
 	}
 
 }

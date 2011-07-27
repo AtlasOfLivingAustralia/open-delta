@@ -13,7 +13,6 @@ import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.directives.args.IntegerTextListParser;
 import au.org.ala.delta.directives.args.TextListParser;
 import au.org.ala.delta.model.TypeSettingMark;
-import au.org.ala.delta.model.TypeSettingMark.MarkPosition;
 
 /**
  * Base class for handling the TYPESETTING MARKS and FORMATTING MARKS directives.

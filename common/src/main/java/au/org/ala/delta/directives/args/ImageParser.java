@@ -11,14 +11,13 @@ import au.org.ala.delta.model.image.ImageOverlay;
 import au.org.ala.delta.model.image.ImageOverlayParser;
 
 /**
- * Parses the arguments to the CHARACTER IMAGES, TAXON IMAGES and STARTUP IMAGES
- * directives.
+ * Parses the arguments to the CHARACTER IMAGES, TAXON IMAGES directives.
  */
 public class ImageParser extends DirectiveArgsParser {
 
-	private ImageOverlayParser _overlayParser;
-	private int _imageType;
-	private List<ImageInfo> _imageInfo;
+	protected ImageOverlayParser _overlayParser;
+	protected int _imageType;
+	protected List<ImageInfo> _imageInfo;
 	
 	public ImageParser(DeltaContext context, Reader reader, int imageType) {
 		super(context, reader);
@@ -35,6 +34,7 @@ public class ImageParser extends DirectiveArgsParser {
 	public List<ImageInfo> getImageInfo() {
 		return _imageInfo;
 	}
+	
 	@Override
 	public void parse() throws ParseException {
 		
@@ -48,16 +48,27 @@ public class ImageParser extends DirectiveArgsParser {
 			Object id = readId();
 			skipWhitespace();
 			
-			String fileName = readFileName();
-			skipWhitespace();
-			
-			String overlayText = readToNext('#');
-			
-			List<ImageOverlay> overlays = _overlayParser.parseOverlays(overlayText, _imageType);
-		
-			_imageInfo.add(new ImageInfo(id, _imageType, fileName, overlays));
+			while (_currentInt >= 0 && _currentChar != '#') {
+				readImage(id);
+			}
 		}
 		
+	}
+
+	protected void readImage(Object id) throws ParseException {
+		String fileName = readFileName();
+		skipWhitespace();
+		
+		List<ImageOverlay> overlays = new ArrayList<ImageOverlay>();
+		while (_currentChar == '<') {
+			String overlayText = readToNext('>');
+			overlayText+='>';
+			overlays.addAll(_overlayParser.parseOverlays(overlayText, _imageType));
+			readNext();
+			skipWhitespace();
+		}
+		
+		_imageInfo.add(new ImageInfo(id, _imageType, fileName, overlays));
 	}
 	
 	protected Object readId() throws ParseException {

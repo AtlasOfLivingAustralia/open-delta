@@ -30,5 +30,4 @@ public class ImageInfo extends DefaultImageData {
 	public Object getId() {
 		return _subjectId;
 	}
-	
 }

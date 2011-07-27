@@ -4,19 +4,21 @@ import java.io.StringReader;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.args.ImageParser;
+import au.org.ala.delta.directives.args.NoIdImageParser;
 import au.org.ala.delta.model.image.ImageType;
 
 /**
- * Processes the CHARACTER IMAGES directive.
+ * Handles the STARTUP IMAGES directive.
  */
-public class CharacterImages extends AbstractImageDirective {
+public class StartupImages extends AbstractImageDirective {
 
-	public CharacterImages() {
-		super(ImageType.IMAGE_CHARACTER, "character", "images");
+	protected StartupImages() {
+		super(ImageType.IMAGE_STARTUP, "startup", "images");
 	}
 	
 	@Override
 	protected ImageParser createParser(DeltaContext context, StringReader reader) {
-		return new ImageParser(context, reader, ImageType.IMAGE_CHARACTER);
+		return new NoIdImageParser(context, reader, ImageType.IMAGE_STARTUP);
 	}
+
 }

@@ -40,7 +40,7 @@ public class DirOutCharTypes extends AbstractDirOutFunctor {
 			}
 			
 		}
-		writeLine(state, valueRangeToString(charTypes));
+		writeLine(state, _deltaWriter.valueRangeToString(charTypes));
 		
 	}
 	

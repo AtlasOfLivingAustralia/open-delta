@@ -20,6 +20,10 @@ import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.TextCharacter;
 import au.org.ala.delta.model.TypeSettingMark;
 import au.org.ala.delta.model.TypeSettingMark.CharacterNoteMarks;
+import au.org.ala.delta.model.image.Image;
+import au.org.ala.delta.model.image.ImageOverlay;
+import au.org.ala.delta.model.image.OverlayLocation;
+import au.org.ala.delta.model.image.OverlayType;
 import au.org.ala.delta.model.impl.DefaultDataSet;
 
 /**
@@ -173,22 +177,31 @@ public class IntkeyCharactersFileWriterTest extends TestCase {
 	 */
 	@Test
 	public void testWriteCharacterNotesHelpFormat() {
-		String format = "help format!";
-		
-		_charsFile.writeCharacterNotesFormat(format);
+		String format = "format!";
+		TypeSettingMark mark = new TypeSettingMark(CharacterNoteMarks.CHARACTER_NOTES_HELP_FORMAT.getId(), format, true);
+		_context.addFormattingMark(mark);
+		_charsFileWriter.writeCharacterNotesHelpFormat();
 		assertEquals(format.length(), readInt(2));	
 		assertEquals(format,readString(3, format.length()));
 	}
 	
 	@Test
 	public void testWriteCharacterImages() {
-		List<String> characterImages = new ArrayList<String>();
-		String image1 = "file1.jpg <@feature x=1 y=2 w=3 h=4>";
-		String image2 = "file2.jpg <@text x=1 y=2 w=3 h=4>";
-		characterImages.add(image1);
-		characterImages.add(image2);
 		
-		_charsFile.writeCharacterImages(characterImages);
+		String image1 = "test.jpg <@feature x=1 y=2 w=3 h=4>\n";
+		
+		au.org.ala.delta.model.Character character = _dataSet.getCharacter(1);
+		Image image = character.addImage("test.jpg", "");
+		ImageOverlay overlay = new ImageOverlay(OverlayType.OLFEATURE);
+		OverlayLocation location = new OverlayLocation();
+		overlay.addLocation(location);
+		location.X = 1;
+		location.Y = 2;
+		location.W = 3;
+		location.H = 4;
+		
+		image.addOverlay(overlay);
+		_charsFileWriter.writeCharacterImages();
 		
 		_charsFile.seek(IntkeyFile.RECORD_LENGTH_BYTES);
 		assertEquals(3, _charsFile.readInt());
@@ -196,9 +209,6 @@ public class IntkeyCharactersFileWriterTest extends TestCase {
 		
 		assertEquals(image1.length(), readInt(3));
 		assertEquals(image1, readString(4, image1.length()));
-		
-		assertEquals(image2.length(), readInt(5));
-		assertEquals(image2, readString(6, image2.length()));	
 	}
 	
 	@Test
@@ -207,10 +217,10 @@ public class IntkeyCharactersFileWriterTest extends TestCase {
 		String startupImages = "file1.jpg <@feature x=1 y=2 w=3 h=4> "+
 		    "file2.jpg <@text x=1 y=2 w=3 h=4>";
 		
-		_charsFile.writeStartupImages(startupImages);
+		//_charsFileWriter.writeStartupImages();
 
-		assertEquals(startupImages.length(), readInt(2));
-		assertEquals(startupImages, readString(3, startupImages.length()));
+		//assertEquals(startupImages.length(), readInt(2));
+		//assertEquals(startupImages, readString(3, startupImages.length()));
 	}
 	
 	@Test

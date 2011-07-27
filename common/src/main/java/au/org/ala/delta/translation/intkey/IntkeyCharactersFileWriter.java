@@ -13,6 +13,9 @@ import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.NumericCharacter;
 import au.org.ala.delta.model.TypeSettingMark;
 import au.org.ala.delta.model.TypeSettingMark.CharacterNoteMarks;
+import au.org.ala.delta.model.image.Image;
+import au.org.ala.delta.translation.delta.DeltaWriter;
+import au.org.ala.delta.translation.delta.ImageOverlayWriter;
 
 /**
  * Writes the intkey chars file using the data in a supplied DeltaContext and
@@ -86,7 +89,32 @@ public class IntkeyCharactersFileWriter {
 	}
 	
 	public void writeCharacterImages() {
-		throw new NotImplementedException();
+		List<String> imageList = new ArrayList<String>(_dataSet.getNumberOfCharacters());
+	
+		
+		for (int i=1; i<=_dataSet.getNumberOfCharacters(); i++) {
+			Character character = _dataSet.getCharacter(i);
+			List<Image> images = character.getImages();
+			if (images.isEmpty()) {
+				imageList.add("");
+			}
+			else {
+				StringBuilder buffer = new StringBuilder();
+				ImageOverlayWriter overlayWriter = createOverlayWriter(buffer);
+				for (Image image : images) {
+					buffer.append(image.getFileName()).append(" ");
+					overlayWriter.writeOverlays(image.getOverlays(), 0, character);
+				}
+				imageList.add(buffer.toString());
+			}
+			
+		}
+		_charsFile.writeCharacterImages(imageList);
+	}
+	
+	private ImageOverlayWriter createOverlayWriter(StringBuilder buffer) {
+		DeltaWriter writer = new DeltaWriter(buffer);
+		return new ImageOverlayWriter(writer);
 	}
 	
 	public void writeStartupImages() {

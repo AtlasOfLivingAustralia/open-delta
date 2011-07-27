@@ -1,5 +1,7 @@
 package au.org.ala.delta.translation;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintStream;
 
 import org.apache.commons.lang.StringUtils;
@@ -22,6 +24,18 @@ public class Printer {
 	private boolean _indentOnLineWrap;
 	private boolean _softWrap;
 	
+	
+	public Printer(final StringBuilder buffer) {
+		
+		_output = new PrintStream(new OutputStream() {
+			@Override
+			public void write(int b) throws IOException {
+				buffer.append((char)b);
+			}
+		});
+		initialise();
+	}
+	
 	/**
 	 * Creates a new Printer that will print to the supplied PrintStream.
 	 * @param output the output stream to print to.
@@ -30,9 +44,14 @@ public class Printer {
 	 */
 	public Printer(PrintStream output, int lineWidth) {
 		_output = output;
+		_printWidth = lineWidth;
+		initialise();
+	}
+	
+	private void initialise() {
 		_outputBuffer = new StringBuilder();
 		_indented = false;
-		_printWidth = lineWidth;
+		
 		_indentOnLineWrap = false;
 		_softWrap = false;
 	}

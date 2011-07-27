@@ -8,9 +8,9 @@ import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.directives.args.ImageParser;
 
 /**
- * Processes the CHARACTER IMAGES directive.
+ * Base class for parsing directives that specify images and image overlays.
  */
-public class AbstractImageDirective extends AbstractInternalDirective {
+public abstract class AbstractImageDirective extends AbstractInternalDirective {
 
 	private DirectiveArguments _args;
 	private int _imageType;
@@ -32,13 +32,11 @@ public class AbstractImageDirective extends AbstractInternalDirective {
 		
 		String data = directiveArguments.getFirstArgumentText();
 		
-		ImageParser parser = new ImageParser(context, new StringReader(data), _imageType);
+		ImageParser parser = createParser(context, new StringReader(data));
 		parser.parse();
 		
 		context.setImages(_imageType, parser.getImageInfo());
 	}
-
 	
-	
-	
+	protected abstract ImageParser createParser(DeltaContext context, StringReader reader);
 }
