@@ -46,12 +46,16 @@ public abstract class TextListParser<T> extends DirectiveArgsParser {
 		
 	    while (_currentChar == MARK_IDENTIFIER) {
 	    	
-	    	T id = readId();
-	    	String comment = readOptionalComment();
-	    	String value = readText();
-	    	
-	    	_args.addDirectiveArgument(id, comment, value);
+	    	readSingle();
 	    }
+	}
+
+	private void readSingle() throws ParseException {
+		T id = readId();
+		String comment = readOptionalComment();
+		String value = readText();
+		
+		_args.addDirectiveArgument(id, comment, value);
 	}
 	
 	/**

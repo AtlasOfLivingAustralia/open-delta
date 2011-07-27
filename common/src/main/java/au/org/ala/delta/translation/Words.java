@@ -16,4 +16,8 @@ public class Words {
 		return _vwords[word.ordinal()];
 	}
 	
+	public static void setWord(Word word, String value) {
+		_vwords[word.ordinal()] = value;
+	}
+	
 }

@@ -17,6 +17,8 @@ import au.org.ala.delta.model.TypeSettingMark.CharacterNoteMarks;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageInfo;
 import au.org.ala.delta.model.image.ImageType;
+import au.org.ala.delta.translation.Words;
+import au.org.ala.delta.translation.Words.Word;
 import au.org.ala.delta.translation.delta.DeltaWriter;
 import au.org.ala.delta.translation.delta.ImageOverlayWriter;
 
@@ -160,7 +162,8 @@ public class IntkeyCharactersFileWriter {
 	}
 	
 	public void writeOrWord() {
-		throw new NotImplementedException();
+		String orWord = Words.word(Word.OR);
+		_charsFile.writeOrWord(orWord);
 	}
 	
 	public void writeFonts() {

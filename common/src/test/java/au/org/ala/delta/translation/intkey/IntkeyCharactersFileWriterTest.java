@@ -27,6 +27,8 @@ import au.org.ala.delta.model.image.ImageOverlay;
 import au.org.ala.delta.model.image.ImageType;
 import au.org.ala.delta.model.image.OverlayType;
 import au.org.ala.delta.model.impl.DefaultDataSet;
+import au.org.ala.delta.translation.Words;
+import au.org.ala.delta.translation.Words.Word;
 
 /**
  * Tests the IntkeyCharactersFileWriter class.
@@ -222,12 +224,15 @@ public class IntkeyCharactersFileWriterTest extends TestCase {
 	private void checkImages() {
 		String startupImages = "file1.jpg <@feature x=1 y=2 w=3 h=4> "+
 	    "<@text x=1 y=2 w=3 h=4>";
+		System.out.println(startupImages.length());
 		
+		//assertEquals(startupImages.length()+System.getProperty("line.separator").length(), readInt(2));
 		startupImages = startupImages.replace(System.getProperty("line.separator"), " ");
 		
-		assertEquals(startupImages.length()+System.getProperty("line.separator").length(), readInt(2));
 		String actual = readString(3, startupImages.length()).trim();
+		
 		actual = actual.replace(System.getProperty("line.separator"), " ");
+		System.out.println(actual);
 		assertEquals(startupImages, actual);
 	}
 
@@ -298,8 +303,9 @@ public class IntkeyCharactersFileWriterTest extends TestCase {
 	@Test
 	public void testWriteOrWord() {
 		String orWord = "or";
+		Words.setWord(Word.OR, orWord);
 		
-		_charsFile.writeOrWord(orWord);
+		_charsFileWriter.writeOrWord();
 
 		assertEquals(orWord.length(), readInt(2));
 		assertEquals(orWord, readString(3, orWord.length()));
