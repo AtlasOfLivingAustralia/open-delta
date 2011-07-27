@@ -47,6 +47,8 @@ import au.org.ala.delta.util.Utils;
  */
 public class DeltaContext extends AbstractDeltaContext {
 
+	public static enum HeadingType {HEADING, REGISTRATION_SUBHEADING};
+	
 	private DeltaDataSet _dataSet;
 	
 	private Map<String, Object> _variables;
@@ -90,7 +92,7 @@ public class DeltaContext extends AbstractDeltaContext {
 	private boolean _useAlternateComma;
 	private boolean _insertImplicitValues = false;
 	private boolean _outputHtml = false;
-
+	private Map<HeadingType, String> _headings = new HashMap<HeadingType, String>();
 	private Integer _characterForTaxonImages = null;
 
 	private String _credits;
@@ -597,5 +599,13 @@ public class DeltaContext extends AbstractDeltaContext {
 	
 	public TypeSettingMark getFormattingMark(CharacterNoteMarks mark) {
 		return _formattingMarks.get(mark.getId());
+	}
+	
+	public void setHeading(HeadingType type, String heading) {
+		_headings.put(type, heading);
+	}
+	
+	public String getHeading(HeadingType type) {
+		return _headings.get(type);
 	}
 }

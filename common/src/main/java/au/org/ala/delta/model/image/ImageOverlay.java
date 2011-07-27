@@ -63,6 +63,16 @@ public class ImageOverlay {
 		overlayText = "";
 		comment = "";
 	}
+	
+	public ImageOverlay(int type, short x, short y, short w, short h) {
+		this(type);
+		OverlayLocation location = new OverlayLocation();
+		location.X = x;
+		location.Y = y;
+		location.W = w;
+		location.H = h;
+		addLocation(location);
+	}
 
 	public boolean isType(int overlayType) {
 		return type == overlayType;

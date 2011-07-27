@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.lang.NotImplementedException;
 
 import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.DeltaContext.HeadingType;
 import au.org.ala.delta.intkey.WriteOnceIntkeyCharsFile;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.DeltaDataSet;
@@ -14,6 +15,8 @@ import au.org.ala.delta.model.NumericCharacter;
 import au.org.ala.delta.model.TypeSettingMark;
 import au.org.ala.delta.model.TypeSettingMark.CharacterNoteMarks;
 import au.org.ala.delta.model.image.Image;
+import au.org.ala.delta.model.image.ImageInfo;
+import au.org.ala.delta.model.image.ImageType;
 import au.org.ala.delta.translation.delta.DeltaWriter;
 import au.org.ala.delta.translation.delta.ImageOverlayWriter;
 
@@ -118,27 +121,42 @@ public class IntkeyCharactersFileWriter {
 	}
 	
 	public void writeStartupImages() {
-		throw new NotImplementedException();
+		List<ImageInfo> startupImages = _context.getImages(ImageType.IMAGE_STARTUP);
+		String images = imagesToString(startupImages);
+		_charsFile.writeStartupImages(images);
+	}
+
+	private String imagesToString(List<ImageInfo> startupImages) {
+		StringBuilder buffer = new StringBuilder();
+		ImageOverlayWriter overlayWriter = createOverlayWriter(buffer);
+		for (ImageInfo image : startupImages) {
+			if (buffer.length() > 0) {
+				buffer.append(" ");
+			}
+			buffer.append(image.getFileName()).append(" ");
+			overlayWriter.writeOverlays(image.getOverlays(), 0, null);
+		}
+		return buffer.toString();
 	}
 	
 	public void writeCharacterKeyImages() {
-		throw new NotImplementedException();
+		List<ImageInfo> startupImages = _context.getImages(ImageType.IMAGE_CHARACTER_KEYWORD);
+		String images = imagesToString(startupImages);
+		_charsFile.writeCharacterKeyImages(images);
 	}
 	
 	public void writeHeading() {
-		throw new NotImplementedException();	
+		String heading = _context.getHeading(HeadingType.HEADING);
+		_charsFile.writeHeading(heading);
 	}
 	
 	public void writeSubHeading() {
-		throw new NotImplementedException();
-	}
-	
-	public void writeValidationString() {
-		throw new NotImplementedException();
+		String heading = _context.getHeading(HeadingType.REGISTRATION_SUBHEADING);
+		_charsFile.writeSubHeading(heading);
 	}
 	
 	public void writeCharacterMask() {
-		throw new NotImplementedException();
+		
 	}
 	
 	public void writeOrWord() {

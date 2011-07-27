@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.DeltaContext.HeadingType;
 import au.org.ala.delta.intkey.IntkeyFile;
 import au.org.ala.delta.intkey.WriteOnceIntkeyCharsFile;
 import au.org.ala.delta.io.BinFileMode;
@@ -21,8 +22,9 @@ import au.org.ala.delta.model.TextCharacter;
 import au.org.ala.delta.model.TypeSettingMark;
 import au.org.ala.delta.model.TypeSettingMark.CharacterNoteMarks;
 import au.org.ala.delta.model.image.Image;
+import au.org.ala.delta.model.image.ImageInfo;
 import au.org.ala.delta.model.image.ImageOverlay;
-import au.org.ala.delta.model.image.OverlayLocation;
+import au.org.ala.delta.model.image.ImageType;
 import au.org.ala.delta.model.image.OverlayType;
 import au.org.ala.delta.model.impl.DefaultDataSet;
 
@@ -192,13 +194,8 @@ public class IntkeyCharactersFileWriterTest extends TestCase {
 		
 		au.org.ala.delta.model.Character character = _dataSet.getCharacter(1);
 		Image image = character.addImage("test.jpg", "");
-		ImageOverlay overlay = new ImageOverlay(OverlayType.OLFEATURE);
-		OverlayLocation location = new OverlayLocation();
-		overlay.addLocation(location);
-		location.X = 1;
-		location.Y = 2;
-		location.W = 3;
-		location.H = 4;
+		ImageOverlay overlay = new ImageOverlay(OverlayType.OLFEATURE, 
+				(short)1 ,(short)2, (short)3, (short)4);
 		
 		image.addOverlay(overlay);
 		_charsFileWriter.writeCharacterImages();
@@ -214,31 +211,54 @@ public class IntkeyCharactersFileWriterTest extends TestCase {
 	@Test
 	public void testWriteStartupImages() {
 		
-		String startupImages = "file1.jpg <@feature x=1 y=2 w=3 h=4> "+
-		    "file2.jpg <@text x=1 y=2 w=3 h=4>";
+		List<ImageInfo> images = createImages();
+		_context.setImages(ImageType.IMAGE_STARTUP, images);
 		
-		//_charsFileWriter.writeStartupImages();
+		_charsFileWriter.writeStartupImages();
+		
+		checkImages();
+	}
 
-		//assertEquals(startupImages.length(), readInt(2));
-		//assertEquals(startupImages, readString(3, startupImages.length()));
+	private void checkImages() {
+		String startupImages = "file1.jpg <@feature x=1 y=2 w=3 h=4> "+
+	    "<@text x=1 y=2 w=3 h=4>";
+		
+		startupImages = startupImages.replace(System.getProperty("line.separator"), " ");
+		
+		assertEquals(startupImages.length()+System.getProperty("line.separator").length(), readInt(2));
+		String actual = readString(3, startupImages.length()).trim();
+		actual = actual.replace(System.getProperty("line.separator"), " ");
+		assertEquals(startupImages, actual);
+	}
+
+	private List<ImageInfo> createImages() {
+		ImageOverlay overlay = new ImageOverlay(OverlayType.OLFEATURE, 
+				(short)1 ,(short)2, (short)3, (short)4);
+		List<ImageOverlay> overlays = new ArrayList<ImageOverlay>();
+		overlays.add(overlay);
+		overlays.add(new ImageOverlay(OverlayType.OLTEXT, (short)1, (short)2, (short)3, (short)4));
+		ImageInfo image = new ImageInfo(0, ImageType.IMAGE_STARTUP, "file1.jpg", overlays);
+		List<ImageInfo> images = new ArrayList<ImageInfo>();
+		images.add(image);
+		return images;
 	}
 	
 	@Test
 	public void testWriteCharacterKeyImages() {
 		
-		String characterKeyImages = "file1.jpg <@feature x=1 y=2 w=3 h=4>";
+		List<ImageInfo> images = createImages();
+		_context.setImages(ImageType.IMAGE_CHARACTER_KEYWORD, images);
 		
-		_charsFile.writeStartupImages(characterKeyImages);
-
-		assertEquals(characterKeyImages.length(), readInt(2));
-		assertEquals(characterKeyImages, readString(3, characterKeyImages.length()));
+		_charsFileWriter.writeCharacterKeyImages();
+		
+		checkImages();
 	}
 	
 	@Test
 	public void testWriteHeading() {
 		String heading = "this is a heading";
-		
-		_charsFile.writeHeading(heading);
+		_context.setHeading(HeadingType.HEADING, heading);
+		_charsFileWriter.writeHeading();
 
 		assertEquals(heading.length(), readInt(2));
 		assertEquals(heading, readString(3, heading.length()));
@@ -246,9 +266,9 @@ public class IntkeyCharactersFileWriterTest extends TestCase {
 	
 	@Test
 	public void testWriteSubHeading() {
-		String heading = "this is a sub heading";
-		
-		_charsFile.writeSubHeading(heading);
+		String heading = "this is a subheading";
+		_context.setHeading(HeadingType.REGISTRATION_SUBHEADING, heading);
+		_charsFileWriter.writeSubHeading();
 
 		assertEquals(heading.length(), readInt(2));
 		assertEquals(heading, readString(3, heading.length()));

@@ -17,6 +17,19 @@ public class OverlayLocation {
 	private static final int OLOC_FLAG_COLOUR   =   0x04000000;
 	public static final byte OL_INTEGRAL_HEIGHT = 0x8;
 	
+	
+	public OverlayLocation() {
+		clearAll();
+	}
+	
+	public OverlayLocation(short x, short y, short w, short h) {
+		clearAll();
+		X = x;
+		Y = y;
+		W = w;
+		H = h;
+	}
+	
 	public void clearAll() {
 		drawType = OLDrawType.Unknown;
 		ID = flags = 0;

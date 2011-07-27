@@ -15,6 +15,7 @@
 package au.org.ala.delta.directives;
 
 import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.DeltaContext.HeadingType;
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.directives.args.DirectiveArguments;
 
@@ -30,7 +31,7 @@ public class Heading extends AbstractTextDirective {
 		String data = args.getFirstArgumentText();
 		
 		String heading = replaceVariables(context, data.trim());
-		context.setVariable("heading", heading);
+		context.setHeading(HeadingType.HEADING, heading);
 		Logger.log("HEADING: %s", heading);
 	}
 
