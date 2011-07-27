@@ -938,16 +938,14 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         case BEST:
             LinkedHashMap<Character, Double> bestCharactersMap = _context.getBestCharacters();
             if (bestCharactersMap != null) {
+                _lblNumAvailableCharacters.setText(String.format(bestCharactersCaption, bestCharactersMap.keySet().size()));
                 if (bestCharactersMap.isEmpty()) {
                     handleNoAvailableCharacters();
-                    _lblNumAvailableCharacters.setText(String.format(bestCharactersCaption, bestCharactersMap.keySet().size()));
                     return;
                 } else {
                     _availableCharacterListModel = new BestCharacterListModel(new ArrayList<Character>(bestCharactersMap.keySet()), bestCharactersMap);
                     _listAvailableCharacters.setModel(_availableCharacterListModel);
-                    _lblNumAvailableCharacters.setText(String.format(bestCharactersCaption, bestCharactersMap.keySet().size()));
                 }
-
             } else {
                 _availableCharacterListModel = null;
 
@@ -984,13 +982,14 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             List<Character> availableCharacters = new ArrayList<Character>(_context.getIncludedCharacters());
             availableCharacters.removeAll(_context.getSpecimen().getUsedCharacters());
             Collections.sort(availableCharacters);
+            _lblNumAvailableCharacters.setText(String.format(availableCharactersCaption, availableCharacters.size()));
             if (availableCharacters.size() == 0) {
                 handleNoAvailableCharacters();
+                return;
             } else {
                 _availableCharacterListModel = new CharacterListModel(availableCharacters);
                 _listAvailableCharacters.setModel(_availableCharacterListModel);
             }
-            _lblNumAvailableCharacters.setText(String.format(availableCharactersCaption, availableCharacters.size()));
             break;
         case SEPARATE:
             throw new NotImplementedException();
@@ -1150,22 +1149,20 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         if (availableTaxa.size() > 1) {
             updateAvailableCharacters();
         } else {
+            String message = null;
+            
             if (availableTaxa.size() == 0) {
-                JLabel lbl = new JLabel(noMatchingTaxaRemainCaption);
-                lbl.setHorizontalAlignment(JLabel.CENTER);
-                lbl.setBackground(Color.WHITE);
-                lbl.setOpaque(true);
-
-                _sclPaneAvailableCharacters.setViewportView(lbl);
-                _sclPaneAvailableCharacters.revalidate();
+                message = noMatchingTaxaRemainCaption;
             } else if (availableTaxa.size() == 1) {
-                JLabel lbl = new JLabel(identificationCompleteCaption);
-                lbl.setHorizontalAlignment(JLabel.CENTER);
-                lbl.setBackground(Color.WHITE);
-                lbl.setOpaque(true);
-                _sclPaneAvailableCharacters.setViewportView(lbl);
-                _sclPaneAvailableCharacters.revalidate();
+                message = identificationCompleteCaption;
             }
+            
+            JLabel lbl = new JLabel(message);
+            lbl.setHorizontalAlignment(JLabel.CENTER);
+            lbl.setBackground(Color.WHITE);
+            lbl.setOpaque(true);
+            _sclPaneAvailableCharacters.setViewportView(lbl);
+            _sclPaneAvailableCharacters.revalidate();
 
             switch (_context.getCharacterOrder()) {
             case NATURAL:
@@ -1189,7 +1186,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     @Override
     public void handleIdentificationRestarted() {
         _btnDiffSpecimenTaxa.setEnabled(false);
-        initializeIdentification();
+        handleUpdateAll();
     }
 
     @Override
