@@ -2,10 +2,10 @@ package au.org.ala.delta.editor.slotfile.model;
 
 import au.org.ala.delta.editor.slotfile.VOImageInfoDesc;
 import au.org.ala.delta.editor.slotfile.VOImageInfoDesc.LOGFONT;
-import au.org.ala.delta.editor.slotfile.VOImageInfoDesc.OverlayFontType;
 import au.org.ala.delta.io.BinFileEncoding;
 import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.model.image.ImageSettings.FontInfo;
+import au.org.ala.delta.model.image.ImageSettings.OverlayFontType;
 import au.org.ala.delta.util.Pair;
 
 public class ImageSettingsHelper {
@@ -17,7 +17,7 @@ public class ImageSettingsHelper {
 		fontInfo = toFontInfo(imageInfo.readOverlayFont(OverlayFontType.OF_FEATURE));
 		settings.setDefaultFeatureFontInfo(fontInfo);
 		
-		fontInfo = toFontInfo(imageInfo.readOverlayFont(OverlayFontType.OF_BUTTON));
+		fontInfo = toFontInfo(imageInfo.readOverlayFont(au.org.ala.delta.model.image.ImageSettings.OverlayFontType.OF_BUTTON));
 		settings.setDefaultButtonFontInfo(fontInfo);
 		
 		settings.setImagePath(imageInfo.readImagePath());

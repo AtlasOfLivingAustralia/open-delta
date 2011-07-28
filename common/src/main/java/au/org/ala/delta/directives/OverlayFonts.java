@@ -44,18 +44,32 @@ public class OverlayFonts extends AbstractInternalDirective {
 			
 			FontInfo fontInfo = new FontInfo();
 			skipWhitespace();
-			fontInfo.size = readInteger();
-			skipWhitespace();
-			fontInfo.weight = readInteger();
-			skipWhitespace();
-			fontInfo.italic = readInteger() != 0;
-			skipWhitespace();
-			fontInfo.pitch = readInteger();
-			skipWhitespace();
-			fontInfo.family = readInteger();
-			skipWhitespace();
-			fontInfo.charSet = readInteger();
 			
+			// Any of the digits are optional.
+			if (Character.isDigit(_currentChar)) {
+				fontInfo.size = readInteger();
+				skipWhitespace();
+			}
+			if (Character.isDigit(_currentChar)) {
+				fontInfo.weight = readInteger();
+				skipWhitespace();
+			}
+			if (Character.isDigit(_currentChar)) {
+				fontInfo.italic = readInteger() != 0;
+				skipWhitespace();
+			}
+			if (Character.isDigit(_currentChar)) {
+				fontInfo.pitch = readInteger();
+				skipWhitespace();
+			}
+			if (Character.isDigit(_currentChar)) {
+				fontInfo.family = readInteger();
+				skipWhitespace();
+			}
+			if (Character.isDigit(_currentChar)) {
+				fontInfo.charSet = readInteger();
+				skipWhitespace();
+			}
 			fontInfo.name = readToNext('#');
 			
 			return "";

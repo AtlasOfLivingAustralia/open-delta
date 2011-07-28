@@ -10,8 +10,30 @@ import java.awt.Font;
 public class ImageSettings {
 
 	public enum ButtonAlignment {NO_ALIGN, ALIGN_VERTICALLY, ALIGN_HORIZONTALLY};
-	
+	public enum OverlayFontType {
+		OF_DEFAULT, OF_BUTTON, OF_FEATURE;
+		// OL_FONT_LIST_END;
+
+		public static OverlayFontType fromOrdinal(int ord) {
+			return values()[ord];
+		}
+
+	};
 	public static class FontInfo {
+		
+		public FontInfo() {
+			this(0, 0, false, 0, 0, 0, null);
+			comment = null;
+		}
+		public FontInfo(int size, int weight, boolean italic, int pitch, int family, int charSet, String name) {
+			this.size = size;
+			this.weight = weight;
+			this.italic = italic;
+			this.pitch = pitch;
+			this.family = family;
+			this.charSet = charSet;
+			this.name = name;
+		}
 		public int size;
 		public int weight;
 		public boolean italic;

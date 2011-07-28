@@ -39,16 +39,16 @@ public class ImageOverlayWriter {
 			int startIndent, Illustratable subject) {
 		
 		OverlayLocation olLoc;
-		StringBuilder _textBuffer = new StringBuilder();
+		StringBuilder textBuffer = new StringBuilder();
 		for (ImageOverlay overlay : overlayList) {
 			int indent = startIndent;
 			int curType = overlay.type;
 
-			_textBuffer.append('<');
+			textBuffer.append('<');
 			if (curType != OverlayType.OLCOMMENT) {
-				_textBuffer.append('@');
-				_textBuffer.append(OverlayType.keywordFromType(curType));
-				_textBuffer.append(' ');
+				textBuffer.append('@');
+				textBuffer.append(OverlayType.keywordFromType(curType));
+				textBuffer.append(' ');
 			}
 
 			// These types have only simple text, with no location information
@@ -60,10 +60,10 @@ public class ImageOverlayWriter {
 				if (curType == OverlayType.OLCOMMENT || curType == OverlayType.OLSUBJECT) {
 					text = Utils.despaceRtf(text, true);
 				}
-				_textBuffer.append(text);
-				_textBuffer.append('>');
-				_deltaWriter.outputTextBuffer(_textBuffer.toString(), indent, indent + 5, true);
-				_textBuffer = new StringBuilder();
+				textBuffer.append(text);
+				textBuffer.append('>');
+				_deltaWriter.outputTextBuffer(textBuffer.toString(), indent, indent + 5, true);
+				textBuffer = new StringBuilder();
 				continue;
 			}
 
@@ -75,17 +75,17 @@ public class ImageOverlayWriter {
 			// Keyword, value, and state have arguments before the positioning
 			// information
 			if (curType == OverlayType.OLKEYWORD) {
-				_textBuffer.append('\"');
-				_textBuffer.append(overlay.keywords);
-				_textBuffer.append('\"');
-				_textBuffer.append(' ');
+				textBuffer.append('\"');
+				textBuffer.append(overlay.keywords);
+				textBuffer.append('\"');
+				textBuffer.append(' ');
 			} else if (curType == OverlayType.OLVALUE) {
 				Character character = (Character) subject;
 				if (!character.getCharacterType().isNumeric())
 					throw new RuntimeException("TDirInOutEx(ED_INTERNAL_ERROR)");
 
-				_textBuffer.append(overlay.getValueString());
-				_textBuffer.append(' ');
+				textBuffer.append(overlay.getValueString());
+				textBuffer.append(' ');
 			} else if (curType == OverlayType.OLSTATE) {
 				Character character = (Character) subject;
 				if (!character.getCharacterType().isMultistate())
@@ -93,90 +93,90 @@ public class ImageOverlayWriter {
 
 				if (overlay.stateId <= 0)
 					throw new RuntimeException("ED_INTERNAL_ERROR)");
-				_textBuffer.append(overlay.stateId);
-				_textBuffer.append(' ');
+				textBuffer.append(overlay.stateId);
+				textBuffer.append(' ');
 			}
 
-			int xIndent = startIndent + _textBuffer.length();
+			int xIndent = startIndent + textBuffer.length();
 
 			if (overlay.comment.length() > 0) {
-				_textBuffer.append('<');
+				textBuffer.append('<');
 
-				_textBuffer.append(Utils.despaceRtf(overlay.comment, true));
-				_textBuffer.append("> ");
+				textBuffer.append(Utils.despaceRtf(overlay.comment, true));
+				textBuffer.append("> ");
 			}
 
-			_textBuffer.append("x=");
+			textBuffer.append("x=");
 			if (curType == OverlayType.OLUNITS && olLoc.X == Short.MIN_VALUE)
-				_textBuffer.append('~');
+				textBuffer.append('~');
 			else
-				_textBuffer.append(olLoc.X);
-			_textBuffer.append(" y=");
+				textBuffer.append(olLoc.X);
+			textBuffer.append(" y=");
 			if (curType == OverlayType.OLUNITS && olLoc.Y == Short.MIN_VALUE)
-				_textBuffer.append('~');
+				textBuffer.append('~');
 			else
-				_textBuffer.append(olLoc.Y);
+				textBuffer.append(olLoc.Y);
 			// These button types have only x and y co-ordinates.
 			if (curType == OverlayType.OLOK || curType == OverlayType.OLCANCEL
 					|| curType == OverlayType.OLNOTES) {
-				_textBuffer.append('>');
-				_deltaWriter.outputTextBuffer(_textBuffer.toString(), indent, indent, true);
-				_textBuffer = new StringBuilder();
+				textBuffer.append('>');
+				_deltaWriter.outputTextBuffer(textBuffer.toString(), indent, indent, true);
+				textBuffer = new StringBuilder();
 				continue;
 			}
 
 			if (curType != OverlayType.OLIMAGENOTES) {
-				_textBuffer.append(" w=");
-				_textBuffer.append(olLoc.W);
-				_textBuffer.append(" h=");
-				_textBuffer.append(olLoc.H);
+				textBuffer.append(" w=");
+				textBuffer.append(olLoc.W);
+				textBuffer.append(" h=");
+				textBuffer.append(olLoc.H);
 			}
 
 			// Output hotspot information
 			int tmpIndent = indent;
 			for (int loc = 1; loc<overlay.location.size(); loc++) {
 				OverlayLocation hsLoc = overlay.location.get(loc);
-				_deltaWriter.outputTextBuffer(_textBuffer.toString(), tmpIndent, tmpIndent, true);
-				_textBuffer = new StringBuilder();
+				_deltaWriter.outputTextBuffer(textBuffer.toString(), tmpIndent, tmpIndent, true);
+				textBuffer = new StringBuilder();
 				tmpIndent = xIndent;
 
-				_textBuffer.append(" x=").append(hsLoc.X);
-				_textBuffer.append(" y=").append(hsLoc.Y);
-				_textBuffer.append(" w=").append(hsLoc.W);
-				_textBuffer.append(" h=").append(hsLoc.H);
+				textBuffer.append(" x=").append(hsLoc.X);
+				textBuffer.append(" y=").append(hsLoc.Y);
+				textBuffer.append(" w=").append(hsLoc.W);
+				textBuffer.append(" h=").append(hsLoc.H);
 				if (hsLoc.drawType == OLDrawType.ellipse)
-					_textBuffer.append(" e");
+					textBuffer.append(" e");
 				if (hsLoc.isPopup())
-					_textBuffer.append(" p");
+					textBuffer.append(" p");
 				if (hsLoc.isColorSet()) {
-					_textBuffer.append(" f=");
-					Formatter formatter = new Formatter(_textBuffer);
+					textBuffer.append(" f=");
+					Formatter formatter = new Formatter(textBuffer);
 					formatter.format("%06X", hsLoc.getColorAsBGR());
 				}
 			}
 
 			// Output other flags
 			if (overlay.omitDescription())
-				_textBuffer.append(" n");
+				textBuffer.append(" n");
 			if (overlay.includeComments())
-				_textBuffer.append(" c");
+				textBuffer.append(" c");
 			if (overlay.centreText())
-				_textBuffer.append(" m");
+				textBuffer.append(" m");
 
 			boolean hasText = false;
 			if (overlay.overlayText.length() > 0) {
-				_deltaWriter.outputTextBuffer(_textBuffer.toString(), tmpIndent, indent, true);
-				_textBuffer = new StringBuilder();
-				_textBuffer.append(" t=");
-				_textBuffer.append(Utils.despaceRtf(overlay.overlayText, true));
+				_deltaWriter.outputTextBuffer(textBuffer.toString(), tmpIndent, indent, true);
+				textBuffer = new StringBuilder();
+				textBuffer.append(" t=");
+				textBuffer.append(Utils.despaceRtf(overlay.overlayText, true));
 				hasText = true;
 			}
 			if (hasText) {
 				tmpIndent = indent +1; 
 			}
-			_textBuffer.append('>');
-			_deltaWriter.outputTextBuffer(_textBuffer.toString(), tmpIndent, indent, true);
-			_textBuffer = new StringBuilder();
+			textBuffer.append('>');
+			_deltaWriter.outputTextBuffer(textBuffer.toString(), tmpIndent, indent, true);
+			textBuffer = new StringBuilder();
 		}
 
 	}

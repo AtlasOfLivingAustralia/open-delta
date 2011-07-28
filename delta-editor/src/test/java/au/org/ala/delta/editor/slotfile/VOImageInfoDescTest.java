@@ -7,7 +7,7 @@ import org.junit.Before;
 
 import au.org.ala.delta.DeltaTestCase;
 import au.org.ala.delta.editor.slotfile.VOImageInfoDesc.LOGFONT;
-import au.org.ala.delta.editor.slotfile.VOImageInfoDesc.OverlayFontType;
+import au.org.ala.delta.model.image.ImageSettings.OverlayFontType;
 import au.org.ala.delta.util.Pair;
 
 

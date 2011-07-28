@@ -167,7 +167,8 @@ public class IntkeyCharactersFileWriter {
 	}
 	
 	public void writeFonts() {
-		throw new NotImplementedException();
+		_dataSet.getImageSettings();
+		
 	}
 	
 	public void writeItemSubheadings() {

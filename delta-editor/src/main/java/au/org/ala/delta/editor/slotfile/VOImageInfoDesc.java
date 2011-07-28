@@ -20,6 +20,7 @@ import java.util.Map;
 
 import au.org.ala.delta.io.BinFile;
 import au.org.ala.delta.io.BinFileEncoding;
+import au.org.ala.delta.model.image.ImageSettings.OverlayFontType;
 import au.org.ala.delta.util.Pair;
 
 /**
@@ -297,16 +298,6 @@ public class VOImageInfoDesc extends VOAnyDesc {
 		}
 
 	}
-
-	public enum OverlayFontType {
-		OF_DEFAULT, OF_BUTTON, OF_FEATURE;
-		// OL_FONT_LIST_END;
-
-		public static OverlayFontType fromOrdinal(int ord) {
-			return values()[ord];
-		}
-
-	};
 
 	public class LOGFONT implements IOObject {
 

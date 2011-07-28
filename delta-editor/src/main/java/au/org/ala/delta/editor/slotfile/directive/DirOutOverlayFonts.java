@@ -14,12 +14,11 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.slotfile.directive;
 
-import org.apache.commons.lang.StringUtils;
-
-import au.org.ala.delta.editor.slotfile.VOImageInfoDesc.OverlayFontType;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.model.image.ImageSettings.FontInfo;
+import au.org.ala.delta.model.image.ImageSettings.OverlayFontType;
+import au.org.ala.delta.translation.delta.OverlayFontWriter;
 
 public class DirOutOverlayFonts extends AbstractDirOutFunctor {
 
@@ -29,12 +28,12 @@ public class DirOutOverlayFonts extends AbstractDirOutFunctor {
 		
 		DeltaDataSet dataSet = state.getDataSet();
 
+		OverlayFontWriter fontWriter = new OverlayFontWriter(_deltaWriter);
 		ImageSettings settings = dataSet.getImageSettings();
 		if (settings != null) {
 
 			for (OverlayFontType fontType : OverlayFontType.values()) {
-				int indent = 2;
-				_textBuffer.append("#").append(fontType.ordinal() + 1).append(". ");
+				
 				FontInfo fontInfo;
 				if (fontType == OverlayFontType.OF_DEFAULT) {
 					fontInfo = settings.getDefaultFontInfo();
@@ -45,28 +44,8 @@ public class DirOutOverlayFonts extends AbstractDirOutFunctor {
 				else {
 					fontInfo = settings.getDefaultButtonFontInfo();
 				}
+				fontWriter.writeFont(fontInfo, fontType);
 				
-				String comment = fontInfo.comment;
-				if (StringUtils.isNotEmpty(comment)) {
-					_textBuffer.append(" <");
-					_textBuffer.append(comment);
-					_textBuffer.append('>');
-					outputTextBuffer(indent, indent, true);
-					indent = 10;
-				}
-				if (StringUtils.isNotEmpty(fontInfo.name)) {
-
-					String buffer = String.format("%d %d %d %d %d %d %s",
-							fontInfo.size,
-							fontInfo.weight, 
-							fontInfo.italic ? 1 : 0, 
-							fontInfo.pitch,
-							fontInfo.family,
-							fontInfo.charSet, fontInfo.name);
-					_textBuffer.append(buffer);
-					outputTextBuffer(indent, 10, true);
-				} else
-					_textBuffer = new StringBuilder();
 			}
 		}
 	}
