@@ -78,6 +78,24 @@ public class IntkeyFile extends BinFile {
 		return writeToRecord(recordNumber, 0, bytes.array());
 	}
 	
+	public int writeBooleansToRecord(int recordNumber, List<Boolean> values) {
+		ByteBuffer bytes = ByteBuffer.allocate(values.size() * SIZE_INT_IN_BYTES);
+		bytes.order(ByteOrder.LITTLE_ENDIAN);
+		for (boolean value : values) {
+			bytes.putInt(value ? 1 : 0);
+		}
+		return writeToRecord(recordNumber, 0, bytes.array());
+	}
+	
+	public int writeFloatsToRecord(int recordNumber, List<Float> values) {
+		ByteBuffer bytes = ByteBuffer.allocate(values.size() * SIZE_INT_IN_BYTES);
+		bytes.order(ByteOrder.LITTLE_ENDIAN);
+		for (float value : values) {
+			bytes.putFloat(value);
+		}
+		return writeToRecord(recordNumber, 0, bytes.array());
+	}
+	
 	public int writeToRecord(int recordNumber, int[] values) {
 		seekToRecord(recordNumber);
 		writeInts(values);
