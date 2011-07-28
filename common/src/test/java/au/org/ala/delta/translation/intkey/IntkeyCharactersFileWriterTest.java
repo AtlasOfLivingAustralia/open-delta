@@ -328,30 +328,32 @@ public class IntkeyCharactersFileWriterTest extends TestCase {
 		_charsFileWriter.writeFonts();
 		
 		_charsFile.seek(IntkeyFile.RECORD_LENGTH_BYTES);
-//		assertEquals(3, _charsFile.readInt());
-//		
-//		String defaultFontString = "1 2 0 3 4 5 default font";
-//		String defaultFeatureFontString = "6 7 1 8 9 10 default feature font";
-//		String defaultButtonFontString = "11 12 1 13 14 15 default button font";
-//		_charsFile.seek(IntkeyFile.RECORD_LENGTH_BYTES*2);
-//		
-//		assertEquals(defaultFontString.length(), _charsFile.readInt());
-//		assertEquals(defaultButtonFontString.length(), _charsFile.readInt());
-//		assertEquals(defaultFeatureFontString.length(), _charsFile.readInt());
-//		
-//		int total = defaultFontString.length() + defaultFeatureFontString.length()+defaultButtonFontString.length();
-//		assertEquals(defaultFontString+defaultButtonFontString+defaultFeatureFontString, readString(4, total));
+		assertEquals(3, _charsFile.readInt());
+		
+		String defaultFontString = "#1. 1 2 0 3 4 5 default font";
+		String defaultFeatureFontString = "#3. 6 7 1 8 9 10 default feature font";
+		String defaultButtonFontString = "#2. 11 12 1 13 14 15 default button font";
+		_charsFile.seek(IntkeyFile.RECORD_LENGTH_BYTES*2);
+		
+		assertEquals(defaultFontString.length(), _charsFile.readInt());
+		assertEquals(defaultButtonFontString.length(), _charsFile.readInt());
+		assertEquals(defaultFeatureFontString.length(), _charsFile.readInt());
+		
+		int total = defaultFontString.length() + defaultFeatureFontString.length()+defaultButtonFontString.length();
+		String actual = readString(4, total);
+		assertEquals(defaultFontString+defaultButtonFontString+defaultFeatureFontString, actual);
 	}
 	
 	@Test
 	public void testWriteItemSubHeadings() {
-		List<String> itemSubHeadings = new ArrayList<String>();
+		
 		String heading1 = "heading1";
 		String heading2 = "heading2";
-		itemSubHeadings.add(heading1);
-		itemSubHeadings.add(heading2);
 		
-		_charsFile.writeItemSubheadings(itemSubHeadings);
+		_context.itemSubheading(1, heading1);
+		_context.itemSubheading(2, heading2);
+		
+		_charsFileWriter.writeItemSubheadings();
 		
 		_charsFile.seek(IntkeyFile.RECORD_LENGTH_BYTES);
 		assertEquals(3, _charsFile.readInt());

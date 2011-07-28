@@ -136,6 +136,18 @@ public class ImageSettings {
 		return ButtonAlignment.NO_ALIGN;
 	}
 	
+	public FontInfo getFont(OverlayFontType type) {
+		switch (type) {
+		case OF_DEFAULT:
+			return _defaultFontInfo;
+		case OF_BUTTON:
+			return _defaultButtonFont;
+		case OF_FEATURE:
+			return _defaultFeatureFontInfo;
+		}
+		throw new IllegalArgumentException("Unsupported font type: "+type);
+	}
+	
 	private Font fontInfoToFont(FontInfo info) {
 		if (info.size == 0) {
 			return null;

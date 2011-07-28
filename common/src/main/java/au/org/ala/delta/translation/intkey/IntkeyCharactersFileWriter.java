@@ -3,8 +3,6 @@ package au.org.ala.delta.translation.intkey;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.NotImplementedException;
-
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.DeltaContext.HeadingType;
 import au.org.ala.delta.intkey.WriteOnceIntkeyCharsFile;
@@ -16,11 +14,15 @@ import au.org.ala.delta.model.TypeSettingMark;
 import au.org.ala.delta.model.TypeSettingMark.CharacterNoteMarks;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageInfo;
+import au.org.ala.delta.model.image.ImageSettings;
+import au.org.ala.delta.model.image.ImageSettings.FontInfo;
+import au.org.ala.delta.model.image.ImageSettings.OverlayFontType;
 import au.org.ala.delta.model.image.ImageType;
 import au.org.ala.delta.translation.Words;
 import au.org.ala.delta.translation.Words.Word;
 import au.org.ala.delta.translation.delta.DeltaWriter;
 import au.org.ala.delta.translation.delta.ImageOverlayWriter;
+import au.org.ala.delta.translation.delta.OverlayFontWriter;
 
 /**
  * Writes the intkey chars file using the data in a supplied DeltaContext and
@@ -43,10 +45,7 @@ public class IntkeyCharactersFileWriter {
 		for (int i=1; i<=_dataSet.getNumberOfCharacters(); i++) {
 			Character character = _dataSet.getCharacter(i);
 			String notes = character.getNotes();
-			if (notes == null) {
-				notes = "";
-			}
-			allNotes.add(notes);
+			add(allNotes, notes);
 		}
 		_charsFile.writeCharacterNotes(allNotes);
 	}
@@ -167,11 +166,45 @@ public class IntkeyCharactersFileWriter {
 	}
 	
 	public void writeFonts() {
-		_dataSet.getImageSettings();
+		List<String> fonts = new ArrayList<String>();
+		ImageSettings settings = _dataSet.getImageSettings();
 		
+		for (OverlayFontType fontType : OverlayFontType.values()) {
+			addFontText(fonts, settings.getFont(fontType), fontType);
+		}
+		_charsFile.writeFonts(fonts);
+	}
+	
+	private void addFontText(List<String> fonts, FontInfo font, OverlayFontType type) {
+		if (font != null) {
+			StringBuilder fontText = new StringBuilder();
+			OverlayFontWriter writer = createOverlayFontWriter(fontText);
+			writer.writeFont(font, type);
+			
+			fonts.add(fontText.toString().trim());
+		}
+	}
+	
+	private OverlayFontWriter createOverlayFontWriter(StringBuilder buffer) {
+		DeltaWriter writer = new DeltaWriter(buffer);
+		return new OverlayFontWriter(writer);
 	}
 	
 	public void writeItemSubheadings() {
-		throw new NotImplementedException();
+		List<String> subHeadings = new ArrayList<String>();
+		for (int i=1; i<=_dataSet.getNumberOfCharacters(); i++) {
+			
+			String subheading = _context.getItemSubheading(i);
+			add(subHeadings, subheading);
+		}
+		_charsFile.writeItemSubheadings(subHeadings);
+		
+	}
+	
+	private void add(List<String> values, String value) {
+		if (value == null) {
+			value = "";
+		}
+		values.add(value);
 	}
 }
