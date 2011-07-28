@@ -156,43 +156,14 @@ public class ImageOverlay {
 		return ((location.get(0).flags & OL_OMIT_DESCRIPTION) > 0);
 	}
 	
-	public void setOmitDescription(boolean omitDescription) {
-		
-		if (omitDescription) {
-			location.get(0).flags |= OL_OMIT_DESCRIPTION;
-		}
-		else {
-			location.get(0).flags &= ~OL_OMIT_DESCRIPTION;
-		}
-	}
-	
 	public boolean includeComments() {
 		return ((location.get(0).flags & OL_INCLUDE_COMMENTS) > 0);
-	}
-	
-	public void setIncludeComments(boolean includeComments) {
-		if (includeComments) {
-			location.get(0).flags |= OL_INCLUDE_COMMENTS;
-		}
-		else {
-			location.get(0).flags &= ~OL_INCLUDE_COMMENTS;
-		}
 	}
 	
 	public boolean centreText() {
 		return (location.size() > 0 && (location.get(0).flags & OL_CENTER_TEXT) > 0);
 	}
 	
-	public void setCentreText(boolean centreText) {
-		if (centreText) {
-			location.get(0).flags |= OL_CENTER_TEXT;
-		}
-		else {
-			location.get(0).flags &= ~OL_CENTER_TEXT;
-		}
-	}
-
-
 	public boolean canSelect() {
 		return type == OverlayType.OLSTATE || type == OverlayType.OLVALUE;
 	}

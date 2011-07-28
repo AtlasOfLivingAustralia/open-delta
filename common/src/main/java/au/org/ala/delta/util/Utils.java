@@ -83,7 +83,7 @@ public class Utils {
 		int i = 0;
 		for (; i < buf.length(); ++i) {
 			char ch = buf.charAt(i);
-			if (Character.isDigit(ch) || (i==0 && ch=='-')) {
+			if (Character.isDigit(ch) || (i==0 && ch=='-') || (ch >= 65 && ch <= 90) || (ch >= 97 && ch <= 122)) {
 				digits.append(ch);
 			} else {
 				break;

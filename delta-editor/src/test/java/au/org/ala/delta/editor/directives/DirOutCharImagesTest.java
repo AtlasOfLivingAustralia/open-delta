@@ -96,9 +96,9 @@ public class DirOutCharImagesTest extends DirOutImageOverlayTest {
 		ImageOverlay overlay = addOverlay(image, OverlayType.OLSTATE, 1, 2, 3, 4);
 		overlay.stateId = 1;
 		overlay.overlayText="extra";
-		overlay.setIncludeComments(true);
-		overlay.setCentreText(true);
-		overlay.setOmitDescription(true);
+		overlay.getLocation(0).setIncludeComments(true);
+		overlay.getLocation(0).setCentreText(true);
+		overlay.getLocation(0).setOmitDescription(true);
 		
 		DirOutCharImages dirOut = new DirOutCharImages();
 		

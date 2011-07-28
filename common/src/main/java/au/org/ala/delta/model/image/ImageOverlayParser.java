@@ -354,15 +354,15 @@ public class ImageOverlayParser {
 					break;
 
 				case 'C':
-					anOverlay.setIncludeComments(true);
+				    olLocation.setIncludeComments(true);
 					break;
 
 				case 'M':
-					anOverlay.setCentreText(true);
+				    olLocation.setCentreText(true);
 					break;
 
 				case 'N':
-					anOverlay.setOmitDescription(true);
+				    olLocation.setOmitDescription(true);
 					break;
 
 				case 'P':
@@ -476,7 +476,7 @@ public class ImageOverlayParser {
 
 		String candidate = buffer.substring(pos, buffer.length());
 		int[] endPtr = new int[] { 0 };
-		int retVal = Utils.strtol(candidate, endPtr);
+		int retVal = Utils.strtol(candidate, endPtr, base);
 		if (endPtr[0] == 0) {
 			throw new RuntimeException("Bad symbol: " + candidate);
 		} else {
