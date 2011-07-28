@@ -338,6 +338,11 @@ public class BinFile {
 		_stats.ReadInt++;
 		return b.getInt();
 	}
+	
+	public float readFloat() {
+		ByteBuffer b = readByteBuffer(4);
+		return b.getFloat();
+	}
 
 	// Not really sure what swrite is all about yet...
 	public void swrite(byte[] data) {

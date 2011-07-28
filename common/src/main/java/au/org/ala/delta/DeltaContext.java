@@ -367,10 +367,28 @@ public class DeltaContext extends AbstractDeltaContext {
 		
 	}
 	
+	public void setCharacterReliability(int number, double reliability) {
+		if (_characterWeights == null) {
+			_characterWeights = new double[getNumberOfCharacters()];
+		}
+		_characterWeights[number-1] = Math.pow(2, reliability-5);
+	}
+	
 	public double getCharacterWeight(int number) {
-		return _characterWeights[number-1];
+		if (_characterWeights != null) {
+			return _characterWeights[number-1];
+		}
+		return 0;
 	}
 
+	
+	public double getCharacterReliability(int number) {
+		if (_characterWeights == null) {
+			return 0;
+		}
+		return Math.log(_characterWeights[number-1])/Math.log(2) +5;
+	}
+	
 	/**
 	 * Returns true if the specified item has been marked as excluded by an EXCLUDED ITEMS directive
 	 * @param itemNumber the item number to check.

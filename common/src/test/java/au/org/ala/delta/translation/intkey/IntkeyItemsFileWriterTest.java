@@ -44,6 +44,8 @@ public class IntkeyItemsFileWriterTest extends TestCase {
 		TextCharacter char2 = (TextCharacter)_dataSet.addCharacter(CharacterType.Text);
 		char2.setDescription("this is character 2 description");
 		
+		_context.setNumberOfCharacters(2);
+		
 		Item item1 = _dataSet.addItem();
 		item1.setDescription("Item 1 description");
 		
@@ -78,8 +80,26 @@ public class IntkeyItemsFileWriterTest extends TestCase {
 	}
 	
 	@Test 
-	public void zztestWriteCharacterSpecs() {
-		throw new NotImplementedException();
+	public void testWriteCharacterSpecs() {
+		
+		_context.setCharacterReliability(1, 10.1);
+		_context.setCharacterReliability(2, 3.3);
+		
+		_itemsFileWriter.writeCharacterSpecs();
+		
+		int[] charTypes = readInts(2, 2);
+		assertEquals(1, charTypes[0]);
+		assertEquals(5, charTypes[1]);
+		
+		int[] numStates = readInts(3, 2);
+		assertEquals(3, numStates[0]);
+		assertEquals(0, numStates[1]);
+		
+		float[] reliabilities = readFloats(4, 2);
+		assertEquals(10.1f, reliabilities[0]);
+		assertEquals(3.3f, reliabilities[1]);
+		
+		
 	}
 	
 	@Test 
@@ -175,6 +195,16 @@ public class IntkeyItemsFileWriterTest extends TestCase {
 			ints[i] = _itemsFile.readInt();
 		}
 		return ints;
+	}
+	
+	private float[] readFloats(int recordNum, int numFloats) {
+		_itemsFile.seek(IntkeyFile.RECORD_LENGTH_BYTES*(recordNum-1));
+		
+		float[] floats = new float[numFloats];
+		for (int i=0; i<numFloats; i++) {
+			floats[i] = _itemsFile.readFloat();
+		}
+		return floats;
 	}
 	
 	private int readInt(int recordNum) {
