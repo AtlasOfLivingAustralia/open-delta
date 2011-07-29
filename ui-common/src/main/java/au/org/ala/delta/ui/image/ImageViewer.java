@@ -56,24 +56,19 @@ public class ImageViewer extends ImagePanel implements LayoutManager2, ActionLis
     /**
      * Creates a new ImageViewer for the supplied Image.
      * 
-     * @param imagePath
-     *            the path to find relative images on.
      * @param image
      *            the image to view.
+     * @param imageSettings
+     *            application-wide settings for the display of images            
      */
-    public ImageViewer(String imagePath, Image image, ImageSettings imageSettings) {
+    public ImageViewer(Image image, ImageSettings imageSettings) {
         _image = image;
 
-        // ResourceMap resources =
-        // Application.getInstance().getContext().getResourceMap();
+        ResourceMap resources = Application.getInstance().getContext().getResourceMap();
         
-        
-        // _factory = new OverlayComponentFactory(resources,
-        // dataSet.getImageSettings());
-
-        _factory = new OverlayComponentFactory(null, imageSettings);
+        _factory = new OverlayComponentFactory(resources, imageSettings);
         setLayout(this);
-        displayImage(image.getImageLocation(imagePath));
+        displayImage(image.getImageLocation(imageSettings.getImagePath()));
         _components = new ArrayList<JComponent>();
         _observers = new ArrayList<OverlaySelectionObserver>();
         addOverlays();
