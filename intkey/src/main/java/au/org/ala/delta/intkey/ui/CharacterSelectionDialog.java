@@ -6,6 +6,7 @@ import java.awt.GridLayout;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.ActionMap;
 import javax.swing.JButton;
@@ -18,6 +19,7 @@ import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageOverlay;
 import au.org.ala.delta.model.image.ImageOverlayParser;
@@ -170,13 +172,6 @@ public class CharacterSelectionDialog extends ListSelectionDialog {
 
     @Action
     public void characterSelectionDialog_Images() {
-        Character ch = (Character) _listModel.getCharacterAt(_list.getSelectedIndex());
-
-        Image img = ch.getImages().get(0);
-        ImageViewer viewer = new ImageViewer(img, _imageSettings);
-        JDialog dlg = new JDialog(this, true);
-        dlg.add(viewer);
-        dlg.setVisible(true);
 
     }
 

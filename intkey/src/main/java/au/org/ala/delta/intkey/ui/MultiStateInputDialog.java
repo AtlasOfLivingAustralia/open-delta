@@ -18,6 +18,7 @@ import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.model.MultiStateCharacter;
+import au.org.ala.delta.model.image.ImageSettings;
 
 public class MultiStateInputDialog extends CharacterValueInputDialog {
 
@@ -35,8 +36,8 @@ public class MultiStateInputDialog extends CharacterValueInputDialog {
     @Resource
     String selectionConfirmationTitle;    
 
-    public MultiStateInputDialog(Frame owner, MultiStateCharacter ch) {
-        super(owner, ch);
+    public MultiStateInputDialog(Frame owner, MultiStateCharacter ch, ImageSettings imageSettings) {
+        super(owner, ch, imageSettings);
         
         ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(MultiStateInputDialog.class);
         resourceMap.injectFields(this);
@@ -58,6 +59,7 @@ public class MultiStateInputDialog extends CharacterValueInputDialog {
         _list.setModel(listModel);
         
         _inputData = new HashSet<Integer>();
+
     }
 
     @Override
@@ -80,12 +82,27 @@ public class MultiStateInputDialog extends CharacterValueInputDialog {
         setVisible(false);
     }
 
-    public Set<Integer> getInputData() {
-        return _inputData;
-    }
-
     @Override
     void handleBtnCancelClicked() {
         this.setVisible(false);
     }
+    
+
+    @Override
+    void handleBtnImagesClicked() {
+        StateSelectionFromImageDialog dlg = new StateSelectionFromImageDialog(this,  (MultiStateCharacter) _ch, _imageSettings);
+        dlg.setVisible(true);
+        
+        Set<Integer> selectedStates = dlg.getSelectedStates();
+        if (selectedStates != null) {
+            _inputData.addAll(selectedStates);
+            this.setVisible(false);
+        }
+        
+    }
+    
+    public Set<Integer> getInputData() {
+        return _inputData;
+    }
+
 }

@@ -16,6 +16,7 @@ import au.org.ala.delta.model.image.OverlayType;
 import au.org.ala.delta.ui.image.ImageViewer;
 import au.org.ala.delta.ui.image.OverlaySelectionObserver;
 import au.org.ala.delta.ui.image.SelectableOverlay;
+import java.awt.BorderLayout;
 
 public class StateSelectionFromImageDialog extends JDialog {
 
@@ -25,13 +26,20 @@ public class StateSelectionFromImageDialog extends JDialog {
 
     public StateSelectionFromImageDialog(Frame owner, MultiStateCharacter character, ImageSettings imageSettings) {
         super(owner, true);
+        init(character, imageSettings);
     }
 
+    /**
+     * @wbp.parser.constructor
+     */
     public StateSelectionFromImageDialog(Dialog owner, MultiStateCharacter character, ImageSettings imageSettings) {
         super(owner, true);
+        init(character, imageSettings);
     }
 
     private void init(MultiStateCharacter character, ImageSettings imageSettings) {
+        getContentPane().setLayout(new BorderLayout(0, 0));
+        
         _imageSettings = imageSettings;
         _character = character;
         _selectedStates = new HashSet<Integer>();
@@ -46,7 +54,7 @@ public class StateSelectionFromImageDialog extends JDialog {
             }
         });
 
-        this.add(viewer);
+        getContentPane().add(viewer, BorderLayout.CENTER);
     }
 
     private void handleOverlaySelection(SelectableOverlay overlay) {
@@ -59,8 +67,17 @@ public class StateSelectionFromImageDialog extends JDialog {
         } else if (imageOverlay.isType(OverlayType.OLIMAGENOTES)) {
             // showImageNotes();
         } else if (imageOverlay.isType(OverlayType.OLSTATE)) {
-            //imageOverlay.ge
+            int stateId = imageOverlay.stateId;
+            if (overlay.isSelected()) {
+                _selectedStates.add(stateId);
+            } else {
+                _selectedStates.remove(stateId);
+            }
         }
+    }
+    
+    public Set<Integer> getSelectedStates() {
+        return _selectedStates;
     }
 
 }

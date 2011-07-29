@@ -303,7 +303,7 @@ public class UseDirective extends IntkeyDirective {
                     // its controlling
                     // characters
                     if (checkCharacterUsable(ch, context, false)) {
-                        CharacterValue characterVal = promptForCharacterValue(UIUtils.getMainFrame(), ch);
+                        CharacterValue characterVal = promptForCharacterValue(ch, context.getDirectivePopulator());
                         if (characterVal != null) {
                             // store this value so that the prompt does not need
                             // to
@@ -373,7 +373,7 @@ public class UseDirective extends IntkeyDirective {
                             // more of its controlling
                             // characters
                             if (checkCharacterUsable(ch, context, false)) {
-                                characterVal = promptForCharacterValue(UIUtils.getMainFrame(), ch);
+                                characterVal = promptForCharacterValue(ch, context.getDirectivePopulator());
                             } else {
                                 // remove this value so that the user will not
                                 // be
@@ -499,7 +499,7 @@ public class UseDirective extends IntkeyDirective {
                 // can be set to for which the dependent character will be
                 // inapplicable.
                 if (!context.isProcessingInputFile() && (cc.getNonAutoCc() || ch.getUseCc() || !cc.getNonAutoCc() && !cc.getUseCc() && applicableStates.size() > 1)) {
-                    CharacterValue val = promptForCharacterValue(UIUtils.getMainFrame(), cc);
+                    CharacterValue val = promptForCharacterValue(cc, context.getDirectivePopulator());
                     if (val != null) {
                         context.setValueForCharacter(cc, val);
                     } else {
@@ -557,26 +557,26 @@ public class UseDirective extends IntkeyDirective {
             return retMap;
         }
 
-        private CharacterValue promptForCharacterValue(Frame frame, Character ch) {
+        private CharacterValue promptForCharacterValue(Character ch, DirectivePopulator populator) {
             CharacterValue characterVal = null;
 
             if (ch instanceof MultiStateCharacter) {
-                Set<Integer> stateValues = promptForMultiStateValue(frame, (MultiStateCharacter) ch);
+                Set<Integer> stateValues = populator.promptForMultiStateValue((MultiStateCharacter) ch);
                 if (stateValues.size() > 0) {
                     characterVal = new MultiStateValue((MultiStateCharacter) ch, stateValues);
                 }
             } else if (ch instanceof IntegerCharacter) {
-                Set<Integer> intValue = promptForIntegerValue(frame, (IntegerCharacter) ch);
+                Set<Integer> intValue = populator.promptForIntegerValue((IntegerCharacter) ch);
                 if (intValue != null) {
                     characterVal = new IntegerValue((IntegerCharacter) ch, intValue);
                 }
             } else if (ch instanceof RealCharacter) {
-                FloatRange floatRange = promptForRealValue(frame, (RealCharacter) ch);
+                FloatRange floatRange = populator.promptForRealValue((RealCharacter) ch);
                 if (floatRange != null) {
                     characterVal = new RealValue((RealCharacter) ch, floatRange);
                 }
             } else if (ch instanceof TextCharacter) {
-                List<String> stringList = promptForTextValue(frame, (TextCharacter) ch);
+                List<String> stringList = populator.promptForTextValue((TextCharacter) ch);
                 if (stringList.size() > 0) {
                     characterVal = new TextValue((TextCharacter) ch, stringList);
                 }
@@ -585,30 +585,6 @@ public class UseDirective extends IntkeyDirective {
             }
 
             return characterVal;
-        }
-
-        private Set<Integer> promptForMultiStateValue(Frame frame, MultiStateCharacter ch) {
-            MultiStateInputDialog dlg = new MultiStateInputDialog(frame, ch);
-            UIUtils.showDialog(dlg);
-            return dlg.getInputData();
-        }
-
-        private Set<Integer> promptForIntegerValue(Frame frame, IntegerCharacter ch) {
-            IntegerInputDialog dlg = new IntegerInputDialog(frame, ch);
-            UIUtils.showDialog(dlg);
-            return dlg.getInputData();
-        }
-
-        private FloatRange promptForRealValue(Frame frame, RealCharacter ch) {
-            RealInputDialog dlg = new RealInputDialog(frame, ch);
-            UIUtils.showDialog(dlg);
-            return dlg.getInputData();
-        }
-
-        private List<String> promptForTextValue(Frame frame, TextCharacter ch) {
-            TextInputDialog dlg = new TextInputDialog(frame, ch);
-            UIUtils.showDialog(dlg);
-            return dlg.getInputData();
         }
 
         @Override

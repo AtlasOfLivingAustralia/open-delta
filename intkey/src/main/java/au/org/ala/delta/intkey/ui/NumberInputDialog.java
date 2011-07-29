@@ -17,13 +17,14 @@ import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.model.NumericCharacter;
+import au.org.ala.delta.model.image.ImageSettings;
 
 public abstract class NumberInputDialog extends CharacterValueInputDialog {
     protected JTextField _txtInput;
     private JLabel _lblUnits;
     
-    public NumberInputDialog(Frame owner, NumericCharacter ch) {
-        super(owner, ch);
+    public NumberInputDialog(Frame owner, NumericCharacter ch, ImageSettings imageSettings) {
+        super(owner, ch, imageSettings);
         
         ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(NumberInputDialog.class);
         resourceMap.injectFields(this);

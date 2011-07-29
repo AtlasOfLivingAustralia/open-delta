@@ -6,6 +6,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.Frame;
 import java.awt.Insets;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
@@ -46,6 +47,7 @@ import javax.swing.event.MouseInputAdapter;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.FloatRange;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
@@ -77,15 +79,23 @@ import au.org.ala.delta.intkey.ui.BestCharacterListModel;
 import au.org.ala.delta.intkey.ui.BusyGlassPane;
 import au.org.ala.delta.intkey.ui.CharacterKeywordSelectionDialog;
 import au.org.ala.delta.intkey.ui.CharacterListModel;
+import au.org.ala.delta.intkey.ui.IntegerInputDialog;
+import au.org.ala.delta.intkey.ui.MultiStateInputDialog;
 import au.org.ala.delta.intkey.ui.ReExecuteDialog;
+import au.org.ala.delta.intkey.ui.RealInputDialog;
 import au.org.ala.delta.intkey.ui.RtfReportDisplayDialog;
 import au.org.ala.delta.intkey.ui.TaxonKeywordSelectionDialog;
 import au.org.ala.delta.intkey.ui.TaxonListModel;
 import au.org.ala.delta.intkey.ui.TaxonWithDifferenceCountListModel;
+import au.org.ala.delta.intkey.ui.TextInputDialog;
 import au.org.ala.delta.intkey.ui.UIUtils;
 import au.org.ala.delta.intkey.ui.UsedCharacterListModel;
 import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.IntegerCharacter;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.MultiStateCharacter;
+import au.org.ala.delta.model.RealCharacter;
+import au.org.ala.delta.model.TextCharacter;
 import au.org.ala.delta.ui.AboutBox;
 import au.org.ala.delta.ui.DeltaSingleFrameApplication;
 import au.org.ala.delta.ui.rtf.SimpleRtfEditorKit;
@@ -1280,5 +1290,34 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     public String promptForString(String message, String initialValue, String directiveName) {
         return (String) JOptionPane.showInputDialog(getMainFrame(), message, directiveName, JOptionPane.PLAIN_MESSAGE, null, null, initialValue);
     }
+
+    @Override
+    public List<String> promptForTextValue(TextCharacter ch) {
+        TextInputDialog dlg = new TextInputDialog(getMainFrame(), ch, _context.getImageSettings());
+        UIUtils.showDialog(dlg);
+        return dlg.getInputData();
+    }
+
+    @Override
+    public Set<Integer> promptForIntegerValue(IntegerCharacter ch) {
+        IntegerInputDialog dlg = new IntegerInputDialog(getMainFrame(), ch, _context.getImageSettings());
+        UIUtils.showDialog(dlg);
+        return dlg.getInputData();
+    }
+
+    @Override
+    public FloatRange promptForRealValue(RealCharacter ch) {
+        RealInputDialog dlg = new RealInputDialog(getMainFrame(), ch, _context.getImageSettings());
+        UIUtils.showDialog(dlg);
+        return dlg.getInputData();
+    }
+
+    @Override
+    public Set<Integer> promptForMultiStateValue(MultiStateCharacter ch) {
+        MultiStateInputDialog dlg = new MultiStateInputDialog(getMainFrame(), ch, _context.getImageSettings());
+        UIUtils.showDialog(dlg);
+        return dlg.getInputData();
+    }
+    
 
 }

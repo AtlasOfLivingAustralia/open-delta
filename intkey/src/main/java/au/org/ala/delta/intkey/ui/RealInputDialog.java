@@ -11,28 +11,29 @@ import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.intkey.directives.ParsingUtils;
 import au.org.ala.delta.model.RealCharacter;
+import au.org.ala.delta.model.image.ImageSettings;
 
 public class RealInputDialog extends NumberInputDialog {
 
     private FloatRange _inputData;
-    
+
     @Resource
     String title;
-    
+
     @Resource
     String validationErrorMessage;
-    
+
     @Resource
     String validationErrorTitle;
 
-    public RealInputDialog(Frame owner, RealCharacter ch) {
-        super(owner, ch);
-        
+    public RealInputDialog(Frame owner, RealCharacter ch, ImageSettings imageSettings) {
+        super(owner, ch, imageSettings);
+
         ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(RealInputDialog.class);
         resourceMap.injectFields(this);
-        
+
         setTitle(title);
-        
+
         _inputData = null;
     }
 
@@ -51,13 +52,19 @@ public class RealInputDialog extends NumberInputDialog {
         }
     }
 
-    public FloatRange getInputData() {
-        return _inputData;
-    }
-
     @Override
     void handleBtnCancelClicked() {
         this.setVisible(false);
+    }
+
+    @Override
+    void handleBtnImagesClicked() {
+        // TODO Auto-generated method stub
+
+    }
+
+    public FloatRange getInputData() {
+        return _inputData;
     }
 
 }

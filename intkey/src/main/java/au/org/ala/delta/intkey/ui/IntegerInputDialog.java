@@ -13,28 +13,29 @@ import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.intkey.directives.ParsingUtils;
 import au.org.ala.delta.model.IntegerCharacter;
+import au.org.ala.delta.model.image.ImageSettings;
 
 public class IntegerInputDialog extends NumberInputDialog {
 
     private Set<Integer> _inputData;
-    
+
     @Resource
     String title;
-    
+
     @Resource
     String validationErrorMessage;
-    
+
     @Resource
     String validationErrorTitle;
 
-    public IntegerInputDialog(Frame owner, IntegerCharacter ch) {
-        super(owner, ch);
-        
+    public IntegerInputDialog(Frame owner, IntegerCharacter ch, ImageSettings imageSettings) {
+        super(owner, ch, imageSettings);
+
         ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(IntegerInputDialog.class);
         resourceMap.injectFields(this);
-        
+
         setTitle(title);
-        
+
         _inputData = null;
     }
 
@@ -51,6 +52,12 @@ public class IntegerInputDialog extends NumberInputDialog {
         } else {
             this.setVisible(false);
         }
+    }
+
+    @Override
+    void handleBtnImagesClicked() {
+        // TODO Auto-generated method stub
+
     }
 
     public Set<Integer> getInputData() {

@@ -15,6 +15,7 @@ import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.model.TextCharacter;
+import au.org.ala.delta.model.image.ImageSettings;
 
 public class TextInputDialog extends CharacterValueInputDialog {
     private JPanel _pnlTxtFld;
@@ -24,8 +25,8 @@ public class TextInputDialog extends CharacterValueInputDialog {
     @Resource
     String title;
 
-    public TextInputDialog(Frame owner, TextCharacter ch) {
-        super(owner, ch);
+    public TextInputDialog(Frame owner, TextCharacter ch, ImageSettings imageSettings) {
+        super(owner, ch, imageSettings);
         
         ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(TextInputDialog.class);
         resourceMap.injectFields(this);
@@ -70,6 +71,12 @@ public class TextInputDialog extends CharacterValueInputDialog {
     @Override
     void handleBtnCancelClicked() {
         this.setVisible(false);
+    }
+
+    @Override
+    void handleBtnImagesClicked() {
+        // TODO Auto-generated method stub
+        
     }
 
 }

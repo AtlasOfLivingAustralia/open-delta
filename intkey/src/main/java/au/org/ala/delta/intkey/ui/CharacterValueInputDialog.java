@@ -17,6 +17,7 @@ import org.jdesktop.application.Application;
 
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.format.CharacterFormatter;
+import au.org.ala.delta.model.image.ImageSettings;
 
 public abstract class CharacterValueInputDialog extends JDialog {
     protected JPanel _buttonPanel;
@@ -30,8 +31,9 @@ public abstract class CharacterValueInputDialog extends JDialog {
     protected JLabel _lblCharacterDescription;
     protected Character _ch;
     protected CharacterFormatter _formatter;
+    protected ImageSettings _imageSettings;
 
-    public CharacterValueInputDialog(Frame owner, Character ch) {
+    public CharacterValueInputDialog(Frame owner, Character ch, ImageSettings imageSettings) {
         super(owner, true);
         ActionMap actionMap = Application.getInstance().getContext().getActionMap(CharacterValueInputDialog.class, this); 
         
@@ -41,6 +43,7 @@ public abstract class CharacterValueInputDialog extends JDialog {
         setPreferredSize(new Dimension(600, 200));
         
         _ch = ch;
+        _imageSettings = imageSettings;
         
         _buttonPanel = new JPanel();
         _buttonPanel.setBorder(new EmptyBorder(0, 20, 10, 20));
@@ -53,7 +56,9 @@ public abstract class CharacterValueInputDialog extends JDialog {
 
         _btnImages = new JButton();
         _btnImages.setAction(actionMap.get("characterValueInputDialog_Images"));
-        _btnImages.setEnabled(false);
+        if (ch.getImageCount() == 0) {
+            _btnImages.setEnabled(false);
+        }
         _buttonPanel.add(_btnImages);
 
         _btnFullText = new JButton();
@@ -96,6 +101,7 @@ public abstract class CharacterValueInputDialog extends JDialog {
 
     abstract void handleBtnOKClicked();
     abstract void handleBtnCancelClicked();
+    abstract void handleBtnImagesClicked();
     
     // Button action handlers
     
@@ -106,6 +112,7 @@ public abstract class CharacterValueInputDialog extends JDialog {
     
     @Action
     public void characterValueInputDialog_Images() {
+        handleBtnImagesClicked();
     }
     
     @Action
