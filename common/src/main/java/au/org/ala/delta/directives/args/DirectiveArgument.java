@@ -19,6 +19,16 @@ public class DirectiveArgument<T> implements Comparable<DirectiveArgument<?>>{
 		_id = id;
 	}
 	
+	public DirectiveArgument(DirectiveArgument<T> arg) {
+		this();
+		_id = arg.getId();
+		_comment = arg.getComment();
+		_value = arg.getValue();
+		for (BigDecimal value : arg.getData()) {
+			_dataVect.add(value);
+		}
+	}
+	
 	public DirectiveArgument() {
 		_dataVect = new ArrayList<BigDecimal>();
 	}
@@ -60,6 +70,14 @@ public class DirectiveArgument<T> implements Comparable<DirectiveArgument<?>>{
 	}
 	
 	public void add(int value) {
+		_dataVect.add(new BigDecimal(value));
+	}
+	
+	public void add(BigDecimal value) {
+		_dataVect.add(value);
+	}
+	
+	public void add(float value) {
 		_dataVect.add(new BigDecimal(value));
 	}
 	

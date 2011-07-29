@@ -103,11 +103,6 @@ public class IntkeyItemsFileWriterTest extends TestCase {
 	}
 	
 	@Test 
-	public void zztestwriteMinMaxValues() {
-		throw new NotImplementedException();
-	}
-	
-	@Test 
 	public void zztestwriteCharacterDependencies() {
 		throw new NotImplementedException();
 	}

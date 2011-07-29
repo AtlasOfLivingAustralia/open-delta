@@ -16,6 +16,9 @@ package au.org.ala.delta.directives;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 
 public abstract class AbstractStreamParser {
@@ -109,6 +112,27 @@ public abstract class AbstractStreamParser {
 		}
 
 		return Integer.parseInt(b.toString());
+	}
+	
+	protected BigDecimal readReal() throws ParseException {
+		int position = _position;
+		StringBuilder b = new StringBuilder();
+		while (Character.isDigit(_currentChar) || _currentChar == DecimalFormatSymbols.getInstance().getDecimalSeparator()) {
+			b.append(_currentChar);
+			readNext();
+		}
+		if (b.length() == 0) {
+			throw new ParseException("Expected a number, got '" + _currentChar + "'", _position-1);
+		}
+		BigDecimal real = null;
+		try {
+			real = new BigDecimal(b.toString());
+		}
+		catch (NumberFormatException e) {
+			throw new ParseException("Expected real number, got: "+b.toString(), position);
+		}
+		return real;
+		
 	}
 
 	protected String readComment() throws ParseException {

@@ -65,9 +65,10 @@ public class DirectiveArguments {
 		_args.add(arg);
 	}
 
-	public <T> void addDirectiveArgument(T id) {
+	public <T> DirectiveArgument<T> addDirectiveArgument(T id) {
 		DirectiveArgument<T> arg = new DirectiveArgument<T>(id);
 		_args.add(arg);
+		return arg;
 	}
 	
 	/**

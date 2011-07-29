@@ -82,10 +82,6 @@ public class IntkeyItemsFileWriter {
 		}
 	}
 	
-	public void writeMinMaxValues() {
-		throw new NotImplementedException();
-	}
-	
 	public void writeCharacterDependencies() {
 		throw new NotImplementedException();
 	}
