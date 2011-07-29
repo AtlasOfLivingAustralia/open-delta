@@ -68,6 +68,8 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     private Set<Integer> _includedCharacters;
     private Set<Integer> _includedTaxa;
+    
+    private List<String> _imagePaths;
 
     /**
      * Should executed directives be recorded in the history?
@@ -835,6 +837,9 @@ public class IntkeyContext extends AbstractDeltaContext {
         imageSettings.setDefaultFontInfo(defaultOverlayFontInfo);
         imageSettings.setDefaultButtonFontInfo(buttonOverlayFontInfo);
         imageSettings.setDefaultFeatureFontInfo(featureOverlayFontInfo);
+        
+        //TODO need to read in (multiple!) image paths as defined in directives file
+        imageSettings.setImagePath(new File(_datasetInitFile.getParent(), "images").getAbsolutePath());
         
         return imageSettings;
     }

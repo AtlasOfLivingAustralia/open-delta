@@ -2,6 +2,7 @@ package au.org.ala.delta.intkey.model;
 
 import java.io.File;
 import java.nio.ByteBuffer;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -33,10 +34,17 @@ import au.org.ala.delta.model.RealAttribute;
 import au.org.ala.delta.model.RealCharacter;
 import au.org.ala.delta.model.TextAttribute;
 import au.org.ala.delta.model.TextCharacter;
+import au.org.ala.delta.model.image.Image;
+import au.org.ala.delta.model.image.ImageOverlay;
+import au.org.ala.delta.model.image.ImageOverlayParser;
 import au.org.ala.delta.model.image.ImageSettings.FontInfo;
+import au.org.ala.delta.model.image.ImageType;
 import au.org.ala.delta.model.impl.CharacterData;
 import au.org.ala.delta.model.impl.DefaultCharacterData;
+import au.org.ala.delta.model.impl.DefaultImageData;
+import au.org.ala.delta.model.impl.ImageData;
 import au.org.ala.delta.model.impl.ItemData;
+import au.org.ala.delta.util.Pair;
 
 public final class IntkeyDatasetFileReader {
 
@@ -769,7 +777,16 @@ public final class IntkeyDatasetFileReader {
             List<String> charactersImageData = readStringList(imagesFile, rpCImages, numChars);
 
             for (int i = 0; i < numChars; i++) {
-                characters.get(i).setImageData(charactersImageData.get(i));
+                Character ch = characters.get(i);
+
+                String imagesData = charactersImageData.get(i);
+
+                if (imagesData != null) {
+                    List<Pair<String, String>> imageData = parseImagesData(imagesData, ImageType.IMAGE_CHARACTER);
+                    for (Pair<String, String> pair : imageData) {
+                        ch.addImage(pair.getFirst(), pair.getSecond());
+                    }
+                }
             }
         }
     }
@@ -781,7 +798,16 @@ public final class IntkeyDatasetFileReader {
         if (recNo != 0) {
             List<String> taxaImageData = readStringList(itemBinFile, recNo, numItems);
             for (int i = 0; i < numItems; i++) {
-                taxa.get(i).setImageData(taxaImageData.get(i));
+                Item taxon = taxa.get(i);
+
+                String imagesData = taxaImageData.get(i);
+
+                if (imagesData != null) {
+                    List<Pair<String, String>> imageData = parseImagesData(imagesData, ImageType.IMAGE_TAXON);
+                    for (Pair<String, String> pair : imageData) {
+                        taxon.addImage(pair.getFirst(), pair.getSecond());
+                    }
+                }
             }
         }
     }
@@ -833,10 +859,10 @@ public final class IntkeyDatasetFileReader {
         int recordNo = charFileHeader.getRpFont();
         if (recordNo != 0) {
             seekToRecord(charBinFile, recordNo);
-            
-            //single integer showing the number of fonts
+
+            // single integer showing the number of fonts
             int numFonts = charBinFile.readInt();
-            
+
             seekToRecord(charBinFile, recordNo + 1);
             List<Integer> fontTextLengths = readIntegerList(charBinFile, numFonts);
 
@@ -861,9 +887,9 @@ public final class IntkeyDatasetFileReader {
             ds.setOverlayFonts(fonts);
         }
     }
-    
+
     private static FontInfo parseOverlayFontString(String fontInfoStr) {
-        
+
         String[] tokens = fontInfoStr.split(" ");
         int size = Integer.parseInt(tokens[0]);
         int weight = Integer.parseInt(tokens[1]);
@@ -872,7 +898,7 @@ public final class IntkeyDatasetFileReader {
         int family = Integer.parseInt(tokens[4]);
         int charSet = Integer.parseInt(tokens[5]);
         String name = StringUtils.join(Arrays.copyOfRange(tokens, 6, tokens.length - 1), ' ');
-        
+
         return new FontInfo(size, weight, italic, pitch, family, charSet, name);
     }
 
@@ -995,7 +1021,6 @@ public final class IntkeyDatasetFileReader {
                 int startIndex = j * bitsPerTaxon;
                 int endIndex = startIndex + bitsPerTaxon;
 
-                
                 boolean[] taxonData = Arrays.copyOfRange(taxaData, startIndex, endIndex);
 
                 // Taxon data consists of a bit for each state, indicating
@@ -1025,7 +1050,7 @@ public final class IntkeyDatasetFileReader {
             IntegerCharacter intChar = (IntegerCharacter) c;
             int charMinValue = intChar.getMinimumValue();
             int charMaxValue = intChar.getMaximumValue();
-            
+
             // 1 bit for all values below minimum, 1 bit for each value between
             // minimum and maximum (inclusive),
             // 1 bit for all values above maximum, 1 inapplicability bit.
@@ -1229,7 +1254,7 @@ public final class IntkeyDatasetFileReader {
     private static boolean[] byteArrayToBooleanArray(byte[] bArray) {
         boolean[] boolArray = new boolean[bArray.length * Byte.SIZE];
 
-        for (int i=0; i < bArray.length; i++) {
+        for (int i = 0; i < bArray.length; i++) {
             byte b = bArray[i];
             for (int j = 0; j < Byte.SIZE; j++) {
                 if ((b & (1 << j)) > 0) {
@@ -1242,8 +1267,64 @@ public final class IntkeyDatasetFileReader {
 
         return boolArray;
     }
-    
+
     private static int recordsSpannedByBytes(int numBytes) {
         return (int) (Math.ceil((double) numBytes / (double) Constants.RECORD_LENGTH_BYTES));
+    }
+
+    private static List<Pair<String, String>> parseImagesData(String imagesData, int imageType) {
+        List<Pair<String, String>> retList = new ArrayList<Pair<String, String>>();
+
+        List<String> separateImageDataList = separateImageDataStrings(imagesData);
+
+        for (String strImageData : separateImageDataList) {
+            String fileName = null;
+            String strOverlayData = null;
+
+            if (strImageData.contains("<")) {
+                int firstOpenBracketIndex = strImageData.indexOf('<');
+                fileName = strImageData.substring(0, firstOpenBracketIndex).trim();
+                strOverlayData = strImageData.substring(firstOpenBracketIndex).trim();
+            } else {
+                fileName = strImageData;
+            }
+
+            retList.add(new Pair<String, String>(fileName, strOverlayData));
+        }
+
+        return retList;
+    }
+
+    private static List<String> separateImageDataStrings(String imagesData) {
+        List<String> imagesDataList = new ArrayList<String>();
+
+        int endLastSubstring = -1;
+        boolean inBracket = false;
+
+        String[] tokens = imagesData.split(" ");
+
+        for (int i = 0; i < tokens.length; i++) {
+            String token = tokens[i];
+
+            if (token.startsWith("<")) {
+                inBracket = true;
+            } else if (token.endsWith(">")) {
+                inBracket = false;
+            } else if (i > 0 && !inBracket) {
+                String[] subList = Arrays.copyOfRange(tokens, endLastSubstring + 1, i);
+                imagesDataList.add(StringUtils.join(subList, " "));
+                endLastSubstring = i - 1;
+            }
+
+            if (i == tokens.length - 1) {
+                String[] subList = Arrays.copyOfRange(tokens, endLastSubstring + 1, i + 1);
+                imagesDataList.add(StringUtils.join(subList, " "));
+                endLastSubstring = i;
+                continue;
+            }
+
+        }
+
+        return imagesDataList;
     }
 }

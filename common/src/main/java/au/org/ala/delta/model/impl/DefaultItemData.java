@@ -1,5 +1,6 @@
 package au.org.ala.delta.model.impl;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,6 +10,9 @@ import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.AttributeFactory;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.image.Image;
+import au.org.ala.delta.model.image.ImageOverlay;
+import au.org.ala.delta.model.image.ImageOverlayParser;
+import au.org.ala.delta.model.image.ImageType;
 
 /**
  * Implements ItemData and stores the data in memory.
@@ -98,10 +102,18 @@ public class DefaultItemData implements ItemData {
     
     @Override
     public Image addImage(String fileName, String comments) {
-    	DefaultImageData imageData = new DefaultImageData(fileName);
-		Image image = new Image(imageData);
-    	_images.add(image);
-    	return image;
+        DefaultImageData imageData = new DefaultImageData(fileName);
+        Image image = new Image(imageData);
+        try {
+            if (comments != null) {
+                List<ImageOverlay> overlayList = new ImageOverlayParser().parseOverlays(comments, ImageType.IMAGE_TAXON);
+                imageData.setOverlays(overlayList);
+            }
+            _images.add(image);
+            return image;
+        } catch (ParseException ex) {
+            throw new RuntimeException("Error parsing taxon image overlay data");
+        }
     }
 
 	@Override

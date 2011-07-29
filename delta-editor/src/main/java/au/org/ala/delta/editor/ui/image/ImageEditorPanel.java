@@ -30,8 +30,8 @@ public class ImageEditorPanel extends ImageViewer {
 	private boolean _dragging;
 	private boolean _editingEnabled;
 	
-	public ImageEditorPanel(String imagePath, Image image, ImageSettings imageSettings) {
-		super(imagePath, image, imageSettings);
+	public ImageEditorPanel(Image image, ImageSettings imageSettings) {
+		super(image, imageSettings);
 		_editingEnabled = true;
 		addEventHandlers();
 	}

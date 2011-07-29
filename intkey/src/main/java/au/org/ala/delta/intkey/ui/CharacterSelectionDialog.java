@@ -68,21 +68,21 @@ public class CharacterSelectionDialog extends ListSelectionDialog {
     public CharacterSelectionDialog(Frame owner, List<Character> characters, String directiveName, String keyword, ImageSettings imageSettings) {
         this(owner, characters, directiveName, imageSettings);
         _keyword = keyword;
-        _imageSettings= imageSettings;
+        _imageSettings = imageSettings;
         setTitle(String.format(titleFromKeyword, _directiveName, _keyword));
     }
 
     public CharacterSelectionDialog(Dialog owner, List<Character> characters, String directiveName, ImageSettings imageSettings) {
         super(owner);
         _directiveName = directiveName;
-        _imageSettings= imageSettings;
+        _imageSettings = imageSettings;
         init(characters);
     }
 
     public CharacterSelectionDialog(Frame owner, List<Character> characters, String directiveName, ImageSettings imageSettings) {
         super(owner);
         _directiveName = directiveName;
-        _imageSettings= imageSettings;
+        _imageSettings = imageSettings;
         init(characters);
     }
 
@@ -171,29 +171,12 @@ public class CharacterSelectionDialog extends ListSelectionDialog {
     @Action
     public void characterSelectionDialog_Images() {
         Character ch = (Character) _listModel.getCharacterAt(_list.getSelectedIndex());
-        
-        String imageDataString = ch.getImageData();
-        int firstOpenBracketIndex = imageDataString.indexOf('<');
-        String fileName = imageDataString.substring(0, firstOpenBracketIndex).trim();
-        String overlayData = imageDataString.substring(firstOpenBracketIndex).trim();
-        System.out.println(overlayData);
 
-        try {
-            List<ImageOverlay> overlayList = new ImageOverlayParser().parseOverlays(overlayData, ImageType.IMAGE_CHARACTER);
-
-            ImageData imageData = new DefaultImageData(fileName);
-            imageData.setOverlays(overlayList);
-
-            Image img = new Image(imageData);
-            img.setSubject(ch);
-
-            ImageViewer viewer = new ImageViewer("src/test/resources/dataset/sample/images", img, _imageSettings);
-            JDialog dlg = new JDialog(this, true);
-            dlg.add(viewer);
-            dlg.setVisible(true);
-        } catch (ParseException ex) {
-            ex.printStackTrace();
-        }
+        Image img = ch.getImages().get(0);
+        ImageViewer viewer = new ImageViewer(img, _imageSettings);
+        JDialog dlg = new JDialog(this, true);
+        dlg.add(viewer);
+        dlg.setVisible(true);
 
     }
 

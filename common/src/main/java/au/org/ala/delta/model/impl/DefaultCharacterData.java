@@ -1,5 +1,6 @@
 package au.org.ala.delta.model.impl;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -9,144 +10,147 @@ import org.apache.commons.lang.NotImplementedException;
 import au.org.ala.delta.model.CharacterDependency;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.image.Image;
+import au.org.ala.delta.model.image.ImageOverlay;
+import au.org.ala.delta.model.image.ImageOverlayParser;
+import au.org.ala.delta.model.image.ImageType;
 
 /**
  * An implementation of CharacterData that maintains the data in-memory.
  */
 public class DefaultCharacterData implements CharacterData {
 
-	private String _notes;
-	private String _description;
-	private boolean _exclusive;
-	private boolean _mandatory;
-	private String _units;
-	private String[] _states = new String[0];
-	private int _codedImplicitStateId;
-	private int _uncodedImplicitStateId;
-	private float _reliability;
-	private int _maximumValue;
-	private int _minimumValue;
-	private String _imageData;
-	private String _itemSubheading;
-	private List<Float> _keyStateBoundaries;
-	private boolean _containsSynonmyInfo;
-	private boolean _omitOr;
-	private boolean _useCc;
-	private boolean _omitPeriod;
-	private boolean _newParagraph;
-	private boolean _nonAutoCc;
-	private List<CharacterDependency> _dependentCharacters = new ArrayList<CharacterDependency>();
+    private String _notes;
+    private String _description;
+    private boolean _exclusive;
+    private boolean _mandatory;
+    private String _units;
+    private String[] _states = new String[0];
+    private int _codedImplicitStateId;
+    private int _uncodedImplicitStateId;
+    private float _reliability;
+    private int _maximumValue;
+    private int _minimumValue;
+    private String _imageData;
+    private String _itemSubheading;
+    private List<Float> _keyStateBoundaries;
+    private boolean _containsSynonmyInfo;
+    private boolean _omitOr;
+    private boolean _useCc;
+    private boolean _omitPeriod;
+    private boolean _newParagraph;
+    private boolean _nonAutoCc;
+    private List<CharacterDependency> _dependentCharacters = new ArrayList<CharacterDependency>();
     private List<CharacterDependency> _controllingCharacters = new ArrayList<CharacterDependency>();
 
     private List<Image> _images = new ArrayList<Image>();
-    
-	@Override
-	public String getDescription() {
-		return _description;
-	}
-	
-	@Override
-	public void setDescription(String description) {
-		_description = description;
-	}
 
-	@Override
-	public boolean isExclusive() {
-		return _exclusive;
-	}
+    @Override
+    public String getDescription() {
+        return _description;
+    }
 
-	@Override
-	public boolean isMandatory() {
-		return _mandatory;
-	}
+    @Override
+    public void setDescription(String description) {
+        _description = description;
+    }
 
-	@Override
-	public String getUnits() {
-		return _units;
-	}
-	
-	@Override
-	public void setUnits(String units) {
-		_units = units;
-	}
+    @Override
+    public boolean isExclusive() {
+        return _exclusive;
+    }
 
-	@Override
-	public String getStateText(int stateNumber) {
-		return _states[stateNumber-1];
-	}
-	
-	@Override
-	public void setStateText(int stateNumber, String text) {
-		
-		_states[stateNumber-1] = text;
-	}
-	
-	@Override
-	public void setNumberOfStates(int numStates) {
-		_states = new String[numStates];
-		
-	}
+    @Override
+    public boolean isMandatory() {
+        return _mandatory;
+    }
 
-	@Override
-	public int getNumberOfStates() {
-		return _states.length;
-	}
+    @Override
+    public String getUnits() {
+        return _units;
+    }
 
-	@Override
-	public void setMandatory(boolean mandatory) {
-		_mandatory = mandatory;
-	}
+    @Override
+    public void setUnits(String units) {
+        _units = units;
+    }
 
-	/**
-	 * @return the notes about this character
-	 */
-	public String getNotes() {
-		return _notes;
-	}
+    @Override
+    public String getStateText(int stateNumber) {
+        return _states[stateNumber - 1];
+    }
 
-	/**
-	 * @param notes the notes to set
-	 */
-	public void setNotes(String notes) {
-		_notes = notes;
-	}
+    @Override
+    public void setStateText(int stateNumber, String text) {
 
-	
-	@Override
-	public void setExclusive(boolean exclusive) {
-		_exclusive = exclusive;
-		
-	}
+        _states[stateNumber - 1] = text;
+    }
 
-	@Override
-	public int getCodedImplicitState() {
-		return _codedImplicitStateId;
-	}
+    @Override
+    public void setNumberOfStates(int numStates) {
+        _states = new String[numStates];
 
-	@Override
-	public void setCodedImplicitState(int stateId) {
-		_codedImplicitStateId = stateId;
-	}
+    }
 
-	@Override
-	public int getUncodedImplicitState() {
-		return _uncodedImplicitStateId;
-	}
+    @Override
+    public int getNumberOfStates() {
+        return _states.length;
+    }
 
-	@Override
-	public void setUncodedImplicitState(int stateId) {
-		_uncodedImplicitStateId = stateId;
-	}
+    @Override
+    public void setMandatory(boolean mandatory) {
+        _mandatory = mandatory;
+    }
 
-	@Override
-	public void validateAttributeText(String text) {
-		throw new NotImplementedException();
-	}
+    /**
+     * @return the notes about this character
+     */
+    public String getNotes() {
+        return _notes;
+    }
 
-	@Override
-	public ControllingInfo checkApplicability(Item item) {
-		throw new NotImplementedException();
-	}
+    /**
+     * @param notes
+     *            the notes to set
+     */
+    public void setNotes(String notes) {
+        _notes = notes;
+    }
+
+    @Override
+    public void setExclusive(boolean exclusive) {
+        _exclusive = exclusive;
+
+    }
+
+    @Override
+    public int getCodedImplicitState() {
+        return _codedImplicitStateId;
+    }
+
+    @Override
+    public void setCodedImplicitState(int stateId) {
+        _codedImplicitStateId = stateId;
+    }
+
+    @Override
+    public int getUncodedImplicitState() {
+        return _uncodedImplicitStateId;
+    }
+
+    @Override
+    public void setUncodedImplicitState(int stateId) {
+        _uncodedImplicitStateId = stateId;
+    }
+
+    @Override
+    public void validateAttributeText(String text) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public ControllingInfo checkApplicability(Item item) {
+        throw new NotImplementedException();
+    }
 
     @Override
     public float getReliability() {
@@ -267,59 +271,67 @@ public class DefaultCharacterData implements CharacterData {
     public void setNonAutoCc(boolean nonAutoCc) {
         _nonAutoCc = nonAutoCc;
     }
-    
-    @Override
-	public void addState() {
-		List<String> states = Arrays.asList(_states);
-		states.add("");
-		_states = states.toArray(new String[states.size()]);
-	}
-    
-    @Override
-	public void moveState(int stateNumber, int newStateNumber) {
-		List<String> states = Arrays.asList(_states);
-		String text = states.remove(stateNumber-1);
-		states.add(newStateNumber-1, text);
-	}
 
-	@Override
-    public Image addImage(String fileName, String comments) {
-		DefaultImageData imageData = new DefaultImageData(fileName);
-		Image image = new Image(imageData);
-    	_images.add(image);
-    	return image;
+    @Override
+    public void addState() {
+        List<String> states = Arrays.asList(_states);
+        states.add("");
+        _states = states.toArray(new String[states.size()]);
     }
 
-	@Override
-	public List<Image> getImages() {
-		return _images;
-	}
-	
-	@Override
-	public int getImageCount() {
-		return _images.size();
-	}
+    @Override
+    public void moveState(int stateNumber, int newStateNumber) {
+        List<String> states = Arrays.asList(_states);
+        String text = states.remove(stateNumber - 1);
+        states.add(newStateNumber - 1, text);
+    }
 
-	@Override
-	public void deleteImage(Image image) {
-		_images.remove(image);
-	}
+    @Override
+    public Image addImage(String fileName, String comments) {
+        DefaultImageData imageData = new DefaultImageData(fileName);
+        Image image = new Image(imageData);
+        try {
+            if (comments != null) {
+                List<ImageOverlay> overlayList = new ImageOverlayParser().parseOverlays(comments, ImageType.IMAGE_CHARACTER);
+                imageData.setOverlays(overlayList);
+            }
+            _images.add(image);
+            return image;
+        } catch (ParseException ex) {
+            throw new RuntimeException("Error parsing character image overlay data");
+        }
+    }
 
-	@Override
-	public void moveImage(Image image, int position) {
-		int imageIndex = _images.indexOf(image);
-		_images.remove(imageIndex);
-		_images.add(position, image);
-	}
-	
-	public void addDependentCharacters(CharacterDependency dependency) {
+    @Override
+    public List<Image> getImages() {
+        return _images;
+    }
+
+    @Override
+    public int getImageCount() {
+        return _images.size();
+    }
+
+    @Override
+    public void deleteImage(Image image) {
+        _images.remove(image);
+    }
+
+    @Override
+    public void moveImage(Image image, int position) {
+        int imageIndex = _images.indexOf(image);
+        _images.remove(imageIndex);
+        _images.add(position, image);
+    }
+
+    public void addDependentCharacters(CharacterDependency dependency) {
         _dependentCharacters.add(dependency);
     }
 
     public List<CharacterDependency> getDependentCharacters() {
         return _dependentCharacters;
     }
-    
+
     public void addControllingCharacters(CharacterDependency dependency) {
         _controllingCharacters.add(dependency);
     }
@@ -328,15 +340,15 @@ public class DefaultCharacterData implements CharacterData {
         return _controllingCharacters;
     }
 
-	@Override
-	public List<Integer> getControlledCharacterNumbers(boolean indirect) {
-		throw new NotImplementedException();
-	}
+    @Override
+    public List<Integer> getControlledCharacterNumbers(boolean indirect) {
+        throw new NotImplementedException();
+    }
 
-	@Override
-	public void removeControllingCharacter(CharacterDependency dependency) {
-		_controllingCharacters.remove(dependency);
-		
-	}
-    
+    @Override
+    public void removeControllingCharacter(CharacterDependency dependency) {
+        _controllingCharacters.remove(dependency);
+
+    }
+
 }
