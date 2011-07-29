@@ -15,6 +15,7 @@ import javax.swing.border.CompoundBorder;
 
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.image.Image;
+import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.ui.image.ImageViewer;
 
 /**
@@ -29,8 +30,8 @@ public class ImageEditorPanel extends ImageViewer {
 	private boolean _dragging;
 	private boolean _editingEnabled;
 	
-	public ImageEditorPanel(String imagePath, Image image, DeltaDataSet dataSet) {
-		super(imagePath, image, dataSet);
+	public ImageEditorPanel(String imagePath, Image image, ImageSettings imageSettings) {
+		super(imagePath, image, imageSettings);
 		_editingEnabled = true;
 		addEventHandlers();
 	}

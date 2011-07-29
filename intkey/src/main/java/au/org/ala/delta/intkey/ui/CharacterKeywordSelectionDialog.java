@@ -111,7 +111,7 @@ public class CharacterKeywordSelectionDialog extends KeywordSelectionDialog {
             if (characters.isEmpty()) {
                 JOptionPane.showMessageDialog(this, allCharactersInSelectedSetExcludedCaption, title, JOptionPane.ERROR_MESSAGE);
             } else {
-                CharacterSelectionDialog charDlg = new CharacterSelectionDialog(this, characters, _directiveName, selectedKeyword);
+                CharacterSelectionDialog charDlg = new CharacterSelectionDialog(this, characters, _directiveName, selectedKeyword, _context.getImageSettings());
                 charDlg.setVisible(true);
 
                 List<Character> charsSelectedInDlg = charDlg.getSelectedCharacters();

@@ -135,7 +135,7 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 	 * @param image the image to add.
 	 */
 	private void addCardFor(Image image) {
-		ImageEditorPanel viewer = new ImageEditorPanel(_model.getImagePath(), image, _model);
+		ImageEditorPanel viewer = new ImageEditorPanel(_model.getImagePath(), image, _model.getImageSettings());
 		String text = subjectTextOrFileName(image);
 		
 		_imageEditors.put(text, viewer);

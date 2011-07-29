@@ -23,6 +23,8 @@ import au.org.ala.delta.intkey.model.specimen.Specimen;
 import au.org.ala.delta.intkey.ui.UIUtils;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.image.ImageSettings;
+import au.org.ala.delta.model.image.ImageSettings.FontInfo;
 
 /**
  * Model. Maintains global application state. THIS CLASS IS NOT THREAD SAFE
@@ -818,6 +820,23 @@ public class IntkeyContext extends AbstractDeltaContext {
         retSet.removeAll(_specimen.getInapplicableCharacters());
         
         return retSet;
+    }
+    
+    public ImageSettings getImageSettings() {
+        ImageSettings imageSettings = new ImageSettings();
+        
+        List<FontInfo> overlayFonts = _dataset.getOverlayFonts();
+
+        FontInfo defaultOverlayFontInfo = overlayFonts.get(0);
+        FontInfo buttonOverlayFontInfo = overlayFonts.get(1);
+        FontInfo featureOverlayFontInfo = overlayFonts.get(2);
+        
+        
+        imageSettings.setDefaultFontInfo(defaultOverlayFontInfo);
+        imageSettings.setDefaultButtonFontInfo(buttonOverlayFontInfo);
+        imageSettings.setDefaultFeatureFontInfo(featureOverlayFontInfo);
+        
+        return imageSettings;
     }
 
     /**

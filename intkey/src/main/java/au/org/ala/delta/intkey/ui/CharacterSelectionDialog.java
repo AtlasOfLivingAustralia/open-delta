@@ -3,11 +3,13 @@ package au.org.ala.delta.intkey.ui;
 import java.awt.Dialog;
 import java.awt.Frame;
 import java.awt.GridLayout;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.ActionMap;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.border.EmptyBorder;
 
 import org.jdesktop.application.Action;
@@ -16,6 +18,14 @@ import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.image.Image;
+import au.org.ala.delta.model.image.ImageOverlay;
+import au.org.ala.delta.model.image.ImageOverlayParser;
+import au.org.ala.delta.model.image.ImageSettings;
+import au.org.ala.delta.model.image.ImageType;
+import au.org.ala.delta.model.impl.DefaultImageData;
+import au.org.ala.delta.model.impl.ImageData;
+import au.org.ala.delta.ui.image.ImageViewer;
 
 public class CharacterSelectionDialog extends ListSelectionDialog {
 
@@ -39,33 +49,40 @@ public class CharacterSelectionDialog extends ListSelectionDialog {
     // The name of the keyword that these characters belong to
     private String _keyword;
 
+    // controls display of character images
+    private ImageSettings _imageSettings;
+
     @Resource
     String title;
 
     @Resource
     String titleFromKeyword;
 
-    public CharacterSelectionDialog(Dialog owner, List<Character> characters, String directiveName, String keyword) {
-        this(owner, characters, directiveName);
+    public CharacterSelectionDialog(Dialog owner, List<Character> characters, String directiveName, String keyword, ImageSettings imageSettings) {
+        this(owner, characters, directiveName, imageSettings);
         _keyword = keyword;
+
         setTitle(String.format(titleFromKeyword, _directiveName, _keyword));
     }
 
-    public CharacterSelectionDialog(Frame owner, List<Character> characters, String directiveName, String keyword) {
-        this(owner, characters, directiveName);
+    public CharacterSelectionDialog(Frame owner, List<Character> characters, String directiveName, String keyword, ImageSettings imageSettings) {
+        this(owner, characters, directiveName, imageSettings);
         _keyword = keyword;
+        _imageSettings= imageSettings;
         setTitle(String.format(titleFromKeyword, _directiveName, _keyword));
     }
 
-    public CharacterSelectionDialog(Dialog owner, List<Character> characters, String directiveName) {
+    public CharacterSelectionDialog(Dialog owner, List<Character> characters, String directiveName, ImageSettings imageSettings) {
         super(owner);
         _directiveName = directiveName;
+        _imageSettings= imageSettings;
         init(characters);
     }
 
-    public CharacterSelectionDialog(Frame owner, List<Character> characters, String directiveName) {
+    public CharacterSelectionDialog(Frame owner, List<Character> characters, String directiveName, ImageSettings imageSettings) {
         super(owner);
         _directiveName = directiveName;
+        _imageSettings= imageSettings;
         init(characters);
     }
 
@@ -94,7 +111,6 @@ public class CharacterSelectionDialog extends ListSelectionDialog {
 
         _btnImages = new JButton();
         _btnImages.setAction(actionMap.get("characterSelectionDialog_Images"));
-        _btnImages.setEnabled(false);
         _panelButtons.add(_btnImages);
 
         _btnSearch = new JButton();
@@ -154,6 +170,30 @@ public class CharacterSelectionDialog extends ListSelectionDialog {
 
     @Action
     public void characterSelectionDialog_Images() {
+        Character ch = (Character) _listModel.getCharacterAt(_list.getSelectedIndex());
+        
+        String imageDataString = ch.getImageData();
+        int firstOpenBracketIndex = imageDataString.indexOf('<');
+        String fileName = imageDataString.substring(0, firstOpenBracketIndex).trim();
+        String overlayData = imageDataString.substring(firstOpenBracketIndex).trim();
+        System.out.println(overlayData);
+
+        try {
+            List<ImageOverlay> overlayList = new ImageOverlayParser().parseOverlays(overlayData, ImageType.IMAGE_CHARACTER);
+
+            ImageData imageData = new DefaultImageData(fileName);
+            imageData.setOverlays(overlayList);
+
+            Image img = new Image(imageData);
+            img.setSubject(ch);
+
+            ImageViewer viewer = new ImageViewer("src/test/resources/dataset/sample/images", img, _imageSettings);
+            JDialog dlg = new JDialog(this, true);
+            dlg.add(viewer);
+            dlg.setVisible(true);
+        } catch (ParseException ex) {
+            ex.printStackTrace();
+        }
 
     }
 

@@ -33,6 +33,7 @@ import au.org.ala.delta.model.RealAttribute;
 import au.org.ala.delta.model.RealCharacter;
 import au.org.ala.delta.model.TextAttribute;
 import au.org.ala.delta.model.TextCharacter;
+import au.org.ala.delta.model.image.ImageSettings.FontInfo;
 import au.org.ala.delta.model.impl.CharacterData;
 import au.org.ala.delta.model.impl.DefaultCharacterData;
 import au.org.ala.delta.model.impl.ItemData;
@@ -832,7 +833,11 @@ public final class IntkeyDatasetFileReader {
         int recordNo = charFileHeader.getRpFont();
         if (recordNo != 0) {
             seekToRecord(charBinFile, recordNo);
+            
+            //single integer showing the number of fonts
             int numFonts = charBinFile.readInt();
+            
+            seekToRecord(charBinFile, recordNo + 1);
             List<Integer> fontTextLengths = readIntegerList(charBinFile, numFonts);
 
             int totalFontsLength = 0;
@@ -841,19 +846,34 @@ public final class IntkeyDatasetFileReader {
             }
 
             int recordsSpannedByFontTextLengths = recordsSpannedByBytes(numFonts * Constants.SIZE_INT_IN_BYTES);
-            seekToRecord(charBinFile, recordNo + recordsSpannedByFontTextLengths);
+            seekToRecord(charBinFile, recordNo + 1 + recordsSpannedByFontTextLengths);
 
-            List<String> fonts = new ArrayList<String>();
+            List<FontInfo> fonts = new ArrayList<FontInfo>();
             ByteBuffer fontTextData = charBinFile.readByteBuffer(totalFontsLength);
             for (int fontLength : fontTextLengths) {
                 byte[] fontTextBytes = new byte[fontLength];
                 fontTextData.get(fontTextBytes);
                 String fontText = BinFileEncoding.decode(fontTextBytes);
-                fonts.add(fontText);
+                FontInfo fontInfo = parseOverlayFontString(fontText);
+                fonts.add(fontInfo);
             }
 
             ds.setOverlayFonts(fonts);
         }
+    }
+    
+    private static FontInfo parseOverlayFontString(String fontInfoStr) {
+        
+        String[] tokens = fontInfoStr.split(" ");
+        int size = Integer.parseInt(tokens[0]);
+        int weight = Integer.parseInt(tokens[1]);
+        boolean italic = Integer.parseInt(tokens[2]) > 0;
+        int pitch = Integer.parseInt(tokens[3]);
+        int family = Integer.parseInt(tokens[4]);
+        int charSet = Integer.parseInt(tokens[5]);
+        String name = StringUtils.join(Arrays.copyOfRange(tokens, 6, tokens.length - 1), ' ');
+        
+        return new FontInfo(size, weight, italic, pitch, family, charSet, name);
     }
 
     private static void readCharacterItemSubheadings(CharactersFileHeader charFileHeader, BinFile charBinFile, List<Character> characters) {
