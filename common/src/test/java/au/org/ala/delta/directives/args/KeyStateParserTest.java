@@ -103,7 +103,7 @@ public class KeyStateParserTest extends TestCase {
 	@SuppressWarnings("unchecked")
 	public void testMultipleChars() throws Exception {
 		
-		KeyStateParser parser = parserFor("2-3,1/2/3 4,~1.3/1.3~ 5,~1.1/1.1-3/3~");
+		KeyStateParser parser = parserFor("2,1/2/3 4,~1.3/1.3~ 5,~1.1/1.1-3/3~");
 		parser.parse();
 		
 		DirectiveArguments args = parser.getDirectiveArgs();
