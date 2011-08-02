@@ -31,6 +31,7 @@ import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DefaultDataSetFactory;
 import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.model.IdentificationKeyCharacter;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.StateValueMatrix;
 import au.org.ala.delta.model.TypeSettingMark;
@@ -78,6 +79,7 @@ public class DeltaContext extends AbstractDeltaContext {
 	private Set<Integer> _emphasizedFeatures = new HashSet<Integer>();
 	private Integer _characterForTaxonNames = null;
 	private Map<Integer, List<ImageInfo>> _images = new HashMap<Integer, List<ImageInfo>>();
+	private Map<Integer, IdentificationKeyCharacter> _keyCharacters = new HashMap<Integer, IdentificationKeyCharacter>();
 	
 	private int _numberOfCharacters;
 	private int _maxNumberOfStates;
@@ -625,5 +627,14 @@ public class DeltaContext extends AbstractDeltaContext {
 	
 	public String getHeading(HeadingType type) {
 		return _headings.get(type);
+	}
+
+	public void addIdentificationKeyCharacter(IdentificationKeyCharacter keyCharacter) {
+		_keyCharacters.put(keyCharacter.getCharacterNumber(), keyCharacter);
+		
+	}
+	
+	public IdentificationKeyCharacter getIdentificationKeyCharacter(int characterNumber) {
+		return _keyCharacters.get(characterNumber);
 	}
 }

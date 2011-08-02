@@ -1,15 +1,21 @@
 package au.org.ala.delta.translation.intkey;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.NotImplementedException;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.intkey.WriteOnceIntkeyItemsFile;
+import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.model.IdentificationKeyCharacter;
+import au.org.ala.delta.model.IntegerAttribute;
+import au.org.ala.delta.model.MultiStateAttribute;
 import au.org.ala.delta.model.MultiStateCharacter;
 
 /**
@@ -90,6 +96,64 @@ public class IntkeyItemsFileWriter {
 		throw new NotImplementedException();
 	}
 	
+	private void writeMultiStateAttribute(MultiStateAttribute attribute) {
+		MultiStateCharacter character = (MultiStateCharacter)attribute.getCharacter();
+		Set<Integer> states = attribute.getPresentStates();
+		// Convert this using the KEY STATES stuff if appropriate.
+		
+//		IdentificationKeyCharacter keyCharacter = _context.getIdentificationKeyCharacter(character);
+//		keyCharacter.transform(states);
+//		
+//		KeyStates.transform(attribute);
+//		if (_context.getKeyStates(character.getCharacterId()) {
+//			for (each key state) {
+//				if (states contains keystatevalues) {
+//					keystates.add(state);
+//				}
+//			}
+//		}
+		attribute.isInapplicable();
+	
+		
+		// IF attribute is marked as Variabile, all state bits get set.
+		if (attribute.isVariable()) {
+			// set all states.
+		}
+		
+	}
+	
+	private void processIntegerAttributes(int characterNumber) {
+		int max1 = 64;
+		int max2 = 200;
+		
+		IntegerAttribute attribute = (IntegerAttribute)_dataSet.getAttribute(1, 1);
+		List<Integer> values = new ArrayList<Integer>();
+		
+		int value = 0;
+		values.add(value);
+		
+		Collections.sort(values);
+		
+		int min = values.get(0);
+		int max = values.get(values.size()-1);
+		if (max-min > max2) {
+			int index = Collections.binarySearch(values, min+max2);
+			if (index < 0) {
+				index = -(index+1);
+			}
+			
+			if (index > values.size()/2) {
+				convertToReal(characterNumber);
+			}
+		}
+		
+		
+		
+	}
+	
+	private void convertToReal(int characterNumber) {
+		
+	}
 	
 	public void writeKeyStateBoundaries() {
 		throw new NotImplementedException();
