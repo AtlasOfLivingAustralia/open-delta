@@ -77,8 +77,20 @@ public class IdentificationKeyCharacter {
 		_states.add(state);
 	}
 	
+	public int getNumberOfStates() {
+		if (_states.size() > 0) {
+			return _states.size();
+		}
+		else {
+			return ((MultiStateCharacter)_character).getNumberOfStates();
+		}
+	}
+	
 	public List<Integer> getPresentStates(Attribute attribute) {
-		
+		// IF attribute is marked as Variabile, all state bits get set.
+		//if (attribute.isVariable()) {
+			// set all states.
+		//}
 		throw new NotImplementedException();
 	}
 

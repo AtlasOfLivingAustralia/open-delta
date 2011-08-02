@@ -1,10 +1,12 @@
 package au.org.ala.delta.intkey;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang.math.FloatRange;
 
 import au.org.ala.delta.io.BinFileMode;
 
@@ -39,17 +41,9 @@ public class WriteOnceIntkeyItemsFile extends IntkeyFile {
 		int startRecord = newRecord();
 		_header.setRpTnam(startRecord);
 		
-		int[] offsets = new int[descriptions.size()+1];
-		StringBuilder buffer = new StringBuilder();
-		offsets[0] = 0;
-		for (int i=0; i<descriptions.size(); i++) {
-			offsets[i+1] = offsets[i] + descriptions.get(i).length();
-			buffer.append(descriptions.get(i));
-		}
-		startRecord += writeToRecord(startRecord, offsets);
-		writeToRecord(startRecord, buffer.toString());
+		writeStringsWithOffsetsToRecord(startRecord, descriptions);
 	}
-	
+
 	public void writeCharacterSpecs(List<Integer> characterTypes, List<Integer> numStates, List<Float> characterReliabilities) {
 		checkCharacterListLength(characterTypes);
 		checkCharacterListLength(numStates);
@@ -81,6 +75,61 @@ public class WriteOnceIntkeyItemsFile extends IntkeyFile {
 	
 	public void writeAttributeData() {
 		throw new NotImplementedException();
+	}
+	
+	public void writeAttributeBits(int charNumber, List<BitSet> attributes, int numBits) {
+		int record = updateCharacterIndex(charNumber);
+		
+		// Merge the list into a single BitSet.
+		BitSet master = new BitSet();
+		int offset = 0;
+		for (BitSet set : attributes) {
+			for (int i=0; i<numBits; i++) {
+				if (set.get(i)) {
+					master.set(i+offset);
+				}
+			}
+			offset += numBits;
+		}
+		
+		List<Integer> values = bitSetToInts(master, numBits*attributes.size());
+		writeToRecord(record, values);
+		
+	}
+
+	private int updateCharacterIndex(int charNumber) {
+		int indexRecord = _header.getRpCdat();
+		if (indexRecord == 0) {
+			indexRecord = newRecord();
+			_header.setRpCdat(indexRecord);
+		}
+		List<Integer> indicies = readIntegerList(indexRecord, _header.getNChar());
+		
+		int record = newRecord();
+		indicies.set(charNumber-1, record);
+		writeToRecord(indexRecord, indicies);
+		return record;
+	}
+	
+	public void writeAttributeFloats(int charNumber, BitSet inapplicableBits, List<FloatRange> values) {
+		int record = updateCharacterIndex(charNumber);
+		List<Integer> inapplicable = bitSetToInts(inapplicableBits, _header.getNItem());
+		record += writeToRecord(record, inapplicable);
+		
+		List<Float> floats = new ArrayList<Float>();
+		for (FloatRange range : values) {
+			floats.add(range.getMinimumFloat());
+			floats.add(range.getMaximumFloat());
+		}
+		writeFloatsToRecord(record, floats);
+	}
+	
+	public void writeAttributeStrings(int charNumber, BitSet inapplicableBits, List<String> values) {
+		int record = updateCharacterIndex(charNumber);
+		List<Integer> inapplicable = bitSetToInts(inapplicableBits, _header.getNItem());
+		record += writeToRecord(record, inapplicable);
+		
+		writeStringsWithOffsetsToRecord(record, values);
 	}
 	
 	
@@ -196,4 +245,6 @@ public class WriteOnceIntkeyItemsFile extends IntkeyFile {
 			throw new IllegalArgumentException("There must be "+_header.getNChar()+" values in the list");
 		}
 	}
+
+	
 }

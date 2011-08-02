@@ -3,6 +3,7 @@ package au.org.ala.delta.intkey;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.List;
 
 import au.org.ala.delta.io.BinFile;
@@ -207,5 +208,37 @@ public class IntkeyFile extends BinFile {
     	
     	return numRecords;
     }
+
+
+
+	protected List<Integer> bitSetToInts(BitSet set, int numValues) {
+		List<Integer> values = new ArrayList<Integer>();
+		int i=0; 
+		while (i<numValues) {
+			int value = 0;
+			while (i<numValues && i%32 < 32) {
+				if (set.get(i)) {
+					value |= 1<< i%32;
+				}
+				i++;
+			}
+			values.add(value);
+		}
+		return values;
+	}
+
+
+
+	protected void writeStringsWithOffsetsToRecord(int startRecord, List<String> descriptions) {
+		int[] offsets = new int[descriptions.size()+1];
+		StringBuilder buffer = new StringBuilder();
+		offsets[0] = 0;
+		for (int i=0; i<descriptions.size(); i++) {
+			offsets[i+1] = offsets[i] + descriptions.get(i).length();
+			buffer.append(descriptions.get(i));
+		}
+		startRecord += writeToRecord(startRecord, offsets);
+		writeToRecord(startRecord, buffer.toString());
+	}
 
 }

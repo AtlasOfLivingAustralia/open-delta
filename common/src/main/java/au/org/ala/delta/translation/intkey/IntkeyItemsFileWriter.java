@@ -1,10 +1,13 @@
 package au.org.ala.delta.translation.intkey;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.BitField;
 import org.apache.commons.lang.NotImplementedException;
 
 import au.org.ala.delta.DeltaContext;
@@ -93,32 +96,38 @@ public class IntkeyItemsFileWriter {
 	}
 	
 	public void writeAttributeData() {
-		throw new NotImplementedException();
+		
+		Iterator<IdentificationKeyCharacter> keyChars = null;// _context.identificationKeyCharacterIterator();
+		while (keyChars.hasNext()) {
+			
+		}
+		
 	}
 	
-	private void writeMultiStateAttribute(MultiStateAttribute attribute) {
-		MultiStateCharacter character = (MultiStateCharacter)attribute.getCharacter();
-		Set<Integer> states = attribute.getPresentStates();
-		// Convert this using the KEY STATES stuff if appropriate.
+	private void writeMultiStateAttributes(IdentificationKeyCharacter character) {
 		
-//		IdentificationKeyCharacter keyCharacter = _context.getIdentificationKeyCharacter(character);
-//		keyCharacter.transform(states);
-//		
-//		KeyStates.transform(attribute);
-//		if (_context.getKeyStates(character.getCharacterId()) {
-//			for (each key state) {
-//				if (states contains keystatevalues) {
-//					keystates.add(state);
-//				}
-//			}
-//		}
-		attribute.isInapplicable();
-	
+		int charNumber = character.getCharacterNumber();
+		int numStates = character.getNumberOfStates();
+		List<BitSet> attributes = new ArrayList<BitSet>();
+		for (int i=1; i<=_dataSet.getMaximumNumberOfItems(); i++) {
+			Attribute attribute = _dataSet.getAttribute(i, character.getCharacterNumber());
 		
-		// IF attribute is marked as Variabile, all state bits get set.
-		if (attribute.isVariable()) {
-			// set all states.
+			List<Integer> states = character.getPresentStates(attribute);
+			
+			// Turn into bitset.
+			BitSet bits = new BitSet();
+			for (int state : states) {
+				bits.set(state-1);
+			}
+			
+			if (attribute.isInapplicable()) {
+				bits.set(numStates);
+			}
+			attributes.add(bits);
 		}
+		
+		_itemsFile.writeAttributeBits(charNumber, attributes, numStates);
+		
 		
 	}
 	

@@ -144,20 +144,7 @@ public class WriteOnceIntkeyCharsFile extends IntkeyFile {
 		
 		List<Integer> values = new ArrayList<Integer>();
 		values.add(originalNumChars);
-		
-		int i=0;
-		while (i<originalNumChars) {
-			int value = 0;
-			
-			while (i<originalNumChars && i%32 < 32) {
-				if (characters.get(i)) {
-					value |= 1 << i%32;
-				}
-				i++;
-			}
-			
-			values.add(value);
-		}
+		values.addAll(bitSetToInts(characters, originalNumChars));
 		writeToRecord(recordNum, values);
 	}
 	
