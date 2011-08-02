@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -40,7 +41,9 @@ import au.org.ala.delta.model.TypeSettingMark.MarkPosition;
 import au.org.ala.delta.model.image.ImageInfo;
 import au.org.ala.delta.model.UnorderedMultiStateCharacter;
 import au.org.ala.delta.rtf.RTFUtils;
+import au.org.ala.delta.translation.delta.DeltaFormatDataSetFilter;
 import au.org.ala.delta.util.Functor;
+import au.org.ala.delta.util.IdentificationKeyCharacterIterator;
 import au.org.ala.delta.util.Utils;
 
 /**
@@ -59,10 +62,13 @@ public class DeltaContext extends AbstractDeltaContext {
 	private TranslateType _translateType;
 	private Set<Integer> _excludedCharacters = new HashSet<Integer>();
 	private Set<Integer> _excludedItems = new HashSet<Integer>();
-	private Set<Integer> _omitPeriodForCharacters = new HashSet<Integer>();
+	private Set<Integer> _omitPeriodForCharacters = new HashSet<Integer>();	
 	private Set<Integer> _replaceSemiColonWithComma = new HashSet<Integer>();
 	private Set<Integer> _omitOrForCharacters = new HashSet<Integer>();
 	private Set<Integer> _newParagraphCharacters = new HashSet<Integer>();
+	private Set<Integer> _charactersForSynonymy = new HashSet<Integer>(); 
+	private Set<Integer> _useControllingCharactersFirst = new HashSet<Integer>(); 
+	
 	private Map<Integer, String> _itemHeadings = new HashMap<Integer, String>();
 	private Map<Integer, String> _itemSubHeadings = new HashMap<Integer, String>();
 	private Map<Integer, String> _indexHeadings = new HashMap<Integer, String>();
@@ -94,6 +100,9 @@ public class DeltaContext extends AbstractDeltaContext {
 	private boolean _useAlternateComma;
 	private boolean _insertImplicitValues = false;
 	private boolean _outputHtml = false;
+	private boolean _enableDeltaOutput = true;
+	private boolean _chineseFormat = false;
+	
 	private Map<HeadingType, String> _headings = new HashMap<HeadingType, String>();
 	private Integer _characterForTaxonImages = null;
 
@@ -565,9 +574,24 @@ public class DeltaContext extends AbstractDeltaContext {
 		return _insertImplicitValues;
 	}
 
-	public boolean omitOrForCharacter(int i) {
+	public boolean isOrOmmitedForCharacter(int i) {
 		return _omitOrForCharacters.contains(i);
 	}
+	
+	public void omitOrForCharacter(int charNumber) {
+		_omitOrForCharacters.add(charNumber);
+	}
+	
+	public boolean isUseControllingCharacterFirst(int i) {
+		return _useControllingCharactersFirst.contains(i);
+	}
+	
+	public void setUseControllingCharacterFirst(int charNumber, boolean useControllingCharFirst) {
+		if (useControllingCharFirst) {
+			_useControllingCharactersFirst.add(charNumber);
+		}
+	}
+
 
 	public boolean omitCharacterNumbers() {
 		return _omitCharacterNumbers;
@@ -636,5 +660,33 @@ public class DeltaContext extends AbstractDeltaContext {
 	
 	public IdentificationKeyCharacter getIdentificationKeyCharacter(int characterNumber) {
 		return _keyCharacters.get(characterNumber);
+	}
+	
+	public void disableDeltaOutput() {
+		_enableDeltaOutput = false;
+	}
+	
+	public boolean isDeltaOutputDisabled() {
+		return !_enableDeltaOutput;
+	}
+	
+	public void setChineseFormat(boolean chineseFormat) {
+		_chineseFormat = chineseFormat;
+	}
+	
+	public boolean isChineseFormat() {
+		return _chineseFormat;
+	}
+	
+	public Iterator<IdentificationKeyCharacter> identificationKeyCharacterIterator() {
+		return new IdentificationKeyCharacterIterator(this, new DeltaFormatDataSetFilter(this));
+	}
+
+	public void addCharacterForSynonymy(int number) {
+		_charactersForSynonymy.add(number);
+	}
+	
+	public Set<Integer> getCharactersForSynonymy() {
+		return _charactersForSynonymy;
 	}
 }

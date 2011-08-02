@@ -155,7 +155,7 @@ public class WriteOnceIntkeyItemsFile extends IntkeyFile {
 		_header.setChineseFmt(toInt(chineseFormat));
 	}
 	
-	public void writeCharacterSynonomy(List<Boolean> synonomy) {
+	public void writeCharacterSynonymy(List<Boolean> synonomy) {
 		checkEmpty(_header.getRpCsynon());
 		checkCharacterListLength(synonomy);
 		

@@ -2,12 +2,13 @@ package au.org.ala.delta.translation.intkey;
 
 import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang.BitField;
 import org.apache.commons.lang.NotImplementedException;
 
 import au.org.ala.delta.DeltaContext;
@@ -18,8 +19,11 @@ import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.IdentificationKeyCharacter;
 import au.org.ala.delta.model.IntegerAttribute;
-import au.org.ala.delta.model.MultiStateAttribute;
+import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
+import au.org.ala.delta.model.image.Image;
+import au.org.ala.delta.translation.delta.DeltaWriter;
+import au.org.ala.delta.translation.delta.ImageOverlayWriter;
 
 /**
  * Writes the intkey items file using the data in a supplied DeltaContext and
@@ -97,11 +101,13 @@ public class IntkeyItemsFileWriter {
 	
 	public void writeAttributeData() {
 		
-		Iterator<IdentificationKeyCharacter> keyChars = null;// _context.identificationKeyCharacterIterator();
+		Iterator<IdentificationKeyCharacter> keyChars = _context.identificationKeyCharacterIterator();
 		while (keyChars.hasNext()) {
-			
+			IdentificationKeyCharacter keyChar = keyChars.next();
+			if (keyChar.getCharacterType().isMultistate()) {
+				writeMultiStateAttributes(keyChar);
+			}	
 		}
-		
 	}
 	
 	private void writeMultiStateAttributes(IdentificationKeyCharacter character) {
@@ -169,27 +175,72 @@ public class IntkeyItemsFileWriter {
 	}
 	
 	public void writeTaxonImages() {
-		throw new NotImplementedException();
+		List<String> imageList = new ArrayList<String>(_dataSet.getMaximumNumberOfItems());
+	
+		
+		for (int i=1; i<=_dataSet.getMaximumNumberOfItems(); i++) {
+			Item item = _dataSet.getItem(i);
+			List<Image> images = item.getImages();
+			if (images.isEmpty()) {
+				imageList.add("");
+			}
+			else {
+				StringBuilder buffer = new StringBuilder();
+				ImageOverlayWriter overlayWriter = createOverlayWriter(buffer);
+				for (Image image : images) {
+					buffer.append(image.getFileName()).append(" ");
+					overlayWriter.writeOverlays(image.getOverlays(), 0, item);
+				}
+				imageList.add(buffer.toString());
+			}
+			
+		}
+		_itemsFile.writeTaxonImages(imageList);
+	}
+	
+	private ImageOverlayWriter createOverlayWriter(StringBuilder buffer) {
+		DeltaWriter writer = new DeltaWriter(buffer);
+		return new ImageOverlayWriter(writer);
 	}
 	
 	public void writeEnableDeltaOutput() {
-		throw new NotImplementedException();
+		_itemsFile.writeEnableDeltaOutput(_context.isDeltaOutputDisabled());
 	}
 	
 	public void writeChineseFormat() {
-		throw new NotImplementedException();
+		_itemsFile.writeChineseFormat(_context.isChineseFormat());
 	}
 	
 	public void writeCharacterSynonomy() {
-		throw new NotImplementedException();
+		
+		List<Boolean> charsForSynonymy = charactersToBooleans(_context.getCharactersForSynonymy());
+		_itemsFile.writeCharacterSynonymy(charsForSynonymy);
+	}
+	
+	private List<Boolean> charactersToBooleans(Set<Integer> charNumbers) {
+		List<Boolean> booleans = new ArrayList<Boolean>(_dataSet.getNumberOfCharacters());
+		for (int i=1; i<=_dataSet.getNumberOfCharacters(); i++) {
+			booleans.add(charNumbers.contains(i));
+		}
+		return booleans;
 	}
 	
 	public void writeOmitOr() {
-		throw new NotImplementedException();
+		List<Boolean> booleans = new ArrayList<Boolean>(_dataSet.getNumberOfCharacters());
+		for (int i=1; i<=_dataSet.getNumberOfCharacters(); i++) {
+			booleans.add(_context.isOrOmmitedForCharacter(i));
+		}
+		_itemsFile.writeOmitOr(booleans);
 	}
 	
 	public void writeUseControllingFirst() {
-		throw new NotImplementedException();
+		Set<Integer> values = new HashSet<Integer>(_dataSet.getNumberOfCharacters());
+		for (int i=1; i<=_dataSet.getNumberOfCharacters(); i++) {
+			if (_context.isUseControllingCharacterFirst(i)) {
+				values.add(i);
+			}
+		}
+		_itemsFile.writeUseControllingFirst(values);
 	}
 
 	public void writeTaxonLinks() {

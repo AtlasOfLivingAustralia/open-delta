@@ -1,4 +1,4 @@
-package au.org.ala.delta.translation;
+package au.org.ala.delta.util;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -7,6 +7,7 @@ import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.IdentificationKeyCharacter;
+import au.org.ala.delta.translation.AbstractDataSetFilter;
 
 /**
  * Iterates through the Characters in a data set, possibly excluding some, 
