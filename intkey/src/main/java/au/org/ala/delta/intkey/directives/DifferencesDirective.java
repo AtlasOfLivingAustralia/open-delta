@@ -148,7 +148,12 @@ public class DifferencesDirective extends IntkeyDirective {
             }
         }
 
-        if (taxa.size() < 2) {
+        int numTaxa = taxa.size();
+        if (includeSpecimen) {
+            numTaxa++;
+        }
+        
+        if (numTaxa < 2) {
             throw new IllegalStateException("At least two taxa required for comparison");
         }
 
