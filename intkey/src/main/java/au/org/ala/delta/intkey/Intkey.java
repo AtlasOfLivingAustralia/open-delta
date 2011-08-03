@@ -15,6 +15,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,6 +27,7 @@ import java.util.Set;
 
 import javax.swing.AbstractListModel;
 import javax.swing.ActionMap;
+import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -201,6 +203,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     private JPanel _globalOptionBar;
     private JScrollPane _sclPaneAvailableCharacters;
     private JPanel _pnlAvailableCharactersHeader;
+    private JPanel _pnlDynamicButtons;
 
     public static void main(String[] args) {
         setupMacSystemProperties(Intkey.class);
@@ -237,6 +240,9 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         _globalOptionBar.setBorder(new EmptyBorder(0, 5, 0, 5));
         _rootPanel.add(_globalOptionBar, BorderLayout.NORTH);
         _globalOptionBar.setLayout(new BorderLayout(0, 0));
+        
+        _pnlDynamicButtons = new JPanel();
+        _globalOptionBar.add(_pnlDynamicButtons, BorderLayout.WEST);
 
         _btnContextHelp = new JButton();
         _btnContextHelp.setAction(actionMap.get("btnContextHelp"));
@@ -1256,6 +1262,33 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     public void removeBusyMessage(String message) {
         // TODO Auto-generated method stub
     }
+    
+    @Override
+    public void addToolbarButton(boolean advancedModeOnly, boolean normalModeOnly, boolean inactiveUnlessUsedCharacters, String imageFileName, String commands, String shortHelp, String fullHelp) {
+        Icon icon;
+        
+        File initializationFile = _context.getInitializationFile();
+        if (initializationFile != null) {
+            File parentDir = initializationFile.getParentFile();
+            
+        } else {
+            
+        }
+        
+        
+    }
+
+    @Override
+    public void addToolbarSpace() {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void clearToolbar() {
+        // TODO Auto-generated method stub
+        
+    }
 
     // ================================== DirectivePopulator methods
     // ===================================================================
@@ -1318,6 +1351,6 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         UIUtils.showDialog(dlg);
         return dlg.getInputData();
     }
-    
+
 
 }

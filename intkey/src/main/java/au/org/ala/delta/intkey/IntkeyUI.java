@@ -19,4 +19,10 @@ public interface IntkeyUI {
     void displayBusyMessage(String message);
     
     void removeBusyMessage(String message);
+    
+    void addToolbarButton(boolean advancedModeOnly, boolean normalModeOnly, boolean inactiveUnlessUsedCharacters, String imageFileName, String commands, String shortHelp, String fullHelp);
+    
+    void addToolbarSpace();
+    
+    void clearToolbar();
 }

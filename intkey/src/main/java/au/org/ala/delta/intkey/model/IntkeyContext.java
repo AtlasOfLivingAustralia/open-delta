@@ -68,7 +68,7 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     private Set<Integer> _includedCharacters;
     private Set<Integer> _includedTaxa;
-    
+
     private List<String> _imagePaths;
 
     /**
@@ -257,12 +257,12 @@ public class IntkeyContext extends AbstractDeltaContext {
         for (int i : charNumRange.toArray()) {
             _includedCharacters.add(i);
         }
-        
+
         _includedTaxa = new HashSet<Integer>();
         IntRange taxaNumRange = new IntRange(1, _dataset.getNumberOfTaxa());
         for (int i : taxaNumRange.toArray()) {
             _includedTaxa.add(i);
-        }        
+        }
 
         // TODO need a proper listener pattern here?
         if (!_processingInputFile) {
@@ -392,13 +392,13 @@ public class IntkeyContext extends AbstractDeltaContext {
         if (keyword.equals(CHARACTER_KEYWORD_ALL) || keyword.equals(CHARACTER_KEYWORD_USED) || keyword.equals(CHARACTER_KEYWORD_AVAILABLE)) {
             throw new IllegalArgumentException(String.format(UIUtils.getResourceString("RedefineSystemKeyword.error"), keyword));
         }
-        
-        for (int chNum: characterNumbers) {
+
+        for (int chNum : characterNumbers) {
             if (chNum < 1 || chNum > _dataset.getNumberOfCharacters()) {
                 throw new IllegalArgumentException(String.format("Invalid character number %s", chNum));
             }
         }
-        
+
         _userDefinedCharacterKeywords.put(keyword.toLowerCase(), characterNumbers);
     }
 
@@ -478,24 +478,24 @@ public class IntkeyContext extends AbstractDeltaContext {
         if (_dataset == null) {
             throw new IllegalStateException("Cannot define a taxa keyword if no dataset loaded");
         }
-        
+
         keyword = keyword.toLowerCase();
         if (keyword.equals(TAXON_KEYWORD_ALL) || keyword.equals(TAXON_KEYWORD_ELIMINATED) || keyword.equals(TAXON_KEYWORD_REMAINING)) {
             throw new IllegalArgumentException(String.format(UIUtils.getResourceString("RedefineSystemKeyword.error"), keyword));
         }
-        
-        for (int taxonNum: taxaNumbers) {
+
+        for (int taxonNum : taxaNumbers) {
             if (taxonNum < 1 || taxonNum > _dataset.getNumberOfTaxa()) {
                 throw new IllegalArgumentException(String.format("Invalid taxon number %s", taxonNum));
             }
         }
-        
+
         _userDefinedTaxonKeywords.put(keyword, taxaNumbers);
     }
 
     public List<Item> getTaxaForKeyword(String keyword) {
         List<Item> retList = new ArrayList<Item>();
-        
+
         keyword = keyword.toLowerCase();
 
         if (keyword.equals(TAXON_KEYWORD_ALL)) {
@@ -545,8 +545,8 @@ public class IntkeyContext extends AbstractDeltaContext {
                     throw new IllegalArgumentException(String.format(UIUtils.getResourceString("KeywordAmbiguous.error"), keyword));
                 }
             }
-            
-            for (int taxonNumber: taxaNumbersSet) {
+
+            for (int taxonNumber : taxaNumbersSet) {
                 retList.add(_dataset.getTaxon(taxonNumber));
             }
 
@@ -583,7 +583,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         if (remainingTaxaCount < _dataset.getNumberOfTaxa()) {
             retList.add(TAXON_KEYWORD_ELIMINATED);
         }
-        
+
         retList.addAll(_userDefinedTaxonKeywords.keySet());
 
         return retList;
@@ -714,6 +714,14 @@ public class IntkeyContext extends AbstractDeltaContext {
     }
 
     /**
+     * @return a reference to the most recently loaded dataset initialization
+     *         file, or null if no such files have been loaded
+     */
+    public File getInitializationFile() {
+        return _datasetInitFile;
+    }
+
+    /**
      * @return The current character order being used to list available
      *         characters in the application
      */
@@ -784,14 +792,15 @@ public class IntkeyContext extends AbstractDeltaContext {
         if (includedCharacters == null || includedCharacters.isEmpty()) {
             throw new IllegalArgumentException("Cannot exclude all characters");
         }
-        
+
         // defensive copy
         _includedCharacters = new HashSet<Integer>(includedCharacters);
-        
-        // best characters need to be recalculated to account for characters that
+
+        // best characters need to be recalculated to account for characters
+        // that
         // have been included/excluded
         _bestCharacters = null;
-        
+
         _appUI.handleUpdateAll();
     }
 
@@ -799,48 +808,48 @@ public class IntkeyContext extends AbstractDeltaContext {
         if (includedTaxa == null || includedTaxa.isEmpty()) {
             throw new IllegalArgumentException("Cannot exclude all taxa");
         }
-        
+
         // defensive copy
         _includedTaxa = new HashSet<Integer>(includedTaxa);
-        
+
         // best characters need to be recalculated to account for taxa that
         // have been included/excluded
         _bestCharacters = null;
-        
+
         _appUI.handleUpdateAll();
     }
-    
+
     // The currently included characters minus the characters
     // that have values set in the specimen
     public Set<Character> getAvailableCharacters() {
         Set<Character> retSet = getIncludedCharacters();
-        
+
         // Used characters are not available
         retSet.removeAll(_specimen.getUsedCharacters());
-        
+
         // Neither are characters that have been made inapplicable
         retSet.removeAll(_specimen.getInapplicableCharacters());
-        
+
         return retSet;
     }
-    
+
     public ImageSettings getImageSettings() {
         ImageSettings imageSettings = new ImageSettings();
-        
+
         List<FontInfo> overlayFonts = _dataset.getOverlayFonts();
 
         FontInfo defaultOverlayFontInfo = overlayFonts.get(0);
         FontInfo buttonOverlayFontInfo = overlayFonts.get(1);
         FontInfo featureOverlayFontInfo = overlayFonts.get(2);
-        
-        
+
         imageSettings.setDefaultFontInfo(defaultOverlayFontInfo);
         imageSettings.setDefaultButtonFontInfo(buttonOverlayFontInfo);
         imageSettings.setDefaultFeatureFontInfo(featureOverlayFontInfo);
-        
-        //TODO need to read in (multiple!) image paths as defined in directives file
+
+        // TODO need to read in (multiple!) image paths as defined in directives
+        // file
         imageSettings.setImagePath(new File(_datasetInitFile.getParent(), "images").getAbsolutePath());
-        
+
         return imageSettings;
     }
 

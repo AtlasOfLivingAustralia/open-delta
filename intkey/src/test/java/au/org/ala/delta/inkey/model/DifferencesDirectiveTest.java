@@ -20,7 +20,6 @@ import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.IntegerCharacter;
 import au.org.ala.delta.model.Item;
 
-//TODO make these tests check against the present of characters rather than just the number of differences
 public class DifferencesDirectiveTest extends TestCase {
 
     public static final boolean DEFAULT_MATCH_INAPPLICABLES = true;
