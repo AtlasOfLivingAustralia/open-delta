@@ -191,8 +191,16 @@ public class WriteOnceIntkeyItemsFile extends IntkeyFile {
 		writeBooleansToRecord(record, values);
 	}
 	
-	public void writeTaxonLinks() {
-		throw new NotImplementedException();
+	public void writeTaxonLinks(int index, List<String> taxonLinks) {
+		int[] taxonLinksIndex = _header.getRpTlinks();
+		checkEmpty(taxonLinksIndex[0]);
+		checkItemListLength(taxonLinks);
+		
+		int indexRecord = newRecord();
+		taxonLinksIndex[0] = indexRecord;
+		_header.setRpTlinks(taxonLinksIndex);
+		
+		writeIndexedValues(indexRecord, taxonLinks.toArray(new String[taxonLinks.size()]));
 	}
 	
 	public void writeOmitPeriod(Set<Integer> omitPeriod) {
@@ -217,10 +225,6 @@ public class WriteOnceIntkeyItemsFile extends IntkeyFile {
 		_header.setRpNonAutoCc(record);
 		
 		writeAsBooleans(nonAutoCC, record);
-	}
-	
-	public void writeSubjectForOutputFiles() {
-		throw new NotImplementedException();
 	}
 	
 	private int toInt(boolean b) {

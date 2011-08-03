@@ -2,7 +2,6 @@ package au.org.ala.delta.translation.intkey;
 
 import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -10,9 +9,11 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.intkey.WriteOnceIntkeyItemsFile;
+import au.org.ala.delta.io.OutputFileSelector;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterType;
@@ -161,9 +162,6 @@ public class IntkeyItemsFileWriter {
 				convertToReal(characterNumber);
 			}
 		}
-		
-		
-		
 	}
 	
 	private void convertToReal(int characterNumber) {
@@ -244,24 +242,64 @@ public class IntkeyItemsFileWriter {
 	}
 
 	public void writeTaxonLinks() {
-		throw new NotImplementedException();
+		int numItems = _dataSet.getMaximumNumberOfItems();
+		List<String> taxonLinksList = new ArrayList<String>(numItems);
+		for (int i=1; i<=numItems; i++) {
+			String taxonLinks = _context.getTaxonLinks(i);
+			if (taxonLinks == null) {
+				taxonLinks = "";	
+			}
+			taxonLinksList.add(taxonLinks);
+		}
+		
+		_itemsFile.writeTaxonLinks(0, taxonLinksList);
 	}
 	
 	public void writeOmitPeriod() {
-		throw new NotImplementedException();
+		Set<Integer> values = new HashSet<Integer>(_dataSet.getNumberOfCharacters());
+		for (int i=1; i<=_dataSet.getNumberOfCharacters(); i++) {
+			if (_context.getOmitPeriodForCharacter(i)) {
+				values.add(i);
+			}
+		}
+		_itemsFile.writeOmitPeriod(values);
 	}
 	
 	public void writeNewParagraph() {
-		throw new NotImplementedException();
+		_itemsFile.writeNewParagraph(_context.getNewParagraphCharacters());
 	}
 	
 	public void writeNonAutoControllingChars() {
-		throw new NotImplementedException();
+		Set<Integer> values = new HashSet<Integer>(_dataSet.getNumberOfCharacters());
+		for (int i=1; i<=_dataSet.getNumberOfCharacters(); i++) {
+			if (_context.getNonautomaticControllingCharacter(i)) {
+				values.add(i);
+			}
+		}
+		_itemsFile.writeNonAutoControllingChars(values);
 	}
 	
 	public void writeSubjectForOutputFiles() {
-		throw new NotImplementedException();
+		OutputFileSelector outputFileSelector = _context.getOutputFileSelector();
+		String subject = outputFileSelector.getSubjectForOutputFiles();
+		if (StringUtils.isEmpty(subject)) {
+			return;
+		}
+		
+		int numItems = _dataSet.getMaximumNumberOfItems();
+		List<String> taxonLinksList = new ArrayList<String>(numItems);
+		for (int i=1; i<=numItems; i++) {
+			StringBuffer text = new StringBuffer();
+			
+			String outputFile = outputFileSelector.getOutputFile(i);
+			if (StringUtils.isNotEmpty(outputFile)) {
+				text.append(outputFile).append(" ");
+				text.append("<@subject ").append(subject).append(">");
+			}
+			
+			taxonLinksList.add(text.toString());
+		}
+		
+		_itemsFile.writeTaxonLinks(1, taxonLinksList);
 	}
-	
-	
 }

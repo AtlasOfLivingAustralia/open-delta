@@ -28,6 +28,7 @@ import java.util.Set;
 import au.org.ala.delta.directives.AbstractDeltaContext;
 import au.org.ala.delta.directives.DirectiveParserObserver;
 import au.org.ala.delta.directives.ParsingContext;
+import au.org.ala.delta.io.OutputFileSelector;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DefaultDataSetFactory;
@@ -38,8 +39,8 @@ import au.org.ala.delta.model.StateValueMatrix;
 import au.org.ala.delta.model.TypeSettingMark;
 import au.org.ala.delta.model.TypeSettingMark.CharacterNoteMarks;
 import au.org.ala.delta.model.TypeSettingMark.MarkPosition;
-import au.org.ala.delta.model.image.ImageInfo;
 import au.org.ala.delta.model.UnorderedMultiStateCharacter;
+import au.org.ala.delta.model.image.ImageInfo;
 import au.org.ala.delta.rtf.RTFUtils;
 import au.org.ala.delta.translation.delta.DeltaFormatDataSetFilter;
 import au.org.ala.delta.util.Functor;
@@ -54,6 +55,7 @@ public class DeltaContext extends AbstractDeltaContext {
 	public static enum HeadingType {HEADING, REGISTRATION_SUBHEADING};
 	
 	private DeltaDataSet _dataSet;
+	private OutputFileSelector _outputFileSelector;
 	
 	private Map<String, Object> _variables;
 	private int _ListFilenameSize = 15;
@@ -68,13 +70,14 @@ public class DeltaContext extends AbstractDeltaContext {
 	private Set<Integer> _newParagraphCharacters = new HashSet<Integer>();
 	private Set<Integer> _charactersForSynonymy = new HashSet<Integer>(); 
 	private Set<Integer> _useControllingCharactersFirst = new HashSet<Integer>(); 
+	private Set<Integer> _nonautomaticControllingCharacters = new HashSet<Integer>(); 
 	
 	private Map<Integer, String> _itemHeadings = new HashMap<Integer, String>();
 	private Map<Integer, String> _itemSubHeadings = new HashMap<Integer, String>();
 	private Map<Integer, String> _indexHeadings = new HashMap<Integer, String>();
 	private Map<Integer, TypeSettingMark> _typeSettingMarks = new HashMap<Integer, TypeSettingMark>();
 	private Map<Integer, TypeSettingMark> _formattingMarks = new HashMap<Integer, TypeSettingMark>();
-	
+	private Map<String, String> _taxonLinks = new HashMap<String, String>();
 	private Set<Set<Integer>> _linkedCharacters = new HashSet<Set<Integer>>();
 	private Map<Integer,Set<Integer>> _emphasizedCharacters = new HashMap<Integer, Set<Integer>>();
 	private Map<String,Set<Integer>> _emphasizedCharactersByDescription = new HashMap<String, Set<Integer>>();
@@ -90,6 +93,7 @@ public class DeltaContext extends AbstractDeltaContext {
 	private int _numberOfCharacters;
 	private int _maxNumberOfStates;
 	private int _maxNumberOfItems;
+	
 	private boolean _omitTypeSettingMarks = false;
 	private int _printWidth = 80;
 	private boolean _replaceAngleBrackets;
@@ -107,7 +111,8 @@ public class DeltaContext extends AbstractDeltaContext {
 	private Integer _characterForTaxonImages = null;
 
 	private String _credits;
-
+	
+	
 	private PrintStream _listStream;
 	private PrintStream _errorStream;
 	private PrintStream _printStream;
@@ -152,8 +157,13 @@ public class DeltaContext extends AbstractDeltaContext {
 		_listStream = System.out;
 		
 		_dataSet = dataSet;
+		
+		_outputFileSelector = new OutputFileSelector(_dataSet);
 	}
 	
+	public OutputFileSelector getOutputFileSelector() {
+		return _outputFileSelector;
+	}
 	
 	public DeltaDataSet getDataSet() {
 		return _dataSet;
@@ -503,6 +513,13 @@ public class DeltaContext extends AbstractDeltaContext {
 	public boolean getOmitPeriodForCharacter(int characterNum) {
 		return _omitPeriodForCharacters.contains(characterNum);
 	}
+	
+	
+	public void setOmitPeriodForCharacter(int charNumber, boolean omit) {
+		if (omit) {
+			_omitPeriodForCharacters.add(charNumber);
+		}
+	}
 
 	public boolean replaceSemiColonWithComma(int characterNum) {
 		return _replaceSemiColonWithComma.contains(characterNum);
@@ -561,6 +578,21 @@ public class DeltaContext extends AbstractDeltaContext {
 		return false;
 	}
 	
+	public void addTaxonLinks(String itemDescription, String links) {
+		_taxonLinks.put(RTFUtils.stripFormatting(itemDescription), links);
+	}
+	
+	public String getTaxonLinks(int itemNumber) {
+		String description = itemDescrptionFor(itemNumber);
+		return _taxonLinks.get(description);
+	}
+	
+	private String itemDescrptionFor(int itemNumber) {
+		Item item = getDataSet().getItem(itemNumber);
+		String description = RTFUtils.stripFormatting(item.getDescription());
+		return description;
+	}
+	
 
 	public boolean isFeatureEmphasized(int i) {
 		return _emphasizedFeatures.contains(i);
@@ -581,6 +613,8 @@ public class DeltaContext extends AbstractDeltaContext {
 	public void omitOrForCharacter(int charNumber) {
 		_omitOrForCharacters.add(charNumber);
 	}
+	
+
 	
 	public boolean isUseControllingCharacterFirst(int i) {
 		return _useControllingCharactersFirst.contains(i);
@@ -689,4 +723,15 @@ public class DeltaContext extends AbstractDeltaContext {
 	public Set<Integer> getCharactersForSynonymy() {
 		return _charactersForSynonymy;
 	}
+
+	public void setNonautomaticControllingCharacter(int number, boolean value) {
+		if (value) {
+			_nonautomaticControllingCharacters.add(number);
+		}
+	}
+	
+	public boolean getNonautomaticControllingCharacter(int number) {
+		return _nonautomaticControllingCharacters.contains(number);
+	}
+	
 }
