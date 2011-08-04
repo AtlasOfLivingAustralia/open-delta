@@ -1,11 +1,10 @@
 package au.org.ala.delta.model;
 
-import java.util.List;
 import java.util.Set;
 
 import au.org.ala.delta.model.impl.AttributeData;
 
-public class IntegerAttribute extends Attribute {
+public class IntegerAttribute extends NumericAttribute {
 
     
     public IntegerAttribute(IntegerCharacter character, AttributeData impl) {
@@ -25,9 +24,4 @@ public class IntegerAttribute extends Attribute {
         _impl.setPresentStateOrIntegerValues(values);
         notifyObservers();
     }
-    
-    public List<NumericRange> getNumericValue() {
-    	return _impl.getNumericValue();
-    }
-
 }

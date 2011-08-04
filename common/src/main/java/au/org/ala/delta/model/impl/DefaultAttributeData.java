@@ -1,6 +1,7 @@
 package au.org.ala.delta.model.impl;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -24,6 +25,7 @@ public class DefaultAttributeData implements AttributeData {
     
     public DefaultAttributeData(Character character) {
     	_character = character;
+    	_parsedAttribute = new Attribute(_character);
     }
     
     @Override
@@ -34,7 +36,7 @@ public class DefaultAttributeData implements AttributeData {
     @Override
     public void setValueFromString(String value) {
         _value = value;
-        _parsedAttribute = new Attribute(value, _character);
+        _parsedAttribute.parse(value, false);
     }
 
     @Override
@@ -77,7 +79,9 @@ public class DefaultAttributeData implements AttributeData {
 
     @Override
     public Set<Integer> getPresentStateOrIntegerValues() {
-        throw new UnsupportedOperationException();
+    	List<Integer> states = new ArrayList<Integer>();
+    	_parsedAttribute.getEncodedStates(states, new short[1]);
+    	return new HashSet<Integer>(states);
     }
 
     @Override

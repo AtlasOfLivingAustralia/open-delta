@@ -1,10 +1,11 @@
 package au.org.ala.delta.model;
 
+
 import org.apache.commons.lang.math.FloatRange;
 
 import au.org.ala.delta.model.impl.AttributeData;
 
-public class RealAttribute extends Attribute {
+public class RealAttribute extends NumericAttribute {
 
     public RealAttribute(RealCharacter character, AttributeData impl) {
         super(character, impl);

@@ -130,7 +130,9 @@ public class IntkeyFile extends BinFile {
 	}
 	
 	public int newRecord() {
-		return ++_recordCount;
+		_recordCount++;
+		seekToRecord(_recordCount+1);
+		return _recordCount;
 	}
 	
 	// Note that records are 1 indexed.
@@ -154,7 +156,7 @@ public class IntkeyFile extends BinFile {
     
     
     public List<Integer> readIntegerList(int recordNum, int numInts) {
-    	
+    	seek(recordOffset(recordNum));
         ByteBuffer bb = readByteBuffer(numInts * SIZE_INT_IN_BYTES);
 
         List<Integer> retList = new ArrayList<Integer>();

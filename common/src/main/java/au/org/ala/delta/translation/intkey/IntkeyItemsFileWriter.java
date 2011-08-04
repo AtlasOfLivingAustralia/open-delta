@@ -10,6 +10,7 @@ import java.util.Set;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.FloatRange;
 import org.apache.commons.lang.math.IntRange;
 import org.apache.commons.lang.math.Range;
 
@@ -22,9 +23,9 @@ import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.IdentificationKeyCharacter;
 import au.org.ala.delta.model.IntegerAttribute;
-import au.org.ala.delta.model.IntegerCharacter;
 import au.org.ala.delta.model.Item;
-import au.org.ala.delta.model.MultiStateCharacter;
+import au.org.ala.delta.model.MultiStateAttribute;
+import au.org.ala.delta.model.NumericAttribute;
 import au.org.ala.delta.model.NumericRange;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.translation.delta.DeltaWriter;
@@ -36,6 +37,9 @@ import au.org.ala.delta.translation.delta.ImageOverlayWriter;
  */
 public class IntkeyItemsFileWriter {
 
+	static final int INTEGER_RANGE_WARNING_THRESHOLD = 64;
+	static final int INTEGER_RANGE_MAX_THRESHOLD = 200;
+	
 	private WriteOnceIntkeyItemsFile _itemsFile;
 	private DeltaDataSet _dataSet;
 	private DeltaContext _context;
@@ -48,8 +52,8 @@ public class IntkeyItemsFileWriter {
 	
 	public void writeItemDescrptions() {
 		
-		List<String> descriptions = new ArrayList<String>(_dataSet.getNumberOfCharacters());
-		for (int i=1; i<=_dataSet.getNumberOfCharacters(); i++) {
+		List<String> descriptions = new ArrayList<String>(_dataSet.getMaximumNumberOfItems());
+		for (int i=1; i<=_dataSet.getMaximumNumberOfItems(); i++) {
 			descriptions.add(_dataSet.getItem(i).getDescription());
 		}
 		_itemsFile.writeItemDescrptions(descriptions);
@@ -61,11 +65,12 @@ public class IntkeyItemsFileWriter {
 		List<Integer> states = new ArrayList<Integer>(_dataSet.getNumberOfCharacters());
 		List<Float> reliabilities = new ArrayList<Float>(_dataSet.getNumberOfCharacters());
 		
-		for (int i=1; i<=_dataSet.getNumberOfCharacters(); i++) {
-			Character character = _dataSet.getCharacter(i);
+	    Iterator<IdentificationKeyCharacter> iterator = _context.identificationKeyCharacterIterator();
+		while(iterator.hasNext()) {
+			IdentificationKeyCharacter character = iterator.next();
 			types.add(typeToInt(character.getCharacterType()));
 			states.add(numStates(character));
-			reliabilities.add((float)_context.getCharacterReliability(i));
+			reliabilities.add((float)_context.getCharacterReliability(character.getCharacterNumber()));
 			
 		}
 		_itemsFile.writeCharacterSpecs(types, states, reliabilities);	
@@ -88,9 +93,9 @@ public class IntkeyItemsFileWriter {
 		throw new IllegalArgumentException("Invalid character type: "+type);
 	}
 	
-	private int numStates(Character character) {
+	private int numStates(IdentificationKeyCharacter character) {
 		if (character.getCharacterType().isMultistate()) {
-			return ((MultiStateCharacter)character).getNumberOfStates();
+			return character.getNumberOfStates();
 		}
 		else if (character.getCharacterType().isNumeric()) {
 			return 1;
@@ -107,15 +112,25 @@ public class IntkeyItemsFileWriter {
 	public void writeAttributeData() {
 		
 		Iterator<IdentificationKeyCharacter> keyChars = _context.identificationKeyCharacterIterator();
+		List<IntRange> intRanges = new ArrayList<IntRange>();
 		while (keyChars.hasNext()) {
 			IdentificationKeyCharacter keyChar = keyChars.next();
+			IntRange minMax = new IntRange(0);
 			if (keyChar.getCharacterType().isMultistate()) {
 				writeMultiStateAttributes(keyChar);
 			}	
 			else if (keyChar.getCharacterType() == CharacterType.IntegerNumeric) {
-				writeIntegerAttributes(keyChar.getCharacter());
+				minMax = writeIntegerAttributes(keyChar.getCharacter());
 			}
+			else if (keyChar.getCharacterType() == CharacterType.RealNumeric) {
+				writeRealAttributes(keyChar.getCharacter());
+			}
+			else {
+				writeTextAttributes(keyChar.getCharacter());
+			}
+			intRanges.add(minMax);
 		}
+		_itemsFile.writeMinMaxValues(intRanges);
 	}
 	
 	private void writeMultiStateAttributes(IdentificationKeyCharacter character) {
@@ -124,7 +139,7 @@ public class IntkeyItemsFileWriter {
 		int numStates = character.getNumberOfStates();
 		List<BitSet> attributes = new ArrayList<BitSet>();
 		for (int i=1; i<=_dataSet.getMaximumNumberOfItems(); i++) {
-			Attribute attribute = _dataSet.getAttribute(i, character.getCharacterNumber());
+			MultiStateAttribute attribute = (MultiStateAttribute)_dataSet.getAttribute(i, character.getCharacterNumber());
 		
 			List<Integer> states = character.getPresentStates(attribute);
 			
@@ -140,16 +155,14 @@ public class IntkeyItemsFileWriter {
 			attributes.add(bits);
 		}
 		
-		_itemsFile.writeAttributeBits(charNumber, attributes, numStates);
-		
-		
+		_itemsFile.writeAttributeBits(charNumber, attributes, numStates+1);
 	}
 	
-	private void writeIntegerAttributes(Character character) {
+	private IntRange writeIntegerAttributes(Character character) {
 		IntRange characterRange = determineIntegerRange(character);
 		if (characterRange == null) {
 			// The range was too large - treat this character as a real.
-			
+			writeRealAttributes(character);
 		}
 		else {
 			int charNumber = character.getCharacterId();
@@ -160,7 +173,10 @@ public class IntkeyItemsFileWriter {
 				// Turn into bitset.
 				BitSet bits = new BitSet();
 				IntegerAttribute attribute = (IntegerAttribute)_dataSet.getAttribute(i, charNumber);
-			
+				if (attribute.isUnknown()) {
+					continue;
+				}
+				
 				if (attribute.isInapplicable()) {
 					bits.set(numStates+2);
 				}
@@ -194,23 +210,26 @@ public class IntkeyItemsFileWriter {
 			
 			_itemsFile.writeAttributeBits(charNumber, attributes, numStates);
 		}
+		return characterRange;
 	}
 	
 	
 	private IntRange determineIntegerRange(Character intChar) {
-		int max1 = 64;
-		int max2 = 200;
 		
 		Set<Integer> values = new HashSet<Integer>();
 		boolean hasMultiRangeAttribute = populateValues(intChar.getCharacterId(), values);
 		
 		List<Integer> orderedValues = new ArrayList<Integer>(values);
+		
+		if (orderedValues.size() == 0) {
+			return new IntRange(0);
+		}
 		Collections.sort(orderedValues);
 		
 		int min = orderedValues.get(0);
 		int max = orderedValues.get(values.size()-1);
 		
-		int upperLimit = hasMultiRangeAttribute ? max2 : max1;
+		int upperLimit = hasMultiRangeAttribute ? INTEGER_RANGE_MAX_THRESHOLD : INTEGER_RANGE_WARNING_THRESHOLD;
 		if (max-min > upperLimit) {
 			int index = Collections.binarySearch(orderedValues, min+upperLimit);
 			if (index < 0) {
@@ -238,7 +257,7 @@ public class IntkeyItemsFileWriter {
 	 * range of values encoded.
 	 */
 	private boolean populateValues(int characterNumber, Set<Integer> values) {
-		boolean useNormalValues = false; //context.getUseNormalValues();
+		boolean useNormalValues = _context.getUseNormalValues();
 		
 		boolean hasMultiRangeAttribute = false;
 		for (int i=1; i<_dataSet.getMaximumNumberOfItems(); i++) {
@@ -273,8 +292,57 @@ public class IntkeyItemsFileWriter {
 		return hasMultiRangeAttribute;
 	}
 	
-	private void convertToReal(IntegerCharacter intChar) {
+	private void writeRealAttributes(Character realChar) {
+		boolean useNormalValues = _context.getUseNormalValues();
+		int characterNumber = realChar.getCharacterId();
 		
+		List<FloatRange> values = new ArrayList<FloatRange>();
+		BitSet inapplicableBits = new BitSet();
+		for (int i=1; i<_dataSet.getMaximumNumberOfItems(); i++) {
+			
+			NumericAttribute attribute = (NumericAttribute)_dataSet.getAttribute(i, characterNumber);
+			if (attribute == null || attribute.isUnknown() || attribute.isInapplicable() || attribute.isVariable()) {
+				FloatRange range = new FloatRange(Float.MAX_VALUE, -Float.MAX_VALUE);
+				values.add(range);
+				if (attribute.isInapplicable()) {
+					inapplicableBits.set(i-1);
+				}
+				continue;
+			}
+			List<NumericRange> ranges = attribute.getNumericValue();
+			
+			Range useRange;
+			for (NumericRange range : ranges) {
+				if (useNormalValues) {
+					useRange = range.getNormalRange();
+				}
+				else {
+					useRange = range.getFullRange();
+				}
+				FloatRange floatRange = new FloatRange(useRange.getMinimumFloat(), useRange.getMaximumFloat());
+				values.add(floatRange);
+			}
+		}
+		_itemsFile.writeAttributeFloats(characterNumber, inapplicableBits, values);
+	}
+	
+	private void writeTextAttributes(Character textChar) {
+		int characterNumber = textChar.getCharacterId();
+		
+		List<String> values = new ArrayList<String>();
+		BitSet inapplicableBits = new BitSet();
+		for (int i=1; i<_dataSet.getMaximumNumberOfItems(); i++) {
+			Attribute attribute = _dataSet.getAttribute(i, characterNumber);
+			
+			if (attribute.isInapplicable()) {
+				inapplicableBits.set(i-1);
+				values.add("");
+			}
+			else {
+				values.add(attribute.getValueAsString());
+			}
+		}
+		_itemsFile.writeAttributeStrings(characterNumber, inapplicableBits, values);
 	}
 	
 	public void writeKeyStateBoundaries() {

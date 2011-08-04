@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.math.FloatRange;
 
 /**
@@ -19,6 +18,10 @@ public class IdentificationKeyCharacter {
 	public abstract class KeyState {
 		int stateId;
 		public abstract boolean isPresent(Number value);
+		
+		public int getStateNumber() {
+			return stateId;
+		}
 	}
 	
 	public class MultiStateKeyState extends KeyState {
@@ -86,12 +89,30 @@ public class IdentificationKeyCharacter {
 		}
 	}
 	
-	public List<Integer> getPresentStates(Attribute attribute) {
-		// IF attribute is marked as Variabile, all state bits get set.
-		//if (attribute.isVariable()) {
-			// set all states.
-		//}
-		throw new NotImplementedException();
+	public List<Integer> getPresentStates(MultiStateAttribute attribute) {
+		
+		List<Integer> states = new ArrayList<Integer>();
+		if (attribute.isVariable()) {
+			for (int i=1; i<=getNumberOfStates(); i++) {
+				states.add(i);
+			}
+		}
+		else {
+			Set<Integer> originalStates = attribute.getPresentStates();
+			if (_states.size() > 0) {
+				for (int originalState : originalStates) {
+					for (KeyState state : _states) {
+						if (state.isPresent(originalState)) {
+							states.add(state.getStateNumber());
+						}
+					}
+				}
+			}
+			else {
+				states.addAll(originalStates);
+			}
+		}
+		return states;
 	}
 
 	public Integer getCharacterNumber() {

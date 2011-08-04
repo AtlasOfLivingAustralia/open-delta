@@ -105,7 +105,7 @@ public class Attribute implements Iterable<AttrChunk> {
 
 	public Attribute(String text, Character charBase) {
 		init(charBase);
-		parse(text, charBase, false);
+		parse(text, false);
 	}
 
 	@Override
@@ -123,14 +123,9 @@ public class Attribute implements Iterable<AttrChunk> {
 		NUMBER, VARIABLE, UNKNOWN, INAPPLICABLE, NOWHERE
 	};
 
-	public void parse(String text, Character charBase, boolean isIntkey) {
-		if (charBase == null) {
-			if (text.length() > 0) {
-				insert(end(), new AttrChunk(text));
-				return;
-			}
-		}
-		CharacterType charType = charBase.getCharacterType();
+	public void parse(String text,  boolean isIntkey) {
+		
+		CharacterType charType = _character.getCharacterType();
 		
 		// Insert comments around text characters if they are not already present.
 		if (charType.isText()) {
@@ -142,7 +137,7 @@ public class Attribute implements Iterable<AttrChunk> {
 		// Ignore whether exclusive if parsing Intkey "use" directive
 		boolean isExclusive = false;
 		if (charType.isMultistate()) {
-			MultiStateCharacter multiStateChar = (MultiStateCharacter)charBase;
+			MultiStateCharacter multiStateChar = (MultiStateCharacter)_character;
 			isExclusive = multiStateChar.isExclusive() && !isIntkey;
 		}
 
@@ -694,12 +689,12 @@ public class Attribute implements Iterable<AttrChunk> {
 
 	
 
-	public boolean getEncodedStates(Character charBase, List<Integer> stateIds, short[] pseudoValues) {
+	public boolean getEncodedStates(List<Integer> stateIds, short[] pseudoValues) {
 
 		stateIds.clear();
 		pseudoValues[0] = PSEUDO_NONE;
 
-		CharacterType charType = charBase.getCharacterType();
+		CharacterType charType = _character.getCharacterType();
 		if (!charType.isMultistate()) {
 			return false;
 		}
@@ -755,7 +750,7 @@ public class Attribute implements Iterable<AttrChunk> {
 		}
 		// Had nothing, so use implicit value
 		if (empty) {
-			int implicitId = ((MultiStateCharacter)charBase).getUncodedImplicitState();
+			int implicitId = ((MultiStateCharacter)_character).getUncodedImplicitState();
 			if (implicitId != 0)
 				stateIds.add(implicitId);
 		}

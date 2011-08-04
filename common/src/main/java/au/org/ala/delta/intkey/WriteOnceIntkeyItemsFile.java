@@ -1,12 +1,14 @@
 package au.org.ala.delta.intkey;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.math.FloatRange;
+import org.apache.commons.lang.math.IntRange;
 
 import au.org.ala.delta.io.BinFileMode;
 
@@ -57,14 +59,19 @@ public class WriteOnceIntkeyItemsFile extends IntkeyFile {
 		writeFloatsToRecord(record, characterReliabilities);
 	}
 	
-	public void writeMinMaxValues(List<Integer> minValues, List<Integer> maxValues) {
-		checkCharacterListLength(minValues);
-		checkCharacterListLength(maxValues);
+	public void writeMinMaxValues(List<IntRange> minMaxValues) {
+		checkCharacterListLength(minMaxValues);
 		
 		checkEmpty(_header.getRpMini());
 		int record = newRecord();
 		_header.setRpMini(record);
 		
+		List<Integer> minValues = new ArrayList<Integer>();
+		List<Integer> maxValues = new ArrayList<Integer>();
+		for (IntRange range : minMaxValues) {
+			minValues.add(range.getMinimumInteger());
+			maxValues.add(range.getMaximumInteger());
+		}
 		record += writeToRecord(record, minValues);
 		record += writeToRecord(record, maxValues);
 	}
@@ -99,12 +106,18 @@ public class WriteOnceIntkeyItemsFile extends IntkeyFile {
 
 	private int updateCharacterIndex(int charNumber) {
 		int indexRecord = _header.getRpCdat();
+		List<Integer> indicies = null;
 		if (indexRecord == 0) {
 			indexRecord = newRecord();
 			_header.setRpCdat(indexRecord);
+			Integer[] indiciesArray = new Integer[_header.getNChar()];
+			Arrays.fill(indiciesArray, Integer.valueOf(0));
+			indicies = Arrays.asList(indiciesArray);
+			
 		}
-		List<Integer> indicies = readIntegerList(indexRecord, _header.getNChar());
-		
+		else {
+			indicies = readIntegerList(indexRecord, _header.getNChar());
+		}
 		int record = newRecord();
 		indicies.set(charNumber-1, record);
 		writeToRecord(indexRecord, indicies);
