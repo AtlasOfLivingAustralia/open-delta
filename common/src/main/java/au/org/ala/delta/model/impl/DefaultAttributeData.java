@@ -1,9 +1,15 @@
 package au.org.ala.delta.model.impl;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.FloatRange;
+import org.apache.commons.lang.math.NumberRange;
+
+import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.NumericRange;
 
 
 /**
@@ -13,7 +19,13 @@ import org.apache.commons.lang.math.FloatRange;
 public class DefaultAttributeData implements AttributeData {
 
     private String _value;
-
+    private Attribute _parsedAttribute;
+    private Character _character;
+    
+    public DefaultAttributeData(Character character) {
+    	_character = character;
+    }
+    
     @Override
     public String getValueAsString() {
         return _value;
@@ -22,11 +34,12 @@ public class DefaultAttributeData implements AttributeData {
     @Override
     public void setValueFromString(String value) {
         _value = value;
+        _parsedAttribute = new Attribute(value, _character);
     }
 
     @Override
     public boolean isStatePresent(int stateNumber) {
-        return false;
+        return _parsedAttribute.encodesState(stateNumber, true);
     }
 
     public void setStatePresent(int stateNumber, boolean present) {
@@ -72,7 +85,12 @@ public class DefaultAttributeData implements AttributeData {
 
 	@Override
 	public boolean isVariable() {
-		return "V".equals(_value);
+		for (AttrChunk chunk : _parsedAttribute) {
+			if (chunk.getType() == ChunkType.CHUNK_VARIABLE) {
+				return true;
+			}
+		}
+		return false;
 	}
 
     @Override
@@ -88,5 +106,50 @@ public class DefaultAttributeData implements AttributeData {
 	@Override
 	public boolean isCommentOnly() {
 		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public List<NumericRange> getNumericValue() {
+		List<NumericRange> ranges = new ArrayList<NumericRange>();
+		NumericRange range = new NumericRange();
+		List<Number> numbers = new ArrayList<Number>();
+		for (AttrChunk chunk : _parsedAttribute) {
+			switch (chunk.getType()) {
+			case ChunkType.CHUNK_AND:
+			case ChunkType.CHUNK_OR:
+				addNumericRange(ranges, range, numbers);
+				range = new NumericRange();
+				numbers = new ArrayList<Number>();
+				break;
+			case ChunkType.CHUNK_EXLO_NUMBER:
+				range.setExtremeLow(chunk.getNumber());
+				break;
+			case ChunkType.CHUNK_EXHI_NUMBER:
+				range.setExtremeHigh(chunk.getNumber());
+				break;
+			case ChunkType.CHUNK_NUMBER:
+				numbers.add(chunk.getNumber());
+				break;
+			}
+		}
+		addNumericRange(ranges, range, numbers);
+		
+		return ranges;
+	}
+
+	private void addNumericRange(List<NumericRange> ranges, NumericRange range, List<Number> numbers) {
+		if (numbers.size() == 1) {
+			range.setRange(new NumberRange(numbers.get(0)));
+		}
+		else if (numbers.size() == 2) {
+			range.setRange(new NumberRange(numbers.get(0), numbers.get(1)));
+		}
+		else if (numbers.size() == 3) {
+			range.setRange(new NumberRange(numbers.get(0), numbers.get(2)));
+			range.setMiddle(numbers.get(1));
+		}
+		ranges.add(range);
 	}	
+	
+	
 }

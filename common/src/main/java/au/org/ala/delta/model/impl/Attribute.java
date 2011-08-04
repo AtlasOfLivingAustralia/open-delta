@@ -219,7 +219,7 @@ public class Attribute implements Iterable<AttrChunk> {
 
 						case NUMBER:
 							if (charType.isNumeric()) {
-								BigDecimal aNumb = new BigDecimal(substring(text, startPos, i - startPos + 1));
+								BigDecimal aNumb = Utils.stringToBigDecimal(substring(text, startPos, i - startPos + 1), new int[1]);
 								if (aNumb.compareTo(prevNumb) < 0) {
 									throw new AttributeParseException(AttributeParseError.EAP_BAD_NUMERIC_ORDER, startPos - nHidden);
 								}
@@ -303,7 +303,7 @@ public class Attribute implements Iterable<AttrChunk> {
 					if (parseState == ParseState.NUMBER) {
 						if (!inserted) {
 							if (charType.isNumeric()) {
-								BigDecimal aNumb = new BigDecimal(substring(text, startPos, i - startPos + 1));
+								BigDecimal aNumb = Utils.stringToBigDecimal(substring(text, startPos, i - startPos + 1), new int[1]);
 								if (aNumb.compareTo(prevNumb) < 0)
 									throw new AttributeParseException(AttributeParseError.EAP_BAD_NUMERIC_ORDER, startPos - nHidden);
 								insert(end(), new AttrChunk(aNumb));
@@ -358,7 +358,7 @@ public class Attribute implements Iterable<AttrChunk> {
 
 						case NUMBER:
 							if (charType.isNumeric()) {
-								BigDecimal aNumb = new BigDecimal(substring(text, startPos, i - startPos + 1));
+								BigDecimal aNumb = Utils.stringToBigDecimal(substring(text, startPos, i - startPos + 1), new int[1]);
 								if (aNumb.compareTo(prevNumb) < 0) {
 									throw new AttributeParseException(AttributeParseError.EAP_BAD_NUMERIC_ORDER, startPos - nHidden);
 								}
@@ -424,7 +424,7 @@ public class Attribute implements Iterable<AttrChunk> {
 					{
 						if (parseState == ParseState.NUMBER) {
 							if (!inserted) {
-								BigDecimal aNumb = new BigDecimal(substring(text, startPos, i - startPos + 1));
+								BigDecimal aNumb = Utils.stringToBigDecimal(substring(text, startPos, i - startPos + 1), new int[1]);
 								if (aNumb.compareTo(prevNumb) < 0) {
 									throw new AttributeParseException(AttributeParseError.EAP_BAD_NUMERIC_ORDER, startPos - nHidden);
 								}
@@ -455,7 +455,7 @@ public class Attribute implements Iterable<AttrChunk> {
 						if (startPos < 0 || j == text.length())
 							throw new AttributeParseException(AttributeParseError.EAP_BADATTR_SYMBOL, startPos - nHidden);
 						i = j;
-						BigDecimal exhiNumb = new BigDecimal(substring(text, startPos, i - startPos));
+						BigDecimal exhiNumb = Utils.stringToBigDecimal(substring(text, startPos, i - startPos), new int[1]);
 						if (exhiNumb.compareTo(prevNumb) < 0) {
 							throw new AttributeParseException(AttributeParseError.EAP_BAD_NUMERIC_ORDER, startPos - nHidden);
 						}
@@ -481,7 +481,7 @@ public class Attribute implements Iterable<AttrChunk> {
 						if (startPos < 0 || j == text.length() - 1 || text.charAt(j + 1) != ')')
 							throw new AttributeParseException(AttributeParseError.EAP_BADATTR_SYMBOL, startPos - nHidden);
 						i = j + 1;
-						BigDecimal exloNumb = new BigDecimal(substring(text, startPos, i - startPos - 1));
+						BigDecimal exloNumb = Utils.stringToBigDecimal(substring(text, startPos, i - startPos - 1), new int[1]);
 						insert(end(), new AttrChunk(ChunkType.CHUNK_EXLO_NUMBER, exloNumb));
 						prevNumb = exloNumb;
 						hadExLo = true;
@@ -563,7 +563,7 @@ public class Attribute implements Iterable<AttrChunk> {
 
 			case NUMBER:
 				if (charType.isNumeric()) {
-					BigDecimal aNumb = new BigDecimal(substring(text, startPos, i - startPos + 1));
+					BigDecimal aNumb = Utils.stringToBigDecimal(substring(text, startPos, i - startPos + 1), new int[1]);
 					if (aNumb.compareTo(prevNumb) < 0) {
 						throw new AttributeParseException(AttributeParseError.EAP_BAD_NUMERIC_ORDER, startPos - nHidden);
 					}
@@ -773,18 +773,13 @@ public class Attribute implements Iterable<AttrChunk> {
 		return dest.toString();
 	}
 
-	public boolean encodesState(Character charBase, int stateId, boolean checkRanges) {
-		return encodesState(charBase, stateId, checkRanges, false);
+	public boolean encodesState(int stateId, boolean checkRanges) {
+		return encodesState(stateId, checkRanges, false);
 	}
 
-	public boolean encodesState(Character charBase, int stateId, boolean checkRanges, boolean wasImplicit) {
-		
-		CharacterType charType = charBase.getCharacterType();
-		if (!charType.isMultistate()) {
-			return false;
-		}
+	public boolean encodesState(int stateId, boolean checkRanges, boolean wasImplicit) {
 
-		boolean isOrdered = (charType == CharacterType.OrderedMultiState);
+		boolean isOrdered = (_character.getCharacterType() == CharacterType.OrderedMultiState);
 		int rangeStart = -1;
 		boolean inRange = false;
 		boolean textOnly = true;
@@ -812,7 +807,7 @@ public class Attribute implements Iterable<AttrChunk> {
 				inRange = true;
 			}
 		}
-		if (textOnly && ((MultiStateCharacter)charBase).getUncodedImplicitState() == stateId) {
+		if (textOnly && ((MultiStateCharacter)_character).getUncodedImplicitState() == stateId) {
 			wasImplicit = true;
 			return true;
 		}

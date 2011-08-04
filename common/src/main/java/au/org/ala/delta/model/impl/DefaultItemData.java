@@ -49,7 +49,7 @@ public class DefaultItemData implements ItemData {
 
         Attribute attribute = _attributes.get(character);
         if (attribute == null) {
-            attribute = AttributeFactory.newAttribute(character, new DefaultAttributeData());
+            attribute = AttributeFactory.newAttribute(character, new DefaultAttributeData(character));
         }
 
         return attribute;

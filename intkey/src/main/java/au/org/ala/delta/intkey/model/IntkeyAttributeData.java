@@ -1,11 +1,13 @@
 package au.org.ala.delta.intkey.model;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.FloatRange;
 
+import au.org.ala.delta.model.NumericRange;
 import au.org.ala.delta.model.impl.AttributeData;
 
 public class IntkeyAttributeData implements AttributeData {
@@ -105,4 +107,11 @@ public class IntkeyAttributeData implements AttributeData {
     public boolean isCommentOnly() {
     	return ((_stateOrIntegerValues.size() == 0) && (_realRange == null));
     }
+
+	@Override
+	public List<NumericRange> getNumericValue() {
+		throw new UnsupportedOperationException();
+	}
+    
+    
 }

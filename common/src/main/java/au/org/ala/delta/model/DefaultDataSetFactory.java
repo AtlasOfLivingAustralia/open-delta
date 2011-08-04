@@ -46,7 +46,7 @@ public class DefaultDataSetFactory implements DeltaDataSetFactory {
 
     @Override
     public Attribute createAttribute(Character character, Item item) {
-        Attribute attribute = AttributeFactory.newAttribute(character, new DefaultAttributeData());
+        Attribute attribute = AttributeFactory.newAttribute(character, new DefaultAttributeData(character));
         attribute.setItem(item);
         return attribute;
     }

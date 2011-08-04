@@ -20,8 +20,10 @@ import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.IdentificationKeyCharacter;
 import au.org.ala.delta.model.IntegerAttribute;
+import au.org.ala.delta.model.IntegerCharacter;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
+import au.org.ala.delta.model.NumericRange;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.translation.delta.DeltaWriter;
 import au.org.ala.delta.translation.delta.ImageOverlayWriter;
@@ -138,15 +140,40 @@ public class IntkeyItemsFileWriter {
 		
 	}
 	
-	private void processIntegerAttributes(int characterNumber) {
+	private void determineIntegerRange(IntegerCharacter intChar) {
 		int max1 = 64;
 		int max2 = 200;
 		
-		IntegerAttribute attribute = (IntegerAttribute)_dataSet.getAttribute(1, 1);
 		List<Integer> values = new ArrayList<Integer>();
+		boolean useNormalValues = false; //context.getUseNormalValues();
 		
-		int value = 0;
-		values.add(value);
+		// foreach attribute
+		
+		boolean hasMultiRangeAttribute = false;
+		IntegerAttribute attribute = (IntegerAttribute)_dataSet.getAttribute(1, 1);
+		List<NumericRange> ranges = attribute.getNumericValue();
+		if (ranges.size() > 1) {
+			hasMultiRangeAttribute = true;
+		}
+		
+		for (NumericRange range : ranges) {
+			if (!useNormalValues) {
+				if (range.hasExtremeLow()) {
+					values.add(range.getExtremeLow().intValue());
+				}
+				if (range.hasExtremeHigh()) {
+					values.add(range.getExtremeHigh().intValue());
+				}
+				
+			}
+			values.add(range.getRange().getMinimumInteger());
+			values.add(range.getRange().getMaximumInteger());
+			if (range.hasMiddleValue()) {
+				values.add(range.getMiddle().intValue());
+			}
+		}
+		
+		// end foreach attribute.
 		
 		Collections.sort(values);
 		
@@ -159,12 +186,12 @@ public class IntkeyItemsFileWriter {
 			}
 			
 			if (index > values.size()/2) {
-				convertToReal(characterNumber);
+				convertToReal(intChar);
 			}
 		}
 	}
 	
-	private void convertToReal(int characterNumber) {
+	private void convertToReal(IntegerCharacter intChar) {
 		
 	}
 	
