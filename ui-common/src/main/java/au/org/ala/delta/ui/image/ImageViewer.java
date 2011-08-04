@@ -8,7 +8,9 @@ import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.JComponent;
 
@@ -28,6 +30,7 @@ import au.org.ala.delta.ui.image.overlay.OverlayLocation;
 import au.org.ala.delta.ui.image.overlay.OverlayLocationProvider;
 import au.org.ala.delta.ui.image.overlay.RelativePositionedTextOverlay;
 import au.org.ala.delta.ui.image.overlay.SelectableTextOverlay;
+import au.org.ala.delta.ui.image.overlay.TextFieldOverlay;
 
 /**
  * Displays a single DELTA Image.
@@ -51,7 +54,9 @@ public class ImageViewer extends ImagePanel implements LayoutManager2, ActionLis
     private List<OverlaySelectionObserver> _observers;
 
     /** Kept for convenience when toggling the display of hotspots */
-    private List<HotSpotGroup> _hotSpotGroups;
+    private Map<ImageOverlay, HotSpotGroup> _hotSpotGroups;
+
+    private TextFieldOverlay _inputField;
 
     /**
      * Creates a new ImageViewer for the supplied Image.
@@ -59,13 +64,13 @@ public class ImageViewer extends ImagePanel implements LayoutManager2, ActionLis
      * @param image
      *            the image to view.
      * @param imageSettings
-     *            application-wide settings for the display of images            
+     *            application-wide settings for the display of images
      */
     public ImageViewer(Image image, ImageSettings imageSettings) {
         _image = image;
 
         ResourceMap resources = Application.getInstance().getContext().getResourceMap();
-        
+
         _factory = new OverlayComponentFactory(resources, imageSettings);
         setLayout(this);
         displayImage(image.getImageLocation(imageSettings.getImagePath()));
@@ -77,7 +82,7 @@ public class ImageViewer extends ImagePanel implements LayoutManager2, ActionLis
     private void addOverlays() {
         _overlays = _image.getOverlays();
 
-        _hotSpotGroups = new ArrayList<HotSpotGroup>();
+        _hotSpotGroups = new HashMap<ImageOverlay, HotSpotGroup>();
         for (ImageOverlay overlay : _overlays) {
             JComponent overlayComp = _factory.createOverlayComponent(overlay, _image);
 
@@ -132,7 +137,7 @@ public class ImageViewer extends ImagePanel implements LayoutManager2, ActionLis
         if (hotSpotCount > 0) {
             HotSpotGroup group = new HotSpotGroup(selectable);
             group.addOverlaySelectionObserver(this);
-            _hotSpotGroups.add(group);
+            _hotSpotGroups.put(overlay, group);
 
             for (int i = 1; i <= hotSpotCount; i++) {
                 overlay.getLocation(i);
@@ -144,7 +149,7 @@ public class ImageViewer extends ImagePanel implements LayoutManager2, ActionLis
     }
 
     public void setDisplayHotSpots(boolean displayHotSpots) {
-        for (HotSpotGroup group : _hotSpotGroups) {
+        for (HotSpotGroup group : _hotSpotGroups.values()) {
             group.setDisplayHotSpots(displayHotSpots);
         }
         repaint();
@@ -262,4 +267,26 @@ public class ImageViewer extends ImagePanel implements LayoutManager2, ActionLis
     public void removeOverlaySelectionObserver(OverlaySelectionObserver observer) {
         _observers.remove(observer);
     }
+
+    public Image getViewedImage() {
+        return _image;
+    }
+
+    public List<ImageOverlay> getOverlays() {
+        // defensive copy
+        return new ArrayList<ImageOverlay>(_overlays);
+    }
+
+    public HotSpotGroup getHotSpotGroupForOverlay(ImageOverlay overlay) {
+        return _hotSpotGroups.get(overlay);
+    }
+
+    public String getInputText() {
+        if (_inputField != null) {
+            return _inputField.getText();
+        } else {
+            return null;
+        }
+    }
+
 }

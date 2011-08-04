@@ -56,8 +56,8 @@ public class IntegerInputDialog extends NumberInputDialog {
 
     @Override
     void handleBtnImagesClicked() {
-        // TODO Auto-generated method stub
-
+        StateSelectionFromImageDialog dlg = new StateSelectionFromImageDialog(this, _ch, _imageSettings);
+        dlg.setVisible(true);
     }
 
     public Set<Integer> getInputData() {

@@ -1,4 +1,4 @@
-package au.org.ala.delta.editor.ui.image;
+package au.org.ala.delta.ui.image;
 
 import java.awt.BorderLayout;
 import java.awt.Component;

@@ -21,16 +21,16 @@ public class TextInputDialog extends CharacterValueInputDialog {
     private JPanel _pnlTxtFld;
     private JTextField _txtInput;
     private List<String> _inputData;
-    
+
     @Resource
     String title;
 
     public TextInputDialog(Frame owner, TextCharacter ch, ImageSettings imageSettings) {
         super(owner, ch, imageSettings);
-        
+
         ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(TextInputDialog.class);
         resourceMap.injectFields(this);
-        
+
         setTitle(title);
 
         _pnlTxtFld = new JPanel();
@@ -75,8 +75,8 @@ public class TextInputDialog extends CharacterValueInputDialog {
 
     @Override
     void handleBtnImagesClicked() {
-        // TODO Auto-generated method stub
-        
+        StateSelectionFromImageDialog dlg = new StateSelectionFromImageDialog(this, _ch, _imageSettings);
+        dlg.setVisible(true);
     }
 
 }

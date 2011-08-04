@@ -65,6 +65,7 @@ public class OverlayComponentFactory {
             break;
         case OverlayType.OLSTATE: // Use name of the state (selectable)
         case OverlayType.OLVALUE: // Use specified values or ranges (selectable)
+        case OverlayType.OLKEYWORD: // Use specified keyword(s)
             component = new SelectableTextOverlay(overlay, text);
             break;
         case OverlayType.OLENTER: // Create edit box for data entry
@@ -91,7 +92,6 @@ public class OverlayComponentFactory {
         case OverlayType.OLSUBJECT: // Has text for menu entry
         case OverlayType.OLSOUND: // Has name of .WAV sound file
         case OverlayType.OLHEADING: // Using heading string for the data-set
-        case OverlayType.OLKEYWORD: // Use specified keyword(s)
             break;
         default:
             System.out.println("Unsupported overlay type: " + overlay.type);

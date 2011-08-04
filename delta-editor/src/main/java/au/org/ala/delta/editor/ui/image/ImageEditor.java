@@ -48,6 +48,7 @@ import au.org.ala.delta.model.image.OverlayType;
 import au.org.ala.delta.ui.RichTextDialog;
 import au.org.ala.delta.ui.image.AudioPlayer;
 import au.org.ala.delta.ui.image.ImagePanel.ScalingMode;
+import au.org.ala.delta.ui.image.AboutImageDialog;
 import au.org.ala.delta.ui.image.OverlaySelectionObserver;
 import au.org.ala.delta.ui.image.SelectableOverlay;
 import au.org.ala.delta.util.DataSetHelper;
