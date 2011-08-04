@@ -70,7 +70,7 @@ public class DefaultAttributeDataTest extends TestCase {
 		assertEquals(extremeMin, range.getExtremeLow().intValue());
 		assertEquals(extremeMax, range.getExtremeHigh().intValue());
 		assertEquals(middle, range.getMiddle().intValue());
-		Range normalRange = range.getRange();
+		Range normalRange = range.getNormalRange();
 		assertEquals(min, normalRange.getMinimumInteger());
 		assertEquals(max, normalRange.getMaximumInteger());
 	}
@@ -79,7 +79,7 @@ public class DefaultAttributeDataTest extends TestCase {
 		assertNull(range.getExtremeLow());
 		assertNull(range.getExtremeHigh());
 		
-		Range normalRange = range.getRange();
+		Range normalRange = range.getNormalRange();
 		assertEquals(min, normalRange.getMinimumInteger());
 		assertEquals(max, normalRange.getMaximumInteger());
 	}

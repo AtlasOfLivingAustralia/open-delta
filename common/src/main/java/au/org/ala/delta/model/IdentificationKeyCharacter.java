@@ -101,4 +101,8 @@ public class IdentificationKeyCharacter {
 	public CharacterType getCharacterType() {
 		return _character.getCharacterType();
 	}
+	
+	public Character getCharacter() {
+		return _character;
+	}
 }

@@ -1,5 +1,6 @@
 package au.org.ala.delta.model;
 
+import org.apache.commons.lang.math.NumberRange;
 import org.apache.commons.lang.math.Range;
 
 public class NumericRange {
@@ -35,8 +36,21 @@ public class NumericRange {
 		return _middle;
 	}
 
-	public Range getRange() {
+	public Range getNormalRange() {
 		return _range;
+	}
+	
+	public Range getFullRange() {
+		Number min = _range.getMinimumNumber();
+		Number max = _range.getMaximumNumber();
+		if (hasExtremeLow()) {
+			min = _extremeLow;
+		}
+		
+		if (hasExtremeHigh()) {
+			max = _extremeHigh;
+		}
+		return new NumberRange(min, max);
 	}
 
 	public boolean hasExtremeLow() {

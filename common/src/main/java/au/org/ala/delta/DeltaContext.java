@@ -106,6 +106,7 @@ public class DeltaContext extends AbstractDeltaContext {
 	private boolean _outputHtml = false;
 	private boolean _enableDeltaOutput = true;
 	private boolean _chineseFormat = false;
+	private boolean _useNormalValues = false;
 	
 	private Map<HeadingType, String> _headings = new HashMap<HeadingType, String>();
 	private Integer _characterForTaxonImages = null;
@@ -732,6 +733,15 @@ public class DeltaContext extends AbstractDeltaContext {
 	
 	public boolean getNonautomaticControllingCharacter(int number) {
 		return _nonautomaticControllingCharacters.contains(number);
+	}
+
+	public boolean getUseNormalValues() {
+		
+		return _useNormalValues;
+	}
+	
+	public void setUseNormalValues(boolean useNormalValues) {
+		_useNormalValues = useNormalValues;
 	}
 	
 }

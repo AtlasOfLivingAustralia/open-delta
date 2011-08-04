@@ -53,8 +53,10 @@ public class DefaultAttributeData implements AttributeData {
 
     @Override
     public boolean isUnknown() {
-        String value = getValueAsString();
-        return ("U".equals(value) || (StringUtils.isEmpty(value)));
+    	if (StringUtils.isEmpty(_value)) {
+    		return true;
+    	}
+    	return _parsedAttribute.isUnknown();
     }
 
     @Override

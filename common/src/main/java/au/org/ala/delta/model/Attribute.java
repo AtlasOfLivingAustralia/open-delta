@@ -55,6 +55,8 @@ public abstract class Attribute {
 	 * @return true if the value of this attribute is unknown.
 	 */
 	public boolean isUnknown() {
+		//TODO variant items or characters with implicit values can result
+		// in an uncoded attribute that is not unknown.
 	    return _impl.isUnknown();
 	}
 	
@@ -65,6 +67,10 @@ public abstract class Attribute {
 	 */
 	public boolean isInapplicable() {
 	    return _impl.isInapplicable();
+	}
+	
+	public boolean isVariable() {
+		return _impl.isVariable();
 	}
 	
 	public boolean isSimple() {
