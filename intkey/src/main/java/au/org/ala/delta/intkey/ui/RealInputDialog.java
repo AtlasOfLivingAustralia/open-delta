@@ -59,8 +59,18 @@ public class RealInputDialog extends NumberInputDialog {
 
     @Override
     void handleBtnImagesClicked() {
-        StateSelectionFromImageDialog dlg = new StateSelectionFromImageDialog(this, _ch, _imageSettings);
+        ImageCharacterInputDialog dlg = new ImageCharacterInputDialog(this, _ch, _imageSettings);
         dlg.setVisible(true);
+        
+        try {
+            FloatRange rangeFromImageDialog = dlg.getInputRealValues();
+            if (rangeFromImageDialog != null) {
+                _inputData = rangeFromImageDialog;
+                this.setVisible(false);
+            }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, validationErrorMessage, validationErrorTitle, JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     public FloatRange getInputData() {

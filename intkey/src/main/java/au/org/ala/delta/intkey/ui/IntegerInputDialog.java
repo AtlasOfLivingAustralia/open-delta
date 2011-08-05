@@ -56,8 +56,18 @@ public class IntegerInputDialog extends NumberInputDialog {
 
     @Override
     void handleBtnImagesClicked() {
-        StateSelectionFromImageDialog dlg = new StateSelectionFromImageDialog(this, _ch, _imageSettings);
+        ImageCharacterInputDialog dlg = new ImageCharacterInputDialog(this, _ch, _imageSettings);
         dlg.setVisible(true);
+
+        try {
+            Set<Integer> inputValuesFromImageDialog = dlg.getInputIntegerValues();
+            if (inputValuesFromImageDialog != null && !inputValuesFromImageDialog.isEmpty()) {
+                _inputData = inputValuesFromImageDialog;
+                this.setVisible(false);
+            }
+        } catch (IllegalArgumentException ex) {
+            JOptionPane.showMessageDialog(this, validationErrorMessage, validationErrorTitle, JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     public Set<Integer> getInputData() {

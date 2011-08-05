@@ -102,6 +102,10 @@ public class ImageViewer extends ImagePanel implements LayoutManager2, ActionLis
                 // If the overlay has associated hotspots, add them also.
                 addHotSpots(overlay, selectable);
             }
+            
+            if (overlayComp instanceof TextFieldOverlay) {
+                _inputField = (TextFieldOverlay) overlayComp;
+            }
         }
 
         assignRelativeComponents();
@@ -276,6 +280,7 @@ public class ImageViewer extends ImagePanel implements LayoutManager2, ActionLis
         // defensive copy
         return new ArrayList<ImageOverlay>(_overlays);
     }
+
 
     public HotSpotGroup getHotSpotGroupForOverlay(ImageOverlay overlay) {
         return _hotSpotGroups.get(overlay);

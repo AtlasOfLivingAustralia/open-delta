@@ -90,7 +90,7 @@ public class MultiStateInputDialog extends CharacterValueInputDialog {
 
     @Override
     void handleBtnImagesClicked() {
-        StateSelectionFromImageDialog dlg = new StateSelectionFromImageDialog(this,  (MultiStateCharacter) _ch, _imageSettings);
+        ImageCharacterInputDialog dlg = new ImageCharacterInputDialog(this,  (MultiStateCharacter) _ch, _imageSettings);
         dlg.setVisible(true);
         
         Set<Integer> selectedStates = dlg.getSelectedStates();

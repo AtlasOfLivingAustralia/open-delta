@@ -14,22 +14,53 @@
  ******************************************************************************/
 package au.org.ala.delta.util;
 
-public class Pair<T,K> {
-	
-	private T _first;
-	private K _second;
-	
-	public Pair(T first, K second) {
-		_first = first;
-		_second = second;
-	}
-	
-	public T getFirst() {
-		return _first;
-	}
-	
-	public K getSecond() {
-		return _second;
-	}
+public class Pair<T, K> {
+
+    private T _first;
+    private K _second;
+
+    public Pair(T first, K second) {
+        _first = first;
+        _second = second;
+    }
+
+    public T getFirst() {
+        return _first;
+    }
+
+    public K getSecond() {
+        return _second;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((_first == null) ? 0 : _first.hashCode());
+        result = prime * result + ((_second == null) ? 0 : _second.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Pair other = (Pair) obj;
+        if (_first == null) {
+            if (other._first != null)
+                return false;
+        } else if (!_first.equals(other._first))
+            return false;
+        if (_second == null) {
+            if (other._second != null)
+                return false;
+        } else if (!_second.equals(other._second))
+            return false;
+        return true;
+    }
 
 }

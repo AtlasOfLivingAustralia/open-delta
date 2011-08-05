@@ -75,8 +75,13 @@ public class TextInputDialog extends CharacterValueInputDialog {
 
     @Override
     void handleBtnImagesClicked() {
-        StateSelectionFromImageDialog dlg = new StateSelectionFromImageDialog(this, _ch, _imageSettings);
+        ImageCharacterInputDialog dlg = new ImageCharacterInputDialog(this, _ch, _imageSettings);
         dlg.setVisible(true);
+        
+        _inputData = dlg.getInputTextValues();
+        if (!_inputData.isEmpty()) {
+            this.setVisible(false);
+        }
     }
 
 }
