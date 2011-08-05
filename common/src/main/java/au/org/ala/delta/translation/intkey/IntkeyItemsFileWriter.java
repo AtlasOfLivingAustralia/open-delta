@@ -114,41 +114,55 @@ public class IntkeyItemsFileWriter {
 		Integer[] characters = new Integer[_dataSet.getNumberOfCharacters()];
 		Arrays.fill(characters, 0);
 		List<Integer> dependencyData = new ArrayList<Integer>(Arrays.asList(characters));
+		List<Integer> invertedDependencyData = new ArrayList<Integer>(Arrays.asList(characters));
 		
 		for (int i=1; i<=_dataSet.getNumberOfCharacters(); i++) {
 			Character character = _dataSet.getCharacter(i);
-			if (!character.getCharacterType().isMultistate()) {
-				continue;
-			}
-			MultiStateCharacter multiStateCharacter = (MultiStateCharacter)character;
-			
-			List<CharacterDependency> dependentCharacters = multiStateCharacter.getDependentCharacters();
-			if (dependentCharacters != null) {
-				dependencyData.set(i-1, dependencyData.size());
-				int numStates = multiStateCharacter.getNumberOfStates();
-				int statesOffset = dependencyData.size();
-				for (int state=0; state<numStates; state++) {
-					dependencyData.add(0);
-				}
-				for (CharacterDependency dependency : dependentCharacters) {
-					int dataOffset = dependencyData.size();
-					List<Integer> dependentCharacterNumbers = toRangeList(dependency.getDependentCharacterIds());
-					dependencyData.add(dependentCharacterNumbers.size());
-					dependencyData.addAll(dependentCharacterNumbers);
-					for (int state : dependency.getStates()) {
-						dependencyData.set(statesOffset+state-1, dataOffset);
-					}
-				}
+			if (character.getCharacterType().isMultistate()) {
 				
+				MultiStateCharacter multiStateCharacter = (MultiStateCharacter)character;
+				addDependencyData(dependencyData, multiStateCharacter);
+			}
+			else {
+				addInvertedDependencyData(invertedDependencyData, character);
 			}
 		}
-		_itemsFile.writeCharacterDependencies(dependencyData);
+		_itemsFile.writeCharacterDependencies(dependencyData, invertedDependencyData);
 		
 	}
+
+	private void addDependencyData(List<Integer> dependencyData, MultiStateCharacter multiStateCharacter) {
+		List<CharacterDependency> dependentCharacters = multiStateCharacter.getDependentCharacters();
+		if (dependentCharacters != null) {
+			dependencyData.set(multiStateCharacter.getCharacterId()-1, dependencyData.size());
+			int numStates = multiStateCharacter.getNumberOfStates();
+			int statesOffset = dependencyData.size();
+			for (int state=0; state<numStates; state++) {
+				dependencyData.add(0);
+			}
+			for (CharacterDependency dependency : dependentCharacters) {
+				int dataOffset = dependencyData.size();
+				List<Integer> dependentCharacterNumbers = toRangeList(dependency.getDependentCharacterIds());
+				dependencyData.add(dependentCharacterNumbers.size());
+				dependencyData.addAll(dependentCharacterNumbers);
+				for (int state : dependency.getStates()) {
+					dependencyData.set(statesOffset+state-1, dataOffset);
+				}
+			}
+			
+		}
+	}
 	
-	public class blah {
-		int characterId;
-		Map<Integer, List<Integer>> stateIndicies;
+	private void addInvertedDependencyData(List<Integer> invertedDependencyData, Character character) {
+		List<CharacterDependency> dependencies = character.getControllingCharacters();
+		if (dependencies == null || dependencies.size() == 0) {
+			return;
+		}
+		invertedDependencyData.set(character.getCharacterId(), invertedDependencyData.size());
+		invertedDependencyData.add(dependencies.size());
+		for (CharacterDependency dependency : dependencies) {
+			invertedDependencyData.add(dependency.getControllingCharacterId());
+		}
 	}
 	
 	private List<Integer> toRangeList(Set<Integer> values) {

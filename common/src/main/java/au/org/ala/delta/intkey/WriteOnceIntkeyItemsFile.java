@@ -75,13 +75,13 @@ public class WriteOnceIntkeyItemsFile extends IntkeyFile {
 		record += writeToRecord(record, maxValues);
 	}
 	
-	public void writeCharacterDependencies(List<Integer> dependencyData) {
+	public void writeCharacterDependencies(List<Integer> dependencyData, List<Integer> invertedDependencyData) {
 		checkEmpty(_header.getRpCdep());
 		int record = newRecord();
 		_header.setRpCdep(record);
 		
-		writeToRecord(record, dependencyData);
-		
+		record += writeToRecord(record, dependencyData);
+		writeToRecord(record, invertedDependencyData);
 	}
 	
 	public void writeAttributeBits(int charNumber, List<BitSet> attributes, int numBits) {
