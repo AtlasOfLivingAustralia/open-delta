@@ -113,6 +113,7 @@ public class IntkeyItemsFileWriter {
 		
 		Iterator<IdentificationKeyCharacter> keyChars = _context.identificationKeyCharacterIterator();
 		List<IntRange> intRanges = new ArrayList<IntRange>();
+		Set<Float> floats = new HashSet<Float>();
 		while (keyChars.hasNext()) {
 			IdentificationKeyCharacter keyChar = keyChars.next();
 			IntRange minMax = new IntRange(0);
@@ -123,7 +124,15 @@ public class IntkeyItemsFileWriter {
 				minMax = writeIntegerAttributes(keyChar.getCharacter());
 			}
 			else if (keyChar.getCharacterType() == CharacterType.RealNumeric) {
-				writeRealAttributes(keyChar.getCharacter());
+				List<FloatRange> attributeFloats = writeRealAttributes(keyChar.getCharacter());
+				for (FloatRange range : attributeFloats) {
+					if (range.getMinimumFloat() != Float.MAX_VALUE) {
+						floats.add(range.getMinimumFloat());
+					}
+					if (range.getMaximumFloat() != Float.MAX_VALUE) {
+						floats.add(range.getMaximumFloat());
+					}
+				}
 			}
 			else {
 				writeTextAttributes(keyChar.getCharacter());
@@ -131,6 +140,9 @@ public class IntkeyItemsFileWriter {
 			intRanges.add(minMax);
 		}
 		_itemsFile.writeMinMaxValues(intRanges);
+		ArrayList<Float> keyStateBoundards = new ArrayList<Float>(floats);
+		Collections.sort(keyStateBoundards);
+		//_itemsFile.writeKeyStateBoundaries(keyStateBoundaries);
 	}
 	
 	private void writeMultiStateAttributes(IdentificationKeyCharacter character) {
@@ -174,6 +186,7 @@ public class IntkeyItemsFileWriter {
 				BitSet bits = new BitSet();
 				IntegerAttribute attribute = (IntegerAttribute)_dataSet.getAttribute(i, charNumber);
 				if (attribute.isUnknown()) {
+					attributes.add(bits);
 					continue;
 				}
 				
@@ -192,7 +205,7 @@ public class IntkeyItemsFileWriter {
 						usedRange = range.getFullRange();
 					}
 					
-					for (int j=usedRange.getMaximumInteger(); j<=usedRange.getMaximumInteger(); j++) {
+					for (int j=usedRange.getMinimumInteger(); j<=usedRange.getMaximumInteger(); j++) {
 						if (j<characterRange.getMinimumInteger()) {
 							bits.set(0);
 						}
@@ -208,7 +221,7 @@ public class IntkeyItemsFileWriter {
 				
 			}
 			
-			_itemsFile.writeAttributeBits(charNumber, attributes, numStates);
+			_itemsFile.writeAttributeBits(charNumber, attributes, numStates+3);
 		}
 		return characterRange;
 	}
@@ -292,17 +305,17 @@ public class IntkeyItemsFileWriter {
 		return hasMultiRangeAttribute;
 	}
 	
-	private void writeRealAttributes(Character realChar) {
+	private List<FloatRange> writeRealAttributes(Character realChar) {
 		boolean useNormalValues = _context.getUseNormalValues();
 		int characterNumber = realChar.getCharacterId();
 		
 		List<FloatRange> values = new ArrayList<FloatRange>();
 		BitSet inapplicableBits = new BitSet();
-		for (int i=1; i<_dataSet.getMaximumNumberOfItems(); i++) {
+		for (int i=1; i<=_dataSet.getMaximumNumberOfItems(); i++) {
 			
 			NumericAttribute attribute = (NumericAttribute)_dataSet.getAttribute(i, characterNumber);
 			if (attribute == null || attribute.isUnknown() || attribute.isInapplicable() || attribute.isVariable()) {
-				FloatRange range = new FloatRange(Float.MAX_VALUE, -Float.MAX_VALUE);
+				FloatRange range = new FloatRange(Float.MAX_VALUE);
 				values.add(range);
 				if (attribute.isInapplicable()) {
 					inapplicableBits.set(i-1);
@@ -324,6 +337,7 @@ public class IntkeyItemsFileWriter {
 			}
 		}
 		_itemsFile.writeAttributeFloats(characterNumber, inapplicableBits, values);
+		return values;
 	}
 	
 	private void writeTextAttributes(Character textChar) {
@@ -331,9 +345,13 @@ public class IntkeyItemsFileWriter {
 		
 		List<String> values = new ArrayList<String>();
 		BitSet inapplicableBits = new BitSet();
-		for (int i=1; i<_dataSet.getMaximumNumberOfItems(); i++) {
+		for (int i=1; i<=_dataSet.getMaximumNumberOfItems(); i++) {
 			Attribute attribute = _dataSet.getAttribute(i, characterNumber);
 			
+			if (attribute == null || attribute.isUnknown()) {
+				values.add("");
+				continue;
+			}
 			if (attribute.isInapplicable()) {
 				inapplicableBits.set(i-1);
 				values.add("");

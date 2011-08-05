@@ -80,10 +80,6 @@ public class WriteOnceIntkeyItemsFile extends IntkeyFile {
 		throw new NotImplementedException();
 	}
 	
-	public void writeAttributeData() {
-		throw new NotImplementedException();
-	}
-	
 	public void writeAttributeBits(int charNumber, List<BitSet> attributes, int numBits) {
 		int record = updateCharacterIndex(charNumber);
 		
@@ -101,7 +97,6 @@ public class WriteOnceIntkeyItemsFile extends IntkeyFile {
 		
 		List<Integer> values = bitSetToInts(master, numBits*attributes.size());
 		writeToRecord(record, values);
-		
 	}
 
 	private int updateCharacterIndex(int charNumber) {
@@ -131,8 +126,15 @@ public class WriteOnceIntkeyItemsFile extends IntkeyFile {
 		
 		List<Float> floats = new ArrayList<Float>();
 		for (FloatRange range : values) {
-			floats.add(range.getMinimumFloat());
-			floats.add(range.getMaximumFloat());
+			// Special case - Float.MAX_VALUE indicates unknown.
+			if (range.getMinimumFloat() == Float.MAX_VALUE) {
+				floats.add(Float.MAX_VALUE);
+				floats.add(-Float.MAX_VALUE);
+			}
+			else {
+				floats.add(range.getMinimumFloat());
+				floats.add(range.getMaximumFloat());
+			}
 		}
 		writeFloatsToRecord(record, floats);
 	}

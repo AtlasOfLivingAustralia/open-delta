@@ -12,7 +12,7 @@ import au.org.ala.delta.io.BinFileMode;
 
 /**
  * Provides access to the contents of a file formatted for use by the
- * Intkey program.
+ * Intkey program.  It currently mostly only supports sequential writes.
  */
 public class IntkeyFile extends BinFile {
 
@@ -33,10 +33,63 @@ public class IntkeyFile extends BinFile {
 		_recordCount = 0;
 	}
 	
+	/**
+	 * Writes the supplied array of ints to the record identified by
+	 * <code>recordNumber</code>.  If the number of values is larger than
+	 * will fit into a single record (>128) the write will continue into 
+	 * the next record.  
+	 * @param recordNumber the record number to write to.
+	 * @param values the data to write to the record.
+	 * @return the number of records written.
+	 */
+	public int writeToRecord(int recordNumber, int[] values) {
+		checkForOverwrite(recordNumber, 0, values.length * SIZE_INT_IN_BYTES);
+		
+		seekToRecord(recordNumber);
+		writeInts(values);
+		
+		return values.length / RECORD_LENGTH_INTEGERS + 1;
+	}
+	
+	public int writeToRecord(int recordNumber, int offset, byte[] values) {
+		int numRecords = checkForOverwrite(recordNumber, offset, values.length);
+		
+		seekToRecord(recordNumber, offset);
+		write(values);
+		
+		return numRecords;
+	}
+
+	private int checkForOverwrite(int recordNumber, int offset, int numBytes) {
+		int numRecords = (offset+numBytes / RECORD_LENGTH_BYTES)+1;
+		
+		System.out.println("Writing :"+numRecords+", starting at record: "+recordNumber);
+		
+		if (numRecords > 1 && recordNumber != _recordCount) {
+			throw new RuntimeException("Writing "+(numBytes + offset)+ " bytes to a record will overwrite the next record");
+		}
+		if (_recordCount < recordNumber) {
+			_recordCount = recordNumber;
+		}
+		if (numRecords > 1) {
+			_recordCount+=numRecords-1;
+		}
+		return numRecords;
+	}
+	
+	public void writeToRecord(int recordNumber, int value) {
+		
+		seekToRecord(recordNumber);
+		writeInts(new int[]{value});
+	}
 	
 	
 	public int writeToRecord(int recordNumber, String value) {
 		return writeToRecord(recordNumber, 0, value);
+	}
+	
+	public void writeToRecord(int recordNumber, byte value) {
+		writeToRecord(recordNumber, 0, new byte[] {value});
 	}
 	
 	/**
@@ -97,33 +150,7 @@ public class IntkeyFile extends BinFile {
 		return writeToRecord(recordNumber, 0, bytes.array());
 	}
 	
-	public int writeToRecord(int recordNumber, int[] values) {
-		seekToRecord(recordNumber);
-		writeInts(values);
-		
-		return values.length / RECORD_LENGTH_INTEGERS + 1;
-	}
 	
-	public void writeToRecord(int recordNumber, int value) {
-		seekToRecord(recordNumber);
-		writeInts(new int[]{value});
-	}
-	
-	public void writeToRecord(int recordNumber, byte value) {
-		writeToRecord(recordNumber, 0, new byte[] {value});
-	}
-	
-	public int writeToRecord(int recordNumber, int offset, byte[] values) {
-		int numRecords = (offset+values.length / RECORD_LENGTH_BYTES);
-		if (numRecords > 1 && recordNumber != _recordCount) {
-			throw new RuntimeException("Writing "+(values.length + offset)+ " bytes to a record will overwrite the next record");
-		}
-		
-		seekToRecord(recordNumber, offset);
-		write(values);
-		
-		return numRecords+1;
-	}
 
 	public int getRecordCount() {
 		return _recordCount;
@@ -211,8 +238,6 @@ public class IntkeyFile extends BinFile {
     	return numRecords;
     }
 
-
-
 	protected List<Integer> bitSetToInts(BitSet set, int numValues) {
 		List<Integer> values = new ArrayList<Integer>();
 		int i=0; 
@@ -228,8 +253,6 @@ public class IntkeyFile extends BinFile {
 		}
 		return values;
 	}
-
-
 
 	protected void writeStringsWithOffsetsToRecord(int startRecord, List<String> descriptions) {
 		int[] offsets = new int[descriptions.size()+1];

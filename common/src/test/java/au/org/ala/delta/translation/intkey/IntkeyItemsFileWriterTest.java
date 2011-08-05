@@ -58,11 +58,16 @@ public class IntkeyItemsFileWriterTest extends TestCase {
 		item1.setDescription("Item 1 description");
 		_dataSet.addAttribute(1, 1).setValueFromString("<attribute 1,1 comment>1&3");
 		_dataSet.addAttribute(1, 2).setValueFromString("<text character>");
+		_dataSet.addAttribute(1, 3).setValueFromString("(1-)2-3/6-8");
+		_dataSet.addAttribute(1, 4).setValueFromString("<text character>4.4");
+		
 		
 		Item item2 = _dataSet.addItem();
 		item2.setDescription("Description of item 2");
 		_dataSet.addAttribute(2, 1).setValueFromString("<attribute 2,1 comment>1-2");
 		_dataSet.addAttribute(2, 2).setValueFromString("<attribute 2,2 text character>");
+		_dataSet.addAttribute(2, 3).setValueFromString("4");
+		_dataSet.addAttribute(2, 4).setValueFromString("5.1-7.9");
 		
 		Item item3 = _dataSet.addItem();
 		item3.setDescription("Item 3 has a great description");
@@ -127,9 +132,16 @@ public class IntkeyItemsFileWriterTest extends TestCase {
 	@Test 
 	public void testWriteAttributeData() {
 		_itemsFileWriter.writeAttributeData();
-		int[] indicies = readInts(2, 2);
+		int[] indicies = readInts(2, 4);
+		// Record where char 1 attributes are encoded.
 		assertEquals(3, indicies[0]);
+		// Record where char 2 attributes are encoded.
 		assertEquals(4, indicies[1]);
+		// Record where char 3 attributes are encoded.
+		assertEquals(7, indicies[2]);
+		// Record where char 4 attributes are encoded.
+		assertEquals(8, indicies[3]);
+		// Record where ...
 		
 		int[] multistateAttributes = readInts(3, 1);
 		
@@ -139,13 +151,58 @@ public class IntkeyItemsFileWriterTest extends TestCase {
 		assertEquals(53, multistateAttributes[0]);
 		
 		
+		// Text character (character 2)
+		int[] inappliableBits = readInts(4, 1);
+		assertEquals(0, inappliableBits[0]);
+		
+		String attribute12 = _dataSet.getAttribute(1, 2).getValueAsString();
+		String attribute22 = _dataSet.getAttribute(2, 2).getValueAsString();
+		String attribute32 = "";
+		
+		int totalLength = attribute12.length()+attribute22.length()+attribute32.length();
+		int offset = readInt(5);
+		assertEquals(0, offset);
+		assertEquals(attribute12.length(), _itemsFile.readInt());
+		assertEquals(attribute12.length()+attribute22.length(), _itemsFile.readInt());
+		assertEquals(totalLength, _itemsFile.readInt());
+	
+		assertEquals(attribute12+attribute22+attribute32, readString(6, totalLength));	
+		
+		// Integer character (character 3)
+		// attribute 1 is "(1-)2-3/6-8", attribute 2 is "4", attribute 3 null.
+		// because we aren't using normal values, the range of values is 1-8.
+		// hence our number of bits per attribute is 8-1+3=10.
+		// attribute 1: 0111001110
+		// attribute 2: 0000010000
+		// attribute 3: 0000000000
+		int[] intAttributeBits = readInts(7, 1);
+		assertEquals(16846, intAttributeBits[0]);
+		
+		
+		// Real character (character 4)
+		// attribute 1 is "4.4".
+		// attribute 2 is "5.1-7.9". 
+		// attribute 3 is null.
+		inappliableBits = readInts(8, 1);
+		assertEquals(0, inappliableBits[0]);
+		float[] values = readFloats(9, 6);
+		float[] expected = {4.4f, 4.4f, 5.1f, 7.9f, Float.MAX_VALUE, -Float.MAX_VALUE};
+		for (int i=0;i<expected.length; i++) {
+			assertEquals(expected[i], values[i]);
+		}
+		
+		// Integer min/max values are stored next.
+		// only character 3 is an integer character, it's range is 1-8
+		int[] mins = readInts(10, 4);
+		int[] max = readInts(11, 4);
+		int[] expectedMins = {0, 0, 1, 0};
+		int[] expectedMaxes = {0, 0, 8, 0};
+		for (int i=0; i<expectedMins.length; i++) {
+			assertEquals(expectedMins[i], mins[i]);
+			assertEquals(expectedMaxes[i], max[i]);
+		}
 	}
 	
-	
-	@Test
-	public void zztestwriteKeyStateBoundaries() {
-		throw new NotImplementedException();
-	}
 	
 	@Test
 	public void zztestwriteTaxonImages() {
