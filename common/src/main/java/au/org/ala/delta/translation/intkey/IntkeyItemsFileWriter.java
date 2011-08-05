@@ -1,14 +1,15 @@
 package au.org.ala.delta.translation.intkey;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.FloatRange;
 import org.apache.commons.lang.math.IntRange;
@@ -19,12 +20,14 @@ import au.org.ala.delta.intkey.WriteOnceIntkeyItemsFile;
 import au.org.ala.delta.io.OutputFileSelector;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.CharacterDependency;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.IdentificationKeyCharacter;
 import au.org.ala.delta.model.IntegerAttribute;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateAttribute;
+import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.NumericAttribute;
 import au.org.ala.delta.model.NumericRange;
 import au.org.ala.delta.model.image.Image;
@@ -106,17 +109,82 @@ public class IntkeyItemsFileWriter {
 	}
 	
 	public void writeCharacterDependencies() {
-		throw new NotImplementedException();
+		
+		
+		Integer[] characters = new Integer[_dataSet.getNumberOfCharacters()];
+		Arrays.fill(characters, 0);
+		List<Integer> dependencyData = new ArrayList<Integer>(Arrays.asList(characters));
+		
+		for (int i=1; i<=_dataSet.getNumberOfCharacters(); i++) {
+			Character character = _dataSet.getCharacter(i);
+			if (!character.getCharacterType().isMultistate()) {
+				continue;
+			}
+			MultiStateCharacter multiStateCharacter = (MultiStateCharacter)character;
+			
+			List<CharacterDependency> dependentCharacters = multiStateCharacter.getDependentCharacters();
+			if (dependentCharacters != null) {
+				dependencyData.set(i-1, dependencyData.size());
+				int numStates = multiStateCharacter.getNumberOfStates();
+				int statesOffset = dependencyData.size();
+				for (int state=0; state<numStates; state++) {
+					dependencyData.add(0);
+				}
+				for (CharacterDependency dependency : dependentCharacters) {
+					int dataOffset = dependencyData.size();
+					List<Integer> dependentCharacterNumbers = toRangeList(dependency.getDependentCharacterIds());
+					dependencyData.add(dependentCharacterNumbers.size());
+					dependencyData.addAll(dependentCharacterNumbers);
+					for (int state : dependency.getStates()) {
+						dependencyData.set(statesOffset+state-1, dataOffset);
+					}
+				}
+				
+			}
+		}
+		_itemsFile.writeCharacterDependencies(dependencyData);
+		
+	}
+	
+	public class blah {
+		int characterId;
+		Map<Integer, List<Integer>> stateIndicies;
+	}
+	
+	private List<Integer> toRangeList(Set<Integer> values) {
+		List<Integer> rangeList = new ArrayList<Integer>();
+		List<Integer> list = new ArrayList<Integer>(values);
+		if (list.size() == 1) {
+			
+			rangeList.add(list.get(0));
+			rangeList.add(list.get(0));
+			return rangeList;
+		}
+		
+		Collections.sort(list);
+		
+		int first = 0;
+		for (int i=1; i<list.size(); i++) {
+			if (list.get(i) != list.get(i-1)) {
+				rangeList.add(list.get(first));
+				rangeList.add(list.get(i-1));
+				first = i;
+			}
+		}
+		rangeList.add(list.get(first));
+		rangeList.add(list.get(list.size()-1));
+		return rangeList;
 	}
 	
 	public void writeAttributeData() {
 		
 		Iterator<IdentificationKeyCharacter> keyChars = _context.identificationKeyCharacterIterator();
 		List<IntRange> intRanges = new ArrayList<IntRange>();
-		Set<Float> floats = new HashSet<Float>();
+		List<List<Float>> keyStateBoundaries = new ArrayList<List<Float>>();
 		while (keyChars.hasNext()) {
 			IdentificationKeyCharacter keyChar = keyChars.next();
 			IntRange minMax = new IntRange(0);
+			Set<Float> floats = new HashSet<Float>();
 			if (keyChar.getCharacterType().isMultistate()) {
 				writeMultiStateAttributes(keyChar);
 			}	
@@ -124,8 +192,9 @@ public class IntkeyItemsFileWriter {
 				minMax = writeIntegerAttributes(keyChar.getCharacter());
 			}
 			else if (keyChar.getCharacterType() == CharacterType.RealNumeric) {
-				List<FloatRange> attributeFloats = writeRealAttributes(keyChar.getCharacter());
-				for (FloatRange range : attributeFloats) {
+				
+				List<FloatRange> ranges = (writeRealAttributes(keyChar.getCharacter()));
+				for (FloatRange range : ranges) {
 					if (range.getMinimumFloat() != Float.MAX_VALUE) {
 						floats.add(range.getMinimumFloat());
 					}
@@ -138,11 +207,12 @@ public class IntkeyItemsFileWriter {
 				writeTextAttributes(keyChar.getCharacter());
 			}
 			intRanges.add(minMax);
+			List<Float> floatList = new ArrayList<Float>(floats);
+			Collections.sort(floatList);
+			keyStateBoundaries.add(floatList);
 		}
 		_itemsFile.writeMinMaxValues(intRanges);
-		ArrayList<Float> keyStateBoundards = new ArrayList<Float>(floats);
-		Collections.sort(keyStateBoundards);
-		//_itemsFile.writeKeyStateBoundaries(keyStateBoundaries);
+		_itemsFile.writeKeyStateBoundaries(keyStateBoundaries);
 	}
 	
 	private void writeMultiStateAttributes(IdentificationKeyCharacter character) {
@@ -361,10 +431,6 @@ public class IntkeyItemsFileWriter {
 			}
 		}
 		_itemsFile.writeAttributeStrings(characterNumber, inapplicableBits, values);
-	}
-	
-	public void writeKeyStateBoundaries() {
-		throw new NotImplementedException();
 	}
 	
 	public void writeTaxonImages() {

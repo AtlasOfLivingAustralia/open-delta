@@ -6,7 +6,6 @@ import java.util.BitSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.math.FloatRange;
 import org.apache.commons.lang.math.IntRange;
 
@@ -76,8 +75,13 @@ public class WriteOnceIntkeyItemsFile extends IntkeyFile {
 		record += writeToRecord(record, maxValues);
 	}
 	
-	public void writeCharacterDependencies() {
-		throw new NotImplementedException();
+	public void writeCharacterDependencies(List<Integer> dependencyData) {
+		checkEmpty(_header.getRpCdep());
+		int record = newRecord();
+		_header.setRpCdep(record);
+		
+		writeToRecord(record, dependencyData);
+		
 	}
 	
 	public void writeAttributeBits(int charNumber, List<BitSet> attributes, int numBits) {
@@ -148,8 +152,28 @@ public class WriteOnceIntkeyItemsFile extends IntkeyFile {
 	}
 	
 	
-	public void writeKeyStateBoundaries() {
-		throw new NotImplementedException();
+	public void writeKeyStateBoundaries(List<List<Float>> keyStateBoundaries) {
+		checkEmpty(_header.getRpNkbd());
+		checkCharacterListLength(keyStateBoundaries);
+		
+		int indexRecord = newRecord();
+		_header.setRpNkbd(indexRecord);
+		
+		List<Integer> index = new ArrayList<Integer>();
+		
+		for (List<Float> charBoundaries : keyStateBoundaries) {
+			if (charBoundaries.size() > 0) {
+				int recordNum = newRecord();
+				index.add(recordNum);
+				writeToRecord(recordNum, charBoundaries.size());
+				writeFloatsToRecord(recordNum+1, charBoundaries);
+				
+			}
+			else {
+				index.add(0);
+			}
+		}
+		writeToRecord(indexRecord, index);
 	}
 	
 	public void writeTaxonImages(List<String> images) {

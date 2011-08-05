@@ -201,6 +201,22 @@ public class IntkeyItemsFileWriterTest extends TestCase {
 			assertEquals(expectedMins[i], mins[i]);
 			assertEquals(expectedMaxes[i], max[i]);
 		}
+		
+		// Then real character key state boundaries.
+		int[] index = readInts(12, 4);
+		int[] expectedIndex = {0, 0, 0, 13};
+		for (int i=0; i<expectedIndex.length; i++) {
+			assertEquals(expectedIndex[i], index[i]);
+		}
+		
+		int[] keyStateBoundaryCount = readInts(13, 1);
+		assertEquals(3, keyStateBoundaryCount[0]);
+		
+		float[] expectedFloats = {4.4f, 5.1f, 7.9f};
+		float[] actualFloats = readFloats(14, 3);
+		for (int i=0; i<expectedFloats.length; i++) {
+			assertEquals(expectedFloats[i], actualFloats[i]);
+		}
 	}
 	
 	
