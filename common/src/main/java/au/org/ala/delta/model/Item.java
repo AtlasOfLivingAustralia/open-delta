@@ -112,14 +112,6 @@ public class Item implements AttributeObserver, Illustratable, Comparable<Item> 
 		notifyObservers();
 	}
 	
-    public String getImageData() {
-        return _impl.getImageData();
-    }
-
-    public void setImageData(String imageData) {
-        _impl.setImageData(imageData);
-    }
-    
     public String getLinkFileDataWithSubjects() {
         return _impl.getLinkFileDataWithSubjects();
     }

@@ -16,6 +16,7 @@ import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.image.Image;
 
 public class TaxonKeywordSelectionDialog extends KeywordSelectionDialog {
 
@@ -128,8 +129,27 @@ public class TaxonKeywordSelectionDialog extends KeywordSelectionDialog {
 
     @Override
     protected void imagesBtnPressed() {
-        // TODO Auto-generated method stub
+        List<Image> taxonKeywordImages = _context.getDataset().getTaxonKeywordImages();
+        if (taxonKeywordImages != null && !taxonKeywordImages.isEmpty()) {
+            ImageDialog dlg = new ImageDialog(this, _context.getImageSettings());
+            dlg.setImages(taxonKeywordImages);
+            dlg.setVisible(true);
 
+            if (dlg.okButtonPressed() && !dlg.getSelectedKeywords().isEmpty()) {
+                Set<String> selectedKeywords = dlg.getSelectedKeywords();
+                for (String keyword : selectedKeywords) {
+                    List<Item> taxa = _context.getTaxaForKeyword(keyword);
+
+                    if (_selectFromIncluded) {
+                        taxa.retainAll(_includedTaxa);
+                    }
+
+                    _selectedTaxa.addAll(taxa);
+                }
+                Collections.sort(_selectedTaxa);
+                this.setVisible(false);
+            }
+        }
     }
 
     @Override

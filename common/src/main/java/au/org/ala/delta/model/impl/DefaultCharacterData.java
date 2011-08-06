@@ -183,16 +183,6 @@ public class DefaultCharacterData implements CharacterData {
     }
 
     @Override
-    public String getImageData() {
-        return _imageData;
-    }
-
-    @Override
-    public void setImageData(String imageData) {
-        _imageData = imageData;
-    }
-
-    @Override
     public String getItemSubheading() {
         return _itemSubheading;
     }

@@ -16,6 +16,7 @@ import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.image.Image;
 
 public class CharacterKeywordSelectionDialog extends KeywordSelectionDialog {
 
@@ -30,7 +31,7 @@ public class CharacterKeywordSelectionDialog extends KeywordSelectionDialog {
 
     @Resource
     String selectFromIncludedCharactersCaption;
-    
+
     @Resource
     String allCharactersInSelectedSetExcludedCaption;
 
@@ -80,11 +81,11 @@ public class CharacterKeywordSelectionDialog extends KeywordSelectionDialog {
             String keyword = (String) o;
 
             List<Character> characters = _context.getCharactersForKeyword(keyword);
-            
+
             if (_selectFromIncluded) {
                 characters.retainAll(_includedCharacters);
-            }            
-            
+            }
+
             _selectedCharacters.addAll(characters);
         }
         Collections.sort(_selectedCharacters);
@@ -103,7 +104,7 @@ public class CharacterKeywordSelectionDialog extends KeywordSelectionDialog {
             List<Character> characters = new ArrayList<Character>();
             String selectedKeyword = (String) _list.getSelectedValue();
             characters.addAll(_context.getCharactersForKeyword(selectedKeyword));
-            
+
             if (_selectFromIncluded) {
                 characters.retainAll(_includedCharacters);
             }
@@ -126,8 +127,27 @@ public class CharacterKeywordSelectionDialog extends KeywordSelectionDialog {
 
     @Override
     protected void imagesBtnPressed() {
-        // TODO Auto-generated method stub
+        List<Image> characterKeywordImages = _context.getDataset().getCharacterKeywordImages();
+        if (characterKeywordImages != null && !characterKeywordImages.isEmpty()) {
+            ImageDialog dlg = new ImageDialog(this, _context.getImageSettings());
+            dlg.setImages(characterKeywordImages);
+            dlg.setVisible(true);
 
+            if (dlg.okButtonPressed() && !dlg.getSelectedKeywords().isEmpty()) {
+                Set<String> selectedKeywords = dlg.getSelectedKeywords();
+                for (String keyword : selectedKeywords) {
+                    List<Character> characters = _context.getCharactersForKeyword(keyword);
+
+                    if (_selectFromIncluded) {
+                        characters.retainAll(_includedCharacters);
+                    }
+
+                    _selectedCharacters.addAll(characters);
+                }
+                Collections.sort(_selectedCharacters);
+                this.setVisible(false);
+            }
+        }
     }
 
     @Override

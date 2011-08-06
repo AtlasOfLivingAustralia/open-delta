@@ -9,6 +9,7 @@ import au.org.ala.delta.io.BinFile;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageSettings.FontInfo;
 
 public class IntkeyDataset {
@@ -30,9 +31,9 @@ public class IntkeyDataset {
 
     private String _orWord;
 
-    private String _startupImageData;
-    private String _characterKeywordImageData;
-    private String _taxonKeywordImageData;
+    private List<Image> _startupImages;
+    private List<Image> _characterKeywordImages;
+    private List<Image> _taxonKeywordImages;
     private List<FontInfo> _overlayFonts;
 
     private boolean _deltaOutputPermitted;
@@ -136,28 +137,30 @@ public class IntkeyDataset {
         this._orWord = orWord;
     }
 
-    public String getStartupImageData() {
-        return _startupImageData;
+    public List<Image> getStartupImages() {
+        //defensive copy
+        return new ArrayList<Image>(_startupImages);
     }
 
-    void setStartupImageData(String startupImageData) {
-        this._startupImageData = startupImageData;
+    void setStartupImages(List<Image> startupImages) {
+        _startupImages = new ArrayList<Image>(startupImages);
     }
 
-    public String getCharacterKeywordImageData() {
-        return _characterKeywordImageData;
+    public List<Image> getCharacterKeywordImages() {
+        // defensive copy
+        return new ArrayList<Image>(_characterKeywordImages);
     }
 
-    void setCharacterKeywordImageData(String characterKeywordImageData) {
-        this._characterKeywordImageData = characterKeywordImageData;
+    void setCharacterKeywordImages(List<Image> characterKeywordImages) {
+        this._characterKeywordImages = new ArrayList<Image>(characterKeywordImages);
     }
 
-    public String getTaxonKeywordImageData() {
-        return _taxonKeywordImageData;
+    public List<Image> getTaxonKeywordImages() {
+        return new ArrayList<Image>(_taxonKeywordImages);
     }
 
-    void setTaxonKeywordImageData(String taxonKeywordImageData) {
-        this._taxonKeywordImageData = taxonKeywordImageData;
+    void setTaxonKeywordImages(List<Image> taxonKeywordImages) {
+        this._taxonKeywordImages = new ArrayList<Image>(taxonKeywordImages);
     }
 
     public List<FontInfo> getOverlayFonts() {

@@ -114,16 +114,6 @@ public class VOItemAdaptor extends ImageHolderAdaptor implements ItemData {
 	}
 
     @Override
-    public String getImageData() {
-        throw new NotImplementedException();
-    }
-
-    @Override
-    public void setImageData(String imageData) {
-        throw new NotImplementedException();
-    }
-
-    @Override
     public String getLinkFileDataWithSubjects() {
         throw new NotImplementedException();
     }

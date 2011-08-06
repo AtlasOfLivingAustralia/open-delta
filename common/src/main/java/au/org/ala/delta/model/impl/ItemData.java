@@ -22,10 +22,6 @@ public interface ItemData {
 	
 	void setVariant(boolean variant);
 	
-    String getImageData();
-    
-    void setImageData(String imageData);
-    
     String getLinkFileDataWithSubjects();
     
     void setLinkFileDataWithSubjects(String linkFileData);

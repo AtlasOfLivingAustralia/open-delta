@@ -50,24 +50,30 @@ public class MultipleImageViewer extends JPanel {
 
     /**
      * Displays the next image of the current subject (Character or Item)
+     * @return false if there is no next image to move to, otherwise true
      */
-    public void nextImage() {
+    public boolean nextImage() {
         int nextIndex = _selectedIndex + 1;
         if (nextIndex < _imageViewers.size()) {
             _layout.next(_contentPanel);
             _selectedIndex = nextIndex;
+            return true;
         }
+        return false;
     }
 
     /**
      * Displays the previous image of the current subject (Character or Item)
+     * @return false if there is no previous image to move to, otherwise true
      */
-    public void previousImage() {
+    public boolean previousImage() {
         int prevIndex = _selectedIndex - 1;
         if (prevIndex >= 0) {
             _layout.previous(_contentPanel);
             _selectedIndex = prevIndex;
+            return true;
         }
+        return false;
     }
 
     public void replaySound() {

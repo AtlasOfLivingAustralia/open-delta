@@ -60,10 +60,6 @@ public interface CharacterData extends Illustratable {
 
     void setMinimumValue(int min);
     
-    String getImageData();
-    
-    void setImageData(String imageData);
-    
     String getItemSubheading();
     
     void setItemSubheading(String charItemSubheading);

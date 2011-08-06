@@ -71,16 +71,6 @@ public class DefaultItemData implements ItemData {
     }
 
     @Override
-    public String getImageData() {
-        return _imageData;
-    }
-
-    @Override
-    public void setImageData(String imageData) {
-        _imageData = imageData;
-    }
-
-    @Override
     public String getLinkFileDataWithSubjects() {
         return _linkFileDataWithSubjects;
     }

@@ -81,6 +81,7 @@ import au.org.ala.delta.intkey.ui.BestCharacterListModel;
 import au.org.ala.delta.intkey.ui.BusyGlassPane;
 import au.org.ala.delta.intkey.ui.CharacterKeywordSelectionDialog;
 import au.org.ala.delta.intkey.ui.CharacterListModel;
+import au.org.ala.delta.intkey.ui.ImageDialog;
 import au.org.ala.delta.intkey.ui.IntegerInputDialog;
 import au.org.ala.delta.intkey.ui.MultiStateInputDialog;
 import au.org.ala.delta.intkey.ui.ReExecuteDialog;
@@ -98,8 +99,11 @@ import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.RealCharacter;
 import au.org.ala.delta.model.TextCharacter;
+import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.ui.AboutBox;
 import au.org.ala.delta.ui.DeltaSingleFrameApplication;
+import au.org.ala.delta.ui.image.ImageUtils;
+import au.org.ala.delta.ui.image.ImageViewer;
 import au.org.ala.delta.ui.rtf.SimpleRtfEditorKit;
 import au.org.ala.delta.ui.util.IconHelper;
 
@@ -240,7 +244,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         _globalOptionBar.setBorder(new EmptyBorder(0, 5, 0, 5));
         _rootPanel.add(_globalOptionBar, BorderLayout.NORTH);
         _globalOptionBar.setLayout(new BorderLayout(0, 0));
-        
+
         _pnlDynamicButtons = new JPanel();
         _globalOptionBar.add(_pnlDynamicButtons, BorderLayout.WEST);
 
@@ -1111,6 +1115,13 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     @Override
     public void handleNewDataset(IntkeyDataset dataset) {
         getMainFrame().setTitle(String.format(windowTitleWithDatasetTitle, dataset.getHeading()));
+
+        // display startup images
+        List<Image> startupImages = dataset.getStartupImages();
+        if (startupImages != null) {
+            ImageUtils.displayImagesFullScreen(startupImages, _context.getImageSettings(), getMainFrame());
+        }
+
         initializeIdentification();
     }
 
@@ -1156,13 +1167,13 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             updateAvailableCharacters();
         } else {
             String message = null;
-            
+
             if (availableTaxa.size() == 0) {
                 message = noMatchingTaxaRemainCaption;
             } else if (availableTaxa.size() == 1) {
                 message = identificationCompleteCaption;
             }
-            
+
             JLabel lbl = new JLabel(message);
             lbl.setHorizontalAlignment(JLabel.CENTER);
             lbl.setBackground(Color.WHITE);
@@ -1262,32 +1273,31 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     public void removeBusyMessage(String message) {
         // TODO Auto-generated method stub
     }
-    
+
     @Override
     public void addToolbarButton(boolean advancedModeOnly, boolean normalModeOnly, boolean inactiveUnlessUsedCharacters, String imageFileName, String commands, String shortHelp, String fullHelp) {
         Icon icon;
-        
+
         File initializationFile = _context.getInitializationFile();
         if (initializationFile != null) {
             File parentDir = initializationFile.getParentFile();
-            
+
         } else {
-            
+
         }
-        
-        
+
     }
 
     @Override
     public void addToolbarSpace() {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void clearToolbar() {
         // TODO Auto-generated method stub
-        
+
     }
 
     // ================================== DirectivePopulator methods
@@ -1351,6 +1361,5 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         UIUtils.showDialog(dlg);
         return dlg.getInputData();
     }
-
 
 }

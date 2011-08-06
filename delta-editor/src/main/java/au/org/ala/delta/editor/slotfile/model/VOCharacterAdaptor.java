@@ -518,16 +518,6 @@ public class VOCharacterAdaptor extends ImageHolderAdaptor implements CharacterD
     }
 
     @Override
-    public String getImageData() {
-        throw new NotImplementedException();
-    }
-
-    @Override
-    public void setImageData(String imageData) {
-        throw new NotImplementedException();
-    }
-
-    @Override
     public String getItemSubheading() {
         throw new NotImplementedException();
     }

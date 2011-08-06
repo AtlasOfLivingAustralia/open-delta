@@ -782,7 +782,7 @@ public final class IntkeyDatasetFileReader {
                 String imagesData = charactersImageData.get(i);
 
                 if (imagesData != null) {
-                    List<Pair<String, String>> imageData = parseImagesData(imagesData, ImageType.IMAGE_CHARACTER);
+                    List<Pair<String, String>> imageData = parseImagesData(imagesData);
                     for (Pair<String, String> pair : imageData) {
                         ch.addImage(pair.getFirst(), pair.getSecond());
                     }
@@ -803,7 +803,7 @@ public final class IntkeyDatasetFileReader {
                 String imagesData = taxaImageData.get(i);
 
                 if (imagesData != null) {
-                    List<Pair<String, String>> imageData = parseImagesData(imagesData, ImageType.IMAGE_TAXON);
+                    List<Pair<String, String>> imageData = parseImagesData(imagesData);
                     for (Pair<String, String> pair : imageData) {
                         taxon.addImage(pair.getFirst(), pair.getSecond());
                     }
@@ -817,7 +817,16 @@ public final class IntkeyDatasetFileReader {
             seekToRecord(charBinFile, charFileHeader.getRpStartupImages());
 
             int imageDataRecord = charBinFile.readInt();
-            ds.setStartupImageData(readReferencedString(charBinFile, imageDataRecord));
+            String startupImagesData = readReferencedString(charBinFile, imageDataRecord);
+            if (!StringUtils.isEmpty(startupImagesData)) {
+                List<Image> startupImages = new ArrayList<Image>();
+                List<Pair<String, String>> imageData = parseImagesData(startupImagesData);
+                for (Pair<String, String> pair : imageData) {
+                    Image image = createImage(pair.getFirst(), pair.getSecond(), ImageType.IMAGE_STARTUP);
+                    startupImages.add(image);
+                }
+                ds.setStartupImages(startupImages);
+            }
         }
     }
 
@@ -826,7 +835,16 @@ public final class IntkeyDatasetFileReader {
             seekToRecord(charBinFile, charFileHeader.getRpCKeyImages());
 
             int imageDataRecord = charBinFile.readInt();
-            ds.setCharacterKeywordImageData(readReferencedString(charBinFile, imageDataRecord));
+            String characterKeywordImagesData = readReferencedString(charBinFile, imageDataRecord);
+            if (!StringUtils.isEmpty(characterKeywordImagesData)) {
+                List<Image> characterKeywordImages = new ArrayList<Image>();
+                List<Pair<String, String>> imageData = parseImagesData(characterKeywordImagesData);
+                for (Pair<String, String> pair : imageData) {
+                    Image image = createImage(pair.getFirst(), pair.getSecond(), ImageType.IMAGE_CHARACTER_KEYWORD);
+                    characterKeywordImages.add(image);
+                }
+                ds.setCharacterKeywordImages(characterKeywordImages);
+            }
         }
     }
 
@@ -835,7 +853,16 @@ public final class IntkeyDatasetFileReader {
             seekToRecord(charBinFile, charFileHeader.getRpTKeyImages());
 
             int imageDataRecord = charBinFile.readInt();
-            ds.setTaxonKeywordImageData(readReferencedString(charBinFile, imageDataRecord));
+            String taxonKeywordImagesData = readReferencedString(charBinFile, imageDataRecord);
+            if (!StringUtils.isEmpty(taxonKeywordImagesData)) {
+                List<Image> taxonKeywordImages = new ArrayList<Image>();
+                List<Pair<String, String>> imageData = parseImagesData(taxonKeywordImagesData);
+                for (Pair<String, String> pair : imageData) {
+                    Image image = createImage(pair.getFirst(), pair.getSecond(), ImageType.IMAGE_TAXON_KEYWORD);
+                    taxonKeywordImages.add(image);
+                }
+                ds.setTaxonKeywordImages(taxonKeywordImages);
+            }
         }
     }
 
@@ -1272,7 +1299,7 @@ public final class IntkeyDatasetFileReader {
         return (int) (Math.ceil((double) numBytes / (double) Constants.RECORD_LENGTH_BYTES));
     }
 
-    private static List<Pair<String, String>> parseImagesData(String imagesData, int imageType) {
+    private static List<Pair<String, String>> parseImagesData(String imagesData) {
         List<Pair<String, String>> retList = new ArrayList<Pair<String, String>>();
 
         List<String> separateImageDataList = separateImageDataStrings(imagesData);
@@ -1326,5 +1353,20 @@ public final class IntkeyDatasetFileReader {
         }
 
         return imagesDataList;
+    }
+    
+    private static Image createImage(String fileName, String comments, int imageType) {
+        DefaultImageData imageData = new DefaultImageData(fileName);
+        Image image = new Image(imageData);
+        try {
+            if (comments != null) {
+                List<ImageOverlay> overlayList = new ImageOverlayParser().parseOverlays(comments, imageType);
+                imageData.setOverlays(overlayList);
+            }
+            return image;
+        } catch (ParseException ex) {
+            ex.printStackTrace();
+            throw new RuntimeException("Error parsing image overlay data");
+        }
     }
 }

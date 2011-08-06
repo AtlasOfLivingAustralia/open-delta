@@ -87,7 +87,6 @@ public abstract class KeywordSelectionDialog extends ListSelectionDialog {
         _btnImages = new JButton();
         _panelInnerButtons.add(_btnImages);
         _btnImages.setAction(actionMap.get("keywordSelectionDialog_Images"));
-        _btnImages.setEnabled(false);
 
         _btnSearch = new JButton();
         _panelInnerButtons.add(_btnSearch);

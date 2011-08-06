@@ -132,14 +132,6 @@ public abstract class Character implements Illustratable, Comparable<Character> 
         _impl.setReliability(reliability);
     }
 
-    public String getImageData() {
-        return _impl.getImageData();
-    }
-
-    public void setImageData(String imageData) {
-        _impl.setImageData(imageData);
-    }
-
     public String getItemSubheading() {
         return _impl.getItemSubheading();
     }
