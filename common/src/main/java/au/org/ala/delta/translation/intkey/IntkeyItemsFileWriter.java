@@ -409,6 +409,12 @@ public class IntkeyItemsFileWriter {
 			
 			Range useRange;
 			for (NumericRange range : ranges) {
+				if (_context.hasAbsoluteError(characterNumber)) {
+					range.setAbsoluteError(_context.getAbsoluteError(characterNumber));
+				}
+				else if (_context.hasPercentageError(characterNumber)) {
+					range.setPercentageError(_context.getPercentageError(characterNumber));
+				}
 				if (useNormalValues) {
 					useRange = range.getNormalRange();
 				}

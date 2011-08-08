@@ -16,7 +16,7 @@ package au.org.ala.delta.editor.slotfile.directive;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.TranslateType;
-import au.org.ala.delta.translation.AbstractDataSetTranslator;
+import au.org.ala.delta.translation.DataSetTranslator;
 import au.org.ala.delta.translation.DataSetTranslatorFactory;
 
 /**
@@ -30,9 +30,7 @@ public class DirOutCharacterList implements DirectiveFunctor {
 		DeltaContext context = new DeltaContext(state.getDataSet());
 		context.setTranslateType(TranslateType.Delta);
 		
-		AbstractDataSetTranslator translator = factory.createTranslator(context, state.getPrinter());
-		
-	
+		DataSetTranslator translator = factory.createTranslator(context, state.getPrinter());
 		translator.translateCharacters();
 	}
 

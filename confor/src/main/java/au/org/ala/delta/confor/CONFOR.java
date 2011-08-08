@@ -22,7 +22,7 @@ import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.directives.ConforDirectiveFileParser;
 import au.org.ala.delta.directives.ConforDirectiveParserObserver;
-import au.org.ala.delta.translation.AbstractDataSetTranslator;
+import au.org.ala.delta.translation.DataSetTranslator;
 import au.org.ala.delta.translation.DataSetTranslatorFactory;
 
 public class CONFOR {
@@ -79,9 +79,9 @@ public class CONFOR {
 		p.parse(input, context);
 		
 		DataSetTranslatorFactory factory = new DataSetTranslatorFactory();
-		AbstractDataSetTranslator translator = factory.createTranslator(context);
+		DataSetTranslator translator = factory.createTranslator(context);
 		
-		translator.translate();
+		translator.translateItems();
 		
 	}
 

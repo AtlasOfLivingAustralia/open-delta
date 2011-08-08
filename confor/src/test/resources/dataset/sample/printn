@@ -1,0 +1,21 @@
+*SHOW Print the taxon names - plain text.
+
+*HEADING Grass Genera #TIME #DATE
+
+*LISTING FILE printn.lst
+
+*PRINT FILE printn.prt
+
+*INPUT FILE specs
+
+*PRINT ITEM NAMES
+
+*OMIT TYPESETTING MARKS
+
+*PRINT HEADING
+
+*PRINT COMMENT ITEM NAMES
+
+*PRINT COMMENT 
+
+*INPUT FILE items

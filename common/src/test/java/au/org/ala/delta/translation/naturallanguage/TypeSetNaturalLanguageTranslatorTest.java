@@ -67,7 +67,7 @@ public class TypeSetNaturalLanguageTranslatorTest extends
 		AttributeFormatter attributeFormatter = new TypeSettingAttributeFormatter();
 		_dataSetTranslator = new NaturalLanguageTranslator(_context, _typeSetter, _printer, itemFormatter, characterFormatter, attributeFormatter);
 		
-		_dataSetTranslator.translate();
+		_dataSetTranslator.translateItems();
 		checkResult("typeset.txt");
 	}
 	
@@ -84,7 +84,7 @@ public class TypeSetNaturalLanguageTranslatorTest extends
 		AttributeFormatter attributeFormatter = new TypeSettingAttributeFormatter();
 		_dataSetTranslator = new NaturalLanguageTranslator(_context, _typeSetter, _printer, itemFormatter, characterFormatter, attributeFormatter);
 
-		_dataSetTranslator.translate();
+		_dataSetTranslator.translateItems();
 		checkResult("/dataset/sample/expected_results/withtypesetting.txt");
 	}
 	

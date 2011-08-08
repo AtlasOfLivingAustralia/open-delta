@@ -7,6 +7,7 @@ import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.translation.attribute.ParsedAttribute.Values;
 
 
 /**
@@ -25,7 +26,7 @@ public abstract class AbstractDataSetTranslator implements DataSetTranslator {
 		_filter = filter;
 	}
 	
-	public void translate() {
+	public void translateItems() {
 		
 		DeltaDataSet dataSet = _context.getDataSet();
 		
@@ -89,16 +90,27 @@ public abstract class AbstractDataSetTranslator implements DataSetTranslator {
 		}
 	}
 	
-	@Override
-	public void beforeFirstCharacter() {}
+	public void beforeFirstItem() {};
 
-	@Override
-	public void beforeCharacter(Character character) {}
+	public void beforeItem(Item item) {};
 
-	@Override
-	public void afterCharacter(Character character) {}
+	public void afterItem(Item item) {};
 
-	@Override
-	public void afterLastCharacter() {}
+	public void beforeAttribute(Attribute attribute) {};
 
+	public void afterAttribute(Attribute attribute) {};
+
+	public void afterLastItem() {};
+
+	public void attributeComment(String comment) {};
+
+	public void attributeValues(Values values) {};
+	
+	public void beforeFirstCharacter() {};
+	
+	public void beforeCharacter(Character character) {};
+	
+	public void afterCharacter(Character character) {};
+	
+	public void afterLastCharacter() {};
 }

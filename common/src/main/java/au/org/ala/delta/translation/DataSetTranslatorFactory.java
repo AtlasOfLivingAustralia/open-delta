@@ -6,6 +6,7 @@ import au.org.ala.delta.model.format.AttributeFormatter;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.translation.delta.DeltaFormatTranslator;
+import au.org.ala.delta.translation.intkey.IntkeyTranslator;
 import au.org.ala.delta.translation.naturallanguage.NaturalLanguageTranslator;
 
 
@@ -14,13 +15,13 @@ import au.org.ala.delta.translation.naturallanguage.NaturalLanguageTranslator;
  */
 public class DataSetTranslatorFactory {
 	
-	public AbstractDataSetTranslator createTranslator(DeltaContext context) {
+	public DataSetTranslator createTranslator(DeltaContext context) {
 		return createTranslator(context, createPrinter(context));
 	}
 	
-	public AbstractDataSetTranslator createTranslator(DeltaContext context, Printer printer) {
+	public DataSetTranslator createTranslator(DeltaContext context, Printer printer) {
 		
-		AbstractDataSetTranslator translator = null;
+		DataSetTranslator translator = null;
 		TranslateType translation = context.getTranslateType();
 		
 		if (translation.equals(TranslateType.NaturalLanguage) && context.getOutputHtml() == false) {
@@ -29,13 +30,20 @@ public class DataSetTranslatorFactory {
 		else if (translation.equals(TranslateType.Delta)) {
 			translator = createDeltaFormatTranslator(context, printer);
 		}
+		else if (translation.equals(TranslateType.IntKey)) {
+			translator = createIntkeyFormatTranslator(context);
+		}
 		else {
-			throw new RuntimeException("Only natural language without typesetting is currently supported.");
+			throw new RuntimeException("(Currently) unsupported translation type: "+translation);
 		}
 		return translator;
 	}
 	
 	
+
+	private DataSetTranslator createIntkeyFormatTranslator(DeltaContext context) {
+		return new IntkeyTranslator(context);
+	}
 
 	private AbstractDataSetTranslator createNaturalLanguageTranslator(
 			DeltaContext context, Printer printer) {

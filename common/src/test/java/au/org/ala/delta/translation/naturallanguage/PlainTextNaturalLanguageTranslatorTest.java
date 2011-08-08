@@ -40,7 +40,7 @@ public class PlainTextNaturalLanguageTranslatorTest extends NaturalLangaugeTrans
 	
 	public void testBasicTranslation() throws Exception {
 		initialiseContext(DEFAULT_DATASET_PATH);
-		_dataSetTranslator.translate();
+		_dataSetTranslator.translateItems();
 		checkResult("default.txt");
 	}
 	
@@ -52,7 +52,7 @@ public class PlainTextNaturalLanguageTranslatorTest extends NaturalLangaugeTrans
 		initialiseContext(DEFAULT_DATASET_PATH);
 		_context.setOmitRedundantVariantAttributes(true);
 		
-		_dataSetTranslator.translate();
+		_dataSetTranslator.translateItems();
 		checkResult("redundant_variant_attr_omitted.txt");
 	}
 	
@@ -64,7 +64,7 @@ public class PlainTextNaturalLanguageTranslatorTest extends NaturalLangaugeTrans
 		initialiseContext(DEFAULT_DATASET_PATH);
 		_context.setOmitRedundantVariantAttributes(false);
 		
-		_dataSetTranslator.translate();
+		_dataSetTranslator.translateItems();
 		checkResult("redundant_variant_attr_included.txt");
 	}
 	
@@ -80,28 +80,28 @@ public class PlainTextNaturalLanguageTranslatorTest extends NaturalLangaugeTrans
 		
 		_context.linkCharacters(linkedCharacters);
 		
-		_dataSetTranslator.translate();
+		_dataSetTranslator.translateItems();
 		checkResult("linked_characters.txt");
 	}
 	
 	public void testSimpleSampleTranslation() throws Exception{
 		initialiseContext(SAMPLE_DATASET_PATH);
 		
-		_dataSetTranslator.translate();
+		_dataSetTranslator.translateItems();
 		checkResult("/dataset/sample/expected_results/default.txt");
 	}
 	
 	public void testSampleTranslationWithImplictValues() throws Exception{
 		initialiseContext(SAMPLE_DATASET_PATH);
 		_context.setInsertImplicitValues(true);
-		_dataSetTranslator.translate();
+		_dataSetTranslator.translateItems();
 		checkResult("/dataset/sample/expected_results/withimplicitvalues.txt");
 	}
 	
 	public void testSimplePoneriniTranslation() throws Exception {
 		initialiseContext(PONERINI_DATASET_PATH);	
 		
-		_dataSetTranslator.translate();
+		_dataSetTranslator.translateItems();
 		checkResult("/dataset/ponerini/expected_results/default.txt");
 	}
 	
@@ -112,7 +112,7 @@ public class PlainTextNaturalLanguageTranslatorTest extends NaturalLangaugeTrans
 	public void zztestSimpleVideTranslation() throws Exception {
 		initialiseContext(VIDE_DATASET_PATH);	
 		
-		_dataSetTranslator.translate();
+		_dataSetTranslator.translateItems();
 		checkResult("/dataset/vide/expected_results/default.txt", true);
 	}
 	
@@ -123,7 +123,7 @@ public class PlainTextNaturalLanguageTranslatorTest extends NaturalLangaugeTrans
 	public void zztestSimpleCFloraTranslation() throws Exception {
 		initialiseContext(CFLORA_DATASET_PATH);	
 		
-		_dataSetTranslator.translate();
+		_dataSetTranslator.translateItems();
 		checkResult("/dataset/cflora/expected_results/default.txt");
 	}
 	

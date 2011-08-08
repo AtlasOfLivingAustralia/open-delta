@@ -6,7 +6,7 @@ import java.io.PrintStream;
 import org.junit.Before;
 
 import au.org.ala.delta.DeltaContext;
-import au.org.ala.delta.translation.AbstractDataSetTranslator;
+import au.org.ala.delta.translation.DataSetTranslator;
 import au.org.ala.delta.translation.DataSetTranslatorFactory;
 import au.org.ala.delta.translation.Printer;
 import au.org.ala.delta.translation.TranslatorTest;
@@ -18,7 +18,7 @@ public class DeltaFormatTranslatorTest extends TranslatorTest {
 
 	protected static final String DEFAULT_DATASET_PATH = "/dataset/sample/fillin";
 	
-	protected AbstractDataSetTranslator _dataSetTranslator;
+	protected DataSetTranslator _dataSetTranslator;
 	protected Printer _printer;
 	protected DataSetTranslatorFactory _factory;
 	
@@ -39,7 +39,7 @@ public class DeltaFormatTranslatorTest extends TranslatorTest {
 		initialiseContext(DEFAULT_DATASET_PATH);
 		_context.setOmitTypeSettingMarks(false);
 		_dataSetTranslator = _factory.createTranslator(_context);
-		_dataSetTranslator.translate();
+		_dataSetTranslator.translateItems();
 		
 		checkResult("/dataset/sample/expected_results/deltaformatitems.txt");
 		
@@ -49,7 +49,7 @@ public class DeltaFormatTranslatorTest extends TranslatorTest {
 		initialiseContext(DEFAULT_DATASET_PATH);
 		_context.setOmitTypeSettingMarks(true);
 		_dataSetTranslator = _factory.createTranslator(_context);
-		_dataSetTranslator.translate();
+		_dataSetTranslator.translateItems();
 		
 		checkResult("/dataset/sample/expected_results/deltaformatitem-omittypesettingmarks.txt");
 		
@@ -60,7 +60,7 @@ public class DeltaFormatTranslatorTest extends TranslatorTest {
 		_context.setInsertImplicitValues(false);
 		
 		_dataSetTranslator = _factory.createTranslator(_context);
-		_dataSetTranslator.translate();
+		_dataSetTranslator.translateItems();
 		
 		checkResult("/dataset/sample/expected_results/deltaformatitem-noimplicitvalues.txt");
 		

@@ -19,7 +19,6 @@ import au.org.ala.delta.model.format.AttributeFormatter;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.translation.AbstractDataSetTranslator;
-import au.org.ala.delta.translation.DataSetTranslator;
 import au.org.ala.delta.translation.Printer;
 import au.org.ala.delta.translation.TypeSetter;
 import au.org.ala.delta.translation.Words;
@@ -35,7 +34,7 @@ import au.org.ala.delta.translation.attribute.TextAttributeTranslator;
  * The NaturalLanguageTranslator is responsible for turning a DELTA data set
  * into formatted natural language.
  */
-public class NaturalLanguageTranslator extends AbstractDataSetTranslator implements DataSetTranslator {
+public class NaturalLanguageTranslator extends AbstractDataSetTranslator {
 
     private DeltaContext _context;
     private Printer _printer;

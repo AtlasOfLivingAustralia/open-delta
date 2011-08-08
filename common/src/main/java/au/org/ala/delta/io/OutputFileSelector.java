@@ -16,6 +16,7 @@ public class OutputFileSelector {
 	private Map<String, String> _itemOutputFiles = new HashMap<String, String>();
 	private DeltaDataSet _dataSet;
 	private String _subjectForOutputFiles;
+	private String _intkeyOutputFile;
 	
 	public OutputFileSelector(DeltaDataSet dataSet) {
 		_dataSet = dataSet;
@@ -63,11 +64,11 @@ public class OutputFileSelector {
 		return description;
 	}
 	
-	public void getIntkeyOutputFile() {
-		
+	public String getIntkeyOutputFile() {
+		return _intkeyOutputFile;
 	}
 	
 	public void setIntkeyOutputFile(String intkeyOut) {
-		
+		_intkeyOutputFile = intkeyOut;
 	}
 }
