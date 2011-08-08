@@ -6,7 +6,6 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.Frame;
 import java.awt.Insets;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
@@ -20,12 +19,12 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.swing.AbstractListModel;
 import javax.swing.ActionMap;
 import javax.swing.Icon;
 import javax.swing.JButton;
@@ -81,7 +80,7 @@ import au.org.ala.delta.intkey.ui.BestCharacterListModel;
 import au.org.ala.delta.intkey.ui.BusyGlassPane;
 import au.org.ala.delta.intkey.ui.CharacterKeywordSelectionDialog;
 import au.org.ala.delta.intkey.ui.CharacterListModel;
-import au.org.ala.delta.intkey.ui.ImageDialog;
+import au.org.ala.delta.intkey.ui.ColoringListCellRenderer;
 import au.org.ala.delta.intkey.ui.IntegerInputDialog;
 import au.org.ala.delta.intkey.ui.MultiStateInputDialog;
 import au.org.ala.delta.intkey.ui.ReExecuteDialog;
@@ -103,7 +102,6 @@ import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.ui.AboutBox;
 import au.org.ala.delta.ui.DeltaSingleFrameApplication;
 import au.org.ala.delta.ui.image.ImageUtils;
-import au.org.ala.delta.ui.image.ImageViewer;
 import au.org.ala.delta.ui.rtf.SimpleRtfEditorKit;
 import au.org.ala.delta.ui.util.IconHelper;
 
@@ -122,6 +120,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     private JList _listUsedCharacters;
     private JList _listRemainingTaxa;
     private JList _listEliminatedTaxa;
+    private ColoringListCellRenderer _listCellRenderer;
 
     private CharacterListModel _availableCharacterListModel;
     private UsedCharacterListModel _usedCharacterListModel;
@@ -134,7 +133,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     private JLabel _lblNumUsedCharacters;
 
     private BusyGlassPane _glassPane = null;
-
+    
     boolean normalMode = false;
 
     @Resource
@@ -232,6 +231,8 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
         _context = new IntkeyContext(this, this);
         _directiveParser = IntkeyDirectiveParser.createInstance();
+        
+        _listCellRenderer = new ColoringListCellRenderer();
 
         ActionMap actionMap = getContext().getActionMap();
 
@@ -286,6 +287,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
         _listAvailableCharacters = new JList();
         _listAvailableCharacters.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        _listAvailableCharacters.setCellRenderer(_listCellRenderer);
         _listAvailableCharacters.addMouseListener(new MouseInputAdapter() {
 
             @Override
@@ -378,6 +380,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         _pnlUsedCharacters.add(_sclPnUsedCharacters, BorderLayout.CENTER);
 
         _listUsedCharacters = new JList();
+        _listUsedCharacters.setCellRenderer(_listCellRenderer);
         _listUsedCharacters.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         _listUsedCharacters.addMouseListener(new MouseInputAdapter() {
 
@@ -530,6 +533,11 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         _txtFldCmdBar.setBackground(Color.BLACK);
         _rootPanel.add(_txtFldCmdBar, BorderLayout.SOUTH);
         _txtFldCmdBar.setColumns(10);
+        
+        HashSet<Integer> selectedChars = new HashSet<Integer>();
+        selectedChars.add(0);
+        selectedChars.add(9);
+        _listCellRenderer.setIndicesToColor(selectedChars);
 
         show(_rootPanel);
     }
@@ -903,6 +911,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     @Action
     public void btnFindTaxon() {
+        
     }
 
     // =========================================================================================
@@ -1361,5 +1370,17 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         UIUtils.showDialog(dlg);
         return dlg.getInputData();
     }
+    
+    //=====================================================================================================
+    
+    /*int findAllTaxa(String searchText, boolean selectAll, boolean searchSynonyms, boolean searchEliminatedTaxa) {
+        //IntkeyDataset dataset = _context.getDataset();
+        //_context.get
+        
+        //return 0;
+    }*/
+    
+    
+    
 
 }

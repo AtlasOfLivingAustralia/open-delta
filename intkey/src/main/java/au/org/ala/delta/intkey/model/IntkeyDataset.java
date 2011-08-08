@@ -2,7 +2,6 @@ package au.org.ala.delta.intkey.model;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import au.org.ala.delta.io.BinFile;
@@ -18,7 +17,7 @@ public class IntkeyDataset {
     private File _itemsFile;
     private ItemsFileHeader _itemsFileHeader;
     private CharactersFileHeader _charactersFileHeader;
-    private List<au.org.ala.delta.model.Character> _characters;
+    private List<Character> _characters;
     private List<Item> _taxa;
     private BinFile _itemsBinFile;
 
@@ -38,6 +37,22 @@ public class IntkeyDataset {
 
     private boolean _deltaOutputPermitted;
     private boolean chineseFormat;
+
+    /**
+     * A list of characters that contain synonmy information. The values of such
+     * characters for each taxon contain synonyms for that taxon.
+     */
+    private List<Character> _synonymyCharacters;
+
+    public IntkeyDataset() {
+        _characters = new ArrayList<Character>();
+        _taxa = new ArrayList<Item>();
+        _startupImages = new ArrayList<Image>();
+        _characterKeywordImages = new ArrayList<Image>();
+        _taxonKeywordImages = new ArrayList<Image>();
+        _overlayFonts = new ArrayList<FontInfo>();
+        _synonymyCharacters = new ArrayList<Character>();
+    }
 
     public File getCharactersFile() {
         return _charactersFile;
@@ -138,8 +153,9 @@ public class IntkeyDataset {
     }
 
     public List<Image> getStartupImages() {
-        //defensive copy
+        // defensive copy
         return new ArrayList<Image>(_startupImages);
+
     }
 
     void setStartupImages(List<Image> startupImages) {
@@ -156,6 +172,7 @@ public class IntkeyDataset {
     }
 
     public List<Image> getTaxonKeywordImages() {
+        // defensive copy
         return new ArrayList<Image>(_taxonKeywordImages);
     }
 
@@ -164,12 +181,8 @@ public class IntkeyDataset {
     }
 
     public List<FontInfo> getOverlayFonts() {
-        if (_overlayFonts != null) {
-            // return defensive copy
-            return new ArrayList<FontInfo>(_overlayFonts);
-        } else {
-            return null;
-        }
+        // return defensive copy
+        return new ArrayList<FontInfo>(_overlayFonts);
     }
 
     void setOverlayFonts(List<FontInfo> overlayFonts) {
@@ -230,6 +243,15 @@ public class IntkeyDataset {
 
     public boolean realCharacterKeyStateBoundariesPresent() {
         return _itemsFileHeader.getLSbnd() > 0;
+    }
+
+    public List<Character> getSynonymyCharacters() {
+        //defensive copy
+        return new ArrayList<Character>(_synonymyCharacters);
+    }
+    
+    public void setSynonymyCharacters(List<Character> synonymyCharacters) {
+        _synonymyCharacters = new ArrayList<Character>(synonymyCharacters);
     }
 
     /**

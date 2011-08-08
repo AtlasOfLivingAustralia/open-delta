@@ -553,5 +553,25 @@ public class DataSetLoadTest extends TestCase {
         assertEquals(5, ds.getNumberOfTaxa());
         assertEquals(2, context.getCharacterKeywords().size());        
     }
+    
+    /**
+     * Test that synonymy character information is correctly read from the dataset.
+     */
+    @Test
+    public void testReadSynonymyCharacters() throws Exception {
+        URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
+        IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
+        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+        
+        IntkeyDataset ds = context.getDataset();
+        
+        List<Character> synonymyCharacters = ds.getSynonymyCharacters();
+        
+        assertEquals(1, synonymyCharacters.size());
+        
+        Character synonymyCharacter = synonymyCharacters.get(0);
+        assertEquals(1, synonymyCharacter.getCharacterId());
+        
+    }
 
 }
