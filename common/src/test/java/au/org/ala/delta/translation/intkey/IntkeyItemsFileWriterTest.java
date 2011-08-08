@@ -1,8 +1,10 @@
 package au.org.ala.delta.translation.intkey;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import junit.framework.TestCase;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -125,8 +127,30 @@ public class IntkeyItemsFileWriterTest extends TestCase {
 	}
 	
 	@Test 
-	public void zztestwriteCharacterDependencies() {
-		throw new NotImplementedException();
+	public void testWriteCharacterDependencies() {
+		
+		Set<Integer> states = new HashSet<Integer>();
+		states.add(2);
+		states.add(3);
+		
+		Set<Integer> dependentChars = new HashSet<Integer>();
+		dependentChars.add(3);
+		dependentChars.add(4);
+		_dataSet.addCharacterDependency((MultiStateCharacter)_dataSet.getCharacter(1), states, dependentChars);
+		
+		_itemsFileWriter.writeCharacterDependencies();
+		
+		int[] charDepData = readInts(2, 10);
+		int[] expected = {4,0,0,0,0,7,7,1,3,4};
+		for (int i=0; i<expected.length; i++) {
+			assertEquals(expected[i], charDepData[i]);
+		}
+		
+		int[] invCharDepData = readInts(3, 8);
+		expected = new int[] {0,0,4,6,1,1,1,1};
+		for (int i=0; i<expected.length; i++) {
+			assertEquals(expected[i], invCharDepData[i]);
+		}
 	}
 	
 	@Test 
@@ -217,62 +241,6 @@ public class IntkeyItemsFileWriterTest extends TestCase {
 		for (int i=0; i<expectedFloats.length; i++) {
 			assertEquals(expectedFloats[i], actualFloats[i]);
 		}
-	}
-	
-	
-	@Test
-	public void zztestwriteTaxonImages() {
-		throw new NotImplementedException();
-	}
-	
-	@Test
-	public void zztestwriteEnableDeltaOutput() {
-		throw new NotImplementedException();
-	}
-	
-	@Test
-	public void zztestwriteChineseFormat() {
-		throw new NotImplementedException();
-	}
-	
-	@Test
-	public void zztestwriteCharacterSynonomy() {
-		throw new NotImplementedException();
-	}
-	
-	@Test
-	public void zztestwriteOmitOr() {
-		throw new NotImplementedException();
-	}
-	
-	@Test
-	public void zztestwriteUseControllingFirst() {
-		throw new NotImplementedException();
-	}
-
-	@Test
-	public void zztestwriteTaxonLinks() {
-		throw new NotImplementedException();
-	}
-	
-	@Test
-	public void zztestwriteOmitPeriod() {
-		throw new NotImplementedException();
-	}
-	
-	@Test
-	public void zztestwriteNewParagraph() {
-		throw new NotImplementedException();
-	}
-	
-	@Test
-	public void zztestwriteNonAutoControllingChars() {
-		throw new NotImplementedException();
-	}
-	
-	@Test
-	public void zztestwriteSubjectForOutputFiles() {
-		throw new NotImplementedException();
 	}
 	
 	

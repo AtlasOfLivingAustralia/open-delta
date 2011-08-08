@@ -30,7 +30,6 @@ public class DefaultCharacterData implements CharacterData {
     private float _reliability;
     private int _maximumValue;
     private int _minimumValue;
-    private String _imageData;
     private String _itemSubheading;
     private List<Float> _keyStateBoundaries;
     private boolean _containsSynonmyInfo;

@@ -10,11 +10,16 @@ public class NumericRange {
 	private Number _middle;
 	private Range _range;
 	
+	private Double _absoluteError;
+	private Double _percentageError;
+	
 	public NumericRange(Number extremeLow, Range range, Number middle, Number extremeHigh) {
 		_extremeLow = extremeLow;
 		_extremeHigh = extremeHigh;
 		_middle = middle;
 		_range = range;
+		_absoluteError = null;
+		_percentageError = null;
 	}
 	
 	public NumericRange() {
@@ -22,6 +27,8 @@ public class NumericRange {
 		_extremeHigh = null;
 		_middle = null;
 		_range = null;
+		_percentageError = null;
+		_absoluteError = null;
 	}
 
 	public Number getExtremeLow() {
@@ -37,6 +44,9 @@ public class NumericRange {
 	}
 
 	public Range getNormalRange() {
+		if (_range.getMinimumNumber().equals(_range.getMaximumNumber())) {
+			return createRangeForSingleValue(_range.getMinimumNumber());
+		}
 		return _range;
 	}
 	
@@ -49,6 +59,9 @@ public class NumericRange {
 		
 		if (hasExtremeHigh()) {
 			max = _extremeHigh;
+		}
+		if (min.equals(max)) {
+			return createRangeForSingleValue(min);
 		}
 		return new NumberRange(min, max);
 	}
@@ -81,5 +94,33 @@ public class NumericRange {
 		_range = range;
 	}
 	
+	public void setAbsoluteError(double error) {
+		if (_percentageError != null) {
+			throw new IllegalArgumentException("Cannot specify both an absolute and percentage error!");
+		}
+		_absoluteError = error;
+	}
 	
+	public void setPercentageError(double error) {
+		if (_absoluteError != null) {
+			throw new IllegalArgumentException("Cannot specify both an absolute and percentage error!");
+		}
+		_percentageError = error;
+	}
+	
+	private Range createRangeForSingleValue(Number value) {
+		
+		if ((_absoluteError == null) && (_percentageError == null)) {
+			return new NumberRange(value);
+		}
+		double val = value.doubleValue();
+		if (_absoluteError != null) {
+			return new NumberRange(val - _absoluteError, val + _absoluteError);
+		}
+		else {
+			double lower = 100*val/(100+_percentageError);
+			double upper = val*(100+_percentageError)/100;
+			return new NumberRange(lower, upper);
+		}	
+	}
 }

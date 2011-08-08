@@ -21,7 +21,7 @@ public class OutputFileSelector {
 		_dataSet = dataSet;
 	}
 
-	public String getOutputFile(int itemNumber) {
+	public String getItemOutputFile(int itemNumber) {
 		if (_itemOutputFiles.isEmpty() && _characterForOutputFiles == 0) {
 			throw new RuntimeException("One of ITEM OUTPUT FILES or CHARACTER FOR OUTPUT FILES must be specified.");
 		}
@@ -61,5 +61,13 @@ public class OutputFileSelector {
 		Item item = _dataSet.getItem(itemNumber);
 		String description = RTFUtils.stripFormatting(item.getDescription());
 		return description;
+	}
+	
+	public void getIntkeyOutputFile() {
+		
+	}
+	
+	public void setIntkeyOutputFile(String intkeyOut) {
+		
 	}
 }

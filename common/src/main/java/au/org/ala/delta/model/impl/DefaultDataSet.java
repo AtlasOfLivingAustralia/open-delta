@@ -232,14 +232,20 @@ public class DefaultDataSet extends AbstractObservableDataSet {
 			MultiStateCharacter owningCharacter, Set<Integer> states,
 			Set<Integer> dependentCharacters) {
 		CharacterDependency characterDependency = _factory.createCharacterDependency(owningCharacter, states, dependentCharacters);
-		_characterDependencies.add(characterDependency);
+		owningCharacter.addDependentCharacters(characterDependency);
+		
+		for (int characterNumber : dependentCharacters) {
+			Character dependent = getCharacter(characterNumber);
+			dependent.addControllingCharacter(characterDependency);
+		}
+		
 		return characterDependency;
 	}
 
 	@Override
 	public void deleteCharacterDependency(
 			CharacterDependency characterDependency) {
-		_characterDependencies.remove(characterDependency);	
+		getCharacter(characterDependency.getControllingCharacterId()).removeControllingCharacter(characterDependency);
 	}
 	
 	/**

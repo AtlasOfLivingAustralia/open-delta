@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
@@ -123,9 +122,9 @@ public class IntkeyItemsFileWriter {
 				MultiStateCharacter multiStateCharacter = (MultiStateCharacter)character;
 				addDependencyData(dependencyData, multiStateCharacter);
 			}
-			else {
-				addInvertedDependencyData(invertedDependencyData, character);
-			}
+			
+			addInvertedDependencyData(invertedDependencyData, character);
+			
 		}
 		_itemsFile.writeCharacterDependencies(dependencyData, invertedDependencyData);
 		
@@ -133,7 +132,7 @@ public class IntkeyItemsFileWriter {
 
 	private void addDependencyData(List<Integer> dependencyData, MultiStateCharacter multiStateCharacter) {
 		List<CharacterDependency> dependentCharacters = multiStateCharacter.getDependentCharacters();
-		if (dependentCharacters != null) {
+		if (dependentCharacters != null && dependentCharacters.size() > 0) {
 			dependencyData.set(multiStateCharacter.getCharacterId()-1, dependencyData.size());
 			int numStates = multiStateCharacter.getNumberOfStates();
 			int statesOffset = dependencyData.size();
@@ -143,7 +142,7 @@ public class IntkeyItemsFileWriter {
 			for (CharacterDependency dependency : dependentCharacters) {
 				int dataOffset = dependencyData.size();
 				List<Integer> dependentCharacterNumbers = toRangeList(dependency.getDependentCharacterIds());
-				dependencyData.add(dependentCharacterNumbers.size());
+				dependencyData.add(dependentCharacterNumbers.size()/2);
 				dependencyData.addAll(dependentCharacterNumbers);
 				for (int state : dependency.getStates()) {
 					dependencyData.set(statesOffset+state-1, dataOffset);
@@ -158,7 +157,7 @@ public class IntkeyItemsFileWriter {
 		if (dependencies == null || dependencies.size() == 0) {
 			return;
 		}
-		invertedDependencyData.set(character.getCharacterId(), invertedDependencyData.size());
+		invertedDependencyData.set(character.getCharacterId()-1, invertedDependencyData.size());
 		invertedDependencyData.add(dependencies.size());
 		for (CharacterDependency dependency : dependencies) {
 			invertedDependencyData.add(dependency.getControllingCharacterId());
@@ -179,7 +178,7 @@ public class IntkeyItemsFileWriter {
 		
 		int first = 0;
 		for (int i=1; i<list.size(); i++) {
-			if (list.get(i) != list.get(i-1)) {
+			if (list.get(i) != list.get(i-1)+1) {
 				rangeList.add(list.get(first));
 				rangeList.add(list.get(i-1));
 				first = i;
@@ -566,7 +565,7 @@ public class IntkeyItemsFileWriter {
 		for (int i=1; i<=numItems; i++) {
 			StringBuffer text = new StringBuffer();
 			
-			String outputFile = outputFileSelector.getOutputFile(i);
+			String outputFile = outputFileSelector.getItemOutputFile(i);
 			if (StringUtils.isNotEmpty(outputFile)) {
 				text.append(outputFile).append(" ");
 				text.append("<@subject ").append(subject).append(">");

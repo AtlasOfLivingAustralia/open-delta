@@ -89,6 +89,9 @@ public class DeltaContext extends AbstractDeltaContext {
 	private Integer _characterForTaxonNames = null;
 	private Map<Integer, List<ImageInfo>> _images = new HashMap<Integer, List<ImageInfo>>();
 	private Map<Integer, IdentificationKeyCharacter> _keyCharacters = new HashMap<Integer, IdentificationKeyCharacter>();
+	private Map<Integer, Double> _absolueErrorInCharacterAttributes = new HashMap<Integer, Double>();
+	private Map<Integer, Double> _percentageErrorInCharacterAttributes = new HashMap<Integer, Double>();
+	private Set<Integer> _omitLowerRangeCharacters = new HashSet<Integer>();
 	
 	private int _numberOfCharacters;
 	private int _maxNumberOfStates;
@@ -742,6 +745,43 @@ public class DeltaContext extends AbstractDeltaContext {
 	
 	public void setUseNormalValues(boolean useNormalValues) {
 		_useNormalValues = useNormalValues;
+	}
+
+	public void setAbsoluteError(int characterNumber, Double error) {
+		_absolueErrorInCharacterAttributes.put(characterNumber, error);
+	}
+	
+	public Double getAbsoluteError(int characterNumber) {
+		return _absolueErrorInCharacterAttributes.get(characterNumber);
+	}
+	
+	public boolean hasAbsoluteError(int characterNumber) {
+		return _absolueErrorInCharacterAttributes.containsKey(characterNumber);
+	}
+	
+	public void setPercentageError(int characterNumber, Double error) {
+		_percentageErrorInCharacterAttributes.put(characterNumber, error);
+	}
+	
+	public Double getPercentageError(int characterNumber) {
+		return _percentageErrorInCharacterAttributes.get(characterNumber);
+	}
+	
+	public boolean hasPercentageError(int characterNumber) {
+		return _percentageErrorInCharacterAttributes.containsKey(characterNumber);
+	}
+	
+	public void setOmitLowerForCharacter(int characterNumber, boolean omitLower) {
+		if (omitLower) {	
+			_omitLowerRangeCharacters.add(characterNumber);
+		}
+		else {
+			_omitLowerRangeCharacters.remove(characterNumber);
+		}
+	}
+	
+	public boolean getOmitLowerForCharacter(int characterNumber) {
+		return _omitLowerRangeCharacters.contains(characterNumber);
 	}
 	
 }
