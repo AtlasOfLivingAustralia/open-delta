@@ -133,8 +133,8 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     private JLabel _lblNumUsedCharacters;
 
     private BusyGlassPane _glassPane = null;
-    
-    boolean normalMode = false;
+
+    boolean _advancedMode = false;
 
     @Resource
     String windowTitleWithDatasetTitle;
@@ -231,7 +231,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
         _context = new IntkeyContext(this, this);
         _directiveParser = IntkeyDirectiveParser.createInstance();
-        
+
         _listCellRenderer = new ColoringListCellRenderer();
 
         ActionMap actionMap = getContext().getActionMap();
@@ -259,12 +259,6 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         _rootSplitPane = new JSplitPane();
         _rootSplitPane.setDividerSize(3);
         _rootSplitPane.setResizeWeight(0.5);
-        _rootSplitPane.addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentShown(ComponentEvent arg0) {
-                System.out.println("root split pane shown");
-            }
-        });
         _rootSplitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
         _rootSplitPane.setContinuousLayout(true);
         _rootPanel.add(_rootSplitPane);
@@ -336,6 +330,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         _btnSeparate = new JButton();
         _btnSeparate.setAction(actionMap.get("btnSeparate"));
         _btnSeparate.setEnabled(false);
+        _btnSeparate.setVisible(_advancedMode);
         _btnSeparate.setPreferredSize(new Dimension(30, 30));
         _pnlAvailableCharactersButtons.add(_btnSeparate);
 
@@ -358,6 +353,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         _btnSetMatch = new JButton();
         _btnSetMatch.setAction(actionMap.get("btnSetMatch"));
         _btnSetMatch.setEnabled(false);
+        _btnSetMatch.setVisible(_advancedMode);
         _btnSetMatch.setPreferredSize(new Dimension(30, 30));
         _pnlAvailableCharactersButtons.add(_btnSetMatch);
 
@@ -503,7 +499,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         _lblEliminatedTaxa.setText(String.format(eliminatedTaxaCaption, 0));
         _pnlEliminatedTaxaHeader.add(_lblEliminatedTaxa, BorderLayout.WEST);
 
-        JMenuBar menuBar = buildMenus();
+        JMenuBar menuBar = buildMenus(_advancedMode);
         getMainView().setMenuBar(menuBar);
 
         _txtFldCmdBar = new JTextField();
@@ -531,9 +527,10 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         _txtFldCmdBar.setFont(new Font("Courier New", Font.BOLD, 13));
         _txtFldCmdBar.setForeground(SystemColor.text);
         _txtFldCmdBar.setBackground(Color.BLACK);
+        _txtFldCmdBar.setVisible(_advancedMode);
         _rootPanel.add(_txtFldCmdBar, BorderLayout.SOUTH);
         _txtFldCmdBar.setColumns(10);
-        
+
         HashSet<Integer> selectedChars = new HashSet<Integer>();
         selectedChars.add(0);
         selectedChars.add(9);
@@ -569,7 +566,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         }
     }
 
-    private JMenuBar buildMenus() {
+    private JMenuBar buildMenus(boolean advancedMode) {
 
         _cmdMenus = new HashMap<String, JMenu>();
 
@@ -577,7 +574,21 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
         JMenuBar menuBar = new JMenuBar();
 
-        // File menu
+        menuBar.add(buildFileMenu(true, actionMap));
+
+        if (advancedMode) {
+            menuBar.add(buildQueriesMenu(actionMap));
+            menuBar.add(buildBrowsingMenu(actionMap));
+            menuBar.add(buildSettingsMenu(actionMap));
+            menuBar.add(buildReExecuteMenu(actionMap));
+        }
+        menuBar.add(buildWindowMenu(actionMap));
+        menuBar.add(buildHelpMenu(advancedMode, actionMap));
+
+        return menuBar;
+    }
+
+    private JMenu buildFileMenu(boolean advancedMode, ActionMap actionMap) {
         JMenu mnuFile = new JMenu();
         mnuFile.setName("mnuFile");
 
@@ -585,95 +596,113 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         mnuItNewDataSet.setAction(actionMap.get("mnuItNewDataSet"));
         mnuFile.add(mnuItNewDataSet);
 
-        JMenuItem mnuItPreferences = new JMenuItem();
-        mnuItPreferences.setAction(actionMap.get("mnuItPreferences"));
-        mnuItPreferences.setEnabled(false);
-        mnuFile.add(mnuItPreferences);
+        if (_advancedMode) {
+            JMenuItem mnuItPreferences = new JMenuItem();
+            mnuItPreferences.setAction(actionMap.get("mnuItPreferences"));
+            mnuItPreferences.setEnabled(false);
+            mnuFile.add(mnuItPreferences);
 
-        JMenuItem mnuItContents = new JMenuItem();
-        mnuItContents.setAction(actionMap.get("mnuItContents"));
-        mnuItContents.setEnabled(false);
-        mnuFile.add(mnuItContents);
+            JMenuItem mnuItContents = new JMenuItem();
+            mnuItContents.setAction(actionMap.get("mnuItContents"));
+            mnuItContents.setEnabled(false);
+            mnuFile.add(mnuItContents);
 
-        mnuFile.addSeparator();
+            mnuFile.addSeparator();
 
-        JMenu mnuFileCmds = new JMenu();
-        mnuFileCmds.setName("mnuFileCmds");
+            JMenu mnuFileCmds = new JMenu();
+            mnuFileCmds.setName("mnuFileCmds");
 
-        JMenuItem mnuItFileCharactersCmd = new JMenuItem();
-        mnuItFileCharactersCmd.setAction(actionMap.get("mnuItFileCharacters"));
-        mnuFileCmds.add(mnuItFileCharactersCmd);
+            JMenuItem mnuItFileCharactersCmd = new JMenuItem();
+            mnuItFileCharactersCmd.setAction(actionMap.get("mnuItFileCharacters"));
+            mnuFileCmds.add(mnuItFileCharactersCmd);
 
-        JMenuItem mnuItFileTaxaCmd = new JMenuItem();
-        mnuItFileTaxaCmd.setAction(actionMap.get("mnuItFileTaxa"));
-        mnuFileCmds.add(mnuItFileTaxaCmd);
+            JMenuItem mnuItFileTaxaCmd = new JMenuItem();
+            mnuItFileTaxaCmd.setAction(actionMap.get("mnuItFileTaxa"));
+            mnuFileCmds.add(mnuItFileTaxaCmd);
 
-        mnuFile.add(mnuFileCmds);
+            mnuFile.add(mnuFileCmds);
 
-        JMenu mnuOutputCmds = new JMenu();
-        mnuOutputCmds.setName("mnuOutputCmds");
-        mnuOutputCmds.setEnabled(false);
-        mnuFile.add(mnuOutputCmds);
+            JMenu mnuOutputCmds = new JMenu();
+            mnuOutputCmds.setName("mnuOutputCmds");
+            mnuOutputCmds.setEnabled(false);
+            mnuFile.add(mnuOutputCmds);
 
-        mnuFile.addSeparator();
+            mnuFile.addSeparator();
 
-        JMenuItem mnuItComment = new JMenuItem();
-        mnuItComment.setAction(actionMap.get("mnuItComment"));
-        mnuItComment.setEnabled(false);
-        mnuFile.add(mnuItComment);
+            JMenuItem mnuItComment = new JMenuItem();
+            mnuItComment.setAction(actionMap.get("mnuItComment"));
+            mnuItComment.setEnabled(false);
+            mnuFile.add(mnuItComment);
 
-        JMenuItem mnuItShow = new JMenuItem();
-        mnuItShow.setAction(actionMap.get("mnuItShow"));
-        mnuItShow.setEnabled(false);
-        mnuFile.add(mnuItShow);
+            JMenuItem mnuItShow = new JMenuItem();
+            mnuItShow.setAction(actionMap.get("mnuItShow"));
+            mnuItShow.setEnabled(false);
+            mnuFile.add(mnuItShow);
 
-        mnuFile.addSeparator();
+            mnuFile.addSeparator();
 
-        JMenuItem mnuItNormalMode = new JMenuItem();
-        mnuItNormalMode.setAction(actionMap.get("mnuItNormalMode"));
-        mnuItNormalMode.setEnabled(false);
-        mnuFile.add(mnuItNormalMode);
+            JMenuItem mnuItNormalMode = new JMenuItem();
+            mnuItNormalMode.setAction(actionMap.get("mnuItNormalMode"));
+            mnuFile.add(mnuItNormalMode);
 
-        mnuFile.addSeparator();
+            mnuFile.addSeparator();
 
-        JMenuItem mnuItEditIndex = new JMenuItem("Edit Index...");
-        mnuItEditIndex.setAction(actionMap.get("mnuItEditIndex"));
-        mnuItEditIndex.setEnabled(false);
-        mnuFile.add(mnuItEditIndex);
+            JMenuItem mnuItEditIndex = new JMenuItem("Edit Index...");
+            mnuItEditIndex.setAction(actionMap.get("mnuItEditIndex"));
+            mnuItEditIndex.setEnabled(false);
+            mnuFile.add(mnuItEditIndex);
 
-        _cmdMenus.put("file", mnuFileCmds);
+            _cmdMenus.put("file", mnuFileCmds);
+        } else {
+            mnuFile.addSeparator();
+            
+            JMenuItem mnuItAdvancedMode = new JMenuItem();
+            mnuItAdvancedMode.setAction(actionMap.get("mnuItAdvancedMode"));
+            mnuFile.add(mnuItAdvancedMode);
+        }
 
         mnuFile.addSeparator();
 
         JMenuItem mnuItFileExit = new JMenuItem();
         mnuItFileExit.setAction(actionMap.get("mnuItExitApplication"));
         mnuFile.add(mnuItFileExit);
-        menuBar.add(mnuFile);
 
+        return mnuFile;
+    }
+
+    private JMenu buildQueriesMenu(ActionMap actionMap) {
         JMenu mnuQueries = new JMenu();
         mnuQueries.setName("mnuQueries");
         mnuQueries.setEnabled(false);
-        menuBar.add(mnuQueries);
+        return mnuQueries;
+    }
 
+    private JMenu buildBrowsingMenu(ActionMap actionMap) {
         JMenu mnuBrowsing = new JMenu();
         mnuBrowsing.setName("mnuBrowsing");
         mnuBrowsing.setEnabled(false);
-        menuBar.add(mnuBrowsing);
+        return mnuBrowsing;
+    }
 
+    private JMenu buildSettingsMenu(ActionMap actionMap) {
         JMenu mnuSettings = new JMenu();
         mnuSettings.setName("mnuSettings");
         mnuSettings.setEnabled(false);
-        menuBar.add(mnuSettings);
+        return mnuSettings;
+    }
 
+    private JMenu buildReExecuteMenu(ActionMap actionMap) {
         JMenu mnuReExecute = new JMenu("ReExecute...");
         mnuReExecute.setName("mnuReExecute");
-        menuBar.add(mnuReExecute);
 
         JMenuItem mnuItReExecute = new JMenuItem();
         mnuItReExecute.setAction(actionMap.get("mnuItReExecute"));
         mnuReExecute.add(mnuItReExecute);
 
-        // Window menu
+        return mnuReExecute;
+    }
+
+    private JMenu buildWindowMenu(ActionMap actionMap) {
         JMenu mnuWindow = new JMenu();
         mnuWindow.setName("mnuWindow");
 
@@ -693,9 +722,11 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         mnuItCloseAll.setAction(actionMap.get("mnuItCloseAllWindows"));
         mnuItCloseAll.setEnabled(false);
         mnuWindow.add(mnuItCloseAll);
-        menuBar.add(mnuWindow);
 
-        // Help menu
+        return mnuWindow;
+    }
+
+    private JMenu buildHelpMenu(boolean advancedMode, ActionMap actionMap) {
         JMenu mnuHelp = new JMenu();
         mnuHelp.setName("mnuHelp");
         JMenuItem mnuItHelpIntroduction = new JMenuItem();
@@ -703,10 +734,12 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         mnuItHelpIntroduction.setEnabled(false);
         mnuHelp.add(mnuItHelpIntroduction);
 
-        JMenuItem mnuItHelpCommands = new JMenuItem();
-        mnuItHelpCommands.setAction(actionMap.get("mnuItHelpCommands"));
-        mnuItHelpCommands.setEnabled(false);
-        mnuHelp.add(mnuItHelpCommands);
+        if (advancedMode) {
+            JMenuItem mnuItHelpCommands = new JMenuItem();
+            mnuItHelpCommands.setAction(actionMap.get("mnuItHelpCommands"));
+            mnuItHelpCommands.setEnabled(false);
+            mnuHelp.add(mnuItHelpCommands);
+        }
 
         if (isMac()) {
             configureMacAboutBox(actionMap.get("mnuItHelpAbout"));
@@ -716,9 +749,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             mnuHelp.add(mnuItAbout);
         }
 
-        menuBar.add(mnuHelp);
-
-        return menuBar;
+        return mnuHelp;
     }
 
     // ============== File menu actions ==============================
@@ -757,17 +788,34 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     @Action
     public void mnuItNormalMode() {
-        if (!normalMode) {
-            _pnlAvailableCharactersButtons.remove(_btnSeparate);
-            _pnlAvailableCharactersButtons.remove(_btnSetTolerance);
-            _rootPanel.remove(_txtFldCmdBar);
-            _rootPanel.revalidate();
-            normalMode = true;
+        toggleAdvancedMode();
+    }
+
+    @Action
+    public void mnuItAdvancedMode() {
+        toggleAdvancedMode();
+    }
+
+    private void toggleAdvancedMode() {
+        _advancedMode = !_advancedMode;
+
+        if (_advancedMode) {
+            JMenuBar menuBar = buildMenus(true);
+            getMainFrame().setJMenuBar(menuBar);
+            _btnSeparate.setVisible(true);
+            _btnSetMatch.setVisible(true);
+            _txtFldCmdBar.setVisible(true);
         } else {
-            _rootPanel.add(_txtFldCmdBar, BorderLayout.SOUTH);
-            _rootPanel.revalidate();
-            normalMode = false;
+            JMenuBar menuBar = buildMenus(false);
+            getMainFrame().setJMenuBar(menuBar);
+            _btnSeparate.setVisible(false);
+            _btnSetMatch.setVisible(false);
+            _txtFldCmdBar.setVisible(false);
         }
+
+        ResourceMap resourceMap = getContext().getResourceMap(Intkey.class);
+        resourceMap.injectComponents(getMainFrame());
+        _rootPanel.revalidate();
     }
 
     @Action
@@ -911,7 +959,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     @Action
     public void btnFindTaxon() {
-        
+
     }
 
     // =========================================================================================
@@ -1127,7 +1175,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
         // display startup images
         List<Image> startupImages = dataset.getStartupImages();
-        if (startupImages != null) {
+        if (!startupImages.isEmpty()) {
             ImageUtils.displayImagesFullScreen(startupImages, _context.getImageSettings(), getMainFrame());
         }
 
@@ -1370,17 +1418,15 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         UIUtils.showDialog(dlg);
         return dlg.getInputData();
     }
-    
-    //=====================================================================================================
-    
-    /*int findAllTaxa(String searchText, boolean selectAll, boolean searchSynonyms, boolean searchEliminatedTaxa) {
-        //IntkeyDataset dataset = _context.getDataset();
-        //_context.get
-        
-        //return 0;
-    }*/
-    
-    
-    
+
+    // =====================================================================================================
+
+    /*
+     * int findAllTaxa(String searchText, boolean selectAll, boolean
+     * searchSynonyms, boolean searchEliminatedTaxa) { //IntkeyDataset dataset =
+     * _context.getDataset(); //_context.get
+     * 
+     * //return 0; }
+     */
 
 }
