@@ -768,14 +768,16 @@ public class IntkeyContext extends AbstractDeltaContext {
         return _matchType;
     }
 
-    public Set<Character> getIncludedCharacters() {
-        Set<Character> retSet = new HashSet<Character>();
+    public List<Character> getIncludedCharacters() {
+        List<Character> retList = new ArrayList<Character>();
 
         for (int charNum : _includedCharacters) {
-            retSet.add(_dataset.getCharacter(charNum));
+            retList.add(_dataset.getCharacter(charNum));
         }
+        
+        Collections.sort(retList);
 
-        return retSet;
+        return retList;
     }
 
     public Set<Item> getIncludedTaxa() {
@@ -821,16 +823,20 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     // The currently included characters minus the characters
     // that have values set in the specimen
-    public Set<Character> getAvailableCharacters() {
-        Set<Character> retSet = getIncludedCharacters();
+    public List<Character> getAvailableCharacters() {
+        List<Character> retList = getIncludedCharacters();
 
         // Used characters are not available
-        retSet.removeAll(_specimen.getUsedCharacters());
+        retList.removeAll(_specimen.getUsedCharacters());
 
         // Neither are characters that have been made inapplicable
-        retSet.removeAll(_specimen.getInapplicableCharacters());
+        retList.removeAll(_specimen.getInapplicableCharacters());
 
-        return retSet;
+        return retList;
+    }
+    
+    public List<Character> getUsedCharacters() {
+        return _specimen.getUsedCharacters();
     }
 
     public ImageSettings getImageSettings() {

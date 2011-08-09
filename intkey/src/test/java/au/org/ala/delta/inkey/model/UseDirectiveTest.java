@@ -279,7 +279,7 @@ public class UseDirectiveTest extends TestCase {
         assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(4)));
         assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(5)));
 
-        Set<au.org.ala.delta.model.Character> availableCharacters = context.getAvailableCharacters();
+        List<au.org.ala.delta.model.Character> availableCharacters = context.getAvailableCharacters();
         assertTrue(availableCharacters.contains(ds.getCharacter(1)));
         assertFalse(availableCharacters.contains(ds.getCharacter(2)));
         assertFalse(availableCharacters.contains(ds.getCharacter(3)));
@@ -504,7 +504,7 @@ public class UseDirectiveTest extends TestCase {
 
         new UseDirective().parseAndProcess(context, "/M 2,2");
 
-        Set<au.org.ala.delta.model.Character> availableCharacters = context.getAvailableCharacters();
+        List<au.org.ala.delta.model.Character> availableCharacters = context.getAvailableCharacters();
         assertFalse(availableCharacters.contains(charSeedInShell));
         assertFalse(availableCharacters.contains(charAvgThickness));
         assertFalse(specimen.hasValueFor(charSeedInShell));

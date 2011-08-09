@@ -166,7 +166,7 @@ public class DifferencesDirective extends IntkeyDirective {
         } else {
             // If characters not input using dialog, filter any characters that
             // are not currently included
-            Set<Character> includedCharacters = context.getIncludedCharacters();
+            List<Character> includedCharacters = context.getIncludedCharacters();
             characters.retainAll(includedCharacters);
             if (characters.isEmpty()) {
                 context.getUI().displayErrorMessage("All selected characters have been excluded");

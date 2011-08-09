@@ -20,7 +20,7 @@ import au.org.ala.delta.model.image.Image;
 
 public class CharacterKeywordSelectionDialog extends KeywordSelectionDialog {
 
-    private Set<Character> _includedCharacters;
+    private List<Character> _includedCharacters;
     private List<Character> _selectedCharacters;
 
     @Resource

@@ -81,6 +81,7 @@ import au.org.ala.delta.intkey.ui.BusyGlassPane;
 import au.org.ala.delta.intkey.ui.CharacterKeywordSelectionDialog;
 import au.org.ala.delta.intkey.ui.CharacterListModel;
 import au.org.ala.delta.intkey.ui.ColoringListCellRenderer;
+import au.org.ala.delta.intkey.ui.FindInCharactersDialog;
 import au.org.ala.delta.intkey.ui.IntegerInputDialog;
 import au.org.ala.delta.intkey.ui.MultiStateInputDialog;
 import au.org.ala.delta.intkey.ui.ReExecuteDialog;
@@ -96,6 +97,7 @@ import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.IntegerCharacter;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
+import au.org.ala.delta.model.NumericCharacter;
 import au.org.ala.delta.model.RealCharacter;
 import au.org.ala.delta.model.TextCharacter;
 import au.org.ala.delta.model.image.Image;
@@ -120,7 +122,9 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     private JList _listUsedCharacters;
     private JList _listRemainingTaxa;
     private JList _listEliminatedTaxa;
-    private ColoringListCellRenderer _listCellRenderer;
+
+    private ColoringListCellRenderer _availableCharactersListCellRenderer;
+    private ColoringListCellRenderer _usedCharactersListCellRenderer;
 
     private CharacterListModel _availableCharacterListModel;
     private UsedCharacterListModel _usedCharacterListModel;
@@ -134,7 +138,10 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     private BusyGlassPane _glassPane = null;
 
-    boolean _advancedMode = false;
+    private boolean _advancedMode = false;
+
+    private List<Integer> _matchedAvailableCharacterIndices = null;
+    private List<Integer> _matchedUsedCharacterIndices = null;
 
     @Resource
     String windowTitleWithDatasetTitle;
@@ -232,7 +239,8 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         _context = new IntkeyContext(this, this);
         _directiveParser = IntkeyDirectiveParser.createInstance();
 
-        _listCellRenderer = new ColoringListCellRenderer();
+        _availableCharactersListCellRenderer = new ColoringListCellRenderer();
+        _usedCharactersListCellRenderer = new ColoringListCellRenderer();
 
         ActionMap actionMap = getContext().getActionMap();
 
@@ -281,7 +289,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
         _listAvailableCharacters = new JList();
         _listAvailableCharacters.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        _listAvailableCharacters.setCellRenderer(_listCellRenderer);
+        _listAvailableCharacters.setCellRenderer(_availableCharactersListCellRenderer);
         _listAvailableCharacters.addMouseListener(new MouseInputAdapter() {
 
             @Override
@@ -364,7 +372,6 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
         _btnFindCharacter = new JButton();
         _btnFindCharacter.setAction(actionMap.get("btnFindCharacter"));
-        _btnFindCharacter.setEnabled(false);
         _btnFindCharacter.setPreferredSize(new Dimension(30, 30));
         _pnlAvailableCharactersButtons.add(_btnFindCharacter);
 
@@ -376,7 +383,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         _pnlUsedCharacters.add(_sclPnUsedCharacters, BorderLayout.CENTER);
 
         _listUsedCharacters = new JList();
-        _listUsedCharacters.setCellRenderer(_listCellRenderer);
+        _listUsedCharacters.setCellRenderer(_usedCharactersListCellRenderer);
         _listUsedCharacters.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         _listUsedCharacters.addMouseListener(new MouseInputAdapter() {
 
@@ -467,7 +474,6 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
         _btnFindTaxon = new JButton();
         _btnFindTaxon.setAction(actionMap.get("btnFindTaxon"));
-        _btnFindTaxon.setEnabled(false);
         _btnFindTaxon.setPreferredSize(new Dimension(30, 30));
         _pnlRemainingTaxaButtons.add(_btnFindTaxon);
 
@@ -530,11 +536,6 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         _txtFldCmdBar.setVisible(_advancedMode);
         _rootPanel.add(_txtFldCmdBar, BorderLayout.SOUTH);
         _txtFldCmdBar.setColumns(10);
-
-        HashSet<Integer> selectedChars = new HashSet<Integer>();
-        selectedChars.add(0);
-        selectedChars.add(9);
-        _listCellRenderer.setIndicesToColor(selectedChars);
 
         show(_rootPanel);
     }
@@ -655,7 +656,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             _cmdMenus.put("file", mnuFileCmds);
         } else {
             mnuFile.addSeparator();
-            
+
             JMenuItem mnuItAdvancedMode = new JMenuItem();
             mnuItAdvancedMode.setAction(actionMap.get("mnuItAdvancedMode"));
             mnuFile.add(mnuItAdvancedMode);
@@ -920,6 +921,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     @Action
     public void btnFindCharacter() {
+        new FindInCharactersDialog(this, _context).setVisible(true);
     }
 
     // ============================= Taxon toolbar button actions
@@ -996,7 +998,11 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         handleUpdateAll();
     }
 
-    private void updateAvailableCharacters() {
+    void updateAvailableCharacters() {
+
+        // remove any item coloring done by a previous "find in characters"
+        // search
+        _availableCharactersListCellRenderer.setIndicesToColor(Collections.EMPTY_SET);
 
         IntkeyCharacterOrder charOrder = _context.getCharacterOrder();
 
@@ -1132,6 +1138,10 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     }
 
     private void updateUsedCharacters() {
+        // remove any item coloring done by a previous "find in characters"
+        // search
+        _usedCharactersListCellRenderer.setIndicesToColor(Collections.EMPTY_SET);
+
         Specimen specimen = _context.getSpecimen();
         List<Character> usedCharacters = specimen.getUsedCharacters();
 
@@ -1421,12 +1431,115 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     // =====================================================================================================
 
-    /*
-     * int findAllTaxa(String searchText, boolean selectAll, boolean
-     * searchSynonyms, boolean searchEliminatedTaxa) { //IntkeyDataset dataset =
-     * _context.getDataset(); //_context.get
-     * 
-     * //return 0; }
-     */
+    void findTaxon(String searchText, boolean searchSynonyms, boolean searchEliminatedTaxa) {
+        _context.getDataset();
+    }
+
+    void findTaxa(String searchText, boolean searchSynonyms, boolean searchEliminatedTaxa) {
+
+    }
+
+    void nextTaxon() {
+
+    }
+
+    //Returns number of characters matched
+    public int findCharacters(String searchText, boolean searchStates, boolean searchUsedCharacters) {
+        int numFoundCharacters = 0;
+        
+        List<Character> availableCharacters;
+
+        IntkeyCharacterOrder charOrder = _context.getCharacterOrder();
+        switch (charOrder) {
+        case NATURAL:
+            availableCharacters = _context.getAvailableCharacters();
+            break;
+        case BEST:
+            availableCharacters = new ArrayList<Character>(_context.getBestCharacters().keySet());
+            break;
+        case SEPARATE:
+            throw new NotImplementedException();
+        default:
+            throw new RuntimeException("Unrecognised character order");
+        }
+
+        List<Character> usedCharacters = _context.getUsedCharacters();
+
+        _matchedAvailableCharacterIndices = new ArrayList<Integer>();
+
+        for (int i = 0; i < availableCharacters.size(); i++) {
+            Character ch = availableCharacters.get(i);
+            if (characterMatches(ch, searchText, searchStates)) {
+                _matchedAvailableCharacterIndices.add(i);
+            }
+        }
+
+        numFoundCharacters += _matchedAvailableCharacterIndices.size();
+        _availableCharactersListCellRenderer.setIndicesToColor(new HashSet<Integer>(_matchedAvailableCharacterIndices));
+
+        if (searchUsedCharacters) {
+            _matchedUsedCharacterIndices = new ArrayList<Integer>();
+
+            for (int i = 0; i < usedCharacters.size(); i++) {
+                Character ch = usedCharacters.get(i);
+                if (characterMatches(ch, searchText, searchStates)) {
+                    _matchedUsedCharacterIndices.add(i);
+                }
+            }
+
+            numFoundCharacters += _matchedUsedCharacterIndices.size();
+            _usedCharactersListCellRenderer.setIndicesToColor(new HashSet<Integer>(_matchedUsedCharacterIndices));
+        }
+
+        _listAvailableCharacters.repaint();
+        _listUsedCharacters.repaint();
+        
+        return numFoundCharacters;
+    }
+
+    private boolean characterMatches(Character ch, String searchText, boolean searchStates) {
+        boolean result = false;
+
+        if (ch.getDescription().contains(searchText)) {
+            result = true;
+        }
+
+        if (!result && searchStates) {
+            if (ch instanceof MultiStateCharacter) {
+                MultiStateCharacter msChar = (MultiStateCharacter) ch;
+                for (String state : msChar.getStates()) {
+                    if (state.contains(searchText)) {
+                        result = true;
+                        break;
+                    }
+                }
+            } else if (ch instanceof NumericCharacter) {
+                NumericCharacter numChar = (NumericCharacter) ch;
+                if (numChar.getUnits() != null && numChar.getUnits().contains(searchText)) {
+                    result = true;
+                }
+            }
+        }
+
+        return result;
+    }
+
+    public void selectCurrentMatchedCharacter(int matchedCharacterIndex) {
+
+        if (matchedCharacterIndex < _matchedAvailableCharacterIndices.size()) {
+            int indexToSelect = _matchedAvailableCharacterIndices.get(matchedCharacterIndex);
+            _listAvailableCharacters.setSelectedIndex(indexToSelect);
+            _listAvailableCharacters.ensureIndexIsVisible(indexToSelect);
+            _listUsedCharacters.clearSelection();
+        } else if (!_matchedUsedCharacterIndices.isEmpty()) {
+            int offsetIndex = matchedCharacterIndex - _matchedAvailableCharacterIndices.size();
+            if (offsetIndex < _matchedUsedCharacterIndices.size()) {
+                int indexToSelect = _matchedUsedCharacterIndices.get(offsetIndex);
+                _listUsedCharacters.setSelectedIndex(indexToSelect);
+                _listUsedCharacters.ensureIndexIsVisible(indexToSelect);
+                _listAvailableCharacters.clearSelection();
+            }
+        }
+    }
 
 }
