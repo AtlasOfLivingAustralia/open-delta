@@ -127,6 +127,10 @@ public class ImageOverlay {
 		return getX(0);
 	}
 
+	public void setX(int x) {
+		getLocation(0).setX(x);
+	}
+	
 	public int getX(int id) {
 		return location.get(id).X;
 	}
@@ -138,6 +142,10 @@ public class ImageOverlay {
 	public int getY(int id) {
 		return location.get(id).Y;
 	}
+	
+	public void setY(int y) {
+		getLocation(0).setY(y);
+	}
 
 	public int getHeight() {
 		return getHeight(0);
@@ -147,7 +155,10 @@ public class ImageOverlay {
 		return location.get(id).H;
 		
 	}
-
+	public void setHeight(int height) {
+		getLocation(0).setH(height);
+	}
+	
 	public int getWidth() {
 		return getWidth(0);
 	}
@@ -156,6 +167,10 @@ public class ImageOverlay {
 		return location.get(id).W;
 	}
 
+	public void setWidth(int width) {
+		getLocation(0).setW(width);
+	}
+	
 	public OverlayLocation getLocation(int id) {
 		return location.get(id);
 	}
@@ -179,7 +194,23 @@ public class ImageOverlay {
 	public boolean canSelect() {
 		return type == OverlayType.OLSTATE || type == OverlayType.OLVALUE;
 	}
+	
+	public void setOmitDescription(boolean omitDescription) {
+		getLocation(0).setOmitDescription(omitDescription);
+	}
 
+	public void setIncludeComments(boolean includeComments) {
+		getLocation(0).setIncludeComments(includeComments);
+	}
+
+	public void setCentreText(boolean centreText) {
+		getLocation(0).setCentreText(centreText);
+	}
+
+	public void setIntegralHeight(boolean integralHeight) {
+		getLocation(0).setIntegeralHeight(integralHeight);
+	}
+	
 	public String getValueString() {
 		StringBuilder value = new StringBuilder();
 		value.append(minVal);

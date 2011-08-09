@@ -1,7 +1,6 @@
 package au.org.ala.delta.model.impl;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -30,8 +29,6 @@ public class DefaultDataSet extends AbstractObservableDataSet {
 	
 	private Map<Integer, Character> _characters;
 	
-	private Set<CharacterDependency> _characterDependencies;
-	
 	private ImageSettings _imageSettings;
 	
 	private boolean _modified;
@@ -40,7 +37,6 @@ public class DefaultDataSet extends AbstractObservableDataSet {
 		super(factory);
 		_items = new HashMap<Integer, Item>();
 		_characters = new HashMap<Integer, Character>();
-		_characterDependencies = new HashSet<CharacterDependency>();
 		_modified = false;
 	}
 	

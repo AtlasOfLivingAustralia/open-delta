@@ -15,8 +15,6 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 
 import org.jdesktop.application.Action;
-import org.jdesktop.application.Application;
-import org.jdesktop.application.SingleFrameApplication;
 
 import au.org.ala.delta.model.image.ImageOverlay;
 import au.org.ala.delta.model.image.ImageSettings;
@@ -24,7 +22,8 @@ import au.org.ala.delta.ui.image.ImagePanel.ScalingMode;
 
 public class MultipleImageViewer extends JPanel {
 
-    private int _selectedIndex;
+	private static final long serialVersionUID = 6901754518169951771L;
+	private int _selectedIndex;
     private CardLayout _layout;
     private ScalingMode _scalingMode;
     private List<ImageViewer> _imageViewers;

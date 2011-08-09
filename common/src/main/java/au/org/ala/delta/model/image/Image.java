@@ -90,7 +90,7 @@ public class Image {
 		return getOverlaysOfType(OverlayType.OLSOUND);
 	}
 	
-	private List<ImageOverlay> getOverlaysOfType(int type) {
+	public List<ImageOverlay> getOverlaysOfType(int type) {
 		List<ImageOverlay> results = new ArrayList<ImageOverlay>();
 		List<ImageOverlay> overlays = getOverlays();
 		
@@ -142,12 +142,25 @@ public class Image {
 		_impl.addOverlay(overlay);
 	}
 	
+	public ImageOverlay addOverlay(int overlayType) {
+		ImageOverlay overlay = new ImageOverlay(overlayType);
+		addOverlay(overlay);
+		return overlay;
+	}
+	
 	public void updateOverlay(ImageOverlay overlay) {
 		_impl.updateOverlay(overlay);
 	}
 	
 	public void deleteOverlay(ImageOverlay overlay) {
-		_impl.addOverlay(overlay);
+		_impl.deleteOverlay(overlay);
+	}
+	
+	public void deleteAllOverlays() {
+		 List<ImageOverlay> overlays = getOverlays();
+		 for (ImageOverlay overlay : overlays) {
+			 deleteOverlay(overlay);
+		 }
 	}
 	
 	/**

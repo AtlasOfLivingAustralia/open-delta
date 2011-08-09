@@ -123,7 +123,22 @@ public class OverlayLocation {
             flags &= ~OL_CENTER_TEXT;
         }
     }
+    
+    public void setX(int x) {
+    	x = (short)x;
+    }
 
+	public void setY(int y) {
+	    y = (short)y;
+	}
+	
+	public void setW(int w) {
+		w = (short)w;
+	}
+	
+	public void setH(int h) {
+		h = (short)h;
+	}
     public static enum OLDrawType {
         Unknown, frame, rectangle, line, arrow, ellipse;
 

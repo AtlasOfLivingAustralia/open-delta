@@ -21,7 +21,6 @@ public class DefaultItemData implements ItemData {
 
     private String _description;
     private boolean _variant;
-    private String _imageData;
     private String _linkFileDataWithSubjects;
     private String _linkFileDataNoSubjects;
 

@@ -3,6 +3,8 @@ package au.org.ala.delta.model.image;
 import java.awt.Color;
 import java.awt.Font;
 
+import au.org.ala.delta.model.image.OverlayLocation.OLDrawType;
+
 /**
  * The ImageSettings class maintains the defaults used when creating images and
  * image overlays.
@@ -157,6 +159,24 @@ public class ImageSettings {
 		return new Font(info.name, style, Math.abs(info.size));
 	}
 
+	public void configureHotSpotDefaults(OverlayLocation location) {
+		location.drawType = OLDrawType.rectangle;
+		
+	}
 	
+	public void configureOverlayDefaults(ImageOverlay overlay) {
+
+		if (overlay.integralHeight()) {
+			overlay.setHeight(-1);
+		}
+		else {
+		    int needHeight = getFontHeight(overlay.type == OverlayType.OLFEATURE ? _defaultFeatureFontInfo : _defaultFontInfo) + 1;
+		    overlay.setHeight(needHeight);
+		}
+	}
+
+	private int getFontHeight(FontInfo font) {
+		return 10;
+	}
 	
 }

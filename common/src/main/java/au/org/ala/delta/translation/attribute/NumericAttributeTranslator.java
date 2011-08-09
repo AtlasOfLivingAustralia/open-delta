@@ -23,11 +23,15 @@ public class NumericAttributeTranslator extends AttributeTranslator {
 	/** Knows how to type set a range symbol */
 	private TypeSetter _typeSetter;
 	
-	public NumericAttributeTranslator(NumericCharacter<?> character, TypeSetter typeSetter, AttributeFormatter formatter) {
+	/** Omit the space in between a numeric attribute and the units */
+	private boolean _omitSpaceBeforeUnits;
+	
+	public NumericAttributeTranslator(NumericCharacter<?> character, TypeSetter typeSetter, AttributeFormatter formatter, boolean omitSpaceBeforeUnits) {
 		super(formatter);
 		_character = character;
 		_formatter = new CharacterFormatter(false, true, false, false, true);
 		_typeSetter = typeSetter;
+		_omitSpaceBeforeUnits = omitSpaceBeforeUnits;
 	}
 	
 	@Override
@@ -61,7 +65,10 @@ public class NumericAttributeTranslator extends AttributeTranslator {
 		StringBuilder output = new StringBuilder();
 		if (_character.hasUnits()) {
 			String units = _formatter.formatUnits(_character);
-			output.append(" ").append(units);
+			if (!_omitSpaceBeforeUnits) {
+				output.append(" ");
+			}
+			output.append(units);
 		}
 		return output.toString();
 	}

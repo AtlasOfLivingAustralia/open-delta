@@ -27,7 +27,7 @@ public class NumericAttributeTranslatorTest extends TestCase {
 		PlainTextTypeSetter typeSetter = new PlainTextTypeSetter(null);
 		AttributeFormatter attributeFormatter = new AttributeFormatter(false, true, false);
 		
-		_translator = new NumericAttributeTranslator(_realCharacter, typeSetter, attributeFormatter);
+		_translator = new NumericAttributeTranslator(_realCharacter, typeSetter, attributeFormatter, false);
 	}
 	
 	/**

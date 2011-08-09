@@ -2,21 +2,24 @@ package au.org.ala.delta.editor.ui.image;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Window;
 
+import javax.swing.ActionMap;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
+import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
-import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.border.TitledBorder;
 
 import org.jdesktop.application.Action;
+import org.jdesktop.application.Application;
 
 import au.org.ala.delta.model.image.ImageOverlay;
 import au.org.ala.delta.model.image.OverlayType;
@@ -29,10 +32,10 @@ public class OverlayEditDialog extends JDialog {
 
 	private static final long serialVersionUID = 3460369707621339162L;
 	private ImageOverlay _overlay;
-	private JTextField xDimension;
-	private JTextField yDimension;
-	private JTextField wDimension;
-	private JTextField hDimension;
+	private JFormattedTextField xDimension;
+	private JFormattedTextField yDimension;
+	private JFormattedTextField wDimension;
+	private JFormattedTextField hDimension;
 	private JSpinner stateNumberSpinner;
 	private RtfEditor textEditor;
 	private JCheckBox chckbxCentreInBox;
@@ -44,19 +47,20 @@ public class OverlayEditDialog extends JDialog {
 	private JButton btnApply;
 	private JLabel stateNumLabel;
 	
-	public OverlayEditDialog(ImageOverlay overlay) {
-		
+	public OverlayEditDialog(Window parent, ImageOverlay overlay) {
+		super(parent);
 		_overlay = overlay;
 		createUI();
 		addEventHandlers();
 		updateGUI();
 	}
 	
-	
 	private void addEventHandlers() {
-		
+		ActionMap actions = Application.getInstance().getContext().getActionMap(this);
+		btnOk.setAction(actions.get("okOverlayChanges"));
+		btnApply.setAction(actions.get("applyOverlayChanges"));
+		btnCancel.setAction(actions.get("cancelOverlayChanges"));
 	}
-	
 	
 	private void createUI() {
 		JPanel panel = new JPanel();
@@ -189,22 +193,22 @@ public class OverlayEditDialog extends JDialog {
 		
 		JLabel lblNewLabel = new JLabel("X:");
 		
-		xDimension = new JTextField();
+		xDimension = numberField();
 		xDimension.setColumns(10);
 		
 		JLabel lblY = new JLabel("Y:");
 		
-		yDimension = new JTextField();
+		yDimension = numberField();
 		yDimension.setColumns(10);
 		
 		JLabel lblW = new JLabel("W:");
 		
-		wDimension = new JTextField();
+		wDimension = numberField();
 		wDimension.setColumns(10);
 		
 		JLabel lblH = new JLabel("H:");
 		
-		hDimension = new JTextField();
+		hDimension = numberField();
 		hDimension.setColumns(10);
 		
 		JLabel lblImageUnits = new JLabel("Image Units");
@@ -256,6 +260,12 @@ public class OverlayEditDialog extends JDialog {
 		panel.setLayout(gl_panel);
 	}
 	
+	private JFormattedTextField numberField() {
+		JFormattedTextField field = new JFormattedTextField();
+		field.setValue(0);
+		return field;
+	}
+	
 	private void updateGUI() {
 		if (_overlay.isType(OverlayType.OLSTATE)) {
 			stateNumberSpinner.setValue(_overlay.stateId);
@@ -271,15 +281,43 @@ public class OverlayEditDialog extends JDialog {
 		chckbxOmitDescription.setSelected(_overlay.omitDescription());
 		chckbxUseIntegralHeight.setSelected(_overlay.integralHeight());
 		
-		xDimension.setText(Integer.toString(_overlay.getX()));
-		yDimension.setText(Integer.toString(_overlay.getY()));
-		wDimension.setText(Integer.toString(_overlay.getWidth()));
-		hDimension.setText(Integer.toString(_overlay.getHeight()));
+		xDimension.setValue(_overlay.getX());
+		yDimension.setValue(_overlay.getY());
+		wDimension.setValue(_overlay.getWidth());
+		hDimension.setValue(_overlay.getHeight());
 		
 	}
 	
 	@Action
 	public void applyOverlayChanges() {
+		applyChanges();
+	}
+	
+	@Action
+	public void okOverlayChanges() {
+		applyChanges();
+		setVisible(false);
+	}
+	
+	private void applyChanges() {
+		if (_overlay.isType(OverlayType.OLSTATE)) {
+			_overlay.stateId = (Integer)stateNumberSpinner.getValue();
+		}
+		_overlay.overlayText = textEditor.getRtfTextBody();
+		_overlay.setCentreText(chckbxCentreInBox.isSelected());
+		_overlay.setIncludeComments(chckbxIncludeComments.isSelected());
+		_overlay.setOmitDescription(chckbxOmitDescription.isSelected());
+		_overlay.setIntegralHeight(chckbxUseIntegralHeight.isSelected());
 		
+		_overlay.setX((Integer)xDimension.getValue());
+		_overlay.setY((Integer)yDimension.getValue());
+		_overlay.setWidth((Integer)wDimension.getValue());
+		_overlay.setHeight((Integer)hDimension.getValue());
+	}
+	
+	@Action
+	public void cancelOverlayChanges() {
+		setVisible(false);
 	}
 }
+

@@ -49,7 +49,7 @@ public class Pair<T, K> {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        Pair other = (Pair) obj;
+        Pair<?,?> other = (Pair<?,?>) obj;
         if (_first == null) {
             if (other._first != null)
                 return false;

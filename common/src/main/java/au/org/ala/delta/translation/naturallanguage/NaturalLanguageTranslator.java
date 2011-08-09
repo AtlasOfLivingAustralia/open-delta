@@ -305,7 +305,7 @@ public class NaturalLanguageTranslator extends AbstractDataSetTranslator {
             return new MultiStateAttributeTranslator((MultiStateCharacter) character, _characterFormatter, _attributeFormatter);
         }
         if (character instanceof NumericCharacter<?>) {
-            return new NumericAttributeTranslator((NumericCharacter<?>) character, _typeSetter, _attributeFormatter);
+            return new NumericAttributeTranslator((NumericCharacter<?>) character, _typeSetter, _attributeFormatter, _context.getOmitSpaceBeforeUnits());
         }
 
         return new TextAttributeTranslator(_attributeFormatter);
