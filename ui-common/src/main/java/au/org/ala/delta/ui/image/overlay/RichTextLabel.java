@@ -64,7 +64,7 @@ public class RichTextLabel extends JPanel implements OverlayLocationProvider {
 	public Dimension getPreferredSize() {
 		
 		
-		if (_overlay.getHeight(0, 0) < 0) {
+		if (_overlay.getHeight(0) < 0) {
 			Font f = getFont();
 			FontMetrics m = getFontMetrics(f);
 			m.getHeight();

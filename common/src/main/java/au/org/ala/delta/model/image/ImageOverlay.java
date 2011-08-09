@@ -139,11 +139,19 @@ public class ImageOverlay {
 		return location.get(id).Y;
 	}
 
-	public int getHeight(int id, double yscale) {
+	public int getHeight() {
+		return getHeight(0);
+	}
+	
+	public int getHeight(int id) {
 		return location.get(id).H;
 		
 	}
 
+	public int getWidth() {
+		return getWidth(0);
+	}
+	
 	public int getWidth(int id) {
 		return location.get(id).W;
 	}
@@ -164,6 +172,10 @@ public class ImageOverlay {
 		return (location.size() > 0 && (location.get(0).flags & OL_CENTER_TEXT) > 0);
 	}
 	
+	public boolean integralHeight() {
+		return (location.size() > 0 && (location.get(0).flags & OL_INTEGRAL_HEIGHT) > 0);
+	}
+	
 	public boolean canSelect() {
 		return type == OverlayType.OLSTATE || type == OverlayType.OLVALUE;
 	}
@@ -180,6 +192,7 @@ public class ImageOverlay {
 	public void setValueString(String value) {
 		int rangeIndex = value.indexOf("-");
 		if (rangeIndex >= 0) {
+			
 			minVal = value.substring(0, rangeIndex);
 			if (rangeIndex < value.length()-1) {
 				maxVal = value.substring(rangeIndex+1);

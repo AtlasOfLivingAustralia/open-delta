@@ -36,31 +36,28 @@ public class DeltaFormatTranslatorTest extends TranslatorTest {
 	}
 	
 	public void testItemsTranslation() throws Exception {
-		initialiseContext(DEFAULT_DATASET_PATH);
+		
 		_context.setOmitTypeSettingMarks(false);
-		_dataSetTranslator = _factory.createTranslator(_context);
-		_dataSetTranslator.translateItems();
+		_context.setInsertImplicitValues(true);
+		initialiseContext(DEFAULT_DATASET_PATH);
 		
 		checkResult("/dataset/sample/expected_results/deltaformatitems.txt");
 		
 	}
 	
 	public void testItemsTranslationOmitTypeSettingMarks() throws Exception {
-		initialiseContext(DEFAULT_DATASET_PATH);
+		_context.setInsertImplicitValues(true);
 		_context.setOmitTypeSettingMarks(true);
-		_dataSetTranslator = _factory.createTranslator(_context);
-		_dataSetTranslator.translateItems();
+		initialiseContext(DEFAULT_DATASET_PATH);
 		
 		checkResult("/dataset/sample/expected_results/deltaformatitem-omittypesettingmarks.txt");
 		
 	}
 	
 	public void testItemsTranslationNoImplicitValues() throws Exception {
-		initialiseContext(DEFAULT_DATASET_PATH);
 		_context.setInsertImplicitValues(false);
 		
-		_dataSetTranslator = _factory.createTranslator(_context);
-		_dataSetTranslator.translateItems();
+		initialiseContext(DEFAULT_DATASET_PATH);
 		
 		checkResult("/dataset/sample/expected_results/deltaformatitem-noimplicitvalues.txt");
 		

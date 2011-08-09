@@ -8,8 +8,6 @@
 
 *TRANSLATE INTO DELTA FORMAT
 
-*INSERT IMPLICIT VALUES
-
 *COMMENT The following directive has no effect in the sample data, as
        there are no variant items.
 

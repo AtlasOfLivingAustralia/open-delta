@@ -46,9 +46,9 @@ import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageOverlay;
 import au.org.ala.delta.model.image.OverlayType;
 import au.org.ala.delta.ui.RichTextDialog;
+import au.org.ala.delta.ui.image.AboutImageDialog;
 import au.org.ala.delta.ui.image.AudioPlayer;
 import au.org.ala.delta.ui.image.ImagePanel.ScalingMode;
-import au.org.ala.delta.ui.image.AboutImageDialog;
 import au.org.ala.delta.ui.image.OverlaySelectionObserver;
 import au.org.ala.delta.ui.image.SelectableOverlay;
 import au.org.ala.delta.util.DataSetHelper;
@@ -200,6 +200,7 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 		return controlMenu;
 	}
 	
+	
 	/**
 	 * Builds and returns the View menu.
 	 * 
@@ -301,18 +302,24 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 	 * @param image the image to display.
 	 */
 	public void displayImage(Image image) {
-		String text = subjectTextOrFileName(image);
-		if (!_imageEditors.containsKey(text)) {
-			addCardFor(image);
+		try {
+			_selectedImage = image;
+			String text = subjectTextOrFileName(image);
+			if (!_imageEditors.containsKey(text)) {
+				addCardFor(image);
+			}
+			
+			int index = _images.indexOf(_selectedImage);
+			_actionMap.get("nextImage").setEnabled(index < (_images.size()-1));
+			_actionMap.get("previousImage").setEnabled(index > 0);
+			_actionMap.get("showImageNotes").setEnabled(image.hasNotes());
+			_layout.show(_contentPanel, text);
+			revalidate();
+			replaySound();
 		}
-		_selectedImage = image;
-		int index = _images.indexOf(_selectedImage);
-		_actionMap.get("nextImage").setEnabled(index < (_images.size()-1));
-		_actionMap.get("previousImage").setEnabled(index > 0);
-		_actionMap.get("showImageNotes").setEnabled(image.hasNotes());
-		_layout.show(_contentPanel, text);
-		revalidate();
-		replaySound();
+		catch (Exception e) {
+			_messageHelper.errorLoadingImage(image.getFileName());
+		}
 	}
 	
 	

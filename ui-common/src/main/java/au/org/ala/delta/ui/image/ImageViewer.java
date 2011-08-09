@@ -17,12 +17,10 @@ import javax.swing.JComponent;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 
-import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageOverlay;
 import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.model.image.OverlayType;
-import au.org.ala.delta.model.image.ImageSettings.FontInfo;
 import au.org.ala.delta.ui.image.overlay.HotSpot;
 import au.org.ala.delta.ui.image.overlay.HotSpotGroup;
 import au.org.ala.delta.ui.image.overlay.OverlayButton;

@@ -22,8 +22,6 @@ import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.directives.ConforDirectiveFileParser;
 import au.org.ala.delta.directives.ConforDirectiveParserObserver;
-import au.org.ala.delta.translation.DataSetTranslator;
-import au.org.ala.delta.translation.DataSetTranslatorFactory;
 
 public class CONFOR {
 
@@ -77,12 +75,6 @@ public class CONFOR {
 		p.registerObserver(new ConforDirectiveParserObserver(context));
 		
 		p.parse(input, context);
-		
-		DataSetTranslatorFactory factory = new DataSetTranslatorFactory();
-		DataSetTranslator translator = factory.createTranslator(context);
-		
-		translator.translateItems();
-		
 	}
 
 }

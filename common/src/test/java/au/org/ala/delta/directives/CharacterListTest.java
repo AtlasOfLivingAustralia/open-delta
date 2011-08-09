@@ -7,6 +7,7 @@ import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DefaultDataSetFactory;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.MultiStateCharacter;
+import au.org.ala.delta.stub.DataSetTranslatorFactoryStub;
 
 import junit.framework.TestCase;
 
@@ -18,7 +19,7 @@ public class CharacterListTest extends TestCase {
 	
 	private DeltaDataSet _dataSet;
 	private DeltaContext _context;
-	
+	private CharacterList _characterList = new CharacterList();
 	
 	@Before
 	public void setUp() {
@@ -26,6 +27,7 @@ public class CharacterListTest extends TestCase {
 		_dataSet = factory.createDataSet("test");
 		_context = new DeltaContext(_dataSet);
 		
+		_characterList = new CharacterList(new DataSetTranslatorFactoryStub());
 	}
 	
 	public void testCharacterList() throws Exception {
@@ -41,8 +43,8 @@ public class CharacterListTest extends TestCase {
 			"    4. a rim of minute papillae/\n";
 
 		
-		CharacterList characterList = new CharacterList();
-		characterList.parseAndProcess(_context, charDescription);
+		
+		_characterList.parseAndProcess(_context, charDescription);
 		
 		assertEquals(1, _dataSet.getNumberOfCharacters());
 		MultiStateCharacter multiStateChar = (MultiStateCharacter)_dataSet.getCharacter(1);
