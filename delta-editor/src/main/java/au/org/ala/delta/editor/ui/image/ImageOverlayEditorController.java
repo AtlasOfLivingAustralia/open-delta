@@ -6,13 +6,22 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.swing.ActionMap;
+import javax.swing.JComponent;
+import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
 import org.jdesktop.application.Action;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ResourceMap;
 
+import au.org.ala.delta.editor.model.EditorViewModel;
+import au.org.ala.delta.editor.ui.util.MenuBuilder;
+import au.org.ala.delta.editor.ui.util.PopupMenuListener;
 import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.NumericCharacter;
 import au.org.ala.delta.model.image.Image;
@@ -23,21 +32,51 @@ import au.org.ala.delta.model.image.OverlayType;
 
 public class ImageOverlayEditorController {
 
+	class PopupDisplayer extends PopupMenuListener {
+		public PopupDisplayer(JComponent component) {
+			super(null, component);
+		}
+
+		@Override
+		protected void showPopup(Point p) {
+			_popupMenuLocation = p;
+			super.showPopup(p);
+		}
+
+		@Override
+		protected JPopupMenu getPopup() {
+			return buildPopupMenu();
+		}
+		
+	}
+	
+	
 	private ImageEditor _imageEditor;
-	private Image _selectedImage;
 	private ImageOverlay _selectedOverlay;
 	private ButtonAlignment _alignment;
 	private ImageSettings _imageSettings;
+	private ResourceMap _resources;
+	private ActionMap _actions;
+	private Point _popupMenuLocation;
+	private EditorViewModel _model;
 
 	enum ButtonAlignment {
 		ALIGN_VERTICAL, ALIGN_HORIZONTAL, ALIGN_NONE
 	};
 
-	public ImageOverlayEditorController(ImageEditor imageEditor) {
+	public ImageOverlayEditorController(ImageEditor imageEditor, EditorViewModel model) {
 		_imageEditor = imageEditor;
+		_resources = Application.getInstance().getContext().getResourceMap();
+		_actions = Application.getInstance().getContext().getActionMap(this);
+		_model = model;
+		new PopupDisplayer(imageEditor);
+		
 	}
+	
+	
 
-	private JPopupMenu buildPopupMenu() {
+	public JPopupMenu buildPopupMenu() {
+		boolean itemImage = (_model.getSelectedImage().getSubject() instanceof Item);
 		List<String> popupMenuActions = new ArrayList<String>();
 		popupMenuActions.add("editSelectedOverlay");
 		popupMenuActions.add("deleteSelectedOverlay");
@@ -47,32 +86,56 @@ public class ImageOverlayEditorController {
 		popupMenuActions.add("displayImageSettings");
 		popupMenuActions.add("-");
 		popupMenuActions.add("cancelPopup");
+		
+		JPopupMenu popup = new JPopupMenu();
+		MenuBuilder.buildMenu(popup, popupMenuActions, _actions);
 
 		List<String> stackOverlayMenuActions = new ArrayList<String>();
 		stackOverlayMenuActions.add("stackSelectedOverlayHigher");
 		stackOverlayMenuActions.add("stackSelectedOverlayLower");
 		stackOverlayMenuActions.add("stackSelectedOverlayOnTop");
 		stackOverlayMenuActions.add("stackSelectedOverlayOnBottom");
-
-		List<String> overlayMenuActions = new ArrayList<String>();
-		overlayMenuActions.add("addTextOverlay");
-		overlayMenuActions.add("-");
-		overlayMenuActions.add("addAllUsualOverlays");
-		overlayMenuActions.add("addFeatureDescriptionOverlay");
-		overlayMenuActions.add("addStateOverlay");
-		overlayMenuActions.add("addHotspot");
-		overlayMenuActions.add("-");
-		overlayMenuActions.add("addOkOverlay");
-		overlayMenuActions.add("addCancelOverlay");
-		overlayMenuActions.add("addNotesOverlay");
-
+		JMenu stackOverlayMenu = new JMenu(_resources.getString("overlayPopup.stackOverlayMenu"));
+		MenuBuilder.buildMenu(stackOverlayMenu, stackOverlayMenuActions, _actions);
+		popup.add(stackOverlayMenu, 2);
+		
+		List<String> insertOverlayMenuActions = new ArrayList<String>();
+		insertOverlayMenuActions.add("addTextOverlay");
+		if (itemImage) {
+			insertOverlayMenuActions.add("addItemNameOverlay");
+		}
+		insertOverlayMenuActions.add("-");
+		if (!itemImage) {
+			insertOverlayMenuActions.add("addAllUsualOverlays");
+			insertOverlayMenuActions.add("addFeatureDescriptionOverlay");
+			
+			insertOverlayMenuActions.add("addStateOverlay");
+			insertOverlayMenuActions.add("addHotspot");
+			insertOverlayMenuActions.add("-");
+		}
+		insertOverlayMenuActions.add("addOkOverlay");
+		insertOverlayMenuActions.add("addCancelOverlay");
+		if (!itemImage) {
+			insertOverlayMenuActions.add("addNotesOverlay");
+		}
+		else {
+			insertOverlayMenuActions.add("addImageNotesOverlay");
+		}
+		
+		JMenu insertOverlayMenu = new JMenu(_resources.getString("overlayPopup.insertOverlayMenu"));
+		MenuBuilder.buildMenu(insertOverlayMenu, insertOverlayMenuActions, _actions);
+		popup.add(insertOverlayMenu, 5);
+		
 		List<String> alignButtonsMenuActions = new ArrayList<String>();
 		alignButtonsMenuActions.add("useDefaultButtonAlignment");
 		alignButtonsMenuActions.add("alignButtonsVertically");
 		alignButtonsMenuActions.add("alignButtonsHorizontally");
 		alignButtonsMenuActions.add("dontAlignButtons");
-
-		throw new NotImplementedException();
+		JMenu alignButtonsMenu = new JMenu(_resources.getString("overlayPopup.alignButtonsMenu"));
+		MenuBuilder.buildMenu(alignButtonsMenu, alignButtonsMenuActions, _actions);
+		popup.add(alignButtonsMenu, 7);
+		
+		return popup;
 	}
 
 	@Action
@@ -82,12 +145,12 @@ public class ImageOverlayEditorController {
 
 	@Action
 	public void deleteSelectedOverlay() {
-		_selectedImage.deleteOverlay(_selectedOverlay);
+		_model.getSelectedImage().deleteOverlay(_selectedOverlay);
 	}
 
 	@Action
 	public void deleteAllOverlays() {
-		_selectedImage.deleteAllOverlays();
+		_model.getSelectedImage().deleteAllOverlays();
 	}
 
 	@Action
@@ -146,10 +209,10 @@ public class ImageOverlayEditorController {
 
 	@Action
 	public void addAllUsualOverlays() {
-		if (_selectedImage.getSubject() instanceof Character) {
-			Character character = (Character) _selectedImage.getSubject();
+		if (_model.getSelectedImage().getSubject() instanceof Character) {
+			Character character = (Character) _model.getSelectedImage().getSubject();
 			Point origin = new Point(150, 300);
-			if (_selectedImage.getOverlay(OverlayType.OLFEATURE) == null) {
+			if (_model.getSelectedImage().getOverlay(OverlayType.OLFEATURE) == null) {
 				ImageOverlay newOverlay = newOverlay(OverlayType.OLFEATURE);
 
 				newOverlay.setX(origin.x);
@@ -161,13 +224,13 @@ public class ImageOverlayEditorController {
 			if (character.getCharacterType().isMultistate()) {
 				addStateOverlays((MultiStateCharacter) character, origin);
 			} else if (character.getCharacterType().isNumeric()) {
-				if (_selectedImage.getOverlay(OverlayType.OLENTER) == null) {
+				if (_model.getSelectedImage().getOverlay(OverlayType.OLENTER) == null) {
 					ImageOverlay newOverlay = newOverlay(OverlayType.OLENTER);
 					newOverlay.setX(400);
 					newOverlay.setY(600);
 
 				}
-				if (_selectedImage.getOverlay(OverlayType.OLUNITS) == null
+				if (_model.getSelectedImage().getOverlay(OverlayType.OLUNITS) == null
 						&& StringUtils.isNotEmpty(((NumericCharacter<?>) character).getUnits())) {
 					ImageOverlay newOverlay = newOverlay(OverlayType.OLUNITS);
 
@@ -176,15 +239,15 @@ public class ImageOverlayEditorController {
 
 				}
 			}
-			if (_selectedImage.getOverlay(OverlayType.OLOK) == null) {
+			if (_model.getSelectedImage().getOverlay(OverlayType.OLOK) == null) {
 				newOverlay(OverlayType.OLOK);
 
 			}
-			if (_selectedImage.getOverlay(OverlayType.OLCANCEL) == null) {
+			if (_model.getSelectedImage().getOverlay(OverlayType.OLCANCEL) == null) {
 				newOverlay(OverlayType.OLCANCEL);
 
 			}
-			if (StringUtils.isNotEmpty(character.getNotes()) && _selectedImage.getOverlay(OverlayType.OLNOTES) == null) {
+			if (StringUtils.isNotEmpty(character.getNotes()) && _model.getSelectedImage().getOverlay(OverlayType.OLNOTES) == null) {
 				newOverlay(OverlayType.OLNOTES);
 
 			}
@@ -193,7 +256,7 @@ public class ImageOverlayEditorController {
 
 	private void addStateOverlays(MultiStateCharacter character, Point origin) {
 		int stateNum;
-		List<ImageOverlay> overlays = _selectedImage.getOverlaysOfType(OverlayType.OLSTATE);
+		List<ImageOverlay> overlays = _model.getSelectedImage().getOverlaysOfType(OverlayType.OLSTATE);
 		Set<Integer> states = new HashSet<Integer>();
 		for (ImageOverlay overlay : overlays) {
 			states.add(overlay.stateId);
@@ -223,7 +286,12 @@ public class ImageOverlayEditorController {
 
 	@Action
 	public void addFeatureDescriptionOverlay() {
-		throw new NotImplementedException();
+		addOverlay(OverlayType.OLFEATURE);
+	}
+	
+	@Action
+	public void addItemNameOverlay() {
+		addOverlay(OverlayType.OLITEM);
 	}
 
 	@Action
@@ -250,20 +318,25 @@ public class ImageOverlayEditorController {
 	public void addNotesOverlay() {
 		addOverlay(OverlayType.OLNOTES);
 	}
+	
+	@Action
+	public void addImageNotesOverlay() {
+		addOverlay(OverlayType.OLIMAGENOTES);
+	}
 
 	private void addOverlay(int overlayType) {
 		ImageOverlay overlay = newOverlay(overlayType);
 	}
 
 	private ImageOverlay newStateOverlay(int stateNum) {
-		ImageOverlay anOverlay = _selectedImage.addOverlay(OverlayType.OLSTATE);
+		ImageOverlay anOverlay = _model.getSelectedImage().addOverlay(OverlayType.OLSTATE);
 		anOverlay.stateId = stateNum;
 		configureOverlay(anOverlay);
 		return anOverlay;
 	}
 
 	private ImageOverlay newOverlay(int overlayType) {
-		ImageOverlay anOverlay = _selectedImage.addOverlay(overlayType);
+		ImageOverlay anOverlay = _model.getSelectedImage().addOverlay(overlayType);
 		configureOverlay(anOverlay);
 		return anOverlay;
 	}
@@ -303,7 +376,7 @@ public class ImageOverlayEditorController {
 			newLocation.setX(Math.max(0, Math.min(1000 - bwClient, (int) newLocation.X)));
 			newLocation.setY(Math.max(0, Math.min(1000 - bhClient, (int) newLocation.Y)));
 			int okWhere = Integer.MIN_VALUE, cancelWhere = Integer.MIN_VALUE, notesWhere = Integer.MIN_VALUE;
-			ImageOverlay okOverlay = _selectedImage.getOverlay(OverlayType.OLOK);
+			ImageOverlay okOverlay = _model.getSelectedImage().getOverlay(OverlayType.OLOK);
 			if (okOverlay != null) {
 				if (align == ButtonAlignment.ALIGN_VERTICAL) {
 					newLocation.setX(okOverlay.getX());
@@ -313,7 +386,7 @@ public class ImageOverlayEditorController {
 					okWhere = okOverlay.getX();
 				}
 			}
-			ImageOverlay cancelOverlay = _selectedImage.getOverlay(OverlayType.OLCANCEL);
+			ImageOverlay cancelOverlay = _model.getSelectedImage().getOverlay(OverlayType.OLCANCEL);
 			if (cancelOverlay != null) {
 				if (align == ButtonAlignment.ALIGN_VERTICAL) {
 					newLocation.setX(cancelOverlay.getX());
@@ -324,10 +397,10 @@ public class ImageOverlayEditorController {
 				}
 			}
 			ImageOverlay notesOverlay;
-			if (_selectedImage.getSubject() instanceof au.org.ala.delta.model.Character)
-				notesOverlay = _selectedImage.getOverlay(OverlayType.OLNOTES);
+			if (_model.getSelectedImage().getSubject() instanceof au.org.ala.delta.model.Character)
+				notesOverlay = _model.getSelectedImage().getOverlay(OverlayType.OLNOTES);
 			else
-				notesOverlay = _selectedImage.getOverlay(OverlayType.OLIMAGENOTES);
+				notesOverlay = _model.getSelectedImage().getOverlay(OverlayType.OLIMAGENOTES);
 			if (notesOverlay != null) {
 				if (align == ButtonAlignment.ALIGN_VERTICAL) {
 					newLocation.setX(notesOverlay.getX());

@@ -278,6 +278,13 @@ public class DataSetWrapper implements ObservableDeltaDataSet, DeltaDataSetObser
 		}	
 	}
 
+	@Override
+	public void imageEdited(DeltaDataSetChangeEvent event) {
+		for (int i=_observerList.size()-1; i>=0; i--) {
+			_observerList.get(i).imageEdited(event);
+		}	
+	}
+
     @Override
     public Attribute addAttribute(int itemNumber, int characterNumber) {
         return _wrappedDataSet.addAttribute(itemNumber, characterNumber);

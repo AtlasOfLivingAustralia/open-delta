@@ -1,5 +1,7 @@
 package au.org.ala.delta.editor.ui.util;
 
+import java.util.List;
+
 import javax.swing.ActionMap;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
@@ -36,12 +38,19 @@ public class MenuBuilder {
 		return menus;
 	}
 	
+	public static JMenuItem[] buildMenu(JMenu menu, List<String> actionNames, ActionMap actionMap) {
+		return buildMenu(menu, actionNames.toArray(new String[actionNames.size()]), actionMap);
+	}
+	
 	public static void buildMenu(JPopupMenu menu, String[] actionNames, ActionMap actionMap) {
 		for (String action : actionNames) {
 			addMenuItem(menu, action, actionMap);
 		}
 	}
 	
+	public static void buildMenu(JPopupMenu menu, List<String> actionNames, ActionMap actionMap) {
+		buildMenu(menu, actionNames.toArray(new String[actionNames.size()]), actionMap);
+	}
 	/**
 	 * Creates and adds a menu item to the supplied menu with an action identified by the supplied actionName.
 	 * 

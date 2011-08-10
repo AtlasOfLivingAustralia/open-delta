@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.observer.CharacterObserver;
 import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
 import au.org.ala.delta.model.observer.DeltaDataSetObserver;
@@ -209,6 +210,9 @@ public abstract class AbstractObservableDataSet implements ObservableDeltaDataSe
 	protected void fireDeltaDataSetEvent(Item item, Character character, Object extraInformation, DataSetEventDispatcher dispatcher) {
 		dispatcher.fireDataSetEvent(item, character, extraInformation);
 	}
+	protected void fireDeltaDataSetEvent(Image image, DataSetEventDispatcher dispatcher) {
+		dispatcher.fireDataSetEvent(new DeltaDataSetChangeEvent(this, image));
+	}
 	
 	protected void fireItemAdded(Item item) {
 		fireDeltaDataSetEvent(item, null, new ItemAddedDispatcher());
@@ -238,11 +242,17 @@ public abstract class AbstractObservableDataSet implements ObservableDeltaDataSe
 	public void characterChanged(Character character) {
 		fireDeltaDataSetEvent(null, character, new CharacterEditedDispatcher());
 	}
+	
+	@Override
+	public void imageChanged(Image image) {
+		fireDeltaDataSetEvent(image, new ImageEditedDispatcher());
+	}
 
 	@Override
 	public void itemChanged(Item item, Attribute attribute) {
 		fireDeltaDataSetEvent(item, null, new ItemEditedDispatcher());
 	}
+	
 	
 
 	protected abstract class DataSetEventDispatcher {
@@ -301,6 +311,13 @@ public abstract class AbstractObservableDataSet implements ObservableDeltaDataSe
 		@Override
 		public void doFireEvent(DeltaDataSetObserver observer, DeltaDataSetChangeEvent event) {
 			observer.characterEdited(event);
+		}
+	}
+	
+	protected class ImageEditedDispatcher extends DataSetEventDispatcher {
+		@Override
+		public void doFireEvent(DeltaDataSetObserver observer, DeltaDataSetChangeEvent event) {
+			observer.imageEdited(event);
 		}
 	}
 

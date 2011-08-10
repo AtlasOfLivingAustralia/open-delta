@@ -23,8 +23,9 @@ import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.impl.CharacterData;
 import au.org.ala.delta.model.impl.ControllingInfo;
 import au.org.ala.delta.model.observer.CharacterObserver;
+import au.org.ala.delta.model.observer.ImageObserver;
 
-public abstract class Character implements Illustratable, Comparable<Character> {
+public abstract class Character implements Illustratable, Comparable<Character>, ImageObserver {
 
     private int _number;
     
@@ -211,6 +212,7 @@ public abstract class Character implements Illustratable, Comparable<Character> 
 	public Image addImage(String fileName, String comments) {
 		Image image = _impl.addImage(fileName, comments);
 		image.setSubject(this);
+		image.addImageObserver(this);
 		notifyObservers();
 		
 		return image;
@@ -222,6 +224,7 @@ public abstract class Character implements Illustratable, Comparable<Character> 
     	
     	for (Image image : images) {
     		image.setSubject(this);
+    		image.addImageObserver(this);
     	}
     	
     	return images;
@@ -271,6 +274,18 @@ public abstract class Character implements Illustratable, Comparable<Character> 
         _observers.remove(observer);
     }
 
+    @Override
+    public void imageChanged(Image image) {
+    	if (_observers == null) {
+            return;
+        }
+        // Notify observers in reverse order to support observer removal during
+        // event handling.
+        for (int i = _observers.size() - 1; i >= 0; i--) {
+            _observers.get(i).imageChanged(image);
+        }
+    }
+    
     /**
      * Notifies all registered CharacterObservers that this Character has
      * changed.
@@ -313,5 +328,5 @@ public abstract class Character implements Illustratable, Comparable<Character> 
         return Integer.valueOf(this.getCharacterId()).compareTo(Integer.valueOf(o.getCharacterId()));
     }
 
-
+   
 }

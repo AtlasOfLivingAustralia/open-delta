@@ -111,7 +111,7 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 		
 		_actionMap.get("replayVideo").setEnabled(false);
 		setName("ImageEditor-"+_subject.toString());
-		
+		new ImageOverlayEditorController(this, model);
 		buildMenus();
 	}
 	
@@ -286,6 +286,7 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 	}
 	
 	private void displaySubject(Illustratable subject, Image image) {
+		_model.setSelectedImage(image);
 		_subject = image.getSubject();
 		_images = _subject.getImages();
 		_contentPanel.removeAll();

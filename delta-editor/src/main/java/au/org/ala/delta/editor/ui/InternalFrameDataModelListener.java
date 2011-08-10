@@ -97,4 +97,9 @@ public class InternalFrameDataModelListener extends InternalFrameAdapter impleme
 	public void characterSelected(DeltaDataSetChangeEvent event) {
 		_frame.repaint();
 	}
+	
+	@Override
+	public void imageEdited(DeltaDataSetChangeEvent event) {
+		_frame.repaint();
+	}
 }

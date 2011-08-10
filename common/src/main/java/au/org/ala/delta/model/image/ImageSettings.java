@@ -2,6 +2,9 @@ package au.org.ala.delta.model.image;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.io.File;
+
+import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.model.image.OverlayLocation.OLDrawType;
 
@@ -50,8 +53,24 @@ public class ImageSettings {
 	private FontInfo _defaultFontInfo;
 	private FontInfo _defaultFeatureFontInfo;
 	private FontInfo _defaultButtonFont;
+	private String _dataSetPath;
+	
+	public ImageSettings() {
+		_dataSetPath = null;
+	}
+	
+	public ImageSettings(String dataSetPath) {
+		_dataSetPath = dataSetPath;
+	}
+	
+	public void setDataSetPath(String path) {
+		_dataSetPath = path;
+	}
 	
 	public String getImagePath() {
+		if (StringUtils.isNotEmpty(_dataSetPath)) {
+			return _dataSetPath + File.separator + _imagePath;
+		}
 		return _imagePath;
 	}
 	

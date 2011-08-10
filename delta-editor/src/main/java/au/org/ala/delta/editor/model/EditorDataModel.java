@@ -18,6 +18,7 @@ import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.ObservableDeltaDataSet;
 import au.org.ala.delta.model.image.Image;
+import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
 
 
@@ -162,6 +163,13 @@ public class EditorDataModel extends DataSetWrapper implements EditorViewModel, 
 	}
 	
 	
+	@Override
+	public ImageSettings getImageSettings() {
+		ImageSettings settings = _wrappedDataSet.getImageSettings();
+		settings.setDataSetPath(getDataSetPath());
+		return settings;
+	}
+
 	@Override
 	public String getDataSetPath() {
 		File name = new File(getName());

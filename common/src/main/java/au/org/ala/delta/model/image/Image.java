@@ -9,6 +9,7 @@ import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.model.Illustratable;
 import au.org.ala.delta.model.impl.ImageData;
+import au.org.ala.delta.model.observer.ImageObserver;
 
 /**
  * DELTA data sets support the inclusion of images to illustrate Taxa and Characters.
@@ -21,6 +22,7 @@ public class Image {
 
 	private ImageData _impl;
 	private Illustratable _subject;
+	private List<ImageObserver> _observers;
 	
 	public Image(ImageData data) {
 		_impl = data;
@@ -36,6 +38,7 @@ public class Image {
 	
 	public void setOverlays(List<ImageOverlay> overlays) {
 		_impl.setOverlays(overlays);
+		 notifyObservers();
 	}
 
 	public String getFileName() {
@@ -140,6 +143,7 @@ public class Image {
 	
 	public void addOverlay(ImageOverlay overlay) {
 		_impl.addOverlay(overlay);
+		 notifyObservers();
 	}
 	
 	public ImageOverlay addOverlay(int overlayType) {
@@ -150,10 +154,12 @@ public class Image {
 	
 	public void updateOverlay(ImageOverlay overlay) {
 		_impl.updateOverlay(overlay);
+		 notifyObservers();
 	}
 	
 	public void deleteOverlay(ImageOverlay overlay) {
 		_impl.deleteOverlay(overlay);
+		notifyObservers();
 	}
 	
 	public void deleteAllOverlays() {
@@ -206,4 +212,48 @@ public class Image {
 		ImageOverlay notesOverlay = getFirstOverlayOfType(OverlayType.OLIMAGENOTES);
 		return notesOverlay != null;
 	}
+	
+	/**
+     * Registers interest in being notified of changes to this Image.
+     * 
+     * @param observer
+     *            the object interested in receiving notification of changes.
+     */
+    public void addImageObserver(ImageObserver observer) {
+        if (_observers == null) {
+            _observers = new ArrayList<ImageObserver>(1);
+        }
+        if (!_observers.contains(observer)) {
+            _observers.add(observer);
+        }
+    }
+
+    /**
+     * De-registers interest in changes to this Image.
+     * 
+     * @param observer
+     *            the object no longer interested in receiving notification of
+     *            changes.
+     */
+    public void removeImageObserver(ImageObserver observer) {
+        if (_observers == null) {
+            return;
+        }
+        _observers.remove(observer);
+    }
+
+    /**
+     * Notifies all registered ImageObservers that this Image has
+     * changed.
+     */
+    protected void notifyObservers() {
+        if (_observers == null) {
+            return;
+        }
+        // Notify observers in reverse order to support observer removal during
+        // event handling.
+        for (int i = _observers.size() - 1; i >= 0; i--) {
+            _observers.get(i).imageChanged(this);
+        }
+    }
 }

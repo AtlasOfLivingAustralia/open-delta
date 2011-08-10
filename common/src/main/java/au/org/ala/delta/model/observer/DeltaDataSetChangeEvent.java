@@ -2,6 +2,7 @@ package au.org.ala.delta.model.observer;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.image.Image;
 
 /**
  * Contains information about a change to a DeltaDataSet.
@@ -11,6 +12,8 @@ public class DeltaDataSetChangeEvent {
 	public Character _character;
 	
 	public Item _item;
+	
+	public Image _image;
 	
 	public DeltaDataSet _dataSet;
 	
@@ -35,12 +38,21 @@ public class DeltaDataSetChangeEvent {
 		_extra = extra;
 	}
 	
+	public DeltaDataSetChangeEvent(DeltaDataSet source, Image image) {
+		_dataSet = source;
+		_image = image;
+	}
+	
 	public Character getCharacter() {
 		return _character;
 	}
 	
 	public Item getItem() {
 		return _item;
+	}
+	
+	public Image getImage() {
+		return _image;
 	}
 	
 	public Object getExtraInformation() {

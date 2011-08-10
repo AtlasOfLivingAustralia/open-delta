@@ -22,13 +22,14 @@ import org.apache.commons.lang.StringUtils;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.impl.ItemData;
 import au.org.ala.delta.model.observer.AttributeObserver;
+import au.org.ala.delta.model.observer.ImageObserver;
 import au.org.ala.delta.model.observer.ItemObserver;
 
 /**
  * Represents an Item in the DELTA system.
  * An item usually corresponds to a Taxon, but a 1-1 relationship is not required.
  */
-public class Item implements AttributeObserver, Illustratable, Comparable<Item> {
+public class Item implements AttributeObserver, ImageObserver, Illustratable, Comparable<Item> {
 
     private ItemData _impl;
 
@@ -132,6 +133,7 @@ public class Item implements AttributeObserver, Illustratable, Comparable<Item> 
     public Image addImage(String fileName, String comments) {
     	Image image = _impl.addImage(fileName, comments);
     	image.setSubject(this);
+    	image.addImageObserver(this);
     	notifyObservers();
     	
     	return image;
@@ -155,6 +157,7 @@ public class Item implements AttributeObserver, Illustratable, Comparable<Item> 
     	
     	for (Image image : images) {
     		image.setSubject(this);
+    		image.addImageObserver(this);
     	}
     	
     	return images;
@@ -202,6 +205,18 @@ public class Item implements AttributeObserver, Illustratable, Comparable<Item> 
 	protected void notifyObservers() {
 		notifyObservers(null);
 	}	
+	
+	 @Override
+    public void imageChanged(Image image) {
+    	if (_observers == null) {
+            return;
+        }
+        // Notify observers in reverse order to support observer removal during
+        // event handling.
+        for (int i = _observers.size() - 1; i >= 0; i--) {
+            _observers.get(i).imageChanged(image);
+        }
+    }
 	
 	/**
 	 * Notifies all registered ItemObservers that this Item has changed.

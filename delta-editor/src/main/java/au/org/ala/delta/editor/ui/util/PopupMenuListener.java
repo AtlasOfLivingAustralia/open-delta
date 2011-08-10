@@ -1,5 +1,6 @@
 package au.org.ala.delta.editor.ui.util;
 
+import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -14,9 +15,11 @@ import javax.swing.JPopupMenu;
 public class PopupMenuListener extends MouseAdapter {
 	
 	private JPopupMenu _popup;
+	private JComponent _component;
 	
 	public PopupMenuListener(JPopupMenu popup, JComponent component) {
 		_popup = popup;
+		_component = component;
 		component.addMouseListener(this);
 	}
 	
@@ -28,14 +31,17 @@ public class PopupMenuListener extends MouseAdapter {
         maybeShowPopup(e);
     }
 
-    private void maybeShowPopup(MouseEvent e) {
+    protected void maybeShowPopup(MouseEvent e) {
         if (e.isPopupTrigger()) {
-            getPopup().show(e.getComponent(),
-                       e.getX(), e.getY());
+        	showPopup(new Point(e.getX(), e.getY()));
         }
     }
     
     protected JPopupMenu getPopup() {
     	return _popup;
+    }
+    
+    protected void showPopup(Point p) {
+    	getPopup().show(_component, p.x, p.y);
     }
 }

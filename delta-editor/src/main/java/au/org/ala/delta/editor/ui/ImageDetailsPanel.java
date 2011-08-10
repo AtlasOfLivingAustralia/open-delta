@@ -318,7 +318,7 @@ public class ImageDetailsPanel extends JPanel {
 	 */
 	public void bind(EditorViewModel model, Illustratable target) {
 		_illustratable = target;
-		_dataSet = model;
+		setDataSet(model);
 		List<Image> images = _illustratable.getImages();
 		imageList.setImages(images);
 	}
@@ -535,15 +535,25 @@ public class ImageDetailsPanel extends JPanel {
 		@Override
 		public void itemEdited(DeltaDataSetChangeEvent event) {
 			if (event.getItem().equals(_illustratable)) {
-				int selection = -1;
-				if (_selectedImage != null) {
-					selection = imageList.getSelectedIndex();
-				}
-				bind(_dataSet, _illustratable);
-				if (selection != -1) {
-					imageList.setSelectedIndex(selection);
-				}
-				
+				updateImageList();				
+			}
+		}
+
+		private void updateImageList() {
+			int selection = -1;
+			if (_selectedImage != null) {
+				selection = imageList.getSelectedIndex();
+			}
+			bind(_dataSet, _illustratable);
+			if (selection != -1) {
+				imageList.setSelectedIndex(selection);
+			}
+		}
+		
+		@Override
+		public void characterEdited(DeltaDataSetChangeEvent event) {
+			if (event.getCharacter().equals(_illustratable)) {
+				updateImageList();
 			}
 		}
 	};
