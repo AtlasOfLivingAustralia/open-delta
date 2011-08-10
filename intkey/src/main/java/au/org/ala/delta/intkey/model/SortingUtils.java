@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -104,7 +105,9 @@ public class SortingUtils {
 
         // Build list of remaining taxa
         int numAvailableTaxa = 0;
-        Set<Item> includedTaxa = context.getIncludedTaxa();
+        
+        //Put includedTaxa into a hash set to speed up membership lookup
+        Set<Item> includedTaxa = new HashSet<Item>(context.getIncludedTaxa());
         Map<Item, Boolean> taxaAvailability = new HashMap<Item, Boolean>();
 
         // TODO this line throws exception if no characters have been USEd yet

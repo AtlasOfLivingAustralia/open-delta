@@ -32,7 +32,7 @@ public class TaxonKeywordSelectionDialog extends KeywordSelectionDialog {
     @Resource
     String allTaxaInSelectedSetExcludedCaption;
 
-    private Set<Item> _includedTaxa;
+    private List<Item> _includedTaxa;
     private List<Item> _selectedTaxa;
 
     public TaxonKeywordSelectionDialog(Dialog owner, IntkeyContext context, String directiveName, boolean permitSelectionFromIncludedTaxaOnly) {

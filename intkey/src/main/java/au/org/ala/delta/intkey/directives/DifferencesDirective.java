@@ -140,7 +140,7 @@ public class DifferencesDirective extends IntkeyDirective {
         } else {
             // If taxa not input using dialog, filter any taxa that are not
             // currently included
-            Set<Item> includedTaxa = context.getIncludedTaxa();
+            List<Item> includedTaxa = context.getIncludedTaxa();
             taxa.retainAll(includedTaxa);
             if (taxa.isEmpty()) {
                 context.getUI().displayErrorMessage("All selected taxa have been excluded");

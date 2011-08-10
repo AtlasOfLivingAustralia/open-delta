@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.ActionMap;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.border.EmptyBorder;
 
@@ -29,7 +30,7 @@ public class TaxonSelectionDialog extends ListSelectionDialog {
     private JButton _btnFullText;
     private JButton _btnHelp;
 
-    private TaxonListModel _listModel;
+    private DefaultListModel _listModel;
 
     // The name of the directive being processed
     private String _directiveName;
@@ -121,15 +122,17 @@ public class TaxonSelectionDialog extends ListSelectionDialog {
         _selectedTaxa = new ArrayList<Item>();
 
         if (taxa != null) {
-            _listModel = new TaxonListModel(taxa);
+            _listModel = new DefaultListModel();
+            _listModel.copyInto(taxa.toArray());
             _list.setModel(_listModel);
+            _list.setCellRenderer(new TaxonCellRenderer());
         }
     }
 
     @Action
     public void taxonSelectionDialog_OK() {
         for (int i : _list.getSelectedIndices()) {
-            _selectedTaxa.add(_listModel.getTaxonAt(i));
+            _selectedTaxa.add((Item) _listModel.getElementAt(i));
         }
 
         this.setVisible(false);

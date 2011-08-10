@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.swing.ActionMap;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.border.EmptyBorder;
@@ -43,7 +44,7 @@ public class CharacterSelectionDialog extends ListSelectionDialog {
     private JButton _btnNotes;
     private JButton _btnHelp;
 
-    private CharacterListModel _listModel;
+    private DefaultListModel _listModel;
 
     // The name of the directive being processed
     private String _directiveName;
@@ -146,15 +147,17 @@ public class CharacterSelectionDialog extends ListSelectionDialog {
         _selectedCharacters = new ArrayList<Character>();
 
         if (characters != null) {
-            _listModel = new CharacterListModel(characters);
+            _listModel = new DefaultListModel();
+            _listModel.copyInto(characters.toArray());
             _list.setModel(_listModel);
+            _list.setCellRenderer(new CharacterCellRenderer());
         }
     }
 
     @Action
     public void characterSelectionDialog_OK() {
         for (int i : _list.getSelectedIndices()) {
-            _selectedCharacters.add(_listModel.getCharacterAt(i));
+            _selectedCharacters.add((Character)_listModel.getElementAt(i));
         }
 
         this.setVisible(false);

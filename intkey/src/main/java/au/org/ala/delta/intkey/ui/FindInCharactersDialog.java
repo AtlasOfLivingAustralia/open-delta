@@ -20,6 +20,7 @@ import javax.swing.JButton;
 import org.apache.commons.lang.StringUtils;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
+import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.intkey.Intkey;
@@ -42,7 +43,6 @@ public class FindInCharactersDialog extends JDialog {
     private JCheckBox _chckbxSearchStates;
     private JPanel _pnlMainBottom;
     private JTextField _textField;
-    private JLabel lblEnterSearchString;
 
     private javax.swing.Action _findAction;
     private javax.swing.Action _nextAction;
@@ -52,13 +52,30 @@ public class FindInCharactersDialog extends JDialog {
 
     private int _numMatchedCharacters;
     private int _currentMatchedCharacter;
+    private JLabel _lblEnterSearchString;
+    
+    @Resource
+    String windowTitle;
+    
+    @Resource
+    String windowTitleNumberFound;
 
+    @Resource
+    String enterSearchStringCaption;
+    
+    @Resource
+    String searchStatesCaption;
+    
+    @Resource
+    String searchUsedCharactersCaption;
+    
     public FindInCharactersDialog(Intkey intkeyApp, IntkeyContext context) {
         super(intkeyApp.getMainFrame(), false);
+        setResizable(false);
 
         ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(FindInCharactersDialog.class);
         resourceMap.injectFields(this);
-        ActionMap actionMap = Application.getInstance().getContext().getActionMap(FindInCharactersDialog.class, this);
+        ActionMap actionMap = Application.getInstance().getContext().getActionMap(this);
 
         _intkeyApp = intkeyApp;
 
@@ -67,6 +84,8 @@ public class FindInCharactersDialog extends JDialog {
 
         _findAction = actionMap.get("findCharacters");
         _nextAction = actionMap.get("nextCharacter");
+        
+        this.setTitle(windowTitle);
 
         _pnlMain = new JPanel();
         _pnlMain.setBorder(new EmptyBorder(20, 20, 20, 20));
@@ -77,9 +96,9 @@ public class FindInCharactersDialog extends JDialog {
         _pnlMain.add(_pnlMainTop, BorderLayout.NORTH);
         _pnlMainTop.setLayout(new BoxLayout(_pnlMainTop, BoxLayout.Y_AXIS));
 
-        lblEnterSearchString = new JLabel("Enter search string:");
-        lblEnterSearchString.setBorder(new EmptyBorder(0, 0, 5, 0));
-        _pnlMainTop.add(lblEnterSearchString);
+        _lblEnterSearchString = new JLabel(enterSearchStringCaption);
+        _lblEnterSearchString.setBorder(new EmptyBorder(0, 0, 5, 0));
+        _pnlMainTop.add(_lblEnterSearchString);
 
         _textField = new JTextField();
         _pnlMainTop.add(_textField);
@@ -107,10 +126,10 @@ public class FindInCharactersDialog extends JDialog {
         _pnlMain.add(_pnlMainBottom, BorderLayout.CENTER);
         _pnlMainBottom.setLayout(new BoxLayout(_pnlMainBottom, BoxLayout.Y_AXIS));
 
-        _chckbxSearchStates = new JCheckBox("Search states");
+        _chckbxSearchStates = new JCheckBox(searchStatesCaption);
         _pnlMainBottom.add(_chckbxSearchStates);
 
-        _chckbxSearchUsedCharacters = new JCheckBox("Search used characters");
+        _chckbxSearchUsedCharacters = new JCheckBox(searchUsedCharactersCaption);
         _pnlMainBottom.add(_chckbxSearchUsedCharacters);
 
         _pnlButtons = new JPanel();
@@ -147,7 +166,7 @@ public class FindInCharactersDialog extends JDialog {
         gbc__btnPrevious.gridy = 1;
         _pnlInnerButtons.add(_btnPrevious, gbc__btnPrevious);
 
-        _btnDone = new JButton("Done");
+        _btnDone = new JButton();
         _btnDone.setAction(actionMap.get("findCharactersDone"));
 
         GridBagConstraints gbc__btnDone = new GridBagConstraints();
@@ -157,6 +176,7 @@ public class FindInCharactersDialog extends JDialog {
         _pnlInnerButtons.add(_btnDone, gbc__btnDone);
 
         this.pack();
+        this.setLocationRelativeTo(_intkeyApp.getMainFrame());
     }
 
     @Action
@@ -167,7 +187,8 @@ public class FindInCharactersDialog extends JDialog {
         boolean searchUsedCharacters = _chckbxSearchUsedCharacters.isSelected();
         if (!StringUtils.isEmpty(searchText)) {
             _numMatchedCharacters = _intkeyApp.findCharacters(searchText, searchStates, searchUsedCharacters);
-
+            this.setTitle(String.format(windowTitleNumberFound, _numMatchedCharacters));
+            
             if (_numMatchedCharacters > 0) {
                 _currentMatchedCharacter = 0;
                 characterSelectionUpdated();
@@ -207,12 +228,12 @@ public class FindInCharactersDialog extends JDialog {
     }
 
     private void reset() {
-        System.out.println("calling reset!");
         if (_numMatchedCharacters > 0) {
+            this.setTitle(windowTitle);
             _btnFindNext.setAction(_findAction);
             _btnFindNext.setEnabled(true);
             _btnPrevious.setEnabled(false);
-            
+
             _numMatchedCharacters = 0;
             _currentMatchedCharacter = -1;
         }

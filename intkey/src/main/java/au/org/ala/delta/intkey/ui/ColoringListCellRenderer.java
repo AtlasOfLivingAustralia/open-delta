@@ -9,30 +9,28 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 
-public class ColoringListCellRenderer extends JLabel implements ListCellRenderer {
+public abstract class ColoringListCellRenderer extends JLabel implements ListCellRenderer {
 
     /**
      * 
      */
     private static final long serialVersionUID = 8458733723316953454L;
     
-    private Set<Integer> _indicesToColor;
-
     public ColoringListCellRenderer() {
         setOpaque(true);
-        _indicesToColor = new HashSet<Integer>();
     }
 
     @Override
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-        String s = value.toString();
+        String s = getTextForValue(value);
+        
         setText(s);
         if (isSelected) {
             setBackground(list.getSelectionBackground());
             setForeground(list.getSelectionForeground());
         } else {
             setBackground(list.getBackground());
-            if (_indicesToColor.contains(index)) {
+            if (isValueColored(value)) {
                 setForeground(Color.BLUE);
             } else {
                 setForeground(list.getForeground());
@@ -44,8 +42,6 @@ public class ColoringListCellRenderer extends JLabel implements ListCellRenderer
         return this;
     }
 
-    public void setIndicesToColor(Set<Integer> indicesToColor) {
-        _indicesToColor = new HashSet<Integer>(indicesToColor);
-    }
-
+    protected abstract String getTextForValue(Object value);
+    protected abstract boolean isValueColored(Object value);
 }

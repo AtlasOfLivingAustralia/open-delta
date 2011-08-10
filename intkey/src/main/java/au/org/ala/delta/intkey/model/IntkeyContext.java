@@ -298,7 +298,7 @@ public class IntkeyContext extends AbstractDeltaContext {
 
         _recordDirectiveHistory = true;
         _processingInputFile = false;
-
+        
         _appUI.handleNewDataset(_dataset);
     }
 
@@ -768,6 +768,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         return _matchType;
     }
 
+    //Returns included characters ordered by character number
     public List<Character> getIncludedCharacters() {
         List<Character> retList = new ArrayList<Character>();
 
@@ -780,14 +781,17 @@ public class IntkeyContext extends AbstractDeltaContext {
         return retList;
     }
 
-    public Set<Item> getIncludedTaxa() {
-        Set<Item> retSet = new HashSet<Item>();
+    //Returns included taxa ordered by taxon number
+    public List<Item> getIncludedTaxa() {
+        List<Item> retList = new ArrayList<Item>();
 
         for (int charNum : _includedTaxa) {
-            retSet.add(_dataset.getTaxon(charNum));
+            retList.add(_dataset.getTaxon(charNum));
         }
+        
+        Collections.sort(retList);
 
-        return retSet;
+        return retList;
     }
 
     public void setIncludedCharacters(Set<Integer> includedCharacters) {
@@ -837,6 +841,50 @@ public class IntkeyContext extends AbstractDeltaContext {
     
     public List<Character> getUsedCharacters() {
         return _specimen.getUsedCharacters();
+    }
+    
+    public List<Item> getAvailableTaxa() {
+        Map<Item, Integer> taxaDifferenceCounts = _specimen.getTaxonDifferences();
+
+        List<Item> includedTaxa = getIncludedTaxa();
+        List<Item> availableTaxa = new ArrayList<Item>();
+
+        if (taxaDifferenceCounts != null) {
+            for (Item taxon : includedTaxa) {
+                if (taxaDifferenceCounts.containsKey(taxon)) {
+                    int diffCount = taxaDifferenceCounts.get(taxon);
+                    if (diffCount <= _tolerance) {
+                        availableTaxa.add(taxon);
+                    } 
+                } else {
+                    availableTaxa.add(taxon);
+                }
+            }
+        } else {
+            availableTaxa.addAll(includedTaxa);
+        }
+        
+        return availableTaxa;
+    }
+    
+    public List<Item> getEliminatedTaxa() {
+        Map<Item, Integer> taxaDifferenceCounts = _specimen.getTaxonDifferences();
+
+        List<Item> includedTaxa = getIncludedTaxa();
+        List<Item> eliminatedTaxa = new ArrayList<Item>();
+
+        if (taxaDifferenceCounts != null) {
+            for (Item taxon : includedTaxa) {
+                if (taxaDifferenceCounts.containsKey(taxon)) {
+                    int diffCount = taxaDifferenceCounts.get(taxon);
+                    if (diffCount > _tolerance) {
+                        eliminatedTaxa.add(taxon);
+                    } 
+                } 
+            }
+        } 
+        
+        return eliminatedTaxa;
     }
 
     public ImageSettings getImageSettings() {
