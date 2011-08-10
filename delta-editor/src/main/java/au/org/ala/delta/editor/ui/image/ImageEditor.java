@@ -45,6 +45,8 @@ import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageOverlay;
 import au.org.ala.delta.model.image.OverlayType;
+import au.org.ala.delta.model.observer.AbstractDataSetObserver;
+import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
 import au.org.ala.delta.ui.RichTextDialog;
 import au.org.ala.delta.ui.image.AboutImageDialog;
 import au.org.ala.delta.ui.image.AudioPlayer;
@@ -82,6 +84,7 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 	public ImageEditor(EditorViewModel model) {
 
 		_model = model;
+		_model.addDeltaDataSetObserver(new ImageEditListener());
 		editor = (DeltaEditor)Application.getInstance();
 		_helper = new DataSetHelper(model);
 		_actionMap = Application.getInstance().getContext().getActionMap(this);
@@ -604,5 +607,19 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 				showImageNotes();
 			}
 		}
+	}
+	
+	class ImageEditListener extends AbstractDataSetObserver {
+
+		@Override
+		public void imageEdited(DeltaDataSetChangeEvent event) {
+			if (event.getImage() == _selectedImage) {
+				String key = subjectTextOrFileName(_selectedImage);
+				ImageEditorPanel editor = _imageEditors.get(key);
+				editor.addOverlays();
+				editor.revalidate();
+			}
+		}
+		
 	}
 }

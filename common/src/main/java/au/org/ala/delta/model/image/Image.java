@@ -23,9 +23,12 @@ public class Image {
 	private ImageData _impl;
 	private Illustratable _subject;
 	private List<ImageObserver> _observers;
+	/** A flag to temporarily prevent notification of observers during a bulk add/delete operation */
+	private boolean _suspendNotify;
 	
 	public Image(ImageData data) {
 		_impl = data;
+		_suspendNotify = false;
 	}
 	
 	public ImageData getImageData() {
@@ -163,10 +166,19 @@ public class Image {
 	}
 	
 	public void deleteAllOverlays() {
-		 List<ImageOverlay> overlays = getOverlays();
-		 for (ImageOverlay overlay : overlays) {
-			 deleteOverlay(overlay);
-		 }
+		
+		try {
+			_suspendNotify = true;
+		
+			 List<ImageOverlay> overlays = getOverlays();
+			 for (ImageOverlay overlay : overlays) {
+				 deleteOverlay(overlay);
+			 }
+		}
+		finally {
+			_suspendNotify = false;
+		}
+		notifyObservers();
 	}
 	
 	/**
@@ -247,7 +259,7 @@ public class Image {
      * changed.
      */
     protected void notifyObservers() {
-        if (_observers == null) {
+        if (_observers == null || _suspendNotify) {
             return;
         }
         // Notify observers in reverse order to support observer removal during

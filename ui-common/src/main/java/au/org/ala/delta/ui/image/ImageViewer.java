@@ -77,7 +77,9 @@ public class ImageViewer extends ImagePanel implements LayoutManager2, ActionLis
         addOverlays();
     }
 
-    private void addOverlays() {
+    public void addOverlays() {
+    	_components.clear();
+    	removeAll();
         _overlays = _image.getOverlays();
 
         _hotSpotGroups = new HashMap<ImageOverlay, HotSpotGroup>();

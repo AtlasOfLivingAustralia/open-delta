@@ -321,6 +321,7 @@ public class ItemEditor extends JInternalFrame implements ValidationListener, De
 	 */
 	public void bind(EditorViewModel dataSet) {
 		_dataSet = dataSet;
+		
 		_valid = true;
 		taxonSelectionList.setDataSet(dataSet);
 		
