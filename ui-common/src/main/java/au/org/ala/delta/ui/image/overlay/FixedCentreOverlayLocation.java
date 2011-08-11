@@ -1,8 +1,7 @@
 package au.org.ala.delta.ui.image.overlay;
 
-import java.awt.Font;
-import java.awt.FontMetrics;
 import java.awt.Point;
+import java.awt.Rectangle;
 
 import javax.swing.JComponent;
 
@@ -26,6 +25,7 @@ public class FixedCentreOverlayLocation implements OverlayLocation {
 	
 	@Override
 	public int getX() {
+		
 		double scaledWidth = _image.getImageWidth();
 		double width = _image.getPreferredImageWidth();
 		
@@ -64,19 +64,11 @@ public class FixedCentreOverlayLocation implements OverlayLocation {
 		}
 		
 		int height = 0;
-		if (_location.H < 0) {
-			Font f = _component.getFont();
-			FontMetrics m = _component.getFontMetrics(f);
-			int lineHeight = m.getHeight();
-			
-			height = lineHeight * -_location.H;
-		}
-		else {
-			// Fonts don't scale with the image so the height should use the
-			// original image height.
-			double scaledHeight = _image.getPreferredImageHeight();
-			height = (int)(_location.H / 1000d * scaledHeight);
-		}
+		
+		// Fonts don't scale with the image so the height should use the
+		// original image height.
+		double scaledHeight = _image.getPreferredImageHeight();
+		height = (int)(_location.H / 1000d * scaledHeight);
 		
 		return height; 
 	}
@@ -96,4 +88,31 @@ public class FixedCentreOverlayLocation implements OverlayLocation {
 		
 		return width;
 	}
+
+	@Override
+	public void updateLocationFromBounds(Rectangle bounds) {
+		double scaledWidth = _image.getImageWidth();
+		double width = _image.getPreferredImageWidth();
+		double imageScale = scaledWidth/width;
+		
+		double halfComponentWidth = 0.5 * bounds.width;
+		double midPointXInPixels = bounds.x + halfComponentWidth;
+		double toImageUnits = 1000/width;
+		
+		Point p = _image.getImageOrigin();
+		
+		int x = (int)Math.round((midPointXInPixels/imageScale-halfComponentWidth)*toImageUnits - p.x);
+		_location.setX(x);
+		
+		double scaledHeight = _image.getImageHeight();
+		double height = _image.getPreferredImageHeight();
+		imageScale = scaledHeight/height;
+		
+		double halfComponentHeight = 0.5 * bounds.height;
+		double midPointYInPixels = bounds.y + halfComponentHeight;
+		toImageUnits = 1000/height;
+		int y = (int)Math.round((midPointYInPixels/imageScale-halfComponentHeight)*toImageUnits - p.y);
+		_location.setY(y);
+	}
+	
 }

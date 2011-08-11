@@ -1,30 +1,20 @@
 package au.org.ala.delta.editor.ui.image;
 
 import java.awt.Point;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.swing.ActionMap;
-import javax.swing.JComponent;
-import javax.swing.JMenu;
-import javax.swing.JPopupMenu;
+import javax.swing.SwingUtilities;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
 import org.jdesktop.application.Action;
-import org.jdesktop.application.Application;
-import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.editor.model.EditorViewModel;
-import au.org.ala.delta.editor.ui.util.MenuBuilder;
-import au.org.ala.delta.editor.ui.util.PopupMenuListener;
 import au.org.ala.delta.model.Character;
-import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.NumericCharacter;
-import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageOverlay;
 import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.model.image.OverlayLocation;
@@ -32,115 +22,26 @@ import au.org.ala.delta.model.image.OverlayType;
 
 public class ImageOverlayEditorController {
 
-	class PopupDisplayer extends PopupMenuListener {
-		public PopupDisplayer(JComponent component) {
-			super(null, component);
-		}
-
-		@Override
-		protected void showPopup(Point p) {
-			_popupMenuLocation = p;
-			super.showPopup(p);
-		}
-
-		@Override
-		protected JPopupMenu getPopup() {
-			return buildPopupMenu();
-		}
-		
-	}
-	
-	
-	private ImageEditor _imageEditor;
 	private ImageOverlay _selectedOverlay;
 	private ButtonAlignment _alignment;
 	private ImageSettings _imageSettings;
-	private ResourceMap _resources;
-	private ActionMap _actions;
-	private Point _popupMenuLocation;
+	
 	private EditorViewModel _model;
+	private ImageEditorPanel _view;
 
 	enum ButtonAlignment {
 		ALIGN_VERTICAL, ALIGN_HORIZONTAL, ALIGN_NONE
 	};
 
-	public ImageOverlayEditorController(ImageEditor imageEditor, EditorViewModel model) {
-		_imageEditor = imageEditor;
-		_resources = Application.getInstance().getContext().getResourceMap();
-		_actions = Application.getInstance().getContext().getActionMap(this);
+	public ImageOverlayEditorController(ImageEditorPanel view, EditorViewModel model) {
 		_model = model;
-		new PopupDisplayer(imageEditor);
-		
+		_view = view;
 	}
 	
-	
-
-	public JPopupMenu buildPopupMenu() {
-		boolean itemImage = (_model.getSelectedImage().getSubject() instanceof Item);
-		List<String> popupMenuActions = new ArrayList<String>();
-		popupMenuActions.add("editSelectedOverlay");
-		popupMenuActions.add("deleteSelectedOverlay");
-		popupMenuActions.add("-");
-		popupMenuActions.add("deleteAllOverlays");
-		popupMenuActions.add("-");
-		popupMenuActions.add("displayImageSettings");
-		popupMenuActions.add("-");
-		popupMenuActions.add("cancelPopup");
-		
-		JPopupMenu popup = new JPopupMenu();
-		MenuBuilder.buildMenu(popup, popupMenuActions, _actions);
-
-		List<String> stackOverlayMenuActions = new ArrayList<String>();
-		stackOverlayMenuActions.add("stackSelectedOverlayHigher");
-		stackOverlayMenuActions.add("stackSelectedOverlayLower");
-		stackOverlayMenuActions.add("stackSelectedOverlayOnTop");
-		stackOverlayMenuActions.add("stackSelectedOverlayOnBottom");
-		JMenu stackOverlayMenu = new JMenu(_resources.getString("overlayPopup.stackOverlayMenu"));
-		MenuBuilder.buildMenu(stackOverlayMenu, stackOverlayMenuActions, _actions);
-		popup.add(stackOverlayMenu, 2);
-		
-		List<String> insertOverlayMenuActions = new ArrayList<String>();
-		insertOverlayMenuActions.add("addTextOverlay");
-		if (itemImage) {
-			insertOverlayMenuActions.add("addItemNameOverlay");
-		}
-		insertOverlayMenuActions.add("-");
-		if (!itemImage) {
-			insertOverlayMenuActions.add("addAllUsualOverlays");
-			insertOverlayMenuActions.add("addFeatureDescriptionOverlay");
-			
-			insertOverlayMenuActions.add("addStateOverlay");
-			insertOverlayMenuActions.add("addHotspot");
-			insertOverlayMenuActions.add("-");
-		}
-		insertOverlayMenuActions.add("addOkOverlay");
-		insertOverlayMenuActions.add("addCancelOverlay");
-		if (!itemImage) {
-			insertOverlayMenuActions.add("addNotesOverlay");
-		}
-		else {
-			insertOverlayMenuActions.add("addImageNotesOverlay");
-		}
-		
-		JMenu insertOverlayMenu = new JMenu(_resources.getString("overlayPopup.insertOverlayMenu"));
-		MenuBuilder.buildMenu(insertOverlayMenu, insertOverlayMenuActions, _actions);
-		popup.add(insertOverlayMenu, 5);
-		
-		List<String> alignButtonsMenuActions = new ArrayList<String>();
-		alignButtonsMenuActions.add("useDefaultButtonAlignment");
-		alignButtonsMenuActions.add("alignButtonsVertically");
-		alignButtonsMenuActions.add("alignButtonsHorizontally");
-		alignButtonsMenuActions.add("dontAlignButtons");
-		JMenu alignButtonsMenu = new JMenu(_resources.getString("overlayPopup.alignButtonsMenu"));
-		MenuBuilder.buildMenu(alignButtonsMenu, alignButtonsMenuActions, _actions);
-		popup.add(alignButtonsMenu, 7);
-		
-		return popup;
-	}
-
 	@Action
 	public void editSelectedOverlay() {
-		throw new NotImplementedException();
+		OverlayEditDialog dialog = new OverlayEditDialog(SwingUtilities.getWindowAncestor(_view), _selectedOverlay);
+		dialog.setVisible(true);
 	}
 
 	@Action

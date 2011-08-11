@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
@@ -41,6 +42,8 @@ public class RichTextLabel extends JPanel implements OverlayLocationProvider {
 		_editor.setFont(UIManager.getFont("Label.font"));
 		
 		_editor.setText(text);	
+		_editor.setHighlighter(null);
+		_editor.setDragEnabled(false);
 		if (overlay.centreText()) {
 			centreText();
 		}
@@ -84,12 +87,26 @@ public class RichTextLabel extends JPanel implements OverlayLocationProvider {
 	
 	@Override
 	public void addMouseListener(MouseListener l) {
+		super.addMouseListener(l);
 		_editor.addMouseListener(l);
 	}
 	
 	@Override
 	public void removeMouseListener(MouseListener l) {
+		super.removeMouseListener(l);
 		_editor.removeMouseListener(l);
+	}
+	
+	@Override
+	public void addMouseMotionListener(MouseMotionListener l) {
+		super.addMouseMotionListener(l);
+		_editor.addMouseMotionListener(l);
+	}
+	
+	@Override
+	public void removeMouseMotionListener(MouseMotionListener l) {
+		super.removeMouseMotionListener(l);
+		_editor.removeMouseMotionListener(l);
 	}
 	
 	@Override

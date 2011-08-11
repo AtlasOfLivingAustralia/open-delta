@@ -1,6 +1,7 @@
 package au.org.ala.delta.ui.image.overlay;
 
 import java.awt.Point;
+import java.awt.Rectangle;
 
 import au.org.ala.delta.ui.image.ImageViewer;
 
@@ -44,5 +45,8 @@ public class ScaledOverlayLocation implements OverlayLocation {
 		
 		return (int)Math.round(_location.W / 1000d * scaledWidth);
 	}
+	
+	@Override
+	public void updateLocationFromBounds(Rectangle bounds) {}
 	
 }

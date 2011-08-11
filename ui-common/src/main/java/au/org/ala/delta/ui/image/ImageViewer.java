@@ -35,7 +35,7 @@ import au.org.ala.delta.ui.image.overlay.TextFieldOverlay;
  */
 public class ImageViewer extends ImagePanel implements LayoutManager2, ActionListener, OverlaySelectionObserver {
 
-    private static final String IMAGE_OVERLAY_PROPERTY = "ImageOverlay";
+    protected static final String IMAGE_OVERLAY_PROPERTY = "ImageOverlay";
 
     private static final long serialVersionUID = -6735023009826819178L;
 

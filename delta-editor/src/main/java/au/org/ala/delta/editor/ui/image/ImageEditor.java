@@ -114,7 +114,7 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 		
 		_actionMap.get("replayVideo").setEnabled(false);
 		setName("ImageEditor-"+_subject.toString());
-		new ImageOverlayEditorController(this, model);
+		
 		buildMenus();
 	}
 	
@@ -139,7 +139,7 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 	 * @param image the image to add.
 	 */
 	private void addCardFor(Image image) {
-		ImageEditorPanel viewer = new ImageEditorPanel(image, _model.getImageSettings());
+		ImageEditorPanel viewer = new ImageEditorPanel(image, _model);
 		String text = subjectTextOrFileName(image);
 		
 		_imageEditors.put(text, viewer);

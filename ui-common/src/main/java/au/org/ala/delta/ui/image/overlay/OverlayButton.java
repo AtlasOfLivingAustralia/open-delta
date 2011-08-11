@@ -44,6 +44,10 @@ public class OverlayButton extends JButton implements ActionListener, Selectable
 	public boolean isSelected() {
 		return false;
 	}
+	
+	public void linkTo(OverlayButton other) {
+		
+	}
 
 	@Override
 	public ImageOverlay getImageOverlay() {

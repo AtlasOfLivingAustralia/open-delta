@@ -1,13 +1,17 @@
 package au.org.ala.delta.ui.image.overlay;
 
+import java.awt.Rectangle;
+
 public interface OverlayLocation {
 
-	public abstract int getX();
+	public int getX();
 
-	public abstract int getY();
+	public int getY();
 
-	public abstract int getHeight();
+	public int getHeight();
 
-	public abstract int getWidth();
+	public int getWidth();
+	
+	public void updateLocationFromBounds(Rectangle bounds);
 
 }
