@@ -281,4 +281,12 @@ public class EditorDataModel extends DataSetWrapper implements EditorViewModel, 
 		super.characterEdited(event);
 	}
 
+	@Override
+	public void imageEdited(DeltaDataSetChangeEvent event) {
+		setModified(true);
+		super.imageEdited(event);
+	}
+	
+	
+
 }

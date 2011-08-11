@@ -247,4 +247,28 @@ public class ImageOverlay {
 		stateId = 0;
 		type = OverlayType.OLNONE;
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + getId();
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ImageOverlay other = (ImageOverlay) obj;
+		if (getId() != other.getId())
+			return false;
+		return true;
+	}
+	
+	
 }

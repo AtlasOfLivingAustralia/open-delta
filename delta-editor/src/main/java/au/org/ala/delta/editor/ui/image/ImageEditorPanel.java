@@ -51,7 +51,8 @@ public class ImageEditorPanel extends ImageViewer {
 	private EditorViewModel _model;
 	private ResourceMap _resources;
 	private ActionMap _actions;
-	private Point _popupMenuLocation;
+	private ImageEditorSelectionModel _selection;
+	private ImageOverlayEditorController _controller;
 	
 	public ImageEditorPanel(Image image, EditorViewModel model) {
 		super(image, model.getImageSettings());
@@ -59,7 +60,11 @@ public class ImageEditorPanel extends ImageViewer {
 		_editingEnabled = true;
 		_buttonAlignment = ButtonAlignment.ALIGN_VERTICAL;
 		_resources = Application.getInstance().getContext().getResourceMap();
-		_actions = Application.getInstance().getContext().getActionMap(this);
+		_selection = new ImageEditorSelectionModel();
+		_selection.setSelectedImage(image);
+		_controller = new ImageOverlayEditorController(_selection, _model);
+		_actions = Application.getInstance().getContext().getActionMap(_controller);
+		
 		addEventHandlers();
 	}
 	
@@ -72,9 +77,11 @@ public class ImageEditorPanel extends ImageViewer {
 	
 	private void addEventHandlers() {
 		for (JComponent overlayComp : _components) {
+			new PopupDisplayer(overlayComp);
 			new OverlayComponentListener(overlayComp);
 		}
-		new ImageOverlayEditorController(this, _model);
+		
+		new PopupDisplayer(this);
 	}
 	
 	public void select(JComponent overlayComp) {
@@ -83,19 +90,26 @@ public class ImageEditorPanel extends ImageViewer {
 		}
 		
 		if (_selectedOverlayComp != overlayComp) {
-			Border border = overlayComp.getBorder();
+			
 			
 			if (_selectedOverlayComp != null) {
 				resetBorder();
 			}
-			Border selectedBorder = BorderFactory.createBevelBorder(BevelBorder.RAISED);
-			CompoundBorder compoundBorder = BorderFactory.createCompoundBorder(selectedBorder, border);
-			overlayComp.putClientProperty("Opaque", overlayComp.isOpaque());
-			// Have to do this or buttons on the MAC don't render properly 
-			// with a compound border.
-			overlayComp.setOpaque(true);
+			
 			_selectedOverlayComp = overlayComp;
-			_selectedOverlayComp.setBorder(compoundBorder);
+			_selection.setSelectedOverlayComponent(overlayComp);
+			
+			if (overlayComp != null) {
+				Border border = overlayComp.getBorder();
+				Border selectedBorder = BorderFactory.createBevelBorder(BevelBorder.RAISED);
+				CompoundBorder compoundBorder = BorderFactory.createCompoundBorder(selectedBorder, border);
+				overlayComp.putClientProperty("Opaque", overlayComp.isOpaque());
+				// Have to do this or buttons on the MAC don't render properly 
+				// with a compound border.
+				overlayComp.setOpaque(true);
+				
+				_selectedOverlayComp.setBorder(compoundBorder);
+			}
 		}
 	}
 	
@@ -249,9 +263,11 @@ public class ImageEditorPanel extends ImageViewer {
 	public JPopupMenu buildPopupMenu() {
 		boolean itemImage = (_model.getSelectedImage().getSubject() instanceof Item);
 		List<String> popupMenuActions = new ArrayList<String>();
-		popupMenuActions.add("editSelectedOverlay");
-		popupMenuActions.add("deleteSelectedOverlay");
-		popupMenuActions.add("-");
+		if (_selectedOverlayComp != null) {
+			popupMenuActions.add("editSelectedOverlay");
+			popupMenuActions.add("deleteSelectedOverlay");
+			popupMenuActions.add("-");
+		}
 		popupMenuActions.add("deleteAllOverlays");
 		popupMenuActions.add("-");
 		popupMenuActions.add("displayImageSettings");
@@ -261,15 +277,16 @@ public class ImageEditorPanel extends ImageViewer {
 		JPopupMenu popup = new JPopupMenu();
 		MenuBuilder.buildMenu(popup, popupMenuActions, _actions);
 
-		List<String> stackOverlayMenuActions = new ArrayList<String>();
-		stackOverlayMenuActions.add("stackSelectedOverlayHigher");
-		stackOverlayMenuActions.add("stackSelectedOverlayLower");
-		stackOverlayMenuActions.add("stackSelectedOverlayOnTop");
-		stackOverlayMenuActions.add("stackSelectedOverlayOnBottom");
-		JMenu stackOverlayMenu = new JMenu(_resources.getString("overlayPopup.stackOverlayMenu"));
-		MenuBuilder.buildMenu(stackOverlayMenu, stackOverlayMenuActions, _actions);
-		popup.add(stackOverlayMenu, 2);
-		
+		if (_selectedOverlayComp != null) {
+			List<String> stackOverlayMenuActions = new ArrayList<String>();
+			stackOverlayMenuActions.add("stackSelectedOverlayHigher");
+			stackOverlayMenuActions.add("stackSelectedOverlayLower");
+			stackOverlayMenuActions.add("stackSelectedOverlayOnTop");
+			stackOverlayMenuActions.add("stackSelectedOverlayOnBottom");
+			JMenu stackOverlayMenu = new JMenu(_resources.getString("overlayPopup.stackOverlayMenu"));
+			MenuBuilder.buildMenu(stackOverlayMenu, stackOverlayMenuActions, _actions);
+			popup.add(stackOverlayMenu, 2);
+		}
 		List<String> insertOverlayMenuActions = new ArrayList<String>();
 		insertOverlayMenuActions.add("addTextOverlay");
 		if (itemImage) {
@@ -295,7 +312,8 @@ public class ImageEditorPanel extends ImageViewer {
 		
 		JMenu insertOverlayMenu = new JMenu(_resources.getString("overlayPopup.insertOverlayMenu"));
 		MenuBuilder.buildMenu(insertOverlayMenu, insertOverlayMenuActions, _actions);
-		popup.add(insertOverlayMenu, 5);
+		int indexModifier = _selectedOverlayComp == null ? 4 : 0;
+		popup.add(insertOverlayMenu, 5-indexModifier);
 		
 		List<String> alignButtonsMenuActions = new ArrayList<String>();
 		alignButtonsMenuActions.add("useDefaultButtonAlignment");
@@ -304,11 +322,10 @@ public class ImageEditorPanel extends ImageViewer {
 		alignButtonsMenuActions.add("dontAlignButtons");
 		JMenu alignButtonsMenu = new JMenu(_resources.getString("overlayPopup.alignButtonsMenu"));
 		MenuBuilder.buildMenu(alignButtonsMenu, alignButtonsMenuActions, _actions);
-		popup.add(alignButtonsMenu, 7);
+		popup.add(alignButtonsMenu, 7-indexModifier);
 		
 		return popup;
 	}
-
 	
 	
 	class OverlayComponentListener extends MouseAdapter implements MouseMotionListener {
@@ -324,6 +341,7 @@ public class ImageEditorPanel extends ImageViewer {
 		
 		@Override
 		public void mousePressed(MouseEvent e) {		
+			System.out.println("Selected!");
 			select(_overlayComp);
 			_pressedEvent = SwingUtilities.convertMouseEvent(_overlayComp, e, ImageEditorPanel.this);
 		}
@@ -331,6 +349,7 @@ public class ImageEditorPanel extends ImageViewer {
 		@Override
 		public void mouseReleased(MouseEvent e) {
 			if (_pressedEvent != null) {
+				System.out.println("Stopped");
 				_pressedEvent = null;
 				stopMove();
 			}
@@ -338,6 +357,7 @@ public class ImageEditorPanel extends ImageViewer {
 		
 		@Override
 		public void mouseDragged(MouseEvent e) {
+			System.out.println("Dragged");
 			MouseEvent e2 = SwingUtilities.convertMouseEvent(_overlayComp, e, ImageEditorPanel.this);
 			
 			int dx = e2.getX() - _pressedEvent.getX();
@@ -352,13 +372,16 @@ public class ImageEditorPanel extends ImageViewer {
 	}
 	
 	class PopupDisplayer extends PopupMenuListener {
-		public PopupDisplayer() {
-			super(null, ImageEditorPanel.this);
+		public PopupDisplayer(JComponent comp) {
+			super(null, comp);
 		}
 
 		@Override
 		protected void showPopup(Point p) {
-			_popupMenuLocation = p;
+			if (_component == ImageEditorPanel.this) {
+				select(null);
+			}
+			_selection.setSelectedPoint(p);
 			super.showPopup(p);
 		}
 

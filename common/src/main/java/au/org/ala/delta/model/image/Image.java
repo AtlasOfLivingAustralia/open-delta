@@ -165,6 +165,37 @@ public class Image {
 		notifyObservers();
 	}
 	
+	public void moveUp(ImageOverlay overlay) {
+		move(overlay, 1);
+	}
+	
+	public void moveDown(ImageOverlay overlay) {
+		move(overlay, -1);
+	}
+	
+	public void moveToTop(ImageOverlay overlay) {
+		move(overlay, Integer.MAX_VALUE);
+	}
+	
+	public void moveToBottom(ImageOverlay overlay) {
+		move(overlay, Integer.MIN_VALUE);
+	}
+	
+	private void move(ImageOverlay overlay, int amount) {
+		List<ImageOverlay> overlays = getOverlays();
+		int index = overlays.indexOf(overlay);
+		if (index < 0) {
+			throw new IllegalArgumentException("No overlay exists with id: "+overlay.getId());
+		}
+		overlay = overlays.remove(index);
+		int newIndex = index+amount;
+		newIndex = Math.max(0, index+amount);
+		newIndex = Math.min(overlays.size()-1, newIndex);
+		overlays.add(newIndex, overlay);
+		
+		_impl.setOverlays(overlays);
+	}
+	
 	public void deleteAllOverlays() {
 		
 		try {

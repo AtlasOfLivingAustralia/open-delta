@@ -5,8 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.swing.SwingUtilities;
-
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
 import org.jdesktop.application.Action;
@@ -15,6 +13,7 @@ import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.NumericCharacter;
+import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageOverlay;
 import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.model.image.OverlayLocation;
@@ -25,33 +24,31 @@ public class ImageOverlayEditorController {
 	private ImageOverlay _selectedOverlay;
 	private ButtonAlignment _alignment;
 	private ImageSettings _imageSettings;
-	
-	private EditorViewModel _model;
-	private ImageEditorPanel _view;
+	private ImageEditorSelectionModel _selection;
 
 	enum ButtonAlignment {
 		ALIGN_VERTICAL, ALIGN_HORIZONTAL, ALIGN_NONE
 	};
 
-	public ImageOverlayEditorController(ImageEditorPanel view, EditorViewModel model) {
-		_model = model;
-		_view = view;
+	public ImageOverlayEditorController(ImageEditorSelectionModel selection, EditorViewModel model) {
+		_imageSettings = model.getImageSettings();
+		
+		_selection = selection;
 	}
 	
 	@Action
 	public void editSelectedOverlay() {
-		OverlayEditDialog dialog = new OverlayEditDialog(SwingUtilities.getWindowAncestor(_view), _selectedOverlay);
-		dialog.setVisible(true);
+		
 	}
 
 	@Action
 	public void deleteSelectedOverlay() {
-		_model.getSelectedImage().deleteOverlay(_selectedOverlay);
+		_selection.getSelectedImage().deleteOverlay(_selectedOverlay);
 	}
 
 	@Action
 	public void deleteAllOverlays() {
-		_model.getSelectedImage().deleteAllOverlays();
+		_selection.getSelectedImage().deleteAllOverlays();
 	}
 
 	@Action
@@ -65,27 +62,32 @@ public class ImageOverlayEditorController {
 
 	@Action
 	public void stackSelectedOverlayHigher() {
-		throw new NotImplementedException();
+		Image image = _selection.getSelectedImage();
+		image.moveUp(_selection.getSelectedOverlay());
+	
 	}
 
 	@Action
 	public void stackSelectedOverlayLower() {
-		throw new NotImplementedException();
+		Image image = _selection.getSelectedImage();
+		image.moveDown(_selection.getSelectedOverlay());
 	}
 
 	@Action
 	public void stackSelectedOverlayOnTop() {
-		throw new NotImplementedException();
+		Image image = _selection.getSelectedImage();
+		image.moveToTop(_selection.getSelectedOverlay());
 	}
 
 	@Action
 	public void stackSelectedOverlayOnBottom() {
-		throw new NotImplementedException();
+		Image image = _selection.getSelectedImage();
+		image.moveToBottom(_selection.getSelectedOverlay());
 	}
 
 	@Action
 	public void useDefaultButtonAlignment() {
-		throw new NotImplementedException();
+		_alignment = ButtonAlignment.ALIGN_NONE;
 	}
 
 	@Action
@@ -105,15 +107,15 @@ public class ImageOverlayEditorController {
 
 	@Action
 	public void addTextOverlay() {
-		throw new NotImplementedException();
+		addOverlay(OverlayType.OLTEXT);
 	}
 
 	@Action
 	public void addAllUsualOverlays() {
-		if (_model.getSelectedImage().getSubject() instanceof Character) {
-			Character character = (Character) _model.getSelectedImage().getSubject();
+		if (_selection.getSelectedImage().getSubject() instanceof Character) {
+			Character character = (Character) _selection.getSelectedImage().getSubject();
 			Point origin = new Point(150, 300);
-			if (_model.getSelectedImage().getOverlay(OverlayType.OLFEATURE) == null) {
+			if (_selection.getSelectedImage().getOverlay(OverlayType.OLFEATURE) == null) {
 				ImageOverlay newOverlay = newOverlay(OverlayType.OLFEATURE);
 
 				newOverlay.setX(origin.x);
@@ -125,13 +127,13 @@ public class ImageOverlayEditorController {
 			if (character.getCharacterType().isMultistate()) {
 				addStateOverlays((MultiStateCharacter) character, origin);
 			} else if (character.getCharacterType().isNumeric()) {
-				if (_model.getSelectedImage().getOverlay(OverlayType.OLENTER) == null) {
+				if (_selection.getSelectedImage().getOverlay(OverlayType.OLENTER) == null) {
 					ImageOverlay newOverlay = newOverlay(OverlayType.OLENTER);
 					newOverlay.setX(400);
 					newOverlay.setY(600);
 
 				}
-				if (_model.getSelectedImage().getOverlay(OverlayType.OLUNITS) == null
+				if (_selection.getSelectedImage().getOverlay(OverlayType.OLUNITS) == null
 						&& StringUtils.isNotEmpty(((NumericCharacter<?>) character).getUnits())) {
 					ImageOverlay newOverlay = newOverlay(OverlayType.OLUNITS);
 
@@ -140,15 +142,15 @@ public class ImageOverlayEditorController {
 
 				}
 			}
-			if (_model.getSelectedImage().getOverlay(OverlayType.OLOK) == null) {
+			if (_selection.getSelectedImage().getOverlay(OverlayType.OLOK) == null) {
 				newOverlay(OverlayType.OLOK);
 
 			}
-			if (_model.getSelectedImage().getOverlay(OverlayType.OLCANCEL) == null) {
+			if (_selection.getSelectedImage().getOverlay(OverlayType.OLCANCEL) == null) {
 				newOverlay(OverlayType.OLCANCEL);
 
 			}
-			if (StringUtils.isNotEmpty(character.getNotes()) && _model.getSelectedImage().getOverlay(OverlayType.OLNOTES) == null) {
+			if (StringUtils.isNotEmpty(character.getNotes()) && _selection.getSelectedImage().getOverlay(OverlayType.OLNOTES) == null) {
 				newOverlay(OverlayType.OLNOTES);
 
 			}
@@ -157,7 +159,7 @@ public class ImageOverlayEditorController {
 
 	private void addStateOverlays(MultiStateCharacter character, Point origin) {
 		int stateNum;
-		List<ImageOverlay> overlays = _model.getSelectedImage().getOverlaysOfType(OverlayType.OLSTATE);
+		List<ImageOverlay> overlays = _selection.getSelectedImage().getOverlaysOfType(OverlayType.OLSTATE);
 		Set<Integer> states = new HashSet<Integer>();
 		for (ImageOverlay overlay : overlays) {
 			states.add(overlay.stateId);
@@ -226,23 +228,24 @@ public class ImageOverlayEditorController {
 	}
 
 	private void addOverlay(int overlayType) {
-		ImageOverlay overlay = newOverlay(overlayType);
+		newOverlay(overlayType);
 	}
 
 	private ImageOverlay newStateOverlay(int stateNum) {
-		ImageOverlay anOverlay = _model.getSelectedImage().addOverlay(OverlayType.OLSTATE);
+		ImageOverlay anOverlay = _selection.getSelectedImage().addOverlay(OverlayType.OLSTATE);
 		anOverlay.stateId = stateNum;
 		configureOverlay(anOverlay);
 		return anOverlay;
 	}
 
 	private ImageOverlay newOverlay(int overlayType) {
-		ImageOverlay anOverlay = _model.getSelectedImage().addOverlay(overlayType);
+		ImageOverlay anOverlay = _selection.getSelectedImage().addOverlay(overlayType);
 		configureOverlay(anOverlay);
 		return anOverlay;
 	}
 
 	private void configureOverlay(ImageOverlay anOverlay) {
+		Point start = _selection.getSelectedPoint();
 		OverlayLocation newLocation = new OverlayLocation();
 		anOverlay.location.add(newLocation);
 		if (anOverlay.type == OverlayType.OLHOTSPOT) {
@@ -253,12 +256,9 @@ public class ImageOverlayEditorController {
 		}
 		Point menuPoint = new Point();
 		if (menuPoint.x != Integer.MIN_VALUE) {
-			Point curPos = new Point(menuPoint);
-			Point imagePt = new Point();
-			// ScreenToClient(curPos);
-			// ClientToImage (curPos, imagePt);
-			newLocation.setX(imagePt.x);
-			newLocation.setY(imagePt.y);
+			
+			newLocation.setX(start.x);
+			newLocation.setY(start.y);
 		} else {
 			newLocation.X = 350;
 			newLocation.Y = 450;
@@ -277,7 +277,7 @@ public class ImageOverlayEditorController {
 			newLocation.setX(Math.max(0, Math.min(1000 - bwClient, (int) newLocation.X)));
 			newLocation.setY(Math.max(0, Math.min(1000 - bhClient, (int) newLocation.Y)));
 			int okWhere = Integer.MIN_VALUE, cancelWhere = Integer.MIN_VALUE, notesWhere = Integer.MIN_VALUE;
-			ImageOverlay okOverlay = _model.getSelectedImage().getOverlay(OverlayType.OLOK);
+			ImageOverlay okOverlay = _selection.getSelectedImage().getOverlay(OverlayType.OLOK);
 			if (okOverlay != null) {
 				if (align == ButtonAlignment.ALIGN_VERTICAL) {
 					newLocation.setX(okOverlay.getX());
@@ -287,7 +287,7 @@ public class ImageOverlayEditorController {
 					okWhere = okOverlay.getX();
 				}
 			}
-			ImageOverlay cancelOverlay = _model.getSelectedImage().getOverlay(OverlayType.OLCANCEL);
+			ImageOverlay cancelOverlay = _selection.getSelectedImage().getOverlay(OverlayType.OLCANCEL);
 			if (cancelOverlay != null) {
 				if (align == ButtonAlignment.ALIGN_VERTICAL) {
 					newLocation.setX(cancelOverlay.getX());
@@ -298,10 +298,10 @@ public class ImageOverlayEditorController {
 				}
 			}
 			ImageOverlay notesOverlay;
-			if (_model.getSelectedImage().getSubject() instanceof au.org.ala.delta.model.Character)
-				notesOverlay = _model.getSelectedImage().getOverlay(OverlayType.OLNOTES);
+			if (_selection.getSelectedImage().getSubject() instanceof au.org.ala.delta.model.Character)
+				notesOverlay = _selection.getSelectedImage().getOverlay(OverlayType.OLNOTES);
 			else
-				notesOverlay = _model.getSelectedImage().getOverlay(OverlayType.OLIMAGENOTES);
+				notesOverlay = _selection.getSelectedImage().getOverlay(OverlayType.OLIMAGENOTES);
 			if (notesOverlay != null) {
 				if (align == ButtonAlignment.ALIGN_VERTICAL) {
 					newLocation.setX(notesOverlay.getX());
