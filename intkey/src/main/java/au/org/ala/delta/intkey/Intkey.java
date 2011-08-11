@@ -82,6 +82,7 @@ import au.org.ala.delta.intkey.ui.BusyGlassPane;
 import au.org.ala.delta.intkey.ui.CharacterCellRenderer;
 import au.org.ala.delta.intkey.ui.CharacterKeywordSelectionDialog;
 import au.org.ala.delta.intkey.ui.FindInCharactersDialog;
+import au.org.ala.delta.intkey.ui.FindInTaxaDialog;
 import au.org.ala.delta.intkey.ui.IntegerInputDialog;
 import au.org.ala.delta.intkey.ui.MultiStateInputDialog;
 import au.org.ala.delta.intkey.ui.ReExecuteDialog;
@@ -92,12 +93,14 @@ import au.org.ala.delta.intkey.ui.TaxonKeywordSelectionDialog;
 import au.org.ala.delta.intkey.ui.TaxonWithDifferenceCountCellRenderer;
 import au.org.ala.delta.intkey.ui.TextInputDialog;
 import au.org.ala.delta.intkey.ui.UIUtils;
+import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.IntegerCharacter;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.NumericCharacter;
 import au.org.ala.delta.model.RealCharacter;
+import au.org.ala.delta.model.TextAttribute;
 import au.org.ala.delta.model.TextCharacter;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.ui.AboutBox;
@@ -961,7 +964,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     @Action
     public void btnFindTaxon() {
-
+        new FindInTaxaDialog(this).setVisible(true);
     }
 
     // =========================================================================================
@@ -1013,13 +1016,13 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
                     return;
                 } else {
                     _availableCharacterListModel = new DefaultListModel();
-                    for (Character ch: bestCharactersMap.keySet()) {
+                    for (Character ch : bestCharactersMap.keySet()) {
                         _availableCharacterListModel.addElement(ch);
                     }
                     _availableCharacterListModel.copyInto(bestCharactersMap.keySet().toArray());
                     _availableCharactersListCellRenderer = new BestCharacterCellRenderer(bestCharactersMap);
-                    _listAvailableCharacters.setModel(_availableCharacterListModel);
                     _listAvailableCharacters.setCellRenderer(_availableCharactersListCellRenderer);
+                    _listAvailableCharacters.setModel(_availableCharacterListModel);
                 }
             } else {
                 _availableCharacterListModel = null;
@@ -1063,12 +1066,12 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
                 return;
             } else {
                 _availableCharacterListModel = new DefaultListModel();
-                for (Character ch: availableCharacters) {
+                for (Character ch : availableCharacters) {
                     _availableCharacterListModel.addElement(ch);
                 }
                 _availableCharactersListCellRenderer = new CharacterCellRenderer();
-                _listAvailableCharacters.setModel(_availableCharacterListModel);
                 _listAvailableCharacters.setCellRenderer(_availableCharactersListCellRenderer);
+                _listAvailableCharacters.setModel(_availableCharacterListModel);
             }
             break;
         case SEPARATE:
@@ -1155,12 +1158,12 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         }
 
         _usedCharacterListModel = new DefaultListModel();
-        for (CharacterValue chVal: usedCharacterValues) {
+        for (CharacterValue chVal : usedCharacterValues) {
             _usedCharacterListModel.addElement(chVal);
         }
         _usedCharactersListCellRenderer = new AttributeCellRenderer();
-        _listUsedCharacters.setModel(_usedCharacterListModel);
         _listUsedCharacters.setCellRenderer(_usedCharactersListCellRenderer);
+        _listUsedCharacters.setModel(_usedCharacterListModel);
 
         _lblNumUsedCharacters.setText(String.format(usedCharactersCaption, _usedCharacterListModel.getSize()));
     }
@@ -1176,15 +1179,15 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             _availableTaxaCellRenderer = new TaxonCellRenderer();
         }
 
-        for (Item taxon: availableTaxa) {
+        for (Item taxon : availableTaxa) {
             _availableTaxaListModel.addElement(taxon);
         }
 
-        _listRemainingTaxa.setModel(_availableTaxaListModel);
         _listRemainingTaxa.setCellRenderer(_availableTaxaCellRenderer);
+        _listRemainingTaxa.setModel(_availableTaxaListModel);
 
         _lblNumRemainingTaxa.setText(String.format(remainingTaxaCaption, _availableTaxaListModel.getSize()));
-        
+
         _listRemainingTaxa.repaint();
     }
 
@@ -1193,18 +1196,18 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         Collections.sort(eliminatedTaxa, new DifferenceCountComparator(taxaDifferenceCounts));
 
         _eliminatedTaxaListModel = new DefaultListModel();
-        
-        for (Item taxon: eliminatedTaxa) {
+
+        for (Item taxon : eliminatedTaxa) {
             _eliminatedTaxaListModel.addElement(taxon);
         }
 
         _eliminatedTaxaCellRenderer = new TaxonWithDifferenceCountCellRenderer(taxaDifferenceCounts);
 
-        _listEliminatedTaxa.setModel(_eliminatedTaxaListModel);
         _listEliminatedTaxa.setCellRenderer(_eliminatedTaxaCellRenderer);
+        _listEliminatedTaxa.setModel(_eliminatedTaxaListModel);
 
         _lblEliminatedTaxa.setText(String.format(eliminatedTaxaCaption, _eliminatedTaxaListModel.getSize()));
-        
+
         _listEliminatedTaxa.repaint();
     }
 
@@ -1435,34 +1438,77 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         return dlg.getInputData();
     }
 
-    // =====================================================================================================
+    // ======== Methods for "find in characters" and "find in taxa" functions
+    // ====================
 
     // Returns number of taxa matched
     public int findTaxa(String searchText, boolean searchSynonyms, boolean searchEliminatedTaxa) {
-//         int numFoundTaxa = 0;
-//        
-//         List<Item> availableTaxa = _context.getIncludedTaxa();
-//         List<Item> eliminatedTaxa = _context.getEliminatedTaxa();
-//        
-//         _matchedAvailableTaxonIndices = new ArrayList<Integer>();
-//        
-//         List<Character> synonymyCharacters =
-//         _context.getDataset().getSynonymyCharacters();
-//         List<List<Attribute>> synonymyAttributes = null;
-//        
-//         IntkeyDataset dataset = _context.getDataset();
-//        
-//         if (searchSynonyms) {
-//         for (Character ch: synonymyCharacters) {
-//         List<Attribute> attrs =
-//         dataset.getAttributesForCharacter(ch.getCharacterId());
-//         synonymyAttributes.add(attrs);
-//         }
-//         }
-//         _context.getDataset().getAttributesForCharacter(charNo)
-//        
-//         return numFoundTaxa;
-        return 0;
+        int numFoundTaxa = 0;
+
+        IntkeyDataset dataset = _context.getDataset();
+
+        List<Item> availableTaxa = _context.getAvailableTaxa();
+        List<Item> eliminatedTaxa = _context.getEliminatedTaxa();
+        _foundAvailableTaxa = new ArrayList<Item>();
+        _foundEliminatedTaxa = new ArrayList<Item>();
+
+        List<TextCharacter> synonymyCharacters = dataset.getSynonymyCharacters();
+        Map<Item, List<String>> taxonSynonymyStrings = new HashMap<Item, List<String>>();
+
+        if (searchSynonyms) {
+            List<Item> allTaxa = dataset.getTaxa();
+
+            for (Item taxon : allTaxa) {
+                List synonymyStringsList = new ArrayList<String>();
+                taxonSynonymyStrings.put(taxon, synonymyStringsList);
+            }
+
+            for (TextCharacter ch : synonymyCharacters) {
+                List<Attribute> attrs = dataset.getAttributesForCharacter(ch.getCharacterId());
+
+                for (Attribute attr : attrs) {
+                    TextAttribute textAttr = (TextAttribute) attr;
+
+                    Item taxon = attr.getItem();
+                    List<String> synonymyStringList = taxonSynonymyStrings.get(taxon);
+                    synonymyStringList.add(textAttr.getText());
+                }
+            }
+        }
+
+        for (Item taxon : availableTaxa) {
+            if (taxonMatches(searchText, taxon, taxonSynonymyStrings.get(taxon))) {
+                _foundAvailableTaxa.add(taxon);
+            }
+        }
+
+        for (Item taxon : eliminatedTaxa) {
+            if (taxonMatches(searchText, taxon, taxonSynonymyStrings.get(taxon))) {
+                _foundEliminatedTaxa.add(taxon);
+            }
+        }
+
+        // found available taxa must be sorted by difference count if the
+        // tolerance has been
+        // set to greater than zero - this mirrors the ordering in which the
+        // available taxa are
+        // displayed in this situation
+        if (_context.getTolerance() > 0) {
+            Collections.sort(_foundAvailableTaxa, new DifferenceCountComparator(_context.getSpecimen().getTaxonDifferences()));
+        }
+
+        // eliminated taxa must always be sorted by difference count. This
+        // mirrors the order in which the
+        // eliminated taxa are displayed.
+        Collections.sort(_foundEliminatedTaxa, new DifferenceCountComparator(_context.getSpecimen().getTaxonDifferences()));
+
+        _availableTaxaCellRenderer.setTaxaToColor(new HashSet<Item>(_foundAvailableTaxa));
+        _eliminatedTaxaCellRenderer.setTaxaToColor(new HashSet<Item>(_foundEliminatedTaxa));
+
+        _listRemainingTaxa.repaint();
+        _listEliminatedTaxa.repaint();
+
+        return _foundAvailableTaxa.size() + _foundEliminatedTaxa.size();
     }
 
     private boolean taxonMatches(String searchText, Item taxon, List<String> synonymStrings) {
@@ -1481,6 +1527,40 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         }
 
         return false;
+    }
+
+    public void selectCurrentMatchedTaxon(int matchedTaxonIndex) {
+
+        if (matchedTaxonIndex < _foundAvailableTaxa.size()) {
+            Item taxon = _foundAvailableTaxa.get(matchedTaxonIndex);
+            _listRemainingTaxa.setSelectedValue(taxon, true);
+            _listEliminatedTaxa.clearSelection();
+        } else if (!_foundEliminatedTaxa.isEmpty()) {
+            int offsetIndex = matchedTaxonIndex - _foundAvailableTaxa.size();
+            if (offsetIndex < _foundEliminatedTaxa.size()) {
+                Item taxon = _foundEliminatedTaxa.get(offsetIndex);
+                _listEliminatedTaxa.setSelectedValue(taxon, true);
+                _listRemainingTaxa.clearSelection();
+            }
+        }
+    }
+
+    public void selectAllMatchedTaxa() {
+        
+        int[] availableTaxaSelectedIndices = new int[_foundAvailableTaxa.size()];
+        for (int i=0; i < _foundAvailableTaxa.size(); i++) {
+            Item taxon = _foundAvailableTaxa.get(i);
+            availableTaxaSelectedIndices[i] = _availableTaxaListModel.indexOf(taxon);
+        }
+
+        int[] eliminatedTaxaSelectedIndices = new int[_foundEliminatedTaxa.size()];
+        for (int i=0; i < _foundEliminatedTaxa.size(); i++) {
+            Item taxon = _foundEliminatedTaxa.get(i);
+            eliminatedTaxaSelectedIndices[i] = _eliminatedTaxaListModel.indexOf(taxon);
+        }
+        
+        _listRemainingTaxa.setSelectedIndices(availableTaxaSelectedIndices);
+        _listEliminatedTaxa.setSelectedIndices(eliminatedTaxaSelectedIndices);
     }
 
     // Returns number of characters matched
@@ -1519,7 +1599,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
                 }
             }
         }
-        
+
         _availableCharactersListCellRenderer.setCharactersToColor(new HashSet<Character>(_foundAvailableCharacters));
         _usedCharactersListCellRenderer.setCharactersToColor(new HashSet<Character>(_foundUsedCharacters));
 
@@ -1560,7 +1640,6 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     public void selectCurrentMatchedCharacter(int matchedCharacterIndex) {
 
-        
         if (matchedCharacterIndex < _foundAvailableCharacters.size()) {
             Character ch = _foundAvailableCharacters.get(matchedCharacterIndex);
             _listAvailableCharacters.setSelectedValue(ch, true);

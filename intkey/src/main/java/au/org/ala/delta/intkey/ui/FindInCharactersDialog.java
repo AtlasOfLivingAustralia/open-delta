@@ -48,7 +48,6 @@ public class FindInCharactersDialog extends JDialog {
     private javax.swing.Action _nextAction;
 
     private Intkey _intkeyApp;
-    private IntkeyContext _context;
 
     private int _numMatchedCharacters;
     private int _currentMatchedCharacter;
@@ -68,6 +67,9 @@ public class FindInCharactersDialog extends JDialog {
     
     @Resource
     String searchUsedCharactersCaption;
+    
+    @Resource
+    String noCharactersFoundMessage;
     
     public FindInCharactersDialog(Intkey intkeyApp, IntkeyContext context) {
         super(intkeyApp.getMainFrame(), false);
@@ -127,9 +129,24 @@ public class FindInCharactersDialog extends JDialog {
         _pnlMainBottom.setLayout(new BoxLayout(_pnlMainBottom, BoxLayout.Y_AXIS));
 
         _chckbxSearchStates = new JCheckBox(searchStatesCaption);
+        _chckbxSearchStates.addActionListener(new ActionListener() {
+            
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                reset();
+            }
+        });
+        
         _pnlMainBottom.add(_chckbxSearchStates);
 
         _chckbxSearchUsedCharacters = new JCheckBox(searchUsedCharactersCaption);
+        _chckbxSearchUsedCharacters.addActionListener(new ActionListener() {
+            
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                reset();
+            }
+        });
         _pnlMainBottom.add(_chckbxSearchUsedCharacters);
 
         _pnlButtons = new JPanel();
@@ -181,7 +198,6 @@ public class FindInCharactersDialog extends JDialog {
 
     @Action
     public void findCharacters() {
-
         String searchText = _textField.getText();
         boolean searchStates = _chckbxSearchStates.isSelected();
         boolean searchUsedCharacters = _chckbxSearchUsedCharacters.isSelected();
@@ -193,7 +209,7 @@ public class FindInCharactersDialog extends JDialog {
                 _currentMatchedCharacter = 0;
                 characterSelectionUpdated();
             } else {
-                JOptionPane.showMessageDialog(this, "No characters found");
+                JOptionPane.showMessageDialog(this, noCharactersFoundMessage, "", JOptionPane.INFORMATION_MESSAGE);
             }
         }
     }

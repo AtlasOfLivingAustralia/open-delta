@@ -453,15 +453,19 @@ public final class IntkeyDatasetFileReader {
             nonAutoCcList = readIntegerList(itemBinFile, numChars);
         }
 
-        List<Character> synonymyCharacters = new ArrayList<Character>();
-        
+        List<TextCharacter> synonymyCharacters = new ArrayList<TextCharacter>();
+
         for (int i = 0; i < numChars; i++) {
             Character ch = characters.get(i);
 
             if (synonmyInfoList != null) {
                 ch.setContainsSynonmyInformation(synonmyInfoList.get(i) != 0);
                 if (ch.getContainsSynonmyInformation()) {
-                    synonymyCharacters.add(ch);
+                    if (ch instanceof TextCharacter) {
+                        synonymyCharacters.add((TextCharacter) ch);
+                    } else {
+                        throw new RuntimeException("Only text characters can contains synonymy information");
+                    }
                 }
             }
 
@@ -485,7 +489,7 @@ public final class IntkeyDatasetFileReader {
                 ch.setNonAutoCc(nonAutoCcList.get(i) != 0);
             }
         }
-        
+
         ds.setSynonymyCharacters(synonymyCharacters);
 
     }
@@ -1361,7 +1365,7 @@ public final class IntkeyDatasetFileReader {
 
         return imagesDataList;
     }
-    
+
     private static Image createImage(String fileName, String comments, int imageType) {
         DefaultImageData imageData = new DefaultImageData(fileName);
         Image image = new Image(imageData);

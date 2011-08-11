@@ -11,6 +11,9 @@ public class TaxonWithDifferenceCountCellRenderer extends TaxonCellRenderer {
 
     public TaxonWithDifferenceCountCellRenderer(Map<Item, Integer> differenceCounts) {
         _differenceCounts = new HashMap<Item, Integer>();
+        if (differenceCounts != null) {
+            _differenceCounts.putAll(differenceCounts);
+        }
     }
 
     @Override

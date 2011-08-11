@@ -8,6 +8,7 @@ import au.org.ala.delta.io.BinFile;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.TextCharacter;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageSettings.FontInfo;
 
@@ -39,10 +40,10 @@ public class IntkeyDataset {
     private boolean chineseFormat;
 
     /**
-     * A list of characters that contain synonmy information. The values of such
+     * A list of text characters that contain synonmy information. The values of such
      * characters for each taxon contain synonyms for that taxon.
      */
-    private List<Character> _synonymyCharacters;
+    private List<TextCharacter> _synonymyCharacters;
 
     public IntkeyDataset() {
         _characters = new ArrayList<Character>();
@@ -51,7 +52,7 @@ public class IntkeyDataset {
         _characterKeywordImages = new ArrayList<Image>();
         _taxonKeywordImages = new ArrayList<Image>();
         _overlayFonts = new ArrayList<FontInfo>();
-        _synonymyCharacters = new ArrayList<Character>();
+        _synonymyCharacters = new ArrayList<TextCharacter>();
     }
 
     public File getCharactersFile() {
@@ -245,13 +246,13 @@ public class IntkeyDataset {
         return _itemsFileHeader.getLSbnd() > 0;
     }
 
-    public List<Character> getSynonymyCharacters() {
+    public List<TextCharacter> getSynonymyCharacters() {
         //defensive copy
-        return new ArrayList<Character>(_synonymyCharacters);
+        return new ArrayList<TextCharacter>(_synonymyCharacters);
     }
     
-    public void setSynonymyCharacters(List<Character> synonymyCharacters) {
-        _synonymyCharacters = new ArrayList<Character>(synonymyCharacters);
+    public void setSynonymyCharacters(List<TextCharacter> synonymyCharacters) {
+        _synonymyCharacters = new ArrayList<TextCharacter>(synonymyCharacters);
     }
 
     /**

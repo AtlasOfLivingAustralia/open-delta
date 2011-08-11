@@ -565,7 +565,7 @@ public class DataSetLoadTest extends TestCase {
         
         IntkeyDataset ds = context.getDataset();
         
-        List<Character> synonymyCharacters = ds.getSynonymyCharacters();
+        List<TextCharacter> synonymyCharacters = ds.getSynonymyCharacters();
         
         assertEquals(1, synonymyCharacters.size());
         
