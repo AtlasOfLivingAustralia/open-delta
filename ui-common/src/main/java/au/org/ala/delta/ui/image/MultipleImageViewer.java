@@ -22,13 +22,15 @@ import au.org.ala.delta.ui.image.ImagePanel.ScalingMode;
 
 public class MultipleImageViewer extends JPanel {
 
-	private static final long serialVersionUID = 6901754518169951771L;
-	private int _selectedIndex;
+    private static final long serialVersionUID = 6901754518169951771L;
+    private int _selectedIndex;
     private CardLayout _layout;
     private ScalingMode _scalingMode;
     private List<ImageViewer> _imageViewers;
     private ImageSettings _imageSettings;
     private JPanel _contentPanel;
+    private boolean _hideHotSpots;
+    private boolean _hideTextOverlays;
 
     public MultipleImageViewer(ImageSettings imageSettings) {
         _imageSettings = imageSettings;
@@ -44,35 +46,49 @@ public class MultipleImageViewer extends JPanel {
 
     public void addImageViewer(ImageViewer viewer) {
         _imageViewers.add(viewer);
-        _contentPanel.add(viewer, ImageUtils.subjectTextOrFileName(viewer.getViewedImage()));
+        _contentPanel.add(viewer, ImageUtils.getSubjectTextOrFileName(viewer.getViewedImage()));
     }
 
     /**
      * Displays the next image of the current subject (Character or Item)
-     * @return false if there is no next image to move to, otherwise true
      */
-    public boolean nextImage() {
+    public void nextImage() {
         int nextIndex = _selectedIndex + 1;
         if (nextIndex < _imageViewers.size()) {
             _layout.next(_contentPanel);
             _selectedIndex = nextIndex;
-            return true;
         }
-        return false;
     }
 
     /**
      * Displays the previous image of the current subject (Character or Item)
-     * @return false if there is no previous image to move to, otherwise true
      */
-    public boolean previousImage() {
+    public void previousImage() {
         int prevIndex = _selectedIndex - 1;
         if (prevIndex >= 0) {
             _layout.previous(_contentPanel);
             _selectedIndex = prevIndex;
-            return true;
         }
-        return false;
+    }
+
+    public void showImage(String imageName) {
+        _layout.show(_contentPanel, imageName);
+    }
+
+    public int getNumberImages() {
+        return _imageViewers.size();
+    }
+
+    public int getIndexCurrentlyViewedImage() {
+        return _selectedIndex;
+    }
+
+    public boolean atFirstImage() {
+        return _selectedIndex == 0;
+    }
+
+    public boolean atLastImage() {
+        return _selectedIndex == _imageViewers.size() - 1;
     }
 
     public void replaySound() {
@@ -154,6 +170,32 @@ public class MultipleImageViewer extends JPanel {
         });
 
         gd.setFullScreenWindow(w);
+    }
+    
+    public void toggleHideHotSpots() {
+        setHideHotSpots(!_hideHotSpots);
+    }
+    
+    public void setHideHotSpots(boolean hideHotSpots) {
+        if (_hideHotSpots != hideHotSpots) {
+            _hideHotSpots = hideHotSpots;
+            for (ImageViewer viewer : _imageViewers) {
+                viewer.setDisplayHotSpots(!hideHotSpots);
+            }
+        }
+    }
+    
+    public void toggleHideText() {
+        setHideTextOverlays(!_hideTextOverlays);
+    }
+    
+    private void setHideTextOverlays(boolean hideTextOverlays) {
+        if (_hideTextOverlays != hideTextOverlays) {
+            _hideTextOverlays = hideTextOverlays;
+            for (ImageViewer viewer : _imageViewers) {
+                viewer.setDisplayTextOverlays(!hideTextOverlays);
+            }
+        }
     }
 
     public ImageViewer getVisibleViewer() {

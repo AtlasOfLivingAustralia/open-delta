@@ -24,7 +24,7 @@ public class ImageUtils {
      * @return the subject text of an image, or the filename if none has been
      *         specified.
      */
-    public static String subjectTextOrFileName(Image image) {
+    public static String getSubjectTextOrFileName(Image image) {
         String text = image.getSubjectText();
         if (StringUtils.isEmpty(text)) {
             text = image.getFileName();
@@ -60,10 +60,12 @@ public class ImageUtils {
 
         w.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
-                if (!viewer.nextImage()) {
+                if (viewer.atLastImage()) {
                     w.setVisible(false);
                     w.dispose();
                     gd.setFullScreenWindow(null);
+                } else {
+                    viewer.nextImage();
                 }
             }
         });

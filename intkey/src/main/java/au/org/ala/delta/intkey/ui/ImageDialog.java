@@ -3,28 +3,37 @@ package au.org.ala.delta.intkey.ui;
 import java.awt.BorderLayout;
 import java.awt.Dialog;
 import java.awt.Frame;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import javax.swing.ActionMap;
+import javax.swing.ButtonGroup;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JDialog;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JRadioButtonMenuItem;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.FloatRange;
 import org.apache.commons.lang.math.IntRange;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
+import org.jdesktop.application.Resource;
+import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.intkey.directives.ParsingUtils;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageOverlay;
 import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.model.image.OverlayType;
+import au.org.ala.delta.ui.image.ImageUtils;
 import au.org.ala.delta.ui.image.ImageViewer;
 import au.org.ala.delta.ui.image.MultipleImageViewer;
 import au.org.ala.delta.ui.image.OverlaySelectionObserver;
@@ -37,28 +46,36 @@ public class ImageDialog extends JDialog implements OverlaySelectionObserver {
     protected ImageSettings _imageSettings;
     protected MultipleImageViewer _multipleImageViewer;
     protected JMenuBar _menuBar;
-    protected JMenu _mnControl;
-    private JMenu _mnSubject;
-    private JMenu mnWindow;
-    private JMenuItem mntmScaled;
-    private JMenuItem mntmHideText;
-    private JMenuItem mntmReplaySound;
-    private JMenuItem mntmFitToImage;
-    private JMenuItem mntmFullScreen;
-    private JMenuItem mntmCascade;
-    private JMenuItem mntmTile;
-    private JMenuItem mntmCloseAll;
-    private JMenuItem mntmAboutImage;
-    private JMenuItem mntmReplayVideo;
+    protected JMenu _mnuControl;
+    private JMenu _mnuSubject;
+    private JMenu _mnuWindow;
+    private JCheckBoxMenuItem _mnuItScaled;
+    private JCheckBoxMenuItem _mnuItHideText;
+    private JMenuItem _mnuItReplaySound;
+    private JMenuItem _mnuItFitToImage;
+    private JMenuItem _mnuItFullScreen;
+    private JMenuItem _mnuItCascade;
+    private JMenuItem _mnuItTile;
+    private JMenuItem _mnuItCloseAll;
+    private JMenuItem _mnuItAboutImage;
+    private JMenuItem _mnuItReplayVideo;
 
     private Set<Integer> _selectedStates;
     private Set<String> _selectedKeywords;
     private Set<Pair<String, String>> _selectedValues;
     private boolean _okButtonPressed;
+    private JMenuItem _mnuItNextImage;
+    private JMenuItem _mnuItPreviousImage;
+    
+    /*@Resource
+    String mnuSubjectCaption;
+    
+    @Resource
+    String mnuControlCaption;
+    
+    @Resource
+    String mnuWindowCaption;*/
 
-    /**
-     * @wbp.parser.constructor
-     */
     public ImageDialog(Frame owner, ImageSettings imageSettings) {
         super(owner, true);
         init(imageSettings);
@@ -71,13 +88,13 @@ public class ImageDialog extends JDialog implements OverlaySelectionObserver {
 
     private void init(ImageSettings imageSettings) {
         _imageSettings = imageSettings;
-        
+
         _okButtonPressed = false;
-        
+
         _selectedStates = new HashSet<Integer>();
         _selectedKeywords = new HashSet<String>();
         _selectedValues = new HashSet<Pair<String, String>>();
-        
+
         getContentPane().setLayout(new BorderLayout(0, 0));
 
         buildMenu();
@@ -89,79 +106,125 @@ public class ImageDialog extends JDialog implements OverlaySelectionObserver {
     }
 
     private void buildMenu() {
-        ActionMap actionMap = Application.getInstance().getContext().getActionMap(this);
+        ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(ImageDialog.class);
+        resourceMap.injectFields(this);
+        ActionMap actionMap = Application.getInstance().getContext().getActionMap(ImageDialog.class, this);
 
         _menuBar = new JMenuBar();
         setJMenuBar(_menuBar);
 
-        _mnSubject = new JMenu("Subject");
-        _menuBar.add(_mnSubject);
+        _mnuSubject = new JMenu(resourceMap.getString("ImageDialog.mnuSubjectCaption"));
+        _menuBar.add(_mnuSubject);
 
-        _mnControl = new JMenu("Control");
-        _menuBar.add(_mnControl);
+        _mnuControl = new JMenu(resourceMap.getString("ImageDialog.mnuControlCaption"));
+        _menuBar.add(_mnuControl);
 
-        JMenuItem mnuItNextImage = new JMenuItem();
-        mnuItNextImage.setAction(actionMap.get("ImageDialog_mnuItNextImage"));
-        _mnControl.add(mnuItNextImage);
+        _mnuItNextImage = new JMenuItem();
+        _mnuItNextImage.setAction(actionMap.get("nextImage"));
+        _mnuControl.add(_mnuItNextImage);
 
-        JMenuItem mnuItPreviousImage = new JMenuItem();
-        mnuItPreviousImage.setAction(actionMap.get("ImageDialog_mnuItPreviousImage"));
-        _mnControl.add(mnuItPreviousImage);
+        _mnuItPreviousImage = new JMenuItem();
+        _mnuItPreviousImage.setAction(actionMap.get("previousImage"));
+        _mnuControl.add(_mnuItPreviousImage);
 
-        mnWindow = new JMenu("Window");
-        _menuBar.add(mnWindow);
+        _mnuWindow = new JMenu(resourceMap.getString("ImageDialog.mnuSubjectCaption"));
+        _menuBar.add(_mnuWindow);
 
-        mntmScaled = new JMenuItem("Scaled");
-        mnWindow.add(mntmScaled);
+        _mnuItScaled = new JCheckBoxMenuItem();
+        _mnuItScaled.setAction(actionMap.get("toggleScaling"));
+        _mnuItScaled.getAction().putValue(javax.swing.Action.SELECTED_KEY, true);
+        _mnuWindow.add(_mnuItScaled);
 
-        mntmHideText = new JMenuItem("Hide text");
-        mnWindow.add(mntmHideText);
+        _mnuItHideText = new JCheckBoxMenuItem();
+        _mnuItHideText.setAction(actionMap.get("toggleHideText"));
+        _mnuItHideText.getAction().putValue(javax.swing.Action.SELECTED_KEY, false);
+        _mnuWindow.add(_mnuItHideText);
 
-        mntmReplaySound = new JMenuItem("Replay Sound");
-        mnWindow.add(mntmReplaySound);
+        _mnuItReplaySound = new JMenuItem();
+        _mnuItReplaySound.setAction(actionMap.get("replaySound"));
+        _mnuWindow.add(_mnuItReplaySound);
 
-        mntmReplayVideo = new JMenuItem("Replay Video");
-        mnWindow.add(mntmReplayVideo);
+        _mnuItReplayVideo = new JMenuItem();
+        _mnuItReplayVideo.setAction(actionMap.get("replayVideo"));
+        _mnuWindow.add(_mnuItReplayVideo);
 
-        mnWindow.addSeparator();
+        _mnuWindow.addSeparator();
 
-        mntmFitToImage = new JMenuItem("Fit to image");
-        mnWindow.add(mntmFitToImage);
+        _mnuItFitToImage = new JMenuItem();
+        _mnuItFitToImage.setAction(actionMap.get("fitToImage"));
+        _mnuWindow.add(_mnuItFitToImage);
 
-        mntmFullScreen = new JMenuItem("Full Screen");
-        mnWindow.add(mntmFullScreen);
+        _mnuItFullScreen = new JMenuItem();
+        _mnuItFullScreen.setAction(actionMap.get("fullScreen"));
+        _mnuWindow.add(_mnuItFullScreen);
 
-        mnWindow.addSeparator();
+        _mnuWindow.addSeparator();
 
-        mntmCascade = new JMenuItem("Cascade");
-        mnWindow.add(mntmCascade);
+        _mnuItCascade = new JMenuItem();
+        _mnuItCascade.setAction(actionMap.get("cascade"));
+        _mnuWindow.add(_mnuItCascade);
 
-        mntmTile = new JMenuItem("Tile");
-        mnWindow.add(mntmTile);
+        _mnuItTile = new JMenuItem();
+        _mnuItTile.setAction(actionMap.get("tile"));
+        _mnuWindow.add(_mnuItTile);
 
-        mntmCloseAll = new JMenuItem("Close All");
-        mnWindow.add(mntmCloseAll);
+        _mnuItCloseAll = new JMenuItem();
+        _mnuItCloseAll.setAction(actionMap.get("closeAll"));
+        _mnuWindow.add(_mnuItCloseAll);
 
-        mnWindow.addSeparator();
+        _mnuWindow.addSeparator();
 
-        mntmAboutImage = new JMenuItem("About Image...");
-        mnWindow.add(mntmAboutImage);
+        _mnuItAboutImage = new JMenuItem();
+        _mnuItAboutImage.setAction(actionMap.get("aboutImage"));
+        _mnuWindow.add(_mnuItAboutImage);
     }
-    
+
     protected void setImages(List<Image> images) {
+
+        List<String> imageNames = new ArrayList<String>();
         for (Image image : images) {
             ImageViewer viewer = new ImageViewer(image, _imageSettings);
             _multipleImageViewer.addImageViewer(viewer);
             viewer.addOverlaySelectionObserver(this);
+
+            String imageName = ImageUtils.getSubjectTextOrFileName(image);
+            imageNames.add(imageName);
+            populateSubjectMenu(imageNames);
         }
-        
+
         _selectedStates = new HashSet<Integer>();
         _selectedKeywords = new HashSet<String>();
         _selectedValues = new HashSet<Pair<String, String>>();
-        
+
+        _mnuItNextImage.setEnabled(images.size() > 1);
+        _mnuItPreviousImage.setEnabled(false);
+
         this.pack();
     }
-    
+
+    private void populateSubjectMenu(List<String> imageNames) {
+        _mnuSubject.removeAll();
+
+        ButtonGroup group = new ButtonGroup();
+
+        for (final String imageName : imageNames) {
+            JRadioButtonMenuItem rdBtnMnuIt = new JRadioButtonMenuItem(imageName);
+            rdBtnMnuIt.addActionListener(new ActionListener() {
+
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    _multipleImageViewer.showImage(imageName);
+                    handleNewImageSelected();
+                }
+            });
+
+            group.add(rdBtnMnuIt);
+            _mnuSubject.add(rdBtnMnuIt);
+        }
+
+        ((JRadioButtonMenuItem) _mnuSubject.getMenuComponent(0)).setSelected(true);
+    }
+
     public void setFullScreen() {
         _multipleImageViewer.fullScreen();
     }
@@ -200,15 +263,73 @@ public class ImageDialog extends JDialog implements OverlaySelectionObserver {
     }
 
     @Action
-    public void ImageDialog_mnuItNextImage() {
+    public void nextImage() {
         _multipleImageViewer.nextImage();
-        reSelectStatesInNewViewer(_multipleImageViewer.getVisibleViewer());
+        handleNewImageSelected();
     }
 
     @Action
-    public void ImageDialog_mnuItPreviousImage() {
+    public void previousImage() {
         _multipleImageViewer.previousImage();
+        handleNewImageSelected();
+    }
+
+    @Action
+    public void toggleScaling() {
+        _multipleImageViewer.toggleScaling();
+    }
+
+    @Action
+    public void toggleHideText() {
+        _multipleImageViewer.toggleHideText();
+    }
+
+    @Action
+    public void replaySound() {
+        _multipleImageViewer.replaySound();
+    }
+
+    @Action
+    public void replayVideo() {
+        _multipleImageViewer.replayVideo();
+    }
+
+    @Action
+    public void fitToImage() {
+        _multipleImageViewer.fitToImage();
+    }
+
+    @Action
+    public void fullScreen() {
+        _multipleImageViewer.fullScreen();
+    }
+
+    @Action
+    public void cascade() {
+
+    }
+
+    @Action
+    public void tile() {
+
+    }
+
+    @Action
+    public void closeAll() {
+
+    }
+
+    @Action
+    public void aboutImage() {
+
+    }
+
+    private void handleNewImageSelected() {
         reSelectStatesInNewViewer(_multipleImageViewer.getVisibleViewer());
+        _mnuItNextImage.setEnabled(!_multipleImageViewer.atLastImage());
+        _mnuItPreviousImage.setEnabled(!_multipleImageViewer.atFirstImage());
+        JRadioButtonMenuItem imageMenuItem = (JRadioButtonMenuItem) _mnuSubject.getMenuComponent(_multipleImageViewer.getIndexCurrentlyViewedImage());
+        imageMenuItem.setSelected(true);
     }
 
     private void reSelectStatesInNewViewer(ImageViewer viewer) {
@@ -302,7 +423,7 @@ public class ImageDialog extends JDialog implements OverlaySelectionObserver {
         String inputText = _multipleImageViewer.getVisibleViewer().getInputText();
         return ParsingUtils.parseTextCharacterValue(inputText);
     }
-    
+
     /**
      * @return was the dialog closed using the ok button?
      */
