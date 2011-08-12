@@ -8,7 +8,9 @@ import java.util.Set;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
 import org.jdesktop.application.Action;
+import org.jdesktop.application.Application;
 
+import au.org.ala.delta.editor.DeltaEditor;
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.MultiStateCharacter;
@@ -41,7 +43,9 @@ public class ImageOverlayEditorController {
 	
 	@Action
 	public void editSelectedOverlay() {
-		
+		DeltaEditor editor = (DeltaEditor)Application.getInstance();
+		OverlayEditDialog overlayEditor = new OverlayEditDialog(editor.getMainFrame(), _selection.getSelectedOverlay());
+		editor.show(overlayEditor);
 	}
 
 	@Action
@@ -51,6 +55,7 @@ public class ImageOverlayEditorController {
 
 	@Action
 	public void deleteAllOverlays() {
+		// TODO are you sure?
 		_selection.getSelectedImage().deleteAllOverlays();
 	}
 

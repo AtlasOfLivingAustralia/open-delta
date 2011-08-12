@@ -20,6 +20,7 @@ import javax.swing.border.TitledBorder;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
+import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.model.image.ImageOverlay;
 import au.org.ala.delta.model.image.OverlayType;
@@ -32,6 +33,8 @@ public class OverlayEditDialog extends JDialog {
 
 	private static final long serialVersionUID = 3460369707621339162L;
 	private ImageOverlay _overlay;
+	private ResourceMap _resources;
+	
 	private JFormattedTextField xDimension;
 	private JFormattedTextField yDimension;
 	private JFormattedTextField wDimension;
@@ -46,10 +49,13 @@ public class OverlayEditDialog extends JDialog {
 	private JButton btnCancel;
 	private JButton btnApply;
 	private JLabel stateNumLabel;
+	private JLabel lblImageUnits;
 	
 	public OverlayEditDialog(Window parent, ImageOverlay overlay) {
 		super(parent);
+		setName("overlayEditDialog");
 		_overlay = overlay;
+		_resources = Application.getInstance().getContext().getResourceMap();
 		createUI();
 		addEventHandlers();
 		updateGUI();
@@ -63,10 +69,12 @@ public class OverlayEditDialog extends JDialog {
 	}
 	
 	private void createUI() {
+		
 		JPanel panel = new JPanel();
 		getContentPane().add(panel, BorderLayout.CENTER);
 		
-		stateNumLabel = new JLabel("State Number:");
+		stateNumLabel = new JLabel();
+		stateNumLabel.setName("overlayEditStateNumberLabel");
 		
 		stateNumberSpinner = new JSpinner();
 		
@@ -74,8 +82,8 @@ public class OverlayEditDialog extends JDialog {
 		textEditor.setBackground(new Color(255, 255, 255));
 		JScrollPane textScroller = new JScrollPane(textEditor);
 		
-		JLabel lblAdditionalText = new JLabel("Additional Text:");
-		
+		JLabel lblAdditionalText = new JLabel();
+		lblAdditionalText.setName("overlayEditAdditionalTextLabel");
 		JPanel panel_1 = new JPanel();
 		panel_1.setBorder(null);
 		
@@ -151,15 +159,16 @@ public class OverlayEditDialog extends JDialog {
 		panel_2.setLayout(gl_panel_2);
 		
 		chckbxCentreInBox = new JCheckBox("Centre in box");
-		
+		chckbxCentreInBox.setName("overlayEditCentreInBoxLabel");
 		chckbxIncludeComments = new JCheckBox("Include comments");
-		
+		chckbxIncludeComments.setName("overlayEditIncludeCommentsLabel");
 		chckbxOmitDescription = new JCheckBox("Omit description");
-		
+		chckbxOmitDescription.setName("overlayEditOmitDescriptionLabel");
 		chckbxUseIntegralHeight = new JCheckBox("Use integral height");
-		
+		chckbxUseIntegralHeight.setName("overlayEditUseIntegralHeightLabel");
 		JPanel dimensionsPanel = new JPanel();
-		dimensionsPanel.setBorder(new TitledBorder(null, "Dimensions", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		String dimensionsTitle = _resources.getString("overlayEditDimensionsLabel.text");
+		dimensionsPanel.setBorder(new TitledBorder(null, dimensionsTitle, TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		GroupLayout gl_panel_1 = new GroupLayout(panel_1);
 		gl_panel_1.setHorizontalGroup(
 			gl_panel_1.createParallelGroup(Alignment.LEADING)
@@ -191,27 +200,31 @@ public class OverlayEditDialog extends JDialog {
 					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 		);
 		
-		JLabel lblNewLabel = new JLabel("X:");
-		
+		JLabel lblNewLabel = new JLabel();
+		lblNewLabel.setName("overlayEditXLabel");
 		xDimension = numberField();
 		xDimension.setColumns(10);
 		
-		JLabel lblY = new JLabel("Y:");
-		
+		JLabel lblY = new JLabel();
+		lblY.setName("overlayEditYLabel");
 		yDimension = numberField();
 		yDimension.setColumns(10);
 		
-		JLabel lblW = new JLabel("W:");
 		
+		JLabel lblW = new JLabel();
+		lblW.setName("overlayEditWidthLabel");
 		wDimension = numberField();
 		wDimension.setColumns(10);
 		
-		JLabel lblH = new JLabel("H:");
 		
+		JLabel lblH = new JLabel();
+		lblH.setName("overlayEditHeightLabel");
 		hDimension = numberField();
 		hDimension.setColumns(10);
 		
-		JLabel lblImageUnits = new JLabel("Image Units");
+		
+		lblImageUnits = new JLabel();
+		lblImageUnits.setText(_resources.getString("overlayEditImageUnitsLabel.text"));
 		GroupLayout gl_dimensionsPanel = new GroupLayout(dimensionsPanel);
 		gl_dimensionsPanel.setHorizontalGroup(
 			gl_dimensionsPanel.createParallelGroup(Alignment.LEADING)
@@ -285,7 +298,11 @@ public class OverlayEditDialog extends JDialog {
 		yDimension.setValue(_overlay.getY());
 		wDimension.setValue(_overlay.getWidth());
 		hDimension.setValue(_overlay.getHeight());
-		
+		String key = "overlayEditImageUnitsLabel.text";
+		if (_overlay.integralHeight()) {
+			key = "overlayEditLinesLabel.text";
+		}
+		lblImageUnits.setText(_resources.getString(key));
 	}
 	
 	@Action
@@ -313,6 +330,8 @@ public class OverlayEditDialog extends JDialog {
 		_overlay.setY((Integer)yDimension.getValue());
 		_overlay.setWidth((Integer)wDimension.getValue());
 		_overlay.setHeight((Integer)hDimension.getValue());
+		
+		
 	}
 	
 	@Action
