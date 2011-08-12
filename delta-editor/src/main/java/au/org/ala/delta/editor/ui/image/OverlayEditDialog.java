@@ -22,6 +22,7 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 
+import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageOverlay;
 import au.org.ala.delta.model.image.OverlayType;
 import au.org.ala.delta.ui.rtf.RtfEditor;
@@ -33,6 +34,7 @@ public class OverlayEditDialog extends JDialog {
 
 	private static final long serialVersionUID = 3460369707621339162L;
 	private ImageOverlay _overlay;
+	private Image _image;
 	private ResourceMap _resources;
 	
 	private JFormattedTextField xDimension;
@@ -51,9 +53,10 @@ public class OverlayEditDialog extends JDialog {
 	private JLabel stateNumLabel;
 	private JLabel lblImageUnits;
 	
-	public OverlayEditDialog(Window parent, ImageOverlay overlay) {
+	public OverlayEditDialog(Window parent, Image image, ImageOverlay overlay) {
 		super(parent);
 		setName("overlayEditDialog");
+		_image = image;
 		_overlay = overlay;
 		_resources = Application.getInstance().getContext().getResourceMap();
 		createUI();
@@ -331,6 +334,7 @@ public class OverlayEditDialog extends JDialog {
 		_overlay.setWidth((Integer)wDimension.getValue());
 		_overlay.setHeight((Integer)hDimension.getValue());
 		
+		_image.updateOverlay(_overlay);
 		
 	}
 	

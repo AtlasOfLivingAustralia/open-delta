@@ -1,5 +1,7 @@
 package au.org.ala.delta.ui.image.overlay;
 
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Point;
 import java.awt.Rectangle;
 
@@ -59,16 +61,25 @@ public class FixedCentreOverlayLocation implements OverlayLocation {
 	
 	@Override
 	public int getHeight() {
-		if (_location.H <= 0) {
+		if (_location.H <= Short.MIN_VALUE) {
 			return _component.getPreferredSize().height;
 		}
 		
 		int height = 0;
-		
-		// Fonts don't scale with the image so the height should use the
-		// original image height.
-		double scaledHeight = _image.getPreferredImageHeight();
-		height = (int)(_location.H / 1000d * scaledHeight);
+		if (_location.H < 0) {
+			Font f = _component.getFont();
+			FontMetrics m = _component.getFontMetrics(f);
+			int lineHeight = m.getHeight();
+			
+			height = lineHeight * -_location.H;
+			System.out.println("H="+height);
+		}
+		else {
+			// Fonts don't scale with the image so the height should use the
+			// original image height.
+			double scaledHeight = _image.getPreferredImageHeight();
+			height = (int)(_location.H / 1000d * scaledHeight);
+		}
 		
 		return height; 
 	}
@@ -103,6 +114,7 @@ public class FixedCentreOverlayLocation implements OverlayLocation {
 		
 		int x = (int)Math.round((midPointXInPixels/imageScale-halfComponentWidth)*toImageUnits - p.x);
 		_location.setX(x);
+		_location.setW((int)(bounds.width*toImageUnits));
 		
 		double scaledHeight = _image.getImageHeight();
 		double height = _image.getPreferredImageHeight();
@@ -113,6 +125,8 @@ public class FixedCentreOverlayLocation implements OverlayLocation {
 		toImageUnits = 1000/height;
 		int y = (int)Math.round((midPointYInPixels/imageScale-halfComponentHeight)*toImageUnits - p.y);
 		_location.setY(y);
+		_location.setH((int)(bounds.height*toImageUnits));
+		
 	}
 	
 }

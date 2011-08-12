@@ -170,12 +170,14 @@ public class ImageEditorPanel extends ImageViewer {
 		if (!_editingEnabled) {
 			return;
 		}
-		_dragging = false;
+		if (_dragging) {
+			_dragging = false;
 		
-		boundsToOverlayLocation(_selectedOverlayComp);
-		
-		setLayout(this);
-		revalidate();
+			boundsToOverlayLocation(_selectedOverlayComp);
+			
+			setLayout(this);
+			revalidate();
+		}
 	}
 	
 	private void boundsToOverlayLocation(JComponent component) {

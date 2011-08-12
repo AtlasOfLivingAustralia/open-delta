@@ -44,7 +44,8 @@ public class ImageOverlayEditorController {
 	@Action
 	public void editSelectedOverlay() {
 		DeltaEditor editor = (DeltaEditor)Application.getInstance();
-		OverlayEditDialog overlayEditor = new OverlayEditDialog(editor.getMainFrame(), _selection.getSelectedOverlay());
+		OverlayEditDialog overlayEditor = new OverlayEditDialog(editor.getMainFrame(), 
+				_selection.getSelectedImage(), _selection.getSelectedOverlay());
 		editor.show(overlayEditor);
 	}
 
@@ -236,7 +237,8 @@ public class ImageOverlayEditorController {
 	}
 
 	private void addOverlay(int overlayType) {
-		newOverlay(overlayType);
+		ImageOverlay overlay = newOverlay(overlayType);
+		_selection.getSelectedImage().updateOverlay(overlay);
 	}
 
 	private ImageOverlay newStateOverlay(int stateNum) {
@@ -253,20 +255,30 @@ public class ImageOverlayEditorController {
 	}
 
 	private void configureOverlay(ImageOverlay anOverlay) {
-		Point start = _selection.getSelectedPoint();
-		OverlayLocation newLocation = new OverlayLocation();
-		anOverlay.location.add(newLocation);
+		Point menuPoint = _selection.getSelectedPoint();
+		if (menuPoint == null) {
+			menuPoint = new Point(Integer.MIN_VALUE, Integer.MIN_VALUE);
+		}
+		OverlayLocation newLocation;
+		if (anOverlay.location.size() == 0) {
+			newLocation = new OverlayLocation();
+			anOverlay.location.add(newLocation);
+		}
+		else {
+			newLocation = anOverlay.getLocation(0);
+		}
+		
 		if (anOverlay.type == OverlayType.OLHOTSPOT) {
 			_imageSettings.configureHotSpotDefaults(newLocation);
 			newLocation.H = 200;
 		} else {
 			_imageSettings.configureOverlayDefaults(anOverlay);
 		}
-		Point menuPoint = new Point();
+		
 		if (menuPoint.x != Integer.MIN_VALUE) {
 			
-			newLocation.setX(start.x);
-			newLocation.setY(start.y);
+			newLocation.setX(menuPoint.x);
+			newLocation.setY(menuPoint.y);
 		} else {
 			newLocation.X = 350;
 			newLocation.Y = 450;
@@ -359,6 +371,6 @@ public class ImageOverlayEditorController {
 			newLocation.setW(Math.min(200, 1000 - newLocation.X));
 		else
 			newLocation.setW(Math.min(300, 1000 - newLocation.X));
-		anOverlay.location.add(0, newLocation);
+		
 	}
 }
