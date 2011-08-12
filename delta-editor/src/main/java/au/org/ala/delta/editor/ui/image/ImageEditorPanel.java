@@ -1,6 +1,7 @@
 package au.org.ala.delta.editor.ui.image;
 
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Graphics;
 import java.awt.Insets;
 import java.awt.Point;
@@ -344,6 +345,7 @@ public class ImageEditorPanel extends ImageViewer {
 
 		private JComponent _overlayComp;
 		private MouseEvent _pressedEvent;
+		private int corner = 4;
 		
 		public OverlayComponentListener(JComponent overlayComp) {
 			_overlayComp = overlayComp;
@@ -353,15 +355,14 @@ public class ImageEditorPanel extends ImageViewer {
 		
 		@Override
 		public void mousePressed(MouseEvent e) {		
-			System.out.println("Selected!");
 			select(_overlayComp);
 			_pressedEvent = SwingUtilities.convertMouseEvent(_overlayComp, e, ImageEditorPanel.this);
+			
 		}
 		
 		@Override
 		public void mouseReleased(MouseEvent e) {
 			if (_pressedEvent != null) {
-				System.out.println("Stopped");
 				_pressedEvent = null;
 				stopMove();
 			}
@@ -369,7 +370,7 @@ public class ImageEditorPanel extends ImageViewer {
 		
 		@Override
 		public void mouseDragged(MouseEvent e) {
-			System.out.println("Dragged");
+			
 			MouseEvent e2 = SwingUtilities.convertMouseEvent(_overlayComp, e, ImageEditorPanel.this);
 			
 			int dx = e2.getX() - _pressedEvent.getX();
@@ -380,7 +381,62 @@ public class ImageEditorPanel extends ImageViewer {
 		}
 		
 		@Override
-		public void mouseMoved(MouseEvent e) {}
+		public void mouseClicked(MouseEvent e) {
+			if (e.getClickCount() == 2) {
+				_controller.editSelectedOverlay();
+			}
+		}
+		
+		@Override
+		public void mouseMoved(MouseEvent e) {
+			if (_selectedOverlayComp == _overlayComp) {
+				if (inTopLeft(e)) {
+					setCursor(Cursor.getPredefinedCursor(Cursor.NW_RESIZE_CURSOR));
+				}
+				else if (inTopRight(e)) {
+					setCursor(Cursor.getPredefinedCursor(Cursor.NE_RESIZE_CURSOR));
+				}
+				else if (inBottomLeft(e)) {
+					setCursor(Cursor.getPredefinedCursor(Cursor.SW_RESIZE_CURSOR));
+				}
+				else if (inBottomRight(e)) {
+					setCursor(Cursor.getPredefinedCursor(Cursor.SE_RESIZE_CURSOR));
+				}
+				else {
+					setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+				}
+			}
+		}
+		
+		private boolean inCorner(MouseEvent e) {
+			return inTopLeft(e) || inTopRight(e) || inBottomLeft(e) || inBottomRight(e);
+			
+		}
+		
+		private boolean inTopLeft(MouseEvent e) {
+			int x = e.getX();
+			int y = e.getY();
+			return (x <= corner && y <= corner);
+		}
+		private boolean inTopRight(MouseEvent e) {
+			int x = e.getX();
+			int y = e.getY();
+			int w = _overlayComp.getWidth();
+			return (x >= w-corner && y <= corner);
+		}
+		private boolean inBottomLeft(MouseEvent e) {
+			int x = e.getX();
+			int y = e.getY();
+			int h = _overlayComp.getHeight();
+			return (x <= corner && y >= h - corner);
+		}
+		private boolean inBottomRight(MouseEvent e) {
+			int x = e.getX();
+			int y = e.getY();
+			int w = _overlayComp.getWidth();
+			int h = _overlayComp.getHeight();
+			return (x >= w-corner && y >= h - corner);
+		}
 	}
 	
 	class PopupDisplayer extends PopupMenuListener {

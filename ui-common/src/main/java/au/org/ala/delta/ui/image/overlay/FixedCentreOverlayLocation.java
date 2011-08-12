@@ -72,7 +72,6 @@ public class FixedCentreOverlayLocation implements OverlayLocation {
 			int lineHeight = m.getHeight();
 			
 			height = lineHeight * -_location.H;
-			System.out.println("H="+height);
 		}
 		else {
 			// Fonts don't scale with the image so the height should use the
