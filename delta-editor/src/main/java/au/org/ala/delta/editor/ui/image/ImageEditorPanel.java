@@ -76,12 +76,22 @@ public class ImageEditorPanel extends ImageViewer {
 	}
 	
 	private void addEventHandlers() {
+		
+		new PopupDisplayer(this);
+	}
+	
+	private void addComponentListeners() {
 		for (JComponent overlayComp : _components) {
 			new PopupDisplayer(overlayComp);
 			new OverlayComponentListener(overlayComp);
 		}
 		
-		new PopupDisplayer(this);
+	}
+	
+	@Override
+	public void addOverlays() {
+		super.addOverlays();
+		addComponentListeners();		
 	}
 	
 	public void select(JComponent overlayComp) {

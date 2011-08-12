@@ -229,6 +229,13 @@ public abstract class VOAnyDesc {
 		n.fromBinary(data);
 		return n;
 	}
+	
+	protected DeltaNumber dataReadNumber() {
+		ByteBuffer data = dataReadBuffer(DeltaNumber.size());
+		DeltaNumber n = new DeltaNumber();
+		n.fromBinary(data.array());
+		return n;
+	}
 
 	protected void writePersData(byte[] data) {
 		assert _slotFile != null;
@@ -244,6 +251,11 @@ public abstract class VOAnyDesc {
 	
 	protected String readString(int size) {
 		return _slotFile.sread(size);
+	}
+	
+	protected String dataReadString(int size) {
+		ByteBuffer bb = dataReadBuffer(size);
+		return BinFileEncoding.decode(bb.array());
 	}
 	
 	protected ByteBuffer dataReadBuffer(int len) {

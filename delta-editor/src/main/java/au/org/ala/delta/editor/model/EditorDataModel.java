@@ -166,6 +166,9 @@ public class EditorDataModel extends DataSetWrapper implements EditorViewModel, 
 	@Override
 	public ImageSettings getImageSettings() {
 		ImageSettings settings = _wrappedDataSet.getImageSettings();
+		if (settings == null) {
+			settings = new ImageSettings();
+		}
 		settings.setDataSetPath(getDataSetPath());
 		return settings;
 	}

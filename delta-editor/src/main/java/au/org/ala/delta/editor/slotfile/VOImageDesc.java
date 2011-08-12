@@ -945,6 +945,7 @@ public class VOImageDesc extends VOAnyDesc {
 		    dataSeek(startLoc);
 		    
 		    ImageOverlay olDel = readSingleOverlay();
+		
 		    byte[] trailerBuf = dupTrailingData(0, SeekDirection.FROM_CUR);
 		    if (trailerBuf != null) {
 		        dataSeek(startLoc);
@@ -1079,10 +1080,7 @@ public class VOImageDesc extends VOAnyDesc {
 	protected ImageOverlay readSingleOverlay(boolean isNew) {
 		// First part gives type of the overlay,
 		// followed by the lengths of remaining info
-		short[] valBuf = new short[4];
-		for (int i = 0; i < valBuf.length; ++i) {
-			valBuf[i] = _slotFile.readShort();
-		}
+		short[] valBuf = dataReadShorts(4);
 		// Reads in:
 		// 0 : overlay type
 		// 1 : length of location list
@@ -1099,7 +1097,7 @@ public class VOImageDesc extends VOAnyDesc {
 			// Highest three bytes contain the ID
 			// These should perhaps be made separate, but would "break" the
 			// original design, which stored only the drawType and not the ID
-			int aValue = readInt();
+			int aValue = dataReadInt();
 			olLoc.drawType = OLDrawType.fromOrdinal(aValue & 0xFF);
 			olLoc.ID = aValue >> 8;
 
@@ -1112,11 +1110,11 @@ public class VOImageDesc extends VOAnyDesc {
 				}
 			}
 			// DataRead(&olLoc.drawType, sizeof(olLoc.drawType));
-			olLoc.flags = readInt();
-			olLoc.X = readShort();
-			olLoc.Y = readShort();
-			olLoc.W = readShort();
-			olLoc.H = readShort();
+			olLoc.flags = dataReadInt();
+			olLoc.X = dataReadShort();
+			olLoc.Y = dataReadShort();
+			olLoc.W = dataReadShort();
+			olLoc.H = dataReadShort();
 
 			if (olLoc.H <= 0) {
 				olLoc.flags |= ImageOverlay.OL_INTEGRAL_HEIGHT;
@@ -1124,17 +1122,17 @@ public class VOImageDesc extends VOAnyDesc {
 			dest.location.add(olLoc);
 		}
 
-		dest.overlayText = readString(valBuf[2]);
-		dest.comment = readString(valBuf[3]);
+		dest.overlayText = dataReadString(valBuf[2]);
+		dest.comment = dataReadString(valBuf[3]);
 
 		if (dest.type == OverlayType.OLSTATE) {
-			dest.stateId = readInt();
+			dest.stateId = dataReadInt();
 		} else if (dest.type == OverlayType.OLVALUE) {
-			dest.minVal = readNumber().asString();
-			dest.maxVal = readNumber().asString();
+			dest.minVal = dataReadNumber().asString();
+			dest.maxVal = dataReadNumber().asString();
 		} else if (dest.type == OverlayType.OLKEYWORD) {
-			short textLen = readShort();
-			dest.keywords = readString(textLen);
+			short textLen = dataReadShort();
+			dest.keywords = dataReadString(textLen);
 		}
 
 		return dest;

@@ -103,6 +103,24 @@ public class VOImageDescTest extends DeltaTestCase {
 		compareOverlayList(overlays, overlays2);
 		
 	}
+	
+	
+	@Test
+	public void testDeleteOverlays() {
+		VOImageDesc desc = getCharacterImageDesc(6, 0);
+		
+		List<ImageOverlay> overlays = desc.readAllOverlays();
+		for (ImageOverlay overlay : overlays) {
+			desc.removeOverlay(overlay.getId());
+			System.out.println("Deleting : "+overlay.getId());
+			List<ImageOverlay> tmpOverlays = desc.readAllOverlays();
+			for (ImageOverlay tmp : tmpOverlays) {
+				System.out.println(tmp.getId());
+			}
+		}
+		System.out.println(desc.readAllOverlays());
+		assertEquals(0, desc.readAllOverlays().size());
+	}
 
 	private void compareOverlayList(List<ImageOverlay> overlays,
 			List<ImageOverlay> overlays2) {
@@ -119,6 +137,16 @@ public class VOImageDescTest extends DeltaTestCase {
 	private VOImageDesc getImageDesc(int itemNumber, int imageNumber) {
 		int id = _vop.getDeltaMaster().uniIdFromItemNo(itemNumber);
 		VOItemDesc item = (VOItemDesc)_vop.getDescFromId(id);
+		List<Integer> imageIds = item.readImageList();
+		
+		VOImageDesc desc = (VOImageDesc)_vop.getDescFromId(imageIds.get(imageNumber));
+		
+		return desc;
+	}
+	
+	private VOImageDesc getCharacterImageDesc(int characterNumber, int imageNumber) {
+		int id = _vop.getDeltaMaster().uniIdFromCharNo(characterNumber);
+		VOCharBaseDesc item = (VOCharBaseDesc)_vop.getDescFromId(id);
 		List<Integer> imageIds = item.readImageList();
 		
 		VOImageDesc desc = (VOImageDesc)_vop.getDescFromId(imageIds.get(imageNumber));

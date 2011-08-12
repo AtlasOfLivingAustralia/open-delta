@@ -4,6 +4,7 @@ import java.io.File;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Test;
 
 import au.org.ala.delta.DeltaTestCase;
 import au.org.ala.delta.editor.slotfile.VOImageInfoDesc.LOGFONT;
@@ -37,6 +38,7 @@ public class VOImageInfoDescTest extends DeltaTestCase {
 	/**
 	 * Since we are working with the sample data set we know which taxa have images.
 	 */
+	@Test
 	public void testReadWriteImageInfoDesc() {
 		
 		VOImageInfoDesc imageInfo = _vop.getImageInfo();
@@ -60,4 +62,5 @@ public class VOImageInfoDescTest extends DeltaTestCase {
 		assertEquals(1, fontInfo.getFirst().lfItalic);
 		
 	}
+
 }

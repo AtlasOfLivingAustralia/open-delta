@@ -19,6 +19,9 @@ import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.model.image.OverlayLocation;
 import au.org.ala.delta.model.image.OverlayType;
 
+/**
+ * Handles actions performed on an ImageEditorPanel. (add/delete/update overlays).
+ */
 public class ImageOverlayEditorController {
 
 	private ImageOverlay _selectedOverlay;
