@@ -2,6 +2,7 @@ package au.org.ala.delta.ui.image.overlay;
 
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.beans.Beans;
 import java.net.URL;
 
 import org.jdesktop.application.Application;
@@ -69,6 +70,7 @@ public class FixedCentreOverlayLocationTest extends TestCase {
 	
 	@Before
 	public void setUp() {
+		Beans.setDesignTime(true);
 		Application.launch(ApplicationStub.class, null);
 	}
 	
