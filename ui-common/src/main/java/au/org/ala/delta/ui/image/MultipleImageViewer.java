@@ -8,7 +8,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -19,6 +21,7 @@ import org.jdesktop.application.Action;
 import au.org.ala.delta.model.image.ImageOverlay;
 import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.ui.image.ImagePanel.ScalingMode;
+import java.awt.Color;
 
 public class MultipleImageViewer extends JPanel {
 
@@ -27,6 +30,7 @@ public class MultipleImageViewer extends JPanel {
     private CardLayout _layout;
     private ScalingMode _scalingMode;
     private List<ImageViewer> _imageViewers;
+    private Map<String, ImageViewer> _imageViewerMap;
     private ImageSettings _imageSettings;
     private JPanel _contentPanel;
     private boolean _hideHotSpots;
@@ -40,13 +44,17 @@ public class MultipleImageViewer extends JPanel {
         this.setLayout(new BorderLayout());
         this.add(_contentPanel, BorderLayout.CENTER);
         _imageViewers = new ArrayList<ImageViewer>();
+        _imageViewerMap = new HashMap<String, ImageViewer>();
+       
         _selectedIndex = 0;
         _scalingMode = ScalingMode.FIXED_ASPECT_RATIO;
     }
 
     public void addImageViewer(ImageViewer viewer) {
         _imageViewers.add(viewer);
-        _contentPanel.add(viewer, ImageUtils.getSubjectTextOrFileName(viewer.getViewedImage()));
+        String imageId = ImageUtils.getSubjectTextOrFileName(viewer.getViewedImage());
+        _imageViewerMap.put(imageId, viewer);
+        _contentPanel.add(viewer, imageId);
     }
 
     /**
@@ -71,8 +79,10 @@ public class MultipleImageViewer extends JPanel {
         }
     }
 
-    public void showImage(String imageName) {
-        _layout.show(_contentPanel, imageName);
+    public void showImage(String imageId) {
+        ImageViewer viewer = _imageViewerMap.get(imageId);
+        _selectedIndex = _imageViewers.indexOf(viewer);
+        _layout.show(_contentPanel, imageId);
     }
 
     public int getNumberImages() {
@@ -141,37 +151,6 @@ public class MultipleImageViewer extends JPanel {
         parentWindow.pack();
     }
 
-    /**
-     * Displays the image in a full screen window. Clicking the mouse will
-     * dismiss the window and return to normal mode.
-     */
-    @Action
-    public void fullScreen() {
-        // The assumption here is that this component has been added to a
-        // dialog. We need the parent window of the dialog.
-        Window parentWindow = SwingUtilities.getWindowAncestor(this);
-        Window ancestorWindow = SwingUtilities.getWindowAncestor(parentWindow);
-        final Window w = new Window(ancestorWindow);
-        w.setLayout(new BorderLayout());
-
-        final ImageViewer viewer = getVisibleViewer();
-        w.add(viewer, BorderLayout.CENTER);
-        final GraphicsDevice gd = ancestorWindow.getGraphicsConfiguration().getDevice();
-
-        w.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
-
-                w.dispose();
-                gd.setFullScreenWindow(null);
-                // add(viewer, key);
-                // _layout.show(_contentPanel, key);
-                revalidate();
-            }
-        });
-
-        gd.setFullScreenWindow(w);
-    }
-    
     public void toggleHideHotSpots() {
         setHideHotSpots(!_hideHotSpots);
     }

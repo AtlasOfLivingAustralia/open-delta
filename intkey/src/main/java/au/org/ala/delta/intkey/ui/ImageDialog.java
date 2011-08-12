@@ -3,8 +3,14 @@ package au.org.ala.delta.intkey.ui;
 import java.awt.BorderLayout;
 import java.awt.Dialog;
 import java.awt.Frame;
+import java.awt.GraphicsDevice;
+import java.awt.GridLayout;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -25,14 +31,15 @@ import org.apache.commons.lang.math.FloatRange;
 import org.apache.commons.lang.math.IntRange;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
-import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
+import org.jdesktop.application.SingleFrameApplication;
 
 import au.org.ala.delta.intkey.directives.ParsingUtils;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageOverlay;
 import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.model.image.OverlayType;
+import au.org.ala.delta.ui.image.ImagePanel.ScalingMode;
 import au.org.ala.delta.ui.image.ImageUtils;
 import au.org.ala.delta.ui.image.ImageViewer;
 import au.org.ala.delta.ui.image.MultipleImageViewer;
@@ -66,24 +73,23 @@ public class ImageDialog extends JDialog implements OverlaySelectionObserver {
     private boolean _okButtonPressed;
     private JMenuItem _mnuItNextImage;
     private JMenuItem _mnuItPreviousImage;
-    
-    /*@Resource
-    String mnuSubjectCaption;
-    
-    @Resource
-    String mnuControlCaption;
-    
-    @Resource
-    String mnuWindowCaption;*/
 
+    private Window _fullScreenWindow;
+    
+    
+    /**
+     * @wbp.parser.constructor
+     */
     public ImageDialog(Frame owner, ImageSettings imageSettings) {
         super(owner, true);
         init(imageSettings);
+        setLocationRelativeTo(owner);
     }
 
     public ImageDialog(Dialog owner, ImageSettings imageSettings) {
         super(owner, true);
         init(imageSettings);
+        setLocationRelativeTo(owner);
     }
 
     private void init(ImageSettings imageSettings) {
@@ -95,12 +101,21 @@ public class ImageDialog extends JDialog implements OverlaySelectionObserver {
         _selectedKeywords = new HashSet<String>();
         _selectedValues = new HashSet<Pair<String, String>>();
 
-        getContentPane().setLayout(new BorderLayout(0, 0));
-
         buildMenu();
+        getContentPane().setLayout(new GridLayout(0, 1, 0, 0));
 
         _multipleImageViewer = new MultipleImageViewer(_imageSettings);
-        getContentPane().add(_multipleImageViewer, BorderLayout.CENTER);
+        getContentPane().add(_multipleImageViewer);
+        
+        this.addWindowListener(new WindowAdapter() {
+
+            @Override
+            public void windowOpened(WindowEvent e) {
+                replaySound();
+            }
+            
+        
+        });
 
         this.pack();
     }
@@ -146,6 +161,7 @@ public class ImageDialog extends JDialog implements OverlaySelectionObserver {
 
         _mnuItReplayVideo = new JMenuItem();
         _mnuItReplayVideo.setAction(actionMap.get("replayVideo"));
+        _mnuItReplayVideo.setEnabled(false);
         _mnuWindow.add(_mnuItReplayVideo);
 
         _mnuWindow.addSeparator();
@@ -208,7 +224,7 @@ public class ImageDialog extends JDialog implements OverlaySelectionObserver {
         ButtonGroup group = new ButtonGroup();
 
         for (final String imageName : imageNames) {
-            JRadioButtonMenuItem rdBtnMnuIt = new JRadioButtonMenuItem(imageName);
+            final JRadioButtonMenuItem rdBtnMnuIt = new JRadioButtonMenuItem(imageName);
             rdBtnMnuIt.addActionListener(new ActionListener() {
 
                 @Override
@@ -223,10 +239,6 @@ public class ImageDialog extends JDialog implements OverlaySelectionObserver {
         }
 
         ((JRadioButtonMenuItem) _mnuSubject.getMenuComponent(0)).setSelected(true);
-    }
-
-    public void setFullScreen() {
-        _multipleImageViewer.fullScreen();
     }
 
     @Override
@@ -301,7 +313,39 @@ public class ImageDialog extends JDialog implements OverlaySelectionObserver {
 
     @Action
     public void fullScreen() {
-        _multipleImageViewer.fullScreen();
+        
+//        Image image = _multipleImageViewer.getVisibleViewer().getViewedImage();
+//        ImageViewer copyViewer = new ImageViewer(image, _imageSettings);
+//        copyViewer.setScalingMode(ScalingMode.NO_SCALING);
+//        copyViewer.addOverlaySelectionObserver(this);
+//
+//        final Window w = new Window(this);
+//        w.setLayout(new BorderLayout());
+//        w.add(copyViewer, BorderLayout.CENTER);
+//
+//        final GraphicsDevice gd = this.getGraphicsConfiguration().getDevice();
+//        
+//        copyViewer.addOverlaySelectionObserver(new OverlaySelectionObserver() {
+//            
+//            @Override
+//            public void overlaySelected(SelectableOverlay overlay) {
+//                ImageOverlay imageOverlay = overlay.getImageOverlay();
+//                if (imageOverlay.isType(OverlayType.OLOK) || imageOverlay.isType(OverlayType.OLCANCEL)) {
+//                    w.setVisible(false);
+//                    w.dispose();
+//                    gd.setFullScreenWindow(null);
+//                } 
+//            }
+//        });
+//
+//        gd.setFullScreenWindow(w);
+        
+      Image image = _multipleImageViewer.getVisibleViewer().getViewedImage();
+      List<Image> images = new ArrayList<Image>();
+      images.add(image);
+      Window applicationWindow = ((SingleFrameApplication) Application.getInstance()).getMainFrame();
+      this.setVisible(false);
+      ImageUtils.displayImagesFullScreen(images, _imageSettings, applicationWindow);
     }
 
     @Action
@@ -328,8 +372,7 @@ public class ImageDialog extends JDialog implements OverlaySelectionObserver {
         reSelectStatesInNewViewer(_multipleImageViewer.getVisibleViewer());
         _mnuItNextImage.setEnabled(!_multipleImageViewer.atLastImage());
         _mnuItPreviousImage.setEnabled(!_multipleImageViewer.atFirstImage());
-        JRadioButtonMenuItem imageMenuItem = (JRadioButtonMenuItem) _mnuSubject.getMenuComponent(_multipleImageViewer.getIndexCurrentlyViewedImage());
-        imageMenuItem.setSelected(true);
+        replaySound();
     }
 
     private void reSelectStatesInNewViewer(ImageViewer viewer) {

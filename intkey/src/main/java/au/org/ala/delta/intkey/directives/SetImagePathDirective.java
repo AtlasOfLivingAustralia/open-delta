@@ -18,6 +18,4 @@ public class SetImagePathDirective extends IntkeyDirective {
         return null;
     }
 
-
-
 }

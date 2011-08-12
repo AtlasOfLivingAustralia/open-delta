@@ -124,7 +124,7 @@ public class ImageOverlayParser {
                 // SaveIt:
                 // Should check and save whatever we have built up
                 if ((parseState == ParseState.TEXT || parseState == ParseState.PATH) && textStart != -1) {
-                    int textLen = i - textStart - 1;
+                    int textLen = i - textStart;
                     if (textLen > 0)
                         anOverlay.overlayText += buffer.substring(textStart + 1, textStart + textLen);
                 }

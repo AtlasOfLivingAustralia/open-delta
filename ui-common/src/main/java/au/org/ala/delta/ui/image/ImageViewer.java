@@ -1,5 +1,6 @@
 package au.org.ala.delta.ui.image;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -66,6 +67,8 @@ public class ImageViewer extends ImagePanel implements LayoutManager2, ActionLis
      */
     public ImageViewer(Image image, ImageSettings imageSettings) {
         _image = image;
+        
+        this.setBackground(Color.BLACK);
 
         ResourceMap resources = Application.getInstance().getContext().getResourceMap();
 

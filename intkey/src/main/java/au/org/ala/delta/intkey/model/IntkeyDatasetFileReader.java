@@ -42,7 +42,6 @@ import au.org.ala.delta.model.image.ImageType;
 import au.org.ala.delta.model.impl.CharacterData;
 import au.org.ala.delta.model.impl.DefaultCharacterData;
 import au.org.ala.delta.model.impl.DefaultImageData;
-import au.org.ala.delta.model.impl.ImageData;
 import au.org.ala.delta.model.impl.ItemData;
 import au.org.ala.delta.util.Pair;
 

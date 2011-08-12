@@ -5,16 +5,27 @@ import java.awt.Color;
 import java.awt.GraphicsDevice;
 import java.awt.GridBagLayout;
 import java.awt.Window;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.Iterator;
 import java.util.List;
 
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReadParam;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 import javax.swing.JPanel;
 
 import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageSettings;
+import au.org.ala.delta.util.Pair;
 
 public class ImageUtils {
 
@@ -70,7 +81,63 @@ public class ImageUtils {
             }
         });
 
+        w.setFocusable(true);
+
+        w.addKeyListener(new KeyListener() {
+
+            @Override
+            public void keyTyped(KeyEvent e) {
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+                    w.setVisible(false);
+                    w.dispose();
+                    gd.setFullScreenWindow(null);
+                }
+            }
+        });
+
         gd.setFullScreenWindow(w);
+    }
+    
+    public static Pair<BufferedImage, String> read(URL imageFileLocation) throws Exception {
+        InputStream inputStream = imageFileLocation.openStream();
+        String imageType;
+       
+        ImageInputStream stream = ImageIO.createImageInputStream(inputStream);
+        BufferedImage image;
+        try {
+            Iterator<ImageReader> iter = ImageIO.getImageReaders(stream);
+            if (!iter.hasNext()) {
+                return null;
+            }
+
+            ImageReader reader = (ImageReader)iter.next();
+            ImageReadParam param = reader.getDefaultReadParam();
+            reader.setInput(stream, true, true);
+            imageType = reader.getFormatName();
+            try {
+                image = reader.read(0, param);
+            } finally {
+                reader.dispose();
+                stream.close();
+            }
+           
+            if (image == null) {
+                stream.close();
+            }
+        } finally {
+            inputStream.close();
+        }
+        
+        Pair<BufferedImage, String> pair = new Pair<BufferedImage, String>(image, imageType);
+        return pair;
     }
 
 }

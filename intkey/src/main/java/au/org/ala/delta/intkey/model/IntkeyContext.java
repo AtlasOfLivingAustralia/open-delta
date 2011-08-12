@@ -906,6 +906,10 @@ public class IntkeyContext extends AbstractDeltaContext {
 
         return imageSettings;
     }
+    
+    public void setImagePaths(List<String> imagePaths) {
+        _imagePaths = new ArrayList<String>(imagePaths);
+    }
 
     /**
      * Called prior to application shutdown.
