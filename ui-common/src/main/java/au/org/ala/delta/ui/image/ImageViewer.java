@@ -167,6 +167,7 @@ public class ImageViewer extends ImagePanel implements LayoutManager2, ActionLis
             for (int i = 1; i <= hotSpotCount; i++) {
                 overlay.getLocation(i);
                 HotSpot hotSpot = _factory.createHotSpot(overlay, i);
+                hotSpot.putClientProperty(IMAGE_OVERLAY_PROPERTY, overlay);
                 group.add(hotSpot);
                 add(hotSpot, overlay.getLocation(i));
             }

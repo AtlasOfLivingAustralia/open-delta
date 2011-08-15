@@ -81,6 +81,51 @@ public class VOImageDescTest extends DeltaTestCase {
 		assertEquals("Test", overlay.overlayText);
 	}
 	
+	/**
+	 * Tests an overlay can updated correctly.
+	 */
+	@Test
+	public void testReplaceCharacterOverlay() {
+		VOImageDesc desc = getCharacterImageDesc(6, 0);
+		List<ImageOverlay> overlays = desc.readAllOverlays();
+		int size = overlays.size();
+		ImageOverlay featureOverlay = overlays.get(1);
+		int x = 100;
+		int y = 200;
+		featureOverlay.setX(x);
+		featureOverlay.setY(y);
+		
+		desc.replaceOverlay(featureOverlay, true);
+		
+		overlays = desc.readAllOverlays();
+		assertEquals(size, overlays.size());
+		assertEquals(x, overlays.get(1).getX());
+		assertEquals(y, overlays.get(1).getY());
+	}
+	
+	/**
+	 * Tests a state overlay can updated correctly.
+	 */
+	@Test
+	public void testReplaceHotspot() {
+		VOImageDesc desc = getCharacterImageDesc(6, 0);
+		List<ImageOverlay> overlays = desc.readAllOverlays();
+		
+		int size = overlays.size();
+		ImageOverlay stateOverlay = overlays.get(2);
+		int x = 100;
+		int y = 200;
+		stateOverlay.getLocation(1).setX(x);
+		stateOverlay.getLocation(1).setY(y);
+		
+		desc.replaceOverlay(stateOverlay, false);
+		
+		overlays = desc.readAllOverlays();
+		assertEquals(size, overlays.size());
+		assertEquals(x, overlays.get(2).getLocation(1).X);
+		assertEquals(y, overlays.get(2).getLocation(1).Y);
+	}
+	
 	@Test
 	public void testWriteAllOverlays() {
 		VOImageDesc desc = getImageDesc(7, 0);

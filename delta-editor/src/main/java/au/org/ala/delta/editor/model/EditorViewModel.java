@@ -1,6 +1,5 @@
 package au.org.ala.delta.editor.model;
 
-import java.net.URL;
 import java.util.prefs.PreferenceChangeListener;
 
 import au.org.ala.delta.model.Character;

@@ -73,6 +73,11 @@ public class ImageOverlay {
 		location.H = h;
 		addLocation(location);
 	}
+	
+	public ImageOverlay(ImageOverlay toCopy) {
+		this(toCopy.type);
+		location = new ArrayList<OverlayLocation>(toCopy.location);
+	}
 
 	public boolean isType(int overlayType) {
 		return type == overlayType;

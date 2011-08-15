@@ -48,7 +48,7 @@ public class ImageEditorPanel extends ImageViewer {
 
 	private JComponent _selectedOverlayComp;
 	/** A flag that indicates a component is being dragged to a new location */
-	private boolean _dragging;
+	private boolean _editing;
 	
 	private boolean _editingEnabled;
 	private ButtonAlignment _buttonAlignment;
@@ -63,7 +63,7 @@ public class ImageEditorPanel extends ImageViewer {
 		super(image, model.getImageSettings());
 		_model = model;
 		_editingEnabled = true;
-		_dragging = false;
+		_editing = false;
 		_buttonAlignment = ButtonAlignment.ALIGN_VERTICAL;
 		_resources = Application.getInstance().getContext().getResourceMap();
 		_selection = new ImageEditorSelectionModel();
@@ -152,37 +152,32 @@ public class ImageEditorPanel extends ImageViewer {
 		}
 	}
 	
-	public void move(JComponent overlayComp, int dx, int dy) {
+	public void startEdit(JComponent overlayComp) {
 		if (!_editingEnabled) {
 			return;
 		}
 		
 		if (_selectedOverlayComp == overlayComp) {
-			if (!_dragging) {
-				_dragging = true;
+			if (!_editing) {
+				_editing = true;
 				setLayout(null);
 			}
 			
-			Rectangle bounds = _selectedOverlayComp.getBounds();
-			bounds.x+=dx;
-			bounds.y+=dy;
-			
-			_selectedOverlayComp.setBounds(bounds);
 			repaint();
 		}
 	}
 	
-	public void stopMove() {
+	public void stopEdit() {
 		if (!_editingEnabled) {
 			return;
 		}
-		if (_dragging) {
-			_dragging = false;
+		if (_editing) {
+			_editing = false;
 		
-			boundsToOverlayLocation(_selectedOverlayComp);
-			
+			// The layout has to be reset before the overlay is updated.
 			setLayout(this);
-			revalidate();
+			boundsToOverlayLocation(_selectedOverlayComp);
+			repaint();
 		}
 	}
 	
@@ -191,6 +186,8 @@ public class ImageEditorPanel extends ImageViewer {
 		 OverlayLocationProvider locationProvider = (OverlayLocationProvider) component;
          OverlayLocation location = locationProvider.location(this);
          location.updateLocationFromBounds(component.getBounds());
+         
+        _image.updateOverlay(_selection.getSelectedOverlay());
 	}
 	
 	/**
@@ -351,7 +348,7 @@ public class ImageEditorPanel extends ImageViewer {
 		private JComponent _overlayComp;
 		private MouseEvent _pressedEvent;
 		private int corner = 6;
-		private Resizer _resizer;
+		private OverlayComponentEditor _editor;
 		
 		public OverlayComponentListener(JComponent overlayComp) {
 			_overlayComp = overlayComp;
@@ -364,44 +361,47 @@ public class ImageEditorPanel extends ImageViewer {
 			select(_overlayComp);
 			_pressedEvent = SwingUtilities.convertMouseEvent(_overlayComp, e, ImageEditorPanel.this);
 			if (inTopLeft(e)) {
-				_resizer = new Resizer(_overlayComp, SwingConstants.SOUTH_EAST);
+				_editor = new OverlayComponentResizer(_overlayComp, SwingConstants.SOUTH_EAST);
 			}
 			else if (inTopRight(e)) {
-				_resizer = new Resizer(_overlayComp, SwingConstants.SOUTH_WEST);
+				_editor = new OverlayComponentResizer(_overlayComp, SwingConstants.SOUTH_WEST);
 			}
 			else if (inBottomLeft(e)) {
-				_resizer = new Resizer(_overlayComp, SwingConstants.NORTH_EAST);
+				_editor = new OverlayComponentResizer(_overlayComp, SwingConstants.NORTH_EAST);
 			}
 			else if (inBottomRight(e)) {
-				_resizer = new Resizer(_overlayComp, SwingConstants.NORTH_WEST);
+				_editor = new OverlayComponentResizer(_overlayComp, SwingConstants.NORTH_WEST);
 			}
 			else {
-				_resizer = null;
-			}
-			
+				_editor = new OverlayComponentMover(_overlayComp);
+			}	
 		}
 		
 		@Override
 		public void mouseReleased(MouseEvent e) {
 			if (_pressedEvent != null) {
 				_pressedEvent = null;
-				stopMove();
+				_editor = null;
+				stopEdit();
 			}
 		}
 		
 		@Override
 		public void mouseDragged(MouseEvent e) {
 			
+			if (!_editing) {
+				startEdit(_overlayComp);
+			}
 			MouseEvent e2 = SwingUtilities.convertMouseEvent(_overlayComp, e, ImageEditorPanel.this);
 			
 			int dx = e2.getX() - _pressedEvent.getX();
 			int dy = e2.getY() - _pressedEvent.getY();
 			
-			if (_resizer != null) {
-				_resizer.resize(dx, dy);
+			if (_editor != null) {
+				_editor.mouseDragged(dx, dy);
 			}
 			else {
-				move(_overlayComp, dx, dy);
+				
 			}
 			_pressedEvent = e2;
 			
@@ -490,19 +490,44 @@ public class ImageEditorPanel extends ImageViewer {
 		
 	}
 	
-	class Resizer {
-		
+	abstract class OverlayComponentEditor {
 		JComponent _overlayComp;
 		Rectangle _originalBounds;
-		int _anchor;
 		
-		public Resizer(JComponent overlayComp, int anchor) {
+		
+		public OverlayComponentEditor(JComponent overlayComp) {
 			_overlayComp = overlayComp;
 			_originalBounds = overlayComp.getBounds();
+		}
+		
+		public abstract void mouseDragged(int dx, int dy);
+	}
+	
+	class OverlayComponentMover extends OverlayComponentEditor {
+		public OverlayComponentMover(JComponent overlayComp) {
+			super(overlayComp);
+		}
+		
+		public void mouseDragged(int dx, int dy) {
+			Rectangle bounds = _selectedOverlayComp.getBounds();
+			bounds.x+=dx;
+			bounds.y+=dy;
+			
+			_selectedOverlayComp.setBounds(bounds);
+			repaint();
+		}
+	}
+	
+	class OverlayComponentResizer extends OverlayComponentEditor {
+		
+		int _anchor;
+		
+		public OverlayComponentResizer(JComponent overlayComp, int anchor) {
+			super(overlayComp);
 			_anchor = anchor;
 		}
 		
-		public void resize(int dx, int dy) {
+		public void mouseDragged(int dx, int dy) {
 			Dimension min = _overlayComp.getMinimumSize();
 			Rectangle bounds = _overlayComp.getBounds();
 			if (_anchor == SwingConstants.NORTH_WEST) {

@@ -9,25 +9,12 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.Iterator;
 import java.util.List;
 
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReadParam;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
 import javax.swing.JPanel;
-
-import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageSettings;
-import au.org.ala.delta.util.Pair;
 
 public class ImageUtils {
 

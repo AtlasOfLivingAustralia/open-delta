@@ -65,15 +65,26 @@ public class VOImageAdaptor implements ImageData {
 	}
 	
 	public void addOverlay(ImageOverlay overlay) {
-		_imageDesc.insertOverlay(overlay, 0);
+		_imageDesc.insertOverlay(updateStateId(overlay), 0);
 	}
 	
 	public void updateOverlay(ImageOverlay overlay) {
-		_imageDesc.replaceOverlay(overlay, true);
+		_imageDesc.replaceOverlay(updateStateId(overlay), false);
 	}
 	
 	public void deleteOverlay(ImageOverlay overlay) {
 		_imageDesc.removeOverlay(overlay.getId());
+	}
+	
+	private ImageOverlay updateStateId(ImageOverlay overlay) {
+		if (overlay.isType(OverlayType.OLSTATE)) {
+			ImageOverlay copy = new ImageOverlay(overlay);
+			int id = _imageDesc.getOwnerId();
+			VOCharBaseDesc charBase = (VOCharBaseDesc)_vop.getDescFromId(id);
+			copy.stateId = charBase.uniIdFromStateNo(overlay.stateId);
+			return copy;
+		}
+		return overlay;
 	}
 	
 }

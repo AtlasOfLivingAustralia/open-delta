@@ -3,7 +3,6 @@ package au.org.ala.delta.ui.image;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Window;
 import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.util.HashSet;

@@ -111,7 +111,7 @@ public class FixedCentreOverlayLocation implements OverlayLocation {
 		
 		Point p = _image.getImageOrigin();
 		
-		int x = (int)Math.round((midPointXInPixels/imageScale-halfComponentWidth)*toImageUnits - p.x);
+		int x = (int)Math.round(((midPointXInPixels-p.x)/imageScale-halfComponentWidth)*toImageUnits);
 		_location.setX(x);
 		_location.setW((int)(bounds.width*toImageUnits));
 		
@@ -122,7 +122,7 @@ public class FixedCentreOverlayLocation implements OverlayLocation {
 		double halfComponentHeight = 0.5 * bounds.height;
 		double midPointYInPixels = bounds.y + halfComponentHeight;
 		toImageUnits = 1000/height;
-		int y = (int)Math.round((midPointYInPixels/imageScale-halfComponentHeight)*toImageUnits - p.y);
+		int y = (int)Math.round(((midPointYInPixels-p.y)/imageScale-halfComponentHeight)*toImageUnits);
 		_location.setY(y);
 		_location.setH((int)(bounds.height*toImageUnits));
 		
