@@ -10,6 +10,8 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Iterator;
@@ -28,20 +30,6 @@ import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.util.Pair;
 
 public class ImageUtils {
-
-    /**
-     * @param image
-     *            the image to get the text for.
-     * @return the subject text of an image, or the filename if none has been
-     *         specified.
-     */
-    public static String getSubjectTextOrFileName(Image image) {
-        String text = image.getSubjectText();
-        if (StringUtils.isEmpty(text)) {
-            text = image.getFileName();
-        }
-        return text;
-    }
 
     // Display the list of images one by one in a full screen window. Clicking
     // the window will
@@ -104,40 +92,6 @@ public class ImageUtils {
         });
 
         gd.setFullScreenWindow(w);
-    }
-    
-    public static Pair<BufferedImage, String> read(URL imageFileLocation) throws Exception {
-        InputStream inputStream = imageFileLocation.openStream();
-        String imageType;
-       
-        ImageInputStream stream = ImageIO.createImageInputStream(inputStream);
-        BufferedImage image;
-        try {
-            Iterator<ImageReader> iter = ImageIO.getImageReaders(stream);
-            if (!iter.hasNext()) {
-                return null;
-            }
-
-            ImageReader reader = (ImageReader)iter.next();
-            ImageReadParam param = reader.getDefaultReadParam();
-            reader.setInput(stream, true, true);
-            imageType = reader.getFormatName();
-            try {
-                image = reader.read(0, param);
-            } finally {
-                reader.dispose();
-                stream.close();
-            }
-           
-            if (image == null) {
-                stream.close();
-            }
-        } finally {
-            inputStream.close();
-        }
-        
-        Pair<BufferedImage, String> pair = new Pair<BufferedImage, String>(image, imageType);
-        return pair;
     }
 
 }

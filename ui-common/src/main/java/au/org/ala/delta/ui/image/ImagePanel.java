@@ -32,6 +32,7 @@ public class ImagePanel extends JPanel implements Scrollable {
 	protected Image _scaledImage;
 	private ScalingMode _scalingMode;
 	private ScalingStrategy _scalingStrategy;
+	protected URL _imageFileLocation;
 	private String _imageType;
 	
 	public enum ScalingMode {NO_SCALING, FIXED_ASPECT_RATIO, FILL_AVAILABLE_SPACE};
@@ -50,6 +51,7 @@ public class ImagePanel extends JPanel implements Scrollable {
 		
 		try {
 			_image = read(imageFileLocation);
+			_imageFileLocation = imageFileLocation;
 			_scaledImage = _image;
 			
 			setScalingMode(_scalingMode);
@@ -383,5 +385,8 @@ public class ImagePanel extends JPanel implements Scrollable {
 	    _maxScrollableUnitIncrement = pixels;
 	}
 	
+	public URL getImageFileLocation() {
+	    return _imageFileLocation;
+	}
 	
 }

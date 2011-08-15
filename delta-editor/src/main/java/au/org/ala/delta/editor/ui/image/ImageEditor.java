@@ -140,7 +140,7 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 	 */
 	private void addCardFor(Image image) {
 		ImageEditorPanel viewer = new ImageEditorPanel(image, _model);
-		String text = subjectTextOrFileName(image);
+		String text = image.getSubjectTextOrFileName();
 		
 		_imageEditors.put(text, viewer);
 		
@@ -156,7 +156,7 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 		_subjectMenu.removeAll();
 		ButtonGroup group = new ButtonGroup();
 		for (final Image image : _images) {
-			String text = subjectTextOrFileName(image);
+			String text = image.getSubjectTextOrFileName();
 			JMenuItem subject = new JCheckBoxMenuItem(text);
 			group.add(subject);
 			subject.addActionListener(new ActionListener() {				
@@ -250,20 +250,6 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 		return null;
 	}
 	
-	/**
-	 * @param image the image to get the text for.
-	 * @return the subject text of an image, or the filename if none has
-	 * been specified.
-	 */
-	private String subjectTextOrFileName(Image image) {
-		String text = image.getSubjectText();
-		if (StringUtils.isEmpty(text)) {
-			text = image.getFileName();
-		}
-		return text;
-	}
-
-	
 	private void displaySubject(Character subject, Image image) {
 		displaySubject((Illustratable)subject, image);
 		
@@ -308,7 +294,7 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 	public void displayImage(Image image) {
 		try {
 			_selectedImage = image;
-			String text = subjectTextOrFileName(image);
+			String text = image.getSubjectTextOrFileName();
 			if (!_imageEditors.containsKey(text)) {
 				addCardFor(image);
 			}
@@ -467,7 +453,7 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 		for (ImageOverlay sound : sounds) {
 			
 			try {
-				URL soundUrl = _selectedImage.soundToURL(sound, _model.getImagePath());
+				URL soundUrl = _model.getImageSettings().findFileOnImagePath(sound.overlayText);
 				AudioPlayer.playClip(soundUrl);
 			}
 			catch (Exception e) {
@@ -485,7 +471,7 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 	 */
 	@Action
 	public void reloadImage() {
-		String key = subjectTextOrFileName(_selectedImage);
+		String key = _selectedImage.getSubjectTextOrFileName();
 		ImageEditorPanel editor = _imageEditors.get(key);
 		_imageEditors.remove(key);
 		remove(editor);
@@ -495,7 +481,7 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 	}
 	
 	private ImageEditorPanel visibleEditor() {
-		String key = subjectTextOrFileName(_selectedImage);
+		String key = _selectedImage.getSubjectTextOrFileName();
 		ImageEditorPanel editor = _imageEditors.get(key);
 		return editor;
 	}
@@ -519,7 +505,7 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 		final Window w = new Window(parent);
 		w.setLayout(new BorderLayout());
 		
-		final String key = subjectTextOrFileName(_selectedImage);
+		final String key = _selectedImage.getSubjectTextOrFileName();
 		final ImageEditorPanel editor = _imageEditors.get(key);
 		w.add(editor, BorderLayout.CENTER);
 		final GraphicsDevice gd = parent.getGraphicsConfiguration().getDevice();
@@ -563,7 +549,7 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 	@Action
 	public void aboutImage() {
 		AboutImageDialog about = new AboutImageDialog(
-				this, subjectTextOrFileName(_selectedImage), _selectedImage.getImageLocation(_model.getImagePath()),
+				this, _selectedImage.getSubjectTextOrFileName(), visibleEditor().getImageFileLocation(),
 				visibleEditor().getImage(), visibleEditor().getImageFormatName());
 		
 		editor.show(about);
@@ -614,7 +600,7 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 		@Override
 		public void imageEdited(DeltaDataSetChangeEvent event) {
 			if (event.getImage() == _selectedImage) {
-				String key = subjectTextOrFileName(_selectedImage);
+				String key = _selectedImage.getSubjectTextOrFileName();
 				ImageEditorPanel editor = _imageEditors.get(key);
 				editor.addOverlays();
 				editor.revalidate();

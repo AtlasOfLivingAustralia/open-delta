@@ -15,8 +15,8 @@ public class SetImagePathDirectiveInvocation implements IntkeyDirectiveInvocatio
 
     @Override
     public boolean execute(IntkeyContext context) {
-        // TODO Auto-generated method stub
-        return false;
+        context.setImagePaths(_imagePaths);
+        return true;
     }
 
 }

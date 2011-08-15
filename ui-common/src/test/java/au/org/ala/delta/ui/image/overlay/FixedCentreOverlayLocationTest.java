@@ -41,7 +41,7 @@ public class FixedCentreOverlayLocationTest extends TestCase {
 			return _pw;
 		}
 
-		@Override
+        @Override
 		public int getPreferredImageHeight() {
 			return _ph;
 		}
@@ -60,6 +60,11 @@ public class FixedCentreOverlayLocationTest extends TestCase {
 		public int getImageHeight() {
 			return _h;
 		}
+		
+	      @Override
+	        protected URL findImageFile(String fileName, ImageSettings imageSettings) {
+	            return null;
+	        }
 	}
 	
 	public static class ApplicationStub extends Application {

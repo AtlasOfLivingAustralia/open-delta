@@ -48,7 +48,7 @@ public class MultipleImageViewer extends JPanel {
 
     public void addImageViewer(ImageViewer viewer) {
         _imageViewers.add(viewer);
-        String imageId = ImageUtils.getSubjectTextOrFileName(viewer.getViewedImage());
+        String imageId = viewer.getViewedImage().getSubjectTextOrFileName();
         _imageViewerMap.put(imageId, viewer);
         _contentPanel.add(viewer, imageId);
     }
@@ -100,9 +100,8 @@ public class MultipleImageViewer extends JPanel {
     public void replaySound() {
         List<ImageOverlay> sounds = getVisibleViewer().getViewedImage().getSounds();
         for (ImageOverlay sound : sounds) {
-
             try {
-                URL soundUrl = getVisibleViewer().getViewedImage().soundToURL(sound, _imageSettings.getImagePath());
+                URL soundUrl = _imageSettings.findFileOnImagePath(sound.overlayText);
                 AudioPlayer.playClip(soundUrl);
             } catch (Exception e) {
                 // TODO _messageHelper.errorPlayingSound(sound.overlayText);

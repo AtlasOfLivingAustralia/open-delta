@@ -3,6 +3,8 @@ package au.org.ala.delta.model.image;
 import java.awt.Color;
 import java.awt.Font;
 import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,6 +69,10 @@ public class ImageSettings {
         _dataSetPath = null;
         _imagePaths = new ArrayList<String>();
         _imagePaths.add("images");
+
+        _defaultFontInfo = new FontInfo(10, 4, false, 2, 2, 0, "MS Sans Serif");
+        _defaultButtonFont = new FontInfo(10, 4, false, 2, 2, 0, "MS Sans Serif");
+        _defaultFeatureFontInfo = new FontInfo(10, 7, false, 2, 2, 0, "MS Sans Serif");
     }
 
     public ImageSettings(String dataSetPath) {
@@ -78,7 +84,7 @@ public class ImageSettings {
         _dataSetPath = path;
     }
 
-    //Convenience method for when there is only one image path
+    // Convenience method for when there is only one image path
     public String getImagePath() {
         if (!_imagePaths.isEmpty()) {
             return getImagePaths().get(0);
@@ -91,8 +97,7 @@ public class ImageSettings {
         List<String> retList = new ArrayList<String>();
 
         for (String imagePath : _imagePaths) {
-         
-            if (new File(imagePath).isAbsolute() || StringUtils.isEmpty(_dataSetPath)) {
+            if (imagePath.startsWith("http") || new File(imagePath).isAbsolute() || StringUtils.isEmpty(_dataSetPath)) {
                 retList.add(imagePath);
             } else {
                 retList.add(_dataSetPath + File.separator + imagePath);
@@ -101,15 +106,15 @@ public class ImageSettings {
 
         return retList;
     }
-    
-    //Convenience method for when there is only one image path
+
+    // Convenience method for when there is only one image path
     public void setImagePath(String imagePath) {
         _imagePaths = new ArrayList<String>();
         _imagePaths.add(imagePath);
     }
 
     public void setImagePaths(List<String> imagePaths) {
-        _imagePaths = new ArrayList<String>();
+        _imagePaths = new ArrayList<String>(imagePaths);
     }
 
     public FontInfo getDefaultFontInfo() {
@@ -228,6 +233,37 @@ public class ImageSettings {
 
     private int getFontHeight(FontInfo font) {
         return 10;
+    }
+
+    public URL findFileOnImagePath(String fileName) {
+        URL fileLocation = null;
+        for (String imagePath : getImagePaths()) {
+            try {
+                if (imagePath.toLowerCase().startsWith("http")) {
+                    fileLocation = new URL(imagePath + fileName);
+
+                    // Try opening a stream to the remote file. If no exceptions
+                    // are thrown, the file
+                    // was successfully found at that location. Unfortunately
+                    // there is no better way to
+                    // test existence of a remote file.
+                    fileLocation.openStream();
+                    break;
+                } else {
+                    File f = new File(imagePath + File.separator + fileName);
+                    if (f.exists()) {
+                        fileLocation = f.toURI().toURL();
+                        break;
+                    }
+
+                }
+
+            } catch (IOException ioexception) {
+                // do nothing, keep searching on image path.
+            }
+        }
+
+        return fileLocation;
     }
 
 }

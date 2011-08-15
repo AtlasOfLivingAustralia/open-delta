@@ -39,6 +39,7 @@ import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageOverlay;
 import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.model.image.OverlayType;
+import au.org.ala.delta.ui.image.AboutImageDialog;
 import au.org.ala.delta.ui.image.ImagePanel.ScalingMode;
 import au.org.ala.delta.ui.image.ImageUtils;
 import au.org.ala.delta.ui.image.ImageViewer;
@@ -46,6 +47,7 @@ import au.org.ala.delta.ui.image.MultipleImageViewer;
 import au.org.ala.delta.ui.image.OverlaySelectionObserver;
 import au.org.ala.delta.ui.image.SelectableOverlay;
 import au.org.ala.delta.ui.image.overlay.HotSpotGroup;
+import au.org.ala.delta.ui.image.overlay.SelectableTextOverlay;
 import au.org.ala.delta.util.Pair;
 
 public class ImageDialog extends JDialog implements OverlaySelectionObserver {
@@ -75,8 +77,7 @@ public class ImageDialog extends JDialog implements OverlaySelectionObserver {
     private JMenuItem _mnuItPreviousImage;
 
     private Window _fullScreenWindow;
-    
-    
+
     /**
      * @wbp.parser.constructor
      */
@@ -106,15 +107,14 @@ public class ImageDialog extends JDialog implements OverlaySelectionObserver {
 
         _multipleImageViewer = new MultipleImageViewer(_imageSettings);
         getContentPane().add(_multipleImageViewer);
-        
+
         this.addWindowListener(new WindowAdapter() {
 
             @Override
             public void windowOpened(WindowEvent e) {
                 replaySound();
             }
-            
-        
+
         });
 
         this.pack();
@@ -203,7 +203,7 @@ public class ImageDialog extends JDialog implements OverlaySelectionObserver {
             _multipleImageViewer.addImageViewer(viewer);
             viewer.addOverlaySelectionObserver(this);
 
-            String imageName = ImageUtils.getSubjectTextOrFileName(image);
+            String imageName = image.getSubjectTextOrFileName();
             imageNames.add(imageName);
             populateSubjectMenu(imageNames);
         }
@@ -313,39 +313,43 @@ public class ImageDialog extends JDialog implements OverlaySelectionObserver {
 
     @Action
     public void fullScreen() {
-        
-//        Image image = _multipleImageViewer.getVisibleViewer().getViewedImage();
-//        ImageViewer copyViewer = new ImageViewer(image, _imageSettings);
-//        copyViewer.setScalingMode(ScalingMode.NO_SCALING);
-//        copyViewer.addOverlaySelectionObserver(this);
-//
-//        final Window w = new Window(this);
-//        w.setLayout(new BorderLayout());
-//        w.add(copyViewer, BorderLayout.CENTER);
-//
-//        final GraphicsDevice gd = this.getGraphicsConfiguration().getDevice();
-//        
-//        copyViewer.addOverlaySelectionObserver(new OverlaySelectionObserver() {
-//            
-//            @Override
-//            public void overlaySelected(SelectableOverlay overlay) {
-//                ImageOverlay imageOverlay = overlay.getImageOverlay();
-//                if (imageOverlay.isType(OverlayType.OLOK) || imageOverlay.isType(OverlayType.OLCANCEL)) {
-//                    w.setVisible(false);
-//                    w.dispose();
-//                    gd.setFullScreenWindow(null);
-//                } 
-//            }
-//        });
-//
-//        gd.setFullScreenWindow(w);
-        
-      Image image = _multipleImageViewer.getVisibleViewer().getViewedImage();
-      List<Image> images = new ArrayList<Image>();
-      images.add(image);
-      Window applicationWindow = ((SingleFrameApplication) Application.getInstance()).getMainFrame();
-      this.setVisible(false);
-      ImageUtils.displayImagesFullScreen(images, _imageSettings, applicationWindow);
+
+        // Image image =
+        // _multipleImageViewer.getVisibleViewer().getViewedImage();
+        // ImageViewer copyViewer = new ImageViewer(image, _imageSettings);
+        // copyViewer.setScalingMode(ScalingMode.NO_SCALING);
+        // copyViewer.addOverlaySelectionObserver(this);
+        //
+        // final Window w = new Window(this);
+        // w.setLayout(new BorderLayout());
+        // w.add(copyViewer, BorderLayout.CENTER);
+        //
+        // final GraphicsDevice gd =
+        // this.getGraphicsConfiguration().getDevice();
+        //
+        // copyViewer.addOverlaySelectionObserver(new OverlaySelectionObserver()
+        // {
+        //
+        // @Override
+        // public void overlaySelected(SelectableOverlay overlay) {
+        // ImageOverlay imageOverlay = overlay.getImageOverlay();
+        // if (imageOverlay.isType(OverlayType.OLOK) ||
+        // imageOverlay.isType(OverlayType.OLCANCEL)) {
+        // w.setVisible(false);
+        // w.dispose();
+        // gd.setFullScreenWindow(null);
+        // }
+        // }
+        // });
+        //
+        // gd.setFullScreenWindow(w);
+
+        Image image = _multipleImageViewer.getVisibleViewer().getViewedImage();
+        List<Image> images = new ArrayList<Image>();
+        images.add(image);
+        Window applicationWindow = ((SingleFrameApplication) Application.getInstance()).getMainFrame();
+        this.setVisible(false);
+        ImageUtils.displayImagesFullScreen(images, _imageSettings, applicationWindow);
     }
 
     @Action
@@ -365,7 +369,9 @@ public class ImageDialog extends JDialog implements OverlaySelectionObserver {
 
     @Action
     public void aboutImage() {
-
+        ImageViewer visibleViewer = _multipleImageViewer.getVisibleViewer();
+        AboutImageDialog dlg = new AboutImageDialog(this, visibleViewer.getViewedImage().getSubjectTextOrFileName(), visibleViewer.getImageFileLocation(), visibleViewer.getImage(), visibleViewer.getImageFormatName());
+        dlg.setVisible(true);
     }
 
     private void handleNewImageSelected() {
@@ -381,8 +387,15 @@ public class ImageDialog extends JDialog implements OverlaySelectionObserver {
             if (overlay.isType(OverlayType.OLSTATE)) {
                 int stateId = overlay.stateId;
 
+                SelectableTextOverlay selectableText = viewer.getSelectableTextForOverlay(overlay);
+                if (selectableText != null) {
+                    selectableText.setSelected(_selectedStates.contains(stateId));
+                }
+                
                 HotSpotGroup hotSpotGroup = viewer.getHotSpotGroupForOverlay(overlay);
-                hotSpotGroup.setSelected(_selectedStates.contains(stateId));
+                if (hotSpotGroup != null) {
+                    hotSpotGroup.setSelected(_selectedStates.contains(stateId));
+                }
             }
         }
     }

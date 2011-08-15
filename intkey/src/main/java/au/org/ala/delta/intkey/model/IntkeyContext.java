@@ -298,7 +298,7 @@ public class IntkeyContext extends AbstractDeltaContext {
 
         _recordDirectiveHistory = true;
         _processingInputFile = false;
-        
+
         _appUI.handleNewDataset(_dataset);
     }
 
@@ -768,27 +768,27 @@ public class IntkeyContext extends AbstractDeltaContext {
         return _matchType;
     }
 
-    //Returns included characters ordered by character number
+    // Returns included characters ordered by character number
     public List<Character> getIncludedCharacters() {
         List<Character> retList = new ArrayList<Character>();
 
         for (int charNum : _includedCharacters) {
             retList.add(_dataset.getCharacter(charNum));
         }
-        
+
         Collections.sort(retList);
 
         return retList;
     }
 
-    //Returns included taxa ordered by taxon number
+    // Returns included taxa ordered by taxon number
     public List<Item> getIncludedTaxa() {
         List<Item> retList = new ArrayList<Item>();
 
         for (int charNum : _includedTaxa) {
             retList.add(_dataset.getTaxon(charNum));
         }
-        
+
         Collections.sort(retList);
 
         return retList;
@@ -838,11 +838,11 @@ public class IntkeyContext extends AbstractDeltaContext {
 
         return retList;
     }
-    
+
     public List<Character> getUsedCharacters() {
         return _specimen.getUsedCharacters();
     }
-    
+
     public List<Item> getAvailableTaxa() {
         Map<Item, Integer> taxaDifferenceCounts = _specimen.getTaxonDifferences();
 
@@ -855,7 +855,7 @@ public class IntkeyContext extends AbstractDeltaContext {
                     int diffCount = taxaDifferenceCounts.get(taxon);
                     if (diffCount <= _tolerance) {
                         availableTaxa.add(taxon);
-                    } 
+                    }
                 } else {
                     availableTaxa.add(taxon);
                 }
@@ -863,10 +863,10 @@ public class IntkeyContext extends AbstractDeltaContext {
         } else {
             availableTaxa.addAll(includedTaxa);
         }
-        
+
         return availableTaxa;
     }
-    
+
     public List<Item> getEliminatedTaxa() {
         Map<Item, Integer> taxaDifferenceCounts = _specimen.getTaxonDifferences();
 
@@ -879,11 +879,11 @@ public class IntkeyContext extends AbstractDeltaContext {
                     int diffCount = taxaDifferenceCounts.get(taxon);
                     if (diffCount > _tolerance) {
                         eliminatedTaxa.add(taxon);
-                    } 
-                } 
+                    }
+                }
             }
-        } 
-        
+        }
+
         return eliminatedTaxa;
     }
 
@@ -892,23 +892,25 @@ public class IntkeyContext extends AbstractDeltaContext {
 
         List<FontInfo> overlayFonts = _dataset.getOverlayFonts();
 
-        FontInfo defaultOverlayFontInfo = overlayFonts.get(0);
-        FontInfo buttonOverlayFontInfo = overlayFonts.get(1);
-        FontInfo featureOverlayFontInfo = overlayFonts.get(2);
+//        FontInfo defaultOverlayFontInfo = overlayFonts.get(0);
+//        FontInfo buttonOverlayFontInfo = overlayFonts.get(1);
+//        FontInfo featureOverlayFontInfo = overlayFonts.get(2);
+//
+//        imageSettings.setDefaultFontInfo(defaultOverlayFontInfo);
+//        imageSettings.setDefaultButtonFontInfo(buttonOverlayFontInfo);
+//        imageSettings.setDefaultFeatureFontInfo(featureOverlayFontInfo);
 
-        imageSettings.setDefaultFontInfo(defaultOverlayFontInfo);
-        imageSettings.setDefaultButtonFontInfo(buttonOverlayFontInfo);
-        imageSettings.setDefaultFeatureFontInfo(featureOverlayFontInfo);
-
-        // TODO need to read in (multiple!) image paths as defined in directives
-        // file
-        imageSettings.setImagePath(new File(_datasetInitFile.getParent(), "images").getAbsolutePath());
+        // TODO need a definitive way to work out the dataset directory
+        imageSettings.setDataSetPath(_datasetInitFile.getParentFile().getAbsolutePath());
+        
+        imageSettings.setImagePaths(_imagePaths);
 
         return imageSettings;
     }
-    
+
     public void setImagePaths(List<String> imagePaths) {
         _imagePaths = new ArrayList<String>(imagePaths);
+
     }
 
     /**

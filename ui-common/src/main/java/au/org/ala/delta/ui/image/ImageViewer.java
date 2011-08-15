@@ -8,6 +8,7 @@ import java.awt.LayoutManager2;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -54,6 +55,8 @@ public class ImageViewer extends ImagePanel implements LayoutManager2, ActionLis
 
     /** Kept for convenience when toggling the display of hotspots */
     private Map<ImageOverlay, HotSpotGroup> _hotSpotGroups;
+    
+    private Map<ImageOverlay, SelectableTextOverlay> _selectableTextOverlays;
 
     private TextFieldOverlay _inputField;
 
@@ -74,10 +77,23 @@ public class ImageViewer extends ImagePanel implements LayoutManager2, ActionLis
 
         _factory = new OverlayComponentFactory(resources, imageSettings);
         setLayout(this);
-        displayImage(image.getImageLocation(imageSettings.getImagePath()));
+        
+        URL imageLocation = findImageFile(image.getFileName(), imageSettings);
+        
+        displayImage(imageLocation);
         _components = new ArrayList<JComponent>();
         _observers = new ArrayList<OverlaySelectionObserver>();
         addOverlays();
+    }
+    
+    protected URL findImageFile(String fileName, ImageSettings imageSettings) {
+        URL imageLocation = imageSettings.findFileOnImagePath(fileName);
+        
+        if (imageLocation == null) {
+            throw new IllegalArgumentException("Could not open image file " + fileName);
+        }        
+        
+        return imageLocation;
     }
 
     public void addOverlays() {
@@ -86,6 +102,7 @@ public class ImageViewer extends ImagePanel implements LayoutManager2, ActionLis
         _overlays = _image.getOverlays();
 
         _hotSpotGroups = new HashMap<ImageOverlay, HotSpotGroup>();
+        _selectableTextOverlays = new HashMap<ImageOverlay, SelectableTextOverlay>();
         for (ImageOverlay overlay : _overlays) {
             JComponent overlayComp = _factory.createOverlayComponent(overlay, _image);
 
@@ -104,6 +121,7 @@ public class ImageViewer extends ImagePanel implements LayoutManager2, ActionLis
                 selectable.addOverlaySelectionObserver(this);
                 // If the overlay has associated hotspots, add them also.
                 addHotSpots(overlay, selectable);
+                _selectableTextOverlays.put(overlay, selectable);
             }
             
             if (overlayComp instanceof TextFieldOverlay) {
@@ -287,6 +305,10 @@ public class ImageViewer extends ImagePanel implements LayoutManager2, ActionLis
 
     public HotSpotGroup getHotSpotGroupForOverlay(ImageOverlay overlay) {
         return _hotSpotGroups.get(overlay);
+    }
+    
+    public SelectableTextOverlay getSelectableTextForOverlay(ImageOverlay overlay) {
+        return _selectableTextOverlays.get(overlay);
     }
 
     public String getInputText() {
