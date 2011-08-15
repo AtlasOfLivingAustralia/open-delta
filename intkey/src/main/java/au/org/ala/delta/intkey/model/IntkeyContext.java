@@ -175,20 +175,15 @@ public class IntkeyContext extends AbstractDeltaContext {
      * @param fileName
      *            Path to the characters file
      */
-    public void setFileCharacters(String fileName) {
-        Logger.log("Setting characters file to: %s", fileName);
+    public void setFileCharacters(File charactersFile) {
+        Logger.log("Setting characters file to: %s", charactersFile.getAbsolutePath());
 
-        if (_datasetInitFile != null) {
-            _charactersFile = new File(_datasetInitFile.getParentFile(), fileName);
-        } else {
-            _charactersFile = new File(fileName);
-        }
-
-        if (!_charactersFile.exists()) {
-            String absoluteFileName = _charactersFile.getAbsolutePath();
-            _charactersFile = null;
+        if (!charactersFile.exists()) {
+            String absoluteFileName = charactersFile.getAbsolutePath();
             throw new IllegalArgumentException(String.format(UIUtils.getResourceString("CharactersFileNotFound.error"), absoluteFileName));
         }
+        
+        _charactersFile = charactersFile;
 
         if (_dataset == null && _taxaFile != null) {
             createNewDataSet();
@@ -211,20 +206,16 @@ public class IntkeyContext extends AbstractDeltaContext {
      * @param fileName
      *            Path to the taxa (items) file
      */
-    public void setFileTaxa(String fileName) {
-        Logger.log("Setting taxa file to: %s", fileName);
+    public void setFileTaxa(File taxaFile) {
+        Logger.log("Setting taxa file to: %s", taxaFile.getAbsolutePath());
 
-        if (_datasetInitFile != null) {
-            _taxaFile = new File(_datasetInitFile.getParentFile(), fileName);
-        } else {
-            _taxaFile = new File(fileName);
-        }
 
-        if (!_taxaFile.exists()) {
-            String absoluteFileName = _taxaFile.getAbsolutePath();
-            _taxaFile = null;
+        if (!taxaFile.exists()) {
+            String absoluteFileName = taxaFile.getAbsolutePath();
             throw new IllegalArgumentException(String.format(UIUtils.getResourceString("TaxaFileNotFound.error"), absoluteFileName));
         }
+        
+        _taxaFile = taxaFile;
 
         if (_dataset == null && _charactersFile != null) {
             createNewDataSet();
@@ -237,6 +228,29 @@ public class IntkeyContext extends AbstractDeltaContext {
             _dataset = null;
             _charactersFile = null;
         }
+    }
+    
+    public void processInputFile(File inputFile) {
+        Logger.log("Reading in directives from file: %s", inputFile.getAbsolutePath());
+        
+        if (inputFile == null || !inputFile.exists()) {
+            throw new IllegalArgumentException("Could not open input file " + inputFile.getAbsolutePath());
+        }
+
+        // Don't record directive history while processing the data set file
+        _recordDirectiveHistory = false;
+        _processingInputFile = true;
+
+        IntkeyDirectiveParser parser = IntkeyDirectiveParser.createInstance();
+
+        try {
+            parser.parse(inputFile, IntkeyContext.this);
+        } catch (IOException ex) {
+            Logger.log(ex.getMessage());
+        }
+
+        _recordDirectiveHistory = true;
+        _processingInputFile = false;
     }
 
     /**
@@ -279,26 +293,16 @@ public class IntkeyContext extends AbstractDeltaContext {
      * @param fileName
      *            Path to the dataset initialization file
      */
-    public void newDataSetFile(String fileName) {
-
-        Logger.log("Reading in new Data Set file from: %s", fileName);
-
-        // Don't record directive history while processing the data set file
-        _recordDirectiveHistory = false;
-        _processingInputFile = true;
-
-        IntkeyDirectiveParser parser = IntkeyDirectiveParser.createInstance();
-
-        try {
-            _datasetInitFile = new File(fileName);
-            parser.parse(new File(fileName), IntkeyContext.this);
-        } catch (IOException ex) {
-            Logger.log(ex.getMessage());
+    public void newDataSetFile(File datasetFile) {
+        Logger.log("Reading in directives from file: %s", datasetFile.getAbsolutePath());
+        
+        if (datasetFile == null || !datasetFile.exists()) {
+            throw new IllegalArgumentException("Could not open dataset file " + datasetFile.getAbsolutePath());
         }
-
-        _recordDirectiveHistory = true;
-        _processingInputFile = false;
-
+        
+        _datasetInitFile = datasetFile;
+        
+        processInputFile(datasetFile);
         _appUI.handleNewDataset(_dataset);
     }
 
@@ -892,17 +896,24 @@ public class IntkeyContext extends AbstractDeltaContext {
 
         List<FontInfo> overlayFonts = _dataset.getOverlayFonts();
 
-//        FontInfo defaultOverlayFontInfo = overlayFonts.get(0);
-//        FontInfo buttonOverlayFontInfo = overlayFonts.get(1);
-//        FontInfo featureOverlayFontInfo = overlayFonts.get(2);
-//
-//        imageSettings.setDefaultFontInfo(defaultOverlayFontInfo);
-//        imageSettings.setDefaultButtonFontInfo(buttonOverlayFontInfo);
-//        imageSettings.setDefaultFeatureFontInfo(featureOverlayFontInfo);
+        if (overlayFonts.size() > 0) {
+            FontInfo defaultOverlayFontInfo = overlayFonts.get(0);
+            imageSettings.setDefaultFontInfo(defaultOverlayFontInfo);
+        }
+
+        if (overlayFonts.size() > 1) {
+            FontInfo buttonOverlayFontInfo = overlayFonts.get(1);
+            imageSettings.setDefaultButtonFontInfo(buttonOverlayFontInfo);
+        }
+
+        if (overlayFonts.size() > 2) {
+            FontInfo featureOverlayFontInfo = overlayFonts.get(2);
+            imageSettings.setDefaultFeatureFontInfo(featureOverlayFontInfo);
+        }
 
         // TODO need a definitive way to work out the dataset directory
         imageSettings.setDataSetPath(_datasetInitFile.getParentFile().getAbsolutePath());
-        
+
         imageSettings.setImagePaths(_imagePaths);
 
         return imageSettings;

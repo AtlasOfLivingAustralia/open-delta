@@ -34,9 +34,9 @@ public class FileTaxaDirective extends IntkeyDirective {
 
     @Override
     protected IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) {
-        String fileName = data;
+        File selectedFile = null;
 
-        if (fileName == null) {
+        if (data == null) {
             JFileChooser chooser = new JFileChooser();
             FileFilter filter = new FileFilter() {
 
@@ -55,14 +55,18 @@ public class FileTaxaDirective extends IntkeyDirective {
             chooser.setFileFilter(filter);
             int returnVal = chooser.showOpenDialog(UIUtils.getMainFrame());
             if (returnVal == JFileChooser.APPROVE_OPTION) {
-                fileName = chooser.getSelectedFile().getAbsolutePath();
-            } else {
-                fileName = null;
+                selectedFile = chooser.getSelectedFile();
+
+            }
+        } else {
+            selectedFile = new File(data);
+            if (!selectedFile.isAbsolute()) {
+                selectedFile = new File(context.getInitializationFile().getParentFile(), data);
             }
         }
 
-        if (fileName != null) {
-            FileTaxaDirectiveInvocation invoc = new FileTaxaDirectiveInvocation(fileName);
+        if (selectedFile != null) {
+            FileTaxaDirectiveInvocation invoc = new FileTaxaDirectiveInvocation(selectedFile);
             return invoc;
         }
 
@@ -70,16 +74,16 @@ public class FileTaxaDirective extends IntkeyDirective {
     }
 
     class FileTaxaDirectiveInvocation implements IntkeyDirectiveInvocation {
-        private String _fileName;
+        private File _file;
 
-        public FileTaxaDirectiveInvocation(String fileName) {
-            _fileName = fileName;
+        public FileTaxaDirectiveInvocation(File taxaFile) {
+            _file = taxaFile;
         }
 
         @Override
         public boolean execute(IntkeyContext context) {
             try {
-                context.setFileTaxa(_fileName);
+                context.setFileTaxa(_file);
                 return true;
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(UIUtils.getMainFrame(), ex.getMessage(), "", JOptionPane.ERROR_MESSAGE);
@@ -89,7 +93,7 @@ public class FileTaxaDirective extends IntkeyDirective {
 
         @Override
         public String toString() {
-            return String.format("%s %s", StringUtils.join(_controlWords, " ").toUpperCase(), _fileName);
+            return String.format("%s %s", StringUtils.join(_controlWords, " ").toUpperCase(), _file);
         }
 
     }

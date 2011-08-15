@@ -9,6 +9,7 @@ import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.TextCharacter;
+import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageSettings.FontInfo;
 
@@ -40,8 +41,8 @@ public class IntkeyDataset {
     private boolean chineseFormat;
 
     /**
-     * A list of text characters that contain synonmy information. The values of such
-     * characters for each taxon contain synonyms for that taxon.
+     * A list of text characters that contain synonmy information. The values of
+     * such characters for each taxon contain synonyms for that taxon.
      */
     private List<TextCharacter> _synonymyCharacters;
 
@@ -247,12 +248,25 @@ public class IntkeyDataset {
     }
 
     public List<TextCharacter> getSynonymyCharacters() {
-        //defensive copy
+        // defensive copy
         return new ArrayList<TextCharacter>(_synonymyCharacters);
     }
-    
+
     public void setSynonymyCharacters(List<TextCharacter> synonymyCharacters) {
         _synonymyCharacters = new ArrayList<TextCharacter>(synonymyCharacters);
+    }
+
+    public Item getTaxonByName(String taxonName) {
+        ItemFormatter formatter = new ItemFormatter(false, true, false, false, true, false);
+        for (Item taxon : _taxa) {
+            //String comments, RTF etc. from taxon description
+            String formattedTaxonName = formatter.formatItemDescription(taxon);
+            
+            if (formattedTaxonName.equalsIgnoreCase(taxonName)) {
+                return taxon;
+            }
+        }
+        return null;
     }
 
     /**

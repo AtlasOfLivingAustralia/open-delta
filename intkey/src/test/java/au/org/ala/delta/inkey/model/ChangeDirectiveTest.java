@@ -36,7 +36,7 @@ public class ChangeDirectiveTest extends TestCase {
     public void testChangeDirective() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
         IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+        context.newDataSetFile(new File(initFileUrl.toURI()));
 
         IntkeyDataset ds = context.getDataset();
         Specimen specimen = context.getSpecimen();
@@ -94,7 +94,7 @@ public class ChangeDirectiveTest extends TestCase {
     public void testChangeDirective2() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
         IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+        context.newDataSetFile(new File(initFileUrl.toURI()));
 
         IntkeyDataset ds = context.getDataset();
         Specimen specimen = context.getSpecimen();
@@ -164,7 +164,7 @@ public class ChangeDirectiveTest extends TestCase {
     public void testChangeDirective3() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
         IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+        context.newDataSetFile(new File(initFileUrl.toURI()));
 
         IntkeyDataset ds = context.getDataset();
         Specimen specimen = context.getSpecimen();

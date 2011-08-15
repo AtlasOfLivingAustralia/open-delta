@@ -35,9 +35,9 @@ public class FileCharactersDirective extends IntkeyDirective {
     @Override
     protected IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) {
         _data = data;
-        String fileName = data;
+        File selectedFile = null;
 
-        if (fileName == null) {
+        if (data == null) {
             JFileChooser chooser = new JFileChooser();
             FileFilter filter = new FileFilter() {
 
@@ -56,14 +56,20 @@ public class FileCharactersDirective extends IntkeyDirective {
             chooser.setFileFilter(filter);
             int returnVal = chooser.showOpenDialog(UIUtils.getMainFrame());
             if (returnVal == JFileChooser.APPROVE_OPTION) {
-                fileName = chooser.getSelectedFile().getAbsolutePath();
+                selectedFile = chooser.getSelectedFile();
             } else {
-                fileName = null;
+                selectedFile = null;
+            }
+        } else {
+            
+            selectedFile = new File(data);
+            if (!selectedFile.isAbsolute()) {
+                selectedFile = new File(context.getInitializationFile().getParentFile(), data);
             }
         }
 
-        if (fileName != null) {
-            FileCharactersDirectiveInvocation invoc = new FileCharactersDirectiveInvocation(fileName);
+        if (selectedFile != null) {
+            FileCharactersDirectiveInvocation invoc = new FileCharactersDirectiveInvocation(selectedFile);
             return invoc;
         }
 
@@ -71,16 +77,16 @@ public class FileCharactersDirective extends IntkeyDirective {
     }
 
     class FileCharactersDirectiveInvocation implements IntkeyDirectiveInvocation {
-        private String _fileName;
+        private File _file;
 
-        public FileCharactersDirectiveInvocation(String fileName) {
-            _fileName = fileName;
+        public FileCharactersDirectiveInvocation(File charactersFile) {
+            _file = charactersFile;
         }
 
         @Override
         public boolean execute(IntkeyContext context) {
             try {
-                context.setFileCharacters(_fileName);
+                context.setFileCharacters(_file);
                 return true;
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(UIUtils.getMainFrame(), ex.getMessage(), "", JOptionPane.ERROR_MESSAGE);
@@ -90,7 +96,7 @@ public class FileCharactersDirective extends IntkeyDirective {
 
         @Override
         public String toString() {
-            return String.format("%s %s", StringUtils.join(_controlWords, " ").toUpperCase(), _fileName);
+            return String.format("%s %s", StringUtils.join(_controlWords, " ").toUpperCase(), _file);
         }
     }
 }

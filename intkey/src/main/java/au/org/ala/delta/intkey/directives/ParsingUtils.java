@@ -180,13 +180,13 @@ public class ParsingUtils {
                 if (i == 0) {
                     inQuotedString = true;
                 } else if (i != data.length() - 1) {
-                    if (inQuotedString && (nextChar == ' ' || nextChar == ',' || nextChar == '\n')) {
+                    if (inQuotedString && (nextChar == ' ' || nextChar == ',' || nextChar == '\n' || nextChar == '\r')) {
                         inQuotedString = false;
-                    } else if (!inQuotedString && (prevChar == ' ' || prevChar == ',' || prevChar == '\n')) {
+                    } else if (!inQuotedString && (prevChar == ' ' || prevChar == ',' || prevChar == '\n' || prevChar == '\r')) {
                         inQuotedString = true;
                     }
                 }
-            } else if ((c == ' ' || c == '\n') && !inQuotedString) {
+            } else if ((c == ' ' || c == '\n' || c == '\r') && !inQuotedString) {
                 // if we're not inside a quoted string, then a space or newline
                 // designates
                 // the end of a subcommand

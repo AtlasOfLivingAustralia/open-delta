@@ -45,7 +45,7 @@ public class UseDirectiveTest extends TestCase {
     public void testSetMultiState() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
         IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+        context.newDataSetFile(new File(initFileUrl.toURI()));
 
         MultiStateCharacter charSubfamily = (MultiStateCharacter) context.getDataset().getCharacter(78);
 
@@ -104,7 +104,7 @@ public class UseDirectiveTest extends TestCase {
     public void testSetInteger() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
         IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+        context.newDataSetFile(new File(initFileUrl.toURI()));
 
         IntegerCharacter charStamens = (IntegerCharacter) context.getDataset().getCharacter(60);
 
@@ -170,7 +170,7 @@ public class UseDirectiveTest extends TestCase {
     public void testSetReal() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
         IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+        context.newDataSetFile(new File(initFileUrl.toURI()));
 
         RealCharacter charCulmsMaxHeight = (RealCharacter) context.getDataset().getCharacter(3);
 
@@ -214,7 +214,7 @@ public class UseDirectiveTest extends TestCase {
     public void testSetText() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
         IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+        context.newDataSetFile(new File(initFileUrl.toURI()));
 
         TextCharacter charIncluding = (TextCharacter) context.getDataset().getCharacter(1);
 
@@ -254,7 +254,7 @@ public class UseDirectiveTest extends TestCase {
     public void testSetTwice() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/controlling_characters_simple/intkey.ink");
         IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+        context.newDataSetFile(new File(initFileUrl.toURI()));
 
         IntkeyDataset ds = context.getDataset();
 
@@ -323,7 +323,7 @@ public class UseDirectiveTest extends TestCase {
     public void testSetNonExistentCharacter() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
         IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+        context.newDataSetFile(new File(initFileUrl.toURI()));
 
         boolean exceptionThrown = false;
         try {
@@ -345,7 +345,7 @@ public class UseDirectiveTest extends TestCase {
     public void testKeyword() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
         IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+        context.newDataSetFile(new File(initFileUrl.toURI()));
         IntkeyDataset ds = context.getDataset();
 
         UnorderedMultiStateCharacter charLongevity = (UnorderedMultiStateCharacter) ds.getCharacter(2);
@@ -382,7 +382,7 @@ public class UseDirectiveTest extends TestCase {
     public void testControllingCharactersSet() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/controlling_characters_simple/intkey.ink");
         IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+        context.newDataSetFile(new File(initFileUrl.toURI()));
 
         IntkeyDataset ds = context.getDataset();
 
@@ -416,7 +416,7 @@ public class UseDirectiveTest extends TestCase {
     public void testDependentCharactersRemoved() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/controlling_characters_simple/intkey.ink");
         IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+        context.newDataSetFile(new File(initFileUrl.toURI()));
 
         IntkeyDataset ds = context.getDataset();
 
@@ -450,7 +450,7 @@ public class UseDirectiveTest extends TestCase {
     public void testAvailabilityMultipleControllingCharacters() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/controlling_characters_multiple_controlling/intkey.ink");
         IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+        context.newDataSetFile(new File(initFileUrl.toURI()));
 
         IntkeyDataset ds = context.getDataset();
 
@@ -490,7 +490,7 @@ public class UseDirectiveTest extends TestCase {
     public void testAvailabilityControlHierarchy() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/controlling_characters_simple/intkey.ink");
         IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+        context.newDataSetFile(new File(initFileUrl.toURI()));
 
         IntkeyDataset ds = context.getDataset();
 
@@ -530,7 +530,7 @@ public class UseDirectiveTest extends TestCase {
     public void testAttributeWithValuesAndInapplicabilityFlag() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
         IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+        context.newDataSetFile(new File(initFileUrl.toURI()));
 
         IntkeyDataset ds = context.getDataset();
 
@@ -574,7 +574,7 @@ public class UseDirectiveTest extends TestCase {
     public void testSetCCAndDependentShareControllingCharacter() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/controlling_characters_shared_cc/intkey.ink");
         IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+        context.newDataSetFile(new File(initFileUrl.toURI()));
 
         // Set processing input file flag to true so that Intkey will
         // automatically
@@ -611,7 +611,7 @@ public class UseDirectiveTest extends TestCase {
     public void testValuesForInapplicableCharactersWithSharedCC() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/controlling_characters_shared_cc/intkey.ink");
         IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+        context.newDataSetFile(new File(initFileUrl.toURI()));
 
         // Set processing input file flag to true so that Intkey will
         // automatically
@@ -645,7 +645,7 @@ public class UseDirectiveTest extends TestCase {
     public void testNoValidationPromptDialogsWhenProcessingInputFile() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/controlling_characters_simple/testNoValidationPromptDialogsWhenProcessingInputFile.ink");
         IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+        context.newDataSetFile(new File(initFileUrl.toURI()));
         IntkeyDataset ds = context.getDataset();
 
         Specimen specimen = context.getSpecimen();

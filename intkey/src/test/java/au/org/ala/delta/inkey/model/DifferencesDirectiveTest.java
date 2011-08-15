@@ -35,7 +35,7 @@ public class DifferencesDirectiveTest extends TestCase {
     public void testDifferencesSmokeTest() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
         IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+        context.newDataSetFile(new File(initFileUrl.toURI()));
         IntkeyDataset ds = context.getDataset();
 
         new DifferencesDirective().parseAndProcess(context, "(all) all");
@@ -49,7 +49,7 @@ public class DifferencesDirectiveTest extends TestCase {
     public void testDifferencesResults() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/controlling_characters_simple/intkey.ink");
         IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+        context.newDataSetFile(new File(initFileUrl.toURI()));
         IntkeyDataset ds = context.getDataset();
 
         Item taxonCarrot = ds.getTaxon(1);
@@ -81,7 +81,7 @@ public class DifferencesDirectiveTest extends TestCase {
     public void testOmitTextCharacters() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/controlling_characters_simple/intkey.ink");
         IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+        context.newDataSetFile(new File(initFileUrl.toURI()));
         IntkeyDataset ds = context.getDataset();
 
         Item taxonCarrot = ds.getTaxon(1);
@@ -112,7 +112,7 @@ public class DifferencesDirectiveTest extends TestCase {
     public void testIncludeSpecimen() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
         IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+        context.newDataSetFile(new File(initFileUrl.toURI()));
         IntkeyDataset ds = context.getDataset();
 
         IntegerCharacter chUpperGlumeNerveNumber = (IntegerCharacter) ds.getCharacter(38);
@@ -138,7 +138,7 @@ public class DifferencesDirectiveTest extends TestCase {
     public void testDefaultMatchValues() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
         IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+        context.newDataSetFile(new File(initFileUrl.toURI()));
         IntkeyDataset ds = context.getDataset();
 
         List<au.org.ala.delta.model.Character> differingChars = DiffUtils.determineDifferingCharactersForTaxa(ds, ds.getCharacters(), ds.getTaxa(), null, DEFAULT_MATCH_UNKNOWNS, DEFAULT_MATCH_INAPPLICABLES, MatchType.OVERLAP, false);
@@ -168,7 +168,7 @@ public class DifferencesDirectiveTest extends TestCase {
     public void testExact() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
         IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+        context.newDataSetFile(new File(initFileUrl.toURI()));
         IntkeyDataset ds = context.getDataset();
 
         // note that the differences directive automatically sets match
@@ -188,7 +188,7 @@ public class DifferencesDirectiveTest extends TestCase {
     public void testSubset() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
         IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+        context.newDataSetFile(new File(initFileUrl.toURI()));
         IntkeyDataset ds = context.getDataset();
 
         
@@ -212,7 +212,7 @@ public class DifferencesDirectiveTest extends TestCase {
     public void testSubsetReal() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
         IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+        context.newDataSetFile(new File(initFileUrl.toURI()));
         IntkeyDataset ds = context.getDataset();
 
         List<Item> taxa = new ArrayList<Item>();
@@ -236,7 +236,7 @@ public class DifferencesDirectiveTest extends TestCase {
     public void testDontMatchUnknowns() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
         IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+        context.newDataSetFile(new File(initFileUrl.toURI()));
         IntkeyDataset ds = context.getDataset();
 
         List<au.org.ala.delta.model.Character> differingChars = DiffUtils.determineDifferingCharactersForTaxa(ds, ds.getCharacters(), ds.getTaxa(), null, false,
@@ -260,7 +260,7 @@ public class DifferencesDirectiveTest extends TestCase {
     public void testDontMatchInapplicables() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
         IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+        context.newDataSetFile(new File(initFileUrl.toURI()));
         IntkeyDataset ds = context.getDataset();
 
         List<au.org.ala.delta.model.Character> differingChars = DiffUtils.determineDifferingCharactersForTaxa(ds, ds.getCharacters(), ds.getTaxa(), null, DEFAULT_MATCH_UNKNOWNS,

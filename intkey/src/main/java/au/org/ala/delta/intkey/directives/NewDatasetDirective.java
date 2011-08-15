@@ -1,5 +1,7 @@
 package au.org.ala.delta.intkey.directives;
 
+import java.io.File;
+
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -32,7 +34,7 @@ public class NewDatasetDirective extends IntkeyDirective {
 
     @Override
     protected IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
-        String filePath = data;
+        File file = null;
 
         /*
          * if (filePath == null) { SelectDataSetDialog dlg = new
@@ -49,11 +51,11 @@ public class NewDatasetDirective extends IntkeyDirective {
         chooser.setFileFilter(filter);
         int returnVal = chooser.showOpenDialog(UIUtils.getMainFrame());
         if (returnVal == JFileChooser.APPROVE_OPTION) {
-            filePath = chooser.getSelectedFile().getAbsolutePath();
+            file = chooser.getSelectedFile();
         }
 
-        if (filePath != null) {
-            NewDataSetDirectiveInvocation invoc = new NewDataSetDirectiveInvocation(filePath);
+        if (file != null) {
+            NewDataSetDirectiveInvocation invoc = new NewDataSetDirectiveInvocation(file);
             return invoc;
         }
 
@@ -62,21 +64,21 @@ public class NewDatasetDirective extends IntkeyDirective {
 
     class NewDataSetDirectiveInvocation implements IntkeyDirectiveInvocation {
 
-        private String _fileName;
+        private File _datasetFile;
 
-        public NewDataSetDirectiveInvocation(String fileName) {
-            _fileName = fileName;
+        public NewDataSetDirectiveInvocation(File file) {
+            _datasetFile = file;
         }
 
         @Override
         public boolean execute(IntkeyContext context) {
-            context.newDataSetFile(_fileName);
+            context.newDataSetFile(_datasetFile);
             return true;
         }
 
         @Override
         public String toString() {
-            return String.format("%s %s", StringUtils.join(_controlWords, " ").toUpperCase(), _fileName);
+            return String.format("%s %s", StringUtils.join(_controlWords, " ").toUpperCase(), _datasetFile);
         }
 
     }

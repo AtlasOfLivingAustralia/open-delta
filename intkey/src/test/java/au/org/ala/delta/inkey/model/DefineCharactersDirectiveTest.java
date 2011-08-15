@@ -28,7 +28,7 @@ public class DefineCharactersDirectiveTest extends TestCase {
     public void testSingleCharacter() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
         IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+        context.newDataSetFile(new File(initFileUrl.toURI()));
         IntkeyDataset ds = context.getDataset();
 
         new DefineCharactersDirective().parseAndProcess(context, "foo 1");
@@ -46,7 +46,7 @@ public class DefineCharactersDirectiveTest extends TestCase {
     public void testMultipleCharacters() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
         IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+        context.newDataSetFile(new File(initFileUrl.toURI()));
         IntkeyDataset ds = context.getDataset();
 
         new DefineCharactersDirective().parseAndProcess(context, "foo 48 11 2");
@@ -64,7 +64,7 @@ public class DefineCharactersDirectiveTest extends TestCase {
     public void testCharacterRange() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
         IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+        context.newDataSetFile(new File(initFileUrl.toURI()));
         IntkeyDataset ds = context.getDataset();
 
         new DefineCharactersDirective().parseAndProcess(context, "foo 10-15");
@@ -83,7 +83,7 @@ public class DefineCharactersDirectiveTest extends TestCase {
     public void testMultipleRanges() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
         IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+        context.newDataSetFile(new File(initFileUrl.toURI()));
         IntkeyDataset ds = context.getDataset();
 
         new DefineCharactersDirective().parseAndProcess(context, "foo 10-15 47-49");
@@ -101,7 +101,7 @@ public class DefineCharactersDirectiveTest extends TestCase {
     public void testKeyword() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
         IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+        context.newDataSetFile(new File(initFileUrl.toURI()));
         IntkeyDataset ds = context.getDataset();
 
         new DefineCharactersDirective().parseAndProcess(context, "foo habit");
@@ -120,7 +120,7 @@ public class DefineCharactersDirectiveTest extends TestCase {
     public void testPartialKeyword() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
         IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+        context.newDataSetFile(new File(initFileUrl.toURI()));
         IntkeyDataset ds = context.getDataset();
 
         new DefineCharactersDirective().parseAndProcess(context, "foo hab");
@@ -139,7 +139,7 @@ public class DefineCharactersDirectiveTest extends TestCase {
     public void testCombination() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
         IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+        context.newDataSetFile(new File(initFileUrl.toURI()));
         IntkeyDataset ds = context.getDataset();
 
         new DefineCharactersDirective().parseAndProcess(context, "foo 20-23 habit 48");

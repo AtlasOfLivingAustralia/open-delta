@@ -46,8 +46,8 @@ public class DataSetLoadTest extends TestCase {
         URL iitemsFileUrl = getClass().getResource("/dataset/sample/iitems");
 
         IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.setFileCharacters(new File(icharsFileUrl.toURI()).getAbsolutePath());
-        context.setFileTaxa(new File(iitemsFileUrl.toURI()).getAbsolutePath());
+        context.setFileCharacters(new File(icharsFileUrl.toURI()));
+        context.setFileTaxa(new File(iitemsFileUrl.toURI()));
 
         assertEquals(87, context.getDataset().getNumberOfCharacters());
         assertEquals(14, context.getDataset().getNumberOfTaxa());
@@ -61,7 +61,7 @@ public class DataSetLoadTest extends TestCase {
     public void testReadSampleFromInitializationFile() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
         IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+        context.newDataSetFile(new File(initFileUrl.toURI()));
 
         List<String> keywordsWithoutSystemDefinedOnes = new ArrayList<String>(context.getCharacterKeywords());
         keywordsWithoutSystemDefinedOnes.remove(IntkeyContext.CHARACTER_KEYWORD_ALL);
@@ -82,7 +82,7 @@ public class DataSetLoadTest extends TestCase {
     public void testLoadControllingCharsDataset() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/controlling_characters_simple/intkey.ink");
         IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+        context.newDataSetFile(new File(initFileUrl.toURI()));
 
         IntkeyDataset ds = context.getDataset();
 
@@ -170,7 +170,7 @@ public class DataSetLoadTest extends TestCase {
     public void testNonAutomaticControllingCharacters() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/controlling_characters_non_auto/intkey.ink");
         IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+        context.newDataSetFile(new File(initFileUrl.toURI()));
 
         IntkeyDataset ds = context.getDataset();
 
@@ -209,7 +209,7 @@ public class DataSetLoadTest extends TestCase {
     public void testUseControllingCharactersFirst() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/controlling_characters_use_first/intkey.ink");
         IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+        context.newDataSetFile(new File(initFileUrl.toURI()));
 
         IntkeyDataset ds = context.getDataset();
 
@@ -247,7 +247,7 @@ public class DataSetLoadTest extends TestCase {
     public void testApplicableCharactersDirective() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/controlling_characters_applicable_directive/intkey.ink");
         IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+        context.newDataSetFile(new File(initFileUrl.toURI()));
 
         IntkeyDataset ds = context.getDataset();
 
@@ -294,7 +294,7 @@ public class DataSetLoadTest extends TestCase {
     public void testReadAttributes() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/controlling_characters_simple/intkey.ink");
         IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+        context.newDataSetFile(new File(initFileUrl.toURI()));
 
         IntkeyDataset ds = context.getDataset();
 
@@ -509,7 +509,7 @@ public class DataSetLoadTest extends TestCase {
     public void testReadAttributes2() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
         IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+        context.newDataSetFile(new File(initFileUrl.toURI()));
 
         IntkeyDataset ds = context.getDataset();
 
@@ -536,7 +536,7 @@ public class DataSetLoadTest extends TestCase {
     public void testReadTwoDatasets() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
         IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+        context.newDataSetFile(new File(initFileUrl.toURI()));
         
         IntkeyDataset ds = context.getDataset();
         
@@ -545,7 +545,7 @@ public class DataSetLoadTest extends TestCase {
         assertEquals(38, context.getCharacterKeywords().size());
         
         initFileUrl = getClass().getResource("/dataset/controlling_characters_simple/intkey.ink");
-        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+        context.newDataSetFile(new File(initFileUrl.toURI()));
         
         ds = context.getDataset();
         
@@ -561,7 +561,7 @@ public class DataSetLoadTest extends TestCase {
     public void testReadSynonymyCharacters() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
         IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+        context.newDataSetFile(new File(initFileUrl.toURI()));
         
         IntkeyDataset ds = context.getDataset();
         

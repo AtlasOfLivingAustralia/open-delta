@@ -1349,6 +1349,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     public void removeBusyMessage(String message) {
         // TODO Auto-generated method stub
     }
+    
 
     @Override
     public void addToolbarButton(boolean advancedModeOnly, boolean normalModeOnly, boolean inactiveUnlessUsedCharacters, String imageFileName, String commands, String shortHelp, String fullHelp) {

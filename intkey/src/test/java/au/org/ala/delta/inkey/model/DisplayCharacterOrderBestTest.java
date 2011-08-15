@@ -24,7 +24,7 @@ public class DisplayCharacterOrderBestTest extends TestCase {
         URL initFileUrl = getClass().getResource("/dataset/controlling_characters_simple/intkey.ink");
 
         IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+        context.newDataSetFile(new File(initFileUrl.toURI()));
 
         Map<Character, Double> bestMap = SortingUtils.orderBest(context);
         List<Character> orderedCharList = new ArrayList<Character>(bestMap.keySet());
@@ -45,7 +45,7 @@ public class DisplayCharacterOrderBestTest extends TestCase {
         URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
 
         IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+        context.newDataSetFile(new File(initFileUrl.toURI()));
 
         Map<Character, Double> bestMap = SortingUtils.orderBest(context);
         List<Character> orderedCharList = new ArrayList<Character>(bestMap.keySet());
@@ -123,7 +123,7 @@ public class DisplayCharacterOrderBestTest extends TestCase {
         URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
 
         IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+        context.newDataSetFile(new File(initFileUrl.toURI()));
 
         new UseDirective().parseAndProcess(context, "38,5");
 
@@ -195,7 +195,7 @@ public class DisplayCharacterOrderBestTest extends TestCase {
         URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
 
         IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()).getAbsolutePath());
+        context.newDataSetFile(new File(initFileUrl.toURI()));
 
         new UseDirective().parseAndProcess(context, "38,5");
         new UseDirective().parseAndProcess(context, "40,1");

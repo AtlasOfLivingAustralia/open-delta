@@ -4,7 +4,6 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 
-import au.org.ala.delta.intkey.IntkeyUI;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
 public class DefineTaxaDirectiveInvocation implements IntkeyDirectiveInvocation {
