@@ -91,12 +91,11 @@ public class ImageSettings {
         List<String> retList = new ArrayList<String>();
 
         for (String imagePath : _imagePaths) {
-            if (StringUtils.isNotEmpty(_dataSetPath)) {
-                if (new File(imagePath).isAbsolute()) {
-                    retList.add(imagePath);
-                } else {
-                    retList.add(_dataSetPath + File.separator + imagePath);
-                }
+         
+            if (new File(imagePath).isAbsolute() || StringUtils.isEmpty(_dataSetPath)) {
+                retList.add(imagePath);
+            } else {
+                retList.add(_dataSetPath + File.separator + imagePath);
             }
         }
 

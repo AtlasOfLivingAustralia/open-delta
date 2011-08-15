@@ -26,8 +26,8 @@ public class FixedCentreOverlayLocationTest extends TestCase {
 		private int _ph;
 		private Point _origin;
 		
-		public ImageViewerStub(int w, int h, int pw, int ph, Point origin) {
-			super(new Image(new DefaultImageData("test")), new ImageSettings());
+		public ImageViewerStub(int w, int h, int pw, int ph, Point origin, ImageSettings imageSettings) {
+			super(new Image(new DefaultImageData("test")), imageSettings);
 			_w = w;
 			_h = h;
 			_pw = pw;
@@ -68,16 +68,19 @@ public class FixedCentreOverlayLocationTest extends TestCase {
 		protected void startup() {}
 	}
 	
+	private ImageSettings _imageSettings;
+	
 	@Before
 	public void setUp() {
 		Beans.setDesignTime(true);
 		Application.launch(ApplicationStub.class, null);
+		_imageSettings = new ImageSettings("images");
 	}
 	
 	@Test
 	public void testConversionNoScaling() {
 		
-		ImageViewerStub stub = new ImageViewerStub(1000, 1000, 1000, 1000, new Point(0,0));
+		ImageViewerStub stub = new ImageViewerStub(1000, 1000, 1000, 1000, new Point(0,0), _imageSettings);
 		
 		au.org.ala.delta.model.image.OverlayLocation location = newLocation(100, 50, 100, 60);
 		FixedCentreOverlayLocation imageLocation = new FixedCentreOverlayLocation(stub, null, location);
@@ -91,7 +94,7 @@ public class FixedCentreOverlayLocationTest extends TestCase {
 	
 	@Test
 	public void testBoundsToLocationNoScaling() {
-		ImageViewerStub stub = new ImageViewerStub(2000, 1000, 2000, 1000, new Point(0,0));
+		ImageViewerStub stub = new ImageViewerStub(2000, 1000, 2000, 1000, new Point(0,0), _imageSettings);
 		
 		au.org.ala.delta.model.image.OverlayLocation location = newLocation(100, 50, 80, 60);
 		FixedCentreOverlayLocation imageLocation = new FixedCentreOverlayLocation(stub, null, location);

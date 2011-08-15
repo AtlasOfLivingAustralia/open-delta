@@ -345,7 +345,7 @@ public class ImageEditorPanel extends ImageViewer {
 
 		private JComponent _overlayComp;
 		private MouseEvent _pressedEvent;
-		private int corner = 4;
+		private int corner = 6;
 		
 		public OverlayComponentListener(JComponent overlayComp) {
 			_overlayComp = overlayComp;
@@ -403,8 +403,11 @@ public class ImageEditorPanel extends ImageViewer {
 					setCursor(Cursor.getPredefinedCursor(Cursor.SE_RESIZE_CURSOR));
 				}
 				else {
-					setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+					setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
 				}
+			}
+			else {
+				setCursor(Cursor.getDefaultCursor());
 			}
 		}
 		
