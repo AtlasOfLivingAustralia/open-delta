@@ -2,10 +2,7 @@ package au.org.ala.delta.ui.image;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
-import java.awt.GraphicsDevice;
 import java.awt.Window;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,7 +18,6 @@ import org.jdesktop.application.Action;
 import au.org.ala.delta.model.image.ImageOverlay;
 import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.ui.image.ImagePanel.ScalingMode;
-import java.awt.Color;
 
 public class MultipleImageViewer extends JPanel {
 

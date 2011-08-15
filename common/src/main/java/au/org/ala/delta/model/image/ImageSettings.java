@@ -81,7 +81,7 @@ public class ImageSettings {
     //Convenience method for when there is only one image path
     public String getImagePath() {
         if (!_imagePaths.isEmpty()) {
-            return _imagePaths.get(0);
+            return getImagePaths().get(0);
         } else {
             return null;
         }
