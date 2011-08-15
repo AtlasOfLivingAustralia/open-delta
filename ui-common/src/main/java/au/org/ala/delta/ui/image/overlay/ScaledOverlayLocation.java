@@ -47,6 +47,21 @@ public class ScaledOverlayLocation implements OverlayLocation {
 	}
 	
 	@Override
-	public void updateLocationFromBounds(Rectangle bounds) {}
+	public void updateLocationFromBounds(Rectangle bounds) {
+		
+		double scaledWidth = _image.getImageWidth();
+		Point p = _image.getImageOrigin();
+		double toImageUnits = 1000d/scaledWidth;
+		int x = (int)Math.round((bounds.x-p.x)*toImageUnits);
+		
+		_location.setX(x);
+		_location.setW((int)(bounds.width*toImageUnits));
+		
+		double scaledHeight = _image.getImageHeight();
+		toImageUnits = 1000d/scaledHeight;
+		int y = (int)Math.round((bounds.y-p.y)*toImageUnits);
+		_location.setY(y);
+		_location.setH((int)(bounds.height*toImageUnits));
+	}
 	
 }
