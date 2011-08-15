@@ -2,6 +2,7 @@ package au.org.ala.delta.editor.ui.image;
 
 import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Insets;
 import java.awt.Point;
@@ -18,6 +19,7 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
@@ -45,7 +47,9 @@ public class ImageEditorPanel extends ImageViewer {
 	private static final long serialVersionUID = -4018788405322108640L;
 
 	private JComponent _selectedOverlayComp;
+	/** A flag that indicates a component is being dragged to a new location */
 	private boolean _dragging;
+	
 	private boolean _editingEnabled;
 	private ButtonAlignment _buttonAlignment;
 	private Rectangle _lastButtonBorder;
@@ -59,6 +63,7 @@ public class ImageEditorPanel extends ImageViewer {
 		super(image, model.getImageSettings());
 		_model = model;
 		_editingEnabled = true;
+		_dragging = false;
 		_buttonAlignment = ButtonAlignment.ALIGN_VERTICAL;
 		_resources = Application.getInstance().getContext().getResourceMap();
 		_selection = new ImageEditorSelectionModel();
@@ -346,6 +351,7 @@ public class ImageEditorPanel extends ImageViewer {
 		private JComponent _overlayComp;
 		private MouseEvent _pressedEvent;
 		private int corner = 6;
+		private Resizer _resizer;
 		
 		public OverlayComponentListener(JComponent overlayComp) {
 			_overlayComp = overlayComp;
@@ -357,6 +363,21 @@ public class ImageEditorPanel extends ImageViewer {
 		public void mousePressed(MouseEvent e) {		
 			select(_overlayComp);
 			_pressedEvent = SwingUtilities.convertMouseEvent(_overlayComp, e, ImageEditorPanel.this);
+			if (inTopLeft(e)) {
+				_resizer = new Resizer(_overlayComp, SwingConstants.SOUTH_EAST);
+			}
+			else if (inTopRight(e)) {
+				_resizer = new Resizer(_overlayComp, SwingConstants.SOUTH_WEST);
+			}
+			else if (inBottomLeft(e)) {
+				_resizer = new Resizer(_overlayComp, SwingConstants.NORTH_EAST);
+			}
+			else if (inBottomRight(e)) {
+				_resizer = new Resizer(_overlayComp, SwingConstants.NORTH_WEST);
+			}
+			else {
+				_resizer = null;
+			}
 			
 		}
 		
@@ -375,7 +396,13 @@ public class ImageEditorPanel extends ImageViewer {
 			
 			int dx = e2.getX() - _pressedEvent.getX();
 			int dy = e2.getY() - _pressedEvent.getY();
-			move(_overlayComp, dx, dy);
+			
+			if (_resizer != null) {
+				_resizer.resize(dx, dy);
+			}
+			else {
+				move(_overlayComp, dx, dy);
+			}
 			_pressedEvent = e2;
 			
 		}
@@ -385,6 +412,11 @@ public class ImageEditorPanel extends ImageViewer {
 			if (e.getClickCount() == 2) {
 				_controller.editSelectedOverlay();
 			}
+		}
+		
+		@Override
+		public void mouseExited(MouseEvent e) {
+			setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 		}
 		
 		@Override
@@ -409,11 +441,6 @@ public class ImageEditorPanel extends ImageViewer {
 			else {
 				setCursor(Cursor.getDefaultCursor());
 			}
-		}
-		
-		private boolean inCorner(MouseEvent e) {
-			return inTopLeft(e) || inTopRight(e) || inBottomLeft(e) || inBottomRight(e);
-			
 		}
 		
 		private boolean inTopLeft(MouseEvent e) {
@@ -461,6 +488,55 @@ public class ImageEditorPanel extends ImageViewer {
 			return buildPopupMenu();
 		}
 		
+	}
+	
+	class Resizer {
+		
+		JComponent _overlayComp;
+		Rectangle _originalBounds;
+		int _anchor;
+		
+		public Resizer(JComponent overlayComp, int anchor) {
+			_overlayComp = overlayComp;
+			_originalBounds = overlayComp.getBounds();
+			_anchor = anchor;
+		}
+		
+		public void resize(int dx, int dy) {
+			Dimension min = _overlayComp.getMinimumSize();
+			Rectangle bounds = _overlayComp.getBounds();
+			if (_anchor == SwingConstants.NORTH_WEST) {
+				int width = Math.max(min.width, bounds.width + dx);
+				int height = Math.max(min.height, bounds.height + dy);
+				
+				_overlayComp.setBounds(bounds.x, bounds.y, width, height);
+			}
+			else if (_anchor == SwingConstants.NORTH_EAST) {
+				int x = bounds.x + dx;
+				x = Math.min(x, _originalBounds.x+_originalBounds.width-min.width);
+				int width = Math.max(min.width, bounds.width-dx);
+				int height = Math.max(min.height, bounds.height + dy);
+				_overlayComp.setBounds(x, bounds.y, width, height);
+			}
+			else if (_anchor == SwingConstants.SOUTH_WEST) {
+				int width = Math.max(min.width, bounds.width + dx);
+				int y = bounds.y+dy;
+				y = Math.min(_originalBounds.y+_originalBounds.height-min.height, y);
+				int height = Math.max(min.height, bounds.height - dy);
+				
+				_overlayComp.setBounds(bounds.x, y, width, height);
+			}
+			else {
+				int x = bounds.x+dx;
+				x = Math.min(x, _originalBounds.x+_originalBounds.width-min.width);
+				int y = bounds.y+dy;
+				y = Math.min(y, _originalBounds.y+_originalBounds.height-min.height);
+				int width = bounds.width-dx;
+				int height = bounds.height-dy;
+				_overlayComp.setBounds(x, y, width, height);
+			}
+			_overlayComp.repaint();
+		}
 	}
 	
 }
