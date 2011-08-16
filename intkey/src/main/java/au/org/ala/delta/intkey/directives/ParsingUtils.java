@@ -32,7 +32,7 @@ public class ParsingUtils {
                 characters.add(c);
             }
         } else {
-            List<Character> keywordCharacters = context.getCharactersForKeyword(characterToken);
+            List<Character> keywordCharacters = context.getCharactersForKeyword(removeEnclosingQuotes(characterToken));
             characters.addAll(keywordCharacters);
         }
 
@@ -52,7 +52,7 @@ public class ParsingUtils {
                 taxa.add(t);
             }
         } else {
-            List<Item> keywordTaxa = context.getTaxaForKeyword(taxonToken);
+            List<Item> keywordTaxa = context.getTaxaForKeyword(removeEnclosingQuotes(taxonToken));
             taxa.addAll(keywordTaxa);
         }
 

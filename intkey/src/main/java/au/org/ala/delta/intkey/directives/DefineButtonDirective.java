@@ -64,8 +64,8 @@ public class DefineButtonDirective extends IntkeyDirective {
                 fileName = token;
             } else if (directivesToRun == null) {
                 directivesToRun = new ArrayList<String>();
-                for (String str: token.split(";")) {
-                    directivesToRun.add(ParsingUtils.removeEnclosingQuotes(str));
+                for (String str: ParsingUtils.removeEnclosingQuotes(token).split(";")) {
+                    directivesToRun.add(str.trim());
                 }
             } else if (shortHelp == null) {
                 shortHelp = token;

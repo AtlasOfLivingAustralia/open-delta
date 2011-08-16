@@ -148,6 +148,8 @@ public class IntkeyContext extends AbstractDeltaContext {
 
         _characterOrder = IntkeyCharacterOrder.BEST;
         _bestCharacters = null;
+        
+        _imagePaths = new ArrayList<String>();
     }
 
     /**
@@ -933,7 +935,6 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     public void setImagePaths(List<String> imagePaths) {
         _imagePaths = new ArrayList<String>(imagePaths);
-
     }
 
     /**
