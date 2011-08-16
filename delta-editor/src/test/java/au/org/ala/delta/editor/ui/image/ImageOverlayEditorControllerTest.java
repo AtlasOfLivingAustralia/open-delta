@@ -10,8 +10,8 @@ import au.org.ala.delta.DeltaTestCase;
 import au.org.ala.delta.editor.model.EditorDataModel;
 import au.org.ala.delta.editor.slotfile.model.SlotFileDataSet;
 import au.org.ala.delta.editor.slotfile.model.SlotFileRepository;
-import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterType;
+import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageOverlay;
 import au.org.ala.delta.model.image.OverlayType;
@@ -37,7 +37,8 @@ public class ImageOverlayEditorControllerTest extends DeltaTestCase {
 			public void editSelectedOverlay() {}
 			protected void editOverlay(ImageOverlay overlay) {}
 		};
-		Character character = _model.addCharacter(CharacterType.UnorderedMultiState);
+		MultiStateCharacter character = (MultiStateCharacter)_model.addCharacter(CharacterType.UnorderedMultiState);
+		character.setNumberOfStates(2);
 		_image = character.addImage("test.jpg", "");
 		_selection.setSelectedImage(_image);
 	}
@@ -65,4 +66,10 @@ public class ImageOverlayEditorControllerTest extends DeltaTestCase {
 		assertEquals(21, overlay.getHeight());
 	}
 
+	
+	@Test
+	public void testAddAllUsualOverlays() {
+		_controller.addAllUsualOverlays();
+		System.out.println(_image.getOverlays());
+	}
 }

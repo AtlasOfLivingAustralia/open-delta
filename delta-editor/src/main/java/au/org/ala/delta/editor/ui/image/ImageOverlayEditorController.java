@@ -59,6 +59,7 @@ public class ImageOverlayEditorController {
 		enableStateOverlays();
 		Illustratable subject = _selection.getSelectedImage().getSubject();
 		_actions.get("displayImageSettings").setEnabled(false);
+		
 		if (isCharacterIllustrated()) {
 			if (!((Character)subject).hasNotes()) {
 				_actions.get("addNotesOverlay").setEnabled(false);
@@ -166,6 +167,7 @@ public class ImageOverlayEditorController {
 		alignButtonsMenuActions.add("alignButtonsHorizontally");
 		alignButtonsMenuActions.add("dontAlignButtons");
 		JMenu alignButtonsMenu = new JMenu(_resources.getString("overlayPopup.alignButtonsMenu"));
+		alignButtonsMenu.setEnabled(false);
 		MenuBuilder.buildMenu(alignButtonsMenu, alignButtonsMenuActions, _actions);
 		popup.add(alignButtonsMenu, 7-indexModifier);
 		
@@ -257,47 +259,47 @@ public class ImageOverlayEditorController {
 
 	@Action
 	public void addAllUsualOverlays() {
-		if (_selection.getSelectedImage().getSubject() instanceof Character) {
-			Character character = (Character) _selection.getSelectedImage().getSubject();
+		Image image = _selection.getSelectedImage();
+		if (image.getSubject() instanceof Character) {
+			Character character = (Character) image.getSubject();
 			Point origin = new Point(150, 300);
-			if (_selection.getSelectedImage().getOverlay(OverlayType.OLFEATURE) == null) {
+			if (image.getOverlay(OverlayType.OLFEATURE) == null) {
 				ImageOverlay newOverlay = newOverlay(OverlayType.OLFEATURE);
 
 				newOverlay.setX(origin.x);
 				newOverlay.setY(origin.y);
 				origin.x += 25;
 				origin.y += 50;
+				image.updateOverlay(newOverlay);
 
 			}
 			if (character.getCharacterType().isMultistate()) {
 				addStateOverlays((MultiStateCharacter) character, origin);
 			} else if (character.getCharacterType().isNumeric()) {
-				if (_selection.getSelectedImage().getOverlay(OverlayType.OLENTER) == null) {
+				if (image.getOverlay(OverlayType.OLENTER) == null) {
 					ImageOverlay newOverlay = newOverlay(OverlayType.OLENTER);
 					newOverlay.setX(400);
 					newOverlay.setY(600);
-
+					image.updateOverlay(newOverlay);
 				}
-				if (_selection.getSelectedImage().getOverlay(OverlayType.OLUNITS) == null
+				if (image.getOverlay(OverlayType.OLUNITS) == null
 						&& StringUtils.isNotEmpty(((NumericCharacter<?>) character).getUnits())) {
 					ImageOverlay newOverlay = newOverlay(OverlayType.OLUNITS);
 
 					newOverlay.setX(Short.MIN_VALUE);
 					newOverlay.setY(Short.MIN_VALUE);
+					image.updateOverlay(newOverlay);
 
 				}
 			}
-			if (_selection.getSelectedImage().getOverlay(OverlayType.OLOK) == null) {
+			if (image.getOverlay(OverlayType.OLOK) == null) {
 				newOverlay(OverlayType.OLOK);
-
 			}
-			if (_selection.getSelectedImage().getOverlay(OverlayType.OLCANCEL) == null) {
+			if (image.getOverlay(OverlayType.OLCANCEL) == null) {
 				newOverlay(OverlayType.OLCANCEL);
-
 			}
-			if (StringUtils.isNotEmpty(character.getNotes()) && _selection.getSelectedImage().getOverlay(OverlayType.OLNOTES) == null) {
+			if (StringUtils.isNotEmpty(character.getNotes()) && image.getOverlay(OverlayType.OLNOTES) == null) {
 				newOverlay(OverlayType.OLNOTES);
-
 			}
 		}
 	}
@@ -315,10 +317,12 @@ public class ImageOverlayEditorController {
 			newOverlay.setX(origin.x);
 			newOverlay.setY(origin.y);
 
-			ImageOverlay hsOverlay = newOverlay(OverlayType.OLHOTSPOT);
+			OverlayLocation hsOverlay = new OverlayLocation();
 			hsOverlay.setX(origin.x);
 			hsOverlay.setY(origin.y);
+			newOverlay.addLocation(hsOverlay);
 
+			_selection.getSelectedImage().updateOverlay(newOverlay);
 			origin.x += 25;
 			origin.y += 50;
 			if (origin.x > 350)
@@ -355,6 +359,7 @@ public class ImageOverlayEditorController {
 			if (!states.contains(i)) {
 				ImageOverlay overlay = newStateOverlay(i);
 				configureOverlay(overlay);
+				_selection.getSelectedImage().updateOverlay(_selection.getSelectedOverlay());
 				break;
 			}
 		}
@@ -400,14 +405,17 @@ public class ImageOverlayEditorController {
 	private ImageOverlay newStateOverlay(int stateNum) {
 		ImageOverlay overlay = new ImageOverlay(OverlayType.OLSTATE);
 		overlay.stateId = stateNum;
-		_selection.getSelectedImage().addOverlay(overlay);
 		configureOverlay(overlay);
+		
+		_selection.getSelectedImage().addOverlay(overlay);
 		return overlay;
 	}
 
 	private ImageOverlay newOverlay(int overlayType) {
-		ImageOverlay anOverlay = _selection.getSelectedImage().addOverlay(overlayType);
+		ImageOverlay anOverlay = new ImageOverlay(overlayType);
 		configureOverlay(anOverlay);
+
+		_selection.getSelectedImage().addOverlay(anOverlay);
 		return anOverlay;
 	}
 
