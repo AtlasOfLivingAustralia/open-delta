@@ -307,6 +307,7 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 			replaySound();
 		}
 		catch (Exception e) {
+			e.printStackTrace();
 			_messageHelper.errorLoadingImage(image.getFileName());
 		}
 	}

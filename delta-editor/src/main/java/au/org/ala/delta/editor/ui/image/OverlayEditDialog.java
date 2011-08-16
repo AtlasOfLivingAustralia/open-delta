@@ -305,12 +305,15 @@ public class OverlayEditDialog extends JDialog {
 		lblImageUnits.setText(_resources.getString(key));
 		
 		if (_overlay.isButton()) {
-			lblAdditionalText.setEnabled(false);
+			if (!_overlay.isType(OverlayType.OLIMAGENOTES)) {
+				lblAdditionalText.setEnabled(false);
+				textEditor.setEnabled(false);
+			}
+			
 			wDimension.setEnabled(false);
 			wDimension.setValue(null);
 			hDimension.setEnabled(false);
 			hDimension.setValue(null);
-			textEditor.setEnabled(false);
 			chckbxCentreInBox.setEnabled(false);
 			chckbxIncludeComments.setEnabled(false);
 			chckbxOmitDescription.setEnabled(false);
@@ -339,7 +342,6 @@ public class OverlayEditDialog extends JDialog {
 			if (_overlay.isType(OverlayType.OLSTATE)) {
 				_overlay.stateId = (Integer)stateNumberSpinner.getValue();
 			}
-			_overlay.overlayText = textEditor.getRtfTextBody();
 			_overlay.setCentreText(chckbxCentreInBox.isSelected());
 			_overlay.setIncludeComments(chckbxIncludeComments.isSelected());
 			_overlay.setOmitDescription(chckbxOmitDescription.isSelected());
@@ -347,6 +349,9 @@ public class OverlayEditDialog extends JDialog {
 			_overlay.setWidth((Integer)wDimension.getValue());
 			_overlay.setHeight((Integer)hDimension.getValue());
 			
+		}
+		if (!_overlay.isButton() || _overlay.isType(OverlayType.OLIMAGENOTES)) {
+			_overlay.overlayText = textEditor.getRtfTextBody();
 		}
 		_overlay.setX((Integer)xDimension.getValue());
 		_overlay.setY((Integer)yDimension.getValue());

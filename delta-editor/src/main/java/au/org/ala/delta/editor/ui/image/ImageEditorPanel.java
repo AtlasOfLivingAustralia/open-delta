@@ -12,11 +12,9 @@ import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
@@ -24,14 +22,9 @@ import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 
-import org.jdesktop.application.Application;
-import org.jdesktop.application.ResourceMap;
-
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.ui.image.ImageOverlayEditorController.ButtonAlignment;
-import au.org.ala.delta.editor.ui.util.MenuBuilder;
 import au.org.ala.delta.editor.ui.util.PopupMenuListener;
-import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.ui.image.ImageViewer;
 import au.org.ala.delta.ui.image.overlay.OverlayLocation;
@@ -53,8 +46,6 @@ public class ImageEditorPanel extends ImageViewer {
 	private ButtonAlignment _buttonAlignment;
 	private Rectangle _lastButtonBorder;
 	private EditorViewModel _model;
-	private ResourceMap _resources;
-	private ActionMap _actions;
 	private ImageEditorSelectionModel _selection;
 	private ImageOverlayEditorController _controller;
 	
@@ -64,11 +55,9 @@ public class ImageEditorPanel extends ImageViewer {
 		_editingEnabled = true;
 		_editing = false;
 		_buttonAlignment = ButtonAlignment.ALIGN_VERTICAL;
-		_resources = Application.getInstance().getContext().getResourceMap();
 		_selection = new ImageEditorSelectionModel();
 		_selection.setSelectedImage(image);
 		_controller = new ImageOverlayEditorController(_selection, _model);
-		_actions = Application.getInstance().getContext().getActionMap(_controller);
 		
 		addEventHandlers();
 	}
@@ -273,73 +262,7 @@ public class ImageEditorPanel extends ImageViewer {
 	}
 	
 
-	public JPopupMenu buildPopupMenu() {
-		boolean itemImage = (_model.getSelectedImage().getSubject() instanceof Item);
-		List<String> popupMenuActions = new ArrayList<String>();
-		if (_selectedOverlayComp != null) {
-			popupMenuActions.add("editSelectedOverlay");
-			popupMenuActions.add("deleteSelectedOverlay");
-			popupMenuActions.add("-");
-		}
-		popupMenuActions.add("deleteAllOverlays");
-		popupMenuActions.add("-");
-		popupMenuActions.add("displayImageSettings");
-		popupMenuActions.add("-");
-		popupMenuActions.add("cancelPopup");
 		
-		JPopupMenu popup = new JPopupMenu();
-		MenuBuilder.buildMenu(popup, popupMenuActions, _actions);
-
-		if (_selectedOverlayComp != null) {
-			List<String> stackOverlayMenuActions = new ArrayList<String>();
-			stackOverlayMenuActions.add("stackSelectedOverlayHigher");
-			stackOverlayMenuActions.add("stackSelectedOverlayLower");
-			stackOverlayMenuActions.add("stackSelectedOverlayOnTop");
-			stackOverlayMenuActions.add("stackSelectedOverlayOnBottom");
-			JMenu stackOverlayMenu = new JMenu(_resources.getString("overlayPopup.stackOverlayMenu"));
-			MenuBuilder.buildMenu(stackOverlayMenu, stackOverlayMenuActions, _actions);
-			popup.add(stackOverlayMenu, 2);
-		}
-		List<String> insertOverlayMenuActions = new ArrayList<String>();
-		insertOverlayMenuActions.add("addTextOverlay");
-		if (itemImage) {
-			insertOverlayMenuActions.add("addItemNameOverlay");
-		}
-		insertOverlayMenuActions.add("-");
-		if (!itemImage) {
-			insertOverlayMenuActions.add("addAllUsualOverlays");
-			insertOverlayMenuActions.add("addFeatureDescriptionOverlay");
-			
-			insertOverlayMenuActions.add("addStateOverlay");
-			insertOverlayMenuActions.add("addHotspot");
-			insertOverlayMenuActions.add("-");
-		}
-		insertOverlayMenuActions.add("addOkOverlay");
-		insertOverlayMenuActions.add("addCancelOverlay");
-		if (!itemImage) {
-			insertOverlayMenuActions.add("addNotesOverlay");
-		}
-		else {
-			insertOverlayMenuActions.add("addImageNotesOverlay");
-		}
-		
-		JMenu insertOverlayMenu = new JMenu(_resources.getString("overlayPopup.insertOverlayMenu"));
-		MenuBuilder.buildMenu(insertOverlayMenu, insertOverlayMenuActions, _actions);
-		int indexModifier = _selectedOverlayComp == null ? 4 : 0;
-		popup.add(insertOverlayMenu, 5-indexModifier);
-		
-		List<String> alignButtonsMenuActions = new ArrayList<String>();
-		alignButtonsMenuActions.add("useDefaultButtonAlignment");
-		alignButtonsMenuActions.add("alignButtonsVertically");
-		alignButtonsMenuActions.add("alignButtonsHorizontally");
-		alignButtonsMenuActions.add("dontAlignButtons");
-		JMenu alignButtonsMenu = new JMenu(_resources.getString("overlayPopup.alignButtonsMenu"));
-		MenuBuilder.buildMenu(alignButtonsMenu, alignButtonsMenuActions, _actions);
-		popup.add(alignButtonsMenu, 7-indexModifier);
-		
-		return popup;
-	}
-	
 	
 	class OverlayComponentListener extends PopupDisplayer implements MouseMotionListener {
 		private JComponent _overlayComp;
@@ -482,7 +405,7 @@ public class ImageEditorPanel extends ImageViewer {
 
 		@Override
 		protected JPopupMenu getPopup() {
-			return buildPopupMenu();
+			return _controller.buildPopupMenu();
 		}
 		
 	}

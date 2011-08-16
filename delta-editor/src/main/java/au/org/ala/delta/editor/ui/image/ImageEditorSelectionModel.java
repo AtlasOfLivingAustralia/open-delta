@@ -29,6 +29,9 @@ public class ImageEditorSelectionModel {
 		_selectedImage = selectedImage;
 	}
 	public ImageOverlay getSelectedOverlay() {
+		if (_selectedComponent == null) {
+			return null;
+		}
 		return (ImageOverlay)_selectedComponent.getClientProperty("ImageOverlay");
 	}
 	public void setSelectedOverlayComponent(JComponent component) {

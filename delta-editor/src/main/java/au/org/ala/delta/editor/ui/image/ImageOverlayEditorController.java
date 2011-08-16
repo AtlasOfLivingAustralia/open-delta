@@ -1,18 +1,27 @@
 package au.org.ala.delta.editor.ui.image;
 
 import java.awt.Point;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import javax.swing.ActionMap;
+import javax.swing.JMenu;
+import javax.swing.JPopupMenu;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
+import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.editor.DeltaEditor;
 import au.org.ala.delta.editor.model.EditorViewModel;
+import au.org.ala.delta.editor.ui.util.MenuBuilder;
 import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.Illustratable;
+import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.NumericCharacter;
 import au.org.ala.delta.model.image.Image;
@@ -30,22 +39,150 @@ public class ImageOverlayEditorController {
 	private ButtonAlignment _alignment;
 	private ImageSettings _imageSettings;
 	private ImageEditorSelectionModel _selection;
-
+	
+	private ResourceMap _resources;
+	private ActionMap _actions;
+	
+	
 	enum ButtonAlignment {
 		ALIGN_VERTICAL, ALIGN_HORIZONTAL, ALIGN_NONE
 	};
 
 	public ImageOverlayEditorController(ImageEditorSelectionModel selection, EditorViewModel model) {
 		_imageSettings = model.getImageSettings();
-		
 		_selection = selection;
+		_resources = Application.getInstance().getContext().getResourceMap();
+		_actions = Application.getInstance().getContext().getActionMap(this);
+		
 	}
+	
+	private void disableActions() {
+		enableStateOverlays();
+		Illustratable subject = _selection.getSelectedImage().getSubject();
+		_actions.get("displayImageSettings").setEnabled(false);
+		if (isCharacterIllustrated()) {
+			if (!((Character)subject).hasNotes()) {
+				_actions.get("addNotesOverlay").setEnabled(false);
+			}
+		}
+		boolean enableHotspot = _selection.getSelectedOverlay() != null && 
+			_selection.getSelectedOverlay().isType(OverlayType.OLSTATE);
+		_actions.get("addHotspot").setEnabled(enableHotspot);
+		
+		disableIfPresent(OverlayType.OLOK, "addOkOverlay");
+		disableIfPresent(OverlayType.OLCANCEL, "addCancelOverlay");
+		disableIfPresent(OverlayType.OLIMAGENOTES, "addImageNotesOverlay");
+		disableIfPresent(OverlayType.OLNOTES, "addNotesOverlay");
+		disableIfPresent(OverlayType.OLFEATURE, "addFeatureDescriptionOverlay");
+		disableIfPresent(OverlayType.OLITEM, "addItemDescriptionOverlay");
+		
+	}
+	
+	private void disableIfPresent(int overlayType, String action) {
+		Image selectedImage =_selection.getSelectedImage();
+		boolean present = selectedImage.getOverlay(overlayType) != null;
+		_actions.get(action).setEnabled(!present);
+	}
+	
+	private boolean isMultistateCharacterIllustrated() {
+		return getSubject() instanceof MultiStateCharacter;
+	}
+	private boolean isCharacterIllustrated() {
+		return getSubject() instanceof Character;
+	}
+	private Illustratable getSubject() {
+		return _selection.getSelectedImage().getSubject();
+	}
+	private void enableStateOverlays() {
+		if (!isMultistateCharacterIllustrated()) {
+			_actions.get("addStateOverlay").setEnabled(false);
+		}
+		else {
+			MultiStateCharacter character = (MultiStateCharacter)getSubject();
+			
+			Set<Integer> states = getStatesWithOverlays();
+			_actions.get("addStateOverlay").setEnabled(states.size() != character.getNumberOfStates());
+		}
+		
+	}
+	
+	public JPopupMenu buildPopupMenu() {
+		disableActions();
+		boolean itemImage = (_selection.getSelectedImage().getSubject() instanceof Item);
+		List<String> popupMenuActions = new ArrayList<String>();
+		if (_selection.getSelectedOverlay() != null) {
+			popupMenuActions.add("editSelectedOverlay");
+			popupMenuActions.add("deleteSelectedOverlay");
+			popupMenuActions.add("-");
+		}
+		popupMenuActions.add("deleteAllOverlays");
+		popupMenuActions.add("-");
+		popupMenuActions.add("displayImageSettings");
+		popupMenuActions.add("-");
+		popupMenuActions.add("cancelPopup");
+		
+		JPopupMenu popup = new JPopupMenu();
+		MenuBuilder.buildMenu(popup, popupMenuActions, _actions);
+
+		if (_selection.getSelectedOverlay() != null) {
+			List<String> stackOverlayMenuActions = new ArrayList<String>();
+			stackOverlayMenuActions.add("stackSelectedOverlayHigher");
+			stackOverlayMenuActions.add("stackSelectedOverlayLower");
+			stackOverlayMenuActions.add("stackSelectedOverlayOnTop");
+			stackOverlayMenuActions.add("stackSelectedOverlayOnBottom");
+			JMenu stackOverlayMenu = new JMenu(_resources.getString("overlayPopup.stackOverlayMenu"));
+			MenuBuilder.buildMenu(stackOverlayMenu, stackOverlayMenuActions, _actions);
+			popup.add(stackOverlayMenu, 2);
+		}
+		List<String> insertOverlayMenuActions = new ArrayList<String>();
+		insertOverlayMenuActions.add("addTextOverlay");
+		if (itemImage) {
+			insertOverlayMenuActions.add("addItemDescriptionOverlay");
+		}
+		insertOverlayMenuActions.add("-");
+		if (!itemImage) {
+			insertOverlayMenuActions.add("addAllUsualOverlays");
+			insertOverlayMenuActions.add("addFeatureDescriptionOverlay");
+			insertOverlayMenuActions.add("addStateOverlay");
+			insertOverlayMenuActions.add("addHotspot");
+			insertOverlayMenuActions.add("-");
+		}
+		insertOverlayMenuActions.add("addOkOverlay");
+		insertOverlayMenuActions.add("addCancelOverlay");
+		if (!itemImage) {
+			insertOverlayMenuActions.add("addNotesOverlay");
+		}
+		else {
+			insertOverlayMenuActions.add("addImageNotesOverlay");
+		}
+		
+		JMenu insertOverlayMenu = new JMenu(_resources.getString("overlayPopup.insertOverlayMenu"));
+		MenuBuilder.buildMenu(insertOverlayMenu, insertOverlayMenuActions, _actions);
+		int indexModifier = _selection.getSelectedOverlay() == null ? 4 : 0;
+		popup.add(insertOverlayMenu, 5-indexModifier);
+		
+		List<String> alignButtonsMenuActions = new ArrayList<String>();
+		alignButtonsMenuActions.add("useDefaultButtonAlignment");
+		alignButtonsMenuActions.add("alignButtonsVertically");
+		alignButtonsMenuActions.add("alignButtonsHorizontally");
+		alignButtonsMenuActions.add("dontAlignButtons");
+		JMenu alignButtonsMenu = new JMenu(_resources.getString("overlayPopup.alignButtonsMenu"));
+		MenuBuilder.buildMenu(alignButtonsMenu, alignButtonsMenuActions, _actions);
+		popup.add(alignButtonsMenu, 7-indexModifier);
+		
+		return popup;
+	}
+
 	
 	@Action
 	public void editSelectedOverlay() {
+		editOverlay(_selection.getSelectedOverlay());
+	}
+	
+	private void editOverlay(ImageOverlay overlay) {
 		DeltaEditor editor = (DeltaEditor)Application.getInstance();
 		OverlayEditDialog overlayEditor = new OverlayEditDialog(editor.getMainFrame(), 
-				_selection.getSelectedImage(), _selection.getSelectedOverlay());
+				_selection.getSelectedImage(), overlay);
 		editor.show(overlayEditor);
 	}
 
@@ -207,7 +344,7 @@ public class ImageOverlayEditorController {
 	}
 	
 	@Action
-	public void addItemNameOverlay() {
+	public void addItemDescriptionOverlay() {
 		addOverlay(OverlayType.OLITEM);
 	}
 
@@ -257,6 +394,8 @@ public class ImageOverlayEditorController {
 	private void addOverlay(int overlayType) {
 		ImageOverlay overlay = newOverlay(overlayType);
 		_selection.getSelectedImage().updateOverlay(overlay);
+		editOverlay(overlay);
+		
 	}
 
 	private ImageOverlay newStateOverlay(int stateNum) {
