@@ -1,5 +1,7 @@
 package au.org.ala.delta.editor.ui.image;
 
+import java.beans.Beans;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,12 +28,14 @@ public class ImageOverlayEditorControllerTest extends DeltaTestCase {
 	
 	@Before
 	public void setUp() {
+		Beans.setDesignTime(true);
 		SlotFileRepository repo = new SlotFileRepository();
 		SlotFileDataSet dataSet = (SlotFileDataSet) repo.newDataSet();
 		_model = new EditorDataModel(dataSet);
 		_selection = new ImageEditorSelectionModel();
 		_controller = new ImageOverlayEditorController(_selection, _model) {
 			public void editSelectedOverlay() {}
+			protected void editOverlay(ImageOverlay overlay) {}
 		};
 		Character character = _model.addCharacter(CharacterType.UnorderedMultiState);
 		_image = character.addImage("test.jpg", "");
@@ -58,7 +62,7 @@ public class ImageOverlayEditorControllerTest extends DeltaTestCase {
 		assertEquals(350, overlay.getX());
 		assertEquals(450, overlay.getY());
 		assertEquals(300, overlay.getWidth());
-		assertEquals(11, overlay.getHeight());
+		assertEquals(21, overlay.getHeight());
 	}
 
 }

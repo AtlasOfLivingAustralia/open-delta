@@ -35,7 +35,6 @@ import au.org.ala.delta.model.image.OverlayType;
  */
 public class ImageOverlayEditorController {
 
-	private ImageOverlay _selectedOverlay;
 	private ButtonAlignment _alignment;
 	private ImageSettings _imageSettings;
 	private ImageEditorSelectionModel _selection;
@@ -179,7 +178,7 @@ public class ImageOverlayEditorController {
 		editOverlay(_selection.getSelectedOverlay());
 	}
 	
-	private void editOverlay(ImageOverlay overlay) {
+	protected void editOverlay(ImageOverlay overlay) {
 		DeltaEditor editor = (DeltaEditor)Application.getInstance();
 		OverlayEditDialog overlayEditor = new OverlayEditDialog(editor.getMainFrame(), 
 				_selection.getSelectedImage(), overlay);
@@ -188,7 +187,7 @@ public class ImageOverlayEditorController {
 
 	@Action
 	public void deleteSelectedOverlay() {
-		_selection.getSelectedImage().deleteOverlay(_selectedOverlay);
+		_selection.getSelectedImage().deleteOverlay(_selection.getSelectedOverlay());
 	}
 
 	@Action
@@ -476,7 +475,7 @@ public class ImageOverlayEditorController {
 				}
 			}
 			ImageOverlay notesOverlay;
-			if (_selection.getSelectedImage().getSubject() instanceof au.org.ala.delta.model.Character)
+			if (isCharacterIllustrated())
 				notesOverlay = _selection.getSelectedImage().getOverlay(OverlayType.OLNOTES);
 			else
 				notesOverlay = _selection.getSelectedImage().getOverlay(OverlayType.OLIMAGENOTES);

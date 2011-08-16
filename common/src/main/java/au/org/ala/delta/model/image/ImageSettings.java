@@ -231,8 +231,9 @@ public class ImageSettings {
         }
     }
 
-    private int getFontHeight(FontInfo font) {
-        return 10;
+    private int getFontHeight(FontInfo fontInfo) {
+    	
+        return 20;	
     }
 
     public URL findFileOnImagePath(String fileName) {
