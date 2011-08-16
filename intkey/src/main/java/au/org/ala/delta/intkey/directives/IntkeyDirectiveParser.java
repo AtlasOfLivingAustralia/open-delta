@@ -37,6 +37,7 @@ public class IntkeyDirectiveParser extends DirectiveParser<IntkeyContext> {
         instance.registerDirective(new SetRBaseDirective());
         instance.registerDirective(new SetReliabilitiesDirective());
         instance.registerDirective(new DisplayCharacterOrderBestDirective());
+        instance.registerDirective(new BestDirective());
         instance.registerDirective(new DisplayCharacterOrderNaturalDirective());
         instance.registerDirective(new DifferencesDirective());
         instance.registerDirective(new SetToleranceDirective());
@@ -44,8 +45,6 @@ public class IntkeyDirectiveParser extends DirectiveParser<IntkeyContext> {
         instance.registerDirective(new IncludeTaxaDirective());
         instance.registerDirective(new SetImagePathDirective());
         instance.registerDirective(new DefineButtonDirective());
-        instance.registerDirective(new DefineButtonClearDirective());
-        instance.registerDirective(new DefineButtonSpaceDirective());
         return instance;
     }
 

@@ -6,7 +6,7 @@ public class DefineButtonClearDirectiveInvocation implements IntkeyDirectiveInvo
 
     @Override
     public boolean execute(IntkeyContext context) {
-        System.out.println("Clearing buttons");
+        context.getUI().clearToolbar();
         return true;
     }
 

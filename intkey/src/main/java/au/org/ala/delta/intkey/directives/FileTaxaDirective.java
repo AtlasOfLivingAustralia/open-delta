@@ -61,7 +61,7 @@ public class FileTaxaDirective extends IntkeyDirective {
         } else {
             selectedFile = new File(data);
             if (!selectedFile.isAbsolute()) {
-                selectedFile = new File(context.getInitializationFile().getParentFile(), data);
+                selectedFile = new File(context.getDatasetDirectory(), data);
             }
         }
 

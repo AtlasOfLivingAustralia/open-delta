@@ -1,25 +1,29 @@
 package au.org.ala.delta.intkey.directives;
 
 import au.org.ala.delta.directives.args.DirectiveArgType;
-import au.org.ala.delta.intkey.directives.invocation.DefineButtonSpaceDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class DefineButtonSpaceDirective extends IntkeyDirective {
+/**
+ * Identical to the "DISPLAY CHARACTERORDER BEST" directive.
+ * Included for backwards compatibility reasons.
+ * @author ChrisF
+ *
+ */
+public class BestDirective extends IntkeyDirective {
 
-    public DefineButtonSpaceDirective() {
-        super("define", "button", "space");
+    public BestDirective() {
+        super("best");
     }
-    
+
     @Override
     public int getArgType() {
-        // TODO Auto-generated method stub
         return DirectiveArgType.DIRARG_NONE;
     }
-    
+
     @Override
     protected IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
-        return new DefineButtonSpaceDirectiveInvocation();
+        return new DisplayCharacterOrderBestDirective.DisplayCharacterOrderBestDirectiveInvocation();
     }
 
 }

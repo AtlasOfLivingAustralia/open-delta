@@ -64,7 +64,7 @@ public class FileCharactersDirective extends IntkeyDirective {
             
             selectedFile = new File(data);
             if (!selectedFile.isAbsolute()) {
-                selectedFile = new File(context.getInitializationFile().getParentFile(), data);
+                selectedFile = new File(context.getDatasetDirectory(), data);
             }
         }
 

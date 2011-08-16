@@ -1,5 +1,7 @@
 package au.org.ala.delta.intkey;
 
+import java.util.List;
+
 import au.org.ala.delta.intkey.model.IntkeyDataset;
 
 public interface IntkeyUI {
@@ -20,7 +22,7 @@ public interface IntkeyUI {
     
     void removeBusyMessage(String message);
     
-    void addToolbarButton(boolean advancedModeOnly, boolean normalModeOnly, boolean inactiveUnlessUsedCharacters, String imageFileName, String commands, String shortHelp, String fullHelp);
+    void addToolbarButton(boolean advancedModeOnly, boolean normalModeOnly, boolean inactiveUnlessUsedCharacters, String imageFileName, List<String> commands, String shortHelp, String fullHelp);
     
     void addToolbarSpace();
     

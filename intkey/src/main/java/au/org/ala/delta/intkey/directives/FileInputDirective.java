@@ -24,7 +24,7 @@ public class FileInputDirective extends IntkeyDirective {
         
         File selectedFile = new File(data);
         if (!selectedFile.isAbsolute()) {
-            selectedFile = new File(context.getInitializationFile().getParentFile(), data);
+            selectedFile = new File(context.getDatasetDirectory(), data);
         }
         
         return new FileInputDirectiveInvocation(selectedFile);

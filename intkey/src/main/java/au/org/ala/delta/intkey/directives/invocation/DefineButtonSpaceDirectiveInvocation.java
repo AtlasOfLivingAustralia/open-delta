@@ -6,7 +6,7 @@ public class DefineButtonSpaceDirectiveInvocation implements IntkeyDirectiveInvo
 
     @Override
     public boolean execute(IntkeyContext context) {
-        System.out.println("adding button space");
+        context.getUI().addToolbarSpace();
         return true;
     }
 

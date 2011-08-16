@@ -189,12 +189,12 @@ public class ParsingUtils {
             } else if ((c == ' ' || c == '\n' || c == '\r') && !inQuotedString) {
                 // if we're not inside a quoted string, then a space or newline
                 // designates
-                // the end of a subcommand
+                // the end of a token
                 isEndToken = true;
             }
 
             if (i == (data.length() - 1)) {
-                // end of data string always designates the end of a subcommand
+                // end of data string always designates the end of a token
                 isEndToken = true;
             }
 

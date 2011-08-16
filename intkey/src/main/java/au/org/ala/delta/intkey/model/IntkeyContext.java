@@ -721,8 +721,20 @@ public class IntkeyContext extends AbstractDeltaContext {
      * @return a reference to the most recently loaded dataset initialization
      *         file, or null if no such files have been loaded
      */
-    public File getInitializationFile() {
+    public File getDatasetInitializationFile() {
         return _datasetInitFile;
+    }
+    
+    public File getDatasetDirectory() {
+        if (_datasetInitFile != null) {
+            return _datasetInitFile.getParentFile();
+        } else if (_charactersFile != null) {
+            return _charactersFile.getParentFile();
+        } else if (_taxaFile != null) {
+            return _taxaFile.getParentFile();
+        } else {
+            return null;
+        }
     }
 
     /**

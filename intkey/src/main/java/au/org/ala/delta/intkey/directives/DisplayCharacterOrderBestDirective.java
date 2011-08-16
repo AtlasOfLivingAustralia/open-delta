@@ -22,7 +22,7 @@ public class DisplayCharacterOrderBestDirective extends IntkeyDirective {
         return new DisplayCharacterOrderBestDirectiveInvocation();
     }
 
-    private class DisplayCharacterOrderBestDirectiveInvocation implements IntkeyDirectiveInvocation {
+    static class DisplayCharacterOrderBestDirectiveInvocation implements IntkeyDirectiveInvocation {
 
         @Override
         public boolean execute(IntkeyContext context) {

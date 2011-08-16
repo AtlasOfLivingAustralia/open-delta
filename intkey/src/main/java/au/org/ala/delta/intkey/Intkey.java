@@ -11,8 +11,10 @@ import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,9 +26,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.imageio.ImageIO;
 import javax.swing.ActionMap;
 import javax.swing.DefaultListModel;
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -111,6 +115,8 @@ import au.org.ala.delta.ui.util.IconHelper;
 
 public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, DirectivePopulator {
 
+    private static String INTKEY_ICON_PATH = "/au/org/ala/delta/intkey/resources/icons";
+
     private JPanel _rootPanel;
     private JSplitPane _rootSplitPane;
     private JSplitPane _innerSplitPaneRight;
@@ -148,6 +154,10 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     private List<Character> _foundUsedCharacters = null;
     private List<Item> _foundAvailableTaxa = null;
     private List<Item> _foundEliminatedTaxa = null;
+
+    private List<JButton> _advancedModeOnlyDynamicButtons;
+    private List<JButton> _normalModeOnlyDynamicButtons;
+    private List<JButton> _activeOnlyWhenCharactersUsedButtons;
 
     @Resource
     String windowTitleWithDatasetTitle;
@@ -203,6 +213,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     private JButton _btnDiffTaxa;
     private JButton _btnSubsetTaxa;
     private JButton _btnFindTaxon;
+    private JButton _btnContextHelp;
     private JPanel _pnlAvailableCharacters;
     private JPanel _pnlAvailableCharactersButtons;
     private JPanel _pnlUsedCharacters;
@@ -215,7 +226,6 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     private JPanel _pnlEliminatedTaxa;
     private JScrollPane _sclPnEliminatedTaxa;
     private JPanel _pnlEliminatedTaxaHeader;
-    private JButton _btnContextHelp;
     private JPanel _globalOptionBar;
     private JScrollPane _sclPaneAvailableCharacters;
     private JPanel _pnlAvailableCharactersHeader;
@@ -245,6 +255,10 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         _context = new IntkeyContext(this, this);
         _directiveParser = IntkeyDirectiveParser.createInstance();
 
+        _advancedModeOnlyDynamicButtons = new ArrayList<JButton>();
+        _normalModeOnlyDynamicButtons = new ArrayList<JButton>();
+        _activeOnlyWhenCharactersUsedButtons = new ArrayList<JButton>();
+
         ActionMap actionMap = getContext().getActionMap();
 
         _rootPanel = new JPanel();
@@ -258,9 +272,14 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         _globalOptionBar.setLayout(new BorderLayout(0, 0));
 
         _pnlDynamicButtons = new JPanel();
+        FlowLayout flowLayout_1 = (FlowLayout) _pnlDynamicButtons.getLayout();
+        flowLayout_1.setVgap(0);
+        flowLayout_1.setHgap(0);
         _globalOptionBar.add(_pnlDynamicButtons, BorderLayout.WEST);
 
         _btnContextHelp = new JButton();
+        _btnContextHelp.setMinimumSize(new Dimension(30, 30));
+        _btnContextHelp.setMaximumSize(new Dimension(30, 30));
         _btnContextHelp.setAction(actionMap.get("btnContextHelp"));
         _btnContextHelp.setEnabled(false);
         _btnContextHelp.setPreferredSize(new Dimension(30, 30));
@@ -522,12 +541,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
                     JMenu cmdMenu = _cmdMenus.get(cmdStr);
                     cmdMenu.doClick();
                 } else {
-                    try {
-                        _directiveParser.parse(new InputStreamReader(new ByteArrayInputStream(cmdStr.getBytes())), _context);
-                    } catch (Exception ex) {
-                        Logger.log("Exception thrown while processing directive \"%s\"", cmdStr);
-                        ex.printStackTrace();
-                    }
+                    parseAndExecuteDirective(cmdStr);
                 }
                 _txtFldCmdBar.setText(null);
             }
@@ -969,6 +983,15 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     // =========================================================================================
 
+    private void parseAndExecuteDirective(String command) {
+        try {
+            _directiveParser.parse(new InputStreamReader(new ByteArrayInputStream(command.getBytes())), _context);
+        } catch (Exception ex) {
+            Logger.log("Exception thrown while processing directive \"%s\"", command);
+            ex.printStackTrace();
+        }
+    }
+
     private void executeDirective(IntkeyDirective dir, String data) {
         try {
             dir.parseAndProcess(_context, data);
@@ -1171,7 +1194,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     private void updateAvailableTaxa(List<Item> availableTaxa, Map<Item, Integer> taxaDifferenceCounts) {
         _availableTaxaListModel = new DefaultListModel();
 
-        if (_context.getTolerance() > 0) {
+        if (_context.getTolerance() > 0 && taxaDifferenceCounts != null) {
             // sort available taxa by difference count
             Collections.sort(availableTaxa, new DifferenceCountComparator(taxaDifferenceCounts));
             _availableTaxaCellRenderer = new TaxonWithDifferenceCountCellRenderer(taxaDifferenceCounts);
@@ -1274,6 +1297,8 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         updateUsedCharacters();
         updateAvailableTaxa(availableTaxa, _context.getSpecimen().getTaxonDifferences());
         updateUsedTaxa(eliminatedTaxa, _context.getSpecimen().getTaxonDifferences());
+
+        updateDynamicButtons();
     }
 
     @Override
@@ -1329,8 +1354,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     @Override
     public void displayErrorMessage(String message) {
-        // TODO Auto-generated method stub
-
+        JOptionPane.showMessageDialog(getMainFrame(), message, "Error", JOptionPane.ERROR_MESSAGE);
     }
 
     @Override
@@ -1349,32 +1373,133 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     public void removeBusyMessage(String message) {
         // TODO Auto-generated method stub
     }
-    
 
     @Override
-    public void addToolbarButton(boolean advancedModeOnly, boolean normalModeOnly, boolean inactiveUnlessUsedCharacters, String imageFileName, String commands, String shortHelp, String fullHelp) {
-        Icon icon;
+    public void addToolbarButton(boolean advancedModeOnly, boolean normalModeOnly, boolean inactiveUnlessUsedCharacters, String imageFileName, List<String> commands, String shortHelp, String fullHelp) {
+        Icon icon = null;
 
-        File initializationFile = _context.getInitializationFile();
-        if (initializationFile != null) {
-            File parentDir = initializationFile.getParentFile();
-
-        } else {
-
+        // Is the image file an absolute file?
+        File iconFile = new File(imageFileName);
+        if (iconFile.exists() && iconFile.isAbsolute()) {
+            try {
+                icon = readImageIconFromFile(iconFile);
+            } catch (IOException ex) {
+                displayErrorMessage("Error reading image from file " + iconFile.getAbsolutePath());
+            }
         }
 
+        // Is the image file relative to the dataset directory?
+        if (icon == null) {
+            File relativeIconFile = new File(_context.getDatasetDirectory(), imageFileName);
+            if (relativeIconFile.exists() && relativeIconFile.isAbsolute()) {
+                try {
+                    icon = readImageIconFromFile(relativeIconFile);
+                } catch (IOException ex) {
+                    displayErrorMessage("Error reading image from file " + iconFile.getAbsolutePath());
+                }
+            }
+        }
+
+        // try getting an icon with the exact image name from the icon resources
+        if (icon == null) {
+            try {
+                icon = IconHelper.createImageIconFromAbsolutePath(INTKEY_ICON_PATH + "/" + imageFileName);
+            } catch (Exception ex) {
+                // do nothing
+            }
+        }
+
+        if (icon == null && imageFileName.toLowerCase().endsWith(".bmp")) {
+            // try substituting ".bmp" for ".png" and reading from the icon
+            // resources. All the default
+            // icons that come with Intkey have been convert to png format.
+            String modifiedImageFileName = imageFileName.replaceFirst(".bmp$", ".png");
+
+            try {
+                icon = IconHelper.createImageIconFromAbsolutePath(INTKEY_ICON_PATH + "/" + modifiedImageFileName);
+            } catch (Exception ex) {
+                // do nothing
+            }
+        }
+
+        if (icon == null) {
+            displayErrorMessage("Could not find image " + imageFileName);
+            return;
+        }
+
+        JButton button = new JButton(icon);
+        button.setMargin(new Insets(0, 0, 0, 0));
+        _pnlDynamicButtons.add(button);
+
+        final List<String> commandsCopy = new ArrayList<String>(commands);
+
+        button.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                for (String command : commandsCopy) {
+                    parseAndExecuteDirective(command);
+                }
+
+            }
+        });
+
+        if (advancedModeOnly && !normalModeOnly) {
+            _advancedModeOnlyDynamicButtons.add(button);
+        }
+
+        if (normalModeOnly && !advancedModeOnly) {
+            _normalModeOnlyDynamicButtons.add(button);
+        }
+
+        if (inactiveUnlessUsedCharacters) {
+            _activeOnlyWhenCharactersUsedButtons.add(button);
+        }
+
+        updateDynamicButtons();
+    }
+
+    private void updateDynamicButtons() {
+        for (JButton b : _advancedModeOnlyDynamicButtons) {
+            b.setVisible(_advancedMode);
+        }
+
+        for (JButton b : _normalModeOnlyDynamicButtons) {
+            b.setVisible(!_advancedMode);
+        }
+
+        for (JButton b : _activeOnlyWhenCharactersUsedButtons) {
+            if (_usedCharacterListModel != null) {
+                b.setEnabled(_usedCharacterListModel.size() > 0);
+            } else {
+                b.setEnabled(false);
+            }
+        }
+
+        _rootPanel.revalidate();
+    }
+
+    private ImageIcon readImageIconFromFile(File iconFile) throws IOException {
+        BufferedImage img = ImageIO.read(iconFile);
+        ImageIcon imgIcon = new ImageIcon(img);
+        return imgIcon;
     }
 
     @Override
     public void addToolbarSpace() {
-        // TODO Auto-generated method stub
-
+        JPanel spacerPanel = new JPanel();
+        spacerPanel.setMinimumSize(new Dimension(20, 1));
+        _pnlDynamicButtons.add(spacerPanel);
+        _rootPanel.revalidate();
     }
 
     @Override
     public void clearToolbar() {
-        // TODO Auto-generated method stub
-
+        _advancedModeOnlyDynamicButtons.clear();
+        _normalModeOnlyDynamicButtons.clear();
+        _activeOnlyWhenCharactersUsedButtons.clear();
+        _pnlDynamicButtons.removeAll();
+        _rootPanel.revalidate();
     }
 
     // ================================== DirectivePopulator methods
@@ -1547,19 +1672,19 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     }
 
     public void selectAllMatchedTaxa() {
-        
+
         int[] availableTaxaSelectedIndices = new int[_foundAvailableTaxa.size()];
-        for (int i=0; i < _foundAvailableTaxa.size(); i++) {
+        for (int i = 0; i < _foundAvailableTaxa.size(); i++) {
             Item taxon = _foundAvailableTaxa.get(i);
             availableTaxaSelectedIndices[i] = _availableTaxaListModel.indexOf(taxon);
         }
 
         int[] eliminatedTaxaSelectedIndices = new int[_foundEliminatedTaxa.size()];
-        for (int i=0; i < _foundEliminatedTaxa.size(); i++) {
+        for (int i = 0; i < _foundEliminatedTaxa.size(); i++) {
             Item taxon = _foundEliminatedTaxa.get(i);
             eliminatedTaxaSelectedIndices[i] = _eliminatedTaxaListModel.indexOf(taxon);
         }
-        
+
         _listRemainingTaxa.setSelectedIndices(availableTaxaSelectedIndices);
         _listEliminatedTaxa.setSelectedIndices(eliminatedTaxaSelectedIndices);
     }
