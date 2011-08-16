@@ -168,11 +168,7 @@ public class ImageOverlayEditorController {
 
 	private void addStateOverlays(MultiStateCharacter character, Point origin) {
 		int stateNum;
-		List<ImageOverlay> overlays = _selection.getSelectedImage().getOverlaysOfType(OverlayType.OLSTATE);
-		Set<Integer> states = new HashSet<Integer>();
-		for (ImageOverlay overlay : overlays) {
-			states.add(overlay.stateId);
-		}
+		Set<Integer> states = getStatesWithOverlays();
 
 		for (stateNum = 1; stateNum <= character.getNumberOfStates(); stateNum++) {
 			if (states.contains(stateNum)) {
@@ -196,6 +192,15 @@ public class ImageOverlayEditorController {
 		}
 	}
 
+	private Set<Integer> getStatesWithOverlays() {
+		List<ImageOverlay> overlays = _selection.getSelectedImage().getOverlaysOfType(OverlayType.OLSTATE);
+		Set<Integer> states = new HashSet<Integer>();
+		for (ImageOverlay overlay : overlays) {
+			states.add(overlay.stateId);
+		}
+		return states;
+	}
+
 	@Action
 	public void addFeatureDescriptionOverlay() {
 		addOverlay(OverlayType.OLFEATURE);
@@ -208,12 +213,25 @@ public class ImageOverlayEditorController {
 
 	@Action
 	public void addStateOverlay() {
-		throw new NotImplementedException();
+		Set<Integer> states = getStatesWithOverlays();		
+		MultiStateCharacter character = (MultiStateCharacter)_selection.getSelectedImage().getSubject();
+		for (int i=1; i<=character.getNumberOfStates(); i++) {
+			if (!states.contains(i)) {
+				ImageOverlay overlay = newStateOverlay(i);
+				configureOverlay(overlay);
+				break;
+			}
+		}
 	}
 
 	@Action
 	public void addHotspot() {
-		throw new NotImplementedException();
+		if (_selection.getSelectedOverlay().isType(OverlayType.OLSTATE)) {
+			OverlayLocation hotSpot = new OverlayLocation();
+			_imageSettings.configureHotSpotDefaults(hotSpot);
+			_selection.getSelectedOverlay().addLocation(hotSpot);
+			_selection.getSelectedImage().updateOverlay(_selection.getSelectedOverlay());
+		}
 	}
 
 	@Action
@@ -242,10 +260,11 @@ public class ImageOverlayEditorController {
 	}
 
 	private ImageOverlay newStateOverlay(int stateNum) {
-		ImageOverlay anOverlay = _selection.getSelectedImage().addOverlay(OverlayType.OLSTATE);
-		anOverlay.stateId = stateNum;
-		configureOverlay(anOverlay);
-		return anOverlay;
+		ImageOverlay overlay = new ImageOverlay(OverlayType.OLSTATE);
+		overlay.stateId = stateNum;
+		_selection.getSelectedImage().addOverlay(overlay);
+		configureOverlay(overlay);
+		return overlay;
 	}
 
 	private ImageOverlay newOverlay(int overlayType) {
@@ -283,7 +302,7 @@ public class ImageOverlayEditorController {
 			newLocation.X = 350;
 			newLocation.Y = 450;
 		}
-		if (anOverlay.IsButton()) {
+		if (anOverlay.isButton()) {
 			int bhClient = newLocation.H;
 			int bwClient = newLocation.W;
 			newLocation.W = newLocation.H = Short.MIN_VALUE;

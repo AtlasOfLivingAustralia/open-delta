@@ -124,7 +124,7 @@ public class ImageOverlay {
 		return Math.max(0, (int) location.size() - 1);
 	}
 
-	public boolean IsButton() {
+	public boolean isButton() {
 		return type == OverlayType.OLOK || type == OverlayType.OLCANCEL || type == OverlayType.OLNOTES || type == OverlayType.OLIMAGENOTES;
 	}
 

@@ -7,7 +7,6 @@ import java.awt.Graphics;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
@@ -88,7 +87,6 @@ public class ImageEditorPanel extends ImageViewer {
 	
 	private void addComponentListeners() {
 		for (JComponent overlayComp : _components) {
-			new PopupDisplayer(overlayComp);
 			new OverlayComponentListener(overlayComp);
 		}
 		
@@ -343,22 +341,22 @@ public class ImageEditorPanel extends ImageViewer {
 	}
 	
 	
-	class OverlayComponentListener extends MouseAdapter implements MouseMotionListener {
-
+	class OverlayComponentListener extends PopupDisplayer implements MouseMotionListener {
 		private JComponent _overlayComp;
 		private MouseEvent _pressedEvent;
 		private int corner = 6;
 		private OverlayComponentEditor _editor;
 		
 		public OverlayComponentListener(JComponent overlayComp) {
+			super(overlayComp);
 			_overlayComp = overlayComp;
-			_overlayComp.addMouseListener(this);
 			_overlayComp.addMouseMotionListener(this);
 		}
 		
 		@Override
 		public void mousePressed(MouseEvent e) {		
 			select(_overlayComp);
+			super.mousePressed(e);
 			_pressedEvent = SwingUtilities.convertMouseEvent(_overlayComp, e, ImageEditorPanel.this);
 			if (inTopLeft(e)) {
 				_editor = new OverlayComponentResizer(_overlayComp, SwingConstants.SOUTH_EAST);
@@ -384,6 +382,7 @@ public class ImageEditorPanel extends ImageViewer {
 				_editor = null;
 				stopEdit();
 			}
+			super.mouseReleased(e);
 		}
 		
 		@Override
@@ -400,16 +399,14 @@ public class ImageEditorPanel extends ImageViewer {
 			if (_editor != null) {
 				_editor.mouseDragged(dx, dy);
 			}
-			else {
-				
-			}
+			
 			_pressedEvent = e2;
 			
 		}
 		
 		@Override
 		public void mouseClicked(MouseEvent e) {
-			if (e.getClickCount() == 2) {
+			if (e.getClickCount() == 2 && SwingUtilities.isLeftMouseButton(e)) {
 				_controller.editSelectedOverlay();
 			}
 		}
