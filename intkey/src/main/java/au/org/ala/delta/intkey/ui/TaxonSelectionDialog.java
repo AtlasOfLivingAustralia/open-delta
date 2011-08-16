@@ -123,9 +123,11 @@ public class TaxonSelectionDialog extends ListSelectionDialog {
 
         if (taxa != null) {
             _listModel = new DefaultListModel();
-            _listModel.copyInto(taxa.toArray());
-            _list.setModel(_listModel);
+            for (Item taxon : taxa) {
+                _listModel.addElement(taxon);
+            }
             _list.setCellRenderer(new TaxonCellRenderer());
+            _list.setModel(_listModel);
         }
     }
 

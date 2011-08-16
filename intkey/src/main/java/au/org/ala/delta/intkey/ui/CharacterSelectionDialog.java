@@ -148,9 +148,11 @@ public class CharacterSelectionDialog extends ListSelectionDialog {
 
         if (characters != null) {
             _listModel = new DefaultListModel();
-            _listModel.copyInto(characters.toArray());
-            _list.setModel(_listModel);
+            for (Character ch : characters) {
+                _listModel.addElement(ch);
+            }
             _list.setCellRenderer(new CharacterCellRenderer());
+            _list.setModel(_listModel);
         }
     }
 
