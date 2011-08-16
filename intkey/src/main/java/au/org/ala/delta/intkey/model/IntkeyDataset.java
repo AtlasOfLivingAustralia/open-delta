@@ -209,7 +209,7 @@ public class IntkeyDataset {
 
     public Character getCharacter(int charNum) {
         if (charNum < 1 || charNum > _characters.size()) {
-            throw new IllegalArgumentException("Invalid character number");
+            throw new IllegalArgumentException("Invalid character number " + charNum);
         }
         return _characters.get(charNum - 1);
     }
@@ -220,7 +220,7 @@ public class IntkeyDataset {
 
     public Item getTaxon(int taxonNum) {
         if (taxonNum < 1 || taxonNum > _taxa.size()) {
-            throw new IllegalArgumentException("Invalid taxon number");
+            throw new IllegalArgumentException("Invalid taxon number " + taxonNum);
         }
         return _taxa.get(taxonNum - 1);
     }

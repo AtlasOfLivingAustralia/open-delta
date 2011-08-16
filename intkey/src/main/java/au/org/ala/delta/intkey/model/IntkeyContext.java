@@ -842,6 +842,30 @@ public class IntkeyContext extends AbstractDeltaContext {
 
         _appUI.handleUpdateAll();
     }
+    
+    // Use all available characters aside from those specified.
+    public void setExcludedCharacters(Set<Integer> excludedCharacters) {
+        Set<Integer> includedCharacters = new HashSet<Integer>();
+        for (int i=1; i < _dataset.getNumberOfCharacters() + 1; i++) {
+            includedCharacters.add(i);
+        }
+        
+        includedCharacters.removeAll(excludedCharacters);
+        
+        setIncludedCharacters(includedCharacters);
+    }
+    
+    // Use all available taxa aside from those specified.
+    public void setExcludedTaxa(Set<Integer> excludedTaxa) {
+        Set<Integer> includedTaxa = new HashSet<Integer>();
+        for (int i=1; i < _dataset.getNumberOfTaxa() + 1; i++) {
+            includedTaxa.add(i);
+        }
+        
+        includedTaxa.removeAll(excludedTaxa);
+        
+        setIncludedTaxa(includedTaxa);        
+    }
 
     // The currently included characters minus the characters
     // that have values set in the specimen
