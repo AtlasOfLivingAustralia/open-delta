@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>au.org.ala.delta</groupId>
 	<artifactId>confor</artifactId>
-	<version>1.0-M6-SNAPSHOT</version>
+	<version>1.0-M6</version>
 	<name>CONFOR</name>
 
 	<scm>
