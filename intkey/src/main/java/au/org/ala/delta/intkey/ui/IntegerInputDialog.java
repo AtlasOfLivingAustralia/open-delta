@@ -1,12 +1,10 @@
 package au.org.ala.delta.intkey.ui;
 
 import java.awt.Frame;
-import java.util.List;
 import java.util.Set;
 
 import javax.swing.JOptionPane;
 
-import org.apache.commons.lang.math.IntRange;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;

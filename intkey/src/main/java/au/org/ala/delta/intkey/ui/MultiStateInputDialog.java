@@ -3,9 +3,7 @@ package au.org.ala.delta.intkey.ui;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Frame;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.swing.DefaultListModel;

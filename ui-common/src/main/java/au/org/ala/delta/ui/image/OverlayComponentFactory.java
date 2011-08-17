@@ -67,6 +67,7 @@ public class OverlayComponentFactory {
         case OverlayType.OLVALUE: // Use specified values or ranges (selectable)
         case OverlayType.OLKEYWORD: // Use specified keyword(s)
             component = new SelectableTextOverlay(overlay, text);
+            component.setFont(_imageSettings.getDefaultFeatureFont());
             break;
         case OverlayType.OLENTER: // Create edit box for data entry
             component = new TextFieldOverlay(overlay);

@@ -36,6 +36,10 @@ public class OverlayTextBuilder {
 		case OverlayType.OLTEXT: // Use a literal text string
 			includeExtraText = true;
 			break;
+	    case OverlayType.OLKEYWORD: // Use specified keyword(s)
+	        text = overlay.keywords;
+	        includeExtraText = true;
+	        break;
 		case OverlayType.OLITEM: // Use name of the item
 			if (!overlay.omitDescription()) {
 				text = _itemFormatter.formatItemDescription((Item) imageOwner, !overlay.includeComments());
@@ -95,7 +99,6 @@ public class OverlayTextBuilder {
 		case OverlayType.OLSUBJECT: // Has text for menu entry
 		case OverlayType.OLSOUND: // Has name of .WAV sound file
 		case OverlayType.OLHEADING: // Using heading string for the data-set
-		case OverlayType.OLKEYWORD: // Use specified keyword(s)
 			break;
 		default:
 			text = "";

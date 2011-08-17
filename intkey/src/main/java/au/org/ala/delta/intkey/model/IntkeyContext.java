@@ -262,8 +262,6 @@ public class IntkeyContext extends AbstractDeltaContext {
      */
     private void createNewDataSet() {
 
-        //initializeIdentification();
-
         _dataset = IntkeyDatasetFileReader.readDataSet(_charactersFile, _taxaFile);
 
         _specimen = new Specimen(_dataset, _matchInapplicables, _matchInapplicables, _matchType);
@@ -297,6 +295,8 @@ public class IntkeyContext extends AbstractDeltaContext {
      */
     public void newDataSetFile(File datasetFile) {
         Logger.log("Reading in directives from file: %s", datasetFile.getAbsolutePath());
+        
+        initializeIdentification();
         
         if (datasetFile == null || !datasetFile.exists()) {
             throw new IllegalArgumentException("Could not open dataset file " + datasetFile.getAbsolutePath());

@@ -37,6 +37,7 @@ public class RichTextLabel extends JPanel implements OverlayLocationProvider {
 		
 		_editor.setEditable(false);
 		_editor.setBackground(Color.WHITE);
+		_editor.setForeground(Color.BLACK);
 		_editor.setBorder(null);
 		_editor.setOpaque(true);
 		_editor.setFont(UIManager.getFont("Label.font"));
