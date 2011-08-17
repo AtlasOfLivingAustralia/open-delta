@@ -1590,7 +1590,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             if (dlg.okButtonPressed()) {
                 return dlg.getInputTextValues();
             } else {
-                return null;
+                return Collections.EMPTY_LIST;
             }
         } else {
             TextInputDialog dlg = new TextInputDialog(getMainFrame(), ch, _context.getImageSettings());
@@ -1607,7 +1607,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             if (dlg.okButtonPressed()) {
                 return dlg.getInputIntegerValues();
             } else {
-                return null;
+                return Collections.EMPTY_SET;
             }
         } else {
             IntegerInputDialog dlg = new IntegerInputDialog(getMainFrame(), ch, _context.getImageSettings());
@@ -1641,7 +1641,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             if (dlg.okButtonPressed()) {
                 return dlg.getSelectedStates();
             } else {
-                return null;
+                return Collections.EMPTY_SET;
             }
         } else {
             MultiStateInputDialog dlg = new MultiStateInputDialog(getMainFrame(), ch, _context.getImageSettings());
