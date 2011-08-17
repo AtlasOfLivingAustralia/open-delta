@@ -278,6 +278,9 @@ public class ImageEditorPanel extends ImageViewer {
 		
 		@Override
 		public void mousePressed(MouseEvent e) {		
+			if (!_editingEnabled) {
+				return;
+			}
 			select(_overlayComp);
 			super.mousePressed(e);
 			_pressedEvent = SwingUtilities.convertMouseEvent(_overlayComp, e, ImageEditorPanel.this);
@@ -329,6 +332,9 @@ public class ImageEditorPanel extends ImageViewer {
 		
 		@Override
 		public void mouseClicked(MouseEvent e) {
+			if (!_editingEnabled) {
+				return;
+			}
 			if (e.getClickCount() == 2 && SwingUtilities.isLeftMouseButton(e)) {
 				_controller.editSelectedOverlay();
 			}
