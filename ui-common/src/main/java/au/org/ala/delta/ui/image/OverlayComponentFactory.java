@@ -2,6 +2,7 @@ package au.org.ala.delta.ui.image;
 
 import javax.swing.JComponent;
 
+import org.apache.commons.lang.StringUtils;
 import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.model.Illustratable;
@@ -64,10 +65,22 @@ public class OverlayComponentFactory {
             component = new RelativePositionedTextOverlay(overlay, text);
             break;
         case OverlayType.OLSTATE: // Use name of the state (selectable)
-        case OverlayType.OLVALUE: // Use specified values or ranges (selectable)
         case OverlayType.OLKEYWORD: // Use specified keyword(s)
             component = new SelectableTextOverlay(overlay, text);
             component.setFont(_imageSettings.getDefaultFeatureFont());
+            break;
+        case OverlayType.OLVALUE: // Use specified values or ranges (selectable)
+            String minVal = overlay.minVal;
+            String maxVal = overlay.maxVal;
+            
+            if (StringUtils.isNotEmpty(maxVal)) {
+                text = minVal + " - " + maxVal;
+            } else {
+                text = minVal;
+            }
+            
+            component = new SelectableTextOverlay(overlay, text);
+            component.setFont(_imageSettings.getDefaultFeatureFont());   
             break;
         case OverlayType.OLENTER: // Create edit box for data entry
             component = new TextFieldOverlay(overlay);
