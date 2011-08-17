@@ -195,7 +195,7 @@ public class ImageDialog extends JDialog implements OverlaySelectionObserver {
         _mnuWindow.add(_mnuItAboutImage);
     }
 
-    protected void setImages(List<Image> images) {
+    public void setImages(List<Image> images) {
 
         List<String> imageNames = new ArrayList<String>();
         for (Image image : images) {

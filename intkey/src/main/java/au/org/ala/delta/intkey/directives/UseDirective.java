@@ -91,10 +91,9 @@ public class UseDirective extends IntkeyDirective {
 
             } else {
                 // No characters specified, prompt the user to select characters
+                
                 String directiveName = change ? directiveName = StringUtils.join(new ChangeDirective().getControlWords(), " ").toUpperCase() : StringUtils.join(_controlWords, " ").toUpperCase();
-                CharacterKeywordSelectionDialog dlg = new CharacterKeywordSelectionDialog(UIUtils.getMainFrame(), context, directiveName, true);
-                dlg.setVisible(true);
-                List<Character> selectedCharacters = dlg.getSelectedCharacters();
+                List<Character> selectedCharacters = context.getDirectivePopulator().promptForCharacters(directiveName, true);
                 if (selectedCharacters.size() > 0) {
                     for (Character ch : selectedCharacters) {
                         characterNumbers.add(ch.getCharacterId());

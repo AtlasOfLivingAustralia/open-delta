@@ -87,6 +87,8 @@ import au.org.ala.delta.intkey.ui.CharacterCellRenderer;
 import au.org.ala.delta.intkey.ui.CharacterKeywordSelectionDialog;
 import au.org.ala.delta.intkey.ui.FindInCharactersDialog;
 import au.org.ala.delta.intkey.ui.FindInTaxaDialog;
+import au.org.ala.delta.intkey.ui.ImageCharacterInputDialog;
+import au.org.ala.delta.intkey.ui.ImageDialog;
 import au.org.ala.delta.intkey.ui.IntegerInputDialog;
 import au.org.ala.delta.intkey.ui.MultiStateInputDialog;
 import au.org.ala.delta.intkey.ui.ReExecuteDialog;
@@ -1507,16 +1509,60 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     @Override
     public List<Character> promptForCharacters(String directiveName, boolean permitSelectionFromIncludedCharactersOnly) {
-        CharacterKeywordSelectionDialog dlg = new CharacterKeywordSelectionDialog(getMainFrame(), _context, directiveName, permitSelectionFromIncludedCharactersOnly);
-        show(dlg);
-        return dlg.getSelectedCharacters();
+        List<Image> characterKeywordImages = _context.getDataset().getCharacterKeywordImages();
+        if (!_advancedMode && characterKeywordImages != null && !characterKeywordImages.isEmpty()) {
+            ImageDialog dlg = new ImageDialog(getMainFrame(), _context.getImageSettings());
+            dlg.setImages(characterKeywordImages);
+
+            show(dlg);
+
+            Set<String> keywords = dlg.getSelectedKeywords();
+
+            List<Character> selectedCharacters = new ArrayList<Character>();
+
+            for (String keyword : keywords) {
+                selectedCharacters.addAll(_context.getCharactersForKeyword(keyword));
+            }
+
+            if (permitSelectionFromIncludedCharactersOnly) {
+                selectedCharacters.retainAll(_context.getIncludedCharacters());
+            }
+
+            return selectedCharacters;
+        } else {
+            CharacterKeywordSelectionDialog dlg = new CharacterKeywordSelectionDialog(getMainFrame(), _context, directiveName, permitSelectionFromIncludedCharactersOnly);
+            show(dlg);
+            return dlg.getSelectedCharacters();
+        }
     }
 
     @Override
     public List<Item> promptForTaxa(String directiveName, boolean permitSelectionFromIncludedTaxaOnly) {
-        TaxonKeywordSelectionDialog dlg = new TaxonKeywordSelectionDialog(getMainFrame(), _context, directiveName, permitSelectionFromIncludedTaxaOnly);
-        show(dlg);
-        return dlg.getSelectedTaxa();
+        List<Image> taxonKeywordImages = _context.getDataset().getTaxonKeywordImages();
+        if (!_advancedMode && taxonKeywordImages != null && !taxonKeywordImages.isEmpty()) {
+            ImageDialog dlg = new ImageDialog(getMainFrame(), _context.getImageSettings());
+            dlg.setImages(taxonKeywordImages);
+
+            show(dlg);
+
+            Set<String> keywords = dlg.getSelectedKeywords();
+
+            List<Item> selectedTaxa = new ArrayList<Item>();
+
+            for (String keyword : keywords) {
+                selectedTaxa.addAll(_context.getTaxaForKeyword(keyword));
+            }
+
+            if (permitSelectionFromIncludedTaxaOnly) {
+                selectedTaxa.retainAll(_context.getIncludedCharacters());
+            }
+
+            return selectedTaxa;
+        } else {
+            TaxonKeywordSelectionDialog dlg = new TaxonKeywordSelectionDialog(getMainFrame(), _context, directiveName, permitSelectionFromIncludedTaxaOnly);
+            show(dlg);
+            return dlg.getSelectedTaxa();
+        }
     }
 
     @Override
@@ -1538,30 +1584,54 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     @Override
     public List<String> promptForTextValue(TextCharacter ch) {
-        TextInputDialog dlg = new TextInputDialog(getMainFrame(), ch, _context.getImageSettings());
-        UIUtils.showDialog(dlg);
-        return dlg.getInputData();
+        if (!_advancedMode && !ch.getImages().isEmpty()) {
+            ImageCharacterInputDialog dlg = new ImageCharacterInputDialog(getMainFrame(), ch, _context.getImageSettings());
+            show(dlg);
+            return dlg.getInputTextValues();
+        } else {
+            TextInputDialog dlg = new TextInputDialog(getMainFrame(), ch, _context.getImageSettings());
+            UIUtils.showDialog(dlg);
+            return dlg.getInputData();
+        }
     }
 
     @Override
     public Set<Integer> promptForIntegerValue(IntegerCharacter ch) {
-        IntegerInputDialog dlg = new IntegerInputDialog(getMainFrame(), ch, _context.getImageSettings());
-        UIUtils.showDialog(dlg);
-        return dlg.getInputData();
+        if (!_advancedMode && !ch.getImages().isEmpty()) {
+            ImageCharacterInputDialog dlg = new ImageCharacterInputDialog(getMainFrame(), ch, _context.getImageSettings());
+            show(dlg);
+            return dlg.getInputIntegerValues();
+        } else {
+            IntegerInputDialog dlg = new IntegerInputDialog(getMainFrame(), ch, _context.getImageSettings());
+            UIUtils.showDialog(dlg);
+            return dlg.getInputData();
+        }
     }
 
     @Override
     public FloatRange promptForRealValue(RealCharacter ch) {
-        RealInputDialog dlg = new RealInputDialog(getMainFrame(), ch, _context.getImageSettings());
-        UIUtils.showDialog(dlg);
-        return dlg.getInputData();
+        if (!_advancedMode && !ch.getImages().isEmpty()) {
+            ImageCharacterInputDialog dlg = new ImageCharacterInputDialog(getMainFrame(), ch, _context.getImageSettings());
+            show(dlg);
+            return dlg.getInputRealValues();
+        } else {
+            RealInputDialog dlg = new RealInputDialog(getMainFrame(), ch, _context.getImageSettings());
+            UIUtils.showDialog(dlg);
+            return dlg.getInputData();
+        }
     }
 
     @Override
     public Set<Integer> promptForMultiStateValue(MultiStateCharacter ch) {
-        MultiStateInputDialog dlg = new MultiStateInputDialog(getMainFrame(), ch, _context.getImageSettings());
-        UIUtils.showDialog(dlg);
-        return dlg.getInputData();
+        if (!_advancedMode && !ch.getImages().isEmpty()) {
+            ImageCharacterInputDialog dlg = new ImageCharacterInputDialog(getMainFrame(), ch, _context.getImageSettings());
+            show(dlg);
+            return dlg.getSelectedStates();
+        } else {
+            MultiStateInputDialog dlg = new MultiStateInputDialog(getMainFrame(), ch, _context.getImageSettings());
+            UIUtils.showDialog(dlg);
+            return dlg.getInputData();
+        }
     }
 
     // ======== Methods for "find in characters" and "find in taxa" functions
