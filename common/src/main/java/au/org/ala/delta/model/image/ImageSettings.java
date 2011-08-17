@@ -218,24 +218,10 @@ public class ImageSettings {
 
     public void configureHotSpotDefaults(OverlayLocation location) {
         location.drawType = OLDrawType.rectangle;
-
+        location.setW(250);
+        location.setH(250);
     }
-
-    public void configureOverlayDefaults(ImageOverlay overlay) {
-
-        if (overlay.integralHeight()) {
-            overlay.setHeight(-1);
-        } else {
-            int needHeight = getFontHeight(overlay.type == OverlayType.OLFEATURE ? _defaultFeatureFontInfo : _defaultFontInfo) + 1;
-            overlay.setHeight(needHeight);
-        }
-    }
-
-    private int getFontHeight(FontInfo fontInfo) {
-    	
-        return 20;	
-    }
-
+    
     public URL findFileOnImagePath(String fileName) {
         URL fileLocation = null;
         for (String imagePath : getImagePaths()) {

@@ -38,7 +38,6 @@ public class ImageOverlayEditorController {
 	private ButtonAlignment _alignment;
 	private ImageSettings _imageSettings;
 	private ImageEditorSelectionModel _selection;
-	
 	private ResourceMap _resources;
 	private ActionMap _actions;
 	
@@ -317,11 +316,10 @@ public class ImageOverlayEditorController {
 			newOverlay.setX(origin.x);
 			newOverlay.setY(origin.y);
 
-			OverlayLocation hsOverlay = new OverlayLocation();
-			hsOverlay.setX(origin.x);
-			hsOverlay.setY(origin.y);
-			newOverlay.addLocation(hsOverlay);
-
+			OverlayLocation hotspot = addHotspot(newOverlay);
+			hotspot.setX(origin.x);
+			hotspot.setY(origin.y);
+			
 			_selection.getSelectedImage().updateOverlay(newOverlay);
 			origin.x += 25;
 			origin.y += 50;
@@ -367,12 +365,18 @@ public class ImageOverlayEditorController {
 
 	@Action
 	public void addHotspot() {
-		if (_selection.getSelectedOverlay().isType(OverlayType.OLSTATE)) {
-			OverlayLocation hotSpot = new OverlayLocation();
-			_imageSettings.configureHotSpotDefaults(hotSpot);
-			_selection.getSelectedOverlay().addLocation(hotSpot);
-			_selection.getSelectedImage().updateOverlay(_selection.getSelectedOverlay());
+		ImageOverlay overlay = _selection.getSelectedOverlay();
+		if (overlay.isType(OverlayType.OLSTATE)) {
+			addHotspot(overlay);
+			_selection.getSelectedImage().updateOverlay(overlay);
 		}
+	}
+	
+	private OverlayLocation addHotspot(ImageOverlay overlay) {
+		OverlayLocation hotSpot = new OverlayLocation();
+		_imageSettings.configureHotSpotDefaults(hotSpot);
+		overlay.addLocation(hotSpot);
+		return hotSpot;
 	}
 
 	@Action
@@ -433,12 +437,9 @@ public class ImageOverlayEditorController {
 			newLocation = anOverlay.getLocation(0);
 		}
 		
-		if (anOverlay.type == OverlayType.OLHOTSPOT) {
-			_imageSettings.configureHotSpotDefaults(newLocation);
-			newLocation.H = 200;
-		} else {
-			_imageSettings.configureOverlayDefaults(anOverlay);
-		}
+		anOverlay.setIntegralHeight(true);
+		anOverlay.setHeight(-1);
+		
 		
 		if (menuPoint.x != Integer.MIN_VALUE) {
 			

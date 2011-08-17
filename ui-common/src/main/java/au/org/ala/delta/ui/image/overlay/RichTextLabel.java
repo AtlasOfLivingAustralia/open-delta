@@ -60,6 +60,7 @@ public class RichTextLabel extends JPanel implements OverlayLocationProvider {
 		StyledDocument doc = _editor.getStyledDocument();
 		SimpleAttributeSet center = new SimpleAttributeSet();
 		StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
+		
 		doc.setParagraphAttributes(0, doc.getLength(), center, false);
 	}
 	
