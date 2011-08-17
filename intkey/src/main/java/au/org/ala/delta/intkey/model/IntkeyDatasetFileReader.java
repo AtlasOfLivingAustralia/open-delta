@@ -934,7 +934,7 @@ public final class IntkeyDatasetFileReader {
         int pitch = Integer.parseInt(tokens[3]);
         int family = Integer.parseInt(tokens[4]);
         int charSet = Integer.parseInt(tokens[5]);
-        String name = StringUtils.join(Arrays.copyOfRange(tokens, 6, tokens.length - 1), ' ');
+        String name = StringUtils.join(Arrays.copyOfRange(tokens, 6, tokens.length), ' ');
 
         return new FontInfo(size, weight, italic, pitch, family, charSet, name);
     }
