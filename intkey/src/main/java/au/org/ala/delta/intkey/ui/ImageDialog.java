@@ -112,12 +112,12 @@ public class ImageDialog extends JDialog implements OverlaySelectionObserver {
 
             @Override
             public void windowOpened(WindowEvent e) {
+                fitToImage();
                 replaySound();
             }
 
         });
 
-        this.pack();
     }
 
     private void buildMenu() {
@@ -370,7 +370,8 @@ public class ImageDialog extends JDialog implements OverlaySelectionObserver {
     @Action
     public void aboutImage() {
         ImageViewer visibleViewer = _multipleImageViewer.getVisibleViewer();
-        AboutImageDialog dlg = new AboutImageDialog(this, visibleViewer.getViewedImage().getSubjectTextOrFileName(), visibleViewer.getImageFileLocation(), visibleViewer.getImage(), visibleViewer.getImageFormatName());
+        AboutImageDialog dlg = new AboutImageDialog(this, visibleViewer.getViewedImage().getSubjectTextOrFileName(), visibleViewer.getImageFileLocation(), visibleViewer.getImage(),
+                visibleViewer.getImageFormatName());
         dlg.setVisible(true);
     }
 
@@ -378,6 +379,12 @@ public class ImageDialog extends JDialog implements OverlaySelectionObserver {
         reSelectStatesInNewViewer(_multipleImageViewer.getVisibleViewer());
         _mnuItNextImage.setEnabled(!_multipleImageViewer.atLastImage());
         _mnuItPreviousImage.setEnabled(!_multipleImageViewer.atFirstImage());
+        
+        int viewedIndex = _multipleImageViewer.getIndexCurrentlyViewedImage();
+        JMenuItem mnuIt = (JMenuItem) _mnuSubject.getMenuComponent(viewedIndex);
+        mnuIt.setSelected(true);
+        
+        fitToImage();
         replaySound();
     }
 
@@ -391,7 +398,7 @@ public class ImageDialog extends JDialog implements OverlaySelectionObserver {
                 if (selectableText != null) {
                     selectableText.setSelected(_selectedStates.contains(stateId));
                 }
-                
+
                 HotSpotGroup hotSpotGroup = viewer.getHotSpotGroupForOverlay(overlay);
                 if (hotSpotGroup != null) {
                     hotSpotGroup.setSelected(_selectedStates.contains(stateId));
