@@ -41,7 +41,6 @@ public class ImageOverlayEditorController {
 	private ResourceMap _resources;
 	private ActionMap _actions;
 	
-	
 	enum ButtonAlignment {
 		ALIGN_VERTICAL, ALIGN_HORIZONTAL, ALIGN_NONE
 	};

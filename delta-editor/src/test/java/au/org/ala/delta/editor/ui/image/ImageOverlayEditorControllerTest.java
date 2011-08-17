@@ -63,7 +63,7 @@ public class ImageOverlayEditorControllerTest extends DeltaTestCase {
 		assertEquals(350, overlay.getX());
 		assertEquals(450, overlay.getY());
 		assertEquals(300, overlay.getWidth());
-		assertEquals(21, overlay.getHeight());
+		assertEquals(-1, overlay.getHeight());
 	}
 
 	
