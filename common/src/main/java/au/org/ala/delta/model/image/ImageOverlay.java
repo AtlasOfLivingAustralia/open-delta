@@ -274,6 +274,14 @@ public class ImageOverlay {
 			return false;
 		return true;
 	}
+
+	public void deleteLocation(OverlayLocation selectedOverlayLocation) {
+		for (OverlayLocation location : this.location) {
+			if (location.ID == selectedOverlayLocation.ID) {
+				this.location.remove(location);
+			}
+		}
+	}
 	
 	
 }

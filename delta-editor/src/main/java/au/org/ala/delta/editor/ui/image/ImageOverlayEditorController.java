@@ -175,7 +175,9 @@ public class ImageOverlayEditorController {
 	
 	@Action
 	public void editSelectedOverlay() {
-		editOverlay(_selection.getSelectedOverlay());
+		if (!_selection.isHotSpotSelected()) {
+			editOverlay(_selection.getSelectedOverlay());
+		}
 	}
 	
 	protected void editOverlay(ImageOverlay overlay) {
@@ -187,7 +189,13 @@ public class ImageOverlayEditorController {
 
 	@Action
 	public void deleteSelectedOverlay() {
-		_selection.getSelectedImage().deleteOverlay(_selection.getSelectedOverlay());
+		if (_selection.isHotSpotSelected()) {
+			_selection.getSelectedOverlay().deleteLocation(_selection.getSelectedOverlayLocation());
+			_selection.getSelectedImage().updateOverlay(_selection.getSelectedOverlay());
+		}
+		else {
+			_selection.getSelectedImage().deleteOverlay(_selection.getSelectedOverlay());
+		}
 	}
 
 	@Action

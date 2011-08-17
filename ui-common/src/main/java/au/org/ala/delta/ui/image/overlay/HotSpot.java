@@ -13,6 +13,7 @@ import java.util.List;
 import javax.swing.JPanel;
 
 import au.org.ala.delta.model.image.ImageOverlay;
+import au.org.ala.delta.model.image.OverlayLocation;
 import au.org.ala.delta.ui.image.ImageViewer;
 
 /**
@@ -111,7 +112,7 @@ public abstract class HotSpot extends JPanel implements OverlayLocationProvider,
 	}
 	
 	@Override
-	public OverlayLocation location(ImageViewer viewer) {
+	public au.org.ala.delta.ui.image.overlay.OverlayLocation location(ImageViewer viewer) {
 		return new ScaledOverlayLocation(viewer, _overlay.getLocation(_index));
 	}
 	
@@ -161,5 +162,9 @@ public abstract class HotSpot extends JPanel implements OverlayLocationProvider,
 
 	@Override
 	public void mouseEntered(MouseEvent e) {}
+
+	public OverlayLocation getOverlayLocation() {
+		return _overlay.getLocation(_index);
+	}
 	
 }
