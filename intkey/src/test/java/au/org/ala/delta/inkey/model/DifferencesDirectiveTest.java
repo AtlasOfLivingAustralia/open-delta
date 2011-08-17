@@ -277,5 +277,8 @@ public class DifferencesDirectiveTest extends TestCase {
     
     //TODO test include/exclude characters
     //TODO test include/exclude taxa
+    
+    //TODO test character inapplicable for all taxa
+    //TODO test character unknown for all taxa
 
 }

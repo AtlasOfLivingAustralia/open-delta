@@ -262,7 +262,7 @@ public class IntkeyContext extends AbstractDeltaContext {
      */
     private void createNewDataSet() {
 
-        initializeIdentification();
+        //initializeIdentification();
 
         _dataset = IntkeyDatasetFileReader.readDataSet(_charactersFile, _taxaFile);
 
@@ -784,6 +784,18 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     public MatchType getMatchType() {
         return _matchType;
+    }
+    
+    public void setMatchInapplicables(boolean matchInapplicables) {
+        _matchInapplicables = matchInapplicables;
+    }
+    
+    public void setMatchUnknowns(boolean matchUnknowns) {
+        _matchUnknowns = matchUnknowns;
+    }    
+    
+    public void setMatchType(MatchType matchType) {
+        _matchType = matchType;
     }
 
     // Returns included characters ordered by character number

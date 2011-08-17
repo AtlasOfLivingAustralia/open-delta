@@ -41,10 +41,12 @@ import au.org.ala.delta.model.TextCharacter;
  */
 public class DiffUtils {
 
-    //TODO method documentation
-    //This is the logic used by the differences directive. It is located here to aid
-    //unit testing.
-    public static List<Character> determineDifferingCharactersForTaxa(IntkeyDataset dataset, List<Character> characters, List<Item> taxa, Specimen specimen, boolean matchUnknowns, boolean matchInapplicables, MatchType matchType, boolean omitTextCharacters) {
+    // TODO method documentation
+    // This is the logic used by the differences directive. It is located here
+    // to aid
+    // unit testing.
+    public static List<Character> determineDifferingCharactersForTaxa(IntkeyDataset dataset, List<Character> characters, List<Item> taxa, Specimen specimen, boolean matchUnknowns,
+            boolean matchInapplicables, MatchType matchType, boolean omitTextCharacters) {
         List<Character> differencesList = new ArrayList<Character>();
 
         for (au.org.ala.delta.model.Character ch : characters) {
@@ -129,29 +131,31 @@ public class DiffUtils {
         }
 
         if (countUnknown > 0 && !matchUnknowns) {
-            return false;
+            return countUnknown == taxa.size();
         } else if (countNotApplicable > 0 && !matchInapplicables) {
-            return false;
-        } else if (countTaxaWithCharacterCoded > 1) {
-            if (ch instanceof MultiStateCharacter || ch instanceof IntegerCharacter) {
-                return doCompareMultistateOrIntegerForTaxa(attrs, matchUnknowns, matchInapplicables, matchType);
-            } else if (ch instanceof RealCharacter) {
-                List<RealAttribute> realAttrs = new ArrayList<RealAttribute>();
-                for (Attribute attr : attrs) {
-                    realAttrs.add((RealAttribute) attr);
-                }
-                return doCompareRealForTaxa(realAttrs, matchUnknowns, matchInapplicables, matchType);
-            } else if (ch instanceof TextCharacter) {
-                List<TextAttribute> textAttrs = new ArrayList<TextAttribute>();
-                for (Attribute attr : attrs) {
-                    textAttrs.add((TextAttribute) attr);
-                }
-                return doCompareTextForTaxa(textAttrs, matchUnknowns, matchInapplicables, matchType);
-            } else {
-                throw new RuntimeException("Unrecognised character type");
-            }
+            return countNotApplicable == taxa.size();
         } else {
-            return true;
+            if (countTaxaWithCharacterCoded > 1) {
+                if (ch instanceof MultiStateCharacter || ch instanceof IntegerCharacter) {
+                    return doCompareMultistateOrIntegerForTaxa(attrs, matchUnknowns, matchInapplicables, matchType);
+                } else if (ch instanceof RealCharacter) {
+                    List<RealAttribute> realAttrs = new ArrayList<RealAttribute>();
+                    for (Attribute attr : attrs) {
+                        realAttrs.add((RealAttribute) attr);
+                    }
+                    return doCompareRealForTaxa(realAttrs, matchUnknowns, matchInapplicables, matchType);
+                } else if (ch instanceof TextCharacter) {
+                    List<TextAttribute> textAttrs = new ArrayList<TextAttribute>();
+                    for (Attribute attr : attrs) {
+                        textAttrs.add((TextAttribute) attr);
+                    }
+                    return doCompareTextForTaxa(textAttrs, matchUnknowns, matchInapplicables, matchType);
+                } else {
+                    throw new RuntimeException("Unrecognised character type");
+                }
+            } else {
+                return true;
+            }
         }
     }
 
@@ -500,7 +504,7 @@ public class DiffUtils {
             match = attr1Values.equals(attr2Values);
             break;
         case SUBSET:
-            //is the first a subset of the second
+            // is the first a subset of the second
             match = attr2Values.containsAll(attr1Values);
             break;
         case OVERLAP:
