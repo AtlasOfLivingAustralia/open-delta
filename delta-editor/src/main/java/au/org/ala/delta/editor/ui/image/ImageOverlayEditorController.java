@@ -178,12 +178,24 @@ public class ImageOverlayEditorController {
 		if (!_selection.isHotSpotSelected()) {
 			editOverlay(_selection.getSelectedOverlay());
 		}
+		else {
+			editHotspot(_selection.getSelectedOverlayLocation());
+		}
 	}
 	
 	protected void editOverlay(ImageOverlay overlay) {
 		DeltaEditor editor = (DeltaEditor)Application.getInstance();
 		OverlayEditDialog overlayEditor = new OverlayEditDialog(editor.getMainFrame(), 
 				_selection.getSelectedImage(), overlay);
+		editor.show(overlayEditor);
+	}
+	
+	protected void editHotspot(OverlayLocation location) {
+		DeltaEditor editor = (DeltaEditor)Application.getInstance();
+		ImageOverlay overlay = _selection.getSelectedOverlay();
+		HotspotEditDialog overlayEditor = new HotspotEditDialog(editor.getMainFrame(), 
+				_selection.getSelectedImage(), 
+				overlay, overlay.location.indexOf(location));
 		editor.show(overlayEditor);
 	}
 

@@ -28,6 +28,20 @@ public class OverlayLocation {
         W = w;
         H = h;
     }
+    
+    /**
+     * Copies all of the fields from the supplied overlay.
+     * @param location the OverlayLocation to copy.
+     */
+    public void copy(OverlayLocation location) {
+    	X = location.X;
+    	Y = location.Y;
+    	W = location.W;
+    	H = location.H;
+    	ID = location.ID;
+    	flags = location.flags;
+    	drawType = location.drawType;
+    }
 
     public void clearAll() {
         drawType = OLDrawType.Unknown;
@@ -42,6 +56,15 @@ public class OverlayLocation {
 
     public boolean isColorSet() {
         return (flags & OLOC_FLAG_COLOUR) > 0;
+    }
+    
+    public void setUseCustomColour(boolean useCustomColour) {
+    	if (useCustomColour) {
+            flags |= OLOC_FLAG_COLOUR;
+        } else {
+            flags &= ~OLOC_FLAG_COLOUR;
+            clearColor();
+        }
     }
 
     public boolean isPopup() {
@@ -70,7 +93,7 @@ public class OverlayLocation {
     }
 
     public void clearColor() {
-        flags &= ~(OLOC_FLAG_COLOUR_MASK | OLOC_FLAG_COLOUR_MASK);
+        flags &= ~(OLOC_FLAG_COLOUR_MASK);
     }
 
     public int getColor() {

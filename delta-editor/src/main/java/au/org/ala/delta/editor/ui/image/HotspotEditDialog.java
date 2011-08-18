@@ -2,20 +2,23 @@ package au.org.ala.delta.editor.ui.image;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Window;
 
 import javax.swing.ActionMap;
+import javax.swing.ButtonGroup;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JColorChooser;
 import javax.swing.JDialog;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSpinner;
+import javax.swing.JRadioButton;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.border.BevelBorder;
 import javax.swing.border.TitledBorder;
 
 import org.jdesktop.application.Action;
@@ -24,115 +27,124 @@ import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageOverlay;
-import au.org.ala.delta.model.image.OverlayType;
-import au.org.ala.delta.ui.rtf.RtfEditor;
+import au.org.ala.delta.model.image.OverlayLocation;
+import au.org.ala.delta.model.image.OverlayLocation.OLDrawType;
 
 /**
- * Provides a user interface for editing the details of an image overlay.
+ * Provides a user interface for editing the details of an overlay hotspot.
  */
-public class OverlayEditDialog extends JDialog {
+public class HotspotEditDialog extends JDialog {
 
 	private static final long serialVersionUID = 3460369707621339162L;
-	private ImageOverlay _overlay;
+	private OverlayLocation _hotSpot;
 	private Image _image;
+	private int _index;
+	private ImageOverlay _overlay;
 	private ResourceMap _resources;
 	
 	private JFormattedTextField xDimension;
 	private JFormattedTextField yDimension;
 	private JFormattedTextField wDimension;
 	private JFormattedTextField hDimension;
-	private JSpinner stateNumberSpinner;
-	private RtfEditor textEditor;
-	private JCheckBox chckbxCentreInBox;
-	private JCheckBox chckbxIncludeComments;
-	private JCheckBox chckbxOmitDescription;
-	private JCheckBox chckbxUseIntegralHeight;
+	private JCheckBox popupCheckBox;
+	private JCheckBox useCustomColourCheckBox;
 	private JButton btnOk;
 	private JButton btnCancel;
 	private JButton btnApply;
-	private JLabel stateNumLabel;
 	private JLabel lblImageUnits;
-	private JLabel lblAdditionalText;
+	private JPanel panel_4;
+	private JLabel hotSpotColourLabel;
+	private JButton btnChooseColour;
+	private JRadioButton rdbtnRectangle;
+	private JRadioButton rdbtnEllipse;
 	
-	public OverlayEditDialog(Window parent, Image image, ImageOverlay overlay) {
+	public HotspotEditDialog(Window parent, Image image, ImageOverlay overlay, int hotSpotIndex) {
 		super(parent);
-		setName("overlayEditDialog");
+		setName("hotspotEditDialog");
 		_image = image;
 		_overlay = overlay;
+		_index = hotSpotIndex;
+		_hotSpot = new OverlayLocation();
+		_hotSpot.copy(overlay.getLocation(hotSpotIndex));
 		_resources = Application.getInstance().getContext().getResourceMap();
-		setTitle(_resources.getString("overlayEditDialog.title"));
+		setTitle(_resources.getString("hotSpotEditDialog.title", overlay.stateId));
 		createUI();
 		addEventHandlers();
 		updateGUI();
 	}
 	
 	private void addEventHandlers() {
+		ButtonGroup shapes = new ButtonGroup();
+		shapes.add(rdbtnEllipse);
+		shapes.add(rdbtnRectangle);
+		
 		ActionMap actions = Application.getInstance().getContext().getActionMap(this);
 		btnOk.setAction(actions.get("okOverlayChanges"));
 		btnApply.setAction(actions.get("applyOverlayChanges"));
 		btnCancel.setAction(actions.get("cancelOverlayChanges"));
+		btnChooseColour.setAction(actions.get("displayColourChooser"));
+		popupCheckBox.setAction(actions.get("popupSelected"));
+		useCustomColourCheckBox.setAction(actions.get("useCustomColourSelected"));
+		rdbtnEllipse.setAction(actions.get("ellipseSelected"));
+		rdbtnRectangle.setAction(actions.get("rectangleSelected"));
+		
 	}
 	
 	private void createUI() {
-		
 		JPanel panel = new JPanel();
 		getContentPane().add(panel, BorderLayout.CENTER);
-		
-		stateNumLabel = new JLabel();
-		stateNumLabel.setName("overlayEditStateNumberLabel");
-		
-		stateNumberSpinner = new JSpinner();
-		
-		textEditor = new RtfEditor();
-		textEditor.setBackground(new Color(255, 255, 255));
-		JScrollPane textScroller = new JScrollPane(textEditor);
-		
-		lblAdditionalText = new JLabel();
-		lblAdditionalText.setName("overlayEditAdditionalTextLabel");
 		JPanel panel_1 = new JPanel();
 		panel_1.setBorder(null);
 		
 		JPanel panel_2 = new JPanel();
+		
+		JPanel panel_3 = new JPanel();
+		panel_3.setBorder(new TitledBorder(null, "Hotspot Shape", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		GroupLayout gl_panel = new GroupLayout(panel);
 		gl_panel.setHorizontalGroup(
 			gl_panel.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_panel.createSequentialGroup()
+				.addGroup(Alignment.TRAILING, gl_panel.createSequentialGroup()
 					.addContainerGap()
-					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_panel.createSequentialGroup()
-							.addComponent(panel_2, GroupLayout.DEFAULT_SIZE, 528, Short.MAX_VALUE)
-							.addContainerGap())
-						.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
-							.addGroup(gl_panel.createSequentialGroup()
-								.addComponent(panel_1, GroupLayout.PREFERRED_SIZE, 412, Short.MAX_VALUE)
-								.addContainerGap())
-							.addGroup(gl_panel.createSequentialGroup()
-								.addGroup(gl_panel.createParallelGroup(Alignment.LEADING, false)
-									.addComponent(stateNumberSpinner)
-									.addComponent(stateNumLabel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-								.addGap(19)
-								.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
-									.addComponent(textScroller, GroupLayout.DEFAULT_SIZE, 299, Short.MAX_VALUE)
-									.addComponent(lblAdditionalText))
-								.addContainerGap()))))
+					.addGroup(gl_panel.createParallelGroup(Alignment.TRAILING)
+						.addComponent(panel_1, Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 438, Short.MAX_VALUE)
+						.addComponent(panel_3, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 436, Short.MAX_VALUE)
+						.addComponent(panel_2, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 438, Short.MAX_VALUE))
+					.addContainerGap())
 		);
 		gl_panel.setVerticalGroup(
-			gl_panel.createParallelGroup(Alignment.LEADING)
+			gl_panel.createParallelGroup(Alignment.TRAILING)
 				.addGroup(gl_panel.createSequentialGroup()
-					.addGap(10)
-					.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
-						.addComponent(stateNumLabel)
-						.addComponent(lblAdditionalText))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
-						.addComponent(textScroller, GroupLayout.DEFAULT_SIZE, 88, Short.MAX_VALUE)
-						.addComponent(stateNumberSpinner, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+					.addContainerGap()
+					.addComponent(panel_3, GroupLayout.DEFAULT_SIZE, 98, Short.MAX_VALUE)
 					.addGap(18)
-					.addComponent(panel_1, GroupLayout.PREFERRED_SIZE, 135, GroupLayout.PREFERRED_SIZE)
+					.addComponent(panel_1, GroupLayout.PREFERRED_SIZE, 102, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(panel_2, GroupLayout.PREFERRED_SIZE, 42, GroupLayout.PREFERRED_SIZE)
 					.addContainerGap())
 		);
+		
+		rdbtnRectangle = new JRadioButton("Rectangle");
+		
+		rdbtnEllipse = new JRadioButton("Ellipse");
+		GroupLayout gl_panel_3 = new GroupLayout(panel_3);
+		gl_panel_3.setHorizontalGroup(
+			gl_panel_3.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_panel_3.createSequentialGroup()
+					.addGroup(gl_panel_3.createParallelGroup(Alignment.LEADING)
+						.addComponent(rdbtnRectangle)
+						.addComponent(rdbtnEllipse))
+					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+		);
+		gl_panel_3.setVerticalGroup(
+			gl_panel_3.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_panel_3.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(rdbtnRectangle)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(rdbtnEllipse)
+					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+		);
+		panel_3.setLayout(gl_panel_3);
 		
 		btnOk = new JButton("OK");
 		
@@ -163,29 +175,24 @@ public class OverlayEditDialog extends JDialog {
 		);
 		panel_2.setLayout(gl_panel_2);
 		
-		chckbxCentreInBox = new JCheckBox("Centre in box");
-		chckbxCentreInBox.setName("overlayEditCentreInBoxLabel");
-		chckbxIncludeComments = new JCheckBox("Include comments");
-		chckbxIncludeComments.setName("overlayEditIncludeCommentsLabel");
-		chckbxOmitDescription = new JCheckBox("Omit description");
-		chckbxOmitDescription.setName("overlayEditOmitDescriptionLabel");
-		chckbxUseIntegralHeight = new JCheckBox("Use integral height");
-		chckbxUseIntegralHeight.setName("overlayEditUseIntegralHeightLabel");
+		popupCheckBox = new JCheckBox("Pop up");
+		useCustomColourCheckBox = new JCheckBox("Use custom colour");
 		JPanel dimensionsPanel = new JPanel();
 		String dimensionsTitle = _resources.getString("overlayEditDimensionsLabel.text");
 		dimensionsPanel.setBorder(new TitledBorder(null, dimensionsTitle, TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		
+		panel_4 = new JPanel();
 		GroupLayout gl_panel_1 = new GroupLayout(panel_1);
 		gl_panel_1.setHorizontalGroup(
 			gl_panel_1.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panel_1.createSequentialGroup()
-					.addContainerGap()
+					.addGap(10)
 					.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING)
-						.addComponent(chckbxCentreInBox)
-						.addComponent(chckbxIncludeComments)
-						.addComponent(chckbxOmitDescription)
-						.addComponent(chckbxUseIntegralHeight))
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addComponent(dimensionsPanel, GroupLayout.DEFAULT_SIZE, 205, Short.MAX_VALUE)
+						.addComponent(popupCheckBox)
+						.addComponent(useCustomColourCheckBox)
+						.addComponent(panel_4, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+					.addGap(13)
+					.addComponent(dimensionsPanel, GroupLayout.DEFAULT_SIZE, 248, Short.MAX_VALUE)
 					.addContainerGap())
 		);
 		gl_panel_1.setVerticalGroup(
@@ -193,43 +200,49 @@ public class OverlayEditDialog extends JDialog {
 				.addGroup(gl_panel_1.createSequentialGroup()
 					.addContainerGap()
 					.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING)
-						.addComponent(dimensionsPanel, GroupLayout.PREFERRED_SIZE, 123, GroupLayout.PREFERRED_SIZE)
+						.addComponent(dimensionsPanel, GroupLayout.PREFERRED_SIZE, 91, GroupLayout.PREFERRED_SIZE)
 						.addGroup(gl_panel_1.createSequentialGroup()
-							.addComponent(chckbxCentreInBox)
+							.addComponent(popupCheckBox)
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(chckbxIncludeComments)
+							.addComponent(useCustomColourCheckBox)
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(chckbxOmitDescription)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(chckbxUseIntegralHeight)))
+							.addComponent(panel_4, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
 					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 		);
 		
+		hotSpotColourLabel = new JLabel("");
+		hotSpotColourLabel.setPreferredSize(new Dimension(20, 20));
+		hotSpotColourLabel.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		panel_4.add(hotSpotColourLabel);
+		
+		btnChooseColour = new JButton("Choose Colour");
+		panel_4.add(btnChooseColour);
+		
 		JLabel lblNewLabel = new JLabel();
 		lblNewLabel.setName("overlayEditXLabel");
-		xDimension = numberField();
+		xDimension = new JFormattedTextField();
 		xDimension.setColumns(10);
 		
 		JLabel lblY = new JLabel();
 		lblY.setName("overlayEditYLabel");
-		yDimension = numberField();
+		yDimension = new JFormattedTextField();
 		yDimension.setColumns(10);
 		
 		
 		JLabel lblW = new JLabel();
 		lblW.setName("overlayEditWidthLabel");
-		wDimension = numberField();
+		wDimension = new JFormattedTextField();
 		wDimension.setColumns(10);
 		
 		
 		JLabel lblH = new JLabel();
 		lblH.setName("overlayEditHeightLabel");
-		hDimension = numberField();
+		hDimension = new JFormattedTextField();
 		hDimension.setColumns(10);
 		
 		
 		lblImageUnits = new JLabel();
-		lblImageUnits.setText(_resources.getString("overlayEditImageUnitsLabel.text"));
+		lblImageUnits.setName("overlayEditImageUnitsLabel");
 		GroupLayout gl_dimensionsPanel = new GroupLayout(dimensionsPanel);
 		gl_dimensionsPanel.setHorizontalGroup(
 			gl_dimensionsPanel.createParallelGroup(Alignment.LEADING)
@@ -276,54 +289,43 @@ public class OverlayEditDialog extends JDialog {
 		dimensionsPanel.setLayout(gl_dimensionsPanel);
 		panel_1.setLayout(gl_panel_1);
 		panel.setLayout(gl_panel);
-	}
 	
-	private JFormattedTextField numberField() {
-		JFormattedTextField field = new JFormattedTextField();
-		field.setValue(0);
-		return field;
 	}
 	
 	private void updateGUI() {
-		if (_overlay.isType(OverlayType.OLSTATE)) {
-			stateNumberSpinner.setValue(_overlay.stateId);
+		hotSpotColourLabel.setOpaque(true);
+		if (_hotSpot.drawType == OLDrawType.ellipse) {
+			rdbtnEllipse.setSelected(true);
 		}
 		else {
-			stateNumLabel.setVisible(false);
-			stateNumberSpinner.setVisible(false);
+			rdbtnRectangle.setSelected(true);
 		}
-		textEditor.setText(_overlay.overlayText);
-		chckbxCentreInBox.setSelected(_overlay.centreText());
-		chckbxIncludeComments.setSelected(_overlay.includeComments());
-		chckbxOmitDescription.setSelected(_overlay.omitDescription());
-		chckbxUseIntegralHeight.setSelected(_overlay.integralHeight());
-		wDimension.setValue(_overlay.getWidth());
-		hDimension.setValue(_overlay.getHeight());
+		popupCheckBox.setSelected(_hotSpot.isPopup());
+		useCustomColourCheckBox.setEnabled(false);
+		hotSpotColourLabel.setEnabled(false);
+		btnChooseColour.setEnabled(false);
+		if (_hotSpot.isPopup()) {
+			useCustomColourCheckBox.setEnabled(true);
+			useCustomColourCheckBox.setSelected(_hotSpot.isColorSet());
+			hotSpotColourLabel.setEnabled(true);
+			hotSpotColourLabel.setBackground(new Color(_hotSpot.getColor()));
+			
+			if (_hotSpot.isColorSet()) {
+				btnChooseColour.setEnabled(true);
+			}
+		}
+		
+		wDimension.setValue(_hotSpot.W);
+		hDimension.setValue(_hotSpot.H);
 		String key = "overlayEditImageUnitsLabel.text";
-		if (_overlay.integralHeight()) {
+		if (_hotSpot.integralHeight()) {
 			key = "overlayEditLinesLabel.text";
 		}
 		lblImageUnits.setText(_resources.getString(key));
 		
-		if (_overlay.isButton()) {
-			if (!_overlay.isType(OverlayType.OLIMAGENOTES)) {
-				lblAdditionalText.setEnabled(false);
-				textEditor.setEnabled(false);
-			}
-			
-			wDimension.setEnabled(false);
-			wDimension.setValue(null);
-			hDimension.setEnabled(false);
-			hDimension.setValue(null);
-			chckbxCentreInBox.setEnabled(false);
-			chckbxIncludeComments.setEnabled(false);
-			chckbxOmitDescription.setEnabled(false);
-			chckbxUseIntegralHeight.setEnabled(false);
-			xDimension.setEnabled(true);
-			yDimension.setEnabled(true);
-		}
-		xDimension.setValue(_overlay.getX());
-		yDimension.setValue(_overlay.getY());
+		xDimension.setValue(_hotSpot.X);
+		yDimension.setValue(_hotSpot.Y);
+		
 		
 	}
 	
@@ -338,27 +340,48 @@ public class OverlayEditDialog extends JDialog {
 		setVisible(false);
 	}
 	
+	@Action
+	public void displayColourChooser() {
+		Color c = JColorChooser.showDialog(this, "Hotspot color", new Color(_hotSpot.getColor()));
+		_hotSpot.setColor(c.getRGB());
+		updateGUI();
+	}
+	
+	@Action
+	public void popupSelected() {
+		_hotSpot.setPopup(popupCheckBox.isSelected());
+		updateGUI();
+	}
+	
+	@Action
+	public void useCustomColourSelected() {
+		_hotSpot.setUseCustomColour(useCustomColourCheckBox.isSelected());
+		updateGUI();
+	}
+	
+	@Action
+	public void ellipseSelected() {
+		_hotSpot.drawType = OLDrawType.ellipse;
+	}
+
+	@Action
+	public void rectangleSelected() {
+		_hotSpot.drawType = OLDrawType.rectangle;
+	}
+		
+	
 	private void applyChanges() {
-		if (!_overlay.isButton()) {
-			if (_overlay.isType(OverlayType.OLSTATE)) {
-				_overlay.stateId = (Integer)stateNumberSpinner.getValue();
-			}
-			_overlay.setCentreText(chckbxCentreInBox.isSelected());
-			_overlay.setIncludeComments(chckbxIncludeComments.isSelected());
-			_overlay.setOmitDescription(chckbxOmitDescription.isSelected());
-			_overlay.setIntegralHeight(chckbxUseIntegralHeight.isSelected());
-			_overlay.setWidth((Integer)wDimension.getValue());
-			_overlay.setHeight((Integer)hDimension.getValue());
-			
-		}
-		if (!_overlay.isButton() || _overlay.isType(OverlayType.OLIMAGENOTES)) {
-			_overlay.overlayText = textEditor.getRtfTextBody();
-		}
-		_overlay.setX((Integer)xDimension.getValue());
-		_overlay.setY((Integer)yDimension.getValue());
 		
+		_hotSpot.setCentreText(popupCheckBox.isSelected());
+		_hotSpot.setIncludeComments(useCustomColourCheckBox.isSelected());
+		_hotSpot.setW((Short)wDimension.getValue());
+		_hotSpot.setH((Short)hDimension.getValue());
+		
+		_hotSpot.setX((Short)xDimension.getValue());
+		_hotSpot.setY((Short)yDimension.getValue());
+		
+		_overlay.getLocation(_index).copy(_hotSpot);
 		_image.updateOverlay(_overlay);
-		
 	}
 	
 	@Action
