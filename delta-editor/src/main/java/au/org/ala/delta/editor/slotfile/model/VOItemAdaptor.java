@@ -15,6 +15,7 @@
 package au.org.ala.delta.editor.slotfile.model;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.NotImplementedException;
 
@@ -113,26 +114,6 @@ public class VOItemAdaptor extends ImageHolderAdaptor implements ItemData {
 		return _voItemDesc;
 	}
 
-    @Override
-    public String getLinkFileDataWithSubjects() {
-        throw new NotImplementedException();
-    }
-
-    @Override
-    public void setLinkFileDataWithSubjects(String linkFileData) {
-        throw new NotImplementedException();
-    }
-
-    @Override
-    public String getLinkFileDataNoSubjects() {
-        throw new NotImplementedException();
-    }
-
-    @Override
-    public void setLinkFileDataNoSubjects(String linkFileData) {
-        throw new NotImplementedException();
-    }
-
 	@Override
 	protected VOImageHolderDesc getImageHolder() {
 		return _voItemDesc;
@@ -142,6 +123,16 @@ public class VOItemAdaptor extends ImageHolderAdaptor implements ItemData {
 	protected DeltaVOP getVOP() {
 		return _vop;
 	}
+
+    @Override
+    public Map<String, String> getLinkFiles() {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void setLinkFiles(Map<String, String> linkFiles) {
+        throw new NotImplementedException();
+    }
     
    
 }

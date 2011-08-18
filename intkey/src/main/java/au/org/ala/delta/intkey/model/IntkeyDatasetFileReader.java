@@ -792,7 +792,7 @@ public final class IntkeyDatasetFileReader {
                 String imagesData = charactersImageData.get(i);
 
                 if (imagesData != null) {
-                    List<Pair<String, String>> imageData = parseImagesData(imagesData);
+                    List<Pair<String, String>> imageData = parseFileData(imagesData);
                     for (Pair<String, String> pair : imageData) {
                         ch.addImage(pair.getFirst(), pair.getSecond());
                     }
@@ -813,7 +813,7 @@ public final class IntkeyDatasetFileReader {
                 String imagesData = taxaImageData.get(i);
 
                 if (imagesData != null) {
-                    List<Pair<String, String>> imageData = parseImagesData(imagesData);
+                    List<Pair<String, String>> imageData = parseFileData(imagesData);
                     for (Pair<String, String> pair : imageData) {
                         taxon.addImage(pair.getFirst(), pair.getSecond());
                     }
@@ -830,7 +830,7 @@ public final class IntkeyDatasetFileReader {
             String startupImagesData = readReferencedString(charBinFile, imageDataRecord);
             if (!StringUtils.isEmpty(startupImagesData)) {
                 List<Image> startupImages = new ArrayList<Image>();
-                List<Pair<String, String>> imageData = parseImagesData(startupImagesData);
+                List<Pair<String, String>> imageData = parseFileData(startupImagesData);
                 for (Pair<String, String> pair : imageData) {
                     Image image = createImage(pair.getFirst(), pair.getSecond(), ImageType.IMAGE_STARTUP);
                     startupImages.add(image);
@@ -848,7 +848,7 @@ public final class IntkeyDatasetFileReader {
             String characterKeywordImagesData = readReferencedString(charBinFile, imageDataRecord);
             if (!StringUtils.isEmpty(characterKeywordImagesData)) {
                 List<Image> characterKeywordImages = new ArrayList<Image>();
-                List<Pair<String, String>> imageData = parseImagesData(characterKeywordImagesData);
+                List<Pair<String, String>> imageData = parseFileData(characterKeywordImagesData);
                 for (Pair<String, String> pair : imageData) {
                     Image image = createImage(pair.getFirst(), pair.getSecond(), ImageType.IMAGE_CHARACTER_KEYWORD);
                     characterKeywordImages.add(image);
@@ -866,7 +866,7 @@ public final class IntkeyDatasetFileReader {
             String taxonKeywordImagesData = readReferencedString(charBinFile, imageDataRecord);
             if (!StringUtils.isEmpty(taxonKeywordImagesData)) {
                 List<Image> taxonKeywordImages = new ArrayList<Image>();
-                List<Pair<String, String>> imageData = parseImagesData(taxonKeywordImagesData);
+                List<Pair<String, String>> imageData = parseFileData(taxonKeywordImagesData);
                 for (Pair<String, String> pair : imageData) {
                     Image image = createImage(pair.getFirst(), pair.getSecond(), ImageType.IMAGE_TAXON_KEYWORD);
                     taxonKeywordImages.add(image);
@@ -998,29 +998,50 @@ public final class IntkeyDatasetFileReader {
     private static void readTaxonLinksFiles(ItemsFileHeader itemFileHeader, BinFile itemBinFile, List<Item> taxa) {
         int numItems = itemFileHeader.getNItem();
 
-        List<String> linksFileDataWithSubjects = null;
-        List<String> linksFileDataNoSubjects = null;
+        List<String> firstLinksFileData = null;
+        List<String> secondLinksFileData = null;
 
         if (itemFileHeader.getRpTlinks()[0] != 0) {
-            linksFileDataWithSubjects = readStringList(itemBinFile, itemFileHeader.getRpTlinks()[0], numItems);
+            firstLinksFileData = readStringList(itemBinFile, itemFileHeader.getRpTlinks()[0], numItems);
         }
 
         if (itemFileHeader.getRpTlinks()[1] != 0) {
-            linksFileDataNoSubjects = readStringList(itemBinFile, itemFileHeader.getRpTlinks()[1], numItems);
+            secondLinksFileData = readStringList(itemBinFile, itemFileHeader.getRpTlinks()[1], numItems);
         }
 
         for (int i = 0; i < numItems; i++) {
             Item it = taxa.get(i);
+            
+            Map<String, String> taxonLinks = new HashMap<String, String>();
 
-            if (linksFileDataWithSubjects != null) {
-                it.setLinkFileDataWithSubjects(linksFileDataWithSubjects.get(i));
+            if (firstLinksFileData != null) {
+                List<Pair<String, String>> parsedLinks = parseFileData(firstLinksFileData.get(i));
+                for (Pair<String, String> pair: parsedLinks) {
+                    String fileName = pair.getFirst();
+                    String subject = pair.getSecond();
+                    subject = subject.replace("<", "");
+                    subject = subject.replace(">", "");
+                    subject = subject.replace("@subject", "");
+                    subject = subject.trim();
+                    taxonLinks.put(fileName, subject);
+                }
             }
 
-            if (linksFileDataNoSubjects != null) {
-                it.setLinkFileDataNoSubjects(linksFileDataNoSubjects.get(i));
+            if (secondLinksFileData != null) {
+                List<Pair<String, String>> parsedLinks = parseFileData(secondLinksFileData.get(i));
+                for (Pair<String, String> pair: parsedLinks) {
+                    String fileName = pair.getFirst();
+                    String subject = pair.getSecond();
+                    subject = subject.replace("<", "");
+                    subject = subject.replace(">", "");
+                    subject = subject.replace("@subject", "");
+                    subject = subject.trim();
+                    taxonLinks.put(fileName, subject);
+                }
             }
+            
+            it.setLinkFiles(taxonLinks);
         }
-
     }
 
     public static List<Attribute> readAttributesForCharacter(ItemsFileHeader itemFileHeader, BinFile itemBinFile, List<Character> characters, List<Item> taxa, int charNo) {
@@ -1309,36 +1330,43 @@ public final class IntkeyDatasetFileReader {
         return (int) (Math.ceil((double) numBytes / (double) Constants.RECORD_LENGTH_BYTES));
     }
 
-    private static List<Pair<String, String>> parseImagesData(String imagesData) {
+    // parse a string containing filenames and metadata data in the format 
+    // filename {<file information>} filename {<file information>} ...
+    // where <file information> is optional
+    // and return a list of filename and file information pairs.
+    private static List<Pair<String, String>> parseFileData(String fileData) {
         List<Pair<String, String>> retList = new ArrayList<Pair<String, String>>();
 
-        List<String> separateImageDataList = separateImageDataStrings(imagesData);
+        List<String> separateFileDataList = separateFileDataStrings(fileData);
 
-        for (String strImageData : separateImageDataList) {
+        for (String sepFileData : separateFileDataList) {
             String fileName = null;
-            String strOverlayData = null;
+            String fileInfo = null;
 
-            if (strImageData.contains("<")) {
-                int firstOpenBracketIndex = strImageData.indexOf('<');
-                fileName = strImageData.substring(0, firstOpenBracketIndex).trim();
-                strOverlayData = strImageData.substring(firstOpenBracketIndex).trim();
+            if (sepFileData.contains("<")) {
+                int firstOpenBracketIndex = sepFileData.indexOf('<');
+                fileName = sepFileData.substring(0, firstOpenBracketIndex).trim();
+                fileInfo = sepFileData.substring(firstOpenBracketIndex).trim();
             } else {
-                fileName = strImageData;
+                fileName = sepFileData;
             }
 
-            retList.add(new Pair<String, String>(fileName, strOverlayData));
+            retList.add(new Pair<String, String>(fileName, fileInfo));
         }
 
         return retList;
     }
 
-    private static List<String> separateImageDataStrings(String imagesData) {
-        List<String> imagesDataList = new ArrayList<String>();
+    // take a string with format: "filename <file information> <more file information> ..."
+    // and return a list with two items, the first being the filename, and the second being all 
+    // of the file information.
+    private static List<String> separateFileDataStrings(String filesData) {
+        List<String> filesDataList = new ArrayList<String>();
 
         int endLastSubstring = -1;
         boolean inBracket = false;
 
-        String[] tokens = imagesData.split(" ");
+        String[] tokens = filesData.split(" ");
 
         for (int i = 0; i < tokens.length; i++) {
             String token = tokens[i];
@@ -1349,20 +1377,20 @@ public final class IntkeyDatasetFileReader {
                 inBracket = false;
             } else if (i > 0 && !inBracket) {
                 String[] subList = Arrays.copyOfRange(tokens, endLastSubstring + 1, i);
-                imagesDataList.add(StringUtils.join(subList, " "));
+                filesDataList.add(StringUtils.join(subList, " "));
                 endLastSubstring = i - 1;
             }
 
             if (i == tokens.length - 1) {
                 String[] subList = Arrays.copyOfRange(tokens, endLastSubstring + 1, i + 1);
-                imagesDataList.add(StringUtils.join(subList, " "));
+                filesDataList.add(StringUtils.join(subList, " "));
                 endLastSubstring = i;
                 continue;
             }
 
         }
 
-        return imagesDataList;
+        return filesDataList;
     }
 
     private static Image createImage(String fileName, String comments, int imageType) {

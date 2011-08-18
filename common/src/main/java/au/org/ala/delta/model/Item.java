@@ -16,6 +16,7 @@ package au.org.ala.delta.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -113,21 +114,13 @@ public class Item implements AttributeObserver, ImageObserver, Illustratable, Co
 		notifyObservers();
 	}
 	
-    public String getLinkFileDataWithSubjects() {
-        return _impl.getLinkFileDataWithSubjects();
-    }
-
-    public void setLinkFileDataWithSubjects(String linkFileData) {
-        _impl.setLinkFileDataWithSubjects(linkFileData);
-    }
-
-    public String getLinkFileDataNoSubjects() {
-        return _impl.getLinkFileDataNoSubjects();
-    }
-
-    public void setLinkFileDataNoSubjects(String linkFileData) {
-        _impl.setLinkFileDataNoSubjects(linkFileData);
-    }
+	public Map<String, String> getLinkFiles() {
+	    return _impl.getLinkFiles();
+	}
+	
+	public void setLinkFiles(Map<String, String> linkFiles) {
+	    _impl.setLinkFiles(linkFiles);
+	}
     
     @Override
     public Image addImage(String fileName, String comments) {

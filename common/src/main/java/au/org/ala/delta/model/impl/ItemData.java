@@ -1,6 +1,7 @@
 package au.org.ala.delta.model.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
@@ -22,13 +23,9 @@ public interface ItemData {
 	
 	void setVariant(boolean variant);
 	
-    String getLinkFileDataWithSubjects();
-    
-    void setLinkFileDataWithSubjects(String linkFileData);
-    
-    String getLinkFileDataNoSubjects();
-    
-    void setLinkFileDataNoSubjects(String linkFileData);
+	Map<String, String> getLinkFiles();
+	
+	void setLinkFiles(Map<String, String> linkFiles);
 
 	Image addImage(String fileName, String comments);
 	

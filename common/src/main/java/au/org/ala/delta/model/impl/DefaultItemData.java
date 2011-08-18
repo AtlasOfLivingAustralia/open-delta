@@ -21,9 +21,8 @@ public class DefaultItemData implements ItemData {
 
     private String _description;
     private boolean _variant;
-    private String _linkFileDataWithSubjects;
-    private String _linkFileDataNoSubjects;
-
+    
+    private Map<String, String> _linkFiles = new HashMap<String, String>();
     private Map<Character, Attribute> _attributes = new HashMap<Character, Attribute>();
     private List<Image> _images = new ArrayList<Image>();
     
@@ -68,27 +67,17 @@ public class DefaultItemData implements ItemData {
     public void setVariant(boolean variant) {
         _variant = variant;
     }
-
-    @Override
-    public String getLinkFileDataWithSubjects() {
-        return _linkFileDataWithSubjects;
-    }
-
-    @Override
-    public void setLinkFileDataWithSubjects(String linkFileData) {
-        _linkFileDataWithSubjects = linkFileData;
-    }
-
-    @Override
-    public String getLinkFileDataNoSubjects() {
-        return _linkFileDataNoSubjects;
-    }
-
-    @Override
-    public void setLinkFileDataNoSubjects(String linkFileData) {
-        _linkFileDataNoSubjects = linkFileData;
+    
+    @Override 
+    public Map<String, String> getLinkFiles() {
+        return new HashMap<String, String>(_linkFiles);
     }
     
+    @Override
+    public void setLinkFiles(Map<String, String> linkFiles) {
+        _linkFiles = new HashMap<String, String>(linkFiles);
+    }
+
     @Override
     public Image addImage(String fileName, String comments) {
         DefaultImageData imageData = new DefaultImageData(fileName);
