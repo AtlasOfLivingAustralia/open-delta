@@ -10,7 +10,6 @@ import javax.swing.ActionMap;
 import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
@@ -56,7 +55,6 @@ public class ImageOverlayEditorController {
 	private void disableActions() {
 		enableStateOverlays();
 		Illustratable subject = _selection.getSelectedImage().getSubject();
-		_actions.get("displayImageSettings").setEnabled(false);
 		
 		if (isCharacterIllustrated()) {
 			if (!((Character)subject).hasNotes()) {
@@ -218,7 +216,9 @@ public class ImageOverlayEditorController {
 
 	@Action
 	public void displayImageSettings() {
-		throw new NotImplementedException();
+		DeltaEditor editor = (DeltaEditor)Application.getInstance();
+		ImageSettingsDialog dialog = new ImageSettingsDialog(editor.getMainFrame(), _imageSettings);
+		editor.show(dialog);
 	}
 
 	@Action

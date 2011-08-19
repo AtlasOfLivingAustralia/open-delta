@@ -342,7 +342,8 @@ public class HotspotEditDialog extends JDialog {
 	
 	@Action
 	public void displayColourChooser() {
-		Color c = JColorChooser.showDialog(this, "Hotspot color", new Color(_hotSpot.getColor()));
+		String title = _resources.getString("hotSpotColourChooser.title");
+		Color c = JColorChooser.showDialog(this, title, new Color(_hotSpot.getColor()));
 		_hotSpot.setColor(c.getRGB());
 		updateGUI();
 	}

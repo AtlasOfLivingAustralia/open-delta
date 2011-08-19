@@ -1,31 +1,110 @@
 package au.org.ala.delta.editor.ui.image;
 
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GraphicsEnvironment;
+import java.awt.Window;
 
-import javax.swing.JDialog;
+import javax.swing.ActionMap;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
-import javax.swing.JPanel;
-import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.border.TitledBorder;
-import javax.swing.JTextField;
 import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JComboBox;
 import javax.swing.JCheckBox;
+import javax.swing.JColorChooser;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SwingConstants;
-import java.awt.Dimension;
 import javax.swing.border.BevelBorder;
+import javax.swing.border.TitledBorder;
 
+import org.jdesktop.application.Action;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ResourceMap;
+
+import au.org.ala.delta.model.image.ImageSettings;
+
+/**
+ * Allows the user to edit image settings (fonts, defaults when creating
+ * new overlays and the image path).
+ */
 public class ImageSettingsDialog extends JDialog {
 	
 	private static final long serialVersionUID = 8761867230419524659L;
-	private JTextField textField;
+	
+	private ImageSettings _imageSettings;
+	private ResourceMap _resources;
+	
+	private JTextField imagePathTextField;
+	private JComboBox buttonFontCombo;
 	private JComboBox defaultFontCombo;
-
-	public ImageSettingsDialog() {
-		
+	private JComboBox defaultSizeCombo;
+	private JComboBox featureSizeCombo;
+	private JComboBox buttonSizeCombo;
+	private JCheckBox defaultBoldCheckBox;
+	private JCheckBox buttonBoldCheckBox;
+	private JCheckBox defaultItalicCheckBox;
+	private JCheckBox featureItalicCheckBox;
+	private JCheckBox buttonItalicCheckBox;
+	private JTextField sampleTextField;
+	private JCheckBox chckbxSaveSampleAs;
+	private JCheckBox chckbxCentreInBox;
+	private JCheckBox chckbxIncludeComments;
+	private JCheckBox chckbxOmitDescription;
+	private JCheckBox chckbxUseIntegralHeight;
+	private JCheckBox chckbxHotspotsPopUp;
+	private JCheckBox chckbxCustomPopupColour;
+	private JLabel label;
+	private JButton chooseColourButton;
+	private JComboBox comboBox;
+	private JButton imagePathButton;
+	private JComboBox featureFontCombo;
+	private JCheckBox featureBoldCheckBox;
+	private JButton btnOk;
+	private JButton btnCancel;
+	private JButton btnApply;
+	
+	public ImageSettingsDialog(Window parent, ImageSettings settings) {
+		super(parent);
+		_imageSettings = settings;
+		_resources = Application.getInstance().getContext().getResourceMap();
 		createUI();
+		pack();
+		
+		updateGUI();
+		addEventHandlers();
+	}
+	
+	private void addEventHandlers() {
+		ActionMap actions = Application.getInstance().getContext().getActionMap(this);
+		btnOk.setAction(actions.get("okImageSettingsChanges"));
+		btnApply.setAction(actions.get("applyImageSettingsChanges"));
+		btnCancel.setAction(actions.get("cancelImageSettingsChanges"));
+		
+		javax.swing.Action defaultFontChange = actions.get("defaultFontPropertyChanged");
+		defaultFontCombo.setAction(defaultFontChange);
+		defaultSizeCombo.setAction(defaultFontChange);
+		defaultBoldCheckBox.setAction(defaultFontChange);
+		defaultItalicCheckBox.setAction(defaultFontChange);
+		
+		javax.swing.Action featureFontChange = actions.get("featureFontPropertyChanged");
+		featureFontCombo.setAction(featureFontChange);
+		featureSizeCombo.setAction(featureFontChange);
+		featureBoldCheckBox.setAction(featureFontChange);
+		featureItalicCheckBox.setAction(featureFontChange);
+		
+		javax.swing.Action buttonFontChange = actions.get("buttonFontPropertyChanged");
+		buttonFontCombo.setAction(buttonFontChange);
+		buttonSizeCombo.setAction(buttonFontChange);
+		buttonBoldCheckBox.setAction(buttonFontChange);
+		buttonItalicCheckBox.setAction(buttonFontChange);
+		
 	}
 
 	private void createUI() {
@@ -68,42 +147,42 @@ public class ImageSettingsDialog extends JDialog {
 					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 		);
 		
-		JButton btnOk = new JButton("Ok");
+		btnOk = new JButton("Ok");
 		buttonPanel.add(btnOk);
 		
-		JButton btnCancel = new JButton("Cancel");
+		btnCancel = new JButton("Cancel");
 		buttonPanel.add(btnCancel);
 		
-		JButton btnApply = new JButton("Apply");
+		btnApply = new JButton("Apply");
 		btnApply.setHorizontalAlignment(SwingConstants.RIGHT);
 		buttonPanel.add(btnApply);
 		
-		JCheckBox chckbxCentreInBox = new JCheckBox("Centre in box");
+		chckbxCentreInBox = new JCheckBox("Centre in box");
 		
-		JCheckBox chckbxIncludeComments = new JCheckBox("Include Comments");
+		chckbxIncludeComments = new JCheckBox("Include Comments");
 		
-		JCheckBox chckbxOmitDescription = new JCheckBox("Omit description");
+		chckbxOmitDescription = new JCheckBox("Omit description");
 		
-		JCheckBox chckbxUseIntegralHeight = new JCheckBox("Use integral height");
+		chckbxUseIntegralHeight = new JCheckBox("Use integral height");
 		
-		JCheckBox chckbxHotspotsPopUp = new JCheckBox("Hotspots pop up");
+		chckbxHotspotsPopUp = new JCheckBox("Hotspots pop up");
 		
-		JCheckBox chckbxCustomPopupColour = new JCheckBox("Custom popup colour");
+		chckbxCustomPopupColour = new JCheckBox("Custom popup colour");
 		
 		JPanel panel = new JPanel();
 		
-		JLabel label = new JLabel("");
+		label = new JLabel("");
 		label.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		label.setPreferredSize(new Dimension(25, 25));
 		label.setOpaque(true);
 		label.setEnabled(false);
 		
-		JButton button = new JButton("Choose Colour");
-		button.setEnabled(false);
+		chooseColourButton = new JButton("Choose Colour");
+		chooseColourButton.setEnabled(false);
 		
 		JLabel lblButtonAlignment = new JLabel("Button alignment");
 		
-		JComboBox comboBox = new JComboBox();
+		comboBox = new JComboBox();
 		GroupLayout gl_overlayDefaultsPanel = new GroupLayout(overlayDefaultsPanel);
 		gl_overlayDefaultsPanel.setHorizontalGroup(
 			gl_overlayDefaultsPanel.createParallelGroup(Alignment.LEADING)
@@ -153,7 +232,7 @@ public class ImageSettingsDialog extends JDialog {
 					.addContainerGap()
 					.addComponent(label, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(button)
+					.addComponent(chooseColourButton)
 					.addGap(68))
 		);
 		gl_panel.setVerticalGroup(
@@ -161,7 +240,7 @@ public class ImageSettingsDialog extends JDialog {
 				.addGroup(gl_panel.createSequentialGroup()
 					.addContainerGap()
 					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
-						.addComponent(button)
+						.addComponent(chooseColourButton)
 						.addComponent(label, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 		);
@@ -176,90 +255,92 @@ public class ImageSettingsDialog extends JDialog {
 		
 		JLabel lblItalic = new JLabel("Italic");
 		
-		JLabel lblDefault = new JLabel("Default:");
+		JLabel featureLabel = new JLabel("Feature:");
+		
+		buttonFontCombo = new JComboBox();
+		buttonFontCombo.setModel(new FontFamilyModel());
+		
+		featureSizeCombo = new JComboBox();
+		featureSizeCombo.setModel(new FontSizeModel());
+		
+		buttonBoldCheckBox = new JCheckBox("");
+		
+		featureItalicCheckBox = new JCheckBox("");
+		
+		JLabel buttonLabel = new JLabel("Button:");
+		
+		featureFontCombo = new JComboBox();
+		featureFontCombo.setModel(new FontFamilyModel());
+		
+		buttonSizeCombo = new JComboBox();
+		buttonSizeCombo.setModel(new FontSizeModel());
+		
+		featureBoldCheckBox = new JCheckBox("");
+		
+		buttonItalicCheckBox = new JCheckBox("");
+		
+		JLabel defaultLabel = new JLabel("Default:");
 		
 		defaultFontCombo = new JComboBox();
+		defaultFontCombo.setModel(new FontFamilyModel());
 		
-		JComboBox defaultSizeCombo = new JComboBox();
+		defaultSizeCombo = new JComboBox();
+		defaultSizeCombo.setModel(new FontSizeModel());
 		
-		JCheckBox defaultBoldCheckBox = new JCheckBox("");
+		defaultBoldCheckBox = new JCheckBox("");
 		
-		JCheckBox defaultItalicCheckBox = new JCheckBox("");
-		
-		JLabel lblFeature = new JLabel("Feature:");
-		
-		JComboBox featureFontCombo = new JComboBox();
-		
-		JComboBox featureSizeCombo = new JComboBox();
-		
-		JCheckBox featureBoldCheckBox = new JCheckBox("");
-		
-		JCheckBox featureItalicCheckBox = new JCheckBox("");
-		
-		JLabel lblButton = new JLabel("Button:");
-		
-		JComboBox buttonFontCombo = new JComboBox();
-		
-		JComboBox buttonSizeCombo = new JComboBox();
-		
-		JCheckBox buttonBoldCheckBox = new JCheckBox("");
-		
-		JCheckBox buttonItalicCheckBox = new JCheckBox("");
+		defaultItalicCheckBox = new JCheckBox("");
 		
 		JLabel lblSample = new JLabel("Sample:");
 		
-		JTextField lblNewLabel = new JTextField("");
+		sampleTextField = new JTextField("");
 		
-		JCheckBox chckbxSaveSampleAs = new JCheckBox("Save sample as comment");
+		chckbxSaveSampleAs = new JCheckBox("Save sample as comment");
 		
 		
 		GroupLayout gl_overlayFontDefaultsPanel = new GroupLayout(overlayFontDefaultsPanel);
 		gl_overlayFontDefaultsPanel.setHorizontalGroup(
 			gl_overlayFontDefaultsPanel.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_overlayFontDefaultsPanel.createSequentialGroup()
+					.addContainerGap()
 					.addGroup(gl_overlayFontDefaultsPanel.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_overlayFontDefaultsPanel.createSequentialGroup()
 							.addGroup(gl_overlayFontDefaultsPanel.createParallelGroup(Alignment.LEADING)
+								.addComponent(defaultLabel)
+								.addComponent(featureLabel)
+								.addComponent(buttonLabel))
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addGroup(gl_overlayFontDefaultsPanel.createParallelGroup(Alignment.TRAILING)
+								.addComponent(lblFontName, 0, 345, Short.MAX_VALUE)
 								.addGroup(gl_overlayFontDefaultsPanel.createSequentialGroup()
-									.addGroup(gl_overlayFontDefaultsPanel.createParallelGroup(Alignment.LEADING)
-										.addComponent(lblButton)
-										.addComponent(lblDefault))
-									.addPreferredGap(ComponentPlacement.RELATED)
 									.addGroup(gl_overlayFontDefaultsPanel.createParallelGroup(Alignment.TRAILING)
-										.addComponent(lblFontName, 0, 334, Short.MAX_VALUE)
-										.addGroup(gl_overlayFontDefaultsPanel.createSequentialGroup()
-											.addGroup(gl_overlayFontDefaultsPanel.createParallelGroup(Alignment.TRAILING)
-												.addComponent(buttonFontCombo, Alignment.LEADING, 0, 328, Short.MAX_VALUE)
-												.addComponent(featureFontCombo, 0, 328, Short.MAX_VALUE))
-											.addPreferredGap(ComponentPlacement.RELATED))))
-								.addGroup(gl_overlayFontDefaultsPanel.createSequentialGroup()
-									.addComponent(lblFeature)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(defaultFontCombo, 0, 328, Short.MAX_VALUE)
+										.addComponent(defaultFontCombo, Alignment.LEADING, 0, 339, Short.MAX_VALUE)
+										.addComponent(featureFontCombo, 0, 339, Short.MAX_VALUE)
+										.addComponent(buttonFontCombo, 0, 339, Short.MAX_VALUE))
 									.addPreferredGap(ComponentPlacement.RELATED)))
 							.addGroup(gl_overlayFontDefaultsPanel.createParallelGroup(Alignment.LEADING)
-								.addComponent(lblSize, 0, 83, Short.MAX_VALUE)
-								.addComponent(buttonSizeCombo, 0, 83, Short.MAX_VALUE)
-								.addComponent(defaultSizeCombo, 0, 83, Short.MAX_VALUE)
-								.addComponent(featureSizeCombo, 0, 83, Short.MAX_VALUE)))
+								.addComponent(lblSize, 0, 94, Short.MAX_VALUE)
+								.addComponent(defaultSizeCombo, 0, 94, Short.MAX_VALUE)
+								.addComponent(featureSizeCombo, 0, 94, Short.MAX_VALUE)
+								.addComponent(buttonSizeCombo, 0, 94, Short.MAX_VALUE)))
 						.addGroup(gl_overlayFontDefaultsPanel.createSequentialGroup()
 							.addComponent(lblSample)
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addGroup(gl_overlayFontDefaultsPanel.createParallelGroup(Alignment.LEADING)
 								.addComponent(chckbxSaveSampleAs)
-								.addComponent(lblNewLabel, GroupLayout.DEFAULT_SIZE, 418, Short.MAX_VALUE))))
+								.addComponent(sampleTextField, GroupLayout.DEFAULT_SIZE, 440, Short.MAX_VALUE))))
 					.addGap(18)
-					.addGroup(gl_overlayFontDefaultsPanel.createParallelGroup(Alignment.LEADING)
-						.addComponent(featureBoldCheckBox, 0, 50, Short.MAX_VALUE)
-						.addComponent(buttonBoldCheckBox, GroupLayout.PREFERRED_SIZE, 63, GroupLayout.PREFERRED_SIZE)
+					.addGroup(gl_overlayFontDefaultsPanel.createParallelGroup(Alignment.LEADING, false)
+						.addComponent(featureBoldCheckBox, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
 						.addComponent(defaultBoldCheckBox, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
+						.addComponent(buttonBoldCheckBox, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
 						.addComponent(lblBold, GroupLayout.PREFERRED_SIZE, 46, GroupLayout.PREFERRED_SIZE))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_overlayFontDefaultsPanel.createParallelGroup(Alignment.TRAILING)
-						.addComponent(featureItalicCheckBox, Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 63, GroupLayout.PREFERRED_SIZE)
-						.addComponent(defaultItalicCheckBox, Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 63, GroupLayout.PREFERRED_SIZE)
+						.addComponent(buttonItalicCheckBox, Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
+						.addComponent(featureItalicCheckBox, Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
 						.addComponent(lblItalic, Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 50, GroupLayout.PREFERRED_SIZE)
-						.addComponent(buttonItalicCheckBox, Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE))
+						.addComponent(defaultItalicCheckBox, Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE))
 					.addContainerGap())
 		);
 		gl_overlayFontDefaultsPanel.setVerticalGroup(
@@ -274,61 +355,176 @@ public class ImageSettingsDialog extends JDialog {
 					.addGap(10)
 					.addGroup(gl_overlayFontDefaultsPanel.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_overlayFontDefaultsPanel.createParallelGroup(Alignment.BASELINE)
-							.addComponent(lblButton)
-							.addComponent(buttonFontCombo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-							.addComponent(buttonSizeCombo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-						.addComponent(buttonItalicCheckBox)
-						.addComponent(buttonBoldCheckBox))
+							.addComponent(defaultFontCombo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addComponent(defaultSizeCombo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addComponent(defaultLabel))
+						.addComponent(defaultItalicCheckBox)
+						.addComponent(defaultBoldCheckBox))
 					.addGap(10)
 					.addGroup(gl_overlayFontDefaultsPanel.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_overlayFontDefaultsPanel.createParallelGroup(Alignment.BASELINE)
 							.addComponent(featureFontCombo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-							.addComponent(lblDefault)
-							.addComponent(defaultSizeCombo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-						.addComponent(defaultItalicCheckBox)
+							.addComponent(featureSizeCombo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addComponent(featureLabel))
+						.addComponent(featureItalicCheckBox)
 						.addComponent(featureBoldCheckBox))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_overlayFontDefaultsPanel.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_overlayFontDefaultsPanel.createSequentialGroup()
 							.addGroup(gl_overlayFontDefaultsPanel.createParallelGroup(Alignment.BASELINE)
-								.addComponent(defaultFontCombo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-								.addComponent(featureSizeCombo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-								.addComponent(lblFeature))
+								.addComponent(buttonSizeCombo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+								.addComponent(buttonFontCombo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+								.addComponent(buttonLabel))
 							.addGap(18)
 							.addGroup(gl_overlayFontDefaultsPanel.createParallelGroup(Alignment.BASELINE)
-								.addComponent(lblSample)
-								.addComponent(lblNewLabel, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE))
+								.addComponent(sampleTextField, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
+								.addComponent(lblSample))
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(chckbxSaveSampleAs))
-						.addComponent(featureItalicCheckBox)
-						.addComponent(defaultBoldCheckBox))
+						.addComponent(buttonItalicCheckBox)
+						.addComponent(buttonBoldCheckBox))
 					.addContainerGap(16, Short.MAX_VALUE))
 		);
 		overlayFontDefaultsPanel.setLayout(gl_overlayFontDefaultsPanel);
 		
-		textField = new JTextField();
-		textField.setColumns(10);
+		imagePathTextField = new JTextField();
+		imagePathTextField.setColumns(10);
 		
-		JButton btnNewButton = new JButton("New button");
+		imagePathButton = new JButton("New button");
 		GroupLayout gl_imagePathPanel = new GroupLayout(imagePathPanel);
 		gl_imagePathPanel.setHorizontalGroup(
 			gl_imagePathPanel.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_imagePathPanel.createSequentialGroup()
 					.addContainerGap()
-					.addComponent(textField, GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+					.addComponent(imagePathTextField, GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(btnNewButton))
+					.addComponent(imagePathButton))
 		);
 		gl_imagePathPanel.setVerticalGroup(
 			gl_imagePathPanel.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_imagePathPanel.createSequentialGroup()
 					.addContainerGap()
 					.addGroup(gl_imagePathPanel.createParallelGroup(Alignment.BASELINE)
-						.addComponent(textField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(btnNewButton))
+						.addComponent(imagePathTextField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(imagePathButton))
 					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 		);
 		imagePathPanel.setLayout(gl_imagePathPanel);
 		getContentPane().setLayout(groupLayout);
+	}
+	
+	private void updateGUI() {
+		imagePathTextField.setText(_imageSettings.getImagePath());
+		Font defaultFont = _imageSettings.getDefaultFont();
+		updateFromFont(defaultFont, defaultFontCombo, defaultSizeCombo, defaultBoldCheckBox, defaultItalicCheckBox);
+		Font featureFont = _imageSettings.getDefaultFeatureFont();
+		updateFromFont(featureFont, featureFontCombo, featureSizeCombo, featureBoldCheckBox, featureItalicCheckBox);
+		Font buttonFont = _imageSettings.getDefaultButtonFont();
+		updateFromFont(buttonFont, buttonFontCombo, buttonSizeCombo, buttonBoldCheckBox, buttonItalicCheckBox);
+		
+		sampleTextField.setFont(fontFromComponents(defaultFontCombo, defaultSizeCombo, defaultBoldCheckBox, defaultItalicCheckBox));
+		sampleTextField.setText("This is a test sentence"); //_imageSettings.getFontComment());
+		
+	}
+	
+	
+	
+	private void updateFromFont(Font font, JComboBox name, JComboBox size, JCheckBox bold, JCheckBox italic) {
+		name.getModel().setSelectedItem(font.getFamily());
+		size.getModel().setSelectedItem(font.getSize());
+		bold.setSelected(font.isBold());
+		italic.setSelected(font.isItalic());
+	}
+	
+	private Font fontFromComponents(JComboBox name, JComboBox sizeCombo, JCheckBox bold, JCheckBox italic) {
+		String family = (String)name.getSelectedItem();
+		int size = (Integer)sizeCombo.getSelectedItem();
+		int style = 0;
+		if (bold.isSelected()) {
+			style |= Font.BOLD;
+		}
+		if (italic.isSelected()) {
+			style |= Font.ITALIC;
+		}
+		Font font = new Font(family, style, size);
+		
+		return font;	
+	}
+	
+	
+	@Action
+	public void displayColourChooser() {
+		Color currentDefault = _imageSettings.getCustomPopupColour();
+		String title = _resources.getString("hotSpotColourChooser.title");
+		Color c = JColorChooser.showDialog(this, title, currentDefault);
+		
+	}
+	
+	@Action
+	public void applyImageSettingsChanges() {
+		applyChanges();
+	}
+	
+	@Action
+	public void okImageSettingsChanges() {
+		applyChanges();
+		setVisible(false);
+	}
+	
+	@Action
+	public void cancelImageSettingsChanges() {
+		setVisible(false);
+	}
+	
+	@Action
+	public void defaultFontPropertyChanged() {
+		sampleTextField.setFont(fontFromComponents(defaultFontCombo, defaultSizeCombo, defaultBoldCheckBox, defaultItalicCheckBox));
+	}
+	
+	@Action
+	public void featureFontPropertyChanged() {
+		sampleTextField.setFont(fontFromComponents(featureFontCombo, featureSizeCombo, featureBoldCheckBox, featureItalicCheckBox));
+	}
+	
+	@Action
+	public void buttonFontPropertyChanged() {
+		sampleTextField.setFont(fontFromComponents(buttonFontCombo, buttonSizeCombo, buttonBoldCheckBox, buttonItalicCheckBox));
+	}
+	
+	private void applyChanges() {
+		
+	}
+	
+	static String[] fontFamilyNames = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
+	
+	
+	private class FontFamilyModel extends DefaultComboBoxModel {
+
+		private static final long serialVersionUID = 8071821047820831134L;
+		@Override
+		public Object getElementAt(int index) {
+			
+			return fontFamilyNames[index];
+		}
+		@Override
+		public int getSize() {
+			return fontFamilyNames.length;
+		}
+	}
+	
+	private class FontSizeModel extends DefaultComboBoxModel {
+		
+		private static final long serialVersionUID = -1338904577467370497L;
+		private static final int MIN_SIZE = 7;
+		private static final int MAX_SIZE = 25;
+		
+		@Override
+		public Object getElementAt(int index) {
+			return MIN_SIZE + index;
+		}
+		@Override
+		public int getSize() {
+			return MAX_SIZE-MIN_SIZE+1;
+		}
 	}
 }
