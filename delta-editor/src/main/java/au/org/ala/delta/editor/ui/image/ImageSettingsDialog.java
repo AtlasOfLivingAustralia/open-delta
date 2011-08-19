@@ -24,11 +24,13 @@ import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.TitledBorder;
 
+import org.apache.commons.lang.StringUtils;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.model.image.ImageSettings;
+import au.org.ala.delta.model.image.ImageSettings.ButtonAlignment;
 
 /**
  * Allows the user to edit image settings (fonts, defaults when creating
@@ -40,6 +42,9 @@ public class ImageSettingsDialog extends JDialog {
 	
 	private ImageSettings _imageSettings;
 	private ResourceMap _resources;
+	private String _defaultFontCommment;
+	private String _featureFontComment;
+	private String _buttonFontComment;
 	
 	private JTextField imagePathTextField;
 	private JComboBox buttonFontCombo;
@@ -60,9 +65,9 @@ public class ImageSettingsDialog extends JDialog {
 	private JCheckBox chckbxUseIntegralHeight;
 	private JCheckBox chckbxHotspotsPopUp;
 	private JCheckBox chckbxCustomPopupColour;
-	private JLabel label;
+	private JLabel selectedColourLabel;
 	private JButton chooseColourButton;
-	private JComboBox comboBox;
+	private JComboBox buttonAlignmentCombo;
 	private JButton imagePathButton;
 	private JComboBox featureFontCombo;
 	private JCheckBox featureBoldCheckBox;
@@ -105,6 +110,7 @@ public class ImageSettingsDialog extends JDialog {
 		buttonBoldCheckBox.setAction(buttonFontChange);
 		buttonItalicCheckBox.setAction(buttonFontChange);
 		
+		chooseColourButton.setAction(actions.get("displayColourChooser"));
 	}
 
 	private void createUI() {
@@ -171,18 +177,19 @@ public class ImageSettingsDialog extends JDialog {
 		
 		JPanel panel = new JPanel();
 		
-		label = new JLabel("");
-		label.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
-		label.setPreferredSize(new Dimension(25, 25));
-		label.setOpaque(true);
-		label.setEnabled(false);
+		selectedColourLabel = new JLabel("");
+		selectedColourLabel.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		selectedColourLabel.setPreferredSize(new Dimension(25, 25));
+		selectedColourLabel.setOpaque(true);
+		selectedColourLabel.setEnabled(false);
 		
 		chooseColourButton = new JButton("Choose Colour");
 		chooseColourButton.setEnabled(false);
 		
 		JLabel lblButtonAlignment = new JLabel("Button alignment");
 		
-		comboBox = new JComboBox();
+		buttonAlignmentCombo = new JComboBox();
+		buttonAlignmentCombo.setModel(new ButtonAlignmentModel());
 		GroupLayout gl_overlayDefaultsPanel = new GroupLayout(overlayDefaultsPanel);
 		gl_overlayDefaultsPanel.setHorizontalGroup(
 			gl_overlayDefaultsPanel.createParallelGroup(Alignment.LEADING)
@@ -197,7 +204,7 @@ public class ImageSettingsDialog extends JDialog {
 						.addComponent(chckbxUseIntegralHeight)
 						.addComponent(chckbxHotspotsPopUp)
 						.addComponent(chckbxCustomPopupColour)
-						.addComponent(comboBox, GroupLayout.PREFERRED_SIZE, 167, GroupLayout.PREFERRED_SIZE)
+						.addComponent(buttonAlignmentCombo, GroupLayout.PREFERRED_SIZE, 167, GroupLayout.PREFERRED_SIZE)
 						.addComponent(panel, GroupLayout.PREFERRED_SIZE, 193, GroupLayout.PREFERRED_SIZE)
 						.addComponent(chckbxCentreInBox))
 					.addContainerGap(25, Short.MAX_VALUE))
@@ -222,7 +229,7 @@ public class ImageSettingsDialog extends JDialog {
 					.addGap(12)
 					.addComponent(lblButtonAlignment)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(comboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+					.addComponent(buttonAlignmentCombo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 					.addContainerGap(144, Short.MAX_VALUE))
 		);
 		GroupLayout gl_panel = new GroupLayout(panel);
@@ -230,7 +237,7 @@ public class ImageSettingsDialog extends JDialog {
 			gl_panel.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panel.createSequentialGroup()
 					.addContainerGap()
-					.addComponent(label, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+					.addComponent(selectedColourLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(chooseColourButton)
 					.addGap(68))
@@ -241,7 +248,7 @@ public class ImageSettingsDialog extends JDialog {
 					.addContainerGap()
 					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
 						.addComponent(chooseColourButton)
-						.addComponent(label, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+						.addComponent(selectedColourLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 		);
 		panel.setLayout(gl_panel);
@@ -423,8 +430,31 @@ public class ImageSettingsDialog extends JDialog {
 		updateFromFont(buttonFont, buttonFontCombo, buttonSizeCombo, buttonBoldCheckBox, buttonItalicCheckBox);
 		
 		sampleTextField.setFont(fontFromComponents(defaultFontCombo, defaultSizeCombo, defaultBoldCheckBox, defaultItalicCheckBox));
-		sampleTextField.setText("This is a test sentence"); //_imageSettings.getFontComment());
+		String sample = _imageSettings.getDefaultFontInfo().comment;
+		sampleTextField.setText(sample);
 		
+		
+		_defaultFontCommment = _imageSettings.getDefaultFontInfo().comment;
+		if (StringUtils.isEmpty(_defaultFontCommment)) {
+			_defaultFontCommment = _resources.getString("defaultFont.samplePrefix");
+		}
+		_featureFontComment = _imageSettings.getDefaultFeatureFontInfo().comment;
+		if (StringUtils.isEmpty(_featureFontComment)) {
+			_featureFontComment = _resources.getString("defaultFeatureFont.samplePrefix");
+		}
+		_buttonFontComment = _imageSettings.getDefaultButtonFontInfo().comment;
+		if (StringUtils.isEmpty(_buttonFontComment)) {
+			_buttonFontComment = _resources.getString("defaultButtonFont.samplePrefix");
+		}
+		chckbxCentreInBox.setSelected(_imageSettings.getCentreInBox());
+		chckbxIncludeComments.setSelected(_imageSettings.getIncludeComments());
+		chckbxOmitDescription.setSelected(_imageSettings.getOmitDescription());
+		chckbxUseIntegralHeight.setSelected(_imageSettings.getUseIntegralHeight());
+		chckbxHotspotsPopUp.setSelected(_imageSettings.getHotspotsPopup());
+		chckbxCustomPopupColour.setSelected(_imageSettings.getUseCustomPopupColour());
+		selectedColourLabel.setOpaque(true);
+		selectedColourLabel.setBackground(_imageSettings.getCustomPopupColour());
+		buttonAlignmentCombo.getModel().setSelectedItem(_imageSettings.getButtonAlignment());
 	}
 	
 	
@@ -456,8 +486,8 @@ public class ImageSettingsDialog extends JDialog {
 	public void displayColourChooser() {
 		Color currentDefault = _imageSettings.getCustomPopupColour();
 		String title = _resources.getString("hotSpotColourChooser.title");
-		Color c = JColorChooser.showDialog(this, title, currentDefault);
-		
+		Color newDefault = JColorChooser.showDialog(this, title, currentDefault);
+		selectedColourLabel.setBackground(newDefault);
 	}
 	
 	@Action
@@ -479,16 +509,19 @@ public class ImageSettingsDialog extends JDialog {
 	@Action
 	public void defaultFontPropertyChanged() {
 		sampleTextField.setFont(fontFromComponents(defaultFontCombo, defaultSizeCombo, defaultBoldCheckBox, defaultItalicCheckBox));
+		sampleTextField.setText(_defaultFontCommment);
 	}
 	
 	@Action
 	public void featureFontPropertyChanged() {
 		sampleTextField.setFont(fontFromComponents(featureFontCombo, featureSizeCombo, featureBoldCheckBox, featureItalicCheckBox));
+		sampleTextField.setText(_featureFontComment);
 	}
 	
 	@Action
 	public void buttonFontPropertyChanged() {
 		sampleTextField.setFont(fontFromComponents(buttonFontCombo, buttonSizeCombo, buttonBoldCheckBox, buttonItalicCheckBox));
+		sampleTextField.setText(_buttonFontComment);
 	}
 	
 	private void applyChanges() {
@@ -503,7 +536,6 @@ public class ImageSettingsDialog extends JDialog {
 		private static final long serialVersionUID = 8071821047820831134L;
 		@Override
 		public Object getElementAt(int index) {
-			
 			return fontFamilyNames[index];
 		}
 		@Override
@@ -525,6 +557,19 @@ public class ImageSettingsDialog extends JDialog {
 		@Override
 		public int getSize() {
 			return MAX_SIZE-MIN_SIZE+1;
+		}
+	}
+	
+	private class ButtonAlignmentModel extends DefaultComboBoxModel {
+		
+		private static final long serialVersionUID = -2435924644345786329L;
+		@Override
+		public Object getElementAt(int index) {
+			return ButtonAlignment.values()[index];
+		}
+		@Override
+		public int getSize() {
+			return ButtonAlignment.values().length;
 		}
 	}
 }

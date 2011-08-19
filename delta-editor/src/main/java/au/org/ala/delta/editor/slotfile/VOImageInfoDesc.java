@@ -299,7 +299,7 @@ public class VOImageInfoDesc extends VOAnyDesc {
 
 	}
 
-	public class LOGFONT implements IOObject {
+	public static class LOGFONT implements IOObject {
 
 		public static final int SIZE = 4 + 4 + 4 + 4 + 4 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 32;
 

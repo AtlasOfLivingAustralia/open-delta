@@ -64,6 +64,14 @@ public class ImageSettings {
     private FontInfo _defaultFeatureFontInfo;
     private FontInfo _defaultButtonFont;
     private String _dataSetPath;
+    private boolean _centreInBox;
+    private boolean _includeComments;
+    private boolean _omitDescription;
+    private boolean _useIntegralHeight;
+    private boolean _hotspotsPopup;
+    private boolean _useCustomPopupColour;
+    private Color _customPopupColour;
+    private ButtonAlignment _buttonAlignment;
 
     public ImageSettings() {
         _dataSetPath = null;
@@ -165,37 +173,73 @@ public class ImageSettings {
             count++;
         }
         return count;
-    }
-
+    } 
+    
     public boolean getCentreInBox() {
-        return false;
-    }
+		return _centreInBox;
+	}
 
-    public boolean getIncludeComments() {
-        return false;
-    }
+	public void setCentreInBox(boolean centreInBox) {
+		_centreInBox = centreInBox;
+	}
 
-    public boolean getOmitDescription() {
-        return false;
-    }
+	public boolean getIncludeComments() {
+		return _includeComments;
+	}
 
-    public boolean getUseIntegralHeight() {
-        return false;
-    }
+	public void setIncludeComments(boolean includeComments) {
+		_includeComments = includeComments;
+	}
 
-    public boolean getHotspotsPopUp() {
-        return false;
-    }
+	public boolean getOmitDescription() {
+		return _omitDescription;
+	}
 
-    public Color getCustomPopupColour() {
-        return null;
-    }
+	public void setOmitDescription(boolean omitDescription) {
+		_omitDescription = omitDescription;
+	}
 
-    public ButtonAlignment getButtonAlignment() {
-        return ButtonAlignment.NO_ALIGN;
-    }
+	public boolean getUseIntegralHeight() {
+		return _useIntegralHeight;
+	}
 
-    public FontInfo getFont(OverlayFontType type) {
+	public void setUseIntegralHeight(boolean useIntegralHeight) {
+		_useIntegralHeight = useIntegralHeight;
+	}
+
+	public boolean getHotspotsPopup() {
+		return _hotspotsPopup;
+	}
+
+	public void setHotspotsPopup(boolean hotspotsPopup) {
+		_hotspotsPopup = hotspotsPopup;
+	}
+
+	public boolean getUseCustomPopupColour() {
+		return _useCustomPopupColour;
+	}
+
+	public void setUseCustomPopupColour(boolean useCustomPopupColour) {
+		_useCustomPopupColour = useCustomPopupColour;
+	}
+
+	public Color getCustomPopupColour() {
+		return _customPopupColour;
+	}
+
+	public void setCustomPopupColour(Color customPopupColour) {
+	    _customPopupColour = customPopupColour;
+	}
+	
+	public ButtonAlignment getButtonAlignment() {
+		return _buttonAlignment;
+	}
+	
+	public void setButtonAlignment(ButtonAlignment buttonAlignment) {
+		_buttonAlignment = buttonAlignment;
+	}
+
+	public FontInfo getFont(OverlayFontType type) {
         switch (type) {
         case OF_DEFAULT:
             return _defaultFontInfo;
