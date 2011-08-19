@@ -7,6 +7,11 @@ import au.org.ala.delta.model.Item;
 
 public class TaxonWithDifferenceCountCellRenderer extends TaxonCellRenderer {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -1387340931499472805L;
+    
     private Map<Item, Integer> _differenceCounts;
 
     public TaxonWithDifferenceCountCellRenderer(Map<Item, Integer> differenceCounts) {

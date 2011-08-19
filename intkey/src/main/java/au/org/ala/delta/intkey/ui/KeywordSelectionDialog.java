@@ -24,6 +24,11 @@ import java.awt.FlowLayout;
 import javax.swing.ButtonGroup;
 
 public abstract class KeywordSelectionDialog extends ListSelectionDialog {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -5586414259535222597L;
+    
     protected JButton _btnOk;
     protected JButton _btnDeselectAll;
     protected JButton _btnList;

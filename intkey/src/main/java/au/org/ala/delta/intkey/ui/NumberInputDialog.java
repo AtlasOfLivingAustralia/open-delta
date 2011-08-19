@@ -1,29 +1,30 @@
 package au.org.ala.delta.intkey.ui;
 
-import java.awt.Frame;
-import javax.swing.JLabel;
 import java.awt.BorderLayout;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
 import java.awt.FlowLayout;
-import java.awt.GridLayout;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.border.EmptyBorder;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 import org.jdesktop.application.Application;
-import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.model.NumericCharacter;
 import au.org.ala.delta.model.image.ImageSettings;
 
 public abstract class NumberInputDialog extends CharacterValueInputDialog {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -7872379958955241882L;
     protected JTextField _txtInput;
     private JLabel _lblUnits;
     
-    public NumberInputDialog(Frame owner, NumericCharacter ch, ImageSettings imageSettings) {
+    public NumberInputDialog(Frame owner, NumericCharacter<?> ch, ImageSettings imageSettings) {
         super(owner, ch, imageSettings);
         
         ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(NumberInputDialog.class);

@@ -9,8 +9,6 @@ import java.util.Map;
 
 import org.apache.commons.lang.math.IntRange;
 
-import au.org.ala.delta.directives.args.DirectiveArgType;
-import au.org.ala.delta.intkey.IntkeyUI;
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.model.IntkeyDataset;
@@ -20,11 +18,6 @@ public class SetReliabilitiesDirective extends IntkeyDirective {
 
     public SetReliabilitiesDirective() {
         super("set", "reliabilities");
-    }
-
-    @Override
-    public int getArgType() {
-        return DirectiveArgType.DIRARG_INTKEY_ATTRIBUTES;
     }
 
     @Override

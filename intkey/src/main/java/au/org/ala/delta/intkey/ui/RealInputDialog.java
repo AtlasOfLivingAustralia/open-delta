@@ -15,6 +15,11 @@ import au.org.ala.delta.model.image.ImageSettings;
 
 public class RealInputDialog extends NumberInputDialog {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -3565062911844305863L;
+
     private FloatRange _inputData;
 
     @Resource

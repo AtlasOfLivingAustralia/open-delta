@@ -1,6 +1,5 @@
 package au.org.ala.delta.intkey.directives;
 
-import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.ui.UIUtils;
@@ -20,11 +19,6 @@ public class SetRBaseDirective extends IntkeyDirective {
     
     public SetRBaseDirective() {
         super("set", "rbase");
-    }
-
-    @Override
-    public int getArgType() {
-        return DirectiveArgType.DIRARG_REAL;
     }
 
     @Override

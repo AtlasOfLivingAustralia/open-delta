@@ -7,6 +7,11 @@ import au.org.ala.delta.model.Character;
 
 public class BestCharacterCellRenderer extends CharacterCellRenderer {
     
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 4185197144357517831L;
+
     private Map<Character, Double> _separatingPowers;
     
     public BestCharacterCellRenderer(Map<Character, Double> separatingPowers) {

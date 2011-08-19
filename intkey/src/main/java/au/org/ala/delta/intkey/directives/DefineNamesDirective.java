@@ -3,7 +3,6 @@ package au.org.ala.delta.intkey.directives;
 import java.util.ArrayList;
 import java.util.List;
 
-import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.intkey.directives.invocation.DefineNamesDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
@@ -14,11 +13,6 @@ public class DefineNamesDirective extends IntkeyDirective {
         super("define", "names");
     }
 
-    @Override
-    public int getArgType() {
-        return DirectiveArgType.DIRARG_INTKEY_ITEMLIST;
-    }
-    
     @Override
     protected IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
         List<String> tokens = ParsingUtils.tokenizeDirectiveCall(data);

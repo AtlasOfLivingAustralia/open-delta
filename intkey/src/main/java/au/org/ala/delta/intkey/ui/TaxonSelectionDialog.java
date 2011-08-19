@@ -19,6 +19,11 @@ import org.jdesktop.application.ResourceMap;
 import au.org.ala.delta.model.Item;
 
 public class TaxonSelectionDialog extends ListSelectionDialog {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -147794343857823234L;
+    
     private List<Item> _selectedTaxa;
     private JButton _btnOk;
     private JButton _btnSelectAll;

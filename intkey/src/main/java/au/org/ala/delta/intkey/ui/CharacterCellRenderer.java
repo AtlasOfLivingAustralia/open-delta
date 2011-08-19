@@ -8,6 +8,11 @@ import au.org.ala.delta.model.format.CharacterFormatter;
 
 public class CharacterCellRenderer extends ColoringListCellRenderer {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 2386540902414786423L;
+    
     protected Set<Character> _charactersToColor;
     protected CharacterFormatter _formatter;
 

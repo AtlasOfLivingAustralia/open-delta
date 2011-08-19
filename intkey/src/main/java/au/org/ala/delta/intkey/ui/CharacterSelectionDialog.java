@@ -3,15 +3,12 @@ package au.org.ala.delta.intkey.ui;
 import java.awt.Dialog;
 import java.awt.Frame;
 import java.awt.GridLayout;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import javax.swing.ActionMap;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.border.EmptyBorder;
 
 import org.jdesktop.application.Action;
@@ -20,18 +17,14 @@ import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.model.Character;
-import au.org.ala.delta.model.MultiStateCharacter;
-import au.org.ala.delta.model.image.Image;
-import au.org.ala.delta.model.image.ImageOverlay;
-import au.org.ala.delta.model.image.ImageOverlayParser;
 import au.org.ala.delta.model.image.ImageSettings;
-import au.org.ala.delta.model.image.ImageType;
-import au.org.ala.delta.model.impl.DefaultImageData;
-import au.org.ala.delta.model.impl.ImageData;
-import au.org.ala.delta.ui.image.ImageViewer;
 
 public class CharacterSelectionDialog extends ListSelectionDialog {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -3782045491747441657L;
     private List<Character> _selectedCharacters;
     private JButton _btnOk;
     private JButton _btnSelectAll;

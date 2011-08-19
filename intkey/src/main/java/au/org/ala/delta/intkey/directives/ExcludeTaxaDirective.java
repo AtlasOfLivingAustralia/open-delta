@@ -4,9 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.intkey.directives.invocation.ExcludeTaxaDirectiveInvocation;
-import au.org.ala.delta.intkey.directives.invocation.IncludeTaxaDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.model.Item;
@@ -16,11 +14,6 @@ public class ExcludeTaxaDirective extends IntkeyDirective {
         super("exclude", "taxa");
     }
 
-    @Override
-    public int getArgType() {
-        return DirectiveArgType.DIRARG_INTKEY_CHARLIST;
-    }
-    
     @Override
     protected IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
         Set<Integer> excludeTaxaNumbers = new HashSet<Integer>();

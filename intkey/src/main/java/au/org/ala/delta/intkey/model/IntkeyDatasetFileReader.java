@@ -1112,7 +1112,7 @@ public final class IntkeyDatasetFileReader {
             // 1 bit for all values below minimum, 1 bit for each value between
             // minimum and maximum (inclusive),
             // 1 bit for all values above maximum, 1 inapplicability bit.
-            int bitsPerTaxon = intChar.getMaximumValue() - intChar.getMinimumValue() + 4;
+            int bitsPerTaxon = charMaxValue - charMinValue + 4;
             int totalBitsNeeded = bitsPerTaxon * numTaxa;
 
             int bytesToRead = Double.valueOf(Math.ceil(Double.valueOf(totalBitsNeeded) / Double.valueOf(Byte.SIZE))).intValue();

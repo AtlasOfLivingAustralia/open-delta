@@ -20,6 +20,11 @@ import au.org.ala.delta.model.image.Image;
 
 public class TaxonKeywordSelectionDialog extends KeywordSelectionDialog {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -8462278458050948803L;
+
     @Resource
     String title;
 

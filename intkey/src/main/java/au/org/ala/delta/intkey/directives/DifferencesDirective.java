@@ -21,12 +21,6 @@ public class DifferencesDirective extends IntkeyDirective {
     }
 
     @Override
-    public int getArgType() {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
-    @Override
     protected IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
         IntkeyDataset ds = context.getDataset();
 

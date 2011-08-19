@@ -20,6 +20,11 @@ import au.org.ala.delta.model.image.ImageSettings;
 
 public class MultiStateInputDialog extends CharacterValueInputDialog {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -7594452342030275494L;
+
     Set<Integer> _inputData;
 
     private JList _list;

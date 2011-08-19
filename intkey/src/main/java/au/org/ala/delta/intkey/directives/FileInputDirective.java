@@ -2,7 +2,6 @@ package au.org.ala.delta.intkey.directives;
 
 import java.io.File;
 
-import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.intkey.directives.invocation.FileInputDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
@@ -11,11 +10,6 @@ public class FileInputDirective extends IntkeyDirective {
 
     public FileInputDirective() {
         super("file", "input");
-    }
-
-    @Override
-    public int getArgType() {
-        return DirectiveArgType.DIRARG_TEXT;
     }
 
     @Override

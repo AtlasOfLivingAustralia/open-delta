@@ -6,7 +6,6 @@ import java.util.Set;
 
 import org.apache.commons.lang.math.IntRange;
 
-import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.intkey.directives.invocation.DefineTaxaDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
@@ -16,11 +15,6 @@ public class DefineTaxaDirective extends IntkeyDirective {
 
     public DefineTaxaDirective() {
         super("define", "taxa");
-    }
-
-    @Override
-    public int getArgType() {
-        return DirectiveArgType.DIRARG_KEYWORD_CHARLIST;
     }
 
     @Override

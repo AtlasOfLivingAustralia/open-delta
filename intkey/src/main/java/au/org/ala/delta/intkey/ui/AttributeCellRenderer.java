@@ -10,6 +10,11 @@ import au.org.ala.delta.model.Character;
 //refactored to use Attribute objects
 public class AttributeCellRenderer extends ColoringListCellRenderer {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -8919505858741276673L;
+    
     protected Set<Character> _charactersToColor;
     
     public AttributeCellRenderer() {

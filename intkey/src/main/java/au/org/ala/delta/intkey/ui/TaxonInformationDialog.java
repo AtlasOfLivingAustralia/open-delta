@@ -1,22 +1,16 @@
 package au.org.ala.delta.intkey.ui;
 
-import javax.swing.JDialog;
-import java.awt.FlowLayout;
-import javax.swing.BoxLayout;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.DefaultListModel;
-import javax.swing.JComboBox;
-import javax.swing.JPanel;
-import javax.swing.JList;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
 import java.awt.BorderLayout;
 import java.util.List;
 
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
-import javax.swing.JSplitPane;
+import javax.swing.JList;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
 
@@ -26,6 +20,11 @@ import au.org.ala.delta.model.image.Image;
 
 public class TaxonInformationDialog extends JDialog {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -369093284637981457L;
+    
     private List<Item> _taxa;
     private int _selectedIndex;
     private ItemFormatter _formatter;

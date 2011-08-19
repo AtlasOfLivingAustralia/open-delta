@@ -1,16 +1,13 @@
 package au.org.ala.delta.intkey.ui;
 
-import java.awt.BorderLayout;
 import java.awt.Dialog;
 import java.awt.Frame;
-import java.awt.GraphicsDevice;
 import java.awt.GridLayout;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -40,7 +37,6 @@ import au.org.ala.delta.model.image.ImageOverlay;
 import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.model.image.OverlayType;
 import au.org.ala.delta.ui.image.AboutImageDialog;
-import au.org.ala.delta.ui.image.ImagePanel.ScalingMode;
 import au.org.ala.delta.ui.image.ImageUtils;
 import au.org.ala.delta.ui.image.ImageViewer;
 import au.org.ala.delta.ui.image.MultipleImageViewer;
@@ -52,6 +48,11 @@ import au.org.ala.delta.util.Pair;
 
 public class ImageDialog extends JDialog implements OverlaySelectionObserver {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -8012068171243224330L;
+    
     protected ImageSettings _imageSettings;
     protected MultipleImageViewer _multipleImageViewer;
     protected JMenuBar _menuBar;

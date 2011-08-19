@@ -4,9 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.intkey.directives.invocation.ExcludeCharactersDirectiveInvocation;
-import au.org.ala.delta.intkey.directives.invocation.IncludeCharactersDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
@@ -16,11 +14,6 @@ public class ExcludeCharactersDirective extends IntkeyDirective {
         super("exclude", "characters");
     }
 
-    @Override
-    public int getArgType() {
-        return DirectiveArgType.DIRARG_INTKEY_CHARLIST;
-    }
-    
     @Override
     protected IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
         Set<Integer> excludeCharacterNumbers = new HashSet<Integer>();

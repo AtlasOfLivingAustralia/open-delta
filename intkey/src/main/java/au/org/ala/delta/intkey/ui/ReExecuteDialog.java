@@ -31,6 +31,11 @@ import org.jdesktop.application.ResourceMap;
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 
 public class ReExecuteDialog extends JDialog {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 5026213030206139590L;
+    
     private JPanel _pnlButtons;
     private JButton _btnExecute;
     private JButton _btnCancel;

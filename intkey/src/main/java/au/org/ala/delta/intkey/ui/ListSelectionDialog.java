@@ -15,6 +15,11 @@ import javax.swing.border.EtchedBorder;
 
 public class ListSelectionDialog extends JDialog {
     
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 8010652632956537773L;
+    
     protected JScrollPane _scrollPane;
     protected JList _list;
     protected JPanel _panelButtons;

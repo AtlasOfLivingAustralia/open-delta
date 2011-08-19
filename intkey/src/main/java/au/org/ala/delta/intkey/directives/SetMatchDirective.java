@@ -1,6 +1,5 @@
 package au.org.ala.delta.intkey.directives;
 
-import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.SetMatchDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
@@ -10,11 +9,6 @@ public class SetMatchDirective extends IntkeyDirective {
 
     public SetMatchDirective() {
         super("set", "match");
-    }
-
-    @Override
-    public int getArgType() {
-        return DirectiveArgType.DIRARG_TEXTLIST;
     }
 
     @Override

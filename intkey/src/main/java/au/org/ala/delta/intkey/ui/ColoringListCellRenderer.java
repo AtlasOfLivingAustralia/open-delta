@@ -2,8 +2,6 @@ package au.org.ala.delta.intkey.ui;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.swing.JLabel;
 import javax.swing.JList;

@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.intkey.directives.invocation.IncludeTaxaDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
@@ -15,11 +14,6 @@ public class IncludeTaxaDirective extends IntkeyDirective {
         super("include", "taxa");
     }
 
-    @Override
-    public int getArgType() {
-        return DirectiveArgType.DIRARG_INTKEY_CHARLIST;
-    }
-    
     @Override
     protected IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
         Set<Integer> includeTaxaNumbers = new HashSet<Integer>();

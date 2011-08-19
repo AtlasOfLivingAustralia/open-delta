@@ -22,6 +22,11 @@ import org.jdesktop.application.ResourceMap;
 
 public class BusyGlassPane extends JPanel {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 3178455415213119732L;
+    
     @Resource
     Icon icon;
 

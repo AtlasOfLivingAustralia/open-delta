@@ -1,26 +1,22 @@
 package au.org.ala.delta.intkey.ui;
 
-import javax.swing.JDialog;
-import javax.swing.JScrollPane;
 import java.awt.BorderLayout;
 import java.awt.Frame;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import javax.swing.JTextPane;
-import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.plaf.FileChooserUI;
-import javax.swing.text.EditorKit;
 import javax.swing.ActionMap;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
-import javax.swing.JMenuBar;
 import javax.swing.JMenu;
+import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JSeparator;
+import javax.swing.JScrollPane;
+import javax.swing.JTextPane;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.text.EditorKit;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
@@ -28,6 +24,11 @@ import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 
 public class RtfReportDisplayDialog extends JDialog {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 7668085877552672061L;
+    
     private JTextPane _textPane;
     private JScrollPane _scrollPane;
 

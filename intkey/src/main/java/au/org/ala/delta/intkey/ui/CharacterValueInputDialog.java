@@ -20,6 +20,11 @@ import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.image.ImageSettings;
 
 public abstract class CharacterValueInputDialog extends JDialog {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 361631735179369565L;
+    
     protected JPanel _buttonPanel;
     protected JButton _btnImages;
     protected JButton _btnFullText;

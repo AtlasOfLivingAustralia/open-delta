@@ -1,10 +1,8 @@
 package au.org.ala.delta.intkey.directives;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.intkey.directives.invocation.DefineButtonClearDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.DefineButtonDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.DefineButtonSpaceDirectiveInvocation;
@@ -15,12 +13,6 @@ public class DefineButtonDirective extends IntkeyDirective {
 
     public DefineButtonDirective() {
         super("define", "button");
-    }
-
-    @Override
-    public int getArgType() {
-        // TODO Auto-generated method stub
-        return DirectiveArgType.DIRARG_FILE;
     }
 
     @Override

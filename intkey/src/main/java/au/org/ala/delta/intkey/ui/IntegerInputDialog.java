@@ -15,6 +15,11 @@ import au.org.ala.delta.model.image.ImageSettings;
 
 public class IntegerInputDialog extends NumberInputDialog {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1248724422772112737L;
+
     private Set<Integer> _inputData;
 
     @Resource

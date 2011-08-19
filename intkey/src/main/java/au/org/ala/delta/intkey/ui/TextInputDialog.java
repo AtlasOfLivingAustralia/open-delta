@@ -18,6 +18,11 @@ import au.org.ala.delta.model.TextCharacter;
 import au.org.ala.delta.model.image.ImageSettings;
 
 public class TextInputDialog extends CharacterValueInputDialog {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1140659731710865780L;
+    
     private JPanel _pnlTxtFld;
     private JTextField _txtInput;
     private List<String> _inputData;

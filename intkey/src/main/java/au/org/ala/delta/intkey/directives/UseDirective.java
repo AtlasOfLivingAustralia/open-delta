@@ -1,6 +1,5 @@
 package au.org.ala.delta.intkey.directives;
 
-import java.awt.Frame;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -18,8 +17,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.FloatRange;
 import org.apache.commons.lang.math.IntRange;
 
-import au.org.ala.delta.directives.args.DirectiveArgType;
-import au.org.ala.delta.intkey.IntkeyUI;
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.model.IntkeyDataset;
@@ -28,12 +25,7 @@ import au.org.ala.delta.intkey.model.specimen.IntegerValue;
 import au.org.ala.delta.intkey.model.specimen.MultiStateValue;
 import au.org.ala.delta.intkey.model.specimen.RealValue;
 import au.org.ala.delta.intkey.model.specimen.TextValue;
-import au.org.ala.delta.intkey.ui.CharacterKeywordSelectionDialog;
 import au.org.ala.delta.intkey.ui.CharacterSelectionDialog;
-import au.org.ala.delta.intkey.ui.IntegerInputDialog;
-import au.org.ala.delta.intkey.ui.MultiStateInputDialog;
-import au.org.ala.delta.intkey.ui.RealInputDialog;
-import au.org.ala.delta.intkey.ui.TextInputDialog;
 import au.org.ala.delta.intkey.ui.UIUtils;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterDependency;
@@ -58,11 +50,6 @@ public class UseDirective extends IntkeyDirective {
     public UseDirective() {
         super("use");
         _charFormatter = new CharacterFormatter(false, false, false, true, true);
-    }
-
-    @Override
-    public int getArgType() {
-        return DirectiveArgType.DIRARG_INTKEY_ATTRIBUTES;
     }
 
     @Override

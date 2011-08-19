@@ -11,8 +11,6 @@ import javax.swing.JOptionPane;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.IntRange;
 
-import au.org.ala.delta.directives.args.DirectiveArgType;
-import au.org.ala.delta.intkey.IntkeyUI;
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.ui.UIUtils;
@@ -22,11 +20,6 @@ public class DefineCharactersDirective extends IntkeyDirective {
     public DefineCharactersDirective() {
         super("define", "characters");
     }
-
-	@Override
-	public int getArgType() {
-		return DirectiveArgType.DIRARG_KEYWORD_CHARLIST;
-	}
 
 	@Override
     protected IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {

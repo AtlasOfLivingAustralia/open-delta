@@ -8,6 +8,11 @@ import au.org.ala.delta.model.format.ItemFormatter;
 
 public class TaxonCellRenderer extends ColoringListCellRenderer {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -1293701960772743421L;
+    
     protected ItemFormatter _formatter;
     protected Set<Item> _taxaToColor;
 

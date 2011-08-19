@@ -8,8 +8,6 @@ import javax.swing.filechooser.FileFilter;
 
 import org.apache.commons.lang.StringUtils;
 
-import au.org.ala.delta.directives.args.DirectiveArgType;
-import au.org.ala.delta.intkey.IntkeyUI;
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.ui.UIUtils;
@@ -25,11 +23,6 @@ public class FileTaxaDirective extends IntkeyDirective {
 
     public FileTaxaDirective() {
         super("file", "taxa");
-    }
-
-    @Override
-    public int getArgType() {
-        return DirectiveArgType.DIRARG_FILE;
     }
 
     @Override

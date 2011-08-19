@@ -32,6 +32,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class FindInCharactersDialog extends JDialog {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 5558508562558253447L;
+    
     private JPanel _pnlMain;
     private JPanel _pnlMainTop;
     private JButton _btnDone;

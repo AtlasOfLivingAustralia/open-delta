@@ -9,25 +9,31 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
 
 public abstract class IntkeyDirective extends AbstractDirective<IntkeyContext> {
     
+    protected DirectiveArguments _args;
+    
     public IntkeyDirective(String... controlWords) {
         super(controlWords);
     }
     
-    protected DirectiveArguments _args;
+    @Override
+    public final int getArgType() {
+        // Not relevant for Intkey. This is only used for import/export of directives
+        // in the delta editor.
+        return 0;
+    }
     
     @Override
-	public DirectiveArguments getDirectiveArgs() {
-		return _args;
-	}
-
+    public final DirectiveArguments getDirectiveArgs() {
+        return _args;
+    }
+    
 	@Override
-	public void parse(IntkeyContext context, String data) throws ParseException {
-		
+	public final void parse(IntkeyContext context, String data) throws ParseException {
 		_args = DirectiveArguments.textArgument(data);
 	}
 
 	@Override
-	public void process(IntkeyContext context, DirectiveArguments directiveArguments) throws Exception {
+	public final void process(IntkeyContext context, DirectiveArguments directiveArguments) throws Exception {
 		parseAndProcess(context, directiveArguments.getFirstArgumentText());
 	}
 

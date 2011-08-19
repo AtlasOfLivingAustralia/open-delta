@@ -20,6 +20,11 @@ import au.org.ala.delta.model.image.Image;
 
 public class CharacterKeywordSelectionDialog extends KeywordSelectionDialog {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1417718500077724253L;
+    
     private List<Character> _includedCharacters;
     private List<Character> _selectedCharacters;
 
