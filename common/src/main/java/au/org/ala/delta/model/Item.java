@@ -25,6 +25,7 @@ import au.org.ala.delta.model.impl.ItemData;
 import au.org.ala.delta.model.observer.AttributeObserver;
 import au.org.ala.delta.model.observer.ImageObserver;
 import au.org.ala.delta.model.observer.ItemObserver;
+import au.org.ala.delta.util.Pair;
 
 /**
  * Represents an Item in the DELTA system.
@@ -114,11 +115,11 @@ public class Item implements AttributeObserver, ImageObserver, Illustratable, Co
 		notifyObservers();
 	}
 	
-	public Map<String, String> getLinkFiles() {
+	public List<Pair<String, String>> getLinkFiles() {
 	    return _impl.getLinkFiles();
 	}
 	
-	public void setLinkFiles(Map<String, String> linkFiles) {
+	public void setLinkFiles(List<Pair<String, String>> linkFiles) {
 	    _impl.setLinkFiles(linkFiles);
 	}
     

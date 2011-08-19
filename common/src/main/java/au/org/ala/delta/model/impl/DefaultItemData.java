@@ -13,6 +13,7 @@ import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageOverlay;
 import au.org.ala.delta.model.image.ImageOverlayParser;
 import au.org.ala.delta.model.image.ImageType;
+import au.org.ala.delta.util.Pair;
 
 /**
  * Implements ItemData and stores the data in memory.
@@ -22,7 +23,7 @@ public class DefaultItemData implements ItemData {
     private String _description;
     private boolean _variant;
     
-    private Map<String, String> _linkFiles = new HashMap<String, String>();
+    private List<Pair<String, String>> _linkFiles = new ArrayList<Pair<String, String>>();
     private Map<Character, Attribute> _attributes = new HashMap<Character, Attribute>();
     private List<Image> _images = new ArrayList<Image>();
     
@@ -69,13 +70,13 @@ public class DefaultItemData implements ItemData {
     }
     
     @Override 
-    public Map<String, String> getLinkFiles() {
-        return new HashMap<String, String>(_linkFiles);
+    public List<Pair<String, String>> getLinkFiles() {
+        return new ArrayList<Pair<String, String>>(_linkFiles);
     }
     
     @Override
-    public void setLinkFiles(Map<String, String> linkFiles) {
-        _linkFiles = new HashMap<String, String>(linkFiles);
+    public void setLinkFiles(List<Pair<String, String>> linkFiles) {
+        _linkFiles = new ArrayList<Pair<String, String>>(linkFiles);
     }
 
     @Override

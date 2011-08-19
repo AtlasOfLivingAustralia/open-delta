@@ -998,7 +998,10 @@ public final class IntkeyDatasetFileReader {
     private static void readTaxonLinksFiles(ItemsFileHeader itemFileHeader, BinFile itemBinFile, List<Item> taxa) {
         int numItems = itemFileHeader.getNItem();
 
+        // from TAXON LINKS Confor directive
         List<String> firstLinksFileData = null;
+        
+        // from SUBJECT FOR OUTPUT FILES Confor directive
         List<String> secondLinksFileData = null;
 
         if (itemFileHeader.getRpTlinks()[0] != 0) {
@@ -1011,35 +1014,41 @@ public final class IntkeyDatasetFileReader {
 
         for (int i = 0; i < numItems; i++) {
             Item it = taxa.get(i);
-            
-            Map<String, String> taxonLinks = new HashMap<String, String>();
+
+            List<Pair<String, String>> taxonLinks = new ArrayList<Pair<String, String>>();
+
+            // links from SUBJECT FOR OUTPUT FILES Confor directive (there should only
+            // be one) go in the list first.
+            if (secondLinksFileData != null) {
+                if (secondLinksFileData.get(i) != null) {
+                    List<Pair<String, String>> parsedLinks = parseFileData(secondLinksFileData.get(i));
+                    for (Pair<String, String> pair : parsedLinks) {
+                        String fileName = pair.getFirst();
+                        String subject = pair.getSecond();
+                        subject = subject.replace("<", "");
+                        subject = subject.replace(">", "");
+                        subject = subject.replace("@subject", "");
+                        subject = subject.trim();
+                        taxonLinks.add(new Pair<String, String>(fileName, subject));
+                    }
+                }
+            }
 
             if (firstLinksFileData != null) {
-                List<Pair<String, String>> parsedLinks = parseFileData(firstLinksFileData.get(i));
-                for (Pair<String, String> pair: parsedLinks) {
-                    String fileName = pair.getFirst();
-                    String subject = pair.getSecond();
-                    subject = subject.replace("<", "");
-                    subject = subject.replace(">", "");
-                    subject = subject.replace("@subject", "");
-                    subject = subject.trim();
-                    taxonLinks.put(fileName, subject);
+                if (firstLinksFileData.get(i) != null) {
+                    List<Pair<String, String>> parsedLinks = parseFileData(firstLinksFileData.get(i));
+                    for (Pair<String, String> pair : parsedLinks) {
+                        String fileName = pair.getFirst();
+                        String subject = pair.getSecond();
+                        subject = subject.replace("<", "");
+                        subject = subject.replace(">", "");
+                        subject = subject.replace("@subject", "");
+                        subject = subject.trim();
+                        taxonLinks.add(new Pair<String, String>(fileName, subject));
+                    }
                 }
             }
 
-            if (secondLinksFileData != null) {
-                List<Pair<String, String>> parsedLinks = parseFileData(secondLinksFileData.get(i));
-                for (Pair<String, String> pair: parsedLinks) {
-                    String fileName = pair.getFirst();
-                    String subject = pair.getSecond();
-                    subject = subject.replace("<", "");
-                    subject = subject.replace(">", "");
-                    subject = subject.replace("@subject", "");
-                    subject = subject.trim();
-                    taxonLinks.put(fileName, subject);
-                }
-            }
-            
             it.setLinkFiles(taxonLinks);
         }
     }
@@ -1330,7 +1339,7 @@ public final class IntkeyDatasetFileReader {
         return (int) (Math.ceil((double) numBytes / (double) Constants.RECORD_LENGTH_BYTES));
     }
 
-    // parse a string containing filenames and metadata data in the format 
+    // parse a string containing filenames and metadata data in the format
     // filename {<file information>} filename {<file information>} ...
     // where <file information> is optional
     // and return a list of filename and file information pairs.
@@ -1357,8 +1366,10 @@ public final class IntkeyDatasetFileReader {
         return retList;
     }
 
-    // take a string with format: "filename <file information> <more file information> ..."
-    // and return a list with two items, the first being the filename, and the second being all 
+    // take a string with format:
+    // "filename <file information> <more file information> ..."
+    // and return a list with two items, the first being the filename, and the
+    // second being all
     // of the file information.
     private static List<String> separateFileDataStrings(String filesData) {
         List<String> filesDataList = new ArrayList<String>();

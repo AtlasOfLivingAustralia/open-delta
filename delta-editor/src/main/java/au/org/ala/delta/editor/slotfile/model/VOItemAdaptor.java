@@ -30,6 +30,7 @@ import au.org.ala.delta.model.AttributeFactory;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.impl.AttributeData;
 import au.org.ala.delta.model.impl.ItemData;
+import au.org.ala.delta.util.Pair;
 import au.org.ala.delta.util.Utils;
 
 /**
@@ -125,12 +126,12 @@ public class VOItemAdaptor extends ImageHolderAdaptor implements ItemData {
 	}
 
     @Override
-    public Map<String, String> getLinkFiles() {
+    public List<Pair<String, String>> getLinkFiles() {
         throw new NotImplementedException();
     }
 
     @Override
-    public void setLinkFiles(Map<String, String> linkFiles) {
+    public void setLinkFiles(List<Pair<String, String>> linkFiles) {
         throw new NotImplementedException();
     }
     

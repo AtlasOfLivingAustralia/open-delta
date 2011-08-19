@@ -1,6 +1,7 @@
 package au.org.ala.delta.intkey.ui;
 
 import java.awt.BorderLayout;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
@@ -51,6 +52,9 @@ public class TaxonInformationDialog extends JDialog {
     private JLabel _lblIllustrations;
     private JScrollPane _sclPnIllustrations;
     private JList _listIllustrations;
+    
+    private List<String> _fileNames;
+    private List<Image> _images;
 
     public TaxonInformationDialog(List<Item> taxa) {
 
@@ -155,9 +159,12 @@ public class TaxonInformationDialog extends JDialog {
         Item selectedTaxon = _taxa.get(_selectedIndex);
         
         //Update other list
+        _fileNames = new ArrayList<String>();
         
+        //for (String fileName: selectedTaxon.getLinkFiles())
         
         //Update illustrations list
+        _images = new ArrayList<Image>();
         DefaultListModel illustrationsListModel = new DefaultListModel(); 
         for (Image img: selectedTaxon.getImages()) {
             illustrationsListModel.addElement(img.getSubjectTextOrFileName());
@@ -190,5 +197,10 @@ public class TaxonInformationDialog extends JDialog {
         _selectedIndex--;
         displayTaxon(_selectedIndex);
     }
+    
+    private interface InformationDialogCommand {
+        public void execute();
+    }
+    
 
 }

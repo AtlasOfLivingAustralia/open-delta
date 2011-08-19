@@ -6,6 +6,7 @@ import java.util.Map;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.image.Image;
+import au.org.ala.delta.util.Pair;
 
 public interface ItemData {
 	
@@ -23,9 +24,9 @@ public interface ItemData {
 	
 	void setVariant(boolean variant);
 	
-	Map<String, String> getLinkFiles();
+	List<Pair<String, String>> getLinkFiles();
 	
-	void setLinkFiles(Map<String, String> linkFiles);
+	void setLinkFiles(List<Pair<String, String>> linkFiles);
 
 	Image addImage(String fileName, String comments);
 	
