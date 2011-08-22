@@ -31,6 +31,8 @@ public class ImageSettings {
         }
 
     };
+    
+    public static final char IMAGE_PATH_SEPARATOR = ';';
 
     public static class FontInfo {
 
@@ -92,13 +94,36 @@ public class ImageSettings {
         _dataSetPath = path;
     }
 
-    // Convenience method for when there is only one image path
+    public String getDataSetPath() {
+    	return _dataSetPath;
+    }
+    
+    /**
+     * @return the first entry on the image path as an absolute file path.
+     */
+    public String getFirstImagePath() {
+    	if (_imagePaths.isEmpty()) {
+    		return "";
+    	}
+    	else {
+    		return getImagePaths().get(0);
+    	}
+    }
+    
+    /**
+     * @return the list of image paths as a ';' separated String.
+     */
     public String getImagePath() {
-        if (!_imagePaths.isEmpty()) {
-            return getImagePaths().get(0);
-        } else {
-            return null;
+        if (_imagePaths.isEmpty()) {
+        	return "";
         }
+        StringBuilder path = new StringBuilder();
+        path.append(_imagePaths.get(0));
+    	for (int i=1; i<_imagePaths.size(); i++) {
+    		path.append(IMAGE_PATH_SEPARATOR);
+    		path.append(_imagePaths.get(i));
+    	}
+    	return path.toString();
     }
 
     public List<String> getImagePaths() {
@@ -297,4 +322,27 @@ public class ImageSettings {
         return fileLocation;
     }
 
+	public void addToImagePath(File selectedFile) {
+		File dataSetPath = new File(_dataSetPath);
+		
+		File parent = parent(selectedFile, dataSetPath);
+		String prefix = "";
+		while (!parent.equals(dataSetPath)) {
+			prefix += ".."+File.pathSeparator;
+			parent = parent(selectedFile, dataSetPath.getParentFile());
+		}
+		String filePath = selectedFile.getAbsolutePath();
+		String relativePath = filePath.substring(filePath.indexOf(parent.getAbsolutePath()));
+		
+		_imagePaths.add(relativePath);
+	}
+
+	private File parent(File start, File parent) {
+		if (start.equals(parent) || start.getParentFile() == null) {
+			return start;
+		}
+		else {
+			return parent(start.getParentFile(), parent);
+		}
+	}
 }

@@ -16,6 +16,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JColorChooser;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -77,6 +78,7 @@ public class ImageSettingsDialog extends JDialog {
 	
 	public ImageSettingsDialog(Window parent, ImageSettings settings) {
 		super(parent);
+		
 		_imageSettings = settings;
 		_resources = Application.getInstance().getContext().getResourceMap();
 		createUI();
@@ -91,6 +93,7 @@ public class ImageSettingsDialog extends JDialog {
 		btnOk.setAction(actions.get("okImageSettingsChanges"));
 		btnApply.setAction(actions.get("applyImageSettingsChanges"));
 		btnCancel.setAction(actions.get("cancelImageSettingsChanges"));
+		imagePathButton.setAction(actions.get("addToImagePath"));
 		
 		javax.swing.Action defaultFontChange = actions.get("defaultFontPropertyChanged");
 		defaultFontCombo.setAction(defaultFontChange);
@@ -481,6 +484,15 @@ public class ImageSettingsDialog extends JDialog {
 		return font;	
 	}
 	
+	@Action
+	public void addToImagePath() {
+		JFileChooser chooser = new JFileChooser(_imageSettings.getDataSetPath());
+		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		int result = chooser.showDialog(this, _resources.getString("okImageSettingsChanges.Action.text"));
+		if (result == JFileChooser.APPROVE_OPTION) {
+			_imageSettings.addToImagePath(chooser.getSelectedFile());
+		}
+	}
 	
 	@Action
 	public void displayColourChooser() {
