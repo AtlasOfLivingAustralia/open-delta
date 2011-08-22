@@ -166,6 +166,20 @@ public class AttributeEditor extends JPanel implements ValidationListener, Prefe
 						}
 					}
 				}
+				
+				if (noModifiersOrShift(e.getModifiers()) && e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+					e.consume();
+					InputVerifier validator = _textPane.getInputVerifier();
+					if (validator != null) {
+						if (!validator.verify(_textPane)) {
+							return;
+						}
+					}
+					if (commitChanges()) {
+						fireFocusOnViewer();
+					}
+					
+				}
 			}
 			
 			private boolean noModifiersOrShift(int modifiers) {
@@ -242,6 +256,12 @@ public class AttributeEditor extends JPanel implements ValidationListener, Prefe
 	protected void fireReverse() {
 		for (AttributeEditorListener l : _listeners) {
 			l.reverse();
+		}
+	}
+	
+	protected void fireFocusOnViewer() {
+		for (AttributeEditorListener l : _listeners) {
+			l.focusOnViewer();
 		}
 	}
 	

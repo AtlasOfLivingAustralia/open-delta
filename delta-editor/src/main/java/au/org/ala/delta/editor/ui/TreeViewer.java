@@ -182,6 +182,10 @@ public class TreeViewer extends JInternalFrame implements DeltaView {
 			public void reverse() {
 				updateSelection(-1);
 			}
+			@Override
+			public void focusOnViewer() {
+				_tree.requestFocus();				
+			}
 		});
 
 		this.getContentPane().setLayout(new BorderLayout());
@@ -499,13 +503,11 @@ public class TreeViewer extends JInternalFrame implements DeltaView {
 	}
 	
 	/**
-	 * Overrides the editing behavior of the DefaultTreeCellEditor to allow editing to
+	 * Overrides the editing behaviour of the DefaultTreeCellEditor to allow editing to
 	 * occur with a single click.  (The default is three).
 	 */
 	class DeltaTreeEditor extends DefaultTreeCellEditor {
-		
-		private static final long serialVersionUID = 8431473832073654661L;
-
+		 
 		private MultiStateAttributeCellEditor _multistateEditor;
 		private NumericTextAttributeCellEditor _numericTextEditor;
 		private DefaultTreeCellRenderer _renderer;

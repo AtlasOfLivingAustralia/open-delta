@@ -5,5 +5,7 @@ public interface AttributeEditorListener {
 	void advance();
 	
 	void reverse();
+	
+	void focusOnViewer();
 
 }

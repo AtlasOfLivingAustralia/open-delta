@@ -241,6 +241,11 @@ public class MatrixViewer extends JInternalFrame implements DeltaView {
 			public void reverse() {
 				updateSelection(-1);
 			}
+			@Override
+			public void focusOnViewer() {
+				_table.requestFocus();
+			}			
+			
 		});
 
 		_table.getActionMap().getParent().remove("paste");
