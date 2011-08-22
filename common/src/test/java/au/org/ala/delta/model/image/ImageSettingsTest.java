@@ -16,7 +16,8 @@ public class ImageSettingsTest extends TestCase {
 	 */
 	@Test
 	public void testAddToImagePathSubDirectoryOfDataSet() {
-		String dataSetPath = File.separatorChar+"test"+File.separatorChar+"path"+File.separatorChar;
+		String dataSetPath = File.listRoots()[0].getAbsolutePath()+
+			"test"+File.separatorChar+"path"+File.separatorChar;
 		String newPath = dataSetPath+"moreimages";
 		
 		ImageSettings imageSettings = new ImageSettings(dataSetPath);
@@ -28,15 +29,17 @@ public class ImageSettingsTest extends TestCase {
 	
 	@Test
 	public void testAddToImagePathNotSubDirectoryOfDataSet() {
-		String dataSetPath = File.separatorChar+"test"+File.separatorChar+"path"+File.separatorChar;
-		String newPath = File.separatorChar+"test"+File.separatorChar+"moreimages";
+		String dataSetPath = File.listRoots()[0].getAbsolutePath()+
+		    "test"+File.separatorChar+"path"+File.separatorChar;
+		String newPath = File.listRoots()[0].getAbsolutePath()+
+			"test"+File.separatorChar+"moreimages";
 		ImageSettings imageSettings = new ImageSettings(dataSetPath);
 		
 		imageSettings.addToImagePath(new File(newPath));
 	
 		assertEquals("images;.."+File.separatorChar+"moreimages", imageSettings.getImagePath());	
 	
-		newPath = File.separatorChar+"moreimages";
+		newPath = File.listRoots()[0].getAbsolutePath()+"moreimages";
 		imageSettings.addToImagePath(new File(newPath));
 		
 		assertEquals("images;.."+File.separatorChar+"moreimages;.."+File.separatorChar+".."+File.separatorChar+"moreimages", imageSettings.getImagePath());	
