@@ -26,6 +26,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.EventObject;
 import java.util.List;
+import java.util.logging.ErrorManager;
 import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
 
@@ -39,6 +40,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
 import javax.swing.LookAndFeel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -410,14 +412,19 @@ public class DeltaEditor extends InternalFrameApplication implements
 	 * @return A DeltaFileLoader task
 	 */
 	@Action(block = BlockingScope.APPLICATION)
-	public DeltaFileLoader loadPreviousFile(ActionEvent e) {
+	public DeltaFileLoader loadPreviousFile(ActionEvent e) {		
 		DeltaFileLoader fileOpenTask = null;
 		JComponent item = (JComponent) e.getSource();
 		if (item != null) {
-			File toOpen = new File((String) item.getClientProperty("Filename"));
+			String filename = (String) item.getClientProperty("Filename");
+			File toOpen = new File(filename);
 			if (toOpen != null && toOpen.exists()) {
 				fileOpenTask = new DeltaFileLoader(this, toOpen);
 				fileOpenTask.addPropertyChangeListener(_statusBar);
+			} else {
+				JOptionPane.showMessageDialog(getMainFrame(), "File not found or not readable!", "File open failed", JOptionPane.ERROR_MESSAGE);								
+				item.getParent().remove(item);
+				EditorPreferences.removeFileFromMRU(filename);
 			}
 		}
 		return fileOpenTask;

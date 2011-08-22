@@ -16,22 +16,22 @@ import au.org.ala.delta.editor.ui.EditorAdvanceMode;
 public class EditorPreferences {
 
 	public static String MRU_PREF_KEY = "MRU";
-	
+
 	/** Character used to separate the most recently used filenames */
 	private static String MRU_SEPARATOR = "\n";
 	/** The maximum number of Most Recently Used files */
 	private static int MAX_SIZE_MRU = 4;
-	
+
 	private static String IMPORT_FILE_FILTER_KEY = "importFileFilter";
 	/** Default value for the import file filter */
 	private static String DEFAULT_IMPORT_FILE_FILTER = "*.bak;*.box;tidy*.;reorder*.";
-	
+
 	public static String ADVANCE_MODE_KEY = "EditorAdvanceMode";
-	
+
 	private static EditorAdvanceMode DEFAULT_EDITOR_ADVANCE_MODE = EditorAdvanceMode.Character;
 
 	/**
-	 * @return An array of the most recently used filenames 
+	 * @return An array of the most recently used filenames
 	 */
 	public static String[] getPreviouslyUsedFiles() {
 		Preferences prefs = Preferences.userNodeForPackage(DeltaEditor.class);
@@ -46,15 +46,46 @@ public class EditorPreferences {
 	}
 
 	/**
+	 * Removes the specified file from the most recently used file list
+	 * @param filename The filename to remove
+	 */
+	public static void removeFileFromMRU(String filename) {
+
+		String[] existingFiles = getPreviouslyUsedFiles();
+
+		StringBuilder b = new StringBuilder();
+		for (int i = 0; i < existingFiles.length; ++i) {
+
+			if (!existingFiles[i].equalsIgnoreCase(filename)) {
+
+				if (b.length() > 0) {
+					b.append(MRU_SEPARATOR);
+				}
+				b.append(existingFiles[i]);
+			}
+		}
+		
+		Preferences prefs = Preferences.userNodeForPackage(DeltaEditor.class);
+		prefs.put(MRU_PREF_KEY, b.toString());
+		try {
+			prefs.sync();
+		} catch (BackingStoreException e) {
+			throw new RuntimeException(e);
+		}
+
+	}
+
+	/**
 	 * Adds the supplied filename to the top of the most recently used files.
+	 * 
 	 * @param filename
 	 */
 	public static void addFileToMRU(String filename) {
 
 		Queue<String> q = new LinkedList<String>();
-		
+
 		q.add(filename);
-		
+
 		String[] existingFiles = getPreviouslyUsedFiles();
 		if (existingFiles != null) {
 			for (String existingFile : existingFiles) {
@@ -80,7 +111,7 @@ public class EditorPreferences {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	public static String getImportFileFilter() {
 		Preferences prefs = Preferences.userNodeForPackage(DeltaEditor.class);
 		if (prefs != null) {
@@ -89,48 +120,49 @@ public class EditorPreferences {
 
 		return DEFAULT_IMPORT_FILE_FILTER;
 	}
-	
+
 	public static void setImportFileFilter(String filter) {
 		Preferences prefs = Preferences.userNodeForPackage(DeltaEditor.class);
 		if (prefs != null) {
 			prefs.put(IMPORT_FILE_FILTER_KEY, filter);
 		}
 	}
-	
+
 	public static EditorAdvanceMode getEditorAdvanceMode() {
 		Preferences prefs = Preferences.userNodeForPackage(DeltaEditor.class);
 		if (prefs != null) {
 			String mode = prefs.get(ADVANCE_MODE_KEY, DEFAULT_EDITOR_ADVANCE_MODE.toString());
 			return EditorAdvanceMode.valueOf(mode);
-		}	
+		}
 		return DEFAULT_EDITOR_ADVANCE_MODE;
 	}
-	
+
 	public static void setEditorAdvanceMode(EditorAdvanceMode mode) {
 		Preferences prefs = Preferences.userNodeForPackage(DeltaEditor.class);
 		if (prefs != null) {
 			prefs.put(ADVANCE_MODE_KEY, mode.toString());
-		}		
+		}
 	}
-	
+
 	/**
-	 * Allows the supplied PreferenceChangeListener to be notified of changes made to
-	 * preferences managed by this class.
-	 * @param listener the PreferenceChangeListener to add.
+	 * Allows the supplied PreferenceChangeListener to be notified of changes made to preferences managed by this class.
+	 * 
+	 * @param listener
+	 *            the PreferenceChangeListener to add.
 	 */
 	public static void addPreferencesChangeListener(PreferenceChangeListener listener) {
 		Preferences prefs = Preferences.userNodeForPackage(DeltaEditor.class);
 		if (prefs != null) {
 			prefs.addPreferenceChangeListener(listener);
-		}	
+		}
 	}
 
 	public static void removePreferenceChangeListener(PreferenceChangeListener listener) {
 		Preferences prefs = Preferences.userNodeForPackage(DeltaEditor.class);
 		if (prefs != null) {
 			prefs.removePreferenceChangeListener(listener);
-		}	
-		
+		}
+
 	}
 
 }
