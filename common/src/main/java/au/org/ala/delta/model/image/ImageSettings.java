@@ -322,19 +322,47 @@ public class ImageSettings {
         return fileLocation;
     }
 
+    /**
+     * Adds the supplied path to the image path as a path relative to the
+     * data set path.
+     * @param selectedFile a file containing the path to add.  If the file
+     * is relative it will be added without modification.  Otherwise it 
+     * will be turned into a path relative to the data set path and then
+     * added.
+     */
 	public void addToImagePath(File selectedFile) {
-		File dataSetPath = new File(_dataSetPath);
-		
-		File parent = parent(selectedFile, dataSetPath);
-		String prefix = "";
-		while (!parent.equals(dataSetPath)) {
-			prefix += ".."+File.pathSeparator;
-			parent = parent(selectedFile, dataSetPath.getParentFile());
+		String relativePath;
+		if (selectedFile.isAbsolute()) {
+			File dataSetPath = new File(_dataSetPath);
+			
+			File parent = parent(selectedFile, dataSetPath);
+			File commonParent = dataSetPath;
+			String prefix = "";
+			while (!parent.equals(commonParent)) {
+				prefix += ".."+File.separatorChar;
+				commonParent = commonParent.getParentFile();
+				parent = parent(selectedFile, commonParent);
+			}
+			String filePath = selectedFile.getAbsolutePath();
+			String parentPath = parent.getAbsolutePath();
+			
+			int relativePathIndex = filePath.indexOf(parentPath)+parentPath.length();
+			if (!parentPath.endsWith(File.separator)) {
+				relativePathIndex++;
+			}
+			relativePath = prefix+filePath.substring(relativePathIndex);
 		}
-		String filePath = selectedFile.getAbsolutePath();
-		String relativePath = filePath.substring(filePath.indexOf(parent.getAbsolutePath()));
+		else {
+			relativePath = selectedFile.getPath();
+		}
 		
-		_imagePaths.add(relativePath);
+		addToImagePath(relativePath);
+	}
+	
+	private void addToImagePath(String relativePath) {
+		if (!_imagePaths.contains(relativePath)) {
+			_imagePaths.add(relativePath);
+		}
 	}
 
 	private File parent(File start, File parent) {

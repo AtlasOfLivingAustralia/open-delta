@@ -491,6 +491,7 @@ public class ImageSettingsDialog extends JDialog {
 		int result = chooser.showDialog(this, _resources.getString("okImageSettingsChanges.Action.text"));
 		if (result == JFileChooser.APPROVE_OPTION) {
 			_imageSettings.addToImagePath(chooser.getSelectedFile());
+			imagePathTextField.setText(_imageSettings.getImagePath());
 		}
 	}
 	

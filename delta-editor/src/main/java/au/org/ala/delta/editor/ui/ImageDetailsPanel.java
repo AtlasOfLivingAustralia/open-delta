@@ -31,8 +31,10 @@ import org.apache.commons.lang.StringUtils;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 
+import au.org.ala.delta.editor.DeltaEditor;
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.ui.dnd.SimpleTransferHandler;
+import au.org.ala.delta.editor.ui.image.ImageSettingsDialog;
 import au.org.ala.delta.editor.ui.util.MessageDialogHelper;
 import au.org.ala.delta.model.Illustratable;
 import au.org.ala.delta.model.image.Image;
@@ -89,6 +91,7 @@ public class ImageDetailsPanel extends JPanel {
 		btnDisplay.setAction(actions.get("displayImage"));
 		btnAdd.setAction(actions.get("addImage"));
 		btnDelete.setAction(actions.get("deleteImage"));
+		btnSettings.setAction(actions.get("displayImageSettings"));
 		imageList.addListSelectionListener(new ListSelectionListener() {
 			
 			@Override
@@ -386,6 +389,13 @@ public class ImageDetailsPanel extends JPanel {
 		if (delete) {
 			_illustratable.deleteImage(_selectedImage);
 		}	
+	}
+	
+	@Action
+	public void displayImageSettings() {
+		DeltaEditor editor = (DeltaEditor)Application.getInstance();
+		ImageSettingsDialog dialog = new ImageSettingsDialog(editor.getMainFrame(), _dataSet.getImageSettings());
+		editor.show(dialog);
 	}
 	
 	/**
