@@ -18,7 +18,6 @@ import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.image.ImageSettings;
-import au.org.ala.delta.model.image.ResourceSettings;
 
 public class CharacterSelectionDialog extends ListSelectionDialog {
 

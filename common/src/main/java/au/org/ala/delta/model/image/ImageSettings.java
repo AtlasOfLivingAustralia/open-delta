@@ -5,6 +5,7 @@ import java.awt.Font;
 import java.util.ArrayList;
 
 
+import au.org.ala.delta.model.ResourceSettings;
 import au.org.ala.delta.model.image.OverlayLocation.OLDrawType;
 
 /**

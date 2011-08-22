@@ -25,6 +25,7 @@ import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.ResourceSettings;
 import au.org.ala.delta.model.format.Formatter;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.model.image.Image;
@@ -67,10 +68,12 @@ public class TaxonInformationDialog extends JDialog {
     private List<String> _fileNames;
     private List<Image> _images;
     
+    private ResourceSettings _infoSettings;
+    
     @Resource
     String noImagesCaption;
 
-    public TaxonInformationDialog(Frame owner, List<Item> taxa) {
+    public TaxonInformationDialog(Frame owner, List<Item> taxa, ResourceSettings infoSettings) {
         super(owner, true);
         
         ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(TaxonInformationDialog.class);

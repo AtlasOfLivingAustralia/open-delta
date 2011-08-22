@@ -23,9 +23,9 @@ import au.org.ala.delta.intkey.model.specimen.Specimen;
 import au.org.ala.delta.intkey.ui.UIUtils;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.ResourceSettings;
 import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.model.image.ImageSettings.FontInfo;
-import au.org.ala.delta.model.image.ResourceSettings;
 
 /**
  * Model. Maintains global application state. THIS CLASS IS NOT THREAD SAFE
