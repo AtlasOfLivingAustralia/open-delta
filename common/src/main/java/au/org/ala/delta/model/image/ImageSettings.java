@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -32,7 +33,7 @@ public class ImageSettings {
 
     };
     
-    public static final char IMAGE_PATH_SEPARATOR = ';';
+    public static final String IMAGE_PATH_SEPARATOR = ";";
 
     public static class FontInfo {
 
@@ -143,7 +144,8 @@ public class ImageSettings {
     // Convenience method for when there is only one image path
     public void setImagePath(String imagePath) {
         _imagePaths = new ArrayList<String>();
-        _imagePaths.add(imagePath);
+        
+        _imagePaths.addAll(Arrays.asList(imagePath.split(IMAGE_PATH_SEPARATOR)));
     }
 
     public void setImagePaths(List<String> imagePaths) {
