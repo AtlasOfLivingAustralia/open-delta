@@ -121,10 +121,10 @@ public class ResourceSettings {
      */
     public URL findFileOnResourcePath(String fileName) {
         URL fileLocation = null;
-        for (String imagePath : getResourcePathLocations()) {
+        for (String resourcePath : getResourcePathLocations()) {
             try {
-                if (imagePath.toLowerCase().startsWith("http")) {
-                    fileLocation = new URL(imagePath + fileName);
+                if (resourcePath.toLowerCase().startsWith("http")) {
+                    fileLocation = new URL(resourcePath + fileName);
 
                     // Try opening a stream to the remote file. If no exceptions
                     // are thrown, the file
@@ -134,7 +134,7 @@ public class ResourceSettings {
                     fileLocation.openStream();
                     break;
                 } else {
-                    File f = new File(imagePath + File.separator + fileName);
+                    File f = new File(resourcePath + File.separator + fileName);
                     if (f.exists()) {
                         fileLocation = f.toURI().toURL();
                         break;

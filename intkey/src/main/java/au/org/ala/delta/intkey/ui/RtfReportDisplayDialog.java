@@ -1,6 +1,7 @@
 package au.org.ala.delta.intkey.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Dialog;
 import java.awt.Frame;
 import java.io.File;
 import java.io.FileWriter;
@@ -53,12 +54,20 @@ public class RtfReportDisplayDialog extends JDialog {
     
     @Resource
     String fileChooserTitle;
+    
+    public RtfReportDisplayDialog(Dialog owner, EditorKit editorKit, String contentSource, String title) {
+        super(owner);
+        initialize(editorKit, contentSource, title);
+    }
 
     public RtfReportDisplayDialog(Frame owner, EditorKit editorKit, String contentSource, String title) {
         super(owner);
-        
-        ActionMap actionMap = Application.getInstance().getContext().getActionMap(this);
-        ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(ReExecuteDialog.class);
+        initialize(editorKit, contentSource, title);
+    }
+    
+    public void initialize(EditorKit editorKit, String contentSource, String title) {
+        ActionMap actionMap = Application.getInstance().getContext().getActionMap(RtfReportDisplayDialog.class, this);
+        ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(RtfReportDisplayDialog.class);
         resourceMap.injectFields(this);
 
         _scrollPane = new JScrollPane();

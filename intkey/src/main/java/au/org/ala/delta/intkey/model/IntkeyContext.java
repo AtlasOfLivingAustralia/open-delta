@@ -70,8 +70,8 @@ public class IntkeyContext extends AbstractDeltaContext {
     private Set<Integer> _includedCharacters;
     private Set<Integer> _includedTaxa;
 
-    private List<String> _imagePaths;
-    private List<String> _infoPaths;
+    private List<String> _imagePathLocations;
+    private List<String> _infoPathLocations;
 
     /**
      * Should executed directives be recorded in the history?
@@ -151,7 +151,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         _characterOrder = IntkeyCharacterOrder.BEST;
         _bestCharacters = null;
         
-        _imagePaths = new ArrayList<String>();
+        _imagePathLocations = new ArrayList<String>();
     }
 
     /**
@@ -966,7 +966,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         // TODO need a definitive way to work out the dataset directory
         imageSettings.setDataSetPath(_datasetInitFile.getParentFile().getAbsolutePath());
 
-        imageSettings.setResourcePaths(_imagePaths);
+        imageSettings.setResourcePaths(_imagePathLocations);
 
         return imageSettings;
     }
@@ -977,17 +977,17 @@ public class IntkeyContext extends AbstractDeltaContext {
         // TODO need a definitive way to work out the dataset directory
         infoSettings.setDataSetPath(_datasetInitFile.getParentFile().getAbsolutePath());
 
-        infoSettings.setResourcePaths(_imagePaths);
+        infoSettings.setResourcePaths(_infoPathLocations);
 
         return infoSettings;
     }
 
     public void setImagePaths(List<String> imagePaths) {
-        _imagePaths = new ArrayList<String>(imagePaths);
+        _imagePathLocations = new ArrayList<String>(imagePaths);
     }
     
     public void setInfoPaths(List<String> infoPaths) {
-        _infoPaths = new ArrayList<String>(infoPaths);
+        _infoPathLocations = new ArrayList<String>(infoPaths);
     }
 
     /**
