@@ -25,6 +25,7 @@ import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.model.image.ImageSettings.FontInfo;
+import au.org.ala.delta.model.image.ResourceSettings;
 
 /**
  * Model. Maintains global application state. THIS CLASS IS NOT THREAD SAFE
@@ -70,6 +71,7 @@ public class IntkeyContext extends AbstractDeltaContext {
     private Set<Integer> _includedTaxa;
 
     private List<String> _imagePaths;
+    private List<String> _infoPaths;
 
     /**
      * Should executed directives be recorded in the history?
@@ -964,13 +966,28 @@ public class IntkeyContext extends AbstractDeltaContext {
         // TODO need a definitive way to work out the dataset directory
         imageSettings.setDataSetPath(_datasetInitFile.getParentFile().getAbsolutePath());
 
-        imageSettings.setImagePaths(_imagePaths);
+        imageSettings.setResourcePaths(_imagePaths);
 
         return imageSettings;
+    }
+    
+    public ResourceSettings getInfoSettings() {
+        ResourceSettings infoSettings = new ResourceSettings();
+
+        // TODO need a definitive way to work out the dataset directory
+        infoSettings.setDataSetPath(_datasetInitFile.getParentFile().getAbsolutePath());
+
+        infoSettings.setResourcePaths(_imagePaths);
+
+        return infoSettings;
     }
 
     public void setImagePaths(List<String> imagePaths) {
         _imagePaths = new ArrayList<String>(imagePaths);
+    }
+    
+    public void setInfoPaths(List<String> infoPaths) {
+        _infoPaths = new ArrayList<String>(infoPaths);
     }
 
     /**

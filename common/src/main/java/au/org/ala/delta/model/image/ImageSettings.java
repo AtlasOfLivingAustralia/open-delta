@@ -2,14 +2,8 @@ package au.org.ala.delta.model.image;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.model.image.OverlayLocation.OLDrawType;
 
@@ -17,7 +11,7 @@ import au.org.ala.delta.model.image.OverlayLocation.OLDrawType;
  * The ImageSettings class maintains the defaults used when creating images and
  * image overlays.
  */
-public class ImageSettings {
+public class ImageSettings extends ResourceSettings {
 
     public enum ButtonAlignment {
         NO_ALIGN, ALIGN_VERTICALLY, ALIGN_HORIZONTALLY
@@ -33,8 +27,6 @@ public class ImageSettings {
 
     };
     
-    public static final String IMAGE_PATH_SEPARATOR = ";";
-
     public static class FontInfo {
 
         public FontInfo() {
@@ -62,11 +54,9 @@ public class ImageSettings {
         public String comment;
     }
 
-    private List<String> _imagePaths;
     private FontInfo _defaultFontInfo;
     private FontInfo _defaultFeatureFontInfo;
     private FontInfo _defaultButtonFont;
-    private String _dataSetPath;
     private boolean _centreInBox;
     private boolean _includeComments;
     private boolean _omitDescription;
@@ -78,8 +68,8 @@ public class ImageSettings {
 
     public ImageSettings() {
         _dataSetPath = null;
-        _imagePaths = new ArrayList<String>();
-        _imagePaths.add("images");
+        _resourcePaths = new ArrayList<String>();
+        _resourcePaths.add("images");
 
         _defaultFontInfo = new FontInfo(10, 4, false, 2, 2, 0, "MS Sans Serif");
         _defaultButtonFont = new FontInfo(10, 4, false, 2, 2, 0, "MS Sans Serif");
@@ -89,67 +79,6 @@ public class ImageSettings {
     public ImageSettings(String dataSetPath) {
         this();
         _dataSetPath = dataSetPath;
-    }
-
-    public void setDataSetPath(String path) {
-        _dataSetPath = path;
-    }
-
-    public String getDataSetPath() {
-    	return _dataSetPath;
-    }
-    
-    /**
-     * @return the first entry on the image path as an absolute file path.
-     */
-    public String getFirstImagePath() {
-    	if (_imagePaths.isEmpty()) {
-    		return "";
-    	}
-    	else {
-    		return getImagePaths().get(0);
-    	}
-    }
-    
-    /**
-     * @return the list of image paths as a ';' separated String.
-     */
-    public String getImagePath() {
-        if (_imagePaths.isEmpty()) {
-        	return "";
-        }
-        StringBuilder path = new StringBuilder();
-        path.append(_imagePaths.get(0));
-    	for (int i=1; i<_imagePaths.size(); i++) {
-    		path.append(IMAGE_PATH_SEPARATOR);
-    		path.append(_imagePaths.get(i));
-    	}
-    	return path.toString();
-    }
-
-    public List<String> getImagePaths() {
-        List<String> retList = new ArrayList<String>();
-
-        for (String imagePath : _imagePaths) {
-            if (imagePath.startsWith("http") || new File(imagePath).isAbsolute() || StringUtils.isEmpty(_dataSetPath)) {
-                retList.add(imagePath);
-            } else {
-                retList.add(_dataSetPath + File.separator + imagePath);
-            }
-        }
-
-        return retList;
-    }
-
-    // Convenience method for when there is only one image path
-    public void setImagePath(String imagePath) {
-        _imagePaths = new ArrayList<String>();
-        
-        _imagePaths.addAll(Arrays.asList(imagePath.split(IMAGE_PATH_SEPARATOR)));
-    }
-
-    public void setImagePaths(List<String> imagePaths) {
-        _imagePaths = new ArrayList<String>(imagePaths);
     }
 
     public FontInfo getDefaultFontInfo() {
@@ -292,87 +221,4 @@ public class ImageSettings {
         location.setW(250);
         location.setH(250);
     }
-    
-    public URL findFileOnImagePath(String fileName) {
-        URL fileLocation = null;
-        for (String imagePath : getImagePaths()) {
-            try {
-                if (imagePath.toLowerCase().startsWith("http")) {
-                    fileLocation = new URL(imagePath + fileName);
-
-                    // Try opening a stream to the remote file. If no exceptions
-                    // are thrown, the file
-                    // was successfully found at that location. Unfortunately
-                    // there is no better way to
-                    // test existence of a remote file.
-                    fileLocation.openStream();
-                    break;
-                } else {
-                    File f = new File(imagePath + File.separator + fileName);
-                    if (f.exists()) {
-                        fileLocation = f.toURI().toURL();
-                        break;
-                    }
-
-                }
-
-            } catch (IOException ioexception) {
-                // do nothing, keep searching on image path.
-            }
-        }
-
-        return fileLocation;
-    }
-
-    /**
-     * Adds the supplied path to the image path as a path relative to the
-     * data set path.
-     * @param selectedFile a file containing the path to add.  If the file
-     * is relative it will be added without modification.  Otherwise it 
-     * will be turned into a path relative to the data set path and then
-     * added.
-     */
-	public void addToImagePath(File selectedFile) {
-		String relativePath;
-		if (selectedFile.isAbsolute()) {
-			File dataSetPath = new File(_dataSetPath);
-			
-			File parent = parent(selectedFile, dataSetPath);
-			File commonParent = dataSetPath;
-			String prefix = "";
-			while (!parent.equals(commonParent)) {
-				prefix += ".."+File.separatorChar;
-				commonParent = commonParent.getParentFile();
-				parent = parent(selectedFile, commonParent);
-			}
-			String filePath = selectedFile.getAbsolutePath();
-			String parentPath = parent.getAbsolutePath();
-			
-			int relativePathIndex = filePath.indexOf(parentPath)+parentPath.length();
-			if (!parentPath.endsWith(File.separator)) {
-				relativePathIndex++;
-			}
-			relativePath = prefix+filePath.substring(relativePathIndex);
-		}
-		else {
-			relativePath = selectedFile.getPath();
-		}
-		
-		addToImagePath(relativePath);
-	}
-	
-	private void addToImagePath(String relativePath) {
-		if (!_imagePaths.contains(relativePath)) {
-			_imagePaths.add(relativePath);
-		}
-	}
-
-	private File parent(File start, File parent) {
-		if (start.equals(parent) || start.getParentFile() == null) {
-			return start;
-		}
-		else {
-			return parent(start.getParentFile(), parent);
-		}
-	}
 }

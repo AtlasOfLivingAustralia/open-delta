@@ -12,6 +12,7 @@ import org.junit.Test;
 import junit.framework.TestCase;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageSettings;
+import au.org.ala.delta.model.image.ResourceSettings;
 import au.org.ala.delta.model.impl.DefaultImageData;
 import au.org.ala.delta.ui.image.ImageViewer;
 

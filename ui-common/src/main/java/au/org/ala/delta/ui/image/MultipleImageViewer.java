@@ -101,7 +101,7 @@ public class MultipleImageViewer extends JPanel {
         List<ImageOverlay> sounds = getVisibleViewer().getViewedImage().getSounds();
         for (ImageOverlay sound : sounds) {
             try {
-                URL soundUrl = _imageSettings.findFileOnImagePath(sound.overlayText);
+                URL soundUrl = _imageSettings.findFileOnResourcePath(sound.overlayText);
                 AudioPlayer.playClip(soundUrl);
             } catch (Exception e) {
                 // TODO _messageHelper.errorPlayingSound(sound.overlayText);

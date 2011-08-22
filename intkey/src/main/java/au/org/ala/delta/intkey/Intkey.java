@@ -95,6 +95,7 @@ import au.org.ala.delta.intkey.ui.ReExecuteDialog;
 import au.org.ala.delta.intkey.ui.RealInputDialog;
 import au.org.ala.delta.intkey.ui.RtfReportDisplayDialog;
 import au.org.ala.delta.intkey.ui.TaxonCellRenderer;
+import au.org.ala.delta.intkey.ui.TaxonInformationDialog;
 import au.org.ala.delta.intkey.ui.TaxonKeywordSelectionDialog;
 import au.org.ala.delta.intkey.ui.TaxonWithDifferenceCountCellRenderer;
 import au.org.ala.delta.intkey.ui.TextInputDialog;
@@ -481,7 +482,6 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
         _btnTaxonInfo = new JButton();
         _btnTaxonInfo.setAction(actionMap.get("btnTaxonInfo"));
-        _btnTaxonInfo.setEnabled(false);
         _btnTaxonInfo.setPreferredSize(new Dimension(30, 30));
         _pnlRemainingTaxaButtons.add(_btnTaxonInfo);
 
@@ -948,6 +948,18 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     @Action
     public void btnTaxonInfo() {
+        List<Item> selectedTaxa = new ArrayList<Item>();
+
+        for (int i : _listRemainingTaxa.getSelectedIndices()) {
+            selectedTaxa.add((Item) _availableTaxaListModel.getElementAt(i));
+        }
+
+        for (int i : _listEliminatedTaxa.getSelectedIndices()) {
+            selectedTaxa.add((Item) _eliminatedTaxaListModel.getElementAt(i));
+        }
+        
+        TaxonInformationDialog dlg = new TaxonInformationDialog(getMainFrame(), selectedTaxa);
+        show(dlg);
     }
 
     @Action

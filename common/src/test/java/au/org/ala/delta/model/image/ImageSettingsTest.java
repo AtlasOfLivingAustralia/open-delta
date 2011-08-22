@@ -22,9 +22,9 @@ public class ImageSettingsTest extends TestCase {
 		
 		ImageSettings imageSettings = new ImageSettings(dataSetPath);
 		
-		imageSettings.addToImagePath(new File(newPath));
+		imageSettings.addToResourcePath(new File(newPath));
 	
-		assertEquals("images;moreimages", imageSettings.getImagePath());	
+		assertEquals("images;moreimages", imageSettings.getResourcePath());	
 	}
 	
 	@Test
@@ -35,14 +35,14 @@ public class ImageSettingsTest extends TestCase {
 			"test"+File.separatorChar+"moreimages";
 		ImageSettings imageSettings = new ImageSettings(dataSetPath);
 		
-		imageSettings.addToImagePath(new File(newPath));
+		imageSettings.addToResourcePath(new File(newPath));
 	
-		assertEquals("images;.."+File.separatorChar+"moreimages", imageSettings.getImagePath());	
+		assertEquals("images;.."+File.separatorChar+"moreimages", imageSettings.getResourcePath());	
 	
 		newPath = File.listRoots()[0].getAbsolutePath()+"moreimages";
-		imageSettings.addToImagePath(new File(newPath));
+		imageSettings.addToResourcePath(new File(newPath));
 		
-		assertEquals("images;.."+File.separatorChar+"moreimages;.."+File.separatorChar+".."+File.separatorChar+"moreimages", imageSettings.getImagePath());	
+		assertEquals("images;.."+File.separatorChar+"moreimages;.."+File.separatorChar+".."+File.separatorChar+"moreimages", imageSettings.getResourcePath());	
 	}
 
 }

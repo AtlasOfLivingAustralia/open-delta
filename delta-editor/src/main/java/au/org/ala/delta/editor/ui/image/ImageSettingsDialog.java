@@ -424,7 +424,7 @@ public class ImageSettingsDialog extends JDialog {
 	}
 	
 	private void updateGUI() {
-		imagePathTextField.setText(_imageSettings.getImagePath());
+		imagePathTextField.setText(_imageSettings.getResourcePath());
 		Font defaultFont = _imageSettings.getDefaultFont();
 		updateFromFont(defaultFont, defaultFontCombo, defaultSizeCombo, defaultBoldCheckBox, defaultItalicCheckBox);
 		Font featureFont = _imageSettings.getDefaultFeatureFont();
@@ -490,8 +490,8 @@ public class ImageSettingsDialog extends JDialog {
 		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		int result = chooser.showDialog(this, _resources.getString("okImageSettingsChanges.Action.text"));
 		if (result == JFileChooser.APPROVE_OPTION) {
-			_imageSettings.addToImagePath(chooser.getSelectedFile());
-			imagePathTextField.setText(_imageSettings.getImagePath());
+			_imageSettings.addToResourcePath(chooser.getSelectedFile());
+			imagePathTextField.setText(_imageSettings.getResourcePath());
 		}
 	}
 	

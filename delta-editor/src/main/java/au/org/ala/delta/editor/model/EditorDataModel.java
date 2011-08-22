@@ -158,7 +158,7 @@ public class EditorDataModel extends DataSetWrapper implements EditorViewModel, 
 			return "";
 		}
 		
-		String imagePath = getImageSettings().getFirstImagePath();
+		String imagePath = getImageSettings().getFirstResourcePath();
 		return imagePath;
 	}
 	

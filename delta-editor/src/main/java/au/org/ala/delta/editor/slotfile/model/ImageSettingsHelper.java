@@ -23,10 +23,10 @@ public class ImageSettingsHelper {
 		settings.setDefaultFontInfo(fontInfo);
 		fontInfo = toFontInfo(imageInfo.readOverlayFont(OverlayFontType.OF_FEATURE));
 		settings.setDefaultFeatureFontInfo(fontInfo);
-		fontInfo = toFontInfo(imageInfo.readOverlayFont(au.org.ala.delta.model.image.ImageSettings.OverlayFontType.OF_BUTTON));
+		fontInfo = toFontInfo(imageInfo.readOverlayFont(ImageSettings.OverlayFontType.OF_BUTTON));
 		settings.setDefaultButtonFontInfo(fontInfo);
 		
-		settings.setImagePath(imageInfo.readImagePath());
+		settings.setResourcePath(imageInfo.readImagePath());
 		
 		ImageOverlay overlay = new ImageOverlay();
 		OverlayLocation tmpLocation = new OverlayLocation();
@@ -48,7 +48,7 @@ public class ImageSettingsHelper {
 		Pair<LOGFONT, String> buttonFont = fromFontInfo(settings.getDefaultButtonFontInfo());
 		imageInfo.writeOverlayFont(OverlayFontType.OF_BUTTON, buttonFont.getSecond(), buttonFont.getFirst());
 	
-		imageInfo.writeImagePath(settings.getImagePath());
+		imageInfo.writeImagePath(settings.getResourcePath());
 		
 		ImageOverlay overlay = new ImageOverlay();
 		OverlayLocation tmpLocation = new OverlayLocation();

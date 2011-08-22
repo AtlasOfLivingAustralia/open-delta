@@ -453,7 +453,7 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 		for (ImageOverlay sound : sounds) {
 			
 			try {
-				URL soundUrl = _model.getImageSettings().findFileOnImagePath(sound.overlayText);
+				URL soundUrl = _model.getImageSettings().findFileOnResourcePath(sound.overlayText);
 				AudioPlayer.playClip(soundUrl);
 			}
 			catch (Exception e) {
