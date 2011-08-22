@@ -1,9 +1,13 @@
 package au.org.ala.delta.intkey.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Frame;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.ActionMap;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -15,7 +19,13 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
 
+import org.jdesktop.application.Action;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.Resource;
+import org.jdesktop.application.ResourceMap;
+
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.format.Formatter;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.model.image.Image;
 
@@ -28,7 +38,8 @@ public class TaxonInformationDialog extends JDialog {
     
     private List<Item> _taxa;
     private int _selectedIndex;
-    private ItemFormatter _formatter;
+    private ItemFormatter _itemFormatter;
+    private Formatter _imageDescriptionFormatter;
     private JPanel _mainPanel;
     private JPanel _comboPanel;
     private JComboBox _comboBox;
@@ -55,9 +66,17 @@ public class TaxonInformationDialog extends JDialog {
     
     private List<String> _fileNames;
     private List<Image> _images;
+    
+    @Resource
+    String noImagesCaption;
 
-    public TaxonInformationDialog(List<Item> taxa) {
-
+    public TaxonInformationDialog(Frame owner, List<Item> taxa) {
+        super(owner, true);
+        
+        ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(TaxonInformationDialog.class);
+        resourceMap.injectFields(this);
+        ActionMap actionMap = Application.getInstance().getContext().getActionMap(TaxonInformationDialog.class, this);
+        
         setTitle("Taxon Information");
         getContentPane().setLayout(new BorderLayout(0, 0));
 
@@ -71,22 +90,34 @@ public class TaxonInformationDialog extends JDialog {
         _comboPanel.setLayout(new BorderLayout(0, 0));
 
         _comboBox = new JComboBox();
+        _comboBox.addActionListener(new ActionListener() {
+            
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                displayTaxon(_comboBox.getSelectedIndex());
+            }
+        });
+        
         _comboPanel.add(_comboBox, BorderLayout.CENTER);
 
         _btnPanel = new JPanel();
         _btnPanel.setBorder(new EmptyBorder(0, 0, 10, 0));
         _mainPanel.add(_btnPanel, BorderLayout.SOUTH);
 
-        _btnDisplay = new JButton("Display");
+        _btnDisplay = new JButton();
+        _btnDisplay.setAction(actionMap.get("displaySelectedTaxonInformation"));
         _btnPanel.add(_btnDisplay);
 
-        _btnMultipleImages = new JButton("Multiple Images");
+        _btnMultipleImages = new JButton();
+        _btnMultipleImages.setAction(actionMap.get("displayMultipleImages"));
         _btnPanel.add(_btnMultipleImages);
 
-        _btnDeselectAll = new JButton("Deselect All");
+        _btnDeselectAll = new JButton();
+        _btnDeselectAll.setAction(actionMap.get("deselectAllTaxonInformation"));
         _btnPanel.add(_btnDeselectAll);
 
         _btnDone = new JButton("Done");
+        _btnDone.setAction(actionMap.get("done"));
         _btnPanel.add(_btnDone);
 
         _pnlCenter = new JPanel();
@@ -96,16 +127,20 @@ public class TaxonInformationDialog extends JDialog {
         _pnlNavigationButtons = new JPanel();
         _pnlCenter.add(_pnlNavigationButtons, BorderLayout.NORTH);
 
-        _btnStart = new JButton("start");
+        _btnStart = new JButton();
+        _btnStart.setAction(actionMap.get("firstTaxon"));
         _pnlNavigationButtons.add(_btnStart);
 
-        _btnPrevious = new JButton("previous");
+        _btnPrevious = new JButton();
+        _btnPrevious.setAction(actionMap.get("previousTaxon"));
         _pnlNavigationButtons.add(_btnPrevious);
 
-        _btnForward = new JButton("forward");
+        _btnForward = new JButton();
+        _btnForward.setAction(actionMap.get("nextTaxon"));
         _pnlNavigationButtons.add(_btnForward);
 
-        _btnEnd = new JButton("end");
+        _btnEnd = new JButton();
+        _btnEnd.setAction(actionMap.get("lastTaxon"));
         _pnlNavigationButtons.add(_btnEnd);
 
         _pnlLists = new JPanel();
@@ -138,10 +173,13 @@ public class TaxonInformationDialog extends JDialog {
         _sclPnIllustrations.setViewportView(_listIllustrations);
         _pnlListIllustrations.add(_sclPnIllustrations, BorderLayout.CENTER);
 
-        _formatter = new ItemFormatter(false, false, true, false, true, false);
+        _itemFormatter = new ItemFormatter(false, false, true, false, true, false);
+        _imageDescriptionFormatter = new Formatter(false, false, false, true);
         
         _taxa = taxa;
         initialize();
+        
+        this.pack();
     }
 
     private void initialize() {
@@ -149,14 +187,18 @@ public class TaxonInformationDialog extends JDialog {
 
         DefaultComboBoxModel comboModel = new DefaultComboBoxModel();
         for (Item taxon : _taxa) {
-            comboModel.addElement(_formatter.formatItemDescription(taxon));
+            comboModel.addElement(_itemFormatter.formatItemDescription(taxon));
         }
+        _comboBox.setModel(comboModel);
         
         displayTaxon(0);
     }
 
     private void displayTaxon(int index) {
+        _selectedIndex = index;
         Item selectedTaxon = _taxa.get(_selectedIndex);
+        
+        _comboBox.setSelectedIndex(_selectedIndex);
         
         //Update other list
         _fileNames = new ArrayList<String>();
@@ -167,35 +209,68 @@ public class TaxonInformationDialog extends JDialog {
         _images = new ArrayList<Image>();
         DefaultListModel illustrationsListModel = new DefaultListModel(); 
         for (Image img: selectedTaxon.getImages()) {
-            illustrationsListModel.addElement(img.getSubjectTextOrFileName());
+            _images.add(img);
+            illustrationsListModel.addElement(_imageDescriptionFormatter.defaultFormat(img.getSubjectTextOrFileName()));
         }
+        
+        if (_images.isEmpty()) {
+            illustrationsListModel.addElement(noImagesCaption);
+        }
+        
+        _listIllustrations.setModel(illustrationsListModel);
         
         //update button state
         _btnStart.setEnabled(index > 0);
         _btnPrevious.setEnabled(index > 0);
-        _btnForward.setEnabled(index < _taxa.size());
-        _btnEnd.setEnabled(index < _taxa.size());
+        _btnForward.setEnabled(index < _taxa.size() - 1);
+        _btnEnd.setEnabled(index < _taxa.size() - 1);
         
     }
 
+    @Action
     public void firstTaxon() {
-        _selectedIndex = 0;
-        displayTaxon(_selectedIndex);
+        displayTaxon(0);
     }
 
+    @Action
     public void lastTaxon() {
-        _selectedIndex = _taxa.size() - 1;
-        displayTaxon(_selectedIndex);
+        displayTaxon(_taxa.size() - 1);
     }
 
+    @Action
     public void nextTaxon() {
-        _selectedIndex++;
-        displayTaxon(_selectedIndex);
+        displayTaxon(_selectedIndex + 1);
     }
 
+    @Action
     public void previousTaxon() {
-        _selectedIndex--;
-        displayTaxon(_selectedIndex);
+        displayTaxon(_selectedIndex - 1);
+    }
+    
+    @Action
+    public void displaySelectedTaxonInformation() {
+        
+    }
+    
+    @Action
+    public void displayMultipleImages() {
+        
+    }
+    
+    @Action
+    public void webSearch() {
+        //TODO should we even bother with this?
+    }
+    
+    @Action
+    public void deselectAllTaxonInformation() {
+        _listOther.clearSelection();
+        _listIllustrations.clearSelection();
+    }
+    
+    @Action
+    public void done() {
+        this.setVisible(false);
     }
     
     private interface InformationDialogCommand {
