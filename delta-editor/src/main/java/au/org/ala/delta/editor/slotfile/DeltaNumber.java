@@ -17,12 +17,15 @@ package au.org.ala.delta.editor.slotfile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.text.DecimalFormatSymbols;
+import java.util.Locale;
 
 /**
  * Stores a numeric value (as a float) and the number of decimal places associated with that 
  * value.
  */
 public class DeltaNumber {
+	
+	protected static final char DECIMAL_SEPARATOR = '.';
 
 	private float _value;
 	private byte _decimal;
@@ -86,10 +89,9 @@ public class DeltaNumber {
 		_decimal = Decimal;
 	}
 
-	public int setFromString(String src) {
-		char decimal = new DecimalFormatSymbols().getDecimalSeparator();
+	public int setFromString(String src) {						
 		int effectiveLength = parseFloat(src);	
-		int pos = src.indexOf(decimal);
+		int pos = src.indexOf(DECIMAL_SEPARATOR);
 		if (pos > 0) {
 			_decimal = (byte) (effectiveLength - 1 - pos);
 		}
@@ -115,8 +117,9 @@ public class DeltaNumber {
 	}
 	
 	public String asString() {
-		String format = String.format("%%.%df", _decimal);
-		return String.format(format, _value);
+		String format = String.format("%%.%df", _decimal);		
+		// We use the English locale to force the '.' decimal separator. See issue #15
+		return String.format(Locale.ENGLISH, format, _value);
 	}
 	
 	@Override

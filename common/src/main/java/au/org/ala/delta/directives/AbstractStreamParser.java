@@ -17,17 +17,19 @@ package au.org.ala.delta.directives;
 import java.io.IOException;
 import java.io.Reader;
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 
 public abstract class AbstractStreamParser {
+
+	// For now we use just the period for decimal numbers. In the future we may need to examine how locale should affect this.
+	protected static final char DECIMAL_SEPARATOR = '.';
 
 	protected Reader _reader;
 	protected AbstractDeltaContext _context;
 	protected char _currentChar;
 	protected int _currentInt;
 	protected int _position;
+	
 
 	public AbstractStreamParser(AbstractDeltaContext context, Reader reader) {
 		_reader = reader;
@@ -117,7 +119,7 @@ public abstract class AbstractStreamParser {
 	protected BigDecimal readReal() throws ParseException {
 		int position = _position;
 		StringBuilder b = new StringBuilder();
-		while (Character.isDigit(_currentChar) || _currentChar == DecimalFormatSymbols.getInstance().getDecimalSeparator()) {
+		while (Character.isDigit(_currentChar) || _currentChar == DECIMAL_SEPARATOR) {
 			b.append(_currentChar);
 			readNext();
 		}
