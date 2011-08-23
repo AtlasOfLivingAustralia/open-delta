@@ -19,6 +19,10 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 
 import org.apache.commons.lang.StringUtils;
@@ -39,6 +43,7 @@ public class ActionSetsDialog extends JDialog {
 	
 	private EditorViewModel _model;
 	private ResourceMap _resources;
+	private ActionMap _actions;
 	
 	private JLabel actionSetDetailsLabel;
 	private JButton runButton;
@@ -56,6 +61,8 @@ public class ActionSetsDialog extends JDialog {
 		super(parent);
 		_model = model;
 		_resources = Application.getInstance().getContext().getResourceMap();
+		_actions = Application.getInstance().getContext().getActionMap(this);
+		
 		createUI();
 		addEventHandlers();
 		updateGUI();
@@ -63,14 +70,80 @@ public class ActionSetsDialog extends JDialog {
 	
 	
 	private void addEventHandlers() {
-		ActionMap actions = Application.getInstance().getContext().getActionMap(this);
-		runButton.setAction(actions.get("runDirectiveFile"));
-		editButton.setAction(actions.get("editDirectiveFile"));
-		deleteButton.setAction(actions.get("deleteDirectiveFile"));
-		doneButton.setAction(actions.get("doneWithActionSets"));
+		runButton.setAction(_actions.get("runDirectiveFile"));
+		editButton.setAction(_actions.get("editDirectiveFile"));
+		deleteButton.setAction(_actions.get("deleteDirectiveFile"));
+		doneButton.setAction(_actions.get("doneWithActionSets"));
 		
-
+		JTable[] tables = {conforTable, intkeyTable, distTable, keyTable};
+		for (JTable table : tables) {
+			table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+				
+				@Override
+				public void valueChanged(ListSelectionEvent e) {
+					updateAction();
+				}
+			});
+		}
+		tabbedPane.addChangeListener(new ChangeListener() {
+			
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				updateAction();
+			}
+		});
 	}
+	
+	public void updateAction() {
+		DirectiveFile file = getSelectedFile();
+		if (file == null) {
+			enableActions(false);
+			actionSetDetailsLabel.setText("");
+		}
+		else {
+			enableActions(true);
+			actionSetDetailsLabel.setText(getActionText(file));
+		}
+	}
+	
+	private String getActionText(DirectiveFile file) {
+		String action = file.getDefiningDirective();
+		if (file.isSpecsFile()) {
+			action = _resources.getString("actionSetsSpecsFileAction");
+		}
+		else if (file.isCharsFile()) {
+			action = _resources.getString("actionSetsCharsFileAction");
+		}
+		else if (file.isItemsFile()) {
+			action = _resources.getString("actionSetsItemsFileAction");
+		}
+		
+		if (StringUtils.isEmpty(action)) {
+			switch (file.getType()) {
+			case CONFOR:
+			    action = _resources.getString("actionSetsDefaultConforAction");
+				break;
+			case INTKEY:
+				action = _resources.getString("actionSetsDefaultIntkeyAction");
+				break;
+			case DIST:
+				action = _resources.getString("actionSetsDefaultDistAction");
+				break;
+			case KEY:
+				action = _resources.getString("actionSetsDefaultKeyAction");
+				break;
+			}
+		}
+		return action;
+	}
+	
+	private void enableActions(boolean enable) {
+		String[] actions = {"runDirectiveFile", "editDirectiveFile","deleteDirectiveFile"};
+		for (String action : actions) {
+			_actions.get(action).setEnabled(enable);
+		}
+	}
+	
 	@Action
 	public void runDirectiveFile() {
 		DirectiveFile file = getSelectedFile();
@@ -99,7 +172,11 @@ public class ActionSetsDialog extends JDialog {
 		JTable selectedTable = (JTable)((JScrollPane)tabbedPane.getSelectedComponent()).getViewport().getView();
 		
 		int selected = selectedTable.getSelectedRow();
-		return ((DirectiveFileTableModel)selectedTable.getModel()).getFileAt(selected);
+		DirectiveFile file = null;
+		if (selected >= 0) {
+			file = ((DirectiveFileTableModel)selectedTable.getModel()).getFileAt(selected); 
+		}
+		return file;
 	}
 	
 	private void createUI() {
@@ -165,6 +242,8 @@ public class ActionSetsDialog extends JDialog {
 		intkeyTable.setModel(new DirectiveFileTableModel(files.get(DirectiveType.INTKEY)));
 		distTable.setModel(new DirectiveFileTableModel(files.get(DirectiveType.DIST)));
 		keyTable.setModel(new DirectiveFileTableModel(files.get(DirectiveType.KEY)));	
+		
+		updateAction();
 	}
 	
 	private class DirectiveFileTableModel extends AbstractTableModel {

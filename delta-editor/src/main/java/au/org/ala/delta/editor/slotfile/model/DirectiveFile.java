@@ -250,4 +250,19 @@ public class DirectiveFile {
 	public String toString() {
 		return getFileName()+" ("+getType().getAbbreviation()+")";
 	}
+	
+	/**
+	 * Attempts to return the name of the directive in this file which is 
+	 * the main purpose of the directive file.
+	 * It currently only will return something for CONFOR directive files.
+	 */
+	public String getDefiningDirective() {
+		if (getType() == DirectiveType.CONFOR) {
+			int directiveType = _dirFileDesc.getPrincipleConforAction();
+			if (directiveType != 0) {
+				return ConforDirType.ConforDirArray[directiveType].joinNameComponents();
+			}
+		}
+		return "";
+	}
 }
