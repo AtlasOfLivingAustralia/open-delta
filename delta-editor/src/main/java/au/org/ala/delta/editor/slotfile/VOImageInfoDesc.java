@@ -16,8 +16,8 @@ package au.org.ala.delta.editor.slotfile;
 
 import java.awt.Font;
 import java.awt.font.TextAttribute;
+import java.util.Arrays;
 import java.util.Map;
-
 import au.org.ala.delta.io.BinFile;
 import au.org.ala.delta.io.BinFileEncoding;
 import au.org.ala.delta.model.image.ImageSettings.OverlayFontType;
@@ -316,7 +316,7 @@ public class VOImageInfoDesc extends VOAnyDesc {
 		public byte lfClipPrecision;
 		public byte lfQuality;
 		public byte lfPitchAndFamily;
-		public byte[] lfFaceName = new byte[32];
+		byte[] lfFaceName = new byte[32];
 
 		@Override
 		public void read(BinFile file) {
@@ -384,6 +384,20 @@ public class VOImageInfoDesc extends VOAnyDesc {
 			lfItalic = (style & Font.ITALIC) > 0 ? (byte)1 : (byte)0;
 			lfWeight = (Integer)attributes.get(TextAttribute.WEIGHT);
 			
+		}
+		
+		public void setLfFaceName(String faceName) {
+			if (faceName.length() > 32) {
+				throw new IllegalArgumentException("Font family length must be <= 32 bytes");
+			}
+			lfFaceName = new byte[32];
+			Arrays.fill(lfFaceName, (byte)0);
+			byte[] tmp = BinFileEncoding.encode(faceName);
+			System.arraycopy(tmp, 0, lfFaceName, 0, Math.min(tmp.length, lfFaceName.length));
+		}
+
+		public String getLfFaceName() {
+			return BinFileEncoding.decode(lfFaceName).trim();
 		}
 	}
 

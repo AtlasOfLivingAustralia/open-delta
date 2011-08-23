@@ -28,6 +28,9 @@ public class ImageSettings extends ResourceSettings {
 
     };
     
+    private static final ButtonAlignment DEFAULT_BUTTON_ALIGNMENT = ButtonAlignment.NO_ALIGN;
+    
+    
     public static class FontInfo {
 
         public FontInfo() {
@@ -66,7 +69,7 @@ public class ImageSettings extends ResourceSettings {
     private boolean _useCustomPopupColour;
     private Color _customPopupColour;
     private ButtonAlignment _buttonAlignment;
-
+    
     public ImageSettings() {
         _dataSetPath = null;
         _resourcePaths = new ArrayList<String>();
@@ -189,6 +192,9 @@ public class ImageSettings extends ResourceSettings {
 	}
 	
 	public ButtonAlignment getButtonAlignment() {
+		if (_buttonAlignment == null) {
+			return DEFAULT_BUTTON_ALIGNMENT;
+		}
 		return _buttonAlignment;
 	}
 	
@@ -208,12 +214,51 @@ public class ImageSettings extends ResourceSettings {
         throw new IllegalArgumentException("Unsupported font type: " + type);
     }
 
+	public void setDefaultFont(Font font) {
+		FontInfo fontInfo = getDefaultFontInfo();
+		fontToFontInfo(font, fontInfo);
+	}
+	
+	public void setDefaultFont(Font font, String comment) {
+		setFont(font, comment, getDefaultFontInfo());
+	}
+	
+	public void setDefaultFeatureFont(Font font) {
+		FontInfo fontInfo = getDefaultFeatureFontInfo();
+		fontToFontInfo(font, fontInfo);
+	}
+	
+	public void setDefaultFeatureFont(Font font, String comment) {
+		setFont(font, comment, getDefaultFeatureFontInfo());
+	}
+	
+	public void setDefaultButtonFont(Font font) {
+		FontInfo fontInfo = getDefaultButtonFontInfo();
+		fontToFontInfo(font, fontInfo);
+	}
+	
+	public void setDefaultButtonFont(Font font, String comment) {
+		setFont(font, comment, getDefaultButtonFontInfo());
+	}
+	
+	private void setFont(Font font, String comment, FontInfo fontInfo) {
+		fontToFontInfo(font, fontInfo);
+		fontInfo.comment = comment;
+	}
+	
+	private void fontToFontInfo(Font font, FontInfo fontInfo) {
+		fontInfo.name = font.getFamily();
+		fontInfo.size = font.getSize();
+		fontInfo.italic = font.isItalic();
+		fontInfo.weight = font.isBold() ? 7 : 4;
+	}
+	
     private Font fontInfoToFont(FontInfo info) {
         if (info.size == 0) {
             return null;
         }
         int style = info.italic ? Font.ITALIC : 0;
-        style = style | (info.weight > 500 ? Font.BOLD : 0);
+        style = style | (info.weight >= 5 ? Font.BOLD : 0);
         return new Font(info.name, style, Math.abs(info.size));
     }
 

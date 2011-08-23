@@ -217,7 +217,8 @@ public class ImageOverlayEditorController {
 	@Action
 	public void displayImageSettings() {
 		DeltaEditor editor = (DeltaEditor)Application.getInstance();
-		ImageSettingsDialog dialog = new ImageSettingsDialog(editor.getMainFrame(), _imageSettings);
+		ImageSettingsDialog dialog = new ImageSettingsDialog(
+				editor.getMainFrame(), editor.getCurrentDataSet(), _imageSettings);
 		editor.show(dialog);
 	}
 

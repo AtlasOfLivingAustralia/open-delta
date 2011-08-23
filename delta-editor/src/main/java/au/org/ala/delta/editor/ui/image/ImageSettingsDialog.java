@@ -1,14 +1,19 @@
 package au.org.ala.delta.editor.ui.image;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
 import java.awt.Window;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 
 import javax.swing.ActionMap;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
@@ -18,6 +23,7 @@ import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
@@ -30,6 +36,7 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 
+import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.model.image.ImageSettings.ButtonAlignment;
 
@@ -42,6 +49,7 @@ public class ImageSettingsDialog extends JDialog {
 	private static final long serialVersionUID = 8761867230419524659L;
 	
 	private ImageSettings _imageSettings;
+	private EditorViewModel _model;
 	private ResourceMap _resources;
 	private String _defaultFontCommment;
 	private String _featureFontComment;
@@ -76,10 +84,11 @@ public class ImageSettingsDialog extends JDialog {
 	private JButton btnCancel;
 	private JButton btnApply;
 	
-	public ImageSettingsDialog(Window parent, ImageSettings settings) {
+	public ImageSettingsDialog(Window parent, EditorViewModel model, ImageSettings settings) {
 		super(parent);
 		
 		_imageSettings = settings;
+		_model = model;
 		_resources = Application.getInstance().getContext().getResourceMap();
 		createUI();
 		pack();
@@ -99,24 +108,55 @@ public class ImageSettingsDialog extends JDialog {
 		defaultFontCombo.setAction(defaultFontChange);
 		defaultSizeCombo.setAction(defaultFontChange);
 		defaultBoldCheckBox.setAction(defaultFontChange);
+		defaultBoldCheckBox.setText("");
 		defaultItalicCheckBox.setAction(defaultFontChange);
+		defaultItalicCheckBox.setText("");
+		FocusListener defaultFontFocusListener = new FocusAdapter() {
+			@Override
+			public void focusGained(FocusEvent e) {
+				defaultFontPropertyChanged();
+			}
+		};
+		defaultFontCombo.addFocusListener(defaultFontFocusListener);
+		defaultSizeCombo.addFocusListener(defaultFontFocusListener);
 		
 		javax.swing.Action featureFontChange = actions.get("featureFontPropertyChanged");
 		featureFontCombo.setAction(featureFontChange);
 		featureSizeCombo.setAction(featureFontChange);
 		featureBoldCheckBox.setAction(featureFontChange);
+		featureBoldCheckBox.setText("");
 		featureItalicCheckBox.setAction(featureFontChange);
+		featureItalicCheckBox.setText("");
+		FocusListener featureFontFocusListener = new FocusAdapter() {
+			@Override
+			public void focusGained(FocusEvent e) {
+				featureFontPropertyChanged();
+			}
+		};
+		featureFontCombo.addFocusListener(featureFontFocusListener);
+		featureSizeCombo.addFocusListener(featureFontFocusListener);
 		
 		javax.swing.Action buttonFontChange = actions.get("buttonFontPropertyChanged");
 		buttonFontCombo.setAction(buttonFontChange);
 		buttonSizeCombo.setAction(buttonFontChange);
 		buttonBoldCheckBox.setAction(buttonFontChange);
+		buttonBoldCheckBox.setText("");
 		buttonItalicCheckBox.setAction(buttonFontChange);
+		buttonItalicCheckBox.setText("");
+		FocusListener buttonFontFocusListener = new FocusAdapter() {
+			@Override
+			public void focusGained(FocusEvent e) {
+				buttonFontPropertyChanged();
+			}
+		};
+		buttonFontCombo.addFocusListener(buttonFontFocusListener);
+		buttonSizeCombo.addFocusListener(buttonFontFocusListener);
 		
 		chooseColourButton.setAction(actions.get("displayColourChooser"));
 	}
 
 	private void createUI() {
+		setTitle(_resources.getString("imageSettingsDialog.title"));
 		JPanel overlayDefaultsPanel = new JPanel();
 		overlayDefaultsPanel.setBorder(new TitledBorder(null, "Defaults for new overlays", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		
@@ -193,6 +233,7 @@ public class ImageSettingsDialog extends JDialog {
 		
 		buttonAlignmentCombo = new JComboBox();
 		buttonAlignmentCombo.setModel(new ButtonAlignmentModel());
+		buttonAlignmentCombo.setRenderer(new ButtonAlignmentRenderer());
 		GroupLayout gl_overlayDefaultsPanel = new GroupLayout(overlayDefaultsPanel);
 		gl_overlayDefaultsPanel.setHorizontalGroup(
 			gl_overlayDefaultsPanel.createParallelGroup(Alignment.LEADING)
@@ -306,7 +347,7 @@ public class ImageSettingsDialog extends JDialog {
 		sampleTextField = new JTextField("");
 		
 		chckbxSaveSampleAs = new JCheckBox("Save sample as comment");
-		
+		chckbxSaveSampleAs.setSelected(true);
 		
 		GroupLayout gl_overlayFontDefaultsPanel = new GroupLayout(overlayFontDefaultsPanel);
 		gl_overlayFontDefaultsPanel.setHorizontalGroup(
@@ -538,7 +579,33 @@ public class ImageSettingsDialog extends JDialog {
 	}
 	
 	private void applyChanges() {
+		_imageSettings.setResourcePath(imagePathTextField.getText());
 		
+		Font defaultFont = fontFromComponents(defaultFontCombo, defaultSizeCombo, defaultBoldCheckBox, defaultItalicCheckBox);
+		Font featureFont = fontFromComponents(featureFontCombo, featureSizeCombo, featureBoldCheckBox, featureItalicCheckBox);
+		Font buttonFont = fontFromComponents(buttonFontCombo, buttonSizeCombo, buttonBoldCheckBox, buttonItalicCheckBox);
+		if (chckbxSaveSampleAs.isSelected()) {
+			_imageSettings.setDefaultFont(defaultFont, _defaultFontCommment);
+			_imageSettings.setDefaultFeatureFont(featureFont, _featureFontComment);
+			_imageSettings.setDefaultButtonFont(buttonFont, _buttonFontComment);
+			
+		}
+		else {
+			_imageSettings.setDefaultFont(defaultFont);
+			_imageSettings.setDefaultFeatureFont(featureFont);
+			_imageSettings.setDefaultButtonFont(buttonFont);
+		}
+		
+		_imageSettings.setCentreInBox(chckbxCentreInBox.isSelected());
+		_imageSettings.setIncludeComments(chckbxIncludeComments.isSelected());
+		_imageSettings.setOmitDescription(chckbxOmitDescription.isSelected());
+		_imageSettings.setUseIntegralHeight(chckbxUseIntegralHeight.isSelected());
+		_imageSettings.setHotspotsPopup(chckbxHotspotsPopUp.isSelected());
+		_imageSettings.setUseCustomPopupColour(chckbxCustomPopupColour.isSelected());
+		_imageSettings.setCustomPopupColour(selectedColourLabel.getBackground());
+		_imageSettings.setButtonAlignment((ButtonAlignment)buttonAlignmentCombo.getModel().getSelectedItem());
+		
+		_model.setImageSettings(_imageSettings);
 	}
 	
 	static String[] fontFamilyNames = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
@@ -584,5 +651,34 @@ public class ImageSettingsDialog extends JDialog {
 		public int getSize() {
 			return ButtonAlignment.values().length;
 		}
+	}
+	
+	private class ButtonAlignmentRenderer extends DefaultListCellRenderer {
+
+		private static final long serialVersionUID = 7525531913965500140L;
+		private final String RESOURCE_PREFIX = "imageSettingsDialog.buttonAlignment.";
+		
+		@Override
+		public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
+				boolean cellHasFocus) {
+			ButtonAlignment align = (ButtonAlignment)value;
+			
+			String suffix;
+			switch (align) {
+			case ALIGN_HORIZONTALLY:
+				suffix = "alignHorizontally";
+				break;
+			case ALIGN_VERTICALLY:
+				suffix = "alignVertically";
+				break;
+			case NO_ALIGN:
+			default:
+				suffix = "noAlign";
+				break;
+			}
+			String displayValue = _resources.getString(RESOURCE_PREFIX + suffix);
+			return super.getListCellRendererComponent(list, displayValue, index, isSelected, cellHasFocus);
+		}
+		
 	}
 }
