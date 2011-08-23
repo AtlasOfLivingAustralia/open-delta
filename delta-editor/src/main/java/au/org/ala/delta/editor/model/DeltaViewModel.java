@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
 
+import au.org.ala.delta.editor.slotfile.model.DirectiveFile;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
@@ -121,4 +122,16 @@ public class DeltaViewModel extends DataSetWrapper implements EditorViewModel, P
 	public String getDataSetPath() {
 		return _editorDataModel.getDataSetPath();
 	}
+
+	@Override
+	public int getDirectiveFileCount() {
+		return _editorDataModel.getDirectiveFileCount();
+	}
+
+	@Override
+	public DirectiveFile getDirectiveFile(int directiveFileNumber) {
+		return _editorDataModel.getDirectiveFile(directiveFileNumber);
+	}
+	
+	
 }

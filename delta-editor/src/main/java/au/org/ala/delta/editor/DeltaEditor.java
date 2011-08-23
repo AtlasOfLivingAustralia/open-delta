@@ -26,7 +26,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.EventObject;
 import java.util.List;
-import java.util.logging.ErrorManager;
 import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
 
@@ -40,7 +39,6 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JPopupMenu;
 import javax.swing.LookAndFeel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -63,8 +61,10 @@ import au.org.ala.delta.editor.model.EditorDataModel;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile.DirectiveType;
 import au.org.ala.delta.editor.slotfile.model.SlotFileRepository;
 import au.org.ala.delta.editor.support.InternalFrameApplication;
+import au.org.ala.delta.editor.ui.ActionSetsDialog;
 import au.org.ala.delta.editor.ui.StatusBar;
 import au.org.ala.delta.editor.ui.help.HelpConstants;
+import au.org.ala.delta.editor.ui.image.ImageSettingsDialog;
 import au.org.ala.delta.editor.ui.util.MenuBuilder;
 import au.org.ala.delta.model.AbstractObservableDataSet;
 import au.org.ala.delta.model.DeltaDataSetRepository;
@@ -721,12 +721,16 @@ public class DeltaEditor extends InternalFrameApplication implements
 		newView(editor, "T");
 	}
 
-	@Action(enabledProperty = "enabled")
+	@Action(enabledProperty = "saveAsEnabled")
 	public void viewActionSets() {
+		ActionSetsDialog dialog = new ActionSetsDialog(getMainFrame(), getCurrentDataSet());
+		show(dialog);
 	}
 
-	@Action(enabledProperty = "enabled")
+	@Action(enabledProperty = "saveAsEnabled")
 	public void viewImageSettings() {
+		ImageSettingsDialog dialog = new ImageSettingsDialog(getMainFrame(), getCurrentDataSet(), getCurrentDataSet().getImageSettings());
+		show(dialog);
 	}
 
 	@Action

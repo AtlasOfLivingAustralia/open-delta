@@ -168,6 +168,38 @@ public class DirectiveFile {
 		
 	}
 	
+	/**
+	 * Returns the the text from the first SHOW or COMMENT directive in
+	 * this directive file.  If none exist, an empty string will be returned.
+	 */
+	public String getDescription() {
+		List<Integer> directiveTypes = new ArrayList<Integer>();
+		List<Dir> directives = _dirFileDesc.readAllDirectives(directiveTypes);
+		
+		switch (getType()) {
+		case CONFOR:
+			directiveTypes.add(ConforDirType.SHOW);
+			directiveTypes.add(ConforDirType.COMMENT);
+			break;
+		case INTKEY:
+			directiveTypes.add(IntkeyDirType.SHOW);
+			directiveTypes.add(IntkeyDirType.COMMENT);
+			break;
+		case DIST:
+			directiveTypes.add(DistDirType.COMMENT);
+			break;
+		case KEY:
+			directiveTypes.add(KeyDirType.COMMENT);
+			break;
+		}
+		
+		String description = "";
+		if (!directives.isEmpty()) {
+			description = directives.get(0).args.get(0).text;
+		}
+		return description;
+	}
+	
 	public List<DirectiveInstance> getDirectives() {
 		List<Dir> directives = _dirFileDesc.readAllDirectives();
 		List<DirectiveInstance> toReturn = new ArrayList<DirectiveInstance>(directives.size());
@@ -210,6 +242,9 @@ public class DirectiveFile {
 		return directive;
 	}
 
+	public long getLastModifiedTime() {
+		return _dirFileDesc.getFileModifyTime();
+	}
 	
 
 	public String toString() {
