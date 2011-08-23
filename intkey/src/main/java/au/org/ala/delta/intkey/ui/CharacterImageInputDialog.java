@@ -9,7 +9,12 @@ import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageSettings;
 
-public class ImageCharacterInputDialog extends ImageDialog {
+/**
+ * Used to Display images for a single character
+ * @author ChrisF
+ *
+ */
+public class CharacterImageInputDialog extends ImageDialog {
 
     /**
      * 
@@ -18,7 +23,7 @@ public class ImageCharacterInputDialog extends ImageDialog {
 
     private Character _character;
 
-    public ImageCharacterInputDialog(Frame owner, Character character, ImageSettings imageSettings) {
+    public CharacterImageInputDialog(Frame owner, Character character, ImageSettings imageSettings) {
         super(owner, imageSettings);
         init(character);
     }
@@ -26,7 +31,7 @@ public class ImageCharacterInputDialog extends ImageDialog {
     /**
      * @wbp.parser.constructor
      */
-    public ImageCharacterInputDialog(Dialog owner, Character character, ImageSettings imageSettings) {
+    public CharacterImageInputDialog(Dialog owner, Character character, ImageSettings imageSettings) {
         super(owner, imageSettings);
         init(character);
     }

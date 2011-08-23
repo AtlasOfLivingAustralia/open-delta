@@ -3,13 +3,11 @@ package au.org.ala.delta.intkey.ui;
 import java.awt.BorderLayout;
 import java.awt.Desktop;
 import java.awt.Frame;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.io.File;
-import java.io.FileReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +32,8 @@ import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.SingleFrameApplication;
 
+import au.org.ala.delta.intkey.directives.IntkeyDirectiveParser;
+import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.ResourceSettings;
 import au.org.ala.delta.model.format.Formatter;
@@ -51,6 +51,8 @@ public class TaxonInformationDialog extends JDialog {
     private static final long serialVersionUID = -369093284637981457L;
 
     private List<Item> _taxa;
+    private List<Item> _taxaWithImages;
+
     private int _selectedIndex;
     private ItemFormatter _itemFormatter;
     private Formatter _imageDescriptionFormatter;
@@ -78,16 +80,19 @@ public class TaxonInformationDialog extends JDialog {
     private JScrollPane _sclPnIllustrations;
     private JList _listIllustrations;
 
+    private IntkeyContext _context;
     private ResourceSettings _infoSettings;
     private ImageSettings _imageSettings;
-    
+
     private List<Image> _images;
+    private List<Pair<String, String>> _definedDirectiveCommands;
+
     private List<InformationDialogCommand> _cmds;
 
     @Resource
     String noImagesCaption;
 
-    public TaxonInformationDialog(Frame owner, List<Item> taxa, ResourceSettings infoSettings, ImageSettings imageSettings) {
+    public TaxonInformationDialog(Frame owner, List<Item> taxa, IntkeyContext context) {
         super(owner, true);
 
         ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(TaxonInformationDialog.class);
@@ -162,8 +167,10 @@ public class TaxonInformationDialog extends JDialog {
 
         _pnlLists = new JPanel();
         _pnlCenter.add(_pnlLists, BorderLayout.CENTER);
+        _pnlLists.setLayout(new GridLayout(0, 2, 0, 0));
 
         _pnlListOther = new JPanel();
+        _pnlListOther.setBorder(new EmptyBorder(5, 5, 5, 5));
         _pnlLists.add(_pnlListOther);
         _pnlListOther.setLayout(new BorderLayout(0, 0));
 
@@ -177,7 +184,7 @@ public class TaxonInformationDialog extends JDialog {
                     _cmds.get(selectedIndex).execute();
                 }
             }
-            
+
         });
 
         _sclPnOther = new JScrollPane();
@@ -188,6 +195,7 @@ public class TaxonInformationDialog extends JDialog {
         _pnlListOther.add(_lblOther, BorderLayout.NORTH);
 
         _pnlListIllustrations = new JPanel();
+        _pnlListIllustrations.setBorder(new EmptyBorder(5, 5, 5, 5));
         _pnlLists.add(_pnlListIllustrations);
         _pnlListIllustrations.setLayout(new BorderLayout(0, 0));
 
@@ -201,26 +209,33 @@ public class TaxonInformationDialog extends JDialog {
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() >= 2) {
                     int selectedListIndex = _listIllustrations.getSelectedIndex();
-                    Item selectedTaxon = _taxa.get(_selectedIndex);
-                    ImageDialog dlg = new ImageDialog(TaxonInformationDialog.this, _imageSettings);
-                    dlg.setImages(selectedTaxon.getImages());
-                    dlg.setVisible(true);
+                    displaySelectedTaxonImage(selectedListIndex);
                 }
             }
-            
+
         });
 
         _sclPnIllustrations = new JScrollPane();
 
         _sclPnIllustrations.setViewportView(_listIllustrations);
-        _pnlListIllustrations.add(_sclPnIllustrations, BorderLayout.CENTER);
+        _pnlListIllustrations.add(_sclPnIllustrations);
 
-        _infoSettings = infoSettings;
-        _imageSettings = imageSettings;
+        _context = context;
+        _definedDirectiveCommands = _context.getTaxonInformationDialogCommands();
+
+        _infoSettings = _context.getInfoSettings();
+        _imageSettings = _context.getImageSettings();
         _itemFormatter = new ItemFormatter(false, false, true, false, true, false);
         _imageDescriptionFormatter = new Formatter(false, false, false, true);
 
         _taxa = taxa;
+        _taxaWithImages = new ArrayList<Item>();
+        for (Item taxon : taxa) {
+            if (taxon.getImageCount() > 0) {
+                _taxaWithImages.add(taxon);
+            }
+        }
+
         initialize();
 
         this.pack();
@@ -245,22 +260,30 @@ public class TaxonInformationDialog extends JDialog {
         _comboBox.setSelectedIndex(_selectedIndex);
 
         // Update other list
-        //_fileNames = new ArrayList<String>();
+        // _fileNames = new ArrayList<String>();
         _cmds = new ArrayList<InformationDialogCommand>();
         DefaultListModel otherListModel = new DefaultListModel();
-        for (Pair<String, String> fileNameTitlePair: selectedTaxon.getLinkFiles()) {
+        for (Pair<String, String> fileNameTitlePair : selectedTaxon.getLinkFiles()) {
             String fileName = fileNameTitlePair.getFirst();
             String fileTitle = fileNameTitlePair.getSecond();
-            
+
             if (fileTitle != null) {
                 otherListModel.addElement(fileTitle);
             } else {
                 otherListModel.addElement(fileName);
             }
-            
+
             _cmds.add(new OpenLinkFileCommand(fileName));
         }
-        
+
+        for (Pair<String, String> subjectDirectiveCommandPair : _definedDirectiveCommands) {
+            String subject = subjectDirectiveCommandPair.getFirst();
+            String directiveCommand = subjectDirectiveCommandPair.getSecond();
+
+            otherListModel.addElement(subject);
+            _cmds.add(new RunDirectiveCommand(directiveCommand));
+        }
+
         _listOther.setModel(otherListModel);
 
         // Update illustrations list
@@ -297,12 +320,16 @@ public class TaxonInformationDialog extends JDialog {
 
     @Action
     public void nextTaxon() {
-        displayTaxon(_selectedIndex + 1);
+        if (_selectedIndex < _taxa.size() - 1) {
+            displayTaxon(_selectedIndex + 1);
+        }
     }
 
     @Action
     public void previousTaxon() {
-        displayTaxon(_selectedIndex - 1);
+        if (_selectedIndex > 0) {
+            displayTaxon(_selectedIndex - 1);
+        }
     }
 
     @Action
@@ -331,8 +358,20 @@ public class TaxonInformationDialog extends JDialog {
         this.setVisible(false);
     }
 
+    public Item getSelectedTaxon() {
+        return _taxa.get(_selectedIndex);
+    }
+
     private interface InformationDialogCommand {
         public void execute();
+    }
+
+    private void displaySelectedTaxonImage(int imageIndex) {
+        Item selectedTaxon = getSelectedTaxon();
+        TaxonImageDialog dlg = new TaxonImageDialog(this, _imageSettings, _taxaWithImages);
+        dlg.displayImagesForTaxon(selectedTaxon);
+        dlg.showImage(imageIndex);
+        dlg.setVisible(true);
     }
 
     private class OpenLinkFileCommand implements InformationDialogCommand {
@@ -352,13 +391,34 @@ public class TaxonInformationDialog extends JDialog {
                     File rtfFile = new File(linkFileURL.toURI());
                     String rtfSource = FileUtils.readFileToString(rtfFile);
                     RtfReportDisplayDialog dlg = new RtfReportDisplayDialog(TaxonInformationDialog.this, new SimpleRtfEditorKit(), rtfSource, "blah");
-                    ((SingleFrameApplication)Application.getInstance()).show(dlg);
+                    ((SingleFrameApplication) Application.getInstance()).show(dlg);
                 } else if (_linkFileName.toLowerCase().startsWith("http")) {
                     Desktop.getDesktop().browse(linkFileURL.toURI());
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
+        }
+    }
+
+    private class RunDirectiveCommand implements InformationDialogCommand {
+
+        private String _directiveCommand;
+
+        public RunDirectiveCommand(String directiveCommand) {
+            _directiveCommand = directiveCommand;
+        }
+
+        @Override
+        public void execute() {
+            // substitute ?S for selected taxon number
+            Item selectedTaxon = getSelectedTaxon();
+            int taxonNumber = selectedTaxon.getItemNumber();
+
+            String command = _directiveCommand.replaceAll("\\?S", Integer.toString(taxonNumber));
+
+            // parse and run directive
+            _context.parseAndExecuteDirective(command);
         }
     }
 }

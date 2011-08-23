@@ -52,32 +52,32 @@ public class ImageDialog extends JDialog implements OverlaySelectionObserver {
      * 
      */
     private static final long serialVersionUID = -8012068171243224330L;
-    
+
     protected ImageSettings _imageSettings;
     protected MultipleImageViewer _multipleImageViewer;
     protected JMenuBar _menuBar;
     protected JMenu _mnuControl;
-    private JMenu _mnuSubject;
-    private JMenu _mnuWindow;
-    private JCheckBoxMenuItem _mnuItScaled;
-    private JCheckBoxMenuItem _mnuItHideText;
-    private JMenuItem _mnuItReplaySound;
-    private JMenuItem _mnuItFitToImage;
-    private JMenuItem _mnuItFullScreen;
-    private JMenuItem _mnuItCascade;
-    private JMenuItem _mnuItTile;
-    private JMenuItem _mnuItCloseAll;
-    private JMenuItem _mnuItAboutImage;
-    private JMenuItem _mnuItReplayVideo;
+    protected JMenu _mnuSubject;
+    protected JMenu _mnuWindow;
+    protected JCheckBoxMenuItem _mnuItScaled;
+    protected JCheckBoxMenuItem _mnuItHideText;
+    protected JMenuItem _mnuItReplaySound;
+    protected JMenuItem _mnuItFitToImage;
+    protected JMenuItem _mnuItFullScreen;
+    protected JMenuItem _mnuItCascade;
+    protected JMenuItem _mnuItTile;
+    protected JMenuItem _mnuItCloseAll;
+    protected JMenuItem _mnuItAboutImage;
+    protected JMenuItem _mnuItReplayVideo;
 
-    private Set<Integer> _selectedStates;
-    private Set<String> _selectedKeywords;
-    private Set<Pair<String, String>> _selectedValues;
-    private boolean _okButtonPressed;
-    private JMenuItem _mnuItNextImage;
-    private JMenuItem _mnuItPreviousImage;
+    protected Set<Integer> _selectedStates;
+    protected Set<String> _selectedKeywords;
+    protected Set<Pair<String, String>> _selectedValues;
+    protected boolean _okButtonPressed;
+    protected JMenuItem _mnuItNextImage;
+    protected JMenuItem _mnuItPreviousImage;
 
-    private Window _fullScreenWindow;
+    protected Window _fullScreenWindow;
 
     /**
      * @wbp.parser.constructor
@@ -105,9 +105,6 @@ public class ImageDialog extends JDialog implements OverlaySelectionObserver {
 
         buildMenu();
         getContentPane().setLayout(new GridLayout(0, 1, 0, 0));
-
-        _multipleImageViewer = new MultipleImageViewer(_imageSettings);
-        getContentPane().add(_multipleImageViewer);
 
         this.addWindowListener(new WindowAdapter() {
 
@@ -198,6 +195,14 @@ public class ImageDialog extends JDialog implements OverlaySelectionObserver {
 
     public void setImages(List<Image> images) {
 
+        // remove the old multiple image viewer if there is one.
+        if (_multipleImageViewer != null) {
+            getContentPane().remove(_multipleImageViewer);
+        }
+
+        _multipleImageViewer = new MultipleImageViewer(_imageSettings);
+        getContentPane().add(_multipleImageViewer);
+
         List<String> imageNames = new ArrayList<String>();
         for (Image image : images) {
             ImageViewer viewer = new ImageViewer(image, _imageSettings);
@@ -273,6 +278,11 @@ public class ImageDialog extends JDialog implements OverlaySelectionObserver {
             String maximumValString = imageOverlay.maxVal;
             _selectedValues.add(new Pair<String, String>(minimumValString, maximumValString));
         }
+    }
+
+    public void showImage(int imageIndex) {
+        _multipleImageViewer.showImage(imageIndex);
+        handleNewImageSelected();
     }
 
     @Action
@@ -380,11 +390,11 @@ public class ImageDialog extends JDialog implements OverlaySelectionObserver {
         reSelectStatesInNewViewer(_multipleImageViewer.getVisibleViewer());
         _mnuItNextImage.setEnabled(!_multipleImageViewer.atLastImage());
         _mnuItPreviousImage.setEnabled(!_multipleImageViewer.atFirstImage());
-        
+
         int viewedIndex = _multipleImageViewer.getIndexCurrentlyViewedImage();
         JMenuItem mnuIt = (JMenuItem) _mnuSubject.getMenuComponent(viewedIndex);
         mnuIt.setSelected(true);
-        
+
         fitToImage();
         replaySound();
     }

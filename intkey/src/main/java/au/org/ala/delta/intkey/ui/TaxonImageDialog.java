@@ -1,5 +1,111 @@
 package au.org.ala.delta.intkey.ui;
 
-public class TaxonImageDialog {
+import java.awt.Dialog;
+import java.awt.Frame;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.ActionMap;
+import javax.swing.JMenuItem;
+
+import org.jdesktop.application.Action;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ResourceMap;
+
+import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.image.ImageSettings;
+
+public class TaxonImageDialog extends ImageDialog {
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -358445604269517364L;
+
+    private List<Item> _taxa;
+
+    private JMenuItem _mnuItNextTaxon;
+    private JMenuItem _mnuItPreviousTaxon;
+    private JMenuItem _mnuItMultipleImages;
+
+    private int _selectedTaxonIndex;
+
+    public TaxonImageDialog(Dialog owner, ImageSettings imageSettings, List<Item> taxa) {
+        super(owner, imageSettings);
+        init(taxa);
+    }
+
+    public TaxonImageDialog(Frame owner, ImageSettings imageSettings, List<Item> taxa) {
+        super(owner, imageSettings);
+        init(taxa);
+    }
+
+    private void init(List<Item> taxa) {
+        _taxa = new ArrayList<Item>(taxa);
+        _selectedTaxonIndex = 0;
+        ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(TaxonImageDialog.class);
+        resourceMap.injectFields(this);
+        buildMenu();
+    }
+
+    private void buildMenu() {
+        ActionMap actionMap = Application.getInstance().getContext().getActionMap(TaxonImageDialog.class, this);
+
+        _mnuItNextTaxon = new JMenuItem();
+        _mnuItNextTaxon.setAction(actionMap.get("nextTaxon"));
+        _mnuControl.add(_mnuItNextTaxon);
+
+        _mnuItPreviousTaxon = new JMenuItem();
+        _mnuItPreviousTaxon.setAction(actionMap.get("previousTaxon"));
+        _mnuControl.add(_mnuItPreviousTaxon);
+
+        _mnuControl.addSeparator();
+
+        _mnuItMultipleImages = new JMenuItem();
+        _mnuItMultipleImages.setAction(actionMap.get("displayMultipleImages"));
+        _mnuControl.add(_mnuItMultipleImages);
+        
+    }
+
+    private void displayImagesForTaxon(int taxonIndex) {
+        _selectedTaxonIndex = taxonIndex;
+
+        Item selectedTaxon = _taxa.get(_selectedTaxonIndex);
+
+        setImages(selectedTaxon.getImages());
+
+        _mnuItNextTaxon.setEnabled(_selectedTaxonIndex < _taxa.size() - 1);
+        _mnuItPreviousTaxon.setEnabled(_selectedTaxonIndex > 0);
+        _mnuItMultipleImages.setEnabled(selectedTaxon.getImageCount() > 1);
+        
+        fitToImage();
+        replaySound();
+    }
+
+    public void displayImagesForTaxon(Item taxon) {
+        int taxonIndex = _taxa.indexOf(taxon);
+        if (taxonIndex > -1) {
+            displayImagesForTaxon(taxonIndex);
+        }
+    }
+
+    @Action
+    public void nextTaxon() {
+        if (_selectedTaxonIndex < _taxa.size() - 1) {
+            displayImagesForTaxon(_selectedTaxonIndex + 1);
+        }
+    }
+
+    @Action
+    public void previousTaxon() {
+        if (_selectedTaxonIndex > 0) {
+            displayImagesForTaxon(_selectedTaxonIndex - 1);
+        }
+    }
+
+    @Action
+    public void displayMultipleImages() {
+
+    }
 
 }

@@ -2,6 +2,7 @@ package au.org.ala.delta.intkey.model;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -26,6 +27,7 @@ import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.ResourceSettings;
 import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.model.image.ImageSettings.FontInfo;
+import au.org.ala.delta.util.Pair;
 
 /**
  * Model. Maintains global application state. THIS CLASS IS NOT THREAD SAFE
@@ -72,6 +74,10 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     private List<String> _imagePathLocations;
     private List<String> _infoPathLocations;
+    
+    private List<Pair<String, String>> _taxonInformationDialogCommands;
+    
+    private IntkeyDirectiveParser _directiveParser;
 
     /**
      * Should executed directives be recorded in the history?
@@ -122,6 +128,9 @@ public class IntkeyContext extends AbstractDeltaContext {
         _directivePopulator = directivePopulator;
         _recordDirectiveHistory = false;
         _processingInputFile = false;
+        
+        _directiveParser = IntkeyDirectiveParser.createInstance();
+        
         initializeIdentification();
     }
 
@@ -152,6 +161,9 @@ public class IntkeyContext extends AbstractDeltaContext {
         _bestCharacters = null;
         
         _imagePathLocations = new ArrayList<String>();
+        _infoPathLocations = new ArrayList<String>();
+        
+        _taxonInformationDialogCommands = new ArrayList<Pair<String,String>>();
     }
 
     /**
@@ -308,6 +320,15 @@ public class IntkeyContext extends AbstractDeltaContext {
         
         processInputFile(datasetFile);
         _appUI.handleNewDataset(_dataset);
+    }
+    
+    public void parseAndExecuteDirective(String command) {
+        try {
+            _directiveParser.parse(new StringReader(command), this);
+        } catch (Exception ex) {
+            _appUI.displayErrorMessage(String.format("Exception thrown while processing directive \"%s\"", command));
+            ex.printStackTrace();
+        }
     }
 
     /**
@@ -988,6 +1009,14 @@ public class IntkeyContext extends AbstractDeltaContext {
     
     public void setInfoPaths(List<String> infoPaths) {
         _infoPathLocations = new ArrayList<String>(infoPaths);
+    }
+    
+    public void addTaxonInformationDialogCommand(String subject, String command) {
+        _taxonInformationDialogCommands.add(new Pair<String, String>(subject, command));
+    }
+    
+    public List<Pair<String, String>> getTaxonInformationDialogCommands() {
+        return new ArrayList<Pair<String, String>>(_taxonInformationDialogCommands);
     }
 
     /**

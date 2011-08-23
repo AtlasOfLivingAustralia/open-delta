@@ -27,6 +27,7 @@ public class MultipleImageViewer extends JPanel {
     private ScalingMode _scalingMode;
     private List<ImageViewer> _imageViewers;
     private Map<String, ImageViewer> _imageViewerMap;
+    private List<String> _imageIds;
     private ImageSettings _imageSettings;
     private JPanel _contentPanel;
     private boolean _hideHotSpots;
@@ -41,7 +42,8 @@ public class MultipleImageViewer extends JPanel {
         this.add(_contentPanel, BorderLayout.CENTER);
         _imageViewers = new ArrayList<ImageViewer>();
         _imageViewerMap = new HashMap<String, ImageViewer>();
-       
+        _imageIds = new ArrayList<String>();
+        
         _selectedIndex = 0;
         _scalingMode = ScalingMode.FIXED_ASPECT_RATIO;
     }
@@ -50,6 +52,7 @@ public class MultipleImageViewer extends JPanel {
         _imageViewers.add(viewer);
         String imageId = viewer.getViewedImage().getSubjectTextOrFileName();
         _imageViewerMap.put(imageId, viewer);
+        _imageIds.add(imageId);
         _contentPanel.add(viewer, imageId);
     }
 
@@ -79,6 +82,15 @@ public class MultipleImageViewer extends JPanel {
         ImageViewer viewer = _imageViewerMap.get(imageId);
         _selectedIndex = _imageViewers.indexOf(viewer);
         _layout.show(_contentPanel, imageId);
+    }
+    
+    public void showImage(int imageIndex) {
+        if (imageIndex < 0 || imageIndex > _imageViewers.size() - 1) {
+            throw new IllegalArgumentException("Invalid image index");
+        }
+        
+        String imageId = _imageIds.get(imageIndex);
+        showImage(imageId);
     }
 
     public int getNumberImages() {

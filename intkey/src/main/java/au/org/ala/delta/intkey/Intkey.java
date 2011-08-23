@@ -12,10 +12,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -87,7 +86,7 @@ import au.org.ala.delta.intkey.ui.CharacterCellRenderer;
 import au.org.ala.delta.intkey.ui.CharacterKeywordSelectionDialog;
 import au.org.ala.delta.intkey.ui.FindInCharactersDialog;
 import au.org.ala.delta.intkey.ui.FindInTaxaDialog;
-import au.org.ala.delta.intkey.ui.ImageCharacterInputDialog;
+import au.org.ala.delta.intkey.ui.CharacterImageInputDialog;
 import au.org.ala.delta.intkey.ui.ImageDialog;
 import au.org.ala.delta.intkey.ui.IntegerInputDialog;
 import au.org.ala.delta.intkey.ui.MultiStateInputDialog;
@@ -143,8 +142,6 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     private DefaultListModel _usedCharacterListModel;
     private DefaultListModel _availableTaxaListModel;
     private DefaultListModel _eliminatedTaxaListModel;
-
-    private IntkeyDirectiveParser _directiveParser;
 
     private JLabel _lblNumAvailableCharacters;
     private JLabel _lblNumUsedCharacters;
@@ -256,7 +253,6 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         mainFrame.setIconImages(IconHelper.getRedIconList());
 
         _context = new IntkeyContext(this, this);
-        _directiveParser = IntkeyDirectiveParser.createInstance();
 
         _advancedModeOnlyDynamicButtons = new ArrayList<JButton>();
         _normalModeOnlyDynamicButtons = new ArrayList<JButton>();
@@ -543,7 +539,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
                     JMenu cmdMenu = _cmdMenus.get(cmdStr);
                     cmdMenu.doClick();
                 } else {
-                    parseAndExecuteDirective(cmdStr);
+                    _context.parseAndExecuteDirective(cmdStr);
                 }
                 _txtFldCmdBar.setText(null);
             }
@@ -958,7 +954,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             selectedTaxa.add((Item) _eliminatedTaxaListModel.getElementAt(i));
         }
         
-        TaxonInformationDialog dlg = new TaxonInformationDialog(getMainFrame(), selectedTaxa, _context.getInfoSettings(), _context.getImageSettings());
+        TaxonInformationDialog dlg = new TaxonInformationDialog(getMainFrame(), selectedTaxa, _context);
         show(dlg);
     }
 
@@ -997,15 +993,6 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     // =========================================================================================
 
-    private void parseAndExecuteDirective(String command) {
-        try {
-            _directiveParser.parse(new InputStreamReader(new ByteArrayInputStream(command.getBytes())), _context);
-        } catch (Exception ex) {
-            Logger.log("Exception thrown while processing directive \"%s\"", command);
-            ex.printStackTrace();
-        }
-    }
-
     private void executeDirective(IntkeyDirective dir, String data) {
         try {
             dir.parseAndProcess(_context, data);
@@ -1021,10 +1008,6 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             Logger.error(msg);
             Logger.error(ex);
         }
-    }
-
-    private void executeDirectiveInvocation(IntkeyDirectiveInvocation invoc) {
-        _context.executeDirective(invoc);
     }
 
     private void taxonSelectionChanged() {
@@ -1452,7 +1435,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             @Override
             public void actionPerformed(ActionEvent e) {
                 for (String command : commandsCopy) {
-                    parseAndExecuteDirective(command);
+                    _context.parseAndExecuteDirective(command);
                 }
 
             }
@@ -1597,7 +1580,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     @Override
     public List<String> promptForTextValue(TextCharacter ch) {
         if (!_advancedMode && !ch.getImages().isEmpty()) {
-            ImageCharacterInputDialog dlg = new ImageCharacterInputDialog(getMainFrame(), ch, _context.getImageSettings());
+            CharacterImageInputDialog dlg = new CharacterImageInputDialog(getMainFrame(), ch, _context.getImageSettings());
             show(dlg);
             if (dlg.okButtonPressed()) {
                 return dlg.getInputTextValues();
@@ -1614,7 +1597,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     @Override
     public Set<Integer> promptForIntegerValue(IntegerCharacter ch) {
         if (!_advancedMode && !ch.getImages().isEmpty()) {
-            ImageCharacterInputDialog dlg = new ImageCharacterInputDialog(getMainFrame(), ch, _context.getImageSettings());
+            CharacterImageInputDialog dlg = new CharacterImageInputDialog(getMainFrame(), ch, _context.getImageSettings());
             show(dlg);
             if (dlg.okButtonPressed()) {
                 return dlg.getInputIntegerValues();
@@ -1631,7 +1614,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     @Override
     public FloatRange promptForRealValue(RealCharacter ch) {
         if (!_advancedMode && !ch.getImages().isEmpty()) {
-            ImageCharacterInputDialog dlg = new ImageCharacterInputDialog(getMainFrame(), ch, _context.getImageSettings());
+            CharacterImageInputDialog dlg = new CharacterImageInputDialog(getMainFrame(), ch, _context.getImageSettings());
             show(dlg);
             if (dlg.okButtonPressed()) {
                 return dlg.getInputRealValues();
@@ -1648,7 +1631,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     @Override
     public Set<Integer> promptForMultiStateValue(MultiStateCharacter ch) {
         if (!_advancedMode && !ch.getImages().isEmpty()) {
-            ImageCharacterInputDialog dlg = new ImageCharacterInputDialog(getMainFrame(), ch, _context.getImageSettings());
+            CharacterImageInputDialog dlg = new CharacterImageInputDialog(getMainFrame(), ch, _context.getImageSettings());
             show(dlg);
             if (dlg.okButtonPressed()) {
                 return dlg.getSelectedStates();

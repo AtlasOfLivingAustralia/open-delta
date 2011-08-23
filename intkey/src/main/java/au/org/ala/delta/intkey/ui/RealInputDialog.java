@@ -64,7 +64,7 @@ public class RealInputDialog extends NumberInputDialog {
 
     @Override
     void handleBtnImagesClicked() {
-        ImageCharacterInputDialog dlg = new ImageCharacterInputDialog(this, _ch, _imageSettings);
+        CharacterImageInputDialog dlg = new CharacterImageInputDialog(this, _ch, _imageSettings);
         dlg.setVisible(true);
         
         try {

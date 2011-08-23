@@ -2,6 +2,11 @@ package au.org.ala.delta.intkey.directives;
 
 public class IntkeyDirectiveParseException extends Exception {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 2156835375263847602L;
+
     public IntkeyDirectiveParseException() {
         super();
     }
