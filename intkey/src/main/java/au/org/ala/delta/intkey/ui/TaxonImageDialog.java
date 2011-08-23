@@ -13,6 +13,7 @@ import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.model.image.ImageSettings;
 
 public class TaxonImageDialog extends ImageDialog {
@@ -30,6 +31,8 @@ public class TaxonImageDialog extends ImageDialog {
 
     private int _selectedTaxonIndex;
 
+    private ItemFormatter _itemFormatter;
+
     public TaxonImageDialog(Dialog owner, ImageSettings imageSettings, List<Item> taxa) {
         super(owner, imageSettings);
         init(taxa);
@@ -42,6 +45,9 @@ public class TaxonImageDialog extends ImageDialog {
 
     private void init(List<Item> taxa) {
         _taxa = new ArrayList<Item>(taxa);
+
+        _itemFormatter = new ItemFormatter(false, true, false, false, true, false);
+
         _selectedTaxonIndex = 0;
         ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(TaxonImageDialog.class);
         resourceMap.injectFields(this);
@@ -64,12 +70,11 @@ public class TaxonImageDialog extends ImageDialog {
         _mnuItMultipleImages = new JMenuItem();
         _mnuItMultipleImages.setAction(actionMap.get("displayMultipleImages"));
         _mnuControl.add(_mnuItMultipleImages);
-        
+
     }
 
     private void displayImagesForTaxon(int taxonIndex) {
         _selectedTaxonIndex = taxonIndex;
-
         Item selectedTaxon = _taxa.get(_selectedTaxonIndex);
 
         setImages(selectedTaxon.getImages());
@@ -77,9 +82,25 @@ public class TaxonImageDialog extends ImageDialog {
         _mnuItNextTaxon.setEnabled(_selectedTaxonIndex < _taxa.size() - 1);
         _mnuItPreviousTaxon.setEnabled(_selectedTaxonIndex > 0);
         _mnuItMultipleImages.setEnabled(selectedTaxon.getImageCount() > 1);
-        
+
+        updateTitle();
         fitToImage();
         replaySound();
+    }
+
+    private void updateTitle() {
+        Item selectedTaxon = _taxa.get(_selectedTaxonIndex);
+        
+        String formattedTaxonName = _itemFormatter.formatItemDescription(selectedTaxon);
+        String formattedImageName = _imageDescriptionFormatter.defaultFormat(_multipleImageViewer.getVisibleViewer().getViewedImage().getSubjectTextOrFileName());
+        
+        setTitle(String.format("%s: %s", formattedTaxonName, formattedImageName));
+    }
+    
+    @Override
+    protected void handleNewImageSelected() {
+        super.handleNewImageSelected();
+        updateTitle();
     }
 
     public void displayImagesForTaxon(Item taxon) {

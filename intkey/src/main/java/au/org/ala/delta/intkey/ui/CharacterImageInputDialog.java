@@ -5,14 +5,22 @@ import java.awt.Dialog;
 import java.awt.Frame;
 import java.util.List;
 
+import org.jdesktop.application.Application;
+import org.jdesktop.application.Resource;
+import org.jdesktop.application.ResourceMap;
+
 import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.IntegerCharacter;
+import au.org.ala.delta.model.MultiStateCharacter;
+import au.org.ala.delta.model.RealCharacter;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageSettings;
 
 /**
  * Used to Display images for a single character
+ * 
  * @author ChrisF
- *
+ * 
  */
 public class CharacterImageInputDialog extends ImageDialog {
 
@@ -22,6 +30,20 @@ public class CharacterImageInputDialog extends ImageDialog {
     private static final long serialVersionUID = 6274578091708982240L;
 
     private Character _character;
+
+    // Title used when the dialog is used to display images for an integer
+    // character
+    @Resource
+    String integerTitle;
+
+    // Title used when the dialog is used to display images for a real character
+    @Resource
+    String realTitle;
+
+    // Title used when the dialog is used to display images for an multistate
+    // character
+    @Resource
+    String multistateTitle;
 
     public CharacterImageInputDialog(Frame owner, Character character, ImageSettings imageSettings) {
         super(owner, imageSettings);
@@ -37,6 +59,9 @@ public class CharacterImageInputDialog extends ImageDialog {
     }
 
     private void init(Character character) {
+        ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(CharacterImageInputDialog.class);
+        resourceMap.injectFields(this);
+        
         _character = character;
         getContentPane().setLayout(new BorderLayout(0, 0));
 
@@ -46,6 +71,14 @@ public class CharacterImageInputDialog extends ImageDialog {
         setImages(images);
 
         getContentPane().add(_multipleImageViewer, BorderLayout.CENTER);
+
+        if (character instanceof IntegerCharacter) {
+            setTitle(integerTitle);
+        } else if (character instanceof RealCharacter) {
+            setTitle(realTitle);
+        } else if (character instanceof MultiStateCharacter) {
+            setTitle(multistateTitle);
+        }
 
         this.pack();
     }

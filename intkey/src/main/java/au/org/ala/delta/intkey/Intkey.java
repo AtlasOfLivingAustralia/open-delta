@@ -197,6 +197,12 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     @Resource
     String mismatchesAllowCannotSeparateCaption;
+    
+    @Resource 
+    String selectCharacterKeywordsCaption;
+    
+    @Resource 
+    String selectTaxonKeywordsCaption;    
 
     private JLabel _lblNumRemainingTaxa;
     private JLabel _lblEliminatedTaxa;
@@ -1508,6 +1514,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         if (!_advancedMode && characterKeywordImages != null && !characterKeywordImages.isEmpty()) {
             ImageDialog dlg = new ImageDialog(getMainFrame(), _context.getImageSettings());
             dlg.setImages(characterKeywordImages);
+            dlg.setTitle(selectCharacterKeywordsCaption);
 
             show(dlg);
 
@@ -1537,6 +1544,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         if (!_advancedMode && taxonKeywordImages != null && !taxonKeywordImages.isEmpty()) {
             ImageDialog dlg = new ImageDialog(getMainFrame(), _context.getImageSettings());
             dlg.setImages(taxonKeywordImages);
+            dlg.setTitle(selectTaxonKeywordsCaption);
 
             show(dlg);
 
@@ -1666,7 +1674,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             List<Item> allTaxa = dataset.getTaxa();
 
             for (Item taxon : allTaxa) {
-                List synonymyStringsList = new ArrayList<String>();
+                List<String> synonymyStringsList = new ArrayList<String>();
                 taxonSynonymyStrings.put(taxon, synonymyStringsList);
             }
 

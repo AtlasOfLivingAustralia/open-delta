@@ -32,6 +32,7 @@ import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.SingleFrameApplication;
 
 import au.org.ala.delta.intkey.directives.ParsingUtils;
+import au.org.ala.delta.model.format.Formatter;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageOverlay;
 import au.org.ala.delta.model.image.ImageSettings;
@@ -78,6 +79,8 @@ public class ImageDialog extends JDialog implements OverlaySelectionObserver {
     protected JMenuItem _mnuItPreviousImage;
 
     protected Window _fullScreenWindow;
+    
+    protected Formatter _imageDescriptionFormatter;
 
     /**
      * @wbp.parser.constructor
@@ -102,6 +105,8 @@ public class ImageDialog extends JDialog implements OverlaySelectionObserver {
         _selectedStates = new HashSet<Integer>();
         _selectedKeywords = new HashSet<String>();
         _selectedValues = new HashSet<Pair<String, String>>();
+        
+        _imageDescriptionFormatter = new Formatter(false, false, false, true);
 
         buildMenu();
         getContentPane().setLayout(new GridLayout(0, 1, 0, 0));
@@ -230,7 +235,7 @@ public class ImageDialog extends JDialog implements OverlaySelectionObserver {
         ButtonGroup group = new ButtonGroup();
 
         for (final String imageName : imageNames) {
-            final JRadioButtonMenuItem rdBtnMnuIt = new JRadioButtonMenuItem(imageName);
+            final JRadioButtonMenuItem rdBtnMnuIt = new JRadioButtonMenuItem(_imageDescriptionFormatter.defaultFormat(imageName));
             rdBtnMnuIt.addActionListener(new ActionListener() {
 
                 @Override
@@ -386,7 +391,7 @@ public class ImageDialog extends JDialog implements OverlaySelectionObserver {
         dlg.setVisible(true);
     }
 
-    private void handleNewImageSelected() {
+    protected void handleNewImageSelected() {
         reSelectStatesInNewViewer(_multipleImageViewer.getVisibleViewer());
         _mnuItNextImage.setEnabled(!_multipleImageViewer.atLastImage());
         _mnuItPreviousImage.setEnabled(!_multipleImageViewer.atFirstImage());
