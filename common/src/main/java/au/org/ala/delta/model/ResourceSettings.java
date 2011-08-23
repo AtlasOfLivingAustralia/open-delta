@@ -129,10 +129,10 @@ public class ResourceSettings {
         //dataset path itself.
         locationsToSearch.add(getDataSetPath());
         
-        for (String locationToSearch : locationsToSearch) {
+        for (String resourcePath : locationsToSearch) {
             try {
-                if (locationToSearch.toLowerCase().startsWith("http")) {
-                    fileLocation = new URL(locationToSearch + fileName);
+                if (resourcePath.toLowerCase().startsWith("http")) {
+                    fileLocation = new URL(resourcePath + fileName);
 
                     // Try opening a stream to the remote file. If no exceptions
                     // are thrown, the file
@@ -142,7 +142,7 @@ public class ResourceSettings {
                     fileLocation.openStream();
                     break;
                 } else {
-                    File f = new File(locationToSearch + File.separator + fileName);
+                    File f = new File(resourcePath + File.separator + fileName);
                     if (f.exists()) {
                         fileLocation = f.toURI().toURL();
                         break;
