@@ -35,7 +35,10 @@ public class ImageSettingsHelper {
 		settings.setIncludeComments(overlay.includeComments());
 		settings.setOmitDescription(overlay.omitDescription());
 		settings.setUseIntegralHeight(overlay.integralHeight());
+		
+		tmpLocation.flags = imageInfo.getHotspotDefaults();
 		settings.setHotspotsPopup(tmpLocation.isPopup());
+		settings.setUseCustomPopupColour(tmpLocation.getUseCustomColour());
 		settings.setCustomPopupColour(new Color(tmpLocation.getColor()));
 	}
 	
@@ -56,10 +59,14 @@ public class ImageSettingsHelper {
 		overlay.setIncludeComments(settings.getIncludeComments());
 		overlay.setOmitDescription(settings.getOmitDescription());
 		overlay.setIntegralHeight(settings.getUseIntegralHeight());
-		tmpLocation.setPopup(settings.getHotspotsPopup());
-		tmpLocation.setColor(settings.getCustomPopupColour().getRGB());
-		
 		imageInfo.setOverlayDefaults((short)tmpLocation.flags);
+		
+		tmpLocation = new OverlayLocation();
+		tmpLocation.setPopup(settings.getHotspotsPopup());
+		tmpLocation.setUseCustomColour(settings.getUseCustomPopupColour());
+		tmpLocation.setColor(settings.getCustomPopupColour().getRGB());
+		imageInfo.setHotspotDefaults(tmpLocation.flags);
+		
 	}
 	
 	public static FontInfo toFontInfo(Pair<LOGFONT, String> values) {

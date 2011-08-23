@@ -158,13 +158,16 @@ public class ImageSettingsDialog extends JDialog {
 	private void createUI() {
 		setTitle(_resources.getString("imageSettingsDialog.title"));
 		JPanel overlayDefaultsPanel = new JPanel();
-		overlayDefaultsPanel.setBorder(new TitledBorder(null, "Defaults for new overlays", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		String overlayDefaultsTitle = _resources.getString("imageSettingsOverlayDefaults.title");
+		overlayDefaultsPanel.setBorder(new TitledBorder(null, overlayDefaultsTitle, TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		
 		JPanel imagePathPanel = new JPanel();
-		imagePathPanel.setBorder(new TitledBorder(null, "Image Path", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		String imagePathTitle = _resources.getString("imageSettingsImagePath.title");
+		imagePathPanel.setBorder(new TitledBorder(null, imagePathTitle, TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		
 		JPanel overlayFontDefaultsPanel = new JPanel();
-		overlayFontDefaultsPanel.setBorder(new TitledBorder(null, "Overlay font settings", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		String overlayFontTitle = _resources.getString("imageSettingsOverlayFonts.title");
+		overlayFontDefaultsPanel.setBorder(new TitledBorder(null, overlayFontTitle, TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
@@ -206,18 +209,18 @@ public class ImageSettingsDialog extends JDialog {
 		btnApply.setHorizontalAlignment(SwingConstants.RIGHT);
 		buttonPanel.add(btnApply);
 		
-		chckbxCentreInBox = new JCheckBox("Centre in box");
-		
-		chckbxIncludeComments = new JCheckBox("Include Comments");
-		
-		chckbxOmitDescription = new JCheckBox("Omit description");
-		
-		chckbxUseIntegralHeight = new JCheckBox("Use integral height");
-		
-		chckbxHotspotsPopUp = new JCheckBox("Hotspots pop up");
-		
-		chckbxCustomPopupColour = new JCheckBox("Custom popup colour");
-		
+		chckbxCentreInBox = new JCheckBox();
+		chckbxCentreInBox.setName("imageSettingsCentreInBox");
+		chckbxIncludeComments = new JCheckBox();
+		chckbxIncludeComments.setName("imageSettingsIncludeComments");
+		chckbxOmitDescription = new JCheckBox();
+		chckbxOmitDescription.setName("imageSettingsOmitDescription");
+		chckbxUseIntegralHeight = new JCheckBox();
+		chckbxUseIntegralHeight.setName("imageSettingsUseIntegralHeight");
+		chckbxHotspotsPopUp = new JCheckBox();
+		chckbxHotspotsPopUp.setName("imageSettingsHotspotsPopUp");
+		chckbxCustomPopupColour = new JCheckBox();
+		chckbxCustomPopupColour.setName("imageSettingsCustomPopupColour");
 		JPanel panel = new JPanel();
 		
 		selectedColourLabel = new JLabel("");
@@ -226,11 +229,11 @@ public class ImageSettingsDialog extends JDialog {
 		selectedColourLabel.setOpaque(true);
 		selectedColourLabel.setEnabled(false);
 		
-		chooseColourButton = new JButton("Choose Colour");
+		chooseColourButton = new JButton();
 		chooseColourButton.setEnabled(false);
 		
-		JLabel lblButtonAlignment = new JLabel("Button alignment");
-		
+		JLabel lblButtonAlignment = new JLabel();
+		lblButtonAlignment.setName("imageSettingsButtonAlignment");
 		buttonAlignmentCombo = new JComboBox();
 		buttonAlignmentCombo.setModel(new ButtonAlignmentModel());
 		buttonAlignmentCombo.setRenderer(new ButtonAlignmentRenderer());
@@ -298,16 +301,17 @@ public class ImageSettingsDialog extends JDialog {
 		panel.setLayout(gl_panel);
 		overlayDefaultsPanel.setLayout(gl_overlayDefaultsPanel);
 		
-		JLabel lblFontName = new JLabel("Font name:");
+		JLabel lblFontName = new JLabel();
+		lblFontName.setName("imageSettingsFontName");
+		JLabel lblSize = new JLabel();
+		lblSize.setName("imageSettingsFontSize");
+		JLabel lblBold = new JLabel();
+		lblBold.setName("imageSettingsFontBold");
+		JLabel lblItalic = new JLabel();
+		lblItalic.setName("imageSettingsFontItalic");
 		
-		JLabel lblSize = new JLabel("Size");
-		
-		JLabel lblBold = new JLabel("Bold");
-		
-		JLabel lblItalic = new JLabel("Italic");
-		
-		JLabel featureLabel = new JLabel("Feature:");
-		
+		JLabel featureLabel = new JLabel();
+		featureLabel.setName("imageSettingsFeatureFont");
 		buttonFontCombo = new JComboBox();
 		buttonFontCombo.setModel(new FontFamilyModel());
 		
@@ -318,7 +322,8 @@ public class ImageSettingsDialog extends JDialog {
 		
 		featureItalicCheckBox = new JCheckBox("");
 		
-		JLabel buttonLabel = new JLabel("Button:");
+		JLabel buttonLabel = new JLabel();
+		buttonLabel.setName("imageSettingsButtonFont");
 		
 		featureFontCombo = new JComboBox();
 		featureFontCombo.setModel(new FontFamilyModel());
@@ -330,8 +335,8 @@ public class ImageSettingsDialog extends JDialog {
 		
 		buttonItalicCheckBox = new JCheckBox("");
 		
-		JLabel defaultLabel = new JLabel("Default:");
-		
+		JLabel defaultLabel = new JLabel();
+		defaultLabel.setName("imageSettingsDefaultFont");
 		defaultFontCombo = new JComboBox();
 		defaultFontCombo.setModel(new FontFamilyModel());
 		
@@ -342,12 +347,13 @@ public class ImageSettingsDialog extends JDialog {
 		
 		defaultItalicCheckBox = new JCheckBox("");
 		
-		JLabel lblSample = new JLabel("Sample:");
-		
+		JLabel lblSample = new JLabel();
+		lblSample.setName("imageSettingsSample");
 		sampleTextField = new JTextField("");
 		
-		chckbxSaveSampleAs = new JCheckBox("Save sample as comment");
+		chckbxSaveSampleAs = new JCheckBox();
 		chckbxSaveSampleAs.setSelected(true);
+		chckbxSaveSampleAs.setName("imageSettingsSaveSampleAs");
 		
 		GroupLayout gl_overlayFontDefaultsPanel = new GroupLayout(overlayFontDefaultsPanel);
 		gl_overlayFontDefaultsPanel.setHorizontalGroup(
@@ -602,7 +608,9 @@ public class ImageSettingsDialog extends JDialog {
 		_imageSettings.setUseIntegralHeight(chckbxUseIntegralHeight.isSelected());
 		_imageSettings.setHotspotsPopup(chckbxHotspotsPopUp.isSelected());
 		_imageSettings.setUseCustomPopupColour(chckbxCustomPopupColour.isSelected());
-		_imageSettings.setCustomPopupColour(selectedColourLabel.getBackground());
+		if (_imageSettings.getUseCustomPopupColour()) {
+			_imageSettings.setCustomPopupColour(selectedColourLabel.getBackground());
+		}
 		_imageSettings.setButtonAlignment((ButtonAlignment)buttonAlignmentCombo.getModel().getSelectedItem());
 		
 		_model.setImageSettings(_imageSettings);

@@ -66,6 +66,10 @@ public class OverlayLocation {
             clearColor();
         }
     }
+    
+    public boolean getUseCustomColour() {
+    	return (flags & OLOC_FLAG_COLOUR) > 0;
+    }
 
     public boolean isPopup() {
         return (flags & OLOC_FLAG_POPUP) > 0;
