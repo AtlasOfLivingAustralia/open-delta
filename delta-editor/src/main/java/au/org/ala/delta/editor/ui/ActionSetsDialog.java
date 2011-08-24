@@ -33,6 +33,7 @@ import org.jdesktop.application.ResourceMap;
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile.DirectiveType;
+import au.org.ala.delta.editor.ui.util.MessageDialogHelper;
 
 /**
  * Allows the user to see and execute CONFOR / DIST / KEY directives files.
@@ -44,6 +45,7 @@ public class ActionSetsDialog extends JDialog {
 	private EditorViewModel _model;
 	private ResourceMap _resources;
 	private ActionMap _actions;
+	private MessageDialogHelper _messageHelper;
 	
 	private JLabel actionSetDetailsLabel;
 	private JButton runButton;
@@ -62,7 +64,7 @@ public class ActionSetsDialog extends JDialog {
 		_model = model;
 		_resources = Application.getInstance().getContext().getResourceMap();
 		_actions = Application.getInstance().getContext().getActionMap(this);
-		
+		_messageHelper = new MessageDialogHelper();
 		createUI();
 		addEventHandlers();
 		updateGUI();
@@ -146,9 +148,31 @@ public class ActionSetsDialog extends JDialog {
 	
 	@Action
 	public void runDirectiveFile() {
-		DirectiveFile file = getSelectedFile();
-		System.out.println("Run: "+file.getShortFileName());
-		
+		DirectiveFile file = getSelectedFile();	
+		if (file == null) {
+			return;
+		}
+		String program = null;
+		switch (file.getType()) {
+		case CONFOR:
+			program = "CONFORQW";
+			break;
+		case INTKEY:
+			program = "INTKEY5";
+			break;
+		case DIST:
+			program = "DISTQW";
+			break;
+		case KEY:
+			program = "KEYQW";
+			break;
+		}
+		try {
+			Runtime.getRuntime().exec(new String[]{program, file.getFileName()});
+		}
+		catch (Exception e) {
+			_messageHelper.errorRunningDirectiveFile(file.getShortFileName());
+		}
 	}
 	@Action
 	public void editDirectiveFile() {
@@ -159,12 +183,13 @@ public class ActionSetsDialog extends JDialog {
 	@Action
 	public void deleteDirectiveFile() {
 		DirectiveFile file = getSelectedFile();
-		System.out.println("Delete: "+file.getShortFileName());
-		// TODO are you sure?
-		
-		_model.deleteDirectiveFile(file);
-		
-		updateGUI();
+		if (file == null) {
+			return;
+		}
+		if(_messageHelper.confirmDeleteDirectiveFile(file.getShortFileName())) {
+			_model.deleteDirectiveFile(file);
+			updateGUI();
+		}
 	}
 	@Action
 	public void doneWithActionSets() {

@@ -62,6 +62,14 @@ public class MessageDialogHelper {
 		return result == JOptionPane.OK_OPTION;
 	}
 	
+	public boolean confirmDeleteDirectiveFile(String fileName) {
+		String title = _messages.getString("deleteDirectiveFile.title");
+		String message = _messages.getString("deleteDirectiveFile.message", fileName);
+		int result = au.org.ala.delta.ui.MessageDialogHelper.showConfirmDialog(_dialogParent, title, message, 50);
+		return result == JOptionPane.OK_OPTION;
+	}
+	
+	
 	public void errorLoadingImage(String fileName) {
 		String title = _messages.getString("errorLoadingImage.title");
 		String message = _messages.getString("errorLoadingImage.message", fileName);
@@ -99,6 +107,13 @@ public class MessageDialogHelper {
 		int type = result.isError() ? JOptionPane.ERROR_MESSAGE : JOptionPane.WARNING_MESSAGE;
 		JOptionPane.showMessageDialog(_dialogParent, message, title, type);
 		
+	}
+
+	public void errorRunningDirectiveFile(String fileName) {
+		String title = _messages.getString("errorRunningDirectiveFile.title");
+		String message = _messages.getString("errorRunningDirectiveFile.message", fileName);
+		JOptionPane.showMessageDialog(_dialogParent, message, title, JOptionPane.ERROR_MESSAGE);
+
 	}
 
 
