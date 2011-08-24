@@ -265,4 +265,9 @@ public class DirectiveFile {
 		}
 		return "";
 	}
+
+	public int getFileNumber() {
+		DeltaVOP vop = (DeltaVOP)_dirFileDesc.getVOP();
+		return vop.getDeltaMaster().dirFileNoFromUniId(_dirFileDesc.getUniId());
+	}
 }

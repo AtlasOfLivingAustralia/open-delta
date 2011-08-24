@@ -198,15 +198,23 @@ public class EditorDataModel extends DataSetWrapper implements EditorViewModel, 
 	}
 	
 	public DirectiveFile addDirectiveFile(int fileNumber, String fileName, DirectiveType type) {
-		return ((SlotFileDataSet)_wrappedDataSet).addDirectiveFile(fileNumber, fileName, type);
+		return slotFileDataSet().addDirectiveFile(fileNumber, fileName, type);
 	}
 	
 	public int getDirectiveFileCount() {
-		return ((SlotFileDataSet)_wrappedDataSet).getDirectiveFileCount();
+		return slotFileDataSet().getDirectiveFileCount();
 	}
 	
 	public DirectiveFile getDirectiveFile(int fileNumber) {
-		return ((SlotFileDataSet)_wrappedDataSet).getDirectiveFile(fileNumber);
+		return slotFileDataSet().getDirectiveFile(fileNumber);
+	}
+	
+	public void deleteDirectiveFile(DirectiveFile file) {
+		slotFileDataSet().deleteDirectiveFile(file);
+	}
+	
+	private SlotFileDataSet slotFileDataSet() {
+		return (SlotFileDataSet)_wrappedDataSet;
 	}
 	
 	public boolean isModified() {

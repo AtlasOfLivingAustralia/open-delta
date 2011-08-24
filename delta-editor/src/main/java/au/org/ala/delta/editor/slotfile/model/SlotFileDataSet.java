@@ -652,4 +652,18 @@ public class SlotFileDataSet extends AbstractObservableDataSet {
 		
 		return new DirectiveFile(dirFile);
 	}
+	
+	public void deleteDirectiveFile(DirectiveFile file) {
+		
+		int id = getVOP().getDeltaMaster().uniIdFromDirFileNo(file.getFileNumber());
+		
+		// Get a pointer to the file's descriptor, for general use.
+		VODirFileDesc dirFile = (VODirFileDesc)getVOP().getDescFromId(id);
+		
+        // Next remove the file from the master list
+		if (getVOP().getDeltaMaster().removeDirFile(id)) {
+		      // Finally, delete the descriptor from the VOP
+		      _vop.deleteObject(dirFile);
+		}
+	}
 }

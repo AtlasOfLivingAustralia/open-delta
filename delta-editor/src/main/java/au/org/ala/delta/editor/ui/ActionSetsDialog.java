@@ -161,7 +161,10 @@ public class ActionSetsDialog extends JDialog {
 		DirectiveFile file = getSelectedFile();
 		System.out.println("Delete: "+file.getShortFileName());
 		// TODO are you sure?
-		//_model.deleteDirectiveFile(file);
+		
+		_model.deleteDirectiveFile(file);
+		
+		updateGUI();
 	}
 	@Action
 	public void doneWithActionSets() {
@@ -246,6 +249,10 @@ public class ActionSetsDialog extends JDialog {
 		updateAction();
 	}
 	
+	/**
+	 * Presents a List of DirectiveFiles in a form suitable for display
+	 * in the Action Sets Dialog.
+	 */
 	private class DirectiveFileTableModel extends AbstractTableModel {
 
 		private static final long serialVersionUID = 6176954693803171069L;

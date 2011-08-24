@@ -50,4 +50,6 @@ public interface EditorViewModel extends ObservableDeltaDataSet {
 	public int getDirectiveFileCount();
 	
 	public DirectiveFile getDirectiveFile(int directiveFileNumber);
+	
+	public void deleteDirectiveFile(DirectiveFile file);
 }

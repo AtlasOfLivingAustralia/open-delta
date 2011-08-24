@@ -133,5 +133,9 @@ public class DeltaViewModel extends DataSetWrapper implements EditorViewModel, P
 		return _editorDataModel.getDirectiveFile(directiveFileNumber);
 	}
 	
+	@Override
+	public void deleteDirectiveFile(DirectiveFile file) {
+		_editorDataModel.deleteDirectiveFile(file);
+	}
 	
 }
