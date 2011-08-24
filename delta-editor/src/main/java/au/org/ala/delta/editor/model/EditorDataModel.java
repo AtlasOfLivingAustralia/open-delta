@@ -198,6 +198,7 @@ public class EditorDataModel extends DataSetWrapper implements EditorViewModel, 
 	}
 	
 	public DirectiveFile addDirectiveFile(int fileNumber, String fileName, DirectiveType type) {
+		setModified(true);
 		return slotFileDataSet().addDirectiveFile(fileNumber, fileName, type);
 	}
 	
@@ -210,6 +211,7 @@ public class EditorDataModel extends DataSetWrapper implements EditorViewModel, 
 	}
 	
 	public void deleteDirectiveFile(DirectiveFile file) {
+		setModified(true);
 		slotFileDataSet().deleteDirectiveFile(file);
 	}
 	

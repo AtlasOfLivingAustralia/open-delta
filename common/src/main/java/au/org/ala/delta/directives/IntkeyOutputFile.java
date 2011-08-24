@@ -8,6 +8,10 @@ import au.org.ala.delta.directives.args.DirectiveArguments;
  */
 public class IntkeyOutputFile extends AbstractTextDirective {
 
+	public IntkeyOutputFile() {
+		super("intkey", "output", "file");
+	}
+	
 	@Override
 	public void process(DeltaContext context, DirectiveArguments directiveArguments) throws Exception {
 		context.getOutputFileSelector().setIntkeyOutputFile(directiveArguments.getFirstArgumentText());

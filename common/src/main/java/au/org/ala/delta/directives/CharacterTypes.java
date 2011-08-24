@@ -70,7 +70,6 @@ public class CharacterTypes extends AbstractCharacterListDirective<DeltaContext,
 		}
 		
 		dataSet.addCharacter(charNumber, type);
-		System.out.println("Created: "+charNumber);
 		_lastCharacterNumber = charNumber;
 	}
 	

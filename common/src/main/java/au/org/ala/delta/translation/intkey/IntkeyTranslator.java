@@ -20,7 +20,7 @@ public class IntkeyTranslator implements DataSetTranslator {
 	@Override
 	public void translateCharacters() {
 		
-		String fileName = _context.getOutputFileSelector().getIntkeyOutputFile();
+		String fileName = _context.getOutputFileSelector().getIntkeyOutputFilePath();
 		WriteOnceIntkeyCharsFile charsFile = new WriteOnceIntkeyCharsFile(
 				_dataSet.getNumberOfCharacters(), fileName , BinFileMode.FM_APPEND);
 		IntkeyCharactersFileWriter charsWriter = new IntkeyCharactersFileWriter(_context, charsFile);
@@ -28,7 +28,7 @@ public class IntkeyTranslator implements DataSetTranslator {
 	
 	@Override
 	public void translateItems() {
-		String fileName = _context.getOutputFileSelector().getIntkeyOutputFile();
+		String fileName = _context.getOutputFileSelector().getIntkeyOutputFilePath();
 		
 		WriteOnceIntkeyItemsFile itemsFile = new WriteOnceIntkeyItemsFile(
 				_dataSet.getNumberOfCharacters(), _dataSet.getMaximumNumberOfItems(), fileName, BinFileMode.FM_APPEND);

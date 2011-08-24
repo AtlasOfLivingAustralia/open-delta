@@ -792,5 +792,20 @@ public class DeltaContext extends AbstractDeltaContext {
 	public boolean getOmitSpaceBeforeUnits() {
 		return _omitSpaceBeforeUnits;
 	}
+
+	@Override
+	public ParsingContext newParsingContext() {
+		ParsingContext context = super.newParsingContext();
+		_outputFileSelector.setParsingContext(context);
+		return context;
+	}
+
+	@Override
+	public ParsingContext endCurrentParsingContext() {
+		ParsingContext context =  super.endCurrentParsingContext();
+		_outputFileSelector.setParsingContext(context);
+		return context;
+	}
+	
 	
 }

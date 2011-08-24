@@ -1,10 +1,12 @@
 package au.org.ala.delta.io;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 
+import au.org.ala.delta.directives.ParsingContext;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Item;
@@ -17,11 +19,15 @@ public class OutputFileSelector {
 	private DeltaDataSet _dataSet;
 	private String _subjectForOutputFiles;
 	private String _intkeyOutputFile;
+	private ParsingContext _context;
 	
 	public OutputFileSelector(DeltaDataSet dataSet) {
 		_dataSet = dataSet;
 	}
 
+	public void setParsingContext(ParsingContext context) {
+		_context = context;
+	}
 	public String getItemOutputFile(int itemNumber) {
 		if (_itemOutputFiles.isEmpty() && _characterForOutputFiles == 0) {
 			throw new RuntimeException("One of ITEM OUTPUT FILES or CHARACTER FOR OUTPUT FILES must be specified.");
@@ -64,8 +70,13 @@ public class OutputFileSelector {
 		return description;
 	}
 	
-	public String getIntkeyOutputFile() {
-		return _intkeyOutputFile;
+	public String getIntkeyOutputFilePath() {
+		File file = new File(_intkeyOutputFile);
+		if (!file.isAbsolute()) {
+			File workingDir = _context.getFile().getParentFile();
+			file = new File(workingDir, _intkeyOutputFile);
+		}
+		return file.getAbsolutePath();
 	}
 	
 	public void setIntkeyOutputFile(String intkeyOut) {
