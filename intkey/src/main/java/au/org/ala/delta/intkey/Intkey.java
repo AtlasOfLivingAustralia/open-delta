@@ -888,7 +888,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     @Action
     public void mnuItHelpAbout() {
-        AboutBox aboutBox = new AboutBox(getMainFrame());
+        AboutBox aboutBox = new AboutBox(getMainFrame(), IconHelper.createRed32ImageIcon());
         show(aboutBox);
     }
 

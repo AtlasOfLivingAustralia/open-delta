@@ -505,7 +505,7 @@ public class DeltaEditor extends InternalFrameApplication implements
 	}
 
 	private void createAboutBox() {
-		AboutBox aboutBox = new AboutBox(getMainFrame());
+		AboutBox aboutBox = new AboutBox(getMainFrame(), IconHelper.createBlue32ImageIcon());
 		show(aboutBox);
 	}
 

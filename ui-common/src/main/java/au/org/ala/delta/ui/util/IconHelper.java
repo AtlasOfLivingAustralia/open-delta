@@ -71,6 +71,22 @@ public class IconHelper {
     public static ImageIcon createBlue12ImageIcon() {
         return createImageIcon(IconHelper.DELTA_BLUE_IMAGE_12);
     }
+    
+    public static ImageIcon createRed32ImageIcon() {
+        return createImageIcon(IconHelper.DELTA_RED_IMAGE_32);
+    }
+
+    public static ImageIcon createRed16ImageIcon() {
+        return createImageIcon(IconHelper.DELTA_RED_IMAGE_16);
+    }
+
+    public static ImageIcon createRed14ImageIcon() {
+        return createImageIcon(IconHelper.DELTA_RED_IMAGE_14);
+    }
+    
+    public static ImageIcon createRed12ImageIcon() {
+        return createImageIcon(IconHelper.DELTA_RED_IMAGE_12);
+    }
 
     public static List<? extends Image> getBlueIconList() {
         List<Image> list = new ArrayList<Image>();
