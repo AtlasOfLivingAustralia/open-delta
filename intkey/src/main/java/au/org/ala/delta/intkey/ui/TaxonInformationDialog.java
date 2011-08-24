@@ -2,6 +2,7 @@ package au.org.ala.delta.intkey.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Desktop;
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -22,6 +23,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.SwingWorker;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.MouseInputAdapter;
 
@@ -32,7 +34,6 @@ import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.SingleFrameApplication;
 
-import au.org.ala.delta.intkey.directives.IntkeyDirectiveParser;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.ResourceSettings;
@@ -42,7 +43,6 @@ import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.ui.rtf.SimpleRtfEditorKit;
 import au.org.ala.delta.util.Pair;
-import java.awt.Dimension;
 
 public class TaxonInformationDialog extends JDialog {
 
@@ -90,11 +90,18 @@ public class TaxonInformationDialog extends JDialog {
 
     private List<InformationDialogCommand> _cmds;
 
+    /**
+     * Calls Desktop.getDesktop on a background thread as it's slow to
+     * initialise
+     */
+    private SwingWorker<Desktop, Void> _desktopWorker;
+
     @Resource
     String noImagesCaption;
 
     public TaxonInformationDialog(Frame owner, List<Item> taxa, IntkeyContext context) {
         super(owner, true);
+
         setPreferredSize(new Dimension(550, 280));
         setMinimumSize(new Dimension(550, 280));
 
@@ -241,6 +248,8 @@ public class TaxonInformationDialog extends JDialog {
 
         initialize();
 
+        loadDesktopInBackground();
+
         this.pack();
     }
 
@@ -257,6 +266,23 @@ public class TaxonInformationDialog extends JDialog {
         _comboBox.setModel(comboModel);
 
         displayTaxon(0);
+    }
+
+    /**
+     * We do this because Desktop.getDesktop() can be very slow
+     */
+    private void loadDesktopInBackground() {
+        _desktopWorker = new SwingWorker<Desktop, Void>() {
+
+            protected Desktop doInBackground() {
+                if (Desktop.isDesktopSupported()) {
+                    return Desktop.getDesktop();
+                } else {
+                    return null;
+                }
+            }
+        };
+        _desktopWorker.execute();
     }
 
     private void displayTaxon(int index) {
@@ -393,13 +419,25 @@ public class TaxonInformationDialog extends JDialog {
             URL linkFileURL = _infoSettings.findFileOnResourcePath(_linkFileName);
 
             try {
+                Desktop desktop = _desktopWorker.get();
+
                 if (_linkFileName.toLowerCase().endsWith(".rtf")) {
                     File rtfFile = new File(linkFileURL.toURI());
                     String rtfSource = FileUtils.readFileToString(rtfFile);
                     RtfReportDisplayDialog dlg = new RtfReportDisplayDialog(TaxonInformationDialog.this, new SimpleRtfEditorKit(), rtfSource, "blah");
                     ((SingleFrameApplication) Application.getInstance()).show(dlg);
-                } else if (_linkFileName.toLowerCase().startsWith("http")) {
-                    Desktop.getDesktop().browse(linkFileURL.toURI());
+                } else if (linkFileURL.getProtocol().equals("http")) {
+                    if (desktop.isSupported(Desktop.Action.BROWSE)) {
+                        desktop.browse(linkFileURL.toURI());
+                    }
+                } else if (_linkFileName.toLowerCase().endsWith(".ink")) {
+
+                } else if (_linkFileName.toLowerCase().endsWith(".wav")) {
+
+                } else {
+                    if (desktop.isSupported(Desktop.Action.OPEN)) {
+                        desktop.open(new File(linkFileURL.toURI()));
+                    }
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();

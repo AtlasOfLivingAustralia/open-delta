@@ -32,7 +32,6 @@ import org.jdesktop.application.Application;
 import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 
-import au.org.ala.delta.ui.util.IconHelper;
 import au.org.ala.delta.util.Utils;
 
 /**
