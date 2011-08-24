@@ -259,7 +259,7 @@ public class FindInTaxaDialog extends JDialog {
     }
 
     @Action
-    public void nextTaxon() {
+    public void nextFoundTaxon() {
         if (_currentMatchedTaxon < (_numMatchedTaxa - 1)) {
             _currentMatchedTaxon++;
             taxonSelectionUpdated();
@@ -267,7 +267,7 @@ public class FindInTaxaDialog extends JDialog {
     }
 
     @Action
-    public void previousTaxon() {
+    public void previousFoundTaxon() {
         if (_currentMatchedTaxon > 0) {
             _currentMatchedTaxon--;
             taxonSelectionUpdated();

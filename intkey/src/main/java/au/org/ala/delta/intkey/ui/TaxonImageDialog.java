@@ -111,14 +111,14 @@ public class TaxonImageDialog extends ImageDialog {
     }
 
     @Action
-    public void nextTaxon() {
+    public void viewNextTaxon() {
         if (_selectedTaxonIndex < _taxa.size() - 1) {
             displayImagesForTaxon(_selectedTaxonIndex + 1);
         }
     }
 
     @Action
-    public void previousTaxon() {
+    public void viewPreviousTaxon() {
         if (_selectedTaxonIndex > 0) {
             displayImagesForTaxon(_selectedTaxonIndex - 1);
         }

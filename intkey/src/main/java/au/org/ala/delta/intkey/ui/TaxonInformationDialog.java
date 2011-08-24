@@ -42,6 +42,7 @@ import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.ui.rtf.SimpleRtfEditorKit;
 import au.org.ala.delta.util.Pair;
+import java.awt.Dimension;
 
 public class TaxonInformationDialog extends JDialog {
 
@@ -94,6 +95,8 @@ public class TaxonInformationDialog extends JDialog {
 
     public TaxonInformationDialog(Frame owner, List<Item> taxa, IntkeyContext context) {
         super(owner, true);
+        setPreferredSize(new Dimension(550, 280));
+        setMinimumSize(new Dimension(550, 280));
 
         ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(TaxonInformationDialog.class);
         resourceMap.injectFields(this);
@@ -246,7 +249,10 @@ public class TaxonInformationDialog extends JDialog {
 
         DefaultComboBoxModel comboModel = new DefaultComboBoxModel();
         for (Item taxon : _taxa) {
-            comboModel.addElement(_itemFormatter.formatItemDescription(taxon));
+            String formattedItemName = _itemFormatter.formatItemDescription(taxon);
+            formattedItemName = formattedItemName.replace("<", "");
+            formattedItemName = formattedItemName.replace(">", "");
+            comboModel.addElement(formattedItemName);
         }
         _comboBox.setModel(comboModel);
 
