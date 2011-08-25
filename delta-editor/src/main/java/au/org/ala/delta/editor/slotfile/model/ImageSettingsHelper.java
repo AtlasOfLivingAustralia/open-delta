@@ -18,12 +18,23 @@ import au.org.ala.delta.util.Pair;
 public class ImageSettingsHelper {
 
 	public static void copyToImageSettings(VOImageInfoDesc imageInfo, ImageSettings settings) {
-		FontInfo fontInfo = toFontInfo(imageInfo.readOverlayFont(OverlayFontType.OF_DEFAULT));
-		settings.setDefaultFontInfo(fontInfo);
-		fontInfo = toFontInfo(imageInfo.readOverlayFont(OverlayFontType.OF_FEATURE));
-		settings.setDefaultFeatureFontInfo(fontInfo);
-		fontInfo = toFontInfo(imageInfo.readOverlayFont(ImageSettings.OverlayFontType.OF_BUTTON));
-		settings.setDefaultButtonFontInfo(fontInfo);
+		Pair<LOGFONT, String> pair = imageInfo.readOverlayFont(OverlayFontType.OF_DEFAULT);
+		if (pair.getFirst()!= null && pair.getSecond() != null) {
+			FontInfo fontInfo = toFontInfo(pair);
+			settings.setDefaultFontInfo(fontInfo);
+		}
+		
+		pair = imageInfo.readOverlayFont(OverlayFontType.OF_FEATURE);
+		if (pair.getFirst()!= null && pair.getSecond() != null) {			
+			FontInfo fontInfo = toFontInfo(pair);
+			settings.setDefaultFeatureFontInfo(fontInfo);
+		}
+		
+		pair = imageInfo.readOverlayFont(ImageSettings.OverlayFontType.OF_BUTTON);
+		if (pair.getFirst()!= null && pair.getSecond() != null) {
+			FontInfo fontInfo = toFontInfo(pair);
+			settings.setDefaultButtonFontInfo(fontInfo);
+		}
 		
 		settings.setResourcePath(imageInfo.readImagePath());
 		

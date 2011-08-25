@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
 
 public class RTFUtils {
@@ -36,7 +35,9 @@ public class RTFUtils {
 		try {
 			reader.parse();
 		} catch (Exception ex) {
-			throw new RuntimeException(ex);
+			// throw new RuntimeException(ex);
+			// Ignore, and return the original text
+			return rtf;
 		}
 		return handler.getFilteredText();
 	}
@@ -93,39 +94,39 @@ class FilteringRTFHandler implements RTFHandler {
 
 	@Override
 	public void onCharacterAttributeChange(List<AttributeValue> values) {
-	    handleAttributeChange(values);
+		handleAttributeChange(values);
 	}
 
-    @Override
-    public void onParagraphAttributeChange(List<AttributeValue> values) {
-        handleAttributeChange(values);
-    }
-    
-    private void handleAttributeChange(List<AttributeValue> values) {
-        boolean atLeastOneAllowed = false;
-        for (AttributeValue val : values) {
-            if (_allowedKeywords.contains(val.getKeyword())) {
-                atLeastOneAllowed = true;
-                _buffer.append("\\").append(val.getKeyword());
-                if (val.hasParam()) {
-                    _buffer.append(val.getParam());
-                }
-            }
-        }
-        if (atLeastOneAllowed) {
-            _buffer.append(" "); // terminate the string of control words...
-        }        
-    }
+	@Override
+	public void onParagraphAttributeChange(List<AttributeValue> values) {
+		handleAttributeChange(values);
+	}
 
-    @Override
-    public void startParagraph() {
-    }
+	private void handleAttributeChange(List<AttributeValue> values) {
+		boolean atLeastOneAllowed = false;
+		for (AttributeValue val : values) {
+			if (_allowedKeywords.contains(val.getKeyword())) {
+				atLeastOneAllowed = true;
+				_buffer.append("\\").append(val.getKeyword());
+				if (val.hasParam()) {
+					_buffer.append(val.getParam());
+				}
+			}
+		}
+		if (atLeastOneAllowed) {
+			_buffer.append(" "); // terminate the string of control words...
+		}
+	}
 
-    @Override
-    public void endParagraph() {
-        if (_newlinesToSpace) {
-            _buffer.append(" ");
-        }
-    }
+	@Override
+	public void startParagraph() {
+	}
+
+	@Override
+	public void endParagraph() {
+		if (_newlinesToSpace) {
+			_buffer.append(" ");
+		}
+	}
 
 }

@@ -14,9 +14,7 @@
  ******************************************************************************/
 package au.org.ala.delta;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import au.org.ala.delta.directives.AbstractDirective;
 import au.org.ala.delta.directives.DirectiveSearchResult;
@@ -89,94 +87,13 @@ public class Tree {
     public void dump() {
         _toplevel.dump(0);
     }
-
-}
-
-class TreeNode {
-
-    protected String _name;
-    protected TreeNode _parent;
-
-    protected TreeNode(TreeNode parent, String name) {
-        _parent = parent;
-        _name = name;
+    
+    public void visit(TreeVisitor visitor) {
+    	_toplevel.visit(visitor);
     }
-
-    public TreeNode getParent() {
-        return _parent;
-    }
-
-    public String getName() {
-        return _name;
-    }
-
-    public void dump(int indent) {
-        StringBuilder b = new StringBuilder();
-        for (int i = 0; i < indent; ++i) {
-            b.append("  ");
-        }
-        b.append(_name);
-        Logger.log("%s", b.toString());
-    }
-
-}
-
-@SuppressWarnings("rawtypes")
-class DirectiveTreeNode extends TreeNodeList {
-    private AbstractDirective _directive;
-
-    public DirectiveTreeNode(TreeNode parent, String name, AbstractDirective directive) {
-        super(parent, name);
-        _directive = directive;
-    }
-
-    public AbstractDirective getDirective() {
-        return _directive;
-    }
-
-    @Override
-    public String toString() {
-        return String.format("DirectiveNode: %s", _directive);
-    }
-
-    @Override
-    public void dump(int indent) {
-        StringBuilder b = new StringBuilder();
-        for (int i = 0; i < indent; ++i) {
-            b.append("  ");
-        }
-        b.append(_name);
-        Logger.log("%s (%s)", b.toString(), _directive);
-    }
-}
-
-class TreeNodeList extends TreeNode {
-
-    private Map<String, TreeNode> _children;
-
-    public TreeNodeList(TreeNode parent, String name) {
-        super(parent, name);
-        _children = new HashMap<String, TreeNode>();
-    }
-
-    public Map<String, TreeNode> getChildren() {
-        return _children;
-    }
-
-    public void addChild(TreeNode child) {
-        _children.put(child.getName(), child);
-    }
-
-    public String toString() {
-        return String.format("TreeNodeList: %s", _name);
-    }
-
-    public void dump(int indent) {
-        super.dump(indent);
-        for (TreeNode n : _children.values()) {
-            n.dump(indent + 1);
-        }
-
+    
+    public static interface TreeVisitor {
+    	void visit(TreeNode node);
     }
 
 }
