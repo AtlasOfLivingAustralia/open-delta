@@ -20,6 +20,7 @@ import au.org.ala.delta.editor.slotfile.directive.DirectiveInOutState;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile;
 import au.org.ala.delta.editor.ui.validator.ValidationListener;
 import au.org.ala.delta.editor.ui.validator.ValidationResult;
+import au.org.ala.delta.ui.codeeditor.CodeEditor;
 
 /**
  * Provides a user interface that allows directive files to be edited.
@@ -39,7 +40,7 @@ public class DirectiveFileEditor extends JInternalFrame implements ValidationLis
 	private ActionMap _actions;
 	
 	
-	private JTextArea directivesTextArea;
+	private CodeEditor directivesEditor;
 	
 	public DirectiveFileEditor(EditorViewModel model) {	
 		super();
@@ -54,10 +55,24 @@ public class DirectiveFileEditor extends JInternalFrame implements ValidationLis
 	
 	
 	private void createUI() {
-		directivesTextArea = new JTextArea();
-		getContentPane().add(new JScrollPane(directivesTextArea), BorderLayout.CENTER);
+		directivesEditor = new CodeEditor(getMimeType());
+		directivesEditor.setEOLMarkersPainted(false);
+		getContentPane().add(new JScrollPane(directivesEditor), BorderLayout.CENTER);
 	}
 
+	private String getMimeType() {
+		DirectiveFile file = _model.getSelectedDirectiveFile();
+		String mimeType;
+		switch (file.getType()) {
+		case CONFOR:
+			mimeType = "text/confor";
+			break;
+		default:
+			mimeType = "text/plain";
+			break;
+		}
+		return mimeType;
+	}
 
 	private void updateGUI() {
 		DirectiveFile file = _model.getSelectedDirectiveFile();
@@ -68,7 +83,7 @@ public class DirectiveFileEditor extends JInternalFrame implements ValidationLis
 		state.setPrintStream(p);
 		ec.writeDirectivesFile(file, state);
 		
-		directivesTextArea.setText(new String(out.toByteArray()));
+		directivesEditor.setText(new String(out.toByteArray()));
 	}
 
 	@Override
