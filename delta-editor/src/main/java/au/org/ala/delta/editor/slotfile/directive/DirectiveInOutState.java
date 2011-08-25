@@ -14,6 +14,8 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.slotfile.directive;
 
+import java.io.PrintStream;
+
 import au.org.ala.delta.editor.slotfile.DirectiveInstance;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.translation.Printer;
@@ -23,6 +25,10 @@ public class DirectiveInOutState {
 	private DirectiveInstance _currentDirective;
 	private Printer _printer;
 	private DeltaDataSet _dataSet;
+	
+	public DirectiveInOutState(DeltaDataSet dataSet) {
+		_dataSet = dataSet;
+	}
 	
 	public void setCurrentDirective(DirectiveInstance directive) {
 		_currentDirective = directive;
@@ -38,6 +44,18 @@ public class DirectiveInOutState {
 	
 	public Printer getPrinter() {
 		return _printer;
+	}
+	
+	/**
+	 * Convenience method that creates a Printer from a PrintStream.
+	 * @param out the print stream to export to.
+	 */
+	public void setPrintStream(PrintStream out) {
+		Printer printer = new Printer(out, 80);
+		printer.setIndentOnLineWrap(true);
+		printer.setSoftWrap(true);
+		printer.setIndent(2);
+		setPrinter(printer);
 	}
 	
 	public DeltaDataSet getDataSet() {

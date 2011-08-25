@@ -739,6 +739,12 @@ public class DeltaEditor extends InternalFrameApplication implements
 		newView(editor, "I");
 	}
 	
+	@Action
+	public void viewDirectivesEditor() {
+		DeltaView editor = _activeController.createDirectivesEditorView();
+		newView(editor, "");
+	}
+	
 	
 	@Action(enabledProperty = "saveAsEnabled")
 	public void importDirectives() {

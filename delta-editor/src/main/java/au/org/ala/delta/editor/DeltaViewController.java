@@ -320,6 +320,14 @@ public class DeltaViewController extends InternalFrameAdapter implements Vetoabl
 		
 		return view;
 	}
+	
+	public DeltaView createDirectivesEditorView() {
+		DeltaViewModel model = createViewModel();
+		DeltaView view = _viewFactory.createDirectivesEditorView(model);
+		viewerOpened(view, model);
+		
+		return view;
+	}
 
 	private DeltaViewModel createViewModel() {
 		
@@ -330,6 +338,8 @@ public class DeltaViewController extends InternalFrameAdapter implements Vetoabl
 			model.setSelectedItem(selectedModel.getSelectedItem());
 			model.setSelectedState(selectedModel.getSelectedState());
 			model.setSelectedImage(selectedModel.getSelectedImage());
+			// TODO This is because the ActionSets Dialog currently doesn't use a wrapper model.
+			model.setSelectedDirectiveFile(_dataSet.getSelectedDirectiveFile());
 		}
 		return model;
 	}
@@ -361,6 +371,8 @@ public class DeltaViewController extends InternalFrameAdapter implements Vetoabl
 			_observers.get(i).viewSelected(this, view);
 		}
 	}
+
+	
 
 	
 	

@@ -64,6 +64,8 @@ public class ActionSetsDialog extends JDialog {
 		_model = model;
 		_resources = Application.getInstance().getContext().getResourceMap();
 		_actions = Application.getInstance().getContext().getActionMap(this);
+		ActionMap editorActions = Application.getInstance().getContext().getActionMap();
+		_actions.put("viewDirectivesEditor", editorActions.get("viewDirectivesEditor"));
 		_messageHelper = new MessageDialogHelper();
 		createUI();
 		addEventHandlers();
@@ -177,8 +179,9 @@ public class ActionSetsDialog extends JDialog {
 	@Action
 	public void editDirectiveFile() {
 		DirectiveFile file = getSelectedFile();
-		System.out.println("Edit: "+file.getShortFileName());
+		_model.setSelectedDirectiveFile(file);
 		
+		_actions.get("viewDirectivesEditor").actionPerformed(null);
 	}
 	@Action
 	public void deleteDirectiveFile() {

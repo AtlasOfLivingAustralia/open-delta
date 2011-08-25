@@ -35,12 +35,9 @@ public abstract class DirOutTest extends TestCase {
 		_dataSet = new DefaultDataSetFactory().createDataSet("test");
 		
 		_bytesOut = new ByteArrayOutputStream();
-		PrintStream out = new PrintStream(_bytesOut, true, "utf-8");
-		_state = new DirectiveInOutState();
-		
+		PrintStream out = new PrintStream(_bytesOut, true, "utf-8");	
 		Printer _printer = new Printer(out, 80);
-		_state = new DirectiveInOutState();
-		_state.setDataSet(_dataSet);
+		_state = new DirectiveInOutState(_dataSet);
 		_state.setPrinter(_printer);
 		
 		DirectiveInstance directive = new DirectiveInstance(getDirective(), null); 

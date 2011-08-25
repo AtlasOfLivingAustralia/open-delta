@@ -2,6 +2,7 @@ package au.org.ala.delta.editor;
 
 import au.org.ala.delta.editor.model.DeltaViewModel;
 import au.org.ala.delta.editor.ui.CharacterEditor;
+import au.org.ala.delta.editor.ui.DirectiveFileEditor;
 import au.org.ala.delta.editor.ui.ItemEditor;
 import au.org.ala.delta.editor.ui.MatrixViewer;
 import au.org.ala.delta.editor.ui.TreeViewer;
@@ -35,6 +36,10 @@ public class DeltaViewFactory {
 	
 	public DeltaView createImageEditorView(DeltaViewModel model) {
 		return new ImageEditor(model);
+	}
+
+	public DeltaView createDirectivesEditorView(DeltaViewModel model) {
+		return new DirectiveFileEditor(model);
 	}
 	
 }

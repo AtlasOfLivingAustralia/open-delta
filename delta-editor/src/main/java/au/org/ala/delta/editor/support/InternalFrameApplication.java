@@ -38,7 +38,7 @@ public abstract class InternalFrameApplication extends DeltaSingleFrameApplicati
 		getContext().getSessionStorage().putProperty(JInternalFrame.class, new InternalFrameProperty());
 	}
 
-	protected void show(JInternalFrame frame) {
+	public void show(JInternalFrame frame) {
 		assert (frame != null);
 
 		if (_desktop == null) {

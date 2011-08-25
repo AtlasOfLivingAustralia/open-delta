@@ -1,9 +1,12 @@
 package au.org.ala.delta.editor.ui;
 
 import java.awt.BorderLayout;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 
 import javax.swing.ActionMap;
 import javax.swing.JInternalFrame;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 import org.jdesktop.application.Application;
@@ -13,6 +16,7 @@ import au.org.ala.delta.editor.DeltaEditor;
 import au.org.ala.delta.editor.DeltaView;
 import au.org.ala.delta.editor.directives.ExportController;
 import au.org.ala.delta.editor.model.EditorViewModel;
+import au.org.ala.delta.editor.slotfile.directive.DirectiveInOutState;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile;
 import au.org.ala.delta.editor.ui.validator.ValidationListener;
 import au.org.ala.delta.editor.ui.validator.ValidationResult;
@@ -34,6 +38,9 @@ public class DirectiveFileEditor extends JInternalFrame implements ValidationLis
 	
 	private ActionMap _actions;
 	
+	
+	private JTextArea directivesTextArea;
+	
 	public DirectiveFileEditor(EditorViewModel model) {	
 		super();
 		setName("ItemEditorDialog");
@@ -47,20 +54,26 @@ public class DirectiveFileEditor extends JInternalFrame implements ValidationLis
 	
 	
 	private void createUI() {
-		getContentPane().add(new JTextArea(), BorderLayout.CENTER);
+		directivesTextArea = new JTextArea();
+		getContentPane().add(new JScrollPane(directivesTextArea), BorderLayout.CENTER);
 	}
 
 
 	private void updateGUI() {
 		DirectiveFile file = _model.getSelectedDirectiveFile();
 		ExportController ec = new ExportController((DeltaEditor)Application.getInstance());
+		DirectiveInOutState state = new DirectiveInOutState(_model);
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		PrintStream p = new PrintStream(out);
+		state.setPrintStream(p);
+		ec.writeDirectivesFile(file, state);
 		
+		directivesTextArea.setText(new String(out.toByteArray()));
 	}
 
 	@Override
 	public String getViewTitle() {
-		// TODO Auto-generated method stub
-		return null;
+		return _model.getSelectedDirectiveFile().getShortFileName();
 	}
 
 
