@@ -2,7 +2,7 @@ package au.org.ala.delta.ui.codeeditor.action;
 
 import java.awt.event.ActionEvent;
 
-import au.org.ala.delta.ui.codeeditor.CodeEditor;
+import au.org.ala.delta.ui.codeeditor.CodeTextArea;
 
 public class CopyKeyAction extends EditorAction {
 
@@ -17,7 +17,7 @@ public class CopyKeyAction extends EditorAction {
      * @param textArea
      *            The text area.
      */
-    public CopyKeyAction(CodeEditor textArea) {
+    public CopyKeyAction(CodeTextArea textArea) {
         super(textArea);
     }
 

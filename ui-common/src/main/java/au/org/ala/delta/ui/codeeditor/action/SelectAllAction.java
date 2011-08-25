@@ -2,7 +2,7 @@ package au.org.ala.delta.ui.codeeditor.action;
 
 import java.awt.event.ActionEvent;
 
-import au.org.ala.delta.ui.codeeditor.CodeEditor;
+import au.org.ala.delta.ui.codeeditor.CodeTextArea;
 
 public class SelectAllAction extends EditorAction {
 
@@ -17,7 +17,7 @@ public class SelectAllAction extends EditorAction {
      * @param textArea
      *            The text area to perform actions on.
      */
-    public SelectAllAction(CodeEditor textArea) {
+    public SelectAllAction(CodeTextArea textArea) {
         super(textArea);
     }
 

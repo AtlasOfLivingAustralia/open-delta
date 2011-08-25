@@ -4,7 +4,7 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.text.BadLocationException;
 
-import au.org.ala.delta.ui.codeeditor.CodeEditor;
+import au.org.ala.delta.ui.codeeditor.CodeTextArea;
 
 public class EnterKeyAction extends EditorAction {
 
@@ -19,7 +19,7 @@ public class EnterKeyAction extends EditorAction {
      * @param textArea
      *            The text area.
      */
-    public EnterKeyAction(CodeEditor textArea) {
+    public EnterKeyAction(CodeTextArea textArea) {
         super(textArea);
     }
 

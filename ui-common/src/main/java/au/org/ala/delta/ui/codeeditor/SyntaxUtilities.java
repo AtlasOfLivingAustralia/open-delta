@@ -84,7 +84,7 @@ public class SyntaxUtilities implements IGlyphPainter {
         SyntaxStyle[] styles = new SyntaxStyle[Token.ID_COUNT];
 
         styles[Token.COMMENT1] = new SyntaxStyle(new Color(0x009900), true, false);
-        styles[Token.COMMENT2] = new SyntaxStyle(new Color(0x000099), true, false);
+        styles[Token.COMMENT2] = new SyntaxStyle(new Color(0x009900), true, false);
         styles[Token.KEYWORD1] = new SyntaxStyle(Color.blue, false, false);
         styles[Token.KEYWORD2] = new SyntaxStyle(Color.blue, false, false);
         styles[Token.KEYWORD3] = new SyntaxStyle(new Color(0x009600), false, false);

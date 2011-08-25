@@ -4,7 +4,7 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.text.BadLocationException;
 
-import au.org.ala.delta.ui.codeeditor.CodeEditor;
+import au.org.ala.delta.ui.codeeditor.CodeTextArea;
 import au.org.ala.delta.ui.codeeditor.TextUtilities;
 
 public class BackspaceKeyAction extends KeyAction {
@@ -20,7 +20,7 @@ public class BackspaceKeyAction extends KeyAction {
      * @param textArea
      *            The text area.
      */
-    public BackspaceKeyAction(CodeEditor textArea) {
+    public BackspaceKeyAction(CodeTextArea textArea) {
         super(textArea);
     }
 

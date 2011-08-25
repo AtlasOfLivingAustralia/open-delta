@@ -2,7 +2,7 @@ package au.org.ala.delta.ui.codeeditor.action;
 
 import java.awt.event.ActionEvent;
 
-import au.org.ala.delta.ui.codeeditor.CodeEditor;
+import au.org.ala.delta.ui.codeeditor.CodeTextArea;
 
 public class FindKeyAction extends EditorAction {
 
@@ -17,7 +17,7 @@ public class FindKeyAction extends EditorAction {
      * @param textArea
      *            The text editor.
      */
-    public FindKeyAction(CodeEditor textArea) {
+    public FindKeyAction(CodeTextArea textArea) {
         super(textArea);
     }
 

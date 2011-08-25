@@ -241,7 +241,7 @@ public class VODirFileDesc extends VOAnyDesc implements WindowsConstants {
 				throw new RuntimeException("Internal error. nDirectives mismatch");
 			}
 
-			if (dirIncludeFilter != null && dirIncludeFilter.contains(dirType)) {
+			if (dirIncludeFilter != null && !dirIncludeFilter.contains(dirType)) {
 				return null;
 			}
 

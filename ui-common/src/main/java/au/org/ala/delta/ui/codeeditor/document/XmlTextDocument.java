@@ -3,7 +3,7 @@ package au.org.ala.delta.ui.codeeditor.document;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Segment;
 
-import au.org.ala.delta.ui.codeeditor.CodeEditor;
+import au.org.ala.delta.ui.codeeditor.CodeTextArea;
 import au.org.ala.delta.ui.codeeditor.SyntaxUtilities;
 import au.org.ala.delta.ui.codeeditor.Token;
 
@@ -29,7 +29,7 @@ public class XmlTextDocument extends TextDocument {
      * @param textArea
      *            The text area the command was invoked at.
      */
-    public void contentAssist(CodeEditor textArea) {
+    public void contentAssist(CodeTextArea textArea) {
 
     }
 

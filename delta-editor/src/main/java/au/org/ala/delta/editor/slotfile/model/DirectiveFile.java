@@ -14,6 +14,7 @@ import au.org.ala.delta.editor.slotfile.Directive;
 import au.org.ala.delta.editor.slotfile.DirectiveInstance;
 import au.org.ala.delta.editor.slotfile.VODirFileDesc;
 import au.org.ala.delta.editor.slotfile.VODirFileDesc.Dir;
+import au.org.ala.delta.editor.slotfile.VODirFileDesc.DirArgs;
 import au.org.ala.delta.editor.slotfile.directive.ConforDirType;
 import au.org.ala.delta.editor.slotfile.directive.DistDirType;
 import au.org.ala.delta.editor.slotfile.directive.IntkeyDirType;
@@ -173,8 +174,7 @@ public class DirectiveFile {
 	 * this directive file.  If none exist, an empty string will be returned.
 	 */
 	public String getDescription() {
-		List<Integer> directiveTypes = new ArrayList<Integer>();
-		List<Dir> directives = _dirFileDesc.readAllDirectives(directiveTypes);
+		List<Integer> directiveTypes = new ArrayList<Integer>();		
 		
 		switch (getType()) {
 		case CONFOR:
@@ -193,10 +193,16 @@ public class DirectiveFile {
 			break;
 		}
 		
+		List<Dir> directives = _dirFileDesc.readAllDirectives(directiveTypes);
+		
 		String description = "";
 		if (!directives.isEmpty()) {
-			description = directives.get(0).args.get(0).text;
+			List<DirArgs> args = directives.get(0).args;
+			if (args.size() > 0) {
+				description = args.get(0).text;
+			}		
 		}
+		
 		return description;
 	}
 	

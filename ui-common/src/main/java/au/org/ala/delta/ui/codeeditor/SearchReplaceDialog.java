@@ -44,7 +44,7 @@ public class SearchReplaceDialog extends BaseDialog {
      */
     private static final long serialVersionUID = 1L;
     /** The text area. */
-    private CodeEditor textArea;
+    private CodeTextArea textArea;
 
     /**
      * Gets the text to find.
@@ -73,9 +73,9 @@ public class SearchReplaceDialog extends BaseDialog {
      */
     public int getFindDirection() {
         if (backwardRadioButton.isSelected()) {
-            return CodeEditor.DIRECTION_BACKWARD;
+            return CodeTextArea.DIRECTION_BACKWARD;
         }
-        return CodeEditor.DIRECTION_FORWARD;
+        return CodeTextArea.DIRECTION_FORWARD;
     }
 
     /**
@@ -111,7 +111,7 @@ public class SearchReplaceDialog extends BaseDialog {
      * @param textArea
      *            The text area.
      */
-    public SearchReplaceDialog(CodeEditor textArea) {
+    public SearchReplaceDialog(CodeTextArea textArea) {
         super(textArea.getFrame(), false);
         setTitle("Find/Replace");
         this.textArea = textArea;

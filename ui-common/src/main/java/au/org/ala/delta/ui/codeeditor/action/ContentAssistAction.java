@@ -2,7 +2,7 @@ package au.org.ala.delta.ui.codeeditor.action;
 
 import java.awt.event.ActionEvent;
 
-import au.org.ala.delta.ui.codeeditor.CodeEditor;
+import au.org.ala.delta.ui.codeeditor.CodeTextArea;
 
 public class ContentAssistAction extends EditorAction {
 
@@ -17,7 +17,7 @@ public class ContentAssistAction extends EditorAction {
      * @param textArea
      *            The text area.
      */
-    public ContentAssistAction(CodeEditor textArea) {
+    public ContentAssistAction(CodeTextArea textArea) {
         super(textArea);
     }
 

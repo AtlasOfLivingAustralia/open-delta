@@ -12,7 +12,7 @@ public abstract class DirectiveTextDocument<C extends AbstractDeltaContext> exte
 
 	public DirectiveTextDocument() {
 
-		addTokenPattern(Token.COMMENT1, true, "\\*COMMENT\\s.*$");
+		addTokenPattern(Token.COMMENT2, true, "\\*COMMENT\\s.*$");
 
 		DirectiveParser<C> parser = getDirectiveParser();
 
@@ -34,7 +34,6 @@ public abstract class DirectiveTextDocument<C extends AbstractDeltaContext> exte
 							sb.append(words[i]);
 						}
 					}
-					System.out.printf("Adding token: %s for directive: %s\n", sb.toString(), directive.toString());
 					addTokenPattern(Token.KEYWORD1, true, sb.toString());
 				}
 			}
@@ -45,12 +44,12 @@ public abstract class DirectiveTextDocument<C extends AbstractDeltaContext> exte
 
 	@Override
 	public String getBlockCommentStart() {
-		return "";
+		return "*COMMENT ";
 	}
 
 	@Override
 	public String getBlockCommentEnd() {
-		return "";
+		return "\n";
 	}
 
 	@Override

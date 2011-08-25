@@ -2,14 +2,14 @@ package au.org.ala.delta.ui.codeeditor.action;
 
 import javax.swing.AbstractAction;
 
-import au.org.ala.delta.ui.codeeditor.CodeEditor;
+import au.org.ala.delta.ui.codeeditor.CodeTextArea;
 
 public abstract class EditorAction extends AbstractAction {
 
 	private static final long serialVersionUID = 1L;
 	
 	/** The text editor. */
-	protected CodeEditor codeEditor;
+	protected CodeTextArea codeEditor;
 
 	/**
 	 * Constructs a EditorAction instance with specific arguments.
@@ -17,7 +17,7 @@ public abstract class EditorAction extends AbstractAction {
 	 * @param textArea
 	 *            The text area.
 	 */
-	public EditorAction(CodeEditor textArea) {
+	public EditorAction(CodeTextArea textArea) {
 		this.codeEditor = textArea;
 	}
 

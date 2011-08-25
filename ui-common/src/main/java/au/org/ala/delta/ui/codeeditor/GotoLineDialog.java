@@ -22,7 +22,7 @@ public class GotoLineDialog extends BaseDialog {
      */
 	private static final long serialVersionUID = 1L;
 	/** The text area. */
-	private CodeEditor textArea;
+	private CodeTextArea textArea;
 
 	/**
 	 * Sets the current line number.
@@ -40,7 +40,7 @@ public class GotoLineDialog extends BaseDialog {
 	 * @param textArea
 	 *            The text area.
 	 */
-	public GotoLineDialog(CodeEditor textArea) {
+	public GotoLineDialog(CodeTextArea textArea) {
 		super(textArea.getFrame(), false);
 		this.textArea = textArea;
 		setTitle("Goto line");

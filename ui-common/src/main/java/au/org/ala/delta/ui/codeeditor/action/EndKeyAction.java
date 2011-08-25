@@ -2,7 +2,7 @@ package au.org.ala.delta.ui.codeeditor.action;
 
 import java.awt.event.ActionEvent;
 
-import au.org.ala.delta.ui.codeeditor.CodeEditor;
+import au.org.ala.delta.ui.codeeditor.CodeTextArea;
 
 public class EndKeyAction extends KeyAction {
 
@@ -15,7 +15,7 @@ public class EndKeyAction extends KeyAction {
    * Constructs a EndKeyAction instance with specific arguments.
    * @param textArea The text area.
    */
-  public EndKeyAction(CodeEditor textArea) {
+  public EndKeyAction(CodeTextArea textArea) {
     super(textArea);
   }
 

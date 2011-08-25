@@ -2,7 +2,7 @@ package au.org.ala.delta.ui.codeeditor.action;
 
 import java.awt.event.ActionEvent;
 
-import au.org.ala.delta.ui.codeeditor.CodeEditor;
+import au.org.ala.delta.ui.codeeditor.CodeTextArea;
 
 public class CutKeyAction extends EditorAction {
 
@@ -17,7 +17,7 @@ public class CutKeyAction extends EditorAction {
      * @param textArea
      *            The text area.
      */
-    public CutKeyAction(CodeEditor textArea) {
+    public CutKeyAction(CodeTextArea textArea) {
         super(textArea);
     }
 

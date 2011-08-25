@@ -2,7 +2,7 @@ package au.org.ala.delta.ui.codeeditor.action;
 
 import java.awt.event.ActionEvent;
 
-import au.org.ala.delta.ui.codeeditor.CodeEditor;
+import au.org.ala.delta.ui.codeeditor.CodeTextArea;
 
 public class UpKeyAction extends KeyAction {
 
@@ -17,7 +17,7 @@ public class UpKeyAction extends KeyAction {
      * @param textArea
      *            The text area.
      */
-    public UpKeyAction(CodeEditor textArea) {
+    public UpKeyAction(CodeTextArea textArea) {
         super(textArea);
     }
 

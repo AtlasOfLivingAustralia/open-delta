@@ -2,7 +2,7 @@ package au.org.ala.delta.ui.codeeditor.action;
 
 import java.awt.event.ActionEvent;
 
-import au.org.ala.delta.ui.codeeditor.CodeEditor;
+import au.org.ala.delta.ui.codeeditor.CodeTextArea;
 
 public class InsertKeyAction extends EditorAction {
 
@@ -17,7 +17,7 @@ public class InsertKeyAction extends EditorAction {
      * @param textArea
      *            The text area.
      */
-    public InsertKeyAction(CodeEditor textArea) {
+    public InsertKeyAction(CodeTextArea textArea) {
         super(textArea);
     }
 

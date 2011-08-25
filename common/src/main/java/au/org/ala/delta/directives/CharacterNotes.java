@@ -32,7 +32,6 @@ public class CharacterNotes extends AbstractTextListDirective<Integer> {
 	@Override
 	public void process(DeltaContext context, DirectiveArguments directiveArguments) throws Exception {
 		
-
 	}
 
 }

@@ -2,12 +2,12 @@ package au.org.ala.delta.ui.codeeditor.action;
 
 import java.awt.event.ActionEvent;
 
-import au.org.ala.delta.ui.codeeditor.CodeEditor;
+import au.org.ala.delta.ui.codeeditor.CodeTextArea;
 
 
 public class CommentBlockAction extends EditorAction {
 
-    public CommentBlockAction(CodeEditor textArea) {
+    public CommentBlockAction(CodeTextArea textArea) {
         super(textArea);
     }
 

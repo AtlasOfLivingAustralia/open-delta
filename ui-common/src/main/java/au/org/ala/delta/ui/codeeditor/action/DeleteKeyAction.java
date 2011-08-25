@@ -4,7 +4,7 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.text.BadLocationException;
 
-import au.org.ala.delta.ui.codeeditor.CodeEditor;
+import au.org.ala.delta.ui.codeeditor.CodeTextArea;
 import au.org.ala.delta.ui.codeeditor.TextUtilities;
 
 public class DeleteKeyAction extends KeyAction {
@@ -18,7 +18,7 @@ public class DeleteKeyAction extends KeyAction {
    * Constructs a DeleteKeyAction instance with specific arguments.
    * @param textArea The text area.
    */
-  public DeleteKeyAction(CodeEditor textArea) {
+  public DeleteKeyAction(CodeTextArea textArea) {
     super(textArea);
   }
 

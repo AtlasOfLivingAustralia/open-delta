@@ -11,7 +11,7 @@ import javax.swing.text.Segment;
 import javax.swing.undo.CompoundEdit;
 import javax.swing.undo.UndoManager;
 
-import au.org.ala.delta.ui.codeeditor.CodeEditor;
+import au.org.ala.delta.ui.codeeditor.CodeTextArea;
 import au.org.ala.delta.ui.codeeditor.Token;
 import au.org.ala.delta.ui.codeeditor.action.RedoKeyAction;
 import au.org.ala.delta.ui.codeeditor.action.UndoKeyAction;
@@ -610,6 +610,6 @@ public abstract class TextDocument extends PlainDocument {
      * @param textArea
      *            The text area the command was invoked at.
      */
-    public void contentAssist(CodeEditor textArea) {
+    public void contentAssist(CodeTextArea textArea) {
     }
 }
