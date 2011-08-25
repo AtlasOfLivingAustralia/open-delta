@@ -91,7 +91,7 @@ public class ExportControllerTest extends DeltaTestCase {
 			DirectiveFileInfo test = new DirectiveFileInfo(directiveFile.getFileName(), DirectiveType.CONFOR, directiveFile);
 			
 			List<DirectiveFileInfo> files = Arrays.asList(new DirectiveFileInfo[] {test});
-			File tempDir = new File("/tmp");
+			File tempDir = new File(System.getProperty("java.io.tmpdir"));
 			System.out.println(i+" : "+directiveFile.getShortFileName());
 			exporter.new DoExportTask(tempDir, files).doInBackground();
 		}
