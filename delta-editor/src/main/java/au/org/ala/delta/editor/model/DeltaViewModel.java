@@ -32,6 +32,9 @@ public class DeltaViewModel extends DataSetWrapper implements EditorViewModel, P
 	/** the currently selected image */ 
 	private Image _selectedImage;
 	
+	/** The currently selected directive file */
+	private DirectiveFile _selectedDirectiveFile;
+	
 	/** The number of the selected state.  Only valid when the selected
 	 * character is a multistate character (otherwise it's -1).
 	 */
@@ -136,6 +139,16 @@ public class DeltaViewModel extends DataSetWrapper implements EditorViewModel, P
 	@Override
 	public void deleteDirectiveFile(DirectiveFile file) {
 		_editorDataModel.deleteDirectiveFile(file);
+	}
+	
+	@Override
+	public DirectiveFile getSelectedDirectiveFile() {
+		return _selectedDirectiveFile;
+	}
+	
+	@Override
+	public void setSelectedDirectiveFile(DirectiveFile file) {
+		_selectedDirectiveFile = file;
 	}
 	
 }

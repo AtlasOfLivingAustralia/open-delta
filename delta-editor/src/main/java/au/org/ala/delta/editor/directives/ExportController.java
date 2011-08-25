@@ -1,9 +1,7 @@
 package au.org.ala.delta.editor.directives;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.PrintStream;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -143,7 +141,81 @@ public class ExportController {
 			List<DirectiveFileInfo> files) {
 		new DoExportTask(selectedDirectory, files).execute();
 	}
+	
+	private void writeDirectivesFile(DirectiveFile file, DirectiveInOutState state) {
+		try {
+			List<DirectiveInstance> directives = file.getDirectives();
 
+			for (int i = 0; i < directives.size(); i++) {
+				writeDirective(directives.get(i), state);
+				if (i != directives.size() - 1) {
+					state.getPrinter().writeBlankLines(1, 0);
+				}
+			}
+			state.getPrinter().printBufferLine();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (state.getPrinter() != null) {
+				state.getPrinter().close();
+			}
+		}
+	}
+	
+	private void configureExportState(
+			DirectiveInOutState state,
+			DirectiveFile file,
+			String directoryPath)  {
+		try {
+			String fileName = file.getShortFileName();
+			FilenameUtils.concat(directoryPath, fileName);
+			File directivesFile = new File(directoryPath + fileName);
+			if (directivesFile.exists()) {
+				rename(directivesFile);
+				directivesFile = new File(directoryPath + fileName);
+			}
+			PrintStream out = new PrintStream(directivesFile, "utf-8");
+			Printer printer = new Printer(out, 80);
+			printer.setIndentOnLineWrap(true);
+			printer.setSoftWrap(true);
+			printer.setIndent(2);
+	
+			state.setPrinter(printer);
+			state.setDataSet(_model);
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private void rename(File directivesFile) {
+		File bakFile = new File(directivesFile.getAbsolutePath() + ".bak");
+		directivesFile.renameTo(bakFile);
+	}
+
+	protected void writeDirective(DirectiveInstance directive,
+			DirectiveInOutState state) {
+		
+		state.setCurrentDirective(directive);
+		Directive directiveInfo = directive.getDirective();
+
+		directiveInfo.getOutFunc().process(state);
+	}
+
+	public class StatusUpdatingExportState extends DirectiveInOutState {
+		
+		private ImportExportStatus _status;
+		public StatusUpdatingExportState(ImportExportStatus status) {
+			_status = status;
+		}
+		@Override
+		public void setCurrentDirective(DirectiveInstance directive) {
+			super.setCurrentDirective(directive);
+			_status.setCurrentDirective(directive.getDirective().joinNameComponents());
+		}
+	}
+	
 	public class DoExportTask extends Task<Void, ImportExportStatus> implements
 			DirectiveParserObserver {
 
@@ -168,10 +240,13 @@ public class ExportController {
 
 			buildSpecialDirFiles();
 			
+			DirectiveInOutState state = new StatusUpdatingExportState(_status);
 			for (DirectiveFileInfo file : _files) {
 				DirectiveFile dirFile = file.getDirectiveFile();
 				if (dirFile != null) {
-					writeDirectivesFile(dirFile, _directoryName);
+					configureExportState(state, dirFile, _directoryName);
+					_status.setCurrentFile(file.getFileName());
+					writeDirectivesFile(dirFile, state);
 				}
 
 				publish(_status);
@@ -194,67 +269,6 @@ public class ExportController {
 		public void postProcess(
 				AbstractDirective<? extends AbstractDeltaContext> directive) {
 			// storeDirective(directive);
-		}
-
-		private void writeDirectivesFile(DirectiveFile file,
-				String directoryPath) {
-			DirectiveInOutState state = new DirectiveInOutState();
-			_status.setCurrentFile(file.getFileName());
-			try {
-				state = createExportState(file, directoryPath);
-				List<DirectiveInstance> directives = file.getDirectives();
-
-				for (int i = 0; i < directives.size(); i++) {
-					writeDirective(directives.get(i), state);
-					if (i != directives.size() - 1) {
-						state.getPrinter().writeBlankLines(1, 0);
-					}
-				}
-				state.getPrinter().printBufferLine();
-
-			} catch (Exception e) {
-				e.printStackTrace();
-			} finally {
-				if (state.getPrinter() != null) {
-					state.getPrinter().close();
-				}
-			}
-		}
-
-		private DirectiveInOutState createExportState(DirectiveFile file,
-				String directoryPath) throws FileNotFoundException,
-				UnsupportedEncodingException {
-			String fileName = file.getShortFileName();
-			FilenameUtils.concat(directoryPath, fileName);
-			File directivesFile = new File(directoryPath + fileName);
-			if (directivesFile.exists()) {
-				rename(directivesFile);
-				directivesFile = new File(directoryPath + fileName);
-			}
-			PrintStream out = new PrintStream(directivesFile, "utf-8");
-			Printer printer = new Printer(out, 80);
-			printer.setIndentOnLineWrap(true);
-			printer.setSoftWrap(true);
-			printer.setIndent(2);
-
-			DirectiveInOutState state = new DirectiveInOutState();
-			state.setPrinter(printer);
-			state.setDataSet(_model);
-			return state;
-		}
-
-		private void rename(File directivesFile) {
-			File bakFile = new File(directivesFile.getAbsolutePath() + ".bak");
-			directivesFile.renameTo(bakFile);
-		}
-
-		protected void writeDirective(DirectiveInstance directive,
-				DirectiveInOutState state) {
-			_status.setCurrentDirective(directive.getDirective().joinNameComponents());
-			state.setCurrentDirective(directive);
-			Directive directiveInfo = directive.getDirective();
-
-			directiveInfo.getOutFunc().process(state);
 		}
 	}
 

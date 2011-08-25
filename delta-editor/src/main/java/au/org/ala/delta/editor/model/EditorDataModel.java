@@ -44,6 +44,9 @@ public class EditorDataModel extends DataSetWrapper implements EditorViewModel, 
 	/** the currently selected image */ 
 	private Image _selectedImage;
 	
+	/** The currently selected directive file */
+	private DirectiveFile _selectedDirectiveFile;
+	
 	/** Helper class for notifying interested parties of property changes */
 	private PropertyChangeSupport _propertyChangeSupport;
 	
@@ -119,6 +122,16 @@ public class EditorDataModel extends DataSetWrapper implements EditorViewModel, 
 	@Override
 	public void setSelectedImage(Image image) {
 		_selectedImage = image;
+	}
+	
+	@Override
+	public DirectiveFile getSelectedDirectiveFile() {
+		return _selectedDirectiveFile;
+	}
+	
+	@Override
+	public void setSelectedDirectiveFile(DirectiveFile file) {
+		_selectedDirectiveFile = file;
 	}
 	
 	public ObservableDeltaDataSet getDeltaDataSet() {
