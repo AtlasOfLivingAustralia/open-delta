@@ -431,9 +431,9 @@ public class TaxonInformationDialog extends JDialog {
                         desktop.browse(linkFileURL.toURI());
                     }
                 } else if (_linkFileName.toLowerCase().endsWith(".ink")) {
-
+                    //TODO
                 } else if (_linkFileName.toLowerCase().endsWith(".wav")) {
-
+                    //TODO
                 } else {
                     if (desktop.isSupported(Desktop.Action.OPEN)) {
                         desktop.open(new File(linkFileURL.toURI()));

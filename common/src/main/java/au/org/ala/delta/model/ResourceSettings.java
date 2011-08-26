@@ -113,8 +113,9 @@ public class ResourceSettings {
 
     /**
      * Find a file on the resource path. The individual resource path locations
-     * are checked in turn until a file with the specified name is found. The dataset path is also
-     * searched if the file cannot be found at any of the resource path locations.
+     * are checked in turn until a file with the specified name is found. The
+     * dataset path is also searched if the file cannot be found at any of the
+     * resource path locations.
      * 
      * @param fileName
      *            The file name
@@ -122,17 +123,22 @@ public class ResourceSettings {
      */
     public URL findFileOnResourcePath(String fileName) {
         URL fileLocation = null;
-        
+
         List<String> locationsToSearch = getResourcePathLocations();
-        
-        //If file cannot be found at any of the resource path locations, also search the
-        //dataset path itself.
+
+        // If file cannot be found at any of the resource path locations, also
+        // search the
+        // dataset path itself.
         locationsToSearch.add(getDataSetPath());
-        
+
         for (String resourcePath : locationsToSearch) {
             try {
                 if (resourcePath.toLowerCase().startsWith("http")) {
-                    fileLocation = new URL(resourcePath + fileName);
+                    if (resourcePath.endsWith("/")) {
+                        fileLocation = new URL(resourcePath + fileName);
+                    } else {
+                        fileLocation = new URL(resourcePath + "/" + fileName);
+                    }
 
                     // Try opening a stream to the remote file. If no exceptions
                     // are thrown, the file

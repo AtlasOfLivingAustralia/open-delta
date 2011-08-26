@@ -1,16 +1,24 @@
 package au.org.ala.delta.intkey.model;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
+import javax.swing.SwingWorker;
+
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.math.IntRange;
 
 import au.org.ala.delta.Logger;
@@ -28,6 +36,7 @@ import au.org.ala.delta.model.ResourceSettings;
 import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.model.image.ImageSettings.FontInfo;
 import au.org.ala.delta.util.Pair;
+import au.org.ala.delta.util.Utils;
 
 /**
  * Model. Maintains global application state. THIS CLASS IS NOT THREAD SAFE
@@ -49,7 +58,12 @@ public class IntkeyContext extends AbstractDeltaContext {
     private File _charactersFile;
 
     private IntkeyDataset _dataset;
-    private File _datasetInitFile;
+
+    private String _remoteInkFileLocation;
+    private File _zippedDatasetFile;
+    private File _datasetStartupFile;
+    
+    private StartupFileData _startupFileData;
 
     private IntkeyUI _appUI;
     private DirectivePopulator _directivePopulator;
@@ -74,9 +88,9 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     private List<String> _imagePathLocations;
     private List<String> _infoPathLocations;
-    
+
     private List<Pair<String, String>> _taxonInformationDialogCommands;
-    
+
     private IntkeyDirectiveParser _directiveParser;
 
     /**
@@ -128,9 +142,9 @@ public class IntkeyContext extends AbstractDeltaContext {
         _directivePopulator = directivePopulator;
         _recordDirectiveHistory = false;
         _processingInputFile = false;
-        
+
         _directiveParser = IntkeyDirectiveParser.createInstance();
-        
+
         initializeIdentification();
     }
 
@@ -159,11 +173,11 @@ public class IntkeyContext extends AbstractDeltaContext {
 
         _characterOrder = IntkeyCharacterOrder.BEST;
         _bestCharacters = null;
-        
+
         _imagePathLocations = new ArrayList<String>();
         _infoPathLocations = new ArrayList<String>();
-        
-        _taxonInformationDialogCommands = new ArrayList<Pair<String,String>>();
+
+        _taxonInformationDialogCommands = new ArrayList<Pair<String, String>>();
     }
 
     /**
@@ -198,13 +212,15 @@ public class IntkeyContext extends AbstractDeltaContext {
             String absoluteFileName = charactersFile.getAbsolutePath();
             throw new IllegalArgumentException(String.format(UIUtils.getResourceString("CharactersFileNotFound.error"), absoluteFileName));
         }
-        
+
         _charactersFile = charactersFile;
 
         if (_dataset == null && _taxaFile != null) {
             createNewDataSet();
         } else {
-            // cleanup the old dataset, e.g. items file needs to be closed.
+            // cleanup the old dataset, in case the FILE CHARACTERS directive
+            // has
+            // been called without loading a new dataset file.
             if (_dataset != null) {
                 _dataset.cleanup();
             }
@@ -225,18 +241,18 @@ public class IntkeyContext extends AbstractDeltaContext {
     public void setFileTaxa(File taxaFile) {
         Logger.log("Setting taxa file to: %s", taxaFile.getAbsolutePath());
 
-
         if (!taxaFile.exists()) {
             String absoluteFileName = taxaFile.getAbsolutePath();
             throw new IllegalArgumentException(String.format(UIUtils.getResourceString("TaxaFileNotFound.error"), absoluteFileName));
         }
-        
+
         _taxaFile = taxaFile;
 
         if (_dataset == null && _charactersFile != null) {
             createNewDataSet();
         } else {
-            // cleanup the old dataset, e.g. items file needs to be closed.
+            // cleanup the old dataset, in case the FILE TAXA directive has
+            // been called without loading a new dataset file.
             if (_dataset != null) {
                 _dataset.cleanup();
             }
@@ -245,10 +261,10 @@ public class IntkeyContext extends AbstractDeltaContext {
             _charactersFile = null;
         }
     }
-    
+
     public void processInputFile(File inputFile) {
         Logger.log("Reading in directives from file: %s", inputFile.getAbsolutePath());
-        
+
         if (inputFile == null || !inputFile.exists()) {
             throw new IllegalArgumentException("Could not open input file " + inputFile.getAbsolutePath());
         }
@@ -263,6 +279,7 @@ public class IntkeyContext extends AbstractDeltaContext {
             parser.parse(inputFile, IntkeyContext.this);
         } catch (IOException ex) {
             Logger.log(ex.getMessage());
+            _appUI.displayErrorMessage(String.format("Error reading file '%s'", inputFile.getAbsolutePath()));
         }
 
         _recordDirectiveHistory = true;
@@ -275,7 +292,6 @@ public class IntkeyContext extends AbstractDeltaContext {
      * character and taxa files
      */
     private void createNewDataSet() {
-
         _dataset = IntkeyDatasetFileReader.readDataSet(_charactersFile, _taxaFile);
 
         _specimen = new Specimen(_dataset, _matchInapplicables, _matchInapplicables, _matchType);
@@ -300,28 +316,35 @@ public class IntkeyContext extends AbstractDeltaContext {
     }
 
     /**
-     * Read and execute the specified dataset initialization file. This method
-     * will block while the calling thread while the file is read, the dataset
+     * Read and execute the specified dataset startup file. This file may be either a
+     * "webstart" file, or a file containing actual directives to initialize the dataset.
+     * 
+     *  This method will block while the calling thread while the file is read, the dataset
      * is loaded, and other directives in the file are executed.
      * 
      * @param fileName
-     *            Path to the dataset initialization file
+     *            Path to the dataset initialization file 
      */
     public void newDataSetFile(File datasetFile) {
         Logger.log("Reading in directives from file: %s", datasetFile.getAbsolutePath());
-        
+
+        cleanupOldDataset();
+
         initializeIdentification();
-        
+
         if (datasetFile == null || !datasetFile.exists()) {
             throw new IllegalArgumentException("Could not open dataset file " + datasetFile.getAbsolutePath());
         }
+
+        new StartupFileLoader(datasetFile).execute();
         
-        _datasetInitFile = datasetFile;
-        
-        processInputFile(datasetFile);
-        _appUI.handleNewDataset(_dataset);
+        _datasetStartupFile = datasetFile;
     }
-    
+
+    private void processInitializationFile(File initializationFile) {
+        processInputFile(initializationFile);
+    }
+
     public void parseAndExecuteDirective(String command) {
         try {
             _directiveParser.parse(new StringReader(command), this);
@@ -685,7 +708,9 @@ public class IntkeyContext extends AbstractDeltaContext {
      */
     public void setTolerance(int toleranceValue) {
         _tolerance = toleranceValue;
-        _appUI.handleUpdateAll();
+        if (_dataset != null) {
+            _appUI.handleUpdateAll();
+        }
     }
 
     /**
@@ -746,13 +771,13 @@ public class IntkeyContext extends AbstractDeltaContext {
      * @return a reference to the most recently loaded dataset initialization
      *         file, or null if no such files have been loaded
      */
-    public File getDatasetInitializationFile() {
-        return _datasetInitFile;
+    public File getDatasetStartupFile() {
+        return _datasetStartupFile;
     }
-    
+
     public File getDatasetDirectory() {
-        if (_datasetInitFile != null) {
-            return _datasetInitFile.getParentFile();
+        if (_datasetStartupFile != null) {
+            return _datasetStartupFile.getParentFile();
         } else if (_charactersFile != null) {
             return _charactersFile.getParentFile();
         } else if (_taxaFile != null) {
@@ -779,7 +804,9 @@ public class IntkeyContext extends AbstractDeltaContext {
      */
     public void setCharacterOrder(IntkeyCharacterOrder characterOrder) {
         this._characterOrder = characterOrder;
-        _appUI.handleUpdateAll();
+        if (_dataset != null) {
+            _appUI.handleUpdateAll();
+        }
     }
 
     /**
@@ -808,15 +835,15 @@ public class IntkeyContext extends AbstractDeltaContext {
     public MatchType getMatchType() {
         return _matchType;
     }
-    
+
     public void setMatchInapplicables(boolean matchInapplicables) {
         _matchInapplicables = matchInapplicables;
     }
-    
+
     public void setMatchUnknowns(boolean matchUnknowns) {
         _matchUnknowns = matchUnknowns;
-    }    
-    
+    }
+
     public void setMatchType(MatchType matchType) {
         _matchType = matchType;
     }
@@ -860,7 +887,9 @@ public class IntkeyContext extends AbstractDeltaContext {
         // have been included/excluded
         _bestCharacters = null;
 
-        _appUI.handleUpdateAll();
+        if (_dataset != null) {
+            _appUI.handleUpdateAll();
+        }
     }
 
     public void setIncludedTaxa(Set<Integer> includedTaxa) {
@@ -875,31 +904,33 @@ public class IntkeyContext extends AbstractDeltaContext {
         // have been included/excluded
         _bestCharacters = null;
 
-        _appUI.handleUpdateAll();
+        if (_dataset != null) {
+            _appUI.handleUpdateAll();
+        }
     }
-    
+
     // Use all available characters aside from those specified.
     public void setExcludedCharacters(Set<Integer> excludedCharacters) {
         Set<Integer> includedCharacters = new HashSet<Integer>();
-        for (int i=1; i < _dataset.getNumberOfCharacters() + 1; i++) {
+        for (int i = 1; i < _dataset.getNumberOfCharacters() + 1; i++) {
             includedCharacters.add(i);
         }
-        
+
         includedCharacters.removeAll(excludedCharacters);
-        
+
         setIncludedCharacters(includedCharacters);
     }
-    
+
     // Use all available taxa aside from those specified.
     public void setExcludedTaxa(Set<Integer> excludedTaxa) {
         Set<Integer> includedTaxa = new HashSet<Integer>();
-        for (int i=1; i < _dataset.getNumberOfTaxa() + 1; i++) {
+        for (int i = 1; i < _dataset.getNumberOfTaxa() + 1; i++) {
             includedTaxa.add(i);
         }
-        
+
         includedTaxa.removeAll(excludedTaxa);
-        
-        setIncludedTaxa(includedTaxa);        
+
+        setIncludedTaxa(includedTaxa);
     }
 
     // The currently included characters minus the characters
@@ -985,18 +1016,18 @@ public class IntkeyContext extends AbstractDeltaContext {
         }
 
         // TODO need a definitive way to work out the dataset directory
-        imageSettings.setDataSetPath(_datasetInitFile.getParentFile().getAbsolutePath());
+        imageSettings.setDataSetPath(_datasetStartupFile.getParentFile().getAbsolutePath());
 
         imageSettings.setResourcePaths(_imagePathLocations);
 
         return imageSettings;
     }
-    
+
     public ResourceSettings getInfoSettings() {
         ResourceSettings infoSettings = new ResourceSettings();
 
         // TODO need a definitive way to work out the dataset directory
-        infoSettings.setDataSetPath(_datasetInitFile.getParentFile().getAbsolutePath());
+        infoSettings.setDataSetPath(_datasetStartupFile.getParentFile().getAbsolutePath());
 
         infoSettings.setResourcePaths(_infoPathLocations);
 
@@ -1006,15 +1037,15 @@ public class IntkeyContext extends AbstractDeltaContext {
     public void setImagePaths(List<String> imagePaths) {
         _imagePathLocations = new ArrayList<String>(imagePaths);
     }
-    
+
     public void setInfoPaths(List<String> infoPaths) {
         _infoPathLocations = new ArrayList<String>(infoPaths);
     }
-    
+
     public void addTaxonInformationDialogCommand(String subject, String command) {
         _taxonInformationDialogCommands.add(new Pair<String, String>(subject, command));
     }
-    
+
     public List<Pair<String, String>> getTaxonInformationDialogCommands() {
         return new ArrayList<Pair<String, String>>(_taxonInformationDialogCommands);
     }
@@ -1023,17 +1054,135 @@ public class IntkeyContext extends AbstractDeltaContext {
      * Called prior to application shutdown.
      */
     public void cleanupForShutdown() {
+        cleanupOldDataset();
+    }
+
+    private void cleanupOldDataset() {
         if (_dataset != null) {
             _dataset.cleanup();
         }
+
+        if (_startupFileData != null) {
+            try {
+                FileUtils.deleteDirectory(_startupFileData.getDataFileLocalCopy().getParentFile());
+                _startupFileData = null;
+            } catch (IOException ex) {
+                // do nothing, as we are closing the dataset there is not a lot we can
+                // do. The worst that can
+                // happen is that files get left in the temporary folder.
+            }
+        }
+        
+        _appUI.handleDatasetClosed();
     }
 
     public IntkeyUI getUI() {
         return _appUI;
     }
+    
+    public StartupFileData getStartupFileData() {
+        return _startupFileData;
+    }
 
     public DirectivePopulator getDirectivePopulator() {
         return _directivePopulator;
+    }
+
+    private class StartupFileLoader extends SwingWorker<Void, String> {
+
+        private File _startupFile;
+
+        public StartupFileLoader(File startupFile) {
+            _startupFile = startupFile;
+        }
+
+        @Override
+        protected Void doInBackground() throws Exception {
+            publish("Loading dataset...");
+
+            String inkFileLocation = null;
+            String dataFileLocation = null;
+            String initializationFileLocation = null;
+            String imagePath = null;
+            String infoPath = null;
+
+            BufferedReader reader = new BufferedReader(new FileReader(_startupFile));
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] tokens = line.split("=");
+
+                if (tokens.length == 2) {
+                    String keyword = tokens[0];
+                    String value = tokens[1];
+
+                    if (keyword.equals(Constants.INIT_FILE_INK_FILE_KEYWORD)) {
+                        inkFileLocation = value;
+                    } else if (keyword.equals(Constants.INIT_FILE_DATA_FILE_KEYWORD)) {
+                        dataFileLocation = value;
+                    } else if (keyword.equals(Constants.INIT_FILE_INITIALIZATION_FILE_KEYWORD)) {
+                        initializationFileLocation = value;
+                    } else if (keyword.equals(Constants.INIT_FILE_IMAGE_PATH_KEYWORD)) {
+                        imagePath = value;
+                    } else if (keyword.equals(Constants.INIT_FILE_INFO_PATH_KEYWORD)) {
+                        infoPath = value;
+                    }
+                }
+            }
+
+            if (inkFileLocation != null && initializationFileLocation != null && dataFileLocation != null) {
+                File tempDir = new File(FileUtils.getTempDirectory(), UUID.randomUUID().toString());
+                tempDir.mkdir();
+
+                URL dataFileURL = new URL(dataFileLocation);
+
+                String[] dataFileLocationTokens = dataFileURL.toString().split("/");
+                File localDataFile = new File(tempDir, dataFileLocationTokens[dataFileLocationTokens.length - 1]);
+
+                publish("downloading dataset from " + dataFileURL.toString());
+                FileUtils.copyURLToFile(dataFileURL, localDataFile, 10000, 10000);
+
+                Utils.extractZipFile(localDataFile, tempDir);
+
+                StartupFileData startupFileData = new StartupFileData();
+                startupFileData.setInkFileLocation(inkFileLocation);
+                startupFileData.setDataFileLocation(dataFileLocation);
+                startupFileData.setInitializationFileLocation(initializationFileLocation);
+                startupFileData.setDataFileLocalCopy(localDataFile);
+                startupFileData.setInitializationFileLocalCopy(new File(tempDir, initializationFileLocation));
+
+                _startupFileData = startupFileData;
+                processInitializationFile(_startupFileData.getInitializationFileLocalCopy());
+                setImagePaths(Arrays.asList(_startupFileData.getImagePath()));
+                setInfoPaths(Arrays.asList(_startupFileData.getInfoPath()));
+            } else {
+                processInitializationFile(_startupFile);
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void process(List<String> chunks) {
+            String lastProgressMessage = chunks.get(chunks.size() - 1);
+            _appUI.displayBusyMessage(lastProgressMessage);
+        }
+
+        @Override
+        protected void done() {
+            try {
+                _appUI.removeBusyMessage();
+
+                // Need to call get() so that we can handle any exceptions that
+                // occurred on the other thread.
+                get();
+
+                _appUI.handleNewDataset(_dataset);
+            } catch (Exception e) {
+                _appUI.displayErrorMessage("Error reading dataset file " + _startupFile.getAbsolutePath());
+                e.printStackTrace();
+            }
+        }
     }
 
 }

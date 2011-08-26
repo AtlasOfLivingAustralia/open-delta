@@ -13,6 +13,11 @@ public class MockIntkeyUI implements IntkeyUI {
     }
 
     @Override
+    public void handleDatasetClosed() {
+        // do nothing
+    }
+
+    @Override
     public void handleUpdateAll() {
         // do nothing
     }
@@ -42,7 +47,7 @@ public class MockIntkeyUI implements IntkeyUI {
     }
 
     @Override
-    public void removeBusyMessage(String message) {
+    public void removeBusyMessage() {
     }
 
     @Override

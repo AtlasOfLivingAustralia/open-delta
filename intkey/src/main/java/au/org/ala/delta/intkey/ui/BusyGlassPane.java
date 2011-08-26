@@ -29,6 +29,10 @@ public class BusyGlassPane extends JPanel {
     
     @Resource
     Icon icon;
+    private JLabel _lblMessage;
+    private JPanel _pnlMessage;
+    private JPanel _pnlImage;
+    private JLabel _lblBusyBar;
 
     public BusyGlassPane(String message) {
         super(null, false);
@@ -40,30 +44,30 @@ public class BusyGlassPane extends JPanel {
         this.setOpaque(false);
         this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         setLayout(new GridLayout(0, 1, 0, 0));
-
-        JPanel panel = new JPanel();
-        panel.setOpaque(false);
-        add(panel);
-        panel.setLayout(new BorderLayout(0, 0));
-
-        JLabel lblMessage = new JLabel(message);
-        lblMessage.setFont(new Font("Tahoma", Font.BOLD, 11));
-        panel.add(lblMessage, BorderLayout.SOUTH);
-        lblMessage.setAlignmentY(Component.BOTTOM_ALIGNMENT);
-        lblMessage.setAlignmentX(Component.CENTER_ALIGNMENT);
-        lblMessage.setHorizontalAlignment(SwingConstants.CENTER);
-
-        JPanel panel_1 = new JPanel();
-        panel_1.setOpaque(false);
-        add(panel_1);
-        panel_1.setLayout(new BorderLayout(0, 0));
-
-        JLabel lblBusyBar = new JLabel("");
-        panel_1.add(lblBusyBar, BorderLayout.NORTH);
-        lblBusyBar.setAlignmentY(Component.TOP_ALIGNMENT);
-        lblBusyBar.setHorizontalAlignment(SwingConstants.CENTER);
-        lblBusyBar.setAlignmentX(Component.CENTER_ALIGNMENT);
-        lblBusyBar.setIcon(icon);
+                
+                        _pnlMessage = new JPanel();
+                        _pnlMessage.setOpaque(false);
+                        add(_pnlMessage);
+                        _pnlMessage.setLayout(new BorderLayout(0, 0));
+                        
+                                _lblMessage = new JLabel(message);
+                                _lblMessage.setFont(new Font("Tahoma", Font.BOLD, 11));
+                                _pnlMessage.add(_lblMessage, BorderLayout.SOUTH);
+                                _lblMessage.setAlignmentY(Component.BOTTOM_ALIGNMENT);
+                                _lblMessage.setAlignmentX(Component.CENTER_ALIGNMENT);
+                                _lblMessage.setHorizontalAlignment(SwingConstants.CENTER);
+        
+                _pnlImage = new JPanel();
+                _pnlImage.setOpaque(false);
+                add(_pnlImage);
+                _pnlImage.setLayout(new BorderLayout(0, 0));
+                
+                        _lblBusyBar = new JLabel("");
+                        _pnlImage.add(_lblBusyBar, BorderLayout.NORTH);
+                        _lblBusyBar.setAlignmentY(Component.TOP_ALIGNMENT);
+                        _lblBusyBar.setHorizontalAlignment(SwingConstants.CENTER);
+                        _lblBusyBar.setAlignmentX(Component.CENTER_ALIGNMENT);
+                        _lblBusyBar.setIcon(icon);
         MouseInputListener blockMouseEvents = new MouseInputAdapter() {
         };
         this.addMouseMotionListener(blockMouseEvents);
@@ -75,7 +79,12 @@ public class BusyGlassPane extends JPanel {
     }
 
     public void setIcon(Icon icon) {
+        System.out.println("Setting icon");
         this.icon = icon;
+    }
+    
+    public void setMessage(String message) {
+        _lblMessage.setText(message);
     }
 
     @Override

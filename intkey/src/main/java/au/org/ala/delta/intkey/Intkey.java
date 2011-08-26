@@ -14,16 +14,19 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
 
 import javax.imageio.ImageIO;
 import javax.swing.ActionMap;
@@ -68,7 +71,6 @@ import au.org.ala.delta.intkey.directives.IncludeCharactersDirective;
 import au.org.ala.delta.intkey.directives.IncludeTaxaDirective;
 import au.org.ala.delta.intkey.directives.IntkeyDirective;
 import au.org.ala.delta.intkey.directives.IntkeyDirectiveParseException;
-import au.org.ala.delta.intkey.directives.IntkeyDirectiveParser;
 import au.org.ala.delta.intkey.directives.NewDatasetDirective;
 import au.org.ala.delta.intkey.directives.RestartDirective;
 import au.org.ala.delta.intkey.directives.SetToleranceDirective;
@@ -77,16 +79,17 @@ import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyCharacterOrder;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.model.IntkeyDataset;
+import au.org.ala.delta.intkey.model.StartupFileData;
 import au.org.ala.delta.intkey.model.specimen.CharacterValue;
 import au.org.ala.delta.intkey.model.specimen.Specimen;
 import au.org.ala.delta.intkey.ui.AttributeCellRenderer;
 import au.org.ala.delta.intkey.ui.BestCharacterCellRenderer;
 import au.org.ala.delta.intkey.ui.BusyGlassPane;
 import au.org.ala.delta.intkey.ui.CharacterCellRenderer;
+import au.org.ala.delta.intkey.ui.CharacterImageInputDialog;
 import au.org.ala.delta.intkey.ui.CharacterKeywordSelectionDialog;
 import au.org.ala.delta.intkey.ui.FindInCharactersDialog;
 import au.org.ala.delta.intkey.ui.FindInTaxaDialog;
-import au.org.ala.delta.intkey.ui.CharacterImageInputDialog;
 import au.org.ala.delta.intkey.ui.ImageDialog;
 import au.org.ala.delta.intkey.ui.IntegerInputDialog;
 import au.org.ala.delta.intkey.ui.MultiStateInputDialog;
@@ -114,10 +117,15 @@ import au.org.ala.delta.ui.DeltaSingleFrameApplication;
 import au.org.ala.delta.ui.image.ImageUtils;
 import au.org.ala.delta.ui.rtf.SimpleRtfEditorKit;
 import au.org.ala.delta.ui.util.IconHelper;
+import au.org.ala.delta.util.Pair;
 
 public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, DirectivePopulator {
 
     private static String INTKEY_ICON_PATH = "/au/org/ala/delta/intkey/resources/icons";
+    private static String MRU_FILES_PREF_KEY = "MRU";
+    private static String MRU_FILES_SEPARATOR = "\n";
+    private static String MRU_ITEM_SEPARATOR = ";";
+    private static int MAX_SIZE_MRU = 4;
 
     private JPanel _rootPanel;
     private JSplitPane _rootSplitPane;
@@ -197,12 +205,12 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     @Resource
     String mismatchesAllowCannotSeparateCaption;
-    
-    @Resource 
+
+    @Resource
     String selectCharacterKeywordsCaption;
-    
-    @Resource 
-    String selectTaxonKeywordsCaption;    
+
+    @Resource
+    String selectTaxonKeywordsCaption;
 
     private JLabel _lblNumRemainingTaxa;
     private JLabel _lblEliminatedTaxa;
@@ -571,21 +579,9 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     @Override
     protected void shutdown() {
+        saveCurrentlyOpenedDataset();
         _context.cleanupForShutdown();
         super.shutdown();
-    }
-
-    private void showBusyMessage(String message) {
-        _glassPane = new BusyGlassPane(message);
-        getMainFrame().setGlassPane(_glassPane);
-        _glassPane.setVisible(true);
-    }
-
-    private void removeBusyMessage() {
-        if (_glassPane != null) {
-            _glassPane.setVisible(false);
-            _glassPane = null;
-        }
     }
 
     private JMenuBar buildMenus(boolean advancedMode) {
@@ -617,6 +613,9 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         JMenuItem mnuItNewDataSet = new JMenuItem();
         mnuItNewDataSet.setAction(actionMap.get("mnuItNewDataSet"));
         mnuFile.add(mnuItNewDataSet);
+
+        JMenu mnuFileRecents = buildRecentFilesMenu();
+        mnuFile.add(mnuFileRecents);
 
         if (_advancedMode) {
             JMenuItem mnuItPreferences = new JMenuItem();
@@ -690,6 +689,33 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         mnuFile.add(mnuItFileExit);
 
         return mnuFile;
+    }
+
+    private JMenu buildRecentFilesMenu() {
+        JMenu mnuFileRecents = new JMenu();
+        mnuFileRecents.setName("mnuFileRecents");
+
+        List<Pair<String, String>> recentFiles = getPreviouslyUsedFiles();
+
+        for (Pair<String, String> recentFile : recentFiles) {
+            final String filePath = recentFile.getFirst();
+            String title = recentFile.getSecond();
+
+            JMenuItem mnuItRecentFile = new JMenuItem(title);
+            mnuItRecentFile.setToolTipText(filePath);
+
+            mnuItRecentFile.addActionListener(new ActionListener() {
+
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    openPreviouslyOpenedFile(filePath);
+                }
+            });
+            
+            mnuFileRecents.add(mnuItRecentFile);
+        }
+
+        return mnuFileRecents;
     }
 
     private JMenu buildQueriesMenu(ActionMap actionMap) {
@@ -959,7 +985,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         for (int i : _listEliminatedTaxa.getSelectedIndices()) {
             selectedTaxa.add((Item) _eliminatedTaxaListModel.getElementAt(i));
         }
-        
+
         TaxonInformationDialog dlg = new TaxonInformationDialog(getMainFrame(), selectedTaxa, _context);
         show(dlg);
     }
@@ -1072,7 +1098,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
                 try {
                     Thread.sleep(250);
                     if (!worker.isDone()) {
-                        showBusyMessage(calculatingBestCaption);
+                        displayBusyMessage(calculatingBestCaption);
                     }
                 } catch (InterruptedException ex) {
                     // do nothing
@@ -1251,57 +1277,71 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         }
 
         initializeIdentification();
+        
+        _rootPanel.revalidate();
+    }
+    
+    @Override
+    public void handleDatasetClosed() {
+        saveCurrentlyOpenedDataset();
+        JMenuBar menuBar = buildMenus(_advancedMode); //need to refresh the recent datasets menu
+        getMainFrame().setJMenuBar(menuBar);
+        ResourceMap resourceMap = getContext().getResourceMap(Intkey.class);
+        resourceMap.injectComponents(getMainFrame());
     }
 
     @Override
     public void handleUpdateAll() {
+        if (_context.getDataset() != null) { // Only update we have a dataset
+                                             // loaded.
+            List<Item> availableTaxa = _context.getAvailableTaxa();
+            List<Item> eliminatedTaxa = _context.getEliminatedTaxa();
 
-        List<Item> availableTaxa = _context.getAvailableTaxa();
-        List<Item> eliminatedTaxa = _context.getEliminatedTaxa();
+            _btnDiffSpecimenTaxa.setEnabled(availableTaxa.size() > 0 && eliminatedTaxa.size() > 0);
 
-        _btnDiffSpecimenTaxa.setEnabled(availableTaxa.size() > 0 && eliminatedTaxa.size() > 0);
+            // Need to display a message in place of the list of available
+            // characters
+            // if there are no remaining taxa (no matching taxa remain), or only
+            // 1
+            // remaining taxon (identification complete)
+            if (availableTaxa.size() > 1) {
+                updateAvailableCharacters();
+            } else {
+                String message = null;
 
-        // Need to display a message in place of the list of available
-        // characters
-        // if there are no remaining taxa (no matching taxa remain), or only 1
-        // remaining taxon (identification complete)
-        if (availableTaxa.size() > 1) {
-            updateAvailableCharacters();
-        } else {
-            String message = null;
+                if (availableTaxa.size() == 0) {
+                    message = noMatchingTaxaRemainCaption;
+                } else if (availableTaxa.size() == 1) {
+                    message = identificationCompleteCaption;
+                }
 
-            if (availableTaxa.size() == 0) {
-                message = noMatchingTaxaRemainCaption;
-            } else if (availableTaxa.size() == 1) {
-                message = identificationCompleteCaption;
+                JLabel lbl = new JLabel(message);
+                lbl.setHorizontalAlignment(JLabel.CENTER);
+                lbl.setBackground(Color.WHITE);
+                lbl.setOpaque(true);
+                _sclPaneAvailableCharacters.setViewportView(lbl);
+                _sclPaneAvailableCharacters.revalidate();
+
+                switch (_context.getCharacterOrder()) {
+                case NATURAL:
+                    _lblNumAvailableCharacters.setText(String.format(availableCharactersCaption, 0));
+                    break;
+                case BEST:
+                    _lblNumAvailableCharacters.setText(String.format(bestCharactersCaption, 0));
+                    break;
+                case SEPARATE:
+                    throw new NotImplementedException();
+                default:
+                    throw new RuntimeException("Unrecognized character order");
+                }
             }
 
-            JLabel lbl = new JLabel(message);
-            lbl.setHorizontalAlignment(JLabel.CENTER);
-            lbl.setBackground(Color.WHITE);
-            lbl.setOpaque(true);
-            _sclPaneAvailableCharacters.setViewportView(lbl);
-            _sclPaneAvailableCharacters.revalidate();
+            updateUsedCharacters();
+            updateAvailableTaxa(availableTaxa, _context.getSpecimen().getTaxonDifferences());
+            updateUsedTaxa(eliminatedTaxa, _context.getSpecimen().getTaxonDifferences());
 
-            switch (_context.getCharacterOrder()) {
-            case NATURAL:
-                _lblNumAvailableCharacters.setText(String.format(availableCharactersCaption, 0));
-                break;
-            case BEST:
-                _lblNumAvailableCharacters.setText(String.format(bestCharactersCaption, 0));
-                break;
-            case SEPARATE:
-                throw new NotImplementedException();
-            default:
-                throw new RuntimeException("Unrecognized character order");
-            }
+            updateDynamicButtons();
         }
-
-        updateUsedCharacters();
-        updateAvailableTaxa(availableTaxa, _context.getSpecimen().getTaxonDifferences());
-        updateUsedTaxa(eliminatedTaxa, _context.getSpecimen().getTaxonDifferences());
-
-        updateDynamicButtons();
     }
 
     @Override
@@ -1323,7 +1363,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         try {
             Thread.sleep(250);
             if (!worker.isDone()) {
-                showBusyMessage(loadingReportCaption);
+                displayBusyMessage(loadingReportCaption);
             }
         } catch (InterruptedException ex) {
             // do nothing
@@ -1368,13 +1408,21 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     @Override
     public void displayBusyMessage(String message) {
-        // TODO Auto-generated method stub
-
+        if (_glassPane == null) {
+            _glassPane = new BusyGlassPane(message);
+            getMainFrame().setGlassPane(_glassPane);
+            _glassPane.setVisible(true);
+        } else {
+            _glassPane.setMessage(message);
+        }
     }
 
     @Override
-    public void removeBusyMessage(String message) {
-        // TODO Auto-generated method stub
+    public void removeBusyMessage() {
+        if (_glassPane != null) {
+            _glassPane.setVisible(false);
+            _glassPane = null;
+        }
     }
 
     @Override
@@ -1431,6 +1479,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         }
 
         JButton button = new JButton(icon);
+        button.setToolTipText(shortHelp);
         button.setMargin(new Insets(0, 0, 0, 0));
         _pnlDynamicButtons.add(button);
 
@@ -1889,7 +1938,119 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
                 return Integer.valueOf(diffT1).compareTo(Integer.valueOf(diffT2));
             }
         }
+    }
+
+    private void openPreviouslyOpenedFile(String fileName) {
+        _context.newDataSetFile(new File(fileName));
+    }
+
+    private void saveCurrentlyOpenedDataset() {
+        // if the dataset was downloaded, ask the user if they wish to save it
+        StartupFileData startupFileData = _context.getStartupFileData();
+
+        File fileToOpenDataset = null;
+        if (startupFileData != null) {
+            fileToOpenDataset = _context.getDatasetStartupFile();
+        } else {
+            fileToOpenDataset = _context.getDatasetStartupFile();
+        }
+
+        if (_context.getDataset() != null) {
+            String datasetTitle = _context.getDataset().getHeading();
+            
+            addFileToMRU(fileToOpenDataset.getAbsolutePath(), datasetTitle);
+        }
+    }
+
+    public static List<Pair<String, String>> getPreviouslyUsedFiles() {
+        List<Pair<String, String>> retList = new ArrayList<Pair<String, String>>();
+
+        Preferences prefs = Preferences.userNodeForPackage(Intkey.class);
+        if (prefs != null) {
+            String mru = prefs.get(MRU_FILES_PREF_KEY, "");
+            if (!StringUtils.isEmpty(mru)) {
+                String[] mruFiles = mru.split(MRU_FILES_SEPARATOR);
+                for (String mruFile : mruFiles) {
+                    String[] mruFileItems = mruFile.split(MRU_ITEM_SEPARATOR);
+                    retList.add(new Pair<String, String>(mruFileItems[0], mruFileItems[1]));
+                }
+            }
+        }
+
+        return retList;
+    }
+
+    /**
+     * Removes the specified file from the most recently used file list
+     * 
+     * @param filename
+     *            The filename to remove
+     */
+    public static void removeFileFromMRU(String filename) {
+
+        List<Pair<String, String>> existingFiles = getPreviouslyUsedFiles();
+
+        StringBuilder b = new StringBuilder();
+        for (int i = 0; i < existingFiles.size(); ++i) {
+
+            Pair<String, String> fileNameTitlePair = existingFiles.get(i);
+            String existingFileName = fileNameTitlePair.getFirst();
+
+            if (!existingFileName.equalsIgnoreCase(filename)) {
+
+                if (b.length() > 0) {
+                    b.append(MRU_FILES_SEPARATOR);
+                }
+                b.append(fileNameTitlePair.getFirst() + MRU_ITEM_SEPARATOR + fileNameTitlePair.getSecond());
+            }
+        }
+
+        Preferences prefs = Preferences.userNodeForPackage(Intkey.class);
+        prefs.put(MRU_FILES_PREF_KEY, b.toString());
+        try {
+            prefs.sync();
+        } catch (BackingStoreException e) {
+            throw new RuntimeException(e);
+        }
 
     }
 
+    /**
+     * Adds the supplied filename to the top of the most recently used files.
+     * 
+     * @param filename
+     */
+    public static void addFileToMRU(String filename, String title) {
+
+        Queue<String> q = new LinkedList<String>();
+
+        String newFilePathAndTitle = filename + MRU_ITEM_SEPARATOR + title;
+        q.add(newFilePathAndTitle);
+
+        List<Pair<String, String>> existingFiles = getPreviouslyUsedFiles();
+        if (existingFiles != null) {
+            for (Pair<String, String> existingFile : existingFiles) {
+                String existingFilePathAndTitle = existingFile.getFirst() + MRU_ITEM_SEPARATOR + existingFile.getSecond();
+                if (!q.contains(existingFilePathAndTitle)) {
+                    q.add(existingFilePathAndTitle);
+                }
+            }
+        }
+
+        StringBuilder b = new StringBuilder();
+        for (int i = 0; i < MAX_SIZE_MRU && q.size() > 0; ++i) {
+            if (i > 0) {
+                b.append(MRU_FILES_SEPARATOR);
+            }
+            b.append(q.poll());
+        }
+
+        Preferences prefs = Preferences.userNodeForPackage(Intkey.class);
+        prefs.put(MRU_FILES_PREF_KEY, b.toString());
+        try {
+            prefs.sync();
+        } catch (BackingStoreException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
