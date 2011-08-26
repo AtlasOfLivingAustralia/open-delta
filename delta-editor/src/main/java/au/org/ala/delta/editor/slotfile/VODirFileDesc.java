@@ -393,7 +393,6 @@ public class VODirFileDesc extends VOAnyDesc implements WindowsConstants {
 					directive.args.get(i).id = readInt();
 					directive.args.get(i).value = readNumber();
 					nObjs = readInt();
-
 					directive.args.get(i).resizeDataVect(nObjs);
 					for (j = 0; j < nObjs; ++j) {
 						// Read associated values.
@@ -1231,6 +1230,7 @@ public class VODirFileDesc extends VOAnyDesc implements WindowsConstants {
 		    case DirectiveArgType.DIRARG_KEYSTATE:
 		        nObjs = directive.args.size();
 		        dataWrite(nObjs);
+		    
 		        for (i = 0; i < directive.args.size(); ++i) {
 		            dataWrite(directive.args.get(i).id);
 		            dataWrite(directive.args.get(i).value.toBinary());
@@ -1581,7 +1581,8 @@ public class VODirFileDesc extends VOAnyDesc implements WindowsConstants {
 		
 		public void setAsDeltaNumber(DeltaNumber number) {
 			_decimal = number.getDecimal();
-			_bytes = number.toBinary();
+			byte[] value = number.toBinary();
+			System.arraycopy(value, 0, _bytes, 0, _bytes.length);
 		}
 
 		@Override

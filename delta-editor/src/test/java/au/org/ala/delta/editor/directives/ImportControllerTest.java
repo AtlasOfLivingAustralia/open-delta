@@ -5,13 +5,13 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ApplicationContext;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import au.org.ala.delta.DeltaTestCase;
 import au.org.ala.delta.editor.DeltaEditor;
 import au.org.ala.delta.editor.model.EditorDataModel;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile;
@@ -27,7 +27,7 @@ import au.org.ala.delta.model.MultiStateCharacter;
 /**
  * Tests the ImportController class. 
  */
-public class ImportControllerTest extends TestCase {
+public class ImportControllerTest extends DeltaTestCase {
 
 	/**
 	 * Allows us to manually set the data set to be returned from the
@@ -61,23 +61,32 @@ public class ImportControllerTest extends TestCase {
 	
 	
 	/** The instance of the class we are testing */
-	private ImportController importer;
+	protected ImportController importer;
 	
 	/** The data set we are importing into */
-	private SlotFileDataSet _dataSet;
+	protected SlotFileDataSet _dataSet;
 	
-	private SlotFileRepository _repository;
+	protected SlotFileRepository _repository;
 	
 	@Before
 	public void setUp() throws Exception {
 		
 		DeltaEditorTestHelper helper = createTestHelper();
 		_repository = new SlotFileRepository();
-		_dataSet = (SlotFileDataSet)_repository.newDataSet();
+		createDataSet();
 		EditorDataModel model = new EditorDataModel(_dataSet);
 		helper.setModel(model);
 
 		importer = new ImportController(helper, model);
+	}
+	
+	protected void createDataSet() throws Exception {
+		_dataSet = (SlotFileDataSet)_repository.newDataSet();
+	}
+	
+	@After
+	public void tearDown() throws Exception {
+		_dataSet.close();
 	}
 
 	@Test

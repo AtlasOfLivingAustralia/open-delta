@@ -134,7 +134,9 @@ public class DirectiveFile {
 		Dir dir = _converter.fromDirective(directive);
 		
 		List<Dir> directives = _dirFileDesc.readAllDirectives();
+		System.out.println(directives);
 		directives.add(index, dir);
+		System.out.println("Adding directive "+directive.getDirective().joinNameComponents());
 		_dirFileDesc.writeAllDirectives(directives);
 	}
 	
