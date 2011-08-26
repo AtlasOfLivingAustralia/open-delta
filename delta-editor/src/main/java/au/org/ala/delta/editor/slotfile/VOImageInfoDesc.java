@@ -230,9 +230,13 @@ public class VOImageInfoDesc extends VOAnyDesc {
 		    }
 		}
 		// Seek to force allocation of large enough slot
-		dataSeek(startPos + trailerLeng + 2 + comment.length() + LOGFONT.SIZE);
-		dataSeek(startPos);
+		if (comment == null) {
+			comment = "";
+		}
 		commentLen = (short)comment.length();
+		dataSeek(startPos + trailerLeng + 2 + commentLen + LOGFONT.SIZE);
+		dataSeek(startPos);
+		
 		dataWrite(commentLen);
 		dataWrite(stringToBytes(comment));
 		dataWrite(logFont);
