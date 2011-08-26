@@ -24,6 +24,8 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseWheelEvent;
@@ -69,13 +71,12 @@ public class MatrixViewer extends JInternalFrame implements DeltaView {
 	private MatrixTableModel _model;
 	private AttributeEditor _attributeEditor;
 
-	
 	@Resource
 	String windowTitle;
 
 	public MatrixViewer(EditorViewModel dataSet) {
 		super();
-		setName(dataSet.getShortName()+"-grid");
+		setName(dataSet.getShortName() + "-grid");
 		ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(MatrixViewer.class);
 		resourceMap.injectFields(this);
 
@@ -84,7 +85,7 @@ public class MatrixViewer extends JInternalFrame implements DeltaView {
 		_dataSet = dataSet;
 		// It's important that this observer is added before the table model is created
 		// as it corrects the selection after the table model fires a tableStructureChanged
-		// event (which clears the selection). (Listeners are notified in reverse order of 
+		// event (which clears the selection). (Listeners are notified in reverse order of
 		// being added).
 		_dataSet.addDeltaDataSetObserver(new AbstractDataSetObserver() {
 
@@ -92,25 +93,27 @@ public class MatrixViewer extends JInternalFrame implements DeltaView {
 			public void characterAdded(DeltaDataSetChangeEvent event) {
 				restoreSelection(event);
 			}
+
 			@Override
 			public void characterMoved(DeltaDataSetChangeEvent event) {
 				restoreSelection(event);
 			}
+
 			@Override
 			public void characterDeleted(DeltaDataSetChangeEvent event) {
 				restoreSelection(event);
 			}
-			
+
 			private void restoreSelection(DeltaDataSetChangeEvent event) {
 				int row = _fixedColumns.getSelectedRow();
-				int column = event.getCharacter().getCharacterId()-1;
+				int column = event.getCharacter().getCharacterId() - 1;
 				_table.getSelectionModel().setSelectionInterval(row, row);
 				_table.getColumnModel().getSelectionModel().setSelectionInterval(column, column);
 				scrollCellToVisible(row, column);
 			}
-			
+
 		});
-		
+
 		_model = new MatrixTableModel(dataSet);
 
 		this.setSize(new Dimension(600, 500));
@@ -119,11 +122,11 @@ public class MatrixViewer extends JInternalFrame implements DeltaView {
 		_fixedColumns.setDragEnabled(true);
 		_fixedColumns.setDropMode(DropMode.INSERT_ROWS);
 		_fixedColumns.setFillsViewportHeight(true);
-		
+
 		_table = new DropIndicationTable(_model, _fixedColumns);
 		_fixedColumns.setTable(_table);
 		_fixedColumns.getTableHeader().setReorderingAllowed(false);
-		
+
 		_fixedColumns.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 
 			@Override
@@ -133,18 +136,18 @@ public class MatrixViewer extends JInternalFrame implements DeltaView {
 					_table.getSelectionModel().setSelectionInterval(row, row);
 				}
 			}
-			
+
 		});
-				
+
 		new TableRowResizer(_fixedColumns, _table);
-		
+
 		_table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		_table.getTableHeader().setSize(new Dimension(_table.getColumnModel().getTotalColumnWidth(), 100));
 		_table.getSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		_table.setCellSelectionEnabled(true);
 		_table.setDefaultRenderer(Object.class, new AttributeCellRenderer());
 		_table.getTableHeader().setReorderingAllowed(false);
-		
+
 		ListSelectionListener listener = new ListSelectionListener() {
 
 			@Override
@@ -153,14 +156,14 @@ public class MatrixViewer extends JInternalFrame implements DeltaView {
 				_fixedColumns.getSelectionModel().setSelectionInterval(row, row);
 				int charId = _table.getSelectedColumn() + 1;
 				int itemId = _table.getSelectedRow() + 1;
-				
+
 				if (itemId > 0) {
 					Item selectedItem = _dataSet.getItem(itemId);
 					_dataSet.setSelectedItem(selectedItem);
 				}
 				if (charId > 0) {
 					au.org.ala.delta.model.Character selectedCharacter = _dataSet.getCharacter(charId);
-					_dataSet.setSelectedCharacter(selectedCharacter);	
+					_dataSet.setSelectedCharacter(selectedCharacter);
 				}
 				if ((itemId > 0) && (charId > 0)) {
 					_attributeEditor.bind(_dataSet.getSelectedCharacter(), _dataSet.getSelectedItem());
@@ -170,18 +173,18 @@ public class MatrixViewer extends JInternalFrame implements DeltaView {
 
 		_table.getSelectionModel().addListSelectionListener(listener);
 		_table.getColumnModel().getSelectionModel().addListSelectionListener(listener);
-		
+
 		_table.getTableHeader().setDefaultRenderer(new TableHeaderRenderer());
 
 		final JScrollPane scrollpane = new JScrollPane(_table);
 		scrollpane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		scrollpane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-		
+
 		final JScrollPane fixedScrollPane = new JScrollPane(_fixedColumns);
 		fixedScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
 		fixedScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 		fixedScrollPane.setPreferredSize(new Dimension(120, 200));
-		new TableHeaderResizer((DropIndicationTableHeader)_table.getTableHeader(), scrollpane, fixedScrollPane);
+		new TableHeaderResizer((DropIndicationTableHeader) _table.getTableHeader(), scrollpane, fixedScrollPane);
 		scrollpane.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
 
 			@Override
@@ -189,18 +192,18 @@ public class MatrixViewer extends JInternalFrame implements DeltaView {
 				fixedScrollPane.getViewport().setViewPosition(scrollpane.getViewport().getViewPosition());
 			}
 		});
-		
+
 		// Even though the vertical scrollbar policy is "never" the scroll position can be
 		// adjusted while dragging during a drag and drop operation.
 		fixedScrollPane.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
-			
+
 			@Override
 			public void adjustmentValueChanged(AdjustmentEvent e) {
 				scrollpane.getViewport().setViewPosition(fixedScrollPane.getViewport().getViewPosition());
-				
+
 			}
 		});
-		
+
 		// This enables mouse wheeling scrolling works over the table row header
 		// (it won't by default because the vertical scroll bar policy is never).
 		fixedScrollPane.setWheelScrollingEnabled(false);
@@ -211,7 +214,7 @@ public class MatrixViewer extends JInternalFrame implements DeltaView {
 				Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(e);
 			}
 		});
-		
+
 		JSplitPane content = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		content.setBorder(null);
 		content.add(scrollpane, JSplitPane.RIGHT);
@@ -221,8 +224,7 @@ public class MatrixViewer extends JInternalFrame implements DeltaView {
 
 		_attributeEditor = new AttributeEditor(_dataSet);
 
-		JSplitPane divider = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-		divider.setDividerLocation(getHeight() - 200);
+		final JSplitPane divider = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		divider.setResizeWeight(1);
 
 		divider.setTopComponent(content);
@@ -230,28 +232,39 @@ public class MatrixViewer extends JInternalFrame implements DeltaView {
 
 		this.getContentPane().setLayout(new BorderLayout());
 		this.getContentPane().add(divider, BorderLayout.CENTER);
-		
+
+		this.addComponentListener(new ComponentAdapter() {
+
+			@Override
+			public void componentShown(ComponentEvent e) {
+				divider.setDividerLocation(getHeight() - EditorPreferences.getViewerDividerOffset());
+			}
+
+		});
+
 		_attributeEditor.add(new AttributeEditorListener() {
-			
+
 			@Override
 			public void advance() {
 				updateSelection(1);
 			}
+
 			@Override
 			public void reverse() {
 				updateSelection(-1);
 			}
+
 			@Override
 			public void focusOnViewer() {
 				_table.requestFocus();
-			}			
-			
+			}
+
 		});
 
 		_table.getActionMap().getParent().remove("paste");
 
 		ActionMap actionMap = Application.getInstance().getContext().getActionMap(this);
-				
+
 		javax.swing.Action copySelectedWithHeaders = actionMap.get("copySelectedWithHeaders");
 		if (copySelectedWithHeaders != null) {
 			_table.getActionMap().put("copySelectedWithHeaders", copySelectedWithHeaders);
@@ -261,92 +274,96 @@ public class MatrixViewer extends JInternalFrame implements DeltaView {
 		if (copySelection != null) {
 			_table.getActionMap().put("copy", copySelection);
 		}
-		
+
 		javax.swing.Action selectAll = actionMap.get("selectAll");
 		if (selectAll != null) {
 			_table.getActionMap().put("selectAll", selectAll);
 		}
-		
+
 		if ((_dataSet.getMaximumNumberOfItems() > 0) && (_dataSet.getNumberOfCharacters() > 0)) {
 			selectCell(0, 0);
 		}
 		configureDefaultRowHeight();
-		
+
 		_table.addKeyListener(new KeyProxy());
-	}	
-	
+	}
+
 	@Override
 	public ReorderableList getCharacterListView() {
-		return (DropIndicationTableHeader)_table.getTableHeader();
+		return (DropIndicationTableHeader) _table.getTableHeader();
 	}
-	
+
 	@Override
 	public ReorderableList getItemListView() {
 		return _fixedColumns;
 	}
-	
+
 	/**
-	 * Updates the current table selection index.  
-	 * @param selectionModifier the amount to add to the current selection index.
+	 * Updates the current table selection index.
+	 * 
+	 * @param selectionModifier
+	 *            the amount to add to the current selection index.
 	 */
 	private void updateSelection(int selectionModifier) {
 		switch (EditorPreferences.getEditorAdvanceMode()) {
 		case Character:
 			int candidateCharIndex = _table.getSelectedColumn() + selectionModifier;
 			if (candidateCharIndex >= 0 && candidateCharIndex < _table.getModel().getColumnCount()) {
-				_table.setColumnSelectionInterval(candidateCharIndex, candidateCharIndex);							
+				_table.setColumnSelectionInterval(candidateCharIndex, candidateCharIndex);
 			}
 			break;
 		case Item:
-			int candidateRowIndex = _table.getSelectedRow() + selectionModifier;;
+			int candidateRowIndex = _table.getSelectedRow() + selectionModifier;
+			;
 			if (candidateRowIndex >= 0 && candidateRowIndex < _table.getModel().getRowCount()) {
-				_table.setRowSelectionInterval(candidateRowIndex, candidateRowIndex);							
-			}						
+				_table.setRowSelectionInterval(candidateRowIndex, candidateRowIndex);
+			}
 			break;
 		}
 		scrollCellToVisible(_table.getSelectedRow(), _table.getSelectedColumn());
 	}
-	
+
 	public void scrollCellToVisible(int row, int column) {
 		_table.scrollRectToVisible(_table.getCellRect(row, column, true));
-	}	
-	
+	}
+
 	private void selectCell(int rowIndex, int colIndex) {
 		_table.getSelectionModel().setSelectionInterval(rowIndex, rowIndex);
-		_table.getColumnModel().getSelectionModel().setSelectionInterval(colIndex, colIndex);		
+		_table.getColumnModel().getSelectionModel().setSelectionInterval(colIndex, colIndex);
 	}
-	
+
 	private void configureDefaultRowHeight() {
 		TableCellRenderer renderer = _fixedColumns.getDefaultRenderer(Object.class);
 		Component comp = renderer.getTableCellRendererComponent(_fixedColumns, "Example Text", true, true, 0, 0);
 		_fixedColumns.setRowHeight(comp.getPreferredSize().height);
 		_table.setRowHeight(comp.getPreferredSize().height);
 	}
-	
+
 	@Action(block = BlockingScope.APPLICATION)
 	public Task<Void, Void> copy() {
 		return new CopySelectedTask(Application.getInstance());
 	}
-	
+
 	@Action(block = BlockingScope.APPLICATION)
 	public void selectAll() {
 		try {
 			// First select the top left cell so as to not confuse the row header listener code...
 			_table.getSelectionModel().setSelectionInterval(0, 0);
 			// Then select all...
-			_table.selectAll();			
+			_table.selectAll();
 		} catch (Exception ex) {
 			System.err.println(ex);
 		}
 	}
-	
+
 	@Action(block = BlockingScope.APPLICATION)
 	public Task<Void, Void> copySelectedWithHeaders() {
 		return new CopySelectedWithHeadersTask(Application.getInstance());
 	}
-	
+
 	@Override
-	public void open() {}
+	public void open() {
+	}
 
 	@Override
 	public boolean editsValid() {
@@ -357,7 +374,7 @@ public class MatrixViewer extends JInternalFrame implements DeltaView {
 	public String getViewTitle() {
 		return windowTitle;
 	}
-	
+
 	abstract class ClipboardCopyTask extends Task<Void, Void> {
 
 		protected String CELL_SEPERATOR = "\t";
@@ -426,7 +443,7 @@ public class MatrixViewer extends JInternalFrame implements DeltaView {
 		}
 
 	}
-	
+
 	/**
 	 * Copies the selected rows and columns, including the selected row and column headers...
 	 */
@@ -447,9 +464,9 @@ public class MatrixViewer extends JInternalFrame implements DeltaView {
 			int[] rows = _table.getSelectedRows();
 
 			setTotalCells(cols.length * rows.length);
-			
-			// For each column emit the column header...			
-			b.append(CELL_SEPERATOR);  // the top left corner has nothing...			
+
+			// For each column emit the column header...
+			b.append(CELL_SEPERATOR); // the top left corner has nothing...
 			for (int i = 0; i < cols.length; ++i) {
 				b.append(_table.getColumnName(cols[i])).append(CELL_SEPERATOR);
 			}
@@ -480,13 +497,10 @@ public class MatrixViewer extends JInternalFrame implements DeltaView {
 		}
 
 	}
-	
 
 	/**
-	 * This listener class is responsible for transferring focus to the 
-	 * AttributeEditor when the user starts typing in a focused cell.
-	 * Command type events (e.g. cut/copy/paste) will not initiate a focus transfer
-	 * but any other key events will.	 *
+	 * This listener class is responsible for transferring focus to the AttributeEditor when the user starts typing in a focused cell. Command type events (e.g. cut/copy/paste) will not initiate a
+	 * focus transfer but any other key events will. *
 	 */
 	class KeyProxy extends KeyAdapter {
 
@@ -494,45 +508,44 @@ public class MatrixViewer extends JInternalFrame implements DeltaView {
 		public void keyTyped(KeyEvent e) {
 			checkAndForwardKey(e);
 		}
-		
+
 		private void checkAndForwardKey(KeyEvent e) {
 			if (shouldForwardKey(e)) {
 				_attributeEditor.acceptKeyEvent(e);
 			}
 		}
-		
+
 		/**
-		 * Checks a key event and determines whether it represents a command
-		 * (e.g. cut/copy/paste).
-		 * @param e the KeyEvent to check.
+		 * Checks a key event and determines whether it represents a command (e.g. cut/copy/paste).
+		 * 
+		 * @param e
+		 *            the KeyEvent to check.
 		 * @return true if the KeyEvent is a command.
 		 */
 		private boolean isCommand(KeyEvent e) {
 			int commandKeyMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
-            return ((e.getModifiers() & commandKeyMask) != 0);
+			return ((e.getModifiers() & commandKeyMask) != 0);
 		}
-		
-		/** 
+
+		/**
 		 * @return true if the table has a only one selected cell.
 		 */
 		private boolean isSingleCellSelected() {
 			return (_table.getSelectedColumnCount() == 1 && _table.getSelectedRowCount() == 1);
 		}
-		
+
 		/**
-		 * A key will be forwarded if: 
-		 * a) it's not a command (cut/copy/paste)
-		 * b) there is a single selected cell in the table (so it is clear
-		 * which attribute is being edited).
-		 * @param e the KeyEvent that was generated.
-		 * @return true if the KeyEvent should be forwarded to the AttributeEditor for
-		 * processing.
+		 * A key will be forwarded if: a) it's not a command (cut/copy/paste) b) there is a single selected cell in the table (so it is clear which attribute is being edited).
+		 * 
+		 * @param e
+		 *            the KeyEvent that was generated.
+		 * @return true if the KeyEvent should be forwarded to the AttributeEditor for processing.
 		 */
 		private boolean shouldForwardKey(KeyEvent e) {
 			return isSingleCellSelected() && !isCommand(e);
 		}
 	}
-	
+
 }
 
 class BottomLineBorder extends LineBorder {
@@ -551,4 +564,3 @@ class BottomLineBorder extends LineBorder {
 		g.setColor(oldColor);
 	}
 }
-

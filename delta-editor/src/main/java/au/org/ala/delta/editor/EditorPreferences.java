@@ -29,6 +29,9 @@ public class EditorPreferences {
 	public static String ADVANCE_MODE_KEY = "EditorAdvanceMode";
 
 	private static EditorAdvanceMode DEFAULT_EDITOR_ADVANCE_MODE = EditorAdvanceMode.Character;
+	
+	public static String VIEWER_DIVIDER_OFFSET_KEY = "ViewerDividerOffset";
+	private static int DEFAULT_VIEWER_DIVIDER_OFFSET = 200;
 
 	/**
 	 * @return An array of the most recently used filenames
@@ -136,11 +139,27 @@ public class EditorPreferences {
 		}
 		return DEFAULT_EDITOR_ADVANCE_MODE;
 	}
-
+	
 	public static void setEditorAdvanceMode(EditorAdvanceMode mode) {
 		Preferences prefs = Preferences.userNodeForPackage(DeltaEditor.class);
 		if (prefs != null) {
 			prefs.put(ADVANCE_MODE_KEY, mode.toString());
+		}
+	}
+	
+	public static int getViewerDividerOffset() {
+		Preferences prefs = Preferences.userNodeForPackage(DeltaEditor.class);
+		if (prefs != null) {
+			return prefs.getInt(VIEWER_DIVIDER_OFFSET_KEY, DEFAULT_VIEWER_DIVIDER_OFFSET);
+			
+		}
+		return DEFAULT_VIEWER_DIVIDER_OFFSET;		
+	}
+	
+	public static void setViewerDividerOffset(int offset) {
+		Preferences prefs = Preferences.userNodeForPackage(DeltaEditor.class);
+		if (prefs != null) {
+			prefs.putInt(VIEWER_DIVIDER_OFFSET_KEY, offset);
 		}
 	}
 

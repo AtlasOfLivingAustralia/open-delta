@@ -167,7 +167,6 @@ public class TreeViewer extends JInternalFrame implements DeltaView {
 
 		final JSplitPane divider = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 
-		divider.setDividerLocation(getHeight() - 100);
 		divider.setResizeWeight(1);
 
 		divider.setTopComponent(content);
@@ -201,7 +200,7 @@ public class TreeViewer extends JInternalFrame implements DeltaView {
 		
 			@Override
 			public void componentShown(ComponentEvent e) {
-				divider.setDividerLocation(getHeight() - 200);
+				divider.setDividerLocation(getHeight() - EditorPreferences.getViewerDividerOffset());
 			}
 		
 		});
