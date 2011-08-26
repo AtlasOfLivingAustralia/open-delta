@@ -6,6 +6,7 @@ import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
 
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile;
+import au.org.ala.delta.editor.slotfile.model.DirectiveFile.DirectiveType;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
@@ -141,6 +142,11 @@ public class DeltaViewModel extends DataSetWrapper implements EditorViewModel, P
 		_editorDataModel.deleteDirectiveFile(file);
 	}
 	
+	@Override
+	public DirectiveFile addDirectiveFile(int fileNumber, String fileName, DirectiveType type) {
+		return _editorDataModel.addDirectiveFile(fileNumber, fileName, type);
+	}
+
 	@Override
 	public DirectiveFile getSelectedDirectiveFile() {
 		return _selectedDirectiveFile;

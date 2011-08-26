@@ -3,16 +3,21 @@ package au.org.ala.delta.editor.ui;
 import java.awt.BorderLayout;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.io.StringReader;
 
 import javax.swing.ActionMap;
+import javax.swing.JButton;
 import javax.swing.JInternalFrame;
 
+import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.editor.DeltaEditor;
 import au.org.ala.delta.editor.DeltaView;
 import au.org.ala.delta.editor.directives.ExportController;
+import au.org.ala.delta.editor.directives.ImportController;
+import au.org.ala.delta.editor.directives.ImportExportStatus;
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.slotfile.directive.DirectiveInOutState;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile;
@@ -29,9 +34,6 @@ public class DirectiveFileEditor extends JInternalFrame implements ValidationLis
 
 	/** Contains the directive file are editing */
 	private EditorViewModel _model;
-
-	/** Allows directive files to be opened read only */
-	private boolean _readOnly;
 
 	private ResourceMap _resources;
 
@@ -54,6 +56,10 @@ public class DirectiveFileEditor extends JInternalFrame implements ValidationLis
 		directivesEditor = new CodeEditor(getMimeType());
 		directivesEditor.getTextArea().setEOLMarkersPainted(false);
 		getContentPane().add(directivesEditor, BorderLayout.CENTER);
+		JButton apply = new JButton("Apply");
+		apply.setAction(_actions.get("applyChanges"));
+		getContentPane().add(apply, BorderLayout.SOUTH);
+		
 	}
 
 	private String getMimeType() {
@@ -95,6 +101,18 @@ public class DirectiveFileEditor extends JInternalFrame implements ValidationLis
 
 	}
 
+	@Action
+	public void applyChanges() {
+		ImportController controller = new ImportController((DeltaEditor) Application.getInstance(), _model);
+	
+		String text = directivesEditor.getTextArea().getText();
+		ImportExportStatus status = new ImportExportStatus();
+		controller.importDirectivesFile(
+				_model.getSelectedDirectiveFile(), new StringReader(text), status);
+		
+		updateGUI();
+	}
+	
 	@Override
 	public boolean editsValid() {
 

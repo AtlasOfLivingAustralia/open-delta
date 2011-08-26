@@ -38,12 +38,7 @@ public class DirectiveArgConverter {
 
 		Dir dir = new Dir();
 		Directive directiveDescription = directive.getDirective();
-		try {
 		dir.setDirType(directiveDescription.getNumber());
-		}
-		catch (NullPointerException e) {
-			e.printStackTrace();
-		}
 		populateArgs(dir, directive.getDirectiveArguments(), directiveDescription.getArgType());
 
 		return dir;
@@ -107,13 +102,13 @@ public class DirectiveArgConverter {
 		return arg.attrib.getAsText(showComments, _vop);
 	}
 
-	private void populateArgs(Dir dir, DirectiveArguments args, int directiveType) {
-		if (args == null || directiveType == DirectiveArgType.DIRARG_INTERNAL) {
+	private void populateArgs(Dir dir, DirectiveArguments args, int argType) {
+		if (args == null || argType == DirectiveArgType.DIRARG_INTERNAL) {
 			dir.resizeArgs(0);
 		}
 		else {
 			for (DirectiveArgument<?> arg : args.getDirectiveArguments()) {
-				IdConverter converter = idConverterFor(directiveType);
+				IdConverter converter = idConverterFor(argType);
 				
 				DirArgs dirArg = new DirArgs(converter.convertId(arg.getId()));
 				dirArg.setText(arg.getText());
@@ -123,8 +118,10 @@ public class DirectiveArgConverter {
 					dirArg.setValue(value.toPlainString());
 				}
 				
+				converter = idConverterForData(arg, argType);
 				for (BigDecimal dataValue : arg.getData()) {
 					DirListData data = new DirListData();
+					converter.convertData(data, dataValue);
 					data.setAsDeltaNumber(new DeltaNumber(dataValue.toPlainString()));
 					dirArg.getData().add(data);
 				}
@@ -141,6 +138,8 @@ public class DirectiveArgConverter {
 		public Object convertId(int id);
 		
 		public BigDecimal convertData(DirListData data);
+		
+		public void convertData(DirListData data, BigDecimal value);
 	}
 	
 	class CharacterNumberConverter implements IdConverter {
@@ -156,6 +155,12 @@ public class DirectiveArgConverter {
 		public BigDecimal convertData(DirListData data) {
 			return new BigDecimal(convert(data.getIntNumb()));
 		}
+		
+		@Override
+		public void convertData(DirListData data, BigDecimal value) {
+			data.setIntNumb((Integer)convertId(value.intValue()));
+		}
+		
 		private int convert(int id) {
 			return _vop.getDeltaMaster().charNoFromUniId(id);
 		}
@@ -174,6 +179,12 @@ public class DirectiveArgConverter {
 		public BigDecimal convertData(DirListData data) {
 			return new BigDecimal(convert(data.getIntNumb()));
 		}
+		
+		@Override
+		public void convertData(DirListData data, BigDecimal value) {
+			data.setIntNumb((Integer)convertId(value.intValue()));
+		}
+		
 		private int convert(int id) {
 			return _vop.getDeltaMaster().itemNoFromUniId(id);
 		}
@@ -200,6 +211,10 @@ public class DirectiveArgConverter {
 		public BigDecimal convertData(DirListData data) {
 			throw new UnsupportedOperationException();
 		}
+		@Override
+		public void convertData(DirListData data, BigDecimal value) {
+			data.setIntNumb((Integer)convertId(value.intValue()));
+		}
 	}
 	
 	class DirectIntegerConverter implements IdConverter {
@@ -215,6 +230,11 @@ public class DirectiveArgConverter {
 		public BigDecimal convertData(DirListData data) {
 			return new BigDecimal(data.getIntNumb());
 		}
+		
+		@Override
+		public void convertData(DirListData data, BigDecimal value) {
+			data.setIntNumb((Integer)convertId(value.intValue()));
+		}
 	}
 	class DirectRealConverter extends DirectIntegerConverter {
 		@Override
@@ -228,6 +248,11 @@ public class DirectiveArgConverter {
 		@Override
 		public BigDecimal convertData(DirListData data) {
 			return new BigDecimal(data.asString());
+		}
+		
+		@Override
+		public void convertData(DirListData data, BigDecimal value) {
+			data.setAsDeltaNumber(new DeltaNumber(value.toPlainString()));
 		}
 	}
 	
@@ -244,6 +269,9 @@ public class DirectiveArgConverter {
 		public BigDecimal convertData(DirListData data) {
 			return null;
 		}
+		@Override
+		public void convertData(DirListData data, BigDecimal value) {
+		}
 	}
 	
 	/**
@@ -258,13 +286,29 @@ public class DirectiveArgConverter {
 		}
 		@Override
 		public BigDecimal convertData(DirListData data) {
-			int charBaseId = _vop.getDeltaMaster().uniIdFromCharNo(_characterNumber);
-			VOCharBaseDesc charBase = (VOCharBaseDesc)_vop.getDescFromId(charBaseId);
+			VOCharBaseDesc charBase = getCharBase();
+			
 			if (CharType.isMultistate(charBase.getCharType())) {
 				int stateId = data.getIntNumb();
 				return new BigDecimal(charBase.stateNoFromUniId(stateId));
 			}
 			return new BigDecimal(data.asString());
+		}
+		private VOCharBaseDesc getCharBase() {
+			int charBaseId = _vop.getDeltaMaster().uniIdFromCharNo(_characterNumber);
+			VOCharBaseDesc charBase = (VOCharBaseDesc)_vop.getDescFromId(charBaseId);
+			return charBase;
+		}
+		@Override
+		public void convertData(DirListData data, BigDecimal value) {
+			VOCharBaseDesc charBase = getCharBase();
+			if (CharType.isMultistate(charBase.getCharType())) {
+				int stateNum = value.intValue();
+				data.setIntNumb((charBase.uniIdFromStateNo(stateNum)));
+			}
+			else {
+				data.setAsDeltaNumber(new DeltaNumber(value.toPlainString()));
+			}
 		}
 	}
 	
