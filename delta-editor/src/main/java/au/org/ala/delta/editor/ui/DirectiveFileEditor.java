@@ -79,6 +79,9 @@ public class DirectiveFileEditor extends JInternalFrame implements ValidationLis
 		state.setPrintStream(p);
 		ec.writeDirectivesFile(file, state);
 
+		if (file.isCharsFile() || file.isItemsFile() || file.isSpecsFile()) {
+			directivesEditor.getTextArea().setEditable(false);
+		}
 		directivesEditor.setText(new String(out.toByteArray()));
 	}
 
@@ -110,13 +113,11 @@ public class DirectiveFileEditor extends JInternalFrame implements ValidationLis
 
 	@Override
 	public void validationSuceeded(ValidationResult results) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void validationFailed(ValidationResult results) {
-		// TODO Auto-generated method stub
 
 	}
 

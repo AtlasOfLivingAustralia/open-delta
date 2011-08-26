@@ -90,11 +90,11 @@ public class ExportController {
 			info.setDirectiveFile(dirFile);
 
 			if (dirFile.isSpecsFile()) {
-				model.setSpecsFile(info.getFileName());
+				model.setSpecsFile(info);
 			} else if (dirFile.isItemsFile()) {
-				model.setItemsFile(info.getFileName());
+				model.setItemsFile(info);
 			} else if (dirFile.isCharsFile()) {
-				model.setCharactersFile(info.getFileName());
+				model.setCharactersFile(info);
 			} else {
 				files.add(info);
 			}

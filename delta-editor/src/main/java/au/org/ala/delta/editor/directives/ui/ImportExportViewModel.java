@@ -4,8 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
-
 import au.org.ala.delta.editor.directives.DirectiveFileInfo;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile.DirectiveType;
 
@@ -20,15 +18,15 @@ public class ImportExportViewModel {
 
 	private DirectiveType _selectedDirectiveType = DirectiveType.CONFOR;
 	private File _currentDirectory;
-	private String _specsFile;
-	private String _charactersFile;
-	private String _itemsFile;
+	private DirectiveFileInfo _specsFile;
+	private DirectiveFileInfo _charactersFile;
+	private DirectiveFileInfo _itemsFile;
 	private List<DirectiveFileInfo> _includedDirectivesFiles;
-	private List<String> _excludedDirectiveFiles;
+	private List<DirectiveFileInfo> _excludedDirectiveFiles;
 
 	public ImportExportViewModel() {
 		_includedDirectivesFiles = new ArrayList<DirectiveFileInfo>();
-		_excludedDirectiveFiles = new ArrayList<String>();
+		_excludedDirectiveFiles = new ArrayList<DirectiveFileInfo>();
 	}
 
 	public void include(String file) {
@@ -40,35 +38,47 @@ public class ImportExportViewModel {
 	}
 
 	public void exclude(DirectiveFileInfo file) {
-		_excludedDirectiveFiles.add(file.getFileName());
+		_excludedDirectiveFiles.add(file);
 		_includedDirectivesFiles.remove(file);
 	}
 
-	public void moveToSpecs(String file) {
-		if (StringUtils.isNotEmpty(_specsFile)) {
+	public void moveToSpecs(DirectiveFileInfo file) {
+		if (_specsFile != null) {
 			_excludedDirectiveFiles.add(_specsFile);
 		}
 		_excludedDirectiveFiles.remove(file);
 		_specsFile = file;
 
 	}
+	
+	public void moveToSpecs(String fileName) {
+		moveToSpecs(new DirectiveFileInfo(fileName, DirectiveType.CONFOR));
+	}
 
-	public void moveToChars(String file) {
-		if (StringUtils.isNotEmpty(_charactersFile)) {
+	public void moveToChars(DirectiveFileInfo file) {
+		if (_charactersFile != null) {
 			_excludedDirectiveFiles.add(_charactersFile);
 		}
 		_excludedDirectiveFiles.remove(file);
 		_charactersFile = file;
 	}
+	
+	public void moveToChars(String fileName) {
+		moveToChars(new DirectiveFileInfo(fileName, DirectiveType.CONFOR));
+	}
 
-	public void moveToItems(String file) {
-		if (StringUtils.isNotEmpty(_itemsFile)) {
+	public void moveToItems(DirectiveFileInfo file) {
+		if (_itemsFile != null) {
 			_excludedDirectiveFiles.add(_itemsFile);
 		}
 		_excludedDirectiveFiles.remove(file);
 		_itemsFile = file;
 	}
 
+	public void moveToItems(String fileName) {
+		moveToItems(new DirectiveFileInfo(fileName, DirectiveType.CONFOR));
+	}
+	
 	public DirectiveType getSelectedDirectiveType() {
 		return _selectedDirectiveType;
 	}
@@ -87,22 +97,23 @@ public class ImportExportViewModel {
 	
 	public void populateExcludedFromCurrentDirectory() {
 		_includedDirectivesFiles = new ArrayList<DirectiveFileInfo>();
-		_excludedDirectiveFiles = new ArrayList<String>();
+		_excludedDirectiveFiles = new ArrayList<DirectiveFileInfo>();
 		for (File file : _currentDirectory.listFiles()) {
 			if (!file.isDirectory()) {
-				_excludedDirectiveFiles.add(file.getName());
+				DirectiveFileInfo fileInfo = new DirectiveFileInfo(file.getName());
+				_excludedDirectiveFiles.add(fileInfo);
 			}
 		}
 		if (_excludedDirectiveFiles.contains(DEFAULT_SPECS_DIRECTIVE_FILE)) {
-			_specsFile = DEFAULT_SPECS_DIRECTIVE_FILE;
+			_specsFile = new DirectiveFileInfo(DEFAULT_SPECS_DIRECTIVE_FILE, DirectiveType.CONFOR);
 			_excludedDirectiveFiles.remove(DEFAULT_SPECS_DIRECTIVE_FILE);
 		}
 		if (_excludedDirectiveFiles.contains(DEFAULT_CHARS_DIRECTIVE_FILE)) {
-			_charactersFile = DEFAULT_CHARS_DIRECTIVE_FILE;
+			_charactersFile = new DirectiveFileInfo(DEFAULT_CHARS_DIRECTIVE_FILE, DirectiveType.CONFOR);
 			_excludedDirectiveFiles.remove(DEFAULT_CHARS_DIRECTIVE_FILE);
 		}
 		if (_excludedDirectiveFiles.contains(DEFAULT_ITEMS_DIRECTIVE_FILE)) {
-			_itemsFile = DEFAULT_ITEMS_DIRECTIVE_FILE;
+			_itemsFile = new DirectiveFileInfo(DEFAULT_ITEMS_DIRECTIVE_FILE, DirectiveType.CONFOR);
 			_excludedDirectiveFiles.remove(DEFAULT_ITEMS_DIRECTIVE_FILE);
 		}
 	}
@@ -119,42 +130,40 @@ public class ImportExportViewModel {
 		return files;
 	}
 
-	private void addIfNotEmpty(String fileName, List<DirectiveFileInfo> files) {
-		if (StringUtils.isNotEmpty(fileName)) {
-			DirectiveFileInfo specsFile = new DirectiveFileInfo(fileName,
-					DirectiveType.CONFOR);
-			files.add(specsFile);
+	private void addIfNotEmpty(DirectiveFileInfo fileInfo, List<DirectiveFileInfo> files) {
+		if (fileInfo != null) {
+			files.add(fileInfo);
 		}
 	}
 
 	public boolean isImportable() {
 		return (_currentDirectory != null) && 
 		  (!_includedDirectivesFiles.isEmpty() || 
-		   StringUtils.isNotEmpty(_charactersFile) || 
-		   StringUtils.isNotEmpty(_itemsFile));
+		  _charactersFile != null || 
+		  _itemsFile != null);
 	}
 
-	public String getSpecsFile() {
+	public DirectiveFileInfo getSpecsFile() {
 		return _specsFile;
 	}
 
-	public void setSpecsFile(String specsFile) {
+	public void setSpecsFile(DirectiveFileInfo specsFile) {
 		this._specsFile = specsFile;
 	}
 
-	public String getCharactersFile() {
+	public DirectiveFileInfo getCharactersFile() {
 		return _charactersFile;
 	}
 
-	public void setCharactersFile(String charactersFile) {
+	public void setCharactersFile(DirectiveFileInfo charactersFile) {
 		this._charactersFile = charactersFile;
 	}
 
-	public String getItemsFile() {
+	public DirectiveFileInfo getItemsFile() {
 		return _itemsFile;
 	}
 
-	public void setItemsFile(String itemsFile) {
+	public void setItemsFile(DirectiveFileInfo itemsFile) {
 		this._itemsFile = itemsFile;
 	}
 
@@ -167,11 +176,11 @@ public class ImportExportViewModel {
 		this._includedDirectivesFiles = includedDirectivesFiles;
 	}
 
-	public List<String> getExcludedDirectiveFiles() {
+	public List<DirectiveFileInfo> getExcludedDirectiveFiles() {
 		return _excludedDirectiveFiles;
 	}
 
-	public void setExcludedDirectiveFiles(List<String> excludedDirectiveFiles) {
+	public void setExcludedDirectiveFiles(List<DirectiveFileInfo> excludedDirectiveFiles) {
 		this._excludedDirectiveFiles = excludedDirectiveFiles;
 	}
 }

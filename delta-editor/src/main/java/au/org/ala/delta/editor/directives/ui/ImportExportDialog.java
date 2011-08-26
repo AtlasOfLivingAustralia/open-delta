@@ -576,9 +576,9 @@ public class ImportExportDialog extends JDialog {
 			path = directory.getAbsolutePath();
 		}
 		currentDirectoryTextField.setText(path);
-		charactersFileTextField.setText(_model.getCharactersFile());
-		itemsFileTextField.setText(_model.getItemsFile());
-		specificationsFileTextField.setText(_model.getSpecsFile());
+		charactersFileTextField.setText(_model.getCharactersFile().getFileName());
+		itemsFileTextField.setText(_model.getItemsFile().getFileName());
+		specificationsFileTextField.setText(_model.getSpecsFile().getFileName());
 		currentImportFilterTextField.setText(_currentFilter);
 		FilteredListModel possibleDirectivesModel = new FilteredListModel(_currentFilter);
 		possibleDirectivesList.setModel(possibleDirectivesModel);
@@ -628,12 +628,12 @@ public class ImportExportDialog extends JDialog {
 	private class FilteredListModel extends AbstractListModel {
 
 		private static final long serialVersionUID = -2432156074008941418L;
-		private List<String> _filteredList = new ArrayList<String>();
+		private List<DirectiveFileInfo> _filteredList = new ArrayList<DirectiveFileInfo>();
 		
 		public FilteredListModel(String filter) {
 			ImportFileNameFilter importFilter = new ImportFileNameFilter(_currentFilter);
-			for (String file : _model.getExcludedDirectiveFiles()) {
-				if (importFilter.accept(new File(file))) {
+			for (DirectiveFileInfo file : _model.getExcludedDirectiveFiles()) {
+				if (importFilter.accept(new File(file.getFileName()))) {
 					_filteredList.add(file);
 				}
 			}
