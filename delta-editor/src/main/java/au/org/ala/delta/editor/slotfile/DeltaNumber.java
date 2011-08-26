@@ -16,7 +16,6 @@ package au.org.ala.delta.editor.slotfile;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
 /**

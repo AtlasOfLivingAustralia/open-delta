@@ -653,6 +653,17 @@ public class SlotFileDataSet extends AbstractObservableDataSet {
 		return new DirectiveFile(dirFile);
 	}
 	
+	public DirectiveFile getDirectiveFile(String fileName) {
+		int directiveFileCount = getDirectiveFileCount();
+		for (int i=1; i<=directiveFileCount; i++) {
+			DirectiveFile file = getDirectiveFile(i);
+			if (fileName.equals(file.getFileName())) {
+				return file;
+			}
+		}
+		return null;
+	}
+	
 	public void deleteDirectiveFile(DirectiveFile file) {
 		
 		int id = getVOP().getDeltaMaster().uniIdFromDirFileNo(file.getFileNumber());

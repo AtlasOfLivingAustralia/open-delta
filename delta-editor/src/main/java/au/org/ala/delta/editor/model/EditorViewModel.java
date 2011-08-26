@@ -52,6 +52,8 @@ public interface EditorViewModel extends ObservableDeltaDataSet {
 	
 	public DirectiveFile getDirectiveFile(int directiveFileNumber);
 	
+	public DirectiveFile getDirectiveFile(String fileName);
+	
 	public void deleteDirectiveFile(DirectiveFile file);
 	
 	public DirectiveFile getSelectedDirectiveFile();
@@ -59,4 +61,5 @@ public interface EditorViewModel extends ObservableDeltaDataSet {
 	public void setSelectedDirectiveFile(DirectiveFile file);
 	
 	public DirectiveFile addDirectiveFile(int fileNumber, String fileName, DirectiveType type);
+
 }

@@ -29,6 +29,13 @@ public class DirectiveFileInfo {
 		this(name, fileName, type, null);
 	}
 	
+	public DirectiveFileInfo(DirectiveFile file) {
+		_name = file.getFileName();
+		_fileName = _name;
+		_type = file.getType();
+		_directiveFile = file;
+	}
+	
 	public DirectiveFileInfo(String fileName, DirectiveType type, DirectiveFile file) {
 		this(fileName, fileName, type, file);
 	}

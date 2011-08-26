@@ -15,6 +15,7 @@ import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.editor.DeltaEditor;
 import au.org.ala.delta.editor.DeltaView;
+import au.org.ala.delta.editor.directives.DirectiveFileInfo;
 import au.org.ala.delta.editor.directives.ExportController;
 import au.org.ala.delta.editor.directives.ImportController;
 import au.org.ala.delta.editor.directives.ImportExportStatus;
@@ -107,8 +108,9 @@ public class DirectiveFileEditor extends JInternalFrame implements ValidationLis
 	
 		String text = directivesEditor.getTextArea().getText();
 		ImportExportStatus status = new ImportExportStatus();
-		controller.importDirectivesFile(
-				_model.getSelectedDirectiveFile(), new StringReader(text), status);
+		DirectiveFile file = _model.getSelectedDirectiveFile();
+		DirectiveFileInfo fileInfo = new DirectiveFileInfo(file);
+		controller.importDirectivesFile(fileInfo, new StringReader(text), status);
 		
 		updateGUI();
 	}

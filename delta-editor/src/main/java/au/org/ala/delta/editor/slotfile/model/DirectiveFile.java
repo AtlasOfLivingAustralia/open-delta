@@ -134,9 +134,7 @@ public class DirectiveFile {
 		Dir dir = _converter.fromDirective(directive);
 		
 		List<Dir> directives = _dirFileDesc.readAllDirectives();
-		System.out.println(directives);
 		directives.add(index, dir);
-		System.out.println("Adding directive "+directive.getDirective().joinNameComponents());
 		_dirFileDesc.writeAllDirectives(directives);
 	}
 	
@@ -224,6 +222,23 @@ public class DirectiveFile {
 		return toReturn;
 	}
 	
+	public void setDirectives(List<DirectiveInstance> directives) {
+		
+		List<Dir> dirs = new ArrayList<Dir>(directives.size());
+		for (DirectiveInstance directive : directives) {
+			dirs.add(_converter.fromDirective(directive));
+		}
+		_dirFileDesc.writeAllDirectives(dirs);
+	}
+	
+	public int getFlags() {
+		return _dirFileDesc.getFileFlags();
+	}
+	
+	public void setFlags(int flags) {
+		_dirFileDesc.setFileFlags(flags);
+	}
+	
 	private Directive getDirective(Dir dir) {
 		DirectiveType progType = getType();
 		int type = dir.getDirType();
@@ -254,6 +269,9 @@ public class DirectiveFile {
 		return _dirFileDesc.getFileModifyTime();
 	}
 	
+	public void setLastModifiedTime(long time) {
+		_dirFileDesc.setFileModifyTime(time);
+	}
 
 	public String toString() {
 		return getFileName()+" ("+getType().getAbbreviation()+")";

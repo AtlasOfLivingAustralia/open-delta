@@ -223,6 +223,11 @@ public class EditorDataModel extends DataSetWrapper implements EditorViewModel, 
 		return slotFileDataSet().getDirectiveFile(fileNumber);
 	}
 	
+	@Override
+	public DirectiveFile getDirectiveFile(String fileName) {
+		return slotFileDataSet().getDirectiveFile(fileName);
+	}
+	
 	public void deleteDirectiveFile(DirectiveFile file) {
 		setModified(true);
 		slotFileDataSet().deleteDirectiveFile(file);

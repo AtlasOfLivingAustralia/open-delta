@@ -107,7 +107,13 @@ public class ImportController implements DirectiveImportHandler  {
 		new DoImportTask(selectedDirectory, files).execute();
 	}
 
-	public void importDirectivesFile(DirectiveFile directiveFile, Reader directivesReader, ImportExportStatus status) {
+	public void importDirectivesFile(DirectiveFileInfo fileInfo, Reader directivesReader, ImportExportStatus status) {
+		
+		String name = fileInfo.getFileName();
+		
+		DirectiveFile existing =  _model.getDirectiveFile(name);
+		DirectiveFile directiveFile = _model.addDirectiveFile(_model.getDirectiveFileCount()+1, name, fileInfo.getType());
+		
 		DirectiveFileImporter parser = new DirectiveFileImporter(this, directivesOfType(directiveFile.getType()));
 		
 		_context.setDirectiveFile(directiveFile);
@@ -115,9 +121,17 @@ public class ImportController implements DirectiveImportHandler  {
 		// Looks like we skip the specs file if we have non zero items or chars.....
 		try {
 			parser.parse(directivesReader, _context);
+			
+			if (existing != null) {
+				existing.setDirectives(directiveFile.getDirectives());
+				existing.setLastModifiedTime(directiveFile.getLastModifiedTime());
+				existing.setFlags(directiveFile.getFlags());
+				_model.deleteDirectiveFile(directiveFile);
+			}
 		}
 		catch (Exception e) {
 			status.setTotalErrors(status.getTotalErrors()+1);
+			_model.deleteDirectiveFile(directiveFile);
 			e.printStackTrace();
 		}
 	}
@@ -176,15 +190,13 @@ public class ImportController implements DirectiveImportHandler  {
 			ImportExportStatus status = new ImportExportStatus();
 			publish(status);
 						
-			int fileNumber = 1;
 			for (DirectiveFileInfo file : _files) {
 				
-				DirectiveFile directiveFile = _model.addDirectiveFile(fileNumber++, file.getName(), file.getType());
 				File toParse = new File(_directoryName+file.getFileName());
 				FileInputStream fileIn = new FileInputStream(toParse);
 				InputStreamReader reader = new InputStreamReader(fileIn, _context.getFileEncoding());
 				
-				importDirectivesFile(directiveFile, reader, status);
+				importDirectivesFile(file, reader, status);
 				
 				// First check if the existing dataset has a directives file with the same name
 				// and same last modified date.  If so, skip it.
@@ -203,9 +215,6 @@ public class ImportController implements DirectiveImportHandler  {
 			cause.printStackTrace();
 			super.failed(cause);
 		}	
-			
-		
-		
 	}
 	
 	/**
