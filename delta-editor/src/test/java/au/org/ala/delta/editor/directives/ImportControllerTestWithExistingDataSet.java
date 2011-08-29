@@ -6,6 +6,9 @@ import java.util.List;
 
 import org.junit.Test;
 
+import au.org.ala.delta.editor.slotfile.DirectiveInstance;
+import au.org.ala.delta.editor.slotfile.directive.ConforDirType;
+import au.org.ala.delta.editor.slotfile.model.DirectiveFile;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile.DirectiveType;
 import au.org.ala.delta.editor.slotfile.model.SlotFileDataSet;
 
@@ -32,11 +35,17 @@ public class ImportControllerTestWithExistingDataSet extends AbstractImportContr
 		
 		importer.new DoImportTask(datasetDirectory, files).doInBackground();
 
-//		assertEquals(preImportCount, _dataSet.getDirectiveFileCount());
-//		
-//		DirectiveFile file = _dataSet.getDirectiveFile(1);
-//		
-//		assertEquals(24, file.getDirectiveCount());
+		assertEquals(preImportCount, _dataSet.getDirectiveFileCount());
+		
+		DirectiveFile file = _dataSet.getDirectiveFile("tokey");
+		
+		assertEquals(13, file.getDirectiveCount());
+		
+		// Make sure our change has been imported.
+		DirectiveInstance directive = file.getDirectives().get(0);
+		assertEquals(ConforDirType.SHOW, directive.getDirective().getNumber());
+		String showText = directive.getDirectiveArguments().getFirstArgumentText();
+		assertEquals("Translate into KEY format (modified).", showText);
 	}
 	
 }

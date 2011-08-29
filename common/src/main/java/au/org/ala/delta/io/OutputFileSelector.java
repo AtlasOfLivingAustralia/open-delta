@@ -19,6 +19,7 @@ public class OutputFileSelector {
 	private DeltaDataSet _dataSet;
 	private String _subjectForOutputFiles;
 	private String _intkeyOutputFile;
+	private String _keyOutputFile;
 	private ParsingContext _context;
 	
 	public OutputFileSelector(DeltaDataSet dataSet) {
@@ -71,15 +72,27 @@ public class OutputFileSelector {
 	}
 	
 	public String getIntkeyOutputFilePath() {
-		File file = new File(_intkeyOutputFile);
-		if (!file.isAbsolute()) {
-			File workingDir = _context.getFile().getParentFile();
-			file = new File(workingDir, _intkeyOutputFile);
-		}
-		return file.getAbsolutePath();
+		return makeAbsolute(_intkeyOutputFile);
 	}
 	
 	public void setIntkeyOutputFile(String intkeyOut) {
 		_intkeyOutputFile = intkeyOut;
+	}
+
+	public String getKeyOutputFile() {
+		return makeAbsolute(_keyOutputFile);
+	}
+	
+	public void setKeyOutputFile(String keyOut) {
+		_keyOutputFile = keyOut;
+	}
+	
+	private String makeAbsolute(String fileName) {
+		File file = new File(fileName);
+		if (!file.isAbsolute()) {
+			File workingDir = _context.getFile().getParentFile();
+			file = new File(workingDir, fileName);
+		}
+		return file.getAbsolutePath();
 	}
 }

@@ -1,5 +1,6 @@
 package au.org.ala.delta.editor.slotfile.model;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -653,11 +654,23 @@ public class SlotFileDataSet extends AbstractObservableDataSet {
 		return new DirectiveFile(dirFile);
 	}
 	
+	/**
+	 * Returns the directive file with the specified name or null if it 
+	 * does not exist.  File path information is not used as part of the 
+	 * matching routine.
+	 * @param fileName the name of the directive file to get.
+	 * @return the matching DirectiveFile or null if there is no match.
+	 */
 	public DirectiveFile getDirectiveFile(String fileName) {
+		
+		// Strip any path information off before doing the match.
+		File tmp = new File(fileName);
+		fileName = tmp.getName();
+		
 		int directiveFileCount = getDirectiveFileCount();
 		for (int i=1; i<=directiveFileCount; i++) {
 			DirectiveFile file = getDirectiveFile(i);
-			if (fileName.equals(file.getFileName())) {
+			if (fileName.equals(file.getShortFileName())) {
 				return file;
 			}
 		}
