@@ -26,8 +26,6 @@ import au.org.ala.delta.directives.args.DirectiveArgsParser;
 import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.NumericCharacter;
-import au.org.ala.delta.translation.DataSetTranslator;
-import au.org.ala.delta.translation.DataSetTranslatorFactory;
 
 /**
  * Processes the CHARACTER LIST directive and initiates the character translation
@@ -35,15 +33,10 @@ import au.org.ala.delta.translation.DataSetTranslatorFactory;
  */
 public class CharacterList extends AbstractTextDirective {
 
-	private DataSetTranslatorFactory _factory;
+	public static final String[] CONTROL_WORDS = {"character", "list"};
 	
 	public CharacterList() {
-		this(new DataSetTranslatorFactory());
-	}
-	
-	public CharacterList(DataSetTranslatorFactory factory) {
-		super("character", "list");
-		_factory = factory;
+		super(CONTROL_WORDS);
 	}
 	
 	@Override
@@ -59,11 +52,7 @@ public class CharacterList extends AbstractTextDirective {
 		StringReader reader = new StringReader(data);
 		CharacterListParser parser = new CharacterListParser(context, reader);
 		parser.parse();
-		
-		DataSetTranslator translator = _factory.createTranslator(context);
-		translator.translateCharacters();
 	}
-
 }
 
 class CharacterListParser extends DirectiveArgsParser {

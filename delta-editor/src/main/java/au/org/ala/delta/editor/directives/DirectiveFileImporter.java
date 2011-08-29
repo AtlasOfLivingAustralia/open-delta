@@ -6,16 +6,14 @@ import java.util.List;
 
 import au.org.ala.delta.directives.AbstractDirective;
 import au.org.ala.delta.directives.DirectiveParser;
-import au.org.ala.delta.directives.args.DirectiveArgsParser;
-import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.editor.slotfile.Directive;
 import au.org.ala.delta.editor.slotfile.DirectiveArgType;
 import au.org.ala.delta.editor.slotfile.DirectiveInstance;
 
 
 /**
- * The DirectiveFileImporter is responsible for importing each of the 
- * directives in a single file into a DeltaDataSet.
+ * The DirectiveFileImporter is responsible for parsing a directives file
+ * and importing each of the directives in a single file into a DeltaDataSet.
  */
 public class DirectiveFileImporter extends DirectiveParser<ImportContext> {
 
@@ -57,7 +55,16 @@ public class DirectiveFileImporter extends DirectiveParser<ImportContext> {
 		}
 	}
 
-
+	/**
+	 * Most directive imports can be handled by simply parsing and adding to
+	 * the dataset (which is the responsibility of the ImportDirective).
+	 * Directives of type DIRARG_INTERNAL are actually stored as part of the
+	 * data model so these directives are parsed and processed. (the 
+	 * processing step updates the data set).
+	 * @param directives the directives supported by this DirectiveFileImporter.
+	 * Depending of the type of the directives file (CONFOR/INTKEY/KEY/DIST)
+	 * a different set of directives will be registered.
+	 */
 	private void registerDirectives(Directive[] directives) {
 		Directive directive = null;
     	try {
@@ -65,8 +72,8 @@ public class DirectiveFileImporter extends DirectiveParser<ImportContext> {
 	    	for (int i=0; i<directives.length; i++) {
 	    		directive = directives[i];
 	    		if (directive.getArgType() == DirectiveArgType.DIRARG_INTERNAL) {
-	    			Class<? extends AbstractDirective<?>> dirClass = directive.getImplementationClass();
-	    			registerDirective(dirClass.newInstance());
+	    			
+	    			registerInternalDirective(directive);
 	    		}
 	    		else {
 	    			registerDirective(new ImportDirective(directive));
@@ -76,6 +83,20 @@ public class DirectiveFileImporter extends DirectiveParser<ImportContext> {
     	catch (Exception e) {
     		throw new RuntimeException("Failed to find directive for: "+directive.joinNameComponents(), e);
     	}
+	}
+
+	/**
+	 * Instantiates an instance of the CONFOR directive class to handle the
+	 * parsing and processing of the directive.  The CHARACTER LIST and
+	 * ITEM DESCRIPTIONS directives are special cases as the processing of
+	 * these directives normally result in a CONFOR action to be taken
+	 * (e.g. a translation).
+	 * @param directive the directive to register.
+	 */
+	private void registerInternalDirective(Directive directive) throws InstantiationException, IllegalAccessException {
+		
+		Class<? extends AbstractDirective<?>> dirClass = directive.getImplementationClass();
+		registerDirective(dirClass.newInstance());
 	}
 	
 	public Directive typeOf(AbstractDirective<?> directive) {
@@ -96,44 +117,4 @@ public class DirectiveFileImporter extends DirectiveParser<ImportContext> {
 		}
 		throw new RuntimeException("Cannot find a directive matching: "+Arrays.asList(directiveName));
 	}
-    
-    class ImportDirective extends AbstractDirective<ImportContext>{
-
-    	private Directive _directive;
-    	private DirectiveArguments _args;
-
-		public ImportDirective(Directive directive) {
-    		super(directive.getName());
-    		_directive = directive;
-    	}
-    
-		@Override
-		public DirectiveArguments getDirectiveArgs() {
-			return _args;
-		}
-
-		@Override
-		public int getArgType() {
-			return _directive.getArgType();
-		}
-
-		@Override
-		public void parse(ImportContext context, String data) throws ParseException {
-			
-			DirectiveArgsParser parser = DirectiveArgParserFactory.parserFor(_directive, context, data);
-			
-			if (_directive.getArgType() != DirectiveArgType.DIRARG_NONE) {
-				parser.parse(); 
-				_args = parser.getDirectiveArgs();
-			}
-			
-			System.out.println("Directive: "+_directive.joinNameComponents()+" Arg type: "+_directive.getArgType());
-		}
-
-		@Override
-		public void process(ImportContext context,
-				DirectiveArguments directiveArguments) throws Exception {
-			throw new UnsupportedOperationException();
-		}
-    }
 }

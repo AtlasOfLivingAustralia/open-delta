@@ -26,23 +26,16 @@ import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.StateValue;
-import au.org.ala.delta.translation.DataSetTranslator;
-import au.org.ala.delta.translation.DataSetTranslatorFactory;
 
 /**
  * Parses and processes the ITEM DESCRIPTIONS directive.
  */
 public class ItemDescriptions extends AbstractTextDirective {
 
-	private DataSetTranslatorFactory _factory;
+	public static final String[] CONTROL_WORDS = {"item", "descriptions"};
 	
 	public ItemDescriptions() {
-		this(new DataSetTranslatorFactory());
-	}
-	
-	public ItemDescriptions(DataSetTranslatorFactory factory) {
-		super("item", "descriptions");
-		_factory = factory;
+		super(CONTROL_WORDS);
 	}
 	
 	@Override
@@ -55,9 +48,6 @@ public class ItemDescriptions extends AbstractTextDirective {
 		StringReader reader = new StringReader(data.getFirstArgumentText());
 		ItemsParser parser = new ItemsParser(context, reader);
 		parser.parse();
-		
-		DataSetTranslator translator = _factory.createTranslator(context);
-		translator.translateItems();
 	}
 
 }

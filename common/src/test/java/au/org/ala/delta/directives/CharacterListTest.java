@@ -1,5 +1,7 @@
 package au.org.ala.delta.directives;
 
+import junit.framework.TestCase;
+
 import org.junit.Before;
 
 import au.org.ala.delta.DeltaContext;
@@ -7,9 +9,6 @@ import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DefaultDataSetFactory;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.MultiStateCharacter;
-import au.org.ala.delta.stub.DataSetTranslatorFactoryStub;
-
-import junit.framework.TestCase;
 
 /**
  * Tests the CharacterList class.
@@ -27,7 +26,7 @@ public class CharacterListTest extends TestCase {
 		_dataSet = factory.createDataSet("test");
 		_context = new DeltaContext(_dataSet);
 		
-		_characterList = new CharacterList(new DataSetTranslatorFactoryStub());
+		_characterList = new CharacterList();
 	}
 	
 	public void testCharacterList() throws Exception {

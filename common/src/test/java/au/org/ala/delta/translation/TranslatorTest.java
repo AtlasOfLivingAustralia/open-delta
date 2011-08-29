@@ -13,6 +13,7 @@ import org.apache.commons.io.FileUtils;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.ConforDirectiveFileParser;
+import au.org.ala.delta.directives.ConforDirectiveParserObserver;
 
 public abstract class TranslatorTest extends TestCase {
 
@@ -41,6 +42,7 @@ public abstract class TranslatorTest extends TestCase {
 
 		ConforDirectiveFileParser parser = ConforDirectiveFileParser
 				.createInstance();
+		parser.registerObserver(new ConforDirectiveParserObserver(_context));
 		parser.parse(specs, _context);
 	}
 
