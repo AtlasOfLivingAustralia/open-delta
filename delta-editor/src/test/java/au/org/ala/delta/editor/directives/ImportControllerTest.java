@@ -1,23 +1,14 @@
 package au.org.ala.delta.editor.directives;
 
 import java.io.File;
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 
-import org.jdesktop.application.Application;
-import org.jdesktop.application.ApplicationContext;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
-import au.org.ala.delta.DeltaTestCase;
-import au.org.ala.delta.editor.DeltaEditor;
-import au.org.ala.delta.editor.model.EditorDataModel;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile.DirectiveType;
 import au.org.ala.delta.editor.slotfile.model.SlotFileDataSet;
-import au.org.ala.delta.editor.slotfile.model.SlotFileRepository;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.IntegerCharacter;
@@ -27,70 +18,16 @@ import au.org.ala.delta.model.MultiStateCharacter;
 /**
  * Tests the ImportController class. 
  */
-public class ImportControllerTest extends DeltaTestCase {
+public class ImportControllerTest extends AbstractImportControllerTest {
 
-	/**
-	 * Allows us to manually set the data set to be returned from the
-	 * getCurrentDataSet method.
-	 */
-	private class DeltaEditorTestHelper extends DeltaEditor {
-		private EditorDataModel _model;
-		public void setModel(EditorDataModel model) {
-			_model = model;
-		}
-		
-		@Override
-		public EditorDataModel getCurrentDataSet() {
-			return _model;
-		}
-		
-		
-	}
 	
-	public DeltaEditorTestHelper createTestHelper() throws Exception {
-		
-		DeltaEditorTestHelper helper = new DeltaEditorTestHelper();
-		ApplicationContext context = helper.getContext();
-		context.setApplicationClass(DeltaEditor.class);
-		Method method = ApplicationContext.class.getDeclaredMethod("setApplication", Application.class);
-		method.setAccessible(true);
-		method.invoke(context, helper);
-	
-		return helper;
-	}
-	
-	
-	/** The instance of the class we are testing */
-	protected ImportController importer;
-	
-	/** The data set we are importing into */
-	protected SlotFileDataSet _dataSet;
-	
-	protected SlotFileRepository _repository;
-	
-	@Before
-	public void setUp() throws Exception {
-		
-		DeltaEditorTestHelper helper = createTestHelper();
-		_repository = new SlotFileRepository();
-		createDataSet();
-		EditorDataModel model = new EditorDataModel(_dataSet);
-		helper.setModel(model);
-
-		importer = new ImportController(helper, model);
-	}
 	
 	protected void createDataSet() throws Exception {
 		_dataSet = (SlotFileDataSet)_repository.newDataSet();
 	}
-	
-	@After
-	public void tearDown() throws Exception {
-		_dataSet.close();
-	}
 
 	@Test
-	public void zztestSilentImport() throws Exception {
+	public void testSilentImport() throws Exception {
 		
 		File datasetDirectory = new File(getClass().getResource("/dataset").toURI());
 		DirectiveFileInfo specs = new DirectiveFileInfo("specs", DirectiveType.CONFOR);
@@ -157,11 +94,11 @@ public class ImportControllerTest extends DeltaTestCase {
 		
 		importer.new DoImportTask(datasetDirectory, files).doInBackground();
 
-//		assertEquals(1, _dataSet.getDirectiveFileCount());
-//		
-//		DirectiveFile file = _dataSet.getDirectiveFile(1);
-//		
-//		assertEquals(24, file.getDirectiveCount());
+		assertEquals(1, _dataSet.getDirectiveFileCount());
+		
+		DirectiveFile file = _dataSet.getDirectiveFile(1);
+		
+		assertEquals(24, file.getDirectiveCount());
 	}
 	
 }

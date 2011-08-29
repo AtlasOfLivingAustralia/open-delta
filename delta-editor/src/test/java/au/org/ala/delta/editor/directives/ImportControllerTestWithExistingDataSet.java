@@ -6,14 +6,13 @@ import java.util.List;
 
 import org.junit.Test;
 
-import au.org.ala.delta.editor.slotfile.model.DirectiveFile;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile.DirectiveType;
 import au.org.ala.delta.editor.slotfile.model.SlotFileDataSet;
 
 /**
  * Tests importing into an existing data set.
  */
-public class ImportControllerTestWithExistingDataSet extends ImportControllerTest {
+public class ImportControllerTestWithExistingDataSet extends AbstractImportControllerTest {
 
 
 	protected void createDataSet() throws Exception {
