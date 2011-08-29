@@ -34,6 +34,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -80,6 +81,7 @@ import au.org.ala.delta.intkey.model.IntkeyCharacterOrder;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.model.IntkeyDataset;
 import au.org.ala.delta.intkey.model.StartupFileData;
+import au.org.ala.delta.intkey.model.StartupUtils;
 import au.org.ala.delta.intkey.model.specimen.CharacterValue;
 import au.org.ala.delta.intkey.model.specimen.Specimen;
 import au.org.ala.delta.intkey.ui.AttributeCellRenderer;
@@ -580,7 +582,6 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     @Override
     protected void shutdown() {
         saveCurrentlyOpenedDataset();
-        _context.cleanupForShutdown();
         super.shutdown();
     }
 
@@ -711,7 +712,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
                     openPreviouslyOpenedFile(filePath);
                 }
             });
-            
+
             mnuFileRecents.add(mnuItRecentFile);
         }
 
@@ -1277,14 +1278,15 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         }
 
         initializeIdentification();
-        
+
         _rootPanel.revalidate();
     }
-    
+
     @Override
     public void handleDatasetClosed() {
         saveCurrentlyOpenedDataset();
-        JMenuBar menuBar = buildMenus(_advancedMode); //need to refresh the recent datasets menu
+        JMenuBar menuBar = buildMenus(_advancedMode); // need to refresh the
+                                                      // recent datasets menu
         getMainFrame().setJMenuBar(menuBar);
         ResourceMap resourceMap = getContext().getResourceMap(Intkey.class);
         resourceMap.injectComponents(getMainFrame());
@@ -1949,15 +1951,39 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         StartupFileData startupFileData = _context.getStartupFileData();
 
         File fileToOpenDataset = null;
-        if (startupFileData != null) {
-            fileToOpenDataset = _context.getDatasetStartupFile();
+        if (startupFileData != null && startupFileData.isRemoteDataset()) {
+            int chosenOption = JOptionPane.showConfirmDialog(getMainFrame(), "Save downloaded dataset?", "Save", JOptionPane.YES_NO_OPTION);
+            if (chosenOption == JOptionPane.YES_OPTION) {
+                JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
+                int returnVal = fileChooser.showOpenDialog(getMainFrame());
+
+                if (returnVal == JFileChooser.APPROVE_OPTION) {
+                    File saveDir = fileChooser.getSelectedFile();
+
+                    try {
+                        File newInkFile = StartupUtils.saveRemoteDataset(_context, saveDir);
+                        fileToOpenDataset = newInkFile;
+                    } catch (IOException ex) {
+                        displayErrorMessage("Error saving downloaded dataset");
+                        // not much we can do here, just abort saving/adding to
+                        // recents list.
+                        return;
+                    }
+                } else {
+                    fileToOpenDataset = _context.getDatasetStartupFile();
+                }
+            } else {
+                fileToOpenDataset = _context.getDatasetStartupFile();
+            }
         } else {
             fileToOpenDataset = _context.getDatasetStartupFile();
         }
 
         if (_context.getDataset() != null) {
             String datasetTitle = _context.getDataset().getHeading();
-            
+
             addFileToMRU(fileToOpenDataset.getAbsolutePath(), datasetTitle);
         }
     }

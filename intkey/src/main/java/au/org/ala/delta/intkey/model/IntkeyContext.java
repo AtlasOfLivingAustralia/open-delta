@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -73,7 +74,7 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     /**
      * A directives file that is run to load the dataset in intkey, initialize
-     * values etc
+     * values etc. Typically a .ini file, but can also have extension .ink.
      */
     private File _initializationFile;
 
@@ -1064,13 +1065,6 @@ public class IntkeyContext extends AbstractDeltaContext {
         return new ArrayList<Pair<String, String>>(_taxonInformationDialogCommands);
     }
 
-    /**
-     * Called prior to application shutdown.
-     */
-    public void cleanupForShutdown() {
-        cleanupOldDataset();
-    }
-
     private void cleanupOldDataset() {
         if (_dataset != null) {
             _dataset.cleanup();
@@ -1115,13 +1109,14 @@ public class IntkeyContext extends AbstractDeltaContext {
         protected Void doInBackground() throws Exception {
             publish("Loading dataset...");
 
-            String inkFileLocation = null;
-            String dataFileLocation = null;
+            URL inkFileLocation = null;
+            URL dataFileLocation = null;
             String initializationFileLocation = null;
             String imagePath = null;
             String infoPath = null;
 
             BufferedReader reader = new BufferedReader(new FileReader(_startupFile));
+            System.out.println(_startupFile.getAbsolutePath());
 
             String line;
             while ((line = reader.readLine()) != null) {
@@ -1132,9 +1127,18 @@ public class IntkeyContext extends AbstractDeltaContext {
                     String value = tokens[1];
 
                     if (keyword.equals(Constants.INIT_FILE_INK_FILE_KEYWORD)) {
-                        inkFileLocation = value;
+                        // Datasets saved with the old implementation of Intkey
+                        // used simple file paths
+                        // for startup files that were saved to disk. Check if
+                        // this is the format that is
+                        // used before attempting to read as a URL.
+                        if (value.equals(_startupFile.getAbsolutePath())) {
+                            inkFileLocation = _startupFile.toURI().toURL();
+                        } else {
+                            inkFileLocation = new URL(value);
+                        }
                     } else if (keyword.equals(Constants.INIT_FILE_DATA_FILE_KEYWORD)) {
-                        dataFileLocation = value;
+                        dataFileLocation = new URL(value);
                     } else if (keyword.equals(Constants.INIT_FILE_INITIALIZATION_FILE_KEYWORD)) {
                         initializationFileLocation = value;
                     } else if (keyword.equals(Constants.INIT_FILE_IMAGE_PATH_KEYWORD)) {
@@ -1149,13 +1153,31 @@ public class IntkeyContext extends AbstractDeltaContext {
                 File tempDir = new File(FileUtils.getTempDirectory(), UUID.randomUUID().toString());
                 tempDir.mkdir();
 
-                URL dataFileURL = new URL(dataFileLocation);
+                String[] dataFileLocationTokens = dataFileLocation.toString().split("/");
+                String dataFileName = dataFileLocationTokens[dataFileLocationTokens.length - 1];
+                File localDataFile = new File(tempDir, dataFileName);
 
-                String[] dataFileLocationTokens = dataFileURL.toString().split("/");
-                File localDataFile = new File(tempDir, dataFileLocationTokens[dataFileLocationTokens.length - 1]);
+                // If the ink file location points to a local file, the dataset
+                // has been saved locally. Look for the
+                // zipped data file in the same directory as the ink file.
+                boolean savedDatasetOpened = false;
+                if (inkFileLocation.getProtocol().equals("file")) {
+                    File savedInkFile = new File(inkFileLocation.toURI());
+                    if (savedInkFile.exists()) {
+                        File saveDirectory = savedInkFile.getParentFile();
+                        File savedDataFile = new File(saveDirectory, dataFileName);
+                        if (savedDataFile.exists()) {
+                            FileUtils.copyFile(savedDataFile, localDataFile);
+                            savedDatasetOpened = true;
+                        }
+                    }
+                }
 
-                publish("downloading dataset from " + dataFileURL.toString());
-                FileUtils.copyURLToFile(dataFileURL, localDataFile, 10000, 10000);
+                if (!savedDatasetOpened) {
+                    // Data set is hosted remotely. Download it.
+                    publish("downloading dataset from " + dataFileLocation.toString());
+                    FileUtils.copyURLToFile(dataFileLocation, localDataFile, 10000, 10000);
+                }
 
                 Utils.extractZipFile(localDataFile, tempDir);
 
@@ -1167,6 +1189,7 @@ public class IntkeyContext extends AbstractDeltaContext {
                 startupFileData.setInitializationFileLocalCopy(new File(tempDir, initializationFileLocation));
                 startupFileData.setImagePath(imagePath);
                 startupFileData.setInfoPath(infoPath);
+                startupFileData.setRemoteDataset(!savedDatasetOpened);
 
                 _startupFileData = startupFileData;
                 processInitializationFile(_startupFileData.getInitializationFileLocalCopy());

@@ -1,31 +1,33 @@
 package au.org.ala.delta.intkey.model;
 
 import java.io.File;
+import java.net.URL;
 
 public class StartupFileData {
 
-    private String _inkFileLocation;
-    private String _dataFileLocation;
+    private URL _inkFileLocation;
+    private URL _dataFileLocation;
     private String _initializationFileLocation;
     private String _imagePath;
-    private String infoPath;
+    private String _infoPath;
+    private boolean _remoteDataset;
 
     private File _dataFileLocalCopy;
     private File _initializationFileLocalCopy;
 
-    public String getInkFileLocation() {
+    public URL getInkFileLocation() {
         return _inkFileLocation;
     }
 
-    public void setInkFileLocation(String inkFileLocation) {
+    public void setInkFileLocation(URL inkFileLocation) {
         this._inkFileLocation = inkFileLocation;
     }
 
-    public String getDataFileLocation() {
+    public URL getDataFileLocation() {
         return _dataFileLocation;
     }
 
-    public void setDataFileLocation(String dataFileLocation) {
+    public void setDataFileLocation(URL dataFileLocation) {
         this._dataFileLocation = dataFileLocation;
     }
 
@@ -46,11 +48,11 @@ public class StartupFileData {
     }
 
     public String getInfoPath() {
-        return infoPath;
+        return _infoPath;
     }
 
     public void setInfoPath(String infoPath) {
-        this.infoPath = infoPath;
+        this._infoPath = infoPath;
     }
 
     public File getDataFileLocalCopy() {
@@ -67,5 +69,13 @@ public class StartupFileData {
 
     public void setInitializationFileLocalCopy(File initializationFileLocalCopy) {
         this._initializationFileLocalCopy = initializationFileLocalCopy;
+    }
+    
+    public boolean isRemoteDataset() {
+        return _remoteDataset;
+    }
+
+    public void setRemoteDataset(boolean remoteDataset) {
+        this._remoteDataset = remoteDataset;
     }
 }
