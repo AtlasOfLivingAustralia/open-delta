@@ -60,9 +60,9 @@ public class DefineButtonDirective extends IntkeyDirective {
                     directivesToRun.add(str.trim());
                 }
             } else if (shortHelp == null) {
-                shortHelp = token;
+                shortHelp = ParsingUtils.removeEnclosingQuotes(token);
             } else if (fullHelp == null) {
-                fullHelp = token;
+                fullHelp = ParsingUtils.removeEnclosingQuotes(token);
             }
         }
 
