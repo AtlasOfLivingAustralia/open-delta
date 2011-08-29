@@ -20,7 +20,7 @@ import au.org.ala.delta.intkey.model.specimen.Specimen;
  * @author ChrisF
  * 
  */
-public class RestartDirectiveTest extends TestCase {
+public class RestartDirectiveTest extends IntkeyDatasetTestCase {
 
     /**
      * Set some values for characters in the specimen, then run the restart
@@ -30,10 +30,7 @@ public class RestartDirectiveTest extends TestCase {
      */
     @Test
     public void testRestart() throws Exception {
-        URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
-        IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()));
-        IntkeyDataset ds = context.getDataset();
+        IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
 
         new UseDirective().parseAndProcess(context, "2-5,1");
 
@@ -51,10 +48,7 @@ public class RestartDirectiveTest extends TestCase {
      */
     @Test
     public void testRestartImmediately() throws Exception {
-        URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
-        IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()));
-        IntkeyDataset ds = context.getDataset();
+        IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
 
         new RestartDirective().parseAndProcess(context, null);
 

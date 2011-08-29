@@ -61,8 +61,22 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     private String _remoteInkFileLocation;
     private File _zippedDatasetFile;
+
+    /**
+     * A .ink file used to load a new dataset. May be a jnlp style file
+     * specifying where data is to be downloaded from. Or may be a directives
+     * file that is run to load the dataset in intkey, initialize values etc. In
+     * the latter case, this value will be the same as _initializationFile (see
+     * below).
+     */
     private File _datasetStartupFile;
-    
+
+    /**
+     * A directives file that is run to load the dataset in intkey, initialize
+     * values etc
+     */
+    private File _initializationFile;
+
     private StartupFileData _startupFileData;
 
     private IntkeyUI _appUI;
@@ -316,14 +330,15 @@ public class IntkeyContext extends AbstractDeltaContext {
     }
 
     /**
-     * Read and execute the specified dataset startup file. This file may be either a
-     * "webstart" file, or a file containing actual directives to initialize the dataset.
+     * Read and execute the specified dataset startup file. This file may be
+     * either a "webstart" file, or a file containing actual directives to
+     * initialize the dataset.
      * 
-     *  This method will block while the calling thread while the file is read, the dataset
-     * is loaded, and other directives in the file are executed.
+     * This method will block while the calling thread while the file is read,
+     * the dataset is loaded, and other directives in the file are executed.
      * 
      * @param fileName
-     *            Path to the dataset initialization file 
+     *            Path to the dataset initialization file
      */
     public void newDataSetFile(File datasetFile) {
         Logger.log("Reading in directives from file: %s", datasetFile.getAbsolutePath());
@@ -337,11 +352,12 @@ public class IntkeyContext extends AbstractDeltaContext {
         }
 
         new StartupFileLoader(datasetFile).execute();
-        
+
         _datasetStartupFile = datasetFile;
     }
 
     private void processInitializationFile(File initializationFile) {
+        _initializationFile = initializationFile;
         processInputFile(initializationFile);
     }
 
@@ -776,8 +792,8 @@ public class IntkeyContext extends AbstractDeltaContext {
     }
 
     public File getDatasetDirectory() {
-        if (_datasetStartupFile != null) {
-            return _datasetStartupFile.getParentFile();
+        if (_initializationFile != null) {
+            return _initializationFile.getParentFile();
         } else if (_charactersFile != null) {
             return _charactersFile.getParentFile();
         } else if (_taxaFile != null) {
@@ -1015,8 +1031,7 @@ public class IntkeyContext extends AbstractDeltaContext {
             imageSettings.setDefaultFeatureFontInfo(featureOverlayFontInfo);
         }
 
-        // TODO need a definitive way to work out the dataset directory
-        imageSettings.setDataSetPath(_datasetStartupFile.getParentFile().getAbsolutePath());
+        imageSettings.setDataSetPath(getDatasetDirectory().getAbsolutePath());
 
         imageSettings.setResourcePaths(_imagePathLocations);
 
@@ -1026,8 +1041,7 @@ public class IntkeyContext extends AbstractDeltaContext {
     public ResourceSettings getInfoSettings() {
         ResourceSettings infoSettings = new ResourceSettings();
 
-        // TODO need a definitive way to work out the dataset directory
-        infoSettings.setDataSetPath(_datasetStartupFile.getParentFile().getAbsolutePath());
+        infoSettings.setDataSetPath(getDatasetDirectory().getAbsolutePath());
 
         infoSettings.setResourcePaths(_infoPathLocations);
 
@@ -1067,19 +1081,20 @@ public class IntkeyContext extends AbstractDeltaContext {
                 FileUtils.deleteDirectory(_startupFileData.getDataFileLocalCopy().getParentFile());
                 _startupFileData = null;
             } catch (IOException ex) {
-                // do nothing, as we are closing the dataset there is not a lot we can
+                // do nothing, as we are closing the dataset there is not a lot
+                // we can
                 // do. The worst that can
                 // happen is that files get left in the temporary folder.
             }
         }
-        
+
         _appUI.handleDatasetClosed();
     }
 
     public IntkeyUI getUI() {
         return _appUI;
     }
-    
+
     public StartupFileData getStartupFileData() {
         return _startupFileData;
     }
@@ -1150,11 +1165,19 @@ public class IntkeyContext extends AbstractDeltaContext {
                 startupFileData.setInitializationFileLocation(initializationFileLocation);
                 startupFileData.setDataFileLocalCopy(localDataFile);
                 startupFileData.setInitializationFileLocalCopy(new File(tempDir, initializationFileLocation));
+                startupFileData.setImagePath(imagePath);
+                startupFileData.setInfoPath(infoPath);
 
                 _startupFileData = startupFileData;
                 processInitializationFile(_startupFileData.getInitializationFileLocalCopy());
-                setImagePaths(Arrays.asList(_startupFileData.getImagePath()));
-                setInfoPaths(Arrays.asList(_startupFileData.getInfoPath()));
+
+                if (startupFileData.getImagePath() != null) {
+                    setImagePaths(Arrays.asList(_startupFileData.getImagePath()));
+                }
+
+                if (startupFileData.getInfoPath() != null) {
+                    setInfoPaths(Arrays.asList(_startupFileData.getInfoPath()));
+                }
             } else {
                 processInitializationFile(_startupFile);
             }

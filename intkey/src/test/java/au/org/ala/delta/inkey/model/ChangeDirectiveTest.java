@@ -22,10 +22,11 @@ import au.org.ala.delta.model.UnorderedMultiStateCharacter;
 
 /**
  * Unit tests for the CHANGE directive
+ * 
  * @author ChrisF
- *
+ * 
  */
-public class ChangeDirectiveTest extends TestCase {
+public class ChangeDirectiveTest extends IntkeyDatasetTestCase {
 
     /**
      * Smoke test for the CHANGE directive.
@@ -34,9 +35,7 @@ public class ChangeDirectiveTest extends TestCase {
      */
     @Test
     public void testChangeDirective() throws Exception {
-        URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
-        IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()));
+        IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
 
         IntkeyDataset ds = context.getDataset();
         Specimen specimen = context.getSpecimen();
@@ -86,15 +85,15 @@ public class ChangeDirectiveTest extends TestCase {
     }
 
     /**
-     * This unit test tests the fix for a bug that was found with updating the 
-     * specimen after a character value is changed. It was fixed in revision 736.
+     * This unit test tests the fix for a bug that was found with updating the
+     * specimen after a character value is changed. It was fixed in revision
+     * 736.
+     * 
      * @throws Exception
      */
     @Test
     public void testChangeDirective2() throws Exception {
-        URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
-        IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()));
+        IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
 
         IntkeyDataset ds = context.getDataset();
         Specimen specimen = context.getSpecimen();
@@ -114,7 +113,7 @@ public class ChangeDirectiveTest extends TestCase {
 
         assertEquals(Arrays.asList(charIncluding, charLongevity, charCulmsMaxHeight, charCulmsWoodyHerbacious, charCulmsBranchedAbove, charCulmNodesHairyGlabrous, charLeafBladesShape,
                 charLeafBladesMidWidth, charLeafBladesPseudo, charLigulePresence), specimen.getUsedCharacters());
-        
+
         Map<Item, Integer> taxonDifferences = specimen.getTaxonDifferences();
         assertEquals(14, taxonDifferences.size());
         assertEquals(6, (int) taxonDifferences.get(ds.getTaxon(1)));
@@ -154,23 +153,23 @@ public class ChangeDirectiveTest extends TestCase {
         assertEquals(5, (int) taxonDifferences2.get(ds.getTaxon(13)));
         assertEquals(6, (int) taxonDifferences2.get(ds.getTaxon(14)));
     }
-    
+
     /**
-     * This unit test tests the fix for a bug that was found with updating the 
-     * specimen after a character value is changed. It was fixed in revision 736.
+     * This unit test tests the fix for a bug that was found with updating the
+     * specimen after a character value is changed. It was fixed in revision
+     * 736.
+     * 
      * @throws Exception
      */
     @Test
     public void testChangeDirective3() throws Exception {
-        URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
-        IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()));
+        IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
 
         IntkeyDataset ds = context.getDataset();
         Specimen specimen = context.getSpecimen();
 
         new UseDirective().parseAndProcess(context, "16,1");
-        
+
         Map<Item, Integer> taxonDifferences = specimen.getTaxonDifferences();
         assertEquals(14, taxonDifferences.size());
         assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(1)));
@@ -189,7 +188,7 @@ public class ChangeDirectiveTest extends TestCase {
         assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(14)));
 
         new ChangeDirective().parseAndProcess(context, "16,2");
-        
+
         Map<Item, Integer> taxonDifferences2 = specimen.getTaxonDifferences();
         assertEquals(14, taxonDifferences2.size());
         assertEquals(0, (int) taxonDifferences2.get(ds.getTaxon(1)));

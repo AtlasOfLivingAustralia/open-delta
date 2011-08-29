@@ -1,11 +1,7 @@
 package au.org.ala.delta.inkey.model;
 
-import java.io.File;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-
-import junit.framework.TestCase;
 
 import org.junit.Test;
 
@@ -20,7 +16,7 @@ import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.IntegerCharacter;
 import au.org.ala.delta.model.Item;
 
-public class DifferencesDirectiveTest extends TestCase {
+public class DifferencesDirectiveTest extends IntkeyDatasetTestCase {
 
     public static final boolean DEFAULT_MATCH_INAPPLICABLES = true;
     public static final boolean DEFAULT_MATCH_UNKNOWNS = true;
@@ -33,9 +29,7 @@ public class DifferencesDirectiveTest extends TestCase {
      */
     @Test
     public void testDifferencesSmokeTest() throws Exception {
-        URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
-        IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()));
+        IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
         IntkeyDataset ds = context.getDataset();
 
         new DifferencesDirective().parseAndProcess(context, "(all) all");
@@ -47,9 +41,7 @@ public class DifferencesDirectiveTest extends TestCase {
      */
     @Test
     public void testDifferencesResults() throws Exception {
-        URL initFileUrl = getClass().getResource("/dataset/controlling_characters_simple/intkey.ink");
-        IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()));
+        IntkeyContext context = loadDataset("/dataset/controlling_characters_simple/intkey.ink");
         IntkeyDataset ds = context.getDataset();
 
         Item taxonCarrot = ds.getTaxon(1);
@@ -79,9 +71,7 @@ public class DifferencesDirectiveTest extends TestCase {
      */
     @Test
     public void testOmitTextCharacters() throws Exception {
-        URL initFileUrl = getClass().getResource("/dataset/controlling_characters_simple/intkey.ink");
-        IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()));
+        IntkeyContext context = loadDataset("/dataset/controlling_characters_simple/intkey.ink");
         IntkeyDataset ds = context.getDataset();
 
         Item taxonCarrot = ds.getTaxon(1);
@@ -110,9 +100,7 @@ public class DifferencesDirectiveTest extends TestCase {
      */
     @Test
     public void testIncludeSpecimen() throws Exception {
-        URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
-        IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()));
+        IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
         IntkeyDataset ds = context.getDataset();
 
         IntegerCharacter chUpperGlumeNerveNumber = (IntegerCharacter) ds.getCharacter(38);
@@ -136,9 +124,7 @@ public class DifferencesDirectiveTest extends TestCase {
      */
     @Test
     public void testDefaultMatchValues() throws Exception {
-        URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
-        IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()));
+        IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
         IntkeyDataset ds = context.getDataset();
 
         List<au.org.ala.delta.model.Character> differingChars = DiffUtils.determineDifferingCharactersForTaxa(ds, ds.getCharacters(), ds.getTaxa(), null, DEFAULT_MATCH_UNKNOWNS, DEFAULT_MATCH_INAPPLICABLES, MatchType.OVERLAP, false);
@@ -166,9 +152,7 @@ public class DifferencesDirectiveTest extends TestCase {
      */
     @Test
     public void testExact() throws Exception {
-        URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
-        IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()));
+        IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
         IntkeyDataset ds = context.getDataset();
 
         // note that the differences directive automatically sets match
@@ -186,9 +170,7 @@ public class DifferencesDirectiveTest extends TestCase {
      */
     @Test
     public void testSubset() throws Exception {
-        URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
-        IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()));
+        IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
         IntkeyDataset ds = context.getDataset();
 
         
@@ -210,9 +192,7 @@ public class DifferencesDirectiveTest extends TestCase {
      */
     @Test
     public void testSubsetReal() throws Exception {
-        URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
-        IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()));
+        IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
         IntkeyDataset ds = context.getDataset();
 
         List<Item> taxa = new ArrayList<Item>();
@@ -234,9 +214,7 @@ public class DifferencesDirectiveTest extends TestCase {
      */
     @Test
     public void testDontMatchUnknowns() throws Exception {
-        URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
-        IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()));
+        IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
         IntkeyDataset ds = context.getDataset();
 
         List<au.org.ala.delta.model.Character> differingChars = DiffUtils.determineDifferingCharactersForTaxa(ds, ds.getCharacters(), ds.getTaxa(), null, false,
@@ -258,9 +236,7 @@ public class DifferencesDirectiveTest extends TestCase {
      */
     @Test
     public void testDontMatchInapplicables() throws Exception {
-        URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
-        IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()));
+        IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
         IntkeyDataset ds = context.getDataset();
 
         List<au.org.ala.delta.model.Character> differingChars = DiffUtils.determineDifferingCharactersForTaxa(ds, ds.getCharacters(), ds.getTaxa(), null, DEFAULT_MATCH_UNKNOWNS,

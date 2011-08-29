@@ -1,7 +1,5 @@
 package au.org.ala.delta.inkey.model;
 
-import java.io.File;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 
@@ -11,14 +9,12 @@ import au.org.ala.delta.intkey.directives.DefineCharactersDirective;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.model.IntkeyDataset;
 
-import junit.framework.TestCase;
-
 /**
  * Unit tests for the DEFINE CHARACTERS directive
  * @author ChrisF
  *
  */
-public class DefineCharactersDirectiveTest extends TestCase {
+public class DefineCharactersDirectiveTest extends IntkeyDatasetTestCase {
 
     /**
      * Create a character keyword comprising a single character
@@ -26,16 +22,13 @@ public class DefineCharactersDirectiveTest extends TestCase {
      */
     @Test
     public void testSingleCharacter() throws Exception {
-        URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
-        IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()));
-        IntkeyDataset ds = context.getDataset();
+        IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
 
         new DefineCharactersDirective().parseAndProcess(context, "foo 1");
 
         List<au.org.ala.delta.model.Character> keywordCharacters = context.getCharactersForKeyword("foo");
 
-        assertEquals(Arrays.asList(ds.getCharacter(1)), keywordCharacters);
+        assertEquals(Arrays.asList(context.getDataset().getCharacter(1)), keywordCharacters);
     }
 
     /**
@@ -44,9 +37,7 @@ public class DefineCharactersDirectiveTest extends TestCase {
      */
     @Test
     public void testMultipleCharacters() throws Exception {
-        URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
-        IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()));
+        IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
         IntkeyDataset ds = context.getDataset();
 
         new DefineCharactersDirective().parseAndProcess(context, "foo 48 11 2");
@@ -62,9 +53,7 @@ public class DefineCharactersDirectiveTest extends TestCase {
      */
     @Test
     public void testCharacterRange() throws Exception {
-        URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
-        IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()));
+        IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
         IntkeyDataset ds = context.getDataset();
 
         new DefineCharactersDirective().parseAndProcess(context, "foo 10-15");
@@ -81,9 +70,7 @@ public class DefineCharactersDirectiveTest extends TestCase {
      */
     @Test
     public void testMultipleRanges() throws Exception {
-        URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
-        IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()));
+        IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
         IntkeyDataset ds = context.getDataset();
 
         new DefineCharactersDirective().parseAndProcess(context, "foo 10-15 47-49");
@@ -99,9 +86,7 @@ public class DefineCharactersDirectiveTest extends TestCase {
      */
     @Test
     public void testKeyword() throws Exception {
-        URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
-        IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()));
+        IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
         IntkeyDataset ds = context.getDataset();
 
         new DefineCharactersDirective().parseAndProcess(context, "foo habit");
@@ -118,9 +103,7 @@ public class DefineCharactersDirectiveTest extends TestCase {
      */
     @Test
     public void testPartialKeyword() throws Exception {
-        URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
-        IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()));
+        IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
         IntkeyDataset ds = context.getDataset();
 
         new DefineCharactersDirective().parseAndProcess(context, "foo hab");
@@ -137,9 +120,7 @@ public class DefineCharactersDirectiveTest extends TestCase {
      */
     @Test
     public void testCombination() throws Exception {
-        URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
-        IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()));
+        IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
         IntkeyDataset ds = context.getDataset();
 
         new DefineCharactersDirective().parseAndProcess(context, "foo 20-23 habit 48");

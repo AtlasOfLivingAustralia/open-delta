@@ -7,8 +7,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.apache.commons.lang.math.FloatRange;
 import org.junit.Test;
 
@@ -29,12 +27,13 @@ import au.org.ala.delta.model.TextCharacter;
 import au.org.ala.delta.model.UnorderedMultiStateCharacter;
 
 /**
- * Unit tests for the loading of dataset information from the items and 
+ * Unit tests for the loading of dataset information from the items and
  * characters files.
+ * 
  * @author ChrisF
- *
+ * 
  */
-public class DataSetLoadTest extends TestCase {
+public class DataSetLoadTest extends IntkeyDatasetTestCase {
 
     /**
      * Test opening the sample dataset by setting the characters file and the
@@ -59,9 +58,7 @@ public class DataSetLoadTest extends TestCase {
      */
     @Test
     public void testReadSampleFromInitializationFile() throws Exception {
-        URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
-        IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()));
+        IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
 
         List<String> keywordsWithoutSystemDefinedOnes = new ArrayList<String>(context.getCharacterKeywords());
         keywordsWithoutSystemDefinedOnes.remove(IntkeyContext.CHARACTER_KEYWORD_ALL);
@@ -80,9 +77,7 @@ public class DataSetLoadTest extends TestCase {
      */
     @Test
     public void testLoadControllingCharsDataset() throws Exception {
-        URL initFileUrl = getClass().getResource("/dataset/controlling_characters_simple/intkey.ink");
-        IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()));
+        IntkeyContext context = loadDataset("/dataset/controlling_characters_simple/intkey.ink");
 
         IntkeyDataset ds = context.getDataset();
 
@@ -168,9 +163,7 @@ public class DataSetLoadTest extends TestCase {
      */
     @Test
     public void testNonAutomaticControllingCharacters() throws Exception {
-        URL initFileUrl = getClass().getResource("/dataset/controlling_characters_non_auto/intkey.ink");
-        IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()));
+        IntkeyContext context = loadDataset("/dataset/controlling_characters_non_auto/intkey.ink");
 
         IntkeyDataset ds = context.getDataset();
 
@@ -207,9 +200,7 @@ public class DataSetLoadTest extends TestCase {
      */
     @Test
     public void testUseControllingCharactersFirst() throws Exception {
-        URL initFileUrl = getClass().getResource("/dataset/controlling_characters_use_first/intkey.ink");
-        IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()));
+        IntkeyContext context = loadDataset("/dataset/controlling_characters_use_first/intkey.ink");
 
         IntkeyDataset ds = context.getDataset();
 
@@ -245,9 +236,7 @@ public class DataSetLoadTest extends TestCase {
      */
     @Test
     public void testApplicableCharactersDirective() throws Exception {
-        URL initFileUrl = getClass().getResource("/dataset/controlling_characters_applicable_directive/intkey.ink");
-        IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()));
+        IntkeyContext context = loadDataset("/dataset/controlling_characters_applicable_directive/intkey.ink");
 
         IntkeyDataset ds = context.getDataset();
 
@@ -292,9 +281,7 @@ public class DataSetLoadTest extends TestCase {
      */
     @Test
     public void testReadAttributes() throws Exception {
-        URL initFileUrl = getClass().getResource("/dataset/controlling_characters_simple/intkey.ink");
-        IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()));
+        IntkeyContext context = loadDataset("/dataset/controlling_characters_simple/intkey.ink");
 
         IntkeyDataset ds = context.getDataset();
 
@@ -507,9 +494,7 @@ public class DataSetLoadTest extends TestCase {
      */
     @Test
     public void testReadAttributes2() throws Exception {
-        URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
-        IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()));
+        IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
 
         IntkeyDataset ds = context.getDataset();
 
@@ -526,10 +511,11 @@ public class DataSetLoadTest extends TestCase {
         assertEquals(new HashSet(Arrays.asList(3, 4, 5, 6, 7)), attrUpperGlumeMidZoneNerveNo.getPresentValues());
         assertEquals(new HashSet(Arrays.asList(1, 2, 3, 5)), attrFloristicKingdoms.getPresentStates());
     }
-    
+
     /**
-     * Test reading two datasets in succession. Ensure that number of characters, keywords etc is
-     * correct after reading the second dataset.
+     * Test reading two datasets in succession. Ensure that number of
+     * characters, keywords etc is correct after reading the second dataset.
+     * 
      * @throws Exception
      */
     @Test
@@ -537,41 +523,58 @@ public class DataSetLoadTest extends TestCase {
         URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
         IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
         context.newDataSetFile(new File(initFileUrl.toURI()));
-        
+
+        // The dataset is loaded on a separate thread so we need to wait until
+        // it is loaded.
+        while (true) {
+            Thread.sleep(250);
+            if (context.getDataset() != null) {
+                break;
+            }
+        }
+
         IntkeyDataset ds = context.getDataset();
-        
+
         assertEquals(87, ds.getNumberOfCharacters());
         assertEquals(14, ds.getNumberOfTaxa());
         assertEquals(38, context.getCharacterKeywords().size());
-        
+
         initFileUrl = getClass().getResource("/dataset/controlling_characters_simple/intkey.ink");
         context.newDataSetFile(new File(initFileUrl.toURI()));
-        
+
+        // The dataset is loaded on a separate thread so we need to wait until
+        // it is loaded.
+        while (true) {
+            Thread.sleep(250);
+            if (context.getDataset() != null) {
+                break;
+            }
+        }
+
         ds = context.getDataset();
-        
+
         assertEquals(8, ds.getNumberOfCharacters());
         assertEquals(5, ds.getNumberOfTaxa());
-        assertEquals(2, context.getCharacterKeywords().size());        
+        assertEquals(2, context.getCharacterKeywords().size());
     }
-    
+
     /**
-     * Test that synonymy character information is correctly read from the dataset.
+     * Test that synonymy character information is correctly read from the
+     * dataset.
      */
     @Test
     public void testReadSynonymyCharacters() throws Exception {
-        URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
-        IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()));
-        
+        IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
+
         IntkeyDataset ds = context.getDataset();
-        
+
         List<TextCharacter> synonymyCharacters = ds.getSynonymyCharacters();
-        
+
         assertEquals(1, synonymyCharacters.size());
-        
+
         Character synonymyCharacter = synonymyCharacters.get(0);
         assertEquals(1, synonymyCharacter.getCharacterId());
-        
+
     }
 
 }

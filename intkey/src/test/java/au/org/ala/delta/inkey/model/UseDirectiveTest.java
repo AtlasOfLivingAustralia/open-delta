@@ -34,7 +34,7 @@ import au.org.ala.delta.model.UnorderedMultiStateCharacter;
  * @author ChrisF
  *
  */
-public class UseDirectiveTest extends TestCase {
+public class UseDirectiveTest extends IntkeyDatasetTestCase {
 
     /**
      * Test setting a value for a multi state character
@@ -43,9 +43,7 @@ public class UseDirectiveTest extends TestCase {
      */
     @Test
     public void testSetMultiState() throws Exception {
-        URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
-        IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()));
+        IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
 
         MultiStateCharacter charSubfamily = (MultiStateCharacter) context.getDataset().getCharacter(78);
 
@@ -102,9 +100,7 @@ public class UseDirectiveTest extends TestCase {
      */
     @Test
     public void testSetInteger() throws Exception {
-        URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
-        IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()));
+        IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
 
         IntegerCharacter charStamens = (IntegerCharacter) context.getDataset().getCharacter(60);
 
@@ -168,9 +164,7 @@ public class UseDirectiveTest extends TestCase {
      */
     @Test
     public void testSetReal() throws Exception {
-        URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
-        IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()));
+        IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
 
         RealCharacter charCulmsMaxHeight = (RealCharacter) context.getDataset().getCharacter(3);
 
@@ -212,9 +206,7 @@ public class UseDirectiveTest extends TestCase {
      */
     @Test
     public void testSetText() throws Exception {
-        URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
-        IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()));
+        IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
 
         TextCharacter charIncluding = (TextCharacter) context.getDataset().getCharacter(1);
 
@@ -252,10 +244,7 @@ public class UseDirectiveTest extends TestCase {
      */
     @Test
     public void testSetTwice() throws Exception {
-        URL initFileUrl = getClass().getResource("/dataset/controlling_characters_simple/intkey.ink");
-        IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()));
-
+        IntkeyContext context = loadDataset("/dataset/controlling_characters_simple/intkey.ink");
         IntkeyDataset ds = context.getDataset();
 
         // Set processing input file flag to true so that Intkey will
@@ -321,9 +310,7 @@ public class UseDirectiveTest extends TestCase {
      */
     @Test
     public void testSetNonExistentCharacter() throws Exception {
-        URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
-        IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()));
+        IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
 
         boolean exceptionThrown = false;
         try {
@@ -343,9 +330,7 @@ public class UseDirectiveTest extends TestCase {
      */
     @Test
     public void testKeyword() throws Exception {
-        URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
-        IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()));
+        IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
         IntkeyDataset ds = context.getDataset();
 
         UnorderedMultiStateCharacter charLongevity = (UnorderedMultiStateCharacter) ds.getCharacter(2);
@@ -380,10 +365,7 @@ public class UseDirectiveTest extends TestCase {
      */
     @Test
     public void testControllingCharactersSet() throws Exception {
-        URL initFileUrl = getClass().getResource("/dataset/controlling_characters_simple/intkey.ink");
-        IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()));
-
+        IntkeyContext context = loadDataset("/dataset/controlling_characters_simple/intkey.ink");
         IntkeyDataset ds = context.getDataset();
 
         UnorderedMultiStateCharacter charSeedPresence = (UnorderedMultiStateCharacter) ds.getCharacter(2);
@@ -414,10 +396,7 @@ public class UseDirectiveTest extends TestCase {
      */
     @Test
     public void testDependentCharactersRemoved() throws Exception {
-        URL initFileUrl = getClass().getResource("/dataset/controlling_characters_simple/intkey.ink");
-        IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()));
-
+        IntkeyContext context = loadDataset("/dataset/controlling_characters_simple/intkey.ink");
         IntkeyDataset ds = context.getDataset();
 
         UnorderedMultiStateCharacter charSeedPresence = (UnorderedMultiStateCharacter) ds.getCharacter(2);
@@ -448,10 +427,7 @@ public class UseDirectiveTest extends TestCase {
      */
     @Test
     public void testAvailabilityMultipleControllingCharacters() throws Exception {
-        URL initFileUrl = getClass().getResource("/dataset/controlling_characters_multiple_controlling/intkey.ink");
-        IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()));
-
+        IntkeyContext context = loadDataset("/dataset/controlling_characters_multiple_controlling/intkey.ink");
         IntkeyDataset ds = context.getDataset();
 
         au.org.ala.delta.model.Character charThree = ds.getCharacter(3);
@@ -488,10 +464,7 @@ public class UseDirectiveTest extends TestCase {
      */
     @Test
     public void testAvailabilityControlHierarchy() throws Exception {
-        URL initFileUrl = getClass().getResource("/dataset/controlling_characters_simple/intkey.ink");
-        IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()));
-
+        IntkeyContext context = loadDataset("/dataset/controlling_characters_simple/intkey.ink");
         IntkeyDataset ds = context.getDataset();
 
         UnorderedMultiStateCharacter charSeedPresence = (UnorderedMultiStateCharacter) ds.getCharacter(2);
@@ -528,10 +501,7 @@ public class UseDirectiveTest extends TestCase {
      */
     @Test
     public void testAttributeWithValuesAndInapplicabilityFlag() throws Exception {
-        URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
-        IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()));
-
+        IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
         IntkeyDataset ds = context.getDataset();
 
         // Check that the taxon "Oryza" - number 10 - is eliminated when
@@ -572,9 +542,7 @@ public class UseDirectiveTest extends TestCase {
      */
     @Test
     public void testSetCCAndDependentShareControllingCharacter() throws Exception {
-        URL initFileUrl = getClass().getResource("/dataset/controlling_characters_shared_cc/intkey.ink");
-        IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()));
+        IntkeyContext context = loadDataset("/dataset/controlling_characters_shared_cc/intkey.ink");
 
         // Set processing input file flag to true so that Intkey will
         // automatically
@@ -609,9 +577,7 @@ public class UseDirectiveTest extends TestCase {
      */
     @Test
     public void testValuesForInapplicableCharactersWithSharedCC() throws Exception {
-        URL initFileUrl = getClass().getResource("/dataset/controlling_characters_shared_cc/intkey.ink");
-        IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()));
+        IntkeyContext context = loadDataset("/dataset/controlling_characters_shared_cc/intkey.ink");
 
         // Set processing input file flag to true so that Intkey will
         // automatically
@@ -643,9 +609,7 @@ public class UseDirectiveTest extends TestCase {
      */
     @Test
     public void testNoValidationPromptDialogsWhenProcessingInputFile() throws Exception {
-        URL initFileUrl = getClass().getResource("/dataset/controlling_characters_simple/testNoValidationPromptDialogsWhenProcessingInputFile.ink");
-        IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()));
+        IntkeyContext context = loadDataset("/dataset/controlling_characters_simple/testNoValidationPromptDialogsWhenProcessingInputFile.ink");
         IntkeyDataset ds = context.getDataset();
 
         Specimen specimen = context.getSpecimen();

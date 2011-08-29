@@ -8,8 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
 import org.junit.Test;
 
 import au.org.ala.delta.intkey.directives.UseDirective;
@@ -17,14 +15,11 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.model.SortingUtils;
 import au.org.ala.delta.model.Character;
 
-public class DisplayCharacterOrderBestTest extends TestCase {
+public class DisplayCharacterOrderBestTest extends IntkeyDatasetTestCase {
 
     @Test
     public void testSimpleDataSet() throws Exception {
-        URL initFileUrl = getClass().getResource("/dataset/controlling_characters_simple/intkey.ink");
-
-        IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()));
+        IntkeyContext context = loadDataset("/dataset/controlling_characters_simple/intkey.ink");
 
         Map<Character, Double> bestMap = SortingUtils.orderBest(context);
         List<Character> orderedCharList = new ArrayList<Character>(bestMap.keySet());
@@ -42,10 +37,7 @@ public class DisplayCharacterOrderBestTest extends TestCase {
 
     @Test
     public void testDeltaSampleDataSet() throws Exception {
-        URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
-
-        IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()));
+        IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
 
         Map<Character, Double> bestMap = SortingUtils.orderBest(context);
         List<Character> orderedCharList = new ArrayList<Character>(bestMap.keySet());
@@ -120,10 +112,7 @@ public class DisplayCharacterOrderBestTest extends TestCase {
 
     @Test
     public void testBestOrder2() throws Exception {
-        URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
-
-        IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()));
+        IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
 
         new UseDirective().parseAndProcess(context, "38,5");
 
@@ -192,10 +181,7 @@ public class DisplayCharacterOrderBestTest extends TestCase {
 
     @Test
     public void testBestOrder3() throws Exception {
-        URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
-
-        IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()));
+        IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
 
         new UseDirective().parseAndProcess(context, "38,5");
         new UseDirective().parseAndProcess(context, "40,1");
