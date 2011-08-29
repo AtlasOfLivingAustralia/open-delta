@@ -1,20 +1,21 @@
 package au.org.ala.delta.editor.slotfile.model;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.io.FilenameUtils;
+
 import au.org.ala.delta.editor.slotfile.Attribute;
 import au.org.ala.delta.editor.slotfile.DeltaVOP;
 import au.org.ala.delta.editor.slotfile.TextType;
 import au.org.ala.delta.editor.slotfile.VOCharBaseDesc;
-import au.org.ala.delta.editor.slotfile.VODirFileDesc;
 import au.org.ala.delta.editor.slotfile.VOCharBaseDesc.CharTextInfo;
-import au.org.ala.delta.editor.slotfile.VODirFileDesc.DirFileFixedData;
 import au.org.ala.delta.editor.slotfile.VOCharTextDesc;
 import au.org.ala.delta.editor.slotfile.VOControllingDesc;
+import au.org.ala.delta.editor.slotfile.VODirFileDesc;
+import au.org.ala.delta.editor.slotfile.VODirFileDesc.DirFileFixedData;
 import au.org.ala.delta.editor.slotfile.VOImageDesc;
 import au.org.ala.delta.editor.slotfile.VOImageInfoDesc;
 import au.org.ala.delta.editor.slotfile.VOItemDesc;
@@ -664,13 +665,12 @@ public class SlotFileDataSet extends AbstractObservableDataSet {
 	public DirectiveFile getDirectiveFile(String fileName) {
 		
 		// Strip any path information off before doing the match.
-		File tmp = new File(fileName);
-		fileName = tmp.getName();
+		String tmpFileName = FilenameUtils.getName(fileName);
 		
 		int directiveFileCount = getDirectiveFileCount();
 		for (int i=1; i<=directiveFileCount; i++) {
 			DirectiveFile file = getDirectiveFile(i);
-			if (fileName.equals(file.getShortFileName())) {
+			if (tmpFileName.equals(file.getShortFileName())) {
 				return file;
 			}
 		}

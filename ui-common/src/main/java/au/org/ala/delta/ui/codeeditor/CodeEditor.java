@@ -108,5 +108,16 @@ public class CodeEditor extends JPanel {
 	public void setText(String text) {
 		_editor.setText(text);
 	}
+	
+	/**
+	 * Allows a client of the CodeEditor to add custom functions to the
+	 * toolbar (for example, "save").
+	 * @param action the action that will occur when the button is pressed.
+	 * @param name the name to use when configuring the button properties
+	 * from the resource bundle.
+	 */
+	public void addToolbarButton(Action action, String name) {
+		_toolbar.add(toolbarAction(action, name));
+	}
 
 }

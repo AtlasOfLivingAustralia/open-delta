@@ -36,8 +36,6 @@ public class DirectiveFileEditor extends JInternalFrame implements ValidationLis
 	/** Contains the directive file are editing */
 	private EditorViewModel _model;
 
-	private ResourceMap _resources;
-
 	private ActionMap _actions;
 
 	private CodeEditor directivesEditor;
@@ -46,20 +44,25 @@ public class DirectiveFileEditor extends JInternalFrame implements ValidationLis
 		super();
 		setName("ItemEditorDialog");
 		_model = model;
-		_resources = Application.getInstance().getContext().getResourceMap(DirectiveFileEditor.class);
 		_actions = Application.getInstance().getContext().getActionMap(this);
 
 		createUI();
+		addEventHandlers();
 		updateGUI();
+	}
+	
+	private void addEventHandlers() {
+		javax.swing.Action applyChanges = _actions.get("applyChanges");
+		directivesEditor.addToolbarButton(applyChanges, "saveDirectiveFile");
 	}
 
 	private void createUI() {
 		directivesEditor = new CodeEditor(getMimeType());
 		directivesEditor.getTextArea().setEOLMarkersPainted(false);
 		getContentPane().add(directivesEditor, BorderLayout.CENTER);
-		JButton apply = new JButton("Apply");
-		apply.setAction(_actions.get("applyChanges"));
-		getContentPane().add(apply, BorderLayout.SOUTH);
+//		JButton apply = new JButton("Apply");
+//		apply.setAction(_actions.get("applyChanges"));
+//		getContentPane().add(apply, BorderLayout.SOUTH);
 		
 	}
 

@@ -1,6 +1,5 @@
 package au.org.ala.delta.editor.slotfile.model;
 
-import java.io.File;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -114,8 +113,7 @@ public class DirectiveFile {
 	
 	public String getShortFileName() {
 		String fileName = getFileName();
-		File file = new File(FilenameUtils.separatorsToSystem(fileName));
-		return file.getName();
+		return FilenameUtils.getName(fileName);
 	}
 	
 	public void setFileType(short type) {
