@@ -6,12 +6,12 @@ import java.io.PrintStream;
 import java.io.StringReader;
 
 import javax.swing.ActionMap;
-import javax.swing.JButton;
 import javax.swing.JInternalFrame;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
-import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.editor.DeltaEditor;
 import au.org.ala.delta.editor.DeltaView;
@@ -39,6 +39,8 @@ public class DirectiveFileEditor extends JInternalFrame implements ValidationLis
 	private ActionMap _actions;
 
 	private CodeEditor directivesEditor;
+	
+	private String originalText;
 
 	public DirectiveFileEditor(EditorViewModel model) {
 		super();
@@ -54,16 +56,31 @@ public class DirectiveFileEditor extends JInternalFrame implements ValidationLis
 	private void addEventHandlers() {
 		javax.swing.Action applyChanges = _actions.get("applyChanges");
 		directivesEditor.addToolbarButton(applyChanges, "saveDirectiveFile");
+		directivesEditor.getTextArea().getDocument().addDocumentListener( 
+			new DocumentListener() {
+				@Override
+				public void removeUpdate(DocumentEvent e) {
+					enableSave();
+				}
+				@Override
+				public void insertUpdate(DocumentEvent e) {
+					enableSave();
+				}
+				@Override
+				public void changedUpdate(DocumentEvent e) {
+					enableSave();
+				}
+			});
+	}
+	
+	private void enableSave() {
+		_actions.get("applyChanges").setEnabled(true);
 	}
 
 	private void createUI() {
 		directivesEditor = new CodeEditor(getMimeType());
 		directivesEditor.getTextArea().setEOLMarkersPainted(false);
 		getContentPane().add(directivesEditor, BorderLayout.CENTER);
-//		JButton apply = new JButton("Apply");
-//		apply.setAction(_actions.get("applyChanges"));
-//		getContentPane().add(apply, BorderLayout.SOUTH);
-		
 	}
 
 	private String getMimeType() {
@@ -92,7 +109,8 @@ public class DirectiveFileEditor extends JInternalFrame implements ValidationLis
 		if (file.isCharsFile() || file.isItemsFile() || file.isSpecsFile()) {
 			directivesEditor.getTextArea().setEditable(false);
 		}
-		directivesEditor.setText(new String(out.toByteArray()));
+		originalText = new String(out.toByteArray());
+		directivesEditor.setText(originalText);
 	}
 
 	@Override
@@ -121,7 +139,7 @@ public class DirectiveFileEditor extends JInternalFrame implements ValidationLis
 	@Override
 	public boolean editsValid() {
 
-		return false;
+		return true;
 	}
 
 	@Override

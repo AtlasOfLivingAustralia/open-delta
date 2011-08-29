@@ -116,6 +116,13 @@ public class MessageDialogHelper {
 
 	}
 
+	public String promptForDirectiveFileName() {
+		String title = _messages.getString("directiveFileNamePrompt.title");
+		String message = _messages.getString("directiveFileNamePrompt.message");
+		return JOptionPane.showInputDialog(_dialogParent, message, title, JOptionPane.PLAIN_MESSAGE);
+
+	}
+
 
 	
 }

@@ -2,7 +2,6 @@ package au.org.ala.delta.editor.ui;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.awt.Window;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -11,9 +10,10 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.ActionMap;
-import javax.swing.BoxLayout;
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
-import javax.swing.JDialog;
+import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -30,6 +30,7 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 
+import au.org.ala.delta.editor.DeltaView;
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile.DirectiveType;
@@ -38,7 +39,7 @@ import au.org.ala.delta.editor.ui.util.MessageDialogHelper;
 /**
  * Allows the user to see and execute CONFOR / DIST / KEY directives files.
  */
-public class ActionSetsDialog extends JDialog {
+public class ActionSetsDialog extends JInternalFrame implements DeltaView {
 	
 	private static final long serialVersionUID = -3525771335064005800L;
 	
@@ -49,6 +50,7 @@ public class ActionSetsDialog extends JDialog {
 	
 	private JLabel actionSetDetailsLabel;
 	private JButton runButton;
+	private JButton addButton;
 	private JButton doneButton;
 	private JButton editButton;
 	private JButton deleteButton;
@@ -59,8 +61,8 @@ public class ActionSetsDialog extends JDialog {
 	private JTabbedPane tabbedPane;
 	
 	
-	public ActionSetsDialog(Window parent, EditorViewModel model) {
-		super(parent);
+	public ActionSetsDialog(EditorViewModel model) {
+		
 		_model = model;
 		_resources = Application.getInstance().getContext().getResourceMap();
 		_actions = Application.getInstance().getContext().getActionMap(this);
@@ -75,6 +77,7 @@ public class ActionSetsDialog extends JDialog {
 	
 	private void addEventHandlers() {
 		runButton.setAction(_actions.get("runDirectiveFile"));
+		addButton.setAction(_actions.get("addDirectiveFile"));
 		editButton.setAction(_actions.get("editDirectiveFile"));
 		deleteButton.setAction(_actions.get("deleteDirectiveFile"));
 		doneButton.setAction(_actions.get("doneWithActionSets"));
@@ -176,6 +179,25 @@ public class ActionSetsDialog extends JDialog {
 			_messageHelper.errorRunningDirectiveFile(file.getShortFileName());
 		}
 	}
+	
+	@Action
+	public void addDirectiveFile() {
+		
+		String name = _messageHelper.promptForDirectiveFileName();
+		if (name != null) {
+			int fileCount = _model.getDirectiveFileCount();
+			DirectiveFile file = _model.addDirectiveFile(fileCount, name, selectedDirectiveType());
+			updateGUI();
+			
+			JTable selectedTable = (JTable)((JScrollPane)tabbedPane.getSelectedComponent()).getViewport().getView();
+			DirectiveFileTableModel tm = (DirectiveFileTableModel)selectedTable.getModel();
+			int newFileIndex = tm.indexOf(file);
+			selectedTable.getSelectionModel().setSelectionInterval(newFileIndex, newFileIndex);
+			
+			editDirectiveFile();
+		}
+	}
+	
 	@Action
 	public void editDirectiveFile() {
 		DirectiveFile file = getSelectedFile();
@@ -212,7 +234,7 @@ public class ActionSetsDialog extends JDialog {
 	
 	private void createUI() {
 		setName("actionSetsDialog");
-		setTitle(_resources.getString("actionSetsDialog.title"));
+		
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		getContentPane().add(tabbedPane, BorderLayout.CENTER);
 		
@@ -230,19 +252,36 @@ public class ActionSetsDialog extends JDialog {
 		
 		JPanel buttonPanel = new JPanel();
 		getContentPane().add(buttonPanel, BorderLayout.EAST);
-		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
 		
 		runButton = new JButton("Run");
-		buttonPanel.add(runButton);
 		
-		doneButton = new JButton("Done");
-		buttonPanel.add(doneButton);
+		addButton = new JButton("Add");
 		
 		editButton = new JButton("Edit");
-		buttonPanel.add(editButton);
 		
 		deleteButton = new JButton("Delete");
-		buttonPanel.add(deleteButton);
+		
+		doneButton = new JButton("Done");
+		GroupLayout gl_buttonPanel = new GroupLayout(buttonPanel);
+		gl_buttonPanel.setHorizontalGroup(
+			gl_buttonPanel.createParallelGroup(Alignment.LEADING)
+				.addComponent(runButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+				.addComponent(addButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+				.addComponent(editButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+				.addComponent(deleteButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+				.addComponent(doneButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+		);
+		gl_buttonPanel.setVerticalGroup(
+			gl_buttonPanel.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_buttonPanel.createSequentialGroup()
+					.addComponent(runButton)
+					.addComponent(addButton)
+					.addComponent(editButton)
+					.addComponent(deleteButton)
+					.addComponent(doneButton))
+		);
+		buttonPanel.setLayout(gl_buttonPanel);
+		
 		
 		JPanel labelPanel = new JPanel();
 		FlowLayout flowLayout = (FlowLayout) labelPanel.getLayout();
@@ -277,6 +316,45 @@ public class ActionSetsDialog extends JDialog {
 		updateAction();
 	}
 	
+	private DirectiveType selectedDirectiveType() {
+		JTable selectedTable = (JTable)((JScrollPane)tabbedPane.getSelectedComponent()).getViewport().getView();
+		if (selectedTable == conforTable) {
+			return DirectiveType.CONFOR;
+		}
+		else if (selectedTable == intkeyTable) {
+			return DirectiveType.INTKEY;
+		}
+		else if (selectedTable == keyTable) {
+			return DirectiveType.KEY;
+		}
+		else  {
+			return DirectiveType.DIST;
+		}
+	}
+	
+	@Override
+	public ReorderableList getCharacterListView() {
+		return null;
+	}
+
+	@Override
+	public ReorderableList getItemListView() {
+		return null;
+	}
+	
+	@Override
+	public boolean editsValid() {
+		return true;
+	}
+	
+	@Override
+	public void open() {}
+	
+	@Override
+	public String getViewTitle() {
+		return _resources.getString("actionSetsDialog.title");
+	}
+
 	/**
 	 * Presents a List of DirectiveFiles in a form suitable for display
 	 * in the Action Sets Dialog.
@@ -338,6 +416,16 @@ public class ActionSetsDialog extends JDialog {
 		
 		public DirectiveFile getFileAt(int rowIndex) {
 			return _files.get(rowIndex);
+		}
+		
+		public int indexOf(DirectiveFile file) {
+			for (int i=0; i<_files.size(); i++) {
+				DirectiveFile tmpFile = _files.get(i);
+				if (file.getShortFileName().equals(tmpFile.getShortFileName())) {
+					return i;
+				}
+			}
+			return -1;
 		}
 		
 	}

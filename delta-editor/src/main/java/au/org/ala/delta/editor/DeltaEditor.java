@@ -61,7 +61,6 @@ import au.org.ala.delta.editor.model.EditorDataModel;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile.DirectiveType;
 import au.org.ala.delta.editor.slotfile.model.SlotFileRepository;
 import au.org.ala.delta.editor.support.InternalFrameApplication;
-import au.org.ala.delta.editor.ui.ActionSetsDialog;
 import au.org.ala.delta.editor.ui.StatusBar;
 import au.org.ala.delta.editor.ui.help.HelpConstants;
 import au.org.ala.delta.editor.ui.image.ImageSettingsDialog;
@@ -723,8 +722,8 @@ public class DeltaEditor extends InternalFrameApplication implements
 
 	@Action(enabledProperty = "saveAsEnabled")
 	public void viewActionSets() {
-		ActionSetsDialog dialog = new ActionSetsDialog(getMainFrame(), getCurrentDataSet());
-		show(dialog);
+		DeltaView actionSets = _activeController.createActionSetsView();
+		newView(actionSets, "A");
 	}
 
 	@Action(enabledProperty = "saveAsEnabled")
