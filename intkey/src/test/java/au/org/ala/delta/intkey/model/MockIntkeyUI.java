@@ -1,4 +1,4 @@
-package au.org.ala.delta.inkey.model;
+package au.org.ala.delta.intkey.model;
 
 import java.util.List;
 
