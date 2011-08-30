@@ -468,7 +468,7 @@ public class IntkeyContext extends AbstractDeltaContext {
             }
         }
 
-        _userDefinedCharacterKeywords.put(keyword.toLowerCase(), characterNumbers);
+        _userDefinedCharacterKeywords.put(keyword, characterNumbers);
     }
 
     /**
@@ -499,9 +499,20 @@ public class IntkeyContext extends AbstractDeltaContext {
             if (characterNumbersSet == null) {
                 List<String> matches = new ArrayList<String>();
                 for (String savedKeyword : _userDefinedCharacterKeywords.keySet()) {
-                    // ignore leading and trailing whitespace when matching
-                    // against a keyword
-                    if (savedKeyword.trim().startsWith(keyword.trim())) {
+                    
+                    //Ignore case when matching keywords
+                    String modifiedKeyword = keyword.toLowerCase();
+                    String modifiedSavedKeyword = savedKeyword.toLowerCase();
+                    
+                    //Ignore whitespace characters
+                    modifiedKeyword = modifiedKeyword.replaceAll("\\s", "");
+                    modifiedSavedKeyword = modifiedSavedKeyword.replaceAll("\\s", "");
+                    
+                    //Ignore trailing and leading whitespace
+                    modifiedKeyword = modifiedKeyword.trim();
+                    modifiedSavedKeyword = modifiedSavedKeyword.trim();
+                    
+                    if (modifiedSavedKeyword.startsWith(modifiedKeyword)) {
                         matches.add(savedKeyword);
                     }
                 }
@@ -548,7 +559,6 @@ public class IntkeyContext extends AbstractDeltaContext {
             throw new IllegalStateException("Cannot define a taxa keyword if no dataset loaded");
         }
 
-        keyword = keyword.toLowerCase();
         if (keyword.equals(TAXON_KEYWORD_ALL) || keyword.equals(TAXON_KEYWORD_ELIMINATED) || keyword.equals(TAXON_KEYWORD_REMAINING)) {
             throw new IllegalArgumentException(String.format(UIUtils.getResourceString("RedefineSystemKeyword.error"), keyword));
         }
@@ -599,9 +609,19 @@ public class IntkeyContext extends AbstractDeltaContext {
             if (taxaNumbersSet == null) {
                 List<String> matches = new ArrayList<String>();
                 for (String savedKeyword : _userDefinedTaxonKeywords.keySet()) {
-                    // ignore leading and trailing whitespace when matching
-                    // against a keyword
-                    if (savedKeyword.trim().startsWith(keyword.trim())) {
+                    //Ignore case when matching keywords
+                    String modifiedKeyword = keyword.toLowerCase();
+                    String modifiedSavedKeyword = savedKeyword.toLowerCase();
+                    
+                    //Ignore whitespace characters
+                    modifiedKeyword = modifiedKeyword.replaceAll("\\s", "");
+                    modifiedSavedKeyword = modifiedSavedKeyword.replaceAll("\\s", "");
+                    
+                    //Ignore trailing and leading whitespace
+                    modifiedKeyword = modifiedKeyword.trim();
+                    modifiedSavedKeyword = modifiedSavedKeyword.trim();
+                    
+                    if (modifiedSavedKeyword.startsWith(modifiedKeyword)) {
                         matches.add(savedKeyword);
                     }
                 }

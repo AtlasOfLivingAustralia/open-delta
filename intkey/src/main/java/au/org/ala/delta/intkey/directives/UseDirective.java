@@ -203,17 +203,10 @@ public class UseDirective extends IntkeyDirective {
     private List<Integer> parseLHS(String lhs, IntkeyContext context) {
         List<Integer> retList = new ArrayList<Integer>();
 
-        IntRange range = ParsingUtils.parseIntRange(lhs);
-        if (range != null) {
-            for (int i : range.toArray()) {
-                retList.add(i);
-            }
-        } else {
-            // TODO handle exception if not valid keyword passed.
-            List<Character> charList = context.getCharactersForKeyword(lhs);
-            for (Character c : charList) {
-                retList.add(c.getCharacterId());
-            }
+        List<Character> charList = ParsingUtils.parseCharacterToken(lhs, context);
+        
+        for (Character c : charList) {
+            retList.add(c.getCharacterId());
         }
 
         return retList;
