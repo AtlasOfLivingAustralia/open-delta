@@ -147,7 +147,7 @@ public class TaxonSelectionDialog extends ListSelectionDialog {
 
     @Action
     public void taxonSelectionDialog_SelectAll() {
-        _list.setSelectionInterval(0, _listModel.getSize());
+        _list.setSelectionInterval(0, _listModel.getSize() - 1);
     }
 
     @Action
