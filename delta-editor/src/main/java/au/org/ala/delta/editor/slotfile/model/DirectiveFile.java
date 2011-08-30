@@ -108,7 +108,7 @@ public class DirectiveFile {
 	}
 	
 	public String getFileName() {
-		return _dirFileDesc.getFileName();
+		return _dirFileDesc.getFileName().trim();
 	}
 	
 	public String getShortFileName() {

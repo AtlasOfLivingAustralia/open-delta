@@ -43,6 +43,10 @@ public class ActionSetsDialog extends JInternalFrame implements DeltaView {
 	
 	private static final long serialVersionUID = -3525771335064005800L;
 	
+	private static final int TIME_COLUMN_WIDTH = 150;
+	private static final int FILE_NAME_COLUMN_WIDTH = 150;
+	private static final int FILE_DESCRIPTION_COLUMN_WIDTH = 300;
+	
 	private EditorViewModel _model;
 	private ResourceMap _resources;
 	private ActionMap _actions;
@@ -99,6 +103,12 @@ public class ActionSetsDialog extends JInternalFrame implements DeltaView {
 				updateAction();
 			}
 		});
+	}
+	
+	private void configureWidths(JTable table) {
+		table.getColumnModel().getColumn(0).setPreferredWidth(FILE_DESCRIPTION_COLUMN_WIDTH);
+		table.getColumnModel().getColumn(1).setPreferredWidth(FILE_NAME_COLUMN_WIDTH);
+		table.getColumnModel().getColumn(2).setPreferredWidth(TIME_COLUMN_WIDTH);		
 	}
 	
 	public void updateAction() {
@@ -309,9 +319,13 @@ public class ActionSetsDialog extends JInternalFrame implements DeltaView {
 			files.get(file.getType()).add(file);
 		}
 		conforTable.setModel(new DirectiveFileTableModel(files.get(DirectiveType.CONFOR)));
+		configureWidths(conforTable);
 		intkeyTable.setModel(new DirectiveFileTableModel(files.get(DirectiveType.INTKEY)));
+		configureWidths(intkeyTable);
 		distTable.setModel(new DirectiveFileTableModel(files.get(DirectiveType.DIST)));
-		keyTable.setModel(new DirectiveFileTableModel(files.get(DirectiveType.KEY)));	
+		configureWidths(distTable);
+		keyTable.setModel(new DirectiveFileTableModel(files.get(DirectiveType.KEY)));
+		configureWidths(keyTable);
 		
 		updateAction();
 	}
@@ -396,6 +410,9 @@ public class ActionSetsDialog extends JInternalFrame implements DeltaView {
 			}
 			else {
 				long lastModified = _files.get(rowIndex).getLastModifiedTime();
+				if (lastModified == 0) {
+					return "";
+				}
 				return _displayFormat.format(new Date(lastModified));
 			}
 			

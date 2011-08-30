@@ -86,9 +86,7 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
 			prev = ch;
 			ch = reader.read();
 			if (ch == '\n') {
-				for (DirectiveParserObserver o : _observers) {
-					o.preProcess(line.toString().trim());
-				}
+				
 
 				pc.incrementCurrentLine();
 				pc.setCurrentOffset(0);
@@ -98,11 +96,7 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
 			pc.incrementCurrentOffset();
 		}
 
-		AbstractDirective<?> directive = processDirective(currentData, context);
-
-		for (DirectiveParserObserver o : _observers) {
-			o.postProcess(directive);
-		}
+		processDirective(currentData, context);
 
 		Logger.log("Finished!");
 		context.endCurrentParsingContext();
@@ -122,6 +116,7 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
 				DirectiveSearchResult result = directiveTree.findDirective(controlWords);
 				if (result.getResultType() == ResultType.Found) {
 					AbstractDirective d = result.getDirective();
+					
 					// do something with the directive...
 					try {
 						String dd;
@@ -150,9 +145,17 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	protected void doProcess(C context, AbstractDirective d, String dd) throws ParseException, Exception {
+		
+		for (DirectiveParserObserver o : _observers) {
+			o.preProcess(d, dd);
+		}
 		d.parse(context, dd);
 		DirectiveArguments args = d.getDirectiveArgs();
 		d.process(context, args);
+		
+		for (DirectiveParserObserver o : _observers) {
+			o.postProcess(d);
+		}
 	}
 
 	protected abstract void handleUnrecognizedDirective(C context, List<String> controlWords);

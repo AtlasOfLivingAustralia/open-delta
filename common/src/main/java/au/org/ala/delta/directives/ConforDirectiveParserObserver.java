@@ -21,8 +21,8 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
     }
     
     @Override
-    public void preProcess(String data) {
-        _context.ListMessage(data);
+    public void preProcess(AbstractDirective<? extends AbstractDeltaContext> directive, String data) {
+        _context.ListMessage(directive.getName() + " " +data);
     }
 
     @Override

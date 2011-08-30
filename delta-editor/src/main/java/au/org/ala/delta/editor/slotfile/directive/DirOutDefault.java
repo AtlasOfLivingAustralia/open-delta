@@ -458,7 +458,7 @@ public class DirOutDefault extends AbstractDirOutFunctor {
 				_textBuffer.append(temp);
 				_textBuffer.append("/");
 			}
-			boolean hasComment = vectIter.getComment().length() > 0;
+			boolean hasComment = StringUtils.isNotEmpty(vectIter.getComment());
 			if (hasComment) {
 				_textBuffer.append(" <");
 				_textBuffer.append(vectIter.getComment());

@@ -378,10 +378,6 @@ public class DeltaViewController extends InternalFrameAdapter implements Vetoabl
 			_observers.get(i).viewSelected(this, view);
 		}
 	}
-
-	
-
-	
 	
 }
  

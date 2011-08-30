@@ -576,9 +576,18 @@ public class ImportExportDialog extends JDialog {
 			path = directory.getAbsolutePath();
 		}
 		currentDirectoryTextField.setText(path);
-		charactersFileTextField.setText(_model.getCharactersFile().getFileName());
-		itemsFileTextField.setText(_model.getItemsFile().getFileName());
-		specificationsFileTextField.setText(_model.getSpecsFile().getFileName());
+		DirectiveFileInfo charsFile = _model.getCharactersFile();
+		if (charsFile != null) {
+			charactersFileTextField.setText(charsFile.getFileName());
+		}
+		DirectiveFileInfo itemsFile = _model.getItemsFile();
+		if (itemsFile != null) {
+			itemsFileTextField.setText(itemsFile.getFileName());
+		}
+		DirectiveFileInfo specsFile = _model.getSpecsFile();
+		if (specsFile != null) {
+			specificationsFileTextField.setText(specsFile.getFileName());
+		}
 		currentImportFilterTextField.setText(_currentFilter);
 		FilteredListModel possibleDirectivesModel = new FilteredListModel(_currentFilter);
 		possibleDirectivesList.setModel(possibleDirectivesModel);

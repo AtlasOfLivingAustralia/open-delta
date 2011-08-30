@@ -22,6 +22,7 @@ import au.org.ala.delta.editor.DeltaEditor;
 import au.org.ala.delta.editor.directives.ui.ImportExportDialog;
 import au.org.ala.delta.editor.directives.ui.ImportExportStatusDialog;
 import au.org.ala.delta.editor.directives.ui.ImportExportViewModel;
+import au.org.ala.delta.editor.directives.ui.ImportViewModel;
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.slotfile.Directive;
 import au.org.ala.delta.editor.slotfile.directive.ConforDirType;
@@ -44,13 +45,20 @@ public class ImportController implements DirectiveImportHandler  {
 	private ResourceMap _resources;
 	private ActionMap _actions;
 	private ImportContext _context;
+	private DirectiveImportHandler _handler;
+	private volatile boolean _importError;
 	
-	public ImportController(DeltaEditor editor, EditorViewModel model) {
+	public ImportController(DeltaEditor editor, EditorViewModel model, DirectiveImportHandler handler) {
 		_editor = editor;
 		_resources = _editor.getContext().getResourceMap();
 		_actions = _editor.getContext().getActionMap(this);
 		_model = model;
 		_context = new ImportContext(_model);
+		_handler = handler;
+	}
+	
+	public ImportController(DeltaEditor editor, EditorViewModel model) {
+		this(editor, model, null);
 	}
 	
 	public void begin() {
@@ -59,10 +67,10 @@ public class ImportController implements DirectiveImportHandler  {
 			JOptionPane.showMessageDialog(_editor.getMainFrame(), "Imports are only currently supported for new data sets.");
 			return;
 		}
-		_importModel = new ImportExportViewModel();
+		_importModel = new ImportViewModel();
 		File dataSetPath = new File(_model.getDataSetPath());
 		if (dataSetPath.exists()) {
-			_importModel.populateExcludedFromCurrentDirectory();
+			_importModel.populate(_model);
 		}
 		
 		_importDialog = new ImportExportDialog(_editor.getMainFrame(), _importModel, "ImportDialog");
@@ -88,7 +96,7 @@ public class ImportController implements DirectiveImportHandler  {
 		int result = directorySelector.showOpenDialog(_importDialog);
 		if (result == JFileChooser.APPROVE_OPTION) {
 			_importModel.setCurrentDirectory(directorySelector.getSelectedFile());
-			_importModel.populateExcludedFromCurrentDirectory();
+			_importModel.populate(_model);
 			_importDialog.updateUI();
 		}
 	}
@@ -109,11 +117,11 @@ public class ImportController implements DirectiveImportHandler  {
 
 	public void importDirectivesFile(DirectiveFileInfo fileInfo, Reader directivesReader, ImportExportStatus status) {
 		
-		String name = fileInfo.getFileName();
+		String name = fileInfo.getName();
 		
 		DirectiveFile existing =  _model.getDirectiveFile(name);
 		DirectiveFile directiveFile = _model.addDirectiveFile(_model.getDirectiveFileCount()+1, name, fileInfo.getType());
-		
+		directiveFile.setLastModifiedTime(System.currentTimeMillis());
 		DirectiveFileImporter parser = new DirectiveFileImporter(this, directivesOfType(directiveFile.getType()));
 		
 		_context.setDirectiveFile(directiveFile);
@@ -123,9 +131,7 @@ public class ImportController implements DirectiveImportHandler  {
 			parser.parse(directivesReader, _context);
 			
 			if (existing != null) {
-				existing.setDirectives(directiveFile.getDirectives());
-				existing.setLastModifiedTime(directiveFile.getLastModifiedTime());
-				existing.setFlags(directiveFile.getFlags());
+				copyToExistingFile(existing, directiveFile);
 				_model.deleteDirectiveFile(directiveFile);
 			}
 		}
@@ -134,6 +140,12 @@ public class ImportController implements DirectiveImportHandler  {
 			_model.deleteDirectiveFile(directiveFile);
 			e.printStackTrace();
 		}
+	}
+
+	private void copyToExistingFile(DirectiveFile existing, DirectiveFile directiveFile) {
+		existing.setDirectives(directiveFile.getDirectives());
+		existing.setLastModifiedTime(directiveFile.getLastModifiedTime());
+		existing.setFlags(directiveFile.getFlags());
 	}
 	
 	private Directive[] directivesOfType(DirectiveType type) {
@@ -156,23 +168,41 @@ public class ImportController implements DirectiveImportHandler  {
 	}
 	
 	@Override
-	public void preProcess(String data) {}
+	public void preProcess(AbstractDirective<? extends AbstractDeltaContext> directive, String data) {
+		if (_handler != null) {
+			_handler.preProcess(directive, data);
+		}
+	}
 
 	@Override
-	public void postProcess(AbstractDirective<? extends AbstractDeltaContext> directive) { }
+	public void postProcess(AbstractDirective<? extends AbstractDeltaContext> directive) {
+		if (_handler != null) {
+			_handler.postProcess(directive);
+		}
+	}
 
 	@Override
-	public void handleUnrecognizedDirective(ImportContext context, List<String> controlWords) { }
+	public void handleUnrecognizedDirective(ImportContext context, List<String> controlWords) { 
+		if (_handler != null) {
+			_handler.handleUnrecognizedDirective(context, controlWords);
+		}
+	}
 
 	@Override
 	public void handleDirectiveProcessingException(
-			ImportContext context, AbstractDirective<ImportContext> d, Exception ex) {}
+			ImportContext context, AbstractDirective<ImportContext> d, Exception ex) {
+		if (_handler != null) {
+			_handler.handleDirectiveProcessingException(context, d, ex);
+		}
+		_importError = true;
+	}
 	
 	
-	public class DoImportTask extends Task<Void, ImportExportStatus> {
+	public class DoImportTask extends Task<Void, ImportExportStatus> implements DirectiveImportHandler {
 
 		private String _directoryName;
 		private List<DirectiveFileInfo> _files;
+		private ImportExportStatus _status = new ImportExportStatus();
 		
 		public DoImportTask(File directory, List<DirectiveFileInfo> files) {
 			super(_editor);
@@ -187,8 +217,8 @@ public class ImportController implements DirectiveImportHandler  {
 		
 		@Override
 		protected Void doInBackground() throws Exception {
-			ImportExportStatus status = new ImportExportStatus();
-			publish(status);
+			
+			publish(_status);
 						
 			for (DirectiveFileInfo file : _files) {
 				
@@ -196,15 +226,15 @@ public class ImportController implements DirectiveImportHandler  {
 				FileInputStream fileIn = new FileInputStream(toParse);
 				InputStreamReader reader = new InputStreamReader(fileIn, _context.getFileEncoding());
 				
-				importDirectivesFile(file, reader, status);
+				importDirectivesFile(file, reader, _status);
 				
 				// First check if the existing dataset has a directives file with the same name
 				// and same last modified date.  If so, skip it.
-				status.setCurrentFile(file.getFileName());
-				publish(status);
+				_status.setCurrentFile(file.getFileName());
+				publish(_status);
 				
-				status.setTotalLines(status.getTotalLines()+1);
-				publish(status);
+				_status.setTotalLines(_status.getTotalLines()+1);
+				publish(_status);
 			}
 			
 			return null;
@@ -214,7 +244,34 @@ public class ImportController implements DirectiveImportHandler  {
 		protected void failed(Throwable cause) {
 			cause.printStackTrace();
 			super.failed(cause);
-		}	
+		}
+
+
+		@Override
+		public void preProcess(AbstractDirective<? extends AbstractDeltaContext> directive, String data) {
+			_status.setCurrentDirective((String)directive.getName());
+			publish(_status);
+		}
+
+
+		@Override
+		public void postProcess(AbstractDirective<? extends AbstractDeltaContext> directive) {
+			
+		}
+
+
+		@Override
+		public void handleUnrecognizedDirective(ImportContext context, List<String> controlWords) {
+			
+		}
+
+
+		@Override
+		public void handleDirectiveProcessingException(ImportContext context, AbstractDirective<ImportContext> d,
+				Exception ex) {
+			_status.setTotalErrors(_status.getTotalErrors()+1);
+			publish(_status);
+		}
 	}
 	
 	/**

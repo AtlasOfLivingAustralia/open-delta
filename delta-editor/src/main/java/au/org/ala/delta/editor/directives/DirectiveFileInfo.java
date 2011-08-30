@@ -18,7 +18,7 @@ public class DirectiveFileInfo {
 	private String _name;
 	
 	public DirectiveFileInfo(String fileName) {
-		this(fileName, null, null, null);
+		this(fileName, fileName, null, null);
 	}
 	
 	public DirectiveFileInfo(String fileName, DirectiveType type) {
@@ -75,8 +75,41 @@ public class DirectiveFileInfo {
 		_directiveFile = directiveFile;
 	}
 	
+	
+	
 	public String toString() {
-		return _fileName + " (" + _type.getAbbreviation() + ")";
+		StringBuilder result = new StringBuilder(_fileName);
+		if (_type != null) {
+			result.append(" (").append(_type.getAbbreviation()).append(")");
+		}
+		return result.toString();
 	}
+	
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((_fileName == null) ? 0 : _fileName.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		DirectiveFileInfo other = (DirectiveFileInfo) obj;
+		if (_fileName == null) {
+			if (other._fileName != null)
+				return false;
+		} else if (!_fileName.equals(other._fileName))
+			return false;
+		return true;
+	}
+
 	
 }

@@ -1,9 +1,10 @@
 package au.org.ala.delta.editor.directives;
 
+
 /**
  * The status of the current import or export operation. Used as a model for the ImportExportStatusDialog.
  */
-public class ImportExportStatus {
+public class ImportExportStatus  {
 
 	private String heading;
 	private String importDirectory;
@@ -143,6 +144,5 @@ public class ImportExportStatus {
 	public void setTextFromLastShowDirective(String textFromLastShowDirective) {
 		this.textFromLastShowDirective = textFromLastShowDirective;
 	}
-	
 	
 }

@@ -2,7 +2,6 @@ package au.org.ala.delta.editor.directives;
 
 import java.io.File;
 import java.io.PrintStream;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.ActionMap;
@@ -20,10 +19,11 @@ import au.org.ala.delta.directives.AbstractDeltaContext;
 import au.org.ala.delta.directives.AbstractDirective;
 import au.org.ala.delta.directives.DirectiveParserObserver;
 import au.org.ala.delta.editor.DeltaEditor;
+import au.org.ala.delta.editor.directives.ui.ExportViewModel;
 import au.org.ala.delta.editor.directives.ui.ImportExportDialog;
 import au.org.ala.delta.editor.directives.ui.ImportExportStatusDialog;
 import au.org.ala.delta.editor.directives.ui.ImportExportViewModel;
-import au.org.ala.delta.editor.model.EditorDataModel;
+import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.slotfile.Directive;
 import au.org.ala.delta.editor.slotfile.DirectiveInstance;
 import au.org.ala.delta.editor.slotfile.directive.ConforDirType;
@@ -40,7 +40,7 @@ import au.org.ala.delta.model.image.ImageSettings;
  */
 public class ExportController {
 	private DeltaEditor _context;
-	private EditorDataModel _model;
+	private EditorViewModel _model;
 	private ImportExportViewModel _exportModel;
 	private ImportExportDialog _exportDialog;
 	private ResourceMap _resources;
@@ -54,7 +54,8 @@ public class ExportController {
 	}
 
 	public void begin() {
-		_exportModel = getExistingDirectives();
+		_exportModel = new ExportViewModel();
+		_exportModel.populate(_model);
 
 		_exportDialog = new ImportExportDialog(_context.getMainFrame(), _exportModel, "ExportDialog");
 		_exportDialog.setDirectorySelectionAction(_actions.get("changeExportDirectory"));
@@ -69,42 +70,7 @@ public class ExportController {
 		}
 	}
 
-	/**
-	 * Builds the model for the export dialog from the directive files
-	 * currently a part of the model.
-	 * @return a new ImportExportViewModel initialised from the data set.
-	 */
-	private ImportExportViewModel getExistingDirectives() {
-
-		ImportExportViewModel model = new ImportExportViewModel();
-		int directiveFileCount = _model.getDirectiveFileCount();
-
-		List<DirectiveFileInfo> files = new ArrayList<DirectiveFileInfo>(
-				directiveFileCount);
-
-		for (int i = 1; i <= directiveFileCount; i++) {
-			DirectiveFile dirFile = _model.getDirectiveFile(i);
-
-			DirectiveFileInfo info = new DirectiveFileInfo(
-					dirFile.getShortFileName(), dirFile.getType());
-			info.setDirectiveFile(dirFile);
-
-			if (dirFile.isSpecsFile()) {
-				model.setSpecsFile(info);
-			} else if (dirFile.isItemsFile()) {
-				model.setItemsFile(info);
-			} else if (dirFile.isCharsFile()) {
-				model.setCharactersFile(info);
-			} else {
-				files.add(info);
-			}
-		}
-		model.setIncludedDirectivesFiles(files);
-		model.setCurrentDirectory(new File(_model.getDataSetPath()));
-
-		return model;
-	}
-
+	
 	/**
 	 * Exports the supplied directives files into the specified directory.
 	 * @param selectedDirectory the directory to export the files to.
@@ -248,7 +214,7 @@ public class ExportController {
 		}
 
 		@Override
-		public void preProcess(String data) {
+		public void preProcess(AbstractDirective<? extends AbstractDeltaContext> directive, String data) {
 		}
 
 		@Override

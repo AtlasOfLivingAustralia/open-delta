@@ -5,24 +5,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 import au.org.ala.delta.editor.directives.DirectiveFileInfo;
+import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile.DirectiveType;
 
 /**
  * Manages the data displayed in the ImportExportDialog.
  */
-public class ImportExportViewModel {
+public abstract class ImportExportViewModel {
 
 	public static final String DEFAULT_ITEMS_DIRECTIVE_FILE = "items";
 	public static final String DEFAULT_CHARS_DIRECTIVE_FILE = "chars";
 	public static final String DEFAULT_SPECS_DIRECTIVE_FILE = "specs";
 
-	private DirectiveType _selectedDirectiveType = DirectiveType.CONFOR;
-	private File _currentDirectory;
-	private DirectiveFileInfo _specsFile;
-	private DirectiveFileInfo _charactersFile;
-	private DirectiveFileInfo _itemsFile;
-	private List<DirectiveFileInfo> _includedDirectivesFiles;
-	private List<DirectiveFileInfo> _excludedDirectiveFiles;
+	protected DirectiveType _selectedDirectiveType = DirectiveType.CONFOR;
+	protected File _currentDirectory;
+	protected DirectiveFileInfo _specsFile;
+	protected DirectiveFileInfo _charactersFile;
+	protected DirectiveFileInfo _itemsFile;
+	protected List<DirectiveFileInfo> _includedDirectivesFiles;
+	protected List<DirectiveFileInfo> _excludedDirectiveFiles;
 
 	public ImportExportViewModel() {
 		_includedDirectivesFiles = new ArrayList<DirectiveFileInfo>();
@@ -94,29 +95,6 @@ public class ImportExportViewModel {
 	public void setCurrentDirectory(File currentDirectory) {
 		this._currentDirectory = currentDirectory;
 	}
-	
-	public void populateExcludedFromCurrentDirectory() {
-		_includedDirectivesFiles = new ArrayList<DirectiveFileInfo>();
-		_excludedDirectiveFiles = new ArrayList<DirectiveFileInfo>();
-		for (File file : _currentDirectory.listFiles()) {
-			if (!file.isDirectory()) {
-				DirectiveFileInfo fileInfo = new DirectiveFileInfo(file.getName());
-				_excludedDirectiveFiles.add(fileInfo);
-			}
-		}
-		if (_excludedDirectiveFiles.contains(DEFAULT_SPECS_DIRECTIVE_FILE)) {
-			_specsFile = new DirectiveFileInfo(DEFAULT_SPECS_DIRECTIVE_FILE, DirectiveType.CONFOR);
-			_excludedDirectiveFiles.remove(DEFAULT_SPECS_DIRECTIVE_FILE);
-		}
-		if (_excludedDirectiveFiles.contains(DEFAULT_CHARS_DIRECTIVE_FILE)) {
-			_charactersFile = new DirectiveFileInfo(DEFAULT_CHARS_DIRECTIVE_FILE, DirectiveType.CONFOR);
-			_excludedDirectiveFiles.remove(DEFAULT_CHARS_DIRECTIVE_FILE);
-		}
-		if (_excludedDirectiveFiles.contains(DEFAULT_ITEMS_DIRECTIVE_FILE)) {
-			_itemsFile = new DirectiveFileInfo(DEFAULT_ITEMS_DIRECTIVE_FILE, DirectiveType.CONFOR);
-			_excludedDirectiveFiles.remove(DEFAULT_ITEMS_DIRECTIVE_FILE);
-		}
-	}
 
 	public List<DirectiveFileInfo> getSelectedFiles() {
 
@@ -183,4 +161,6 @@ public class ImportExportViewModel {
 	public void setExcludedDirectiveFiles(List<DirectiveFileInfo> excludedDirectiveFiles) {
 		this._excludedDirectiveFiles = excludedDirectiveFiles;
 	}
+	
+	public abstract void populate(EditorViewModel model);
 }

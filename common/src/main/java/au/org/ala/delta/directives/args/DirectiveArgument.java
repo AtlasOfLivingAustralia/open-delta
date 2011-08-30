@@ -23,6 +23,9 @@ public class DirectiveArgument<T> implements Comparable<DirectiveArgument<?>>{
 		this();
 		_id = arg.getId();
 		_comment = arg.getComment();
+		if (_comment == null) {
+			_comment = "";
+		}
 		_value = arg.getValue();
 		for (BigDecimal value : arg.getData()) {
 			_dataVect.add(value);
@@ -58,10 +61,16 @@ public class DirectiveArgument<T> implements Comparable<DirectiveArgument<?>>{
 	}
 	
 	public void setComment(String comment) {
-		_comment = comment;
+		if (_comment == null) {
+			_comment = "";
+		}
+		else {
+			_comment = comment;
+		}
 	}
 	
 	public String getComment() {
+		
 		return _comment;
 	}
 	

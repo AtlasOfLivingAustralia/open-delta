@@ -36,7 +36,6 @@ public class DirectiveFileImporter extends DirectiveParser<ImportContext> {
 	@Override
 	protected void handleDirectiveProcessingException(
 			ImportContext context, AbstractDirective<ImportContext> d, Exception ex) {
-		ex.printStackTrace();
 		_handler.handleDirectiveProcessingException(context, d, ex);
 	}
 	

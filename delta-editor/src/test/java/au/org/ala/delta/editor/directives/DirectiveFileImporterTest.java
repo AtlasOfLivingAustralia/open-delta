@@ -46,7 +46,7 @@ public class DirectiveFileImporterTest extends TestCase {
 	class DirectiveImportHandlerStub implements DirectiveImportHandler {
 
 		@Override
-		public void preProcess(String data) {
+		public void preProcess(AbstractDirective<? extends AbstractDeltaContext> directive, String data) {
 			System.out.println("preProcess"+data);
 			
 		}
