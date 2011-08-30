@@ -13,7 +13,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 
-import org.apache.commons.lang.StringUtils;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 
@@ -21,7 +20,6 @@ import au.org.ala.delta.ui.codeeditor.action.FindKeyAction;
 import au.org.ala.delta.ui.codeeditor.action.GotoLineKeyAction;
 import au.org.ala.delta.ui.codeeditor.action.ToggleLineNumbersAction;
 import au.org.ala.delta.ui.codeeditor.action.ToggleShowWhitespaceAction;
-import au.org.ala.delta.ui.util.IconHelper;
 
 public class CodeEditor extends JPanel {
 	
@@ -50,10 +48,10 @@ public class CodeEditor extends JPanel {
 		_editor = new CodeTextArea(mimeType);
 		_toolbar = new JToolBar();
 		
-		_toolbar.add(toggleAction(new ToggleShowWhitespaceAction(_editor), "show_whitespace", false));
-		_toolbar.add(toggleAction(new ToggleLineNumbersAction(_editor), "show_linenumbers", true));
-		_toolbar.add(toolbarAction(new FindKeyAction(_editor), "editor_find"));
-		_toolbar.add(toolbarAction(new GotoLineKeyAction(_editor), "editor_gotoline"));
+		addToggleToolbarButton(new ToggleShowWhitespaceAction(_editor), "show_whitespace", false);
+		addToggleToolbarButton(new ToggleLineNumbersAction(_editor), "show_linenumbers", true);
+		addToolbarButton(new FindKeyAction(_editor), "editor_find");
+		addToolbarButton(new GotoLineKeyAction(_editor), "editor_gotoline");
 		
 		_editor.addCaretPositionListener(new CaretPositionListener() {
             public void positionUpdate(CaretPositionEvent evt) {
@@ -66,31 +64,45 @@ public class CodeEditor extends JPanel {
 		add(_status, BorderLayout.SOUTH);
 	}
 	
-	private JButton toolbarAction(Action action, String name) {
+	/**
+	 * Allows a client of the CodeEditor to add custom functions to the
+	 * toolbar (for example, "save").
+	 * @param action the action that will occur when the button is pressed.
+	 * @param name the name to use when configuring the button properties
+	 * from the resource bundle.
+	 */	
+	public JButton addToolbarButton(Action action, String name) {
 		JButton btn = new JButton(action);
 		decorateToolbarButton(btn, action, name);
+		_toolbar.add(btn);
 		return btn;
 	}
 	
-	private JToggleButton toggleAction(Action action, String name, boolean selected) {
-		
+	/**
+	 * Allows a client of the CodeEditor to add custom functions to the
+	 * toolbar (for example, "save"). This function adds a toggle button
+	 * @param action the action that will occur when the button is pressed.
+	 * @param name the name to use when configuring the button properties
+	 * from the resource bundle.
+	 */	
+	public JToggleButton addToggleToolbarButton(Action action, String name, boolean initiallySelected) {
 		JToggleButton btn = new JToggleButton(action);
 		decorateToolbarButton(btn, action, name);
-		if (selected) {
-			btn.setSelected(selected);
-		}
+		btn.setSelected(initiallySelected);		
+		_toolbar.add(btn);
 		return btn;
 	}
-	
+					
 	private void decorateToolbarButton(AbstractButton button, Action action, String name) {
 		
 		String keyPrefix = name + ".Action.";
-		String iconName = _resources.getString(keyPrefix+"icon");
 		
-		if (!StringUtils.isEmpty(iconName)) {
-			ImageIcon icon = IconHelper.createImageIcon(iconName);
+		String iconKey = keyPrefix + "icon";
+		if (_resources.keySet().contains(keyPrefix+"icon")) {
+			ImageIcon icon = _resources.getImageIcon(iconKey);
 			action.putValue(Action.SMALL_ICON, icon);
 		}
+		
 		action.putValue(Action.SHORT_DESCRIPTION, _resources.getString(keyPrefix+"shortDescription"));
 		button.setAction(action);
 		button.setFocusable(false);
@@ -107,17 +119,6 @@ public class CodeEditor extends JPanel {
 
 	public void setText(String text) {
 		_editor.setText(text);
-	}
-	
-	/**
-	 * Allows a client of the CodeEditor to add custom functions to the
-	 * toolbar (for example, "save").
-	 * @param action the action that will occur when the button is pressed.
-	 * @param name the name to use when configuring the button properties
-	 * from the resource bundle.
-	 */
-	public void addToolbarButton(Action action, String name) {
-		_toolbar.add(toolbarAction(action, name));
 	}
 
 }
