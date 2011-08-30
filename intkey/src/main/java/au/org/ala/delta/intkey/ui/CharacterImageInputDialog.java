@@ -14,7 +14,10 @@ import au.org.ala.delta.model.IntegerCharacter;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.RealCharacter;
 import au.org.ala.delta.model.image.Image;
+import au.org.ala.delta.model.image.ImageOverlay;
 import au.org.ala.delta.model.image.ImageSettings;
+import au.org.ala.delta.model.image.OverlayType;
+import au.org.ala.delta.ui.image.SelectableOverlay;
 
 /**
  * Used to Display images for a single character
@@ -61,7 +64,7 @@ public class CharacterImageInputDialog extends ImageDialog {
     private void init(Character character) {
         ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(CharacterImageInputDialog.class);
         resourceMap.injectFields(this);
-        
+
         _character = character;
         getContentPane().setLayout(new BorderLayout(0, 0));
 
@@ -85,6 +88,16 @@ public class CharacterImageInputDialog extends ImageDialog {
 
     private void buildMenu() {
         // add character specific stuff here
+    }
+
+    @Override
+    public void overlaySelected(SelectableOverlay overlay) {
+        ImageOverlay imageOverlay = overlay.getImageOverlay();
+        if (imageOverlay.isType(OverlayType.OLNOTES)) {
+            displayRTFWindow(_character.getNotes(), "Notes");
+        } else {
+            super.overlaySelected(overlay);
+        }
     }
 
 }

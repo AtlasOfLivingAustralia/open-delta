@@ -58,11 +58,11 @@ public class TaxonImageDialog extends ImageDialog {
         ActionMap actionMap = Application.getInstance().getContext().getActionMap(TaxonImageDialog.class, this);
 
         _mnuItNextTaxon = new JMenuItem();
-        _mnuItNextTaxon.setAction(actionMap.get("nextTaxon"));
+        _mnuItNextTaxon.setAction(actionMap.get("viewNextTaxon"));
         _mnuControl.add(_mnuItNextTaxon);
 
         _mnuItPreviousTaxon = new JMenuItem();
-        _mnuItPreviousTaxon.setAction(actionMap.get("previousTaxon"));
+        _mnuItPreviousTaxon.setAction(actionMap.get("viewPreviousTaxon"));
         _mnuControl.add(_mnuItPreviousTaxon);
 
         _mnuControl.addSeparator();

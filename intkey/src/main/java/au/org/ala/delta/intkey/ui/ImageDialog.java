@@ -45,6 +45,7 @@ import au.org.ala.delta.ui.image.OverlaySelectionObserver;
 import au.org.ala.delta.ui.image.SelectableOverlay;
 import au.org.ala.delta.ui.image.overlay.HotSpotGroup;
 import au.org.ala.delta.ui.image.overlay.SelectableTextOverlay;
+import au.org.ala.delta.ui.rtf.SimpleRtfEditorKit;
 import au.org.ala.delta.util.Pair;
 
 public class ImageDialog extends JDialog implements OverlaySelectionObserver {
@@ -262,10 +263,9 @@ public class ImageDialog extends JDialog implements OverlaySelectionObserver {
         } else if (imageOverlay.isType(OverlayType.OLCANCEL)) {
             _okButtonPressed = false;
             this.setVisible(false);
-        } else if (imageOverlay.isType(OverlayType.OLNOTES)) {
-            // showCharacterNotes();
         } else if (imageOverlay.isType(OverlayType.OLIMAGENOTES)) {
-            // showImageNotes();
+            Image image = _multipleImageViewer.getVisibleViewer().getViewedImage();
+            displayRTFWindow(image.getNotes(), "Image Notes");
         } else if (imageOverlay.isType(OverlayType.OLSTATE)) {
             int stateId = imageOverlay.stateId;
             if (overlay.isSelected()) {
@@ -388,6 +388,7 @@ public class ImageDialog extends JDialog implements OverlaySelectionObserver {
         ImageViewer visibleViewer = _multipleImageViewer.getVisibleViewer();
         AboutImageDialog dlg = new AboutImageDialog(this, visibleViewer.getViewedImage().getSubjectTextOrFileName(), visibleViewer.getImageFileLocation(), visibleViewer.getImage(),
                 visibleViewer.getImageFormatName());
+        dlg.pack();
         dlg.setVisible(true);
     }
 
@@ -402,6 +403,11 @@ public class ImageDialog extends JDialog implements OverlaySelectionObserver {
 
         fitToImage();
         replaySound();
+    }
+    
+    protected void displayRTFWindow(String rtfContent, String title) {
+        RtfReportDisplayDialog dlg = new RtfReportDisplayDialog(this, new SimpleRtfEditorKit(), rtfContent, title);
+        ((SingleFrameApplication) Application.getInstance()).show(dlg);
     }
 
     private void reSelectStatesInNewViewer(ImageViewer viewer) {
