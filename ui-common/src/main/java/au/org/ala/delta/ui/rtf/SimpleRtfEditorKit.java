@@ -28,7 +28,7 @@ public class SimpleRtfEditorKit extends StyledEditorKit {
 	/**
 	 * @return "text/rtf"
 	 */
-	public String getContentType() {
+	public String getContentType() {		
 		return "text/rtf";
 	}
 	
@@ -36,18 +36,17 @@ public class SimpleRtfEditorKit extends StyledEditorKit {
 	public void read(InputStream in, Document doc, int pos) throws IOException, BadLocationException {
 		// TODO here in theory we should read the RTF header to determine the encoding then 
 		// create the appropriate reader.  
-		parseRtf(new InputStreamReader(in), doc);
+		parseRtf(new InputStreamReader(in), doc, pos);
 	}
 
 	@Override
 	public void read(Reader in, Document doc, int pos) throws IOException, BadLocationException {
-		// In this case it is up to the consumer to be using the correct character encoding.
-		
-		parseRtf(in, doc);
+		// In this case it is up to the consumer to be using the correct character encoding.		
+		parseRtf(in, doc, pos);
 	}
 	
-	private void parseRtf(Reader in, Document doc) throws IOException {
-		RTFHandler handler = new DocumentBuildingRtfHandler((DefaultStyledDocument)doc);
+	private void parseRtf(Reader in, Document doc, int position) throws IOException {
+		RTFHandler handler = new DocumentBuildingRtfHandler((DefaultStyledDocument)doc, position);
 		RTFReader reader = new RTFReader(in, handler);
 		reader.parse();
 	}
@@ -62,7 +61,13 @@ public class SimpleRtfEditorKit extends StyledEditorKit {
 	@Override
 	public void write(Writer out, Document doc, int pos, int len) throws IOException, BadLocationException {
 		if (doc instanceof StyledDocument) {
-			new RTFWriter(out, (StyledDocument)doc).write();
+			StyledDocument styledDoc = (StyledDocument) doc;
+			RTFWriter writer = new RTFWriter(out, styledDoc); 
+			if (len == styledDoc.getLength() || len == 0) {
+				writer.write();
+			} else {
+				writer.writeFragment(pos, len);
+			}
 		}
 		else {
 			super.write(out, doc, pos, len);
