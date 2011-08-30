@@ -54,8 +54,8 @@ public class RTFWriter {
 		_attributeHandlers.put(StyleConstants.Underline, new BooleanAttributeHandler(StyleConstants.Underline, CharacterAttributeType.Underline.keyword()));
 		_attributeHandlers.put(StyleConstants.Subscript, new BooleanAttributeHandler(StyleConstants.Subscript, CharacterAttributeType.Subscript.keyword()));
 		_attributeHandlers.put(StyleConstants.Superscript, new BooleanAttributeHandler(StyleConstants.Superscript, CharacterAttributeType.Superscript.keyword()));
-		_attributeHandlers.put(StyleConstants.FontSize, new FontSizeAttributeHandler(StyleConstants.FontSize, CharacterAttributeType.FontSize.keyword(), 11));
-		_attributeHandlers.put(StyleConstants.FontFamily, new FontFamilyAttributeHandler(StyleConstants.FontFamily, CharacterAttributeType.Font.keyword()));
+//		_attributeHandlers.put(StyleConstants.FontSize, new FontSizeAttributeHandler(StyleConstants.FontSize, CharacterAttributeType.FontSize.keyword(), 11));
+//		_attributeHandlers.put(StyleConstants.FontFamily, new FontFamilyAttributeHandler(StyleConstants.FontFamily, CharacterAttributeType.Font.keyword()));
 	}
 
 	/**
