@@ -50,9 +50,9 @@ public class DocumentBuildingRtfHandler extends RTFHandlerAdapter {
 
 	private List<Color> _colors = new ArrayList<Color>();
 
-	private static Color _defaultColor = Color.BLACK;
+	private Color _defaultColor = Color.BLACK;
 	
-	private static JComponent _owner;
+	private JComponent _owner;
 
 	/**
 	 * Set by the "deffN" keyword
@@ -77,6 +77,9 @@ public class DocumentBuildingRtfHandler extends RTFHandlerAdapter {
 		_textBuffer = new StringBuilder();
 		_position = position;
 		_owner = owner;
+		if (_owner != null) {
+		    _defaultColor = _owner.getForeground();
+		}
 	}
 	
 
