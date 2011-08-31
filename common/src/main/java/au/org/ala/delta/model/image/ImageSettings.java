@@ -2,8 +2,8 @@ package au.org.ala.delta.model.image;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Toolkit;
 import java.util.ArrayList;
-
 
 import au.org.ala.delta.model.ResourceSettings;
 import au.org.ala.delta.model.image.OverlayLocation.OLDrawType;
@@ -27,10 +27,9 @@ public class ImageSettings extends ResourceSettings {
         }
 
     };
-    
+
     private static final ButtonAlignment DEFAULT_BUTTON_ALIGNMENT = ButtonAlignment.NO_ALIGN;
-    
-    
+
     public static class FontInfo {
 
         public FontInfo() {
@@ -69,7 +68,7 @@ public class ImageSettings extends ResourceSettings {
     private boolean _useCustomPopupColour;
     private Color _customPopupColour;
     private ButtonAlignment _buttonAlignment;
-    
+
     public ImageSettings() {
         _dataSetPath = null;
         _resourcePaths = new ArrayList<String>();
@@ -133,76 +132,76 @@ public class ImageSettings extends ResourceSettings {
             count++;
         }
         return count;
-    } 
-    
+    }
+
     public boolean getCentreInBox() {
-		return _centreInBox;
-	}
+        return _centreInBox;
+    }
 
-	public void setCentreInBox(boolean centreInBox) {
-		_centreInBox = centreInBox;
-	}
+    public void setCentreInBox(boolean centreInBox) {
+        _centreInBox = centreInBox;
+    }
 
-	public boolean getIncludeComments() {
-		return _includeComments;
-	}
+    public boolean getIncludeComments() {
+        return _includeComments;
+    }
 
-	public void setIncludeComments(boolean includeComments) {
-		_includeComments = includeComments;
-	}
+    public void setIncludeComments(boolean includeComments) {
+        _includeComments = includeComments;
+    }
 
-	public boolean getOmitDescription() {
-		return _omitDescription;
-	}
+    public boolean getOmitDescription() {
+        return _omitDescription;
+    }
 
-	public void setOmitDescription(boolean omitDescription) {
-		_omitDescription = omitDescription;
-	}
+    public void setOmitDescription(boolean omitDescription) {
+        _omitDescription = omitDescription;
+    }
 
-	public boolean getUseIntegralHeight() {
-		return _useIntegralHeight;
-	}
+    public boolean getUseIntegralHeight() {
+        return _useIntegralHeight;
+    }
 
-	public void setUseIntegralHeight(boolean useIntegralHeight) {
-		_useIntegralHeight = useIntegralHeight;
-	}
+    public void setUseIntegralHeight(boolean useIntegralHeight) {
+        _useIntegralHeight = useIntegralHeight;
+    }
 
-	public boolean getHotspotsPopup() {
-		return _hotspotsPopup;
-	}
+    public boolean getHotspotsPopup() {
+        return _hotspotsPopup;
+    }
 
-	public void setHotspotsPopup(boolean hotspotsPopup) {
-		_hotspotsPopup = hotspotsPopup;
-	}
+    public void setHotspotsPopup(boolean hotspotsPopup) {
+        _hotspotsPopup = hotspotsPopup;
+    }
 
-	public boolean getUseCustomPopupColour() {
-		return _useCustomPopupColour;
-	}
+    public boolean getUseCustomPopupColour() {
+        return _useCustomPopupColour;
+    }
 
-	public void setUseCustomPopupColour(boolean useCustomPopupColour) {
-		_useCustomPopupColour = useCustomPopupColour;
-	}
+    public void setUseCustomPopupColour(boolean useCustomPopupColour) {
+        _useCustomPopupColour = useCustomPopupColour;
+    }
 
-	public Color getCustomPopupColour() {
-		return _customPopupColour;
-	}
+    public Color getCustomPopupColour() {
+        return _customPopupColour;
+    }
 
-	public void setCustomPopupColour(Color customPopupColour) {
-	    _customPopupColour = customPopupColour;
-	}
-	
-	public ButtonAlignment getButtonAlignment() {
-		if (_buttonAlignment == null) {
-			return DEFAULT_BUTTON_ALIGNMENT;
-		}
-		return _buttonAlignment;
-	}
-	
-	public void setButtonAlignment(ButtonAlignment buttonAlignment) {
-		_buttonAlignment = buttonAlignment;
-	}
+    public void setCustomPopupColour(Color customPopupColour) {
+        _customPopupColour = customPopupColour;
+    }
 
-	public FontInfo getFont(OverlayFontType type) {
+    public ButtonAlignment getButtonAlignment() {
+        if (_buttonAlignment == null) {
+            return DEFAULT_BUTTON_ALIGNMENT;
+        }
+        return _buttonAlignment;
+    }
+
+    public void setButtonAlignment(ButtonAlignment buttonAlignment) {
+        _buttonAlignment = buttonAlignment;
+    }
+
+    public FontInfo getFont(OverlayFontType type) {
         switch (type) {
         case OF_DEFAULT:
             return _defaultFontInfo;
@@ -214,52 +213,83 @@ public class ImageSettings extends ResourceSettings {
         throw new IllegalArgumentException("Unsupported font type: " + type);
     }
 
-	public void setDefaultFont(Font font) {
-		FontInfo fontInfo = getDefaultFontInfo();
-		fontToFontInfo(font, fontInfo);
-	}
-	
-	public void setDefaultFont(Font font, String comment) {
-		setFont(font, comment, getDefaultFontInfo());
-	}
-	
-	public void setDefaultFeatureFont(Font font) {
-		FontInfo fontInfo = getDefaultFeatureFontInfo();
-		fontToFontInfo(font, fontInfo);
-	}
-	
-	public void setDefaultFeatureFont(Font font, String comment) {
-		setFont(font, comment, getDefaultFeatureFontInfo());
-	}
-	
-	public void setDefaultButtonFont(Font font) {
-		FontInfo fontInfo = getDefaultButtonFontInfo();
-		fontToFontInfo(font, fontInfo);
-	}
-	
-	public void setDefaultButtonFont(Font font, String comment) {
-		setFont(font, comment, getDefaultButtonFontInfo());
-	}
-	
-	private void setFont(Font font, String comment, FontInfo fontInfo) {
-		fontToFontInfo(font, fontInfo);
-		fontInfo.comment = comment;
-	}
-	
-	private void fontToFontInfo(Font font, FontInfo fontInfo) {
-		fontInfo.name = font.getFamily();
-		fontInfo.size = font.getSize();
-		fontInfo.italic = font.isItalic();
-		fontInfo.weight = font.isBold() ? 7 : 4;
-	}
-	
+    public void setDefaultFont(Font font) {
+        FontInfo fontInfo = getDefaultFontInfo();
+        fontToFontInfo(font, fontInfo);
+    }
+
+    public void setDefaultFont(Font font, String comment) {
+        setFont(font, comment, getDefaultFontInfo());
+    }
+
+    public void setDefaultFeatureFont(Font font) {
+        FontInfo fontInfo = getDefaultFeatureFontInfo();
+        fontToFontInfo(font, fontInfo);
+    }
+
+    public void setDefaultFeatureFont(Font font, String comment) {
+        setFont(font, comment, getDefaultFeatureFontInfo());
+    }
+
+    public void setDefaultButtonFont(Font font) {
+        FontInfo fontInfo = getDefaultButtonFontInfo();
+        fontToFontInfo(font, fontInfo);
+    }
+
+    public void setDefaultButtonFont(Font font, String comment) {
+        setFont(font, comment, getDefaultButtonFontInfo());
+    }
+
+    private void setFont(Font font, String comment, FontInfo fontInfo) {
+        fontToFontInfo(font, fontInfo);
+        fontInfo.comment = comment;
+    }
+
+    private void fontToFontInfo(Font font, FontInfo fontInfo) {
+        fontInfo.name = font.getFamily();
+        fontInfo.size = font.getSize();
+        fontInfo.italic = font.isItalic();
+        fontInfo.weight = font.isBold() ? 7 : 4;
+    }
+
     private Font fontInfoToFont(FontInfo info) {
         if (info.size == 0) {
             return null;
         }
         int style = info.italic ? Font.ITALIC : 0;
         style = style | (info.weight >= 5 ? Font.BOLD : 0);
-        return new Font(info.name, style, Math.abs(info.size));
+
+        /**
+         * Need to adjust the font size as Java 2D assumes 72 dpi. From the Java
+         * 2D FAQ:
+         * 
+         * Q: Why does (eg) a 10 pt font in Java applications appear to have a
+         * different size from the same font at 10pt in a native application?
+         * 
+         * A: Conversion from the size in points into device pixels depends on
+         * device resolution as reported by the platform APIs. Java 2D defaults
+         * to assuming 72 dpi. Platform defaults vary. Mac OS also uses 72 dpi.
+         * Linux desktops based on GTK (Gnome) or Qt (KDE) typically default to
+         * 96 dpi and let the end-user customise what they want to use. Windows
+         * defaults to 96 dpi (VGA resolution) and also offers 120 dpi (large
+         * fonts size) and lets users further specify a custom resolution. So a
+         * couple of things can now be seen
+         * 
+         * The DPI reported by platform APIs likely has no correspondence to the
+         * true DPI of the display device Its unlikely that Java 2D's default
+         * matches the platform default. So a typical results is that for
+         * Window's default 96 DPI that a 10 pt font in a Java application is
+         * 72/96 of the size of the native counterpart.
+         * 
+         * Note that Swing's Windows and GTK L&Fs do scale fonts based on the
+         * system DPI to match the desktop. If you want to do the same in your
+         * application you can call java.awt.Toolkit.getScreenResolution() and
+         * use this to apply a simple scale to the size you specify for fonts.
+         */
+        int screenRes = Toolkit.getDefaultToolkit().getScreenResolution();
+        int fontSize = (int) Math.round(Math.abs(info.size) * screenRes / 72.0);
+
+        return new Font(info.name, style, fontSize);
     }
 
     public void configureHotSpotDefaults(OverlayLocation location) {
