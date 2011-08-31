@@ -315,7 +315,7 @@ public class UseDirectiveTest extends IntkeyDatasetTestCase {
         boolean exceptionThrown = false;
         try {
             new UseDirective().parseAndProcess(context, "666,1");
-        } catch (IntkeyDirectiveParseException ex) {
+        } catch (IllegalArgumentException ex) {
             exceptionThrown = true;
         }
 
