@@ -75,6 +75,8 @@ public class DeltaContext extends AbstractDeltaContext {
 	private Map<Integer, String> _itemHeadings = new HashMap<Integer, String>();
 	private Map<Integer, String> _itemSubHeadings = new HashMap<Integer, String>();
 	private Map<Integer, String> _indexHeadings = new HashMap<Integer, String>();
+	private Map<Integer, String> _characterHeadings = new HashMap<Integer, String>();
+	
 	private Map<Integer, TypeSettingMark> _typeSettingMarks = new HashMap<Integer, TypeSettingMark>();
 	private Map<Integer, TypeSettingMark> _formattingMarks = new HashMap<Integer, TypeSettingMark>();
 	private Map<String, String> _taxonLinks = new HashMap<String, String>();
@@ -449,6 +451,14 @@ public class DeltaContext extends AbstractDeltaContext {
 	 */
 	public String getItemSubheading(int characterNumber) {
 		return _itemSubHeadings.get(characterNumber);
+	}
+	
+	public void addCharacterHeading(int characterNumber, String heading) {
+		_characterHeadings.put(characterNumber, heading);
+	}
+	
+	public String getCharacterHeading(int characterNumber) {
+		return _characterHeadings.get(characterNumber);
 	}
 	
 	

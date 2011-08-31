@@ -46,7 +46,6 @@ public class ImportController implements DirectiveImportHandler  {
 	private ActionMap _actions;
 	private ImportContext _context;
 	private DirectiveImportHandler _handler;
-	private volatile boolean _importError;
 	
 	public ImportController(DeltaEditor editor, EditorViewModel model, DirectiveImportHandler handler) {
 		_editor = editor;
@@ -115,23 +114,28 @@ public class ImportController implements DirectiveImportHandler  {
 		new DoImportTask(selectedDirectory, files).execute();
 	}
 
-	public void importDirectivesFile(DirectiveFileInfo fileInfo, Reader directivesReader, ImportExportStatus status) {
+	public boolean importDirectivesFile(DirectiveFileInfo fileInfo, Reader directivesReader, ImportExportStatus status) {
 		
 		String name = fileInfo.getName();
 		
 		DirectiveFile existing =  _model.getDirectiveFile(name);
 		DirectiveFile directiveFile = _model.addDirectiveFile(_model.getDirectiveFileCount()+1, name, fileInfo.getType());
 		directiveFile.setLastModifiedTime(System.currentTimeMillis());
-		DirectiveFileImporter parser = new DirectiveFileImporter(this, directivesOfType(directiveFile.getType()));
+		DirectiveFileImporter importer = new DirectiveFileImporter(this, directivesOfType(directiveFile.getType()));
 		
 		_context.setDirectiveFile(directiveFile);
 		
 		// Looks like we skip the specs file if we have non zero items or chars.....
 		try {
-			parser.parse(directivesReader, _context);
+			importer.parse(directivesReader, _context);
 			
-			if (existing != null) {
-				copyToExistingFile(existing, directiveFile);
+			if (importer.success()) {
+				if (existing != null) {
+					copyToExistingFile(existing, directiveFile);
+					_model.deleteDirectiveFile(directiveFile);
+				}
+			}
+			else {
 				_model.deleteDirectiveFile(directiveFile);
 			}
 		}
@@ -140,6 +144,7 @@ public class ImportController implements DirectiveImportHandler  {
 			_model.deleteDirectiveFile(directiveFile);
 			e.printStackTrace();
 		}
+		return importer.success();
 	}
 
 	private void copyToExistingFile(DirectiveFile existing, DirectiveFile directiveFile) {
@@ -194,7 +199,6 @@ public class ImportController implements DirectiveImportHandler  {
 		if (_handler != null) {
 			_handler.handleDirectiveProcessingException(context, d, ex);
 		}
-		_importError = true;
 	}
 	
 	

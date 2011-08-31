@@ -19,10 +19,12 @@ public class DirectiveFileImporter extends DirectiveParser<ImportContext> {
 
 	private DirectiveImportHandler _handler;
 	private Directive[] _directives; 
+	private boolean _importFailed;
 	
 	public DirectiveFileImporter(DirectiveImportHandler handler, Directive[] directives) {
 		_handler = handler;
 		_directives = directives;
+		_importFailed = true;
 		registerDirectives(directives);
 		registerObserver(handler);
 	}
@@ -30,12 +32,14 @@ public class DirectiveFileImporter extends DirectiveParser<ImportContext> {
 	
 	@Override
 	protected void handleUnrecognizedDirective(ImportContext context, List<String> controlWords) {
+		_importFailed = true;
 		_handler.handleUnrecognizedDirective(context, controlWords);
 	}
 
 	@Override
 	protected void handleDirectiveProcessingException(
 			ImportContext context, AbstractDirective<ImportContext> d, Exception ex) {
+		_importFailed = true;
 		_handler.handleDirectiveProcessingException(context, d, ex);
 	}
 	
@@ -115,5 +119,9 @@ public class DirectiveFileImporter extends DirectiveParser<ImportContext> {
 			}
 		}
 		throw new RuntimeException("Cannot find a directive matching: "+Arrays.asList(directiveName));
+	}
+	
+	public boolean success() {
+		return !_importFailed;
 	}
 }

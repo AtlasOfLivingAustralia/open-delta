@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.io.StringReader;
+import java.text.ParseException;
+import java.util.List;
 
 import javax.swing.ActionMap;
 import javax.swing.JInternalFrame;
@@ -13,10 +15,13 @@ import javax.swing.event.DocumentListener;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 
+import au.org.ala.delta.directives.AbstractDirective;
 import au.org.ala.delta.editor.DeltaEditor;
 import au.org.ala.delta.editor.DeltaView;
 import au.org.ala.delta.editor.directives.DirectiveFileInfo;
+import au.org.ala.delta.editor.directives.DirectiveImportHandlerAdapter;
 import au.org.ala.delta.editor.directives.ExportController;
+import au.org.ala.delta.editor.directives.ImportContext;
 import au.org.ala.delta.editor.directives.ImportController;
 import au.org.ala.delta.editor.directives.ImportExportStatus;
 import au.org.ala.delta.editor.model.EditorViewModel;
@@ -125,15 +130,17 @@ public class DirectiveFileEditor extends JInternalFrame implements ValidationLis
 
 	@Action
 	public void applyChanges() {
-		ImportController controller = new ImportController((DeltaEditor) Application.getInstance(), _model);
+		ImportController controller = new ImportController(
+				(DeltaEditor) Application.getInstance(), _model, new ImportErrorHandler());
 	
 		String text = directivesEditor.getTextArea().getText();
 		ImportExportStatus status = new ImportExportStatus();
 		DirectiveFile file = _model.getSelectedDirectiveFile();
 		DirectiveFileInfo fileInfo = new DirectiveFileInfo(file);
-		controller.importDirectivesFile(fileInfo, new StringReader(text), status);
-		
-		updateGUI();
+		boolean success = controller.importDirectivesFile(fileInfo, new StringReader(text), status);
+		if (success) {
+			updateGUI();
+		}
 	}
 	
 	@Override
@@ -160,6 +167,31 @@ public class DirectiveFileEditor extends JInternalFrame implements ValidationLis
 	@Override
 	public void validationFailed(ValidationResult results) {
 
+	}
+	
+	private void highlightError(int charNumber) {
+		directivesEditor.getTextArea().select(charNumber, charNumber+1);
+	}
+	
+	class ImportErrorHandler extends DirectiveImportHandlerAdapter {
+
+		@Override
+		public void handleUnrecognizedDirective(ImportContext context, List<String> controlWords) {
+			
+		}
+
+		@Override
+		public void handleDirectiveProcessingException(ImportContext context, AbstractDirective<ImportContext> d,
+				Exception ex) {
+			handleException(ex);
+		}
+		
+		private void handleException(Exception ex) {
+			if (ex instanceof ParseException) {
+				highlightError(((ParseException)ex).getErrorOffset());
+			}
+		}
+		
 	}
 
 }
