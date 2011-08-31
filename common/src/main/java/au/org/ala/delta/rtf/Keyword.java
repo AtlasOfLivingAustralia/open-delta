@@ -47,6 +47,8 @@ public abstract class Keyword {
         registerKeyword(new DestinationKeyword("colortbl", DestinationState.Header));
         registerKeyword(new DestinationKeyword("info", DestinationState.Header));
         registerKeyword(new DestinationKeyword("stylesheet", DestinationState.Header));
+        
+        registerKeyword(new DestinationKeyword("*", DestinationState.Skip));
 
         // Special keywords
         registerKeyword(new UnicodeKeyword("u"));

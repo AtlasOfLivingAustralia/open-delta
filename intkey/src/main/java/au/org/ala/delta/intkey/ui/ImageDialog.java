@@ -406,7 +406,7 @@ public class ImageDialog extends JDialog implements OverlaySelectionObserver {
     }
     
     protected void displayRTFWindow(String rtfContent, String title) {
-        RtfReportDisplayDialog dlg = new RtfReportDisplayDialog(this, new SimpleRtfEditorKit(), rtfContent, title);
+        RtfReportDisplayDialog dlg = new RtfReportDisplayDialog(this, new SimpleRtfEditorKit(null), rtfContent, title);
         ((SingleFrameApplication) Application.getInstance()).show(dlg);
     }
 

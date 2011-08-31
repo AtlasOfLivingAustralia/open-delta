@@ -74,6 +74,7 @@ public class AttributeEditor extends JPanel implements ValidationListener, Prefe
 	private JTable _characterDetailsTable;
 	private JToggleButton advanceItem;
 	private JToggleButton advanceCharacter;
+	private JToggleButton advanceNone;
 	
 	private boolean _valid = true;
 
@@ -149,20 +150,27 @@ public class AttributeEditor extends JPanel implements ValidationListener, Prefe
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if (noModifiersOrShift(e.getModifiers()) && e.getKeyCode() == KeyEvent.VK_ENTER) {
-					e.consume();
+					
 					InputVerifier validator = _textPane.getInputVerifier();
 					if (validator != null) {
 						if (!validator.verify(_textPane)) {
+							e.consume();
 							return;
 						}
 					}
 					if (commitChanges()) {
-						if (e.getModifiers() == 0) {
-							// Notify the host of this control to advance to either the next item or character...
-							fireAdvance();	
-						}
-						else {
-							fireReverse();
+						
+						if (EditorPreferences.getEditorAdvanceMode() == EditorAdvanceMode.None) {
+							// Let the enter go through to the text editor
+						} else {		
+							e.consume();
+							if (e.getModifiers() == 0) {
+								// Notify the host of this control to advance to either the next item or character...
+								fireAdvance();	
+							}
+							else {
+								fireReverse();
+							}
 						}
 					}
 				}
@@ -218,20 +226,34 @@ public class AttributeEditor extends JPanel implements ValidationListener, Prefe
 		advanceCharacter = new JToggleButton();
 	    advanceCharacter.setAction(actions.get("advanceCharacter"));
 		advanceCharacter.setFocusable(false);
+		
+		advanceNone = new JToggleButton();
+		advanceNone.setAction(actions.get("advanceNone"));
+		advanceNone.setFocusable(false);
+		
+		
+		
 		ButtonGroup buttons = new ButtonGroup();
 		buttons.add(advanceItem);
 		buttons.add(advanceCharacter);
+		buttons.add(advanceNone);
 		
+		EditorAdvanceMode mode = EditorPreferences.getEditorAdvanceMode();
+		switch (mode) {
+			case Character:
+				advanceCharacter.setSelected(true);
+				break;
+			case Item:
+				advanceItem.setSelected(true);
+				break;
+			default:
+				advanceNone.setSelected(true);
+		}
 		
-		if (EditorPreferences.getEditorAdvanceMode().equals(EditorAdvanceMode.Item)) {
-			advanceItem.setSelected(true);
-		}
-		else {
-			advanceCharacter.setSelected(true);
-		}
 		toolbar.addSeparator();
 		toolbar.add(advanceItem);
 		toolbar.add(advanceCharacter);
+		toolbar.add(advanceNone);
 	}
 	
 
@@ -268,12 +290,18 @@ public class AttributeEditor extends JPanel implements ValidationListener, Prefe
 	@Override
 	public void preferenceChange(PreferenceChangeEvent evt) {
 		if (EditorPreferences.ADVANCE_MODE_KEY.equals(evt.getKey())) {
-			if (EditorAdvanceMode.Character.equals(EditorPreferences.getEditorAdvanceMode())) {
-				advanceCharacter.setSelected(true);
-			}
-			else {
-				advanceItem.setSelected(true);
-			}
+			
+			EditorAdvanceMode mode = EditorPreferences.getEditorAdvanceMode();
+			switch (mode) {
+				case Character:
+					advanceCharacter.setSelected(true);
+					break;
+				case Item:
+					advanceItem.setSelected(true);
+					break;
+				default:
+					advanceNone.setSelected(true);						
+			}			
 		}
 	}
 
@@ -368,6 +396,16 @@ public class AttributeEditor extends JPanel implements ValidationListener, Prefe
 		}
 	}
 	
+	/**
+	 * Changes the behaviour of Enter/Shift-Enter such that it will not advance the
+	 * selection 
+	 */
+	@org.jdesktop.application.Action
+	public void advanceNone() {
+		if (advanceNone.isSelected()) {
+			EditorPreferences.setEditorAdvanceMode(EditorAdvanceMode.None);
+		}
+	}
 	
 	@Override
 	public void validationSuceeded(ValidationResult results) {

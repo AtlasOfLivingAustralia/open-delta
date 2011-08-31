@@ -21,7 +21,8 @@ import au.org.ala.delta.rtf.Keyword;
  */
 public class RTFWriter {
 
-	private static final String HEADER_TEXT = "{\\rtf\\ansi\\deff0{\\fonttbl{\\f0\\froman Tms Rmn;}}\\pard\\plain ";
+	// private static final String HEADER_TEXT = "{\\rtf\\ansi\\deff0{\\fonttbl{\\f0\\froman Tms Rmn;}}\\pard\\plain ";
+	private static final String HEADER_TEXT = "{\\rtf\\ansi\\pard\\plain ";
 	private static final String TRAILING_TEXT = "}";
 
 	/** The output stream we are writing to */
@@ -44,7 +45,6 @@ public class RTFWriter {
 		_writer = Writer;
 		_document = document;
 		_writeRtfHeader = writeRtfHeader;
-
 		configureAttributeHandlers();
 	}
 
@@ -54,8 +54,8 @@ public class RTFWriter {
 		_attributeHandlers.put(StyleConstants.Underline, new BooleanAttributeHandler(StyleConstants.Underline, CharacterAttributeType.Underline.keyword()));
 		_attributeHandlers.put(StyleConstants.Subscript, new BooleanAttributeHandler(StyleConstants.Subscript, CharacterAttributeType.Subscript.keyword()));
 		_attributeHandlers.put(StyleConstants.Superscript, new BooleanAttributeHandler(StyleConstants.Superscript, CharacterAttributeType.Superscript.keyword()));
-//		_attributeHandlers.put(StyleConstants.FontSize, new FontSizeAttributeHandler(StyleConstants.FontSize, CharacterAttributeType.FontSize.keyword(), 11));
-//		_attributeHandlers.put(StyleConstants.FontFamily, new FontFamilyAttributeHandler(StyleConstants.FontFamily, CharacterAttributeType.Font.keyword()));
+		// _attributeHandlers.put(StyleConstants.FontSize, new FontSizeAttributeHandler(StyleConstants.FontSize, CharacterAttributeType.FontSize.keyword(), 11));
+		// _attributeHandlers.put(StyleConstants.FontFamily, new FontFamilyAttributeHandler(StyleConstants.FontFamily, CharacterAttributeType.Font.keyword()));
 	}
 
 	/**
@@ -73,9 +73,9 @@ public class RTFWriter {
 		public abstract boolean handleAttribute(AttributeSet attributes) throws IOException;
 
 	}
-	
+
 	public class FontFamilyAttributeHandler extends AttributeHandler {
-		
+
 		private Object _currentValue;
 
 		protected FontFamilyAttributeHandler(Object documentAttribute, String rtfKeyword) {
@@ -86,20 +86,20 @@ public class RTFWriter {
 		public boolean handleAttribute(AttributeSet attributes) throws IOException {
 			boolean handled = false;
 			Object attributeValue = attributes.getAttribute(_documentAttribute);
-			if (attributeValue != null &&  _currentValue != attributeValue) {
+			if (attributeValue != null && _currentValue != attributeValue) {
 				// This will always force to the first font in the font table. This should actually extract a font number from a font table, but
 				// this would mean buffering and deferring the entire output so that the font table could be built...
-				_writer.write("\\f0");			
+				_writer.write("\\f0");
 				_currentValue = attributeValue;
 				handled = true;
 			}
 			return handled;
 		}
-		
+
 	}
-	
+
 	public class IntegerAttributeHandler extends AttributeHandler {
-		
+
 		private Integer _currentValue;
 
 		public IntegerAttributeHandler(Object documentAttribute, String rtfKeyword, Integer defaultValue) {
@@ -112,19 +112,19 @@ public class RTFWriter {
 			boolean handled = false;
 			Integer attributeValue = (Integer) attributes.getAttribute(_documentAttribute);
 
-			if (attributeValue != null &&  _currentValue != attributeValue) {							
+			if (attributeValue != null && _currentValue != attributeValue) {
 				_writer.write(_rtfKeyword);
-				_writer.write("" + transform(attributeValue));				
+				_writer.write("" + transform(attributeValue));
 				_currentValue = attributeValue;
 				handled = true;
 			}
 			return handled;
 		}
-		
+
 		protected int transform(int value) {
 			return value;
 		}
-			
+
 	}
 
 	/**
@@ -135,7 +135,7 @@ public class RTFWriter {
 		public FontSizeAttributeHandler(Object documentAttribute, String rtfKeyword, Integer defaultValue) {
 			super(documentAttribute, rtfKeyword, defaultValue);
 		}
-		
+
 		@Override
 		protected int transform(int value) {
 			// RTF font size is in half points

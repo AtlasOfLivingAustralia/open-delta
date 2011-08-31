@@ -1385,7 +1385,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
         @Override
         public Void doInBackground() {
-            _dlg = new RtfReportDisplayDialog(getMainFrame(), new SimpleRtfEditorKit(), _rtfSource, _title);
+            _dlg = new RtfReportDisplayDialog(getMainFrame(), new SimpleRtfEditorKit(null), _rtfSource, _title);
             return null;
         }
 

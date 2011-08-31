@@ -424,7 +424,7 @@ public class TaxonInformationDialog extends JDialog {
                 if (_linkFileName.toLowerCase().endsWith(".rtf")) {
                     File rtfFile = new File(linkFileURL.toURI());
                     String rtfSource = FileUtils.readFileToString(rtfFile);
-                    RtfReportDisplayDialog dlg = new RtfReportDisplayDialog(TaxonInformationDialog.this, new SimpleRtfEditorKit(), rtfSource, "blah");
+                    RtfReportDisplayDialog dlg = new RtfReportDisplayDialog(TaxonInformationDialog.this, new SimpleRtfEditorKit(null), rtfSource, "blah");
                     ((SingleFrameApplication) Application.getInstance()).show(dlg);
                 } else if (linkFileURL.getProtocol().equals("http")) {
                     if (desktop.isSupported(Desktop.Action.BROWSE)) {

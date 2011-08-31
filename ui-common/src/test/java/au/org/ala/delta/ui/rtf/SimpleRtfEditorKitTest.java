@@ -21,10 +21,10 @@ import au.org.ala.delta.ui.rtf.SimpleRtfEditorKit;
  */
 public class SimpleRtfEditorKitTest extends TestCase {
 	
-	private static final String WRITER_HEADER_TEXT = "{\\rtf\\ansi\\deff0{\\fonttbl{\\f0\\froman Tms Rmn;}}\\pard\\plain ";
+	private static final String WRITER_HEADER_TEXT = "{\\rtf\\ansi\\pard\\plain ";
 	
 	@Test public void testReadSimpleDocument() throws Exception {
-		SimpleRtfEditorKit editorKit = new SimpleRtfEditorKit();
+		SimpleRtfEditorKit editorKit = new SimpleRtfEditorKit(null);
 		
 		DefaultStyledDocument doc = new DefaultStyledDocument();
 		InputStream in = getClass().getResourceAsStream("/rtf/test1.rtf");
@@ -42,7 +42,7 @@ public class SimpleRtfEditorKitTest extends TestCase {
 	}
 	
 	@Test public void testReadSimpleFormattedDocument() throws Exception {
-		SimpleRtfEditorKit editorKit = new SimpleRtfEditorKit();
+		SimpleRtfEditorKit editorKit = new SimpleRtfEditorKit(null);
 		
 		DefaultStyledDocument doc = new DefaultStyledDocument();
 		InputStream in = getClass().getResourceAsStream("/rtf/test2.rtf");
@@ -63,7 +63,7 @@ public class SimpleRtfEditorKitTest extends TestCase {
 	public void testMoreComplexDocument() throws Exception {
 		String rtf = "{\\rtf\\ansi\\deff0{\\fonttbl{\\f0\\froman Tms Rmn;}}\\pard\\plain \\fs20 \\super This is plain text. \\super0\\par{\\b\\i This is bold italic}}";
 		
-		SimpleRtfEditorKit editorKit = new SimpleRtfEditorKit();
+		SimpleRtfEditorKit editorKit = new SimpleRtfEditorKit(null);
 		DefaultStyledDocument doc = new DefaultStyledDocument();
 		InputStream in = new ByteArrayInputStream(rtf.getBytes());
 		editorKit.read(in, doc, 0);
@@ -111,7 +111,7 @@ public class SimpleRtfEditorKitTest extends TestCase {
 	 */
 	private String readAndWrite(String rtf) throws IOException, BadLocationException {
 		StringReader reader = new StringReader(rtf);
-		SimpleRtfEditorKit editorKit = new SimpleRtfEditorKit();
+		SimpleRtfEditorKit editorKit = new SimpleRtfEditorKit(null);
 		DefaultStyledDocument doc = new DefaultStyledDocument();
 		editorKit.read(reader, doc, 0);
 		

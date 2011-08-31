@@ -33,8 +33,8 @@ public class RtfEditorPane extends JTextPane {
 	 * Creates a new RtfEditorPane.
 	 */
 	public RtfEditorPane() {
-		setEditorKit(new SimpleRtfEditorKit());
-		setTransferHandler(new SimpleRtfTransferHandler());
+		setEditorKit(new SimpleRtfEditorKit(this));
+		// setTransferHandler(new SimpleRtfTransferHandler());
 	}
 
 	/**
@@ -44,7 +44,7 @@ public class RtfEditorPane extends JTextPane {
 	public String getRtfTextBody() {
 		String rtfText = null;
 		Document doc = getDocument();
-		SimpleRtfEditorKit kit = new SimpleRtfEditorKit();
+		SimpleRtfEditorKit kit = new SimpleRtfEditorKit(this);
 		StringWriter writer = new StringWriter();
 		try {
 			kit.writeBody(writer, doc, 0, doc.getLength());
