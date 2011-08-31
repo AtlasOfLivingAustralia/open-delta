@@ -94,11 +94,11 @@ public class ImportControllerTest extends AbstractImportControllerTest {
 		
 		importer.new DoImportTask(datasetDirectory, files).doInBackground();
 
-		//assertEquals(1, _dataSet.getDirectiveFileCount());
+		assertEquals(1, _dataSet.getDirectiveFileCount());
 		
-		//DirectiveFile file = _dataSet.getDirectiveFile(1);
+		DirectiveFile file = _dataSet.getDirectiveFile(1);
 		
-		//assertEquals(24, file.getDirectiveCount());
+		assertEquals(24, file.getDirectiveCount());
 	}
 	
 }

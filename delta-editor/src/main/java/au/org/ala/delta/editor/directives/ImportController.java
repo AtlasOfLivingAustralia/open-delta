@@ -188,6 +188,8 @@ public class ImportController implements DirectiveImportHandler  {
 
 	@Override
 	public void handleUnrecognizedDirective(ImportContext context, List<String> controlWords) { 
+		System.out.println(controlWords);
+		
 		if (_handler != null) {
 			_handler.handleUnrecognizedDirective(context, controlWords);
 		}
@@ -196,6 +198,7 @@ public class ImportController implements DirectiveImportHandler  {
 	@Override
 	public void handleDirectiveProcessingException(
 			ImportContext context, AbstractDirective<ImportContext> d, Exception ex) {
+		ex.printStackTrace();
 		if (_handler != null) {
 			_handler.handleDirectiveProcessingException(context, d, ex);
 		}
@@ -266,7 +269,8 @@ public class ImportController implements DirectiveImportHandler  {
 
 		@Override
 		public void handleUnrecognizedDirective(ImportContext context, List<String> controlWords) {
-			
+			_status.setTotalErrors(_status.getTotalErrors()+1);
+			publish(_status);
 		}
 
 
@@ -274,6 +278,7 @@ public class ImportController implements DirectiveImportHandler  {
 		public void handleDirectiveProcessingException(ImportContext context, AbstractDirective<ImportContext> d,
 				Exception ex) {
 			_status.setTotalErrors(_status.getTotalErrors()+1);
+			
 			publish(_status);
 		}
 	}

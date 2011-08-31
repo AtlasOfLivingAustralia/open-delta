@@ -24,7 +24,7 @@ public class DirectiveFileImporter extends DirectiveParser<ImportContext> {
 	public DirectiveFileImporter(DirectiveImportHandler handler, Directive[] directives) {
 		_handler = handler;
 		_directives = directives;
-		_importFailed = true;
+		_importFailed = false;
 		registerDirectives(directives);
 		registerObserver(handler);
 	}
@@ -33,6 +33,8 @@ public class DirectiveFileImporter extends DirectiveParser<ImportContext> {
 	@Override
 	protected void handleUnrecognizedDirective(ImportContext context, List<String> controlWords) {
 		_importFailed = true;
+		System.out.println(controlWords);
+		
 		_handler.handleUnrecognizedDirective(context, controlWords);
 	}
 
@@ -40,6 +42,7 @@ public class DirectiveFileImporter extends DirectiveParser<ImportContext> {
 	protected void handleDirectiveProcessingException(
 			ImportContext context, AbstractDirective<ImportContext> d, Exception ex) {
 		_importFailed = true;
+		ex.printStackTrace();
 		_handler.handleDirectiveProcessingException(context, d, ex);
 	}
 	
