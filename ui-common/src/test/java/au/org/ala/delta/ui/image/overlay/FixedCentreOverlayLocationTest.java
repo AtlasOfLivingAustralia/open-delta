@@ -94,7 +94,7 @@ public class FixedCentreOverlayLocationTest extends TestCase {
 		assertEquals(100, imageLocation.getX());
 		assertEquals(50, imageLocation.getY());
 		assertEquals(100, imageLocation.getWidth());
-		assertEquals(60, imageLocation.getHeight());
+		assertEquals(65, imageLocation.getHeight());
 		
 	}
 	
@@ -111,7 +111,7 @@ public class FixedCentreOverlayLocationTest extends TestCase {
 		assertEquals(200, imageLocation.getX());
 		assertEquals(100, imageLocation.getY());
 		assertEquals(80, imageLocation.getWidth());
-		assertEquals(60, imageLocation.getHeight());
+		assertEquals(65, imageLocation.getHeight());
 	}
 	
 	private au.org.ala.delta.model.image.OverlayLocation newLocation(int x, int y, int w, int h) {
