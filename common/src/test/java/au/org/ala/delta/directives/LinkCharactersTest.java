@@ -14,7 +14,7 @@ public class LinkCharactersTest extends TestCase {
 		LinkCharacters directive = new LinkCharacters();
 		DeltaContext context = new DeltaContext();
 		
-		String data = "*LINK CHARACTERS 1-3 6:10-11 7-9";
+		String data = "1-3 6:10-11 7-9";
 		
 		directive.parseAndProcess(context, data);
 		
