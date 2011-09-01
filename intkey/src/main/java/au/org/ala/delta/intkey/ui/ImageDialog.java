@@ -209,16 +209,13 @@ public class ImageDialog extends JDialog implements OverlaySelectionObserver {
         _multipleImageViewer = new MultipleImageViewer(_imageSettings);
         getContentPane().add(_multipleImageViewer);
 
-        List<String> imageNames = new ArrayList<String>();
         for (Image image : images) {
             ImageViewer viewer = new ImageViewer(image, _imageSettings);
             _multipleImageViewer.addImageViewer(viewer);
             viewer.addOverlaySelectionObserver(this);
-
-            String imageName = image.getSubjectTextOrFileName();
-            imageNames.add(imageName);
-            populateSubjectMenu(imageNames);
         }
+        
+        populateSubjectMenu(images);
 
         _selectedStates = new HashSet<Integer>();
         _selectedKeywords = new HashSet<String>();
@@ -230,18 +227,20 @@ public class ImageDialog extends JDialog implements OverlaySelectionObserver {
         this.pack();
     }
 
-    private void populateSubjectMenu(List<String> imageNames) {
+    private void populateSubjectMenu(List<Image> images) {
         _mnuSubject.removeAll();
 
         ButtonGroup group = new ButtonGroup();
 
-        for (final String imageName : imageNames) {
-            final JRadioButtonMenuItem rdBtnMnuIt = new JRadioButtonMenuItem(_imageDescriptionFormatter.defaultFormat(imageName));
+        for (Image image : images) {
+            String imageDescription = _imageDescriptionFormatter.defaultFormat(image.getSubjectTextOrFileName());
+            final String imageFileName = image.getFileName();
+            JRadioButtonMenuItem rdBtnMnuIt = new JRadioButtonMenuItem(imageDescription);
             rdBtnMnuIt.addActionListener(new ActionListener() {
 
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    _multipleImageViewer.showImage(imageName);
+                    _multipleImageViewer.showImage(imageFileName);
                     handleNewImageSelected();
                 }
             });

@@ -50,7 +50,7 @@ public class MultipleImageViewer extends JPanel {
 
     public void addImageViewer(ImageViewer viewer) {
         _imageViewers.add(viewer);
-        String imageId = viewer.getViewedImage().getSubjectTextOrFileName();
+        String imageId = viewer.getViewedImage().getFileName();
         _imageViewerMap.put(imageId, viewer);
         _imageIds.add(imageId);
         _contentPanel.add(viewer, imageId);
