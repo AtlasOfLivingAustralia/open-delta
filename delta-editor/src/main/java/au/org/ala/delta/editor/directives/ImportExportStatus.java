@@ -37,11 +37,13 @@ public class ImportExportStatus  {
 	private volatile boolean _cancelled;
 	private volatile boolean _paused;
 	private volatile boolean _finished;
+	private volatile boolean _pauseOnError;
 	
 	public ImportExportStatus() {
 		_cancelled = false;
 		_finished = false;
 		_paused = false;
+		_pauseOnError = true;
 		
 		_logBuilder = new RTFBuilder();
 		_logBuilder.startDocument();
@@ -95,7 +97,7 @@ public class ImportExportStatus  {
 	 */
 	public void setCurrentFile(String currentFile) {
 		
-		if (StringUtils.isNotEmpty(currentFile)) {
+		if (StringUtils.isNotEmpty(this.currentFile)) {
 			_logBuilder.increaseIndent();
 			_logBuilder.appendText("Import succeeded");
 			_logBuilder.decreaseIndent();
@@ -217,7 +219,7 @@ public class ImportExportStatus  {
 	}
 
 	public boolean getPauseOnError() {
-		return true;
+		return _pauseOnError;
 	}
 	
 	/**
@@ -268,5 +270,10 @@ public class ImportExportStatus  {
 	
 	public boolean isFinished() {
 		return _finished;
+	}
+
+	public void setPauseOnError(boolean pauseOnError) {
+		_pauseOnError = pauseOnError;
+		
 	}
 }

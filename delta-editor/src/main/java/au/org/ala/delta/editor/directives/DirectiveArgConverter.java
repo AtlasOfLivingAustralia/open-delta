@@ -17,6 +17,7 @@ import au.org.ala.delta.editor.slotfile.VOCharBaseDesc;
 import au.org.ala.delta.editor.slotfile.VODirFileDesc.Dir;
 import au.org.ala.delta.editor.slotfile.VODirFileDesc.DirArgs;
 import au.org.ala.delta.editor.slotfile.VODirFileDesc.DirListData;
+import au.org.ala.delta.editor.slotfile.VOItemDesc;
 
 /**
  * Creates and populates a Dir object from the arguments supplied to a 
@@ -144,7 +145,7 @@ public class DirectiveArgConverter {
 	
 	class CharacterNumberConverter implements IdConverter {
 		@Override
-		public int convertId(Object id) {
+		public int convertId(Object id) {		
 			return _vop.getDeltaMaster().uniIdFromCharNo((Integer)id);
 		}
 		@Override
@@ -193,7 +194,19 @@ public class DirectiveArgConverter {
 	class ItemDescriptionConverter implements IdConverter {
 		@Override
 		public int convertId(Object id) {
-			throw new NotImplementedException();
+			// Delimeters have a funny behaviour.
+			if (id instanceof Integer) {
+				int idInt = (Integer)id;
+				if (idInt != Integer.MIN_VALUE) {
+					throw new IllegalArgumentException("Unsupported id: "+id);
+				}
+				return idInt;
+			}
+			VOItemDesc item = _vop.getItemFromName((String)id, true);
+			if (item == null) {
+				throw new IllegalArgumentException("No such item "+id);
+			}
+			return item.getUniId();
 		}
 		/**
 		 * The conversion in this direction converts into an integer
@@ -326,6 +339,7 @@ public class DirectiveArgConverter {
 		case DirectiveArgType.DIRARG_OTHER:
 		case DirectiveArgType.DIRARG_INTKEY_ONOFF:
 		case DirectiveArgType.DIRARG_INTEGER:
+		case DirectiveArgType.DIRARG_CHARGROUPS:
 			return new NullConverter();
 
 		case DirectiveArgType.DIRARG_TEXTLIST:
@@ -350,7 +364,6 @@ public class DirectiveArgConverter {
 		case DirectiveArgType.DIRARG_CHARTEXTLIST:
 		
 		case DirectiveArgType.DIRARG_CHAR:
-		case DirectiveArgType.DIRARG_CHARGROUPS:
 		case DirectiveArgType.DIRARG_INTKEY_CHARLIST:
 		case DirectiveArgType.DIRARG_INTKEY_CHARREALLIST:
 		case DirectiveArgType.DIRARG_KEYSTATE:

@@ -101,6 +101,16 @@ public class TreeViewer extends JInternalFrame implements DeltaView {
 		this.setSize(new Dimension(800, 500));
 
 		_dataModel = dataModel;
+		_dataModel.addDeltaDataSetObserver(new AbstractDataSetObserver() {
+			@Override
+			public void characterAdded(DeltaDataSetChangeEvent event) {
+				TreePath path = new TreePath(_tree.getModel().getRoot());
+				if (!_tree.isExpanded(path)) {
+					_tree.expandPath(path);
+				}
+			}
+			
+		});
 
 		_itemList = new ItemList(_dataModel);
 		_itemList.setDragEnabled(true);
@@ -108,9 +118,11 @@ public class TreeViewer extends JInternalFrame implements DeltaView {
 
 		_tree = new CharacterTree();
 		final CharacterTreeModel treeModel = new CharacterTreeModel(_dataModel);
+		
 		_tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		_tree.setModel(treeModel);
 		_tree.setRootVisible(false);
+		_tree.expandPath(new TreePath(treeModel.getRoot()));
 		_tree.setEditable(true);
 		_tree.setShowsRootHandles(true);
 		DeltaTreeCellRenderer renderer = new DeltaTreeCellRenderer(_dataModel);
@@ -598,6 +610,7 @@ class CharacterTreeModel extends DefaultTreeModel {
 
 	public CharacterTreeModel(EditorViewModel dataModel) {
 		super(new ContextRootNode(dataModel), false);
+		
 		_dataModel = dataModel;
 		_dataModel.addDeltaDataSetObserver(new TreeModelCharacterListener());
 		_variableLengthCharacterIndicies = new HashSet<Integer>();

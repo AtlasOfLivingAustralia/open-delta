@@ -292,7 +292,13 @@ public class ImportController  {
 			_statusDialog.update(status);
 			String log = status.getImportLog();
 			if (StringUtils.isNotEmpty(log)) {
-				_dialog.setText(log+"}\n");
+				try {
+				_dialog.setText(log);
+				}
+				catch (Exception e) {
+					System.out.println(log);
+					e.printStackTrace();
+				}
 			}
 			
 		}

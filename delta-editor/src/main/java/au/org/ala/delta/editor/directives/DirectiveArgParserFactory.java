@@ -5,6 +5,7 @@ import java.io.StringReader;
 import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.directives.args.DirectiveArgsParser;
 import au.org.ala.delta.directives.args.IdListParser;
+import au.org.ala.delta.directives.args.IdSetParser;
 import au.org.ala.delta.directives.args.IdValueListParser;
 import au.org.ala.delta.directives.args.IdWithIdListParser;
 import au.org.ala.delta.directives.args.IntegerIdArgParser;
@@ -60,6 +61,9 @@ public class DirectiveArgParserFactory {
 			break;
 		case DirectiveArgType.DIRARG_KEYSTATE:
 			parser = new KeyStateParser(context, reader);
+			break;
+		case DirectiveArgType.DIRARG_CHARGROUPS:
+			parser = new IdSetParser(context, reader);
 			break;
 		default:
 			throw new RuntimeException("No parser for :"+directive.joinNameComponents()+

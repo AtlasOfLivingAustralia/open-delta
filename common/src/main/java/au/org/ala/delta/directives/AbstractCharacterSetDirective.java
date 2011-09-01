@@ -14,23 +14,19 @@
  ******************************************************************************/
 package au.org.ala.delta.directives;
 
+import java.io.StringReader;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
-
-import org.apache.commons.lang.math.IntRange;
 
 import au.org.ala.delta.directives.args.DirectiveArgument;
 import au.org.ala.delta.directives.args.DirectiveArguments;
+import au.org.ala.delta.directives.args.IdSetParser;
 
 /**
  * An AbstractCharacterSetDirective is a directive that takes a space separated list of 
  * character sets of the form: c1:c2:...cn where cn is a character number or a range of numbers.
  */
 public abstract class AbstractCharacterSetDirective<C extends AbstractDeltaContext> extends AbstractDirective<C> {
-
-	private static Pattern CHAR_SET_PATTERN = Pattern.compile("^(\\d+)[:-](.*)$");
 
 	protected DirectiveArguments args;
 	
@@ -45,23 +41,10 @@ public abstract class AbstractCharacterSetDirective<C extends AbstractDeltaConte
 
 	@Override
 	public void parse(C context, String data) throws ParseException {
-		args = new DirectiveArguments();	
-		String[] typeDescriptors = data.split(" |\\n");
-		for (String typeDescriptor : typeDescriptors) {
-			typeDescriptor = typeDescriptor.trim();
-			if (CHAR_SET_PATTERN.matcher(typeDescriptor).matches()) {
-				String[] bits = typeDescriptor.trim().split(":");
-				
-				List<Integer> characters = new ArrayList<Integer>();
-				for (String bit : bits) {
-					IntRange r = parseRange(bit);
-					for (int i : r.toArray()) {
-						characters.add(i);
-					}
-				}
-				args.addDirectiveArgument(characters);
-			}
-		}
+		IdSetParser parser = new IdSetParser(context, new StringReader(data));
+		parser.parse();
+		
+		args = parser.getDirectiveArgs();
 	}
 
 	@Override

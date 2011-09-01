@@ -70,6 +70,8 @@ public class ImportExportStatusDialog extends JDialog {
 		cancelAction.setEnabled(false);
 		btnCancel.setAction(cancelAction);
 		
+		chckbxPauseOnErrors.setAction(_actions.get("pauseOnErrors"));
+		
 	}
 
 	private void createUI() {
@@ -347,5 +349,11 @@ public class ImportExportStatusDialog extends JDialog {
 	}
 	public boolean getPauseOnError() {
 		return chckbxPauseOnErrors.isSelected();
+	}
+	
+	public void pauseOnErrors() {
+		if (_status != null) {
+			_status.setPauseOnError(chckbxPauseOnErrors.isSelected());
+		}
 	}
 }
