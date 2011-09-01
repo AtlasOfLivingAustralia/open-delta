@@ -1,5 +1,7 @@
 package au.org.ala.delta.ui.util;
 
+import java.awt.Window;
+
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.NumericCharacter;
@@ -8,7 +10,7 @@ import au.org.ala.delta.ui.RichTextDialog;
 
 public class UIUtils {
 
-    public static RichTextDialog createCharacterDetailsDialog(Character character) {
+    public static RichTextDialog createCharacterDetailsDialog(Window owner, Character character) {
         CharacterFormatter formatter = new CharacterFormatter();
         StringBuilder text = new StringBuilder();
         text.append(formatter.formatCharacterDescription(character));
@@ -25,7 +27,7 @@ public class UIUtils {
             text.append("\\par ");
             text.append(numericChar.getUnits());
         }
-        RichTextDialog dialog = new RichTextDialog(text.toString());
+        RichTextDialog dialog = new RichTextDialog(owner, text.toString());
         return dialog;
     }
 }

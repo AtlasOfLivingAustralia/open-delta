@@ -127,7 +127,13 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
 						}
 						// String dd = data.substring(i + word.length() +
 						// 1).trim();
+						for (DirectiveParserObserver o : _observers) {
+							o.preProcess(d, dd);
+						}
 						doProcess(context, d, dd);
+						for (DirectiveParserObserver o : _observers) {
+							o.postProcess(d);
+						}
 					} catch (Exception ex) {
 						handleDirectiveProcessingException(context, d, ex);
 					}
@@ -146,16 +152,9 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	protected void doProcess(C context, AbstractDirective d, String dd) throws ParseException, Exception {
 		
-		for (DirectiveParserObserver o : _observers) {
-			o.preProcess(d, dd);
-		}
 		d.parse(context, dd);
 		DirectiveArguments args = d.getDirectiveArgs();
 		d.process(context, args);
-		
-		for (DirectiveParserObserver o : _observers) {
-			o.postProcess(d);
-		}
 	}
 
 	protected abstract void handleUnrecognizedDirective(C context, List<String> controlWords);

@@ -47,7 +47,7 @@ public abstract class AbstractDirective<C extends AbstractDeltaContext> {
     
     public abstract void process(C context, DirectiveArguments directiveArguments) throws Exception;
     
-    public Object getName() {
+    public String getName() {
         return StringUtils.join(_controlWords, " ").toUpperCase();
     }
     

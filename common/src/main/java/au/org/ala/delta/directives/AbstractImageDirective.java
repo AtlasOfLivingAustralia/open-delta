@@ -12,12 +12,12 @@ import au.org.ala.delta.directives.args.ImageParser;
  */
 public abstract class AbstractImageDirective extends AbstractInternalDirective {
 
-	private DirectiveArguments _args;
 	private int _imageType;
 	
 	public AbstractImageDirective(int imageType, String... controlWords) {
-		super("character", "images");
+		super(controlWords);
 		_imageType = imageType;
+		_args = new DirectiveArguments();
 	}
 	
 

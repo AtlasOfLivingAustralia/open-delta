@@ -10,6 +10,7 @@ import javax.swing.ActionMap;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
+import org.apache.commons.lang.StringUtils;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.Task;
@@ -31,12 +32,13 @@ import au.org.ala.delta.editor.slotfile.directive.IntkeyDirType;
 import au.org.ala.delta.editor.slotfile.directive.KeyDirType;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile.DirectiveType;
+import au.org.ala.delta.ui.RichTextDialog;
 
 /**
  * The ImportController manages the process of importing a set of directives files
  * into the current Editor dataset.
  */
-public class ImportController implements DirectiveImportHandler  {
+public class ImportController  {
 
 	private DeltaEditor _editor;
 	private EditorViewModel _model;
@@ -45,7 +47,6 @@ public class ImportController implements DirectiveImportHandler  {
 	private ResourceMap _resources;
 	private ActionMap _actions;
 	private ImportContext _context;
-	private DirectiveImportHandler _handler;
 	
 	public ImportController(DeltaEditor editor, EditorViewModel model, DirectiveImportHandler handler) {
 		_editor = editor;
@@ -53,7 +54,6 @@ public class ImportController implements DirectiveImportHandler  {
 		_actions = _editor.getContext().getActionMap(this);
 		_model = model;
 		_context = new ImportContext(_model);
-		_handler = handler;
 	}
 	
 	public ImportController(DeltaEditor editor, EditorViewModel model) {
@@ -114,14 +114,25 @@ public class ImportController implements DirectiveImportHandler  {
 		new DoImportTask(selectedDirectory, files).execute();
 	}
 
-	public boolean importDirectivesFile(DirectiveFileInfo fileInfo, Reader directivesReader, ImportExportStatus status) {
+	/**
+	 * Parses the supplied stream into the directives file identified by
+	 * the supplied DirectiveFileInfo.  If a directive exists with the same
+	 * name, the contents of that file will be replaced, otherwise a new
+	 * directives file will be added.
+	 * If the import fails the directives file will not be updated.
+	 * @param fileInfo identifies the directives file to import into.
+	 * @param directivesReader a reader containing the raw directives data.
+	 * @param status
+	 * @return true if the import succeeded, false otherwise.
+	 */
+	public boolean importDirectivesFile(DirectiveFileInfo fileInfo, Reader directivesReader, DirectiveImportHandler handler) {
 		
 		String name = fileInfo.getName();
 		
 		DirectiveFile existing =  _model.getDirectiveFile(name);
 		DirectiveFile directiveFile = _model.addDirectiveFile(_model.getDirectiveFileCount()+1, name, fileInfo.getType());
 		directiveFile.setLastModifiedTime(System.currentTimeMillis());
-		DirectiveFileImporter importer = new DirectiveFileImporter(this, directivesOfType(directiveFile.getType()));
+		DirectiveFileImporter importer = new DirectiveFileImporter(handler, directivesOfType(directiveFile.getType()));
 		
 		_context.setDirectiveFile(directiveFile);
 		
@@ -140,7 +151,6 @@ public class ImportController implements DirectiveImportHandler  {
 			}
 		}
 		catch (Exception e) {
-			status.setTotalErrors(status.getTotalErrors()+1);
 			_model.deleteDirectiveFile(directiveFile);
 			e.printStackTrace();
 		}
@@ -172,39 +182,6 @@ public class ImportController implements DirectiveImportHandler  {
 		return directives;
 	}
 	
-	@Override
-	public void preProcess(AbstractDirective<? extends AbstractDeltaContext> directive, String data) {
-		if (_handler != null) {
-			_handler.preProcess(directive, data);
-		}
-	}
-
-	@Override
-	public void postProcess(AbstractDirective<? extends AbstractDeltaContext> directive) {
-		if (_handler != null) {
-			_handler.postProcess(directive);
-		}
-	}
-
-	@Override
-	public void handleUnrecognizedDirective(ImportContext context, List<String> controlWords) { 
-		System.out.println(controlWords);
-		
-		if (_handler != null) {
-			_handler.handleUnrecognizedDirective(context, controlWords);
-		}
-	}
-
-	@Override
-	public void handleDirectiveProcessingException(
-			ImportContext context, AbstractDirective<ImportContext> d, Exception ex) {
-		ex.printStackTrace();
-		if (_handler != null) {
-			_handler.handleDirectiveProcessingException(context, d, ex);
-		}
-	}
-	
-	
 	public class DoImportTask extends Task<Void, ImportExportStatus> implements DirectiveImportHandler {
 
 		private String _directoryName;
@@ -233,12 +210,11 @@ public class ImportController implements DirectiveImportHandler  {
 				FileInputStream fileIn = new FileInputStream(toParse);
 				InputStreamReader reader = new InputStreamReader(fileIn, _context.getFileEncoding());
 				
-				importDirectivesFile(file, reader, _status);
-				
 				// First check if the existing dataset has a directives file with the same name
 				// and same last modified date.  If so, skip it.
 				_status.setCurrentFile(file.getFileName());
 				publish(_status);
+				importDirectivesFile(file, reader, this);
 				
 				_status.setTotalLines(_status.getTotalLines()+1);
 				publish(_status);
@@ -256,7 +232,7 @@ public class ImportController implements DirectiveImportHandler  {
 
 		@Override
 		public void preProcess(AbstractDirective<? extends AbstractDeltaContext> directive, String data) {
-			_status.setCurrentDirective((String)directive.getName());
+			_status.setCurrentDirective(directive, data);
 			publish(_status);
 		}
 
@@ -269,7 +245,7 @@ public class ImportController implements DirectiveImportHandler  {
 
 		@Override
 		public void handleUnrecognizedDirective(ImportContext context, List<String> controlWords) {
-			_status.setTotalErrors(_status.getTotalErrors()+1);
+			_status.error("unrecognised directive " +controlWords);
 			publish(_status);
 		}
 
@@ -277,7 +253,7 @@ public class ImportController implements DirectiveImportHandler  {
 		@Override
 		public void handleDirectiveProcessingException(ImportContext context, AbstractDirective<ImportContext> d,
 				Exception ex) {
-			_status.setTotalErrors(_status.getTotalErrors()+1);
+			_status.error(ex.getMessage());
 			
 			publish(_status);
 		}
@@ -289,14 +265,21 @@ public class ImportController implements DirectiveImportHandler  {
 	private class StatusUpdater extends TaskListener.Adapter<Void, ImportExportStatus> {
 
 		private ImportExportStatusDialog _statusDialog;
-		
+		private RichTextDialog _dialog;
 		public StatusUpdater(ImportExportStatusDialog statusDialog) {
 			_statusDialog = statusDialog;
+			_dialog = new RichTextDialog(_editor.getMainFrame(), "");
+			_editor.show(_dialog);
 		}
 		@Override
 		public void process(TaskEvent<List<ImportExportStatus>> event) {
+			ImportExportStatus status = event.getValue().get(0); 
+			_statusDialog.update(status);
+			String log = status.getImportLog();
+			if (StringUtils.isNotEmpty(log)) {
+				_dialog.setText(log+"}\n");
+			}
 			
-			_statusDialog.update(event.getValue().get(0));
 		}
 		
 	}

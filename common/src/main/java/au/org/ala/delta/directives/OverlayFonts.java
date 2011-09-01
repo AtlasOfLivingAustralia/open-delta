@@ -12,8 +12,6 @@ import au.org.ala.delta.model.image.ImageSettings.FontInfo;
 
 public class OverlayFonts extends AbstractInternalDirective {
 
-	private DirectiveArguments _args;
-	
 	public OverlayFonts() {
 		super("overlay", "fonts");
 	}

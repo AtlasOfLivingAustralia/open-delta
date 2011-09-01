@@ -19,8 +19,10 @@ import au.org.ala.delta.directives.args.DirectiveArguments;
 
 public class Show extends AbstractTextDirective {
 
+	public static final String[] CONTROL_WORDS = {"show"};
+	
 	public Show() {
-		super("show");
+		super(CONTROL_WORDS);
 	}
 
 	@Override

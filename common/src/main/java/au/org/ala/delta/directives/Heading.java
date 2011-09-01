@@ -21,8 +21,10 @@ import au.org.ala.delta.directives.args.DirectiveArguments;
 
 public class Heading extends AbstractTextDirective {
 	
+	public static final String[] CONTROL_WORDS = {"heading"};
+	
 	public Heading() {
-		super("heading");
+		super(CONTROL_WORDS);
 	}
 	
 	@Override

@@ -23,7 +23,6 @@ import au.org.ala.delta.editor.directives.DirectiveImportHandlerAdapter;
 import au.org.ala.delta.editor.directives.ExportController;
 import au.org.ala.delta.editor.directives.ImportContext;
 import au.org.ala.delta.editor.directives.ImportController;
-import au.org.ala.delta.editor.directives.ImportExportStatus;
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.slotfile.directive.DirectiveInOutState;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile;
@@ -131,13 +130,12 @@ public class DirectiveFileEditor extends JInternalFrame implements ValidationLis
 	@Action
 	public void applyChanges() {
 		ImportController controller = new ImportController(
-				(DeltaEditor) Application.getInstance(), _model, new ImportErrorHandler());
+				(DeltaEditor) Application.getInstance(), _model);
 	
 		String text = directivesEditor.getTextArea().getText();
-		ImportExportStatus status = new ImportExportStatus();
 		DirectiveFile file = _model.getSelectedDirectiveFile();
 		DirectiveFileInfo fileInfo = new DirectiveFileInfo(file);
-		boolean success = controller.importDirectivesFile(fileInfo, new StringReader(text), status);
+		boolean success = controller.importDirectivesFile(fileInfo, new StringReader(text), new ImportErrorHandler());
 		if (success) {
 			updateGUI();
 		}

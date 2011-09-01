@@ -389,7 +389,7 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 			text.append("\\par ");
 			text.append(numericChar.getUnits());
 		}
-		RichTextDialog dialog = new RichTextDialog(text.toString());
+		RichTextDialog dialog = new RichTextDialog(editor.getMainFrame(), text.toString());
 		editor.show(dialog);
 	}
 	
@@ -565,14 +565,14 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 	
 	@Action
 	public void showImageNotes() {
-		RichTextDialog dialog = new RichTextDialog(_selectedImage.getNotes());
+		RichTextDialog dialog = new RichTextDialog(editor.getMainFrame(), _selectedImage.getNotes());
 		editor.show(dialog);
 	}
 	
 	@Action
 	public void showCharacterNotes() {
 		Character character = (Character)_subject;
-		RichTextDialog dialog = new RichTextDialog(character.getNotes());
+		RichTextDialog dialog = new RichTextDialog(editor.getMainFrame(), character.getNotes());
 		editor.show(dialog);
 	}
 	

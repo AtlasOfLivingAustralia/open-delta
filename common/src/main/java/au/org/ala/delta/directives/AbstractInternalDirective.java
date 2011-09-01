@@ -5,7 +5,7 @@ import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.directives.args.DirectiveArguments;
 
 public abstract class AbstractInternalDirective extends AbstractDirective<DeltaContext> {
-	private DirectiveArguments _args;
+	protected DirectiveArguments _args;
 	
 	public AbstractInternalDirective(String... controlWords) {
 		super(controlWords);

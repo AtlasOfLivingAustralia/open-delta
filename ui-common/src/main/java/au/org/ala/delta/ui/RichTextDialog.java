@@ -2,6 +2,7 @@ package au.org.ala.delta.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Window;
 
 import javax.swing.JDialog;
 import javax.swing.JScrollPane;
@@ -17,9 +18,11 @@ public class RichTextDialog extends JDialog {
 
 	private static final long serialVersionUID = 9109806191571551508L;
 
-	public RichTextDialog(String text) {
+	private RtfEditorPane editor;
+	public RichTextDialog(Window owner, String text) {
+		super(owner);
 		setLayout(new BorderLayout());
-		RtfEditorPane editor = new RtfEditorPane();
+		editor = new RtfEditorPane();
 		
 		editor.setEditable(false);
 		editor.setBackground(Color.WHITE);
@@ -32,5 +35,9 @@ public class RichTextDialog extends JDialog {
 		scroller.setViewportBorder(null);
 		scroller.setBorder(null);
 		add(scroller, BorderLayout.CENTER);
+	}
+	
+	public void setText(String text) {
+		editor.setText(text);
 	}
 }

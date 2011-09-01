@@ -163,7 +163,7 @@ public class ExportController {
 		@Override
 		public void setCurrentDirective(DirectiveInstance directive) {
 			super.setCurrentDirective(directive);
-			_status.setCurrentDirective(directive.getDirective().joinNameComponents());
+			//_status.setCurrentDirective(directive.getDirective(), directive.getDirectiveArguments().getFirstArgumentText());
 		}
 	}
 	

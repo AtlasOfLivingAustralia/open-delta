@@ -41,40 +41,51 @@ public class ConforDirectiveFileParser extends DirectiveParser<DeltaContext> {
     public static ConforDirectiveFileParser createInstance() {
         ConforDirectiveFileParser instance = new ConforDirectiveFileParser();
         
-        instance.registerDirective(new Show());
-        instance.registerDirective(new Heading());
-        instance.registerDirective(new TranslateInto());
+       instance.registerDirective(new CharacterForTaxonImages());
         instance.registerDirective(new CharacterHeadings());
+        instance.registerDirective(new CharacterImages());
+        
         instance.registerDirective(new CharacterList());
         instance.registerDirective(new CharacterNotes());
         instance.registerDirective(new CharacterReliabilities());
         instance.registerDirective(new CharacterTypes());
         instance.registerDirective(new CharacterWeights());
+        instance.registerDirective(new Comment());
+        instance.registerDirective(new DataBufferSize());
+        instance.registerDirective(new DependentCharacters());
+        instance.registerDirective(new ExcludeCharacters());
+        instance.registerDirective(new Heading());
+        instance.registerDirective(new ImplicitValues());
         instance.registerDirective(new InputFile());
+        instance.registerDirective(new InsertImplicitValues());
         instance.registerDirective(new IntkeyOutputFile());       
+        instance.registerDirective(new ItemDescriptions());
         instance.registerDirective(new ListingFile());
-        instance.registerDirective(new PrintFile());
+
         instance.registerDirective(new NumberOfCharacters());
+        instance.registerDirective(new MandatoryCharacters());
         instance.registerDirective(new MaximumNumberOfStates());
         instance.registerDirective(new MaximumNumberOfItems());
-        instance.registerDirective(new DataBufferSize());
+        instance.registerDirective(new NewParagraphAtCharacters());
         instance.registerDirective(new NumbersOfStates());
-        instance.registerDirective(new ImplicitValues());
-        instance.registerDirective(new DependentCharacters());
-        instance.registerDirective(new MandatoryCharacters());
-        instance.registerDirective(new PrintWidth());
-        instance.registerDirective(new Comment());
-        instance.registerDirective(new ReplaceAngleBrackets());
         instance.registerDirective(new OmitCharacterNumbers());
         instance.registerDirective(new OmitInapplicables());
         instance.registerDirective(new OmitInnerComments());
         instance.registerDirective(new OmitTypeSettingMarks());
-        instance.registerDirective(new CharacterForTaxonImages());
-        instance.registerDirective(new ExcludeCharacters());
-        instance.registerDirective(new NewParagraphAtCharacters());
-        instance.registerDirective(new ItemDescriptions());
+        
+        instance.registerDirective(new PrintFile());
+        instance.registerDirective(new PrintWidth());
+
+
+        instance.registerDirective(new ReplaceAngleBrackets());
+        instance.registerDirective(new Show());
+        
+        instance.registerDirective(new StartupImages());
+        instance.registerDirective(new TaxonImages());
+        
+        instance.registerDirective(new TranslateInto());
         instance.registerDirective(new TypeSettingMarks());
-        instance.registerDirective(new InsertImplicitValues());
+
         
         return instance;
     }
