@@ -35,7 +35,7 @@ public class OverlayComponentFactory {
 
     public OverlayComponentFactory(ResourceMap resources, ImageSettings imageSettings) {
         _imageSettings = imageSettings;
-        _textBuilder = new OverlayTextBuilder(resources);
+        _textBuilder = new OverlayTextBuilder(resources, imageSettings);
     }
 
     /**
@@ -53,9 +53,11 @@ public class OverlayComponentFactory {
         JComponent component = null;
         String text = _textBuilder.getText(overlay, imageOwner);
         switch (overlay.type) {
+        case OverlayType.OLHEADING: // Using heading string for the data-set
         case OverlayType.OLTEXT: // Use a literal text string
         case OverlayType.OLITEM: // Use name of the item
             component = new RichTextLabel(overlay, text);
+            component.setFont(_imageSettings.getDefaultFont());
             break;
         case OverlayType.OLFEATURE: // Use name of the character
             component = new RichTextLabel(overlay, text);
@@ -105,7 +107,6 @@ public class OverlayComponentFactory {
                                  // correspond with array OLKeywords.
         case OverlayType.OLSUBJECT: // Has text for menu entry
         case OverlayType.OLSOUND: // Has name of .WAV sound file
-        case OverlayType.OLHEADING: // Using heading string for the data-set
             break;
         default:
             System.out.println("Unsupported overlay type: " + overlay.type);

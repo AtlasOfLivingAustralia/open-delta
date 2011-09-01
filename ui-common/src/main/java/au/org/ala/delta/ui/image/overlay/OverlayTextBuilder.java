@@ -10,6 +10,7 @@ import au.org.ala.delta.model.NumericCharacter;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.model.image.ImageOverlay;
+import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.model.image.OverlayType;
 
 /**
@@ -21,9 +22,11 @@ public class OverlayTextBuilder {
 	private CharacterFormatter _characterFormatter;
 	private CharacterFormatter _stateFormatter;
 	private ResourceMap _resources;
+	private ImageSettings _imageSettings;
 
-	public OverlayTextBuilder(ResourceMap resources) {
+	public OverlayTextBuilder(ResourceMap resources, ImageSettings imageSettings) {
 		_resources = resources;
+		_imageSettings = imageSettings;
 		_itemFormatter = new ItemFormatter(false, false, false, false, false, false);
 		_characterFormatter = new CharacterFormatter(false, true, false, false, false);
 		_stateFormatter = new CharacterFormatter(true, true, false, false, false);
@@ -90,6 +93,8 @@ public class OverlayTextBuilder {
 		case OverlayType.OLIMAGENOTES: // Create Notes pushbutton (for notes about the image)
 			text = _resources.getString("imageOverlay.imageNotesButton.text");
 			break;
+	    case OverlayType.OLHEADING: // Using heading string for the data-set
+	        text = _imageSettings.getDatasetName();
 		case OverlayType.OLENTER: // Create edit box for data entry
 		case OverlayType.OLCOMMENT: // Not a "real" overlay type, but used to
 									// save comments addressed to images rather than overlays
@@ -98,7 +103,6 @@ public class OverlayTextBuilder {
 		case OverlayType.OLNONE: // Undefined; the remaining values MUST  correspond with array OLKeywords.
 		case OverlayType.OLSUBJECT: // Has text for menu entry
 		case OverlayType.OLSOUND: // Has name of .WAV sound file
-		case OverlayType.OLHEADING: // Using heading string for the data-set
 			break;
 		default:
 			text = "";

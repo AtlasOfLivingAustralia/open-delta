@@ -9,6 +9,7 @@ import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.NumericCharacter;
 import au.org.ala.delta.model.image.ImageOverlay;
+import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.model.image.OverlayLocation;
 import au.org.ala.delta.model.image.OverlayType;
 
@@ -79,8 +80,9 @@ public class OverlayTextBuilderTest extends TestCase {
 	@Before
 	protected void setUp() {
 		ResourceMap resources = new ResourceMap(null, getClass().getClassLoader(), "au.org.ala.delta.ui.resources.DeltaSingleFrameApplication");
+		ImageSettings imageSettings = new ImageSettings();
 		
-		_builder = new OverlayTextBuilder(resources);	
+		_builder = new OverlayTextBuilder(resources, imageSettings);	
 		_overlay = new ImageOverlay();
 		_overlay.addLocation(new OverlayLocation());
 	}

@@ -13,6 +13,8 @@ import au.org.ala.delta.model.image.OverlayLocation.OLDrawType;
  * image overlays.
  */
 public class ImageSettings extends ResourceSettings {
+    
+    private String _datasetName;
 
     public enum ButtonAlignment {
         NO_ALIGN, ALIGN_VERTICALLY, ALIGN_HORIZONTALLY
@@ -296,5 +298,16 @@ public class ImageSettings extends ResourceSettings {
         location.drawType = OLDrawType.rectangle;
         location.setW(250);
         location.setH(250);
+    }
+    
+    // The dataset name (or "heading") needs to be accessible via the image settings so that the content of 
+    // "@heading" overlays for startup images can have their text set to be the dataset name.
+    
+    public String getDatasetName() {
+        return _datasetName;
+    }
+
+    public void setDatasetName(String datasetName) {
+        this._datasetName = datasetName;
     }
 }

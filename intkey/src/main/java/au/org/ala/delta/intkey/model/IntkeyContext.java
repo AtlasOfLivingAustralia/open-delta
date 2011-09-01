@@ -1055,6 +1055,8 @@ public class IntkeyContext extends AbstractDeltaContext {
         imageSettings.setDataSetPath(getDatasetDirectory().getAbsolutePath());
 
         imageSettings.setResourcePaths(_imagePathLocations);
+        
+        imageSettings.setDatasetName(_dataset.getHeading());
 
         return imageSettings;
     }
