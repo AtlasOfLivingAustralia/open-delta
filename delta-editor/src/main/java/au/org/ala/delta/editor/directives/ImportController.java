@@ -205,7 +205,9 @@ public class ImportController  {
 			publish(_status);
 						
 			for (DirectiveFileInfo file : _files) {
-				
+				if (isCancelled()) {
+					break;
+				}
 				File toParse = new File(_directoryName+file.getFileName());
 				FileInputStream fileIn = new FileInputStream(toParse);
 				InputStreamReader reader = new InputStreamReader(fileIn, _context.getFileEncoding());
@@ -219,6 +221,8 @@ public class ImportController  {
 				_status.setTotalLines(_status.getTotalLines()+1);
 				publish(_status);
 			}
+			_status.finish();
+			publish(_status);
 			
 			return null;
 		}
@@ -245,17 +249,28 @@ public class ImportController  {
 
 		@Override
 		public void handleUnrecognizedDirective(ImportContext context, List<String> controlWords) {
-			_status.error("unrecognised directive " +controlWords);
-			publish(_status);
+			error("unrecognised directive " +controlWords);
 		}
 
 
 		@Override
 		public void handleDirectiveProcessingException(ImportContext context, AbstractDirective<ImportContext> d,
 				Exception ex) {
-			_status.error(ex.getMessage());
-			
+			error(ex.getMessage());
+		}
+		
+		private void error(String message) {
+			_status.error(message);
 			publish(_status);
+			
+			if (_status.getPauseOnError()) {
+				_status.pause();
+				
+				if (_status.isCancelled()) {
+					cancel(false);
+				}
+			}
+			
 		}
 	}
 	

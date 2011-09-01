@@ -34,8 +34,15 @@ public class ImportExportStatus  {
 
 	private RTFBuilder _logBuilder;
 	
+	private volatile boolean _cancelled;
+	private volatile boolean _paused;
+	private volatile boolean _finished;
 	
 	public ImportExportStatus() {
+		_cancelled = false;
+		_finished = false;
+		_paused = false;
+		
 		_logBuilder = new RTFBuilder();
 		_logBuilder.startDocument();
 		_logBuilder.setAlignment(Alignment.CENTER);
@@ -208,6 +215,58 @@ public class ImportExportStatus  {
 	public String getImportLog() {
 		return _logBuilder.toString() + "}\n";
 	}
+
+	public boolean getPauseOnError() {
+		return true;
+	}
 	
+	/**
+	 * Pauses the execution of the calling Thread until such time as some
+	 * other thread calls resume().
+	 * In the intended use case, this object becomes the synchronization
+	 * point between the ImportController.DoImportTask and the ImportExportStatusDialog.
+	 */
+	public void pause() {
+		_paused = true;
+		synchronized (this) {
+			try {
+				this.wait();
+			}
+			catch (InterruptedException e){}
+		}
+	}
 	
+	/**
+	 * Combined with the pause() method, this is used by the
+	 * ImportController.DoImportTask to pause and resume the import operation.
+	 */
+	public void resume() {
+		_paused = false;
+		synchronized(this) {
+			this.notify();
+		}
+	}
+
+	public void cancel() {
+		_cancelled = true;
+		synchronized(this) {
+			this.notify();
+		}
+	}
+	
+	public boolean isCancelled() {
+		return _cancelled;
+	}
+	
+	public boolean isPaused() {
+		return _paused;
+	}
+
+	public void finish() {
+		_finished = true;
+	}
+	
+	public boolean isFinished() {
+		return _finished;
+	}
 }

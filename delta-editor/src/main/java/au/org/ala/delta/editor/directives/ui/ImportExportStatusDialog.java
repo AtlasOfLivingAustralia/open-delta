@@ -39,22 +39,37 @@ public class ImportExportStatusDialog extends JDialog {
 	private JLabel currentFileErrors;
 	private JLabel textFromLastShowDirective;
 	private JButton btnDone;
+	private JButton btnContinue;
 	private JButton btnCancel;
 	private JCheckBox chckbxPauseOnErrors;
-
+	
+	private ImportExportStatus _status;
+	private ActionMap _actions;
+	
 	/**
 	 * Displays the status of a directives import during the import process.
 	 */
 	public ImportExportStatusDialog(Window parent) {
 		super(parent);
+		_actions = Application.getInstance().getContext().getActionMap(this);
 		createUI();
 		addEventListeners();
 	}
 	
 	private void addEventListeners() {
-		ActionMap actions = Application.getInstance().getContext().getActionMap(this);
-		btnDone.setAction(actions.get("importExportFinished"));
-		btnCancel.setAction(actions.get("cancelImportExport"));
+		
+		javax.swing.Action done = _actions.get("importExportFinished");
+		done.setEnabled(false);
+		btnDone.setAction(done);
+		
+		javax.swing.Action continueAction = _actions.get("continueImportExport");
+		continueAction.setEnabled(false);
+		btnContinue.setAction(continueAction);
+		
+		javax.swing.Action cancelAction = _actions.get("cancelImportExport");
+		cancelAction.setEnabled(false);
+		btnCancel.setAction(cancelAction);
+		
 	}
 
 	private void createUI() {
@@ -81,6 +96,7 @@ public class ImportExportStatusDialog extends JDialog {
 		chckbxPauseOnErrors = new JCheckBox("Pause on errors and messages");
 		chckbxPauseOnErrors.setSelected(true);
 		
+		btnContinue = new JButton("Continue");
 		btnDone = new JButton("Done");
 		
 		btnCancel = new JButton("Cancel");
@@ -99,6 +115,8 @@ public class ImportExportStatusDialog extends JDialog {
 						.addComponent(lblTextFromLast, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 388, Short.MAX_VALUE)
 						.addComponent(textFromLastShowDirective, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 388, Short.MAX_VALUE)
 						.addGroup(gl_statusPanel.createSequentialGroup()
+							.addComponent(btnContinue)
+							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(btnDone)
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(btnCancel)))
@@ -120,6 +138,7 @@ public class ImportExportStatusDialog extends JDialog {
 					.addComponent(chckbxPauseOnErrors)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_statusPanel.createParallelGroup(Alignment.BASELINE)
+						.addComponent(btnContinue)
 						.addComponent(btnCancel)
 						.addComponent(btnDone))
 					.addGap(14))
@@ -282,6 +301,7 @@ public class ImportExportStatusDialog extends JDialog {
 	 * @param status contains the current import status.
 	 */
 	public void update(ImportExportStatus status) {
+		_status = status;
 		heading.setText(status.getHeading());
 		importDirectory.setText(status.getImportDirectory());
 		currentFile.setText(status.getCurrentFile());
@@ -293,6 +313,15 @@ public class ImportExportStatusDialog extends JDialog {
 		currentFileErrors.setText(Integer.toString(status.getErrorsInCurrentFile()));
 		
 		textFromLastShowDirective.setText(status.getTextFromLastShowDirective());
+		
+		javax.swing.Action done = _actions.get("importExportFinished");
+		done.setEnabled(_status.isFinished());
+		
+		javax.swing.Action continueAction = _actions.get("continueImportExport");
+		continueAction.setEnabled(_status.isPaused());
+		
+		javax.swing.Action cancelAction = _actions.get("cancelImportExport");
+		cancelAction.setEnabled(_status.isPaused());
 	}
 	
 	@Action
@@ -302,9 +331,20 @@ public class ImportExportStatusDialog extends JDialog {
 	
 	@Action
 	public void cancelImportExport() {
+		if (_status != null) {
+			_status.cancel();
+			_status.resume();
+			
+		}
 		setVisible(false);
 	}
 	
+	@Action
+	public void continueImportExport() {
+		if (_status != null) {
+			_status.resume();
+		}
+	}
 	public boolean getPauseOnError() {
 		return chckbxPauseOnErrors.isSelected();
 	}
