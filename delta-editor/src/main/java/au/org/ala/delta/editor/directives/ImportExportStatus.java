@@ -24,10 +24,10 @@ public class ImportExportStatus  {
 	private String currentFile;
 	private String currentDirective;
 	
-	private int totalLines;
+	private int totalDirectives;
 	private int totalErrors;
 	
-	private int lineInCurentFile;
+	private int directivesInCurentFile;
 	private int errorsInCurrentFile;
 	
 	private String textFromLastShowDirective;
@@ -106,6 +106,7 @@ public class ImportExportStatus  {
 		
 		this.currentFile = currentFile.getFileName();
 		errorsInCurrentFile = 0;
+		directivesInCurentFile = 0;
 		
 		_logBuilder.setAlignment(Alignment.LEFT);
 		_logBuilder.appendText("");
@@ -140,6 +141,8 @@ public class ImportExportStatus  {
 	 * @param currentDirective the currentDirective to set
 	 */
 	public void setCurrentDirective(AbstractDirective<? extends AbstractDeltaContext> directive, String data) {
+		directivesInCurentFile++;
+		totalDirectives++;
 		currentDirective = directive.getName();
 		
 		if (ArrayUtils.equalsIgnoreCase(Show.CONTROL_WORDS, directive.getControlWords())) {
@@ -156,15 +159,8 @@ public class ImportExportStatus  {
 	/**
 	 * @return the totalLines
 	 */
-	public int getTotalLines() {
-		return totalLines;
-	}
-
-	/**
-	 * @param totalLines the totalLines to set
-	 */
-	public void setTotalLines(int totalLines) {
-		this.totalLines = totalLines;
+	public int getTotalDirectives() {
+		return totalDirectives;
 	}
 
 	public void error(String message) {
@@ -192,15 +188,8 @@ public class ImportExportStatus  {
 	/**
 	 * @return the lineInCurentFile
 	 */
-	public int getLineInCurentFile() {
-		return lineInCurentFile;
-	}
-
-	/**
-	 * @param lineInCurentFile the lineInCurentFile to set
-	 */
-	public void setLineInCurentFile(int lineInCurentFile) {
-		this.lineInCurentFile = lineInCurentFile;
+	public int getDirectivesInCurentFile() {
+		return directivesInCurentFile;
 	}
 
 	/**

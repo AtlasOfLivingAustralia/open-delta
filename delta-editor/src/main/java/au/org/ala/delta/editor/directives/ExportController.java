@@ -78,7 +78,7 @@ public class ExportController {
 	 */
 	public void doExport(File selectedDirectory, List<DirectiveFileInfo> files) {
 		ImportExportStatusDialog statusDialog = new ImportExportStatusDialog(
-				_context.getMainFrame());
+				_context.getMainFrame(), "export");
 		_context.show(statusDialog);
 
 		// Do the import on a background thread.

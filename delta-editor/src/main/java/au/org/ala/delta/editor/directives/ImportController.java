@@ -96,7 +96,7 @@ public class ImportController  {
 	}
 	
 	public void doImport(File selectedDirectory, List<DirectiveFileInfo> files) {
-		ImportExportStatusDialog statusDialog = new ImportExportStatusDialog(_editor.getMainFrame());
+		ImportExportStatusDialog statusDialog = new ImportExportStatusDialog(_editor.getMainFrame(), "import");
 		_editor.show(statusDialog);
 		
 		// Do the import on a background thread.
@@ -216,7 +216,6 @@ public class ImportController  {
 				publish(_status);
 				importDirectivesFile(file, reader, this);
 				
-				_status.setTotalLines(_status.getTotalLines()+1);
 				publish(_status);
 			}
 			_status.finish();

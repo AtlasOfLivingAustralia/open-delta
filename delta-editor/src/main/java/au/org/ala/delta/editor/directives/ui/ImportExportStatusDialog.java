@@ -45,13 +45,16 @@ public class ImportExportStatusDialog extends JDialog {
 	
 	private ImportExportStatus _status;
 	private ActionMap _actions;
+	private String _resourcePrefix;
+	
 	
 	/**
 	 * Displays the status of a directives import during the import process.
 	 */
-	public ImportExportStatusDialog(Window parent) {
+	public ImportExportStatusDialog(Window parent, String prefix) {
 		super(parent);
 		_actions = Application.getInstance().getContext().getActionMap(this);
+		_resourcePrefix = prefix;
 		createUI();
 		addEventListeners();
 	}
@@ -75,6 +78,7 @@ public class ImportExportStatusDialog extends JDialog {
 	}
 
 	private void createUI() {
+		setName("importExportStatusDialog");
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setMinimumSize(new Dimension(465, 354));
 		setPreferredSize(new Dimension(465, 354));
@@ -82,6 +86,8 @@ public class ImportExportStatusDialog extends JDialog {
 		getContentPane().add(statusPanel, BorderLayout.CENTER);
 		
 		JLabel lblImportingDeltaData = new JLabel("Importing DELTA data set");
+		lblImportingDeltaData.setName(_resourcePrefix+"Heading");
+		
 		lblImportingDeltaData.setHorizontalAlignment(SwingConstants.CENTER);
 		
 		JPanel panel = new JPanel();
@@ -89,13 +95,14 @@ public class ImportExportStatusDialog extends JDialog {
 		
 		JPanel panel_1 = new JPanel();
 		
-		JLabel lblTextFromLast = new JLabel("Text from last *SHOW directive:");
+		JLabel lblTextFromLast = new JLabel("");
+		lblTextFromLast.setName("lastShowDirectiveLabel");
 		lblTextFromLast.setHorizontalAlignment(SwingConstants.CENTER);
 		
 		textFromLastShowDirective = new JLabel();
 		textFromLastShowDirective.setBorder(new SoftBevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		
-		chckbxPauseOnErrors = new JCheckBox("Pause on errors and messages");
+		chckbxPauseOnErrors = new JCheckBox();
 		chckbxPauseOnErrors.setSelected(true);
 		
 		btnContinue = new JButton("Continue");
@@ -146,29 +153,30 @@ public class ImportExportStatusDialog extends JDialog {
 					.addGap(14))
 		);
 		
-		JLabel lblStatistics = new JLabel("Statistics");
-		
-		JLabel lblTota = new JLabel("Total");
-		
-		JLabel lblCurrentFile_1 = new JLabel("Current file");
-		
+		JLabel lblStatistics = new JLabel();
+		lblStatistics.setName("importExportStatisticsLabel");
+		JLabel lblTota = new JLabel();
+		lblTota.setName("importExportTotalLabel");
+		JLabel lblCurrentFile_1 = new JLabel();
+		lblCurrentFile_1.setName("importExportCurrentFileLabel");
 		JPanel panel_2 = new JPanel();
 		panel_2.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 		
-		JLabel lblLines = new JLabel("Lines:");
+		JLabel lblLines = new JLabel();
+		lblLines.setName("importExportDirectivesLabel");
 		
-		totalLines = new JLabel("1861");
+		totalLines = new JLabel("");
 		totalLines.setHorizontalAlignment(SwingConstants.TRAILING);
 		
-		currentFileLine = new JLabel("8");
+		currentFileLine = new JLabel("");
 		currentFileLine.setHorizontalAlignment(SwingConstants.TRAILING);
 		
-		JLabel lblErrors = new JLabel("Errors:");
-		
-		totalErrors = new JLabel("0");
+		JLabel lblErrors = new JLabel();
+		lblErrors.setName("importExportErrorsLabel");
+		totalErrors = new JLabel("");
 		totalErrors.setHorizontalAlignment(SwingConstants.TRAILING);
 		
-		currentFileErrors = new JLabel("0");
+		currentFileErrors = new JLabel("");
 		currentFileErrors.setHorizontalAlignment(SwingConstants.TRAILING);
 		GroupLayout gl_panel_2 = new GroupLayout(panel_2);
 		gl_panel_2.setHorizontalGroup(
@@ -234,14 +242,14 @@ public class ImportExportStatusDialog extends JDialog {
 		);
 		panel_1.setLayout(gl_panel_1);
 		
-		JLabel lblCurrent = new JLabel("Current:");
-		
+		JLabel lblCurrent = new JLabel();
+		lblCurrent.setName("importExportCurrentLabel");
 		JLabel lblCurrentFile = new JLabel("Current file:");
-		
-		JLabel lblImportDirectory = new JLabel("Import directory:");
-		
-		JLabel lblHeading = new JLabel("Heading:");
-		
+		lblCurrentFile.setName("importExportCurrentFileLabel");
+		JLabel lblImportDirectory = new JLabel();
+		lblImportDirectory.setName(_resourcePrefix+"DirectoryLabel");
+		JLabel lblHeading = new JLabel();
+		lblHeading.setName("importExportHeadingLabel");
 		heading = new JLabel("");
 		
 		importDirectory = new JLabel("");
@@ -309,9 +317,9 @@ public class ImportExportStatusDialog extends JDialog {
 		currentFile.setText(status.getCurrentFile());
 		currentDirective.setText(status.getCurrentDirective());
 		
-		totalLines.setText(Integer.toString(status.getTotalLines()));
+		totalLines.setText(Integer.toString(status.getTotalDirectives()));
 		totalErrors.setText(Integer.toString(status.getTotalErrors()));
-		currentFileLine.setText(Integer.toString(status.getLineInCurentFile()));
+		currentFileLine.setText(Integer.toString(status.getDirectivesInCurentFile()));
 		currentFileErrors.setText(Integer.toString(status.getErrorsInCurrentFile()));
 		
 		textFromLastShowDirective.setText(status.getTextFromLastShowDirective());
