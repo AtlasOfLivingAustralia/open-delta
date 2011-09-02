@@ -11,8 +11,8 @@ import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.directives.args.IdWithIdListParser;
 
 public class AddCharacters extends AbstractCustomDirective {
-	public AddCharacters(String... controlWords) {
-		super(controlWords);
+	public AddCharacters() {
+		super("add", "characters");
 	}
 
 	@Override
