@@ -1567,7 +1567,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             dlg.setImages(characterKeywordImages);
             dlg.setTitle(selectCharacterKeywordsCaption);
 
-            show(dlg);
+            show(dlg);            
 
             Set<String> keywords = dlg.getSelectedKeywords();
 

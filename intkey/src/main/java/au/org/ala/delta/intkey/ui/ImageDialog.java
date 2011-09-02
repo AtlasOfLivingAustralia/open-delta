@@ -89,13 +89,16 @@ public class ImageDialog extends JDialog implements OverlaySelectionObserver {
     public ImageDialog(Frame owner, ImageSettings imageSettings) {
         super(owner, true);
         init(imageSettings);
-        setLocationRelativeTo(owner);
     }
 
     public ImageDialog(Dialog owner, ImageSettings imageSettings) {
         super(owner, true);
         init(imageSettings);
-        setLocationRelativeTo(owner);
+    }
+    
+    @Override
+    public String getName() {
+    	return null;
     }
 
     private void init(ImageSettings imageSettings) {
