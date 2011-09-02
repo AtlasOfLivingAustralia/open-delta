@@ -1,13 +1,26 @@
 package au.org.ala.delta.intkey.ui;
 
+import java.awt.BorderLayout;
 import java.awt.Dialog;
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GridLayout;
+import java.awt.Rectangle;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -38,6 +51,7 @@ import au.org.ala.delta.model.image.ImageOverlay;
 import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.model.image.OverlayType;
 import au.org.ala.delta.ui.image.AboutImageDialog;
+import au.org.ala.delta.ui.image.ImagePanel.ScalingMode;
 import au.org.ala.delta.ui.image.ImageUtils;
 import au.org.ala.delta.ui.image.ImageViewer;
 import au.org.ala.delta.ui.image.MultipleImageViewer;
@@ -48,7 +62,7 @@ import au.org.ala.delta.ui.image.overlay.SelectableTextOverlay;
 import au.org.ala.delta.ui.rtf.SimpleRtfEditorKit;
 import au.org.ala.delta.util.Pair;
 
-public class ImageDialog extends JDialog implements OverlaySelectionObserver {
+public class ImageDialog extends IntkeyDialog implements OverlaySelectionObserver {
 
     /**
      * 
@@ -80,8 +94,10 @@ public class ImageDialog extends JDialog implements OverlaySelectionObserver {
     protected JMenuItem _mnuItPreviousImage;
 
     protected Window _fullScreenWindow;
-    
+
     protected Formatter _imageDescriptionFormatter;
+
+    private List<Image> _images;
 
     /**
      * @wbp.parser.constructor
@@ -95,11 +111,6 @@ public class ImageDialog extends JDialog implements OverlaySelectionObserver {
         super(owner, true);
         init(imageSettings);
     }
-    
-    @Override
-    public String getName() {
-    	return null;
-    }
 
     private void init(ImageSettings imageSettings) {
         _imageSettings = imageSettings;
@@ -109,7 +120,7 @@ public class ImageDialog extends JDialog implements OverlaySelectionObserver {
         _selectedStates = new HashSet<Integer>();
         _selectedKeywords = new HashSet<String>();
         _selectedValues = new HashSet<Pair<String, String>>();
-        
+
         _imageDescriptionFormatter = new Formatter(false, false, false, true);
 
         buildMenu();
@@ -119,12 +130,11 @@ public class ImageDialog extends JDialog implements OverlaySelectionObserver {
 
             @Override
             public void windowOpened(WindowEvent e) {
-                fitToImage();
+                // fitToImage();
                 replaySound();
             }
 
         });
-
     }
 
     private void buildMenu() {
@@ -203,6 +213,7 @@ public class ImageDialog extends JDialog implements OverlaySelectionObserver {
     }
 
     public void setImages(List<Image> images) {
+        _images = images;
 
         // remove the old multiple image viewer if there is one.
         if (_multipleImageViewer != null) {
@@ -212,19 +223,19 @@ public class ImageDialog extends JDialog implements OverlaySelectionObserver {
         _multipleImageViewer = new MultipleImageViewer(_imageSettings);
         getContentPane().add(_multipleImageViewer);
 
-        for (Image image : images) {
+        for (Image image : _images) {
             ImageViewer viewer = new ImageViewer(image, _imageSettings);
             _multipleImageViewer.addImageViewer(viewer);
             viewer.addOverlaySelectionObserver(this);
         }
-        
-        populateSubjectMenu(images);
+
+        populateSubjectMenu(_images);
 
         _selectedStates = new HashSet<Integer>();
         _selectedKeywords = new HashSet<String>();
         _selectedValues = new HashSet<Pair<String, String>>();
 
-        _mnuItNextImage.setEnabled(images.size() > 1);
+        _mnuItNextImage.setEnabled(_images.size() > 1);
         _mnuItPreviousImage.setEnabled(false);
 
         this.pack();
@@ -261,13 +272,15 @@ public class ImageDialog extends JDialog implements OverlaySelectionObserver {
         ImageOverlay imageOverlay = overlay.getImageOverlay();
         if (imageOverlay.isType(OverlayType.OLOK)) {
             _okButtonPressed = true;
-            this.setVisible(false);
+            setVisible(false);
         } else if (imageOverlay.isType(OverlayType.OLCANCEL)) {
             _okButtonPressed = false;
-            this.setVisible(false);
+            setVisible(false);
         } else if (imageOverlay.isType(OverlayType.OLIMAGENOTES)) {
             Image image = _multipleImageViewer.getVisibleViewer().getViewedImage();
             displayRTFWindow(image.getNotes(), "Image Notes");
+        } else if (imageOverlay.isType(OverlayType.OLNOTES)) {
+            displayRTFWindow("Character notes go here", "Notes");
         } else if (imageOverlay.isType(OverlayType.OLSTATE)) {
             int stateId = imageOverlay.stateId;
             if (overlay.isSelected()) {
@@ -331,43 +344,45 @@ public class ImageDialog extends JDialog implements OverlaySelectionObserver {
 
     @Action
     public void fullScreen() {
-
-        // Image image =
-        // _multipleImageViewer.getVisibleViewer().getViewedImage();
-        // ImageViewer copyViewer = new ImageViewer(image, _imageSettings);
-        // copyViewer.setScalingMode(ScalingMode.NO_SCALING);
-        // copyViewer.addOverlaySelectionObserver(this);
-        //
-        // final Window w = new Window(this);
-        // w.setLayout(new BorderLayout());
-        // w.add(copyViewer, BorderLayout.CENTER);
-        //
-        // final GraphicsDevice gd =
-        // this.getGraphicsConfiguration().getDevice();
-        //
-        // copyViewer.addOverlaySelectionObserver(new OverlaySelectionObserver()
-        // {
-        //
-        // @Override
-        // public void overlaySelected(SelectableOverlay overlay) {
-        // ImageOverlay imageOverlay = overlay.getImageOverlay();
-        // if (imageOverlay.isType(OverlayType.OLOK) ||
-        // imageOverlay.isType(OverlayType.OLCANCEL)) {
-        // w.setVisible(false);
-        // w.dispose();
-        // gd.setFullScreenWindow(null);
-        // }
-        // }
-        // });
-        //
-        // gd.setFullScreenWindow(w);
-
-        Image image = _multipleImageViewer.getVisibleViewer().getViewedImage();
-        List<Image> images = new ArrayList<Image>();
-        images.add(image);
         Window applicationWindow = ((SingleFrameApplication) Application.getInstance()).getMainFrame();
-        this.setVisible(false);
-        ImageUtils.displayImagesFullScreen(images, _imageSettings, applicationWindow);
+
+        final JDialog dlg = new JDialog(this);
+        dlg.setLayout(new BorderLayout());
+        dlg.setUndecorated(true);
+
+        Image image = _images.get(_multipleImageViewer.getIndexCurrentlyViewedImage());
+        ImageViewer imageViewer = new ImageViewer(image, _imageSettings);
+        imageViewer.addOverlaySelectionObserver(this);
+        imageViewer.setScalingMode(ScalingMode.NO_SCALING);
+
+        dlg.add(imageViewer, BorderLayout.CENTER);
+
+        Rectangle r = applicationWindow.getGraphicsConfiguration().getBounds();
+        dlg.setLocation(r.x, r.y);
+        //
+        // //set this dialog to have the same location - we don't want it still
+        // visible on a different monitor
+        this.setLocation(r.x, r.y);
+        dlg.setSize(new Dimension(r.width, r.height));
+
+        dlg.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                dlg.setVisible(false);
+            }
+        });
+
+        dlg.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+                    dlg.setVisible(false);
+                }
+            }
+        });
+
+        dlg.setFocusable(true);
+        dlg.setVisible(true);
     }
 
     @Action
@@ -406,7 +421,7 @@ public class ImageDialog extends JDialog implements OverlaySelectionObserver {
         fitToImage();
         replaySound();
     }
-    
+
     protected void displayRTFWindow(String rtfContent, String title) {
         RtfReportDisplayDialog dlg = new RtfReportDisplayDialog(this, new SimpleRtfEditorKit(null), rtfContent, title);
         ((SingleFrameApplication) Application.getInstance()).show(dlg);

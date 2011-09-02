@@ -23,8 +23,9 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
+import java.awt.Dimension;
 
-public class RtfReportDisplayDialog extends JDialog {
+public class RtfReportDisplayDialog extends IntkeyDialog {
     /**
      * 
      */
@@ -55,13 +56,17 @@ public class RtfReportDisplayDialog extends JDialog {
     @Resource
     String fileChooserTitle;
     
+    /**
+     * @wbp.parser.constructor
+     */
     public RtfReportDisplayDialog(Dialog owner, EditorKit editorKit, String contentSource, String title) {
-        super(owner);
+        super(owner, false);
+        setPreferredSize(new Dimension(800, 450));
         initialize(editorKit, contentSource, title);
     }
 
     public RtfReportDisplayDialog(Frame owner, EditorKit editorKit, String contentSource, String title) {
-        super(owner);
+        super(owner, false);
         initialize(editorKit, contentSource, title);
     }
     

@@ -2,12 +2,9 @@ package au.org.ala.delta.ui.image;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dialog.ModalityType;
 import java.awt.Dimension;
-import java.awt.GraphicsDevice;
 import java.awt.GridBagLayout;
 import java.awt.Rectangle;
-import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -16,7 +13,6 @@ import java.awt.event.MouseEvent;
 import java.util.List;
 
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import au.org.ala.delta.model.image.Image;
@@ -30,7 +26,7 @@ public class ImageUtils {
     // window if the last image
     // is currently being displayed.
     public static void displayImagesFullScreen(List<Image> images, ImageSettings imageSettings, Window applicationWindow) {
-        final JFrame w = new JFrame(applicationWindow.getGraphicsConfiguration());
+        final JDialog w = new JDialog(applicationWindow);
         w.setUndecorated(true);
         w.setLayout(new BorderLayout());
 
@@ -77,24 +73,6 @@ public class ImageUtils {
         });
 
         w.setFocusable(true);
-
-        w.addKeyListener(new KeyListener() {
-
-            @Override
-            public void keyTyped(KeyEvent e) {
-            }
-
-            @Override
-            public void keyReleased(KeyEvent e) {
-            }
-
-            @Override
-            public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-                    w.setVisible(false);
-                }
-            }
-        });
 
         Rectangle r = applicationWindow.getGraphicsConfiguration().getBounds();
         w.setLocation(r.x, r.y);
