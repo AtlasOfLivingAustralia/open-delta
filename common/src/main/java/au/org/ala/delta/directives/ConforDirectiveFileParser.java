@@ -41,51 +41,88 @@ public class ConforDirectiveFileParser extends DirectiveParser<DeltaContext> {
     public static ConforDirectiveFileParser createInstance() {
         ConforDirectiveFileParser instance = new ConforDirectiveFileParser();
         
-       instance.registerDirective(new CharacterForTaxonImages());
+        instance.registerDirective(new AbsoluteError());
+        instance.registerDirective(new AddCharacters());
+        instance.registerDirective(new ApplicableCharacters());
+        
+        instance.registerDirective(new CharacterForTaxonImages());
+        instance.registerDirective(new CharacterForTaxonNames());   
         instance.registerDirective(new CharacterHeadings());
         instance.registerDirective(new CharacterImages());
-        
         instance.registerDirective(new CharacterList());
         instance.registerDirective(new CharacterNotes());
         instance.registerDirective(new CharacterReliabilities());
+        instance.registerDirective(new CharactersForSynonymy());
         instance.registerDirective(new CharacterTypes());
         instance.registerDirective(new CharacterWeights());
+        instance.registerDirective(new ChineseFormat());
         instance.registerDirective(new Comment());
+        
         instance.registerDirective(new DataBufferSize());
         instance.registerDirective(new DependentCharacters());
+        instance.registerDirective(new DisableDeltaOutput());
+        
+        instance.registerDirective(new EmphasizeCharacters());
         instance.registerDirective(new ExcludeCharacters());
+        
+        instance.registerDirective(new FormattingMarks());
+        
         instance.registerDirective(new Heading());
+        
         instance.registerDirective(new ImplicitValues());
+        instance.registerDirective(new InapplicableCharacters());
         instance.registerDirective(new InputFile());
         instance.registerDirective(new InsertImplicitValues());
         instance.registerDirective(new IntkeyOutputFile());       
         instance.registerDirective(new ItemDescriptions());
+        instance.registerDirective(new ItemSubHeadings());
+        
+        instance.registerDirective(new KeyOutputFile());   
+        instance.registerDirective(new KeyStates());   
+        
+        instance.registerDirective(new LinkCharacters());
         instance.registerDirective(new ListingFile());
 
-        instance.registerDirective(new NumberOfCharacters());
         instance.registerDirective(new MandatoryCharacters());
-        instance.registerDirective(new MaximumNumberOfStates());
         instance.registerDirective(new MaximumNumberOfItems());
+        instance.registerDirective(new MaximumNumberOfStates());
+      
         instance.registerDirective(new NewParagraphAtCharacters());
+        instance.registerDirective(new NonautomaticControllingCharacters());
+        instance.registerDirective(new NumberOfCharacters());
         instance.registerDirective(new NumbersOfStates());
+        
         instance.registerDirective(new OmitCharacterNumbers());
         instance.registerDirective(new OmitInapplicables());
         instance.registerDirective(new OmitInnerComments());
+        instance.registerDirective(new OmitLowerForCharacters());
+        instance.registerDirective(new OmitOrForCharacters());
+        instance.registerDirective(new OmitPeriodForCharacters());
+        instance.registerDirective(new OmitSpaceBeforeUnits());
         instance.registerDirective(new OmitTypeSettingMarks());
+        instance.registerDirective(new OutputFormatHtml());
+        instance.registerDirective(new OverlayFonts());
         
+        instance.registerDirective(new PercentageError());
         instance.registerDirective(new PrintFile());
         instance.registerDirective(new PrintWidth());
 
-
+        instance.registerDirective(new RegistrationSubHeading());
         instance.registerDirective(new ReplaceAngleBrackets());
+        
         instance.registerDirective(new Show());
-        
         instance.registerDirective(new StartupImages());
-        instance.registerDirective(new TaxonImages());
+        instance.registerDirective(new SubjectForOutputFiles());
         
+        instance.registerDirective(new TaxonImages());
+        instance.registerDirective(new TaxonLinks());
+        instance.registerDirective(new TranslateImplicitValues());
         instance.registerDirective(new TranslateInto());
         instance.registerDirective(new TypeSettingMarks());
-
+        
+        instance.registerDirective(new UseControllingCharactersFirst());
+        instance.registerDirective(new Vocabulary());
+        
         
         return instance;
     }

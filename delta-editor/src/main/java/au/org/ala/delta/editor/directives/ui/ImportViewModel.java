@@ -14,7 +14,7 @@ import au.org.ala.delta.editor.slotfile.model.DirectiveFile.DirectiveType;
  * operation.
  */
 public class ImportViewModel extends ImportExportViewModel {
-
+	
 	@Override
 	public void populate(EditorViewModel model) {
 		
@@ -26,6 +26,9 @@ public class ImportViewModel extends ImportExportViewModel {
 	}
 
 	private void populateIncludedFiles(EditorViewModel model) {
+		
+		_specsDisabled = model.getNumberOfCharacters() > 0 || model.getMaximumNumberOfItems() > 0;
+		
 		int directiveFileCount = model.getDirectiveFileCount();
 		
 		_includedDirectivesFiles = new ArrayList<DirectiveFileInfo>();

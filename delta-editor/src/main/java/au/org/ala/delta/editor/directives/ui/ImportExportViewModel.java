@@ -24,10 +24,12 @@ public abstract class ImportExportViewModel {
 	protected DirectiveFileInfo _itemsFile;
 	protected List<DirectiveFileInfo> _includedDirectivesFiles;
 	protected List<DirectiveFileInfo> _excludedDirectiveFiles;
+	protected boolean _specsDisabled;
 
 	public ImportExportViewModel() {
 		_includedDirectivesFiles = new ArrayList<DirectiveFileInfo>();
 		_excludedDirectiveFiles = new ArrayList<DirectiveFileInfo>();
+		_specsDisabled = false;
 	}
 
 	public void include(String file) {
@@ -50,6 +52,10 @@ public abstract class ImportExportViewModel {
 		_excludedDirectiveFiles.remove(file);
 		_specsFile = file;
 
+	}
+	
+	public boolean isSpecsDisabled() {
+		return _specsDisabled;
 	}
 	
 	public void moveToSpecs(String fileName) {
@@ -99,10 +105,11 @@ public abstract class ImportExportViewModel {
 	public List<DirectiveFileInfo> getSelectedFiles() {
 
 		List<DirectiveFileInfo> files = new ArrayList<DirectiveFileInfo>();
-		addIfNotEmpty(_specsFile, files);
-		addIfNotEmpty(_charactersFile, files);
-		addIfNotEmpty(_itemsFile, files);
-
+		if (!_specsDisabled) {
+			addIfNotEmpty(_specsFile, files);
+			addIfNotEmpty(_charactersFile, files);
+			addIfNotEmpty(_itemsFile, files);
+		}
 		files.addAll(_includedDirectivesFiles);
 
 		return files;

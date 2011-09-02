@@ -63,14 +63,11 @@ public class DeltaVOP extends VOP {
 		}
 
 		for (Entry<VOItemDesc, String> entry : _itemNames.entrySet()) {
-			if (name.equals(entry.getValue())) {
+			if (ansiName.equals(entry.getValue())) {
 				return entry.getKey();
 			}
 		}
-		if (_itemNames.containsValue(ansiName)) {
-			return null;
-		}
-
+	
 		return null;
 
 	}

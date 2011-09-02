@@ -8,7 +8,6 @@ import java.util.List;
 
 import javax.swing.ActionMap;
 import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
 
 import org.apache.commons.lang.StringUtils;
 import org.jdesktop.application.Action;
@@ -62,10 +61,6 @@ public class ImportController  {
 	
 	public void begin() {
 		
-		if ((_model.getNumberOfCharacters() > 0) || (_model.getMaximumNumberOfItems() > 0)) {
-			JOptionPane.showMessageDialog(_editor.getMainFrame(), "Imports are only currently supported for new data sets.");
-			return;
-		}
 		_importModel = new ImportViewModel();
 		File dataSetPath = new File(_model.getDataSetPath());
 		if (dataSetPath.exists()) {

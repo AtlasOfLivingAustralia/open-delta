@@ -588,6 +588,16 @@ public class ImportExportDialog extends JDialog {
 		if (specsFile != null) {
 			specificationsFileTextField.setText(specsFile.getFileName());
 		}
+		if (_model.isSpecsDisabled()) {
+			charactersFileTextField.setEnabled(false);
+			itemsFileTextField.setEnabled(false);
+			specificationsFileTextField.setEnabled(false);
+			moveToSpecsButton.setEnabled(false);
+			moveToCharsButton.setEnabled(false);
+			moveToItemsButton.setEnabled(false);
+		
+		}
+		
 		currentImportFilterTextField.setText(_currentFilter);
 		FilteredListModel possibleDirectivesModel = new FilteredListModel(_currentFilter);
 		possibleDirectivesList.setModel(possibleDirectivesModel);

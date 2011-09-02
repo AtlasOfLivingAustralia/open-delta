@@ -113,6 +113,7 @@ public class DeltaContext extends AbstractDeltaContext {
 	private boolean _chineseFormat = false;
 	private boolean _useNormalValues = false;
 	private boolean _omitSpaceBeforeUnits = false;
+	private boolean _translateImplicitValues = false;
 	
 	private Map<HeadingType, String> _headings = new HashMap<HeadingType, String>();
 	private Integer _characterForTaxonImages = null;
@@ -803,6 +804,14 @@ public class DeltaContext extends AbstractDeltaContext {
 		return _omitSpaceBeforeUnits;
 	}
 
+	public void setTranslateImplicitValues(boolean translate) {
+		_translateImplicitValues = translate;
+	}
+	
+	public boolean getTranslateImplictValues() {
+		return _translateImplicitValues;
+	}
+	
 	@Override
 	public ParsingContext newParsingContext() {
 		ParsingContext context = super.newParsingContext();

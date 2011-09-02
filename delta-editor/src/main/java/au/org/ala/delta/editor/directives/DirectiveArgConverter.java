@@ -191,18 +191,18 @@ public class DirectiveArgConverter {
 		}
 	}
 	
-	class ItemDescriptionConverter implements IdConverter {
+	class ItemDescriptionConverter extends ItemNumberConverter {
 		@Override
 		public int convertId(Object id) {
 			// Delimeters have a funny behaviour.
 			if (id instanceof Integer) {
 				int idInt = (Integer)id;
 				if (idInt != Integer.MIN_VALUE) {
-					throw new IllegalArgumentException("Unsupported id: "+id);
+					return super.convertId(id);
 				}
 				return idInt;
 			}
-			VOItemDesc item = _vop.getItemFromName((String)id, true);
+			VOItemDesc item = _vop.getItemFromName((String)id, false);
 			if (item == null) {
 				throw new IllegalArgumentException("No such item "+id);
 			}
