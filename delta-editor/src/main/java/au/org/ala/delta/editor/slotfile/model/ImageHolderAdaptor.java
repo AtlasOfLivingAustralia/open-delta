@@ -37,30 +37,33 @@ public abstract class ImageHolderAdaptor implements Illustratable {
 	 */
 	@Override
 	public Image addImage(String fileName, String comments) {
-		if (StringUtils.isEmpty(fileName)) {
-			throw new IllegalArgumentException("Image file name cannot be null");
-		}
-		VOImageDesc.ImageFixedData imageFixedData = new VOImageDesc.ImageFixedData(
-				getImageHolder().getUniId(), ImageType.IMAGE_TAXON);
-		VOImageDesc imageDesc = (VOImageDesc) getVOP().insertObject(imageFixedData,
-				imageFixedData.size(), null, 0, 0);
-		if (imageDesc != null) {
-			imageDesc.writeFileName(fileName);
-			try {
-				imageDesc.parseOverlays(comments);
-			} catch (ParseException e) {
-				throw new RuntimeException(e);
-			}
-
-			int imageId = imageDesc.getUniId();
-			List<Integer> images = getImageHolder().readImageList();
-			images.add(imageId);
-			getImageHolder().writeImageList(images);
+		synchronized (getVOP()) {
 			
-			return new Image(new VOImageAdaptor(getVOP(), imageDesc));
+			if (StringUtils.isEmpty(fileName)) {
+				throw new IllegalArgumentException("Image file name cannot be null");
+			}
+			VOImageDesc.ImageFixedData imageFixedData = new VOImageDesc.ImageFixedData(
+					getImageHolder().getUniId(), ImageType.IMAGE_TAXON);
+			VOImageDesc imageDesc = (VOImageDesc) getVOP().insertObject(imageFixedData,
+					imageFixedData.size(), null, 0, 0);
+			if (imageDesc != null) {
+				imageDesc.writeFileName(fileName);
+				try {
+					imageDesc.parseOverlays(comments);
+				} catch (ParseException e) {
+					throw new RuntimeException(e);
+				}
+	
+				int imageId = imageDesc.getUniId();
+				List<Integer> images = getImageHolder().readImageList();
+				images.add(imageId);
+				getImageHolder().writeImageList(images);
+				
+				return new Image(new VOImageAdaptor(getVOP(), imageDesc));
+			}
+			
+			return null;
 		}
-		
-		return null;
 	}
 	
 	/**
@@ -69,20 +72,24 @@ public abstract class ImageHolderAdaptor implements Illustratable {
 	 */
 	@Override
 	public List<Image> getImages() {
-		List<Integer> imageIds = getImageHolder().readImageList();
+		synchronized (getVOP()) {
+			List<Integer> imageIds = getImageHolder().readImageList();
+			
+			List<Image> images = new ArrayList<Image>();
 		
-		List<Image> images = new ArrayList<Image>();
-	
-		for (int id : imageIds) {
-			images.add(createImage(id));
+			for (int id : imageIds) {
+				images.add(createImage(id));
+			}
+			
+			return images;
 		}
-		
-		return images;
 	}
 	
 	@Override
 	public int getImageCount() {
-		return getImageHolder().getNImages();
+		synchronized (getVOP()) {
+			return getImageHolder().getNImages();
+		}
 	}
 	
 	/**
@@ -99,14 +106,16 @@ public abstract class ImageHolderAdaptor implements Illustratable {
 	
 	@Override
 	public void deleteImage(Image image) {
-		VOImageAdaptor imageAdaptor = (VOImageAdaptor)image.getImageData();
-		VOImageDesc imageDesc = imageAdaptor.getImageDesc();
-		if (imageDesc.getOwnerId() != getImageHolder().getUniId()) {
-			throw new IllegalArgumentException("Image is not owned by this object");
+		synchronized (getVOP()) {
+			VOImageAdaptor imageAdaptor = (VOImageAdaptor)image.getImageData();
+			VOImageDesc imageDesc = imageAdaptor.getImageDesc();
+			if (imageDesc.getOwnerId() != getImageHolder().getUniId()) {
+				throw new IllegalArgumentException("Image is not owned by this object");
+			}
+			getImageHolder().deleteImage(imageDesc.getUniId());
+			
+			getVOP().deleteObject(imageDesc);
 		}
-		getImageHolder().deleteImage(imageDesc.getUniId());
-		
-		getVOP().deleteObject(imageDesc);
 	}
 	
 	private int getImageId(Image image) {
@@ -116,17 +125,18 @@ public abstract class ImageHolderAdaptor implements Illustratable {
 	
 	@Override
 	public void moveImage(Image image, int position) {
-		
-		List<Integer> images = getImageHolder().readImageList();
-		int id = getImageId(image);
-		
-		for (int i=0; i<images.size(); i++) {
-			if (images.get(i) == id) {
-				images.remove(i);
-				images.add(position, id);
-				break;
+		synchronized (getVOP()) {
+			List<Integer> images = getImageHolder().readImageList();
+			int id = getImageId(image);
+			
+			for (int i=0; i<images.size(); i++) {
+				if (images.get(i) == id) {
+					images.remove(i);
+					images.add(position, id);
+					break;
+				}
 			}
+			getImageHolder().writeImageList(images);
 		}
-		getImageHolder().writeImageList(images);
 	}
 }

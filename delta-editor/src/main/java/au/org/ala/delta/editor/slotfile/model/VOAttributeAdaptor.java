@@ -13,6 +13,7 @@ import au.org.ala.delta.editor.slotfile.AttrChunk;
 import au.org.ala.delta.editor.slotfile.Attribute;
 import au.org.ala.delta.editor.slotfile.Attribute.AttrIterator;
 import au.org.ala.delta.editor.slotfile.ChunkType;
+import au.org.ala.delta.editor.slotfile.DeltaVOP;
 import au.org.ala.delta.editor.slotfile.TextType;
 import au.org.ala.delta.editor.slotfile.VOCharBaseDesc;
 import au.org.ala.delta.editor.slotfile.VOItemDesc;
@@ -27,32 +28,40 @@ public class VOAttributeAdaptor implements AttributeData {
 
     private VOItemDesc _itemDesc;
     private VOCharBaseDesc _charBaseDesc;
+    private DeltaVOP _vop;
 
     public VOAttributeAdaptor(VOItemDesc itemDesc, VOCharBaseDesc charBaseDesc) {
         _itemDesc = itemDesc;
         _charBaseDesc = charBaseDesc;
+        _vop = (DeltaVOP)itemDesc.getVOP();
 
     }
 
     @Override
     public String getValueAsString() {
-        return _itemDesc.readAttributeAsText(_charBaseDesc.getUniId(), TextType.RTF);
+    	synchronized (_vop) {
+    		return _itemDesc.readAttributeAsText(_charBaseDesc.getUniId(), TextType.RTF);
+		}
     }
 
     @Override
     public void setValueFromString(String value) {
-        Attribute attribute = new Attribute(value, _charBaseDesc);
-        _itemDesc.writeAttribute(attribute);
+    	synchronized (_vop) {
+	        Attribute attribute = new Attribute(value, _charBaseDesc);
+	        _itemDesc.writeAttribute(attribute);
+    	}
     }
 
     @Override
     public boolean isStatePresent(int stateNumber) {
-        int stateId = _charBaseDesc.uniIdFromStateNo(stateNumber);
-        Attribute attribute = _itemDesc.readAttribute(_charBaseDesc.getUniId());
-        if (attribute == null) {
-            return false;
-        }
-        return attribute.encodesState(_charBaseDesc, stateId, true);
+    	synchronized (_vop) {
+	        int stateId = _charBaseDesc.uniIdFromStateNo(stateNumber);
+	        Attribute attribute = _itemDesc.readAttribute(_charBaseDesc.getUniId());
+	        if (attribute == null) {
+	            return false;
+	        }
+	        return attribute.encodesState(_charBaseDesc, stateId, true);
+    	}
     }
 
     @Override
@@ -70,105 +79,109 @@ public class VOAttributeAdaptor implements AttributeData {
      *            the state number to toggle.
      */
     public void toggleStatePresent(int stateNumber) {
-
-        Attribute attribute = _itemDesc.readAttribute(_charBaseDesc.getUniId());
-
-        boolean changeMade = false;
-        int stateId = _charBaseDesc.uniIdFromStateNo(stateNumber);
-        if (attribute != null) {
-            if (!attribute.isSimple(_charBaseDesc)) {
-                return;
-            }
-            int previousStateNumber = 0;
-            AttrIterator i = (AttrIterator) attribute.iterator();
-            AttrIterator prevStateIterator = (AttrIterator) attribute.iterator();
-
-            while (i.hasNext()) {
-                AttrChunk chunk = i.get();
-                if (chunk.getType() == ChunkType.CHUNK_STATE) {
-                    int currentStateNumber = _charBaseDesc.stateNoFromUniId(chunk.getStateId());
-                    if (currentStateNumber == stateNumber) {
-                        if (i.getPos() == 0) {
-                            // The attribute iterator implementation doesn't
-                            // throw
-                            // concurrent modification exceptions so we can get
-                            // away with this....
-                            attribute.erase(i.getPos());
-                            i = (AttrIterator) attribute.iterator();
-                            if (i.hasNext()) {
-                                chunk = i.get();
-                                if (chunk.getType() == ChunkType.CHUNK_OR) {
-                                    attribute.erase(i.getPos());
-                                }
-                            }
-
-                        } else if (previousStateNumber != 0) {
-                            prevStateIterator.increment();
-                            AttrChunk previousChunk = prevStateIterator.get();
-                            if (previousChunk.getType() == ChunkType.CHUNK_OR) {
-                                i.increment();
-                                attribute.erase(prevStateIterator.getPos(), i.getPos());
-                            }
-                        }
-                        changeMade = true;
-                        break;
-                    } else if (_charBaseDesc.testCharFlag(VOCharBaseDesc.CHAR_EXCLUSIVE)) {
-                        attribute.erase(i.getPos());
-                    } else if (currentStateNumber > stateNumber) {
-                        int pos = attribute.insert(i.getPos(), new AttrChunk(ChunkType.CHUNK_STATE, stateId));
-                        pos = attribute.insert(pos, new AttrChunk(ChunkType.CHUNK_OR));
-                        i.setPos(pos);
-                        changeMade = true;
-                        break;
-                    } else {
-                        prevStateIterator.setPos(i.getPos());
-                        previousStateNumber = currentStateNumber;
-                    }
-                } else if (chunk.getType() != ChunkType.CHUNK_OR) {
-                    if (_charBaseDesc.testCharFlag(VOCharBaseDesc.CHAR_EXCLUSIVE)) {
-                        attribute.erase(i.getPos());
-                        break;
-                    }
-                }
-                i.increment();
-            }
-            if (i.getPos() == attribute.end() && !changeMade) {
-                if (attribute.getNChunks() > 0) {
-                    attribute.insert(attribute.end(), new AttrChunk(ChunkType.CHUNK_OR));
-                }
-                attribute.insert(attribute.end(), new AttrChunk(ChunkType.CHUNK_STATE, stateId));
-                changeMade = true;
-            }
-        } else {
-            attribute = new Attribute();
-            attribute.setCharId(_charBaseDesc.getUniId());
-            attribute.insert(0, new AttrChunk(ChunkType.CHUNK_STATE, stateId));
-            changeMade = true;
-        }
-
-        if (changeMade) {
-            _itemDesc.writeAttribute(attribute);
-        }
-
+    	synchronized (_vop) {
+	        Attribute attribute = _itemDesc.readAttribute(_charBaseDesc.getUniId());
+	
+	        boolean changeMade = false;
+	        int stateId = _charBaseDesc.uniIdFromStateNo(stateNumber);
+	        if (attribute != null) {
+	            if (!attribute.isSimple(_charBaseDesc)) {
+	                return;
+	            }
+	            int previousStateNumber = 0;
+	            AttrIterator i = (AttrIterator) attribute.iterator();
+	            AttrIterator prevStateIterator = (AttrIterator) attribute.iterator();
+	
+	            while (i.hasNext()) {
+	                AttrChunk chunk = i.get();
+	                if (chunk.getType() == ChunkType.CHUNK_STATE) {
+	                    int currentStateNumber = _charBaseDesc.stateNoFromUniId(chunk.getStateId());
+	                    if (currentStateNumber == stateNumber) {
+	                        if (i.getPos() == 0) {
+	                            // The attribute iterator implementation doesn't
+	                            // throw
+	                            // concurrent modification exceptions so we can get
+	                            // away with this....
+	                            attribute.erase(i.getPos());
+	                            i = (AttrIterator) attribute.iterator();
+	                            if (i.hasNext()) {
+	                                chunk = i.get();
+	                                if (chunk.getType() == ChunkType.CHUNK_OR) {
+	                                    attribute.erase(i.getPos());
+	                                }
+	                            }
+	
+	                        } else if (previousStateNumber != 0) {
+	                            prevStateIterator.increment();
+	                            AttrChunk previousChunk = prevStateIterator.get();
+	                            if (previousChunk.getType() == ChunkType.CHUNK_OR) {
+	                                i.increment();
+	                                attribute.erase(prevStateIterator.getPos(), i.getPos());
+	                            }
+	                        }
+	                        changeMade = true;
+	                        break;
+	                    } else if (_charBaseDesc.testCharFlag(VOCharBaseDesc.CHAR_EXCLUSIVE)) {
+	                        attribute.erase(i.getPos());
+	                    } else if (currentStateNumber > stateNumber) {
+	                        int pos = attribute.insert(i.getPos(), new AttrChunk(ChunkType.CHUNK_STATE, stateId));
+	                        pos = attribute.insert(pos, new AttrChunk(ChunkType.CHUNK_OR));
+	                        i.setPos(pos);
+	                        changeMade = true;
+	                        break;
+	                    } else {
+	                        prevStateIterator.setPos(i.getPos());
+	                        previousStateNumber = currentStateNumber;
+	                    }
+	                } else if (chunk.getType() != ChunkType.CHUNK_OR) {
+	                    if (_charBaseDesc.testCharFlag(VOCharBaseDesc.CHAR_EXCLUSIVE)) {
+	                        attribute.erase(i.getPos());
+	                        break;
+	                    }
+	                }
+	                i.increment();
+	            }
+	            if (i.getPos() == attribute.end() && !changeMade) {
+	                if (attribute.getNChunks() > 0) {
+	                    attribute.insert(attribute.end(), new AttrChunk(ChunkType.CHUNK_OR));
+	                }
+	                attribute.insert(attribute.end(), new AttrChunk(ChunkType.CHUNK_STATE, stateId));
+	                changeMade = true;
+	            }
+	        } else {
+	            attribute = new Attribute();
+	            attribute.setCharId(_charBaseDesc.getUniId());
+	            attribute.insert(0, new AttrChunk(ChunkType.CHUNK_STATE, stateId));
+	            changeMade = true;
+	        }
+	
+	        if (changeMade) {
+	            _itemDesc.writeAttribute(attribute);
+	        }
+    	}
     }
 
     @Override
     public boolean isSimple() {
-        if ((_itemDesc == null) || (_charBaseDesc == null)) {
-            return true;
-        }
-        Attribute attribute = _itemDesc.readAttribute(_charBaseDesc.getUniId());
-        if (attribute != null) {
-            return attribute.isSimple(_charBaseDesc);
-        }
-
-        return true;
+    	synchronized (_vop) {
+	        if ((_itemDesc == null) || (_charBaseDesc == null)) {
+	            return true;
+	        }
+	        Attribute attribute = _itemDesc.readAttribute(_charBaseDesc.getUniId());
+	        if (attribute != null) {
+	            return attribute.isSimple(_charBaseDesc);
+	        }
+	
+	        return true;
+    	}
     }
 
     @Override
     public boolean isUnknown() {
-    	 Attribute attribute = _itemDesc.readAttribute(_charBaseDesc.getUniId());
-    	 return attribute == null || attribute.isUnknown();
+    	synchronized (_vop) {
+	    	 Attribute attribute = _itemDesc.readAttribute(_charBaseDesc.getUniId());
+	    	 return attribute == null || attribute.isUnknown();
+    	}
     }
 
     @Override
@@ -188,17 +201,19 @@ public class VOAttributeAdaptor implements AttributeData {
 
     @Override
     public Set<Integer> getPresentStateOrIntegerValues() {
-        Attribute attribute = _itemDesc.readAttribute(_charBaseDesc.getUniId());
-        List<Integer> stateIds = new ArrayList<Integer>();
-        short[] pseudoValues = new short[1];
-        if (attribute != null) {
-            attribute.getEncodedStates(_charBaseDesc, stateIds, pseudoValues);
-        }
-        Set<Integer> states = new HashSet<Integer>(stateIds.size());
-        for (int id : stateIds) {
-            states.add(_charBaseDesc.stateNoFromUniId(id));
-        }
-        return states;
+    	synchronized (_vop) {
+	        Attribute attribute = _itemDesc.readAttribute(_charBaseDesc.getUniId());
+	        List<Integer> stateIds = new ArrayList<Integer>();
+	        short[] pseudoValues = new short[1];
+	        if (attribute != null) {
+	            attribute.getEncodedStates(_charBaseDesc, stateIds, pseudoValues);
+	        }
+	        Set<Integer> states = new HashSet<Integer>(stateIds.size());
+	        for (int id : stateIds) {
+	            states.add(_charBaseDesc.stateNoFromUniId(id));
+	        }
+	        return states;
+    	}
     }
 
     @Override
@@ -208,16 +223,18 @@ public class VOAttributeAdaptor implements AttributeData {
 
     @Override
     public boolean isVariable() {
-        boolean variable = false;
-        Attribute attribute = _itemDesc.readAttribute(_charBaseDesc.getUniId());
-        if (attribute != null) {
-            List<Integer> stateIds = new ArrayList<Integer>();
-            short[] pseudoValues = new short[1];
-            attribute.getEncodedStates(_charBaseDesc, stateIds, pseudoValues);
-            variable = ((pseudoValues[0] & VOItemDesc.PSEUDO_VARIABLE) != 0);
-        }
-
-        return variable;
+    	synchronized (_vop) {
+	        boolean variable = false;
+	        Attribute attribute = _itemDesc.readAttribute(_charBaseDesc.getUniId());
+	        if (attribute != null) {
+	            List<Integer> stateIds = new ArrayList<Integer>();
+	            short[] pseudoValues = new short[1];
+	            attribute.getEncodedStates(_charBaseDesc, stateIds, pseudoValues);
+	            variable = ((pseudoValues[0] & VOItemDesc.PSEUDO_VARIABLE) != 0);
+	        }
+	
+	        return variable;
+    	}
     }
 
     @Override
@@ -227,29 +244,33 @@ public class VOAttributeAdaptor implements AttributeData {
 
 	@Override
 	public boolean isRangeEncoded() {
-		 Attribute attribute = _itemDesc.readAttribute(_charBaseDesc.getUniId());
-	     if (attribute != null) {
-	         for (AttrChunk chunk : attribute) {
-	        	if (chunk.getType() == ChunkType.CHUNK_TO) {
-	        		return true;
-	        	}
-	         }
-	     }
-	     return false;
+		synchronized (_vop) {
+			 Attribute attribute = _itemDesc.readAttribute(_charBaseDesc.getUniId());
+		     if (attribute != null) {
+		         for (AttrChunk chunk : attribute) {
+		        	if (chunk.getType() == ChunkType.CHUNK_TO) {
+		        		return true;
+		        	}
+		         }
+		     }
+		     return false;
+		}
 	}
 
 	@Override
     public boolean isCommentOnly() {
-    	Attribute attribute = _itemDesc.readAttribute(_charBaseDesc.getUniId());
-	     if (attribute != null) {
-	         for (AttrChunk chunk : attribute) {
-	        	if ((chunk.getType() != ChunkType.CHUNK_TEXT) &&
-	        	    (chunk.getType() != ChunkType.CHUNK_LONGTEXT)) {
-	        		return false;
-	        	}
-	         }
-	     }
-	     return true;
+		synchronized (_vop) {
+	    	Attribute attribute = _itemDesc.readAttribute(_charBaseDesc.getUniId());
+		     if (attribute != null) {
+		         for (AttrChunk chunk : attribute) {
+		        	if ((chunk.getType() != ChunkType.CHUNK_TEXT) &&
+		        	    (chunk.getType() != ChunkType.CHUNK_LONGTEXT)) {
+		        		return false;
+		        	}
+		         }
+		     }
+		     return true;
+		}
     }
 
 	@Override

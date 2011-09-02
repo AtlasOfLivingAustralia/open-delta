@@ -28,80 +28,100 @@ public class VOControllingAdapter implements CharacterDependencyData {
 	}
 	
 	public int getId() {
-		return _controllingDesc.getUniId();
+		synchronized (_vop) {
+			return _controllingDesc.getUniId();
+		}
 	}
 	
 	@Override
 	public void addDependentCharacter(Character character) {
-		
-		int charId = getCharacterId(character);
-		_controllingDesc.addControlledChar(charId);
+		synchronized (_vop) {
+			int charId = getCharacterId(character);
+			_controllingDesc.addControlledChar(charId);
+		}
 	}
 
 	@Override
 	public void removeDependentCharacter(Character character) {
-		int charId = getCharacterId(character);
-		_controllingDesc.removeControlledChar(charId);
+		synchronized (_vop) {
+			int charId = getCharacterId(character);
+			_controllingDesc.removeControlledChar(charId);
+		}
 	}
 
 	@Override
 	public void setDescription(String description) {
-		_controllingDesc.writeLabel(description);
+		synchronized (_vop) {
+			_controllingDesc.writeLabel(description);
+		}
 	}
 
 	@Override
 	public String getDescription() {
-		return _controllingDesc.readLabel();
+		synchronized (_vop) {
+			return _controllingDesc.readLabel();
+		}
 	}
 
 	@Override
 	public Set<Integer> getStates() {
-		List<Integer> stateIds = _controllingDesc.readStateIds();
-		Set<Integer> stateNumbers = new HashSet<Integer>(stateIds.size());
-		VOCharBaseDesc charBase = charBaseForId(_controllingDesc.getCharId());
-		for (int id : stateIds) {
-			stateNumbers.add(charBase.stateNoFromUniId(id));
+		synchronized (_vop) {
+			List<Integer> stateIds = _controllingDesc.readStateIds();
+			Set<Integer> stateNumbers = new HashSet<Integer>(stateIds.size());
+			VOCharBaseDesc charBase = charBaseForId(_controllingDesc.getCharId());
+			for (int id : stateIds) {
+				stateNumbers.add(charBase.stateNoFromUniId(id));
+			}
+			
+			return stateNumbers;
 		}
-		
-		return stateNumbers;
 	}
 	
 	@Override
 	public void setStates(Set<Integer> states) {
-		
-		List<Integer> stateIds = new ArrayList<Integer>();
-		VOCharBaseDesc charBase = charBaseForId(_controllingDesc.getCharId());
-		for (int stateNumber : states) {
-			stateIds.add(charBase.uniIdFromStateNo(stateNumber));
+		synchronized (_vop) {
+			List<Integer> stateIds = new ArrayList<Integer>();
+			VOCharBaseDesc charBase = charBaseForId(_controllingDesc.getCharId());
+			for (int stateNumber : states) {
+				stateIds.add(charBase.uniIdFromStateNo(stateNumber));
+			}
+			Collections.sort(stateIds);
+			
+			_controllingDesc.writeStateIds(stateIds);
 		}
-		Collections.sort(stateIds);
-		
-		_controllingDesc.writeStateIds(stateIds);
 	}
 
 	@Override
 	public Set<Integer> getDependentCharacterIds() {
-		List<Integer> charIds = _controllingDesc.readControlledChars();
-		Set<Integer> characterNumbers = new HashSet<Integer>(charIds.size());
-		
-		for (int id : charIds) {
-			characterNumbers.add(_vop.getDeltaMaster().charNoFromUniId(id));
+		synchronized (_vop) {
+			List<Integer> charIds = _controllingDesc.readControlledChars();
+			Set<Integer> characterNumbers = new HashSet<Integer>(charIds.size());
+			
+			for (int id : charIds) {
+				characterNumbers.add(_vop.getDeltaMaster().charNoFromUniId(id));
+			}
+			
+			return characterNumbers;
 		}
-		
-		return characterNumbers;
 	}
 
 	public int getControllingCharacterId() {
-		int charId =_controllingDesc.getCharId();
-		return _vop.getDeltaMaster().charNoFromUniId(charId);
+		synchronized (_vop) {
+			int charId =_controllingDesc.getCharId();
+			return _vop.getDeltaMaster().charNoFromUniId(charId);
+		}
 	}
 	
 	private VOCharBaseDesc charBaseForId(int id) {
-		return (VOCharBaseDesc)_vop.getDescFromId(id);
+		synchronized (_vop) {
+			return (VOCharBaseDesc)_vop.getDescFromId(id);
+		}
 	}
 	
 	private int getCharacterId(Character character) {
-		return _vop.getDeltaMaster().uniIdFromCharNo(character.getCharacterId());
+		synchronized (_vop) {
+			return _vop.getDeltaMaster().uniIdFromCharNo(character.getCharacterId());
+		}
 	}
 
 	/**

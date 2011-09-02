@@ -293,7 +293,7 @@ public class VOP {
 	 * @return
 	 */
 	 public VOAnyDesc insertObject(VOAnyDesc.FixedData fixed, int size,
-	      byte[] variData, int initSlotSize, int growSize) { 
+	     byte[] variData, int initSlotSize, int growSize) { 
 		 //TVOAnyDesc *TVop::InsertObject( TVOAnyDesc::TFixedData *fixedData, size_t fixedDataSize, 
 		 // void huge *variData, long variDataSize, 
 		 // long initSlotSize, long growsSize )

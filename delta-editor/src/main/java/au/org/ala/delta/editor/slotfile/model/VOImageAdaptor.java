@@ -35,17 +35,19 @@ public class VOImageAdaptor implements ImageData {
 	
 	@Override
 	public List<ImageOverlay> getOverlays() {
-		List<ImageOverlay> overlays = _imageDesc.readAllOverlays();
-		
-		for (ImageOverlay overlay : overlays) {
-			if (overlay.isType(OverlayType.OLSTATE)) {
-				int id = _imageDesc.getOwnerId();
-				VOCharBaseDesc charBase = (VOCharBaseDesc)_vop.getDescFromId(id);
-				overlay.stateId = charBase.stateNoFromUniId(overlay.stateId);
+		synchronized (_vop) {
+			List<ImageOverlay> overlays = _imageDesc.readAllOverlays();
+			
+			for (ImageOverlay overlay : overlays) {
+				if (overlay.isType(OverlayType.OLSTATE)) {
+					int id = _imageDesc.getOwnerId();
+					VOCharBaseDesc charBase = (VOCharBaseDesc)_vop.getDescFromId(id);
+					overlay.stateId = charBase.stateNoFromUniId(overlay.stateId);
+				}
 			}
+			
+			return overlays;
 		}
-		
-		return overlays;
 	}
 	
 	@Override
@@ -61,19 +63,27 @@ public class VOImageAdaptor implements ImageData {
 	}
 
 	public String getFileName() {
-		return _imageDesc.readFileName();
+		synchronized (_vop) {
+			return _imageDesc.readFileName();
+		}
 	}
 	
 	public void addOverlay(ImageOverlay overlay) {
-		_imageDesc.insertOverlay(updateStateId(overlay), 0);
+		synchronized (_vop) {
+			_imageDesc.insertOverlay(updateStateId(overlay), 0);
+		}
 	}
 	
 	public void updateOverlay(ImageOverlay overlay) {
-		_imageDesc.replaceOverlay(updateStateId(overlay), false);
+		synchronized (_vop) {
+			_imageDesc.replaceOverlay(updateStateId(overlay), false);
+		}
 	}
 	
 	public void deleteOverlay(ImageOverlay overlay) {
-		_imageDesc.removeOverlay(overlay.getId());
+		synchronized (_vop) {
+			_imageDesc.removeOverlay(overlay.getId());
+		}
 	}
 	
 	private ImageOverlay updateStateId(ImageOverlay overlay) {

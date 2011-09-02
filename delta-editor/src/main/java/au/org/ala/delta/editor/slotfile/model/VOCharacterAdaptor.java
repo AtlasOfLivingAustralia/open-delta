@@ -50,54 +50,68 @@ public class VOCharacterAdaptor extends ImageHolderAdaptor implements CharacterD
 
 	@Override
 	public String getDescription() {
-		String description = "";
-		if (_textDesc != null) {
-			description = _textDesc.readFeatureText(TextType.RTF);
+		synchronized (_vop) {
+			String description = "";
+			if (_textDesc != null) {
+				description = _textDesc.readFeatureText(TextType.RTF);
+			}
+			return description;
 		}
-		return description;
 	}
 
 	@Override
 	public void setDescription(String desc) {
-		_textDesc.makeTemp();
-		_textDesc.writeFeatureText(desc);
+		synchronized (_vop) {
+			_textDesc.makeTemp();
+			_textDesc.writeFeatureText(desc);
+		}
 	}
 
 	@Override
 	public void setUnits(String units) {
-		_charDesc.setInitialStateNumber(1);
-		int stateId = _charDesc.uniIdFromStateNo(1);
-		_textDesc.makeTemp();
-		_textDesc.writeStateText(units, stateId);
+		synchronized (_vop) {
+			_charDesc.setInitialStateNumber(1);
+			int stateId = _charDesc.uniIdFromStateNo(1);
+			_textDesc.makeTemp();
+			_textDesc.writeStateText(units, stateId);
+		}
 	}
 
 	@Override
 	public boolean isExclusive() {
-		return _charDesc.testCharFlag(VOCharBaseDesc.CHAR_EXCLUSIVE);
+		synchronized (_vop) {
+			return _charDesc.testCharFlag(VOCharBaseDesc.CHAR_EXCLUSIVE);
+		}
 	}
 
 	@Override
 	public void setExclusive(boolean b) {
-		if (b) {
-			_charDesc.setCharFlag(VOCharBaseDesc.CHAR_EXCLUSIVE);
-		}
-		else {
-			_charDesc.clearCharFlag(VOCharBaseDesc.CHAR_EXCLUSIVE);
+		synchronized (_vop) {
+			if (b) {
+				_charDesc.setCharFlag(VOCharBaseDesc.CHAR_EXCLUSIVE);
+			}
+			else {
+				_charDesc.clearCharFlag(VOCharBaseDesc.CHAR_EXCLUSIVE);
+			}
 		}
 	}
 
 	@Override
 	public boolean isMandatory() {
-		return _charDesc.testCharFlag(VOCharBaseDesc.CHAR_MANDATORY);
+		synchronized (_vop) {
+			return _charDesc.testCharFlag(VOCharBaseDesc.CHAR_MANDATORY);
+		}
 	}
 
 	@Override
 	public void setMandatory(boolean b) {
-		if (b) {
-			_charDesc.setCharFlag(VOCharBaseDesc.CHAR_MANDATORY);
-		}
-		else {
-			_charDesc.clearCharFlag(VOCharBaseDesc.CHAR_MANDATORY);
+		synchronized (_vop) {
+			if (b) {
+				_charDesc.setCharFlag(VOCharBaseDesc.CHAR_MANDATORY);
+			}
+			else {
+				_charDesc.clearCharFlag(VOCharBaseDesc.CHAR_MANDATORY);
+			}
 		}
 	}
 
@@ -107,79 +121,102 @@ public class VOCharacterAdaptor extends ImageHolderAdaptor implements CharacterD
 
 	@Override
 	public String getUnits() {
-		String units = "";
-		if (_charDesc.getNStatesUsed() >= UNITS_TEXT_STATE_NUMBER) {
-			units = getStateText(UNITS_TEXT_STATE_NUMBER);
+		synchronized (_vop) {
+			String units = "";
+			if (_charDesc.getNStatesUsed() >= UNITS_TEXT_STATE_NUMBER) {
+				units = getStateText(UNITS_TEXT_STATE_NUMBER);
+			}
+			return units;
 		}
-		return units;
 	}
 
 	@Override
 	public String getStateText(int stateNumber) {
-		if (_textDesc == null) {
-			return "";
+		synchronized (_vop) {
+			if (_textDesc == null) {
+				return "";
+			}
+			int stateId = _charDesc.uniIdFromStateNo(stateNumber);
+			return _textDesc.readStateText(stateId, TextType.RTF);
 		}
-		int stateId = _charDesc.uniIdFromStateNo(stateNumber);
-		return _textDesc.readStateText(stateId, TextType.RTF);
 	}
 
 	@Override
 	public int getNumberOfStates() {
-		// Trying to read past the number of states actually used yields an error
-		return _charDesc.getNStatesUsed();
+		synchronized (_vop) {
+			// Trying to read past the number of states actually used yields an error
+			return _charDesc.getNStatesUsed();
+		}
 	}
 
 	@Override
 	public void setStateText(int stateNumber, String text) {
-		int stateId = _charDesc.uniIdFromStateNo(stateNumber);
-		_textDesc.writeStateText(text, stateId);
+		synchronized (_vop) {
+			int stateId = _charDesc.uniIdFromStateNo(stateNumber);
+			_textDesc.writeStateText(text, stateId);
+		}
 	}
 
 	@Override
 	public void setNumberOfStates(int numStates) {
-
-		if (_charDesc.getNStatesUsed() > 0) {
-			throw new NotImplementedException("Ooops, don't currently handle deleting existing states...");
+		synchronized (_vop) {
+			if (_charDesc.getNStatesUsed() > 0) {
+				throw new NotImplementedException("Ooops, don't currently handle deleting existing states...");
+			}
+			_charDesc.setInitialStateNumber(numStates);
 		}
-		_charDesc.setInitialStateNumber(numStates);
 	}
 
 	@Override
 	public String getNotes() {
-		return _textDesc.readNoteText(TextType.RTF);
+		synchronized (_vop) {
+			return _textDesc.readNoteText(TextType.RTF);
+		}
 	}
 
 	@Override
 	public void setNotes(String note) {
-		_textDesc.writeNoteText(note);
+		synchronized (_vop) {
+			_textDesc.writeNoteText(note);
+		}
 	}
 
 	@Override
 	public int getCodedImplicitState() {
-		return _charDesc.stateNoFromUniId(_charDesc.getCodedImplicit());
+		synchronized (_vop) {
+			return _charDesc.stateNoFromUniId(_charDesc.getCodedImplicit());
+		}
 	}
 
 	@Override
 	public int getUncodedImplicitState() {
-		return _charDesc.stateNoFromUniId(_charDesc.getUncodedImplicit());
+		synchronized (_vop) {
+			return _charDesc.stateNoFromUniId(_charDesc.getUncodedImplicit());
+		}
 	}
 
 	@Override
 	public void setCodedImplicitState(int stateNo) {
-		int stateId = _charDesc.uniIdFromStateNo(stateNo);
-		_charDesc.setCodedImplicit((short) stateId);
+		synchronized (_vop) {
+			int stateId = _charDesc.uniIdFromStateNo(stateNo);
+			_charDesc.setCodedImplicit((short) stateId);
+		}
 
 	}
 
 	@Override
 	public void setUncodedImplicitState(int stateNo) {
-		int stateId = _charDesc.uniIdFromStateNo(stateNo);
-		_charDesc.setUncodedImplicit((short) stateId);
+		synchronized (_vop) {
+			int stateId = _charDesc.uniIdFromStateNo(stateNo);
+			_charDesc.setUncodedImplicit((short) stateId);
+		}
 	}
 
 	@Override
 	public void validateAttributeText(String text) {
-		new Attribute(text, _charDesc);
+		synchronized (_vop) {
+			new Attribute(text, _charDesc);
+		}
 	}
 
 	class CompareCharNos implements Comparator<Integer> {
@@ -221,8 +258,10 @@ public class VOCharacterAdaptor extends ImageHolderAdaptor implements CharacterD
 
 	@Override
 	public ControllingInfo checkApplicability(Item itemModel) {
-		VOItemDesc item = ((VOItemAdaptor) itemModel.getItemData()).getItemDesc();
-		return checkApplicability(item, _charDesc, 0, new ArrayList<Integer>());
+		synchronized (_vop) {
+			VOItemDesc item = ((VOItemAdaptor) itemModel.getItemData()).getItemDesc();
+			return checkApplicability(item, _charDesc, 0, new ArrayList<Integer>());
+		}
 	}
 
 	protected ControllingInfo checkApplicability(VOItemDesc item, VOCharBaseDesc charBase, int recurseLevel, List<Integer> testedControlledChars) {
@@ -341,16 +380,18 @@ public class VOCharacterAdaptor extends ImageHolderAdaptor implements CharacterD
 	
 	@Override
 	public List<Integer> getControlledCharacterNumbers(boolean indirect) {
-		List<Integer> controlledCharacterIds = new ArrayList<Integer>();
-		List<Integer> testedCharacterIds = new ArrayList<Integer>();
-		
-		getControlledChars(testedCharacterIds, _charDesc, controlledCharacterIds, indirect);
-		
-		List<Integer> controlledCharacterNos = new ArrayList<Integer>();
-		for (int id : controlledCharacterIds) {
-			controlledCharacterNos.add(getVOP().getDeltaMaster().charNoFromUniId(id));
+		synchronized (_vop) {
+			List<Integer> controlledCharacterIds = new ArrayList<Integer>();
+			List<Integer> testedCharacterIds = new ArrayList<Integer>();
+			
+			getControlledChars(testedCharacterIds, _charDesc, controlledCharacterIds, indirect);
+			
+			List<Integer> controlledCharacterNos = new ArrayList<Integer>();
+			for (int id : controlledCharacterIds) {
+				controlledCharacterNos.add(getVOP().getDeltaMaster().charNoFromUniId(id));
+			}
+			return controlledCharacterNos;
 		}
-		return controlledCharacterNos;
 	}
 
 	private boolean getControlledChars(List<Integer> testedControlling, VOCharBaseDesc charBase, List<Integer> contChars, boolean includeIndirect) {
@@ -401,16 +442,19 @@ public class VOCharacterAdaptor extends ImageHolderAdaptor implements CharacterD
 	
 	@Override
 	public void addDependentCharacters(CharacterDependency dependency) {
-		VOControllingAdapter impl = (VOControllingAdapter)dependency.getImpl();
-		_charDesc.addControllingInfo(impl.getId());
+		synchronized (_vop) {
+			VOControllingAdapter impl = (VOControllingAdapter)dependency.getImpl();
+			_charDesc.addControllingInfo(impl.getId());
+		}
 		
 	}
 
 	@Override
 	public List<CharacterDependency> getDependentCharacters() {
-		
-		List<Integer> controllingInfoIds = _charDesc.readDependentContAttrs();
-		return idListToCharacterDependencyList(controllingInfoIds);
+		synchronized (_vop) {
+			List<Integer> controllingInfoIds = _charDesc.readDependentContAttrs();
+			return idListToCharacterDependencyList(controllingInfoIds);
+		}
 	}
 
 	
@@ -426,22 +470,28 @@ public class VOCharacterAdaptor extends ImageHolderAdaptor implements CharacterD
 
 	@Override
 	public void addControllingCharacters(CharacterDependency dependency) {
-		int id = VOControllingAdapter.getId(dependency);
-		_charDesc.addControllingInfo(id);
+		synchronized (_vop) {
+			int id = VOControllingAdapter.getId(dependency);
+			_charDesc.addControllingInfo(id);
+		}
 		
 	}
 	
 	@Override
 	public void removeControllingCharacter(CharacterDependency dependency) {
-		int id = VOControllingAdapter.getId(dependency);
-		_charDesc.removeControllingInfo(id);
+		synchronized (_vop) {
+			int id = VOControllingAdapter.getId(dependency);
+			_charDesc.removeControllingInfo(id);
+		}
 		
 	}
 
 	@Override
 	public List<CharacterDependency> getControllingCharacters() {
-		List<Integer> controllingInfoIds = _charDesc.readControllingInfo();
-		return idListToCharacterDependencyList(controllingInfoIds);
+		synchronized (_vop) {
+			List<Integer> controllingInfoIds = _charDesc.readControllingInfo();
+			return idListToCharacterDependencyList(controllingInfoIds);
+		}
 		
 	}
 	
@@ -459,12 +509,16 @@ public class VOCharacterAdaptor extends ImageHolderAdaptor implements CharacterD
 	
     @Override
 	public void addState() {
-		_charDesc.insertState(getNumberOfStates()+1, getVOP());
+    	synchronized (_vop) {
+    		_charDesc.insertState(getNumberOfStates()+1, getVOP());
+    	}
 	}
     
     @Override
 	public void moveState(int stateNumber, int newNumber) {
-		_charDesc.moveState(stateNumber, newNumber);
+    	synchronized (_vop) {
+    		_charDesc.moveState(stateNumber, newNumber);
+    	}
 	}
     
     /**
@@ -474,13 +528,14 @@ public class VOCharacterAdaptor extends ImageHolderAdaptor implements CharacterD
      * @param newType the new type for this character.
      */
 	public void setCharacterType(CharacterType newType) {
-		
-		if (CharType.isMultistate(_charDesc.getCharType()) && (!newType.isMultistate())) {
-			_charDesc.setCodedImplicit(VOCharBaseDesc.STATEID_NULL);
-			_charDesc.setUncodedImplicit(VOCharBaseDesc.STATEID_NULL);
+		synchronized (_vop) {
+			if (CharType.isMultistate(_charDesc.getCharType()) && (!newType.isMultistate())) {
+				_charDesc.setCodedImplicit(VOCharBaseDesc.STATEID_NULL);
+				_charDesc.setUncodedImplicit(VOCharBaseDesc.STATEID_NULL);
+			}
+			
+			_charDesc.setCharType(CharacterTypeConverter.toCharType(newType));		
 		}
-		
-		_charDesc.setCharType(CharacterTypeConverter.toCharType(newType));		
 	}
 
 	@Override

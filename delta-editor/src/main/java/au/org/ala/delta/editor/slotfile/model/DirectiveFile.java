@@ -37,78 +37,97 @@ public class DirectiveFile {
 	
 	private VODirFileDesc _dirFileDesc;
 	private DirectiveArgConverter _converter;
+	private DeltaVOP _vop;
 	
 	public DirectiveFile(VODirFileDesc dirFileDesc) {
 		_dirFileDesc = dirFileDesc;
-		_converter = new DirectiveArgConverter((DeltaVOP)_dirFileDesc.getVOP());
+		_vop = (DeltaVOP)_dirFileDesc.getVOP();
+		_converter = new DirectiveArgConverter(_vop);
 	}
 	
 	public DirectiveType getType() {
-		short progType = _dirFileDesc.getProgType();
-		DirectiveType type;
-		switch (progType) {
-		case VODirFileDesc.PROGTYPE_CONFOR:
-			type = DirectiveType.CONFOR;
-			break;
-		case VODirFileDesc.PROGTYPE_INTKEY:
-			type = DirectiveType.INTKEY;
-			break;
-		case VODirFileDesc.PROGTYPE_DIST:
-			type = DirectiveType.DIST;
-			break;
-		case VODirFileDesc.PROGTYPE_KEY:
-			type = DirectiveType.KEY;
-			break;
-		default:
-			throw new IllegalStateException("This file has an unknown type! "+progType);
+		synchronized (_vop) {
+			
+			short progType = _dirFileDesc.getProgType();
+			DirectiveType type;
+			switch (progType) {
+			case VODirFileDesc.PROGTYPE_CONFOR:
+				type = DirectiveType.CONFOR;
+				break;
+			case VODirFileDesc.PROGTYPE_INTKEY:
+				type = DirectiveType.INTKEY;
+				break;
+			case VODirFileDesc.PROGTYPE_DIST:
+				type = DirectiveType.DIST;
+				break;
+			case VODirFileDesc.PROGTYPE_KEY:
+				type = DirectiveType.KEY;
+				break;
+			default:
+				throw new IllegalStateException("This file has an unknown type! "+progType);
+			}
+			return type;
 		}
-		return type;
 	}
 	
 	public boolean isSpecsFile() {
-		return (_dirFileDesc.getFileFlags() & VODirFileDesc.FILEFLAG_SPECS) > 0;
+		synchronized (_vop) {
+			return (_dirFileDesc.getFileFlags() & VODirFileDesc.FILEFLAG_SPECS) > 0;
+		}
 	}
 	
 	public void setSpecsFile(boolean isSpecsFile) {
-		int flags = _dirFileDesc.getFileFlags();
-		if (isSpecsFile) {
-			_dirFileDesc.setFileFlags(flags | VODirFileDesc.FILEFLAG_SPECS);
-		}
-		else {
-			_dirFileDesc.setFileFlags(flags & ~VODirFileDesc.FILEFLAG_SPECS);
+		synchronized (_vop) {
+			int flags = _dirFileDesc.getFileFlags();
+			if (isSpecsFile) {
+				_dirFileDesc.setFileFlags(flags | VODirFileDesc.FILEFLAG_SPECS);
+			}
+			else {
+				_dirFileDesc.setFileFlags(flags & ~VODirFileDesc.FILEFLAG_SPECS);
+			}
 		}
 	}
 	
 	public boolean isItemsFile() {
-		return (_dirFileDesc.getFileFlags() & VODirFileDesc.FILEFLAG_ITEMS) > 0;
+		synchronized (_vop) {
+			return (_dirFileDesc.getFileFlags() & VODirFileDesc.FILEFLAG_ITEMS) > 0;
+		}
 	}
 	
 	public void setItemsFile(boolean isItemsFile) {
-		int flags = _dirFileDesc.getFileFlags();
-		if (isItemsFile) {
-			_dirFileDesc.setFileFlags(flags | VODirFileDesc.FILEFLAG_ITEMS);
-		}
-		else {
-			_dirFileDesc.setFileFlags(flags & ~VODirFileDesc.FILEFLAG_ITEMS);
+		synchronized (_vop) {
+			int flags = _dirFileDesc.getFileFlags();
+			if (isItemsFile) {
+				_dirFileDesc.setFileFlags(flags | VODirFileDesc.FILEFLAG_ITEMS);
+			}
+			else {
+				_dirFileDesc.setFileFlags(flags & ~VODirFileDesc.FILEFLAG_ITEMS);
+			}
 		}
 	}
 	
 	public boolean isCharsFile() {
-		return (_dirFileDesc.getFileFlags() & VODirFileDesc.FILEFLAG_CHARS) > 0;
+		synchronized (_vop) {
+			return (_dirFileDesc.getFileFlags() & VODirFileDesc.FILEFLAG_CHARS) > 0;
+		}
 	}
 	
 	public void setCharsFile(boolean isCharsFile) {
-		int flags = _dirFileDesc.getFileFlags();
-		if (isCharsFile) {
-			_dirFileDesc.setFileFlags(flags | VODirFileDesc.FILEFLAG_CHARS);
-		}
-		else {
-			_dirFileDesc.setFileFlags(flags & ~VODirFileDesc.FILEFLAG_CHARS);
+		synchronized (_vop) {
+			int flags = _dirFileDesc.getFileFlags();
+			if (isCharsFile) {
+				_dirFileDesc.setFileFlags(flags | VODirFileDesc.FILEFLAG_CHARS);
+			}
+			else {
+				_dirFileDesc.setFileFlags(flags & ~VODirFileDesc.FILEFLAG_CHARS);
+			}
 		}
 	}
 	
 	public String getFileName() {
-		return _dirFileDesc.getFileName().trim();
+		synchronized (_vop) {
+			return _dirFileDesc.getFileName().trim();
+		}
 	}
 	
 	public String getShortFileName() {
@@ -117,11 +136,15 @@ public class DirectiveFile {
 	}
 	
 	public void setFileType(short type) {
-		_dirFileDesc.setFileType(type);
+		synchronized (_vop) {
+			_dirFileDesc.setFileType(type);
+		}
 	}
 	
 	public int getDirectiveCount() {
-		return _dirFileDesc.getNDirectives();
+		synchronized (_vop) {
+			return _dirFileDesc.getNDirectives();
+		}
 	}
 	
 	public void add(DirectiveInstance directive) {
@@ -129,15 +152,19 @@ public class DirectiveFile {
 	}
 	
 	public void add(int index, DirectiveInstance directive) {
-		Dir dir = _converter.fromDirective(directive);
-		
-		List<Dir> directives = _dirFileDesc.readAllDirectives();
-		directives.add(index, dir);
-		_dirFileDesc.writeAllDirectives(directives);
+		synchronized (_vop) {
+			Dir dir = _converter.fromDirective(directive);
+			
+			List<Dir> directives = _dirFileDesc.readAllDirectives();
+			directives.add(index, dir);
+			_dirFileDesc.writeAllDirectives(directives);
+		}
 	}
 	
 	public void deleteDirective(int directiveNum) {
-		_dirFileDesc.deleteDirective(directiveNum);
+		synchronized (_vop) {
+			_dirFileDesc.deleteDirective(directiveNum);
+		}
 	}
 	
 	public DirectiveInstance addTextDirective(int index, Directive directiveType, String text) {
@@ -172,69 +199,78 @@ public class DirectiveFile {
 	 * this directive file.  If none exist, an empty string will be returned.
 	 */
 	public String getDescription() {
-		List<Integer> directiveTypes = new ArrayList<Integer>();		
-		
-		switch (getType()) {
-		case CONFOR:
-			directiveTypes.add(ConforDirType.SHOW);
-			directiveTypes.add(ConforDirType.COMMENT);
-			break;
-		case INTKEY:
-			directiveTypes.add(IntkeyDirType.SHOW);
-			directiveTypes.add(IntkeyDirType.COMMENT);
-			break;
-		case DIST:
-			directiveTypes.add(DistDirType.COMMENT);
-			break;
-		case KEY:
-			directiveTypes.add(KeyDirType.COMMENT);
-			break;
+		synchronized (_vop) {
+			List<Integer> directiveTypes = new ArrayList<Integer>();		
+			
+			switch (getType()) {
+			case CONFOR:
+				directiveTypes.add(ConforDirType.SHOW);
+				directiveTypes.add(ConforDirType.COMMENT);
+				break;
+			case INTKEY:
+				directiveTypes.add(IntkeyDirType.SHOW);
+				directiveTypes.add(IntkeyDirType.COMMENT);
+				break;
+			case DIST:
+				directiveTypes.add(DistDirType.COMMENT);
+				break;
+			case KEY:
+				directiveTypes.add(KeyDirType.COMMENT);
+				break;
+			}
+			
+			List<Dir> directives = _dirFileDesc.readAllDirectives(directiveTypes);
+			
+			String description = "";
+			if (!directives.isEmpty()) {
+				List<DirArgs> args = directives.get(0).args;
+				if (args.size() > 0) {
+					description = args.get(0).text;
+				}		
+			}
+			
+			return description;
 		}
-		
-		List<Dir> directives = _dirFileDesc.readAllDirectives(directiveTypes);
-		
-		String description = "";
-		if (!directives.isEmpty()) {
-			List<DirArgs> args = directives.get(0).args;
-			if (args.size() > 0) {
-				description = args.get(0).text;
-			}		
-		}
-		
-		return description;
 	}
 	
 	public List<DirectiveInstance> getDirectives() {
-		List<Dir> directives = _dirFileDesc.readAllDirectives();
-		List<DirectiveInstance> toReturn = new ArrayList<DirectiveInstance>(directives.size());
-		DirectiveType type = getType();
-		for (Dir dir : directives) {
-			
-			Directive directive = getDirective(dir);
-			DirectiveArguments args = _converter.convertArgs(dir, directive.getArgType());
-			DirectiveInstance dirInstance = new DirectiveInstance(directive, args);
-			dirInstance.setCommented((dir.getDirType() & VODirFileDesc.DIRARG_COMMENT_FLAG) != 0);
-			dirInstance.setDirectiveType(type);
-			toReturn.add( dirInstance);
+		synchronized (_vop) {
+			List<Dir> directives = _dirFileDesc.readAllDirectives();
+			List<DirectiveInstance> toReturn = new ArrayList<DirectiveInstance>(directives.size());
+			DirectiveType type = getType();
+			for (Dir dir : directives) {
+				
+				Directive directive = getDirective(dir);
+				DirectiveArguments args = _converter.convertArgs(dir, directive.getArgType());
+				DirectiveInstance dirInstance = new DirectiveInstance(directive, args);
+				dirInstance.setCommented((dir.getDirType() & VODirFileDesc.DIRARG_COMMENT_FLAG) != 0);
+				dirInstance.setDirectiveType(type);
+				toReturn.add( dirInstance);
+			}
+			return toReturn;
 		}
-		return toReturn;
 	}
 	
 	public void setDirectives(List<DirectiveInstance> directives) {
-		
-		List<Dir> dirs = new ArrayList<Dir>(directives.size());
-		for (DirectiveInstance directive : directives) {
-			dirs.add(_converter.fromDirective(directive));
+		synchronized (_vop) {
+			List<Dir> dirs = new ArrayList<Dir>(directives.size());
+			for (DirectiveInstance directive : directives) {
+				dirs.add(_converter.fromDirective(directive));
+			}
+			_dirFileDesc.writeAllDirectives(dirs);
 		}
-		_dirFileDesc.writeAllDirectives(dirs);
 	}
 	
 	public int getFlags() {
-		return _dirFileDesc.getFileFlags();
+		synchronized (_vop) {
+			return _dirFileDesc.getFileFlags();
+		}
 	}
 	
 	public void setFlags(int flags) {
-		_dirFileDesc.setFileFlags(flags);
+		synchronized (_vop) {
+			_dirFileDesc.setFileFlags(flags);
+		}
 	}
 	
 	private Directive getDirective(Dir dir) {
@@ -264,11 +300,15 @@ public class DirectiveFile {
 	}
 
 	public long getLastModifiedTime() {
-		return _dirFileDesc.getFileModifyTime();
+		synchronized (_vop) {
+			return _dirFileDesc.getFileModifyTime();
+		}
 	}
 	
 	public void setLastModifiedTime(long time) {
-		_dirFileDesc.setFileModifyTime(time);
+		synchronized (_vop) {
+			_dirFileDesc.setFileModifyTime(time);
+		}
 	}
 
 	public String toString() {
@@ -281,17 +321,21 @@ public class DirectiveFile {
 	 * It currently only will return something for CONFOR directive files.
 	 */
 	public String getDefiningDirective() {
-		if (getType() == DirectiveType.CONFOR) {
-			int directiveType = _dirFileDesc.getPrincipleConforAction();
-			if (directiveType != 0) {
-				return ConforDirType.ConforDirArray[directiveType].joinNameComponents();
+		synchronized (_vop) {
+			if (getType() == DirectiveType.CONFOR) {
+				int directiveType = _dirFileDesc.getPrincipleConforAction();
+				if (directiveType != 0) {
+					return ConforDirType.ConforDirArray[directiveType].joinNameComponents();
+				}
 			}
+			return "";
 		}
-		return "";
 	}
 
 	public int getFileNumber() {
-		DeltaVOP vop = (DeltaVOP)_dirFileDesc.getVOP();
-		return vop.getDeltaMaster().dirFileNoFromUniId(_dirFileDesc.getUniId());
+		synchronized (_vop) {
+			return _vop.getDeltaMaster().dirFileNoFromUniId(_dirFileDesc.getUniId());
+		
+		}
 	}
 }

@@ -132,7 +132,9 @@ public class SlotFileDataSet extends AbstractObservableDataSet {
 	@Override
 	public void close() {
 		if (_observerList.isEmpty()) {
-			_vop.close();
+			synchronized (_vop) {
+				_vop.close();
+			}
 		}
 	}
 	
@@ -322,25 +324,33 @@ public class SlotFileDataSet extends AbstractObservableDataSet {
 	
 	@Override
 	public void deleteCharacterDependency(CharacterDependency characterDependency) {
-		VOControllingAdapter controlling = (VOControllingAdapter)characterDependency.getImpl();
-		deleteControlling(controlling.getId());
+		synchronized (_vop) {
+			VOControllingAdapter controlling = (VOControllingAdapter)characterDependency.getImpl();
+			deleteControlling(controlling.getId());
+		}
+		
 	}
 	
 	@Override
 	public ImageSettings getImageSettings() {
-		VOImageInfoDesc imageInfo = _vop.getImageInfo();
-		if (imageInfo == null) {
-			return null;
+		synchronized (_vop) {
+			VOImageInfoDesc imageInfo = _vop.getImageInfo();
+			if (imageInfo == null) {
+				return null;
+			}
+			ImageSettings settings = new ImageSettings();
+			ImageSettingsHelper.copyToImageSettings(imageInfo, settings);
+		
+			return settings;
 		}
-		ImageSettings settings = new ImageSettings();
-		ImageSettingsHelper.copyToImageSettings(imageInfo, settings);
-		return settings;
 	}
 	
 	@Override
 	public void setImageSettings(ImageSettings imageSettings) {
-		VOImageInfoDesc imageInfo = _vop.getImageInfo();
-		ImageSettingsHelper.copyFromImageSettings(imageInfo, imageSettings);
+		synchronized (_vop) {
+			VOImageInfoDesc imageInfo = _vop.getImageInfo();
+			ImageSettingsHelper.copyFromImageSettings(imageInfo, imageSettings);
+		}
 	}
 	
 	private boolean deleteControlling(int ctlId) {
@@ -556,19 +566,21 @@ public class SlotFileDataSet extends AbstractObservableDataSet {
     
     @Override
     public boolean canChangeCharacterType(Character character, CharacterType newType) {
-    	List<Item> items = getUncodedItems(character);
-    	if (items.size() == getMaximumNumberOfItems()) {
-    		return true;
+    	synchronized (_vop) {
+	    	List<Item> items = getUncodedItems(character);
+	    	if (items.size() == getMaximumNumberOfItems()) {
+	    		return true;
+	    	}
+	    	
+	    	if (character.getCharacterType().isMultistate()) {
+	    		return canChangeMultiStateCharacterType((MultiStateCharacter)character, newType);
+	    	}
+	    	else if (character.getCharacterType().isNumeric()) {
+	    		return canChangeNumericCharacterType((NumericCharacter<?>)character, newType);
+	    	}
+	    	
+	    	return true;
     	}
-    	
-    	if (character.getCharacterType().isMultistate()) {
-    		return canChangeMultiStateCharacterType((MultiStateCharacter)character, newType);
-    	}
-    	else if (character.getCharacterType().isNumeric()) {
-    		return canChangeNumericCharacterType((NumericCharacter<?>)character, newType);
-    	}
-    	
-    	return true;
     }
     
     /**
@@ -578,81 +590,93 @@ public class SlotFileDataSet extends AbstractObservableDataSet {
      */
 	@Override
 	public Character changeCharacterType(Character character, CharacterType newType) {
-		if (!canChangeCharacterType(character, newType)) {
-			throw new IllegalArgumentException("Cannot change Character type from :"
-					+character.getCharacterType()+ " to "+newType);
-		}
-		VOCharacterAdaptor impl = (VOCharacterAdaptor)character.getImpl();
-		if (character.getCharacterType().isMultistate() && !newType.isMultistate()) {
-			MultiStateCharacter multiStateChar = (MultiStateCharacter)character;
-			while (multiStateChar.getNumberOfStates() > 0) {
-				deleteState(multiStateChar, 1);
+		synchronized (_vop) {
+			if (!canChangeCharacterType(character, newType)) {
+				throw new IllegalArgumentException("Cannot change Character type from :"
+						+character.getCharacterType()+ " to "+newType);
 			}
+			VOCharacterAdaptor impl = (VOCharacterAdaptor)character.getImpl();
+			if (character.getCharacterType().isMultistate() && !newType.isMultistate()) {
+				MultiStateCharacter multiStateChar = (MultiStateCharacter)character;
+				while (multiStateChar.getNumberOfStates() > 0) {
+					deleteState(multiStateChar, 1);
+				}
+			}
+			impl.setCharacterType(newType);
+			VOCharBaseDesc charBaseDesc = impl.getCharBaseDesc();
+			Character newCharacter = getFactory().wrapCharacter(charBaseDesc, character.getCharacterId());
+			characterChanged(character);
+			
+			return newCharacter;
 		}
-		impl.setCharacterType(newType);
-		VOCharBaseDesc charBaseDesc = impl.getCharBaseDesc();
-		Character newCharacter = getFactory().wrapCharacter(charBaseDesc, character.getCharacterId());
-		characterChanged(character);
-		
-		return newCharacter;
 	}
 
     @Override
     public au.org.ala.delta.model.Attribute addAttribute(int itemNumber, int characterNumber) {
-        Item item = getItem(itemNumber);
-        Character character = getCharacter(characterNumber);
-        au.org.ala.delta.model.Attribute attribute = _factory.createAttribute(character, item);
-        item.addAttribute(character, attribute);
-        return attribute;
+    	synchronized (_vop) {  
+    		Item item = getItem(itemNumber);
+	        Character character = getCharacter(characterNumber);
+	        au.org.ala.delta.model.Attribute attribute = _factory.createAttribute(character, item);
+	        item.addAttribute(character, attribute);
+	        return attribute;
+    	}
     }
 
 	@Override
 	public CharacterDependency addCharacterDependency(
 			MultiStateCharacter owningCharacter, Set<Integer> states,
 			Set<Integer> dependentCharacters) {
-		return _factory.createCharacterDependency(owningCharacter, states, dependentCharacters);
+		synchronized (_vop) {
+			return _factory.createCharacterDependency(owningCharacter, states, dependentCharacters);
+	
+		}
 	}
 	
-	
 	public DirectiveFile addDirectiveFile(int fileNumber, String fileName, DirectiveType type) {
-		VODirFileDesc.DirFileFixedData fixed = new VODirFileDesc.DirFileFixedData();
-		VODirFileDesc dirFile = (VODirFileDesc)_vop.insertObject(fixed, DirFileFixedData.SIZE, null, 0, 0);
-		
-		dirFile.setFileName(fileName);
-		int progType = 0;
-		switch (type) {
-		case CONFOR:
-			progType = VODirFileDesc.PROGTYPE_CONFOR;
-			break;
-		case INTKEY:
-			progType = VODirFileDesc.PROGTYPE_INTKEY;
-			break;
-		case DIST:
-			progType = VODirFileDesc.PROGTYPE_DIST;
-			break;
-		case KEY:
-			progType = VODirFileDesc.PROGTYPE_KEY;
-			break;
+		synchronized (_vop) {
+			VODirFileDesc.DirFileFixedData fixed = new VODirFileDesc.DirFileFixedData();
+			VODirFileDesc dirFile = (VODirFileDesc)_vop.insertObject(fixed, DirFileFixedData.SIZE, null, 0, 0);
+			
+			dirFile.setFileName(fileName);
+			int progType = 0;
+			switch (type) {
+			case CONFOR:
+				progType = VODirFileDesc.PROGTYPE_CONFOR;
+				break;
+			case INTKEY:
+				progType = VODirFileDesc.PROGTYPE_INTKEY;
+				break;
+			case DIST:
+				progType = VODirFileDesc.PROGTYPE_DIST;
+				break;
+			case KEY:
+				progType = VODirFileDesc.PROGTYPE_KEY;
+				break;
+			}
+			dirFile.setProgType((short)progType);
+			
+			_vop.getDeltaMaster().InsertDirFile(dirFile.getUniId(), fileNumber);
+			
+			return new DirectiveFile(dirFile);
 		}
-		dirFile.setProgType((short)progType);
-		
-		_vop.getDeltaMaster().InsertDirFile(dirFile.getUniId(), fileNumber);
-		
-		return new DirectiveFile(dirFile);
 	}
 	
 	public int getDirectiveFileCount() {
-		return _vop.getDeltaMaster().getNDirFiles();
+		synchronized (_vop) {
+			return _vop.getDeltaMaster().getNDirFiles();
+		}
 	}
 	
 	public DirectiveFile getDirectiveFile(int fileNumber) {
-		if (fileNumber <= 0 || fileNumber > getDirectiveFileCount()) {
-			throw new IllegalArgumentException("No such file: "+fileNumber);
+		synchronized (_vop) {	
+			if (fileNumber <= 0 || fileNumber > getDirectiveFileCount()) {
+				throw new IllegalArgumentException("No such file: "+fileNumber);
+			}
+			int id = _vop.getDeltaMaster().uniIdFromDirFileNo(fileNumber);
+			VODirFileDesc dirFile = (VODirFileDesc)_vop.getDescFromId(id);
+			
+			return new DirectiveFile(dirFile);
 		}
-		int id = _vop.getDeltaMaster().uniIdFromDirFileNo(fileNumber);
-		VODirFileDesc dirFile = (VODirFileDesc)_vop.getDescFromId(id);
-		
-		return new DirectiveFile(dirFile);
 	}
 	
 	/**
@@ -663,31 +687,33 @@ public class SlotFileDataSet extends AbstractObservableDataSet {
 	 * @return the matching DirectiveFile or null if there is no match.
 	 */
 	public DirectiveFile getDirectiveFile(String fileName) {
-		
-		// Strip any path information off before doing the match.
-		String tmpFileName = FilenameUtils.getName(fileName);
-		
-		int directiveFileCount = getDirectiveFileCount();
-		for (int i=1; i<=directiveFileCount; i++) {
-			DirectiveFile file = getDirectiveFile(i);
-			if (tmpFileName.equals(file.getShortFileName())) {
-				return file;
+		synchronized (_vop) {
+			// Strip any path information off before doing the match.
+			String tmpFileName = FilenameUtils.getName(fileName);
+			
+			int directiveFileCount = getDirectiveFileCount();
+			for (int i=1; i<=directiveFileCount; i++) {
+				DirectiveFile file = getDirectiveFile(i);
+				if (tmpFileName.equals(file.getShortFileName())) {
+					return file;
+				}
 			}
+			return null;
 		}
-		return null;
 	}
 	
 	public void deleteDirectiveFile(DirectiveFile file) {
-		
-		int id = getVOP().getDeltaMaster().uniIdFromDirFileNo(file.getFileNumber());
-		
-		// Get a pointer to the file's descriptor, for general use.
-		VODirFileDesc dirFile = (VODirFileDesc)getVOP().getDescFromId(id);
-		
-        // Next remove the file from the master list
-		if (getVOP().getDeltaMaster().removeDirFile(id)) {
-		      // Finally, delete the descriptor from the VOP
-		      _vop.deleteObject(dirFile);
+		synchronized (_vop) {
+			int id = getVOP().getDeltaMaster().uniIdFromDirFileNo(file.getFileNumber());
+			
+			// Get a pointer to the file's descriptor, for general use.
+			VODirFileDesc dirFile = (VODirFileDesc)getVOP().getDescFromId(id);
+			
+	        // Next remove the file from the master list
+			if (getVOP().getDeltaMaster().removeDirFile(id)) {
+			      // Finally, delete the descriptor from the VOP
+			      _vop.deleteObject(dirFile);
+			}
 		}
 	}
 }

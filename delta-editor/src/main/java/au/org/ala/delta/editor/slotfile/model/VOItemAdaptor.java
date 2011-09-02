@@ -15,7 +15,6 @@
 package au.org.ala.delta.editor.slotfile.model;
 
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang.NotImplementedException;
 
@@ -48,26 +47,31 @@ public class VOItemAdaptor extends ImageHolderAdaptor implements ItemData {
 	}
 	
 	public void setDescription(String itemName) {		
-		
-		String oldDescription = getDescription();
-		
-		Attribute nameAttribute = new Attribute(VOItemDesc.VOUID_NAME);
-		nameAttribute.insert(0, new AttrChunk(itemName));
-		_voItemDesc.writeAttribute(nameAttribute);
-		
-		if (!Utils.RTFToANSI(itemName).equals(oldDescription)) {
-			_vop.deleteFromNameList(_voItemDesc);
-			_vop.insertInNameList(_voItemDesc);
+		synchronized (_vop) {
+			String oldDescription = getDescription();
+			
+			Attribute nameAttribute = new Attribute(VOItemDesc.VOUID_NAME);
+			nameAttribute.insert(0, new AttrChunk(itemName));
+			_voItemDesc.writeAttribute(nameAttribute);
+			
+			if (!Utils.RTFToANSI(itemName).equals(oldDescription)) {
+				_vop.deleteFromNameList(_voItemDesc);
+				_vop.insertInNameList(_voItemDesc);
+			}
 		}
 	}
 
 
 	public String getDescription() {
-		return _voItemDesc.readAttributeAsText(VOItemDesc.VOUID_NAME, TextType.RTF);
+		synchronized (_vop) {
+			return _voItemDesc.readAttributeAsText(VOItemDesc.VOUID_NAME, TextType.RTF);
+		}
 	}
 	
 	public String getUnformattedDescription() {
-		return _voItemDesc.getAnsiName();	
+		synchronized (_vop) {
+			return _voItemDesc.getAnsiName();	
+		}
 	}
 
 
@@ -79,12 +83,14 @@ public class VOItemAdaptor extends ImageHolderAdaptor implements ItemData {
 
 	@Override
 	public au.org.ala.delta.model.Attribute getAttribute(Character character) {
-		if (character == null) {
-			return null;
+		synchronized (_vop) {
+			if (character == null) {
+				return null;
+			}
+			
+			AttributeData impl = new VOAttributeAdaptor(_voItemDesc, getVOCharBaseDesc(character));
+			return AttributeFactory.newAttribute(character, impl);
 		}
-		
-		AttributeData impl = new VOAttributeAdaptor(_voItemDesc, getVOCharBaseDesc(character));
-		return AttributeFactory.newAttribute(character, impl);
 	}
 
 	/**
@@ -93,8 +99,10 @@ public class VOItemAdaptor extends ImageHolderAdaptor implements ItemData {
 	 */
 	@Override
 	public void addAttribute(Character character, au.org.ala.delta.model.Attribute attribute) {
-	    Attribute slotFileAttribute = new Attribute(attribute.getValueAsString(), getVOCharBaseDesc(character));
-		_voItemDesc.writeAttribute(slotFileAttribute);
+		synchronized (_vop) {
+			Attribute slotFileAttribute = new Attribute(attribute.getValueAsString(), getVOCharBaseDesc(character));
+			_voItemDesc.writeAttribute(slotFileAttribute);
+		}
 	}
 	
 	private VOCharBaseDesc getVOCharBaseDesc(Character character) {
@@ -103,12 +111,16 @@ public class VOItemAdaptor extends ImageHolderAdaptor implements ItemData {
 
 	@Override
 	public boolean isVariant() {
-		return _voItemDesc.isVariant();
+		synchronized (_vop) {
+			return _voItemDesc.isVariant();
+		}
 	}
 
 	@Override
 	public void setVariant(boolean variant) {
-		_voItemDesc.setVariant(variant);
+		synchronized (_vop) {
+			_voItemDesc.setVariant(variant);
+		}
 	}
 	
 	public VOItemDesc getItemDesc() {
