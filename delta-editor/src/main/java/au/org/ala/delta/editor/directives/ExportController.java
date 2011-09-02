@@ -197,7 +197,7 @@ public class ExportController {
 				if (dirFile != null) {
 					File output = createExportFile(dirFile, _directoryName);
 					state.setPrintStream(new PrintStream(output, "utf-8"));
-					_status.setCurrentFile(file.getFileName());
+					_status.setCurrentFile(file);
 					writeDirectivesFile(dirFile, state);
 				}
 

@@ -351,6 +351,7 @@ public class ImportExportStatusDialog extends JDialog {
 		return chckbxPauseOnErrors.isSelected();
 	}
 	
+	@Action
 	public void pauseOnErrors() {
 		if (_status != null) {
 			_status.setPauseOnError(chckbxPauseOnErrors.isSelected());

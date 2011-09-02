@@ -190,10 +190,13 @@ public class ImportController  {
 		
 		public DoImportTask(File directory, List<DirectiveFileInfo> files) {
 			super(_editor);
+			
 			String directoryName = directory.getAbsolutePath();
 			if (!directoryName.endsWith(File.separator)) {
 				directoryName += File.separator;
 			}
+			_status.setHeading(_model.getName());
+			_status.setImportDirectory(directoryName);
 			_directoryName = directoryName;
 			_files = files;
 		}
@@ -214,7 +217,7 @@ public class ImportController  {
 				
 				// First check if the existing dataset has a directives file with the same name
 				// and same last modified date.  If so, skip it.
-				_status.setCurrentFile(file.getFileName());
+				_status.setCurrentFile(file);
 				publish(_status);
 				importDirectivesFile(file, reader, this);
 				

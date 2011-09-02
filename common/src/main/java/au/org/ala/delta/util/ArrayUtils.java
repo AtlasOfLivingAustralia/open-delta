@@ -48,5 +48,28 @@ public class ArrayUtils {
 			}
 		}
 	}
+	
+	/**
+	 * Does a case insensitive comparison of each of the elements of the
+	 * supplied arrays to determine if they are equal.
+	 * @param array1 the first array to compare.  May not be null.
+	 * @param array2 the second array to compare. May not be null.
+	 * @return true if the arrays are the same length and 
+	 * String.equalsIgnoreCase returns true for each of the elements.
+	 */
+	public static boolean equalsIgnoreCase(String[] array1, String[] array2) {
+		if (array1 == null || array2 == null) {
+			throw new IllegalArgumentException("Null arrays not supported");
+		}
+		if (array1.length != array2.length) {
+			return false;
+		}
+		for (int i=0; i<array1.length; i++) {
+			if (!array1[i].equalsIgnoreCase(array2[i])) {
+				return false;
+			}
+		}
+		return true;
+	}
 
 }

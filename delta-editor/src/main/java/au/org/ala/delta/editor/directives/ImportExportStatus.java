@@ -1,7 +1,6 @@
 package au.org.ala.delta.editor.directives;
 
 import java.text.DateFormat;
-import java.util.Arrays;
 import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
@@ -12,6 +11,7 @@ import au.org.ala.delta.directives.Heading;
 import au.org.ala.delta.directives.Show;
 import au.org.ala.delta.rtf.RTFBuilder;
 import au.org.ala.delta.rtf.RTFBuilder.Alignment;
+import au.org.ala.delta.util.ArrayUtils;
 
 
 /**
@@ -34,10 +34,13 @@ public class ImportExportStatus  {
 
 	private RTFBuilder _logBuilder;
 	
+	private boolean _error;
+	
 	private volatile boolean _cancelled;
 	private volatile boolean _paused;
 	private volatile boolean _finished;
 	private volatile boolean _pauseOnError;
+	
 	
 	public ImportExportStatus() {
 		_cancelled = false;
@@ -47,9 +50,7 @@ public class ImportExportStatus  {
 		
 		_logBuilder = new RTFBuilder();
 		_logBuilder.startDocument();
-		_logBuilder.setAlignment(Alignment.CENTER);
-		_logBuilder.appendText("DELTA - IMPORT LOG");
-		_logBuilder.appendText("Dataset : ");
+		
 	}
 	
 	/**
@@ -64,6 +65,9 @@ public class ImportExportStatus  {
 	 */
 	public void setHeading(String heading) {
 		this.heading = heading;
+		_logBuilder.setAlignment(Alignment.CENTER);
+		_logBuilder.appendText("DELTA - IMPORT LOG");
+		_logBuilder.appendText("Dataset : "+heading);
 	}
 
 	/**
@@ -95,24 +99,34 @@ public class ImportExportStatus  {
 	/**
 	 * @param currentFile the currentFile to set
 	 */
-	public void setCurrentFile(String currentFile) {
+	public void setCurrentFile(DirectiveFileInfo currentFile) {
 		
-		if (StringUtils.isNotEmpty(this.currentFile)) {
-			_logBuilder.increaseIndent();
-			_logBuilder.appendText("Import succeeded");
-			_logBuilder.decreaseIndent();
-		}
+		finishPreviousDirective();
+		_error = false;
 		
-		this.currentFile = currentFile;
+		this.currentFile = currentFile.getFileName();
 		errorsInCurrentFile = 0;
 		
 		_logBuilder.setAlignment(Alignment.LEFT);
 		_logBuilder.appendText("");
 		_logBuilder.appendText("Directives file: \\b " + currentFile + " \\b0");
 		_logBuilder.increaseIndent();
-		_logBuilder.appendText("File type ");
+		_logBuilder.appendText("File type "+currentFile.getType());
 		
 		_logBuilder.decreaseIndent();
+	}
+
+	private void finishPreviousDirective() {
+		if (StringUtils.isNotEmpty(this.currentFile)) {
+			_logBuilder.increaseIndent();
+			if (_error) {
+				_logBuilder.appendText("Import \\b failed \\b0 .");
+			}
+			else {
+				_logBuilder.appendText("Import succeeded");
+			}
+			_logBuilder.decreaseIndent();
+		}
 	}
 
 	/**
@@ -127,12 +141,14 @@ public class ImportExportStatus  {
 	 */
 	public void setCurrentDirective(AbstractDirective<? extends AbstractDeltaContext> directive, String data) {
 		currentDirective = directive.getName();
-		if (Arrays.equals(Show.CONTROL_WORDS, directive.getControlWords())) {
+		
+		if (ArrayUtils.equalsIgnoreCase(Show.CONTROL_WORDS, directive.getControlWords())) {
 			_logBuilder.increaseIndent();
 			_logBuilder.appendText("*"+directive.getName()+" "+data);
+			_logBuilder.decreaseIndent();
 			textFromLastShowDirective = data;
 		}
-		else if (Arrays.equals(Heading.CONTROL_WORDS, directive.getControlWords())) {
+		else if (ArrayUtils.equalsIgnoreCase(Heading.CONTROL_WORDS, directive.getControlWords())) {
 			heading = data;
 		}
 	}
@@ -153,10 +169,11 @@ public class ImportExportStatus  {
 
 	public void error(String message) {
 		incrementErrors();
-		_logBuilder.appendText(message);
+		_error = true;
 		_logBuilder.increaseIndent();
-		_logBuilder.appendText("Import \\b failed \\b0 .");
+		_logBuilder.appendText(message);
 		_logBuilder.decreaseIndent();
+		
 	}
 	
 	private void incrementErrors() {
@@ -266,6 +283,21 @@ public class ImportExportStatus  {
 
 	public void finish() {
 		_finished = true;
+		finishPreviousDirective();
+		writeReportFooter();
+		
+	}
+
+	private void writeReportFooter() {
+		DateFormat dateFormat = DateFormat.getDateTimeInstance();
+		_logBuilder.setAlignment(Alignment.CENTER);
+		_logBuilder.appendText("Import finished "+dateFormat.format(new Date()));
+		if (totalErrors > 0) {
+			_logBuilder.appendText("\\b "+totalErrors + " files failed to import correctly  \\b0 ");
+		}
+		else {
+			_logBuilder.appendText("\\b Import succeeded. \\b0 ");
+		}
 	}
 	
 	public boolean isFinished() {
