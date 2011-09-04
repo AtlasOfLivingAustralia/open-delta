@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
+import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.directives.AbstractDeltaContext;
 import au.org.ala.delta.directives.AbstractDirective;
@@ -41,23 +42,19 @@ public class ImportExportStatus  {
 	private volatile boolean _finished;
 	private volatile boolean _pauseOnError;
 	
+	private String _resourcePrefix;
+	private ResourceMap _resources;
 	
-	public ImportExportStatus() {
+	public ImportExportStatus(ResourceMap resources, String resourcePrefix) {
 		_cancelled = false;
 		_finished = false;
 		_paused = false;
 		_pauseOnError = true;
-		
+		_resourcePrefix = resourcePrefix;
+		_resources = resources;
 		_logBuilder = new RTFBuilder();
 		_logBuilder.startDocument();
 		
-	}
-	
-	/**
-	 * @return the heading
-	 */
-	public String getHeading() {
-		return heading;
 	}
 
 	/**
@@ -66,8 +63,8 @@ public class ImportExportStatus  {
 	public void setHeading(String heading) {
 		this.heading = heading;
 		_logBuilder.setAlignment(Alignment.CENTER);
-		_logBuilder.appendText("DELTA - IMPORT LOG");
-		_logBuilder.appendText("Dataset : "+heading);
+		_logBuilder.appendText(_resources.getString(_resourcePrefix+".heading"));
+		_logBuilder.appendText(_resources.getString("importExportReport.dataSetLabel",heading));
 	}
 
 	/**
@@ -77,16 +74,24 @@ public class ImportExportStatus  {
 		return importDirectory;
 	}
 
+	public String getHeading() {
+		return this.heading;
+	}
+	
 	/**
 	 * @param importDirectory the importDirectory to set
 	 */
 	public void setImportDirectory(String importDirectory) {
-		DateFormat dateFormat = DateFormat.getDateTimeInstance();
 		
 		this.importDirectory = importDirectory;
-		_logBuilder.appendText("Import directory: "+importDirectory);
-		_logBuilder.appendText("Import begun :"+dateFormat.format(new Date()));
+		_logBuilder.appendText(_resources.getString(_resourcePrefix+".directoryLabel", importDirectory));
+		_logBuilder.appendText(_resources.getString(_resourcePrefix+".timeLabel", currentTime()));
 		
+	}
+	
+	private String currentTime() {
+		DateFormat dateFormat = DateFormat.getDateTimeInstance();
+		return dateFormat.format(new Date());
 	}
 
 	/**
@@ -110,9 +115,9 @@ public class ImportExportStatus  {
 		
 		_logBuilder.setAlignment(Alignment.LEFT);
 		_logBuilder.appendText("");
-		_logBuilder.appendText("Directives file: \\b " + currentFile + " \\b0");
+		_logBuilder.appendText(_resources.getString("importExportReport.directivesFileLabel", currentFile));
 		_logBuilder.increaseIndent();
-		_logBuilder.appendText("File type "+currentFile.getType());
+		_logBuilder.appendText(_resources.getString("importExportReport.fileTypeLabel", currentFile.getType()));
 		
 		_logBuilder.decreaseIndent();
 	}
@@ -121,10 +126,10 @@ public class ImportExportStatus  {
 		if (StringUtils.isNotEmpty(this.currentFile)) {
 			_logBuilder.increaseIndent();
 			if (_error) {
-				_logBuilder.appendText("Import \\b failed \\b0 .");
+				_logBuilder.appendText(_resources.getString(_resourcePrefix+".failure"));
 			}
 			else {
-				_logBuilder.appendText("Import succeeded");
+				_logBuilder.appendText(_resources.getString(_resourcePrefix+".success"));
 			}
 			_logBuilder.decreaseIndent();
 		}
@@ -278,14 +283,10 @@ public class ImportExportStatus  {
 	}
 
 	private void writeReportFooter() {
-		DateFormat dateFormat = DateFormat.getDateTimeInstance();
 		_logBuilder.setAlignment(Alignment.CENTER);
-		_logBuilder.appendText("Import finished "+dateFormat.format(new Date()));
+		_logBuilder.appendText(_resources.getString(_resourcePrefix+".finished", currentTime()));
 		if (totalErrors > 0) {
-			_logBuilder.appendText("\\b "+totalErrors + " files failed to import correctly  \\b0 ");
-		}
-		else {
-			_logBuilder.appendText("\\b Import succeeded. \\b0 ");
+			_logBuilder.appendText(_resources.getString(_resourcePrefix+".failureMessage",totalErrors));
 		}
 	}
 	

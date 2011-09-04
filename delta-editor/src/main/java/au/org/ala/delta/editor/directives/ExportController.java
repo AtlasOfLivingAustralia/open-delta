@@ -170,7 +170,7 @@ public class ExportController {
 	public class DoExportTask extends Task<Void, ImportExportStatus> implements
 			DirectiveParserObserver {
 
-		private ImportExportStatus _status = new ImportExportStatus();
+		private ImportExportStatus _status = new ImportExportStatus(_resources, "exportReport");
 		private String _directoryName;
 		private List<DirectiveFileInfo> _files;
 

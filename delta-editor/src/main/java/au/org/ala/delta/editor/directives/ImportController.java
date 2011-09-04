@@ -181,7 +181,7 @@ public class ImportController  {
 
 		private String _directoryName;
 		private List<DirectiveFileInfo> _files;
-		private ImportExportStatus _status = new ImportExportStatus();
+		private ImportExportStatus _status = new ImportExportStatus(_resources, "importReport");
 		
 		public DoImportTask(File directory, List<DirectiveFileInfo> files) {
 			super(_editor);
