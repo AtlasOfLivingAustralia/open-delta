@@ -9,6 +9,7 @@ import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateAttribute;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.NumericCharacter;
+import au.org.ala.delta.model.TextAttribute;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.translation.AbstractDataSetTranslator;
@@ -92,6 +93,11 @@ public class DeltaFormatTranslator extends AbstractDataSetTranslator {
 
 	private String getAttributeValue(Attribute attribute) {
 		String value = attribute.getValueAsString();
+		if (attribute instanceof TextAttribute) {
+			if (!value.startsWith("<")) {
+				value = "<"+value+">";
+			}
+		}
 		if (attribute instanceof MultiStateAttribute) {
             MultiStateAttribute msAttr = (MultiStateAttribute) attribute;
             if (msAttr.isImplicit()) {
