@@ -13,7 +13,6 @@ import javax.swing.ActionMap;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
-import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -30,7 +29,6 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 
-import au.org.ala.delta.editor.DeltaView;
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile.DirectiveType;
@@ -39,7 +37,7 @@ import au.org.ala.delta.editor.ui.util.MessageDialogHelper;
 /**
  * Allows the user to see and execute CONFOR / DIST / KEY directives files.
  */
-public class ActionSetsDialog extends JInternalFrame implements DeltaView {
+public class ActionSetsDialog extends AbstractDeltaView {
 	
 	private static final long serialVersionUID = -3525771335064005800L;
 	
@@ -345,24 +343,6 @@ public class ActionSetsDialog extends JInternalFrame implements DeltaView {
 			return DirectiveType.DIST;
 		}
 	}
-	
-	@Override
-	public ReorderableList getCharacterListView() {
-		return null;
-	}
-
-	@Override
-	public ReorderableList getItemListView() {
-		return null;
-	}
-	
-	@Override
-	public boolean editsValid() {
-		return true;
-	}
-	
-	@Override
-	public void open() {}
 	
 	@Override
 	public String getViewTitle() {

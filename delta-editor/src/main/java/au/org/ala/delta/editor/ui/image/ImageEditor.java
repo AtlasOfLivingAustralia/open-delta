@@ -18,7 +18,6 @@ import java.util.Map;
 import javax.swing.ActionMap;
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JInternalFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -30,9 +29,8 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 
 import au.org.ala.delta.editor.DeltaEditor;
-import au.org.ala.delta.editor.DeltaView;
 import au.org.ala.delta.editor.model.EditorViewModel;
-import au.org.ala.delta.editor.ui.ReorderableList;
+import au.org.ala.delta.editor.ui.AbstractDeltaView;
 import au.org.ala.delta.editor.ui.util.MenuBuilder;
 import au.org.ala.delta.editor.ui.util.MessageDialogHelper;
 import au.org.ala.delta.model.Character;
@@ -58,7 +56,7 @@ import au.org.ala.delta.util.DataSetHelper;
  * Displays Character and Taxon images and allows the addition of 
  * ImageOverlays to the Image to assist with IntKey identifications.
  */
-public class ImageEditor extends JInternalFrame implements DeltaView {
+public class ImageEditor extends AbstractDeltaView {
 
 	private static final long serialVersionUID = 4867008707368683722L;
 
@@ -229,24 +227,6 @@ public class ImageEditor extends JInternalFrame implements DeltaView {
 	@Override
 	public String getViewTitle() {
 		return _selectedImage.getFileName();
-	}
-
-	@Override
-	public void open() {}
-
-	@Override
-	public boolean editsValid() {
-		return true;
-	}
-
-	@Override
-	public ReorderableList getCharacterListView() {
-		return null;
-	}
-
-	@Override
-	public ReorderableList getItemListView() {
-		return null;
 	}
 	
 	private void displaySubject(Character subject, Image image) {

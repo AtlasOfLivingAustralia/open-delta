@@ -123,6 +123,10 @@ public class MessageDialogHelper {
 
 	}
 
-
+	public int promtForSaveBeforeClosing() {
+		String title = _messages.getString("saveBeforeClosing.title");
+		String message = _messages.getString("saveBeforeClosing.message");
+		return JOptionPane.showConfirmDialog(_dialogParent, message, title, JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE) ;
+	}
 	
 }

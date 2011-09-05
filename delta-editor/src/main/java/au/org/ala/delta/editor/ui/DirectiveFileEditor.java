@@ -8,7 +8,7 @@ import java.text.ParseException;
 import java.util.List;
 
 import javax.swing.ActionMap;
-import javax.swing.JInternalFrame;
+import javax.swing.JOptionPane;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -17,7 +17,6 @@ import org.jdesktop.application.Application;
 
 import au.org.ala.delta.directives.AbstractDirective;
 import au.org.ala.delta.editor.DeltaEditor;
-import au.org.ala.delta.editor.DeltaView;
 import au.org.ala.delta.editor.directives.DirectiveFileInfo;
 import au.org.ala.delta.editor.directives.DirectiveImportHandlerAdapter;
 import au.org.ala.delta.editor.directives.ExportController;
@@ -26,14 +25,13 @@ import au.org.ala.delta.editor.directives.ImportController;
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.slotfile.directive.DirectiveInOutState;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile;
-import au.org.ala.delta.editor.ui.validator.ValidationListener;
-import au.org.ala.delta.editor.ui.validator.ValidationResult;
+import au.org.ala.delta.editor.ui.util.MessageDialogHelper;
 import au.org.ala.delta.ui.codeeditor.CodeEditor;
 
 /**
  * Provides a user interface that allows directive files to be edited.
  */
-public class DirectiveFileEditor extends JInternalFrame implements ValidationListener, DeltaView {
+public class DirectiveFileEditor extends AbstractDeltaView {
 
 	private static final long serialVersionUID = 9193388605723396077L;
 
@@ -45,13 +43,15 @@ public class DirectiveFileEditor extends JInternalFrame implements ValidationLis
 	private CodeEditor directivesEditor;
 	
 	private String originalText;
+	
+	private MessageDialogHelper _messageHelper;
 
 	public DirectiveFileEditor(EditorViewModel model) {
 		super();
 		setName("ItemEditorDialog");
 		_model = model;
 		_actions = Application.getInstance().getContext().getActionMap(this);
-
+		_messageHelper = new MessageDialogHelper();
 		createUI();
 		addEventHandlers();
 		updateGUI();
@@ -79,6 +79,9 @@ public class DirectiveFileEditor extends JInternalFrame implements ValidationLis
 	
 	private void enableSave() {
 		_actions.get("applyChanges").setEnabled(true);
+	}
+	private void disableSave() {
+		_actions.get("applyChanges").setEnabled(false);
 	}
 
 	private void createUI() {
@@ -115,6 +118,7 @@ public class DirectiveFileEditor extends JInternalFrame implements ValidationLis
 		}
 		originalText = new String(out.toByteArray());
 		directivesEditor.setText(originalText);
+		disableSave();
 	}
 
 	@Override
@@ -123,8 +127,18 @@ public class DirectiveFileEditor extends JInternalFrame implements ValidationLis
 	}
 
 	@Override
-	public void open() {
-
+	public boolean canClose() {
+		if (originalText.equals(directivesEditor.getTextArea().getText())) {
+			return true;
+		}
+		int result = _messageHelper.promtForSaveBeforeClosing();
+		if (result == JOptionPane.CANCEL_OPTION) {
+			return false;
+		}
+		else if (result == JOptionPane.OK_OPTION) {
+			applyChanges();
+		}
+		return true;
 	}
 
 	@Action
@@ -143,28 +157,7 @@ public class DirectiveFileEditor extends JInternalFrame implements ValidationLis
 	
 	@Override
 	public boolean editsValid() {
-
 		return true;
-	}
-
-	@Override
-	public ReorderableList getCharacterListView() {
-		return null;
-	}
-
-	@Override
-	public ReorderableList getItemListView() {
-		return null;
-	}
-
-	@Override
-	public void validationSuceeded(ValidationResult results) {
-
-	}
-
-	@Override
-	public void validationFailed(ValidationResult results) {
-
 	}
 	
 	private void highlightError(int charNumber) {

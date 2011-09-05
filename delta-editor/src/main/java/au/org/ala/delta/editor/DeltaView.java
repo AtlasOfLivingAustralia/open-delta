@@ -15,4 +15,5 @@ public interface DeltaView {
 	
 	public ReorderableList getCharacterListView();
 	public ReorderableList getItemListView();
+	public boolean canClose();
 }

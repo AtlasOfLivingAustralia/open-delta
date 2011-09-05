@@ -14,7 +14,6 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
-import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -39,7 +38,6 @@ import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.editor.CharacterController;
-import au.org.ala.delta.editor.DeltaView;
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.ui.util.MessageDialogHelper;
 import au.org.ala.delta.editor.ui.validator.CharacterValidator;
@@ -56,7 +54,7 @@ import au.org.ala.delta.ui.rtf.RtfToolBar;
 /**
  * Provides a user interface that allows a character to be edited.
  */
-public class CharacterEditor extends JInternalFrame implements DeltaView {
+public class CharacterEditor extends AbstractDeltaView {
 	
 	private static final int CONTROLS_EDITOR_TAB_INDEX = 4;
 
@@ -190,18 +188,6 @@ public class CharacterEditor extends JInternalFrame implements DeltaView {
 		comboBox.setAction(map.get("characterTypeChanged"));
 	}
 	
-	
-	
-	@Override
-	public ReorderableList getCharacterListView() {
-		return null;
-	}
-
-	@Override
-	public ReorderableList getItemListView() {
-		return null;
-	}
-
 	@Action
 	public void characterEditDone() {
 		try {
@@ -546,14 +532,6 @@ public class CharacterEditor extends JInternalFrame implements DeltaView {
 			}
 		}
 		_editsDisabled = false;
-	}
-	
-	@Override
-	public void open() {}
-
-	@Override
-	public boolean editsValid() {
-		return true;
 	}
 
 	@Override

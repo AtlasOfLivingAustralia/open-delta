@@ -29,7 +29,6 @@ import javax.swing.DefaultCellEditor;
 import javax.swing.DropMode;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
-import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -54,7 +53,6 @@ import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 
-import au.org.ala.delta.editor.DeltaView;
 import au.org.ala.delta.editor.EditorPreferences;
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.ui.util.EditorUIUtils;
@@ -78,7 +76,7 @@ import au.org.ala.delta.ui.AboutBox;
 /**
  * The TreeViewer presents the data model as a list of items and a tree containing the character attributes of the item selected from the list.
  */
-public class TreeViewer extends JInternalFrame implements DeltaView {
+public class TreeViewer extends AbstractDeltaView {
 
 	private static final long serialVersionUID = 1L;
 
@@ -262,10 +260,6 @@ public class TreeViewer extends JInternalFrame implements DeltaView {
 		}
 
 		return 0;
-	}
-
-	@Override
-	public void open() {
 	}
 
 	@Override

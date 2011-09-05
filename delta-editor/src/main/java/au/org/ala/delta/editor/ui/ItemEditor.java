@@ -9,7 +9,6 @@ import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -34,7 +33,6 @@ import org.jdesktop.application.Application;
 import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 
-import au.org.ala.delta.editor.DeltaView;
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.ui.validator.ItemValidator;
 import au.org.ala.delta.editor.ui.validator.TextComponentValidator;
@@ -47,7 +45,7 @@ import au.org.ala.delta.ui.rtf.RtfToolBar;
 /**
  * Provides a user interface that allows an item description and images to be edited.
  */
-public class ItemEditor extends JInternalFrame implements ValidationListener, DeltaView {
+public class ItemEditor extends AbstractDeltaView implements ValidationListener {
 	
 	private static final long serialVersionUID = 9193388605723396077L;
 
@@ -99,16 +97,6 @@ public class ItemEditor extends JInternalFrame implements ValidationListener, De
 		createUI();
 		addEventHandlers(map);
 		bind(model);		
-	}
-	
-	@Override
-	public ReorderableList getCharacterListView() {
-		return null;
-	}
-
-	@Override
-	public ReorderableList getItemListView() {
-		return null;
 	}
 
 	/**
@@ -383,8 +371,6 @@ public class ItemEditor extends JInternalFrame implements ValidationListener, De
 		_valid = false;
 	}
 	
-	@Override
-	public void open() {}
 
 	@Override
 	public boolean editsValid() {

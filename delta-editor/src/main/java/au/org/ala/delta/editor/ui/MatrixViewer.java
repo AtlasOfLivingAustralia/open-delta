@@ -33,7 +33,6 @@ import java.awt.event.MouseWheelListener;
 
 import javax.swing.ActionMap;
 import javax.swing.DropMode;
-import javax.swing.JInternalFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
@@ -50,7 +49,6 @@ import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.Task;
 import org.jdesktop.application.Task.BlockingScope;
 
-import au.org.ala.delta.editor.DeltaView;
 import au.org.ala.delta.editor.EditorPreferences;
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.ui.dnd.DropIndicationTable;
@@ -61,7 +59,7 @@ import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
 /**
  * The MatrixViewer presents the attributes of the data set in a tabular format.
  */
-public class MatrixViewer extends JInternalFrame implements DeltaView {
+public class MatrixViewer extends AbstractDeltaView {
 
 	private static final long serialVersionUID = 1L;
 
@@ -359,10 +357,6 @@ public class MatrixViewer extends JInternalFrame implements DeltaView {
 	@Action(block = BlockingScope.APPLICATION)
 	public Task<Void, Void> copySelectedWithHeaders() {
 		return new CopySelectedWithHeadersTask(Application.getInstance());
-	}
-
-	@Override
-	public void open() {
 	}
 
 	@Override

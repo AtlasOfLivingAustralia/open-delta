@@ -93,12 +93,16 @@ public class DeltaViewController extends InternalFrameAdapter implements Vetoabl
 
 		
 		if (JInternalFrame.IS_CLOSED_PROPERTY.equals(e.getPropertyName()) && (e.getNewValue().equals(Boolean.TRUE))) {
-			
-			if (_activeViews.size() == 1) {
-				boolean canClose = confirmClose();
-				if (!canClose) {
-					throw new PropertyVetoException("Close cancelled", e);
+			if (((DeltaView)e.getSource()).canClose()) {
+				if (_activeViews.size() == 1) {
+					boolean canClose = confirmClose();
+					if (!canClose) {
+						throw new PropertyVetoException("Close cancelled", e);
+					}
 				}
+			}
+			else {
+				throw new PropertyVetoException("Close cancelled by view", e);
 			}
 		}
 		else if (JInternalFrame.IS_SELECTED_PROPERTY.equals(e.getPropertyName())) {
