@@ -36,7 +36,7 @@ public class ImportControllerTest extends AbstractImportControllerTest {
 		
 		List<DirectiveFileInfo> files = Arrays.asList(new DirectiveFileInfo[] {specs, chars, items});
 		
-		importer.new DoImportTask(datasetDirectory, files).doInBackground();
+		importer.new DoImportTask(datasetDirectory, files, true).doInBackground();
 		
 		assertEquals(89, _dataSet.getNumberOfCharacters());
 		// do a few random assertions
@@ -92,7 +92,7 @@ public class ImportControllerTest extends AbstractImportControllerTest {
 		
 		List<DirectiveFileInfo> files = Arrays.asList(new DirectiveFileInfo[] {toint});
 		
-		importer.new DoImportTask(datasetDirectory, files).doInBackground();
+		importer.new DoImportTask(datasetDirectory, files, true).doInBackground();
 
 		assertEquals(1, _dataSet.getDirectiveFileCount());
 		

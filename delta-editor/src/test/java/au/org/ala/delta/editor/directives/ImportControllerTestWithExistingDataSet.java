@@ -33,7 +33,7 @@ public class ImportControllerTestWithExistingDataSet extends AbstractImportContr
 		
 		int preImportCount = _dataSet.getDirectiveFileCount();
 		
-		importer.new DoImportTask(datasetDirectory, files).doInBackground();
+		importer.new DoImportTask(datasetDirectory, files, true).doInBackground();
 
 		assertEquals(preImportCount, _dataSet.getDirectiveFileCount());
 		

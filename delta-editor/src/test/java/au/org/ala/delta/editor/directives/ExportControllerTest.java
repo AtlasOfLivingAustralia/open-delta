@@ -93,7 +93,7 @@ public class ExportControllerTest extends DeltaTestCase {
 			List<DirectiveFileInfo> files = Arrays.asList(new DirectiveFileInfo[] {test});
 			File tempDir = new File(System.getProperty("java.io.tmpdir"));
 			System.out.println(i+" : "+directiveFile.getShortFileName());
-			exporter.new DoExportTask(tempDir, files).doInBackground();
+			exporter.new DoExportTask(tempDir, files, true).doInBackground();
 		}
 	}
 	
@@ -331,7 +331,7 @@ public class ExportControllerTest extends DeltaTestCase {
 		
 		List<DirectiveFileInfo> files = Arrays.asList(new DirectiveFileInfo[] {test});
 		
-		exporter.new DoExportTask(directory, files).doInBackground();
+		exporter.new DoExportTask(directory, files, true).doInBackground();
 	}
 	
 	private String[] read(String fileName) throws Exception {

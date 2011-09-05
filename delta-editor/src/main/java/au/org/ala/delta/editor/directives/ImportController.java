@@ -9,18 +9,11 @@ import java.util.List;
 import javax.swing.ActionMap;
 import javax.swing.JFileChooser;
 
-import org.apache.commons.lang.StringUtils;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ResourceMap;
-import org.jdesktop.application.Task;
-import org.jdesktop.application.TaskEvent;
-import org.jdesktop.application.TaskListener;
 
-import au.org.ala.delta.directives.AbstractDeltaContext;
-import au.org.ala.delta.directives.AbstractDirective;
 import au.org.ala.delta.editor.DeltaEditor;
 import au.org.ala.delta.editor.directives.ui.ImportExportDialog;
-import au.org.ala.delta.editor.directives.ui.ImportExportStatusDialog;
 import au.org.ala.delta.editor.directives.ui.ImportExportViewModel;
 import au.org.ala.delta.editor.directives.ui.ImportViewModel;
 import au.org.ala.delta.editor.model.EditorViewModel;
@@ -31,7 +24,6 @@ import au.org.ala.delta.editor.slotfile.directive.IntkeyDirType;
 import au.org.ala.delta.editor.slotfile.directive.KeyDirType;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile.DirectiveType;
-import au.org.ala.delta.ui.RichTextDialog;
 
 /**
  * The ImportController manages the process of importing a set of directives files
@@ -96,17 +88,15 @@ public class ImportController  {
 	}
 	
 	public void doImport(File selectedDirectory, List<DirectiveFileInfo> files) {
-		ImportExportStatusDialog statusDialog = new ImportExportStatusDialog(_editor.getMainFrame(), "import");
-		_editor.show(statusDialog);
 		
 		// Do the import on a background thread.
-		DoImportTask importTask = new DoImportTask(selectedDirectory, files);
-		importTask.addTaskListener(new StatusUpdater(statusDialog));
+		DoImportTask importTask = new DoImportTask(selectedDirectory, files, false);
+		
 		importTask.execute();
 	}
 	
 	public void doSilentImport(File selectedDirectory, List<DirectiveFileInfo> files) {
-		new DoImportTask(selectedDirectory, files).execute();
+		new DoImportTask(selectedDirectory, files, true).execute();
 	}
 
 	/**
@@ -177,23 +167,10 @@ public class ImportController  {
 		return directives;
 	}
 	
-	public class DoImportTask extends Task<Void, ImportExportStatus> implements DirectiveImportHandler {
-
-		private String _directoryName;
-		private List<DirectiveFileInfo> _files;
-		private ImportExportStatus _status = new ImportExportStatus(_resources, "importReport");
+	public class DoImportTask extends ImportExportTask {
 		
-		public DoImportTask(File directory, List<DirectiveFileInfo> files) {
-			super(_editor);
-			
-			String directoryName = directory.getAbsolutePath();
-			if (!directoryName.endsWith(File.separator)) {
-				directoryName += File.separator;
-			}
-			_status.setHeading(_model.getName());
-			_status.setImportDirectory(directoryName);
-			_directoryName = directoryName;
-			_files = files;
+		public DoImportTask(File directory, List<DirectiveFileInfo> files, boolean silent) {
+			super(_editor, _model, directory, files, "import", silent);
 		}
 		
 		
@@ -223,84 +200,6 @@ public class ImportController  {
 			
 			return null;
 		}
-
-		@Override
-		protected void failed(Throwable cause) {
-			cause.printStackTrace();
-			super.failed(cause);
-		}
-
-
-		@Override
-		public void preProcess(AbstractDirective<? extends AbstractDeltaContext> directive, String data) {
-			_status.setCurrentDirective(directive, data);
-			publish(_status);
-		}
-
-
-		@Override
-		public void postProcess(AbstractDirective<? extends AbstractDeltaContext> directive) {
-			
-		}
-
-
-		@Override
-		public void handleUnrecognizedDirective(ImportContext context, List<String> controlWords) {
-			error("unrecognised directive " +controlWords);
-		}
-
-
-		@Override
-		public void handleDirectiveProcessingException(ImportContext context, AbstractDirective<ImportContext> d,
-				Exception ex) {
-			error(ex.getMessage());
-		}
-		
-		private void error(String message) {
-			_status.error(message);
-			publish(_status);
-			
-			if (_status.getPauseOnError()) {
-				_status.pause();
-				
-				if (_status.isCancelled()) {
-					cancel(false);
-				}
-			}
-			
-		}
 	}
-	
-	/**
-	 * Listens for import progress and updates the Status Dialog.
-	 */
-	private class StatusUpdater extends TaskListener.Adapter<Void, ImportExportStatus> {
-
-		private ImportExportStatusDialog _statusDialog;
-		private RichTextDialog _dialog;
-		public StatusUpdater(ImportExportStatusDialog statusDialog) {
-			_statusDialog = statusDialog;
-			_dialog = new RichTextDialog(_editor.getMainFrame(), "");
-			_editor.show(_dialog);
-		}
-		@Override
-		public void process(TaskEvent<List<ImportExportStatus>> event) {
-			ImportExportStatus status = event.getValue().get(0); 
-			_statusDialog.update(status);
-			String log = status.getImportLog();
-			if (StringUtils.isNotEmpty(log)) {
-				try {
-				_dialog.setText(log);
-				}
-				catch (Exception e) {
-					System.out.println(log);
-					e.printStackTrace();
-				}
-			}
-			
-		}
-		
-	}
-	
 	
 }

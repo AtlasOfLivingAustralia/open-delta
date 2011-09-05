@@ -11,13 +11,9 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ResourceMap;
-import org.jdesktop.application.Task;
 import org.jdesktop.application.TaskEvent;
 import org.jdesktop.application.TaskListener;
 
-import au.org.ala.delta.directives.AbstractDeltaContext;
-import au.org.ala.delta.directives.AbstractDirective;
-import au.org.ala.delta.directives.DirectiveParserObserver;
 import au.org.ala.delta.editor.DeltaEditor;
 import au.org.ala.delta.editor.directives.ui.ExportViewModel;
 import au.org.ala.delta.editor.directives.ui.ImportExportDialog;
@@ -39,7 +35,7 @@ import au.org.ala.delta.model.image.ImageSettings;
  * files from the data set to the file system.
  */
 public class ExportController {
-	private DeltaEditor _context;
+	private DeltaEditor _editor;
 	private EditorViewModel _model;
 	private ImportExportViewModel _exportModel;
 	private ImportExportDialog _exportDialog;
@@ -47,20 +43,20 @@ public class ExportController {
 	private ActionMap _actions;
 	
 	public ExportController(DeltaEditor context) {
-		_context = context;
+		_editor = context;
 		_model = context.getCurrentDataSet();
-		_resources = _context.getContext().getResourceMap();
-		_actions = _context.getContext().getActionMap(this);
+		_resources = _editor.getContext().getResourceMap();
+		_actions = _editor.getContext().getActionMap(this);
 	}
 
 	public void begin() {
 		_exportModel = new ExportViewModel();
 		_exportModel.populate(_model);
 
-		_exportDialog = new ImportExportDialog(_context.getMainFrame(), _exportModel, "ExportDialog");
+		_exportDialog = new ImportExportDialog(_editor.getMainFrame(), _exportModel, "ExportDialog");
 		_exportDialog.setDirectorySelectionAction(_actions.get("changeExportDirectory"));
 		
-		_context.show(_exportDialog);
+		_editor.show(_exportDialog);
 
 		if (_exportDialog.proceed()) {
 			List<DirectiveFileInfo> files = _exportModel.getSelectedFiles();
@@ -78,11 +74,11 @@ public class ExportController {
 	 */
 	public void doExport(File selectedDirectory, List<DirectiveFileInfo> files) {
 		ImportExportStatusDialog statusDialog = new ImportExportStatusDialog(
-				_context.getMainFrame(), "export");
-		_context.show(statusDialog);
+				_editor.getMainFrame(), "export");
+		_editor.show(statusDialog);
 
 		// Do the import on a background thread.
-		DoExportTask importTask = new DoExportTask(selectedDirectory, files);
+		DoExportTask importTask = new DoExportTask(selectedDirectory, files, false);
 		importTask.addTaskListener(new StatusUpdater(statusDialog));
 		importTask.execute();
 	}
@@ -104,7 +100,7 @@ public class ExportController {
 
 	public void doSilentExport(File selectedDirectory,
 			List<DirectiveFileInfo> files) {
-		new DoExportTask(selectedDirectory, files).execute();
+		new DoExportTask(selectedDirectory, files, true).execute();
 	}
 	
 	public void writeDirectivesFile(DirectiveFile file, DirectiveInOutState state) {
@@ -153,35 +149,10 @@ public class ExportController {
 		directiveInfo.getOutFunc().process(state);
 	}
 
-	public class StatusUpdatingExportState extends DirectiveInOutState {
+	public class DoExportTask extends ImportExportTask {
 		
-		private ImportExportStatus _status;
-		public StatusUpdatingExportState(ImportExportStatus status) {
-			super(_model);
-			_status = status;
-		}
-		@Override
-		public void setCurrentDirective(DirectiveInstance directive) {
-			super.setCurrentDirective(directive);
-			//_status.setCurrentDirective(directive.getDirective(), directive.getDirectiveArguments().getFirstArgumentText());
-		}
-	}
-	
-	public class DoExportTask extends Task<Void, ImportExportStatus> implements
-			DirectiveParserObserver {
-
-		private ImportExportStatus _status = new ImportExportStatus(_resources, "exportReport");
-		private String _directoryName;
-		private List<DirectiveFileInfo> _files;
-
-		public DoExportTask(File directory, List<DirectiveFileInfo> files) {
-			super(_context);
-			String directoryName = directory.getAbsolutePath();
-			if (!directoryName.endsWith(File.separator)) {
-				directoryName += File.separator;
-			}
-			_directoryName = directoryName;
-			_files = files;
+		public DoExportTask(File directory, List<DirectiveFileInfo> files, boolean silent) {
+			super(_editor, _model, directory, files, "export", silent);
 		}
 
 		@Override
@@ -191,7 +162,7 @@ public class ExportController {
 
 			buildSpecialDirFiles();
 			
-			DirectiveInOutState state = new StatusUpdatingExportState(_status);
+			DirectiveInOutState state = new DirectiveInOutState(_model);
 			for (DirectiveFileInfo file : _files) {
 				DirectiveFile dirFile = file.getDirectiveFile();
 				if (dirFile != null) {
@@ -203,24 +174,10 @@ public class ExportController {
 
 				publish(_status);
 			}
+			_status.finish();
+			publish(_status);
 
 			return null;
-		}
-
-		@Override
-		protected void failed(Throwable cause) {
-			cause.printStackTrace();
-			super.failed(cause);
-		}
-
-		@Override
-		public void preProcess(AbstractDirective<? extends AbstractDeltaContext> directive, String data) {
-		}
-
-		@Override
-		public void postProcess(
-				AbstractDirective<? extends AbstractDeltaContext> directive) {
-			// storeDirective(directive);
 		}
 	}
 
