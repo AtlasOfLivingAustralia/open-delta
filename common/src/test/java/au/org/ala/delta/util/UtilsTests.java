@@ -104,6 +104,12 @@ public class UtilsTests extends TestCase {
 		assertEquals("Culms Again", withoutComments);
 	}
 	
+	public void testDespaceRtf() {
+		String withRtf = "<when present,>,1/3<\\i Bromidium\\i0>/5<rarely>";
+		String despaced = Utils.despaceRtf(withRtf, false);
+		assertEquals("<when present,>,1/3<\\i{}Bromidium\\i0{}>/5<rarely>", despaced);
+	}
+	
 //	/**
 //	 * Tests the remove comments method with nested comments
 //	 */

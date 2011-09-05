@@ -17,6 +17,7 @@ import au.org.ala.delta.translation.Printer;
 import au.org.ala.delta.translation.attribute.AttributeParser;
 import au.org.ala.delta.translation.attribute.ParsedAttribute;
 import au.org.ala.delta.translation.attribute.ParsedAttribute.Values;
+import au.org.ala.delta.util.Utils;
 
 /**
  * The DeltaFormatTranslator can reformat the output of the 
@@ -104,7 +105,7 @@ public class DeltaFormatTranslator extends AbstractDataSetTranslator {
                 value = Integer.toString(msAttr.getImplicitValue());
             }
         }
-		return value;
+		return Utils.despaceRtf(value, false);
 	}
 
 	@Override

@@ -755,6 +755,10 @@ public class Utils {
                         if (wasInUnicode && srcPos + 1 < outputText.length() && outputText.charAt(srcPos + 1) == '\'')
                             inUnicode = true;
                     }
+                    else if (ch == '>') {
+                    	// Append a space after the RTF (it was probably stripped by the attribute parsing) 
+                    	outputText.insert(srcPos, "{}");
+                    }
                 }
             } else if (ch == '\\')
                 inRTF = true;
