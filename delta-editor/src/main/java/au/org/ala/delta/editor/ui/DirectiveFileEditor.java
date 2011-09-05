@@ -8,10 +8,12 @@ import java.text.ParseException;
 import java.util.List;
 
 import javax.swing.ActionMap;
+import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import org.apache.commons.lang.StringUtils;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 
@@ -26,7 +28,11 @@ import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.slotfile.directive.DirectiveInOutState;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile;
 import au.org.ala.delta.editor.ui.util.MessageDialogHelper;
+import au.org.ala.delta.editor.ui.validator.TextComponentValidator;
+import au.org.ala.delta.editor.ui.validator.ValidationResult;
+import au.org.ala.delta.editor.ui.validator.Validator;
 import au.org.ala.delta.ui.codeeditor.CodeEditor;
+import au.org.ala.delta.ui.codeeditor.CodeTextArea;
 
 /**
  * Provides a user interface that allows directive files to be edited.
@@ -143,16 +149,7 @@ public class DirectiveFileEditor extends AbstractDeltaView {
 
 	@Action
 	public void applyChanges() {
-		ImportController controller = new ImportController(
-				(DeltaEditor) Application.getInstance(), _model);
-	
-		String text = directivesEditor.getTextArea().getText();
-		DirectiveFile file = _model.getSelectedDirectiveFile();
-		DirectiveFileInfo fileInfo = new DirectiveFileInfo(file);
-		boolean success = controller.importDirectivesFile(fileInfo, new StringReader(text), new ImportErrorHandler());
-		if (success) {
-			updateGUI();
-		}
+		new CodeEditorValidator(new ImportErrorHandler()).verify(directivesEditor.getTextArea());
 	}
 	
 	@Override
@@ -164,25 +161,74 @@ public class DirectiveFileEditor extends AbstractDeltaView {
 		directivesEditor.getTextArea().select(charNumber, charNumber+1);
 	}
 	
-	class ImportErrorHandler extends DirectiveImportHandlerAdapter {
+	class ImportErrorHandler extends DirectiveImportHandlerAdapter implements Validator {
 
+		private ValidationResult _result = ValidationResult.success();
+		/**
+		 * Validate the supplied object and return an instance of ValidationResult.
+		 * @param toValidate the object to validate.
+		 * @return results of the validation.
+		 */
+		public ValidationResult validate(Object toValidate) {
+			ImportController controller = new ImportController(
+					(DeltaEditor) Application.getInstance(), _model);
+		
+			String text = directivesEditor.getTextArea().getText();
+			DirectiveFile file = _model.getSelectedDirectiveFile();
+			DirectiveFileInfo fileInfo = new DirectiveFileInfo(file);
+			boolean success = controller.importDirectivesFile(fileInfo, new StringReader(text), this);
+			if (success) {
+				updateGUI();
+			}
+			return _result;
+		}
+			
 		@Override
 		public void handleUnrecognizedDirective(ImportContext context, List<String> controlWords) {
-			
+			System.out.println(context.getDirective());
+			_result = ValidationResult.error("errors.UNRECOGNISED_DIRECTIVE");
+			_result.setMessageArgs(StringUtils.join(controlWords.toArray()));
 		}
 
 		@Override
 		public void handleDirectiveProcessingException(ImportContext context, AbstractDirective<ImportContext> d,
 				Exception ex) {
 			handleException(ex);
+			
 		}
 		
 		private void handleException(Exception ex) {
 			if (ex instanceof ParseException) {
-				highlightError(((ParseException)ex).getErrorOffset());
+				ParseException pe = (ParseException)ex;
+				highlightError(pe.getErrorOffset());
+				_result = ValidationResult.error("errors.DIRECTIVE_PARSE_ERROR");
+				_result.setMessageArgs(ex.getMessage());
 			}
 		}
 		
+	}
+	
+	class CodeEditorValidator extends TextComponentValidator {
+		public CodeEditorValidator(Validator validator) {
+			super(validator);
+		}
+		
+		@Override
+		public boolean verify(JComponent component) {
+			return validate(component);
+		}
+		
+		public Object getValueToValidate(JComponent component) {
+			return ((CodeTextArea)component).getText();
+		}
+		
+		protected void updateTextStyles(JComponent component, ValidationResult validationResult) {
+			CodeTextArea textArea = (CodeTextArea)component;
+			if (!validationResult.isValid()) {
+				int pos = validationResult.getInvalidCharacterPosition();
+				textArea.select(Math.max(pos, 0), textArea.getDocument().getLength());
+			}
+		}
 	}
 
 }

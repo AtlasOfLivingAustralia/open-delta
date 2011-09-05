@@ -18,6 +18,7 @@ public class ValidationResult {
 	private int _invalidCharacterPosition;
 	private String _errorMessageKey;
 	private ResultType _type;
+	private Object[] _messageArgs;
 	
 	/**
 	 * Creates a new ValidationResult representing a failed validation.
@@ -46,6 +47,10 @@ public class ValidationResult {
 		_invalidCharacterPosition = -1;
 	}
 	
+	public void setMessageArgs(Object... args) {
+		_messageArgs = args;
+	}
+	
 	/**
 	 * @return true if there are no messages associated with this result.
 	 */
@@ -66,8 +71,14 @@ public class ValidationResult {
 	}
 	
 	public String getMessage() {
-		if (_invalidCharacterPosition != -1) {
+		if (_invalidCharacterPosition != -1 && _messageArgs != null) {
+			return RESOURCES.getString(_errorMessageKey, _invalidCharacterPosition, _messageArgs);
+		}
+		else if (_invalidCharacterPosition != -1) {
 			return RESOURCES.getString(_errorMessageKey, _invalidCharacterPosition);
+		}
+		else if (_messageArgs != null) {
+			return RESOURCES.getString(_errorMessageKey, _messageArgs);
 		}
 		else {
 			return RESOURCES.getString(_errorMessageKey);

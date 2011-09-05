@@ -163,12 +163,12 @@ public class TextComponentValidator extends InputVerifier {
 
 	 * @return true if validation succeeded.
 	 */
-	private boolean validate(JComponent component) {
+	protected boolean validate(JComponent component) {
 		boolean valid = false;
-		Object value = getValueToValidate((JTextComponent)component);
+		Object value = getValueToValidate(component);
 			
 		ValidationResult result = _validator.validate(value);
-		updateTextStyles((JTextComponent)component, result);
+		updateTextStyles(component, result);
 		if (!result.isValid()) {
 			_errorMessageDisplay.setMessage(result.getMessage());
 			_errorMessageDisplay.showAbove(component);
@@ -201,9 +201,10 @@ public class TextComponentValidator extends InputVerifier {
 		return text;
 	}
 	
-	private void updateTextStyles(JTextComponent component, ValidationResult validationResult) {
+	protected void updateTextStyles(JComponent component, ValidationResult validationResult) {
+		JTextComponent textComp = (JTextComponent)component;
 		if (!validationResult.isValid()) {
-			component.select(validationResult.getInvalidCharacterPosition(), component.getDocument().getLength());
+			textComp.select(validationResult.getInvalidCharacterPosition(), textComp.getDocument().getLength());
 		}
 	}
 
