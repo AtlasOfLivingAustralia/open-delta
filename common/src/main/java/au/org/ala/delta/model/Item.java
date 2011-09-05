@@ -134,6 +134,14 @@ public class Item implements AttributeObserver, ImageObserver, Illustratable, Co
     }
     
     @Override
+    public void addImage(Image image) {
+        _impl.addImage(image);
+        image.setSubject(this);
+        image.addImageObserver(this);
+        notifyObservers();
+    }
+    
+    @Override
 	public void deleteImage(Image image) {
     	_impl.deleteImage(image);
     	notifyObservers();

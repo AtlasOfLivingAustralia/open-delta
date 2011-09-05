@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.editor.slotfile.DeltaVOP;
@@ -65,6 +66,11 @@ public abstract class ImageHolderAdaptor implements Illustratable {
 			return null;
 		}
 	}
+	
+    @Override
+    public void addImage(Image image) {
+        throw new NotImplementedException();
+    }
 	
 	/**
 	 * @return the list of Images managed by the ImageHolder.  If there are no

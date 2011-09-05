@@ -94,6 +94,11 @@ public class DefaultItemData implements ItemData {
             throw new RuntimeException("Error parsing taxon image overlay data");
         }
     }
+    
+    @Override
+    public void addImage(Image image) {
+        _images.add(image);        
+    }
 
 	@Override
 	public List<Image> getImages() {

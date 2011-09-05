@@ -794,7 +794,8 @@ public final class IntkeyDatasetFileReader {
                 if (imagesData != null) {
                     List<Pair<String, String>> imageData = parseFileData(imagesData);
                     for (Pair<String, String> pair : imageData) {
-                        ch.addImage(pair.getFirst(), pair.getSecond());
+                        Image image = createImage(pair.getFirst(), pair.getSecond(), ImageType.IMAGE_CHARACTER);
+                        ch.addImage(image);
                     }
                 }
             }
@@ -815,7 +816,8 @@ public final class IntkeyDatasetFileReader {
                 if (imagesData != null) {
                     List<Pair<String, String>> imageData = parseFileData(imagesData);
                     for (Pair<String, String> pair : imageData) {
-                        taxon.addImage(pair.getFirst(), pair.getSecond());
+                        Image image = createImage(pair.getFirst(), pair.getSecond(), ImageType.IMAGE_TAXON);
+                        taxon.addImage(image);
                     }
                 }
             }
@@ -1409,7 +1411,9 @@ public final class IntkeyDatasetFileReader {
         Image image = new Image(imageData);
         try {
             if (comments != null) {
-                List<ImageOverlay> overlayList = new ImageOverlayParser().parseOverlays(comments, imageType);
+                ImageOverlayParser parser = new ImageOverlayParser();
+                parser.setColorsBGR(true);
+                List<ImageOverlay> overlayList = parser.parseOverlays(comments, imageType);
                 imageData.setOverlays(overlayList);
             }
             return image;

@@ -95,7 +95,15 @@ public class OverlayLocation {
 
         flags |= OLOC_FLAG_COLOUR;
     }
+    
+    public void setColorFromBGR(int bgr) {
+        clearColor();
 
+        flags |= bgr;
+
+        flags |= OLOC_FLAG_COLOUR;
+    }
+    
     public void clearColor() {
         flags &= ~(OLOC_FLAG_COLOUR_MASK);
     }

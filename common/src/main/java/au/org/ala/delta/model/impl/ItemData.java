@@ -30,6 +30,8 @@ public interface ItemData {
 
 	Image addImage(String fileName, String comments);
 	
+	void addImage(Image image);
+	
 	void deleteImage(Image image);
 	
 	void moveImage(Image image, int position);

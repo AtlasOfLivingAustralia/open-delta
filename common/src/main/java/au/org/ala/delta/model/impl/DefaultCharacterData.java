@@ -290,6 +290,11 @@ public class DefaultCharacterData implements CharacterData {
             throw new RuntimeException("Error parsing character image overlay data");
         }
     }
+    
+    @Override
+    public void addImage(Image image) {
+        _images.add(image);        
+    }
 
     @Override
     public List<Image> getImages() {

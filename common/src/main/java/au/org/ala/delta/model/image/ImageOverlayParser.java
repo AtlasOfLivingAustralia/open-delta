@@ -29,6 +29,18 @@ public class ImageOverlayParser {
 
     private Set<Integer> usedIds = new HashSet<Integer>();
 
+    /**
+     * True if parsed color values should be interpreted as being in BGR format
+     */
+    private boolean colorsBGR = false;
+
+    /**
+     * @param colorsBGR true if parsed color values should be interpreted as being in BGR format
+     */
+    public void setColorsBGR(boolean colorsBGR) {
+        this.colorsBGR = colorsBGR;
+    }
+
     // Parse a string containing overlay information, and build up the
     // corresponding list of TImageOverlay objects
     // It is assumed that the string includes the surroundings brackets,
@@ -396,7 +408,11 @@ public class ImageOverlayParser {
                     int[] result = readIntegerValue(buffer, ++i, false, true, 16);
                     val = result[0];
                     i = result[1];
-                    hsLocation.setColor(val);
+                    if (colorsBGR) {
+                        hsLocation.setColorFromBGR(val);                        
+                    } else {
+                        hsLocation.setColor(val);
+                    }
 
                     break;
 

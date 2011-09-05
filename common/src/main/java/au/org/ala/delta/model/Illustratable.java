@@ -17,6 +17,12 @@ public interface Illustratable {
 	public Image addImage(String fileName, String comments);
 	
 	/**
+	 * Associates an image with this object
+	 * @param image the image
+	 */
+	public void addImage(Image image);
+	
+	/**
 	 * @return a list of images associated with this object.
 	 */
 	public List<Image> getImages();

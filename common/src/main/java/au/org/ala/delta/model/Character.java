@@ -217,8 +217,17 @@ public abstract class Character implements Illustratable, Comparable<Character>,
 		
 		return image;
 	}
+    
 
 	@Override
+    public void addImage(Image image) {
+	    _impl.addImage(image);
+        image.setSubject(this);
+        image.addImageObserver(this);
+        notifyObservers();
+    }
+
+    @Override
 	public List<Image> getImages() {
 		List<Image> images = _impl.getImages();
     	
