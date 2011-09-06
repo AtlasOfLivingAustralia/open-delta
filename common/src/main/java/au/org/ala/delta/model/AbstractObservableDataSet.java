@@ -244,6 +244,11 @@ public abstract class AbstractObservableDataSet implements ObservableDeltaDataSe
 	}
 	
 	@Override
+	public void characterStateChanged(Character character, int stateNum) {
+		fireDeltaDataSetEvent(null, character, stateNum, new CharacterEditedDispatcher());
+	}
+	
+	@Override
 	public void imageChanged(Image image) {
 		fireDeltaDataSetEvent(image, new ImageEditedDispatcher());
 	}

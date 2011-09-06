@@ -667,7 +667,23 @@ class CharacterTreeModel extends DefaultTreeModel {
 			ContextRootNode root = (ContextRootNode) getRoot();
 			int charNumber = event.getCharacter().getCharacterId();
 			fireTreeNodesChanged(this, new Object[] { root }, new int[] { charNumber - 1 }, new Object[] { root.getChildAt(charNumber - 1) });
-			updateNode((CharacterTreeNode) root.getChildAt(charNumber - 1), charNumber);
+			CharacterTreeNode charNode = (CharacterTreeNode) root.getChildAt(charNumber - 1);
+			updateNode(charNode, charNumber);
+			if (event.getExtraInformation() != null) {
+				// Force recreation of the children.
+				charNode.setCharacterNumber(charNode.getCharacterNumber());
+				// The event was because of a change to a character state.
+				int childCount = charNode.getChildCount();
+				int[] childIndicies = new int[childCount];
+				Object[] children = new Object[childCount];
+				for (int i=0; i<childCount; i++) {
+					childIndicies[i] = i;
+					children[i] = charNode.getChildAt(i);
+				}
+				charNode.getChildCount();
+				fireTreeNodesChanged(this, pathToNode(charNode), childIndicies, children);
+				
+			}
 		}
 
 		@Override
