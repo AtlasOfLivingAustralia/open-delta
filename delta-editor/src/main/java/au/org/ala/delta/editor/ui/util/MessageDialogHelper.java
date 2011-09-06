@@ -129,4 +129,15 @@ public class MessageDialogHelper {
 		return JOptionPane.showConfirmDialog(_dialogParent, message, title, JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE) ;
 	}
 	
+	public int confirmNotOnImagePath() {
+		String title = _messages.getString("confirmNotOnImagePath.title");
+		String message = _messages.getString("confirmNotOnImagePath.message");
+		return JOptionPane.showConfirmDialog(_dialogParent, message, title, JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE) ;
+	}
+	
+	public int confirmDuplicateFileName() {
+		String title = _messages.getString("confirmDuplicateFilename.title");
+		String message = _messages.getString("confirmDuplicateFilename.message");
+		return JOptionPane.showConfirmDialog(_dialogParent, message, title, JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE) ;
+	}
 }

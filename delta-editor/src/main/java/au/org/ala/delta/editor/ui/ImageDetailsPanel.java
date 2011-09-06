@@ -1,6 +1,8 @@
 package au.org.ala.delta.editor.ui;
 
 import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.io.File;
@@ -19,6 +21,7 @@ import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.LayoutStyle.ComponentPlacement;
@@ -26,6 +29,7 @@ import javax.swing.TransferHandler;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.filechooser.FileFilter;
 
 import org.apache.commons.lang.StringUtils;
 import org.jdesktop.application.Action;
@@ -39,6 +43,7 @@ import au.org.ala.delta.editor.ui.util.MessageDialogHelper;
 import au.org.ala.delta.model.Illustratable;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageOverlay;
+import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.model.image.OverlayType;
 import au.org.ala.delta.model.observer.AbstractDataSetObserver;
 import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
@@ -65,6 +70,8 @@ public class ImageDetailsPanel extends JPanel {
 	/** Helper class for displaying messages */
 	private MessageDialogHelper _messageHelper;
 	
+	private ActionMap _actions;
+	
 	// UI components
 	private ImageList imageList;
 	private RtfEditorPane subjectTextPane;
@@ -75,6 +82,7 @@ public class ImageDetailsPanel extends JPanel {
 	private JButton btnAdd;
 	private JButton deleteSoundButton;
 	private JButton playSoundButton;
+	private JButton insertSoundButton;
 	private JComboBox soundComboBox;
 
 	
@@ -86,12 +94,12 @@ public class ImageDetailsPanel extends JPanel {
 	}
 	
 	private void addEventHandlers() {
-		ActionMap actions = Application.getInstance().getContext().getActionMap(this);
+		_actions = Application.getInstance().getContext().getActionMap(this);
 		
-		btnDisplay.setAction(actions.get("displayImage"));
-		btnAdd.setAction(actions.get("addImage"));
-		btnDelete.setAction(actions.get("deleteImage"));
-		btnSettings.setAction(actions.get("displayImageSettings"));
+		btnDisplay.setAction(_actions.get("displayImage"));
+		btnAdd.setAction(_actions.get("addImage"));
+		btnDelete.setAction(_actions.get("deleteImage"));
+		btnSettings.setAction(_actions.get("displayImageSettings"));
 		imageList.addListSelectionListener(new ListSelectionListener() {
 			
 			@Override
@@ -101,14 +109,14 @@ public class ImageDetailsPanel extends JPanel {
 				updateDisplay();
 			}
 		});
-		imageList.setSelectionAction(actions.get("displayImage"));
+		imageList.setSelectionAction(_actions.get("displayImage"));
 		imageList.setDragEnabled(true);
 		imageList.setDropMode(DropMode.INSERT);
 		imageList.setTransferHandler(new ImageTransferHandler());
 		
-		playSoundButton.setAction(actions.get("playSound"));
-		deleteSoundButton.setAction(actions.get("delete" +
-				"Sound"));
+		playSoundButton.setAction(_actions.get("playSound"));
+		deleteSoundButton.setAction(_actions.get("deleteSound"));
+		insertSoundButton.setAction(_actions.get("addSound"));
 		FocusAdapter focusAdaptor = new FocusAdapter() {
 
 			@Override
@@ -122,6 +130,12 @@ public class ImageDetailsPanel extends JPanel {
 			}
 		
 		};
+		soundComboBox.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				updateSoundActions();
+			}
+		});
 		subjectTextPane.addFocusListener(focusAdaptor);
 		developerNotesTextPane.addFocusListener(focusAdaptor);
 	}
@@ -255,7 +269,7 @@ public class ImageDetailsPanel extends JPanel {
 		
 		playSoundButton = new JButton();
 		
-		JButton btnInsert = new JButton("Insert");
+		insertSoundButton = new JButton("Insert");
 		GroupLayout gl_panel_3 = new GroupLayout(panel_3);
 		gl_panel_3.setHorizontalGroup(
 			gl_panel_3.createParallelGroup(Alignment.LEADING)
@@ -266,7 +280,7 @@ public class ImageDetailsPanel extends JPanel {
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(playSoundButton)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(btnInsert)
+					.addComponent(insertSoundButton)
 					.addContainerGap())
 		);
 		gl_panel_3.setVerticalGroup(
@@ -277,7 +291,7 @@ public class ImageDetailsPanel extends JPanel {
 						.addComponent(soundComboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(deleteSoundButton)
 						.addComponent(playSoundButton)
-						.addComponent(btnInsert)))
+						.addComponent(insertSoundButton)))
 		);
 		panel_3.setLayout(gl_panel_3);
 	
@@ -326,21 +340,62 @@ public class ImageDetailsPanel extends JPanel {
 		imageList.setImages(images);
 	}
 	
-	public File getImageFile() {
+	private File getImageFile() {
+		return getMediaFile(SupportedFileTypes.getSupportedImageFilesFilter());
+	}
+	
+	private File getSoundFile() {
+		return getMediaFile(SupportedFileTypes.getSupportedSoundFilesFilter());
+	}
+	
+	private File getMediaFile(FileFilter filter) {
 		String imagePath = _dataSet.getImagePath();
 		JFileChooser chooser = new JFileChooser(imagePath);
-		chooser.setFileFilter(SupportedFileTypes.getSupportedImageFilesFilter());
+		chooser.setFileFilter(filter);
 		
 		if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
 			File imageFile = chooser.getSelectedFile();
 			
-			String parent = imageFile.getParent();
-			if (imagePath.equals(parent)) {
-				// Turn the file into a relative one.
-				imageFile = new File(imageFile.getName());
+			ImageSettings settings = _dataSet.getImageSettings();
+			if (settings.isOnResourcePath(imageFile)) {
+				List<ImageOverlay> existingSounds = _selectedImage.getSounds();
+				String name = imageFile.getName();
+				boolean exists = false;
+				for (ImageOverlay sound : existingSounds) {
+					if (name.equals(sound.overlayText)) {
+						exists = true;
+						break;
+					}
+				}
+				if (exists) {
+					int result = _messageHelper.confirmDuplicateFileName();
+					if (result == JOptionPane.YES_OPTION) {
+						imageFile = new File(imageFile.getAbsolutePath());
+					}
+					else if (result == JOptionPane.NO_OPTION) {
+						return getMediaFile(filter);
+					}
+					else {
+						imageFile = null;
+					}
+				}
+				else {
+					// Turn the file into a relative one.
+					imageFile = new File(name);
+				}
 			}
 			else {
 				// Ask about it or copy it to the image path.
+				int result = _messageHelper.confirmNotOnImagePath();
+				if (result == JOptionPane.YES_OPTION) {
+					imageFile = new File(imageFile.getAbsolutePath());
+				}
+				else if (result == JOptionPane.NO_OPTION) {
+					return getMediaFile(filter);
+				}
+				else {
+					imageFile = null;
+				}
 			}
 			
 			return imageFile;
@@ -348,7 +403,6 @@ public class ImageDetailsPanel extends JPanel {
 		
 		return null;
 	}
-	
 	
 	/**
 	 * Displays the currently selected image.
@@ -404,7 +458,9 @@ public class ImageDetailsPanel extends JPanel {
 	 */
 	@Action
 	public void deleteSound() {
-		
+		ImageOverlay soundFile = (ImageOverlay)soundComboBox.getSelectedItem();
+		_selectedImage.deleteOverlay(soundFile);
+		soundComboBox.removeItem(soundFile);
 	}
 	
 	/**
@@ -422,6 +478,21 @@ public class ImageDetailsPanel extends JPanel {
 		}
 	}
 	
+	/**
+	 * Allows the user to select a sound file to be added to the image.
+	 */
+	@Action
+	public void addSound() {
+		File soundFile = getSoundFile();
+		if (soundFile != null) {
+			ImageOverlay soundOverlay = new ImageOverlay(OverlayType.OLSOUND);
+			soundOverlay.overlayText = soundFile.getPath();
+			_selectedImage.addOverlay(soundOverlay);
+			soundComboBox.addItem(soundOverlay);
+		}
+	}
+	
+	
 	private void updateSubjectText() {
 		
 		String subjectText = subjectTextPane.getText();
@@ -435,6 +506,13 @@ public class ImageDetailsPanel extends JPanel {
 		String subjectText = developerNotesTextPane.getText();
 		
 		updateOverlayText(OverlayType.OLCOMMENT, subjectText);
+	}
+	
+	private void updateSoundActions() {
+		boolean enabled = soundComboBox.getSelectedItem() != null;
+		_actions.get("playSound").setEnabled(enabled);
+		_actions.get("deleteSound").setEnabled(enabled);
+		
 	}
 	
 	/**
@@ -477,9 +555,6 @@ public class ImageDetailsPanel extends JPanel {
 			developerNotesTextPane.setText("");
 			btnDisplay.setEnabled(false);
 			btnDelete.setEnabled(false);
-			
-			playSoundButton.setEnabled(false);
-			deleteSoundButton.setEnabled(false);
 		}
 		else {
 			btnDisplay.setEnabled(true);
@@ -498,6 +573,7 @@ public class ImageDetailsPanel extends JPanel {
 				}
 			}
 		}
+		updateSoundActions();
 	}
 	
 	/**

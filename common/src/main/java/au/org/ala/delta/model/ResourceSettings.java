@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -83,7 +84,7 @@ public class ResourceSettings {
             if (imagePath.startsWith("http") || new File(imagePath).isAbsolute() || StringUtils.isEmpty(_dataSetPath)) {
                 retList.add(imagePath);
             } else {
-                retList.add(_dataSetPath + File.separator + imagePath);
+            	retList.add(FilenameUtils.concat(_dataSetPath, imagePath));
             }
         }
 
@@ -109,6 +110,22 @@ public class ResourceSettings {
      */
     public void setResourcePaths(List<String> resourcePaths) {
         _resourcePaths = new ArrayList<String>(resourcePaths);
+    }
+    
+    /**
+     * Checks if a file exists on the resource path.
+     * @param file the file to check.
+     * @return true if the supplied file is on the resource path.
+     */
+    public boolean isOnResourcePath(File file) {
+    	String filePath = file.getParent();
+    	List<String> resourcePaths = getResourcePathLocations();
+    	for (String path : resourcePaths) {
+    		if (filePath.equals(FilenameUtils.separatorsToSystem(path))) {
+    			return true;
+    		}
+    	}
+    	return false;
     }
 
     /**
