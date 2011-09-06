@@ -34,6 +34,7 @@ import javax.swing.filechooser.FileFilter;
 import org.apache.commons.lang.StringUtils;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
+import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.editor.DeltaEditor;
 import au.org.ala.delta.editor.model.EditorViewModel;
@@ -71,6 +72,7 @@ public class ImageDetailsPanel extends JPanel {
 	private MessageDialogHelper _messageHelper;
 	
 	private ActionMap _actions;
+	private ResourceMap _resources;
 	
 	// UI components
 	private ImageList imageList;
@@ -87,14 +89,14 @@ public class ImageDetailsPanel extends JPanel {
 
 	
 	public ImageDetailsPanel() {
-		
+		_actions = Application.getInstance().getContext().getActionMap(this);
+		_resources = Application.getInstance().getContext().getResourceMap();
 		_messageHelper = new MessageDialogHelper();
 		createUI();
 		addEventHandlers();
 	}
 	
 	private void addEventHandlers() {
-		_actions = Application.getInstance().getContext().getActionMap(this);
 		
 		btnDisplay.setAction(_actions.get("displayImage"));
 		btnAdd.setAction(_actions.get("addImage"));
@@ -169,10 +171,10 @@ public class ImageDetailsPanel extends JPanel {
 					.addContainerGap())
 		);
 		
-		btnSettings = new JButton("Settings...");
-		btnDisplay = new JButton("Display");
-		btnAdd = new JButton("Add");
-		btnDelete = new JButton("Delete");
+		btnSettings = new JButton();
+		btnDisplay = new JButton();
+		btnAdd = new JButton();
+		btnDelete = new JButton();
 		
 		GroupLayout gl_buttonPanel = new GroupLayout(buttonPanel);
 		gl_buttonPanel.setHorizontalGroup(
@@ -201,17 +203,21 @@ public class ImageDetailsPanel extends JPanel {
 		);
 		buttonPanel.setLayout(gl_buttonPanel);
 		
-		JLabel lblSubjectText = new JLabel("Subject text:");
+		JLabel lblSubjectText = new JLabel();
+		lblSubjectText.setName("imageDetailsSubjectLabel");
 		
 		JScrollPane scrollPane_1 = new JScrollPane();
 		
-		JLabel lblDevelopersNotes = new JLabel("Developer's notes:");
+		JLabel lblDevelopersNotes = new JLabel();
+		lblDevelopersNotes.setName("imageDetailsDevelopersNotesLabel");
 		
 		JScrollPane scrollPane_2 = new JScrollPane();
 		
 		JPanel panel_3 = new JPanel();
-		panel_3.setBorder(new TitledBorder(null, "Image sound", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		
+		String title = _resources.getString("imageDetailsSoundTitle");
+		
+		panel_3.setBorder(new TitledBorder(null, title, TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		
 		GroupLayout gl_panel_2 = new GroupLayout(panel_2);
 		gl_panel_2.setHorizontalGroup(
@@ -269,7 +275,7 @@ public class ImageDetailsPanel extends JPanel {
 		
 		playSoundButton = new JButton();
 		
-		insertSoundButton = new JButton("Insert");
+		insertSoundButton = new JButton();
 		GroupLayout gl_panel_3 = new GroupLayout(panel_3);
 		gl_panel_3.setHorizontalGroup(
 			gl_panel_3.createParallelGroup(Alignment.LEADING)
@@ -297,7 +303,8 @@ public class ImageDetailsPanel extends JPanel {
 	
 		panel_2.setLayout(gl_panel_2);
 		
-		JLabel lblImageFiles = new JLabel("Image files:");
+		JLabel lblImageFiles = new JLabel();
+		lblImageFiles.setName("imageDetailsImageFilesLabel");
 		lblImageFiles.setAlignmentY(Component.TOP_ALIGNMENT);
 		
 		JScrollPane scrollPane = new JScrollPane();
