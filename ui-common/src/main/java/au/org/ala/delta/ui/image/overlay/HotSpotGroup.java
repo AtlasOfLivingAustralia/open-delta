@@ -43,11 +43,13 @@ public class HotSpotGroup implements HotSpotObserver, SelectableOverlay {
 	@Override
 	public void hotSpotEntered(ImageOverlay overlay) {
 		setMouseInHotSpotRegion(true);
+		_overlay.handleMouseEntered();
 	}
 
 	@Override
 	public void hotSpotExited(ImageOverlay overlay) {
 		setMouseInHotSpotRegion(false);
+		_overlay.handleMouseExited();
 	}
 
 	@Override
@@ -80,5 +82,7 @@ public class HotSpotGroup implements HotSpotObserver, SelectableOverlay {
 		return _overlay.getImageOverlay();
 	}
 	
-	
+	public Set<HotSpot> getHotSpots() {
+	    return _hotspots;
+	}
 }

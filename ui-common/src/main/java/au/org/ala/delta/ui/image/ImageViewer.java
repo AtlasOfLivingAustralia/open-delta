@@ -3,11 +3,15 @@ package au.org.ala.delta.ui.image;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.LayoutManager2;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -55,7 +59,7 @@ public class ImageViewer extends ImagePanel implements LayoutManager2, ActionLis
 
     /** Kept for convenience when toggling the display of hotspots */
     private Map<ImageOverlay, HotSpotGroup> _hotSpotGroups;
-    
+
     private Map<ImageOverlay, SelectableTextOverlay> _selectableTextOverlays;
 
     private TextFieldOverlay _inputField;
@@ -70,35 +74,35 @@ public class ImageViewer extends ImagePanel implements LayoutManager2, ActionLis
      */
     public ImageViewer(Image image, ImageSettings imageSettings) {
         _image = image;
-        
+
         this.setBackground(Color.BLACK);
 
         ResourceMap resources = Application.getInstance().getContext().getResourceMap();
 
         _factory = new OverlayComponentFactory(resources, imageSettings);
         setLayout(this);
-        
+
         URL imageLocation = findImageFile(image.getFileName(), imageSettings);
-        
+
         displayImage(imageLocation);
         _components = new ArrayList<JComponent>();
         _observers = new ArrayList<OverlaySelectionObserver>();
         addOverlays();
     }
-    
+
     protected URL findImageFile(String fileName, ImageSettings imageSettings) {
         URL imageLocation = imageSettings.findFileOnResourcePath(fileName);
-        
+
         if (imageLocation == null) {
             throw new IllegalArgumentException("Could not open image file " + fileName);
-        }        
-        
+        }
+
         return imageLocation;
     }
 
     public void addOverlays() {
-    	_components.clear();
-    	removeAll();
+        _components.clear();
+        removeAll();
         _overlays = _image.getOverlays();
 
         _hotSpotGroups = new HashMap<ImageOverlay, HotSpotGroup>();
@@ -123,13 +127,53 @@ public class ImageViewer extends ImagePanel implements LayoutManager2, ActionLis
                 addHotSpots(overlay, selectable);
                 _selectableTextOverlays.put(overlay, selectable);
             }
-            
+
             if (overlayComp instanceof TextFieldOverlay) {
                 _inputField = (TextFieldOverlay) overlayComp;
             }
         }
 
         assignRelativeComponents();
+        addMouseListeners();
+    }
+
+    protected void addMouseListeners() {
+        // Need to display the hand cursor when mousing over a selectable
+        // overlay or hot spot
+        for (final SelectableTextOverlay selectable : _selectableTextOverlays.values()) {
+            selectable.addMouseListener(new MouseAdapter() {
+
+                @Override
+                public void mouseExited(MouseEvent e) {
+                    setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                }
+
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                    setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+                }
+            });
+        }
+
+        for (HotSpotGroup hotSpotGroup : _hotSpotGroups.values()) {
+            for (HotSpot hotSpot : hotSpotGroup.getHotSpots()) {
+                hotSpot.addMouseListener(new MouseAdapter() {
+
+                    @Override
+                    public void mouseExited(MouseEvent e) {
+                        setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                    }
+
+                    @Override
+                    public void mouseEntered(MouseEvent e) {
+                        setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+                    }
+                });
+            }
+        }
+
     }
 
     /**
@@ -171,6 +215,8 @@ public class ImageViewer extends ImagePanel implements LayoutManager2, ActionLis
                 group.add(hotSpot);
                 add(hotSpot, overlay.getLocation(i));
             }
+
+            selectable.setHotspotGroup(group);
         }
     }
 
@@ -303,11 +349,10 @@ public class ImageViewer extends ImagePanel implements LayoutManager2, ActionLis
         return new ArrayList<ImageOverlay>(_overlays);
     }
 
-
     public HotSpotGroup getHotSpotGroupForOverlay(ImageOverlay overlay) {
         return _hotSpotGroups.get(overlay);
     }
-    
+
     public SelectableTextOverlay getSelectableTextForOverlay(ImageOverlay overlay) {
         return _selectableTextOverlays.get(overlay);
     }

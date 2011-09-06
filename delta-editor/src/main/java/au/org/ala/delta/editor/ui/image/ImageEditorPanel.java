@@ -74,17 +74,12 @@ public class ImageEditorPanel extends ImageViewer {
 		new PopupDisplayer(this);
 	}
 	
-	private void addComponentListeners() {
+	@Override
+	protected void addMouseListeners() {
 		for (JComponent overlayComp : _components) {
-			new OverlayComponentListener(overlayComp);
+			new OverlayMouseListener(overlayComp);
 		}
 		
-	}
-	
-	@Override
-	public void addOverlays() {
-		super.addOverlays();
-		addComponentListeners();		
 	}
 	
 	public void select(JComponent overlayComp) {
@@ -264,13 +259,13 @@ public class ImageEditorPanel extends ImageViewer {
 
 		
 	
-	class OverlayComponentListener extends PopupDisplayer implements MouseMotionListener {
+	class OverlayMouseListener extends PopupDisplayer implements MouseMotionListener {
 		private JComponent _overlayComp;
 		private MouseEvent _pressedEvent;
 		private int corner = 6;
 		private OverlayComponentEditor _editor;
 		
-		public OverlayComponentListener(JComponent overlayComp) {
+		public OverlayMouseListener(JComponent overlayComp) {
 			super(overlayComp);
 			_overlayComp = overlayComp;
 			_overlayComp.addMouseMotionListener(this);

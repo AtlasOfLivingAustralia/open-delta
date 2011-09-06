@@ -1,12 +1,15 @@
 package au.org.ala.delta.ui.image.overlay;
 
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 import javax.swing.BorderFactory;
+import javax.swing.border.BevelBorder;
 
 import au.org.ala.delta.model.image.ImageOverlay;
+import au.org.ala.delta.ui.DashedLineBorder;
 import au.org.ala.delta.ui.image.OverlaySelectionObserver;
 import au.org.ala.delta.ui.image.SelectableOverlay;
 
@@ -22,12 +25,17 @@ public class SelectableTextOverlay extends RichTextLabel implements MouseListene
 
     private boolean _selected;
     private SelectableOverlaySupport _support;
+    private HotSpotGroup _hotSpotGroup;
 
     public SelectableTextOverlay(ImageOverlay overlay, String text) {
         super(overlay, text);
         _selected = false;
         _support = new SelectableOverlaySupport();
         _editor.addMouseListener(this);
+    }
+
+    public void setHotspotGroup(HotSpotGroup hotSpotGroup) {
+        _hotSpotGroup = hotSpotGroup;
     }
 
     public void setSelected(boolean selected) {
@@ -44,7 +52,7 @@ public class SelectableTextOverlay extends RichTextLabel implements MouseListene
             // foreground color.
             _editor.setText(_text);
 
-            setBorder(BorderFactory.createLineBorder(_editor.getForeground()));
+            setBorder(new DashedLineBorder(_editor.getForeground(), _editor.getBackground()));
         }
     }
 
@@ -82,9 +90,25 @@ public class SelectableTextOverlay extends RichTextLabel implements MouseListene
 
     @Override
     public void mouseEntered(MouseEvent e) {
+        handleMouseEntered();
+        if (_hotSpotGroup != null) {
+            _hotSpotGroup.setMouseInHotSpotRegion(true);
+        }
     }
 
     @Override
     public void mouseExited(MouseEvent e) {
+        handleMouseExited();
+        if (_hotSpotGroup != null) {
+            _hotSpotGroup.setMouseInHotSpotRegion(false);
+        }
+    }
+
+    public void handleMouseEntered() {
+        setBorder(new DashedLineBorder(_editor.getForeground(), _editor.getBackground()));
+    }
+
+    public void handleMouseExited() {
+        setBorder(BorderFactory.createLineBorder(_editor.getForeground()));
     }
 }
