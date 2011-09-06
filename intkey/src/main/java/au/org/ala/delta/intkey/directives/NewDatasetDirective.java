@@ -37,14 +37,18 @@ public class NewDatasetDirective extends IntkeyDirective {
          * dlg.getSelectedFilePath(); } }
          */
 
-        // TODO - This is temporary until the SelectDataSetDialog has been
-        // completed.
-        JFileChooser chooser = new JFileChooser();
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("Data Initialization Files (*.ini, *.ink)", "ini", "ink");
-        chooser.setFileFilter(filter);
-        int returnVal = chooser.showOpenDialog(UIUtils.getMainFrame());
-        if (returnVal == JFileChooser.APPROVE_OPTION) {
-            file = chooser.getSelectedFile();
+        if (data != null) {
+            file = new File(data);
+        } else {
+            // TODO - This is temporary until the SelectDataSetDialog has been
+            // completed.
+            JFileChooser chooser = new JFileChooser();
+            FileNameExtensionFilter filter = new FileNameExtensionFilter("Data Initialization Files (*.ini, *.ink)", "ini", "ink");
+            chooser.setFileFilter(filter);
+            int returnVal = chooser.showOpenDialog(UIUtils.getMainFrame());
+            if (returnVal == JFileChooser.APPROVE_OPTION) {
+                file = chooser.getSelectedFile();
+            }
         }
 
         if (file != null) {

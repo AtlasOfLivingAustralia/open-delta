@@ -136,7 +136,7 @@ public class TaxonKeywordSelectionDialog extends KeywordSelectionDialog {
     protected void imagesBtnPressed() {
         List<Image> taxonKeywordImages = _context.getDataset().getTaxonKeywordImages();
         if (taxonKeywordImages != null && !taxonKeywordImages.isEmpty()) {
-            ImageDialog dlg = new ImageDialog(this, _context.getImageSettings());
+            ImageDialog dlg = new ImageDialog(this, _context.getImageSettings(), true);
             dlg.setImages(taxonKeywordImages);
             dlg.setVisible(true);
 

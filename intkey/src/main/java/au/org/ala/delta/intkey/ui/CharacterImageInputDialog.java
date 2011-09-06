@@ -48,16 +48,16 @@ public class CharacterImageInputDialog extends ImageDialog {
     @Resource
     String multistateTitle;
 
-    public CharacterImageInputDialog(Frame owner, Character character, ImageSettings imageSettings) {
-        super(owner, imageSettings);
+    public CharacterImageInputDialog(Frame owner, Character character, ImageSettings imageSettings, boolean modal) {
+        super(owner, imageSettings, modal);
         init(character);
     }
 
     /**
      * @wbp.parser.constructor
      */
-    public CharacterImageInputDialog(Dialog owner, Character character, ImageSettings imageSettings) {
-        super(owner, imageSettings);
+    public CharacterImageInputDialog(Dialog owner, Character character, ImageSettings imageSettings, boolean modal) {
+        super(owner, imageSettings, modal);
         init(character);
     }
 

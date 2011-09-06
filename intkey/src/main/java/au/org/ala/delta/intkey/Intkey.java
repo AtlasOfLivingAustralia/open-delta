@@ -14,6 +14,8 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -247,6 +249,8 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     private JPanel _pnlAvailableCharactersHeader;
     private JPanel _pnlDynamicButtons;
 
+    private String _datasetInitFileToOpen = null;
+
     public static void main(String[] args) {
         setupMacSystemProperties(Intkey.class);
         launch(Intkey.class, args);
@@ -256,6 +260,10 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     protected void initialize(String[] args) {
         ResourceMap resourceMap = getContext().getResourceMap(Intkey.class);
         resourceMap.injectFields(this);
+
+        if (args.length > 0) {
+            _datasetInitFileToOpen = args[0];
+        }
     }
 
     /**
@@ -577,6 +585,10 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         _rootSplitPane.setDividerLocation(2.0 / 3.0);
         _innerSplitPaneLeft.setDividerLocation(2.0 / 3.0);
         _innerSplitPaneRight.setDividerLocation(2.0 / 3.0);
+
+        if (_datasetInitFileToOpen != null) {
+            executeDirective(new NewDatasetDirective(), _datasetInitFileToOpen);
+        }
     }
 
     @Override
@@ -1563,11 +1575,11 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     public List<Character> promptForCharacters(String directiveName, boolean permitSelectionFromIncludedCharactersOnly) {
         List<Image> characterKeywordImages = _context.getDataset().getCharacterKeywordImages();
         if (!_advancedMode && characterKeywordImages != null && !characterKeywordImages.isEmpty()) {
-            ImageDialog dlg = new ImageDialog(getMainFrame(), _context.getImageSettings());
+            ImageDialog dlg = new ImageDialog(getMainFrame(), _context.getImageSettings(), true);
             dlg.setImages(characterKeywordImages);
             dlg.setTitle(selectCharacterKeywordsCaption);
 
-            show(dlg);            
+            show(dlg);
 
             Set<String> keywords = dlg.getSelectedKeywords();
 
@@ -1593,7 +1605,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     public List<Item> promptForTaxa(String directiveName, boolean permitSelectionFromIncludedTaxaOnly) {
         List<Image> taxonKeywordImages = _context.getDataset().getTaxonKeywordImages();
         if (!_advancedMode && taxonKeywordImages != null && !taxonKeywordImages.isEmpty()) {
-            ImageDialog dlg = new ImageDialog(getMainFrame(), _context.getImageSettings());
+            ImageDialog dlg = new ImageDialog(getMainFrame(), _context.getImageSettings(), true);
             dlg.setImages(taxonKeywordImages);
             dlg.setTitle(selectTaxonKeywordsCaption);
 
@@ -1639,7 +1651,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     @Override
     public List<String> promptForTextValue(TextCharacter ch) {
         if (!_advancedMode && !ch.getImages().isEmpty()) {
-            CharacterImageInputDialog dlg = new CharacterImageInputDialog(getMainFrame(), ch, _context.getImageSettings());
+            CharacterImageInputDialog dlg = new CharacterImageInputDialog(getMainFrame(), ch, _context.getImageSettings(), true);
             show(dlg);
             if (dlg.okButtonPressed()) {
                 return dlg.getInputTextValues();
@@ -1656,7 +1668,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     @Override
     public Set<Integer> promptForIntegerValue(IntegerCharacter ch) {
         if (!_advancedMode && !ch.getImages().isEmpty()) {
-            CharacterImageInputDialog dlg = new CharacterImageInputDialog(getMainFrame(), ch, _context.getImageSettings());
+            CharacterImageInputDialog dlg = new CharacterImageInputDialog(getMainFrame(), ch, _context.getImageSettings(), true);
             show(dlg);
             if (dlg.okButtonPressed()) {
                 return dlg.getInputIntegerValues();
@@ -1673,7 +1685,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     @Override
     public FloatRange promptForRealValue(RealCharacter ch) {
         if (!_advancedMode && !ch.getImages().isEmpty()) {
-            CharacterImageInputDialog dlg = new CharacterImageInputDialog(getMainFrame(), ch, _context.getImageSettings());
+            CharacterImageInputDialog dlg = new CharacterImageInputDialog(getMainFrame(), ch, _context.getImageSettings(), true);
             show(dlg);
             if (dlg.okButtonPressed()) {
                 return dlg.getInputRealValues();
@@ -1690,7 +1702,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     @Override
     public Set<Integer> promptForMultiStateValue(MultiStateCharacter ch) {
         if (!_advancedMode && !ch.getImages().isEmpty()) {
-            CharacterImageInputDialog dlg = new CharacterImageInputDialog(getMainFrame(), ch, _context.getImageSettings());
+            CharacterImageInputDialog dlg = new CharacterImageInputDialog(getMainFrame(), ch, _context.getImageSettings(), true);
             show(dlg);
             if (dlg.okButtonPressed()) {
                 return dlg.getSelectedStates();

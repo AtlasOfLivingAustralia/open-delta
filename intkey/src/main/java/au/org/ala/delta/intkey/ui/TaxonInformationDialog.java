@@ -41,6 +41,7 @@ import au.org.ala.delta.model.format.Formatter;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageSettings;
+import au.org.ala.delta.ui.image.AudioPlayer;
 import au.org.ala.delta.ui.rtf.SimpleRtfEditorKit;
 import au.org.ala.delta.util.Pair;
 
@@ -366,7 +367,15 @@ public class TaxonInformationDialog extends JDialog {
 
     @Action
     public void displaySelectedTaxonInformation() {
-
+        int[] selectedCommandIndicies = _listOther.getSelectedIndices();
+        for (int idx: selectedCommandIndicies) {
+            _cmds.get(idx).execute();
+        }
+        
+        int[] selectedImageIndicies = _listIllustrations.getSelectedIndices();
+        for (int idx: selectedImageIndicies) {
+            displaySelectedTaxonImage(idx);
+        }
     }
 
     @Action
@@ -400,7 +409,7 @@ public class TaxonInformationDialog extends JDialog {
 
     private void displaySelectedTaxonImage(int imageIndex) {
         Item selectedTaxon = getSelectedTaxon();
-        TaxonImageDialog dlg = new TaxonImageDialog(this, _imageSettings, _taxaWithImages);
+        TaxonImageDialog dlg = new TaxonImageDialog(this, _imageSettings, _taxaWithImages, false);
         dlg.displayImagesForTaxon(selectedTaxon);
         dlg.showImage(imageIndex);
         dlg.setVisible(true);
@@ -431,9 +440,10 @@ public class TaxonInformationDialog extends JDialog {
                         desktop.browse(linkFileURL.toURI());
                     }
                 } else if (_linkFileName.toLowerCase().endsWith(".ink")) {
-                    //TODO
+                    File inkFile = new File(linkFileURL.toURI());
+                    System.out.println(inkFile.getAbsolutePath());
                 } else if (_linkFileName.toLowerCase().endsWith(".wav")) {
-                    //TODO
+                    AudioPlayer.playClip(linkFileURL);
                 } else {
                     if (desktop.isSupported(Desktop.Action.OPEN)) {
                         desktop.open(new File(linkFileURL.toURI()));

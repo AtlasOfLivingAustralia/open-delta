@@ -102,13 +102,13 @@ public class ImageDialog extends IntkeyDialog implements OverlaySelectionObserve
     /**
      * @wbp.parser.constructor
      */
-    public ImageDialog(Frame owner, ImageSettings imageSettings) {
-        super(owner, true);
+    public ImageDialog(Frame owner, ImageSettings imageSettings, boolean modal) {
+        super(owner, modal);
         init(imageSettings);
     }
 
-    public ImageDialog(Dialog owner, ImageSettings imageSettings) {
-        super(owner, true);
+    public ImageDialog(Dialog owner, ImageSettings imageSettings, boolean modal) {
+        super(owner, modal);
         init(imageSettings);
     }
 
@@ -159,7 +159,7 @@ public class ImageDialog extends IntkeyDialog implements OverlaySelectionObserve
         _mnuItPreviousImage.setAction(actionMap.get("previousImage"));
         _mnuControl.add(_mnuItPreviousImage);
 
-        _mnuWindow = new JMenu(resourceMap.getString("ImageDialog.mnuSubjectCaption"));
+        _mnuWindow = new JMenu(resourceMap.getString("ImageDialog.mnuWindowCaption"));
         _menuBar.add(_mnuWindow);
 
         _mnuItScaled = new JCheckBoxMenuItem();
