@@ -68,7 +68,7 @@ public class ControlledByEditor extends CharacterDepencencyEditor {
 				for (int index : indices) {
 					for (CharacterDependency controllingAttribute : _controllingAttributes) {
 						if (_allControllingAttributes.indexOf(controllingAttribute) == index) {
-							newSelection.remove(index);
+							newSelection.remove((Integer)index);
 						}
 					}
 				}

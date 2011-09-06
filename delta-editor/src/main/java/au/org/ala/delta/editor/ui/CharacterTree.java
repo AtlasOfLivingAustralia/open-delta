@@ -52,7 +52,12 @@ public class CharacterTree extends JTree implements ReorderableList {
 			// states.
 			_selectedCharacter = pathToCharacterNumber(selectedPath);
 			
-			return _selectedCharacter-1;
+			if (selectedPath.getPathCount() >= 3) {
+				int stateNum = ((MultistateStateNode)selectedPath.getPathComponent(2)).getStateNo();
+				return stateNum-1;
+			}
+			
+			return -1;
 		}
 
 		@Override
@@ -73,13 +78,12 @@ public class CharacterTree extends JTree implements ReorderableList {
 		
 		private int dropLocationToStateNumber(DropLocation location) {
 			TreePath path = location.getPath();
-			
 			if (path.getPathCount() == 2) {
-				if (location.getChildIndex() >= 0) {
-					return location.getChildIndex()+1;
-				}
-				else if (pathToCharacterNumber(path) == _selectedCharacter) {
-					return 3;
+				
+				if (pathToCharacterNumber(path) == _selectedCharacter) {
+					if (location.getChildIndex() >= 0) {
+						return location.getChildIndex()+1;
+					}
 				}
 			}
 			return -1;
