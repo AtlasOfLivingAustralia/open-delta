@@ -134,7 +134,7 @@ public class DirectiveFileEditor extends AbstractDeltaView {
 
 	@Override
 	public boolean canClose() {
-		if (originalText.equals(directivesEditor.getTextArea().getText())) {
+		if (originalText.equals(getText())) {
 			return true;
 		}
 		int result = _messageHelper.promtForSaveBeforeClosing();
@@ -157,8 +157,8 @@ public class DirectiveFileEditor extends AbstractDeltaView {
 		return true;
 	}
 	
-	private void highlightError(int charNumber) {
-		directivesEditor.getTextArea().select(charNumber, charNumber+1);
+	private String getText() {
+		return directivesEditor.getTextArea().getText();
 	}
 	
 	class ImportErrorHandler extends DirectiveImportHandlerAdapter implements Validator {
@@ -173,7 +173,7 @@ public class DirectiveFileEditor extends AbstractDeltaView {
 			ImportController controller = new ImportController(
 					(DeltaEditor) Application.getInstance(), _model);
 		
-			String text = directivesEditor.getTextArea().getText();
+			String text = getText();
 			DirectiveFile file = _model.getSelectedDirectiveFile();
 			DirectiveFileInfo fileInfo = new DirectiveFileInfo(file);
 			boolean success = controller.importDirectivesFile(fileInfo, new StringReader(text), this);
@@ -185,25 +185,40 @@ public class DirectiveFileEditor extends AbstractDeltaView {
 			
 		@Override
 		public void handleUnrecognizedDirective(ImportContext context, List<String> controlWords) {
-			System.out.println(context.getDirective());
-			_result = ValidationResult.error("errors.UNRECOGNISED_DIRECTIVE");
-			_result.setMessageArgs(StringUtils.join(controlWords.toArray()));
+			String directive = StringUtils.join(controlWords.toArray(), ' ');
+			int location = directiveIndex(directive);
+			if (location >= 0) {
+				_result = ValidationResult.error("UNRECOGNISED_DIRECTIVE", location);
+			}
+			else {
+				_result = ValidationResult.error("UNRECOGNISED_DIRECTIVE");
+			}
+			
+			_result.setMessageArgs(directive);
 		}
 
 		@Override
 		public void handleDirectiveProcessingException(ImportContext context, AbstractDirective<ImportContext> d,
 				Exception ex) {
-			handleException(ex);
-			
-		}
-		
-		private void handleException(Exception ex) {
 			if (ex instanceof ParseException) {
+				String directive = d.getName();
+				int location = directiveIndex(directive);
 				ParseException pe = (ParseException)ex;
-				highlightError(pe.getErrorOffset());
-				_result = ValidationResult.error("errors.DIRECTIVE_PARSE_ERROR");
+				location += directive.length();
+				String text = getText();
+				while (Character.isWhitespace(text.charAt(location))) {
+					location ++;
+				}
+				
+				location += pe.getErrorOffset();
+				_result = ValidationResult.error("DIRECTIVE_PARSE_ERROR", location);
 				_result.setMessageArgs(ex.getMessage());
 			}
+		}
+		
+		private int directiveIndex(String directive) {
+			String text = getText();
+			return text.indexOf(directive);
 		}
 		
 	}
@@ -219,14 +234,26 @@ public class DirectiveFileEditor extends AbstractDeltaView {
 		}
 		
 		public Object getValueToValidate(JComponent component) {
-			return ((CodeTextArea)component).getText();
+			return getText();
 		}
 		
 		protected void updateTextStyles(JComponent component, ValidationResult validationResult) {
 			CodeTextArea textArea = (CodeTextArea)component;
 			if (!validationResult.isValid()) {
 				int pos = validationResult.getInvalidCharacterPosition();
-				textArea.select(Math.max(pos, 0), textArea.getDocument().getLength());
+				if (pos >= 0) {
+					String text = getText();
+					int nextSpace = text.indexOf(' ', pos);
+					if (nextSpace < 0) {
+						nextSpace = text.length() - 1;
+					}
+					int nextNewline = text.indexOf('\n', pos);
+					if (nextNewline < 0) {
+						nextNewline = text.length() - 1;
+					}
+					
+					textArea.select(Math.max(pos, 0), Math.min(nextSpace, nextNewline));
+				}
 			}
 		}
 	}

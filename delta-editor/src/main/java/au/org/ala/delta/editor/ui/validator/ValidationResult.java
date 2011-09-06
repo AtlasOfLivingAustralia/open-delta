@@ -48,7 +48,14 @@ public class ValidationResult {
 	}
 	
 	public void setMessageArgs(Object... args) {
-		_messageArgs = args;
+		if (_invalidCharacterPosition >= 0) {
+			_messageArgs = new Object[args.length+1];
+			_messageArgs[0] = _invalidCharacterPosition;
+			System.arraycopy(args, 0, _messageArgs, 1, args.length);
+		}
+		else {
+			_messageArgs = args;
+		}
 	}
 	
 	/**
@@ -71,14 +78,11 @@ public class ValidationResult {
 	}
 	
 	public String getMessage() {
-		if (_invalidCharacterPosition != -1 && _messageArgs != null) {
-			return RESOURCES.getString(_errorMessageKey, _invalidCharacterPosition, _messageArgs);
+		if (_messageArgs != null) {
+			return RESOURCES.getString(_errorMessageKey, _messageArgs);
 		}
 		else if (_invalidCharacterPosition != -1) {
 			return RESOURCES.getString(_errorMessageKey, _invalidCharacterPosition);
-		}
-		else if (_messageArgs != null) {
-			return RESOURCES.getString(_errorMessageKey, _messageArgs);
 		}
 		else {
 			return RESOURCES.getString(_errorMessageKey);
