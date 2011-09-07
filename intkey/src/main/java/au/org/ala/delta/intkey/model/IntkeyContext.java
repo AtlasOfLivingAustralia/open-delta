@@ -93,6 +93,7 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     private double _varyWeight;
     private double _rbase;
+    private int _diagLevel;
 
     private IntkeyCharacterOrder _characterOrder;
 
@@ -787,6 +788,15 @@ public class IntkeyContext extends AbstractDeltaContext {
     public void setRBase(double rbase) {
         _rbase = rbase;
     }
+    
+    public int getDiagLevel() {
+        return _diagLevel;
+    }
+
+    public void setDiagLevel(int diagLevel) {
+        this._diagLevel = diagLevel;
+    }
+
 
     /**
      * @return a reference to the current taxa file, or null if one has not been
