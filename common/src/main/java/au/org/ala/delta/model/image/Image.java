@@ -161,6 +161,8 @@ public class Image {
         overlays.add(newIndex, overlay);
 
         _impl.setOverlays(overlays);
+        
+        notifyObservers();
     }
 
     public void deleteAllOverlays() {

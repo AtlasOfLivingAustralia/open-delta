@@ -2,12 +2,15 @@ package au.org.ala.delta.editor.ui.image;
 
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import javax.swing.ActionMap;
 import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
 import org.apache.commons.lang.StringUtils;
@@ -18,6 +21,7 @@ import org.jdesktop.application.ResourceMap;
 import au.org.ala.delta.editor.DeltaEditor;
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.ui.util.MenuBuilder;
+import au.org.ala.delta.editor.ui.util.MessageDialogHelper;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Illustratable;
 import au.org.ala.delta.model.Item;
@@ -26,6 +30,7 @@ import au.org.ala.delta.model.NumericCharacter;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageOverlay;
 import au.org.ala.delta.model.image.ImageSettings;
+import au.org.ala.delta.model.image.ImageSettings.ButtonAlignment;
 import au.org.ala.delta.model.image.OverlayLocation;
 import au.org.ala.delta.model.image.OverlayType;
 
@@ -39,17 +44,15 @@ public class ImageOverlayEditorController {
 	private ImageEditorSelectionModel _selection;
 	private ResourceMap _resources;
 	private ActionMap _actions;
+	private MessageDialogHelper _messageHelper;
 	
-	enum ButtonAlignment {
-		ALIGN_VERTICAL, ALIGN_HORIZONTAL, ALIGN_NONE
-	};
-
 	public ImageOverlayEditorController(ImageEditorSelectionModel selection, EditorViewModel model) {
 		_imageSettings = model.getImageSettings();
 		_selection = selection;
 		_resources = Application.getInstance().getContext().getResourceMap();
 		_actions = Application.getInstance().getContext().getActionMap(this);
-		
+		_messageHelper = new MessageDialogHelper();
+		_alignment = model.getImageSettings().getButtonAlignment();
 	}
 	
 	private void disableActions() {
@@ -159,12 +162,24 @@ public class ImageOverlayEditorController {
 		
 		List<String> alignButtonsMenuActions = new ArrayList<String>();
 		alignButtonsMenuActions.add("useDefaultButtonAlignment");
-		alignButtonsMenuActions.add("alignButtonsVertically");
-		alignButtonsMenuActions.add("alignButtonsHorizontally");
-		alignButtonsMenuActions.add("dontAlignButtons");
+		alignButtonsMenuActions.add("*alignButtonsVertically");
+		alignButtonsMenuActions.add("*alignButtonsHorizontally");
+		alignButtonsMenuActions.add("*dontAlignButtons");
 		JMenu alignButtonsMenu = new JMenu(_resources.getString("overlayPopup.alignButtonsMenu"));
-		alignButtonsMenu.setEnabled(false);
-		MenuBuilder.buildMenu(alignButtonsMenu, alignButtonsMenuActions, _actions);
+		alignButtonsMenu.setEnabled(getButtonOverlays().size() > 0);
+		JMenuItem[] items = MenuBuilder.buildMenu(alignButtonsMenu, alignButtonsMenuActions, _actions);
+		switch (_alignment) {
+		case NO_ALIGN:
+			items[3].setSelected(true);
+			break;
+		case ALIGN_HORIZONTALLY:
+			items[2].setSelected(true);
+			break;
+		case ALIGN_VERTICALLY:
+			items[1].setSelected(true);
+			break;
+		}
+		
 		popup.add(alignButtonsMenu, 7-indexModifier);
 		
 		return popup;
@@ -210,8 +225,9 @@ public class ImageOverlayEditorController {
 
 	@Action
 	public void deleteAllOverlays() {
-		// TODO are you sure?
-		_selection.getSelectedImage().deleteAllOverlays();
+		if (_messageHelper.confirmDeleteOverlay()) {
+			_selection.getSelectedImage().deleteAllOverlays();
+		}
 	}
 
 	@Action
@@ -253,24 +269,93 @@ public class ImageOverlayEditorController {
 
 	@Action
 	public void useDefaultButtonAlignment() {
-		_alignment = ButtonAlignment.ALIGN_NONE;
+		_alignment = _imageSettings.getButtonAlignment();
 	}
 
 	@Action
 	public void alignButtonsVertically() {
-		_alignment = ButtonAlignment.ALIGN_VERTICAL;
+		_alignment = ButtonAlignment.ALIGN_VERTICALLY;
+		List<ImageOverlay> buttons = getButtonOverlays();
+		Collections.sort(buttons, new YPosComparitor());
+		int x = 0;
+		for (ImageOverlay button : buttons) {
+			x += button.getX();
+		}
+		x = x/buttons.size();
+		int prevY = 0;
+		for (ImageOverlay button : buttons) {
+			button.setX(x);
+			if (prevY > button.getY()) {
+				button.setY(prevY+1);
+			}
+			prevY = button.getY() + buttonHeight();
+			
+			_selection.getSelectedImage().updateOverlay(button);
+		}
+		
+	}
+	
+	private int buttonHeight() {
+		return 50;
+	}
+	
+	private int buttonWidth() {
+		return 150;
+	}
+	
+	private class XPosComparitor implements Comparator<ImageOverlay> {
+		@Override
+		public int compare(ImageOverlay o1, ImageOverlay o2) {
+			return o1.getX() < o2.getX() ? -1 : (o1.getX() == o2.getX()? 0 : 1);
+		}
+	}
+	private class YPosComparitor implements Comparator<ImageOverlay> {
+		@Override
+		public int compare(ImageOverlay o1, ImageOverlay o2) {
+			return o1.getY() < o2.getY() ? -1 : (o1.getY() == o2.getY()? 0 : 1);
+		}
 	}
 
 	@Action
 	public void alignButtonsHorizontally() {
-		_alignment = ButtonAlignment.ALIGN_HORIZONTAL;
+		_alignment = ButtonAlignment.ALIGN_HORIZONTALLY;
+		List<ImageOverlay> buttons = getButtonOverlays();
+		Collections.sort(buttons, new XPosComparitor());
+		int y = 0;
+		for (ImageOverlay button : buttons) {
+			y += button.getY();
+		}
+		y = y/buttons.size();
+		int prevX = 0;
+		for (ImageOverlay button : buttons) {
+			button.setY(y);
+			if (prevX > button.getX()) {
+				button.setX(prevX+1);
+			}
+			prevX = button.getX() + buttonWidth();
+			
+			_selection.getSelectedImage().updateOverlay(button);
+		}
+		
+
 	}
 
 	@Action
 	public void dontAlignButtons() {
-		_alignment = ButtonAlignment.ALIGN_NONE;
+		_alignment = ButtonAlignment.NO_ALIGN;
 	}
 
+	private List<ImageOverlay> getButtonOverlays() {
+		List<ImageOverlay> overlays = _selection.getSelectedImage().getOverlays();
+		List<ImageOverlay> buttons = new ArrayList<ImageOverlay>();
+		for (ImageOverlay overlay : overlays) {
+			if (overlay.isButton()) {
+				buttons.add(overlay);
+			}
+		}
+		return buttons;
+	}
+	
 	@Action
 	public void addTextOverlay() {
 		addOverlay(OverlayType.OLTEXT);
@@ -474,31 +559,31 @@ public class ImageOverlayEditorController {
 			int bwClient = newLocation.W;
 			newLocation.W = newLocation.H = Short.MIN_VALUE;
 			ButtonAlignment align = _alignment;
-			if (align == ButtonAlignment.ALIGN_NONE)
-				align = ButtonAlignment.ALIGN_VERTICAL;
+			if (align == ButtonAlignment.NO_ALIGN)
+				align = ButtonAlignment.ALIGN_VERTICALLY;
 			if (menuPoint.x == Integer.MIN_VALUE) {
-				newLocation.setX(align == ButtonAlignment.ALIGN_VERTICAL ? 800 : 500);
-				newLocation.setY(align == ButtonAlignment.ALIGN_VERTICAL ? 500 : 800);
+				newLocation.setX(align == ButtonAlignment.ALIGN_VERTICALLY ? 800 : 500);
+				newLocation.setY(align == ButtonAlignment.ALIGN_VERTICALLY ? 500 : 800);
 			}
 			newLocation.setX(Math.max(0, Math.min(1000 - bwClient, (int) newLocation.X)));
 			newLocation.setY(Math.max(0, Math.min(1000 - bhClient, (int) newLocation.Y)));
 			int okWhere = Integer.MIN_VALUE, cancelWhere = Integer.MIN_VALUE, notesWhere = Integer.MIN_VALUE;
 			ImageOverlay okOverlay = _selection.getSelectedImage().getOverlay(OverlayType.OLOK);
 			if (okOverlay != null) {
-				if (align == ButtonAlignment.ALIGN_VERTICAL) {
+				if (align == ButtonAlignment.ALIGN_VERTICALLY) {
 					newLocation.setX(okOverlay.getX());
 					okWhere = okOverlay.getY();
-				} else if (align == ButtonAlignment.ALIGN_HORIZONTAL) {
+				} else if (align == ButtonAlignment.ALIGN_HORIZONTALLY) {
 					newLocation.setY(okOverlay.getY());
 					okWhere = okOverlay.getX();
 				}
 			}
 			ImageOverlay cancelOverlay = _selection.getSelectedImage().getOverlay(OverlayType.OLCANCEL);
 			if (cancelOverlay != null) {
-				if (align == ButtonAlignment.ALIGN_VERTICAL) {
+				if (align == ButtonAlignment.ALIGN_VERTICALLY) {
 					newLocation.setX(cancelOverlay.getX());
 					cancelWhere = cancelOverlay.getY();
-				} else if (align == ButtonAlignment.ALIGN_HORIZONTAL) {
+				} else if (align == ButtonAlignment.ALIGN_HORIZONTALLY) {
 					newLocation.setY(cancelOverlay.getY());
 					cancelWhere = cancelOverlay.getX();
 				}
@@ -509,19 +594,19 @@ public class ImageOverlayEditorController {
 			else
 				notesOverlay = _selection.getSelectedImage().getOverlay(OverlayType.OLIMAGENOTES);
 			if (notesOverlay != null) {
-				if (align == ButtonAlignment.ALIGN_VERTICAL) {
+				if (align == ButtonAlignment.ALIGN_VERTICALLY) {
 					newLocation.setX(notesOverlay.getX());
 					notesWhere = notesOverlay.getY();
-				} else if (align == ButtonAlignment.ALIGN_HORIZONTAL) {
+				} else if (align == ButtonAlignment.ALIGN_HORIZONTALLY) {
 					newLocation.setY(notesOverlay.getY());
 					notesWhere = notesOverlay.getX();
 				}
 			}
 			int newWhere = Integer.MIN_VALUE;
 			int size = 0;
-			if (align == ButtonAlignment.ALIGN_VERTICAL)
+			if (align == ButtonAlignment.ALIGN_VERTICALLY)
 				size = bhClient;
-			else if (align == ButtonAlignment.ALIGN_HORIZONTAL)
+			else if (align == ButtonAlignment.ALIGN_HORIZONTALLY)
 				size = bwClient;
 			int space = size + (size + 1) / 2;
 			if (anOverlay.type == OverlayType.OLOK) {
@@ -548,9 +633,9 @@ public class ImageOverlayEditorController {
 			if (newWhere != Integer.MIN_VALUE) {
 				if (newWhere < 0)
 					newWhere = 0;
-				if (align == ButtonAlignment.ALIGN_VERTICAL)
+				if (align == ButtonAlignment.ALIGN_VERTICALLY)
 					newLocation.setY(newWhere);
-				else if (align == ButtonAlignment.ALIGN_HORIZONTAL)
+				else if (align == ButtonAlignment.ALIGN_HORIZONTALLY)
 					newLocation.setX(newWhere);
 			}
 		} else if (anOverlay.type == OverlayType.OLHOTSPOT)
@@ -558,5 +643,9 @@ public class ImageOverlayEditorController {
 		else
 			newLocation.setW(Math.min(300, 1000 - newLocation.X));
 		
+	}
+
+	public ButtonAlignment getButtonAlignment() {
+		return _alignment;
 	}
 }

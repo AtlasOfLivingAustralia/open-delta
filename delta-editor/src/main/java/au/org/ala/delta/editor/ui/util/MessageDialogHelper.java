@@ -140,4 +140,12 @@ public class MessageDialogHelper {
 		String message = _messages.getString("confirmDuplicateFilename.message");
 		return JOptionPane.showConfirmDialog(_dialogParent, message, title, JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE) ;
 	}
+
+	public boolean confirmDeleteOverlay() {
+		String title = _messages.getString("deleteOverlay.title");
+		String message = _messages.getString("deleteOverlay.message");
+		int result = au.org.ala.delta.ui.MessageDialogHelper.showConfirmDialog(_dialogParent, title, message, message.length());
+		return (result == JOptionPane.YES_OPTION);
+
+	}
 }

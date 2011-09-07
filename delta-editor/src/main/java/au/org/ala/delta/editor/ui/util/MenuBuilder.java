@@ -42,14 +42,17 @@ public class MenuBuilder {
 		return buildMenu(menu, actionNames.toArray(new String[actionNames.size()]), actionMap);
 	}
 	
-	public static void buildMenu(JPopupMenu menu, String[] actionNames, ActionMap actionMap) {
+	public static JMenuItem[] buildMenu(JPopupMenu menu, String[] actionNames, ActionMap actionMap) {
+		JMenuItem[] items = new JMenuItem[actionNames.length];
+		int i = 0;
 		for (String action : actionNames) {
-			addMenuItem(menu, action, actionMap);
+			items[i++] = addMenuItem(menu, action, actionMap);
 		}
+		return items;
 	}
 	
-	public static void buildMenu(JPopupMenu menu, List<String> actionNames, ActionMap actionMap) {
-		buildMenu(menu, actionNames.toArray(new String[actionNames.size()]), actionMap);
+	public static JMenuItem[] buildMenu(JPopupMenu menu, List<String> actionNames, ActionMap actionMap) {
+		return buildMenu(menu, actionNames.toArray(new String[actionNames.size()]), actionMap);
 	}
 	/**
 	 * Creates and adds a menu item to the supplied menu with an action identified by the supplied actionName.
@@ -79,12 +82,24 @@ public class MenuBuilder {
 		return menuItem;
 	}
 	
-	private static void addMenuItem(JPopupMenu menu, String actionName, ActionMap actionMap) {
+	private static JMenuItem addMenuItem(JPopupMenu menu, String actionName, ActionMap actionMap) {
+		JMenuItem menuItem = null;
+		
 		if ("-".equals(actionName)) {
 			menu.addSeparator();
 		} else {
-			menu.add(actionMap.get(actionName));
+			if (actionName.startsWith("*")) {
+				menuItem = new JCheckBoxMenuItem();
+				actionName = actionName.substring(1);
+			}
+			else {
+				menuItem = new JMenuItem();
+			}
+			
+			menuItem.setAction(actionMap.get(actionName));
+			menu.add(menuItem);
 		}
+		return menuItem;
 	}
 
 }

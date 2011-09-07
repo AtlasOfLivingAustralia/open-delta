@@ -6,7 +6,6 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Stroke;
@@ -20,14 +19,12 @@ import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.border.Border;
-import javax.swing.border.CompoundBorder;
 
 import au.org.ala.delta.editor.model.EditorViewModel;
-import au.org.ala.delta.editor.ui.image.ImageOverlayEditorController.ButtonAlignment;
 import au.org.ala.delta.editor.ui.util.PopupMenuListener;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageOverlay;
+import au.org.ala.delta.model.image.ImageSettings.ButtonAlignment;
 import au.org.ala.delta.ui.image.ImageViewer;
 import au.org.ala.delta.ui.image.overlay.OverlayLocation;
 import au.org.ala.delta.ui.image.overlay.OverlayLocationProvider;
@@ -45,7 +42,6 @@ public class ImageEditorPanel extends ImageViewer {
 	private boolean _editing;
 	
 	private boolean _editingEnabled;
-	private ButtonAlignment _buttonAlignment;
 	private Rectangle _lastButtonBorder;
 	private EditorViewModel _model;
 	private ImageEditorSelectionModel _selection;
@@ -56,7 +52,6 @@ public class ImageEditorPanel extends ImageViewer {
 		_model = model;
 		_editingEnabled = true;
 		_editing = false;
-		_buttonAlignment = ButtonAlignment.ALIGN_VERTICAL;
 		_selection = new ImageEditorSelectionModel();
 		_selection.setSelectedImage(image);
 		_controller = new ImageOverlayEditorController(_selection, _model);
@@ -67,7 +62,7 @@ public class ImageEditorPanel extends ImageViewer {
 	public void setEditingEnabled(boolean enabled) {
 		_editingEnabled = enabled;
 		if (!_editingEnabled) {
-			resetBorder();
+			select(null);
 		}
 	}
 	
@@ -92,30 +87,7 @@ public class ImageEditorPanel extends ImageViewer {
 		_selection.setSelectedOverlayComponent(overlayComp);
 		repaint();
 	}
-	
-
-	public Insets borderInsets() {
-		CompoundBorder compoundBorder = (CompoundBorder)_selectedOverlayComp.getBorder();
-		Border b = compoundBorder.getOutsideBorder();
-		Insets insets = null;
-		if (b != null) {
-			insets = b.getBorderInsets(_selectedOverlayComp);
-		}
-		else {
-			insets = new Insets(0, 0, 0, 0);
-		}
-		return insets;
-	}
-	
-	private void resetBorder() {
-		if (_selectedOverlayComp != null) {
-			boolean opaque = (Boolean)_selectedOverlayComp.getClientProperty("Opaque");
-			_selectedOverlayComp.setOpaque(opaque);
-			CompoundBorder compoundBorder = (CompoundBorder)_selectedOverlayComp.getBorder();
-			_selectedOverlayComp.setBorder(compoundBorder.getInsideBorder());
-		}
-	}
-	
+		
 	public void startEdit(JComponent overlayComp) {
 		if (!_editingEnabled) {
 			return;
@@ -140,7 +112,7 @@ public class ImageEditorPanel extends ImageViewer {
 		
 			// The layout has to be reset before the overlay is updated.
 			setLayout(this);
-			if (_selectedOverlayComp instanceof JButton && (_buttonAlignment != ButtonAlignment.ALIGN_NONE)) {
+			if (_selectedOverlayComp instanceof JButton && (_controller.getButtonAlignment() != ButtonAlignment.NO_ALIGN)) {
 				List<JComponent> buttons = getButtons();
 				for (JComponent comp : buttons) {
 					boundsToOverlayLocation(comp);
@@ -178,7 +150,7 @@ public class ImageEditorPanel extends ImageViewer {
 		}
 		super.paintComponent(g);
 		
-		if (_selectedOverlayComp instanceof JButton && _buttonAlignment != ButtonAlignment.ALIGN_NONE) {
+		if (_selectedOverlayComp instanceof JButton && _controller.getButtonAlignment() != ButtonAlignment.NO_ALIGN) {
 			drawButtonSelectionBorder(g);
 		}
 		else {
@@ -226,10 +198,8 @@ public class ImageEditorPanel extends ImageViewer {
 					bottomRight.y = buttonBounds.y+buttonBounds.height;
 				}
 			}
-			g.setColor(Color.LIGHT_GRAY);
-			
-			_lastButtonBorder = new Rectangle(topLeft.x, topLeft.y, bottomRight.x-topLeft.x, bottomRight.y-topLeft.y);
-			g.drawRect(_lastButtonBorder.x, _lastButtonBorder.y, _lastButtonBorder.width, _lastButtonBorder.height);
+			Rectangle bounds = new Rectangle(topLeft.x, topLeft.y, bottomRight.x-topLeft.x, bottomRight.y-topLeft.y);
+			drawSelectionBorder(bounds, g);
 		}
 	}
 	
@@ -242,28 +212,6 @@ public class ImageEditorPanel extends ImageViewer {
 		}
 		return buttons;
 	}
-	
-	/**
-	 * Overrides layoutOverlays to adjust the bounds of the selected component
-	 * to handle the compound border that indicates selection.
-	 */
-	@Override
-	protected void layoutOverlays() { 
-		super.layoutOverlays();
-		if (_selectedOverlayComp != null) {
-			Insets insets = borderInsets();
-			Rectangle bounds = _selectedOverlayComp.getBounds();
-			bounds.x -= insets.left;
-			bounds.width += insets.left + insets.right;
-			bounds.y -= insets.top;
-			bounds.height += insets.bottom+insets.top;
-			
-			_selectedOverlayComp.setBounds(bounds);
-		}
-	}
-	
-
-		
 	
 	class OverlayMouseListener extends PopupDisplayer implements MouseMotionListener {
 		private JComponent _overlayComp;
@@ -449,7 +397,7 @@ public class ImageEditorPanel extends ImageViewer {
 		public void mouseDragged(int dx, int dy) {
 			moveBounds(dx, dy, _selectedOverlayComp);
 			// Special case for aligned buttons - move the whole lot.
-			if (_selectedOverlayComp instanceof JButton && _buttonAlignment != ButtonAlignment.ALIGN_NONE) {
+			if (_selectedOverlayComp instanceof JButton && _controller.getButtonAlignment() != ButtonAlignment.NO_ALIGN) {
 				List<JComponent> buttons = getButtons();
 				for (JComponent comp : buttons) {
 					if (comp != _selectedOverlayComp) {

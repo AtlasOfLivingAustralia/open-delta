@@ -59,5 +59,4 @@ public class ImageEditorSelectionModel {
 	public void setSelectedOverlayComponent(JComponent component) {
 		_selectedComponent = component;
 	}
-	
 }
