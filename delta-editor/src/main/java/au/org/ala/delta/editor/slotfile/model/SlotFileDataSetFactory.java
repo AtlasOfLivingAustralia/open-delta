@@ -159,7 +159,7 @@ public class SlotFileDataSetFactory implements DeltaDataSetFactory {
 			Set<Integer> dependentCharacters) {
 		
 		VOControllingDesc.ControllingFixedData controllingData = new VOControllingDesc.ControllingFixedData();
-		VOControllingDesc controllingDesc = (VOControllingDesc)getVOP().insertObject(controllingData, 0, null, 0, 0);
+		VOControllingDesc controllingDesc = (VOControllingDesc)getVOP().insertObject(controllingData, VOControllingDesc.ControllingFixedData.SIZE, null, 0, 0);
 		
 		int charId = getVOP().getDeltaMaster().uniIdFromCharNo(owningCharacter.getCharacterId());
 		VOCharBaseDesc charDesc = (VOCharBaseDesc)getVOP().getDescFromId(charId);

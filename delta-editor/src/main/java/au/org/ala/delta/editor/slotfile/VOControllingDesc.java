@@ -256,6 +256,8 @@ public class VOControllingDesc extends VOAnyDesc {
 		
 		public ControllingFixedData() {
 			super("Cont Attr");
+			TypeID = VODescFactory.VOControllingDesc_TypeId;
+			fixedSize = SIZE;
 		}
 
 		public short fixedSize;
