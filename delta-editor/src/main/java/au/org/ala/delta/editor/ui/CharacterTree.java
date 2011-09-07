@@ -12,6 +12,7 @@ import javax.swing.TransferHandler;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 import au.org.ala.delta.editor.ui.dnd.SimpleTransferHandler;
@@ -78,14 +79,18 @@ public class CharacterTree extends JTree implements ReorderableList {
 		
 		private int dropLocationToStateNumber(DropLocation location) {
 			TreePath path = location.getPath();
-			if (path.getPathCount() == 2) {
+			if (path.getPathCount() == 2 && pathToCharacterNumber(path) == _selectedCharacter) {
 				
-				if (pathToCharacterNumber(path) == _selectedCharacter) {
-					if (location.getChildIndex() >= 0) {
-						return location.getChildIndex()+1;
-					}
+				if (location.getChildIndex() >= 0) {
+					return location.getChildIndex()+1;
 				}
 			}
+			else if (path.getPathCount() == 1 && location.getChildIndex() == _selectedCharacter) {
+				// get character number.  move to last state position.
+				TreeNode node = (TreeNode)getModel().getChild(path.getLastPathComponent(), _selectedCharacter-1);
+				return node.getChildCount()+1;
+			}
+			
 			return -1;
 		}
 

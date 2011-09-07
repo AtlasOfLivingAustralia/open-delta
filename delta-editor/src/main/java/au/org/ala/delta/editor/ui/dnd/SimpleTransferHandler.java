@@ -34,12 +34,12 @@ public abstract class SimpleTransferHandler<T> extends TransferHandler {
 	 * @return true if the current transferable can be imported into the current drop target.
 	 */
 	public boolean canImport(TransferHandler.TransferSupport info) {
+	
 		if (!info.isDataFlavorSupported(_flavour)) {
 			return false;
 		}
 		
 		int dropIndex = getDropLocationIndex(info.getDropLocation());
-		
 		return ((dropIndex >= 0) && (dropIndex != sourceIndex) && (dropIndex != sourceIndex+1));
 	}
 	

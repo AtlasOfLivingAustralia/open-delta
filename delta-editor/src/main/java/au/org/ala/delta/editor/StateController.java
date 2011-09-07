@@ -133,7 +133,6 @@ public class StateController {
 
 		@Override
 		protected void move(Integer stateNum, int targetIndex) {
-			System.out.println("moving "+stateNum+" to "+targetIndex);
 			StateController.this.moveState(stateNum, targetIndex);
 		}
 
