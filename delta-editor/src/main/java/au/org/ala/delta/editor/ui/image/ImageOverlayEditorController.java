@@ -46,12 +46,12 @@ public class ImageOverlayEditorController {
 	private ActionMap _actions;
 	private MessageDialogHelper _messageHelper;
 	
-	public ImageOverlayEditorController(ImageEditorSelectionModel selection, EditorViewModel model) {
+	public ImageOverlayEditorController(ImageEditorSelectionModel selection, EditorViewModel model, MessageDialogHelper messageHelper) {
 		_imageSettings = model.getImageSettings();
 		_selection = selection;
 		_resources = Application.getInstance().getContext().getResourceMap();
 		_actions = Application.getInstance().getContext().getActionMap(this);
-		_messageHelper = new MessageDialogHelper();
+		_messageHelper = messageHelper;
 		_alignment = model.getImageSettings().getButtonAlignment();
 	}
 	
@@ -225,11 +225,15 @@ public class ImageOverlayEditorController {
 
 	@Action
 	public void deleteAllOverlays() {
-		if (_messageHelper.confirmDeleteOverlay()) {
+		if (confirmDeleteAllOverlays()) {
 			_selection.getSelectedImage().deleteAllOverlays();
 		}
 	}
 
+	protected boolean confirmDeleteAllOverlays() {
+		return _messageHelper.confirmDeleteOverlay();
+	}
+	
 	@Action
 	public void displayImageSettings() {
 		DeltaEditor editor = (DeltaEditor)Application.getInstance();

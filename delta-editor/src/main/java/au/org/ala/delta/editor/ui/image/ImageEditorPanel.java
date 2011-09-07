@@ -21,6 +21,7 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
 import au.org.ala.delta.editor.model.EditorViewModel;
+import au.org.ala.delta.editor.ui.util.MessageDialogHelper;
 import au.org.ala.delta.editor.ui.util.PopupMenuListener;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageOverlay;
@@ -54,7 +55,7 @@ public class ImageEditorPanel extends ImageViewer {
 		_editing = false;
 		_selection = new ImageEditorSelectionModel();
 		_selection.setSelectedImage(image);
-		_controller = new ImageOverlayEditorController(_selection, _model);
+		_controller = new ImageOverlayEditorController(_selection, _model, new MessageDialogHelper());
 		
 		addEventHandlers();
 	}

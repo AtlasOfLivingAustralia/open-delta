@@ -33,9 +33,12 @@ public class ImageOverlayEditorControllerTest extends DeltaTestCase {
 		SlotFileDataSet dataSet = (SlotFileDataSet) repo.newDataSet();
 		_model = new EditorDataModel(dataSet);
 		_selection = new ImageEditorSelectionModel();
-		_controller = new ImageOverlayEditorController(_selection, _model) {
+		_controller = new ImageOverlayEditorController(_selection, _model, null) {
 			public void editSelectedOverlay() {}
 			protected void editOverlay(ImageOverlay overlay) {}
+			protected boolean confirmDeleteAllOverlays() {
+				return true;
+			}
 		};
 		MultiStateCharacter character = (MultiStateCharacter)_model.addCharacter(CharacterType.UnorderedMultiState);
 		character.setNumberOfStates(2);
