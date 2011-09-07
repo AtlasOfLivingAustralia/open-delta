@@ -124,6 +124,14 @@ public class AttributeEditor extends JPanel implements ValidationListener, Prefe
 					}
 				}
 			}
+			@Override
+			public void characterEdited(DeltaDataSetChangeEvent event) {
+				if (event.getCharacter() == _character) {
+					if (!_committing) {
+						bind(_character, _item);
+					}
+				}
+			}
 			
 		});
 		_dataSet.addPreferenceChangeListener(this);

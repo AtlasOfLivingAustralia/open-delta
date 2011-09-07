@@ -1,24 +1,25 @@
 package au.org.ala.delta.editor.ui.image;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Stroke;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 
@@ -26,6 +27,7 @@ import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.ui.image.ImageOverlayEditorController.ButtonAlignment;
 import au.org.ala.delta.editor.ui.util.PopupMenuListener;
 import au.org.ala.delta.model.image.Image;
+import au.org.ala.delta.model.image.ImageOverlay;
 import au.org.ala.delta.ui.image.ImageViewer;
 import au.org.ala.delta.ui.image.overlay.OverlayLocation;
 import au.org.ala.delta.ui.image.overlay.OverlayLocationProvider;
@@ -86,29 +88,9 @@ public class ImageEditorPanel extends ImageViewer {
 		if (!_editingEnabled) {
 			return;
 		}
-		
-		if (_selectedOverlayComp != overlayComp) {
-			
-			
-			if (_selectedOverlayComp != null) {
-				resetBorder();
-			}
-			
-			_selectedOverlayComp = overlayComp;
-			_selection.setSelectedOverlayComponent(overlayComp);
-			
-			if (overlayComp != null) {
-				Border border = overlayComp.getBorder();
-				Border selectedBorder = BorderFactory.createBevelBorder(BevelBorder.RAISED);
-				CompoundBorder compoundBorder = BorderFactory.createCompoundBorder(selectedBorder, border);
-				overlayComp.putClientProperty("Opaque", overlayComp.isOpaque());
-				// Have to do this or buttons on the MAC don't render properly 
-				// with a compound border.
-				overlayComp.setOpaque(true);
-				
-				_selectedOverlayComp.setBorder(compoundBorder);
-			}
-		}
+		_selectedOverlayComp = overlayComp;
+		_selection.setSelectedOverlayComponent(overlayComp);
+		repaint();
 	}
 	
 
@@ -158,7 +140,16 @@ public class ImageEditorPanel extends ImageViewer {
 		
 			// The layout has to be reset before the overlay is updated.
 			setLayout(this);
-			boundsToOverlayLocation(_selectedOverlayComp);
+			if (_selectedOverlayComp instanceof JButton && (_buttonAlignment != ButtonAlignment.ALIGN_NONE)) {
+				List<JComponent> buttons = getButtons();
+				for (JComponent comp : buttons) {
+					boundsToOverlayLocation(comp);
+				}
+			}
+			else {
+				boundsToOverlayLocation(_selectedOverlayComp);
+				
+			}
 			repaint();
 		}
 	}
@@ -168,8 +159,8 @@ public class ImageEditorPanel extends ImageViewer {
 		 OverlayLocationProvider locationProvider = (OverlayLocationProvider) component;
          OverlayLocation location = locationProvider.location(this);
          location.updateLocationFromBounds(component.getBounds());
-         
-        _image.updateOverlay(_selection.getSelectedOverlay());
+         ImageOverlay overlay = (ImageOverlay)component.getClientProperty("ImageOverlay");
+        _image.updateOverlay(overlay);
 	}
 	
 	/**
@@ -191,9 +182,24 @@ public class ImageEditorPanel extends ImageViewer {
 			drawButtonSelectionBorder(g);
 		}
 		else {
+			if (_selectedOverlayComp != null) {
+			drawSelectionBorder(_selectedOverlayComp.getBounds(), g);
+			}
 			_lastButtonBorder = null;
 		}
 		
+	}
+	
+	private void drawSelectionBorder(Rectangle bounds, Graphics g) {
+		Graphics2D g2 = (Graphics2D)g;
+		Stroke old = g2.getStroke();
+		int thick = 3;
+		Stroke borderStroke = new BasicStroke(thick);
+		g2.setStroke(borderStroke);
+		g2.setColor(Color.RED);
+		g2.drawRect(bounds.x-thick, bounds.y-thick, bounds.width+2*thick-1, bounds.height+2*thick-1);
+		
+		g2.setStroke(old);
 	}
 
 	private void drawButtonSelectionBorder(Graphics g) {
@@ -279,21 +285,26 @@ public class ImageEditorPanel extends ImageViewer {
 			select(_overlayComp);
 			super.mousePressed(e);
 			_pressedEvent = SwingUtilities.convertMouseEvent(_overlayComp, e, ImageEditorPanel.this);
-			if (inTopLeft(e)) {
-				_editor = new OverlayComponentResizer(_overlayComp, SwingConstants.SOUTH_EAST);
-			}
-			else if (inTopRight(e)) {
-				_editor = new OverlayComponentResizer(_overlayComp, SwingConstants.SOUTH_WEST);
-			}
-			else if (inBottomLeft(e)) {
-				_editor = new OverlayComponentResizer(_overlayComp, SwingConstants.NORTH_EAST);
-			}
-			else if (inBottomRight(e)) {
-				_editor = new OverlayComponentResizer(_overlayComp, SwingConstants.NORTH_WEST);
+			if (!(_overlayComp instanceof JButton)) {
+				if (inTopLeft(e)) {
+					_editor = new OverlayComponentResizer(_overlayComp, SwingConstants.SOUTH_EAST);
+				}
+				else if (inTopRight(e)) {
+					_editor = new OverlayComponentResizer(_overlayComp, SwingConstants.SOUTH_WEST);
+				}
+				else if (inBottomLeft(e)) {
+					_editor = new OverlayComponentResizer(_overlayComp, SwingConstants.NORTH_EAST);
+				}
+				else if (inBottomRight(e)) {
+					_editor = new OverlayComponentResizer(_overlayComp, SwingConstants.NORTH_WEST);
+				}
+				else {
+					_editor = new OverlayComponentMover(_overlayComp);
+				}	
 			}
 			else {
 				_editor = new OverlayComponentMover(_overlayComp);
-			}	
+			}
 		}
 		
 		@Override
@@ -343,17 +354,23 @@ public class ImageEditorPanel extends ImageViewer {
 		@Override
 		public void mouseMoved(MouseEvent e) {
 			if (_selectedOverlayComp == _overlayComp) {
-				if (inTopLeft(e)) {
-					setCursor(Cursor.getPredefinedCursor(Cursor.NW_RESIZE_CURSOR));
-				}
-				else if (inTopRight(e)) {
-					setCursor(Cursor.getPredefinedCursor(Cursor.NE_RESIZE_CURSOR));
-				}
-				else if (inBottomLeft(e)) {
-					setCursor(Cursor.getPredefinedCursor(Cursor.SW_RESIZE_CURSOR));
-				}
-				else if (inBottomRight(e)) {
-					setCursor(Cursor.getPredefinedCursor(Cursor.SE_RESIZE_CURSOR));
+				if (!(_selectedOverlayComp instanceof JButton)) {
+			
+					if (inTopLeft(e)) {
+						setCursor(Cursor.getPredefinedCursor(Cursor.NW_RESIZE_CURSOR));
+					}
+					else if (inTopRight(e)) {
+						setCursor(Cursor.getPredefinedCursor(Cursor.NE_RESIZE_CURSOR));
+					}
+					else if (inBottomLeft(e)) {
+						setCursor(Cursor.getPredefinedCursor(Cursor.SW_RESIZE_CURSOR));
+					}
+					else if (inBottomRight(e)) {
+						setCursor(Cursor.getPredefinedCursor(Cursor.SE_RESIZE_CURSOR));
+					}
+					else {
+						setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+					}
 				}
 				else {
 					setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
@@ -430,12 +447,25 @@ public class ImageEditorPanel extends ImageViewer {
 		}
 		
 		public void mouseDragged(int dx, int dy) {
-			Rectangle bounds = _selectedOverlayComp.getBounds();
+			moveBounds(dx, dy, _selectedOverlayComp);
+			// Special case for aligned buttons - move the whole lot.
+			if (_selectedOverlayComp instanceof JButton && _buttonAlignment != ButtonAlignment.ALIGN_NONE) {
+				List<JComponent> buttons = getButtons();
+				for (JComponent comp : buttons) {
+					if (comp != _selectedOverlayComp) {
+						moveBounds(dx, dy, comp);
+					}
+				}
+			}
+			repaint();
+		}
+		
+		private void moveBounds(int dx, int dy, JComponent comp) {
+			Rectangle bounds = comp.getBounds();
 			bounds.x+=dx;
 			bounds.y+=dy;
 			
-			_selectedOverlayComp.setBounds(bounds);
-			repaint();
+			comp.setBounds(bounds);
 		}
 	}
 	
