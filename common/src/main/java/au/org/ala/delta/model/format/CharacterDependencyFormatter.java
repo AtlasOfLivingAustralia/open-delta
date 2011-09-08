@@ -1,5 +1,7 @@
 package au.org.ala.delta.model.format;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -29,7 +31,7 @@ public class CharacterDependencyFormatter {
 		
 		appendSummary(characterDependency, controllingCharacter, description);
 		
-		appendText(characterDependency, controllingCharacter, description);
+		appendText(characterDependency.getStatesAsList(), controllingCharacter, description);
 		
 		return description.toString();
 	}
@@ -47,7 +49,7 @@ public class CharacterDependencyFormatter {
 		description.append("] ");
 	}
 
-	private void appendText(CharacterDependency characterDependency,
+	private void appendText(List<Integer> stateNumbers,
 			MultiStateCharacter controllingCharacter, StringBuilder description) {
 		
 		String charDescription = _characterFormatter.formatCharacterDescription(controllingCharacter);
@@ -58,12 +60,17 @@ public class CharacterDependencyFormatter {
 		description.append(charDescription);
 		description.append(": ");
 		
-		List<Integer> stateNumbers = characterDependency.getStatesAsList();
 		for (int i=0; i<stateNumbers.size()-1; i++) {
 			description.append(_characterFormatter.formatState(controllingCharacter, stateNumbers.get(i)));
 			description.append(", or ");
 		}
 		description.append(_characterFormatter.formatState(controllingCharacter, stateNumbers.get(stateNumbers.size()-1)));
+	}
+	
+	public String defaultLabelFor(MultiStateCharacter controllingCharacter, Collection<Integer> states) {
+		StringBuilder builder = new StringBuilder();
+		appendText(new ArrayList<Integer>(states), controllingCharacter, builder);
+		return builder.toString();
 	}
 	
 }

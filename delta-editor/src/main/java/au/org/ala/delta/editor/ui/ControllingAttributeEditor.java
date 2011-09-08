@@ -379,6 +379,19 @@ public class ControllingAttributeEditor extends CharacterDepencencyEditor {
 		controlledCharacterList.setModel(new CharacterListModel(_controlledCharacters));
 		remainingCharacterList.setCellRenderer(new CharacterListRenderer(unselectables));
 		remainingCharacterList.setModel(new CharacterListModel(_remainingCharacters));
+		checkAndEnableDefineButton();
+	}
+	
+	private void checkAndEnableDefineButton() {
+		boolean modified = false;
+	    for (StateViewModel state : _states) {
+	    	if (state.isModified()) {
+	    		modified = true;
+	    		break;
+	    	}
+	    }
+	    btnDefine.setEnabled(modified);
+	    enableListEditing(_controllingAttribute != null && !modified);
 	}
 	
 	class ControllingAttributeModel extends AbstractListModel implements ComboBoxModel {
@@ -479,16 +492,10 @@ public class ControllingAttributeEditor extends CharacterDepencencyEditor {
 		public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
 		    _states.get(rowIndex).setPresent((Boolean)aValue);
 		    
-		    boolean modified = false;
-		    for (StateViewModel state : _states) {
-		    	if (state.isModified()) {
-		    		modified = true;
-		    		break;
-		    	}
-		    }
-		    btnDefine.setEnabled(modified);
-		    enableListEditing(_controllingAttribute != null && !modified);
+		    checkAndEnableDefineButton();
 		}
+
+		
 		
 	}
 	

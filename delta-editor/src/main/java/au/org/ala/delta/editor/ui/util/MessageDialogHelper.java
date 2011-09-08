@@ -148,4 +148,11 @@ public class MessageDialogHelper {
 		return (result == JOptionPane.YES_OPTION);
 
 	}
+	
+	public String promptForControllingAttributeLabel(String defaultLabel) {
+		String title = _messages.getString("controllingAttributeLabelPrompt.title");
+		String message = _messages.getString("controllingAttributeLabelPrompt.message");
+		return (String)JOptionPane.showInputDialog(_dialogParent, message, title, JOptionPane.PLAIN_MESSAGE, null, null, defaultLabel);
+
+	}
 }

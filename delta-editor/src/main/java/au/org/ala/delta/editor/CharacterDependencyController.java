@@ -31,9 +31,13 @@ public class CharacterDependencyController {
 	 * @param states the set of states for the new CharacterDependency.
 	 */
 	public void defineCharacterDependency(MultiStateCharacter controllingCharacter, Set<Integer> states) {
-		// TODO Validate first.
 		
-		_model.addCharacterDependency(controllingCharacter, states, new HashSet<Integer>());
+		String defaultLabel = _formatter.defaultLabelFor(controllingCharacter, states);
+		String label = _messageDialogHelper.promptForControllingAttributeLabel(defaultLabel);
+		if (label != null) {
+			CharacterDependency dependency = _model.addCharacterDependency(controllingCharacter, states, new HashSet<Integer>());
+			dependency.setDescription(label);
+		}
 	}
 
 	/**
