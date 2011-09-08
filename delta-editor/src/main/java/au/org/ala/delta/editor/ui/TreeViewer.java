@@ -669,10 +669,12 @@ class CharacterTreeModel extends DefaultTreeModel {
 			fireTreeNodesChanged(this, new Object[] { root }, new int[] { charNumber - 1 }, new Object[] { root.getChildAt(charNumber - 1) });
 			CharacterTreeNode charNode = (CharacterTreeNode) root.getChildAt(charNumber - 1);
 			updateNode(charNode, charNumber);
+			
+			// The event was because of a change to a character state.
 			if (event.getExtraInformation() != null) {
 				// Force recreation of the children.
 				charNode.setCharacterNumber(charNode.getCharacterNumber());
-				// The event was because of a change to a character state.
+				
 				int childCount = charNode.getChildCount();
 				int[] childIndicies = new int[childCount];
 				Object[] children = new Object[childCount];
@@ -681,7 +683,7 @@ class CharacterTreeModel extends DefaultTreeModel {
 					children[i] = charNode.getChildAt(i);
 				}
 				charNode.getChildCount();
-				fireTreeNodesChanged(this, pathToNode(charNode), childIndicies, children);
+				fireTreeStructureChanged(this, pathToNode(charNode), childIndicies, children);
 				
 			}
 		}

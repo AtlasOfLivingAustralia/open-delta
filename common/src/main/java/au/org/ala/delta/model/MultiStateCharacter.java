@@ -90,6 +90,11 @@ public abstract class MultiStateCharacter extends Character {
 		notifyObservers();
 	}
 	
+	public void clearUncodedImplicitState() {
+		_impl.setUncodedImplicitState(-1);
+		notifyObservers();
+	}
+	
 	public void setExclusive(boolean exclusive) {
 	    _impl.setExclusive(exclusive);
 	    notifyObservers();

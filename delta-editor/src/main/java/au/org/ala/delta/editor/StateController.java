@@ -85,7 +85,14 @@ public class StateController {
 	 */
 	@Action
 	public void toggleStateImplicit() {
-		getSelectedCharacter().setUncodedImplicitState(_view.getSelectedIndex()+1);
+		int state = _view.getSelectedIndex()+1;
+		MultiStateCharacter character = getSelectedCharacter();
+		if (character.getUncodedImplicitState() == state) {
+			character.clearUncodedImplicitState();
+		}
+		else {
+			character.setUncodedImplicitState(_view.getSelectedIndex()+1);
+		}
 	}
 	
 	private boolean confirmDelete(int toDelete) {
