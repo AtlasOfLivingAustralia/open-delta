@@ -104,6 +104,26 @@ public class StateEditor extends CharacterEditTab {
 				updateStateText();
 			}
 		});
+		
+		stateDescriptionPane.addKeyListener(new SelectionNavigationKeyListener() {
+			
+			@Override
+			protected void reverseSelection() {
+				
+				int selected = stateList.getSelectedIndex();
+				if (selected > 0) {
+					stateList.setSelectedIndex(selected-1);
+				}
+			}
+			
+			@Override
+			protected void advanceSelection() {
+				int selected = stateList.getSelectedIndex();
+				if (selected < stateList.getModel().getSize()-1) {
+					stateList.setSelectedIndex(selected+1);
+				}
+			}
+		});
 	}
 	
 	/**
@@ -192,17 +212,23 @@ public class StateEditor extends CharacterEditTab {
 			int selectedIndex = stateList.getSelectedIndex();
 			
 			_selectedState = selectedIndex + 1;
+			int stateCount = _character.getNumberOfStates();
 			
-			if ((_character.getNumberOfStates() > 0) && (_selectedState > 0)) {
-				stateDescriptionPane.setText(_character.getState(_selectedState));
-			}
-			else {
+			if (_selectedState > stateCount) {
 				stateDescriptionPane.setText("");
 			}
-			if (_selectedState > 0) {
-				chckbxImplicit.setSelected(_character.getUncodedImplicitState() == _selectedState);
+			else {
+				if ((stateCount > 0) && (_selectedState > 0)) {
+					stateDescriptionPane.setText(_character.getState(_selectedState));
+				}
+				else {
+					stateDescriptionPane.setText("");
+				}
+				if (_selectedState > 0) {
+					chckbxImplicit.setSelected(_character.getUncodedImplicitState() == _selectedState);
+				}
 			}
-			chckbxImplicit.setEnabled(_selectedState > 0);
+			chckbxImplicit.setEnabled(_selectedState > 0 && _selectedState <= stateCount);
 		}
 		finally {
 			_ignoreUpdates = false;
@@ -235,6 +261,11 @@ public class StateEditor extends CharacterEditTab {
 	
 	public void updateStateText() {
 		if (!_ignoreUpdates && _selectedState > 0) {
+			
+			if (_selectedState == _character.getNumberOfStates()+1) {
+				_stateController.addState(null);
+			}
+			
 			String text = stateDescriptionPane.getRtfTextBody();
 			_character.setState(_selectedState, text);
 		
@@ -253,11 +284,14 @@ public class StateEditor extends CharacterEditTab {
 		
 		@Override
 		public int getSize() {
-			return _character.getNumberOfStates();
+			return _character.getNumberOfStates()+1;
 		}
 
 		@Override
 		public Object getElementAt(int index) {
+			if (index == _character.getNumberOfStates()) {
+				return "";
+			}
 			return _formatter.formatState(_character, index+1);
 		}
 		

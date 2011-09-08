@@ -19,7 +19,6 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -139,25 +138,11 @@ public class AttributeEditor extends JPanel implements ValidationListener, Prefe
 		_editListener = new EditListener();
 		_textPane.getDocument().addDocumentListener(_editListener);
 		_textPane.addFocusListener(new EditCommitter());
-		_textPane.addKeyListener(new KeyAdapter() {
-			
-			@Override
-			public void keyReleased(KeyEvent e) {
-				if (noModifiersOrShift(e.getModifiers()) && e.getKeyCode() == KeyEvent.VK_ENTER) {
-					e.consume();
-				}
-			}
-			
-			@Override
-			public void keyTyped(KeyEvent e) {
-				if (noModifiersOrShift(e.getModifiers()) && e.getKeyCode() == KeyEvent.VK_ENTER) {
-					e.consume();
-				}
-			}
+		_textPane.addKeyListener(new SelectionNavigationKeyListener() {
 			
 			@Override
 			public void keyPressed(KeyEvent e) {
-				if (noModifiersOrShift(e.getModifiers()) && e.getKeyCode() == KeyEvent.VK_ENTER) {
+				if (isSelectionNavigationKeyCombination(e)) {
 					
 					InputVerifier validator = _textPane.getInputVerifier();
 					if (validator != null) {
@@ -196,10 +181,6 @@ public class AttributeEditor extends JPanel implements ValidationListener, Prefe
 					}
 					
 				}
-			}
-			
-			private boolean noModifiersOrShift(int modifiers) {
-				return ((modifiers == 0) || ((modifiers & KeyEvent.SHIFT_MASK) > 0));
 			}
 
 		});
