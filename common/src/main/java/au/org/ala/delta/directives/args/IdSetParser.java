@@ -2,10 +2,7 @@ package au.org.ala.delta.directives.args;
 
 import java.io.Reader;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.commons.lang.math.IntRange;
 
 import au.org.ala.delta.directives.AbstractDeltaContext;
 
@@ -14,8 +11,6 @@ import au.org.ala.delta.directives.AbstractDeltaContext;
  * the LINKED CHARACTERS directive.
  */
 public class IdSetParser extends DirectiveArgsParser {
-	
-	public static final char SET_VALUE_SEPARATOR = ':';
 	
 	public IdSetParser(AbstractDeltaContext context, Reader reader) {
 		super(context, reader);
@@ -30,24 +25,15 @@ public class IdSetParser extends DirectiveArgsParser {
 		skipWhitespace();
 		while (_currentInt > 0) {
 			
-			readSet();
+			addSet();
 			
 			skipWhitespace();
 		}
 		
 	}
 	
-	private void readSet() throws ParseException {
-		List<Integer> values = new ArrayList<Integer>();
-		while (_currentInt > 0 && !Character.isWhitespace(_currentChar)) {
-			if (_currentChar == SET_VALUE_SEPARATOR) {
-				readNext();
-			}
-			IntRange ids = readIds();
-			for (int i : ids.toArray()) {
-				values.add(i);
-			}
-		}
+	private void addSet() throws ParseException {
+		List<Integer> values = readSet();
 		
 		if (values.size() > 0) {
 			_args.addDirectiveArgument(values);

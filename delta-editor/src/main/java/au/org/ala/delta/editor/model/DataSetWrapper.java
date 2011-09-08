@@ -1,6 +1,7 @@
 package au.org.ala.delta.editor.model;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -25,7 +26,7 @@ public class DataSetWrapper implements ObservableDeltaDataSet, DeltaDataSetObser
 	/** The data set we are wrapping */
 	protected ObservableDeltaDataSet _wrappedDataSet;
 	/** Maintains a list of objects interested in being notified of changes to this model */
-	private List<DeltaDataSetObserver> _observerList = new ArrayList<DeltaDataSetObserver>();
+	private List<SwingDeltaDataSetObserver> _observerList = new ArrayList<SwingDeltaDataSetObserver>();
 
 	public DataSetWrapper(ObservableDeltaDataSet dataSet) {
 		_wrappedDataSet = dataSet;
@@ -47,16 +48,26 @@ public class DataSetWrapper implements ObservableDeltaDataSet, DeltaDataSetObser
 		_wrappedDataSet.close();
 	}
 	
+	private boolean contains(DeltaDataSetObserver observer) {
+	
+		for (SwingDeltaDataSetObserver swingObserver : _observerList) {
+			if (observer == swingObserver.getObserver()) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	/**
 	 * Adds an observer interested in receiving notification of changes to this model.
 	 * Duplicate observers are ignored.
 	 * @param observer the observer to add.
 	 */
 	public void addDeltaDataSetObserver(DeltaDataSetObserver observer) {
-		if (_observerList.contains(observer)) {
+		if (contains(observer)) {
 			return;
 		}
-		_observerList.add(observer);
+		_observerList.add(new SwingDeltaDataSetObserver(observer));
 	}
 
 	/**
@@ -64,7 +75,13 @@ public class DataSetWrapper implements ObservableDeltaDataSet, DeltaDataSetObser
 	 * @param observer the observer to remove.
 	 */
 	public void removeDeltaDataSetObserver(DeltaDataSetObserver observer) {
-		_observerList.remove(observer);
+		Iterator<SwingDeltaDataSetObserver> i = _observerList.iterator();
+		while (i.hasNext()) {
+			if (observer == i.next().getObserver()) {
+				i.remove();
+				return;
+			}
+		}
 	}
 
 	@Override

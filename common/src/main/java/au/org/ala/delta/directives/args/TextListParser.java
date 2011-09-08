@@ -50,13 +50,14 @@ public abstract class TextListParser<T> extends DirectiveArgsParser {
 	    }
 	}
 
-	private void readSingle() throws ParseException {
+	protected void readSingle() throws ParseException {
 		T id = readId();
 		String comment = readOptionalComment();
 		String value = readText();
 		
 		_args.addDirectiveArgument(id, comment, value);
 	}
+	
 	
 	/**
 	 * The item subheadings directive allows a delimiter to be specified which can be used to

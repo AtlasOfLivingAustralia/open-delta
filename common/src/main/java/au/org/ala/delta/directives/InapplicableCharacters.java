@@ -15,7 +15,7 @@
 package au.org.ala.delta.directives;
 
 
-public class InapplicableCharacters extends DependentCharacters {
+public class InapplicableCharacters extends AbstractCharacterDependencyDirective {
 
     public InapplicableCharacters() {
         super("inapplicable", "characters");

@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.lang.math.IntRange;
 
@@ -18,6 +20,7 @@ public abstract class DirectiveArgsParser extends AbstractStreamParser {
 
 	protected static final char MARK_IDENTIFIER = '#';
 	protected static final char VALUE_SEPARATOR = ',';
+	public static final char SET_VALUE_SEPARATOR = ':';
 	
 	protected DirectiveArguments _args;
 	protected int _markedInt;
@@ -109,6 +112,21 @@ public abstract class DirectiveArgsParser extends AbstractStreamParser {
 		catch (Exception e) {
 			throw new ParseException(e.getMessage(), _position-1);
 		}
+	}
+	
+	protected List<Integer> readSet() throws ParseException {
+		List<Integer> values = new ArrayList<Integer>();
+		while (_currentInt > 0 && !Character.isWhitespace(_currentChar)) {
+			if (_currentChar == SET_VALUE_SEPARATOR) {
+				readNext();
+			}
+			IntRange ids = readIds();
+			for (int i : ids.toArray()) {
+				values.add(i);
+			}
+		}
+		
+		return values;
 	}
 	
 	protected void readValueSeparator() throws ParseException {
