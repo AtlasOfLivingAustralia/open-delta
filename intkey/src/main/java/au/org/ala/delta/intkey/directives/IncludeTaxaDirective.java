@@ -21,7 +21,7 @@ public class IncludeTaxaDirective extends IntkeyDirective {
         List<String> tokens = ParsingUtils.tokenizeDirectiveCall(data);
         
         if (tokens.isEmpty()) {
-            List<Item> selectedTaxa = context.getDirectivePopulator().promptForTaxa("INCLUDE TAXA", false);
+            List<Item> selectedTaxa = context.getDirectivePopulator().promptForTaxaByKeyword("INCLUDE TAXA", false);
             for (Item taxon: selectedTaxa) {
                 includeTaxaNumbers.add(taxon.getItemNumber());
             }

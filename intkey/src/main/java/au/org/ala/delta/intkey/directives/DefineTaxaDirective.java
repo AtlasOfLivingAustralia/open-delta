@@ -55,7 +55,7 @@ public class DefineTaxaDirective extends IntkeyDirective {
         }
 
         if (taxonNumbers.size() == 0) {
-            List<Item> taxa = context.getDirectivePopulator().promptForTaxa("DEFINE TAXA", true);
+            List<Item> taxa = context.getDirectivePopulator().promptForTaxaByKeyword("DEFINE TAXA", true);
             for (Item taxon: taxa) {
                 taxonNumbers.add(taxon.getItemNumber());
             }

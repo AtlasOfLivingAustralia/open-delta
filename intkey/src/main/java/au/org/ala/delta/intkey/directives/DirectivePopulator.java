@@ -1,5 +1,7 @@
 package au.org.ala.delta.intkey.directives;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
@@ -13,9 +15,11 @@ import au.org.ala.delta.model.TextCharacter;
 
 public interface DirectivePopulator {
     
-    List<au.org.ala.delta.model.Character> promptForCharacters(String directiveName, boolean permitSelectionFromIncludedCharactersOnly);
+    List<au.org.ala.delta.model.Character> promptForCharactersByKeyword(String directiveName, boolean permitSelectionFromIncludedCharactersOnly);
+    List<au.org.ala.delta.model.Character> promptForCharactersByList(String directiveName, boolean selectFromAll, boolean selectIncludedCharactersOnly);
     
-    List<Item> promptForTaxa(String directiveName, boolean permitSelectionFromIncludedTaxaOnly);
+    List<Item> promptForTaxaByKeyword(String directiveName, boolean permitSelectionFromIncludedTaxaOnly);
+    List<au.org.ala.delta.model.Character> promptForTaxaByList(String directiveName, boolean selectFromAll, boolean selectIncludedCharactersOnly);
     
     /**
      * Null denotes cancellation
@@ -33,5 +37,9 @@ public interface DirectivePopulator {
     FloatRange promptForRealValue(RealCharacter ch);
     
     Set<Integer> promptForMultiStateValue(MultiStateCharacter ch);
+    
+    File promptForFile(List<String> fileExtensions, String description, boolean createFileIfNonExistant) throws IOException;
+    
+    Boolean promptForOnOffValue(String directiveName, boolean initialValue);
 
 }

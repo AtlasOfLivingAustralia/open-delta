@@ -51,11 +51,6 @@ public abstract class NewIntkeyDirective extends AbstractDirective<IntkeyContext
 
     @Override
     public final void parseAndProcess(IntkeyContext context, String data) throws Exception {
-        // IntkeyDirectiveInvocation invoc = doProcess(context, data);
-        //
-        // if (invoc != null) {
-        // context.executeDirective(invoc);
-        // }
         List<String> tokens = ParsingUtils.tokenizeDirectiveCall(data);
         Queue<String> tokenQueue = new ArrayDeque<String>(tokens);
 
@@ -82,15 +77,15 @@ public abstract class NewIntkeyDirective extends AbstractDirective<IntkeyContext
 
         if (_intkeyArgsList != null) {
             for (IntkeyDirectiveArgument arg : _intkeyArgsList) {
-                Object parsedArgumentValue = arg.parseInput(tokenQueue, context.getDirectivePopulator(), StringUtils.join(_controlWords, " "));
+                Object parsedArgumentValue = arg.parseInput(tokenQueue, context, StringUtils.join(_controlWords, " "));
                 BeanUtils.setProperty(invoc, arg.getName(), parsedArgumentValue);
             }
         }
 
-        context.executeDirective(invoc);
+        if (context != null) {
+            context.executeDirective(invoc);
+        }
     }
-
-    protected abstract IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception;
 
     protected abstract List<IntkeyDirectiveArgument> buildArguments();
 

@@ -21,7 +21,7 @@ public class ExcludeTaxaDirective extends IntkeyDirective {
         List<String> tokens = ParsingUtils.tokenizeDirectiveCall(data);
         
         if (tokens.isEmpty()) {
-            List<Item> selectedTaxa = context.getDirectivePopulator().promptForTaxa("EXCLUDE TAXA", false);
+            List<Item> selectedTaxa = context.getDirectivePopulator().promptForTaxaByKeyword("EXCLUDE TAXA", false);
             for (Item taxon: selectedTaxa) {
                 excludeTaxaNumbers.add(taxon.getItemNumber());
             }

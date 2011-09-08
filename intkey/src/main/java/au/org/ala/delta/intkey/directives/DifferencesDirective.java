@@ -117,7 +117,7 @@ public class DifferencesDirective extends IntkeyDirective {
         }
 
         if (taxa.size() == 0) {
-            taxa = context.getDirectivePopulator().promptForTaxa("DIFFERENCES", true);
+            taxa = context.getDirectivePopulator().promptForTaxaByKeyword("DIFFERENCES", true);
             if (taxa.size() == 0) {
                 // user hit cancel or did not select anything
                 return null;
@@ -150,7 +150,7 @@ public class DifferencesDirective extends IntkeyDirective {
         }
 
         if (characters.size() == 0) {
-            characters = context.getDirectivePopulator().promptForCharacters("DIFFERENCES", true);
+            characters = context.getDirectivePopulator().promptForCharactersByKeyword("DIFFERENCES", true);
             if (characters.size() == 0) {
                 // user hit cancel or did not select anything
                 return null;

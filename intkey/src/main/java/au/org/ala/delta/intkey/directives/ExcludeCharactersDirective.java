@@ -21,7 +21,7 @@ public class ExcludeCharactersDirective extends IntkeyDirective {
         List<String> tokens = ParsingUtils.tokenizeDirectiveCall(data);
         
         if (tokens.isEmpty()) {
-            List<au.org.ala.delta.model.Character> selectedCharacters = context.getDirectivePopulator().promptForCharacters("INCLUDE CHARACTERS", false);
+            List<au.org.ala.delta.model.Character> selectedCharacters = context.getDirectivePopulator().promptForCharactersByKeyword("INCLUDE CHARACTERS", false);
             for (au.org.ala.delta.model.Character ch: selectedCharacters) {
                 excludeCharacterNumbers.add(ch.getCharacterId());
             }

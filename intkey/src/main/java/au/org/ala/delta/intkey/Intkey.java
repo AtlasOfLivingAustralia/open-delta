@@ -54,6 +54,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.MouseInputAdapter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
@@ -76,6 +77,7 @@ import au.org.ala.delta.intkey.directives.IntkeyDirective;
 import au.org.ala.delta.intkey.directives.IntkeyDirectiveParseException;
 import au.org.ala.delta.intkey.directives.NewDatasetDirective;
 import au.org.ala.delta.intkey.directives.RestartDirective;
+import au.org.ala.delta.intkey.directives.SelectionMode;
 import au.org.ala.delta.intkey.directives.SetToleranceDirective;
 import au.org.ala.delta.intkey.directives.UseDirective;
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
@@ -92,11 +94,13 @@ import au.org.ala.delta.intkey.ui.BusyGlassPane;
 import au.org.ala.delta.intkey.ui.CharacterCellRenderer;
 import au.org.ala.delta.intkey.ui.CharacterImageInputDialog;
 import au.org.ala.delta.intkey.ui.CharacterKeywordSelectionDialog;
+import au.org.ala.delta.intkey.ui.CharacterSelectionDialog;
 import au.org.ala.delta.intkey.ui.FindInCharactersDialog;
 import au.org.ala.delta.intkey.ui.FindInTaxaDialog;
 import au.org.ala.delta.intkey.ui.ImageDialog;
 import au.org.ala.delta.intkey.ui.IntegerInputDialog;
 import au.org.ala.delta.intkey.ui.MultiStateInputDialog;
+import au.org.ala.delta.intkey.ui.OnOffPromptDialog;
 import au.org.ala.delta.intkey.ui.ReExecuteDialog;
 import au.org.ala.delta.intkey.ui.RealInputDialog;
 import au.org.ala.delta.intkey.ui.RtfReportDisplayDialog;
@@ -1572,7 +1576,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     // ===================================================================
 
     @Override
-    public List<Character> promptForCharacters(String directiveName, boolean permitSelectionFromIncludedCharactersOnly) {
+    public List<Character> promptForCharactersByKeyword(String directiveName, boolean permitSelectionFromIncludedCharactersOnly) {
         List<Image> characterKeywordImages = _context.getDataset().getCharacterKeywordImages();
         if (!_advancedMode && characterKeywordImages != null && !characterKeywordImages.isEmpty()) {
             ImageDialog dlg = new ImageDialog(getMainFrame(), _context.getImageSettings(), true);
@@ -1595,14 +1599,27 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
             return selectedCharacters;
         } else {
-            CharacterKeywordSelectionDialog dlg = new CharacterKeywordSelectionDialog(getMainFrame(), _context, directiveName, permitSelectionFromIncludedCharactersOnly);
+            CharacterKeywordSelectionDialog dlg = new CharacterKeywordSelectionDialog(getMainFrame(), _context, directiveName.toUpperCase(), permitSelectionFromIncludedCharactersOnly);
             show(dlg);
             return dlg.getSelectedCharacters();
         }
     }
 
     @Override
-    public List<Item> promptForTaxa(String directiveName, boolean permitSelectionFromIncludedTaxaOnly) {
+    public List<Character> promptForCharactersByList(String directiveName, boolean selectFromAll, boolean selectIncludedCharactersOnly) {
+        List<Character> charactersToSelect;
+        if (selectFromAll) {
+            charactersToSelect = _context.getCharactersForKeyword(IntkeyContext.CHARACTER_KEYWORD_ALL);
+        } else {
+            charactersToSelect = _context.getCharactersForKeyword(IntkeyContext.CHARACTER_KEYWORD_AVAILABLE);
+        }
+        CharacterSelectionDialog dlg = new CharacterSelectionDialog(getMainFrame(), charactersToSelect, directiveName.toUpperCase(), _context.getImageSettings());
+        show(dlg);
+        return dlg.getSelectedCharacters();
+    }
+
+    @Override
+    public List<Item> promptForTaxaByKeyword(String directiveName, boolean permitSelectionFromIncludedTaxaOnly) {
         List<Image> taxonKeywordImages = _context.getDataset().getTaxonKeywordImages();
         if (!_advancedMode && taxonKeywordImages != null && !taxonKeywordImages.isEmpty()) {
             ImageDialog dlg = new ImageDialog(getMainFrame(), _context.getImageSettings(), true);
@@ -1629,6 +1646,12 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             show(dlg);
             return dlg.getSelectedTaxa();
         }
+    }
+
+    @Override
+    public List<Character> promptForTaxaByList(String directiveName, boolean selectFromAll, boolean selectIncludedCharactersOnly) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     @Override
@@ -1713,6 +1736,60 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             MultiStateInputDialog dlg = new MultiStateInputDialog(getMainFrame(), ch, _context.getImageSettings());
             UIUtils.showDialog(dlg);
             return dlg.getInputData();
+        }
+    }
+
+    @Override
+    public File promptForFile(List<String> fileExtensions, String description, boolean createFileIfNonExistant) throws IOException {
+        String[] extensionsArray = new String[fileExtensions.size()];
+        fileExtensions.toArray(extensionsArray);
+
+        JFileChooser chooser = new JFileChooser();
+        FileNameExtensionFilter filter = new FileNameExtensionFilter(description, extensionsArray);
+        chooser.setFileFilter(filter);
+
+        int returnVal;
+
+        if (createFileIfNonExistant) {
+            returnVal = chooser.showSaveDialog(UIUtils.getMainFrame());
+        } else {
+            returnVal = chooser.showOpenDialog(UIUtils.getMainFrame());
+        }
+
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+
+            if (createFileIfNonExistant) {
+                File file = chooser.getSelectedFile();
+
+                // if only one file extension was supplied and the filename does
+                // not end with this extension, add it before
+                // creating the file
+                if (fileExtensions.size() == 1) {
+                    String extension = fileExtensions.get(0);
+                    String filePath = chooser.getSelectedFile().getAbsolutePath();
+                    if (!filePath.endsWith(extension)) {
+                        file = new File(filePath + "." + extension);
+                    }
+                }
+
+                file.createNewFile();
+                return file;
+            } else {
+                return chooser.getSelectedFile();
+            }
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public Boolean promptForOnOffValue(String directiveName, boolean initialValue) {
+        OnOffPromptDialog dlg = new OnOffPromptDialog(getMainFrame(), directiveName.toUpperCase(), initialValue);
+        show(dlg);
+        if (dlg.isOkButtonPressed()) {
+            return dlg.getSelectedValue();
+        } else {
+            return null;
         }
     }
 
@@ -2091,4 +2168,5 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             throw new RuntimeException(e);
         }
     }
+
 }

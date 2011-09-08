@@ -80,7 +80,7 @@ public class UseDirective extends IntkeyDirective {
                 // No characters specified, prompt the user to select characters
                 
                 String directiveName = change ? directiveName = StringUtils.join(new ChangeDirective().getControlWords(), " ").toUpperCase() : StringUtils.join(_controlWords, " ").toUpperCase();
-                List<Character> selectedCharacters = context.getDirectivePopulator().promptForCharacters(directiveName, true);
+                List<Character> selectedCharacters = context.getDirectivePopulator().promptForCharactersByKeyword(directiveName, true);
                 if (selectedCharacters.size() > 0) {
                     for (Character ch : selectedCharacters) {
                         characterNumbers.add(ch.getCharacterId());

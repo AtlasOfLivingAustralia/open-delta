@@ -51,6 +51,9 @@ public class IntkeyDirectiveParser extends DirectiveParser<IntkeyContext> {
         instance.registerDirective(new SetInfoPathDirective());
         instance.registerDirective(new SetMatchDirective());
         instance.registerDirective(new SetDiagLevelDirective());
+        instance.registerDirective(new CharactersDirective());
+        instance.registerDirective(new FileOutputDirective());
+        instance.registerDirective(new SetFixDirective());
 
         return instance;
     }

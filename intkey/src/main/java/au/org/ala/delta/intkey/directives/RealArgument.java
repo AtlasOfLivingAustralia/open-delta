@@ -4,9 +4,9 @@ import java.util.Queue;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class IntegerArgument extends IntkeyDirectiveArgument {
+public class RealArgument extends IntkeyDirectiveArgument {
 
-    public IntegerArgument(String name, String promptText) {
+    public RealArgument(String name, String promptText) {
         super(name, promptText);
     }
 
@@ -20,12 +20,13 @@ public class IntegerArgument extends IntkeyDirectiveArgument {
 
         if (token != null) {
             try {
-                int parsedInteger = Integer.parseInt(token);
-                return parsedInteger;
+                double parsedDouble = Double.parseDouble(token);
+                return parsedDouble;
             } catch (NumberFormatException ex) {
-                throw new IntkeyDirectiveParseException("Integer value required", ex);
+                throw new IntkeyDirectiveParseException("Real value required", ex);
             }
         }
         return null;
     }
+
 }

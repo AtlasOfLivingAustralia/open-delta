@@ -1,5 +1,7 @@
 package au.org.ala.delta.intkey.model;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
@@ -16,12 +18,22 @@ import au.org.ala.delta.model.TextCharacter;
 public class MockDirectivePopulator implements DirectivePopulator {
 
     @Override
-    public List<Character> promptForCharacters(String directiveName, boolean permitSelectionFromIncludedCharactersOnly) {
+    public List<Character> promptForCharactersByKeyword(String directiveName, boolean permitSelectionFromIncludedCharactersOnly) {
         return null;
     }
 
     @Override
-    public List<Item> promptForTaxa(String directiveName, boolean permitSelectionFromIncludedTaxaOnly) {
+    public List<Character> promptForCharactersByList(String directiveName, boolean selectFromAll, boolean selectIncludedCharactersOnly) {
+        return null;
+    }
+
+    @Override
+    public List<Item> promptForTaxaByKeyword(String directiveName, boolean permitSelectionFromIncludedTaxaOnly) {
+        return null;
+    }
+
+    @Override
+    public List<Character> promptForTaxaByList(String directiveName, boolean selectFromAll, boolean selectIncludedCharactersOnly) {
         return null;
     }
 
@@ -52,6 +64,16 @@ public class MockDirectivePopulator implements DirectivePopulator {
 
     @Override
     public Set<Integer> promptForMultiStateValue(MultiStateCharacter ch) {
+        return null;
+    }
+
+    @Override
+    public File promptForFile(List<String> fileExtensions, String description, boolean createFileIfNonExistant) throws IOException {
+        return null;
+    }
+
+    @Override
+    public Boolean promptForOnOffValue(String directiveName, boolean initialValue) {
         return null;
     }
 
