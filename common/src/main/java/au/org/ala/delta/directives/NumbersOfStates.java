@@ -18,9 +18,12 @@ import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.directives.args.DirectiveArguments;
+import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.MultiStateCharacter;
 
 public class NumbersOfStates extends AbstractCharacterListDirective<DeltaContext, Integer> {
+	
+	public static final int DEFAULT_NUMBER_OF_STATES = 2;
 	
 	public NumbersOfStates() {
 		super("numbers", "of", "states");
@@ -50,7 +53,31 @@ public class NumbersOfStates extends AbstractCharacterListDirective<DeltaContext
 			throw new RuntimeException("Attempt to set number of states on an non-multistate character: " + charIndex);
 		}
 	}
+	
+	@Override
+	public void process(DeltaContext context, DirectiveArguments directiveArguments) throws Exception {
+		super.process(context, directiveArguments);
+		
+		setDefaults(context);
+	}
 
+	/**
+	 * Sets the number of states to "2" for any multistate characters not
+	 * explicitly assigned a number of states.
+	 */
+	private void setDefaults(DeltaContext context) {
+		DeltaDataSet dataSet = context.getDataSet();
+		for (int i=1; i<=dataSet.getNumberOfCharacters(); i++) {
+			au.org.ala.delta.model.Character character = dataSet.getCharacter(i);
+			if (character.getCharacterType().isMultistate()) {
+				MultiStateCharacter multiStateChar = (MultiStateCharacter)character;
+				if (multiStateChar.getNumberOfStates() == 0) {
+					processCharacter(context, i, DEFAULT_NUMBER_OF_STATES);
+				}
+			}
+		}
+	}
+	
 	@Override
 	protected void addArgument(DirectiveArguments args, int charIndex, String value) {
 		args.addNumericArgument(charIndex, value);

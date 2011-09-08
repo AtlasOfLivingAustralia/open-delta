@@ -35,7 +35,7 @@ public abstract class AbstractCharacterDependencyDirective extends AbstractTextD
 		DependentCharactersParser parser = new DependentCharactersParser(context, reader);
 		parser.parse();
 		
-		//addCharacterDependencies(context, parser.getCharacterDependencies());
+		addCharacterDependencies(context, parser.getCharacterDependencies());
 	}
 
 	protected void addCharacterDependencies(DeltaContext context, List<CharacterDependency> dependencies) {
