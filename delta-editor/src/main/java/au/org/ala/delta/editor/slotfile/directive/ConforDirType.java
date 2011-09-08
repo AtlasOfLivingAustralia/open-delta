@@ -52,7 +52,6 @@ import au.org.ala.delta.directives.PrintFile;
 import au.org.ala.delta.directives.PrintWidth;
 import au.org.ala.delta.directives.ReplaceAngleBrackets;
 import au.org.ala.delta.directives.Show;
-import au.org.ala.delta.directives.TaxonImages;
 import au.org.ala.delta.directives.TypeSettingMarks;
 import au.org.ala.delta.editor.slotfile.Directive;
 import au.org.ala.delta.editor.slotfile.DirectiveArgType;
@@ -298,7 +297,7 @@ public class ConforDirType {
         new Directive(new String[] {"NEW", "PRINT", "PAGE", ""}, 0, ConforDirType.NEW_PRINT_PAGE, DirectiveArgType.DIRARG_NONE, new DirInDefault(), new DirOutDefault()),
         new Directive(new String[] {"NO", "DATA", "LISTING", ""}, 0, ConforDirType.NO_DATA_LISTING, DirectiveArgType.DIRARG_NONE, new DirInDefault(), new DirOutDefault()),
         new Directive(new String[] {"NONAUTOMATIC", "CONTROLLING", "CHARACTERS", ""}, 4, ConforDirType.NONAUTOMATIC_CONTROLLING_CHARACTERS, DirectiveArgType.DIRARG_CHARLIST, new DirInDefault(), new DirOutDefault()),
-        new Directive(new String[] {"NUMBER", "OF", "CHARACTERS", ""}, 1, ConforDirType.NUMBER_OF_CHARACTERS, DirectiveArgType.DIRARG_INTERNAL, NumberOfCharacters.class, new DirInNumberChars(), new DirOutNumberChars()),
+        new Directive(new String[] {"NUMBER", "OF", "CHARACTERS", ""}, 1, ConforDirType.NUMBER_OF_CHARACTERS, DirectiveArgType.DIRARG_INTERNAL, NumberOfCharacters.class, new DirInDefault(), new DirOutNumberChars()),
         new Directive(new String[] {"NUMBER", "STATES", "FROM", "ZERO"}, 4, ConforDirType.NUMBER_STATES_FROM_ZERO, DirectiveArgType.DIRARG_NONE, new DirInDefault(), new DirOutDefault()),
         new Directive(new String[] {"NUMBERS", "OF", "STATES", ""}, 3, ConforDirType.NUMBERS_OF_STATES, DirectiveArgType.DIRARG_INTERNAL, NumbersOfStates.class, new DirInNumberStates(), new DirOutNumberStates()),
         new Directive(new String[] {"OMIT", "CHARACTER", "NUMBERS", ""}, 4, ConforDirType.OMIT_CHARACTER_NUMBERS, DirectiveArgType.DIRARG_NONE, OmitCharacterNumbers.class, new DirInDefault(), new DirOutDefault()),
@@ -348,7 +347,7 @@ public class ConforDirType {
         new Directive(new String[] {"STATE", "CODES", "", ""}, 1, ConforDirType.STATE_CODES, DirectiveArgType.DIRARG_TEXT, new DirInStateCodes(), new DirOutDefault()),
         new Directive(new String[] {"STOP", "AFTER", "ITEM", ""}, 4, ConforDirType.STOP_AFTER_ITEM, DirectiveArgType.DIRARG_ITEM, new DirInDefault(), new DirOutDefault()),
         new Directive(new String[] {"SUBJECT", "FOR", "OUTPUT", "FILES"}, 4, ConforDirType.SUBJECT_FOR_OUTPUT_FILES, DirectiveArgType.DIRARG_TEXT, new DirInDefault(), new DirOutDefault()),
-        new Directive(new String[] {"TAXON", "IMAGES", "", ""}, 4, ConforDirType.TAXON_IMAGES, DirectiveArgType.DIRARG_INTERNAL, TaxonImages.class, new DirInDefault(), new DirOutTaxonImages()),
+        new Directive(new String[] {"TAXON", "IMAGES", "", ""}, 4, ConforDirType.TAXON_IMAGES, DirectiveArgType.DIRARG_INTERNAL, DirInTaxonImages.class, new DirInDefault(), new DirOutTaxonImages()),
         new Directive(new String[] {"TAXON", "KEYWORD", "IMAGES", ""}, 4, ConforDirType.TAXON_KEYWORD_IMAGES, DirectiveArgType.DIRARG_TEXT, new DirInDefault(), new DirOutDefault()),
         new Directive(new String[] {"TAXON", "LINKS", "", ""}, 4, ConforDirType.TAXON_LINKS, DirectiveArgType.DIRARG_ITEMFILELIST, null, null),
         new Directive(new String[] {"TRANSLATE", "IMPLICIT", "VALUES", ""}, 4, ConforDirType.TRANSLATE_IMPLICIT_VALUES, DirectiveArgType.DIRARG_NONE, new DirInDefault(), new DirOutDefault()),

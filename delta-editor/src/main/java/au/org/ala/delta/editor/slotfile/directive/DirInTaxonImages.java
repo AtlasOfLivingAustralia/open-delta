@@ -14,13 +14,23 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.slotfile.directive;
 
-import org.apache.commons.lang.NotImplementedException;
+import java.text.ParseException;
 
-public class DirInNumberChars implements DirectiveFunctor {
+import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.directives.TaxonImages;
+import au.org.ala.delta.directives.args.DirectiveArguments;
+import au.org.ala.delta.model.image.ImageType;
+import au.org.ala.delta.util.DataSetHelper;
 
+public class DirInTaxonImages extends TaxonImages {
+
+	
 	@Override
-	public void process(DirectiveInOutState state) {
-		throw new NotImplementedException();
+	public void process(DeltaContext context, DirectiveArguments directiveArguments) throws ParseException {
+		super.process(context, directiveArguments);
+		
+		DataSetHelper helper = new DataSetHelper(context.getDataSet());
+		helper.addItemImages(context.getImages(ImageType.IMAGE_TAXON));
 	}
 
 }

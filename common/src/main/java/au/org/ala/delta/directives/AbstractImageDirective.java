@@ -39,4 +39,5 @@ public abstract class AbstractImageDirective extends AbstractInternalDirective {
 	}
 	
 	protected abstract ImageParser createParser(DeltaContext context, StringReader reader);
+	
 }

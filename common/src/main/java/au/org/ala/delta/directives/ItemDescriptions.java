@@ -47,9 +47,8 @@ public class ItemDescriptions extends AbstractTextDirective {
 	public void process(DeltaContext context, DirectiveArguments data) throws Exception {
 		StringReader reader = new StringReader(data.getFirstArgumentText());
 		ItemsParser parser = new ItemsParser(context, reader);
-		parser.parse();
+		parser.parse();	
 	}
-
 }
 
 class ItemsParser extends AbstractStreamParser {

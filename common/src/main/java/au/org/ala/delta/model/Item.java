@@ -16,7 +16,6 @@ package au.org.ala.delta.model;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 

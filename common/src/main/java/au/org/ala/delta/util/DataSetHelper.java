@@ -1,8 +1,11 @@
 package au.org.ala.delta.util;
 
-import au.org.ala.delta.model.DeltaDataSet;
+import java.util.List;
+
 import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.image.ImageInfo;
 
 /**
  * Contains helper methods for working with a DeltaDataSet. These methods could
@@ -103,5 +106,22 @@ public class DataSetHelper {
 			}
 		}
 		return null;
+	}
+	
+
+	public void addItemImages(List<ImageInfo> images) {
+		if (images == null) {
+			return;
+		}
+		for (ImageInfo imageInfo : images) {
+			String description = (String)imageInfo.getId();
+			Item item = _dataSet.itemForDescription(description);
+			if (item != null) {
+				imageInfo.addOrUpdate(item);
+			}
+			else {
+				throw new IllegalArgumentException("No such item: "+description);
+			}
+		}
 	}
 }
