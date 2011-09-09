@@ -331,7 +331,7 @@ public class ImageOverlayParser {
                     if (dims == HAS_ALL_DIMS && (anOverlay.type == OverlayType.OLSTATE || anOverlay.type == OverlayType.OLVALUE || anOverlay.type == OverlayType.OLKEYWORD)) {
                         if (inHotspot)
                             anOverlay.location.add(hsLocation);
-                        hsLocation.clearAll();
+                        hsLocation = new OverlayLocation();
                         inHotspot = true;
                         dims = 0;
                     }
