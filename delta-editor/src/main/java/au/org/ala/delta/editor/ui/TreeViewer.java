@@ -157,7 +157,11 @@ public class TreeViewer extends AbstractDeltaView {
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
 
-				_dataModel.setSelectedItem(_dataModel.getItem(_itemList.getSelectedIndex() + 1));
+				int selectedItemNum = _itemList.getSelectedIndex() + 1;
+				if (selectedItemNum <= 0) {
+					return;
+				}
+				_dataModel.setSelectedItem(_dataModel.getItem(selectedItemNum));
 
 				treeModel.itemChanged();
 				_tree.repaint();

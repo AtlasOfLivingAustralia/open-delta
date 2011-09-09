@@ -507,7 +507,7 @@ public class CharacterEditor extends AbstractDeltaView {
 	private void updateScreen() {
 		
 		_editsDisabled = true;
-//		setTitle(_dataSet.getName() + " "+titleSuffix);
+
 		if (_selectedCharacter == null) {
 			_selectedCharacter = _dataSet.getCharacter(1);
 		}
