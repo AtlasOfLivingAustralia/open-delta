@@ -371,7 +371,7 @@ public class ItemEditor extends AbstractDeltaView implements ValidationListener 
 	private void updateDisplay() {
 
 		_editsDisabled = true;
-		setTitle(_dataSet.getName() + " " + titleSuffix);
+		
 		if (_selectedItem == null) {
 			_selectedItem = _dataSet.getItem(1);
 		}

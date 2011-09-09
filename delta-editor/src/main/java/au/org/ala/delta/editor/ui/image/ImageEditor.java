@@ -226,7 +226,7 @@ public class ImageEditor extends AbstractDeltaView {
 	
 	@Override
 	public String getViewTitle() {
-		return _selectedImage.getFileName();
+		return _selectedImage.getFileName()+" - %s";
 	}
 	
 	private void displaySubject(Character subject, Image image) {

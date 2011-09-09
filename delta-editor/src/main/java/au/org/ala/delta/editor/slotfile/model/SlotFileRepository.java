@@ -27,7 +27,11 @@ import au.org.ala.delta.util.IProgressObserver;
  */
 public class SlotFileRepository implements DeltaDataSetRepository {
 
-	
+	/** 
+	 * Tracks the number of new data sets created so each can be given
+	 * a unique name
+	 */
+	private int _count;
 
 	/** 
 	 * Saves the supplied data set to permanent storage
@@ -77,7 +81,7 @@ public class SlotFileRepository implements DeltaDataSetRepository {
 	public DeltaDataSet newDataSet() {
 		DeltaVOP vop = new DeltaVOP();
 		SlotFileDataSetFactory _factory = new SlotFileDataSetFactory(vop);
-		return _factory.createDataSet("");
+		return _factory.createDataSet("Document"+_count++);
 	}
 
 	private DeltaVOP getVOP(DeltaDataSet dataSet) {
