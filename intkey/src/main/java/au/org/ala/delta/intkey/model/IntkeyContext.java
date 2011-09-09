@@ -186,6 +186,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         _tolerance = 0;
         _rbase = 1.1;
         _varyWeight = 1;
+        _diagLevel = 1;
 
         _characterOrder = IntkeyCharacterOrder.BEST;
         _bestCharacters = null;
@@ -500,19 +501,19 @@ public class IntkeyContext extends AbstractDeltaContext {
             if (characterNumbersSet == null) {
                 List<String> matches = new ArrayList<String>();
                 for (String savedKeyword : _userDefinedCharacterKeywords.keySet()) {
-                    
-                    //Ignore case when matching keywords
+
+                    // Ignore case when matching keywords
                     String modifiedKeyword = keyword.toLowerCase();
                     String modifiedSavedKeyword = savedKeyword.toLowerCase();
-                    
-                    //Ignore whitespace characters
+
+                    // Ignore whitespace characters
                     modifiedKeyword = modifiedKeyword.replaceAll("\\s", "");
                     modifiedSavedKeyword = modifiedSavedKeyword.replaceAll("\\s", "");
-                    
-                    //Ignore trailing and leading whitespace
+
+                    // Ignore trailing and leading whitespace
                     modifiedKeyword = modifiedKeyword.trim();
                     modifiedSavedKeyword = modifiedSavedKeyword.trim();
-                    
+
                     if (modifiedSavedKeyword.startsWith(modifiedKeyword)) {
                         matches.add(savedKeyword);
                     }
@@ -610,18 +611,18 @@ public class IntkeyContext extends AbstractDeltaContext {
             if (taxaNumbersSet == null) {
                 List<String> matches = new ArrayList<String>();
                 for (String savedKeyword : _userDefinedTaxonKeywords.keySet()) {
-                    //Ignore case when matching keywords
+                    // Ignore case when matching keywords
                     String modifiedKeyword = keyword.toLowerCase();
                     String modifiedSavedKeyword = savedKeyword.toLowerCase();
-                    
-                    //Ignore whitespace characters
+
+                    // Ignore whitespace characters
                     modifiedKeyword = modifiedKeyword.replaceAll("\\s", "");
                     modifiedSavedKeyword = modifiedSavedKeyword.replaceAll("\\s", "");
-                    
-                    //Ignore trailing and leading whitespace
+
+                    // Ignore trailing and leading whitespace
                     modifiedKeyword = modifiedKeyword.trim();
                     modifiedSavedKeyword = modifiedSavedKeyword.trim();
-                    
+
                     if (modifiedSavedKeyword.startsWith(modifiedKeyword)) {
                         matches.add(savedKeyword);
                     }
@@ -788,7 +789,7 @@ public class IntkeyContext extends AbstractDeltaContext {
     public void setRBase(double rbase) {
         _rbase = rbase;
     }
-    
+
     public int getDiagLevel() {
         return _diagLevel;
     }
@@ -796,7 +797,6 @@ public class IntkeyContext extends AbstractDeltaContext {
     public void setDiagLevel(int diagLevel) {
         this._diagLevel = diagLevel;
     }
-
 
     /**
      * @return a reference to the current taxa file, or null if one has not been
@@ -1065,7 +1065,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         imageSettings.setDataSetPath(getDatasetDirectory().getAbsolutePath());
 
         imageSettings.setResourcePaths(_imagePathLocations);
-        
+
         imageSettings.setDatasetName(_dataset.getHeading());
 
         return imageSettings;

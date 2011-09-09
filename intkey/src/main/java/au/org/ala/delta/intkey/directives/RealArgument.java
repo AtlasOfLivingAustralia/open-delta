@@ -4,14 +4,14 @@ import java.util.Queue;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class RealArgument extends IntkeyDirectiveArgument {
+public class RealArgument extends IntkeyDirectiveArgument<Double> {
 
-    public RealArgument(String name, String promptText) {
-        super(name, promptText);
+    public RealArgument(String name, String promptText, double initialValue) {
+        super(name, promptText, initialValue);
     }
 
     @Override
-    public Object parseInput(Queue<String> inputTokens, IntkeyContext context, String directiveName) throws IntkeyDirectiveParseException {
+    public Double parseInput(Queue<String> inputTokens, IntkeyContext context, String directiveName) throws IntkeyDirectiveParseException {
         String token = inputTokens.poll();
 
         if (token == null) {

@@ -4,17 +4,17 @@ import java.util.Queue;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class OnOffArgument extends IntkeyDirectiveArgument {
+public class OnOffArgument extends IntkeyDirectiveArgument<Boolean> {
 
     private static final String ON_VALUE = "ON";
     private static final String OFF_VALUE = "OFF";
 
-    public OnOffArgument(String name, String promptText) {
-        super(name, promptText);
+    public OnOffArgument(String name, String promptText, boolean initialValue) {
+        super(name, promptText, initialValue);
     }
 
     @Override
-    public Object parseInput(Queue<String> inputTokens, IntkeyContext context, String directiveName) throws IntkeyDirectiveParseException {
+    public Boolean parseInput(Queue<String> inputTokens, IntkeyContext context, String directiveName) throws IntkeyDirectiveParseException {
         String token = inputTokens.poll();
 
         if (token == null) {

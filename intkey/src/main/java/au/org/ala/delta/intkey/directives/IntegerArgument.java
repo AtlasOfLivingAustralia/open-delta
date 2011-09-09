@@ -4,18 +4,18 @@ import java.util.Queue;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class IntegerArgument extends IntkeyDirectiveArgument {
+public class IntegerArgument extends IntkeyDirectiveArgument<Integer> {
 
-    public IntegerArgument(String name, String promptText) {
-        super(name, promptText);
+    public IntegerArgument(String name, String promptText, int initialValue) {
+        super(name, promptText, initialValue);
     }
 
     @Override
-    public Object parseInput(Queue<String> inputTokens, IntkeyContext context, String directiveName) throws IntkeyDirectiveParseException {
+    public Integer parseInput(Queue<String> inputTokens, IntkeyContext context, String directiveName) throws IntkeyDirectiveParseException {
         String token = inputTokens.poll();
 
         if (token == null) {
-            token = context.getDirectivePopulator().promptForString(getPromptText(), null, directiveName);
+            token = context.getDirectivePopulator().promptForString(_promptText, Integer.toString(_initialValue), directiveName);
         }
 
         if (token != null) {

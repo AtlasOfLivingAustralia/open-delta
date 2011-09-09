@@ -18,12 +18,10 @@ public abstract class NewIntkeyDirective extends AbstractDirective<IntkeyContext
     protected DirectiveArguments _args;
 
     protected List<IntkeyDirectiveFlag> _intkeyFlagsList;
-    protected List<IntkeyDirectiveArgument> _intkeyArgsList;
 
     public NewIntkeyDirective(String... controlWords) {
         super(controlWords);
-        _intkeyArgsList = buildArguments();
-        _intkeyFlagsList = buildFlags();
+        _intkeyFlagsList = buildFlagsList();
     }
 
     @Override
@@ -74,9 +72,16 @@ public abstract class NewIntkeyDirective extends AbstractDirective<IntkeyContext
                 matchingFlags = tokenMatched;
             }
         }
+        
+        // The arguments list needs to be generated each time a call to the directive is processed. This is
+        // because most arguments need to have provided with an initial value which is used when prompting the user.
+        // This initial value needs to be read out of the IntkeyContext at the time of parsing.
+        // E.g. the integer argument for the SET TOLERANCE directive will have an initial value equal to the
+        // the value of the tolerance setting before the call to the directive.
+        List<IntkeyDirectiveArgument<?>> intkeyArgsList = generateArgumentsList(context);
 
-        if (_intkeyArgsList != null) {
-            for (IntkeyDirectiveArgument arg : _intkeyArgsList) {
+        if (intkeyArgsList != null) {
+            for (IntkeyDirectiveArgument<?> arg : intkeyArgsList) {
                 Object parsedArgumentValue = arg.parseInput(tokenQueue, context, StringUtils.join(_controlWords, " "));
                 BeanUtils.setProperty(invoc, arg.getName(), parsedArgumentValue);
             }
@@ -87,9 +92,9 @@ public abstract class NewIntkeyDirective extends AbstractDirective<IntkeyContext
         }
     }
 
-    protected abstract List<IntkeyDirectiveArgument> buildArguments();
+    protected abstract List<IntkeyDirectiveArgument<?>> generateArgumentsList(IntkeyContext context);
 
-    protected abstract List<IntkeyDirectiveFlag> buildFlags();
+    protected abstract List<IntkeyDirectiveFlag> buildFlagsList();
 
     protected abstract IntkeyDirectiveInvocation buildCommandObject();
 }

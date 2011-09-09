@@ -5,6 +5,7 @@ import java.util.List;
 
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.SetDiagLevelInvocation;
+import au.org.ala.delta.intkey.model.IntkeyContext;
 
 public class SetDiagLevelDirective extends NewIntkeyDirective {
     
@@ -13,14 +14,14 @@ public class SetDiagLevelDirective extends NewIntkeyDirective {
     }
     
     @Override
-    protected List<IntkeyDirectiveArgument> buildArguments() {
-        List<IntkeyDirectiveArgument> arguments = new ArrayList<IntkeyDirectiveArgument>();
-        arguments.add(new IntegerArgument("diaglevel", "Enter value of DiagLevel"));
+    protected List<IntkeyDirectiveArgument<?>> generateArgumentsList(IntkeyContext context) {
+        List<IntkeyDirectiveArgument<?>> arguments = new ArrayList<IntkeyDirectiveArgument<?>>();
+        arguments.add(new IntegerArgument("diagLevel", "Enter value of DiagLevel", context.getDiagLevel()));
         return arguments;
     }
 
     @Override
-    protected List<IntkeyDirectiveFlag> buildFlags() {
+    protected List<IntkeyDirectiveFlag> buildFlagsList() {
         List<IntkeyDirectiveFlag> flags = new ArrayList<IntkeyDirectiveFlag>();
         flags.add(new IntkeyDirectiveFlag('X', "fakeFlag"));
         return flags;

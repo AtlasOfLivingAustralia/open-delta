@@ -6,7 +6,7 @@ import java.util.Queue;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class CharacterListArgument extends IntkeyDirectiveArgument {
+public class CharacterListArgument extends IntkeyDirectiveArgument<List<au.org.ala.delta.model.Character>> {
 
     private static final String OVERRIDE_EXCLUDED_CHARACTERS = "/C";
 
@@ -14,13 +14,13 @@ public class CharacterListArgument extends IntkeyDirectiveArgument {
     private boolean _selectFromAll;
 
     public CharacterListArgument(String name, String promptText, SelectionMode defaultSelectionMode, boolean selectFromAll) {
-        super(name, promptText);
+        super(name, promptText, null);
         _defaultSelectionMode = defaultSelectionMode;
         _selectFromAll = selectFromAll;
     }
 
     @Override
-    public Object parseInput(Queue<String> inputTokens, IntkeyContext context, String directiveName) throws IntkeyDirectiveParseException {
+    public List<au.org.ala.delta.model.Character> parseInput(Queue<String> inputTokens, IntkeyContext context, String directiveName) throws IntkeyDirectiveParseException {
         boolean overrideExcludedCharacters = false;
 
         
