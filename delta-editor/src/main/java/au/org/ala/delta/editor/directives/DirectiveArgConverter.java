@@ -252,6 +252,9 @@ public class DirectiveArgConverter {
 	class DirectRealConverter extends DirectIntegerConverter {
 		@Override
 		public int convertId(Object id) {
+			if (id == null) {
+				return -1;
+			}
 			return (Integer)id;
 		}
 		@Override

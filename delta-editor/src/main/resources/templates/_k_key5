@@ -1,0 +1,8 @@
+*COMMENT Confirmatory characters - RTF.
+
+*HEADING Key 5. Confirmatory characters
+*NUMBER OF CONFIRMATORY CHARACTERS 3
+*OUTPUT DIRECTORY rtf
+*INPUT FILE markrtf
+*PRINT COMMENT
+\pard\plain\s3\sa200\keepn\fs24\b{}Key 5. Confirmatory characters\b0{}

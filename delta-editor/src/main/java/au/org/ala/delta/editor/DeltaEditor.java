@@ -23,6 +23,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.beans.PropertyVetoException;
 import java.io.File;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.EventObject;
 import java.util.List;
@@ -46,6 +47,7 @@ import javax.swing.event.InternalFrameEvent;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
+import org.apache.commons.io.FileUtils;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ProxyActions;
@@ -54,6 +56,7 @@ import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.Task;
 import org.jdesktop.application.Task.BlockingScope;
 
+import au.org.ala.delta.Logger;
 import au.org.ala.delta.editor.directives.DirectiveFileInfo;
 import au.org.ala.delta.editor.directives.ExportController;
 import au.org.ala.delta.editor.directives.ImportController;
@@ -775,17 +778,18 @@ public class DeltaEditor extends InternalFrameApplication implements
 	 */
 	private void initialiseNewDataSet(EditorDataModel dataSet) {
 		
-		File workingDirectory = new File(".");
-		File[] templateFiles = workingDirectory.listFiles();
+		String[] templates = {"_c_cimages",	"_c_markrtf", "_c_timages",	"_c_tonatr",
+				"_i_intkey.ink",  "_c_cnotes", "_c_ofiles", "_c_todis", "_c_tonatsr",
+				"_i_toolbar.inp", "_c_headc", "_c_ofonts", "_c_toint", "_c_tonex",
+				"_k_key5", "_c_layout", "_c_printch", "_c_tokey", "_c_uncoded", "_k_key5a",
+				"_c_markhtm", "_c_printcr", "_c_tonath", "_d_dist"};
+		File tmp = new File(System.getProperty("java.io.tmpdir"));
 		List<DirectiveFileInfo> toImport = new ArrayList<DirectiveFileInfo>();
-		for (File file : templateFiles) {
-			String fileName = file.getName();
-			if (fileName.length() <= 3) {
-				continue;
-			}
+		for (String template : templates) {
+			
 			DirectiveType type = null;
-			if (fileName.startsWith("_")) {
-				switch (fileName.charAt(1)) {
+			if (template.startsWith("_")) {
+				switch (template.charAt(1)) {
 				case 'c':
 					type = DirectiveType.CONFOR;
 					break;
@@ -802,13 +806,22 @@ public class DeltaEditor extends InternalFrameApplication implements
 					continue;
 				}
 				
-				String name = fileName.substring(3);
-				toImport.add(new DirectiveFileInfo(name, fileName, type));
+				String name = template.substring(3);
+				
+				File templateFile = new File(tmp, template);
+				InputStream templateStream = getClass().getResourceAsStream("/templates/"+template);
+				try {
+					FileUtils.copyInputStreamToFile(templateStream, templateFile);
+					toImport.add(new DirectiveFileInfo(name, template, type));
+				}
+				catch (Exception e) {
+					Logger.error("Unable to import template: %s", template);
+				}
 			}
 		}
 		
 		ImportController controller = new ImportController(this, dataSet);
-		controller.doSilentImport(workingDirectory, toImport);
+		controller.doSilentImport(tmp, toImport);
 	}
 		
 

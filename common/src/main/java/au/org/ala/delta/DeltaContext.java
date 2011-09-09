@@ -289,7 +289,7 @@ public class DeltaContext extends AbstractDeltaContext {
 	}
 
 	public Character getCharacter(int number) {
-		if (number <= _numberOfCharacters) {
+		if (number <= _dataSet.getNumberOfCharacters()) {
 			Character c = _dataSet.getCharacter(number);
 			if (c==null) {
 				c = _dataSet.addCharacter(number, CharacterType.UnorderedMultiState);

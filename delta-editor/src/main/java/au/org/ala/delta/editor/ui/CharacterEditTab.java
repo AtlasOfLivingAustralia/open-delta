@@ -44,7 +44,7 @@ public abstract class CharacterEditTab extends JPanel {
 		super(layout, isDoubleBuffered);
 	}
 
-	public boolean isValid() {
+	public boolean isContentsValid() {
 		return true;
 	}
 	

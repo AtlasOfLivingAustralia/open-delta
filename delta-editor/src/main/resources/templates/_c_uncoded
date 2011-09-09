@@ -1,0 +1,22 @@
+*SHOW Print unrecorded characters.
+
+*COMMENT : HEADING Grass Genera #TIME #DATE
+
+*LISTING FILE uncoded.lst  *PRINT FILE uncoded.prt
+
+*INPUT FILE specs
+
+*EXCLUDE CHARACTER 88
+
+*PRINT UNCODED CHARACTERS
+
+*OMIT TYPESETTING MARKS
+
+*COMMENT Activate the following two directives if you want the unrecorded
+characters given in natural language instead of just character numbers.
+
+*COMMENT : TRANSLATE UNCODED CHARACTERS
+
+*COMMENT : INPUT FILE chars
+
+*INPUT FILE items
