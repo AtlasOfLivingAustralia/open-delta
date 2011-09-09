@@ -9,11 +9,12 @@ import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
+import au.org.ala.delta.rtf.RTFUtils;
 
 /**
  * Validates changes to Characters.
  */
-public class CharacterValidator {
+public class CharacterValidator extends DescriptionValidator {
 
 	private Character _character;
 	private EditorViewModel _model;
@@ -30,10 +31,11 @@ public class CharacterValidator {
 	}
 	
 	public ValidationResult validateDescription(String description) {
-		if (StringUtils.isEmpty(description)) {
+		String plainText =  RTFUtils.stripFormatting((String) description).trim();
+		if (StringUtils.isEmpty(plainText)) {
 			return new ValidationResult("empty.character.description", 0);
-		}
-		return new ValidationResult();
+		} 
+		return validateComments(description);
 	}
 	
 	/**
