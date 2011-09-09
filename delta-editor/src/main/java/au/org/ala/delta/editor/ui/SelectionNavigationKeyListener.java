@@ -4,9 +4,10 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 /**
- * Listens for Enter / Shift Enter.
+ * Listens for Enter / Shift Enter.  By default does nothing and can be
+ * used to simply consume these key combinations.
  */
-public abstract class SelectionNavigationKeyListener implements KeyListener {
+public class SelectionNavigationKeyListener implements KeyListener {
 	
 	@Override
 	public void keyReleased(KeyEvent e) {

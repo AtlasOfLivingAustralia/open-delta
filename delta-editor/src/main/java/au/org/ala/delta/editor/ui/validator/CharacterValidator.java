@@ -98,6 +98,16 @@ public class CharacterValidator {
 		return ValidationResult.success();
 	}
 	
+	public ValidationResult validateStates() {
+		if (_character.getCharacterType().isMultistate()) {
+			if (((MultiStateCharacter)_character).getNumberOfStates() == 0) {
+				return ValidationResult.error("MULTISTATE_CHARS_NEED_AT_LEAST_ONE_STATE");
+			}
+		
+		}
+		return ValidationResult.success();
+	}
+	
 	/**
 	 * Provides a Validator instance that will validate the Character feature description.
 	 * @param model the model the Character to validate is a part of.
@@ -114,4 +124,5 @@ public class CharacterValidator {
 			}
 		};
 	}
+	
 }

@@ -131,9 +131,13 @@ public class CharacterEditor extends AbstractDeltaView {
 
 	private void createCharacterForEmptyDataSet(EditorViewModel model) {
 		if (model.getNumberOfCharacters() == 0) {
-			Character character = _controller.addCharacter();
-			model.setSelectedCharacter(character);
+			addCharacter(model);
 		}
+	}
+	
+	private void addCharacter(EditorViewModel model) {
+		Character character = _controller.addCharacter();
+		model.setSelectedCharacter(character);
 	}
 
 	/**
@@ -146,7 +150,7 @@ public class CharacterEditor extends AbstractDeltaView {
 				if (_editsDisabled) {
 					return;
 				}
-				setSelectedCharacter(_dataSet.getCharacter((Integer)spinner.getValue()));
+				updateCharacterSelection((Integer)spinner.getValue());
 			}
 		});
 		
@@ -166,6 +170,7 @@ public class CharacterEditor extends AbstractDeltaView {
 				characterEditPerformed();
 			}
 		});
+		rtfEditor.addKeyListener(new SelectionNavigationKeyListener());
 		characterSelectionList.setSelectionAction(map.get("characterSelected"));
 		
 		characterSelectionList.addListSelectionListener(new ListSelectionListener() {
@@ -186,6 +191,15 @@ public class CharacterEditor extends AbstractDeltaView {
 		btnSelect.setAction(map.get("selectCharacterByName"));
 		
 		comboBox.setAction(map.get("characterTypeChanged"));
+	}
+	
+	private void updateCharacterSelection(int characterNum) {
+		
+		if (characterNum > _dataSet.getNumberOfCharacters()) {
+			addCharacter(_dataSet);
+		}
+		
+		setSelectedCharacter(_dataSet.getCharacter(characterNum));
 	}
 	
 	@Action
@@ -454,7 +468,6 @@ public class CharacterEditor extends AbstractDeltaView {
 		characterSelectionList.setModel(dataSet);
 		setSelectedCharacter(dataSet.getSelectedCharacter());
 		
-		_validator = new CharacterValidator(_dataSet, _selectedCharacter);
 		_dataSet.addDeltaDataSetObserver(new AbstractDataSetObserver() {
 
 			@Override
@@ -467,8 +480,6 @@ public class CharacterEditor extends AbstractDeltaView {
 				}
 			}
 		});
-		
-		updateScreen();
 	}
 	
 	private void characterEditPerformed() {
@@ -490,7 +501,7 @@ public class CharacterEditor extends AbstractDeltaView {
 		}
 		
 		SpinnerNumberModel model = (SpinnerNumberModel)spinner.getModel();
-		model.setMaximum(_dataSet.getNumberOfCharacters());
+		model.setMaximum(_dataSet.getNumberOfCharacters()+1);
 		model.setValue(_selectedCharacter.getCharacterId());
 		
 		// This check prevents update errors on the editor pane Document.
