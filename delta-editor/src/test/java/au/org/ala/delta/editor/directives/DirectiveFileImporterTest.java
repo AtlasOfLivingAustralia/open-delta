@@ -166,7 +166,7 @@ public class DirectiveFileImporterTest extends TestCase {
 			assertEquals(Integer.valueOf(ids[i]), (Integer)directive.getDirectiveArguments().get(i).getId());
 			assertTrue(StringUtils.isNotEmpty(directive.getDirectiveArguments().get(i).getText()));
 		}
-		assertEquals("\\pard\\li0\\fi340\\b{}Taxonomy, distribution.\\b0{}\n", directive.getDirectiveArguments().get(8).getText());
+		assertEquals("\\pard\\li0\\fi340\\b{}Taxonomy, distribution.\\b0{} ", directive.getDirectiveArguments().get(8).getText());
 		
 		// Next 5 are "INPUT FILE".
 		String[] files = {"cnotes", "ofonts", "cimages", "timages", "ofiles"};
