@@ -442,8 +442,8 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
                     int selectedIndex = _listUsedCharacters.getSelectedIndex();
                     if (selectedIndex >= 0) {
                         try {
-                            Character ch = (Character) _usedCharacterListModel.getElementAt(selectedIndex);
-                            executeDirective(new ChangeDirective(), Integer.toString(ch.getCharacterId()));
+                            CharacterValue chVal = (CharacterValue) _usedCharacterListModel.getElementAt(selectedIndex);
+                            executeDirective(new ChangeDirective(), Integer.toString(chVal.getCharacter().getCharacterId()));
                         } catch (Exception ex) {
                             ex.printStackTrace();
                         }

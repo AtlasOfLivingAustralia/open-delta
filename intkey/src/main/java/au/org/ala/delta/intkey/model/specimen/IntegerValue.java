@@ -8,14 +8,17 @@ import java.util.Set;
 import org.apache.commons.lang.math.IntRange;
 
 import au.org.ala.delta.model.IntegerCharacter;
+import au.org.ala.delta.model.format.Formatter;
 
 public class IntegerValue extends CharacterValue {
 
     private IntegerCharacter _character;
     private List<Integer> _values;
+    private Formatter _unitsFormatter;
 
     public IntegerValue(IntegerCharacter character, Set<Integer> values) {
         _character = character;
+        _unitsFormatter = new Formatter(true, false, false, true);
 
         int charMinimum = _character.getMinimumValue();
         int charMaximum = _character.getMaximumValue();
@@ -103,7 +106,7 @@ public class IntegerValue extends CharacterValue {
 
         if (_character.hasUnits()) {
             builder.append(" ");
-            builder.append(_character.getUnits());
+            builder.append(_unitsFormatter.defaultFormat(_character.getUnits()));
         }
 
         return builder.toString();

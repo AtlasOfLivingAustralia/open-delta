@@ -4,15 +4,18 @@ import org.apache.commons.lang.math.FloatRange;
 
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.RealCharacter;
+import au.org.ala.delta.model.format.Formatter;
 
 public class RealValue extends CharacterValue {
     
     private RealCharacter _character;
     private FloatRange _range;
+    private Formatter _unitsFormatter;
 
     public RealValue(RealCharacter character, FloatRange range) {
         _character = character;
         _range = range;
+        _unitsFormatter = new Formatter(true, false, false, true);
     }
     
     @Override
@@ -34,7 +37,7 @@ public class RealValue extends CharacterValue {
         
         if (_character.hasUnits()) {
             builder.append(" ");
-            builder.append(_character.getUnits());
+            builder.append(_unitsFormatter.defaultFormat(_character.getUnits()));
         }
         
         return builder.toString();
