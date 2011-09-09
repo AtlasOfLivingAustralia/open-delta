@@ -31,8 +31,9 @@ public class CharacterValidator extends DescriptionValidator {
 	}
 	
 	public ValidationResult validateDescription(String description) {
+
 		String plainText =  RTFUtils.stripFormatting((String) description).trim();
-		if (StringUtils.isEmpty(plainText)) {
+		if (StringUtils.isBlank(plainText)) {
 			return new ValidationResult("empty.character.description", 0);
 		} 
 		return validateComments(description);

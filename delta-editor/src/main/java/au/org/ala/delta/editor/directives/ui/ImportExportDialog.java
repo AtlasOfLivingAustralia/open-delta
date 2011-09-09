@@ -538,7 +538,7 @@ public class ImportExportDialog extends JDialog {
 	public void moveFromPossibleToOther() {
 		
 		for (Object file : possibleDirectivesList.getSelectedValues()) {
-			_model.include((String)file);
+			_model.include((DirectiveFileInfo)file);
 		}
 		updateUI();
 	}

@@ -32,11 +32,10 @@ public abstract class ImportExportViewModel {
 		_specsDisabled = false;
 	}
 
-	public void include(String file) {
-		DirectiveFileInfo directiveFile = new DirectiveFileInfo((String) file,
-				_selectedDirectiveType);
+	public void include(DirectiveFileInfo file) {
 
-		_includedDirectivesFiles.add(directiveFile);
+		file.setType(_selectedDirectiveType);
+		_includedDirectivesFiles.add(file);
 		_excludedDirectiveFiles.remove(file);
 	}
 

@@ -44,6 +44,10 @@ public abstract class CharacterEditTab extends JPanel {
 		super(layout, isDoubleBuffered);
 	}
 
+	public boolean isValid() {
+		return true;
+	}
+	
 	/**
 	 * Sets the Character for editing.
 	 * @param character the Character to edit.

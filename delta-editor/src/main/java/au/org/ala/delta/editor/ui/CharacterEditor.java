@@ -43,6 +43,7 @@ import au.org.ala.delta.editor.CharacterController;
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.ui.util.MessageDialogHelper;
 import au.org.ala.delta.editor.ui.validator.CharacterValidator;
+import au.org.ala.delta.editor.ui.validator.TextComponentValidator;
 import au.org.ala.delta.editor.ui.validator.ValidationResult;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterType;
@@ -288,7 +289,8 @@ public class CharacterEditor extends AbstractDeltaView {
 		controlledByEditor.bind(_dataSet, character);
 		controllingAttributeEditor.bind(_dataSet, character);
 		_validator = new CharacterValidator(_dataSet, _selectedCharacter);
-		
+		TextComponentValidator validator = new TextComponentValidator(CharacterValidator.descriptionValidator(_dataSet, character));
+		rtfEditor.setInputVerifier(validator);
 		updateScreen();
 	}
 	
