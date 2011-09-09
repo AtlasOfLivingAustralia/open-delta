@@ -27,6 +27,8 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.event.InternalFrameAdapter;
+import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
@@ -191,6 +193,14 @@ public class CharacterEditor extends AbstractDeltaView {
 		btnSelect.setAction(map.get("selectCharacterByName"));
 		
 		comboBox.setAction(map.get("characterTypeChanged"));
+		
+		// Give the item description text area focus.
+		addInternalFrameListener(new InternalFrameAdapter() {
+			@Override
+			public void internalFrameActivated(InternalFrameEvent e) {
+				rtfEditor.requestFocusInWindow();
+			}
+		});
 	}
 	
 	private void updateCharacterSelection(int characterNum) {

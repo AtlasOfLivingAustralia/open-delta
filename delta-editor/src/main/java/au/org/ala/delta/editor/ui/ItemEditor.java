@@ -95,10 +95,22 @@ public class ItemEditor extends AbstractDeltaView implements ValidationListener 
 		resources.injectFields(this);
 		ActionMap map = Application.getInstance().getContext().getActionMap(this);
 		createUI();
+		createItemForEmptyDataSet(model);
 		addEventHandlers(map);
 		bind(model);		
 	}
 
+	private void createItemForEmptyDataSet(EditorViewModel model) {
+		if (model.getMaximumNumberOfItems() == 0) {
+			addItem(model);
+		}
+	}
+	
+	private void addItem(EditorViewModel model) {
+		Item item = model.addItem();
+		model.setSelectedItem(item);
+	}
+	
 	/**
 	 * Adds the event handlers to the UI components.
 	 */
@@ -109,8 +121,8 @@ public class ItemEditor extends AbstractDeltaView implements ValidationListener 
 				if (_editsDisabled) {
 					return;
 				}
-				_selectedItem = _dataSet.getItem((Integer)spinner.getValue());
-				updateDisplay();
+				
+				updateItemSelection((Integer)spinner.getValue());
 			}
 		});
 		
@@ -129,6 +141,14 @@ public class ItemEditor extends AbstractDeltaView implements ValidationListener 
 			public void changedUpdate(DocumentEvent e) {
 				itemEditPerformed();
 			}
+		});
+		rtfEditor.addKeyListener(new SelectionNavigationKeyListener(){
+
+			@Override
+			protected void advanceSelection() {
+				_validator.verify(rtfEditor);
+			}
+			
 		});
 		taxonSelectionList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		taxonSelectionList.addListSelectionListener(new ListSelectionListener() {
@@ -156,6 +176,17 @@ public class ItemEditor extends AbstractDeltaView implements ValidationListener 
 			}
 		});
 	}
+	
+
+	private void updateItemSelection(int itemNum) {
+	 
+		if (itemNum > _dataSet.getMaximumNumberOfItems()) {
+			addItem(_dataSet);
+		}
+		_selectedItem = _dataSet.getItem(itemNum);
+		updateDisplay();
+	}
+	
 	
 	@Action
 	public void itemEditDone() {
@@ -316,13 +347,9 @@ public class ItemEditor extends AbstractDeltaView implements ValidationListener 
 		_selectedItem = dataSet.getSelectedItem();
 		imageDetails.bind(dataSet, _selectedItem);
 		_editingNewItem = StringUtils.isEmpty(_selectedItem.getDescription());
-		if (!_editingNewItem) {
-			rtfEditor.setInputVerifier(_validator);
-		}
-		else {
-			rtfEditor.setInputVerifier(null);
-		}
-	
+		
+		rtfEditor.setInputVerifier(_validator);
+
 		updateDisplay();
 	}
 	
@@ -348,7 +375,7 @@ public class ItemEditor extends AbstractDeltaView implements ValidationListener 
 		}
 		
 		SpinnerNumberModel model = (SpinnerNumberModel)spinner.getModel();
-		model.setMaximum(_dataSet.getMaximumNumberOfItems());
+		model.setMaximum(_dataSet.getMaximumNumberOfItems()+1);
 		model.setValue(_selectedItem.getItemNumber());
 		
 		
@@ -356,18 +383,24 @@ public class ItemEditor extends AbstractDeltaView implements ValidationListener 
 		
 		chckbxTreatAsVariant.setSelected(_selectedItem.isVariant());
 		imageDetails.bind(_dataSet, _selectedItem);
+		rtfEditor.requestFocusInWindow();
 		_editsDisabled = false;
 	}
 
 	@Override
 	public void validationSuceeded(ValidationResult results) {
 		btnDone.setEnabled(true);
+		spinner.setEnabled(true);
+		
 		_valid = true;
 	}
 
 	@Override
 	public void validationFailed(ValidationResult results) {
-		btnDone.setEnabled(false);
+		if (!_editingNewItem) {
+			btnDone.setEnabled(false);
+		}
+		spinner.setEnabled(false);
 		_valid = false;
 	}
 	
