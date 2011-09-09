@@ -9,6 +9,8 @@ import java.awt.LayoutManager2;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
@@ -61,6 +63,8 @@ public class ImageViewer extends ImagePanel implements LayoutManager2, ActionLis
 
     private Map<ImageOverlay, SelectableTextOverlay> _selectableTextOverlays;
 
+    private Map<ImageOverlay, OverlayButton> _overlayButtons;
+
     private TextFieldOverlay _inputField;
 
     /**
@@ -106,6 +110,11 @@ public class ImageViewer extends ImagePanel implements LayoutManager2, ActionLis
 
         _hotSpotGroups = new HashMap<ImageOverlay, HotSpotGroup>();
         _selectableTextOverlays = new HashMap<ImageOverlay, SelectableTextOverlay>();
+        _overlayButtons = new HashMap<ImageOverlay, OverlayButton>();
+
+        int maxButtonHeight = 0;
+        int maxButtonWidth = 0;
+
         for (ImageOverlay overlay : _overlays) {
             JComponent overlayComp = _factory.createOverlayComponent(overlay, _image);
 
@@ -116,7 +125,22 @@ public class ImageViewer extends ImagePanel implements LayoutManager2, ActionLis
             add(overlayComp, overlay.getLocation(0));
 
             if (overlayComp instanceof OverlayButton) {
-                ((OverlayButton) overlayComp).addActionListener(this);
+                OverlayButton button = (OverlayButton) overlayComp;
+                _overlayButtons.put(overlay, button);
+                button.addActionListener(this);
+
+                // Determine a maximum width and height to set as the preferred
+                // size
+                // on all buttons.
+                Dimension buttonPreferredSize = button.getPreferredSize();
+
+                if (maxButtonHeight < buttonPreferredSize.height) {
+                    maxButtonHeight = buttonPreferredSize.height;
+                }
+
+                if (maxButtonWidth < buttonPreferredSize.width) {
+                    maxButtonWidth = buttonPreferredSize.width;
+                }
             }
 
             if (overlayComp instanceof SelectableTextOverlay) {
@@ -130,6 +154,11 @@ public class ImageViewer extends ImagePanel implements LayoutManager2, ActionLis
             if (overlayComp instanceof TextFieldOverlay) {
                 _inputField = (TextFieldOverlay) overlayComp;
             }
+        }
+
+        Dimension buttonPreferredSize = new Dimension(maxButtonWidth, maxButtonHeight);
+        for (OverlayButton button : _overlayButtons.values()) {
+            button.setPreferredSize(buttonPreferredSize);
         }
 
         assignRelativeComponents();
