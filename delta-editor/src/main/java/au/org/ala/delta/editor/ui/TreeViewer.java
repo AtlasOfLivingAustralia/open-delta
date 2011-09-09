@@ -296,7 +296,7 @@ public class TreeViewer extends AbstractDeltaView {
 			int stateNum = nodeValue.getStateNo();
 			getEditingCheckBox().setText(_formatter.formatState(character, stateNum));
 
-			getEditingCheckBox().setSelected(multiStateAttr.isStatePresent(stateNum));
+			getEditingCheckBox().setSelected(multiStateAttr.isStateCoded(stateNum));
 			return editorComponent;
 		}
 

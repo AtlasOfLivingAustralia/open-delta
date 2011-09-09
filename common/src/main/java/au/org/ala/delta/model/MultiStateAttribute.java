@@ -26,6 +26,16 @@ public class MultiStateAttribute extends Attribute {
         return statePresent;
     }
     
+    /**
+     * Only returns true if the supplied state has been coded.
+     * This is in contrast to isStatePresent which will return true if the
+     * state number is the implicit value and this attribute is uncoded.
+     * @param stateNumber the state number to check.
+     */
+    public boolean isStateCoded(int stateNumber) {
+    	return _impl.isStatePresent(stateNumber);
+    }
+    
     public void setStatePresent(int stateNumber, boolean present) {
         _impl.setStatePresent(stateNumber, present);
         
