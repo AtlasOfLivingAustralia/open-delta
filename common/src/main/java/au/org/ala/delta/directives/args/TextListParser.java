@@ -91,7 +91,7 @@ public abstract class TextListParser<T> extends DirectiveArgsParser {
 		String value = "";
 		
 		if (_delimiter == 0) {
-		   value = readToNext(MARK_IDENTIFIER);
+		   value = cleanWhiteSpace(readToNext(MARK_IDENTIFIER));
 		}
 		else {
 			consumeWhiteSpace();
