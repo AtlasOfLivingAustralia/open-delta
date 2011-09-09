@@ -6,6 +6,7 @@ import java.util.Set;
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.ui.util.MessageDialogHelper;
 import au.org.ala.delta.model.CharacterDependency;
+import au.org.ala.delta.model.CircularDependencyException;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.format.CharacterDependencyFormatter;
 
@@ -53,6 +54,15 @@ public class CharacterDependencyController {
 		}
 		// TODO validate first.
 		characterDependency.setStates(states);
+	}
+	
+	public void addDependentCharacter(CharacterDependency characterDependency, au.org.ala.delta.model.Character dependent) {
+		try {
+			characterDependency.addDependentCharacter(dependent);
+		}
+		catch (CircularDependencyException e) {
+			_messageDialogHelper.displayCircularDependencyError();
+		}
 	}
 	
 	/**

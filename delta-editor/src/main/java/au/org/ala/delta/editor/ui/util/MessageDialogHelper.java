@@ -155,4 +155,10 @@ public class MessageDialogHelper {
 		return (String)JOptionPane.showInputDialog(_dialogParent, message, title, JOptionPane.PLAIN_MESSAGE, null, null, defaultLabel);
 
 	}
+
+	public void displayCircularDependencyError() {
+		String title = _messages.getString("circularDependencyError.title");
+		String message = _messages.getString("circularDependencyError.message");
+		JOptionPane.showMessageDialog(_dialogParent, message, title, JOptionPane.ERROR_MESSAGE);
+	}
 }

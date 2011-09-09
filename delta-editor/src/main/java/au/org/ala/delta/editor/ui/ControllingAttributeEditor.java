@@ -326,7 +326,8 @@ public class ControllingAttributeEditor extends CharacterDepencencyEditor {
 		
 		for (Object selected : selectedDependencies) {
 			Character dependent = (Character)selected;
-			_controllingAttribute.addDependentCharacter(dependent);
+			
+			_controller.addDependentCharacter(_controllingAttribute, dependent);
 		}
 		
 		selectedAttributeChanged();
