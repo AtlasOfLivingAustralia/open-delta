@@ -204,7 +204,8 @@ public class TextComponentValidator extends InputVerifier {
 	protected void updateTextStyles(JComponent component, ValidationResult validationResult) {
 		JTextComponent textComp = (JTextComponent)component;
 		if (!validationResult.isValid()) {
-			textComp.select(validationResult.getInvalidCharacterPosition(), textComp.getDocument().getLength());
+			// textComp.select(validationResult.getInvalidCharacterPosition(), textComp.getDocument().getLength());
+			textComp.select(validationResult.getInvalidCharacterPosition(), validationResult.getInvalidCharacterPosition() + 1);
 		}
 	}
 
