@@ -88,6 +88,8 @@ public class IntkeyContext extends AbstractDeltaContext {
     private boolean _matchInapplicables;
     private boolean _matchUnknowns;
     private MatchType _matchType;
+    
+    private DiagType _diagType;
 
     private int _tolerance;
 
@@ -182,6 +184,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         _matchInapplicables = true;
         _matchUnknowns = true;
         _matchType = MatchType.OVERLAP;
+        _diagType = DiagType.SPECIMENS;
 
         _tolerance = 0;
         _rbase = 1.1;
@@ -696,13 +699,11 @@ public class IntkeyContext extends AbstractDeltaContext {
 
         if (_dataset != null) {
             // Create a new blank specimen
-            _specimen = new Specimen(_dataset, _matchInapplicables, _matchInapplicables, _matchType);
+            _specimen = new Specimen(_dataset, _matchInapplicables, _matchUnknowns, _matchType);
 
             // As we are starting from the beginning, best characters must be
             // cleared as they are no longer valid
             _bestCharacters = null;
-
-            _tolerance = 0;
 
             _appUI.handleIdentificationRestarted();
         }
@@ -874,25 +875,33 @@ public class IntkeyContext extends AbstractDeltaContext {
     public boolean getMatchInapplicables() {
         return _matchInapplicables;
     }
+    
+    public void setMatchInapplicables(boolean matchInapplicables) {
+        _matchInapplicables = matchInapplicables;
+    }
 
     public boolean getMatchUnkowns() {
         return _matchUnknowns;
     }
 
+    public void setMatchUnknowns(boolean matchUnknowns) {
+        _matchUnknowns = matchUnknowns;
+    }
+    
     public MatchType getMatchType() {
         return _matchType;
     }
 
-    public void setMatchInapplicables(boolean matchInapplicables) {
-        _matchInapplicables = matchInapplicables;
-    }
-
-    public void setMatchUnknowns(boolean matchUnknowns) {
-        _matchUnknowns = matchUnknowns;
-    }
-
     public void setMatchType(MatchType matchType) {
         _matchType = matchType;
+    }
+    
+    public DiagType getDiagType() {
+        return _diagType;
+    }
+
+    public void setDiagType(DiagType diagType) {
+        this._diagType = diagType;
     }
 
     // Returns included characters ordered by character number

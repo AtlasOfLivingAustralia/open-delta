@@ -1,8 +1,10 @@
 package au.org.ala.delta.intkey.directives;
 
-import org.apache.commons.lang.StringUtils;
+import java.util.ArrayList;
+import java.util.List;
 
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
+import au.org.ala.delta.intkey.directives.invocation.RestartDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
 /**
@@ -12,30 +14,28 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
  * @author ChrisF
  * 
  */
-public class RestartDirective extends IntkeyDirective {
+public class RestartDirective extends NewIntkeyDirective {
 
     public RestartDirective() {
         super("restart");
     }
 
     @Override
-    protected IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
-        // TODO this is a stub, need to handle optional switches here.
-
-        return new RestartDirectiveInvocation();
+    protected List<IntkeyDirectiveArgument<?>> generateArgumentsList(IntkeyContext context) {
+        return null;
     }
 
-    class RestartDirectiveInvocation implements IntkeyDirectiveInvocation {
+    @Override
+    protected List<IntkeyDirectiveFlag> buildFlagsList() {
+        List<IntkeyDirectiveFlag> flags = new ArrayList<IntkeyDirectiveFlag>();
+        flags.add(new IntkeyDirectiveFlag('I', "identificationParameters"));
+        flags.add(new IntkeyDirectiveFlag('Q', "queryParameters"));
+        flags.add(new IntkeyDirectiveFlag('T', "zeroTolerance"));
+        return flags;
+    }
 
-        @Override
-        public boolean execute(IntkeyContext context) {
-            context.restartIdentification();
-            return true;
-        }
-
-        @Override
-        public String toString() {
-            return StringUtils.join(_controlWords, " ").toUpperCase();
-        }
+    @Override
+    protected IntkeyDirectiveInvocation buildCommandObject() {
+        return new RestartDirectiveInvocation();
     }
 }

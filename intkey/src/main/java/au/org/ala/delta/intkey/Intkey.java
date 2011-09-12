@@ -64,6 +64,7 @@ import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.Logger;
+import au.org.ala.delta.directives.AbstractDirective;
 import au.org.ala.delta.intkey.directives.ChangeDirective;
 import au.org.ala.delta.intkey.directives.DifferencesDirective;
 import au.org.ala.delta.intkey.directives.DirectivePopulator;
@@ -1042,7 +1043,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     // =========================================================================================
 
-    private void executeDirective(IntkeyDirective dir, String data) {
+    private void executeDirective(AbstractDirective<IntkeyContext> dir, String data) {
         try {
             dir.parseAndProcess(_context, data);
         } catch (IntkeyDirectiveParseException ex) {

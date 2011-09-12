@@ -60,23 +60,31 @@ public abstract class NewIntkeyDirective extends AbstractDirective<IntkeyContext
                 boolean tokenMatched = false;
                 String token = tokenQueue.peek();
 
-                for (IntkeyDirectiveFlag flag : _intkeyFlagsList) {
-                    if (token.equalsIgnoreCase("/" + flag.getSymbol())) {
-                        BeanUtils.setProperty(invoc, flag.getName(), true);
-                        tokenQueue.remove();
-                        tokenMatched = true;
-                        break;
+                if (token != null) {
+                    for (IntkeyDirectiveFlag flag : _intkeyFlagsList) {
+                        if (token.equalsIgnoreCase("/" + flag.getSymbol())) {
+                            BeanUtils.setProperty(invoc, flag.getName(), true);
+                            tokenQueue.remove();
+                            tokenMatched = true;
+                            break;
+                        }
                     }
-                }
 
-                matchingFlags = tokenMatched;
+                    matchingFlags = tokenMatched;
+                } else {
+                    matchingFlags = false;
+                }
             }
         }
-        
-        // The arguments list needs to be generated each time a call to the directive is processed. This is
-        // because most arguments need to have provided with an initial value which is used when prompting the user.
-        // This initial value needs to be read out of the IntkeyContext at the time of parsing.
-        // E.g. the integer argument for the SET TOLERANCE directive will have an initial value equal to the
+
+        // The arguments list needs to be generated each time a call to the
+        // directive is processed. This is
+        // because most arguments need to have provided with an initial value
+        // which is used when prompting the user.
+        // This initial value needs to be read out of the IntkeyContext at the
+        // time of parsing.
+        // E.g. the integer argument for the SET TOLERANCE directive will have
+        // an initial value equal to the
         // the value of the tolerance setting before the call to the directive.
         List<IntkeyDirectiveArgument<?>> intkeyArgsList = generateArgumentsList(context);
 
