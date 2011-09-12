@@ -42,6 +42,9 @@ public class TaxonListArgument extends IntkeyDirectiveArgument<List<Item>> {
                 selectionMode = SelectionMode.KEYWORD;
             } else if (token.equalsIgnoreCase(LIST_DIALOG_WILDCARD)) {
                 selectionMode = SelectionMode.LIST;
+            } else if (token.endsWith(LIST_DIALOG_AUTO_SELECT_SOLE_ITEM_WILDCARD)) {
+                selectionMode = SelectionMode.LIST;
+                //TODO fully implement ?L1 wildcard
             } else {
                 taxa = new ArrayList<Item>();
                 while (token != null) {

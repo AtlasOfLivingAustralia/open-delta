@@ -12,7 +12,7 @@ public class SetFixDirectiveInvocation implements IntkeyDirectiveInvocation {
 
     @Override
     public boolean execute(IntkeyContext context) {
-        System.out.println(value);
+        context.setFixCharacterValues(value);
         return true;
     }
 

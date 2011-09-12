@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -88,7 +87,7 @@ public class IntkeyContext extends AbstractDeltaContext {
     private boolean _matchInapplicables;
     private boolean _matchUnknowns;
     private MatchType _matchType;
-    
+
     private DiagType _diagType;
 
     private int _tolerance;
@@ -110,6 +109,9 @@ public class IntkeyContext extends AbstractDeltaContext {
     private List<Pair<String, String>> _taxonInformationDialogCommands;
 
     private IntkeyDirectiveParser _directiveParser;
+
+    private boolean _fixCharacterValues;
+    private Set<Integer> _fixedCharacters;
 
     /**
      * Should executed directives be recorded in the history?
@@ -198,6 +200,8 @@ public class IntkeyContext extends AbstractDeltaContext {
         _infoPathLocations = new ArrayList<String>();
 
         _taxonInformationDialogCommands = new ArrayList<Pair<String, String>>();
+
+        _fixCharacterValues = false;
     }
 
     /**
@@ -875,7 +879,7 @@ public class IntkeyContext extends AbstractDeltaContext {
     public boolean getMatchInapplicables() {
         return _matchInapplicables;
     }
-    
+
     public void setMatchInapplicables(boolean matchInapplicables) {
         _matchInapplicables = matchInapplicables;
     }
@@ -887,7 +891,7 @@ public class IntkeyContext extends AbstractDeltaContext {
     public void setMatchUnknowns(boolean matchUnknowns) {
         _matchUnknowns = matchUnknowns;
     }
-    
+
     public MatchType getMatchType() {
         return _matchType;
     }
@@ -895,7 +899,7 @@ public class IntkeyContext extends AbstractDeltaContext {
     public void setMatchType(MatchType matchType) {
         _matchType = matchType;
     }
-    
+
     public DiagType getDiagType() {
         return _diagType;
     }
@@ -1136,6 +1140,26 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     public DirectivePopulator getDirectivePopulator() {
         return _directivePopulator;
+    }
+
+    public boolean getFixCharacterValues() {
+        return _fixCharacterValues;
+    }
+
+    public void setFixCharacterValues(boolean fixCharacterValues) {
+        if (fixCharacterValues != this._fixCharacterValues) {
+            this._fixCharacterValues = fixCharacterValues;
+            if (_fixCharacterValues) {
+                _fixedCharacters = new HashSet<Integer>();
+            } else {
+                _fixedCharacters = null;
+                restartIdentification();
+            }
+        }
+    }
+    
+    public List<Character> getFixedCharacters() {
+        return null;
     }
 
     private class StartupFileLoader extends SwingWorker<Void, String> {

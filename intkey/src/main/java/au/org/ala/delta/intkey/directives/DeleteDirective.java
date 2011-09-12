@@ -3,14 +3,13 @@ package au.org.ala.delta.intkey.directives;
 import java.util.ArrayList;
 import java.util.List;
 
-import au.org.ala.delta.intkey.directives.invocation.IncludeCharactersDirectiveInvocation;
+import au.org.ala.delta.intkey.directives.invocation.DeleteDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class IncludeCharactersDirective extends NewIntkeyDirective {
-    
-    public IncludeCharactersDirective() {
-        super("include", "characters");
+public class DeleteDirective extends NewIntkeyDirective {
+    public DeleteDirective() {
+        super("delete");
     }
 
     @Override
@@ -22,11 +21,13 @@ public class IncludeCharactersDirective extends NewIntkeyDirective {
 
     @Override
     protected List<IntkeyDirectiveFlag> buildFlagsList() {
-        return null;
+        List<IntkeyDirectiveFlag> flags = new ArrayList<IntkeyDirectiveFlag>();
+        flags.add(new IntkeyDirectiveFlag('M', "suppressUnusedCharacterWarning"));
+        return flags;
     }
 
     @Override
     protected IntkeyDirectiveInvocation buildCommandObject() {
-        return new IncludeCharactersDirectiveInvocation();
+        return new DeleteDirectiveInvocation();
     }
 }

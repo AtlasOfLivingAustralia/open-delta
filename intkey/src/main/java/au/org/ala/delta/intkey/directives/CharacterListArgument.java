@@ -23,8 +23,6 @@ public class CharacterListArgument extends IntkeyDirectiveArgument<List<au.org.a
     public List<au.org.ala.delta.model.Character> parseInput(Queue<String> inputTokens, IntkeyContext context, String directiveName) throws IntkeyDirectiveParseException {
         boolean overrideExcludedCharacters = false;
 
-        
-
         String token = inputTokens.poll();
         if (token != null && token.equalsIgnoreCase(OVERRIDE_EXCLUDED_CHARACTERS)) {
             overrideExcludedCharacters = true;
