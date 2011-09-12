@@ -194,16 +194,19 @@ public class AttributeEditor extends JPanel implements ValidationListener, Prefe
 		JSplitPane split = new JSplitPane();
 
 		_textPane = new RtfEditor();
+		
 		_characterDetailsTable = new JTable();
 		_characterDetailsTable.setShowGrid(false);
 
 		JScrollPane scrollPane = new JScrollPane(_textPane);
+		scrollPane.setMinimumSize(new Dimension(200,50));
 		split.setLeftComponent(scrollPane);
 
 		split.setRightComponent(_characterDetailsTable);
 
 		split.setDividerLocation(300);
 		split.setResizeWeight(0.5);
+		
 
 		RtfToolBar toolbar = new RtfToolBar(_owner);
 		toolbar.addEditor(_textPane);
