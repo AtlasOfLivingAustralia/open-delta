@@ -51,14 +51,13 @@ public class DocumentBuildingRtfHandler extends RTFHandlerAdapter {
 	private List<Color> _colors = new ArrayList<Color>();
 
 	private Color _defaultColor = Color.BLACK;
-	
+
 	private JComponent _owner;
 
 	/**
 	 * Set by the "deffN" keyword
 	 */
-	private int _defaultFont = 0;
-	
+	private int _defaultFontIndex = 0;
 
 	/**
 	 * 
@@ -69,6 +68,7 @@ public class DocumentBuildingRtfHandler extends RTFHandlerAdapter {
 	 */
 	public DocumentBuildingRtfHandler(DefaultStyledDocument document, int position, JComponent owner) {
 		configureAttributeHandlers();
+
 		_currentCharacterAttributes = new SimpleAttributeSet();
 		_currentParagraphAttributes = new SimpleAttributeSet();
 		addDefaultFontIfMissing(_currentParagraphAttributes);
@@ -78,10 +78,9 @@ public class DocumentBuildingRtfHandler extends RTFHandlerAdapter {
 		_position = position;
 		_owner = owner;
 		if (_owner != null) {
-		    _defaultColor = _owner.getForeground();
+			_defaultColor = _owner.getForeground();
 		}
 	}
-	
 
 	private void configureAttributeHandlers() {
 		_attributeHandlers.put(CharacterAttributeType.Bold.keyword(), new SimpleBooleanAttributeHandler(StyleConstants.Bold));
@@ -107,7 +106,7 @@ public class DocumentBuildingRtfHandler extends RTFHandlerAdapter {
 	public void onKeyword(String keyword, boolean hasParam, int param) {
 		// default font keyword
 		if (keyword.equals("deff")) {
-			_defaultFont = param;
+			_defaultFontIndex = param;
 		}
 	}
 
@@ -215,8 +214,8 @@ public class DocumentBuildingRtfHandler extends RTFHandlerAdapter {
 			// Use the default font if one has not been set
 			if (copyAttributes.getAttribute(StyleConstants.FontFamily) == null) {
 				// ensure that the index for the default font is a valid index
-				if (_fontFamilyNames.size() - 1 >= _defaultFont) {
-					copyAttributes.addAttribute(StyleConstants.FontFamily, _fontFamilyNames.get(_defaultFont));
+				if (_fontFamilyNames.size() - 1 >= _defaultFontIndex) {
+					copyAttributes.addAttribute(StyleConstants.FontFamily, _fontFamilyNames.get(_defaultFontIndex));
 				}
 			}
 
@@ -233,7 +232,7 @@ public class DocumentBuildingRtfHandler extends RTFHandlerAdapter {
 			throw new RuntimeException("Parsing the RTF document failed!", e);
 		}
 	}
-	
+
 	private void addDefaultFontIfMissing(MutableAttributeSet set) {
 		if (set.getAttribute(StyleConstants.FontFamily) == null) {
 			if (_owner != null) {
@@ -242,18 +241,15 @@ public class DocumentBuildingRtfHandler extends RTFHandlerAdapter {
 					set.addAttribute(StyleConstants.FontConstants.FontFamily, f.getFamily());
 					if (set.getAttribute(StyleConstants.FontSize) == null) {
 						set.addAttribute(StyleConstants.FontConstants.FontSize, f.getSize());
-					}					
+					}
 				}
 			}
-		}		
+		}
 	}
-	
 
 	@Override
 	public void endParagraph() {
-		
-		// addDefaultFontIfMissing(_currentCharacterAttributes);
-				
+		addDefaultFontIfMissing(_currentParagraphAttributes);
 		_document.setParagraphAttributes(_document.getLength(), 1, _currentParagraphAttributes, true);
 		_textBuffer.append("\n");
 		appendToDocument();
@@ -483,6 +479,5 @@ public class DocumentBuildingRtfHandler extends RTFHandlerAdapter {
 			newAttributes.addAttribute(StyleConstants.Alignment, _alignmentAttribute);
 		}
 	}
-	
 
 }

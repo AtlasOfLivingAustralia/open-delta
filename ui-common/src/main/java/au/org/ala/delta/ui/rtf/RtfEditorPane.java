@@ -34,7 +34,6 @@ public class RtfEditorPane extends JTextPane {
 	 */
 	public RtfEditorPane() {
 		setEditorKit(new SimpleRtfEditorKit(this));
-		// setTransferHandler(new SimpleRtfTransferHandler());
 	}
 
 	/**
