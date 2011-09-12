@@ -35,7 +35,7 @@ public class RichTextLabel extends JPanel implements OverlayLocationProvider {
 	public RichTextLabel(ImageOverlay overlay, String text) {
 	    _text = text;
 		_overlay = overlay;
-		_editor = new RtfEditorPane();
+		_editor = new RtfEditorPane(overlay.centreText());		
 		
 		_editor.setEditable(false);
 		_editor.setBackground(Color.WHITE);
@@ -43,7 +43,7 @@ public class RichTextLabel extends JPanel implements OverlayLocationProvider {
 		_editor.setBorder(null);
 		_editor.setOpaque(true);
 		_editor.setFont(UIManager.getFont("Label.font"));
-		
+				
 		_editor.setText(_text);	
 		_editor.setHighlighter(null);
 		_editor.setDragEnabled(false);

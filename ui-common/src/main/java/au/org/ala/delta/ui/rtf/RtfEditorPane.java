@@ -35,6 +35,10 @@ public class RtfEditorPane extends JTextPane {
 	public RtfEditorPane() {
 		setEditorKit(new SimpleRtfEditorKit(this));
 	}
+	
+	public RtfEditorPane(boolean centreVertically) {
+		setEditorKit(new SimpleRtfEditorKit(this, centreVertically));
+	}
 
 	/**
 	 * @return a String containing the text in this RtfEditorPane's document, inclusive of RTF formatting characters. Note that this method strips the RTF header and attributes (such as font table
