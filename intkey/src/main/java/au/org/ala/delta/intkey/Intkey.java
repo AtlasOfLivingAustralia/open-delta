@@ -1498,7 +1498,8 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         }
 
         JButton button = new JButton(icon);
-        button.setToolTipText(shortHelp);
+        //button.setToolTipText(shortHelp);
+        button.setToolTipText(commands.toString());
         button.setMargin(new Insets(0, 0, 0, 0));
         _pnlDynamicButtons.add(button);
 
@@ -1650,7 +1651,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     }
 
     @Override
-    public List<Character> promptForTaxaByList(String directiveName, boolean selectFromAll, boolean selectIncludedCharactersOnly) {
+    public List<Item> promptForTaxaByList(String directiveName, boolean selectFromAll, boolean selectIncludedCharactersOnly) {
         // TODO Auto-generated method stub
         return null;
     }

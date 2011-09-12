@@ -14,6 +14,7 @@
  ******************************************************************************/
 package au.org.ala.delta;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import au.org.ala.delta.directives.AbstractDirective;
@@ -22,10 +23,13 @@ import au.org.ala.delta.directives.DirectiveSearchResult.ResultType;
 
 public class Tree {
 
+    private boolean _matchShortControlWords;
+
     private TreeNodeList _toplevel;
 
     public Tree() {
         _toplevel = new TreeNodeList(null, "ROOT");
+        _matchShortControlWords = false;
     }
 
     @SuppressWarnings("rawtypes")
@@ -40,7 +44,7 @@ public class Tree {
 
             if (p.getChildren().containsKey(key)) {
                 TreeNode n = p.getChildren().get(key);
-                if (n instanceof DirectiveTreeNode && i == words.length-1) {
+                if (n instanceof DirectiveTreeNode && i == words.length - 1) {
                     throw new RuntimeException("Directive tree already contains directive: " + directive.toString());
                 } else {
                     p = (TreeNodeList) n;
@@ -56,17 +60,31 @@ public class Tree {
 
     public DirectiveSearchResult findDirective(List<String> controlWords) {
         TreeNodeList p = _toplevel;
-        for (int i=0; i<controlWords.size(); i++) {
-     
+        for (int i = 0; i < controlWords.size(); i++) {
+
             String key = makeKey(controlWords.get(i));
             if (p.getChildren().containsKey(key)) {
                 TreeNode n = p.getChildren().get(key);
-                if (i == controlWords.size()-1 && n instanceof DirectiveTreeNode) {
+                if (i == controlWords.size() - 1 && n instanceof DirectiveTreeNode) {
                     return new DirectiveSearchResult(ResultType.Found, ((DirectiveTreeNode) n).getDirective());
                 } else {
                     p = (TreeNodeList) n;
                 }
             } else {
+                if (_matchShortControlWords) {
+                    List<String> matchedKeys = new ArrayList<String>();
+                    for (String nodeKey : p.getChildren().keySet()) {
+                        if (nodeKey.startsWith(key)) {
+                            matchedKeys.add(nodeKey);
+                        }
+                    }
+
+                    if (matchedKeys.size() == 1) {
+                        TreeNode n = p.getChildren().get(matchedKeys.get(0));
+                        return new DirectiveSearchResult(ResultType.Found, ((DirectiveTreeNode) n).getDirective());
+                    }
+                }
+
                 return new DirectiveSearchResult(ResultType.NotFound, null);
             }
         }
@@ -87,13 +105,17 @@ public class Tree {
     public void dump() {
         _toplevel.dump(0);
     }
-    
+
     public void visit(TreeVisitor visitor) {
-    	_toplevel.visit(visitor);
+        _toplevel.visit(visitor);
+    }
+
+    public static interface TreeVisitor {
+        void visit(TreeNode node);
     }
     
-    public static interface TreeVisitor {
-    	void visit(TreeNode node);
+    public void setMatchShortControlWords(boolean matchShortControlWords) {
+        this._matchShortControlWords = matchShortControlWords;
     }
 
 }

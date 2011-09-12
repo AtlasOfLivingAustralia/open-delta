@@ -19,6 +19,10 @@ public class IntkeyDirectiveParser extends DirectiveParser<IntkeyContext> {
 
     // private constructor - use factory method to get an instance.
     private IntkeyDirectiveParser() {
+        // Intkey needs to be able to match supplied control words of less
+        // than the standard 3 characters, e.g. "INCLUDE T" should match the
+        // "INCLUDE TAXA" directive.
+        getDirectiveTree().setMatchShortControlWords(true);
     }
 
     public static IntkeyDirectiveParser createInstance() {
