@@ -357,7 +357,7 @@ public class CharacterEditor extends AbstractDeltaView {
 		JLabel lblCharacterType = new JLabel("Character Type:");
 		lblCharacterType.setName("characterTypeLabel");
 		
-		RtfToolBar toolbar = new RtfToolBar();
+		RtfToolBar toolbar = new RtfToolBar(this);
 		createTabbedPane(toolbar);
 		
 		JPanel mainPanel = new JPanel();

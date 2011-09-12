@@ -30,6 +30,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.DefaultCellEditor;
 import javax.swing.InputVerifier;
 import javax.swing.JCheckBox;
+import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -93,12 +94,14 @@ public class AttributeEditor extends JPanel implements ValidationListener, Prefe
 
 	private boolean _inapplicable;
 	
+	private JInternalFrame _owner;
+	
 	/**
 	 * Creates a new AttributeEditor using the supplied EditorDataModel.
 	 * @param dataSet the model for the AttributeEditor.
 	 */
-	public AttributeEditor(EditorViewModel dataSet) {
-
+	public AttributeEditor(EditorViewModel dataSet, JInternalFrame owner) {		
+		_owner = owner;
 		ActionMap actions = Application.getInstance().getContext().getActionMap(this);
 		
 		_dataSet = dataSet;
@@ -202,7 +205,7 @@ public class AttributeEditor extends JPanel implements ValidationListener, Prefe
 		split.setDividerLocation(300);
 		split.setResizeWeight(0.5);
 
-		RtfToolBar toolbar = new RtfToolBar();
+		RtfToolBar toolbar = new RtfToolBar(_owner);
 		toolbar.addEditor(_textPane);
 		add(toolbar, BorderLayout.NORTH);
 		

@@ -220,7 +220,7 @@ public class MatrixViewer extends AbstractDeltaView {
 		content.setDividerSize(4);
 		content.setDividerLocation(180);
 
-		_attributeEditor = new AttributeEditor(_dataSet);
+		_attributeEditor = new AttributeEditor(_dataSet, this);
 
 		final JSplitPane divider = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		divider.setResizeWeight(1);

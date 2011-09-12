@@ -176,7 +176,7 @@ public class TreeViewer extends AbstractDeltaView {
 		content.setRightComponent(new JScrollPane(_tree));
 		content.setLeftComponent(new JScrollPane(_itemList));
 
-		_stateEditor = new AttributeEditor(_dataModel);
+		_stateEditor = new AttributeEditor(_dataModel, this);
 
 		final JSplitPane divider = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 

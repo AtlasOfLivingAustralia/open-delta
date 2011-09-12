@@ -326,7 +326,7 @@ public class ItemEditor extends AbstractDeltaView implements ValidationListener 
 		setPreferredSize(new Dimension(827, 500));
 		setMinimumSize(new Dimension(748, 444));
 
-		RtfToolBar toolbar = new RtfToolBar();
+		RtfToolBar toolbar = new RtfToolBar(this);
 		toolbar.addEditor(rtfEditor);
 		getContentPane().add(toolbar, BorderLayout.NORTH);
 		getContentPane().add(content, BorderLayout.CENTER);
