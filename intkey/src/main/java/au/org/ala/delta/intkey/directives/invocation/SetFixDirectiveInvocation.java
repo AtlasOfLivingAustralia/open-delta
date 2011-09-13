@@ -12,7 +12,18 @@ public class SetFixDirectiveInvocation implements IntkeyDirectiveInvocation {
 
     @Override
     public boolean execute(IntkeyContext context) {
-        context.setFixCharacterValues(value);
+        
+        if (value == true && context.charactersFixed()) {
+            context.getUI().displayErrorMessage("Characters already fixed.");
+            return false;
+        }        
+        
+        if (value == true && context.getUsedCharacters().isEmpty()) {
+            context.getUI().displayErrorMessage("No characters in specimen description to fix.");
+            return false;
+        }
+        
+        context.setCharactersFixed(value);
         return true;
     }
 

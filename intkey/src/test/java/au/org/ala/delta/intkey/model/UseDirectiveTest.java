@@ -1,13 +1,8 @@
 package au.org.ala.delta.intkey.model;
 
-import java.io.File;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-import junit.framework.TestCase;
 
 import org.apache.commons.lang.math.FloatRange;
 import org.junit.Test;
@@ -15,8 +10,6 @@ import org.junit.Test;
 import au.org.ala.delta.intkey.Intkey;
 import au.org.ala.delta.intkey.directives.IntkeyDirectiveParseException;
 import au.org.ala.delta.intkey.directives.UseDirective;
-import au.org.ala.delta.intkey.model.IntkeyContext;
-import au.org.ala.delta.intkey.model.IntkeyDataset;
 import au.org.ala.delta.intkey.model.specimen.IntegerValue;
 import au.org.ala.delta.intkey.model.specimen.MultiStateValue;
 import au.org.ala.delta.intkey.model.specimen.RealValue;

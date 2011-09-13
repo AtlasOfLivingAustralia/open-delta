@@ -384,9 +384,19 @@ public class UseDirective extends IntkeyDirective {
         }
 
         private boolean checkCharacterUsable(Character ch, IntkeyContext context, boolean warnAlreadySet) {
-            CharacterFormatter formatter = new CharacterFormatter(false, false, false, true, true);
+            CharacterFormatter formatter = new CharacterFormatter(true, false, false, true, true);
 
-            // TODO is character fixed?
+            // is character fixed?
+            if (context.charactersFixed()) {
+                if (context.getFixedCharactersList().contains(ch.getCharacterId())) {
+                    if (!context.isProcessingInputFile()) {
+                        String msg = String.format(UIUtils.getResourceString("UseDirective.CharacterFixed"), formatter.formatCharacterDescription(ch));
+                        String title = String.format(UIUtils.getResourceString("Intkey.informationDlgTitle"), formatter.formatCharacterDescription(ch));
+                        JOptionPane.showMessageDialog(UIUtils.getMainFrame(), msg, title, JOptionPane.ERROR_MESSAGE);
+                    }
+                    return false;
+                }
+            }
 
             // is character already used?
             if (warnAlreadySet) {

@@ -110,8 +110,8 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     private IntkeyDirectiveParser _directiveParser;
 
-    private boolean _fixCharacterValues;
-    private Set<Integer> _fixedCharacters;
+    private boolean _charactersFixed;
+    private List<Integer> _fixedCharactersList;
 
     /**
      * Should executed directives be recorded in the history?
@@ -201,7 +201,7 @@ public class IntkeyContext extends AbstractDeltaContext {
 
         _taxonInformationDialogCommands = new ArrayList<Pair<String, String>>();
 
-        _fixCharacterValues = false;
+        _charactersFixed = false;
     }
 
     /**
@@ -436,6 +436,12 @@ public class IntkeyContext extends AbstractDeltaContext {
     public void removeValueForCharacter(Character ch) {
         Logger.log("Deleting character");
         _specimen.removeValueForCharacter(ch);
+
+        if (_charactersFixed) {
+            // Need to manually box the int - otherwise will use the character
+            // id as an index.
+            _fixedCharactersList.remove(Integer.valueOf(ch.getCharacterId()));
+        }
     }
 
     /**
@@ -702,8 +708,20 @@ public class IntkeyContext extends AbstractDeltaContext {
         // TODO need to account for fixed characters etc here.
 
         if (_dataset != null) {
+
+            Specimen oldSpecimen = _specimen;
+
             // Create a new blank specimen
             _specimen = new Specimen(_dataset, _matchInapplicables, _matchUnknowns, _matchType);
+
+            // Any character values that have been fixed need to be copied into
+            // the new specimen
+            if (_charactersFixed) {
+                for (int characterNumber : _fixedCharactersList) {
+                    Character ch = _dataset.getCharacter(characterNumber);
+                    _specimen.setValueForCharacter(ch, oldSpecimen.getValueForCharacter(ch));
+                }
+            }
 
             // As we are starting from the beginning, best characters must be
             // cleared as they are no longer valid
@@ -1142,24 +1160,31 @@ public class IntkeyContext extends AbstractDeltaContext {
         return _directivePopulator;
     }
 
-    public boolean getFixCharacterValues() {
-        return _fixCharacterValues;
+    public boolean charactersFixed() {
+        return _charactersFixed;
     }
 
-    public void setFixCharacterValues(boolean fixCharacterValues) {
-        if (fixCharacterValues != this._fixCharacterValues) {
-            this._fixCharacterValues = fixCharacterValues;
-            if (_fixCharacterValues) {
-                _fixedCharacters = new HashSet<Integer>();
+    public void setCharactersFixed(boolean charactersFixed) {
+        if (charactersFixed != this._charactersFixed) {
+            this._charactersFixed = charactersFixed;
+            if (_charactersFixed) {
+                _fixedCharactersList = new ArrayList<Integer>();
+                for (Character usedCharacter : getUsedCharacters()) {
+                    _fixedCharactersList.add(usedCharacter.getCharacterId());
+                }
             } else {
-                _fixedCharacters = null;
+                _fixedCharactersList = null;
                 restartIdentification();
             }
         }
     }
-    
-    public List<Character> getFixedCharacters() {
-        return null;
+
+    /**
+     * @return A list of character ids for the characters that have been fixed,
+     *         or null if characters have not been fixed.
+     */
+    public List<Integer> getFixedCharactersList() {
+        return _fixedCharactersList;
     }
 
     private class StartupFileLoader extends SwingWorker<Void, String> {

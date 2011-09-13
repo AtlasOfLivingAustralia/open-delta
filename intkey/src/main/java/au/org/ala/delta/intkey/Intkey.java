@@ -444,6 +444,11 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
                     if (selectedIndex >= 0) {
                         try {
                             CharacterValue chVal = (CharacterValue) _usedCharacterListModel.getElementAt(selectedIndex);
+
+                            if (_context.charactersFixed() && _context.getFixedCharactersList().contains(chVal.getCharacter().getCharacterId())) {
+                                return;
+                            }
+
                             executeDirective(new ChangeDirective(), Integer.toString(chVal.getCharacter().getCharacterId()));
                         } catch (Exception ex) {
                             ex.printStackTrace();
@@ -1498,7 +1503,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         }
 
         JButton button = new JButton(icon);
-        //button.setToolTipText(shortHelp);
+        // button.setToolTipText(shortHelp);
         button.setToolTipText(commands.toString());
         button.setMargin(new Insets(0, 0, 0, 0));
         _pnlDynamicButtons.add(button);
