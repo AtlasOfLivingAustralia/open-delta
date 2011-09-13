@@ -3,6 +3,7 @@ package au.org.ala.delta.intkey;
 import java.util.List;
 
 import au.org.ala.delta.intkey.model.IntkeyDataset;
+import au.org.ala.delta.model.Item;
 
 public interface IntkeyUI {
 
@@ -29,4 +30,8 @@ public interface IntkeyUI {
     void addToolbarSpace();
     
     void clearToolbar();
+    
+    void IllustrateCharacters(List<au.org.ala.delta.model.Character> characters);
+    
+    void IllustrateTaxa(List<Item> taxa);
 }

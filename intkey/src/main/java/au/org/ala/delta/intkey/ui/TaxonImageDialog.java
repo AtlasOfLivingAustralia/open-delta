@@ -52,6 +52,10 @@ public class TaxonImageDialog extends ImageDialog {
         ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(TaxonImageDialog.class);
         resourceMap.injectFields(this);
         buildMenu();
+
+        if (!_taxa.isEmpty()) {
+            displayImagesForTaxon(0);
+        }
     }
 
     private void buildMenu() {
@@ -90,13 +94,13 @@ public class TaxonImageDialog extends ImageDialog {
 
     private void updateTitle() {
         Item selectedTaxon = _taxa.get(_selectedTaxonIndex);
-        
+
         String formattedTaxonName = _itemFormatter.formatItemDescription(selectedTaxon);
         String formattedImageName = _imageDescriptionFormatter.defaultFormat(_multipleImageViewer.getVisibleViewer().getViewedImage().getSubjectTextOrFileName());
-        
+
         setTitle(String.format("%s: %s", formattedTaxonName, formattedImageName));
     }
-    
+
     @Override
     protected void handleNewImageSelected() {
         super.handleNewImageSelected();

@@ -91,7 +91,13 @@ public abstract class NewIntkeyDirective extends AbstractDirective<IntkeyContext
         if (intkeyArgsList != null) {
             for (IntkeyDirectiveArgument<?> arg : intkeyArgsList) {
                 Object parsedArgumentValue = arg.parseInput(tokenQueue, context, StringUtils.join(_controlWords, " "));
-                BeanUtils.setProperty(invoc, arg.getName(), parsedArgumentValue);
+                if (parsedArgumentValue != null) {
+                    BeanUtils.setProperty(invoc, arg.getName(), parsedArgumentValue);
+                } else {
+                    // No argument value supplied, user cancelled out of the
+                    // prompt dialog.
+                    return;
+                }
             }
         }
 

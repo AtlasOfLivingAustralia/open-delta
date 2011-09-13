@@ -106,8 +106,10 @@ import au.org.ala.delta.intkey.ui.ReExecuteDialog;
 import au.org.ala.delta.intkey.ui.RealInputDialog;
 import au.org.ala.delta.intkey.ui.RtfReportDisplayDialog;
 import au.org.ala.delta.intkey.ui.TaxonCellRenderer;
+import au.org.ala.delta.intkey.ui.TaxonImageDialog;
 import au.org.ala.delta.intkey.ui.TaxonInformationDialog;
 import au.org.ala.delta.intkey.ui.TaxonKeywordSelectionDialog;
+import au.org.ala.delta.intkey.ui.TaxonSelectionDialog;
 import au.org.ala.delta.intkey.ui.TaxonWithDifferenceCountCellRenderer;
 import au.org.ala.delta.intkey.ui.TextInputDialog;
 import au.org.ala.delta.intkey.ui.UIUtils;
@@ -1578,6 +1580,17 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         _pnlDynamicButtons.removeAll();
         _rootPanel.revalidate();
     }
+    
+    @Override
+    public void IllustrateCharacters(List<Character> characters) {
+        // TODO Auto-generated method stub
+    }
+
+    @Override
+    public void IllustrateTaxa(List<Item> taxa) {
+        TaxonImageDialog dlg = new TaxonImageDialog(getMainFrame(), _context.getImageSettings(), taxa, false);
+        show(dlg);
+    }
 
     // ================================== DirectivePopulator methods
     // ===================================================================
@@ -1657,8 +1670,15 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     @Override
     public List<Item> promptForTaxaByList(String directiveName, boolean selectFromAll, boolean selectIncludedCharactersOnly) {
-        // TODO Auto-generated method stub
-        return null;
+        List<Item> taxaToSelect;
+        if (selectFromAll) {
+            taxaToSelect = _context.getTaxaForKeyword(IntkeyContext.TAXON_KEYWORD_ALL);
+        } else {
+            taxaToSelect = _context.getTaxaForKeyword(IntkeyContext.TAXON_KEYWORD_REMAINING);
+        }
+        TaxonSelectionDialog dlg = new TaxonSelectionDialog(getMainFrame(), taxaToSelect, directiveName.toUpperCase());        
+        show(dlg);
+        return dlg.getSelectedTaxa();
     }
 
     @Override

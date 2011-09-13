@@ -4,6 +4,8 @@ import java.util.List;
 
 import au.org.ala.delta.intkey.IntkeyUI;
 import au.org.ala.delta.intkey.model.IntkeyDataset;
+import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.Item;
 
 public class MockIntkeyUI implements IntkeyUI {
 
@@ -60,6 +62,14 @@ public class MockIntkeyUI implements IntkeyUI {
 
     @Override
     public void clearToolbar() {
+    }
+
+    @Override
+    public void IllustrateCharacters(List<Character> characters) {
+    }
+
+    @Override
+    public void IllustrateTaxa(List<Item> taxa) {
     }
 
 }

@@ -65,6 +65,11 @@ public class TaxonListArgument extends IntkeyDirectiveArgument<List<Item>> {
                 taxa = populator.promptForTaxaByList(directiveName, _selectFromAll, !overrideExcludedCharacters);
             }
         }
+        
+        // An empty list indicates that the user hit cancel when prompted to select taxa
+        if (taxa.size() == 0) {
+            taxa = null;
+        }
 
         return taxa;
     }

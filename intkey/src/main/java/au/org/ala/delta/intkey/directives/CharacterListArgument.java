@@ -61,7 +61,12 @@ public class CharacterListArgument extends IntkeyDirectiveArgument<List<au.org.a
                 characters = populator.promptForCharactersByList(directiveName, _selectFromAll, !overrideExcludedCharacters);
             }
         }
-
+        
+        // An empty list indicates that the user hit cancel when prompted to select characters
+        if (characters.size() == 0) {
+            characters = null;
+        }
+        
         return characters;
     }
 }
