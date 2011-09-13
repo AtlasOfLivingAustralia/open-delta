@@ -99,6 +99,7 @@ import au.org.ala.delta.intkey.ui.CharacterSelectionDialog;
 import au.org.ala.delta.intkey.ui.FindInCharactersDialog;
 import au.org.ala.delta.intkey.ui.FindInTaxaDialog;
 import au.org.ala.delta.intkey.ui.ImageDialog;
+import au.org.ala.delta.intkey.ui.ImageUtils;
 import au.org.ala.delta.intkey.ui.IntegerInputDialog;
 import au.org.ala.delta.intkey.ui.MultiStateInputDialog;
 import au.org.ala.delta.intkey.ui.OnOffPromptDialog;
@@ -125,7 +126,6 @@ import au.org.ala.delta.model.TextCharacter;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.ui.AboutBox;
 import au.org.ala.delta.ui.DeltaSingleFrameApplication;
-import au.org.ala.delta.ui.image.ImageUtils;
 import au.org.ala.delta.ui.rtf.SimpleRtfEditorKit;
 import au.org.ala.delta.ui.util.IconHelper;
 import au.org.ala.delta.util.Pair;
@@ -1298,7 +1298,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         // display startup images
         List<Image> startupImages = dataset.getStartupImages();
         if (!startupImages.isEmpty()) {
-            ImageUtils.displayImagesFullScreen(startupImages, _context.getImageSettings(), getMainFrame());
+            ImageUtils.displayStartupScreen(startupImages, _context.getImageSettings(), getMainFrame());
         }
 
         initializeIdentification();

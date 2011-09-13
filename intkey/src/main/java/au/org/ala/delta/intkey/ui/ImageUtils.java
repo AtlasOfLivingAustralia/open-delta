@@ -1,4 +1,4 @@
-package au.org.ala.delta.ui.image;
+package au.org.ala.delta.intkey.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -15,8 +15,18 @@ import java.util.List;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 
+import org.jdesktop.application.Application;
+import org.jdesktop.application.SingleFrameApplication;
+
 import au.org.ala.delta.model.image.Image;
+import au.org.ala.delta.model.image.ImageOverlay;
 import au.org.ala.delta.model.image.ImageSettings;
+import au.org.ala.delta.model.image.OverlayType;
+import au.org.ala.delta.ui.image.ImageViewer;
+import au.org.ala.delta.ui.image.MultipleImageViewer;
+import au.org.ala.delta.ui.image.OverlaySelectionObserver;
+import au.org.ala.delta.ui.image.SelectableOverlay;
+import au.org.ala.delta.ui.rtf.SimpleRtfEditorKit;
 
 public class ImageUtils {
 
@@ -25,16 +35,33 @@ public class ImageUtils {
     // cause the next image in the list to be displayed, or will close the
     // window if the last image
     // is currently being displayed.
-    public static void displayImagesFullScreen(List<Image> images, ImageSettings imageSettings, Window applicationWindow) {
+    public static void displayStartupScreen(List<Image> images, ImageSettings imageSettings, Window applicationWindow) {
         final JDialog w = new JDialog(applicationWindow);
         w.setUndecorated(true);
         w.setLayout(new BorderLayout());
 
         final MultipleImageViewer viewer = new MultipleImageViewer(imageSettings);
         viewer.setBackground(Color.BLACK);
-        for (Image image : images) {
+        for (final Image image : images) {
             ImageViewer imageViewer = new ImageViewer(image, imageSettings);
             imageViewer.setBackground(Color.BLACK);
+            imageViewer.addOverlaySelectionObserver(new OverlaySelectionObserver() {
+                @Override
+                public void overlaySelected(SelectableOverlay overlay) {
+                    ImageOverlay imageOverlay = overlay.getImageOverlay();
+                    if (imageOverlay.isType(OverlayType.OLOK)) {
+                        w.setVisible(false);
+                    } else if (imageOverlay.isType(OverlayType.OLCANCEL)) {
+                        w.setVisible(false);
+                    } else if (imageOverlay.isType(OverlayType.OLIMAGENOTES)) {
+                        String rtfContent = image.getNotes();
+                        String title = "Image Notes";
+                        RtfReportDisplayDialog dlg = new RtfReportDisplayDialog(w, new SimpleRtfEditorKit(null), rtfContent, title);
+                        ((SingleFrameApplication) Application.getInstance()).show(dlg);
+                    }                    
+                }
+            });
+            
             viewer.addImageViewer(imageViewer);
         }
 
