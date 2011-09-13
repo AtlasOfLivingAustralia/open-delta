@@ -14,10 +14,17 @@ import javax.swing.border.EmptyBorder;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
+import org.jdesktop.application.SingleFrameApplication;
 
 import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.IntegerCharacter;
+import au.org.ala.delta.model.MultiStateCharacter;
+import au.org.ala.delta.model.NumericCharacter;
+import au.org.ala.delta.model.RealCharacter;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.image.ImageSettings;
+import au.org.ala.delta.rtf.RTFBuilder;
+import au.org.ala.delta.ui.rtf.SimpleRtfEditorKit;
 
 public abstract class CharacterValueInputDialog extends JDialog {
     /**
@@ -68,12 +75,12 @@ public abstract class CharacterValueInputDialog extends JDialog {
 
         _btnFullText = new JButton();
         _btnFullText.setAction(actionMap.get("characterValueInputDialog_FullText"));
-        _btnFullText.setEnabled(false);
+        _btnFullText.setEnabled(true);
         _buttonPanel.add(_btnFullText);
 
         _btnSearch = new JButton();
         _btnSearch.setAction(actionMap.get("characterValueInputDialog_Search"));
-        _btnSearch.setEnabled(false);
+        _btnSearch.setEnabled(true);
         _buttonPanel.add(_btnSearch);
 
         _btnCancel = new JButton();
@@ -82,7 +89,7 @@ public abstract class CharacterValueInputDialog extends JDialog {
 
         _btnNotes = new JButton();
         _btnNotes.setAction(actionMap.get("characterValueInputDialog_Notes"));
-        _btnNotes.setEnabled(false);
+        _btnNotes.setEnabled(true);
         _buttonPanel.add(_btnNotes);
 
         _btnHelp = new JButton();
@@ -108,6 +115,32 @@ public abstract class CharacterValueInputDialog extends JDialog {
     abstract void handleBtnCancelClicked();
     abstract void handleBtnImagesClicked();
     
+    private String generateRtfFullCharacterText() {
+        CharacterFormatter f = new CharacterFormatter(true, false, false, true, true);
+        
+        RTFBuilder builder = new RTFBuilder();
+        builder.appendText(f.formatCharacterDescription(_ch));
+        
+        builder.increaseIndent();
+        
+        if (_ch instanceof MultiStateCharacter) {
+            MultiStateCharacter msChar = (MultiStateCharacter) _ch;
+            for (int i=0; i < msChar.getNumberOfStates(); i++) {
+                builder.appendText(f.formatState(msChar, i+1));
+            }
+        } else if (_ch instanceof NumericCharacter<?>) {
+            NumericCharacter<?> numChar = (NumericCharacter<?>) _ch;
+            builder.appendText(f.formatUnits(numChar));
+        }
+        
+        return builder.toString();
+    }
+    
+    private void displayRTFWindow(String rtfContent, String title) {
+        RtfReportDisplayDialog dlg = new RtfReportDisplayDialog(this, new SimpleRtfEditorKit(null), rtfContent, title);
+        ((SingleFrameApplication) Application.getInstance()).show(dlg);
+    }
+
     // Button action handlers
     
     @Action
@@ -122,6 +155,8 @@ public abstract class CharacterValueInputDialog extends JDialog {
     
     @Action
     public void characterValueInputDialog_FullText() {
+        String rtfFullText = generateRtfFullCharacterText();
+        displayRTFWindow(rtfFullText, "Full text of character");
     }
     
     @Action
@@ -135,6 +170,7 @@ public abstract class CharacterValueInputDialog extends JDialog {
     
     @Action
     public void characterValueInputDialog_Notes() {
+        displayRTFWindow(_ch.getNotes(), "Image Notes");
     }
     
     @Action
