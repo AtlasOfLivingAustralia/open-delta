@@ -14,6 +14,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -115,18 +116,18 @@ public class CharacterEditor extends AbstractDeltaView {
 	/** Handles significant edits performed using this CharacterEditor */
 	private CharacterController _controller;
 	
-	public CharacterEditor(EditorViewModel model) {	
+	
+	public CharacterEditor(EditorViewModel model, JInternalFrame owner) {	
 		setName("CharacterEditorDialog");
 		
+		setOwner(owner);
 		_dialogHelper = new MessageDialogHelper();
 		_context = Application.getInstance().getContext();
 		_resources = _context.getResourceMap(CharacterEditor.class);
 		_resources.injectFields(this);
 		ActionMap map = Application.getInstance().getContext().getActionMap(this);
-		createUI();
-		
-		_controller = new CharacterController(characterSelectionList, model);
-		
+		createUI();		
+		_controller = new CharacterController(characterSelectionList, model);			
 		createCharacterForEmptyDataSet(model);
 		addEventHandlers(map);
 		bind(model);

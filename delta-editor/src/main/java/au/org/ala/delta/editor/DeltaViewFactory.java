@@ -1,5 +1,7 @@
 package au.org.ala.delta.editor;
 
+import javax.swing.JInternalFrame;
+
 import au.org.ala.delta.editor.model.DeltaViewModel;
 import au.org.ala.delta.editor.ui.ActionSetsDialog;
 import au.org.ala.delta.editor.ui.CharacterEditor;
@@ -27,12 +29,12 @@ public class DeltaViewFactory {
 		return new MatrixViewer(model);
 	}
 	
-	public DeltaView createItemEditView(DeltaViewModel model) {
-		return new ItemEditor(model);
+	public DeltaView createItemEditView(DeltaViewModel model, JInternalFrame owner) {
+		return new ItemEditor(model, owner);
 	}
 
-	public DeltaView createCharacterEditView(DeltaViewModel model) {
-		return new CharacterEditor(model);
+	public DeltaView createCharacterEditView(DeltaViewModel model, JInternalFrame owner) {
+		return new CharacterEditor(model, owner);
 	}
 	
 	public DeltaView createImageEditorView(DeltaViewModel model) {

@@ -87,8 +87,6 @@ public class DeltaEditor extends InternalFrameApplication implements
 	/** Helper class for notifying listeners of property changes */
 	private PropertyChangeSupport _propertyChangeSupport;
 
-	private static final long serialVersionUID = 1L;
-
 	private StatusBar _statusBar;
 
 	private ActionMap _actionMap;
@@ -712,7 +710,6 @@ public class DeltaEditor extends InternalFrameApplication implements
 
 	@Action(enabledProperty = "saveAsEnabled")
 	public void viewCharacterEditor() {
-		
 		DeltaView editor = _activeController.createCharacterEditView();
 		newView(editor, "C");
 	}

@@ -9,6 +9,7 @@ import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -86,16 +87,17 @@ public class ItemEditor extends AbstractDeltaView implements ValidationListener 
 	@Resource
 	private String selectTaxonLabelText;
 
-	public ItemEditor(EditorViewModel model) {
+	public ItemEditor(EditorViewModel model, JInternalFrame owner) {
 		super();
 		setName("ItemEditorDialog");
+		setOwner(owner);
 
 		ResourceMap resources = Application.getInstance().getContext().getResourceMap(ItemEditor.class);
 		resources.injectFields(this);
 		ActionMap map = Application.getInstance().getContext().getActionMap(this);
 		createUI();
 		createItemForEmptyDataSet(model);
-		addEventHandlers(map);
+		addEventHandlers(map);		
 		bind(model);
 	}
 

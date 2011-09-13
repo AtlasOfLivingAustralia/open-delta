@@ -303,15 +303,24 @@ public class DeltaViewController extends InternalFrameAdapter implements Vetoabl
 	public DeltaView createItemEditView() {
 		
 		DeltaViewModel model = createViewModel();
-		DeltaView view = _viewFactory.createItemEditView(model);
+		DeltaView view = _viewFactory.createItemEditView(model, getCurrentView());
 		viewerOpened(view, model);
 		
 		return view;
 	}
 	
-	public DeltaView createCharacterEditView() {
-		DeltaViewModel model = createViewModel();
-		DeltaView view = _viewFactory.createCharacterEditView(model);
+	private JInternalFrame getCurrentView() {
+		for (JInternalFrame frame : _activeViews) {
+			if (frame.isSelected()) {
+				return frame;
+			}
+		}
+		return null;
+	}
+	
+	public DeltaView createCharacterEditView() {		
+		DeltaViewModel model = createViewModel();		
+		DeltaView view = _viewFactory.createCharacterEditView(model, getCurrentView());
 		viewerOpened(view, model);
 		
 		return view;
