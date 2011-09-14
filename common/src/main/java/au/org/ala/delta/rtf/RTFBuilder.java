@@ -6,8 +6,9 @@ public class RTFBuilder {
 
     private StringBuilder _strBuilder;
 
-    // by default, the indent width is 720, which is the default tab size.
-    private int _indentWidth = 720;
+    // by default, the indent width is 340 twips, which is the same as in the legacy version
+    // if Intkey
+    private int _indentWidth = 340;
     private int _currentIndent = 0;
 
     public static enum Alignment {

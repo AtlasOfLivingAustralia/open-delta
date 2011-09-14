@@ -143,6 +143,7 @@ public class TaxonInformationDialog extends JDialog {
 
         _btnMultipleImages = new JButton();
         _btnMultipleImages.setAction(actionMap.get("displayMultipleImages"));
+        _btnMultipleImages.setEnabled(false);
         _btnPanel.add(_btnMultipleImages);
 
         _btnDeselectAll = new JButton();
