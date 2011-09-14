@@ -15,6 +15,7 @@
 package au.org.ala.delta.editor;
 
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -25,6 +26,7 @@ import java.beans.PropertyVetoException;
 import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.EventObject;
 import java.util.List;
 import java.util.prefs.PreferenceChangeEvent;
@@ -45,6 +47,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.plaf.FontUIResource;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
 import org.apache.commons.io.FileUtils;
@@ -55,6 +58,8 @@ import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.Task;
 import org.jdesktop.application.Task.BlockingScope;
+
+import com.l2fprod.common.swing.JFontChooser;
 
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.editor.directives.DirectiveFileInfo;
@@ -73,14 +78,14 @@ import au.org.ala.delta.model.DeltaDataSetRepository;
 import au.org.ala.delta.ui.AboutBox;
 import au.org.ala.delta.ui.help.HelpController;
 import au.org.ala.delta.ui.util.IconHelper;
+import au.org.ala.delta.ui.util.UIUtils;
 import au.org.ala.delta.util.IProgressObserver;
 
 /**
  * The main class for the DELTA Editor.
  */
-@ProxyActions({"copySelectedWithHeaders", "selectAll"})
-public class DeltaEditor extends InternalFrameApplication implements
-		PreferenceChangeListener, DeltaViewStatusObserver, PropertyChangeListener {
+@ProxyActions({ "copySelectedWithHeaders", "selectAll" })
+public class DeltaEditor extends InternalFrameApplication implements PreferenceChangeListener, DeltaViewStatusObserver, PropertyChangeListener {
 
 	private static final String DELTA_FILE_EXTENSION = "dlt";
 
@@ -94,27 +99,26 @@ public class DeltaEditor extends InternalFrameApplication implements
 
 	/** Used to create/find/save data sets */
 	private DeltaDataSetRepository _dataSetRepository;
-	
+
 	private boolean _saveEnabled;
 	private boolean _saveAsEnabled;
-	
+
 	/** Flag to prevent concurrent modification exception on close all */
 	private boolean _closingAll;
-	
+
 	/**
-	 * There is one DeltaViewController for each open DeltaDataSet.  Each controller
-	 * is responsible for one or more DeltaViews.
+	 * There is one DeltaViewController for each open DeltaDataSet. Each controller is responsible for one or more DeltaViews.
 	 */
 	private List<DeltaViewController> _controllers;
-	
+
 	/** The DeltaViewController responsible for the currently selected/focused DeltaView */
 	private DeltaViewController _activeController;
-	
+
 	private HelpController _helpController;
 
 	private JMenu _fileMenu;
 	private JMenu _windowMenu;
-	
+
 	@Resource
 	String windowTitleWithoutFilename;
 
@@ -134,20 +138,20 @@ public class DeltaEditor extends InternalFrameApplication implements
 		setupMacSystemProperties(DeltaEditor.class);
 		launch(DeltaEditor.class, args);
 	}
-	
+
 	public DeltaEditor() {
 		_controllers = new ArrayList<DeltaViewController>();
 		_saveEnabled = false;
 		_saveAsEnabled = false;
 		_closingAll = false;
-		
+
 		_propertyChangeSupport = new PropertyChangeSupport(this);
-		
+
 	}
 
 	@Override
 	protected void initialize(String[] args) {
-		_resourceMap = getContext() .getResourceMap(DeltaEditor.class);
+		_resourceMap = getContext().getResourceMap(DeltaEditor.class);
 		_resourceMap.injectFields(this);
 	}
 
@@ -167,7 +171,6 @@ public class DeltaEditor extends InternalFrameApplication implements
 	@Override
 	protected void startup() {
 
-		
 		_actionMap = getContext().getActionMap(this);
 
 		JFrame frame = getMainFrame();
@@ -184,16 +187,16 @@ public class DeltaEditor extends InternalFrameApplication implements
 
 			@Override
 			public boolean canExit(EventObject event) {
-			
+
 				boolean canClose = closeAll();
-				
+
 				return canClose;
 			}
 		});
 
 		_helpController = new HelpController("help/delta_editor/DeltaEditor");
 		_dataSetRepository = new SlotFileRepository();
-		
+
 		_statusBar = new StatusBar();
 		getMainView().setStatusBar(_statusBar);
 
@@ -210,8 +213,7 @@ public class DeltaEditor extends InternalFrameApplication implements
 	protected void ready() {
 
 		EditorPreferences.addPreferencesChangeListener(this);
-		JOptionPane.showConfirmDialog(getMainFrame(), warning, warningTitle,
-				JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE);
+		JOptionPane.showConfirmDialog(getMainFrame(), warning, warningTitle, JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE);
 		super.ready();
 	}
 
@@ -253,12 +255,10 @@ public class DeltaEditor extends InternalFrameApplication implements
 		mnuHelp.add(mnuItHelpContents);
 		mnuItHelpContents.addActionListener(_helpController.helpAction());
 
-		JMenuItem mnuItHelpOnSelection = new JMenuItem(
-				IconHelper.createImageIcon("help_cursor.png"));
+		JMenuItem mnuItHelpOnSelection = new JMenuItem(IconHelper.createImageIcon("help_cursor.png"));
 		mnuItHelpOnSelection.setName("mnuItHelpOnSelection");
 
-		mnuItHelpOnSelection.addActionListener(_helpController
-				.helpOnSelectionAction());
+		mnuItHelpOnSelection.addActionListener(_helpController.helpOnSelectionAction());
 		mnuHelp.add(mnuItHelpOnSelection);
 
 		javax.swing.Action openAboutAction = _actionMap.get("openAbout");
@@ -278,11 +278,33 @@ public class DeltaEditor extends InternalFrameApplication implements
 
 	private void buildWindowMenu(JMenu mnuWindow) {
 		mnuWindow.removeAll();
-		
+
+		JMenuItem mnuItCascade = new JMenuItem();
+		mnuItCascade.setAction(_actionMap.get("cascadeFrames"));
+		mnuWindow.add(mnuItCascade);
+
 		JMenuItem mnuItTile = new JMenuItem();
 		mnuItTile.setAction(_actionMap.get("tileFrames"));
 		mnuWindow.add(mnuItTile);
 
+		JMenuItem mnuItTileHorz = new JMenuItem();
+		mnuItTileHorz.setAction(_actionMap.get("tileFramesHorizontally"));
+		mnuWindow.add(mnuItTileHorz);
+
+		JMenuItem mnuItArrangeIcons = new JMenuItem();
+		mnuItArrangeIcons.setAction(_actionMap.get("arrangeIcons"));
+		mnuWindow.add(mnuItArrangeIcons);
+
+		JMenuItem mnuItCloseAll = new JMenuItem();
+		mnuItCloseAll.setAction(_actionMap.get("closeAllFrames"));
+		mnuWindow.add(mnuItCloseAll);
+
+		mnuWindow.addSeparator();
+		
+		JMenuItem mnuItChooseFont = new JMenuItem();
+		mnuItChooseFont.setAction(_actionMap.get("chooseFont"));
+		mnuWindow.add(mnuItChooseFont);
+		
 		mnuWindow.addSeparator();
 
 		JMenu mnuLF = new JMenu();
@@ -294,14 +316,13 @@ public class DeltaEditor extends InternalFrameApplication implements
 		mnuItMetalLF.setAction(_actionMap.get("metalLookAndFeel"));
 		mnuLF.add(mnuItMetalLF);
 
-		
 		JMenuItem mnuItWindowsLF = new JMenuItem();
 		mnuItWindowsLF.setAction(_actionMap.get("systemLookAndFeel"));
 		mnuLF.add(mnuItWindowsLF);
-		
+
 		try {
 			// Nimbus L&F was added in update java 6 update 10.
-			Class.forName( "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel").newInstance();
+			Class.forName("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel").newInstance();
 			JMenuItem mnuItNimbusLF = new JMenuItem();
 			mnuItNimbusLF.setAction(_actionMap.get("nimbusLookAndFeel"));
 			mnuLF.add(mnuItNimbusLF);
@@ -309,13 +330,13 @@ public class DeltaEditor extends InternalFrameApplication implements
 			// The Nimbus L&F is not available, no matter.
 		}
 		mnuWindow.addSeparator();
-		
+
 		for (final JInternalFrame frame : _frames) {
 			JMenuItem windowItem = new JCheckBoxMenuItem();
 			windowItem.setText(frame.getTitle());
 			windowItem.setSelected(frame.isSelected());
 			windowItem.addActionListener(new ActionListener() {
-				
+
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					try {
@@ -326,16 +347,14 @@ public class DeltaEditor extends InternalFrameApplication implements
 			});
 			mnuWindow.add(windowItem);
 		}
-		
+
 	}
 
 	private void buildFileMenu(JMenu mnuFile) {
 
 		mnuFile.removeAll();
 
-		String[] fileMenuActions = { "newFile", "loadFile", "closeFile", "-",
-				"saveFile", "saveAsFile", "-", "importDirectives",
-				"exportDirectives" };
+		String[] fileMenuActions = { "newFile", "loadFile", "closeFile", "-", "saveFile", "saveAsFile", "-", "importDirectives", "exportDirectives" };
 
 		MenuBuilder.buildMenu(mnuFile, fileMenuActions, _actionMap);
 
@@ -364,34 +383,33 @@ public class DeltaEditor extends InternalFrameApplication implements
 		}
 
 	}
+
 	@Action
 	public void systemLookAndFeel() {
 		try {
-			Class<?> c = Class.forName(UIManager
-					.getSystemLookAndFeelClassName());
+			Class<?> c = Class.forName(UIManager.getSystemLookAndFeelClassName());
 			LookAndFeel sysLaf = (LookAndFeel) c.newInstance();
 			changeLookAndFeel(sysLaf);
+		} catch (Exception e) {
 		}
-		catch (Exception e) {}
 	}
-	
+
 	@Action
 	public void metalLookAndFeel() {
 		changeLookAndFeel(new MetalLookAndFeel());
 	}
-	
+
 	@Action
 	public void nimbusLookAndFeel() {
 		// Nimbus L&F was added in update java 6 update 10.
 		LookAndFeel nimbusLaF;
 		try {
-			nimbusLaF = (LookAndFeel) Class.forName(
-					"com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel")
-					.newInstance();
+			nimbusLaF = (LookAndFeel) Class.forName("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel").newInstance();
 			changeLookAndFeel(nimbusLaF);
-		} catch (Exception e) {} 
+		} catch (Exception e) {
+		}
 	}
-	
+
 	private void changeLookAndFeel(LookAndFeel laf) {
 		try {
 			UIManager.setLookAndFeel(laf);
@@ -400,19 +418,16 @@ public class DeltaEditor extends InternalFrameApplication implements
 			System.err.println(ex);
 		}
 	}
-	
 
 	/**
-	 * Loads a previously loaded delta file from the Most Recently Used list. It
-	 * is assumed that the source ActionEvent as set the filename in a client
-	 * property called "Filename".
+	 * Loads a previously loaded delta file from the Most Recently Used list. It is assumed that the source ActionEvent as set the filename in a client property called "Filename".
 	 * 
 	 * @param e
 	 *            The action event that triggered this action
 	 * @return A DeltaFileLoader task
 	 */
 	@Action(block = BlockingScope.APPLICATION)
-	public DeltaFileLoader loadPreviousFile(ActionEvent e) {		
+	public DeltaFileLoader loadPreviousFile(ActionEvent e) {
 		DeltaFileLoader fileOpenTask = null;
 		JComponent item = (JComponent) e.getSource();
 		if (item != null) {
@@ -422,7 +437,7 @@ public class DeltaEditor extends InternalFrameApplication implements
 				fileOpenTask = new DeltaFileLoader(this, toOpen);
 				fileOpenTask.addPropertyChangeListener(_statusBar);
 			} else {
-				JOptionPane.showMessageDialog(getMainFrame(), "File not found or not readable!", "File open failed", JOptionPane.ERROR_MESSAGE);								
+				JOptionPane.showMessageDialog(getMainFrame(), "File not found or not readable!", "File open failed", JOptionPane.ERROR_MESSAGE);
 				item.getParent().remove(item);
 				EditorPreferences.removeFileFromMRU(filename);
 			}
@@ -450,9 +465,7 @@ public class DeltaEditor extends InternalFrameApplication implements
 		JMenu mnuView = new JMenu();
 		mnuView.setName("mnuView");
 
-		String[] viewMenuActions = { "newTreeView", "newGridView", "-",
-				"viewCharacterEditor", "viewTaxonEditor", "-",
-				"viewActionSets", "viewImageSettings" };
+		String[] viewMenuActions = { "newTreeView", "newGridView", "-", "viewCharacterEditor", "viewTaxonEditor", "-", "viewActionSets", "viewImageSettings" };
 
 		MenuBuilder.buildMenu(mnuView, viewMenuActions, _actionMap);
 
@@ -469,8 +482,7 @@ public class DeltaEditor extends InternalFrameApplication implements
 			chooser.setCurrentDirectory(_lastDirectory);
 		}
 
-		chooser.setFileFilter(new FileNameExtensionFilter(
-				"Delta Editor files *.dlt", DELTA_FILE_EXTENSION));
+		chooser.setFileFilter(new FileNameExtensionFilter("Delta Editor files *.dlt", DELTA_FILE_EXTENSION));
 		int dialogResult;
 		if (open) {
 			dialogResult = chooser.showOpenDialog(getMainFrame());
@@ -496,11 +508,11 @@ public class DeltaEditor extends InternalFrameApplication implements
 	}
 
 	private void newView(DeltaView view, String helpKey) {
-		
-		_helpController.setHelpKeyForComponent((JComponent)view, helpKey);
+
+		_helpController.setHelpKeyForComponent((JComponent) view, helpKey);
 		// TODO need to remove this dependency on JInternalFrame....
-		show((JInternalFrame)view);
-		
+		show((JInternalFrame) view);
+
 		updateTitle();
 	}
 
@@ -509,8 +521,7 @@ public class DeltaEditor extends InternalFrameApplication implements
 		show(aboutBox);
 	}
 
-	abstract class ProgressObservingTask<T, V> extends Task<T, V> implements
-			IProgressObserver {
+	abstract class ProgressObservingTask<T, V> extends Task<T, V> implements IProgressObserver {
 
 		public ProgressObservingTask(Application app) {
 			super(app);
@@ -526,15 +537,13 @@ public class DeltaEditor extends InternalFrameApplication implements
 	/**
 	 * Loads a Delta file and creates a new tree view when it finishes.
 	 */
-	class DeltaFileLoader extends
-			ProgressObservingTask<AbstractObservableDataSet, Void> {
+	class DeltaFileLoader extends ProgressObservingTask<AbstractObservableDataSet, Void> {
 
 		/** The file to load */
 		private File _deltaFile;
 
 		/**
-		 * Creates a DeltaFileLoader for the specified application that will
-		 * load the supplied DELTA file.
+		 * Creates a DeltaFileLoader for the specified application that will load the supplied DELTA file.
 		 * 
 		 * @param app
 		 *            the application this task is a part of.
@@ -550,13 +559,12 @@ public class DeltaEditor extends InternalFrameApplication implements
 		@Override
 		protected AbstractObservableDataSet doInBackground() throws Exception {
 			message("loading", _deltaFile.getAbsolutePath());
-			return (AbstractObservableDataSet) _dataSetRepository.findByName(
-					_deltaFile.getAbsolutePath(), this);
+			return (AbstractObservableDataSet) _dataSetRepository.findByName(_deltaFile.getAbsolutePath(), this);
 		}
 
 		@Override
 		protected void succeeded(AbstractObservableDataSet result) {
-			
+
 			EditorPreferences.addFileToMRU(_deltaFile.getAbsolutePath());
 			_activeController = createController(result);
 			newTree();
@@ -567,8 +575,7 @@ public class DeltaEditor extends InternalFrameApplication implements
 		 */
 		@Override
 		protected void failed(Throwable cause) {
-			JOptionPane.showMessageDialog(getMainFrame(), cause.getMessage(),
-					getTitle(), JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(getMainFrame(), cause.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
 		}
 
 		@Override
@@ -579,7 +586,9 @@ public class DeltaEditor extends InternalFrameApplication implements
 
 	/**
 	 * Creates a controller to manage the supplied data set.
-	 * @param dataSet the data set that requires a controller.
+	 * 
+	 * @param dataSet
+	 *            the data set that requires a controller.
 	 * @return a controller for the supplied dataset.
 	 */
 	private DeltaViewController createController(AbstractObservableDataSet dataSet) {
@@ -594,25 +603,25 @@ public class DeltaEditor extends InternalFrameApplication implements
 	}
 
 	/**
-	 * Called when any view is closed.  Does tidy up if there are no remaining views.
+	 * Called when any view is closed. Does tidy up if there are no remaining views.
 	 */
 	public void viewClosed(DeltaViewController controller, DeltaView view) {
 		if (!_closingAll) {
 			if (controller.getViewCount() == 0) {
 				_controllers.remove(controller);
-				
+
 				if (_controllers.isEmpty()) {
 					_activeController = null;
 					setSaveAsEnabled(false);
 					setSaveEnabled(false);
-					
+
 				}
 			}
 		}
 	}
 
 	/**
-	 * Called when a view is selected.  Updates the title and the state of the save/save as menus.
+	 * Called when a view is selected. Updates the title and the state of the save/save as menus.
 	 */
 	public void viewSelected(DeltaViewController controller, DeltaView view) {
 		_activeController = controller;
@@ -620,13 +629,12 @@ public class DeltaEditor extends InternalFrameApplication implements
 		setSaveEnabled(getCurrentDataSet().isModified());
 		setSaveAsEnabled(true);
 	}
-	
+
 	/**
-	 * Updates the main window title with the name of the data set displayed by the currently
-	 * selected view.
+	 * Updates the main window title with the name of the data set displayed by the currently selected view.
 	 */
 	private void updateTitle() {
-		
+
 		if (_activeController == null) {
 			if (isMac()) {
 				getMainFrame().getRootPane().putClientProperty("Window.documentModified", Boolean.FALSE);
@@ -635,17 +643,16 @@ public class DeltaEditor extends InternalFrameApplication implements
 			return;
 		}
 		String dataSetName = getCurrentDataSet().getName();
-		String title = String.format(windowTitleWithFilename,dataSetName);
-		
+		String title = String.format(windowTitleWithFilename, dataSetName);
+
 		boolean modified = getCurrentDataSet().isModified();
 		if (modified) {
 			if (isMac()) {
 				getMainFrame().getRootPane().putClientProperty("Window.documentModified", Boolean.TRUE);
-			}
-			else {
+			} else {
 				title = title + "*";
 			}
-		} else  {
+		} else {
 			if (isMac()) {
 				getMainFrame().getRootPane().putClientProperty("Window.documentModified", Boolean.FALSE);
 			}
@@ -673,7 +680,7 @@ public class DeltaEditor extends InternalFrameApplication implements
 	@Action(enabledProperty = "saveAsEnabled")
 	public void saveAsFile() {
 		_activeController.saveAs();
-		
+
 		updateTitle();
 	}
 
@@ -684,7 +691,7 @@ public class DeltaEditor extends InternalFrameApplication implements
 
 	@Action(enabledProperty = "saveAsEnabled")
 	public void newGridView() {
-		
+
 		if (_activeController != null) {
 			newMatrix();
 		}
@@ -698,9 +705,67 @@ public class DeltaEditor extends InternalFrameApplication implements
 		}
 	}
 
-	@Action
+	private boolean checkWindowCount(int number) {
+		return _desktop != null && _desktop.getAllFrames().length >= number;
+	}
+
+	public boolean isTileEnabled() {
+		return checkWindowCount(1);
+	}
+
+	@Action(enabledProperty = "tileEnabled")
 	public void tileFrames() {
-		tileFramesInDesktopPane();
+		tileFramesInDesktopPane(false);
+	}
+
+	@Action
+	public void chooseFont() {
+		Font f = UIManager.getFont("Label.font");
+		Font newFont = JFontChooser.showDialog(_desktop, "Please select a font", f);		
+		if (newFont != null) {
+			FontUIResource fontResource = new FontUIResource(newFont);
+			Enumeration<Object> keys = UIManager.getDefaults().keys();
+			while (keys.hasMoreElements()) {
+				Object key = keys.nextElement();
+				Object value = UIManager.get(key);				
+				if (value instanceof javax.swing.plaf.FontUIResource) {
+					UIManager.put(key, fontResource);
+				}
+			}	
+			SwingUtilities.updateComponentTreeUI(getMainFrame());
+		}
+	}
+
+	@Action(enabledProperty = "tileEnabled")
+	public void tileFramesHorizontally() {
+		tileFramesInDesktopPane(true);
+	}
+
+	public boolean isCascadeEnabled() {
+		return checkWindowCount(1);
+	}
+
+	@Action(enabledProperty = "cascadeEnabled")
+	public void cascadeFrames() {
+		UIUtils.cascade(_desktop);
+	}
+
+	public boolean isArrangeIconsEnabled() {
+		return checkWindowCount(1);
+	}
+
+	@Action(enabledProperty = "arrangeIconsEnabled")
+	public void arrangeIcons() {
+		UIUtils.arrangeMinifiedWindows(_desktop);
+	}
+
+	public boolean isCloseAllFramesEnabled() {
+		return checkWindowCount(1);
+	}
+
+	@Action(enabledProperty = "closeAllFramesEnabled")
+	public void closeAllFrames() {
+		_activeController.closeAll();
 	}
 
 	@Action
@@ -737,14 +802,13 @@ public class DeltaEditor extends InternalFrameApplication implements
 		DeltaView editor = _activeController.createImageEditorView();
 		newView(editor, "I");
 	}
-	
+
 	@Action
 	public void viewDirectivesEditor() {
 		DeltaView editor = _activeController.createDirectivesEditorView();
 		newView(editor, "");
 	}
-	
-	
+
 	@Action(enabledProperty = "saveAsEnabled")
 	public void importDirectives() {
 		new ImportController(this, getCurrentDataSet()).begin();
@@ -758,32 +822,28 @@ public class DeltaEditor extends InternalFrameApplication implements
 
 	@Action
 	public void newFile() {
-		
+
 		AbstractObservableDataSet dataSet = (AbstractObservableDataSet) _dataSetRepository.newDataSet();
-		
+
 		_activeController = createController(dataSet);
-		
+
 		initialiseNewDataSet(_activeController.getModel());
-		
+
 		newTree();
 	}
-	
+
 	/**
-	 * Populates the VOP with the set of template directives files that are distributed
-	 * with the DELTA suite.  These templates take the form of _<type>_<filename> where type
-	 * can be one of "c" (confor), "i" (intkey), "k" (key) or "d" (dist).
+	 * Populates the VOP with the set of template directives files that are distributed with the DELTA suite. These templates take the form of _<type>_<filename> where type can be one of "c" (confor),
+	 * "i" (intkey), "k" (key) or "d" (dist).
 	 */
 	private void initialiseNewDataSet(EditorDataModel dataSet) {
-		
-		String[] templates = {"_c_cimages",	"_c_markrtf", "_c_timages",	"_c_tonatr",
-				"_i_intkey.ink",  "_c_cnotes", "_c_ofiles", "_c_todis", "_c_tonatsr",
-				"_i_toolbar.inp", "_c_headc", "_c_ofonts", "_c_toint", "_c_tonex",
-				"_k_key5", "_c_layout", "_c_printch", "_c_tokey", "_c_uncoded", "_k_key5a",
-				"_c_markhtm", "_c_printcr", "_c_tonath", "_d_dist"};
+
+		String[] templates = { "_c_cimages", "_c_markrtf", "_c_timages", "_c_tonatr", "_i_intkey.ink", "_c_cnotes", "_c_ofiles", "_c_todis", "_c_tonatsr", "_i_toolbar.inp", "_c_headc", "_c_ofonts",
+				"_c_toint", "_c_tonex", "_k_key5", "_c_layout", "_c_printch", "_c_tokey", "_c_uncoded", "_k_key5a", "_c_markhtm", "_c_printcr", "_c_tonath", "_d_dist" };
 		File tmp = new File(System.getProperty("java.io.tmpdir"));
 		List<DirectiveFileInfo> toImport = new ArrayList<DirectiveFileInfo>();
 		for (String template : templates) {
-			
+
 			DirectiveType type = null;
 			if (template.startsWith("_")) {
 				switch (template.charAt(1)) {
@@ -802,25 +862,23 @@ public class DeltaEditor extends InternalFrameApplication implements
 				default:
 					continue;
 				}
-				
+
 				String name = template.substring(3);
-				
+
 				File templateFile = new File(tmp, template);
-				InputStream templateStream = getClass().getResourceAsStream("/templates/"+template);
+				InputStream templateStream = getClass().getResourceAsStream("/templates/" + template);
 				try {
 					FileUtils.copyInputStreamToFile(templateStream, templateFile);
 					toImport.add(new DirectiveFileInfo(name, template, type));
-				}
-				catch (Exception e) {
+				} catch (Exception e) {
 					Logger.error("Unable to import template: %s", template);
 				}
 			}
 		}
-		
+
 		ImportController controller = new ImportController(this, dataSet);
 		controller.doSilentImport(tmp, toImport);
 	}
-		
 
 	@Action(enabledProperty = "saveAsEnabled")
 	public void closeFile() {
@@ -839,7 +897,7 @@ public class DeltaEditor extends InternalFrameApplication implements
 		}
 		return true;
 	}
-	
+
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 		if (_activeController == null) {
@@ -847,7 +905,7 @@ public class DeltaEditor extends InternalFrameApplication implements
 		}
 		if (evt.getSource() == _activeController.getModel()) {
 			if ("modified".equals(evt.getPropertyName())) {
-				setSaveEnabled((Boolean)evt.getNewValue());
+				setSaveEnabled((Boolean) evt.getNewValue());
 			}
 		}
 	}
@@ -859,10 +917,9 @@ public class DeltaEditor extends InternalFrameApplication implements
 	public void setSaveEnabled(boolean saveEnabled) {
 		boolean oldSaveEnabled = _saveEnabled;
 		_saveEnabled = saveEnabled;
-		_propertyChangeSupport.firePropertyChange("saveEnabled",
-				oldSaveEnabled, _saveEnabled);
+		_propertyChangeSupport.firePropertyChange("saveEnabled", oldSaveEnabled, _saveEnabled);
 		updateTitle();
-		
+
 	}
 
 	public boolean isSaveEnabled() {
@@ -872,8 +929,7 @@ public class DeltaEditor extends InternalFrameApplication implements
 	public void setSaveAsEnabled(boolean saveEnabled) {
 		boolean oldSaveAsEnabled = _saveAsEnabled;
 		_saveAsEnabled = saveEnabled;
-		_propertyChangeSupport.firePropertyChange("saveAsEnabled",
-				oldSaveAsEnabled, _saveAsEnabled);
+		_propertyChangeSupport.firePropertyChange("saveAsEnabled", oldSaveAsEnabled, _saveAsEnabled);
 	}
 
 	public boolean isSaveAsEnabled() {
@@ -881,8 +937,7 @@ public class DeltaEditor extends InternalFrameApplication implements
 	}
 
 	/**
-	 * Updates the file menu when a value is added to the most recently used
-	 * list.
+	 * Updates the file menu when a value is added to the most recently used list.
 	 */
 	@Override
 	public void preferenceChange(PreferenceChangeEvent evt) {
@@ -892,11 +947,11 @@ public class DeltaEditor extends InternalFrameApplication implements
 	}
 
 	/**
-     * Invoked when an internal frame is activated.
-     */
-    public void internalFrameActivated(InternalFrameEvent e) {
-    	buildWindowMenu(_windowMenu);
-    }
+	 * Invoked when an internal frame is activated.
+	 */
+	public void internalFrameActivated(InternalFrameEvent e) {
+		buildWindowMenu(_windowMenu);
+	}
 
 	@Override
 	public void internalFrameOpened(InternalFrameEvent e) {
@@ -907,6 +962,5 @@ public class DeltaEditor extends InternalFrameApplication implements
 	public void internalFrameClosed(InternalFrameEvent e) {
 		buildWindowMenu(_windowMenu);
 	}
-	
-}
 
+}

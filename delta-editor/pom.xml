@@ -12,6 +12,11 @@
 			<url>http://download.java.net/maven/2/</url>
 			<layout>default</layout>
 		</repository>
+		<repository>
+			<id>shell-sourceforge-jp</id>
+			<name>maven repository on sourceforge.jp shell server</name>
+			<url>http://jfontchooser.sourceforge.jp/repository/say/swing/jfontchooser</url>		
+		</repository>
 	</repositories>
 
 	<scm>
@@ -236,6 +241,13 @@
 			<version>1.9</version>
 		</dependency>
 
+		<dependency>
+			<groupId>com.l2fprod.common</groupId>
+			<artifactId>l2fprod-common-fontchooser</artifactId>
+			<version>6.9.1</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
 	</dependencies>
 	<distributionManagement>
 		<repository>

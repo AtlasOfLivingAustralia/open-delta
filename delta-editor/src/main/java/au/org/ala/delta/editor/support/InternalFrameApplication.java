@@ -104,7 +104,7 @@ public abstract class InternalFrameApplication extends DeltaSingleFrameApplicati
 	/**
 	 * Tiles the open JInternalFrames.
 	 */
-	protected void tileFramesInDesktopPane() {
+	protected void tileFramesInDesktopPane(boolean horizontal) {
 
 		// How many frames do we have?
 		JInternalFrame[] allframes = _desktop.getAllFrames();
@@ -116,11 +116,21 @@ public abstract class InternalFrameApplication extends DeltaSingleFrameApplicati
 		int sqrt = (int) Math.sqrt(count);
 		int rows = sqrt;
 		int cols = sqrt;
-		if (rows * cols < count) {
-			cols++;
+		
+		if (horizontal) {
 			if (rows * cols < count) {
 				rows++;
+				if (rows * cols < count) {
+					cols++;
+				}
 			}
+		} else {
+			if (rows * cols < count) {
+				cols++;
+				if (rows * cols < count) {
+					rows++;
+				}
+			}		
 		}
 
 		// Define some initial values for size & location.
