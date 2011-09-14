@@ -710,6 +710,8 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 			super("Char Base");
 			this.TypeID = VODescFactory.VOCharBaseDesc_TypeId;
 			this.fixedSize = SIZE;
+			uncodedImplicit = VOCharBaseDesc.STATEID_NULL;
+			codedImplicit = VOCharBaseDesc.STATEID_NULL;
 		}
 
 		public short fixedSize;
