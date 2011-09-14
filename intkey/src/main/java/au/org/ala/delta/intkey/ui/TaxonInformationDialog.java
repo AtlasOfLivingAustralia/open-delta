@@ -101,7 +101,7 @@ public class TaxonInformationDialog extends JDialog {
     String noImagesCaption;
 
     public TaxonInformationDialog(Frame owner, List<Item> taxa, IntkeyContext context) {
-        super(owner, true);
+        super(owner, false);
 
         setPreferredSize(new Dimension(550, 280));
         setMinimumSize(new Dimension(550, 280));

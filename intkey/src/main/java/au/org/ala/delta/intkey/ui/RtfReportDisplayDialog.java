@@ -30,7 +30,7 @@ public class RtfReportDisplayDialog extends IntkeyDialog {
      * 
      */
     private static final long serialVersionUID = 7668085877552672061L;
-    
+
     private JTextPane _textPane;
     private JScrollPane _scrollPane;
 
@@ -46,22 +46,21 @@ public class RtfReportDisplayDialog extends IntkeyDialog {
     private JMenuItem _mnuItCascade;
     private JMenuItem _mnuItTile;
     private JMenuItem _mnuItCloseAll;
-    
+
     @Resource
     String fileFilterDescription;
-    
+
     @Resource
     String fileWriteError;
-    
+
     @Resource
     String fileChooserTitle;
-    
+
     /**
      * @wbp.parser.constructor
      */
     public RtfReportDisplayDialog(Dialog owner, EditorKit editorKit, String contentSource, String title) {
         super(owner, false);
-        setPreferredSize(new Dimension(800, 450));
         initialize(editorKit, contentSource, title);
     }
 
@@ -69,11 +68,13 @@ public class RtfReportDisplayDialog extends IntkeyDialog {
         super(owner, false);
         initialize(editorKit, contentSource, title);
     }
-    
+
     public void initialize(EditorKit editorKit, String contentSource, String title) {
         ActionMap actionMap = Application.getInstance().getContext().getActionMap(RtfReportDisplayDialog.class, this);
         ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(RtfReportDisplayDialog.class);
         resourceMap.injectFields(this);
+
+        setPreferredSize(new Dimension(800, 450));
 
         _scrollPane = new JScrollPane();
         getContentPane().add(_scrollPane, BorderLayout.CENTER);
