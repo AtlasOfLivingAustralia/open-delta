@@ -882,6 +882,11 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             _txtFldCmdBar.setVisible(false);
         }
 
+        // Need to update available characters because character separating
+        // powers
+        // are only shown in best ordering when in advanced mode.
+        updateAvailableCharacters();
+
         ResourceMap resourceMap = getContext().getResourceMap(Intkey.class);
         resourceMap.injectComponents(getMainFrame());
         _rootPanel.revalidate();
@@ -1093,7 +1098,14 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
                         _availableCharacterListModel.addElement(ch);
                     }
                     _availableCharacterListModel.copyInto(bestCharactersMap.keySet().toArray());
-                    _availableCharactersListCellRenderer = new BestCharacterCellRenderer(bestCharactersMap);
+
+                    // Only display character separating powers if in advanced
+                    // mode.
+                    if (_advancedMode) {
+                        _availableCharactersListCellRenderer = new BestCharacterCellRenderer(bestCharactersMap);
+                    } else {
+                        _availableCharactersListCellRenderer = new CharacterCellRenderer();
+                    }
                     _listAvailableCharacters.setCellRenderer(_availableCharactersListCellRenderer);
                     _listAvailableCharacters.setModel(_availableCharacterListModel);
                 }
@@ -1575,7 +1587,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         _pnlDynamicButtons.removeAll();
         _rootPanel.revalidate();
     }
-    
+
     @Override
     public void IllustrateCharacters(List<Character> characters) {
         // TODO Auto-generated method stub
@@ -1671,7 +1683,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         } else {
             taxaToSelect = _context.getTaxaForKeyword(IntkeyContext.TAXON_KEYWORD_REMAINING);
         }
-        TaxonSelectionDialog dlg = new TaxonSelectionDialog(getMainFrame(), taxaToSelect, directiveName.toUpperCase());        
+        TaxonSelectionDialog dlg = new TaxonSelectionDialog(getMainFrame(), taxaToSelect, directiveName.toUpperCase());
         show(dlg);
         return dlg.getSelectedTaxa();
     }
