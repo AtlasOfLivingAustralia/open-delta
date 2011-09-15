@@ -497,9 +497,17 @@ public class MatrixViewer extends AbstractDeltaView {
 	 * focus transfer but any other key events will. *
 	 */
 	class KeyProxy extends KeyAdapter {
+		
+		@Override
+		public void keyPressed(KeyEvent e) {
+			if (e.getKeyCode() == KeyEvent.VK_TAB) {
+				e.consume();
+			}
+		}
+				
 
 		@Override
-		public void keyTyped(KeyEvent e) {
+		public void keyTyped(KeyEvent e) {			
 			checkAndForwardKey(e);
 		}
 
