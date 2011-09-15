@@ -31,7 +31,7 @@ public class FileArgument extends IntkeyDirectiveArgument<File> {
                 throw new IntkeyDirectiveParseException("Error creating file");
             }
         } else {
-            file = new File(filePath);    
+            file = new File(context.getDatasetDirectory(), filePath);    
         }
         
         if (file != null && !file.exists()) {

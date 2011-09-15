@@ -92,6 +92,7 @@ import au.org.ala.delta.intkey.ui.CharacterCellRenderer;
 import au.org.ala.delta.intkey.ui.CharacterImageInputDialog;
 import au.org.ala.delta.intkey.ui.CharacterKeywordSelectionDialog;
 import au.org.ala.delta.intkey.ui.CharacterSelectionDialog;
+import au.org.ala.delta.intkey.ui.ContentsDialog;
 import au.org.ala.delta.intkey.ui.FindInCharactersDialog;
 import au.org.ala.delta.intkey.ui.FindInTaxaDialog;
 import au.org.ala.delta.intkey.ui.ImageDialog;
@@ -1513,7 +1514,8 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         }
 
         JButton button = new JButton(icon);
-        button.setToolTipText(shortHelp);
+        //button.setToolTipText(shortHelp);
+        button.setToolTipText(commands.toString());
         button.setMargin(new Insets(0, 0, 0, 0));
         _pnlDynamicButtons.add(button);
 
@@ -1598,9 +1600,16 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         TaxonImageDialog dlg = new TaxonImageDialog(getMainFrame(), _context.getImageSettings(), taxa, false);
         show(dlg);
     }
-
+    
+    
+    @Override
+    public void displayContents(LinkedHashMap<String, String> contentsMap) {
+        ContentsDialog dlg = new ContentsDialog(getMainFrame(), contentsMap, _context);
+        show(dlg);
+    }
     // ================================== DirectivePopulator methods
     // ===================================================================
+
 
     @Override
     public List<Character> promptForCharactersByKeyword(String directiveName, boolean permitSelectionFromIncludedCharactersOnly) {

@@ -371,6 +371,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         processInputFile(initializationFile);
     }
 
+    //TODO Does this belong here?
     public void parseAndExecuteDirective(String command) {
         try {
             _directiveParser.parse(new StringReader(command), this);
