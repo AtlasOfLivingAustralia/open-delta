@@ -33,6 +33,7 @@ import javax.swing.KeyStroke;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 
+import au.org.ala.delta.model.SearchDirection;
 import au.org.ala.delta.ui.codeeditor.BaseDialog;
 import au.org.ala.delta.ui.util.UIUtils;
 

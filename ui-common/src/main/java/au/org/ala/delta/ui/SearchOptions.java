@@ -14,6 +14,8 @@
  ******************************************************************************/
 package au.org.ala.delta.ui;
 
+import au.org.ala.delta.model.SearchDirection;
+
 /**
  * Immutable Transfer Object for the options for a textual search and replace
  * 

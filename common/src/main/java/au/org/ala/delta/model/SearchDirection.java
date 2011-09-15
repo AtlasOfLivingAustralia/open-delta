@@ -12,7 +12,7 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  ******************************************************************************/
-package au.org.ala.delta.ui;
+package au.org.ala.delta.model;
 
 public enum SearchDirection {	
 	Forward, Backward;

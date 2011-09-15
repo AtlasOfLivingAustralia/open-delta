@@ -1,6 +1,7 @@
 package au.org.ala.delta.editor.model;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
@@ -8,8 +9,10 @@ import java.util.prefs.PreferenceChangeListener;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile.DirectiveType;
 import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.CharacterVisitor;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
+import au.org.ala.delta.model.SearchDirection;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
 
@@ -170,4 +173,20 @@ public class DeltaViewModel extends DataSetWrapper implements EditorViewModel, P
 	public DirectiveFile getDirectiveFile(String fileName) {
 		return _editorDataModel.getDirectiveFile(fileName);
 	}
+
+	@Override
+	public void visitCharacters(CharacterVisitor visitor) {
+		_editorDataModel.visitCharacters(visitor);
+	}
+
+	@Override
+	public Collection<Character> selectCharacters(CharacterPredicate predicate) {
+		return _editorDataModel.selectCharacters(predicate);
+	}
+
+	@Override
+	public Character firstCharacter(CharacterPredicate predicate, int startIndex, SearchDirection direction) {		
+		return _editorDataModel.firstCharacter(predicate, startIndex, direction);
+	}
+	
 }

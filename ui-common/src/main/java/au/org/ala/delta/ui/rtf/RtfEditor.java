@@ -40,7 +40,7 @@ import javax.swing.undo.UndoManager;
 
 import org.jdesktop.application.Application;
 
-import au.org.ala.delta.ui.SearchDirection;
+import au.org.ala.delta.model.SearchDirection;
 import au.org.ala.delta.ui.SearchOptions;
 import au.org.ala.delta.ui.SearchReplaceDialog;
 import au.org.ala.delta.ui.SearchableComponent;

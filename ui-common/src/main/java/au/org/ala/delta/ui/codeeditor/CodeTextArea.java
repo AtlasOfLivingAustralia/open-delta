@@ -65,7 +65,7 @@ import javax.swing.text.Segment;
 import javax.swing.text.TabExpander;
 import javax.swing.text.Utilities;
 
-import au.org.ala.delta.ui.SearchDirection;
+import au.org.ala.delta.model.SearchDirection;
 import au.org.ala.delta.ui.SearchOptions;
 import au.org.ala.delta.ui.SearchReplaceDialog;
 import au.org.ala.delta.ui.SearchableComponent;

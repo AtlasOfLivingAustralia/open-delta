@@ -21,6 +21,7 @@ import java.awt.Rectangle;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
+import java.util.Collection;
 import java.util.EventObject;
 import java.util.HashSet;
 import java.util.Set;
@@ -54,6 +55,7 @@ import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.editor.EditorPreferences;
+import au.org.ala.delta.editor.model.CharacterPredicate;
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.ui.util.EditorUIUtils;
 import au.org.ala.delta.editor.ui.validator.AttributeValidator;
@@ -62,10 +64,12 @@ import au.org.ala.delta.editor.ui.validator.ValidationListener;
 import au.org.ala.delta.editor.ui.validator.ValidationResult;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.CharacterVisitor;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateAttribute;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.NumericCharacter;
+import au.org.ala.delta.model.SearchDirection;
 import au.org.ala.delta.model.TextCharacter;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.impl.ControllingInfo;
@@ -107,7 +111,7 @@ public class TreeViewer extends AbstractDeltaView {
 					_tree.expandPath(path);
 				}
 			}
-			
+
 		});
 
 		_itemList = new ItemList(_dataModel);
@@ -116,7 +120,7 @@ public class TreeViewer extends AbstractDeltaView {
 
 		_tree = new CharacterTree();
 		final CharacterTreeModel treeModel = new CharacterTreeModel(_dataModel);
-		
+
 		_tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		_tree.setModel(treeModel);
 		_tree.setRootVisible(false);
@@ -210,12 +214,12 @@ public class TreeViewer extends AbstractDeltaView {
 		_tree.setSelectionRow(0);
 
 		this.addComponentListener(new ComponentAdapter() {
-		
+
 			@Override
 			public void componentShown(ComponentEvent e) {
 				divider.setDividerLocation(getHeight() - EditorPreferences.getViewerDividerOffset());
 			}
-		
+
 		});
 
 	}
@@ -608,7 +612,7 @@ class CharacterTreeModel extends DefaultTreeModel {
 
 	public CharacterTreeModel(EditorViewModel dataModel) {
 		super(new ContextRootNode(dataModel), false);
-		
+
 		_dataModel = dataModel;
 		_dataModel.addDeltaDataSetObserver(new TreeModelCharacterListener());
 		_variableLengthCharacterIndicies = new HashSet<Integer>();
@@ -618,6 +622,18 @@ class CharacterTreeModel extends DefaultTreeModel {
 				_variableLengthCharacterIndicies.add(i - 1);
 			}
 		}
+	}
+
+	public void visitCharacters(CharacterVisitor visitor) {
+		_dataModel.visitCharacters(visitor);
+	}
+
+	public Collection<Character> selectCharacters(CharacterPredicate predicate) {
+		return _dataModel.selectCharacters(predicate);
+	}
+
+	public Character firstCharacter(CharacterPredicate predicate, int startIndex, SearchDirection direction) {
+		return _dataModel.firstCharacter(predicate, startIndex, direction);
 	}
 
 	/**
@@ -639,6 +655,10 @@ class CharacterTreeModel extends DefaultTreeModel {
 		}
 
 		nodeChanged(aNode);
+	}
+
+	public int getNumberOfCharacters() {
+		return _dataModel.getNumberOfCharacters();
 	}
 
 	/**
@@ -673,22 +693,22 @@ class CharacterTreeModel extends DefaultTreeModel {
 			fireTreeNodesChanged(this, new Object[] { root }, new int[] { charNumber - 1 }, new Object[] { root.getChildAt(charNumber - 1) });
 			CharacterTreeNode charNode = (CharacterTreeNode) root.getChildAt(charNumber - 1);
 			updateNode(charNode, charNumber);
-			
+
 			// The event was because of a change to a character state.
 			if (event.getExtraInformation() != null) {
 				// Force recreation of the children.
 				charNode.setCharacterNumber(charNode.getCharacterNumber());
-				
+
 				int childCount = charNode.getChildCount();
 				int[] childIndicies = new int[childCount];
 				Object[] children = new Object[childCount];
-				for (int i=0; i<childCount; i++) {
+				for (int i = 0; i < childCount; i++) {
 					childIndicies[i] = i;
 					children[i] = charNode.getChildAt(i);
 				}
 				charNode.getChildCount();
 				fireTreeStructureChanged(this, pathToNode(charNode), childIndicies, children);
-				
+
 			}
 		}
 
