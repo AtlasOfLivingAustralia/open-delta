@@ -54,9 +54,8 @@ public class TaxonListArgument extends IntkeyDirectiveArgument<List<Item>> {
                 selectionMode = SelectionMode.KEYWORD;
             } else if (token.equalsIgnoreCase(LIST_DIALOG_WILDCARD)) {
                 selectionMode = SelectionMode.LIST;
-            } else if (token.endsWith(LIST_DIALOG_AUTO_SELECT_SOLE_ITEM_WILDCARD)) {
+            } else if (token.equalsIgnoreCase(LIST_DIALOG_AUTO_SELECT_SOLE_ITEM_WILDCARD)) {
                 selectionMode = SelectionMode.LIST_AUTOSELECT_SINGLE_VALUE;
-                //TODO fully implement ?L1 wildcard
             } else {
                 taxa = new ArrayList<Item>();
                 
@@ -95,7 +94,8 @@ public class TaxonListArgument extends IntkeyDirectiveArgument<List<Item>> {
             if (selectionMode == SelectionMode.KEYWORD) {
                 taxa = populator.promptForTaxaByKeyword(directiveName, !overrideExcludedCharacters);
             } else {
-                taxa = populator.promptForTaxaByList(directiveName, _selectFromAll, !overrideExcludedCharacters);
+                boolean autoSelectSingleValue = (selectionMode == SelectionMode.LIST_AUTOSELECT_SINGLE_VALUE);
+                taxa = populator.promptForTaxaByList(directiveName, _selectFromAll, !overrideExcludedCharacters, autoSelectSingleValue);
             }
         }
         

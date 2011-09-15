@@ -1635,12 +1635,16 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     @Override
     public List<Character> promptForCharactersByList(String directiveName, boolean selectFromAll, boolean selectIncludedCharactersOnly) {
         List<Character> charactersToSelect;
+        
+        String keyword = null;
         if (selectFromAll) {
             charactersToSelect = _context.getCharactersForKeyword(IntkeyContext.CHARACTER_KEYWORD_ALL);
+            keyword = IntkeyContext.CHARACTER_KEYWORD_ALL;
         } else {
             charactersToSelect = _context.getCharactersForKeyword(IntkeyContext.CHARACTER_KEYWORD_AVAILABLE);
+            keyword = IntkeyContext.CHARACTER_KEYWORD_AVAILABLE;
         }
-        CharacterSelectionDialog dlg = new CharacterSelectionDialog(getMainFrame(), charactersToSelect, directiveName.toUpperCase(), _context.getImageSettings());
+        CharacterSelectionDialog dlg = new CharacterSelectionDialog(getMainFrame(), charactersToSelect, directiveName.toUpperCase(), keyword, _context.getImageSettings());
         show(dlg);
         return dlg.getSelectedCharacters();
     }
@@ -1669,23 +1673,32 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
             return selectedTaxa;
         } else {
-            TaxonKeywordSelectionDialog dlg = new TaxonKeywordSelectionDialog(getMainFrame(), _context, directiveName, permitSelectionFromIncludedTaxaOnly);
+            TaxonKeywordSelectionDialog dlg = new TaxonKeywordSelectionDialog(getMainFrame(), _context, directiveName.toUpperCase(), permitSelectionFromIncludedTaxaOnly);
             show(dlg);
             return dlg.getSelectedTaxa();
         }
     }
 
     @Override
-    public List<Item> promptForTaxaByList(String directiveName, boolean selectFromAll, boolean selectIncludedCharactersOnly) {
+    public List<Item> promptForTaxaByList(String directiveName, boolean selectFromAll, boolean selectIncludedCharactersOnly, boolean autoSelectSingleValue) {
         List<Item> taxaToSelect;
+        
+        String keyword = null;
         if (selectFromAll) {
             taxaToSelect = _context.getTaxaForKeyword(IntkeyContext.TAXON_KEYWORD_ALL);
+            keyword = IntkeyContext.TAXON_KEYWORD_ALL;
         } else {
             taxaToSelect = _context.getTaxaForKeyword(IntkeyContext.TAXON_KEYWORD_REMAINING);
+            keyword = IntkeyContext.TAXON_KEYWORD_REMAINING;
         }
-        TaxonSelectionDialog dlg = new TaxonSelectionDialog(getMainFrame(), taxaToSelect, directiveName.toUpperCase());
-        show(dlg);
-        return dlg.getSelectedTaxa();
+
+        if (taxaToSelect.size() == 1 && autoSelectSingleValue) {
+            return taxaToSelect;
+        } else {
+            TaxonSelectionDialog dlg = new TaxonSelectionDialog(getMainFrame(), taxaToSelect, directiveName.toUpperCase(), keyword);
+            show(dlg);
+            return dlg.getSelectedTaxa();
+        }
     }
 
     @Override
