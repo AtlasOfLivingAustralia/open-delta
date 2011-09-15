@@ -7,7 +7,6 @@ import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.NumericCharacter;
 import au.org.ala.delta.model.format.CharacterFormatter;
-import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.rtf.RTFBuilder;
 
 public class CharactersDirectiveInvocation implements IntkeyDirectiveInvocation {
@@ -47,7 +46,6 @@ public class CharactersDirectiveInvocation implements IntkeyDirectiveInvocation 
 
         context.getUI().displayRTFReport(builder.toString(), "Characters");
 
-        // TODO generate and show report
         return true;
     }
 
