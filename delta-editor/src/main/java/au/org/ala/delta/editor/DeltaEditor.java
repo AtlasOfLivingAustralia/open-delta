@@ -59,8 +59,6 @@ import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.Task;
 import org.jdesktop.application.Task.BlockingScope;
 
-import com.l2fprod.common.swing.JFontChooser;
-
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.editor.directives.DirectiveFileInfo;
 import au.org.ala.delta.editor.directives.ExportController;
@@ -80,6 +78,8 @@ import au.org.ala.delta.ui.help.HelpController;
 import au.org.ala.delta.ui.util.IconHelper;
 import au.org.ala.delta.ui.util.UIUtils;
 import au.org.ala.delta.util.IProgressObserver;
+
+import com.l2fprod.common.swing.JFontChooser;
 
 /**
  * The main class for the DELTA Editor.
@@ -334,9 +334,15 @@ public class DeltaEditor extends InternalFrameApplication implements PreferenceC
 		}
 		mnuWindow.addSeparator();
 
+		int i = 1;
 		for (final JInternalFrame frame : _frames) {
-			JMenuItem windowItem = new JCheckBoxMenuItem();
-			windowItem.setText(frame.getTitle());
+			JMenuItem windowItem = new JCheckBoxMenuItem();			
+			if ( i < 10 ) {
+				windowItem.setText(String.format("%d %s", i, frame.getTitle()));
+				windowItem.setMnemonic(KeyEvent.VK_1 + (i - 1));
+			} else {
+				windowItem.setText(frame.getTitle());	
+			}
 			windowItem.setSelected(frame.isSelected());
 			windowItem.addActionListener(new ActionListener() {
 
@@ -349,6 +355,7 @@ public class DeltaEditor extends InternalFrameApplication implements PreferenceC
 				}
 			});
 			mnuWindow.add(windowItem);
+			++i;
 		}
 
 	}
