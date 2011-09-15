@@ -84,7 +84,7 @@ import au.org.ala.delta.util.IProgressObserver;
 /**
  * The main class for the DELTA Editor.
  */
-@ProxyActions({ "copySelectedWithHeaders", "selectAll" })
+@ProxyActions({ "copySelectedWithHeaders", "selectAll", "find", "replace", "findNext" })
 public class DeltaEditor extends InternalFrameApplication implements PreferenceChangeListener, DeltaViewStatusObserver, PropertyChangeListener {
 
 	private static final String DELTA_FILE_EXTENSION = "dlt";
@@ -233,9 +233,12 @@ public class DeltaEditor extends InternalFrameApplication implements PreferenceC
 		menuBar.add(_fileMenu);
 
 		// Edit Menu
-
 		JMenu mnuEdit = buildEditMenu();
 		menuBar.add(mnuEdit);
+		
+		// Search Menu
+		JMenu mnuSearch = buildSearchMenu();
+		menuBar.add(mnuSearch);
 
 		// View Menu
 		JMenu mnuView = buildViewMenu();
@@ -443,6 +446,17 @@ public class DeltaEditor extends InternalFrameApplication implements PreferenceC
 			}
 		}
 		return fileOpenTask;
+	}
+	
+	private JMenu buildSearchMenu() {
+		JMenu mnuSearch = new JMenu();
+		mnuSearch.setName("mnuSearch");
+
+		String[] seachMenuActions = { "find", "findNext" };
+
+		MenuBuilder.buildMenu(mnuSearch, seachMenuActions, _actionMap);
+
+		return mnuSearch;		
 	}
 
 	private JMenu buildEditMenu() {

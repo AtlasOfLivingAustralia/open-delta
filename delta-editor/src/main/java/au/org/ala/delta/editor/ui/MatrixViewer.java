@@ -395,7 +395,7 @@ public class MatrixViewer extends AbstractDeltaView {
 		}
 
 	}
-
+	
 	class CopySelectedTask extends ClipboardCopyTask {
 
 		public CopySelectedTask(Application application) {

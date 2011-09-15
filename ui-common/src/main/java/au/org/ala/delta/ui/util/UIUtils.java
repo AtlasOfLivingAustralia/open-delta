@@ -1,12 +1,17 @@
 package au.org.ala.delta.ui.util;
 
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Window;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JComponent;
 import javax.swing.JDesktopPane;
+import javax.swing.JDialog;
 import javax.swing.JInternalFrame;
 import javax.swing.JInternalFrame.JDesktopIcon;
 
@@ -105,6 +110,33 @@ public class UIUtils {
 			}
 		}
 		
+	}
+
+	public static Frame getParentFrame(JComponent comp) {		
+		Container p = comp;
+		while (p != null && !(p instanceof Frame)) {
+			p = p.getParent();
+		}
+		return p == null ? null : (Frame) p;
+	}
+	
+	public static JInternalFrame getParentInternalFrame(JComponent comp) {		
+		Container p = comp;
+		while (p != null && !(p instanceof JInternalFrame)) {
+			p = p.getParent();
+		}
+		return p == null ? null : (JInternalFrame) p;
+	}
+	
+	public static void centerDialog(JDialog dialog, Container parent) {
+	    Dimension parentSize = parent.getSize();
+	    Dimension dialogSize = dialog.getSize();
+	    Point parentLocn = parent.getLocationOnScreen();
+	
+	    int locnX = parentLocn.x + (parentSize.width - dialogSize.width) / 2;
+	    int locnY = parentLocn.y + (parentSize.height - dialogSize.height) / 2;
+	
+	    dialog.setLocation(locnX, locnY);
 	}
 
 }
