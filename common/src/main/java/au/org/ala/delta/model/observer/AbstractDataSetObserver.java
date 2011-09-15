@@ -26,6 +26,9 @@ public abstract class AbstractDataSetObserver implements DeltaDataSetObserver {
 
 	@Override
 	public void characterDeleted(DeltaDataSetChangeEvent event) {}
+	
+	@Override
+	public void characterTypeChanged(DeltaDataSetChangeEvent event) {}
 
 	@Override
 	public void characterMoved(DeltaDataSetChangeEvent event) {}

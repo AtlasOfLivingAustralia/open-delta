@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import au.org.ala.delta.directives.CharacterTypes;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.observer.CharacterObserver;
 import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
@@ -244,6 +245,11 @@ public abstract class AbstractObservableDataSet implements ObservableDeltaDataSe
 	}
 	
 	@Override
+	public void characterTypeChanged(Character oldCharacter, Character newCharacter) {
+		fireDeltaDataSetEvent(null, oldCharacter, newCharacter, new CharacterChangedTypeDispatcher());
+	}
+		
+	@Override
 	public void characterStateChanged(Character character, int stateNum) {
 		fireDeltaDataSetEvent(null, character, stateNum, new CharacterEditedDispatcher());
 	}
@@ -330,6 +336,13 @@ public abstract class AbstractObservableDataSet implements ObservableDeltaDataSe
 		@Override
 		public void doFireEvent(DeltaDataSetObserver observer, DeltaDataSetChangeEvent event) {
 			observer.characterAdded(event);
+		}
+	}
+	
+	protected class CharacterChangedTypeDispatcher extends DataSetEventDispatcher {
+		@Override
+		public void doFireEvent(DeltaDataSetObserver observer, DeltaDataSetChangeEvent event) {
+			observer.characterTypeChanged(event);			
 		}
 	}
 	

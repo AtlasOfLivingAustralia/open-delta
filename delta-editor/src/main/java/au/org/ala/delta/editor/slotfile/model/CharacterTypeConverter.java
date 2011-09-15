@@ -22,6 +22,8 @@ public class CharacterTypeConverter {
 			return CharacterType.OrderedMultiState;
 		case CharType.UNORDERED:
 			return CharacterType.UnorderedMultiState;
+		case CharType.UNKNOWN:
+			return CharacterType.Unknown;
 		default:
 			throw new RuntimeException("Unrecognised character type: " + charType);
 		}
@@ -47,6 +49,8 @@ public class CharacterTypeConverter {
 			return CharType.ORDERED;
 		case UnorderedMultiState:
 			return CharType.UNORDERED;
+		case Unknown:
+			return CharType.UNKNOWN;
 		default:
 			throw new RuntimeException("Unrecognised character type: " + characterType);
 		}

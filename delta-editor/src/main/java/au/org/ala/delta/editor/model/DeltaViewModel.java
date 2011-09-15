@@ -11,6 +11,7 @@ import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.image.Image;
+import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
 
 /**
  * The DeltaViewModel is designed to provide each view with a separate instance of
@@ -61,9 +62,19 @@ public class DeltaViewModel extends DataSetWrapper implements EditorViewModel, P
 		if (_selectedCharacter == null || selectedCharacter == null || 
 				!_selectedCharacter.equals(selectedCharacter)) {
 			_selectedState = -1;
+		}		
+		_selectedCharacter = selectedCharacter;
+	}
+	
+	@Override
+	public void characterTypeChanged(DeltaDataSetChangeEvent event) {
+		
+		Character oldCharacter = event.getCharacter();
+		Character newCharacter = (Character) event.getExtraInformation();
+		if (_selectedCharacter == oldCharacter) {
+			_selectedCharacter = newCharacter;
 		}
 		
-		_selectedCharacter = selectedCharacter;
 	}
 	
 	@Override

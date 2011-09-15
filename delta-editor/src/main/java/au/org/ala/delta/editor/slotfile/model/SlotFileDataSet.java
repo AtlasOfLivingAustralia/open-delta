@@ -20,6 +20,7 @@ import au.org.ala.delta.editor.slotfile.VOImageDesc;
 import au.org.ala.delta.editor.slotfile.VOImageInfoDesc;
 import au.org.ala.delta.editor.slotfile.VOItemDesc;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile.DirectiveType;
+import au.org.ala.delta.editor.ui.CharacterTree;
 import au.org.ala.delta.model.AbstractObservableDataSet;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterDependency;
@@ -605,7 +606,7 @@ public class SlotFileDataSet extends AbstractObservableDataSet {
 			impl.setCharacterType(newType);
 			VOCharBaseDesc charBaseDesc = impl.getCharBaseDesc();
 			Character newCharacter = getFactory().wrapCharacter(charBaseDesc, character.getCharacterId());
-			characterChanged(character);
+			characterTypeChanged(character, newCharacter);
 			
 			return newCharacter;
 		}

@@ -28,6 +28,8 @@ public class CharacterFactory {
 				return new TextCharacter(number);
 			case UnorderedMultiState:
 				return new UnorderedMultiStateCharacter(number);
+			case Unknown:
+				return new UnknownCharacter(number);
 			default:
 				throw new RuntimeException("Unhandled character type: " + type);
 		}

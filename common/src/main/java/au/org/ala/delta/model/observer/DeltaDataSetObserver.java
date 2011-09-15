@@ -23,6 +23,8 @@ public interface DeltaDataSetObserver {
 	
 	public void characterEdited(DeltaDataSetChangeEvent event);
 	
+	public void characterTypeChanged(DeltaDataSetChangeEvent event);
+	
 	public void characterSelected(DeltaDataSetChangeEvent event);
 	
 	public void imageEdited(DeltaDataSetChangeEvent event);

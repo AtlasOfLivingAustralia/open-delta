@@ -234,4 +234,23 @@ public class SwingDeltaDataSetObserver implements DeltaDataSetObserver {
 			}
 		}
 	}
+	
+	@Override
+	public void characterTypeChanged(final DeltaDataSetChangeEvent event) {
+		if (SwingUtilities.isEventDispatchThread()) {
+			_observer.characterTypeChanged(event);
+		}
+		else {
+			try {
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						_observer.characterTypeChanged(event);	
+					}
+				});
+			} catch (Exception e) {
+				handleException(e);
+			}
+		}
+	}
 }

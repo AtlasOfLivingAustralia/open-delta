@@ -86,7 +86,7 @@ public class EditorDataModel extends DataSetWrapper implements EditorViewModel, 
 				!_selectedCharacter.equals(selectedCharacter)) {
 			_selectedState = -1;
 		}
-		
+				
 		_selectedCharacter = selectedCharacter;
 	}
 	

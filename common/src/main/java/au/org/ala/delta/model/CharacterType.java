@@ -21,7 +21,8 @@ public enum CharacterType {
 	IntegerNumeric,
 	RealNumeric,
 	OrderedMultiState,
-	UnorderedMultiState;
+	UnorderedMultiState,
+	Unknown;
 	
 	public boolean isMultistate() {
 		return (this.equals(OrderedMultiState) || (this.equals(UnorderedMultiState)));

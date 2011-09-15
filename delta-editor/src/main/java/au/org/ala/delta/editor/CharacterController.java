@@ -121,7 +121,7 @@ public class CharacterController {
 		if (selectedItem != null) {
 			characterNumber = selectedItem.getCharacterId();
 		}
-		Character newItem = _model.addCharacter(characterNumber, CharacterType.UnorderedMultiState);
+		Character newItem = _model.addCharacter(characterNumber, CharacterType.Unknown);
 		
 		editNewCharacter(newItem, new ActionEvent(_view, -1, ""));
 	}
@@ -180,7 +180,7 @@ public class CharacterController {
 			return false;
 		}
 		
-		if (_model.canChangeCharacterType(_selectedCharacter, type)) {
+		if (_model.canChangeCharacterType(_selectedCharacter, type)) {			
 			_model.changeCharacterType(_selectedCharacter, type);
 		}
 		else {

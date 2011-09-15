@@ -16,6 +16,13 @@ public interface CharacterObserver extends ImageObserver {
 	public void characterChanged(Character character);
 	
 	/**
+	 * Invoked when the Character type changes
+	 * @param oldCharacter The old character wrapper
+	 * @param newCharacter The new character wrapper
+	 */
+	public void characterTypeChanged(Character oldCharacter, Character newCharacter);
+	
+	/**
 	 * Invoked when a character state is added/deleted/moved/edited
 	 * @param character the character with a changed state.
 	 * @param stateNum the affected state number.

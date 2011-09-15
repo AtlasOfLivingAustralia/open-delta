@@ -12,6 +12,8 @@ public class AttributeFactory {
             return new MultiStateAttribute((MultiStateCharacter) character, impl);
         } else if (character instanceof TextCharacter) {
             return new TextAttribute((TextCharacter) character, impl);
+        } else if (character instanceof UnknownCharacter) {
+        	return new UnknownAttribute((UnknownCharacter) character, impl);
         } else {
             throw new RuntimeException("unrecognized character type");
         }
