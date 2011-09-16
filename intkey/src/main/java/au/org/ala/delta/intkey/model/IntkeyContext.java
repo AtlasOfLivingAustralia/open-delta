@@ -112,6 +112,8 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     private boolean _charactersFixed;
     private List<Integer> _fixedCharactersList;
+    
+    private boolean _autoTolerance;
 
     /**
      * Should executed directives be recorded in the history?
@@ -454,6 +456,25 @@ public class IntkeyContext extends AbstractDeltaContext {
         // are no longer
         // valid
         _bestCharacters = null;
+        
+        //if the autotolerance (as specified by SET AUTOTOLERANCE directive) is on,
+        //reduce the tolerance to the smallest value such that the number of taxa remaining is non-zero.
+        if (_autoTolerance) {
+            Map<Item, Integer> taxonDifferences = _specimen.getTaxonDifferences();
+            
+            int minDiff = Integer.MAX_VALUE;
+            for (int taxonDiffCount: taxonDifferences.values()) {
+                if (taxonDiffCount < minDiff) {
+                    minDiff = taxonDiffCount;
+                }
+                
+                if (minDiff == 0) {
+                    break;
+                }
+            }
+            
+            _tolerance = minDiff;
+        }
 
         _appUI.handleUpdateAll();
     }
@@ -1186,6 +1207,14 @@ public class IntkeyContext extends AbstractDeltaContext {
      */
     public List<Integer> getFixedCharactersList() {
         return _fixedCharactersList;
+    }
+    
+    public boolean isAutoTolerance() {
+        return _autoTolerance;
+    }
+
+    public void setAutoTolerance(boolean autoTolerance) {
+        this._autoTolerance = autoTolerance;
     }
 
     private class StartupFileLoader extends SwingWorker<Void, String> {

@@ -4,19 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
-import au.org.ala.delta.intkey.directives.invocation.SetFixDirectiveInvocation;
+import au.org.ala.delta.intkey.directives.invocation.SetAutoToleranceDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class SetFixDirective extends NewIntkeyDirective {
+public class SetAutoToleranceDirective extends NewIntkeyDirective {
     
-    public SetFixDirective() {
-        super("set", "fix");
+    public SetAutoToleranceDirective() {
+        super("set", "autotolerance");
     }
 
     @Override
     protected List<IntkeyDirectiveArgument<?>> generateArgumentsList(IntkeyContext context) {
         List<IntkeyDirectiveArgument<?>> arguments = new ArrayList<IntkeyDirectiveArgument<?>>();
-        arguments.add(new OnOffArgument("value", null, context.charactersFixed()));
+        arguments.add(new OnOffArgument("value", null, context.isAutoTolerance()));
         return arguments;
     }
 
@@ -27,7 +27,6 @@ public class SetFixDirective extends NewIntkeyDirective {
 
     @Override
     protected IntkeyDirectiveInvocation buildCommandObject() {
-        return new SetFixDirectiveInvocation();
+        return new SetAutoToleranceDirectiveInvocation();
     }
-
 }
