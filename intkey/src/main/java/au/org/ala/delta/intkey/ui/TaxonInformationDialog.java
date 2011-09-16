@@ -27,12 +27,10 @@ import javax.swing.SwingWorker;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.MouseInputAdapter;
 
-import org.apache.commons.io.FileUtils;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
-import org.jdesktop.application.SingleFrameApplication;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.model.Item;
@@ -41,8 +39,6 @@ import au.org.ala.delta.model.format.Formatter;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageSettings;
-import au.org.ala.delta.ui.image.AudioPlayer;
-import au.org.ala.delta.ui.rtf.SimpleRtfEditorKit;
 import au.org.ala.delta.util.Pair;
 
 public class TaxonInformationDialog extends JDialog {
@@ -307,7 +303,7 @@ public class TaxonInformationDialog extends JDialog {
                 otherListModel.addElement(fileName);
             }
 
-            _cmds.add(new OpenLinkFileCommand(fileName));
+            _cmds.add(new OpenLinkFileCommand(fileName, fileTitle));
         }
 
         for (Pair<String, String> subjectDirectiveCommandPair : _definedDirectiveCommands) {
@@ -369,12 +365,12 @@ public class TaxonInformationDialog extends JDialog {
     @Action
     public void displaySelectedTaxonInformation() {
         int[] selectedCommandIndicies = _listOther.getSelectedIndices();
-        for (int idx: selectedCommandIndicies) {
+        for (int idx : selectedCommandIndicies) {
             _cmds.get(idx).execute();
         }
-        
+
         int[] selectedImageIndicies = _listIllustrations.getSelectedIndices();
-        for (int idx: selectedImageIndicies) {
+        for (int idx : selectedImageIndicies) {
             displaySelectedTaxonImage(idx);
         }
     }
@@ -419,9 +415,11 @@ public class TaxonInformationDialog extends JDialog {
     private class OpenLinkFileCommand implements InformationDialogCommand {
 
         private String _linkFileName;
+        private String _description;
 
-        public OpenLinkFileCommand(String linkFileName) {
+        public OpenLinkFileCommand(String linkFileName, String description) {
             _linkFileName = linkFileName;
+            _description = description;
         }
 
         @Override
@@ -429,29 +427,11 @@ public class TaxonInformationDialog extends JDialog {
             URL linkFileURL = _infoSettings.findFileOnResourcePath(_linkFileName);
 
             try {
-                Desktop desktop = _desktopWorker.get();
+                File file = new File(linkFileURL.toURI());
 
-                if (_linkFileName.toLowerCase().endsWith(".rtf")) {
-                    File rtfFile = new File(linkFileURL.toURI());
-                    String rtfSource = FileUtils.readFileToString(rtfFile);
-                    RtfReportDisplayDialog dlg = new RtfReportDisplayDialog(TaxonInformationDialog.this, new SimpleRtfEditorKit(null), rtfSource, "blah");
-                    ((SingleFrameApplication) Application.getInstance()).show(dlg);
-                } else if (linkFileURL.getProtocol().equals("http")) {
-                    if (desktop.isSupported(Desktop.Action.BROWSE)) {
-                        desktop.browse(linkFileURL.toURI());
-                    }
-                } else if (_linkFileName.toLowerCase().endsWith(".ink")) {
-                    File inkFile = new File(linkFileURL.toURI());
-                    System.out.println(inkFile.getAbsolutePath());
-                } else if (_linkFileName.toLowerCase().endsWith(".wav")) {
-                    AudioPlayer.playClip(linkFileURL);
-                } else {
-                    if (desktop.isSupported(Desktop.Action.OPEN)) {
-                        desktop.open(new File(linkFileURL.toURI()));
-                    }
-                }
+                _context.getUI().displayFile(file, _description);
             } catch (Exception ex) {
-                ex.printStackTrace();
+                _context.getUI().displayErrorMessage("Badly formed URL: " + linkFileURL.toString());
             }
         }
     }

@@ -3,6 +3,7 @@ package au.org.ala.delta.intkey;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -254,6 +255,12 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     private JPanel _pnlDynamicButtons;
 
     private String _datasetInitFileToOpen = null;
+
+    /**
+     * Calls Desktop.getDesktop on a background thread as it's slow to
+     * initialise
+     */
+    private SwingWorker<Desktop, Void> _desktopWorker;
 
     public static void main(String[] args) {
         setupMacSystemProperties(Intkey.class);
@@ -598,6 +605,8 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         if (_datasetInitFileToOpen != null) {
             executeDirective(new NewDatasetDirective(), _datasetInitFileToOpen);
         }
+        
+        loadDesktopInBackground();
     }
 
     @Override
@@ -1051,6 +1060,23 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     }
 
     // =========================================================================================
+
+    /**
+     * We do this because Desktop.getDesktop() can be very slow
+     */
+    private void loadDesktopInBackground() {
+        _desktopWorker = new SwingWorker<Desktop, Void>() {
+
+            protected Desktop doInBackground() {
+                if (Desktop.isDesktopSupported()) {
+                    return Desktop.getDesktop();
+                } else {
+                    return null;
+                }
+            }
+        };
+        _desktopWorker.execute();
+    }
 
     private void executeDirective(AbstractDirective<IntkeyContext> dir, String data) {
         try {
@@ -1514,7 +1540,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         }
 
         JButton button = new JButton(icon);
-        //button.setToolTipText(shortHelp);
+        // button.setToolTipText(shortHelp);
         button.setToolTipText(commands.toString());
         button.setMargin(new Insets(0, 0, 0, 0));
         _pnlDynamicButtons.add(button);
@@ -1600,16 +1626,24 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         TaxonImageDialog dlg = new TaxonImageDialog(getMainFrame(), _context.getImageSettings(), taxa, false);
         show(dlg);
     }
-    
-    
+
     @Override
     public void displayContents(LinkedHashMap<String, String> contentsMap) {
         ContentsDialog dlg = new ContentsDialog(getMainFrame(), contentsMap, _context);
         show(dlg);
     }
+
+    @Override
+    public void displayFile(File file, String description) {
+        try {
+            UIUtils.displayFile(file, description, _desktopWorker.get());
+        } catch (Exception ex) {
+            displayErrorMessage("Error displaying file " + file.getAbsolutePath());
+        }
+    }
+
     // ================================== DirectivePopulator methods
     // ===================================================================
-
 
     @Override
     public List<Character> promptForCharactersByKeyword(String directiveName, boolean permitSelectionFromIncludedCharactersOnly) {
@@ -1644,7 +1678,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     @Override
     public List<Character> promptForCharactersByList(String directiveName, boolean selectFromAll, boolean selectIncludedCharactersOnly) {
         List<Character> charactersToSelect;
-        
+
         String keyword = null;
         if (selectFromAll) {
             charactersToSelect = _context.getCharactersForKeyword(IntkeyContext.CHARACTER_KEYWORD_ALL);
@@ -1691,7 +1725,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     @Override
     public List<Item> promptForTaxaByList(String directiveName, boolean selectFromAll, boolean selectIncludedCharactersOnly, boolean autoSelectSingleValue) {
         List<Item> taxaToSelect;
-        
+
         String keyword = null;
         if (selectFromAll) {
             taxaToSelect = _context.getTaxaForKeyword(IntkeyContext.TAXON_KEYWORD_ALL);

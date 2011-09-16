@@ -1,5 +1,6 @@
 package au.org.ala.delta.intkey.model;
 
+import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -75,6 +76,10 @@ public class MockIntkeyUI implements IntkeyUI {
 
     @Override
     public void displayContents(LinkedHashMap<String, String> contentsMap) {
+    }
+
+    @Override
+    public void displayFile(File file, String description) {
     }
 
 }

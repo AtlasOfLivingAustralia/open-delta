@@ -1,5 +1,6 @@
 package au.org.ala.delta.intkey;
 
+import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -37,5 +38,7 @@ public interface IntkeyUI {
     void IllustrateTaxa(List<Item> taxa);
 
     void displayContents(LinkedHashMap<String, String> contentsMap);
+    
+    void displayFile(File file, String description);
 
 }
