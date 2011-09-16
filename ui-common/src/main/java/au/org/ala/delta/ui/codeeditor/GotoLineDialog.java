@@ -15,6 +15,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
+import au.org.ala.delta.ui.BaseDialog;
+
 public class GotoLineDialog extends BaseDialog {
 
 	/**

@@ -22,7 +22,7 @@ import javax.swing.JComponent;
  * @author baird
  *
  */
-public interface SearchableComponent {
+public interface SearchAndReplaceController {
 	
 	/**
 	 * The parent frame for the component
@@ -32,24 +32,21 @@ public interface SearchableComponent {
 	
 	/**
 	 * Find the specified text 
-	 * @param text
 	 * @param options
 	 */
-	boolean find(String text, SearchOptions options);	
+	boolean find(SearchOptions options);	
 	
 	/**
 	 * Replace the currently selected text with the supplied text
 	 * @param replacementText
-	 * @param options
 	 */
 	void replaceSelected(String replacementText);
 	
 	/**
 	 * Replace all instances of textToReplace with replacment text
-	 * @param textToReplace
-	 * @param replacementText
 	 * @param options
+	 * @param replacementText	 
 	 */
-	int replaceAll(String textToReplace, String replacementText, SearchOptions options);
+	int replaceAll(SearchOptions options, String replacementText);
 
 }

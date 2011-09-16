@@ -68,7 +68,7 @@ import javax.swing.text.Utilities;
 import au.org.ala.delta.model.SearchDirection;
 import au.org.ala.delta.ui.SearchOptions;
 import au.org.ala.delta.ui.SearchReplaceDialog;
-import au.org.ala.delta.ui.SearchableComponent;
+import au.org.ala.delta.ui.SearchAndReplaceController;
 import au.org.ala.delta.ui.codeeditor.action.BackspaceKeyAction;
 import au.org.ala.delta.ui.codeeditor.action.CommentBlockAction;
 import au.org.ala.delta.ui.codeeditor.action.CopyKeyAction;
@@ -740,7 +740,7 @@ public class CodeTextArea extends JComponent implements Scrollable, TabExpander 
 		String findText = searchReplaceDialog.getFindText();
 		if ((findText != null) && (findText.length() > 0)) {
 			// finding text
-			find(findText, searchReplaceDialog.getSearchOptions());
+			find(searchReplaceDialog.getSearchOptions());
 		}
 	}
 
@@ -1734,7 +1734,8 @@ public class CodeTextArea extends JComponent implements Scrollable, TabExpander 
 	 * @param searchString
 	 *            The text to find.
 	 */
-	public boolean find(String searchString, SearchOptions options) {
+	public boolean find(SearchOptions options) {
+		
 		int caretLine = getCaretLine();
 		int caretPosition = getCaretPosition();
 		int lastLine = getLineCount();
@@ -1742,6 +1743,7 @@ public class CodeTextArea extends JComponent implements Scrollable, TabExpander 
 		int i = caretLine;
 		int indexOfSearch = 0;
 		String lineText = null;
+		String searchString = options.getSearchTerm();
 		if (!options.isCaseSensitive()) {
 			searchString = searchString.toLowerCase();
 		}
@@ -2932,7 +2934,7 @@ public class CodeTextArea extends JComponent implements Scrollable, TabExpander 
 
 	}
 
-	static class SearchableAdapter implements SearchableComponent {
+	static class SearchableAdapter implements SearchAndReplaceController {
 
 		private CodeTextArea _component;
 
@@ -2946,8 +2948,8 @@ public class CodeTextArea extends JComponent implements Scrollable, TabExpander 
 		}
 
 		@Override
-		public boolean find(String text, SearchOptions options) {
-			return _component.find(text, options);
+		public boolean find(SearchOptions options) {
+			return _component.find(options);
 		}
 
 		@Override
@@ -2956,7 +2958,7 @@ public class CodeTextArea extends JComponent implements Scrollable, TabExpander 
 		}
 
 		@Override
-		public int replaceAll(String textToReplace, String replacementText, SearchOptions options) {
+		public int replaceAll(SearchOptions options, String replacementText) {
 			return _component.replaceAll(replacementText, replacementText, options);
 		}
 

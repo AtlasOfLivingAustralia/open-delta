@@ -26,15 +26,11 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
-import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
-import javax.swing.event.InternalFrameAdapter;
-import javax.swing.event.InternalFrameEvent;
 
 import au.org.ala.delta.model.SearchDirection;
-import au.org.ala.delta.ui.codeeditor.BaseDialog;
 import au.org.ala.delta.ui.util.UIUtils;
 
 public class SearchReplaceDialog extends BaseDialog {
@@ -59,7 +55,7 @@ public class SearchReplaceDialog extends BaseDialog {
 	private JLabel replaceLabel;
 	private JComboBox replaceWithCombo;
 	private JCheckBox wrapSearchCheck;
-	private SearchableComponent searchableComponent;
+	private SearchAndReplaceController searchableComponent;
 
 	/**
 	 * Constructs a SearchReplaceDialog instance with specific attributes.
@@ -67,22 +63,11 @@ public class SearchReplaceDialog extends BaseDialog {
 	 * @param searchableComponent
 	 *            The text area.
 	 */
-	public SearchReplaceDialog(SearchableComponent searchableComponent) {
+	public SearchReplaceDialog(SearchAndReplaceController searchableComponent) {
 		super(UIUtils.getParentFrame(searchableComponent.getEditorComponent()), "Find/Replace");
 		setName("searchReplaceDialog");		
 		setResizable(false);	
-		JInternalFrame internalFrame = UIUtils.getParentInternalFrame(searchableComponent.getEditorComponent());
-		if (internalFrame != null) {
-			internalFrame.addInternalFrameListener(new InternalFrameAdapter() {
-				@Override
-				public void internalFrameClosing(InternalFrameEvent e) {
-					if (isVisible()) {
-						setVisible(false);
-					}
-				}
-			});
-		}
-		
+		hookInternalFrame(searchableComponent.getEditorComponent());
 		this.searchableComponent = searchableComponent;
 		initComponents();
 		forwardRadioButton.setSelected(true);
@@ -115,7 +100,7 @@ public class SearchReplaceDialog extends BaseDialog {
 		UIUtils.centerDialog(this, searchableComponent.getEditorComponent());
 	}
 
-	public SearchableComponent getSearchableComponent() {
+	public SearchAndReplaceController getSearchableComponent() {
 		return searchableComponent;
 	}
 
@@ -379,15 +364,14 @@ public class SearchReplaceDialog extends BaseDialog {
 	}
 
 	private SearchOptions createSearchOptions() {
-		return new SearchOptions(getFindDirection(), isCaseSensitiveSearch(), isWrappedSearch());
+		return new SearchOptions(getFindText(), getFindDirection(), isCaseSensitiveSearch(), isWrappedSearch());
 	}
 
 	private void replaceAllButtonActionPerformed(java.awt.event.ActionEvent evt) {
-		String textToFind = getFindText();
-		updateComboBox(findCombo, textToFind);
+		updateComboBox(findCombo, getFindText());
 		String textToReplaceWith = (String) replaceWithCombo.getSelectedItem();
 		updateComboBox(replaceWithCombo, textToReplaceWith);
-		searchableComponent.replaceAll(textToFind, textToReplaceWith, createSearchOptions());
+		searchableComponent.replaceAll(createSearchOptions(), textToReplaceWith);
 	}
 
 	private void replaceButtonActionPerformed(java.awt.event.ActionEvent evt) {
@@ -397,9 +381,8 @@ public class SearchReplaceDialog extends BaseDialog {
 	}
 
 	private void findButtonActionPerformed(java.awt.event.ActionEvent evt) {
-		String textToFind = getFindText();
-		updateComboBox(findCombo, textToFind);
-		searchableComponent.find(textToFind, createSearchOptions());
+		updateComboBox(findCombo, getFindText());
+		searchableComponent.find(createSearchOptions());
 	}
 
 	private void replaceFindButtonActionPerformed(java.awt.event.ActionEvent evt) {
@@ -410,7 +393,7 @@ public class SearchReplaceDialog extends BaseDialog {
 		// find step
 		String textToFind = getFindText();
 		updateComboBox(findCombo, textToFind);
-		searchableComponent.find(textToFind, createSearchOptions());
+		searchableComponent.find(createSearchOptions());
 	}
 
 	/**

@@ -43,7 +43,7 @@ import org.jdesktop.application.Application;
 import au.org.ala.delta.model.SearchDirection;
 import au.org.ala.delta.ui.SearchOptions;
 import au.org.ala.delta.ui.SearchReplaceDialog;
-import au.org.ala.delta.ui.SearchableComponent;
+import au.org.ala.delta.ui.SearchAndReplaceController;
 
 /**
  * Extends the RtfEditorPane to provide the facility to create a toolbar with buttons that control basic style elements of the document (bold, italic, etc).
@@ -116,7 +116,7 @@ public class RtfEditor extends RtfEditorPane {
 		String findText = _searchReplaceDialog.getFindText();
 		if ((findText != null) && (findText.length() > 0)) {
 			// finding text
-			_searchReplaceDialog.getSearchableComponent().find(findText, _searchReplaceDialog.getSearchOptions());
+			_searchReplaceDialog.getSearchableComponent().find(_searchReplaceDialog.getSearchOptions());
 		}
 	}
 
@@ -242,7 +242,7 @@ public class RtfEditor extends RtfEditorPane {
 		}
 	}
 
-	class SearchableAdapter implements SearchableComponent {
+	class SearchableAdapter implements SearchAndReplaceController {
 
 		@Override
 		public JComponent getEditorComponent() {
@@ -250,9 +250,10 @@ public class RtfEditor extends RtfEditorPane {
 		}
 
 		@Override
-		public boolean find(String text, SearchOptions options) {
+		public boolean find(SearchOptions options) {
 			Document doc = RtfEditor.this.getDocument();
 
+			String text = options.getSearchTerm();
 			if (!options.isCaseSensitive()) {
 				text = text.toLowerCase();
 			}
@@ -338,11 +339,11 @@ public class RtfEditor extends RtfEditorPane {
 		}
 
 		@Override
-		public int replaceAll(String searchString, String textToReplaceWith, SearchOptions options) {
-			SearchOptions replaceOptions = new SearchOptions(SearchDirection.Forward, options.isCaseSensitive(), false);
+		public int replaceAll(SearchOptions options, String textToReplaceWith) {
+			SearchOptions replaceOptions = new SearchOptions(options.getSearchTerm(), SearchDirection.Forward, options.isCaseSensitive(), false);
 			setCaretPosition(0);
 			int count = 0;
-			while (_searchReplaceDialog.getSearchableComponent().find(searchString, replaceOptions)) {
+			while (_searchReplaceDialog.getSearchableComponent().find(replaceOptions)) {
 				_searchReplaceDialog.getSearchableComponent().replaceSelected(textToReplaceWith);
 				count++;
 			}

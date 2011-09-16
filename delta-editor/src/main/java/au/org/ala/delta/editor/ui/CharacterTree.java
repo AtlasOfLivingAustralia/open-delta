@@ -7,7 +7,7 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.Action;
 import javax.swing.ActionMap;
-import javax.swing.JOptionPane;
+import javax.swing.JComponent;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.TransferHandler;
@@ -25,6 +25,8 @@ import au.org.ala.delta.editor.model.CharacterPredicate;
 import au.org.ala.delta.editor.ui.dnd.SimpleTransferHandler;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.SearchDirection;
+import au.org.ala.delta.ui.SearchController;
+import au.org.ala.delta.ui.SearchDialog;
 import au.org.ala.delta.ui.SearchOptions;
 
 /**
@@ -215,23 +217,23 @@ public class CharacterTree extends JTree implements ReorderableList {
 
 	}
 
-	private CharacterSearchController _search;
+	private SearchDialog _search;
 
 	@org.jdesktop.application.Action
 	public void find() {
 		if (_search == null) {
-			_search = new CharacterSearchController();
+			_search = new SearchDialog(new CharacterSearchController());
 		}
-		_search.find();
+		_search.setVisible(true);
 	}
 	
 	@org.jdesktop.application.Action
 	public void findNext() {
 		if (_search == null) {
-			_search = new CharacterSearchController();
-			_search.find();
+			find();
 			return;
 		}
+		
 		_search.findNext();
 	}
 
@@ -320,34 +322,16 @@ public class CharacterTree extends JTree implements ReorderableList {
 		}
 	}
 
-	class CharacterSearchController {
+	class CharacterSearchController implements SearchController {
 		
 		private SearchCharacterPredicate _predicate;
 		private Character _lastResult;
 		private ResourceMap _messages;
 		
+		
 		public CharacterSearchController() {
 			SingleFrameApplication application = (SingleFrameApplication)Application.getInstance();
 			_messages = application.getContext().getResourceMap();			
-		}
-
-		public void find() {
-			
-			String prefill = "";
-			if (_predicate != null) {
-				prefill = _predicate.getTerm();
-			}
-			
-			final String term = JOptionPane.showInputDialog(CharacterTree.this.getParent(), _messages.getString("findCharacter.text"), prefill);
-
-			if (term!= null) {
-				if (_search == null) {
-					_search = new CharacterSearchController();
-				}
-				SearchOptions options = new SearchOptions(SearchDirection.Forward, false, true);
-				_predicate = new SearchCharacterPredicate(term, options);				
-				_lastResult = findImpl(_predicate, getSelectedIndex() + 1);
-			}			
 		}
 		
 		private Character findImpl(SearchCharacterPredicate predicate, int startFrom) {
@@ -362,25 +346,37 @@ public class CharacterTree extends JTree implements ReorderableList {
 			}
 
 			if (result != null) {
-				int index = result.getCharacterId() - 1;
-				setSelectedIndex(index);
-				TreePath path = getPathForRow(index);
-				makeVisible(path);
-				scrollPathToVisible(path);
+				selectCharacter(result);
 			} else {
-				setSelectedIndex(-1);
+				clearSelection();
 			}
 			
 			return result;			
 		}
 		
-		public void findNext() {
-			if (_predicate == null) {
-				find();
-				return;
-			}
+		private void selectCharacter(Character ch) {
+			int index = ch.getCharacterId() - 1;
+			setSelectedIndex(index);
+			TreePath path = getPathForRow(index);
+			makeVisible(path);
+			scrollPathToVisible(path);			
+		}
+		
+		@Override
+		public String getTitle() {
+			return _messages.getString("findCharacter.title");
+		}
+		
+		@Override
+		public JComponent getOwningComponent() {
+			return CharacterTree.this;
+		}
+
+		@Override
+		public boolean findNext(SearchOptions options) {
 			
-			int delta = _predicate.getOptions().getSearchDirection() == SearchDirection.Forward ? 1 : -1;
+			
+			int delta = options.getSearchDirection() == SearchDirection.Forward ? 1 : -1;
 			
 			int startFrom = getSelectedIndex() + delta;
 			if (_lastResult != null) {
@@ -389,12 +385,21 @@ public class CharacterTree extends JTree implements ReorderableList {
 			
 			CharacterTreeModel model = (CharacterTreeModel) getModel();
 			if (startFrom < 1) {
-				startFrom = _predicate.getOptions().isWrappedSearch() ? model.getNumberOfCharacters() : 1;
+				startFrom = options.isWrappedSearch() ? model.getNumberOfCharacters() : 1;
 			} else if (startFrom > model.getNumberOfCharacters()) {
-				startFrom = _predicate.getOptions().isWrappedSearch() ? 1 : model.getNumberOfCharacters();
-			}								
+				startFrom = options.isWrappedSearch() ? 1 : model.getNumberOfCharacters();
+			}
 			
-			_lastResult = findImpl(_predicate, startFrom);
+			_predicate = new SearchCharacterPredicate(options);
+			
+			Character result = findImpl(_predicate, startFrom);
+			if (result == null && _lastResult != null && !options.isWrappedSearch()) {
+				selectCharacter(_lastResult);
+			} else {
+				_lastResult = result;
+			}
+			
+			return _lastResult != null;
 		}
 
 	}
@@ -404,13 +409,12 @@ public class CharacterTree extends JTree implements ReorderableList {
 		private String _term;
 		private SearchOptions _options;
 
-		public SearchCharacterPredicate(String term, SearchOptions options) {
+		public SearchCharacterPredicate(SearchOptions options) {
 			_options = options;
+			_term = options.getSearchTerm();
 			if (!options.isCaseSensitive()) {
-				_term = term.toLowerCase();
-			} else {
-				_term = term;
-			}
+				_term = _term.toLowerCase();
+			} 
 		}
 
 		@Override

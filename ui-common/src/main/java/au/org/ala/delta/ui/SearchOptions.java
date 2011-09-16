@@ -17,21 +17,28 @@ package au.org.ala.delta.ui;
 import au.org.ala.delta.model.SearchDirection;
 
 /**
- * Immutable Transfer Object for the options for a textual search and replace
+ * Immutable Transfer Object for the options of a textual search
  * 
  * @author baird
  *
  */
 public class SearchOptions {
 	
+	private String searchTerm;
 	private boolean wrappedSearch;
 	private boolean caseSensitive;
 	private SearchDirection searchDirection;
 	
-	public SearchOptions(SearchDirection searchDirection, boolean caseSensitive, boolean wrapSearch) {
+	
+	public SearchOptions(String searchTerm, SearchDirection searchDirection, boolean caseSensitive, boolean wrapSearch) {
+		this.searchTerm = searchTerm;
 		this.wrappedSearch = wrapSearch;
 		this.caseSensitive = caseSensitive;
 		this.searchDirection = searchDirection;
+	}
+	
+	public String getSearchTerm() {
+		return searchTerm;
 	}
 	
 	public boolean isWrappedSearch() {

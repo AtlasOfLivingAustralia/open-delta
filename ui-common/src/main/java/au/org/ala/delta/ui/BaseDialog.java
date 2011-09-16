@@ -1,4 +1,4 @@
-package au.org.ala.delta.ui.codeeditor;
+package au.org.ala.delta.ui;
 
 import java.awt.Container;
 import java.awt.Dialog;
@@ -14,7 +14,12 @@ import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
+import javax.swing.JInternalFrame;
 import javax.swing.KeyStroke;
+import javax.swing.event.InternalFrameAdapter;
+import javax.swing.event.InternalFrameEvent;
+
+import au.org.ala.delta.ui.util.UIUtils;
 
 public class BaseDialog extends JDialog {
 
@@ -236,4 +241,19 @@ public class BaseDialog extends JDialog {
 
         setLocation(locnX, locnY);
     }
+
+    protected void hookInternalFrame(JComponent owner) {
+		JInternalFrame internalFrame = UIUtils.getParentInternalFrame(owner);
+		if (internalFrame != null) {
+			internalFrame.addInternalFrameListener(new InternalFrameAdapter() {
+				@Override
+				public void internalFrameClosing(InternalFrameEvent e) {
+					if (isVisible()) {
+						setVisible(false);
+					}
+				}
+			});
+		}
+    }
+    
 }
