@@ -88,12 +88,12 @@ public class IntkeyContext extends AbstractDeltaContext {
     private boolean _matchUnknowns;
     private MatchType _matchType;
 
-    private DiagType _diagType;
-
     private int _tolerance;
 
     private double _varyWeight;
     private double _rbase;
+
+    private DiagType _diagType;
     private int _diagLevel;
 
     private IntkeyCharacterOrder _characterOrder;

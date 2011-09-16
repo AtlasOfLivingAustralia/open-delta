@@ -22,7 +22,7 @@ public class IntkeyDirectiveParser extends DirectiveParser<IntkeyContext> {
         // Intkey needs to be able to match supplied control words of less
         // than the standard 3 characters, e.g. "INCLUDE T" should match the
         // "INCLUDE TAXA" directive.
-        getDirectiveTree().setMatchShortControlWords(true);
+        getDirectiveTree().setMatchFirstThreeCharacters(false);
     }
 
     public static IntkeyDirectiveParser createInstance() {
@@ -64,6 +64,8 @@ public class IntkeyDirectiveParser extends DirectiveParser<IntkeyContext> {
         instance.registerDirective(new ContentsDirective());
         instance.registerDirective(new FileDisplayDirective());
         instance.registerDirective(new SetAutoToleranceDirective());
+        instance.registerDirective(new SetDiagTypeSpecimensDirective());
+        instance.registerDirective(new SetDiagTypeTaxaDirective());
 
         return instance;
     }

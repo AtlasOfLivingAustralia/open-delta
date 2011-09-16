@@ -19,11 +19,5 @@ public class SetDiagLevelTest extends TestCase {
         IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
         new SetDiagLevelDirective().parseAndProcess(context, null);
     }
-    
-    @Test
-    public void testSetDiagLevelWithFlag() throws Exception {
-        IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        new SetDiagLevelDirective().parseAndProcess(context, "/X 1");
-    }
 
 }

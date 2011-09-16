@@ -1,23 +1,20 @@
 package au.org.ala.delta.intkey.directives;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
-import au.org.ala.delta.intkey.directives.invocation.SetDiagLevelInvocation;
+import au.org.ala.delta.intkey.directives.invocation.SetDiagTypeTaxaDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class SetDiagLevelDirective extends NewIntkeyDirective {
+public class SetDiagTypeTaxaDirective extends NewIntkeyDirective {
 
-    public SetDiagLevelDirective() {
-        super("set", "diaglevel");
+    public SetDiagTypeTaxaDirective() {
+        super("set", "diagtype", "taxa");
     }
-
+    
     @Override
     protected List<IntkeyDirectiveArgument<?>> generateArgumentsList(IntkeyContext context) {
-        List<IntkeyDirectiveArgument<?>> arguments = new ArrayList<IntkeyDirectiveArgument<?>>();
-        arguments.add(new IntegerArgument("diagLevel", "Enter value of DiagLevel", context.getDiagLevel()));
-        return arguments;
+        return null;
     }
 
     @Override
@@ -27,7 +24,7 @@ public class SetDiagLevelDirective extends NewIntkeyDirective {
 
     @Override
     protected IntkeyDirectiveInvocation buildCommandObject() {
-        return new SetDiagLevelInvocation();
+        return new SetDiagTypeTaxaDirectiveInvocation();
     }
 
 }

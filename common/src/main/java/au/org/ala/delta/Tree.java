@@ -14,7 +14,6 @@
  ******************************************************************************/
 package au.org.ala.delta;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import au.org.ala.delta.directives.AbstractDirective;
@@ -23,13 +22,19 @@ import au.org.ala.delta.directives.DirectiveSearchResult.ResultType;
 
 public class Tree {
 
-    private boolean _matchShortControlWords;
+    /**
+     * If true (the default), matching is done against the first three
+     * characters of a control word. Supplied text of less than three characters
+     * will not match, and any characters past the first three are ignored for
+     * matching purposes.
+     */
+    private boolean _matchFirstThreeCharacters;
 
     private TreeNodeList _toplevel;
 
     public Tree() {
         _toplevel = new TreeNodeList(null, "ROOT");
-        _matchShortControlWords = false;
+        _matchFirstThreeCharacters = true;
     }
 
     @SuppressWarnings("rawtypes")
@@ -71,20 +76,6 @@ public class Tree {
                     p = (TreeNodeList) n;
                 }
             } else {
-                if (_matchShortControlWords) {
-                    List<String> matchedKeys = new ArrayList<String>();
-                    for (String nodeKey : p.getChildren().keySet()) {
-                        if (nodeKey.startsWith(key)) {
-                            matchedKeys.add(nodeKey);
-                        }
-                    }
-
-                    if (matchedKeys.size() == 1) {
-                        TreeNode n = p.getChildren().get(matchedKeys.get(0));
-                        return new DirectiveSearchResult(ResultType.Found, ((DirectiveTreeNode) n).getDirective());
-                    }
-                }
-
                 return new DirectiveSearchResult(ResultType.NotFound, null);
             }
         }
@@ -95,9 +86,13 @@ public class Tree {
         if (str == null) {
             return null;
         }
+
         str = str.trim().toLowerCase();
-        if (str.length() > 3) {
-            str = str.substring(0, 3);
+
+        if (_matchFirstThreeCharacters) {
+            if (str.length() > 3) {
+                str = str.substring(0, 3);
+            }
         }
         return str;
     }
@@ -113,9 +108,9 @@ public class Tree {
     public static interface TreeVisitor {
         void visit(TreeNode node);
     }
-    
-    public void setMatchShortControlWords(boolean matchShortControlWords) {
-        this._matchShortControlWords = matchShortControlWords;
+
+    public void setMatchFirstThreeCharacters(boolean matchFirstThreeCharacters) {
+        this._matchFirstThreeCharacters = matchFirstThreeCharacters;
     }
 
 }
