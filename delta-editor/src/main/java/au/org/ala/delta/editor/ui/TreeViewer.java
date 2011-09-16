@@ -55,7 +55,6 @@ import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.editor.EditorPreferences;
-import au.org.ala.delta.editor.model.CharacterPredicate;
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.ui.util.EditorUIUtils;
 import au.org.ala.delta.editor.ui.validator.AttributeValidator;
@@ -64,7 +63,6 @@ import au.org.ala.delta.editor.ui.validator.ValidationListener;
 import au.org.ala.delta.editor.ui.validator.ValidationResult;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
-import au.org.ala.delta.model.CharacterVisitor;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateAttribute;
 import au.org.ala.delta.model.MultiStateCharacter;
@@ -76,6 +74,9 @@ import au.org.ala.delta.model.impl.ControllingInfo;
 import au.org.ala.delta.model.observer.AbstractDataSetObserver;
 import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
 import au.org.ala.delta.ui.AboutBox;
+import au.org.ala.delta.util.Predicate;
+import au.org.ala.delta.util.SearchableModel;
+import au.org.ala.delta.util.Visitor;
 
 /**
  * The TreeViewer presents the data model as a list of items and a tree containing the character attributes of the item selected from the list.
@@ -603,7 +604,7 @@ public class TreeViewer extends AbstractDeltaView {
 
 }
 
-class CharacterTreeModel extends DefaultTreeModel {
+class CharacterTreeModel extends DefaultTreeModel implements SearchableModel<Character> {
 
 	private static final long serialVersionUID = 1L;
 	private EditorViewModel _dataModel;
@@ -624,15 +625,16 @@ class CharacterTreeModel extends DefaultTreeModel {
 		}
 	}
 
-	public void visitCharacters(CharacterVisitor visitor) {
+	public void visitCharacters(Visitor<Character> visitor) {
 		_dataModel.visitCharacters(visitor);
 	}
 
-	public Collection<Character> selectCharacters(CharacterPredicate predicate) {
+	public Collection<Character> selectCharacters(Predicate<Character> predicate) {
 		return _dataModel.selectCharacters(predicate);
 	}
 
-	public Character firstCharacter(CharacterPredicate predicate, int startIndex, SearchDirection direction) {
+	@Override
+	public Character first(Predicate<Character> predicate, int startIndex, SearchDirection direction) {
 		return _dataModel.firstCharacter(predicate, startIndex, direction);
 	}
 
@@ -752,6 +754,11 @@ class CharacterTreeModel extends DefaultTreeModel {
 		private Object[] pathToNode(CharacterTreeNode node) {
 			return new Object[] { getRoot(), node };
 		}
+	}
+
+	@Override
+	public int size() {
+		return getNumberOfCharacters();
 	}
 
 }

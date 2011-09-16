@@ -18,16 +18,14 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 import org.jdesktop.application.Application;
-import org.jdesktop.application.ResourceMap;
-import org.jdesktop.application.SingleFrameApplication;
 
-import au.org.ala.delta.editor.model.CharacterPredicate;
 import au.org.ala.delta.editor.ui.dnd.SimpleTransferHandler;
 import au.org.ala.delta.model.Character;
-import au.org.ala.delta.model.SearchDirection;
-import au.org.ala.delta.ui.SearchController;
+import au.org.ala.delta.ui.GenericSearchController;
+import au.org.ala.delta.ui.GenericSearchPredicate;
 import au.org.ala.delta.ui.SearchDialog;
 import au.org.ala.delta.ui.SearchOptions;
+import au.org.ala.delta.util.SearchableModel;
 
 /**
  * The CharacterTree extends JTree to provide 1-click cell editing and to implement the ReorderableList interface to help our Drag and Drop implementation.
@@ -226,14 +224,14 @@ public class CharacterTree extends JTree implements ReorderableList {
 		}
 		_search.setVisible(true);
 	}
-	
+
 	@org.jdesktop.application.Action
 	public void findNext() {
 		if (_search == null) {
 			find();
 			return;
 		}
-		
+
 		_search.findNext();
 	}
 
@@ -322,119 +320,69 @@ public class CharacterTree extends JTree implements ReorderableList {
 		}
 	}
 
-	class CharacterSearchController implements SearchController {
-		
-		private SearchCharacterPredicate _predicate;
-		private Character _lastResult;
-		private ResourceMap _messages;
-		
-		
-		public CharacterSearchController() {
-			SingleFrameApplication application = (SingleFrameApplication)Application.getInstance();
-			_messages = application.getContext().getResourceMap();			
-		}
-		
-		private Character findImpl(SearchCharacterPredicate predicate, int startFrom) {
-			CharacterTreeModel model = (CharacterTreeModel) getModel();
-			Character result = model.firstCharacter(predicate, startFrom, predicate.getOptions().getSearchDirection());
-			if (result == null && predicate.getOptions().isWrappedSearch()) {
-				int restartFrom = 1;
-				if (predicate.getOptions().getSearchDirection() == SearchDirection.Backward) {
-					restartFrom = model.getNumberOfCharacters();
-				}
-				result = model.firstCharacter(predicate, restartFrom, predicate.getOptions().getSearchDirection());
-			}
+	class CharacterSearchController extends GenericSearchController<Character> {
 
-			if (result != null) {
-				selectCharacter(result);
-			} else {
-				clearSelection();
-			}
-			
-			return result;			
+		public CharacterSearchController() {
+			super("findCharacter.title");
 		}
-		
-		private void selectCharacter(Character ch) {
-			int index = ch.getCharacterId() - 1;
-			setSelectedIndex(index);
-			TreePath path = getPathForRow(index);
-			makeVisible(path);
-			scrollPathToVisible(path);			
-		}
-		
-		@Override
-		public String getTitle() {
-			return _messages.getString("findCharacter.title");
-		}
-		
+
 		@Override
 		public JComponent getOwningComponent() {
 			return CharacterTree.this;
 		}
 
 		@Override
-		public boolean findNext(SearchOptions options) {
-			
-			
-			int delta = options.getSearchDirection() == SearchDirection.Forward ? 1 : -1;
-			
-			int startFrom = getSelectedIndex() + delta;
-			if (_lastResult != null) {
-				startFrom = _lastResult.getCharacterId() + delta;
-			}
-			
-			CharacterTreeModel model = (CharacterTreeModel) getModel();
-			if (startFrom < 1) {
-				startFrom = options.isWrappedSearch() ? model.getNumberOfCharacters() : 1;
-			} else if (startFrom > model.getNumberOfCharacters()) {
-				startFrom = options.isWrappedSearch() ? 1 : model.getNumberOfCharacters();
-			}
-			
-			_predicate = new SearchCharacterPredicate(options);
-			
-			Character result = findImpl(_predicate, startFrom);
-			if (result == null && _lastResult != null && !options.isWrappedSearch()) {
-				selectCharacter(_lastResult);
-			} else {
-				_lastResult = result;
-			}
-			
-			return _lastResult != null;
+		protected void selectItem(Character character) {
+			int index = character.getCharacterId() - 1;
+			setSelectedIndex(index);
+			TreePath path = getPathForRow(index);
+			makeVisible(path);
+			scrollPathToVisible(path);
 		}
 
+		@Override
+		protected void clearSelection() {
+			CharacterTree.this.clearSelection();
+		}
+
+		@Override
+		protected SearchableModel<Character> getSearchableModel() {
+			return (CharacterTreeModel) getModel();
+		}
+
+		@Override
+		protected int getSelectedIndex() {
+			return CharacterTree.this.getSelectedIndex();
+		}
+
+		@Override
+		protected int getIndexOf(Character item) {
+			return item.getCharacterId() - 1;
+		}
+
+		@Override
+		protected GenericSearchPredicate<Character> createPredicate(SearchOptions options) {
+			return new SearchCharacterPredicate(options);
+		}
+		
 	}
 
-	class SearchCharacterPredicate implements CharacterPredicate {
-
-		private String _term;
-		private SearchOptions _options;
+	class SearchCharacterPredicate extends GenericSearchPredicate<Character> {
 
 		public SearchCharacterPredicate(SearchOptions options) {
-			_options = options;
-			_term = options.getSearchTerm();
-			if (!options.isCaseSensitive()) {
-				_term = _term.toLowerCase();
-			} 
+			super(options);
 		}
 
 		@Override
 		public boolean test(Character character) {
 			String desc = character.getDescription();
-			if (!_options.isCaseSensitive()) {
-				return desc.toLowerCase().contains(_term);
+			if (!getOptions().isCaseSensitive()) {
+				return desc.toLowerCase().contains(getTerm());
 			}
 
-			return desc.contains(_term);
+			return desc.contains(getTerm());
 		}
-		
-		public SearchOptions getOptions() {
-			return _options;
-		}
-		
-		public String getTerm() {
-			return _term;
-		}
-		
+
 	}
 
 }

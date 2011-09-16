@@ -15,7 +15,6 @@ import au.org.ala.delta.editor.slotfile.model.DirectiveFile.DirectiveType;
 import au.org.ala.delta.editor.slotfile.model.SlotFileDataSet;
 import au.org.ala.delta.model.AbstractObservableDataSet;
 import au.org.ala.delta.model.Character;
-import au.org.ala.delta.model.CharacterVisitor;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.ObservableDeltaDataSet;
@@ -23,41 +22,40 @@ import au.org.ala.delta.model.SearchDirection;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
-
+import au.org.ala.delta.util.Predicate;
+import au.org.ala.delta.util.Visitor;
 
 /**
- * Provides the UI model with a backing DeltaDataSet.  Each EditorDataModel is associated with a 
- * single view component.  This class maintains a separate list of DeltaDataSetObservers 
- * to allow clean removal of listeners from the backing DeltaDataSet when a view of the model is 
- * closed. 
+ * Provides the UI model with a backing DeltaDataSet. Each EditorDataModel is associated with a single view component. This class maintains a separate list of DeltaDataSetObservers to allow clean
+ * removal of listeners from the backing DeltaDataSet when a view of the model is closed.
  */
 public class EditorDataModel extends DataSetWrapper implements EditorViewModel, PreferenceChangeListener {
 
 	/** The number of the currently selected character */
 	private Character _selectedCharacter;
-	
+
 	/** The number of the currently selected item */
 	private Item _selectedItem;
-	
-	/** The number of the selected state.  Only valid when the selected
-	 * character is a multistate character (otherwise it's -1).
+
+	/**
+	 * The number of the selected state. Only valid when the selected character is a multistate character (otherwise it's -1).
 	 */
 	private int _selectedState;
-	
-	/** the currently selected image */ 
+
+	/** the currently selected image */
 	private Image _selectedImage;
-	
+
 	/** The currently selected directive file */
 	private DirectiveFile _selectedDirectiveFile;
-	
+
 	/** Helper class for notifying interested parties of property changes */
 	private PropertyChangeSupport _propertyChangeSupport;
-	
+
 	private List<PreferenceChangeListener> _preferenceChangeListeners;
-	
+
 	/** Keeps track of whether this data set has been modified */
 	private boolean _modified;
-	
+
 	public EditorDataModel(AbstractObservableDataSet dataSet) {
 		super(dataSet);
 		_propertyChangeSupport = new PropertyChangeSupport(this);
@@ -67,32 +65,29 @@ public class EditorDataModel extends DataSetWrapper implements EditorViewModel, 
 		_selectedItem = null;
 		EditorPreferences.addPreferencesChangeListener(this);
 	}
-	
+
 	public void addPropertyChangeListener(PropertyChangeListener listener) {
 		_propertyChangeSupport.addPropertyChangeListener(listener);
 	}
-	
+
 	public void removePropertyChangeListener(PropertyChangeListener listener) {
 		_propertyChangeSupport.removePropertyChangeListener(listener);
 	}
-	
-	
+
 	@Override
 	public void setSelectedItem(Item selectedItem) {
 		_selectedItem = selectedItem;
 	}
-	
-	
+
 	@Override
 	public void setSelectedCharacter(Character selectedCharacter) {
-		if (_selectedCharacter == null || selectedCharacter == null || 
-				!_selectedCharacter.equals(selectedCharacter)) {
+		if (_selectedCharacter == null || selectedCharacter == null || !_selectedCharacter.equals(selectedCharacter)) {
 			_selectedState = -1;
 		}
-				
+
 		_selectedCharacter = selectedCharacter;
 	}
-	
+
 	@Override
 	public void setSelectedState(int state) {
 		if (!(_selectedCharacter instanceof MultiStateCharacter)) {
@@ -100,47 +95,46 @@ public class EditorDataModel extends DataSetWrapper implements EditorViewModel, 
 		}
 		_selectedState = state;
 	}
-	
+
 	@Override
 	public int getSelectedState() {
 		return _selectedState;
 	}
-	
+
 	@Override
 	public Item getSelectedItem() {
 		return _selectedItem;
 	}
-	
-	
+
 	@Override
 	public Character getSelectedCharacter() {
 		return _selectedCharacter;
 	}
-	
+
 	@Override
 	public Image getSelectedImage() {
 		return _selectedImage;
 	}
-	
+
 	@Override
 	public void setSelectedImage(Image image) {
 		_selectedImage = image;
 	}
-	
+
 	@Override
 	public DirectiveFile getSelectedDirectiveFile() {
 		return _selectedDirectiveFile;
 	}
-	
+
 	@Override
 	public void setSelectedDirectiveFile(DirectiveFile file) {
 		_selectedDirectiveFile = file;
 	}
-	
+
 	public ObservableDeltaDataSet getDeltaDataSet() {
 		return _wrappedDataSet;
 	}
-	
+
 	@Override
 	public void deleteItem(Item item) {
 		_wrappedDataSet.deleteItem(item);
@@ -148,7 +142,7 @@ public class EditorDataModel extends DataSetWrapper implements EditorViewModel, 
 			_selectedItem = null;
 		}
 	}
-	
+
 	@Override
 	public String getName() {
 		String name = _wrappedDataSet.getName();
@@ -157,7 +151,7 @@ public class EditorDataModel extends DataSetWrapper implements EditorViewModel, 
 		}
 		return name;
 	}
-	
+
 	@Override
 	public String getShortName() {
 		String name = _wrappedDataSet.getName();
@@ -167,7 +161,7 @@ public class EditorDataModel extends DataSetWrapper implements EditorViewModel, 
 		name = new File(name).getName();
 		return name;
 	}
-	
+
 	@Override
 	public String getImagePath() {
 		ImageSettings settings = getImageSettings();
@@ -176,11 +170,10 @@ public class EditorDataModel extends DataSetWrapper implements EditorViewModel, 
 		if (!file.isAbsolute()) {
 			imagePath = getDataSetPath() + imagePath;
 		}
-		
+
 		return imagePath;
 	}
-	
-	
+
 	@Override
 	public ImageSettings getImageSettings() {
 		ImageSettings settings = _wrappedDataSet.getImageSettings();
@@ -196,14 +189,14 @@ public class EditorDataModel extends DataSetWrapper implements EditorViewModel, 
 		File name = new File(getName());
 		String dataSetFolder = "";
 		if (name.isAbsolute()) {
-			dataSetFolder = name.getParent()+File.separator;
+			dataSetFolder = name.getParent() + File.separator;
 		}
 		return dataSetFolder;
 	}
-	
+
 	@Override
 	public void setName(String name) {
-		
+
 		_wrappedDataSet.setName(name);
 		_propertyChangeSupport.firePropertyChange("name", null, name);
 	}
@@ -214,50 +207,50 @@ public class EditorDataModel extends DataSetWrapper implements EditorViewModel, 
 		_wrappedDataSet.removeDeltaDataSetObserver(this);
 		_wrappedDataSet.close();
 	}
-	
+
 	public DirectiveFile addDirectiveFile(int fileNumber, String fileName, DirectiveType type) {
 		setModified(true);
 		return slotFileDataSet().addDirectiveFile(fileNumber, fileName, type);
 	}
-	
+
 	public int getDirectiveFileCount() {
 		return slotFileDataSet().getDirectiveFileCount();
 	}
-	
+
 	public DirectiveFile getDirectiveFile(int fileNumber) {
 		return slotFileDataSet().getDirectiveFile(fileNumber);
 	}
-	
+
 	@Override
 	public DirectiveFile getDirectiveFile(String fileName) {
 		return slotFileDataSet().getDirectiveFile(fileName);
 	}
-	
+
 	public void deleteDirectiveFile(DirectiveFile file) {
 		setModified(true);
 		slotFileDataSet().deleteDirectiveFile(file);
 	}
-	
+
 	private SlotFileDataSet slotFileDataSet() {
-		return (SlotFileDataSet)_wrappedDataSet;
+		return (SlotFileDataSet) _wrappedDataSet;
 	}
-	
+
 	public boolean isModified() {
 		return _wrappedDataSet.isModified();
 	}
-	
+
 	public void setModified(boolean modified) {
-		
+
 		if (modified != _modified) {
 			_propertyChangeSupport.firePropertyChange("modified", _modified, modified);
 		}
 		_modified = modified;
 	}
-	
+
 	public void addPreferenceChangeListener(PreferenceChangeListener listener) {
 		_preferenceChangeListeners.add(listener);
 	}
-	
+
 	public void removePreferenceChangeListener(PreferenceChangeListener listener) {
 		_preferenceChangeListeners.remove(listener);
 	}
@@ -316,9 +309,9 @@ public class EditorDataModel extends DataSetWrapper implements EditorViewModel, 
 		setModified(true);
 		super.characterEdited(event);
 	}
-	
+
 	@Override
-	public void characterTypeChanged(DeltaDataSetChangeEvent event) {	
+	public void characterTypeChanged(DeltaDataSetChangeEvent event) {
 		Character oldCharacter = event.getCharacter();
 		Character newCharacter = (Character) event.getExtraInformation();
 		if (_selectedCharacter == oldCharacter) {
@@ -326,7 +319,6 @@ public class EditorDataModel extends DataSetWrapper implements EditorViewModel, 
 		}
 		super.characterTypeChanged(event);
 	}
-	
 
 	@Override
 	public void imageEdited(DeltaDataSetChangeEvent event) {
@@ -335,7 +327,7 @@ public class EditorDataModel extends DataSetWrapper implements EditorViewModel, 
 	}
 
 	@Override
-	public void visitCharacters(CharacterVisitor visitor) {
+	public void visitCharacters(Visitor<Character> visitor) {
 		if (visitor != null) {
 			for (int i = 1; i <= getNumberOfCharacters(); ++i) {
 				Character character = getCharacter(i);
@@ -343,23 +335,23 @@ public class EditorDataModel extends DataSetWrapper implements EditorViewModel, 
 					break;
 				}
 			}
-		}		
+		}
 	}
 
 	@Override
-	public Collection<Character> selectCharacters(CharacterPredicate predicate) {
-		ArrayList<Character> results = new ArrayList<Character>();		
+	public Collection<Character> selectCharacters(Predicate<Character> predicate) {
+		ArrayList<Character> results = new ArrayList<Character>();
 		for (int i = 1; i <= getNumberOfCharacters(); ++i) {
 			Character ch = getCharacter(i);
 			if (predicate.test(ch)) {
 				results.add(ch);
 			}
-		}		
+		}
 		return results;
 	}
 
 	@Override
-	public Character firstCharacter(CharacterPredicate predicate, int startIndex, SearchDirection direction) {	
+	public Character firstCharacter(Predicate<Character> predicate, int startIndex, SearchDirection direction) {
 		if (direction == SearchDirection.Forward) {
 			for (int i = startIndex; i <= getNumberOfCharacters(); ++i) {
 				Character ch = getCharacter(i);
@@ -372,11 +364,33 @@ public class EditorDataModel extends DataSetWrapper implements EditorViewModel, 
 				Character ch = getCharacter(i);
 				if (predicate.test(ch)) {
 					return ch;
-				}				
+				}
 			}
 		}
-		
+
 		return null;
 	}
+	
+	@Override
+	public Item firstItem(Predicate<Item> predicate, int startIndex, SearchDirection direction) {
+		if (direction == SearchDirection.Forward) {
+			for (int i = startIndex; i <= getMaximumNumberOfItems(); ++i) {
+				Item item = getItem(i);
+				if (predicate.test(item)) {
+					return item;
+				}
+			}
+		} else {
+			for (int i = startIndex; i >= 1; --i) {
+				Item item = getItem(i);
+				if (predicate.test(item)) {
+					return item;
+				}
+			}
+		}
+
+		return null;
+	}
+	
 
 }

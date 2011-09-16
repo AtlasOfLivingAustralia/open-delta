@@ -1,13 +1,24 @@
 package au.org.ala.delta.editor.ui;
 
 import javax.swing.AbstractListModel;
+import javax.swing.ActionMap;
+import javax.swing.JComponent;
 import javax.swing.ListSelectionModel;
+
+import org.jdesktop.application.Application;
 
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.SearchDirection;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.model.observer.AbstractDataSetObserver;
 import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
+import au.org.ala.delta.ui.GenericSearchController;
+import au.org.ala.delta.ui.GenericSearchPredicate;
+import au.org.ala.delta.ui.SearchDialog;
+import au.org.ala.delta.ui.SearchOptions;
+import au.org.ala.delta.util.Predicate;
+import au.org.ala.delta.util.SearchableModel;
 
 /**
  * A specialized List for displaying DELTA Items.
@@ -23,7 +34,7 @@ public class ItemList extends SelectionList {
 	/**
 	 * A ListModel that uses a backing DeltaDataSet to obtain a list of Items to display in the list.
 	 */
-	class ItemListModel extends AbstractListModel {
+	class ItemListModel extends AbstractListModel implements SearchableModel<Item>{
 
 		private static final long serialVersionUID = 3730613528594711922L;
 		private EditorViewModel _dataSet;
@@ -71,6 +82,16 @@ public class ItemList extends SelectionList {
 				fireContentsChanged(ItemListModel.this, Math.min(oldIndex, newIndex)-1, Math.max(oldIndex, newIndex)-1);
 			}
 		}
+
+		@Override
+		public Item first(Predicate<Item> predicate, int startIndex, SearchDirection direction) {
+			return _dataSet.firstItem(predicate, startIndex, direction);
+		}
+
+		@Override
+		public int size() {
+			return this.getSize();
+		}
 	}
 	
 	/**
@@ -107,6 +128,19 @@ public class ItemList extends SelectionList {
 	public ItemList(EditorViewModel dataSet) {
 		this();
 		setDataSet(dataSet);
+		
+		ActionMap actionMap = Application.getInstance().getContext().getActionMap(this);
+		
+		javax.swing.Action find = actionMap.get("find");
+		if (find != null) {
+			getActionMap().put("find", find);
+		}
+
+		javax.swing.Action findNext = actionMap.get("findNext");
+		if (findNext != null) {
+			getActionMap().put("findNext", findNext);
+		}
+
 	}
 	
 	public void setDataSet(EditorViewModel dataSet) {
@@ -114,6 +148,88 @@ public class ItemList extends SelectionList {
 		
 	}
 	
+	private SearchDialog _search;
+
+	@org.jdesktop.application.Action
+	public void find() {
+		if (_search == null) {
+			_search = new SearchDialog(new ItemSearchController());
+		}
+		_search.setVisible(true);
+	}
 	
+	@org.jdesktop.application.Action
+	public void findNext() {
+		if (_search == null) {
+			find();
+			return;
+		}
+		
+		_search.findNext();
+	}
+	
+	class ItemSearchController extends GenericSearchController<Item> {
+
+		public ItemSearchController() {
+			super("findItem.title");
+		}
+
+		@Override
+		public JComponent getOwningComponent() {
+			return ItemList.this;
+		}
+
+		@Override
+		protected void selectItem(Item item) {
+			int index = item.getItemNumber() - 1;
+			setSelectedIndex(index);
+			ensureIndexIsVisible(index);			
+		}
+
+		@Override
+		protected void clearSelection() {
+			ItemList.this.clearSelection();
+			
+		}
+
+		@Override
+		protected SearchableModel<Item> getSearchableModel() {
+			return (ItemListModel) getModel();
+		}
+
+		@Override
+		protected int getSelectedIndex() {
+			return ItemList.this.getSelectedIndex();
+		}
+
+		@Override
+		protected int getIndexOf(Item object) {
+			return object.getItemNumber() - 1;
+		}
+
+		@Override
+		protected GenericSearchPredicate<Item> createPredicate(SearchOptions options) {
+			return new ItemSearchPredicate(options);
+		}
+		
+	}
+	
+	class ItemSearchPredicate extends GenericSearchPredicate<Item> {
+
+		protected ItemSearchPredicate(SearchOptions options) {
+			super(options);
+		}
+
+		@Override
+		public boolean test(Item item) {
+			String desc = item.getDescription();
+			if (!getOptions().isCaseSensitive()) {
+				return desc.toLowerCase().contains(getTerm());
+			}
+
+			return desc.contains(getTerm());
+		}
+		
+	}
 	
 }
