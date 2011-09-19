@@ -52,7 +52,7 @@ public class SortingUtils {
      */
     public static LinkedHashMap<au.org.ala.delta.model.Character, Double> orderBest(IntkeyContext context) {
         LinkedHashMap<Character, Double> retMap = new LinkedHashMap<Character, Double>();
-        
+
         IntkeyDataset dataset = context.getDataset();
         Specimen specimen = context.getSpecimen();
 
@@ -78,7 +78,6 @@ public class SortingUtils {
         for (Character ch : availableCharacters) {
 
             // TODO ignore EXACT characters that have been eliminated
-            // TODO ignore characters not "masked in" - excluded characters?
 
             // Ignore character if its reliability is zero
             if (ch.getReliability() == 0) {
@@ -97,7 +96,7 @@ public class SortingUtils {
             }
         }
         availableCharacters.removeAll(ignoredCharacters);
-        
+
         if (availableCharacters.isEmpty()) {
             // no available characters, so just return an empty map.
             return retMap;
@@ -105,18 +104,18 @@ public class SortingUtils {
 
         // Build list of remaining taxa
         int numAvailableTaxa = 0;
-        
-        //Put includedTaxa into a hash set to speed up membership lookup
+
+        // Put includedTaxa and eliminated taxa into hash sets to speed up
+        // membership lookup
         Set<Item> includedTaxa = new HashSet<Item>(context.getIncludedTaxa());
+        Set<Item> eliminatedTaxa = new HashSet<Item>(context.getEliminatedTaxa());
         Map<Item, Boolean> taxaAvailability = new HashMap<Item, Boolean>();
 
-        // TODO this line throws exception if no characters have been USEd yet
-        Map<Item, Integer> taxonDifferences = specimen.getTaxonDifferences();
         for (Item taxon : dataset.getTaxa()) {
 
             boolean ignore = false;
 
-            if (taxonDifferences != null && taxonDifferences.get(taxon) > context.getTolerance()) {
+            if (eliminatedTaxa.contains(taxon)) {
                 ignore = true;
             }
 
@@ -136,7 +135,7 @@ public class SortingUtils {
             }
 
         }
-        
+
         if (numAvailableTaxa == 0) {
             // no taxa are available - return empty map
             return retMap;

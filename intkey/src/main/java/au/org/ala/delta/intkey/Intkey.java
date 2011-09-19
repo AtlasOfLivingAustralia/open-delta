@@ -1280,13 +1280,13 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         _lblNumUsedCharacters.setText(String.format(usedCharactersCaption, _usedCharacterListModel.getSize()));
     }
 
-    private void updateAvailableTaxa(List<Item> availableTaxa, Map<Item, Integer> taxaDifferenceCounts) {
+    private void updateAvailableTaxa(List<Item> availableTaxa, Map<Item, Set<Character>> taxaDifferingCharacters) {
         _availableTaxaListModel = new DefaultListModel();
 
-        if (_context.getTolerance() > 0 && taxaDifferenceCounts != null) {
+        if (_context.getTolerance() > 0 && taxaDifferingCharacters != null) {
             // sort available taxa by difference count
-            Collections.sort(availableTaxa, new DifferenceCountComparator(taxaDifferenceCounts));
-            _availableTaxaCellRenderer = new TaxonWithDifferenceCountCellRenderer(taxaDifferenceCounts);
+            Collections.sort(availableTaxa, new DifferenceCountComparator(taxaDifferingCharacters));
+            _availableTaxaCellRenderer = new TaxonWithDifferenceCountCellRenderer(taxaDifferingCharacters);
         } else {
             _availableTaxaCellRenderer = new TaxonCellRenderer();
         }
@@ -1303,9 +1303,9 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         _listRemainingTaxa.repaint();
     }
 
-    private void updateUsedTaxa(List<Item> eliminatedTaxa, Map<Item, Integer> taxaDifferenceCounts) {
+    private void updateUsedTaxa(List<Item> eliminatedTaxa, Map<Item, Set<Character>> taxaDifferingCharacters) {
         // sort eliminated taxa by difference count
-        Collections.sort(eliminatedTaxa, new DifferenceCountComparator(taxaDifferenceCounts));
+        Collections.sort(eliminatedTaxa, new DifferenceCountComparator(taxaDifferingCharacters));
 
         _eliminatedTaxaListModel = new DefaultListModel();
 
@@ -1313,7 +1313,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             _eliminatedTaxaListModel.addElement(taxon);
         }
 
-        _eliminatedTaxaCellRenderer = new TaxonWithDifferenceCountCellRenderer(taxaDifferenceCounts);
+        _eliminatedTaxaCellRenderer = new TaxonWithDifferenceCountCellRenderer(taxaDifferingCharacters);
 
         _listEliminatedTaxa.setCellRenderer(_eliminatedTaxaCellRenderer);
         _listEliminatedTaxa.setModel(_eliminatedTaxaListModel);
@@ -2102,16 +2102,16 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     private class DifferenceCountComparator implements Comparator<Item> {
 
-        private Map<Item, Integer> _differenceCounts;
+        private Map<Item, Set<Character>> _taxaDifferingCharacters;
 
-        public DifferenceCountComparator(Map<Item, Integer> differenceCounts) {
-            _differenceCounts = differenceCounts;
+        public DifferenceCountComparator(Map<Item, Set<Character>> taxaDifferingCharacters) {
+            _taxaDifferingCharacters = taxaDifferingCharacters;
         }
 
         @Override
         public int compare(Item t1, Item t2) {
-            int diffT1 = _differenceCounts.get(t1);
-            int diffT2 = _differenceCounts.get(t2);
+            int diffT1 = _taxaDifferingCharacters.get(t1).size();
+            int diffT2 = _taxaDifferingCharacters.get(t2).size();
 
             if (diffT1 == diffT2) {
                 return t1.compareTo(t2);

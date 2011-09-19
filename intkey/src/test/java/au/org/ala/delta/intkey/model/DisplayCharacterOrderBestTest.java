@@ -1,9 +1,7 @@
 package au.org.ala.delta.intkey.model;
 
-import java.io.File;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -11,8 +9,6 @@ import java.util.Map;
 import org.junit.Test;
 
 import au.org.ala.delta.intkey.directives.UseDirective;
-import au.org.ala.delta.intkey.model.IntkeyContext;
-import au.org.ala.delta.intkey.model.SortingUtils;
 import au.org.ala.delta.model.Character;
 
 public class DisplayCharacterOrderBestTest extends IntkeyDatasetTestCase {

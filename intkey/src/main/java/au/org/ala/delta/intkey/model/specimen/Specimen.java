@@ -40,7 +40,7 @@ public class Specimen {
      */
     private Map<Character, Integer> _characterInapplicabilityCounts;
 
-    private Map<Item, Integer> _taxonDifferences;
+    private Map<Item, Set<Character>> _taxonDifferences;
 
     public Specimen(IntkeyDataset dataset, boolean matchInapplicables, boolean matchUnknowns, MatchType matchType) {
         _characterValues = new LinkedHashMap<Character, CharacterValue>();
@@ -52,6 +52,12 @@ public class Specimen {
         _matchInapplicables = matchInapplicables;
         _matchUnknowns = matchUnknowns;
         _matchType = matchType;
+
+        // initialise the taxon differences table
+        _taxonDifferences = new HashMap<Item, Set<Character>>();
+        for (Item taxon : _dataset.getTaxa()) {
+            _taxonDifferences.put(taxon, new HashSet<Character>());
+        }
     }
 
     public boolean hasValueFor(Character ch) {
@@ -67,11 +73,13 @@ public class Specimen {
 
         // Do nothing if no value recorded for the supplied character
         if (valToRemove != null) {
-            
-            // IMPORTANT - differences table must be updated first, if _characterValues
-            // is modified first then the differences table will be updated incorrectly! 
-            updateDifferencesTable(valToRemove, true);            
-            
+
+            // IMPORTANT - differences table must be updated first, if
+            // _characterValues
+            // is modified first then the differences table will be updated
+            // incorrectly!
+            updateDifferencesTable(valToRemove, true);
+
             _characterValues.remove(ch);
 
             // If this is a controlling character, also need to remove values
@@ -110,7 +118,7 @@ public class Specimen {
         if (!ch.equals(value.getCharacter())) {
             throw new IllegalArgumentException(String.format("Invalid value for character %s", ch.toString()));
         }
-        
+
         if (isCharacterInapplicable(ch)) {
             throw new IllegalArgumentException(String.format("Cannot set character %s - this character is inapplicable", ch.toString()));
         }
@@ -120,15 +128,6 @@ public class Specimen {
         // the character.
         if (hasValueFor(ch) && getValueForCharacter(ch).equals(value)) {
             return;
-        }
-
-        // initialise the taxon differences table if it has not already been
-        // initialized.
-        if (_taxonDifferences == null) {
-            _taxonDifferences = new HashMap<Item, Integer>();
-            for (Item taxon : _dataset.getTaxa()) {
-                _taxonDifferences.put(taxon, 0);
-            }
         }
 
         if (hasValueFor(ch)) {
@@ -226,29 +225,30 @@ public class Specimen {
                 throw new RuntimeException(String.format("Unrecognised CharacterValue subtype %s", val.getClass().getName()));
             }
 
-            int currentDiffCount = 0;
-            if (_taxonDifferences.containsKey(taxon)) {
-                currentDiffCount = _taxonDifferences.get(taxon);
-            }
+            // int currentDiffCount = 0;
+            // if (_taxonDifferences.containsKey(taxon)) {
+            // currentDiffCount = _taxonDifferences.get(taxon);
+            // }
+
+            Set<Character> differingCharacters = _taxonDifferences.get(taxon);
 
             if (removed && !match) {
-                _taxonDifferences.put(taxon, Math.max(0, currentDiffCount - 1));
+                // _taxonDifferences.put(taxon, Math.max(0, currentDiffCount -
+                // 1));
+                differingCharacters.remove(val.getCharacter());
             } else if (!removed && !match) {
-                _taxonDifferences.put(taxon, currentDiffCount + 1);
+                // _taxonDifferences.put(taxon, currentDiffCount + 1);
+                differingCharacters.add(val.getCharacter());
             }
         }
     }
 
-    public Map<Item, Integer> getTaxonDifferences() {
-
-        if (_characterValues.size() == 0) {
-            return null;
-        }
-
-        // defensive copy
-        return new HashMap<Item, Integer>(_taxonDifferences);
+    // No defensive copy for efficiency reasons. The returned map should not be
+    // modified
+    public Map<Item, Set<Character>> getTaxonDifferences() {
+        return _taxonDifferences;
     }
-    
+
     public Set<Character> getInapplicableCharacters() {
         return new HashSet<Character>(_characterInapplicabilityCounts.keySet());
     }

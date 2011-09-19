@@ -3,6 +3,7 @@ package au.org.ala.delta.intkey.model;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.math.FloatRange;
 import org.junit.Test;
@@ -15,6 +16,7 @@ import au.org.ala.delta.intkey.model.specimen.MultiStateValue;
 import au.org.ala.delta.intkey.model.specimen.RealValue;
 import au.org.ala.delta.intkey.model.specimen.Specimen;
 import au.org.ala.delta.intkey.model.specimen.TextValue;
+import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.IntegerCharacter;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
@@ -252,14 +254,14 @@ public class UseDirectiveTest extends IntkeyDatasetTestCase {
         Specimen specimen = context.getSpecimen();
         assertEquals(Arrays.asList(ds.getCharacter(2), ds.getCharacter(3)), specimen.getUsedCharacters());
 
-        Map<Item, Integer> taxonDifferences = specimen.getTaxonDifferences();
-        assertEquals(5, taxonDifferences.size());
+        Map<Item, Set<au.org.ala.delta.model.Character>> taxonDifferingCharacters = specimen.getTaxonDifferences();
+        assertEquals(5, taxonDifferingCharacters.size());
 
-        assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(1)));
-        assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(2)));
-        assertEquals(0, (int) taxonDifferences.get(ds.getTaxon(3)));
-        assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(4)));
-        assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(5)));
+        assertEquals(1, taxonDifferingCharacters.get(ds.getTaxon(1)).size());
+        assertEquals(1, taxonDifferingCharacters.get(ds.getTaxon(2)).size());
+        assertEquals(0, taxonDifferingCharacters.get(ds.getTaxon(3)).size());
+        assertEquals(1, taxonDifferingCharacters.get(ds.getTaxon(4)).size());
+        assertEquals(1, taxonDifferingCharacters.get(ds.getTaxon(5)).size());
 
         List<au.org.ala.delta.model.Character> availableCharacters = context.getAvailableCharacters();
         assertTrue(availableCharacters.contains(ds.getCharacter(1)));
@@ -275,14 +277,14 @@ public class UseDirectiveTest extends IntkeyDatasetTestCase {
 
         assertEquals(Arrays.asList(ds.getCharacter(2), ds.getCharacter(3)), specimen.getUsedCharacters());
 
-        taxonDifferences = specimen.getTaxonDifferences();
-        assertEquals(5, taxonDifferences.size());
+        taxonDifferingCharacters = specimen.getTaxonDifferences();
+        assertEquals(5, taxonDifferingCharacters.size());
 
-        assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(1)));
-        assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(2)));
-        assertEquals(0, (int) taxonDifferences.get(ds.getTaxon(3)));
-        assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(4)));
-        assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(5)));
+        assertEquals(1, taxonDifferingCharacters.get(ds.getTaxon(1)).size());
+        assertEquals(1, taxonDifferingCharacters.get(ds.getTaxon(2)).size());
+        assertEquals(0, taxonDifferingCharacters.get(ds.getTaxon(3)).size());
+        assertEquals(1, taxonDifferingCharacters.get(ds.getTaxon(4)).size());
+        assertEquals(1, taxonDifferingCharacters.get(ds.getTaxon(5)).size());
 
         availableCharacters = context.getAvailableCharacters();
         assertTrue(availableCharacters.contains(ds.getCharacter(1)));
@@ -508,23 +510,23 @@ public class UseDirectiveTest extends IntkeyDatasetTestCase {
         Specimen specimen = context.getSpecimen();
         assertEquals(Arrays.asList(ds.getCharacter(32), ds.getCharacter(38)), specimen.getUsedCharacters());
 
-        Map<Item, Integer> taxonDifferences = specimen.getTaxonDifferences();
-        assertEquals(14, taxonDifferences.size());
+        Map<Item, Set<Character>> taxonDifferingCharacters = specimen.getTaxonDifferences();
+        assertEquals(14, taxonDifferingCharacters.size());
 
-        assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(1)));
-        assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(2)));
-        assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(3)));
-        assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(4)));
-        assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(5)));
-        assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(6)));
-        assertEquals(0, (int) taxonDifferences.get(ds.getTaxon(7)));
-        assertEquals(0, (int) taxonDifferences.get(ds.getTaxon(8)));
-        assertEquals(0, (int) taxonDifferences.get(ds.getTaxon(9)));
-        assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(10)));
-        assertEquals(0, (int) taxonDifferences.get(ds.getTaxon(11)));
-        assertEquals(0, (int) taxonDifferences.get(ds.getTaxon(12)));
-        assertEquals(0, (int) taxonDifferences.get(ds.getTaxon(13)));
-        assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(14)));
+        assertEquals(1, taxonDifferingCharacters.get(ds.getTaxon(1)).size());
+        assertEquals(1, taxonDifferingCharacters.get(ds.getTaxon(2)).size());
+        assertEquals(1, taxonDifferingCharacters.get(ds.getTaxon(3)).size());
+        assertEquals(1, taxonDifferingCharacters.get(ds.getTaxon(4)).size());
+        assertEquals(1, taxonDifferingCharacters.get(ds.getTaxon(5)).size());
+        assertEquals(1, taxonDifferingCharacters.get(ds.getTaxon(6)).size());
+        assertEquals(0, taxonDifferingCharacters.get(ds.getTaxon(7)).size());
+        assertEquals(0, taxonDifferingCharacters.get(ds.getTaxon(8)).size());
+        assertEquals(0, taxonDifferingCharacters.get(ds.getTaxon(9)).size());
+        assertEquals(1, taxonDifferingCharacters.get(ds.getTaxon(10)).size());
+        assertEquals(0, taxonDifferingCharacters.get(ds.getTaxon(11)).size());
+        assertEquals(0, taxonDifferingCharacters.get(ds.getTaxon(12)).size());
+        assertEquals(0, taxonDifferingCharacters.get(ds.getTaxon(13)).size());
+        assertEquals(1, taxonDifferingCharacters.get(ds.getTaxon(14)).size());
     }
 
     /**
@@ -551,14 +553,14 @@ public class UseDirectiveTest extends IntkeyDatasetTestCase {
         Specimen specimen = context.getSpecimen();
         assertEquals(Arrays.asList(ds.getCharacter(2), ds.getCharacter(3), ds.getCharacter(4)), specimen.getUsedCharacters());
 
-        Map<Item, Integer> taxonDifferences = specimen.getTaxonDifferences();
-        assertEquals(5, taxonDifferences.size());
+        Map<Item, Set<Character>> taxonDifferingCharacters = specimen.getTaxonDifferences();
+        assertEquals(5, taxonDifferingCharacters.size());
 
-        assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(1)));
-        assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(2)));
-        assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(3)));
-        assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(4)));
-        assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(5)));
+        assertEquals(1, taxonDifferingCharacters.get(ds.getTaxon(1)).size());
+        assertEquals(1, taxonDifferingCharacters.get(ds.getTaxon(2)).size());
+        assertEquals(1, taxonDifferingCharacters.get(ds.getTaxon(3)).size());
+        assertEquals(1, taxonDifferingCharacters.get(ds.getTaxon(4)).size());
+        assertEquals(1, taxonDifferingCharacters.get(ds.getTaxon(5)).size());
     }
 
     /**
@@ -586,14 +588,14 @@ public class UseDirectiveTest extends IntkeyDatasetTestCase {
         Specimen specimen = context.getSpecimen();
         assertEquals(Arrays.asList(ds.getCharacter(2)), specimen.getUsedCharacters());
 
-        Map<Item, Integer> taxonDifferences = specimen.getTaxonDifferences();
-        assertEquals(5, taxonDifferences.size());
+        Map<Item, Set<Character>> taxonDifferingCharacters = specimen.getTaxonDifferences();
+        assertEquals(5, taxonDifferingCharacters.size());
 
-        assertEquals(0, (int) taxonDifferences.get(ds.getTaxon(1)));
-        assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(2)));
-        assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(3)));
-        assertEquals(1, (int) taxonDifferences.get(ds.getTaxon(4)));
-        assertEquals(0, (int) taxonDifferences.get(ds.getTaxon(5)));
+        assertEquals(0, taxonDifferingCharacters.get(ds.getTaxon(1)).size());
+        assertEquals(1, taxonDifferingCharacters.get(ds.getTaxon(2)).size());
+        assertEquals(1, taxonDifferingCharacters.get(ds.getTaxon(3)).size());
+        assertEquals(1, taxonDifferingCharacters.get(ds.getTaxon(4)).size());
+        assertEquals(0, taxonDifferingCharacters.get(ds.getTaxon(5)).size());
     }
 
     /**

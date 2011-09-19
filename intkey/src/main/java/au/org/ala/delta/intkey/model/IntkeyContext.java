@@ -112,7 +112,8 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     private boolean _charactersFixed;
     private List<Integer> _fixedCharactersList;
-    
+    private Set<Integer> _exactCharactersSet;
+
     private boolean _autoTolerance;
 
     /**
@@ -171,8 +172,7 @@ public class IntkeyContext extends AbstractDeltaContext {
     }
 
     /**
-     * Called to set the initial state at the beginning of the identification of
-     * a specimen
+     * Called to set the initial state when a new dataset is loaded
      */
     private void initializeIdentification() {
         // Use linked hashmap so that the keys list will be returned in
@@ -204,6 +204,8 @@ public class IntkeyContext extends AbstractDeltaContext {
         _taxonInformationDialogCommands = new ArrayList<Pair<String, String>>();
 
         _charactersFixed = false;
+        _fixedCharactersList = new ArrayList<Integer>();
+        _exactCharactersSet = new HashSet<Integer>();
     }
 
     /**
@@ -373,7 +375,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         processInputFile(initializationFile);
     }
 
-    //TODO Does this belong here?
+    // TODO Does this belong here?
     public void parseAndExecuteDirective(String command) {
         try {
             _directiveParser.parse(new StringReader(command), this);
@@ -456,23 +458,25 @@ public class IntkeyContext extends AbstractDeltaContext {
         // are no longer
         // valid
         _bestCharacters = null;
-        
-        //if the autotolerance (as specified by SET AUTOTOLERANCE directive) is on,
-        //reduce the tolerance to the smallest value such that the number of taxa remaining is non-zero.
+
+        // if the autotolerance (as specified by SET AUTOTOLERANCE directive) is
+        // on,
+        // reduce the tolerance to the smallest value such that the number of
+        // taxa remaining is non-zero.
         if (_autoTolerance) {
-            Map<Item, Integer> taxonDifferences = _specimen.getTaxonDifferences();
-            
+            Map<Item, Set<Character>> taxaDifferingCharacters = _specimen.getTaxonDifferences();
+
             int minDiff = Integer.MAX_VALUE;
-            for (int taxonDiffCount: taxonDifferences.values()) {
-                if (taxonDiffCount < minDiff) {
-                    minDiff = taxonDiffCount;
+            for (Set<Character> differingCharacters : taxaDifferingCharacters.values()) {
+                if (differingCharacters.size() < minDiff) {
+                    minDiff = differingCharacters.size();
                 }
-                
+
                 if (minDiff == 0) {
                     break;
                 }
             }
-            
+
             _tolerance = minDiff;
         }
 
@@ -617,25 +621,9 @@ public class IntkeyContext extends AbstractDeltaContext {
         if (keyword.equals(TAXON_KEYWORD_ALL)) {
             return _dataset.getTaxa();
         } else if (keyword.equals(TAXON_KEYWORD_ELIMINATED)) {
-            Map<Item, Integer> diffTable = _specimen.getTaxonDifferences();
-            for (Item taxon : diffTable.keySet()) {
-                int diffCount = diffTable.get(taxon);
-                if (diffCount > _tolerance) {
-                    retList.add(taxon);
-                }
-            }
+            return getEliminatedTaxa();
         } else if (keyword.equals(TAXON_KEYWORD_REMAINING)) {
-            Map<Item, Integer> diffTable = _specimen.getTaxonDifferences();
-            if (diffTable == null) {
-                retList.addAll(_dataset.getTaxa());
-            } else {
-                for (Item taxon : diffTable.keySet()) {
-                    int diffCount = diffTable.get(taxon);
-                    if (diffCount <= _tolerance) {
-                        retList.add(taxon);
-                    }
-                }
-            }
+            return getAvailableTaxa();
         } else {
             // TODO match if supplied text matches the beginning of a taxon name
             Set<Integer> taxaNumbersSet = _userDefinedCharacterKeywords.get(keyword);
@@ -687,15 +675,15 @@ public class IntkeyContext extends AbstractDeltaContext {
         List<String> retList = new ArrayList<String>();
         retList.add(TAXON_KEYWORD_ALL);
 
-        Map<Item, Integer> taxonDifferences = _specimen.getTaxonDifferences();
+        Map<Item, Set<Character>> taxonDifferingCharacters = _specimen.getTaxonDifferences();
 
         int remainingTaxaCount = 0;
 
-        if (taxonDifferences == null) {
+        if (taxonDifferingCharacters == null) {
             remainingTaxaCount = _dataset.getNumberOfTaxa();
         } else {
-            for (Item taxon : taxonDifferences.keySet()) {
-                int diffCount = taxonDifferences.get(taxon);
+            for (Item taxon : taxonDifferingCharacters.keySet()) {
+                int diffCount = taxonDifferingCharacters.get(taxon).size();
                 if (diffCount <= _tolerance) {
                     remainingTaxaCount++;
                 }
@@ -1052,41 +1040,45 @@ public class IntkeyContext extends AbstractDeltaContext {
     }
 
     public List<Item> getAvailableTaxa() {
-        Map<Item, Integer> taxaDifferenceCounts = _specimen.getTaxonDifferences();
-
-        List<Item> includedTaxa = getIncludedTaxa();
-        List<Item> availableTaxa = new ArrayList<Item>();
-
-        if (taxaDifferenceCounts != null) {
-            for (Item taxon : includedTaxa) {
-                if (taxaDifferenceCounts.containsKey(taxon)) {
-                    int diffCount = taxaDifferenceCounts.get(taxon);
-                    if (diffCount <= _tolerance) {
-                        availableTaxa.add(taxon);
-                    }
-                } else {
-                    availableTaxa.add(taxon);
-                }
-            }
-        } else {
-            availableTaxa.addAll(includedTaxa);
-        }
-
+        List<Item> availableTaxa = getIncludedTaxa();
+        availableTaxa.removeAll(getEliminatedTaxa());
         return availableTaxa;
     }
 
     public List<Item> getEliminatedTaxa() {
-        Map<Item, Integer> taxaDifferenceCounts = _specimen.getTaxonDifferences();
+        Map<Item, Set<Character>> taxaDifferingCharacters = _specimen.getTaxonDifferences();
 
         List<Item> includedTaxa = getIncludedTaxa();
         List<Item> eliminatedTaxa = new ArrayList<Item>();
 
-        if (taxaDifferenceCounts != null) {
+        if (taxaDifferingCharacters != null) {
             for (Item taxon : includedTaxa) {
-                if (taxaDifferenceCounts.containsKey(taxon)) {
-                    int diffCount = taxaDifferenceCounts.get(taxon);
-                    if (diffCount > _tolerance) {
+                if (taxaDifferingCharacters.containsKey(taxon)) {
+
+                    // A taxon is eliminated if:
+                    // 1. Its value for a character specifed as an "exact"
+                    // character does not match
+                    // the value set in the specimen
+                    // 2. The total number of characters for the taxon whose
+                    // values differ to the specimen
+                    // is greater than the tolerance setting.
+                    Set<Character> taxonDifferingCharacters = taxaDifferingCharacters.get(taxon);
+
+                    boolean nonMatchingExactCharacter = false;
+                    for (Character ch : taxonDifferingCharacters) {
+                        if (isCharacterExact(ch)) {
+                            nonMatchingExactCharacter = true;
+                            break;
+                        }
+                    }
+
+                    if (nonMatchingExactCharacter) {
                         eliminatedTaxa.add(taxon);
+                    } else {
+                        int diffCount = taxaDifferingCharacters.get(taxon).size();
+                        if (diffCount > _tolerance) {
+                            eliminatedTaxa.add(taxon);
+                        }
                     }
                 }
             }
@@ -1195,7 +1187,7 @@ public class IntkeyContext extends AbstractDeltaContext {
                     _fixedCharactersList.add(usedCharacter.getCharacterId());
                 }
             } else {
-                _fixedCharactersList = null;
+                _fixedCharactersList = new ArrayList<Integer>();
                 restartIdentification();
             }
         }
@@ -1208,13 +1200,29 @@ public class IntkeyContext extends AbstractDeltaContext {
     public List<Integer> getFixedCharactersList() {
         return _fixedCharactersList;
     }
-    
+
     public boolean isAutoTolerance() {
         return _autoTolerance;
     }
 
     public void setAutoTolerance(boolean autoTolerance) {
         this._autoTolerance = autoTolerance;
+    }
+
+    public Set<Character> getExactCharacters() {
+        Set<Character> exactCharacters = new HashSet<Character>();
+        for (int charNum : _exactCharactersSet) {
+            exactCharacters.add(_dataset.getCharacter(charNum));
+        }
+        return exactCharacters;
+    }
+
+    public void SetExactCharacters(Set<Integer> characters) {
+        _exactCharactersSet = new HashSet<Integer>(characters);
+    }
+
+    private boolean isCharacterExact(Character ch) {
+        return _exactCharactersSet.contains(ch.getCharacterId());
     }
 
     private class StartupFileLoader extends SwingWorker<Void, String> {
