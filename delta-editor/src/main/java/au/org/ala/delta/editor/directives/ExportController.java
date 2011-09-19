@@ -11,13 +11,10 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ResourceMap;
-import org.jdesktop.application.TaskEvent;
-import org.jdesktop.application.TaskListener;
 
 import au.org.ala.delta.editor.DeltaEditor;
 import au.org.ala.delta.editor.directives.ui.ExportViewModel;
 import au.org.ala.delta.editor.directives.ui.ImportExportDialog;
-import au.org.ala.delta.editor.directives.ui.ImportExportStatusDialog;
 import au.org.ala.delta.editor.directives.ui.ImportExportViewModel;
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.slotfile.Directive;
@@ -73,14 +70,10 @@ public class ExportController {
 	 * @param files the files to export.
 	 */
 	public void doExport(File selectedDirectory, List<DirectiveFileInfo> files) {
-		ImportExportStatusDialog statusDialog = new ImportExportStatusDialog(
-				_editor.getMainFrame(), "export");
-		_editor.show(statusDialog);
 
-		// Do the import on a background thread.
-		DoExportTask importTask = new DoExportTask(selectedDirectory, files, false);
-		importTask.addTaskListener(new StatusUpdater(statusDialog));
-		importTask.execute();
+		// Do the export on a background thread.
+		DoExportTask exportTask = new DoExportTask(selectedDirectory, files, false);
+		exportTask.execute();
 	}
 	
 	@Action
@@ -162,7 +155,7 @@ public class ExportController {
 
 			buildSpecialDirFiles();
 			
-			DirectiveInOutState state = new DirectiveInOutState(_model);
+			DirectiveInOutState state = new StatusUpdatingState(_model, _status);
 			for (DirectiveFileInfo file : _files) {
 				DirectiveFile dirFile = file.getDirectiveFile();
 				if (dirFile != null) {
@@ -180,25 +173,25 @@ public class ExportController {
 			return null;
 		}
 	}
-
+	
 	/**
-	 * Listens for import progress and updates the Status Dialog.
+	 * Wraps the DirectiveInOutState to allow status updates during the 
+	 * export operation.
 	 */
-	private class StatusUpdater extends
-			TaskListener.Adapter<Void, ImportExportStatus> {
-
-		private ImportExportStatusDialog _statusDialog;
-
-		public StatusUpdater(ImportExportStatusDialog statusDialog) {
-			_statusDialog = statusDialog;
+	private class StatusUpdatingState extends DirectiveInOutState {
+		
+		private ImportExportStatus _status;
+		public StatusUpdatingState(EditorViewModel model, ImportExportStatus status) {
+			super(model);
+			_status = status;
 		}
 
 		@Override
-		public void process(TaskEvent<List<ImportExportStatus>> event) {
-
-			_statusDialog.update(event.getValue().get(0));
+		public void setCurrentDirective(DirectiveInstance directive) {
+			
+			_status.setCurrentDirective(directive);
+			super.setCurrentDirective(directive);
 		}
-
 	}
 	
 	private void buildSpecialDirFiles() {

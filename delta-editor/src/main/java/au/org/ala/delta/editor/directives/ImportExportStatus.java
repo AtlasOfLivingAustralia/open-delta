@@ -10,6 +10,9 @@ import au.org.ala.delta.directives.AbstractDeltaContext;
 import au.org.ala.delta.directives.AbstractDirective;
 import au.org.ala.delta.directives.Heading;
 import au.org.ala.delta.directives.Show;
+import au.org.ala.delta.directives.args.DirectiveArguments;
+import au.org.ala.delta.editor.slotfile.DirectiveInstance;
+import au.org.ala.delta.editor.slotfile.directive.ConforDirType;
 import au.org.ala.delta.rtf.RTFBuilder;
 import au.org.ala.delta.rtf.RTFBuilder.Alignment;
 import au.org.ala.delta.util.ArrayUtils;
@@ -157,6 +160,33 @@ public class ImportExportStatus  {
 			textFromLastShowDirective = data;
 		}
 		else if (ArrayUtils.equalsIgnoreCase(Heading.CONTROL_WORDS, directive.getControlWords())) {
+			heading = data;
+		}
+	}
+	
+	public void setCurrentDirective(DirectiveInstance directive) {
+		directivesInCurentFile++;
+		totalDirectives++;
+		String name = directive.getDirective().joinNameComponents();
+		currentDirective = name;
+		
+		if (directive.getDirective().getNumber() == ConforDirType.SHOW) {
+			_logBuilder.increaseIndent();
+			String data = "";
+			DirectiveArguments args = directive.getDirectiveArguments();
+			if (args != null) {
+				data = args.getFirstArgumentText();
+			}
+			_logBuilder.appendText("*"+name+" "+data);
+			_logBuilder.decreaseIndent();
+			textFromLastShowDirective = data;
+		}
+		else if (directive.getDirective().getNumber() == ConforDirType.HEADING) {
+			String data = "";
+			DirectiveArguments args = directive.getDirectiveArguments();
+			if (args != null) {
+				data = args.getFirstArgumentText();
+			}
 			heading = data;
 		}
 	}
