@@ -24,6 +24,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
@@ -181,7 +182,9 @@ public class ActionSetsDialog extends AbstractDeltaView {
 			break;
 		}
 		try {
-			Runtime.getRuntime().exec(new String[]{program, file.getFileName()});
+			String name = file.getShortFileName();
+			String fileName = FilenameUtils.concat(_model.getDataSetPath(), name);
+			Runtime.getRuntime().exec(new String[]{program, "\""+fileName+"\""});
 		}
 		catch (Exception e) {
 			_messageHelper.errorRunningDirectiveFile(file.getShortFileName());
