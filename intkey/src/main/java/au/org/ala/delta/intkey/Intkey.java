@@ -1169,9 +1169,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
             break;
         case NATURAL:
-            List<Character> availableCharacters = new ArrayList<Character>(_context.getIncludedCharacters());
-            availableCharacters.removeAll(_context.getSpecimen().getUsedCharacters());
-            Collections.sort(availableCharacters);
+            List<Character> availableCharacters = new ArrayList<Character>(_context.getAvailableCharacters());
             _lblNumAvailableCharacters.setText(String.format(availableCharactersCaption, availableCharacters.size()));
             if (availableCharacters.size() == 0) {
                 handleNoAvailableCharacters();
