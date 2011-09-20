@@ -22,7 +22,7 @@ public class SetExactDirectiveInvocation implements IntkeyDirectiveInvocation {
             characterNumbers.add(ch.getCharacterId());
         }
         
-        context.SetExactCharacters(characterNumbers);
+        context.setExactCharacters(characterNumbers);
         return true;
     }
 

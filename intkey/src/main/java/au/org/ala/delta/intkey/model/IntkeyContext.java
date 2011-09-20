@@ -1220,7 +1220,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         return exactCharacters;
     }
 
-    public void SetExactCharacters(Set<Integer> characters) {
+    public void setExactCharacters(Set<Integer> characters) {
         _exactCharactersSet = new HashSet<Integer>(characters);
     }
 
