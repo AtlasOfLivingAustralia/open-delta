@@ -95,6 +95,7 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     private DiagType _diagType;
     private int _diagLevel;
+    private int _stopBest;
 
     private IntkeyCharacterOrder _characterOrder;
 
@@ -194,6 +195,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         _rbase = 1.1;
         _varyWeight = 1;
         _diagLevel = 1;
+        
 
         _characterOrder = IntkeyCharacterOrder.BEST;
         _bestCharacters = null;
@@ -341,6 +343,7 @@ public class IntkeyContext extends AbstractDeltaContext {
             _appUI.handleNewDataset(_dataset);
         }
 
+        _stopBest = _dataset.getNumberOfCharacters();
     }
 
     /**
@@ -1223,6 +1226,14 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     private boolean isCharacterExact(Character ch) {
         return _exactCharactersSet.contains(ch.getCharacterId());
+    }
+    
+    public int getStopBest() {
+        return _stopBest;
+    }
+
+    public void setStopBest(int stopBest) {
+        this._stopBest = stopBest;
     }
 
     private class StartupFileLoader extends SwingWorker<Void, String> {

@@ -77,7 +77,7 @@ public class SortingUtils {
         List<Character> ignoredCharacters = new ArrayList<Character>();
         for (Character ch : availableCharacters) {
 
-            // TODO ignore EXACT characters that have been eliminated
+            // TODO ignore EXACT characters that have been eliminated????
 
             // Ignore character if its reliability is zero
             if (ch.getReliability() == 0) {
