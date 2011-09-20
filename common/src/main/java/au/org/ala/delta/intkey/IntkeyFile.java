@@ -4,7 +4,10 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import au.org.ala.delta.io.BinFile;
 import au.org.ala.delta.io.BinFileEncoding;
@@ -26,11 +29,11 @@ public class IntkeyFile extends BinFile {
     public static final int DATASET_MAJOR_VERSION = 5;
     public static final int DATASET_MINOR_VERSION = 2;
     
-    private int _recordCount;
+    private Set<Integer> _occupiedRecords;
     
 	public IntkeyFile(String fileName, BinFileMode mode) {
 		super(fileName, mode);
-		_recordCount = 0;
+		_occupiedRecords = new HashSet<Integer>();
 	}
 	
 	/**
@@ -65,14 +68,11 @@ public class IntkeyFile extends BinFile {
 		
 		System.out.println("Writing :"+numRecords+", starting at record: "+recordNumber);
 		
-		if (numRecords > 1 && recordNumber != _recordCount) {
-			throw new RuntimeException("Writing "+(numBytes + offset)+ " bytes to a record will overwrite the next record");
-		}
-		if (_recordCount < recordNumber) {
-			_recordCount = recordNumber;
-		}
-		if (numRecords > 1) {
-			_recordCount+=numRecords-1;
+		for (int i=recordNumber; i<recordNumber+numRecords; i++) {
+			if (_occupiedRecords.contains(i)) {
+				throw new RuntimeException("Writing "+(numBytes + offset)+ " bytes to a record will overwrite the next record");
+			}
+			_occupiedRecords.add(i);
 		}
 		return numRecords;
 	}
@@ -116,9 +116,6 @@ public class IntkeyFile extends BinFile {
 	 */
 	public int writeToRecord(int recordNumber, int offset, String value) {
 		byte[] notesBytes = BinFileEncoding.encode(value);
-		if (notesBytes.length > Byte.MAX_VALUE) {
-			throw new RuntimeException("Maximum allowed size is :"+Byte.MAX_VALUE);
-		}
 		
 		return writeToRecord(recordNumber, offset, notesBytes);
 	}
@@ -130,6 +127,25 @@ public class IntkeyFile extends BinFile {
 			bytes.putInt(value);
 		}
 		return writeToRecord(recordNumber, 0, bytes.array());
+	}
+	
+	/**
+	 * Designed to allow headers and index records to be overwritten.
+	 * @param recordNumber the first (of possibily many, depending on the
+	 * number of values) record to be overwritten.
+	 * @param values the values to write, starting at record, recordNumber..
+	 */
+	public void overwriteRecord(int recordNumber, List<Integer> values) {
+		if (!_occupiedRecords.contains(recordNumber)) {
+			throw new IllegalArgumentException("Record "+recordNumber+" has not been allocated.");
+		}
+		ByteBuffer bytes = ByteBuffer.allocate(values.size() * SIZE_INT_IN_BYTES);
+		bytes.order(ByteOrder.LITTLE_ENDIAN);
+		for (int value : values) {
+			bytes.putInt(value);
+		}
+		seekToRecord(recordNumber, 0);
+		write(bytes.array());
 	}
 	
 	public int writeBooleansToRecord(int recordNumber, List<Boolean> values) {
@@ -150,16 +166,13 @@ public class IntkeyFile extends BinFile {
 		return writeToRecord(recordNumber, 0, bytes.array());
 	}
 	
-	
-
-	public int getRecordCount() {
-		return _recordCount;
-	}
-	
-	public int newRecord() {
-		_recordCount++;
-		seekToRecord(_recordCount+1);
-		return _recordCount;
+	public int nextAvailableRecord() {
+		int max = 0;
+		if (_occupiedRecords.size() > 0) {
+		    max = Collections.max(_occupiedRecords);
+		}
+		seekToRecord(max+1);
+		return max+1;
 	}
 	
 	// Note that records are 1 indexed.
@@ -207,7 +220,7 @@ public class IntkeyFile extends BinFile {
      */
     public void writeIndexedValues(int indexRecordNum, String[] values) {
     	int[] indicies = new int[values.length];
-    	int recordNum = newRecord();
+    	int recordNum = indexRecordNum + (int)Math.floor(indicies.length/RECORD_LENGTH_INTEGERS) + 1;
     	for (int i=0; i<values.length; i++) {
     		indicies[i] = recordNum;
     		recordNum += writeStringWithLength(recordNum, values[i]);

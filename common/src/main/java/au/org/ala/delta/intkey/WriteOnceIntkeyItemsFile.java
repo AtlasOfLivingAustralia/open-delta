@@ -27,19 +27,25 @@ public class WriteOnceIntkeyItemsFile extends IntkeyFile {
 	}
 	
 	public void createHeader(int numCharacters, int numItems) {
-		newRecord();
+		nextAvailableRecord();
 		_header = new ItemsFileHeader();
 		_header.setLRec(RECORD_LENGTH_INTEGERS);
 		_header.setNItem(numItems);
 		_header.setNChar(numCharacters);
 		_header.setMajorVer(DATASET_MAJOR_VERSION);
 		_header.setMinorVer(DATASET_MINOR_VERSION);
+		// This is done to allocate the first record to the header.
+		writeHeader();
+	}
+	
+	public void writeHeader() {
+		writeToRecord(1, _header.toInts());	
 	}
 	
 	public void writeItemDescrptions(List<String> descriptions) {
 		checkItemListLength(descriptions);
 		checkEmpty(_header.getRpTnam());
-		int startRecord = newRecord();
+		int startRecord = nextAvailableRecord();
 		_header.setRpTnam(startRecord);
 		
 		writeStringsWithOffsetsToRecord(startRecord, descriptions);
@@ -50,7 +56,7 @@ public class WriteOnceIntkeyItemsFile extends IntkeyFile {
 		checkCharacterListLength(numStates);
 		checkCharacterListLength(characterReliabilities);
 		checkEmpty(_header.getRpSpec());
-		int record = newRecord();
+		int record = nextAvailableRecord();
 		_header.setRpSpec(record);
 		
 		record += writeToRecord(record, characterTypes);
@@ -62,7 +68,7 @@ public class WriteOnceIntkeyItemsFile extends IntkeyFile {
 		checkCharacterListLength(minMaxValues);
 		
 		checkEmpty(_header.getRpMini());
-		int record = newRecord();
+		int record = nextAvailableRecord();
 		_header.setRpMini(record);
 		
 		List<Integer> minValues = new ArrayList<Integer>();
@@ -77,7 +83,7 @@ public class WriteOnceIntkeyItemsFile extends IntkeyFile {
 	
 	public void writeCharacterDependencies(List<Integer> dependencyData, List<Integer> invertedDependencyData) {
 		checkEmpty(_header.getRpCdep());
-		int record = newRecord();
+		int record = nextAvailableRecord();
 		_header.setRpCdep(record);
 		
 		record += writeToRecord(record, dependencyData);
@@ -106,21 +112,25 @@ public class WriteOnceIntkeyItemsFile extends IntkeyFile {
 	private int updateCharacterIndex(int charNumber) {
 		int indexRecord = _header.getRpCdat();
 		List<Integer> indicies = null;
+		int next = 0;
 		if (indexRecord == 0) {
-			indexRecord = newRecord();
+			indexRecord = nextAvailableRecord();
 			_header.setRpCdat(indexRecord);
 			Integer[] indiciesArray = new Integer[_header.getNChar()];
 			Arrays.fill(indiciesArray, Integer.valueOf(0));
 			indicies = Arrays.asList(indiciesArray);
-			
+			next = indexRecord + indiciesArray.length / RECORD_LENGTH_INTEGERS + 1;
+			indicies.set(charNumber-1, next);
+			writeToRecord(indexRecord, indicies);
 		}
 		else {
 			indicies = readIntegerList(indexRecord, _header.getNChar());
+			next = nextAvailableRecord();
+			indicies.set(charNumber-1, next);
+			overwriteRecord(indexRecord, indicies);
 		}
-		int record = newRecord();
-		indicies.set(charNumber-1, record);
-		writeToRecord(indexRecord, indicies);
-		return record;
+		
+		return next;
 	}
 	
 	public void writeAttributeFloats(int charNumber, BitSet inapplicableBits, List<FloatRange> values) {
@@ -156,14 +166,20 @@ public class WriteOnceIntkeyItemsFile extends IntkeyFile {
 		checkEmpty(_header.getRpNkbd());
 		checkCharacterListLength(keyStateBoundaries);
 		
-		int indexRecord = newRecord();
+		int indexRecord = nextAvailableRecord();
 		_header.setRpNkbd(indexRecord);
 		
 		List<Integer> index = new ArrayList<Integer>();
+		// Write the index to allocate the record.
+		for (int i=0; i<keyStateBoundaries.size(); i++) {
+			index.add(0);
+		}
+		writeToRecord(indexRecord, index);
+		index = new ArrayList<Integer>();
 		
 		for (List<Float> charBoundaries : keyStateBoundaries) {
 			if (charBoundaries.size() > 0) {
-				int recordNum = newRecord();
+				int recordNum = nextAvailableRecord();
 				index.add(recordNum);
 				writeToRecord(recordNum, charBoundaries.size());
 				writeFloatsToRecord(recordNum+1, charBoundaries);
@@ -173,14 +189,15 @@ public class WriteOnceIntkeyItemsFile extends IntkeyFile {
 				index.add(0);
 			}
 		}
-		writeToRecord(indexRecord, index);
+		// Now update the index
+		overwriteRecord(indexRecord, index);
 	}
 	
 	public void writeTaxonImages(List<String> images) {
 		checkEmpty(_header.getRpTimages());
 		checkItemListLength(images);
 		
-		int indexRecord = newRecord();
+		int indexRecord = nextAvailableRecord();
 		_header.setRpTimages(indexRecord);
 		
 		writeIndexedValues(indexRecord, images.toArray(new String[images.size()]));
@@ -198,7 +215,7 @@ public class WriteOnceIntkeyItemsFile extends IntkeyFile {
 		checkEmpty(_header.getRpCsynon());
 		checkCharacterListLength(synonomy);
 		
-		int record = newRecord();
+		int record = nextAvailableRecord();
 		_header.setRpTimages(record);
 		
 		writeBooleansToRecord(record, synonomy);
@@ -208,7 +225,7 @@ public class WriteOnceIntkeyItemsFile extends IntkeyFile {
 		checkEmpty(_header.getRpOmitOr());
 		checkCharacterListLength(omitOr);
 		
-		int record = newRecord();
+		int record = nextAvailableRecord();
 		_header.setRpOmitOr(record);
 		
 		writeBooleansToRecord(record, omitOr);
@@ -216,7 +233,7 @@ public class WriteOnceIntkeyItemsFile extends IntkeyFile {
 	
 	public void writeUseControllingFirst(Set<Integer> useControllingChars) {
 		checkEmpty(_header.getRpUseCc());
-		int record = newRecord();
+		int record = nextAvailableRecord();
 		_header.setRpUseCc(record);
 		
 		writeAsBooleans(useControllingChars, record);
@@ -235,7 +252,7 @@ public class WriteOnceIntkeyItemsFile extends IntkeyFile {
 		checkEmpty(taxonLinksIndex[0]);
 		checkItemListLength(taxonLinks);
 		
-		int indexRecord = newRecord();
+		int indexRecord = nextAvailableRecord();
 		taxonLinksIndex[0] = indexRecord;
 		_header.setRpTlinks(taxonLinksIndex);
 		
@@ -244,7 +261,7 @@ public class WriteOnceIntkeyItemsFile extends IntkeyFile {
 	
 	public void writeOmitPeriod(Set<Integer> omitPeriod) {
 		checkEmpty(_header.getRpOmitPeriod());
-		int record = newRecord();
+		int record = nextAvailableRecord();
 		_header.setRpOmitPeriod(record);
 		
 		writeAsBooleans(omitPeriod, record);
@@ -252,7 +269,7 @@ public class WriteOnceIntkeyItemsFile extends IntkeyFile {
 	
 	public void writeNewParagraph(Set<Integer> newParagraph) {
 		checkEmpty(_header.getRpNewPara());
-		int record = newRecord();
+		int record = nextAvailableRecord();
 		_header.setRpNewPara(record);
 		
 		writeAsBooleans(newParagraph, record);
@@ -260,7 +277,7 @@ public class WriteOnceIntkeyItemsFile extends IntkeyFile {
 	
 	public void writeNonAutoControllingChars(Set<Integer> nonAutoCC) {
 		checkEmpty(_header.getRpNonAutoCc());
-		int record = newRecord();
+		int record = nextAvailableRecord();
 		_header.setRpNonAutoCc(record);
 		
 		writeAsBooleans(nonAutoCC, record);

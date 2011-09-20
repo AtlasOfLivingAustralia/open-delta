@@ -52,6 +52,10 @@ public class IntkeyItemsFileWriter {
 		_context = context;
 	}
 	
+	public void writeAll() {
+		
+	}
+	
 	public void writeItemDescrptions() {
 		
 		List<String> descriptions = new ArrayList<String>(_dataSet.getMaximumNumberOfItems());

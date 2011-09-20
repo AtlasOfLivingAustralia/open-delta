@@ -256,7 +256,7 @@ public class IntkeyCharactersFileWriterTest extends TestCase {
 		List<ImageInfo> images = createImages();
 		_context.setImages(ImageType.IMAGE_CHARACTER_KEYWORD, images);
 		
-		_charsFileWriter.writeCharacterKeyImages();
+		_charsFileWriter.writeCharacterKeywordImages();
 		
 		checkImages();
 	}

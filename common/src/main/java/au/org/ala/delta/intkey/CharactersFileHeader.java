@@ -1,5 +1,8 @@
 package au.org.ala.delta.intkey;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class CharactersFileHeader {
 
     private int _nc;
@@ -189,4 +192,29 @@ public class CharactersFileHeader {
         this._cptr = cptr;
     }
 
+    public List<Integer> toInts() {
+    	List<Integer> ints = new ArrayList<Integer>();
+    	ints.add(_nc);
+    	ints.add(_maxDes);
+    	ints.add(rpCdes);
+    	ints.add(rpStat);
+    	ints.add(rpChlp);
+    	ints.add(rpChlpGrp);
+    	ints.add(rpChlpFmt1);
+    	ints.add(rpChlpFmt2);
+    	ints.add(rpCImagesC);
+    	ints.add(rpStartupImages);
+    	ints.add(rpCKeyImages);
+    	ints.add(rpTKeyImages);
+    	ints.add(rpHeading);
+    	ints.add(rpRegSubHeading);
+    	ints.add(rpValidationString);
+    	ints.add(rpCharacterMask);
+    	ints.add(rpOrWord);
+    	ints.add(rpCheckForCd);
+    	ints.add(rpFont);
+    	ints.add(rpItemSubHead);
+    	
+    	return ints;
+    }
 }

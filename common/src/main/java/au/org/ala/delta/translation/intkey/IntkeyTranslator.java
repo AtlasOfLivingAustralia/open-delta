@@ -7,6 +7,9 @@ import au.org.ala.delta.io.BinFileMode;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.translation.DataSetTranslator;
 
+/**
+ * Translates a DELTA data set into the format used by the INTKEY program.
+ */
 public class IntkeyTranslator implements DataSetTranslator {
 
 	private DeltaContext _context;
@@ -24,6 +27,7 @@ public class IntkeyTranslator implements DataSetTranslator {
 		WriteOnceIntkeyCharsFile charsFile = new WriteOnceIntkeyCharsFile(
 				_dataSet.getNumberOfCharacters(), fileName , BinFileMode.FM_APPEND);
 		IntkeyCharactersFileWriter charsWriter = new IntkeyCharactersFileWriter(_context, charsFile);
+		charsWriter.writeAll();
 	}
 	
 	@Override
@@ -32,6 +36,7 @@ public class IntkeyTranslator implements DataSetTranslator {
 		
 		WriteOnceIntkeyItemsFile itemsFile = new WriteOnceIntkeyItemsFile(
 				_dataSet.getNumberOfCharacters(), _dataSet.getMaximumNumberOfItems(), fileName, BinFileMode.FM_APPEND);
-		IntkeyItemsFileWriter itemWriter = new IntkeyItemsFileWriter(_context, itemsFile);
+		IntkeyItemsFileWriter itemsWriter = new IntkeyItemsFileWriter(_context, itemsFile);
+		itemsWriter.writeAll();
 	}
 }

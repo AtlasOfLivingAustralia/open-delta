@@ -40,7 +40,29 @@ public class IntkeyCharactersFileWriter {
 		_context = context;
 	}
 	
-	public void writeCharacterNotes() {
+	public void writeAll() {
+		
+		writeCharacterFeatures();
+		writeCharacterNotes();
+		writeCharacterNotesFormat();
+		writeCharacterNotesHelpFormat();
+		writeCharacterImages();
+		writeStartupImages();
+		writeCharacterKeywordImages();
+		writeTaxonKeywordImages();
+		writeHeading();
+		writeSubHeading();
+		writeCharacterMask();
+		writeOrWord();
+		writeFonts();
+		writeItemSubheadings();
+		
+		// Need to write the header last as it is updated as each section 
+		// is written.
+		_charsFile.writeHeader();
+	}
+	
+	protected void writeCharacterNotes() {
 		List<String> allNotes = new ArrayList<String>(_dataSet.getNumberOfCharacters());
 		for (int i=1; i<=_dataSet.getNumberOfCharacters(); i++) {
 			Character character = _dataSet.getCharacter(i);
@@ -51,7 +73,7 @@ public class IntkeyCharactersFileWriter {
 	}
 	
 	
-	public void writeCharacterFeatures() {
+	protected void writeCharacterFeatures() {
 		List<List<String>> features = new ArrayList<List<String>>();
 		
 		for (int i=1; i<=_dataSet.getNumberOfCharacters(); i++) {
@@ -66,7 +88,10 @@ public class IntkeyCharactersFileWriter {
 				}
 			}
 			else if (character.getCharacterType().isNumeric()) {
-				feature.add(((NumericCharacter<?>)character).getUnits());
+				NumericCharacter<?> numericChar = (NumericCharacter<?>)character;
+				if (numericChar.hasUnits()) {
+					feature.add(numericChar.getUnits());
+				}
 			}
 			features.add(feature);
 		}
@@ -74,7 +99,7 @@ public class IntkeyCharactersFileWriter {
 		_charsFile.writeCharacterFeatures(features);
 	}
 	
-	public void writeCharacterNotesFormat() {
+	protected void writeCharacterNotesFormat() {
 		TypeSettingMark mark = _context.getFormattingMark(CharacterNoteMarks.CHARACTER_NOTES_FORMAT);
 		String markText = "";
 		if (mark != null) {
@@ -83,7 +108,7 @@ public class IntkeyCharactersFileWriter {
 		_charsFile.writeCharacterNotesFormat(markText);
 	}
 	
-	public void writeCharacterNotesHelpFormat() {
+	protected void writeCharacterNotesHelpFormat() {
 		TypeSettingMark mark = _context.getFormattingMark(CharacterNoteMarks.CHARACTER_NOTES_HELP_FORMAT);
 		String markText = "";
 		if (mark != null) {
@@ -92,7 +117,7 @@ public class IntkeyCharactersFileWriter {
 		_charsFile.writeCharacterNotesHelpFormat(markText);
 	}
 	
-	public void writeCharacterImages() {
+	protected void writeCharacterImages() {
 		List<String> imageList = new ArrayList<String>(_dataSet.getNumberOfCharacters());
 	
 		
@@ -121,7 +146,7 @@ public class IntkeyCharactersFileWriter {
 		return new ImageOverlayWriter(writer);
 	}
 	
-	public void writeStartupImages() {
+	protected void writeStartupImages() {
 		List<ImageInfo> startupImages = _context.getImages(ImageType.IMAGE_STARTUP);
 		String images = imagesToString(startupImages);
 		_charsFile.writeStartupImages(images);
@@ -140,32 +165,38 @@ public class IntkeyCharactersFileWriter {
 		return buffer.toString();
 	}
 	
-	public void writeCharacterKeyImages() {
-		List<ImageInfo> startupImages = _context.getImages(ImageType.IMAGE_CHARACTER_KEYWORD);
-		String images = imagesToString(startupImages);
+	protected void writeCharacterKeywordImages() {
+		List<ImageInfo> imageInfo = _context.getImages(ImageType.IMAGE_CHARACTER_KEYWORD);
+		String images = imagesToString(imageInfo);
 		_charsFile.writeCharacterKeyImages(images);
 	}
 	
-	public void writeHeading() {
+	protected void writeTaxonKeywordImages() {
+		List<ImageInfo> imageInfo = _context.getImages(ImageType.IMAGE_TAXON_KEYWORD);
+		String images = imagesToString(imageInfo);
+		_charsFile.writeTaxonKeyImages(images);
+	}
+	
+	protected void writeHeading() {
 		String heading = _context.getHeading(HeadingType.HEADING);
 		_charsFile.writeHeading(heading);
 	}
 	
-	public void writeSubHeading() {
+	protected void writeSubHeading() {
 		String heading = _context.getHeading(HeadingType.REGISTRATION_SUBHEADING);
 		_charsFile.writeSubHeading(heading);
 	}
 	
-	public void writeCharacterMask() {
+	protected void writeCharacterMask() {
 		
 	}
 	
-	public void writeOrWord() {
+	protected void writeOrWord() {
 		String orWord = Words.word(Word.OR);
 		_charsFile.writeOrWord(orWord);
 	}
 	
-	public void writeFonts() {
+	protected void writeFonts() {
 		List<String> fonts = new ArrayList<String>();
 		ImageSettings settings = _dataSet.getImageSettings();
 		
@@ -175,7 +206,7 @@ public class IntkeyCharactersFileWriter {
 		_charsFile.writeFonts(fonts);
 	}
 	
-	private void addFontText(List<String> fonts, FontInfo font, OverlayFontType type) {
+	protected void addFontText(List<String> fonts, FontInfo font, OverlayFontType type) {
 		if (font != null) {
 			StringBuilder fontText = new StringBuilder();
 			OverlayFontWriter writer = createOverlayFontWriter(fontText);
@@ -190,7 +221,7 @@ public class IntkeyCharactersFileWriter {
 		return new OverlayFontWriter(writer);
 	}
 	
-	public void writeItemSubheadings() {
+	protected void writeItemSubheadings() {
 		List<String> subHeadings = new ArrayList<String>();
 		for (int i=1; i<=_dataSet.getNumberOfCharacters(); i++) {
 			
@@ -201,10 +232,12 @@ public class IntkeyCharactersFileWriter {
 		
 	}
 	
-	private void add(List<String> values, String value) {
+	protected void add(List<String> values, String value) {
 		if (value == null) {
 			value = "";
 		}
 		values.add(value);
 	}
+
+
 }

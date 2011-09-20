@@ -33,14 +33,14 @@ public class Logger {
 
     public static void error(String format, Object... args) {
         String message = String.format(format, args);
-        _logger.fine(message);
+        _logger.severe(message);
     }
     
     public static void error(Throwable th) {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         th.printStackTrace(pw);
-        _logger.fine(sw.toString());
+        _logger.severe(sw.toString());
     }
 
 }

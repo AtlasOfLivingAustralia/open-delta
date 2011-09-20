@@ -93,13 +93,13 @@ public class IntkeyItemsFileWriterTest extends TestCase {
 		String item3 = _dataSet.getItem(3).getDescription();
 		
 		int totalLength = item1.length()+item2.length()+item3.length();
-		int offset = readInt(2);
+		int offset = readInt(3);
 		assertEquals(0, offset);
 		assertEquals(item1.length(), _itemsFile.readInt());
 		assertEquals(item1.length()+item2.length(), _itemsFile.readInt());
 		assertEquals(totalLength, _itemsFile.readInt());
 	
-		assertEquals(item1+item2+item3, readString(3, totalLength));	
+		assertEquals(item1+item2+item3, readString(4, totalLength));	
 		
 	}
 	
@@ -111,15 +111,15 @@ public class IntkeyItemsFileWriterTest extends TestCase {
 		
 		_itemsFileWriter.writeCharacterSpecs();
 		
-		int[] charTypes = readInts(2, 2);
+		int[] charTypes = readInts(3, 2);
 		assertEquals(1, charTypes[0]);
 		assertEquals(5, charTypes[1]);
 		
-		int[] numStates = readInts(3, 2);
+		int[] numStates = readInts(4, 2);
 		assertEquals(3, numStates[0]);
 		assertEquals(0, numStates[1]);
 		
-		float[] reliabilities = readFloats(4, 2);
+		float[] reliabilities = readFloats(5, 2);
 		assertEquals(10.1f, reliabilities[0]);
 		assertEquals(3.3f, reliabilities[1]);
 		
@@ -140,13 +140,13 @@ public class IntkeyItemsFileWriterTest extends TestCase {
 		
 		_itemsFileWriter.writeCharacterDependencies();
 		
-		int[] charDepData = readInts(2, 10);
+		int[] charDepData = readInts(3, 10);
 		int[] expected = {4,0,0,0,0,7,7,1,3,4};
 		for (int i=0; i<expected.length; i++) {
 			assertEquals(expected[i], charDepData[i]);
 		}
 		
-		int[] invCharDepData = readInts(3, 8);
+		int[] invCharDepData = readInts(4, 8);
 		expected = new int[] {0,0,4,6,1,1,1,1};
 		for (int i=0; i<expected.length; i++) {
 			assertEquals(expected[i], invCharDepData[i]);
@@ -156,18 +156,18 @@ public class IntkeyItemsFileWriterTest extends TestCase {
 	@Test 
 	public void testWriteAttributeData() {
 		_itemsFileWriter.writeAttributeData();
-		int[] indicies = readInts(2, 4);
+		int[] indicies = readInts(3, 4);
 		// Record where char 1 attributes are encoded.
-		assertEquals(3, indicies[0]);
+		assertEquals(4, indicies[0]);
 		// Record where char 2 attributes are encoded.
-		assertEquals(4, indicies[1]);
+		assertEquals(5, indicies[1]);
 		// Record where char 3 attributes are encoded.
-		assertEquals(7, indicies[2]);
+		assertEquals(8, indicies[2]);
 		// Record where char 4 attributes are encoded.
-		assertEquals(8, indicies[3]);
+		assertEquals(9, indicies[3]);
 		// Record where ...
 		
-		int[] multistateAttributes = readInts(3, 1);
+		int[] multistateAttributes = readInts(4, 1);
 		
 		// Expect
 		// attribute 1:  0101
@@ -176,7 +176,7 @@ public class IntkeyItemsFileWriterTest extends TestCase {
 		
 		
 		// Text character (character 2)
-		int[] inappliableBits = readInts(4, 1);
+		int[] inappliableBits = readInts(5, 1);
 		assertEquals(0, inappliableBits[0]);
 		
 		String attribute12 = _dataSet.getAttribute(1, 2).getValueAsString();
@@ -184,13 +184,13 @@ public class IntkeyItemsFileWriterTest extends TestCase {
 		String attribute32 = "";
 		
 		int totalLength = attribute12.length()+attribute22.length()+attribute32.length();
-		int offset = readInt(5);
+		int offset = readInt(6);
 		assertEquals(0, offset);
 		assertEquals(attribute12.length(), _itemsFile.readInt());
 		assertEquals(attribute12.length()+attribute22.length(), _itemsFile.readInt());
 		assertEquals(totalLength, _itemsFile.readInt());
 	
-		assertEquals(attribute12+attribute22+attribute32, readString(6, totalLength));	
+		assertEquals(attribute12+attribute22+attribute32, readString(7, totalLength));	
 		
 		// Integer character (character 3)
 		// attribute 1 is "(1-)2-3/6-8", attribute 2 is "4", attribute 3 null.
@@ -199,7 +199,7 @@ public class IntkeyItemsFileWriterTest extends TestCase {
 		// attribute 1: 0111001110
 		// attribute 2: 0000010000
 		// attribute 3: 0000000000
-		int[] intAttributeBits = readInts(7, 1);
+		int[] intAttributeBits = readInts(8, 1);
 		assertEquals(16846, intAttributeBits[0]);
 		
 		
@@ -207,9 +207,9 @@ public class IntkeyItemsFileWriterTest extends TestCase {
 		// attribute 1 is "4.4".
 		// attribute 2 is "5.1-7.9". 
 		// attribute 3 is null.
-		inappliableBits = readInts(8, 1);
+		inappliableBits = readInts(9, 1);
 		assertEquals(0, inappliableBits[0]);
-		float[] values = readFloats(9, 6);
+		float[] values = readFloats(10, 6);
 		float[] expected = {4.4f, 4.4f, 5.1f, 7.9f, Float.MAX_VALUE, -Float.MAX_VALUE};
 		for (int i=0;i<expected.length; i++) {
 			assertEquals(expected[i], values[i]);
@@ -217,8 +217,8 @@ public class IntkeyItemsFileWriterTest extends TestCase {
 		
 		// Integer min/max values are stored next.
 		// only character 3 is an integer character, it's range is 1-8
-		int[] mins = readInts(10, 4);
-		int[] max = readInts(11, 4);
+		int[] mins = readInts(11, 4);
+		int[] max = readInts(12, 4);
 		int[] expectedMins = {0, 0, 1, 0};
 		int[] expectedMaxes = {0, 0, 8, 0};
 		for (int i=0; i<expectedMins.length; i++) {
@@ -227,17 +227,17 @@ public class IntkeyItemsFileWriterTest extends TestCase {
 		}
 		
 		// Then real character key state boundaries.
-		int[] index = readInts(12, 4);
-		int[] expectedIndex = {0, 0, 0, 13};
+		int[] index = readInts(13, 4);
+		int[] expectedIndex = {0, 0, 0, 14};
 		for (int i=0; i<expectedIndex.length; i++) {
 			assertEquals(expectedIndex[i], index[i]);
 		}
 		
-		int[] keyStateBoundaryCount = readInts(13, 1);
+		int[] keyStateBoundaryCount = readInts(14, 1);
 		assertEquals(3, keyStateBoundaryCount[0]);
 		
 		float[] expectedFloats = {4.4f, 5.1f, 7.9f};
-		float[] actualFloats = readFloats(14, 3);
+		float[] actualFloats = readFloats(15, 3);
 		for (int i=0; i<expectedFloats.length; i++) {
 			assertEquals(expectedFloats[i], actualFloats[i]);
 		}

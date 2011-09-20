@@ -22,16 +22,22 @@ public class WriteOnceIntkeyCharsFile extends IntkeyFile {
 	}
 	
 	public void createHeader(int numCharacters) {
-		newRecord();
+		nextAvailableRecord();
 		_header = new CharactersFileHeader();
 		_header.setNC(numCharacters);
+		// This is done to allocate the first record to the header.
+		writeHeader();
+	}
+	
+	public void writeHeader() {
+		writeToRecord(1, _header.toInts());
 	}
 	
 	public void writeCharacterNotes(List<String> notes) {
 		checkEmpty(_header.getRpChlp());
 		checkLength(notes);
 		
-		int notesIndexRecord = newRecord();
+		int notesIndexRecord = nextAvailableRecord();
 		_header.setRpChlp(notesIndexRecord);
 		
 		writeIndexedValues(notesIndexRecord, notes.toArray(new String[notes.size()]));
@@ -45,12 +51,12 @@ public class WriteOnceIntkeyCharsFile extends IntkeyFile {
 		checkEmpty(_header.getRpCdes());
 		checkLength(features);
 		
-		int indexRecord = newRecord();
+		int indexRecord = nextAvailableRecord();
 		int[] indicies = new int[features.size()];
 		int[] numStates = new int[features.size()];
 		_header.setRpCdes(indexRecord);
 		
-		int recordNum = newRecord();
+		int recordNum = indexRecord + (int)Math.floor(indicies.length/RECORD_LENGTH_INTEGERS) + 1;
 		for (int i=0; i<features.size(); i++) {
 			indicies[i] = recordNum;
 			// The first value is always the feature description (hence the -1)
@@ -66,7 +72,7 @@ public class WriteOnceIntkeyCharsFile extends IntkeyFile {
 	public void writeCharacterNotesFormat(String format) {
 		checkEmpty(_header.getRpChlpFmt1());
 		
-		int recordNum = newRecord();
+		int recordNum = nextAvailableRecord();
 		_header.setRpChlpFmt1(recordNum);
 		writeCharacterNotesFormat(_header.getRpChlpFmt1(), format);
 	}
@@ -74,7 +80,7 @@ public class WriteOnceIntkeyCharsFile extends IntkeyFile {
 	public void writeCharacterNotesHelpFormat(String format) {
 		checkEmpty(_header.getRpChlpFmt2());
 		
-		int recordNum = newRecord();
+		int recordNum = nextAvailableRecord();
 		_header.setRpChlpFmt2(recordNum);
 		writeCharacterNotesFormat(_header.getRpChlpFmt2(), format);
 	}
@@ -87,7 +93,7 @@ public class WriteOnceIntkeyCharsFile extends IntkeyFile {
 		checkEmpty(_header.getRpCImagesC());
 		checkLength(charImages);
 		
-		int indexRecord = newRecord();
+		int indexRecord = nextAvailableRecord();
 		_header.setRpCImagesC(indexRecord);
 		
 		writeIndexedValues(indexRecord, charImages.toArray(new String[charImages.size()]));
@@ -96,7 +102,7 @@ public class WriteOnceIntkeyCharsFile extends IntkeyFile {
 	public void writeStartupImages(String startupImages) {
 		checkEmpty(_header.getRpStartupImages());
 		
-		int recordNum = newRecord();
+		int recordNum = nextAvailableRecord();
 		_header.setRpStartupImages(recordNum);
 		
 		writeStringWithLength(recordNum, startupImages);
@@ -105,16 +111,25 @@ public class WriteOnceIntkeyCharsFile extends IntkeyFile {
 	public void writeCharacterKeyImages(String characterKeyImages) {
 		checkEmpty(_header.getRpCKeyImages());
 		
-		int recordNum = newRecord();
+		int recordNum = nextAvailableRecord();
 		_header.setRpCKeyImages(recordNum);
 		
 		writeStringWithLength(recordNum, characterKeyImages);
 	}
 	
+	public void writeTaxonKeyImages(String taxonKeyImages) {
+		checkEmpty(_header.getRpTKeyImages());
+		
+		int recordNum = nextAvailableRecord();
+		_header.setRpTKeyImages(recordNum);
+		
+		writeStringWithLength(recordNum, taxonKeyImages);
+	}
+	
 	public void writeHeading(String heading) {
 		checkEmpty(_header.getRpHeading());
 		
-		int recordNum = newRecord();
+		int recordNum = nextAvailableRecord();
 		_header.setRpHeading(recordNum);
 		
 		writeStringWithLength(recordNum, heading);
@@ -123,7 +138,7 @@ public class WriteOnceIntkeyCharsFile extends IntkeyFile {
 	public void writeSubHeading(String subHeading) {
 		checkEmpty(_header.getRpRegSubHeading());
 		
-		int recordNum = newRecord();
+		int recordNum = nextAvailableRecord();
 		_header.setRpRegSubHeading(recordNum);
 		
 		writeStringWithLength(recordNum, subHeading);
@@ -131,7 +146,7 @@ public class WriteOnceIntkeyCharsFile extends IntkeyFile {
 	
 	public void writeValidationString(String validationString) {
 		checkEmpty(_header.getRpValidationString());
-		int recordNum = newRecord();
+		int recordNum = nextAvailableRecord();
 		_header.setRpValidationString(recordNum);
 		writeStringWithLength(recordNum, validationString);
 	}
@@ -139,7 +154,7 @@ public class WriteOnceIntkeyCharsFile extends IntkeyFile {
 	public void writeCharacterMask(int originalNumChars, BitSet characters) {
 		checkEmpty(_header.getRpCharacterMask());
 	
-		int recordNum = newRecord();
+		int recordNum = nextAvailableRecord();
 		_header.setRpCharacterMask(recordNum);
 		
 		List<Integer> values = new ArrayList<Integer>();
@@ -151,7 +166,7 @@ public class WriteOnceIntkeyCharsFile extends IntkeyFile {
 	public void writeOrWord(String orWord) {
 		checkEmpty(_header.getRpOrWord());
 		
-		int recordNum = newRecord();
+		int recordNum = nextAvailableRecord();
 		_header.setRpOrWord(recordNum);
 		
 		writeStringWithLength(recordNum, orWord);
@@ -160,7 +175,7 @@ public class WriteOnceIntkeyCharsFile extends IntkeyFile {
 	public void writeFonts(List<String> fonts) {
 		checkEmpty(_header.getRpFont());
 		
-		int recordNum = newRecord();
+		int recordNum = nextAvailableRecord();
 		_header.setRpFont(recordNum);
 		
 		writeToRecord(recordNum, fonts.size());
@@ -171,7 +186,7 @@ public class WriteOnceIntkeyCharsFile extends IntkeyFile {
 		checkEmpty(_header.getRpItemSubHead());
 		checkLength(itemSubHeadings);
 		
-		int recordNum = newRecord();
+		int recordNum = nextAvailableRecord();
 		_header.setRpItemSubHead(recordNum);
 		writeIndexedValues(recordNum, itemSubHeadings.toArray(new String[itemSubHeadings.size()]));
 	}

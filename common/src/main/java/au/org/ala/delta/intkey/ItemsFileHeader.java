@@ -1,12 +1,16 @@
 package au.org.ala.delta.intkey;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class ItemsFileHeader {
     
     private int _nItem;
     private int _nChar;
     private int _ms;
-    private int _lRec;
+    // TODO should be contants.RECORD_LENGTH_INTEGER
+    private int _lRec = 32;
     private int _rpTnam;
     private int _rpSpec;
     private int _rpMini;
@@ -245,6 +249,53 @@ public class ItemsFileHeader {
     }
     void setLinvdep(int lInvdep) {
         this._lInvdep = lInvdep;
-    }    
+    }
+    
+    
+    public List<Integer> toInts() {
+    	List<Integer> ints = new ArrayList<Integer>();
+    	ints.add(_nItem);
+    	ints.add(_nChar);
+    	ints.add(_ms);
+    	// Max dat is unused.
+    	ints.add(0);
+    	ints.add(_lRec);
+    	ints.add(_rpTnam);
+    	ints.add(_rpSpec);
+    	ints.add(_rpMini);
+    	ints.add(_lDep);
+    	ints.add(_rpCdep);
+    	ints.add(_lInvdep);
+    	ints.add(_rpInvdep);
+    	ints.add(_rpCdat);
+    	ints.add(_lSbnd);
+    	ints.add(_lkstat);
+    	ints.add(_majorVer);
+    	ints.add(_rpNkbd);
+    	ints.add(_maxInt);
+    	// Maxtxt1
+    	ints.add(0);
+    	// Maxtxt2
+    	ints.add(0);
+    	ints.add(_minorVer);
+    	// Unused (or maybe _taxonImageChar)
+    	ints.add(0);
+    	ints.add(_rpCimagesI);
+    	ints.add(_rpTimages);
+    	ints.add(_enableDeltaOutput);
+    	ints.add(_chineseFmt);
+    	ints.add(_rpCsynon);
+    	ints.add(_rpOmitOr);
+    	ints.add(_rpNext);
+    	
+    	ints.add(_rpUseCc);
+    	ints.add(_rpTlinks[0]);
+    	ints.add(_rpOmitPeriod);
+    	ints.add(_rpNewPara);
+    	ints.add(_rpNonAutoCc);
+    	ints.add(_rpTlinks[1]);
+    	
+    	return ints;
+	}    
 
 }
