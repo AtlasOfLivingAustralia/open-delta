@@ -30,6 +30,10 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ResourceMap;
+import org.jdesktop.application.SingleFrameApplication;
+
 import au.org.ala.delta.model.SearchDirection;
 import au.org.ala.delta.ui.util.UIUtils;
 
@@ -56,6 +60,7 @@ public class SearchReplaceDialog extends BaseDialog {
 	private JComboBox replaceWithCombo;
 	private JCheckBox wrapSearchCheck;
 	private SearchAndReplaceController searchableComponent;
+	private ResourceMap _messages;
 
 	/**
 	 * Constructs a SearchReplaceDialog instance with specific attributes.
@@ -64,7 +69,13 @@ public class SearchReplaceDialog extends BaseDialog {
 	 *            The text area.
 	 */
 	public SearchReplaceDialog(SearchAndReplaceController searchableComponent) {
-		super(UIUtils.getParentFrame(searchableComponent.getEditorComponent()), "Find/Replace");
+		super(UIUtils.getParentFrame(searchableComponent.getEditorComponent()));
+		
+		SingleFrameApplication application = (SingleFrameApplication) Application.getInstance();
+		_messages = application.getContext().getResourceMap();
+		
+		setTitle(_messages.getString("searchReplaceDialog.title"));
+		
 		setName("searchReplaceDialog");		
 		setResizable(false);	
 		hookInternalFrame(searchableComponent.getEditorComponent());
@@ -186,7 +197,7 @@ public class SearchReplaceDialog extends BaseDialog {
 		aaPanel1.setLayout(new java.awt.GridBagLayout());
 
 		findButton.setMnemonic('n');
-		findButton.setText("Find");
+		findButton.setText(_messages.getString("searchReplaceDialog.findButton"));
 		findButton.addActionListener(new java.awt.event.ActionListener() {
 
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -202,7 +213,7 @@ public class SearchReplaceDialog extends BaseDialog {
 		aaPanel1.add(findButton, gridBagConstraints);
 
 		replaceFindButton.setMnemonic('d');
-		replaceFindButton.setText("Replace/Find");
+		replaceFindButton.setText(_messages.getString("searchReplaceDialog.replaceFindButton"));
 		replaceFindButton.addActionListener(new java.awt.event.ActionListener() {
 
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -218,7 +229,7 @@ public class SearchReplaceDialog extends BaseDialog {
 		aaPanel1.add(replaceFindButton, gridBagConstraints);
 
 		replaceButton.setMnemonic('R');
-		replaceButton.setText("Replace");
+		replaceButton.setText(_messages.getString("searchReplaceDialog.replaceButton"));
 		replaceButton.addActionListener(new java.awt.event.ActionListener() {
 
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -236,7 +247,7 @@ public class SearchReplaceDialog extends BaseDialog {
 		aaPanel1.add(replaceButton, gridBagConstraints);
 
 		replaceAllButton.setMnemonic('A');
-		replaceAllButton.setText("Replace All");
+		replaceAllButton.setText(_messages.getString("searchReplaceDialog.replaceAllButton"));
 		replaceAllButton.addActionListener(new java.awt.event.ActionListener() {
 
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -253,7 +264,7 @@ public class SearchReplaceDialog extends BaseDialog {
 		gridBagConstraints.insets = new java.awt.Insets(2, 5, 2, 5);
 		aaPanel1.add(replaceAllButton, gridBagConstraints);
 
-		closeButton.setText("Close");
+		closeButton.setText(_messages.getString("searchReplaceDialog.closeButton"));
 		closeButton.addActionListener(new java.awt.event.ActionListener() {
 
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -273,13 +284,13 @@ public class SearchReplaceDialog extends BaseDialog {
 
 		mainPanel.setLayout(new java.awt.GridBagLayout());
 
-		findLabel.setText("Find:");
+		findLabel.setText(_messages.getString("searchReplaceDialog.findLabel"));
 		gridBagConstraints = new java.awt.GridBagConstraints();
 		gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
 		gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 2);
 		mainPanel.add(findLabel, gridBagConstraints);
 
-		replaceLabel.setText("Replace with:");
+		replaceLabel.setText(_messages.getString("searchReplaceDialog.replaceLabel"));
 		gridBagConstraints = new java.awt.GridBagConstraints();
 		gridBagConstraints.gridx = 0;
 		gridBagConstraints.gridy = 1;
@@ -307,15 +318,15 @@ public class SearchReplaceDialog extends BaseDialog {
 
 		directionPanel.setLayout(new java.awt.GridBagLayout());
 
-		directionPanel.setBorder(new javax.swing.border.TitledBorder("Direction"));
-		forwardRadioButton.setText("Forward");
+		directionPanel.setBorder(new javax.swing.border.TitledBorder(_messages.getString("searchReplaceDialog.directionPanelTitle")));
+		forwardRadioButton.setText(_messages.getString("searchReplaceDialog.forwardRadioButton"));
 		directionButtonGroup.add(forwardRadioButton);
 		gridBagConstraints = new java.awt.GridBagConstraints();
 		gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
 		gridBagConstraints.weightx = 0.5;
 		directionPanel.add(forwardRadioButton, gridBagConstraints);
 
-		backwardRadioButton.setText("Backward");
+		backwardRadioButton.setText(_messages.getString("searchReplaceDialog.backwardRadioButton"));
 		directionButtonGroup.add(backwardRadioButton);
 		gridBagConstraints = new java.awt.GridBagConstraints();
 		gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
@@ -332,14 +343,14 @@ public class SearchReplaceDialog extends BaseDialog {
 
 		optionsPanel.setLayout(new java.awt.GridBagLayout());
 
-		optionsPanel.setBorder(new javax.swing.border.TitledBorder("Options"));
-		caseSensitiveCheck.setText("Case Sensitive");
+		optionsPanel.setBorder(new javax.swing.border.TitledBorder(_messages.getString("searchReplaceDialog.optionsPanelTitle")));
+		caseSensitiveCheck.setText(_messages.getString("searchReplaceDialog.caseSensitiveCheck"));
 		gridBagConstraints = new java.awt.GridBagConstraints();
 		gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
 		gridBagConstraints.weightx = 0.5;
 		optionsPanel.add(caseSensitiveCheck, gridBagConstraints);
 
-		wrapSearchCheck.setText("Wrap Search");
+		wrapSearchCheck.setText(_messages.getString("searchReplaceDialog.wrapSearchCheck"));
 		gridBagConstraints = new java.awt.GridBagConstraints();
 		gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
 		gridBagConstraints.weightx = 0.5;

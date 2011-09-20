@@ -58,7 +58,7 @@ public class SearchDialog extends JDialog {
 		setTitle(controller.getTitle());
 		setName(_controller.getTitle());
 		setResizable(false);
-		setBounds(100, 100, 300, 180);
+		setBounds(100, 100, 368, 188);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -79,36 +79,38 @@ public class SearchDialog extends JDialog {
 		JPanel panel = new JPanel();
 		panel.setBorder(new TitledBorder(null, messages.getString("searchDialog.groupDirection"), TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
-		gl_contentPanel.setHorizontalGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING).addGroup(
-				gl_contentPanel
-						.createSequentialGroup()
-						.addContainerGap()
+		gl_contentPanel.setHorizontalGroup(
+			gl_contentPanel.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_contentPanel.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(lblFind)
+					.addGap(18)
+					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+						.addComponent(textField, GroupLayout.DEFAULT_SIZE, 314, Short.MAX_VALUE)
+						.addGroup(gl_contentPanel.createSequentialGroup()
+							.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+								.addComponent(chckbxMatchCase)
+								.addComponent(chckbxWrapSearch))
+							.addGap(26)
+							.addComponent(panel, GroupLayout.DEFAULT_SIZE, 267, Short.MAX_VALUE)))
+					.addContainerGap())
+		);
+		gl_contentPanel.setVerticalGroup(
+			gl_contentPanel.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_contentPanel.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
 						.addComponent(lblFind)
-						.addGap(18)
-						.addGroup(
-								gl_contentPanel
-										.createParallelGroup(Alignment.LEADING, false)
-										.addGroup(
-												gl_contentPanel
-														.createSequentialGroup()
-														.addGroup(
-																gl_contentPanel.createParallelGroup(Alignment.TRAILING)
-																		.addGroup(gl_contentPanel.createSequentialGroup().addComponent(chckbxMatchCase).addGap(26))
-																		.addGroup(gl_contentPanel.createSequentialGroup().addComponent(chckbxWrapSearch).addGap(18)))
-														.addPreferredGap(ComponentPlacement.RELATED).addComponent(panel, 0, 0, Short.MAX_VALUE))
-										.addComponent(textField, GroupLayout.PREFERRED_SIZE, 222, GroupLayout.PREFERRED_SIZE)).addContainerGap(88, Short.MAX_VALUE)));
-		gl_contentPanel.setVerticalGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING).addGroup(
-				gl_contentPanel
-						.createSequentialGroup()
-						.addContainerGap()
-						.addGroup(
-								gl_contentPanel.createParallelGroup(Alignment.BASELINE).addComponent(lblFind)
-										.addComponent(textField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-						.addPreferredGap(ComponentPlacement.RELATED)
-						.addGroup(
-								gl_contentPanel.createParallelGroup(Alignment.LEADING)
-										.addGroup(gl_contentPanel.createSequentialGroup().addComponent(chckbxMatchCase).addGap(2).addComponent(chckbxWrapSearch))
-										.addComponent(panel, GroupLayout.DEFAULT_SIZE, 76, Short.MAX_VALUE)).addContainerGap()));
+						.addComponent(textField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_contentPanel.createSequentialGroup()
+							.addComponent(chckbxMatchCase)
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addComponent(chckbxWrapSearch))
+						.addComponent(panel, GroupLayout.DEFAULT_SIZE, 83, Short.MAX_VALUE))
+					.addContainerGap())
+		);
 
 		buttonGroup = new ButtonGroup();
 
