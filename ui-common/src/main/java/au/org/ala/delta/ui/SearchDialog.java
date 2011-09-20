@@ -108,7 +108,7 @@ public class SearchDialog extends JDialog {
 							.addPreferredGap(ComponentPlacement.UNRELATED)
 							.addComponent(chckbxWrapSearch))
 						.addComponent(panel, GroupLayout.DEFAULT_SIZE, 83, Short.MAX_VALUE))
-					.addContainerGap())
+					.addGap(6))
 		);
 
 		buttonGroup = new ButtonGroup();
@@ -121,14 +121,22 @@ public class SearchDialog extends JDialog {
 		buttonGroup.add(rdbtnBackwards);
 
 		GroupLayout gl_panel = new GroupLayout(panel);
-		gl_panel.setHorizontalGroup(gl_panel.createParallelGroup(Alignment.TRAILING).addGroup(
-				gl_panel.createSequentialGroup()
-						.addContainerGap()
-						.addGroup(
-								gl_panel.createParallelGroup(Alignment.TRAILING).addComponent(rdbtnBackwards, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 171, Short.MAX_VALUE)
-										.addComponent(rdbtnForwards, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 171, Short.MAX_VALUE)).addContainerGap()));
-		gl_panel.setVerticalGroup(gl_panel.createParallelGroup(Alignment.LEADING).addGroup(
-				gl_panel.createSequentialGroup().addComponent(rdbtnForwards).addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE).addComponent(rdbtnBackwards)));
+		gl_panel.setHorizontalGroup(
+			gl_panel.createParallelGroup(Alignment.TRAILING)
+				.addGroup(gl_panel.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(gl_panel.createParallelGroup(Alignment.TRAILING)
+						.addComponent(rdbtnForwards, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 243, Short.MAX_VALUE)
+						.addComponent(rdbtnBackwards, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 243, Short.MAX_VALUE))
+					.addContainerGap())
+		);
+		gl_panel.setVerticalGroup(
+			gl_panel.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_panel.createSequentialGroup()
+					.addComponent(rdbtnForwards, GroupLayout.PREFERRED_SIZE, 36, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(rdbtnBackwards, GroupLayout.DEFAULT_SIZE, 38, Short.MAX_VALUE))
+		);
 		panel.setLayout(gl_panel);
 		contentPanel.setLayout(gl_contentPanel);
 		{
