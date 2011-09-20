@@ -57,8 +57,7 @@ public class SearchDialog extends JDialog {
 		UIUtils.centerDialog(this, controller.getOwningComponent().getParent());
 		setTitle(controller.getTitle());
 		setName(_controller.getTitle());
-		setResizable(false);
-		setBounds(100, 100, 368, 188);
+		setBounds(100, 100, 364, 200);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
