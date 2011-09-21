@@ -105,7 +105,7 @@ public abstract class CharacterValueInputDialog extends JDialog {
         
         _lblCharacterDescription = new JLabel();
         _lblCharacterDescription.setBorder(new EmptyBorder(0, 0, 5, 0));
-        _formatter = new CharacterFormatter(false, false, AngleBracketHandlingMode.REPLACE, true);
+        _formatter = new CharacterFormatter(false, false, AngleBracketHandlingMode.REMOVE_SURROUNDING_REPLACE_INNER, true);
         _lblCharacterDescription.setText(_formatter.formatCharacterDescription(_ch));
         _pnlMain.add(_lblCharacterDescription, BorderLayout.NORTH);
         
@@ -117,7 +117,7 @@ public abstract class CharacterValueInputDialog extends JDialog {
     abstract void handleBtnImagesClicked();
     
     private String generateRtfFullCharacterText() {
-        CharacterFormatter f = new CharacterFormatter(true, false, AngleBracketHandlingMode.REPLACE, true);
+        CharacterFormatter f = new CharacterFormatter(true, false, AngleBracketHandlingMode.REMOVE_SURROUNDING_REPLACE_INNER, true);
         
         RTFBuilder builder = new RTFBuilder();
         builder.appendText(f.formatCharacterDescription(_ch));

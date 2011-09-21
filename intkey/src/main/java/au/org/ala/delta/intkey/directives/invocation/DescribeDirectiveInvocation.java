@@ -28,7 +28,7 @@ public class DescribeDirectiveInvocation implements IntkeyDirectiveInvocation {
     @Override
     public boolean execute(IntkeyContext context) {
         ItemFormatter taxonFormatter = new ItemFormatter(false, false, AngleBracketHandlingMode.REMOVE, false, false);
-        CharacterFormatter characterFormatter = new CharacterFormatter(false, false, AngleBracketHandlingMode.REPLACE, true);
+        CharacterFormatter characterFormatter = new CharacterFormatter(false, false, AngleBracketHandlingMode.REMOVE_SURROUNDING_REPLACE_INNER, false);
         AttributeFormatter attributeFormatter = new AttributeFormatter(false, false, false);
 
         RTFBuilder builder = new RTFBuilder();

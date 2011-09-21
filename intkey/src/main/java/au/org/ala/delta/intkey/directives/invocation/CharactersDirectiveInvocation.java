@@ -20,7 +20,7 @@ public class CharactersDirectiveInvocation implements IntkeyDirectiveInvocation 
 
     @Override
     public boolean execute(IntkeyContext context) {
-        CharacterFormatter characterFormatter = new CharacterFormatter(true, false, AngleBracketHandlingMode.REPLACE, true);
+        CharacterFormatter characterFormatter = new CharacterFormatter(true, false, AngleBracketHandlingMode.REMOVE_SURROUNDING_REPLACE_INNER, true);
 
         RTFBuilder builder = new RTFBuilder();
         builder.startDocument();
