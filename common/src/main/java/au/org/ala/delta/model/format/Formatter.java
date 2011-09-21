@@ -16,16 +16,19 @@ public class Formatter {
 
     protected static Pattern EMPTY_COMMENT_PATTERN = Pattern.compile("<\\s*>");
 
-    protected boolean _stripComments;
-    protected boolean _stripNestedCommentsOnly;
     protected boolean _stripFormatting;
-    protected boolean _replaceAngleBrackets;
+    protected boolean _stripComments;
 
-    public Formatter(boolean stripComments, boolean stripNestedCommentsOnly, boolean replaceAngleBrackets, boolean stripFormatting) {
+    protected AngleBracketHandlingMode _angleBracketHandlingMode;
+
+    public static enum AngleBracketHandlingMode {
+        RETAIN, REPLACE, REMOVE, REMOVE_SURROUNDING_REPLACE_INNER
+    };
+
+    public Formatter(boolean stripComments, AngleBracketHandlingMode angleBracketHandlingMode, boolean stripFormatting) {
         _stripComments = stripComments;
-        _stripNestedCommentsOnly = stripNestedCommentsOnly;
+        _angleBracketHandlingMode = angleBracketHandlingMode;
         _stripFormatting = stripFormatting;
-        _replaceAngleBrackets = replaceAngleBrackets;
     }
 
     /**
@@ -52,8 +55,8 @@ public class Formatter {
         if (stripComments) {
             text = stripComments(text);
         }
-        if (!stripComments && _replaceAngleBrackets) {
-            text = replaceAngleBrackets(text);
+        if (!stripComments) {
+            text = handleAngleBrackets(text);
         }
         // Stripping formatting can leave extra whitespace lying around
         // sometimes.
@@ -103,13 +106,29 @@ public class Formatter {
      *            the text to replace angle brackets in
      * @return the text with angle brackets replaced.
      */
-    public String replaceAngleBrackets(String text) {
-        if (textSurroundedByAngleBrackets(text)) {
-            text = text.substring(1, text.length() - 1);
+    private String handleAngleBrackets(String text) {
+        switch (_angleBracketHandlingMode) {
+        case REMOVE:
+            text = text.replace("<", "");
+            text = text.replace(">", "");
+            break;
+        case REPLACE:
+            text = text.replace("<", "(");
+            text = text.replace(">", ")");
+            break;
+        case REMOVE_SURROUNDING_REPLACE_INNER:
+            if (textSurroundedByAngleBrackets(text)) {
+                text = text.substring(1, text.length() - 1);
+            }
+            text = text.replace("<", "(");
+            text = text.replace(">", ")");
+        case RETAIN:
+            // do nothing
+            break;
+        default:
+            throw new IllegalArgumentException("Unrecognized angle bracket handling mode");
         }
 
-        text = text.replace('<', '(');
-        text = text.replace('>', ')');
         return text;
     }
 
@@ -126,13 +145,7 @@ public class Formatter {
      *            the text to remove comments from.
      * @return the text without comments.
      */
-    public String stripComments(String text) {
-        if (_stripNestedCommentsOnly) {
-            if (textSurroundedByAngleBrackets(text)) {
-                text = text.substring(1, text.length() - 1);
-            }
-        }
-
+    private String stripComments(String text) {
         CommentStripper stripper = new CommentStripper(text);
         try {
             stripper.parse();
@@ -226,6 +239,10 @@ public class Formatter {
         public abstract void comment(String comment) throws ParseException;
 
         public abstract void value(String value) throws ParseException;
+    }
+
+    public class Foo {
+
     }
 
 }

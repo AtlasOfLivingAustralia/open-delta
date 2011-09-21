@@ -15,6 +15,7 @@ import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.format.AttributeFormatter;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.ItemFormatter;
+import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.rtf.RTFBuilder;
 
 public class DifferencesDirectiveInvocation implements IntkeyDirectiveInvocation {
@@ -42,9 +43,9 @@ public class DifferencesDirectiveInvocation implements IntkeyDirectiveInvocation
         _omitTextCharacters = omitTextCharacters;
         _characters = new ArrayList<au.org.ala.delta.model.Character>(characters);
         _taxa = new ArrayList<Item>(taxa);
-        _characterFormatter = new CharacterFormatter(false, true, true, false, false);
-        _taxonFormatter = new ItemFormatter(false, true, true, false, false, false);
-        _attributeFormatter = new AttributeFormatter(false, false, true, true, false);
+        _characterFormatter = new CharacterFormatter(false, true, AngleBracketHandlingMode.RETAIN, false);
+        _taxonFormatter = new ItemFormatter(false, true, AngleBracketHandlingMode.RETAIN, false, false);
+        _attributeFormatter = new AttributeFormatter(false, false, true, AngleBracketHandlingMode.RETAIN);
     }
 
     @Override

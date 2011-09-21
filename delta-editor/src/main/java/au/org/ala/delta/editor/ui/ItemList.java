@@ -11,6 +11,7 @@ import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.SearchDirection;
 import au.org.ala.delta.model.format.ItemFormatter;
+import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.observer.AbstractDataSetObserver;
 import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
 import au.org.ala.delta.ui.GenericSearchController;
@@ -104,7 +105,7 @@ public class ItemList extends SelectionList {
 		
 		public ItemViewModel(Item item) {
 			_model = item;
-			_formatter = new ItemFormatter(true, false, false, false, true, true);
+			_formatter = new ItemFormatter(true, false, AngleBracketHandlingMode.RETAIN, true, true);
 		}
 
 		@Override

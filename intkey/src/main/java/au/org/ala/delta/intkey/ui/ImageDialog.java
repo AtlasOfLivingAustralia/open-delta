@@ -39,6 +39,7 @@ import org.jdesktop.application.SingleFrameApplication;
 
 import au.org.ala.delta.intkey.directives.ParsingUtils;
 import au.org.ala.delta.model.format.Formatter;
+import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageOverlay;
 import au.org.ala.delta.model.image.ImageSettings;
@@ -113,7 +114,7 @@ public class ImageDialog extends IntkeyDialog implements OverlaySelectionObserve
         _selectedKeywords = new HashSet<String>();
         _selectedValues = new HashSet<Pair<String, String>>();
 
-        _imageDescriptionFormatter = new Formatter(false, false, false, true);
+        _imageDescriptionFormatter = new Formatter(false, AngleBracketHandlingMode.RETAIN, true);
 
         buildMenu();
         getContentPane().setLayout(new GridLayout(0, 1, 0, 0));

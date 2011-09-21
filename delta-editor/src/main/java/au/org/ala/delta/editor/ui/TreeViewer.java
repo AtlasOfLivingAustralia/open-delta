@@ -70,6 +70,7 @@ import au.org.ala.delta.model.NumericCharacter;
 import au.org.ala.delta.model.SearchDirection;
 import au.org.ala.delta.model.TextCharacter;
 import au.org.ala.delta.model.format.CharacterFormatter;
+import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.impl.ControllingInfo;
 import au.org.ala.delta.model.observer.AbstractDataSetObserver;
 import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
@@ -292,7 +293,7 @@ public class TreeViewer extends AbstractDeltaView {
 
 		public MultiStateAttributeCellEditor() {
 			super(new MultiStateCheckbox());
-			_formatter = new CharacterFormatter(true, false, false, false, true);
+			_formatter = new CharacterFormatter(true, false, AngleBracketHandlingMode.RETAIN, true);
 			editorComponent.setOpaque(false);
 		}
 
@@ -846,7 +847,7 @@ class DeltaTreeCellRenderer extends DefaultTreeCellRenderer {
 
 	public DeltaTreeCellRenderer(EditorViewModel dataModel) {
 		_dataModel = dataModel;
-		_formatter = new CharacterFormatter(true, false, false, false, true);
+		_formatter = new CharacterFormatter(true, false, AngleBracketHandlingMode.RETAIN, true);
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -979,7 +980,7 @@ class CharacterTreeNode extends DefaultMutableTreeNode {
 class MultistateStateNode extends DefaultMutableTreeNode {
 
 	private static final long serialVersionUID = 1L;
-	private static CharacterFormatter _characterFormatter = new CharacterFormatter(true, false, false, false, true);
+	private static CharacterFormatter _characterFormatter = new CharacterFormatter(true, false, AngleBracketHandlingMode.RETAIN, true);
 
 	private MultiStateCharacter _character;
 	private int _stateNo;

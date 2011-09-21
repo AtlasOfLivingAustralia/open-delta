@@ -5,6 +5,7 @@ import org.apache.commons.lang.math.FloatRange;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.RealCharacter;
 import au.org.ala.delta.model.format.Formatter;
+import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 
 public class RealValue extends CharacterValue {
     
@@ -15,7 +16,7 @@ public class RealValue extends CharacterValue {
     public RealValue(RealCharacter character, FloatRange range) {
         _character = character;
         _range = range;
-        _unitsFormatter = new Formatter(true, false, false, true);
+        _unitsFormatter = new Formatter(true, AngleBracketHandlingMode.RETAIN, true);
     }
     
     @Override

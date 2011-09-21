@@ -9,6 +9,7 @@ import org.apache.commons.lang.math.IntRange;
 
 import au.org.ala.delta.model.IntegerCharacter;
 import au.org.ala.delta.model.format.Formatter;
+import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 
 public class IntegerValue extends CharacterValue {
 
@@ -18,7 +19,7 @@ public class IntegerValue extends CharacterValue {
 
     public IntegerValue(IntegerCharacter character, Set<Integer> values) {
         _character = character;
-        _unitsFormatter = new Formatter(true, false, false, true);
+        _unitsFormatter = new Formatter(true, AngleBracketHandlingMode.RETAIN, true);
 
         int charMinimum = _character.getMinimumValue();
         int charMaximum = _character.getMaximumValue();

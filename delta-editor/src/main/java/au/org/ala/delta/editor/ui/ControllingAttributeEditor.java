@@ -41,6 +41,7 @@ import au.org.ala.delta.model.CharacterDependency;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.format.CharacterDependencyFormatter;
 import au.org.ala.delta.model.format.CharacterFormatter;
+import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.ui.rtf.RtfToolBar;
 
 /**
@@ -58,7 +59,7 @@ public class ControllingAttributeEditor extends CharacterDepencencyEditor {
 	private List<Character> _remainingCharacters;
 	private List<Character> _controlledCharacters;
 	private CharacterDependencyFormatter _formatter;
-	private CharacterFormatter _characterFormatter = new CharacterFormatter(true, false, false, false, true);
+	private CharacterFormatter _characterFormatter = new CharacterFormatter(true, false, AngleBracketHandlingMode.RETAIN, true);
 	private ResourceMap _resources;
 	private List<StateViewModel> _states;
 	private CharacterDependencyController _controller;

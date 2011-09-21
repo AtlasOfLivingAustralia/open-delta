@@ -4,6 +4,7 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.model.SearchUtils;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.format.CharacterFormatter;
+import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.rtf.RTFBuilder;
 
 public class FindCharactersDirectiveInvocation implements IntkeyDirectiveInvocation {
@@ -17,7 +18,7 @@ public class FindCharactersDirectiveInvocation implements IntkeyDirectiveInvocat
     @Override
     public boolean execute(IntkeyContext context) {
 
-        CharacterFormatter characterFormatter = new CharacterFormatter(true, false, false, true, true);
+        CharacterFormatter characterFormatter = new CharacterFormatter(true, false, AngleBracketHandlingMode.REPLACE, true);
 
         RTFBuilder builder = new RTFBuilder();
         builder.startDocument();

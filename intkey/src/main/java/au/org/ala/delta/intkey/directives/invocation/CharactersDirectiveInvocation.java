@@ -7,6 +7,7 @@ import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.NumericCharacter;
 import au.org.ala.delta.model.format.CharacterFormatter;
+import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.rtf.RTFBuilder;
 
 public class CharactersDirectiveInvocation implements IntkeyDirectiveInvocation {
@@ -19,7 +20,7 @@ public class CharactersDirectiveInvocation implements IntkeyDirectiveInvocation 
 
     @Override
     public boolean execute(IntkeyContext context) {
-        CharacterFormatter characterFormatter = new CharacterFormatter(true, false, false, true, true);
+        CharacterFormatter characterFormatter = new CharacterFormatter(true, false, AngleBracketHandlingMode.REPLACE, true);
 
         RTFBuilder builder = new RTFBuilder();
         builder.startDocument();

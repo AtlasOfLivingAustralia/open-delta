@@ -24,6 +24,7 @@ import org.jdesktop.application.ResourceMap;
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.format.ItemFormatter;
+import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.observer.AbstractDataSetObserver;
 import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
 import au.org.ala.delta.ui.AboutBox;
@@ -146,10 +147,10 @@ public class TableRowHeader extends JTable implements ReorderableList {
 			_dataSet.addDeltaDataSetObserver(new ItemAddedListener());
 			boolean includeNumber = false;
 			boolean stripComments = false;
-			boolean replaceAngleBrackets = false;
+			AngleBracketHandlingMode angleBracketHandlingMode = AngleBracketHandlingMode.RETAIN;
 			boolean stripRtf = true;
 			boolean useShortFormOfVariant = true;
-			_formatter = new ItemFormatter(includeNumber, stripComments, false, replaceAngleBrackets, stripRtf, useShortFormOfVariant);
+			_formatter = new ItemFormatter(includeNumber, stripComments, angleBracketHandlingMode, stripRtf, useShortFormOfVariant);
 		}
 		
 		public void setTable(JTable table) {

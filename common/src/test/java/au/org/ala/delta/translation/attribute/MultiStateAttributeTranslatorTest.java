@@ -10,6 +10,7 @@ import au.org.ala.delta.model.DefaultDataSetFactory;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.format.AttributeFormatter;
 import au.org.ala.delta.model.format.CharacterFormatter;
+import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 
 /**
  * Tests the MultiStateAttributeTranslator class.
@@ -35,7 +36,7 @@ public class MultiStateAttributeTranslatorTest extends TestCase {
 		_multiStateCharacter.setState(5, "State 5");
 		_multiStateCharacter.setState(6, "State 6");
 		AttributeFormatter attributeFormatter = new AttributeFormatter(false, true, false);
-		CharacterFormatter characterFormatter = new CharacterFormatter(false, true, false, false, true);
+		CharacterFormatter characterFormatter = new CharacterFormatter(false, true, AngleBracketHandlingMode.RETAIN, true);
 		_translator = new MultiStateAttributeTranslator(_multiStateCharacter, characterFormatter, attributeFormatter);
 	}
 	

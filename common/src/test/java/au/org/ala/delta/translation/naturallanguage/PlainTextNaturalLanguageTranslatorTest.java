@@ -13,6 +13,7 @@ import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.model.format.AttributeFormatter;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.ItemFormatter;
+import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.translation.PlainTextTypeSetter;
 import au.org.ala.delta.translation.Printer;
 import au.org.ala.delta.translation.naturallanguage.NaturalLanguageTranslator;
@@ -32,8 +33,8 @@ public class PlainTextNaturalLanguageTranslatorTest extends NaturalLangaugeTrans
 		_printer = new Printer(pout, 78);
 		_typeSetter = new PlainTextTypeSetter(_printer);
 		_context = new DeltaContext();
-		ItemFormatter itemFormatter = new ItemFormatter(false, false, false, false, true, false);
-		CharacterFormatter characterFormatter = new CharacterFormatter(false, true, false, false, true);
+		ItemFormatter itemFormatter = new ItemFormatter(false, false, AngleBracketHandlingMode.RETAIN, true, false);
+		CharacterFormatter characterFormatter = new CharacterFormatter(false, true, AngleBracketHandlingMode.RETAIN, true);
 		AttributeFormatter attributeFormatter = new AttributeFormatter(false, true, false);
 		_dataSetTranslator = new NaturalLanguageTranslator(_context, _typeSetter, _printer, itemFormatter, characterFormatter, attributeFormatter);
 	}

@@ -5,6 +5,7 @@ import java.util.Set;
 
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.format.ItemFormatter;
+import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 
 public class TaxonCellRenderer extends ColoringListCellRenderer {
 
@@ -17,7 +18,7 @@ public class TaxonCellRenderer extends ColoringListCellRenderer {
     protected Set<Item> _taxaToColor;
 
     public TaxonCellRenderer() {
-        _formatter = new ItemFormatter(false, true, false, false, true, false);
+        _formatter = new ItemFormatter(false, true, AngleBracketHandlingMode.RETAIN, true, false);
         _taxaToColor = new HashSet<Item>();
     }
 

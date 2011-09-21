@@ -4,6 +4,7 @@ import javax.swing.table.AbstractTableModel;
 
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.model.format.CharacterFormatter;
+import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 
 public class TableHeaderModel extends AbstractTableModel {
 
@@ -14,7 +15,7 @@ public class TableHeaderModel extends AbstractTableModel {
 	
 	public TableHeaderModel(EditorViewModel model) {
 		_model = model;
-		_formatter = new CharacterFormatter(false, false, false, false, true);
+		_formatter = new CharacterFormatter(false, false, AngleBracketHandlingMode.RETAIN, true);
 	}
 	
 	@Override

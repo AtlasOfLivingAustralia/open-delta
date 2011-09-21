@@ -12,10 +12,10 @@ public class CharacterFormatter extends Formatter {
 	private boolean _includeNumber;
 	
 	public CharacterFormatter() {
-		this(true, false, false, false, false);
+		this(true, false, AngleBracketHandlingMode.RETAIN, false);
 	}
-	public CharacterFormatter(boolean includeNumber, boolean stripComments, boolean stripNestedCommentsOnly, boolean replaceAngleBrackets, boolean stripFormatting) {
-		super(stripComments, stripNestedCommentsOnly, replaceAngleBrackets, stripFormatting);
+	public CharacterFormatter(boolean includeNumber, boolean stripComments, AngleBracketHandlingMode angleBracketHandlingMode, boolean stripFormatting) {
+		super(stripComments, angleBracketHandlingMode, stripFormatting);
 		_includeNumber = includeNumber;
 	}
 	

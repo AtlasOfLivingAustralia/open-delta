@@ -13,6 +13,7 @@ import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.TextAttribute;
 import au.org.ala.delta.model.TextCharacter;
 import au.org.ala.delta.model.format.ItemFormatter;
+import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageSettings.FontInfo;
 
@@ -260,7 +261,7 @@ public class IntkeyDataset {
     }
 
     public Item getTaxonByName(String taxonName) {
-        ItemFormatter formatter = new ItemFormatter(false, true, false, false, true, false);
+        ItemFormatter formatter = new ItemFormatter(false, true, AngleBracketHandlingMode.RETAIN, true, false);
         for (Item taxon : _taxa) {
             // String comments, RTF etc. from taxon description
             String formattedTaxonName = formatter.formatItemDescription(taxon);

@@ -25,6 +25,7 @@ import au.org.ala.delta.editor.StateController;
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.format.CharacterFormatter;
+import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.observer.AbstractDataSetObserver;
 import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
 import au.org.ala.delta.ui.rtf.RtfEditor;
@@ -54,7 +55,7 @@ public class StateEditor extends CharacterEditTab {
 	public StateEditor(RtfToolBar toolbar) {
 		super(toolbar);
 		_ignoreUpdates = false;
-		_formatter = new CharacterFormatter(true, false, false, false, true);
+		_formatter = new CharacterFormatter(true, false, AngleBracketHandlingMode.RETAIN, true);
 		createUI();
 		addEventHandlers();
 	}

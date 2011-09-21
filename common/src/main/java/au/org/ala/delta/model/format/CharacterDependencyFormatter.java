@@ -9,6 +9,7 @@ import org.apache.commons.lang.StringUtils;
 import au.org.ala.delta.model.CharacterDependency;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.MultiStateCharacter;
+import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 
 /**
  * Formats CharacterDependencies in a consistent manner.
@@ -20,7 +21,7 @@ public class CharacterDependencyFormatter {
 	
 	public CharacterDependencyFormatter(DeltaDataSet dataSet) {
 		_dataSet = dataSet;
-		_characterFormatter = new CharacterFormatter(false, true, false, false, true);
+		_characterFormatter = new CharacterFormatter(false, true, AngleBracketHandlingMode.RETAIN, true);
 	}
 	
 	public String formatCharacterDependency(CharacterDependency characterDependency) {

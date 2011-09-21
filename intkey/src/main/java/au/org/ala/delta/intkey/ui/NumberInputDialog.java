@@ -15,6 +15,7 @@ import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.model.NumericCharacter;
 import au.org.ala.delta.model.format.Formatter;
+import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.image.ImageSettings;
 
 public abstract class NumberInputDialog extends CharacterValueInputDialog {
@@ -50,7 +51,7 @@ public abstract class NumberInputDialog extends CharacterValueInputDialog {
         panel.add(_lblUnits);
         
         if (ch.getUnits() != null) {
-            _lblUnits.setText(new Formatter(true, false, false, true).defaultFormat(ch.getUnits()));
+            _lblUnits.setText(new Formatter(true, AngleBracketHandlingMode.RETAIN, true).defaultFormat(ch.getUnits()));
         } else {
             _lblUnits.setVisible(false);
         }

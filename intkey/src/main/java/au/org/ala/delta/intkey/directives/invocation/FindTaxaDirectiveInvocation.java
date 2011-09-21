@@ -11,6 +11,7 @@ import au.org.ala.delta.model.TextAttribute;
 import au.org.ala.delta.model.format.AttributeFormatter;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.ItemFormatter;
+import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.rtf.RTFBuilder;
 
 public class FindTaxaDirectiveInvocation implements IntkeyDirectiveInvocation {
@@ -24,9 +25,9 @@ public class FindTaxaDirectiveInvocation implements IntkeyDirectiveInvocation {
     @Override
     public boolean execute(IntkeyContext context) {
 
-        ItemFormatter taxonFormatter = new ItemFormatter(false, false, true, false, false, false);
-        CharacterFormatter characterFormatter = new CharacterFormatter(false, true, false, false, false);
-        AttributeFormatter attributeFormatter = new AttributeFormatter(false, false, true, true, false);
+        ItemFormatter taxonFormatter = new ItemFormatter(false, false, AngleBracketHandlingMode.REMOVE, false, false);
+        CharacterFormatter characterFormatter = new CharacterFormatter(false, true, AngleBracketHandlingMode.RETAIN, false);
+        AttributeFormatter attributeFormatter = new AttributeFormatter(false, false, true, AngleBracketHandlingMode.RETAIN);
 
         RTFBuilder builder = new RTFBuilder();
         builder.startDocument();

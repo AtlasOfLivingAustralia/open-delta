@@ -9,6 +9,7 @@ import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.NumericCharacter;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.ItemFormatter;
+import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.image.ImageOverlay;
 import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.model.image.OverlayType;
@@ -27,9 +28,9 @@ public class OverlayTextBuilder {
 	public OverlayTextBuilder(ResourceMap resources, ImageSettings imageSettings) {
 		_resources = resources;
 		_imageSettings = imageSettings;
-		_itemFormatter = new ItemFormatter(false, false, false, false, false, false);
-		_characterFormatter = new CharacterFormatter(false, true, false, false, false);
-		_stateFormatter = new CharacterFormatter(true, true, false, false, false);
+		_itemFormatter = new ItemFormatter(false, false, AngleBracketHandlingMode.RETAIN, false, false);
+		_characterFormatter = new CharacterFormatter(false, true, AngleBracketHandlingMode.RETAIN, false);
+		_stateFormatter = new CharacterFormatter(true, true, AngleBracketHandlingMode.RETAIN, false);
 	}
 
 	public String getText(ImageOverlay overlay, Illustratable imageOwner) {

@@ -9,6 +9,7 @@ import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.format.AttributeFormatter;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.ItemFormatter;
+import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.rtf.RTFBuilder;
 
 public class DescribeDirectiveInvocation implements IntkeyDirectiveInvocation {
@@ -26,8 +27,8 @@ public class DescribeDirectiveInvocation implements IntkeyDirectiveInvocation {
 
     @Override
     public boolean execute(IntkeyContext context) {
-        ItemFormatter taxonFormatter = new ItemFormatter(false, false, false, true, false, false);
-        CharacterFormatter characterFormatter = new CharacterFormatter(false, false, false, true, true);
+        ItemFormatter taxonFormatter = new ItemFormatter(false, false, AngleBracketHandlingMode.REMOVE, false, false);
+        CharacterFormatter characterFormatter = new CharacterFormatter(false, false, AngleBracketHandlingMode.REPLACE, true);
         AttributeFormatter attributeFormatter = new AttributeFormatter(false, false, false);
 
         RTFBuilder builder = new RTFBuilder();

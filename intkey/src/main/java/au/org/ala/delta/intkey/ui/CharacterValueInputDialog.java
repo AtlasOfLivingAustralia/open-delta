@@ -22,6 +22,7 @@ import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.NumericCharacter;
 import au.org.ala.delta.model.RealCharacter;
 import au.org.ala.delta.model.format.CharacterFormatter;
+import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.rtf.RTFBuilder;
 import au.org.ala.delta.ui.rtf.SimpleRtfEditorKit;
@@ -104,7 +105,7 @@ public abstract class CharacterValueInputDialog extends JDialog {
         
         _lblCharacterDescription = new JLabel();
         _lblCharacterDescription.setBorder(new EmptyBorder(0, 0, 5, 0));
-        _formatter = new CharacterFormatter(false, false, false, true, true);
+        _formatter = new CharacterFormatter(false, false, AngleBracketHandlingMode.REPLACE, true);
         _lblCharacterDescription.setText(_formatter.formatCharacterDescription(_ch));
         _pnlMain.add(_lblCharacterDescription, BorderLayout.NORTH);
         
@@ -116,7 +117,7 @@ public abstract class CharacterValueInputDialog extends JDialog {
     abstract void handleBtnImagesClicked();
     
     private String generateRtfFullCharacterText() {
-        CharacterFormatter f = new CharacterFormatter(true, false, false, true, true);
+        CharacterFormatter f = new CharacterFormatter(true, false, AngleBracketHandlingMode.REPLACE, true);
         
         RTFBuilder builder = new RTFBuilder();
         builder.appendText(f.formatCharacterDescription(_ch));

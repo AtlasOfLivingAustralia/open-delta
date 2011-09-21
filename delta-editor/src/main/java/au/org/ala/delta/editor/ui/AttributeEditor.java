@@ -58,6 +58,7 @@ import au.org.ala.delta.model.MultiStateAttribute;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.NumericCharacter;
 import au.org.ala.delta.model.format.CharacterFormatter;
+import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.observer.AbstractDataSetObserver;
 import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
 import au.org.ala.delta.ui.rtf.RtfEditor;
@@ -596,7 +597,7 @@ public class AttributeEditor extends JPanel implements ValidationListener, Prefe
 	class StateListModel extends AbstractTableModel {
 	
 		private static final long serialVersionUID = 1L;
-		private CharacterFormatter _characterFormatter = new CharacterFormatter(true, false, false, false, true);
+		private CharacterFormatter _characterFormatter = new CharacterFormatter(true, false, AngleBracketHandlingMode.RETAIN, true);
 		
 		private Item _item;
 		private MultiStateCharacter _character;
