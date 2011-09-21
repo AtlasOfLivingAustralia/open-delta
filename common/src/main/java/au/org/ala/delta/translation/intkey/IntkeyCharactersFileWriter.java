@@ -3,6 +3,8 @@ package au.org.ala.delta.translation.intkey;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.DeltaContext.HeadingType;
 import au.org.ala.delta.intkey.WriteOnceIntkeyCharsFile;
@@ -123,8 +125,8 @@ public class IntkeyCharactersFileWriter {
 		for (int i=1; i<=_dataSet.getNumberOfCharacters(); i++) {
 			Character character = _dataSet.getCharacter(i);
 			List<Image> images = character.getImages();
-			
-			imageList.add(imageWriter.imagesToString(images, character));
+			String image = imageWriter.imagesToString(images, character); 
+			imageList.add(image);
 			
 		}
 		if (!imageList.isEmpty()) {

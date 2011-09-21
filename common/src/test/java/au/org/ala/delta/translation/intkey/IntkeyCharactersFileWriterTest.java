@@ -194,7 +194,7 @@ public class IntkeyCharactersFileWriterTest extends TestCase {
 	@Test
 	public void testWriteCharacterImages() {
 		
-		String image1 = " test.jpg <@feature x=1 y=2 w=3 h=4> ";
+		String image1 = "test.jpg <@feature x=1 y=2 w=3 h=4>";
 		
 		au.org.ala.delta.model.Character character = _dataSet.getCharacter(1);
 		Image image = character.addImage("test.jpg", "");

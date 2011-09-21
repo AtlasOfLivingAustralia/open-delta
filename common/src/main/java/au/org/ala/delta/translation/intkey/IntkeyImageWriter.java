@@ -21,7 +21,7 @@ public class IntkeyImageWriter {
 				overlayWriter.writeOverlays(image.getOverlays(), 0, subject);
 			}
 			imageData = buffer.toString();
-			imageData = imageData.replaceAll("\\s", " ");
+			imageData = imageData.replaceAll("\\s", " ").trim();
 			
 		}
 		return imageData;
