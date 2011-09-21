@@ -199,11 +199,15 @@ public class IntkeyCharactersFileWriter {
 	protected void writeFonts() {
 		List<String> fonts = new ArrayList<String>();
 		ImageSettings settings = _dataSet.getImageSettings();
-		
-		for (OverlayFontType fontType : OverlayFontType.values()) {
-			addFontText(fonts, settings.getFont(fontType), fontType);
+		if (settings != null) {
+			for (OverlayFontType fontType : OverlayFontType.values()) {
+				FontInfo font = settings.getFont(fontType);
+				if (font != null) {
+					addFontText(fonts, settings.getFont(fontType), fontType);
+				}
+			}
+			_charsFile.writeFonts(fonts);
 		}
-		_charsFile.writeFonts(fonts);
 	}
 	
 	protected void addFontText(List<String> fonts, FontInfo font, OverlayFontType type) {

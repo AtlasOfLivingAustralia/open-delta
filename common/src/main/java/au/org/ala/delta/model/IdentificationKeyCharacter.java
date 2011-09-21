@@ -57,6 +57,9 @@ public class IdentificationKeyCharacter {
 	private List<KeyState> _states;
 	
 	public IdentificationKeyCharacter(Character character) {
+		if (character == null) {
+			throw new IllegalArgumentException("Null character invalid");
+		}
 		_character = character;
 		_states = new ArrayList<KeyState>();
 	}

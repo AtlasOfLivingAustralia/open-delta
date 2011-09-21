@@ -29,7 +29,15 @@ public class IdentificationKeyCharacterIterator implements Iterator<Identificati
 	
 	@Override
 	public boolean hasNext() {
-		return _index <= _dataSet.getNumberOfCharacters();
+		if (_index > _dataSet.getNumberOfCharacters()) {
+			return false;
+		}
+		int index = _index;
+		if (next() != null) {
+			_index = index;
+			return true;
+		}
+		return false;
 	}
 
 	@Override
@@ -39,10 +47,13 @@ public class IdentificationKeyCharacterIterator implements Iterator<Identificati
 		}
 		
 		Character character = _dataSet.getCharacter(_index);
-		while (!_filter.filter(character)) {
-			_index++;
-			character = _dataSet.getCharacter(_index);
-		}
+//		while ( !_filter.filter(character) && _index < _dataSet.getNumberOfCharacters()) {
+//			_index++;
+//			character = _dataSet.getCharacter(_index);
+//		}
+//		if (character == null) {
+//			return null;
+//		}
 		
 		IdentificationKeyCharacter keyChar = _context.getIdentificationKeyCharacter(_index);
 		if (keyChar == null) {

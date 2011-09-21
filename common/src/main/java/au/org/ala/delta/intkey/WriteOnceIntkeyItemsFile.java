@@ -42,7 +42,7 @@ public class WriteOnceIntkeyItemsFile extends IntkeyFile {
 		writeToRecord(1, _header.toInts());	
 	}
 	
-	public void writeItemDescrptions(List<String> descriptions) {
+	public void writeItemDescriptions(List<String> descriptions) {
 		checkItemListLength(descriptions);
 		checkEmpty(_header.getRpTnam());
 		int startRecord = nextAvailableRecord();

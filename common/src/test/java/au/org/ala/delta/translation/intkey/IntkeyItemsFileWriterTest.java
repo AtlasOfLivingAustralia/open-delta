@@ -86,7 +86,7 @@ public class IntkeyItemsFileWriterTest extends TestCase {
 	@Test 
 	public void testWriteItemDescrptions() {
 		
-		_itemsFileWriter.writeItemDescrptions();
+		_itemsFileWriter.writeItemDescriptions();
 		
 		String item1 = _dataSet.getItem(1).getDescription();
 		String item2 = _dataSet.getItem(2).getDescription();

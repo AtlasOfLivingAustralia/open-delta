@@ -57,6 +57,12 @@ public class DeltaFormatDataSetFilter extends AbstractDataSetFilter implements D
 	
 	@Override
 	public boolean filter(Character character) {
-		return !_context.isCharacterExcluded(character.getCharacterId());
+		try {
+			return !_context.isCharacterExcluded(character.getCharacterId());
+		}
+		catch (RuntimeException e) {
+			e.printStackTrace();
+			throw e;
+		}
 	}
 }

@@ -53,16 +53,31 @@ public class IntkeyItemsFileWriter {
 	}
 	
 	public void writeAll() {
-		
+		writeItemDescriptions();
+		writeCharacterSpecs();
+		writeCharacterDependencies();
+		writeAttributeData();
+		writeTaxonImages();
+		writeEnableDeltaOutput();
+		writeChineseFormat();
+		writeCharacterSynonomy();
+		writeOmitOr();
+		writeUseControllingFirst();
+		writeTaxonLinks();
+		writeOmitPeriod();
+		writeNewParagraph();
+		writeNonAutoControllingChars();
+		writeSubjectForOutputFiles();
+		_itemsFile.writeHeader();
 	}
 	
-	public void writeItemDescrptions() {
+	public void writeItemDescriptions() {
 		
 		List<String> descriptions = new ArrayList<String>(_dataSet.getMaximumNumberOfItems());
 		for (int i=1; i<=_dataSet.getMaximumNumberOfItems(); i++) {
 			descriptions.add(_dataSet.getItem(i).getDescription());
 		}
-		_itemsFile.writeItemDescrptions(descriptions);
+		_itemsFile.writeItemDescriptions(descriptions);
 	}
 	
 	public void writeCharacterSpecs() {

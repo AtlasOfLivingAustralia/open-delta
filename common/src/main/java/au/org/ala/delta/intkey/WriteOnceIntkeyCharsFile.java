@@ -26,11 +26,11 @@ public class WriteOnceIntkeyCharsFile extends IntkeyFile {
 		_header = new CharactersFileHeader();
 		_header.setNC(numCharacters);
 		// This is done to allocate the first record to the header.
-		writeHeader();
+		writeToRecord(1, _header.toInts());
 	}
 	
 	public void writeHeader() {
-		writeToRecord(1, _header.toInts());
+		overwriteRecord(1, _header.toInts());
 	}
 	
 	public void writeCharacterNotes(List<String> notes) {
