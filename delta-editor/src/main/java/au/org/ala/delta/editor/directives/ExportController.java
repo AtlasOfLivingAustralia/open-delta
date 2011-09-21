@@ -153,7 +153,7 @@ public class ExportController {
 			
 			publish(_status);
 
-			buildSpecialDirFiles();
+			buildSpecialDirFiles(_files);
 			
 			DirectiveInOutState state = new StatusUpdatingState(_model, _status);
 			for (DirectiveFileInfo file : _files) {
@@ -194,7 +194,7 @@ public class ExportController {
 		}
 	}
 	
-	private void buildSpecialDirFiles() {
+	private void buildSpecialDirFiles(List<DirectiveFileInfo> files) {
 	 
 		DirectiveFile specsFile = null;
 		DirectiveFile charsFile = null;
@@ -284,7 +284,7 @@ public class ExportController {
 		    }
 
 		if (specsFile == null) { // Need to create an internal "specs" file
-		    specsFile = createDirectiveFile("specs", "~ Dataset specifications.");
+		    specsFile = createDirectiveFile(files, "specs", "~ Dataset specifications.");
 		    specsFile.setSpecsFile(true);
 		}
 
@@ -372,12 +372,12 @@ public class ExportController {
 		}
 		  
 		if (hasCNotes && !hasCNotesDir) { 
-		    createCharacterNotesDirectivesFile();
+		    createCharacterNotesDirectivesFile(files);
 		    hasCNotesDir = true;
 		}
 
 		if (charsFile == null) { // Need to create an internal "chars" file
-		    charsFile = createDirectiveFile("chars", "~ Character list.");
+		    charsFile = createDirectiveFile(files, "chars", "~ Character list.");
 		    charsFile.setCharsFile(true);
 		}
 
@@ -422,10 +422,10 @@ public class ExportController {
 		    }
 		}
 		if (!hadCharList)
-		    specsFile.addNoArgDirective(curDirectives.size(), ConforDirType.get(ConforDirType.CHARACTER_LIST));
+		    charsFile.addNoArgDirective(curDirectives.size(), ConforDirType.get(ConforDirType.CHARACTER_LIST));
 
 		if (itemsFile == null) {
-		    itemsFile = createDirectiveFile("items", "~ Item descriptions");
+		    itemsFile = createDirectiveFile(files, "items", "~ Item descriptions");
 		    itemsFile.setItemsFile(true);
 		}
 
@@ -440,32 +440,43 @@ public class ExportController {
 		}
 
 		if (!hadItemDesc)
-		     specsFile.addNoArgDirective(curDirectives.size(), ConforDirType.get(ConforDirType.ITEM_DESCRIPTIONS));
+		     itemsFile.addNoArgDirective(curDirectives.size(), ConforDirType.get(ConforDirType.ITEM_DESCRIPTIONS));
 
 		if (hasCImages && !hasCImagesDir) {
-		    createDirectiveFile("cimages", "~ Character images.", ConforDirType.CHARACTER_IMAGES);
+		    createDirectiveFile(files, "cimages", "~ Character images.", ConforDirType.CHARACTER_IMAGES);
 		}
 		if (hasTImages && !hasTImagesDir) {
-		    createDirectiveFile("timages", "~ Taxon images.", ConforDirType.TAXON_IMAGES);
+		    createDirectiveFile(files, "timages", "~ Taxon images.", ConforDirType.TAXON_IMAGES);
 		}
 		if (hasOFonts && !hasOFontsDir) {
-		    createDirectiveFile("ofonts", "~ Set fonts for image overlays.", ConforDirType.OVERLAY_FONTS);
+		    createDirectiveFile(files, "ofonts", "~ Set fonts for image overlays.", ConforDirType.OVERLAY_FONTS);
 		}
 	}
 
-	private void createCharacterNotesDirectivesFile() {
-		createDirectiveFile("cnotes", "~ Character notes.", ConforDirType.CHARACTER_NOTES);
+	private void updateDirectiveFileInfo(List<DirectiveFileInfo> files, String name, DirectiveFile directivesFile) {
+		for (DirectiveFileInfo file : files) {
+			if (file.getName().equals(name)) {
+				file.setDirectiveFile(directivesFile);
+				break;
+			}
+		}
+	}
+
+	private void createCharacterNotesDirectivesFile(List<DirectiveFileInfo> fileInfo) {
+		createDirectiveFile(fileInfo, "cnotes", "~ Character notes.", ConforDirType.CHARACTER_NOTES);
 	}
 	
-	private DirectiveFile createDirectiveFile(String fileName, String showDirectiveText) {
+	private DirectiveFile createDirectiveFile(List<DirectiveFileInfo> fileInfo, String fileName, String showDirectiveText) {
 		int numFiles = _model.getDirectiveFileCount();
 		DirectiveFile dirFile = _model.addDirectiveFile(numFiles+1, fileName, DirectiveType.CONFOR);
 		dirFile.addTextDirective(0, ConforDirType.get(ConforDirType.SHOW), showDirectiveText);
+		updateDirectiveFileInfo(fileInfo, fileName, dirFile);
+		
 		return dirFile;
 	}
 	
-	private DirectiveFile createDirectiveFile(String fileName, String showDirectiveText, int directive) {
-		DirectiveFile dirFile = createDirectiveFile(fileName, showDirectiveText);
+	private DirectiveFile createDirectiveFile(List<DirectiveFileInfo> fileInfo, String fileName, String showDirectiveText, int directive) {
+		DirectiveFile dirFile = createDirectiveFile(fileInfo, fileName, showDirectiveText);
 		dirFile.addNoArgDirective(1, ConforDirType.get(directive));
 		return dirFile;
 	}
