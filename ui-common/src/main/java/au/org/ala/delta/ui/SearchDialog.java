@@ -33,8 +33,9 @@ import org.jdesktop.application.SingleFrameApplication;
 
 import au.org.ala.delta.model.SearchDirection;
 import au.org.ala.delta.ui.util.UIUtils;
+import net.miginfocom.swing.MigLayout;
+import java.awt.Dimension;
 import javax.swing.BoxLayout;
-import java.awt.Component;
 
 public class SearchDialog extends JDialog {
 
@@ -59,6 +60,7 @@ public class SearchDialog extends JDialog {
 		UIUtils.centerDialog(this, controller.getOwningComponent().getParent());
 		setTitle(controller.getTitle());
 		setName(_controller.getTitle());
+		setBounds(100, 100, 366, 229);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -66,49 +68,42 @@ public class SearchDialog extends JDialog {
 		SingleFrameApplication application = (SingleFrameApplication) Application.getInstance();
 		ResourceMap messages = application.getContext().getResourceMap();
 
+		JLabel lblFind = new JLabel(messages.getString("searchDialog.lblFind"));
+		lblFind.setMinimumSize(new Dimension(30, 0));
+
+		textField = new JTextField();
+		textField.setColumns(10);
+
+		JPanel panel = new JPanel();
+		panel.setBorder(new TitledBorder(null, messages.getString("searchDialog.groupDirection"), TitledBorder.LEADING, TitledBorder.TOP, null, null));
+
 		buttonGroup = new ButtonGroup();
-		contentPanel.setLayout(new BorderLayout(0, 0));
+
+		rdbtnForwards = new JRadioButton(messages.getString("searchDialog.directionForwards"));
+		rdbtnForwards.setSelected(true);
+		buttonGroup.add(rdbtnForwards);
+
+		rdbtnBackwards = new JRadioButton(messages.getString("searchDialog.directionBackwards"));
+		buttonGroup.add(rdbtnBackwards);
+		contentPanel.setLayout(new MigLayout("", "[growprio 0,grow,left][grow][grow]", "[20px][21px,grow][grow]"));
+		contentPanel.add(lblFind, "cell 0 0,alignx left,aligny top");
+		contentPanel.add(textField, "cell 1 0 2 1,growx,aligny top");
+		
+		final JPanel panel_1 = new JPanel();
+		panel_1.setBorder(new TitledBorder(null, messages.getString("searchDialog.optionsPanelTitle"), TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		contentPanel.add(panel_1, "cell 0 1 2 1,grow");
+				panel_1.setLayout(new BoxLayout(panel_1, BoxLayout.Y_AXIS));
+		
+				chckbxMatchCase = new JCheckBox(messages.getString("searchDialog.lblMatchCase"));
+				panel_1.add(chckbxMatchCase);
 				
-				JPanel panel_1 = new JPanel();
-				contentPanel.add(panel_1, BorderLayout.NORTH);
-				panel_1.setLayout(new BorderLayout(0, 0));
-		
-				JLabel lblFind = new JLabel(messages.getString("searchDialog.lblFind"));
-				panel_1.add(lblFind, BorderLayout.WEST);
-		
-				textField = new JTextField();
-				panel_1.add(textField, BorderLayout.CENTER);
-				textField.setColumns(10);
-		
-		JPanel panel_2 = new JPanel();
-		contentPanel.add(panel_2, BorderLayout.CENTER);
-				panel_2.setLayout(new BorderLayout(0, 0));
-		
-				JPanel panel = new JPanel();
-				panel_2.add(panel, BorderLayout.EAST);
-				panel.setBorder(new TitledBorder(null, messages.getString("searchDialog.groupDirection"), TitledBorder.LEADING, TitledBorder.TOP, null, null));
-				
-						rdbtnForwards = new JRadioButton(messages.getString("searchDialog.directionForwards"));
-						rdbtnForwards.setSelected(true);
-						buttonGroup.add(rdbtnForwards);
-						
-								rdbtnBackwards = new JRadioButton(messages.getString("searchDialog.directionBackwards"));
-								buttonGroup.add(rdbtnBackwards);
-										panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-										panel.add(rdbtnForwards);
-										panel.add(rdbtnBackwards);
-										
-										JPanel panel_3 = new JPanel();
-										panel_3.setBorder(new TitledBorder(null, "Options", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-										panel_2.add(panel_3, BorderLayout.WEST);
-												panel_3.setLayout(new BoxLayout(panel_3, BoxLayout.Y_AXIS));
-										
-												chckbxMatchCase = new JCheckBox(messages.getString("searchDialog.lblMatchCase"));
-												panel_3.add(chckbxMatchCase);
-												
-														chckbxWrapSearch = new JCheckBox(messages.getString("searchDialog.lblWrapSearch"));
-														panel_3.add(chckbxWrapSearch);
-														chckbxWrapSearch.setSelected(true);
+						chckbxWrapSearch = new JCheckBox(messages.getString("searchDialog.lblWrapSearch"));
+						panel_1.add(chckbxWrapSearch);
+						chckbxWrapSearch.setSelected(true);
+		contentPanel.add(panel, "cell 2 1,grow");
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+		panel.add(rdbtnForwards);
+		panel.add(rdbtnBackwards);
 		{
 			JPanel buttonPane = new JPanel();
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
