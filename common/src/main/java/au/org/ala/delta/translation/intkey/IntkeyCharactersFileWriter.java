@@ -21,7 +21,6 @@ import au.org.ala.delta.model.image.ImageType;
 import au.org.ala.delta.translation.Words;
 import au.org.ala.delta.translation.Words.Word;
 import au.org.ala.delta.translation.delta.DeltaWriter;
-import au.org.ala.delta.translation.delta.ImageOverlayWriter;
 import au.org.ala.delta.translation.delta.OverlayFontWriter;
 
 /**
@@ -120,31 +119,18 @@ public class IntkeyCharactersFileWriter {
 	protected void writeCharacterImages() {
 		List<String> imageList = new ArrayList<String>(_dataSet.getNumberOfCharacters());
 	
-		
+		IntkeyImageWriter imageWriter = new IntkeyImageWriter();
 		for (int i=1; i<=_dataSet.getNumberOfCharacters(); i++) {
 			Character character = _dataSet.getCharacter(i);
 			List<Image> images = character.getImages();
-			if (images.isEmpty()) {
-				imageList.add("");
-			}
-			else {
-				StringBuilder buffer = new StringBuilder();
-				ImageOverlayWriter overlayWriter = createOverlayWriter(buffer);
-				for (Image image : images) {
-					buffer.append(image.getFileName()).append(" ");
-					overlayWriter.writeOverlays(image.getOverlays(), 0, character);
-				}
-				imageList.add(buffer.toString());
-			}
+			
+			imageList.add(imageWriter.imagesToString(images, character));
 			
 		}
 		_charsFile.writeCharacterImages(imageList);
 	}
 	
-	private ImageOverlayWriter createOverlayWriter(StringBuilder buffer) {
-		DeltaWriter writer = new DeltaWriter(buffer);
-		return new ImageOverlayWriter(writer);
-	}
+	
 	
 	protected void writeStartupImages() {
 		List<ImageInfo> startupImages = _context.getImages(ImageType.IMAGE_STARTUP);
@@ -152,17 +138,9 @@ public class IntkeyCharactersFileWriter {
 		_charsFile.writeStartupImages(images);
 	}
 
-	private String imagesToString(List<ImageInfo> startupImages) {
-		StringBuilder buffer = new StringBuilder();
-		ImageOverlayWriter overlayWriter = createOverlayWriter(buffer);
-		for (ImageInfo image : startupImages) {
-			if (buffer.length() > 0) {
-				buffer.append(" ");
-			}
-			buffer.append(image.getFileName()).append(" ");
-			overlayWriter.writeOverlays(image.getOverlays(), 0, null);
-		}
-		return buffer.toString();
+	private String imagesToString(List<ImageInfo> images) {
+		IntkeyImageWriter imageWriter = new IntkeyImageWriter();
+		return imageWriter.imagesToString(images);
 	}
 	
 	protected void writeCharacterKeywordImages() {

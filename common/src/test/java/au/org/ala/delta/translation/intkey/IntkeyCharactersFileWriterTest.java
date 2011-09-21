@@ -194,7 +194,7 @@ public class IntkeyCharactersFileWriterTest extends TestCase {
 	@Test
 	public void testWriteCharacterImages() {
 		
-		String image1 = "test.jpg <@feature x=1 y=2 w=3 h=4>";
+		String image1 = " test.jpg <@feature x=1 y=2 w=3 h=4> ";
 		
 		au.org.ala.delta.model.Character character = _dataSet.getCharacter(1);
 		Image image = character.addImage("test.jpg", "");
@@ -208,8 +208,8 @@ public class IntkeyCharactersFileWriterTest extends TestCase {
 		assertEquals(3, _charsFile.readInt());
 		assertEquals(5, _charsFile.readInt());
 		
-		assertEquals(image1.length()+System.getProperty("line.separator").length(), readInt(3));
-		assertEquals(image1, readString(4, image1.length()).trim());
+		assertEquals(image1.length(), readInt(3));
+		assertEquals(image1, readString(4, image1.length()));
 	}
 	
 	@Test

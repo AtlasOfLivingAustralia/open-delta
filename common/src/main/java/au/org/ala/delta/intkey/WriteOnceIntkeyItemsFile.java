@@ -35,11 +35,11 @@ public class WriteOnceIntkeyItemsFile extends IntkeyFile {
 		_header.setMajorVer(DATASET_MAJOR_VERSION);
 		_header.setMinorVer(DATASET_MINOR_VERSION);
 		// This is done to allocate the first record to the header.
-		writeHeader();
+		writeToRecord(1, _header.toInts());	
 	}
 	
 	public void writeHeader() {
-		writeToRecord(1, _header.toInts());	
+		overwriteRecord(1, _header.toInts());	
 	}
 	
 	public void writeItemDescriptions(List<String> descriptions) {
@@ -74,12 +74,9 @@ public class WriteOnceIntkeyItemsFile extends IntkeyFile {
 		List<Integer> minValues = new ArrayList<Integer>();
 		List<Integer> maxValues = new ArrayList<Integer>();
 		for (IntRange range : minMaxValues) {
-			try {
 			minValues.add(range.getMinimumInteger());
 			maxValues.add(range.getMaximumInteger());
-			}catch (NullPointerException e) {
-				e.printStackTrace();
-			}
+			
 		}
 		record += writeToRecord(record, minValues);
 		record += writeToRecord(record, maxValues);
@@ -253,11 +250,11 @@ public class WriteOnceIntkeyItemsFile extends IntkeyFile {
 	
 	public void writeTaxonLinks(int index, List<String> taxonLinks) {
 		int[] taxonLinksIndex = _header.getRpTlinks();
-		checkEmpty(taxonLinksIndex[0]);
+		checkEmpty(taxonLinksIndex[index]);
 		checkItemListLength(taxonLinks);
 		
 		int indexRecord = nextAvailableRecord();
-		taxonLinksIndex[0] = indexRecord;
+		taxonLinksIndex[index] = indexRecord;
 		_header.setRpTlinks(taxonLinksIndex);
 		
 		writeIndexedValues(indexRecord, taxonLinks.toArray(new String[taxonLinks.size()]));
@@ -294,7 +291,7 @@ public class WriteOnceIntkeyItemsFile extends IntkeyFile {
 	
 	private void checkEmpty(int recordNum) {
 		if (recordNum > 0) {
-			throw new RuntimeException("Character images already exit");
+			throw new RuntimeException("This record has already been written");
 		}
 	}
 	

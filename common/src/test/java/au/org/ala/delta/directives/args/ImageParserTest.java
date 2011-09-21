@@ -12,7 +12,6 @@ import org.junit.Test;
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.model.image.ImageInfo;
 import au.org.ala.delta.model.image.ImageOverlay;
-import au.org.ala.delta.model.image.ImageOverlayParser;
 import au.org.ala.delta.model.image.ImageType;
 import au.org.ala.delta.model.image.OverlayLocation;
 
@@ -141,6 +140,25 @@ public class ImageParserTest extends TestCase {
             }
             locations.add(location);
         }
+    }
+    
+    @Test
+    public void testMultipleFiles() throws Exception {
+    	ImageParser parser = parserFor("#Test/ pet01.gif <@subject Drawings> <@feature x=8 y=8 w=170 h=-1 m> " +
+    			"<@state 1 x=233 y=40 w=233 h=-1 x=30 y=106 w=573 h=880 p f=FF8040 m> " +
+    			"<@state 2 x=711 y=40 w=266 h=-1 x=713 y=106 w=267 h=880 p f=FF8040 m> " +
+    			"<@ok x=608 y=304> <@cancel x=608 y=380> " +
+    			"pet02.gif <@subject Photo> <@feature x=150 y=31 w=170 h=-1 m> " +
+    			"<@state 1 x=17 y=529 w=225 h=-1  x=5 y=6 w=486 h=990 p f=FF8040 m> " +
+    			"<@state 2 x=611 y=510 w=266 h=-2 m t=(not illustrated)> " +
+    			"<@ok x=632 y=850> " +
+    			"<@cancel x=768 y=850>", ImageType.IMAGE_CHARACTER);
+    	parser.parse();
+    	
+    	List<ImageInfo> imageInfoList = parser.getImageInfo();
+        assertEquals(2, imageInfoList.size());
+        
+
     }
 
 }

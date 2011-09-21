@@ -30,8 +30,6 @@ import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.NumericAttribute;
 import au.org.ala.delta.model.NumericRange;
 import au.org.ala.delta.model.image.Image;
-import au.org.ala.delta.translation.delta.DeltaWriter;
-import au.org.ala.delta.translation.delta.ImageOverlayWriter;
 
 /**
  * Writes the intkey items file using the data in a supplied DeltaContext and
@@ -475,31 +473,16 @@ public class IntkeyItemsFileWriter {
 	public void writeTaxonImages() {
 		List<String> imageList = new ArrayList<String>(_dataSet.getMaximumNumberOfItems());
 	
-		
+		IntkeyImageWriter imageWriter = new IntkeyImageWriter();
 		for (int i=1; i<=_dataSet.getMaximumNumberOfItems(); i++) {
 			Item item = _dataSet.getItem(i);
 			List<Image> images = item.getImages();
-			if (images.isEmpty()) {
-				imageList.add("");
-			}
-			else {
-				StringBuilder buffer = new StringBuilder();
-				ImageOverlayWriter overlayWriter = createOverlayWriter(buffer);
-				for (Image image : images) {
-					buffer.append(image.getFileName()).append(" ");
-					overlayWriter.writeOverlays(image.getOverlays(), 0, item);
-				}
-				imageList.add(buffer.toString());
-			}
+			imageList.add(imageWriter.imagesToString(images, item));
 			
 		}
 		_itemsFile.writeTaxonImages(imageList);
 	}
 	
-	private ImageOverlayWriter createOverlayWriter(StringBuilder buffer) {
-		DeltaWriter writer = new DeltaWriter(buffer);
-		return new ImageOverlayWriter(writer);
-	}
 	
 	public void writeEnableDeltaOutput() {
 		_itemsFile.writeEnableDeltaOutput(_context.isDeltaOutputDisabled());
