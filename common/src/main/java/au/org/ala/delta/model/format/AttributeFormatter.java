@@ -11,20 +11,25 @@ import org.apache.commons.lang.math.IntRange;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.IntegerAttribute;
 import au.org.ala.delta.model.MultiStateAttribute;
+import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.RealAttribute;
 import au.org.ala.delta.model.TextAttribute;
 
 /**
  * Formats an attribute.
  */
-public class AttributeFormatter extends CharacterFormatter {
+public class AttributeFormatter extends Formatter {
+
+    boolean _includeNumber;
 
     public AttributeFormatter(boolean includeNumber, boolean stripFormatting, boolean stripComments) {
-        super(includeNumber, stripComments, AngleBracketHandlingMode.RETAIN, stripFormatting);
+        super(stripComments, AngleBracketHandlingMode.RETAIN, stripFormatting);
+        _includeNumber = includeNumber;
     }
 
     public AttributeFormatter(boolean includeNumber, boolean stripFormatting, boolean stripComments, AngleBracketHandlingMode angleBracketHandlingMode) {
-        super(includeNumber, stripComments, angleBracketHandlingMode, stripFormatting);
+        super(stripComments, angleBracketHandlingMode, stripFormatting);
+        _includeNumber = includeNumber;
     }
 
     /**
@@ -60,15 +65,24 @@ public class AttributeFormatter extends CharacterFormatter {
     private String formatMultiStateAttribute(MultiStateAttribute attribute) {
         StringBuilder builder = new StringBuilder();
 
+        MultiStateCharacter character = attribute.getCharacter();
         List<Integer> values = new ArrayList<Integer>(attribute.getPresentStates());
 
         for (int i = 0; i < values.size(); i++) {
+            int stateNumber = i + 1;
+
             if (i > 0) {
                 // TODO "or" needs to be internationalized
                 builder.append("; or ");
             }
 
-            builder.append(formatState(attribute.getCharacter(), values.get(i)));
+            if (_includeNumber) {
+                builder.append("(");
+                builder.append(stateNumber);
+                builder.append(") ");
+            }
+            String stateText = character.getState(stateNumber);
+            builder.append(defaultFormat(stateText));
         }
 
         return builder.toString().trim();
@@ -152,7 +166,7 @@ public class AttributeFormatter extends CharacterFormatter {
             builder.append(Integer.toString(aboveMaximum));
             builder.append(" or more");
         }
-        
+
         String units = attribute.getCharacter().getUnits();
         if (!StringUtils.isBlank(units)) {
             builder.append(" ");

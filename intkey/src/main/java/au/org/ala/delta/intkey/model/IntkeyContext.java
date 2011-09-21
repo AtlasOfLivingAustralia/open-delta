@@ -147,6 +147,10 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     private List<IntkeyDirectiveInvocation> _executedDirectives;
 
+    private boolean _displayNumbering;
+    private boolean _displayInapplicables;
+    private boolean _displayUnknowns;
+
     /**
      * Constructor
      * 
@@ -195,7 +199,6 @@ public class IntkeyContext extends AbstractDeltaContext {
         _rbase = 1.1;
         _varyWeight = 1;
         _diagLevel = 1;
-        
 
         _characterOrder = IntkeyCharacterOrder.BEST;
         _bestCharacters = null;
@@ -208,6 +211,8 @@ public class IntkeyContext extends AbstractDeltaContext {
         _charactersFixed = false;
         _fixedCharactersList = new ArrayList<Integer>();
         _exactCharactersSet = new HashSet<Integer>();
+
+        _displayNumbering = false;
     }
 
     /**
@@ -1227,13 +1232,38 @@ public class IntkeyContext extends AbstractDeltaContext {
     private boolean isCharacterExact(Character ch) {
         return _exactCharactersSet.contains(ch.getCharacterId());
     }
-    
+
     public int getStopBest() {
         return _stopBest;
     }
 
     public void setStopBest(int stopBest) {
         this._stopBest = stopBest;
+    }
+
+    public boolean displayNumbering() {
+        return _displayNumbering;
+    }
+
+    public void setDisplayNumbering(boolean displayNumbering) {
+        this._displayNumbering = displayNumbering;
+        _appUI.handleUpdateAll();
+    }
+
+    public boolean displayInapplicables() {
+        return _displayInapplicables;
+    }
+
+    public void setDisplayInapplicables(boolean displayInapplicables) {
+        this._displayInapplicables = displayInapplicables;
+    }
+
+    public boolean displayUnknowns() {
+        return _displayUnknowns;
+    }
+
+    public void setDisplayUnknowns(boolean displayUnknowns) {
+        this._displayUnknowns = displayUnknowns;
     }
 
     private class StartupFileLoader extends SwingWorker<Void, String> {

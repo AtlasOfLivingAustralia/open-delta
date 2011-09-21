@@ -42,7 +42,8 @@ public class IntkeyDataset {
     private List<FontInfo> _overlayFonts;
 
     private boolean _deltaOutputPermitted;
-    private boolean chineseFormat;
+    private boolean _chineseFormat;
+    private boolean _itemSubheadingsPresent;
 
     /**
      * A list of text characters that contain synonmy information. The values of
@@ -204,11 +205,11 @@ public class IntkeyDataset {
     }
 
     public boolean isChineseFormat() {
-        return chineseFormat;
+        return _chineseFormat;
     }
 
     void setChineseFormat(boolean chineseFormat) {
-        this.chineseFormat = chineseFormat;
+        this._chineseFormat = chineseFormat;
     }
 
     public Character getCharacter(int charNum) {
@@ -292,10 +293,18 @@ public class IntkeyDataset {
                 synonymyStringList.add(textAttr);
             }
         }
-        
+
         return taxonSynonymyAttributes;
     }
 
+    public boolean itemSubheadingsPresent() {
+        return _itemSubheadingsPresent;
+    }
+
+    void setItemSubheadingsPresent(boolean itemSubheadingsPresent) {
+        this._itemSubheadingsPresent = itemSubheadingsPresent;
+    }
+    
     /**
      * Called prior to application shutdown.
      */

@@ -95,7 +95,7 @@ public final class IntkeyDatasetFileReader {
         readTaxonKeywordImages(charFileHeader, charBinFile, ds);
         readOrWord(charFileHeader, charBinFile, ds);
         readOverlayFonts(charFileHeader, charBinFile, ds);
-        readCharacterItemSubheadings(charFileHeader, charBinFile, characters);
+        readCharacterItemSubheadings(charFileHeader, charBinFile, characters, ds);
         readRealCharacterKeyStateBoundaries(itemFileHeader, itemBinFile, characters);
         readTaxonImages(itemFileHeader, itemBinFile, taxa);
 
@@ -941,10 +941,11 @@ public final class IntkeyDatasetFileReader {
         return new FontInfo(size, weight, italic, pitch, family, charSet, name);
     }
 
-    private static void readCharacterItemSubheadings(CharactersFileHeader charFileHeader, BinFile charBinFile, List<Character> characters) {
+    private static void readCharacterItemSubheadings(CharactersFileHeader charFileHeader, BinFile charBinFile, List<Character> characters, IntkeyDataset ds) {
         int numChars = charFileHeader.getNC();
         int recordNo = charFileHeader.getRpItemSubHead();
         if (recordNo != 0) {
+            ds.setItemSubheadingsPresent(true);
             List<String> itemSubheadings = readStringList(charBinFile, recordNo, numChars);
 
             for (int i = 0; i < numChars; i++) {

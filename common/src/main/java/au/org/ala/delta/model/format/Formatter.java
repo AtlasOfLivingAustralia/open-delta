@@ -241,8 +241,4 @@ public class Formatter {
         public abstract void value(String value) throws ParseException;
     }
 
-    public class Foo {
-
-    }
-
 }

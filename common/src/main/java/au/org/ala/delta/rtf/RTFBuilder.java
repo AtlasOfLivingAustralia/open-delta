@@ -6,7 +6,8 @@ public class RTFBuilder {
 
     private StringBuilder _strBuilder;
 
-    // by default, the indent width is 340 twips, which is the same as in the legacy version
+    // by default, the indent width is 340 twips, which is the same as in the
+    // legacy version
     // if Intkey
     private int _indentWidth = 340;
     private int _currentIndent = 0;
@@ -76,30 +77,37 @@ public class RTFBuilder {
     }
 
     public void appendText(String str) {
-        _strBuilder.append("\\pard ");
+        // If string contains the "par" or "pard" control words, assume that it
+        // has already been
+        // completely formatted, and does not require any additional formatting.
+//        if (str.contains("\\par") || str.contains("\\pard")) {
+//            _strBuilder.append(str);
+//        } else {
+            _strBuilder.append("\\pard ");
 
-        if (_alignment != null) {
-            switch (_alignment) {
-            case LEFT:
-                _strBuilder.append("\\ql ");
-                break;
-            case RIGHT:
-                _strBuilder.append("\\qr ");
-                break;
-            case CENTER:
-                _strBuilder.append("\\qc ");
-                break;
-            case JUSTIFY:
-                _strBuilder.append("\\qj ");
-                break;
+            if (_alignment != null) {
+                switch (_alignment) {
+                case LEFT:
+                    _strBuilder.append("\\ql ");
+                    break;
+                case RIGHT:
+                    _strBuilder.append("\\qr ");
+                    break;
+                case CENTER:
+                    _strBuilder.append("\\qc ");
+                    break;
+                case JUSTIFY:
+                    _strBuilder.append("\\qj ");
+                    break;
+                }
             }
-        }
 
-        int indentTwips = _currentIndent * _indentWidth;
-        _strBuilder.append(String.format("\\li%s ", indentTwips));
-        _strBuilder.append(str);
-        _strBuilder.append("\\par ");
-        _strBuilder.append("\n");
-    }
+            int indentTwips = _currentIndent * _indentWidth;
+            _strBuilder.append(String.format("\\li%s ", indentTwips));
+            _strBuilder.append(str);
+            _strBuilder.append("\\par ");
+            _strBuilder.append("\n");
+        }
+//    }
 
 }
