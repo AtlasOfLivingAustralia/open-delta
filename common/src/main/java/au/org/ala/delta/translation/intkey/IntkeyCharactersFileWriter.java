@@ -119,23 +119,27 @@ public class IntkeyCharactersFileWriter {
 	protected void writeCharacterImages() {
 		List<String> imageList = new ArrayList<String>(_dataSet.getNumberOfCharacters());
 	
-		IntkeyImageWriter imageWriter = new IntkeyImageWriter();
-		for (int i=1; i<=_dataSet.getNumberOfCharacters(); i++) {
-			Character character = _dataSet.getCharacter(i);
-			List<Image> images = character.getImages();
-			
-			imageList.add(imageWriter.imagesToString(images, character));
-			
-		}
+		if (!imageList.isEmpty()) {
+			IntkeyImageWriter imageWriter = new IntkeyImageWriter();
+			for (int i=1; i<=_dataSet.getNumberOfCharacters(); i++) {
+				Character character = _dataSet.getCharacter(i);
+				List<Image> images = character.getImages();
+				
+				imageList.add(imageWriter.imagesToString(images, character));
+				
+			}
 		_charsFile.writeCharacterImages(imageList);
+		}
 	}
 	
 	
 	
 	protected void writeStartupImages() {
 		List<ImageInfo> startupImages = _context.getImages(ImageType.IMAGE_STARTUP);
-		String images = imagesToString(startupImages);
-		_charsFile.writeStartupImages(images);
+		if (!startupImages.isEmpty()) {
+			String images = imagesToString(startupImages);
+			_charsFile.writeStartupImages(images);
+		}
 	}
 
 	private String imagesToString(List<ImageInfo> images) {
@@ -145,14 +149,18 @@ public class IntkeyCharactersFileWriter {
 	
 	protected void writeCharacterKeywordImages() {
 		List<ImageInfo> imageInfo = _context.getImages(ImageType.IMAGE_CHARACTER_KEYWORD);
-		String images = imagesToString(imageInfo);
-		_charsFile.writeCharacterKeyImages(images);
+		if (!imageInfo.isEmpty()) {
+			String images = imagesToString(imageInfo);
+			_charsFile.writeCharacterKeyImages(images); 
+		}
 	}
 	
 	protected void writeTaxonKeywordImages() {
 		List<ImageInfo> imageInfo = _context.getImages(ImageType.IMAGE_TAXON_KEYWORD);
-		String images = imagesToString(imageInfo);
-		_charsFile.writeTaxonKeyImages(images);
+		if (!imageInfo.isEmpty()) {
+			String images = imagesToString(imageInfo);
+			_charsFile.writeTaxonKeyImages(images);
+		}
 	}
 	
 	protected void writeHeading() {

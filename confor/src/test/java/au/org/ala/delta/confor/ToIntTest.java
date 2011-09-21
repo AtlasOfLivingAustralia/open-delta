@@ -3,6 +3,8 @@ package au.org.ala.delta.confor;
 import java.io.File;
 import java.net.URL;
 
+import org.junit.Test;
+
 import junit.framework.TestCase;
 import au.org.ala.delta.intkey.model.IntkeyDataset;
 import au.org.ala.delta.intkey.model.IntkeyDatasetFileReader;
@@ -12,7 +14,7 @@ import au.org.ala.delta.intkey.model.IntkeyDatasetFileReader;
  */
 public class ToIntTest extends TestCase {
 	
-	
+	@Test
 	public void testSampleToInt() throws Exception {
 		
 		File tointFile = urlToFile("/dataset/sample/toint");
@@ -21,9 +23,9 @@ public class ToIntTest extends TestCase {
 		File ichars = urlToFile("/dataset/sample/ichars");
 		File iitems = urlToFile("/dataset/sample/iitems");
 		
-//		IntkeyDataset dataSet = IntkeyDatasetFileReader.readDataSet(ichars, iitems);
-//		assertEquals(89, dataSet.getNumberOfCharacters());
-//		assertEquals(14, dataSet.getNumberOfTaxa());
+		IntkeyDataset dataSet = IntkeyDatasetFileReader.readDataSet(ichars, iitems);
+		assertEquals(89, dataSet.getNumberOfCharacters());
+		assertEquals(14, dataSet.getNumberOfTaxa());
 	}
 	
 	private File urlToFile(String urlString) throws Exception {
