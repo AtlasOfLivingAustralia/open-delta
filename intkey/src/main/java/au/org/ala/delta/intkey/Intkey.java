@@ -82,6 +82,7 @@ import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyCharacterOrder;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.model.IntkeyDataset;
+import au.org.ala.delta.intkey.model.SearchUtils;
 import au.org.ala.delta.intkey.model.StartupFileData;
 import au.org.ala.delta.intkey.model.StartupUtils;
 import au.org.ala.delta.intkey.model.specimen.CharacterValue;
@@ -1886,7 +1887,6 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     // Returns number of taxa matched
     public int findTaxa(String searchText, boolean searchSynonyms, boolean searchEliminatedTaxa) {
-        int numFoundTaxa = 0;
 
         IntkeyDataset dataset = _context.getDataset();
 
@@ -1895,38 +1895,16 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         _foundAvailableTaxa = new ArrayList<Item>();
         _foundEliminatedTaxa = new ArrayList<Item>();
 
-        List<TextCharacter> synonymyCharacters = dataset.getSynonymyCharacters();
-        Map<Item, List<String>> taxonSynonymyStrings = new HashMap<Item, List<String>>();
-
-        if (searchSynonyms) {
-            List<Item> allTaxa = dataset.getTaxa();
-
-            for (Item taxon : allTaxa) {
-                List<String> synonymyStringsList = new ArrayList<String>();
-                taxonSynonymyStrings.put(taxon, synonymyStringsList);
-            }
-
-            for (TextCharacter ch : synonymyCharacters) {
-                List<Attribute> attrs = dataset.getAttributesForCharacter(ch.getCharacterId());
-
-                for (Attribute attr : attrs) {
-                    TextAttribute textAttr = (TextAttribute) attr;
-
-                    Item taxon = attr.getItem();
-                    List<String> synonymyStringList = taxonSynonymyStrings.get(taxon);
-                    synonymyStringList.add(textAttr.getText());
-                }
-            }
-        }
+        Map<Item, List<TextAttribute>> taxaSynonymyAttributes = dataset.getSynonymyAttributesForTaxa();
 
         for (Item taxon : availableTaxa) {
-            if (taxonMatches(searchText, taxon, taxonSynonymyStrings.get(taxon))) {
+            if (SearchUtils.taxonMatches(searchText, taxon, SearchUtils.getSynonymyStringsForTaxon(taxon, taxaSynonymyAttributes))) {
                 _foundAvailableTaxa.add(taxon);
             }
         }
 
         for (Item taxon : eliminatedTaxa) {
-            if (taxonMatches(searchText, taxon, taxonSynonymyStrings.get(taxon))) {
+            if (SearchUtils.taxonMatches(searchText, taxon, SearchUtils.getSynonymyStringsForTaxon(taxon, taxaSynonymyAttributes))) {
                 _foundEliminatedTaxa.add(taxon);
             }
         }
@@ -1953,24 +1931,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
         return _foundAvailableTaxa.size() + _foundEliminatedTaxa.size();
     }
-
-    private boolean taxonMatches(String searchText, Item taxon, List<String> synonymStrings) {
-        String searchTextLowerCase = searchText.toLowerCase();
-
-        if (taxon.getDescription().toLowerCase().contains(searchTextLowerCase)) {
-            return true;
-        }
-
-        if (synonymStrings != null) {
-            for (String synonymString : synonymStrings) {
-                if (synonymString.toLowerCase().contains(searchTextLowerCase)) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
+    
 
     public void selectCurrentMatchedTaxon(int matchedTaxonIndex) {
 
@@ -2030,14 +1991,14 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         _foundUsedCharacters = new ArrayList<Character>();
 
         for (Character ch : availableCharacters) {
-            if (characterMatches(ch, searchText, searchStates)) {
+            if (SearchUtils.characterMatches(ch, searchText, searchStates)) {
                 _foundAvailableCharacters.add(ch);
             }
         }
 
         if (searchUsedCharacters) {
             for (Character ch : usedCharacters) {
-                if (characterMatches(ch, searchText, searchStates)) {
+                if (SearchUtils.characterMatches(ch, searchText, searchStates)) {
                     _foundUsedCharacters.add(ch);
                 }
             }
@@ -2052,34 +2013,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         return _foundAvailableCharacters.size() + _foundUsedCharacters.size();
     }
 
-    private boolean characterMatches(Character ch, String searchText, boolean searchStates) {
-        boolean result = false;
 
-        String searchTextLowerCase = searchText.toLowerCase();
-
-        if (ch.getDescription().toLowerCase().contains(searchTextLowerCase)) {
-            result = true;
-        }
-
-        if (!result && searchStates) {
-            if (ch instanceof MultiStateCharacter) {
-                MultiStateCharacter msChar = (MultiStateCharacter) ch;
-                for (String state : msChar.getStates()) {
-                    if (state.toLowerCase().contains(searchTextLowerCase)) {
-                        result = true;
-                        break;
-                    }
-                }
-            } else if (ch instanceof NumericCharacter) {
-                NumericCharacter numChar = (NumericCharacter) ch;
-                if (numChar.getUnits() != null && numChar.getUnits().toLowerCase().contains(searchTextLowerCase)) {
-                    result = true;
-                }
-            }
-        }
-
-        return result;
-    }
 
     public void selectCurrentMatchedCharacter(int matchedCharacterIndex) {
 

@@ -33,6 +33,8 @@ import org.jdesktop.application.SingleFrameApplication;
 
 import au.org.ala.delta.model.SearchDirection;
 import au.org.ala.delta.ui.util.UIUtils;
+import javax.swing.BoxLayout;
+import java.awt.Component;
 
 public class SearchDialog extends JDialog {
 
@@ -57,7 +59,6 @@ public class SearchDialog extends JDialog {
 		UIUtils.centerDialog(this, controller.getOwningComponent().getParent());
 		setTitle(controller.getTitle());
 		setName(_controller.getTitle());
-		setBounds(100, 100, 366, 229);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -65,80 +66,49 @@ public class SearchDialog extends JDialog {
 		SingleFrameApplication application = (SingleFrameApplication) Application.getInstance();
 		ResourceMap messages = application.getContext().getResourceMap();
 
-		JLabel lblFind = new JLabel(messages.getString("searchDialog.lblFind"));
-
-		textField = new JTextField();
-		textField.setColumns(10);
-
-		chckbxMatchCase = new JCheckBox(messages.getString("searchDialog.lblMatchCase"));
-
-		chckbxWrapSearch = new JCheckBox(messages.getString("searchDialog.lblWrapSearch"));
-		chckbxWrapSearch.setSelected(true);
-
-		JPanel panel = new JPanel();
-		panel.setBorder(new TitledBorder(null, messages.getString("searchDialog.groupDirection"), TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
-		gl_contentPanel.setHorizontalGroup(
-			gl_contentPanel.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_contentPanel.createSequentialGroup()
-					.addContainerGap()
-					.addComponent(lblFind)
-					.addGap(18)
-					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-						.addComponent(textField, GroupLayout.DEFAULT_SIZE, 314, Short.MAX_VALUE)
-						.addGroup(gl_contentPanel.createSequentialGroup()
-							.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-								.addComponent(chckbxMatchCase)
-								.addComponent(chckbxWrapSearch))
-							.addGap(26)
-							.addComponent(panel, GroupLayout.DEFAULT_SIZE, 267, Short.MAX_VALUE)))
-					.addContainerGap())
-		);
-		gl_contentPanel.setVerticalGroup(
-			gl_contentPanel.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_contentPanel.createSequentialGroup()
-					.addContainerGap()
-					.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
-						.addComponent(lblFind)
-						.addComponent(textField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_contentPanel.createSequentialGroup()
-							.addComponent(chckbxMatchCase)
-							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addComponent(chckbxWrapSearch))
-						.addComponent(panel, GroupLayout.DEFAULT_SIZE, 83, Short.MAX_VALUE))
-					.addGap(6))
-		);
-
 		buttonGroup = new ButtonGroup();
-
-		rdbtnForwards = new JRadioButton(messages.getString("searchDialog.directionForwards"));
-		rdbtnForwards.setSelected(true);
-		buttonGroup.add(rdbtnForwards);
-
-		rdbtnBackwards = new JRadioButton(messages.getString("searchDialog.directionBackwards"));
-		buttonGroup.add(rdbtnBackwards);
-
-		GroupLayout gl_panel = new GroupLayout(panel);
-		gl_panel.setHorizontalGroup(
-			gl_panel.createParallelGroup(Alignment.TRAILING)
-				.addGroup(gl_panel.createSequentialGroup()
-					.addContainerGap()
-					.addGroup(gl_panel.createParallelGroup(Alignment.TRAILING)
-						.addComponent(rdbtnForwards, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 243, Short.MAX_VALUE)
-						.addComponent(rdbtnBackwards, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 243, Short.MAX_VALUE))
-					.addContainerGap())
-		);
-		gl_panel.setVerticalGroup(
-			gl_panel.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_panel.createSequentialGroup()
-					.addComponent(rdbtnForwards, GroupLayout.PREFERRED_SIZE, 36, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addComponent(rdbtnBackwards, GroupLayout.DEFAULT_SIZE, 38, Short.MAX_VALUE))
-		);
-		panel.setLayout(gl_panel);
-		contentPanel.setLayout(gl_contentPanel);
+		contentPanel.setLayout(new BorderLayout(0, 0));
+				
+				JPanel panel_1 = new JPanel();
+				contentPanel.add(panel_1, BorderLayout.NORTH);
+				panel_1.setLayout(new BorderLayout(0, 0));
+		
+				JLabel lblFind = new JLabel(messages.getString("searchDialog.lblFind"));
+				panel_1.add(lblFind, BorderLayout.WEST);
+		
+				textField = new JTextField();
+				panel_1.add(textField, BorderLayout.CENTER);
+				textField.setColumns(10);
+		
+		JPanel panel_2 = new JPanel();
+		contentPanel.add(panel_2, BorderLayout.CENTER);
+				panel_2.setLayout(new BorderLayout(0, 0));
+		
+				JPanel panel = new JPanel();
+				panel_2.add(panel, BorderLayout.EAST);
+				panel.setBorder(new TitledBorder(null, messages.getString("searchDialog.groupDirection"), TitledBorder.LEADING, TitledBorder.TOP, null, null));
+				
+						rdbtnForwards = new JRadioButton(messages.getString("searchDialog.directionForwards"));
+						rdbtnForwards.setSelected(true);
+						buttonGroup.add(rdbtnForwards);
+						
+								rdbtnBackwards = new JRadioButton(messages.getString("searchDialog.directionBackwards"));
+								buttonGroup.add(rdbtnBackwards);
+										panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+										panel.add(rdbtnForwards);
+										panel.add(rdbtnBackwards);
+										
+										JPanel panel_3 = new JPanel();
+										panel_3.setBorder(new TitledBorder(null, "Options", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+										panel_2.add(panel_3, BorderLayout.WEST);
+												panel_3.setLayout(new BoxLayout(panel_3, BoxLayout.Y_AXIS));
+										
+												chckbxMatchCase = new JCheckBox(messages.getString("searchDialog.lblMatchCase"));
+												panel_3.add(chckbxMatchCase);
+												
+														chckbxWrapSearch = new JCheckBox(messages.getString("searchDialog.lblWrapSearch"));
+														panel_3.add(chckbxWrapSearch);
+														chckbxWrapSearch.setSelected(true);
 		{
 			JPanel buttonPane = new JPanel();
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));

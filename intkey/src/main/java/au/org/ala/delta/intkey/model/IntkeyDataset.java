@@ -2,12 +2,15 @@ package au.org.ala.delta.intkey.model;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import au.org.ala.delta.io.BinFile;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.TextAttribute;
 import au.org.ala.delta.model.TextCharacter;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.model.image.Image;
@@ -259,14 +262,37 @@ public class IntkeyDataset {
     public Item getTaxonByName(String taxonName) {
         ItemFormatter formatter = new ItemFormatter(false, true, false, false, true, false);
         for (Item taxon : _taxa) {
-            //String comments, RTF etc. from taxon description
+            // String comments, RTF etc. from taxon description
             String formattedTaxonName = formatter.formatItemDescription(taxon);
-            
+
             if (formattedTaxonName.equalsIgnoreCase(taxonName)) {
                 return taxon;
             }
         }
         return null;
+    }
+
+    public Map<Item, List<TextAttribute>> getSynonymyAttributesForTaxa() {
+        Map<Item, List<TextAttribute>> taxonSynonymyAttributes = new HashMap<Item, List<TextAttribute>>();
+
+        for (Item taxon : _taxa) {
+            List<TextAttribute> synonymyAttributesList = new ArrayList<TextAttribute>();
+            taxonSynonymyAttributes.put(taxon, synonymyAttributesList);
+        }
+
+        for (TextCharacter ch : _synonymyCharacters) {
+            List<Attribute> attrs = getAttributesForCharacter(ch.getCharacterId());
+
+            for (Attribute attr : attrs) {
+                TextAttribute textAttr = (TextAttribute) attr;
+
+                Item taxon = attr.getItem();
+                List<TextAttribute> synonymyStringList = taxonSynonymyAttributes.get(taxon);
+                synonymyStringList.add(textAttr);
+            }
+        }
+        
+        return taxonSynonymyAttributes;
     }
 
     /**
