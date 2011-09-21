@@ -95,4 +95,8 @@ public class OutputFileSelector {
 		}
 		return file.getAbsolutePath();
 	}
+
+	public void setCharacterForOutputFiles(int character) {
+		_characterForOutputFiles = character;
+	}
 }

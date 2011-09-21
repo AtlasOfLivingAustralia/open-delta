@@ -74,8 +74,12 @@ public class WriteOnceIntkeyItemsFile extends IntkeyFile {
 		List<Integer> minValues = new ArrayList<Integer>();
 		List<Integer> maxValues = new ArrayList<Integer>();
 		for (IntRange range : minMaxValues) {
+			try {
 			minValues.add(range.getMinimumInteger());
 			maxValues.add(range.getMaximumInteger());
+			}catch (NullPointerException e) {
+				e.printStackTrace();
+			}
 		}
 		record += writeToRecord(record, minValues);
 		record += writeToRecord(record, maxValues);

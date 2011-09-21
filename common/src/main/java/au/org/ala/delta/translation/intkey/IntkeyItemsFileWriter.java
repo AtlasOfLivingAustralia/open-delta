@@ -277,6 +277,7 @@ public class IntkeyItemsFileWriter {
 		if (characterRange == null) {
 			// The range was too large - treat this character as a real.
 			writeRealAttributes(character);
+			characterRange = new IntRange(0);
 		}
 		else {
 			int charNumber = character.getCharacterId();
