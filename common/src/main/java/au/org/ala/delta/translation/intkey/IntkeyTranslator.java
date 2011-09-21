@@ -28,6 +28,7 @@ public class IntkeyTranslator implements DataSetTranslator {
 				_dataSet.getNumberOfCharacters(), fileName , BinFileMode.FM_APPEND);
 		IntkeyCharactersFileWriter charsWriter = new IntkeyCharactersFileWriter(_context, charsFile);
 		charsWriter.writeAll();
+		charsFile.close();
 	}
 	
 	@Override
@@ -38,5 +39,6 @@ public class IntkeyTranslator implements DataSetTranslator {
 				_dataSet.getNumberOfCharacters(), _dataSet.getMaximumNumberOfItems(), fileName, BinFileMode.FM_APPEND);
 		IntkeyItemsFileWriter itemsWriter = new IntkeyItemsFileWriter(_context, itemsFile);
 		itemsWriter.writeAll();
+		itemsFile.close();
 	}
 }
