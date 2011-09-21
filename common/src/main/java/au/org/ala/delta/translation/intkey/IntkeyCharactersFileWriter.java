@@ -119,16 +119,17 @@ public class IntkeyCharactersFileWriter {
 	protected void writeCharacterImages() {
 		List<String> imageList = new ArrayList<String>(_dataSet.getNumberOfCharacters());
 	
+		IntkeyImageWriter imageWriter = new IntkeyImageWriter();
+		for (int i=1; i<=_dataSet.getNumberOfCharacters(); i++) {
+			Character character = _dataSet.getCharacter(i);
+			List<Image> images = character.getImages();
+			
+			imageList.add(imageWriter.imagesToString(images, character));
+			
+		}
 		if (!imageList.isEmpty()) {
-			IntkeyImageWriter imageWriter = new IntkeyImageWriter();
-			for (int i=1; i<=_dataSet.getNumberOfCharacters(); i++) {
-				Character character = _dataSet.getCharacter(i);
-				List<Image> images = character.getImages();
-				
-				imageList.add(imageWriter.imagesToString(images, character));
-				
-			}
-		_charsFile.writeCharacterImages(imageList);
+			
+			_charsFile.writeCharacterImages(imageList);
 		}
 	}
 	
