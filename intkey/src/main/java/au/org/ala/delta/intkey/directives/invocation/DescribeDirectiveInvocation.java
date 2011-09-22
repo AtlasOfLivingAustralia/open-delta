@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
+
 import au.org.ala.delta.intkey.model.DiffUtils;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.model.IntkeyDataset;
@@ -18,7 +20,9 @@ import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.rtf.RTFBuilder;
+import au.org.ala.delta.rtf.RTFUtils;
 import au.org.ala.delta.util.Pair;
+import au.org.ala.delta.util.Utils;
 
 public class DescribeDirectiveInvocation implements IntkeyDirectiveInvocation {
 
@@ -44,8 +48,7 @@ public class DescribeDirectiveInvocation implements IntkeyDirectiveInvocation {
 
         RTFBuilder builder = null;
         if (dataset.itemSubheadingsPresent() && !context.displayNumbering()) {
-            builder = generateReportGroupedByItemSubheading(characterAttributesMap, specimen, charactersItemSubheadingMap, context.displayNumbering(), context.displayUnknowns(),
-                    context.displayInapplicables());
+            builder = generateReportGroupedByItemSubheading(characterAttributesMap, specimen, charactersItemSubheadingMap, context.displayUnknowns(), context.displayInapplicables());
         } else {
             builder = generateStandardReport(characterAttributesMap, specimen, charactersItemSubheadingMap, context.displayNumbering(), context.displayUnknowns(), context.displayInapplicables());
         }
@@ -59,8 +62,8 @@ public class DescribeDirectiveInvocation implements IntkeyDirectiveInvocation {
     private RTFBuilder generateStandardReport(Map<Character, List<Attribute>> characterAttributesMap, Specimen specimen, Map<Character, String> charactersItemSubheadingMap, boolean displayNumbering,
             boolean displayInapplicables, boolean displayUnknowns) {
         ItemFormatter taxonFormatter = new ItemFormatter(displayNumbering, CommentStrippingMode.RETAIN_SURROUNDING_STRIP_INNER, AngleBracketHandlingMode.REMOVE, false, false, true);
-        CharacterFormatter characterFormatter = new CharacterFormatter(displayNumbering, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REMOVE_SURROUNDING_REPLACE_INNER, false, true);
-        AttributeFormatter attributeFormatter = new AttributeFormatter(displayNumbering, false, CommentStrippingMode.RETAIN_SURROUNDING_STRIP_INNER, AngleBracketHandlingMode.REMOVE, true);
+        CharacterFormatter characterFormatter = new CharacterFormatter(displayNumbering, CommentStrippingMode.RETAIN_SURROUNDING_STRIP_INNER, AngleBracketHandlingMode.REMOVE, false, true);
+        AttributeFormatter attributeFormatter = new AttributeFormatter(displayNumbering, false, CommentStrippingMode.RETAIN_SURROUNDING_STRIP_INNER, AngleBracketHandlingMode.REMOVE, false);
 
         RTFBuilder builder = new RTFBuilder();
         builder.startDocument();
@@ -111,7 +114,15 @@ public class DescribeDirectiveInvocation implements IntkeyDirectiveInvocation {
         if ((!attr.isInapplicable() || displayInapplicables) && (!attr.isUnknown() || displayUnknowns)) {
             String itemSubheading = charactersItemSubheadingMap.get(ch);
             if (itemSubheading != null && !itemSubheading.equals(currentItemSubheading)) {
-                builder.appendText(itemSubheading);
+
+                // For some reason the DELTA sample data set contains an item
+                // subheading that is an empty
+                // paragraph. Ignore any item subheadings that contain only
+                // formatting marks
+                if (!StringUtils.isEmpty(RTFUtils.stripFormatting(currentItemSubheading))) {
+                    builder.appendText(itemSubheading);
+                }
+
                 currentItemSubheading = itemSubheading;
             }
 
@@ -126,10 +137,10 @@ public class DescribeDirectiveInvocation implements IntkeyDirectiveInvocation {
     // Generate a description with the attribute values grouped by item
     // subheadings in paragraphs
     private RTFBuilder generateReportGroupedByItemSubheading(Map<Character, List<Attribute>> characterAttributesMap, Specimen specimen, Map<Character, String> charactersItemSubheadingMap,
-            boolean displayNumbering, boolean displayInapplicables, boolean displayUnknowns) {
-        ItemFormatter taxonFormatter = new ItemFormatter(displayNumbering, CommentStrippingMode.RETAIN_SURROUNDING_STRIP_INNER, AngleBracketHandlingMode.REMOVE, false, false, true);
-        CharacterFormatter characterFormatter = new CharacterFormatter(displayNumbering, CommentStrippingMode.RETAIN_SURROUNDING_STRIP_INNER, AngleBracketHandlingMode.REMOVE, false, true);
-        AttributeFormatter attributeFormatter = new AttributeFormatter(displayNumbering, false, CommentStrippingMode.RETAIN_SURROUNDING_STRIP_INNER, AngleBracketHandlingMode.REMOVE, true);
+            boolean displayInapplicables, boolean displayUnknowns) {
+        ItemFormatter taxonFormatter = new ItemFormatter(false, CommentStrippingMode.RETAIN_SURROUNDING_STRIP_INNER, AngleBracketHandlingMode.REMOVE, false, false, true);
+        CharacterFormatter characterFormatter = new CharacterFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.REMOVE, false, true);
+        AttributeFormatter attributeFormatter = new AttributeFormatter(false, false, CommentStrippingMode.RETAIN_SURROUNDING_STRIP_INNER, AngleBracketHandlingMode.REMOVE, false);
 
         RTFBuilder builder = new RTFBuilder();
         builder.startDocument();
@@ -182,7 +193,7 @@ public class DescribeDirectiveInvocation implements IntkeyDirectiveInvocation {
         return builder;
     }
 
-    //Helper method for generateReportGroupedByItemSubheading()
+    // Helper method for generateReportGroupedByItemSubheading()
     private String groupedByItemSubheadingReportHandleAttribute(RTFBuilder builder, StringBuilder itemSubheadingGroupBuilder, Attribute attr, Map<Character, String> charactersItemSubheadingMap,
             String currentItemSubheading, boolean displayInapplicables, boolean displayUnknowns, CharacterFormatter characterFormatter, AttributeFormatter attributeFormatter) {
 
@@ -191,7 +202,9 @@ public class DescribeDirectiveInvocation implements IntkeyDirectiveInvocation {
         if ((!attr.isInapplicable() || displayInapplicables) && (!attr.isUnknown() || displayUnknowns)) {
             String itemSubheading = charactersItemSubheadingMap.get(ch);
             if (itemSubheading != null && !itemSubheading.equals(currentItemSubheading)) {
-                builder.appendText(itemSubheadingGroupBuilder.toString());
+                if (itemSubheadingGroupBuilder.length() > 0) {
+                    builder.appendText(itemSubheadingGroupBuilder.toString());
+                }
                 currentItemSubheading = itemSubheading;
 
                 // Can't create a new StringBuilder here as the calling method
@@ -205,13 +218,20 @@ public class DescribeDirectiveInvocation implements IntkeyDirectiveInvocation {
 
             String characterDescription = characterFormatter.formatCharacterDescription(ch);
             String attributeDescription = attributeFormatter.formatAttribute(attr);
-            itemSubheadingGroupBuilder.append(String.format("%s %s. ", characterDescription, attributeDescription));
+
+            if (StringUtils.isEmpty(characterDescription)) {
+                attributeDescription = Utils.capitaliseFirstWord(attributeDescription);
+                itemSubheadingGroupBuilder.append(String.format("%s. ", attributeDescription));
+            } else {
+                itemSubheadingGroupBuilder.append(String.format("%s %s. ", characterDescription, attributeDescription));
+            }
+
         }
 
         return currentItemSubheading;
     }
 
-    // Build a dictionary of item subheadings keyed by character. 
+    // Build a dictionary of item subheadings keyed by character.
     private Map<Character, String> generateCharactersItemSubheadingMap(IntkeyDataset ds) {
         if (!ds.itemSubheadingsPresent()) {
             return Collections.EMPTY_MAP;
@@ -232,7 +252,8 @@ public class DescribeDirectiveInvocation implements IntkeyDirectiveInvocation {
         return retMap;
     }
 
-    // Build dictionary of attributes for all taxa keyed by the corresponding character
+    // Build dictionary of attributes for all taxa keyed by the corresponding
+    // character
     private Map<Character, List<Attribute>> generateCharacterAttributesMap(IntkeyDataset dataset) {
         Map<Character, List<Attribute>> characterAttributesMap = new HashMap<Character, List<Attribute>>();
 

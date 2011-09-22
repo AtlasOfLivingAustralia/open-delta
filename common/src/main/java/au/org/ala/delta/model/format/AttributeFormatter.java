@@ -14,7 +14,6 @@ import au.org.ala.delta.model.MultiStateAttribute;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.RealAttribute;
 import au.org.ala.delta.model.TextAttribute;
-import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 
 /**
  * Formats an attribute.
