@@ -1,13 +1,13 @@
 package au.org.ala.delta.translation.intkey;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.DeltaContext.HeadingType;
 import au.org.ala.delta.intkey.WriteOnceIntkeyCharsFile;
 import au.org.ala.delta.model.Character;
-import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.NumericCharacter;
 import au.org.ala.delta.model.TypeSettingMark;
@@ -18,6 +18,8 @@ import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.model.image.ImageSettings.FontInfo;
 import au.org.ala.delta.model.image.ImageSettings.OverlayFontType;
 import au.org.ala.delta.model.image.ImageType;
+import au.org.ala.delta.translation.FilteredCharacter;
+import au.org.ala.delta.translation.FilteredDataSet;
 import au.org.ala.delta.translation.Words;
 import au.org.ala.delta.translation.Words.Word;
 import au.org.ala.delta.translation.delta.DeltaWriter;
@@ -30,12 +32,12 @@ import au.org.ala.delta.translation.delta.OverlayFontWriter;
 public class IntkeyCharactersFileWriter {
 
 	private WriteOnceIntkeyCharsFile _charsFile;
-	private DeltaDataSet _dataSet;
+	private FilteredDataSet _dataSet;
 	private DeltaContext _context;
 	
-	public IntkeyCharactersFileWriter(DeltaContext context, WriteOnceIntkeyCharsFile charsFile) {
+	public IntkeyCharactersFileWriter(DeltaContext context, FilteredDataSet dataSet, WriteOnceIntkeyCharsFile charsFile) {
 		_charsFile = charsFile;
-		_dataSet = context.getDataSet();
+		_dataSet = dataSet;
 		_context = context;
 	}
 	
@@ -63,8 +65,9 @@ public class IntkeyCharactersFileWriter {
 	
 	protected void writeCharacterNotes() {
 		List<String> allNotes = new ArrayList<String>(_dataSet.getNumberOfCharacters());
-		for (int i=1; i<=_dataSet.getNumberOfCharacters(); i++) {
-			Character character = _dataSet.getCharacter(i);
+		Iterator<FilteredCharacter> characters = _dataSet.filteredCharacters();
+		while (characters.hasNext()) {
+			Character character = characters.next().getCharacter();
 			String notes = character.getNotes();
 			add(allNotes, notes);
 		}
@@ -75,9 +78,9 @@ public class IntkeyCharactersFileWriter {
 	protected void writeCharacterFeatures() {
 		List<List<String>> features = new ArrayList<List<String>>();
 		
-		for (int i=1; i<=_dataSet.getNumberOfCharacters(); i++) {
-			
-			Character character = _dataSet.getCharacter(i);
+		Iterator<FilteredCharacter> characters = _dataSet.filteredCharacters();
+		while (characters.hasNext()) {
+			Character character = characters.next().getCharacter();
 			List<String> feature = new ArrayList<String>();
 			feature.add(character.getDescription());
 			if (character.getCharacterType().isMultistate()) {
@@ -120,8 +123,9 @@ public class IntkeyCharactersFileWriter {
 		List<String> imageList = new ArrayList<String>(_dataSet.getNumberOfCharacters());
 	
 		IntkeyImageWriter imageWriter = new IntkeyImageWriter();
-		for (int i=1; i<=_dataSet.getNumberOfCharacters(); i++) {
-			Character character = _dataSet.getCharacter(i);
+		Iterator<FilteredCharacter> characters = _dataSet.filteredCharacters();
+		while (characters.hasNext()) {
+			Character character = characters.next().getCharacter();
 			List<Image> images = character.getImages();
 			String image = imageWriter.imagesToString(images, character); 
 			imageList.add(image);

@@ -30,8 +30,8 @@ public class ToIntTest extends TestCase {
 		
 		IntkeyDataset expectedDataSet = IntkeyDatasetFileReader.readDataSet(expectedIChars, expectedIItems);
 	
-//		assertEquals(expectedDataSet.getNumberOfCharacters(), dataSet.getNumberOfCharacters());
-//		assertEquals(expectedDataSet.getNumberOfTaxa(), dataSet.getNumberOfTaxa());
+		assertEquals(expectedDataSet.getNumberOfCharacters(), dataSet.getNumberOfCharacters());
+		assertEquals(expectedDataSet.getNumberOfTaxa(), dataSet.getNumberOfTaxa());
 	
 	}
 	

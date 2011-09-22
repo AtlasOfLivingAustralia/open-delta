@@ -7,7 +7,7 @@ import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.IdentificationKeyCharacter;
-import au.org.ala.delta.translation.AbstractDataSetFilter;
+import au.org.ala.delta.translation.DataSetFilter;
 
 /**
  * Iterates through the Characters in a data set, possibly excluding some, 
@@ -15,26 +15,30 @@ import au.org.ala.delta.translation.AbstractDataSetFilter;
  */
 public class IdentificationKeyCharacterIterator implements Iterator<IdentificationKeyCharacter>{
 
-	private int _index;
+	private int _realIndex;
+	private int _filteredIndex;
 	private DeltaDataSet _dataSet;
 	private DeltaContext _context;
-	private AbstractDataSetFilter _filter;
+	private DataSetFilter _filter;
 	
-	public IdentificationKeyCharacterIterator(DeltaContext context, AbstractDataSetFilter filter) {
+	public IdentificationKeyCharacterIterator(DeltaContext context, DataSetFilter filter) {
 		_context = context;
 		_dataSet = context.getDataSet();
-		_index = 1;
+		_realIndex = 1;
+		_filteredIndex = 1;
 		_filter = filter;
 	}
 	
 	@Override
 	public boolean hasNext() {
-		if (_index > _dataSet.getNumberOfCharacters()) {
+		if (_realIndex > _dataSet.getNumberOfCharacters()) {
 			return false;
 		}
-		int index = _index;
+		int tmpRealIndex = _realIndex;
+		int tmpFilteredIndex = _filteredIndex;
 		if (next() != null) {
-			_index = index;
+			_realIndex = tmpRealIndex;
+			_filteredIndex = tmpFilteredIndex;
 			return true;
 		}
 		return false;
@@ -42,25 +46,30 @@ public class IdentificationKeyCharacterIterator implements Iterator<Identificati
 
 	@Override
 	public IdentificationKeyCharacter next() {
-		if (_index > _dataSet.getNumberOfCharacters()) {
+		if (_realIndex > _dataSet.getNumberOfCharacters()) {
 			throw new NoSuchElementException();
 		}
 		
-		Character character = _dataSet.getCharacter(_index);
-//		while ( !_filter.filter(character) && _index < _dataSet.getNumberOfCharacters()) {
-//			_index++;
-//			character = _dataSet.getCharacter(_index);
-//		}
-//		if (character == null) {
-//			return null;
-//		}
+		Character character = _dataSet.getCharacter(_realIndex);
+		while ( !_filter.filter(character) && _realIndex < _dataSet.getNumberOfCharacters()) {
+			_realIndex++;
+			character = _dataSet.getCharacter(_realIndex);
+		}
+		if (!_filter.filter(character) || character == null) {
+			return null;
+		}
 		
-		IdentificationKeyCharacter keyChar = _context.getIdentificationKeyCharacter(_index);
+		IdentificationKeyCharacter keyChar = _context.getIdentificationKeyCharacter(_realIndex);
 		if (keyChar == null) {
 			keyChar = new IdentificationKeyCharacter(character);
 		}
-		_index++;
+		_realIndex++;
 		
+		
+		if (keyChar != null) {
+			keyChar.setFilteredCharacterNumber(_filteredIndex);
+		}
+		_filteredIndex++;
 		return keyChar;
 	}
 

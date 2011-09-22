@@ -29,8 +29,10 @@ import au.org.ala.delta.model.image.ImageSettings.FontInfo;
 import au.org.ala.delta.model.image.ImageType;
 import au.org.ala.delta.model.image.OverlayType;
 import au.org.ala.delta.model.impl.DefaultDataSet;
+import au.org.ala.delta.translation.FilteredDataSet;
 import au.org.ala.delta.translation.Words;
 import au.org.ala.delta.translation.Words.Word;
+import au.org.ala.delta.translation.delta.DeltaFormatDataSetFilter;
 
 /**
  * Tests the IntkeyCharactersFileWriter class.
@@ -59,7 +61,8 @@ public class IntkeyCharactersFileWriterTest extends TestCase {
 		char2.setDescription("this is character 2 description");
 		
 		_charsFile = new WriteOnceIntkeyCharsFile(2, null, BinFileMode.FM_TEMPORARY);
-		_charsFileWriter = new IntkeyCharactersFileWriter(_context, _charsFile);
+		FilteredDataSet dataSet = new FilteredDataSet(_context, new DeltaFormatDataSetFilter(_context));
+		_charsFileWriter = new IntkeyCharactersFileWriter(_context, dataSet, _charsFile);
 	}
 	
 	@After

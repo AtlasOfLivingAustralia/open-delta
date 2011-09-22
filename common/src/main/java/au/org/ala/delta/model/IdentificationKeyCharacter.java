@@ -55,13 +55,20 @@ public class IdentificationKeyCharacter {
 	
 	private Character _character;
 	private List<KeyState> _states;
+	private int _filteredCharacterNumber;
 	
 	public IdentificationKeyCharacter(Character character) {
 		if (character == null) {
 			throw new IllegalArgumentException("Null character invalid");
 		}
 		_character = character;
+		_filteredCharacterNumber = character.getCharacterId();
 		_states = new ArrayList<KeyState>();
+	}
+	
+	public IdentificationKeyCharacter(int characterNumber, Character character) {
+		this (character);
+		_filteredCharacterNumber = characterNumber;
 	}
 	
 	public void addState(int id, List<Integer> originalStates) {
@@ -120,6 +127,14 @@ public class IdentificationKeyCharacter {
 
 	public Integer getCharacterNumber() {
 		return _character.getCharacterId();
+	}
+	
+	public void setFilteredCharacterNumber(int characterNumber) {
+		_filteredCharacterNumber = characterNumber;
+	}
+	
+	public int getFilteredCharacterNumber() {
+		return _filteredCharacterNumber;
 	}
 	
 	public CharacterType getCharacterType() {

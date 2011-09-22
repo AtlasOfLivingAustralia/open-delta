@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -42,9 +41,7 @@ import au.org.ala.delta.model.TypeSettingMark.MarkPosition;
 import au.org.ala.delta.model.UnorderedMultiStateCharacter;
 import au.org.ala.delta.model.image.ImageInfo;
 import au.org.ala.delta.rtf.RTFUtils;
-import au.org.ala.delta.translation.delta.DeltaFormatDataSetFilter;
 import au.org.ala.delta.util.Functor;
-import au.org.ala.delta.util.IdentificationKeyCharacterIterator;
 import au.org.ala.delta.util.Utils;
 
 /**
@@ -712,6 +709,10 @@ public class DeltaContext extends AbstractDeltaContext {
 		return _keyCharacters.get(characterNumber);
 	}
 	
+	public Map<Integer, IdentificationKeyCharacter> getIdentificaitonKeyCharacters() {
+		return _keyCharacters;
+	}
+	
 	public void disableDeltaOutput() {
 		_enableDeltaOutput = false;
 	}
@@ -726,10 +727,6 @@ public class DeltaContext extends AbstractDeltaContext {
 	
 	public boolean isChineseFormat() {
 		return _chineseFormat;
-	}
-	
-	public Iterator<IdentificationKeyCharacter> identificationKeyCharacterIterator() {
-		return new IdentificationKeyCharacterIterator(this, new DeltaFormatDataSetFilter(this));
 	}
 
 	public void addCharacterForSynonymy(int number) {

@@ -21,6 +21,8 @@ import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.RealCharacter;
 import au.org.ala.delta.model.TextCharacter;
 import au.org.ala.delta.model.impl.DefaultDataSet;
+import au.org.ala.delta.translation.FilteredDataSet;
+import au.org.ala.delta.translation.delta.DeltaFormatDataSetFilter;
 
 /**
  * Tests the IntkeyCharactersFileWriter class.
@@ -75,7 +77,9 @@ public class IntkeyItemsFileWriterTest extends TestCase {
 		item3.setDescription("Item 3 has a great description");
 		
 		_itemsFile = new WriteOnceIntkeyItemsFile(4, 3, null, BinFileMode.FM_TEMPORARY);
-		_itemsFileWriter = new IntkeyItemsFileWriter(_context, _itemsFile);
+		FilteredDataSet dataSet = new FilteredDataSet(_context, new DeltaFormatDataSetFilter(_context));
+		
+		_itemsFileWriter = new IntkeyItemsFileWriter(_context, dataSet, _itemsFile);
 	}
 	
 	@After

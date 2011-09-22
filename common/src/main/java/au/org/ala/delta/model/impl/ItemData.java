@@ -1,7 +1,6 @@
 package au.org.ala.delta.model.impl;
 
 import java.util.List;
-import java.util.Map;
 
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;

@@ -21,7 +21,6 @@ import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterDependency;
 import au.org.ala.delta.model.CharacterType;
-import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.IdentificationKeyCharacter;
 import au.org.ala.delta.model.IntegerAttribute;
 import au.org.ala.delta.model.Item;
@@ -30,6 +29,9 @@ import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.NumericAttribute;
 import au.org.ala.delta.model.NumericRange;
 import au.org.ala.delta.model.image.Image;
+import au.org.ala.delta.translation.FilteredCharacter;
+import au.org.ala.delta.translation.FilteredDataSet;
+import au.org.ala.delta.translation.FilteredItem;
 
 /**
  * Writes the intkey items file using the data in a supplied DeltaContext and
@@ -41,12 +43,12 @@ public class IntkeyItemsFileWriter {
 	static final int INTEGER_RANGE_MAX_THRESHOLD = 200;
 	
 	private WriteOnceIntkeyItemsFile _itemsFile;
-	private DeltaDataSet _dataSet;
+	private FilteredDataSet _dataSet;
 	private DeltaContext _context;
 	
-	public IntkeyItemsFileWriter(DeltaContext context, WriteOnceIntkeyItemsFile itemsFile) {
+	public IntkeyItemsFileWriter(DeltaContext context, FilteredDataSet dataSet, WriteOnceIntkeyItemsFile itemsFile) {
 		_itemsFile = itemsFile;
-		_dataSet = context.getDataSet();
+		_dataSet = dataSet;
 		_context = context;
 	}
 	
@@ -72,8 +74,9 @@ public class IntkeyItemsFileWriter {
 	public void writeItemDescriptions() {
 		
 		List<String> descriptions = new ArrayList<String>(_dataSet.getMaximumNumberOfItems());
-		for (int i=1; i<=_dataSet.getMaximumNumberOfItems(); i++) {
-			descriptions.add(_dataSet.getItem(i).getDescription());
+		Iterator<FilteredItem> items = _dataSet.filteredItems();
+		while (items.hasNext()) {
+			descriptions.add(items.next().getItem().getDescription());
 		}
 		_itemsFile.writeItemDescriptions(descriptions);
 	}
@@ -84,7 +87,7 @@ public class IntkeyItemsFileWriter {
 		List<Integer> states = new ArrayList<Integer>(_dataSet.getNumberOfCharacters());
 		List<Float> reliabilities = new ArrayList<Float>(_dataSet.getNumberOfCharacters());
 		
-	    Iterator<IdentificationKeyCharacter> iterator = _context.identificationKeyCharacterIterator();
+	    Iterator<IdentificationKeyCharacter> iterator = _dataSet.identificationKeyCharacterIterator();
 		while(iterator.hasNext()) {
 			IdentificationKeyCharacter character = iterator.next();
 			types.add(typeToInt(character.getCharacterType()));
@@ -126,31 +129,32 @@ public class IntkeyItemsFileWriter {
 	
 	public void writeCharacterDependencies() {
 		
-		
 		Integer[] characters = new Integer[_dataSet.getNumberOfCharacters()];
 		Arrays.fill(characters, 0);
 		List<Integer> dependencyData = new ArrayList<Integer>(Arrays.asList(characters));
 		List<Integer> invertedDependencyData = new ArrayList<Integer>(Arrays.asList(characters));
 		
-		for (int i=1; i<=_dataSet.getNumberOfCharacters(); i++) {
-			Character character = _dataSet.getCharacter(i);
+		Iterator<FilteredCharacter> filteredChars = _dataSet.filteredCharacters();
+		while (filteredChars.hasNext()) {
+			FilteredCharacter filteredChar = filteredChars.next();
+			Character character = filteredChar.getCharacter();
 			if (character.getCharacterType().isMultistate()) {
 				
 				MultiStateCharacter multiStateCharacter = (MultiStateCharacter)character;
-				addDependencyData(dependencyData, multiStateCharacter);
+				addDependencyData(filteredChar.getCharacterNumber(), dependencyData, multiStateCharacter);
 			}
 			
-			addInvertedDependencyData(invertedDependencyData, character);
+			addInvertedDependencyData(filteredChar.getCharacterNumber(), invertedDependencyData, character);
 			
 		}
 		_itemsFile.writeCharacterDependencies(dependencyData, invertedDependencyData);
 		
 	}
 
-	private void addDependencyData(List<Integer> dependencyData, MultiStateCharacter multiStateCharacter) {
+	private void addDependencyData(int filteredCharNumber, List<Integer> dependencyData, MultiStateCharacter multiStateCharacter) {
 		List<CharacterDependency> dependentCharacters = multiStateCharacter.getDependentCharacters();
 		if (dependentCharacters != null && dependentCharacters.size() > 0) {
-			dependencyData.set(multiStateCharacter.getCharacterId()-1, dependencyData.size());
+			dependencyData.set(filteredCharNumber-1, dependencyData.size());
 			int numStates = multiStateCharacter.getNumberOfStates();
 			int statesOffset = dependencyData.size();
 			for (int state=0; state<numStates; state++) {
@@ -169,12 +173,12 @@ public class IntkeyItemsFileWriter {
 		}
 	}
 	
-	private void addInvertedDependencyData(List<Integer> invertedDependencyData, Character character) {
+	private void addInvertedDependencyData(int filteredCharNumber, List<Integer> invertedDependencyData, Character character) {
 		List<CharacterDependency> dependencies = character.getControllingCharacters();
 		if (dependencies == null || dependencies.size() == 0) {
 			return;
 		}
-		invertedDependencyData.set(character.getCharacterId()-1, invertedDependencyData.size());
+		invertedDependencyData.set(filteredCharNumber-1, invertedDependencyData.size());
 		invertedDependencyData.add(dependencies.size());
 		for (CharacterDependency dependency : dependencies) {
 			invertedDependencyData.add(dependency.getControllingCharacterId());
@@ -208,7 +212,7 @@ public class IntkeyItemsFileWriter {
 	
 	public void writeAttributeData() {
 		
-		Iterator<IdentificationKeyCharacter> keyChars = _context.identificationKeyCharacterIterator();
+		Iterator<IdentificationKeyCharacter> keyChars = _dataSet.identificationKeyCharacterIterator();
 		List<IntRange> intRanges = new ArrayList<IntRange>();
 		List<List<Float>> keyStateBoundaries = new ArrayList<List<Float>>();
 		while (keyChars.hasNext()) {
@@ -219,11 +223,11 @@ public class IntkeyItemsFileWriter {
 				writeMultiStateAttributes(keyChar);
 			}	
 			else if (keyChar.getCharacterType() == CharacterType.IntegerNumeric) {
-				minMax = writeIntegerAttributes(keyChar.getCharacter());
+				minMax = writeIntegerAttributes(keyChar.getFilteredCharacterNumber(), keyChar.getCharacter());
 			}
 			else if (keyChar.getCharacterType() == CharacterType.RealNumeric) {
 				
-				List<FloatRange> ranges = (writeRealAttributes(keyChar.getCharacter()));
+				List<FloatRange> ranges = writeRealAttributes(keyChar.getFilteredCharacterNumber(), keyChar.getCharacter());
 				for (FloatRange range : ranges) {
 					if (range.getMinimumFloat() != Float.MAX_VALUE) {
 						floats.add(range.getMinimumFloat());
@@ -234,7 +238,7 @@ public class IntkeyItemsFileWriter {
 				}
 			}
 			else {
-				writeTextAttributes(keyChar.getCharacter());
+				writeTextAttributes(keyChar.getFilteredCharacterNumber(), keyChar.getCharacter());
 			}
 			intRanges.add(minMax);
 			List<Float> floatList = new ArrayList<Float>(floats);
@@ -247,11 +251,13 @@ public class IntkeyItemsFileWriter {
 	
 	private void writeMultiStateAttributes(IdentificationKeyCharacter character) {
 		
-		int charNumber = character.getCharacterNumber();
+		int charNumber = character.getFilteredCharacterNumber();
 		int numStates = character.getNumberOfStates();
 		List<BitSet> attributes = new ArrayList<BitSet>();
-		for (int i=1; i<=_dataSet.getMaximumNumberOfItems(); i++) {
-			MultiStateAttribute attribute = (MultiStateAttribute)_dataSet.getAttribute(i, character.getCharacterNumber());
+		Iterator<FilteredItem> items = _dataSet.filteredItems();
+		while (items.hasNext()) {
+			int itemNum = items.next().getItem().getItemNumber();
+			MultiStateAttribute attribute = (MultiStateAttribute)_dataSet.getAttribute(itemNum, character.getCharacterNumber());
 		
 			List<Integer> states = character.getPresentStates(attribute);
 			
@@ -270,11 +276,11 @@ public class IntkeyItemsFileWriter {
 		_itemsFile.writeAttributeBits(charNumber, attributes, numStates+1);
 	}
 	
-	private IntRange writeIntegerAttributes(Character character) {
+	private IntRange writeIntegerAttributes(int filteredCharacterNumber, Character character) {
 		IntRange characterRange = determineIntegerRange(character);
 		if (characterRange == null) {
 			// The range was too large - treat this character as a real.
-			writeRealAttributes(character);
+			writeRealAttributes(filteredCharacterNumber, character);
 			characterRange = new IntRange(0);
 		}
 		else {
@@ -322,7 +328,7 @@ public class IntkeyItemsFileWriter {
 				
 			}
 			
-			_itemsFile.writeAttributeBits(charNumber, attributes, numStates+3);
+			_itemsFile.writeAttributeBits(filteredCharacterNumber, attributes, numStates+3);
 		}
 		return characterRange;
 	}
@@ -406,7 +412,7 @@ public class IntkeyItemsFileWriter {
 		return hasMultiRangeAttribute;
 	}
 	
-	private List<FloatRange> writeRealAttributes(Character realChar) {
+	private List<FloatRange> writeRealAttributes(int filteredCharNumber, Character realChar) {
 		boolean useNormalValues = _context.getUseNormalValues();
 		int characterNumber = realChar.getCharacterId();
 		
@@ -443,39 +449,42 @@ public class IntkeyItemsFileWriter {
 				values.add(floatRange);
 			}
 		}
-		_itemsFile.writeAttributeFloats(characterNumber, inapplicableBits, values);
+		_itemsFile.writeAttributeFloats(filteredCharNumber, inapplicableBits, values);
 		return values;
 	}
 	
-	private void writeTextAttributes(Character textChar) {
+	private void writeTextAttributes(int filteredCharNumber, Character textChar) {
 		int characterNumber = textChar.getCharacterId();
 		
 		List<String> values = new ArrayList<String>();
 		BitSet inapplicableBits = new BitSet();
-		for (int i=1; i<=_dataSet.getMaximumNumberOfItems(); i++) {
-			Attribute attribute = _dataSet.getAttribute(i, characterNumber);
+		Iterator<FilteredItem> items = _dataSet.filteredItems();
+		while (items.hasNext()) {
+			FilteredItem item = items.next();
+			Attribute attribute = _dataSet.getAttribute(item.getItem().getItemNumber(), characterNumber);
 			
 			if (attribute == null || attribute.isUnknown()) {
 				values.add("");
 				continue;
 			}
 			if (attribute.isInapplicable()) {
-				inapplicableBits.set(i-1);
+				inapplicableBits.set(item.getItemNumber()-1);
 				values.add("");
 			}
 			else {
 				values.add(attribute.getValueAsString());
 			}
 		}
-		_itemsFile.writeAttributeStrings(characterNumber, inapplicableBits, values);
+		_itemsFile.writeAttributeStrings(filteredCharNumber, inapplicableBits, values);
 	}
 	
 	public void writeTaxonImages() {
 		List<String> imageList = new ArrayList<String>(_dataSet.getMaximumNumberOfItems());
 	
 		IntkeyImageWriter imageWriter = new IntkeyImageWriter();
-		for (int i=1; i<=_dataSet.getMaximumNumberOfItems(); i++) {
-			Item item = _dataSet.getItem(i);
+		Iterator<FilteredItem> items = _dataSet.filteredItems();
+		while (items.hasNext()) {
+			Item item = items.next().getItem();
 			List<Image> images = item.getImages();
 			imageList.add(imageWriter.imagesToString(images, item));
 			
@@ -500,25 +509,28 @@ public class IntkeyItemsFileWriter {
 	
 	private List<Boolean> charactersToBooleans(Set<Integer> charNumbers) {
 		List<Boolean> booleans = new ArrayList<Boolean>(_dataSet.getNumberOfCharacters());
-		for (int i=1; i<=_dataSet.getNumberOfCharacters(); i++) {
-			booleans.add(charNumbers.contains(i));
+		Iterator<FilteredCharacter> characters = _dataSet.filteredCharacters();
+		while (characters.hasNext()) {
+			booleans.add(charNumbers.contains(characters.next().getCharacterNumber()));
 		}
 		return booleans;
 	}
 	
 	public void writeOmitOr() {
 		List<Boolean> booleans = new ArrayList<Boolean>(_dataSet.getNumberOfCharacters());
-		for (int i=1; i<=_dataSet.getNumberOfCharacters(); i++) {
-			booleans.add(_context.isOrOmmitedForCharacter(i));
+		Iterator<FilteredCharacter> characters = _dataSet.filteredCharacters();
+		while (characters.hasNext()) {
+			booleans.add(_context.isOrOmmitedForCharacter(characters.next().getCharacterNumber()));
 		}
 		_itemsFile.writeOmitOr(booleans);
 	}
 	
 	public void writeUseControllingFirst() {
 		Set<Integer> values = new HashSet<Integer>(_dataSet.getNumberOfCharacters());
-		for (int i=1; i<=_dataSet.getNumberOfCharacters(); i++) {
-			if (_context.isUseControllingCharacterFirst(i)) {
-				values.add(i);
+		Iterator<FilteredCharacter> characters = _dataSet.filteredCharacters();
+		while (characters.hasNext()) {
+			if (_context.isUseControllingCharacterFirst(characters.next().getCharacterNumber())) {
+				values.add(characters.next().getCharacterNumber());
 			}
 		}
 		_itemsFile.writeUseControllingFirst(values);
@@ -540,9 +552,11 @@ public class IntkeyItemsFileWriter {
 	
 	public void writeOmitPeriod() {
 		Set<Integer> values = new HashSet<Integer>(_dataSet.getNumberOfCharacters());
-		for (int i=1; i<=_dataSet.getNumberOfCharacters(); i++) {
-			if (_context.getOmitPeriodForCharacter(i)) {
-				values.add(i);
+		Iterator<FilteredCharacter> characters = _dataSet.filteredCharacters();
+		while (characters.hasNext()) {
+			int filteredItemNum = characters.next().getCharacterNumber();
+			if (_context.getOmitPeriodForCharacter(filteredItemNum)) {
+				values.add(filteredItemNum);
 			}
 		}
 		_itemsFile.writeOmitPeriod(values);
@@ -554,9 +568,11 @@ public class IntkeyItemsFileWriter {
 	
 	public void writeNonAutoControllingChars() {
 		Set<Integer> values = new HashSet<Integer>(_dataSet.getNumberOfCharacters());
-		for (int i=1; i<=_dataSet.getNumberOfCharacters(); i++) {
-			if (_context.getNonautomaticControllingCharacter(i)) {
-				values.add(i);
+		Iterator<FilteredCharacter> characters = _dataSet.filteredCharacters();
+		while (characters.hasNext()) {
+			int filteredItemNum = characters.next().getCharacterNumber();
+			if (_context.getNonautomaticControllingCharacter(filteredItemNum)) {
+				values.add(filteredItemNum);
 			}
 		}
 		_itemsFile.writeNonAutoControllingChars(values);
