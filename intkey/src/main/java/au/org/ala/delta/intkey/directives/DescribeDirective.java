@@ -16,7 +16,7 @@ public class DescribeDirective extends NewIntkeyDirective {
     @Override
     protected List<IntkeyDirectiveArgument<?>> generateArgumentsList(IntkeyContext context) {
         List<IntkeyDirectiveArgument<?>> arguments = new ArrayList<IntkeyDirectiveArgument<?>>();
-        arguments.add(new TaxonListArgument("taxa", null, SelectionMode.KEYWORD, false, true));
+        arguments.add(new BracketedTaxonListArgument("selectedTaxaSpecimen", null, SelectionMode.KEYWORD, false));
         arguments.add(new CharacterListArgument("characters", null, SelectionMode.KEYWORD, false));
         return arguments;
     }

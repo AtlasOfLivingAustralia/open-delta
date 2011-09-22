@@ -361,6 +361,9 @@ public class IntkeyContext extends AbstractDeltaContext {
      * 
      * @param fileName
      *            Path to the dataset initialization file
+     * @return SwingWorker used to load the dataset in a separate thread - unit
+     *         tests need this so that they can block until the dataset is
+     *         loaded.
      */
     public SwingWorker<?, ?> newDataSetFile(File datasetFile) {
         Logger.log("Reading in directives from file: %s", datasetFile.getAbsolutePath());
@@ -377,7 +380,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         loader.execute();
 
         _datasetStartupFile = datasetFile;
-        
+
         return loader;
     }
 

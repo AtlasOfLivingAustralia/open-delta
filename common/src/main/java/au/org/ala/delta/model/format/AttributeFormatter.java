@@ -69,7 +69,7 @@ public class AttributeFormatter extends Formatter {
         List<Integer> values = new ArrayList<Integer>(attribute.getPresentStates());
 
         for (int i = 0; i < values.size(); i++) {
-            int stateNumber = i + 1;
+            int stateNumber = values.get(i);
 
             if (i > 0) {
                 // TODO "or" needs to be internationalized

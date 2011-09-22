@@ -6,30 +6,19 @@ import java.util.Queue;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.util.Pair;
 
-public class TaxonListArgument extends AbstractTaxonListArgument<List<Item>> {
+public class BracketedTaxonListArgument extends AbstractTaxonListArgument<Pair<List<Item>, Boolean>> {
 
-    /**
-     * @param name
-     *            Name of the argument
-     * @param promptText
-     *            Text used to prompt the user for a value
-     * @param defaultSelectionMode
-     *            default selection mode when user is prompted for a value
-     * @param selectFromAll
-     *            When prompting, allow selection from all
-     * @param bracketed
-     *            if true, the taxon numbers/ranges/keywords must be inside
-     *            brackets, unless there is only a single character
-     *            number/range/keyword
-     */
-    public TaxonListArgument(String name, String promptText, SelectionMode defaultSelectionMode, boolean selectFromAll) {
+    private static final String OPEN_BRACKET = "(";
+    private static final String CLOSE_BRACKET = ")";
+
+    public BracketedTaxonListArgument(String name, String promptText, SelectionMode defaultSelectionMode, boolean selectFromAll) {
         super(name, promptText, defaultSelectionMode, selectFromAll);
-
     }
 
     @Override
-    public List<Item> parseInput(Queue<String> inputTokens, IntkeyContext context, String directiveName) throws IntkeyDirectiveParseException {
+    public Pair<List<Item>, Boolean> parseInput(Queue<String> inputTokens, IntkeyContext context, String directiveName) throws IntkeyDirectiveParseException {
         boolean overrideExcludedCharacters = false;
 
         String token = inputTokens.poll();
@@ -38,6 +27,7 @@ public class TaxonListArgument extends AbstractTaxonListArgument<List<Item>> {
             token = inputTokens.poll();
         }
 
+        boolean includeSpecimen = false;
         List<Item> taxa = null;
 
         SelectionMode selectionMode = _defaultSelectionMode;
@@ -54,9 +44,34 @@ public class TaxonListArgument extends AbstractTaxonListArgument<List<Item>> {
             } else {
                 taxa = new ArrayList<Item>();
 
+                boolean inBrackets = false;
+
+                if (token.equals(OPEN_BRACKET)) {
+                    inBrackets = true;
+                    token = inputTokens.poll();
+                }
+
                 while (token != null) {
+
+                    if (token.equals(CLOSE_BRACKET)) {
+                        break;
+                    }
+
                     try {
-                        taxa.addAll(ParsingUtils.parseTaxonToken(token, context));
+
+                        if (token.equalsIgnoreCase(IntkeyContext.SPECIMEN_KEYWORD)) {
+                            includeSpecimen = true;
+                        } else {
+                            taxa.addAll(ParsingUtils.parseTaxonToken(token, context));
+                        }
+
+                        // If we are expecting a bracketed list, but no brackets
+                        // are present,
+                        // only parse the first token
+                        if (!inBrackets) {
+                            break;
+                        }
+
                         token = inputTokens.poll();
 
                     } catch (IllegalArgumentException ex) {
@@ -67,6 +82,8 @@ public class TaxonListArgument extends AbstractTaxonListArgument<List<Item>> {
         }
 
         if (taxa == null) {
+            // TODO NEED TO BE ABLE TO INCLUDE OPTION TO SELECT SPECIMEN IN
+            // THESE PROMPTS
             DirectivePopulator populator = context.getDirectivePopulator();
             if (selectionMode == SelectionMode.KEYWORD) {
                 taxa = populator.promptForTaxaByKeyword(directiveName, !overrideExcludedCharacters);
@@ -76,13 +93,12 @@ public class TaxonListArgument extends AbstractTaxonListArgument<List<Item>> {
             }
         }
 
-        // An empty list indicates that the user hit cancel when prompted to
-        // select taxa
-        if (taxa.size() == 0) {
-            taxa = null;
+        // No taxa selected or specimen selected is assumed to indicated that
+        // the user hit cancel
+        if (taxa.size() == 0 && includeSpecimen == false) {
+            return null;
         }
 
-        return taxa;
+        return new Pair<List<Item>, Boolean>(taxa, includeSpecimen);
     }
-
 }
