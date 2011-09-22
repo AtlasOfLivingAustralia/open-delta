@@ -217,7 +217,7 @@ public class WriteOnceIntkeyItemsFile extends IntkeyFile {
 		checkCharacterListLength(synonomy);
 		
 		int record = nextAvailableRecord();
-		_header.setRpTimages(record);
+		_header.setRpCsynon(record);
 		
 		writeBooleansToRecord(record, synonomy);
 	}

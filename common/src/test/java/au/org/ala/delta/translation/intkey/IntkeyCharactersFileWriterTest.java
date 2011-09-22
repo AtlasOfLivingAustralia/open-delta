@@ -209,7 +209,7 @@ public class IntkeyCharactersFileWriterTest extends TestCase {
 		
 		_charsFile.seek(IntkeyFile.RECORD_LENGTH_BYTES);
 		assertEquals(3, _charsFile.readInt());
-		assertEquals(5, _charsFile.readInt());
+		assertEquals(0, _charsFile.readInt());
 		
 		assertEquals(image1.length(), readInt(3));
 		assertEquals(image1, readString(4, image1.length()));

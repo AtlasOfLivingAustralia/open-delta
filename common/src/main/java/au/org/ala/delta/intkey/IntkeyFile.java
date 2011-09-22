@@ -3,11 +3,14 @@ package au.org.ala.delta.intkey;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.io.BinFile;
 import au.org.ala.delta.io.BinFileEncoding;
@@ -220,10 +223,13 @@ public class IntkeyFile extends BinFile {
      */
     public void writeIndexedValues(int indexRecordNum, String[] values) {
     	int[] indicies = new int[values.length];
+    	Arrays.fill(indicies, 0);
     	int recordNum = indexRecordNum + (int)Math.floor(indicies.length/RECORD_LENGTH_INTEGERS) + 1;
     	for (int i=0; i<values.length; i++) {
-    		indicies[i] = recordNum;
-    		recordNum += writeStringWithLength(recordNum, values[i]);
+    		if (StringUtils.isNotEmpty(values[i])) {
+	    		indicies[i] = recordNum;
+	    		recordNum += writeStringWithLength(recordNum, values[i]);
+    		}
     	}
     	writeToRecord(indexRecordNum, indicies);
     }

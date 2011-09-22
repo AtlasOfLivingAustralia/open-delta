@@ -8,6 +8,9 @@ import org.junit.Test;
 import junit.framework.TestCase;
 import au.org.ala.delta.intkey.model.IntkeyDataset;
 import au.org.ala.delta.intkey.model.IntkeyDatasetFileReader;
+import au.org.ala.delta.model.Attribute;
+import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.Item;
 
 /**
  * Tests the CONFOR toint process.
@@ -33,6 +36,27 @@ public class ToIntTest extends TestCase {
 		assertEquals(expectedDataSet.getNumberOfCharacters(), dataSet.getNumberOfCharacters());
 		assertEquals(expectedDataSet.getNumberOfTaxa(), dataSet.getNumberOfTaxa());
 	
+		/*for (int i=1; i<=expectedDataSet.getNumberOfTaxa(); i++) {
+			Item item = dataSet.getTaxon(i);
+			Item expectedItem = expectedDataSet.getTaxon(i);
+			
+			assertEquals(expectedItem.getDescription(), item.getDescription());
+			assertEquals(expectedItem.getImageCount(), item.getImageCount());
+			assertEquals(expectedItem.getLinkFiles(), item.getLinkFiles());
+			
+			for (int j=1; j<=expectedDataSet.getNumberOfCharacters(); j++) {
+				Character character = dataSet.getCharacter(j);
+				Character expectedCharacter = expectedDataSet.getCharacter(j);
+				
+				assertEquals(expectedCharacter.getDescription(), character.getDescription());
+				
+				Attribute attr = item.getAttribute(character);
+				Attribute expectedAttribute = expectedItem.getAttribute(expectedCharacter);
+				
+				assertEquals(expectedAttribute.getValueAsString(), attr.getValueAsString());
+			}
+			
+		}*/
 	}
 	
 	private File urlToFile(String urlString) throws Exception {
