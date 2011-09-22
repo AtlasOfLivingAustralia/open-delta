@@ -3,6 +3,8 @@ package au.org.ala.delta.intkey.model;
 import java.io.File;
 import java.net.URL;
 
+import javax.swing.SwingWorker;
+
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import junit.framework.TestCase;
 
@@ -26,16 +28,11 @@ public abstract class IntkeyDatasetTestCase extends TestCase {
     public IntkeyContext loadDataset(String resourcePathToDataset) throws Exception {
         URL initFileUrl = getClass().getResource(resourcePathToDataset);
         IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()));
+        SwingWorker<?, ?> worker = context.newDataSetFile(new File(initFileUrl.toURI()));
 
         // The dataset is loaded on a separate thread so we need to wait until
         // it is loaded.
-        while (true) {
-            Thread.sleep(250);
-            if (context.getDataset() != null) {
-                break;
-            }
-        }
+        worker.get();
 
         return context;
     }

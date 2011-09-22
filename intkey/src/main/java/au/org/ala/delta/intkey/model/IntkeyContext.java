@@ -362,7 +362,7 @@ public class IntkeyContext extends AbstractDeltaContext {
      * @param fileName
      *            Path to the dataset initialization file
      */
-    public void newDataSetFile(File datasetFile) {
+    public SwingWorker<?, ?> newDataSetFile(File datasetFile) {
         Logger.log("Reading in directives from file: %s", datasetFile.getAbsolutePath());
 
         cleanupOldDataset();
@@ -373,9 +373,12 @@ public class IntkeyContext extends AbstractDeltaContext {
             throw new IllegalArgumentException("Could not open dataset file " + datasetFile.getAbsolutePath());
         }
 
-        new StartupFileLoader(datasetFile).execute();
+        StartupFileLoader loader = new StartupFileLoader(datasetFile);
+        loader.execute();
 
         _datasetStartupFile = datasetFile;
+        
+        return loader;
     }
 
     private void processInitializationFile(File initializationFile) {
