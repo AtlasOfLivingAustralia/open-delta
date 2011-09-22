@@ -8,6 +8,7 @@ import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.directives.AbstractStreamParser;
 import au.org.ala.delta.rtf.RTFUtils;
+import au.org.ala.delta.util.Utils;
 
 /**
  * Base class for DELTA formatters.
@@ -17,18 +18,24 @@ public class Formatter {
     protected static Pattern EMPTY_COMMENT_PATTERN = Pattern.compile("<\\s*>");
 
     protected boolean _stripFormatting;
-    protected boolean _stripComments;
+    protected boolean _capitaliseFirstWord;
 
+    protected CommentStrippingMode _commentStrippingMode;
     protected AngleBracketHandlingMode _angleBracketHandlingMode;
+
+    public static enum CommentStrippingMode {
+        RETAIN, STRIP_ALL, RETAIN_SURROUNDING_STRIP_INNER
+    }
 
     public static enum AngleBracketHandlingMode {
         RETAIN, REPLACE, REMOVE, REMOVE_SURROUNDING_REPLACE_INNER
     };
 
-    public Formatter(boolean stripComments, AngleBracketHandlingMode angleBracketHandlingMode, boolean stripFormatting) {
-        _stripComments = stripComments;
+    public Formatter(CommentStrippingMode commentStrippingMode, AngleBracketHandlingMode angleBracketHandlingMode, boolean stripFormatting, boolean capitaliseFirstWord) {
+        _commentStrippingMode = commentStrippingMode;
         _angleBracketHandlingMode = angleBracketHandlingMode;
         _stripFormatting = stripFormatting;
+        _capitaliseFirstWord = capitaliseFirstWord;
     }
 
     /**
@@ -40,11 +47,10 @@ public class Formatter {
      * @return the formatted text.
      */
     public String defaultFormat(String text) {
-
-        return defaultFormat(text, _stripComments, _stripFormatting);
+        return defaultFormat(text, _commentStrippingMode, _angleBracketHandlingMode, _stripFormatting, _capitaliseFirstWord);
     }
 
-    public String defaultFormat(String text, boolean stripComments, boolean stripFormatting) {
+    public String defaultFormat(String text, CommentStrippingMode commentStrippingMode, AngleBracketHandlingMode angleBracketHandlingMode, boolean stripFormatting, boolean capitaliseFirstWord) {
         if (StringUtils.isEmpty(text)) {
             return "";
         }
@@ -52,15 +58,21 @@ public class Formatter {
         if (stripFormatting) {
             text = RTFUtils.stripFormatting(text);
         }
-        if (stripComments) {
-            text = stripComments(text);
+
+        text = stripComments(text, commentStrippingMode);
+
+        if (commentStrippingMode == CommentStrippingMode.RETAIN) {
+            text = handleAngleBrackets(text, angleBracketHandlingMode);
         }
-        if (!stripComments) {
-            text = handleAngleBrackets(text);
-        }
+
         // Stripping formatting can leave extra whitespace lying around
         // sometimes.
         text = text.replaceAll(" +", " ");
+
+        if (capitaliseFirstWord) {
+            text = Utils.capitaliseFirstWord(text);
+        }
+
         return text;
     }
 
@@ -106,7 +118,7 @@ public class Formatter {
      *            the text to replace angle brackets in
      * @return the text with angle brackets replaced.
      */
-    private String handleAngleBrackets(String text) {
+    private String handleAngleBrackets(String text, AngleBracketHandlingMode angleBracketHandlingMode) {
         switch (_angleBracketHandlingMode) {
         case REMOVE:
             text = text.replace("<", "");
@@ -145,7 +157,22 @@ public class Formatter {
      *            the text to remove comments from.
      * @return the text without comments.
      */
-    private String stripComments(String text) {
+    private String stripComments(String text, CommentStrippingMode commentStrippingMode) {
+        switch (commentStrippingMode) {
+        case RETAIN:
+            // no modification
+            return text;
+        case RETAIN_SURROUNDING_STRIP_INNER:
+            if (textSurroundedByAngleBrackets(text)) {
+                text = text.substring(1, text.length() - 1);
+            }
+            break;
+        case STRIP_ALL:
+            break;
+        default:
+            throw new IllegalArgumentException("Unrecognized comment stripping mode");
+        }
+
         CommentStripper stripper = new CommentStripper(text);
         try {
             stripper.parse();

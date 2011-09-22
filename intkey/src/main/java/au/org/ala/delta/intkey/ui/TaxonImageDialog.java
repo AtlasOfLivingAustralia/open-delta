@@ -15,6 +15,7 @@ import org.jdesktop.application.ResourceMap;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
+import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.model.image.ImageSettings;
 
 public class TaxonImageDialog extends ImageDialog {
@@ -47,7 +48,7 @@ public class TaxonImageDialog extends ImageDialog {
     private void init(List<Item> taxa) {
         _taxa = new ArrayList<Item>(taxa);
 
-        _itemFormatter = new ItemFormatter(false, true, AngleBracketHandlingMode.RETAIN, true, false);
+        _itemFormatter = new ItemFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.RETAIN, true, false, false);
 
         _selectedTaxonIndex = 0;
         ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(TaxonImageDialog.class);

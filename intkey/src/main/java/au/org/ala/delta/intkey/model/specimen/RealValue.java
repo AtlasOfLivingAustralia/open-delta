@@ -6,6 +6,7 @@ import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.RealCharacter;
 import au.org.ala.delta.model.format.Formatter;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
+import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 
 public class RealValue extends CharacterValue {
     
@@ -16,7 +17,7 @@ public class RealValue extends CharacterValue {
     public RealValue(RealCharacter character, FloatRange range) {
         _character = character;
         _range = range;
-        _unitsFormatter = new Formatter(true, AngleBracketHandlingMode.RETAIN, true);
+        _unitsFormatter = new Formatter(CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.RETAIN, true, false);
     }
     
     @Override

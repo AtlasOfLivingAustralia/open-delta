@@ -15,6 +15,7 @@ import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.format.AttributeFormatter;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
+import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.rtf.RTFBuilder;
 import au.org.ala.delta.util.Pair;
@@ -57,9 +58,9 @@ public class DescribeDirectiveInvocation implements IntkeyDirectiveInvocation {
     // Generate a desciption with each attribute value listed on a separate line
     private RTFBuilder generateStandardReport(Map<Character, List<Attribute>> characterAttributesMap, Specimen specimen, Map<Character, String> charactersItemSubheadingMap, boolean displayNumbering,
             boolean displayInapplicables, boolean displayUnknowns) {
-        ItemFormatter taxonFormatter = new ItemFormatter(displayNumbering, false, AngleBracketHandlingMode.REMOVE, false, false);
-        CharacterFormatter characterFormatter = new CharacterFormatter(displayNumbering, false, AngleBracketHandlingMode.REMOVE_SURROUNDING_REPLACE_INNER, false);
-        AttributeFormatter attributeFormatter = new AttributeFormatter(displayNumbering, false, false);
+        ItemFormatter taxonFormatter = new ItemFormatter(displayNumbering, CommentStrippingMode.RETAIN_SURROUNDING_STRIP_INNER, AngleBracketHandlingMode.REMOVE, false, false, true);
+        CharacterFormatter characterFormatter = new CharacterFormatter(displayNumbering, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REMOVE_SURROUNDING_REPLACE_INNER, false, true);
+        AttributeFormatter attributeFormatter = new AttributeFormatter(displayNumbering, false, CommentStrippingMode.RETAIN_SURROUNDING_STRIP_INNER, AngleBracketHandlingMode.REMOVE, true);
 
         RTFBuilder builder = new RTFBuilder();
         builder.startDocument();
@@ -126,9 +127,9 @@ public class DescribeDirectiveInvocation implements IntkeyDirectiveInvocation {
     // subheadings in paragraphs
     private RTFBuilder generateReportGroupedByItemSubheading(Map<Character, List<Attribute>> characterAttributesMap, Specimen specimen, Map<Character, String> charactersItemSubheadingMap,
             boolean displayNumbering, boolean displayInapplicables, boolean displayUnknowns) {
-        ItemFormatter taxonFormatter = new ItemFormatter(displayNumbering, false, AngleBracketHandlingMode.REMOVE, false, false);
-        CharacterFormatter characterFormatter = new CharacterFormatter(displayNumbering, true, AngleBracketHandlingMode.REMOVE_SURROUNDING_REPLACE_INNER, false);
-        AttributeFormatter attributeFormatter = new AttributeFormatter(displayNumbering, false, true);
+        ItemFormatter taxonFormatter = new ItemFormatter(displayNumbering, CommentStrippingMode.RETAIN_SURROUNDING_STRIP_INNER, AngleBracketHandlingMode.REMOVE, false, false, true);
+        CharacterFormatter characterFormatter = new CharacterFormatter(displayNumbering, CommentStrippingMode.RETAIN_SURROUNDING_STRIP_INNER, AngleBracketHandlingMode.REMOVE, false, true);
+        AttributeFormatter attributeFormatter = new AttributeFormatter(displayNumbering, false, CommentStrippingMode.RETAIN_SURROUNDING_STRIP_INNER, AngleBracketHandlingMode.REMOVE, true);
 
         RTFBuilder builder = new RTFBuilder();
         builder.startDocument();

@@ -4,6 +4,7 @@ import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.TranslateType;
 import au.org.ala.delta.model.format.AttributeFormatter;
 import au.org.ala.delta.model.format.CharacterFormatter;
+import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.translation.delta.DeltaFormatDataSetFilter;
@@ -97,10 +98,10 @@ public class DataSetTranslatorFactory {
 	
 	private ItemFormatter createItemFormatter(DeltaContext context, TypeSetter typeSetter) {
 		if (context.isOmitTypeSettingMarks()) {
-			return new ItemFormatter(false, false, AngleBracketHandlingMode.RETAIN, true, false);
+			return new ItemFormatter(false, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.RETAIN, true, false, false);
 		}
 		else if (typeSetter == null) {
-			return new ItemFormatter(false, false, AngleBracketHandlingMode.RETAIN, false, false);
+			return new ItemFormatter(false, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.RETAIN, false, false, false);
 		}
 		else {
 			return new TypeSettingItemFormatter(typeSetter);
@@ -108,12 +109,12 @@ public class DataSetTranslatorFactory {
 	}
 	
 	private CharacterFormatter createCharacterFormatter(DeltaContext context) {
-		return new CharacterFormatter(false, true, AngleBracketHandlingMode.RETAIN, context.isOmitTypeSettingMarks());
+		return new CharacterFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.RETAIN, context.isOmitTypeSettingMarks(), false);
 	}
 	
 	private AttributeFormatter createAttributeFormatter(DeltaContext context, TypeSetter typeSetter) {
 		if (context.isOmitTypeSettingMarks()) {
-			return new AttributeFormatter(false, true, false);
+			return new AttributeFormatter(false, true, CommentStrippingMode.RETAIN);
 		}
 		else {
 			return new TypeSettingAttributeFormatter();

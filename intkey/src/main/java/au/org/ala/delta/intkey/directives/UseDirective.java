@@ -35,6 +35,7 @@ import au.org.ala.delta.model.RealCharacter;
 import au.org.ala.delta.model.TextCharacter;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
+import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 
 /**
  * The USE directive - allow the user to enter information about a specimen
@@ -50,7 +51,7 @@ public class UseDirective extends IntkeyDirective {
 
     public UseDirective() {
         super("use");
-        _charFormatter = new CharacterFormatter(false, false, AngleBracketHandlingMode.REPLACE, true);
+        _charFormatter = new CharacterFormatter(false, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REPLACE, true, false);
     }
 
     @Override
@@ -385,7 +386,7 @@ public class UseDirective extends IntkeyDirective {
         }
 
         private boolean checkCharacterUsable(Character ch, IntkeyContext context, boolean warnAlreadySet) {
-            CharacterFormatter formatter = new CharacterFormatter(true, false, AngleBracketHandlingMode.REPLACE, true);
+            CharacterFormatter formatter = new CharacterFormatter(true, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REPLACE, true, false);
 
             // is character fixed?
             if (context.charactersFixed()) {

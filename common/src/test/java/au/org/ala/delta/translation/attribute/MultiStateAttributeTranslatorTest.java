@@ -11,6 +11,7 @@ import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.format.AttributeFormatter;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
+import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 
 /**
  * Tests the MultiStateAttributeTranslator class.
@@ -35,8 +36,8 @@ public class MultiStateAttributeTranslatorTest extends TestCase {
 		_multiStateCharacter.setState(4, "<State 4>");
 		_multiStateCharacter.setState(5, "State 5");
 		_multiStateCharacter.setState(6, "State 6");
-		AttributeFormatter attributeFormatter = new AttributeFormatter(false, true, false);
-		CharacterFormatter characterFormatter = new CharacterFormatter(false, true, AngleBracketHandlingMode.RETAIN, true);
+		AttributeFormatter attributeFormatter = new AttributeFormatter(false, true, CommentStrippingMode.RETAIN);
+		CharacterFormatter characterFormatter = new CharacterFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.RETAIN, true, false);
 		_translator = new MultiStateAttributeTranslator(_multiStateCharacter, characterFormatter, attributeFormatter);
 	}
 	

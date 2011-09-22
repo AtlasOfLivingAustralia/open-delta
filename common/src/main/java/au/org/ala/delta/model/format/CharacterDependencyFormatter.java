@@ -10,6 +10,7 @@ import au.org.ala.delta.model.CharacterDependency;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
+import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 
 /**
  * Formats CharacterDependencies in a consistent manner.
@@ -21,7 +22,7 @@ public class CharacterDependencyFormatter {
 	
 	public CharacterDependencyFormatter(DeltaDataSet dataSet) {
 		_dataSet = dataSet;
-		_characterFormatter = new CharacterFormatter(false, true, AngleBracketHandlingMode.RETAIN, true);
+		_characterFormatter = new CharacterFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.RETAIN, true, false);
 	}
 	
 	public String formatCharacterDependency(CharacterDependency characterDependency) {
@@ -56,7 +57,7 @@ public class CharacterDependencyFormatter {
 		String charDescription = _characterFormatter.formatCharacterDescription(controllingCharacter);
 		
 		if (StringUtils.isEmpty(charDescription)) {
-			charDescription = _characterFormatter.formatCharacterDescription(controllingCharacter, false);
+			charDescription = _characterFormatter.formatCharacterDescription(controllingCharacter, CommentStrippingMode.RETAIN);
 		}
 		description.append(charDescription);
 		description.append(": ");

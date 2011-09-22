@@ -6,6 +6,7 @@ import java.util.Set;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
+import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 
 public class TaxonCellRenderer extends ColoringListCellRenderer {
 
@@ -18,7 +19,7 @@ public class TaxonCellRenderer extends ColoringListCellRenderer {
     protected Set<Item> _taxaToColor;
 
     public TaxonCellRenderer() {
-        _formatter = new ItemFormatter(false, true, AngleBracketHandlingMode.RETAIN, true, false);
+        _formatter = new ItemFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.RETAIN, true, false, false);
         _taxaToColor = new HashSet<Item>();
     }
 

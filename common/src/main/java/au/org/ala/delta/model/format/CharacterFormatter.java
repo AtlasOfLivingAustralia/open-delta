@@ -12,15 +12,15 @@ public class CharacterFormatter extends Formatter {
 	private boolean _includeNumber;
 	
 	public CharacterFormatter() {
-		this(true, false, AngleBracketHandlingMode.RETAIN, false);
+		this(true, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.RETAIN, false, false);
 	}
-	public CharacterFormatter(boolean includeNumber, boolean stripComments, AngleBracketHandlingMode angleBracketHandlingMode, boolean stripFormatting) {
-		super(stripComments, angleBracketHandlingMode, stripFormatting);
+	public CharacterFormatter(boolean includeNumber, CommentStrippingMode commentStrippingMode, AngleBracketHandlingMode angleBracketHandlingMode, boolean stripFormatting, boolean capitaliseFirstWord) {
+		super(commentStrippingMode, angleBracketHandlingMode, stripFormatting, capitaliseFirstWord);
 		_includeNumber = includeNumber;
 	}
 	
 	public String formatState(MultiStateCharacter character, int stateNumber) {
-		return formatState(character, stateNumber, _stripComments);
+		return formatState(character, stateNumber, _commentStrippingMode);
 	}
 
 	
@@ -30,26 +30,25 @@ public class CharacterFormatter extends Formatter {
 	 * @param stateNumber the number of the state to format.
 	 * @return a String describing the state.
 	 */
-	public String formatState(MultiStateCharacter character, int stateNumber, boolean stripComments) {
+	public String formatState(MultiStateCharacter character, int stateNumber, CommentStrippingMode commentStrippingMode) {
 		StringBuilder state = new StringBuilder();
 		if (_includeNumber) {
 			state.append(stateNumber).append(". ");
 		}
 		String stateText = character.getState(stateNumber);
 		
-		state.append(defaultFormat(stateText, stripComments, _stripFormatting));
+		state.append(defaultFormat(stateText, commentStrippingMode, _angleBracketHandlingMode, _stripFormatting, _capitaliseFirstWord));
 		return state.toString();
 	}
 
 	public String formatCharacterDescription(Character character) {
-		
-		return formatCharacterDescription(character, _stripComments);
+		return formatCharacterDescription(character, _commentStrippingMode);
 	}
 	
-	public String formatCharacterDescription(Character character, boolean stripComments) {
+	public String formatCharacterDescription(Character character, CommentStrippingMode commentStrippingMode) {
 
 		String description = character.getDescription();
-		String formattedDescription = defaultFormat(description, stripComments, _stripFormatting);
+		String formattedDescription = defaultFormat(description, commentStrippingMode, _angleBracketHandlingMode, _stripFormatting, _capitaliseFirstWord);
 		
 		if (_includeNumber) {
 			formattedDescription = character.getCharacterId()+". "+formattedDescription;
@@ -63,12 +62,12 @@ public class CharacterFormatter extends Formatter {
 	 * @return the characters units, formatted.
 	 */
 	public String formatUnits(NumericCharacter<?> character) {
-		return formatUnits(character, _stripComments);
+		return formatUnits(character, _commentStrippingMode);
 	}
 	
-	public String formatUnits(NumericCharacter<?> character, boolean stripComments) {
+	public String formatUnits(NumericCharacter<?> character, CommentStrippingMode commentStrippingMode) {
 		String units = character.getUnits();
-		return defaultFormat(units, stripComments, _stripFormatting);
+		return defaultFormat(units, commentStrippingMode, _angleBracketHandlingMode, _stripFormatting, _capitaliseFirstWord);
 	}
 	
 }

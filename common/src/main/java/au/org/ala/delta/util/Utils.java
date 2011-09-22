@@ -781,9 +781,50 @@ public class Utils {
             outputText.append('>');
         return outputText.toString();
     }
+    
+    /**
+     *  Capitalises the first word in the supplied text (which may contain RTF markup)
+     *  the first letter of the word is preceded by a '|'.
+     * @param text the text to capitalise.
+     * @return the text with the first word capitalised.
+     */
+    public static String capitaliseFirstWord(String text) {
+        if (StringUtils.isEmpty(text)) {
+            return text;
+        }
+        //
+        StringBuilder tmp = new StringBuilder();
+        tmp.append(text);
+        int index = 0;
+        if (tmp.charAt(0) == '\\') {
+            
+            if (tmp.length() > 1) {
+                index++;
+                char next = tmp.charAt(index);
+                if (next != '\\' && next != '-') {
+                    
+                    while (index < text.length() && Character.isLetterOrDigit(tmp.charAt(index))) {
+                        index++;
+                    }
+                }
+            }
+        }
+        while (index < text.length() && !Character.isLetterOrDigit(tmp.charAt(index))) {
+            index++;
+        }
+        if (index < text.length() && Character.isLetter(tmp.charAt(index))) {
+            if ((index == 0) || (tmp.charAt(index-1) != '|')) {
+                tmp.setCharAt(index, Character.toUpperCase(tmp.charAt(index)));
+            }
+            else if (tmp.charAt(index-1) == '|') {
+                tmp.deleteCharAt(index-1);
+            }
+        }
+        return tmp.toString();
+    }
 
     /**
-     * Unzips the supplied
+     * Unzips the supplied zip file
      * 
      * @param zip
      *            The zip file to extract

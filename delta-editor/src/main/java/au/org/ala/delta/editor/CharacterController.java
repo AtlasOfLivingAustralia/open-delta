@@ -19,6 +19,7 @@ import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
+import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 
 /**
  * Handles actions performed on the Characters.
@@ -160,7 +161,7 @@ public class CharacterController {
 	}
 	
 	private boolean confirmDelete(Character toDelete) {
-		CharacterFormatter formatter = new CharacterFormatter(true, false, AngleBracketHandlingMode.RETAIN, true);
+		CharacterFormatter formatter = new CharacterFormatter(true, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.RETAIN, true, false);
 		
 		String characterDescription = formatter.formatCharacterDescription(toDelete);
 		

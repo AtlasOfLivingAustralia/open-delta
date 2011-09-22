@@ -6,6 +6,7 @@ import au.org.ala.delta.model.NumericCharacter;
 import au.org.ala.delta.model.format.AttributeFormatter;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
+import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.translation.TypeSetter;
 import au.org.ala.delta.translation.attribute.ParsedAttribute.Values;
 
@@ -30,7 +31,7 @@ public class NumericAttributeTranslator extends AttributeTranslator {
 	public NumericAttributeTranslator(NumericCharacter<?> character, TypeSetter typeSetter, AttributeFormatter formatter, boolean omitSpaceBeforeUnits) {
 		super(formatter);
 		_character = character;
-		_formatter = new CharacterFormatter(false, true, AngleBracketHandlingMode.RETAIN, true);
+		_formatter = new CharacterFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.RETAIN, true, false);
 		_typeSetter = typeSetter;
 		_omitSpaceBeforeUnits = omitSpaceBeforeUnits;
 	}

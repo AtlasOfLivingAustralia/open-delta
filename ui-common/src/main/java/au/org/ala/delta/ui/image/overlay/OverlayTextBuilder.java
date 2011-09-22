@@ -8,6 +8,7 @@ import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.NumericCharacter;
 import au.org.ala.delta.model.format.CharacterFormatter;
+import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.image.ImageOverlay;
@@ -28,9 +29,9 @@ public class OverlayTextBuilder {
 	public OverlayTextBuilder(ResourceMap resources, ImageSettings imageSettings) {
 		_resources = resources;
 		_imageSettings = imageSettings;
-		_itemFormatter = new ItemFormatter(false, false, AngleBracketHandlingMode.RETAIN, false, false);
-		_characterFormatter = new CharacterFormatter(false, true, AngleBracketHandlingMode.RETAIN, false);
-		_stateFormatter = new CharacterFormatter(true, true, AngleBracketHandlingMode.RETAIN, false);
+		_itemFormatter = new ItemFormatter(false, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.RETAIN, false, false, false);
+		_characterFormatter = new CharacterFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.RETAIN, false, false);
+		_stateFormatter = new CharacterFormatter(true, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.RETAIN, false, false);
 	}
 
 	public String getText(ImageOverlay overlay, Illustratable imageOwner) {
@@ -46,14 +47,14 @@ public class OverlayTextBuilder {
 	        break;
 		case OverlayType.OLITEM: // Use name of the item
 			if (!overlay.omitDescription()) {
-				text = _itemFormatter.formatItemDescription((Item) imageOwner, !overlay.includeComments());
+				text = _itemFormatter.formatItemDescription((Item) imageOwner, overlay.includeComments() ? CommentStrippingMode.RETAIN : CommentStrippingMode.STRIP_ALL);
 			}
 			includeExtraText = true;
 			break;
 		case OverlayType.OLFEATURE: // Use name of the character
 			if (!overlay.omitDescription()) {
 				String description = _characterFormatter
-						.formatCharacterDescription((au.org.ala.delta.model.Character) imageOwner, !overlay.includeComments());
+						.formatCharacterDescription((au.org.ala.delta.model.Character) imageOwner, overlay.includeComments() ? CommentStrippingMode.RETAIN : CommentStrippingMode.STRIP_ALL);
 				text = StringUtils.capitalize(description);
 			}
 			includeExtraText = true;
@@ -61,7 +62,7 @@ public class OverlayTextBuilder {
 		case OverlayType.OLSTATE: // Use name of the state (selectable)
 			if (!overlay.omitDescription()) {
 				text = _stateFormatter.formatState(
-						(MultiStateCharacter) imageOwner, overlay.stateId, !overlay.includeComments()); // TODO convert from id to number inside slotfile code
+						(MultiStateCharacter) imageOwner, overlay.stateId, overlay.includeComments() ? CommentStrippingMode.RETAIN : CommentStrippingMode.STRIP_ALL); // TODO convert from id to number inside slotfile code
 			}
 			includeExtraText = true;
 			break;
@@ -119,7 +120,7 @@ public class OverlayTextBuilder {
 	}
 
 	private String getUnits(Illustratable imageOwner, ImageOverlay overlay) {
-		return _characterFormatter.formatUnits((NumericCharacter<?>) imageOwner, !overlay.includeComments());
+		return _characterFormatter.formatUnits((NumericCharacter<?>) imageOwner, overlay.includeComments() ? CommentStrippingMode.RETAIN : CommentStrippingMode.STRIP_ALL);
 	}
 
 }

@@ -6,6 +6,7 @@ import java.util.Set;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
+import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 
 public class CharacterCellRenderer extends ColoringListCellRenderer {
 
@@ -19,7 +20,7 @@ public class CharacterCellRenderer extends ColoringListCellRenderer {
 
     public CharacterCellRenderer() {
         _charactersToColor = new HashSet<Character>();
-        _formatter = new CharacterFormatter(false, false, AngleBracketHandlingMode.REMOVE_SURROUNDING_REPLACE_INNER, true);
+        _formatter = new CharacterFormatter(false, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REMOVE_SURROUNDING_REPLACE_INNER, true, false);
     }
 
     @Override

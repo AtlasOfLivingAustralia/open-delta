@@ -13,6 +13,7 @@ import au.org.ala.delta.editor.ui.dnd.SimpleTransferHandler;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
+import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 
 /**
  * Handles actions performed on Character states.
@@ -97,7 +98,7 @@ public class StateController {
 	}
 	
 	private boolean confirmDelete(int toDelete) {
-		CharacterFormatter formatter = new CharacterFormatter(true, false, AngleBracketHandlingMode.RETAIN, true);
+		CharacterFormatter formatter = new CharacterFormatter(true, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.RETAIN, true, false);
 		
 		String itemDescription = formatter.formatState(getSelectedCharacter(), toDelete);
 		

@@ -36,6 +36,7 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.ResourceSettings;
 import au.org.ala.delta.model.format.Formatter;
+import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.image.Image;
@@ -234,8 +235,8 @@ public class TaxonInformationDialog extends JDialog {
 
         _infoSettings = _context.getInfoSettings();
         _imageSettings = _context.getImageSettings();
-        _itemFormatter = new ItemFormatter(false, false, AngleBracketHandlingMode.REMOVE, true, false);
-        _imageDescriptionFormatter = new Formatter(false, AngleBracketHandlingMode.RETAIN, true);
+        _itemFormatter = new ItemFormatter(false, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REMOVE, true, false, false);
+        _imageDescriptionFormatter = new Formatter(CommentStrippingMode.RETAIN, AngleBracketHandlingMode.RETAIN, true, false);
 
         _taxa = taxa;
         _taxaWithImages = new ArrayList<Item>();

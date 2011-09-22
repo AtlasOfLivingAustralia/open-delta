@@ -16,6 +16,7 @@ import au.org.ala.delta.editor.ui.dnd.SimpleTransferHandler;
 import au.org.ala.delta.editor.ui.util.MenuBuilder;
 import au.org.ala.delta.editor.ui.util.PopupMenuListener;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 
@@ -152,7 +153,7 @@ public class ItemController {
 	}
 	
 	private boolean confirmDelete(Item toDelete) {
-		ItemFormatter formatter = new ItemFormatter(true, false, AngleBracketHandlingMode.RETAIN, true, false);
+		ItemFormatter formatter = new ItemFormatter(true, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.RETAIN, true, false, false);
 		
 		String itemDescription = formatter.formatItemDescription(toDelete);
 		

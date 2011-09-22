@@ -14,6 +14,7 @@ import au.org.ala.delta.model.MultiStateAttribute;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.RealAttribute;
 import au.org.ala.delta.model.TextAttribute;
+import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 
 /**
  * Formats an attribute.
@@ -22,13 +23,13 @@ public class AttributeFormatter extends Formatter {
 
     boolean _includeNumber;
 
-    public AttributeFormatter(boolean includeNumber, boolean stripFormatting, boolean stripComments) {
-        super(stripComments, AngleBracketHandlingMode.RETAIN, stripFormatting);
+    public AttributeFormatter(boolean includeNumber, boolean stripFormatting, CommentStrippingMode commentStrippingMode) {
+        super(commentStrippingMode, AngleBracketHandlingMode.RETAIN, stripFormatting, false);
         _includeNumber = includeNumber;
     }
 
-    public AttributeFormatter(boolean includeNumber, boolean stripFormatting, boolean stripComments, AngleBracketHandlingMode angleBracketHandlingMode) {
-        super(stripComments, angleBracketHandlingMode, stripFormatting);
+    public AttributeFormatter(boolean includeNumber, boolean stripFormatting, CommentStrippingMode commentStrippingMode, AngleBracketHandlingMode angleBracketHandlingMode, boolean capitaliseFirstWord) {
+        super(commentStrippingMode, angleBracketHandlingMode, stripFormatting, capitaliseFirstWord);
         _includeNumber = includeNumber;
     }
 

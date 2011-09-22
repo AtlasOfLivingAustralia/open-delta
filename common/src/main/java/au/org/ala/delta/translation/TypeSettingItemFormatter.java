@@ -1,6 +1,8 @@
 package au.org.ala.delta.translation;
 
 import au.org.ala.delta.model.format.ItemFormatter;
+import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
+import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 
 /**
  * Extends the ItemFormatter to apply typesetting marks to the item description as appropriate.
@@ -10,7 +12,7 @@ public class TypeSettingItemFormatter extends ItemFormatter {
 	private TypeSetter _typeSetter;
 	
 	public TypeSettingItemFormatter(TypeSetter typeSetter) {
-		super(false, false, AngleBracketHandlingMode.RETAIN, false, false);
+		super(false, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.RETAIN, false, false, false);
 		_typeSetter = typeSetter;
 	}
 
@@ -22,9 +24,9 @@ public class TypeSettingItemFormatter extends ItemFormatter {
 	}
 	
 	@Override
-	public String defaultFormat(String text, boolean stripComments, boolean stripFormatting) {
+	public String defaultFormat(String text, CommentStrippingMode commentStrippingMode, AngleBracketHandlingMode angleBracketHandlingMode, boolean stripFormatting, boolean capitaliseFirstWord) {
 		
-		String formatted = super.defaultFormat(text, stripComments, stripFormatting);
+		String formatted = super.defaultFormat(text, commentStrippingMode, angleBracketHandlingMode, stripFormatting, capitaliseFirstWord);
 		return _typeSetter.typeSetItemDescription(formatted);
 	}
 	
