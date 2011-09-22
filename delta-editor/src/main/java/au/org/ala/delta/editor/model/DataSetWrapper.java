@@ -3,16 +3,8 @@ package au.org.ala.delta.editor.model;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
-import au.org.ala.delta.model.Attribute;
-import au.org.ala.delta.model.Character;
-import au.org.ala.delta.model.CharacterDependency;
-import au.org.ala.delta.model.CharacterType;
-import au.org.ala.delta.model.Item;
-import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.ObservableDeltaDataSet;
-import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
 import au.org.ala.delta.model.observer.DeltaDataSetObserver;
 
@@ -21,31 +13,14 @@ import au.org.ala.delta.model.observer.DeltaDataSetObserver;
  * be isolated from the actual data set so that references to closed views don't 
  * hang around in the model and prevent garbage collection.
  */
-public class DataSetWrapper implements ObservableDeltaDataSet, DeltaDataSetObserver {
+public class DataSetWrapper extends au.org.ala.delta.model.DataSetWrapper implements DeltaDataSetObserver {
 
-	/** The data set we are wrapping */
-	protected ObservableDeltaDataSet _wrappedDataSet;
 	/** Maintains a list of objects interested in being notified of changes to this model */
 	private List<SwingDeltaDataSetObserver> _observerList = new ArrayList<SwingDeltaDataSetObserver>();
 
 	public DataSetWrapper(ObservableDeltaDataSet dataSet) {
-		_wrappedDataSet = dataSet;
+		super(dataSet);
 		_wrappedDataSet.addDeltaDataSetObserver(this);
-	}
-
-	@Override
-	public String getName() {
-		return _wrappedDataSet.getName();
-	}
-
-	@Override
-	public void setName(String name) {
-		_wrappedDataSet.setName(name);
-	}
-
-	@Override
-	public void close() {
-		_wrappedDataSet.close();
 	}
 	
 	private boolean contains(DeltaDataSetObserver observer) {
@@ -82,147 +57,6 @@ public class DataSetWrapper implements ObservableDeltaDataSet, DeltaDataSetObser
 				return;
 			}
 		}
-	}
-
-	@Override
-	public Item getItem(int number) {
-		Item item = _wrappedDataSet.getItem(number);
-		return item;
-	}
-
-	@Override
-	public String getAttributeAsString(int itemNumber, int characterNumber) {
-		return _wrappedDataSet.getAttributeAsString(itemNumber, characterNumber);
-	}
-
-	@Override
-	public Character getCharacter(int number) {
-		Character character = _wrappedDataSet.getCharacter(number);
-		return character;
-	}
-
-	@Override
-	public int getNumberOfCharacters() {
-		return _wrappedDataSet.getNumberOfCharacters();
-	}
-
-	@Override
-	public int getMaximumNumberOfItems() {
-		return _wrappedDataSet.getMaximumNumberOfItems();
-	}
-
-	@Override
-	public Character addCharacter(int characterNumber, CharacterType type) {
-		Character character = _wrappedDataSet.addCharacter(characterNumber, type);
-		return character;
-	}
-
-	@Override
-	public Character addCharacter(CharacterType type) {
-		Character character = _wrappedDataSet.addCharacter(type);
-		return character;
-	}
-
-	@Override
-	public Item addItem(int itemNumber) {
-		Item item = _wrappedDataSet.addItem(itemNumber);
-		return item;
-	}
-
-	@Override
-	public Item addItem() {
-		Item item = _wrappedDataSet.addItem();
-		return item;
-	}
-
-	@Override
-	public Item addVariantItem(int parentItemNumber, int itemNumber) {
-		return _wrappedDataSet.addVariantItem(parentItemNumber, itemNumber);
-	}
-
-	@Override
-	public boolean isModified() {
-		return _wrappedDataSet.isModified();
-	}
-
-	public void deleteItem(int itemNumber) {
-		deleteItem(_wrappedDataSet.getItem(itemNumber));
-	}
-
-	@Override
-	public void deleteItem(Item item) {
-		_wrappedDataSet.deleteItem(item);
-	}
-	
-	@Override
-	public void deleteCharacter(Character character) {
-		_wrappedDataSet.deleteCharacter(character);
-	}
-
-	@Override
-	public Attribute getAttribute(int itemNumber, int characterNumber) {
-		return _wrappedDataSet.getAttribute(itemNumber, characterNumber);
-	}
-
-	@Override
-	public void moveItem(Item item, int newItemNumber) {
-		_wrappedDataSet.moveItem(item, newItemNumber);
-	}
-	
-	@Override
-	public void deleteState(MultiStateCharacter character, int stateNumber) {
-		_wrappedDataSet.deleteState(character, stateNumber);
-	}
-
-	@Override
-	public void moveCharacter(Character character, int newCharacterNumber) {
-		_wrappedDataSet.moveCharacter(character, newCharacterNumber);
-	}
-	
-	@Override
-	public List<Item> getUncodedItems(Character character) {
-		return _wrappedDataSet.getUncodedItems(character);
-	}
-	
-	@Override
-	public List<Item> getItemsWithMultipleStatesCoded(
-			MultiStateCharacter character) {
-		return _wrappedDataSet.getItemsWithMultipleStatesCoded(character);
-	}
-	
-	@Override
-	public List<CharacterDependency> getAllCharacterDependencies() {
-		return _wrappedDataSet.getAllCharacterDependencies();
-	}
-
-	@Override
-	public Character changeCharacterType(Character character,
-			CharacterType newType) {
-		return _wrappedDataSet.changeCharacterType(character, newType);
-	}
-	
-	@Override
-	public boolean canChangeCharacterType(Character character, CharacterType newType) {
-		return _wrappedDataSet.canChangeCharacterType(character, newType);
-	}
-
-	
-	@Override
-	public CharacterDependency addCharacterDependency(
-			MultiStateCharacter owningCharacter, Set<Integer> states,
-			Set<Integer> dependentCharacters) {
-		return _wrappedDataSet.addCharacterDependency(owningCharacter, states, dependentCharacters);
-	}
-
-	@Override
-	public void deleteCharacterDependency(
-			CharacterDependency characterDependency) {
-		_wrappedDataSet.deleteCharacterDependency(characterDependency);
-	}
-	
-	@Override
-	public Item itemForDescription(String description) {
-		return _wrappedDataSet.itemForDescription(description);
 	}
 
 	@Override
@@ -308,21 +142,4 @@ public class DataSetWrapper implements ObservableDeltaDataSet, DeltaDataSetObser
 			_observerList.get(i).imageEdited(event);
 		}	
 	}
-
-    @Override
-    public Attribute addAttribute(int itemNumber, int characterNumber) {
-        return _wrappedDataSet.addAttribute(itemNumber, characterNumber);
-    }
-
-	@Override
-	public ImageSettings getImageSettings() {
-		return _wrappedDataSet.getImageSettings();
-	}
-
-	@Override
-	public void setImageSettings(ImageSettings imageSettings) {
-		_wrappedDataSet.setImageSettings(imageSettings);	
-	}
-    
-    
 }

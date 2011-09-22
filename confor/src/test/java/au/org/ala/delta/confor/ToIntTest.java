@@ -24,8 +24,15 @@ public class ToIntTest extends TestCase {
 		File iitems = urlToFile("/dataset/sample/iitems");
 		
 		IntkeyDataset dataSet = IntkeyDatasetFileReader.readDataSet(ichars, iitems);
-		assertEquals(89, dataSet.getNumberOfCharacters());
-		assertEquals(14, dataSet.getNumberOfTaxa());
+		
+		File expectedIChars = urlToFile("/dataset/sample/expected_results/ichars");
+		File expectedIItems = urlToFile("/dataset/sample/expected_results/iitems");
+		
+		IntkeyDataset expectedDataSet = IntkeyDatasetFileReader.readDataSet(expectedIChars, expectedIItems);
+	
+//		assertEquals(expectedDataSet.getNumberOfCharacters(), dataSet.getNumberOfCharacters());
+//		assertEquals(expectedDataSet.getNumberOfTaxa(), dataSet.getNumberOfTaxa());
+	
 	}
 	
 	private File urlToFile(String urlString) throws Exception {

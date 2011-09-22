@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import au.org.ala.delta.directives.CharacterTypes;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.observer.CharacterObserver;
 import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
