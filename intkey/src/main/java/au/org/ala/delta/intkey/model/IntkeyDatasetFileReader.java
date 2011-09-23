@@ -47,6 +47,8 @@ import au.org.ala.delta.util.Pair;
 
 public final class IntkeyDatasetFileReader {
 
+    private static String DEFAULT_OR_WORD = "or";
+
     public static IntkeyDataset readDataSet(File charactersFile, File itemsFile) {
 
         // TODO should modify BinFile so that you can pass in a File.
@@ -887,8 +889,7 @@ public final class IntkeyDatasetFileReader {
             seekToRecord(charBinFile, recordNo + 1);
             orWord = readString(charBinFile, orWordLength);
         } else {
-            // TODO need to put this literal somewhere else
-            orWord = "or";
+            orWord = DEFAULT_OR_WORD;
         }
 
         ds.setOrWord(orWord);
@@ -1003,7 +1004,7 @@ public final class IntkeyDatasetFileReader {
 
         // from TAXON LINKS Confor directive
         List<String> firstLinksFileData = null;
-        
+
         // from SUBJECT FOR OUTPUT FILES Confor directive
         List<String> secondLinksFileData = null;
 
@@ -1020,7 +1021,8 @@ public final class IntkeyDatasetFileReader {
 
             List<Pair<String, String>> taxonLinks = new ArrayList<Pair<String, String>>();
 
-            // links from SUBJECT FOR OUTPUT FILES Confor directive (there should only
+            // links from SUBJECT FOR OUTPUT FILES Confor directive (there
+            // should only
             // be one) go in the list first.
             if (secondLinksFileData != null) {
                 if (secondLinksFileData.get(i) != null) {
@@ -1418,7 +1420,7 @@ public final class IntkeyDatasetFileReader {
                 imageData.setOverlays(overlayList);
             }
             return image;
-        } catch (ParseException ex) {
+        } catch (Exception ex) {// (ParseException ex) {
             ex.printStackTrace();
             throw new RuntimeException("Error parsing image overlay data");
         }

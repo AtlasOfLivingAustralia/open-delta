@@ -42,15 +42,18 @@ public class DescribeDirectiveInvocation implements IntkeyDirectiveInvocation {
     @Override
     public boolean execute(IntkeyContext context) {
         IntkeyDataset dataset = context.getDataset();
+        
         Specimen specimen = context.getSpecimen();
         Map<Character, List<Attribute>> characterAttributesMap = generateCharacterAttributesMap(dataset);
         Map<Character, String> charactersItemSubheadingMap = generateCharactersItemSubheadingMap(dataset);
 
         RTFBuilder builder = null;
         if (dataset.itemSubheadingsPresent() && !context.displayNumbering()) {
-            builder = generateReportGroupedByItemSubheading(characterAttributesMap, specimen, charactersItemSubheadingMap, context.displayUnknowns(), context.displayInapplicables(), dataset.getOrWord());
+            builder = generateReportGroupedByItemSubheading(characterAttributesMap, specimen, charactersItemSubheadingMap, context.displayUnknowns(), context.displayInapplicables(),
+                    dataset.getOrWord());
         } else {
-            builder = generateStandardReport(characterAttributesMap, specimen, charactersItemSubheadingMap, context.displayNumbering(), context.displayUnknowns(), context.displayInapplicables(), dataset.getOrWord());
+            builder = generateStandardReport(characterAttributesMap, specimen, charactersItemSubheadingMap, context.displayNumbering(), context.displayUnknowns(), context.displayInapplicables(),
+                    dataset.getOrWord());
         }
 
         context.getUI().displayRTFReport(builder.toString(), "Describe");
@@ -61,9 +64,9 @@ public class DescribeDirectiveInvocation implements IntkeyDirectiveInvocation {
     // Generate a desciption with each attribute value listed on a separate line
     private RTFBuilder generateStandardReport(Map<Character, List<Attribute>> characterAttributesMap, Specimen specimen, Map<Character, String> charactersItemSubheadingMap, boolean displayNumbering,
             boolean displayInapplicables, boolean displayUnknowns, String orWord) {
-        ItemFormatter taxonFormatter = new ItemFormatter(displayNumbering, CommentStrippingMode.RETAIN_SURROUNDING_STRIP_INNER, AngleBracketHandlingMode.REMOVE, false, false, true);
+        ItemFormatter taxonFormatter = new ItemFormatter(displayNumbering, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REMOVE, false, false, true);
         CharacterFormatter characterFormatter = new CharacterFormatter(displayNumbering, CommentStrippingMode.RETAIN_SURROUNDING_STRIP_INNER, AngleBracketHandlingMode.REMOVE, false, true);
-        AttributeFormatter attributeFormatter = new AttributeFormatter(displayNumbering, false, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REMOVE_SURROUNDING_REPLACE_INNER, false, orWord);
+        AttributeFormatter attributeFormatter = new AttributeFormatter(displayNumbering, false, CommentStrippingMode.RETAIN_SURROUNDING_STRIP_INNER, AngleBracketHandlingMode.REMOVE, false, orWord);
 
         RTFBuilder builder = new RTFBuilder();
         builder.startDocument();
@@ -97,6 +100,7 @@ public class DescribeDirectiveInvocation implements IntkeyDirectiveInvocation {
                         attributeFormatter);
             }
 
+            builder.appendText("");
             builder.decreaseIndent();
         }
 
@@ -128,7 +132,16 @@ public class DescribeDirectiveInvocation implements IntkeyDirectiveInvocation {
 
             String characterDescription = characterFormatter.formatCharacterDescription(ch);
             String attributeDescription = attributeFormatter.formatAttribute(attr);
-            builder.appendText(String.format("%s %s", characterDescription, attributeDescription));
+
+            StringBuilder lineToInsert = new StringBuilder();
+            lineToInsert.append(characterDescription);
+            lineToInsert.append(" ");
+            lineToInsert.append(attributeDescription);
+            if (!ch.getOmitPeriod()) {
+                lineToInsert.append(".");
+            }
+
+            builder.appendText(lineToInsert.toString());
         }
 
         return currentItemSubheading;
@@ -138,9 +151,9 @@ public class DescribeDirectiveInvocation implements IntkeyDirectiveInvocation {
     // subheadings in paragraphs
     private RTFBuilder generateReportGroupedByItemSubheading(Map<Character, List<Attribute>> characterAttributesMap, Specimen specimen, Map<Character, String> charactersItemSubheadingMap,
             boolean displayInapplicables, boolean displayUnknowns, String orWord) {
-        ItemFormatter taxonFormatter = new ItemFormatter(false, CommentStrippingMode.RETAIN_SURROUNDING_STRIP_INNER, AngleBracketHandlingMode.REMOVE, false, false, true);
+        ItemFormatter taxonFormatter = new ItemFormatter(false, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REMOVE, false, false, true);
         CharacterFormatter characterFormatter = new CharacterFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.REMOVE, false, true);
-        AttributeFormatter attributeFormatter = new AttributeFormatter(false, false, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REMOVE_SURROUNDING_REPLACE_INNER, false, orWord);
+        AttributeFormatter attributeFormatter = new AttributeFormatter(false, false, CommentStrippingMode.RETAIN_SURROUNDING_STRIP_INNER, AngleBracketHandlingMode.REMOVE, false, orWord);
 
         RTFBuilder builder = new RTFBuilder();
         builder.startDocument();
@@ -185,6 +198,7 @@ public class DescribeDirectiveInvocation implements IntkeyDirectiveInvocation {
                 builder.appendText(itemSubheadingGroupBuilder.toString());
             }
 
+            builder.appendText("");
             builder.decreaseIndent();
         }
 
@@ -200,6 +214,8 @@ public class DescribeDirectiveInvocation implements IntkeyDirectiveInvocation {
         Character ch = attr.getCharacter();
 
         if ((!attr.isInapplicable() || displayInapplicables) && (!attr.isUnknown() || displayUnknowns)) {
+            
+            //If this is the beginning of a new itemsubheading category then we need to add the item subheading
             String itemSubheading = charactersItemSubheadingMap.get(ch);
             if (itemSubheading != null && !itemSubheading.equals(currentItemSubheading)) {
                 if (itemSubheadingGroupBuilder.length() > 0) {
@@ -214,17 +230,30 @@ public class DescribeDirectiveInvocation implements IntkeyDirectiveInvocation {
 
                 itemSubheadingGroupBuilder.append(currentItemSubheading);
                 itemSubheadingGroupBuilder.append(" ");
+            } else if (ch.getNewParagraph()) {
+                // Add a paragraph break
+                if (itemSubheadingGroupBuilder.length() > 0) {
+                    itemSubheadingGroupBuilder.append(" \\par ");
+                }              
             }
 
             String characterDescription = characterFormatter.formatCharacterDescription(ch);
             String attributeDescription = attributeFormatter.formatAttribute(attr);
 
-            if (StringUtils.isEmpty(characterDescription)) {
-                attributeDescription = Utils.capitaliseFirstWord(attributeDescription);
-                itemSubheadingGroupBuilder.append(String.format("%s. ", attributeDescription));
+            if (!StringUtils.isEmpty(characterDescription)) {
+                itemSubheadingGroupBuilder.append(characterDescription);
+                itemSubheadingGroupBuilder.append(" ");
+                itemSubheadingGroupBuilder.append(attributeDescription);
             } else {
-                itemSubheadingGroupBuilder.append(String.format("%s %s. ", characterDescription, attributeDescription));
+                attributeDescription = Utils.capitaliseFirstWord(attributeDescription);
+                itemSubheadingGroupBuilder.append(attributeDescription);
             }
+
+            if (!ch.getOmitPeriod()) {
+                itemSubheadingGroupBuilder.append(".");
+            }
+            
+            itemSubheadingGroupBuilder.append(" ");
 
         }
 

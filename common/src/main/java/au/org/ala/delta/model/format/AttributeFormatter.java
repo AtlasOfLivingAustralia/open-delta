@@ -181,9 +181,9 @@ public class AttributeFormatter extends Formatter {
 
         String orSeparator = null;
         if (attribute.getCharacter().getOmitOr() == true) {
-            orSeparator = "; " + _orWord + " ";
+            orSeparator = "; ";            
         } else {
-            orSeparator = "; ";
+            orSeparator = "; " + _orWord + " ";
         }
 
         if (belowMinimumPresent) {
