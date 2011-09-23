@@ -6,10 +6,14 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 
+import au.org.ala.delta.DeltaContext.OutputFormat;
 import au.org.ala.delta.directives.ParsingContext;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.format.AttributeFormatter;
+import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
+import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.rtf.RTFUtils;
 
 public class OutputFileSelector {
@@ -21,6 +25,7 @@ public class OutputFileSelector {
 	private String _intkeyOutputFile;
 	private String _keyOutputFile;
 	private ParsingContext _context;
+	private OutputFormat _outputFormat;
 	
 	public OutputFileSelector(DeltaDataSet dataSet) {
 		_dataSet = dataSet;
@@ -45,12 +50,33 @@ public class OutputFileSelector {
 			else {
 				Attribute attribute = _dataSet.getAttribute(itemNumber, _characterForOutputFiles);
 				if (attribute != null) {
-					outputFile = attribute.getValueAsString();
+					AttributeFormatter formatter = new AttributeFormatter(false, true, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REMOVE, false, null);
+					outputFile = formatter.formatAttribute(attribute);
 				}
 			}
 			itemNumber--;
 		}
-		return outputFile;
+		
+		return addExtension(outputFile);
+	}
+	
+	private String addExtension(String outputFile) {
+		
+		StringBuilder output = new StringBuilder(outputFile);
+		if (outputFile.indexOf('.') < 0) {
+			switch (_outputFormat) {
+			case RTF:
+				output.append(".rtf");
+				break;
+			case HTML:
+				output.append(".htm");
+				break;
+			default:
+				output.append(".prt");
+				break;
+			}
+		}
+		return output.toString();
 	}
 	
 	public void setSubjectForOutputFiles(String subjectForOutputFiles) {
@@ -99,4 +125,7 @@ public class OutputFileSelector {
 	public void setCharacterForOutputFiles(int character) {
 		_characterForOutputFiles = character;
 	}
+
+	public void setOutputFormat(OutputFormat outputFormat) {
+		_outputFormat = outputFormat;	}
 }

@@ -539,15 +539,20 @@ public class IntkeyItemsFileWriter {
 	public void writeTaxonLinks() {
 		int numItems = _dataSet.getMaximumNumberOfItems();
 		List<String> taxonLinksList = new ArrayList<String>(numItems);
+		boolean linkPresent = false;
 		for (int i=1; i<=numItems; i++) {
 			String taxonLinks = _context.getTaxonLinks(i);
 			if (taxonLinks == null) {
 				taxonLinks = "";	
 			}
+			if (StringUtils.isNotBlank(taxonLinks)) {
+				linkPresent = true;
+			}
 			taxonLinksList.add(taxonLinks);
 		}
-		
-		_itemsFile.writeTaxonLinks(0, taxonLinksList);
+		if (linkPresent) {
+			_itemsFile.writeTaxonLinks(0, taxonLinksList);
+		}
 	}
 	
 	public void writeOmitPeriod() {

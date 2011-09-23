@@ -50,10 +50,11 @@ import au.org.ala.delta.util.Utils;
 public class DeltaContext extends AbstractDeltaContext {
 
 	public static enum HeadingType {HEADING, REGISTRATION_SUBHEADING};
+	public static enum OutputFormat {RTF, HTML, NONE};
 	
 	private DeltaDataSet _dataSet;
 	private OutputFileSelector _outputFileSelector;
-	
+	private OutputFormat _outputFormat = OutputFormat.RTF;
 	private Map<String, Object> _variables;
 	private int _ListFilenameSize = 15;
 	private List<String> _errorMessages = new ArrayList<String>();
@@ -164,6 +165,7 @@ public class DeltaContext extends AbstractDeltaContext {
 		_dataSet = dataSet;
 		
 		_outputFileSelector = new OutputFileSelector(_dataSet);
+		_outputFileSelector.setOutputFormat(_outputFormat);
 	}
 	
 	public OutputFileSelector getOutputFileSelector() {
@@ -311,6 +313,10 @@ public class DeltaContext extends AbstractDeltaContext {
 
 	public void setOmitTypeSettingMarks(boolean b) {
 		_omitTypeSettingMarks = b;
+		if (b) {
+			_outputFormat = OutputFormat.NONE;
+			_outputFileSelector.setOutputFormat(_outputFormat);
+		}
 	}
 
 	public boolean isOmitTypeSettingMarks() {

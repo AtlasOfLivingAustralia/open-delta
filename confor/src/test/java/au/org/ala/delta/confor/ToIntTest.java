@@ -3,6 +3,8 @@ package au.org.ala.delta.confor;
 import java.io.File;
 import java.net.URL;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.junit.Test;
 
 import junit.framework.TestCase;
@@ -20,11 +22,16 @@ public class ToIntTest extends TestCase {
 	@Test
 	public void testSampleToInt() throws Exception {
 		
-		File tointFile = urlToFile("/dataset/sample/toint");
-		CONFOR.main(new String[]{tointFile.getAbsolutePath()});
+		File tointDirectory = urlToFile("/dataset/");
+		File dest = new File(System.getProperty("java.io.tmpdir"));
+		FileUtils.copyDirectory(tointDirectory, dest);
 		
-		File ichars = urlToFile("/dataset/sample/ichars");
-		File iitems = urlToFile("/dataset/sample/iitems");
+		String tointFilePath = FilenameUtils.concat(dest.getAbsolutePath(), "sample/toint");
+		
+		CONFOR.main(new String[]{tointFilePath});
+		
+		File ichars = new File(FilenameUtils.concat(dest.getAbsolutePath(), "sample/ichars"));
+		File iitems = new File(FilenameUtils.concat(dest.getAbsolutePath(), "sample/iitems"));
 		
 		IntkeyDataset dataSet = IntkeyDatasetFileReader.readDataSet(ichars, iitems);
 		
@@ -32,7 +39,7 @@ public class ToIntTest extends TestCase {
 		File expectedIItems = urlToFile("/dataset/sample/expected_results/iitems");
 		
 		IntkeyDataset expectedDataSet = IntkeyDatasetFileReader.readDataSet(expectedIChars, expectedIItems);
-	
+		
 		assertEquals(expectedDataSet.getNumberOfCharacters(), dataSet.getNumberOfCharacters());
 		assertEquals(expectedDataSet.getNumberOfTaxa(), dataSet.getNumberOfTaxa());
 	
@@ -50,10 +57,12 @@ public class ToIntTest extends TestCase {
 				
 				assertEquals(expectedCharacter.getDescription(), character.getDescription());
 				
-				Attribute attr = item.getAttribute(character);
-				Attribute expectedAttribute = expectedItem.getAttribute(expectedCharacter);
+				
+				Attribute attr = dataSet.getAttribute(i, j);
+				Attribute expectedAttribute = expectedDataSet.getAttribute(i, j);
 				
 				assertEquals(expectedAttribute.getValueAsString(), attr.getValueAsString());
+				
 			}
 			
 		}*/

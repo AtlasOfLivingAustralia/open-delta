@@ -34,6 +34,10 @@ public class WriteOnceIntkeyItemsFile extends IntkeyFile {
 		_header.setNChar(numCharacters);
 		_header.setMajorVer(DATASET_MAJOR_VERSION);
 		_header.setMinorVer(DATASET_MINOR_VERSION);
+		// Even if there is no data, we always mark that there is a second
+		// section for simplicity (otherwise we don't know how many 
+		// records to allocate)
+		_header.setRpNext(2);
 		// This is done to allocate the first record to the header.
 		writeToRecord(1, _header.toInts());	
 	}

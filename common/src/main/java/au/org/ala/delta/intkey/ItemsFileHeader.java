@@ -288,6 +288,11 @@ public class ItemsFileHeader {
     	ints.add(_rpOmitOr);
     	ints.add(_rpNext);
     	
+    	// Used internally by intkey.
+    	ints.add(_dupItemPtr);
+    	ints.add(_tptr);
+    	ints.add(_lbtree);
+    	
     	ints.add(_rpUseCc);
     	ints.add(_rpTlinks[0]);
     	ints.add(_rpOmitPeriod);
