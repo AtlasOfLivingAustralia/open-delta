@@ -3,6 +3,7 @@ package au.org.ala.delta.model.format;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.FloatRange;
@@ -20,16 +21,37 @@ import au.org.ala.delta.model.TextAttribute;
  */
 public class AttributeFormatter extends Formatter {
 
-    boolean _includeNumber;
+    private boolean _includeNumber;
+
+    private String _orMoreCaption;
+    private String _orLessCaption;
+    private String _notRecordedCaption;
+    private String _notApplicableCaption;
+    private String _orWord;
 
     public AttributeFormatter(boolean includeNumber, boolean stripFormatting, CommentStrippingMode commentStrippingMode) {
         super(commentStrippingMode, AngleBracketHandlingMode.RETAIN, stripFormatting, false);
         _includeNumber = includeNumber;
+        initCaptions();
     }
 
-    public AttributeFormatter(boolean includeNumber, boolean stripFormatting, CommentStrippingMode commentStrippingMode, AngleBracketHandlingMode angleBracketHandlingMode, boolean capitaliseFirstWord) {
+    public AttributeFormatter(boolean includeNumber, boolean stripFormatting, CommentStrippingMode commentStrippingMode, AngleBracketHandlingMode angleBracketHandlingMode,
+            boolean capitaliseFirstWord, String orWord) {
         super(commentStrippingMode, angleBracketHandlingMode, stripFormatting, capitaliseFirstWord);
         _includeNumber = includeNumber;
+        initCaptions();
+        if (!StringUtils.isEmpty(orWord)) {
+            _orWord = orWord;
+        }
+    }
+
+    private void initCaptions() {
+        ResourceBundle bundle = ResourceBundle.getBundle("au/org/ala/delta/resources/delta-common");
+        _orMoreCaption = bundle.getString("AttributeFormatter.OrMore");
+        _orLessCaption = bundle.getString("AttributeFormatter.OrLess");
+        _notRecordedCaption = bundle.getString("AttributeFormatter.NotRecorded");
+        _notApplicableCaption = bundle.getString("AttributeFormatter.NotApplicable");
+        _orWord = bundle.getString("AttributeFormatter.DefaultOrWord");
     }
 
     /**
@@ -48,17 +70,30 @@ public class AttributeFormatter extends Formatter {
         return defaultFormat(comment);
     }
 
+    /**
+     * Format the supplied attribute
+     * 
+     * @param attribute
+     *            the attribute to format
+     * @return A formatted string describing the attribute
+     */
     public String formatAttribute(Attribute attribute) {
-        if (attribute instanceof MultiStateAttribute) {
-            return formatMultiStateAttribute((MultiStateAttribute) attribute);
-        } else if (attribute instanceof IntegerAttribute) {
-            return formatIntegerAttribute((IntegerAttribute) attribute);
-        } else if (attribute instanceof RealAttribute) {
-            return formatRealAttribute((RealAttribute) attribute);
-        } else if (attribute instanceof TextAttribute) {
-            return formatTextAttribute((TextAttribute) attribute);
+        if (attribute.isInapplicable() && attribute.isUnknown()) {
+            return _notApplicableCaption;
+        } else if (attribute.isUnknown()) {
+            return _notRecordedCaption;
         } else {
-            throw new IllegalArgumentException("Unrecognised attribute type");
+            if (attribute instanceof MultiStateAttribute) {
+                return formatMultiStateAttribute((MultiStateAttribute) attribute);
+            } else if (attribute instanceof IntegerAttribute) {
+                return formatIntegerAttribute((IntegerAttribute) attribute);
+            } else if (attribute instanceof RealAttribute) {
+                return formatRealAttribute((RealAttribute) attribute);
+            } else if (attribute instanceof TextAttribute) {
+                return formatTextAttribute((TextAttribute) attribute);
+            } else {
+                throw new IllegalArgumentException("Unrecognised attribute type");
+            }
         }
     }
 
@@ -72,8 +107,14 @@ public class AttributeFormatter extends Formatter {
             int stateNumber = values.get(i);
 
             if (i > 0) {
-                // TODO "or" needs to be internationalized
-                builder.append("; or ");
+                String orSeparator = null;
+                if (attribute.getCharacter().getOmitOr() == true) {
+                    orSeparator = "; " + _orWord + " ";
+                } else {
+                    orSeparator = "; ";
+                }
+
+                builder.append(orSeparator);
             }
 
             if (_includeNumber) {
@@ -138,11 +179,15 @@ public class AttributeFormatter extends Formatter {
             }
         }
 
-        String orSeparator = "; or ";
+        String orSeparator = null;
+        if (attribute.getCharacter().getOmitOr() == true) {
+            orSeparator = "; " + _orWord + " ";
+        } else {
+            orSeparator = "; ";
+        }
 
         if (belowMinimumPresent) {
-            builder.append(Integer.toString(belowMinimum));
-            builder.append(" or less");
+            builder.append(String.format(_orLessCaption, Integer.toString(belowMinimum)));
             if (intRanges.size() > 0 || aboveMaximumPresent) {
                 builder.append(orSeparator);
             }
@@ -163,8 +208,7 @@ public class AttributeFormatter extends Formatter {
         }
 
         if (aboveMaximumPresent) {
-            builder.append(Integer.toString(aboveMaximum));
-            builder.append(" or more");
+            builder.append(String.format(_orMoreCaption, Integer.toString(aboveMaximum)));
         }
 
         String units = attribute.getCharacter().getUnits();

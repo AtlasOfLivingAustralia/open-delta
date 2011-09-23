@@ -48,9 +48,9 @@ public class DescribeDirectiveInvocation implements IntkeyDirectiveInvocation {
 
         RTFBuilder builder = null;
         if (dataset.itemSubheadingsPresent() && !context.displayNumbering()) {
-            builder = generateReportGroupedByItemSubheading(characterAttributesMap, specimen, charactersItemSubheadingMap, context.displayUnknowns(), context.displayInapplicables());
+            builder = generateReportGroupedByItemSubheading(characterAttributesMap, specimen, charactersItemSubheadingMap, context.displayUnknowns(), context.displayInapplicables(), dataset.getOrWord());
         } else {
-            builder = generateStandardReport(characterAttributesMap, specimen, charactersItemSubheadingMap, context.displayNumbering(), context.displayUnknowns(), context.displayInapplicables());
+            builder = generateStandardReport(characterAttributesMap, specimen, charactersItemSubheadingMap, context.displayNumbering(), context.displayUnknowns(), context.displayInapplicables(), dataset.getOrWord());
         }
 
         context.getUI().displayRTFReport(builder.toString(), "Describe");
@@ -60,10 +60,10 @@ public class DescribeDirectiveInvocation implements IntkeyDirectiveInvocation {
 
     // Generate a desciption with each attribute value listed on a separate line
     private RTFBuilder generateStandardReport(Map<Character, List<Attribute>> characterAttributesMap, Specimen specimen, Map<Character, String> charactersItemSubheadingMap, boolean displayNumbering,
-            boolean displayInapplicables, boolean displayUnknowns) {
+            boolean displayInapplicables, boolean displayUnknowns, String orWord) {
         ItemFormatter taxonFormatter = new ItemFormatter(displayNumbering, CommentStrippingMode.RETAIN_SURROUNDING_STRIP_INNER, AngleBracketHandlingMode.REMOVE, false, false, true);
         CharacterFormatter characterFormatter = new CharacterFormatter(displayNumbering, CommentStrippingMode.RETAIN_SURROUNDING_STRIP_INNER, AngleBracketHandlingMode.REMOVE, false, true);
-        AttributeFormatter attributeFormatter = new AttributeFormatter(displayNumbering, false, CommentStrippingMode.RETAIN_SURROUNDING_STRIP_INNER, AngleBracketHandlingMode.REMOVE, false);
+        AttributeFormatter attributeFormatter = new AttributeFormatter(displayNumbering, false, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REMOVE_SURROUNDING_REPLACE_INNER, false, orWord);
 
         RTFBuilder builder = new RTFBuilder();
         builder.startDocument();
@@ -137,10 +137,10 @@ public class DescribeDirectiveInvocation implements IntkeyDirectiveInvocation {
     // Generate a description with the attribute values grouped by item
     // subheadings in paragraphs
     private RTFBuilder generateReportGroupedByItemSubheading(Map<Character, List<Attribute>> characterAttributesMap, Specimen specimen, Map<Character, String> charactersItemSubheadingMap,
-            boolean displayInapplicables, boolean displayUnknowns) {
+            boolean displayInapplicables, boolean displayUnknowns, String orWord) {
         ItemFormatter taxonFormatter = new ItemFormatter(false, CommentStrippingMode.RETAIN_SURROUNDING_STRIP_INNER, AngleBracketHandlingMode.REMOVE, false, false, true);
         CharacterFormatter characterFormatter = new CharacterFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.REMOVE, false, true);
-        AttributeFormatter attributeFormatter = new AttributeFormatter(false, false, CommentStrippingMode.RETAIN_SURROUNDING_STRIP_INNER, AngleBracketHandlingMode.REMOVE, false);
+        AttributeFormatter attributeFormatter = new AttributeFormatter(false, false, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REMOVE_SURROUNDING_REPLACE_INNER, false, orWord);
 
         RTFBuilder builder = new RTFBuilder();
         builder.startDocument();

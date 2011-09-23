@@ -46,11 +46,11 @@ public class DifferencesDirectiveInvocation implements IntkeyDirectiveInvocation
         _taxa = new ArrayList<Item>(taxa);
         _characterFormatter = new CharacterFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.RETAIN, false, false);
         _taxonFormatter = new ItemFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.RETAIN, false, false, false);
-        _attributeFormatter = new AttributeFormatter(false, false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.RETAIN, false);
     }
 
     @Override
     public boolean execute(IntkeyContext context) {
+        _attributeFormatter = new AttributeFormatter(false, false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.RETAIN, false, context.getDataset().getOrWord());
         
         Specimen specimen = null;
         if (_includeSpecimen) {

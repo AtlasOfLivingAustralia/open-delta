@@ -28,7 +28,8 @@ public class FindTaxaDirectiveInvocation implements IntkeyDirectiveInvocation {
 
         ItemFormatter taxonFormatter = new ItemFormatter(false, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REMOVE, false, false, false);
         CharacterFormatter characterFormatter = new CharacterFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.RETAIN, false, false);
-        AttributeFormatter attributeFormatter = new AttributeFormatter(false, false, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REMOVE_SURROUNDING_REPLACE_INNER, false);
+        AttributeFormatter attributeFormatter = new AttributeFormatter(false, false, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REMOVE_SURROUNDING_REPLACE_INNER, false, context
+                .getDataset().getOrWord());
 
         RTFBuilder builder = new RTFBuilder();
         builder.startDocument();
