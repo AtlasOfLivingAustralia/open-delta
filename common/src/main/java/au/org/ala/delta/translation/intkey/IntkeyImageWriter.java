@@ -26,7 +26,7 @@ public class IntkeyImageWriter {
 				StringBuilder overlayTextBuilder = new StringBuilder();
 				ImageOverlayWriter overlayWriter = createOverlayWriter(overlayTextBuilder);
 				overlayWriter.writeOverlays(image.getOverlays(), 0, subject);
-				String overlayText = overlayTextBuilder.toString().replaceAll("\\s", " ").trim();
+				String overlayText = overlayTextBuilder.toString().replaceAll("\\s+", " ").trim();
 				if (StringUtils.isNotEmpty(overlayText)) {
 					buffer.append(" ");
 					buffer.append(overlayText);
