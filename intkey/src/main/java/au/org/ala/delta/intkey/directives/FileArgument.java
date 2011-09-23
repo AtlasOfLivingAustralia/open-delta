@@ -11,7 +11,7 @@ public class FileArgument extends IntkeyDirectiveArgument<File> {
 
     private List<String> _fileExtensions;
     private boolean _createFileIfNonExistant;
-    
+
     public FileArgument(String name, String promptText, File initialValue, List<String> fileExtensions, boolean createFileIfNonExistant) {
         super(name, promptText, initialValue);
         _fileExtensions = fileExtensions;
@@ -21,23 +21,30 @@ public class FileArgument extends IntkeyDirectiveArgument<File> {
     @Override
     public File parseInput(Queue<String> inputTokens, IntkeyContext context, String directiveName) throws IntkeyDirectiveParseException {
         String filePath = inputTokens.poll();
-        
+
         File file = null;
-        
+
         if (filePath == null) {
             try {
-            file = context.getDirectivePopulator().promptForFile(_fileExtensions, getPromptText(), _createFileIfNonExistant);
+                file = context.getDirectivePopulator().promptForFile(_fileExtensions, getPromptText(), _createFileIfNonExistant);
             } catch (IOException ex) {
                 throw new IntkeyDirectiveParseException("Error creating file");
             }
         } else {
-            file = new File(context.getDatasetDirectory(), filePath);    
+            file = new File(context.getDatasetDirectory(), filePath);
+            if (!file.exists() && _createFileIfNonExistant) {
+                try {
+                    file.createNewFile();
+                } catch (IOException ex) {
+                    throw new IntkeyDirectiveParseException(String.format("Error creating file %s", file.getAbsolutePath()));
+                }
+            }
         }
-        
+
         if (file != null && !file.exists()) {
             throw new IntkeyDirectiveParseException(String.format("Could not open file %s", file.getAbsolutePath()));
         }
-        
+
         return file;
     }
 

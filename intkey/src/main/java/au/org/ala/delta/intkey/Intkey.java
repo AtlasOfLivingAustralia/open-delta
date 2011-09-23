@@ -613,6 +613,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     @Override
     protected void shutdown() {
         saveCurrentlyOpenedDataset();
+        _context.cleanupForShutdown();
         super.shutdown();
     }
 

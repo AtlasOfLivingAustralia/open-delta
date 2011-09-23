@@ -1,14 +1,18 @@
 package au.org.ala.delta.intkey.model;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.StringReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -151,6 +155,12 @@ public class IntkeyContext extends AbstractDeltaContext {
     private boolean _displayInapplicables;
     private boolean _displayUnknowns;
 
+    private File _logFile;
+    private File _journalFile;
+    private PrintWriter _logFileWriter;
+    private PrintWriter _journalFileWriter;
+    private Map<File, PrintWriter> _outputFileWriters;
+
     /**
      * Constructor
      * 
@@ -172,6 +182,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         _processingInputFile = false;
 
         _directiveParser = IntkeyDirectiveParser.createInstance();
+        _outputFileWriters = new HashMap<File, PrintWriter>();
 
         initializeIdentification();
     }
@@ -1174,6 +1185,22 @@ public class IntkeyContext extends AbstractDeltaContext {
         }
 
         _appUI.handleDatasetClosed();
+
+    }
+
+    /**
+     * Called prior to application shutdown.
+     */
+    public void cleanupForShutdown() {
+        cleanupOldDataset();
+        _logFileWriter.flush();
+        _logFileWriter.close();
+        _journalFileWriter.flush();
+        _journalFileWriter.close();
+        for (PrintWriter outputFileWriter : _outputFileWriters.values()) {
+            outputFileWriter.flush();
+            outputFileWriter.close();
+        }
     }
 
     public IntkeyUI getUI() {
@@ -1270,6 +1297,44 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     public void setDisplayUnknowns(boolean displayUnknowns) {
         this._displayUnknowns = displayUnknowns;
+    }
+
+    public void setLogFile(File logFile) throws IOException {
+        if (_logFile != null) {
+            _logFileWriter.flush();
+            _logFileWriter.close();
+        }
+
+        _logFileWriter = new PrintWriter(new BufferedWriter(new FileWriter(logFile)));
+        _logFile = logFile;
+    }
+
+    public void setJournalFile(File journalFile) throws IOException {
+        if (_journalFile != null) {
+            _journalFileWriter.flush();
+            _journalFileWriter.close();
+        }
+
+        _journalFileWriter = new PrintWriter(new BufferedWriter(new FileWriter(journalFile)));
+        _journalFile = journalFile;
+    }
+
+    public void newOutputFile(File outputFile) throws IOException {
+        if (!_outputFileWriters.containsKey(outputFile)) {
+            PrintWriter outputFileWriter = new PrintWriter(new BufferedWriter(new FileWriter(outputFile)));
+            _outputFileWriters.put(outputFile, outputFileWriter);
+        }
+    }
+
+    public void closeOutputFile(File outputFile) {
+        if (_outputFileWriters.containsKey(outputFile)) {
+            PrintWriter outputFileWriter = _outputFileWriters.get(outputFile);
+            outputFileWriter.flush();
+            outputFileWriter.close();
+            _outputFileWriters.remove(outputFile);
+        } else {
+            throw new IllegalArgumentException(String.format("File '%s' is not open as an output file", outputFile.getAbsolutePath()));
+        }
     }
 
     private class StartupFileLoader extends SwingWorker<Void, String> {

@@ -6,7 +6,7 @@ import java.io.IOException;
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class FileOutputDirectiveInvocation implements IntkeyDirectiveInvocation {
+public class FileLogDirectiveInvocation implements IntkeyDirectiveInvocation {
 
     private File _file;
 
@@ -21,8 +21,9 @@ public class FileOutputDirectiveInvocation implements IntkeyDirectiveInvocation 
             return true;
         } catch (IOException ex) {
             Logger.error(ex);
-            context.getUI().displayErrorMessage(String.format("Error opening output file %s", _file.getAbsolutePath()));
+            context.getUI().displayErrorMessage(String.format("Error opening log file %s", _file.getAbsolutePath()));
             return false;
         }
     }
+
 }
