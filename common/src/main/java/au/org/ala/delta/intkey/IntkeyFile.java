@@ -276,7 +276,8 @@ public class IntkeyFile extends BinFile {
 	protected void writeStringsWithOffsetsToRecord(int startRecord, List<String> descriptions) {
 		int[] offsets = new int[descriptions.size()+1];
 		StringBuilder buffer = new StringBuilder();
-		offsets[0] = 0;
+		// This seems fishy, but the existing confor offsets seem to start with 1.
+		offsets[0] = 1;
 		for (int i=0; i<descriptions.size(); i++) {
 			offsets[i+1] = offsets[i] + descriptions.get(i).length();
 			buffer.append(descriptions.get(i));

@@ -2,6 +2,8 @@ package au.org.ala.delta.translation.intkey;
 
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 import au.org.ala.delta.model.Illustratable;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageInfo;
@@ -15,14 +17,22 @@ public class IntkeyImageWriter {
 		if (!images.isEmpty()) {
 	
 			StringBuilder buffer = new StringBuilder();
-			ImageOverlayWriter overlayWriter = createOverlayWriter(buffer);
+			
 			for (Image image : images) {
-				buffer.append(" "+image.getFileName()).append(" ");
+				if (buffer.length() > 0) {
+					buffer.append(" ");
+				}
+				buffer.append(image.getFileName());
+				StringBuilder overlayTextBuilder = new StringBuilder();
+				ImageOverlayWriter overlayWriter = createOverlayWriter(overlayTextBuilder);
 				overlayWriter.writeOverlays(image.getOverlays(), 0, subject);
+				String overlayText = overlayTextBuilder.toString().replaceAll("\\s", " ").trim();
+				if (StringUtils.isNotEmpty(overlayText)) {
+					buffer.append(" ");
+					buffer.append(overlayText);
+				}
 			}
 			imageData = buffer.toString();
-			imageData = imageData.replaceAll("\\s", " ").trim();
-			
 		}
 		return imageData;
 	}

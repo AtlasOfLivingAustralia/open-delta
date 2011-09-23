@@ -98,10 +98,10 @@ public class IntkeyItemsFileWriterTest extends TestCase {
 		
 		int totalLength = item1.length()+item2.length()+item3.length();
 		int offset = readInt(3);
-		assertEquals(0, offset);
-		assertEquals(item1.length(), _itemsFile.readInt());
-		assertEquals(item1.length()+item2.length(), _itemsFile.readInt());
-		assertEquals(totalLength, _itemsFile.readInt());
+		assertEquals(1, offset);
+		assertEquals(item1.length()+1, _itemsFile.readInt());
+		assertEquals(item1.length()+item2.length()+1, _itemsFile.readInt());
+		assertEquals(totalLength+1, _itemsFile.readInt());
 	
 		assertEquals(item1+item2+item3, readString(4, totalLength));	
 		
@@ -189,10 +189,10 @@ public class IntkeyItemsFileWriterTest extends TestCase {
 		
 		int totalLength = attribute12.length()+attribute22.length()+attribute32.length();
 		int offset = readInt(6);
-		assertEquals(0, offset);
-		assertEquals(attribute12.length(), _itemsFile.readInt());
-		assertEquals(attribute12.length()+attribute22.length(), _itemsFile.readInt());
-		assertEquals(totalLength, _itemsFile.readInt());
+		assertEquals(1, offset);
+		assertEquals(attribute12.length()+1, _itemsFile.readInt());
+		assertEquals(attribute12.length()+attribute22.length()+1, _itemsFile.readInt());
+		assertEquals(totalLength+1, _itemsFile.readInt());
 	
 		assertEquals(attribute12+attribute22+attribute32, readString(7, totalLength));	
 		

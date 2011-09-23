@@ -43,7 +43,7 @@ public class ToIntTest extends TestCase {
 		assertEquals(expectedDataSet.getNumberOfCharacters(), dataSet.getNumberOfCharacters());
 		assertEquals(expectedDataSet.getNumberOfTaxa(), dataSet.getNumberOfTaxa());
 	
-		/*for (int i=1; i<=expectedDataSet.getNumberOfTaxa(); i++) {
+		for (int i=1; i<=expectedDataSet.getNumberOfTaxa(); i++) {
 			Item item = dataSet.getTaxon(i);
 			Item expectedItem = expectedDataSet.getTaxon(i);
 			
@@ -57,15 +57,16 @@ public class ToIntTest extends TestCase {
 				
 				assertEquals(expectedCharacter.getDescription(), character.getDescription());
 				
-				
-				Attribute attr = dataSet.getAttribute(i, j);
 				Attribute expectedAttribute = expectedDataSet.getAttribute(i, j);
+				Attribute attr = dataSet.getAttribute(i, j);
+				
 				
 				assertEquals(expectedAttribute.getValueAsString(), attr.getValueAsString());
 				
 			}
 			
-		}*/
+		}
+		
 	}
 	
 	private File urlToFile(String urlString) throws Exception {
