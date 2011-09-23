@@ -333,9 +333,9 @@ public class IntkeyCharactersFileWriterTest extends TestCase {
 		_charsFile.seek(IntkeyFile.RECORD_LENGTH_BYTES);
 		assertEquals(3, _charsFile.readInt());
 		
-		String defaultFontString = "#1. 1 2 0 3 4 5 default font";
-		String defaultFeatureFontString = "#3. 6 7 1 8 9 10 default feature font";
-		String defaultButtonFontString = "#2. 11 12 1 13 14 15 default button font";
+		String defaultFontString = "1 2 0 3 4 5 default font";
+		String defaultFeatureFontString = "6 7 1 8 9 10 default feature font";
+		String defaultButtonFontString = "11 12 1 13 14 15 default button font";
 		_charsFile.seek(IntkeyFile.RECORD_LENGTH_BYTES*2);
 		
 		assertEquals(defaultFontString.length(), _charsFile.readInt());

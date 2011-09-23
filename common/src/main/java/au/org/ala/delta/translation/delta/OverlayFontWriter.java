@@ -13,32 +13,45 @@ public class OverlayFontWriter {
 	
 	public void writeFont(FontInfo fontInfo, OverlayFontType fontType) {
 		int indent = 2;
-		StringBuilder _textBuffer = new StringBuilder();
-		_textBuffer.append("#").append(fontType.ordinal() + 1).append(". ");
 		
+		writeId(fontType);
 		
 		String comment = fontInfo.comment;
 		if (StringUtils.isNotEmpty(comment)) {
-			_textBuffer.append(" <");
-			_textBuffer.append(comment);
-			_textBuffer.append('>');
-			_deltaWriter.outputTextBuffer(_textBuffer.toString(), indent, indent, true);
-			_textBuffer = new StringBuilder();
+			writeComment(indent, comment);
 			indent = 10;
 		}
 		if (StringUtils.isNotEmpty(fontInfo.name)) {
 
-			String buffer = String.format("%d %d %d %d %d %d %s",
-					fontInfo.size,
-					fontInfo.weight, 
-					fontInfo.italic ? 1 : 0, 
-					fontInfo.pitch,
-					fontInfo.family,
-					fontInfo.charSet, fontInfo.name);
-			_textBuffer.append(buffer);
-			_deltaWriter.outputTextBuffer(_textBuffer.toString(),indent, 10, true);
-			_textBuffer = new StringBuilder();
-		} else
-			_textBuffer = new StringBuilder();
+			writeFontInfo(fontInfo, indent);
+		}
+		
+	}
+
+	public void writeFontInfo(FontInfo fontInfo, int indent) {
+		StringBuilder textBuffer = new StringBuilder();
+		String buffer = String.format("%d %d %d %d %d %d %s",
+				fontInfo.size,
+				fontInfo.weight, 
+				fontInfo.italic ? 1 : 0, 
+				fontInfo.pitch,
+				fontInfo.family,
+				fontInfo.charSet, fontInfo.name);
+		textBuffer.append(buffer);
+		_deltaWriter.outputTextBuffer(textBuffer.toString(), indent, 10, true);
+	}
+
+	private void writeComment(int indent, String comment) {
+		StringBuilder textBuffer = new StringBuilder(); 
+		textBuffer.append(" <");
+		textBuffer.append(comment);
+		textBuffer.append('>');
+		_deltaWriter.outputTextBuffer(textBuffer.toString(), indent, indent, true);
+	}
+
+	private void writeId(OverlayFontType fontType) {
+		StringBuilder textBuffer = new StringBuilder(); 
+		textBuffer.append("#").append(fontType.ordinal() + 1).append(". ");
+		_deltaWriter.outputTextBuffer(textBuffer.toString(), 0, 0, false);
 	}
 }

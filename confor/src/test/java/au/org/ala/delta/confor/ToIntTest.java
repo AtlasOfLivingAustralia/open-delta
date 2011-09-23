@@ -43,6 +43,24 @@ public class ToIntTest extends TestCase {
 		assertEquals(expectedDataSet.getNumberOfCharacters(), dataSet.getNumberOfCharacters());
 		assertEquals(expectedDataSet.getNumberOfTaxa(), dataSet.getNumberOfTaxa());
 	
+		assertEquals(expectedDataSet.getCharacterKeywordImages(), dataSet.getCharacterKeywordImages());
+		assertEquals(expectedDataSet.getHeading(), dataSet.getHeading());
+		// These seem to be unused now.
+		//assertEquals(expectedDataSet.getHelpCharNotesFormattingInfo(), dataSet.getHelpCharNotesFormattingInfo());
+		//assertEquals(expectedDataSet.getMainCharNotesFormattingInfo(), dataSet.getMainCharNotesFormattingInfo());
+		assertEquals(expectedDataSet.getOrWord(), dataSet.getOrWord());
+		assertEquals(expectedDataSet.getSubHeading(), dataSet.getSubHeading());
+		assertEquals(expectedDataSet.getValidationString(), dataSet.getValidationString());
+		assertEquals(expectedDataSet.getOverlayFonts(), dataSet.getOverlayFonts());
+		assertEquals(expectedDataSet.getStartupImages(), dataSet.getStartupImages());
+//		assertEquals(expectedDataSet.getSynonymyAttributesForTaxa(), dataSet.getSynonymyAttributesForTaxa());
+		assertEquals(expectedDataSet.getSynonymyCharacters(), dataSet.getSynonymyCharacters());
+		assertEquals(expectedDataSet.getTaxonKeywordImages(), dataSet.getTaxonKeywordImages());
+		
+		
+		
+		
+		
 		for (int i=1; i<=expectedDataSet.getNumberOfTaxa(); i++) {
 			Item item = dataSet.getTaxon(i);
 			Item expectedItem = expectedDataSet.getTaxon(i);

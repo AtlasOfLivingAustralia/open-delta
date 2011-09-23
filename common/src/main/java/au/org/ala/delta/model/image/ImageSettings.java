@@ -57,6 +57,50 @@ public class ImageSettings extends ResourceSettings {
         public int charSet;
         public String name;
         public String comment;
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + charSet;
+			result = prime * result + family;
+			result = prime * result + (italic ? 1231 : 1237);
+			result = prime * result + ((name == null) ? 0 : name.hashCode());
+			result = prime * result + pitch;
+			result = prime * result + size;
+			result = prime * result + weight;
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			FontInfo other = (FontInfo) obj;
+			if (charSet != other.charSet)
+				return false;
+			if (family != other.family)
+				return false;
+			if (italic != other.italic)
+				return false;
+			if (name == null) {
+				if (other.name != null)
+					return false;
+			} else if (!name.equals(other.name))
+				return false;
+			if (pitch != other.pitch)
+				return false;
+			if (size != other.size)
+				return false;
+			if (weight != other.weight)
+				return false;
+			return true;
+		}
+        
+        
     }
 
     private FontInfo _defaultFontInfo;

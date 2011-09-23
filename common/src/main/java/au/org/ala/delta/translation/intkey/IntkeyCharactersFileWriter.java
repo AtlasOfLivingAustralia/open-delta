@@ -194,18 +194,18 @@ public class IntkeyCharactersFileWriter {
 			for (OverlayFontType fontType : OverlayFontType.values()) {
 				FontInfo font = settings.getFont(fontType);
 				if (font != null) {
-					addFontText(fonts, settings.getFont(fontType), fontType);
+					addFontText(fonts, settings.getFont(fontType));
 				}
 			}
 			_charsFile.writeFonts(fonts);
 		}
 	}
 	
-	protected void addFontText(List<String> fonts, FontInfo font, OverlayFontType type) {
+	protected void addFontText(List<String> fonts, FontInfo font) {
 		if (font != null) {
 			StringBuilder fontText = new StringBuilder();
 			OverlayFontWriter writer = createOverlayFontWriter(fontText);
-			writer.writeFont(font, type);
+			writer.writeFontInfo(font, 0);
 			
 			fonts.add(fontText.toString().trim());
 		}
