@@ -20,7 +20,7 @@ public class TaxaDirectiveInvocation implements IntkeyDirectiveInvocation {
     @Override
     public boolean execute(IntkeyContext context) {
 
-        ItemFormatter taxonFormatter = new ItemFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.RETAIN, false, false, false);
+        ItemFormatter taxonFormatter = new ItemFormatter(context.displayNumbering(), CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.RETAIN, false, false, false);
 
         RTFBuilder builder = new RTFBuilder();
         builder.startDocument();

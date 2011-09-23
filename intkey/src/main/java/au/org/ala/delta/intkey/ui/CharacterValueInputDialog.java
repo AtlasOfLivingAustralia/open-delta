@@ -47,7 +47,7 @@ public abstract class CharacterValueInputDialog extends JDialog {
     protected CharacterFormatter _formatter;
     protected ImageSettings _imageSettings;
 
-    public CharacterValueInputDialog(Frame owner, Character ch, ImageSettings imageSettings) {
+    public CharacterValueInputDialog(Frame owner, Character ch, ImageSettings imageSettings, boolean displayNumbering) {
         super(owner, true);
         ActionMap actionMap = Application.getInstance().getContext().getActionMap(CharacterValueInputDialog.class, this); 
         
@@ -106,7 +106,7 @@ public abstract class CharacterValueInputDialog extends JDialog {
         
         _lblCharacterDescription = new JLabel();
         _lblCharacterDescription.setBorder(new EmptyBorder(0, 0, 5, 0));
-        _formatter = new CharacterFormatter(false, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REMOVE_SURROUNDING_REPLACE_INNER, true, false);
+        _formatter = new CharacterFormatter(displayNumbering, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REMOVE_SURROUNDING_REPLACE_INNER, true, false);
         _lblCharacterDescription.setText(_formatter.formatCharacterDescription(_ch));
         _pnlMain.add(_lblCharacterDescription, BorderLayout.NORTH);
         

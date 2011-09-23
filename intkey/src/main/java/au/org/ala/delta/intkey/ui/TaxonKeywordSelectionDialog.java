@@ -39,7 +39,7 @@ public class TaxonKeywordSelectionDialog extends KeywordSelectionDialog {
 
     private List<Item> _includedTaxa;
     private List<Item> _selectedTaxa;
-
+    
     public TaxonKeywordSelectionDialog(Dialog owner, IntkeyContext context, String directiveName, boolean permitSelectionFromIncludedTaxaOnly) {
         super(owner, context, directiveName);
         _directiveName = directiveName;
@@ -119,7 +119,7 @@ public class TaxonKeywordSelectionDialog extends KeywordSelectionDialog {
             if (taxa.isEmpty()) {
                 JOptionPane.showMessageDialog(this, allTaxaInSelectedSetExcludedCaption, title, JOptionPane.ERROR_MESSAGE);
             } else {
-                TaxonSelectionDialog taxonDlg = new TaxonSelectionDialog(this, taxa, _directiveName, selectedKeyword);
+                TaxonSelectionDialog taxonDlg = new TaxonSelectionDialog(this, taxa, _directiveName, selectedKeyword, _context.displayNumbering());
                 taxonDlg.setVisible(true);
 
                 List<Item> taxaSelectedInDlg = taxonDlg.getSelectedTaxa();

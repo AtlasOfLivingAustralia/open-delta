@@ -1130,9 +1130,9 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
                     // Only display character separating powers if in advanced
                     // mode.
                     if (_advancedMode) {
-                        _availableCharactersListCellRenderer = new BestCharacterCellRenderer(bestCharactersMap);
+                        _availableCharactersListCellRenderer = new BestCharacterCellRenderer(bestCharactersMap, _context.displayNumbering());
                     } else {
-                        _availableCharactersListCellRenderer = new CharacterCellRenderer();
+                        _availableCharactersListCellRenderer = new CharacterCellRenderer(_context.displayNumbering());
                     }
                     _listAvailableCharacters.setCellRenderer(_availableCharactersListCellRenderer);
                     _listAvailableCharacters.setModel(_availableCharacterListModel);
@@ -1180,7 +1180,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
                 for (Character ch : availableCharacters) {
                     _availableCharacterListModel.addElement(ch);
                 }
-                _availableCharactersListCellRenderer = new CharacterCellRenderer();
+                _availableCharactersListCellRenderer = new CharacterCellRenderer(_context.displayNumbering());
                 _listAvailableCharacters.setCellRenderer(_availableCharactersListCellRenderer);
                 _listAvailableCharacters.setModel(_availableCharacterListModel);
             }
@@ -1285,9 +1285,9 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         if (_context.getTolerance() > 0 && taxaDifferingCharacters != null) {
             // sort available taxa by difference count
             Collections.sort(availableTaxa, new DifferenceCountComparator(taxaDifferingCharacters));
-            _availableTaxaCellRenderer = new TaxonWithDifferenceCountCellRenderer(taxaDifferingCharacters);
+            _availableTaxaCellRenderer = new TaxonWithDifferenceCountCellRenderer(taxaDifferingCharacters, _context.displayNumbering());
         } else {
-            _availableTaxaCellRenderer = new TaxonCellRenderer();
+            _availableTaxaCellRenderer = new TaxonCellRenderer(_context.displayNumbering());
         }
 
         for (Item taxon : availableTaxa) {
@@ -1312,7 +1312,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             _eliminatedTaxaListModel.addElement(taxon);
         }
 
-        _eliminatedTaxaCellRenderer = new TaxonWithDifferenceCountCellRenderer(taxaDifferingCharacters);
+        _eliminatedTaxaCellRenderer = new TaxonWithDifferenceCountCellRenderer(taxaDifferingCharacters, _context.displayNumbering());
 
         _listEliminatedTaxa.setCellRenderer(_eliminatedTaxaCellRenderer);
         _listEliminatedTaxa.setModel(_eliminatedTaxaListModel);
@@ -1686,7 +1686,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             charactersToSelect = _context.getCharactersForKeyword(IntkeyContext.CHARACTER_KEYWORD_AVAILABLE);
             keyword = IntkeyContext.CHARACTER_KEYWORD_AVAILABLE;
         }
-        CharacterSelectionDialog dlg = new CharacterSelectionDialog(getMainFrame(), charactersToSelect, directiveName.toUpperCase(), keyword, _context.getImageSettings());
+        CharacterSelectionDialog dlg = new CharacterSelectionDialog(getMainFrame(), charactersToSelect, directiveName.toUpperCase(), keyword, _context.getImageSettings(), _context.displayNumbering());
         show(dlg);
         return dlg.getSelectedCharacters();
     }
@@ -1737,7 +1737,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         if (taxaToSelect.size() == 1 && autoSelectSingleValue) {
             return taxaToSelect;
         } else {
-            TaxonSelectionDialog dlg = new TaxonSelectionDialog(getMainFrame(), taxaToSelect, directiveName.toUpperCase(), keyword);
+            TaxonSelectionDialog dlg = new TaxonSelectionDialog(getMainFrame(), taxaToSelect, directiveName.toUpperCase(), keyword, _context.displayNumbering());
             show(dlg);
             return dlg.getSelectedTaxa();
         }
@@ -1771,7 +1771,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
                 return Collections.EMPTY_LIST;
             }
         } else {
-            TextInputDialog dlg = new TextInputDialog(getMainFrame(), ch, _context.getImageSettings());
+            TextInputDialog dlg = new TextInputDialog(getMainFrame(), ch, _context.getImageSettings(), _context.displayNumbering());
             UIUtils.showDialog(dlg);
             return dlg.getInputData();
         }
@@ -1788,7 +1788,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
                 return Collections.EMPTY_SET;
             }
         } else {
-            IntegerInputDialog dlg = new IntegerInputDialog(getMainFrame(), ch, _context.getImageSettings());
+            IntegerInputDialog dlg = new IntegerInputDialog(getMainFrame(), ch, _context.getImageSettings(), _context.displayNumbering());
             UIUtils.showDialog(dlg);
             return dlg.getInputData();
         }
@@ -1805,7 +1805,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
                 return null;
             }
         } else {
-            RealInputDialog dlg = new RealInputDialog(getMainFrame(), ch, _context.getImageSettings());
+            RealInputDialog dlg = new RealInputDialog(getMainFrame(), ch, _context.getImageSettings(), _context.displayNumbering());
             UIUtils.showDialog(dlg);
             return dlg.getInputData();
         }
@@ -1822,7 +1822,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
                 return Collections.EMPTY_SET;
             }
         } else {
-            MultiStateInputDialog dlg = new MultiStateInputDialog(getMainFrame(), ch, _context.getImageSettings());
+            MultiStateInputDialog dlg = new MultiStateInputDialog(getMainFrame(), ch, _context.getImageSettings(), _context.displayNumbering());
             UIUtils.showDialog(dlg);
             return dlg.getInputData();
         }

@@ -27,6 +27,7 @@ public class CharacterKeywordSelectionDialog extends KeywordSelectionDialog {
     
     private List<Character> _includedCharacters;
     private List<Character> _selectedCharacters;
+    private boolean _displayCharacterNumbering;
 
     @Resource
     String title;
@@ -78,6 +79,8 @@ public class CharacterKeywordSelectionDialog extends KeywordSelectionDialog {
             _rdbtnSelectFromIncluded.setSelected(true);
             _selectFromIncluded = true;
         }
+        
+        _displayCharacterNumbering = context.displayNumbering();
     }
 
     @Override
@@ -117,7 +120,7 @@ public class CharacterKeywordSelectionDialog extends KeywordSelectionDialog {
             if (characters.isEmpty()) {
                 JOptionPane.showMessageDialog(this, allCharactersInSelectedSetExcludedCaption, title, JOptionPane.ERROR_MESSAGE);
             } else {
-                CharacterSelectionDialog charDlg = new CharacterSelectionDialog(this, characters, _directiveName, selectedKeyword, _context.getImageSettings());
+                CharacterSelectionDialog charDlg = new CharacterSelectionDialog(this, characters, _directiveName, selectedKeyword, _context.getImageSettings(), _displayCharacterNumbering);
                 charDlg.setVisible(true);
 
                 List<Character> charsSelectedInDlg = charDlg.getSelectedCharacters();

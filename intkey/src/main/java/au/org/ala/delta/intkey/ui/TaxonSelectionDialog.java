@@ -49,31 +49,31 @@ public class TaxonSelectionDialog extends ListSelectionDialog {
     @Resource
     String titleFromKeyword;
 
-    public TaxonSelectionDialog(Dialog owner, List<Item> taxa, String directiveName, String keyword) {
-        this(owner, taxa, directiveName);
+    public TaxonSelectionDialog(Dialog owner, List<Item> taxa, String directiveName, String keyword, boolean displayNumbering) {
+        this(owner, taxa, directiveName, displayNumbering);
         _keyword = keyword;
         setTitle(String.format(titleFromKeyword, _directiveName, _keyword));
     }
 
-    public TaxonSelectionDialog(Frame owner, List<Item> taxa, String directiveName, String keyword) {
-        this(owner, taxa, directiveName);
+    public TaxonSelectionDialog(Frame owner, List<Item> taxa, String directiveName, String keyword, boolean displayNumbering) {
+        this(owner, taxa, directiveName, displayNumbering);
         _keyword = keyword;
         setTitle(String.format(titleFromKeyword, _directiveName, _keyword));
     }
 
-    public TaxonSelectionDialog(Dialog owner, List<Item> taxa, String directiveName) {
+    public TaxonSelectionDialog(Dialog owner, List<Item> taxa, String directiveName, boolean displayNumbering) {
         super(owner);
         _directiveName = directiveName;
-        init(taxa);
+        init(taxa, displayNumbering);
     }
 
-    public TaxonSelectionDialog(Frame owner, List<Item> taxa, String directiveName) {
+    public TaxonSelectionDialog(Frame owner, List<Item> taxa, String directiveName, boolean displayNumbering) {
         super(owner);
         _directiveName = directiveName;
-        init(taxa);
+        init(taxa, displayNumbering);
     }
 
-    private void init(List<Item> taxa) {
+    private void init(List<Item> taxa, boolean displayNumbering) {
         ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(TaxonSelectionDialog.class);
         resourceMap.injectFields(this);
         ActionMap actionMap = Application.getInstance().getContext().getActionMap(TaxonSelectionDialog.class, this);
@@ -131,7 +131,7 @@ public class TaxonSelectionDialog extends ListSelectionDialog {
             for (Item taxon : taxa) {
                 _listModel.addElement(taxon);
             }
-            _list.setCellRenderer(new TaxonCellRenderer());
+            _list.setCellRenderer(new TaxonCellRenderer(displayNumbering));
             _list.setModel(_listModel);
         }
     }

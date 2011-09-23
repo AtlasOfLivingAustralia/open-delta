@@ -54,35 +54,35 @@ public class CharacterSelectionDialog extends ListSelectionDialog {
     @Resource
     String titleFromKeyword;
 
-    public CharacterSelectionDialog(Dialog owner, List<Character> characters, String directiveName, String keyword, ImageSettings imageSettings) {
-        this(owner, characters, directiveName, imageSettings);
+    public CharacterSelectionDialog(Dialog owner, List<Character> characters, String directiveName, String keyword, ImageSettings imageSettings, boolean displayNumbering) {
+        this(owner, characters, directiveName, imageSettings, displayNumbering);
         _keyword = keyword;
 
         setTitle(String.format(titleFromKeyword, _directiveName, _keyword));
     }
 
-    public CharacterSelectionDialog(Frame owner, List<Character> characters, String directiveName, String keyword, ImageSettings imageSettings) {
-        this(owner, characters, directiveName, imageSettings);
+    public CharacterSelectionDialog(Frame owner, List<Character> characters, String directiveName, String keyword, ImageSettings imageSettings, boolean displayNumbering) {
+        this(owner, characters, directiveName, imageSettings, displayNumbering);
         _keyword = keyword;
         _imageSettings = imageSettings;
         setTitle(String.format(titleFromKeyword, _directiveName, _keyword));
     }
 
-    public CharacterSelectionDialog(Dialog owner, List<Character> characters, String directiveName, ImageSettings imageSettings) {
+    public CharacterSelectionDialog(Dialog owner, List<Character> characters, String directiveName, ImageSettings imageSettings, boolean displayNumbering) {
         super(owner);
         _directiveName = directiveName;
         _imageSettings = imageSettings;
-        init(characters);
+        init(characters, displayNumbering);
     }
 
-    public CharacterSelectionDialog(Frame owner, List<Character> characters, String directiveName, ImageSettings imageSettings) {
+    public CharacterSelectionDialog(Frame owner, List<Character> characters, String directiveName, ImageSettings imageSettings, boolean displayNumbering) {
         super(owner);
         _directiveName = directiveName;
         _imageSettings = imageSettings;
-        init(characters);
+        init(characters, displayNumbering);
     }
 
-    private void init(List<Character> characters) {
+    private void init(List<Character> characters, boolean displayNumbering) {
         ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(CharacterSelectionDialog.class);
         resourceMap.injectFields(this);
         ActionMap actionMap = Application.getInstance().getContext().getActionMap(CharacterSelectionDialog.class, this);
@@ -144,7 +144,7 @@ public class CharacterSelectionDialog extends ListSelectionDialog {
             for (Character ch : characters) {
                 _listModel.addElement(ch);
             }
-            _list.setCellRenderer(new CharacterCellRenderer());
+            _list.setCellRenderer(new CharacterCellRenderer(displayNumbering));
             _list.setModel(_listModel);
         }
     }

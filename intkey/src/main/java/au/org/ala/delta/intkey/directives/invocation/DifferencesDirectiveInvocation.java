@@ -44,13 +44,13 @@ public class DifferencesDirectiveInvocation implements IntkeyDirectiveInvocation
         _omitTextCharacters = omitTextCharacters;
         _characters = new ArrayList<au.org.ala.delta.model.Character>(characters);
         _taxa = new ArrayList<Item>(taxa);
-        _characterFormatter = new CharacterFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.RETAIN, false, false);
-        _taxonFormatter = new ItemFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.RETAIN, false, false, false);
     }
 
     @Override
     public boolean execute(IntkeyContext context) {
-        _attributeFormatter = new AttributeFormatter(false, false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.RETAIN, false, context.getDataset().getOrWord());
+        _characterFormatter = new CharacterFormatter(context.displayNumbering(), CommentStrippingMode.RETAIN_SURROUNDING_STRIP_INNER, AngleBracketHandlingMode.REMOVE, false, true);
+        _taxonFormatter = new ItemFormatter(context.displayNumbering(), CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.RETAIN, false, false, false);
+        _attributeFormatter = new AttributeFormatter(context.displayNumbering(), false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.RETAIN, false, context.getDataset().getOrWord());
         
         Specimen specimen = null;
         if (_includeSpecimen) {

@@ -12,10 +12,11 @@ public class TaxonWithDifferenceCountCellRenderer extends TaxonCellRenderer {
      * 
      */
     private static final long serialVersionUID = -1387340931499472805L;
-    
+
     private Map<Item, Set<au.org.ala.delta.model.Character>> _taxaDifferingCharacters;
 
-    public TaxonWithDifferenceCountCellRenderer(Map<Item, Set<au.org.ala.delta.model.Character>> taxaDifferingCharacters) {
+    public TaxonWithDifferenceCountCellRenderer(Map<Item, Set<au.org.ala.delta.model.Character>> taxaDifferingCharacters, boolean displayNumbering) {
+        super(displayNumbering);
         _taxaDifferingCharacters = new HashMap<Item, Set<au.org.ala.delta.model.Character>>();
         if (taxaDifferingCharacters != null) {
             _taxaDifferingCharacters.putAll(taxaDifferingCharacters);

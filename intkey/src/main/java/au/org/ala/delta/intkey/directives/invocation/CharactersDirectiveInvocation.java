@@ -21,7 +21,7 @@ public class CharactersDirectiveInvocation implements IntkeyDirectiveInvocation 
 
     @Override
     public boolean execute(IntkeyContext context) {
-        CharacterFormatter characterFormatter = new CharacterFormatter(true, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REMOVE_SURROUNDING_REPLACE_INNER, true, false);
+        CharacterFormatter characterFormatter = new CharacterFormatter(context.displayNumbering(), CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REMOVE_SURROUNDING_REPLACE_INNER, true, false);
 
         RTFBuilder builder = new RTFBuilder();
         builder.startDocument();

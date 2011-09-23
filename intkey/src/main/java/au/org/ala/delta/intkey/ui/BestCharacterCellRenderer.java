@@ -14,7 +14,8 @@ public class BestCharacterCellRenderer extends CharacterCellRenderer {
 
     private Map<Character, Double> _separatingPowers;
     
-    public BestCharacterCellRenderer(Map<Character, Double> separatingPowers) {
+    public BestCharacterCellRenderer(Map<Character, Double> separatingPowers, boolean displayNumbering) {
+        super(displayNumbering);
         _separatingPowers = new HashMap<Character, Double>(separatingPowers);
     }
 

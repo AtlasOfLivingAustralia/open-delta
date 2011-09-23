@@ -30,8 +30,8 @@ public class TextInputDialog extends CharacterValueInputDialog {
     @Resource
     String title;
 
-    public TextInputDialog(Frame owner, TextCharacter ch, ImageSettings imageSettings) {
-        super(owner, ch, imageSettings);
+    public TextInputDialog(Frame owner, TextCharacter ch, ImageSettings imageSettings, boolean displayNumbering) {
+        super(owner, ch, imageSettings, displayNumbering);
 
         ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(TextInputDialog.class);
         resourceMap.injectFields(this);

@@ -235,7 +235,7 @@ public class TaxonInformationDialog extends JDialog {
 
         _infoSettings = _context.getInfoSettings();
         _imageSettings = _context.getImageSettings();
-        _itemFormatter = new ItemFormatter(false, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REMOVE, true, false, false);
+        _itemFormatter = new ItemFormatter(_context.displayNumbering(), CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REMOVE, true, false, false);
         _imageDescriptionFormatter = new Formatter(CommentStrippingMode.RETAIN, AngleBracketHandlingMode.RETAIN, true, false);
 
         _taxa = taxa;

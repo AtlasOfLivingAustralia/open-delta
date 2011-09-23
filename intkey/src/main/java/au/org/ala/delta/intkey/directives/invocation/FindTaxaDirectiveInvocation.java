@@ -1,6 +1,5 @@
 package au.org.ala.delta.intkey.directives.invocation;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -10,9 +9,9 @@ import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.TextAttribute;
 import au.org.ala.delta.model.format.AttributeFormatter;
 import au.org.ala.delta.model.format.CharacterFormatter;
+import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.model.format.ItemFormatter;
-import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.rtf.RTFBuilder;
 
 public class FindTaxaDirectiveInvocation implements IntkeyDirectiveInvocation {
@@ -25,10 +24,10 @@ public class FindTaxaDirectiveInvocation implements IntkeyDirectiveInvocation {
 
     @Override
     public boolean execute(IntkeyContext context) {
-
-        ItemFormatter taxonFormatter = new ItemFormatter(false, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REMOVE, false, false, false);
-        CharacterFormatter characterFormatter = new CharacterFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.RETAIN, false, false);
-        AttributeFormatter attributeFormatter = new AttributeFormatter(false, false, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REMOVE_SURROUNDING_REPLACE_INNER, false, context
+        boolean displayNumbering = context.displayNumbering();
+        ItemFormatter taxonFormatter = new ItemFormatter(displayNumbering, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REMOVE, false, false, false);
+        CharacterFormatter characterFormatter = new CharacterFormatter(displayNumbering, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.RETAIN, false, false);
+        AttributeFormatter attributeFormatter = new AttributeFormatter(displayNumbering, false, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REMOVE_SURROUNDING_REPLACE_INNER, false, context
                 .getDataset().getOrWord());
 
         RTFBuilder builder = new RTFBuilder();

@@ -310,7 +310,7 @@ public class UseDirective extends IntkeyDirective {
                 while (!charsNoValues.isEmpty()) {
                     String directiveName = _change ? directiveName = StringUtils.join(new ChangeDirective().getControlWords(), " ").toUpperCase() : StringUtils.join(_controlWords, " ").toUpperCase();
 
-                    CharacterSelectionDialog selectDlg = new CharacterSelectionDialog(UIUtils.getMainFrame(), charsNoValues, directiveName, context.getImageSettings());
+                    CharacterSelectionDialog selectDlg = new CharacterSelectionDialog(UIUtils.getMainFrame(), charsNoValues, directiveName, context.getImageSettings(), context.displayNumbering());
                     selectDlg.setVisible(true);
 
                     List<Character> selectedCharacters = selectDlg.getSelectedCharacters();

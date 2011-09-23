@@ -19,7 +19,7 @@ public class FindCharactersDirectiveInvocation implements IntkeyDirectiveInvocat
     @Override
     public boolean execute(IntkeyContext context) {
 
-        CharacterFormatter characterFormatter = new CharacterFormatter(true, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REMOVE_SURROUNDING_REPLACE_INNER, false, false);
+        CharacterFormatter characterFormatter = new CharacterFormatter(context.displayNumbering(), CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REMOVE_SURROUNDING_REPLACE_INNER, false, false);
 
         RTFBuilder builder = new RTFBuilder();
         builder.startDocument();

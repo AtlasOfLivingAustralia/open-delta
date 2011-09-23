@@ -10,7 +10,7 @@ public abstract class CharacterValue {
     CharacterFormatter _formatter;
     
     public CharacterValue() {
-        _formatter = new CharacterFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.REMOVE, true, true);
+        _formatter = new CharacterFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.REMOVE, true, false);
     }
     
     public abstract Character getCharacter();

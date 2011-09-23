@@ -18,9 +18,9 @@ public class CharacterCellRenderer extends ColoringListCellRenderer {
     protected Set<Character> _charactersToColor;
     protected CharacterFormatter _formatter;
 
-    public CharacterCellRenderer() {
+    public CharacterCellRenderer(boolean displayNumbering) {
         _charactersToColor = new HashSet<Character>();
-        _formatter = new CharacterFormatter(false, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REMOVE_SURROUNDING_REPLACE_INNER, true, false);
+        _formatter = new CharacterFormatter(displayNumbering, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REMOVE_SURROUNDING_REPLACE_INNER, true, false);
     }
 
     @Override

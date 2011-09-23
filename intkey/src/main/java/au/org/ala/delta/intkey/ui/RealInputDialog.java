@@ -31,8 +31,8 @@ public class RealInputDialog extends NumberInputDialog {
     @Resource
     String validationErrorTitle;
 
-    public RealInputDialog(Frame owner, RealCharacter ch, ImageSettings imageSettings) {
-        super(owner, ch, imageSettings);
+    public RealInputDialog(Frame owner, RealCharacter ch, ImageSettings imageSettings, boolean displayNumbering) {
+        super(owner, ch, imageSettings, displayNumbering);
 
         ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(RealInputDialog.class);
         resourceMap.injectFields(this);

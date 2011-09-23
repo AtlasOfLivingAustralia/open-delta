@@ -18,8 +18,8 @@ public class TaxonCellRenderer extends ColoringListCellRenderer {
     protected ItemFormatter _formatter;
     protected Set<Item> _taxaToColor;
 
-    public TaxonCellRenderer() {
-        _formatter = new ItemFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.RETAIN, true, false, false);
+    public TaxonCellRenderer(boolean displayNumbering) {
+        _formatter = new ItemFormatter(displayNumbering, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.RETAIN, true, false, false);
         _taxaToColor = new HashSet<Item>();
     }
 
