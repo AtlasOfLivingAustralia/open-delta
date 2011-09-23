@@ -42,7 +42,7 @@ public class CharacterNotes extends AbstractTextListDirective<Integer> {
 			int charId = (Integer)arg.getId();
 			// The delimeter character is encoded with id = Integer.MIN_VALUE.
 			if (charId != Integer.MIN_VALUE) {
-				context.getDataSet().getCharacter(charId).setNotes(arg.getText());
+				context.getDataSet().getCharacter(charId).setNotes(arg.getText().trim());
 			}
 		}
 		
