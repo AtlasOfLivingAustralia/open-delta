@@ -12,6 +12,7 @@ import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.NumericCharacter;
 import au.org.ala.delta.model.TypeSettingMark;
 import au.org.ala.delta.model.TypeSettingMark.CharacterNoteMarks;
+import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageInfo;
 import au.org.ala.delta.model.image.ImageSettings;
@@ -34,11 +35,17 @@ public class IntkeyCharactersFileWriter {
 	private WriteOnceIntkeyCharsFile _charsFile;
 	private FilteredDataSet _dataSet;
 	private DeltaContext _context;
+	private CharacterFormatter _formatter;
 	
-	public IntkeyCharactersFileWriter(DeltaContext context, FilteredDataSet dataSet, WriteOnceIntkeyCharsFile charsFile) {
+	public IntkeyCharactersFileWriter(
+			DeltaContext context, 
+			FilteredDataSet dataSet,
+			CharacterFormatter formatter,
+			WriteOnceIntkeyCharsFile charsFile) {
 		_charsFile = charsFile;
 		_dataSet = dataSet;
 		_context = context;
+		_formatter = formatter;
 	}
 	
 	public void writeAll() {
@@ -82,17 +89,17 @@ public class IntkeyCharactersFileWriter {
 		while (characters.hasNext()) {
 			Character character = characters.next().getCharacter();
 			List<String> feature = new ArrayList<String>();
-			feature.add(character.getDescription());
+			feature.add(_formatter.formatCharacterDescription(character));
 			if (character.getCharacterType().isMultistate()) {
 				MultiStateCharacter multiStateChar = (MultiStateCharacter)character;
 				for (int j=1; j<=multiStateChar.getNumberOfStates(); j++) {
-					feature.add( multiStateChar.getState(j));
+					feature.add(_formatter.formatState(multiStateChar,j));
 				}
 			}
 			else if (character.getCharacterType().isNumeric()) {
 				NumericCharacter<?> numericChar = (NumericCharacter<?>)character;
 				if (numericChar.hasUnits()) {
-					feature.add(numericChar.getUnits());
+					feature.add(_formatter.formatUnits(numericChar));
 				}
 			}
 			features.add(feature);
@@ -136,8 +143,6 @@ public class IntkeyCharactersFileWriter {
 			_charsFile.writeCharacterImages(imageList);
 		}
 	}
-	
-	
 	
 	protected void writeStartupImages() {
 		List<ImageInfo> startupImages = _context.getImages(ImageType.IMAGE_STARTUP);

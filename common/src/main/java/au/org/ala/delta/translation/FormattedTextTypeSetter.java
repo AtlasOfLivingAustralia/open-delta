@@ -151,7 +151,7 @@ public class FormattedTextTypeSetter extends PlainTextTypeSetter {
 		private StringBuilder _typeSetValue;
 		
 		public CommentedValueTypeSetter(String value, String beforeValueMark, String afterValueMark) {
-			super(value);
+			super(value, false);
 			_beforeValueMark = beforeValueMark;
 			_afterValueMark = afterValueMark;
 			_typeSetValue = new StringBuilder();

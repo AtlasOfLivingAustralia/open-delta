@@ -347,7 +347,7 @@ public class DeltaContext extends AbstractDeltaContext {
 		_omitInnerComments = b;
 	}
 
-	public boolean isOmitInnerComments() {
+	public boolean getOmitInnerComments() {
 		return _omitInnerComments;
 	}
 

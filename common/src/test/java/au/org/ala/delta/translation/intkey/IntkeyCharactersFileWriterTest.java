@@ -21,6 +21,9 @@ import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.TextCharacter;
 import au.org.ala.delta.model.TypeSettingMark;
 import au.org.ala.delta.model.TypeSettingMark.CharacterNoteMarks;
+import au.org.ala.delta.model.format.CharacterFormatter;
+import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
+import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageInfo;
 import au.org.ala.delta.model.image.ImageOverlay;
@@ -62,7 +65,8 @@ public class IntkeyCharactersFileWriterTest extends TestCase {
 		
 		_charsFile = new WriteOnceIntkeyCharsFile(2, null, BinFileMode.FM_TEMPORARY);
 		FilteredDataSet dataSet = new FilteredDataSet(_context, new DeltaFormatDataSetFilter(_context));
-		_charsFileWriter = new IntkeyCharactersFileWriter(_context, dataSet, _charsFile);
+		CharacterFormatter formatter = new CharacterFormatter(false, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.RETAIN, false, false);
+		_charsFileWriter = new IntkeyCharactersFileWriter(_context, dataSet, formatter, _charsFile);
 	}
 	
 	@After

@@ -4,6 +4,7 @@ import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.intkey.WriteOnceIntkeyCharsFile;
 import au.org.ala.delta.intkey.WriteOnceIntkeyItemsFile;
 import au.org.ala.delta.io.BinFileMode;
+import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.translation.DataSetTranslator;
 import au.org.ala.delta.translation.FilteredDataSet;
 
@@ -14,10 +15,12 @@ public class IntkeyTranslator implements DataSetTranslator {
 
 	private DeltaContext _context;
 	private FilteredDataSet _dataSet;
+	private CharacterFormatter _characterFormatter;
 	
-	public IntkeyTranslator(DeltaContext context, FilteredDataSet dataSet) {
+	public IntkeyTranslator(DeltaContext context, FilteredDataSet dataSet, CharacterFormatter characterFormatter) {
 		_context = context;
 		_dataSet = dataSet;
+		_characterFormatter = characterFormatter;
 	}
 
 	@Override
@@ -26,7 +29,7 @@ public class IntkeyTranslator implements DataSetTranslator {
 		String fileName = _context.getOutputFileSelector().getIntkeyOutputFilePath();
 		WriteOnceIntkeyCharsFile charsFile = new WriteOnceIntkeyCharsFile(
 				_dataSet.getNumberOfCharacters(), fileName , BinFileMode.FM_APPEND);
-		IntkeyCharactersFileWriter charsWriter = new IntkeyCharactersFileWriter(_context, _dataSet, charsFile);
+		IntkeyCharactersFileWriter charsWriter = new IntkeyCharactersFileWriter(_context, _dataSet, _characterFormatter, charsFile);
 		charsWriter.writeAll();
 		charsFile.close();
 	}

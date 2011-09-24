@@ -22,15 +22,15 @@ public class CharacterWeightsTest extends TestCase {
 		
 		directive.parseAndProcess(context, data);
 		
-		assertEquals(0.0, context.getCharacterWeight(1));
+		assertEquals(0.0, context.getCharacterReliability(1));
 		
 		// Make sure ranges are ok.
-		assertEquals(7.0, context.getCharacterWeight(2));
-		assertEquals(7.0, context.getCharacterWeight(3));
-		assertEquals(7.0, context.getCharacterWeight(4));
-		assertEquals(7.0, context.getCharacterWeight(5));
+		assertEquals(7.0, context.getCharacterReliability(2));
+		assertEquals(7.0, context.getCharacterReliability(3));
+		assertEquals(7.0, context.getCharacterReliability(4));
+		assertEquals(7.0, context.getCharacterReliability(5));
 		
-		assertEquals(7.1, context.getCharacterWeight(77));
+		assertEquals(7.1, context.getCharacterReliability(77));
 		
 		// This directive initialises weights to 5...
 		assertEquals(5.0, context.getCharacterWeight(88));

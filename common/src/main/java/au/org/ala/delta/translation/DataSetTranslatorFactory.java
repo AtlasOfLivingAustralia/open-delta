@@ -46,7 +46,7 @@ public class DataSetTranslatorFactory {
 
 	private DataSetTranslator createIntkeyFormatTranslator(DeltaContext context) {
 		FilteredDataSet dataSet = new FilteredDataSet(context, new DeltaFormatDataSetFilter(context));
-		return new IntkeyTranslator(context, dataSet);
+		return new IntkeyTranslator(context, dataSet, createCharacterFormatter(context));
 	}
 
 	private AbstractDataSetTranslator createNaturalLanguageTranslator(
@@ -109,7 +109,13 @@ public class DataSetTranslatorFactory {
 	}
 	
 	private CharacterFormatter createCharacterFormatter(DeltaContext context) {
-		return new CharacterFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.RETAIN, context.isOmitTypeSettingMarks(), false);
+		CommentStrippingMode mode = CommentStrippingMode.STRIP_ALL;
+		if (context.getTranslateType() == TranslateType.IntKey) {
+			if (context.getOmitInnerComments()) {
+				mode = CommentStrippingMode.STRIP_INNER;
+			}
+		}
+		return new CharacterFormatter(false, mode, AngleBracketHandlingMode.RETAIN, context.isOmitTypeSettingMarks(), false);
 	}
 	
 	private AttributeFormatter createAttributeFormatter(DeltaContext context, TypeSetter typeSetter) {

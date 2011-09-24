@@ -90,6 +90,8 @@ public class WriteOnceIntkeyItemsFile extends IntkeyFile {
 		checkEmpty(_header.getRpCdep());
 		int record = nextAvailableRecord();
 		_header.setRpCdep(record);
+		//_header.setLDep(dependencyData.size());
+		_header.setLinvdep(invertedDependencyData.size());
 		
 		record += writeToRecord(record, dependencyData);
 		writeToRecord(record, invertedDependencyData);

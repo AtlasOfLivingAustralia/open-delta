@@ -24,7 +24,7 @@ public class Formatter {
     protected AngleBracketHandlingMode _angleBracketHandlingMode;
 
     public static enum CommentStrippingMode {
-        RETAIN, STRIP_ALL, RETAIN_SURROUNDING_STRIP_INNER
+        RETAIN, STRIP_ALL, RETAIN_SURROUNDING_STRIP_INNER, STRIP_INNER
     }
 
     public static enum AngleBracketHandlingMode {
@@ -168,12 +168,13 @@ public class Formatter {
             }
             break;
         case STRIP_ALL:
+        case STRIP_INNER:
             break;
         default:
             throw new IllegalArgumentException("Unrecognized comment stripping mode");
         }
 
-        CommentStripper stripper = new CommentStripper(text);
+        CommentStripper stripper = new CommentStripper(text, commentStrippingMode == CommentStrippingMode.STRIP_INNER);
         try {
             stripper.parse();
         } catch (Exception e) {
@@ -190,12 +191,15 @@ public class Formatter {
 
         private StringBuilder _value = new StringBuilder();
 
-        public CommentStripper(String value) {
-            super(value);
+        public CommentStripper(String value, boolean stripInnerComments) {
+            super(value, stripInnerComments);
         }
 
         @Override
         public void comment(String comment) {
+        	if (_stripInnerComments) {
+        		_value.append(comment);
+        	}
         }
 
         @Override
@@ -222,9 +226,11 @@ public class Formatter {
     public static abstract class CommentExtractor extends AbstractStreamParser {
 
         protected char _previousChar = 0;
+        protected boolean _stripInnerComments;
 
-        public CommentExtractor(String value) {
+        public CommentExtractor(String value, boolean stripInnerComments) {
             super(null, new StringReader(value));
+            _stripInnerComments = stripInnerComments;
         }
 
         @Override
@@ -252,7 +258,7 @@ public class Formatter {
 
         protected boolean matchesComment() {
             if (_currentChar == '<') {
-                return _position == 1 || Character.isWhitespace(_previousChar);
+                return _position == 1 || Character.isWhitespace(_previousChar) || _previousChar == '<' || _previousChar == '>';
             }
             return false;
         }
@@ -262,6 +268,34 @@ public class Formatter {
             _previousChar = _currentChar;
             return super.readNext();
         }
+        
+        protected String readComment() throws ParseException {
+    		assert _currentChar == '<';
+    		
+    		StringBuilder b = new StringBuilder("" + _currentChar);
+    		int commentNestLevel = 1;
+    		readNext();
+    		while (_currentInt >= 0 && commentNestLevel > 0) {
+    			switch (_currentChar) {
+    				case '>':
+    					commentNestLevel--;
+    					break;
+    				case '<':
+    					commentNestLevel++;
+    					break;
+    				default:
+    			}
+    			if (_currentInt >= 0) {
+    				if (!_stripInnerComments || commentNestLevel > 1) {
+    					b.append(_currentChar);
+    				}
+    			}
+    			readNext();
+    		}
+
+    		return b.toString();
+    	}
+
 
         public abstract void comment(String comment) throws ParseException;
 

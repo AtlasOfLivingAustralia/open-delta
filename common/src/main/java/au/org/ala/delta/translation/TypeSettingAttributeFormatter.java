@@ -1,7 +1,6 @@
 package au.org.ala.delta.translation;
 
 import au.org.ala.delta.model.format.AttributeFormatter;
-import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 
 /**
  * Extends the AttributeFormatter to recognise numeric ranges in comments

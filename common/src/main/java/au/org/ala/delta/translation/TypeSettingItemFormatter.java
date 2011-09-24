@@ -1,8 +1,6 @@
 package au.org.ala.delta.translation;
 
 import au.org.ala.delta.model.format.ItemFormatter;
-import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
-import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 
 /**
  * Extends the ItemFormatter to apply typesetting marks to the item description as appropriate.
