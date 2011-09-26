@@ -234,18 +234,14 @@ public class IntkeyItemsFileWriter {
 			}	
 			else if (keyChar.getCharacterType() == CharacterType.IntegerNumeric) {
 				minMax = writeIntegerAttributes(keyChar.getFilteredCharacterNumber(), keyChar.getCharacter());
-			}
-			else if (keyChar.getCharacterType() == CharacterType.RealNumeric) {
-				
-				List<FloatRange> ranges = writeRealAttributes(keyChar.getFilteredCharacterNumber(), keyChar.getCharacter());
-				for (FloatRange range : ranges) {
-					if (range.getMinimumFloat() != Float.MAX_VALUE) {
-						floats.add(range.getMinimumFloat());
-					}
-					if (range.getMaximumFloat() != Float.MAX_VALUE) {
-						floats.add(range.getMaximumFloat());
-					}
+				if (minMax == null) {
+					minMax = new IntRange(0);
+					_itemsFile.changeCharacterType(keyChar.getFilteredCharacterNumber(), typeToInt(CharacterType.RealNumeric));
+					floats = writeRealAttributes(keyChar.getFilteredCharacterNumber(), keyChar.getCharacter());
 				}
+			}
+			else if (keyChar.getCharacterType() == CharacterType.RealNumeric) {	
+				floats = writeRealAttributes(keyChar.getFilteredCharacterNumber(), keyChar.getCharacter());
 			}
 			else {
 				writeTextAttributes(keyChar.getFilteredCharacterNumber(), keyChar.getCharacter());
@@ -288,12 +284,8 @@ public class IntkeyItemsFileWriter {
 	
 	private IntRange writeIntegerAttributes(int filteredCharacterNumber, Character character) {
 		IntRange characterRange = determineIntegerRange(character);
-		if (characterRange == null) {
-			// The range was too large - treat this character as a real.
-			writeRealAttributes(filteredCharacterNumber, character);
-			characterRange = new IntRange(0);
-		}
-		else {
+		if (characterRange != null) {
+		
 			int charNumber = character.getCharacterId();
 			int numStates = characterRange.getMaximumInteger()-characterRange.getMinimumInteger();
 			List<BitSet> attributes = new ArrayList<BitSet>();
@@ -422,7 +414,7 @@ public class IntkeyItemsFileWriter {
 		return hasMultiRangeAttribute;
 	}
 	
-	private List<FloatRange> writeRealAttributes(int filteredCharNumber, Character realChar) {
+	private Set<Float> writeRealAttributes(int filteredCharNumber, Character realChar) {
 		boolean useNormalValues = _context.getUseNormalValues();
 		int characterNumber = realChar.getCharacterId();
 		
@@ -460,7 +452,17 @@ public class IntkeyItemsFileWriter {
 			}
 		}
 		_itemsFile.writeAttributeFloats(filteredCharNumber, inapplicableBits, values);
-		return values;
+		
+		Set<Float> floats = new HashSet<Float>();
+		for (FloatRange range : values) {
+			if (range.getMinimumFloat() != Float.MAX_VALUE) {
+				floats.add(range.getMinimumFloat());
+			}
+			if (range.getMaximumFloat() != Float.MAX_VALUE) {
+				floats.add(range.getMaximumFloat());
+			}
+		}
+		return floats;
 	}
 	
 	private void writeTextAttributes(int filteredCharNumber, Character textChar) {

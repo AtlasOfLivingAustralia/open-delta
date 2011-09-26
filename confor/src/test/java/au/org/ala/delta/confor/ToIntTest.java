@@ -90,7 +90,7 @@ public class ToIntTest extends TestCase {
 				Character character = dataSet.getCharacter(j);
 				Character expectedCharacter = expectedDataSet.getCharacter(j);
 				
-				//assertEquals("Character: "+j,expectedCharacter.getCharacterType(), character.getCharacterType());
+				assertEquals("Character: "+j,expectedCharacter.getCharacterType(), character.getCharacterType());
 				if (expectedCharacter.getCharacterType().isMultistate()) {
 					MultiStateCharacter multiStateChar = (MultiStateCharacter)character;
 					MultiStateCharacter expectedMultiStateChar = (MultiStateCharacter)expectedCharacter;

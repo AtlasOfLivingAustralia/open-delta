@@ -276,9 +276,7 @@ public class IntkeyFile extends BinFile {
 	protected void writeStringsWithOffsetsToRecord(int startRecord, List<String> descriptions) {
 		int[] offsets = new int[descriptions.size()+1];
 		StringBuilder buffer = new StringBuilder();
-		// This seems fishy, but the existing confor offsets seem to start with 1.
-		// It think it's because the original code was FORTRAN and arrays are
-		// "1" indexed so any location pointers are off by 1.
+		// FORTRAN arrays are "1" indexed so any location pointers are off by 1.
 		offsets[0] = 1;
 		for (int i=0; i<descriptions.size(); i++) {
 			offsets[i+1] = offsets[i] + descriptions.get(i).length();

@@ -68,6 +68,14 @@ public class WriteOnceIntkeyItemsFile extends IntkeyFile {
 		writeFloatsToRecord(record, characterReliabilities);
 	}
 	
+	public void changeCharacterType(int characterNumber, int newType) {
+		int record = _header.getRpSpec();
+		List<Integer> charTypes = readIntegerList(record, _header.getNChar());
+		
+		charTypes.set(characterNumber-1, newType);
+		overwriteRecord(record, charTypes);
+	}
+	
 	public void writeMinMaxValues(List<IntRange> minMaxValues) {
 		checkCharacterListLength(minMaxValues);
 		
