@@ -130,7 +130,7 @@ public class Formatter {
             break;
         case REMOVE_SURROUNDING_REPLACE_INNER:
             if (textSurroundedByAngleBrackets(text)) {
-                text = text.substring(1, text.length() - 1);
+                text = removeSurroundingBrackets(text);
             }
             text = text.replace("<", "(");
             text = text.replace(">", ")");
@@ -143,6 +143,11 @@ public class Formatter {
 
         return text;
     }
+
+	private String removeSurroundingBrackets(String text) {
+		text = text.substring(1, text.length() - 1);
+		return text;
+	}
 
     /**
      * Removes the comments which are areas of text enclosed in angle brackets.
@@ -164,7 +169,7 @@ public class Formatter {
             return text;
         case RETAIN_SURROUNDING_STRIP_INNER:
             if (textSurroundedByAngleBrackets(text)) {
-                text = text.substring(1, text.length() - 1);
+                text = removeSurroundingBrackets(text);
             }
             break;
         case STRIP_ALL:
@@ -198,8 +203,20 @@ public class Formatter {
         @Override
         public void comment(String comment) {
         	if (_stripInnerComments) {
-        		_value.append(comment);
+        		
+        		_value.append(trimComment(comment));
         	}
+        }
+        
+        private String trimComment(String comment) {
+        	// comment is surrounded by <>.
+        	if (textSurroundedByAngleBrackets(comment)) {
+        		comment = removeSurroundingBrackets(comment).trim();
+        		if (comment.length() > 0) {
+        			comment = "<"+comment.trim()+">";
+        		}
+        	}
+        	return comment;
         }
 
         @Override
@@ -207,11 +224,7 @@ public class Formatter {
             if (value == null) {
                 return;
             }
-            value = value.trim();
-            if (StringUtils.isNotBlank(value)) {
-                _value.append(value.trim());
-                _value.append(" ");
-            }
+            _value.append(value);
 
         }
 
@@ -275,6 +288,7 @@ public class Formatter {
     		StringBuilder b = new StringBuilder("" + _currentChar);
     		int commentNestLevel = 1;
     		readNext();
+    	
     		while (_currentInt >= 0 && commentNestLevel > 0) {
     			switch (_currentChar) {
     				case '>':
@@ -286,8 +300,10 @@ public class Formatter {
     				default:
     			}
     			if (_currentInt >= 0) {
-    				if (!_stripInnerComments || commentNestLevel > 1) {
-    					b.append(_currentChar);
+    				if (!_stripInnerComments || commentNestLevel <= 1) {
+    					if (_currentChar != '>' || commentNestLevel == 0) {
+    						b.append(_currentChar);
+    					}
     				}
     			}
     			readNext();

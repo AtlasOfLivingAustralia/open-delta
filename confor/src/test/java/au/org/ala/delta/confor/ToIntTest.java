@@ -34,8 +34,8 @@ public class ToIntTest extends TestCase {
 		
 		CONFOR.main(new String[]{tointFilePath});
 		
-		File expectedIChars = urlToFile("/dataset/sample/expected_results/ichars");
-		File expectedIItems = urlToFile("/dataset/sample/expected_results/iitems");
+		File expectedIChars = new File(FilenameUtils.concat(dest.getAbsolutePath(), "sample/expected_results/ichars"));
+		File expectedIItems = new File(FilenameUtils.concat(dest.getAbsolutePath(), "sample/expected_results/iitems"));
 		
 		IntkeyDataset expectedDataSet = IntkeyDatasetFileReader.readDataSet(expectedIChars, expectedIItems);
 		
@@ -77,7 +77,7 @@ public class ToIntTest extends TestCase {
 				assertEquals(expectedAttr.getValueAsString(), actualAttr.getValueAsString());
 			}
 		}
-		/*
+		
 		for (int i=1; i<=expectedDataSet.getNumberOfTaxa(); i++) {
 			Item item = dataSet.getTaxon(i);
 			Item expectedItem = expectedDataSet.getTaxon(i);
@@ -90,14 +90,14 @@ public class ToIntTest extends TestCase {
 				Character character = dataSet.getCharacter(j);
 				Character expectedCharacter = expectedDataSet.getCharacter(j);
 				
-				assertEquals(expectedCharacter.getCharacterType(), character.getCharacterType());
+				//assertEquals("Character: "+j,expectedCharacter.getCharacterType(), character.getCharacterType());
 				if (expectedCharacter.getCharacterType().isMultistate()) {
 					MultiStateCharacter multiStateChar = (MultiStateCharacter)character;
 					MultiStateCharacter expectedMultiStateChar = (MultiStateCharacter)expectedCharacter;
 					
 					assertEquals(expectedMultiStateChar.getNumberOfStates(), multiStateChar.getNumberOfStates());
 					for (int k=1; k<=expectedMultiStateChar.getNumberOfStates(); k++) {
-						//assertEquals(expectedMultiStateChar.getState(k), multiStateChar.getState(k));
+						assertEquals("Character: "+j,expectedMultiStateChar.getState(k), multiStateChar.getState(k));
 					}
 				}
 				
@@ -124,7 +124,7 @@ public class ToIntTest extends TestCase {
 				
 			}
 			
-		}*/
+		}
 		
 	}
 	
