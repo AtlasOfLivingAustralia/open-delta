@@ -154,14 +154,18 @@ public class IntkeyItemsFileWriter {
 	private void addDependencyData(int filteredCharNumber, List<Integer> dependencyData, MultiStateCharacter multiStateCharacter) {
 		List<CharacterDependency> dependentCharacters = multiStateCharacter.getDependentCharacters();
 		if (dependentCharacters != null && dependentCharacters.size() > 0) {
-			dependencyData.set(filteredCharNumber-1, dependencyData.size());
+			// Any location specifications are "1" indexed because the 
+			// original code was FORTRAN.  Intkey expects this and compensates.
+			dependencyData.set(filteredCharNumber-1, dependencyData.size()+1);
 			int numStates = multiStateCharacter.getNumberOfStates();
 			int statesOffset = dependencyData.size();
+			// Start off by adding zeros for each state, which makes the List the
+			// correct length to just start adding dependency data at the end.
 			for (int state=0; state<numStates; state++) {
 				dependencyData.add(0);
 			}
 			for (CharacterDependency dependency : dependentCharacters) {
-				int dataOffset = dependencyData.size();
+				int dataOffset = dependencyData.size()+1; // Another case of 1 based indexing.
 				List<Integer> dependentCharacterNumbers = toRangeList(dependency.getDependentCharacterIds());
 				dependencyData.add(dependentCharacterNumbers.size()/2);
 				dependencyData.addAll(dependentCharacterNumbers);
@@ -169,7 +173,6 @@ public class IntkeyItemsFileWriter {
 					dependencyData.set(statesOffset+state-1, dataOffset);
 				}
 			}
-			
 		}
 	}
 	
@@ -178,10 +181,17 @@ public class IntkeyItemsFileWriter {
 		if (dependencies == null || dependencies.size() == 0) {
 			return;
 		}
-		invertedDependencyData.set(filteredCharNumber-1, invertedDependencyData.size());
-		invertedDependencyData.add(dependencies.size());
+		// FORTRAN 1-based array indexing...
+		invertedDependencyData.set(filteredCharNumber-1, invertedDependencyData.size()+1);
+		// Inverted data doesn't contain the number of controlling characters
+		//invertedDependencyData.add(dependencies.size());
+		Set<Integer> controllingChars = new HashSet<Integer>();
 		for (CharacterDependency dependency : dependencies) {
-			invertedDependencyData.add(dependency.getControllingCharacterId());
+			int controllingCharNumber = dependency.getControllingCharacterId();
+			if (!controllingChars.contains(controllingCharNumber)) {
+				invertedDependencyData.add(controllingCharNumber);
+			}
+			controllingChars.add(controllingCharNumber);
 		}
 	}
 	

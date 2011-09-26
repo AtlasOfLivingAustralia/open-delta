@@ -145,15 +145,15 @@ public class IntkeyItemsFileWriterTest extends TestCase {
 		_itemsFileWriter.writeCharacterDependencies();
 		
 		int[] charDepData = readInts(3, 10);
-		int[] expected = {4,0,0,0,0,7,7,1,3,4};
+		int[] expected = {5,0,0,0,0,8,8,1,3,4};
 		for (int i=0; i<expected.length; i++) {
-			assertEquals(expected[i], charDepData[i]);
+			assertEquals("index: "+i, expected[i], charDepData[i]);
 		}
 		
-		int[] invCharDepData = readInts(4, 8);
-		expected = new int[] {0,0,4,6,1,1,1,1};
+		int[] invCharDepData = readInts(4, 6);
+		expected = new int[] {0,0,5,6,1,1};
 		for (int i=0; i<expected.length; i++) {
-			assertEquals(expected[i], invCharDepData[i]);
+			assertEquals("index: "+i, expected[i], invCharDepData[i]);
 		}
 	}
 	

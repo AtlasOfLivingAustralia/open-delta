@@ -635,6 +635,10 @@ public final class IntkeyDatasetFileReader {
         if (itemFileHeader.getLDep() >= numChars) {
             seekToRecord(itemBinFile, itemFileHeader.getRpCdep());
             List<Integer> dependencyData = readIntegerList(itemBinFile, itemFileHeader.getLDep());
+System.out.println(dependencyData);
+
+seekToRecord(itemBinFile, itemFileHeader.getRpInvdep());
+System.out.println(readIntegerList(itemBinFile, itemFileHeader.getLinvdep()));
 
             // At the start of the dependency data there is an integer value for
             // each character.

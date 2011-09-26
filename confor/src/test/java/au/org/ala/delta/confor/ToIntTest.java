@@ -112,16 +112,14 @@ public class ToIntTest extends TestCase {
 				assertEquals(expectedCharacter.getOmitPeriod(), character.getOmitPeriod());
 				assertEquals(expectedCharacter.getReliability(), character.getReliability(), 0.016f);
 				assertEquals(expectedCharacter.getUseCc(), character.getUseCc());
-				//assertEquals(expectedCharacter.getControllingCharacters(), character.getControllingCharacters());
-				//assertEquals(expectedCharacter.getDependentCharacters(), character.getDependentCharacters());
+				assertEquals(expectedCharacter.getControllingCharacters(), character.getControllingCharacters());
+				assertEquals(expectedCharacter.getDependentCharacters(), character.getDependentCharacters());
 				
 				
 				Attribute expectedAttribute = expectedDataSet.getAttribute(i, j);
 				Attribute attr = dataSet.getAttribute(i, j);
 				
-				
 				assertEquals(expectedAttribute.getValueAsString(), attr.getValueAsString());
-				
 			}
 			
 		}
