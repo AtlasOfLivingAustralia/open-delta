@@ -1,4 +1,4 @@
-package au.org.ala.delta.intkey;
+package au.org.ala.delta.io;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -12,15 +12,12 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 
-import au.org.ala.delta.io.BinFile;
-import au.org.ala.delta.io.BinFileEncoding;
-import au.org.ala.delta.io.BinFileMode;
 
 /**
  * Provides access to the contents of a file formatted for use by the
  * Intkey program.  It currently mostly only supports sequential writes.
  */
-public class IntkeyFile extends BinFile {
+public class BinaryKeyFile extends BinFile {
 
 	// TODO - I nicked these from the Intkey project Constants class.
 	public static final int RECORD_LENGTH_INTEGERS = 32;
@@ -34,7 +31,7 @@ public class IntkeyFile extends BinFile {
     
     private Set<Integer> _occupiedRecords;
     
-	public IntkeyFile(String fileName, BinFileMode mode) {
+	public BinaryKeyFile(String fileName, BinFileMode mode) {
 		super(fileName, mode);
 		_occupiedRecords = new HashSet<Integer>();
 	}

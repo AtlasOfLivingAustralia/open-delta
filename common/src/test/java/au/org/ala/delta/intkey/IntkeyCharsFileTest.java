@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import au.org.ala.delta.io.BinFileMode;
+import au.org.ala.delta.io.BinaryKeyFile;
 
 import junit.framework.TestCase;
 
@@ -59,37 +60,37 @@ public class IntkeyCharsFileTest extends TestCase {
 		_charsFile.writeCharacterFeatures(features);
 		
 		// First record should be the header.
-		_charsFile.seek(IntkeyFile.RECORD_LENGTH_BYTES);
+		_charsFile.seek(BinaryKeyFile.RECORD_LENGTH_BYTES);
 		
 		// first record should be our feature index, then feature length
 		// of first feature, then text of first feature.
-		byte[] data = _charsFile.read(3*IntkeyFile.RECORD_LENGTH_BYTES);
+		byte[] data = _charsFile.read(3*BinaryKeyFile.RECORD_LENGTH_BYTES);
 		ByteBuffer dataBuffer = ByteBuffer.wrap(data);
 		dataBuffer.order(ByteOrder.LITTLE_ENDIAN);
 		
 		int offset = dataBuffer.getInt();
 		assertEquals(3, offset);
 		
-		dataBuffer.position(IntkeyFile.RECORD_LENGTH_BYTES);
+		dataBuffer.position(BinaryKeyFile.RECORD_LENGTH_BYTES);
 		int length = dataBuffer.getInt();
 		assertEquals(featureDescription.length(), length);
 		length = dataBuffer.getInt();
 		assertEquals("state1".length(), length);
 		
 		byte[] text = new byte[featureDescription.length()];
-		dataBuffer.position(IntkeyFile.RECORD_LENGTH_BYTES*2);
+		dataBuffer.position(BinaryKeyFile.RECORD_LENGTH_BYTES*2);
 		
 		dataBuffer.get(text);
 		assertEquals(featureDescription, new String(text));
 		
-		dataBuffer.position(IntkeyFile.RECORD_LENGTH_BYTES*2+featureDescription.length());
+		dataBuffer.position(BinaryKeyFile.RECORD_LENGTH_BYTES*2+featureDescription.length());
 		text = new byte["state1".length()];
 		dataBuffer.get(text);
 		assertEquals("state1", new String(text));
 		
 		
 		// This should also have written the num states record.
-		_charsFile.seek(IntkeyFile.RECORD_LENGTH_BYTES*6);
+		_charsFile.seek(BinaryKeyFile.RECORD_LENGTH_BYTES*6);
 		int numStates = _charsFile.readInt();
 		assertEquals(1, numStates);
 		assertEquals(0, _charsFile.readInt());
@@ -112,7 +113,7 @@ public class IntkeyCharsFileTest extends TestCase {
 		_charsFile.writeCharacterNotes(notes);
 		
 		// First record should be the header.
-		_charsFile.seek(IntkeyFile.RECORD_LENGTH_BYTES);
+		_charsFile.seek(BinaryKeyFile.RECORD_LENGTH_BYTES);
 		
 		assertEquals(3, _charsFile.readInt());
 		assertEquals(5, _charsFile.readInt());
@@ -160,7 +161,7 @@ public class IntkeyCharsFileTest extends TestCase {
 		
 		_charsFile.writeCharacterImages(characterImages);
 		
-		_charsFile.seek(IntkeyFile.RECORD_LENGTH_BYTES);
+		_charsFile.seek(BinaryKeyFile.RECORD_LENGTH_BYTES);
 		assertEquals(3, _charsFile.readInt());
 		assertEquals(5, _charsFile.readInt());
 		
@@ -257,11 +258,11 @@ public class IntkeyCharsFileTest extends TestCase {
 		
 		_charsFile.writeFonts(fonts);
 		
-		_charsFile.seek(IntkeyFile.RECORD_LENGTH_BYTES);
+		_charsFile.seek(BinaryKeyFile.RECORD_LENGTH_BYTES);
 		assertEquals(fonts.size(), _charsFile.readInt());
 		
 		
-		_charsFile.seek(IntkeyFile.RECORD_LENGTH_BYTES*2);
+		_charsFile.seek(BinaryKeyFile.RECORD_LENGTH_BYTES*2);
 		assertEquals(font1.length(), _charsFile.readInt());
 		assertEquals(font2.length(), _charsFile.readInt());
 		assertEquals(font3.length(), _charsFile.readInt());
@@ -279,7 +280,7 @@ public class IntkeyCharsFileTest extends TestCase {
 		
 		_charsFile.writeItemSubheadings(itemSubHeadings);
 		
-		_charsFile.seek(IntkeyFile.RECORD_LENGTH_BYTES);
+		_charsFile.seek(BinaryKeyFile.RECORD_LENGTH_BYTES);
 		assertEquals(3, _charsFile.readInt());
 		assertEquals(5, _charsFile.readInt());
 		
@@ -292,7 +293,7 @@ public class IntkeyCharsFileTest extends TestCase {
 	
 	
 	private String readString(int recordNum, int lengthInBytes) {
-		_charsFile.seek(IntkeyFile.RECORD_LENGTH_BYTES*(recordNum-1));
+		_charsFile.seek(BinaryKeyFile.RECORD_LENGTH_BYTES*(recordNum-1));
 		byte[] formatBytes = new byte[lengthInBytes];
 		_charsFile.readBytes(formatBytes);
 		
@@ -300,7 +301,7 @@ public class IntkeyCharsFileTest extends TestCase {
 	}
 	
 	private int[] readInts(int recordNum, int numInts) {
-		_charsFile.seek(IntkeyFile.RECORD_LENGTH_BYTES*(recordNum-1));
+		_charsFile.seek(BinaryKeyFile.RECORD_LENGTH_BYTES*(recordNum-1));
 		
 		int[] ints = new int[numInts];
 		for (int i=0; i<numInts; i++) {

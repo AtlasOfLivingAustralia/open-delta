@@ -12,9 +12,9 @@ import org.junit.Test;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.DeltaContext.HeadingType;
-import au.org.ala.delta.intkey.IntkeyFile;
 import au.org.ala.delta.intkey.WriteOnceIntkeyCharsFile;
 import au.org.ala.delta.io.BinFileMode;
+import au.org.ala.delta.io.BinaryKeyFile;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DefaultDataSetFactory;
 import au.org.ala.delta.model.MultiStateCharacter;
@@ -84,7 +84,7 @@ public class IntkeyCharactersFileWriterTest extends TestCase {
 		_charsFileWriter.writeCharacterFeatures();
 		
 		// First record should be the header.
-		_charsFile.seek(IntkeyFile.RECORD_LENGTH_BYTES);
+		_charsFile.seek(BinaryKeyFile.RECORD_LENGTH_BYTES);
 		
 		// first record should be our feature index, then feature length
 		// of first feature, then text of first feature.
@@ -94,7 +94,7 @@ public class IntkeyCharactersFileWriterTest extends TestCase {
 		assertEquals(5, _charsFile.readInt());
 		
 		MultiStateCharacter multiStateChar = (MultiStateCharacter)_dataSet.getCharacter(1);
-		_charsFile.seek(IntkeyFile.RECORD_LENGTH_BYTES*2);
+		_charsFile.seek(BinaryKeyFile.RECORD_LENGTH_BYTES*2);
 		int total = 0;
 		StringBuilder text = new StringBuilder();
 		int length = _charsFile.readInt();
@@ -115,23 +115,23 @@ public class IntkeyCharactersFileWriterTest extends TestCase {
 		text.append(multiStateChar.getState(3));
 		
 		byte[] textBytes = new byte[total];
-		_charsFile.seek(IntkeyFile.RECORD_LENGTH_BYTES*3);
+		_charsFile.seek(BinaryKeyFile.RECORD_LENGTH_BYTES*3);
 		
 		_charsFile.readBytes(textBytes);
 		assertEquals(text.toString(), new String(textBytes));
 		
-		_charsFile.seek(IntkeyFile.RECORD_LENGTH_BYTES*4);
+		_charsFile.seek(BinaryKeyFile.RECORD_LENGTH_BYTES*4);
 		TextCharacter textChar = (TextCharacter)_dataSet.getCharacter(2);
 		String description = textChar.getDescription();
 		assertEquals(description.length(), _charsFile.readInt());
 		
-		_charsFile.seek(IntkeyFile.RECORD_LENGTH_BYTES*5);
+		_charsFile.seek(BinaryKeyFile.RECORD_LENGTH_BYTES*5);
 		textBytes = new byte[description.length()];
 		_charsFile.readBytes(textBytes);
 		assertEquals(description, new String(textBytes));
 		
 		// This should also have written the num states record.
-		_charsFile.seek(IntkeyFile.RECORD_LENGTH_BYTES*6);
+		_charsFile.seek(BinaryKeyFile.RECORD_LENGTH_BYTES*6);
 		int numStates = _charsFile.readInt();
 		assertEquals(3, numStates);
 		assertEquals(0, _charsFile.readInt());
@@ -158,7 +158,7 @@ public class IntkeyCharactersFileWriterTest extends TestCase {
 		_charsFileWriter.writeCharacterNotes();
 		
 		// First record should be the header.
-		_charsFile.seek(IntkeyFile.RECORD_LENGTH_BYTES);
+		_charsFile.seek(BinaryKeyFile.RECORD_LENGTH_BYTES);
 		
 		assertEquals(3, _charsFile.readInt());
 		assertEquals(5, _charsFile.readInt());
@@ -211,7 +211,7 @@ public class IntkeyCharactersFileWriterTest extends TestCase {
 		image.addOverlay(overlay);
 		_charsFileWriter.writeCharacterImages();
 		
-		_charsFile.seek(IntkeyFile.RECORD_LENGTH_BYTES);
+		_charsFile.seek(BinaryKeyFile.RECORD_LENGTH_BYTES);
 		assertEquals(3, _charsFile.readInt());
 		assertEquals(0, _charsFile.readInt());
 		
@@ -334,13 +334,13 @@ public class IntkeyCharactersFileWriterTest extends TestCase {
 		_dataSet.setImageSettings(settings);
 		_charsFileWriter.writeFonts();
 		
-		_charsFile.seek(IntkeyFile.RECORD_LENGTH_BYTES);
+		_charsFile.seek(BinaryKeyFile.RECORD_LENGTH_BYTES);
 		assertEquals(3, _charsFile.readInt());
 		
 		String defaultFontString = "1 2 0 3 4 5 default font";
 		String defaultFeatureFontString = "6 7 1 8 9 10 default feature font";
 		String defaultButtonFontString = "11 12 1 13 14 15 default button font";
-		_charsFile.seek(IntkeyFile.RECORD_LENGTH_BYTES*2);
+		_charsFile.seek(BinaryKeyFile.RECORD_LENGTH_BYTES*2);
 		
 		assertEquals(defaultFontString.length(), _charsFile.readInt());
 		assertEquals(defaultButtonFontString.length(), _charsFile.readInt());
@@ -362,7 +362,7 @@ public class IntkeyCharactersFileWriterTest extends TestCase {
 		
 		_charsFileWriter.writeItemSubheadings();
 		
-		_charsFile.seek(IntkeyFile.RECORD_LENGTH_BYTES);
+		_charsFile.seek(BinaryKeyFile.RECORD_LENGTH_BYTES);
 		assertEquals(3, _charsFile.readInt());
 		assertEquals(5, _charsFile.readInt());
 		
@@ -375,7 +375,7 @@ public class IntkeyCharactersFileWriterTest extends TestCase {
 	
 	
 	private String readString(int recordNum, int lengthInBytes) {
-		_charsFile.seek(IntkeyFile.RECORD_LENGTH_BYTES*(recordNum-1));
+		_charsFile.seek(BinaryKeyFile.RECORD_LENGTH_BYTES*(recordNum-1));
 		byte[] formatBytes = new byte[lengthInBytes];
 		_charsFile.readBytes(formatBytes);
 		
@@ -383,7 +383,7 @@ public class IntkeyCharactersFileWriterTest extends TestCase {
 	}
 	
 	private int[] readInts(int recordNum, int numInts) {
-		_charsFile.seek(IntkeyFile.RECORD_LENGTH_BYTES*(recordNum-1));
+		_charsFile.seek(BinaryKeyFile.RECORD_LENGTH_BYTES*(recordNum-1));
 		
 		int[] ints = new int[numInts];
 		for (int i=0; i<numInts; i++) {

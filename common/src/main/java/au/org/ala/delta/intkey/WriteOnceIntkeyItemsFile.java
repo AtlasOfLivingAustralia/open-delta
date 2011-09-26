@@ -10,6 +10,7 @@ import org.apache.commons.lang.math.FloatRange;
 import org.apache.commons.lang.math.IntRange;
 
 import au.org.ala.delta.io.BinFileMode;
+import au.org.ala.delta.io.BinaryKeyFile;
 import au.org.ala.delta.translation.intkey.IntkeyItemsFileWriter;
 
 /**
@@ -18,7 +19,7 @@ import au.org.ala.delta.translation.intkey.IntkeyItemsFileWriter;
  * It does not support random access - it primarily supports the use case
  * of CONFOR creating the intkey characters file.
  */
-public class WriteOnceIntkeyItemsFile extends IntkeyFile {
+public class WriteOnceIntkeyItemsFile extends BinaryKeyFile {
 
 	private ItemsFileHeader _header;
 	

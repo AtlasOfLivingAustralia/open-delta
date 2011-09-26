@@ -10,9 +10,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import au.org.ala.delta.DeltaContext;
-import au.org.ala.delta.intkey.IntkeyFile;
 import au.org.ala.delta.intkey.WriteOnceIntkeyItemsFile;
 import au.org.ala.delta.io.BinFileMode;
+import au.org.ala.delta.io.BinaryKeyFile;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DefaultDataSetFactory;
 import au.org.ala.delta.model.IntegerCharacter;
@@ -250,7 +250,7 @@ public class IntkeyItemsFileWriterTest extends TestCase {
 	
 	
 	private String readString(int recordNum, int lengthInBytes) {
-		_itemsFile.seek(IntkeyFile.RECORD_LENGTH_BYTES*(recordNum-1));
+		_itemsFile.seek(BinaryKeyFile.RECORD_LENGTH_BYTES*(recordNum-1));
 		byte[] formatBytes = new byte[lengthInBytes];
 		_itemsFile.readBytes(formatBytes);
 		
@@ -258,7 +258,7 @@ public class IntkeyItemsFileWriterTest extends TestCase {
 	}
 	
 	private int[] readInts(int recordNum, int numInts) {
-		_itemsFile.seek(IntkeyFile.RECORD_LENGTH_BYTES*(recordNum-1));
+		_itemsFile.seek(BinaryKeyFile.RECORD_LENGTH_BYTES*(recordNum-1));
 		
 		int[] ints = new int[numInts];
 		for (int i=0; i<numInts; i++) {
@@ -268,7 +268,7 @@ public class IntkeyItemsFileWriterTest extends TestCase {
 	}
 	
 	private float[] readFloats(int recordNum, int numFloats) {
-		_itemsFile.seek(IntkeyFile.RECORD_LENGTH_BYTES*(recordNum-1));
+		_itemsFile.seek(BinaryKeyFile.RECORD_LENGTH_BYTES*(recordNum-1));
 		
 		float[] floats = new float[numFloats];
 		for (int i=0; i<numFloats; i++) {

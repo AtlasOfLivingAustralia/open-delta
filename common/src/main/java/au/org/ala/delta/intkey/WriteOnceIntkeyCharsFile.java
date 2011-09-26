@@ -5,6 +5,7 @@ import java.util.BitSet;
 import java.util.List;
 
 import au.org.ala.delta.io.BinFileMode;
+import au.org.ala.delta.io.BinaryKeyFile;
 
 /**
  * Encapsulates the way the various bits of data in the character file
@@ -12,7 +13,7 @@ import au.org.ala.delta.io.BinFileMode;
  * It does not support random access - it primarily supports the use case
  * of CONFOR creating the intkey characters file.
  */
-public class WriteOnceIntkeyCharsFile extends IntkeyFile {
+public class WriteOnceIntkeyCharsFile extends BinaryKeyFile {
 
 	private CharactersFileHeader _header;
 	
