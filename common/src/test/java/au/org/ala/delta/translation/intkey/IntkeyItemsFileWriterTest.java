@@ -144,8 +144,9 @@ public class IntkeyItemsFileWriterTest extends TestCase {
 		
 		_itemsFileWriter.writeCharacterDependencies();
 		
-		int[] charDepData = readInts(3, 10);
-		int[] expected = {5,0,0,0,0,8,8,1,3,4};
+		int[] expected = {5,0,0,0,0,8,11,1,3,4,1,3,4};
+		int[] charDepData = readInts(3, expected.length);
+		
 		for (int i=0; i<expected.length; i++) {
 			assertEquals("index: "+i, expected[i], charDepData[i]);
 		}

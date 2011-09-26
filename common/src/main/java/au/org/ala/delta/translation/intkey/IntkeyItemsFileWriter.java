@@ -40,7 +40,7 @@ import au.org.ala.delta.translation.FilteredItem;
 public class IntkeyItemsFileWriter {
 
 	static final int INTEGER_RANGE_WARNING_THRESHOLD = 64;
-	static final int INTEGER_RANGE_MAX_THRESHOLD = 200;
+	public static final int INTEGER_RANGE_MAX_THRESHOLD = 200;
 	
 	private WriteOnceIntkeyItemsFile _itemsFile;
 	private FilteredDataSet _dataSet;
@@ -165,13 +165,16 @@ public class IntkeyItemsFileWriter {
 				dependencyData.add(0);
 			}
 			for (CharacterDependency dependency : dependentCharacters) {
-				int dataOffset = dependencyData.size()+1; // Another case of 1 based indexing.
 				List<Integer> dependentCharacterNumbers = toRangeList(dependency.getDependentCharacterIds());
-				dependencyData.add(dependentCharacterNumbers.size()/2);
-				dependencyData.addAll(dependentCharacterNumbers);
+				
 				for (int state : dependency.getStates()) {
+					int dataOffset = dependencyData.size()+1; // Another case of 1 based indexing.
+					
 					dependencyData.set(statesOffset+state-1, dataOffset);
+					dependencyData.add(dependentCharacterNumbers.size()/2);
+					dependencyData.addAll(dependentCharacterNumbers);
 				}
+				
 			}
 		}
 	}

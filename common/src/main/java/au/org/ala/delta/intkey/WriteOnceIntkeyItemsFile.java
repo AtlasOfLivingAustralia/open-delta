@@ -10,6 +10,7 @@ import org.apache.commons.lang.math.FloatRange;
 import org.apache.commons.lang.math.IntRange;
 
 import au.org.ala.delta.io.BinFileMode;
+import au.org.ala.delta.translation.intkey.IntkeyItemsFileWriter;
 
 /**
  * Encapsulates the way the various bits of data in the items file
@@ -34,6 +35,7 @@ public class WriteOnceIntkeyItemsFile extends IntkeyFile {
 		_header.setNChar(numCharacters);
 		_header.setMajorVer(DATASET_MAJOR_VERSION);
 		_header.setMinorVer(DATASET_MINOR_VERSION);
+		_header.setMaxInt(IntkeyItemsFileWriter.INTEGER_RANGE_MAX_THRESHOLD);
 		// Even if there is no data, we always mark that there is a second
 		// section for simplicity (otherwise we don't know how many 
 		// records to allocate)
@@ -62,6 +64,12 @@ public class WriteOnceIntkeyItemsFile extends IntkeyFile {
 		checkEmpty(_header.getRpSpec());
 		int record = nextAvailableRecord();
 		_header.setRpSpec(record);
+		
+		int maxStates = 0;
+		for (int state : numStates) {
+			maxStates = Math.max(maxStates, state);
+		}
+		_header.setMs(maxStates);
 		
 		record += writeToRecord(record, characterTypes);
 		record += writeToRecord(record, numStates);
@@ -240,7 +248,6 @@ public class WriteOnceIntkeyItemsFile extends IntkeyFile {
 				checkSum += type;
 			}
 		}
-		System.out.println("ENABLE DELTA OUTPUT: "+checkSum);
 		_header.setEnableDeltaOutput(checkSum);
 	}
 	
