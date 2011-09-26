@@ -458,8 +458,14 @@ public class IntkeyItemsFileWriter {
 			if (range.getMinimumFloat() != Float.MAX_VALUE) {
 				floats.add(range.getMinimumFloat());
 			}
+			else {
+				floats.add(0f);  // For CONFOR compatibility, seems wrong.
+			}
 			if (range.getMaximumFloat() != Float.MAX_VALUE) {
 				floats.add(range.getMaximumFloat());
+			}
+			else{ 
+				floats.add(1.0f);   // For CONFOR compatibility, seems wrong.
 			}
 		}
 		return floats;

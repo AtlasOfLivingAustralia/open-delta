@@ -238,10 +238,10 @@ public class IntkeyItemsFileWriterTest extends TestCase {
 		}
 		
 		int[] keyStateBoundaryCount = readInts(14, 1);
-		assertEquals(3, keyStateBoundaryCount[0]);
+		assertEquals(5, keyStateBoundaryCount[0]);
 		
-		float[] expectedFloats = {4.4f, 5.1f, 7.9f};
-		float[] actualFloats = readFloats(15, 3);
+		float[] expectedFloats = {0f, 1f, 4.4f, 5.1f, 7.9f};
+		float[] actualFloats = readFloats(15, 5);
 		for (int i=0; i<expectedFloats.length; i++) {
 			assertEquals(expectedFloats[i], actualFloats[i]);
 		}

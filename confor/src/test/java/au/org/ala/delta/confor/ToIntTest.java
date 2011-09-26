@@ -113,7 +113,8 @@ public class ToIntTest extends TestCase {
 					if (expectedCharacter.getCharacterType() == CharacterType.RealNumeric) {
 						RealCharacter realChar = (RealCharacter)character;
 						RealCharacter expectedRealChar = (RealCharacter)expectedCharacter;
-						//assertEquals("Character: "+j,expectedRealChar.getKeyStateBoundaries(), realChar.getKeyStateBoundaries());
+						
+						assertEquals("Character: "+j,expectedRealChar.getKeyStateBoundaries(), realChar.getKeyStateBoundaries());
 					}
 				}
 				
