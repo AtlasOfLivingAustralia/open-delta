@@ -1342,11 +1342,41 @@ public class IntkeyContext extends AbstractDeltaContext {
             throw new IllegalArgumentException(String.format("File '%s' is not open as an output file", outputFile.getAbsolutePath()));
         }
     }
-    
+
     public List<File> getOutputFiles() {
         List<File> fileList = new ArrayList<File>(_outputFileWriters.keySet());
         Collections.sort(fileList);
         return fileList;
+    }
+
+    /**
+     * Appends the supplied text to the log file if one has been specified
+     * @param text
+     */
+    public void appendToLogFile(String text) {
+        if (_logFile != null) {
+            _logFileWriter.println(text);
+        }
+    }
+
+    /**
+     * Appends the supplied text to the journal file if one has been specified
+     * @param text
+     */
+    public void appendToJournalFile(String text) {
+        if (_journalFile != null) {
+            _journalFileWriter.println(text);
+        }
+    }
+
+    /**
+     * Appends the supplied text to any open output files
+     * @param text
+     */
+    public void appendToOutputFiles(String text) {
+        for (PrintWriter outputFileWriter : _outputFileWriters.values()) {
+            outputFileWriter.println(text);
+        }
     }
 
     private class StartupFileLoader extends SwingWorker<Void, String> {

@@ -77,6 +77,7 @@ public class IntkeyDirectiveParser extends DirectiveParser<IntkeyContext> {
         instance.registerDirective(new FileJournalDirective());
         instance.registerDirective(new FileLogDirective());
         instance.registerDirective(new FileCloseDirective());
+        instance.registerDirective(new CommentDirective());
         return instance;
     }
 
