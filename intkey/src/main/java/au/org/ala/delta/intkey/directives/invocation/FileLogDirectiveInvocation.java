@@ -17,7 +17,7 @@ public class FileLogDirectiveInvocation implements IntkeyDirectiveInvocation {
     @Override
     public boolean execute(IntkeyContext context) {
         try {
-            context.newOutputFile(_file);
+            context.setLogFile(_file);
             return true;
         } catch (IOException ex) {
             Logger.error(ex);

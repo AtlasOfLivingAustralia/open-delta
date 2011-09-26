@@ -31,12 +31,28 @@ public class FileArgument extends IntkeyDirectiveArgument<File> {
                 throw new IntkeyDirectiveParseException("Error creating file");
             }
         } else {
-            file = new File(context.getDatasetDirectory(), filePath);
+            // If the supplied file path starts with one of the file system
+            // roots, then it is absolute. Otherwise, assume that
+            // it is relative to the directory in which the dataset is located.
+            boolean fileAbsolute = false;
+            for (File root : File.listRoots()) {
+                if (filePath.toLowerCase().startsWith(root.getAbsolutePath().toLowerCase())) {
+                    fileAbsolute = true;
+                    break;
+                }
+            }
+
+            if (fileAbsolute) {
+                file = new File(filePath);
+            } else {
+                file = new File(context.getDatasetDirectory(), filePath);
+            }
+
             if (!file.exists() && _createFileIfNonExistant) {
                 try {
                     file.createNewFile();
                 } catch (IOException ex) {
-                    throw new IntkeyDirectiveParseException(String.format("Error creating file %s", file.getAbsolutePath()));
+                    throw new IntkeyDirectiveParseException(String.format("Error creating file %s", file.getAbsolutePath()), ex);
                 }
             }
         }

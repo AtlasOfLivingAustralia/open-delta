@@ -77,4 +77,9 @@ public class MockDirectivePopulator implements DirectivePopulator {
         return null;
     }
 
+    @Override
+    public File promptForOutputFile() {
+        return null;
+    }
+
 }

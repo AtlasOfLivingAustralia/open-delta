@@ -1193,10 +1193,16 @@ public class IntkeyContext extends AbstractDeltaContext {
      */
     public void cleanupForShutdown() {
         cleanupOldDataset();
-        _logFileWriter.flush();
-        _logFileWriter.close();
-        _journalFileWriter.flush();
-        _journalFileWriter.close();
+        if (_logFileWriter != null) {
+            _logFileWriter.flush();
+            _logFileWriter.close();
+        }
+
+        if (_journalFileWriter != null) {
+            _journalFileWriter.flush();
+            _journalFileWriter.close();
+        }
+
         for (PrintWriter outputFileWriter : _outputFileWriters.values()) {
             outputFileWriter.flush();
             outputFileWriter.close();
@@ -1335,6 +1341,12 @@ public class IntkeyContext extends AbstractDeltaContext {
         } else {
             throw new IllegalArgumentException(String.format("File '%s' is not open as an output file", outputFile.getAbsolutePath()));
         }
+    }
+    
+    public List<File> getOutputFiles() {
+        List<File> fileList = new ArrayList<File>(_outputFileWriters.keySet());
+        Collections.sort(fileList);
+        return fileList;
     }
 
     private class StartupFileLoader extends SwingWorker<Void, String> {

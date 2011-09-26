@@ -1,6 +1,5 @@
 package au.org.ala.delta.intkey.directives;
 
-import java.text.ParseException;
 import java.util.ArrayDeque;
 import java.util.List;
 import java.util.Queue;
@@ -8,12 +7,12 @@ import java.util.Queue;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
 
-import au.org.ala.delta.directives.AbstractDirective;
 import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public abstract class NewIntkeyDirective extends AbstractDirective<IntkeyContext> {
+/** TODO NEED A NAME FOR THIS CLASS **/
+public abstract class NewIntkeyDirective extends IntkeyDirective {
 
     protected DirectiveArguments _args;
 
@@ -25,30 +24,7 @@ public abstract class NewIntkeyDirective extends AbstractDirective<IntkeyContext
     }
 
     @Override
-    public final int getArgType() {
-        // Not relevant for Intkey. This is only used for import/export of
-        // directives
-        // in the delta editor.
-        return 0;
-    }
-
-    @Override
-    public final DirectiveArguments getDirectiveArgs() {
-        return _args;
-    }
-
-    @Override
-    public final void parse(IntkeyContext context, String data) throws ParseException {
-        _args = DirectiveArguments.textArgument(data);
-    }
-
-    @Override
-    public final void process(IntkeyContext context, DirectiveArguments directiveArguments) throws Exception {
-        parseAndProcess(context, directiveArguments.getFirstArgumentText());
-    }
-
-    @Override
-    public final void parseAndProcess(IntkeyContext context, String data) throws Exception {
+    public final IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
         List<String> tokens = ParsingUtils.tokenizeDirectiveCall(data);
         Queue<String> tokenQueue = new ArrayDeque<String>(tokens);
 
@@ -92,18 +68,20 @@ public abstract class NewIntkeyDirective extends AbstractDirective<IntkeyContext
             for (IntkeyDirectiveArgument<?> arg : intkeyArgsList) {
                 Object parsedArgumentValue = arg.parseInput(tokenQueue, context, StringUtils.join(_controlWords, " "));
                 if (parsedArgumentValue != null) {
-                    BeanUtils.setProperty(invoc, arg.getName(), parsedArgumentValue);
+                    try {
+                        BeanUtils.setProperty(invoc, arg.getName(), parsedArgumentValue);
+                    } catch (Exception ex) {
+                        System.out.println("HEre!");
+                    }
                 } else {
                     // No argument value supplied, user cancelled out of the
                     // prompt dialog.
-                    return;
+                    return null;
                 }
             }
         }
 
-        if (context != null) {
-            context.executeDirective(invoc);
-        }
+        return invoc;
     }
 
     protected abstract List<IntkeyDirectiveArgument<?>> generateArgumentsList(IntkeyContext context);

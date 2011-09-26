@@ -12,8 +12,8 @@ public class StopBestDirectiveInvocation implements IntkeyDirectiveInvocation {
 
     @Override
     public boolean execute(IntkeyContext context) {
-        // TODO Auto-generated method stub
-        return false;
+        context.setStopBest(_value);
+        return true;
     }
 
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
+import au.org.ala.delta.intkey.directives.invocation.StopBestDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
 public class SetStopBestDirective extends NewIntkeyDirective {
@@ -26,8 +27,7 @@ public class SetStopBestDirective extends NewIntkeyDirective {
 
     @Override
     protected IntkeyDirectiveInvocation buildCommandObject() {
-        // TODO Auto-generated method stub
-        return null;
+        return new StopBestDirectiveInvocation();
     }
 
 }

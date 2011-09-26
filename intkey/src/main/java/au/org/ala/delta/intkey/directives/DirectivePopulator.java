@@ -41,5 +41,7 @@ public interface DirectivePopulator {
     File promptForFile(List<String> fileExtensions, String description, boolean createFileIfNonExistant) throws IOException;
     
     Boolean promptForOnOffValue(String directiveName, boolean initialValue);
+    
+    File promptForOutputFile();
 
 }

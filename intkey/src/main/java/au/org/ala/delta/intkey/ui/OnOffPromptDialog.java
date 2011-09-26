@@ -1,24 +1,23 @@
 package au.org.ala.delta.intkey.ui;
 
-import javax.swing.JDialog;
-import javax.swing.JPanel;
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Frame;
 
 import javax.swing.ActionMap;
+import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
-import javax.swing.BoxLayout;
+import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.SwingConstants;
-import java.awt.Component;
 import javax.swing.border.EmptyBorder;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 
-public class OnOffPromptDialog extends JDialog {
+public class OnOffPromptDialog extends IntkeyDialog {
 
     /**
      * 
@@ -51,7 +50,7 @@ public class OnOffPromptDialog extends JDialog {
         btnOk.setAction(actionMap.get("onOffPromptDialog_OkPressed"));
         _btnPanel.add(btnOk);
 
-        btnCancel = new JButton("Cancel");
+        btnCancel = new JButton();
         btnCancel.setAction(actionMap.get("onOffPromptDialog_CancelPressed"));
         _btnPanel.add(btnCancel);
 

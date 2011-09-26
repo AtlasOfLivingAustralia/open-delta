@@ -102,6 +102,7 @@ import au.org.ala.delta.intkey.ui.ImageUtils;
 import au.org.ala.delta.intkey.ui.IntegerInputDialog;
 import au.org.ala.delta.intkey.ui.MultiStateInputDialog;
 import au.org.ala.delta.intkey.ui.OnOffPromptDialog;
+import au.org.ala.delta.intkey.ui.OutputFileSelectionDialog;
 import au.org.ala.delta.intkey.ui.ReExecuteDialog;
 import au.org.ala.delta.intkey.ui.RealInputDialog;
 import au.org.ala.delta.intkey.ui.RtfReportDisplayDialog;
@@ -113,12 +114,10 @@ import au.org.ala.delta.intkey.ui.TaxonSelectionDialog;
 import au.org.ala.delta.intkey.ui.TaxonWithDifferenceCountCellRenderer;
 import au.org.ala.delta.intkey.ui.TextInputDialog;
 import au.org.ala.delta.intkey.ui.UIUtils;
-import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.IntegerCharacter;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
-import au.org.ala.delta.model.NumericCharacter;
 import au.org.ala.delta.model.RealCharacter;
 import au.org.ala.delta.model.TextAttribute;
 import au.org.ala.delta.model.TextCharacter;
@@ -606,7 +605,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         if (_datasetInitFileToOpen != null) {
             executeDirective(new NewDatasetDirective(), _datasetInitFileToOpen);
         }
-        
+
         loadDesktopInBackground();
     }
 
@@ -1851,18 +1850,21 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             if (createFileIfNonExistant) {
                 File file = chooser.getSelectedFile();
 
-                // if only one file extension was supplied and the filename does
-                // not end with this extension, add it before
-                // creating the file
-                if (fileExtensions.size() == 1) {
-                    String extension = fileExtensions.get(0);
-                    String filePath = chooser.getSelectedFile().getAbsolutePath();
-                    if (!filePath.endsWith(extension)) {
-                        file = new File(filePath + "." + extension);
+                if (!file.exists()) {
+                    // if only one file extension was supplied and the filename
+                    // does
+                    // not end with this extension, add it before
+                    // creating the file
+                    if (fileExtensions.size() == 1) {
+                        String extension = fileExtensions.get(0);
+                        String filePath = chooser.getSelectedFile().getAbsolutePath();
+                        if (!filePath.endsWith(extension)) {
+                            file = new File(filePath + "." + extension);
+                        }
                     }
-                }
 
-                file.createNewFile();
+                    file.createNewFile();
+                }
                 return file;
             } else {
                 return chooser.getSelectedFile();
@@ -1878,6 +1880,17 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         show(dlg);
         if (dlg.isOkButtonPressed()) {
             return dlg.getSelectedValue();
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public File promptForOutputFile() {
+        OutputFileSelectionDialog dlg = new OutputFileSelectionDialog(getMainFrame(), _context.getOutputFiles());
+        show(dlg);
+        if (dlg.isOkButtonPressed()) {
+            return dlg.getSelectedFile();
         } else {
             return null;
         }
@@ -1932,7 +1945,6 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
         return _foundAvailableTaxa.size() + _foundEliminatedTaxa.size();
     }
-    
 
     public void selectCurrentMatchedTaxon(int matchedTaxonIndex) {
 
@@ -2013,8 +2025,6 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
         return _foundAvailableCharacters.size() + _foundUsedCharacters.size();
     }
-
-
 
     public void selectCurrentMatchedCharacter(int matchedCharacterIndex) {
 
