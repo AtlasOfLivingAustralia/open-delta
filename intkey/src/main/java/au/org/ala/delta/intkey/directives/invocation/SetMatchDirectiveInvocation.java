@@ -3,7 +3,7 @@ package au.org.ala.delta.intkey.directives.invocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.model.MatchType;
 
-public class SetMatchDirectiveInvocation implements IntkeyDirectiveInvocation {
+public class SetMatchDirectiveInvocation extends IntkeyDirectiveInvocation {
     
     private boolean _matchInapplicables;
     private boolean _matchUnknowns;

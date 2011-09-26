@@ -7,7 +7,7 @@ import java.util.Set;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.model.Character;
 
-public class SetExactDirectiveInvocation implements IntkeyDirectiveInvocation {
+public class SetExactDirectiveInvocation extends IntkeyDirectiveInvocation {
 
     private List<au.org.ala.delta.model.Character> characters;
     

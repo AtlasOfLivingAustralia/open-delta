@@ -6,7 +6,7 @@ import java.io.IOException;
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class FileLogDirectiveInvocation implements IntkeyDirectiveInvocation {
+public class FileLogDirectiveInvocation extends IntkeyDirectiveInvocation {
 
     private File _file;
 

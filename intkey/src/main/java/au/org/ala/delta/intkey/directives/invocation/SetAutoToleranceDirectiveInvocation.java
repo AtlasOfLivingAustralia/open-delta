@@ -2,7 +2,7 @@ package au.org.ala.delta.intkey.directives.invocation;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class SetAutoToleranceDirectiveInvocation implements IntkeyDirectiveInvocation {
+public class SetAutoToleranceDirectiveInvocation extends IntkeyDirectiveInvocation {
 
     boolean _value;
     

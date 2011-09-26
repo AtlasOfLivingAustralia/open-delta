@@ -2,7 +2,7 @@ package au.org.ala.delta.intkey.directives.invocation;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class DisplayUnknownsDirectiveInvocation implements IntkeyDirectiveInvocation {
+public class DisplayUnknownsDirectiveInvocation extends IntkeyDirectiveInvocation {
 
     private boolean _value;
 

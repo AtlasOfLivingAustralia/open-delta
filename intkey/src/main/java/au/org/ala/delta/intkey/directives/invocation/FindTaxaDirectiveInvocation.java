@@ -14,7 +14,7 @@ import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.rtf.RTFBuilder;
 
-public class FindTaxaDirectiveInvocation implements IntkeyDirectiveInvocation {
+public class FindTaxaDirectiveInvocation extends IntkeyDirectiveInvocation {
 
     private String _searchText;
 

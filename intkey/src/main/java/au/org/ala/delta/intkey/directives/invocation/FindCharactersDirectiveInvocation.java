@@ -8,7 +8,7 @@ import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.rtf.RTFBuilder;
 
-public class FindCharactersDirectiveInvocation implements IntkeyDirectiveInvocation {
+public class FindCharactersDirectiveInvocation extends IntkeyDirectiveInvocation {
 
     private String _searchText;
 

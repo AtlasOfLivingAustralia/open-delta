@@ -7,7 +7,7 @@ import java.util.Set;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.model.Character;
 
-public class IncludeCharactersDirectiveInvocation implements IntkeyDirectiveInvocation {
+public class IncludeCharactersDirectiveInvocation extends IntkeyDirectiveInvocation {
 
     private List<Character> _characters;
 

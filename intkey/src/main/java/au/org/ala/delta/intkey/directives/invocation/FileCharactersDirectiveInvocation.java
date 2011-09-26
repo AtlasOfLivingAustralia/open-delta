@@ -4,7 +4,7 @@ import java.io.File;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class FileDisplayDirectiveInvocation extends IntkeyDirectiveInvocation {
+public class FileCharactersDirectiveInvocation extends IntkeyDirectiveInvocation {
 
     private File _file;
 
@@ -14,7 +14,7 @@ public class FileDisplayDirectiveInvocation extends IntkeyDirectiveInvocation {
 
     @Override
     public boolean execute(IntkeyContext context) {
-        context.getUI().displayFile(_file, _file.getName());
+        context.setFileCharacters(_file);
         return true;
     }
 

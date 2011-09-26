@@ -5,7 +5,7 @@ import java.util.List;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.model.Character;
 
-public class DeleteDirectiveInvocation implements IntkeyDirectiveInvocation {
+public class DeleteDirectiveInvocation extends IntkeyDirectiveInvocation {
 
     private List<Character> _characters;
     private boolean suppressUnusedCharacterWarning;

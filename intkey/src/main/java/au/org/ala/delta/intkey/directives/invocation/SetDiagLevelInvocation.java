@@ -2,7 +2,7 @@ package au.org.ala.delta.intkey.directives.invocation;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class SetDiagLevelInvocation implements IntkeyDirectiveInvocation {
+public class SetDiagLevelInvocation extends IntkeyDirectiveInvocation {
     
     private int _diagLevel;
 

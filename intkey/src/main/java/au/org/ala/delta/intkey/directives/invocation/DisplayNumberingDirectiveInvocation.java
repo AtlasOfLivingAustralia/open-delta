@@ -2,7 +2,7 @@ package au.org.ala.delta.intkey.directives.invocation;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class DisplayNumberingDirectiveInvocation implements IntkeyDirectiveInvocation {
+public class DisplayNumberingDirectiveInvocation extends IntkeyDirectiveInvocation {
 
     private boolean _value;
 

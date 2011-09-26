@@ -4,7 +4,7 @@ import java.util.List;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class DefineButtonDirectiveInvocation implements IntkeyDirectiveInvocation {
+public class DefineButtonDirectiveInvocation extends IntkeyDirectiveInvocation {
 
     private boolean _displayAdvancedOnly;
     private boolean _displayNormalOnly;

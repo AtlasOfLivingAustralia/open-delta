@@ -1,16 +1,12 @@
 package au.org.ala.delta.intkey.directives;
 
-import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
-import javax.swing.filechooser.FileFilter;
-
-import org.apache.commons.lang.StringUtils;
-
+import au.org.ala.delta.intkey.directives.invocation.FileCharactersDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
-import au.org.ala.delta.intkey.ui.UIUtils;
 
 /**
  * The FILE CHARACTERS directive - specifies the name of the intkey characters
@@ -19,77 +15,28 @@ import au.org.ala.delta.intkey.ui.UIUtils;
  * @author ChrisF
  * 
  */
-public class FileCharactersDirective extends IntkeyDirective {
+public class FileCharactersDirective extends NewIntkeyDirective {
 
     public FileCharactersDirective() {
         super("file", "characters");
     }
 
     @Override
-    protected IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) {
-        _data = data;
-        File selectedFile = null;
+    protected List<IntkeyDirectiveArgument<?>> generateArgumentsList(IntkeyContext context) {
+        List<IntkeyDirectiveArgument<?>> arguments = new ArrayList<IntkeyDirectiveArgument<?>>();
+        arguments.add(new FileArgument("file", "Files (ichars*)", null, Arrays.asList(new String[] { "ichars" }), false));
+        return arguments;
+    }
 
-        if (data == null) {
-            JFileChooser chooser = new JFileChooser();
-            FileFilter filter = new FileFilter() {
-
-                @Override
-                public boolean accept(File f) {
-                    return f.isDirectory() || f.getName().toLowerCase().startsWith("iitems");
-                }
-
-                @Override
-                public String getDescription() {
-                    return "Files (ichars*)";
-                }
-
-            };
-
-            chooser.setFileFilter(filter);
-            int returnVal = chooser.showOpenDialog(UIUtils.getMainFrame());
-            if (returnVal == JFileChooser.APPROVE_OPTION) {
-                selectedFile = chooser.getSelectedFile();
-            } else {
-                selectedFile = null;
-            }
-        } else {
-            
-            selectedFile = new File(data);
-            if (!selectedFile.isAbsolute()) {
-                selectedFile = new File(context.getDatasetDirectory(), data);
-            }
-        }
-
-        if (selectedFile != null) {
-            FileCharactersDirectiveInvocation invoc = new FileCharactersDirectiveInvocation(selectedFile);
-            return invoc;
-        }
-
+    @Override
+    protected List<IntkeyDirectiveFlag> buildFlagsList() {
         return null;
     }
 
-    class FileCharactersDirectiveInvocation implements IntkeyDirectiveInvocation {
-        private File _file;
-
-        public FileCharactersDirectiveInvocation(File charactersFile) {
-            _file = charactersFile;
-        }
-
-        @Override
-        public boolean execute(IntkeyContext context) {
-            try {
-                context.setFileCharacters(_file);
-                return true;
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(UIUtils.getMainFrame(), ex.getMessage(), "", JOptionPane.ERROR_MESSAGE);
-                return false;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return String.format("%s %s", StringUtils.join(_controlWords, " ").toUpperCase(), _file);
-        }
+    @Override
+    protected IntkeyDirectiveInvocation buildCommandObject() {
+        return new FileCharactersDirectiveInvocation();
     }
+
+
 }

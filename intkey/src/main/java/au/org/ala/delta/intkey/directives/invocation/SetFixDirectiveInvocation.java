@@ -2,7 +2,7 @@ package au.org.ala.delta.intkey.directives.invocation;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class SetFixDirectiveInvocation implements IntkeyDirectiveInvocation {
+public class SetFixDirectiveInvocation extends IntkeyDirectiveInvocation {
 
     private boolean value;
 

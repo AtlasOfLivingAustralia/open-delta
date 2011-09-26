@@ -6,7 +6,7 @@ import java.util.List;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.model.Item;
 
-public class IllustrateTaxaDirectiveInvocation implements IntkeyDirectiveInvocation {
+public class IllustrateTaxaDirectiveInvocation extends IntkeyDirectiveInvocation {
 
     private List<Item> _taxa;
 

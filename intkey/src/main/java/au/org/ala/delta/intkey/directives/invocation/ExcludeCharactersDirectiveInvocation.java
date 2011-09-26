@@ -4,7 +4,7 @@ import java.util.Set;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class ExcludeCharactersDirectiveInvocation implements IntkeyDirectiveInvocation {
+public class ExcludeCharactersDirectiveInvocation extends IntkeyDirectiveInvocation {
 
     private Set<Integer> _excludedCharNumbers;
     

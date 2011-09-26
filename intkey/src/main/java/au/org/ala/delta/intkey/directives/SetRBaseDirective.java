@@ -1,8 +1,11 @@
 package au.org.ala.delta.intkey.directives;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
+import au.org.ala.delta.intkey.directives.invocation.SetRBaseDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
-import au.org.ala.delta.intkey.ui.UIUtils;
 
 /**
  * The SET RBASE directive - sets the base of the logarithmic
@@ -13,7 +16,7 @@ import au.org.ala.delta.intkey.ui.UIUtils;
  * @author ChrisF
  * 
  */
-public class SetRBaseDirective extends IntkeyDirective {
+public class SetRBaseDirective extends NewIntkeyDirective {
     
     //TODO needs to provide a prompt window if no value is supplied
     
@@ -22,37 +25,20 @@ public class SetRBaseDirective extends IntkeyDirective {
     }
 
     @Override
-    protected IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
-
-        String errMsg = UIUtils.getResourceString("SetRBaseDirective.InvalidValue");
-
-        try {
-            double value = Double.parseDouble(data);
-
-            if (value >= 1.0 && value <= 5.0) {
-                return new SetRBaseDirectiveInvocation(value);
-            } else {
-                throw new IntkeyDirectiveParseException(errMsg);
-            }
-        } catch (NumberFormatException ex) {
-            throw new IntkeyDirectiveParseException(errMsg, ex);
-        }
+    protected List<IntkeyDirectiveArgument<?>> generateArgumentsList(IntkeyContext context) {
+        List<IntkeyDirectiveArgument<?>> arguments = new ArrayList<IntkeyDirectiveArgument<?>>();
+        arguments.add(new RealArgument("rbase", "Enter value of RBASE", context.getRBase()));
+        return arguments;
     }
 
-    private class SetRBaseDirectiveInvocation implements IntkeyDirectiveInvocation {
+    @Override
+    protected List<IntkeyDirectiveFlag> buildFlagsList() {
+        return null;
+    }
 
-        private double _value;
-
-        public SetRBaseDirectiveInvocation(double value) {
-            _value = value;
-        }
-
-        @Override
-        public boolean execute(IntkeyContext context) {
-            context.setRBase(_value);
-            return true;
-        }
-
+    @Override
+    protected IntkeyDirectiveInvocation buildCommandObject() {
+        return new SetRBaseDirectiveInvocation();
     }
 
 }

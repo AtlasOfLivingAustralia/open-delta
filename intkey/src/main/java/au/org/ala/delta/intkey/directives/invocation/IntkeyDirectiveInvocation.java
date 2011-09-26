@@ -10,7 +10,7 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
  * @author Chris
  *
  */
-public interface IntkeyDirectiveInvocation {
+public abstract class IntkeyDirectiveInvocation {
     
     /**
      * Perform execution

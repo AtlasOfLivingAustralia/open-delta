@@ -6,7 +6,7 @@ import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class DefineTaxaDirectiveInvocation implements IntkeyDirectiveInvocation {
+public class DefineTaxaDirectiveInvocation extends IntkeyDirectiveInvocation {
 
     public static final String LABEL = "DEFINE TAXA";
     

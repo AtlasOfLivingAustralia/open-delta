@@ -11,6 +11,7 @@ import javax.swing.JOptionPane;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.IntRange;
 
+import au.org.ala.delta.intkey.directives.invocation.DefineCharactersDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.ui.UIUtils;
@@ -53,29 +54,6 @@ public class DefineCharactersDirective extends IntkeyDirective {
         }
 
         return new DefineCharactersDirectiveInvocation(keyword, characterNumbers);
-    }
-
-    class DefineCharactersDirectiveInvocation implements IntkeyDirectiveInvocation {
-
-        String _keyword;
-        Set<Integer> _characterNumbers;
-
-        public DefineCharactersDirectiveInvocation(String keyword, Set<Integer> characterNumbers) {
-            _keyword = keyword;
-            _characterNumbers = characterNumbers;
-        }
-
-        @Override
-        public boolean execute(IntkeyContext context) {
-            context.addCharacterKeyword(_keyword, _characterNumbers);
-            return true;
-        }
-
-        @Override
-        public String toString() {
-            return String.format("%s %s %s", StringUtils.join(_controlWords, " ").toUpperCase(), _keyword, StringUtils.join(_characterNumbers, " "));
-        }
-
     }
 
 }

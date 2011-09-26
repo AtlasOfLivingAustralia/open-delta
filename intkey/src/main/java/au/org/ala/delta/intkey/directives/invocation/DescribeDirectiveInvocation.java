@@ -24,7 +24,7 @@ import au.org.ala.delta.rtf.RTFUtils;
 import au.org.ala.delta.util.Pair;
 import au.org.ala.delta.util.Utils;
 
-public class DescribeDirectiveInvocation implements IntkeyDirectiveInvocation {
+public class DescribeDirectiveInvocation extends IntkeyDirectiveInvocation {
 
     private List<Item> _taxa;
     private boolean _includeSpecimen;

@@ -4,7 +4,7 @@ import java.io.File;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class FileCloseDirectiveInvocation implements IntkeyDirectiveInvocation {
+public class FileCloseDirectiveInvocation extends IntkeyDirectiveInvocation {
 
     private File _file;
     

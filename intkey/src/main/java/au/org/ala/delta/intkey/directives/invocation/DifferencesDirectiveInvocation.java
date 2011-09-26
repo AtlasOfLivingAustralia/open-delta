@@ -19,7 +19,7 @@ import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.rtf.RTFBuilder;
 
-public class DifferencesDirectiveInvocation implements IntkeyDirectiveInvocation {
+public class DifferencesDirectiveInvocation extends IntkeyDirectiveInvocation {
     private boolean _matchUnknowns;
     private boolean _matchInapplicables;
     private MatchType _matchType;

@@ -5,7 +5,7 @@ import java.util.List;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class SetImagePathDirectiveInvocation implements IntkeyDirectiveInvocation {
+public class SetImagePathDirectiveInvocation extends IntkeyDirectiveInvocation {
     
     private List<String> _imagePaths;
     

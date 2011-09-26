@@ -8,7 +8,7 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.model.IntkeyDataset;
 import au.org.ala.delta.model.Item;
 
-public class DefineNamesDirectiveInvocation implements IntkeyDirectiveInvocation {
+public class DefineNamesDirectiveInvocation extends IntkeyDirectiveInvocation {
 
     private String _keyword;
     private List<String> _taxonNames;

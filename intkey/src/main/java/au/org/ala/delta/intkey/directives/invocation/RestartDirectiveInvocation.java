@@ -4,7 +4,7 @@ import au.org.ala.delta.intkey.model.DiagType;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.model.MatchType;
 
-public class RestartDirectiveInvocation implements IntkeyDirectiveInvocation {
+public class RestartDirectiveInvocation extends IntkeyDirectiveInvocation {
 
     boolean _identificationParameters = false;
     boolean _queryParameters = false;

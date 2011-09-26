@@ -10,6 +10,7 @@ import java.util.Map;
 import org.apache.commons.lang.math.IntRange;
 
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
+import au.org.ala.delta.intkey.directives.invocation.SetReliabilitiesDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.model.IntkeyDataset;
 import au.org.ala.delta.model.Character;
@@ -55,21 +56,4 @@ public class SetReliabilitiesDirective extends IntkeyDirective {
         return new SetReliabilitiesDirectiveInvocation(reliabilitiesMap);
     }
 
-    private class SetReliabilitiesDirectiveInvocation implements IntkeyDirectiveInvocation {
-        private Map<Character, Float> _reliabilitiesMap;
-
-        public SetReliabilitiesDirectiveInvocation(Map<Character, Float> reliabilitiesMap) {
-            _reliabilitiesMap = reliabilitiesMap;
-        }
-
-        @Override
-        public boolean execute(IntkeyContext context) {
-            for (Character ch : _reliabilitiesMap.keySet()) {
-                ch.setReliability(_reliabilitiesMap.get(ch));
-            }
-
-            return true;
-        }
-
-    }
 }

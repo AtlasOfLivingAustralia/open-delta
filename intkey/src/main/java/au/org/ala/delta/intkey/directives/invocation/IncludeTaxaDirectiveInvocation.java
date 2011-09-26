@@ -7,7 +7,7 @@ import java.util.Set;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.model.Item;
 
-public class IncludeTaxaDirectiveInvocation implements IntkeyDirectiveInvocation {
+public class IncludeTaxaDirectiveInvocation extends IntkeyDirectiveInvocation {
     
     private List<Item> _taxa;
 
