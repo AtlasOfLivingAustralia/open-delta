@@ -12,8 +12,9 @@ public class CommentDirectiveInvocation implements IntkeyDirectiveInvocation {
 
     @Override
     public boolean execute(IntkeyContext context) {
-        context.appendToLogFile(_text);
-        context.appendToJournalFile(_text);
+        // Do nothing. This directive exists purely to add the supplied text to
+        // the
+        // log and journal files. This is done elsewhere.
         return true;
     }
 
