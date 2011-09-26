@@ -1023,8 +1023,10 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             selectedTaxa.add((Item) _eliminatedTaxaListModel.getElementAt(i));
         }
 
-        TaxonInformationDialog dlg = new TaxonInformationDialog(getMainFrame(), selectedTaxa, _context);
-        show(dlg);
+        if (!selectedTaxa.isEmpty()) {
+            TaxonInformationDialog dlg = new TaxonInformationDialog(getMainFrame(), selectedTaxa, _context);
+            show(dlg);
+        }
     }
 
     @Action
