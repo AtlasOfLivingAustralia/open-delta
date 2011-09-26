@@ -58,7 +58,6 @@ public class IntkeyItemsFileWriter {
 		writeCharacterDependencies();
 		writeAttributeData();
 		writeTaxonImages();
-		writeEnableDeltaOutput();
 		writeChineseFormat();
 		writeCharacterSynonomy();
 		writeOmitOr();
@@ -68,6 +67,7 @@ public class IntkeyItemsFileWriter {
 		writeNewParagraph();
 		writeNonAutoControllingChars();
 		writeSubjectForOutputFiles();
+		writeEnableDeltaOutput();
 		_itemsFile.writeHeader();
 	}
 	
@@ -506,7 +506,7 @@ public class IntkeyItemsFileWriter {
 	
 	
 	public void writeEnableDeltaOutput() {
-		_itemsFile.writeEnableDeltaOutput(_context.isDeltaOutputDisabled());
+		_itemsFile.writeEnableDeltaOutput(!_context.isDeltaOutputDisabled());
 	}
 	
 	public void writeChineseFormat() {

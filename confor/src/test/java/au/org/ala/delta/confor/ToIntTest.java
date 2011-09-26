@@ -14,8 +14,11 @@ import au.org.ala.delta.intkey.model.IntkeyDataset;
 import au.org.ala.delta.intkey.model.IntkeyDatasetFileReader;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
+import au.org.ala.delta.model.NumericCharacter;
+import au.org.ala.delta.model.RealCharacter;
 import au.org.ala.delta.model.TextAttribute;
 
 /**
@@ -98,6 +101,19 @@ public class ToIntTest extends TestCase {
 					assertEquals(expectedMultiStateChar.getNumberOfStates(), multiStateChar.getNumberOfStates());
 					for (int k=1; k<=expectedMultiStateChar.getNumberOfStates(); k++) {
 						assertEquals("Character: "+j,expectedMultiStateChar.getState(k), multiStateChar.getState(k));
+					}
+				}
+				else if (expectedCharacter.getCharacterType().isNumeric()) {
+					
+					NumericCharacter<?> numericChar = (NumericCharacter<?>)character;
+					NumericCharacter<?> expectedNumericChar = (NumericCharacter<?>)expectedCharacter;
+					
+					assertEquals(expectedNumericChar.getUnits(), numericChar.getUnits());
+					
+					if (expectedCharacter.getCharacterType() == CharacterType.RealNumeric) {
+						RealCharacter realChar = (RealCharacter)character;
+						RealCharacter expectedRealChar = (RealCharacter)expectedCharacter;
+						//assertEquals("Character: "+j,expectedRealChar.getKeyStateBoundaries(), realChar.getKeyStateBoundaries());
 					}
 				}
 				

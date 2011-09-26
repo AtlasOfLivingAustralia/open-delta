@@ -181,9 +181,21 @@ public class WriteOnceIntkeyItemsFile extends IntkeyFile {
 	public void writeKeyStateBoundaries(List<List<Float>> keyStateBoundaries) {
 		checkEmpty(_header.getRpNkbd());
 		checkCharacterListLength(keyStateBoundaries);
+		int sum = 0;
+		int maxCount = 0;
+		for (List<Float> boundaries : keyStateBoundaries) {
+			sum += boundaries.size();
+			maxCount = Math.max(maxCount, boundaries.size());
+		}
+		if (sum == 0) {
+			// no key state boundaries.
+			return;
+		}
 		
 		int indexRecord = nextAvailableRecord();
 		_header.setRpNkbd(indexRecord);
+		_header.setLSbnd(sum);
+		_header.setLkstat(maxCount);
 		
 		List<Integer> index = new ArrayList<Integer>();
 		// Write the index to allocate the record.
@@ -205,6 +217,7 @@ public class WriteOnceIntkeyItemsFile extends IntkeyFile {
 				index.add(0);
 			}
 		}
+		
 		// Now update the index
 		overwriteRecord(indexRecord, index);
 	}
@@ -220,7 +233,15 @@ public class WriteOnceIntkeyItemsFile extends IntkeyFile {
 	}
 	
 	public void writeEnableDeltaOutput(boolean enable) {
-		_header.setEnableDeltaOutput(toInt(enable));
+		int checkSum = 0;
+		if (enable) {
+			List<Integer> charTypes = readIntegerList(_header.getRpSpec(), _header.getNChar());
+			for (int type : charTypes) {
+				checkSum += type;
+			}
+		}
+		System.out.println("ENABLE DELTA OUTPUT: "+checkSum);
+		_header.setEnableDeltaOutput(checkSum);
 	}
 	
 	public void writeChineseFormat(boolean chineseFormat) {
