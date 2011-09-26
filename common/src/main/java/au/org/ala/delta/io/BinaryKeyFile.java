@@ -15,7 +15,7 @@ import org.apache.commons.lang.StringUtils;
 
 /**
  * Provides access to the contents of a file formatted for use by the
- * Intkey program.  It currently mostly only supports sequential writes.
+ * Intkey and Key programs.  It currently mostly only supports sequential writes.
  */
 public class BinaryKeyFile extends BinFile {
 
