@@ -2,6 +2,7 @@ package au.org.ala.delta.model;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -22,7 +23,6 @@ public class IdentificationKeyCharacter {
 		public int getStateNumber() {
 			return stateId;
 		}
-		
 	}
 	
 	/**
@@ -43,6 +43,11 @@ public class IdentificationKeyCharacter {
 			return _originalStates.contains(orignalState);
 		}
 		
+		public List<Integer> originalStates() {
+			List<Integer> states = new ArrayList<Integer>(_originalStates);
+			Collections.sort(states);
+			return states;
+		}
 	}
 	
 	/**
@@ -61,6 +66,10 @@ public class IdentificationKeyCharacter {
 		
 		public boolean isPresent(Number value) {
 			return _stateRange.containsFloat(value);
+		}
+		
+		public FloatRange stateRange() {
+			return _stateRange;
 		}
 	}
 	
@@ -115,6 +124,13 @@ public class IdentificationKeyCharacter {
 		}
 	}
 	
+	public KeyState getKeyState(int stateNum) {
+		if (stateNum > _states.size() ) {
+			throw new IllegalArgumentException(stateNum+" > "+_states.size());
+		}
+		return _states.get(stateNum);
+	}
+	
 	public List<Integer> getPresentStates(MultiStateAttribute attribute) {
 		
 		List<Integer> states = new ArrayList<Integer>();
@@ -160,6 +176,8 @@ public class IdentificationKeyCharacter {
 	public Character getCharacter() {
 		return _character;
 	}
+	
+
 	
 	public List<KeyState> getStates() {
 		return _states;

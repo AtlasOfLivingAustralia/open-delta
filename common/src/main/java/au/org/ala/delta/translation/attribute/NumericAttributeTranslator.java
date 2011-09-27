@@ -51,11 +51,11 @@ public class NumericAttributeTranslator extends AttributeTranslator {
 	 * Overrides the parent method to append the characters units, if any, to the translation.
 	 */
 	@Override
-	protected String values(Values values) {
+	public String translateValues(Values values) {
 		
 		StringBuilder output = new StringBuilder();
 		
-		String value = super.values(values);
+		String value = super.translateValues(values);
 		if (StringUtils.isNotEmpty(value)) {
 			output.append(value).append(getUnits());
 		}

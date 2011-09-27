@@ -4,8 +4,6 @@ import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.TranslateType;
 import au.org.ala.delta.model.format.AttributeFormatter;
 import au.org.ala.delta.model.format.CharacterFormatter;
-import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
-import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.translation.delta.DeltaFormatDataSetFilter;
 import au.org.ala.delta.translation.delta.DeltaFormatTranslator;
@@ -27,18 +25,19 @@ public class DataSetTranslatorFactory {
 		
 		DataSetTranslator translator = null;
 		TranslateType translation = context.getTranslateType();
+		FormatterFactory formatterFactory = new FormatterFactory(context);
 		
 		if (translation.equals(TranslateType.NaturalLanguage) && context.getOutputHtml() == false) {
-			translator = createNaturalLanguageTranslator(context, printer);
+			translator = createNaturalLanguageTranslator(context, printer, formatterFactory);
 		}
 		else if (translation.equals(TranslateType.Delta)) {
-			translator = createDeltaFormatTranslator(context, printer);
+			translator = createDeltaFormatTranslator(context, printer, formatterFactory);
 		}
 		else if (translation.equals(TranslateType.IntKey)) {
-			translator = createIntkeyFormatTranslator(context);
+			translator = createIntkeyFormatTranslator(context, formatterFactory);
 		}
 		else if (translation.equals(TranslateType.Key)) {
-			translator = createKeyFormatTranslator(context);
+			translator = createKeyFormatTranslator(context, formatterFactory);
 		}
 		else {
 			throw new RuntimeException("(Currently) unsupported translation type: "+translation);
@@ -48,30 +47,31 @@ public class DataSetTranslatorFactory {
 	
 	
 
-	private DataSetTranslator createIntkeyFormatTranslator(DeltaContext context) {
+	private DataSetTranslator createIntkeyFormatTranslator(DeltaContext context, FormatterFactory formatterFactory) {
 		FilteredDataSet dataSet = new FilteredDataSet(context, new DeltaFormatDataSetFilter(context));
-		return new IntkeyTranslator(context, dataSet, createCharacterFormatter(context));
+		return new IntkeyTranslator(context, dataSet, formatterFactory.createCharacterFormatter());
 	}
 	
-	private DataSetTranslator createKeyFormatTranslator(DeltaContext context) {
+	private DataSetTranslator createKeyFormatTranslator(DeltaContext context, FormatterFactory formatterFactory) {
 		FilteredDataSet dataSet = new FilteredDataSet(context, new DeltaFormatDataSetFilter(context));
-		return new KeyTranslator(context, dataSet, createCharacterFormatter(context));
+		return new KeyTranslator(context, dataSet, formatterFactory.createCharacterFormatter());
 	}
 
 	private AbstractDataSetTranslator createNaturalLanguageTranslator(
-			DeltaContext context, Printer printer) {
+			DeltaContext context, Printer printer, FormatterFactory formatterFactory) {
 		AbstractDataSetTranslator translator;
-		TypeSetter typeSetter = createTypeSetter(context, printer);
+		TypeSetter typeSetter = new TypeSetterFactory().createTypeSetter(context, printer);
 		
-		ItemFormatter itemFormatter  = createItemFormatter(context, typeSetter);
-		CharacterFormatter characterFormatter = createCharacterFormatter(context);
-		AttributeFormatter attributeFormatter = createAttributeFormatter(context, typeSetter);
+		ItemFormatter itemFormatter  = formatterFactory.createItemFormatter(typeSetter);
+		CharacterFormatter characterFormatter = formatterFactory.createCharacterFormatter();
+		AttributeFormatter attributeFormatter = formatterFactory.createAttributeFormatter();
 		translator = new NaturalLanguageTranslator(context, typeSetter, printer, itemFormatter, characterFormatter, attributeFormatter);
 		return translator;
 	}
 	
-	private AbstractDataSetTranslator createDeltaFormatTranslator(DeltaContext context, Printer printer) {
-		ItemFormatter itemFormatter  = createItemFormatter(context, null);
+	private AbstractDataSetTranslator createDeltaFormatTranslator(
+			DeltaContext context, Printer printer, FormatterFactory formatterFactory) {
+		ItemFormatter itemFormatter  = formatterFactory.createItemFormatter(null);
 		return new DeltaFormatTranslator(context, printer, itemFormatter);
 	}
 	
@@ -86,53 +86,6 @@ public class DataSetTranslatorFactory {
 		return new Printer(context.getPrintStream(), printWidth);
 	}
 	
-	/**
-	 * Creates the appropriate TypeSetter for the supplied context.  If the TYPESETTING MARKS
-	 * directive has been specified a FormattedTypeSetter will be returned. Otherwise a
-	 * PlainTextTypeSetter will be returned.
-	 * @param context the context in which the translator will run.
-	 * @param printer used for outputting to the print file.
-	 * @return a new instance of TypeSetter.
-	 */
-	private TypeSetter createTypeSetter(DeltaContext context, Printer printer) {
-		
-		if (context.getTypeSettingMarks().isEmpty()) {
-			return new PlainTextTypeSetter(printer);
-		}
-		else {
-			return new FormattedTextTypeSetter(context.getTypeSettingMarks(), printer);
-		}
-		
-	}
 	
-	private ItemFormatter createItemFormatter(DeltaContext context, TypeSetter typeSetter) {
-		if (context.isOmitTypeSettingMarks()) {
-			return new ItemFormatter(false, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.RETAIN, true, false, false);
-		}
-		else if (typeSetter == null) {
-			return new ItemFormatter(false, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.RETAIN, false, false, false);
-		}
-		else {
-			return new TypeSettingItemFormatter(typeSetter);
-		}
-	}
 	
-	private CharacterFormatter createCharacterFormatter(DeltaContext context) {
-		CommentStrippingMode mode = CommentStrippingMode.STRIP_ALL;
-		if (context.getTranslateType() == TranslateType.IntKey) {
-			if (context.getOmitInnerComments()) {
-				mode = CommentStrippingMode.STRIP_INNER;
-			}
-		}
-		return new CharacterFormatter(false, mode, AngleBracketHandlingMode.RETAIN, context.isOmitTypeSettingMarks(), false);
-	}
-	
-	private AttributeFormatter createAttributeFormatter(DeltaContext context, TypeSetter typeSetter) {
-		if (context.isOmitTypeSettingMarks()) {
-			return new AttributeFormatter(false, true, CommentStrippingMode.RETAIN);
-		}
-		else {
-			return new TypeSettingAttributeFormatter();
-		}
-	}
 }

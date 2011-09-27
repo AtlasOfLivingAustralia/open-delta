@@ -60,7 +60,7 @@ public abstract class AttributeTranslator {
 		// Special case - if an attribute is marked not applicable and has a comment
 		// the "not applicable" is omitted from the description.
 		if (!isInapplicableWithComment(commentedValues)) {
-			 output.append(values(commentedValues.getValues()));
+			 output.append(translateValues(commentedValues.getValues()));
 		}
 		output.append(comment(commentedValues.getComment()));
 		return output.toString();
@@ -96,7 +96,7 @@ public abstract class AttributeTranslator {
 		return output.toString();
 	}
 	
-	protected String values(Values values) {
+	public String translateValues(Values values) {
 		if (values == null) {
 			return "";
 		}
