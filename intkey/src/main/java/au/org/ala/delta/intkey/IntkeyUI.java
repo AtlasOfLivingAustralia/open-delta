@@ -46,4 +46,6 @@ public interface IntkeyUI {
     void setLogVisible(boolean visible);
     
     void updateLog();
+    
+    void quitApplication();
 }

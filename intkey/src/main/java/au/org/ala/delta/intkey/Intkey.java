@@ -1688,6 +1688,11 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         _logDialog.setContent(builder.toString());
     }
 
+    @Override
+    public void quitApplication() {
+        exit();
+    }
+
     // ================================== DirectivePopulator methods
     // ===================================================================
 

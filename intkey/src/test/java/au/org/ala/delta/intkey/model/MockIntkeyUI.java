@@ -95,4 +95,8 @@ public class MockIntkeyUI implements IntkeyUI {
         return false;
     }
 
+    @Override
+    public void quitApplication() {
+    }
+
 }

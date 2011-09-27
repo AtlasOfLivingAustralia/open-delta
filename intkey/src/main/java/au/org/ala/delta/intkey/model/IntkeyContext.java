@@ -1199,7 +1199,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         _appUI.handleDatasetClosed();
 
     }
-
+    
     /**
      * Called prior to application shutdown.
      */
