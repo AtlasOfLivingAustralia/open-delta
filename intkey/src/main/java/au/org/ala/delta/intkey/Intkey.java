@@ -122,6 +122,7 @@ import au.org.ala.delta.model.RealCharacter;
 import au.org.ala.delta.model.TextAttribute;
 import au.org.ala.delta.model.TextCharacter;
 import au.org.ala.delta.model.image.Image;
+import au.org.ala.delta.rtf.RTFBuilder;
 import au.org.ala.delta.ui.AboutBox;
 import au.org.ala.delta.ui.DeltaSingleFrameApplication;
 import au.org.ala.delta.ui.rtf.SimpleRtfEditorKit;
@@ -221,6 +222,9 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     @Resource
     String selectTaxonKeywordsCaption;
 
+    @Resource
+    String logDialogTitle;
+
     private JLabel _lblNumRemainingTaxa;
     private JLabel _lblEliminatedTaxa;
     private JButton _btnRestart;
@@ -253,6 +257,8 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     private JScrollPane _sclPaneAvailableCharacters;
     private JPanel _pnlAvailableCharactersHeader;
     private JPanel _pnlDynamicButtons;
+
+    private RtfReportDisplayDialog _logDialog;
 
     private String _datasetInitFileToOpen = null;
 
@@ -591,6 +597,8 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         _txtFldCmdBar.setVisible(_advancedMode);
         _rootPanel.add(_txtFldCmdBar, BorderLayout.SOUTH);
         _txtFldCmdBar.setColumns(10);
+
+        _logDialog = new RtfReportDisplayDialog(getMainFrame(), new SimpleRtfEditorKit(null), null, logDialogTitle);
 
         show(_rootPanel);
     }
@@ -1641,6 +1649,43 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         } catch (Exception ex) {
             displayErrorMessage("Error displaying file " + file.getAbsolutePath());
         }
+    }
+
+    @Override
+    public boolean isLogVisible() {
+        return _logDialog.isVisible();
+    }
+
+    @Override
+    public void setLogVisible(boolean visible) {
+        if (visible) {
+            show(_logDialog);
+        } else {
+            _logDialog.setVisible(false);
+        }
+    }
+
+    @Override
+    public void updateLog() {
+        String logContent = _context.getLogText();
+        RTFBuilder builder = new RTFBuilder();
+        builder.startDocument();
+        builder.setFont(1);
+        String[] lines = logContent.split("\n");
+        for (String line : lines) {
+            // directive calls are identified by a leading asterisk. They should
+            // be colored blue.
+            // All other lines should be colored red.
+            if (line.startsWith("*")) {
+                builder.setTextColor(Color.BLUE);
+            } else {
+                builder.setTextColor(Color.RED);
+            }
+            builder.appendText(line);
+        }
+        builder.endDocument();
+
+        _logDialog.setContent(builder.toString());
     }
 
     // ================================== DirectivePopulator methods

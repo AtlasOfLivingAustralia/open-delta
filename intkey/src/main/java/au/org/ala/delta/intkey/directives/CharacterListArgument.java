@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Queue;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.Item;
 
 public class CharacterListArgument extends IntkeyDirectiveArgument<List<au.org.ala.delta.model.Character>> {
 
@@ -20,7 +22,7 @@ public class CharacterListArgument extends IntkeyDirectiveArgument<List<au.org.a
     }
 
     @Override
-    public List<au.org.ala.delta.model.Character> parseInput(Queue<String> inputTokens, IntkeyContext context, String directiveName) throws IntkeyDirectiveParseException {
+    public List<au.org.ala.delta.model.Character> parseInput(Queue<String> inputTokens, IntkeyContext context, String directiveName, StringBuilder stringRepresentationBuilder) throws IntkeyDirectiveParseException {
         boolean overrideExcludedCharacters = false;
 
         String token = inputTokens.poll();
@@ -59,6 +61,15 @@ public class CharacterListArgument extends IntkeyDirectiveArgument<List<au.org.a
                 characters = populator.promptForCharactersByKeyword(directiveName, !overrideExcludedCharacters);
             } else {
                 characters = populator.promptForCharactersByList(directiveName, _selectFromAll, !overrideExcludedCharacters);
+            }
+        }
+        
+        stringRepresentationBuilder.append(" ");
+        for (int i = 0; i < characters.size(); i++) {
+            Character ch = characters.get(i);
+            stringRepresentationBuilder.append(ch.getCharacterId());
+            if (i < characters.size() - 1) {
+                stringRepresentationBuilder.append(" ");
             }
         }
         

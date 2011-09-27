@@ -41,4 +41,9 @@ public interface IntkeyUI {
     
     void displayFile(File file, String description);
 
+    boolean isLogVisible();
+    
+    void setLogVisible(boolean visible);
+    
+    void updateLog();
 }

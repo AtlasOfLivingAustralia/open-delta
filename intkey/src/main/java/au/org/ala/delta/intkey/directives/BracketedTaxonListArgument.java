@@ -18,7 +18,7 @@ public class BracketedTaxonListArgument extends AbstractTaxonListArgument<Pair<L
     }
 
     @Override
-    public Pair<List<Item>, Boolean> parseInput(Queue<String> inputTokens, IntkeyContext context, String directiveName) throws IntkeyDirectiveParseException {
+    public Pair<List<Item>, Boolean> parseInput(Queue<String> inputTokens, IntkeyContext context, String directiveName, StringBuilder stringRepresentationBuilder) throws IntkeyDirectiveParseException {
         boolean overrideExcludedCharacters = false;
 
         String token = inputTokens.poll();
@@ -98,6 +98,23 @@ public class BracketedTaxonListArgument extends AbstractTaxonListArgument<Pair<L
         if (taxa.size() == 0 && includeSpecimen == false) {
             return null;
         }
+
+        // TODO need to handle keywords here
+        stringRepresentationBuilder.append(" ");
+        stringRepresentationBuilder.append(OPEN_BRACKET);
+        for (int i = 0; i < taxa.size(); i++) {
+            Item taxon = taxa.get(i);
+            stringRepresentationBuilder.append(taxon.getItemNumber());
+            if (i < taxa.size() - 1) {
+                stringRepresentationBuilder.append(" ");
+            }
+        }
+        
+        if (includeSpecimen) {
+            stringRepresentationBuilder.append(" ");
+            stringRepresentationBuilder.append(IntkeyContext.SPECIMEN_KEYWORD.toUpperCase());
+        }
+        stringRepresentationBuilder.append(CLOSE_BRACKET);
 
         return new Pair<List<Item>, Boolean>(taxa, includeSpecimen);
     }

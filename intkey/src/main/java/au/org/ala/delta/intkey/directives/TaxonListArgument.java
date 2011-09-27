@@ -29,7 +29,7 @@ public class TaxonListArgument extends AbstractTaxonListArgument<List<Item>> {
     }
 
     @Override
-    public List<Item> parseInput(Queue<String> inputTokens, IntkeyContext context, String directiveName) throws IntkeyDirectiveParseException {
+    public List<Item> parseInput(Queue<String> inputTokens, IntkeyContext context, String directiveName, StringBuilder stringRepresentationBuilder) throws IntkeyDirectiveParseException {
         boolean overrideExcludedCharacters = false;
 
         String token = inputTokens.poll();
@@ -73,6 +73,15 @@ public class TaxonListArgument extends AbstractTaxonListArgument<List<Item>> {
             } else {
                 boolean autoSelectSingleValue = (selectionMode == SelectionMode.LIST_AUTOSELECT_SINGLE_VALUE);
                 taxa = populator.promptForTaxaByList(directiveName, _selectFromAll, !overrideExcludedCharacters, autoSelectSingleValue);
+            }
+        }
+        
+        stringRepresentationBuilder.append(" ");
+        for (int i = 0; i < taxa.size(); i++) {
+            Item taxon = taxa.get(i);
+            stringRepresentationBuilder.append(taxon.getItemNumber());
+            if (i < taxa.size() - 1) {
+                stringRepresentationBuilder.append(" ");
             }
         }
 

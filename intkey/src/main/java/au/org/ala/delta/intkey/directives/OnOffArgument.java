@@ -14,16 +14,19 @@ public class OnOffArgument extends IntkeyDirectiveArgument<Boolean> {
     }
 
     @Override
-    public Boolean parseInput(Queue<String> inputTokens, IntkeyContext context, String directiveName) throws IntkeyDirectiveParseException {
+    public Boolean parseInput(Queue<String> inputTokens, IntkeyContext context, String directiveName, StringBuilder stringRepresentationBuilder) throws IntkeyDirectiveParseException {
         String token = inputTokens.poll();
 
         if (token == null) {
-            // TODO feed actual initial value in
-            return context.getDirectivePopulator().promptForOnOffValue(directiveName, true);
+            return context.getDirectivePopulator().promptForOnOffValue(directiveName, getInitialValue());
         } else {
             if (token.equalsIgnoreCase(ON_VALUE)) {
+                stringRepresentationBuilder.append(" ");
+                stringRepresentationBuilder.append(ON_VALUE);
                 return true;
             } else if (token.equalsIgnoreCase(OFF_VALUE)) {
+                stringRepresentationBuilder.append(" ");
+                stringRepresentationBuilder.append(OFF_VALUE);
                 return false;
             } else {
                 throw new IntkeyDirectiveParseException(String.format("Invalid value for %s : '%s', expecting '%s' or '%s'", ON_VALUE, OFF_VALUE));

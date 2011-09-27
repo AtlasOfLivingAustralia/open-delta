@@ -33,5 +33,5 @@ public abstract class IntkeyDirectiveArgument<T> {
         return _initialValue;
     }
 
-    abstract public T parseInput(Queue<String> inputTokens, IntkeyContext context, String directiveName) throws IntkeyDirectiveParseException;
+    abstract public T parseInput(Queue<String> inputTokens, IntkeyContext context, String directiveName, StringBuilder stringRepresentationBuilder) throws IntkeyDirectiveParseException;
 }

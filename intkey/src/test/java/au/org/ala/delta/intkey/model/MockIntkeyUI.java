@@ -82,4 +82,17 @@ public class MockIntkeyUI implements IntkeyUI {
     public void displayFile(File file, String description) {
     }
 
+    @Override
+    public void setLogVisible(boolean visible) {
+    }
+
+    @Override
+    public void updateLog() {
+    }
+
+    @Override
+    public boolean isLogVisible() {
+        return false;
+    }
+
 }

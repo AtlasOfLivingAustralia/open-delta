@@ -19,7 +19,7 @@ public class FileArgument extends IntkeyDirectiveArgument<File> {
     }
 
     @Override
-    public File parseInput(Queue<String> inputTokens, IntkeyContext context, String directiveName) throws IntkeyDirectiveParseException {
+    public File parseInput(Queue<String> inputTokens, IntkeyContext context, String directiveName, StringBuilder stringRepresentationBuilder) throws IntkeyDirectiveParseException {
         String filePath = inputTokens.poll();
 
         File file = null;
@@ -59,6 +59,11 @@ public class FileArgument extends IntkeyDirectiveArgument<File> {
 
         if (file != null && !file.exists()) {
             throw new IntkeyDirectiveParseException(String.format("Could not open file %s", file.getAbsolutePath()));
+        }
+
+        if (file != null) {
+            stringRepresentationBuilder.append(" ");
+            stringRepresentationBuilder.append(file.getAbsolutePath());
         }
 
         return file;

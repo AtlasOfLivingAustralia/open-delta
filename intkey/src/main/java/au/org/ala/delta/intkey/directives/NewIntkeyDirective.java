@@ -25,6 +25,9 @@ public abstract class NewIntkeyDirective extends IntkeyDirective {
 
     @Override
     public final IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
+        StringBuilder stringRepresentationBuilder = new StringBuilder();
+        stringRepresentationBuilder.append(StringUtils.join(getControlWords(), " ").toUpperCase());
+
         List<String> tokens = ParsingUtils.tokenizeDirectiveCall(data);
         Queue<String> tokenQueue = new ArrayDeque<String>(tokens);
 
@@ -42,6 +45,10 @@ public abstract class NewIntkeyDirective extends IntkeyDirective {
                             BeanUtils.setProperty(invoc, flag.getName(), true);
                             tokenQueue.remove();
                             tokenMatched = true;
+
+                            stringRepresentationBuilder.append("/");
+                            stringRepresentationBuilder.append(flag.getSymbol());
+
                             break;
                         }
                     }
@@ -66,13 +73,9 @@ public abstract class NewIntkeyDirective extends IntkeyDirective {
 
         if (intkeyArgsList != null) {
             for (IntkeyDirectiveArgument<?> arg : intkeyArgsList) {
-                Object parsedArgumentValue = arg.parseInput(tokenQueue, context, StringUtils.join(_controlWords, " "));
+                Object parsedArgumentValue = arg.parseInput(tokenQueue, context, StringUtils.join(_controlWords, " "), stringRepresentationBuilder);
                 if (parsedArgumentValue != null) {
-                    try {
-                        BeanUtils.setProperty(invoc, arg.getName(), parsedArgumentValue);
-                    } catch (Exception ex) {
-                        System.out.println("HEre!");
-                    }
+                    BeanUtils.setProperty(invoc, arg.getName(), parsedArgumentValue);
                 } else {
                     // No argument value supplied, user cancelled out of the
                     // prompt dialog.
@@ -80,6 +83,8 @@ public abstract class NewIntkeyDirective extends IntkeyDirective {
                 }
             }
         }
+
+        invoc.setStringRepresentation(stringRepresentationBuilder.toString());
 
         return invoc;
     }

@@ -33,7 +33,7 @@ public class RTFBuilder {
     public void startDocument() {
         _strBuilder.append("{\\rtf1\\ansi\\deff0 {\\fonttbl{\\f0\\froman Times New Roman;}{\\f1\\fswiss MS Sans Serif;}}");
         _strBuilder.append("\n");
-        _strBuilder.append("{\\colortbl;\\red255\\green0\\blue0;}");
+        _strBuilder.append("{\\colortbl;\\red255\\green0\\blue0;\\red0\\green0\\blue255}");
         _strBuilder.append("\n");
         _strBuilder.append("\\fs28");
         _strBuilder.append("\n");
@@ -61,6 +61,8 @@ public class RTFBuilder {
             _strBuilder.append("\\cf0");
         } else if (color.equals(Color.RED)) {
             _strBuilder.append("\\cf1");
+        } else if (color.equals(Color.BLUE)) {
+            _strBuilder.append("\\cf2");
         } else {
             throw new IllegalArgumentException("Unsupported color");
         }

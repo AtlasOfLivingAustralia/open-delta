@@ -12,6 +12,17 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
  */
 public abstract class IntkeyDirectiveInvocation {
     
+    private String stringRepresentation;
+    
+    public void setStringRepresentation(String stringRepresentation) {
+        this.stringRepresentation = stringRepresentation;
+    }
+    
+    @Override
+    public String toString() {
+        return stringRepresentation;
+    }
+
     /**
      * Perform execution
      * @param context State object to set values on

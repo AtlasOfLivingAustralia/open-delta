@@ -159,7 +159,15 @@ public class IntkeyContext extends AbstractDeltaContext {
     private File _journalFile;
     private PrintWriter _logFileWriter;
     private PrintWriter _journalFileWriter;
-    private Map<File, PrintWriter> _outputFileWriters;
+
+    // Intkey can only write to a single output file at a time, so need to keep
+    // track of the
+    // current file
+    private File _currentOutputFile;
+    private PrintWriter _currentOutputFileWriter;
+
+    private StringBuilder _logCache;
+    private StringBuilder _journalCache;
 
     /**
      * Constructor
@@ -182,7 +190,8 @@ public class IntkeyContext extends AbstractDeltaContext {
         _processingInputFile = false;
 
         _directiveParser = IntkeyDirectiveParser.createInstance();
-        _outputFileWriters = new HashMap<File, PrintWriter>();
+        _logCache = new StringBuilder();
+        _journalCache = new StringBuilder();
 
         initializeIdentification();
     }
@@ -433,6 +442,9 @@ public class IntkeyContext extends AbstractDeltaContext {
             } else {
                 _executedDirectives.add(insertionIndex, invoc);
             }
+
+            appendToLog("*" + invoc.toString());
+            appendToJournal("*" + invoc.toString());
         }
     }
 
@@ -1203,9 +1215,9 @@ public class IntkeyContext extends AbstractDeltaContext {
             _journalFileWriter.close();
         }
 
-        for (PrintWriter outputFileWriter : _outputFileWriters.values()) {
-            outputFileWriter.flush();
-            outputFileWriter.close();
+        if (_currentOutputFileWriter != null) {
+            _currentOutputFileWriter.flush();
+            _currentOutputFileWriter.close();
         }
     }
 
@@ -1306,77 +1318,99 @@ public class IntkeyContext extends AbstractDeltaContext {
     }
 
     public void setLogFile(File logFile) throws IOException {
-        if (_logFile != null) {
+        if (_logFileWriter != null) {
             _logFileWriter.flush();
             _logFileWriter.close();
         }
 
         _logFileWriter = new PrintWriter(new BufferedWriter(new FileWriter(logFile)));
         _logFile = logFile;
+
+        _logFileWriter.append(_logCache.toString());
     }
 
     public void setJournalFile(File journalFile) throws IOException {
-        if (_journalFile != null) {
+        if (_journalFileWriter != null) {
             _journalFileWriter.flush();
             _journalFileWriter.close();
         }
 
         _journalFileWriter = new PrintWriter(new BufferedWriter(new FileWriter(journalFile)));
         _journalFile = journalFile;
+
+        _journalFileWriter.append(_journalCache.toString());
     }
 
     public void newOutputFile(File outputFile) throws IOException {
-        if (!_outputFileWriters.containsKey(outputFile)) {
-            PrintWriter outputFileWriter = new PrintWriter(new BufferedWriter(new FileWriter(outputFile)));
-            _outputFileWriters.put(outputFile, outputFileWriter);
+        if (_currentOutputFile != null && !_currentOutputFile.equals(outputFile)) {
+            if (_currentOutputFile != null) {
+                closeOutputFile(_currentOutputFile);
+            }
+
+            _currentOutputFile = outputFile;
+            _currentOutputFileWriter = new PrintWriter(new BufferedWriter(new FileWriter(outputFile)));
         }
     }
 
     public void closeOutputFile(File outputFile) {
-        if (_outputFileWriters.containsKey(outputFile)) {
-            PrintWriter outputFileWriter = _outputFileWriters.get(outputFile);
-            outputFileWriter.flush();
-            outputFileWriter.close();
-            _outputFileWriters.remove(outputFile);
-        } else {
-            throw new IllegalArgumentException(String.format("File '%s' is not open as an output file", outputFile.getAbsolutePath()));
+        if (_currentOutputFile != null && _currentOutputFile.equals(outputFile)) {
+            _currentOutputFileWriter.flush();
+            _currentOutputFileWriter.close();
+            _currentOutputFile = null;
         }
     }
 
     public List<File> getOutputFiles() {
-        List<File> fileList = new ArrayList<File>(_outputFileWriters.keySet());
-        Collections.sort(fileList);
-        return fileList;
+        // List<File> fileList = new
+        // ArrayList<File>(_outputFileWriters.keySet());
+        // Collections.sort(fileList);
+        // return fileList;
+        return null;
     }
 
     /**
-     * Appends the supplied text to the log file if one has been specified
+     * Appends the supplied text to the current output file
+     * 
      * @param text
      */
-    public void appendToLogFile(String text) {
-        if (_logFile != null) {
+    public void appendToOutputFile(String text) {
+        if (_currentOutputFile == null) {
+            throw new IllegalStateException("No output file is open");
+        }
+
+        _currentOutputFileWriter.println(text);
+        _currentOutputFileWriter.flush();
+    }
+
+    /**
+     * Appends the supplied text to the log
+     * 
+     * @param text
+     */
+    public void appendToLog(String text) {
+        if (_logFileWriter != null) {
             _logFileWriter.println(text);
+            _logFileWriter.flush();
         }
+
+        _logCache.append(text);
+        _logCache.append("\n");
+
+        _appUI.updateLog();
     }
 
-    /**
-     * Appends the supplied text to the journal file if one has been specified
-     * @param text
-     */
-    public void appendToJournalFile(String text) {
-        if (_journalFile != null) {
+    public void appendToJournal(String text) {
+        if (_journalFileWriter != null) {
             _journalFileWriter.println(text);
+            _journalFileWriter.flush();
         }
+
+        _journalCache.append(text);
+        _journalCache.append("\n");
     }
 
-    /**
-     * Appends the supplied text to any open output files
-     * @param text
-     */
-    public void appendToOutputFiles(String text) {
-        for (PrintWriter outputFileWriter : _outputFileWriters.values()) {
-            outputFileWriter.println(text);
-        }
+    public String getLogText() {
+        return _logCache.toString();
     }
 
     private class StartupFileLoader extends SwingWorker<Void, String> {

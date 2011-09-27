@@ -11,7 +11,7 @@ public class IntegerArgument extends IntkeyDirectiveArgument<Integer> {
     }
 
     @Override
-    public Integer parseInput(Queue<String> inputTokens, IntkeyContext context, String directiveName) throws IntkeyDirectiveParseException {
+    public Integer parseInput(Queue<String> inputTokens, IntkeyContext context, String directiveName, StringBuilder stringRepresentationBuilder) throws IntkeyDirectiveParseException {
         String token = inputTokens.poll();
 
         if (token == null) {
@@ -21,6 +21,8 @@ public class IntegerArgument extends IntkeyDirectiveArgument<Integer> {
         if (token != null) {
             try {
                 int parsedInteger = Integer.parseInt(token);
+                stringRepresentationBuilder.append(" ");
+                stringRepresentationBuilder.append(parsedInteger);
                 return parsedInteger;
             } catch (NumberFormatException ex) {
                 throw new IntkeyDirectiveParseException("Integer value required", ex);
