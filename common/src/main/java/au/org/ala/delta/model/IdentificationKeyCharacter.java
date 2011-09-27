@@ -15,13 +15,14 @@ import org.apache.commons.lang.math.FloatRange;
  */
 public class IdentificationKeyCharacter {
 
-	public abstract class KeyState {
+	public static abstract class KeyState {
 		int stateId;
 		public abstract boolean isPresent(Number value);
 		
 		public int getStateNumber() {
 			return stateId;
 		}
+		
 	}
 	
 	/**
@@ -29,7 +30,7 @@ public class IdentificationKeyCharacter {
 	 * multistate character to a single new state defined by the KEY STATES
 	 * directive.
 	 */
-	public class MultiStateKeyState extends KeyState {
+	public static class MultiStateKeyState extends KeyState {
 	
 		Set<Integer> _originalStates;
 		
@@ -49,7 +50,7 @@ public class IdentificationKeyCharacter {
 	 * real or integer character to a single new state defined by the KEY STATES
 	 * directive.
 	 */
-	public class NumericKeyState extends KeyState {
+	public static class NumericKeyState extends KeyState {
 		
 		FloatRange _stateRange;
 		
@@ -158,5 +159,9 @@ public class IdentificationKeyCharacter {
 	
 	public Character getCharacter() {
 		return _character;
+	}
+	
+	public List<KeyState> getStates() {
+		return _states;
 	}
 }

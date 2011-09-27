@@ -8,8 +8,8 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.model.format.AttributeFormatter;
-import au.org.ala.delta.translation.attribute.ParsedAttribute.CommentedValues;
-import au.org.ala.delta.translation.attribute.ParsedAttribute.Values;
+import au.org.ala.delta.translation.attribute.CommentedValueList.CommentedValues;
+import au.org.ala.delta.translation.attribute.CommentedValueList.Values;
 
 /**
  * Translates an Attribute into natural language.
@@ -33,7 +33,7 @@ public abstract class AttributeTranslator {
 	 * @param attribute the attribute to translate.
 	 * @return a String containing the natural language description of the attribute.
 	 */
-	public String translate(ParsedAttribute attribute) {
+	public String translate(CommentedValueList attribute) {
 		_translatedValue = new StringBuilder();
 		_translatedValue.append(translateCharacterComment(attribute.getCharacterComment()));
 		
@@ -90,11 +90,7 @@ public abstract class AttributeTranslator {
 		StringBuilder output = new StringBuilder();
 		if (StringUtils.isNotEmpty(comment)) {
 			output.append(" ");
-			if (comment.startsWith("<the slender")) {
-				for (int i=0;i<comment.length();i++) {
-					System.out.println(comment.charAt(i)+":"+(int)comment.charAt(i));
-				}
-			}
+			
 			output.append(comment);
 		}
 		return output.toString();

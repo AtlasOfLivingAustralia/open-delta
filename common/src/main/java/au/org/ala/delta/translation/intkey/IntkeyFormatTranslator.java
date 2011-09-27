@@ -7,7 +7,7 @@ import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.translation.AbstractDataSetTranslator;
 import au.org.ala.delta.translation.Printer;
-import au.org.ala.delta.translation.attribute.ParsedAttribute.Values;
+import au.org.ala.delta.translation.attribute.CommentedValueList.Values;
 import au.org.ala.delta.translation.delta.DeltaFormatDataSetFilter;
 
 /**

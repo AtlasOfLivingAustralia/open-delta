@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class ParsedAttribute {
+public class CommentedValueList {
 
 	private String _characterComment;
 	private List<CommentedValues> _commentedValues;
 
-	public ParsedAttribute(String comment, List<CommentedValues> values) {
+	public CommentedValueList(String comment, List<CommentedValues> values) {
 		_characterComment = comment;
 		_commentedValues = values;
 	}

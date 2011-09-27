@@ -15,8 +15,8 @@ import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.translation.AbstractDataSetTranslator;
 import au.org.ala.delta.translation.Printer;
 import au.org.ala.delta.translation.attribute.AttributeParser;
-import au.org.ala.delta.translation.attribute.ParsedAttribute;
-import au.org.ala.delta.translation.attribute.ParsedAttribute.Values;
+import au.org.ala.delta.translation.attribute.CommentedValueList;
+import au.org.ala.delta.translation.attribute.CommentedValueList.Values;
 import au.org.ala.delta.util.Utils;
 
 /**
@@ -72,7 +72,7 @@ public class DeltaFormatTranslator extends AbstractDataSetTranslator {
 		String value = getAttributeValue(attribute);
 	    value = _itemFormatter.defaultFormat(value);
 		if (StringUtils.isNotEmpty(value)) {
-			ParsedAttribute parsedAttribute = _parser.parse(value);
+			CommentedValueList parsedAttribute = _parser.parse(value);
 			String charComment = parsedAttribute.getCharacterComment();
 			attributeValue.append(charComment);
 			

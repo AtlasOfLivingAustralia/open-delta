@@ -27,7 +27,7 @@ import au.org.ala.delta.translation.attribute.AttributeParser;
 import au.org.ala.delta.translation.attribute.AttributeTranslator;
 import au.org.ala.delta.translation.attribute.MultiStateAttributeTranslator;
 import au.org.ala.delta.translation.attribute.NumericAttributeTranslator;
-import au.org.ala.delta.translation.attribute.ParsedAttribute.Values;
+import au.org.ala.delta.translation.attribute.CommentedValueList.Values;
 import au.org.ala.delta.translation.attribute.TextAttributeTranslator;
 
 /**

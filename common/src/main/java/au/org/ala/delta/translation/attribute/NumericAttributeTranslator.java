@@ -8,7 +8,7 @@ import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.translation.TypeSetter;
-import au.org.ala.delta.translation.attribute.ParsedAttribute.Values;
+import au.org.ala.delta.translation.attribute.CommentedValueList.Values;
 
 /**
  * The NumericAttributeTranslator is responsible for translating NumericCharacter attributes into 

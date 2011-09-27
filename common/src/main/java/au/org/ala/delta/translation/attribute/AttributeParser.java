@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import au.org.ala.delta.directives.AbstractStreamParser;
-import au.org.ala.delta.translation.attribute.ParsedAttribute.CommentedValues;
-import au.org.ala.delta.translation.attribute.ParsedAttribute.Values;
+import au.org.ala.delta.translation.attribute.CommentedValueList.CommentedValues;
+import au.org.ala.delta.translation.attribute.CommentedValueList.Values;
 
 /**
  * The AttributeParser is responsible for parsing Strings representing attributes into a format
@@ -25,7 +25,7 @@ public class AttributeParser {
 	 * @param attribute the attribute value to parse
 	 * @return a new ParsedAttribute
 	 */
-	public ParsedAttribute parse(String attribute) {
+	public CommentedValueList parse(String attribute) {
 		
 		AttributeStreamParser parser = new AttributeStreamParser(attribute);
 		try {
@@ -40,13 +40,13 @@ public class AttributeParser {
 	
 	class AttributeStreamParser extends AbstractStreamParser {
 		
-		private ParsedAttribute _parsedAttribute;
+		private CommentedValueList _parsedAttribute;
 		
 		public AttributeStreamParser(String attributeValue) {
 			super(null, new StringReader(attributeValue));
 		}
 		
-		public ParsedAttribute getParsedAttribute() {
+		public CommentedValueList getParsedAttribute() {
 			return _parsedAttribute;
 		}
 		
@@ -56,7 +56,7 @@ public class AttributeParser {
 			_parsedAttribute = readParsedAttribute();
 		}
 		
-		public ParsedAttribute readParsedAttribute() throws ParseException {
+		public CommentedValueList readParsedAttribute() throws ParseException {
 			
 			readNext();
 			String characterComment = "";
@@ -73,7 +73,7 @@ public class AttributeParser {
 				}
 			}
 			
-			return new ParsedAttribute(characterComment, commentedValues);
+			return new CommentedValueList(characterComment, commentedValues);
 		}
 		
 		public CommentedValues readCommentedValues() throws ParseException {

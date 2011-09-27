@@ -5,8 +5,8 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import au.org.ala.delta.translation.attribute.ParsedAttribute.CommentedValues;
-import au.org.ala.delta.translation.attribute.ParsedAttribute.Values;
+import au.org.ala.delta.translation.attribute.CommentedValueList.CommentedValues;
+import au.org.ala.delta.translation.attribute.CommentedValueList.Values;
 
 import junit.framework.TestCase;
 
@@ -26,7 +26,7 @@ public class AttributeParserTest extends TestCase {
 	public void testParse() {
 		String value = "1/2";
 		
-		ParsedAttribute attribute = _parser.parse(value);
+		CommentedValueList attribute = _parser.parse(value);
 		
 		assertEquals("", attribute.getCharacterComment());
 		
@@ -45,7 +45,7 @@ public class AttributeParserTest extends TestCase {
 	public void testParseWithComments() {
 		String value = "<character comment>1&2<comment>";
 
-		ParsedAttribute attribute = _parser.parse(value);
+		CommentedValueList attribute = _parser.parse(value);
 		
 		assertEquals("<character comment>", attribute.getCharacterComment());
 		
@@ -64,7 +64,7 @@ public class AttributeParserTest extends TestCase {
 	public void testParseComplexAttributeWithComments() {
 		String value = "<character comment>1<comment 1>/1&2<comment 2<nested comment>>/3-4";
 
-		ParsedAttribute attribute = _parser.parse(value);
+		CommentedValueList attribute = _parser.parse(value);
 		
 		assertEquals("<character comment>", attribute.getCharacterComment());
 		
@@ -92,7 +92,7 @@ public class AttributeParserTest extends TestCase {
 	@Test
 	public void testParseComplexAttribute() {
 		String attributeValue = "<comment>1&2&3<comment 2>/1&3<comment 3>";
-		ParsedAttribute attribute = _parser.parse(attributeValue);
+		CommentedValueList attribute = _parser.parse(attributeValue);
 		assertEquals("<comment>", attribute.getCharacterComment());
 		
 		List<CommentedValues> commentedValues = attribute.getCommentedValues();
@@ -117,7 +117,7 @@ public class AttributeParserTest extends TestCase {
 	@Test
 	public void testSpecialCharacterInComment() {
 		String attributeValue = "2<1/1>/7<3/3>";
-		ParsedAttribute attribute = _parser.parse(attributeValue);
+		CommentedValueList attribute = _parser.parse(attributeValue);
 		
 		assertEquals("", attribute.getCharacterComment());
 		
