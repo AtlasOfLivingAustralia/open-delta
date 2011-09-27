@@ -2,18 +2,17 @@ package au.org.ala.delta.intkey.directives.invocation;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class SetRBaseDirectiveInvocation extends IntkeyDirectiveInvocation {
+public class SetVaryWtDirectiveInvocation extends IntkeyDirectiveInvocation {
+    private double _varyWt;
 
-    private double _rbase;
-
-    public void setRbase(double rbase) {
-        this._rbase = rbase;
+    public void setVaryWt(double varyWt) {
+        this._varyWt = varyWt;
     }
 
     @Override
     public boolean execute(IntkeyContext context) {
-        if (_rbase >= 1.0 && _rbase <= 5.0) {
-            context.setRBase(_rbase);
+        if (_varyWt >= 0.0 && _varyWt <= 1.0) {
+            context.setVaryWeight(_varyWt);
             // Clear the cached best characters then force the UI to update
             // itself,
             // calculating the best
@@ -21,9 +20,8 @@ public class SetRBaseDirectiveInvocation extends IntkeyDirectiveInvocation {
             context.clearBestCharacters();
             context.getUI().handleUpdateAll();
         } else {
-            context.getUI().displayErrorMessage("Value out of range. A valid value is a real number in the range 1-5.");
+            context.getUI().displayErrorMessage("Value out of range. A valid value is a real number in the range 0-1.");
         }
         return true;
     }
-
 }

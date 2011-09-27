@@ -69,7 +69,7 @@ public class SortingUtils {
             charCosts[ch.getCharacterId() - 1] = charCost;
         }
 
-        double varw = (1 - context.getVaryWeight()) / context.getVaryWeight();
+        double varw = (1 - context.getVaryWeight()) / Math.max(context.getVaryWeight(), 0.01);
 
         // Build list of available characters
         List<Character> availableCharacters = new ArrayList<Character>(context.getAvailableCharacters());

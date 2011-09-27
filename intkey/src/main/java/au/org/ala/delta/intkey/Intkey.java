@@ -1118,7 +1118,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         handleUpdateAll();
     }
 
-    void updateAvailableCharacters() {
+    private void updateAvailableCharacters() {
 
         IntkeyCharacterOrder charOrder = _context.getCharacterOrder();
 

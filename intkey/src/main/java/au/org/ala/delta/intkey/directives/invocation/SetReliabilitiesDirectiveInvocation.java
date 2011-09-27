@@ -18,6 +18,12 @@ public class SetReliabilitiesDirectiveInvocation extends IntkeyDirectiveInvocati
             ch.setReliability(_reliabilitiesMap.get(ch));
         }
 
+        // Clear the cached best characters then force the UI to update itself,
+        // calculating the best
+        // characters in the process
+        context.clearBestCharacters();
+        context.getUI().handleUpdateAll();
+
         return true;
     }
 }

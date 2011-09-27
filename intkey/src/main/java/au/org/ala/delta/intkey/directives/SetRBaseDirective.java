@@ -18,8 +18,6 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
  */
 public class SetRBaseDirective extends NewIntkeyDirective {
     
-    //TODO needs to provide a prompt window if no value is supplied
-    
     public SetRBaseDirective() {
         super("set", "rbase");
     }

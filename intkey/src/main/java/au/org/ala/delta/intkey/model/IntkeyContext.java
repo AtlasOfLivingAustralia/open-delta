@@ -932,6 +932,14 @@ public class IntkeyContext extends AbstractDeltaContext {
     public LinkedHashMap<Character, Double> getBestCharacters() {
         return _bestCharacters;
     }
+    
+    /**
+     * Clear the cached best characters. Used to force the UI to recalculate the best characters
+     * next time it needs them
+     */
+    public void clearBestCharacters() {
+        _bestCharacters = null;
+    }
 
     /**
      * Calculates the best characters using the BEST algorithm. This method will
