@@ -207,6 +207,13 @@ public class BinaryKeyFile extends BinFile {
         return retList;
     }
     
+    public String readString(int recordNum, int numChars) {
+    	seek(recordOffset(recordNum));
+        ByteBuffer bb = readByteBuffer(numChars);
+        
+        return BinFileEncoding.decode(bb.array());
+    }
+    
     /**
      * Writes:
      * 1) An index record that contains one entry per supplied value which

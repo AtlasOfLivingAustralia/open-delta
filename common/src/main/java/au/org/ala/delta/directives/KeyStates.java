@@ -12,6 +12,7 @@ import au.org.ala.delta.directives.args.DirectiveArgument;
 import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.directives.args.KeyStateParser;
 import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.IdentificationKeyCharacter;
 
 /**
@@ -48,15 +49,17 @@ public class KeyStates extends AbstractDirective<DeltaContext> {
 	@Override
 	public void process(DeltaContext context, DirectiveArguments directiveArguments) throws Exception {
 		int id = -1;
+		DeltaDataSet dataSet = context.getDataSet();
 		IdentificationKeyCharacter keyCharacter = null;
 		for (DirectiveArgument<?> arg : directiveArguments.getDirectiveArguments()) {
 			int tmpId = (Integer)arg.getId();
 			
 			if (tmpId != id) {
-				keyCharacter = create(context, tmpId);
+				keyCharacter = create(dataSet, tmpId);
 				context.addIdentificationKeyCharacter(keyCharacter);
 			}
-			if (context.getCharacter(id).getCharacterType().isNumeric()) {
+			
+			if (dataSet.getCharacter(tmpId).getCharacterType().isNumeric()) {
 				keyCharacter.addState(arg.getValueAsInt(), argToFloatRange(arg));
 			}
 			else {
@@ -68,8 +71,8 @@ public class KeyStates extends AbstractDirective<DeltaContext> {
 		
 	}
 	
-	private IdentificationKeyCharacter create(DeltaContext context, int id) {
-		Character character = context.getDataSet().getCharacter(id);
+	private IdentificationKeyCharacter create(DeltaDataSet dataSet, int id) {
+		Character character = dataSet.getCharacter(id);
 		IdentificationKeyCharacter keyChar = new IdentificationKeyCharacter(character);
 		return keyChar;
 	}

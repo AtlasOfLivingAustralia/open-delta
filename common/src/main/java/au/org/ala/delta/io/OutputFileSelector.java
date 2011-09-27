@@ -128,4 +128,8 @@ public class OutputFileSelector {
 
 	public void setOutputFormat(OutputFormat outputFormat) {
 		_outputFormat = outputFormat;	}
+
+	public String getKeyOutputFilePath() {
+		return makeAbsolute(_keyOutputFile);
+	}
 }

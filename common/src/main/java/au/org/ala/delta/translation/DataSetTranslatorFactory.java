@@ -10,6 +10,7 @@ import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.translation.delta.DeltaFormatDataSetFilter;
 import au.org.ala.delta.translation.delta.DeltaFormatTranslator;
 import au.org.ala.delta.translation.intkey.IntkeyTranslator;
+import au.org.ala.delta.translation.key.KeyTranslator;
 import au.org.ala.delta.translation.naturallanguage.NaturalLanguageTranslator;
 
 
@@ -36,6 +37,9 @@ public class DataSetTranslatorFactory {
 		else if (translation.equals(TranslateType.IntKey)) {
 			translator = createIntkeyFormatTranslator(context);
 		}
+		else if (translation.equals(TranslateType.Key)) {
+			translator = createKeyFormatTranslator(context);
+		}
 		else {
 			throw new RuntimeException("(Currently) unsupported translation type: "+translation);
 		}
@@ -47,6 +51,11 @@ public class DataSetTranslatorFactory {
 	private DataSetTranslator createIntkeyFormatTranslator(DeltaContext context) {
 		FilteredDataSet dataSet = new FilteredDataSet(context, new DeltaFormatDataSetFilter(context));
 		return new IntkeyTranslator(context, dataSet, createCharacterFormatter(context));
+	}
+	
+	private DataSetTranslator createKeyFormatTranslator(DeltaContext context) {
+		FilteredDataSet dataSet = new FilteredDataSet(context, new DeltaFormatDataSetFilter(context));
+		return new KeyTranslator(context, dataSet, createCharacterFormatter(context));
 	}
 
 	private AbstractDataSetTranslator createNaturalLanguageTranslator(

@@ -24,6 +24,11 @@ public class IdentificationKeyCharacter {
 		}
 	}
 	
+	/**
+	 * Represents a mapping from a set of states from the original 
+	 * multistate character to a single new state defined by the KEY STATES
+	 * directive.
+	 */
 	public class MultiStateKeyState extends KeyState {
 	
 		Set<Integer> _originalStates;
@@ -39,6 +44,11 @@ public class IdentificationKeyCharacter {
 		
 	}
 	
+	/**
+	 * Represents a mapping from a range of values of the original 
+	 * real or integer character to a single new state defined by the KEY STATES
+	 * directive.
+	 */
 	public class NumericKeyState extends KeyState {
 		
 		FloatRange _stateRange;
@@ -95,7 +105,12 @@ public class IdentificationKeyCharacter {
 			return _states.size();
 		}
 		else {
-			return ((MultiStateCharacter)_character).getNumberOfStates();
+			if (_character.getCharacterType().isMultistate()) {
+				return ((MultiStateCharacter)_character).getNumberOfStates(); 
+			}
+			else {
+				return 0;
+			}
 		}
 	}
 	

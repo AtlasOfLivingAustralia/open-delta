@@ -196,7 +196,7 @@ public class WriteOnceIntkeyCharsFile extends BinaryKeyFile {
 	
 	private void checkEmpty(int recordNum) {
 		if (recordNum > 0) {
-			throw new RuntimeException("Character images already exit");
+			throw new RuntimeException("The record has already been allocated.");
 		}
 	}
 	
