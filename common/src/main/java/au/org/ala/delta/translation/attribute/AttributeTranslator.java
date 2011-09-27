@@ -16,7 +16,6 @@ import au.org.ala.delta.translation.attribute.CommentedValueList.Values;
  */
 public abstract class AttributeTranslator {
 
-	
 	private Map<String, String> _separators;
 	protected StringBuilder _translatedValue;
 	protected AttributeFormatter _attributeFormatter;

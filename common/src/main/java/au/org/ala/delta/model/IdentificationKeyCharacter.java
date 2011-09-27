@@ -16,12 +16,30 @@ import org.apache.commons.lang.math.FloatRange;
  */
 public class IdentificationKeyCharacter {
 
-	public static abstract class KeyState {
+	public static abstract class KeyState implements Comparable<KeyState>{
 		int stateId;
 		public abstract boolean isPresent(Number value);
 		
 		public int getStateNumber() {
 			return stateId;
+		}
+
+		@Override
+		public int compareTo(KeyState o) {
+			if (o == null) {
+				return 1;
+			}
+			else {
+				if (stateId > o.stateId) {
+					return 1;
+				}
+				else if (stateId == o.stateId) {
+					return 0;
+				}
+				else {
+					return -1;
+				}
+			}
 		}
 	}
 	
@@ -108,6 +126,7 @@ public class IdentificationKeyCharacter {
 	public void addState(int id, FloatRange range) {
 		NumericKeyState state = new NumericKeyState(id, range);
 		_states.add(state);
+		Collections.sort(_states);
 	}
 	
 	public int getNumberOfStates() {
@@ -125,10 +144,10 @@ public class IdentificationKeyCharacter {
 	}
 	
 	public KeyState getKeyState(int stateNum) {
-		if (stateNum > _states.size() ) {
-			throw new IllegalArgumentException(stateNum+" > "+_states.size());
+		if (stateNum <= 0 || stateNum > _states.size() ) {
+			throw new IllegalArgumentException(stateNum+" must be between 0 and "+_states.size());
 		}
-		return _states.get(stateNum);
+		return _states.get(stateNum - 1);
 	}
 	
 	public List<Integer> getPresentStates(MultiStateAttribute attribute) {
