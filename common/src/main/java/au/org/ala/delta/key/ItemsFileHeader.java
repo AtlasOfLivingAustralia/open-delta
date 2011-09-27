@@ -36,24 +36,6 @@ public class ItemsFileHeader {
 		this._numberOfItems = numberOfItems;
 	}
 
-	
-	
-	public int get_numberOfCharacters() {
-		return _numberOfCharacters;
-	}
-
-	public void set_numberOfCharacters(int _numberOfCharacters) {
-		this._numberOfCharacters = _numberOfCharacters;
-	}
-
-	public int get_numberOfItems() {
-		return _numberOfItems;
-	}
-
-	public void set_numberOfItems(int _numberOfItems) {
-		this._numberOfItems = _numberOfItems;
-	}
-
 	public int getCharacterDependenciesLength() {
 		return _characterDependenciesLength;
 	}

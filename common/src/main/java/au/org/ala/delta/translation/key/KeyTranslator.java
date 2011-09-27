@@ -1,11 +1,14 @@
 package au.org.ala.delta.translation.key;
 
 import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.intkey.WriteOnceIntkeyItemsFile;
 import au.org.ala.delta.io.BinFileMode;
 import au.org.ala.delta.key.WriteOnceKeyCharsFile;
+import au.org.ala.delta.key.WriteOnceKeyItemsFile;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.translation.DataSetTranslator;
 import au.org.ala.delta.translation.FilteredDataSet;
+import au.org.ala.delta.translation.intkey.IntkeyItemsFileWriter;
 
 /**
  * Translates a DELTA data set into the format used by the KEY program.
@@ -35,12 +38,12 @@ public class KeyTranslator implements DataSetTranslator {
 	
 	@Override
 	public void translateItems() {
-		//String fileName = _context.getOutputFileSelector().getIntkeyOutputFilePath();
+		String fileName = _context.getOutputFileSelector().getKeyOutputFilePath();
 		
-		//WriteOnceIntkeyItemsFile itemsFile = new WriteOnceIntkeyItemsFile(
-		//		_dataSet.getNumberOfCharacters(), _dataSet.getMaximumNumberOfItems(), fileName, BinFileMode.FM_APPEND);
-		//IntkeyItemsFileWriter itemsWriter = new IntkeyItemsFileWriter(_context, _dataSet, itemsFile);
-		//itemsWriter.writeAll();
-		//itemsFile.close();
+		WriteOnceKeyItemsFile itemsFile = new WriteOnceKeyItemsFile(
+				_dataSet.getMaximumNumberOfItems(), _dataSet.getNumberOfCharacters(), fileName, BinFileMode.FM_APPEND);
+		KeyItemsFileWriter itemsWriter = new KeyItemsFileWriter(_context, _dataSet, itemsFile);
+		itemsWriter.writeAll();
+		itemsFile.close();
 	}
 }

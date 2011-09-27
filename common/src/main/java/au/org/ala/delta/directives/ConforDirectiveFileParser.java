@@ -76,6 +76,7 @@ public class ConforDirectiveFileParser extends DirectiveParser<DeltaContext> {
         instance.registerDirective(new InsertImplicitValues());
         instance.registerDirective(new IntkeyOutputFile());       
         instance.registerDirective(new ItemDescriptions());
+        instance.registerDirective(new ItemAbundances());
         instance.registerDirective(new ItemSubHeadings());
         
         instance.registerDirective(new KeyOutputFile());   

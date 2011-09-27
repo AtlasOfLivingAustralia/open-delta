@@ -91,6 +91,8 @@ public class DeltaContext extends AbstractDeltaContext {
 	private Map<Integer, IdentificationKeyCharacter> _keyCharacters = new HashMap<Integer, IdentificationKeyCharacter>();
 	private Map<Integer, Double> _absolueErrorInCharacterAttributes = new HashMap<Integer, Double>();
 	private Map<Integer, Double> _percentageErrorInCharacterAttributes = new HashMap<Integer, Double>();
+	private Map<Integer, Double> _itemAbundances = new HashMap<Integer, Double>();
+	
 	private Set<Integer> _omitLowerRangeCharacters = new HashSet<Integer>();
 	
 	private int _numberOfCharacters;
@@ -828,6 +830,13 @@ public class DeltaContext extends AbstractDeltaContext {
 		_outputFileSelector.setParsingContext(context);
 		return context;
 	}
+
+	public void addItemAbundancy(int itemNumber, double value) {
+		_itemAbundances.put(itemNumber, value);
+	}
 	
+	public double getItemAbundancy(int itemNumber) {
+		return _itemAbundances.get(itemNumber);
+	}
 	
 }

@@ -30,8 +30,10 @@ public class ToKeyTest extends TestCase {
 		CONFOR.main(new String[]{tokeyFilePath});
 		
 		String expectedKCharsFilename = FilenameUtils.concat(dest.getAbsolutePath(), "sample/expected_results/kchars");
+		String expectedKItemsFilename = FilenameUtils.concat(dest.getAbsolutePath(), "sample/expected_results/kitems");
 		
 		BinaryKeyFile expectedKChars = new BinaryKeyFile(expectedKCharsFilename, BinFileMode.FM_READONLY);
+		BinaryKeyFile expectedKItems = new BinaryKeyFile(expectedKItemsFilename, BinFileMode.FM_READONLY);
 		
 		String actualKCharsFilename = FilenameUtils.concat(dest.getAbsolutePath(), "sample/kchars");
 		BinaryKeyFile kchars = new BinaryKeyFile(actualKCharsFilename, BinFileMode.FM_READONLY);
@@ -51,6 +53,22 @@ public class ToKeyTest extends TestCase {
 			
 			System.out.println("Expected as string: ");
 			System.out.println(expectedKChars.readString(i, BinaryKeyFile.RECORD_LENGTH_BYTES));
+			
+			System.out.println();
+		}
+		
+		numRecords = expectedKItems.getLength() / BinaryKeyFile.RECORD_LENGTH_BYTES;
+		System.out.println("**** Items File ("+numRecords+")*****");
+		
+		for (int i=1; i<numRecords; i++) {
+			
+			List<Integer> expectedRecord = expectedKItems.readIntegerList(i, BinaryKeyFile.RECORD_LENGTH_INTEGERS);
+			
+			System.out.println("Record: "+i);
+			System.out.println(expectedRecord);
+			
+			System.out.println("Expected as string: ");
+			System.out.println(expectedKItems.readString(i, BinaryKeyFile.RECORD_LENGTH_BYTES));
 			
 			System.out.println();
 		}
