@@ -90,8 +90,6 @@ public class RtfReportDisplayDialog extends IntkeyDialog {
         // ensure that top of text is visible after text has been inserted.
         _textPane.setCaretPosition(0);
 
-        _contentSource = contentSource;
-
         setTitle(title);
 
         _menuBar = new JMenuBar();
@@ -150,7 +148,8 @@ public class RtfReportDisplayDialog extends IntkeyDialog {
     }
 
     public void setContent(String source) {
-        _textPane.setText(source);
+        _contentSource = source;
+        _textPane.setText(_contentSource);
     }
 
     @Action

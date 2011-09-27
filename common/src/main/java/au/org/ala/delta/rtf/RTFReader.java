@@ -121,6 +121,13 @@ public class RTFReader {
         if ((ch = _stream.read()) < 0) {
             return;
         }
+        
+        // Escaped backslash, open and close brace. Simply output the
+        // character
+        if (ch == '\\' || ch == '{' || ch == '}') {
+            printChar((char) ch);
+            return;
+        }
 
         if (!Character.isLetter((char) ch)) {
             // Control symbol...

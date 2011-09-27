@@ -1539,7 +1539,11 @@ public class IntkeyContext extends AbstractDeltaContext {
                 // occurred on the other thread.
                 get();
 
-                _appUI.handleNewDataset(_dataset);
+                if (_dataset != null) {
+                    appendToLog(_dataset.getHeading());
+                    appendToLog(_dataset.getSubHeading());
+                    _appUI.handleNewDataset(_dataset);
+                }
             } catch (Exception e) {
                 _appUI.displayErrorMessage("Error reading dataset file " + _startupFile.getAbsolutePath());
                 e.printStackTrace();

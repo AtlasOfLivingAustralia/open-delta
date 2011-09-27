@@ -41,6 +41,18 @@ public class RTFUtils {
 		}
 		return handler.getFilteredText();
 	}
+	
+	/**
+	 * Escape RTF special characters in the supplied string
+	 * @param rtf
+	 * @return
+	 */
+	public static String escapeRTF(String rtf) {
+	    String escapedRTF = rtf.replace("\\", "\\\\");
+	    escapedRTF = escapedRTF.replace("{", "\\{");
+	    escapedRTF = escapedRTF.replace("}", "\\}");
+	    return escapedRTF;
+	}
 
 }
 

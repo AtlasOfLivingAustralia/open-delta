@@ -123,6 +123,7 @@ import au.org.ala.delta.model.TextAttribute;
 import au.org.ala.delta.model.TextCharacter;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.rtf.RTFBuilder;
+import au.org.ala.delta.rtf.RTFUtils;
 import au.org.ala.delta.ui.AboutBox;
 import au.org.ala.delta.ui.DeltaSingleFrameApplication;
 import au.org.ala.delta.ui.rtf.SimpleRtfEditorKit;
@@ -1681,7 +1682,8 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             } else {
                 builder.setTextColor(Color.RED);
             }
-            builder.appendText(line);
+            String escapedLine = RTFUtils.escapeRTF(line);
+            builder.appendText(escapedLine);
         }
         builder.endDocument();
 
