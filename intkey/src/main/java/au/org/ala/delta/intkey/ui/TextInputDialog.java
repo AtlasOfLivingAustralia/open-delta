@@ -5,6 +5,7 @@ import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.JPanel;
@@ -80,7 +81,7 @@ public class TextInputDialog extends CharacterValueInputDialog {
 
     @Override
     void handleBtnImagesClicked() {
-        CharacterImageInputDialog dlg = new CharacterImageInputDialog(this, _ch, _imageSettings, true);
+        CharacterImageDialog dlg = new CharacterImageDialog(this, Arrays.asList(new au.org.ala.delta.model.Character[] {_ch}),  _imageSettings, true, true);
         dlg.setVisible(true);
         
         _inputData = dlg.getInputTextValues();

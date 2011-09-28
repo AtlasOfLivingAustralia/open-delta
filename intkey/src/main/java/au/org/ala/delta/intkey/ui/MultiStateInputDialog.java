@@ -3,6 +3,7 @@ package au.org.ala.delta.intkey.ui;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Frame;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -93,7 +94,7 @@ public class MultiStateInputDialog extends CharacterValueInputDialog {
 
     @Override
     void handleBtnImagesClicked() {
-        CharacterImageInputDialog dlg = new CharacterImageInputDialog(this,  (MultiStateCharacter) _ch, _imageSettings, true);
+        CharacterImageDialog dlg = new CharacterImageDialog(this, Arrays.asList(new au.org.ala.delta.model.Character[] {_ch}), _imageSettings, true, true);
         dlg.setVisible(true);
         
         Set<Integer> selectedStates = dlg.getSelectedStates();

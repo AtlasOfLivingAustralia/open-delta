@@ -1,6 +1,7 @@
 package au.org.ala.delta.intkey.ui;
 
 import java.awt.Frame;
+import java.util.Arrays;
 
 import javax.swing.JOptionPane;
 
@@ -64,7 +65,7 @@ public class RealInputDialog extends NumberInputDialog {
 
     @Override
     void handleBtnImagesClicked() {
-        CharacterImageInputDialog dlg = new CharacterImageInputDialog(this, _ch, _imageSettings, true);
+        CharacterImageDialog dlg = new CharacterImageDialog(this, Arrays.asList(new au.org.ala.delta.model.Character[] {_ch}), _imageSettings, true, true);
         dlg.setVisible(true);
         
         try {
