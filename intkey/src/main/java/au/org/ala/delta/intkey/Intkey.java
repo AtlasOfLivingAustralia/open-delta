@@ -1296,9 +1296,9 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         if (_context.getTolerance() > 0 && taxaDifferingCharacters != null) {
             // sort available taxa by difference count
             Collections.sort(availableTaxa, new DifferenceCountComparator(taxaDifferingCharacters));
-            _availableTaxaCellRenderer = new TaxonWithDifferenceCountCellRenderer(taxaDifferingCharacters, _context.displayNumbering());
+            _availableTaxaCellRenderer = new TaxonWithDifferenceCountCellRenderer(taxaDifferingCharacters, _context.displayNumbering(), _context.displayComments());
         } else {
-            _availableTaxaCellRenderer = new TaxonCellRenderer(_context.displayNumbering());
+            _availableTaxaCellRenderer = new TaxonCellRenderer(_context.displayNumbering(), _context.displayComments());
         }
 
         for (Item taxon : availableTaxa) {
@@ -1323,7 +1323,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             _eliminatedTaxaListModel.addElement(taxon);
         }
 
-        _eliminatedTaxaCellRenderer = new TaxonWithDifferenceCountCellRenderer(taxaDifferingCharacters, _context.displayNumbering());
+        _eliminatedTaxaCellRenderer = new TaxonWithDifferenceCountCellRenderer(taxaDifferingCharacters, _context.displayNumbering(), _context.displayComments());
 
         _listEliminatedTaxa.setCellRenderer(_eliminatedTaxaCellRenderer);
         _listEliminatedTaxa.setModel(_eliminatedTaxaListModel);
@@ -1363,7 +1363,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     @Override
     public void handleUpdateAll() {
-        if (_context.getDataset() != null) { // Only update we have a dataset
+        if (_context.getDataset() != null) { // Only update if we have a dataset
                                              // loaded.
             List<Item> availableTaxa = _context.getAvailableTaxa();
             List<Item> eliminatedTaxa = _context.getEliminatedTaxa();

@@ -15,8 +15,8 @@ public class TaxonWithDifferenceCountCellRenderer extends TaxonCellRenderer {
 
     private Map<Item, Set<au.org.ala.delta.model.Character>> _taxaDifferingCharacters;
 
-    public TaxonWithDifferenceCountCellRenderer(Map<Item, Set<au.org.ala.delta.model.Character>> taxaDifferingCharacters, boolean displayNumbering) {
-        super(displayNumbering);
+    public TaxonWithDifferenceCountCellRenderer(Map<Item, Set<au.org.ala.delta.model.Character>> taxaDifferingCharacters, boolean displayNumbering, boolean displayComments) {
+        super(displayNumbering, displayComments);
         _taxaDifferingCharacters = new HashMap<Item, Set<au.org.ala.delta.model.Character>>();
         if (taxaDifferingCharacters != null) {
             _taxaDifferingCharacters.putAll(taxaDifferingCharacters);

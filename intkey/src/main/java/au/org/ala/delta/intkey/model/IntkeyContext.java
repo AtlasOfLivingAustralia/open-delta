@@ -154,6 +154,7 @@ public class IntkeyContext extends AbstractDeltaContext {
     private boolean _displayNumbering;
     private boolean _displayInapplicables;
     private boolean _displayUnknowns;
+    private boolean _displayComments;
 
     private File _logFile;
     private File _journalFile;
@@ -233,6 +234,9 @@ public class IntkeyContext extends AbstractDeltaContext {
         _exactCharactersSet = new HashSet<Integer>();
 
         _displayNumbering = false;
+        _displayInapplicables = true;
+        _displayUnknowns = true;
+        _displayComments = false;
     }
 
     /**
@@ -1323,6 +1327,15 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     public void setDisplayUnknowns(boolean displayUnknowns) {
         this._displayUnknowns = displayUnknowns;
+    }
+    
+    public boolean displayComments() {
+        return _displayComments;
+    }
+    
+    public void setDisplayComments(boolean displayComments) {
+        this._displayComments = displayComments;
+        _appUI.handleUpdateAll();
     }
 
     public void setLogFile(File logFile) throws IOException {

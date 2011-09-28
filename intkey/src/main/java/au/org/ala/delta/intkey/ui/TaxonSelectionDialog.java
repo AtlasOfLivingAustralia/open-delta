@@ -131,7 +131,7 @@ public class TaxonSelectionDialog extends ListSelectionDialog {
             for (Item taxon : taxa) {
                 _listModel.addElement(taxon);
             }
-            _list.setCellRenderer(new TaxonCellRenderer(displayNumbering));
+            _list.setCellRenderer(new TaxonCellRenderer(displayNumbering, false));
             _list.setModel(_listModel);
         }
     }
