@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.io.CharacterDependencyEncoder;
 import au.org.ala.delta.key.WriteOnceKeyCharsFile;
 import au.org.ala.delta.key.WriteOnceKeyItemsFile;
 import au.org.ala.delta.model.Character;
@@ -37,12 +38,19 @@ public class KeyItemsFileWriter {
 	
 	public void writeAll() {
 		
+		writeCharacterDependencies();
 		
 		// Need to write the header last as it is updated as each section 
 		// is written.
 		_itemsFile.writeHeader();
 	}
 	
+	protected void writeCharacterDependencies() {
+		CharacterDependencyEncoder encoder = new CharacterDependencyEncoder();
+		List<Integer> dependencyData = encoder.encodeCharacterDependencies(_dataSet);
+		
+		_itemsFile.writeCharacterDependencies(dependencyData);
+	}
 	
 
 }

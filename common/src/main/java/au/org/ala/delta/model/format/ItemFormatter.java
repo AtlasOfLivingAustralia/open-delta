@@ -52,17 +52,21 @@ public class ItemFormatter extends Formatter {
      */
     public String formatItemDescription(Item item, CommentStrippingMode commentStrippingMode) {
 
-        StringBuilder builder = new StringBuilder();
-        if (_includeNumber) {
-            builder.append(item.getItemNumber()).append(". ");
-        }
-        if (item.isVariant()) {
-            builder.append(variant).append(" ");
-        }
-        String description = item.getDescription();
-        description = defaultFormat(description, commentStrippingMode, _angleBracketHandlingMode, _stripFormatting, _capitaliseFirstWord);
+        return formatItemDescription(item, item.getDescription(), commentStrippingMode);    
+    }
+    
+    protected String formatItemDescription(Item item, String description, CommentStrippingMode commentStrippingMode) {
+    	 StringBuilder builder = new StringBuilder();
+         if (_includeNumber) {
+             builder.append(item.getItemNumber()).append(". ");
+         }
+         if (item.isVariant()) {
+             builder.append(variant).append(" ");
+         }
+         
+         description = defaultFormat(description, commentStrippingMode, _angleBracketHandlingMode, _stripFormatting, _capitaliseFirstWord);
 
-        builder.append(description);
-        return builder.toString();
+         builder.append(description);
+         return builder.toString();
     }
 }

@@ -32,6 +32,16 @@ public class WriteOnceKeyItemsFile extends BinaryKeyFile {
 		overwriteRecord(1, _header.toInts());
 	}
 	
+	public void writeCharacterDependencies(List<Integer> dependencyData) {
+		checkEmpty(_header.getCharacterDependencyRecord());
+		
+		int record = nextAvailableRecord();
+		_header.setCharacterDependencyRecord(record);
+		_header.setCharacterDependenciesLength(dependencyData.size());
+		
+		writeToRecord(record, dependencyData);
+	}
+	
 	
 	private void checkEmpty(int recordNum) {
 		if (recordNum > 0) {
