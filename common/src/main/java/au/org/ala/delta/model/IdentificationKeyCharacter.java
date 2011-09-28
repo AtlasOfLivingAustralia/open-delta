@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.math.FloatRange;
+import org.apache.commons.lang.math.Range;
 
 /**
  * Handles transformations from the states / values defined in a DeltaDataSet
@@ -92,6 +93,7 @@ public class IdentificationKeyCharacter {
 	}
 	
 	private Character _character;
+	private boolean _useNormalValues;
 	private List<KeyState> _states;
 	private int _filteredCharacterNumber;
 	
@@ -107,6 +109,10 @@ public class IdentificationKeyCharacter {
 	public IdentificationKeyCharacter(int characterNumber, Character character) {
 		this (character);
 		_filteredCharacterNumber = characterNumber;
+	}
+	
+	public IdentificationKeyCharacter(int characterNumber, Character character, boolean useNormalValues) {
+		
 	}
 	
 	public void addState(int id, List<Integer> originalStates) {
@@ -176,6 +182,35 @@ public class IdentificationKeyCharacter {
 		return states;
 	}
 
+	public List<Integer> getPresentStates(NumericAttribute attribute) {
+		List<Integer> states = new ArrayList<Integer>();
+		if (attribute.isVariable()) {
+			for (int i=1; i<=getNumberOfStates(); i++) {
+				states.add(i);
+			}
+		}
+		else if (!attribute.isUnknown() && !attribute.isInapplicable()) {
+			for (KeyState state : _states) {
+				List<NumericRange> values = attribute.getNumericValue();
+				for (NumericRange value : values) {
+					Range range = null;
+					if (_useNormalValues) {
+						range = value.getNormalRange();
+					}
+					else {
+						range = value.getFullRange();
+					}
+					if (state.isPresent(range.getMinimumNumber()) ||
+						state.isPresent(range.getMaximumNumber())) {
+						states.add(state.getStateNumber());
+					}
+				}
+			}
+			
+		}
+		return states;
+	}
+	
 	public Integer getCharacterNumber() {
 		return _character.getCharacterId();
 	}

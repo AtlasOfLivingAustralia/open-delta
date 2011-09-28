@@ -1,9 +1,12 @@
 package au.org.ala.delta.key;
 
+import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.List;
 
 import au.org.ala.delta.io.BinFileMode;
 import au.org.ala.delta.io.BinaryKeyFile;
+import au.org.ala.delta.util.Pair;
 
 /**
  * Knows the format of the keys items file.  This class is designed to 
@@ -32,6 +35,24 @@ public class WriteOnceKeyItemsFile extends BinaryKeyFile {
 		overwriteRecord(1, _header.toInts());
 	}
 	
+
+	public void writeItems(List<Pair<String, List<BitSet>>> items) {
+		checkEmpty(_header.getCharacterDependencyRecord());
+		List<Integer> itemDescriptionLengths = new ArrayList<Integer>();
+		int record = nextAvailableRecord();
+		for (Pair<String, List<BitSet>> item : items) {
+			String description = item.getFirst();
+			itemDescriptionLengths.add(description.length());
+			record += writeToRecord(record, description);
+			System.out.println("writing to record : "+description);
+			List<Integer> attributes = new ArrayList<Integer>();
+			for (BitSet attribute : item.getSecond()) {
+				attributes.addAll(bitSetToInts(attribute, 32));
+			}
+			record += writeToRecord(record, attributes);
+		}
+	}
+	
 	public void writeCharacterDependencies(List<Integer> dependencyData) {
 		checkEmpty(_header.getCharacterDependencyRecord());
 		
@@ -54,4 +75,5 @@ public class WriteOnceKeyItemsFile extends BinaryKeyFile {
 			throw new RuntimeException("There must be one value for each character");
 		}
 	}
+
 }

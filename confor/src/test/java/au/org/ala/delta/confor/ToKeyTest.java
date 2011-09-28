@@ -36,7 +36,10 @@ public class ToKeyTest extends TestCase {
 		BinaryKeyFile expectedKItems = new BinaryKeyFile(expectedKItemsFilename, BinFileMode.FM_READONLY);
 		
 		String actualKCharsFilename = FilenameUtils.concat(dest.getAbsolutePath(), "sample/kchars");
+		String actualKItemsFilename = FilenameUtils.concat(dest.getAbsolutePath(), "sample/kitems");
+		
 		BinaryKeyFile kchars = new BinaryKeyFile(actualKCharsFilename, BinFileMode.FM_READONLY);
+		BinaryKeyFile kitems = new BinaryKeyFile(actualKItemsFilename, BinFileMode.FM_READONLY);
 		
 		int numRecords = expectedKChars.getLength() / BinaryKeyFile.RECORD_LENGTH_BYTES;
 		int actualNumRecords = kchars.getLength() / BinaryKeyFile.RECORD_LENGTH_BYTES;
@@ -63,12 +66,24 @@ public class ToKeyTest extends TestCase {
 		for (int i=1; i<numRecords; i++) {
 			
 			List<Integer> expectedRecord = expectedKItems.readIntegerList(i, BinaryKeyFile.RECORD_LENGTH_INTEGERS);
+			//List<Integer> actualRecord = kitems.readIntegerList(i, BinaryKeyFile.RECORD_LENGTH_INTEGERS);
 			
 			System.out.println("Record: "+i);
 			System.out.println(expectedRecord);
+			//System.out.println(actualRecord);
 			
 			System.out.println("Expected as string: ");
-			System.out.println(expectedKItems.readString(i, BinaryKeyFile.RECORD_LENGTH_BYTES));
+			char[] chars = expectedKItems.readString(i, BinaryKeyFile.RECORD_LENGTH_BYTES).toCharArray();
+			for (int c=0; c<chars.length; c++) {
+				System.out.print(chars[c]);
+			}
+			System.out.println();
+			
+//			char[] actualChars = kitems.readString(i, BinaryKeyFile.RECORD_LENGTH_BYTES).toCharArray();
+//			for (int c=0; c<actualChars.length; c++) {
+//				System.out.print(actualChars[c]);
+//			}
+			System.out.println();
 			
 			System.out.println();
 		}

@@ -2,6 +2,7 @@ package au.org.ala.delta.io;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -17,7 +18,7 @@ import au.org.ala.delta.translation.FilteredDataSet;
  * Knows how to encode a list of character dependencies in the format
  * required by Intkey and Key.
  */
-public class CharacterDependencyEncoder {
+public class BinaryKeyFileEncoder {
 
 	public List<Integer> encodeCharacterDependencies(FilteredDataSet dataSet) {
 		List<Integer> dependencyData = initialiseDependencyList(dataSet);
@@ -134,5 +135,13 @@ public class CharacterDependencyEncoder {
 		return rangeList;
 	}
 
+	public BitSet encodeAttributeStates(List<Integer> presentStates) {
+		// Turn into bitset.
+		BitSet bits = new BitSet();
+		for (int state : presentStates) {
+			bits.set(state-1);
+		}
+		return bits;
+	}
 
 }

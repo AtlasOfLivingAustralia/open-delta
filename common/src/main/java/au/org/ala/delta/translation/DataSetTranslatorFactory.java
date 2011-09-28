@@ -53,8 +53,11 @@ public class DataSetTranslatorFactory {
 	}
 	
 	private DataSetTranslator createKeyFormatTranslator(DeltaContext context, FormatterFactory formatterFactory) {
+		TypeSetter typeSetter = new TypeSetterFactory().createTypeSetter(context, null);
+		
 		FilteredDataSet dataSet = new FilteredDataSet(context, new DeltaFormatDataSetFilter(context));
-		return new KeyTranslator(context, dataSet, formatterFactory.createCharacterFormatter());
+		return new KeyTranslator(context, dataSet,
+				formatterFactory.createItemFormatter(typeSetter), formatterFactory.createCharacterFormatter());
 	}
 
 	private AbstractDataSetTranslator createNaturalLanguageTranslator(

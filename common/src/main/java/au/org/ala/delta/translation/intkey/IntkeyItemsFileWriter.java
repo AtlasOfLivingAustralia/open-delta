@@ -15,7 +15,7 @@ import org.apache.commons.lang.math.Range;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.intkey.WriteOnceIntkeyItemsFile;
-import au.org.ala.delta.io.CharacterDependencyEncoder;
+import au.org.ala.delta.io.BinaryKeyFileEncoder;
 import au.org.ala.delta.io.OutputFileSelector;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
@@ -127,7 +127,7 @@ public class IntkeyItemsFileWriter {
 	
 	public void writeCharacterDependencies() {
 		
-		CharacterDependencyEncoder encoder = new CharacterDependencyEncoder();
+		BinaryKeyFileEncoder encoder = new BinaryKeyFileEncoder();
 		List<Integer> dependencyData = encoder.encodeCharacterDependencies(_dataSet);
 		List<Integer> invertedDependencyData = encoder.encodeCharacterDependenciesInverted(_dataSet);
 		_itemsFile.writeCharacterDependencies(dependencyData, invertedDependencyData);
@@ -181,10 +181,7 @@ public class IntkeyItemsFileWriter {
 			List<Integer> states = character.getPresentStates(attribute);
 			
 			// Turn into bitset.
-			BitSet bits = new BitSet();
-			for (int state : states) {
-				bits.set(state-1);
-			}
+			BitSet bits = new BinaryKeyFileEncoder().encodeAttributeStates(states);
 			
 			if (attribute.isInapplicable()) {
 				bits.set(numStates);
