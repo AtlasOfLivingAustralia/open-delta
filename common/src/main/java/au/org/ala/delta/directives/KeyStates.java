@@ -3,6 +3,8 @@ package au.org.ala.delta.directives;
 import java.io.StringReader;
 import java.math.BigDecimal;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.lang.math.FloatRange;
 
@@ -12,6 +14,7 @@ import au.org.ala.delta.directives.args.DirectiveArgument;
 import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.directives.args.KeyStateParser;
 import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.IdentificationKeyCharacter;
 
@@ -55,15 +58,27 @@ public class KeyStates extends AbstractDirective<DeltaContext> {
 			int tmpId = (Integer)arg.getId();
 			
 			if (tmpId != id) {
-				keyCharacter = create(dataSet, tmpId);
+				keyCharacter = create(context, tmpId);
 				context.addIdentificationKeyCharacter(keyCharacter);
 			}
 			
-			if (dataSet.getCharacter(tmpId).getCharacterType().isNumeric()) {
+			CharacterType charType = dataSet.getCharacter(tmpId).getCharacterType();
+			if (charType.isNumeric()) {
 				keyCharacter.addState(arg.getValueAsInt(), argToFloatRange(arg));
 			}
-			else {
+			else if (charType == CharacterType.UnorderedMultiState){
 				keyCharacter.addState(arg.getValueAsInt(), arg.getDataList());
+			}
+			else if (charType == CharacterType.OrderedMultiState) {
+				List<Integer> states = arg.getDataList();
+				if (states.size() > 1) {
+					List<Integer> range = new ArrayList<Integer>();
+					for (int i=states.get(0); i<=states.get(1); i++) {
+						range.add(i);
+					}
+					states = range;
+				}
+				keyCharacter.addState(arg.getValueAsInt(), states);
 			}
 			
 			id = tmpId;
@@ -71,9 +86,10 @@ public class KeyStates extends AbstractDirective<DeltaContext> {
 		
 	}
 	
-	private IdentificationKeyCharacter create(DeltaDataSet dataSet, int id) {
-		Character character = dataSet.getCharacter(id);
-		IdentificationKeyCharacter keyChar = new IdentificationKeyCharacter(character);
+	private IdentificationKeyCharacter create(DeltaContext context, int characterNumber) {
+		DeltaDataSet dataSet = context.getDataSet();
+		Character character = dataSet.getCharacter(characterNumber);
+		IdentificationKeyCharacter keyChar = new IdentificationKeyCharacter(character, context.getUseNormalValues(characterNumber));
 		return keyChar;
 	}
 	

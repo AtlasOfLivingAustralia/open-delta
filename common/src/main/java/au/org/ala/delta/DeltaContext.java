@@ -111,7 +111,7 @@ public class DeltaContext extends AbstractDeltaContext {
 	private boolean _outputHtml = false;
 	private boolean _enableDeltaOutput = true;
 	private boolean _chineseFormat = false;
-	private boolean _useNormalValues = false;
+	private Map<Integer, Boolean> _useNormalValues = new HashMap<Integer, Boolean>();
 	private boolean _omitSpaceBeforeUnits = false;
 	private boolean _translateImplicitValues = false;
 	
@@ -755,13 +755,13 @@ public class DeltaContext extends AbstractDeltaContext {
 		return _nonautomaticControllingCharacters.contains(number);
 	}
 
-	public boolean getUseNormalValues() {
-		
-		return _useNormalValues;
+	public boolean getUseNormalValues(int characterNumber) {
+		Boolean useNormalValues = _useNormalValues.get(characterNumber);
+		return useNormalValues != null ? useNormalValues : false;
 	}
 	
-	public void setUseNormalValues(boolean useNormalValues) {
-		_useNormalValues = useNormalValues;
+	public void setUseNormalValues(int characterNumber, boolean useNormalValues) {
+		_useNormalValues.put(characterNumber, useNormalValues);
 	}
 
 	public void setAbsoluteError(int characterNumber, Double error) {

@@ -196,14 +196,14 @@ public class IntkeyItemsFileWriter {
 		IntRange characterRange = determineIntegerRange(character);
 		if (characterRange != null) {
 		
-			int charNumber = character.getCharacterId();
+			int unfilteredCharNumber = character.getCharacterId();
 			int numStates = characterRange.getMaximumInteger()-characterRange.getMinimumInteger();
 			List<BitSet> attributes = new ArrayList<BitSet>();
 			for (int i=1; i<=_dataSet.getMaximumNumberOfItems(); i++) {
 				
 				// Turn into bitset.
 				BitSet bits = new BitSet();
-				IntegerAttribute attribute = (IntegerAttribute)_dataSet.getAttribute(i, charNumber);
+				IntegerAttribute attribute = (IntegerAttribute)_dataSet.getAttribute(i, unfilteredCharNumber);
 				if (attribute.isUnknown()) {
 					attributes.add(bits);
 					continue;
@@ -217,7 +217,7 @@ public class IntkeyItemsFileWriter {
 				
 				for (NumericRange range : ranges) {
 					Range usedRange;
-					if (_context.getUseNormalValues()) {
+					if (_context.getUseNormalValues(unfilteredCharNumber)) {
 						usedRange = range.getNormalRange();
 					}
 					else {
@@ -289,7 +289,7 @@ public class IntkeyItemsFileWriter {
 	 * range of values encoded.
 	 */
 	private boolean populateValues(int characterNumber, Set<Integer> values) {
-		boolean useNormalValues = _context.getUseNormalValues();
+		boolean useNormalValues = _context.getUseNormalValues(characterNumber);
 		
 		boolean hasMultiRangeAttribute = false;
 		for (int i=1; i<_dataSet.getMaximumNumberOfItems(); i++) {
@@ -325,14 +325,14 @@ public class IntkeyItemsFileWriter {
 	}
 	
 	private Set<Float> writeRealAttributes(int filteredCharNumber, Character realChar) {
-		boolean useNormalValues = _context.getUseNormalValues();
-		int characterNumber = realChar.getCharacterId();
+		int unfilteredCharNumber = realChar.getCharacterId();
+		boolean useNormalValues = _context.getUseNormalValues(unfilteredCharNumber);
 		
 		List<FloatRange> values = new ArrayList<FloatRange>();
 		BitSet inapplicableBits = new BitSet();
 		for (int i=1; i<=_dataSet.getMaximumNumberOfItems(); i++) {
 			
-			NumericAttribute attribute = (NumericAttribute)_dataSet.getAttribute(i, characterNumber);
+			NumericAttribute attribute = (NumericAttribute)_dataSet.getAttribute(i, unfilteredCharNumber);
 			if (attribute == null || attribute.isUnknown() || attribute.isInapplicable() || attribute.isVariable()) {
 				FloatRange range = new FloatRange(Float.MAX_VALUE);
 				values.add(range);
@@ -345,11 +345,11 @@ public class IntkeyItemsFileWriter {
 			
 			Range useRange;
 			for (NumericRange range : ranges) {
-				if (_context.hasAbsoluteError(characterNumber)) {
-					range.setAbsoluteError(_context.getAbsoluteError(characterNumber));
+				if (_context.hasAbsoluteError(unfilteredCharNumber)) {
+					range.setAbsoluteError(_context.getAbsoluteError(unfilteredCharNumber));
 				}
-				else if (_context.hasPercentageError(characterNumber)) {
-					range.setPercentageError(_context.getPercentageError(characterNumber));
+				else if (_context.hasPercentageError(unfilteredCharNumber)) {
+					range.setPercentageError(_context.getPercentageError(unfilteredCharNumber));
 				}
 				if (useNormalValues) {
 					useRange = range.getNormalRange();

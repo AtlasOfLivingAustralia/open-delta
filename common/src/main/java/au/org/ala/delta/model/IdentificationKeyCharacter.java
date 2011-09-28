@@ -20,7 +20,7 @@ public class IdentificationKeyCharacter {
 	public static abstract class KeyState implements Comparable<KeyState>{
 		int stateId;
 		public abstract boolean isPresent(Number value);
-		
+		public abstract boolean isPresent(Range range);
 		public int getStateNumber() {
 			return stateId;
 		}
@@ -62,6 +62,10 @@ public class IdentificationKeyCharacter {
 			return _originalStates.contains(orignalState);
 		}
 		
+		public boolean isPresent(Range range) {
+			return false;
+		}
+		
 		public List<Integer> originalStates() {
 			List<Integer> states = new ArrayList<Integer>(_originalStates);
 			Collections.sort(states);
@@ -87,6 +91,10 @@ public class IdentificationKeyCharacter {
 			return _stateRange.containsFloat(value);
 		}
 		
+		public boolean isPresent(Range range) {
+			return _stateRange.overlapsRange(range);
+		}
+		
 		public FloatRange stateRange() {
 			return _stateRange;
 		}
@@ -98,21 +106,17 @@ public class IdentificationKeyCharacter {
 	private int _filteredCharacterNumber;
 	
 	public IdentificationKeyCharacter(Character character) {
+		this(character, false);
+	}
+	
+	public IdentificationKeyCharacter(Character character, boolean useNormalValues) {
 		if (character == null) {
 			throw new IllegalArgumentException("Null character invalid");
 		}
 		_character = character;
 		_filteredCharacterNumber = character.getCharacterId();
 		_states = new ArrayList<KeyState>();
-	}
-	
-	public IdentificationKeyCharacter(int characterNumber, Character character) {
-		this (character);
-		_filteredCharacterNumber = characterNumber;
-	}
-	
-	public IdentificationKeyCharacter(int characterNumber, Character character, boolean useNormalValues) {
-		
+		_useNormalValues = useNormalValues;
 	}
 	
 	public void addState(int id, List<Integer> originalStates) {
@@ -200,8 +204,7 @@ public class IdentificationKeyCharacter {
 					else {
 						range = value.getFullRange();
 					}
-					if (state.isPresent(range.getMinimumNumber()) ||
-						state.isPresent(range.getMaximumNumber())) {
+					if (state.isPresent(range)) {
 						states.add(state.getStateNumber());
 					}
 				}

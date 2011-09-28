@@ -24,6 +24,7 @@ import au.org.ala.delta.util.Pair;
  */
 public class KeyItemsFileWriter {
 
+	public static final int INAPPLICABLE_BIT = 20;
 	private WriteOnceKeyItemsFile _itemsFile;
 	private FilteredDataSet _dataSet;
 	private DeltaContext _context;
@@ -86,7 +87,11 @@ public class KeyItemsFileWriter {
 				states = keyChar.getPresentStates((NumericAttribute)attribute);
 				 
 			}
-			attributes.add(_encoder.encodeAttributeStates(states));
+			BitSet bits = _encoder.encodeAttributeStates(states);
+			if (attribute.isInapplicable()) {
+				bits.set(INAPPLICABLE_BIT);
+			}
+			attributes.add(bits);
 		}
 		return new Pair<String, List<BitSet>>(description, attributes);
 		
