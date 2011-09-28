@@ -76,4 +76,30 @@ public class WriteOnceKeyItemsFile extends BinaryKeyFile {
 		}
 	}
 
+	public void writeHeading(String heading) {
+		checkEmpty(_header.getHeadingRecord());
+		int record = nextAvailableRecord();
+		_header.setHeadingRecord(record);
+		
+		writeStringWithLength(record, heading);
+	}
+
+	public void writeCharacterMask(List<Boolean> includedCharacters) {
+		checkCharactersLength(includedCharacters);
+		checkEmpty(_header.getCharacterMaskRecord());
+		int record = nextAvailableRecord();
+		_header.setCharacterMaskRecord(record);
+		
+		writeBooleansToRecord(record, includedCharacters);
+	}
+
+	public void writeNumbersOfStates(List<Integer> states) {
+		checkCharactersLength(states);
+		checkEmpty(_header.getStateNumbersRecord());
+		int record = nextAvailableRecord();
+		_header.setStateNumbersRecord(record);
+		
+		writeToRecord(record, states);
+	}
+
 }

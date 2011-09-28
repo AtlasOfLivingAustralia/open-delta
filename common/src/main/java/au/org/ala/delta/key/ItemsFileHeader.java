@@ -44,11 +44,11 @@ public class ItemsFileHeader {
 		this._characterDependenciesLength = characterDependenciesLength;
 	}
 
-	public int getHeaderRecord() {
+	public int getHeadingRecord() {
 		return _headerRecord;
 	}
 
-	public void setHeaderRecord(int headerRecord) {
+	public void setHeadingRecord(int headerRecord) {
 		this._headerRecord = headerRecord;
 	}
 

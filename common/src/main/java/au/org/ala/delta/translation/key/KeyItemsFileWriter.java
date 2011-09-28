@@ -5,7 +5,10 @@ import java.util.BitSet;
 import java.util.Iterator;
 import java.util.List;
 
+import java.util.Arrays;
+
 import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.DeltaContext.HeadingType;
 import au.org.ala.delta.io.BinaryKeyFileEncoder;
 import au.org.ala.delta.key.WriteOnceKeyItemsFile;
 import au.org.ala.delta.model.Attribute;
@@ -15,6 +18,7 @@ import au.org.ala.delta.model.MultiStateAttribute;
 import au.org.ala.delta.model.NumericAttribute;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.model.format.ItemFormatter;
+import au.org.ala.delta.translation.FilteredCharacter;
 import au.org.ala.delta.translation.FilteredDataSet;
 import au.org.ala.delta.util.Pair;
 
@@ -48,6 +52,9 @@ public class KeyItemsFileWriter {
 	public void writeAll() {
 		
 		writeItems();
+		writeHeading();
+		writeCharacterMask();
+		writeNumbersOfStates();
 		writeCharacterDependencies();
 		
 		// Need to write the header last as it is updated as each section 
@@ -55,16 +62,12 @@ public class KeyItemsFileWriter {
 		_itemsFile.writeHeader();
 	}
 	
-	protected void writeCharacterDependencies() {
-		List<Integer> dependencyData = _encoder.encodeCharacterDependencies(_dataSet);
-		
-		_itemsFile.writeCharacterDependencies(dependencyData);
-	}
+	
 	
 	protected void writeItems() {
 		
 		List<Pair<String, List<BitSet>>> items = new ArrayList<Pair<String,List<BitSet>>>();
-		for (int i=1; i<_dataSet.getMaximumNumberOfItems(); i++) {
+		for (int i=1; i<=_dataSet.getMaximumNumberOfItems(); i++) {
 			items.add(writeItem(_dataSet.getItem(i)));
 		}
 		_itemsFile.writeItems(items);
@@ -97,4 +100,38 @@ public class KeyItemsFileWriter {
 		
 	}
 	
+	protected void writeCharacterDependencies() {
+		List<Integer> dependencyData = _encoder.encodeCharacterDependencies(_dataSet);
+		
+		_itemsFile.writeCharacterDependencies(dependencyData);
+	}
+	
+	protected void writeHeading() {
+		_itemsFile.writeHeading(_context.getHeading(HeadingType.HEADING));
+	}
+	
+	protected void writeCharacterMask() {
+		Boolean[] init = new Boolean[_dataSet.getNumberOfCharacters()];
+		Arrays.fill(init, Boolean.FALSE);
+		List<Boolean> includedCharacters = new ArrayList<Boolean>(Arrays.asList(init));
+		
+		Iterator<FilteredCharacter> chars = _dataSet.filteredCharacters();
+		while (chars.hasNext()) {
+			FilteredCharacter character = chars.next();
+			if (!character.getCharacter().getCharacterType().isText()) {
+				includedCharacters.set(character.getCharacter().getCharacterId()-1, Boolean.TRUE);
+			}
+		}
+		_itemsFile.writeCharacterMask(includedCharacters);
+	}
+	
+	protected void writeNumbersOfStates() {
+		List<Integer> states = new ArrayList<Integer>();
+		Iterator<IdentificationKeyCharacter> keyChars = _dataSet.identificationKeyCharacterIterator();
+		while (keyChars.hasNext()) {
+			IdentificationKeyCharacter keyChar = keyChars.next();
+			states.add(keyChar.getNumberOfStates());
+		}
+		_itemsFile.writeNumbersOfStates(states);
+	}
 }
