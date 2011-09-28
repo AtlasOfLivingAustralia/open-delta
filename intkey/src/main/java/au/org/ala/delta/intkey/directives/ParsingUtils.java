@@ -210,7 +210,7 @@ public class ParsingUtils {
                 // consist solely of whitespace should be completely omitted.
                 String trimmedToken = token.trim();
                 if (trimmedToken.length() > 0) {
-                    tokens.add(token.trim());
+                    tokens.add(removeEnclosingQuotes(token.trim()));
                 }
                 endLastToken = i;
             }
