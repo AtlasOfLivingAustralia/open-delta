@@ -133,7 +133,6 @@ public class ImageDialog extends IntkeyDialog implements OverlaySelectionObserve
 
     private void buildMenu() {
         ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(ImageDialog.class);
-        resourceMap.injectFields(this);
         ActionMap actionMap = Application.getInstance().getContext().getActionMap(ImageDialog.class, this);
 
         _menuBar = new JMenuBar();

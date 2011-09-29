@@ -3,6 +3,7 @@ package au.org.ala.delta.intkey.ui;
 import java.awt.BorderLayout;
 import java.awt.Dialog;
 import java.awt.Frame;
+import java.text.MessageFormat;
 import java.util.List;
 
 import javax.swing.ActionMap;
@@ -45,19 +46,25 @@ public class CharacterImageDialog extends ImageDialog {
 
     private boolean _valuesEditable;
 
-    // Title used when the dialog is used to display images for an integer
+    // Title used when the dialog is used to enter values for an integer
     // character
     @Resource
     String integerTitle;
 
-    // Title used when the dialog is used to display images for a real character
+    // Title used when the dialog is used to enter values for a real character
     @Resource
     String realTitle;
 
-    // Title used when the dialog is used to display images for an multistate
+    // Title used when the dialog is used to enter values for an multistate
     // character
     @Resource
     String multistateTitle;
+
+    // Title used when the dialog is used only for display purposes - character
+    // values are not
+    // editable.
+    @Resource
+    String notEditableTitle;
 
     // Message shown when users attempts to set character values when the dialog
     // is being used by the ILLUSTRATE CHARACTERS directive.
@@ -118,12 +125,18 @@ public class CharacterImageDialog extends ImageDialog {
     private void updateTitle() {
         Character selectedCharacter = _characters.get(_selectedCharacterIndex);
 
-        if (selectedCharacter instanceof IntegerCharacter) {
-            setTitle(integerTitle);
-        } else if (selectedCharacter instanceof RealCharacter) {
-            setTitle(realTitle);
-        } else if (selectedCharacter instanceof MultiStateCharacter) {
-            setTitle(multistateTitle);
+        if (_valuesEditable) {
+            if (selectedCharacter instanceof IntegerCharacter) {
+                setTitle(integerTitle);
+            } else if (selectedCharacter instanceof RealCharacter) {
+                setTitle(realTitle);
+            } else if (selectedCharacter instanceof MultiStateCharacter) {
+                setTitle(multistateTitle);
+            }
+        } else {
+            String strCharacterNumber = Integer.toString(selectedCharacter.getCharacterId());
+            String formattedImageName = _imageDescriptionFormatter.defaultFormat(_multipleImageViewer.getVisibleViewer().getViewedImage().getSubjectTextOrFileName());
+            setTitle(MessageFormat.format(notEditableTitle, strCharacterNumber, formattedImageName));
         }
     }
 
