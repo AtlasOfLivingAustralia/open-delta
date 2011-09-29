@@ -90,6 +90,17 @@ public class VOControllingAdapter implements CharacterDependencyData {
 			_controllingDesc.writeStateIds(stateIds);
 		}
 	}
+	
+	@Override
+	public void addState(int state) {
+		synchronized (_vop) {
+			List<Integer> states = _controllingDesc.readStateIds();
+			if (!states.contains(state)) {
+				states.add(state);
+				_controllingDesc.writeStateIds(states);
+			}
+		}
+	}
 
 	@Override
 	public Set<Integer> getDependentCharacterIds() {

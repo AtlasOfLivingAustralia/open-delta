@@ -93,6 +93,11 @@ public class DefaultCharacterDependencyData implements CharacterDependencyData {
 	public void setDescription(String description) {
 		_description = description;
 	}
+	
+	@Override
+	public void addState(int state) {
+		_states.add(state);
+	}
 
 	@Override
 	public String toString() {

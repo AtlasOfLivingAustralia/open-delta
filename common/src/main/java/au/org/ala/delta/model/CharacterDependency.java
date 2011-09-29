@@ -120,6 +120,10 @@ public class CharacterDependency implements Comparable<CharacterDependency>{
 		
 	}
 	
+	public void addState(int state) {
+		_impl.addState(state);
+	}
+	
 	/**
 	 * CharacterDependencies are considered equal if they have the same controlling
 	 * character and states.  (It is not allowed to have two CharacterDependencies defined

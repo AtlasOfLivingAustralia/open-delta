@@ -12,12 +12,60 @@ import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.ObservableDeltaDataSet;
 import au.org.ala.delta.util.IdentificationKeyCharacterIterator;
 
+/**
+ * Provides a view of the dataset filtered on the directives 
+ * EXCLUDE CHARACTERS / EXCLUDE ITEMS
+ */
 public class FilteredDataSet extends DataSetWrapper {
 
 	private DataSetFilter _filter;
 	private DeltaContext _context;
 	private List<FilteredItem> _filteredItems;
 	private List<FilteredCharacter> _filteredCharacters;
+	
+	public class UnfilteredItemIterator implements Iterator<Item> {
+
+		private int itemNumber = 1;
+		
+		@Override
+		public boolean hasNext() {
+			return itemNumber <= getMaximumNumberOfItems();
+		}
+
+		@Override
+		public Item next() {
+			Item item = getItem(itemNumber);
+			itemNumber++;
+			return item;
+		}
+
+		@Override
+		public void remove() {
+			throw new UnsupportedOperationException();
+		}
+	}
+	
+	public class UnfilteredCharacterIterator implements Iterator<Character> {
+
+		private int characterNumber = 1;
+		
+		@Override
+		public boolean hasNext() {
+			return characterNumber <= getNumberOfCharacters();
+		}
+
+		@Override
+		public Character next() {
+			Character character = getCharacter(characterNumber);
+			characterNumber++;
+			return character;
+		}
+
+		@Override
+		public void remove() {
+			throw new UnsupportedOperationException();
+		}
+	}
 	
 	public FilteredDataSet(DeltaContext context, DataSetFilter filter) {
 		super((ObservableDeltaDataSet)context.getDataSet());
@@ -78,5 +126,17 @@ public class FilteredDataSet extends DataSetWrapper {
 	
 	public Iterator<IdentificationKeyCharacter> identificationKeyCharacterIterator() {
 		return new IdentificationKeyCharacterIterator(_context, _filter);
+	}
+	
+	public Iterator<IdentificationKeyCharacter> unfiltereddentificationKeyCharacterIterator() {
+		return new IdentificationKeyCharacterIterator(_context, new AllPassFilter());
+	}
+	
+	public Iterator<Character> unfilteredCharacters() {
+		return new UnfilteredCharacterIterator();
+	}
+	
+	public Iterator<Item> unfilteredItems() {
+		return new UnfilteredItemIterator();
 	}
 }

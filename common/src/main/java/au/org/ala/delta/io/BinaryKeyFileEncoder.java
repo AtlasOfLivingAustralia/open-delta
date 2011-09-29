@@ -10,47 +10,44 @@ import java.util.List;
 import java.util.Set;
 
 import au.org.ala.delta.model.CharacterDependency;
-import au.org.ala.delta.model.MultiStateCharacter;
+import au.org.ala.delta.model.IdentificationKeyCharacter;
 import au.org.ala.delta.translation.FilteredCharacter;
 import au.org.ala.delta.translation.FilteredDataSet;
 
 /**
- * Knows how to encode a list of character dependencies in the format
- * required by Intkey and Key.
+ * Knows how to encode a list of character dependencies in the format required
+ * by Intkey and Key.
  */
 public class BinaryKeyFileEncoder {
 
 	public List<Integer> encodeCharacterDependencies(FilteredDataSet dataSet) {
 		List<Integer> dependencyData = initialiseDependencyList(dataSet);
-	
-		Iterator<FilteredCharacter> filteredChars = dataSet.filteredCharacters();
-		while (filteredChars.hasNext()) {
-			FilteredCharacter filteredChar = filteredChars.next();
-			au.org.ala.delta.model.Character character = filteredChar.getCharacter();
-			if (character.getCharacterType().isMultistate()) {
 
-				MultiStateCharacter multiStateCharacter = (MultiStateCharacter) character;
-				addDependencyData(filteredChar.getCharacterNumber(), dependencyData, multiStateCharacter);
+		Iterator<IdentificationKeyCharacter> filteredChars = dataSet.identificationKeyCharacterIterator();
+		while (filteredChars.hasNext()) {
+			IdentificationKeyCharacter filteredChar = filteredChars.next();
+			if (filteredChar.getCharacterType().isMultistate()) {
+
+				addDependencyData(filteredChar.getCharacterNumber(), dependencyData, filteredChar);
 			}
 		}
 		return dependencyData;
 	}
 
-	
 	public List<Integer> encodeCharacterDependenciesInverted(FilteredDataSet dataSet) {
 		List<Integer> dependencyData = initialiseDependencyList(dataSet);
-		
+
 		Iterator<FilteredCharacter> filteredChars = dataSet.filteredCharacters();
 		while (filteredChars.hasNext()) {
 			FilteredCharacter filteredChar = filteredChars.next();
 			au.org.ala.delta.model.Character character = filteredChar.getCharacter();
-			
+
 			addInvertedDependencyData(filteredChar.getCharacterNumber(), dependencyData, character);
 
 		}
 		return dependencyData;
 	}
-	
+
 	private List<Integer> initialiseDependencyList(FilteredDataSet dataSet) {
 		Integer[] characters = new Integer[dataSet.getNumberOfCharacters()];
 		Arrays.fill(characters, 0);
@@ -58,8 +55,8 @@ public class BinaryKeyFileEncoder {
 		return dependencyData;
 	}
 
-		private void addDependencyData(int filteredCharNumber, List<Integer> dependencyData,
-			MultiStateCharacter multiStateCharacter) {
+	private void addDependencyData(int filteredCharNumber, List<Integer> dependencyData,
+			IdentificationKeyCharacter multiStateCharacter) {
 		List<CharacterDependency> dependentCharacters = multiStateCharacter.getDependentCharacters();
 		if (dependentCharacters != null && dependentCharacters.size() > 0) {
 			// Any location specifications are "1" indexed because the
@@ -109,29 +106,29 @@ public class BinaryKeyFileEncoder {
 			controllingChars.add(controllingCharNumber);
 		}
 	}
-	
+
 	private List<Integer> toRangeList(Set<Integer> values) {
 		List<Integer> rangeList = new ArrayList<Integer>();
 		List<Integer> list = new ArrayList<Integer>(values);
 		if (list.size() == 1) {
-			
+
 			rangeList.add(list.get(0));
 			rangeList.add(list.get(0));
 			return rangeList;
 		}
-		
+
 		Collections.sort(list);
-		
+
 		int first = 0;
-		for (int i=1; i<list.size(); i++) {
-			if (list.get(i) != list.get(i-1)+1) {
+		for (int i = 1; i < list.size(); i++) {
+			if (list.get(i) != list.get(i - 1) + 1) {
 				rangeList.add(list.get(first));
-				rangeList.add(list.get(i-1));
+				rangeList.add(list.get(i - 1));
 				first = i;
 			}
 		}
 		rangeList.add(list.get(first));
-		rangeList.add(list.get(list.size()-1));
+		rangeList.add(list.get(list.size() - 1));
 		return rangeList;
 	}
 
@@ -139,7 +136,7 @@ public class BinaryKeyFileEncoder {
 		// Turn into bitset.
 		BitSet bits = new BitSet();
 		for (int state : presentStates) {
-			bits.set(state-1);
+			bits.set(state - 1);
 		}
 		return bits;
 	}

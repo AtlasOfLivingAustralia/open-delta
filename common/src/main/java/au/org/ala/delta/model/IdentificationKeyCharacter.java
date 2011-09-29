@@ -3,8 +3,10 @@ package au.org.ala.delta.model;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.math.FloatRange;
@@ -234,9 +236,55 @@ public class IdentificationKeyCharacter {
 		return _character;
 	}
 	
-
-	
 	public List<KeyState> getStates() {
 		return _states;
+	}
+
+	public List<CharacterDependency> getDependentCharacters() {
+		if (!getCharacterType().isMultistate()) {
+			throw new IllegalArgumentException("Only multistate characters can have dependent characters");
+		}
+		List<CharacterDependency> originalDependencies = _character.getDependentCharacters();
+		if (_states.size() == 0) {
+			return originalDependencies;
+		}
+		
+		// Convert the dependencies to the new states.
+		Map<Integer, Set<Integer>> dependencyPerState = new HashMap<Integer, Set<Integer>>();
+		for (CharacterDependency dependency : originalDependencies) {
+			for (int state : dependency.getStates()) {
+				dependencyPerState.put(state, dependency.getDependentCharacterIds());
+			}
+		}
+		
+		
+		Map<Set<Integer>, CharacterDependency> modifiedDependencies = new HashMap<Set<Integer>, CharacterDependency>(); 
+		for (KeyState keyState : _states) {
+			MultiStateKeyState msKeyState = (MultiStateKeyState)keyState;
+			Set<Integer> dependentChars = new HashSet<Integer>();
+			for (int originalState : msKeyState.originalStates()) {
+				Set<Integer> tmpDependencies = dependencyPerState.get(originalState);
+				if (tmpDependencies != null) {
+					dependentChars.addAll(tmpDependencies);
+				}
+			}
+			if (!dependentChars.isEmpty()) {
+				if (modifiedDependencies.containsKey(dependentChars)) {
+					modifiedDependencies.get(dependentChars).getStates().add(keyState.stateId);
+				}
+				else {
+					modifiedDependencies.put(dependentChars, newDependency(keyState.stateId, dependentChars));
+				}
+			}
+		}
+		
+		return new ArrayList<CharacterDependency>(modifiedDependencies.values());
+	}
+	
+	private CharacterDependency newDependency(int state, Set<Integer> dependentChars) {
+		DefaultDataSetFactory factory = new DefaultDataSetFactory();
+		Set<Integer> states = new HashSet<Integer>();
+		states.add(state);
+		return factory.createCharacterDependency((MultiStateCharacter)_character, states, dependentChars);
 	}
 }
