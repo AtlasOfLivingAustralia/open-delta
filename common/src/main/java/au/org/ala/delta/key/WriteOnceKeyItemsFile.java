@@ -38,13 +38,10 @@ public class WriteOnceKeyItemsFile extends BinaryKeyFile {
 
 	public void writeItems(List<Pair<String, List<BitSet>>> items) {
 		checkEmpty(_header.getCharacterDependencyRecord());
-		List<Integer> itemDescriptionLengths = new ArrayList<Integer>();
 		int record = nextAvailableRecord();
 		for (Pair<String, List<BitSet>> item : items) {
 			String description = item.getFirst();
-			itemDescriptionLengths.add(description.length());
 			record += writeToRecord(record, description);
-			System.out.println("writing to record : "+description);
 			List<Integer> attributes = new ArrayList<Integer>();
 			for (BitSet attribute : item.getSecond()) {
 				attributes.addAll(bitSetToInts(attribute, 32));
@@ -67,6 +64,12 @@ public class WriteOnceKeyItemsFile extends BinaryKeyFile {
 	private void checkEmpty(int recordNum) {
 		if (recordNum > 0) {
 			throw new RuntimeException("The record has already been allocated.");
+		}
+	}
+	
+	private void checkTaxaLength(List<?> values) {
+		if (values.size() != _header.getNumberOfItems()) {
+			throw new RuntimeException("There must be one value for each item");
 		}
 	}
 	
@@ -102,4 +105,40 @@ public class WriteOnceKeyItemsFile extends BinaryKeyFile {
 		writeToRecord(record, states);
 	}
 
+	public void writeCharacterReliabilities(List<Float> reliabilities) {
+		checkCharactersLength(reliabilities);
+		checkEmpty(_header.getCharcterReliabilitiesRecord());
+		int record = nextAvailableRecord();
+		_header.setCharcterReliabilitiesRecord(record);
+		
+		writeFloatsToRecord(record, reliabilities);
+
+	}
+	
+	public void writeTaxonMask(List<Boolean> includedTaxa) {
+		checkTaxaLength(includedTaxa);
+		checkEmpty(_header.getTaxonMaskRecord());
+		int record = nextAvailableRecord();
+		_header.setTaxonMaskRecord(record);
+		
+		writeBooleansToRecord(record, includedTaxa);
+	}
+
+	public void writeItemLengths(List<Integer> lengths) {
+		checkTaxaLength(lengths);
+		checkEmpty(_header.getItemNameLengthsRecord());
+		int record = nextAvailableRecord();
+		_header.setItemNameLengthsRecord(record);
+		
+		writeToRecord(record, lengths);
+	}
+
+	public void writeItemAbundances(List<Float> abundances) {
+		checkTaxaLength(abundances);
+		checkEmpty(_header.getItemAbundancesRecord());
+		int record = nextAvailableRecord();
+		_header.setItemAbundancesRecord(record);
+		
+		writeFloatsToRecord(record, abundances);
+	}
 }

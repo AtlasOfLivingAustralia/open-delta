@@ -836,7 +836,11 @@ public class DeltaContext extends AbstractDeltaContext {
 	}
 	
 	public double getItemAbundancy(int itemNumber) {
-		return _itemAbundances.get(itemNumber);
+		Double abundancy = _itemAbundances.get(itemNumber);
+		if (abundancy == null) {
+			abundancy = 5d;
+		}
+		return abundancy;
 	}
 	
 }

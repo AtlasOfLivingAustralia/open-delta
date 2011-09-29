@@ -100,11 +100,11 @@ public class ItemsFileHeader {
 		this._itemNameLengthsRecord = itemNameLengthsRecord;
 	}
 
-	public int getItemAbundanciesRecord() {
+	public int getItemAbundancesRecord() {
 		return _itemAbundanciesRecord;
 	}
 
-	public void setItemAbundanciesRecord(int itemAbundanciesRecord) {
+	public void setItemAbundancesRecord(int itemAbundanciesRecord) {
 		this._itemAbundanciesRecord = itemAbundanciesRecord;
 	}
 
@@ -114,8 +114,9 @@ public class ItemsFileHeader {
 	 */
 	public List<Integer> toInts() {
 		List<Integer> ints = new ArrayList<Integer>();
-		ints.add(_numberOfCharacters);
+		
 		ints.add(_numberOfItems);
+		ints.add(_numberOfCharacters);
 		ints.add(_characterDependenciesLength);
 		ints.add(_headerRecord);
 		ints.add(_characterMaskRecord);
@@ -130,8 +131,8 @@ public class ItemsFileHeader {
 	}
 	
 	public void fromInts(List<Integer> ints) {
-		_numberOfCharacters = ints.get(0);
-		_numberOfItems = ints.get(1);
+		_numberOfItems = ints.get(0);
+		_numberOfCharacters = ints.get(1);
 		_characterDependenciesLength = ints.get(2);
 		_headerRecord = ints.get(3);
 		_characterMaskRecord = ints.get(4);

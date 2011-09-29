@@ -20,6 +20,7 @@ import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.translation.FilteredCharacter;
 import au.org.ala.delta.translation.FilteredDataSet;
+import au.org.ala.delta.translation.FilteredItem;
 import au.org.ala.delta.util.Pair;
 
 /**
@@ -56,6 +57,10 @@ public class KeyItemsFileWriter {
 		writeCharacterMask();
 		writeNumbersOfStates();
 		writeCharacterDependencies();
+		writeCharacterReliabilities();
+		writeTaxonMask();
+		writeItemLengths();
+		writeItemAbundances();
 		
 		// Need to write the header last as it is updated as each section 
 		// is written.
@@ -133,5 +138,55 @@ public class KeyItemsFileWriter {
 			states.add(keyChar.getNumberOfStates());
 		}
 		_itemsFile.writeNumbersOfStates(states);
+	}
+	
+	protected void writeCharacterReliabilities() {
+		List<Float> reliabilities = new ArrayList<Float>();
+		Iterator<IdentificationKeyCharacter> keyChars = _dataSet.identificationKeyCharacterIterator();
+		while (keyChars.hasNext()) {
+			IdentificationKeyCharacter keyChar = keyChars.next();
+			reliabilities.add(new Float(_context.getCharacterReliability(keyChar.getCharacterNumber())));
+		}
+		_itemsFile.writeCharacterReliabilities(reliabilities);	
+	}
+	
+	protected void writeTaxonMask() {
+		Boolean[] init = new Boolean[_dataSet.getMaximumNumberOfItems()];
+		Arrays.fill(init, Boolean.FALSE);
+		List<Boolean> includedItems = new ArrayList<Boolean>(Arrays.asList(init));
+		
+		Iterator<FilteredItem> items = _dataSet.filteredItems();
+		while (items.hasNext()) {
+			FilteredItem item = items.next();
+			includedItems.set(item.getItem().getItemNumber()-1, Boolean.TRUE);
+		}
+		_itemsFile.writeTaxonMask(includedItems);
+	}
+	
+	protected void writeItemLengths() {
+		// It would have been easier to write this when the items were 
+		// written but testing is easier if we maintain the same ordering
+		// as CONFOR.
+		List<Pair<String, List<BitSet>>> items = new ArrayList<Pair<String,List<BitSet>>>();
+		for (int i=1; i<=_dataSet.getMaximumNumberOfItems(); i++) {
+			items.add(writeItem(_dataSet.getItem(i)));
+		}
+		List<Integer> lengths = new ArrayList<Integer>();
+		for (Pair<String, List<BitSet>> item : items) {
+			lengths.add(item.getFirst().length());
+		}
+		_itemsFile.writeItemLengths(lengths);
+	}
+	
+	protected void writeItemAbundances() {
+		List<Float> abundances = new ArrayList<Float>();
+		Iterator<FilteredItem> items = _dataSet.filteredItems();
+		while (items.hasNext()) {
+			FilteredItem item = items.next();
+			double abundancy = _context.getItemAbundancy(item.getItem().getItemNumber());
+			abundancy = Math.log(abundancy)/Math.log(2) +5;
+			abundances.add(new Float(abundancy));
+		}
+		_itemsFile.writeItemAbundances(abundances);	
 	}
 }
