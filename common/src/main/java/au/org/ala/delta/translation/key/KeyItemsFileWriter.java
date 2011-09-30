@@ -82,18 +82,20 @@ public class KeyItemsFileWriter {
 		
 		String description = _itemFormatter.formatItemDescription(item, CommentStrippingMode.STRIP_ALL);
 		List<BitSet> attributes = new ArrayList<BitSet>();
-		Iterator<IdentificationKeyCharacter> keyChars = _dataSet.identificationKeyCharacterIterator();
+		Iterator<IdentificationKeyCharacter> keyChars = _dataSet.unfilteredIdentificationKeyCharacterIterator();
 		while (keyChars.hasNext()) {
 			IdentificationKeyCharacter keyChar = keyChars.next();
 			Attribute attribute = item.getAttribute(keyChar.getCharacter());
-			
 			List<Integer> states = new ArrayList<Integer>();
-			if (keyChar.getCharacterType().isMultistate()) {
-				states = keyChar.getPresentStates((MultiStateAttribute)attribute);
-			}
-			else if (keyChar.getCharacterType().isNumeric()) {
-				states = keyChar.getPresentStates((NumericAttribute)attribute);
-				 
+			
+			if (!attribute.isInapplicable()) {
+				if (keyChar.getCharacterType().isMultistate()) {
+					states = keyChar.getPresentStates((MultiStateAttribute)attribute);
+				}
+				else if (keyChar.getCharacterType().isNumeric()) {
+					states = keyChar.getPresentStates((NumericAttribute)attribute);
+					 
+				}
 			}
 			BitSet bits = _encoder.encodeAttributeStates(states);
 			if (attribute.isInapplicable()) {
@@ -106,7 +108,7 @@ public class KeyItemsFileWriter {
 	}
 	
 	protected void writeCharacterDependencies() {
-		List<Integer> dependencyData = _encoder.encodeCharacterDependencies(_dataSet);
+		List<Integer> dependencyData = _encoder.encodeCharacterDependencies(_dataSet.getNumberOfCharacters(), _dataSet.unfilteredIdentificationKeyCharacterIterator());
 		
 		_itemsFile.writeCharacterDependencies(dependencyData);
 	}
@@ -132,7 +134,7 @@ public class KeyItemsFileWriter {
 	
 	protected void writeNumbersOfStates() {
 		List<Integer> states = new ArrayList<Integer>();
-		Iterator<IdentificationKeyCharacter> keyChars = _dataSet.identificationKeyCharacterIterator();
+		Iterator<IdentificationKeyCharacter> keyChars = _dataSet.unfilteredIdentificationKeyCharacterIterator();
 		while (keyChars.hasNext()) {
 			IdentificationKeyCharacter keyChar = keyChars.next();
 			states.add(keyChar.getNumberOfStates());
@@ -142,7 +144,7 @@ public class KeyItemsFileWriter {
 	
 	protected void writeCharacterReliabilities() {
 		List<Float> reliabilities = new ArrayList<Float>();
-		Iterator<IdentificationKeyCharacter> keyChars = _dataSet.identificationKeyCharacterIterator();
+		Iterator<IdentificationKeyCharacter> keyChars = _dataSet.unfilteredIdentificationKeyCharacterIterator();
 		while (keyChars.hasNext()) {
 			IdentificationKeyCharacter keyChar = keyChars.next();
 			reliabilities.add(new Float(_context.getCharacterReliability(keyChar.getCharacterNumber())));

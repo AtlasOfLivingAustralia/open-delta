@@ -63,7 +63,7 @@ public class DefaultAttributeData implements AttributeData {
 
     @Override
     public boolean isInapplicable() {
-        return "-".equals(_value);
+        return _parsedAttribute.isInapplicable();
     }
 
 

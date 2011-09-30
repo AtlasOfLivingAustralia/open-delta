@@ -824,4 +824,13 @@ public class Attribute implements Iterable<AttrChunk> {
 		}
 		return false;
 	}
+	
+	public boolean isInapplicable() {
+		
+		for (AttrChunk chunk : this)
+			if (chunk.getType() == ChunkType.CHUNK_INAPPLICABLE) {
+				return true;
+		}
+		return false;
+	}
 }

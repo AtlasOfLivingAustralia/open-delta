@@ -32,8 +32,8 @@ public class CharacterWeightsTest extends TestCase {
 		
 		assertEquals(7.1, context.getCharacterReliability(77));
 		
-		// This directive initialises weights to 5...
-		assertEquals(5.0, context.getCharacterWeight(88));
+		// This directive initialises reliabilities to 1...
+		assertEquals(1.0, context.getCharacterWeight(88));
 	}
 	
 	/**

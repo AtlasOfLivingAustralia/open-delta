@@ -39,11 +39,15 @@ public abstract class CharacterWeightDirective extends AbstractCharacterListDire
 	@Override
 	public void process(DeltaContext context, DirectiveArguments args) throws Exception {
 		
+		setDefaults(context);
+		
+		super.process(context, args);
+	}
+	
+	protected void setDefaults(DeltaContext context) {
 		for (int i=1; i<=context.getNumberOfCharacters(); i++) {
 			context.setCharacterWeight(i, _defaultWeight);
 		}
-		
-		super.process(context, args);
 	}
 
 	@Override

@@ -207,6 +207,18 @@ public class BinaryKeyFile extends BinFile {
         return retList;
     }
     
+    public List<Float> readFloatList(int recordNum, int numFloats) {
+    	seek(recordOffset(recordNum));
+        ByteBuffer bb = readByteBuffer(numFloats * SIZE_INT_IN_BYTES);
+
+        List<Float> retList = new ArrayList<Float>();
+        for (int i = 0; i < numFloats; i++) {
+            retList.add(bb.getFloat());
+        }
+        
+        return retList;
+    }
+    
     public String readString(int recordNum, int numChars) {
     	seek(recordOffset(recordNum));
         ByteBuffer bb = readByteBuffer(numChars);

@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import au.org.ala.delta.io.BinFileMode;
 import au.org.ala.delta.io.BinaryKeyFile;
+import au.org.ala.delta.key.ItemsFileHeader;
 
 /**
  * Tests the CONFOR tokey process.
@@ -63,31 +64,56 @@ public class ToKeyTest extends TestCase {
 		numRecords = expectedKItems.getLength() / BinaryKeyFile.RECORD_LENGTH_BYTES;
 		System.out.println("**** Items File ("+numRecords+")*****");
 		
-//		for (int i=1; i<numRecords; i++) {
-//			
-//			List<Integer> expectedRecord = expectedKItems.readIntegerList(i, BinaryKeyFile.RECORD_LENGTH_INTEGERS);
-//			List<Integer> actualRecord = kitems.readIntegerList(i, BinaryKeyFile.RECORD_LENGTH_INTEGERS);
-//			
-//			System.out.println("Record: "+i);
-//			System.out.println(expectedRecord);
-//			System.out.println(actualRecord);
-//			
-//			System.out.println("Expected as string: ");
-//			char[] chars = expectedKItems.readString(i, BinaryKeyFile.RECORD_LENGTH_BYTES).toCharArray();
-//			for (int c=0; c<chars.length; c++) {
-//				System.out.print(chars[c]);
-//			}
-//			System.out.println();
-//			
-//			char[] actualChars = kitems.readString(i, BinaryKeyFile.RECORD_LENGTH_BYTES).toCharArray();
-//			for (int c=0; c<actualChars.length; c++) {
-//				System.out.print(actualChars[c]);
-//			}
-//			System.out.println();
-//			
-//			System.out.println();
-//		}
-//		
+		List<Integer> header = expectedKItems.readIntegerList(1, BinaryKeyFile.RECORD_LENGTH_INTEGERS);
+		ItemsFileHeader itemsHeader = new ItemsFileHeader();
+		itemsHeader.fromInts(header);
+		
+		for (int i=1; i<numRecords; i++) {
+			
+			
+			System.out.println("Record: "+i);
+			
+			if ((i >= itemsHeader.getCharcterReliabilitiesRecord() && i < itemsHeader.getTaxonMaskRecord()) ||
+				 i >= itemsHeader.getItemAbundancesRecord()) {
+				List<Float> expectedFloats = expectedKItems.readFloatList(i, BinaryKeyFile.RECORD_LENGTH_INTEGERS);
+				List<Float> actualFloats = kitems.readFloatList(i, BinaryKeyFile.RECORD_LENGTH_INTEGERS);
+				System.out.println(expectedFloats);
+				System.out.println(actualFloats);
+				
+				for (int f=0; f<expectedFloats.size(); f++) {
+					// Note sure if this is a difference in encoding or precision
+					// but our floats are quite different.
+					assertEquals(expectedFloats.get(f), actualFloats.get(f), 0.021f);
+				}
+			}
+			else if (i>=itemsHeader.getHeadingRecord() && i<itemsHeader.getCharacterMaskRecord()){
+				// The header has the date in it so will be different.
+		 	}
+			else {
+				List<Integer> expectedRecord = expectedKItems.readIntegerList(i, BinaryKeyFile.RECORD_LENGTH_INTEGERS);
+				List<Integer> actualRecord = kitems.readIntegerList(i, BinaryKeyFile.RECORD_LENGTH_INTEGERS);
+				System.out.println(expectedRecord);
+				System.out.println(actualRecord);
+			
+				System.out.println("Expected as string: ");
+				char[] chars = expectedKItems.readString(i, BinaryKeyFile.RECORD_LENGTH_BYTES).toCharArray();
+				for (int c=0; c<chars.length; c++) {
+					System.out.print(chars[c]);
+				}
+				
+				assertEquals(expectedRecord, actualRecord);
+			}
+			System.out.println();
+			
+			char[] actualChars = kitems.readString(i, BinaryKeyFile.RECORD_LENGTH_BYTES).toCharArray();
+			for (int c=0; c<actualChars.length; c++) {
+				System.out.print(actualChars[c]);
+			}
+			System.out.println();
+			
+			System.out.println();
+		}
+		
 		
 	}
 	

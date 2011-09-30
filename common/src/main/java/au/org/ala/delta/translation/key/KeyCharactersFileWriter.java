@@ -5,29 +5,13 @@ import java.util.Iterator;
 import java.util.List;
 
 import au.org.ala.delta.DeltaContext;
-import au.org.ala.delta.DeltaContext.HeadingType;
-import au.org.ala.delta.intkey.WriteOnceIntkeyCharsFile;
 import au.org.ala.delta.key.WriteOnceKeyCharsFile;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.IdentificationKeyCharacter;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.NumericCharacter;
-import au.org.ala.delta.model.TypeSettingMark;
-import au.org.ala.delta.model.TypeSettingMark.CharacterNoteMarks;
 import au.org.ala.delta.model.format.CharacterFormatter;
-import au.org.ala.delta.model.image.Image;
-import au.org.ala.delta.model.image.ImageInfo;
-import au.org.ala.delta.model.image.ImageSettings;
-import au.org.ala.delta.model.image.ImageSettings.FontInfo;
-import au.org.ala.delta.model.image.ImageSettings.OverlayFontType;
-import au.org.ala.delta.model.image.ImageType;
-import au.org.ala.delta.translation.FilteredCharacter;
 import au.org.ala.delta.translation.FilteredDataSet;
-import au.org.ala.delta.translation.Words;
-import au.org.ala.delta.translation.Words.Word;
-import au.org.ala.delta.translation.delta.DeltaWriter;
-import au.org.ala.delta.translation.delta.OverlayFontWriter;
-import au.org.ala.delta.translation.intkey.IntkeyImageWriter;
 
 /**
  * Writes the key chars file using the data in a supplied DeltaContext and
@@ -62,7 +46,7 @@ public class KeyCharactersFileWriter {
 	}
 	
 	protected void writeKeyStates() {
-		Iterator<IdentificationKeyCharacter> characters = _dataSet.identificationKeyCharacterIterator();
+		Iterator<IdentificationKeyCharacter> characters = _dataSet.unfilteredIdentificationKeyCharacterIterator();
 		List<Integer> keyStates = new ArrayList<Integer>();
 		while (characters.hasNext()) {
 			IdentificationKeyCharacter keyChar = characters.next();
@@ -75,9 +59,9 @@ public class KeyCharactersFileWriter {
 	protected void writeCharacterFeatures() {
 		List<List<String>> features = new ArrayList<List<String>>();
 		
-		Iterator<FilteredCharacter> characters = _dataSet.filteredCharacters();
+		Iterator<Character> characters = _dataSet.unfilteredCharacters();
 		while (characters.hasNext()) {
-			Character character = characters.next().getCharacter();
+			Character character = characters.next();
 			List<String> feature = new ArrayList<String>();
 			feature.add(_formatter.formatCharacterDescription(character));
 			if (character.getCharacterType().isMultistate()) {

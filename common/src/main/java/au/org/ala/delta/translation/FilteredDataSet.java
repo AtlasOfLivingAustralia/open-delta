@@ -106,15 +106,14 @@ public class FilteredDataSet extends DataSetWrapper {
 		}
 	}
 
-	@Override
-	public int getNumberOfCharacters() {
+	public int getNumberOfFilteredCharacters() {
 		return _filteredCharacters.size();
 	}
 
-	@Override
-	public int getMaximumNumberOfItems() {
+	public int getNumberOfFilteredItems() {
 		return _filteredItems.size();
 	}
+
 	
 	public Iterator<FilteredCharacter> filteredCharacters() {
 		return _filteredCharacters.iterator();
@@ -128,7 +127,7 @@ public class FilteredDataSet extends DataSetWrapper {
 		return new IdentificationKeyCharacterIterator(_context, _filter);
 	}
 	
-	public Iterator<IdentificationKeyCharacter> unfiltereddentificationKeyCharacterIterator() {
+	public Iterator<IdentificationKeyCharacter> unfilteredIdentificationKeyCharacterIterator() {
 		return new IdentificationKeyCharacterIterator(_context, new AllPassFilter());
 	}
 	

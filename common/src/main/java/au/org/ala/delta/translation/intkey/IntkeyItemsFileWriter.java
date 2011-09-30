@@ -71,7 +71,7 @@ public class IntkeyItemsFileWriter {
 	
 	public void writeItemDescriptions() {
 		
-		List<String> descriptions = new ArrayList<String>(_dataSet.getMaximumNumberOfItems());
+		List<String> descriptions = new ArrayList<String>(_dataSet.getNumberOfFilteredItems());
 		Iterator<FilteredItem> items = _dataSet.filteredItems();
 		while (items.hasNext()) {
 			descriptions.add(items.next().getItem().getDescription());
@@ -81,9 +81,9 @@ public class IntkeyItemsFileWriter {
 	
 	public void writeCharacterSpecs() {
 		
-		List<Integer> types = new ArrayList<Integer>(_dataSet.getNumberOfCharacters());
-		List<Integer> states = new ArrayList<Integer>(_dataSet.getNumberOfCharacters());
-		List<Float> reliabilities = new ArrayList<Float>(_dataSet.getNumberOfCharacters());
+		List<Integer> types = new ArrayList<Integer>(_dataSet.getNumberOfFilteredCharacters());
+		List<Integer> states = new ArrayList<Integer>(_dataSet.getNumberOfFilteredCharacters());
+		List<Float> reliabilities = new ArrayList<Float>(_dataSet.getNumberOfFilteredCharacters());
 		
 	    Iterator<IdentificationKeyCharacter> iterator = _dataSet.identificationKeyCharacterIterator();
 		while(iterator.hasNext()) {
@@ -128,8 +128,8 @@ public class IntkeyItemsFileWriter {
 	public void writeCharacterDependencies() {
 		
 		BinaryKeyFileEncoder encoder = new BinaryKeyFileEncoder();
-		List<Integer> dependencyData = encoder.encodeCharacterDependencies(_dataSet);
-		List<Integer> invertedDependencyData = encoder.encodeCharacterDependenciesInverted(_dataSet);
+		List<Integer> dependencyData = encoder.encodeCharacterDependencies(_dataSet.getNumberOfFilteredCharacters(), _dataSet.identificationKeyCharacterIterator());
+		List<Integer> invertedDependencyData = encoder.encodeCharacterDependenciesInverted(_dataSet.getNumberOfFilteredCharacters(), _dataSet.filteredCharacters());
 		_itemsFile.writeCharacterDependencies(dependencyData, invertedDependencyData);
 	}
 	
@@ -199,7 +199,7 @@ public class IntkeyItemsFileWriter {
 			int unfilteredCharNumber = character.getCharacterId();
 			int numStates = characterRange.getMaximumInteger()-characterRange.getMinimumInteger();
 			List<BitSet> attributes = new ArrayList<BitSet>();
-			for (int i=1; i<=_dataSet.getMaximumNumberOfItems(); i++) {
+			for (int i=1; i<=_dataSet.getNumberOfFilteredItems(); i++) {
 				
 				// Turn into bitset.
 				BitSet bits = new BitSet();
@@ -292,7 +292,7 @@ public class IntkeyItemsFileWriter {
 		boolean useNormalValues = _context.getUseNormalValues(characterNumber);
 		
 		boolean hasMultiRangeAttribute = false;
-		for (int i=1; i<_dataSet.getMaximumNumberOfItems(); i++) {
+		for (int i=1; i<_dataSet.getNumberOfFilteredItems(); i++) {
 		
 			IntegerAttribute attribute = (IntegerAttribute)_dataSet.getAttribute(i, characterNumber);
 			if (attribute == null || attribute.isUnknown() || attribute.isInapplicable() || attribute.isVariable()) {
@@ -330,7 +330,7 @@ public class IntkeyItemsFileWriter {
 		
 		List<FloatRange> values = new ArrayList<FloatRange>();
 		BitSet inapplicableBits = new BitSet();
-		for (int i=1; i<=_dataSet.getMaximumNumberOfItems(); i++) {
+		for (int i=1; i<=_dataSet.getNumberOfFilteredItems(); i++) {
 			
 			NumericAttribute attribute = (NumericAttribute)_dataSet.getAttribute(i, unfilteredCharNumber);
 			if (attribute == null || attribute.isUnknown() || attribute.isInapplicable() || attribute.isVariable()) {
@@ -407,7 +407,7 @@ public class IntkeyItemsFileWriter {
 	}
 	
 	public void writeTaxonImages() {
-		List<String> imageList = new ArrayList<String>(_dataSet.getMaximumNumberOfItems());
+		List<String> imageList = new ArrayList<String>(_dataSet.getNumberOfFilteredItems());
 	
 		IntkeyImageWriter imageWriter = new IntkeyImageWriter();
 		Iterator<FilteredItem> items = _dataSet.filteredItems();
@@ -436,7 +436,7 @@ public class IntkeyItemsFileWriter {
 	}
 	
 	private List<Boolean> charactersToBooleans(Set<Integer> charNumbers) {
-		List<Boolean> booleans = new ArrayList<Boolean>(_dataSet.getNumberOfCharacters());
+		List<Boolean> booleans = new ArrayList<Boolean>(_dataSet.getNumberOfFilteredCharacters());
 		Iterator<FilteredCharacter> characters = _dataSet.filteredCharacters();
 		while (characters.hasNext()) {
 			booleans.add(charNumbers.contains(characters.next().getCharacterNumber()));
@@ -445,7 +445,7 @@ public class IntkeyItemsFileWriter {
 	}
 	
 	public void writeOmitOr() {
-		List<Boolean> booleans = new ArrayList<Boolean>(_dataSet.getNumberOfCharacters());
+		List<Boolean> booleans = new ArrayList<Boolean>(_dataSet.getNumberOfFilteredCharacters());
 		Iterator<FilteredCharacter> characters = _dataSet.filteredCharacters();
 		while (characters.hasNext()) {
 			booleans.add(_context.isOrOmmitedForCharacter(characters.next().getCharacterNumber()));
@@ -454,7 +454,7 @@ public class IntkeyItemsFileWriter {
 	}
 	
 	public void writeUseControllingFirst() {
-		Set<Integer> values = new HashSet<Integer>(_dataSet.getNumberOfCharacters());
+		Set<Integer> values = new HashSet<Integer>(_dataSet.getNumberOfFilteredCharacters());
 		Iterator<FilteredCharacter> characters = _dataSet.filteredCharacters();
 		while (characters.hasNext()) {
 			if (_context.isUseControllingCharacterFirst(characters.next().getCharacterNumber())) {
@@ -465,7 +465,7 @@ public class IntkeyItemsFileWriter {
 	}
 
 	public void writeTaxonLinks() {
-		int numItems = _dataSet.getMaximumNumberOfItems();
+		int numItems = _dataSet.getNumberOfFilteredItems();
 		List<String> taxonLinksList = new ArrayList<String>(numItems);
 		boolean linkPresent = false;
 		for (int i=1; i<=numItems; i++) {
@@ -484,7 +484,7 @@ public class IntkeyItemsFileWriter {
 	}
 	
 	public void writeOmitPeriod() {
-		Set<Integer> values = new HashSet<Integer>(_dataSet.getNumberOfCharacters());
+		Set<Integer> values = new HashSet<Integer>(_dataSet.getNumberOfFilteredCharacters());
 		Iterator<FilteredCharacter> characters = _dataSet.filteredCharacters();
 		while (characters.hasNext()) {
 			int filteredItemNum = characters.next().getCharacterNumber();
@@ -500,7 +500,7 @@ public class IntkeyItemsFileWriter {
 	}
 	
 	public void writeNonAutoControllingChars() {
-		Set<Integer> values = new HashSet<Integer>(_dataSet.getNumberOfCharacters());
+		Set<Integer> values = new HashSet<Integer>(_dataSet.getNumberOfFilteredCharacters());
 		Iterator<FilteredCharacter> characters = _dataSet.filteredCharacters();
 		while (characters.hasNext()) {
 			int filteredItemNum = characters.next().getCharacterNumber();
@@ -518,7 +518,7 @@ public class IntkeyItemsFileWriter {
 			return;
 		}
 		
-		int numItems = _dataSet.getMaximumNumberOfItems();
+		int numItems = _dataSet.getNumberOfFilteredItems();
 		List<String> taxonLinksList = new ArrayList<String>(numItems);
 		for (int i=1; i<=numItems; i++) {
 			StringBuffer text = new StringBuffer();

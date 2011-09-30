@@ -71,7 +71,7 @@ public class IntkeyCharactersFileWriter {
 	}
 	
 	protected void writeCharacterNotes() {
-		List<String> allNotes = new ArrayList<String>(_dataSet.getNumberOfCharacters());
+		List<String> allNotes = new ArrayList<String>(_dataSet.getNumberOfFilteredCharacters());
 		Iterator<FilteredCharacter> characters = _dataSet.filteredCharacters();
 		while (characters.hasNext()) {
 			Character character = characters.next().getCharacter();
@@ -127,7 +127,7 @@ public class IntkeyCharactersFileWriter {
 	}
 	
 	protected void writeCharacterImages() {
-		List<String> imageList = new ArrayList<String>(_dataSet.getNumberOfCharacters());
+		List<String> imageList = new ArrayList<String>(_dataSet.getNumberOfFilteredCharacters());
 	
 		IntkeyImageWriter imageWriter = new IntkeyImageWriter();
 		Iterator<FilteredCharacter> characters = _dataSet.filteredCharacters();
@@ -223,7 +223,7 @@ public class IntkeyCharactersFileWriter {
 	
 	protected void writeItemSubheadings() {
 		List<String> subHeadings = new ArrayList<String>();
-		for (int i=1; i<=_dataSet.getNumberOfCharacters(); i++) {
+		for (int i=1; i<=_dataSet.getNumberOfFilteredCharacters(); i++) {
 			
 			String subheading = _context.getItemSubheading(i);
 			add(subHeadings, subheading);

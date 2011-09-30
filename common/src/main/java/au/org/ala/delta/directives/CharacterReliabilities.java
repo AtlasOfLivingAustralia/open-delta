@@ -35,7 +35,14 @@ public class CharacterReliabilities extends CharacterWeightDirective {
 	public CharacterReliabilities() {
 		super(MIN_WEIGHT, MAX_WEIGHT, DEFAULT_WEIGHT, "character", "reliabilities");
 	}
+	
 
+	@Override
+	protected void setDefaults(DeltaContext context) {
+		for (int i=1; i<=context.getNumberOfCharacters(); i++) {
+			context.setCharacterReliability(i, DEFAULT_WEIGHT);
+		}
+	}
 	
 	@Override
 	protected void processCharacter(DeltaContext context, int charIndex, Double reliability) {

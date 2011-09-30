@@ -12,7 +12,6 @@ import java.util.Set;
 import au.org.ala.delta.model.CharacterDependency;
 import au.org.ala.delta.model.IdentificationKeyCharacter;
 import au.org.ala.delta.translation.FilteredCharacter;
-import au.org.ala.delta.translation.FilteredDataSet;
 
 /**
  * Knows how to encode a list of character dependencies in the format required
@@ -20,12 +19,11 @@ import au.org.ala.delta.translation.FilteredDataSet;
  */
 public class BinaryKeyFileEncoder {
 
-	public List<Integer> encodeCharacterDependencies(FilteredDataSet dataSet) {
-		List<Integer> dependencyData = initialiseDependencyList(dataSet);
+	public List<Integer> encodeCharacterDependencies(int numChars, Iterator<IdentificationKeyCharacter> keyChars) {
+		List<Integer> dependencyData = initialiseDependencyList(numChars);
 
-		Iterator<IdentificationKeyCharacter> filteredChars = dataSet.identificationKeyCharacterIterator();
-		while (filteredChars.hasNext()) {
-			IdentificationKeyCharacter filteredChar = filteredChars.next();
+		while (keyChars.hasNext()) {
+			IdentificationKeyCharacter filteredChar = keyChars.next();
 			if (filteredChar.getCharacterType().isMultistate()) {
 
 				addDependencyData(filteredChar.getCharacterNumber(), dependencyData, filteredChar);
@@ -34,12 +32,11 @@ public class BinaryKeyFileEncoder {
 		return dependencyData;
 	}
 
-	public List<Integer> encodeCharacterDependenciesInverted(FilteredDataSet dataSet) {
-		List<Integer> dependencyData = initialiseDependencyList(dataSet);
+	public List<Integer> encodeCharacterDependenciesInverted(int numChars, Iterator<FilteredCharacter> chars) {
+		List<Integer> dependencyData = initialiseDependencyList(numChars);
 
-		Iterator<FilteredCharacter> filteredChars = dataSet.filteredCharacters();
-		while (filteredChars.hasNext()) {
-			FilteredCharacter filteredChar = filteredChars.next();
+		while (chars.hasNext()) {
+			FilteredCharacter filteredChar = chars.next();
 			au.org.ala.delta.model.Character character = filteredChar.getCharacter();
 
 			addInvertedDependencyData(filteredChar.getCharacterNumber(), dependencyData, character);
@@ -48,8 +45,8 @@ public class BinaryKeyFileEncoder {
 		return dependencyData;
 	}
 
-	private List<Integer> initialiseDependencyList(FilteredDataSet dataSet) {
-		Integer[] characters = new Integer[dataSet.getNumberOfCharacters()];
+	private List<Integer> initialiseDependencyList(int size) {
+		Integer[] characters = new Integer[size];
 		Arrays.fill(characters, 0);
 		List<Integer> dependencyData = new ArrayList<Integer>(Arrays.asList(characters));
 		return dependencyData;
