@@ -18,25 +18,22 @@ public class TaxonListArgument extends AbstractTaxonListArgument<List<Item>> {
      *            default selection mode when user is prompted for a value
      * @param selectFromAll
      *            When prompting, allow selection from all
-     * @param bracketed
-     *            if true, the taxon numbers/ranges/keywords must be inside
-     *            brackets, unless there is only a single character
-     *            number/range/keyword
      */
     public TaxonListArgument(String name, String promptText, SelectionMode defaultSelectionMode, boolean selectFromAll) {
         super(name, promptText, defaultSelectionMode, selectFromAll);
-
     }
 
     @Override
     public List<Item> parseInput(Queue<String> inputTokens, IntkeyContext context, String directiveName, StringBuilder stringRepresentationBuilder) throws IntkeyDirectiveParseException {
-        boolean overrideExcludedCharacters = false;
+        boolean overrideExcludedTaxa = false;
 
         String token = inputTokens.poll();
         if (token != null && token.equalsIgnoreCase(OVERRIDE_EXCLUDED_TAXA)) {
-            overrideExcludedCharacters = true;
+            overrideExcludedTaxa = true;
             token = inputTokens.poll();
         }
+        
+        overrideExcludedTaxa = overrideExcludedTaxa || _selectFromAll;
 
         List<Item> taxa = null;
 
@@ -69,10 +66,10 @@ public class TaxonListArgument extends AbstractTaxonListArgument<List<Item>> {
         if (taxa == null) {
             DirectivePopulator populator = context.getDirectivePopulator();
             if (selectionMode == SelectionMode.KEYWORD) {
-                taxa = populator.promptForTaxaByKeyword(directiveName, !overrideExcludedCharacters);
+                taxa = populator.promptForTaxaByKeyword(directiveName, !overrideExcludedTaxa);
             } else {
                 boolean autoSelectSingleValue = (selectionMode == SelectionMode.LIST_AUTOSELECT_SINGLE_VALUE);
-                taxa = populator.promptForTaxaByList(directiveName, _selectFromAll, !overrideExcludedCharacters, autoSelectSingleValue);
+                taxa = populator.promptForTaxaByList(directiveName, !overrideExcludedTaxa, autoSelectSingleValue);
             }
         }
         

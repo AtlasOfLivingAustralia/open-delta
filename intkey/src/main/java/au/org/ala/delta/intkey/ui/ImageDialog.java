@@ -138,6 +138,9 @@ public class ImageDialog extends IntkeyDialog implements OverlaySelectionObserve
         _menuBar = new JMenuBar();
         setJMenuBar(_menuBar);
 
+        // Have to read directly from the resource map - injectFields does not
+        // work for subclasses
+        // of ImageDialog
         _mnuSubject = new JMenu(resourceMap.getString("ImageDialog.mnuSubjectCaption"));
         _menuBar.add(_mnuSubject);
 

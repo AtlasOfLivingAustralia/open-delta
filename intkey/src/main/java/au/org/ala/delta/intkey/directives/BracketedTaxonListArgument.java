@@ -8,6 +8,15 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.util.Pair;
 
+/**
+ * List of taxa. Must be surrounded in brackets if specifying more than one
+ * character number/range/keyword. The "SPECIMEN" keyword can be supplied as one
+ * of the items in the list, to indicate that the specimen should also be used
+ * while processing the directive.
+ * 
+ * @author ChrisF
+ * 
+ */
 public class BracketedTaxonListArgument extends AbstractTaxonListArgument<Pair<List<Item>, Boolean>> {
 
     private static final String OPEN_BRACKET = "(";
@@ -19,14 +28,16 @@ public class BracketedTaxonListArgument extends AbstractTaxonListArgument<Pair<L
 
     @Override
     public Pair<List<Item>, Boolean> parseInput(Queue<String> inputTokens, IntkeyContext context, String directiveName, StringBuilder stringRepresentationBuilder) throws IntkeyDirectiveParseException {
-        boolean overrideExcludedCharacters = false;
+        boolean overrideExcludedTaxa = false;
 
         String token = inputTokens.poll();
         if (token != null && token.equalsIgnoreCase(OVERRIDE_EXCLUDED_TAXA)) {
-            overrideExcludedCharacters = true;
+            overrideExcludedTaxa = true;
             token = inputTokens.poll();
         }
-
+        
+        overrideExcludedTaxa = overrideExcludedTaxa || _selectFromAll;
+        
         boolean includeSpecimen = false;
         List<Item> taxa = null;
 
@@ -86,10 +97,10 @@ public class BracketedTaxonListArgument extends AbstractTaxonListArgument<Pair<L
             // THESE PROMPTS
             DirectivePopulator populator = context.getDirectivePopulator();
             if (selectionMode == SelectionMode.KEYWORD) {
-                taxa = populator.promptForTaxaByKeyword(directiveName, !overrideExcludedCharacters);
+                taxa = populator.promptForTaxaByKeyword(directiveName, !overrideExcludedTaxa);
             } else {
                 boolean autoSelectSingleValue = (selectionMode == SelectionMode.LIST_AUTOSELECT_SINGLE_VALUE);
-                taxa = populator.promptForTaxaByList(directiveName, _selectFromAll, !overrideExcludedCharacters, autoSelectSingleValue);
+                taxa = populator.promptForTaxaByList(directiveName, !overrideExcludedTaxa, autoSelectSingleValue);
             }
         }
 
@@ -109,7 +120,7 @@ public class BracketedTaxonListArgument extends AbstractTaxonListArgument<Pair<L
                 stringRepresentationBuilder.append(" ");
             }
         }
-        
+
         if (includeSpecimen) {
             stringRepresentationBuilder.append(" ");
             stringRepresentationBuilder.append(IntkeyContext.SPECIMEN_KEYWORD.toUpperCase());

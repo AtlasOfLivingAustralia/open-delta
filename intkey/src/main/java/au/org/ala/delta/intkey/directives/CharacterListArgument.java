@@ -30,6 +30,8 @@ public class CharacterListArgument extends IntkeyDirectiveArgument<List<au.org.a
             overrideExcludedCharacters = true;
             token = inputTokens.poll();
         }
+        
+        overrideExcludedCharacters = overrideExcludedCharacters || _selectFromAll;
 
         List<au.org.ala.delta.model.Character> characters = null;
 
@@ -60,7 +62,7 @@ public class CharacterListArgument extends IntkeyDirectiveArgument<List<au.org.a
             if (selectionMode == SelectionMode.KEYWORD) {
                 characters = populator.promptForCharactersByKeyword(directiveName, !overrideExcludedCharacters);
             } else {
-                characters = populator.promptForCharactersByList(directiveName, _selectFromAll, !overrideExcludedCharacters);
+                characters = populator.promptForCharactersByList(directiveName, !overrideExcludedCharacters);
             }
         }
         

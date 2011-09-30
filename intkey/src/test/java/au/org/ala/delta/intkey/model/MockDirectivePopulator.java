@@ -23,17 +23,17 @@ public class MockDirectivePopulator implements DirectivePopulator {
     }
 
     @Override
-    public List<Character> promptForCharactersByList(String directiveName, boolean selectFromAll, boolean selectIncludedCharactersOnly) {
+    public List<Character> promptForCharactersByList(String directiveName, boolean permitSelectionFromIncludedCharactersOnly) {
         return null;
     }
 
     @Override
-    public List<Item> promptForTaxaByKeyword(String directiveName, boolean permitSelectionFromIncludedTaxaOnly) {
+    public List<Item> promptForTaxaByKeyword(String directiveName, boolean selectFromIncludedTaxaOnly) {
         return null;
     }
 
     @Override
-    public List<Item> promptForTaxaByList(String directiveName, boolean selectFromAll, boolean selectIncludedCharactersOnly, boolean autoSelectSingleValue) {
+    public List<Item> promptForTaxaByList(String directiveName, boolean selectFromIncludedTaxaOnly, boolean autoSelectSingleValue) {
         return null;
     }
 
