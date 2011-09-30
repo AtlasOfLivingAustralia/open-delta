@@ -7,6 +7,7 @@ import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.translation.delta.DeltaFormatDataSetFilter;
 import au.org.ala.delta.translation.delta.DeltaFormatTranslator;
+import au.org.ala.delta.translation.dist.DistTranslator;
 import au.org.ala.delta.translation.intkey.IntkeyTranslator;
 import au.org.ala.delta.translation.key.KeyTranslator;
 import au.org.ala.delta.translation.naturallanguage.NaturalLanguageTranslator;
@@ -39,6 +40,9 @@ public class DataSetTranslatorFactory {
 		else if (translation.equals(TranslateType.Key)) {
 			translator = createKeyFormatTranslator(context, formatterFactory);
 		}
+		else if (translation.equals(TranslateType.Dist)) {
+			translator = createDistFormatTranslator(context, formatterFactory);
+		}
 		else {
 			throw new RuntimeException("(Currently) unsupported translation type: "+translation);
 		}
@@ -57,6 +61,14 @@ public class DataSetTranslatorFactory {
 		
 		FilteredDataSet dataSet = new FilteredDataSet(context, new DeltaFormatDataSetFilter(context));
 		return new KeyTranslator(context, dataSet,
+				formatterFactory.createItemFormatter(typeSetter), formatterFactory.createCharacterFormatter());
+	}
+	
+	private DataSetTranslator createDistFormatTranslator(DeltaContext context, FormatterFactory formatterFactory) {
+		TypeSetter typeSetter = new TypeSetterFactory().createTypeSetter(context, null);
+		
+		FilteredDataSet dataSet = new FilteredDataSet(context, new DeltaFormatDataSetFilter(context));
+		return new DistTranslator(context, dataSet,
 				formatterFactory.createItemFormatter(typeSetter), formatterFactory.createCharacterFormatter());
 	}
 

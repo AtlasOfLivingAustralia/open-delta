@@ -24,6 +24,8 @@ public class OutputFileSelector {
 	private String _subjectForOutputFiles;
 	private String _intkeyOutputFile;
 	private String _keyOutputFile;
+	private String _distOutputFile;
+	
 	private ParsingContext _context;
 	private OutputFormat _outputFormat;
 	
@@ -131,5 +133,13 @@ public class OutputFileSelector {
 
 	public String getKeyOutputFilePath() {
 		return makeAbsolute(_keyOutputFile);
+	}
+
+	public void setDistOutputFile(String outputFile) {
+		_distOutputFile = outputFile;
+	}
+	
+	public String getDistOutputFilePath() {
+		return makeAbsolute(_distOutputFile);
 	}
 }
