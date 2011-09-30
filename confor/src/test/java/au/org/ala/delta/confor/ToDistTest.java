@@ -30,14 +30,10 @@ public class ToDistTest extends TestCase {
 		
 		CONFOR.main(new String[]{tokeyFilePath});
 		
-		String expectedDItemsFilename = FilenameUtils.concat(dest.getAbsolutePath(), "sample/expected_results/ditems");
-		
+		String expectedDItemsFilename = FilenameUtils.concat(dest.getAbsolutePath(), "sample/expected_results/ditems");		
 		BinaryKeyFile expectedDItems = new BinaryKeyFile(expectedDItemsFilename, BinFileMode.FM_READONLY);
-		
-//		String actualDItemsFilename = FilenameUtils.concat(dest.getAbsolutePath(), "sample/ditems");
-//		
-//		BinaryKeyFile ditems = new BinaryKeyFile(actualDItemsFilename, BinFileMode.FM_READONLY);
-//		
+		String actualDItemsFilename = FilenameUtils.concat(dest.getAbsolutePath(), "sample/ditems");
+		BinaryKeyFile ditems = new BinaryKeyFile(actualDItemsFilename, BinFileMode.FM_READONLY);
 		
 		List<Integer> header = expectedDItems.readIntegerList(1, BinaryKeyFile.RECORD_LENGTH_INTEGERS);
 		ItemsFileHeader itemsHeader = new ItemsFileHeader();
@@ -48,23 +44,24 @@ public class ToDistTest extends TestCase {
 				
 			System.out.println("Record: "+i);
 			
-		if (i>=itemsHeader.getHeadingRecord() && i<itemsHeader.getCharacterMaskRecord()){
+		//if (i>=itemsHeader.getHeadingRecord() && i<itemsHeader.getCharacterMaskRecord()){
 				// The header has the date in it so will be different.
-		 	}
-			else {
+		// 	}
+			//else {
 				List<Integer> expectedRecord = expectedDItems.readIntegerList(i, BinaryKeyFile.RECORD_LENGTH_INTEGERS);
-		//		List<Integer> actualRecord = ditems.readIntegerList(i, BinaryKeyFile.RECORD_LENGTH_INTEGERS);
+				List<Integer> actualRecord = ditems.readIntegerList(i, BinaryKeyFile.RECORD_LENGTH_INTEGERS);
 				System.out.println(expectedRecord);
-			//	System.out.println(actualRecord);
+				System.out.println(actualRecord);
 			
 				System.out.println("Expected as string: ");
 				char[] chars = expectedDItems.readString(i, BinaryKeyFile.RECORD_LENGTH_BYTES).toCharArray();
 				for (int c=0; c<chars.length; c++) {
 					System.out.print(chars[c]);
 				}
-				
+				List<Float> expectedFloats = expectedDItems.readFloatList(i, BinaryKeyFile.RECORD_LENGTH_INTEGERS);
+				System.out.println(expectedFloats);
 				//assertEquals(expectedRecord, actualRecord);
-			}
+		//	}
 			System.out.println();
 			
 //			char[] actualChars = ditems.readString(i, BinaryKeyFile.RECORD_LENGTH_BYTES).toCharArray();
