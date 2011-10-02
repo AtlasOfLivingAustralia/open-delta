@@ -5,8 +5,6 @@ import java.util.BitSet;
 import java.util.Iterator;
 import java.util.List;
 
-import java.util.Arrays;
-
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.DeltaContext.HeadingType;
 import au.org.ala.delta.io.BinaryKeyFileEncoder;
@@ -18,7 +16,6 @@ import au.org.ala.delta.model.MultiStateAttribute;
 import au.org.ala.delta.model.NumericAttribute;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.model.format.ItemFormatter;
-import au.org.ala.delta.translation.FilteredCharacter;
 import au.org.ala.delta.translation.FilteredDataSet;
 import au.org.ala.delta.translation.FilteredItem;
 import au.org.ala.delta.util.Pair;
@@ -118,17 +115,7 @@ public class KeyItemsFileWriter {
 	}
 	
 	protected void writeCharacterMask() {
-		Boolean[] init = new Boolean[_dataSet.getNumberOfCharacters()];
-		Arrays.fill(init, Boolean.FALSE);
-		List<Boolean> includedCharacters = new ArrayList<Boolean>(Arrays.asList(init));
-		
-		Iterator<FilteredCharacter> chars = _dataSet.filteredCharacters();
-		while (chars.hasNext()) {
-			FilteredCharacter character = chars.next();
-			if (!character.getCharacter().getCharacterType().isText()) {
-				includedCharacters.set(character.getCharacter().getCharacterId()-1, Boolean.TRUE);
-			}
-		}
+		List<Boolean> includedCharacters = _encoder.encodeCharacterMasks(_dataSet, true);
 		_itemsFile.writeCharacterMask(includedCharacters);
 	}
 	
@@ -153,15 +140,7 @@ public class KeyItemsFileWriter {
 	}
 	
 	protected void writeTaxonMask() {
-		Boolean[] init = new Boolean[_dataSet.getMaximumNumberOfItems()];
-		Arrays.fill(init, Boolean.FALSE);
-		List<Boolean> includedItems = new ArrayList<Boolean>(Arrays.asList(init));
-		
-		Iterator<FilteredItem> items = _dataSet.filteredItems();
-		while (items.hasNext()) {
-			FilteredItem item = items.next();
-			includedItems.set(item.getItem().getItemNumber()-1, Boolean.TRUE);
-		}
+		List<Boolean> includedItems = _encoder.encodeItemMasks(_dataSet);
 		_itemsFile.writeTaxonMask(includedItems);
 	}
 	

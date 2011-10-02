@@ -412,7 +412,7 @@ public class DeltaContext extends AbstractDeltaContext {
 		if (_characterWeights != null) {
 			return _characterWeights[number-1];
 		}
-		return 0;
+		return 1;
 	}
 
 	

@@ -123,4 +123,17 @@ public class NumericRange {
 			return new NumberRange(lower, upper);
 		}	
 	}
+	
+	/**
+	 * @return the middle value if one exists, or the average of the normal
+	 * range if it doesn't.
+	 */
+	public double middle() {
+		if (hasMiddleValue()) {
+			return _middle.doubleValue();
+		}
+		Range normal = getNormalRange();
+		return (normal.getMinimumDouble() + normal.getMaximumDouble()) / 2;
+		
+	}
 }

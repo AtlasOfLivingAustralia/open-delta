@@ -4,6 +4,7 @@ import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.TranslateType;
 import au.org.ala.delta.model.format.AttributeFormatter;
 import au.org.ala.delta.model.format.CharacterFormatter;
+import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.translation.delta.DeltaFormatDataSetFilter;
 import au.org.ala.delta.translation.delta.DeltaFormatTranslator;
@@ -69,7 +70,7 @@ public class DataSetTranslatorFactory {
 		
 		FilteredDataSet dataSet = new FilteredDataSet(context, new DeltaFormatDataSetFilter(context));
 		return new DistTranslator(context, dataSet,
-				formatterFactory.createItemFormatter(typeSetter), formatterFactory.createCharacterFormatter());
+				formatterFactory.createItemFormatter(typeSetter, CommentStrippingMode.STRIP_ALL), formatterFactory.createCharacterFormatter());
 	}
 
 	private AbstractDataSetTranslator createNaturalLanguageTranslator(

@@ -43,11 +43,14 @@ public class IntkeyItemsFileWriter {
 	private WriteOnceIntkeyItemsFile _itemsFile;
 	private FilteredDataSet _dataSet;
 	private DeltaContext _context;
+	private BinaryKeyFileEncoder _encoder;
+	
 	
 	public IntkeyItemsFileWriter(DeltaContext context, FilteredDataSet dataSet, WriteOnceIntkeyItemsFile itemsFile) {
 		_itemsFile = itemsFile;
 		_dataSet = dataSet;
 		_context = context;
+		_encoder = new BinaryKeyFileEncoder();
 	}
 	
 	public void writeAll() {
@@ -88,7 +91,7 @@ public class IntkeyItemsFileWriter {
 	    Iterator<IdentificationKeyCharacter> iterator = _dataSet.identificationKeyCharacterIterator();
 		while(iterator.hasNext()) {
 			IdentificationKeyCharacter character = iterator.next();
-			types.add(typeToInt(character.getCharacterType()));
+			types.add(_encoder.typeToInt(character.getCharacterType()));
 			states.add(numStates(character));
 			reliabilities.add((float)_context.getCharacterReliability(character.getCharacterNumber()));
 			
@@ -96,22 +99,7 @@ public class IntkeyItemsFileWriter {
 		_itemsFile.writeCharacterSpecs(types, states, reliabilities);	
 	}
 	
-	private int typeToInt(CharacterType type) {
-		switch (type) {
-		case UnorderedMultiState:
-			return 1;
-		case OrderedMultiState:
-			return 2;
-		case IntegerNumeric:
-			return 3;
-		case RealNumeric:
-			return 4;
-		case Text:
-			return 5;
-		}
-		
-		throw new IllegalArgumentException("Invalid character type: "+type);
-	}
+	
 	
 	private int numStates(IdentificationKeyCharacter character) {
 		if (character.getCharacterType().isMultistate()) {
@@ -127,9 +115,8 @@ public class IntkeyItemsFileWriter {
 	
 	public void writeCharacterDependencies() {
 		
-		BinaryKeyFileEncoder encoder = new BinaryKeyFileEncoder();
-		List<Integer> dependencyData = encoder.encodeCharacterDependencies(_dataSet.getNumberOfFilteredCharacters(), _dataSet.identificationKeyCharacterIterator());
-		List<Integer> invertedDependencyData = encoder.encodeCharacterDependenciesInverted(_dataSet.getNumberOfFilteredCharacters(), _dataSet.filteredCharacters());
+		List<Integer> dependencyData = _encoder.encodeCharacterDependencies(_dataSet.getNumberOfFilteredCharacters(), _dataSet.identificationKeyCharacterIterator());
+		List<Integer> invertedDependencyData = _encoder.encodeCharacterDependenciesInverted(_dataSet.getNumberOfFilteredCharacters(), _dataSet.filteredCharacters());
 		_itemsFile.writeCharacterDependencies(dependencyData, invertedDependencyData);
 	}
 	
@@ -149,7 +136,7 @@ public class IntkeyItemsFileWriter {
 				minMax = writeIntegerAttributes(keyChar.getFilteredCharacterNumber(), keyChar.getCharacter());
 				if (minMax == null) {
 					minMax = new IntRange(0);
-					_itemsFile.changeCharacterType(keyChar.getFilteredCharacterNumber(), typeToInt(CharacterType.RealNumeric));
+					_itemsFile.changeCharacterType(keyChar.getFilteredCharacterNumber(), _encoder.typeToInt(CharacterType.RealNumeric));
 					floats = writeRealAttributes(keyChar.getFilteredCharacterNumber(), keyChar.getCharacter());
 				}
 			}

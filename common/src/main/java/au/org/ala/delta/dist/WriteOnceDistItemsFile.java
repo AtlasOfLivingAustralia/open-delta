@@ -80,7 +80,7 @@ public class WriteOnceDistItemsFile extends BinaryKeyFile {
 		overwriteRecord(1, _header.toInts());
 	}
 
-	public void writeItem(String description, ByteBuffer work) {
+	public int writeItem(String description, ByteBuffer work) {
 		
 		int record = nextAvailableRecord();
 		if (description.length() > RECORD_LENGTH_BYTES) {
@@ -91,12 +91,89 @@ public class WriteOnceDistItemsFile extends BinaryKeyFile {
 	
 		List<Integer> ints = new ArrayList<Integer>();
 		for (int i=0;i<RECORD_LENGTH_INTEGERS; i++) {
-			ints.add(work.getInt(i));
+			ints.add(work.getInt(i*4));
+			System.out.print(Integer.toBinaryString(work.getInt(i*4))+" ");
 		}
+		writeToRecord(record+1, ints);
 		
-		
+		return record;
+	}
+
+	public void setLengthOfAttributeLists(int itemLength) {
+		_header.setLengthOfAttributeLists(itemLength);
 	}
 	
-
+	public void writeHeading(String heading) {
+		checkEmpty(_header.getHeadingRecord());
+		int record = nextAvailableRecord();
+		_header.setHeadingRecord(record);
+		_header.setLengthOfHeading(heading.length());
+		
+		writeToRecord(record, heading);
+	}
 	
+	private void checkEmpty(int recordNum) {
+		if (recordNum > 0) {
+			throw new RuntimeException("The record has already been allocated.");
+		}
+	}
+
+	public void writeCharacterTypes(List<Integer> types) {
+		int record = nextAvailableRecord();
+		_header.setCharacterTypesRecord(record);
+		writeToRecord(record, types);
+	}
+	
+	public void writeNumbersOfStates(List<Integer> states) {
+		int max = 0;
+		for (int numStates : states) {
+			max = Math.max(max, numStates);
+		}
+		_header.setMaximumNumberOfStates(max);
+		int record = nextAvailableRecord();
+		_header.setStateNumbersRecord(record);
+		writeToRecord(record, states);
+	}
+
+	public void writeCharacterMask(List<Boolean> mask) {
+		int record = nextAvailableRecord();
+		_header.setCharacterMaskRecord(record);
+		writeBooleansToRecord(record, mask);
+	}
+
+	public void writeItemMask(List<Boolean> mask) {
+		int record = nextAvailableRecord();
+		_header.setItemMaskRecord(record);
+		writeBooleansToRecord(record, mask);
+	}
+
+	public void writeCharacterWeights(List<Float> weights) {
+		int record = nextAvailableRecord();
+		_header.setCharcterWeightsRecord(record);
+		writeFloatsToRecord(record, weights);
+	}
+	
+	public void writeAttributeOffsets(int[] wordOffsets, int[] bitOffsets) {
+		int record = nextAvailableRecord();
+		_header.setItemCharacterIndexRecord(record);
+		record += writeToRecord(record, wordOffsets);
+		
+		_header.setItemCharacterBitOffsetsRecord(record);
+		writeToRecord(record, bitOffsets);
+	}
+
+	public void writeItemRecordsAndNameLengths(List<Integer> itemRecords, List<Integer> nameLengths) {
+		int record = nextAvailableRecord();
+		_header.setItemsRecord(record);
+		writeToRecord(record, itemRecords);
+		
+		record = nextAvailableRecord();
+		_header.setLengthsOfItemNamesRecord(record);
+		writeToRecord(record, nameLengths);
+	}
+
+	public void writeNameLengths(List<Integer> nameLengths) {
+		
+	}
+
 }

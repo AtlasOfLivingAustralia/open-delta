@@ -10,8 +10,11 @@ import java.util.List;
 import java.util.Set;
 
 import au.org.ala.delta.model.CharacterDependency;
+import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.IdentificationKeyCharacter;
 import au.org.ala.delta.translation.FilteredCharacter;
+import au.org.ala.delta.translation.FilteredDataSet;
+import au.org.ala.delta.translation.FilteredItem;
 
 /**
  * Knows how to encode a list of character dependencies in the format required
@@ -136,6 +139,51 @@ public class BinaryKeyFileEncoder {
 			bits.set(state - 1);
 		}
 		return bits;
+	}
+	
+	public int typeToInt(CharacterType type) {
+		switch (type) {
+		case UnorderedMultiState:
+			return 1;
+		case OrderedMultiState:
+			return 2;
+		case IntegerNumeric:
+			return 3;
+		case RealNumeric:
+			return 4;
+		case Text:
+			return 5;
+		}
+		
+		throw new IllegalArgumentException("Invalid character type: "+type);
+	}
+	
+	public List<Boolean> encodeCharacterMasks(FilteredDataSet dataSet, boolean filterTextChars) {
+		Boolean[] init = new Boolean[dataSet.getNumberOfCharacters()];
+		Arrays.fill(init, Boolean.FALSE);
+		List<Boolean> includedCharacters = new ArrayList<Boolean>(Arrays.asList(init));
+		
+		Iterator<FilteredCharacter> chars = dataSet.filteredCharacters();
+		while (chars.hasNext()) {
+			FilteredCharacter character = chars.next();
+			if (!filterTextChars || !character.getCharacter().getCharacterType().isText()) {
+				includedCharacters.set(character.getCharacter().getCharacterId()-1, Boolean.TRUE);
+			}
+		}
+		return includedCharacters;
+	}
+	
+	public List<Boolean> encodeItemMasks(FilteredDataSet dataSet) {
+		Boolean[] init = new Boolean[dataSet.getMaximumNumberOfItems()];
+		Arrays.fill(init, Boolean.FALSE);
+		List<Boolean> includedItems = new ArrayList<Boolean>(Arrays.asList(init));
+		
+		Iterator<FilteredItem> items = dataSet.filteredItems();
+		while (items.hasNext()) {
+			FilteredItem item = items.next();
+			includedItems.set(item.getItem().getItemNumber()-1, Boolean.TRUE);
+		}
+		return includedItems;
 	}
 
 }

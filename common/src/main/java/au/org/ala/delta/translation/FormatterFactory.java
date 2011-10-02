@@ -20,13 +20,16 @@ public class FormatterFactory {
 		_context = context;
 	}
 	
-	
 	public ItemFormatter createItemFormatter(TypeSetter typeSetter) {
+		return createItemFormatter(typeSetter, CommentStrippingMode.RETAIN);
+	}
+	
+	public ItemFormatter createItemFormatter(TypeSetter typeSetter, CommentStrippingMode mode) {
 		if (_context.isOmitTypeSettingMarks()) {
-			return new ItemFormatter(false, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.RETAIN, true, false, false);
+			return new ItemFormatter(false, mode, AngleBracketHandlingMode.RETAIN, true, false, false);
 		}
 		else if (typeSetter == null) {
-			return new ItemFormatter(false, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.RETAIN, false, false, false);
+			return new ItemFormatter(false, mode, AngleBracketHandlingMode.RETAIN, false, false, false);
 		}
 		else {
 			return new TypeSettingItemFormatter(typeSetter);

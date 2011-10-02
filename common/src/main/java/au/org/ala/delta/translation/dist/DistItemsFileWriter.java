@@ -1,11 +1,14 @@
 package au.org.ala.delta.translation.dist;
 
 import java.nio.ByteBuffer;
-import java.util.BitSet;
+import java.nio.ByteOrder;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
 import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.DeltaContext.HeadingType;
 import au.org.ala.delta.dist.WriteOnceDistItemsFile;
 import au.org.ala.delta.io.BinaryKeyFile;
 import au.org.ala.delta.io.BinaryKeyFileEncoder;
@@ -14,6 +17,8 @@ import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.IdentificationKeyCharacter;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateAttribute;
+import au.org.ala.delta.model.NumericAttribute;
+import au.org.ala.delta.model.NumericRange;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.translation.FilteredDataSet;
 import au.org.ala.delta.util.Pair;
@@ -47,31 +52,37 @@ public class DistItemsFileWriter {
 	
 	public void writeAll() {
 		
-		writeItems();
-//		writeHeading();
-//		writeCharacterMask();
-//		writeNumbersOfStates();
-//		writeCharacterDependencies();
-//		writeCharacterReliabilities();
-//		writeTaxonMask();
-//		writeItemLengths();
-//		writeItemAbundances();
-//		
+		Pair<int[], int[]> offsets = calculateAttributeOffsets();
+		 
+		Pair<List<Integer>, List<Integer>> itemRecords = writeItems(offsets.getFirst(), offsets.getSecond());
+		writeHeading();
+		writeCharacterSpecs();
+		writeCharacterMask();
+		writeCharacterWeights();
+		_itemsFile.writeAttributeOffsets(offsets.getFirst(), offsets.getSecond());
+		writeItemMask();
+		_itemsFile.writeItemRecordsAndNameLengths(itemRecords.getFirst(), itemRecords.getSecond());
+		
 		// Need to write the header last as it is updated as each section 
 		// is written.
 		_itemsFile.writeHeader();
 	}
 	
-	protected void writeItems() {
-		final int BYTES_IN_WORD = 4;
-		 Pair<int[], int[]> offsets = calculateAttributeOffsets();
-		 int[] wordOffsets = offsets.getFirst();
-		 int[] bitOffsets = offsets.getSecond();
-		 ByteBuffer work = ByteBuffer.allocate(1000);
+	protected Pair<List<Integer>, List<Integer>> writeItems(int[] wordOffsets, int[] bitOffsets) {
+		 final int BYTES_IN_WORD = 4;
+		 List<Integer> itemRecords = new ArrayList<Integer>();
+		 List<Integer> nameLengths = new ArrayList<Integer>();
+		 
 		 Iterator<Item> items = _dataSet.unfilteredItems();
 		 while (items.hasNext()) {
 			 Item item = items.next();
 			 String description = _itemFormatter.formatItemDescription(item);
+			 nameLengths.add(description.length());
+			 byte[] bytes = new byte[1000];
+			 Arrays.fill(bytes, (byte)0);
+			 
+			 ByteBuffer work = ByteBuffer.wrap(bytes);
+			 work.order(ByteOrder.LITTLE_ENDIAN);
 			 
 			 
 			 Iterator<IdentificationKeyCharacter> chars = _dataSet.unfilteredIdentificationKeyCharacterIterator();
@@ -79,9 +90,9 @@ public class DistItemsFileWriter {
 				 IdentificationKeyCharacter keyChar = chars.next();
 				 int charNum = keyChar.getCharacterNumber();
 				 if (!keyChar.getCharacterType().isText()) {
-					 int offset = wordOffsets[keyChar.getCharacterNumber()];
+					 int offset = wordOffsets[keyChar.getCharacterNumber()-1]-1;
 					 if (!(keyChar.getCharacterType() == CharacterType.UnorderedMultiState)) {
-						 work.putDouble(offset*BYTES_IN_WORD, -9999.0d);
+						 work.putFloat(offset*BYTES_IN_WORD, -9999.0f);
 					 }
 					 Attribute attribute = item.getAttribute(keyChar.getCharacter());
 					 if (attribute == null || attribute.isUnknown()) {
@@ -90,47 +101,116 @@ public class DistItemsFileWriter {
 					 switch (keyChar.getCharacterType()) {
 					 case UnorderedMultiState:
 						 encodeUnorderedMultistateAttribute(
-								 work, wordOffsets[charNum-1], bitOffsets[charNum-1], 
+								 work, wordOffsets[charNum-1]-1, bitOffsets[charNum-1], 
 								 keyChar, (MultiStateAttribute)attribute);
 	
 						 break;
 					 case OrderedMultiState:
+						 encodeOrderedMultistateAttribute(
+								 work, wordOffsets[charNum-1]-1, keyChar, (MultiStateAttribute)attribute);
 						 break;
 					 case IntegerNumeric:
 					 case RealNumeric:
+						 encodeNumericAttribute(
+								 work, wordOffsets[charNum-1]-1, keyChar, (NumericAttribute)attribute);
+						
 						 break;
 					 }
 				 }
-				 _itemsFile.writeItem(description, work);
+				
 			 }
-		    	 
+			 itemRecords.add(_itemsFile.writeItem(description, work)); 
 		 }
-		 
+		 return new Pair<List<Integer>, List<Integer>>(itemRecords, nameLengths);
+	}
+	
+	protected void writeHeading() {
+		_itemsFile.writeHeading(_context.getHeading(HeadingType.HEADING));
+	}
+	
+	protected void writeCharacterSpecs() {
+		List<Integer> states = new ArrayList<Integer>();
+		List<Integer> types = new ArrayList<Integer>();
+		Iterator<IdentificationKeyCharacter> keyChars = _dataSet.unfilteredIdentificationKeyCharacterIterator();
+		while (keyChars.hasNext()) {
+			IdentificationKeyCharacter keyChar = keyChars.next();
+			states.add(keyChar.getNumberOfStates());
+			types.add(_encoder.typeToInt(keyChar.getCharacterType()));
+		}
+		_itemsFile.writeCharacterTypes(types);
+		_itemsFile.writeNumbersOfStates(states);
+	}
+	
+	protected void writeCharacterMask() {
+		_itemsFile.writeCharacterMask(_encoder.encodeCharacterMasks(_dataSet, false));
+	}
+	
+	protected void writeCharacterWeights() {
+		List<Float> weights = new ArrayList<Float>();
+		Iterator<IdentificationKeyCharacter> keyChars = _dataSet.unfilteredIdentificationKeyCharacterIterator();
+		while (keyChars.hasNext()) {
+			IdentificationKeyCharacter keyChar = keyChars.next();
+			weights.add(new Float(_context.getCharacterWeight(keyChar.getCharacterNumber())));
+		}
+		_itemsFile.writeCharacterWeights(weights);	
+	}
+	
+	protected void writeItemMask() {
+		_itemsFile.writeItemMask(_encoder.encodeItemMasks(_dataSet));
 	}
 	
 	private void encodeUnorderedMultistateAttribute(ByteBuffer work, int wordOffset, int bitOffset, IdentificationKeyCharacter keyChar, MultiStateAttribute attribute) {
 		List<Integer> states = keyChar.getPresentStates(attribute);
 		
-		int word = work.getInt(wordOffset);
+		int word = work.getInt(wordOffset*4);
 		
 		for (int state : states) {
-			int bit = bitOffset + state;
-			if (bit > 32) {
-				work.putInt(wordOffset, word);
+			int bit = bitOffset + state-1;
+			if (bit > 31) {
+				work.putInt(wordOffset*4, word);
 				
 				wordOffset++;
-				word = work.getInt(wordOffset);
+				word = work.getInt(wordOffset*4);
 				bitOffset -= 32;
-				bit = bitOffset + state;
+				bit = bitOffset + state-1;
 			}
-			
-			word |= bit << 2;
+			word |= (1 << bit);
 		}
-		work.putInt(wordOffset, word);
+		work.putInt(wordOffset*4, word);
+	}
+	
+	private void encodeOrderedMultistateAttribute(ByteBuffer work, int wordOffset, IdentificationKeyCharacter keyChar, MultiStateAttribute attribute) {
+		List<Integer> states = keyChar.getPresentStates(attribute);
+		double average = average(states);
+		work.putFloat(wordOffset*4, new Float(average));
 		
 	}
 	
+	private void encodeNumericAttribute(ByteBuffer work, int wordOffset, IdentificationKeyCharacter keyChar, NumericAttribute attribute) {
+		List<NumericRange> ranges = attribute.getNumericValue();
+		List<Double> values = new ArrayList<Double>();
+		
+		for (NumericRange range : ranges) {
+			values.add(range.middle());
+			
+		}
+		double average = average(values);
+		work.putFloat(wordOffset*4, new Float(average));
+	}
+	
+	private double average(List<? extends Number> values) {
+		int count = 0;
+		double sum = 0;
+		for (Number value : values) {
+			count++;
+			sum += value.doubleValue();
+		}
+		double average = sum/(double)count;
+		return average;
+	}
+	
 	private Pair<int[], int[]> calculateAttributeOffsets() {
+		// FORTRAN 1 based indexing means our offset starts at 1.
 		int wordOffset = 1;
         int bitOffset = 0;
         final int BITS_IN_WORD = 32;
@@ -157,7 +237,7 @@ public class DistItemsFileWriter {
         	wordOffset++;
         }
  
-        chars = _dataSet.identificationKeyCharacterIterator();
+        chars = _dataSet.unfilteredIdentificationKeyCharacterIterator();
         while (chars.hasNext()) {
         	IdentificationKeyCharacter character = chars.next();
         	int charNumber = character.getCharacterNumber();
@@ -169,6 +249,7 @@ public class DistItemsFileWriter {
         }
         
         int itemLength = wordOffset-1;
+        _itemsFile.setLengthOfAttributeLists(itemLength);
         if (itemLength > BinaryKeyFile.RECORD_LENGTH_INTEGERS) {
         	throw new IllegalArgumentException("Something is too big");
         }

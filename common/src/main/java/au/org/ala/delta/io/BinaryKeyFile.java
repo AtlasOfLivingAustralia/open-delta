@@ -64,8 +64,10 @@ public class BinaryKeyFile extends BinFile {
 	}
 
 	private int checkForOverwrite(int recordNumber, int offset, int numBytes) {
-		int numRecords = (offset+numBytes / RECORD_LENGTH_BYTES)+1;
-		
+		int numRecords = (offset+numBytes / RECORD_LENGTH_BYTES);
+		if ((offset+numBytes) % RECORD_LENGTH_BYTES > 0) {
+			numRecords++;
+		}
 		System.out.println("Writing :"+numRecords+", starting at record: "+recordNumber);
 		
 		for (int i=recordNumber; i<recordNumber+numRecords; i++) {
