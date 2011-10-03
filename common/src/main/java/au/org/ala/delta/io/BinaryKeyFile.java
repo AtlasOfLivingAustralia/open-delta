@@ -48,14 +48,31 @@ public class BinaryKeyFile extends BinFile {
 	public int writeToRecord(int recordNumber, int[] values) {
 		checkForOverwrite(recordNumber, 0, values.length * SIZE_INT_IN_BYTES);
 		
+		// Zero pad the values out to fill a full record.
+		if (values.length % RECORD_LENGTH_INTEGERS != 0) {
+			int newLength = (values.length / RECORD_LENGTH_INTEGERS + 1) * RECORD_LENGTH_INTEGERS;
+			int[] newValues = new int[newLength];
+			Arrays.fill(newValues, 0);
+			System.arraycopy(values, 0, newValues, 0, values.length);
+			values = newValues;
+		}
+		
 		seekToRecord(recordNumber);
 		writeInts(values);
 		
-		return values.length / RECORD_LENGTH_INTEGERS + 1;
+		return values.length / RECORD_LENGTH_INTEGERS;
 	}
 	
 	public int writeToRecord(int recordNumber, int offset, byte[] values) {
 		int numRecords = checkForOverwrite(recordNumber, offset, values.length);
+		
+		if (values.length % RECORD_LENGTH_BYTES != 0) {
+			int newLength = (values.length / RECORD_LENGTH_BYTES + 1) * RECORD_LENGTH_BYTES;
+			byte[] newValues = new byte[newLength];
+			Arrays.fill(newValues, (byte)0);
+			System.arraycopy(values, 0, newValues, 0, values.length);
+			values = newValues;
+		}
 		
 		seekToRecord(recordNumber, offset);
 		write(values);
@@ -80,7 +97,6 @@ public class BinaryKeyFile extends BinFile {
 	}
 	
 	public void writeToRecord(int recordNumber, int value) {
-		
 		seekToRecord(recordNumber);
 		writeInts(new int[]{value});
 	}
