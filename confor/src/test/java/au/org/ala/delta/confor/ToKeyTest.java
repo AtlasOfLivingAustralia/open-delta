@@ -59,6 +59,8 @@ public class ToKeyTest extends TestCase {
 			System.out.println(expectedKChars.readString(i, BinaryKeyFile.RECORD_LENGTH_BYTES));
 			
 			System.out.println();
+			assertEquals(expectedRecord, actualRecord);
+			
 		}
 		
 		numRecords = expectedKItems.getLength() / BinaryKeyFile.RECORD_LENGTH_BYTES;
@@ -113,7 +115,6 @@ public class ToKeyTest extends TestCase {
 			
 			System.out.println();
 		}
-		
 		
 	}
 	

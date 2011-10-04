@@ -8,6 +8,7 @@ import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.translation.DataSetTranslator;
 import au.org.ala.delta.translation.FilteredDataSet;
+import au.org.ala.delta.translation.FormatterFactory;
 import au.org.ala.delta.util.FileUtils;
 
 /**
@@ -19,12 +20,17 @@ public class KeyTranslator implements DataSetTranslator {
 	private FilteredDataSet _dataSet;
 	private CharacterFormatter _characterFormatter;
 	private ItemFormatter _itemFormatter;
+	private FormatterFactory _formatterFactory;
 	
-	public KeyTranslator(DeltaContext context, FilteredDataSet dataSet, ItemFormatter itemFormatter, CharacterFormatter characterFormatter) {
+	public KeyTranslator(DeltaContext context, FilteredDataSet dataSet, 
+			ItemFormatter itemFormatter, CharacterFormatter characterFormatter,
+			FormatterFactory formatterFactory) {
 		_context = context;
 		_dataSet = dataSet;
 		_characterFormatter = characterFormatter;
 		_itemFormatter = itemFormatter;
+		_formatterFactory = formatterFactory;
+		
 	}
 
 	@Override
@@ -35,7 +41,9 @@ public class KeyTranslator implements DataSetTranslator {
 		
 		WriteOnceKeyCharsFile charsFile = new WriteOnceKeyCharsFile(
 				_dataSet.getNumberOfCharacters(), fileName , BinFileMode.FM_APPEND);
-		KeyCharactersFileWriter charsWriter = new KeyCharactersFileWriter(_context, _dataSet, _characterFormatter, charsFile);
+		KeyStateTranslator keyStateTranslator = new KeyStateTranslator(_formatterFactory);
+		KeyCharactersFileWriter charsWriter = new KeyCharactersFileWriter(
+				_dataSet, _characterFormatter, keyStateTranslator, charsFile);
 		charsWriter.writeAll();
 		charsFile.close();
 	}

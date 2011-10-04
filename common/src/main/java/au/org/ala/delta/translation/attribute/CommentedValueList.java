@@ -58,6 +58,9 @@ public class CommentedValueList {
 		private List<String> _values;
 		private String _separator;
 		
+		private String _prefix;
+		private String _suffix;
+		
 		public Values(String value) {
 			_separator = "";
 			_values = new ArrayList<String>();
@@ -90,6 +93,24 @@ public class CommentedValueList {
 		public int getNumValues() {
 			return _values.size();
 		}
+
+		public String getPrefix() {
+			return _prefix;
+		}
+
+		public void setPrefix(String prefix) {
+			this._prefix = prefix;
+		}
+
+		public String getSuffix() {
+			return _suffix;
+		}
+
+		public void setSuffix(String suffix) {
+			this._suffix = suffix;
+		}
+		
+		
 	}
 	
 	

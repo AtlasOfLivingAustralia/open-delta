@@ -1,5 +1,6 @@
 package au.org.ala.delta.model;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -83,10 +84,14 @@ public class IdentificationKeyCharacter {
 	public static class NumericKeyState extends KeyState {
 		
 		FloatRange _stateRange;
+		private BigDecimal _min;
+		private BigDecimal _max;
 		
-		public NumericKeyState(int id, FloatRange range) {
+		public NumericKeyState(int id, BigDecimal min, BigDecimal max) {
 			stateId = id;
-			_stateRange = range;
+			_min = min;
+			_max = max;
+			_stateRange = new FloatRange(min.floatValue(), max.floatValue());
 		}
 		
 		public boolean isPresent(Number value) {
@@ -97,8 +102,12 @@ public class IdentificationKeyCharacter {
 			return _stateRange.overlapsRange(range);
 		}
 		
-		public FloatRange stateRange() {
-			return _stateRange;
+		public BigDecimal min() {
+			return _min;
+		}
+		
+		public BigDecimal max() {
+			return _max;
 		}
 	}
 	
@@ -135,8 +144,8 @@ public class IdentificationKeyCharacter {
 		
 	}
 	
-	public void addState(int id, FloatRange range) {
-		NumericKeyState state = new NumericKeyState(id, range);
+	public void addState(int id, BigDecimal min, BigDecimal max) {
+		NumericKeyState state = new NumericKeyState(id, min, max);
 		_states.add(state);
 		Collections.sort(_states);
 	}

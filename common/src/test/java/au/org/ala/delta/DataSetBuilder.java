@@ -23,6 +23,7 @@ public class DataSetBuilder {
 		
 		IntegerCharacter char3 = (IntegerCharacter)dataSet.addCharacter(CharacterType.IntegerNumeric);
 		char3.setDescription("Char 3 is an integer character");
+		char3.setUnits("mm");
 		
 		RealCharacter char4 = (RealCharacter)dataSet.addCharacter(CharacterType.RealNumeric);
 		char4.setDescription("Char 4 is a real character");

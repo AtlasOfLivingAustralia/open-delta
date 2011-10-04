@@ -1,12 +1,9 @@
 package au.org.ala.delta.directives;
 
 import java.io.StringReader;
-import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.commons.lang.math.FloatRange;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.args.DirectiveArgType;
@@ -64,7 +61,7 @@ public class KeyStates extends AbstractDirective<DeltaContext> {
 			
 			CharacterType charType = dataSet.getCharacter(tmpId).getCharacterType();
 			if (charType.isNumeric()) {
-				keyCharacter.addState(arg.getValueAsInt(), argToFloatRange(arg));
+				keyCharacter.addState(arg.getValueAsInt(), arg.getData().get(0), arg.getData().get(1));
 			}
 			else if (charType == CharacterType.UnorderedMultiState){
 				keyCharacter.addState(arg.getValueAsInt(), arg.getDataList());
@@ -92,13 +89,4 @@ public class KeyStates extends AbstractDirective<DeltaContext> {
 		IdentificationKeyCharacter keyChar = new IdentificationKeyCharacter(character, context.getUseNormalValues(characterNumber));
 		return keyChar;
 	}
-	
-	private FloatRange argToFloatRange(DirectiveArgument<?> arg) {
-		BigDecimal first = arg.getData().get(0);
-		BigDecimal last = arg.getData().get(1);
-		return new FloatRange(first.floatValue(), last.floatValue());
-	}
-	
-	
-	
 }

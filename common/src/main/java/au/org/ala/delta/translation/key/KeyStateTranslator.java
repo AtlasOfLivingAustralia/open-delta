@@ -1,9 +1,11 @@
 package au.org.ala.delta.translation.key;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.lang.math.FloatRange;
+import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.IdentificationKeyCharacter;
@@ -11,13 +13,25 @@ import au.org.ala.delta.model.IdentificationKeyCharacter.KeyState;
 import au.org.ala.delta.model.IdentificationKeyCharacter.MultiStateKeyState;
 import au.org.ala.delta.model.IdentificationKeyCharacter.NumericKeyState;
 import au.org.ala.delta.model.MultiStateCharacter;
+import au.org.ala.delta.model.NumericCharacter;
 import au.org.ala.delta.translation.FormatterFactory;
+import au.org.ala.delta.translation.PlainTextTypeSetter;
+import au.org.ala.delta.translation.Words;
+import au.org.ala.delta.translation.Words.Word;
 import au.org.ala.delta.translation.attribute.AttributeTranslator;
 import au.org.ala.delta.translation.attribute.CommentedValueList.Values;
 import au.org.ala.delta.translation.attribute.MultiStateAttributeTranslator;
+import au.org.ala.delta.translation.attribute.NumericAttributeTranslator;
 
+/**
+ * Translates a state defined by the KEY STATES directive into a natural
+ * language description used by the KEY program.
+ */
 public class KeyStateTranslator {
 
+	private static final BigDecimal MIN_VALUE = new BigDecimal(-Float.MAX_VALUE);
+	private static final BigDecimal MAX_VALUE = new BigDecimal(Float.MAX_VALUE);
+	
 	private FormatterFactory _formatterFactory;
 
 	public KeyStateTranslator(FormatterFactory formatterFactory) {
@@ -56,13 +70,30 @@ public class KeyStateTranslator {
 		return null;
 	}
 
+	/**
+	 * Produces a state description of a key state defined for a multistate character.
+	 * @param keyChar the character as defined by the KEY STATES directive.
+	 * @param state details of the redefined state to describe.
+	 * @param separator the separator to use.
+	 * @return a description of the supplied state of the supplied character.
+	 */
 	private String translateMultistateState(IdentificationKeyCharacter keyChar, MultiStateKeyState state,
 			String separator) {
 		List<String> states = new ArrayList<String>();
 
 		MultiStateKeyState multiState = (MultiStateKeyState) state;
-		for (int i : multiState.originalStates()) {
-			states.add(Integer.toString(i));
+		if (keyChar.getCharacterType() == CharacterType.UnorderedMultiState) {
+			for (int i : multiState.originalStates()) {
+				states.add(Integer.toString(i));
+			}
+		}
+		else {
+			List<Integer> originalStates = new ArrayList<Integer>(multiState.originalStates());
+			Collections.sort(originalStates);
+			states.add(Integer.toString(originalStates.get(0)));
+			if (originalStates.size() > 1) {
+				states.add(Integer.toString(originalStates.get(originalStates.size()-1)));
+			}
 		}
 
 		AttributeTranslator at = new MultiStateAttributeTranslator((MultiStateCharacter) keyChar.getCharacter(),
@@ -72,28 +103,57 @@ public class KeyStateTranslator {
 		return at.translateValues(values);
 	}
 
+	/**
+	 * Produces a state description of a key state defined for a numeric character.
+	 * @param keyChar the character as defined by the KEY STATES directive.
+	 * @param state details of the redefined state to describe.
+	 * @param separator the separator to use.
+	 * @return a description of the supplied state of the supplied character.
+	 */
 	private String translateNumericState(IdentificationKeyCharacter keyChar, NumericKeyState state) {
 
-		FloatRange range = state.stateRange();
+		BigDecimal min = state.min();
+		BigDecimal max = state.max();
 		List<String> states = new ArrayList<String>();
 
-		if (keyChar.getCharacter().getCharacterType() == CharacterType.IntegerNumeric) {
-			states.add(Integer.toString(range.getMinimumInteger()));
-			if (range.getMaximumInteger() != range.getMinimumInteger()) {
-				states.add(Integer.toString(range.getMaximumInteger()));
+		String separator = " "+Words.word(Word.TO)+ " ";
+		Values values = new Values(states, separator);
+		
+		if (keyChar.getCharacter().getCharacterType().isNumeric()) {
+			
+			if (min.equals(MIN_VALUE)) {
+				values.setPrefix(Words.word(Word.UP_TO));
+				states.add(max.toPlainString());
 			}
-		} else {
-			states.add(Float.toString(range.getMinimumFloat()));
-			if (range.getMaximumFloat() != range.getMinimumFloat()) {
-				states.add(Float.toString(range.getMaximumFloat()));
+			else if (max.equals(MAX_VALUE)) {
+				values.setSuffix(Words.word(Word.OR_MORE));
+				states.add(min.toPlainString());
 			}
+			else {
+				states.add(min.toPlainString());
+				if (min.compareTo(max) != 0) {
+					states.add(max.toPlainString());
+				}
+			}
+		} 
+
+		AttributeTranslator at = new NumericAttributeTranslator(
+				(NumericCharacter<?>) keyChar.getCharacter(), new PlainTextTypeSetter(null),
+				_formatterFactory.createAttributeFormatter(), false);
+
+		StringBuffer result = new StringBuffer();
+		if (StringUtils.isNotBlank((values.getPrefix()))) {
+			result.append(values.getPrefix()).append(" ");
 		}
 
-		AttributeTranslator at = new MultiStateAttributeTranslator((MultiStateCharacter) keyChar.getCharacter(),
-				_formatterFactory.createCharacterFormatter(), _formatterFactory.createAttributeFormatter());
 
-		Values values = new Values(states, "-");
-		return at.translateValues(values);
+		result.append( at.translateValues(values));
+		
+		if (StringUtils.isNotBlank(values.getSuffix())) {
+			result.append(" ").append(values.getSuffix());
+		}
+		return result.toString();
 	}
+
 
 }
