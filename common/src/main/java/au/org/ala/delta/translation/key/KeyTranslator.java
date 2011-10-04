@@ -8,6 +8,7 @@ import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.translation.DataSetTranslator;
 import au.org.ala.delta.translation.FilteredDataSet;
+import au.org.ala.delta.util.FileUtils;
 
 /**
  * Translates a DELTA data set into the format used by the KEY program.
@@ -30,6 +31,8 @@ public class KeyTranslator implements DataSetTranslator {
 	public void translateCharacters() {
 		
 		String fileName = _context.getOutputFileSelector().getKeyOutputFilePath();
+		FileUtils.backupAndDelete(fileName);
+		
 		WriteOnceKeyCharsFile charsFile = new WriteOnceKeyCharsFile(
 				_dataSet.getNumberOfCharacters(), fileName , BinFileMode.FM_APPEND);
 		KeyCharactersFileWriter charsWriter = new KeyCharactersFileWriter(_context, _dataSet, _characterFormatter, charsFile);
@@ -40,6 +43,7 @@ public class KeyTranslator implements DataSetTranslator {
 	@Override
 	public void translateItems() {
 		String fileName = _context.getOutputFileSelector().getKeyOutputFilePath();
+		FileUtils.backupAndDelete(fileName);
 		
 		WriteOnceKeyItemsFile itemsFile = new WriteOnceKeyItemsFile(
 				_dataSet.getMaximumNumberOfItems(), _dataSet.getNumberOfCharacters(), fileName, BinFileMode.FM_APPEND);

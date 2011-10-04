@@ -26,6 +26,7 @@ import au.org.ala.delta.editor.slotfile.model.DirectiveFile.DirectiveType;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.image.ImageSettings;
+import au.org.ala.delta.util.FileUtils;
 
 /**
  * The ExportController manages the process of exporting a set of directives
@@ -119,18 +120,12 @@ public class ExportController {
 	
 	private File createExportFile(DirectiveFile file, String directoryPath) {
 		String fileName = file.getShortFileName();
+		FileUtils.backupAndDelete(fileName, directoryPath);
+		
 		FilenameUtils.concat(directoryPath, fileName);
 		File directivesFile = new File(directoryPath + fileName);
-		if (directivesFile.exists()) {
-			rename(directivesFile);
-			directivesFile = new File(directoryPath + fileName);
-		}
+		
 		return directivesFile;
-	}
-
-	private void rename(File directivesFile) {
-		File bakFile = new File(directivesFile.getAbsolutePath() + ".bak");
-		directivesFile.renameTo(bakFile);
 	}
 
 	protected void writeDirective(DirectiveInstance directive,

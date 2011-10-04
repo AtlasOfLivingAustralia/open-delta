@@ -70,7 +70,7 @@ public class DataSetTranslatorFactory {
 		
 		FilteredDataSet dataSet = new FilteredDataSet(context, new DeltaFormatDataSetFilter(context));
 		return new DistTranslator(context, dataSet,
-				formatterFactory.createItemFormatter(typeSetter, CommentStrippingMode.STRIP_ALL), formatterFactory.createCharacterFormatter());
+				formatterFactory.createItemFormatter(typeSetter, CommentStrippingMode.STRIP_ALL));
 	}
 
 	private AbstractDataSetTranslator createNaturalLanguageTranslator(
