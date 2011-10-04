@@ -1,6 +1,7 @@
 package au.org.ala.delta.intkey.directives.invocation;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.List;
 
 import au.org.ala.delta.intkey.model.DiffUtils;
@@ -13,18 +14,17 @@ import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.format.AttributeFormatter;
 import au.org.ala.delta.model.format.CharacterFormatter;
+import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
-import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.rtf.RTFBuilder;
 import au.org.ala.delta.util.Pair;
 
-public class DifferencesDirectiveInvocation extends IntkeyDirectiveInvocation {
+public class SimilaritiesDirectiveInvocation extends IntkeyDirectiveInvocation {
 
     private MatchType _matchType;
     private boolean _matchUnknowns = false;
     private boolean _matchInapplicables = false;
-    private boolean _omitTextCharacters = false;
 
     private List<Character> _characters;
     private List<Item> _taxa;
@@ -69,28 +69,25 @@ public class DifferencesDirectiveInvocation extends IntkeyDirectiveInvocation {
         this._matchInapplicables = matchInapplicables;
     }
 
-    public void setOmitTextCharacters(boolean omitTextCharacters) {
-        this._omitTextCharacters = omitTextCharacters;
-    }
-
     @Override
     public boolean execute(IntkeyContext context) {
         _characterFormatter = new CharacterFormatter(context.displayNumbering(), CommentStrippingMode.RETAIN_SURROUNDING_STRIP_INNER, AngleBracketHandlingMode.REMOVE, false, true);
         _taxonFormatter = new ItemFormatter(context.displayNumbering(), CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.RETAIN, false, false, false);
-        _attributeFormatter = new AttributeFormatter(context.displayNumbering(), false, CommentStrippingMode.RETAIN_SURROUNDING_STRIP_INNER, AngleBracketHandlingMode.RETAIN, false, context.getDataset().getOrWord());
+        _attributeFormatter = new AttributeFormatter(context.displayNumbering(), false, CommentStrippingMode.RETAIN_SURROUNDING_STRIP_INNER, AngleBracketHandlingMode.RETAIN, false, context
+                .getDataset().getOrWord());
 
         Specimen specimen = null;
         if (_includeSpecimen) {
             specimen = context.getSpecimen();
         }
 
-        List<au.org.ala.delta.model.Character> differences = DiffUtils.determineDifferingCharactersForTaxa(context.getDataset(), _characters, _taxa, specimen, _matchUnknowns, _matchInapplicables,
-                _matchType, _omitTextCharacters);
+        List<au.org.ala.delta.model.Character> similarities = DiffUtils.determineSimilaritiesForTaxa(context.getDataset(), _characters, _taxa, specimen, _matchUnknowns, _matchInapplicables,
+                _matchType);
 
         RTFBuilder builder = new RTFBuilder();
         builder.startDocument();
 
-        for (au.org.ala.delta.model.Character ch : differences) {
+        for (au.org.ala.delta.model.Character ch : similarities) {
 
             List<Attribute> attrs = context.getDataset().getAttributesForCharacter(ch.getCharacterId());
 
@@ -133,19 +130,18 @@ public class DifferencesDirectiveInvocation extends IntkeyDirectiveInvocation {
         builder.setTextColor(Color.RED);
         builder.setFont(1);
 
-        if (differences.size() == 0) {
-            builder.appendText(UIUtils.getResourceString("DifferencesDirective.NoDifferences"));
-        } else if (differences.size() == 1) {
-            builder.appendText(UIUtils.getResourceString("DifferencesDirective.OneDifference"));
+        if (similarities.size() == 0) {
+            builder.appendText(UIUtils.getResourceString("SimilaritiesDirective.NoDifferences"));
+        } else if (similarities.size() == 1) {
+            builder.appendText(UIUtils.getResourceString("SimilaritiesDirective.OneDifference"));
         } else {
-            builder.appendText(String.format(UIUtils.getResourceString("DifferencesDirective.ManyDifferences"), differences.size()));
+            builder.appendText(String.format(UIUtils.getResourceString("SimilaritiesDirective.ManyDifferences"), similarities.size()));
         }
 
         builder.endDocument();
 
-        context.getUI().displayRTFReport(builder.toString(), "Differences");
+        context.getUI().displayRTFReport(builder.toString(), UIUtils.getResourceString("SimilaritiesDirective.ReportTitle"));
 
         return true;
     }
-
 }

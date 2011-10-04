@@ -3,15 +3,15 @@ package au.org.ala.delta.intkey.directives;
 import java.util.ArrayList;
 import java.util.List;
 
-import au.org.ala.delta.intkey.directives.invocation.DifferencesDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
+import au.org.ala.delta.intkey.directives.invocation.SimilaritiesDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.model.MatchType;
 
-public class DifferencesDirective extends NewIntkeyDirective {
+public class SimilaritiesDirective extends NewIntkeyDirective {
 
-    public DifferencesDirective() {
-        super("differences");
+    public SimilaritiesDirective() {
+        super("similarities");
     }
 
     @Override
@@ -30,13 +30,12 @@ public class DifferencesDirective extends NewIntkeyDirective {
         flags.add(new IntkeyDirectiveFlag('E', "matchExact", context.getMatchType() == MatchType.EXACT));
         flags.add(new IntkeyDirectiveFlag('U', "matchUnknowns", context.getMatchUnkowns()));
         flags.add(new IntkeyDirectiveFlag('I', "matchInapplicables", context.getMatchInapplicables()));
-        flags.add(new IntkeyDirectiveFlag('X', "omitTextCharacters", false));
         return flags;
     }
 
     @Override
     protected IntkeyDirectiveInvocation buildCommandObject() {
-        return new DifferencesDirectiveInvocation();
+        return new SimilaritiesDirectiveInvocation();
     }
 
 }

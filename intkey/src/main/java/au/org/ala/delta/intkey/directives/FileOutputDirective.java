@@ -22,7 +22,7 @@ public class FileOutputDirective extends NewIntkeyDirective {
     }
 
     @Override
-    protected List<IntkeyDirectiveFlag> buildFlagsList() {
+    protected List<IntkeyDirectiveFlag> buildFlagsList(IntkeyContext context) {
         return null;
     }
 

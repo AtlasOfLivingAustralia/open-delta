@@ -1701,7 +1701,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     // ===================================================================
 
     @Override
-    public List<Character> promptForCharactersByKeyword(String directiveName, boolean permitSelectFromIncludedCharactersOnly) {
+    public List<Character> promptForCharactersByKeyword(String directiveName, boolean permitSelectionFromIncludedCharactersOnly) {
         List<Image> characterKeywordImages = _context.getDataset().getCharacterKeywordImages();
         if (!_advancedMode && characterKeywordImages != null && !characterKeywordImages.isEmpty()) {
             ImageDialog dlg = new ImageDialog(getMainFrame(), _context.getImageSettings(), true);
@@ -1718,13 +1718,13 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
                 selectedCharacters.addAll(_context.getCharactersForKeyword(keyword));
             }
 
-            if (permitSelectFromIncludedCharactersOnly) {
+            if (permitSelectionFromIncludedCharactersOnly) {
                 selectedCharacters.retainAll(_context.getIncludedCharacters());
             }
 
             return selectedCharacters;
         } else {
-            CharacterKeywordSelectionDialog dlg = new CharacterKeywordSelectionDialog(getMainFrame(), _context, directiveName.toUpperCase(), permitSelectFromIncludedCharactersOnly);
+            CharacterKeywordSelectionDialog dlg = new CharacterKeywordSelectionDialog(getMainFrame(), _context, directiveName.toUpperCase(), permitSelectionFromIncludedCharactersOnly);
             show(dlg);
             return dlg.getSelectedCharacters();
         }
@@ -1779,11 +1779,11 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     }
 
     @Override
-    public List<Item> promptForTaxaByList(String directiveName, boolean selectFromIncludedCharactersOnly, boolean autoSelectSingleValue) {
+    public List<Item> promptForTaxaByList(String directiveName, boolean selectFromIncludedTaxaOnly, boolean autoSelectSingleValue) {
         List<Item> taxaToSelect;
 
         String keyword = null;
-        if (selectFromIncludedCharactersOnly) {
+        if (selectFromIncludedTaxaOnly) {
             taxaToSelect = _context.getTaxaForKeyword(IntkeyContext.TAXON_KEYWORD_REMAINING);
             keyword = IntkeyContext.TAXON_KEYWORD_REMAINING;
         } else {

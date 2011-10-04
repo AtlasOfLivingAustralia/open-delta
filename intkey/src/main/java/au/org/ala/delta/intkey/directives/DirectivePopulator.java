@@ -16,9 +16,9 @@ import au.org.ala.delta.model.TextCharacter;
 public interface DirectivePopulator {
     
     List<au.org.ala.delta.model.Character> promptForCharactersByKeyword(String directiveName, boolean permitSelectionFromIncludedCharactersOnly);
-    List<au.org.ala.delta.model.Character> promptForCharactersByList(String directiveName, boolean permitSelectionFromIncludedCharactersOnly);
+    List<au.org.ala.delta.model.Character> promptForCharactersByList(String directiveName, boolean selectFromIncludedCharactersOnly);
     
-    List<Item> promptForTaxaByKeyword(String directiveName, boolean selectFromIncludedTaxaOnly);
+    List<Item> promptForTaxaByKeyword(String directiveName, boolean permitSelectionFromIncludedTaxaOnly);
     List<Item> promptForTaxaByList(String directiveName, boolean selectFromIncludedTaxaOnly, boolean autoSelectSingleValue);
     
     /**

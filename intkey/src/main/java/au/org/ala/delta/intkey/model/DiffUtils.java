@@ -50,6 +50,8 @@ public class DiffUtils {
         List<Character> differencesList = new ArrayList<Character>();
 
         for (au.org.ala.delta.model.Character ch : characters) {
+            
+            //If the specimen is included in the comparison, ignore any characters for which there is no value set in the specimen
             if (specimen != null && !specimen.hasValueFor(ch)) {
                 continue;
             }
@@ -65,6 +67,25 @@ public class DiffUtils {
         }
 
         return differencesList;
+    }
+    
+    public static List<Character> determineSimilaritiesForTaxa(IntkeyDataset dataset, List<Character> characters, List<Item> taxa, Specimen specimen, boolean matchUnknowns,
+            boolean matchInapplicables, MatchType matchType) {
+        List<Character> similaritiesList = new ArrayList<Character>();
+
+        for (au.org.ala.delta.model.Character ch : characters) {
+          //If the specimen is included in the comparison, ignore any characters for which there is no value set in the specimen
+            if (specimen != null && !specimen.hasValueFor(ch)) {
+                continue;
+            }
+
+            boolean match = DiffUtils.compareForTaxa(dataset, ch, taxa, specimen, matchUnknowns, matchInapplicables, matchType);
+            if (match) {
+                similaritiesList.add(ch);
+            }
+        }
+
+        return similaritiesList;
     }
 
     /**

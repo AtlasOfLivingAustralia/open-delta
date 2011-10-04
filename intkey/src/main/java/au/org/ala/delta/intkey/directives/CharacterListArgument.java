@@ -13,6 +13,11 @@ public class CharacterListArgument extends IntkeyDirectiveArgument<List<au.org.a
     private static final String OVERRIDE_EXCLUDED_CHARACTERS = "/C";
 
     private SelectionMode _defaultSelectionMode;
+    
+    /**
+     * If true, excluded characters are ignored when prompting the user to select
+     * characters. User will select from the list of all characters.
+     */
     private boolean _selectFromAll;
 
     public CharacterListArgument(String name, String promptText, SelectionMode defaultSelectionMode, boolean selectFromAll) {

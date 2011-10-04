@@ -20,7 +20,6 @@ public abstract class NewIntkeyDirective extends IntkeyDirective {
 
     public NewIntkeyDirective(String... controlWords) {
         super(controlWords);
-        _intkeyFlagsList = buildFlagsList();
     }
 
     @Override
@@ -33,29 +32,44 @@ public abstract class NewIntkeyDirective extends IntkeyDirective {
 
         IntkeyDirectiveInvocation invoc = buildCommandObject();
 
-        if (_intkeyFlagsList != null && tokenQueue.size() > 0) {
-            boolean matchingFlags = true;
-            while (matchingFlags) {
-                boolean tokenMatched = false;
-                String token = tokenQueue.peek();
+        // The flags list needs to be generated each time a call to the
+        // directive is processed. This is
+        // because some flags have default values that are taken from settings
+        // on the IntkeyContext.
+        List<IntkeyDirectiveFlag> intkeyFlagsList = buildFlagsList(context);
 
-                if (token != null) {
-                    for (IntkeyDirectiveFlag flag : _intkeyFlagsList) {
-                        if (token.equalsIgnoreCase("/" + flag.getSymbol())) {
-                            BeanUtils.setProperty(invoc, flag.getName(), true);
-                            tokenQueue.remove();
-                            tokenMatched = true;
+        // To begin, initialize the command pattern object with the default
+        // value for each flag
+        if (intkeyFlagsList != null) {
+            for (IntkeyDirectiveFlag flag : intkeyFlagsList) {
+                BeanUtils.setProperty(invoc, flag.getName(), flag.getDefaultValue());
+            }
 
-                            stringRepresentationBuilder.append("/");
-                            stringRepresentationBuilder.append(flag.getSymbol());
+            // Now process any flags listed in the call to the directive
+            if (tokenQueue.size() > 0) {
+                boolean matchingFlags = true;
+                while (matchingFlags) {
+                    boolean tokenMatched = false;
+                    String token = tokenQueue.peek();
 
-                            break;
+                    if (token != null) {
+                        for (IntkeyDirectiveFlag flag : intkeyFlagsList) {
+                            if (token.equalsIgnoreCase("/" + flag.getSymbol())) {
+                                BeanUtils.setProperty(invoc, flag.getName(), true);
+                                tokenQueue.remove();
+                                tokenMatched = true;
+
+                                stringRepresentationBuilder.append("/");
+                                stringRepresentationBuilder.append(flag.getSymbol());
+
+                                break;
+                            }
                         }
-                    }
 
-                    matchingFlags = tokenMatched;
-                } else {
-                    matchingFlags = false;
+                        matchingFlags = tokenMatched;
+                    } else {
+                        matchingFlags = false;
+                    }
                 }
             }
         }
@@ -91,7 +105,7 @@ public abstract class NewIntkeyDirective extends IntkeyDirective {
 
     protected abstract List<IntkeyDirectiveArgument<?>> generateArgumentsList(IntkeyContext context);
 
-    protected abstract List<IntkeyDirectiveFlag> buildFlagsList();
+    protected abstract List<IntkeyDirectiveFlag> buildFlagsList(IntkeyContext context);
 
     protected abstract IntkeyDirectiveInvocation buildCommandObject();
 }

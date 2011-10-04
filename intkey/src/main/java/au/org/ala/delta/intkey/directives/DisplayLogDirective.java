@@ -21,7 +21,7 @@ public class DisplayLogDirective extends NewIntkeyDirective {
     }
 
     @Override
-    protected List<IntkeyDirectiveFlag> buildFlagsList() {
+    protected List<IntkeyDirectiveFlag> buildFlagsList(IntkeyContext context) {
         return null;
     }
 
