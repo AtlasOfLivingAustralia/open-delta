@@ -180,6 +180,11 @@ public class IntkeyItemsFileWriter {
 	}
 	
 	private IntRange writeIntegerAttributes(int filteredCharacterNumber, Character character) {
+		// Returning null here will trigger a change from integer to real
+		// character type.
+		if (_context.getTreatIntegerCharacterAsReal(character.getCharacterId())) {
+			return null;
+		}
 		IntRange characterRange = determineIntegerRange(character);
 		if (characterRange != null) {
 		

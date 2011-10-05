@@ -51,6 +51,7 @@ public class DeltaContext extends AbstractDeltaContext {
 
 	public static enum HeadingType {HEADING, REGISTRATION_SUBHEADING};
 	public static enum OutputFormat {RTF, HTML, NONE};
+	public static enum OutputActions {PRINT_CHARACTER_LIST, PRINT_ITEM_DESCRIPTIONS, PRINT_SUMMARY, PRINT_UNCODED_CHARCACTERS, TRANSLATE_UNCODED_CHARACTERS};
 	
 	private DeltaDataSet _dataSet;
 	private OutputFileSelector _outputFileSelector;
@@ -69,6 +70,7 @@ public class DeltaContext extends AbstractDeltaContext {
 	private Set<Integer> _charactersForSynonymy = new HashSet<Integer>(); 
 	private Set<Integer> _useControllingCharactersFirst = new HashSet<Integer>(); 
 	private Set<Integer> _nonautomaticControllingCharacters = new HashSet<Integer>(); 
+	private Set<Integer> _treatIntegerCharacterAsReal = new HashSet<Integer>();
 	
 	private Map<Integer, String> _itemHeadings = new HashMap<Integer, String>();
 	private Map<Integer, String> _itemSubHeadings = new HashMap<Integer, String>();
@@ -856,5 +858,17 @@ public class DeltaContext extends AbstractDeltaContext {
 		return _keyCharacterListUsed;
 	}
 	
+	public void setTreatIntegerCharacterAsReal(int characterNumber, boolean treatAsReal) {
+		if (treatAsReal) {
+			_treatIntegerCharacterAsReal.add(characterNumber);
+		}
+		else {
+			_treatIntegerCharacterAsReal.remove(characterNumber);
+		}
+	}
+	
+	public boolean getTreatIntegerCharacterAsReal(int characterNumber) {
+		return _treatIntegerCharacterAsReal.contains(characterNumber);
+	}
 	
 }

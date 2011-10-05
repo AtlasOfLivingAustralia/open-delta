@@ -2,7 +2,9 @@ package au.org.ala.delta.io;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -16,10 +18,14 @@ import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.rtf.RTFUtils;
 
+/**
+ * Manages CONFOR output files.
+ */
 public class OutputFileSelector {
 	
 	private int _characterForOutputFiles = 0;
 	private Map<String, String> _itemOutputFiles = new HashMap<String, String>();
+	private Set<Integer> _newFileItems = new HashSet<Integer>();
 	private DeltaDataSet _dataSet;
 	private String _subjectForOutputFiles;
 	private String _intkeyOutputFile;
@@ -141,5 +147,9 @@ public class OutputFileSelector {
 	
 	public String getDistOutputFilePath() {
 		return makeAbsolute(_distOutputFile);
+	}
+
+	public void addNewFileAtItem(Integer id) {
+		_newFileItems.add(id);
 	}
 }
