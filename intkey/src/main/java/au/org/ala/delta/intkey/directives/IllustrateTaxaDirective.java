@@ -12,7 +12,7 @@ public class IllustrateTaxaDirective extends NewIntkeyDirective {
     public IllustrateTaxaDirective() {
         super("illustrate", "taxa");
     }
-    
+
     @Override
     protected List<IntkeyDirectiveArgument<?>> generateArgumentsList(IntkeyContext context) {
         List<IntkeyDirectiveArgument<?>> arguments = new ArrayList<IntkeyDirectiveArgument<?>>();
@@ -21,7 +21,7 @@ public class IllustrateTaxaDirective extends NewIntkeyDirective {
     }
 
     @Override
-    protected List<IntkeyDirectiveFlag> buildFlagsList(IntkeyContext context) {
+    protected List<IntkeyDirectiveFlag> buildFlagsList() {
         return null;
     }
 

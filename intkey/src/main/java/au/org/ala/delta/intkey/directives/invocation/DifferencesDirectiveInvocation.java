@@ -26,6 +26,8 @@ public class DifferencesDirectiveInvocation extends IntkeyDirectiveInvocation {
     private boolean _matchInapplicables = false;
     private boolean _omitTextCharacters = false;
 
+    private boolean _useGlobalMatchValues = true;
+
     private List<Character> _characters;
     private List<Item> _taxa;
     private boolean _includeSpecimen = false;
@@ -46,27 +48,32 @@ public class DifferencesDirectiveInvocation extends IntkeyDirectiveInvocation {
     public void setMatchOverlap(boolean matchOverlap) {
         if (matchOverlap) {
             _matchType = MatchType.OVERLAP;
+            _useGlobalMatchValues = false;
         }
     }
 
     public void setMatchSubset(boolean matchSubset) {
         if (matchSubset) {
             _matchType = MatchType.SUBSET;
+            _useGlobalMatchValues = false;
         }
     }
 
     public void setMatchExact(boolean matchExact) {
         if (matchExact) {
             _matchType = MatchType.EXACT;
+            _useGlobalMatchValues = false;
         }
     }
 
     public void setMatchUnknowns(boolean matchUnknowns) {
         this._matchUnknowns = matchUnknowns;
+        _useGlobalMatchValues = false;
     }
 
     public void setMatchInapplicables(boolean matchInapplicables) {
         this._matchInapplicables = matchInapplicables;
+        _useGlobalMatchValues = false;
     }
 
     public void setOmitTextCharacters(boolean omitTextCharacters) {
@@ -75,9 +82,16 @@ public class DifferencesDirectiveInvocation extends IntkeyDirectiveInvocation {
 
     @Override
     public boolean execute(IntkeyContext context) {
+        if (_useGlobalMatchValues) {
+            _matchType = context.getMatchType();
+            _matchUnknowns = context.getMatchUnkowns();
+            _matchInapplicables = context.getMatchInapplicables();
+        }
+
         _characterFormatter = new CharacterFormatter(context.displayNumbering(), CommentStrippingMode.RETAIN_SURROUNDING_STRIP_INNER, AngleBracketHandlingMode.REMOVE, false, true);
         _taxonFormatter = new ItemFormatter(context.displayNumbering(), CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.RETAIN, false, false, false);
-        _attributeFormatter = new AttributeFormatter(context.displayNumbering(), false, CommentStrippingMode.RETAIN_SURROUNDING_STRIP_INNER, AngleBracketHandlingMode.RETAIN, false, context.getDataset().getOrWord());
+        _attributeFormatter = new AttributeFormatter(context.displayNumbering(), false, CommentStrippingMode.RETAIN_SURROUNDING_STRIP_INNER, AngleBracketHandlingMode.RETAIN, false, context
+                .getDataset().getOrWord());
 
         Specimen specimen = null;
         if (_includeSpecimen) {

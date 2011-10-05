@@ -8,7 +8,7 @@ import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
 public class FindCharactersDirective extends NewIntkeyDirective {
-    
+
     public FindCharactersDirective() {
         super("find", "characters");
     }
@@ -21,7 +21,7 @@ public class FindCharactersDirective extends NewIntkeyDirective {
     }
 
     @Override
-    protected List<IntkeyDirectiveFlag> buildFlagsList(IntkeyContext context) {
+    protected List<IntkeyDirectiveFlag> buildFlagsList() {
         return null;
     }
 

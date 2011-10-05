@@ -12,7 +12,7 @@ public class DisplayInapplicablesDirective extends NewIntkeyDirective {
     public DisplayInapplicablesDirective() {
         super("display", "inapplicables");
     }
-    
+
     @Override
     protected List<IntkeyDirectiveArgument<?>> generateArgumentsList(IntkeyContext context) {
         List<IntkeyDirectiveArgument<?>> arguments = new ArrayList<IntkeyDirectiveArgument<?>>();
@@ -21,7 +21,7 @@ public class DisplayInapplicablesDirective extends NewIntkeyDirective {
     }
 
     @Override
-    protected List<IntkeyDirectiveFlag> buildFlagsList(IntkeyContext context) {
+    protected List<IntkeyDirectiveFlag> buildFlagsList() {
         return null;
     }
 

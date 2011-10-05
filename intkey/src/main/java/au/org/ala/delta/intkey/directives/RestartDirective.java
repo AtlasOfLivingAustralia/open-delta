@@ -26,11 +26,11 @@ public class RestartDirective extends NewIntkeyDirective {
     }
 
     @Override
-    protected List<IntkeyDirectiveFlag> buildFlagsList(IntkeyContext context) {
+    protected List<IntkeyDirectiveFlag> buildFlagsList() {
         List<IntkeyDirectiveFlag> flags = new ArrayList<IntkeyDirectiveFlag>();
-        flags.add(new IntkeyDirectiveFlag('I', "identificationParameters", false));
-        flags.add(new IntkeyDirectiveFlag('Q', "queryParameters", false));
-        flags.add(new IntkeyDirectiveFlag('T', "zeroTolerance", false));
+        flags.add(new IntkeyDirectiveFlag('I', "identificationParameters"));
+        flags.add(new IntkeyDirectiveFlag('Q', "queryParameters"));
+        flags.add(new IntkeyDirectiveFlag('T', "zeroTolerance"));
         return flags;
     }
 

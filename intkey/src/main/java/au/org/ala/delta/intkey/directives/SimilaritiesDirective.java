@@ -6,7 +6,6 @@ import java.util.List;
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.SimilaritiesDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
-import au.org.ala.delta.intkey.model.MatchType;
 
 public class SimilaritiesDirective extends NewIntkeyDirective {
 
@@ -23,13 +22,13 @@ public class SimilaritiesDirective extends NewIntkeyDirective {
     }
 
     @Override
-    protected List<IntkeyDirectiveFlag> buildFlagsList(IntkeyContext context) {
+    protected List<IntkeyDirectiveFlag> buildFlagsList() {
         List<IntkeyDirectiveFlag> flags = new ArrayList<IntkeyDirectiveFlag>();
-        flags.add(new IntkeyDirectiveFlag('O', "matchOverlap", context.getMatchType() == MatchType.OVERLAP));
-        flags.add(new IntkeyDirectiveFlag('S', "matchSubset", context.getMatchType() == MatchType.SUBSET));
-        flags.add(new IntkeyDirectiveFlag('E', "matchExact", context.getMatchType() == MatchType.EXACT));
-        flags.add(new IntkeyDirectiveFlag('U', "matchUnknowns", context.getMatchUnkowns()));
-        flags.add(new IntkeyDirectiveFlag('I', "matchInapplicables", context.getMatchInapplicables()));
+        flags.add(new IntkeyDirectiveFlag('O', "matchOverlap"));
+        flags.add(new IntkeyDirectiveFlag('S', "matchSubset"));
+        flags.add(new IntkeyDirectiveFlag('E', "matchExact"));
+        flags.add(new IntkeyDirectiveFlag('U', "matchUnknowns"));
+        flags.add(new IntkeyDirectiveFlag('I', "matchInapplicables"));
         return flags;
     }
 

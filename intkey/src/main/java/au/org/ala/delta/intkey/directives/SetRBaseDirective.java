@@ -17,7 +17,7 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
  * 
  */
 public class SetRBaseDirective extends NewIntkeyDirective {
-    
+
     public SetRBaseDirective() {
         super("set", "rbase");
     }
@@ -30,7 +30,7 @@ public class SetRBaseDirective extends NewIntkeyDirective {
     }
 
     @Override
-    protected List<IntkeyDirectiveFlag> buildFlagsList(IntkeyContext context) {
+    protected List<IntkeyDirectiveFlag> buildFlagsList() {
         return null;
     }
 

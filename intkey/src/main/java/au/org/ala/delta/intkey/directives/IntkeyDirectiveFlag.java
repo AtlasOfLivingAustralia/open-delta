@@ -4,13 +4,10 @@ public class IntkeyDirectiveFlag {
 
     private char _symbol;
     private String _name;
-    
-    private boolean _defaultValue;
 
-    public IntkeyDirectiveFlag(char symbol, String name, boolean defaultValue) {
+    public IntkeyDirectiveFlag(char symbol, String name) {
         this._symbol = symbol;
         this._name = name;
-        this._defaultValue = defaultValue;
     }
 
     public char getSymbol() {
@@ -20,9 +17,4 @@ public class IntkeyDirectiveFlag {
     public String getName() {
         return _name;
     }
-    
-    public boolean getDefaultValue() {
-        return _defaultValue;
-    }
-
 }

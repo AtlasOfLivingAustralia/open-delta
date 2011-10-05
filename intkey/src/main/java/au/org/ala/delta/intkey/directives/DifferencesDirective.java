@@ -23,14 +23,14 @@ public class DifferencesDirective extends NewIntkeyDirective {
     }
 
     @Override
-    protected List<IntkeyDirectiveFlag> buildFlagsList(IntkeyContext context) {
+    protected List<IntkeyDirectiveFlag> buildFlagsList() {
         List<IntkeyDirectiveFlag> flags = new ArrayList<IntkeyDirectiveFlag>();
-        flags.add(new IntkeyDirectiveFlag('O', "matchOverlap", context.getMatchType() == MatchType.OVERLAP));
-        flags.add(new IntkeyDirectiveFlag('S', "matchSubset", context.getMatchType() == MatchType.SUBSET));
-        flags.add(new IntkeyDirectiveFlag('E', "matchExact", context.getMatchType() == MatchType.EXACT));
-        flags.add(new IntkeyDirectiveFlag('U', "matchUnknowns", context.getMatchUnkowns()));
-        flags.add(new IntkeyDirectiveFlag('I', "matchInapplicables", context.getMatchInapplicables()));
-        flags.add(new IntkeyDirectiveFlag('X', "omitTextCharacters", false));
+        flags.add(new IntkeyDirectiveFlag('O', "matchOverlap"));
+        flags.add(new IntkeyDirectiveFlag('S', "matchSubset"));
+        flags.add(new IntkeyDirectiveFlag('E', "matchExact"));
+        flags.add(new IntkeyDirectiveFlag('U', "matchUnknowns"));
+        flags.add(new IntkeyDirectiveFlag('I', "matchInapplicables"));
+        flags.add(new IntkeyDirectiveFlag('X', "omitTextCharacters"));
         return flags;
     }
 

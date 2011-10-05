@@ -11,14 +11,14 @@ public class SetDiagTypeTaxaDirective extends NewIntkeyDirective {
     public SetDiagTypeTaxaDirective() {
         super("set", "diagtype", "taxa");
     }
-    
+
     @Override
     protected List<IntkeyDirectiveArgument<?>> generateArgumentsList(IntkeyContext context) {
         return null;
     }
 
     @Override
-    protected List<IntkeyDirectiveFlag> buildFlagsList(IntkeyContext context) {
+    protected List<IntkeyDirectiveFlag> buildFlagsList() {
         return null;
     }
 

@@ -8,7 +8,7 @@ import au.org.ala.delta.intkey.directives.invocation.SetAutoToleranceDirectiveIn
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
 public class SetAutoToleranceDirective extends NewIntkeyDirective {
-    
+
     public SetAutoToleranceDirective() {
         super("set", "autotolerance");
     }
@@ -21,7 +21,7 @@ public class SetAutoToleranceDirective extends NewIntkeyDirective {
     }
 
     @Override
-    protected List<IntkeyDirectiveFlag> buildFlagsList(IntkeyContext context) {
+    protected List<IntkeyDirectiveFlag> buildFlagsList() {
         return null;
     }
 

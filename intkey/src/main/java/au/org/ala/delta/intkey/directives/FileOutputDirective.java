@@ -9,7 +9,7 @@ import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
 public class FileOutputDirective extends NewIntkeyDirective {
-    
+
     public FileOutputDirective() {
         super("file", "output");
     }
@@ -22,7 +22,7 @@ public class FileOutputDirective extends NewIntkeyDirective {
     }
 
     @Override
-    protected List<IntkeyDirectiveFlag> buildFlagsList(IntkeyContext context) {
+    protected List<IntkeyDirectiveFlag> buildFlagsList() {
         return null;
     }
 

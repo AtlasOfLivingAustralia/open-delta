@@ -8,7 +8,7 @@ import au.org.ala.delta.intkey.directives.invocation.SetFixDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
 public class SetFixDirective extends NewIntkeyDirective {
-    
+
     public SetFixDirective() {
         super("set", "fix");
     }
@@ -21,7 +21,7 @@ public class SetFixDirective extends NewIntkeyDirective {
     }
 
     @Override
-    protected List<IntkeyDirectiveFlag> buildFlagsList(IntkeyContext context) {
+    protected List<IntkeyDirectiveFlag> buildFlagsList() {
         return null;
     }
 

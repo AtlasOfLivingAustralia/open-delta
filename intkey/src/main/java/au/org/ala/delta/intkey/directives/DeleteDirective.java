@@ -20,9 +20,9 @@ public class DeleteDirective extends NewIntkeyDirective {
     }
 
     @Override
-    protected List<IntkeyDirectiveFlag> buildFlagsList(IntkeyContext context) {
+    protected List<IntkeyDirectiveFlag> buildFlagsList() {
         List<IntkeyDirectiveFlag> flags = new ArrayList<IntkeyDirectiveFlag>();
-        flags.add(new IntkeyDirectiveFlag('M', "suppressUnusedCharacterWarning", false));
+        flags.add(new IntkeyDirectiveFlag('M', "suppressUnusedCharacterWarning"));
         return flags;
     }
 

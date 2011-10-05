@@ -1,7 +1,6 @@
 package au.org.ala.delta.intkey.directives.invocation;
 
 import java.awt.Color;
-import java.util.ArrayList;
 import java.util.List;
 
 import au.org.ala.delta.intkey.model.DiffUtils;
@@ -14,9 +13,9 @@ import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.format.AttributeFormatter;
 import au.org.ala.delta.model.format.CharacterFormatter;
-import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
+import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.rtf.RTFBuilder;
 import au.org.ala.delta.util.Pair;
 
@@ -25,6 +24,8 @@ public class SimilaritiesDirectiveInvocation extends IntkeyDirectiveInvocation {
     private MatchType _matchType;
     private boolean _matchUnknowns = false;
     private boolean _matchInapplicables = false;
+
+    private boolean _useGlobalMatchValues = true;
 
     private List<Character> _characters;
     private List<Item> _taxa;
@@ -46,31 +47,42 @@ public class SimilaritiesDirectiveInvocation extends IntkeyDirectiveInvocation {
     public void setMatchOverlap(boolean matchOverlap) {
         if (matchOverlap) {
             _matchType = MatchType.OVERLAP;
+            _useGlobalMatchValues = false;
         }
     }
 
     public void setMatchSubset(boolean matchSubset) {
         if (matchSubset) {
             _matchType = MatchType.SUBSET;
+            _useGlobalMatchValues = false;
         }
     }
 
     public void setMatchExact(boolean matchExact) {
         if (matchExact) {
             _matchType = MatchType.EXACT;
+            _useGlobalMatchValues = false;
         }
     }
 
     public void setMatchUnknowns(boolean matchUnknowns) {
         this._matchUnknowns = matchUnknowns;
+        _useGlobalMatchValues = false;
     }
 
     public void setMatchInapplicables(boolean matchInapplicables) {
         this._matchInapplicables = matchInapplicables;
+        _useGlobalMatchValues = false;
     }
 
     @Override
     public boolean execute(IntkeyContext context) {
+        if (_useGlobalMatchValues) {
+            _matchType = context.getMatchType();
+            _matchUnknowns = context.getMatchUnkowns();
+            _matchInapplicables = context.getMatchInapplicables();
+        }
+
         _characterFormatter = new CharacterFormatter(context.displayNumbering(), CommentStrippingMode.RETAIN_SURROUNDING_STRIP_INNER, AngleBracketHandlingMode.REMOVE, false, true);
         _taxonFormatter = new ItemFormatter(context.displayNumbering(), CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.RETAIN, false, false, false);
         _attributeFormatter = new AttributeFormatter(context.displayNumbering(), false, CommentStrippingMode.RETAIN_SURROUNDING_STRIP_INNER, AngleBracketHandlingMode.RETAIN, false, context
