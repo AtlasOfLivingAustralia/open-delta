@@ -227,6 +227,9 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     @Resource
     String logDialogTitle;
 
+    @Resource
+    String badlyFormedRTFContentMessage;
+
     private JLabel _lblNumRemainingTaxa;
     private JLabel _lblEliminatedTaxa;
     private JButton _btnRestart;
@@ -1455,13 +1458,24 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
         @Override
         public Void doInBackground() {
-            _dlg = new RtfReportDisplayDialog(getMainFrame(), new SimpleRtfEditorKit(null), _rtfSource, _title);
+            try {
+                _dlg = new RtfReportDisplayDialog(getMainFrame(), new SimpleRtfEditorKit(null), _rtfSource, _title);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
             return null;
         }
 
         @Override
         protected void done() {
-            Intkey.this.show(_dlg);
+            // A runtime exception is thrown by the RtfReportDisplayDialog if
+            // the RTF was invalid. This will result in the dialog being null.
+            if (_dlg == null) {
+                displayErrorMessage(badlyFormedRTFContentMessage);
+            } else {
+                Intkey.this.show(_dlg);
+            }
+
             removeBusyMessage();
         }
 
@@ -1820,7 +1834,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     @Override
     public List<String> promptForTextValue(TextCharacter ch) {
         if (!_advancedMode && !ch.getImages().isEmpty()) {
-            CharacterImageDialog dlg = new CharacterImageDialog(getMainFrame(), Arrays.asList(new Character[] {ch}), _context.getImageSettings(), true, true);
+            CharacterImageDialog dlg = new CharacterImageDialog(getMainFrame(), Arrays.asList(new Character[] { ch }), _context.getImageSettings(), true, true);
             show(dlg);
             if (dlg.okButtonPressed()) {
                 return dlg.getInputTextValues();
@@ -1837,7 +1851,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     @Override
     public Set<Integer> promptForIntegerValue(IntegerCharacter ch) {
         if (!_advancedMode && !ch.getImages().isEmpty()) {
-            CharacterImageDialog dlg = new CharacterImageDialog(getMainFrame(), Arrays.asList(new Character[] {ch}), _context.getImageSettings(), true, true);
+            CharacterImageDialog dlg = new CharacterImageDialog(getMainFrame(), Arrays.asList(new Character[] { ch }), _context.getImageSettings(), true, true);
             show(dlg);
             if (dlg.okButtonPressed()) {
                 return dlg.getInputIntegerValues();
@@ -1854,7 +1868,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     @Override
     public FloatRange promptForRealValue(RealCharacter ch) {
         if (!_advancedMode && !ch.getImages().isEmpty()) {
-            CharacterImageDialog dlg = new CharacterImageDialog(getMainFrame(), Arrays.asList(new Character[] {ch}), _context.getImageSettings(), true, true);
+            CharacterImageDialog dlg = new CharacterImageDialog(getMainFrame(), Arrays.asList(new Character[] { ch }), _context.getImageSettings(), true, true);
             show(dlg);
             if (dlg.okButtonPressed()) {
                 return dlg.getInputRealValues();
@@ -1871,7 +1885,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     @Override
     public Set<Integer> promptForMultiStateValue(MultiStateCharacter ch) {
         if (!_advancedMode && !ch.getImages().isEmpty()) {
-            CharacterImageDialog dlg = new CharacterImageDialog(getMainFrame(), Arrays.asList(new Character[] {ch}), _context.getImageSettings(), true, true);
+            CharacterImageDialog dlg = new CharacterImageDialog(getMainFrame(), Arrays.asList(new Character[] { ch }), _context.getImageSettings(), true, true);
             show(dlg);
             if (dlg.okButtonPressed()) {
                 return dlg.getSelectedStates();

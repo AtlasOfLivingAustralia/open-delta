@@ -10,7 +10,7 @@ public class SummaryDirectiveTest extends IntkeyDatasetTestCase {
     public void testSummary() throws Exception {
         IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
 
-        new SummaryDirective().parseAndProcess(context, "all 48");
+        new SummaryDirective().parseAndProcess(context, "all 4");
     }
     
 }

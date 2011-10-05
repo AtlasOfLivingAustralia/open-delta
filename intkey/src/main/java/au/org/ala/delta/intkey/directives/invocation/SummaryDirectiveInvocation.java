@@ -1,13 +1,18 @@
 package au.org.ala.delta.intkey.directives.invocation;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.math.FloatRange;
+
 import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.intkey.ui.UIUtils;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.IntegerAttribute;
@@ -15,8 +20,12 @@ import au.org.ala.delta.model.IntegerCharacter;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateAttribute;
 import au.org.ala.delta.model.MultiStateCharacter;
+import au.org.ala.delta.model.RealAttribute;
 import au.org.ala.delta.model.RealCharacter;
 import au.org.ala.delta.model.TextCharacter;
+import au.org.ala.delta.model.format.CharacterFormatter;
+import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
+import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.rtf.RTFBuilder;
 import au.org.ala.delta.util.Pair;
 
@@ -39,68 +48,212 @@ public class SummaryDirectiveInvocation extends IntkeyDirectiveInvocation {
     @Override
     public boolean execute(IntkeyContext context) {
         RTFBuilder builder = new RTFBuilder();
+        CharacterFormatter characterFormatter = new CharacterFormatter(false, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REMOVE_SURROUNDING_REPLACE_INNER, true, false);
+        builder.startDocument();
+
+        
 
         for (Character ch : _characters) {
+            int characterNumber = ch.getCharacterId();
+            String characterDescription = characterFormatter.formatCharacterDescription(ch);
             List<Attribute> attrs = context.getDataset().getAttributesForCharacter(ch.getCharacterId());
 
             if (ch instanceof MultiStateCharacter) {
-                // processMultiStateCharacter(builder, (MultiStateCharacter) ch,
-                // attrs);
+                MultiStateCharacter msChar = (MultiStateCharacter) ch;
+                List<Object> summaryInformation = generateMultiStateSummaryInformation(msChar, attrs);
+
+                int numUnknown = (Integer) summaryInformation.get(0);
+                int numInapplicable = (Integer) summaryInformation.get(1);
+                int numRecorded = (Integer) summaryInformation.get(2);
+                Map<Integer, Integer> stateDistribution = (Map<Integer, Integer>) summaryInformation.get(3);
+
+                String characterDetail = MessageFormat.format(UIUtils.getResourceString("SummaryDirective.MultiStateCharacterDetail"), msChar.getNumberOfStates());
+                appendCharacterHeading(builder, characterNumber, characterDetail, characterDescription);
+                builder.increaseIndent();
+                appendUnknownInapplicableRecorded(builder, numUnknown, numInapplicable, numRecorded);
+                appendDistributionOfValues(builder, stateDistribution);
+                builder.appendText("");
+                builder.decreaseIndent();
             } else if (ch instanceof IntegerCharacter) {
-                processIntegerCharacter(builder, (IntegerCharacter) ch, attrs);
+                IntegerCharacter intChar = (IntegerCharacter) ch;
+                List<Object> summaryInformation = generateIntegerSummaryInformation(intChar, attrs);
+
+                int numUnknown = (Integer) summaryInformation.get(0);
+                int numInapplicable = (Integer) summaryInformation.get(1);
+                int numRecorded = (Integer) summaryInformation.get(2);
+                Map<Integer, Integer> valueDistribution = (Map<Integer, Integer>) summaryInformation.get(3);
+                double mean = (Double) summaryInformation.get(4);
+                double stdDev = (Double) summaryInformation.get(5);
+
+                String characterDetail = UIUtils.getResourceString("SummaryDirective.IntegerCharacterDetail");
+                appendCharacterHeading(builder, characterNumber, characterDetail, characterDescription);
+                builder.increaseIndent();
+                appendUnknownInapplicableRecorded(builder, numUnknown, numInapplicable, numRecorded);
+                appendDistributionOfValues(builder, valueDistribution);
+                builder.appendText(String.format("%s\\tab %.2f", UIUtils.getResourceString("SummaryDirective.Mean"), mean));
+                builder.appendText(String.format("%s\\tab %.2f", UIUtils.getResourceString("SummaryDirective.StandardDeviation"), stdDev));
+                builder.appendText("");
+                builder.decreaseIndent();
             } else if (ch instanceof RealCharacter) {
-                processRealCharacter(builder, attrs);
+                RealCharacter realChar = (RealCharacter) ch;
+                List<Object> summaryInformation = generateRealSummaryInformation(realChar, attrs);
+
+                int numUnknown = (Integer) summaryInformation.get(0);
+                int numInapplicable = (Integer) summaryInformation.get(1);
+                int numRecorded = (Integer) summaryInformation.get(2);
+                double minValue = (Double) summaryInformation.get(3);
+                double maxValue = (Double) summaryInformation.get(4);
+                int minValueTaxonIndex = (Integer) summaryInformation.get(5);
+                int maxValueTaxonIndex = (Integer) summaryInformation.get(6);
+                double mean = (Double) summaryInformation.get(7);
+                double stdDev = (Double) summaryInformation.get(8);
+
+                String characterDetail = UIUtils.getResourceString("SummaryDirective.RealCharacterDetail");
+                appendCharacterHeading(builder, characterNumber, characterDetail, characterDescription);
+                builder.increaseIndent();
+                appendUnknownInapplicableRecorded(builder, numUnknown, numInapplicable, numRecorded);
+
+                builder.appendText(String.format("%s\\tab %.2f", UIUtils.getResourceString("SummaryDirective.Mean"), mean));
+                builder.appendText(String.format("%s\\tab %.2f", UIUtils.getResourceString("SummaryDirective.StandardDeviation"), stdDev));
+                builder.appendText(String.format("%s\\tab %.2f (%s)", UIUtils.getResourceString("SummaryDirective.Minimum"), minValue,
+                        MessageFormat.format(UIUtils.getResourceString("SummaryDirective.ItemNumber"), minValueTaxonIndex)));
+                builder.appendText(String.format("%s\\tab %.2f (%s)", UIUtils.getResourceString("SummaryDirective.Maximum"), maxValue,
+                        MessageFormat.format(UIUtils.getResourceString("SummaryDirective.ItemNumber"), maxValueTaxonIndex)));
+
+                builder.appendText("");
+                builder.decreaseIndent();
             } else if (ch instanceof TextCharacter) {
-                processRealCharacter(builder, attrs);
+                TextCharacter textChar = (TextCharacter) ch;
+                List<Object> summaryInformation = generateTextSummaryInformation(textChar, attrs);
+
+                int numUnknown = (Integer) summaryInformation.get(0);
+                int numInapplicable = (Integer) summaryInformation.get(1);
+                int numRecorded = (Integer) summaryInformation.get(2);
+
+                String characterDetail = UIUtils.getResourceString("SummaryDirective.TextCharacterDetail");
+                appendCharacterHeading(builder, characterNumber, characterDetail, characterDescription);
+                builder.increaseIndent();
+                appendUnknownInapplicableRecorded(builder, numUnknown, numInapplicable, numRecorded);
+
+                builder.appendText("");
+                builder.decreaseIndent();
             }
         }
 
+        builder.endDocument();
+        context.getUI().displayRTFReport(builder.toString(), UIUtils.getResourceString("SummaryDirective.ReportTitle"));
+
         return true;
     }
+    
+    private void appendReportHeading() {
+        // output taxon numbers, with consecutive numbers grouped into ranges
+        StringBuilder taxonRangeListBuilder = new StringBuilder();
+        
+        //Collections.sort(_taxa);
+        
+    }
 
-    private void processMultiStateCharacter(RTFBuilder builder, MultiStateCharacter ch, List<Attribute> attrs) {
+    private void appendCharacterHeading(RTFBuilder builder, int characterNumber, String characterDetail, String characterDescription) {
+        builder.appendText(String.format("#%s. (%s) - %s", characterNumber, characterDetail, characterDescription));
+    }
+
+    private void appendUnknownInapplicableRecorded(RTFBuilder builder, int numUnknown, int numInapplicable, int numRecorded) {
+        builder.appendText(String.format("%s \\tab %s/%s/%s", UIUtils.getResourceString("SummaryDirective.UnknownInapplicableRecorded"), numUnknown, numInapplicable, numRecorded));
+    }
+
+    // Write out the distribution of values for an integer or multistate
+    // character. Consecutive values that have the
+    // same distribution count are grouped together. E.g. if states 1 and 2 both
+    // have a distribution count of five,
+    // this will be written out as 1-2(5).
+    private void appendDistributionOfValues(RTFBuilder builder, Map<Integer, Integer> valueDistribution) {
+        StringBuilder distributionStringBuilder = new StringBuilder();
+
+        int startRange = 0;
+        int rangeCount = 0;
+        int prevValue = 0;
+
+        List<Integer> sortedValues = new ArrayList<Integer>(valueDistribution.keySet());
+        Collections.sort(sortedValues);
+        for (int value : sortedValues) {
+            int valueCount = valueDistribution.get(value);
+
+            if (value == sortedValues.get(0)) {
+                rangeCount = valueCount;
+                startRange = value;
+            } else if (value != prevValue + 1 || valueCount != rangeCount) {
+                appendDistributionForRange(distributionStringBuilder, startRange, prevValue, rangeCount);
+
+                startRange = value;
+                rangeCount = valueCount;
+            }
+
+            prevValue = value;
+
+            if (value == sortedValues.get(sortedValues.size() - 1)) {
+                appendDistributionForRange(distributionStringBuilder, startRange, prevValue, rangeCount);
+            }
+        }
+
+        builder.appendText(String.format("%s%s", UIUtils.getResourceString("SummaryDirective.DistributionOfValues"), distributionStringBuilder.toString()));
+    }
+
+    private void appendDistributionForRange(StringBuilder distributionStringBuilder, int startRange, int endRange, int rangeCount) {
+        distributionStringBuilder.append("\\tab ");
+        distributionStringBuilder.append(startRange);
+        if (endRange != startRange) {
+            distributionStringBuilder.append("-");
+            distributionStringBuilder.append(endRange);
+        }
+        distributionStringBuilder.append("(");
+        distributionStringBuilder.append(rangeCount);
+        distributionStringBuilder.append(")");
+    }
+
+    private List<Object> generateMultiStateSummaryInformation(MultiStateCharacter ch, List<Attribute> attrs) {
         int numUnknown = 0;
         int numInapplicable = 0;
         int numRecorded = 0;
 
-        int[] stateTotals = new int[ch.getNumberOfStates()];
+        Map<Integer, Integer> stateDistribution = new HashMap<Integer, Integer>();
 
         for (Item taxon : _taxa) {
             MultiStateAttribute attr = (MultiStateAttribute) attrs.get(taxon.getItemNumber() - 1);
             if (attr.isUnknown() && !attr.isInapplicable()) {
                 numUnknown++;
+                continue;
             } else if (attr.isUnknown() && attr.isInapplicable()) {
                 numInapplicable++;
+                continue;
             } else {
                 numRecorded++;
             }
 
-            for (int i = 0; i < ch.getNumberOfStates(); i++) {
-                int stateTotal = stateTotals[i];
-                if (attr.isStatePresent(i + 1)) {
-                    stateTotal++;
+            Set<Integer> presentStates = attr.getPresentStates();
+
+            for (int state : presentStates) {
+                int stateTotal;
+                if (stateDistribution.containsKey(state)) {
+                    stateTotal = stateDistribution.get(state);
+                } else {
+                    stateTotal = 0;
                 }
 
-                stateTotals[i] = stateTotal;
+                stateTotal++;
+                stateDistribution.put(state, stateTotal);
             }
         }
 
-        System.out.println(String.format("%s. %s %s %s", ch.getCharacterId(), numUnknown, numInapplicable, numRecorded));
-
-        for (int i = 0; i < ch.getNumberOfStates(); i++) {
-            int stateTotal = stateTotals[i];
-            if (stateTotal > 0) {
-                System.out.println(String.format("%s (%s)", i + 1, stateTotal));
-            }
-        }
+        return Arrays.asList(new Object[] { numUnknown, numInapplicable, numRecorded, stateDistribution });
     }
 
-    private void processIntegerCharacter(RTFBuilder builder, IntegerCharacter ch, List<Attribute> attrs) {
+    private List<Object> generateIntegerSummaryInformation(IntegerCharacter ch, List<Attribute> attrs) {
         int numUnknown = 0;
         int numInapplicable = 0;
         int numRecorded = 0;
 
-        Map<Integer, Integer> valueTotals = new HashMap<Integer, Integer>();
+        Map<Integer, Integer> valueDistribution = new HashMap<Integer, Integer>();
 
         // Collect data points to use to calculate mean and standard deviation
         List<Double> valuesForMeanAndStdDev = new ArrayList<Double>();
@@ -122,94 +275,116 @@ public class SummaryDirectiveInvocation extends IntkeyDirectiveInvocation {
 
             for (int value : values) {
                 int valueTotal;
-                if (valueTotals.containsKey(value)) {
-                    valueTotal = valueTotals.get(value);
+                if (valueDistribution.containsKey(value)) {
+                    valueTotal = valueDistribution.get(value);
                 } else {
                     valueTotal = 0;
                 }
 
                 valueTotal++;
-                valueTotals.put(value, valueTotal);
+                valueDistribution.put(value, valueTotal);
                 valuesSum += value;
             }
 
             // for calculating the mean and standard deviation, use the average
             // of the available values.
             valuesForMeanAndStdDev.add((double) valuesSum / (double) values.size());
-
         }
 
-        System.out.println(String.format("%s. %s %s %s", ch.getCharacterId(), numUnknown, numInapplicable, numRecorded));
+        Pair<Double, Double> pairMeanStdDev = calcuateMeanAndStandardDeviation(valuesForMeanAndStdDev);
+        double mean = pairMeanStdDev.getFirst();
+        double stdDev = pairMeanStdDev.getSecond();
 
-        List<Integer> sortedValues = new ArrayList<Integer>(valueTotals.keySet());
-        Collections.sort(sortedValues);
-        for (int value : sortedValues) {
-            int valueTotal = valueTotals.get(value);
-            if (valueTotal > 0) {
-                System.out.println(String.format("%s (%s)", value, valueTotal));
+        return Arrays.asList(new Object[] { numUnknown, numInapplicable, numRecorded, valueDistribution, mean, stdDev });
+    }
+
+    private List<Object> generateRealSummaryInformation(RealCharacter ch, List<Attribute> attrs) {
+        int numUnknown = 0;
+        int numInapplicable = 0;
+        int numRecorded = 0;
+
+        double minValue = Double.MAX_VALUE;
+        double maxValue = Double.MIN_VALUE;
+        int minValueTaxonIndex = 0;
+        int maxValueTaxonIndex = 0;
+
+        // Collect data points to use to calculate mean and standard deviation
+        List<Double> valuesForMeanAndStdDev = new ArrayList<Double>();
+
+        for (Item taxon : _taxa) {
+            RealAttribute attr = (RealAttribute) attrs.get(taxon.getItemNumber() - 1);
+            if (attr.isUnknown() && !attr.isInapplicable()) {
+                numUnknown++;
+                continue;
+            } else if (attr.isUnknown() && attr.isInapplicable()) {
+                numInapplicable++;
+                continue;
+            } else {
+                numRecorded++;
+            }
+
+            FloatRange presentRange = attr.getPresentRange();
+
+            if (presentRange.getMinimumDouble() < minValue) {
+                minValue = presentRange.getMinimumDouble();
+                minValueTaxonIndex = taxon.getItemNumber();
+            }
+
+            if (presentRange.getMaximumDouble() > maxValue) {
+                maxValue = presentRange.getMaximumDouble();
+                maxValueTaxonIndex = taxon.getItemNumber();
+            }
+
+            // for calculating the mean and standard deviation, use the average
+            // the two numbers that
+            // specify the range.
+            valuesForMeanAndStdDev.add((presentRange.getMinimumDouble() + presentRange.getMaximumDouble()) / 2);
+        }
+
+        Pair<Double, Double> pairMeanStdDev = calcuateMeanAndStandardDeviation(valuesForMeanAndStdDev);
+        double mean = pairMeanStdDev.getFirst();
+        double stdDev = pairMeanStdDev.getSecond();
+
+        return Arrays.asList(new Object[] { numUnknown, numInapplicable, numRecorded, minValue, maxValue, minValueTaxonIndex, maxValueTaxonIndex, mean, stdDev });
+    }
+
+    private List<Object> generateTextSummaryInformation(TextCharacter ch, List<Attribute> attrs) {
+        int numUnknown = 0;
+        int numInapplicable = 0;
+        int numRecorded = 0;
+
+        for (Item taxon : _taxa) {
+            Attribute attr = attrs.get(taxon.getItemNumber() - 1);
+            if (attr.isUnknown() && !attr.isInapplicable()) {
+                numUnknown++;
+            } else if (attr.isUnknown() && attr.isInapplicable()) {
+                numInapplicable++;
+            } else {
+                numRecorded++;
             }
         }
 
-        // Calculate mean and standard deviation
+        return Arrays.asList(new Object[] { numUnknown, numInapplicable, numRecorded });
+    }
+
+    private Pair<Double, Double> calcuateMeanAndStandardDeviation(List<Double> valuesForMeanAndStdDev) {
         double sum = 0;
         for (double value : valuesForMeanAndStdDev) {
             sum += value;
         }
 
         double mean = sum / valuesForMeanAndStdDev.size();
-        
+
         double sumSquaredDifferences = 0;
         for (double value : valuesForMeanAndStdDev) {
             double diff = value - mean;
             sumSquaredDifferences += (diff * diff);
         }
-        
+
         double variance = sumSquaredDifferences / (valuesForMeanAndStdDev.size() - 1);
         double stdDev = Math.sqrt(variance);
 
-        System.out.println(mean);
-        System.out.println(stdDev);
-    }
-
-    private void processRealCharacter(RTFBuilder builder, List<Attribute> attrs) {
-        int numUnknown = 0;
-        int numInapplicable = 0;
-        int numRecorded = 0;
-
-        double mean = 0;
-        double ssq = 0;
-
-        for (Item taxon : _taxa) {
-            Attribute attr = attrs.get(taxon.getItemNumber() - 1);
-            if (attr.isUnknown() && !attr.isInapplicable()) {
-                numUnknown++;
-            } else if (attr.isInapplicable()) {
-                numInapplicable++;
-            } else {
-                numRecorded++;
-            }
-
-        }
-    }
-
-    private void processTextCharacter(RTFBuilder builder, TextCharacter ch, List<Attribute> attrs) {
-        int numUnknown = 0;
-        int numInapplicable = 0;
-        int numRecorded = 0;
-
-        for (Item taxon : _taxa) {
-            Attribute attr = attrs.get(taxon.getItemNumber() - 1);
-            if (attr.isUnknown() && !attr.isInapplicable()) {
-                numUnknown++;
-            } else if (attr.isInapplicable()) {
-                numInapplicable++;
-            } else {
-                numRecorded++;
-            }
-
-        }
-
-        System.out.println(String.format("%s. %s %s %s", ch.getCharacterId(), numUnknown, numInapplicable, numRecorded));
+        return new Pair<Double, Double>(mean, stdDev);
     }
 
 }
