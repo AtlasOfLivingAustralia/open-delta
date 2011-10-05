@@ -26,10 +26,10 @@ import au.org.ala.delta.util.Utils;
  */
 public class DeltaFormatTranslator extends AbstractDataSetTranslator {
 
-	private Printer _printer;
-	private ItemFormatter _itemFormatter;
-	private CharacterFormatter _characterFormatter;
-	private AttributeParser _parser;
+	protected Printer _printer;
+	protected ItemFormatter _itemFormatter;
+	protected CharacterFormatter _characterFormatter;
+	protected AttributeParser _parser;
 	
 	public DeltaFormatTranslator(DeltaContext context, Printer printer, ItemFormatter itemFormatter) {
 		super(context, new DeltaFormatDataSetFilter(context));
@@ -158,14 +158,14 @@ public class DeltaFormatTranslator extends AbstractDataSetTranslator {
 		_printer.writeBlankLines(1, 0);
 	}
 	
-	private void outputCharacterStates(MultiStateCharacter character) {
+	protected void outputCharacterStates(MultiStateCharacter character) {
 		_printer.setIndent(7);
 		for (int i=1; i<=character.getNumberOfStates(); i++) {
 			outputLine(_characterFormatter.formatState(character, i)+"/");
 		}
 	}
 	
-	private void outputUnits(NumericCharacter<? extends Number> character) {
+	protected void outputUnits(NumericCharacter<? extends Number> character) {
 		_printer.setIndent(7);
 		outputLine(_characterFormatter.formatUnits(character)+"/");
 	}

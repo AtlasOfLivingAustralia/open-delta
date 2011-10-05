@@ -1,9 +1,11 @@
 package au.org.ala.delta.directives;
 
 import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.DeltaContext.PrintActionType;
 import au.org.ala.delta.model.image.ImageType;
 import au.org.ala.delta.translation.DataSetTranslator;
 import au.org.ala.delta.translation.DataSetTranslatorFactory;
+import au.org.ala.delta.translation.print.PrintAction;
 import au.org.ala.delta.util.DataSetHelper;
 
 /**
@@ -16,6 +18,8 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
     private DeltaContext _context; 
     private DataSetTranslatorFactory _factory;
     private DataSetHelper _helper;
+    private boolean _itemsProcessed;
+    private boolean _charactersProcessed;
     
     public ConforDirectiveParserObserver(DeltaContext context) {
         _context = context;
@@ -38,11 +42,18 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
         else if (directive.getControlWords().equals(ItemDescriptions.CONTROL_WORDS)) {
         	postProcessItems();
         }
+        
+        if (_charactersProcessed && _itemsProcessed) {
+        	processPrintActions();
+        }
     }
 
 	private void postProcessCharacters() {
 		DataSetTranslator translator = _factory.createTranslator(_context);
 		translator.translateCharacters();
+		
+		_charactersProcessed = true;
+		
 	}
 
 	private void postProcessItems() {
@@ -50,5 +61,15 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
 		
 		DataSetTranslator translator = _factory.createTranslator(_context);
 		translator.translateItems();
+		
+		_itemsProcessed = true;
 	}
+	
+	private void processPrintActions() {
+		for (PrintActionType actionType : _context.getPrintActions()) {
+			PrintAction action = _factory.createPrintAction(_context, actionType);
+			action.print();
+		}
+	}
+	
 }

@@ -1,6 +1,7 @@
 package au.org.ala.delta.translation;
 
 import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.DeltaContext.PrintActionType;
 import au.org.ala.delta.TranslateType;
 import au.org.ala.delta.model.format.AttributeFormatter;
 import au.org.ala.delta.model.format.CharacterFormatter;
@@ -12,6 +13,8 @@ import au.org.ala.delta.translation.dist.DistTranslator;
 import au.org.ala.delta.translation.intkey.IntkeyTranslator;
 import au.org.ala.delta.translation.key.KeyTranslator;
 import au.org.ala.delta.translation.naturallanguage.NaturalLanguageTranslator;
+import au.org.ala.delta.translation.print.CharacterListPrinter;
+import au.org.ala.delta.translation.print.PrintAction;
 
 
 /**
@@ -104,6 +107,23 @@ public class DataSetTranslatorFactory {
 		return new Printer(context.getPrintStream(), printWidth);
 	}
 	
+	public PrintAction createPrintAction(DeltaContext context, PrintActionType printAction) {
+		PrintAction action = null;
+		switch (printAction) {
+		case PRINT_CHARACTER_LIST:
+			action = createCharacterListPrinter(context);
+			break;
+		default:
+			throw new UnsupportedOperationException(printAction+" is not yet implemented.");	
+		}
+		return action;
+	}
 	
+	private PrintAction createCharacterListPrinter(DeltaContext context) {
+		FormatterFactory formatterFactory = new FormatterFactory(context);
+		Printer printer = createPrinter(context);
+		ItemFormatter itemFormatter  = formatterFactory.createItemFormatter(null);
+		return new CharacterListPrinter(context, printer, itemFormatter);
+	}
 	
 }

@@ -51,7 +51,7 @@ public class DeltaContext extends AbstractDeltaContext {
 
 	public static enum HeadingType {HEADING, REGISTRATION_SUBHEADING};
 	public static enum OutputFormat {RTF, HTML, NONE};
-	public static enum OutputActions {PRINT_CHARACTER_LIST, PRINT_ITEM_DESCRIPTIONS, PRINT_SUMMARY, PRINT_UNCODED_CHARCACTERS, TRANSLATE_UNCODED_CHARACTERS};
+	public static enum PrintActionType {PRINT_CHARACTER_LIST, PRINT_ITEM_DESCRIPTIONS, PRINT_SUMMARY, PRINT_UNCODED_CHARACTERS, TRANSLATE_UNCODED_CHARACTERS};
 	
 	private DeltaDataSet _dataSet;
 	private OutputFileSelector _outputFileSelector;
@@ -59,6 +59,7 @@ public class DeltaContext extends AbstractDeltaContext {
 	private Map<String, Object> _variables;
 	private int _ListFilenameSize = 15;
 	private List<String> _errorMessages = new ArrayList<String>();
+	private List<PrintActionType> _outputActions = new ArrayList<PrintActionType>();
 
 	private TranslateType _translateType;
 	private Set<Integer> _excludedCharacters = new HashSet<Integer>();
@@ -470,7 +471,6 @@ public class DeltaContext extends AbstractDeltaContext {
 		return _characterHeadings.get(characterNumber);
 	}
 	
-	
 	/**
 	 * Returns the index heading for the supplied item number as defined by the INDEX HEADINGS directive.  
 	 * If no heading has been supplied, this method returns null.
@@ -869,6 +869,14 @@ public class DeltaContext extends AbstractDeltaContext {
 	
 	public boolean getTreatIntegerCharacterAsReal(int characterNumber) {
 		return _treatIntegerCharacterAsReal.contains(characterNumber);
+	}
+	
+	public void addPrintAction(PrintActionType action) {
+		_outputActions.add(action);
+	}
+	
+	public List<PrintActionType> getPrintActions() {
+		return _outputActions;
 	}
 	
 }
