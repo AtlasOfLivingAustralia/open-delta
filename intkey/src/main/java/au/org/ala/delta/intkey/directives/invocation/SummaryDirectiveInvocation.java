@@ -51,7 +51,7 @@ public class SummaryDirectiveInvocation extends IntkeyDirectiveInvocation {
         CharacterFormatter characterFormatter = new CharacterFormatter(false, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REMOVE_SURROUNDING_REPLACE_INNER, true, false);
         builder.startDocument();
 
-        
+        appendReportHeading(builder);
 
         for (Character ch : _characters) {
             int characterNumber = ch.getCharacterId();
@@ -145,13 +145,41 @@ public class SummaryDirectiveInvocation extends IntkeyDirectiveInvocation {
 
         return true;
     }
-    
-    private void appendReportHeading() {
+
+    private void appendReportHeading(RTFBuilder builder) {
         // output taxon numbers, with consecutive numbers grouped into ranges
         StringBuilder taxonRangeListBuilder = new StringBuilder();
-        
-        //Collections.sort(_taxa);
-        
+
+        int startRange = 0;
+        int previousTaxon = 0;
+        for (Item taxon : _taxa) {
+            int taxonNumber = taxon.getItemNumber();
+            if (startRange == 0) {
+                startRange = taxonNumber;
+            } else if (taxonNumber != previousTaxon + 1) {
+                taxonRangeListBuilder.append(" ");
+                taxonRangeListBuilder.append(startRange);
+                if (previousTaxon != startRange) {
+                    taxonRangeListBuilder.append("-");
+                    taxonRangeListBuilder.append(previousTaxon);
+                }
+                startRange = taxonNumber;
+            }
+
+            previousTaxon = taxonNumber;
+
+            if (taxon == _taxa.get(_taxa.size() - 1)) {
+                taxonRangeListBuilder.append(" ");
+                taxonRangeListBuilder.append(startRange);
+                if (taxonNumber != startRange) {
+                    taxonRangeListBuilder.append("-");
+                    taxonRangeListBuilder.append(taxonNumber);
+                }
+            }
+        }
+
+        builder.appendText(MessageFormat.format(UIUtils.getResourceString("SummaryDirective.ReportHeading"), taxonRangeListBuilder.toString()));
+        builder.appendText(" ");
     }
 
     private void appendCharacterHeading(RTFBuilder builder, int characterNumber, String characterDetail, String characterDescription) {
@@ -179,6 +207,7 @@ public class SummaryDirectiveInvocation extends IntkeyDirectiveInvocation {
         for (int value : sortedValues) {
             int valueCount = valueDistribution.get(value);
 
+            // first value
             if (value == sortedValues.get(0)) {
                 rangeCount = valueCount;
                 startRange = value;
@@ -191,6 +220,7 @@ public class SummaryDirectiveInvocation extends IntkeyDirectiveInvocation {
 
             prevValue = value;
 
+            // last value
             if (value == sortedValues.get(sortedValues.size() - 1)) {
                 appendDistributionForRange(distributionStringBuilder, startRange, prevValue, rangeCount);
             }

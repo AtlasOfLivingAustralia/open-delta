@@ -1,6 +1,7 @@
 package au.org.ala.delta.intkey.directives;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Queue;
 
@@ -35,9 +36,9 @@ public class BracketedTaxonListArgument extends AbstractTaxonListArgument<Pair<L
             overrideExcludedTaxa = true;
             token = inputTokens.poll();
         }
-        
+
         overrideExcludedTaxa = overrideExcludedTaxa || _selectFromAll;
-        
+
         boolean includeSpecimen = false;
         List<Item> taxa = null;
 
@@ -127,6 +128,7 @@ public class BracketedTaxonListArgument extends AbstractTaxonListArgument<Pair<L
         }
         stringRepresentationBuilder.append(CLOSE_BRACKET);
 
+        Collections.sort(taxa);
         return new Pair<List<Item>, Boolean>(taxa, includeSpecimen);
     }
 }

@@ -1,6 +1,7 @@
 package au.org.ala.delta.intkey.directives;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Queue;
 
@@ -87,6 +88,8 @@ public class TaxonListArgument extends AbstractTaxonListArgument<List<Item>> {
         if (taxa.size() == 0) {
             taxa = null;
         }
+        
+        Collections.sort(taxa);
 
         return taxa;
     }

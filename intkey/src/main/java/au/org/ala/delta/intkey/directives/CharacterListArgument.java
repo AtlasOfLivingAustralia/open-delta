@@ -1,6 +1,7 @@
 package au.org.ala.delta.intkey.directives;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Queue;
 
@@ -84,6 +85,8 @@ public class CharacterListArgument extends IntkeyDirectiveArgument<List<au.org.a
         if (characters.size() == 0) {
             characters = null;
         }
+        
+        Collections.sort(characters);
         
         return characters;
     }
