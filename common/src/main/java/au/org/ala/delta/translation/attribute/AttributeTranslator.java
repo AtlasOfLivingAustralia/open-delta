@@ -8,6 +8,8 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.model.format.AttributeFormatter;
+import au.org.ala.delta.translation.Words;
+import au.org.ala.delta.translation.Words.Word;
 import au.org.ala.delta.translation.attribute.CommentedValueList.CommentedValues;
 import au.org.ala.delta.translation.attribute.CommentedValueList.Values;
 
@@ -163,7 +165,7 @@ public abstract class AttributeTranslator {
 				}
 				output.append(" ");
 				if (i == translatedValues.size() - 1) {
-					output.append("and ");
+					output.append(Words.word(Word.AND)).append(" ");
 				}
 				output.append(translatedValues.get(i));
 
@@ -186,13 +188,13 @@ public abstract class AttributeTranslator {
 	protected String getTranslatedValue(String value) {
 
 		if ("V".equals(value)) {
-			return "variable";
+			return Words.word(Word.VARIABLE);
 		}
 		if ("U".equals(value)) {
-			return "unknown";
+			return Words.word(Word.UNKNOWN);
 		}
 		if ("-".equals(value)) {
-			return "not applicable";
+			return Words.word(Word.NOT_APPLICABLE);
 		}
 		return translateValue(value);
 	}

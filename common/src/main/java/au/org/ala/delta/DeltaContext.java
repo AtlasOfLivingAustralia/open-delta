@@ -114,6 +114,7 @@ public class DeltaContext extends AbstractDeltaContext {
 	private Map<Integer, Boolean> _useNormalValues = new HashMap<Integer, Boolean>();
 	private boolean _omitSpaceBeforeUnits = false;
 	private boolean _translateImplicitValues = false;
+	private boolean _keyCharacterListUsed = false;
 	
 	private Map<HeadingType, String> _headings = new HashMap<HeadingType, String>();
 	private Integer _characterForTaxonImages = null;
@@ -842,5 +843,18 @@ public class DeltaContext extends AbstractDeltaContext {
 		}
 		return abundancy;
 	}
+
+	public boolean is_keyCharacterListUsed() {
+		return _keyCharacterListUsed;
+	}
+
+	public void setKeyCharacterListUsed(boolean keyCharacterListUsed) {
+		_keyCharacterListUsed = keyCharacterListUsed;
+	}
+	
+	public boolean getKeyCharacterListUsed() {
+		return _keyCharacterListUsed;
+	}
+	
 	
 }

@@ -31,7 +31,8 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
 
     @Override
     public void postProcess(AbstractDirective<? extends AbstractDeltaContext> directive) {
-        if (directive.getControlWords().equals(CharacterList.CONTROL_WORDS)) {
+        if (directive.getControlWords().equals(CharacterList.CONTROL_WORDS) ||
+        	directive.getControlWords().equals(KeyCharacterList.CONTROL_WORDS)) {
         	postProcessCharacters();
         }
         else if (directive.getControlWords().equals(ItemDescriptions.CONTROL_WORDS)) {

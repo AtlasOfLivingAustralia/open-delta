@@ -22,25 +22,28 @@ import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.directives.args.DirectiveArguments;
 
 /**
- * Processes the CHARACTER LIST directive and initiates the character translation
+ * Processes the KEY CHARACTER LIST directive and initiates the character translation
  * operation. (@see au.org.ala.delta.directives.TranslateInto)
+ * The KEY CHARACTER LIST directive cannot be used with the CHARACTER LIST
+ * directive.
  */
-public class CharacterList extends AbstractTextDirective {
+public class KeyCharacterList extends AbstractTextDirective {
 
-	public static final String[] CONTROL_WORDS = {"character", "list"};
+	public static final String[] CONTROL_WORDS = {"key", "character", "list"};
 	
-	public CharacterList() {
+	public KeyCharacterList() {
 		super(CONTROL_WORDS);
 	}
 	
 	@Override
 	public int getArgType() {
-		return DirectiveArgType.DIRARG_INTERNAL;
+		return DirectiveArgType.DIRARG_OTHER;
 	}
 	
 	@Override
 	public void process(DeltaContext context, DirectiveArguments args) throws Exception {
 		
+		context.setKeyCharacterListUsed(true);
 		String data = args.getFirstArgumentText();
 		
 		StringReader reader = new StringReader(data);
