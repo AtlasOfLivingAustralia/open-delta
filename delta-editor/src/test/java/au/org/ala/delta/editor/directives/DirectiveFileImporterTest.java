@@ -69,6 +69,9 @@ public class DirectiveFileImporterTest extends TestCase {
 				AbstractDirective<ImportContext> d, Exception ex) {
 			System.err.println("handleDirectiveProcessingException"+ex.getMessage());
 		}
+		
+		@Override
+		public void finishedProcessing() {}
 	}
 	
 	@Before

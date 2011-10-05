@@ -30,6 +30,11 @@ public class DataSetTranslatorFactory {
 		
 		DataSetTranslator translator = null;
 		TranslateType translation = context.getTranslateType();
+		
+		if (translation == null) {
+			return new NullTranslator();
+		}
+		
 		FormatterFactory formatterFactory = new FormatterFactory(context);
 		
 		if (translation.equals(TranslateType.NaturalLanguage) && context.getOutputHtml() == false) {

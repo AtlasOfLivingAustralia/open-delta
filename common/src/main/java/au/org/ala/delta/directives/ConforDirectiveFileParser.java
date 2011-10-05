@@ -109,6 +109,7 @@ public class ConforDirectiveFileParser extends DirectiveParser<DeltaContext> {
         instance.registerDirective(new OverlayFonts());
         
         instance.registerDirective(new PercentageError());
+        instance.registerDirective(new PrintCharacterList());  
         instance.registerDirective(new PrintFile());
         instance.registerDirective(new PrintWidth());
 

@@ -27,4 +27,6 @@ public class DirectiveImportHandlerAdapter implements DirectiveImportHandler {
 			Exception ex) {
 	}
 
+	@Override
+	public void finishedProcessing() {}
 }

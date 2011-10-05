@@ -1,12 +1,7 @@
 package au.org.ala.delta.confor;
 
-import java.io.File;
-import java.net.URL;
 import java.util.List;
 
-import junit.framework.TestCase;
-
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.junit.Test;
 
@@ -17,22 +12,16 @@ import au.org.ala.delta.key.ItemsFileHeader;
 /**
  * Tests the CONFOR todist process.
  */
-public class ToDistTest extends TestCase {
-
+public class ToDistTest extends ConforTestCase {
+	
 	@Test
 	public void testSampleToDist() throws Exception {
 
-		File tointDirectory = urlToFile("/dataset/");
-		File dest = new File(System.getProperty("java.io.tmpdir"));
-		FileUtils.copyDirectory(tointDirectory, dest);
-
-		String tokeyFilePath = FilenameUtils.concat(dest.getAbsolutePath(), "sample/todis");
-
-		CONFOR.main(new String[] { tokeyFilePath });
-
-		String expectedDItemsFilename = FilenameUtils.concat(dest.getAbsolutePath(), "sample/expected_results/ditems");
+		runConfor();
+		
+		String expectedDItemsFilename = FilenameUtils.concat(_samplePath, "expected_results/ditems");
 		BinaryKeyFile expectedDItems = new BinaryKeyFile(expectedDItemsFilename, BinFileMode.FM_READONLY);
-		String actualDItemsFilename = FilenameUtils.concat(dest.getAbsolutePath(), "sample/ditems");
+		String actualDItemsFilename = FilenameUtils.concat(_samplePath, "ditems");
 		BinaryKeyFile ditems = new BinaryKeyFile(actualDItemsFilename, BinFileMode.FM_READONLY);
 
 		List<Integer> header = expectedDItems.readIntegerList(1, BinaryKeyFile.RECORD_LENGTH_INTEGERS);
@@ -98,6 +87,10 @@ public class ToDistTest extends TestCase {
 		}
 	}
 
+	protected String directivesFileName() {
+		return "todis";
+	}
+	
 	private String toBitString(int expectedBits) {
 		String bitsString = Integer.toBinaryString(expectedBits);
 		int length = bitsString.length();
@@ -109,9 +102,5 @@ public class ToDistTest extends TestCase {
 		return bitsString;
 	}
 
-	private File urlToFile(String urlString) throws Exception {
-		URL url = ToDistTest.class.getResource(urlString);
-		File file = new File(url.toURI());
-		return file;
-	}
+	
 }

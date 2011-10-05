@@ -72,9 +72,12 @@ public class CONFOR {
 	public CONFOR(File input) throws Exception {
 		DeltaContext context = new DeltaContext();
 		ConforDirectiveFileParser p = ConforDirectiveFileParser.createInstance();
-		p.registerObserver(new ConforDirectiveParserObserver(context));
+		ConforDirectiveParserObserver observer = new ConforDirectiveParserObserver(context); 
+		p.registerObserver(observer);
 		
 		p.parse(input, context);
+		
+		observer.finishedProcessing();
 	}
 
 }

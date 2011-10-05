@@ -76,6 +76,9 @@ public abstract class ImportExportTask extends Task<Void, ImportExportStatus> im
 		error(ex.getMessage());
 	}
 	
+	@Override
+	public void finishedProcessing() {}
+	
 	private void error(String message) {
 		_status.error(message);
 		publish(_status);

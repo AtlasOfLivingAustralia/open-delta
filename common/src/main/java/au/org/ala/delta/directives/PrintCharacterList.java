@@ -9,9 +9,12 @@ import au.org.ala.delta.directives.args.DirectiveArguments;
  */
 public class PrintCharacterList extends AbstractNoArgDirective {
 
+	public PrintCharacterList() {
+		super("print", "character", "list");
+	}
+	
 	@Override
 	public void process(DeltaContext context, DirectiveArguments directiveArguments) throws Exception {
 		context.addPrintAction(PrintActionType.PRINT_CHARACTER_LIST);
 	}
-
 }

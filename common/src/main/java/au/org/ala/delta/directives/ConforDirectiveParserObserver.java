@@ -18,8 +18,6 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
     private DeltaContext _context; 
     private DataSetTranslatorFactory _factory;
     private DataSetHelper _helper;
-    private boolean _itemsProcessed;
-    private boolean _charactersProcessed;
     
     public ConforDirectiveParserObserver(DeltaContext context) {
         _context = context;
@@ -42,18 +40,16 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
         else if (directive.getControlWords().equals(ItemDescriptions.CONTROL_WORDS)) {
         	postProcessItems();
         }
-        
-        if (_charactersProcessed && _itemsProcessed) {
-        	processPrintActions();
-        }
+    }
+    
+    @Override
+    public void finishedProcessing() {
+    	processPrintActions();
     }
 
 	private void postProcessCharacters() {
 		DataSetTranslator translator = _factory.createTranslator(_context);
 		translator.translateCharacters();
-		
-		_charactersProcessed = true;
-		
 	}
 
 	private void postProcessItems() {
@@ -61,8 +57,6 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
 		
 		DataSetTranslator translator = _factory.createTranslator(_context);
 		translator.translateItems();
-		
-		_itemsProcessed = true;
 	}
 	
 	private void processPrintActions() {
@@ -71,5 +65,6 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
 			action.print();
 		}
 	}
+	
 	
 }
