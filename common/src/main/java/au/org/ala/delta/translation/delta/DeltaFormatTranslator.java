@@ -125,10 +125,17 @@ public class DeltaFormatTranslator extends AbstractDataSetTranslator {
 		_printer.writeJustifiedText(value, -1);
 	}
 	
-	private void outputLine(String value) {
+	protected void outputLine(String value) {
+		outputLine(value, 0);
+	}
+	
+	protected void outputLine(String value, int numTrailingBlanks) {
 		_printer.indent();
 		_printer.writeJustifiedText(value, -1);
 		_printer.printBufferLine();
+		if (numTrailingBlanks > 0) {
+			_printer.writeBlankLines(numTrailingBlanks, 0);
+		}
 	}
 
 	@Override

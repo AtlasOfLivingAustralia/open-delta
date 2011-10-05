@@ -25,6 +25,8 @@ public class PrintCTest extends ConforTestCase {
 		String actual = FileUtils.readFileToString(actualFile);
 
 		System.out.print(actual);
+		
+		//assertEquals(expected, actual);
 	}
 
 	@Override

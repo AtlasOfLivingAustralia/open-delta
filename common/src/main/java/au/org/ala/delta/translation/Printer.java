@@ -296,7 +296,7 @@ public class Printer {
         return _outputBuffer.charAt(_outputBuffer.length() - 1);
     }
 
-    public void captialiseNextWord() {
+    public void capitaliseNextWord() {
         _capitalise = true;
 
     }

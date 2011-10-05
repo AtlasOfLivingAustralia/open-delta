@@ -189,7 +189,7 @@ public class NaturalLanguageTranslator extends AbstractDataSetTranslator {
 
         if (item.isVariant()) {
             // next character is a capital
-            _printer.captialiseNextWord();
+            _printer.capitaliseNextWord();
             _printer.writeJustifiedText(Words.word(Word.VARIANT), 0);
         }
 
@@ -221,7 +221,7 @@ public class NaturalLanguageTranslator extends AbstractDataSetTranslator {
 
         if (item.isVariant()) {
             // next character is a capital
-            _printer.captialiseNextWord();
+            _printer.capitaliseNextWord();
         }
 
         _printer.writeJustifiedText(description, -1);
@@ -364,7 +364,7 @@ public class NaturalLanguageTranslator extends AbstractDataSetTranslator {
         // linked characters.
         if ((_previousCharInSentence == 0) || (!subsequentPartOfLinkedSet && _lastCharacterOutput < _previousCharInSentence)) {
             ioffset = 0;
-            _printer.captialiseNextWord();
+            _printer.capitaliseNextWord();
         }
 
         int completionAction = -1;
