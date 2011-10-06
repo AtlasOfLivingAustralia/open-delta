@@ -25,6 +25,7 @@ import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.RealAttribute;
 import au.org.ala.delta.model.RealCharacter;
 import au.org.ala.delta.model.TextCharacter;
+import au.org.ala.delta.util.Pair;
 
 /**
  * Utilities for sorting characters
@@ -33,6 +34,10 @@ import au.org.ala.delta.model.TextCharacter;
  * 
  */
 public class SortingUtils {
+
+    private enum OrderingType {
+        BEST, SEPARATE, DIAGNOSE
+    }
 
     /**
      * A separating power below this is treated as zero
@@ -51,14 +56,31 @@ public class SortingUtils {
      *         supplied map
      */
     public static LinkedHashMap<au.org.ala.delta.model.Character, Double> orderBest(IntkeyContext context) {
+        return doOrdering(context, OrderingType.BEST, null);
+    }
+
+    public static LinkedHashMap<au.org.ala.delta.model.Character, Double> orderSeparate(IntkeyContext context, Item taxonToSeparate) {
+        return doOrdering(context, OrderingType.SEPARATE, taxonToSeparate);
+    }
+
+    // TODO change arguments, pass in something other than the entire context.
+    /**
+     * Determines best order and separating power of all characters in the
+     * supplied context's dataset
+     * 
+     * @param context
+     *            the application's global state
+     * @return a map of characters to their separating powers. The best order of
+     *         the characters can be obtained by getting the keyset of the
+     *         supplied map
+     */
+    public static LinkedHashMap<au.org.ala.delta.model.Character, Double> doOrdering(IntkeyContext context, OrderingType orderingType, Item taxonToSeparate) {
         LinkedHashMap<Character, Double> retMap = new LinkedHashMap<Character, Double>();
 
         IntkeyDataset dataset = context.getDataset();
-        Specimen specimen = context.getSpecimen();
 
         List<Character> allCharacters = dataset.getCharacters();
 
-        // TODO refactor so that this array does not need to be final
         final double[] suVals = new double[allCharacters.size()];
         double[] sepVals = new double[allCharacters.size()];
 
@@ -151,7 +173,6 @@ public class SortingUtils {
         List<Character> unsuitableCharacters = new ArrayList<Character>();
 
         for (Character ch : availableCharacters) {
-
             int sumNumTaxaInSubgroups = 0;
             double sumSubgroupsFrequencies = 0;
             int numSubgroupsSameSizeAsOriginalGroup = 0;
@@ -198,6 +219,20 @@ public class SortingUtils {
 
             List<Attribute> charAttributes = dataset.getAttributesForCharacter(ch.getCharacterId());
 
+            // examine taxon to be diagnosed or separated first
+            boolean[] taxonToSeparateStatePresence = new boolean[totalNumStates];
+            int ndgSum = 1;
+            if (orderingType == OrderingType.SEPARATE || orderingType == OrderingType.DIAGNOSE) {
+                Attribute attr = charAttributes.get(taxonToSeparate.getItemNumber() - 1);
+
+                if (attr.isUnknown() && attr.isInapplicable()) {
+                    unsuitableCharacters.add(ch);
+                    continue;
+                }
+
+                taxonToSeparateStatePresence = foo(attr, totalNumStates).getFirst();
+            }
+
             for (Attribute attr : charAttributes) {
                 Item taxon = attr.getItem();
 
@@ -207,153 +242,160 @@ public class SortingUtils {
                     continue;
                 }
 
-                // has a boolean value for each character state. A true value
-                // designates the presence of the corresponding character state
-                // for the attribute.
-                boolean[] statePresence = new boolean[totalNumStates];
+                Pair<boolean[], Integer> statePresencePair = foo(attr, totalNumStates);
 
-                int numStatesPresent = 0;
+                boolean[] statePresence = statePresencePair.getFirst();
+                int numStatesPresent = statePresencePair.getSecond();
 
-                // determine which character states are present for the
-                // attribute.
-                if (attr.isUnknown()) {
-                    // Treat attribute unknown as variable
-                    Arrays.fill(statePresence, true);
-                    numStatesPresent = totalNumStates;
+                if (orderingType == OrderingType.BEST) {
+                    // work out size of character subgroups.
+                    for (int i = 0; i < totalNumStates; i++) {
+                        if (statePresence[i] == true) {
+                            subgroupsNumTaxa[i]++;
+
+                            // frequency of items with current state of current
+                            // character
+                            double stateFrequency = 1.0 / (double) numStatesPresent;
+                            stateFrequency += subgroupFrequencies[i];
+                            subgroupFrequencies[i] = stateFrequency;
+                        }
+                    }
                 } else {
-                    Arrays.fill(statePresence, false);
+                    for (int i = 0; i < totalNumStates; i++) {
+                        if (statePresence[i] == true) {
+                            subgroupsNumTaxa[i]++;
+                        }
+                    }
 
-                    if (ch.getCharacterType() == CharacterType.OrderedMultiState || ch.getCharacterType() == CharacterType.UnorderedMultiState) {
-                        MultiStateAttribute multiStateAttr = (MultiStateAttribute) attr;
-                        Set<Integer> attrPresentStates = multiStateAttr.getPresentStates();
-
+                    if (!taxon.equals(taxonToSeparate)) {
                         for (int i = 0; i < totalNumStates; i++) {
-                            if (attrPresentStates.contains(i + 1)) {
-                                statePresence[i] = true;
-                                numStatesPresent++;
+                            if (statePresence[i] && taxonToSeparateStatePresence[i]) {
+                                ndgSum++;
+                                break;
                             }
                         }
-
-                    } else if (ch.getCharacterType() == CharacterType.IntegerNumeric) {
-                        IntegerCharacter intChar = (IntegerCharacter) ch;
-                        IntegerAttribute intAttr = (IntegerAttribute) attr;
-
-                        // for an integer character, 1 state for each value
-                        // between
-                        // the minimum and
-                        // maximum (inclusive), 1 state for all values below the
-                        // minimum, and 1 state for
-                        // all values above the maximum
-
-                        Set<Integer> attrPresentStates = intAttr.getPresentValues();
-
-                        int offset = intChar.getMinimumValue() - 1;
-
-                        for (int i = 0; i < totalNumStates; i++) {
-                            if (attrPresentStates.contains(i + offset)) {
-                                statePresence[i] = true;
-                                numStatesPresent++;
-                            }
-                        }
-
-                    } else if (ch.getCharacterType() == CharacterType.RealNumeric) {
-                        RealCharacter realChar = (RealCharacter) ch;
-                        RealAttribute realAttr = (RealAttribute) attr;
-                        FloatRange presentRange = realAttr.getPresentRange();
-
-                        // convert real value into multistate value.
-                        numStatesPresent = generateKeyStatesForRealCharacter(realChar, presentRange, statePresence);
-                    } else {
-                        throw new RuntimeException("Invalid character type " + ch.toString());
                     }
                 }
 
-                // work out size of character subgroups.
+            }
+
+            if (orderingType == OrderingType.BEST) {
+                // total number of non-empty character subgroups
+                int totalNumSubgroups = 0;
+
+                // work out sum of subgroup sizes and frequencies
                 for (int i = 0; i < totalNumStates; i++) {
-
-                    if (statePresence[i] == true) {
-                        subgroupsNumTaxa[i]++;
-
-                        // frequency of items with current state of current
-                        // character
-                        double stateFrequency = 1.0 / (double) numStatesPresent;
-                        stateFrequency += subgroupFrequencies[i];
-                        subgroupFrequencies[i] = stateFrequency;
-                    }
-                }
-
-            }
-
-            // total number of non-empty character subgroups
-            int totalNumSubgroups = 0;
-
-            // work out sum of subgroup sizes and frequencies
-            for (int i = 0; i < totalNumStates; i++) {
-                sumNumTaxaInSubgroups += subgroupsNumTaxa[i];
-                sumSubgroupsFrequencies += subgroupFrequencies[i];
-
-                if (subgroupsNumTaxa[i] > 0) {
-                    totalNumSubgroups++;
-                }
-            }
-
-            // character is unsuitable if it divides the characters into a
-            // single
-            // subgroup
-            boolean allTaxaInOneGroup = false;
-            for (int i = 0; i < totalNumStates; i++) {
-                int numTaxaInSubgroup = subgroupsNumTaxa[i];
-
-                if (numTaxaInSubgroup == sumNumTaxaInSubgroups) {
-                    allTaxaInOneGroup = true;
-                    break;
-                } else {
-                    if (numTaxaInSubgroup == numAvailableTaxa) {
-                        numSubgroupsSameSizeAsOriginalGroup++;
-                    }
+                    sumNumTaxaInSubgroups += subgroupsNumTaxa[i];
+                    sumSubgroupsFrequencies += subgroupFrequencies[i];
 
                     if (subgroupsNumTaxa[i] > 0) {
-                        sup0 += (subgroupFrequencies[i] * log2(subgroupsNumTaxa[i]));
+                        totalNumSubgroups++;
                     }
                 }
+
+                for (int i = 0; i < totalNumStates; i++) {
+                    int numTaxaInSubgroup = subgroupsNumTaxa[i];
+
+                    if (numTaxaInSubgroup == sumNumTaxaInSubgroups) {
+                        // character is unsuitable if it divides the characters
+                        // into a
+                        // single
+                        // subgroup
+                        unsuitableCharacters.add(ch);
+                        continue;
+                    } else {
+                        if (numTaxaInSubgroup == numAvailableTaxa) {
+                            numSubgroupsSameSizeAsOriginalGroup++;
+                        }
+
+                        if (subgroupsNumTaxa[i] > 0) {
+                            sup0 += (subgroupFrequencies[i] * log2(subgroupsNumTaxa[i]));
+                        }
+                    }
+                }
+
+                boolean isControllingChar = !ch.getDependentCharacters().isEmpty();
+                // TODO what is this test for???
+                if (!isControllingChar
+                        && (totalNumSubgroups == numSubgroupsSameSizeAsOriginalGroup || (sumNumTaxaInSubgroups > numAvailableTaxa && numSubgroupsSameSizeAsOriginalGroup == totalNumStates))) {
+                    unsuitableCharacters.add(ch);
+                    continue;
+                }
+
+                sup0 = sup0 / sumSubgroupsFrequencies;
+
+                if (numAvailableTaxa > 1 && sumNumTaxaInSubgroups > numAvailableTaxa) {
+                    dupf = varw * (1 + 100 * numSubgroupsSameSizeAsOriginalGroup) * (sumNumTaxaInSubgroups - numAvailableTaxa) * ((numAvailableTaxa + 8) / (numAvailableTaxa * log2(numAvailableTaxa)));
+                } else {
+                    dupf = 0;
+                }
+
+                sep = -sup0 + log2(numAvailableTaxa);
+
+                // handle rounding errors
+                if (Math.abs(sep) <= minimumSeparatingPower) {
+                    sep = 0.0;
+                }
+
+                // don't display controlling characters with 0 separation
+                if (isControllingChar && sep == 0) {
+                    unsuitableCharacters.add(ch);
+                    continue;
+                }
+
+                sup = sup0 + dupf;
+            } else { // SEPARATE or DIAGNOSE
+                // total number of non-empty character subgroups
+                int totalNumSubgroups = 0;
+
+                for (int i = 0; i < totalNumStates; i++) {
+                    sumNumTaxaInSubgroups += subgroupsNumTaxa[i];
+
+                    if (subgroupsNumTaxa[i] > 0) {
+                        totalNumSubgroups++;
+                    }
+                }
+
+                for (int i = 0; i < totalNumStates; i++) {
+                    int numTaxaInSubgroup = subgroupsNumTaxa[i];
+
+                    // character is unsuitable if it divides the characters into
+                    // a
+                    // single
+                    // subgroup
+                    if (numTaxaInSubgroup == sumNumTaxaInSubgroups) {
+                        unsuitableCharacters.add(ch);
+                        continue;
+                    } else {
+                        if (numTaxaInSubgroup == numAvailableTaxa) {
+                            numSubgroupsSameSizeAsOriginalGroup++;
+                        }
+                    }
+                }
+
+                // TODO what is this test for???
+                if (orderingType == OrderingType.DIAGNOSE
+                        && (totalNumSubgroups == numSubgroupsSameSizeAsOriginalGroup || (sumNumTaxaInSubgroups > numAvailableTaxa && numSubgroupsSameSizeAsOriginalGroup == totalNumStates))) {
+                    unsuitableCharacters.add(ch);
+                    continue;
+                }
+
+                sup0 = log2(ndgSum);
+                sep = -sup0 + log2(numAvailableTaxa);
+
+                // handle rounding errors
+                if (Math.abs(sep) <= minimumSeparatingPower) {
+                    sep = 0.0;
+                }
+
+                // for DIAGNOSE, characters with zero separation are ignored
+                if (sep <= 0.0 && orderingType == OrderingType.DIAGNOSE) {
+                    unsuitableCharacters.add(ch);
+                    continue;
+                }
+
+                sup = sup0;
             }
-
-            // A character is unsuitable if it has the same value for all
-            // available characters
-            if (allTaxaInOneGroup) {
-                unsuitableCharacters.add(ch);
-                continue;
-            }
-
-            boolean isControllingChar = !ch.getDependentCharacters().isEmpty();
-            // TODO what is this test for???
-            if (!isControllingChar && (totalNumSubgroups == numSubgroupsSameSizeAsOriginalGroup || (sumNumTaxaInSubgroups > numAvailableTaxa && numSubgroupsSameSizeAsOriginalGroup == totalNumStates))) {
-                unsuitableCharacters.add(ch);
-                continue;
-            }
-
-            sup0 = sup0 / sumSubgroupsFrequencies;
-
-            if (numAvailableTaxa > 1 && sumNumTaxaInSubgroups > numAvailableTaxa) {
-                dupf = varw * (1 + 100 * numSubgroupsSameSizeAsOriginalGroup) * (sumNumTaxaInSubgroups - numAvailableTaxa) * ((numAvailableTaxa + 8) / (numAvailableTaxa * log2(numAvailableTaxa)));
-            } else {
-                dupf = 0;
-            }
-
-            sep = -sup0 + log2(numAvailableTaxa);
-
-            // TODO handle rounding errors?
-            if (Math.abs(sep) <= minimumSeparatingPower) {
-                sep = 0.0;
-            }
-
-            // TODO don't display controlling characters with 0 separation
-            if (isControllingChar && sep == 0) {
-                unsuitableCharacters.add(ch);
-                continue;
-            }
-
-            sup = sup0 + dupf;
 
             su = charCosts[ch.getCharacterId() - 1] + cmin * sup;
 
@@ -368,13 +410,6 @@ public class SortingUtils {
 
             @Override
             public int compare(Character c1, Character c2) {
-                // TODO had to make suMap final - dodgy
-
-                // float c1Su = (float) suVals[c1.getCharacterId() - 1];
-                // float c2Su = (float) suVals[c2.getCharacterId() - 1];
-
-                // return Float.valueOf(c1Su).compareTo(Float.valueOf(c2Su));
-
                 return Double.valueOf(suVals[c1.getCharacterId() - 1]).compareTo(Double.valueOf(suVals[c2.getCharacterId() - 1]));
             }
         });
@@ -431,6 +466,75 @@ public class SortingUtils {
         }
 
         return numStatesPresent;
+    }
+
+    private static Pair<boolean[], Integer> foo(Attribute attr, int totalNumStates) {
+        Character ch = attr.getCharacter();
+
+        // has a boolean value for each character state. A true value
+        // designates the presence of the corresponding character state
+        // for the attribute.
+        boolean[] statePresence = new boolean[totalNumStates];
+
+        int numStatesPresent = 0;
+
+        // determine which character states are present for the
+        // attribute.
+        if (attr.isUnknown()) {//TODO "or inapplicable" is not always ignored for SEPARATE. See "fetdat" in old best.cpp || attr.isInapplicable()) {
+            // Treat attribute unknown or inapplicable as variable
+            // (isUnknown is always true when attribute is
+            // inapplicable)
+            Arrays.fill(statePresence, true);
+            numStatesPresent = totalNumStates;
+        } else {
+            Arrays.fill(statePresence, false);
+
+            if (ch.getCharacterType() == CharacterType.OrderedMultiState || ch.getCharacterType() == CharacterType.UnorderedMultiState) {
+                MultiStateAttribute multiStateAttr = (MultiStateAttribute) attr;
+                Set<Integer> attrPresentStates = multiStateAttr.getPresentStates();
+
+                for (int i = 0; i < totalNumStates; i++) {
+                    if (attrPresentStates.contains(i + 1)) {
+                        statePresence[i] = true;
+                        numStatesPresent++;
+                    }
+                }
+
+            } else if (ch.getCharacterType() == CharacterType.IntegerNumeric) {
+                IntegerCharacter intChar = (IntegerCharacter) ch;
+                IntegerAttribute intAttr = (IntegerAttribute) attr;
+
+                // for an integer character, 1 state for each value
+                // between
+                // the minimum and
+                // maximum (inclusive), 1 state for all values below the
+                // minimum, and 1 state for
+                // all values above the maximum
+
+                Set<Integer> attrPresentStates = intAttr.getPresentValues();
+
+                int offset = intChar.getMinimumValue() - 1;
+
+                for (int i = 0; i < totalNumStates; i++) {
+                    if (attrPresentStates.contains(i + offset)) {
+                        statePresence[i] = true;
+                        numStatesPresent++;
+                    }
+                }
+
+            } else if (ch.getCharacterType() == CharacterType.RealNumeric) {
+                RealCharacter realChar = (RealCharacter) ch;
+                RealAttribute realAttr = (RealAttribute) attr;
+                FloatRange presentRange = realAttr.getPresentRange();
+
+                // convert real value into multistate value.
+                numStatesPresent = generateKeyStatesForRealCharacter(realChar, presentRange, statePresence);
+            } else {
+                throw new RuntimeException("Invalid character type " + ch.toString());
+            }
+        }
+
+        return new Pair<boolean[], Integer>(statePresence, numStatesPresent);
     }
 
     /**

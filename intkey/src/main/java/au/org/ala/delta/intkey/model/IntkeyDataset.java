@@ -239,6 +239,11 @@ public class IntkeyDataset {
         _itemsBinFile = itemsBinFile;
     }
 
+    /**
+     * Get all attributes for the character with the supplied number
+     * @param charNo
+     * @return A list of all attributes for the character, ordered by taxon number in ascending order 
+     */
     public List<Attribute> getAttributesForCharacter(int charNo) {
         List<Attribute> attrList = IntkeyDatasetFileReader.readAttributesForCharacter(_itemsFileHeader, _itemsBinFile, _characters, _taxa, charNo);
         return attrList;
