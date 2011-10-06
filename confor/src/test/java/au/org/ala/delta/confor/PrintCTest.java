@@ -44,7 +44,7 @@ public class PrintCTest extends ConforTestCase {
 		
 		for (int i=0; i<expected.length(); i++) {
 			if (expected.charAt(i) != actual.charAt(i)) {
-				System.out.println("Difference @ char: "+i+" Expected: "+expected.charAt(i)+(int)expected.charAt(i)+", Actual: "+actual.charAt(i)+(int)expected.charAt(i));
+				System.out.println("Difference @ char: "+i+" Expected: "+expected.charAt(i)+(int)expected.charAt(i)+", Actual: "+actual.charAt(i)+(int)actual.charAt(i));
 				break;
 			}
 		}
