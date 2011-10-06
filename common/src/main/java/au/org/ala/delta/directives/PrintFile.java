@@ -31,9 +31,9 @@ public class PrintFile extends AbstractTextDirective {
 		
 		String data = args.getFirstArgumentText();
 		
-		String filename = data.trim() + ".new"; // TODO: kill the .new once stable...
+		String filename = data.trim();
 		File file = new File(context.getCurrentParsingContext().getFile().getParentFile(), filename);		
-		PrintStream stream = new PrintStream(file);
+		PrintStream stream = new PrintStream(file, context.getOutputFileEncoding().name());
 		context.setPrintStream(stream);
 	}
 

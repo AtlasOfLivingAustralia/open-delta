@@ -37,13 +37,22 @@ public class FormatterFactory {
 	}
 	
 	public CharacterFormatter createCharacterFormatter() {
+		return createCharacterFormatter(false, false);
+	}
+	
+	public CharacterFormatter createCharacterFormatter(boolean includeNumber, boolean capitaliseFirst) {
 		CommentStrippingMode mode = CommentStrippingMode.STRIP_ALL;
 		if (_context.getTranslateType() == TranslateType.IntKey) {
 			if (_context.getOmitInnerComments()) {
 				mode = CommentStrippingMode.STRIP_INNER;
 			}
 		}
-		return new CharacterFormatter(false, mode, AngleBracketHandlingMode.RETAIN, _context.isOmitTypeSettingMarks(), false);
+		return createCharacterFormatter(includeNumber, capitaliseFirst, mode);
+	}
+	
+	public CharacterFormatter createCharacterFormatter(boolean includeNumber, boolean capitaliseFirst, CommentStrippingMode mode) {
+		return new CharacterFormatter(includeNumber, mode, AngleBracketHandlingMode.RETAIN, _context.isOmitTypeSettingMarks(), capitaliseFirst);
+		
 	}
 	
 	public AttributeFormatter createAttributeFormatter() {

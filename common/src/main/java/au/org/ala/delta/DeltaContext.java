@@ -55,6 +55,7 @@ public class DeltaContext extends AbstractDeltaContext {
 	
 	private DeltaDataSet _dataSet;
 	private OutputFileSelector _outputFileSelector;
+	
 	private OutputFormat _outputFormat = OutputFormat.RTF;
 	private Map<String, Object> _variables;
 	private int _ListFilenameSize = 15;
@@ -878,5 +879,9 @@ public class DeltaContext extends AbstractDeltaContext {
 	public List<PrintActionType> getPrintActions() {
 		return _outputActions;
 	}
-	
+
+	public void print(String heading) {
+		_printStream.println(heading);
+		
+	}
 }

@@ -23,8 +23,15 @@ public abstract class TextListParser<T> extends DirectiveArgsParser {
 	
 	private char _delimiter;
 	
+	private boolean _cleanWhiteSpace;
+	
 	public TextListParser(DeltaContext context, Reader reader) {
+		this(context, reader, true);
+	}
+	
+	public TextListParser(DeltaContext context, Reader reader, boolean cleanWhiteSpace) {
 		super(context, reader);
+		_cleanWhiteSpace = cleanWhiteSpace;
 	}
 	
 	@Override
@@ -91,7 +98,7 @@ public abstract class TextListParser<T> extends DirectiveArgsParser {
 		String value = "";
 		
 		if (_delimiter == 0) {
-		   value = cleanWhiteSpace(readToNext(MARK_IDENTIFIER));
+		   value = readToNext(MARK_IDENTIFIER);
 		}
 		else {
 			consumeWhiteSpace();
@@ -106,7 +113,7 @@ public abstract class TextListParser<T> extends DirectiveArgsParser {
 				// Consume the delimiter.
 				readNext();
 				
-				value = cleanWhiteSpace(readToNext(_delimiter));
+				value = readToNext(_delimiter);
 				
 				expect(_delimiter);
 				
@@ -117,6 +124,9 @@ public abstract class TextListParser<T> extends DirectiveArgsParser {
 				expect(MARK_IDENTIFIER, true);
 			}
 				
+		}
+		if (_cleanWhiteSpace) {
+			value = cleanWhiteSpace(value);
 		}
 		return value;
 	}

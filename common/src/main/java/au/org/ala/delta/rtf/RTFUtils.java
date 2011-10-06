@@ -139,6 +139,9 @@ class FilteringRTFHandler implements RTFHandler {
 		if (_newlinesToSpace) {
 			_buffer.append(" ");
 		}
+		else {
+			_buffer.append("\n");
+		}
 	}
 
 }

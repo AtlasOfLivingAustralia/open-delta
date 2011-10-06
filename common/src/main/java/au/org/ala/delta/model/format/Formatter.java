@@ -49,14 +49,22 @@ public class Formatter {
     public String defaultFormat(String text) {
         return defaultFormat(text, _commentStrippingMode, _angleBracketHandlingMode, _stripFormatting, _capitaliseFirstWord);
     }
+    
+    public String defaultFormat(String text, boolean newLinesToSpace) {
+        return defaultFormat(text, _commentStrippingMode, _angleBracketHandlingMode, _stripFormatting, _capitaliseFirstWord, newLinesToSpace);
+    }
 
     public String defaultFormat(String text, CommentStrippingMode commentStrippingMode, AngleBracketHandlingMode angleBracketHandlingMode, boolean stripFormatting, boolean capitaliseFirstWord) {
+    	return defaultFormat(text, commentStrippingMode, angleBracketHandlingMode, stripFormatting, capitaliseFirstWord, true);
+    }
+    
+    public String defaultFormat(String text, CommentStrippingMode commentStrippingMode, AngleBracketHandlingMode angleBracketHandlingMode, boolean stripFormatting, boolean capitaliseFirstWord, boolean newLinesToSpace) {
         if (StringUtils.isEmpty(text)) {
             return "";
         }
 
         if (stripFormatting) {
-            text = RTFUtils.stripFormatting(text);
+            text = RTFUtils.stripFormatting(text, newLinesToSpace);
         }
 
         text = stripComments(text, commentStrippingMode);

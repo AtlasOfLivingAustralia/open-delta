@@ -13,6 +13,10 @@ public class IntegerTextListParser extends TextListParser<IntRange> {
 		super(context, reader);
 	}
 	
+	public IntegerTextListParser(DeltaContext context, Reader reader, boolean cleanWhitespace) {
+		super(context, reader, cleanWhitespace);
+	}
+	
 	@Override
 	protected void readSingle() throws ParseException {
 		

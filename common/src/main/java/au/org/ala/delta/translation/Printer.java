@@ -18,7 +18,9 @@ public class Printer {
 
     private int _printWidth = 80;
     private PrintStream _output;
-    private int _currentIndent;
+    private int _paragraphIndent;
+    private int _lineWrapIndent = 0;
+    private boolean _useParagraphIndentOnLineWrap = false;
     private boolean _capitalise;
 
     private StringBuilder _outputBuffer;
@@ -82,19 +84,23 @@ public class Printer {
 
     public void setIndent(int numSpaces) {
 
-        _currentIndent = numSpaces;
+        _paragraphIndent = numSpaces;
     }
 
+    public void indent() {
+    	indent(_paragraphIndent);
+    }
+    
     /**
      * Indents the default amount for the current output type. (takes a luntype
      * and a number of spaces)
      */
-    public void indent() {
+    public void indent(int indent) {
         if (_indented) {
             return;
         }
-        if (_currentIndent <= (Math.abs(_printWidth) - 20)) {
-            for (int i = 0; i < _currentIndent; i++) {
+        if (_paragraphIndent <= (Math.abs(_printWidth) - 20)) {
+            for (int i = 0; i < _paragraphIndent; i++) {
                 _outputBuffer.append(' ');
             }
         }
@@ -129,8 +135,15 @@ public class Printer {
             _output.println(_outputBuffer.substring(0, i + 1));
             _indented = false;
             _outputBuffer = new StringBuilder();
+        
             if (indentNewLine) {
-                indent();
+            	int lineWrap = _lineWrapIndent;
+            	if (_useParagraphIndentOnLineWrap) {
+            		lineWrap = _paragraphIndent;
+            	}
+	            for (int j = 0; j < lineWrap; j++) {
+	                _outputBuffer.append(' ');
+	            }
             }
         }
     }
@@ -185,6 +198,11 @@ public class Printer {
             } else {
                 wrappingPos = _printWidth;
             }
+        }
+        int newLinePos = _outputBuffer.indexOf("\n");
+        if (newLinePos >=0 && newLinePos < wrappingPos) {
+        	wrappingPos = _outputBuffer.indexOf("\n");
+        	_outputBuffer.delete(wrappingPos, wrappingPos);
         }
         return wrappingPos;
     }
@@ -314,5 +332,36 @@ public class Printer {
     public void writeFromVocabulary(Word word, int completionAction) {
         writeJustifiedText(Words.word(word), completionAction, false);
     }
-
+    
+    public void outputLine(int indent, String value, int numTrailingBlanks) {
+		setIndent(indent);
+		outputLine(value, numTrailingBlanks);
+	}
+	
+    public void outputLine(String value) {
+		outputLine(value, 0);
+	}
+	
+    public void outputLine(String value, int numTrailingBlanks) {
+		indent();
+		writeJustifiedText(value, -1);
+		printBufferLine();
+		if (numTrailingBlanks > 0) {
+			writeBlankLines(numTrailingBlanks, 0);
+		}
+	}
+    
+    /**
+     * If a line is wrapped during output, the line wrap indent will be
+     * applied if the setIndentOnLineWrap(true) method has been invoked.
+     * @param indent the indent to apply in addition to the paragraph indent 
+     * if a line is wrapped.
+     */
+    public void setLineWrapIndent(int indent) {
+    	_lineWrapIndent = indent;
+    }
+    
+    public void useParagraphIndentOnLineWrap() {
+    	_useParagraphIndentOnLineWrap = true;
+    }
 }

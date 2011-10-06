@@ -17,16 +17,38 @@ public class PrintCTest extends ConforTestCase {
 		runConfor();
 		
 		File expectedFile = new File(FilenameUtils.concat(_samplePath, "expected_results/printc.prt"));
-		String expected = FileUtils.readFileToString(expectedFile);
+		String expected = FileUtils.readFileToString(expectedFile, "cp1252");
 
 		System.out.println(expected);
 		
-		File actualFile = new File(FilenameUtils.concat(_samplePath, "printc.prt.new"));
-		String actual = FileUtils.readFileToString(actualFile);
+		File actualFile = new File(FilenameUtils.concat(_samplePath, "printc.prt"));
+		String actual = FileUtils.readFileToString(actualFile, "utf-8");
 
 		System.out.print(actual);
 		
-		//assertEquals(expected, actual);
+		// The heading contains the date so will be different.
+		String heading = "Grass Genera"; // <Date>, eg. 11:32 05-OCT-11
+		int headingIndex = expected.indexOf(heading) + 28;
+		expected = expected.substring(headingIndex).trim();
+		actual = actual.substring(headingIndex).trim();
+		
+		boolean dosEol = expected.contains("\r\n");
+		String expectedLineSeparator = "\n";
+		if (dosEol) {
+			expectedLineSeparator = "\r\n";
+		}
+		
+		if (!System.getProperty("line.separator").equals(expectedLineSeparator)) {
+			expected = expected.replaceAll(expectedLineSeparator, System.getProperty("line.separator"));
+		}
+		
+		for (int i=0; i<expected.length(); i++) {
+			if (expected.charAt(i) != actual.charAt(i)) {
+				System.out.println("Difference @ char: "+i+" Expected: "+expected.charAt(i)+", Actual: "+actual.charAt(i));
+				break;
+			}
+		}
+		assertEquals(expected, actual);
 	}
 
 	@Override

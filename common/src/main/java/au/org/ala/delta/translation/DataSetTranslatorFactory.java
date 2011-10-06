@@ -98,7 +98,8 @@ public class DataSetTranslatorFactory {
 	private AbstractDataSetTranslator createDeltaFormatTranslator(
 			DeltaContext context, Printer printer, FormatterFactory formatterFactory) {
 		ItemFormatter itemFormatter  = formatterFactory.createItemFormatter(null);
-		return new DeltaFormatTranslator(context, printer, itemFormatter);
+		CharacterFormatter charFormatter = formatterFactory.createCharacterFormatter();
+		return new DeltaFormatTranslator(context, printer, itemFormatter, charFormatter);
 	}
 	
 	/**
@@ -127,8 +128,8 @@ public class DataSetTranslatorFactory {
 	private PrintAction createCharacterListPrinter(DeltaContext context) {
 		FormatterFactory formatterFactory = new FormatterFactory(context);
 		Printer printer = createPrinter(context);
-		ItemFormatter itemFormatter  = formatterFactory.createItemFormatter(null);
-		return new CharacterListPrinter(context, printer, itemFormatter);
+		CharacterFormatter charFormatter  = formatterFactory.createCharacterFormatter(true, true, CommentStrippingMode.RETAIN);
+		return new CharacterListPrinter(context, printer, charFormatter);
 	}
 	
 }

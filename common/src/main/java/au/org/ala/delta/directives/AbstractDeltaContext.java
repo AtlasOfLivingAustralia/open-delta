@@ -30,5 +30,9 @@ public abstract class AbstractDeltaContext {
     public Charset getFileEncoding() {
     	return Charset.forName("Cp1252");
     }
+    
+    public Charset getOutputFileEncoding() {
+    	return Charset.forName("utf-8");
+    }
 
 }

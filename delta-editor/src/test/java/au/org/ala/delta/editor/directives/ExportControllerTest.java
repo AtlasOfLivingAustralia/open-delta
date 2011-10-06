@@ -6,8 +6,6 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 
-import junit.framework.AssertionFailedError;
-
 import org.apache.commons.io.FileUtils;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ApplicationContext;
@@ -296,25 +294,7 @@ public class ExportControllerTest extends DeltaTestCase {
 		
 		int i=0;
 		for (String directive : directives) {
-			try {
 			assertEquals(directive, actualDirectives[i++]);
-			}
-			catch (AssertionFailedError e) {
-//				for (int j=0; j<directive.length(); j++) {
-//					int char1 = (int)directive.charAt(j);
-//					int char2 = (int)actualDirectives[i-1].charAt(j);
-//					
-//					System.out.print(Integer.toHexString(char1)+",");
-//					System.out.print(Integer.toHexString(char2)+",");
-//					if (char1 != char2) {
-//						System.out.print("******");
-//					}
-//					System.out.println();
-//					
-//				}
-				throw e;
-				
-			}
 		}
 	}
 	

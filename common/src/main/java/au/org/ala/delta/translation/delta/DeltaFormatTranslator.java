@@ -31,12 +31,17 @@ public class DeltaFormatTranslator extends AbstractDataSetTranslator {
 	protected CharacterFormatter _characterFormatter;
 	protected AttributeParser _parser;
 	
-	public DeltaFormatTranslator(DeltaContext context, Printer printer, ItemFormatter itemFormatter) {
+	public DeltaFormatTranslator(
+			DeltaContext context, 
+			Printer printer, 
+			ItemFormatter itemFormatter,
+			CharacterFormatter characterFormatter) {
 		super(context, new DeltaFormatDataSetFilter(context));
 		
 		_printer = printer;
+		_printer.setIndentOnLineWrap(true);
 		_itemFormatter = itemFormatter;
-		_characterFormatter = new CharacterFormatter();
+		_characterFormatter = characterFormatter;
 		 _parser = new AttributeParser();
 	}
 	
@@ -125,19 +130,6 @@ public class DeltaFormatTranslator extends AbstractDataSetTranslator {
 		_printer.writeJustifiedText(value, -1);
 	}
 	
-	protected void outputLine(String value) {
-		outputLine(value, 0);
-	}
-	
-	protected void outputLine(String value, int numTrailingBlanks) {
-		_printer.indent();
-		_printer.writeJustifiedText(value, -1);
-		_printer.printBufferLine();
-		if (numTrailingBlanks > 0) {
-			_printer.writeBlankLines(numTrailingBlanks, 0);
-		}
-	}
-
 	@Override
 	public void beforeFirstCharacter() {
 		outputLine("*CHARACTER LIST");
@@ -161,6 +153,10 @@ public class DeltaFormatTranslator extends AbstractDataSetTranslator {
 		}
 	}
 	
+	protected void outputLine(String line) {
+		_printer.outputLine(line);
+	}
+	
 	public void afterCharacter(Character character) {
 		_printer.writeBlankLines(1, 0);
 	}
@@ -173,7 +169,21 @@ public class DeltaFormatTranslator extends AbstractDataSetTranslator {
 	}
 	
 	protected void outputUnits(NumericCharacter<? extends Number> character) {
-		_printer.setIndent(7);
-		outputLine(_characterFormatter.formatUnits(character)+"/");
+		if (character.hasUnits()) {
+			_printer.setIndent(7);
+			outputLine(_characterFormatter.formatUnits(character)+"/");
+		}
+	}
+	
+	@Override
+	public void translateCharacters() {
+		_printer.setLineWrapIndent(10);
+		super.translateCharacters();
+	}
+	
+	@Override 
+	public void translateItems() {
+		_printer.setLineWrapIndent(0);
+		super.translateItems();
 	}
 }

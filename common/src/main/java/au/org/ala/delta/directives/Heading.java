@@ -34,6 +34,7 @@ public class Heading extends AbstractTextDirective {
 		
 		String heading = replaceVariables(context, data.trim());
 		context.setHeading(HeadingType.HEADING, heading);
+		
 		Logger.log("HEADING: %s", heading);
 	}
 

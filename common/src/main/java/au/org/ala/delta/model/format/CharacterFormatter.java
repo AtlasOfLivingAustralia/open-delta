@@ -37,7 +37,7 @@ public class CharacterFormatter extends Formatter {
 		}
 		String stateText = character.getState(stateNumber);
 		
-		state.append(defaultFormat(stateText, commentStrippingMode, _angleBracketHandlingMode, _stripFormatting, _capitaliseFirstWord));
+		state.append(defaultFormat(stateText, commentStrippingMode, _angleBracketHandlingMode, _stripFormatting, false));
 		return state.toString();
 	}
 
@@ -67,7 +67,7 @@ public class CharacterFormatter extends Formatter {
 	
 	public String formatUnits(NumericCharacter<?> character, CommentStrippingMode commentStrippingMode) {
 		String units = character.getUnits();
-		return defaultFormat(units, commentStrippingMode, _angleBracketHandlingMode, _stripFormatting, _capitaliseFirstWord);
+		return defaultFormat(units, commentStrippingMode, _angleBracketHandlingMode, _stripFormatting, false);
 	}
 	
 }
