@@ -26,11 +26,6 @@ public class PrintCTest extends ConforTestCase {
 
 		System.out.print(actual);
 		
-		// The heading contains the date so will be different.
-		String heading = "Grass Genera"; // <Date>, eg. 11:32 05-OCT-11
-		int headingIndex = expected.indexOf(heading) + 28;
-		expected = expected.substring(headingIndex).trim();
-		actual = actual.substring(headingIndex).trim();
 		
 		boolean dosEol = expected.contains("\r\n");
 		String expectedLineSeparator = "\n";
@@ -41,6 +36,12 @@ public class PrintCTest extends ConforTestCase {
 		if (!System.getProperty("line.separator").equals(expectedLineSeparator)) {
 			expected = expected.replaceAll(expectedLineSeparator, System.getProperty("line.separator"));
 		}
+		// The heading contains the date so will be different.
+		String heading = "Grass Genera"; // <Date>, eg. 11:32 05-OCT-11
+		int headingIndex = expected.indexOf(heading) + 28;
+		expected = expected.substring(headingIndex).trim();
+		actual = actual.substring(headingIndex+2).trim();
+		
 		
 		for (int i=0; i<expected.length(); i++) {
 			if (expected.charAt(i) != actual.charAt(i)) {
