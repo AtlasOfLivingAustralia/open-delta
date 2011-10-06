@@ -7,7 +7,7 @@ import au.org.ala.delta.model.Item;
  * Doesn't do much in the way of typesetting or formatting, inserts some blank lines 
  * for paragraph marks.
  */
-public class PlainTextTypeSetter implements TypeSetter {
+public class PlainTextTypeSetter implements NaturalLanguageTypeSetter {
 
 	private Printer _printer;
 	

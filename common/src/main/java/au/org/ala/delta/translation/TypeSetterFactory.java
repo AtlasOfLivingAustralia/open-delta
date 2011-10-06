@@ -1,6 +1,7 @@
 package au.org.ala.delta.translation;
 
 import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.translation.print.CharacterListTypeSetter;
 
 /**
  * Creates the appropriate TypeSetter for the supplied context.  If the TYPESETTING MARKS
@@ -12,13 +13,25 @@ import au.org.ala.delta.DeltaContext;
  */
 public class TypeSetterFactory {
 	
-	public TypeSetter createTypeSetter(DeltaContext context, Printer printer) {
+	public NaturalLanguageTypeSetter createTypeSetter(DeltaContext context, Printer printer) {
 		
 		if (context.getTypeSettingMarks().isEmpty()) {
 			return new PlainTextTypeSetter(printer);
 		}
 		else {
 			return new FormattedTextTypeSetter(context.getTypeSettingMarks(), printer);
+		}
+		
+	}
+	
+	
+	public CharacterListTypeSetter createCharacterListTypeSetter(DeltaContext context, Printer printer) {
+		
+		if (context.getTypeSettingMarks().isEmpty()) {
+			return new au.org.ala.delta.translation.print.PlainTextTypeSetter(printer);
+		}
+		else {
+			return new au.org.ala.delta.translation.print.FormattedTypeSetter(context.getTypeSettingMarks(), printer);
 		}
 		
 	}

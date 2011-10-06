@@ -3,12 +3,12 @@ package au.org.ala.delta.translation.naturallanguage;
 import au.org.ala.delta.translation.AbstractDataSetTranslator;
 import au.org.ala.delta.translation.Printer;
 import au.org.ala.delta.translation.TranslatorTest;
-import au.org.ala.delta.translation.TypeSetter;
+import au.org.ala.delta.translation.NaturalLanguageTypeSetter;
 
 public abstract class NaturalLangaugeTranslatorTest extends TranslatorTest {
 
 	protected AbstractDataSetTranslator _dataSetTranslator;
-	protected TypeSetter _typeSetter;
+	protected NaturalLanguageTypeSetter _typeSetter;
 	protected Printer _printer;
 
 	protected static final String DEFAULT_DATASET_PATH = "/dataset/simple/tonat";

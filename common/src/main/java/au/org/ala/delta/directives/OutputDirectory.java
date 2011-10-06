@@ -17,10 +17,15 @@ package au.org.ala.delta.directives;
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.args.DirectiveArguments;
 
-public class PrintFile extends AbstractTextDirective {
+/**
+ * Processes the OUTPUT DIRECTORY directive.
+ * @see http://delta-intkey.com/www/uguide.htm#_*OUTPUT_DIRECTORY_ 
+ *
+ */
+public class OutputDirectory extends AbstractTextDirective {
 		
-	public PrintFile() {
-		super("print", "file");
+	public OutputDirectory() {
+		super("output", "directory");
 	}
 	
 	@Override
@@ -28,9 +33,8 @@ public class PrintFile extends AbstractTextDirective {
 		
 		String data = args.getFirstArgumentText();
 		
-		String filename = data.trim();
-		
-		context.getOutputFileSelector().setPrintFile(filename);
+		String directoryName = data.trim();
+		context.getOutputFileSelector().setOutputDirectory(directoryName);
 	}
 
 }

@@ -1,11 +1,15 @@
 package au.org.ala.delta.io;
 
 import java.io.File;
+import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.DeltaContext.OutputFormat;
@@ -23,6 +27,8 @@ import au.org.ala.delta.rtf.RTFUtils;
  */
 public class OutputFileSelector {
 	
+	public static final String OUTPUT_FILE_ENCODING = "utf-8";
+	
 	private int _characterForOutputFiles = 0;
 	private Map<String, String> _itemOutputFiles = new HashMap<String, String>();
 	private Set<Integer> _newFileItems = new HashSet<Integer>();
@@ -31,6 +37,9 @@ public class OutputFileSelector {
 	private String _intkeyOutputFile;
 	private String _keyOutputFile;
 	private String _distOutputFile;
+	private String _outputDirectory;
+	private String _printFileName;
+	private PrintStream _printStream;
 	
 	private ParsingContext _context;
 	private OutputFormat _outputFormat;
@@ -151,5 +160,57 @@ public class OutputFileSelector {
 
 	public void addNewFileAtItem(Integer id) {
 		_newFileItems.add(id);
+	}
+	
+	public void setOutputDirectory(String directory) throws Exception {
+		_outputDirectory = directory;
+		if (_printFileName != null) {
+			recreatePrintFile();
+		}
+	}
+	
+	public void setPrintFile(String filename) throws Exception {
+		_printFileName = filename;
+		recreatePrintFile();
+	}
+	
+	private void recreatePrintFile() throws Exception {
+		
+		closeExistingPrintStream();
+		
+		File parent = _context.getFile().getParentFile();
+		File outputDir = null;
+		if (_outputDirectory != null) {
+			outputDir = new File(FilenameUtils.separatorsToSystem(_outputDirectory));
+			
+			if (!outputDir.isAbsolute()) {
+				
+				outputDir = new File(FilenameUtils.concat(parent.getAbsolutePath(), _outputDirectory));
+			}
+		}
+		else {
+			outputDir = parent;
+		}
+		if (!outputDir.exists()) {
+			FileUtils.forceMkdir(outputDir);
+		}
+		
+		File file = new File(outputDir, _printFileName);	
+		
+		_printStream = new PrintStream(file, OUTPUT_FILE_ENCODING);
+	}
+	
+	private void closeExistingPrintStream() {
+		if (_printStream != null) {
+			IOUtils.closeQuietly(_printStream);
+		}
+	}
+	
+	public void setPrintStream(PrintStream stream) {
+		_printStream = stream;
+	}
+	
+	public PrintStream getPrintStream() {
+		return _printStream;
 	}
 }

@@ -20,11 +20,11 @@ public class FormatterFactory {
 		_context = context;
 	}
 	
-	public ItemFormatter createItemFormatter(TypeSetter typeSetter) {
+	public ItemFormatter createItemFormatter(NaturalLanguageTypeSetter typeSetter) {
 		return createItemFormatter(typeSetter, CommentStrippingMode.RETAIN);
 	}
 	
-	public ItemFormatter createItemFormatter(TypeSetter typeSetter, CommentStrippingMode mode) {
+	public ItemFormatter createItemFormatter(NaturalLanguageTypeSetter typeSetter, CommentStrippingMode mode) {
 		if (_context.isOmitTypeSettingMarks()) {
 			return new ItemFormatter(false, mode, AngleBracketHandlingMode.RETAIN, true, false, false);
 		}

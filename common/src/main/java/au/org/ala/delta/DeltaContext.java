@@ -128,7 +128,6 @@ public class DeltaContext extends AbstractDeltaContext {
 	
 	private PrintStream _listStream;
 	private PrintStream _errorStream;
-	private PrintStream _printStream;
 
 	private StateValueMatrix _matrix;
 
@@ -165,7 +164,6 @@ public class DeltaContext extends AbstractDeltaContext {
 			}
 		});
 
-		_printStream = System.out;
 		_errorStream = System.err;
 		_listStream = System.out;
 		
@@ -173,6 +171,7 @@ public class DeltaContext extends AbstractDeltaContext {
 		
 		_outputFileSelector = new OutputFileSelector(_dataSet);
 		_outputFileSelector.setOutputFormat(_outputFormat);
+		_outputFileSelector.setPrintStream(System.out);
 	}
 	
 	public OutputFileSelector getOutputFileSelector() {
@@ -212,11 +211,11 @@ public class DeltaContext extends AbstractDeltaContext {
 	}
 
 	public void setPrintStream(PrintStream stream) {
-		_printStream = stream;
+		getOutputFileSelector().setPrintStream(stream);
 	}
 	
 	public PrintStream getPrintStream() {
-		return _printStream;
+		return getOutputFileSelector().getPrintStream();
 	}
 
 	public void setErrorStream(PrintStream stream) {
@@ -881,7 +880,7 @@ public class DeltaContext extends AbstractDeltaContext {
 	}
 
 	public void print(String heading) {
-		_printStream.println(heading);
+		getOutputFileSelector().getPrintStream().println(heading);
 		
 	}
 }

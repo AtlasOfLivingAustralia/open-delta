@@ -14,6 +14,7 @@ import au.org.ala.delta.translation.intkey.IntkeyTranslator;
 import au.org.ala.delta.translation.key.KeyTranslator;
 import au.org.ala.delta.translation.naturallanguage.NaturalLanguageTranslator;
 import au.org.ala.delta.translation.print.CharacterListPrinter;
+import au.org.ala.delta.translation.print.CharacterListTypeSetter;
 import au.org.ala.delta.translation.print.PrintAction;
 
 
@@ -66,7 +67,7 @@ public class DataSetTranslatorFactory {
 	}
 	
 	private DataSetTranslator createKeyFormatTranslator(DeltaContext context, FormatterFactory formatterFactory) {
-		TypeSetter typeSetter = new TypeSetterFactory().createTypeSetter(context, null);
+		NaturalLanguageTypeSetter typeSetter = new TypeSetterFactory().createTypeSetter(context, null);
 		
 		FilteredDataSet dataSet = new FilteredDataSet(context, new DeltaFormatDataSetFilter(context));
 		return new KeyTranslator(context, dataSet,
@@ -76,7 +77,7 @@ public class DataSetTranslatorFactory {
 	}
 	
 	private DataSetTranslator createDistFormatTranslator(DeltaContext context, FormatterFactory formatterFactory) {
-		TypeSetter typeSetter = new TypeSetterFactory().createTypeSetter(context, null);
+		NaturalLanguageTypeSetter typeSetter = new TypeSetterFactory().createTypeSetter(context, null);
 		
 		FilteredDataSet dataSet = new FilteredDataSet(context, new DeltaFormatDataSetFilter(context));
 		return new DistTranslator(context, dataSet,
@@ -86,7 +87,7 @@ public class DataSetTranslatorFactory {
 	private AbstractDataSetTranslator createNaturalLanguageTranslator(
 			DeltaContext context, Printer printer, FormatterFactory formatterFactory) {
 		AbstractDataSetTranslator translator;
-		TypeSetter typeSetter = new TypeSetterFactory().createTypeSetter(context, printer);
+		NaturalLanguageTypeSetter typeSetter = new TypeSetterFactory().createTypeSetter(context, printer);
 		
 		ItemFormatter itemFormatter  = formatterFactory.createItemFormatter(typeSetter);
 		CharacterFormatter characterFormatter = formatterFactory.createCharacterFormatter();
@@ -129,7 +130,9 @@ public class DataSetTranslatorFactory {
 		FormatterFactory formatterFactory = new FormatterFactory(context);
 		Printer printer = createPrinter(context);
 		CharacterFormatter charFormatter  = formatterFactory.createCharacterFormatter(true, true, CommentStrippingMode.RETAIN);
-		return new CharacterListPrinter(context, printer, charFormatter);
+		CharacterListTypeSetter typeSetter = new TypeSetterFactory().createCharacterListTypeSetter(context, printer);
+		
+		return new CharacterListPrinter(context, printer, charFormatter, typeSetter);
 	}
 	
 }

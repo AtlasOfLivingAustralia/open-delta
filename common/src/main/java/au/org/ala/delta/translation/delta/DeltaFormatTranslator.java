@@ -164,7 +164,7 @@ public class DeltaFormatTranslator extends AbstractDataSetTranslator {
 	protected void outputCharacterStates(MultiStateCharacter character) {
 		_printer.setIndent(7);
 		for (int i=1; i<=character.getNumberOfStates(); i++) {
-			outputLine(_characterFormatter.formatState(character, i)+"/");
+			outputState(character, i);
 		}
 	}
 	
@@ -173,6 +173,10 @@ public class DeltaFormatTranslator extends AbstractDataSetTranslator {
 			_printer.setIndent(7);
 			outputLine(_characterFormatter.formatUnits(character)+"/");
 		}
+	}
+	
+	protected void outputState(MultiStateCharacter character, int stateNumber) {
+		outputLine(_characterFormatter.formatState(character, stateNumber)+"/");
 	}
 	
 	@Override
