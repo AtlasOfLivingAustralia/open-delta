@@ -17,7 +17,7 @@ public class PrintComment extends AbstractTextDirective {
 	public void process(DeltaContext context, DirectiveArguments directiveArguments) throws Exception {
 		
 		String comment = directiveArguments.getFirstArgumentText();
-		context.print(comment+"\n");
+		context.print(comment+System.getProperty("line.separator"));
 	}
 
 }

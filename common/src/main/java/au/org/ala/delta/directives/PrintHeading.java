@@ -17,7 +17,8 @@ public class PrintHeading extends AbstractNoArgDirective {
 	@Override
 	public void process(DeltaContext context, DirectiveArguments directiveArguments) throws Exception {
 		String heading = context.getHeading(HeadingType.HEADING);
-		context.print("\n\n"+heading+"\n\n");
+		String eol = System.getProperty("line.separator");
+		context.print(eol+eol+heading+eol+eol);
 	}
 
 }
