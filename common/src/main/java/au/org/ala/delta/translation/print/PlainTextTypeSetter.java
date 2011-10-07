@@ -17,8 +17,7 @@ public class PlainTextTypeSetter implements CharacterListTypeSetter {
 	}
 
 	@Override
-	public void beforeFirstCharacterOrHeading() {
-		// TODO Auto-generated method stub
+	public void beforeFirstCharacter() {
 		
 	}
 
@@ -29,7 +28,6 @@ public class PlainTextTypeSetter implements CharacterListTypeSetter {
 
 	@Override
 	public void afterCharacterHeading() {
-		// TODO Auto-generated method stub
 		
 	}
 

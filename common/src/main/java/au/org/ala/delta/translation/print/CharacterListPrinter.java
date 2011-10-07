@@ -35,7 +35,7 @@ public class CharacterListPrinter extends DeltaFormatTranslator implements Print
 	
 	@Override
 	public void beforeFirstCharacter() {
-		_typeSetter.beforeFirstCharacterOrHeading();
+		_typeSetter.beforeFirstCharacter();
 	}
 
 	@Override

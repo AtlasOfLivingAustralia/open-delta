@@ -19,5 +19,15 @@ public class RTFUtilsTest extends TestCase {
 		assertEquals(text, RTFUtils.stripFormatting(text));
 		
 	}
+	
+	
+	@Test
+	public void testRtfToHtml() {
+		String text = "\\i{}Ornithospermum\\i0{} Dumoulin, \\i{}Tema\\i0{} Adans.";
+		String result = RTFUtils.rtfToHtml(text);
+		
+		String expected = "<I>Ornithospermum</I> Dumoulin, <I>Tema</I> Adans.";
+		assertEquals(expected, result);
+	}
 
 }

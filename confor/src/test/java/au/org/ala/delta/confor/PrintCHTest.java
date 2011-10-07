@@ -10,18 +10,18 @@ import org.junit.Test;
  * Tests the PRINT CHARACTER LIST directive in the context of the sample
  * printc directives file.
  */
-public class PrintCRTest extends ConforTestCase {
+public class PrintCHTest extends ConforTestCase {
 
 	@Test
-	public void testSamplePrintCR() throws Exception {
+	public void testSamplePrintCH() throws Exception {
 		runConfor();
 		
-		File expectedFile = new File(FilenameUtils.concat(_samplePath, "expected_results/chars.rtf"));
+		File expectedFile = new File(FilenameUtils.concat(_samplePath, "expected_results/chars.htm"));
 		String expected = FileUtils.readFileToString(expectedFile, "cp1252");
 
 		System.out.println(expected);
 		
-		File actualFile = new File(FilenameUtils.concat(_samplePath, "rtf/chars.rtf"));
+		File actualFile = new File(FilenameUtils.concat(_samplePath, "www/chars.htm"));
 		String actual = FileUtils.readFileToString(actualFile, "utf-8");
 
 		System.out.print(actual);
@@ -49,7 +49,7 @@ public class PrintCRTest extends ConforTestCase {
 
 	@Override
 	protected String directivesFileName() {
-		return "printcr";
+		return "printch";
 	}
 	
 	

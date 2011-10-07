@@ -37,11 +37,9 @@ public class PrintCTest extends ConforTestCase {
 			expected = expected.replaceAll(expectedLineSeparator, System.getProperty("line.separator"));
 		}
 		// The heading contains the date so will be different.
-		String heading = "Grass Genera"; // <Date>, eg. 11:32 05-OCT-11
-		int headingIndex = expected.indexOf(heading) + 28;
-		expected = expected.substring(headingIndex).trim();
-		actual = actual.substring(headingIndex+2).trim();
+		String heading = "Grass Genera 11:32 05-OCT-11"; // <Date>, eg. 11:32 05-OCT-11
 		
+		actual = actual.replaceAll("Grass Genera.*[0-9]{2}-[a-zA-Z]{3}-[0-9]{4}", heading);
 		
 		for (int i=0; i<expected.length(); i++) {
 			if (expected.charAt(i) != actual.charAt(i)) {
@@ -49,7 +47,7 @@ public class PrintCTest extends ConforTestCase {
 				break;
 			}
 		}
-		assertEquals(expected, actual);
+		assertEquals(expected.trim(), actual.trim());
 	}
 
 	@Override

@@ -26,7 +26,8 @@ public class FormattedTypeSetter extends PlainTextTypeSetter {
 	}
 
 	@Override
-	public void beforeFirstCharacterOrHeading() {
+	public void beforeFirstCharacter() {
+		writeTypeSettingMark(MarkPosition.START_OF_FILE);
 		writeTypeSettingMark(MarkPosition.BEFORE_FIRST_CHARACTER_OR_HEADING);
 	}
 

@@ -8,7 +8,7 @@ public interface CharacterListTypeSetter {
 	
 	public void beforeCharacterOrHeading();
 	
-	public void beforeFirstCharacterOrHeading();
+	public void beforeFirstCharacter();
 	
 	public void beforeCharacterHeading();
 	

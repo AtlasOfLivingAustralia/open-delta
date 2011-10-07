@@ -170,7 +170,8 @@ public class OutputFileSelector {
 	}
 	
 	public void setPrintFile(String filename) throws Exception {
-		_printFileName = filename;
+		_printFileName = FilenameUtils.separatorsToSystem(filename);
+		
 		recreatePrintFile();
 	}
 	
@@ -191,17 +192,15 @@ public class OutputFileSelector {
 		else {
 			outputDir = parent;
 		}
-		if (!outputDir.exists()) {
-			FileUtils.forceMkdir(outputDir);
-		}
 		
 		File file = new File(outputDir, _printFileName);	
+		FileUtils.forceMkdir(file.getParentFile());
 		
 		_printStream = new PrintStream(file, OUTPUT_FILE_ENCODING);
 	}
 	
 	private void closeExistingPrintStream() {
-		if (_printStream != null) {
+		if (_printStream != null && _printStream != System.out && _printStream != System.err) {
 			IOUtils.closeQuietly(_printStream);
 		}
 	}

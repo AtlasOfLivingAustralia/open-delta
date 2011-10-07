@@ -53,6 +53,27 @@ public class RTFUtils {
 	    escapedRTF = escapedRTF.replace("}", "\\}");
 	    return escapedRTF;
 	}
+	
+	/**
+	 * Converts RTF formatted text into the html equivalent.
+	 * @param rtf the RTF text to convert.
+	 * @return the text with RTF control words replaced with the equivalent
+	 * HTML.
+	 */
+	public static String rtfToHtml(String rtf) {
+		RtfToHtmlConverter converter = new RtfToHtmlConverter();
+		
+		RTFReader reader = new RTFReader(rtf, converter);
+		try {
+			reader.parse();
+		} catch (Exception ex) {
+			// throw new RuntimeException(ex);
+			// Ignore, and return the original text
+			return rtf;
+		}
+		return converter.getText();
+		
+	}
 
 }
 
