@@ -4,6 +4,7 @@ import java.io.StringReader;
 import java.text.ParseException;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.directives.AbstractStreamParser;
@@ -19,6 +20,7 @@ public class Formatter {
 
     protected boolean _stripFormatting;
     protected boolean _capitaliseFirstWord;
+    protected boolean _rtfToHtml;
 
     protected CommentStrippingMode _commentStrippingMode;
     protected AngleBracketHandlingMode _angleBracketHandlingMode;
@@ -32,12 +34,27 @@ public class Formatter {
     };
 
     public Formatter(CommentStrippingMode commentStrippingMode, AngleBracketHandlingMode angleBracketHandlingMode, boolean stripFormatting, boolean capitaliseFirstWord) {
+        this(commentStrippingMode, angleBracketHandlingMode, stripFormatting, capitaliseFirstWord, false);
+    }
+    
+    public Formatter(CommentStrippingMode commentStrippingMode, AngleBracketHandlingMode angleBracketHandlingMode, boolean stripFormatting, boolean capitaliseFirstWord, boolean rtfToHtml) {
         _commentStrippingMode = commentStrippingMode;
         _angleBracketHandlingMode = angleBracketHandlingMode;
         _stripFormatting = stripFormatting;
         _capitaliseFirstWord = capitaliseFirstWord;
+        _rtfToHtml = rtfToHtml;
     }
 
+    /**
+     * If this is true, any RTF formatting will be converted to HTML 
+     * equivalent and html formatting (e.g. comments <>) will be escaped.
+     * @param rtfToHtml true if rtf should be converted to html during the
+     * formatting operation.
+     */
+    public void setRtfToHtml(boolean rtfToHtml) {
+    	_rtfToHtml = rtfToHtml;
+    }
+    
     /**
      * Formats the supplied text according to how this Formatter was configured
      * on construction.
@@ -51,7 +68,7 @@ public class Formatter {
     }
     
     public String defaultFormat(String text, boolean newLinesToSpace) {
-        return defaultFormat(text, _commentStrippingMode, _angleBracketHandlingMode, _stripFormatting, _capitaliseFirstWord, newLinesToSpace);
+        return defaultFormat(text, _commentStrippingMode, _angleBracketHandlingMode, _stripFormatting, _capitaliseFirstWord, newLinesToSpace, _rtfToHtml);
     }
 
     public String defaultFormat(String text, CommentStrippingMode commentStrippingMode, AngleBracketHandlingMode angleBracketHandlingMode, boolean stripFormatting, boolean capitaliseFirstWord) {
@@ -59,6 +76,10 @@ public class Formatter {
     }
     
     public String defaultFormat(String text, CommentStrippingMode commentStrippingMode, AngleBracketHandlingMode angleBracketHandlingMode, boolean stripFormatting, boolean capitaliseFirstWord, boolean newLinesToSpace) {
+    	return defaultFormat(text, commentStrippingMode, angleBracketHandlingMode, stripFormatting, capitaliseFirstWord, newLinesToSpace, _rtfToHtml);   
+    }
+        
+    public String defaultFormat(String text, CommentStrippingMode commentStrippingMode, AngleBracketHandlingMode angleBracketHandlingMode, boolean stripFormatting, boolean capitaliseFirstWord, boolean newLinesToSpace, boolean rtfToHtml) {
         if (StringUtils.isEmpty(text)) {
             return "";
         }
@@ -79,6 +100,11 @@ public class Formatter {
 
         if (capitaliseFirstWord) {
             text = Utils.capitaliseFirstWord(text);
+        }
+        
+        if (rtfToHtml) {
+        	text = StringEscapeUtils.escapeHtml(text);
+        	text = RTFUtils.rtfToHtml(text);
         }
 
         return text;

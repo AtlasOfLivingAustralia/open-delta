@@ -25,15 +25,19 @@ public class FormatterFactory {
 	}
 	
 	public ItemFormatter createItemFormatter(NaturalLanguageTypeSetter typeSetter, CommentStrippingMode mode) {
+		ItemFormatter formatter = null;
 		if (_context.isOmitTypeSettingMarks()) {
-			return new ItemFormatter(false, mode, AngleBracketHandlingMode.RETAIN, true, false, false);
+			formatter = new ItemFormatter(false, mode, AngleBracketHandlingMode.RETAIN, true, false, false);
 		}
 		else if (typeSetter == null) {
-			return new ItemFormatter(false, mode, AngleBracketHandlingMode.RETAIN, false, false, false);
+			formatter = new ItemFormatter(false, mode, AngleBracketHandlingMode.RETAIN, false, false, false);
 		}
 		else {
-			return new TypeSettingItemFormatter(typeSetter);
+			formatter = new TypeSettingItemFormatter(typeSetter);
 		}
+		formatter.setRtfToHtml(_context.getOutputHtml());
+			
+		return formatter;
 	}
 	
 	public CharacterFormatter createCharacterFormatter() {
@@ -51,16 +55,22 @@ public class FormatterFactory {
 	}
 	
 	public CharacterFormatter createCharacterFormatter(boolean includeNumber, boolean capitaliseFirst, CommentStrippingMode mode) {
-		return new CharacterFormatter(includeNumber, mode, AngleBracketHandlingMode.RETAIN, _context.isOmitTypeSettingMarks(), capitaliseFirst);
+		CharacterFormatter formatter =  new CharacterFormatter(includeNumber, mode, AngleBracketHandlingMode.RETAIN, _context.isOmitTypeSettingMarks(), capitaliseFirst);
+		formatter.setRtfToHtml(_context.getOutputHtml());
 		
+		return formatter;
 	}
 	
 	public AttributeFormatter createAttributeFormatter() {
+		AttributeFormatter formatter = null;
 		if (_context.isOmitTypeSettingMarks()) {
-			return new AttributeFormatter(false, true, CommentStrippingMode.RETAIN);
+			formatter = new AttributeFormatter(false, true, CommentStrippingMode.RETAIN);
 		}
 		else {
-			return new TypeSettingAttributeFormatter();
+			formatter = new TypeSettingAttributeFormatter();
 		}
+		formatter.setRtfToHtml(_context.getOutputHtml());
+		
+		return formatter;
 	}
 }

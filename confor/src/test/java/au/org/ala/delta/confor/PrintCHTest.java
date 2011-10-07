@@ -36,6 +36,12 @@ public class PrintCHTest extends ConforTestCase {
 		if (!System.getProperty("line.separator").equals(expectedLineSeparator)) {
 			expected = expected.replaceAll(expectedLineSeparator, System.getProperty("line.separator"));
 		}
+		
+		// This is because StringEscapeUtils.escapeHtml has already done the
+		// character conversion for left and right quotes.
+		actual = actual.replace("&lsquo", "&#145");
+		actual = actual.replace("&rsquo", "&#146");
+		
 		// The heading contains the date so will be different.
 		
 		for (int i=0; i<expected.length(); i++) {

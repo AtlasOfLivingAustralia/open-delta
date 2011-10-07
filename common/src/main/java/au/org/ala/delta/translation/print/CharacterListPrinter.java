@@ -4,8 +4,6 @@ import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.model.Character;
-import au.org.ala.delta.model.MultiStateCharacter;
-import au.org.ala.delta.model.NumericCharacter;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.translation.Printer;
 import au.org.ala.delta.translation.delta.DeltaFormatTranslator;
@@ -15,12 +13,11 @@ import au.org.ala.delta.translation.delta.DeltaFormatTranslator;
  */
 public class CharacterListPrinter extends DeltaFormatTranslator implements PrintAction {
 	
-	private CharacterListTypeSetter _typeSetter;
+	
 	
 	public CharacterListPrinter(
 			DeltaContext context, Printer printer, CharacterFormatter characterFormatter, CharacterListTypeSetter typeSetter) {
-		super(context, printer, null, characterFormatter);
-		_typeSetter = typeSetter;
+		super(context, printer, null, characterFormatter, typeSetter);
 	}
 		
 	@Override
@@ -29,13 +26,13 @@ public class CharacterListPrinter extends DeltaFormatTranslator implements Print
 	}
 	
 	@Override
-	public void print() {
-		translateCharacters();
+	public void beforeFirstCharacter() {
+		_typeSetter.beforeFirstCharacter();
 	}
 	
 	@Override
-	public void beforeFirstCharacter() {
-		_typeSetter.beforeFirstCharacter();
+	public void print() {
+		translateCharacters();
 	}
 
 	@Override
@@ -68,22 +65,5 @@ public class CharacterListPrinter extends DeltaFormatTranslator implements Print
 		}
 		_printer.writeBlankLines(1, 0);
 	}
-	
-	@Override
-	protected void outputState(MultiStateCharacter character, int stateNumber) {
-		_typeSetter.beforeStateDescription();
-		super.outputState(character, stateNumber);
-	}
-
-	@Override
-	protected void outputUnits(NumericCharacter<? extends Number> character) {
-		if (character.hasUnits()) {
-			_typeSetter.beforeStateDescription();
-		
-			super.outputUnits(character);
-		}
-	}
-	
-	
 	
 }

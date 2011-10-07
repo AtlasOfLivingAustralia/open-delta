@@ -48,6 +48,7 @@ public class FormattedTypeSetter extends PlainTextTypeSetter {
 
 	@Override
 	public void beforeStateDescription() {
+		_printer.setIndent(0);
 		writeTypeSettingMark(MarkPosition.BEFORE_STATE_DESCRIPTION);
 	}
 

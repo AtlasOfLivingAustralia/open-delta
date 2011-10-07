@@ -28,6 +28,17 @@ public class RTFUtilsTest extends TestCase {
 		
 		String expected = "<I>Ornithospermum</I> Dumoulin, <I>Tema</I> Adans.";
 		assertEquals(expected, result);
+		
+		text = "First paragraph \\par{} Second paragraph";
+	    result = RTFUtils.rtfToHtml(text);
+		expected = "First paragraph <P> Second paragraph";
+		assertEquals(expected, result);
+		
+		
+		text = "\\sub{}Test\\nosupersub{}";
+		result = RTFUtils.rtfToHtml(text);
+		expected = "<SUB>Test</SUB>";
+		assertEquals(expected, result);
 	}
 
 }

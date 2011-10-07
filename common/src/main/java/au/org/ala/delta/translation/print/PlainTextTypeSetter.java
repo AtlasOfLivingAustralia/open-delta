@@ -12,13 +12,12 @@ public class PlainTextTypeSetter implements CharacterListTypeSetter {
 
 	@Override
 	public void beforeCharacterOrHeading() {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void beforeFirstCharacter() {
-		
+		_printer.setLineWrapIndent(10);
 	}
 
 	@Override
@@ -33,25 +32,21 @@ public class PlainTextTypeSetter implements CharacterListTypeSetter {
 
 	@Override
 	public void beforeCharacter() {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void beforeStateDescription() {
-		// TODO Auto-generated method stub
-		
+		_printer.setIndent(7);
 	}
 
 	@Override
 	public void beforeCharacterNotes() {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void afterCharacterList() {
-		// TODO Auto-generated method stub
 		
 	}
 

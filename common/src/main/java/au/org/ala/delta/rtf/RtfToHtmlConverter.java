@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
+
 
 /**
  * Converts RTF formatting to the HTML equivalent.
@@ -20,7 +22,7 @@ public class RtfToHtmlConverter implements RTFHandler {
     private static final String[] RTF_KEYWORDS = {
     		 "~", "_", "-", "'", 
     		 "ldblquote", "rdblquote", "lquote", "rquote", 
-    		 "endash", "emdash", "line",
+    		 "endash", "emdash", "line", "par", "nosupersub"
     };
     
     private static final String[] HTML_CHARACTER_ATTRIBUTE_SUBSTITUTIONS = {
@@ -28,12 +30,14 @@ public class RtfToHtmlConverter implements RTFHandler {
     };
     
     private static final String[] HTML_KEYWORD_SUBSTITUTIONS = {
-    		"&nbsp;", "-", "", "", "", 
+    		"&nbsp;", "-", "", "",  
     		"&#145;", "&#146;", "&#145;", "&#146;", 
-    		"&#150;", "&#151;", "<BR>"
+    		"&#150;", "&#151;", "<BR>", "<P>", ""
     };
 	
 	private StringBuilder _buffer;
+	private boolean _inSub = false;
+	private boolean _inSup = false;
 	
 	public RtfToHtmlConverter() {
 		
@@ -55,7 +59,12 @@ public class RtfToHtmlConverter implements RTFHandler {
 
 	@Override
 	public void onKeyword(String keyword, boolean hasParam, int param) {
-		_buffer.append(_rtfToHtml.get(keyword));
+		
+		String html = _rtfToHtml.get(keyword);
+		if (StringUtils.isNotBlank(html)) {
+			_buffer.append(html);
+		}
+		
 	}
 
 	@Override
@@ -98,8 +107,28 @@ public class RtfToHtmlConverter implements RTFHandler {
 	}
 	
 	private void attributeStart(String keyword) {
-		String html = _rtfToHtml.get(keyword);
-		_buffer.append("<").append(html).append(">");
+		if ("nosupersub".equals(keyword)) {
+			
+			if (_inSub) {
+				attributeEnd("sub");
+			}
+			if (_inSup) {
+				attributeEnd("super");
+			}
+			_inSub = false;
+			_inSup = false;
+			
+		}
+		else {
+		    if ("sub".equals(keyword)) {
+			_inSub = true;
+		    }
+			else if ("super".equals(keyword)) {
+				_inSup = true;
+			}
+			String html = _rtfToHtml.get(keyword);
+			_buffer.append("<").append(html).append(">");
+		}
 	}
 	
 	private void attributeEnd(String keyword) {
@@ -113,6 +142,6 @@ public class RtfToHtmlConverter implements RTFHandler {
 
 	@Override
 	public void endParagraph() {
-		_buffer.append("<p/>");
+		
 	}
 }

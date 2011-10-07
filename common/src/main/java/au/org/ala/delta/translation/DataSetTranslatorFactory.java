@@ -100,7 +100,8 @@ public class DataSetTranslatorFactory {
 			DeltaContext context, Printer printer, FormatterFactory formatterFactory) {
 		ItemFormatter itemFormatter  = formatterFactory.createItemFormatter(null);
 		CharacterFormatter charFormatter = formatterFactory.createCharacterFormatter();
-		return new DeltaFormatTranslator(context, printer, itemFormatter, charFormatter);
+		CharacterListTypeSetter typeSetter = new au.org.ala.delta.translation.print.PlainTextTypeSetter(printer);
+		return new DeltaFormatTranslator(context, printer, itemFormatter, charFormatter, typeSetter);
 	}
 	
 	/**

@@ -17,6 +17,7 @@ import au.org.ala.delta.translation.Printer;
 import au.org.ala.delta.translation.attribute.AttributeParser;
 import au.org.ala.delta.translation.attribute.CommentedValueList;
 import au.org.ala.delta.translation.attribute.CommentedValueList.Values;
+import au.org.ala.delta.translation.print.CharacterListTypeSetter;
 import au.org.ala.delta.util.Utils;
 
 /**
@@ -30,12 +31,14 @@ public class DeltaFormatTranslator extends AbstractDataSetTranslator {
 	protected ItemFormatter _itemFormatter;
 	protected CharacterFormatter _characterFormatter;
 	protected AttributeParser _parser;
+	protected CharacterListTypeSetter _typeSetter;
 	
 	public DeltaFormatTranslator(
 			DeltaContext context, 
 			Printer printer, 
 			ItemFormatter itemFormatter,
-			CharacterFormatter characterFormatter) {
+			CharacterFormatter characterFormatter,
+			CharacterListTypeSetter typeSetter) {
 		super(context, new DeltaFormatDataSetFilter(context));
 		
 		_printer = printer;
@@ -43,6 +46,7 @@ public class DeltaFormatTranslator extends AbstractDataSetTranslator {
 		_itemFormatter = itemFormatter;
 		_characterFormatter = characterFormatter;
 		 _parser = new AttributeParser();
+		 _typeSetter = typeSetter;
 	}
 	
 	@Override
@@ -132,6 +136,7 @@ public class DeltaFormatTranslator extends AbstractDataSetTranslator {
 	
 	@Override
 	public void beforeFirstCharacter() {
+		_typeSetter.beforeFirstCharacter();
 		outputLine("*CHARACTER LIST");
 	}
 
@@ -170,18 +175,19 @@ public class DeltaFormatTranslator extends AbstractDataSetTranslator {
 	
 	protected void outputUnits(NumericCharacter<? extends Number> character) {
 		if (character.hasUnits()) {
-			_printer.setIndent(7);
+			_typeSetter.beforeStateDescription();
 			outputLine(_characterFormatter.formatUnits(character)+"/");
 		}
 	}
 	
 	protected void outputState(MultiStateCharacter character, int stateNumber) {
+		_typeSetter.beforeStateDescription();
 		outputLine(_characterFormatter.formatState(character, stateNumber)+"/");
 	}
 	
 	@Override
 	public void translateCharacters() {
-		_printer.setLineWrapIndent(10);
+		
 		super.translateCharacters();
 	}
 	
