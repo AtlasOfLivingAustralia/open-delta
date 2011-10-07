@@ -15,6 +15,7 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -70,6 +71,7 @@ import au.org.ala.delta.intkey.directives.DifferencesDirective;
 import au.org.ala.delta.intkey.directives.DirectivePopulator;
 import au.org.ala.delta.intkey.directives.DisplayCharacterOrderBestDirective;
 import au.org.ala.delta.intkey.directives.DisplayCharacterOrderNaturalDirective;
+import au.org.ala.delta.intkey.directives.DisplayCharacterOrderSeparateDirective;
 import au.org.ala.delta.intkey.directives.FileCharactersDirective;
 import au.org.ala.delta.intkey.directives.FileTaxaDirective;
 import au.org.ala.delta.intkey.directives.IncludeCharactersDirective;
@@ -122,6 +124,9 @@ import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.RealCharacter;
 import au.org.ala.delta.model.TextAttribute;
 import au.org.ala.delta.model.TextCharacter;
+import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
+import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
+import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.rtf.RTFBuilder;
 import au.org.ala.delta.rtf.RTFUtils;
@@ -189,6 +194,9 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     String bestCharactersCaption;
 
     @Resource
+    String separateCharactersCaption;
+
+    @Resource
     String usedCharactersCaption;
 
     @Resource
@@ -228,7 +236,16 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     String logDialogTitle;
 
     @Resource
+    String errorDlgTitle;
+
+    @Resource
+    String informationDlgTitle;
+
+    @Resource
     String badlyFormedRTFContentMessage;
+
+    @Resource
+    String separateInformationMessage;
 
     private JLabel _lblNumRemainingTaxa;
     private JLabel _lblEliminatedTaxa;
@@ -267,6 +284,8 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     private String _datasetInitFileToOpen = null;
 
+    private ItemFormatter _taxonformatter;
+
     /**
      * Calls Desktop.getDesktop on a background thread as it's slow to
      * initialise
@@ -298,6 +317,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         mainFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         mainFrame.setIconImages(IconHelper.getRedIconList());
 
+        _taxonformatter = new ItemFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.REMOVE, true, false, true);
         _context = new IntkeyContext(this, this);
 
         _advancedModeOnlyDynamicButtons = new ArrayList<JButton>();
@@ -404,7 +424,6 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
         _btnSeparate = new JButton();
         _btnSeparate.setAction(actionMap.get("btnSeparate"));
-        _btnSeparate.setEnabled(false);
         _btnSeparate.setVisible(_advancedMode);
         _btnSeparate.setPreferredSize(new Dimension(30, 30));
         _pnlAvailableCharactersButtons.add(_btnSeparate);
@@ -990,6 +1009,15 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     @Action
     public void btnSeparate() {
+        Object[] selectedRemainingTaxa = _listRemainingTaxa.getSelectedValues();
+        if (selectedRemainingTaxa.length != 1) {
+            displayInformationMessage(separateInformationMessage);
+            return;
+        }
+
+        Item selectedTaxon = (Item) selectedRemainingTaxa[0];
+
+        executeDirective(new DisplayCharacterOrderSeparateDirective(), Integer.toString(selectedTaxon.getItemNumber()));
     }
 
     @Action
@@ -1129,9 +1157,16 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         switch (charOrder) {
 
         case BEST:
-            LinkedHashMap<Character, Double> bestCharactersMap = _context.getBestCharacters();
+        case SEPARATE:
+            LinkedHashMap<Character, Double> bestCharactersMap = _context.getBestOrSeparateCharacters();
             if (bestCharactersMap != null) {
-                _lblNumAvailableCharacters.setText(String.format(bestCharactersCaption, bestCharactersMap.keySet().size()));
+                if (charOrder == IntkeyCharacterOrder.BEST) {
+                    _lblNumAvailableCharacters.setText(String.format(bestCharactersCaption, bestCharactersMap.keySet().size()));
+                } else {
+                    Item taxonToSeparate = _context.getDataset().getTaxon(_context.getTaxonToSeparate());
+                    String formattedTaxonName = _taxonformatter.formatItemDescription(taxonToSeparate);
+                    _lblNumAvailableCharacters.setText(MessageFormat.format(separateCharactersCaption, formattedTaxonName, bestCharactersMap.keySet().size()));
+                }
                 if (bestCharactersMap.isEmpty()) {
                     handleNoAvailableCharacters();
                     return;
@@ -1200,8 +1235,6 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
                 _listAvailableCharacters.setModel(_availableCharacterListModel);
             }
             break;
-        case SEPARATE:
-            throw new NotImplementedException();
         default:
             throw new RuntimeException("Unrecognized character order");
         }
@@ -1262,7 +1295,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
         @Override
         protected Void doInBackground() throws Exception {
-            _context.calculateBestCharacters();
+            _context.calculateBestOrSeparateCharacters();
             return null;
         }
 
@@ -1287,7 +1320,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         for (CharacterValue chVal : usedCharacterValues) {
             _usedCharacterListModel.addElement(chVal);
         }
-        _usedCharactersListCellRenderer = new AttributeCellRenderer();
+        _usedCharactersListCellRenderer = new AttributeCellRenderer(_context.displayNumbering(), _context.getDataset().getOrWord());
         _listUsedCharacters.setCellRenderer(_usedCharactersListCellRenderer);
         _listUsedCharacters.setModel(_usedCharacterListModel);
 
@@ -1405,7 +1438,10 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
                     _lblNumAvailableCharacters.setText(String.format(bestCharactersCaption, 0));
                     break;
                 case SEPARATE:
-                    throw new NotImplementedException();
+                    Item taxonToSeparate = _context.getDataset().getTaxon(_context.getTaxonToSeparate());
+                    String formattedTaxonName = _taxonformatter.formatItemDescription(taxonToSeparate);
+                    _lblNumAvailableCharacters.setText(MessageFormat.format(separateCharactersCaption, formattedTaxonName, 0));
+                    break;
                 default:
                     throw new RuntimeException("Unrecognized character order");
                 }
@@ -1483,13 +1519,12 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     @Override
     public void displayErrorMessage(String message) {
-        JOptionPane.showMessageDialog(getMainFrame(), message, "Error", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(getMainFrame(), message, errorDlgTitle, JOptionPane.ERROR_MESSAGE);
     }
 
     @Override
-    public void displayWarningMessage(String message) {
-        // TODO Auto-generated method stub
-
+    public void displayInformationMessage(String message) {
+        JOptionPane.showMessageDialog(getMainFrame(), message, informationDlgTitle, JOptionPane.INFORMATION_MESSAGE);
     }
 
     @Override
@@ -2061,7 +2096,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             availableCharacters = _context.getAvailableCharacters();
             break;
         case BEST:
-            availableCharacters = new ArrayList<Character>(_context.getBestCharacters().keySet());
+            availableCharacters = new ArrayList<Character>(_context.getBestOrSeparateCharacters().keySet());
             break;
         case SEPARATE:
             throw new NotImplementedException();

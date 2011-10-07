@@ -230,7 +230,7 @@ public class SortingUtils {
                     continue;
                 }
 
-                taxonToSeparateStatePresence = foo(attr, totalNumStates).getFirst();
+                taxonToSeparateStatePresence = getStatePresenceForAttribute(attr, totalNumStates, orderingType, context.getDiagType()).getFirst();
             }
 
             for (Attribute attr : charAttributes) {
@@ -242,7 +242,7 @@ public class SortingUtils {
                     continue;
                 }
 
-                Pair<boolean[], Integer> statePresencePair = foo(attr, totalNumStates);
+                Pair<boolean[], Integer> statePresencePair = getStatePresenceForAttribute(attr, totalNumStates, orderingType, context.getDiagType());
 
                 boolean[] statePresence = statePresencePair.getFirst();
                 int numStatesPresent = statePresencePair.getSecond();
@@ -468,7 +468,10 @@ public class SortingUtils {
         return numStatesPresent;
     }
 
-    private static Pair<boolean[], Integer> foo(Attribute attr, int totalNumStates) {
+    // Returns an array of booleans indicating the presence/absence of states for the supplied attribute. Also returns the number of present states.
+    // For integer attributes, each value between the maximum and minimum is treated as a state.
+    // Real attributes are converted to multistate representations using the key state boundaries
+    private static Pair<boolean[], Integer> getStatePresenceForAttribute(Attribute attr, int totalNumStates, OrderingType orderingType, DiagType diagType) {
         Character ch = attr.getCharacter();
 
         // has a boolean value for each character state. A true value
@@ -480,10 +483,13 @@ public class SortingUtils {
 
         // determine which character states are present for the
         // attribute.
-        if (attr.isUnknown()) {//TODO "or inapplicable" is not always ignored for SEPARATE. See "fetdat" in old best.cpp || attr.isInapplicable()) {
-            // Treat attribute unknown or inapplicable as variable
-            // (isUnknown is always true when attribute is
-            // inapplicable)
+
+        if (attr.isUnknown()) {
+            // treat attribute as variable
+            Arrays.fill(statePresence, true);
+            numStatesPresent = totalNumStates;
+        } else if (attr.isInapplicable() && (orderingType == OrderingType.SEPARATE || (orderingType == OrderingType.DIAGNOSE && diagType == DiagType.SPECIMENS))) {
+            // treat attribute as variable
             Arrays.fill(statePresence, true);
             numStatesPresent = totalNumStates;
         } else {

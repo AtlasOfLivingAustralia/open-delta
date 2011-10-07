@@ -18,7 +18,7 @@ public class SetRBaseDirectiveInvocation extends IntkeyDirectiveInvocation {
             // itself,
             // calculating the best
             // characters in the process
-            context.clearBestCharacters();
+            context.clearBestOrSeparateCharacters();
             context.getUI().handleUpdateAll();
         } else {
             context.getUI().displayErrorMessage("Value out of range. A valid value is a real number in the range 1-5.");

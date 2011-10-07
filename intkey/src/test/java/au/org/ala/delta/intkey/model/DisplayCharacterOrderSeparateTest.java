@@ -1,13 +1,10 @@
 package au.org.ala.delta.intkey.model;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
 
+import au.org.ala.delta.intkey.directives.UseDirective;
 import au.org.ala.delta.model.Character;
 
 public class DisplayCharacterOrderSeparateTest extends IntkeyDatasetTestCase {
@@ -15,6 +12,8 @@ public class DisplayCharacterOrderSeparateTest extends IntkeyDatasetTestCase {
     @Test
     public void testSeparate() throws Exception {
         IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
+        
+        new UseDirective().parseAndProcess(context, "11,1");
 
         Map<Character, Double> bestMap = SortingUtils.orderSeparate(context, context.getDataset().getTaxon(1));
 
@@ -50,18 +49,18 @@ public class DisplayCharacterOrderSeparateTest extends IntkeyDatasetTestCase {
 //        }
     }
     
-    @Test
-    public void testSeparate2() throws Exception {
-        IntkeyContext context = loadDataset("/dataset/controlling_characters_simple/intkey.ink");
-
-        Map<Character, Double> bestMap = SortingUtils.orderSeparate(context, context.getDataset().getTaxon(1));
-
-        //List<Character> bestChars = new ArrayList<Character>(bestMap.keySet());
-
-        for (Character ch: bestMap.keySet()) {
-            double sepPower = bestMap.get(ch);
-            System.out.println(String.format("%.2f %s %s", sepPower, ch.getCharacterId(), ch.getDescription()));
-        }
-
-    }
+//    @Test
+//    public void testSeparate2() throws Exception {
+//        IntkeyContext context = loadDataset("/dataset/controlling_characters_simple/intkey.ink");
+//
+//        Map<Character, Double> bestMap = SortingUtils.orderSeparate(context, context.getDataset().getTaxon(1));
+//
+//        //List<Character> bestChars = new ArrayList<Character>(bestMap.keySet());
+//
+//        for (Character ch: bestMap.keySet()) {
+//            double sepPower = bestMap.get(ch);
+//            System.out.println(String.format("%.2f %s %s", sepPower, ch.getCharacterId(), ch.getDescription()));
+//        }
+//
+//    }
 }

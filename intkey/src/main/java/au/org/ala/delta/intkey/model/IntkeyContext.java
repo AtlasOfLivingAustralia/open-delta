@@ -102,7 +102,10 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     private IntkeyCharacterOrder _characterOrder;
 
-    private LinkedHashMap<Character, Double> _bestCharacters;
+    // The taxon to be separated when using the SEPARATE character order.
+    private int _taxonToSeparate;
+
+    private LinkedHashMap<Character, Double> _bestOrSeparateCharacters;
 
     private Set<Integer> _includedCharacters;
     private Set<Integer> _includedTaxa;
@@ -221,7 +224,8 @@ public class IntkeyContext extends AbstractDeltaContext {
         _diagLevel = 1;
 
         _characterOrder = IntkeyCharacterOrder.BEST;
-        _bestCharacters = null;
+        _taxonToSeparate = -1;
+        _bestOrSeparateCharacters = null;
 
         _imagePathLocations = new ArrayList<String>();
         _infoPathLocations = new ArrayList<String>();
@@ -497,7 +501,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         // the specimen has been updated so the currently cached best characters
         // are no longer
         // valid
-        _bestCharacters = null;
+        _bestOrSeparateCharacters = null;
 
         // if the autotolerance (as specified by SET AUTOTOLERANCE directive) is
         // on,
@@ -775,7 +779,7 @@ public class IntkeyContext extends AbstractDeltaContext {
 
             // As we are starting from the beginning, best characters must be
             // cleared as they are no longer valid
-            _bestCharacters = null;
+            _bestOrSeparateCharacters = null;
 
             _appUI.handleIdentificationRestarted();
         }
@@ -915,41 +919,65 @@ public class IntkeyContext extends AbstractDeltaContext {
         return _characterOrder;
     }
 
-    /**
-     * Set the character order used to list available characters in the
-     * application
-     * 
-     * @param characterOrder
-     *            the new character order
-     */
-    public void setCharacterOrder(IntkeyCharacterOrder characterOrder) {
-        this._characterOrder = characterOrder;
+    public void setCharacterOrderBest() {
+        this._characterOrder = IntkeyCharacterOrder.BEST;
+        this._taxonToSeparate = -1;
+        _bestOrSeparateCharacters = null;
         if (_dataset != null) {
             _appUI.handleUpdateAll();
         }
     }
 
+    public void setCharacterOrderNatural() {
+        this._characterOrder = IntkeyCharacterOrder.NATURAL;
+        this._taxonToSeparate = -1;
+        if (_dataset != null) {
+            _appUI.handleUpdateAll();
+        }
+    }
+
+    public void setCharacterOrderSeparate(int taxonToSeparate) {
+        this._characterOrder = IntkeyCharacterOrder.SEPARATE;
+        this._taxonToSeparate = taxonToSeparate;
+        _bestOrSeparateCharacters = null;
+        if (_dataset != null) {
+            _appUI.handleUpdateAll();
+        }
+    }
+
+    public int getTaxonToSeparate() {
+        return _taxonToSeparate;
+    }
+
+    public void setTaxonToSeparate(int taxonToSeparate) {
+        this._taxonToSeparate = taxonToSeparate;
+    }
+
     /**
      * @return The current best characters if they are cached
      */
-    public LinkedHashMap<Character, Double> getBestCharacters() {
-        return _bestCharacters;
+    public LinkedHashMap<Character, Double> getBestOrSeparateCharacters() {
+        return _bestOrSeparateCharacters;
     }
-    
+
     /**
-     * Clear the cached best characters. Used to force the UI to recalculate the best characters
-     * next time it needs them
+     * Clear the cached best characters. Used to force the UI to recalculate the
+     * best characters next time it needs them
      */
-    public void clearBestCharacters() {
-        _bestCharacters = null;
+    public void clearBestOrSeparateCharacters() {
+        _bestOrSeparateCharacters = null;
     }
 
     /**
      * Calculates the best characters using the BEST algorithm. This method will
      * block the calling thread while the calculation is performed
      */
-    public void calculateBestCharacters() {
-        _bestCharacters = SortingUtils.orderBest(IntkeyContext.this);
+    public void calculateBestOrSeparateCharacters() {
+        if (_characterOrder == IntkeyCharacterOrder.BEST) {
+            _bestOrSeparateCharacters = SortingUtils.orderBest(IntkeyContext.this);
+        } else if (_characterOrder == IntkeyCharacterOrder.SEPARATE) {
+            _bestOrSeparateCharacters = SortingUtils.orderSeparate(this, _dataset.getTaxon(_taxonToSeparate));
+        }
     }
 
     public boolean getMatchInapplicables() {
@@ -1021,7 +1049,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         // best characters need to be recalculated to account for characters
         // that
         // have been included/excluded
-        _bestCharacters = null;
+        _bestOrSeparateCharacters = null;
 
         if (_dataset != null) {
             _appUI.handleUpdateAll();
@@ -1038,7 +1066,7 @@ public class IntkeyContext extends AbstractDeltaContext {
 
         // best characters need to be recalculated to account for taxa that
         // have been included/excluded
-        _bestCharacters = null;
+        _bestOrSeparateCharacters = null;
 
         if (_dataset != null) {
             _appUI.handleUpdateAll();
@@ -1210,7 +1238,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         _appUI.handleDatasetClosed();
 
     }
-    
+
     /**
      * Called prior to application shutdown.
      */
@@ -1327,11 +1355,11 @@ public class IntkeyContext extends AbstractDeltaContext {
     public void setDisplayUnknowns(boolean displayUnknowns) {
         this._displayUnknowns = displayUnknowns;
     }
-    
+
     public boolean displayComments() {
         return _displayComments;
     }
-    
+
     public void setDisplayComments(boolean displayComments) {
         this._displayComments = displayComments;
         _appUI.handleUpdateAll();

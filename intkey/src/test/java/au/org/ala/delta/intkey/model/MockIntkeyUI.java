@@ -42,7 +42,7 @@ public class MockIntkeyUI implements IntkeyUI {
     }
 
     @Override
-    public void displayWarningMessage(String message) {
+    public void displayInformationMessage(String message) {
         // do nothing
     }
 
