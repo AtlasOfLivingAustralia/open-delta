@@ -1,12 +1,12 @@
 package au.org.ala.delta.translation.print;
 
-import au.org.ala.delta.translation.Printer;
+import au.org.ala.delta.translation.PrintFile;
 
 public class PlainTextTypeSetter implements CharacterListTypeSetter {
 
-	protected Printer _printer;
+	protected PrintFile _printer;
 	
-	public PlainTextTypeSetter(Printer printer) {
+	public PlainTextTypeSetter(PrintFile printer) {
 		_printer = printer;
 	}
 

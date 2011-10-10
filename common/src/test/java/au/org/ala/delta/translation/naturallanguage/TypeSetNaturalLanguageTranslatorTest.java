@@ -17,7 +17,7 @@ import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.translation.FormattedTextTypeSetter;
-import au.org.ala.delta.translation.Printer;
+import au.org.ala.delta.translation.PrintFile;
 import au.org.ala.delta.translation.TypeSettingAttributeFormatter;
 import au.org.ala.delta.translation.TypeSettingItemFormatter;
 import au.org.ala.delta.translation.naturallanguage.NaturalLanguageTranslator;
@@ -34,7 +34,7 @@ public class TypeSetNaturalLanguageTranslatorTest extends NaturalLangaugeTransla
 
         _bytes = new ByteArrayOutputStream();
         PrintStream pout = new PrintStream(_bytes, false, "UTF-8");
-        _printer = new Printer(pout, 0);
+        _printer = new PrintFile(pout, 0);
         _context = new DeltaContext();
     }
 

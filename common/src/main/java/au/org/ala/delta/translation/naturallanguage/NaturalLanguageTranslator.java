@@ -19,7 +19,7 @@ import au.org.ala.delta.model.format.AttributeFormatter;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.translation.AbstractDataSetTranslator;
-import au.org.ala.delta.translation.Printer;
+import au.org.ala.delta.translation.PrintFile;
 import au.org.ala.delta.translation.NaturalLanguageTypeSetter;
 import au.org.ala.delta.translation.Words;
 import au.org.ala.delta.translation.Words.Word;
@@ -37,14 +37,14 @@ import au.org.ala.delta.translation.attribute.TextAttributeTranslator;
 public class NaturalLanguageTranslator extends AbstractDataSetTranslator {
 
     private DeltaContext _context;
-    private Printer _printer;
+    private PrintFile _printer;
     private DeltaDataSet _dataSet;
     private NaturalLanguageTypeSetter _typeSetter;
     private ItemFormatter _itemFormatter;
     private CharacterFormatter _characterFormatter;
     private AttributeFormatter _attributeFormatter;
 
-    public NaturalLanguageTranslator(DeltaContext context, NaturalLanguageTypeSetter typeSetter, Printer printer, ItemFormatter itemFormatter, CharacterFormatter characterFormatter,
+    public NaturalLanguageTranslator(DeltaContext context, NaturalLanguageTypeSetter typeSetter, PrintFile printer, ItemFormatter itemFormatter, CharacterFormatter characterFormatter,
             AttributeFormatter attributeFormatter) {
         super(context, new NaturalLanguageDataSetFilter(context));
         _context = context;

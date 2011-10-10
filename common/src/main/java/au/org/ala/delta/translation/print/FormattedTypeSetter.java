@@ -4,7 +4,7 @@ import java.util.Map;
 
 import au.org.ala.delta.model.TypeSettingMark;
 import au.org.ala.delta.model.TypeSettingMark.MarkPosition;
-import au.org.ala.delta.translation.Printer;
+import au.org.ala.delta.translation.PrintFile;
 
 /**
  * Inserts typesetting marks (specified using the TYPESETTING MARKS directive)
@@ -15,7 +15,7 @@ public class FormattedTypeSetter extends PlainTextTypeSetter {
 	/** The typesetting marks to use */
 	private Map<Integer, TypeSettingMark> _marks;
 	
-	public FormattedTypeSetter(Map<Integer, TypeSettingMark> typeSettingMarks, Printer printer) {
+	public FormattedTypeSetter(Map<Integer, TypeSettingMark> typeSettingMarks, PrintFile printer) {
 		super(printer);
 		_marks = typeSettingMarks;
 	}

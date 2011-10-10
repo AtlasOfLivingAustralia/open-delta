@@ -8,7 +8,7 @@ import org.junit.Before;
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.translation.DataSetTranslator;
 import au.org.ala.delta.translation.DataSetTranslatorFactory;
-import au.org.ala.delta.translation.Printer;
+import au.org.ala.delta.translation.PrintFile;
 import au.org.ala.delta.translation.TranslatorTest;
 
 /**
@@ -19,7 +19,7 @@ public class DeltaFormatTranslatorTest extends TranslatorTest {
 	protected static final String DEFAULT_DATASET_PATH = "/dataset/sample/fillin";
 	
 	protected DataSetTranslator _dataSetTranslator;
-	protected Printer _printer;
+	protected PrintFile _printer;
 	protected DataSetTranslatorFactory _factory;
 	
 	@Before

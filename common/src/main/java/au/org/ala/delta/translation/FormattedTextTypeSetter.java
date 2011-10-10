@@ -18,9 +18,9 @@ import au.org.ala.delta.model.format.Formatter.CommentExtractor;
 public class FormattedTextTypeSetter extends PlainTextTypeSetter {
 
 	private Map<Integer, TypeSettingMark> _typeSettingMarks;
-	private Printer _printer;
+	private PrintFile _printer;
 	
-	public FormattedTextTypeSetter(Map<Integer, TypeSettingMark> typeSettingMarks, Printer typeSetter) {
+	public FormattedTextTypeSetter(Map<Integer, TypeSettingMark> typeSettingMarks, PrintFile typeSetter) {
 		super(typeSetter);
 		_printer = typeSetter;
 		_typeSettingMarks = typeSettingMarks;

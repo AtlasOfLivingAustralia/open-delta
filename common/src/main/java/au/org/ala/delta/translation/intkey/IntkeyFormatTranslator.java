@@ -6,7 +6,7 @@ import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.translation.AbstractDataSetTranslator;
-import au.org.ala.delta.translation.Printer;
+import au.org.ala.delta.translation.PrintFile;
 import au.org.ala.delta.translation.attribute.CommentedValueList.Values;
 import au.org.ala.delta.translation.delta.DeltaFormatDataSetFilter;
 
@@ -16,7 +16,7 @@ import au.org.ala.delta.translation.delta.DeltaFormatDataSetFilter;
  */
 public class IntkeyFormatTranslator extends AbstractDataSetTranslator {
 
-	public IntkeyFormatTranslator(DeltaContext context, Printer printer, ItemFormatter itemFormatter) {
+	public IntkeyFormatTranslator(DeltaContext context, PrintFile printer, ItemFormatter itemFormatter) {
 		super(context, new DeltaFormatDataSetFilter(context));
 	}
 	

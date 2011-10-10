@@ -27,7 +27,7 @@ public class DataSetTranslatorFactory {
 		return createTranslator(context, createPrinter(context));
 	}
 	
-	public DataSetTranslator createTranslator(DeltaContext context, Printer printer) {
+	public DataSetTranslator createTranslator(DeltaContext context, PrintFile printer) {
 		
 		DataSetTranslator translator = null;
 		TranslateType translation = context.getTranslateType();
@@ -85,7 +85,7 @@ public class DataSetTranslatorFactory {
 	}
 
 	private AbstractDataSetTranslator createNaturalLanguageTranslator(
-			DeltaContext context, Printer printer, FormatterFactory formatterFactory) {
+			DeltaContext context, PrintFile printer, FormatterFactory formatterFactory) {
 		AbstractDataSetTranslator translator;
 		NaturalLanguageTypeSetter typeSetter = new TypeSetterFactory().createTypeSetter(context, printer);
 		
@@ -97,7 +97,7 @@ public class DataSetTranslatorFactory {
 	}
 	
 	private AbstractDataSetTranslator createDeltaFormatTranslator(
-			DeltaContext context, Printer printer, FormatterFactory formatterFactory) {
+			DeltaContext context, PrintFile printer, FormatterFactory formatterFactory) {
 		ItemFormatter itemFormatter  = formatterFactory.createItemFormatter(null);
 		CharacterFormatter charFormatter = formatterFactory.createCharacterFormatter();
 		CharacterListTypeSetter typeSetter = new au.org.ala.delta.translation.print.PlainTextTypeSetter(printer);
@@ -109,10 +109,10 @@ public class DataSetTranslatorFactory {
 	 * @param context the context in which the translation will run.
 	 * @return a new Printer instance.
 	 */
-	private Printer createPrinter(DeltaContext context) {
+	private PrintFile createPrinter(DeltaContext context) {
 		int printWidth = context.getPrintWidth();
 		
-		return new Printer(context.getPrintStream(), printWidth);
+		return new PrintFile(context.getPrintStream(), printWidth);
 	}
 	
 	public PrintAction createPrintAction(DeltaContext context, PrintActionType printAction) {
@@ -129,7 +129,7 @@ public class DataSetTranslatorFactory {
 	
 	private PrintAction createCharacterListPrinter(DeltaContext context) {
 		FormatterFactory formatterFactory = new FormatterFactory(context);
-		Printer printer = createPrinter(context);
+		PrintFile printer = createPrinter(context);
 		CharacterFormatter charFormatter  = formatterFactory.createCharacterFormatter(true, true, CommentStrippingMode.RETAIN);
 		CharacterListTypeSetter typeSetter = new TypeSetterFactory().createCharacterListTypeSetter(context, printer);
 		

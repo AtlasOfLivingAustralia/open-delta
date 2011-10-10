@@ -10,7 +10,7 @@ import au.org.ala.delta.editor.slotfile.DirectiveInstance;
 import au.org.ala.delta.editor.slotfile.directive.DirectiveInOutState;
 import au.org.ala.delta.model.DefaultDataSetFactory;
 import au.org.ala.delta.model.DeltaDataSet;
-import au.org.ala.delta.translation.Printer;
+import au.org.ala.delta.translation.PrintFile;
 import junit.framework.TestCase;
 
 /**
@@ -36,7 +36,7 @@ public abstract class DirOutTest extends TestCase {
 		
 		_bytesOut = new ByteArrayOutputStream();
 		PrintStream out = new PrintStream(_bytesOut, true, "utf-8");	
-		Printer _printer = new Printer(out, 80);
+		PrintFile _printer = new PrintFile(out, 80);
 		_state = new DirectiveInOutState(_dataSet);
 		_state.setPrinter(_printer);
 		

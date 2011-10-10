@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
-import au.org.ala.delta.translation.Printer;
+import au.org.ala.delta.translation.PrintFile;
 import au.org.ala.delta.util.Pair;
 import au.org.ala.delta.util.Utils;
 
@@ -15,17 +15,17 @@ import au.org.ala.delta.util.Utils;
  */
 public class DeltaWriter {
 	
-	protected Printer _printer;
+	protected PrintFile _printer;
 	
 	public DeltaWriter() {
 		_printer = null;
 	}
 	
 	public DeltaWriter(StringBuilder buffer) {
-		_printer = new Printer(buffer);
+		_printer = new PrintFile(buffer);
 	}
 	
-	public DeltaWriter(Printer printer) {
+	public DeltaWriter(PrintFile printer) {
 		_printer = printer;
 	}
 	

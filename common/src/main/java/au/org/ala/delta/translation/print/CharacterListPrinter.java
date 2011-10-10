@@ -5,7 +5,7 @@ import org.apache.commons.lang.StringUtils;
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.format.CharacterFormatter;
-import au.org.ala.delta.translation.Printer;
+import au.org.ala.delta.translation.PrintFile;
 import au.org.ala.delta.translation.delta.DeltaFormatTranslator;
 
 /**
@@ -16,7 +16,7 @@ public class CharacterListPrinter extends DeltaFormatTranslator implements Print
 	
 	
 	public CharacterListPrinter(
-			DeltaContext context, Printer printer, CharacterFormatter characterFormatter, CharacterListTypeSetter typeSetter) {
+			DeltaContext context, PrintFile printer, CharacterFormatter characterFormatter, CharacterListTypeSetter typeSetter) {
 		super(context, printer, null, characterFormatter, typeSetter);
 	}
 		

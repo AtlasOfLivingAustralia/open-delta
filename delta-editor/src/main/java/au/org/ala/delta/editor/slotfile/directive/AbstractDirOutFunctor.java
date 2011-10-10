@@ -2,7 +2,7 @@ package au.org.ala.delta.editor.slotfile.directive;
 
 import au.org.ala.delta.editor.slotfile.Directive;
 import au.org.ala.delta.editor.slotfile.DirectiveInstance;
-import au.org.ala.delta.translation.Printer;
+import au.org.ala.delta.translation.PrintFile;
 import au.org.ala.delta.translation.delta.DeltaWriter;
 
 /**
@@ -54,7 +54,7 @@ public abstract class AbstractDirOutFunctor implements DirectiveFunctor {
 	 * DirectiveInOutState.
 	 */
 	protected void writeLine(DirectiveInOutState state, String text) {
-		Printer printer = state.getPrinter();
+		PrintFile printer = state.getPrinter();
 		printer.writeJustifiedText(text, -1);
 		printer.printBufferLine();
 	}

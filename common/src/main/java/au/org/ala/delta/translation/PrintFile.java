@@ -6,15 +6,14 @@ import java.io.PrintStream;
 
 import org.apache.commons.lang.StringUtils;
 
-import au.org.ala.delta.rtf.RTFUtils;
 import au.org.ala.delta.translation.Words.Word;
 import au.org.ala.delta.util.Utils;
 
 /**
- * The TypeSetter is responsible for formatting output produced by the
- * NaturalLanguageTranslator.
+ * The PrintFile is a wrapper around an output steam that provides some
+ * utility methods for line wrapping and formatting the output.
  */
-public class Printer {
+public class PrintFile {
 
     private int _printWidth = 80;
     private PrintStream _output;
@@ -28,7 +27,7 @@ public class Printer {
     private boolean _indentOnLineWrap;
     private boolean _softWrap;
 
-    public Printer(final StringBuilder buffer) {
+    public PrintFile(final StringBuilder buffer) {
 
         _output = new PrintStream(new OutputStream() {
             @Override
@@ -48,7 +47,7 @@ public class Printer {
      *            the position at which line wrapping should occur. a lineWidth
      *            of zero means no line wrapping.
      */
-    public Printer(PrintStream output, int lineWidth) {
+    public PrintFile(PrintStream output, int lineWidth) {
         _output = output;
         _printWidth = lineWidth;
         initialise();
@@ -279,22 +278,6 @@ public class Printer {
     enum TypeSetting {
         ADD_TYPESETTING_MARKS, DO_NOTHING, REMOVE_EXISTING_TYPESETTINGMARKS
     };
-
-    private TypeSetting _typeSettingMode = TypeSetting.DO_NOTHING;
-
-    public void writeJustifiedOutput(String text, int completionAction, boolean inHtmlRtf, boolean encodeXmlBrackets) {
-        if (_typeSettingMode == TypeSetting.REMOVE_EXISTING_TYPESETTINGMARKS) {
-            text = RTFUtils.stripFormatting(text);
-        } else if (_typeSettingMode == TypeSetting.ADD_TYPESETTING_MARKS) {
-            // Convert number ranges to use an en dash.
-
-            // replace < and > with &lt; and %gt;
-
-        }
-
-        writeJustifiedText(text, completionAction);
-
-    }
 
     private int bufferIndex() {
         return _outputBuffer.length() - 1;

@@ -13,7 +13,7 @@ import au.org.ala.delta.model.TextAttribute;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.translation.AbstractDataSetTranslator;
-import au.org.ala.delta.translation.Printer;
+import au.org.ala.delta.translation.PrintFile;
 import au.org.ala.delta.translation.attribute.AttributeParser;
 import au.org.ala.delta.translation.attribute.CommentedValueList;
 import au.org.ala.delta.translation.attribute.CommentedValueList.Values;
@@ -27,7 +27,7 @@ import au.org.ala.delta.util.Utils;
  */
 public class DeltaFormatTranslator extends AbstractDataSetTranslator {
 
-	protected Printer _printer;
+	protected PrintFile _printer;
 	protected ItemFormatter _itemFormatter;
 	protected CharacterFormatter _characterFormatter;
 	protected AttributeParser _parser;
@@ -35,7 +35,7 @@ public class DeltaFormatTranslator extends AbstractDataSetTranslator {
 	
 	public DeltaFormatTranslator(
 			DeltaContext context, 
-			Printer printer, 
+			PrintFile printer, 
 			ItemFormatter itemFormatter,
 			CharacterFormatter characterFormatter,
 			CharacterListTypeSetter typeSetter) {

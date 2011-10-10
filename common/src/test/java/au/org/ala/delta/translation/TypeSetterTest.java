@@ -15,7 +15,7 @@ import org.junit.Test;
  */
 public class TypeSetterTest extends TestCase {
 	
-	private Printer _typeSetter;
+	private PrintFile _typeSetter;
 	private ByteArrayOutputStream _bytes;
 	private int _lineWidth = 80;
 	
@@ -24,7 +24,7 @@ public class TypeSetterTest extends TestCase {
 		
 		_bytes = new ByteArrayOutputStream();
 		PrintStream pout = new PrintStream(_bytes);
-		_typeSetter = new Printer(pout, _lineWidth);
+		_typeSetter = new PrintFile(pout, _lineWidth);
 	}
 	
 	

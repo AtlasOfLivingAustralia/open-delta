@@ -9,9 +9,9 @@ import au.org.ala.delta.model.Item;
  */
 public class PlainTextTypeSetter implements NaturalLanguageTypeSetter {
 
-	private Printer _printer;
+	private PrintFile _printer;
 	
-	public PlainTextTypeSetter(Printer typeSetter) {
+	public PlainTextTypeSetter(PrintFile typeSetter) {
 		_printer = typeSetter;
 	}
 
