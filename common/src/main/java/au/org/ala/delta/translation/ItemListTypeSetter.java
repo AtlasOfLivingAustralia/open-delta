@@ -6,7 +6,7 @@ import au.org.ala.delta.model.Item;
 /**
  * Typesets the translated output of a DELTA data set.  Handles formatting marks, paragraphs etc.
  */
-public interface NaturalLanguageTypeSetter {
+public interface ItemListTypeSetter {
 
 	public abstract void beforeFirstItem();
 

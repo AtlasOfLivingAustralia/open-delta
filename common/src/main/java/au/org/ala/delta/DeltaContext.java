@@ -52,7 +52,7 @@ public class DeltaContext extends AbstractDeltaContext {
 
 	public static enum HeadingType {HEADING, REGISTRATION_SUBHEADING};
 	public static enum OutputFormat {RTF, HTML, NONE};
-	public static enum PrintActionType {PRINT_CHARACTER_LIST, PRINT_ITEM_DESCRIPTIONS, PRINT_SUMMARY, PRINT_UNCODED_CHARACTERS, TRANSLATE_UNCODED_CHARACTERS};
+	public static enum PrintActionType {PRINT_CHARACTER_LIST, PRINT_ITEM_DESCRIPTIONS, PRINT_ITEM_NAMES, PRINT_SUMMARY, PRINT_UNCODED_CHARACTERS, TRANSLATE_UNCODED_CHARACTERS};
 	
 	private DeltaDataSet _dataSet;
 	private OutputFileSelector _outputFileSelector;

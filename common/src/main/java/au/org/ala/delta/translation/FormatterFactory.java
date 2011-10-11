@@ -20,17 +20,17 @@ public class FormatterFactory {
 		_context = context;
 	}
 	
-	public ItemFormatter createItemFormatter(NaturalLanguageTypeSetter typeSetter) {
-		return createItemFormatter(typeSetter, CommentStrippingMode.RETAIN);
+	public ItemFormatter createItemFormatter(ItemListTypeSetter typeSetter) {
+		return createItemFormatter(typeSetter, CommentStrippingMode.RETAIN, false);
 	}
 	
-	public ItemFormatter createItemFormatter(NaturalLanguageTypeSetter typeSetter, CommentStrippingMode mode) {
+	public ItemFormatter createItemFormatter(ItemListTypeSetter typeSetter, CommentStrippingMode mode, boolean includeNumber) {
 		ItemFormatter formatter = null;
 		if (_context.isOmitTypeSettingMarks()) {
-			formatter = new ItemFormatter(false, mode, AngleBracketHandlingMode.RETAIN, true, false, false);
+			formatter = new ItemFormatter(includeNumber, mode, AngleBracketHandlingMode.RETAIN, true, false, false);
 		}
 		else if (typeSetter == null) {
-			formatter = new ItemFormatter(false, mode, AngleBracketHandlingMode.RETAIN, false, false, false);
+			formatter = new ItemFormatter(includeNumber, mode, AngleBracketHandlingMode.RETAIN, false, false, false);
 		}
 		else {
 			formatter = new TypeSettingItemFormatter(typeSetter);

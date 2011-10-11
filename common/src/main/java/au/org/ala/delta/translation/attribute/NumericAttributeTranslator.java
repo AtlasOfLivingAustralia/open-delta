@@ -7,7 +7,7 @@ import au.org.ala.delta.model.format.AttributeFormatter;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
-import au.org.ala.delta.translation.NaturalLanguageTypeSetter;
+import au.org.ala.delta.translation.ItemListTypeSetter;
 import au.org.ala.delta.translation.attribute.CommentedValueList.Values;
 
 /**
@@ -23,12 +23,12 @@ public class NumericAttributeTranslator extends AttributeTranslator {
 	private CharacterFormatter _formatter;
 	
 	/** Knows how to type set a range symbol */
-	private NaturalLanguageTypeSetter _typeSetter;
+	private ItemListTypeSetter _typeSetter;
 	
 	/** Omit the space in between a numeric attribute and the units */
 	private boolean _omitSpaceBeforeUnits;
 	
-	public NumericAttributeTranslator(NumericCharacter<?> character, NaturalLanguageTypeSetter typeSetter, AttributeFormatter formatter, boolean omitSpaceBeforeUnits) {
+	public NumericAttributeTranslator(NumericCharacter<?> character, ItemListTypeSetter typeSetter, AttributeFormatter formatter, boolean omitSpaceBeforeUnits) {
 		super(formatter);
 		_character = character;
 		_formatter = new CharacterFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.RETAIN, true, false);

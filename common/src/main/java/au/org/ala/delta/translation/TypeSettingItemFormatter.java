@@ -7,9 +7,9 @@ import au.org.ala.delta.model.format.ItemFormatter;
  */
 public class TypeSettingItemFormatter extends ItemFormatter {
 
-	private NaturalLanguageTypeSetter _typeSetter;
+	private ItemListTypeSetter _typeSetter;
 	
-	public TypeSettingItemFormatter(NaturalLanguageTypeSetter typeSetter) {
+	public TypeSettingItemFormatter(ItemListTypeSetter typeSetter) {
 		super(false, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.RETAIN, false, false, false);
 		_typeSetter = typeSetter;
 	}

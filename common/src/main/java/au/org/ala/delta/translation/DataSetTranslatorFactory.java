@@ -15,6 +15,7 @@ import au.org.ala.delta.translation.key.KeyTranslator;
 import au.org.ala.delta.translation.naturallanguage.NaturalLanguageTranslator;
 import au.org.ala.delta.translation.print.CharacterListPrinter;
 import au.org.ala.delta.translation.print.CharacterListTypeSetter;
+import au.org.ala.delta.translation.print.ItemNamesPrinter;
 import au.org.ala.delta.translation.print.PrintAction;
 
 
@@ -67,7 +68,7 @@ public class DataSetTranslatorFactory {
 	}
 	
 	private DataSetTranslator createKeyFormatTranslator(DeltaContext context, FormatterFactory formatterFactory) {
-		NaturalLanguageTypeSetter typeSetter = new TypeSetterFactory().createTypeSetter(context, null);
+		ItemListTypeSetter typeSetter = new TypeSetterFactory().createTypeSetter(context, null);
 		
 		FilteredDataSet dataSet = new FilteredDataSet(context, new DeltaFormatDataSetFilter(context));
 		return new KeyTranslator(context, dataSet,
@@ -77,17 +78,17 @@ public class DataSetTranslatorFactory {
 	}
 	
 	private DataSetTranslator createDistFormatTranslator(DeltaContext context, FormatterFactory formatterFactory) {
-		NaturalLanguageTypeSetter typeSetter = new TypeSetterFactory().createTypeSetter(context, null);
+		ItemListTypeSetter typeSetter = new TypeSetterFactory().createTypeSetter(context, null);
 		
 		FilteredDataSet dataSet = new FilteredDataSet(context, new DeltaFormatDataSetFilter(context));
 		return new DistTranslator(context, dataSet,
-				formatterFactory.createItemFormatter(typeSetter, CommentStrippingMode.STRIP_ALL));
+				formatterFactory.createItemFormatter(typeSetter, CommentStrippingMode.STRIP_ALL, false));
 	}
 
 	private AbstractDataSetTranslator createNaturalLanguageTranslator(
 			DeltaContext context, PrintFile printer, FormatterFactory formatterFactory) {
 		AbstractDataSetTranslator translator;
-		NaturalLanguageTypeSetter typeSetter = new TypeSetterFactory().createTypeSetter(context, printer);
+		ItemListTypeSetter typeSetter = new TypeSetterFactory().createTypeSetter(context, printer);
 		
 		ItemFormatter itemFormatter  = formatterFactory.createItemFormatter(typeSetter);
 		CharacterFormatter characterFormatter = formatterFactory.createCharacterFormatter();
@@ -110,6 +111,9 @@ public class DataSetTranslatorFactory {
 		case PRINT_CHARACTER_LIST:
 			action = createCharacterListPrinter(context);
 			break;
+		case PRINT_ITEM_NAMES:
+			action = createItemNamesPrinter(context);
+			break;
 		default:
 			throw new UnsupportedOperationException(printAction+" is not yet implemented.");	
 		}
@@ -127,6 +131,15 @@ public class DataSetTranslatorFactory {
 		CharacterListTypeSetter typeSetter = new TypeSetterFactory().createCharacterListTypeSetter(context, printer);
 		
 		return new CharacterListPrinter(context, printer, charFormatter, typeSetter);
+	}
+	
+	private PrintAction createItemNamesPrinter(DeltaContext context) {
+		FormatterFactory formatterFactory = new FormatterFactory(context);
+		PrintFile printer = context.getPrintFile();
+		
+		ItemFormatter itemFormatter  = formatterFactory.createItemFormatter(null);
+		
+		return new ItemNamesPrinter(context, new DeltaFormatDataSetFilter(context), itemFormatter, printer);
 	}
 	
 }

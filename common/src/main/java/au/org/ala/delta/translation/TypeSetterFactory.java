@@ -13,7 +13,7 @@ import au.org.ala.delta.translation.print.CharacterListTypeSetter;
  */
 public class TypeSetterFactory {
 	
-	public NaturalLanguageTypeSetter createTypeSetter(DeltaContext context, PrintFile printer) {
+	public ItemListTypeSetter createTypeSetter(DeltaContext context, PrintFile printer) {
 		
 		if (context.getTypeSettingMarks().isEmpty()) {
 			return new PlainTextTypeSetter(printer);
