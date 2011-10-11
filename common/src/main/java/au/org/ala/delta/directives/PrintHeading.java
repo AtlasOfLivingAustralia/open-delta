@@ -17,8 +17,10 @@ public class PrintHeading extends AbstractNoArgDirective {
 	@Override
 	public void process(DeltaContext context, DirectiveArguments directiveArguments) throws Exception {
 		String heading = context.getHeading(HeadingType.HEADING);
-		String eol = System.getProperty("line.separator");
-		context.print(eol+eol+heading+eol+eol);
+		au.org.ala.delta.translation.PrintFile printFile = context.getOutputFileSelector().getPrintFile();
+		printFile.writeBlankLines(2, 0);
+		printFile.outputLine(heading);
+		printFile.writeBlankLines(2, 0);
 	}
 
 }

@@ -67,7 +67,7 @@ public class FormattedTextTypeSetter extends PlainTextTypeSetter {
 		_printer.writeTypeSettingMark(mark);
 	}
 	
-	private void writeTypeSettingMark(MarkPosition mark) {
+	protected void writeTypeSettingMark(MarkPosition mark) {
 		
 		writeTypeSettingMark(_typeSettingMarks.get(mark.getId()).getMarkText());
 	}

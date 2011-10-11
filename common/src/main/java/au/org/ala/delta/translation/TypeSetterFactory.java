@@ -2,6 +2,7 @@ package au.org.ala.delta.translation;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.translation.print.CharacterListTypeSetter;
+import au.org.ala.delta.translation.print.FormattedItemNameTypeSetter;
 
 /**
  * Creates the appropriate TypeSetter for the supplied context.  If the TYPESETTING MARKS
@@ -22,6 +23,19 @@ public class TypeSetterFactory {
 			return new FormattedTextTypeSetter(context.getTypeSettingMarks(), printer);
 		}
 		
+	}
+	
+	/**
+	 * Used when creating typesetters for the PRINT ITEM NAMES and PRINT
+	 * ITEM DESCRIPTIONS print actions.
+	 */
+	public ItemListTypeSetter createItemListTypeSetter(DeltaContext context, PrintFile printer) {
+		if (context.getTypeSettingMarks().isEmpty()) {
+			return new PlainTextTypeSetter(printer);
+		}
+		else {
+			return new FormattedItemNameTypeSetter(context.getTypeSettingMarks(), printer);
+		}
 	}
 	
 	

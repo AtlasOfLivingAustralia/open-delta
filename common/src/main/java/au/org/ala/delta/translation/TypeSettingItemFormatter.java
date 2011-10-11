@@ -10,7 +10,10 @@ public class TypeSettingItemFormatter extends ItemFormatter {
 	private ItemListTypeSetter _typeSetter;
 	
 	public TypeSettingItemFormatter(ItemListTypeSetter typeSetter) {
-		super(false, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.RETAIN, false, false, false);
+		this(typeSetter, false);
+	}	
+	public TypeSettingItemFormatter(ItemListTypeSetter typeSetter, boolean includeNumber) {
+		super(includeNumber, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.RETAIN, false, false, false);
 		_typeSetter = typeSetter;
 	}
 

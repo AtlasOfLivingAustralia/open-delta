@@ -20,6 +20,14 @@ public class FormatterFactory {
 		_context = context;
 	}
 	
+	public ItemFormatter createItemFormatter(ItemListTypeSetter typeSetter, boolean includeNumber) {
+		CommentStrippingMode mode = CommentStrippingMode.RETAIN;
+		if (_context.getOmitInnerComments()) {
+			mode = CommentStrippingMode.STRIP_INNER;
+		}
+		return createItemFormatter(typeSetter, mode, includeNumber);
+	}
+	
 	public ItemFormatter createItemFormatter(ItemListTypeSetter typeSetter) {
 		return createItemFormatter(typeSetter, CommentStrippingMode.RETAIN, false);
 	}
@@ -33,7 +41,7 @@ public class FormatterFactory {
 			formatter = new ItemFormatter(includeNumber, mode, AngleBracketHandlingMode.RETAIN, false, false, false);
 		}
 		else {
-			formatter = new TypeSettingItemFormatter(typeSetter);
+			formatter = new TypeSettingItemFormatter(typeSetter, includeNumber);
 		}
 		formatter.setRtfToHtml(_context.getOutputHtml());
 			

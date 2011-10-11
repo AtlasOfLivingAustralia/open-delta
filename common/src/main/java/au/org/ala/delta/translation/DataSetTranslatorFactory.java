@@ -136,10 +136,11 @@ public class DataSetTranslatorFactory {
 	private PrintAction createItemNamesPrinter(DeltaContext context) {
 		FormatterFactory formatterFactory = new FormatterFactory(context);
 		PrintFile printer = context.getPrintFile();
+		ItemListTypeSetter typeSetter = new TypeSetterFactory().createItemListTypeSetter(context, printer);
 		
-		ItemFormatter itemFormatter  = formatterFactory.createItemFormatter(null);
+		ItemFormatter itemFormatter  = formatterFactory.createItemFormatter(typeSetter, true);
 		
-		return new ItemNamesPrinter(context, new DeltaFormatDataSetFilter(context), itemFormatter, printer);
+		return new ItemNamesPrinter(context, new DeltaFormatDataSetFilter(context), itemFormatter, printer, typeSetter);
 	}
 	
 }
