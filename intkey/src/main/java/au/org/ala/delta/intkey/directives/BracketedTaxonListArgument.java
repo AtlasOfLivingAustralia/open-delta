@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Queue;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.intkey.ui.UIUtils;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.util.Pair;
 
@@ -23,8 +24,8 @@ public class BracketedTaxonListArgument extends AbstractTaxonListArgument<Pair<L
     private static final String OPEN_BRACKET = "(";
     private static final String CLOSE_BRACKET = ")";
 
-    public BracketedTaxonListArgument(String name, String promptText, SelectionMode defaultSelectionMode, boolean selectFromAll) {
-        super(name, promptText, defaultSelectionMode, selectFromAll);
+    public BracketedTaxonListArgument(String name, String promptText, SelectionMode defaultSelectionMode, boolean selectFromAll, boolean noneSelectionPermitted) {
+        super(name, promptText, defaultSelectionMode, selectFromAll, noneSelectionPermitted);
     }
 
     @Override
@@ -98,16 +99,15 @@ public class BracketedTaxonListArgument extends AbstractTaxonListArgument<Pair<L
             // THESE PROMPTS
             DirectivePopulator populator = context.getDirectivePopulator();
             if (selectionMode == SelectionMode.KEYWORD) {
-                taxa = populator.promptForTaxaByKeyword(directiveName, !overrideExcludedTaxa);
+                taxa = populator.promptForTaxaByKeyword(directiveName, !overrideExcludedTaxa, _noneSelectionPermitted);
             } else {
                 boolean autoSelectSingleValue = (selectionMode == SelectionMode.LIST_AUTOSELECT_SINGLE_VALUE);
                 taxa = populator.promptForTaxaByList(directiveName, !overrideExcludedTaxa, autoSelectSingleValue);
             }
         }
 
-        // No taxa selected or specimen selected is assumed to indicated that
-        // the user hit cancel
-        if (taxa.size() == 0 && includeSpecimen == false) {
+        if (taxa.size() == 0 && includeSpecimen == false && !_noneSelectionPermitted) {
+            context.getUI().displayErrorMessage(UIUtils.getResourceString("NoTaxaInSet.error"));
             return null;
         }
 

@@ -99,4 +99,9 @@ public class MockIntkeyUI implements IntkeyUI {
     public void quitApplication() {
     }
 
+    @Override
+    public List<Item> getSelectedTaxa() {
+        return null;
+    }
+
 }

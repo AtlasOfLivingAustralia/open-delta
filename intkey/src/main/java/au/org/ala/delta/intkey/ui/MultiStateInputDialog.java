@@ -33,19 +33,19 @@ public class MultiStateInputDialog extends CharacterValueInputDialog {
 
     @Resource
     String title;
-    
+
     @Resource
     String selectionConfirmationMessage;
-    
+
     @Resource
-    String selectionConfirmationTitle;    
+    String selectionConfirmationTitle;
 
     public MultiStateInputDialog(Frame owner, MultiStateCharacter ch, ImageSettings imageSettings, boolean displayNumbering) {
         super(owner, ch, imageSettings, displayNumbering);
-        
+
         ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(MultiStateInputDialog.class);
         resourceMap.injectFields(this);
-        
+
         setTitle(title);
         setPreferredSize(new Dimension(600, 350));
 
@@ -61,7 +61,7 @@ public class MultiStateInputDialog extends CharacterValueInputDialog {
         }
 
         _list.setModel(listModel);
-        
+
         _inputData = new HashSet<Integer>();
 
     }
@@ -82,29 +82,29 @@ public class MultiStateInputDialog extends CharacterValueInputDialog {
         for (int i : selectedIndicies) {
             _inputData.add(i + 1);
         }
-        
+
         setVisible(false);
     }
 
     @Override
     void handleBtnCancelClicked() {
+        _inputData = null;
         this.setVisible(false);
     }
-    
 
     @Override
     void handleBtnImagesClicked() {
-        CharacterImageDialog dlg = new CharacterImageDialog(this, Arrays.asList(new au.org.ala.delta.model.Character[] {_ch}), _imageSettings, true, true);
+        CharacterImageDialog dlg = new CharacterImageDialog(this, Arrays.asList(new au.org.ala.delta.model.Character[] { _ch }), _imageSettings, true, true);
         dlg.setVisible(true);
-        
+
         Set<Integer> selectedStates = dlg.getSelectedStates();
         if (selectedStates != null) {
             _inputData.addAll(selectedStates);
             this.setVisible(false);
         }
-        
+
     }
-    
+
     public Set<Integer> getInputData() {
         return _inputData;
     }

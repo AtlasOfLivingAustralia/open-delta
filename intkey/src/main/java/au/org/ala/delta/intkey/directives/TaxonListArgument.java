@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Queue;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.intkey.ui.UIUtils;
 import au.org.ala.delta.model.Item;
 
 public class TaxonListArgument extends AbstractTaxonListArgument<List<Item>> {
@@ -20,8 +21,8 @@ public class TaxonListArgument extends AbstractTaxonListArgument<List<Item>> {
      * @param selectFromAll
      *            When prompting, allow selection from all
      */
-    public TaxonListArgument(String name, String promptText, SelectionMode defaultSelectionMode, boolean selectFromAll) {
-        super(name, promptText, defaultSelectionMode, selectFromAll);
+    public TaxonListArgument(String name, String promptText, SelectionMode defaultSelectionMode, boolean selectFromAll, boolean noneSelectionPermitted) {
+        super(name, promptText, defaultSelectionMode, selectFromAll, noneSelectionPermitted);
     }
 
     @Override
@@ -33,7 +34,7 @@ public class TaxonListArgument extends AbstractTaxonListArgument<List<Item>> {
             overrideExcludedTaxa = true;
             token = inputTokens.poll();
         }
-        
+
         overrideExcludedTaxa = overrideExcludedTaxa || _selectFromAll;
 
         List<Item> taxa = null;
@@ -67,13 +68,13 @@ public class TaxonListArgument extends AbstractTaxonListArgument<List<Item>> {
         if (taxa == null) {
             DirectivePopulator populator = context.getDirectivePopulator();
             if (selectionMode == SelectionMode.KEYWORD) {
-                taxa = populator.promptForTaxaByKeyword(directiveName, !overrideExcludedTaxa);
+                taxa = populator.promptForTaxaByKeyword(directiveName, !overrideExcludedTaxa, _noneSelectionPermitted);
             } else {
                 boolean autoSelectSingleValue = (selectionMode == SelectionMode.LIST_AUTOSELECT_SINGLE_VALUE);
                 taxa = populator.promptForTaxaByList(directiveName, !overrideExcludedTaxa, autoSelectSingleValue);
             }
         }
-        
+
         stringRepresentationBuilder.append(" ");
         for (int i = 0; i < taxa.size(); i++) {
             Item taxon = taxa.get(i);
@@ -83,12 +84,11 @@ public class TaxonListArgument extends AbstractTaxonListArgument<List<Item>> {
             }
         }
 
-        // An empty list indicates that the user hit cancel when prompted to
-        // select taxa
-        if (taxa.size() == 0) {
-            taxa = null;
+        if (taxa.size() == 0 && !_noneSelectionPermitted) {
+            context.getUI().displayErrorMessage(UIUtils.getResourceString("NoTaxaInSet.error"));
+            return null;
         }
-        
+
         Collections.sort(taxa);
 
         return taxa;

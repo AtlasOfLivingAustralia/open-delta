@@ -11,11 +11,17 @@ public abstract class AbstractTaxonListArgument<T> extends IntkeyDirectiveArgume
      * taxa. User will select from the list of all taxa.
      */
     protected boolean _selectFromAll;
+    
+    /**
+     * If true, the "NONE" keyword is a permitted option
+     */
+    protected boolean _noneSelectionPermitted;
 
-    public AbstractTaxonListArgument(String name, String promptText, SelectionMode defaultSelectionMode, boolean selectFromAll) {
+    public AbstractTaxonListArgument(String name, String promptText, SelectionMode defaultSelectionMode, boolean selectFromAll, boolean noneSelectionPermitted) {
         super(name, promptText, null);
         _defaultSelectionMode = defaultSelectionMode;
         _selectFromAll = selectFromAll;
+        _noneSelectionPermitted = noneSelectionPermitted;
     }
 
 }

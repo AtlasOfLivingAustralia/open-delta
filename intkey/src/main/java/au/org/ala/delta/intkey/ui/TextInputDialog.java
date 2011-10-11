@@ -23,7 +23,7 @@ public class TextInputDialog extends CharacterValueInputDialog {
      * 
      */
     private static final long serialVersionUID = 1140659731710865780L;
-    
+
     private JPanel _pnlTxtFld;
     private JTextField _txtInput;
     private List<String> _inputData;
@@ -76,14 +76,15 @@ public class TextInputDialog extends CharacterValueInputDialog {
 
     @Override
     void handleBtnCancelClicked() {
+        _inputData = null;
         this.setVisible(false);
     }
 
     @Override
     void handleBtnImagesClicked() {
-        CharacterImageDialog dlg = new CharacterImageDialog(this, Arrays.asList(new au.org.ala.delta.model.Character[] {_ch}),  _imageSettings, true, true);
+        CharacterImageDialog dlg = new CharacterImageDialog(this, Arrays.asList(new au.org.ala.delta.model.Character[] { _ch }), _imageSettings, true, true);
         dlg.setVisible(true);
-        
+
         _inputData = dlg.getInputTextValues();
         if (!_inputData.isEmpty()) {
             this.setVisible(false);

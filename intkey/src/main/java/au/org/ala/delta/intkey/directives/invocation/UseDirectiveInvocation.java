@@ -413,12 +413,12 @@ public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
 
         if (ch instanceof MultiStateCharacter) {
             Set<Integer> stateValues = populator.promptForMultiStateValue((MultiStateCharacter) ch);
-            if (stateValues.size() > 0) {
+            if (stateValues != null && stateValues.size() > 0) {
                 characterVal = new MultiStateValue((MultiStateCharacter) ch, stateValues);
             }
         } else if (ch instanceof IntegerCharacter) {
             Set<Integer> intValue = populator.promptForIntegerValue((IntegerCharacter) ch);
-            if (intValue != null) {
+            if (intValue != null && intValue.size() > 0) {
                 characterVal = new IntegerValue((IntegerCharacter) ch, intValue);
             }
         } else if (ch instanceof RealCharacter) {
@@ -428,7 +428,7 @@ public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
             }
         } else if (ch instanceof TextCharacter) {
             List<String> stringList = populator.promptForTextValue((TextCharacter) ch);
-            if (stringList.size() > 0) {
+            if (stringList != null && stringList.size() > 0) {
                 characterVal = new TextValue((TextCharacter) ch, stringList);
             }
         } else {

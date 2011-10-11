@@ -3,31 +3,31 @@ package au.org.ala.delta.intkey.directives;
 import java.util.ArrayList;
 import java.util.List;
 
-import au.org.ala.delta.intkey.directives.invocation.DeleteDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class DeleteDirective extends NewIntkeyDirective {
-    public DeleteDirective() {
-        super("delete");
+public class DiagnoseDirective extends NewIntkeyDirective {
+
+    public DiagnoseDirective() {
+        super("diagnose");
     }
 
     @Override
     protected List<IntkeyDirectiveArgument<?>> generateArgumentsList(IntkeyContext context) {
         List<IntkeyDirectiveArgument<?>> arguments = new ArrayList<IntkeyDirectiveArgument<?>>();
-        arguments.add(new CharacterListArgument("characters", null, SelectionMode.KEYWORD, true, false));
+        arguments.add(new BracketedTaxonListArgument("selectedTaxaSpecimen", null, SelectionMode.KEYWORD, false, false));
+        arguments.add(new CharacterListArgument("characters", null, SelectionMode.KEYWORD, false, true));
         return arguments;
     }
 
     @Override
     protected List<IntkeyDirectiveFlag> buildFlagsList() {
-        List<IntkeyDirectiveFlag> flags = new ArrayList<IntkeyDirectiveFlag>();
-        flags.add(new IntkeyDirectiveFlag('M', "suppressUnusedCharacterWarning"));
-        return flags;
+        return null;
     }
 
     @Override
     protected IntkeyDirectiveInvocation buildCommandObject() {
-        return new DeleteDirectiveInvocation();
+        return null;
     }
+
 }

@@ -64,6 +64,7 @@ public class DataSetLoadTest extends IntkeyDatasetTestCase {
         keywordsWithoutSystemDefinedOnes.remove(IntkeyContext.CHARACTER_KEYWORD_ALL);
         keywordsWithoutSystemDefinedOnes.remove(IntkeyContext.CHARACTER_KEYWORD_AVAILABLE);
         keywordsWithoutSystemDefinedOnes.remove(IntkeyContext.CHARACTER_KEYWORD_USED);
+        keywordsWithoutSystemDefinedOnes.remove(IntkeyContext.CHARACTER_KEYWORD_NONE);
 
         assertEquals(87, context.getDataset().getNumberOfCharacters());
         assertEquals(14, context.getDataset().getNumberOfTaxa());
@@ -537,7 +538,7 @@ public class DataSetLoadTest extends IntkeyDatasetTestCase {
 
         assertEquals(87, ds.getNumberOfCharacters());
         assertEquals(14, ds.getNumberOfTaxa());
-        assertEquals(38, context.getCharacterKeywords().size());
+        assertEquals(39, context.getCharacterKeywords().size());
 
         initFileUrl = getClass().getResource("/dataset/controlling_characters_simple/intkey.ink");
         context.newDataSetFile(new File(initFileUrl.toURI()));
@@ -555,7 +556,7 @@ public class DataSetLoadTest extends IntkeyDatasetTestCase {
 
         assertEquals(8, ds.getNumberOfCharacters());
         assertEquals(5, ds.getNumberOfTaxa());
-        assertEquals(2, context.getCharacterKeywords().size());
+        assertEquals(3, context.getCharacterKeywords().size());
     }
 
     /**

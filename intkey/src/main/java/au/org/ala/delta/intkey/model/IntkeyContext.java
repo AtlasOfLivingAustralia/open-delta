@@ -144,10 +144,13 @@ public class IntkeyContext extends AbstractDeltaContext {
     public static final String CHARACTER_KEYWORD_ALL = "all";
     public static final String CHARACTER_KEYWORD_USED = "used";
     public static final String CHARACTER_KEYWORD_AVAILABLE = "available";
+    public static final String CHARACTER_KEYWORD_NONE = "none";
 
     public static final String TAXON_KEYWORD_ALL = "all";
     public static final String TAXON_KEYWORD_ELIMINATED = "eliminated";
     public static final String TAXON_KEYWORD_REMAINING = "remaining";
+    public static final String TAXON_KEYWORD_NONE = "none";
+    public static final String TAXON_KEYWORD_SELECTED = "selected";
 
     public static final String SPECIMEN_KEYWORD = "specimen";
 
@@ -543,7 +546,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         }
 
         keyword = keyword.toLowerCase();
-        if (keyword.equals(CHARACTER_KEYWORD_ALL) || keyword.equals(CHARACTER_KEYWORD_USED) || keyword.equals(CHARACTER_KEYWORD_AVAILABLE)) {
+        if (keyword.equals(CHARACTER_KEYWORD_ALL) || keyword.equals(CHARACTER_KEYWORD_USED) || keyword.equals(CHARACTER_KEYWORD_AVAILABLE) || keyword.equals(CHARACTER_KEYWORD_NONE)) {
             throw new IllegalArgumentException(String.format(UIUtils.getResourceString("RedefineSystemKeyword.error"), keyword));
         }
 
@@ -575,6 +578,8 @@ public class IntkeyContext extends AbstractDeltaContext {
             List<au.org.ala.delta.model.Character> availableCharacters = new ArrayList<au.org.ala.delta.model.Character>(_dataset.getCharacters());
             availableCharacters.removeAll(_specimen.getUsedCharacters());
             return availableCharacters;
+        } else if (keyword.equals(CHARACTER_KEYWORD_NONE)) {
+            return Collections.EMPTY_LIST;
         } else {
             Set<Integer> characterNumbersSet = _userDefinedCharacterKeywords.get(keyword.toLowerCase());
 
@@ -634,6 +639,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         }
 
         retList.add(CHARACTER_KEYWORD_AVAILABLE);
+        retList.add(CHARACTER_KEYWORD_NONE);
         retList.addAll(_userDefinedCharacterKeywords.keySet());
 
         return retList;
@@ -644,7 +650,8 @@ public class IntkeyContext extends AbstractDeltaContext {
             throw new IllegalStateException("Cannot define a taxa keyword if no dataset loaded");
         }
 
-        if (keyword.equals(TAXON_KEYWORD_ALL) || keyword.equals(TAXON_KEYWORD_ELIMINATED) || keyword.equals(TAXON_KEYWORD_REMAINING)) {
+        if (keyword.equals(TAXON_KEYWORD_ALL) || keyword.equals(TAXON_KEYWORD_ELIMINATED) || keyword.equals(TAXON_KEYWORD_REMAINING) || keyword.equals(TAXON_KEYWORD_SELECTED)
+                || keyword.equals(TAXON_KEYWORD_NONE)) {
             throw new IllegalArgumentException(String.format(UIUtils.getResourceString("RedefineSystemKeyword.error"), keyword));
         }
 
@@ -668,6 +675,10 @@ public class IntkeyContext extends AbstractDeltaContext {
             return getEliminatedTaxa();
         } else if (keyword.equals(TAXON_KEYWORD_REMAINING)) {
             return getAvailableTaxa();
+        } else if (keyword.equals(TAXON_KEYWORD_SELECTED)) {
+            return _appUI.getSelectedTaxa();
+        } else if (keyword.equals(TAXON_KEYWORD_NONE)) {
+            return Collections.EMPTY_LIST;
         } else {
             // TODO match if supplied text matches the beginning of a taxon name
             Set<Integer> taxaNumbersSet = _userDefinedCharacterKeywords.get(keyword);
@@ -734,13 +745,15 @@ public class IntkeyContext extends AbstractDeltaContext {
             }
         }
 
+        if (remainingTaxaCount < _dataset.getNumberOfTaxa()) {
+            retList.add(TAXON_KEYWORD_ELIMINATED);
+        }
+
         if (remainingTaxaCount > 0) {
             retList.add(TAXON_KEYWORD_REMAINING);
         }
 
-        if (remainingTaxaCount < _dataset.getNumberOfTaxa()) {
-            retList.add(TAXON_KEYWORD_ELIMINATED);
-        }
+        retList.add(TAXON_KEYWORD_NONE);
 
         retList.addAll(_userDefinedTaxonKeywords.keySet());
 

@@ -48,4 +48,6 @@ public interface IntkeyUI {
     void updateLog();
     
     void quitApplication();
+    
+    List<Item> getSelectedTaxa();
 }

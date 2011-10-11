@@ -60,14 +60,15 @@ public class RealInputDialog extends NumberInputDialog {
 
     @Override
     void handleBtnCancelClicked() {
+        _inputData = null;
         this.setVisible(false);
     }
 
     @Override
     void handleBtnImagesClicked() {
-        CharacterImageDialog dlg = new CharacterImageDialog(this, Arrays.asList(new au.org.ala.delta.model.Character[] {_ch}), _imageSettings, true, true);
+        CharacterImageDialog dlg = new CharacterImageDialog(this, Arrays.asList(new au.org.ala.delta.model.Character[] { _ch }), _imageSettings, true, true);
         dlg.setVisible(true);
-        
+
         try {
             FloatRange rangeFromImageDialog = dlg.getInputRealValues();
             if (rangeFromImageDialog != null) {

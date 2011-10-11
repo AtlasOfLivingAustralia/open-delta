@@ -1756,11 +1756,26 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         exit();
     }
 
+    @Override
+    public List<Item> getSelectedTaxa() {
+        List<Item> retList = new ArrayList<Item>();
+
+        for (Object oTaxon : _listRemainingTaxa.getSelectedValues()) {
+            retList.add((Item) oTaxon);
+        }
+
+        for (Object oTaxon : _listEliminatedTaxa.getSelectedValues()) {
+            retList.add((Item) oTaxon);
+        }
+
+        return retList;
+    }
+
     // ================================== DirectivePopulator methods
     // ===================================================================
 
     @Override
-    public List<Character> promptForCharactersByKeyword(String directiveName, boolean permitSelectionFromIncludedCharactersOnly) {
+    public List<Character> promptForCharactersByKeyword(String directiveName, boolean permitSelectionFromIncludedCharactersOnly, boolean noneKeywordAvailable) {
         List<Image> characterKeywordImages = _context.getDataset().getCharacterKeywordImages();
         if (!_advancedMode && characterKeywordImages != null && !characterKeywordImages.isEmpty()) {
             ImageDialog dlg = new ImageDialog(getMainFrame(), _context.getImageSettings(), true);
@@ -1770,6 +1785,10 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             show(dlg);
 
             Set<String> keywords = dlg.getSelectedKeywords();
+
+            if (!noneKeywordAvailable) {
+                keywords.remove(IntkeyContext.CHARACTER_KEYWORD_NONE);
+            }
 
             List<Character> selectedCharacters = new ArrayList<Character>();
 
@@ -1790,11 +1809,11 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     }
 
     @Override
-    public List<Character> promptForCharactersByList(String directiveName, boolean selectFromIncludedCharactersOnly) {
+    public List<Character> promptForCharactersByList(String directiveName, boolean selectFromAvailableCharactersOnly) {
         List<Character> charactersToSelect;
 
         String keyword = null;
-        if (selectFromIncludedCharactersOnly) {
+        if (selectFromAvailableCharactersOnly) {
             charactersToSelect = _context.getCharactersForKeyword(IntkeyContext.CHARACTER_KEYWORD_AVAILABLE);
             keyword = IntkeyContext.CHARACTER_KEYWORD_AVAILABLE;
         } else {
@@ -1808,7 +1827,8 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     }
 
     @Override
-    public List<Item> promptForTaxaByKeyword(String directiveName, boolean permitSelectionFromIncludedTaxaOnly) {
+    public List<Item> promptForTaxaByKeyword(String directiveName, boolean permitSelectionFromIncludedTaxaOnly, boolean noneKeywordAvailable) {
+        
         List<Image> taxonKeywordImages = _context.getDataset().getTaxonKeywordImages();
         if (!_advancedMode && taxonKeywordImages != null && !taxonKeywordImages.isEmpty()) {
             ImageDialog dlg = new ImageDialog(getMainFrame(), _context.getImageSettings(), true);
@@ -1818,6 +1838,10 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             show(dlg);
 
             Set<String> keywords = dlg.getSelectedKeywords();
+            
+            if (!noneKeywordAvailable) {
+                keywords.remove(IntkeyContext.TAXON_KEYWORD_NONE);
+            }
 
             List<Item> selectedTaxa = new ArrayList<Item>();
 
@@ -1838,11 +1862,11 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     }
 
     @Override
-    public List<Item> promptForTaxaByList(String directiveName, boolean selectFromIncludedTaxaOnly, boolean autoSelectSingleValue) {
+    public List<Item> promptForTaxaByList(String directiveName, boolean selectFromRemainingTaxaOnly, boolean autoSelectSingleValue) {
         List<Item> taxaToSelect;
 
         String keyword = null;
-        if (selectFromIncludedTaxaOnly) {
+        if (selectFromRemainingTaxaOnly) {
             taxaToSelect = _context.getTaxaForKeyword(IntkeyContext.TAXON_KEYWORD_REMAINING);
             keyword = IntkeyContext.TAXON_KEYWORD_REMAINING;
         } else {
@@ -1882,7 +1906,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             if (dlg.okButtonPressed()) {
                 return dlg.getInputTextValues();
             } else {
-                return Collections.EMPTY_LIST;
+                return null;
             }
         } else {
             TextInputDialog dlg = new TextInputDialog(getMainFrame(), ch, _context.getImageSettings(), _context.displayNumbering());
@@ -1899,7 +1923,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             if (dlg.okButtonPressed()) {
                 return dlg.getInputIntegerValues();
             } else {
-                return Collections.EMPTY_SET;
+                return null;
             }
         } else {
             IntegerInputDialog dlg = new IntegerInputDialog(getMainFrame(), ch, _context.getImageSettings(), _context.displayNumbering());
@@ -1933,7 +1957,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             if (dlg.okButtonPressed()) {
                 return dlg.getSelectedStates();
             } else {
-                return Collections.EMPTY_SET;
+                return null;
             }
         } else {
             MultiStateInputDialog dlg = new MultiStateInputDialog(getMainFrame(), ch, _context.getImageSettings(), _context.displayNumbering());
@@ -1994,17 +2018,6 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         show(dlg);
         if (dlg.isOkButtonPressed()) {
             return dlg.getSelectedValue();
-        } else {
-            return null;
-        }
-    }
-
-    @Override
-    public File promptForOutputFile() {
-        OutputFileSelectionDialog dlg = new OutputFileSelectionDialog(getMainFrame(), _context.getOutputFiles());
-        show(dlg);
-        if (dlg.isOkButtonPressed()) {
-            return dlg.getSelectedFile();
         } else {
             return null;
         }
@@ -2315,5 +2328,4 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             throw new RuntimeException(e);
         }
     }
-
 }

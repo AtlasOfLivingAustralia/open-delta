@@ -18,7 +18,7 @@ import au.org.ala.delta.model.TextCharacter;
 public class MockDirectivePopulator implements DirectivePopulator {
 
     @Override
-    public List<Character> promptForCharactersByKeyword(String directiveName, boolean permitSelectionFromIncludedCharactersOnly) {
+    public List<Character> promptForCharactersByKeyword(String directiveName, boolean permitSelectionFromIncludedCharactersOnly, boolean noneKeywordAvailable) {
         return null;
     }
 
@@ -28,7 +28,7 @@ public class MockDirectivePopulator implements DirectivePopulator {
     }
 
     @Override
-    public List<Item> promptForTaxaByKeyword(String directiveName, boolean selectFromIncludedTaxaOnly) {
+    public List<Item> promptForTaxaByKeyword(String directiveName, boolean selectFromIncludedTaxaOnly, boolean noneKeywordAvailable) {
         return null;
     }
 
@@ -74,11 +74,6 @@ public class MockDirectivePopulator implements DirectivePopulator {
 
     @Override
     public Boolean promptForOnOffValue(String directiveName, boolean initialValue) {
-        return null;
-    }
-
-    @Override
-    public File promptForOutputFile() {
         return null;
     }
 
