@@ -59,7 +59,7 @@ public class FormattedTextTypeSetter extends PlainTextTypeSetter {
 	@Override
 	public void afterLastItem() {
 		_printer.printBufferLine();
-		writeTypeSettingMark(MarkPosition.AFTER_LAST_ITEM_IN_FILE);
+		writeTypeSettingMark(MarkPosition.END_OF_FILE);
 		_printer.printBufferLine();
 	}
 	

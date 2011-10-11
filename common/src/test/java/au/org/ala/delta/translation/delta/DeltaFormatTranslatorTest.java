@@ -30,7 +30,7 @@ public class DeltaFormatTranslatorTest extends TranslatorTest {
 		
 		_context = new DeltaContext();
 		_context.setPrintStream(pout);
-		_context.setPrintWidth(80);
+		_context.getOutputFileSelector().setPrintWidth(80);
 		_factory = new DataSetTranslatorFactory();
 		
 	}

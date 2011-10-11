@@ -30,7 +30,7 @@ public class PrintFile extends AbstractTextDirective {
 		
 		String filename = data.trim();
 		
-		context.getOutputFileSelector().setPrintFile(filename);
+		context.getOutputFileSelector().setPrintFileName(filename);
 	}
 
 }

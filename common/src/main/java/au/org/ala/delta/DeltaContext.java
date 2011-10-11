@@ -41,6 +41,7 @@ import au.org.ala.delta.model.TypeSettingMark.MarkPosition;
 import au.org.ala.delta.model.UnorderedMultiStateCharacter;
 import au.org.ala.delta.model.image.ImageInfo;
 import au.org.ala.delta.rtf.RTFUtils;
+import au.org.ala.delta.translation.PrintFile;
 import au.org.ala.delta.util.Functor;
 import au.org.ala.delta.util.Utils;
 
@@ -104,7 +105,6 @@ public class DeltaContext extends AbstractDeltaContext {
 	private int _maxNumberOfItems;
 	
 	private boolean _omitTypeSettingMarks = false;
-	private int _printWidth = 80;
 	private boolean _replaceAngleBrackets;
 	private boolean _omitCharacterNumbers = false;
 	private boolean _omitInnerComments = false;
@@ -210,12 +210,15 @@ public class DeltaContext extends AbstractDeltaContext {
 		return _matrix;
 	}
 
+	/**
+	 * Currently used only by units tests.
+	 */
 	public void setPrintStream(PrintStream stream) {
 		getOutputFileSelector().setPrintStream(stream);
 	}
 	
-	public PrintStream getPrintStream() {
-		return getOutputFileSelector().getPrintStream();
+	public PrintFile getPrintFile() {
+		return getOutputFileSelector().getPrintFile();
 	}
 
 	public void setErrorStream(PrintStream stream) {
@@ -327,14 +330,6 @@ public class DeltaContext extends AbstractDeltaContext {
 
 	public boolean isOmitTypeSettingMarks() {
 		return _omitTypeSettingMarks;
-	}
-
-	public int getPrintWidth() {
-		return _printWidth;
-	}
-
-	public void setPrintWidth(int width) {
-		_printWidth = width;
 	}
 
 	public void setReplaceAngleBrackets(boolean b) {
@@ -880,7 +875,7 @@ public class DeltaContext extends AbstractDeltaContext {
 	}
 
 	public void print(String heading) {
-		getOutputFileSelector().getPrintStream().println(heading);
+		getOutputFileSelector().getPrintFile().writeJustifiedText(heading, 1);
 		
 	}
 }

@@ -27,7 +27,6 @@ public class FormattedTypeSetter extends PlainTextTypeSetter {
 
 	@Override
 	public void beforeFirstCharacter() {
-		writeTypeSettingMark(MarkPosition.START_OF_FILE);
 		writeTypeSettingMark(MarkPosition.BEFORE_FIRST_CHARACTER_OR_HEADING);
 	}
 
@@ -61,6 +60,8 @@ public class FormattedTypeSetter extends PlainTextTypeSetter {
 	@Override
 	public void afterCharacterList() {
 		writeTypeSettingMark(MarkPosition.AFTER_CHARACTER_LIST);
+		writeTypeSettingMark(MarkPosition.END_OF_FILE);
+		_printer.printBufferLine();
 	}
 	
 	private void writeTypeSettingMark(String mark) {

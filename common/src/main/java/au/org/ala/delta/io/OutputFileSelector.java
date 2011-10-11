@@ -21,6 +21,7 @@ import au.org.ala.delta.model.format.AttributeFormatter;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.rtf.RTFUtils;
+import au.org.ala.delta.translation.PrintFile;
 
 /**
  * Manages CONFOR output files.
@@ -28,6 +29,8 @@ import au.org.ala.delta.rtf.RTFUtils;
 public class OutputFileSelector {
 	
 	public static final String OUTPUT_FILE_ENCODING = "utf-8";
+	public static final String RTF_OUTPUT_FILE_ENCODING = "cp1252";
+	public static final int DEFAULT_PRINT_WIDTH = 80;
 	
 	private int _characterForOutputFiles = 0;
 	private Map<String, String> _itemOutputFiles = new HashMap<String, String>();
@@ -40,12 +43,19 @@ public class OutputFileSelector {
 	private String _outputDirectory;
 	private String _printFileName;
 	private PrintStream _printStream;
-	
+	private PrintFile _printFile;
 	private ParsingContext _context;
 	private OutputFormat _outputFormat;
 	
+	/** output when a new print file is created */
+	private String _printFileHeaderText;
+	
+	/** Number of characters on a line of text written to the print file */
+	private int _printWidth;
+	
 	public OutputFileSelector(DeltaDataSet dataSet) {
 		_dataSet = dataSet;
+		_printWidth = DEFAULT_PRINT_WIDTH;
 	}
 
 	public void setParsingContext(ParsingContext context) {
@@ -144,7 +154,8 @@ public class OutputFileSelector {
 	}
 
 	public void setOutputFormat(OutputFormat outputFormat) {
-		_outputFormat = outputFormat;	}
+		_outputFormat = outputFormat;
+	}
 
 	public String getKeyOutputFilePath() {
 		return makeAbsolute(_keyOutputFile);
@@ -169,7 +180,27 @@ public class OutputFileSelector {
 		}
 	}
 	
-	public void setPrintFile(String filename) throws Exception {
+	/**
+	 * When typesetting marks are being used, some are required to be output
+	 * when a new print file is created.  The string supplied to this method
+	 * will be output to the print file whenever a new file is created.
+	 * @param headerText
+	 */
+	public void setPrintFileHeader(String headerText) {
+		_printFileHeaderText = headerText;
+		if (_printFile != null) {
+			_printFile.setNewFileHeader(headerText);
+		}
+	}
+	
+	public void setPrintWidth(int printWidth) {
+		_printWidth = printWidth;
+		if (_printFile != null) {
+			_printFile.setPrintWidth(printWidth);
+		}
+	}
+	
+	public void setPrintFileName(String filename) throws Exception {
 		_printFileName = FilenameUtils.separatorsToSystem(filename);
 		
 		recreatePrintFile();
@@ -185,7 +216,6 @@ public class OutputFileSelector {
 			outputDir = new File(FilenameUtils.separatorsToSystem(_outputDirectory));
 			
 			if (!outputDir.isAbsolute()) {
-				
 				outputDir = new File(FilenameUtils.concat(parent.getAbsolutePath(), _outputDirectory));
 			}
 		}
@@ -196,7 +226,13 @@ public class OutputFileSelector {
 		File file = new File(outputDir, _printFileName);	
 		FileUtils.forceMkdir(file.getParentFile());
 		
-		_printStream = new PrintStream(file, OUTPUT_FILE_ENCODING);
+		_printStream = new PrintStream(file, outputFileEncoding());
+		if (StringUtils.isNotEmpty(_printFileHeaderText)) {
+			_printStream.println(_printFileHeaderText);
+		}
+		_printFile = new PrintFile(_printStream, _printWidth);
+		_printFile.setNewFileHeader(_printFileHeaderText);
+		
 	}
 	
 	private void closeExistingPrintStream() {
@@ -207,9 +243,24 @@ public class OutputFileSelector {
 	
 	public void setPrintStream(PrintStream stream) {
 		_printStream = stream;
+		if (_printFile == null) {
+			_printFile = new PrintFile(stream, _printWidth);
+		}
+		else {
+			_printFile.setPrintStream(stream);
+		}
 	}
 	
-	public PrintStream getPrintStream() {
-		return _printStream;
+	public PrintFile getPrintFile() {
+		return _printFile;
+	}
+	
+	private String outputFileEncoding() {
+		if (_outputFormat == OutputFormat.RTF) {
+			return RTF_OUTPUT_FILE_ENCODING;
+		}
+		else {
+			return OUTPUT_FILE_ENCODING;
+		}
 	}
 }

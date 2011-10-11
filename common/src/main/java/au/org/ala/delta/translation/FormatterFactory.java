@@ -56,6 +56,11 @@ public class FormatterFactory {
 	
 	public CharacterFormatter createCharacterFormatter(boolean includeNumber, boolean capitaliseFirst, CommentStrippingMode mode) {
 		CharacterFormatter formatter =  new CharacterFormatter(includeNumber, mode, AngleBracketHandlingMode.RETAIN, _context.isOmitTypeSettingMarks(), capitaliseFirst);
+		
+		if (_context.getOmitInnerComments()) {
+			mode = CommentStrippingMode.STRIP_INNER;
+		}
+		
 		formatter.setRtfToHtml(_context.getOutputHtml());
 		
 		return formatter;

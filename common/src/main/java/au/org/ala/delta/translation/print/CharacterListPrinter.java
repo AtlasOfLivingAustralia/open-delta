@@ -60,10 +60,15 @@ public class CharacterListPrinter extends DeltaFormatTranslator implements Print
 		if (character.hasNotes()) {
 			_typeSetter.beforeCharacterNotes();
 			_printer.setIndentOnLineWrap(false);
-			_printer.outputLine(0, _characterFormatter.defaultFormat(character.getNotes(), false), 0);
+			String notes = _characterFormatter.defaultFormat(character.getNotes(), false);
+			_printer.outputLine(0, notes, 0);
 			_printer.setIndentOnLineWrap(true);
 		}
 		_printer.writeBlankLines(1, 0);
 	}
 	
+	@Override
+	public void afterLastCharacter() {
+		_typeSetter.afterCharacterList();
+	};
 }

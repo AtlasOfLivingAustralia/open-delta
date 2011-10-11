@@ -37,7 +37,7 @@ public class PrintWidth extends AbstractIntegerDirective {
 	protected void processInteger(DeltaContext context, int value) throws Exception {
 		Logger.debug("Setting the print width to %s", value);
 		
-		context.setPrintWidth(value);
+		context.getOutputFileSelector().setPrintWidth(value);
 	}
 
 }

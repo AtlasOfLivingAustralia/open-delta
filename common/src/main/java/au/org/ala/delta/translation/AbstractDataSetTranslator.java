@@ -64,7 +64,7 @@ public abstract class AbstractDataSetTranslator implements DataSetTranslator {
 			}	
 		}
 		
-		afterLastItem();
+		afterLastCharacter();
 	}
 	
 	/**

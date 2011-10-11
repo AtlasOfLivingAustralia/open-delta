@@ -41,6 +41,8 @@ public class PrintCHTest extends ConforTestCase {
 		// character conversion for left and right quotes.
 		actual = actual.replace("&lsquo", "&#145");
 		actual = actual.replace("&rsquo", "&#146");
+		actual = actual.replace("&ndash", "&#150");
+		
 		
 		// The heading contains the date so will be different.
 		

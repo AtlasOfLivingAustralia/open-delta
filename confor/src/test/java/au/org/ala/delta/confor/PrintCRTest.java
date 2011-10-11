@@ -22,7 +22,7 @@ public class PrintCRTest extends ConforTestCase {
 		System.out.println(expected);
 		
 		File actualFile = new File(FilenameUtils.concat(_samplePath, "rtf/chars.rtf"));
-		String actual = FileUtils.readFileToString(actualFile, "utf-8");
+		String actual = FileUtils.readFileToString(actualFile, "cp1252");
 
 		System.out.print(actual);
 		

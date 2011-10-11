@@ -26,6 +26,8 @@ public class PrintFile {
     private boolean _indented;
     private boolean _indentOnLineWrap;
     private boolean _softWrap;
+    private boolean _newFile;
+    private String _newFileHeader;
 
     public PrintFile(final StringBuilder buffer) {
 
@@ -59,8 +61,10 @@ public class PrintFile {
 
         _indentOnLineWrap = false;
         _softWrap = false;
+        _newFile = true;
+        _newFileHeader = "";
     }
-
+    
     public void setSoftWrap(boolean softWrap) {
         _softWrap = softWrap;
     }
@@ -95,9 +99,11 @@ public class PrintFile {
      * and a number of spaces)
      */
     public void indent(int indent) {
+  
         if (_indented) {
             return;
         }
+        writeFileHeader();
         if (_paragraphIndent <= (Math.abs(_printWidth) - 20)) {
             for (int i = 0; i < _paragraphIndent; i++) {
                 _outputBuffer.append(' ');
@@ -148,13 +154,14 @@ public class PrintFile {
     }
 
     public void writeJustifiedText(String text, int completionAction) {
-        text = text.trim();
+        writeFileHeader();
+    	text = text.trim();
         writeJustifiedText(text, completionAction, true);
     }
 
     private boolean _omitNextTrailingSpace = false;
 
-    public void writeJustifiedText(String text, int completionAction, boolean addSpaceIfRequired) {
+    private void writeJustifiedText(String text, int completionAction, boolean addSpaceIfRequired) {
 
         if (_capitalise) {
             text = capitaliseFirstWord(text);
@@ -275,10 +282,6 @@ public class PrintFile {
 
     }
 
-    enum TypeSetting {
-        ADD_TYPESETTING_MARKS, DO_NOTHING, REMOVE_EXISTING_TYPESETTINGMARKS
-    };
-
     private int bufferIndex() {
         return _outputBuffer.length() - 1;
     }
@@ -325,7 +328,7 @@ public class PrintFile {
 		outputLine(value, 0);
 	}
 	
-    public void outputLine(String value, int numTrailingBlanks) {
+    private void outputLine(String value, int numTrailingBlanks) {
 		indent();
 		writeJustifiedText(value, -1);
 		printBufferLine();
@@ -347,4 +350,25 @@ public class PrintFile {
     public void useParagraphIndentOnLineWrap() {
     	_useParagraphIndentOnLineWrap = true;
     }
+    
+    public void setNewFileHeader(String header) {
+    	_newFileHeader = header;
+    }
+    
+    private void writeFileHeader() {
+    	if (_newFile) {
+    		if (StringUtils.isNotBlank(_newFileHeader)) {
+    			writeJustifiedText(_newFileHeader, 1, false);
+    		}
+    		_newFile = false;
+    	}
+    }
+
+	public void setPrintWidth(int printWidth) {
+		_printWidth = printWidth;
+	}
+
+	public void setPrintStream(PrintStream stream) {
+		_output = stream;
+	}
 }

@@ -13,14 +13,12 @@ import au.org.ala.delta.model.TypeSettingMark;
 import au.org.ala.delta.model.TypeSettingMark.MarkPosition;
 import au.org.ala.delta.model.format.AttributeFormatter;
 import au.org.ala.delta.model.format.CharacterFormatter;
-import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
+import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.translation.FormattedTextTypeSetter;
-import au.org.ala.delta.translation.PrintFile;
 import au.org.ala.delta.translation.TypeSettingAttributeFormatter;
 import au.org.ala.delta.translation.TypeSettingItemFormatter;
-import au.org.ala.delta.translation.naturallanguage.NaturalLanguageTranslator;
 
 /**
  * Tests the production of type set natural language. This test is more of an
@@ -33,14 +31,18 @@ public class TypeSetNaturalLanguageTranslatorTest extends NaturalLangaugeTransla
     public void setUp() throws Exception {
 
         _bytes = new ByteArrayOutputStream();
-        PrintStream pout = new PrintStream(_bytes, false, "UTF-8");
-        _printer = new PrintFile(pout, 0);
         _context = new DeltaContext();
+       
     }
 
     @Override
     protected void initialiseContext(String path) throws Exception {
         super.initialiseContext(path);
+        PrintStream pout = new PrintStream(_bytes, false, "UTF-8");
+        
+        _context.setPrintStream(pout);
+        _context.getOutputFileSelector().setPrintWidth(0);
+        _printer = _context.getOutputFileSelector().getPrintFile();
 
     }
 
