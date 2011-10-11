@@ -1,5 +1,6 @@
 package au.org.ala.delta.intkey.directives.invocation;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -12,11 +13,10 @@ import java.util.Set;
 
 import javax.swing.JOptionPane;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.FloatRange;
 
-import au.org.ala.delta.intkey.directives.ChangeDirective;
 import au.org.ala.delta.intkey.directives.DirectivePopulator;
+import au.org.ala.delta.intkey.model.IntkeyCharacterOrder;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.model.IntkeyDataset;
 import au.org.ala.delta.intkey.model.specimen.CharacterValue;
@@ -28,18 +28,22 @@ import au.org.ala.delta.intkey.ui.CharacterSelectionDialog;
 import au.org.ala.delta.intkey.ui.UIUtils;
 import au.org.ala.delta.model.CharacterDependency;
 import au.org.ala.delta.model.IntegerCharacter;
+import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.RealCharacter;
 import au.org.ala.delta.model.TextCharacter;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
+import au.org.ala.delta.model.format.ItemFormatter;
 
 public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
 
     private Map<au.org.ala.delta.model.Character, CharacterValue> _characterValues;
     private boolean _change;
     private boolean _suppressAlreadySetWarning;
+    private CharacterFormatter _charFormatter;
+    private ItemFormatter _taxonFormatter;
 
     public UseDirectiveInvocation(boolean change, boolean suppressAlreadySetWarning) {
         _change = change;
@@ -49,6 +53,9 @@ public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
         // that they
         // were inserted.
         _characterValues = new LinkedHashMap<au.org.ala.delta.model.Character, CharacterValue>();
+
+        _charFormatter = new CharacterFormatter(true, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REPLACE, true, false);
+        _taxonFormatter = new ItemFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.REMOVE, true, false, false);
     }
 
     @Override
@@ -84,7 +91,7 @@ public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
                 // characters
                 if (checkCharacterUsable(ch, context, false)) {
                     CharacterValue characterVal = _characterValues.get(ch);
-                    context.setValueForCharacter(ch, characterVal);
+                    setValueForCharacter(ch, characterVal, context);
                 }
             }
         }
@@ -111,7 +118,7 @@ public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
                         // to
                         // be done for subsequent invocations
                         _characterValues.put(ch, characterVal);
-                        context.setValueForCharacter(ch, characterVal);
+                        setValueForCharacter(ch, characterVal, context);
                     } else {
                         // User hit cancel or did not enter a value when
                         // prompted.
@@ -194,7 +201,8 @@ public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
                             // to
                             // be done for subsequent invocations
                             _characterValues.put(ch, characterVal);
-                            context.setValueForCharacter(ch, characterVal);
+                            setValueForCharacter(ch, characterVal, context);
+
                             charsNoValues.remove(ch);
                         }
                     }
@@ -210,6 +218,29 @@ public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
         _characterValues.put(ch, val);
     }
 
+    private void setValueForCharacter(au.org.ala.delta.model.Character ch, CharacterValue val, IntkeyContext context) {
+        context.setValueForCharacter(ch, val);
+
+        // If using the SEPARATE character order, give the user an opportunity
+        // to change the value if it results in
+        // the elimination of the taxon being separated.
+        if (context.getCharacterOrder() == IntkeyCharacterOrder.SEPARATE) {
+            Item taxonToSeparate = context.getDataset().getTaxon(context.getTaxonToSeparate());
+            if (!context.getAvailableTaxa().contains(taxonToSeparate)) {
+                boolean changeValue = context.getDirectivePopulator().promptForYesNoOption(
+                        MessageFormat.format(UIUtils.getResourceString("UseDirective.TaxonToSeparateEliminatedMsg"), _charFormatter.formatCharacterDescription(ch),
+                                _taxonFormatter.formatItemDescription(taxonToSeparate)));
+
+                if (changeValue) {
+                    CharacterValue newVal = promptForCharacterValue(ch, context.getDirectivePopulator());
+                    _characterValues.put(ch, newVal);
+                    setValueForCharacter(ch, newVal, context);
+                }
+
+            }
+        }
+    }
+
     private boolean checkCharacterUsable(au.org.ala.delta.model.Character ch, IntkeyContext context, boolean warnAlreadySet) {
         CharacterFormatter formatter = new CharacterFormatter(true, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REPLACE, true, false);
 
@@ -217,8 +248,8 @@ public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
         if (context.charactersFixed()) {
             if (context.getFixedCharactersList().contains(ch.getCharacterId())) {
                 if (!context.isProcessingInputFile()) {
-                    String msg = String.format(UIUtils.getResourceString("UseDirective.CharacterFixed"), formatter.formatCharacterDescription(ch));
-                    String title = String.format(UIUtils.getResourceString("Intkey.informationDlgTitle"), formatter.formatCharacterDescription(ch));
+                    String msg = MessageFormat.format(UIUtils.getResourceString("UseDirective.CharacterFixed"), formatter.formatCharacterDescription(ch));
+                    String title = UIUtils.getResourceString("Intkey.informationDlgTitle");
                     JOptionPane.showMessageDialog(UIUtils.getMainFrame(), msg, title, JOptionPane.ERROR_MESSAGE);
                 }
                 return false;
@@ -231,8 +262,8 @@ public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
                 if (context.isProcessingInputFile()) {
                     return true;
                 } else {
-                    String msg = String.format(UIUtils.getResourceString("UseDirective.CharacterAlreadyUsed"), formatter.formatCharacterDescription(ch));
-                    String title = String.format(UIUtils.getResourceString("Intkey.informationDlgTitle"), formatter.formatCharacterDescription(ch));
+                    String msg = MessageFormat.format(UIUtils.getResourceString("UseDirective.CharacterAlreadyUsed"), formatter.formatCharacterDescription(ch));
+                    String title = UIUtils.getResourceString("Intkey.informationDlgTitle");
                     int choice = JOptionPane.showConfirmDialog(UIUtils.getMainFrame(), msg, title, JOptionPane.YES_NO_OPTION);
                     if (choice == JOptionPane.YES_OPTION) {
                         return true;
@@ -246,8 +277,8 @@ public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
         // is character unavailable?
         if (context.getSpecimen().isCharacterInapplicable(ch)) {
             if (!context.isProcessingInputFile()) {
-                String msg = String.format(UIUtils.getResourceString("UseDirective.CharacterUnavailable"), formatter.formatCharacterDescription(ch));
-                String title = String.format(UIUtils.getResourceString("Intkey.informationDlgTitle"), formatter.formatCharacterDescription(ch));
+                String msg = MessageFormat.format(UIUtils.getResourceString("UseDirective.CharacterUnavailable"), formatter.formatCharacterDescription(ch));
+                String title = MessageFormat.format(UIUtils.getResourceString("Intkey.informationDlgTitle"), formatter.formatCharacterDescription(ch));
                 JOptionPane.showMessageDialog(UIUtils.getMainFrame(), msg, title, JOptionPane.ERROR_MESSAGE);
             }
             return false;
@@ -256,8 +287,8 @@ public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
         // is character excluded?
         if (!context.getIncludedCharacters().contains(ch)) {
             if (!context.isProcessingInputFile()) {
-                String msg = String.format(UIUtils.getResourceString("UseDirective.CharacterExcluded"), formatter.formatCharacterDescription(ch));
-                String title = String.format(UIUtils.getResourceString("Intkey.informationDlgTitle"), formatter.formatCharacterDescription(ch));
+                String msg = MessageFormat.format(UIUtils.getResourceString("UseDirective.CharacterExcluded"), formatter.formatCharacterDescription(ch));
+                String title = MessageFormat.format(UIUtils.getResourceString("Intkey.informationDlgTitle"), formatter.formatCharacterDescription(ch));
                 JOptionPane.showMessageDialog(UIUtils.getMainFrame(), msg, title, JOptionPane.ERROR_MESSAGE);
             }
             return false;
@@ -304,7 +335,7 @@ public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
             }
 
             if (applicableStates.size() == cc.getStates().length) {
-                throw new RuntimeException(String.format("There are no states for character %s that will make character %s applicable", cc.getCharacterId(), ch.getCharacterId()));
+                throw new RuntimeException(MessageFormat.format("There are no states for character %s that will make character {0} applicable", cc.getCharacterId(), ch.getCharacterId()));
             }
 
             // If not processing an input file, prompt the user to set the

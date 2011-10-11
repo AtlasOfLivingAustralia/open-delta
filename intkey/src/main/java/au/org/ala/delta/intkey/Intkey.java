@@ -1154,18 +1154,28 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
         IntkeyCharacterOrder charOrder = _context.getCharacterOrder();
 
-        switch (charOrder) {
+        Item taxonToSeparate = null;
+        String formattedTaxonToSeparateName = null;
 
-        case BEST:
+        switch (charOrder) {
         case SEPARATE:
+            taxonToSeparate = _context.getDataset().getTaxon(_context.getTaxonToSeparate());
+            formattedTaxonToSeparateName = _taxonformatter.formatItemDescription(taxonToSeparate);
+            if (!_context.getAvailableTaxa().contains(taxonToSeparate)) {
+                _listAvailableCharacters.setModel(new DefaultListModel());
+                _lblNumAvailableCharacters.setText(MessageFormat.format(separateCharactersCaption, formattedTaxonToSeparateName, 0));
+                break;
+            }
+
+            // If taxon to separate has not been eliminated, drop through and
+            // display the best characters for taxon separation
+        case BEST:
             LinkedHashMap<Character, Double> bestCharactersMap = _context.getBestOrSeparateCharacters();
             if (bestCharactersMap != null) {
                 if (charOrder == IntkeyCharacterOrder.BEST) {
                     _lblNumAvailableCharacters.setText(String.format(bestCharactersCaption, bestCharactersMap.keySet().size()));
                 } else {
-                    Item taxonToSeparate = _context.getDataset().getTaxon(_context.getTaxonToSeparate());
-                    String formattedTaxonName = _taxonformatter.formatItemDescription(taxonToSeparate);
-                    _lblNumAvailableCharacters.setText(MessageFormat.format(separateCharactersCaption, formattedTaxonName, bestCharactersMap.keySet().size()));
+                    _lblNumAvailableCharacters.setText(MessageFormat.format(separateCharactersCaption, formattedTaxonToSeparateName, bestCharactersMap.keySet().size()));
                 }
                 if (bestCharactersMap.isEmpty()) {
                     handleNoAvailableCharacters();
@@ -1851,13 +1861,11 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     @Override
     public Boolean promptForYesNoOption(String message) {
-        int selectedOption = JOptionPane.showConfirmDialog(getMainFrame(), message, null, JOptionPane.YES_NO_CANCEL_OPTION);
+        int selectedOption = JOptionPane.showConfirmDialog(getMainFrame(), message, null, JOptionPane.YES_NO_OPTION);
         if (selectedOption == JOptionPane.YES_OPTION) {
             return true;
-        } else if (selectedOption == JOptionPane.NO_OPTION) {
-            return false;
         } else {
-            return null;
+            return false;
         }
     }
 
