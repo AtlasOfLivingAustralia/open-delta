@@ -25,7 +25,7 @@ public class DeltaFormatDataSetFilter extends AbstractDataSetFilter implements D
 	
 	@Override
 	public boolean filter(Item item) {
-		return !_context.isExcluded(item.getItemNumber());
+		return !_context.isItemExcluded(item.getItemNumber());
 	}
 	
 	

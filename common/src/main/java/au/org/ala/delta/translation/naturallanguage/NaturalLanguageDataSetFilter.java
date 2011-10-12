@@ -25,12 +25,15 @@ public class NaturalLanguageDataSetFilter extends AbstractDataSetFilter implemen
 	
 	@Override
 	public boolean filter(Item item) {
-		return !_context.isExcluded(item.getItemNumber());
+		return !_context.isItemExcluded(item.getItemNumber());
 	}
 	
 	@Override
 	public boolean filter(Item item, Character character) {
 		
+		if (isIncluded(item, character) == 0) {
+			return false;
+		}
 		
 		Attribute attribute = item.getAttribute(character);
 

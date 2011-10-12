@@ -53,7 +53,7 @@ public abstract class AbstractDataSetFilter implements DataSetFilter {
 	protected int isIncluded(Item item, Character character) {
 		int result = 1;
 		int characterNum = character.getCharacterId();
-		if (_context.isExcluded(characterNum)) {
+		if (_context.isCharacterExcluded(characterNum)) {
 			result = 0;
 			// if _context.isCharacterAdded(int item, int character) ||
 			// _context.isEmphasized(int item, int character) {

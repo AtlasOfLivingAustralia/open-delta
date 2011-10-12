@@ -427,7 +427,7 @@ public class DeltaContext extends AbstractDeltaContext {
 	 * @param itemNumber the item number to check.
 	 * @return whether the specified item is excluded.
 	 */
-	public boolean isExcluded(int itemNumber) {
+	public boolean isItemExcluded(int itemNumber) {
 		return _excludedItems.contains(itemNumber);
 	}
 
