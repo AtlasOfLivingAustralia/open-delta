@@ -72,10 +72,11 @@ public interface DirectivePopulator {
      *            if true, no prompt will be shown if only a single taxon is
      *            available for selection - that taxon will be selected
      *            automatically
-     * @return the list of selected characters, or null if the user cancelled
+     * @param if true, the user will only be permitted to select a single taxon           
+     * @return the list of selected taxa, or null if the user cancelled
      *         the operation
      */
-    List<Item> promptForTaxaByList(String directiveName, boolean selectFromIncludedTaxaOnly, boolean autoSelectSingleValue);
+    List<Item> promptForTaxaByList(String directiveName, boolean selectFromIncludedTaxaOnly, boolean autoSelectSingleValue, boolean singleSelect);
 
     /**
      * Prompts the user with a yes/no question

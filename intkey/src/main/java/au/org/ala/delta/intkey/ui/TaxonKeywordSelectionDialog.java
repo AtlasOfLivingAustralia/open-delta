@@ -119,7 +119,7 @@ public class TaxonKeywordSelectionDialog extends KeywordSelectionDialog {
             if (taxa.isEmpty()) {
                 JOptionPane.showMessageDialog(this, allTaxaInSelectedSetExcludedCaption, title, JOptionPane.ERROR_MESSAGE);
             } else {
-                TaxonSelectionDialog taxonDlg = new TaxonSelectionDialog(this, taxa, _directiveName, selectedKeyword, _context.displayNumbering());
+                TaxonSelectionDialog taxonDlg = new TaxonSelectionDialog(this, taxa, _directiveName, selectedKeyword, _context.displayNumbering(), false);
                 taxonDlg.setVisible(true);
 
                 List<Item> taxaSelectedInDlg = taxonDlg.getSelectedTaxa();

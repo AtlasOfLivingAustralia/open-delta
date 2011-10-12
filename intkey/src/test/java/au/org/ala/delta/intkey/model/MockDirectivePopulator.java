@@ -33,7 +33,7 @@ public class MockDirectivePopulator implements DirectivePopulator {
     }
 
     @Override
-    public List<Item> promptForTaxaByList(String directiveName, boolean selectFromIncludedTaxaOnly, boolean autoSelectSingleValue) {
+    public List<Item> promptForTaxaByList(String directiveName, boolean selectFromIncludedTaxaOnly, boolean autoSelectSingleValue, boolean singleSelect) {
         return null;
     }
 

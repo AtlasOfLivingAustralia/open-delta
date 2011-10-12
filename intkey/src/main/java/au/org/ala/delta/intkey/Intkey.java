@@ -1864,7 +1864,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     }
 
     @Override
-    public List<Item> promptForTaxaByList(String directiveName, boolean selectFromRemainingTaxaOnly, boolean autoSelectSingleValue) {
+    public List<Item> promptForTaxaByList(String directiveName, boolean selectFromRemainingTaxaOnly, boolean autoSelectSingleValue, boolean singleSelect) {
         List<Item> taxaToSelect;
 
         String keyword = null;
@@ -1879,7 +1879,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         if (taxaToSelect.size() == 1 && autoSelectSingleValue) {
             return taxaToSelect;
         } else {
-            TaxonSelectionDialog dlg = new TaxonSelectionDialog(getMainFrame(), taxaToSelect, directiveName.toUpperCase(), keyword, _context.displayNumbering());
+            TaxonSelectionDialog dlg = new TaxonSelectionDialog(getMainFrame(), taxaToSelect, directiveName.toUpperCase(), keyword, _context.displayNumbering(), singleSelect);
             show(dlg);
             return dlg.getSelectedTaxa();
         }
