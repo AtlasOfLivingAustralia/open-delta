@@ -34,11 +34,15 @@ public class FormatterFactory {
 	
 	public ItemFormatter createItemFormatter(ItemListTypeSetter typeSetter, CommentStrippingMode mode, boolean includeNumber) {
 		ItemFormatter formatter = null;
+		AngleBracketHandlingMode angleBracketMode = AngleBracketHandlingMode.RETAIN;
+		if (_context.isReplaceAngleBrackets()) {
+			angleBracketMode = AngleBracketHandlingMode.REMOVE;
+		}
 		if (_context.isOmitTypeSettingMarks()) {
-			formatter = new ItemFormatter(includeNumber, mode, AngleBracketHandlingMode.RETAIN, true, false, false);
+			formatter = new ItemFormatter(includeNumber, mode, angleBracketMode, true, false, false);
 		}
 		else if (typeSetter == null) {
-			formatter = new ItemFormatter(includeNumber, mode, AngleBracketHandlingMode.RETAIN, false, false, false);
+			formatter = new ItemFormatter(includeNumber, mode, angleBracketMode, false, false, false);
 		}
 		else {
 			formatter = new TypeSettingItemFormatter(typeSetter, includeNumber);
@@ -63,7 +67,12 @@ public class FormatterFactory {
 	}
 	
 	public CharacterFormatter createCharacterFormatter(boolean includeNumber, boolean capitaliseFirst, CommentStrippingMode mode) {
-		CharacterFormatter formatter =  new CharacterFormatter(includeNumber, mode, AngleBracketHandlingMode.RETAIN, _context.isOmitTypeSettingMarks(), capitaliseFirst);
+		
+		AngleBracketHandlingMode angleBracketMode = AngleBracketHandlingMode.RETAIN;
+		if (_context.isReplaceAngleBrackets()) {
+			angleBracketMode = AngleBracketHandlingMode.REMOVE_SURROUNDING_REPLACE_INNER;
+		}
+		CharacterFormatter formatter =  new CharacterFormatter(includeNumber, mode, angleBracketMode, _context.isOmitTypeSettingMarks(), capitaliseFirst);
 		
 		if (_context.getOmitInnerComments()) {
 			mode = CommentStrippingMode.STRIP_INNER;
@@ -76,8 +85,16 @@ public class FormatterFactory {
 	
 	public AttributeFormatter createAttributeFormatter() {
 		AttributeFormatter formatter = null;
+		AngleBracketHandlingMode angleBracketMode = AngleBracketHandlingMode.RETAIN;
+		if (_context.isReplaceAngleBrackets()) {
+			angleBracketMode = AngleBracketHandlingMode.REPLACE;
+		}
+		CommentStrippingMode mode = CommentStrippingMode.RETAIN;
+		if (_context.getOmitInnerComments()) {
+			mode = CommentStrippingMode.STRIP_INNER;
+		}
 		if (_context.isOmitTypeSettingMarks()) {
-			formatter = new AttributeFormatter(false, true, CommentStrippingMode.RETAIN);
+			formatter = new AttributeFormatter(false, true, mode, angleBracketMode, false, null);
 		}
 		else {
 			formatter = new TypeSettingAttributeFormatter("\\endash{}");

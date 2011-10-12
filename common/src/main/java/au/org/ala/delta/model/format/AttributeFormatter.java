@@ -63,11 +63,21 @@ public class AttributeFormatter extends Formatter {
      * @return the formatted attribute value.
      */
     public String formatComment(String comment) {
-
-        if (StringUtils.isEmpty(comment) || EMPTY_COMMENT_PATTERN.matcher(comment).matches()) {
-            return "";
-        }
-        return defaultFormat(comment);
+    	 if (StringUtils.isEmpty(comment) || EMPTY_COMMENT_PATTERN.matcher(comment).matches()) {
+             return "";
+         }
+         return defaultFormat(comment);
+    }
+    
+    public String formatCharacterComment(String comment) {
+    	 if (StringUtils.isEmpty(comment) || EMPTY_COMMENT_PATTERN.matcher(comment).matches()) {
+             return "";
+         }
+    	 AngleBracketHandlingMode mode = _angleBracketHandlingMode;
+    	 if (_angleBracketHandlingMode == AngleBracketHandlingMode.REPLACE) {
+    		 mode = AngleBracketHandlingMode.REMOVE;
+    	 }
+         return defaultFormat(comment, mode);
     }
 
     /**

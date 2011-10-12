@@ -83,7 +83,7 @@ public abstract class AttributeTranslator {
 
 	public String translateCharacterComment(String comment) {
 		StringBuilder output = new StringBuilder();
-		comment = _attributeFormatter.formatComment(comment);
+		comment = _attributeFormatter.formatCharacterComment(comment);
 		if (StringUtils.isNotEmpty(comment)) {
 			output.append(comment);
 			output.append(" ");

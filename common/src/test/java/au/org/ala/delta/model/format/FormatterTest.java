@@ -21,7 +21,7 @@ public class FormatterTest extends TestCase {
 		_formatter = new Formatter(CommentStrippingMode.STRIP_INNER, AngleBracketHandlingMode.REMOVE, false, false);
 		String text = "not pseudopetiolate <Test <implicit>>";
 		String result = _formatter.defaultFormat(text);
-		assertEquals("not pseudopetiolate <Test>", result);
+		assertEquals("not pseudopetiolate Test", result);
 	}
 	
 	@Test

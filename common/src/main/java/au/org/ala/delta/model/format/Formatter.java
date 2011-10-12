@@ -67,6 +67,10 @@ public class Formatter {
         return defaultFormat(text, _commentStrippingMode, _angleBracketHandlingMode, _stripFormatting, _capitaliseFirstWord);
     }
     
+    public String defaultFormat(String text, AngleBracketHandlingMode angleBracketMode) {
+    	return defaultFormat(text, _commentStrippingMode, angleBracketMode, _stripFormatting, _capitaliseFirstWord);
+    }
+    
     public String defaultFormat(String text, boolean newLinesToSpace) {
         return defaultFormat(text, _commentStrippingMode, _angleBracketHandlingMode, _stripFormatting, _capitaliseFirstWord, newLinesToSpace, _rtfToHtml);
     }
@@ -90,7 +94,7 @@ public class Formatter {
 
         text = stripComments(text, commentStrippingMode);
 
-        if (commentStrippingMode == CommentStrippingMode.RETAIN) {
+        if (commentStrippingMode != CommentStrippingMode.STRIP_ALL) {
             text = handleAngleBrackets(text, angleBracketHandlingMode);
         }
 
@@ -153,7 +157,7 @@ public class Formatter {
      * @return the text with angle brackets replaced.
      */
     private String handleAngleBrackets(String text, AngleBracketHandlingMode angleBracketHandlingMode) {
-        switch (_angleBracketHandlingMode) {
+        switch (angleBracketHandlingMode) {
         case REMOVE:
             text = text.replace("<", "");
             text = text.replace(">", "");

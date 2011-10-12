@@ -104,7 +104,7 @@ public class NaturalLanguageTranslator extends AbstractDataSetTranslator {
 
         Item item = attribute.getItem();
         au.org.ala.delta.model.Character character = attribute.getCharacter();
-
+       
         String comma = Words.word(Word.COMMA);
         if (_context.useAlternateComma()) {
             comma = Words.word(Word.ALTERNATE_COMMA);
@@ -250,16 +250,22 @@ public class NaturalLanguageTranslator extends AbstractDataSetTranslator {
      */
     private void writeAttributes(Item item, List<Character> characters) {
 
+    	Character first = characters.get(0);
+	    if (_context.startNewParagraphAtCharacter(first.getCharacterId())) {
+         	_newParagraph = true;
+        }
         for (Character character : characters) {
             int characterNumber = character.getCharacterId();
 
             boolean subsequentPartOfLinkedSet = (characters.size() > 1) && (character != characters.get(0));
 
             String description = _characterFormatter.formatCharacterDescription(character);
+            String firstDescription = _characterFormatter.formatCharacterDescription(characters.get(0));
             if (subsequentPartOfLinkedSet) {
-                description = removeCommonPrefix(characters.get(0).getDescription(), description);
+                description = removeCommonPrefix(firstDescription, description);
             }
-            writeFeature(description, true, item.getItemNumber(), characterNumber, _context.getItemSubheading(characterNumber), false, false, new int[_context.getNumberOfCharacters()],
+            String itemSubheading = _characterFormatter.defaultFormat(_context.getItemSubheading(characterNumber));
+            writeFeature(description, true, item.getItemNumber(), characterNumber, itemSubheading, false, false, new int[_context.getNumberOfCharacters()],
                     subsequentPartOfLinkedSet);
             writeCharacterAttribute(item, character);
         }
