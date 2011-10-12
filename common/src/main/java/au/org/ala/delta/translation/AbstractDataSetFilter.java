@@ -1,6 +1,7 @@
 package au.org.ala.delta.translation;
 
 import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.TranslateType;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
@@ -65,7 +66,11 @@ public abstract class AbstractDataSetFilter implements DataSetFilter {
 
 	protected boolean outputImplictValue(Attribute attribute) {
 		if (isIncluded(attribute.getItem(), attribute.getCharacter()) == 1) {
-		    return _context.getInsertImplicitValues();
+		    
+			TranslateType type = _context.getTranslateType();
+			if (type == TranslateType.NaturalLanguage || type == TranslateType.Delta) {
+				return _context.getInsertImplicitValues();
+			}
 		}
 		return true;
 	}

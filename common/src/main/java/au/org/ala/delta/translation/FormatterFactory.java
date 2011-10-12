@@ -80,7 +80,7 @@ public class FormatterFactory {
 			formatter = new AttributeFormatter(false, true, CommentStrippingMode.RETAIN);
 		}
 		else {
-			formatter = new TypeSettingAttributeFormatter();
+			formatter = new TypeSettingAttributeFormatter("\\endash{}");
 		}
 		formatter.setRtfToHtml(_context.getOutputHtml());
 		

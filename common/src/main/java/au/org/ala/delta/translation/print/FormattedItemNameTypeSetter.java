@@ -14,10 +14,18 @@ public class FormattedItemNameTypeSetter extends FormattedTextTypeSetter {
 		super(typeSettingMarks, typeSetter);
 	}
 
-	@Override
+	@Override 
 	public void beforeItem(Item item) {
+		writeTypeSettingMark(MarkPosition.BEFORE_ITEM_WITH_NATURAL_LANGUAGE);
+	}
+	
+	@Override
+	public void beforeItemName() {
 		writeTypeSettingMark(MarkPosition.ITEM_DESCRIPTION_BEFORE_ITEM_NAME);
 	}
 
-	
+	@Override
+	public void afterItemName() {
+		writeTypeSettingMark(MarkPosition.ITEM_DESCRIPTION_AFTER_ITEM_NAME);
+	}
 }

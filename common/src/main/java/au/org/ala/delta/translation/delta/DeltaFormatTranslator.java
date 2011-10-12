@@ -8,11 +8,13 @@ import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateAttribute;
 import au.org.ala.delta.model.MultiStateCharacter;
+import au.org.ala.delta.model.NumericAttribute;
 import au.org.ala.delta.model.NumericCharacter;
 import au.org.ala.delta.model.TextAttribute;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.translation.AbstractDataSetTranslator;
+import au.org.ala.delta.translation.DataSetFilter;
 import au.org.ala.delta.translation.PrintFile;
 import au.org.ala.delta.translation.attribute.AttributeParser;
 import au.org.ala.delta.translation.attribute.CommentedValueList;
@@ -35,11 +37,12 @@ public class DeltaFormatTranslator extends AbstractDataSetTranslator {
 	
 	public DeltaFormatTranslator(
 			DeltaContext context, 
+			DataSetFilter filter,
 			PrintFile printer, 
 			ItemFormatter itemFormatter,
 			CharacterFormatter characterFormatter,
 			CharacterListTypeSetter typeSetter) {
-		super(context, new DeltaFormatDataSetFilter(context));
+		super(context, filter);
 		
 		_printer = printer;
 		_printer.setIndentOnLineWrap(true);
@@ -101,20 +104,42 @@ public class DeltaFormatTranslator extends AbstractDataSetTranslator {
 		output(attributeValue.toString());
 	}
 
-	private String getAttributeValue(Attribute attribute) {
-		String value = attribute.getValueAsString();
+	protected String getAttributeValue(Attribute attribute) {
+		
+		String value = null;
 		if (attribute instanceof TextAttribute) {
-			if (!value.startsWith("<")) {
-				value = "<"+value+">";
-			}
+			value = getTextAttributeValue(attribute);
 		}
-		if (attribute instanceof MultiStateAttribute) {
+		else if (attribute instanceof MultiStateAttribute) {
             MultiStateAttribute msAttr = (MultiStateAttribute) attribute;
-            if (msAttr.isImplicit()) {
-                value = Integer.toString(msAttr.getImplicitValue());
-            }
+            value = getMultiStateAttributeValue(msAttr);
         }
+		else if (attribute instanceof NumericAttribute) {
+			value = getNumericAttributeValue((NumericAttribute)attribute);
+		}
 		return Utils.despaceRtf(value, false);
+	}
+	
+	protected String getTextAttributeValue(Attribute attribute) {
+		String value = attribute.getValueAsString();
+		if (!value.startsWith("<")) {
+			value = "<"+value+">";
+		}
+		return value;
+	}
+	
+	protected String getMultiStateAttributeValue(MultiStateAttribute attribute) {
+		String value = attribute.getValueAsString();
+		if (attribute.isImplicit()) {
+            value = Integer.toString(attribute.getImplicitValue());
+        }
+		return value;
+	}
+	
+	protected String getNumericAttributeValue(NumericAttribute attribute) {
+		String value = attribute.getValueAsString();
+		
+		return value;
 	}
 
 	@Override

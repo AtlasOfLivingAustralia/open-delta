@@ -44,7 +44,7 @@ public class ItemNamesPrinter extends AbstractDataSetTranslator implements Print
 	
 	@Override
 	public void beforeItem(Item item) {
-		_typeSetter.beforeItem(item);
+		_typeSetter.beforeItemName();
 	}
 
 	@Override

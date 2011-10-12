@@ -103,7 +103,8 @@ public class DataSetTranslatorFactory {
 		ItemFormatter itemFormatter  = formatterFactory.createItemFormatter(null);
 		CharacterFormatter charFormatter = formatterFactory.createCharacterFormatter();
 		CharacterListTypeSetter typeSetter = new au.org.ala.delta.translation.print.PlainTextTypeSetter(printer);
-		return new DeltaFormatTranslator(context, printer, itemFormatter, charFormatter, typeSetter);
+		DataSetFilter filter = new DeltaFormatDataSetFilter(context);
+		return new DeltaFormatTranslator(context, filter, printer, itemFormatter, charFormatter, typeSetter);
 	}
 	
 	public PrintAction createPrintAction(DeltaContext context, PrintActionType printAction) {
@@ -134,8 +135,8 @@ public class DataSetTranslatorFactory {
 		}
 		CharacterFormatter charFormatter  = formatterFactory.createCharacterFormatter(true, true, mode);
 		CharacterListTypeSetter typeSetter = new TypeSetterFactory().createCharacterListTypeSetter(context, printer);
-		
-		return new CharacterListPrinter(context, printer, charFormatter, typeSetter);
+		DataSetFilter filter = new DeltaFormatDataSetFilter(context);
+		return new CharacterListPrinter(context, filter, printer, charFormatter, typeSetter);
 	}
 	
 	private PrintAction createItemNamesPrinter(DeltaContext context) {
@@ -153,9 +154,10 @@ public class DataSetTranslatorFactory {
 		PrintFile printer = context.getPrintFile();
 		ItemListTypeSetter typeSetter = new TypeSetterFactory().createItemListTypeSetter(context, printer);
 		
-		ItemFormatter itemFormatter  = formatterFactory.createItemFormatter(typeSetter, true);
-		
-		return new ItemDescriptionsPrinter(context, printer, itemFormatter, typeSetter);
+		ItemFormatter itemFormatter  = formatterFactory.createItemFormatter(typeSetter, false);
+		AttributeFormatter attributeFormatter = formatterFactory.createAttributeFormatter();
+		DataSetFilter filter = new DeltaFormatDataSetFilter(context);
+		return new ItemDescriptionsPrinter(context, filter, printer, itemFormatter, attributeFormatter, typeSetter);
 	}
 	
 }

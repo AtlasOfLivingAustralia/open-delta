@@ -8,15 +8,27 @@ import au.org.ala.delta.model.format.AttributeFormatter;
  */
 public class TypeSettingAttributeFormatter extends AttributeFormatter {
 
+	private static final String DEFAULT_RANGE_SEPARATOR = "\u2013";
+	
+	private String _numericRangeSeparator;
+	
 	public TypeSettingAttributeFormatter() {
+		this(DEFAULT_RANGE_SEPARATOR);
+	}
+	
+	public TypeSettingAttributeFormatter(String numericRangeSeparator) {
 		super(false, false, CommentStrippingMode.RETAIN);
+		_numericRangeSeparator = numericRangeSeparator;
 	}
 
 	@Override
 	public String formatComment(String comment) {
 		comment = super.formatComment(comment);
-		comment = comment.replaceAll("(\\d)-(\\d)", "$1\u2013$2");
-		
+		if (comment.startsWith("-")) {
+			comment = _numericRangeSeparator+comment.substring(1);
+		}
+		String separatorRegexp = _numericRangeSeparator.replace("\\", "\\\\");
+		comment = comment.replaceAll("([^a-zA-Z])-([^a-zA-Z])", "$1"+separatorRegexp+"$2");
 		return comment;
 	}
 }
