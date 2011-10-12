@@ -166,4 +166,17 @@ public interface DirectivePopulator {
      */
     Boolean promptForOnOffValue(String directiveName, boolean initialValue);
 
+    /**
+     * Prompts the user to enter match settings used with the SET MATCH
+     * directive.
+     * 
+     * @return A list of objects with three values - 1. A boolean indicating
+     *         whether or not inapplicables should be matched, 2. A boolean
+     *         indicating whether or not unknowns should be matched, 3. A
+     *         MatchType enum value representing the match type (subset, overlap
+     *         or exact). A null list indicates that the user cancelled the
+     *         operation.
+     */
+    List<Object> promptForMatchSettings();
+
 }

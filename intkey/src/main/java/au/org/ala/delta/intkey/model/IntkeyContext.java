@@ -999,6 +999,7 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     public void setMatchInapplicables(boolean matchInapplicables) {
         _matchInapplicables = matchInapplicables;
+        updateSpecimenMatchSettings();
     }
 
     public boolean getMatchUnkowns() {
@@ -1007,6 +1008,7 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     public void setMatchUnknowns(boolean matchUnknowns) {
         _matchUnknowns = matchUnknowns;
+        updateSpecimenMatchSettings();
     }
 
     public MatchType getMatchType() {
@@ -1015,6 +1017,25 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     public void setMatchType(MatchType matchType) {
         _matchType = matchType;
+
+        // A match type of EXACT implies that inapplicables and unknowns should
+        // not be matched.
+        if (_matchType == MatchType.EXACT) {
+            _matchInapplicables = false;
+            _matchUnknowns = false;
+        }
+
+        updateSpecimenMatchSettings();
+    }
+
+    // Update the specimen with new match settings. This needs to be called each
+    // time the match settings are updated
+    // so that the eliminated taxa can be recalculated given the new match
+    // settings.
+    private void updateSpecimenMatchSettings() {
+        Specimen newSpecimen = new Specimen(_dataset, _matchInapplicables, _matchUnknowns, _matchType, _specimen);
+        _specimen = newSpecimen;
+        _appUI.handleUpdateAll();
     }
 
     public DiagType getDiagType() {

@@ -79,12 +79,14 @@ import au.org.ala.delta.intkey.directives.IncludeTaxaDirective;
 import au.org.ala.delta.intkey.directives.IntkeyDirectiveParseException;
 import au.org.ala.delta.intkey.directives.NewDatasetDirective;
 import au.org.ala.delta.intkey.directives.RestartDirective;
+import au.org.ala.delta.intkey.directives.SetMatchDirective;
 import au.org.ala.delta.intkey.directives.SetToleranceDirective;
 import au.org.ala.delta.intkey.directives.UseDirective;
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyCharacterOrder;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.model.IntkeyDataset;
+import au.org.ala.delta.intkey.model.MatchType;
 import au.org.ala.delta.intkey.model.SearchUtils;
 import au.org.ala.delta.intkey.model.StartupFileData;
 import au.org.ala.delta.intkey.model.StartupUtils;
@@ -105,10 +107,10 @@ import au.org.ala.delta.intkey.ui.ImageUtils;
 import au.org.ala.delta.intkey.ui.IntegerInputDialog;
 import au.org.ala.delta.intkey.ui.MultiStateInputDialog;
 import au.org.ala.delta.intkey.ui.OnOffPromptDialog;
-import au.org.ala.delta.intkey.ui.OutputFileSelectionDialog;
 import au.org.ala.delta.intkey.ui.ReExecuteDialog;
 import au.org.ala.delta.intkey.ui.RealInputDialog;
 import au.org.ala.delta.intkey.ui.RtfReportDisplayDialog;
+import au.org.ala.delta.intkey.ui.SetMatchPromptDialog;
 import au.org.ala.delta.intkey.ui.TaxonCellRenderer;
 import au.org.ala.delta.intkey.ui.TaxonImageDialog;
 import au.org.ala.delta.intkey.ui.TaxonInformationDialog;
@@ -446,7 +448,6 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
         _btnSetMatch = new JButton();
         _btnSetMatch.setAction(actionMap.get("btnSetMatch"));
-        _btnSetMatch.setEnabled(false);
         _btnSetMatch.setVisible(_advancedMode);
         _btnSetMatch.setPreferredSize(new Dimension(30, 30));
         _pnlAvailableCharactersButtons.add(_btnSetMatch);
@@ -1037,6 +1038,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     @Action
     public void btnSetMatch() {
+        executeDirective(new SetMatchDirective(), null);
     }
 
     @Action
@@ -1828,7 +1830,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     @Override
     public List<Item> promptForTaxaByKeyword(String directiveName, boolean permitSelectionFromIncludedTaxaOnly, boolean noneKeywordAvailable) {
-        
+
         List<Image> taxonKeywordImages = _context.getDataset().getTaxonKeywordImages();
         if (!_advancedMode && taxonKeywordImages != null && !taxonKeywordImages.isEmpty()) {
             ImageDialog dlg = new ImageDialog(getMainFrame(), _context.getImageSettings(), true);
@@ -1838,7 +1840,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             show(dlg);
 
             Set<String> keywords = dlg.getSelectedKeywords();
-            
+
             if (!noneKeywordAvailable) {
                 keywords.remove(IntkeyContext.TAXON_KEYWORD_NONE);
             }
@@ -2021,6 +2023,26 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         } else {
             return null;
         }
+    }
+
+    @Override
+    public List<Object> promptForMatchSettings() {
+        List<Object> retList = new ArrayList<Object>();
+
+        SetMatchPromptDialog dlg = new SetMatchPromptDialog(getMainFrame(), true, _context.getMatchInapplicables(), _context.getMatchUnkowns(), _context.getMatchType());
+        show(dlg);
+        if (dlg.wasOkButtonPressed()) {
+            boolean matchUnknowns = dlg.getMatchUnknowns();
+            boolean matchInapplicables = dlg.getMatchInapplicables();
+            MatchType matchType = dlg.getMatchType();
+            retList.add(matchUnknowns);
+            retList.add(matchInapplicables);
+            retList.add(matchType);
+        } else {
+            return null;
+        }
+
+        return retList;
     }
 
     // ======== Methods for "find in characters" and "find in taxa" functions
@@ -2328,4 +2350,5 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             throw new RuntimeException(e);
         }
     }
+
 }

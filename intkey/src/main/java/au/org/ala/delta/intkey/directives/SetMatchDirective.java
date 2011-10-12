@@ -1,5 +1,7 @@
 package au.org.ala.delta.intkey.directives;
 
+import java.util.List;
+
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.SetMatchDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
@@ -19,7 +21,15 @@ public class SetMatchDirective extends IntkeyDirective {
         MatchType matchType = MatchType.EXACT;
 
         if (data == null) {
-            return null;
+            List<Object> matchSettings = context.getDirectivePopulator().promptForMatchSettings();
+            if (matchSettings == null) {
+                // Null list indicates that the user cancelled the operation
+                return null;
+            } else {
+                matchUnknowns = (Boolean) matchSettings.get(0);
+                matchInapplicables = (Boolean) matchSettings.get(1);
+                matchType = (MatchType) matchSettings.get(2);
+            }
         } else {
             for (char c : data.toCharArray()) {
                 switch (c) {

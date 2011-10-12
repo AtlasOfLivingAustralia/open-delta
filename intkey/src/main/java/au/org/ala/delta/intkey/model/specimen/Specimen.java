@@ -60,6 +60,16 @@ public class Specimen {
         }
     }
 
+    // Used to copy values out of an existing specimen and apply new match
+    // settings
+    public Specimen(IntkeyDataset dataset, boolean matchInapplicables, boolean matchUnknowns, MatchType matchType, Specimen oldSpecimen) {
+        this(dataset, matchInapplicables, matchUnknowns, matchType);
+
+        for (Character ch : oldSpecimen.getUsedCharacters()) {
+            setValueForCharacter(ch, oldSpecimen.getValueForCharacter(ch));
+        }
+    }
+
     public boolean hasValueFor(Character ch) {
         return _characterValues.containsKey(ch);
     }

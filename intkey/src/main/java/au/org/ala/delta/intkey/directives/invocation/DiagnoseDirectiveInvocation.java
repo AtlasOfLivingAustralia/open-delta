@@ -25,8 +25,20 @@ public class DiagnoseDirectiveInvocation extends IntkeyDirectiveInvocation {
 
     @Override
     public boolean execute(IntkeyContext context) {
-        // TODO Auto-generated method stub
-        return false;
+
+        // saved information which will be altered by DIAGNOSE.
+
+        // derive diagnostic character set for specified items from set of
+        // masked-in characters.
+        for (Item taxon : _taxa) {
+
+            // process preset characters first
+
+            // calculate further separation characters for current taxon
+
+        }
+
+        return true;
     }
 
 }
