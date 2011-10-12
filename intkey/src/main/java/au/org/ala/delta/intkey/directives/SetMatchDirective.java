@@ -1,13 +1,26 @@
 package au.org.ala.delta.intkey.directives;
 
+import java.text.MessageFormat;
 import java.util.List;
 
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.SetMatchDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.model.MatchType;
+import au.org.ala.delta.intkey.ui.UIUtils;
 
 public class SetMatchDirective extends IntkeyDirective {
+
+    private static final String OVERLAP_LETTER = "o";
+    private static final String OVERLAP_WORD = "overlap";
+    private static final String SUBSET_LETTER = "s";
+    private static final String SUBSET_WORD = "subset";
+    private static final String EXACT_LETTER = "e";
+    private static final String EXACT_WORD = "exact";
+    private static final String UNKNOWNS_LETTER = "u";
+    private static final String UNKNOWNS_WORD = "unknowns";
+    private static final String INAPPLICABLES_LETTER = "i";
+    private static final String INAPPLICABLES_WORD = "inapplicables";
 
     public SetMatchDirective() {
         super("set", "match");
@@ -31,34 +44,23 @@ public class SetMatchDirective extends IntkeyDirective {
                 matchType = (MatchType) matchSettings.get(2);
             }
         } else {
-            for (char c : data.toCharArray()) {
-                switch (c) {
-                case 'o':
-                case 'O':
+            List<String> tokens = ParsingUtils.tokenizeDirectiveCall(data);
+            for (String token : tokens) {
+                if (token.equalsIgnoreCase(OVERLAP_LETTER) || token.equalsIgnoreCase(OVERLAP_WORD)) {
                     matchType = MatchType.OVERLAP;
-                    break;
-                case 's':
-                case 'S':
+                } else if (token.equalsIgnoreCase(SUBSET_LETTER) || token.equalsIgnoreCase(SUBSET_WORD)) {
                     matchType = MatchType.SUBSET;
-                    break;
-                case 'e':
-                case 'E':
+                } else if (token.equalsIgnoreCase(EXACT_LETTER) || token.equalsIgnoreCase(EXACT_WORD)) {
+                    matchType = MatchType.EXACT;
                     matchUnknowns = false;
                     matchInapplicables = false;
-                    break;
-                case 'u':
-                case 'U':
+                } else if (token.equalsIgnoreCase(UNKNOWNS_LETTER) || token.equalsIgnoreCase(UNKNOWNS_WORD)) {
                     matchUnknowns = true;
-                    break;
-                case 'i':
-                case 'I':
+                } else if (token.equalsIgnoreCase(INAPPLICABLES_LETTER) || token.equalsIgnoreCase(INAPPLICABLES_WORD)) {
                     matchInapplicables = true;
-                    break;
-                default:
-                    if (!Character.isWhitespace(c)) {
-                        context.getUI().displayErrorMessage("Invalid option for SET MATCH: " + c);
-                        return null;
-                    }
+                } else {
+                    context.getUI().displayErrorMessage(MessageFormat.format(UIUtils.getResourceString("InvalidSetMatchOption.error"), token));
+                    return null;
                 }
             }
         }

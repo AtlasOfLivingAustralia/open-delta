@@ -231,6 +231,10 @@ public class SetMatchPromptDialog extends IntkeyDialog {
             break;
         case EXACT:
             _rdbtnExact.setSelected(true);
+            _chckbxInapplicables.setSelected(false);
+            _chckbxInapplicables.setEnabled(false);
+            _chckbxUnknowns.setSelected(false);
+            _chckbxUnknowns.setEnabled(false);
             break;
         default:
             throw new IllegalArgumentException("Unrecognized match type");

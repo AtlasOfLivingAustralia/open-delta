@@ -26,16 +26,12 @@ public class RestartDirectiveInvocation extends IntkeyDirectiveInvocation {
     public boolean execute(IntkeyContext context) {
         
         if (_identificationParameters) {
-            context.setMatchType(MatchType.OVERLAP);
-            context.setMatchInapplicables(true);
-            context.setMatchUnknowns(true);
+            context.setMatchSettings(true, true, MatchType.OVERLAP);
             context.setDiagType(DiagType.SPECIMENS);
         }
         
         if (_queryParameters) {
-            context.setMatchType(MatchType.OVERLAP);
-            context.setMatchInapplicables(false);
-            context.setMatchUnknowns(false);
+            context.setMatchSettings(false, false, MatchType.OVERLAP);
             context.setDiagType(DiagType.TAXA);
         }
         

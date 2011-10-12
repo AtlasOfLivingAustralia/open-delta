@@ -997,25 +997,15 @@ public class IntkeyContext extends AbstractDeltaContext {
         return _matchInapplicables;
     }
 
-    public void setMatchInapplicables(boolean matchInapplicables) {
-        _matchInapplicables = matchInapplicables;
-        updateSpecimenMatchSettings();
-    }
-
     public boolean getMatchUnkowns() {
         return _matchUnknowns;
-    }
-
-    public void setMatchUnknowns(boolean matchUnknowns) {
-        _matchUnknowns = matchUnknowns;
-        updateSpecimenMatchSettings();
     }
 
     public MatchType getMatchType() {
         return _matchType;
     }
 
-    public void setMatchType(MatchType matchType) {
+    public void setMatchSettings(boolean matchUnknowns, boolean matchInapplicables, MatchType matchType) {
         _matchType = matchType;
 
         // A match type of EXACT implies that inapplicables and unknowns should
@@ -1023,6 +1013,9 @@ public class IntkeyContext extends AbstractDeltaContext {
         if (_matchType == MatchType.EXACT) {
             _matchInapplicables = false;
             _matchUnknowns = false;
+        } else {
+            _matchUnknowns = matchUnknowns;
+            _matchInapplicables = matchInapplicables;
         }
 
         updateSpecimenMatchSettings();

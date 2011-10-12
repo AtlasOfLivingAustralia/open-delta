@@ -4,11 +4,11 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.model.MatchType;
 
 public class SetMatchDirectiveInvocation extends IntkeyDirectiveInvocation {
-    
+
     private boolean _matchInapplicables;
     private boolean _matchUnknowns;
     private MatchType _matchType;
-    
+
     public SetMatchDirectiveInvocation(boolean matchInapplicables, boolean matchUnknowns, MatchType matchType) {
         _matchInapplicables = matchInapplicables;
         _matchUnknowns = matchUnknowns;
@@ -17,9 +17,7 @@ public class SetMatchDirectiveInvocation extends IntkeyDirectiveInvocation {
 
     @Override
     public boolean execute(IntkeyContext context) {
-        context.setMatchInapplicables(_matchInapplicables);
-        context.setMatchUnknowns(_matchUnknowns);
-        context.setMatchType(_matchType);
+        context.setMatchSettings(_matchUnknowns, _matchInapplicables, _matchType);
         return true;
     }
 
