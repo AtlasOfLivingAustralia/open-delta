@@ -20,6 +20,11 @@ public class TypeSettingAttributeFormatter extends AttributeFormatter {
 		super(false, false, CommentStrippingMode.RETAIN);
 		_numericRangeSeparator = numericRangeSeparator;
 	}
+	
+	public TypeSettingAttributeFormatter(String numericRangeSeparator, CommentStrippingMode commentMode, AngleBracketHandlingMode angleMode) {
+		super(false, false, commentMode, angleMode);
+		_numericRangeSeparator = numericRangeSeparator;
+	}
 
 	@Override
 	public String formatComment(String comment) {

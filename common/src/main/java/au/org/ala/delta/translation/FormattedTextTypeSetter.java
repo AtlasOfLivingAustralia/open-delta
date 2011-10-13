@@ -28,7 +28,6 @@ public class FormattedTextTypeSetter extends PlainTextTypeSetter {
 	
 	@Override
 	public void beforeFirstItem() {
-		writeTypeSettingMark(MarkPosition.START_OF_FILE);
 	}
 
 	@Override

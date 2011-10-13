@@ -1,5 +1,3 @@
-mark 28
-
 mark 13mark 51mark 25item 1 mark 26<comment 1>mark 15
 mark 16(1) Character text attribute 1,1. (2) Character integer numeric 1mark 13 whole units. (3) Character real numeric 2.5 real units. (4) Character unordered multistate state 1, or state 2. (5) Character ordered multistate state 3 to state 5. mark 27
 

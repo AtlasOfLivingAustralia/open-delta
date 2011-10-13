@@ -45,7 +45,7 @@ public class FormatterFactory {
 			formatter = new ItemFormatter(includeNumber, mode, angleBracketMode, false, false, false);
 		}
 		else {
-			formatter = new TypeSettingItemFormatter(typeSetter, includeNumber);
+			formatter = new TypeSettingItemFormatter(typeSetter, includeNumber,  mode, angleBracketMode);
 		}
 		formatter.setRtfToHtml(_context.getOutputHtml());
 			
@@ -97,7 +97,7 @@ public class FormatterFactory {
 			formatter = new AttributeFormatter(false, true, mode, angleBracketMode, false, null);
 		}
 		else {
-			formatter = new TypeSettingAttributeFormatter("\\endash{}");
+			formatter = new TypeSettingAttributeFormatter("\\endash{}", mode, angleBracketMode);
 		}
 		formatter.setRtfToHtml(_context.getOutputHtml());
 		

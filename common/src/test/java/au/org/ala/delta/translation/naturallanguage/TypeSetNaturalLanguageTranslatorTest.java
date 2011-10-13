@@ -62,7 +62,6 @@ public class TypeSetNaturalLanguageTranslatorTest extends NaturalLangaugeTransla
     @Test
     public void testSimpleDataSetWithTypesetting() throws Exception {
         initialiseContext(DEFAULT_DATASET_PATH);
-
         _typeSetter = new FormattedTextTypeSetter(createMarks(), _printer);
         ItemFormatter itemFormatter = new TypeSettingItemFormatter(_typeSetter);
         CharacterFormatter characterFormatter = new CharacterFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.RETAIN, false, false);

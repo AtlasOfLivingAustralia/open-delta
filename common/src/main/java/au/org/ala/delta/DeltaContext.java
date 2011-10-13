@@ -75,7 +75,7 @@ public class DeltaContext extends AbstractDeltaContext {
 	private Set<Integer> _nonautomaticControllingCharacters = new HashSet<Integer>(); 
 	private Set<Integer> _treatIntegerCharacterAsReal = new HashSet<Integer>();
 	
-	private Map<Integer, String> _itemHeadings = new HashMap<Integer, String>();
+	private Map<String, String> _itemHeadings = new HashMap<String, String>();
 	private Map<Integer, String> _itemSubHeadings = new HashMap<Integer, String>();
 	private Map<Integer, String> _indexHeadings = new HashMap<Integer, String>();
 	private Map<Integer, String> _characterHeadings = new HashMap<Integer, String>();
@@ -438,8 +438,16 @@ public class DeltaContext extends AbstractDeltaContext {
 	 * @return the heading defined for the specified item or null if no heading was defined.
 	 */
 	public String getItemHeading(int itemNumber) {
+		Item item = getDataSet().getItem(itemNumber);
+		String description = RTFUtils.stripFormatting(item.getDescription());
 		
-		return _itemHeadings.get(itemNumber);
+		return _itemHeadings.get(description);
+	}
+	
+	
+	public void setItemHeading(String itemDescription, String heading) {
+		String description = RTFUtils.stripFormatting(itemDescription);
+		_itemHeadings.put(description, heading);
 	}
 
 	

@@ -12,11 +12,16 @@ public class TypeSettingItemFormatter extends ItemFormatter {
 	public TypeSettingItemFormatter(ItemListTypeSetter typeSetter) {
 		this(typeSetter, false);
 	}	
+	
 	public TypeSettingItemFormatter(ItemListTypeSetter typeSetter, boolean includeNumber) {
-		super(includeNumber, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.RETAIN, false, false, false);
-		_typeSetter = typeSetter;
+		this(typeSetter, includeNumber, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.RETAIN);
 	}
 
+	public TypeSettingItemFormatter(ItemListTypeSetter typeSetter, boolean includeNumber, CommentStrippingMode commentMode, AngleBracketHandlingMode angleMode) {
+		super(includeNumber, commentMode, angleMode, false, false, false);
+		_typeSetter = typeSetter;
+	}
+	
 	@Override
 	public String defaultFormat(String text) {
 		

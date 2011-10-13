@@ -35,6 +35,10 @@ public class AttributeFormatter extends Formatter {
         initCaptions();
     }
 
+    public AttributeFormatter(boolean includeNumber, boolean stripFormatting, CommentStrippingMode commentStrippingMode, AngleBracketHandlingMode angleBracketHandlingMode) {
+    	this(includeNumber, stripFormatting, commentStrippingMode, angleBracketHandlingMode, false, null);
+    }
+    
     public AttributeFormatter(boolean includeNumber, boolean stripFormatting, CommentStrippingMode commentStrippingMode, AngleBracketHandlingMode angleBracketHandlingMode,
             boolean capitaliseFirstWord, String orWord) {
         super(commentStrippingMode, angleBracketHandlingMode, stripFormatting, capitaliseFirstWord);
