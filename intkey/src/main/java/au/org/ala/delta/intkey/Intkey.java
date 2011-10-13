@@ -1575,6 +1575,8 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         if (!closePromptAfterAutoDisplay || (imagesAutoDisplayText == null && otherItemsAutoDisplayText == null)) {
             show(dlg);
         }
+        
+        //TODO need to tile windows!
     }
 
     @Override

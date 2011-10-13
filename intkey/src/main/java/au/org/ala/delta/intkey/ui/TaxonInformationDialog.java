@@ -26,6 +26,7 @@ import javax.swing.SwingWorker;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.MouseInputAdapter;
 
+import org.apache.commons.lang.StringUtils;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.Resource;
@@ -409,20 +410,46 @@ public class TaxonInformationDialog extends IntkeyDialog {
         dlg.setVisible(true);
     }
 
+    /**
+     * Display all images for the selected taxon that contain the supplied text.
+     * If the supplied text is null or is an empty string, all available images
+     * for the selected taxon will be displayed
+     * 
+     * @param text
+     */
     public void displayImagesWithTextInSubject(String text) {
         for (int i = 0; i < _images.size(); i++) {
             Image img = _images.get(i);
             String subjectText = img.getSubjectText();
-            if (subjectText.toLowerCase().contains(text.toLowerCase())) {
+
+            if (StringUtils.isEmpty(text) || subjectText.toLowerCase().contains(text.toLowerCase())) {
                 displaySelectedTaxonImage(i);
             }
 
         }
     }
 
+    /**
+     * Display any non-image information attached to the current taxon with a
+     * subject that contains the supplied text. Link files other than .rtf files
+     * are ignored. If the supplied text is null or is an empty string, all
+     * available non-image information items (other than .rtf files) for the
+     * selected taxon will be displayed
+     * 
+     * @param text
+     */
     public void displayOtherItemsWithTextInDescription(String text) {
         for (InformationDialogCommand cmd : _cmds) {
-            if (cmd.getDescription().toLowerCase().contains(text.toLowerCase())) {
+
+            // Ignore any link files other than rtf files
+            if (cmd instanceof OpenLinkFileCommand) {
+                OpenLinkFileCommand openLinkFileCmd = (OpenLinkFileCommand) cmd;
+                if (!openLinkFileCmd.getLinkFileName().toLowerCase().endsWith(".rtf")) {
+                    continue;
+                }
+            }
+
+            if (StringUtils.isEmpty(text) || cmd.getDescription().toLowerCase().contains(text.toLowerCase())) {
                 cmd.execute();
             }
         }
@@ -460,6 +487,10 @@ public class TaxonInformationDialog extends IntkeyDialog {
         @Override
         public String getDescription() {
             return _description;
+        }
+
+        public String getLinkFileName() {
+            return _linkFileName;
         }
     }
 
