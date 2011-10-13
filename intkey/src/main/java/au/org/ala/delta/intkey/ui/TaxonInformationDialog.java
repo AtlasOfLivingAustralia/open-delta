@@ -18,7 +18,6 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -36,14 +35,14 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.ResourceSettings;
 import au.org.ala.delta.model.format.Formatter;
+import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.model.format.ItemFormatter;
-import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.util.Pair;
 
-public class TaxonInformationDialog extends JDialog {
+public class TaxonInformationDialog extends IntkeyDialog {
 
     /**
      * 
@@ -313,7 +312,7 @@ public class TaxonInformationDialog extends JDialog {
             String directiveCommand = subjectDirectiveCommandPair.getSecond();
 
             otherListModel.addElement(subject);
-            _cmds.add(new RunDirectiveCommand(directiveCommand));
+            _cmds.add(new RunDirectiveCommand(directiveCommand, subject));
         }
 
         _listOther.setModel(otherListModel);
@@ -402,16 +401,37 @@ public class TaxonInformationDialog extends JDialog {
         return _taxa.get(_selectedIndex);
     }
 
-    private interface InformationDialogCommand {
-        public void execute();
-    }
-
     private void displaySelectedTaxonImage(int imageIndex) {
         Item selectedTaxon = getSelectedTaxon();
-        TaxonImageDialog dlg = new TaxonImageDialog(this, _imageSettings, _taxaWithImages, false);
+        TaxonImageDialog dlg = new TaxonImageDialog(UIUtils.getMainFrame(), _imageSettings, _taxaWithImages, false);
         dlg.displayImagesForTaxon(selectedTaxon);
         dlg.showImage(imageIndex);
         dlg.setVisible(true);
+    }
+
+    public void displayImagesWithTextInSubject(String text) {
+        for (int i = 0; i < _images.size(); i++) {
+            Image img = _images.get(i);
+            String subjectText = img.getSubjectText();
+            if (subjectText.toLowerCase().contains(text.toLowerCase())) {
+                displaySelectedTaxonImage(i);
+            }
+
+        }
+    }
+
+    public void displayOtherItemsWithTextInDescription(String text) {
+        for (InformationDialogCommand cmd : _cmds) {
+            if (cmd.getDescription().toLowerCase().contains(text.toLowerCase())) {
+                cmd.execute();
+            }
+        }
+    }
+
+    private interface InformationDialogCommand {
+        public void execute();
+
+        public String getDescription();
     }
 
     private class OpenLinkFileCommand implements InformationDialogCommand {
@@ -436,14 +456,21 @@ public class TaxonInformationDialog extends JDialog {
                 _context.getUI().displayErrorMessage("Badly formed URL: " + linkFileURL.toString());
             }
         }
+
+        @Override
+        public String getDescription() {
+            return _description;
+        }
     }
 
     private class RunDirectiveCommand implements InformationDialogCommand {
 
         private String _directiveCommand;
+        private String _description;
 
-        public RunDirectiveCommand(String directiveCommand) {
+        public RunDirectiveCommand(String directiveCommand, String description) {
             _directiveCommand = directiveCommand;
+            _description = description;
         }
 
         @Override
@@ -456,6 +483,11 @@ public class TaxonInformationDialog extends JDialog {
 
             // parse and run directive
             _context.parseAndExecuteDirective(command);
+        }
+
+        @Override
+        public String getDescription() {
+            return _description;
         }
     }
 }

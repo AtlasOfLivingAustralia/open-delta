@@ -27,6 +27,8 @@ public interface IntkeyUI {
 
     void removeBusyMessage();
 
+    void displayTaxonInformation(List<Item> taxa, String imagesAutoDisplayText, String otherItemsAutoDisplayText, boolean closePromptAfterAutoDisplay);
+
     void addToolbarButton(boolean advancedModeOnly, boolean normalModeOnly, boolean inactiveUnlessUsedCharacters, String imageFileName, List<String> commands, String shortHelp, String fullHelp);
 
     void addToolbarSpace();
@@ -38,16 +40,16 @@ public interface IntkeyUI {
     void IllustrateTaxa(List<Item> taxa);
 
     void displayContents(LinkedHashMap<String, String> contentsMap);
-    
+
     void displayFile(File file, String description);
 
     boolean isLogVisible();
-    
+
     void setLogVisible(boolean visible);
-    
+
     void updateLog();
-    
+
     void quitApplication();
-    
+
     List<Item> getSelectedTaxa();
 }

@@ -62,6 +62,10 @@ public class SortingUtils {
     public static LinkedHashMap<au.org.ala.delta.model.Character, Double> orderSeparate(IntkeyContext context, Item taxonToSeparate) {
         return doOrdering(context, OrderingType.SEPARATE, taxonToSeparate);
     }
+    
+    public static LinkedHashMap<au.org.ala.delta.model.Character, Double> orderDiagnose(IntkeyContext context, Item taxonToSeparate, DiagType diagType) {
+        return doOrdering(context, OrderingType.SEPARATE, taxonToSeparate);
+    }    
 
     // TODO change arguments, pass in something other than the entire context.
     /**

@@ -41,15 +41,43 @@ public abstract class NewIntkeyDirective extends IntkeyDirective {
 
                 if (token != null) {
                     for (IntkeyDirectiveFlag flag : _intkeyFlagsList) {
-                        if (token.equalsIgnoreCase("/" + flag.getSymbol())) {
-                            BeanUtils.setProperty(invoc, flag.getName(), true);
-                            tokenQueue.remove();
-                            tokenMatched = true;
+                        if (flag.takesStringValue()) {
+                            // Flag can have a string value supplied with it in
+                            // format "/X=string", where X is the character
+                            // symbol. Note that
+                            // it is acceptable to supply such a flag without a
+                            // following equals sign and string value.
+                            if (token.matches("^/[" + Character.toLowerCase(flag.getSymbol()) + Character.toUpperCase(flag.getSymbol()) + "](=.+)?")) {
 
-                            stringRepresentationBuilder.append("/");
-                            stringRepresentationBuilder.append(flag.getSymbol());
+                                // If string value is not supplied, it defaults
+                                // to empty string
+                                String flagStringValue = "";
 
-                            break;
+                                String[] tokenPieces = token.split("=");
+
+                                // There should only be 0 or 1 equals sign. If
+                                // more than none is supplied, no match.
+                                if (tokenPieces.length < 3) {
+                                    if (tokenPieces.length == 2) {
+                                        flagStringValue = tokenPieces[1];
+                                    }
+
+                                    BeanUtils.setProperty(invoc, flag.getName(), flagStringValue);
+                                    tokenQueue.remove();
+                                    tokenMatched = true;
+                                    stringRepresentationBuilder.append(token);
+                                    break;
+                                }
+                            }
+                        } else {
+                            if (token.equalsIgnoreCase("/" + flag.getSymbol())) {
+
+                                BeanUtils.setProperty(invoc, flag.getName(), true);
+                                tokenQueue.remove();
+                                tokenMatched = true;
+                                stringRepresentationBuilder.append(token);
+                                break;
+                            }
                         }
                     }
 

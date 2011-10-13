@@ -1559,6 +1559,25 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     }
 
     @Override
+    public void displayTaxonInformation(List<Item> taxa, String imagesAutoDisplayText, String otherItemsAutoDisplayText, boolean closePromptAfterAutoDisplay) {
+        TaxonInformationDialog dlg = new TaxonInformationDialog(getMainFrame(), taxa, _context);
+
+        if (imagesAutoDisplayText != null) {
+            dlg.displayImagesWithTextInSubject(imagesAutoDisplayText);
+        }
+
+        if (otherItemsAutoDisplayText != null) {
+            dlg.displayOtherItemsWithTextInDescription(otherItemsAutoDisplayText);
+        }
+
+        // Don't bother showing the information dialog if it is just going to be
+        // closed again straight away.
+        if (!closePromptAfterAutoDisplay || (imagesAutoDisplayText == null && otherItemsAutoDisplayText == null)) {
+            show(dlg);
+        }
+    }
+
+    @Override
     public void addToolbarButton(boolean advancedModeOnly, boolean normalModeOnly, boolean inactiveUnlessUsedCharacters, String imageFileName, List<String> commands, String shortHelp, String fullHelp) {
         Icon icon = null;
 

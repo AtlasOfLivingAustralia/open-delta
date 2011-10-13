@@ -24,11 +24,11 @@ public class SimilaritiesDirective extends NewIntkeyDirective {
     @Override
     protected List<IntkeyDirectiveFlag> buildFlagsList() {
         List<IntkeyDirectiveFlag> flags = new ArrayList<IntkeyDirectiveFlag>();
-        flags.add(new IntkeyDirectiveFlag('O', "matchOverlap"));
-        flags.add(new IntkeyDirectiveFlag('S', "matchSubset"));
-        flags.add(new IntkeyDirectiveFlag('E', "matchExact"));
-        flags.add(new IntkeyDirectiveFlag('U', "matchUnknowns"));
-        flags.add(new IntkeyDirectiveFlag('I', "matchInapplicables"));
+        flags.add(new IntkeyDirectiveFlag('O', "matchOverlap", false));
+        flags.add(new IntkeyDirectiveFlag('S', "matchSubset", false));
+        flags.add(new IntkeyDirectiveFlag('E', "matchExact", false));
+        flags.add(new IntkeyDirectiveFlag('U', "matchUnknowns", false));
+        flags.add(new IntkeyDirectiveFlag('I', "matchInapplicables", false));
         return flags;
     }
 

@@ -3,6 +3,7 @@ package au.org.ala.delta.intkey.directives;
 import java.util.ArrayList;
 import java.util.List;
 
+import au.org.ala.delta.intkey.directives.invocation.DiagnoseDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
@@ -27,7 +28,7 @@ public class DiagnoseDirective extends NewIntkeyDirective {
 
     @Override
     protected IntkeyDirectiveInvocation buildCommandObject() {
-        return null;
+        return new DiagnoseDirectiveInvocation();
     }
 
 }

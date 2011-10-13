@@ -55,6 +55,10 @@ public class MockIntkeyUI implements IntkeyUI {
     }
 
     @Override
+    public void displayTaxonInformation(List<Item> taxa, String imagesAutoDisplayText, String otherItemsAutoDisplayText, boolean closePromptAfterAutoDisplay) {
+    }
+
+    @Override
     public void addToolbarButton(boolean advancedModeOnly, boolean normalModeOnly, boolean inactiveUnlessUsedCharacters, String imageFileName, List<String> commands, String shortHelp, String fullHelp) {
     }
 

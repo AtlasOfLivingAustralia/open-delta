@@ -4,10 +4,30 @@ public class IntkeyDirectiveFlag {
 
     private char _symbol;
     private String _name;
+    private boolean _takesStringValue;
 
-    public IntkeyDirectiveFlag(char symbol, String name) {
+    /**
+     * ctor
+     * 
+     * @param symbol
+     *            the character used to identify the flag. E.g. for flag "/X",
+     *            the symbol is will be 'X'
+     * @param name
+     *            the name of the javabean property on an
+     *            IntkeyDirectiveInvocation object that corresponds to the flag.
+     *            The javabean property will be set with the parsed value of the
+     *            flag
+     * @param takesStringValue
+     *            If true, the flag is used to input a String value. The string
+     *            value must be supplied after the flag symbol and an '=' sign,
+     *            e.g. "/X=string". If false, the flag is used to input a
+     *            boolean value - no characters are required after the character
+     *            symbol.
+     */
+    public IntkeyDirectiveFlag(char symbol, String name, boolean takesStringValue) {
         this._symbol = symbol;
         this._name = name;
+        this._takesStringValue = takesStringValue;
     }
 
     public char getSymbol() {
@@ -16,5 +36,9 @@ public class IntkeyDirectiveFlag {
 
     public String getName() {
         return _name;
+    }
+
+    public boolean takesStringValue() {
+        return _takesStringValue;
     }
 }
