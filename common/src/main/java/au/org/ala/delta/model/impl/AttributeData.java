@@ -25,6 +25,8 @@ public interface AttributeData {
 	
 	public boolean isInapplicable();
 	
+	public boolean isExclusivelyInapplicable();
+	
 	public FloatRange getRealRange();
 	public void setRealRange(FloatRange range);
 	

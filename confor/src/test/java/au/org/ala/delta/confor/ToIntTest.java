@@ -15,9 +15,12 @@ import au.org.ala.delta.intkey.model.IntkeyDatasetFileReader;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterType;
+import au.org.ala.delta.model.IntegerAttribute;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.MultiStateAttribute;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.NumericCharacter;
+import au.org.ala.delta.model.RealAttribute;
 import au.org.ala.delta.model.RealCharacter;
 import au.org.ala.delta.model.TextAttribute;
 
@@ -135,8 +138,23 @@ public class ToIntTest extends TestCase {
 				
 				Attribute expectedAttribute = expectedDataSet.getAttribute(i, j);
 				Attribute attr = dataSet.getAttribute(i, j);
-				
+				if (expectedAttribute.isInapplicable() != attr.isInapplicable()) {
+					System.out.println("attribute: "+i+","+j+" inapplicable wrong");
+				}
+				//assertEquals(expectedAttribute.isInapplicable(), attr.isInapplicable());
 				assertEquals(expectedAttribute.getValueAsString(), attr.getValueAsString());
+				if (expectedAttribute instanceof MultiStateAttribute) {
+					assertEquals("attribute: "+i+","+j, ((MultiStateAttribute)expectedAttribute).getPresentStates(),
+							((MultiStateAttribute)attr).getPresentStates());
+				}
+				else if (expectedAttribute instanceof RealAttribute) {
+					assertEquals("attribute: "+i+","+j, ((RealAttribute)expectedAttribute).getPresentRange(),
+							((RealAttribute)attr).getPresentRange());
+				}
+				else if (expectedAttribute instanceof IntegerAttribute) {
+					assertEquals("attribute: "+i+","+j, ((IntegerAttribute)expectedAttribute).getPresentValues(),
+							((IntegerAttribute)attr).getPresentValues());
+				}
 			}
 			
 		}

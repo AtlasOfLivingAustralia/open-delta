@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import au.org.ala.delta.model.impl.AttributeData;
+import au.org.ala.delta.model.impl.ControllingInfo;
 import au.org.ala.delta.model.observer.AttributeObserver;
 
 /**
@@ -66,7 +67,21 @@ public abstract class Attribute {
 	 * @return true if this attribute is inapplicable
 	 */
 	public boolean isInapplicable() {
-	    return _impl.isInapplicable();
+		boolean inapplicable = _impl.isInapplicable();
+//		if (!inapplicable) {
+//			ControllingInfo result = _character.checkApplicability(getItem());
+//			inapplicable = result.isInapplicable();
+//		}
+	    return inapplicable;
+	}
+	
+	/**
+	 * An exclusively inapplicable value is one that has been explicitly coded as inapplicable 
+	 * with the value "-" and no other values. 
+	 * @return true if this attribute is inapplicable
+	 */
+	public boolean isExclusivelyInapplicable() {
+	    return _impl.isExclusivelyInapplicable();
 	}
 	
 	public boolean isVariable() {

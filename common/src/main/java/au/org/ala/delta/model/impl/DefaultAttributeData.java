@@ -66,6 +66,11 @@ public class DefaultAttributeData implements AttributeData {
         return _parsedAttribute.isInapplicable();
     }
 
+    @Override
+    public boolean isExclusivelyInapplicable() {
+        return _parsedAttribute.isExclusivelyInapplicable();
+    }
+
 
     @Override
     public FloatRange getRealRange() {

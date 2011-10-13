@@ -64,6 +64,11 @@ public class IntkeyAttributeData implements AttributeData {
     public boolean isInapplicable() {
         return _inapplicable;
     }
+    
+    @Override
+    public boolean isExclusivelyInapplicable() {
+        return _inapplicable;
+    }
 
     @Override
     public FloatRange getRealRange() {

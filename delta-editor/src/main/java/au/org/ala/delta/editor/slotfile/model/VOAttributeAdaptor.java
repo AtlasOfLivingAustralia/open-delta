@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.FloatRange;
 
@@ -186,7 +185,18 @@ public class VOAttributeAdaptor implements AttributeData {
 
     @Override
     public boolean isInapplicable() {
-        throw new NotImplementedException();
+    	synchronized (_vop) {
+	    	 Attribute attribute = _itemDesc.readAttribute(_charBaseDesc.getUniId());
+	    	 return attribute != null && attribute.isInapplicable();
+    	}
+    }
+    
+    @Override
+    public boolean isExclusivelyInapplicable() {
+    	synchronized (_vop) {
+	    	 Attribute attribute = _itemDesc.readAttribute(_charBaseDesc.getUniId());
+	    	 return attribute != null && attribute.isExclusivelyInapplicable();
+    	}
     }
 
     @Override

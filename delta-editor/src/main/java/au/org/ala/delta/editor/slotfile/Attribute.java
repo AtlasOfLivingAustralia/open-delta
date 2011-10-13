@@ -1342,4 +1342,35 @@ public class Attribute implements Iterable<AttrChunk> {
 		}
 		return false;
 	}
+	
+	/**
+	 * Returns true if any of the encoded data is inapplicable.
+	 */
+	public boolean isInapplicable() {
+		
+		for (AttrChunk chunk : this)
+			if (chunk.getType() == ChunkType.CHUNK_INAPPLICABLE) {
+				return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * @return true if the only value of this attribute is "inapplicable".
+	 * For example an attribute coded as 1/- is not inapplicable, either is 
+	 * -<comment>.
+	 */
+	public boolean isExclusivelyInapplicable() {
+		boolean inapplicableFound = false;
+		for (AttrChunk chunk : this) {
+			int type = chunk.getType();
+			if (type != ChunkType.CHUNK_INAPPLICABLE && type != ChunkType.CHUNK_STOP) {
+				return false;
+			}
+			else if (type == ChunkType.CHUNK_INAPPLICABLE) {
+				inapplicableFound = true;
+			}
+		}
+		return inapplicableFound;
+	}
 }

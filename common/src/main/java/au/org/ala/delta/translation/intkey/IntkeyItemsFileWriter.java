@@ -161,6 +161,7 @@ public class IntkeyItemsFileWriter {
 		int numStates = character.getNumberOfStates();
 		List<BitSet> attributes = new ArrayList<BitSet>();
 		Iterator<FilteredItem> items = _dataSet.filteredItems();
+		
 		while (items.hasNext()) {
 			int itemNum = items.next().getItem().getItemNumber();
 			MultiStateAttribute attribute = (MultiStateAttribute)_dataSet.getAttribute(itemNum, character.getCharacterNumber());
@@ -180,6 +181,7 @@ public class IntkeyItemsFileWriter {
 	}
 	
 	private IntRange writeIntegerAttributes(int filteredCharacterNumber, Character character) {
+		
 		// Returning null here will trigger a change from integer to real
 		// character type.
 		if (_context.getTreatIntegerCharacterAsReal(character.getCharacterId())) {
@@ -202,7 +204,7 @@ public class IntkeyItemsFileWriter {
 				}
 				
 				if (attribute.isInapplicable()) {
-					bits.set(numStates+2);
+					bits.set(numStates+3);
 				}
 				
 				List<NumericRange> ranges = attribute.getNumericValue();
@@ -220,11 +222,11 @@ public class IntkeyItemsFileWriter {
 						if (j<characterRange.getMinimumInteger()) {
 							bits.set(0);
 						}
-						else if (j<characterRange.getMaximumInteger()) {
+						else if (j<=characterRange.getMaximumInteger()) {
 							bits.set(j - characterRange.getMinimumInteger()+1);
 						}
 						else {
-							bits.set(numStates+1);
+							bits.set(numStates+2);
 						}
 					}
 				}
@@ -232,7 +234,7 @@ public class IntkeyItemsFileWriter {
 				
 			}
 			
-			_itemsFile.writeAttributeBits(filteredCharacterNumber, attributes, numStates+3);
+			_itemsFile.writeAttributeBits(filteredCharacterNumber, attributes, numStates+4);
 		}
 		return characterRange;
 	}
@@ -240,6 +242,9 @@ public class IntkeyItemsFileWriter {
 	
 	private IntRange determineIntegerRange(Character intChar) {
 		
+		if (intChar.getCharacterId() == 60) {
+			System.out.print("Blah");
+		}
 		Set<Integer> values = new HashSet<Integer>();
 		boolean hasMultiRangeAttribute = populateValues(intChar.getCharacterId(), values);
 		
@@ -284,7 +289,7 @@ public class IntkeyItemsFileWriter {
 		boolean useNormalValues = _context.getUseNormalValues(characterNumber);
 		
 		boolean hasMultiRangeAttribute = false;
-		for (int i=1; i<_dataSet.getNumberOfFilteredItems(); i++) {
+		for (int i=1; i<=_dataSet.getNumberOfFilteredItems(); i++) {
 		
 			IntegerAttribute attribute = (IntegerAttribute)_dataSet.getAttribute(i, characterNumber);
 			if (attribute == null || attribute.isUnknown() || attribute.isInapplicable() || attribute.isVariable()) {

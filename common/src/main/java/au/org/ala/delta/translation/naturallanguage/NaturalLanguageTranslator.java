@@ -288,6 +288,11 @@ public class NaturalLanguageTranslator extends AbstractDataSetTranslator {
     private void writeCharacterAttribute(Item item, Character character) {
 
         Attribute attribute = item.getAttribute(character);
+        // Unknown attributes get through the filter if there is an item
+        // subheading for the character.
+        if (attribute.isUnknown()) {
+        	return;
+        }
         AttributeParser parser = new AttributeParser();
         AttributeTranslator translator = translatorFor(character);
 

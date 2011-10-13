@@ -41,8 +41,7 @@ public class NaturalLanguageDataSetFilter extends AbstractDataSetFilter implemen
 		if (attribute.isUnknown()) { 
 			return false;
 		}
-		// TODO - need to implement controlling chars in the default data model.
-		if ("-".equals(attribute.getValueAsString())) {
+		if (attribute.isExclusivelyInapplicable()) {
 			return false;
 		}
 		if (item.isVariant()) {
@@ -58,6 +57,10 @@ public class NaturalLanguageDataSetFilter extends AbstractDataSetFilter implemen
 			return false;
 		}
 		return true;
+	}
+	
+	private boolean hasItemSubheading(Character character) {
+		return (_context.getItemSubheading(character.getCharacterId()) != null);
 	}
 
 	@Override

@@ -162,12 +162,13 @@ public class IntkeyItemsFileWriterTest extends TestCase {
 		// Integer character (character 3)
 		// attribute 1 is "(1-)2-3/6-8", attribute 2 is "4", attribute 3 null.
 		// because we aren't using normal values, the range of values is 1-8.
-		// hence our number of bits per attribute is 8-1+3=10.
-		// attribute 1: 0111001110
-		// attribute 2: 0000010000
-		// attribute 3: 0000000000
-		int[] intAttributeBits = readInts(8, 1);
-		assertEquals(16846, intAttributeBits[0]);
+		// hence our number of bits per attribute is 8-1+4=11.
+		// attribute 1: 01110011100
+		// attribute 2: 00000100000
+		// attribute 3: 00000000000
+		int[] intAttributeBits = readInts(8, 2);
+		assertEquals(33230, intAttributeBits[0]);
+		assertEquals(0, intAttributeBits[1]);
 		
 		
 		// Real character (character 4)

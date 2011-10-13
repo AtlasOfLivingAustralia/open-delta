@@ -294,9 +294,10 @@ public class BinaryKeyFile extends BinFile {
 	protected List<Integer> bitSetToInts(BitSet set, int numValues) {
 		List<Integer> values = new ArrayList<Integer>();
 		int i=0; 
+		
 		while (i<numValues) {
 			int value = 0;
-			while (i<numValues && i%32 < 32) {
+			while (i<numValues && (i-32*values.size())/32 == 0) {
 				if (set.get(i)) {
 					value |= 1<< i%32;
 				}
