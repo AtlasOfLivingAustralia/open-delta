@@ -77,7 +77,6 @@ public class DeltaContext extends AbstractDeltaContext {
 	
 	private Map<String, String> _itemHeadings = new HashMap<String, String>();
 	private Map<Integer, String> _itemSubHeadings = new HashMap<Integer, String>();
-	private Map<Integer, String> _indexHeadings = new HashMap<Integer, String>();
 	private Map<Integer, String> _characterHeadings = new HashMap<Integer, String>();
 	
 	private Map<Integer, TypeSettingMark> _typeSettingMarks = new HashMap<Integer, TypeSettingMark>();
@@ -134,6 +133,9 @@ public class DeltaContext extends AbstractDeltaContext {
 	private double[] _characterWeights;
 	
 	private DirectiveParserObserver _observer;
+	
+	private Map<String, String> _indexHeadings = new HashMap<String, String>();
+	private String _indexText;
 	
 	public DeltaContext() {
 		this(new DefaultDataSetFactory().createDataSet(""));
@@ -481,8 +483,14 @@ public class DeltaContext extends AbstractDeltaContext {
 	 * @return the index heading defined for the specified item or null if no heading was defined.
 	 */
 	public String getIndexHeading(int itemNumber) {
-		return _indexHeadings.get(itemNumber);
+		String itemDescription = itemDescrptionFor(itemNumber);
+		return _indexHeadings.get(itemDescription);
 	}
+	
+	public void setIndexHeading(String itemDescription, String heading) {
+		_indexHeadings.put(itemDescription, heading);
+	}
+	
 	
 	public void linkCharacters(Set<Integer> linkedCharacters) {
 		_linkedCharacters.add(linkedCharacters);
@@ -934,4 +942,11 @@ public class DeltaContext extends AbstractDeltaContext {
 		getOutputFileSelector().getPrintFile().writeJustifiedText(heading, 1);
 		
 	}
+
+	public void setIndexText(String text) {
+		_indexText = text;
+		
+	}
+
+	
 }

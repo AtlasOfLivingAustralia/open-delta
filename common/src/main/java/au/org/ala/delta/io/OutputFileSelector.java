@@ -47,6 +47,7 @@ public class OutputFileSelector {
 	private ParsingContext _context;
 	private OutputFormat _outputFormat;
 	private int _outputFileIndex;
+	private String _indexOutputFile;
 	
 	/** output when a new print file is created */
 	private String _printFileHeaderText;
@@ -318,5 +319,9 @@ public class OutputFileSelector {
 			}
 		}
 		return newFile;
+	}
+
+	public void setIndexOutputFile(String file) {
+		_indexOutputFile = file;
 	}
 }
