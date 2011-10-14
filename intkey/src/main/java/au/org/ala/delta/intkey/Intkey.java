@@ -881,7 +881,32 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     private JMenu buildSettingsMenu(ActionMap actionMap) {
         JMenu mnuSettings = new JMenu();
         mnuSettings.setName("mnuSettings");
-        mnuSettings.setEnabled(false);
+
+        JMenu mnuSet = new JMenu();
+        mnuSet.setName("mnuSet");
+        mnuSettings.add(mnuSet);
+
+        JMenu mnuDisplay = new JMenu();
+        mnuDisplay.setName("mnuDisplay");
+        mnuSettings.add(mnuDisplay);
+
+        JMenu mnuDefine = new JMenu();
+        mnuDefine.setName("mnuDefine");
+        mnuSettings.add(mnuDefine);
+
+        JMenu mnuInclude = new JMenu();
+        mnuInclude.setName("mnuInclude");
+        mnuSettings.add(mnuInclude);
+
+        JMenu mnuExclude = new JMenu();
+        mnuExclude.setName("mnuExclude");
+        mnuSettings.add(mnuExclude);
+
+        JMenu mnuStatus = new JMenu();
+        mnuStatus.setName("mnuStatus");
+        mnuSettings.add(mnuStatus);
+        mnuStatus.setEnabled(false);
+
         return mnuSettings;
     }
 
