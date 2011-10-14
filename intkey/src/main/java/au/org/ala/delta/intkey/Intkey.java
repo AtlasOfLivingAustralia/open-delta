@@ -67,6 +67,9 @@ import org.jdesktop.application.ResourceMap;
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.directives.AbstractDirective;
 import au.org.ala.delta.intkey.directives.ChangeDirective;
+import au.org.ala.delta.intkey.directives.CharactersDirective;
+import au.org.ala.delta.intkey.directives.DescribeDirective;
+import au.org.ala.delta.intkey.directives.DiagnoseDirective;
 import au.org.ala.delta.intkey.directives.DifferencesDirective;
 import au.org.ala.delta.intkey.directives.DirectivePopulator;
 import au.org.ala.delta.intkey.directives.DisplayCharacterOrderBestDirective;
@@ -74,13 +77,21 @@ import au.org.ala.delta.intkey.directives.DisplayCharacterOrderNaturalDirective;
 import au.org.ala.delta.intkey.directives.DisplayCharacterOrderSeparateDirective;
 import au.org.ala.delta.intkey.directives.FileCharactersDirective;
 import au.org.ala.delta.intkey.directives.FileTaxaDirective;
+import au.org.ala.delta.intkey.directives.FindCharactersDirective;
+import au.org.ala.delta.intkey.directives.FindTaxaDirective;
+import au.org.ala.delta.intkey.directives.IllustrateCharactersDirective;
+import au.org.ala.delta.intkey.directives.IllustrateTaxaDirective;
 import au.org.ala.delta.intkey.directives.IncludeCharactersDirective;
 import au.org.ala.delta.intkey.directives.IncludeTaxaDirective;
+import au.org.ala.delta.intkey.directives.InformationDirective;
 import au.org.ala.delta.intkey.directives.IntkeyDirectiveParseException;
 import au.org.ala.delta.intkey.directives.NewDatasetDirective;
 import au.org.ala.delta.intkey.directives.RestartDirective;
 import au.org.ala.delta.intkey.directives.SetMatchDirective;
 import au.org.ala.delta.intkey.directives.SetToleranceDirective;
+import au.org.ala.delta.intkey.directives.SimilaritiesDirective;
+import au.org.ala.delta.intkey.directives.SummaryDirective;
+import au.org.ala.delta.intkey.directives.TaxaDirective;
 import au.org.ala.delta.intkey.directives.UseDirective;
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyCharacterOrder;
@@ -100,6 +111,7 @@ import au.org.ala.delta.intkey.ui.CharacterImageDialog;
 import au.org.ala.delta.intkey.ui.CharacterKeywordSelectionDialog;
 import au.org.ala.delta.intkey.ui.CharacterSelectionDialog;
 import au.org.ala.delta.intkey.ui.ContentsDialog;
+import au.org.ala.delta.intkey.ui.DirectiveAction;
 import au.org.ala.delta.intkey.ui.FindInCharactersDialog;
 import au.org.ala.delta.intkey.ui.FindInTaxaDialog;
 import au.org.ala.delta.intkey.ui.ImageDialog;
@@ -786,14 +798,83 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     private JMenu buildQueriesMenu(ActionMap actionMap) {
         JMenu mnuQueries = new JMenu();
         mnuQueries.setName("mnuQueries");
-        mnuQueries.setEnabled(false);
+
+        JMenuItem mnuItRestart = new JMenuItem(new DirectiveAction(new RestartDirective(), _context));
+        mnuItRestart.setName("mnuItRestart");
+        mnuQueries.add(mnuItRestart);
+
+        mnuQueries.addSeparator();
+
+        JMenuItem mnuItDescribe = new JMenuItem(new DirectiveAction(new DescribeDirective(), _context));
+        mnuItDescribe.setName("mnuItDescribe");
+        mnuQueries.add(mnuItDescribe);
+
+        JMenuItem mnuItDiagnose = new JMenuItem(new DirectiveAction(new DiagnoseDirective(), _context));
+        mnuItDiagnose.setName("mnuItDiagnose");
+        mnuItDiagnose.setEnabled(false);
+        mnuQueries.add(mnuItDiagnose);
+
+        mnuQueries.addSeparator();
+
+        JMenuItem mnuItDifferences = new JMenuItem(new DirectiveAction(new DifferencesDirective(), _context));
+        mnuItDifferences.setName("mnuItDifferences");
+        mnuQueries.add(mnuItDifferences);
+        JMenuItem mnuItSimilarities = new JMenuItem(new DirectiveAction(new SimilaritiesDirective(), _context));
+        mnuItSimilarities.setName("mnuItSimilarities");
+        mnuQueries.add(mnuItSimilarities);
+
+        mnuQueries.addSeparator();
+
+        JMenuItem mnuItSummary = new JMenuItem(new DirectiveAction(new SummaryDirective(), _context));
+        mnuItSummary.setName("mnuItSummary");
+        mnuQueries.add(mnuItSummary);
+
         return mnuQueries;
     }
 
     private JMenu buildBrowsingMenu(ActionMap actionMap) {
         JMenu mnuBrowsing = new JMenu();
         mnuBrowsing.setName("mnuBrowsing");
-        mnuBrowsing.setEnabled(false);
+
+        JMenuItem mnuItCharacters = new JMenuItem(new DirectiveAction(new CharactersDirective(), _context));
+        mnuItCharacters.setName("mnuItCharacters");
+        mnuBrowsing.add(mnuItCharacters);
+        JMenuItem mnuItTaxa = new JMenuItem(new DirectiveAction(new TaxaDirective(), _context));
+        mnuItTaxa.setName("mnuItTaxa");
+        mnuBrowsing.add(mnuItTaxa);
+
+        mnuBrowsing.addSeparator();
+
+        JMenu mnuFind = new JMenu();
+        mnuFind.setName("mnuFind");
+        JMenuItem mnuItFindCharacters = new JMenuItem(new DirectiveAction(new FindCharactersDirective(), _context));
+        mnuItFindCharacters.setName("mnuItFindCharacters");
+        mnuFind.add(mnuItFindCharacters);
+        JMenuItem mnuItFindTaxa = new JMenuItem(new DirectiveAction(new FindTaxaDirective(), _context));
+        mnuItFindTaxa.setName("mnuItFindTaxa");
+        mnuFind.add(mnuItFindTaxa);
+
+        mnuBrowsing.add(mnuFind);
+
+        mnuBrowsing.addSeparator();
+
+        JMenu mnuIllustrate = new JMenu();
+        mnuIllustrate.setName("mnuIllustrate");
+        JMenuItem mnuItIllustrateCharacters = new JMenuItem(new DirectiveAction(new IllustrateCharactersDirective(), _context));
+        mnuItIllustrateCharacters.setName("mnuItIllustrateCharacters");
+        mnuIllustrate.add(mnuItIllustrateCharacters);
+        JMenuItem mnuItIllustrateTaxa = new JMenuItem(new DirectiveAction(new IllustrateTaxaDirective(), _context));
+        mnuItIllustrateTaxa.setName("mnuItIllustrateTaxa");
+        mnuIllustrate.add(mnuItIllustrateTaxa);
+
+        mnuBrowsing.add(mnuIllustrate);
+
+        mnuBrowsing.addSeparator();
+
+        JMenuItem mnuItInformation = new JMenuItem(new DirectiveAction(new InformationDirective(), _context));
+        mnuItInformation.setName("mnuItInformation");
+        mnuBrowsing.add(mnuItInformation);
+
         return mnuBrowsing;
     }
 
@@ -1575,8 +1656,8 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         if (!closePromptAfterAutoDisplay || (imagesAutoDisplayText == null && otherItemsAutoDisplayText == null)) {
             show(dlg);
         }
-        
-        //TODO need to tile windows!
+
+        // TODO need to tile windows!
     }
 
     @Override
