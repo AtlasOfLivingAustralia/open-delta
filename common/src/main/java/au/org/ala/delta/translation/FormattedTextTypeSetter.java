@@ -35,6 +35,7 @@ public class FormattedTextTypeSetter extends PlainTextTypeSetter {
 	
 	@Override
 	public void beforeFirstItem() {
+		writeTypeSettingMark(MarkPosition.BEFORE_ITEM_NAME_AT_START_OF_FILE);
 	}
 
 	@Override
@@ -105,15 +106,9 @@ public class FormattedTextTypeSetter extends PlainTextTypeSetter {
 		writeTypeSettingMark(MarkPosition.AFTER_ITEM_HEADING);
 	}
 	
-	boolean startOfFile = false;
+	
 	public void beforeItemName() {
-		if (startOfFile) {
-			writeTypeSettingMark(MarkPosition.BEFORE_ITEM_NAME_AT_START_OF_FILE);
-		}
-		else {
-			writeTypeSettingMark(MarkPosition.BEFORE_ITEM_NAME);
-		}
-		
+		writeTypeSettingMark(MarkPosition.BEFORE_ITEM_NAME);
 	}
 	public void afterItemName() {
 		writeTypeSettingMark(MarkPosition.AFTER_ITEM_NAME);

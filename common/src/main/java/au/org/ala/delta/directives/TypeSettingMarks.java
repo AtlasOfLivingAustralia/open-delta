@@ -19,6 +19,9 @@ public class TypeSettingMarks extends AbstractFormattingDirective {
 		if (mark.getId() == MarkPosition.START_OF_FILE.getId()) {
 			context.getOutputFileSelector().setPrintFileHeader(mark.getMarkText());
 		}
+		else if (mark.getId() == MarkPosition.END_OF_FILE.getId()) {
+			context.getOutputFileSelector().setPrintFileFooter(mark.getMarkText());
+		}
 	}
 	
 

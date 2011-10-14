@@ -67,8 +67,10 @@ public class NaturalLanguageTranslator extends AbstractDataSetTranslator {
     @Override
     public void beforeItem(Item item) {
 
-    	_context.getOutputFileSelector().createNewFileIfRequired(item);
-    	
+    	boolean newFile = _context.getOutputFileSelector().createNewFileIfRequired(item);
+    	if (newFile) {
+    		_typeSetter.beforeFirstItem();
+    	}
         _typeSetter.beforeItem(item);
 
         printItemHeading(item);

@@ -50,6 +50,8 @@ public class OutputFileSelector {
 	
 	/** output when a new print file is created */
 	private String _printFileHeaderText;
+	/** Output at the end of the print file */
+	private String _printFileFooterText;
 	
 	/** Number of characters on a line of text written to the print file */
 	private int _printWidth;
@@ -199,6 +201,19 @@ public class OutputFileSelector {
 		}
 	}
 	
+	/**
+	 * When typesetting marks are being used, some are required to be output
+	 * when before a file is closed.  The string supplied to this method
+	 * will be outputn at the end of the print file.
+	 * @param footer the file footer.
+	 */
+	public void setPrintFileFooter(String footer) {
+		_printFileFooterText = footer;
+		if (_printFile != null) {
+			_printFile.setFileFooter(footer);
+		}
+	}
+	
 	public void setPrintWidth(int printWidth) {
 		_printWidth = printWidth;
 		if (_printFile != null) {
@@ -243,12 +258,18 @@ public class OutputFileSelector {
 			_printFile.setPrintStream(_printStream);
 		}
 		_printFile.setNewFileHeader(_printFileHeaderText);
+		_printFile.setFileFooter(_printFileFooterText);
 		
 	}
 	
 	private void closeExistingPrintStream() {
 		if (_printStream != null && _printStream != System.out && _printStream != System.err) {
-			IOUtils.closeQuietly(_printStream);
+			if (_printFile != null) {
+				_printFile.closePrintStream();
+			}
+			else {
+				IOUtils.closeQuietly(_printStream);
+			}
 		}
 	}
 	
@@ -275,8 +296,9 @@ public class OutputFileSelector {
 		}
 	}
 
-	public void createNewFileIfRequired(Item item) {
+	public boolean createNewFileIfRequired(Item item) {
 		
+		boolean newFile = false;
 		int itemNum = item.getItemNumber();
 		String fileName = getItemOutputFile(itemNum);
 		if (StringUtils.isEmpty(fileName)) {
@@ -286,6 +308,7 @@ public class OutputFileSelector {
 			}
 		}
 		if (StringUtils.isNotEmpty(fileName)) {
+			newFile = true;
 			try {
 				setPrintFileName(fileName);
 			}
@@ -294,5 +317,6 @@ public class OutputFileSelector {
 				throw new RuntimeException("Unable to update print file!");
 			}
 		}
+		return newFile;
 	}
 }

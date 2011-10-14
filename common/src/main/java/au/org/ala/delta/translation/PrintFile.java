@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.translation.Words.Word;
@@ -28,6 +29,7 @@ public class PrintFile {
     private boolean _softWrap;
     private boolean _newFile;
     private String _newFileHeader;
+    private String _fileFooter;
 
     public PrintFile(final StringBuilder buffer) {
 
@@ -363,12 +365,30 @@ public class PrintFile {
     		_newFile = false;
     	}
     }
+    
+    public void setFileFooter(String footer) {
+    	_fileFooter = footer;
+    }
+    
+    private void writeFooter() {
+    	if (StringUtils.isNotBlank(_fileFooter)) {
+    		outputLine(_fileFooter);
+    	}
+    }
 
 	public void setPrintWidth(int printWidth) {
 		_printWidth = printWidth;
 	}
 
 	public void setPrintStream(PrintStream stream) {
+		// This can occur if we are changing files.
+		
 		_output = stream;
+	}
+	
+	public void closePrintStream() {
+		printBufferLine();
+		writeFooter();
+		IOUtils.closeQuietly(_output);
 	}
 }
