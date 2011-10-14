@@ -80,6 +80,7 @@ public class ConforDirectiveFileParser extends DirectiveParser<DeltaContext> {
         instance.registerDirective(new ItemAbundances());
         instance.registerDirective(new ItemDescriptions());
         instance.registerDirective(new ItemHeadings());
+        instance.registerDirective(new ItemOutputFiles());
         instance.registerDirective(new ItemSubHeadings());
         
         instance.registerDirective(new KeyCharacterList()); 

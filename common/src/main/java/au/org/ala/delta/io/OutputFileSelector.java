@@ -46,6 +46,7 @@ public class OutputFileSelector {
 	private PrintFile _printFile;
 	private ParsingContext _context;
 	private OutputFormat _outputFormat;
+	private int _outputFileIndex;
 	
 	/** output when a new print file is created */
 	private String _printFileHeaderText;
@@ -56,15 +57,13 @@ public class OutputFileSelector {
 	public OutputFileSelector(DeltaDataSet dataSet) {
 		_dataSet = dataSet;
 		_printWidth = DEFAULT_PRINT_WIDTH;
+		_outputFileIndex = 1;
 	}
 
 	public void setParsingContext(ParsingContext context) {
 		_context = context;
 	}
 	public String getItemOutputFile(int itemNumber) {
-		if (_itemOutputFiles.isEmpty() && _characterForOutputFiles == 0) {
-			throw new RuntimeException("One of ITEM OUTPUT FILES or CHARACTER FOR OUTPUT FILES must be specified.");
-		}
 		
 		String outputFile = "";
 		// This basically says use the current output file if a new one is
@@ -89,6 +88,9 @@ public class OutputFileSelector {
 	
 	private String addExtension(String outputFile) {
 		
+		if (StringUtils.isEmpty(outputFile)) {
+			return "";
+		}
 		StringBuilder output = new StringBuilder(outputFile);
 		if (outputFile.indexOf('.') < 0) {
 			switch (_outputFormat) {
@@ -169,8 +171,12 @@ public class OutputFileSelector {
 		return makeAbsolute(_distOutputFile);
 	}
 
-	public void addNewFileAtItem(Integer id) {
-		_newFileItems.add(id);
+	public void addNewFileAtItem(int itemNumber) {
+		_newFileItems.add(itemNumber);
+	}
+	
+	public boolean getNewFileAtItem(int itemNumber) {
+		return _newFileItems.contains(itemNumber);
 	}
 	
 	public void setOutputDirectory(String directory) throws Exception {
@@ -230,7 +236,12 @@ public class OutputFileSelector {
 		if (StringUtils.isNotEmpty(_printFileHeaderText)) {
 			_printStream.println(_printFileHeaderText);
 		}
-		_printFile = new PrintFile(_printStream, _printWidth);
+		if (_printFile == null) {
+			_printFile = new PrintFile(_printStream, _printWidth);
+		}
+		else {
+			_printFile.setPrintStream(_printStream);
+		}
 		_printFile.setNewFileHeader(_printFileHeaderText);
 		
 	}
@@ -261,6 +272,27 @@ public class OutputFileSelector {
 		}
 		else {
 			return OUTPUT_FILE_ENCODING;
+		}
+	}
+
+	public void createNewFileIfRequired(Item item) {
+		
+		int itemNum = item.getItemNumber();
+		String fileName = getItemOutputFile(itemNum);
+		if (StringUtils.isEmpty(fileName)) {
+			if (_newFileItems.contains(itemNum)) {
+				fileName = _printFileName + _outputFileIndex;
+				_outputFileIndex++;
+			}
+		}
+		if (StringUtils.isNotEmpty(fileName)) {
+			try {
+				setPrintFileName(fileName);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+				throw new RuntimeException("Unable to update print file!");
+			}
 		}
 	}
 }

@@ -708,6 +708,9 @@ public class DeltaContext extends AbstractDeltaContext {
 	}
 
 	public void setOutputHtml(boolean b) {
+		if (b) {
+			getOutputFileSelector().setOutputFormat(OutputFormat.HTML);
+		}
 		_outputHtml = b;
 	}
 	

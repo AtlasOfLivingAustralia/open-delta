@@ -19,15 +19,15 @@ import au.org.ala.delta.model.format.AttributeFormatter;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.translation.AbstractDataSetTranslator;
-import au.org.ala.delta.translation.PrintFile;
 import au.org.ala.delta.translation.ItemListTypeSetter;
+import au.org.ala.delta.translation.PrintFile;
 import au.org.ala.delta.translation.Words;
 import au.org.ala.delta.translation.Words.Word;
 import au.org.ala.delta.translation.attribute.AttributeParser;
 import au.org.ala.delta.translation.attribute.AttributeTranslator;
+import au.org.ala.delta.translation.attribute.CommentedValueList.Values;
 import au.org.ala.delta.translation.attribute.MultiStateAttributeTranslator;
 import au.org.ala.delta.translation.attribute.NumericAttributeTranslator;
-import au.org.ala.delta.translation.attribute.CommentedValueList.Values;
 import au.org.ala.delta.translation.attribute.TextAttributeTranslator;
 
 /**
@@ -67,6 +67,8 @@ public class NaturalLanguageTranslator extends AbstractDataSetTranslator {
     @Override
     public void beforeItem(Item item) {
 
+    	_context.getOutputFileSelector().createNewFileIfRequired(item);
+    	
         _typeSetter.beforeItem(item);
 
         printItemHeading(item);
@@ -194,10 +196,7 @@ public class NaturalLanguageTranslator extends AbstractDataSetTranslator {
         }
 
         Attribute attribute = _dataSet.getAttribute(item.getItemNumber(), characterNumber);
-        // TODO the CONFOR code (TNAT) strips comments. Not sure how nested
-        // comments are treated
-        // as I don't yet understand how item descriptions are broken into the
-        // subgroups.
+       
         String itemDescription = attribute.getValueAsString();
         _printer.writeJustifiedText(itemDescription, 0);
 

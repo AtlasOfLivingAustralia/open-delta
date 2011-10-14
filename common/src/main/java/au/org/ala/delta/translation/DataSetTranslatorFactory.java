@@ -40,8 +40,13 @@ public class DataSetTranslatorFactory {
 		
 		FormatterFactory formatterFactory = new FormatterFactory(context);
 		
-		if (translation.equals(TranslateType.NaturalLanguage) && context.getOutputHtml() == false) {
-			translator = createNaturalLanguageTranslator(context, printFile, formatterFactory);
+		if (translation.equals(TranslateType.NaturalLanguage)) {
+			if (context.getOutputHtml() == false) {
+				translator = createNaturalLanguageTranslator(context, printFile, formatterFactory);
+			}
+			else {
+				translator = createNaturalLanguageTranslator(context, printFile, formatterFactory);
+			}
 		}
 		else if (translation.equals(TranslateType.Delta)) {
 			translator = createDeltaFormatTranslator(context, printFile, formatterFactory);
