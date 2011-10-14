@@ -50,9 +50,9 @@ public class TypeSetNaturalLanguageTranslatorTest extends NaturalLangaugeTransla
         HashMap<Integer, TypeSettingMark> marks = new HashMap<Integer, TypeSettingMark>();
 
         for (MarkPosition position : MarkPosition.values()) {
-            marks.put(position.getId(), new TypeSettingMark(position.getId(), "mark " + position.getId(), false));
+        	_context.addTypeSettingMark(new TypeSettingMark(position.getId(), "mark " + position.getId(), false));
         }
-
+       
         return marks;
     }
 
@@ -62,7 +62,8 @@ public class TypeSetNaturalLanguageTranslatorTest extends NaturalLangaugeTransla
     @Test
     public void testSimpleDataSetWithTypesetting() throws Exception {
         initialiseContext(DEFAULT_DATASET_PATH);
-        _typeSetter = new FormattedTextTypeSetter(createMarks(), _printer);
+        createMarks();
+        _typeSetter = new FormattedTextTypeSetter(_context, _printer);
         ItemFormatter itemFormatter = new TypeSettingItemFormatter(_typeSetter);
         CharacterFormatter characterFormatter = new CharacterFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.RETAIN, false, false);
         AttributeFormatter attributeFormatter = new TypeSettingAttributeFormatter();
@@ -78,8 +79,8 @@ public class TypeSetNaturalLanguageTranslatorTest extends NaturalLangaugeTransla
     @Test
     public void testSampleDataSetWithTypesetting() throws Exception {
         initialiseContext("/dataset/sample/tonatr_simple");
-
-        _typeSetter = new FormattedTextTypeSetter(_context.getTypeSettingMarks(), _printer);
+        
+        _typeSetter = new FormattedTextTypeSetter(_context, _printer);
         ItemFormatter itemFormatter = new TypeSettingItemFormatter(_typeSetter);
         CharacterFormatter characterFormatter = new CharacterFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.RETAIN, false, false);
         AttributeFormatter attributeFormatter = new TypeSettingAttributeFormatter();

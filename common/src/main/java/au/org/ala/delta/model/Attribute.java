@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import au.org.ala.delta.model.impl.AttributeData;
-import au.org.ala.delta.model.impl.ControllingInfo;
 import au.org.ala.delta.model.observer.AttributeObserver;
 
 /**

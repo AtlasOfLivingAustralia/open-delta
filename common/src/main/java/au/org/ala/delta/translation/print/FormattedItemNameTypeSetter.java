@@ -1,17 +1,15 @@
 package au.org.ala.delta.translation.print;
 
-import java.util.Map;
-
+import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.model.Item;
-import au.org.ala.delta.model.TypeSettingMark;
 import au.org.ala.delta.model.TypeSettingMark.MarkPosition;
 import au.org.ala.delta.translation.FormattedTextTypeSetter;
 import au.org.ala.delta.translation.PrintFile;
 
 public class FormattedItemNameTypeSetter extends FormattedTextTypeSetter {
 
-	public FormattedItemNameTypeSetter(Map<Integer, TypeSettingMark> typeSettingMarks, PrintFile typeSetter) {
-		super(typeSettingMarks, typeSetter);
+	public FormattedItemNameTypeSetter(DeltaContext context, PrintFile typeSetter) {
+		super(context, typeSetter);
 	}
 
 	@Override 

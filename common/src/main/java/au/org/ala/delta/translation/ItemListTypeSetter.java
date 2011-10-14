@@ -1,6 +1,7 @@
 package au.org.ala.delta.translation;
 
 import au.org.ala.delta.model.Attribute;
+import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
 
 /**
@@ -35,4 +36,8 @@ public interface ItemListTypeSetter {
 	public abstract void beforeNewParagraphCharacter();
 	
 	public String rangeSeparator();
+
+	public abstract void beforeCharacterDescription(Character character, Item item);
+
+	public abstract void afterCharacterDescription(Character character, Item item);
 }

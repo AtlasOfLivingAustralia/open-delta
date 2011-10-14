@@ -174,7 +174,7 @@ public abstract class AbstractObservableDataSet implements ObservableDeltaDataSe
 	public Item itemForDescription(String description) {
 		
 		String strippedDescription = RTFUtils.stripFormatting(description);
-		for (int i=1; i<getMaximumNumberOfItems(); i++) {
+		for (int i=1; i<=getMaximumNumberOfItems(); i++) {
 			Item item = getItem(i);
 			
 			if (strippedDescription.equals(RTFUtils.stripFormatting(item.getDescription()))) {

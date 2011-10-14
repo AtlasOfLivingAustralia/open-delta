@@ -265,7 +265,7 @@ public class NaturalLanguageTranslator extends AbstractDataSetTranslator {
                 description = removeCommonPrefix(firstDescription, description);
             }
             String itemSubheading = _characterFormatter.defaultFormat(_context.getItemSubheading(characterNumber));
-            writeFeature(description, true, item.getItemNumber(), characterNumber, itemSubheading, false, false, new int[_context.getNumberOfCharacters()],
+            writeFeature(character, item, description, true, item.getItemNumber(), characterNumber, itemSubheading,
                     subsequentPartOfLinkedSet);
             writeCharacterAttribute(item, character);
         }
@@ -306,7 +306,10 @@ public class NaturalLanguageTranslator extends AbstractDataSetTranslator {
         }
 
         String formattedAttribute = translator.translate(parser.parse(value));
+        
+        _typeSetter.beforeAttribute(attribute);
         _printer.writeJustifiedText(formattedAttribute, -1);
+        _typeSetter.afterAttribute(attribute);
         _characterOutputSinceLastPuntuation = true;
 
     }
@@ -328,7 +331,7 @@ public class NaturalLanguageTranslator extends AbstractDataSetTranslator {
     private boolean _characterOutputSinceLastPuntuation;
     private boolean _textOutputSinceLastParagraph;
 
-    private void writeFeature(String description, boolean omitFinalPeriod, int itemNumber, int characterNumber, String subHeading, boolean emphasizeFeature, boolean emphasizeCharacter, int[] offsets,
+    private void writeFeature(Character character, Item item, String description, boolean omitFinalPeriod, int itemNumber, int characterNumber, String subHeading,
             boolean subsequentPartOfLinkedSet) {
 
         // Insert a full stop if required.
@@ -370,37 +373,18 @@ public class NaturalLanguageTranslator extends AbstractDataSetTranslator {
             _printer.writeJustifiedText("(" + characterNumber + ")", -1);
         }
 
-        int ioffset = 0;
+       
         // Check if we are starting a new sentence or starting a new set of
         // linked characters.
         if ((_previousCharInSentence == 0) || (!subsequentPartOfLinkedSet && _lastCharacterOutput < _previousCharInSentence)) {
-            ioffset = 0;
             _printer.capitaliseNextWord();
         }
 
-        int completionAction = -1;
-        boolean emphasisApplied = false;
-        if (emphasizeCharacter) {
-            if ((ioffset == 0) || _context.isCharacterEmphasized(itemNumber, characterNumber)) {
-                _printer.insertTypeSettingMarks(19);
-                emphasisApplied = true;
-                completionAction = -1;
-                if (ioffset == 0 && (offsets[characterNumber] > 0)) {
-                    ioffset = -offsets[characterNumber];
-                }
-            }
-        }
+        _typeSetter.beforeCharacterDescription(character, item);
 
-        writeSentence(description, 0, completionAction);
+        writeSentence(description, 0, -1);
 
-        if (emphasizeCharacter) {
-            if (emphasisApplied) {
-                _printer.insertTypeSettingMarks(20);
-            }
-            if (emphasizeFeature) {
-                _printer.insertTypeSettingMarks(18);
-            }
-        }
+        _typeSetter.afterCharacterDescription(character, item);
 
         _previousCharInSentence = characterNumber;
 

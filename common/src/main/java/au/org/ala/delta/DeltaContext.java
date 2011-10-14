@@ -563,12 +563,55 @@ public class DeltaContext extends AbstractDeltaContext {
 		return emphasized;
 	}
 	
+	public Map<Integer, Set<Integer>> getEmphasizedCharacters() {
+		// Merge the two lists into one.  We couldn't do this during the 
+		// directive parsing because the item descriptions is normally one of the
+		// last directives read.
+		Map<Integer, Set<Integer>> emphasizedChars = new HashMap<Integer, Set<Integer>>(_emphasizedCharacters);
+		
+		for (String description : _emphasizedCharactersByDescription.keySet()) {
+			Set<Integer> chars = _emphasizedCharactersByDescription.get(description);
+			Item item = _dataSet.itemForDescription(description);
+			
+			// This can happen when the chars are being translated before
+			// the item descriptions directive has been encountered.
+			if (item == null) {
+				continue;
+			}
+			int itemNum = item.getItemNumber();
+			
+			if (emphasizedChars.containsKey(itemNum)) {
+				chars.addAll(emphasizedChars.get(itemNum));
+			}
+			
+			Set<Integer> allChars = new HashSet<Integer>();
+			for (int charNum : chars) {
+				Set<Integer> linkedChars = getLinkedCharacters(charNum);
+				if (linkedChars != null) {
+					allChars.addAll(linkedChars);
+				}
+			}
+			
+			emphasizedChars.put(itemNum, allChars);
+		}
+		
+		return emphasizedChars;
+		
+	}
+	
 	public void emphasizeCharacters(int itemNum, Set<Integer> characters) {
+		if (_emphasizedCharacters.containsKey(itemNum)) {
+			characters.addAll(_emphasizedCharacters.get(itemNum));
+		}
 		_emphasizedCharacters.put(itemNum, characters);
 	}
 	
 	public void emphasizeCharacters(String itemDescription, Set<Integer> characters) {
-		_emphasizedCharactersByDescription.put(RTFUtils.stripFormatting(itemDescription), characters);
+		String unformattedDescription = RTFUtils.stripFormatting(itemDescription);
+		if (_emphasizedCharactersByDescription.containsKey(unformattedDescription)) {
+			characters.addAll(_emphasizedCharactersByDescription.get(unformattedDescription));
+		}
+		_emphasizedCharactersByDescription.put(unformattedDescription, characters);
 	}
 	
 	public void addCharacters(int itemNum, Set<Integer> characters) {
@@ -590,7 +633,7 @@ public class DeltaContext extends AbstractDeltaContext {
 	private boolean itemDescriptionEntryExists(Map<String, Set<Integer>> map, int itemNum, int characterNum) {
 		Item item = getDataSet().getItem(itemNum);
 		String description = RTFUtils.stripFormatting(item.getDescription());
-		Set<Integer> chars =  _addedCharactersByDescription.get(description);
+		Set<Integer> chars =  map.get(description);
 		if (chars != null) {
 			return chars.contains(characterNum);
 		}
@@ -625,6 +668,14 @@ public class DeltaContext extends AbstractDeltaContext {
 		return _emphasizedFeatures.contains(i);
 	}
 
+	public void emphasizeFeature(int charNumber) {
+		_emphasizedFeatures.add(charNumber);
+	}
+	
+	public Set<Integer> getEmphasizedFeatures() {
+		return _emphasizedFeatures;
+	}
+	
 	public boolean setInsertImplicitValues(boolean insertImplicitValues) {
 		return _insertImplicitValues = insertImplicitValues;
 	}
@@ -640,8 +691,6 @@ public class DeltaContext extends AbstractDeltaContext {
 	public void omitOrForCharacter(int charNumber) {
 		_omitOrForCharacters.add(charNumber);
 	}
-	
-
 	
 	public boolean isUseControllingCharacterFirst(int i) {
 		return _useControllingCharactersFirst.contains(i);
@@ -847,10 +896,6 @@ public class DeltaContext extends AbstractDeltaContext {
 			abundancy = 5d;
 		}
 		return abundancy;
-	}
-
-	public boolean is_keyCharacterListUsed() {
-		return _keyCharacterListUsed;
 	}
 
 	public void setKeyCharacterListUsed(boolean keyCharacterListUsed) {

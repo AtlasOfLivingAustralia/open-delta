@@ -65,6 +65,7 @@ public class ConforDirectiveFileParser extends DirectiveParser<DeltaContext> {
         instance.registerDirective(new DistOutputFile());
         
         instance.registerDirective(new EmphasizeCharacters());
+        instance.registerDirective(new EmphasizeFeatures());
         instance.registerDirective(new ExcludeCharacters());
         
         instance.registerDirective(new FormattingMarks());

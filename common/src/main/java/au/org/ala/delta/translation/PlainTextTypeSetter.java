@@ -1,6 +1,7 @@
 package au.org.ala.delta.translation;
 
 import au.org.ala.delta.model.Attribute;
+import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
 
 /**
@@ -68,4 +69,12 @@ public class PlainTextTypeSetter implements ItemListTypeSetter {
 	public String rangeSeparator() {
 		return "-";
 	}
+
+	@Override
+	public void beforeCharacterDescription(Character character, Item item) {}
+
+	@Override
+	public void afterCharacterDescription(Character character, Item item) {}
+	
+	
 }

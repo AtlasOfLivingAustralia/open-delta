@@ -42,8 +42,11 @@ public abstract class TranslatorTest extends TestCase {
 
 		ConforDirectiveFileParser parser = ConforDirectiveFileParser
 				.createInstance();
-		parser.registerObserver(new ConforDirectiveParserObserver(_context));
+		ConforDirectiveParserObserver conforObserver = new ConforDirectiveParserObserver(_context);
+		parser.registerObserver(conforObserver);
 		parser.parse(specs, _context);
+		
+		conforObserver.finishedProcessing();
 	}
 
 	protected File classloaderPathToFile(String path) throws URISyntaxException {

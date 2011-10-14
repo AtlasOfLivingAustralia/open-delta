@@ -2,10 +2,13 @@ package au.org.ala.delta.translation;
 
 import java.text.ParseException;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 
+import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.model.Attribute;
+import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.TypeSettingMark;
 import au.org.ala.delta.model.TypeSettingMark.MarkPosition;
@@ -19,11 +22,15 @@ public class FormattedTextTypeSetter extends PlainTextTypeSetter {
 
 	private Map<Integer, TypeSettingMark> _typeSettingMarks;
 	private PrintFile _printer;
+	protected DeltaContext _context;
 	
-	public FormattedTextTypeSetter(Map<Integer, TypeSettingMark> typeSettingMarks, PrintFile typeSetter) {
+	public FormattedTextTypeSetter(
+			DeltaContext context,
+			PrintFile typeSetter) {
 		super(typeSetter);
 		_printer = typeSetter;
-		_typeSettingMarks = typeSettingMarks;
+		_typeSettingMarks = context.getTypeSettingMarks();
+		_context = context;
 	}
 	
 	@Override
@@ -50,10 +57,29 @@ public class FormattedTextTypeSetter extends PlainTextTypeSetter {
 	}
 
 	@Override
-	public void beforeAttribute(Attribute attribute) {}
+	public void beforeAttribute(Attribute attribute) {
+		if (isEmphasized(attribute)) {
+			writeTypeSettingMark(MarkPosition.BEFORE_EMPHASIZED_CHARACTER);
+		}
+	}
 
 	@Override
-	public void afterAttribute(Attribute attribute) {}
+	public void afterAttribute(Attribute attribute) {
+		if (isEmphasized(attribute)) {
+			writeTypeSettingMark(MarkPosition.AFTER_EMPHASIZED_CHARACTER);
+		}
+	}
+	
+	private boolean isEmphasized(Attribute attribute) {
+		
+		int itemNum = attribute.getItem().getItemNumber();
+		int charNum = attribute.getCharacter().getCharacterId();
+		return isEmphasized(charNum, itemNum);
+	}
+	
+	private boolean isEmphasized(int charNum, int itemNum) {
+		return _context.isCharacterEmphasized(itemNum, charNum);
+	}
 
 	@Override
 	public void afterLastItem() {
@@ -109,6 +135,39 @@ public class FormattedTextTypeSetter extends PlainTextTypeSetter {
 	@Override
 	public void beforeNewParagraphCharacter() {
 		writeTypeSettingMark(MarkPosition.BEFORE_NEW_PARAGRAPH_CHARACTER);
+	}
+	
+	@Override
+	public void beforeCharacterDescription(Character character, Item item) {
+		if (_context.isFeatureEmphasized(character.getCharacterId())) {
+			writeTypeSettingMark(MarkPosition.BEFORE_EMPHASIZED_FEATURE);
+		}
+		if (isFeatureEmphazised(character.getCharacterId(), item.getItemNumber())) {
+			writeTypeSettingMark(MarkPosition.BEFORE_EMPHASIZED_CHARACTER);
+		}
+	}
+
+	@Override
+	public void afterCharacterDescription(Character character, Item item) {
+		if (_context.isFeatureEmphasized(character.getCharacterId())) {
+			writeTypeSettingMark(MarkPosition.AFTER_EMPHASIZED_FEATURE);
+		}
+		if (isFeatureEmphazised(character.getCharacterId(), item.getItemNumber())) {
+			writeTypeSettingMark(MarkPosition.AFTER_EMPHASIZED_CHARACTER);
+		}
+	}
+	
+	private boolean isFeatureEmphazised(int charNum, int itemNum) {
+		Set<Integer> linkedChars = _context.getLinkedCharacters(charNum);
+		if (linkedChars == null) {
+			return isEmphasized(charNum, itemNum);
+		}
+		for (int linkedCharNum : linkedChars) {
+			if (isEmphasized(linkedCharNum, itemNum)) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	@Override

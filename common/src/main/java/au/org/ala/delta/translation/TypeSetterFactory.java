@@ -20,7 +20,7 @@ public class TypeSetterFactory {
 			return new PlainTextTypeSetter(printer);
 		}
 		else {
-			return new FormattedTextTypeSetter(context.getTypeSettingMarks(), printer);
+			return new FormattedTextTypeSetter(context,  printer);
 		}
 		
 	}
@@ -34,7 +34,7 @@ public class TypeSetterFactory {
 			return new PlainTextTypeSetter(printer);
 		}
 		else {
-			return new FormattedItemNameTypeSetter(context.getTypeSettingMarks(), printer);
+			return new FormattedItemNameTypeSetter(context, printer);
 		}
 	}
 	
