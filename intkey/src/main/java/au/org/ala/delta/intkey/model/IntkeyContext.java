@@ -379,6 +379,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         }
 
         _stopBest = _dataset.getNumberOfCharacters();
+        _appUI.clearToolbar();
     }
 
     /**
