@@ -264,6 +264,9 @@ public class OutputFileSelector {
 	}
 	
 	private String prependOutputDirectory(String fileName) {
+		if (StringUtils.isEmpty(fileName)) {
+			return "";
+		}
 		String outputFileName = fileName;
 		if (!fileName.contains(File.separator) && (_outputDirectory != null)) {
 			outputFileName = FilenameUtils.concat(_outputDirectory, fileName);
