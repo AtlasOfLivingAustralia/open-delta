@@ -2,28 +2,22 @@ package au.org.ala.delta.intkey.directives.invocation;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class SetFixDirectiveInvocation extends IntkeyDirectiveInvocation {
-
-    private boolean value;
-
-    public void setValue(boolean value) {
-        this.value = value;
-    }
+public class SetFixDirectiveInvocation extends OnOffDirectiveInvocation {
 
     @Override
     public boolean execute(IntkeyContext context) {
-        
-        if (value == true && context.charactersFixed()) {
+
+        if (_value == true && context.charactersFixed()) {
             context.getUI().displayErrorMessage("Characters already fixed.");
             return false;
-        }        
-        
-        if (value == true && context.getUsedCharacters().isEmpty()) {
+        }
+
+        if (_value == true && context.getUsedCharacters().isEmpty()) {
             context.getUI().displayErrorMessage("No characters in specimen description to fix.");
             return false;
         }
-        
-        context.setCharactersFixed(value);
+
+        context.setCharactersFixed(_value);
         return true;
     }
 

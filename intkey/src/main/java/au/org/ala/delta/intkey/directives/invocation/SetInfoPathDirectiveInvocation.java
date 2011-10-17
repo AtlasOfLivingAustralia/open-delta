@@ -8,9 +8,12 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
 public class SetInfoPathDirectiveInvocation extends IntkeyDirectiveInvocation {
 
     private List<String> _infoPaths;
-    
-    public SetInfoPathDirectiveInvocation(List<String> infoPaths) {
-        _infoPaths = new ArrayList<String>(infoPaths);
+
+    public void setInfoPaths(String infoPathsAsString) {
+        _infoPaths = new ArrayList<String>();
+        for (String path : infoPathsAsString.split(";")) {
+            _infoPaths.add(path);
+        }
     }
 
     @Override

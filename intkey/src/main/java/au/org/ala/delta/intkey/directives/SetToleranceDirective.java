@@ -1,41 +1,33 @@
 package au.org.ala.delta.intkey.directives;
 
-import org.apache.commons.lang.StringUtils;
+import java.util.ArrayList;
+import java.util.List;
 
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.SetToleranceDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class SetToleranceDirective extends IntkeyDirective {
-    
+public class SetToleranceDirective extends NewIntkeyDirective {
+
     public SetToleranceDirective() {
         super("set", "tolerance");
     }
 
     @Override
-    protected IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
-        int toleranceValue = 0;
+    protected List<IntkeyDirectiveArgument<?>> generateArgumentsList(IntkeyContext context) {
+        List<IntkeyDirectiveArgument<?>> arguments = new ArrayList<IntkeyDirectiveArgument<?>>();
+        arguments.add(new IntegerArgument("toleranceValue", "Enter value of TOLERANCE", context.getTolerance()));
+        return arguments;
+    }
 
-        int currentTolerance = context.getTolerance();
+    @Override
+    protected List<IntkeyDirectiveFlag> buildFlagsList() {
+        return null;
+    }
 
-        if (StringUtils.isBlank(data)) {
-            String inputText = context.getDirectivePopulator().promptForString("Input tolerance value", Integer.toString(currentTolerance), "SET TOLERANCE");
-
-            if (StringUtils.isBlank(inputText)) {
-                // Cancel hit or blank text entered
-                return null;
-            } else {
-                data = inputText;
-            }
-        }
-
-        try {
-            toleranceValue = Integer.parseInt(data);
-        } catch (NumberFormatException ex) {
-            throw new IntkeyDirectiveParseException("Invalid integer value", ex);
-        }
-
-        return new SetToleranceDirectiveInvocation(toleranceValue);
+    @Override
+    protected IntkeyDirectiveInvocation buildCommandObject() {
+        return new SetToleranceDirectiveInvocation();
     }
 
 }

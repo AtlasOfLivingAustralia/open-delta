@@ -6,12 +6,15 @@ public class DefineInformationDirectiveInvocation extends IntkeyDirectiveInvocat
 
     private String _subject;
     private String _command;
-    
-    public DefineInformationDirectiveInvocation(String subject, String command) {
-        _subject = subject;
-        _command = command;
+
+    public void setSubject(String subject) {
+        this._subject = subject;
     }
-    
+
+    public void setCommand(String command) {
+        this._command = command;
+    }
+
     @Override
     public boolean execute(IntkeyContext context) {
         context.addTaxonInformationDialogCommand(_subject, _command);

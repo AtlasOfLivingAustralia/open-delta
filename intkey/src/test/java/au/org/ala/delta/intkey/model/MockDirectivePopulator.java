@@ -82,4 +82,9 @@ public class MockDirectivePopulator implements DirectivePopulator {
         return null;
     }
 
+    @Override
+    public List<Object> promptForButtonDefinition() {
+        return null;
+    }
+
 }

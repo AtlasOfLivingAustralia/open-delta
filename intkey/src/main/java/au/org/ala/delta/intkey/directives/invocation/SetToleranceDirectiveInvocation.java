@@ -6,8 +6,9 @@ public class SetToleranceDirectiveInvocation extends IntkeyDirectiveInvocation {
     
     private int _toleranceValue;
     
-    public SetToleranceDirectiveInvocation(int toleranceValue) {
-        _toleranceValue = toleranceValue;
+
+    public void setToleranceValue(int toleranceValue) {
+        this._toleranceValue = toleranceValue;
     }
 
     @Override

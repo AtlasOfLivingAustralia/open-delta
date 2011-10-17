@@ -66,8 +66,11 @@ import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.directives.AbstractDirective;
+import au.org.ala.delta.directives.ExcludeCharacters;
 import au.org.ala.delta.intkey.directives.ChangeDirective;
 import au.org.ala.delta.intkey.directives.CharactersDirective;
+import au.org.ala.delta.intkey.directives.DefineCharactersDirective;
+import au.org.ala.delta.intkey.directives.DefineTaxaDirective;
 import au.org.ala.delta.intkey.directives.DescribeDirective;
 import au.org.ala.delta.intkey.directives.DiagnoseDirective;
 import au.org.ala.delta.intkey.directives.DifferencesDirective;
@@ -75,6 +78,8 @@ import au.org.ala.delta.intkey.directives.DirectivePopulator;
 import au.org.ala.delta.intkey.directives.DisplayCharacterOrderBestDirective;
 import au.org.ala.delta.intkey.directives.DisplayCharacterOrderNaturalDirective;
 import au.org.ala.delta.intkey.directives.DisplayCharacterOrderSeparateDirective;
+import au.org.ala.delta.intkey.directives.ExcludeCharactersDirective;
+import au.org.ala.delta.intkey.directives.ExcludeTaxaDirective;
 import au.org.ala.delta.intkey.directives.FileCharactersDirective;
 import au.org.ala.delta.intkey.directives.FileTaxaDirective;
 import au.org.ala.delta.intkey.directives.FindCharactersDirective;
@@ -87,13 +92,31 @@ import au.org.ala.delta.intkey.directives.InformationDirective;
 import au.org.ala.delta.intkey.directives.IntkeyDirectiveParseException;
 import au.org.ala.delta.intkey.directives.NewDatasetDirective;
 import au.org.ala.delta.intkey.directives.RestartDirective;
+import au.org.ala.delta.intkey.directives.SetDiagLevelDirective;
+import au.org.ala.delta.intkey.directives.SetExactDirective;
+import au.org.ala.delta.intkey.directives.SetImagePathDirective;
+import au.org.ala.delta.intkey.directives.SetInfoPathDirective;
 import au.org.ala.delta.intkey.directives.SetMatchDirective;
+import au.org.ala.delta.intkey.directives.SetRBaseDirective;
+import au.org.ala.delta.intkey.directives.SetReliabilitiesDirective;
+import au.org.ala.delta.intkey.directives.SetStopBestDirective;
 import au.org.ala.delta.intkey.directives.SetToleranceDirective;
+import au.org.ala.delta.intkey.directives.SetVaryWtDirective;
 import au.org.ala.delta.intkey.directives.SimilaritiesDirective;
 import au.org.ala.delta.intkey.directives.SummaryDirective;
 import au.org.ala.delta.intkey.directives.TaxaDirective;
 import au.org.ala.delta.intkey.directives.UseDirective;
+import au.org.ala.delta.intkey.directives.invocation.DisplayCharacterOrderBestDirectiveInvocation;
+import au.org.ala.delta.intkey.directives.invocation.DisplayCharacterOrderNaturalDirectiveInvocation;
+import au.org.ala.delta.intkey.directives.invocation.DisplayCommentsDirectiveInvocation;
+import au.org.ala.delta.intkey.directives.invocation.DisplayInapplicablesDirectiveInvocation;
+import au.org.ala.delta.intkey.directives.invocation.DisplayLogDirectiveInvocation;
+import au.org.ala.delta.intkey.directives.invocation.DisplayNumberingDirectiveInvocation;
+import au.org.ala.delta.intkey.directives.invocation.DisplayUnknownsDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
+import au.org.ala.delta.intkey.directives.invocation.SetAutoToleranceDirectiveInvocation;
+import au.org.ala.delta.intkey.directives.invocation.SetFixDirectiveInvocation;
+import au.org.ala.delta.intkey.directives.invocation.SetToleranceDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyCharacterOrder;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.model.IntkeyDataset;
@@ -111,12 +134,15 @@ import au.org.ala.delta.intkey.ui.CharacterImageDialog;
 import au.org.ala.delta.intkey.ui.CharacterKeywordSelectionDialog;
 import au.org.ala.delta.intkey.ui.CharacterSelectionDialog;
 import au.org.ala.delta.intkey.ui.ContentsDialog;
+import au.org.ala.delta.intkey.ui.DefineButtonDialog;
 import au.org.ala.delta.intkey.ui.DirectiveAction;
+import au.org.ala.delta.intkey.ui.DirectiveInvocationAction;
 import au.org.ala.delta.intkey.ui.FindInCharactersDialog;
 import au.org.ala.delta.intkey.ui.FindInTaxaDialog;
 import au.org.ala.delta.intkey.ui.ImageDialog;
 import au.org.ala.delta.intkey.ui.ImageUtils;
 import au.org.ala.delta.intkey.ui.IntegerInputDialog;
+import au.org.ala.delta.intkey.ui.MenuBuilder;
 import au.org.ala.delta.intkey.ui.MultiStateInputDialog;
 import au.org.ala.delta.intkey.ui.OnOffPromptDialog;
 import au.org.ala.delta.intkey.ui.ReExecuteDialog;
@@ -882,26 +908,203 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         JMenu mnuSettings = new JMenu();
         mnuSettings.setName("mnuSettings");
 
+        // "Set" submenu
         JMenu mnuSet = new JMenu();
         mnuSet.setName("mnuSet");
         mnuSettings.add(mnuSet);
 
-        JMenu mnuDisplay = new JMenu();
-        mnuDisplay.setName("mnuDisplay");
-        mnuSettings.add(mnuDisplay);
+        JMenu mnuAutotolerance = new JMenu();
+        mnuAutotolerance.setName("mnuAutotolerance");
 
-        JMenu mnuDefine = new JMenu();
-        mnuDefine.setName("mnuDefine");
-        mnuSettings.add(mnuDefine);
+        JMenuItem mnuItAutotoleranceOn = new JMenuItem();
+        mnuItAutotoleranceOn.setName("mnuItAutotoleranceOn");
+        SetAutoToleranceDirectiveInvocation setAutoToleranceOnInvoc = new SetAutoToleranceDirectiveInvocation();
+        setAutoToleranceOnInvoc.setValue(true);
+        mnuItAutotoleranceOn.setAction(new DirectiveInvocationAction(setAutoToleranceOnInvoc, _context));
+        mnuAutotolerance.add(mnuItAutotoleranceOn);
 
-        JMenu mnuInclude = new JMenu();
-        mnuInclude.setName("mnuInclude");
-        mnuSettings.add(mnuInclude);
+        JMenuItem mnuItAutotoleranceOff = new JMenuItem();
+        mnuItAutotoleranceOff.setName("mnuItAutotoleranceOff");
+        SetAutoToleranceDirectiveInvocation setAutoToleranceOffInvoc = new SetAutoToleranceDirectiveInvocation();
+        setAutoToleranceOffInvoc.setValue(false);
+        mnuItAutotoleranceOff.setAction(new DirectiveInvocationAction(setAutoToleranceOffInvoc, _context));
+        mnuAutotolerance.add(mnuItAutotoleranceOff);
 
-        JMenu mnuExclude = new JMenu();
-        mnuExclude.setName("mnuExclude");
-        mnuSettings.add(mnuExclude);
+        mnuSet.add(mnuAutotolerance);
 
+        JMenu mnuDemonstration = new JMenu();
+        mnuDemonstration.setName("mnuDemonstration");
+
+        JMenuItem mnuItDemonstrationOn = new JMenuItem();
+        mnuItDemonstrationOn.setName("mnuItDemonstrationOn");
+        // SetDemonstrationDirectiveInvocation setDemonstrationOnInvoc = new
+        // SetDemonstrationDirectiveInvocation();
+        // setDemonstrationOnInvoc.setValue(true);
+        // mnuItDemonstrationOn.setAction(new
+        // DirectiveInvocationAction(setDemonstrationOnInvoc, _context));
+        mnuDemonstration.add(mnuItDemonstrationOn);
+
+        JMenuItem mnuItDemonstrationOff = new JMenuItem();
+        mnuItDemonstrationOff.setName("mnuItDemonstrationOff");
+        // SetDemonstrationDirectiveInvocation setDemonstrationOffInvoc = new
+        // SetDemonstrationDirectiveInvocation();
+        // setDemonstrationOffInvoc.setValue(false);
+        // mnuItDemonstrationOff.setAction(new
+        // DirectiveInvocationAction(setDemonstrationOffInvoc, _context));
+        mnuDemonstration.add(mnuItDemonstrationOff);
+        mnuDemonstration.setVisible(false);
+        mnuSet.add(mnuDemonstration);
+
+        JMenuItem mnuItDiagLevel = new JMenuItem();
+        mnuItDiagLevel.setName("mnuItDiagLevel");
+        mnuItDiagLevel.setAction(new DirectiveAction(new SetDiagLevelDirective(), _context));
+        mnuSet.add(mnuItDiagLevel);
+
+        // DiagType
+
+        JMenuItem mnuItExact = new JMenuItem();
+        mnuItExact.setName("mnuItExact");
+        mnuItExact.setAction(new DirectiveAction(new SetExactDirective(), _context));
+        mnuSet.add(mnuItExact);
+
+        JMenu mnuFix = new JMenu();
+        mnuFix.setName("mnuFix");
+
+        JMenuItem mnuItFixOn = new JMenuItem();
+        mnuItFixOn.setName("mnuItFixOn");
+        SetFixDirectiveInvocation setFixOnInvoc = new SetFixDirectiveInvocation();
+        setFixOnInvoc.setValue(true);
+        mnuItFixOn.setAction(new DirectiveInvocationAction(setFixOnInvoc, _context));
+        mnuFix.add(mnuItFixOn);
+
+        JMenuItem mnuItFixOff = new JMenuItem();
+        mnuItFixOff.setName("mnuItFixOff");
+        SetFixDirectiveInvocation setFixOffInvoc = new SetFixDirectiveInvocation();
+        setFixOffInvoc.setValue(false);
+        mnuItFixOff.setAction(new DirectiveInvocationAction(setFixOffInvoc, _context));
+        mnuFix.add(mnuItFixOff);
+
+        mnuSet.add(mnuFix);
+
+        JMenuItem mnuItImagePath = new JMenuItem();
+        mnuItImagePath.setName("mnuItImagePath");
+        mnuItImagePath.setAction(new DirectiveAction(new SetImagePathDirective(), _context));
+        mnuSet.add(mnuItImagePath);
+
+        JMenuItem mnuItInfoPath = new JMenuItem();
+        mnuItInfoPath.setName("mnuItInfoPath");
+        mnuItInfoPath.setAction(new DirectiveAction(new SetInfoPathDirective(), _context));
+        mnuSet.add(mnuItInfoPath);
+
+        JMenuItem mnuItMatch = new JMenuItem();
+        mnuItMatch.setName("mnuItMatch");
+        mnuItMatch.setAction(new DirectiveAction(new SetMatchDirective(), _context));
+        mnuSet.add(mnuItMatch);
+
+        JMenuItem mnuItRbase = new JMenuItem();
+        mnuItRbase.setName("mnuItRbase");
+        mnuItRbase.setAction(new DirectiveAction(new SetRBaseDirective(), _context));
+        mnuSet.add(mnuItRbase);
+
+        JMenuItem mnuItReliabilities = new JMenuItem();
+        mnuItReliabilities.setName("mnuItReliabilities");
+        mnuItReliabilities.setAction(new DirectiveAction(new SetReliabilitiesDirective(), _context));
+        mnuSet.add(mnuItReliabilities);
+
+        JMenuItem mnuItStopBest = new JMenuItem();
+        mnuItStopBest.setName("mnuItStopBest");
+        mnuItStopBest.setAction(new DirectiveAction(new SetStopBestDirective(), _context));
+        mnuSet.add(mnuItStopBest);
+
+        JMenuItem mnuItTolerance = new JMenuItem();
+        mnuItTolerance.setName("mnuItTolerance");
+        mnuItTolerance.setAction(new DirectiveAction(new SetToleranceDirective(), _context));
+        mnuSet.add(mnuItTolerance);
+
+        JMenuItem mnuItVaryWt = new JMenuItem();
+        mnuItVaryWt.setName("mnuItVaryWt");
+        mnuItVaryWt.setAction(new DirectiveAction(new SetVaryWtDirective(), _context));
+        mnuSet.add(mnuItVaryWt);
+
+        // "Display" submenu
+        MenuBuilder mnuDisplayBuilder = new MenuBuilder("mnuDisplay", _context);
+        mnuDisplayBuilder.startSubMenu("mnuCharacterOrder", true);
+        mnuDisplayBuilder.addDirectiveInvocationMenuItem("mnuItCharacterOrderBest", new DisplayCharacterOrderBestDirectiveInvocation());
+        mnuDisplayBuilder.addDirectiveInvocationMenuItem("mnuItCharacterOrderNatural", new DisplayCharacterOrderNaturalDirectiveInvocation());
+        mnuDisplayBuilder.addDirectiveMenuItem("mnuItCharacterOrderSeparate", new DisplayCharacterOrderSeparateDirective());
+        mnuDisplayBuilder.endSubMenu();
+
+        mnuDisplayBuilder.startSubMenu("mnuComments", true);
+        mnuDisplayBuilder.addOnOffDirectiveInvocationMenuItem("mnuItCommentsOn", new DisplayCommentsDirectiveInvocation(), true);
+        mnuDisplayBuilder.addOnOffDirectiveInvocationMenuItem("mnuItCommentsOff", new DisplayCommentsDirectiveInvocation(), false);
+        mnuDisplayBuilder.endSubMenu();
+
+        mnuDisplayBuilder.startSubMenu("mnuContinuous", false);
+        mnuDisplayBuilder.endSubMenu();
+
+        mnuDisplayBuilder.startSubMenu("mnuEndIdentify", false);
+        mnuDisplayBuilder.endSubMenu();
+
+        mnuDisplayBuilder.addMenuItem("mnuItImages", null, false);
+
+        mnuDisplayBuilder.startSubMenu("mnuInapplicables", true);
+        mnuDisplayBuilder.addOnOffDirectiveInvocationMenuItem("mnuItInapplicablesOn", new DisplayInapplicablesDirectiveInvocation(), true);
+        mnuDisplayBuilder.addOnOffDirectiveInvocationMenuItem("mnuItInapplicablesOff", new DisplayInapplicablesDirectiveInvocation(), false);
+        mnuDisplayBuilder.endSubMenu();
+
+        mnuDisplayBuilder.startSubMenu("mnuInput", false);
+        mnuDisplayBuilder.endSubMenu();
+        mnuDisplayBuilder.startSubMenu("mnuKeywords", false);
+        mnuDisplayBuilder.endSubMenu();
+
+        mnuDisplayBuilder.startSubMenu("mnuLog", true);
+        mnuDisplayBuilder.addOnOffDirectiveInvocationMenuItem("mnuItLogOn", new DisplayLogDirectiveInvocation(), true);
+        mnuDisplayBuilder.addOnOffDirectiveInvocationMenuItem("mnuItLogOff", new DisplayLogDirectiveInvocation(), false);
+        mnuDisplayBuilder.endSubMenu();
+
+        mnuDisplayBuilder.startSubMenu("mnuNumbering", true);
+        mnuDisplayBuilder.addOnOffDirectiveInvocationMenuItem("mnuItNumberingOn", new DisplayNumberingDirectiveInvocation(), true);
+        mnuDisplayBuilder.addOnOffDirectiveInvocationMenuItem("mnuItNumberingOff", new DisplayNumberingDirectiveInvocation(), false);
+        mnuDisplayBuilder.endSubMenu();
+
+        mnuDisplayBuilder.startSubMenu("mnuScaled", false);
+        mnuDisplayBuilder.endSubMenu();
+
+        mnuDisplayBuilder.startSubMenu("mnuUnknowns", true);
+        mnuDisplayBuilder.addOnOffDirectiveInvocationMenuItem("mnuItUnknownsOn", new DisplayUnknownsDirectiveInvocation(), true);
+        mnuDisplayBuilder.addOnOffDirectiveInvocationMenuItem("mnuItUnknownsOff", new DisplayUnknownsDirectiveInvocation(), false);
+        mnuDisplayBuilder.endSubMenu();
+
+        mnuDisplayBuilder.startSubMenu("mnuWindowing", false);
+        mnuDisplayBuilder.endSubMenu();
+
+        mnuSettings.add(mnuDisplayBuilder.getMenu());
+
+        // "Define" submenu
+        MenuBuilder mnuDefineBuilder = new MenuBuilder("mnuDefine", _context);
+        mnuDefineBuilder.addDirectiveMenuItem("mnuItDefineCharacters", new DefineCharactersDirective());
+        mnuDefineBuilder.addDirectiveMenuItem("mnuItDefineTaxa", new DefineTaxaDirective());
+        mnuDefineBuilder.addMenuItem("mnuItDefineNames", null, false);
+        mnuDefineBuilder.addMenuItem("mnuItDefineButton", null, false);
+        mnuDefineBuilder.addMenuItem("mnuItDefineEndIdentify", null, false);
+        mnuDefineBuilder.addMenuItem("mnuItDefineInformation", null, false);
+        mnuDefineBuilder.addMenuItem("mnuItDefineInformation", null, false);
+
+        mnuSettings.add(mnuDefineBuilder.getMenu());
+
+        // "Include" submenu
+        MenuBuilder mnuIncludeBuilder = new MenuBuilder("mnuInclude", _context);
+        mnuIncludeBuilder.addDirectiveMenuItem("mnuItIncludeCharacters", new IncludeCharactersDirective());
+        mnuIncludeBuilder.addDirectiveMenuItem("mnuItIncludeTaxa", new IncludeTaxaDirective());
+        mnuSettings.add(mnuIncludeBuilder.getMenu());
+
+        // "Exclude" submenu
+        MenuBuilder mnuExcludeBuilder = new MenuBuilder("mnuExclude", _context);
+        mnuExcludeBuilder.addDirectiveMenuItem("mnuItExcludeCharacters", new ExcludeCharactersDirective());
+        mnuExcludeBuilder.addDirectiveMenuItem("mnuItExcludeTaxa", new ExcludeTaxaDirective());
+        mnuSettings.add(mnuExcludeBuilder.getMenu());
+
+        // "Status" submenu
         JMenu mnuStatus = new JMenu();
         mnuStatus.setName("mnuStatus");
         mnuSettings.add(mnuStatus);
@@ -2170,6 +2373,20 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         }
 
         return retList;
+    }
+
+    @Override
+    public List<Object> promptForButtonDefinition() {
+        List<Object> returnValues = new ArrayList<Object>();
+        
+        DefineButtonDialog dlg = new DefineButtonDialog(getMainFrame(), true);
+        show(dlg);
+        
+        returnValues.add(dlg.isInsertSpace());
+        returnValues.add(dlg.isRemoveAllButtons());
+        
+        
+        return returnValues;
     }
 
     // ======== Methods for "find in characters" and "find in taxa" functions

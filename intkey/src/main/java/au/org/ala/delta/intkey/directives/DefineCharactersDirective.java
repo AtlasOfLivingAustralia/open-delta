@@ -2,58 +2,35 @@ package au.org.ala.delta.intkey.directives;
 
 //TODO need error if no dataset loaded
 //TODO need to prompt if characters/keyword not supplied
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-
-import javax.swing.JOptionPane;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.IntRange;
 
 import au.org.ala.delta.intkey.directives.invocation.DefineCharactersDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
-import au.org.ala.delta.intkey.ui.UIUtils;
 
-public class DefineCharactersDirective extends IntkeyDirective {
+public class DefineCharactersDirective extends NewIntkeyDirective {
 
     public DefineCharactersDirective() {
         super("define", "characters");
     }
 
-	@Override
-    protected IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
-        String keyword = null;
-        Set<Integer> characterNumbers = new HashSet<Integer>();
-        List<String> tokens = ParsingUtils.tokenizeDirectiveCall(data);
+    @Override
+    protected List<IntkeyDirectiveArgument<?>> generateArgumentsList(IntkeyContext context) {
+        List<IntkeyDirectiveArgument<?>> arguments = new ArrayList<IntkeyDirectiveArgument<?>>();
+        arguments.add(new StringArgument("keyword", "Enter keyword", null));
+        arguments.add(new CharacterListArgument("characters", null, SelectionMode.KEYWORD, false, false));
+        return arguments;
+    }
 
-        for (int i = 0; i < tokens.size(); i++) {
-            String token = tokens.get(i);
+    @Override
+    protected List<IntkeyDirectiveFlag> buildFlagsList() {
+        return null;
+    }
 
-            if (i == 0) {
-                keyword = ParsingUtils.removeEnclosingQuotes(token);
-            } else {
-                IntRange r = ParsingUtils.parseIntRange(token);
-                if (r != null)
-                    for (int charNum : r.toArray()) {
-                        characterNumbers.add(charNum);
-                    }
-                else {
-                    try {
-                        List<au.org.ala.delta.model.Character> charList = context.getCharactersForKeyword(token);
-                        for (au.org.ala.delta.model.Character c : charList) {
-                            characterNumbers.add(c.getCharacterId());
-                        }
-                    } catch (IllegalArgumentException ex) {
-                        JOptionPane.showMessageDialog(UIUtils.getMainFrame(), ex.getMessage());
-                        return null;
-                    }
-                }
-            }
-        }
-
-        return new DefineCharactersDirectiveInvocation(keyword, characterNumbers);
+    @Override
+    protected IntkeyDirectiveInvocation buildCommandObject() {
+        return new DefineCharactersDirectiveInvocation();
     }
 
 }

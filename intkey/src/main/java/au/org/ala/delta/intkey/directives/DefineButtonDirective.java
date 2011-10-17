@@ -21,6 +21,7 @@ public class DefineButtonDirective extends IntkeyDirective {
 
         if (tokens.isEmpty()) {
             // TODO show button definition dialog
+            context.getDirectivePopulator().promptForButtonDefinition();
             return null;
         } else {
             String firstToken = tokens.get(0);
@@ -30,22 +31,22 @@ public class DefineButtonDirective extends IntkeyDirective {
             } else if (firstToken.equalsIgnoreCase("clear")) {
                 return processClearButtons();
             } else {
-                return processDefineButton(tokens);
+                return processDefineButton(tokens, context);
             }
         }
     }
 
-    private IntkeyDirectiveInvocation processDefineButton(List<String> tokens) {
+    private IntkeyDirectiveInvocation processDefineButton(List<String> tokens, IntkeyContext context) {
         boolean displayAdvancedOnly = false;
         boolean displayNormalOnly = false;
         boolean inactiveUnlessUsed = false;
-        
+
         String fileName = null;
         List<String> directivesToRun = null;
         String shortHelp = null;
         String fullHelp = null;
-        
-        for (String token: tokens) {
+
+        for (String token : tokens) {
             if (token.equals("/A")) {
                 displayAdvancedOnly = true;
             } else if (token.equals("/N")) {
@@ -56,7 +57,7 @@ public class DefineButtonDirective extends IntkeyDirective {
                 fileName = token;
             } else if (directivesToRun == null) {
                 directivesToRun = new ArrayList<String>();
-                for (String str: ParsingUtils.removeEnclosingQuotes(token).split(";")) {
+                for (String str : ParsingUtils.removeEnclosingQuotes(token).split(";")) {
                     directivesToRun.add(str.trim());
                 }
             } else if (shortHelp == null) {
@@ -67,7 +68,7 @@ public class DefineButtonDirective extends IntkeyDirective {
         }
 
         if (fileName == null || directivesToRun == null || shortHelp == null) {
-            // TODO prompt using button definition dialog
+            context.getDirectivePopulator().promptForButtonDefinition();
             return null;
         } else {
             return new DefineButtonDirectiveInvocation(displayAdvancedOnly, displayNormalOnly, inactiveUnlessUsed, fileName, directivesToRun, shortHelp, fullHelp);
