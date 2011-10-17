@@ -135,7 +135,6 @@ public class DeltaContext extends AbstractDeltaContext {
 	private DirectiveParserObserver _observer;
 	
 	private Map<String, String> _indexHeadings = new HashMap<String, String>();
-	private String _indexText;
 	
 	public DeltaContext() {
 		this(new DefaultDataSetFactory().createDataSet(""));
@@ -483,12 +482,17 @@ public class DeltaContext extends AbstractDeltaContext {
 	 * @return the index heading defined for the specified item or null if no heading was defined.
 	 */
 	public String getIndexHeading(int itemNumber) {
-		String itemDescription = itemDescrptionFor(itemNumber);
+		String itemDescription = itemDescriptionFor(itemNumber);
 		return _indexHeadings.get(itemDescription);
 	}
 	
+	public Map<String, String> getIndexHeadings() {
+		return _indexHeadings;
+	}
+	
 	public void setIndexHeading(String itemDescription, String heading) {
-		_indexHeadings.put(itemDescription, heading);
+		String unformattedItem = RTFUtils.stripFormatting(itemDescription);
+		_indexHeadings.put(unformattedItem, heading);
 	}
 	
 	
@@ -661,11 +665,11 @@ public class DeltaContext extends AbstractDeltaContext {
 	}
 	
 	public String getTaxonLinks(int itemNumber) {
-		String description = itemDescrptionFor(itemNumber);
+		String description = itemDescriptionFor(itemNumber);
 		return _taxonLinks.get(description);
 	}
 	
-	private String itemDescrptionFor(int itemNumber) {
+	private String itemDescriptionFor(int itemNumber) {
 		Item item = getDataSet().getItem(itemNumber);
 		String description = RTFUtils.stripFormatting(item.getDescription());
 		return description;
@@ -942,11 +946,4 @@ public class DeltaContext extends AbstractDeltaContext {
 		getOutputFileSelector().getPrintFile().writeJustifiedText(heading, 1);
 		
 	}
-
-	public void setIndexText(String text) {
-		_indexText = text;
-		
-	}
-
-	
 }

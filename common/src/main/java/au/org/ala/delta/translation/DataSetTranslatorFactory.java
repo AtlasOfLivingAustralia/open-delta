@@ -12,6 +12,8 @@ import au.org.ala.delta.translation.delta.DeltaFormatTranslator;
 import au.org.ala.delta.translation.dist.DistTranslator;
 import au.org.ala.delta.translation.intkey.IntkeyTranslator;
 import au.org.ala.delta.translation.key.KeyTranslator;
+import au.org.ala.delta.translation.naturallanguage.HtmlNaturalLanguageTranslator;
+import au.org.ala.delta.translation.naturallanguage.IndexWriter;
 import au.org.ala.delta.translation.naturallanguage.NaturalLanguageTranslator;
 import au.org.ala.delta.translation.print.CharacterListPrinter;
 import au.org.ala.delta.translation.print.CharacterListTypeSetter;
@@ -41,12 +43,7 @@ public class DataSetTranslatorFactory {
 		FormatterFactory formatterFactory = new FormatterFactory(context);
 		
 		if (translation.equals(TranslateType.NaturalLanguage)) {
-			if (context.getOutputHtml() == false) {
-				translator = createNaturalLanguageTranslator(context, printFile, formatterFactory);
-			}
-			else {
-				translator = createNaturalLanguageTranslator(context, printFile, formatterFactory);
-			}
+			translator = createNaturalLanguageTranslator(context, printFile, formatterFactory);
 		}
 		else if (translation.equals(TranslateType.Delta)) {
 			translator = createDeltaFormatTranslator(context, printFile, formatterFactory);
@@ -99,7 +96,17 @@ public class DataSetTranslatorFactory {
 		ItemFormatter itemFormatter  = formatterFactory.createItemFormatter(typeSetter);
 		CharacterFormatter characterFormatter = formatterFactory.createCharacterFormatter();
 		AttributeFormatter attributeFormatter = formatterFactory.createAttributeFormatter();
-		translator = new NaturalLanguageTranslator(context, typeSetter, printer, itemFormatter, characterFormatter, attributeFormatter);
+		
+		if (context.getOutputHtml() == false) {
+			translator = new NaturalLanguageTranslator(context, typeSetter, printer, itemFormatter, characterFormatter, attributeFormatter);
+		}
+		else {
+			PrintFile indexFile = context.getOutputFileSelector().getIndexFile();
+			IndexWriter indexWriter = new IndexWriter(indexFile, itemFormatter, context);
+			translator = new HtmlNaturalLanguageTranslator(
+					context, typeSetter, printer, itemFormatter,
+					characterFormatter, attributeFormatter, indexWriter);
+		}
 		return translator;
 	}
 	

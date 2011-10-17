@@ -29,8 +29,9 @@ public class IndexText extends AbstractTextDirective {
 	@Override
 	public void process(DeltaContext context, DirectiveArguments args) throws Exception {
 		
-		context.setIndexText(args.getFirstArgumentText());
-
+		String text = args.getFirstArgumentText();
+		au.org.ala.delta.translation.PrintFile indexFile = context.getOutputFileSelector().getIndexFile();
+		indexFile.outputLine(text);
 	}
 
 }

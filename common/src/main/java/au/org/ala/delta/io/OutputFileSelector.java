@@ -47,7 +47,7 @@ public class OutputFileSelector {
 	private ParsingContext _context;
 	private OutputFormat _outputFormat;
 	private int _outputFileIndex;
-	private String _indexOutputFile;
+	private PrintFile _indexFile;
 	
 	/** output when a new print file is created */
 	private String _printFileHeaderText;
@@ -232,23 +232,8 @@ public class OutputFileSelector {
 		
 		closeExistingPrintStream();
 		
-		File parent = _context.getFile().getParentFile();
-		File outputDir = null;
-		if (_outputDirectory != null) {
-			outputDir = new File(FilenameUtils.separatorsToSystem(_outputDirectory));
-			
-			if (!outputDir.isAbsolute()) {
-				outputDir = new File(FilenameUtils.concat(parent.getAbsolutePath(), _outputDirectory));
-			}
-		}
-		else {
-			outputDir = parent;
-		}
+		_printStream = createPrintStream(_printFileName);
 		
-		File file = new File(outputDir, _printFileName);	
-		FileUtils.forceMkdir(file.getParentFile());
-		
-		_printStream = new PrintStream(file, outputFileEncoding());
 		if (StringUtils.isNotEmpty(_printFileHeaderText)) {
 			_printStream.println(_printFileHeaderText);
 		}
@@ -261,6 +246,27 @@ public class OutputFileSelector {
 		_printFile.setNewFileHeader(_printFileHeaderText);
 		_printFile.setFileFooter(_printFileFooterText);
 		
+	}
+	
+	private PrintStream createPrintStream(String fileName) throws Exception {
+		File parent = _context.getFile().getParentFile();
+		File outputDir = null;
+		if (_outputDirectory != null) {
+			outputDir = new File(FilenameUtils.separatorsToSystem(_outputDirectory));
+			
+			if (!outputDir.isAbsolute()) {
+				outputDir = new File(FilenameUtils.concat(parent.getAbsolutePath(), _outputDirectory));
+			}
+		}
+		else {
+			outputDir = parent;
+		}
+		File file = new File(outputDir, fileName);	
+		FileUtils.forceMkdir(file.getParentFile());
+		
+		PrintStream printStream = new PrintStream(file, outputFileEncoding());
+		
+		return printStream;
 	}
 	
 	private void closeExistingPrintStream() {
@@ -321,7 +327,12 @@ public class OutputFileSelector {
 		return newFile;
 	}
 
-	public void setIndexOutputFile(String file) {
-		_indexOutputFile = file;
+	public void setIndexOutputFile(String fileName) throws Exception {
+		PrintStream indexStream = createPrintStream(fileName);
+		_indexFile = new PrintFile(indexStream, _printWidth);
+	}
+	
+	public PrintFile getIndexFile() {
+		return _indexFile;
 	}
 }
