@@ -85,7 +85,7 @@ public class OutputFileSelector {
 			}
 			itemNumber--;
 		}
-		
+		outputFile = prependOutputDirectory(outputFile);
 		return addExtension(outputFile);
 	}
 	
@@ -183,7 +183,7 @@ public class OutputFileSelector {
 	}
 	
 	public void setOutputDirectory(String directory) throws Exception {
-		_outputDirectory = directory;
+		_outputDirectory = FilenameUtils.separatorsToSystem(directory);
 		if (_printFileName != null) {
 			recreatePrintFile();
 		}
@@ -250,23 +250,25 @@ public class OutputFileSelector {
 	
 	private PrintStream createPrintStream(String fileName) throws Exception {
 		File parent = _context.getFile().getParentFile();
-		File outputDir = null;
-		if (_outputDirectory != null) {
-			outputDir = new File(FilenameUtils.separatorsToSystem(_outputDirectory));
-			
-			if (!outputDir.isAbsolute()) {
-				outputDir = new File(FilenameUtils.concat(parent.getAbsolutePath(), _outputDirectory));
-			}
+		
+		String tmpFileName = prependOutputDirectory(fileName);
+		File file = new File(tmpFileName);
+		if (!file.isAbsolute()) {
+			file = new File(FilenameUtils.concat(parent.getAbsolutePath(), tmpFileName));
 		}
-		else {
-			outputDir = parent;
-		}
-		File file = new File(outputDir, fileName);	
 		FileUtils.forceMkdir(file.getParentFile());
 		
 		PrintStream printStream = new PrintStream(file, outputFileEncoding());
 		
 		return printStream;
+	}
+	
+	private String prependOutputDirectory(String fileName) {
+		String outputFileName = fileName;
+		if (!fileName.contains(File.separator) && (_outputDirectory != null)) {
+			outputFileName = FilenameUtils.concat(_outputDirectory, fileName);
+		}
+		return outputFileName;
 	}
 	
 	private void closeExistingPrintStream() {
@@ -328,6 +330,7 @@ public class OutputFileSelector {
 	}
 
 	public void setIndexOutputFile(String fileName) throws Exception {
+		fileName = FilenameUtils.separatorsToSystem(fileName);
 		PrintStream indexStream = createPrintStream(fileName);
 		_indexFile = new PrintFile(indexStream, _printWidth);
 	}

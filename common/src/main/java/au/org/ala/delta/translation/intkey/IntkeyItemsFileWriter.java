@@ -242,9 +242,6 @@ public class IntkeyItemsFileWriter {
 	
 	private IntRange determineIntegerRange(Character intChar) {
 		
-		if (intChar.getCharacterId() == 60) {
-			System.out.print("Blah");
-		}
 		Set<Integer> values = new HashSet<Integer>();
 		boolean hasMultiRangeAttribute = populateValues(intChar.getCharacterId(), values);
 		
