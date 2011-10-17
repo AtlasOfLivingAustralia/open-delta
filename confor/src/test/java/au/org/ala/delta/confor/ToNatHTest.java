@@ -1,6 +1,7 @@
 package au.org.ala.delta.confor;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -16,12 +17,25 @@ public class ToNatHTest extends ConforTestCase {
 	public void testSampleToNatH() throws Exception {
 		runConfor();
 		
-		File expectedFile = new File(FilenameUtils.concat(_samplePath, "expected_results/agrostis.htm"));
+		//testFile("index.htm", "");
+		
+		String[] files = {
+				"agrostis.htm", "andropog.htm", "anisopog.htm", "bambusa.htm",
+				"chloris.htm", "cynodon.htm", "echinoch.htm", "eleusine.htm", 
+				"festuca.htm", "implicit.htm", "oryza.htm", "panicum.htm",
+				"phragmit.htm", "poa.htm", "zea.htm"};
+		for (String file : files) {
+			testFile(file, "www/");
+		}
+	}
+
+	private void testFile(String fileName, String outputPath) throws IOException {
+		File expectedFile = new File(FilenameUtils.concat(_samplePath, "expected_results/"+fileName));
 		String expected = FileUtils.readFileToString(expectedFile, "cp1252");
 
 		System.out.println(expected);
 		
-		File actualFile = new File(FilenameUtils.concat(_samplePath, "www/agrostis.htm"));
+		File actualFile = new File(FilenameUtils.concat(_samplePath, outputPath+fileName));
 		String actual = FileUtils.readFileToString(actualFile, "cp1252");
 
 		System.out.print(actual);

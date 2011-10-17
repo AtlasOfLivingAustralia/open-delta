@@ -19,6 +19,7 @@ import au.org.ala.delta.model.format.AttributeFormatter;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.translation.AbstractDataSetTranslator;
+import au.org.ala.delta.translation.DataSetFilter;
 import au.org.ala.delta.translation.ItemListTypeSetter;
 import au.org.ala.delta.translation.PrintFile;
 import au.org.ala.delta.translation.Words;
@@ -40,13 +41,19 @@ public class NaturalLanguageTranslator extends AbstractDataSetTranslator {
     private PrintFile _printer;
     private DeltaDataSet _dataSet;
     private ItemListTypeSetter _typeSetter;
-    private ItemFormatter _itemFormatter;
+    protected ItemFormatter _itemFormatter;
     private CharacterFormatter _characterFormatter;
     private AttributeFormatter _attributeFormatter;
 
-    public NaturalLanguageTranslator(DeltaContext context, ItemListTypeSetter typeSetter, PrintFile printer, ItemFormatter itemFormatter, CharacterFormatter characterFormatter,
+    public NaturalLanguageTranslator(
+    		DeltaContext context, 
+    		DataSetFilter filter,
+    		ItemListTypeSetter typeSetter, 
+    		PrintFile printer, 
+    		ItemFormatter itemFormatter, 
+    		CharacterFormatter characterFormatter,
             AttributeFormatter attributeFormatter) {
-        super(context, new NaturalLanguageDataSetFilter(context));
+        super(context, filter);
         _context = context;
         _printer = printer;
         _dataSet = _context.getDataSet();
@@ -78,9 +85,6 @@ public class NaturalLanguageTranslator extends AbstractDataSetTranslator {
         printTaxonName(item);
 
         _newParagraph = true;
-        // if html output printIndexHeading(item) - better in a whole other
-        // Something.
-
     }
 
     @Override
@@ -256,8 +260,7 @@ public class NaturalLanguageTranslator extends AbstractDataSetTranslator {
          	_newParagraph = true;
         }
         for (Character character : characters) {
-            int characterNumber = character.getCharacterId();
-
+            
             boolean subsequentPartOfLinkedSet = (characters.size() > 1) && (character != characters.get(0));
 
             String description = _characterFormatter.formatCharacterDescription(character);
@@ -265,9 +268,7 @@ public class NaturalLanguageTranslator extends AbstractDataSetTranslator {
             if (subsequentPartOfLinkedSet) {
                 description = removeCommonPrefix(firstDescription, description);
             }
-            String itemSubheading = _characterFormatter.defaultFormat(_context.getItemSubheading(characterNumber));
-            writeFeature(character, item, description, true, item.getItemNumber(), characterNumber, itemSubheading,
-                    subsequentPartOfLinkedSet);
+            writeFeature(character, item, description, true, subsequentPartOfLinkedSet);
             writeCharacterAttribute(item, character);
         }
     }
@@ -332,11 +333,12 @@ public class NaturalLanguageTranslator extends AbstractDataSetTranslator {
     private boolean _characterOutputSinceLastPuntuation;
     private boolean _textOutputSinceLastParagraph;
 
-    private void writeFeature(Character character, Item item, String description, boolean omitFinalPeriod, int itemNumber, int characterNumber, String subHeading,
+    private void writeFeature(Character character, Item item, String description, boolean omitFinalPeriod,
             boolean subsequentPartOfLinkedSet) {
 
+    	int characterNumber = character.getCharacterId();
         // Insert a full stop if required.
-        if (_newParagraph == true || StringUtils.isNotEmpty(subHeading) || (_previousCharInSentence == 0) || (!subsequentPartOfLinkedSet)) {
+        if (_newParagraph == true || (_previousCharInSentence == 0) || (!subsequentPartOfLinkedSet)) {
 
             if ((_previousCharInSentence != 0) && (!_context.getOmitPeriodForCharacter(_lastCharacterOutput))) {
                 _printer.insertPunctuationMark(Word.FULL_STOP);
@@ -364,26 +366,22 @@ public class NaturalLanguageTranslator extends AbstractDataSetTranslator {
             _textOutputSinceLastParagraph = false;
         }
 
-        if (StringUtils.isNotEmpty(subHeading)) {
-            _printer.insertTypeSettingMarks(32);
-            writeSentence(subHeading, 0, 0);
-
-            _printer.insertTypeSettingMarks(33);
-        }
+        writeItemSubheading(character);
         if (!_context.omitCharacterNumbers()) {
             _printer.writeJustifiedText("(" + characterNumber + ")", -1);
         }
 
        
+        _typeSetter.beforeCharacterDescription(character, item);
+
+
         // Check if we are starting a new sentence or starting a new set of
         // linked characters.
         if ((_previousCharInSentence == 0) || (!subsequentPartOfLinkedSet && _lastCharacterOutput < _previousCharInSentence)) {
             _printer.capitaliseNextWord();
         }
 
-        _typeSetter.beforeCharacterDescription(character, item);
-
-        writeSentence(description, 0, -1);
+        writeSentence(description, -1);
 
         _typeSetter.afterCharacterDescription(character, item);
 
@@ -391,10 +389,20 @@ public class NaturalLanguageTranslator extends AbstractDataSetTranslator {
 
     }
 
-    private void writeSentence(String sentence, int commentAction, int completionAction) {
-        // TODO This does a bunch of stuff including inserting typesetting marks
-        // in the middle
-        // of the sentence.
+	protected void writeItemSubheading(Character character) {
+		String itemSubheading = _context.getItemSubheading(character.getCharacterId());
+		itemSubheading = _characterFormatter.defaultFormat(itemSubheading);
+        
+		if (StringUtils.isNotEmpty(itemSubheading)) {
+            _printer.insertTypeSettingMarks(32);
+            writeSentence(itemSubheading, 0);
+
+            _printer.insertTypeSettingMarks(33);
+        }
+	}
+
+    protected void writeSentence(String sentence, int completionAction) {
+       
         _printer.writeJustifiedText(sentence, completionAction);
 
     }

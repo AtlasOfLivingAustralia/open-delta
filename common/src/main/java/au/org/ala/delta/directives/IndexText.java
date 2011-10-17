@@ -32,6 +32,7 @@ public class IndexText extends AbstractTextDirective {
 		String text = args.getFirstArgumentText();
 		au.org.ala.delta.translation.PrintFile indexFile = context.getOutputFileSelector().getIndexFile();
 		indexFile.outputLine(text);
+		indexFile.writeBlankLines(1, 0);
 	}
 
 }

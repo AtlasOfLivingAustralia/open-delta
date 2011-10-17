@@ -58,10 +58,6 @@ public class NaturalLanguageDataSetFilter extends AbstractDataSetFilter implemen
 		}
 		return true;
 	}
-	
-	private boolean hasItemSubheading(Character character) {
-		return (_context.getItemSubheading(character.getCharacterId()) != null);
-	}
 
 	@Override
 	public boolean filter(Character character) {

@@ -165,6 +165,8 @@ public class PrintFile {
 
     private void writeJustifiedText(String text, int completionAction, boolean addSpaceIfRequired) {
 
+    	text = doSubstitutions(text);
+    	
         if (_capitalise) {
             text = capitaliseFirstWord(text);
         }
@@ -193,7 +195,11 @@ public class PrintFile {
         complete(completionAction);
     }
 
-    private int findWrapPosition() {
+    private String doSubstitutions(String text) {
+		return KeywordSubstitutions.substitute(text);
+	}
+
+	private int findWrapPosition() {
         int numSpaces = numLeadingSpaces(_outputBuffer);
         int wrappingPos = _outputBuffer.lastIndexOf(" ", _printWidth);
 

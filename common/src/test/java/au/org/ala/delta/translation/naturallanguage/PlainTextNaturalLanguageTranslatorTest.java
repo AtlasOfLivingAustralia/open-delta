@@ -15,6 +15,7 @@ import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
+import au.org.ala.delta.translation.DataSetFilter;
 import au.org.ala.delta.translation.PlainTextTypeSetter;
 import au.org.ala.delta.translation.PrintFile;
 import au.org.ala.delta.translation.naturallanguage.NaturalLanguageTranslator;
@@ -37,7 +38,8 @@ public class PlainTextNaturalLanguageTranslatorTest extends NaturalLangaugeTrans
 		ItemFormatter itemFormatter = new ItemFormatter(false, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.RETAIN, true, false, false);
 		CharacterFormatter characterFormatter = new CharacterFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.RETAIN, true, false);
 		AttributeFormatter attributeFormatter = new AttributeFormatter(false, true, CommentStrippingMode.RETAIN);
-		_dataSetTranslator = new NaturalLanguageTranslator(_context, _typeSetter, _printer, itemFormatter, characterFormatter, attributeFormatter);
+		DataSetFilter filter = new NaturalLanguageDataSetFilter(_context);
+		_dataSetTranslator = new NaturalLanguageTranslator(_context, filter, _typeSetter, _printer, itemFormatter, characterFormatter, attributeFormatter);
 	}
 	
 	public void testBasicTranslation() throws Exception {

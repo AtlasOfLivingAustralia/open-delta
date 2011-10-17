@@ -7,6 +7,7 @@ import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.rtf.RTFUtils;
 import au.org.ala.delta.translation.attribute.CommentedValueList.Values;
 
 
@@ -34,8 +35,9 @@ public abstract class AbstractDataSetTranslator implements DataSetTranslator {
 		
 		int numItems = dataSet.getMaximumNumberOfItems();
 		for (int i=1; i<=numItems; i++) {
-			
 			Item item = dataSet.getItem(i);
+			String description = RTFUtils.stripFormatting(item.getDescription());
+			KeywordSubstitutions.put(KeywordSubstitutions.NAME, description);
 			
 			if (_filter.filter(item)) {
 				beforeItem(item);
