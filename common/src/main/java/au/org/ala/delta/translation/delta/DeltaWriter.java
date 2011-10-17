@@ -1,6 +1,5 @@
 package au.org.ala.delta.translation.delta;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -130,7 +129,6 @@ public class DeltaWriter {
 		String[] lines;
 		if (preserveNewLines) {
 			lines = buffer.split("\n");
-			System.out.println(Arrays.asList(lines));
 		}
 		else {
 			String text = buffer.replaceAll("\\s", " ");
