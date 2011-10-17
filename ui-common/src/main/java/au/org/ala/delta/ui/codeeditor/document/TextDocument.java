@@ -109,7 +109,7 @@ public abstract class TextDocument extends PlainDocument {
      *            The index of the line in the document, starting at 0
      * @return The initial token type for the next line
      */
-    protected abstract byte markTokens(byte token, Segment line, int lineIndex);
+    protected abstract byte markTokens(byte token, Segment line, int lineIndex, ITokenAccumulator acc);
 
     /**
      * Connects to undo manager.
@@ -166,7 +166,6 @@ public abstract class TextDocument extends PlainDocument {
             super.insertString(offs, str, a);
         }
         if (calculateWidth) {
-//            int textLength = str.length();
             Element root = getDefaultRootElement();
             int lineIdx = root.getElementIndex(offs);
             int endIdx = offs + str.length();
@@ -258,7 +257,6 @@ public abstract class TextDocument extends PlainDocument {
      *            The inserted text, this one is null if no insert has been performed.
      */
     private void calculateDocumentWidth(int offset, int numMarked, String insertedText) {
-//        int tabWidth = getTabSize();
         int width = 0;
         try {
             Element root = getDefaultRootElement();
@@ -382,6 +380,16 @@ public abstract class TextDocument extends PlainDocument {
         }
         return segment.array;
     }
+    
+    public Token markTokens(Segment line, int lineIndex) {
+    	return markTokens(line, lineIndex, new ITokenAccumulator() {
+			
+			@Override
+			public void addToken(int offset, int length, byte id, Object tag) {
+				TextDocument.this.addTokenImpl(length, id, tag);
+			}
+		});
+    }
 
     /**
      * A wrapper for the lower-level <code>markTokensImpl</code> method that is called to split a line up into tokens.
@@ -391,7 +399,7 @@ public abstract class TextDocument extends PlainDocument {
      * @param lineIndex
      *            The line number
      */
-    public Token markTokens(Segment line, int lineIndex) {
+    public Token markTokens(Segment line, int lineIndex, ITokenAccumulator acc) {
         if (lineIndex >= getHeight()) {
             throw new IllegalArgumentException("Tokenizing invalid line: " + lineIndex);
         }
@@ -407,7 +415,7 @@ public abstract class TextDocument extends PlainDocument {
         }
 
         byte oldToken = info.token;
-        byte token = markTokens(prev == null ? Token.NULL : prev.token, line, lineIndex);
+        byte token = markTokens(prev == null ? Token.NULL : prev.token, line, lineIndex, acc);
 
         info.token = token;
 
@@ -439,7 +447,7 @@ public abstract class TextDocument extends PlainDocument {
 
         lastLine = lineIndex;
 
-        addToken(0, Token.END);
+        acc.addToken(line.length(), 0, Token.END, null);
 
         return firstToken;
     }
@@ -520,7 +528,7 @@ public abstract class TextDocument extends PlainDocument {
      * @param id
      *            The id of the token
      */
-    protected void addToken(int length, byte id) {
+    protected void addTokenImpl(int length, byte id, Object tag) {
         if (id >= Token.INTERNAL_FIRST && id <= Token.INTERNAL_LAST) {
             throw new InternalError("Invalid id: " + id);
         }
@@ -529,15 +537,15 @@ public abstract class TextDocument extends PlainDocument {
             return;
         }
 
-        if (firstToken == null) {
-            firstToken = new Token(length, id);
+		if (firstToken == null) {
+            firstToken = new Token(length, id, tag);
             lastToken = firstToken;
         } else if (lastToken == null) {
             lastToken = firstToken;
             firstToken.length = length;
             firstToken.id = id;
         } else if (lastToken.next == null) {
-            lastToken.next = new Token(length, id);
+            lastToken.next = new Token(length, id, tag);
             lastToken = lastToken.next;
         } else {
             lastToken = lastToken.next;
@@ -617,6 +625,10 @@ public abstract class TextDocument extends PlainDocument {
             }
         }
     }
+    
+	public interface ITokenAccumulator {
+		void addToken(int offset, int length, byte id, Object tag);
+	}
 
     /**
      * Performs the content assist command.

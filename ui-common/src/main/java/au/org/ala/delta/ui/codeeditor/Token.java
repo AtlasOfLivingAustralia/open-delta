@@ -88,6 +88,11 @@ public class Token {
     public byte id;
 
     /**
+     * Document defined object attached to the token
+     */
+    public Object tag;
+
+    /**
      * The next token in the linked list.
      */
     public Token next;
@@ -100,9 +105,23 @@ public class Token {
      * @param id
      *            The id of the token
      */
-    public Token(int length, byte id) {
+//    public Token(int length, byte id) {
+//        this.length = length;
+//        this.id = id;
+//    }
+    
+    public Token(int length, byte id, Object tag) {
         this.length = length;
         this.id = id;
+        this.tag = tag;
+    }
+    
+    public Object getTag() {
+    	return tag;
+    }
+    
+    public void setTag(Object tag) {
+    	this.tag = tag;
     }
 
     /**

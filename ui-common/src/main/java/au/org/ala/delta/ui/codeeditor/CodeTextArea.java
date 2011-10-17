@@ -40,10 +40,12 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -66,6 +68,7 @@ import javax.swing.text.TabExpander;
 import javax.swing.text.Utilities;
 
 import au.org.ala.delta.model.SearchDirection;
+import au.org.ala.delta.model.TypeSettingMark.MarkPosition;
 import au.org.ala.delta.ui.SearchOptions;
 import au.org.ala.delta.ui.SearchReplaceDialog;
 import au.org.ala.delta.ui.SearchAndReplaceController;
@@ -93,7 +96,9 @@ import au.org.ala.delta.ui.codeeditor.action.TabKeyAction;
 import au.org.ala.delta.ui.codeeditor.action.ToggleLineNumbersAction;
 import au.org.ala.delta.ui.codeeditor.action.ToggleShowWhitespaceAction;
 import au.org.ala.delta.ui.codeeditor.action.UpKeyAction;
+import au.org.ala.delta.ui.codeeditor.document.RegExDocument;
 import au.org.ala.delta.ui.codeeditor.document.TextDocument;
+import au.org.ala.delta.ui.codeeditor.document.TextDocument.ITokenAccumulator;
 import au.org.ala.delta.ui.codeeditor.document.TextDocumentFactory;
 
 public class CodeTextArea extends JComponent implements Scrollable, TabExpander {
@@ -693,10 +698,55 @@ public class CodeTextArea extends JComponent implements Scrollable, TabExpander 
 	 */
 	public String getToolTipText(MouseEvent evt) {
 		if (highlight != null) {
-			return highlight.getToolTipText(evt);
+			return highlight.getToolTipText(evt);			
 		} else {
+			int lineIndex = yToLine(evt.getY());
+			int columnIndex = xToOffset(lineIndex, evt.getX());
+			Segment seg = new Segment();
+			getLineText(lineIndex, seg);
+			if (lineIndex >= 0) {
+				TokenList tokList = new TokenList();
+				getDocument().markTokens(seg, lineIndex, tokList);
+				if (tokList.getList() != null && tokList.getList().size() > 0) {
+					for (TokenDescriptor tok : tokList.getList()) {
+						if (columnIndex >= tok.offset && columnIndex <= tok.offset + tok.length && tok.tag != null) {
+							return tok.tag.toString();
+						}
+					}										
+				}
+			}
 			return null;
 		}
+	}
+	
+	static class TokenDescriptor {
+		
+		public int offset;
+		public int length;
+		public byte tokenId;
+		public Object tag;
+		
+		public TokenDescriptor(int offset, int length, byte tokenId, Object tag) {
+			this.offset = offset;
+			this.length = length;
+			this.tokenId = tokenId;
+			this.tag = tag;				
+		}
+	}
+	
+	static class TokenList implements ITokenAccumulator {
+		
+		private List<TokenDescriptor> _list = new ArrayList<CodeTextArea.TokenDescriptor>();
+
+		@Override
+		public void addToken(int offset, int length, byte id, Object tag) {
+			_list.add(new TokenDescriptor(offset, length, id, tag));			
+		}
+		
+		public List<TokenDescriptor> getList() {
+			return _list;
+		}
+		
 	}
 
 	/**
@@ -2796,7 +2846,7 @@ public class CodeTextArea extends JComponent implements Scrollable, TabExpander 
 	 * The mouse handler.
 	 */
 	class MouseHandler extends MouseAdapter {
-
+		
 		/**
 		 * Invoked when the mouse has been clicked on a component.
 		 * 

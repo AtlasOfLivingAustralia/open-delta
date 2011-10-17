@@ -1,0 +1,120 @@
+HTML, BODY { text-align: left; background: white; color: black }
+H1, H2, H3 { font-family: Arial, sans-serif }
+H4, H5, H6 { font-family: "Times New Roman", serif }
+H1 { font-size: 150%; margin: 0; text-align: center }
+H2 { font-size: 125%; margin: 2em 0 .75em; text-align: center }
+H3 { font-size: 115%; margin: 1.5em 0 .5em }
+H4 { font-size: 105%; font-style: normal; font-weight: bold;
+    margin: 1.3em 0 .3em }
+H5 { font-size: 100%; font-style: italic; font-weight: bold;
+    margin: 1.2em 0 0 }
+H6 { font-size: 100%; font-style: italic; font-weight: normal;
+    margin: 1.1em 0 0 }
+HR { margin: .6em 0 0 }
+IMG { margin: 0; border: none}
+    img.floatl { float: left; margin-right: .5em }
+    img.floatr { float: right; margin-left: .5em }
+OL { margin-top: 0; margin-bottom: 0 }
+P { margin: .6em 0 0 } /* Paragraph spacing .6em */
+SUB, SUP { font-size: 75%; }
+TABLE { border-collapse: collapse }
+    table.border { border: solid black 2px }
+TD { vertical-align: top; padding: .1em .2em .1em }
+    td.border { border: solid black 2px } /* In IE, 1px sometimes hidden by background */
+    td.grey { background: #E6E6E6 }
+TH { vertical-align: top; padding: .1em .2em .1em }
+    th.border { border: solid black 2px; background: #E6E6E6 } 
+UL { margin-top: 0; margin-bottom: 0 }
+
+.abstract { font-family: Arial, sans-serif; font-size: 115%;
+    font-weight: bold; margin: 2em 0 .5em; text-align: center }
+.author { font-family: Arial, sans-serif; font-size: 115%;
+    font-weight: bold; margin: 1em 0 1em; text-align: center }
+.authorb0 { font-family: Arial, sans-serif; font-size: 115%;
+    font-weight: bold; margin: 1em 0 0; text-align: center }
+.authorb2 { font-family: Arial, sans-serif; font-size: 115%;
+    font-weight: bold; margin: 1em 0 2em; text-align: center }
+.authort0 { font-family: Arial, sans-serif; font-size: 115%;
+    font-weight: bold; margin: 0 0 1em; text-align: center }
+.center { text-align: center }
+.centert0 { text-align: center; margin-top: 0}
+.contents {margin: 0 0 1px 1em; text-indent: -1em} /* Netscape 4 fails if t and b margins 0 */
+.contentshead { font-family: Arial, sans-serif; font-size: 115%;
+    font-weight: bold; margin: 2em 0 .5em; text-align: center }
+.hanging { margin-left: 2em; text-indent: -2em }
+.hangingt0 { margin-left: 2em; text-indent: -2em; margin-top: 0 }
+.hangingx { margin-left: 4em; text-indent: -2em }
+.hangingxt0 { margin-left: 4em; text-indent: -2em; margin-top: 0 }
+.hangingxx { margin-left: 6em; text-indent: -2em }
+.hangingxxt0 { margin-left: 6em; text-indent: -2em; margin-top: 0 }
+.hangingxxx { margin-left: 8em; text-indent: -2em }
+.hangingxxxt0 { margin-left: 8em; text-indent: -2em; margin-top: 0 }
+.image { text-align: center }
+.indent { margin-left: 2em }
+.indentt0 { margin-left: 2em; margin-top: 0 }
+.indentx { margin-left: 4em }
+.indentxt0 { margin-left: 4em; margin-top: 0 }
+.indentxx { margin-left: 6em }
+.indentxxt0 { margin-left: 6em; margin-top: 0 }
+.left { text-align: left }
+.linkcolor { color: #0000E0 }
+.marginb0 { margin-bottom: 0 }
+.marginbp3 { margin-bottom: .2em }
+.marginbp7 { margin-bottom: .4em }
+.marginb1 { margin-bottom: .6em }
+.marginb1p3 { margin-bottom: .8em }
+.marginb1p7 { margin-bottom: 1em }
+.marginb2 { margin-bottom: 1.2em }
+.marginb2p3 { margin-bottom: 1.4em }
+.marginb3 { margin-bottom: 1.8em }
+.margint0b0 { margin-top: 0; margin-bottom: 0 }
+.margint0 { margin-top: 0 }
+.margint0pbaa { margin-top: 0; page-break-after: avoid }
+.margint0b1 { margin-top: 0; margin-bottom: .6em }
+.margintp3 { margin-top: .2em }
+.margintp7 { margin-top: .4em }
+.margint1 { margin-top: .6em }
+.margint1p3 { margin-top: .8em }
+.margint1p5 { margin-top: .9em }
+.margint1p7 { margin-top: 1em }
+.margint2 { margin-top: 1.2em }
+.margint4 { margin-top: 2.4em }
+.math { letter-spacing: .06em }
+.middle { vertical-align:middle; border-style:none }
+.mon { font-family: "Courier New", monospace }
+.mono { margin-left: 2em; text-indent: -2em;
+    font-family: "Courier New", monospace; font-size: 80% }
+.monot0 { margin: 0 0 0 2em; text-indent: -2em;
+    font-family: "Courier New", monospace; font-size: 80% }
+.monox { margin-left: 4em; text-indent: -2em;
+    font-family: "Courier New", monospace; font-size: 80% }
+.monoxt0 { margin: 0 0 0 4em; text-indent: -2em;
+    font-family: "Courier New", monospace; font-size: 80% }
+.monoxx { margin-left: 6em; text-indent: -2em;
+    font-family: "Courier New", monospace; font-size: 80% }
+.monoxxt0 { margin: 0 0 0 6em; text-indent: -2em;
+    font-family: "Courier New", monospace; font-size: 80% }
+.pbaa { page-break-after: avoid }
+.pdfversion { margin: .5em 0 0; text-align: center }
+.red { color: red }
+.revdate { font-family: Arial, sans-serif; font-size: 110%;
+    font-weight: bold; margin: .4em 0 0; text-align: center }
+.right { text-align: right }
+.table { margin: 0 }
+.tablecaption { margin-bottom: .6em; text-align: center;
+    page-break-after: avoid }
+.tablegrey { margin: 0 }
+.xnormalt0 {} /* No space before in Word, but normal in HTML */
+
+.itemsubheading { font-family: Arial, sans-serif; font-size: 92% }
+
+a:link { background: transparent; color: #0000E0; text-decoration: underline }
+a:visited { background: transparent; color: #600070; text-decoration: underline }
+/* a:hover { background: transparent; color: red; text-decoration: underline }
+
+/* #linkcolor {color: #0000E0} */
+/* #middle {vertical-align:middle; border-style:none } */
+
+BLOCKQUOTE, PRE, UL, OL, DL { page-break-before: avoid }
+H1, H2, H3, H4, H5, H6, TH { page-break-after: avoid; page-break-inside: avoid }
+

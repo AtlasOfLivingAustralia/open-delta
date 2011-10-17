@@ -17,11 +17,11 @@ public abstract class RegExDocument extends TextDocument {
 
 	private List<TokenPattern> _patterns = new ArrayList<TokenPattern>();
 
-	protected void addTokenPattern(byte token, boolean ignorecase, String... regexes) {
-		_patterns.add(new TokenPattern(token, ignorecase, regexes));
+	protected void addTokenPattern(byte token, Object tag, boolean ignorecase, String... regexes) {
+		_patterns.add(new TokenPattern(token, tag, ignorecase, regexes));
 	}
 
-	protected void addKeyWords(byte token, boolean ignorecase, String... keywords) {
+	protected void addKeyWords(byte token, Object tag, boolean ignorecase, String... keywords) {
 		StringBuilder strRegex = new StringBuilder();
 		int i = 0;
 		for (String k : keywords) {
@@ -30,7 +30,7 @@ public abstract class RegExDocument extends TextDocument {
 				strRegex.append("|");
 			}
 		}
-		addTokenPattern(token, ignorecase, strRegex.toString());
+		addTokenPattern(token, tag, ignorecase, strRegex.toString());
 	}
 
 	public abstract String getBlockCommentStart();
@@ -51,9 +51,9 @@ public abstract class RegExDocument extends TextDocument {
 
 		return false;
 	}
-
+	
 	@Override
-	protected byte markTokens(byte token, Segment line, int lineIndex) {
+	protected byte markTokens(byte token, Segment line, int lineIndex, ITokenAccumulator tokAcc) {
 		String full = new String(line.array, line.getBeginIndex(), line.getEndIndex() - line.getBeginIndex());
 
 		String input = full;
@@ -62,11 +62,11 @@ public abstract class RegExDocument extends TextDocument {
 		if (token == Token.COMMENT2) {
 			if (lineContainsBlockCommentEnd(full)) {
 				int idx = full.indexOf(getBlockCommentEnd()) + getBlockCommentEnd().length();
-				addToken(idx, Token.COMMENT2);
+				tokAcc.addToken(bcidx, idx, Token.COMMENT2, null);
 				input = full.substring(idx);
 				token = Token.NULL;
 			} else {
-				addToken(full.length(), token);
+				tokAcc.addToken(bcidx, full.length(), token, null);
 				return token;
 			}
 		} else {
@@ -83,7 +83,7 @@ public abstract class RegExDocument extends TextDocument {
 		for (TokenPattern tp : _patterns) {
 			Matcher m = tp.getPattern().matcher(input);
 			while (m.find()) {
-				matches.add(new TokenMatch(m.start(), m.end() - m.start(), tp.getToken()));
+				matches.add(new TokenMatch(m.start(), m.end() - m.start(), tp.getToken(), tp.getTag()));
 			}
 		}
 		TokenMatch[] sorted = matches.toArray(new TokenMatch[matches.size()]);
@@ -97,10 +97,10 @@ public abstract class RegExDocument extends TextDocument {
 				TokenMatch match = sorted[i];
 				if (lastmatch != null && (match.getStart() < lastmatch.getStart() + lastmatch.getLength() || match.getStart() == lastmatch.getStart())) {
 				} else {
-					if (match.getStart() != lastindex) {
-						addToken(match.getStart() - lastindex, token);
+					if (match.getStart() != lastindex) {						
+						tokAcc.addToken(match.getStart(), match.getStart() - lastindex, token, match.getTag());
 					}
-					addToken(match.getLength(), match.getToken());
+					tokAcc.addToken(match.getStart(), match.getLength(), match.getToken(), match.getTag());
 					lastindex = match.getStart() + match.getLength();
 					token = Token.NULL;
 					lastmatch = match;
@@ -110,12 +110,12 @@ public abstract class RegExDocument extends TextDocument {
 
 		if (bcidx >= 0) {
 			if (lastindex < bcidx) {
-				addToken(bcidx - lastindex, token);
+				tokAcc.addToken(bcidx, bcidx - lastindex, token, null);
 			}
-			addToken(full.length() - bcidx, Token.COMMENT2);
+			tokAcc.addToken(bcidx, full.length() - bcidx, Token.COMMENT2, null);
 			return Token.COMMENT2;
 		} else if (lastindex < input.length()) {
-			addToken(input.length() - lastindex, token);
+			tokAcc.addToken(bcidx, input.length() - lastindex, token, null);
 		}
 		return token;
 	}
@@ -145,8 +145,9 @@ class TokenPattern {
 	private String _regex;
 	private byte _token;
 	private Pattern _pattern;
+	private Object _tag;
 
-	public TokenPattern(byte token, boolean ignorecase, String... regexes) {
+	public TokenPattern(byte token, Object tag, boolean ignorecase, String... regexes) {
 		StringBuilder strBuf = new StringBuilder();
 		for (int i = 0; i < regexes.length; ++i) {
 			strBuf.append(regexes[i]);
@@ -156,6 +157,7 @@ class TokenPattern {
 		}
 		_token = token;
 		_regex = strBuf.toString();
+		_tag = tag;
 		if (ignorecase) {
 			_pattern = Pattern.compile(_regex, Pattern.CASE_INSENSITIVE);
 		} else {
@@ -174,6 +176,11 @@ class TokenPattern {
 	public Pattern getPattern() {
 		return _pattern;
 	}
+	
+	public Object getTag() {
+		return _tag;
+	}
+		
 }
 
 class TokenMatch {
@@ -181,11 +188,13 @@ class TokenMatch {
 	private int _start;
 	private int _length;
 	private byte _token;
+	private Object _tag;
 
-	public TokenMatch(int start, int length, byte token) {
+	public TokenMatch(int start, int length, byte token, Object tag) {
 		_start = start;
 		_length = length;
 		_token = token;
+		_tag = tag;
 	}
 
 	public int getStart() {
@@ -199,4 +208,10 @@ class TokenMatch {
 	public byte getToken() {
 		return _token;
 	}
+	
+	public Object getTag() {
+		return _tag;
+	}
 }
+
+

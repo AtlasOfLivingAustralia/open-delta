@@ -6,6 +6,7 @@
   <tocitem text="Delta Editor">
     <tocitem text="The Character Editor" target="characters" />
 	<tocitem text="The Item Editor" target="items" />
+	<tocitem text="Confor Directives Reference" target="confor_directives" />
   </tocitem>
 </toc>
 

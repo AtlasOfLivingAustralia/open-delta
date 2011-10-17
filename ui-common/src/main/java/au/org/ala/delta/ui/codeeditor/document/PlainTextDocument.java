@@ -30,11 +30,11 @@ public class PlainTextDocument extends TextDocument {
      *            The index of the current line.
      * @return The new index.
      */
-    protected byte markTokens(byte token, Segment line, int lineIndex) {
+    protected byte markTokens(byte token, Segment line, int lineIndex, ITokenAccumulator acc) {
         int offset = line.offset;
         int lastOffset = offset;
         int length = line.count + offset;
-        addToken(length - lastOffset, token);
+        acc.addToken(lastOffset, length - lastOffset, token, null);
         return token;
     }
 

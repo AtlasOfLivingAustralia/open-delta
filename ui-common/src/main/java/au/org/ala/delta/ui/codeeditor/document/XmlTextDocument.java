@@ -44,7 +44,7 @@ public class XmlTextDocument extends TextDocument {
      *            The index of the current line.
      * @return The new index.
      */
-    public byte markTokens(byte token, Segment line, int lineIndex) {
+    public byte markTokens(byte token, Segment line, int lineIndex, ITokenAccumulator acc) {
         char[] array = line.array;
         int offset = line.offset;
         int lastOffset = offset;
@@ -60,7 +60,7 @@ public class XmlTextDocument extends TextDocument {
                 case Token.NULL: // text
                     switch (c) {
                         case '<':
-                            addToken(i - lastOffset, token);
+                            acc.addToken(lastOffset, i - lastOffset, token, null);
                             lastOffset = i;
                             if (SyntaxUtilities.regionMatches(false, line, ip1, "!--")) {
                                 i += 3;
@@ -76,7 +76,7 @@ public class XmlTextDocument extends TextDocument {
                             break;
 
                         case '&':
-                            addToken(i - lastOffset, token);
+                            acc.addToken(lastOffset, i - lastOffset, token, null);
                             lastOffset = i;
                             token = Token.LABEL;
                             break;
@@ -86,7 +86,7 @@ public class XmlTextDocument extends TextDocument {
                 case Token.KEYWORD1: // tag
                     switch (c) {
                         case '>':
-                            addToken(ip1 - lastOffset, token);
+                            acc.addToken(lastOffset, ip1 - lastOffset, token, null);
                             lastOffset = ip1;
                             token = Token.NULL;
                             sk1 = false;
@@ -94,7 +94,7 @@ public class XmlTextDocument extends TextDocument {
 
                         case ' ':
                         case '\t':
-                            addToken(i - lastOffset, token);
+                            acc.addToken(lastOffset, i - lastOffset, token, null);
                             lastOffset = i;
                             token = Token.KEYWORD2;
                             sk1 = false;
@@ -112,19 +112,19 @@ public class XmlTextDocument extends TextDocument {
                 case Token.KEYWORD2: // attribute
                     switch (c) {
                         case '>':
-                            addToken(ip1 - lastOffset, token);
+                            acc.addToken(lastOffset, ip1 - lastOffset, token, null);
                             lastOffset = ip1;
                             token = Token.NULL;
                             break;
 
                         case '/':
-                            addToken(i - lastOffset, token);
+                            acc.addToken(lastOffset, i - lastOffset, token, null);
                             lastOffset = i;
                             token = Token.KEYWORD1;
                             break;
 
                         case '=':
-                            addToken(i - lastOffset, token);
+                            acc.addToken(lastOffset, i - lastOffset, token, null);
                             lastOffset = i;
                             token = Token.OPERATOR;
                     }
@@ -134,7 +134,7 @@ public class XmlTextDocument extends TextDocument {
                     switch (c) {
                         case '\"':
                         case '\'':
-                            addToken(i - lastOffset, token);
+                            acc.addToken(lastOffset, i - lastOffset, token, null);
                             lastOffset = i;
                             if (c == '\"')
                                 token = Token.LITERAL1;
@@ -147,7 +147,7 @@ public class XmlTextDocument extends TextDocument {
                 case Token.LITERAL1:
                 case Token.LITERAL2: // strings
                     if ((token == Token.LITERAL1 && c == '\"') || (token == Token.LITERAL2 && c == '\'')) {
-                        addToken(ip1 - lastOffset, token);
+                        acc.addToken(lastOffset, ip1 - lastOffset, token, null);
                         lastOffset = ip1;
                         token = Token.KEYWORD1;
                     }
@@ -155,7 +155,7 @@ public class XmlTextDocument extends TextDocument {
 
                 case Token.LABEL: // entity
                     if (c == ';') {
-                        addToken(ip1 - lastOffset, token);
+                        acc.addToken(lastOffset, ip1 - lastOffset, token, null);
                         lastOffset = ip1;
                         token = Token.NULL;
                         break;
@@ -164,7 +164,7 @@ public class XmlTextDocument extends TextDocument {
 
                 case Token.COMMENT1: // Inside a comment
                     if (SyntaxUtilities.regionMatches(false, line, i, "-->")) {
-                        addToken((i + 3) - lastOffset, token);
+                        acc.addToken(lastOffset, (i + 3) - lastOffset, token, null);
                         lastOffset = i + 3;
                         token = Token.NULL;
                     }
@@ -172,7 +172,7 @@ public class XmlTextDocument extends TextDocument {
 
                 case Token.COMMENT2: // Inside a declaration
                     if (SyntaxUtilities.regionMatches(false, line, i, ">")) {
-                        addToken(ip1 - lastOffset, token);
+                        acc.addToken(lastOffset, ip1 - lastOffset, token, null);
                         lastOffset = ip1;
                         token = Token.NULL;
                     }
@@ -180,7 +180,7 @@ public class XmlTextDocument extends TextDocument {
 
                 case Token.KEYWORD3: // Inside a processor instruction
                     if (SyntaxUtilities.regionMatches(false, line, i, "?>")) {
-                        addToken((i + 2) - lastOffset, token);
+                        acc.addToken(lastOffset, (i + 2) - lastOffset, token, null);
                         lastOffset = i + 2;
                         token = Token.NULL;
                     }
@@ -193,12 +193,12 @@ public class XmlTextDocument extends TextDocument {
 
         switch (token) {
             case Token.LABEL:
-                addToken(length - lastOffset, Token.INVALID);
+                acc.addToken(lastOffset, length - lastOffset, Token.INVALID, null);
                 token = Token.NULL;
                 break;
 
             default:
-                addToken(length - lastOffset, token);
+                acc.addToken(lastOffset, length - lastOffset, token, null);
                 break;
         }
 
