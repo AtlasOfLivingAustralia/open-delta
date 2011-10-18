@@ -30,6 +30,7 @@ public class PrintFile {
     private boolean _newFile;
     private String _newFileHeader;
     private String _fileFooter;
+    private boolean _omitNextTrailingSpace = false;
 
     public PrintFile(final StringBuilder buffer) {
 
@@ -161,7 +162,7 @@ public class PrintFile {
         writeJustifiedText(text, completionAction, true);
     }
 
-    private boolean _omitNextTrailingSpace = false;
+    
 
     private void writeJustifiedText(String text, int completionAction, boolean addSpaceIfRequired) {
 
@@ -222,8 +223,14 @@ public class PrintFile {
     }
 
     public void writeTypeSettingMark(String mark) {
+    	
+    	boolean tmpCapitalise = _capitalise;
+    	_capitalise = false;
+    	if (!spaceRequired()) {
+    		_omitNextTrailingSpace = true;
+    	}
         writeJustifiedText(mark, -1, false);
-        _omitNextTrailingSpace = true;
+        _capitalise = tmpCapitalise;
     }
 
     private void insertTrailingSpace() {
@@ -231,9 +238,13 @@ public class PrintFile {
             _omitNextTrailingSpace = false;
             return;
         }
-        if (_outputBuffer.length() > 0 && lastCharInBuffer() != ' ') {
+        if (spaceRequired()) {
             _outputBuffer.append(' ');
         }
+    }
+    
+    private boolean spaceRequired() {
+    	return (_outputBuffer.length() > 0 && lastCharInBuffer() != ' ') ;
     }
 
     private void complete(int completionAction) {

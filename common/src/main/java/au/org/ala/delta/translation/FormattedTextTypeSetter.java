@@ -23,6 +23,7 @@ public class FormattedTextTypeSetter extends PlainTextTypeSetter {
 	private Map<Integer, TypeSettingMark> _typeSettingMarks;
 	private PrintFile _printer;
 	protected DeltaContext _context;
+	private boolean _firstItemInFile;
 	
 	public FormattedTextTypeSetter(
 			DeltaContext context,
@@ -35,6 +36,7 @@ public class FormattedTextTypeSetter extends PlainTextTypeSetter {
 	
 	@Override
 	public void beforeFirstItem() {
+		_firstItemInFile = true;
 		writeTypeSettingMark(MarkPosition.BEFORE_ITEM_NAME_AT_START_OF_FILE);
 	}
 
@@ -42,7 +44,6 @@ public class FormattedTextTypeSetter extends PlainTextTypeSetter {
 	public void beforeItem(Item item) {
 		_printer.writeBlankLines(1, 0);
 		writeTypeSettingMark(MarkPosition.BEFORE_ITEM_OR_HEADING);
-
 	}
 
 	@Override
@@ -54,7 +55,6 @@ public class FormattedTextTypeSetter extends PlainTextTypeSetter {
 			// output which simplifies my testing.
 			writeTypeSettingMark(" "+afterItemMark);
 		}
-
 	}
 
 	@Override
@@ -79,6 +79,11 @@ public class FormattedTextTypeSetter extends PlainTextTypeSetter {
 	}
 	
 	private boolean isEmphasized(int charNum, int itemNum) {
+		// This is done to support the fake item used during the implicit
+		// values translation.
+		if (itemNum <= 0) {
+			return false;
+		}
 		return _context.isCharacterEmphasized(itemNum, charNum);
 	}
 
@@ -108,7 +113,10 @@ public class FormattedTextTypeSetter extends PlainTextTypeSetter {
 	
 	
 	public void beforeItemName() {
-		writeTypeSettingMark(MarkPosition.BEFORE_ITEM_NAME);
+		if (!_firstItemInFile) {
+			writeTypeSettingMark(MarkPosition.BEFORE_ITEM_NAME);
+		}
+		_firstItemInFile = false;
 	}
 	public void afterItemName() {
 		writeTypeSettingMark(MarkPosition.AFTER_ITEM_NAME);

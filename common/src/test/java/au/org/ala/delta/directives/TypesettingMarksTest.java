@@ -66,7 +66,7 @@ public class TypesettingMarksTest extends TestCase {
 		
 		TypeSettingMark mark = _context.getTypeSettingMark(MarkPosition.fromId(1));
 		assertEquals(1, mark.getId());
-		assertEquals("mark<comment>#1 1", mark.getMarkText());
+		assertEquals("mark <comment> #1 1", mark.getMarkText());
 		assertEquals(false, mark.getAllowLineBreaks());
 		
 		mark = _context.getTypeSettingMark(MarkPosition.fromId(2));

@@ -12,7 +12,6 @@ import au.org.ala.delta.translation.delta.DeltaFormatTranslator;
 import au.org.ala.delta.translation.dist.DistTranslator;
 import au.org.ala.delta.translation.intkey.IntkeyTranslator;
 import au.org.ala.delta.translation.key.KeyTranslator;
-import au.org.ala.delta.translation.naturallanguage.HtmlNaturalLanguageDataSetFilter;
 import au.org.ala.delta.translation.naturallanguage.HtmlNaturalLanguageTranslator;
 import au.org.ala.delta.translation.naturallanguage.IndexWriter;
 import au.org.ala.delta.translation.naturallanguage.NaturalLanguageDataSetFilter;
@@ -98,13 +97,12 @@ public class DataSetTranslatorFactory {
 		ItemFormatter itemFormatter  = formatterFactory.createItemFormatter(typeSetter);
 		CharacterFormatter characterFormatter = formatterFactory.createCharacterFormatter();
 		AttributeFormatter attributeFormatter = formatterFactory.createAttributeFormatter();
+		DataSetFilter filter = new NaturalLanguageDataSetFilter(context);
 		
 		if (context.getOutputHtml() == false) {
-			DataSetFilter filter = new NaturalLanguageDataSetFilter(context);
 			translator = new NaturalLanguageTranslator(context, filter, typeSetter, printer, itemFormatter, characterFormatter, attributeFormatter);
 		}
 		else {
-			DataSetFilter filter = new HtmlNaturalLanguageDataSetFilter(context);
 			PrintFile indexFile = context.getOutputFileSelector().getIndexFile();
 			IndexWriter indexWriter = new IndexWriter(indexFile, itemFormatter, context);
 			translator = new HtmlNaturalLanguageTranslator(

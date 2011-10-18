@@ -42,8 +42,10 @@ public abstract class AbstractFormattingDirective extends AbstractCustomDirectiv
 		for (DirectiveArgument<?> arg : args.getDirectiveArguments()) {
 			
 			int id = ((Integer)arg.getId());
-			String markText = cleanWhiteSpace(arg.getText());
+			String markText = arg.getText();
+			
 			boolean allowWhiteSpace = hasDelimiter && markText.startsWith(" ");
+			markText = markText.trim();
 			TypeSettingMark mark = new TypeSettingMark(id, markText.trim(), allowWhiteSpace);
 			processMark(context, mark);
 		}

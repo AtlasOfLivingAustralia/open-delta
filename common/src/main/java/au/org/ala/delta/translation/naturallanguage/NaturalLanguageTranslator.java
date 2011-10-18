@@ -10,6 +10,7 @@ import org.apache.commons.lang.StringUtils;
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.DefaultDataSetFactory;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateAttribute;
@@ -37,10 +38,10 @@ import au.org.ala.delta.translation.attribute.TextAttributeTranslator;
  */
 public class NaturalLanguageTranslator extends AbstractDataSetTranslator {
 
-    private DeltaContext _context;
+	protected DeltaContext _context;
     private PrintFile _printer;
-    private DeltaDataSet _dataSet;
-    private ItemListTypeSetter _typeSetter;
+    protected DeltaDataSet _dataSet;
+    protected ItemListTypeSetter _typeSetter;
     protected ItemFormatter _itemFormatter;
     private CharacterFormatter _characterFormatter;
     private AttributeFormatter _attributeFormatter;
@@ -65,11 +66,33 @@ public class NaturalLanguageTranslator extends AbstractDataSetTranslator {
 
     @Override
     public void beforeFirstItem() {
-        _typeSetter.beforeFirstItem();
+        //_typeSetter.beforeFirstItem();
 
         // Insert the implicit attributes section if required.
-
+        if (_context.getTranslateImplictValues()) {
+        	//translateImplicitValues();
+        }
     }
+    
+    private void translateImplicitValues() {
+    	
+    	DefaultDataSetFactory factory = new DefaultDataSetFactory();
+    	Item fakeItem = factory.createItem(-1);
+    	for (int i=1; i<=_dataSet.getNumberOfCharacters(); i++) {
+    		Character character = _dataSet.getCharacter(i);
+    		if (character.getCharacterType().isMultistate()) {
+    			MultiStateCharacter multiStateChar = (MultiStateCharacter)character;
+    			if (multiStateChar.getUncodedImplicitState() > 0) {
+    				
+    				Attribute fake = factory.createAttribute(character, fakeItem);
+    				fakeItem.addAttribute(character, fake);
+    				
+    			}
+    		}
+    	}
+    	beforeItem(fakeItem);
+    }
+    
 
     @Override
     public void beforeItem(Item item) {
@@ -89,19 +112,26 @@ public class NaturalLanguageTranslator extends AbstractDataSetTranslator {
 
     @Override
     public void afterItem(Item item) {
-
-        if (!_characters.isEmpty()) {
-            writeAttributes(item, _characters);
-            _characters = new ArrayList<Character>();
-        }
-        if (_characterOutputSinceLastPuntuation) {
-            writePunctuation(Word.FULL_STOP);
-        }
-        _lastCharacterOutput = 0;
-        _previousCharInSentence = 0;
+       finishWritingAttributes(item);
         _typeSetter.afterItem(item);
-        _newParagraph = true;
-
+    }
+    
+    /**
+     * This is necessary as attributes aren't written until all attributes of
+     * a linked set have been processed.
+     * @param item the item being finished.
+     */
+    protected void finishWritingAttributes(Item item) {
+    	 if (!_characters.isEmpty()) {
+             writeAttributes(item, _characters);
+             _characters = new ArrayList<Character>();
+         }
+         if (_characterOutputSinceLastPuntuation) {
+             writePunctuation(Word.FULL_STOP);
+         }
+         _lastCharacterOutput = 0;
+         _previousCharInSentence = 0;
+         _newParagraph = true;
     }
 
     private List<Character> _characters = new ArrayList<Character>();
@@ -331,7 +361,6 @@ public class NaturalLanguageTranslator extends AbstractDataSetTranslator {
     private int _lastCharacterOutput;
     private int _previousCharInSentence;
     private boolean _characterOutputSinceLastPuntuation;
-    private boolean _textOutputSinceLastParagraph;
 
     private void writeFeature(Character character, Item item, String description, boolean omitFinalPeriod,
             boolean subsequentPartOfLinkedSet) {
@@ -363,7 +392,6 @@ public class NaturalLanguageTranslator extends AbstractDataSetTranslator {
             _typeSetter.newParagraph();
             _typeSetter.beforeNewParagraphCharacter();
             _newParagraph = false;
-            _textOutputSinceLastParagraph = false;
         }
 
         writeItemSubheading(character);
@@ -371,23 +399,30 @@ public class NaturalLanguageTranslator extends AbstractDataSetTranslator {
             _printer.writeJustifiedText("(" + characterNumber + ")", -1);
         }
 
-       
-        _typeSetter.beforeCharacterDescription(character, item);
-
-
-        // Check if we are starting a new sentence or starting a new set of
-        // linked characters.
-        if ((_previousCharInSentence == 0) || (!subsequentPartOfLinkedSet && _lastCharacterOutput < _previousCharInSentence)) {
-            _printer.capitaliseNextWord();
-        }
-
-        writeSentence(description, -1);
-
-        _typeSetter.afterCharacterDescription(character, item);
+        writeCharacterDescription(character, item, description, subsequentPartOfLinkedSet);
 
         _previousCharInSentence = characterNumber;
 
     }
+
+	protected void writeCharacterDescription(Character character, Item item, String description,
+			boolean subsequentPartOfLinkedSet) {
+		// The character description is commonly empty when writing linked
+		// characters.
+		
+		// Check if we are starting a new sentence or starting a new set of
+        // linked characters.
+        if ((_previousCharInSentence == 0) || (!subsequentPartOfLinkedSet && _lastCharacterOutput < _previousCharInSentence)) {
+            _printer.capitaliseNextWord();
+        }
+		if (StringUtils.isNotEmpty(description)) {
+			_typeSetter.beforeCharacterDescription(character, item);
+	
+	        writeSentence(description, -1);
+	
+	        _typeSetter.afterCharacterDescription(character, item);
+		}
+	}
 
 	protected void writeItemSubheading(Character character) {
 		String itemSubheading = _context.getItemSubheading(character.getCharacterId());

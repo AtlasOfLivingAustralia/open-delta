@@ -3,7 +3,6 @@ package au.org.ala.delta.translation.naturallanguage;
 import java.util.List;
 
 import au.org.ala.delta.DeltaContext;
-import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.format.AttributeFormatter;
@@ -47,18 +46,22 @@ public class HtmlNaturalLanguageTranslator extends NaturalLanguageTranslator {
 	}
 
 	@Override
-	public void beforeAttribute(Attribute attribute) {
-		Character character = attribute.getCharacter();
-		if (character.getCharacterId() == _charForTaxonImages) {
-		
-			writeCharacterImages(attribute.getItem(), character);
-		}
-		else {
-			super.beforeAttribute(attribute);
-		}
-	}
+    public void afterItem(Item item) {
+        finishWritingAttributes(item);
+       
+        if (_charForTaxonImages > 0) {
+        	if (_context.startNewParagraphAtCharacter(_charForTaxonImages)) {
+        		_typeSetter.beforeNewParagraphCharacter();
+        	}
+    	    writeCharacterImages(item);
+        }
+       
+        _typeSetter.afterItem(item);
+    }
 
-	private void writeCharacterImages(Item item, Character character) {
+	private void writeCharacterImages(Item item) {
+		
+		Character character = _dataSet.getCharacter(_charForTaxonImages);
 		List<Image> images = item.getImages();
 		if (!images.isEmpty()) {
 			writeItemSubheading(character);
