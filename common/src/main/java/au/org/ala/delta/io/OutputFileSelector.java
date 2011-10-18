@@ -41,6 +41,7 @@ public class OutputFileSelector {
 	private String _keyOutputFile;
 	private String _distOutputFile;
 	private String _outputDirectory;
+	private String _imageDirectory;
 	private String _printFileName;
 	private PrintStream _printStream;
 	private PrintFile _printFile;
@@ -340,5 +341,16 @@ public class OutputFileSelector {
 	
 	public PrintFile getIndexFile() {
 		return _indexFile;
+	}
+
+	public void setImageDirectory(String directoryName) {
+		_imageDirectory = FilenameUtils.separatorsToSystem(directoryName);
+	}
+	
+	public String getImageDirectory() {
+		if (_imageDirectory == null) {
+			_imageDirectory = "";
+		}
+		return _imageDirectory;
 	}
 }

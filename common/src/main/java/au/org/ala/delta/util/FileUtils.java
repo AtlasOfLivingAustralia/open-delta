@@ -34,4 +34,39 @@ public class FileUtils {
 		backupAndDelete(fullPath);
 	}
 	
+	public static String makeRelativeTo(String path, File file) {
+		String relativePath;
+		if (file.isAbsolute()) {
+            File dataSetPath = new File(path);
+
+            File parent = parent(file, dataSetPath);
+            File commonParent = dataSetPath;
+            String prefix = "";
+            while (!parent.equals(commonParent)) {
+                prefix += ".." + File.separatorChar;
+                commonParent = commonParent.getParentFile();
+                parent = parent(file, commonParent);
+            }
+            String filePath = file.getAbsolutePath();
+            String parentPath = parent.getAbsolutePath();
+
+            int relativePathIndex = filePath.indexOf(parentPath) + parentPath.length();
+            if (!parentPath.endsWith(File.separator)) {
+                relativePathIndex++;
+            }
+            relativePath = prefix + filePath.substring(relativePathIndex);
+        } else {
+            relativePath = file.getPath();
+        }
+		return relativePath;
+
+	}
+	
+	private static File parent(File start, File parent) {
+        if (start.equals(parent) || start.getParentFile() == null) {
+            return start;
+        } else {
+            return parent(start.getParentFile(), parent);
+        }
+    }
 }

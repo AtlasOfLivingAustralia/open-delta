@@ -39,7 +39,7 @@ import au.org.ala.delta.translation.attribute.TextAttributeTranslator;
 public class NaturalLanguageTranslator extends AbstractDataSetTranslator {
 
 	protected DeltaContext _context;
-    private PrintFile _printer;
+    protected PrintFile _printer;
     protected DeltaDataSet _dataSet;
     protected ItemListTypeSetter _typeSetter;
     protected ItemFormatter _itemFormatter;

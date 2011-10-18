@@ -1,8 +1,12 @@
 package au.org.ala.delta.translation.naturallanguage;
 
+import java.io.File;
 import java.util.List;
 
+import org.apache.commons.io.FilenameUtils;
+
 import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.io.OutputFileSelector;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.format.AttributeFormatter;
@@ -14,6 +18,7 @@ import au.org.ala.delta.model.image.OverlayType;
 import au.org.ala.delta.translation.DataSetFilter;
 import au.org.ala.delta.translation.ItemListTypeSetter;
 import au.org.ala.delta.translation.PrintFile;
+import au.org.ala.delta.translation.Words.Word;
 
 /**
  * Writes the html index file as a part of the translation process.
@@ -22,6 +27,7 @@ public class HtmlNaturalLanguageTranslator extends NaturalLanguageTranslator {
 	
 	private IndexWriter _indexWriter;
 	private int _charForTaxonImages;
+	private OutputFileSelector _outputFileSelector;
 	
 	public HtmlNaturalLanguageTranslator(
 			DeltaContext context, DataSetFilter filter, ItemListTypeSetter typeSetter, PrintFile printer, ItemFormatter itemFormatter, CharacterFormatter characterFormatter,
@@ -35,6 +41,7 @@ public class HtmlNaturalLanguageTranslator extends NaturalLanguageTranslator {
 		else {
 			_charForTaxonImages = -1;
 		}
+		_outputFileSelector = _context.getOutputFileSelector();
 	}
 
 	@Override
@@ -70,24 +77,32 @@ public class HtmlNaturalLanguageTranslator extends NaturalLanguageTranslator {
 	}
 	
 	private void writeImages(List<Image> images) {
-		StringBuilder text = new StringBuilder();
 		for (Image image : images) {
+			StringBuilder text = new StringBuilder();
+			
 			text.append("&#149;&nbsp;<a href=\"");
-			text.append(image.getFileName());
+			text.append(imageFileName(image));
 			text.append("\">");
 			text.append(_itemFormatter.defaultFormat(image.getSubjectText()));
 			text.append("</a>");
+			writeSentence(text.toString());
 			for (ImageOverlay overlay : image.getOverlaysOfType(OverlayType.OLTEXT)) {
-				text.append(_itemFormatter.defaultFormat(overlay.overlayText));
+				writeSentence(_itemFormatter.defaultFormat(overlay.overlayText));
 			}
 		}
 		
-		writeSentence(text.toString(), -1);
-		
-//		<p><B>Illustrations</B>. &#149;&nbsp;<a href="../images/ag01.gif">Habit -
-//		<I>Agrostis eriantha</I> (plus call of peewee)</a>. <I>Agrostis eriantha</I>
-//		var. <I>eriantha</I>. &#149;&nbsp;<a href="../images/ag25.gif">Floret (plus call
-//		of magpie)</a>. 
+	}
+	
+	private void writeSentence(String text) {
+		_printer.writeJustifiedText(text, -1);
+		_printer.insertPunctuationMark(Word.FULL_STOP);
+	}
+	
+	private String imageFileName(Image image) {
+		String imageFile = image.getFileName();
+		File imageFilePath = new File(new File(_outputFileSelector.getImageDirectory()), imageFile);
+		// Using unix file separators instead of system here because we are producing a html URL.
+		return FilenameUtils.separatorsToUnix(imageFilePath.getPath());
 	}
 	
 }

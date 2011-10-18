@@ -10,6 +10,8 @@ import java.util.List;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 
+import au.org.ala.delta.util.FileUtils;
+
 /**
  * The resource settings class is used to configure multiple locations in which
  * dataset resources can be found. Similar in concept to the Java classpath.
@@ -192,30 +194,7 @@ public class ResourceSettings {
      *            added.
      */
     public void addToResourcePath(File selectedFile) {
-        String relativePath;
-        if (selectedFile.isAbsolute()) {
-            File dataSetPath = new File(_dataSetPath);
-
-            File parent = parent(selectedFile, dataSetPath);
-            File commonParent = dataSetPath;
-            String prefix = "";
-            while (!parent.equals(commonParent)) {
-                prefix += ".." + File.separatorChar;
-                commonParent = commonParent.getParentFile();
-                parent = parent(selectedFile, commonParent);
-            }
-            String filePath = selectedFile.getAbsolutePath();
-            String parentPath = parent.getAbsolutePath();
-
-            int relativePathIndex = filePath.indexOf(parentPath) + parentPath.length();
-            if (!parentPath.endsWith(File.separator)) {
-                relativePathIndex++;
-            }
-            relativePath = prefix + filePath.substring(relativePathIndex);
-        } else {
-            relativePath = selectedFile.getPath();
-        }
-
+        String relativePath = FileUtils.makeRelativeTo(_dataSetPath, selectedFile);
         addToResourcePath(relativePath);
     }
 
@@ -225,12 +204,6 @@ public class ResourceSettings {
         }
     }
 
-    private File parent(File start, File parent) {
-        if (start.equals(parent) || start.getParentFile() == null) {
-            return start;
-        } else {
-            return parent(start.getParentFile(), parent);
-        }
-    }
+    
 
 }
