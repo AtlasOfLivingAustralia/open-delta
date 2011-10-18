@@ -6,17 +6,16 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
 
 public class FileInputDirectiveInvocation extends IntkeyDirectiveInvocation {
 
-    private File _inputFile;
-    
-    public FileInputDirectiveInvocation(File inputFile) {
-        _inputFile = inputFile;
+    private File _file;
+
+    public void setFile(File file) {
+        this._file = file;
     }
 
     @Override
     public boolean execute(IntkeyContext context) {
-        context.processInputFile(_inputFile);
+        context.processInputFile(_file);
         return true;
     }
-    
-    
+
 }

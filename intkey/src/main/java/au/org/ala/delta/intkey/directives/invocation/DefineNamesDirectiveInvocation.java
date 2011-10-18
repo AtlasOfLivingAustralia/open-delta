@@ -5,33 +5,24 @@ import java.util.List;
 import java.util.Set;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
-import au.org.ala.delta.intkey.model.IntkeyDataset;
 import au.org.ala.delta.model.Item;
 
 public class DefineNamesDirectiveInvocation extends IntkeyDirectiveInvocation {
 
     private String _keyword;
-    private List<String> _taxonNames;
+    private List<Item> _taxa;
 
-    public DefineNamesDirectiveInvocation(String keyword, List<String> taxonNames) {
+    public DefineNamesDirectiveInvocation(String keyword, List<Item> taxa) {
         _keyword = keyword;
-        _taxonNames = taxonNames;
+        _taxa = taxa;
     }
 
     @Override
     public boolean execute(IntkeyContext context) {
-        IntkeyDataset dataset = context.getDataset();
-
         Set<Integer> taxaNumbers = new HashSet<Integer>();
 
-        for (String taxonName : _taxonNames) {
-            Item taxon = dataset.getTaxonByName(taxonName);
-            if (taxon == null) {
-                context.getUI().displayErrorMessage(String.format("'%s' is not a valid taxon name", taxonName));
-                return false;
-            } else {
-                taxaNumbers.add(taxon.getItemNumber());
-            }
+        for (Item taxon : _taxa) {
+            taxaNumbers.add(taxon.getItemNumber());
         }
 
         try {

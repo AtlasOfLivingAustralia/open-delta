@@ -37,17 +37,27 @@ public class MenuBuilder {
         _menuStack.pop();
     }
 
-    // TODO remove "enabled" argument once all directives are implemented.
-    public void addMenuItem(String mnuItemName, Action action, boolean enabled) {
+    public void addPreconfiguredJMenu(JMenu mnu) {
+        getCurrentMenu().add(mnu);
+    }
+
+    // TODO this is just to make disabled items - remove once all directives are
+    // implemented.
+    public void addMenuItem(String mnuItemName, boolean enabled) {
         JMenuItem mnuItem = new JMenuItem();
         mnuItem.setName(mnuItemName);
-        mnuItem.setAction(action);
         mnuItem.setEnabled(enabled);
         getCurrentMenu().add(mnuItem);
     }
 
     public void addSeparator() {
         getCurrentMenu().addSeparator();
+    }
+
+    public void addActionMenuItem(Action action) {
+        JMenuItem mnuItem = new JMenuItem();
+        mnuItem.setAction(action);
+        getCurrentMenu().add(mnuItem);
     }
 
     public void addDirectiveMenuItem(String mnuItemName, AbstractDirective<IntkeyContext> directive) {

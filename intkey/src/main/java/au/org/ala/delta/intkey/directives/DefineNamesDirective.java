@@ -1,11 +1,18 @@
 package au.org.ala.delta.intkey.directives;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.text.StrMatcher;
+import org.apache.commons.lang.text.StrTokenizer;
 
 import au.org.ala.delta.intkey.directives.invocation.DefineNamesDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.intkey.ui.UIUtils;
+import au.org.ala.delta.model.Item;
 
 public class DefineNamesDirective extends IntkeyDirective {
 
@@ -15,39 +22,52 @@ public class DefineNamesDirective extends IntkeyDirective {
 
     @Override
     protected IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
-        List<String> tokens = ParsingUtils.tokenizeDirectiveCall(data);
-        
+        // Taxon names are separated by newlines or by commas
+        List<String> tokens = new StrTokenizer(data, StrMatcher.charSetMatcher(new char[] { '\n', '\r', ',' })).getTokenList();
+
         String keyword = null;
-        
         List<String> names = null;
-        
+
         if (!tokens.isEmpty()) {
-            keyword = ParsingUtils.removeEnclosingQuotes(tokens.get(0));
-        }
-        
-        if (tokens.size() > 1) {
             names = new ArrayList<String>();
-            for (int i=1; i < tokens.size(); i++) {
-                String name = ParsingUtils.removeEnclosingQuotes(tokens.get(i));
-                
-                // Names are separated by commas, strip trailing comma
-                // if it is present
-                if (name.endsWith(",")) {
-                    name = name.substring(0, name.length() - 1);
-                }
-                
-                names.add(name);
+
+            String firstToken = tokens.get(0);
+
+            // The keyword (which may quoted) and first taxon name may be
+            // separated by a space
+            List<String> splitFirstToken = new StrTokenizer(firstToken, StrMatcher.charSetMatcher(new char[] { ' ' }), StrMatcher.quoteMatcher()).getTokenList();
+            keyword = splitFirstToken.get(0);
+            if (splitFirstToken.size() > 1) {
+                names.add(StringUtils.join(splitFirstToken.subList(1, splitFirstToken.size()), " "));
+            }
+
+            for (int i = 1; i < tokens.size(); i++) {
+                names.add(tokens.get(i).trim());
             }
         }
-        
-        if (keyword == null) {
-            //TODO prompt for keyword
+
+        List<Item> taxa = new ArrayList<Item>();
+        for (String taxonName : names) {
+            Item taxon = context.getDataset().getTaxonByName(taxonName);
+            if (taxon == null) {
+                context.getUI().displayErrorMessage(MessageFormat.format(UIUtils.getResourceString("InvalidTaxonName.error"), taxonName));
+                return null;
+            } else {
+                taxa.add(taxon);
+            }
         }
-        
-        if (names == null) {
-            //TODO prompt for names
+
+        String directiveName = StringUtils.join(getControlWords(), " ").toUpperCase();
+
+        if (StringUtils.isEmpty(keyword)) {
+            keyword = context.getDirectivePopulator().promptForString("Enter keyword", null, directiveName);
         }
-        
-        return new DefineNamesDirectiveInvocation(keyword, names);
+
+        if (taxa.isEmpty()) {
+            System.out.println(keyword);
+            taxa = context.getDirectivePopulator().promptForTaxaByList(directiveName, false, false, false);
+        }
+
+        return new DefineNamesDirectiveInvocation(keyword, taxa);
     }
 }

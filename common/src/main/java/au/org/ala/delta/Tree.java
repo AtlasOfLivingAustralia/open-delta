@@ -14,6 +14,7 @@
  ******************************************************************************/
 package au.org.ala.delta;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import au.org.ala.delta.directives.AbstractDirective;
@@ -76,6 +77,22 @@ public class Tree {
                     p = (TreeNodeList) n;
                 }
             } else {
+                if (!_matchFirstThreeCharacters) {
+                    List<String> matchedKeys = new ArrayList<String>();
+                    for (String nodeKey : p.getChildren().keySet()) {
+                        if (nodeKey.startsWith(key)) {
+                            matchedKeys.add(nodeKey);
+                        }
+                    }
+
+                    if (matchedKeys.size() == 1) {
+                        TreeNode n = p.getChildren().get(matchedKeys.get(0));
+                        return new DirectiveSearchResult(ResultType.Found, ((DirectiveTreeNode) n).getDirective());
+                    } else if (matchedKeys.size() > 1) {
+                        return new DirectiveSearchResult(ResultType.MoreSpecificityRequired, null);
+                    }
+                }
+
                 return new DirectiveSearchResult(ResultType.NotFound, null);
             }
         }

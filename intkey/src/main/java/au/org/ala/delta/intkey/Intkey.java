@@ -66,10 +66,13 @@ import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.directives.AbstractDirective;
-import au.org.ala.delta.directives.ExcludeCharacters;
 import au.org.ala.delta.intkey.directives.ChangeDirective;
 import au.org.ala.delta.intkey.directives.CharactersDirective;
+import au.org.ala.delta.intkey.directives.CommentDirective;
+import au.org.ala.delta.intkey.directives.ContentsDirective;
 import au.org.ala.delta.intkey.directives.DefineCharactersDirective;
+import au.org.ala.delta.intkey.directives.DefineInformationDirective;
+import au.org.ala.delta.intkey.directives.DefineNamesDirective;
 import au.org.ala.delta.intkey.directives.DefineTaxaDirective;
 import au.org.ala.delta.intkey.directives.DescribeDirective;
 import au.org.ala.delta.intkey.directives.DiagnoseDirective;
@@ -81,6 +84,12 @@ import au.org.ala.delta.intkey.directives.DisplayCharacterOrderSeparateDirective
 import au.org.ala.delta.intkey.directives.ExcludeCharactersDirective;
 import au.org.ala.delta.intkey.directives.ExcludeTaxaDirective;
 import au.org.ala.delta.intkey.directives.FileCharactersDirective;
+import au.org.ala.delta.intkey.directives.FileCloseDirective;
+import au.org.ala.delta.intkey.directives.FileDisplayDirective;
+import au.org.ala.delta.intkey.directives.FileInputDirective;
+import au.org.ala.delta.intkey.directives.FileJournalDirective;
+import au.org.ala.delta.intkey.directives.FileLogDirective;
+import au.org.ala.delta.intkey.directives.FileOutputDirective;
 import au.org.ala.delta.intkey.directives.FileTaxaDirective;
 import au.org.ala.delta.intkey.directives.FindCharactersDirective;
 import au.org.ala.delta.intkey.directives.FindTaxaDirective;
@@ -102,6 +111,7 @@ import au.org.ala.delta.intkey.directives.SetReliabilitiesDirective;
 import au.org.ala.delta.intkey.directives.SetStopBestDirective;
 import au.org.ala.delta.intkey.directives.SetToleranceDirective;
 import au.org.ala.delta.intkey.directives.SetVaryWtDirective;
+import au.org.ala.delta.intkey.directives.ShowDirective;
 import au.org.ala.delta.intkey.directives.SimilaritiesDirective;
 import au.org.ala.delta.intkey.directives.SummaryDirective;
 import au.org.ala.delta.intkey.directives.TaxaDirective;
@@ -115,8 +125,9 @@ import au.org.ala.delta.intkey.directives.invocation.DisplayNumberingDirectiveIn
 import au.org.ala.delta.intkey.directives.invocation.DisplayUnknownsDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.SetAutoToleranceDirectiveInvocation;
+import au.org.ala.delta.intkey.directives.invocation.SetDiagTypeSpecimensDirectiveInvocation;
+import au.org.ala.delta.intkey.directives.invocation.SetDiagTypeTaxaDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.SetFixDirectiveInvocation;
-import au.org.ala.delta.intkey.directives.invocation.SetToleranceDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyCharacterOrder;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.model.IntkeyDataset;
@@ -710,88 +721,49 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     }
 
     private JMenu buildFileMenu(boolean advancedMode, ActionMap actionMap) {
-        JMenu mnuFile = new JMenu();
-        mnuFile.setName("mnuFile");
+        MenuBuilder mnuFileBuilder = new MenuBuilder("mnuFile", _context);
 
-        JMenuItem mnuItNewDataSet = new JMenuItem();
-        mnuItNewDataSet.setAction(actionMap.get("mnuItNewDataSet"));
-        mnuFile.add(mnuItNewDataSet);
+        mnuFileBuilder.addDirectiveMenuItem("mnuItNewDataSet", new NewDatasetDirective());
 
-        JMenu mnuFileRecents = buildRecentFilesMenu();
-        mnuFile.add(mnuFileRecents);
+        mnuFileBuilder.addPreconfiguredJMenu(buildRecentFilesMenu());
 
         if (_advancedMode) {
-            JMenuItem mnuItPreferences = new JMenuItem();
-            mnuItPreferences.setAction(actionMap.get("mnuItPreferences"));
-            mnuItPreferences.setEnabled(false);
-            mnuFile.add(mnuItPreferences);
+            mnuFileBuilder.addMenuItem("mnuItPreferences", false);
+            mnuFileBuilder.addDirectiveMenuItem("mnuItContents", new ContentsDirective());
 
-            JMenuItem mnuItContents = new JMenuItem();
-            mnuItContents.setAction(actionMap.get("mnuItContents"));
-            mnuItContents.setEnabled(false);
-            mnuFile.add(mnuItContents);
+            mnuFileBuilder.addSeparator();
 
-            mnuFile.addSeparator();
+            mnuFileBuilder.startSubMenu("mnuFileCmds", true);
+            mnuFileBuilder.addDirectiveMenuItem("mnuItFileInput", new FileInputDirective());
+            mnuFileBuilder.addDirectiveMenuItem("mnuItFileOutput", new FileOutputDirective());
+            mnuFileBuilder.addDirectiveMenuItem("mnuItFileDisplay", new FileDisplayDirective());
+            mnuFileBuilder.addDirectiveMenuItem("mnuItFileLog", new FileLogDirective());
+            mnuFileBuilder.addDirectiveMenuItem("mnuItFileJournal", new FileJournalDirective());
+            mnuFileBuilder.addDirectiveMenuItem("mnuItFileClose", new FileCloseDirective());
+            mnuFileBuilder.addDirectiveMenuItem("mnuItFileCharacters", new FileCharactersDirective());
+            mnuFileBuilder.addDirectiveMenuItem("mnuItFileTaxa", new FileCharactersDirective());
+            mnuFileBuilder.endSubMenu();
 
-            JMenu mnuFileCmds = new JMenu();
-            mnuFileCmds.setName("mnuFileCmds");
+            mnuFileBuilder.startSubMenu("mnuOutputCmds", false);
+            mnuFileBuilder.endSubMenu();
+            mnuFileBuilder.addSeparator();
 
-            JMenuItem mnuItFileCharactersCmd = new JMenuItem();
-            mnuItFileCharactersCmd.setAction(actionMap.get("mnuItFileCharacters"));
-            mnuFileCmds.add(mnuItFileCharactersCmd);
+            mnuFileBuilder.addDirectiveMenuItem("mnuItComment", new CommentDirective());
+            mnuFileBuilder.addDirectiveMenuItem("mnuItShow", new ShowDirective());
 
-            JMenuItem mnuItFileTaxaCmd = new JMenuItem();
-            mnuItFileTaxaCmd.setAction(actionMap.get("mnuItFileTaxa"));
-            mnuFileCmds.add(mnuItFileTaxaCmd);
+            mnuFileBuilder.addSeparator();
 
-            mnuFile.add(mnuFileCmds);
-
-            JMenu mnuOutputCmds = new JMenu();
-            mnuOutputCmds.setName("mnuOutputCmds");
-            mnuOutputCmds.setEnabled(false);
-            mnuFile.add(mnuOutputCmds);
-
-            mnuFile.addSeparator();
-
-            JMenuItem mnuItComment = new JMenuItem();
-            mnuItComment.setAction(actionMap.get("mnuItComment"));
-            mnuItComment.setEnabled(false);
-            mnuFile.add(mnuItComment);
-
-            JMenuItem mnuItShow = new JMenuItem();
-            mnuItShow.setAction(actionMap.get("mnuItShow"));
-            mnuItShow.setEnabled(false);
-            mnuFile.add(mnuItShow);
-
-            mnuFile.addSeparator();
-
-            JMenuItem mnuItNormalMode = new JMenuItem();
-            mnuItNormalMode.setAction(actionMap.get("mnuItNormalMode"));
-            mnuFile.add(mnuItNormalMode);
-
-            mnuFile.addSeparator();
-
-            JMenuItem mnuItEditIndex = new JMenuItem("Edit Index...");
-            mnuItEditIndex.setAction(actionMap.get("mnuItEditIndex"));
-            mnuItEditIndex.setEnabled(false);
-            mnuFile.add(mnuItEditIndex);
-
-            _cmdMenus.put("file", mnuFileCmds);
+            mnuFileBuilder.addActionMenuItem(actionMap.get("mnuItNormalMode"));
         } else {
-            mnuFile.addSeparator();
-
-            JMenuItem mnuItAdvancedMode = new JMenuItem();
-            mnuItAdvancedMode.setAction(actionMap.get("mnuItAdvancedMode"));
-            mnuFile.add(mnuItAdvancedMode);
+            mnuFileBuilder.addSeparator();
+            mnuFileBuilder.addActionMenuItem(actionMap.get("mnuItAdvancedMode"));
         }
 
-        mnuFile.addSeparator();
+        mnuFileBuilder.addSeparator();
 
-        JMenuItem mnuItFileExit = new JMenuItem();
-        mnuItFileExit.setAction(actionMap.get("mnuItExitApplication"));
-        mnuFile.add(mnuItFileExit);
+        mnuFileBuilder.addActionMenuItem(actionMap.get("mnuItExitApplication"));
 
-        return mnuFile;
+        return mnuFileBuilder.getMenu();
     }
 
     private JMenu buildRecentFilesMenu() {
@@ -909,122 +881,47 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         mnuSettings.setName("mnuSettings");
 
         // "Set" submenu
-        JMenu mnuSet = new JMenu();
-        mnuSet.setName("mnuSet");
-        mnuSettings.add(mnuSet);
+        MenuBuilder mnuSetBuilder = new MenuBuilder("mnuSet", _context);
 
-        JMenu mnuAutotolerance = new JMenu();
-        mnuAutotolerance.setName("mnuAutotolerance");
+        mnuSetBuilder.startSubMenu("mnuAutotolerance", true);
+        mnuSetBuilder.addOnOffDirectiveInvocationMenuItem("mnuItAutotoleranceOn", new SetAutoToleranceDirectiveInvocation(), true);
+        mnuSetBuilder.addOnOffDirectiveInvocationMenuItem("mnuItAutotoleranceOff", new SetAutoToleranceDirectiveInvocation(), false);
+        mnuSetBuilder.endSubMenu();
 
-        JMenuItem mnuItAutotoleranceOn = new JMenuItem();
-        mnuItAutotoleranceOn.setName("mnuItAutotoleranceOn");
-        SetAutoToleranceDirectiveInvocation setAutoToleranceOnInvoc = new SetAutoToleranceDirectiveInvocation();
-        setAutoToleranceOnInvoc.setValue(true);
-        mnuItAutotoleranceOn.setAction(new DirectiveInvocationAction(setAutoToleranceOnInvoc, _context));
-        mnuAutotolerance.add(mnuItAutotoleranceOn);
+        mnuSetBuilder.startSubMenu("mnuDemonstration", true);
+        mnuSetBuilder.endSubMenu();
 
-        JMenuItem mnuItAutotoleranceOff = new JMenuItem();
-        mnuItAutotoleranceOff.setName("mnuItAutotoleranceOff");
-        SetAutoToleranceDirectiveInvocation setAutoToleranceOffInvoc = new SetAutoToleranceDirectiveInvocation();
-        setAutoToleranceOffInvoc.setValue(false);
-        mnuItAutotoleranceOff.setAction(new DirectiveInvocationAction(setAutoToleranceOffInvoc, _context));
-        mnuAutotolerance.add(mnuItAutotoleranceOff);
+        mnuSetBuilder.addDirectiveMenuItem("mnuItDiagLevel", new SetDiagLevelDirective());
 
-        mnuSet.add(mnuAutotolerance);
+        mnuSetBuilder.startSubMenu("mnuDiagType", true);
+        mnuSetBuilder.addDirectiveInvocationMenuItem("mnuItDiagTypeSpecimens", new SetDiagTypeSpecimensDirectiveInvocation());
+        mnuSetBuilder.addDirectiveInvocationMenuItem("mnuItDiagTypeTaxa", new SetDiagTypeTaxaDirectiveInvocation());
+        mnuSetBuilder.endSubMenu();
 
-        JMenu mnuDemonstration = new JMenu();
-        mnuDemonstration.setName("mnuDemonstration");
+        mnuSetBuilder.addDirectiveMenuItem("mnuItExact", new SetExactDirective());
 
-        JMenuItem mnuItDemonstrationOn = new JMenuItem();
-        mnuItDemonstrationOn.setName("mnuItDemonstrationOn");
-        // SetDemonstrationDirectiveInvocation setDemonstrationOnInvoc = new
-        // SetDemonstrationDirectiveInvocation();
-        // setDemonstrationOnInvoc.setValue(true);
-        // mnuItDemonstrationOn.setAction(new
-        // DirectiveInvocationAction(setDemonstrationOnInvoc, _context));
-        mnuDemonstration.add(mnuItDemonstrationOn);
+        mnuSetBuilder.startSubMenu("mnuFix", true);
+        mnuSetBuilder.addOnOffDirectiveInvocationMenuItem("mnuItFixOn", new SetFixDirectiveInvocation(), true);
+        mnuSetBuilder.addOnOffDirectiveInvocationMenuItem("mnuItFixOff", new SetFixDirectiveInvocation(), false);
+        mnuSetBuilder.endSubMenu();
 
-        JMenuItem mnuItDemonstrationOff = new JMenuItem();
-        mnuItDemonstrationOff.setName("mnuItDemonstrationOff");
-        // SetDemonstrationDirectiveInvocation setDemonstrationOffInvoc = new
-        // SetDemonstrationDirectiveInvocation();
-        // setDemonstrationOffInvoc.setValue(false);
-        // mnuItDemonstrationOff.setAction(new
-        // DirectiveInvocationAction(setDemonstrationOffInvoc, _context));
-        mnuDemonstration.add(mnuItDemonstrationOff);
-        mnuDemonstration.setVisible(false);
-        mnuSet.add(mnuDemonstration);
+        mnuSetBuilder.addDirectiveMenuItem("mnuItImagePath", new SetImagePathDirective());
 
-        JMenuItem mnuItDiagLevel = new JMenuItem();
-        mnuItDiagLevel.setName("mnuItDiagLevel");
-        mnuItDiagLevel.setAction(new DirectiveAction(new SetDiagLevelDirective(), _context));
-        mnuSet.add(mnuItDiagLevel);
+        mnuSetBuilder.addDirectiveMenuItem("mnuItInfoPath", new SetInfoPathDirective());
 
-        // DiagType
+        mnuSetBuilder.addDirectiveMenuItem("mnuItMatch", new SetMatchDirective());
 
-        JMenuItem mnuItExact = new JMenuItem();
-        mnuItExact.setName("mnuItExact");
-        mnuItExact.setAction(new DirectiveAction(new SetExactDirective(), _context));
-        mnuSet.add(mnuItExact);
+        mnuSetBuilder.addDirectiveMenuItem("mnuItRbase", new SetRBaseDirective());
 
-        JMenu mnuFix = new JMenu();
-        mnuFix.setName("mnuFix");
+        mnuSetBuilder.addDirectiveMenuItem("mnuItReliabilities", new SetReliabilitiesDirective());
 
-        JMenuItem mnuItFixOn = new JMenuItem();
-        mnuItFixOn.setName("mnuItFixOn");
-        SetFixDirectiveInvocation setFixOnInvoc = new SetFixDirectiveInvocation();
-        setFixOnInvoc.setValue(true);
-        mnuItFixOn.setAction(new DirectiveInvocationAction(setFixOnInvoc, _context));
-        mnuFix.add(mnuItFixOn);
+        mnuSetBuilder.addDirectiveMenuItem("mnuItStopBest", new SetStopBestDirective());
 
-        JMenuItem mnuItFixOff = new JMenuItem();
-        mnuItFixOff.setName("mnuItFixOff");
-        SetFixDirectiveInvocation setFixOffInvoc = new SetFixDirectiveInvocation();
-        setFixOffInvoc.setValue(false);
-        mnuItFixOff.setAction(new DirectiveInvocationAction(setFixOffInvoc, _context));
-        mnuFix.add(mnuItFixOff);
+        mnuSetBuilder.addDirectiveMenuItem("mnuItTolerance", new SetToleranceDirective());
 
-        mnuSet.add(mnuFix);
+        mnuSetBuilder.addDirectiveMenuItem("mnuItVaryWt", new SetVaryWtDirective());
 
-        JMenuItem mnuItImagePath = new JMenuItem();
-        mnuItImagePath.setName("mnuItImagePath");
-        mnuItImagePath.setAction(new DirectiveAction(new SetImagePathDirective(), _context));
-        mnuSet.add(mnuItImagePath);
-
-        JMenuItem mnuItInfoPath = new JMenuItem();
-        mnuItInfoPath.setName("mnuItInfoPath");
-        mnuItInfoPath.setAction(new DirectiveAction(new SetInfoPathDirective(), _context));
-        mnuSet.add(mnuItInfoPath);
-
-        JMenuItem mnuItMatch = new JMenuItem();
-        mnuItMatch.setName("mnuItMatch");
-        mnuItMatch.setAction(new DirectiveAction(new SetMatchDirective(), _context));
-        mnuSet.add(mnuItMatch);
-
-        JMenuItem mnuItRbase = new JMenuItem();
-        mnuItRbase.setName("mnuItRbase");
-        mnuItRbase.setAction(new DirectiveAction(new SetRBaseDirective(), _context));
-        mnuSet.add(mnuItRbase);
-
-        JMenuItem mnuItReliabilities = new JMenuItem();
-        mnuItReliabilities.setName("mnuItReliabilities");
-        mnuItReliabilities.setAction(new DirectiveAction(new SetReliabilitiesDirective(), _context));
-        mnuSet.add(mnuItReliabilities);
-
-        JMenuItem mnuItStopBest = new JMenuItem();
-        mnuItStopBest.setName("mnuItStopBest");
-        mnuItStopBest.setAction(new DirectiveAction(new SetStopBestDirective(), _context));
-        mnuSet.add(mnuItStopBest);
-
-        JMenuItem mnuItTolerance = new JMenuItem();
-        mnuItTolerance.setName("mnuItTolerance");
-        mnuItTolerance.setAction(new DirectiveAction(new SetToleranceDirective(), _context));
-        mnuSet.add(mnuItTolerance);
-
-        JMenuItem mnuItVaryWt = new JMenuItem();
-        mnuItVaryWt.setName("mnuItVaryWt");
-        mnuItVaryWt.setAction(new DirectiveAction(new SetVaryWtDirective(), _context));
-        mnuSet.add(mnuItVaryWt);
+        mnuSettings.add(mnuSetBuilder.getMenu());
 
         // "Display" submenu
         MenuBuilder mnuDisplayBuilder = new MenuBuilder("mnuDisplay", _context);
@@ -1045,7 +942,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         mnuDisplayBuilder.startSubMenu("mnuEndIdentify", false);
         mnuDisplayBuilder.endSubMenu();
 
-        mnuDisplayBuilder.addMenuItem("mnuItImages", null, false);
+        mnuDisplayBuilder.addMenuItem("mnuItImages", false);
 
         mnuDisplayBuilder.startSubMenu("mnuInapplicables", true);
         mnuDisplayBuilder.addOnOffDirectiveInvocationMenuItem("mnuItInapplicablesOn", new DisplayInapplicablesDirectiveInvocation(), true);
@@ -1084,11 +981,11 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         MenuBuilder mnuDefineBuilder = new MenuBuilder("mnuDefine", _context);
         mnuDefineBuilder.addDirectiveMenuItem("mnuItDefineCharacters", new DefineCharactersDirective());
         mnuDefineBuilder.addDirectiveMenuItem("mnuItDefineTaxa", new DefineTaxaDirective());
-        mnuDefineBuilder.addMenuItem("mnuItDefineNames", null, false);
-        mnuDefineBuilder.addMenuItem("mnuItDefineButton", null, false);
-        mnuDefineBuilder.addMenuItem("mnuItDefineEndIdentify", null, false);
-        mnuDefineBuilder.addMenuItem("mnuItDefineInformation", null, false);
-        mnuDefineBuilder.addMenuItem("mnuItDefineInformation", null, false);
+        mnuDefineBuilder.addDirectiveMenuItem("mnuItDefineNames", new DefineNamesDirective());
+        mnuDefineBuilder.addMenuItem("mnuItDefineButton", false);
+        mnuDefineBuilder.addMenuItem("mnuItDefineEndIdentify", false);
+        mnuDefineBuilder.addDirectiveMenuItem("mnuItDefineInformation", new DefineInformationDirective());
+        mnuDefineBuilder.addMenuItem("mnuItDefineSubjects", false);
 
         mnuSettings.add(mnuDefineBuilder.getMenu());
 
@@ -1176,39 +1073,6 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     // ============== File menu actions ==============================
     @Action
-    public void mnuItNewDataSet() {
-        executeDirective(new NewDatasetDirective(), null);
-    }
-
-    @Action
-    public void mnuItPreferences() {
-
-    }
-
-    @Action
-    public void mnuItContents() {
-
-    }
-
-    @Action
-    public void mnuItFileCharacters() {
-        executeDirective(new FileCharactersDirective(), null);
-    }
-
-    @Action
-    public void mnuItFileTaxa() {
-        executeDirective(new FileTaxaDirective(), null);
-    }
-
-    @Action
-    public void mnuItComment() {
-    }
-
-    @Action
-    public void mnuItShow() {
-    }
-
-    @Action
     public void mnuItNormalMode() {
         toggleAdvancedMode();
     }
@@ -1243,10 +1107,6 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         ResourceMap resourceMap = getContext().getResourceMap(Intkey.class);
         resourceMap.injectComponents(getMainFrame());
         _rootPanel.revalidate();
-    }
-
-    @Action
-    public void mnuItEditIndex() {
     }
 
     @Action
@@ -2378,14 +2238,13 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     @Override
     public List<Object> promptForButtonDefinition() {
         List<Object> returnValues = new ArrayList<Object>();
-        
+
         DefineButtonDialog dlg = new DefineButtonDialog(getMainFrame(), true);
         show(dlg);
-        
+
         returnValues.add(dlg.isInsertSpace());
         returnValues.add(dlg.isRemoveAllButtons());
-        
-        
+
         return returnValues;
     }
 

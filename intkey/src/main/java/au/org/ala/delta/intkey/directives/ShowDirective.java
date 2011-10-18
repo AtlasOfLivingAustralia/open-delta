@@ -1,33 +1,27 @@
 package au.org.ala.delta.intkey.directives;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.ShowDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class ShowDirective extends NewIntkeyDirective {
+public class ShowDirective extends IntkeyDirective {
 
     public ShowDirective() {
         super("show");
     }
 
     @Override
-    protected List<IntkeyDirectiveArgument<?>> generateArgumentsList(IntkeyContext context) {
-        List<IntkeyDirectiveArgument<?>> arguments = new ArrayList<IntkeyDirectiveArgument<?>>();
-        arguments.add(new StringArgument("text", "Information", null));
-        return arguments;
-    }
+    protected IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
 
-    @Override
-    protected List<IntkeyDirectiveFlag> buildFlagsList() {
-        return null;
-    }
+        if (StringUtils.isEmpty(data)) {
+            data = context.getDirectivePopulator().promptForString("Enter text", null, StringUtils.join(getControlWords(), " ").toUpperCase());
+        }
 
-    @Override
-    protected IntkeyDirectiveInvocation buildCommandObject() {
-        return new ShowDirectiveInvocation();
+        ShowDirectiveInvocation invoc = new ShowDirectiveInvocation();
+        invoc.setText(data);
+        return invoc;
     }
 
 }

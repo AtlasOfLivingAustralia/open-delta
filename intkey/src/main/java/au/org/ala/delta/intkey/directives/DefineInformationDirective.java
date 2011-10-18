@@ -17,7 +17,7 @@ public class DefineInformationDirective extends NewIntkeyDirective {
     protected List<IntkeyDirectiveArgument<?>> generateArgumentsList(IntkeyContext context) {
         List<IntkeyDirectiveArgument<?>> arguments = new ArrayList<IntkeyDirectiveArgument<?>>();
         arguments.add(new StringArgument("subject", "Enter subject", null));
-        arguments.add(new StringArgument("subject", "Enter command string", null));
+        arguments.add(new StringArgument("command", "Enter command string", null));
         return arguments;
     }
 
