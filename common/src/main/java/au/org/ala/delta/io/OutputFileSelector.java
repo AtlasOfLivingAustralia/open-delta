@@ -49,6 +49,7 @@ public class OutputFileSelector {
 	private OutputFormat _outputFormat;
 	private int _outputFileIndex;
 	private PrintFile _indexFile;
+	private String _indexFileName;
 	
 	/** output when a new print file is created */
 	private String _printFileHeaderText;
@@ -334,8 +335,8 @@ public class OutputFileSelector {
 	}
 
 	public void setIndexOutputFile(String fileName) throws Exception {
-		fileName = FilenameUtils.separatorsToSystem(fileName);
-		PrintStream indexStream = createPrintStream(fileName);
+		_indexFileName = FilenameUtils.separatorsToSystem(fileName);
+		PrintStream indexStream = createPrintStream(_indexFileName);
 		_indexFile = new PrintFile(indexStream, _printWidth);
 	}
 	
@@ -352,5 +353,22 @@ public class OutputFileSelector {
 			_imageDirectory = "";
 		}
 		return _imageDirectory;
+	}
+	
+	public File getPrintFileAsFile() {
+		return fullPathOf(_printFileName);
+	}
+	
+	public File getIndexFileAsFile() {
+		return fullPathOf(_indexFileName);
+	}
+	
+	private File fullPathOf(String fileName) {
+		if (StringUtils.isEmpty(fileName)) {
+			return null;
+		}
+		String parentPath = _context.getFile().getParent();
+		fileName = FilenameUtils.concat(parentPath, prependOutputDirectory(fileName));
+		return new File(fileName);
 	}
 }

@@ -10,7 +10,6 @@ import org.apache.commons.lang.StringUtils;
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
-import au.org.ala.delta.model.DefaultDataSetFactory;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateAttribute;
@@ -64,36 +63,7 @@ public class NaturalLanguageTranslator extends AbstractDataSetTranslator {
         _attributeFormatter = attributeFormatter;
     }
 
-    @Override
-    public void beforeFirstItem() {
-        //_typeSetter.beforeFirstItem();
-
-        // Insert the implicit attributes section if required.
-        if (_context.getTranslateImplictValues()) {
-        	//translateImplicitValues();
-        }
-    }
-    
-    private void translateImplicitValues() {
-    	
-    	DefaultDataSetFactory factory = new DefaultDataSetFactory();
-    	Item fakeItem = factory.createItem(-1);
-    	for (int i=1; i<=_dataSet.getNumberOfCharacters(); i++) {
-    		Character character = _dataSet.getCharacter(i);
-    		if (character.getCharacterType().isMultistate()) {
-    			MultiStateCharacter multiStateChar = (MultiStateCharacter)character;
-    			if (multiStateChar.getUncodedImplicitState() > 0) {
-    				
-    				Attribute fake = factory.createAttribute(character, fakeItem);
-    				fakeItem.addAttribute(character, fake);
-    				
-    			}
-    		}
-    	}
-    	beforeItem(fakeItem);
-    }
-    
-
+  
     @Override
     public void beforeItem(Item item) {
 

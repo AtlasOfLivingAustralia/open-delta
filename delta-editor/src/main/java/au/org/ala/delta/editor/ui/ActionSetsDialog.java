@@ -1,7 +1,10 @@
 package au.org.ala.delta.editor.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Desktop;
 import java.awt.FlowLayout;
+import java.io.File;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -29,11 +32,14 @@ import org.apache.commons.lang.StringUtils;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
+import org.jdesktop.application.SingleFrameApplication;
 
+import au.org.ala.delta.confor.CONFOR;
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile.DirectiveType;
 import au.org.ala.delta.editor.ui.util.MessageDialogHelper;
+import au.org.ala.delta.ui.TextFileViewer;
 
 /**
  * Allows the user to see and execute CONFOR / DIST / KEY directives files.
@@ -166,29 +172,67 @@ public class ActionSetsDialog extends AbstractDeltaView {
 		if (file == null) {
 			return;
 		}
+
+		String name = file.getShortFileName();
+		String fileName = FilenameUtils.concat(_model.getDataSetPath(), name);
+		try {
 		String program = null;
 		switch (file.getType()) {
 		case CONFOR:
-			program = "CONFORQW";
+			runConfor(fileName);
 			break;
 		case INTKEY:
 			program = "INTKEY5";
+			runNatively(program, fileName);
 			break;
 		case DIST:
 			program = "DISTQW";
+			runNatively(program, fileName);
+			
 			break;
 		case KEY:
 			program = "KEYQW";
+			runNatively(program, fileName);
+			
 			break;
 		}
-		try {
-			String name = file.getShortFileName();
-			String fileName = FilenameUtils.concat(_model.getDataSetPath(), name);
-			Runtime.getRuntime().exec(new String[]{program, "\""+fileName+"\""});
+			
 		}
 		catch (Exception e) {
+			e.printStackTrace();
 			_messageHelper.errorRunningDirectiveFile(file.getShortFileName());
 		}
+	}
+	
+	private void runConfor(String fileName) throws Exception {
+		File fileOnFileSystem = new File(fileName);
+
+	    CONFOR confor = new CONFOR(fileOnFileSystem);
+	    if (confor.getIndexFile() != null) {
+	    	displayResults(confor.getIndexFile());
+	    }
+	    else if (confor.getPrintFile() != null) {
+	    	displayResults(confor.getPrintFile());
+	    }
+	}
+	
+	private void displayResults(File file) throws Exception {
+		if (Desktop.isDesktopSupported()) {
+			try {
+				Desktop.getDesktop().open(file);
+				return;
+			}
+			catch (IOException e) {}
+		}
+		
+		TextFileViewer viewer = new TextFileViewer(((SingleFrameApplication)Application.getInstance()).getMainFrame(), file);
+		viewer.setVisible(true);
+		
+	}
+	
+	
+	private void runNatively(String program, String fileName) throws Exception {
+		Runtime.getRuntime().exec(new String[]{program, "\""+fileName+"\""});
 	}
 	
 	@Action

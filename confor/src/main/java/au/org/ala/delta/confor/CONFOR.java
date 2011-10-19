@@ -25,6 +25,8 @@ import au.org.ala.delta.directives.ConforDirectiveParserObserver;
 
 public class CONFOR {
 
+	private DeltaContext _context;
+	
 	/**
 	 * @param args specifies the name of the input file to use.
 	 */
@@ -70,14 +72,30 @@ public class CONFOR {
 	}
 	
 	public CONFOR(File input) throws Exception {
-		DeltaContext context = new DeltaContext();
+		_context = new DeltaContext();
 		ConforDirectiveFileParser p = ConforDirectiveFileParser.createInstance();
-		ConforDirectiveParserObserver observer = new ConforDirectiveParserObserver(context); 
+		ConforDirectiveParserObserver observer = new ConforDirectiveParserObserver(_context); 
 		p.registerObserver(observer);
 		
-		p.parse(input, context);
+		p.parse(input, _context);
 		
 		observer.finishedProcessing();
+	}
+	
+	public File getPrintFile() {
+		return _context.getOutputFileSelector().getPrintFileAsFile();
+	}
+	
+	public File getIndexFile() {
+		return _context.getOutputFileSelector().getIndexFileAsFile();
+	}
+	
+	public File getListingFile() {
+		return null;
+	}
+	
+	public File getErrorFile() {
+		return null;
 	}
 
 }

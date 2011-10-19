@@ -32,7 +32,7 @@ public class ListingFile extends AbstractTextDirective {
 	public void process(DeltaContext context, DirectiveArguments args) throws Exception {
 		
 		String data = args.getFirstArgumentText();
-		String filename = data.trim() + ".new"; // TODO: kill the .new once stable...
+		String filename = data.trim();
 		File file = new File(context.getCurrentParsingContext().getFile().getParentFile(), filename);		
 		PrintStream stream = new PrintStream(file);
 		startFile(context, stream);
