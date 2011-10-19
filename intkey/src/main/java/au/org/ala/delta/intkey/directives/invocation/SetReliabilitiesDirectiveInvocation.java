@@ -21,8 +21,10 @@ public class SetReliabilitiesDirectiveInvocation extends IntkeyDirectiveInvocati
         // Clear the cached best characters then force the UI to update itself,
         // calculating the best
         // characters in the process
-        context.clearBestOrSeparateCharacters();
-        context.getUI().handleUpdateAll();
+        if (!context.isProcessingInputFile()) {
+            context.clearBestOrSeparateCharacters();
+            context.getUI().handleUpdateAll();
+        }
 
         return true;
     }

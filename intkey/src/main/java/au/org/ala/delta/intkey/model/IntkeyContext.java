@@ -42,7 +42,7 @@ import au.org.ala.delta.util.Pair;
 import au.org.ala.delta.util.Utils;
 
 /**
- * Model. Maintains global application state. THIS CLASS IS NOT THREAD SAFE
+ * Model. Maintains global application state.
  * 
  * @author Chris
  * 
@@ -248,7 +248,7 @@ public class IntkeyContext extends AbstractDeltaContext {
     /**
      * @return Is Intkey currently running in advanced mode?
      */
-    public boolean isAdvancedMode() {
+    public synchronized boolean isAdvancedMode() {
         return _isAdvancedMode;
     }
 
@@ -258,7 +258,7 @@ public class IntkeyContext extends AbstractDeltaContext {
      * @param isAdvancedMode
      *            true if Intkey is running in advanced mode
      */
-    public void setAdvancedMode(boolean isAdvancedMode) {
+    public synchronized void setAdvancedMode(boolean isAdvancedMode) {
         this._isAdvancedMode = isAdvancedMode;
     }
 
@@ -270,7 +270,7 @@ public class IntkeyContext extends AbstractDeltaContext {
      * @param fileName
      *            Path to the characters file
      */
-    public void setFileCharacters(File charactersFile) {
+    public synchronized void setFileCharacters(File charactersFile) {
         Logger.log("Setting characters file to: %s", charactersFile.getAbsolutePath());
 
         if (!charactersFile.exists()) {
@@ -303,7 +303,7 @@ public class IntkeyContext extends AbstractDeltaContext {
      * @param fileName
      *            Path to the taxa (items) file
      */
-    public void setFileTaxa(File taxaFile) {
+    public synchronized void setFileTaxa(File taxaFile) {
         Logger.log("Setting taxa file to: %s", taxaFile.getAbsolutePath());
 
         if (!taxaFile.exists()) {
@@ -327,7 +327,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         }
     }
 
-    public void processInputFile(File inputFile) {
+    public synchronized void processInputFile(File inputFile) {
         Logger.log("Reading in directives from file: %s", inputFile.getAbsolutePath());
 
         if (inputFile == null || !inputFile.exists()) {
@@ -396,7 +396,7 @@ public class IntkeyContext extends AbstractDeltaContext {
      *         tests need this so that they can block until the dataset is
      *         loaded.
      */
-    public SwingWorker<?, ?> newDataSetFile(File datasetFile) {
+    public synchronized SwingWorker<?, ?> newDataSetFile(File datasetFile) {
         Logger.log("Reading in directives from file: %s", datasetFile.getAbsolutePath());
 
         cleanupOldDataset();
@@ -421,7 +421,7 @@ public class IntkeyContext extends AbstractDeltaContext {
     }
 
     // TODO Does this belong here?
-    public void parseAndExecuteDirective(String command) {
+    public synchronized void parseAndExecuteDirective(String command) {
         try {
             _directiveParser.parse(new StringReader(command), this);
         } catch (Exception ex) {
@@ -438,7 +438,7 @@ public class IntkeyContext extends AbstractDeltaContext {
      *            a command pattern object representing the invocation of a
      *            directive
      */
-    public void executeDirective(IntkeyDirectiveInvocation invoc) {
+    public synchronized void executeDirective(IntkeyDirectiveInvocation invoc) {
         // record correct insertion index in case execution of directive results
         // in further directives being
         // run (such as in the case of the File Input directive).
@@ -462,7 +462,7 @@ public class IntkeyContext extends AbstractDeltaContext {
     /**
      * @return the currently loaded dataset
      */
-    public IntkeyDataset getDataset() {
+    public synchronized IntkeyDataset getDataset() {
         return _dataset;
     }
 
@@ -475,7 +475,7 @@ public class IntkeyContext extends AbstractDeltaContext {
      *            the character value
      */
     // TODO take a character number rather than a character object?
-    public void setValueForCharacter(au.org.ala.delta.model.Character ch, CharacterValue value) {
+    public synchronized void setValueForCharacter(au.org.ala.delta.model.Character ch, CharacterValue value) {
         Logger.log("Using character");
         _specimen.setValueForCharacter(ch, value);
     }
@@ -486,7 +486,7 @@ public class IntkeyContext extends AbstractDeltaContext {
      * @param ch
      */
     // TODO take a character number rather than a character object?
-    public void removeValueForCharacter(Character ch) {
+    public synchronized void removeValueForCharacter(Character ch) {
         Logger.log("Deleting character");
         _specimen.removeValueForCharacter(ch);
 
@@ -501,7 +501,7 @@ public class IntkeyContext extends AbstractDeltaContext {
      * Called at the end of a series of updates to the current specimen to
      * inform the context that all updates have been performed
      */
-    public void specimenUpdateComplete() {
+    public synchronized void specimenUpdateComplete() {
         // the specimen has been updated so the currently cached best characters
         // are no longer
         // valid
@@ -528,7 +528,7 @@ public class IntkeyContext extends AbstractDeltaContext {
             _tolerance = minDiff;
         }
 
-        _appUI.handleUpdateAll();
+        updateUI();
     }
 
     /**
@@ -541,7 +541,7 @@ public class IntkeyContext extends AbstractDeltaContext {
      *            The set of characters to be represented by the keyword
      */
     // TODO check character number is a valid character number
-    public void addCharacterKeyword(String keyword, Set<Integer> characterNumbers) {
+    public synchronized void addCharacterKeyword(String keyword, Set<Integer> characterNumbers) {
         if (_dataset == null) {
             throw new IllegalStateException("Cannot define a character keyword if no dataset loaded");
         }
@@ -568,7 +568,7 @@ public class IntkeyContext extends AbstractDeltaContext {
      * @return the list of characters that are represented by the supplied
      *         keyword
      */
-    public List<au.org.ala.delta.model.Character> getCharactersForKeyword(String keyword) {
+    public synchronized List<au.org.ala.delta.model.Character> getCharactersForKeyword(String keyword) {
         keyword = keyword.toLowerCase();
 
         if (keyword.equals(CHARACTER_KEYWORD_ALL)) {
@@ -631,7 +631,7 @@ public class IntkeyContext extends AbstractDeltaContext {
      *         keyords "all" and "available", as well as "used" if any
      *         characters have been used.
      */
-    public List<String> getCharacterKeywords() {
+    public synchronized List<String> getCharacterKeywords() {
         List<String> retList = new ArrayList<String>();
         retList.add(CHARACTER_KEYWORD_ALL);
 
@@ -646,7 +646,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         return retList;
     }
 
-    public void addTaxaKeyword(String keyword, Set<Integer> taxaNumbers) {
+    public synchronized void addTaxaKeyword(String keyword, Set<Integer> taxaNumbers) {
         if (_dataset == null) {
             throw new IllegalStateException("Cannot define a taxa keyword if no dataset loaded");
         }
@@ -665,7 +665,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         _userDefinedTaxonKeywords.put(keyword, taxaNumbers);
     }
 
-    public List<Item> getTaxaForKeyword(String keyword) {
+    public synchronized List<Item> getTaxaForKeyword(String keyword) {
         List<Item> retList = new ArrayList<Item>();
 
         keyword = keyword.toLowerCase();
@@ -727,7 +727,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         return retList;
     }
 
-    public List<String> getTaxaKeywords() {
+    public synchronized List<String> getTaxaKeywords() {
         List<String> retList = new ArrayList<String>();
         retList.add(TAXON_KEYWORD_ALL);
 
@@ -765,14 +765,14 @@ public class IntkeyContext extends AbstractDeltaContext {
      * @return A list of command pattern objects representing all directives
      *         that have been executed
      */
-    public List<IntkeyDirectiveInvocation> getExecutedDirectives() {
+    public synchronized List<IntkeyDirectiveInvocation> getExecutedDirectives() {
         return new ArrayList<IntkeyDirectiveInvocation>(_executedDirectives);
     }
 
     /**
      * Resets the context state to prepare for a new identification
      */
-    public void restartIdentification() {
+    public synchronized void restartIdentification() {
         // TODO need to account for fixed characters etc here.
 
         if (_dataset != null) {
@@ -802,14 +802,14 @@ public class IntkeyContext extends AbstractDeltaContext {
     /**
      * @return The current specimen
      */
-    public Specimen getSpecimen() {
+    public synchronized Specimen getSpecimen() {
         return _specimen;
     }
 
     /**
      * @return true if an input file is current being processed
      */
-    public boolean isProcessingInputFile() {
+    public synchronized boolean isProcessingInputFile() {
         return _processingInputFile;
     }
 
@@ -818,7 +818,7 @@ public class IntkeyContext extends AbstractDeltaContext {
      * 
      * @param processing
      */
-    public void setProcessingInputFile(boolean processing) {
+    public synchronized void setProcessingInputFile(boolean processing) {
         _processingInputFile = processing;
     }
 
@@ -826,7 +826,7 @@ public class IntkeyContext extends AbstractDeltaContext {
      * @return The current error tolerance. This is used when determining which
      *         taxa to eliminate following characters being used.
      */
-    public int getTolerance() {
+    public synchronized int getTolerance() {
         return _tolerance;
     }
 
@@ -836,17 +836,17 @@ public class IntkeyContext extends AbstractDeltaContext {
      * 
      * @param toleranceValue
      */
-    public void setTolerance(int toleranceValue) {
+    public synchronized void setTolerance(int toleranceValue) {
         _tolerance = toleranceValue;
         if (_dataset != null) {
-            _appUI.handleUpdateAll();
+            updateUI();
         }
     }
 
     /**
      * @return The current vary weight. This is used by the BEST algorithm
      */
-    public double getVaryWeight() {
+    public synchronized double getVaryWeight() {
         return _varyWeight;
     }
 
@@ -856,7 +856,7 @@ public class IntkeyContext extends AbstractDeltaContext {
      * @param varyWeight
      *            The current vary weight
      */
-    public void setVaryWeight(double varyWeight) {
+    public synchronized void setVaryWeight(double varyWeight) {
         _varyWeight = varyWeight;
     }
 
@@ -866,7 +866,7 @@ public class IntkeyContext extends AbstractDeltaContext {
      * 
      * @return the current rbase value
      */
-    public double getRBase() {
+    public synchronized double getRBase() {
         return _rbase;
     }
 
@@ -877,15 +877,16 @@ public class IntkeyContext extends AbstractDeltaContext {
      * @param rbase
      *            the current rbase value
      */
-    public void setRBase(double rbase) {
+    public synchronized void setRBase(double rbase) {
         _rbase = rbase;
+
     }
 
-    public int getDiagLevel() {
+    public synchronized int getDiagLevel() {
         return _diagLevel;
     }
 
-    public void setDiagLevel(int diagLevel) {
+    public synchronized void setDiagLevel(int diagLevel) {
         this._diagLevel = diagLevel;
     }
 
@@ -893,7 +894,7 @@ public class IntkeyContext extends AbstractDeltaContext {
      * @return a reference to the current taxa file, or null if one has not been
      *         set
      */
-    public File getTaxaFile() {
+    public synchronized File getTaxaFile() {
         return _taxaFile;
     }
 
@@ -901,7 +902,7 @@ public class IntkeyContext extends AbstractDeltaContext {
      * @return a reference to the current characters file, or null if one has
      *         not been set
      */
-    public File getCharactersFile() {
+    public synchronized File getCharactersFile() {
         return _charactersFile;
     }
 
@@ -909,11 +910,11 @@ public class IntkeyContext extends AbstractDeltaContext {
      * @return a reference to the most recently loaded dataset initialization
      *         file, or null if no such files have been loaded
      */
-    public File getDatasetStartupFile() {
+    public synchronized File getDatasetStartupFile() {
         return _datasetStartupFile;
     }
 
-    public File getDatasetDirectory() {
+    public synchronized File getDatasetDirectory() {
         if (_initializationFile != null) {
             return _initializationFile.getParentFile();
         } else if (_charactersFile != null) {
@@ -929,48 +930,48 @@ public class IntkeyContext extends AbstractDeltaContext {
      * @return The current character order being used to list available
      *         characters in the application
      */
-    public IntkeyCharacterOrder getCharacterOrder() {
+    public synchronized IntkeyCharacterOrder getCharacterOrder() {
         return _characterOrder;
     }
 
-    public void setCharacterOrderBest() {
+    public synchronized void setCharacterOrderBest() {
         this._characterOrder = IntkeyCharacterOrder.BEST;
         this._taxonToSeparate = -1;
         _bestOrSeparateCharacters = null;
         if (_dataset != null) {
-            _appUI.handleUpdateAll();
+            updateUI();
         }
     }
 
-    public void setCharacterOrderNatural() {
+    public synchronized void setCharacterOrderNatural() {
         this._characterOrder = IntkeyCharacterOrder.NATURAL;
         this._taxonToSeparate = -1;
         if (_dataset != null) {
-            _appUI.handleUpdateAll();
+            updateUI();
         }
     }
 
-    public void setCharacterOrderSeparate(int taxonToSeparate) {
+    public synchronized void setCharacterOrderSeparate(int taxonToSeparate) {
         this._characterOrder = IntkeyCharacterOrder.SEPARATE;
         this._taxonToSeparate = taxonToSeparate;
         _bestOrSeparateCharacters = null;
         if (_dataset != null) {
-            _appUI.handleUpdateAll();
+            updateUI();
         }
     }
 
-    public int getTaxonToSeparate() {
+    public synchronized int getTaxonToSeparate() {
         return _taxonToSeparate;
     }
 
-    public void setTaxonToSeparate(int taxonToSeparate) {
+    public synchronized void setTaxonToSeparate(int taxonToSeparate) {
         this._taxonToSeparate = taxonToSeparate;
     }
 
     /**
      * @return The current best characters if they are cached
      */
-    public LinkedHashMap<Character, Double> getBestOrSeparateCharacters() {
+    public synchronized LinkedHashMap<Character, Double> getBestOrSeparateCharacters() {
         return _bestOrSeparateCharacters;
     }
 
@@ -978,7 +979,7 @@ public class IntkeyContext extends AbstractDeltaContext {
      * Clear the cached best characters. Used to force the UI to recalculate the
      * best characters next time it needs them
      */
-    public void clearBestOrSeparateCharacters() {
+    public synchronized void clearBestOrSeparateCharacters() {
         _bestOrSeparateCharacters = null;
     }
 
@@ -986,7 +987,7 @@ public class IntkeyContext extends AbstractDeltaContext {
      * Calculates the best characters using the BEST algorithm. This method will
      * block the calling thread while the calculation is performed
      */
-    public void calculateBestOrSeparateCharacters() {
+    public synchronized void calculateBestOrSeparateCharacters() {
         if (_characterOrder == IntkeyCharacterOrder.BEST) {
             _bestOrSeparateCharacters = SortingUtils.orderBest(IntkeyContext.this);
         } else if (_characterOrder == IntkeyCharacterOrder.SEPARATE) {
@@ -994,19 +995,19 @@ public class IntkeyContext extends AbstractDeltaContext {
         }
     }
 
-    public boolean getMatchInapplicables() {
+    public synchronized boolean getMatchInapplicables() {
         return _matchInapplicables;
     }
 
-    public boolean getMatchUnkowns() {
+    public synchronized boolean getMatchUnkowns() {
         return _matchUnknowns;
     }
 
-    public MatchType getMatchType() {
+    public synchronized MatchType getMatchType() {
         return _matchType;
     }
 
-    public void setMatchSettings(boolean matchUnknowns, boolean matchInapplicables, MatchType matchType) {
+    public synchronized void setMatchSettings(boolean matchUnknowns, boolean matchInapplicables, MatchType matchType) {
         _matchType = matchType;
 
         // A match type of EXACT implies that inapplicables and unknowns should
@@ -1029,19 +1030,19 @@ public class IntkeyContext extends AbstractDeltaContext {
     private void updateSpecimenMatchSettings() {
         Specimen newSpecimen = new Specimen(_dataset, _matchInapplicables, _matchUnknowns, _matchType, _specimen);
         _specimen = newSpecimen;
-        _appUI.handleUpdateAll();
+        updateUI();
     }
 
-    public DiagType getDiagType() {
+    public synchronized DiagType getDiagType() {
         return _diagType;
     }
 
-    public void setDiagType(DiagType diagType) {
+    public synchronized void setDiagType(DiagType diagType) {
         this._diagType = diagType;
     }
 
     // Returns included characters ordered by character number
-    public List<Character> getIncludedCharacters() {
+    public synchronized List<Character> getIncludedCharacters() {
         List<Character> retList = new ArrayList<Character>();
 
         for (int charNum : _includedCharacters) {
@@ -1054,7 +1055,7 @@ public class IntkeyContext extends AbstractDeltaContext {
     }
 
     // Returns included taxa ordered by taxon number
-    public List<Item> getIncludedTaxa() {
+    public synchronized List<Item> getIncludedTaxa() {
         List<Item> retList = new ArrayList<Item>();
 
         for (int charNum : _includedTaxa) {
@@ -1066,7 +1067,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         return retList;
     }
 
-    public void setIncludedCharacters(Set<Integer> includedCharacters) {
+    public synchronized void setIncludedCharacters(Set<Integer> includedCharacters) {
         if (includedCharacters == null || includedCharacters.isEmpty()) {
             throw new IllegalArgumentException("Cannot exclude all characters");
         }
@@ -1080,11 +1081,11 @@ public class IntkeyContext extends AbstractDeltaContext {
         _bestOrSeparateCharacters = null;
 
         if (_dataset != null) {
-            _appUI.handleUpdateAll();
+            updateUI();
         }
     }
 
-    public void setIncludedTaxa(Set<Integer> includedTaxa) {
+    public synchronized void setIncludedTaxa(Set<Integer> includedTaxa) {
         if (includedTaxa == null || includedTaxa.isEmpty()) {
             throw new IllegalArgumentException("Cannot exclude all taxa");
         }
@@ -1097,12 +1098,12 @@ public class IntkeyContext extends AbstractDeltaContext {
         _bestOrSeparateCharacters = null;
 
         if (_dataset != null) {
-            _appUI.handleUpdateAll();
+            updateUI();
         }
     }
 
     // Use all available characters aside from those specified.
-    public void setExcludedCharacters(Set<Integer> excludedCharacters) {
+    public synchronized void setExcludedCharacters(Set<Integer> excludedCharacters) {
         Set<Integer> includedCharacters = new HashSet<Integer>();
         for (int i = 1; i < _dataset.getNumberOfCharacters() + 1; i++) {
             includedCharacters.add(i);
@@ -1114,7 +1115,7 @@ public class IntkeyContext extends AbstractDeltaContext {
     }
 
     // Use all available taxa aside from those specified.
-    public void setExcludedTaxa(Set<Integer> excludedTaxa) {
+    public synchronized void setExcludedTaxa(Set<Integer> excludedTaxa) {
         Set<Integer> includedTaxa = new HashSet<Integer>();
         for (int i = 1; i < _dataset.getNumberOfTaxa() + 1; i++) {
             includedTaxa.add(i);
@@ -1127,7 +1128,7 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     // The currently included characters minus the characters
     // that have values set in the specimen
-    public List<Character> getAvailableCharacters() {
+    public synchronized List<Character> getAvailableCharacters() {
         List<Character> retList = getIncludedCharacters();
 
         // Used characters are not available
@@ -1139,17 +1140,17 @@ public class IntkeyContext extends AbstractDeltaContext {
         return retList;
     }
 
-    public List<Character> getUsedCharacters() {
+    public synchronized List<Character> getUsedCharacters() {
         return _specimen.getUsedCharacters();
     }
 
-    public List<Item> getAvailableTaxa() {
+    public synchronized List<Item> getAvailableTaxa() {
         List<Item> availableTaxa = getIncludedTaxa();
         availableTaxa.removeAll(getEliminatedTaxa());
         return availableTaxa;
     }
 
-    public List<Item> getEliminatedTaxa() {
+    public synchronized List<Item> getEliminatedTaxa() {
         Map<Item, Set<Character>> taxaDifferingCharacters = _specimen.getTaxonDifferences();
 
         List<Item> includedTaxa = getIncludedTaxa();
@@ -1191,7 +1192,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         return eliminatedTaxa;
     }
 
-    public ImageSettings getImageSettings() {
+    public synchronized ImageSettings getImageSettings() {
         ImageSettings imageSettings = new ImageSettings();
 
         List<FontInfo> overlayFonts = _dataset.getOverlayFonts();
@@ -1220,7 +1221,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         return imageSettings;
     }
 
-    public ResourceSettings getInfoSettings() {
+    public synchronized ResourceSettings getInfoSettings() {
         ResourceSettings infoSettings = new ResourceSettings();
 
         infoSettings.setDataSetPath(getDatasetDirectory().getAbsolutePath());
@@ -1230,19 +1231,19 @@ public class IntkeyContext extends AbstractDeltaContext {
         return infoSettings;
     }
 
-    public void setImagePaths(List<String> imagePaths) {
+    public synchronized void setImagePaths(List<String> imagePaths) {
         _imagePathLocations = new ArrayList<String>(imagePaths);
     }
 
-    public void setInfoPaths(List<String> infoPaths) {
+    public synchronized void setInfoPaths(List<String> infoPaths) {
         _infoPathLocations = new ArrayList<String>(infoPaths);
     }
 
-    public void addTaxonInformationDialogCommand(String subject, String command) {
+    public synchronized void addTaxonInformationDialogCommand(String subject, String command) {
         _taxonInformationDialogCommands.add(new Pair<String, String>(subject, command));
     }
 
-    public List<Pair<String, String>> getTaxonInformationDialogCommands() {
+    public synchronized List<Pair<String, String>> getTaxonInformationDialogCommands() {
         return new ArrayList<Pair<String, String>>(_taxonInformationDialogCommands);
     }
 
@@ -1270,7 +1271,7 @@ public class IntkeyContext extends AbstractDeltaContext {
     /**
      * Called prior to application shutdown.
      */
-    public void cleanupForShutdown() {
+    public synchronized void cleanupForShutdown() {
         cleanupOldDataset();
         if (_logFileWriter != null) {
             _logFileWriter.flush();
@@ -1288,23 +1289,23 @@ public class IntkeyContext extends AbstractDeltaContext {
         }
     }
 
-    public IntkeyUI getUI() {
+    public synchronized IntkeyUI getUI() {
         return _appUI;
     }
 
-    public StartupFileData getStartupFileData() {
+    public synchronized StartupFileData getStartupFileData() {
         return _startupFileData;
     }
 
-    public DirectivePopulator getDirectivePopulator() {
+    public synchronized DirectivePopulator getDirectivePopulator() {
         return _directivePopulator;
     }
 
-    public boolean charactersFixed() {
+    public synchronized boolean charactersFixed() {
         return _charactersFixed;
     }
 
-    public void setCharactersFixed(boolean charactersFixed) {
+    public synchronized void setCharactersFixed(boolean charactersFixed) {
         if (charactersFixed != this._charactersFixed) {
             this._charactersFixed = charactersFixed;
             if (_charactersFixed) {
@@ -1323,19 +1324,19 @@ public class IntkeyContext extends AbstractDeltaContext {
      * @return A list of character ids for the characters that have been fixed,
      *         or null if characters have not been fixed.
      */
-    public List<Integer> getFixedCharactersList() {
+    public synchronized List<Integer> getFixedCharactersList() {
         return _fixedCharactersList;
     }
 
-    public boolean isAutoTolerance() {
+    public synchronized boolean isAutoTolerance() {
         return _autoTolerance;
     }
 
-    public void setAutoTolerance(boolean autoTolerance) {
+    public synchronized void setAutoTolerance(boolean autoTolerance) {
         this._autoTolerance = autoTolerance;
     }
 
-    public Set<Character> getExactCharacters() {
+    public synchronized Set<Character> getExactCharacters() {
         Set<Character> exactCharacters = new HashSet<Character>();
         for (int charNum : _exactCharactersSet) {
             exactCharacters.add(_dataset.getCharacter(charNum));
@@ -1343,7 +1344,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         return exactCharacters;
     }
 
-    public void setExactCharacters(Set<Integer> characters) {
+    public synchronized void setExactCharacters(Set<Integer> characters) {
         _exactCharactersSet = new HashSet<Integer>(characters);
     }
 
@@ -1351,49 +1352,49 @@ public class IntkeyContext extends AbstractDeltaContext {
         return _exactCharactersSet.contains(ch.getCharacterId());
     }
 
-    public int getStopBest() {
+    public synchronized int getStopBest() {
         return _stopBest;
     }
 
-    public void setStopBest(int stopBest) {
+    public synchronized void setStopBest(int stopBest) {
         this._stopBest = stopBest;
     }
 
-    public boolean displayNumbering() {
+    public synchronized boolean displayNumbering() {
         return _displayNumbering;
     }
 
-    public void setDisplayNumbering(boolean displayNumbering) {
+    public synchronized void setDisplayNumbering(boolean displayNumbering) {
         this._displayNumbering = displayNumbering;
-        _appUI.handleUpdateAll();
+        updateUI();
     }
 
-    public boolean displayInapplicables() {
+    public synchronized boolean displayInapplicables() {
         return _displayInapplicables;
     }
 
-    public void setDisplayInapplicables(boolean displayInapplicables) {
+    public synchronized void setDisplayInapplicables(boolean displayInapplicables) {
         this._displayInapplicables = displayInapplicables;
     }
 
-    public boolean displayUnknowns() {
+    public synchronized boolean displayUnknowns() {
         return _displayUnknowns;
     }
 
-    public void setDisplayUnknowns(boolean displayUnknowns) {
+    public synchronized void setDisplayUnknowns(boolean displayUnknowns) {
         this._displayUnknowns = displayUnknowns;
     }
 
-    public boolean displayComments() {
+    public synchronized boolean displayComments() {
         return _displayComments;
     }
 
-    public void setDisplayComments(boolean displayComments) {
+    public synchronized void setDisplayComments(boolean displayComments) {
         this._displayComments = displayComments;
-        _appUI.handleUpdateAll();
+        updateUI();
     }
 
-    public void setLogFile(File logFile) throws IOException {
+    public synchronized void setLogFile(File logFile) throws IOException {
         if (_logFileWriter != null) {
             _logFileWriter.flush();
             _logFileWriter.close();
@@ -1405,7 +1406,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         _logFileWriter.append(_logCache.toString());
     }
 
-    public void setJournalFile(File journalFile) throws IOException {
+    public synchronized void setJournalFile(File journalFile) throws IOException {
         if (_journalFileWriter != null) {
             _journalFileWriter.flush();
             _journalFileWriter.close();
@@ -1417,7 +1418,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         _journalFileWriter.append(_journalCache.toString());
     }
 
-    public void newOutputFile(File outputFile) throws IOException {
+    public synchronized void newOutputFile(File outputFile) throws IOException {
         if (_currentOutputFile != null && !_currentOutputFile.equals(outputFile)) {
             if (_currentOutputFile != null) {
                 closeOutputFile(_currentOutputFile);
@@ -1428,7 +1429,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         }
     }
 
-    public void closeOutputFile(File outputFile) {
+    public synchronized void closeOutputFile(File outputFile) {
         if (_currentOutputFile != null && _currentOutputFile.equals(outputFile)) {
             _currentOutputFileWriter.flush();
             _currentOutputFileWriter.close();
@@ -1436,7 +1437,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         }
     }
 
-    public List<File> getOutputFiles() {
+    public synchronized List<File> getOutputFiles() {
         // List<File> fileList = new
         // ArrayList<File>(_outputFileWriters.keySet());
         // Collections.sort(fileList);
@@ -1449,7 +1450,7 @@ public class IntkeyContext extends AbstractDeltaContext {
      * 
      * @param text
      */
-    public void appendToOutputFile(String text) {
+    public synchronized void appendToOutputFile(String text) {
         if (_currentOutputFile == null) {
             throw new IllegalStateException("No output file is open");
         }
@@ -1463,7 +1464,7 @@ public class IntkeyContext extends AbstractDeltaContext {
      * 
      * @param text
      */
-    public void appendToLog(String text) {
+    public synchronized void appendToLog(String text) {
         if (_logFileWriter != null) {
             _logFileWriter.println(text);
             _logFileWriter.flush();
@@ -1475,7 +1476,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         _appUI.updateLog();
     }
 
-    public void appendToJournal(String text) {
+    public synchronized void appendToJournal(String text) {
         if (_journalFileWriter != null) {
             _journalFileWriter.println(text);
             _journalFileWriter.flush();
@@ -1485,8 +1486,14 @@ public class IntkeyContext extends AbstractDeltaContext {
         _journalCache.append("\n");
     }
 
-    public String getLogText() {
+    public synchronized String getLogText() {
         return _logCache.toString();
+    }
+
+    private void updateUI() {
+        if (!_processingInputFile) {
+            _appUI.handleUpdateAll();
+        }
     }
 
     private class StartupFileLoader extends SwingWorker<Void, String> {
