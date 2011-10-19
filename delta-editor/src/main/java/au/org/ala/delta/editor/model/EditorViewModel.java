@@ -73,5 +73,9 @@ public interface EditorViewModel extends ObservableDeltaDataSet {
 	public Character firstCharacter(Predicate<Character> predicate, int startIndex, SearchDirection direction);
 	
 	public Item firstItem(Predicate<Item> predicate, int startIndex, SearchDirection direction);
+	
+	public String getExportPath();
+
+	public void setExportPath(String path);
 
 }

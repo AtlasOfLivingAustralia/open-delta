@@ -77,6 +77,7 @@ public class ActionSetsDialog extends AbstractDeltaView {
 		_actions = Application.getInstance().getContext().getActionMap(this);
 		ActionMap editorActions = Application.getInstance().getContext().getActionMap();
 		_actions.put("viewDirectivesEditor", editorActions.get("viewDirectivesEditor"));
+		_actions.put("exportDirectives", editorActions.get("exportDirectives"));
 		_messageHelper = new MessageDialogHelper();
 		createUI();
 		addEventHandlers();
@@ -168,13 +169,16 @@ public class ActionSetsDialog extends AbstractDeltaView {
 	
 	@Action
 	public void runDirectiveFile() {
+		
+		String exportPath = checkExport();
+		
 		DirectiveFile file = getSelectedFile();	
 		if (file == null) {
 			return;
 		}
 
 		String name = file.getShortFileName();
-		String fileName = FilenameUtils.concat(_model.getDataSetPath(), name);
+		String fileName = FilenameUtils.concat(exportPath, name);
 		try {
 		String program = null;
 		switch (file.getType()) {
@@ -202,6 +206,21 @@ public class ActionSetsDialog extends AbstractDeltaView {
 			e.printStackTrace();
 			_messageHelper.errorRunningDirectiveFile(file.getShortFileName());
 		}
+	}
+	
+	private String checkExport() {
+		
+		if (StringUtils.isEmpty(_model.getExportPath())) {
+			boolean result = _messageHelper.confirmExport();
+			if (result) {
+				_actions.get("exportDirectives").actionPerformed(null);
+			}
+		}
+		String exportPath = _model.getExportPath();
+		if (StringUtils.isEmpty(exportPath)) {
+			exportPath = _model.getDataSetPath();
+		}
+		return exportPath;
 	}
 	
 	private void runConfor(String fileName) throws Exception {

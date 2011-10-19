@@ -59,7 +59,7 @@ public class ExportController {
 		if (_exportDialog.proceed()) {
 			List<DirectiveFileInfo> files = _exportModel.getSelectedFiles();
 			File selectedDirectory = _exportModel.getCurrentDirectory();
-
+			_model.setExportPath(selectedDirectory.getAbsolutePath());
 			doExport(selectedDirectory, files);
 		}
 	}

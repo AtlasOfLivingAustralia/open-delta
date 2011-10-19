@@ -161,4 +161,11 @@ public class MessageDialogHelper {
 		String message = _messages.getString("circularDependencyError.message");
 		JOptionPane.showMessageDialog(_dialogParent, message, title, JOptionPane.ERROR_MESSAGE);
 	}
+
+	public boolean confirmExport() {
+		String title = _messages.getString("confirmExport.title");
+		String message = _messages.getString("confirmExport.message");
+		int result = au.org.ala.delta.ui.MessageDialogHelper.showConfirmDialog(_dialogParent, title, message, 50);
+		return result == JOptionPane.OK_OPTION;
+	}
 }

@@ -192,4 +192,15 @@ public class DeltaViewModel extends DataSetWrapper implements EditorViewModel, P
 		return _editorDataModel.firstItem(predicate, startIndex, direction);
 	}
 
+	@Override
+	public String getExportPath() {
+		return _editorDataModel.getExportPath();
+	}
+
+	@Override
+	public void setExportPath(String path) {
+		_editorDataModel.setExportPath(path);
+	}
+	
+	
 }

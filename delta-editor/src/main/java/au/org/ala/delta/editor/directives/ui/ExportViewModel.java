@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 import au.org.ala.delta.editor.directives.DirectiveFileInfo;
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile;
@@ -45,6 +47,10 @@ public class ExportViewModel extends ImportExportViewModel {
 			}
 		}
 		setIncludedDirectivesFiles(files);
-		setCurrentDirectory(new File(model.getDataSetPath()));
+		String exportPath = model.getExportPath();
+		if (StringUtils.isEmpty(exportPath)) {
+			exportPath = model.getDataSetPath();
+		}
+		setCurrentDirectory(new File(exportPath));
 	}
 }

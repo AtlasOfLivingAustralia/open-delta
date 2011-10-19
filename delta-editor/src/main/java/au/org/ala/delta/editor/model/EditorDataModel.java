@@ -52,6 +52,9 @@ public class EditorDataModel extends DataSetWrapper implements EditorViewModel, 
 	private PropertyChangeSupport _propertyChangeSupport;
 
 	private List<PreferenceChangeListener> _preferenceChangeListeners;
+	
+	/** The path at which the last data set export was done */
+	private String _exportPath;
 
 	/** Keeps track of whether this data set has been modified */
 	private boolean _modified;
@@ -393,4 +396,14 @@ public class EditorDataModel extends DataSetWrapper implements EditorViewModel, 
 	}
 	
 
+	@Override
+	public String getExportPath() {
+		
+		return _exportPath;
+	}
+
+	@Override
+	public void setExportPath(String path) {
+		_exportPath = path;
+	}
 }
