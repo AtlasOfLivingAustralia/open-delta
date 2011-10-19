@@ -16,7 +16,7 @@ public class CommentDirective extends NewIntkeyDirective {
     @Override
     protected List<IntkeyDirectiveArgument<?>> generateArgumentsList(IntkeyContext context) {
         List<IntkeyDirectiveArgument<?>> arguments = new ArrayList<IntkeyDirectiveArgument<?>>();
-        arguments.add(new StringArgument("text", "Enter text", null));
+        arguments.add(new StringArgument("text", "Enter text", null, false));
         return arguments;
     }
 

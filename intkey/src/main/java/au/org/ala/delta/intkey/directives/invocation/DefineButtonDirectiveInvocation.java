@@ -2,6 +2,8 @@ package au.org.ala.delta.intkey.directives.invocation;
 
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
 public class DefineButtonDirectiveInvocation extends IntkeyDirectiveInvocation {
@@ -31,6 +33,31 @@ public class DefineButtonDirectiveInvocation extends IntkeyDirectiveInvocation {
     public boolean execute(IntkeyContext context) {
         context.getUI().addToolbarButton(_displayAdvancedOnly, _displayNormalOnly, _inactiveUnlessCharactersUsed, _imageFileName, _directivesToRun, _shortHelp, _fullHelp);
         return true;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder stringRepresentationBuilder = new StringBuilder();
+        stringRepresentationBuilder.append("DEFINE BUTTON ");
+
+        if (_displayAdvancedOnly) {
+            stringRepresentationBuilder.append("/A ");
+        }
+
+        if (_displayNormalOnly) {
+            stringRepresentationBuilder.append("/N ");
+        }
+
+        if (_inactiveUnlessCharactersUsed) {
+            stringRepresentationBuilder.append("/U ");
+        }
+
+        stringRepresentationBuilder.append(String.format("\"%s\" ", _imageFileName));
+        stringRepresentationBuilder.append(String.format("\"%s\" ", StringUtils.join(_directivesToRun, ";")));
+        stringRepresentationBuilder.append(String.format("\"%s\" ", _shortHelp));
+        stringRepresentationBuilder.append(String.format("\"%s\" ", _fullHelp));
+
+        return stringRepresentationBuilder.toString();
     }
 
 }

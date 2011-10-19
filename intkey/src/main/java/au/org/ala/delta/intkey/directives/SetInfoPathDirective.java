@@ -16,7 +16,7 @@ public class SetInfoPathDirective extends NewIntkeyDirective {
     @Override
     protected List<IntkeyDirectiveArgument<?>> generateArgumentsList(IntkeyContext context) {
         List<IntkeyDirectiveArgument<?>> arguments = new ArrayList<IntkeyDirectiveArgument<?>>();
-        arguments.add(new StringArgument("infoPaths", "Enter the path specification for information files", null));
+        arguments.add(new StringArgument("infoPaths", "Enter the path specification for information files", null, false));
         return arguments;
     }
 

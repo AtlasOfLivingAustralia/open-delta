@@ -70,6 +70,7 @@ import au.org.ala.delta.intkey.directives.ChangeDirective;
 import au.org.ala.delta.intkey.directives.CharactersDirective;
 import au.org.ala.delta.intkey.directives.CommentDirective;
 import au.org.ala.delta.intkey.directives.ContentsDirective;
+import au.org.ala.delta.intkey.directives.DefineButtonDirective;
 import au.org.ala.delta.intkey.directives.DefineCharactersDirective;
 import au.org.ala.delta.intkey.directives.DefineInformationDirective;
 import au.org.ala.delta.intkey.directives.DefineNamesDirective;
@@ -982,7 +983,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         mnuDefineBuilder.addDirectiveMenuItem("mnuItDefineCharacters", new DefineCharactersDirective());
         mnuDefineBuilder.addDirectiveMenuItem("mnuItDefineTaxa", new DefineTaxaDirective());
         mnuDefineBuilder.addDirectiveMenuItem("mnuItDefineNames", new DefineNamesDirective());
-        mnuDefineBuilder.addMenuItem("mnuItDefineButton", false);
+        mnuDefineBuilder.addDirectiveMenuItem("mnuItDefineButton", new DefineButtonDirective());
         mnuDefineBuilder.addMenuItem("mnuItDefineEndIdentify", false);
         mnuDefineBuilder.addDirectiveMenuItem("mnuItDefineInformation", new DefineInformationDirective());
         mnuDefineBuilder.addMenuItem("mnuItDefineSubjects", false);
@@ -1103,6 +1104,10 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         // powers
         // are only shown in best ordering when in advanced mode.
         updateAvailableCharacters();
+
+        // Update button toolbar - some buttons are only shown in normal or
+        // advanced mode
+        updateDynamicButtons();
 
         ResourceMap resourceMap = getContext().getResourceMap(Intkey.class);
         resourceMap.injectComponents(getMainFrame());
@@ -1802,8 +1807,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         }
 
         JButton button = new JButton(icon);
-        // button.setToolTipText(shortHelp);
-        button.setToolTipText(commands.toString());
+        button.setToolTipText(shortHelp);
         button.setMargin(new Insets(0, 0, 0, 0));
         _pnlDynamicButtons.add(button);
 
@@ -2242,10 +2246,21 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         DefineButtonDialog dlg = new DefineButtonDialog(getMainFrame(), true);
         show(dlg);
 
-        returnValues.add(dlg.isInsertSpace());
-        returnValues.add(dlg.isRemoveAllButtons());
-
-        return returnValues;
+        if (dlg.wasOkButtonPressed()) {
+            returnValues.add(dlg.isInsertSpace());
+            returnValues.add(dlg.isRemoveAllButtons());
+            returnValues.add(dlg.getImageFilePath());
+            returnValues.add(dlg.getCommands());
+            returnValues.add(dlg.getBriefHelp());
+            returnValues.add(dlg.getDetailedHelp());
+            returnValues.add(dlg.enableIfUsedCharactersOnly());
+            returnValues.add(dlg.enableInNormalModeOnly());
+            returnValues.add(dlg.enableInAdvancedModeOnly());
+            return returnValues;
+        } else {
+            // cancelled
+            return null;
+        }
     }
 
     // ======== Methods for "find in characters" and "find in taxa" functions

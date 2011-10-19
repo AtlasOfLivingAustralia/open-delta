@@ -5,7 +5,7 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
 public class ShowDirectiveInvocation extends IntkeyDirectiveInvocation {
 
     private String _text;
-    
+
     public void setText(String text) {
         this._text = text;
     }
@@ -13,7 +13,7 @@ public class ShowDirectiveInvocation extends IntkeyDirectiveInvocation {
     @Override
     public boolean execute(IntkeyContext context) {
         context.getUI().displayRTFReport(_text, "Information");
-        return false;
+        return true;
     }
 
 }

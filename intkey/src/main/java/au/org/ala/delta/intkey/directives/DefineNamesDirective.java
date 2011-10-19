@@ -13,11 +13,17 @@ import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.ui.UIUtils;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.format.ItemFormatter;
+import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
+import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 
 public class DefineNamesDirective extends IntkeyDirective {
 
+    private ItemFormatter _taxonFormatter;
+
     public DefineNamesDirective() {
         super("define", "names");
+        _taxonFormatter = new ItemFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.RETAIN, true, false, false);
     }
 
     @Override
@@ -26,11 +32,9 @@ public class DefineNamesDirective extends IntkeyDirective {
         List<String> tokens = new StrTokenizer(data, StrMatcher.charSetMatcher(new char[] { '\n', '\r', ',' })).getTokenList();
 
         String keyword = null;
-        List<String> names = null;
+        List<String> names = new ArrayList<String>();
 
         if (!tokens.isEmpty()) {
-            names = new ArrayList<String>();
-
             String firstToken = tokens.get(0);
 
             // The keyword (which may quoted) and first taxon name may be
@@ -61,13 +65,29 @@ public class DefineNamesDirective extends IntkeyDirective {
 
         if (StringUtils.isEmpty(keyword)) {
             keyword = context.getDirectivePopulator().promptForString("Enter keyword", null, directiveName);
+            if (keyword == null) {
+                // cancelled
+                return null;
+            }
         }
 
         if (taxa.isEmpty()) {
-            System.out.println(keyword);
             taxa = context.getDirectivePopulator().promptForTaxaByList(directiveName, false, false, false);
+            if (taxa == null || taxa.isEmpty()) {
+                // cancelled
+                return null;
+            }
+
+            // extract taxon names for use in building string representation of
+            // command
+            for (Item taxon : taxa) {
+                names.add(_taxonFormatter.formatItemDescription(taxon));
+            }
         }
 
-        return new DefineNamesDirectiveInvocation(keyword, taxa);
+        DefineNamesDirectiveInvocation invoc = new DefineNamesDirectiveInvocation(keyword, taxa);
+        invoc.setStringRepresentation(String.format("%s \"%s\" %s", getControlWordsAsString(), keyword, StringUtils.join(names, ", ")));
+
+        return invoc;
     }
 }

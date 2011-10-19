@@ -8,4 +8,9 @@ public class DisplayCharacterOrderNaturalDirectiveInvocation extends IntkeyDirec
         context.setCharacterOrderNatural();
         return true;
     }
+    
+    @Override
+    public String toString() {
+        return "DISPLAY CHARACTERORDER NATURAL";
+    }
 }

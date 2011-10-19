@@ -9,13 +9,16 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
 import javax.swing.ActionMap;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
@@ -23,7 +26,9 @@ import javax.swing.SwingConstants;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
+import org.apache.commons.lang.StringUtils;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.Resource;
@@ -58,6 +63,10 @@ public class DefineButtonDialog extends IntkeyDialog {
     String insertSpaceCaption;
     @Resource
     String removeAllCaption;
+    @Resource
+    String inputValidationError;
+    @Resource
+    String fileFilterDescription;
 
     private JPanel _pnlButtons;
     private JTextField _txtFldFileName;
@@ -90,11 +99,12 @@ public class DefineButtonDialog extends IntkeyDialog {
     public DefineButtonDialog(Frame owner, boolean modal) {
         super(owner, modal);
         setPreferredSize(new Dimension(500, 430));
-        setTitle(title);
 
         ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(DefineButtonDialog.class);
         resourceMap.injectFields(this);
         ActionMap actionMap = Application.getInstance().getContext().getActionMap(DefineButtonDialog.class, this);
+
+        setTitle(title);
 
         _okButtonPressed = false;
 
@@ -147,11 +157,11 @@ public class DefineButtonDialog extends IntkeyDialog {
         _pnlFile.setLayout(new BorderLayout(0, 0));
 
         _txtFldFileName = new JTextField();
-        _txtFldFileName.setEnabled(false);
         _pnlFile.add(_txtFldFileName, BorderLayout.CENTER);
         _txtFldFileName.setColumns(10);
 
-        _btnBrowse = new JButton("Browse...");
+        _btnBrowse = new JButton();
+        _btnBrowse.setAction(actionMap.get("DefineButtonDialog_Browse"));
         _pnlFile.add(_btnBrowse, BorderLayout.EAST);
 
         _lblEnterTheCommands = new JLabel(enterCommandsCaption);
@@ -269,7 +279,7 @@ public class DefineButtonDialog extends IntkeyDialog {
 
                 if (_removeAllButtons) {
                     _insertSpace = false;
-                    _chckbxRemoveAllButtons.setSelected(false);
+                    _chckbxInsertASpace.setSelected(false);
                 }
 
                 updateButtonPropertyControls();
@@ -283,10 +293,18 @@ public class DefineButtonDialog extends IntkeyDialog {
         btnGroup.add(_rdbtnEnableInAll);
         btnGroup.add(_rdbtnEnableInNormal);
         btnGroup.add(_rdbtnEnableInAdvanced);
+
+        _rdbtnEnableInAll.setSelected(true);
     }
 
     @Action
     public void DefineButtonDialog_OK() {
+        if (!_insertSpace && !_removeAllButtons) {
+            if (StringUtils.isEmpty(_txtFldFileName.getText()) || StringUtils.isEmpty(_txtFldCommands.getText()) || StringUtils.isEmpty(_txtFldCommands.getText())) {
+                JOptionPane.showMessageDialog(this, inputValidationError, null, JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        }
         _okButtonPressed = true;
         this.setVisible(false);
     }
@@ -304,7 +322,15 @@ public class DefineButtonDialog extends IntkeyDialog {
 
     @Action
     public void DefineButtonDialog_Browse() {
+        JFileChooser chooser = new JFileChooser();
+        FileNameExtensionFilter filter = new FileNameExtensionFilter(fileFilterDescription, new String[] { "bmp", "png" });
+        chooser.setFileFilter(filter);
 
+        int returnVal = chooser.showOpenDialog(this);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = chooser.getSelectedFile();
+            _txtFldFileName.setText(selectedFile.getAbsolutePath());
+        }
     }
 
     public boolean wasOkButtonPressed() {
@@ -317,6 +343,34 @@ public class DefineButtonDialog extends IntkeyDialog {
 
     public boolean isInsertSpace() {
         return _insertSpace;
+    }
+
+    public String getImageFilePath() {
+        return _txtFldFileName.getText();
+    }
+
+    public String getCommands() {
+        return _txtFldCommands.getText();
+    }
+
+    public String getBriefHelp() {
+        return _txtFldBriefHelp.getText();
+    }
+
+    public String getDetailedHelp() {
+        return _txtFldDetailedHelp.getText();
+    }
+
+    public boolean enableIfUsedCharactersOnly() {
+        return _chckbxEnableOnlyIfUsedCharacters.isSelected();
+    }
+
+    public boolean enableInNormalModeOnly() {
+        return _rdbtnEnableInNormal.isSelected();
+    }
+
+    public boolean enableInAdvancedModeOnly() {
+        return _rdbtnEnableInAdvanced.isSelected();
     }
 
     private void updateButtonPropertyControls() {

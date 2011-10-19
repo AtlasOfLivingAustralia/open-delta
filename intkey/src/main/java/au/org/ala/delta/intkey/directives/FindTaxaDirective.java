@@ -16,7 +16,7 @@ public class FindTaxaDirective extends NewIntkeyDirective {
     @Override
     protected List<IntkeyDirectiveArgument<?>> generateArgumentsList(IntkeyContext context) {
         List<IntkeyDirectiveArgument<?>> arguments = new ArrayList<IntkeyDirectiveArgument<?>>();
-        arguments.add(new StringArgument("searchText", "Enter search string", null));
+        arguments.add(new StringArgument("searchText", "Enter search string", null, true));
         return arguments;
     }
 

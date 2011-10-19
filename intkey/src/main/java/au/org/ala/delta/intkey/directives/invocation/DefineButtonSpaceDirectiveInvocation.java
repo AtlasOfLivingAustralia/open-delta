@@ -9,5 +9,10 @@ public class DefineButtonSpaceDirectiveInvocation extends IntkeyDirectiveInvocat
         context.getUI().addToolbarSpace();
         return true;
     }
+    
+    @Override
+    public String toString() {
+        return "DEFINE BUTTON SPACE";
+    }
 
 }

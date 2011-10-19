@@ -29,6 +29,8 @@ public class SetMatchDirective extends IntkeyDirective {
     @Override
     protected IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
 
+        StringBuilder stringRepresentationBuilder = new StringBuilder(getControlWordsAsString());
+
         boolean matchUnknowns = false;
         boolean matchInapplicables = false;
         MatchType matchType = MatchType.EXACT;
@@ -42,22 +44,54 @@ public class SetMatchDirective extends IntkeyDirective {
                 matchUnknowns = (Boolean) matchSettings.get(0);
                 matchInapplicables = (Boolean) matchSettings.get(1);
                 matchType = (MatchType) matchSettings.get(2);
+
+                switch (matchType) {
+                case OVERLAP:
+                    stringRepresentationBuilder.append(" ");
+                    stringRepresentationBuilder.append(OVERLAP_WORD);
+                    break;
+                case SUBSET:
+                    stringRepresentationBuilder.append(" ");
+                    stringRepresentationBuilder.append(SUBSET_WORD);
+                    break;
+                case EXACT:
+                    stringRepresentationBuilder.append(" ");
+                    stringRepresentationBuilder.append(EXACT_WORD);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unrecognized match type");
+                }
+
+                if (matchUnknowns) {
+                    stringRepresentationBuilder.append(" ");
+                    stringRepresentationBuilder.append(UNKNOWNS_WORD);
+                }
+
+                if (matchInapplicables) {
+                    stringRepresentationBuilder.append(" ");
+                    stringRepresentationBuilder.append(INAPPLICABLES_WORD);
+                }
             }
         } else {
             List<String> tokens = ParsingUtils.tokenizeDirectiveCall(data);
             for (String token : tokens) {
                 if (token.equalsIgnoreCase(OVERLAP_LETTER) || token.equalsIgnoreCase(OVERLAP_WORD)) {
                     matchType = MatchType.OVERLAP;
+                    stringRepresentationBuilder.append(token);
                 } else if (token.equalsIgnoreCase(SUBSET_LETTER) || token.equalsIgnoreCase(SUBSET_WORD)) {
                     matchType = MatchType.SUBSET;
+                    stringRepresentationBuilder.append(token);
                 } else if (token.equalsIgnoreCase(EXACT_LETTER) || token.equalsIgnoreCase(EXACT_WORD)) {
                     matchType = MatchType.EXACT;
                     matchUnknowns = false;
                     matchInapplicables = false;
+                    stringRepresentationBuilder.append(token);
                 } else if (token.equalsIgnoreCase(UNKNOWNS_LETTER) || token.equalsIgnoreCase(UNKNOWNS_WORD)) {
                     matchUnknowns = true;
+                    stringRepresentationBuilder.append(token);
                 } else if (token.equalsIgnoreCase(INAPPLICABLES_LETTER) || token.equalsIgnoreCase(INAPPLICABLES_WORD)) {
                     matchInapplicables = true;
+                    stringRepresentationBuilder.append(token);
                 } else {
                     context.getUI().displayErrorMessage(MessageFormat.format(UIUtils.getResourceString("InvalidSetMatchOption.error"), token));
                     return null;
@@ -65,6 +99,8 @@ public class SetMatchDirective extends IntkeyDirective {
             }
         }
 
-        return new SetMatchDirectiveInvocation(matchInapplicables, matchUnknowns, matchType);
+        SetMatchDirectiveInvocation invoc = new SetMatchDirectiveInvocation(matchInapplicables, matchUnknowns, matchType);
+        invoc.setStringRepresentation(stringRepresentationBuilder.toString());
+        return invoc;
     }
 }

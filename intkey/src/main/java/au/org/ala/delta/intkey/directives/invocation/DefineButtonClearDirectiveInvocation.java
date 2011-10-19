@@ -9,5 +9,10 @@ public class DefineButtonClearDirectiveInvocation extends IntkeyDirectiveInvocat
         context.getUI().clearToolbar();
         return true;
     }
+    
+    @Override
+    public String toString() {
+        return "DEFINE BUTTON CLEAR";
+    }
 
 }

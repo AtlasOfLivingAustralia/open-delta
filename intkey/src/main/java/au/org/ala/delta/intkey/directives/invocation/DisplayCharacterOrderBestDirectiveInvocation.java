@@ -8,4 +8,9 @@ public class DisplayCharacterOrderBestDirectiveInvocation extends IntkeyDirectiv
         context.setCharacterOrderBest();
         return true;
     }
+    
+    @Override
+    public String toString() {
+        return "DISPLAY CHARACTERORDER BEST";
+    }
 }

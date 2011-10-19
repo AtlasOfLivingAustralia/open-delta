@@ -22,11 +22,17 @@ public class DisplayCharacterOrderSeparateDirectiveInvocation extends IntkeyDire
     @Override
     public boolean execute(IntkeyContext context) {
         if (!context.getAvailableTaxa().contains(_taxonToSeparate)) {
-            context.getUI().displayErrorMessage(MessageFormat.format(UIUtils.getResourceString("DisplayCharacterOrderSeparate.TaxonNoLongerInContentionMsg"), _formatter.formatItemDescription(_taxonToSeparate)));
+            context.getUI().displayErrorMessage(
+                    MessageFormat.format(UIUtils.getResourceString("DisplayCharacterOrderSeparate.TaxonNoLongerInContentionMsg"), _formatter.formatItemDescription(_taxonToSeparate)));
             return false;
         }
-        
+
         context.setCharacterOrderSeparate(_taxonToSeparate.getItemNumber());
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("DISPLAY CHARACTERORDER SEPARATE %s", _taxonToSeparate.getItemNumber());
     }
 }

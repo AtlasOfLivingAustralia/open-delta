@@ -1,5 +1,6 @@
 package au.org.ala.delta.intkey.directives;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,9 +21,39 @@ public class DefineButtonDirective extends IntkeyDirective {
         List<String> tokens = ParsingUtils.tokenizeDirectiveCall(data);
 
         if (tokens.isEmpty()) {
-            // TODO show button definition dialog
-            context.getDirectivePopulator().promptForButtonDefinition();
-            return null;
+            List<Object> buttonDefinitionValues = context.getDirectivePopulator().promptForButtonDefinition();
+
+            if (buttonDefinitionValues == null) {
+                // cancelled
+                return null;
+            } else {
+                boolean isInsertSpace = (Boolean) buttonDefinitionValues.get(0);
+                boolean isRemoveAllButtons = (Boolean) buttonDefinitionValues.get(1);
+
+                if (isInsertSpace) {
+                    return new DefineButtonSpaceDirectiveInvocation();
+                } else if (isRemoveAllButtons) {
+                    return new DefineButtonClearDirectiveInvocation();
+                } else {
+                    String imageFilePath = (String) buttonDefinitionValues.get(2);
+
+                    String commandsString = (String) buttonDefinitionValues.get(3);
+
+                    List<String> commands = new ArrayList<String>();
+                    for (String str : ParsingUtils.removeEnclosingQuotes(commandsString).split(";")) {
+                        commands.add(str.trim());
+                    }
+
+                    String shortHelp = (String) buttonDefinitionValues.get(4);
+                    String fullHelp = (String) buttonDefinitionValues.get(5);
+                    boolean enableIfUsedCharactersOnly = (Boolean) buttonDefinitionValues.get(6);
+                    boolean enableInNormalModeOnly = (Boolean) buttonDefinitionValues.get(7);
+                    boolean enableInAdvancedModeOnly = (Boolean) buttonDefinitionValues.get(8);
+
+                    return new DefineButtonDirectiveInvocation(enableInAdvancedModeOnly, enableInNormalModeOnly, enableIfUsedCharactersOnly, imageFilePath, commands, shortHelp, fullHelp);
+                }
+            }
+
         } else {
             String firstToken = tokens.get(0);
 

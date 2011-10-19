@@ -2,6 +2,8 @@ package au.org.ala.delta.intkey.directives;
 
 import java.text.ParseException;
 
+import org.apache.commons.lang.StringUtils;
+
 import au.org.ala.delta.directives.AbstractDirective;
 import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
@@ -52,5 +54,9 @@ public abstract class IntkeyDirective extends AbstractDirective<IntkeyContext> {
     }
 
     protected abstract IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception;
+
+    public String getControlWordsAsString() {
+        return StringUtils.join(getControlWords(), " ").toUpperCase();
+    }
 
 }
