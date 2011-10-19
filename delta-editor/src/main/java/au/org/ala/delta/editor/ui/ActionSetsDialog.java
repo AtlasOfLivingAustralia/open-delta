@@ -3,6 +3,8 @@ package au.org.ala.delta.editor.ui;
 import java.awt.BorderLayout;
 import java.awt.Desktop;
 import java.awt.FlowLayout;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -35,6 +37,8 @@ import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.SingleFrameApplication;
 
 import au.org.ala.delta.confor.CONFOR;
+import au.org.ala.delta.editor.DeltaEditor;
+import au.org.ala.delta.editor.directives.ExportController;
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile.DirectiveType;
@@ -170,8 +174,14 @@ public class ActionSetsDialog extends AbstractDeltaView {
 	@Action
 	public void runDirectiveFile() {
 		
-		String exportPath = checkExport();
+		if (!checkExport()) {
 		
+			doRunDirectiveFile(getExportPath());
+		}
+	}
+
+
+	protected void doRunDirectiveFile(String exportPath) {
 		DirectiveFile file = getSelectedFile();	
 		if (file == null) {
 			return;
@@ -208,19 +218,41 @@ public class ActionSetsDialog extends AbstractDeltaView {
 		}
 	}
 	
-	private String checkExport() {
+	private boolean checkExport() {
 		
-		if (StringUtils.isEmpty(_model.getExportPath())) {
+		if (StringUtils.isEmpty(_model.getExportPath()) || _model.isModified()) {
 			boolean result = _messageHelper.confirmExport();
 			if (result) {
-				_actions.get("exportDirectives").actionPerformed(null);
+				exportDirectivesAndRun();
+				return true;
 			}
 		}
+		
+		return false;
+	}
+	
+	
+	private String getExportPath() {
 		String exportPath = _model.getExportPath();
 		if (StringUtils.isEmpty(exportPath)) {
 			exportPath = _model.getDataSetPath();
 		}
 		return exportPath;
+	}
+	private void exportDirectivesAndRun() {
+		DeltaEditor editor = (DeltaEditor)Application.getInstance();
+		ExportController exportController = new ExportController(editor);
+		exportController.begin(new PropertyChangeListener() {
+			
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				if ("done".equals(evt.getPropertyName())) {
+					if (Boolean.TRUE.equals(evt.getNewValue())) {
+						doRunDirectiveFile(getExportPath());
+					}
+				}
+			}
+		});
 	}
 	
 	private void runConfor(String fileName) throws Exception {

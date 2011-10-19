@@ -1,5 +1,6 @@
 package au.org.ala.delta.editor.directives;
 
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.PrintStream;
 import java.util.List;
@@ -47,7 +48,7 @@ public class ExportController {
 		_actions = _editor.getContext().getActionMap(this);
 	}
 
-	public void begin() {
+	public void begin(PropertyChangeListener listener) {
 		_exportModel = new ExportViewModel();
 		_exportModel.populate(_model);
 
@@ -60,8 +61,12 @@ public class ExportController {
 			List<DirectiveFileInfo> files = _exportModel.getSelectedFiles();
 			File selectedDirectory = _exportModel.getCurrentDirectory();
 			_model.setExportPath(selectedDirectory.getAbsolutePath());
-			doExport(selectedDirectory, files);
+			doExport(selectedDirectory, files, listener);
 		}
+	}
+	
+	public void begin() {
+		begin(null);
 	}
 
 	
@@ -70,10 +75,13 @@ public class ExportController {
 	 * @param selectedDirectory the directory to export the files to.
 	 * @param files the files to export.
 	 */
-	public void doExport(File selectedDirectory, List<DirectiveFileInfo> files) {
+	public void doExport(File selectedDirectory, List<DirectiveFileInfo> files, PropertyChangeListener listener) {
 
 		// Do the export on a background thread.
 		DoExportTask exportTask = new DoExportTask(selectedDirectory, files, false);
+		if (listener != null) {
+			exportTask.addPropertyChangeListener(listener);
+		}
 		exportTask.execute();
 	}
 	
