@@ -14,7 +14,7 @@ import au.org.ala.delta.model.Item;
 public class DisplayCharacterOrderSeparateDirective extends IntkeyDirective {
 
     public DisplayCharacterOrderSeparateDirective() {
-        super("display", "characterorder", "separate");
+        super(true, "display", "characterorder", "separate");
     }
 
     @Override

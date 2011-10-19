@@ -7,7 +7,7 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
 public class DisplayCharacterOrderNaturalDirective extends IntkeyDirective{
 
     public DisplayCharacterOrderNaturalDirective() {
-        super("display", "characterorder", "natural");
+        super(true, "display", "characterorder", "natural");
     }
 
     @Override

@@ -18,8 +18,8 @@ public abstract class NewIntkeyDirective extends IntkeyDirective {
 
     protected List<IntkeyDirectiveFlag> _intkeyFlagsList;
 
-    public NewIntkeyDirective(String... controlWords) {
-        super(controlWords);
+    public NewIntkeyDirective(boolean errorIfNoDatasetLoaded, String... controlWords) {
+        super(errorIfNoDatasetLoaded, controlWords);
         _intkeyFlagsList = buildFlagsList();
     }
 

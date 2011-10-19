@@ -11,7 +11,7 @@ import au.org.ala.delta.intkey.model.MatchType;
 public class DifferencesDirective extends NewIntkeyDirective {
 
     public DifferencesDirective() {
-        super("differences");
+        super(true, "differences");
     }
 
     @Override

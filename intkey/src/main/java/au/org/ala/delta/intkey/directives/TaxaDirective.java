@@ -10,7 +10,7 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
 public class TaxaDirective extends NewIntkeyDirective {
 
     public TaxaDirective() {
-        super("taxa");
+        super(true, "taxa");
     }
 
     @Override

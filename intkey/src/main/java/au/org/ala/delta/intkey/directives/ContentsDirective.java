@@ -11,7 +11,7 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
 public class ContentsDirective extends NewIntkeyDirective {
 
     public ContentsDirective() {
-        super("contents");
+        super(false, "contents");
     }
 
     @Override

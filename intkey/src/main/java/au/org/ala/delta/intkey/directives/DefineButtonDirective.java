@@ -1,6 +1,5 @@
 package au.org.ala.delta.intkey.directives;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +12,7 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
 public class DefineButtonDirective extends IntkeyDirective {
 
     public DefineButtonDirective() {
-        super("define", "button");
+        super(false, "define", "button");
     }
 
     @Override

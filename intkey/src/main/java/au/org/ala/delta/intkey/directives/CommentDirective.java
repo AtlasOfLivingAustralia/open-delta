@@ -10,7 +10,7 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
 public class CommentDirective extends NewIntkeyDirective {
 
     public CommentDirective() {
-        super("comment");
+        super(false, "comment");
     }
 
     @Override

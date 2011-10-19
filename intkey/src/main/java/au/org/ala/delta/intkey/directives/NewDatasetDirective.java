@@ -19,7 +19,7 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
 public class NewDatasetDirective extends NewIntkeyDirective {
 
     public NewDatasetDirective() {
-        super("newdataset");
+        super(false, "newdataset");
     }
 
     @Override

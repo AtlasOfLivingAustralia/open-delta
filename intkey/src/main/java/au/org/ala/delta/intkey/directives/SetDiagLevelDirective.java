@@ -10,7 +10,7 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
 public class SetDiagLevelDirective extends NewIntkeyDirective {
 
     public SetDiagLevelDirective() {
-        super("set", "diaglevel");
+        super(false, "set", "diaglevel");
     }
 
     @Override

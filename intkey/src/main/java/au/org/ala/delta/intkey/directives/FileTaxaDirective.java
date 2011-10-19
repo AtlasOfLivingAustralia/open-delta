@@ -18,7 +18,7 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
 public class FileTaxaDirective extends NewIntkeyDirective {
 
     public FileTaxaDirective() {
-        super("file", "taxa");
+        super(false, "file", "taxa");
     }
 
     @Override

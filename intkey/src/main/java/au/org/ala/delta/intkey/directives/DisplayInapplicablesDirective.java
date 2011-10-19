@@ -10,7 +10,7 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
 public class DisplayInapplicablesDirective extends NewIntkeyDirective {
 
     public DisplayInapplicablesDirective() {
-        super("display", "inapplicables");
+        super(false, "display", "inapplicables");
     }
 
     @Override

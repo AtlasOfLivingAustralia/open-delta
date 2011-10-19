@@ -10,7 +10,7 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
 public class ExcludeCharactersDirective extends NewIntkeyDirective {
 
     public ExcludeCharactersDirective() {
-        super("exclude", "characters");
+        super(true, "exclude", "characters");
     }
 
     @Override

@@ -124,11 +124,6 @@ public class IntkeyContext extends AbstractDeltaContext {
     private boolean _autoTolerance;
 
     /**
-     * Should executed directives be recorded in the history?
-     */
-    private boolean _recordDirectiveHistory;
-
-    /**
      * Is an input file currently being processed?
      */
     private boolean _processingInputFile;
@@ -192,7 +187,6 @@ public class IntkeyContext extends AbstractDeltaContext {
 
         _appUI = appUI;
         _directivePopulator = directivePopulator;
-        _recordDirectiveHistory = false;
         _processingInputFile = false;
 
         _directiveParser = IntkeyDirectiveParser.createInstance();
@@ -334,8 +328,9 @@ public class IntkeyContext extends AbstractDeltaContext {
             throw new IllegalArgumentException("Could not open input file " + inputFile.getAbsolutePath());
         }
 
-        // Don't record directive history while processing the data set file
-        _recordDirectiveHistory = false;
+        // May be in several levels of input file, so need to ensure we set this
+        // back to the correct value.
+        boolean oldProcessingInputFile = _processingInputFile;
         _processingInputFile = true;
 
         IntkeyDirectiveParser parser = IntkeyDirectiveParser.createInstance();
@@ -347,8 +342,7 @@ public class IntkeyContext extends AbstractDeltaContext {
             _appUI.displayErrorMessage(String.format("Error reading file '%s'", inputFile.getAbsolutePath()));
         }
 
-        _recordDirectiveHistory = true;
-        _processingInputFile = false;
+        _processingInputFile = oldProcessingInputFile;
     }
 
     /**
@@ -445,7 +439,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         int insertionIndex = _executedDirectives.size();
 
         boolean success = invoc.execute(this);
-        if (success && _recordDirectiveHistory) {
+        if (success && !_processingInputFile) {
             if (_executedDirectives.size() < insertionIndex) {
                 // executed directives list has been cleared, just add this
                 // directive to the end of the list

@@ -10,7 +10,7 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
 public class DisplayNumberingDirective extends NewIntkeyDirective {
 
     public DisplayNumberingDirective() {
-        super("display", "numbering");
+        super(false, "display", "numbering");
     }
 
     @Override

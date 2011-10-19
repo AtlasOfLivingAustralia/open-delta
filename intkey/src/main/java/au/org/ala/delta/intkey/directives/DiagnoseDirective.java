@@ -10,7 +10,7 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
 public class DiagnoseDirective extends NewIntkeyDirective {
 
     public DiagnoseDirective() {
-        super("diagnose");
+        super(true, "diagnose");
     }
 
     @Override

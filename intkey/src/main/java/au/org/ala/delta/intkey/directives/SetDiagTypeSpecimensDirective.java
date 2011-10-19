@@ -9,7 +9,7 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
 public class SetDiagTypeSpecimensDirective extends NewIntkeyDirective {
 
     public SetDiagTypeSpecimensDirective() {
-        super("set", "diagtype", "specimens");
+        super(false, "set", "diagtype", "specimens");
     }
 
     @Override

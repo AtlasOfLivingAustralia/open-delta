@@ -18,7 +18,7 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
 public class FileCharactersDirective extends NewIntkeyDirective {
 
     public FileCharactersDirective() {
-        super("file", "characters");
+        super(false, "file", "characters");
     }
 
     @Override

@@ -11,7 +11,7 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
 public class FileOutputDirective extends NewIntkeyDirective {
 
     public FileOutputDirective() {
-        super("file", "output");
+        super(false, "file", "output");
     }
 
     @Override

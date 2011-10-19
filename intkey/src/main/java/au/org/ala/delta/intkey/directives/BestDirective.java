@@ -13,7 +13,7 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
 public class BestDirective extends IntkeyDirective {
 
     public BestDirective() {
-        super("best");
+        super(true, "best");
     }
 
     @Override

@@ -9,7 +9,7 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
 
 public class SetVaryWtDirective extends NewIntkeyDirective {
     public SetVaryWtDirective() {
-        super("set", "varywt");
+        super(false, "set", "varywt");
     }
 
     @Override

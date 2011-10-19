@@ -9,7 +9,7 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
 public class SetDiagTypeTaxaDirective extends NewIntkeyDirective {
 
     public SetDiagTypeTaxaDirective() {
-        super("set", "diagtype", "taxa");
+        super(false, "set", "diagtype", "taxa");
     }
 
     @Override

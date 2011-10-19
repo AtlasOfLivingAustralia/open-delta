@@ -10,7 +10,7 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
 public class SimilaritiesDirective extends NewIntkeyDirective {
 
     public SimilaritiesDirective() {
-        super("similarities");
+        super(true, "similarities");
     }
 
     @Override

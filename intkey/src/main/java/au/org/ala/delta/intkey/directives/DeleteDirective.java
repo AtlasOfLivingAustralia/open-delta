@@ -9,7 +9,7 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
 
 public class DeleteDirective extends NewIntkeyDirective {
     public DeleteDirective() {
-        super("delete");
+        super(true, "delete");
     }
 
     @Override

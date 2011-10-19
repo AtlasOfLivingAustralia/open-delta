@@ -7,7 +7,7 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
 public class QuitDirective extends IntkeyDirective {
 
     public QuitDirective() {
-        super("quit");
+        super(false, "quit");
     }
 
     @Override

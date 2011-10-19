@@ -38,7 +38,7 @@ public class UseDirective extends IntkeyDirective {
     private CharacterFormatter _charFormatter;
 
     public UseDirective() {
-        super("use");
+        super(true, "use");
         _charFormatter = new CharacterFormatter(false, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REPLACE, true, false);
     }
 

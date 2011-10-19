@@ -15,7 +15,7 @@ import au.org.ala.delta.model.Item;
 public class DefineTaxaDirective extends NewIntkeyDirective {
 
     public DefineTaxaDirective() {
-        super("define", "taxa");
+        super(true, "define", "taxa");
     }
 
     @Override

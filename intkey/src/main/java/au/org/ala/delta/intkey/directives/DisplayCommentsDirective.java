@@ -10,7 +10,7 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
 public class DisplayCommentsDirective extends NewIntkeyDirective {
 
     public DisplayCommentsDirective() {
-        super("display", "comments");
+        super(false, "display", "comments");
     }
 
     @Override

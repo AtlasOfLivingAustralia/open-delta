@@ -10,7 +10,7 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
 public class InformationDirective extends NewIntkeyDirective {
 
     public InformationDirective() {
-        super("information");
+        super(true, "information");
     }
 
     @Override

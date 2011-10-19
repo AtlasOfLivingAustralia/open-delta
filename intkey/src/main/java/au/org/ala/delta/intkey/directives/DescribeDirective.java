@@ -10,7 +10,7 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
 public class DescribeDirective extends NewIntkeyDirective {
     
     public DescribeDirective() {
-        super("describe");
+        super(true, "describe");
     }
 
     @Override

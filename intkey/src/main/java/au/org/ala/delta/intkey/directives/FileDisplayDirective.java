@@ -11,7 +11,7 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
 public class FileDisplayDirective extends NewIntkeyDirective {
 
     public FileDisplayDirective() {
-        super("file", "display");
+        super(false, "file", "display");
     }
 
     @Override

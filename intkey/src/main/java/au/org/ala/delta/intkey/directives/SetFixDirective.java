@@ -10,7 +10,7 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
 public class SetFixDirective extends NewIntkeyDirective {
 
     public SetFixDirective() {
-        super("set", "fix");
+        super(true, "set", "fix");
     }
 
     @Override

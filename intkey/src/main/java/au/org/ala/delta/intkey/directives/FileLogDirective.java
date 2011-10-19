@@ -10,7 +10,7 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
 
 public class FileLogDirective extends NewIntkeyDirective {
     public FileLogDirective() {
-        super("file", "log");
+        super(false, "file", "log");
     }
 
     @Override

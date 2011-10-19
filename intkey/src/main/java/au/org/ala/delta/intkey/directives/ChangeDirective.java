@@ -13,7 +13,7 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
 public class ChangeDirective extends IntkeyDirective {
 
     public ChangeDirective() {
-        super("change");
+        super(true, "change");
     }
 
     @Override

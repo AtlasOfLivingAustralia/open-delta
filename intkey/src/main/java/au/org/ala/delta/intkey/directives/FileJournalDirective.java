@@ -10,7 +10,7 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
 
 public class FileJournalDirective extends NewIntkeyDirective {
     public FileJournalDirective() {
-        super("file", "journal");
+        super(false, "file", "journal");
     }
 
     @Override

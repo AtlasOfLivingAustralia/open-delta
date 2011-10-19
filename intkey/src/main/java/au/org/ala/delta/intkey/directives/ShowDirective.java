@@ -10,7 +10,7 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
 public class ShowDirective extends NewIntkeyDirective {
 
     public ShowDirective() {
-        super("show");
+        super(false, "show");
     }
 
     @Override

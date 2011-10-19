@@ -10,7 +10,7 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
 public class CharactersDirective extends NewIntkeyDirective {
     
     public CharactersDirective() {
-        super("characters");
+        super(true, "characters");
     }
 
     @Override

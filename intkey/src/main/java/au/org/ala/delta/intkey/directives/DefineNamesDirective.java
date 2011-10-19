@@ -22,7 +22,7 @@ public class DefineNamesDirective extends IntkeyDirective {
     private ItemFormatter _taxonFormatter;
 
     public DefineNamesDirective() {
-        super("define", "names");
+        super(true, "define", "names");
         _taxonFormatter = new ItemFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.RETAIN, true, false, false);
     }
 

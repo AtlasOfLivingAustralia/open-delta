@@ -1,5 +1,6 @@
 package au.org.ala.delta.intkey.directives;
 
+import java.text.MessageFormat;
 import java.text.ParseException;
 
 import org.apache.commons.lang.StringUtils;
@@ -8,13 +9,16 @@ import au.org.ala.delta.directives.AbstractDirective;
 import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.intkey.ui.UIUtils;
 
 public abstract class IntkeyDirective extends AbstractDirective<IntkeyContext> {
 
     protected DirectiveArguments _args;
+    protected boolean _errorIfNoDatasetLoaded;
 
-    public IntkeyDirective(String... controlWords) {
+    public IntkeyDirective(boolean errorIfNoDatasetLoaded, String... controlWords) {
         super(controlWords);
+        _errorIfNoDatasetLoaded = errorIfNoDatasetLoaded;
     }
 
     @Override
@@ -42,6 +46,10 @@ public abstract class IntkeyDirective extends AbstractDirective<IntkeyContext> {
 
     @Override
     public final void parseAndProcess(IntkeyContext context, String data) throws Exception {
+        if (context.getDataset() == null && _errorIfNoDatasetLoaded) {
+            context.getUI().displayErrorMessage(MessageFormat.format(UIUtils.getResourceString("DirectiveCallNoDatasetLoaded.error"), getControlWordsAsString()));
+        }
+
         if (data != null) {
             data = data.trim();
         }

@@ -10,7 +10,7 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
 public class SetAutoToleranceDirective extends NewIntkeyDirective {
 
     public SetAutoToleranceDirective() {
-        super("set", "autotolerance");
+        super(false, "set", "autotolerance");
     }
 
     @Override

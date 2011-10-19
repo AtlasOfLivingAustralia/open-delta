@@ -19,7 +19,7 @@ import au.org.ala.delta.model.Character;
 public class SetReliabilitiesDirective extends IntkeyDirective {
 
     public SetReliabilitiesDirective() {
-        super("set", "reliabilities");
+        super(true, "set", "reliabilities");
     }
 
     @Override

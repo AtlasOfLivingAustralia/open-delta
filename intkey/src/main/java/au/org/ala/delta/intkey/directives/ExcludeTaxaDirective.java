@@ -9,7 +9,7 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
 
 public class ExcludeTaxaDirective extends NewIntkeyDirective {
     public ExcludeTaxaDirective() {
-        super("exclude", "taxa");
+        super(true, "exclude", "taxa");
     }
 
     @Override

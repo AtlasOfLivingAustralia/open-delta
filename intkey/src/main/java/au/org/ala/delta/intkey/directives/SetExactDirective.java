@@ -10,7 +10,7 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
 public class SetExactDirective extends NewIntkeyDirective {
 
     public SetExactDirective() {
-        super("set", "exact");
+        super(true, "set", "exact");
     }
 
     @Override

@@ -23,7 +23,7 @@ public class SetMatchDirective extends IntkeyDirective {
     private static final String INAPPLICABLES_WORD = "inapplicables";
 
     public SetMatchDirective() {
-        super("set", "match");
+        super(false, "set", "match");
     }
 
     @Override
@@ -77,20 +77,25 @@ public class SetMatchDirective extends IntkeyDirective {
             for (String token : tokens) {
                 if (token.equalsIgnoreCase(OVERLAP_LETTER) || token.equalsIgnoreCase(OVERLAP_WORD)) {
                     matchType = MatchType.OVERLAP;
+                    stringRepresentationBuilder.append(" ");
                     stringRepresentationBuilder.append(token);
                 } else if (token.equalsIgnoreCase(SUBSET_LETTER) || token.equalsIgnoreCase(SUBSET_WORD)) {
                     matchType = MatchType.SUBSET;
+                    stringRepresentationBuilder.append(" ");
                     stringRepresentationBuilder.append(token);
                 } else if (token.equalsIgnoreCase(EXACT_LETTER) || token.equalsIgnoreCase(EXACT_WORD)) {
                     matchType = MatchType.EXACT;
                     matchUnknowns = false;
                     matchInapplicables = false;
+                    stringRepresentationBuilder.append(" ");
                     stringRepresentationBuilder.append(token);
                 } else if (token.equalsIgnoreCase(UNKNOWNS_LETTER) || token.equalsIgnoreCase(UNKNOWNS_WORD)) {
                     matchUnknowns = true;
+                    stringRepresentationBuilder.append(" ");
                     stringRepresentationBuilder.append(token);
                 } else if (token.equalsIgnoreCase(INAPPLICABLES_LETTER) || token.equalsIgnoreCase(INAPPLICABLES_WORD)) {
                     matchInapplicables = true;
+                    stringRepresentationBuilder.append(" ");
                     stringRepresentationBuilder.append(token);
                 } else {
                     context.getUI().displayErrorMessage(MessageFormat.format(UIUtils.getResourceString("InvalidSetMatchOption.error"), token));
