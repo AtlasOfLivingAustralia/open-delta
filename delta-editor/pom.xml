@@ -53,7 +53,7 @@
 
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
-				<version>2.2-beta-5</version>
+				<version>2.2.1</version>
 				<executions>
 					<execution>
 						<id>dependency-jars</id>
@@ -251,7 +251,7 @@
 		<dependency>
 			<groupId>au.org.ala.delta</groupId>
 			<artifactId>confor</artifactId>
-			<version>1.0-M8-SNAPSHOT</version>
+			<version>${project.version}</version>
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
