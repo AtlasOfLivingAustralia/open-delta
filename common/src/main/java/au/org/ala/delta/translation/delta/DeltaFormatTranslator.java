@@ -210,13 +210,7 @@ public class DeltaFormatTranslator extends AbstractDataSetTranslator {
 		outputLine(_characterFormatter.formatState(character, stateNumber)+"/");
 	}
 	
-	@Override
-	public void translateCharacters() {
-		
-		super.translateCharacters();
-	}
-	
-	@Override 
+		@Override 
 	public void translateItems() {
 		_printer.setLineWrapIndent(0);
 		super.translateItems();

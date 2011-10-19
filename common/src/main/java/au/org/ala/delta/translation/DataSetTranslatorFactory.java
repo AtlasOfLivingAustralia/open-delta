@@ -115,7 +115,7 @@ public class DataSetTranslatorFactory {
 	private AbstractDataSetTranslator createDeltaFormatTranslator(
 			DeltaContext context, PrintFile printer, FormatterFactory formatterFactory) {
 		ItemFormatter itemFormatter  = formatterFactory.createItemFormatter(null);
-		CharacterFormatter charFormatter = formatterFactory.createCharacterFormatter();
+		CharacterFormatter charFormatter = formatterFactory.createCharacterFormatter(true, false, CommentStrippingMode.RETAIN);
 		CharacterListTypeSetter typeSetter = new au.org.ala.delta.translation.print.PlainTextTypeSetter(printer);
 		DataSetFilter filter = new DeltaFormatDataSetFilter(context);
 		return new DeltaFormatTranslator(context, filter, printer, itemFormatter, charFormatter, typeSetter);
