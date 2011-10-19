@@ -21,7 +21,8 @@ public class Formatter {
     protected boolean _stripFormatting;
     protected boolean _capitaliseFirstWord;
     protected boolean _rtfToHtml;
-
+    protected boolean _despaceRtf;
+    
     protected CommentStrippingMode _commentStrippingMode;
     protected AngleBracketHandlingMode _angleBracketHandlingMode;
 
@@ -43,6 +44,7 @@ public class Formatter {
         _stripFormatting = stripFormatting;
         _capitaliseFirstWord = capitaliseFirstWord;
         _rtfToHtml = rtfToHtml;
+        _despaceRtf = false;
     }
 
     /**
@@ -53,6 +55,9 @@ public class Formatter {
      */
     public void setRtfToHtml(boolean rtfToHtml) {
     	_rtfToHtml = rtfToHtml;
+    }
+    public void setDespaceRtf(boolean despaceRtf) {
+    	_despaceRtf = despaceRtf;
     }
     
     /**
@@ -86,6 +91,10 @@ public class Formatter {
     public String defaultFormat(String text, CommentStrippingMode commentStrippingMode, AngleBracketHandlingMode angleBracketHandlingMode, boolean stripFormatting, boolean capitaliseFirstWord, boolean newLinesToSpace, boolean rtfToHtml) {
         if (StringUtils.isEmpty(text)) {
             return "";
+        }
+        
+        if (_despaceRtf) {
+        	text = Utils.despaceRtf(text, false);
         }
 
         if (stripFormatting) {
