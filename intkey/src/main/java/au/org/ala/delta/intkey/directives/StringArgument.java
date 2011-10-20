@@ -30,17 +30,12 @@ public class StringArgument extends IntkeyDirectiveArgument<String> {
 
     @Override
     public String parseInput(Queue<String> inputTokens, IntkeyContext context, String directiveName, StringBuilder stringRepresentationBuilder) throws IntkeyDirectiveParseException {
-        if (_spaceDelimited) {
-            String token = inputTokens.poll();
-
-            if (token == null || token.equals(DEFAULT_DIALOG_WILDCARD)) {
-                token = context.getDirectivePopulator().promptForString(_promptText, _initialValue, directiveName);
-            }
-
-            stringRepresentationBuilder.append(" ");
-            stringRepresentationBuilder.append(token);
-
-            return token;
+        String argumentValue = null;
+        String token = inputTokens.peek();
+        if (token == null || token.equals(DEFAULT_DIALOG_WILDCARD)) {
+            argumentValue = context.getDirectivePopulator().promptForString(_promptText, _initialValue, directiveName);
+        } else if (_spaceDelimited) {
+            argumentValue = token;
         } else {
             // If argument is not space delimited, we need to use all available
             // tokens in the queue to construct the value for
@@ -54,11 +49,12 @@ public class StringArgument extends IntkeyDirectiveArgument<String> {
                 }
             }
 
-            stringRepresentationBuilder.append(" ");
-            stringRepresentationBuilder.append(valueBuilder.toString());
-
-            return valueBuilder.toString();
+            argumentValue = valueBuilder.toString();
         }
-    }
 
+        stringRepresentationBuilder.append(" ");
+        stringRepresentationBuilder.append(argumentValue);
+
+        return argumentValue;
+    }
 }
