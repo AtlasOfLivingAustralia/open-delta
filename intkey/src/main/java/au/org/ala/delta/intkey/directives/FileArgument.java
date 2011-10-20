@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Queue;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.intkey.ui.UIUtils;
 
 public class FileArgument extends IntkeyDirectiveArgument<File> {
 
@@ -31,22 +32,7 @@ public class FileArgument extends IntkeyDirectiveArgument<File> {
                 throw new IntkeyDirectiveParseException("Error creating file");
             }
         } else {
-            // If the supplied file path starts with one of the file system
-            // roots, then it is absolute. Otherwise, assume that
-            // it is relative to the directory in which the dataset is located.
-            boolean fileAbsolute = false;
-            for (File root : File.listRoots()) {
-                if (filePath.toLowerCase().startsWith(root.getAbsolutePath().toLowerCase())) {
-                    fileAbsolute = true;
-                    break;
-                }
-            }
-
-            if (fileAbsolute) {
-                file = new File(filePath);
-            } else {
-                file = new File(context.getDatasetDirectory(), filePath);
-            }
+            file = UIUtils.findFile(filePath, context.getDatasetDirectory());
 
             if (!file.exists() && _createFileIfNonExistant) {
                 try {

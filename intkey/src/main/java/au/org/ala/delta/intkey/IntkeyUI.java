@@ -1,6 +1,6 @@
 package au.org.ala.delta.intkey;
 
-import java.io.File;
+import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -64,7 +64,15 @@ public interface IntkeyUI {
 
     void displayContents(LinkedHashMap<String, String> contentsMap);
 
-    void displayFile(File file, String description);
+    /**
+     * Display the file at the specified URL.
+     * 
+     * @param filePath
+     *            URL to the file to open.
+     * @param description
+     *            the description of the file
+     */
+    void displayFile(URL fileURL, String description);
 
     boolean isLogVisible();
 

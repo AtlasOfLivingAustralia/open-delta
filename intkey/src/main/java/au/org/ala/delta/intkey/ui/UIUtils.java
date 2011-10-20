@@ -3,6 +3,8 @@ package au.org.ala.delta.intkey.ui;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+import java.util.UUID;
 
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -48,26 +50,92 @@ public class UIUtils {
         }
     }
 
-    public static void displayFile(File file, String description, Desktop desktop) throws IOException {
+    /**
+     * Displays the file specified by the supplied URL. If the URL specifies a
+     * remote file, the file will be downloaded first. The thread will block
+     * while the download occurs.
+     * 
+     * @param fileURL
+     *            A URL pointing to the file of interest
+     * @param description
+     *            A description of the file
+     * @param desktop
+     *            A reference to the AWT Desktop
+     * @throws Exception
+     *             If an unrecoverable error occurred while downloading or
+     *             displaying the file.
+     */
+    public static void displayFileFromURL(URL fileURL, String description, Desktop desktop) throws Exception {
+        String fileName = fileURL.getFile();
 
-        String fileName = file.getName();
-        
         if (fileName.toLowerCase().endsWith(".rtf")) {
+            File file = convertURLToFile(fileURL, 60000);
             String rtfSource = FileUtils.readFileToString(file);
             RtfReportDisplayDialog dlg = new RtfReportDisplayDialog(getMainFrame(), new SimpleRtfEditorKit(null), rtfSource, description);
             ((SingleFrameApplication) Application.getInstance()).show(dlg);
         } else if (fileName.toLowerCase().endsWith(".html")) {
             if (desktop.isSupported(Desktop.Action.BROWSE)) {
-                desktop.browse(file.toURI());
+                desktop.browse(fileURL.toURI());
             }
         } else if (fileName.toLowerCase().endsWith(".ink")) {
-            System.out.println(file.getAbsolutePath());
+            System.out.println(fileURL);
         } else if (fileName.toLowerCase().endsWith(".wav")) {
-            AudioPlayer.playClip(file.toURI().toURL());
+            AudioPlayer.playClip(fileURL);
         } else {
-            if (desktop.isSupported(Desktop.Action.OPEN)) {
-                desktop.open(file);
+            // Open a http link that does not point to a .rtf, .ink or .wav in
+            // the browser
+            if (fileURL.getProtocol().equalsIgnoreCase("http")) {
+                if (desktop.isSupported(Desktop.Action.BROWSE)) {
+                    desktop.browse(fileURL.toURI());
+                }
+            } else {
+                if (desktop.isSupported(Desktop.Action.OPEN)) {
+                    File file = convertURLToFile(fileURL, 60000);
+                    desktop.open(file);
+                }
             }
         }
+    }
+
+    /**
+     * Converts a URL into a file reference. If the URL is a file:/// url, then
+     * simply return the underlying file. Otherwise, first copy the URL content
+     * to a local temp file, then return the temp file.
+     * 
+     * @param url
+     * @param timeout
+     * @return
+     * @throws Exception
+     */
+    public static File convertURLToFile(URL url, int timeout) throws Exception {
+        if (url.getProtocol().equalsIgnoreCase("file")) {
+            return new File(url.toURI());
+        } else {
+            File tempFile = File.createTempFile(UUID.randomUUID().toString(), null);
+            FileUtils.copyURLToFile(url, tempFile, timeout, timeout);
+            return tempFile;
+        }
+    }
+
+    public static File findFile(String filePath, File datasetDirectory) {
+        File file = null;
+        // If the supplied file path starts with one of the file system
+        // roots, then it is absolute. Otherwise, assume that
+        // it is relative to the directory in which the dataset is located.
+        boolean fileAbsolute = false;
+        for (File root : File.listRoots()) {
+            if (filePath.toLowerCase().startsWith(root.getAbsolutePath().toLowerCase())) {
+                fileAbsolute = true;
+                break;
+            }
+        }
+
+        if (fileAbsolute) {
+            file = new File(filePath);
+        } else {
+            file = new File(datasetDirectory, filePath);
+        }
+
+        return file;
     }
 }

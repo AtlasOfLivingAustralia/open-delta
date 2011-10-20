@@ -15,6 +15,8 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URL;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -91,7 +93,6 @@ import au.org.ala.delta.intkey.directives.FileInputDirective;
 import au.org.ala.delta.intkey.directives.FileJournalDirective;
 import au.org.ala.delta.intkey.directives.FileLogDirective;
 import au.org.ala.delta.intkey.directives.FileOutputDirective;
-import au.org.ala.delta.intkey.directives.FileTaxaDirective;
 import au.org.ala.delta.intkey.directives.FindCharactersDirective;
 import au.org.ala.delta.intkey.directives.FindTaxaDirective;
 import au.org.ala.delta.intkey.directives.IllustrateCharactersDirective;
@@ -148,7 +149,6 @@ import au.org.ala.delta.intkey.ui.CharacterSelectionDialog;
 import au.org.ala.delta.intkey.ui.ContentsDialog;
 import au.org.ala.delta.intkey.ui.DefineButtonDialog;
 import au.org.ala.delta.intkey.ui.DirectiveAction;
-import au.org.ala.delta.intkey.ui.DirectiveInvocationAction;
 import au.org.ala.delta.intkey.ui.FindInCharactersDialog;
 import au.org.ala.delta.intkey.ui.FindInTaxaDialog;
 import au.org.ala.delta.intkey.ui.ImageDialog;
@@ -1901,11 +1901,11 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     }
 
     @Override
-    public void displayFile(File file, String description) {
+    public void displayFile(URL fileURL, String description) {
         try {
-            UIUtils.displayFile(file, description, _desktopWorker.get());
+            UIUtils.displayFileFromURL(fileURL, description, _desktopWorker.get());
         } catch (Exception ex) {
-            displayErrorMessage("Error displaying file " + file.getAbsolutePath());
+            displayErrorMessage("Could not display file " + fileURL.toString());
         }
     }
 

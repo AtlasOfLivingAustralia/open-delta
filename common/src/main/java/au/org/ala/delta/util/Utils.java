@@ -15,6 +15,7 @@
 package au.org.ala.delta.util;
 
 import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.awt.Window;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -36,6 +37,7 @@ import java.util.zip.ZipFile;
 
 import javax.swing.JFrame;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.rtf.RTFUtils;
@@ -754,10 +756,10 @@ public class Utils {
                         inRTF = true;
                         if (wasInUnicode && srcPos + 1 < outputText.length() && outputText.charAt(srcPos + 1) == '\'')
                             inUnicode = true;
-                    }
-                    else if (ch == '>') {
-                    	// Append a space after the RTF (it was probably stripped by the attribute parsing) 
-                    	outputText.insert(srcPos, "{}");
+                    } else if (ch == '>') {
+                        // Append a space after the RTF (it was probably
+                        // stripped by the attribute parsing)
+                        outputText.insert(srcPos, "{}");
                     }
                 }
             } else if (ch == '\\')
@@ -781,11 +783,13 @@ public class Utils {
             outputText.append('>');
         return outputText.toString();
     }
-    
+
     /**
-     *  Capitalises the first word in the supplied text (which may contain RTF markup)
-     *  the first letter of the word is preceded by a '|'.
-     * @param text the text to capitalise.
+     * Capitalises the first word in the supplied text (which may contain RTF
+     * markup) the first letter of the word is preceded by a '|'.
+     * 
+     * @param text
+     *            the text to capitalise.
      * @return the text with the first word capitalised.
      */
     public static String capitaliseFirstWord(String text) {
@@ -797,12 +801,12 @@ public class Utils {
         tmp.append(text);
         int index = 0;
         if (tmp.charAt(0) == '\\') {
-            
+
             if (tmp.length() > 1) {
                 index++;
                 char next = tmp.charAt(index);
                 if (next != '\\' && next != '-') {
-                    
+
                     while (index < text.length() && Character.isLetterOrDigit(tmp.charAt(index))) {
                         index++;
                     }
@@ -813,11 +817,10 @@ public class Utils {
             index++;
         }
         if (index < text.length() && Character.isLetter(tmp.charAt(index))) {
-            if ((index == 0) || (tmp.charAt(index-1) != '|')) {
+            if ((index == 0) || (tmp.charAt(index - 1) != '|')) {
                 tmp.setCharAt(index, Character.toUpperCase(tmp.charAt(index)));
-            }
-            else if (tmp.charAt(index-1) == '|') {
-                tmp.deleteCharAt(index-1);
+            } else if (tmp.charAt(index - 1) == '|') {
+                tmp.deleteCharAt(index - 1);
             }
         }
         return tmp.toString();
@@ -861,20 +864,44 @@ public class Utils {
             if (entry.isDirectory() && !fileForEntry.exists()) {
                 fileForEntry.mkdirs();
             } else {
-                OutputStream os = new BufferedOutputStream(new FileOutputStream(fileForEntry));
                 InputStream is = new BufferedInputStream(zipFile.getInputStream(entry));
-
-                byte[] buffer = new byte[2048];
-                while (is.read(buffer) > 0) {
-                    os.write(buffer);
-                }
-
-                is.close();
-                os.flush();
-                os.close();
+                FileUtils.copyInputStreamToFile(is, fileForEntry);
             }
         }
     }
-    
-    
+
+    public static int adjustFontSizeForDPI(int fontSize) {
+        /**
+         * Need to adjust the font size as Java 2D assumes 72 dpi. From the Java
+         * 2D FAQ:
+         * 
+         * Q: Why does (eg) a 10 pt font in Java applications appear to have a
+         * different size from the same font at 10pt in a native application?
+         * 
+         * A: Conversion from the size in points into device pixels depends on
+         * device resolution as reported by the platform APIs. Java 2D defaults
+         * to assuming 72 dpi. Platform defaults vary. Mac OS also uses 72 dpi.
+         * Linux desktops based on GTK (Gnome) or Qt (KDE) typically default to
+         * 96 dpi and let the end-user customise what they want to use. Windows
+         * defaults to 96 dpi (VGA resolution) and also offers 120 dpi (large
+         * fonts size) and lets users further specify a custom resolution. So a
+         * couple of things can now be seen
+         * 
+         * The DPI reported by platform APIs likely has no correspondence to the
+         * true DPI of the display device Its unlikely that Java 2D's default
+         * matches the platform default. So a typical results is that for
+         * Window's default 96 DPI that a 10 pt font in a Java application is
+         * 72/96 of the size of the native counterpart.
+         * 
+         * Note that Swing's Windows and GTK L&Fs do scale fonts based on the
+         * system DPI to match the desktop. If you want to do the same in your
+         * application you can call java.awt.Toolkit.getScreenResolution() and
+         * use this to apply a simple scale to the size you specify for fonts.
+         */
+        int screenRes = Toolkit.getDefaultToolkit().getScreenResolution();
+        int adjustedFontSize = (int) Math.round(Math.abs(fontSize) * screenRes / 72.0);
+
+        return adjustedFontSize;
+    }
+
 }

@@ -7,13 +7,14 @@ import java.util.ArrayList;
 
 import au.org.ala.delta.model.ResourceSettings;
 import au.org.ala.delta.model.image.OverlayLocation.OLDrawType;
+import au.org.ala.delta.util.Utils;
 
 /**
  * The ImageSettings class maintains the defaults used when creating images and
  * image overlays.
  */
 public class ImageSettings extends ResourceSettings {
-    
+
     private String _datasetName;
 
     public enum ButtonAlignment {
@@ -57,50 +58,50 @@ public class ImageSettings extends ResourceSettings {
         public int charSet;
         public String name;
         public String comment;
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + charSet;
-			result = prime * result + family;
-			result = prime * result + (italic ? 1231 : 1237);
-			result = prime * result + ((name == null) ? 0 : name.hashCode());
-			result = prime * result + pitch;
-			result = prime * result + size;
-			result = prime * result + weight;
-			return result;
-		}
 
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			FontInfo other = (FontInfo) obj;
-			if (charSet != other.charSet)
-				return false;
-			if (family != other.family)
-				return false;
-			if (italic != other.italic)
-				return false;
-			if (name == null) {
-				if (other.name != null)
-					return false;
-			} else if (!name.equals(other.name))
-				return false;
-			if (pitch != other.pitch)
-				return false;
-			if (size != other.size)
-				return false;
-			if (weight != other.weight)
-				return false;
-			return true;
-		}
-        
-        
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + charSet;
+            result = prime * result + family;
+            result = prime * result + (italic ? 1231 : 1237);
+            result = prime * result + ((name == null) ? 0 : name.hashCode());
+            result = prime * result + pitch;
+            result = prime * result + size;
+            result = prime * result + weight;
+            return result;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            FontInfo other = (FontInfo) obj;
+            if (charSet != other.charSet)
+                return false;
+            if (family != other.family)
+                return false;
+            if (italic != other.italic)
+                return false;
+            if (name == null) {
+                if (other.name != null)
+                    return false;
+            } else if (!name.equals(other.name))
+                return false;
+            if (pitch != other.pitch)
+                return false;
+            if (size != other.size)
+                return false;
+            if (weight != other.weight)
+                return false;
+            return true;
+        }
+
     }
 
     private FontInfo _defaultFontInfo;
@@ -305,35 +306,7 @@ public class ImageSettings extends ResourceSettings {
         int style = info.italic ? Font.ITALIC : 0;
         style = style | (info.weight >= 5 ? Font.BOLD : 0);
 
-        /**
-         * Need to adjust the font size as Java 2D assumes 72 dpi. From the Java
-         * 2D FAQ:
-         * 
-         * Q: Why does (eg) a 10 pt font in Java applications appear to have a
-         * different size from the same font at 10pt in a native application?
-         * 
-         * A: Conversion from the size in points into device pixels depends on
-         * device resolution as reported by the platform APIs. Java 2D defaults
-         * to assuming 72 dpi. Platform defaults vary. Mac OS also uses 72 dpi.
-         * Linux desktops based on GTK (Gnome) or Qt (KDE) typically default to
-         * 96 dpi and let the end-user customise what they want to use. Windows
-         * defaults to 96 dpi (VGA resolution) and also offers 120 dpi (large
-         * fonts size) and lets users further specify a custom resolution. So a
-         * couple of things can now be seen
-         * 
-         * The DPI reported by platform APIs likely has no correspondence to the
-         * true DPI of the display device Its unlikely that Java 2D's default
-         * matches the platform default. So a typical results is that for
-         * Window's default 96 DPI that a 10 pt font in a Java application is
-         * 72/96 of the size of the native counterpart.
-         * 
-         * Note that Swing's Windows and GTK L&Fs do scale fonts based on the
-         * system DPI to match the desktop. If you want to do the same in your
-         * application you can call java.awt.Toolkit.getScreenResolution() and
-         * use this to apply a simple scale to the size you specify for fonts.
-         */
-        int screenRes = Toolkit.getDefaultToolkit().getScreenResolution();
-        int fontSize = (int) Math.round(Math.abs(info.size) * screenRes / 72.0);
+        int fontSize = Utils.adjustFontSizeForDPI(info.size);
 
         return new Font(info.name, style, fontSize);
     }
@@ -343,10 +316,12 @@ public class ImageSettings extends ResourceSettings {
         location.setW(250);
         location.setH(250);
     }
-    
-    // The dataset name (or "heading") needs to be accessible via the image settings so that the content of 
-    // "@heading" overlays for startup images can have their text set to be the dataset name.
-    
+
+    // The dataset name (or "heading") needs to be accessible via the image
+    // settings so that the content of
+    // "@heading" overlays for startup images can have their text set to be the
+    // dataset name.
+
     public String getDatasetName() {
         return _datasetName;
     }

@@ -476,9 +476,7 @@ public class TaxonInformationDialog extends IntkeyDialog {
             URL linkFileURL = _infoSettings.findFileOnResourcePath(_linkFileName);
 
             try {
-                File file = new File(linkFileURL.toURI());
-
-                _context.getUI().displayFile(file, _description);
+                _context.getUI().displayFile(linkFileURL, _description);
             } catch (Exception ex) {
                 _context.getUI().displayErrorMessage("Badly formed URL: " + linkFileURL.toString());
             }

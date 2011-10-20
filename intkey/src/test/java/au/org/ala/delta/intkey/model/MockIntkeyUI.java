@@ -1,6 +1,7 @@
 package au.org.ala.delta.intkey.model;
 
 import java.io.File;
+import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -83,7 +84,7 @@ public class MockIntkeyUI implements IntkeyUI {
     }
 
     @Override
-    public void displayFile(File file, String description) {
+    public void displayFile(URL fileURL, String description) {
     }
 
     @Override
