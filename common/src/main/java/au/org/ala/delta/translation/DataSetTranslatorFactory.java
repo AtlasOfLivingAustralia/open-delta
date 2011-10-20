@@ -16,6 +16,7 @@ import au.org.ala.delta.translation.naturallanguage.HtmlNaturalLanguageTranslato
 import au.org.ala.delta.translation.naturallanguage.IndexWriter;
 import au.org.ala.delta.translation.naturallanguage.NaturalLanguageDataSetFilter;
 import au.org.ala.delta.translation.naturallanguage.NaturalLanguageTranslator;
+import au.org.ala.delta.translation.nexus.NexusTranslator;
 import au.org.ala.delta.translation.print.CharacterListPrinter;
 import au.org.ala.delta.translation.print.CharacterListTypeSetter;
 import au.org.ala.delta.translation.print.ItemDescriptionsPrinter;
@@ -58,6 +59,9 @@ public class DataSetTranslatorFactory {
 		else if (translation.equals(TranslateType.Dist)) {
 			translator = createDistFormatTranslator(context, formatterFactory);
 		}
+		else if (translation.equals(TranslateType.NexusFormat)) {
+			translator = createNexusFormatTranslator(context, printFile, formatterFactory);
+		}
 		else {
 			throw new RuntimeException("(Currently) unsupported translation type: "+translation);
 		}
@@ -65,6 +69,12 @@ public class DataSetTranslatorFactory {
 	}
 	
 	
+
+	private DataSetTranslator createNexusFormatTranslator(DeltaContext context, PrintFile printFile, FormatterFactory formatterFactory) {
+		CharacterFormatter charFormatter = formatterFactory.createCharacterFormatter(true, false, CommentStrippingMode.RETAIN);
+		ItemFormatter itemFormatter = formatterFactory.createItemFormatter(null, CommentStrippingMode.STRIP_ALL, false);
+		return new NexusTranslator(context, printFile, charFormatter, itemFormatter);
+	}
 
 	private DataSetTranslator createIntkeyFormatTranslator(DeltaContext context, FormatterFactory formatterFactory) {
 		FilteredDataSet dataSet = new FilteredDataSet(context, new DeltaFormatDataSetFilter(context));

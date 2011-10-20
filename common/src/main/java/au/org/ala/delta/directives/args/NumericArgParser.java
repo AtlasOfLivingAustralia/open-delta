@@ -17,7 +17,7 @@ public class NumericArgParser extends DirectiveArgsParser {
 		BigDecimal value;
 		_args = new DirectiveArguments();
 		try {
-			value = new BigDecimal(readFully());
+			value = new BigDecimal(readFully().trim());
 			_args.addValueArgument(value);
 		}
 		catch (Exception e) {

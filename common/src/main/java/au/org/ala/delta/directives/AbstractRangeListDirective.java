@@ -41,7 +41,7 @@ public abstract class AbstractRangeListDirective<C extends AbstractDeltaContext>
 	public void parse(C context, String data) throws ParseException {
 		_args = new DirectiveArguments();
 		// data is a space separate list of ranges...
-		String[] ranges = data.split(" ");
+		String[] ranges = data.trim().split(" ");
 		for (String range : ranges) {
 			IntRange r = parseRange(range);
 			forEach(r, context, new IntegerFunctor<C>() {

@@ -29,7 +29,7 @@ public abstract class AbstractCharacterDependencyDirective extends AbstractTextD
 	@Override
 	public void process(DeltaContext context, DirectiveArguments args) throws Exception {
 		
-		String data = args.getFirstArgumentText();
+		String data = args.getFirstArgumentText().trim();
 		
 		StringReader reader = new StringReader(data);
 		DependentCharactersParser parser = new DependentCharactersParser(context, reader);

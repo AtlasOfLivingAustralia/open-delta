@@ -48,4 +48,7 @@ public class IntkeyTranslator implements DataSetTranslator {
 		itemsWriter.writeAll();
 		itemsFile.close();
 	}
+	
+	@Override
+	public void translateOutputParameter(String parameterName) {}
 }

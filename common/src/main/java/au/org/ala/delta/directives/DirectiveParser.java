@@ -123,7 +123,7 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
 						if (data.length() < i + word.length() + 1) {
 							dd = null;
 						} else {
-							dd = data.substring(i + word.length() + 1).trim();
+							dd = data.substring(i + word.length() + 1);
 						}
 						// String dd = data.substring(i + word.length() +
 						// 1).trim();

@@ -25,7 +25,7 @@ public abstract class AbstractIntegerDirective extends AbstractDirective<DeltaCo
 	
 	@Override
 	public void parse(DeltaContext context, String data) throws ParseException {
-		_value = Integer.parseInt(data);
+		_value = Integer.parseInt(data.trim());
 	}
 
 	@Override

@@ -15,27 +15,26 @@
 package au.org.ala.delta.directives;
 
 import au.org.ala.delta.DeltaContext;
-import au.org.ala.delta.DeltaContext.HeadingType;
-import au.org.ala.delta.Logger;
 import au.org.ala.delta.directives.args.DirectiveArguments;
 
-public class Heading extends AbstractTextDirective {
-	
-	public static final String[] CONTROL_WORDS = {"heading"};
-	
-	public Heading() {
-		super(CONTROL_WORDS);
+/**
+ * Processes the OUTPUT FILE directive.
+ * @see http://delta-intkey.com/www/uguide.htm#_*OUTPUT_FILE__1 
+ *
+ */
+public class OutputFile extends AbstractTextDirective {
+		
+	public OutputFile() {
+		super("output", "file");
 	}
 	
 	@Override
 	public void process(DeltaContext context, DirectiveArguments args) throws Exception {
 		
-		String data = args.getFirstArgumentText().trim();
+		String data = args.getFirstArgumentText();
 		
-		String heading = replaceVariables(context, data.trim());
-		context.setHeading(HeadingType.HEADING, heading);
-		
-		Logger.log("HEADING: %s", heading);
+		String outputFile = data.trim();
+		context.getOutputFileSelector().setOutputFileName(outputFile);
 	}
 
 }

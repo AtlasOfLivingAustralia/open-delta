@@ -44,7 +44,7 @@ public class ImportControllerTestWithExistingDataSet extends AbstractImportContr
 		// Make sure our change has been imported.
 		DirectiveInstance directive = file.getDirectives().get(0);
 		assertEquals(ConforDirType.SHOW, directive.getDirective().getNumber());
-		String showText = directive.getDirectiveArguments().getFirstArgumentText();
+		String showText = directive.getDirectiveArguments().getFirstArgumentText().trim();
 		
 		assertEquals("Translate into KEY format (modified).", showText);
 	}

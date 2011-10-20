@@ -59,4 +59,7 @@ public class KeyTranslator implements DataSetTranslator {
 		itemsWriter.writeAll();
 		itemsFile.close();
 	}
+	
+	@Override
+	public void translateOutputParameter(String parameterName) {}
 }

@@ -3,6 +3,8 @@ package au.org.ala.delta.directives.args;
 import java.io.Reader;
 import java.text.ParseException;
 
+import org.apache.commons.lang.StringUtils;
+
 import au.org.ala.delta.directives.AbstractDeltaContext;
 
 /**
@@ -21,6 +23,7 @@ public class TextArgParser extends DirectiveArgsParser {
 		String text;
 		try {
 			text = readFully();
+			text = StringUtils.stripEnd(text, null);
 			_args.addTextArgument(text);
 		}
 		catch (Exception e) {

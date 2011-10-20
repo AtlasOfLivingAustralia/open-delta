@@ -1,0 +1,228 @@
+#NEXUS
+
+BEGIN DATA;
+DIMENSIONS NTAX=14 NCHAR=75;
+ 
+[!Grass Genera 14:43 20-OCT-11]
+FORMAT MISSING=? GAP=- SYMBOLS="12345";
+ 
+CHARLABELS 
+[1(2)] '<mature> culms <maximum height'
+[2(3)] 'culms <whether woody or herbac'
+[3(4)] '<longevity of plants>'
+[4(5)] 'culms <whether branched above>'
+[5(6)] 'leaf blades <whether pseudopet'
+[6(7)] 'culm nodes <whether hairy or g'
+[7(8)] 'leaf blades <shape: data incom'
+[8(9)] 'leaf blades <mid-width: data v'
+[9(10)] '<adaxial> ligule <presence>'
+[10(11)] '<adaxial> ligule <form; avoid'
+[11(12)] 'plants <whether monoecious, wi'
+[12(13)] 'inflorescence <chasmogamous: o'
+[13(14)] 'inflorescence <whether open or'
+[14(15)] 'inflorescence <whether compris'
+[15(16)] 'spikelet-bearing axes <whether'
+[16(17)] 'spikelet-bearing axes <manner'
+[17(18)] 'spikelets <grouping: recorded'
+[18(19)] 'spikelets <whether secund>'
+[19(20)] 'spikelets <whether in regular'
+[20(21)] 'spikelets <detail of ‘long-and'
+[21(22)] 'pedicels of the ‘pedicellate’'
+[22(23)] 'the ‘shorter’ <andropogonoid>'
+[23(24)] 'the ‘longer’ <andropogonoid> s'
+[24(26)] '<female-fertile> spikelets <ap'
+[25(27)] '<female-fertile> spikelets <pl'
+[26(28)] '<female-fertile> spikelets <lo'
+[27(29)] '<female-fertile> spikelets <wh'
+[28(30)] 'rachilla <of female-fertile sp'
+[29(31)] 'hairy callus <presence>'
+[30(32)] 'glumes <of female-fertile spik'
+[31(33)] 'glumes <of female-fertile spik'
+[32(34)] 'glumes <of female-fertile spik'
+[33(35)] 'glumes <of female-fertile spik'
+[34(36)] 'glumes <of female-fertile spik'
+[35(37)] 'glumes <of female-fertile spik'
+[36(38)] 'upper glume <(or the single gl'
+[37(39)] '<female-fertile> spikelets <wh'
+[38(40)] 'the incomplete <male or steril'
+[39(41)] 'the proximal incomplete floret'
+[40(42)] 'the proximal incomplete floret'
+[41(43)] 'the proximal <imperfect> lemma'
+[42(44)] '<number of> female-fertile flo'
+[43(45)] '<female-fertile> lemmas <shape'
+[44(46)] '<female-fertile> lemmas <entir'
+[45(47)] '<female-fertile> lemmas <wheth'
+[46(48)] 'awns <of female-fertile lemmas'
+[47(49)] 'awns <of female-fertile lemmas'
+[48(50)] 'awns <of female-fertile lemmas'
+[49(51)] 'awns <main, median of the fema'
+[50(52)] '<female-fertile> lemmas <wheth'
+[51(53)] '<female-fertile> lemmas <prese'
+[52(54)] '<female-fertile> lemmas <numbe'
+[53(55)] 'palea <female-fertile, presenc'
+[54(56)] 'palea <female-fertile, relativ'
+[55(57)] 'lodicules <presence in female-'
+[56(58)] 'lodicules <of female-fertile f'
+[57(59)] 'lodicules <of female-fertile f'
+[58(60)] 'stamens <number per female-fer'
+[59(61)] 'ovary <of female-fertile flore'
+[60(62)] 'stigmas <number>'
+[61(63)] 'stigmas <colour, in chasmogamo'
+[62(64)] 'fruit <length when mature>'
+[63(65)] 'fruit <or grain surface patter'
+[64(66)] 'hilum <form>'
+[65(67)] 'pericarp <whether fused or loo'
+[66(68)] '<maximum cells-distant count;'
+[67(69)] '<C4> biochemical type <as dete'
+[68(70)] '<leaf blade XyMS: reliably ind'
+[69(71)] '<leaf blade> mesophyll <presen'
+[70(72)] '<leaf blade> mesophyll <presen'
+[71(73)] 'midrib <of the leaf blade, pro'
+[72(74)] 'midrib <of the mid leaf blade,'
+[73(75)] 'midrib <and/or middle part of'
+[74(76)] '<presence in the leaf blade of'
+[75(77)] '<Zea mays>'
+;
+ 
+STATELABELS 
+1 'up to 199 cm high' '200 to 499 cm high' '500 cm high or more',
+2 'woody and persistent' 'herbaceous',
+3 'annual' 'perennial',
+4 'branched above' 'unbranched above',
+5 'pseudopetiolate' 'not pseudopetiolate',
+6 'hairy' 'glabrous',
+7 'linear to lanceolate' 'ovate-lanceolate to elliptic' 'obovate',
+8 'up to 4.9 mm wide' '5 mm wide or more',
+9 'present' 'absent',
+10 'an unfringed membrane' 'a fringed membrane' 'a fringe of hairs' 
+     'a rim of minute papillae',
+11 'monoecious with all the fertil' 'bisexual, with bisexual spikel'
+'dioecious',
+12 'a single spike' 'of spicate main branches' 'a false spike, with spikelets' 
+     'a single raceme' 'paniculate',
+13 'open' 'contracted',
+14 'a complex of ‘partial inflores' 'not comprising ‘partial inflor',
+15 'disarticulating' 'persistent',
+16 'falling entire' 'disarticulating at the joints',
+17 'solitary' 'paired' 'in triplets',
+18 'secund' 'not secund',
+19 'consistently in ‘long-and-shor' 'not in distinct ‘long-and-shor',
+20 'in pedicellate/sessile combina' 'unequally pedicellate in each',
+21 'discernible, but fused with th' 'free of the rachis',
+22 'hermaphrodite' 'female-only' 'male-only' 'sterile',
+23 'hermaphrodite' 'female-only' 'male-only' 'sterile',
+24 'up to 14.9 mm long' '15 mm long or more',
+25 'compressed laterally' 'not noticeably compressed' 
+     'compressed dorsiventrally',
+26 'disarticulating above the glum' 'disarticulating between the gl' 
+     'falling with the glumes' 'not disarticulating',
+27 'not disarticulating between th' 'disarticulating between the fl',
+28 'prolonged beyond the uppermost' 'terminated by a female-fertile',
+29 'present' 'absent',
+30 'present' 'absent',
+31 'one per spikelet' 'two' 'several',
+32 'very unequal' 'more or less equal',
+33 'shorter than the adjacent lemm' 'long relative to the adjacent',
+34 'awned' 'awnless',
+35 'carinate' 'non-carinate',
+36 'up to 1 nerved' '2 nerved' '3 nerved or more',
+37 'with female-fertile florets on' 'with incomplete florets',
+38 'proximal to the female-fertile' 'distal to the female-fertile f' 
+     'both distal and proximal to th',
+39 'up to 1' '2 or more',
+40 'male' 'sterile',
+41 'awned' 'awnless',
+42 '1' '2 or more',
+43 'entire' 'incised',
+44 'pointed' 'blunt',
+45 'awnless' 'mucronate' 'awned',
+46 '1' '2 to 5' '6 or more',
+47 'from a sinus' 'dorsal' 'apical',
+48 'non-geniculate' 'geniculate',
+49 'much shorter than the body of' 'about as long as the body of t' 
+     'much longer than the body of t',
+50 'carinate' 'non-carinate',
+51 'with a clear germination flap' 'without a germination flap',
+52 'up to 1 nerved' '2 to 7 nerved' '8 nerved or more',
+53 'present' 'absent',
+54 'relatively long' 'conspicuous but relatively sho' 'very reduced',
+55 'present' 'absent',
+56 'fleshy' 'membranous',
+57 'ciliate' 'glabrous',
+58 'up to 2' '3' '4 or more',
+59 'glabrous' 'hairy',
+60 '1' '2' '3 or more',
+61 'white' 'red pigmented' 'brown',
+62 'small to medium sized' 'large',
+63 'sculptured' 'smooth',
+64 'short' 'long-linear',
+65 'free' 'loosely adherent' 'fused',
+66 'C4' 'C3',
+67 'PCK' 'NAD–ME' 'NADP–ME',
+68 'XyMS+' 'XyMS–',
+69 'with arm cells' 'without arm cells',
+70 'with fusoids' 'without fusoids',
+71 'conspicuous' 'not readily distinguishable',
+72 'with one bundle only' 'having a conventional arc of b' 
+     'having complex vascularization',
+73 'with colourless tissue adaxial' 'without colourless tissue adax',
+74 'many of the smallest vascular' 'all the vascular bundles accom',
+75 'fruiting inflorescence a massi' 'fruiting inflorescence not as',
+;
+ 
+MATRIX 
+'Echinochloa'                                                                   
+(12)2(12)(12)22??(12)322?22-?1-----133?22121(12)(12)?3211(12)(12)11?1----2121111
+2212212131322212112                                                             
+'Anisopogon'                                                                    
+122?22111225122--22----211?111222223(12)2---12?321232221112222(23)1122(12)2-1222
+1222                                                                            
+'Bambusa'                                                                       
+312112??1(12)2?112--22----(12)(12)121212212132(23)(12)22(12)12(12)----(12)?31112
+1323??2232-11113222                                                             
+'Chloris'                                                                       
+(12)2(12)?221?1(23)22-22-(12)12----111?1112112?(123)22???1(12)?3(12)(13)1?12(12)
+11112212(12)121(13)111221(12)(12)(12)2                                          
+'Cynodon'                                                                       
+122?221?1(23)22-22-11-----11(12)?(12)212(12)121(123)(12)2---11(12)1----1?(12)111
+1221221213121221(12)222                                                         
+'Andropogon'                                                                    
+(12)2(12)(12)(12)?1?1(12)2(25)?(12)122?1121(34)?(123)3-211222(12)?(123)2112212?3
+112(23)2?(12)1311(12)(12)12?121313222121(12)2                                   
+'Agrostis'                                                                      
+12(12)2221(12)1125(12)22--22----111?(12)(12)12222(12)11----1(12)?(123)(12)22    
+(123)2221(123)122212112132-122(12)12(12)2                                       
+'Eleusine'                                                                      
+12(12)?221?1222(12)22--1-----11(14)2121211213(12)2---21(12)(12)----1?21?1(12)221
+2(13)11111212211222                                                             
+'Festuca'                                                                       
+(12)222221(12)1125(12)22--22----(12)1121212112(12)322???2(12)(12)(123)1(13)1(12)
+2?21112(12)2(12)21(12)2232-122(12)12(12)2                                       
+'Oryza'                                                                         
+(12)2(12)?(12)21?112(25)122--22----111-22(12)2212-121222111(123)131(123)1?(23)11
+122312?(12)2232-11213222                                                        
+'Panicum'                                                                       
+(12)(12)(12)(12)(12)(12)??1(123)25(12)22--22----13(34)?2212122?3211(12)211(12)1-
+---21(23)1111221221213(12)(123)(12)22(12)(12)(12)(12)2                          
+'Phragmites'                                                                    
+(12)(12)2(12)22121325122--22----(12)112111211223231(12)2211(13)13112?(12)1211   
+(12)212312132-11212222                                                          
+'Poa'                                                                           
+12(12)22?1(12)1(12)(23)5(12)22--22----11121(12)12(12)1213(12)2---211(12)----12  
+(23)1(12)122212112132-122112(12)2                                               
+'Zea'                                                                           
+221?22??121--22-22(12)?????(23)4?2212222-1211221??1----2?2112--112(12)1213132221
+2111                                                                            
+;
+ 
+END;
+ 
+BEGIN ASSUMPTIONS;
+OPTIONS DEFTYPE=unord PolyTCount=MINSTEPS;                                      
+TYPESET * untitled = unord: 2-6 9 11-23 26-30 32-35 37-38 40-41 43-44 47-48
+50-51 53 55-57 59 61 63-75, ord: 1 7-8 10 24-25 31 36 39 42 45-46 49 52 54 58 60
+62;
+ 
+WTSET * untitled = 1: 1-75;
+ 
+END;

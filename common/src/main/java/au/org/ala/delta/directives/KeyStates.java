@@ -40,7 +40,7 @@ public class KeyStates extends AbstractDirective<DeltaContext> {
 	@Override
 	public void parse(DeltaContext context, String data) throws ParseException {
 		
-		KeyStateParser parser = new KeyStateParser(context, new StringReader(data));
+		KeyStateParser parser = new KeyStateParser(context, new StringReader(data.trim()));
 		parser.parse();
 		
 		_args = parser.getDirectiveArgs();

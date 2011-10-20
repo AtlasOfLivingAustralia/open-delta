@@ -42,6 +42,7 @@ public class KeyStateParser extends DirectiveArgsParser {
 				state++;
 				parseState(charNums, state, type);
 			}
+			skipWhitespace();
  		}
 	}
 

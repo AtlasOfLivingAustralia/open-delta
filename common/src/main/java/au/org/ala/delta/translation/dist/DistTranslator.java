@@ -39,4 +39,7 @@ public class DistTranslator implements DataSetTranslator {
 		itemsWriter.writeAll();
 		itemsFile.close();
 	}
+	
+	@Override
+	public void translateOutputParameter(String parameterName) {}
 }

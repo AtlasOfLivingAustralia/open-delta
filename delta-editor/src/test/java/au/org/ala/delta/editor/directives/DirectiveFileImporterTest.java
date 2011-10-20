@@ -101,11 +101,11 @@ public class DirectiveFileImporterTest extends TestCase {
 		
 		DirectiveInstance directive = directives.get(0);
 		assertEquals("SHOW", directive.getDirective().joinNameComponents());
-		assertEquals("Translate into INTKEY format.", directive.getDirectiveArguments().getFirstArgumentText());
+		assertEquals("Translate into INTKEY format.", directive.getDirectiveArguments().getFirstArgumentText().trim());
 		
 		directive = directives.get(1);
 		assertEquals("LISTING FILE", directive.getDirective().joinNameComponents());
-		assertEquals("toint.lst", directive.getDirectiveArguments().getFirstArgumentText());
+		assertEquals("toint.lst", directive.getDirectiveArguments().getFirstArgumentText().trim());
 		
 		directive = directives.get(2);
 		assertEquals("HEADING", directive.getDirective().joinNameComponents());
@@ -196,7 +196,7 @@ public class DirectiveFileImporterTest extends TestCase {
 		
 		DirectiveInstance directive = directives.get(0);
 		assertEquals("COMMENT", directive.getDirective().joinNameComponents());
-		assertEquals("Generate distance matrix.", directive.getDirectiveArguments().getFirstArgumentText());
+		assertEquals("Generate distance matrix.", directive.getDirectiveArguments().getFirstArgumentText().trim());
 		
 		directive = directives.get(1);
 		assertEquals("LISTING FILE", directive.getDirective().joinNameComponents());

@@ -69,6 +69,9 @@ public abstract class AbstractDataSetTranslator implements DataSetTranslator {
 		afterLastCharacter();
 	}
 	
+	@Override
+	public void translateOutputParameter(String parameterName) {}
+	
 	/**
 	 * Iterates through the attributes of an Item.
 	 * @param item the item to translate.

@@ -336,6 +336,4 @@ public abstract class Character implements Illustratable, Comparable<Character>,
     public int compareTo(Character o) {
         return Integer.valueOf(this.getCharacterId()).compareTo(Integer.valueOf(o.getCharacterId()));
     }
-
-   
 }

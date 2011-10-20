@@ -13,4 +13,6 @@ public class DataSetTranslatorStub implements DataSetTranslator {
 	@Override
 	public void translateItems() { }
 	
+	@Override
+	public void translateOutputParameter(String parameterName) {}
 }

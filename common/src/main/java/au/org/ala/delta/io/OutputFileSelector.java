@@ -50,6 +50,8 @@ public class OutputFileSelector {
 	private int _outputFileIndex;
 	private PrintFile _indexFile;
 	private String _indexFileName;
+	private String _outputFileName;
+	private PrintFile _outputFile;
 	
 	/** output when a new print file is created */
 	private String _printFileHeaderText;
@@ -370,5 +372,15 @@ public class OutputFileSelector {
 		String parentPath = _context.getFile().getParent();
 		fileName = FilenameUtils.concat(parentPath, prependOutputDirectory(fileName));
 		return new File(fileName);
+	}
+
+	public void setOutputFileName(String outputFile) throws Exception {
+		_outputFileName = FilenameUtils.separatorsToSystem(outputFile);
+		PrintStream indexStream = createPrintStream(_outputFileName);
+		_outputFile = new PrintFile(indexStream, _printWidth);
+	}
+	
+	public PrintFile getOutputFile() {
+		return _outputFile;
 	}
 }
