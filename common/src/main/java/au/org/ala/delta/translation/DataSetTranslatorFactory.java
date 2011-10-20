@@ -11,11 +11,13 @@ import au.org.ala.delta.translation.delta.DeltaFormatDataSetFilter;
 import au.org.ala.delta.translation.delta.DeltaFormatTranslator;
 import au.org.ala.delta.translation.dist.DistTranslator;
 import au.org.ala.delta.translation.intkey.IntkeyTranslator;
+import au.org.ala.delta.translation.key.KeyStateTranslator;
 import au.org.ala.delta.translation.key.KeyTranslator;
 import au.org.ala.delta.translation.naturallanguage.HtmlNaturalLanguageTranslator;
 import au.org.ala.delta.translation.naturallanguage.IndexWriter;
 import au.org.ala.delta.translation.naturallanguage.NaturalLanguageDataSetFilter;
 import au.org.ala.delta.translation.naturallanguage.NaturalLanguageTranslator;
+import au.org.ala.delta.translation.nexus.NexusDataSetFilter;
 import au.org.ala.delta.translation.nexus.NexusTranslator;
 import au.org.ala.delta.translation.print.CharacterListPrinter;
 import au.org.ala.delta.translation.print.CharacterListTypeSetter;
@@ -71,9 +73,11 @@ public class DataSetTranslatorFactory {
 	
 
 	private DataSetTranslator createNexusFormatTranslator(DeltaContext context, PrintFile printFile, FormatterFactory formatterFactory) {
-		CharacterFormatter charFormatter = formatterFactory.createCharacterFormatter(true, false, CommentStrippingMode.RETAIN);
+		CharacterFormatter charFormatter = formatterFactory.createCharacterFormatter(false, false, CommentStrippingMode.RETAIN);
 		ItemFormatter itemFormatter = formatterFactory.createItemFormatter(null, CommentStrippingMode.STRIP_ALL, false);
-		return new NexusTranslator(context, printFile, charFormatter, itemFormatter);
+		FilteredDataSet dataSet = new FilteredDataSet(context, new NexusDataSetFilter(context));
+		KeyStateTranslator keyStateTranslator = new KeyStateTranslator(formatterFactory);
+		return new NexusTranslator(context, dataSet, printFile, keyStateTranslator, charFormatter, itemFormatter);
 	}
 
 	private DataSetTranslator createIntkeyFormatTranslator(DeltaContext context, FormatterFactory formatterFactory) {

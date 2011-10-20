@@ -31,14 +31,6 @@ public class OutputParameters extends AbstractCustomDirective {
 	protected DirectiveArgsParser createParser(DeltaContext context, StringReader reader) {
 		return new TextArgParser(context, reader);
 	}
-	
-	
-
-	@Override
-	public void parse(DeltaContext context, String data) throws ParseException {
-		// TODO Auto-generated method stub
-		super.parse(context, data);
-	}
 
 
 	/**

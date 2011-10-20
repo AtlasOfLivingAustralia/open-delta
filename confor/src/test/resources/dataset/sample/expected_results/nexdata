@@ -2,11 +2,11 @@
 
 BEGIN DATA;
 DIMENSIONS NTAX=14 NCHAR=75;
- 
+
 [!Grass Genera 14:43 20-OCT-11]
 FORMAT MISSING=? GAP=- SYMBOLS="12345";
- 
-CHARLABELS 
+
+CHARLABELS
 [1(2)] '<mature> culms <maximum height'
 [2(3)] 'culms <whether woody or herbac'
 [3(4)] '<longevity of plants>'
@@ -26,10 +26,10 @@ CHARLABELS
 [17(18)] 'spikelets <grouping: recorded'
 [18(19)] 'spikelets <whether secund>'
 [19(20)] 'spikelets <whether in regular'
-[20(21)] 'spikelets <detail of Ôlong-and'
-[21(22)] 'pedicels of the ÔpedicellateÕ'
-[22(23)] 'the ÔshorterÕ <andropogonoid>'
-[23(24)] 'the ÔlongerÕ <andropogonoid> s'
+[20(21)] 'spikelets <detail of â€˜long-and'
+[21(22)] 'pedicels of the â€˜pedicellateâ€™'
+[22(23)] 'the â€˜shorterâ€™ <andropogonoid>'
+[23(24)] 'the â€˜longerâ€™ <andropogonoid> s'
 [24(26)] '<female-fertile> spikelets <ap'
 [25(27)] '<female-fertile> spikelets <pl'
 [26(28)] '<female-fertile> spikelets <lo'
@@ -83,8 +83,8 @@ CHARLABELS
 [74(76)] '<presence in the leaf blade of'
 [75(77)] '<Zea mays>'
 ;
- 
-STATELABELS 
+
+STATELABELS
 1 'up to 199 cm high' '200 to 499 cm high' '500 cm high or more',
 2 'woody and persistent' 'herbaceous',
 3 'annual' 'perennial',
@@ -94,27 +94,27 @@ STATELABELS
 7 'linear to lanceolate' 'ovate-lanceolate to elliptic' 'obovate',
 8 'up to 4.9 mm wide' '5 mm wide or more',
 9 'present' 'absent',
-10 'an unfringed membrane' 'a fringed membrane' 'a fringe of hairs' 
+10 'an unfringed membrane' 'a fringed membrane' 'a fringe of hairs'
      'a rim of minute papillae',
 11 'monoecious with all the fertil' 'bisexual, with bisexual spikel'
-'dioecious',
-12 'a single spike' 'of spicate main branches' 'a false spike, with spikelets' 
+     'dioecious',
+12 'a single spike' 'of spicate main branches' 'a false spike, with spikelets'
      'a single raceme' 'paniculate',
 13 'open' 'contracted',
-14 'a complex of Ôpartial inflores' 'not comprising Ôpartial inflor',
+14 'a complex of â€˜partial inflores' 'not comprising â€˜partial inflor',
 15 'disarticulating' 'persistent',
 16 'falling entire' 'disarticulating at the joints',
 17 'solitary' 'paired' 'in triplets',
 18 'secund' 'not secund',
-19 'consistently in Ôlong-and-shor' 'not in distinct Ôlong-and-shor',
+19 'consistently in â€˜long-and-shor' 'not in distinct â€˜long-and-shor',
 20 'in pedicellate/sessile combina' 'unequally pedicellate in each',
 21 'discernible, but fused with th' 'free of the rachis',
 22 'hermaphrodite' 'female-only' 'male-only' 'sterile',
 23 'hermaphrodite' 'female-only' 'male-only' 'sterile',
 24 'up to 14.9 mm long' '15 mm long or more',
-25 'compressed laterally' 'not noticeably compressed' 
+25 'compressed laterally' 'not noticeably compressed'
      'compressed dorsiventrally',
-26 'disarticulating above the glum' 'disarticulating between the gl' 
+26 'disarticulating above the glum' 'disarticulating between the gl'
      'falling with the glumes' 'not disarticulating',
 27 'not disarticulating between th' 'disarticulating between the fl',
 28 'prolonged beyond the uppermost' 'terminated by a female-fertile',
@@ -127,7 +127,7 @@ STATELABELS
 35 'carinate' 'non-carinate',
 36 'up to 1 nerved' '2 nerved' '3 nerved or more',
 37 'with female-fertile florets on' 'with incomplete florets',
-38 'proximal to the female-fertile' 'distal to the female-fertile f' 
+38 'proximal to the female-fertile' 'distal to the female-fertile f'
      'both distal and proximal to th',
 39 'up to 1' '2 or more',
 40 'male' 'sterile',
@@ -139,7 +139,7 @@ STATELABELS
 46 '1' '2 to 5' '6 or more',
 47 'from a sinus' 'dorsal' 'apical',
 48 'non-geniculate' 'geniculate',
-49 'much shorter than the body of' 'about as long as the body of t' 
+49 'much shorter than the body of' 'about as long as the body of t'
      'much longer than the body of t',
 50 'carinate' 'non-carinate',
 51 'with a clear germination flap' 'without a germination flap',
@@ -158,18 +158,18 @@ STATELABELS
 64 'short' 'long-linear',
 65 'free' 'loosely adherent' 'fused',
 66 'C4' 'C3',
-67 'PCK' 'NADÐME' 'NADPÐME',
-68 'XyMS+' 'XyMSÐ',
+67 'PCK' 'NADâ€“ME' 'NADPâ€“ME',
+68 'XyMS+' 'XyMSâ€“',
 69 'with arm cells' 'without arm cells',
 70 'with fusoids' 'without fusoids',
 71 'conspicuous' 'not readily distinguishable',
-72 'with one bundle only' 'having a conventional arc of b' 
+72 'with one bundle only' 'having a conventional arc of b'
      'having complex vascularization',
 73 'with colourless tissue adaxial' 'without colourless tissue adax',
 74 'many of the smallest vascular' 'all the vascular bundles accom',
 75 'fruiting inflorescence a massi' 'fruiting inflorescence not as',
 ;
- 
+
 MATRIX 
 'Echinochloa'                                                                   
 (12)2(12)(12)22??(12)322?22-?1-----133?22121(12)(12)?3211(12)(12)11?1----2121111

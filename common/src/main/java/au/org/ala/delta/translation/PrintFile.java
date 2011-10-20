@@ -31,7 +31,8 @@ public class PrintFile {
     private String _newFileHeader;
     private String _fileFooter;
     private boolean _omitNextTrailingSpace = false;
-
+    private char[] _wrapAsGroupChar;
+    
     public PrintFile(final StringBuilder buffer) {
 
         _output = new PrintStream(new OutputStream() {
@@ -70,6 +71,10 @@ public class PrintFile {
     
     public void setSoftWrap(boolean softWrap) {
         _softWrap = softWrap;
+    }
+    
+    public void setWrapingGroupChars(char startGroup, char endGroup) {
+    	_wrapAsGroupChar = new char[] {startGroup, endGroup};
     }
 
     public void insertTypeSettingMarks(int number) {
@@ -202,8 +207,7 @@ public class PrintFile {
 
 	private int findWrapPosition() {
         int numSpaces = numLeadingSpaces(_outputBuffer);
-        int wrappingPos = _outputBuffer.lastIndexOf(" ", _printWidth);
-
+        int wrappingPos = findWrappingSpace();
         if (wrappingPos <= numSpaces) {
             if (_softWrap) {
                 wrappingPos = _outputBuffer.indexOf(" ", _printWidth);
@@ -221,6 +225,48 @@ public class PrintFile {
         }
         return wrappingPos;
     }
+	
+	private int findWrappingSpace() {
+		int wrappingPos;
+		if (_wrapAsGroupChar == null) {
+			wrappingPos = _outputBuffer.lastIndexOf(" ", _printWidth);
+		}
+		else {
+			int maxSpace = 0;
+			int groupNest = 0;
+			int maxGroupStart = 0;
+			for (int i=0; i<_printWidth; i++) {
+				if (_wrapAsGroupChar[0] == _wrapAsGroupChar[1]) {
+					if (_outputBuffer.charAt(i) == _wrapAsGroupChar[0]) {
+						groupNest = groupNest == 0 ? 1: 0;
+					}
+				}
+				else {
+					if (_outputBuffer.charAt(i) == _wrapAsGroupChar[0]) {
+						groupNest++;
+						maxGroupStart = i;
+					}
+					else if (_outputBuffer.charAt(i) == _wrapAsGroupChar[1]) {
+						groupNest = Math.max(groupNest-1, 0);
+						
+					}
+				}
+				if (_outputBuffer.charAt(i) == ' ') {
+					if (groupNest == 0) {
+						maxSpace = i;
+					}
+				}
+			}
+			if (groupNest > 0 && maxSpace == 0) {
+				wrappingPos = maxGroupStart;
+			}
+			else {
+				wrappingPos = maxSpace;
+			}
+			
+		}
+		return wrappingPos;
+	}
 
     public void writeTypeSettingMark(String mark) {
     	
@@ -408,4 +454,6 @@ public class PrintFile {
 		writeFooter();
 		IOUtils.closeQuietly(_output);
 	}
+
+	
 }

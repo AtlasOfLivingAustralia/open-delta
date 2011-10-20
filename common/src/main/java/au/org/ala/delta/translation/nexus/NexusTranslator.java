@@ -14,12 +14,13 @@ import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.NumericAttribute;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.FilteredCharacterFormatter;
+import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.translation.DataSetTranslator;
 import au.org.ala.delta.translation.FilteredDataSet;
 import au.org.ala.delta.translation.FilteredItem;
 import au.org.ala.delta.translation.PrintFile;
-import au.org.ala.delta.translation.naturallanguage.NaturalLanguageDataSetFilter;
+import au.org.ala.delta.translation.key.KeyStateTranslator;
 
 /**
  * Implements the translation into Nexus format as specified using the TRANSLATE
@@ -60,21 +61,27 @@ public class NexusTranslator implements DataSetTranslator {
 		"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", 
 		"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", 
 		"K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", 
-		"U", "V"};
+		"U", "V", "W", "X", "Y", "Z"};
 	
 	private DeltaContext _context;
 	private PrintFile _outputFile;
 	private FilteredDataSet _dataSet;
 	private CharacterFormatter _characterFormatter;
 	private ItemFormatter _itemFormatter;
+	private KeyStateTranslator _keyStateTranslator;
 
-	public NexusTranslator(DeltaContext context, PrintFile outputFile, 
+	public NexusTranslator(DeltaContext context, FilteredDataSet dataSet, 
+			PrintFile outputFile, KeyStateTranslator keyStateTranslator,
 			CharacterFormatter characterFormatter, ItemFormatter itemFormatter) {
 		_context = context;
-		_dataSet = new FilteredDataSet(context, new NaturalLanguageDataSetFilter(context));
+		_dataSet = dataSet;
 		_outputFile = outputFile;
+		_outputFile.setWrapingGroupChars('\'', '\'');
+		_outputFile.setLineWrapIndent(5);
+		
 		_characterFormatter = characterFormatter;
 		_itemFormatter = itemFormatter;
+		_keyStateTranslator = keyStateTranslator;
 	}
 
 	@Override
@@ -114,7 +121,7 @@ public class NexusTranslator implements DataSetTranslator {
 		PARAMETER param = PARAMETER.fromName(parameterName);
 		switch (param) {
 		case ASSUMPTIONS:
-			translator = new Command("BEGIN ASSUMPTIONS;");
+			translator = new Command("BEGIN ASSUMPTIONS");
 			break;
 		case CHARLABELS:
 			translator = new CharLabels();
@@ -175,7 +182,8 @@ public class NexusTranslator implements DataSetTranslator {
 			return value;
 		}
 		else {
-			return value.substring(0, MAX_LENGTH);
+			value = value.substring(0, MAX_LENGTH);
+			return value.trim();
 		}
 	}
 	class CharLabels extends ParameterTranslator {
@@ -188,12 +196,12 @@ public class NexusTranslator implements DataSetTranslator {
 				outputCharacter(characters.next());
 			}
 			_outputFile.outputLine(";");
+			_outputFile.writeBlankLines(1, 0);
 		}
 		
 		private void outputCharacter(IdentificationKeyCharacter character) {
 			FilteredCharacterFormatter _formatter = new FilteredCharacterFormatter();
-			CharacterFormatter charFormatter = new CharacterFormatter();
-			String description = charFormatter.formatCharacterDescription(character.getCharacter());
+			String description = _characterFormatter.formatCharacterDescription(character.getCharacter());
 			StringBuilder charOut = new StringBuilder();
 			charOut.append(comment(_formatter.formatCharacterNumber(character)));
 			charOut.append(" ");
@@ -203,22 +211,15 @@ public class NexusTranslator implements DataSetTranslator {
 		}
 	}
 
-	class Data extends ParameterTranslator {
-		@Override
-		public void translateParameter(String parameter) {
-
-		}
-	}
-
 	class Dimensions extends ParameterTranslator {
 		@Override
 		public void translateParameter(String parameter) {
 			StringBuilder dimensions = new StringBuilder();
 			dimensions.append("DIMENSIONS NTAX=").append(_dataSet.getNumberOfFilteredItems());
 			dimensions.append(" NCHAR=").append(_dataSet.getNumberOfFilteredCharacters());
-			dimensions.append(";");
 			
-			_outputFile.outputLine(dimensions.toString());
+			command(dimensions.toString());
+			_outputFile.writeBlankLines(1, 0);
 		}
 	}
 	
@@ -274,6 +275,7 @@ public class NexusTranslator implements DataSetTranslator {
 			format.append("\"");
 			
 			command(format.toString());
+			_outputFile.writeBlankLines(1, 0);
 		}
 	}
 
@@ -287,12 +289,18 @@ public class NexusTranslator implements DataSetTranslator {
 	class StateLabels extends ParameterTranslator {
 		@Override
 		public void translateParameter(String parameter) {
+			_outputFile.setIndentOnLineWrap(true);
+			
 			_outputFile.outputLine("STATELABELS");
 			Iterator<IdentificationKeyCharacter> characters = _dataSet.identificationKeyCharacterIterator();
 			while(characters.hasNext()) {
 				outputCharacterStates(characters.next());
 			}
 			_outputFile.outputLine(";");
+			_outputFile.writeBlankLines(1, 0);
+			
+			_outputFile.setIndentOnLineWrap(false);
+			
 		}
 		
 		private void outputCharacterStates(IdentificationKeyCharacter character) {
@@ -302,12 +310,15 @@ public class NexusTranslator implements DataSetTranslator {
 			boolean hasKeyStates = !character.getStates().isEmpty();
 			for (int i=1; i<=character.getNumberOfStates(); i++) {
 				states.append("'");
+				String state = null;
 				if (hasKeyStates) {
-					states.append(character.getKeyState(i));
+					state = _keyStateTranslator.translateState(character, i);
 				}
 				else {
-					states.append(((MultiStateCharacter)character.getCharacter()).getState(i));
+					MultiStateCharacter multiStateChar = (MultiStateCharacter)character.getCharacter();
+					state = _characterFormatter.formatState(multiStateChar, i, CommentStrippingMode.STRIP_ALL);
 				}
+				states.append(truncate(state));
 				states.append("'");
 				if (i != character.getNumberOfStates()) {
 					states.append(" ");
@@ -321,6 +332,8 @@ public class NexusTranslator implements DataSetTranslator {
 	class Matrix extends ParameterTranslator {
 		@Override
 		public void translateParameter(String parameter) {
+			_outputFile.outputLine("MATRIX");
+			_outputFile.setWrapingGroupChars('(', ')');
 			Iterator<FilteredItem> items = _dataSet.filteredItems();
 			while (items.hasNext()) {
 				Item item = items.next().getItem();
@@ -341,6 +354,8 @@ public class NexusTranslator implements DataSetTranslator {
 				}
 				_outputFile.outputLine(statesOut.toString());
 			}
+			_outputFile.outputLine(";");
+			_outputFile.writeBlankLines(1, 0);
 		}
 		
 		private void writeItem(Item item) {
@@ -367,15 +382,6 @@ public class NexusTranslator implements DataSetTranslator {
 		}
 	}
 	
-	
-
-	class Nexus extends ParameterTranslator {
-		@Override
-		public void translateParameter(String parameter) {
-
-		}
-	}
-
 	class TypeSet extends ParameterTranslator {
 		@Override
 		public void translateParameter(String parameter) {
