@@ -14,7 +14,7 @@ public class KeyOutputFile extends AbstractTextDirective {
 	
 	@Override
 	public void process(DeltaContext context, DirectiveArguments directiveArguments) throws Exception {
-		context.getOutputFileSelector().setKeyOutputFile(directiveArguments.getFirstArgumentText());
+		context.getOutputFileSelector().setKeyOutputFile(directiveArguments.getFirstArgumentText().trim());
 	}
 
 }

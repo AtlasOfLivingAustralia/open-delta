@@ -14,7 +14,7 @@ public class DistOutputFile extends AbstractTextDirective {
 	
 	@Override
 	public void process(DeltaContext context, DirectiveArguments directiveArguments) throws Exception {
-		context.getOutputFileSelector().setDistOutputFile(directiveArguments.getFirstArgumentText());
+		context.getOutputFileSelector().setDistOutputFile(directiveArguments.getFirstArgumentText().trim());
 	}
 
 }

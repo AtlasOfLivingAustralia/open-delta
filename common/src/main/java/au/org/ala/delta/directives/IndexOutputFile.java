@@ -29,7 +29,7 @@ public class IndexOutputFile extends AbstractTextDirective {
 	@Override
 	public void process(DeltaContext context, DirectiveArguments args) throws Exception {
 		
-		context.getOutputFileSelector().setIndexOutputFile(args.getFirstArgumentText());
+		context.getOutputFileSelector().setIndexOutputFile(args.getFirstArgumentText().trim());
 
 	}
 
