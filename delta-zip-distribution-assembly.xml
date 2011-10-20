@@ -14,7 +14,7 @@
 			<directory>${project.basedir}/intkey/src/test/resources/dataset/sample</directory>
 			<outputDirectory>/sample</outputDirectory>
 			<includes>
-				<include>*</include>
+				<include>**/*</include>
 			</includes>
 		</fileSet>		
 		<fileSet>
