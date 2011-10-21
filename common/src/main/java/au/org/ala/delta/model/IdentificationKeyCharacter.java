@@ -173,7 +173,7 @@ public class IdentificationKeyCharacter {
 	
 	public List<Integer> getPresentStates(MultiStateAttribute attribute) {
 		
-		List<Integer> states = new ArrayList<Integer>();
+		Set<Integer> states = new HashSet<Integer>();
 		if (attribute.isVariable()) {
 			for (int i=1; i<=getNumberOfStates(); i++) {
 				states.add(i);
@@ -194,11 +194,13 @@ public class IdentificationKeyCharacter {
 				states.addAll(originalStates);
 			}
 		}
-		return states;
+		List<Integer> statesList = new ArrayList<Integer>(states);
+		Collections.sort(statesList);
+		return statesList;
 	}
 
 	public List<Integer> getPresentStates(NumericAttribute attribute) {
-		List<Integer> states = new ArrayList<Integer>();
+		Set<Integer> states = new HashSet<Integer>();
 		if (attribute.isVariable()) {
 			for (int i=1; i<=getNumberOfStates(); i++) {
 				states.add(i);
@@ -222,7 +224,7 @@ public class IdentificationKeyCharacter {
 			}
 			
 		}
-		return states;
+		return new ArrayList<Integer>(states);
 	}
 	
 	public Integer getCharacterNumber() {
@@ -295,5 +297,9 @@ public class IdentificationKeyCharacter {
 		Set<Integer> states = new HashSet<Integer>();
 		states.add(state);
 		return factory.createCharacterDependency((MultiStateCharacter)_character, states, dependentChars);
+	}
+
+	public void setUseNormalValues(boolean b) {
+		_useNormalValues = b;	
 	}
 }

@@ -25,7 +25,7 @@ public class IntegerIdArgParser extends DirectiveArgsParser {
 	public void parse() throws ParseException {
 		_args = new DirectiveArguments();
 		try {
-			Integer id = Integer.parseInt(readFully());
+			Integer id = Integer.parseInt(readFully().trim());
 			_args.addDirectiveArgument(id);
 		}
 		catch (Exception e) {

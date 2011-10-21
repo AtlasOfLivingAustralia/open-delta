@@ -27,6 +27,7 @@ import au.org.ala.delta.model.MultiStateAttribute;
 import au.org.ala.delta.model.NumericAttribute;
 import au.org.ala.delta.model.NumericRange;
 import au.org.ala.delta.model.image.Image;
+import au.org.ala.delta.model.impl.ControllingInfo;
 import au.org.ala.delta.translation.FilteredCharacter;
 import au.org.ala.delta.translation.FilteredDataSet;
 import au.org.ala.delta.translation.FilteredItem;
@@ -171,13 +172,22 @@ public class IntkeyItemsFileWriter {
 			// Turn into bitset.
 			BitSet bits = new BinaryKeyFileEncoder().encodeAttributeStates(states);
 			
-			if (attribute.isInapplicable()) {
+			if (isInapplicable(attribute)) {
 				bits.set(numStates);
 			}
 			attributes.add(bits);
 		}
 		
 		_itemsFile.writeAttributeBits(charNumber, attributes, numStates+1);
+	}
+	
+	private boolean isInapplicable(Attribute attribute) {
+		if (!attribute.isInapplicable()) {
+			ControllingInfo controllingInfo = _dataSet.checkApplicability(
+					attribute.getCharacter(), attribute.getItem());
+			return controllingInfo.isInapplicable() || controllingInfo.isMaybeInapplicable();
+		}
+		return true;
 	}
 	
 	private IntRange writeIntegerAttributes(int filteredCharacterNumber, Character character) {
@@ -203,7 +213,7 @@ public class IntkeyItemsFileWriter {
 					continue;
 				}
 				
-				if (attribute.isInapplicable()) {
+				if (isInapplicable(attribute)) {
 					bits.set(numStates+3);
 				}
 				
@@ -330,7 +340,7 @@ public class IntkeyItemsFileWriter {
 			if (attribute == null || attribute.isUnknown() || attribute.isInapplicable() || attribute.isVariable()) {
 				FloatRange range = new FloatRange(Float.MAX_VALUE);
 				values.add(range);
-				if (attribute.isInapplicable()) {
+				if (isInapplicable(attribute)) {
 					inapplicableBits.set(i-1);
 				}
 				continue;
@@ -389,7 +399,7 @@ public class IntkeyItemsFileWriter {
 				values.add("");
 				continue;
 			}
-			if (attribute.isInapplicable()) {
+			if (isInapplicable(attribute)) {
 				inapplicableBits.set(item.getItemNumber()-1);
 				values.add("");
 			}

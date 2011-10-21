@@ -191,6 +191,7 @@ public abstract class AbstractObservableDataSet implements ObservableDeltaDataSe
 	
 	@Override
 	public ControllingInfo checkApplicability(Character character, Item item) {
+		
 		return checkApplicability(character, item, character, 0, new ArrayList<Integer>());
 	}
 	
@@ -246,7 +247,12 @@ public abstract class AbstractObservableDataSet implements ObservableDeltaDataSe
 
 		boolean unknownOk = false;
 		
+		
 		if (controlling != null && controlling.size() > 1) {
+			// remove the null (if we are recursing) before we sort.
+			while (controlling.contains(null)) {
+				controlling.remove((Object)null);
+			}
 			Collections.sort(controlling);
 		}
 
@@ -301,6 +307,13 @@ public abstract class AbstractObservableDataSet implements ObservableDeltaDataSe
 								}
 							} else if (controllingStates.containsAll(codedStates)) {
 								return new ControllingInfo(ControlledStateType.Inapplicable, controllingId);
+							}
+							else {
+								for (int state : codedStates) {
+									if (controllingStates.contains(state)) {
+										return new ControllingInfo(ControlledStateType.MaybeInapplicable, controllingId);
+									}
+								}
 							}
 						}
 					} else if (multiStateChar.getUncodedImplicitState() > 0) {

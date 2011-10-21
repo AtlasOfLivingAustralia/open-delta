@@ -784,11 +784,17 @@ public class DeltaContext extends AbstractDeltaContext {
 	}
 	
 	public IdentificationKeyCharacter getIdentificationKeyCharacter(int characterNumber) {
-		return _keyCharacters.get(characterNumber);
-	}
-	
-	public Map<Integer, IdentificationKeyCharacter> getIdentificaitonKeyCharacters() {
-		return _keyCharacters;
+		IdentificationKeyCharacter keyChar = _keyCharacters.get(characterNumber);
+		// Because the TRANSLATE TYPE, USE NORMAL VALUES and KEY STATES directives
+		// are all type 4, we have to defer the determination of whether the
+		// KeyChar needs to use normal values or not till now rather at 
+		// construction time.
+		if (keyChar != null) {
+		    keyChar.setUseNormalValues(
+				_translateType == TranslateType.NexusFormat ||
+				_useNormalValues.containsKey(characterNumber));
+		}
+		return keyChar;
 	}
 	
 	public void disableDeltaOutput() {

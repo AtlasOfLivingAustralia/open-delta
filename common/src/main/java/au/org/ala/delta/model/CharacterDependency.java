@@ -150,7 +150,9 @@ public class CharacterDependency implements Comparable<CharacterDependency>{
 
 	@Override
 	public int compareTo(CharacterDependency o) {
-		
+		if (o == null) {
+			return -1;
+		}
 		return Integer.valueOf(_impl.getControllingCharacterId()).compareTo(
 				Integer.valueOf(o.getControllingCharacterId()));
 	}

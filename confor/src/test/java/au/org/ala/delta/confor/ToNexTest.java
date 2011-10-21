@@ -1,6 +1,8 @@
 package au.org.ala.delta.confor;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.StringReader;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -47,6 +49,17 @@ public class ToNexTest extends ConforTestCase {
 				break;
 			}
 		}
+		BufferedReader expectedReader = new BufferedReader(new StringReader(expected));
+		BufferedReader actualReader = new BufferedReader(new StringReader(actual));
+		String expectedLine = expectedReader.readLine();
+		String actualLine = actualReader.readLine();
+		/*while (expectedLine != null) {
+			assertEquals(expectedLine.trim(), actualLine.trim());
+			expectedLine = expectedReader.readLine();
+			actualLine = actualReader.readLine();
+			
+		}*/
+		
 		//assertEquals(expected.trim(), actual.trim());
 	}
 

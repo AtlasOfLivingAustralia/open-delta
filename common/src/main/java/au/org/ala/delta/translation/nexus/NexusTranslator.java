@@ -16,6 +16,7 @@ import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.FilteredCharacterFormatter;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.model.format.ItemFormatter;
+import au.org.ala.delta.model.impl.ControllingInfo;
 import au.org.ala.delta.translation.DataSetTranslator;
 import au.org.ala.delta.translation.FilteredDataSet;
 import au.org.ala.delta.translation.FilteredItem;
@@ -343,19 +344,36 @@ public class NexusTranslator implements DataSetTranslator {
 				while (characters.hasNext()) {
 					IdentificationKeyCharacter character = characters.next();
 					Attribute attribute = item.getAttribute(character.getCharacter());
-					List<Integer> states = new ArrayList<Integer>();
-					if (attribute instanceof MultiStateAttribute) {
-					    states.addAll(character.getPresentStates((MultiStateAttribute)attribute));
+					if (isInapplicable(attribute)) {
+						statesOut.append("-");
 					}
-					else if (attribute instanceof NumericAttribute) {
-						states.addAll(character.getPresentStates((NumericAttribute)attribute));
+					else {
+						List<Integer> states = new ArrayList<Integer>();
+						
+						if (attribute instanceof MultiStateAttribute) {
+						    states.addAll(character.getPresentStates((MultiStateAttribute)attribute));
+						}
+						else if (attribute instanceof NumericAttribute) {
+							states.addAll(character.getPresentStates((NumericAttribute)attribute));
+						}
+						addStates(statesOut, states);
 					}
-					addStates(statesOut, states);
 				}
 				_outputFile.outputLine(statesOut.toString());
 			}
 			_outputFile.outputLine(";");
 			_outputFile.writeBlankLines(1, 0);
+		}
+		
+		private boolean isInapplicable(Attribute attribute) {
+			if (!attribute.isInapplicable()) {
+				ControllingInfo controllingInfo = _dataSet.checkApplicability(
+						attribute.getCharacter(), attribute.getItem());
+				
+				return (controllingInfo.isInapplicable() ||
+						controllingInfo.isMaybeInapplicable() && attribute.isUnknown());
+			}
+			return true;
 		}
 		
 		private void writeItem(Item item) {

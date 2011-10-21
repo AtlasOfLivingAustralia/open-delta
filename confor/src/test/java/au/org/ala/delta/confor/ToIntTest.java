@@ -51,7 +51,7 @@ public class ToIntTest extends TestCase {
 		
 		IntkeyDataset expectedDataSet = IntkeyDatasetFileReader.readDataSet(expectedIChars, expectedIItems);
 		
-		/*
+		
 		
 		
 		assertEquals(expectedDataSet.getNumberOfCharacters(), dataSet.getNumberOfCharacters());
@@ -160,7 +160,7 @@ public class ToIntTest extends TestCase {
 			}
 			
 		}
-		*/
+		
 	}
 	
 	private File urlToFile(String urlString) throws Exception {
