@@ -12,6 +12,7 @@ import javax.swing.JDialog;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.MouseInputAdapter;
 
@@ -21,8 +22,6 @@ import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
-
-import javax.swing.ListSelectionModel;
 
 public class ContentsDialog extends JDialog {
 

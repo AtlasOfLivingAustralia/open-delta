@@ -1,9 +1,6 @@
 package au.org.ala.delta.intkey.directives.invocation;
 
-import java.net.MalformedURLException;
 import java.net.URL;
-
-import javax.xml.crypto.URIReferenceException;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
 

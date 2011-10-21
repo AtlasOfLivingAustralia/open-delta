@@ -22,18 +22,27 @@ public class ParsingUtils {
 
     // Take an individual number, number range or keyword and return the
     // corresponding characters
-    public static List<Character> parseCharacterToken(String characterToken, IntkeyContext context) {
+    public static List<Character> parseCharacterToken(String characterToken, IntkeyContext context) throws IntkeyDirectiveParseException {
         List<Character> characters = new ArrayList<Character>();
 
         IntRange range = ParsingUtils.parseIntRange(characterToken);
         if (range != null) {
             for (int i : range.toArray()) {
-                Character c = context.getDataset().getCharacter(i);
-                characters.add(c);
+                try {
+                    Character c = context.getDataset().getCharacter(i);
+                    characters.add(c);
+                } catch (IllegalArgumentException ex) {
+                    throw new IntkeyDirectiveParseException("InvalidCharacterNumber.error", i, context.getDataset().getNumberOfCharacters());
+                }
+
             }
         } else {
-            List<Character> keywordCharacters = context.getCharactersForKeyword(removeEnclosingQuotes(characterToken));
-            characters.addAll(keywordCharacters);
+            try {
+                List<Character> keywordCharacters = context.getCharactersForKeyword(removeEnclosingQuotes(characterToken));
+                characters.addAll(keywordCharacters);
+            } catch (IllegalArgumentException ex) {
+                throw new IntkeyDirectiveParseException("CharacterKeywordNotFoundOrAmbiguous.error", characterToken);
+            }
         }
 
         return characters;
@@ -41,19 +50,27 @@ public class ParsingUtils {
 
     // Take an individual number, number range or keyword and return the
     // corresponding taxa
-    public static List<Item> parseTaxonToken(String taxonToken, IntkeyContext context) {
+    public static List<Item> parseTaxonToken(String taxonToken, IntkeyContext context) throws IntkeyDirectiveParseException {
         List<Item> taxa = new ArrayList<Item>();
 
         IntRange range = ParsingUtils.parseIntRange(taxonToken);
 
         if (range != null) {
             for (int i : range.toArray()) {
-                Item t = context.getDataset().getTaxon(i);
-                taxa.add(t);
+                try {
+                    Item t = context.getDataset().getTaxon(i);
+                    taxa.add(t);
+                } catch (IllegalArgumentException ex) {
+                    throw new IntkeyDirectiveParseException("InvalidTaxonNumber.error", i, context.getDataset().getNumberOfTaxa());
+                }
             }
         } else {
-            List<Item> keywordTaxa = context.getTaxaForKeyword(removeEnclosingQuotes(taxonToken));
-            taxa.addAll(keywordTaxa);
+            try {
+                List<Item> keywordTaxa = context.getTaxaForKeyword(removeEnclosingQuotes(taxonToken));
+                taxa.addAll(keywordTaxa);
+            } catch (IllegalArgumentException ex) {
+                throw new IntkeyDirectiveParseException("TaxonKeywordNotFoundOrAmbiguous.error", taxonToken);
+            }
         }
 
         return taxa;

@@ -7,10 +7,6 @@ import org.junit.Test;
 
 import au.org.ala.delta.intkey.directives.DifferencesDirective;
 import au.org.ala.delta.intkey.directives.UseDirective;
-import au.org.ala.delta.intkey.model.DiffUtils;
-import au.org.ala.delta.intkey.model.IntkeyContext;
-import au.org.ala.delta.intkey.model.IntkeyDataset;
-import au.org.ala.delta.intkey.model.MatchType;
 import au.org.ala.delta.intkey.model.specimen.Specimen;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.IntegerCharacter;

@@ -8,7 +8,6 @@ import junit.framework.TestCase;
 import org.junit.Test;
 
 import au.org.ala.delta.intkey.directives.FileTaxaDirective;
-import au.org.ala.delta.intkey.model.IntkeyContext;
 
 /**
  * Unit tests for the FILE TAXA directive

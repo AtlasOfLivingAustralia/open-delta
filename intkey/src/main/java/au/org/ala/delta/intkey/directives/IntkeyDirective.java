@@ -60,6 +60,7 @@ public abstract class IntkeyDirective extends AbstractDirective<IntkeyContext> {
         if (invoc != null) {
             context.executeDirective(invoc);
         }
+
     }
 
     protected abstract IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception;

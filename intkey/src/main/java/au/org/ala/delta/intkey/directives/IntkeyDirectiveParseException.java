@@ -1,5 +1,9 @@
 package au.org.ala.delta.intkey.directives;
 
+import java.text.MessageFormat;
+
+import au.org.ala.delta.intkey.ui.UIUtils;
+
 public class IntkeyDirectiveParseException extends Exception {
 
     /**
@@ -11,16 +15,11 @@ public class IntkeyDirectiveParseException extends Exception {
         super();
     }
 
-    public IntkeyDirectiveParseException(String message, Throwable cause) {
-        super(message, cause);
+    public IntkeyDirectiveParseException(String messageKey, Throwable cause, Object... messageArguments) {
+        super(MessageFormat.format(UIUtils.getResourceString(messageKey), messageArguments), cause);
     }
 
-    public IntkeyDirectiveParseException(String message) {
-        super(message);
+    public IntkeyDirectiveParseException(String messageKey, Object... messageArguments) {
+        super(MessageFormat.format(UIUtils.getResourceString(messageKey), messageArguments));
     }
-
-    public IntkeyDirectiveParseException(Throwable cause) {
-        super(cause);
-    }
-
 }

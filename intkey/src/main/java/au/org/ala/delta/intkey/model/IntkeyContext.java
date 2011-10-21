@@ -603,11 +603,11 @@ public class IntkeyContext extends AbstractDeltaContext {
                 }
 
                 if (matches.size() == 0) {
-                    throw new IllegalArgumentException(String.format(UIUtils.getResourceString("KeywordNotFound.error"), keyword));
+                    throw new IllegalArgumentException("Keyword not found");
                 } else if (matches.size() == 1) {
                     characterNumbersSet = _userDefinedCharacterKeywords.get(matches.get(0));
                 } else {
-                    throw new IllegalArgumentException(String.format(UIUtils.getResourceString("KeywordAmbiguous.error"), keyword));
+                    throw new IllegalArgumentException("Keyword ambiguous");
                 }
             }
 
@@ -702,11 +702,11 @@ public class IntkeyContext extends AbstractDeltaContext {
                 }
 
                 if (matches.size() == 0) {
-                    throw new IllegalArgumentException(String.format(UIUtils.getResourceString("KeywordNotFound.error"), keyword));
+                    throw new IllegalArgumentException("keyword not found");
                 } else if (matches.size() == 1) {
                     taxaNumbersSet = _userDefinedTaxonKeywords.get(matches.get(0));
                 } else {
-                    throw new IllegalArgumentException(String.format(UIUtils.getResourceString("KeywordAmbiguous.error"), keyword));
+                    throw new IllegalArgumentException("keyword ambiguous");
                 }
             }
 

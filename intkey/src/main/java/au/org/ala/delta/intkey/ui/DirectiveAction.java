@@ -9,7 +9,6 @@ import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.directives.AbstractDirective;
-import au.org.ala.delta.intkey.directives.IntkeyDirective;
 import au.org.ala.delta.intkey.directives.IntkeyDirectiveParseException;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 

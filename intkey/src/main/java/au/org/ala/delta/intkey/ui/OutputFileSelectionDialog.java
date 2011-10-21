@@ -1,6 +1,7 @@
 package au.org.ala.delta.intkey.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.io.File;
 import java.util.List;
@@ -18,7 +19,6 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
-import java.awt.Dimension;
 
 public class OutputFileSelectionDialog extends IntkeyDialog {
 

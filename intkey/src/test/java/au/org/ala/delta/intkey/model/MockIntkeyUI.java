@@ -1,12 +1,10 @@
 package au.org.ala.delta.intkey.model;
 
-import java.io.File;
 import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.List;
 
 import au.org.ala.delta.intkey.IntkeyUI;
-import au.org.ala.delta.intkey.model.IntkeyDataset;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
 

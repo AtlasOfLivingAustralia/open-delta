@@ -5,7 +5,6 @@ import java.net.URL;
 
 import javax.swing.SwingWorker;
 
-import au.org.ala.delta.intkey.model.IntkeyContext;
 import junit.framework.TestCase;
 
 /**

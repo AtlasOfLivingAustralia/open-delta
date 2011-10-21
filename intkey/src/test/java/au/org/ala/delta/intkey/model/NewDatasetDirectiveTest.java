@@ -1,8 +1,8 @@
 package au.org.ala.delta.intkey.model;
 
-import org.junit.Test;
-
 import junit.framework.TestCase;
+
+import org.junit.Test;
 
 /**
  * Unit tests for the NEWDATASET directive

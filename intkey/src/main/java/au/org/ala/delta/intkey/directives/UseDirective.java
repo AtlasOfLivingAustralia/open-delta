@@ -68,7 +68,7 @@ public class UseDirective extends IntkeyDirective {
 
             } else {
                 // No characters specified, prompt the user to select characters
-                
+
                 String directiveName = change ? directiveName = StringUtils.join(new ChangeDirective().getControlWords(), " ").toUpperCase() : StringUtils.join(_controlWords, " ").toUpperCase();
                 List<Character> selectedCharacters = context.getDirectivePopulator().promptForCharactersByKeyword(directiveName, true, false);
                 if (selectedCharacters.size() > 0) {
@@ -90,7 +90,7 @@ public class UseDirective extends IntkeyDirective {
                 try {
                     ch = context.getDataset().getCharacter(charNum);
                 } catch (IllegalArgumentException ex) {
-                    throw new IntkeyDirectiveParseException(String.format(UIUtils.getResourceString("UseDirective.InvalidCharacterNumber"), charNum, context.getDataset().getNumberOfCharacters()), ex);
+                    throw new IntkeyDirectiveParseException("UseDirective.InvalidCharacterNumber", ex, charNum, context.getDataset().getNumberOfCharacters());
                 }
 
                 // Parse the supplied value for each character, or prompt for
@@ -108,15 +108,15 @@ public class UseDirective extends IntkeyDirective {
 
                                 for (int val : setStateValues) {
                                     if (val < 0 || val > msCh.getNumberOfStates()) {
-                                        throw new IntkeyDirectiveParseException(String.format(UIUtils.getResourceString("UseDirective.InvalidStateValue"), charValue,
-                                                _charFormatter.formatCharacterDescription(ch), Integer.toString(ch.getCharacterId(), msCh.getNumberOfStates())));
+                                        throw new IntkeyDirectiveParseException("UseDirective.InvalidStateValue", charValue, _charFormatter.formatCharacterDescription(ch), Integer.toString(
+                                                ch.getCharacterId(), msCh.getNumberOfStates()));
                                     }
                                 }
 
                                 invoc.addCharacterValue((MultiStateCharacter) ch, new MultiStateValue((MultiStateCharacter) ch, setStateValues));
                             } catch (IllegalArgumentException ex) {
-                                throw new IntkeyDirectiveParseException(String.format(UIUtils.getResourceString("UseDirective.InvalidStateValue"), charValue, Integer.toString(ch.getCharacterId()),
-                                        _charFormatter.formatCharacterDescription(ch), msCh.getNumberOfStates()), ex);
+                                throw new IntkeyDirectiveParseException("UseDirective.InvalidStateValue", ex, charValue, Integer.toString(ch.getCharacterId()),
+                                        _charFormatter.formatCharacterDescription(ch), msCh.getNumberOfStates());
                             }
                         } else if (ch instanceof IntegerCharacter) {
 
@@ -124,8 +124,8 @@ public class UseDirective extends IntkeyDirective {
                                 Set<Integer> intValues = ParsingUtils.parseMultistateOrIntegerCharacterValue(charValue);
                                 invoc.addCharacterValue((IntegerCharacter) ch, new IntegerValue((IntegerCharacter) ch, intValues));
                             } catch (IllegalArgumentException ex) {
-                                throw new IntkeyDirectiveParseException(String.format(UIUtils.getResourceString("UseDirective.InvalidIntegerValue"), charValue, Integer.toString(ch.getCharacterId()),
-                                        _charFormatter.formatCharacterDescription(ch)), ex);
+                                throw new IntkeyDirectiveParseException("UseDirective.InvalidIntegerValue", ex, charValue, Integer.toString(ch.getCharacterId()),
+                                        _charFormatter.formatCharacterDescription(ch));
                             }
                         } else if (ch instanceof RealCharacter) {
 
@@ -133,8 +133,8 @@ public class UseDirective extends IntkeyDirective {
                                 FloatRange floatRange = ParsingUtils.parseRealCharacterValue(charValue);
                                 invoc.addCharacterValue((RealCharacter) ch, new RealValue((RealCharacter) ch, floatRange));
                             } catch (IllegalArgumentException ex) {
-                                throw new IntkeyDirectiveParseException(String.format(UIUtils.getResourceString("UseDirective.InvalidRealValue"), charValue, Integer.toString(ch.getCharacterId()),
-                                        _charFormatter.formatCharacterDescription(ch)), ex);
+                                throw new IntkeyDirectiveParseException("UseDirective.InvalidRealValue", ex, charValue, Integer.toString(ch.getCharacterId()),
+                                        _charFormatter.formatCharacterDescription(ch));
                             }
                         } else if (ch instanceof TextCharacter) {
                             List<String> stringList = ParsingUtils.parseTextCharacterValue(charValue);
@@ -190,11 +190,11 @@ public class UseDirective extends IntkeyDirective {
         characterNumbers.addAll(parsedCharacterNumbers);
     }
 
-    private List<Integer> parseLHS(String lhs, IntkeyContext context) {
+    private List<Integer> parseLHS(String lhs, IntkeyContext context) throws IntkeyDirectiveParseException {
         List<Integer> retList = new ArrayList<Integer>();
 
         List<Character> charList = ParsingUtils.parseCharacterToken(lhs, context);
-        
+
         for (Character c : charList) {
             retList.add(c.getCharacterId());
         }

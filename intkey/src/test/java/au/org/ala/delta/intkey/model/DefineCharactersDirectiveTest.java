@@ -6,8 +6,6 @@ import java.util.List;
 import org.junit.Test;
 
 import au.org.ala.delta.intkey.directives.DefineCharactersDirective;
-import au.org.ala.delta.intkey.model.IntkeyContext;
-import au.org.ala.delta.intkey.model.IntkeyDataset;
 
 /**
  * Unit tests for the DEFINE CHARACTERS directive

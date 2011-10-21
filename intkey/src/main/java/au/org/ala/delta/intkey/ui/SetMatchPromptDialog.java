@@ -17,6 +17,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.border.EmptyBorder;
 
 import org.jdesktop.application.Action;
@@ -25,7 +26,6 @@ import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.intkey.model.MatchType;
-import javax.swing.JRadioButton;
 
 public class SetMatchPromptDialog extends IntkeyDialog {
 

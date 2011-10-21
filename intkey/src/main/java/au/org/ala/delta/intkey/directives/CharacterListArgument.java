@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Queue;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
-import au.org.ala.delta.intkey.ui.UIUtils;
 import au.org.ala.delta.model.Character;
 
 public class CharacterListArgument extends IntkeyDirectiveArgument<List<au.org.ala.delta.model.Character>> {
@@ -61,12 +60,8 @@ public class CharacterListArgument extends IntkeyDirectiveArgument<List<au.org.a
             } else {
                 characters = new ArrayList<au.org.ala.delta.model.Character>();
                 while (token != null) {
-                    try {
-                        characters.addAll(ParsingUtils.parseCharacterToken(token, context));
-                        token = inputTokens.poll();
-                    } catch (IllegalArgumentException ex) {
-                        throw new IntkeyDirectiveParseException(String.format("Unrecognized character keyword %s", token), ex);
-                    }
+                    characters.addAll(ParsingUtils.parseCharacterToken(token, context));
+                    token = inputTokens.poll();
                 }
             }
         }
@@ -76,6 +71,11 @@ public class CharacterListArgument extends IntkeyDirectiveArgument<List<au.org.a
                 characters = populator.promptForCharactersByKeyword(directiveName, !overrideExcludedCharacters, _noneSelectionPermitted);
             } else {
                 characters = populator.promptForCharactersByList(directiveName, !overrideExcludedCharacters);
+            }
+
+            if (characters == null) {
+                // cancelled
+                return null;
             }
         }
 
@@ -89,8 +89,7 @@ public class CharacterListArgument extends IntkeyDirectiveArgument<List<au.org.a
         }
 
         if (characters.size() == 0 && !_noneSelectionPermitted) {
-            context.getUI().displayErrorMessage(UIUtils.getResourceString("NoCharactersInSet.error"));
-            return null;
+            throw new IntkeyDirectiveParseException("NoCharactersInSet.error");
         }
 
         Collections.sort(characters);

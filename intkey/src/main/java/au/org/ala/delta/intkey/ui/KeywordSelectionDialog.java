@@ -1,14 +1,19 @@
 package au.org.ala.delta.intkey.ui;
 
+import java.awt.BorderLayout;
 import java.awt.Dialog;
+import java.awt.FlowLayout;
 import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.List;
 
 import javax.swing.ActionMap;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 
@@ -16,12 +21,6 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
-import javax.swing.JPanel;
-import java.awt.BorderLayout;
-import javax.swing.JLabel;
-import javax.swing.JRadioButton;
-import java.awt.FlowLayout;
-import javax.swing.ButtonGroup;
 
 public abstract class KeywordSelectionDialog extends ListSelectionDialog {
     /**

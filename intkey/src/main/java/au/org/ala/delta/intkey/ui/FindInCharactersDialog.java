@@ -1,21 +1,24 @@
 package au.org.ala.delta.intkey.ui;
 
-import javax.swing.JDialog;
-import javax.swing.JPanel;
 import java.awt.BorderLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.ActionMap;
-import javax.swing.JLabel;
 import javax.swing.BoxLayout;
-import javax.swing.JOptionPane;
-import javax.swing.JTextField;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-
-import java.awt.GridBagLayout;
-import javax.swing.JButton;
 
 import org.apache.commons.lang.StringUtils;
 import org.jdesktop.application.Action;
@@ -25,11 +28,6 @@ import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.intkey.Intkey;
 import au.org.ala.delta.intkey.model.IntkeyContext;
-
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class FindInCharactersDialog extends JDialog {
     /**

@@ -1,17 +1,11 @@
 package au.org.ala.delta.intkey.model;
 
-import java.io.File;
-import java.net.URL;
 import java.util.Collections;
-
-import junit.framework.TestCase;
 
 import org.junit.Test;
 
 import au.org.ala.delta.intkey.directives.RestartDirective;
 import au.org.ala.delta.intkey.directives.UseDirective;
-import au.org.ala.delta.intkey.model.IntkeyContext;
-import au.org.ala.delta.intkey.model.IntkeyDataset;
 import au.org.ala.delta.intkey.model.specimen.Specimen;
 
 /**

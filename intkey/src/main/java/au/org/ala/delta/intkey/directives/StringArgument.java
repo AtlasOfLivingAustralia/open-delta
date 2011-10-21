@@ -35,6 +35,7 @@ public class StringArgument extends IntkeyDirectiveArgument<String> {
         if (token == null || token.equals(DEFAULT_DIALOG_WILDCARD)) {
             argumentValue = context.getDirectivePopulator().promptForString(_promptText, _initialValue, directiveName);
         } else if (_spaceDelimited) {
+            inputTokens.poll();
             argumentValue = token;
         } else {
             // If argument is not space delimited, we need to use all available

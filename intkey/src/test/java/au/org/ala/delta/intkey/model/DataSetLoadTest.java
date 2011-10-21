@@ -10,8 +10,6 @@ import java.util.List;
 import org.apache.commons.lang.math.FloatRange;
 import org.junit.Test;
 
-import au.org.ala.delta.intkey.model.IntkeyContext;
-import au.org.ala.delta.intkey.model.IntkeyDataset;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterDependency;

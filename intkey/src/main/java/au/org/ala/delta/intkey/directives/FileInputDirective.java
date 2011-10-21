@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import au.org.ala.delta.intkey.directives.invocation.FileInputDirectiveInvocation;
-import au.org.ala.delta.intkey.directives.invocation.FileTaxaDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 

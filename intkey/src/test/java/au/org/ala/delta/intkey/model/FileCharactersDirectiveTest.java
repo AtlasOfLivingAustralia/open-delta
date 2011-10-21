@@ -3,12 +3,11 @@ package au.org.ala.delta.intkey.model;
 import java.io.File;
 import java.net.URL;
 
+import junit.framework.TestCase;
+
 import org.junit.Test;
 
 import au.org.ala.delta.intkey.directives.FileCharactersDirective;
-import au.org.ala.delta.intkey.model.IntkeyContext;
-
-import junit.framework.TestCase;
 
 /**
  * Unit tests for the FILE CHARACTERS directive.

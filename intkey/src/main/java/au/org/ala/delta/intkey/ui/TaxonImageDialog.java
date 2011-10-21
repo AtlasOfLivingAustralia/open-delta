@@ -13,9 +13,9 @@ import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.model.Item;
-import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
+import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.model.image.ImageSettings;
 
 public class TaxonImageDialog extends ImageDialog {
