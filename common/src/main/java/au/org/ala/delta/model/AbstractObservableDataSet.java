@@ -1,10 +1,15 @@
 package au.org.ala.delta.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import au.org.ala.delta.model.image.Image;
+import au.org.ala.delta.model.impl.ControllingInfo;
+import au.org.ala.delta.model.impl.ControllingInfo.ControlledStateType;
 import au.org.ala.delta.model.observer.CharacterObserver;
 import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
 import au.org.ala.delta.model.observer.DeltaDataSetObserver;
@@ -183,6 +188,168 @@ public abstract class AbstractObservableDataSet implements ObservableDeltaDataSe
 		}
 		return null;
 	}
+	
+	@Override
+	public ControllingInfo checkApplicability(Character character, Item item) {
+		return checkApplicability(character, item, character, 0, new ArrayList<Integer>());
+	}
+	
+	private boolean getControlledChars(List<Integer> testedControlling, MultiStateCharacter charBase, List<Integer> contChars, boolean includeIndirect, int baseId) {
+		// We maintain a list of "controlling" characters that have been (or, rather, are being)
+		// tested. This can prevent the infinite recursion which can otherwise result if "circular" dependencies somehow are formed.
+
+		if (testedControlling.contains(charBase.getCharacterId())) {
+			return false;
+		} else {
+			testedControlling.add(charBase.getCharacterId());
+			List<CharacterDependency> contAttrVector = charBase.getDependentCharacters();
+			if (contAttrVector.size() > 0) {
+				// / Loop though all the controlling attributes "owned" by this character
+				for (CharacterDependency iter : contAttrVector) {
+					Set<Integer> controlledChars = iter.getDependentCharacterIds();
+					contChars.addAll(controlledChars);
+				}
+				if (contChars.contains(charBase.getCharacterId()) || contChars.contains(baseId)) {
+					throw new CircularDependencyException();
+				}
+				if (includeIndirect) {
+					// OK. We now have a list of all characters DIRECTLY controlled
+					// by this one. We should add all those INDIRECTLY controlled as well.
+					List<Integer> contDirect = new ArrayList<Integer>(contChars);
+
+					for (Integer i : contDirect) {
+						List<Integer> contIndirect = new ArrayList<Integer>();
+						Character indirCharBase = getCharacter(i);
+						if (indirCharBase.getCharacterType().isMultistate()) {
+							if (getControlledChars(testedControlling, (MultiStateCharacter)indirCharBase, contIndirect, true, baseId)) {
+								if (contIndirect.contains(baseId)) {
+									throw new CircularDependencyException();
+								}
+								contChars.addAll(contIndirect);
+							}
+						}
+					}
+				}
+			}
+			return !contChars.isEmpty();
+		}
+	}
+
+	protected ControllingInfo checkApplicability(Character baseChar, Item item, Character charBase, int recurseLevel, List<Integer> testedControlledChars) {
+
+		int dependencyCount = getAllCharacterDependencies().size();
+		List<CharacterDependency> controlling = charBase.getControllingCharacters();
+		int controllingId = 0;
+		if (item == null || charBase == null || controlling.isEmpty()) {
+			return new ControllingInfo();
+		}
+
+		boolean unknownOk = false;
+		
+		if (controlling != null && controlling.size() > 1) {
+			Collections.sort(controlling);
+		}
+
+		List<Integer> controllingChars = new ArrayList<Integer>();
+		SortedSet<Integer> controllingStates = new TreeSet<Integer>();
+		List<Integer> newContStates = new ArrayList<Integer>();
+		int testCharId = -1;
+
+		controlling.add(null); // Append dummy value, to ease handling of the last element
+		// Loop through all controlling attributes which directly control this character...
+		for (CharacterDependency contAttrDesc : controlling) {
+			int newContCharId = 0;
+			if (contAttrDesc == null) {
+				newContCharId = -1;
+			} else {
+				newContStates = new ArrayList<Integer>(contAttrDesc.getStatesAsList());
+				Collections.sort(newContStates);
+				newContCharId = contAttrDesc.getControllingCharacterId();
+			}
+
+			if (newContCharId == testCharId) {
+				// / Build up all relevant controlling attributes under the control of a
+				// / single controlling character, merging the state lists as we go....
+				controllingStates.addAll(newContStates);
+			} else {
+				// Do checks when changing controlling state
+				if (testCharId != -1) {
+					Character testCharBase = getCharacter(testCharId);
+
+					if (!testCharBase.getCharacterType().isMultistate()) {
+						throw new RuntimeException("Controlling characters must be multistate!");
+					}
+					controllingId = testCharId;
+					MultiStateCharacter multiStateChar = (MultiStateCharacter)testCharBase;
+					// If the controlling character is coded, see whether it makes us inapplicable
+
+					if (item.hasAttribute(testCharBase)) {
+						MultiStateAttribute attrib = (MultiStateAttribute)item.getAttribute(multiStateChar);
+						Set<Integer> codedStates = attrib.getPresentStates();
+
+						// If controlling character is "variable", we are NOT controlled
+						//if ((pseudoValues[0] & VOItemDesc.PSEUDO_VARIABLE) == 0) {
+						if (!attrib.isVariable()) {
+							if (codedStates.isEmpty()) {
+								// If there are no states for the controlling character,
+								// but it is explicitly coded with the "unknown" pseudo-value,
+								// allow the controlled character to also be unknown.
+								if (attrib.isUnknown()) {
+									unknownOk = true;
+								} else {
+									return new ControllingInfo(ControlledStateType.Inapplicable, controllingId);
+								}
+							} else if (controllingStates.containsAll(codedStates)) {
+								return new ControllingInfo(ControlledStateType.Inapplicable, controllingId);
+							}
+						}
+					} else if (multiStateChar.getUncodedImplicitState() > 0) {
+						// if the controlling character is not encoded, see if there is an implicit value for it
+						if (controllingStates.contains(multiStateChar.getUncodedImplicitState())) {
+							return new ControllingInfo(ControlledStateType.Inapplicable, controllingId);
+						}
+					} else {
+						return new ControllingInfo(ControlledStateType.Inapplicable, controllingId);
+						// /// This should probably be handled as a somewhat special case,
+						// /// so the user can be pointed in the right direction
+					}
+				}
+				controllingId = -1;
+				testCharId = newContCharId;
+				if (testCharId != -1) {
+					controllingChars.add(testCharId);
+				}
+				controllingStates.clear();
+				controllingStates.addAll(newContStates);
+			}
+		}
+
+		// Up to this point, nothing has made this character inapplicable.
+		// But it is possible that one of the controlling characters has itself
+		// been made inapplicable.
+
+		// Is this check really necessary? I suppose it is, but it slows things down...
+		for (int j : controllingChars) {
+
+			if (++recurseLevel >= dependencyCount) {
+				try {
+					List<Integer> contChars = new ArrayList<Integer>();
+					if (baseChar.getCharacterType().isMultistate()) {
+						getControlledChars(testedControlledChars, (MultiStateCharacter)baseChar, contChars, true, 0);
+					}
+				} catch (CircularDependencyException ex) {
+					return new ControllingInfo(ControlledStateType.Inapplicable, controllingId);
+				}
+			}
+			Character testCharBase = getCharacter(j);
+			ControllingInfo info = checkApplicability(baseChar, item, testCharBase, recurseLevel, testedControlledChars);
+			if (info.isInapplicable()) {
+				return info;
+			}
+		}
+		return unknownOk ? new ControllingInfo(ControlledStateType.InapplicableOrUnknown, controllingId) : new ControllingInfo();
+	}
+
 	
 	/**
 	 * Adds an observer interested in receiving notification of changes to this data set.

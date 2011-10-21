@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Set;
 
 import au.org.ala.delta.model.image.ImageSettings;
+import au.org.ala.delta.model.impl.ControllingInfo;
 
 
 /**
@@ -192,4 +193,14 @@ public interface DeltaDataSet {
 	 * no such Item can be found.
 	 */
 	public Item itemForDescription(String description);
+
+	/**
+	 * Checks if the supplied character has been made inapplicable by the
+	 * attributes coded for the supplied item.
+	 * @param character the character to check.
+	 * @param item the item to check.
+	 * @return information about whether the character has been made inapplicable
+	 * in the context of the supplied Item. 
+	 */
+	public ControllingInfo checkApplicability(Character character, Item item);
 }

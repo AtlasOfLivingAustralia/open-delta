@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import au.org.ala.delta.model.image.ImageSettings;
+import au.org.ala.delta.model.impl.ControllingInfo;
 import au.org.ala.delta.model.observer.DeltaDataSetObserver;
 
 /**
@@ -200,6 +201,12 @@ public class DataSetWrapper implements ObservableDeltaDataSet {
 	public void setImageSettings(ImageSettings imageSettings) {
 		_wrappedDataSet.setImageSettings(imageSettings);	
 	}
+
+	@Override
+	public ControllingInfo checkApplicability(Character character, Item item) {
+		return _wrappedDataSet.checkApplicability(character, item);
+	}
     
+	
     
 }
