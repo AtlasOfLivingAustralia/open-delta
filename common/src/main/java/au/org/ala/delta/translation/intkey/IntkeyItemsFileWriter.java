@@ -182,10 +182,12 @@ public class IntkeyItemsFileWriter {
 	}
 	
 	private boolean isInapplicable(Attribute attribute) {
+		
 		if (!attribute.isInapplicable()) {
 			ControllingInfo controllingInfo = _dataSet.checkApplicability(
 					attribute.getCharacter(), attribute.getItem());
-			return controllingInfo.isInapplicable() || controllingInfo.isMaybeInapplicable();
+			return controllingInfo.isInapplicable() || 
+				(controllingInfo.isMaybeInapplicable() && !attribute.isUnknown());
 		}
 		return true;
 	}
@@ -194,6 +196,9 @@ public class IntkeyItemsFileWriter {
 		
 		// Returning null here will trigger a change from integer to real
 		// character type.
+		if (character.getCharacterId() == 41) {
+			System.out.println("Breakpoint!");
+		}
 		if (_context.getTreatIntegerCharacterAsReal(character.getCharacterId())) {
 			return null;
 		}
@@ -208,14 +213,15 @@ public class IntkeyItemsFileWriter {
 				// Turn into bitset.
 				BitSet bits = new BitSet();
 				IntegerAttribute attribute = (IntegerAttribute)_dataSet.getAttribute(i, unfilteredCharNumber);
+				if (isInapplicable(attribute)) {
+					bits.set(numStates+3);
+				}
 				if (attribute.isUnknown()) {
 					attributes.add(bits);
 					continue;
 				}
 				
-				if (isInapplicable(attribute)) {
-					bits.set(numStates+3);
-				}
+				
 				
 				List<NumericRange> ranges = attribute.getNumericValue();
 				

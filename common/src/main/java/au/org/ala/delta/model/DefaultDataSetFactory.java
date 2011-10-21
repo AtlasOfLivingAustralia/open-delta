@@ -1,7 +1,10 @@
 package au.org.ala.delta.model;
 
+import java.io.File;
 import java.util.Set;
 
+import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.directives.ConforDirectiveFileParser;
 import au.org.ala.delta.model.impl.DefaultAttributeData;
 import au.org.ala.delta.model.impl.DefaultCharacterData;
 import au.org.ala.delta.model.impl.DefaultCharacterDependencyData;
@@ -15,6 +18,13 @@ import au.org.ala.delta.model.impl.ItemData;
  */
 public class DefaultDataSetFactory implements DeltaDataSetFactory {
 
+	public static DeltaDataSet load(File file) throws Exception {
+		DeltaContext context = new DeltaContext();
+		ConforDirectiveFileParser parser = ConforDirectiveFileParser.createInstance();
+		parser.parse(file, context);
+		return context.getDataSet();
+	}
+	
 	@Override
 	public DeltaDataSet createDataSet(String name) {
 		return new DefaultDataSet(this);

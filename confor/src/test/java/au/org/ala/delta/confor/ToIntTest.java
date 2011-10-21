@@ -82,7 +82,7 @@ public class ToIntTest extends TestCase {
 				TextAttribute expectedAttr = expectedAttrs.get(i);
 				TextAttribute actualAttr = actualAttrs.get(i);
 				
-				//assertEquals(expectedAttr.getValueAsString(), actualAttr.getValueAsString());
+				assertEquals(expectedAttr.getValueAsString(), actualAttr.getValueAsString());
 			}
 		}
 		
@@ -140,10 +140,11 @@ public class ToIntTest extends TestCase {
 				
 				Attribute expectedAttribute = expectedDataSet.getAttribute(i, j);
 				Attribute attr = dataSet.getAttribute(i, j);
+				
 				if (expectedAttribute.isInapplicable() != attr.isInapplicable()) {
 					System.out.println("attribute: "+i+","+j+" inapplicable wrong");
 				}
-				//assertEquals(expectedAttribute.isInapplicable(), attr.isInapplicable());
+				assertEquals(expectedAttribute.isInapplicable(), attr.isInapplicable());
 				assertEquals(expectedAttribute.getValueAsString(), attr.getValueAsString());
 				if (expectedAttribute instanceof MultiStateAttribute) {
 					assertEquals("attribute: "+i+","+j, ((MultiStateAttribute)expectedAttribute).getPresentStates(),
