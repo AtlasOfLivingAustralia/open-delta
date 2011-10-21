@@ -28,6 +28,6 @@ public abstract class IntkeyDirectiveInvocation {
      * @param context State object to set values on
      * @return success
      */
-    public abstract boolean execute(IntkeyContext context);
+    public abstract boolean execute(IntkeyContext context) throws IntkeyDirectiveInvocationException;
     
 }

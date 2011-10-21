@@ -64,6 +64,10 @@ public class CharacterListArgument extends IntkeyDirectiveArgument<List<au.org.a
                     token = inputTokens.poll();
                 }
             }
+
+            if (!overrideExcludedCharacters) {
+                characters.retainAll(context.getIncludedCharacters());
+            }
         }
 
         if (characters == null) {

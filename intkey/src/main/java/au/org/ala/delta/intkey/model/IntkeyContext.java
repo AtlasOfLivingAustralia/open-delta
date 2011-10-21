@@ -30,6 +30,7 @@ import au.org.ala.delta.intkey.IntkeyUI;
 import au.org.ala.delta.intkey.directives.DirectivePopulator;
 import au.org.ala.delta.intkey.directives.IntkeyDirectiveParser;
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
+import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocationException;
 import au.org.ala.delta.intkey.model.specimen.CharacterValue;
 import au.org.ala.delta.intkey.model.specimen.Specimen;
 import au.org.ala.delta.intkey.ui.UIUtils;
@@ -438,18 +439,22 @@ public class IntkeyContext extends AbstractDeltaContext {
         // run (such as in the case of the File Input directive).
         int insertionIndex = _executedDirectives.size();
 
-        boolean success = invoc.execute(this);
-        if (success && !_processingInputFile) {
-            if (_executedDirectives.size() < insertionIndex) {
-                // executed directives list has been cleared, just add this
-                // directive to the end of the list
-                _executedDirectives.add(invoc);
-            } else {
-                _executedDirectives.add(insertionIndex, invoc);
-            }
+        try {
+            boolean success = invoc.execute(this);
+            if (success && !_processingInputFile) {
+                if (_executedDirectives.size() < insertionIndex) {
+                    // executed directives list has been cleared, just add this
+                    // directive to the end of the list
+                    _executedDirectives.add(invoc);
+                } else {
+                    _executedDirectives.add(insertionIndex, invoc);
+                }
 
-            appendToLog("*" + invoc.toString());
-            appendToJournal("*" + invoc.toString());
+                appendToLog("*" + invoc.toString());
+                appendToJournal("*" + invoc.toString());
+            }
+        } catch (IntkeyDirectiveInvocationException ex) {
+            _appUI.displayErrorMessage(ex.getMessage());
         }
     }
 
@@ -1417,10 +1422,10 @@ public class IntkeyContext extends AbstractDeltaContext {
             if (_currentOutputFile != null) {
                 closeOutputFile(_currentOutputFile);
             }
-
-            _currentOutputFile = outputFile;
-            _currentOutputFileWriter = new PrintWriter(new BufferedWriter(new FileWriter(outputFile)));
         }
+
+        _currentOutputFile = outputFile;
+        _currentOutputFileWriter = new PrintWriter(new BufferedWriter(new FileWriter(outputFile)));
     }
 
     public synchronized void closeOutputFile(File outputFile) {

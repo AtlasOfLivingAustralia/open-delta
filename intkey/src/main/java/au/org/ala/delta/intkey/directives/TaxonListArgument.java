@@ -63,6 +63,10 @@ public class TaxonListArgument extends AbstractTaxonListArgument<List<Item>> {
                     }
                 }
             }
+            
+            if (!overrideExcludedTaxa) {
+                taxa.retainAll(context.getIncludedTaxa());
+            }
         }
 
         if (taxa == null) {
@@ -85,8 +89,7 @@ public class TaxonListArgument extends AbstractTaxonListArgument<List<Item>> {
         }
 
         if (taxa.size() == 0 && !_noneSelectionPermitted) {
-            context.getUI().displayErrorMessage(UIUtils.getResourceString("NoTaxaInSet.error"));
-            return null;
+            throw new IntkeyDirectiveParseException("NoTaxaInSet.error");
         }
 
         Collections.sort(taxa);

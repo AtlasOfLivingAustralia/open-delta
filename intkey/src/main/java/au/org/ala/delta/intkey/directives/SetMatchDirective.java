@@ -98,8 +98,7 @@ public class SetMatchDirective extends IntkeyDirective {
                     stringRepresentationBuilder.append(" ");
                     stringRepresentationBuilder.append(token);
                 } else {
-                    context.getUI().displayErrorMessage(MessageFormat.format(UIUtils.getResourceString("InvalidSetMatchOption.error"), token));
-                    return null;
+                    throw new IntkeyDirectiveParseException("InvalidSetMatchOption.error", token);
                 }
             }
         }

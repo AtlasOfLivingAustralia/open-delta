@@ -18,12 +18,9 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.Window;
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.text.DateFormat;
@@ -31,6 +28,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Locale;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -904,4 +902,47 @@ public class Utils {
         return adjustedFontSize;
     }
 
+    public static String formatIntegersAsListOfRanges(List<Integer> ints) {
+        StringBuilder builder = new StringBuilder();
+
+        int startRange = 0;
+        int previousValue = 0;
+
+        for (int i = 0; i < ints.size(); i++) {
+            int val = ints.get(i);
+
+            if (i == 0) {
+                startRange = val;
+            } else {
+                if (previousValue < val - 1) {
+                    builder.append(" ");
+                    builder.append(startRange);
+
+                    if (previousValue != startRange) {
+                        builder.append("-");
+                        builder.append(previousValue);
+                    }
+
+                    startRange = val;
+                    
+                }
+
+                if (i == ints.size() - 1) {
+                    builder.append(" ");
+                    builder.append(startRange);
+
+                    if (val != startRange) {
+                        builder.append("-");
+                        builder.append(val);
+                    }
+
+                    startRange = val;
+                }
+            }
+
+            previousValue = val;
+        }
+
+        return builder.toString().trim();
+    }
 }

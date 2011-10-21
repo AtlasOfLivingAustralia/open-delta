@@ -54,8 +54,7 @@ public class DefineNamesDirective extends IntkeyDirective {
         for (String taxonName : names) {
             Item taxon = context.getDataset().getTaxonByName(taxonName);
             if (taxon == null) {
-                context.getUI().displayErrorMessage(MessageFormat.format(UIUtils.getResourceString("InvalidTaxonName.error"), taxonName));
-                return null;
+                throw new IntkeyDirectiveParseException("InvalidTaxonName.error");
             } else {
                 taxa.add(taxon);
             }

@@ -92,6 +92,10 @@ public class BracketedTaxonListArgument extends AbstractTaxonListArgument<Pair<L
                     }
                 }
             }
+
+            if (!overrideExcludedTaxa) {
+                taxa.retainAll(context.getIncludedTaxa());
+            }
         }
 
         if (taxa == null) {
@@ -107,8 +111,7 @@ public class BracketedTaxonListArgument extends AbstractTaxonListArgument<Pair<L
         }
 
         if (taxa.size() == 0 && includeSpecimen == false && !_noneSelectionPermitted) {
-            context.getUI().displayErrorMessage(UIUtils.getResourceString("NoTaxaInSet.error"));
-            return null;
+            throw new IntkeyDirectiveParseException("NoTaxaInSet.error");
         }
 
         // TODO need to handle keywords here

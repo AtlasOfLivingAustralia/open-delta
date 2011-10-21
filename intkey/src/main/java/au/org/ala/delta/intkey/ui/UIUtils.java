@@ -111,6 +111,7 @@ public class UIUtils {
             return new File(url.toURI());
         } else {
             File tempFile = File.createTempFile(UUID.randomUUID().toString(), null);
+            tempFile.deleteOnExit();
             FileUtils.copyURLToFile(url, tempFile, timeout, timeout);
             return tempFile;
         }
