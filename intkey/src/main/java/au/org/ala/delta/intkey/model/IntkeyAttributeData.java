@@ -66,7 +66,7 @@ public class IntkeyAttributeData implements AttributeData {
     }
     
     @Override
-    public boolean isExclusivelyInapplicable() {
+    public boolean isExclusivelyInapplicable(boolean ignoreComment) {
         return _inapplicable;
     }
 

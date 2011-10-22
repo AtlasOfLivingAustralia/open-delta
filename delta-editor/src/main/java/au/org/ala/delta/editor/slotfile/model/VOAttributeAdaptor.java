@@ -192,10 +192,10 @@ public class VOAttributeAdaptor implements AttributeData {
     }
     
     @Override
-    public boolean isExclusivelyInapplicable() {
+    public boolean isExclusivelyInapplicable(boolean ignoreComment) {
     	synchronized (_vop) {
 	    	 Attribute attribute = _itemDesc.readAttribute(_charBaseDesc.getUniId());
-	    	 return attribute != null && attribute.isExclusivelyInapplicable();
+	    	 return attribute != null && attribute.isExclusivelyInapplicable(ignoreComment);
     	}
     }
 

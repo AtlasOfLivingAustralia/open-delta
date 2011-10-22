@@ -1,12 +1,16 @@
 package au.org.ala.delta.translation.nexus;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.DeltaContext.HeadingType;
 import au.org.ala.delta.model.Attribute;
+import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.IdentificationKeyCharacter;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateAttribute;
@@ -21,6 +25,7 @@ import au.org.ala.delta.translation.DataSetTranslator;
 import au.org.ala.delta.translation.FilteredDataSet;
 import au.org.ala.delta.translation.FilteredItem;
 import au.org.ala.delta.translation.PrintFile;
+import au.org.ala.delta.translation.delta.DeltaWriter;
 import au.org.ala.delta.translation.key.KeyStateTranslator;
 
 /**
@@ -356,6 +361,9 @@ public class NexusTranslator implements DataSetTranslator {
 						else if (attribute instanceof NumericAttribute) {
 							states.addAll(character.getPresentStates((NumericAttribute)attribute));
 						}
+						if (states.size()==0) {
+							System.out.println("Item: "+item.getItemNumber()+" Char: "+character.getFilteredCharacterNumber()+" unkwown");
+						}
 						addStates(statesOut, states);
 					}
 				}
@@ -366,12 +374,15 @@ public class NexusTranslator implements DataSetTranslator {
 		}
 		
 		private boolean isInapplicable(Attribute attribute) {
-			if (!attribute.isInapplicable()) {
+			if (!attribute.isExclusivelyInapplicable(true)) {
 				ControllingInfo controllingInfo = _dataSet.checkApplicability(
 						attribute.getCharacter(), attribute.getItem());
+				String result = controllingInfo.getControlledState().toString();
+				System.out.println("C="+attribute.getCharacter().getCharacterId()+",I="+attribute.getItem().getItemNumber()+",="+result);
 				
-				return (controllingInfo.isInapplicable() ||
-						controllingInfo.isMaybeInapplicable() && attribute.isUnknown());
+				return (controllingInfo.isInapplicable());// ||
+						//controllingInfo.isMaybeInapplicable() && attribute.isUnknown());
+				
 			}
 			return true;
 		}
@@ -400,17 +411,72 @@ public class NexusTranslator implements DataSetTranslator {
 		}
 	}
 	
-	class TypeSet extends ParameterTranslator {
-		@Override
-		public void translateParameter(String parameter) {
-
-		}
-	}
-
 	class WtSet extends ParameterTranslator {
 		@Override
 		public void translateParameter(String parameter) {
+			Map<BigDecimal, List<Integer>> weights = new TreeMap<BigDecimal, List<Integer>>();
+			Iterator<IdentificationKeyCharacter> characters = _dataSet.identificationKeyCharacterIterator();
+			while (characters.hasNext()) {
+				IdentificationKeyCharacter character = characters.next();
+				BigDecimal weight = _context.getCharacterWeightAsBigDecimal(character.getCharacterNumber());
+				if (!weights.containsKey(weight)) {
+					List<Integer> chars = new ArrayList<Integer>();
+					weights.put(weight, chars);
+				}
+				weights.get(weight).add(character.getFilteredCharacterNumber());
+			}
+			
+			StringBuilder weightsOut = new StringBuilder();
+			DeltaWriter writer = new DeltaWriter();
+			weightsOut.append("WTSET * untitled =");
+			for (BigDecimal weight : weights.keySet()) {
+				weightsOut.append(" ");
+				weightsOut.append(weight.toPlainString());
+				weightsOut.append(": ");
+				weightsOut.append(writer.rangeToString(weights.get(weight)));
+			}
+			command(weightsOut.toString());
+			_outputFile.writeBlankLines(1, 0);
+		}
+	}
 
+	class TypeSet extends ParameterTranslator {
+		@Override
+		public void translateParameter(String parameter) {
+			List<Integer> unorderedMultiStateChars = new ArrayList<Integer>();
+			List<Integer> orderedMultiStateChars = new ArrayList<Integer>();
+			Iterator<IdentificationKeyCharacter> characters = _dataSet.identificationKeyCharacterIterator();
+			while (characters.hasNext()) {
+				IdentificationKeyCharacter character = characters.next();
+				CharacterType type = character.getCharacterType();
+				if (type == CharacterType.UnorderedMultiState) {
+					unorderedMultiStateChars.add(character.getFilteredCharacterNumber());
+				}
+				else {
+					orderedMultiStateChars.add(character.getFilteredCharacterNumber());
+				}
+				
+			}
+			StringBuilder out = new StringBuilder();
+			DeltaWriter writer = new DeltaWriter();
+			
+			out.append("TYPESET * untitled = "); 
+			if (!unorderedMultiStateChars.isEmpty()) {
+				out.append("unord: ");
+				out.append(writer.rangeToString(unorderedMultiStateChars));
+				if (!orderedMultiStateChars.isEmpty()) {
+					out.append(", ");
+				}
+			}
+			if (!orderedMultiStateChars.isEmpty()) {
+				out.append("ord: ");
+				out.append(writer.rangeToString(orderedMultiStateChars));
+			}
+			command(out.toString());
+			_outputFile.writeBlankLines(1, 0);
+			
+			
+			
 		}
 	}
 

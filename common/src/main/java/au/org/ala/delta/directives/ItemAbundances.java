@@ -61,7 +61,7 @@ public class ItemAbundances extends AbstractDirective<DeltaContext> {
 	public void process(DeltaContext context, DirectiveArguments directiveArguments) throws Exception {
 		
 		for (int i=1; i<=context.getMaximumNumberOfItems(); i++) {
-			context.setCharacterWeight(i, DEFAULT_WEIGHT);
+			context.addItemAbundancy(i, DEFAULT_WEIGHT);
 		}
 		for (DirectiveArgument<?> arg : directiveArguments.getDirectiveArguments()) {
 			context.addItemAbundancy((Integer)arg.getId(), arg.getValue().doubleValue());

@@ -14,6 +14,8 @@
  ******************************************************************************/
 package au.org.ala.delta.directives;
 
+import java.math.BigDecimal;
+
 import au.org.ala.delta.DeltaContext;
 
 
@@ -24,7 +26,7 @@ import au.org.ala.delta.DeltaContext;
 public class CharacterReliabilities extends CharacterWeightDirective {
 
 	/** The default weight for any characters not included in this directive */
-	private static final double DEFAULT_WEIGHT = 5.0d;
+	private static final BigDecimal DEFAULT_WEIGHT = new BigDecimal("5.0");
 	
 	/** The minimum allowed weight for a character */
 	private static final double MIN_WEIGHT = 0d;
@@ -45,12 +47,12 @@ public class CharacterReliabilities extends CharacterWeightDirective {
 	}
 	
 	@Override
-	protected void processCharacter(DeltaContext context, int charIndex, Double reliability) {
-		
-		if (reliability < MIN_WEIGHT) {
+	protected void processCharacter(DeltaContext context, int charIndex, String reliabilityStr) {
+		BigDecimal reliability = new BigDecimal(reliabilityStr);
+		if (reliability.doubleValue() < MIN_WEIGHT) {
 			throw new IllegalArgumentException("The weight must be greater than "+ MIN_WEIGHT);
 		}
-		if (reliability > MAX_WEIGHT) {
+		if (reliability.doubleValue() > MAX_WEIGHT) {
 			throw new IllegalArgumentException("The weight must be less than "+ MAX_WEIGHT);
 		}
 		context.setCharacterReliability(charIndex, reliability);

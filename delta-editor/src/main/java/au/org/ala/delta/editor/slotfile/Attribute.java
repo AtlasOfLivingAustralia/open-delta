@@ -1360,12 +1360,14 @@ public class Attribute implements Iterable<AttrChunk> {
 	 * For example an attribute coded as 1/- is not inapplicable, either is 
 	 * -<comment>.
 	 */
-	public boolean isExclusivelyInapplicable() {
+	public boolean isExclusivelyInapplicable(boolean ignoreComment) {
 		boolean inapplicableFound = false;
 		for (AttrChunk chunk : this) {
 			int type = chunk.getType();
 			if (type != ChunkType.CHUNK_INAPPLICABLE && type != ChunkType.CHUNK_STOP) {
-				return false;
+				if (!ignoreComment || (type != ChunkType.CHUNK_LONGTEXT && type != ChunkType.CHUNK_TEXT)) {
+				    return false;
+				}
 			}
 			else if (type == ChunkType.CHUNK_INAPPLICABLE) {
 				inapplicableFound = true;

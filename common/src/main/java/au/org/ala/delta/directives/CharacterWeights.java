@@ -14,6 +14,8 @@
  ******************************************************************************/
 package au.org.ala.delta.directives;
 
+import java.math.BigDecimal;
+
 
 /**
  * Processes the CHARACTER RELIABILITES directive.
@@ -21,7 +23,7 @@ package au.org.ala.delta.directives;
 public class CharacterWeights extends CharacterWeightDirective {
 
 	/** The default weight for any characters not included in this directive */
-	private static final double DEFAULT_WEIGHT = 1.0d;
+	private static final BigDecimal DEFAULT_WEIGHT = new BigDecimal("1");
 	
 	/** The minimum allowed weight for a character */
 	private static final double MIN_WEIGHT = 0.03125d;

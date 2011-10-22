@@ -1,5 +1,7 @@
 package au.org.ala.delta.directives;
 
+import java.math.BigDecimal;
+
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.directives.args.DirectiveArguments;
@@ -9,7 +11,7 @@ import au.org.ala.delta.directives.args.DirectiveArguments;
  * Parent class for the CharacterReliabilities and CharacterWeight directives as these directives
  * perform very similar functions.
  */
-public abstract class CharacterWeightDirective extends AbstractCharacterListDirective<DeltaContext, Double>{
+public abstract class CharacterWeightDirective extends AbstractCharacterListDirective<DeltaContext, String>{
 
 	/** The minimum value any character weight is allowed to have */
 	private double _minimumWeight;
@@ -18,10 +20,10 @@ public abstract class CharacterWeightDirective extends AbstractCharacterListDire
 	private double _maximumWeight;
 	
 	/** The default value for unspecified weights */
-	private double _defaultWeight;
+	private BigDecimal _defaultWeight;
 	
 	
-	public CharacterWeightDirective(double minimumWeight, double maximumWeight, double defaultWeight, String... controlWords) {
+	public CharacterWeightDirective(double minimumWeight, double maximumWeight, BigDecimal defaultWeight, String... controlWords) {
 		super(controlWords);
 		_minimumWeight = minimumWeight;
 		_maximumWeight = maximumWeight;
@@ -51,17 +53,18 @@ public abstract class CharacterWeightDirective extends AbstractCharacterListDire
 	}
 
 	@Override
-	protected Double interpretRHS(DeltaContext context, String weight) {
-		return Double.parseDouble(weight);
+	protected String interpretRHS(DeltaContext context, String weight) {
+		return weight.trim();
 	}
 
 	@Override
-	protected void processCharacter(DeltaContext context, int charIndex, Double weight) {
+	protected void processCharacter(DeltaContext context, int charIndex, String weightStr) {
 		
-		if (weight < _minimumWeight) {
+		BigDecimal weight = new BigDecimal(weightStr);
+		if (weight.doubleValue() < _minimumWeight) {
 			throw new IllegalArgumentException("The weight must be greater than "+ _minimumWeight);
 		}
-		if (weight > _maximumWeight) {
+		if (weight.doubleValue() > _maximumWeight) {
 			throw new IllegalArgumentException("The weight must be less than "+ _maximumWeight);
 		}
 		context.setCharacterWeight(charIndex, weight);

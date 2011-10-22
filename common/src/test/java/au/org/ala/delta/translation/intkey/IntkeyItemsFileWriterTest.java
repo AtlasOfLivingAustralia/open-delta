@@ -1,5 +1,6 @@
 package au.org.ala.delta.translation.intkey;
 
+import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -72,8 +73,11 @@ public class IntkeyItemsFileWriterTest extends TestCase {
 	@Test 
 	public void testWriteCharacterSpecs() {
 		
-		_context.setCharacterReliability(1, 10.1);
-		_context.setCharacterReliability(2, 3.3);
+		_context.setCharacterReliability(1, new BigDecimal(10.1));
+		_context.setCharacterReliability(2, new BigDecimal(3.3));
+		_context.setCharacterReliability(3, new BigDecimal(5.0));
+		_context.setCharacterReliability(4, new BigDecimal(5.0));
+		
 		
 		_itemsFileWriter.writeCharacterSpecs();
 		

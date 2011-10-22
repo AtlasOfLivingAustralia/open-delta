@@ -67,8 +67,8 @@ public class DefaultAttributeData implements AttributeData {
     }
 
     @Override
-    public boolean isExclusivelyInapplicable() {
-        return _parsedAttribute.isExclusivelyInapplicable();
+    public boolean isExclusivelyInapplicable(boolean ignoreComments) {
+        return _parsedAttribute.isExclusivelyInapplicable(ignoreComments);
     }
 
 

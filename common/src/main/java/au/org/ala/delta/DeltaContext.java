@@ -15,6 +15,7 @@
 package au.org.ala.delta;
 
 import java.io.PrintStream;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -130,7 +131,7 @@ public class DeltaContext extends AbstractDeltaContext {
 
 	private StateValueMatrix _matrix;
 
-	private double[] _characterWeights;
+	private BigDecimal[] _characterWeights;
 	
 	private DirectiveParserObserver _observer;
 	
@@ -393,34 +394,40 @@ public class DeltaContext extends AbstractDeltaContext {
 		return _newParagraphCharacters.contains(charNumber);
 	}
 
-	public void setCharacterWeight(int number, double weight) {
+	public void setCharacterWeight(int number, BigDecimal weight) {
 		if (_characterWeights == null) {
-			_characterWeights = new double[getNumberOfCharacters()];
+			_characterWeights = new BigDecimal[getNumberOfCharacters()];
 		}
 		_characterWeights[number-1] = weight;
 		
 	}
 	
-	public void setCharacterReliability(int number, double reliability) {
+	public void setCharacterReliability(int number, BigDecimal reliability) {
 		if (_characterWeights == null) {
-			_characterWeights = new double[getNumberOfCharacters()];
+			_characterWeights = new BigDecimal[getNumberOfCharacters()];
 		}
-		_characterWeights[number-1] = Math.pow(2, reliability-5);
+		_characterWeights[number-1] = new BigDecimal(Math.pow(2, reliability.doubleValue()-5));
 	}
 	
 	public double getCharacterWeight(int number) {
 		if (_characterWeights != null) {
-			return _characterWeights[number-1];
+			return _characterWeights[number-1].doubleValue();
 		}
 		return 1;
 	}
 
+	public BigDecimal getCharacterWeightAsBigDecimal(int charNumber) {
+		if (_characterWeights != null) {
+			return _characterWeights[charNumber-1];
+		}
+		return new BigDecimal(1);
+	}
 	
 	public double getCharacterReliability(int number) {
 		if (_characterWeights == null) {
 			return 0;
 		}
-		return Math.log(_characterWeights[number-1])/Math.log(2) +5;
+		return Math.log(_characterWeights[number-1].doubleValue())/Math.log(2) +5;
 	}
 	
 	/**

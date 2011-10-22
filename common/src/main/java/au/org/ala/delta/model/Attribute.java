@@ -77,10 +77,18 @@ public abstract class Attribute {
 	/**
 	 * An exclusively inapplicable value is one that has been explicitly coded as inapplicable 
 	 * with the value "-" and no other values. 
+	 * @param ignoreComments if this parameter is true an attribute will
+	 * be considered exclusively inapplicable if it is coded as inapplicable
+	 * with a comment.  Otherwise the comment will cause it to be not
+	 * exclusively inapplicable.
 	 * @return true if this attribute is inapplicable
 	 */
+	public boolean isExclusivelyInapplicable(boolean ignoreComments) {
+	    return _impl.isExclusivelyInapplicable(ignoreComments);
+	}
+	
 	public boolean isExclusivelyInapplicable() {
-	    return _impl.isExclusivelyInapplicable();
+		return _impl.isExclusivelyInapplicable(false);
 	}
 	
 	public boolean isVariable() {
