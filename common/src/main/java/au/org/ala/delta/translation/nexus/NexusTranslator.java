@@ -274,7 +274,7 @@ public class NexusTranslator implements DataSetTranslator {
 			}
 			
 			format.append("\"");
-			int first = 1; // _ocntext.getNumberFromZero();
+			int first = _context.getNumberStatesFromZero() ? 0 : 1;
 			for (int i=first; i<max+first; i++) {
 				format.append(STATE_CODES[i]);
 			}
@@ -361,9 +361,7 @@ public class NexusTranslator implements DataSetTranslator {
 						else if (attribute instanceof NumericAttribute) {
 							states.addAll(character.getPresentStates((NumericAttribute)attribute));
 						}
-						if (states.size()==0) {
-							System.out.println("Item: "+item.getItemNumber()+" Char: "+character.getFilteredCharacterNumber()+" unkwown");
-						}
+						
 						addStates(statesOut, states);
 					}
 				}
@@ -377,12 +375,7 @@ public class NexusTranslator implements DataSetTranslator {
 			if (!attribute.isExclusivelyInapplicable(true)) {
 				ControllingInfo controllingInfo = _dataSet.checkApplicability(
 						attribute.getCharacter(), attribute.getItem());
-				String result = controllingInfo.getControlledState().toString();
-				System.out.println("C="+attribute.getCharacter().getCharacterId()+",I="+attribute.getItem().getItemNumber()+",="+result);
-				
-				return (controllingInfo.isInapplicable());// ||
-						//controllingInfo.isMaybeInapplicable() && attribute.isUnknown());
-				
+				return (controllingInfo.isInapplicable());
 			}
 			return true;
 		}
@@ -402,8 +395,9 @@ public class NexusTranslator implements DataSetTranslator {
 			else if (states.size() > 1) {
 				statesOut.append("(");
 			}
+			int offset = _context.getNumberStatesFromZero() ? 1 : 0;
 			for (int state : states) {
-				statesOut.append(state);
+				statesOut.append(state - offset);
 			}
 			if (states.size() > 1) {
 				statesOut.append(")");

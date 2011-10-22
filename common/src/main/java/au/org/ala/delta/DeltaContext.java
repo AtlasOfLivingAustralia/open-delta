@@ -119,6 +119,7 @@ public class DeltaContext extends AbstractDeltaContext {
 	private boolean _omitSpaceBeforeUnits = false;
 	private boolean _translateImplicitValues = false;
 	private boolean _keyCharacterListUsed = false;
+	private boolean _numberStatesFromZero = false;
 	
 	private Map<HeadingType, String> _headings = new HashMap<HeadingType, String>();
 	private Integer _characterForTaxonImages = null;
@@ -958,5 +959,13 @@ public class DeltaContext extends AbstractDeltaContext {
 	public void print(String heading) {
 		getOutputFileSelector().getPrintFile().writeJustifiedText(heading, 1);
 		
+	}
+
+	public void numberStatesFromZero() {
+		_numberStatesFromZero = true;
+	}
+	
+	public boolean getNumberStatesFromZero() {
+		return _numberStatesFromZero;
 	}
 }
