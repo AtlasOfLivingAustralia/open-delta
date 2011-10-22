@@ -113,6 +113,7 @@ public class IdentificationKeyCharacter {
 	
 	private Character _character;
 	private boolean _useNormalValues;
+	private boolean _useMeanValues;
 	private List<KeyState> _states;
 	private int _filteredCharacterNumber;
 	
@@ -301,5 +302,9 @@ public class IdentificationKeyCharacter {
 
 	public void setUseNormalValues(boolean b) {
 		_useNormalValues = b;	
+	}
+	
+	public void setUseMeanValues(boolean useMeanValues) {
+		_useMeanValues = useMeanValues;
 	}
 }

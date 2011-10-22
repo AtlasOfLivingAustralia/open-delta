@@ -1,4 +1,4 @@
-package au.org.ala.delta.translation.nexus;
+package au.org.ala.delta.translation.paup;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -26,38 +26,52 @@ import au.org.ala.delta.translation.FilteredItem;
 import au.org.ala.delta.translation.PrintFile;
 import au.org.ala.delta.translation.delta.DeltaWriter;
 import au.org.ala.delta.translation.key.KeyStateTranslator;
-import au.org.ala.delta.translation.parameter.Command;
-import au.org.ala.delta.translation.parameter.Literal;
 import au.org.ala.delta.translation.parameter.ParameterBasedTranslator;
 import au.org.ala.delta.translation.parameter.ParameterTranslator;
 import au.org.ala.delta.translation.parameter.Specifications;
 
 /**
  * Implements the translation into Nexus format as specified using the TRANSLATE
- * INTO NEXUS FORMAT directive.
- * PROCEDURE FOR DETERMINING NEXUS VALUES.
- * 1. NUMERIC CHARACTERS FOR WHICH KEY STATES HAVE NOT BEEN SPECIFIED ARE
- *   EXCLUDED.
- * 2. ONLY NORMAL VALUES OF NUMERIC CHARACTERS ARE USED. EXTREME VALUES
- *   ARE IGNORED.
+ * INTO PAUP FORMAT directive.
+ * 
+ * KEY WORDS REQUIRED FOR PAUP SPECIFICATIONS.
+ *     1 - COMMENT. 2 - PARAMETERS. 3 - SYMBOLS.
+ *     4 - UNORDERED. 5 - DATA. 6 - GO. 7 - WEIGHTS. 8 - END.
+ *
+ * 
+ * PROCEDURE FOR DETERMINING PAUP VALUES (SAME AS FOR HENNIG).
+ * 1. NUMERIC CHARACTERS WITHOUT KEY STATES ARE EXCLUDED.
+ * 2. ONLY `NORMAL' VALUES OF NUMERIC CHARACTERS ARE USED. EXTREME VALUES
+ *    ARE IGNORED.
  * 3. KEY STATES ARE APPLIED. ALL NUMERIC CHARACTERS ARE SUBSEQUENTLY TREATED
- *   AS ORDERED MULTISTATE.
- * 4. IF `USE MEAN VALUES' IS IN FORCE, MULTIPLE VALUES OF ORDERED MULTISTATES
- *   (INCLUDING FORMER NUMERICS) ARE REPLACED BY THEIR MEAN.
- * 5. THE VALUE OR VALUES ARE OUTPUT.
+ *    AS ORDERED MULTISTATE.
+ * 4. IF A `USE MEAN VALUES' DIRECTIVE IS IN FORCE, MULTIPLE VALUES OF ORDERED
+ *    MULTISTATE CHARACTERS (INCLUDING FORMER NUMERIC CHARACTERS) ARE REPLACED
+ *    BY THEIR MEAN.
+ * 5. IF ONLY ONE STATE VALUE IS PRESENT, THAT VALUE IS OUTPUT.
+ * 6. IF ALL POSSIBLE STATE VALUES ARE PRESENT, OR IF MORE THAN ONE VALUE IS
+ *    PRESENT AND `TREAT VARIABLE AS UNKNOWN' HAS BEEN SPECIFIED, THEN ?
+ *    IS OUTPUT.
+ *    OTHERWISE -
+ * 7. FOR ORDERED MULTISTATE CHARACTERS (INCLUDING FORMER NUMERICS)
+ *    A SINGLE VALUE IS OBTAINED AS IN STEP 4.
+ * 8. FOR UNORDERED MULTISTATES, A SINGLE VALUE IS OBTAINED FROM THE ORIGINAL
+ *    DATA (BEFORE THE APPLICATION OF KEY STATES) BY SELECTING THE FIRST VALUE
+ *    CODED, UNLESS `USE LAST VALUE CODED' HAS BEEN SPECIFIED, WHEN THE LAST
+ *    VALUE IS SELECTED. KEY STATES ARE THEN APPLIED IF SPECIFIED.
+ * 9. THE VALUE IS OUTPUT.
 
  */
-public class NexusTranslator extends ParameterBasedTranslator {
+public class PaupTranslator extends ParameterBasedTranslator {
 
 	private enum PARAMETER {
-		ASSUMPTIONS("#ASSUMPTIONS"), CHARLABELS("#CHARLABELS"), DATA("#DATA"), DIMENSIONS("#DIMENSIONS"), END("#END"), FORMAT(
-				"#FORMAT"), HEADING("#HEADING"), STATELABELS("#STATELABELS"), MATRIX("#MATRIX"), NEXUS("#NEXUS"), TYPESET(
-				"#TYPESET"), WTSET("#WTSET");
+		COMMENT("#COMMENT"), PARAMETERS("#PARAMETERS"), SYMBOLS("#SYMBOLS"), UNORDERED("#UNORDERED"), DATA("#DATA"), 
+		GO("#GO"), WEIGHTS("#WEIGHTS"), END("#END");
 
 		private String _name;
 
 		private PARAMETER(String name) {
-			_name = name;
+			_name = name.substring(1, 3).toUpperCase();
 		}
 		
 		public String getName() {
@@ -65,6 +79,7 @@ public class NexusTranslator extends ParameterBasedTranslator {
 		}
 
 	};
+
 
 	private static final String[] STATE_CODES = {
 		"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", 
@@ -79,7 +94,7 @@ public class NexusTranslator extends ParameterBasedTranslator {
 	private ItemFormatter _itemFormatter;
 	private KeyStateTranslator _keyStateTranslator;
 
-	public NexusTranslator(DeltaContext context, FilteredDataSet dataSet, 
+	public PaupTranslator(DeltaContext context, FilteredDataSet dataSet, 
 			PrintFile outputFile, KeyStateTranslator keyStateTranslator,
 			CharacterFormatter characterFormatter, ItemFormatter itemFormatter) {
 		_context = context;
@@ -91,77 +106,9 @@ public class NexusTranslator extends ParameterBasedTranslator {
 		_characterFormatter = characterFormatter;
 		_itemFormatter = itemFormatter;
 		_keyStateTranslator = keyStateTranslator;
-		
 		addParameters();
 	}
 
-	/**
-	 * The output parameters accepted by a Nexus translation are:
-	 * <ul>
-	 * <li>ASSUMPTIONS</li>
-	 * <li>CHARLABELS</li>
-	 * <li>DATA</li>
-	 * <li>DIMENSIONS</li>
-	 * <li>END</li>
-	 * <li>FORMAT</li>
-	 * <li>HEADING</li>
-	 * <li>STATELABELS</li>
-	 * <li>MATRIX</li>
-	 * <li>NEXUS</li>
-	 * <li>TYPESET</li>
-	 * <li>WTSET</li>
-	 * </ul>
-	 */
-	public void addParameters() {
-		
-		ParameterTranslator translator = null;
-		for (PARAMETER param : PARAMETER.values()) {
-			switch (param) {
-			case ASSUMPTIONS:
-				translator = new Command(_outputFile, "BEGIN ASSUMPTIONS");
-				break;
-			case CHARLABELS:
-				translator = new CharLabels(_outputFile);
-				break;
-			case DATA:
-				translator = new Command(_outputFile, "BEGIN DATA");
-				break;
-			case DIMENSIONS:
-				translator = new Specifications(_outputFile, _dataSet, "DIMENSIONS", "NTAX", "NCHAR");
-				break;
-			case END:
-				translator = new Command(_outputFile, "END");
-				break;
-			case FORMAT:
-				translator = new Format(_outputFile);
-				break;
-			case HEADING:
-				translator = new Heading(_outputFile);
-				break;
-			case STATELABELS:
-				translator = new StateLabels(_outputFile);
-				break;
-			case MATRIX:
-				translator = new Matrix(_outputFile);
-				break;
-			case NEXUS:
-				translator = new Literal(_outputFile, "#NEXUS", 1);
-				break;
-			case TYPESET:
-				translator = new TypeSet(_outputFile);
-				break;
-			case WTSET:
-				translator = new WtSet(_outputFile);
-				break;
-			}
-		
-			addSupportedParameter(param.getName(), translator);
-		}
-	}
-	
-	
-
-	
 	@Override
 	protected void unrecognisedParameter(String parameter) {
 		if (!parameter.startsWith("#")) {
@@ -172,7 +119,55 @@ public class NexusTranslator extends ParameterBasedTranslator {
 		}
 	}
 
+	/**
+	 * The output parameters accepted by a Paup translation are:
+	 * <ul>
+	 * <li>COMMENT</li>
+	 * <li>PARAMETERS</li>
+	 * <li>SYMBOLS</li>
+	 * <li>UNORDERED</li>
+	 * <li>DATA</li>
+	 * <li>GO</li>
+	 * <li>WEIGHTS</li>
+	 * <li>END</li>
+	 * </ul>
+	 */
+	public void addParameters() {
+		ParameterTranslator translator = null;
+		for (PARAMETER param : PARAMETER.values()) {
+			switch (param) {
+			case COMMENT:
+				translator = new Comment(_outputFile);
+				break;
+			case PARAMETERS:
+				translator = new Specifications(_outputFile, _dataSet, "PARAMETERS", "NOTU", "NCHAR");
+				break;
+			case SYMBOLS:
+				translator = new Command(_outputFile, "BEGIN DATA");
+				break;
+			case UNORDERED:
+				translator = new Comment(_outputFile);
+				break;
+			case DATA:
+				translator = new Command(_outputFile, "END");
+				break;
+			case GO:
+				translator = new Format(_outputFile);
+				break;
+			case WEIGHTS:
+				translator = new Comment(_outputFile);
+				break;
+			case END:
+				translator = new StateLabels(_outputFile);
+				break;
+			}
+		
+			addSupportedParameter(param.getName(), translator);
+		}
 
+	}
+
+	
 	private static final int MAX_LENGTH = 30;
 	private String truncate(String value) {
 		if (value.length() < MAX_LENGTH) {
@@ -183,6 +178,17 @@ public class NexusTranslator extends ParameterBasedTranslator {
 			return value.trim();
 		}
 	}
+	
+	class Comment extends ParameterTranslator {
+		public Comment(PrintFile outputFile) {
+			super(outputFile);
+		}
+		@Override
+		public void translateParameter(String parameter) {
+			_outputFile.outputLine("!"+_context.getHeading(HeadingType.HEADING));
+		}
+	}
+	
 	class CharLabels extends ParameterTranslator {
 		
 		public CharLabels(PrintFile outputFile) {
@@ -212,6 +218,42 @@ public class NexusTranslator extends ParameterBasedTranslator {
 		}
 	}
 
+	
+	class Literal extends ParameterTranslator {
+		private String _value;
+		private int _trailingLines;
+		
+		public Literal(PrintFile outputFile, String value, int trailingLines) {
+			super(outputFile);
+			_value = value;
+			_trailingLines = trailingLines;
+		}
+		
+		@Override
+		public void translateParameter(String parameter) {
+			_outputFile.outputLine(_value);
+			_outputFile.writeBlankLines(_trailingLines, 0);
+		}
+	}
+
+	class Command extends ParameterTranslator {
+		private String _value;
+		private int _trailingLines;
+		public Command(PrintFile outputFile, String value) {
+			this(outputFile, value, 0);
+		}
+		public Command(PrintFile outputFile, String value, int trailingBlankLines) {
+			super(outputFile);
+			_value = value;
+			_trailingLines = trailingBlankLines;
+		}
+		@Override
+		public void translateParameter(String parameter) {
+			command(_value);
+			_outputFile.writeBlankLines(_trailingLines, 0);
+		}
+	}
+
 	class Format extends ParameterTranslator {
 		
 		public Format(PrintFile outputFile) {
@@ -236,16 +278,6 @@ public class NexusTranslator extends ParameterBasedTranslator {
 			
 			command(format.toString());
 			_outputFile.writeBlankLines(1, 0);
-		}
-	}
-
-	class Heading extends ParameterTranslator {
-		public Heading(PrintFile outputFile) {
-			super(outputFile);
-		}
-		@Override
-		public void translateParameter(String parameter) {
-			_outputFile.outputLine(comment("!"+_context.getHeading(HeadingType.HEADING)));
 		}
 	}
 

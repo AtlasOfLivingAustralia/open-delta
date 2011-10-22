@@ -19,6 +19,7 @@ import au.org.ala.delta.translation.naturallanguage.NaturalLanguageDataSetFilter
 import au.org.ala.delta.translation.naturallanguage.NaturalLanguageTranslator;
 import au.org.ala.delta.translation.nexus.NexusDataSetFilter;
 import au.org.ala.delta.translation.nexus.NexusTranslator;
+import au.org.ala.delta.translation.paup.PaupTranslator;
 import au.org.ala.delta.translation.print.CharacterListPrinter;
 import au.org.ala.delta.translation.print.CharacterListTypeSetter;
 import au.org.ala.delta.translation.print.ItemDescriptionsPrinter;
@@ -64,6 +65,9 @@ public class DataSetTranslatorFactory {
 		else if (translation.equals(TranslateType.NexusFormat)) {
 			translator = createNexusFormatTranslator(context, printFile, formatterFactory);
 		}
+		else if (translation.equals(TranslateType.PAUP)) {
+			translator = createPaupFormatTranslator(context, printFile, formatterFactory);
+		}
 		else {
 			throw new RuntimeException("(Currently) unsupported translation type: "+translation);
 		}
@@ -78,6 +82,14 @@ public class DataSetTranslatorFactory {
 		FilteredDataSet dataSet = new FilteredDataSet(context, new NexusDataSetFilter(context));
 		KeyStateTranslator keyStateTranslator = new KeyStateTranslator(formatterFactory);
 		return new NexusTranslator(context, dataSet, printFile, keyStateTranslator, charFormatter, itemFormatter);
+	}
+	
+	private DataSetTranslator createPaupFormatTranslator(DeltaContext context, PrintFile printFile, FormatterFactory formatterFactory) {
+		CharacterFormatter charFormatter = formatterFactory.createCharacterFormatter(false, false, CommentStrippingMode.RETAIN);
+		ItemFormatter itemFormatter = formatterFactory.createItemFormatter(null, CommentStrippingMode.STRIP_ALL, false);
+		FilteredDataSet dataSet = new FilteredDataSet(context, new NexusDataSetFilter(context));
+		KeyStateTranslator keyStateTranslator = new KeyStateTranslator(formatterFactory);
+		return new PaupTranslator(context, dataSet, printFile, keyStateTranslator, charFormatter, itemFormatter);
 	}
 
 	private DataSetTranslator createIntkeyFormatTranslator(DeltaContext context, FormatterFactory formatterFactory) {

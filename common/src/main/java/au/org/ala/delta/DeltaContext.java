@@ -120,6 +120,8 @@ public class DeltaContext extends AbstractDeltaContext {
 	private boolean _translateImplicitValues = false;
 	private boolean _keyCharacterListUsed = false;
 	private boolean _numberStatesFromZero = false;
+	private boolean _useMeanValues = false;
+	
 	
 	private Map<HeadingType, String> _headings = new HashMap<HeadingType, String>();
 	private Integer _characterForTaxonImages = null;
@@ -800,7 +802,16 @@ public class DeltaContext extends AbstractDeltaContext {
 		if (keyChar != null) {
 		    keyChar.setUseNormalValues(
 				_translateType == TranslateType.NexusFormat ||
+				_translateType == TranslateType.Hennig86    ||
+				_translateType == TranslateType.Dist        ||
+				_translateType == TranslateType.PAUP        ||
 				_useNormalValues.containsKey(characterNumber));
+		    
+		    keyChar.setUseMeanValues(
+		    		_useMeanValues && 
+		    		(_translateType == TranslateType.NexusFormat ||
+		    		 _translateType == TranslateType.Hennig86    ||
+		    		 _translateType == TranslateType.PAUP));
 		}
 		return keyChar;
 	}
@@ -967,5 +978,13 @@ public class DeltaContext extends AbstractDeltaContext {
 	
 	public boolean getNumberStatesFromZero() {
 		return _numberStatesFromZero;
+	}
+	
+	public void useMeanValues() {
+		_useMeanValues = true;
+	}
+	
+	public boolean getUseMeanValues() {
+		return _useMeanValues;
 	}
 }

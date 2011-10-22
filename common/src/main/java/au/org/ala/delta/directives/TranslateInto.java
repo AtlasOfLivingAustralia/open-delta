@@ -61,6 +61,7 @@ public class TranslateInto extends AbstractTextDirective {
 				case IntKey:
 				case Key:
 				case Dist:
+				case PAUP:
 					break;
 				default:
 					throw new RuntimeException("Recognized, but currently unsupported translate to type: " + t);
