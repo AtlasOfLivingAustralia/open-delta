@@ -61,9 +61,13 @@ public class OutputFileSelector {
 	/** Number of characters on a line of text written to the print file */
 	private int _printWidth;
 	
+	/** Number of characters on a line of text written to the output file */
+	private int _outputWidth;
+	
 	public OutputFileSelector(DeltaDataSet dataSet) {
 		_dataSet = dataSet;
 		_printWidth = DEFAULT_PRINT_WIDTH;
+		_outputWidth = DEFAULT_PRINT_WIDTH;
 		_outputFileIndex = 1;
 	}
 
@@ -377,10 +381,14 @@ public class OutputFileSelector {
 	public void setOutputFileName(String outputFile) throws Exception {
 		_outputFileName = FilenameUtils.separatorsToSystem(outputFile);
 		PrintStream indexStream = createPrintStream(_outputFileName);
-		_outputFile = new PrintFile(indexStream, _printWidth);
+		_outputFile = new PrintFile(indexStream, _outputWidth);
 	}
 	
 	public PrintFile getOutputFile() {
 		return _outputFile;
+	}
+
+	public void setOutputWidth(int value) {
+		_outputWidth = value;
 	}
 }

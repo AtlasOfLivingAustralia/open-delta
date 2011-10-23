@@ -88,8 +88,7 @@ public class DataSetTranslatorFactory {
 		CharacterFormatter charFormatter = formatterFactory.createCharacterFormatter(false, false, CommentStrippingMode.RETAIN);
 		ItemFormatter itemFormatter = formatterFactory.createItemFormatter(null, CommentStrippingMode.STRIP_ALL, false);
 		FilteredDataSet dataSet = new FilteredDataSet(context, new NexusDataSetFilter(context));
-		KeyStateTranslator keyStateTranslator = new KeyStateTranslator(formatterFactory);
-		return new PaupTranslator(context, dataSet, printFile, keyStateTranslator, charFormatter, itemFormatter);
+		return new PaupTranslator(context, dataSet, printFile, charFormatter, itemFormatter);
 	}
 
 	private DataSetTranslator createIntkeyFormatTranslator(DeltaContext context, FormatterFactory formatterFactory) {

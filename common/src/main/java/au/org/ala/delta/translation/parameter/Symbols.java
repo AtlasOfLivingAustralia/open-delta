@@ -32,19 +32,27 @@ public class Symbols extends ParameterTranslator {
 		while (characters.hasNext()) {
 			max = Math.max(max, characters.next().getNumberOfStates());
 		}
+		int first = _numberFromZero ? 0 : 1;
+		
 		if (_quoteSymbols) {
 			symbols.append("\"");
 		}
-		int first = _numberFromZero ? 0 : 1;
-		for (int i=first; i<max+first; i++) {
-			symbols.append(ParameterBasedTranslator.STATE_CODES[i]);
-		}
+		writeSymbols(symbols, first, max+first);
+		
 		if (_quoteSymbols) {
 			symbols.append("\"");
 		}
 		symbols.append(";");
 		
 		return symbols.toString();
+	}
+	
+	protected void writeSymbols(StringBuilder symbols, int first, int last) {
+		
+		for (int i=first; i<last+first; i++) {
+			symbols.append(ParameterBasedTranslator.STATE_CODES[i]);
+		}
+		
 	}
 
 }

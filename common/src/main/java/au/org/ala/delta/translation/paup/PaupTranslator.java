@@ -16,14 +16,12 @@ import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateAttribute;
 import au.org.ala.delta.model.NumericAttribute;
 import au.org.ala.delta.model.format.CharacterFormatter;
-import au.org.ala.delta.model.format.FilteredCharacterFormatter;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.model.impl.ControllingInfo;
 import au.org.ala.delta.translation.FilteredDataSet;
 import au.org.ala.delta.translation.FilteredItem;
 import au.org.ala.delta.translation.PrintFile;
 import au.org.ala.delta.translation.delta.DeltaWriter;
-import au.org.ala.delta.translation.key.KeyStateTranslator;
 import au.org.ala.delta.translation.parameter.Command;
 import au.org.ala.delta.translation.parameter.ParameterBasedTranslator;
 import au.org.ala.delta.translation.parameter.ParameterTranslator;
@@ -71,7 +69,7 @@ public class PaupTranslator extends ParameterBasedTranslator {
 		private String _name;
 
 		private PARAMETER(String name) {
-			_name = name.substring(1, 3).toUpperCase();
+			_name = name;
 		}
 		
 		public String getName() {
@@ -81,6 +79,9 @@ public class PaupTranslator extends ParameterBasedTranslator {
 	};
 
 
+	private static final int ITEM_NAME_LENGTH = 8;
+	private static final int OUTPUT_COLUMNS = 80;
+	
 	private static final String[] STATE_CODES = {
 		"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", 
 		"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", 
@@ -92,10 +93,9 @@ public class PaupTranslator extends ParameterBasedTranslator {
 	private FilteredDataSet _dataSet;
 	private CharacterFormatter _characterFormatter;
 	private ItemFormatter _itemFormatter;
-	private KeyStateTranslator _keyStateTranslator;
-
+	
 	public PaupTranslator(DeltaContext context, FilteredDataSet dataSet, 
-			PrintFile outputFile, KeyStateTranslator keyStateTranslator,
+			PrintFile outputFile, 
 			CharacterFormatter characterFormatter, ItemFormatter itemFormatter) {
 		_context = context;
 		_dataSet = dataSet;
@@ -105,7 +105,6 @@ public class PaupTranslator extends ParameterBasedTranslator {
 		
 		_characterFormatter = characterFormatter;
 		_itemFormatter = itemFormatter;
-		_keyStateTranslator = keyStateTranslator;
 		addParameters();
 	}
 
@@ -143,7 +142,7 @@ public class PaupTranslator extends ParameterBasedTranslator {
 				translator = new Specifications(_outputFile, _dataSet, "PARAMETERS", "NOTU", "NCHAR");
 				break;
 			case SYMBOLS:
-				translator = new Symbols(_outputFile, _dataSet, false, _context.getNumberStatesFromZero());
+				translator = new PaupSymbols(_outputFile, _context.getNumberStatesFromZero());
 				break;
 			case UNORDERED:
 				translator = new Comment(_outputFile);
@@ -166,18 +165,6 @@ public class PaupTranslator extends ParameterBasedTranslator {
 		}
 
 	}
-
-	
-	private static final int MAX_LENGTH = 30;
-	private String truncate(String value) {
-		if (value.length() < MAX_LENGTH) {
-			return value;
-		}
-		else {
-			value = value.substring(0, MAX_LENGTH);
-			return value.trim();
-		}
-	}
 	
 	class Comment extends ParameterTranslator {
 		public Comment(PrintFile outputFile) {
@@ -188,62 +175,57 @@ public class PaupTranslator extends ParameterBasedTranslator {
 			_outputFile.outputLine("!"+_context.getHeading(HeadingType.HEADING));
 		}
 	}
-	
-	class CharLabels extends ParameterTranslator {
-		
-		public CharLabels(PrintFile outputFile) {
-			super(outputFile);
-		}
-		@Override
-		public void translateParameter(String parameter) {
 
-			_outputFile.outputLine("CHARLABELS");
-			Iterator<IdentificationKeyCharacter> characters = _dataSet.identificationKeyCharacterIterator();
-			while(characters.hasNext()) {
-				outputCharacter(characters.next());
+	class PaupSymbols extends Symbols {
+		public PaupSymbols(PrintFile outputFile, boolean numberFromZero) {
+			super(outputFile, _dataSet, false, numberFromZero);
+		}
+
+		@Override
+		protected void writeSymbols(StringBuilder symbols, int first, int last) {
+			symbols.append(STATE_CODES[first]).append("-");
+			if (last > 10 - first) {
+				symbols.append(symbols.append(STATE_CODES[10]));
+				symbols.append(" ");
+				symbols.append(STATE_CODES[11]);
+				if (last > 11 - first) {
+					symbols.append("-");	
+				}
 			}
-			_outputFile.outputLine(";");
-			_outputFile.writeBlankLines(1, 0);
-		}
-		
-		private void outputCharacter(IdentificationKeyCharacter character) {
-			FilteredCharacterFormatter _formatter = new FilteredCharacterFormatter();
-			String description = _characterFormatter.formatCharacterDescription(character.getCharacter());
-			StringBuilder charOut = new StringBuilder();
-			charOut.append(comment(_formatter.formatCharacterNumber(character)));
-			charOut.append(" ");
-			charOut.append("'").append(truncate(description)).append("'");
-			_outputFile.outputLine(charOut.toString());
-			
+			symbols.append(STATE_CODES[last - first]);
 		}
 	}
-
 	
-	class Literal extends ParameterTranslator {
-		private String _value;
-		private int _trailingLines;
-		
-		public Literal(PrintFile outputFile, String value, int trailingLines) {
+	/**
+	 * Writes the DATA command (which includes the attribute data).
+	 */
+	class Data extends ParameterTranslator {
+		public Data(PrintFile outputFile) {
 			super(outputFile);
-			_value = value;
-			_trailingLines = trailingLines;
 		}
 		
 		@Override
 		public void translateParameter(String parameter) {
-			_outputFile.outputLine(_value);
-			_outputFile.writeBlankLines(_trailingLines, 0);
+			writeDataSpecification();
 		}
-	}
 
-	class Matrix extends ParameterTranslator {
-		public Matrix(PrintFile outputFile) {
-			super(outputFile);
+		protected void writeDataSpecification() {
+			StringBuilder data = new StringBuilder();
+			// the output width seems to be ignored by the PAUP translation.
+			data.append("DATA ");
+			int numChars = _dataSet.getNumberOfFilteredCharacters();
+			boolean itemNameOnNewLine = (numChars > OUTPUT_COLUMNS - (ITEM_NAME_LENGTH+1));
+			if (itemNameOnNewLine) {
+				data.append(String.format("(A8,A1/(%dA1))", numChars));
+			}
+			else {
+				data.append(String.format("(A8,A1,%dA1)", numChars));
+			}
+			_outputFile.outputLine(data.toString());
 		}
-		@Override
-		public void translateParameter(String parameter) {
-			_outputFile.outputLine("MATRIX");
-			_outputFile.setWrapingGroupChars('(', ')');
+		
+		protected void writeAttributes() {
+			
 			Iterator<FilteredItem> items = _dataSet.filteredItems();
 			while (items.hasNext()) {
 				Item item = items.next().getItem();
@@ -284,12 +266,12 @@ public class PaupTranslator extends ParameterBasedTranslator {
 			return true;
 		}
 		
-		private void writeItem(Item item) {
-			StringBuilder itemOut = new StringBuilder();
-			itemOut.append("'");
-			itemOut.append(_itemFormatter.formatItemDescription(item));
-			itemOut.append("'");
-			_outputFile.outputLine(itemOut.toString());
+		private String writeItem(Item item) {
+			String itemName = _itemFormatter.formatItemDescription(item);
+			if (itemName.length() > ITEM_NAME_LENGTH) {
+				itemName = itemName.substring(0, ITEM_NAME_LENGTH);
+			}
+			return itemName;
 		}
 		
 		private void addStates(StringBuilder statesOut, List<Integer> states) {
