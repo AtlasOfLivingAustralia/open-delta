@@ -31,6 +31,7 @@ import au.org.ala.delta.translation.parameter.Literal;
 import au.org.ala.delta.translation.parameter.ParameterBasedTranslator;
 import au.org.ala.delta.translation.parameter.ParameterTranslator;
 import au.org.ala.delta.translation.parameter.Specifications;
+import au.org.ala.delta.translation.parameter.Symbols;
 
 /**
  * Implements the translation into Nexus format as specified using the TRANSLATE
@@ -66,11 +67,6 @@ public class NexusTranslator extends ParameterBasedTranslator {
 
 	};
 
-	private static final String[] STATE_CODES = {
-		"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", 
-		"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", 
-		"K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", 
-		"U", "V", "W", "X", "Y", "Z"};
 	
 	private DeltaContext _context;
 	private PrintFile _outputFile;
@@ -212,29 +208,17 @@ public class NexusTranslator extends ParameterBasedTranslator {
 		}
 	}
 
-	class Format extends ParameterTranslator {
+	class Format extends Symbols {
 		
 		public Format(PrintFile outputFile) {
-			super(outputFile);
+			super(outputFile, _dataSet, true, _context.getNumberStatesFromZero());
 		}
 		@Override
 		public void translateParameter(String parameter) {
 			StringBuilder format = new StringBuilder();
-			format.append("FORMAT MISSING=? GAP=- SYMBOLS=");
-			Iterator<IdentificationKeyCharacter> characters = _dataSet.identificationKeyCharacterIterator();
-			int max = 0;
-			while (characters.hasNext()) {
-				max = Math.max(max, characters.next().getNumberOfStates());
-			}
-			
-			format.append("\"");
-			int first = _context.getNumberStatesFromZero() ? 0 : 1;
-			for (int i=first; i<max+first; i++) {
-				format.append(STATE_CODES[i]);
-			}
-			format.append("\"");
-			
-			command(format.toString());
+			format.append("FORMAT MISSING=? GAP=- ");
+			format.append(symbols());
+			_outputFile.outputLine(format.toString());
 			_outputFile.writeBlankLines(1, 0);
 		}
 	}

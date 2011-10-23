@@ -14,11 +14,9 @@ import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.IdentificationKeyCharacter;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateAttribute;
-import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.NumericAttribute;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.FilteredCharacterFormatter;
-import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.model.impl.ControllingInfo;
 import au.org.ala.delta.translation.FilteredDataSet;
@@ -26,9 +24,11 @@ import au.org.ala.delta.translation.FilteredItem;
 import au.org.ala.delta.translation.PrintFile;
 import au.org.ala.delta.translation.delta.DeltaWriter;
 import au.org.ala.delta.translation.key.KeyStateTranslator;
+import au.org.ala.delta.translation.parameter.Command;
 import au.org.ala.delta.translation.parameter.ParameterBasedTranslator;
 import au.org.ala.delta.translation.parameter.ParameterTranslator;
 import au.org.ala.delta.translation.parameter.Specifications;
+import au.org.ala.delta.translation.parameter.Symbols;
 
 /**
  * Implements the translation into Nexus format as specified using the TRANSLATE
@@ -143,22 +143,22 @@ public class PaupTranslator extends ParameterBasedTranslator {
 				translator = new Specifications(_outputFile, _dataSet, "PARAMETERS", "NOTU", "NCHAR");
 				break;
 			case SYMBOLS:
-				translator = new Command(_outputFile, "BEGIN DATA");
+				translator = new Symbols(_outputFile, _dataSet, false, _context.getNumberStatesFromZero());
 				break;
 			case UNORDERED:
 				translator = new Comment(_outputFile);
 				break;
 			case DATA:
-				translator = new Command(_outputFile, "END");
+				translator = new Command(_outputFile, "END ");
 				break;
 			case GO:
-				translator = new Format(_outputFile);
+				translator = new Command(_outputFile, "GO ");
 				break;
 			case WEIGHTS:
 				translator = new Comment(_outputFile);
 				break;
 			case END:
-				translator = new StateLabels(_outputFile);
+				translator = new Command(_outputFile, "END ");
 				break;
 			}
 		
@@ -233,97 +233,6 @@ public class PaupTranslator extends ParameterBasedTranslator {
 		public void translateParameter(String parameter) {
 			_outputFile.outputLine(_value);
 			_outputFile.writeBlankLines(_trailingLines, 0);
-		}
-	}
-
-	class Command extends ParameterTranslator {
-		private String _value;
-		private int _trailingLines;
-		public Command(PrintFile outputFile, String value) {
-			this(outputFile, value, 0);
-		}
-		public Command(PrintFile outputFile, String value, int trailingBlankLines) {
-			super(outputFile);
-			_value = value;
-			_trailingLines = trailingBlankLines;
-		}
-		@Override
-		public void translateParameter(String parameter) {
-			command(_value);
-			_outputFile.writeBlankLines(_trailingLines, 0);
-		}
-	}
-
-	class Format extends ParameterTranslator {
-		
-		public Format(PrintFile outputFile) {
-			super(outputFile);
-		}
-		@Override
-		public void translateParameter(String parameter) {
-			StringBuilder format = new StringBuilder();
-			format.append("FORMAT MISSING=? GAP=- SYMBOLS=");
-			Iterator<IdentificationKeyCharacter> characters = _dataSet.identificationKeyCharacterIterator();
-			int max = 0;
-			while (characters.hasNext()) {
-				max = Math.max(max, characters.next().getNumberOfStates());
-			}
-			
-			format.append("\"");
-			int first = _context.getNumberStatesFromZero() ? 0 : 1;
-			for (int i=first; i<max+first; i++) {
-				format.append(STATE_CODES[i]);
-			}
-			format.append("\"");
-			
-			command(format.toString());
-			_outputFile.writeBlankLines(1, 0);
-		}
-	}
-
-	class StateLabels extends ParameterTranslator {
-		public StateLabels(PrintFile outputFile) {
-			super(outputFile);
-		}
-		@Override
-		public void translateParameter(String parameter) {
-			_outputFile.setIndentOnLineWrap(true);
-			
-			_outputFile.outputLine("STATELABELS");
-			Iterator<IdentificationKeyCharacter> characters = _dataSet.identificationKeyCharacterIterator();
-			while(characters.hasNext()) {
-				outputCharacterStates(characters.next());
-			}
-			_outputFile.outputLine(";");
-			_outputFile.writeBlankLines(1, 0);
-			
-			_outputFile.setIndentOnLineWrap(false);
-			
-		}
-		
-		private void outputCharacterStates(IdentificationKeyCharacter character) {
-			StringBuilder states = new StringBuilder();
-			states.append(character.getFilteredCharacterNumber());
-			states.append(" ");
-			boolean hasKeyStates = !character.getStates().isEmpty();
-			for (int i=1; i<=character.getNumberOfStates(); i++) {
-				states.append("'");
-				String state = null;
-				if (hasKeyStates) {
-					state = _keyStateTranslator.translateState(character, i);
-				}
-				else {
-					MultiStateCharacter multiStateChar = (MultiStateCharacter)character.getCharacter();
-					state = _characterFormatter.formatState(multiStateChar, i, CommentStrippingMode.STRIP_ALL);
-				}
-				states.append(truncate(state));
-				states.append("'");
-				if (i != character.getNumberOfStates()) {
-					states.append(" ");
-				}
-			}
-			states.append(",");
-			_outputFile.outputLine(states.toString());
 		}
 	}
 

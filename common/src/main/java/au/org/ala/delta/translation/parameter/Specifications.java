@@ -25,7 +25,7 @@ public class Specifications extends ParameterTranslator {
 		specs.append(_itemsLabel).append("=").append(_dataSet.getNumberOfFilteredItems());
 		specs.append(" ");
 		specs.append(_charsLabel).append("=").append(_dataSet.getNumberOfFilteredCharacters());
-		
+		specs.append(";");
 		command(specs.toString());
 		_outputFile.writeBlankLines(1, 0);
 	}
