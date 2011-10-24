@@ -177,9 +177,11 @@ public class IntkeyCharactersFileWriter {
 	
 	protected void writeHeading() {
 		String heading = _context.getHeading(HeadingType.HEADING);
-		if (StringUtils.isNotBlank(heading)) {
-			_charsFile.writeHeading(heading);
+		if (StringUtils.isBlank(heading)) {
+			heading = " ";
 		}
+		_charsFile.writeHeading(heading);
+		
 	}
 	
 	protected void writeSubHeading() {
