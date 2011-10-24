@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.DeltaContext.HeadingType;
 import au.org.ala.delta.intkey.WriteOnceIntkeyCharsFile;
@@ -175,12 +177,16 @@ public class IntkeyCharactersFileWriter {
 	
 	protected void writeHeading() {
 		String heading = _context.getHeading(HeadingType.HEADING);
-		_charsFile.writeHeading(heading);
+		if (StringUtils.isNotBlank(heading)) {
+			_charsFile.writeHeading(heading);
+		}
 	}
 	
 	protected void writeSubHeading() {
 		String heading = _context.getHeading(HeadingType.REGISTRATION_SUBHEADING);
-		_charsFile.writeSubHeading(heading);
+		if (StringUtils.isNotBlank(heading)) {
+			_charsFile.writeSubHeading(heading);
+		}
 	}
 	
 	protected void writeCharacterMask() {

@@ -10,6 +10,7 @@ import java.util.Set;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.DeltaContext.OutputFormat;
@@ -87,14 +88,24 @@ public class OutputFileSelector {
 			else {
 				Attribute attribute = _dataSet.getAttribute(itemNumber, _characterForOutputFiles);
 				if (attribute != null) {
-					AttributeFormatter formatter = new AttributeFormatter(false, true, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REMOVE, false, null);
-					outputFile = formatter.formatAttribute(attribute);
+					outputFile = outputFileFromAttribute(attribute);
 				}
 			}
 			itemNumber--;
 		}
 		outputFile = prependOutputDirectory(outputFile);
 		return addExtension(outputFile);
+	}
+
+	protected String outputFileFromAttribute(Attribute attribute) {
+		String outputFile;
+		AttributeFormatter formatter = new AttributeFormatter(false, true, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REMOVE, false, null);
+		outputFile = formatter.formatAttribute(attribute);
+		
+		if (outputFile.contains(" ")) {
+			outputFile = outputFile.substring(0, outputFile.indexOf(" "));
+		}
+		return outputFile;
 	}
 	
 	private String addExtension(String outputFile) {

@@ -105,7 +105,7 @@ public class KeyItemsFileWriter {
 	}
 	
 	protected void writeCharacterDependencies() {
-		List<Integer> dependencyData = _encoder.encodeCharacterDependencies(_dataSet.getNumberOfCharacters(), _dataSet.unfilteredIdentificationKeyCharacterIterator());
+		List<Integer> dependencyData = _encoder.encodeCharacterDependencies(_dataSet, false);
 		
 		_itemsFile.writeCharacterDependencies(dependencyData);
 	}

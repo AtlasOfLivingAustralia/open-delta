@@ -75,6 +75,15 @@ public class FilteredDataSet extends DataSetWrapper {
 		filterItems();
 	}
 	
+	public int filteredCharacterNumber(int originalCharacterNumber) {
+		for (FilteredCharacter character : _filteredCharacters) {
+			if (originalCharacterNumber == character.getCharacter().getCharacterId()) {
+				return character.getCharacterNumber();
+			}
+		}
+		throw new IllegalArgumentException("No such character: "+originalCharacterNumber);
+	}
+	
 	
 	private void filterCharacters() {
 		_filteredCharacters = new ArrayList<FilteredCharacter>();

@@ -10,7 +10,7 @@ public class SubjectForOutputFiles extends AbstractTextDirective {
 	}
 	@Override
 	public void process(DeltaContext context, DirectiveArguments directiveArguments) throws Exception {
-		context.getOutputFileSelector().setSubjectForOutputFiles(directiveArguments.getFirstArgumentText());
+		context.getOutputFileSelector().setSubjectForOutputFiles(directiveArguments.getFirstArgumentText().trim());
 	}
 
 }

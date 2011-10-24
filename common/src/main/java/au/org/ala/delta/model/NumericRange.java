@@ -44,8 +44,13 @@ public class NumericRange {
 	}
 
 	public Range getNormalRange() {
+		try {
 		if (_range.getMinimumNumber().equals(_range.getMaximumNumber())) {
 			return createRangeForSingleValue(_range.getMinimumNumber());
+		}
+		}
+		catch (NullPointerException e) {
+			System.out.println("Breakproint");
 		}
 		return _range;
 	}

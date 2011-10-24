@@ -149,6 +149,10 @@ public class DefaultAttributeData implements AttributeData {
 	}
 
 	private void addNumericRange(List<NumericRange> ranges, NumericRange range, List<Number> numbers) {
+		if (!range.hasExtremeHigh() && !range.hasExtremeLow() && numbers.isEmpty()) {
+			return;
+		}
+		
 		if (numbers.size() == 1) {
 			range.setRange(new NumberRange(numbers.get(0)));
 		}

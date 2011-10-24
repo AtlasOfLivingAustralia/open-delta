@@ -22,27 +22,41 @@ import au.org.ala.delta.translation.FilteredItem;
  */
 public class BinaryKeyFileEncoder {
 
-	public List<Integer> encodeCharacterDependencies(int numChars, Iterator<IdentificationKeyCharacter> keyChars) {
+	public List<Integer> encodeCharacterDependencies(FilteredDataSet dataSet, boolean useFilteredCharNums) {
+		int numChars;
+		Iterator<IdentificationKeyCharacter> keyChars;
+		if (useFilteredCharNums) {
+			numChars = dataSet.getNumberOfFilteredCharacters();
+			keyChars = dataSet.identificationKeyCharacterIterator();
+		}	
+		else {
+			numChars = dataSet.getNumberOfCharacters();
+			keyChars = dataSet.unfilteredIdentificationKeyCharacterIterator();
+		}
+		
 		List<Integer> dependencyData = initialiseDependencyList(numChars);
 
 		while (keyChars.hasNext()) {
 			IdentificationKeyCharacter filteredChar = keyChars.next();
 			if (filteredChar.getCharacterType().isMultistate()) {
 
-				addDependencyData(filteredChar.getCharacterNumber(), dependencyData, filteredChar);
+				addDependencyData(dataSet, dependencyData, filteredChar, useFilteredCharNums);
 			}
 		}
 		return dependencyData;
 	}
 
-	public List<Integer> encodeCharacterDependenciesInverted(int numChars, Iterator<FilteredCharacter> chars) {
+	public List<Integer> encodeCharacterDependenciesInverted(FilteredDataSet dataSet) {
+		int numChars = dataSet.getNumberOfFilteredCharacters();
+		Iterator<IdentificationKeyCharacter> keyChars = dataSet.identificationKeyCharacterIterator();
+		
 		List<Integer> dependencyData = initialiseDependencyList(numChars);
 
-		while (chars.hasNext()) {
-			FilteredCharacter filteredChar = chars.next();
+		while (keyChars.hasNext()) {
+			IdentificationKeyCharacter filteredChar = keyChars.next();
 			au.org.ala.delta.model.Character character = filteredChar.getCharacter();
 
-			addInvertedDependencyData(filteredChar.getCharacterNumber(), dependencyData, character);
+			addInvertedDependencyData(dataSet, filteredChar.getFilteredCharacterNumber(), dependencyData, character);
 
 		}
 		return dependencyData;
@@ -55,13 +69,15 @@ public class BinaryKeyFileEncoder {
 		return dependencyData;
 	}
 
-	private void addDependencyData(int filteredCharNumber, List<Integer> dependencyData,
-			IdentificationKeyCharacter multiStateCharacter) {
+	private void addDependencyData(FilteredDataSet dataSet, List<Integer> dependencyData,
+			IdentificationKeyCharacter multiStateCharacter, boolean useFilteredCharNumbers) {
+		
+		int charNumber = useFilteredCharNumbers ? multiStateCharacter.getFilteredCharacterNumber() : multiStateCharacter.getCharacterNumber();
 		List<CharacterDependency> dependentCharacters = multiStateCharacter.getDependentCharacters();
 		if (dependentCharacters != null && dependentCharacters.size() > 0) {
 			// Any location specifications are "1" indexed because the
 			// original code was FORTRAN. Intkey expects this and compensates.
-			dependencyData.set(filteredCharNumber - 1, dependencyData.size() + 1);
+			dependencyData.set(charNumber - 1, dependencyData.size() + 1);
 			int numStates = multiStateCharacter.getNumberOfStates();
 			int statesOffset = dependencyData.size();
 			// Start off by adding zeros for each state, which makes the List
@@ -71,7 +87,18 @@ public class BinaryKeyFileEncoder {
 				dependencyData.add(0);
 			}
 			for (CharacterDependency dependency : dependentCharacters) {
-				List<Integer> dependentCharacterNumbers = toRangeList(dependency.getDependentCharacterIds());
+				Set<Integer> dependentChars = dependency.getDependentCharacterIds();
+			
+				if (useFilteredCharNumbers) {
+					Set<Integer> filteredChars = new HashSet<Integer>();
+					
+					for (int originalCharNum : dependentChars) {
+						filteredChars.add(dataSet.filteredCharacterNumber(originalCharNum));
+					}
+					dependentChars = filteredChars;
+					
+				}
+				List<Integer> dependentCharacterNumbers = toRangeList(dependentChars);
 
 				for (int state : dependency.getStates()) {
 					int dataOffset = dependencyData.size() + 1; // Another case
@@ -87,7 +114,7 @@ public class BinaryKeyFileEncoder {
 		}
 	}
 
-	private void addInvertedDependencyData(int filteredCharNumber, List<Integer> invertedDependencyData,
+	private void addInvertedDependencyData(FilteredDataSet dataSet, int filteredCharNumber, List<Integer> invertedDependencyData,
 			au.org.ala.delta.model.Character character) {
 		List<CharacterDependency> dependencies = character.getControllingCharacters();
 		if (dependencies == null || dependencies.size() == 0) {
@@ -101,7 +128,7 @@ public class BinaryKeyFileEncoder {
 		for (CharacterDependency dependency : dependencies) {
 			int controllingCharNumber = dependency.getControllingCharacterId();
 			if (!controllingChars.contains(controllingCharNumber)) {
-				invertedDependencyData.add(controllingCharNumber);
+				invertedDependencyData.add(dataSet.filteredCharacterNumber(controllingCharNumber));
 			}
 			controllingChars.add(controllingCharNumber);
 		}

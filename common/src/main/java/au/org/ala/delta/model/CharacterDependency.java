@@ -153,8 +153,30 @@ public class CharacterDependency implements Comparable<CharacterDependency>{
 		if (o == null) {
 			return -1;
 		}
-		return Integer.valueOf(_impl.getControllingCharacterId()).compareTo(
+		int result = Integer.valueOf(_impl.getControllingCharacterId()).compareTo(
 				Integer.valueOf(o.getControllingCharacterId()));
+		if (result == 0) {
+			// compare the first state.
+			List<Integer> states = getStatesAsList();
+			List<Integer> otherStates = o.getStatesAsList();
+			
+			if (states.isEmpty() && otherStates.isEmpty()) {
+				result = 0;
+			}
+			else if (states.isEmpty()) {
+				result = 1;
+			}
+			else if (otherStates.isEmpty()) {
+				result = -1;
+			}
+			else {
+				result = Integer.valueOf(states.get(0)).compareTo(
+						 Integer.valueOf(otherStates.get(0)));
+			}
+			
+		}
+		
+		return result;
 	}
 	
 	

@@ -116,8 +116,8 @@ public class IntkeyItemsFileWriter {
 	
 	public void writeCharacterDependencies() {
 		
-		List<Integer> dependencyData = _encoder.encodeCharacterDependencies(_dataSet.getNumberOfFilteredCharacters(), _dataSet.identificationKeyCharacterIterator());
-		List<Integer> invertedDependencyData = _encoder.encodeCharacterDependenciesInverted(_dataSet.getNumberOfFilteredCharacters(), _dataSet.filteredCharacters());
+		List<Integer> dependencyData = _encoder.encodeCharacterDependencies(_dataSet, true);
+		List<Integer> invertedDependencyData = _encoder.encodeCharacterDependenciesInverted(_dataSet);
 		_itemsFile.writeCharacterDependencies(dependencyData, invertedDependencyData);
 	}
 	
