@@ -71,7 +71,14 @@ public class SummaryDirectiveInvocation extends IntkeyDirectiveInvocation {
                 appendCharacterHeading(builder, characterNumber, characterDetail, characterDescription);
                 builder.increaseIndent();
                 appendUnknownInapplicableRecorded(builder, numUnknown, numInapplicable, numRecorded);
-                appendDistributionOfValues(builder, stateDistribution);
+
+                // state distribution map will be empty for characters that are
+                // inapplicable or unknown for
+                // all the taxa being summarized.
+                if (!stateDistribution.isEmpty()) {
+                    appendDistributionOfValues(builder, stateDistribution);
+                }
+
                 builder.appendText("");
                 builder.decreaseIndent();
             } else if (ch instanceof IntegerCharacter) {
@@ -89,7 +96,14 @@ public class SummaryDirectiveInvocation extends IntkeyDirectiveInvocation {
                 appendCharacterHeading(builder, characterNumber, characterDetail, characterDescription);
                 builder.increaseIndent();
                 appendUnknownInapplicableRecorded(builder, numUnknown, numInapplicable, numRecorded);
-                appendDistributionOfValues(builder, valueDistribution);
+
+                // value distribution map will be empty for characters that are
+                // inapplicable or unknown for
+                // all the taxa being summarized.
+                if (!valueDistribution.isEmpty()) {
+                    appendDistributionOfValues(builder, valueDistribution);
+                }
+
                 builder.appendText(String.format("%s\\tab %.2f", UIUtils.getResourceString("SummaryDirective.Mean"), mean));
                 builder.appendText(String.format("%s\\tab %.2f", UIUtils.getResourceString("SummaryDirective.StandardDeviation"), stdDev));
                 builder.appendText("");
@@ -236,9 +250,15 @@ public class SummaryDirectiveInvocation extends IntkeyDirectiveInvocation {
             distributionStringBuilder.append("-");
             distributionStringBuilder.append(endRange);
         }
-        distributionStringBuilder.append("(");
-        distributionStringBuilder.append(rangeCount);
-        distributionStringBuilder.append(")");
+
+        // Include the distribution count for the range only if the report if
+        // for more than one taxon. For a summary report with a single taxon,
+        // the distribution count will always be 1.
+        if (_taxa.size() > 1) {
+            distributionStringBuilder.append("(");
+            distributionStringBuilder.append(rangeCount);
+            distributionStringBuilder.append(")");
+        }
     }
 
     private List<Object> generateMultiStateSummaryInformation(MultiStateCharacter ch, List<Attribute> attrs) {
@@ -405,14 +425,18 @@ public class SummaryDirectiveInvocation extends IntkeyDirectiveInvocation {
 
         double mean = sum / valuesForMeanAndStdDev.size();
 
-        double sumSquaredDifferences = 0;
-        for (double value : valuesForMeanAndStdDev) {
-            double diff = value - mean;
-            sumSquaredDifferences += (diff * diff);
-        }
+        double stdDev = 0;
 
-        double variance = sumSquaredDifferences / (valuesForMeanAndStdDev.size() - 1);
-        double stdDev = Math.sqrt(variance);
+        if (valuesForMeanAndStdDev.size() > 1) {
+            double sumSquaredDifferences = 0;
+            for (double value : valuesForMeanAndStdDev) {
+                double diff = value - mean;
+                sumSquaredDifferences += (diff * diff);
+            }
+
+            double variance = sumSquaredDifferences / (valuesForMeanAndStdDev.size() - 1);
+            stdDev = Math.sqrt(variance);
+        }
 
         return new Pair<Double, Double>(mean, stdDev);
     }

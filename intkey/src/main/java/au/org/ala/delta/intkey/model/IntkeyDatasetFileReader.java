@@ -338,6 +338,10 @@ public final class IntkeyDatasetFileReader {
 
             // Type for corresponding character is indicated by the absolute
             // value of the supplied integer value
+            if (charTypesList.get(i) < 0) {
+                System.out.println(i + 1);
+                System.out.println(charTypesList.get(i));
+            }
             int charType = Math.abs(charTypesList.get(i));
 
             au.org.ala.delta.model.Character newChar = null;
@@ -634,7 +638,7 @@ public final class IntkeyDatasetFileReader {
         if (itemFileHeader.getLDep() >= numChars) {
             seekToRecord(itemBinFile, itemFileHeader.getRpCdep());
             List<Integer> dependencyData = readIntegerList(itemBinFile, itemFileHeader.getLDep());
-System.out.println("dep: "+dependencyData);
+            System.out.println("dep: " + dependencyData);
             // At the start of the dependency data there is an integer value for
             // each character.
             // If non zero, the value is an offset further down the list where
