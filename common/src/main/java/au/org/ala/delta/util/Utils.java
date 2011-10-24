@@ -742,8 +742,12 @@ public class Utils {
 
                         int[] endPos = new int[1];
                         int value = strtol(new String(buff), endPos, 16);
-                        if ((endPos[0] == 2) && value > 127 && outputText.charAt(srcPos - 1) == '\\')
-                            outputText.replace(--srcPos, 4, new String(new char[] { (char) value }));
+                        if ((endPos[0] == 2) && value > 127 && outputText.charAt(srcPos - 1) == '\\') {
+                      
+                        	srcPos--;
+                        	outputText.replace(srcPos, srcPos+4, new String(new char[] { (char) value }));
+                          
+                        }
                     } else if (ch == '\\' && outputText.charAt(srcPos - 1) != '\\') // Terminates
                                                                                     // RTF,
                                                                                     // but

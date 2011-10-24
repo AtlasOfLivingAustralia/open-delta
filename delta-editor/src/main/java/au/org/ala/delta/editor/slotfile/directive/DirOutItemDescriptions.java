@@ -19,10 +19,11 @@ import au.org.ala.delta.TranslateType;
 import au.org.ala.delta.translation.DataSetTranslator;
 import au.org.ala.delta.translation.DataSetTranslatorFactory;
 
-public class DirOutItemDescriptions implements DirectiveFunctor {
+public class DirOutItemDescriptions extends AbstractDirOutFunctor {
 
 	@Override
-	public void process(DirectiveInOutState state) {
+	public void writeDirectiveArguments(DirectiveInOutState state) {
+		
 		DataSetTranslatorFactory factory = new DataSetTranslatorFactory();
 		DeltaContext context = new DeltaContext(state.getDataSet());
 		context.setTranslateType(TranslateType.Delta);

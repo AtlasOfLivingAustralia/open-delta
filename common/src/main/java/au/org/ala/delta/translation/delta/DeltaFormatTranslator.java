@@ -54,8 +54,7 @@ public class DeltaFormatTranslator extends AbstractDataSetTranslator {
 	
 	@Override
 	public void beforeFirstItem() {
-		outputLine("*ITEM DESCRIPTIONS");
-		_printer.writeBlankLines(2, 0);
+		_printer.writeBlankLines(1, 0);
 	}
 
 	@Override
@@ -162,7 +161,6 @@ public class DeltaFormatTranslator extends AbstractDataSetTranslator {
 	@Override
 	public void beforeFirstCharacter() {
 		_typeSetter.beforeFirstCharacter();
-		outputLine("*CHARACTER LIST");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -210,9 +208,15 @@ public class DeltaFormatTranslator extends AbstractDataSetTranslator {
 		outputLine(_characterFormatter.formatState(character, stateNumber)+"/");
 	}
 	
-		@Override 
+	@Override 
 	public void translateItems() {
 		_printer.setLineWrapIndent(0);
+		_printer.setIndent(0);
 		super.translateItems();
+	}
+
+	@Override
+	public void translateOutputParameter(String parameterName) {
+		outputLine(parameterName.replaceAll(" #", " *"));
 	}
 }
