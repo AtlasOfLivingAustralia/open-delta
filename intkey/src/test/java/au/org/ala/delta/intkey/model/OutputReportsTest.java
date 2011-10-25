@@ -75,57 +75,125 @@ public class OutputReportsTest extends IntkeyDatasetTestCase {
         assertEquals("OUTPUT SIMILARITIES\n6 10 14 17 21-24 29 32-33 36 42-43 55 83", fileContents.trim());
     }
 
-//    @Test
-//    public void testOutputSummaryAllTaxa() throws Exception {
-//        IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
-//
-//        File tempFile = File.createTempFile("OutputReportsTest", null);
-//        tempFile.deleteOnExit();
-//
-//        new FileOutputDirective().parseAndProcess(context, tempFile.getAbsolutePath());
-//        new OutputSummaryDirective().parseAndProcess(context, "all all");
-//
-//        String reportOutput = FileUtils.readFileToString(tempFile);
-//        System.out.println(reportOutput);
-//        reportOutput = reportOutput.trim();
-//        reportOutput = reportOutput.replaceAll("\r", "");
-//        reportOutput = reportOutput.replaceAll("\n", " ");
-//
-//        URL expectedOutputFileUrl = getClass().getResource("/outputsummary/output_summary1.txt");
-//        File expectedOutputFile = new File(expectedOutputFileUrl.toURI());
-//
-//        String expectedOutput = FileUtils.readFileToString(expectedOutputFile);
-//        expectedOutput = expectedOutput.trim();
-//        expectedOutput = expectedOutput.replaceAll("\r", "");
-//        expectedOutput = expectedOutput.replaceAll("\n", " ");
-//
-//        assertEquals(expectedOutput, reportOutput);
-//    }
-//    
-//    @Test
-//    public void testOutputSummarySingleTaxon() throws Exception {
-//        IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
-//
-//        File tempFile = File.createTempFile("OutputReportsTest", null);
-//        tempFile.deleteOnExit();
-//
-//        new FileOutputDirective().parseAndProcess(context, tempFile.getAbsolutePath());
-//        new OutputSummaryDirective().parseAndProcess(context, "1 all");
-//
-//        String reportOutput = FileUtils.readFileToString(tempFile);
-//        System.out.println(reportOutput);
-//        reportOutput = reportOutput.trim();
-//        reportOutput = reportOutput.replaceAll("\r", "");
-//        reportOutput = reportOutput.replaceAll("\n", " ");
-//
-//        URL expectedOutputFileUrl = getClass().getResource("/outputsummary/output_summary2.txt");
-//        File expectedOutputFile = new File(expectedOutputFileUrl.toURI());
-//
-//        String expectedOutput = FileUtils.readFileToString(expectedOutputFile);
-//        expectedOutput = expectedOutput.trim();
-//        expectedOutput = expectedOutput.replaceAll("\r", "");
-//        expectedOutput = expectedOutput.replaceAll("\n", " ");
-//
-//        assertEquals(expectedOutput, reportOutput);
-//    }
+    // TODO rework the below into regression tests. They only fail because I
+    // have been unable to replicate
+    // the odd decimal place handling used by the legacy intkey.
+
+    // @Test
+    // public void testOutputSummaryAllTaxa() throws Exception {
+    // IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
+    //
+    // File tempFile = File.createTempFile("OutputReportsTest", null);
+    // tempFile.deleteOnExit();
+    //
+    // new FileOutputDirective().parseAndProcess(context,
+    // tempFile.getAbsolutePath());
+    // new OutputSummaryDirective().parseAndProcess(context, "all all");
+    //
+    // String reportOutput = FileUtils.readFileToString(tempFile);
+    // System.out.println(reportOutput);
+    // reportOutput = reportOutput.trim();
+    // reportOutput = reportOutput.replaceAll("\r", "");
+    // reportOutput = reportOutput.replaceAll("\n", " ");
+    //
+    // URL expectedOutputFileUrl =
+    // getClass().getResource("/outputsummary/sample1.txt");
+    // File expectedOutputFile = new File(expectedOutputFileUrl.toURI());
+    //
+    // String expectedOutput = FileUtils.readFileToString(expectedOutputFile);
+    // expectedOutput = expectedOutput.trim();
+    // expectedOutput = expectedOutput.replaceAll("\r", "");
+    // expectedOutput = expectedOutput.replaceAll("\n", " ");
+    //
+    // assertEquals(expectedOutput, reportOutput);
+    // }
+    //
+    // @Test
+    // public void testOutputSummaryAllTaxa2() throws Exception {
+    // IntkeyContext context =
+    // loadDataset("/dataset/controlling_characters_simple/intkey.ink");
+    //
+    // File tempFile = File.createTempFile("OutputReportsTest", null);
+    // tempFile.deleteOnExit();
+    //
+    // new FileOutputDirective().parseAndProcess(context,
+    // tempFile.getAbsolutePath());
+    // new OutputSummaryDirective().parseAndProcess(context, "all all");
+    //
+    // String reportOutput = FileUtils.readFileToString(tempFile);
+    // System.out.println(reportOutput);
+    // reportOutput = reportOutput.trim();
+    // reportOutput = reportOutput.replaceAll("\r", "");
+    // reportOutput = reportOutput.replaceAll("\n", " ");
+    //
+    // URL expectedOutputFileUrl =
+    // getClass().getResource("/outputsummary/controlling_characters_simple1.txt");
+    // File expectedOutputFile = new File(expectedOutputFileUrl.toURI());
+    //
+    // String expectedOutput = FileUtils.readFileToString(expectedOutputFile);
+    // expectedOutput = expectedOutput.trim();
+    // expectedOutput = expectedOutput.replaceAll("\r", "");
+    // expectedOutput = expectedOutput.replaceAll("\n", " ");
+    //
+    // assertEquals(expectedOutput, reportOutput);
+    // }
+    //
+    // @Test
+    // public void testOutputSummarySingleTaxon() throws Exception {
+    // IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
+    //
+    // File tempFile = File.createTempFile("OutputReportsTest", null);
+    // tempFile.deleteOnExit();
+    //
+    // new FileOutputDirective().parseAndProcess(context,
+    // tempFile.getAbsolutePath());
+    // new OutputSummaryDirective().parseAndProcess(context, "1 all");
+    //
+    // String reportOutput = FileUtils.readFileToString(tempFile);
+    // System.out.println(reportOutput);
+    // reportOutput = reportOutput.trim();
+    // reportOutput = reportOutput.replaceAll("\r", "");
+    // reportOutput = reportOutput.replaceAll("\n", " ");
+    //
+    // URL expectedOutputFileUrl =
+    // getClass().getResource("/outputsummary/sample2.txt");
+    // File expectedOutputFile = new File(expectedOutputFileUrl.toURI());
+    //
+    // String expectedOutput = FileUtils.readFileToString(expectedOutputFile);
+    // expectedOutput = expectedOutput.trim();
+    // expectedOutput = expectedOutput.replaceAll("\r", "");
+    // expectedOutput = expectedOutput.replaceAll("\n", " ");
+    //
+    // assertEquals(expectedOutput, reportOutput);
+    // }
+    //
+    // @Test
+    // public void testOutputSummarySingleTaxon2() throws Exception {
+    // IntkeyContext context =
+    // loadDataset("/dataset/controlling_characters_simple/intkey.ink");
+    //
+    // File tempFile = File.createTempFile("OutputReportsTest", null);
+    // tempFile.deleteOnExit();
+    //
+    // new FileOutputDirective().parseAndProcess(context,
+    // tempFile.getAbsolutePath());
+    // new OutputSummaryDirective().parseAndProcess(context, "1 all");
+    //
+    // String reportOutput = FileUtils.readFileToString(tempFile);
+    // System.out.println(reportOutput);
+    // reportOutput = reportOutput.trim();
+    // reportOutput = reportOutput.replaceAll("\r", "");
+    // reportOutput = reportOutput.replaceAll("\n", " ");
+    //
+    // URL expectedOutputFileUrl =
+    // getClass().getResource("/outputsummary/controlling_characters_simple2.txt");
+    // File expectedOutputFile = new File(expectedOutputFileUrl.toURI());
+    //
+    // String expectedOutput = FileUtils.readFileToString(expectedOutputFile);
+    // expectedOutput = expectedOutput.trim();
+    // expectedOutput = expectedOutput.replaceAll("\r", "");
+    // expectedOutput = expectedOutput.replaceAll("\n", " ");
+    //
+    // assertEquals(expectedOutput, reportOutput);
+    // }
 }

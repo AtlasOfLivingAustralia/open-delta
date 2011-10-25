@@ -41,6 +41,10 @@ public class DefaultCharacterData implements CharacterData {
     private List<CharacterDependency> _dependentCharacters = new ArrayList<CharacterDependency>();
     private List<CharacterDependency> _controllingCharacters = new ArrayList<CharacterDependency>();
 
+    // For INTKEY only - in intkey datasets some integer characters are
+    // represented as real characters
+    private boolean isIntegerRepresentedAsReal;
+
     private List<Image> _images = new ArrayList<Image>();
 
     @Override
@@ -290,10 +294,10 @@ public class DefaultCharacterData implements CharacterData {
             throw new RuntimeException("Error parsing character image overlay data");
         }
     }
-    
+
     @Override
     public void addImage(Image image) {
-        _images.add(image);        
+        _images.add(image);
     }
 
     @Override
@@ -343,6 +347,16 @@ public class DefaultCharacterData implements CharacterData {
     public void removeControllingCharacter(CharacterDependency dependency) {
         _controllingCharacters.remove(dependency);
 
+    }
+    
+    @Override
+    public boolean isIntegerRepresentedAsReal() {
+        return isIntegerRepresentedAsReal;
+    }
+
+    @Override
+    public void setIntegerRepresentedAsReal(boolean isIntegerRepresentedAsReal) {
+        this.isIntegerRepresentedAsReal = isIntegerRepresentedAsReal;
     }
 
 }

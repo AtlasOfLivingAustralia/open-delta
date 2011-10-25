@@ -54,7 +54,7 @@ public class OutputSummaryDirectiveInvocation extends IntkeyDirectiveInvocation 
             if (ch instanceof MultiStateCharacter) {
                 MultiStateCharacter msChar = (MultiStateCharacter) ch;
 
-                List<Object> multiStateSummaryInformation = ReportUtils.generateMultiStateSummaryInformation((MultiStateCharacter) ch, attrs, _taxa);
+                List<Object> multiStateSummaryInformation = ReportUtils.generateMultiStateSummaryInformation((MultiStateCharacter) ch, attrs, _taxa, true);
                 int numUnknown = (Integer) multiStateSummaryInformation.get(0);
                 int numInapplicable = (Integer) multiStateSummaryInformation.get(1);
                 int numRecorded = (Integer) multiStateSummaryInformation.get(2);
@@ -111,7 +111,7 @@ public class OutputSummaryDirectiveInvocation extends IntkeyDirectiveInvocation 
                 }
             } else if (ch instanceof IntegerCharacter) {
                 IntegerCharacter intChar = (IntegerCharacter) ch;
-                List<Object> summaryInformation = ReportUtils.generateIntegerSummaryInformation(intChar, attrs, _taxa);
+                List<Object> summaryInformation = ReportUtils.generateIntegerSummaryInformation(intChar, attrs, _taxa, true);
 
                 int numUnknown = (Integer) summaryInformation.get(0);
                 int numInapplicable = (Integer) summaryInformation.get(1);
@@ -210,7 +210,8 @@ public class OutputSummaryDirectiveInvocation extends IntkeyDirectiveInvocation 
                     }
                 }
             } else if (ch instanceof RealCharacter) {
-                List<Object> realSummaryInformation = ReportUtils.generateRealSummaryInformation((RealCharacter) ch, attrs, _taxa);
+                RealCharacter realChar = (RealCharacter) ch;
+                List<Object> realSummaryInformation = ReportUtils.generateRealSummaryInformation(realChar, attrs, _taxa, true);
                 int numInapplicable = (Integer) realSummaryInformation.get(1);
                 int numUnknown = (Integer) realSummaryInformation.get(0);
                 int numRecorded = (Integer) realSummaryInformation.get(2);
@@ -228,22 +229,44 @@ public class OutputSummaryDirectiveInvocation extends IntkeyDirectiveInvocation 
                 if (numInapplicable == _taxa.size()) {
                     builder.append("-");
                 } else {
-                    if (minValue < mean) {
-                        builder.append(String.format("%.2f", minValue));
-                    }
+                    // Special case for an integer character represented in the
+                    // intkey dataset as a real character.
+                    if (realChar.isIntegerRepresentedAsReal()) {
+                        long longMin = Math.round(minValue);
+                        long longMax = Math.round(maxValue);
+                        long longMean = Math.round(mean);
 
-                    if (_taxa.size() > 1 || (_taxa.size() == 1 && minValue == maxValue)) {
-                        builder.append("-");
-                        builder.append(String.format("%.2f", mean));
-                    }
+                        if (longMin < longMean) {
+                            builder.append(String.format("%d-", longMin));
+                        }
 
-                    if (maxValue > mean) {
-                        builder.append("-");
-                        builder.append(String.format("%.2f", maxValue));
+                        builder.append(String.format("%d", longMean));
+
+                        if (longMax > longMean) {
+                            builder.append(String.format("-%d", longMax));
+                        }
+
+                    } else {
+                        boolean meanOutput = false;
+                        if (minValue < mean) {
+                            builder.append(String.format("%.2f", minValue));
+                            builder.append("-");
+                        }
+
+                        if (_taxa.size() > 1 || (_taxa.size() == 1 && minValue == maxValue)) {
+                            builder.append(String.format("%.2f", mean));
+                            meanOutput = true;
+                        }
+
+                        if (maxValue > mean) {
+                            if (meanOutput) {
+                                builder.append("-");
+                            }
+                            builder.append(String.format("%.2f", maxValue));
+                        }
                     }
                 }
 
-                // TODO integer treated as a real??
             } else {
                 throw new IllegalArgumentException("Unrecognised character type");
             }

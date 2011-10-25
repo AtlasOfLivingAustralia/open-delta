@@ -107,4 +107,8 @@ public interface CharacterData extends Illustratable {
     List<CharacterDependency> getControllingCharacters();
 
 	List<Integer> getControlledCharacterNumbers(boolean indirect);
+	
+    boolean isIntegerRepresentedAsReal();
+
+    public void setIntegerRepresentedAsReal(boolean isIntegerRepresentedAsReal);
 }

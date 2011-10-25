@@ -23,6 +23,7 @@ import au.org.ala.delta.model.RealCharacter;
 import au.org.ala.delta.model.TextAttribute;
 import au.org.ala.delta.model.TextCharacter;
 import au.org.ala.delta.model.UnorderedMultiStateCharacter;
+import au.org.ala.delta.util.Pair;
 
 /**
  * Unit tests for the loading of dataset information from the items and
@@ -567,6 +568,14 @@ public class DataSetLoadTest extends IntkeyDatasetTestCase {
 
         IntkeyDataset ds = context.getDataset();
 
+        for (Character ch : context.getDataset().getCharacters()) {
+            if (ch instanceof RealCharacter) {
+                if (((RealCharacter) ch).isIntegerRepresentedAsReal()) {
+                    System.out.println(ch.getCharacterId());
+                }
+            }
+        }
+
         List<TextCharacter> synonymyCharacters = ds.getSynonymyCharacters();
 
         assertEquals(1, synonymyCharacters.size());
@@ -574,6 +583,20 @@ public class DataSetLoadTest extends IntkeyDatasetTestCase {
         Character synonymyCharacter = synonymyCharacters.get(0);
         assertEquals(1, synonymyCharacter.getCharacterId());
 
+    }
+
+    @Test
+    public void testParseFileOverlayData() {
+        List<Pair<String, String>> strPairList = IntkeyDatasetFileReader.parseFileData("cyperaggregat6.jpg <@subject Specimen> <AQ671479> cyperaggregat7.jpg <@subject Inflorescence>");
+        assertEquals(2, strPairList.size());
+
+        Pair<String, String> firstPair = strPairList.get(0);
+        assertEquals("cyperaggregat6.jpg", firstPair.getFirst());
+        assertEquals("<@subject Specimen> <AQ671479>", firstPair.getSecond());
+
+        Pair<String, String> secondPair = strPairList.get(1);
+        assertEquals("cyperaggregat7.jpg", secondPair.getFirst());
+        assertEquals("<@subject Inflorescence>", secondPair.getSecond());
     }
 
 }

@@ -28,7 +28,7 @@ import au.org.ala.delta.util.Pair;
  */
 public class ReportUtils {
 
-    public static List<Object> generateMultiStateSummaryInformation(MultiStateCharacter ch, List<Attribute> attrs, List<Item> taxa) {
+    public static List<Object> generateMultiStateSummaryInformation(MultiStateCharacter ch, List<Attribute> attrs, List<Item> taxa, boolean outputToDeltaFormat) {
         int numUnknown = 0;
         int numInapplicable = 0;
         int numRecorded = 0;
@@ -40,12 +40,19 @@ public class ReportUtils {
             if (attr.isUnknown() && !attr.isInapplicable()) {
                 numUnknown++;
                 continue;
-            } else if (attr.isUnknown() && attr.isInapplicable()) {
-                numInapplicable++;
-                continue;
-            } else {
-                numRecorded++;
+            } else if (attr.isInapplicable()) {
+                if (outputToDeltaFormat && attr.getCharacter().getControllingCharacters().isEmpty()) {
+                    numInapplicable++;
+                } else if (!outputToDeltaFormat && attr.isUnknown()) {
+                    numInapplicable++;
+                }
+
+                if (attr.isUnknown()) {
+                    continue;
+                }
             }
+
+            numRecorded++;
 
             Set<Integer> presentStates = attr.getPresentStates();
 
@@ -65,7 +72,7 @@ public class ReportUtils {
         return Arrays.asList(new Object[] { numUnknown, numInapplicable, numRecorded, stateDistribution });
     }
 
-    public static List<Object> generateIntegerSummaryInformation(IntegerCharacter ch, List<Attribute> attrs, List<Item> taxa) {
+    public static List<Object> generateIntegerSummaryInformation(IntegerCharacter ch, List<Attribute> attrs, List<Item> taxa, boolean outputToDeltaFormat) {
         int numUnknown = 0;
         int numInapplicable = 0;
         int numRecorded = 0;
@@ -80,12 +87,19 @@ public class ReportUtils {
             if (attr.isUnknown() && !attr.isInapplicable()) {
                 numUnknown++;
                 continue;
-            } else if (attr.isUnknown() && attr.isInapplicable()) {
-                numInapplicable++;
-                continue;
-            } else {
-                numRecorded++;
+            } else if (attr.isInapplicable()) {
+                if (outputToDeltaFormat && attr.getCharacter().getControllingCharacters().isEmpty()) {
+                    numInapplicable++;
+                } else if (!outputToDeltaFormat && attr.isUnknown()) {
+                    numInapplicable++;
+                }
+
+                if (attr.isUnknown()) {
+                    continue;
+                }
             }
+
+            numRecorded++;
 
             Set<Integer> values = attr.getPresentValues();
             int valuesSum = 0;
@@ -115,7 +129,7 @@ public class ReportUtils {
         return Arrays.asList(new Object[] { numUnknown, numInapplicable, numRecorded, valueDistribution, mean, stdDev });
     }
 
-    public static List<Object> generateRealSummaryInformation(RealCharacter ch, List<Attribute> attrs, List<Item> taxa) {
+    public static List<Object> generateRealSummaryInformation(RealCharacter ch, List<Attribute> attrs, List<Item> taxa, boolean outputToDeltaFormat) {
         int numUnknown = 0;
         int numInapplicable = 0;
         int numRecorded = 0;
@@ -133,12 +147,19 @@ public class ReportUtils {
             if (attr.isUnknown() && !attr.isInapplicable()) {
                 numUnknown++;
                 continue;
-            } else if (attr.isUnknown() && attr.isInapplicable()) {
-                numInapplicable++;
-                continue;
-            } else {
-                numRecorded++;
+            } else if (attr.isInapplicable()) {
+                if (outputToDeltaFormat && attr.getCharacter().getControllingCharacters().isEmpty()) {
+                    numInapplicable++;
+                } else if (!outputToDeltaFormat && attr.isUnknown()) {
+                    numInapplicable++;
+                }
+
+                if (attr.isUnknown()) {
+                    continue;
+                }
             }
+
+            numRecorded++;
 
             FloatRange presentRange = attr.getPresentRange();
 
@@ -165,7 +186,7 @@ public class ReportUtils {
         return Arrays.asList(new Object[] { numUnknown, numInapplicable, numRecorded, minValue, maxValue, minValueTaxonIndex, maxValueTaxonIndex, mean, stdDev });
     }
 
-    public static List<Object> generateTextSummaryInformation(TextCharacter ch, List<Attribute> attrs, List<Item> taxa) {
+    public static List<Object> generateTextSummaryInformation(TextCharacter ch, List<Attribute> attrs, List<Item> taxa, boolean outputToDeltaFormat) {
         int numUnknown = 0;
         int numInapplicable = 0;
         int numRecorded = 0;
@@ -174,11 +195,20 @@ public class ReportUtils {
             Attribute attr = attrs.get(taxon.getItemNumber() - 1);
             if (attr.isUnknown() && !attr.isInapplicable()) {
                 numUnknown++;
-            } else if (attr.isUnknown() && attr.isInapplicable()) {
-                numInapplicable++;
-            } else {
-                numRecorded++;
+                continue;
+            } else if (attr.isInapplicable()) {
+                if (outputToDeltaFormat && attr.getCharacter().getControllingCharacters().isEmpty()) {
+                    numInapplicable++;
+                } else if (!outputToDeltaFormat && attr.isUnknown()) {
+                    numInapplicable++;
+                }
+
+                if (attr.isUnknown()) {
+                    continue;
+                }
             }
+
+            numRecorded++;
         }
 
         return Arrays.asList(new Object[] { numUnknown, numInapplicable, numRecorded });
@@ -203,4 +233,5 @@ public class ReportUtils {
 
         return new Pair<Double, Double>(mean, stdDev);
     }
+
 }
