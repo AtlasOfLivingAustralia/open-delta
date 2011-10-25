@@ -54,7 +54,7 @@ public class ToIntTest extends TestCase {
 		
 		IntkeyDataset expectedDataSet = IntkeyDatasetFileReader.readDataSet(expectedIChars, expectedIItems);
 		
-		BinaryKeyFile file = new BinaryKeyFile(FilenameUtils.concat(dest.getAbsolutePath(), "sample/ichars"), BinFileMode.FM_READONLY);
+		/*BinaryKeyFile file = new BinaryKeyFile(FilenameUtils.concat(dest.getAbsolutePath(), "sample/ichars"), BinFileMode.FM_READONLY);
 		BinaryKeyFile efile = new BinaryKeyFile(FilenameUtils.concat(dest.getAbsolutePath(), "sample/expected_results/ichars"), BinFileMode.FM_READONLY);
 		
 		List<Integer> header = file.readIntegerList(1, 128);
@@ -68,7 +68,7 @@ public class ToIntTest extends TestCase {
 		headerc.addAll(filec.readIntegerList(5704, 32));
 		List<Integer> eheaderc = efilec.readIntegerList(1, 64);
 		//assertEquals(eheaderc, headerc);
-		
+		*/
 		
 		assertEquals(expectedDataSet.getNumberOfCharacters(), dataSet.getNumberOfCharacters());
 		assertEquals(expectedDataSet.getNumberOfTaxa(), dataSet.getNumberOfTaxa());
