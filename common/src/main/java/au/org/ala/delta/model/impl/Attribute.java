@@ -126,13 +126,6 @@ public class Attribute implements Iterable<AttrChunk> {
 	public void parse(String text,  boolean isIntkey) {
 		
 		CharacterType charType = _character.getCharacterType();
-		
-		// Insert comments around text characters if they are not already present.
-		if (charType.isText()) {
-			if (!text.startsWith("<")) {
-				text = "<" + text + ">";
-			}
-		}
 
 		// Ignore whether exclusive if parsing Intkey "use" directive
 		boolean isExclusive = false;

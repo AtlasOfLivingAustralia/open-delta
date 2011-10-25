@@ -5,13 +5,16 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
+import junit.framework.TestCase;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.junit.Test;
 
-import junit.framework.TestCase;
 import au.org.ala.delta.intkey.model.IntkeyDataset;
 import au.org.ala.delta.intkey.model.IntkeyDatasetFileReader;
+import au.org.ala.delta.io.BinFileMode;
+import au.org.ala.delta.io.BinaryKeyFile;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterType;
@@ -51,7 +54,20 @@ public class ToIntTest extends TestCase {
 		
 		IntkeyDataset expectedDataSet = IntkeyDatasetFileReader.readDataSet(expectedIChars, expectedIItems);
 		
+		BinaryKeyFile file = new BinaryKeyFile(FilenameUtils.concat(dest.getAbsolutePath(), "sample/ichars"), BinFileMode.FM_READONLY);
+		BinaryKeyFile efile = new BinaryKeyFile(FilenameUtils.concat(dest.getAbsolutePath(), "sample/expected_results/ichars"), BinFileMode.FM_READONLY);
 		
+		List<Integer> header = file.readIntegerList(1, 128);
+		List<Integer> eheader = efile.readIntegerList(1, 128);
+		//assertEquals(eheader, header);
+		
+		BinaryKeyFile filec = new BinaryKeyFile(FilenameUtils.concat(dest.getAbsolutePath(), "sample/iitems"), BinFileMode.FM_READONLY);
+		BinaryKeyFile efilec = new BinaryKeyFile(FilenameUtils.concat(dest.getAbsolutePath(), "sample/expected_results/iitems"), BinFileMode.FM_READONLY);
+		
+		List<Integer> headerc = filec.readIntegerList(1, 32);
+		headerc.addAll(filec.readIntegerList(5704, 32));
+		List<Integer> eheaderc = efilec.readIntegerList(1, 64);
+		//assertEquals(eheaderc, headerc);
 		
 		
 		assertEquals(expectedDataSet.getNumberOfCharacters(), dataSet.getNumberOfCharacters());

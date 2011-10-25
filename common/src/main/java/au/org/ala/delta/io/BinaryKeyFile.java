@@ -119,7 +119,9 @@ public class BinaryKeyFile extends BinFile {
 	 * @param value the string to write.
 	 */
 	public int writeStringWithLength(int recordNumber, String value) {
-		
+		if (value.length() == 0) {
+			throw new RuntimeException("Cannot write zero length strings.");
+		}
 		writeToRecord(recordNumber, value.length());
 		int numRecords = writeToRecord(recordNumber+1, 0, value);
 		return numRecords+1;

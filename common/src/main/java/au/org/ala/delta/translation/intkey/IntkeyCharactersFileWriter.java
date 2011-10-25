@@ -116,7 +116,7 @@ public class IntkeyCharactersFileWriter {
 	
 	protected void writeCharacterNotesFormat() {
 		TypeSettingMark mark = _context.getFormattingMark(CharacterNoteMarks.CHARACTER_NOTES_FORMAT);
-		String markText = "";
+		String markText = " ";
 		if (mark != null) {
 			markText = mark.getMarkText();
 		}
@@ -125,7 +125,7 @@ public class IntkeyCharactersFileWriter {
 	
 	protected void writeCharacterNotesHelpFormat() {
 		TypeSettingMark mark = _context.getFormattingMark(CharacterNoteMarks.CHARACTER_NOTES_HELP_FORMAT);
-		String markText = "";
+		String markText = " ";
 		if (mark != null) {
 			markText = mark.getMarkText();
 		}
