@@ -137,7 +137,7 @@ public class IntkeyItemsFileWriter {
 				minMax = writeIntegerAttributes(keyChar.getFilteredCharacterNumber(), keyChar.getCharacter());
 				if (minMax == null) {
 					minMax = new IntRange(0);
-					_itemsFile.changeCharacterType(keyChar.getFilteredCharacterNumber(), _encoder.typeToInt(CharacterType.RealNumeric));
+					_itemsFile.changeCharacterType(keyChar.getFilteredCharacterNumber(), -_encoder.typeToInt(CharacterType.RealNumeric));
 					floats = writeRealAttributes(keyChar.getFilteredCharacterNumber(), keyChar.getCharacter(), true);
 				}
 			}
@@ -192,9 +192,7 @@ public class IntkeyItemsFileWriter {
 	}
 	
 	private boolean isInapplicable(Attribute attribute) {
-		if (attribute.getCharacter().getCharacterId() == 140) {
-			System.out.println("Breakpoint");
-		}
+		
 		if (!attribute.isInapplicable()) {
 			ControllingInfo controllingInfo = _dataSet.checkApplicability(
 					attribute.getCharacter(), attribute.getItem());
@@ -362,7 +360,11 @@ public class IntkeyItemsFileWriter {
 				continue;
 			}
 			List<NumericRange> ranges = attribute.getNumericValue();
-			
+			// This can happen if the attribute has a comment but no value.
+			if (ranges.isEmpty()) {
+				FloatRange range = new FloatRange(Float.MAX_VALUE);
+				values.add(range);
+			}
 			Range useRange;
 			for (NumericRange range : ranges) {
 				if (_context.hasAbsoluteError(unfilteredCharNumber)) {
