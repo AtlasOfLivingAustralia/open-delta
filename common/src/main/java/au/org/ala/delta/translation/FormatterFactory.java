@@ -72,11 +72,12 @@ public class FormatterFactory {
 		if (_context.isReplaceAngleBrackets()) {
 			angleBracketMode = AngleBracketHandlingMode.REMOVE_SURROUNDING_REPLACE_INNER;
 		}
-		CharacterFormatter formatter =  new CharacterFormatter(includeNumber, mode, angleBracketMode, _context.isOmitTypeSettingMarks(), capitaliseFirst);
 		
 		if (_context.getOmitInnerComments()) {
 			mode = CommentStrippingMode.STRIP_INNER;
 		}
+
+		CharacterFormatter formatter =  new CharacterFormatter(includeNumber, mode, angleBracketMode, _context.isOmitTypeSettingMarks(), capitaliseFirst);
 		
 		formatter.setRtfToHtml(_context.getOutputHtml());
 		

@@ -15,6 +15,7 @@ import au.org.ala.delta.model.NumericCharacter;
 import au.org.ala.delta.model.TypeSettingMark;
 import au.org.ala.delta.model.TypeSettingMark.CharacterNoteMarks;
 import au.org.ala.delta.model.format.CharacterFormatter;
+import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageInfo;
 import au.org.ala.delta.model.image.ImageSettings;
@@ -77,7 +78,10 @@ public class IntkeyCharactersFileWriter {
 		Iterator<FilteredCharacter> characters = _dataSet.filteredCharacters();
 		while (characters.hasNext()) {
 			Character character = characters.next().getCharacter();
-			String notes = character.getNotes();
+			String notes = null;
+			if (character.hasNotes()) {
+				notes = _formatter.defaultFormat(character.getNotes(), CommentStrippingMode.STRIP_ALL);
+			}
 			add(allNotes, notes);
 		}
 		_charsFile.writeCharacterNotes(allNotes);

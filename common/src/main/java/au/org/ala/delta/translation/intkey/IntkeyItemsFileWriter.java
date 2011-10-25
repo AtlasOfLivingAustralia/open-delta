@@ -138,11 +138,11 @@ public class IntkeyItemsFileWriter {
 				if (minMax == null) {
 					minMax = new IntRange(0);
 					_itemsFile.changeCharacterType(keyChar.getFilteredCharacterNumber(), _encoder.typeToInt(CharacterType.RealNumeric));
-					floats = writeRealAttributes(keyChar.getFilteredCharacterNumber(), keyChar.getCharacter());
+					floats = writeRealAttributes(keyChar.getFilteredCharacterNumber(), keyChar.getCharacter(), true);
 				}
 			}
 			else if (keyChar.getCharacterType() == CharacterType.RealNumeric) {	
-				floats = writeRealAttributes(keyChar.getFilteredCharacterNumber(), keyChar.getCharacter());
+				floats = writeRealAttributes(keyChar.getFilteredCharacterNumber(), keyChar.getCharacter(), false);
 			}
 			else {
 				writeTextAttributes(keyChar.getFilteredCharacterNumber(), keyChar.getCharacter());
@@ -167,7 +167,17 @@ public class IntkeyItemsFileWriter {
 			int itemNum = items.next().getItem().getItemNumber();
 			MultiStateAttribute attribute = (MultiStateAttribute)_dataSet.getAttribute(itemNum, character.getCharacterNumber());
 		
-			List<Integer> states = character.getPresentStates(attribute);
+			List<Integer> states = new ArrayList<Integer>();
+			if (attribute.isImplicit()) {
+				ControllingInfo controllingInfo = _dataSet.checkApplicability(
+						attribute.getCharacter(), attribute.getItem());
+				if (!controllingInfo.isInapplicable()) {
+					states = character.getPresentStates(attribute);
+				}
+			}
+			else {
+				 states = character.getPresentStates(attribute);
+			}
 			
 			// Turn into bitset.
 			BitSet bits = new BinaryKeyFileEncoder().encodeAttributeStates(states);
@@ -182,23 +192,23 @@ public class IntkeyItemsFileWriter {
 	}
 	
 	private boolean isInapplicable(Attribute attribute) {
-		
+		if (attribute.getCharacter().getCharacterId() == 140) {
+			System.out.println("Breakpoint");
+		}
 		if (!attribute.isInapplicable()) {
 			ControllingInfo controllingInfo = _dataSet.checkApplicability(
 					attribute.getCharacter(), attribute.getItem());
-			return controllingInfo.isInapplicable() || 
+			return controllingInfo.isStrictlyInapplicable() || 
 				(controllingInfo.isMaybeInapplicable() && !attribute.isUnknown());
 		}
 		return true;
 	}
 	
+	
 	private IntRange writeIntegerAttributes(int filteredCharacterNumber, Character character) {
 		
 		// Returning null here will trigger a change from integer to real
 		// character type.
-		if (character.getCharacterId() == 41) {
-			System.out.println("Breakpoint!");
-		}
 		if (_context.getTreatIntegerCharacterAsReal(character.getCharacterId())) {
 			return null;
 		}
@@ -334,7 +344,7 @@ public class IntkeyItemsFileWriter {
 		return hasMultiRangeAttribute;
 	}
 	
-	private Set<Float> writeRealAttributes(int filteredCharNumber, Character realChar) {
+	private Set<Float> writeRealAttributes(int filteredCharNumber, Character realChar, boolean wasInteger) {
 		int unfilteredCharNumber = realChar.getCharacterId();
 		boolean useNormalValues = _context.getUseNormalValues(unfilteredCharNumber);
 		
@@ -379,13 +389,17 @@ public class IntkeyItemsFileWriter {
 				floats.add(range.getMinimumFloat());
 			}
 			else {
+				if (!wasInteger) {
 				floats.add(0f);  // For CONFOR compatibility, seems wrong.
+				}
 			}
 			if (range.getMaximumFloat() != Float.MAX_VALUE) {
 				floats.add(range.getMaximumFloat());
 			}
 			else{ 
+				if (!wasInteger) {
 				floats.add(1.0f);   // For CONFOR compatibility, seems wrong.
+				}
 			}
 		}
 		return floats;
@@ -449,7 +463,7 @@ public class IntkeyItemsFileWriter {
 		List<Boolean> booleans = new ArrayList<Boolean>(_dataSet.getNumberOfFilteredCharacters());
 		Iterator<FilteredCharacter> characters = _dataSet.filteredCharacters();
 		while (characters.hasNext()) {
-			booleans.add(charNumbers.contains(characters.next().getCharacterNumber()));
+			booleans.add(charNumbers.contains(characters.next().getCharacter().getCharacterId()));
 		}
 		return booleans;
 	}

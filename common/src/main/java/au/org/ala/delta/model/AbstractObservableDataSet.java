@@ -246,7 +246,7 @@ public abstract class AbstractObservableDataSet implements ObservableDeltaDataSe
 		}
 
 		boolean unknownOk = false;
-		
+		ControllingInfo maybeInapplicable = null;
 		
 		if (controlling != null && controlling.size() > 1) {
 			// remove the null (if we are recursing) before we sort.
@@ -311,7 +311,7 @@ public abstract class AbstractObservableDataSet implements ObservableDeltaDataSe
 							else {
 								for (int state : codedStates) {
 									if (controllingStates.contains(state)) {
-										return new ControllingInfo(ControlledStateType.MaybeInapplicable, controllingId);
+										maybeInapplicable = new ControllingInfo(ControlledStateType.MaybeInapplicable, controllingId);
 									}
 								}
 							}
@@ -322,7 +322,7 @@ public abstract class AbstractObservableDataSet implements ObservableDeltaDataSe
 							return new ControllingInfo(ControlledStateType.Inapplicable, controllingId);
 						}
 					} else {
-						return new ControllingInfo(ControlledStateType.Inapplicable, controllingId);
+						return new ControllingInfo(ControlledStateType.InapplicableOrUnknown, controllingId);
 						// /// This should probably be handled as a somewhat special case,
 						// /// so the user can be pointed in the right direction
 					}
@@ -359,8 +359,19 @@ public abstract class AbstractObservableDataSet implements ObservableDeltaDataSe
 			if (info.isInapplicable()) {
 				return info;
 			}
+			else if (info.isMaybeInapplicable()) {
+				maybeInapplicable = info;
+			}
 		}
-		return unknownOk ? new ControllingInfo(ControlledStateType.InapplicableOrUnknown, controllingId) : new ControllingInfo();
+		ControllingInfo result;
+		if (maybeInapplicable != null) {
+			result = maybeInapplicable;
+		}
+		else {
+			result = unknownOk ? new ControllingInfo(ControlledStateType.InapplicableOrUnknown, controllingId) : new ControllingInfo();
+
+		}
+		return result;
 	}
 
 	

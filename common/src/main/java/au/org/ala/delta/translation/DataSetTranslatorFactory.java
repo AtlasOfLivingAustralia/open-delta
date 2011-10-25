@@ -93,7 +93,7 @@ public class DataSetTranslatorFactory {
 
 	private DataSetTranslator createIntkeyFormatTranslator(DeltaContext context, FormatterFactory formatterFactory) {
 		FilteredDataSet dataSet = new FilteredDataSet(context, new DeltaFormatDataSetFilter(context));
-		return new IntkeyTranslator(context, dataSet, formatterFactory.createCharacterFormatter());
+		return new IntkeyTranslator(context, dataSet, formatterFactory.createCharacterFormatter(false, false, CommentStrippingMode.RETAIN));
 	}
 	
 	private DataSetTranslator createKeyFormatTranslator(DeltaContext context, FormatterFactory formatterFactory) {

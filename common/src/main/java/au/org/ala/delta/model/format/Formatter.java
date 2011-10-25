@@ -76,6 +76,10 @@ public class Formatter {
     	return defaultFormat(text, _commentStrippingMode, angleBracketMode, _stripFormatting, _capitaliseFirstWord);
     }
     
+    public String defaultFormat(String text, CommentStrippingMode commentMode) {
+    	return defaultFormat(text, commentMode, _angleBracketHandlingMode, _stripFormatting, _capitaliseFirstWord);
+    }
+    
     public String defaultFormat(String text, boolean newLinesToSpace) {
         return defaultFormat(text, _commentStrippingMode, _angleBracketHandlingMode, _stripFormatting, _capitaliseFirstWord, newLinesToSpace, _rtfToHtml);
     }
@@ -120,7 +124,7 @@ public class Formatter {
         	text = RTFUtils.rtfToHtml(text);
         }
 
-        return text;
+        return text.trim();
     }
 
     /**

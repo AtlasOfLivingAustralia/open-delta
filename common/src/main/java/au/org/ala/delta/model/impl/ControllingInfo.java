@@ -27,6 +27,10 @@ public class ControllingInfo {
 		return _controllingCharacterNo;
 	}
 	
+	public boolean isStrictlyInapplicable() {
+		return _state == ControlledStateType.Inapplicable;
+	}
+	
 	public boolean isInapplicable() {
 		return _state == ControlledStateType.Inapplicable || _state == ControlledStateType.InapplicableOrUnknown;
 	}
