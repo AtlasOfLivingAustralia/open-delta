@@ -437,13 +437,21 @@ public class IntkeyItemsFileWriter {
 	
 		IntkeyImageWriter imageWriter = new IntkeyImageWriter();
 		Iterator<FilteredItem> items = _dataSet.filteredItems();
+		boolean hasImages = false;
 		while (items.hasNext()) {
 			Item item = items.next().getItem();
 			List<Image> images = item.getImages();
-			imageList.add(imageWriter.imagesToString(images, item));
+			String image = "";
+			if (!images.isEmpty()) {
+				image = imageWriter.imagesToString(images, item);
+				hasImages = true;
+			}
+			imageList.add(image);
 			
 		}
-		_itemsFile.writeTaxonImages(imageList);
+		if (hasImages) {
+			_itemsFile.writeTaxonImages(imageList);
+		}
 	}
 	
 	

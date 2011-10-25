@@ -34,14 +34,21 @@ public class WriteOnceIntkeyCharsFile extends BinaryKeyFile {
 		overwriteRecord(1, _header.toInts());
 	}
 	
-	public void writeCharacterNotes(List<String> notes) {
+	public void writeCharacterNotes(List<String> notes, List<Integer> groups) {
 		checkEmpty(_header.getRpChlp());
 		checkLength(notes);
+		checkEmpty(_header.getRpChlpGrp());
+		checkLength(groups);
 		
 		int notesIndexRecord = nextAvailableRecord();
 		_header.setRpChlp(notesIndexRecord);
 		
-		writeIndexedValues(notesIndexRecord, notes.toArray(new String[notes.size()]));
+		int neededGapForGroups = (int)Math.floor(groups.size()/RECORD_LENGTH_INTEGERS) + 1;
+		int groupRecord = writeIndexedValuesWithGap(notesIndexRecord, neededGapForGroups, notes.toArray(new String[notes.size()]));
+		
+	
+		_header.setRpChlpGrp(groupRecord);
+		writeToRecord(groupRecord, groups);
 	}
 	
 	/**
@@ -52,22 +59,35 @@ public class WriteOnceIntkeyCharsFile extends BinaryKeyFile {
 		checkEmpty(_header.getRpCdes());
 		checkLength(features);
 		
-		int indexRecord = nextAvailableRecord();
+		int recordNum = nextAvailableRecord();
 		int[] indicies = new int[features.size()];
 		int[] numStates = new int[features.size()];
-		_header.setRpCdes(indexRecord);
 		
-		int recordNum = indexRecord + (int)Math.floor(indicies.length/RECORD_LENGTH_INTEGERS) + 1;
+		int maxLength = 0;
 		for (int i=0; i<features.size(); i++) {
 			indicies[i] = recordNum;
 			// The first value is always the feature description (hence the -1)
 			numStates[i] = features.get(i).size()-1;
+			List<String> feature = features.get(i);
+			String[] featureArrary = new String[feature.size()];
+			
+			int size = 0;
+			for (int j=0; j<feature.size(); j++) {
+				String featureText = feature.get(j);
+				featureArrary[j] = featureText;
+				size += featureText.length();
+			}
+			maxLength = Math.max(maxLength, size);
 			recordNum += writeAsContinousString(recordNum, features.get(i).toArray(new String[0]));
 		}
-		writeToRecord(indexRecord, indicies);
+		
+		_header.setRpCdes(recordNum);
+		recordNum += writeToRecord(recordNum, indicies);
 		
 		_header.setRpStat(recordNum);
 		writeToRecord(recordNum, numStates);
+		
+		_header.setMaxDes(maxLength);
 	}
 	
 	public void writeCharacterNotesFormat(String format) {
@@ -191,8 +211,6 @@ public class WriteOnceIntkeyCharsFile extends BinaryKeyFile {
 		_header.setRpItemSubHead(recordNum);
 		writeIndexedValues(recordNum, itemSubHeadings.toArray(new String[itemSubHeadings.size()]));
 	}
-	
-	
 	
 	private void checkEmpty(int recordNum) {
 		if (recordNum > 0) {

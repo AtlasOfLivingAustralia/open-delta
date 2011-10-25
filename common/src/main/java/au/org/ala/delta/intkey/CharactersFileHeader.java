@@ -115,6 +115,10 @@ public class CharactersFileHeader {
     void setNC(int nc) {
         this._nc = nc;
     }
+    
+    void setMaxDes(int maxDes) {
+    	_maxDes = maxDes;
+    }
 
     void setRpCdes(int rpCdes) {
         this.rpCdes = rpCdes;

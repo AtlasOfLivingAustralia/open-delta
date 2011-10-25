@@ -258,9 +258,15 @@ public class BinaryKeyFile extends BinFile {
      * @param values the values to write.
      */
     public void writeIndexedValues(int indexRecordNum, String[] values) {
+    	writeIndexedValuesWithGap(indexRecordNum, 0, values);
+    }
+    
+    public int writeIndexedValuesWithGap(int indexRecordNum, int gap, String[] values) {
     	int[] indicies = new int[values.length];
     	Arrays.fill(indicies, 0);
     	int recordNum = indexRecordNum + (int)Math.floor(indicies.length/RECORD_LENGTH_INTEGERS) + 1;
+    	int gapRecord = recordNum;
+    	recordNum += gap;
     	for (int i=0; i<values.length; i++) {
     		if (StringUtils.isNotEmpty(values[i])) {
 	    		indicies[i] = recordNum;
@@ -268,6 +274,7 @@ public class BinaryKeyFile extends BinFile {
     		}
     	}
     	writeToRecord(indexRecordNum, indicies);
+    	return gapRecord;
     }
     
     /**
@@ -280,7 +287,7 @@ public class BinaryKeyFile extends BinFile {
      * @param values the values to write.
      */
     public int writeAsContinousString(int startRecord, String[] values) {
-    	
+   
     	int[] lengths = new int[values.length];
     	StringBuilder text = new StringBuilder();
     	for (int i=0; i<values.length; i++) {

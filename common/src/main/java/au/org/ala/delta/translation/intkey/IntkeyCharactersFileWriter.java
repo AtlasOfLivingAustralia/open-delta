@@ -1,6 +1,7 @@
 package au.org.ala.delta.translation.intkey;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -9,6 +10,7 @@ import org.apache.commons.lang.StringUtils;
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.DeltaContext.HeadingType;
 import au.org.ala.delta.intkey.WriteOnceIntkeyCharsFile;
+import au.org.ala.delta.io.BinaryKeyFileEncoder;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.NumericCharacter;
@@ -39,6 +41,7 @@ public class IntkeyCharactersFileWriter {
 	private FilteredDataSet _dataSet;
 	private DeltaContext _context;
 	private CharacterFormatter _formatter;
+	private BinaryKeyFileEncoder _encoder;
 	
 	public IntkeyCharactersFileWriter(
 			DeltaContext context, 
@@ -49,14 +52,15 @@ public class IntkeyCharactersFileWriter {
 		_dataSet = dataSet;
 		_context = context;
 		_formatter = formatter;
+		_encoder = new BinaryKeyFileEncoder();
 	}
 	
 	public void writeAll() {
 		
 		writeCharacterFeatures();
-		writeCharacterNotes();
 		writeCharacterNotesFormat();
 		writeCharacterNotesHelpFormat();
+		writeCharacterNotes();
 		writeCharacterImages();
 		writeStartupImages();
 		writeCharacterKeywordImages();
@@ -75,16 +79,21 @@ public class IntkeyCharactersFileWriter {
 	
 	protected void writeCharacterNotes() {
 		List<String> allNotes = new ArrayList<String>(_dataSet.getNumberOfFilteredCharacters());
+		List<Integer> groups = new ArrayList<Integer>();
 		Iterator<FilteredCharacter> characters = _dataSet.filteredCharacters();
 		while (characters.hasNext()) {
 			Character character = characters.next().getCharacter();
 			String notes = null;
 			if (character.hasNotes()) {
 				notes = _formatter.defaultFormat(character.getNotes(), CommentStrippingMode.STRIP_ALL);
+				groups.add(character.getCharacterId());
+			}
+			else {
+				groups.add(0);
 			}
 			add(allNotes, notes);
 		}
-		_charsFile.writeCharacterNotes(allNotes);
+		_charsFile.writeCharacterNotes(allNotes, groups);
 	}
 	
 	
@@ -116,7 +125,8 @@ public class IntkeyCharactersFileWriter {
 	
 	protected void writeCharacterNotesFormat() {
 		TypeSettingMark mark = _context.getFormattingMark(CharacterNoteMarks.CHARACTER_NOTES_FORMAT);
-		String markText = " ";
+		
+		String markText = "[8i][12'i][1p]";
 		if (mark != null) {
 			markText = mark.getMarkText();
 		}
@@ -125,7 +135,7 @@ public class IntkeyCharactersFileWriter {
 	
 	protected void writeCharacterNotesHelpFormat() {
 		TypeSettingMark mark = _context.getFormattingMark(CharacterNoteMarks.CHARACTER_NOTES_HELP_FORMAT);
-		String markText = " ";
+		String markText = "[0i][0'i][2'z]";
 		if (mark != null) {
 			markText = mark.getMarkText();
 		}
@@ -137,14 +147,19 @@ public class IntkeyCharactersFileWriter {
 	
 		IntkeyImageWriter imageWriter = new IntkeyImageWriter();
 		Iterator<FilteredCharacter> characters = _dataSet.filteredCharacters();
+		boolean hasImages = false;
 		while (characters.hasNext()) {
 			Character character = characters.next().getCharacter();
 			List<Image> images = character.getImages();
-			String image = imageWriter.imagesToString(images, character); 
+			String image = "";
+			if (!images.isEmpty()) {
+				image = imageWriter.imagesToString(images, character); 
+				hasImages = true;
+			}
 			imageList.add(image);
 			
 		}
-		if (!imageList.isEmpty()) {
+		if (hasImages) {
 			
 			_charsFile.writeCharacterImages(imageList);
 		}
@@ -196,7 +211,14 @@ public class IntkeyCharactersFileWriter {
 	}
 	
 	protected void writeCharacterMask() {
-		
+		List<Boolean> includedCharacters = _encoder.encodeCharacterMasks(_dataSet, true);
+		BitSet charMask = new BitSet();
+		for (int i=0; i<includedCharacters.size(); i++) {
+			if (includedCharacters.get(i)) {
+				charMask.set(i);
+			}
+		}
+		_charsFile.writeCharacterMask(_dataSet.getNumberOfCharacters(), charMask);
 	}
 	
 	protected void writeOrWord() {
@@ -235,12 +257,18 @@ public class IntkeyCharactersFileWriter {
 	
 	protected void writeItemSubheadings() {
 		List<String> subHeadings = new ArrayList<String>();
+		boolean hasSubheadings = false;
 		for (int i=1; i<=_dataSet.getNumberOfFilteredCharacters(); i++) {
 			
 			String subheading = _context.getItemSubheading(i);
+			if (StringUtils.isNotBlank(subheading)) {
+				hasSubheadings = true;
+			}
 			add(subHeadings, subheading);
 		}
-		_charsFile.writeItemSubheadings(subHeadings);
+		if (hasSubheadings) {
+			_charsFile.writeItemSubheadings(subHeadings);
+		}
 		
 	}
 	

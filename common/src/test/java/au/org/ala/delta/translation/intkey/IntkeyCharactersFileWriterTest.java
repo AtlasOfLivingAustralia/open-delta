@@ -86,15 +86,12 @@ public class IntkeyCharactersFileWriterTest extends TestCase {
 		// First record should be the header.
 		_charsFile.seek(BinaryKeyFile.RECORD_LENGTH_BYTES);
 		
-		// first record should be our feature index, then feature length
+		// first record should be feature length
 		// of first feature, then text of first feature.
 
-		int offset = _charsFile.readInt();
-		assertEquals(3, offset);
-		assertEquals(5, _charsFile.readInt());
 		
 		MultiStateCharacter multiStateChar = (MultiStateCharacter)_dataSet.getCharacter(1);
-		_charsFile.seek(BinaryKeyFile.RECORD_LENGTH_BYTES*2);
+		_charsFile.seek(BinaryKeyFile.RECORD_LENGTH_BYTES*1);
 		int total = 0;
 		StringBuilder text = new StringBuilder();
 		int length = _charsFile.readInt();
@@ -115,20 +112,26 @@ public class IntkeyCharactersFileWriterTest extends TestCase {
 		text.append(multiStateChar.getState(3));
 		
 		byte[] textBytes = new byte[total];
-		_charsFile.seek(BinaryKeyFile.RECORD_LENGTH_BYTES*3);
+		_charsFile.seek(BinaryKeyFile.RECORD_LENGTH_BYTES*2);
 		
 		_charsFile.readBytes(textBytes);
 		assertEquals(text.toString(), new String(textBytes));
 		
-		_charsFile.seek(BinaryKeyFile.RECORD_LENGTH_BYTES*4);
+		_charsFile.seek(BinaryKeyFile.RECORD_LENGTH_BYTES*3);
 		TextCharacter textChar = (TextCharacter)_dataSet.getCharacter(2);
 		String description = textChar.getDescription();
 		assertEquals(description.length(), _charsFile.readInt());
 		
-		_charsFile.seek(BinaryKeyFile.RECORD_LENGTH_BYTES*5);
+		_charsFile.seek(BinaryKeyFile.RECORD_LENGTH_BYTES*4);
 		textBytes = new byte[description.length()];
 		_charsFile.readBytes(textBytes);
 		assertEquals(description, new String(textBytes));
+		
+		_charsFile.seek(BinaryKeyFile.RECORD_LENGTH_BYTES*5);
+		int offset = _charsFile.readInt();
+		assertEquals(2, offset);
+		assertEquals(4, _charsFile.readInt());
+		
 		
 		// This should also have written the num states record.
 		_charsFile.seek(BinaryKeyFile.RECORD_LENGTH_BYTES*6);
@@ -160,14 +163,14 @@ public class IntkeyCharactersFileWriterTest extends TestCase {
 		// First record should be the header.
 		_charsFile.seek(BinaryKeyFile.RECORD_LENGTH_BYTES);
 		
-		assertEquals(3, _charsFile.readInt());
-		assertEquals(5, _charsFile.readInt());
+		assertEquals(4, _charsFile.readInt());
+		assertEquals(6, _charsFile.readInt());
 		
-		assertEquals(notes1.length(), readInt(3));
-		assertEquals(notes1, readString(4, notes1.length()));
+		assertEquals(notes1.length(), readInt(4));
+		assertEquals(notes1, readString(5, notes1.length()));
 		
-		assertEquals(notes2.length(), readInt(5));
-		assertEquals(notes2, readString(6, notes2.length()));
+		assertEquals(notes2.length(), readInt(6));
+		assertEquals(notes2, readString(7, notes2.length()));
 	}
 	
 	/**

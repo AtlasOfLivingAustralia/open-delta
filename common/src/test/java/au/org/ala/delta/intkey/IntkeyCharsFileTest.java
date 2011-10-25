@@ -62,28 +62,25 @@ public class IntkeyCharsFileTest extends TestCase {
 		// First record should be the header.
 		_charsFile.seek(BinaryKeyFile.RECORD_LENGTH_BYTES);
 		
-		// first record should be our feature index, then feature length
+		// first record should be feature length
 		// of first feature, then text of first feature.
 		byte[] data = _charsFile.read(3*BinaryKeyFile.RECORD_LENGTH_BYTES);
 		ByteBuffer dataBuffer = ByteBuffer.wrap(data);
 		dataBuffer.order(ByteOrder.LITTLE_ENDIAN);
 		
-		int offset = dataBuffer.getInt();
-		assertEquals(3, offset);
-		
-		dataBuffer.position(BinaryKeyFile.RECORD_LENGTH_BYTES);
+		dataBuffer.position(0);
 		int length = dataBuffer.getInt();
 		assertEquals(featureDescription.length(), length);
 		length = dataBuffer.getInt();
 		assertEquals("state1".length(), length);
 		
 		byte[] text = new byte[featureDescription.length()];
-		dataBuffer.position(BinaryKeyFile.RECORD_LENGTH_BYTES*2);
+		dataBuffer.position(BinaryKeyFile.RECORD_LENGTH_BYTES);
 		
 		dataBuffer.get(text);
 		assertEquals(featureDescription, new String(text));
 		
-		dataBuffer.position(BinaryKeyFile.RECORD_LENGTH_BYTES*2+featureDescription.length());
+		dataBuffer.position(BinaryKeyFile.RECORD_LENGTH_BYTES+featureDescription.length());
 		text = new byte["state1".length()];
 		dataBuffer.get(text);
 		assertEquals("state1", new String(text));
@@ -109,20 +106,23 @@ public class IntkeyCharsFileTest extends TestCase {
 		String notes2 = "this is notes 2";
 		notes.add(notes1);
 		notes.add(notes2);
+		List<Integer> groups = new ArrayList<Integer>();
+		groups.add(1);
+		groups.add(2);
 		
-		_charsFile.writeCharacterNotes(notes);
+		_charsFile.writeCharacterNotes(notes, groups);
 		
 		// First record should be the header.
 		_charsFile.seek(BinaryKeyFile.RECORD_LENGTH_BYTES);
 		
-		assertEquals(3, _charsFile.readInt());
-		assertEquals(5, _charsFile.readInt());
+		assertEquals(4, _charsFile.readInt());
+		assertEquals(6, _charsFile.readInt());
 		
-		assertEquals(notes1.length(), readInt(3));
-		assertEquals(notes1, readString(4, notes1.length()));
+		assertEquals(notes1.length(), readInt(4));
+		assertEquals(notes1, readString(5, notes1.length()));
 		
-		assertEquals(notes2.length(), readInt(5));
-		assertEquals(notes2, readString(6, notes2.length()));
+		assertEquals(notes2.length(), readInt(6));
+		assertEquals(notes2, readString(7, notes2.length()));
 	}
 	
 	/**
