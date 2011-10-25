@@ -33,6 +33,11 @@ public class Pair<T, K> {
     }
 
     @Override
+    public String toString() {
+        return "Pair [_first=" + _first + ", _second=" + _second + "]";
+    }
+
+    @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
