@@ -50,6 +50,7 @@ public class DirectiveArgConverterTest extends VODirFileDescTest {
 	@SuppressWarnings("unchecked")
 	public void testInternalDirectives() throws Exception {
 		Object[] directives = new Object[] {
+				new NumberOfCharacters(), "5", ConforDirType.NUMBER_OF_CHARACTERS,
 				new CharacterTypes(), "1,TE 2,IN 3,RN 4,UM 5,OM", ConforDirType.CHARACTER_TYPES,
 				new MaximumNumberOfItems(), "100", ConforDirType.MAXIMUM_NUMBER_OF_ITEMS,
 				new MaximumNumberOfStates(),"3", ConforDirType.MAXIMUM_NUMBER_OF_STATES,

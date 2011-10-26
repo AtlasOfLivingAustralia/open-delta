@@ -14,28 +14,36 @@
  ******************************************************************************/
 package au.org.ala.delta.directives;
 
+import java.text.ParseException;
+import java.util.HashMap;
+import java.util.Map;
+
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.model.MultiStateCharacter;
+import au.org.ala.delta.util.Pair;
 
-public class CharacterTypes extends AbstractCharacterListDirective<DeltaContext, CharacterType> {
+public class CharacterTypes extends AbstractCharacterListDirective<DeltaContext, String> {
 
+	private static final CharacterType DEFAULT_CHAR_TYPE = CharacterType.UnorderedMultiState;
 	/** 
 	 * Tracks the number last character that was created to allow defaults to be created 
 	 * for characters not explicitly specified
 	 */
-	private int _lastCharacterNumber = 0;
+	private Map<Integer, Pair<CharacterType, Boolean>> _characterTypes;
 	
 	public CharacterTypes() {
 		super("character", "types");
+		_characterTypes = new HashMap<Integer, Pair<CharacterType,Boolean>>();
 	}
 
 	@Override
-	protected CharacterType interpretRHS(DeltaContext context, String rhs) {
-		return CharacterType.parse(rhs);
+	protected String interpretRHS(DeltaContext context, String rhs) {
+		return rhs;
 	}
 	
 	@Override
@@ -52,29 +60,47 @@ public class CharacterTypes extends AbstractCharacterListDirective<DeltaContext,
 		
 		super.process(context, args);
 		
-		for (int i=_lastCharacterNumber+1; i<context.getNumberOfCharacters(); i++) {
-			createDefaultCharacter(context.getDataSet(), i);
-		}
+		createCharacters(context);
 		
 	}
 
-	@Override
-	protected void processCharacter(DeltaContext context, int charNumber, CharacterType type) {
-		Logger.debug("Setting type for character %d to %s", charNumber, type);
+	protected void createCharacters(DeltaContext context) {
 		DeltaDataSet dataSet = context.getDataSet();
+		for (int i=1; i<=context.getNumberOfCharacters(); i++) {
+			CharacterType charType = DEFAULT_CHAR_TYPE;
+			boolean exclusive = false;
+			if (_characterTypes.containsKey(i)) {
+				charType = _characterTypes.get(i).getFirst();
+				exclusive = _characterTypes.get(i).getSecond();
+			}
+			
+			au.org.ala.delta.model.Character character = dataSet.addCharacter(i, charType);
+			if (charType.isMultistate()) {
+				((MultiStateCharacter)character).setExclusive(exclusive);
+			}
+		}
+	}
+
+	@Override
+	protected void processCharacter(DeltaContext context, int charNumber, String type) throws ParseException {
+		Logger.debug("Setting type for character %d to %s", charNumber, type);
 		
-		// CG - this is making an assumption that character types are in ascending numerical order.
-		// I am not sure if this is valid....
-		for (int i=_lastCharacterNumber+1; i<charNumber; i++) {
-			createDefaultCharacter(dataSet, i);
+		
+		boolean exclusive = false;
+		if (type.startsWith("E")) {
+			exclusive = true;
+			type = type.substring(1);
 		}
 		
-		dataSet.addCharacter(charNumber, type);
-		_lastCharacterNumber = charNumber;
-	}
-	
-	private void createDefaultCharacter(DeltaDataSet dataSet, int number) {
-		dataSet.addCharacter(number, CharacterType.UnorderedMultiState);
+		CharacterType charType = CharacterType.parse(type);
+		
+		if (exclusive) {
+			if (!charType.isMultistate()) {
+				throw new ParseException("Invalid character type: "+type, 
+						(int)context.getCurrentParsingContext().getCurrentOffset());
+			}
+		}
+		_characterTypes.put(charNumber, new Pair<CharacterType, Boolean>(charType, exclusive));
 	}
 
 	@Override

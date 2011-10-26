@@ -30,7 +30,6 @@ import au.org.ala.delta.directives.DirectiveParserObserver;
 import au.org.ala.delta.directives.ParsingContext;
 import au.org.ala.delta.io.OutputFileSelector;
 import au.org.ala.delta.model.Character;
-import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DefaultDataSetFactory;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.IdentificationKeyCharacter;
@@ -39,7 +38,6 @@ import au.org.ala.delta.model.StateValueMatrix;
 import au.org.ala.delta.model.TypeSettingMark;
 import au.org.ala.delta.model.TypeSettingMark.CharacterNoteMarks;
 import au.org.ala.delta.model.TypeSettingMark.MarkPosition;
-import au.org.ala.delta.model.UnorderedMultiStateCharacter;
 import au.org.ala.delta.model.image.ImageInfo;
 import au.org.ala.delta.rtf.RTFUtils;
 import au.org.ala.delta.translation.PrintFile;
@@ -301,16 +299,28 @@ public class DeltaContext extends AbstractDeltaContext {
 		return _maxNumberOfItems;
 	}
 
+	/**
+	 * A "safe" version of DeltaDataSet.getCharacter() that does not 
+	 * throw an exception if the character number is not yet in existence.
+	 * Designed to handle out of order creation of characters in the
+	 * CharacterTypes directive.
+	 * @param number the character number to retrieve.
+	 * @return the Character with the specified number, or null if no
+	 * such character exists.
+	 */
 	public Character getCharacter(int number) {
-		if (number <= _dataSet.getNumberOfCharacters()) {
-			Character c = _dataSet.getCharacter(number);
-			if (c==null) {
-				c = _dataSet.addCharacter(number, CharacterType.UnorderedMultiState);
-				((UnorderedMultiStateCharacter)c).setNumberOfStates(2);
-			}
-			return c;
+		Character c = null;
+		
+		try {
+			c = _dataSet.getCharacter(number);
 		}
-		throw new RuntimeException("No such character number " + number);
+		catch (IndexOutOfBoundsException e) {
+			if (number > getNumberOfCharacters()) {
+				throw e;
+			}
+		}
+			
+		return c;
 	}
 
 	public Item getItem(int index) {

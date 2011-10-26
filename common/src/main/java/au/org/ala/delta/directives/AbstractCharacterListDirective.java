@@ -68,6 +68,6 @@ public abstract class AbstractCharacterListDirective<C extends AbstractDeltaCont
 	
 	protected abstract T interpretRHS(C context, String rhs);
 
-	protected abstract void processCharacter(C context, int charIndex, T rhs);
+	protected abstract void processCharacter(C context, int charIndex, T rhs) throws ParseException;
 
 }
