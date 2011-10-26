@@ -6,6 +6,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.MessageFormat;
 
 import javax.swing.ActionMap;
 import javax.swing.BoxLayout;
@@ -206,7 +207,7 @@ public class FindInCharactersDialog extends JDialog {
         boolean searchUsedCharacters = _chckbxSearchUsedCharacters.isSelected();
         if (!StringUtils.isEmpty(searchText)) {
             _numMatchedCharacters = _intkeyApp.findCharacters(searchText, searchStates, searchUsedCharacters);
-            this.setTitle(String.format(windowTitleNumberFound, _numMatchedCharacters));
+            this.setTitle(MessageFormat.format(windowTitleNumberFound, _numMatchedCharacters));
             
             if (_numMatchedCharacters > 0) {
                 _currentMatchedCharacter = 0;

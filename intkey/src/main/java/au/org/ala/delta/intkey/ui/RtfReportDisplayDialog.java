@@ -7,6 +7,7 @@ import java.awt.Frame;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.MessageFormat;
 
 import javax.swing.ActionMap;
 import javax.swing.JFileChooser;
@@ -173,7 +174,7 @@ public class RtfReportDisplayDialog extends IntkeyDialog {
                     fw.flush();
                     fw.close();
                 } catch (IOException ex) {
-                    JOptionPane.showMessageDialog(this, String.format(fileWriteError, selectedFile.getAbsolutePath()));
+                    JOptionPane.showMessageDialog(this, MessageFormat.format(fileWriteError, selectedFile.getAbsolutePath()));
                 }
             }
         }

@@ -151,7 +151,7 @@ public class UseDirective extends IntkeyDirective {
             }
             return invoc;
         } else {
-            throw new IntkeyDirectiveParseException(UIUtils.getResourceString("UseDirective.NoDataSetMsg"));
+            throw new IntkeyDirectiveParseException("UseDirective.NoDataSetMsg");
         }
     }
 

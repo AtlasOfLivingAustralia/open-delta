@@ -3,6 +3,7 @@ package au.org.ala.delta.intkey.ui;
 import java.awt.Dialog;
 import java.awt.Frame;
 import java.awt.GridLayout;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,13 +54,13 @@ public class TaxonSelectionDialog extends ListSelectionDialog {
     public TaxonSelectionDialog(Dialog owner, List<Item> taxa, String directiveName, String keyword, boolean displayNumbering, boolean singleSelect) {
         this(owner, taxa, directiveName, displayNumbering, singleSelect);
         _keyword = keyword;
-        setTitle(String.format(titleFromKeyword, _directiveName, _keyword));
+        setTitle(MessageFormat.format(titleFromKeyword, _directiveName, _keyword));
     }
 
     public TaxonSelectionDialog(Frame owner, List<Item> taxa, String directiveName, String keyword, boolean displayNumbering, boolean singleSelect) {
         this(owner, taxa, directiveName, displayNumbering, singleSelect);
         _keyword = keyword;
-        setTitle(String.format(titleFromKeyword, _directiveName, _keyword));
+        setTitle(MessageFormat.format(titleFromKeyword, _directiveName, _keyword));
     }
 
     public TaxonSelectionDialog(Dialog owner, List<Item> taxa, String directiveName, boolean displayNumbering, boolean singleSelect) {
@@ -79,7 +80,7 @@ public class TaxonSelectionDialog extends ListSelectionDialog {
         resourceMap.injectFields(this);
         ActionMap actionMap = Application.getInstance().getContext().getActionMap(TaxonSelectionDialog.class, this);
 
-        setTitle(String.format(title, _directiveName));
+        setTitle(MessageFormat.format(title, _directiveName));
 
         _panelButtons.setBorder(new EmptyBorder(0, 20, 10, 20));
         _panelButtons.setLayout(new GridLayout(0, 5, 5, 2));

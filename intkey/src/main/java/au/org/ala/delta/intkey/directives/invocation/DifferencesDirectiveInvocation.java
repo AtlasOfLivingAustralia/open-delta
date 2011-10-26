@@ -152,7 +152,7 @@ public class DifferencesDirectiveInvocation extends IntkeyDirectiveInvocation {
         } else if (differences.size() == 1) {
             builder.appendText(UIUtils.getResourceString("DifferencesDirective.OneDifference"));
         } else {
-            builder.appendText(String.format(UIUtils.getResourceString("DifferencesDirective.ManyDifferences"), differences.size()));
+            builder.appendText(UIUtils.getResourceString("DifferencesDirective.ManyDifferences", differences.size()));
         }
 
         builder.endDocument();

@@ -454,7 +454,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
         _lblNumAvailableCharacters = new JLabel();
         _lblNumAvailableCharacters.setFont(new Font("Tahoma", Font.PLAIN, 15));
-        _lblNumAvailableCharacters.setText(String.format(availableCharactersCaption, 0));
+        _lblNumAvailableCharacters.setText(MessageFormat.format(availableCharactersCaption, 0));
         _pnlAvailableCharactersHeader.add(_lblNumAvailableCharacters, BorderLayout.WEST);
 
         _pnlAvailableCharactersButtons = new JPanel();
@@ -553,7 +553,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         _lblNumUsedCharacters = new JLabel();
         _lblNumUsedCharacters.setBorder(new EmptyBorder(7, 0, 7, 0));
         _lblNumUsedCharacters.setFont(new Font("Tahoma", Font.PLAIN, 15));
-        _lblNumUsedCharacters.setText(String.format(usedCharactersCaption, 0));
+        _lblNumUsedCharacters.setText(MessageFormat.format(usedCharactersCaption, 0));
         _pnlUsedCharactersHeader.add(_lblNumUsedCharacters, BorderLayout.WEST);
 
         _innerSplitPaneRight = new JSplitPane();
@@ -587,7 +587,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
         _lblNumRemainingTaxa = new JLabel();
         _lblNumRemainingTaxa.setFont(new Font("Tahoma", Font.PLAIN, 15));
-        _lblNumRemainingTaxa.setText(String.format(remainingTaxaCaption, 0));
+        _lblNumRemainingTaxa.setText(MessageFormat.format(remainingTaxaCaption, 0));
         _pnlRemainingTaxaHeader.add(_lblNumRemainingTaxa, BorderLayout.WEST);
 
         _pnlRemainingTaxaButtons = new JPanel();
@@ -642,7 +642,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         _lblEliminatedTaxa = new JLabel();
         _lblEliminatedTaxa.setBorder(new EmptyBorder(7, 0, 7, 0));
         _lblEliminatedTaxa.setFont(new Font("Tahoma", Font.PLAIN, 15));
-        _lblEliminatedTaxa.setText(String.format(eliminatedTaxaCaption, 0));
+        _lblEliminatedTaxa.setText(MessageFormat.format(eliminatedTaxaCaption, 0));
         _pnlEliminatedTaxaHeader.add(_lblEliminatedTaxa, BorderLayout.WEST);
 
         JMenuBar menuBar = buildMenus(_advancedMode);
@@ -1348,7 +1348,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             LinkedHashMap<Character, Double> bestCharactersMap = _context.getBestOrSeparateCharacters();
             if (bestCharactersMap != null) {
                 if (charOrder == IntkeyCharacterOrder.BEST) {
-                    _lblNumAvailableCharacters.setText(String.format(bestCharactersCaption, bestCharactersMap.keySet().size()));
+                    _lblNumAvailableCharacters.setText(MessageFormat.format(bestCharactersCaption, bestCharactersMap.keySet().size()));
                 } else {
                     _lblNumAvailableCharacters.setText(MessageFormat.format(separateCharactersCaption, formattedTaxonToSeparateName, bestCharactersMap.keySet().size()));
                 }
@@ -1406,7 +1406,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             break;
         case NATURAL:
             List<Character> availableCharacters = new ArrayList<Character>(_context.getAvailableCharacters());
-            _lblNumAvailableCharacters.setText(String.format(availableCharactersCaption, availableCharacters.size()));
+            _lblNumAvailableCharacters.setText(MessageFormat.format(availableCharactersCaption, availableCharacters.size()));
             if (availableCharacters.size() == 0) {
                 handleNoAvailableCharacters();
                 return;
@@ -1509,7 +1509,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         _listUsedCharacters.setCellRenderer(_usedCharactersListCellRenderer);
         _listUsedCharacters.setModel(_usedCharacterListModel);
 
-        _lblNumUsedCharacters.setText(String.format(usedCharactersCaption, _usedCharacterListModel.getSize()));
+        _lblNumUsedCharacters.setText(MessageFormat.format(usedCharactersCaption, _usedCharacterListModel.getSize()));
     }
 
     private void updateAvailableTaxa(List<Item> availableTaxa, Map<Item, Set<Character>> taxaDifferingCharacters) {
@@ -1530,7 +1530,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         _listRemainingTaxa.setCellRenderer(_availableTaxaCellRenderer);
         _listRemainingTaxa.setModel(_availableTaxaListModel);
 
-        _lblNumRemainingTaxa.setText(String.format(remainingTaxaCaption, _availableTaxaListModel.getSize()));
+        _lblNumRemainingTaxa.setText(MessageFormat.format(remainingTaxaCaption, _availableTaxaListModel.getSize()));
 
         _listRemainingTaxa.repaint();
     }
@@ -1550,7 +1550,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         _listEliminatedTaxa.setCellRenderer(_eliminatedTaxaCellRenderer);
         _listEliminatedTaxa.setModel(_eliminatedTaxaListModel);
 
-        _lblEliminatedTaxa.setText(String.format(eliminatedTaxaCaption, _eliminatedTaxaListModel.getSize()));
+        _lblEliminatedTaxa.setText(MessageFormat.format(eliminatedTaxaCaption, _eliminatedTaxaListModel.getSize()));
 
         _listEliminatedTaxa.repaint();
     }
@@ -1560,7 +1560,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     @Override
     public void handleNewDataset(IntkeyDataset dataset) {
-        getMainFrame().setTitle(String.format(windowTitleWithDatasetTitle, dataset.getHeading()));
+        getMainFrame().setTitle(MessageFormat.format(windowTitleWithDatasetTitle, dataset.getHeading()));
 
         // display startup images
         List<Image> startupImages = dataset.getStartupImages();
@@ -1617,10 +1617,10 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
                 switch (_context.getCharacterOrder()) {
                 case NATURAL:
-                    _lblNumAvailableCharacters.setText(String.format(availableCharactersCaption, 0));
+                    _lblNumAvailableCharacters.setText(MessageFormat.format(availableCharactersCaption, 0));
                     break;
                 case BEST:
-                    _lblNumAvailableCharacters.setText(String.format(bestCharactersCaption, 0));
+                    _lblNumAvailableCharacters.setText(MessageFormat.format(bestCharactersCaption, 0));
                     break;
                 case SEPARATE:
                     Item taxonToSeparate = _context.getDataset().getTaxon(_context.getTaxonToSeparate());

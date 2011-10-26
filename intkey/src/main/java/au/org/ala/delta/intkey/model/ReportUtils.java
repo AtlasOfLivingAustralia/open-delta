@@ -18,6 +18,7 @@ import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.RealAttribute;
 import au.org.ala.delta.model.RealCharacter;
 import au.org.ala.delta.model.TextCharacter;
+import au.org.ala.delta.rtf.RTFBuilder;
 import au.org.ala.delta.util.Pair;
 
 /**
@@ -232,6 +233,30 @@ public class ReportUtils {
         double stdDev = Math.sqrt(variance);
 
         return new Pair<Double, Double>(mean, stdDev);
+    }
+
+    public void generateStatusDisplay(IntkeyContext context, RTFBuilder builder) {
+    }
+
+    public void generateStatusIncludeCharacters(IntkeyContext context, RTFBuilder builder) {
+    }
+
+    public void generateStatusIncludeTaxa(IntkeyContext context, RTFBuilder builder) {
+    }
+
+    public void generateStatusExcludeCharacters(IntkeyContext context, RTFBuilder builder) {
+    }
+
+    public void generateStatusExcludeTaxa(IntkeyContext context, RTFBuilder builder) {
+    }
+
+    public void generateStatusFile(IntkeyContext context, RTFBuilder builder) {
+    }
+
+    public void generateStatusSet(IntkeyContext context, RTFBuilder builder) {
+    }
+
+    public void generateStatusAll(IntkeyContext context, RTFBuilder builder) {
     }
 
 }

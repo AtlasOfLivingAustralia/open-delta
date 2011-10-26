@@ -47,7 +47,7 @@ public abstract class IntkeyDirective extends AbstractDirective<IntkeyContext> {
     @Override
     public final void parseAndProcess(IntkeyContext context, String data) throws Exception {
         if (context.getDataset() == null && _errorIfNoDatasetLoaded) {
-            context.getUI().displayErrorMessage(MessageFormat.format(UIUtils.getResourceString("DirectiveCallNoDatasetLoaded.error"), getControlWordsAsString()));
+            context.getUI().displayErrorMessage(UIUtils.getResourceString("DirectiveCallNoDatasetLoaded.error", getControlWordsAsString()));
             return;
         }
 

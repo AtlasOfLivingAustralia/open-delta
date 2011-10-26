@@ -3,6 +3,7 @@ package au.org.ala.delta.intkey.ui;
 import java.awt.Dialog;
 import java.awt.Frame;
 import java.awt.GridLayout;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,7 +66,7 @@ public class CharacterSelectionDialog extends ListSelectionDialog {
         this(owner, characters, directiveName, imageSettings, displayNumbering);
         _keyword = keyword;
         _imageSettings = imageSettings;
-        setTitle(String.format(titleFromKeyword, _directiveName, _keyword));
+        setTitle(MessageFormat.format(titleFromKeyword, _directiveName, _keyword));
     }
 
     public CharacterSelectionDialog(Dialog owner, List<Character> characters, String directiveName, ImageSettings imageSettings, boolean displayNumbering) {
@@ -87,7 +88,7 @@ public class CharacterSelectionDialog extends ListSelectionDialog {
         resourceMap.injectFields(this);
         ActionMap actionMap = Application.getInstance().getContext().getActionMap(CharacterSelectionDialog.class, this);
 
-        setTitle(String.format(title, _directiveName));
+        setTitle(MessageFormat.format(title, _directiveName));
 
         _panelButtons.setBorder(new EmptyBorder(0, 20, 10, 20));
         _panelButtons.setLayout(new GridLayout(0, 5, 5, 2));

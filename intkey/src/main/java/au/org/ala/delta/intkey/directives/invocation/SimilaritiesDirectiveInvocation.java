@@ -147,7 +147,7 @@ public class SimilaritiesDirectiveInvocation extends IntkeyDirectiveInvocation {
         } else if (similarities.size() == 1) {
             builder.appendText(UIUtils.getResourceString("SimilaritiesDirective.OneDifference"));
         } else {
-            builder.appendText(String.format(UIUtils.getResourceString("SimilaritiesDirective.ManyDifferences"), similarities.size()));
+            builder.appendText(UIUtils.getResourceString("SimilaritiesDirective.ManyDifferences", similarities.size()));
         }
 
         builder.endDocument();

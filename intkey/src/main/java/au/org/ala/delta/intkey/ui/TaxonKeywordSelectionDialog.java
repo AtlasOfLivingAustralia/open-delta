@@ -2,6 +2,7 @@ package au.org.ala.delta.intkey.ui;
 
 import java.awt.Dialog;
 import java.awt.Frame;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -56,7 +57,7 @@ public class TaxonKeywordSelectionDialog extends KeywordSelectionDialog {
         ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(TaxonKeywordSelectionDialog.class);
         resourceMap.injectFields(this);
 
-        setTitle(String.format(title, _directiveName));
+        setTitle(MessageFormat.format(title, _directiveName));
         List<String> taxonKeywords = context.getTaxaKeywords();
 
         DefaultListModel model = new DefaultListModel();

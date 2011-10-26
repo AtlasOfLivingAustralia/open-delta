@@ -3,6 +3,7 @@ package au.org.ala.delta.intkey.ui;
 import java.awt.Desktop;
 import java.io.File;
 import java.net.URL;
+import java.text.MessageFormat;
 import java.util.UUID;
 
 import javax.swing.JDialog;
@@ -34,11 +35,11 @@ public class UIUtils {
         return ((SingleFrameApplication) Application.getInstance()).getMainFrame();
     }
 
-    public static String getResourceString(String key) {
+    public static String getResourceString(String key, Object... arguments) {
         try {
             Application app = Application.getInstance();
             String str = app.getContext().getResourceMap().getString(key);
-            return str;
+            return MessageFormat.format(str, arguments);
         } catch (IllegalStateException ex) {
             // To help with unit testing, return empty string if the Swing
             // Application

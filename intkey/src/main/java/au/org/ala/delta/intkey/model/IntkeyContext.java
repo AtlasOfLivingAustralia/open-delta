@@ -270,7 +270,7 @@ public class IntkeyContext extends AbstractDeltaContext {
 
         if (!charactersFile.exists()) {
             String absoluteFileName = charactersFile.getAbsolutePath();
-            throw new IllegalArgumentException(String.format(UIUtils.getResourceString("CharactersFileNotFound.error"), absoluteFileName));
+            throw new IllegalArgumentException(UIUtils.getResourceString("CharactersFileNotFound.error", absoluteFileName));
         }
 
         _charactersFile = charactersFile;
@@ -303,7 +303,7 @@ public class IntkeyContext extends AbstractDeltaContext {
 
         if (!taxaFile.exists()) {
             String absoluteFileName = taxaFile.getAbsolutePath();
-            throw new IllegalArgumentException(String.format(UIUtils.getResourceString("TaxaFileNotFound.error"), absoluteFileName));
+            throw new IllegalArgumentException(UIUtils.getResourceString("TaxaFileNotFound.error", absoluteFileName));
         }
 
         _taxaFile = taxaFile;
@@ -547,7 +547,7 @@ public class IntkeyContext extends AbstractDeltaContext {
 
         keyword = keyword.toLowerCase();
         if (keyword.equals(CHARACTER_KEYWORD_ALL) || keyword.equals(CHARACTER_KEYWORD_USED) || keyword.equals(CHARACTER_KEYWORD_AVAILABLE) || keyword.equals(CHARACTER_KEYWORD_NONE)) {
-            throw new IllegalArgumentException(String.format(UIUtils.getResourceString("RedefineSystemKeyword.error"), keyword));
+            throw new IllegalArgumentException(UIUtils.getResourceString("RedefineSystemKeyword.error", keyword));
         }
 
         for (int chNum : characterNumbers) {
@@ -652,7 +652,7 @@ public class IntkeyContext extends AbstractDeltaContext {
 
         if (keyword.equals(TAXON_KEYWORD_ALL) || keyword.equals(TAXON_KEYWORD_ELIMINATED) || keyword.equals(TAXON_KEYWORD_REMAINING) || keyword.equals(TAXON_KEYWORD_SELECTED)
                 || keyword.equals(TAXON_KEYWORD_NONE)) {
-            throw new IllegalArgumentException(String.format(UIUtils.getResourceString("RedefineSystemKeyword.error"), keyword));
+            throw new IllegalArgumentException(UIUtils.getResourceString("RedefineSystemKeyword.error", keyword));
         }
 
         for (int taxonNum : taxaNumbers) {

@@ -16,10 +16,10 @@ public class IntkeyDirectiveParseException extends Exception {
     }
 
     public IntkeyDirectiveParseException(String messageKey, Throwable cause, Object... messageArguments) {
-        super(MessageFormat.format(UIUtils.getResourceString(messageKey), messageArguments), cause);
+        super(UIUtils.getResourceString(messageKey, messageArguments), cause);
     }
 
     public IntkeyDirectiveParseException(String messageKey, Object... messageArguments) {
-        super(MessageFormat.format(UIUtils.getResourceString(messageKey), messageArguments));
+        super(UIUtils.getResourceString(messageKey, messageArguments));
     }
 }

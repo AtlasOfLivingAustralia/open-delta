@@ -7,6 +7,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.MessageFormat;
 
 import javax.swing.ActionMap;
 import javax.swing.BoxLayout;
@@ -247,7 +248,7 @@ public class FindInTaxaDialog extends JDialog {
         boolean searchEliminatedTaxa = _chckbxSearchEliminatedTaxa.isSelected();
         if (!StringUtils.isEmpty(searchText)) {
             _numMatchedTaxa = _intkeyApp.findTaxa(searchText, searchSynonyms, searchEliminatedTaxa);
-            this.setTitle(String.format(windowTitleNumberFound, _numMatchedTaxa));
+            this.setTitle(MessageFormat.format(windowTitleNumberFound, _numMatchedTaxa));
 
             if (_numMatchedTaxa > 0) {
                 _currentMatchedTaxon = 0;
