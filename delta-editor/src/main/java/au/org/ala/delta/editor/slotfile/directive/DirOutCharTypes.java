@@ -20,6 +20,7 @@ import java.util.List;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.util.Pair;
 
 /**
@@ -35,8 +36,16 @@ public class DirOutCharTypes extends AbstractDirOutFunctor {
 		for (int i=1; i<=dataSet.getNumberOfCharacters(); i++) {
 			Character character = dataSet.getCharacter(i);
 			CharacterType type = character.getCharacterType();
-			if (!type.equals(CharacterType.UnorderedMultiState)) {
-				charTypes.add(new Pair<Integer, String>(i, type.toTypeCode()));
+			boolean exclusive = false;
+			if (type.isMultistate()) {
+				exclusive = ((MultiStateCharacter)character).isExclusive();
+			}
+			if (!type.equals(CharacterType.UnorderedMultiState) || exclusive) {
+				String typeCode = type.toTypeCode();
+				if (exclusive) {
+					typeCode = "E"+typeCode;
+				}
+				charTypes.add(new Pair<Integer, String>(i, typeCode));
 			}
 			
 		}
