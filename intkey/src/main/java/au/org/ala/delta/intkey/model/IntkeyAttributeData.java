@@ -59,6 +59,11 @@ public class IntkeyAttributeData implements AttributeData {
     public boolean isUnknown() {
         return _unknown;
     }
+    
+    @Override
+    public boolean isCodedUnknown() {
+        return _unknown;
+    }
 
     @Override
     public boolean isInapplicable() {

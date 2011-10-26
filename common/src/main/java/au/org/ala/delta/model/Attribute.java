@@ -61,6 +61,16 @@ public abstract class Attribute {
 	}
 	
 	/**
+	 * An unknown attribute is one that has has been coded explicitly with 
+	 * the value "U".
+	 * @return true if the value of this attribute is unknown.
+	 */
+	public boolean isCodedUnknown() {
+		
+	    return _impl.isCodedUnknown();
+	}
+	
+	/**
 	 * An inapplicable value is one that has been explicitly coded as inapplicable 
 	 * - with the value "-"
 	 * @return true if this attribute is inapplicable

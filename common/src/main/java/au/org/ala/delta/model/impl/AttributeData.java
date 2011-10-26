@@ -40,4 +40,6 @@ public interface AttributeData {
 	boolean isCommentOnly();
 
 	public List<NumericRange> getNumericValue();
+
+	boolean isCodedUnknown();
 }

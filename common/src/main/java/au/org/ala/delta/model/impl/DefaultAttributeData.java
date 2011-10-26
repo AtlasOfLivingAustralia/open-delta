@@ -60,6 +60,11 @@ public class DefaultAttributeData implements AttributeData {
     	}
     	return _parsedAttribute.isUnknown();
     }
+    
+    @Override 
+    public boolean isCodedUnknown() {
+    	return _parsedAttribute.isUnknown();
+    }
 
     @Override
     public boolean isInapplicable() {

@@ -70,7 +70,7 @@ public abstract class Character implements Illustratable, Comparable<Character>,
     }
 
     public List<CharacterDependency> getDependentCharacters() {
-        return _impl.getDependentCharacters();
+        return new ArrayList<CharacterDependency>(_impl.getDependentCharacters());
     }
     
     /**
@@ -100,7 +100,7 @@ public abstract class Character implements Illustratable, Comparable<Character>,
 
     
     public List<CharacterDependency> getControllingCharacters() {
-        return _impl.getControllingCharacters();
+        return new ArrayList<CharacterDependency>(_impl.getControllingCharacters());
     }
 
     public void setMandatory(boolean b) {

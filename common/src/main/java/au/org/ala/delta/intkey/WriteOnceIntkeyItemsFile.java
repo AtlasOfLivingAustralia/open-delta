@@ -37,16 +37,22 @@ public class WriteOnceIntkeyItemsFile extends BinaryKeyFile {
 		_header.setMajorVer(DATASET_MAJOR_VERSION);
 		_header.setMinorVer(DATASET_MINOR_VERSION);
 		_header.setMaxInt(IntkeyItemsFileWriter.INTEGER_RANGE_MAX_THRESHOLD);
-		// Even if there is no data, we always mark that there is a second
-		// section for simplicity (otherwise we don't know how many 
-		// records to allocate)
-		_header.setRpNext(2);
+		
 		// This is done to allocate the first record to the header.
-		writeToRecord(1, _header.toInts());	
+		// For binary compatibility with CONFOR we only write the first half
+		// now.
+		writeToRecord(1, _header.toInts().subList(0, RECORD_LENGTH_INTEGERS));	
 	}
 	
 	public void writeHeader() {
-		overwriteRecord(1, _header.toInts());	
+		
+		int part2 = nextAvailableRecord();
+		_header.setRpNext(part2);
+		List<Integer> header = _header.toInts();
+		overwriteRecord(1, header.subList(0, RECORD_LENGTH_INTEGERS));
+		
+		List<Integer> headerPart2 = header.subList(RECORD_LENGTH_INTEGERS, header.size());
+		writeToRecord(part2, headerPart2);
 	}
 	
 	public void writeItemDescriptions(List<String> descriptions) {
@@ -134,41 +140,47 @@ public class WriteOnceIntkeyItemsFile extends BinaryKeyFile {
 		writeToRecord(record, values);
 	}
 
+	private int[] _attributeIndex = null;
+	
 	private int updateCharacterIndex(int charNumber) {
-		int indexRecord = _header.getRpCdat();
-		List<Integer> indicies = null;
 		int next = 0;
-		if (indexRecord == 0) {
-			indexRecord = nextAvailableRecord();
-			_header.setRpCdat(indexRecord);
-			Integer[] indiciesArray = new Integer[_header.getNChar()];
-			Arrays.fill(indiciesArray, Integer.valueOf(0));
-			indicies = Arrays.asList(indiciesArray);
-			next = indexRecord + indiciesArray.length / RECORD_LENGTH_INTEGERS + 1;
-			indicies.set(charNumber-1, next);
-			writeToRecord(indexRecord, indicies);
+		if (_attributeIndex == null) {
+			_attributeIndex = new int[_header.getNChar()];
+			Arrays.fill(_attributeIndex, 0);
 		}
-		else {
-			indicies = readIntegerList(indexRecord, _header.getNChar());
-			next = nextAvailableRecord();
-			indicies.set(charNumber-1, next);
-			overwriteRecord(indexRecord, indicies);
-		}
+		next = nextAvailableRecord();
+		_attributeIndex[charNumber-1] = next;
 		
 		return next;
 	}
 	
-	public void writeAttributeFloats(int charNumber, BitSet inapplicableBits, List<FloatRange> values) {
+	public void writeAttributeIndex() {
+		checkEmpty(_header.getRpCdat());
+		int indexRecord = nextAvailableRecord();
+		_header.setRpCdat(indexRecord);
+		writeToRecord(indexRecord, _attributeIndex);
+		
+	}
+	
+	private int[] _keyStateBoundariesIndex;
+	
+	public void writeAttributeFloats(int charNumber, BitSet inapplicableBits, List<FloatRange> values, List<Float> keyStateBoundaries) {
 		int record = updateCharacterIndex(charNumber);
 		List<Integer> inapplicable = bitSetToInts(inapplicableBits, _header.getNItem());
 		record += writeToRecord(record, inapplicable);
 		
 		List<Float> floats = new ArrayList<Float>();
 		for (FloatRange range : values) {
-			// Special case - Float.MAX_VALUE indicates unknown.
+			// Special cases, Float.MAX_VALUE indicates coded unknown.
+			//               -Float.MIN_VALUE indicates uncoded unknown
 			if (range.getMinimumFloat() == Float.MAX_VALUE) {
-				floats.add(Float.MAX_VALUE);
-				floats.add(-Float.MAX_VALUE);
+				// These somewhat strange values are for CONFOR compatibility
+				floats.add((float)Math.pow(2, 29));
+				floats.add(-(float)Math.pow(2, 29));
+			}
+			else if (range.getMaximumFloat() == -Float.MAX_VALUE) {
+				floats.add(1f);
+				floats.add(0f);
 			}
 			else {
 				floats.add(range.getMinimumFloat());
@@ -176,6 +188,21 @@ public class WriteOnceIntkeyItemsFile extends BinaryKeyFile {
 			}
 		}
 		writeFloatsToRecord(record, floats);
+		
+		
+			
+		int recordNum = nextAvailableRecord();
+		writeToRecord(recordNum, keyStateBoundaries.size());
+		writeFloatsToRecord(recordNum+1, keyStateBoundaries);
+		
+		if (_keyStateBoundariesIndex == null) {
+			_keyStateBoundariesIndex = new int[_header.getNChar()];
+			Arrays.fill(_keyStateBoundariesIndex, 0);
+		}
+		_keyStateBoundariesIndex[charNumber-1] = recordNum;
+		_header.setLSbnd(_header.getLSbnd()+keyStateBoundaries.size());
+		_header.setLkstat(Math.max(_header.getLkstat(), keyStateBoundaries.size()));
+		
 	}
 	
 	public void writeAttributeStrings(int charNumber, BitSet inapplicableBits, List<String> values) {
@@ -187,48 +214,12 @@ public class WriteOnceIntkeyItemsFile extends BinaryKeyFile {
 	}
 	
 	
-	public void writeKeyStateBoundaries(List<List<Float>> keyStateBoundaries) {
+	public void writeKeyStateBoundariesIndex() {
 		checkEmpty(_header.getRpNkbd());
-		checkCharacterListLength(keyStateBoundaries);
-		int sum = 0;
-		int maxCount = 0;
-		for (List<Float> boundaries : keyStateBoundaries) {
-			sum += boundaries.size();
-			maxCount = Math.max(maxCount, boundaries.size());
-		}
-		if (sum == 0) {
-			// no key state boundaries.
-			return;
-		}
-		
 		int indexRecord = nextAvailableRecord();
 		_header.setRpNkbd(indexRecord);
-		_header.setLSbnd(sum);
-		_header.setLkstat(maxCount);
 		
-		List<Integer> index = new ArrayList<Integer>();
-		// Write the index to allocate the record.
-		for (int i=0; i<keyStateBoundaries.size(); i++) {
-			index.add(0);
-		}
-		writeToRecord(indexRecord, index);
-		index = new ArrayList<Integer>();
-		
-		for (List<Float> charBoundaries : keyStateBoundaries) {
-			if (charBoundaries.size() > 0) {
-				int recordNum = nextAvailableRecord();
-				index.add(recordNum);
-				writeToRecord(recordNum, charBoundaries.size());
-				writeFloatsToRecord(recordNum+1, charBoundaries);
-				
-			}
-			else {
-				index.add(0);
-			}
-		}
-		
-		// Now update the index
-		overwriteRecord(indexRecord, index);
+		writeToRecord(indexRecord, _keyStateBoundariesIndex);
 	}
 	
 	public void writeTaxonImages(List<String> images) {

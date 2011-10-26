@@ -182,6 +182,15 @@ public class VOAttributeAdaptor implements AttributeData {
 	    	 return attribute == null || attribute.isUnknown();
     	}
     }
+    
+    @Override
+    public boolean isCodedUnknown() {
+    	synchronized (_vop) {
+	    	 Attribute attribute = _itemDesc.readAttribute(_charBaseDesc.getUniId());
+	    	 
+	    	 return attribute != null && attribute.isUnknown();
+    	}
+    }
 
     @Override
     public boolean isInapplicable() {

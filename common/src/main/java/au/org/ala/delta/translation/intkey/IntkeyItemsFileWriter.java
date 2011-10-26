@@ -31,6 +31,7 @@ import au.org.ala.delta.model.impl.ControllingInfo;
 import au.org.ala.delta.translation.FilteredCharacter;
 import au.org.ala.delta.translation.FilteredDataSet;
 import au.org.ala.delta.translation.FilteredItem;
+import au.org.ala.delta.util.Pair;
 
 /**
  * Writes the intkey items file using the data in a supplied DeltaContext and
@@ -55,10 +56,27 @@ public class IntkeyItemsFileWriter {
 	}
 	
 	public void writeAll() {
+		
+		// To retain compatibility with CONFOR (and older versions of intkey)
+		// we write a blank heading here.
+		_itemsFile.writeStringWithLength(2, " ");
+		
+		// For compatibility with CONFOR we write the attributes in this order:
+		writeUnorderedMultistateAttributes();
+		writeOrderedMultistateAttributes();
+		Pair<List<IntRange>, Set<Integer>> result = writeIntegerAttributes();
+		writeRealAttributes(result.getSecond());
+		writeTextAttributes();
+		
 		writeItemDescriptions();
-		writeCharacterSpecs();
+		writeCharacterSpecs(result.getSecond());
+		
+		_itemsFile.writeMinMaxValues(result.getFirst());
 		writeCharacterDependencies();
-		writeAttributeData();
+		
+		_itemsFile.writeAttributeIndex();
+		_itemsFile.writeKeyStateBoundariesIndex();
+		
 		writeTaxonImages();
 		writeChineseFormat();
 		writeCharacterSynonomy();
@@ -83,7 +101,7 @@ public class IntkeyItemsFileWriter {
 		_itemsFile.writeItemDescriptions(descriptions);
 	}
 	
-	public void writeCharacterSpecs() {
+	public void writeCharacterSpecs(Set<Integer> intsConvertedToFloat) {
 		
 		List<Integer> types = new ArrayList<Integer>(_dataSet.getNumberOfFilteredCharacters());
 		List<Integer> states = new ArrayList<Integer>(_dataSet.getNumberOfFilteredCharacters());
@@ -92,7 +110,12 @@ public class IntkeyItemsFileWriter {
 	    Iterator<IdentificationKeyCharacter> iterator = _dataSet.identificationKeyCharacterIterator();
 		while(iterator.hasNext()) {
 			IdentificationKeyCharacter character = iterator.next();
-			types.add(_encoder.typeToInt(character.getCharacterType()));
+			if (intsConvertedToFloat.contains(character.getCharacterNumber())) {
+				types.add(-_encoder.typeToInt(CharacterType.RealNumeric));
+			}
+			else {
+				types.add(_encoder.typeToInt(character.getCharacterType()));
+			}
 			states.add(numStates(character));
 			reliabilities.add((float)_context.getCharacterReliability(character.getCharacterNumber()));
 			
@@ -121,39 +144,69 @@ public class IntkeyItemsFileWriter {
 		_itemsFile.writeCharacterDependencies(dependencyData, invertedDependencyData);
 	}
 	
-	public void writeAttributeData() {
-		
+	private void writeMultistateAttributes(CharacterType type) {
 		Iterator<IdentificationKeyCharacter> keyChars = _dataSet.identificationKeyCharacterIterator();
+		while (keyChars.hasNext()) {
+			IdentificationKeyCharacter keyChar = keyChars.next();
+			if (keyChar.getCharacterType() == type) {
+				writeMultiStateAttributes(keyChar);
+			}	
+			
+		}
+	}
+	
+	public void writeUnorderedMultistateAttributes() {
+		writeMultistateAttributes(CharacterType.UnorderedMultiState);
+	}
+	
+	public void writeOrderedMultistateAttributes() {
+		writeMultistateAttributes(CharacterType.OrderedMultiState);
+	}
+	
+	public Pair<List<IntRange>, Set<Integer>> writeIntegerAttributes() {
 		List<IntRange> intRanges = new ArrayList<IntRange>();
-		List<List<Float>> keyStateBoundaries = new ArrayList<List<Float>>();
+		Iterator<IdentificationKeyCharacter> keyChars = _dataSet.identificationKeyCharacterIterator();
+		Set<Integer> convertToReal = new HashSet<Integer>();
+		
 		while (keyChars.hasNext()) {
 			IdentificationKeyCharacter keyChar = keyChars.next();
 			IntRange minMax = new IntRange(0);
-			Set<Float> floats = new HashSet<Float>();
-			if (keyChar.getCharacterType().isMultistate()) {
-				writeMultiStateAttributes(keyChar);
-			}	
-			else if (keyChar.getCharacterType() == CharacterType.IntegerNumeric) {
+				
+			if (keyChar.getCharacterType() == CharacterType.IntegerNumeric) {
 				minMax = writeIntegerAttributes(keyChar.getFilteredCharacterNumber(), keyChar.getCharacter());
 				if (minMax == null) {
 					minMax = new IntRange(0);
-					_itemsFile.changeCharacterType(keyChar.getFilteredCharacterNumber(), -_encoder.typeToInt(CharacterType.RealNumeric));
-					floats = writeRealAttributes(keyChar.getFilteredCharacterNumber(), keyChar.getCharacter(), true);
+					convertToReal.add(keyChar.getCharacterNumber());
 				}
 			}
-			else if (keyChar.getCharacterType() == CharacterType.RealNumeric) {	
-				floats = writeRealAttributes(keyChar.getFilteredCharacterNumber(), keyChar.getCharacter(), false);
-			}
-			else {
-				writeTextAttributes(keyChar.getFilteredCharacterNumber(), keyChar.getCharacter());
-			}
+			
 			intRanges.add(minMax);
-			List<Float> floatList = new ArrayList<Float>(floats);
-			Collections.sort(floatList);
-			keyStateBoundaries.add(floatList);
 		}
-		_itemsFile.writeMinMaxValues(intRanges);
-		_itemsFile.writeKeyStateBoundaries(keyStateBoundaries);
+		
+		return new Pair<List<IntRange>, Set<Integer>>(intRanges, convertToReal);
+	
+	}
+	
+	public void writeRealAttributes(Set<Integer> convertToReal) {
+		Iterator<IdentificationKeyCharacter> keyChars = _dataSet.identificationKeyCharacterIterator();
+		while (keyChars.hasNext()) {
+			IdentificationKeyCharacter keyChar = keyChars.next();
+			
+			boolean converted = convertToReal.contains(keyChar.getCharacterNumber());
+			if (keyChar.getCharacterType() == CharacterType.RealNumeric || converted) {	
+			    writeRealAttributes(keyChar.getFilteredCharacterNumber(), keyChar.getCharacter(), converted);
+			}
+		}
+	}
+	
+	public void writeTextAttributes() {
+		Iterator<IdentificationKeyCharacter> keyChars = _dataSet.identificationKeyCharacterIterator();
+		while (keyChars.hasNext()) {
+			IdentificationKeyCharacter keyChar = keyChars.next();
+			if (keyChar.getCharacterType().isText()) {
+				writeTextAttributes(keyChar.getFilteredCharacterNumber(), keyChar.getCharacter());
+			}	
+		}
 	}
 	
 	private void writeMultiStateAttributes(IdentificationKeyCharacter character) {
@@ -351,7 +404,7 @@ public class IntkeyItemsFileWriter {
 		for (int i=1; i<=_dataSet.getNumberOfFilteredItems(); i++) {
 			
 			NumericAttribute attribute = (NumericAttribute)_dataSet.getAttribute(i, unfilteredCharNumber);
-			if (attribute == null || attribute.isUnknown() || attribute.isInapplicable() || attribute.isVariable()) {
+			if (attribute == null || attribute.isCodedUnknown() || attribute.isInapplicable() || attribute.isVariable()) {
 				FloatRange range = new FloatRange(Float.MAX_VALUE);
 				values.add(range);
 				if (isInapplicable(attribute)) {
@@ -362,10 +415,13 @@ public class IntkeyItemsFileWriter {
 			List<NumericRange> ranges = attribute.getNumericValue();
 			// This can happen if the attribute has a comment but no value.
 			if (ranges.isEmpty()) {
-				FloatRange range = new FloatRange(Float.MAX_VALUE);
+				FloatRange range = new FloatRange(-Float.MAX_VALUE);
 				values.add(range);
+				continue;
 			}
 			Range useRange;
+			float min = Float.MAX_VALUE;
+			float max = -Float.MIN_VALUE;
 			for (NumericRange range : ranges) {
 				if (_context.hasAbsoluteError(unfilteredCharNumber)) {
 					range.setAbsoluteError(_context.getAbsoluteError(unfilteredCharNumber));
@@ -379,31 +435,39 @@ public class IntkeyItemsFileWriter {
 				else {
 					useRange = range.getFullRange();
 				}
-				FloatRange floatRange = new FloatRange(useRange.getMinimumFloat(), useRange.getMaximumFloat());
-				values.add(floatRange);
+				min = Math.min(min, useRange.getMinimumFloat());
+				max = Math.max(max, useRange.getMaximumFloat());
+				
 			}
+			FloatRange floatRange = new FloatRange(min, max);
+			values.add(floatRange);
 		}
-		_itemsFile.writeAttributeFloats(filteredCharNumber, inapplicableBits, values);
 		
 		Set<Float> floats = new HashSet<Float>();
 		for (FloatRange range : values) {
-			if (range.getMinimumFloat() != Float.MAX_VALUE) {
+			if (range.getMinimumFloat() != Float.MAX_VALUE && 
+				range.getMinimumFloat() != -Float.MAX_VALUE	) {
 				floats.add(range.getMinimumFloat());
 			}
 			else {
-				if (!wasInteger) {
+				if (range.getMinimumFloat() == -Float.MAX_VALUE) {
 				floats.add(0f);  // For CONFOR compatibility, seems wrong.
 				}
 			}
-			if (range.getMaximumFloat() != Float.MAX_VALUE) {
+			if (range.getMaximumFloat() != Float.MAX_VALUE &&
+			    range.getMinimumFloat() != -Float.MAX_VALUE	){
 				floats.add(range.getMaximumFloat());
 			}
 			else{ 
-				if (!wasInteger) {
+				if (range.getMinimumFloat() == -Float.MAX_VALUE) {
 				floats.add(1.0f);   // For CONFOR compatibility, seems wrong.
 				}
 			}
 		}
+		List<Float> boundaries = new ArrayList<Float>(floats);
+		Collections.sort(boundaries);
+		_itemsFile.writeAttributeFloats(filteredCharNumber, inapplicableBits, values, boundaries);
+		
 		return floats;
 	}
 	
@@ -481,10 +545,17 @@ public class IntkeyItemsFileWriter {
 	public void writeOmitOr() {
 		List<Boolean> booleans = new ArrayList<Boolean>(_dataSet.getNumberOfFilteredCharacters());
 		Iterator<FilteredCharacter> characters = _dataSet.filteredCharacters();
+		boolean omitOrPresent = false;
 		while (characters.hasNext()) {
-			booleans.add(_context.isOrOmmitedForCharacter(characters.next().getCharacterNumber()));
+			boolean omitOr = _context.isOrOmmitedForCharacter(characters.next().getCharacterNumber());
+			if (omitOr) {
+				omitOrPresent = true;
+			}
+			booleans.add(omitOr);
 		}
-		_itemsFile.writeOmitOr(booleans);
+		if (omitOrPresent) {
+			_itemsFile.writeOmitOr(booleans);
+		}
 	}
 	
 	public void writeUseControllingFirst() {
