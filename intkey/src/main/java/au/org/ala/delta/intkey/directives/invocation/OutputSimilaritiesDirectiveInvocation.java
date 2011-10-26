@@ -73,7 +73,7 @@ public class OutputSimilaritiesDirectiveInvocation extends IntkeyDirectiveInvoca
     public boolean execute(IntkeyContext context) throws IntkeyDirectiveInvocationException {
         if (_useGlobalMatchValues) {
             _matchType = context.getMatchType();
-            _matchUnknowns = context.getMatchUnkowns();
+            _matchUnknowns = context.getMatchUnknowns();
             _matchInapplicables = context.getMatchInapplicables();
         }
 

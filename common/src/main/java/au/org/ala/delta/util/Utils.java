@@ -743,10 +743,10 @@ public class Utils {
                         int[] endPos = new int[1];
                         int value = strtol(new String(buff), endPos, 16);
                         if ((endPos[0] == 2) && value > 127 && outputText.charAt(srcPos - 1) == '\\') {
-                      
-                        	srcPos--;
-                        	outputText.replace(srcPos, srcPos+4, new String(new char[] { (char) value }));
-                          
+
+                            srcPos--;
+                            outputText.replace(srcPos, srcPos + 4, new String(new char[] { (char) value }));
+
                         }
                     } else if (ch == '\\' && outputText.charAt(srcPos - 1) != '\\') // Terminates
                                                                                     // RTF,
@@ -912,41 +912,47 @@ public class Utils {
         int startRange = 0;
         int previousValue = 0;
 
-        for (int i = 0; i < ints.size(); i++) {
-            int val = ints.get(i);
+        if (ints.size() == 0) {
+            return StringUtils.EMPTY;
+        } else if (ints.size() == 1) {
+            return Integer.toString(ints.get(0));
+        } else {
+            for (int i = 0; i < ints.size(); i++) {
+                int val = ints.get(i);
 
-            if (i == 0) {
-                startRange = val;
-            } else {
-                if (previousValue < val - 1) {
-                    builder.append(" ");
-                    builder.append(startRange);
+                if (i == 0) {
+                    startRange = val;
+                } else {
+                    if (previousValue < val - 1) {
+                        builder.append(" ");
+                        builder.append(startRange);
 
-                    if (previousValue != startRange) {
-                        builder.append("-");
-                        builder.append(previousValue);
+                        if (previousValue != startRange) {
+                            builder.append("-");
+                            builder.append(previousValue);
+                        }
+
+                        startRange = val;
+
                     }
 
-                    startRange = val;
-                    
-                }
+                    if (i == ints.size() - 1) {
+                        builder.append(" ");
+                        builder.append(startRange);
 
-                if (i == ints.size() - 1) {
-                    builder.append(" ");
-                    builder.append(startRange);
+                        if (val != startRange) {
+                            builder.append("-");
+                            builder.append(val);
+                        }
 
-                    if (val != startRange) {
-                        builder.append("-");
-                        builder.append(val);
+                        startRange = val;
                     }
-
-                    startRange = val;
                 }
+
+                previousValue = val;
             }
 
-            previousValue = val;
+            return builder.toString().trim();
         }
-
-        return builder.toString().trim();
     }
 }

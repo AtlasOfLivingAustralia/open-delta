@@ -1975,7 +1975,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         if (!_advancedMode && characterKeywordImages != null && !characterKeywordImages.isEmpty()) {
             ImageDialog dlg = new ImageDialog(getMainFrame(), _context.getImageSettings(), true);
             dlg.setImages(characterKeywordImages);
-            dlg.setTitle(selectCharacterKeywordsCaption);
+            dlg.setTitle(MessageFormat.format(selectCharacterKeywordsCaption, directiveName));
 
             show(dlg);
 
@@ -2028,7 +2028,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         if (!_advancedMode && taxonKeywordImages != null && !taxonKeywordImages.isEmpty()) {
             ImageDialog dlg = new ImageDialog(getMainFrame(), _context.getImageSettings(), true);
             dlg.setImages(taxonKeywordImages);
-            dlg.setTitle(selectTaxonKeywordsCaption);
+            dlg.setTitle(MessageFormat.format(selectTaxonKeywordsCaption, directiveName));
 
             show(dlg);
 
@@ -2222,7 +2222,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     public List<Object> promptForMatchSettings() {
         List<Object> retList = new ArrayList<Object>();
 
-        SetMatchPromptDialog dlg = new SetMatchPromptDialog(getMainFrame(), true, _context.getMatchInapplicables(), _context.getMatchUnkowns(), _context.getMatchType());
+        SetMatchPromptDialog dlg = new SetMatchPromptDialog(getMainFrame(), true, _context.getMatchInapplicables(), _context.getMatchUnknowns(), _context.getMatchType());
         show(dlg);
         if (dlg.wasOkButtonPressed()) {
             boolean matchUnknowns = dlg.getMatchUnknowns();

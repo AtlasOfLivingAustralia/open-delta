@@ -2,6 +2,7 @@ package au.org.ala.delta.intkey.ui;
 
 import java.awt.Dialog;
 import java.awt.Frame;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -24,7 +25,7 @@ public class CharacterKeywordSelectionDialog extends KeywordSelectionDialog {
      * 
      */
     private static final long serialVersionUID = 1417718500077724253L;
-    
+
     private List<Character> _includedCharacters;
     private List<Character> _selectedCharacters;
     private boolean _displayCharacterNumbering;
@@ -56,7 +57,7 @@ public class CharacterKeywordSelectionDialog extends KeywordSelectionDialog {
         ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(CharacterKeywordSelectionDialog.class);
         resourceMap.injectFields(this);
 
-        setTitle(String.format(title, _directiveName));
+        setTitle(MessageFormat.format(title, _directiveName));
         _selectedCharacters = new ArrayList<Character>();
 
         List<String> characterKeywords = context.getCharacterKeywords();
@@ -79,7 +80,7 @@ public class CharacterKeywordSelectionDialog extends KeywordSelectionDialog {
             _rdbtnSelectFromIncluded.setSelected(true);
             _selectFromIncluded = true;
         }
-        
+
         _displayCharacterNumbering = context.displayNumbering();
     }
 

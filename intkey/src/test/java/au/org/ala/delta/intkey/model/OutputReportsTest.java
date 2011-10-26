@@ -1,17 +1,33 @@
 package au.org.ala.delta.intkey.model;
 
 import java.io.File;
-import java.net.URL;
+import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.NotImplementedException;
 import org.junit.Test;
 
+import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.TranslateType;
 import au.org.ala.delta.intkey.directives.FileOutputDirective;
 import au.org.ala.delta.intkey.directives.OutputCharactersDirective;
 import au.org.ala.delta.intkey.directives.OutputDifferencesDirective;
 import au.org.ala.delta.intkey.directives.OutputSimilaritiesDirective;
-import au.org.ala.delta.intkey.directives.OutputSummaryDirective;
 import au.org.ala.delta.intkey.directives.OutputTaxaDirective;
+import au.org.ala.delta.model.Attribute;
+import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.CharacterDependency;
+import au.org.ala.delta.model.CharacterType;
+import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.MultiStateCharacter;
+import au.org.ala.delta.model.image.ImageSettings;
+import au.org.ala.delta.model.impl.ControllingInfo;
+import au.org.ala.delta.rtf.RTFUtils;
+import au.org.ala.delta.translation.DataSetTranslator;
+import au.org.ala.delta.translation.DataSetTranslatorFactory;
+import au.org.ala.delta.translation.PrintFile;
 
 public class OutputReportsTest extends IntkeyDatasetTestCase {
 
@@ -196,4 +212,195 @@ public class OutputReportsTest extends IntkeyDatasetTestCase {
     //
     // assertEquals(expectedOutput, reportOutput);
     // }
+
+    // public void testOutputDescribe() throws Exception {
+    // IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
+    //
+    // WrappedIntkeyDataset wrapped = new
+    // WrappedIntkeyDataset(context.getDataset());
+    //
+    // DataSetTranslatorFactory factory = new DataSetTranslatorFactory();
+    // DeltaContext deltaContext = new DeltaContext(wrapped);
+    // deltaContext.setTranslateType(TranslateType.Delta);
+    //
+    // PrintFile pf = new PrintFile(new StringBuilder());
+    //
+    // DataSetTranslator translator = factory.createTranslator(deltaContext,
+    // pf);
+    // translator.translateItems();
+    //
+    // System.out.println(pf);
+    // }
+
+    private class WrappedIntkeyDataset implements DeltaDataSet {
+
+        private IntkeyDataset _intkeyDataset;
+
+        public WrappedIntkeyDataset(IntkeyDataset intkeyDataset) {
+            _intkeyDataset = intkeyDataset;
+        }
+
+        @Override
+        public String getName() {
+            return _intkeyDataset.getHeading();
+        }
+
+        @Override
+        public void setName(String name) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Item getItem(int number) {
+            return _intkeyDataset.getTaxon(number);
+        }
+
+        @Override
+        public String getAttributeAsString(int itemNumber, int characterNumber) {
+            return _intkeyDataset.getAttribute(itemNumber, characterNumber).getValueAsString();
+        }
+
+        @Override
+        public Character getCharacter(int number) {
+            return _intkeyDataset.getCharacter(number);
+        }
+
+        @Override
+        public int getNumberOfCharacters() {
+            return _intkeyDataset.getNumberOfCharacters();
+        }
+
+        @Override
+        public int getMaximumNumberOfItems() {
+            return _intkeyDataset.getNumberOfTaxa();
+        }
+
+        @Override
+        public boolean isModified() {
+            // TODO Auto-generated method stub
+            return false;
+        }
+
+        @Override
+        public void close() {
+            // do nothing
+        }
+
+        @Override
+        public Character addCharacter(CharacterType type) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Character addCharacter(int characterNumber, CharacterType type) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void deleteCharacter(Character character) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void moveCharacter(Character character, int newCharacterNumber) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Item addItem() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Item addItem(int itemNumber) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Item addVariantItem(int parentItemNumber, int itemNumber) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Attribute addAttribute(int itemNumber, int characterNumber) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Attribute getAttribute(int itemNumber, int characterNumber) {
+            return _intkeyDataset.getAttribute(itemNumber, characterNumber);
+        }
+
+        @Override
+        public void deleteItem(Item item) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void moveItem(Item item, int newItemNumber) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void deleteState(MultiStateCharacter character, int stateNumber) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public List<Item> getUncodedItems(Character character) {
+            throw new NotImplementedException();
+        }
+
+        @Override
+        public List<Item> getItemsWithMultipleStatesCoded(MultiStateCharacter character) {
+            throw new NotImplementedException();
+        }
+
+        @Override
+        public Character changeCharacterType(Character character, CharacterType newType) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean canChangeCharacterType(Character character, CharacterType newType) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public List<CharacterDependency> getAllCharacterDependencies() {
+            throw new NotImplementedException();
+        }
+
+        @Override
+        public CharacterDependency addCharacterDependency(MultiStateCharacter owningCharacter, Set<Integer> states, Set<Integer> dependentCharacters) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void deleteCharacterDependency(CharacterDependency characterDependency) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public ImageSettings getImageSettings() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void setImageSettings(ImageSettings imageSettings) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Item itemForDescription(String description) {
+            String strippedDescription = RTFUtils.stripFormatting(description);
+            return _intkeyDataset.getTaxonByName(strippedDescription);
+        }
+
+        @Override
+        public ControllingInfo checkApplicability(Character character, Item item) {
+            throw new NotImplementedException();
+        }
+
+    }
 }

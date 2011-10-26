@@ -998,7 +998,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         return _matchInapplicables;
     }
 
-    public synchronized boolean getMatchUnkowns() {
+    public synchronized boolean getMatchUnknowns() {
         return _matchUnknowns;
     }
 
@@ -1053,6 +1053,13 @@ public class IntkeyContext extends AbstractDeltaContext {
         return retList;
     }
 
+    // Returns included characters ordered by character number
+    public synchronized List<Character> getExcludedCharacters() {
+        List<Character> excludedCharacters = _dataset.getCharacters();
+        excludedCharacters.removeAll(getIncludedCharacters());
+        return excludedCharacters;
+    }
+
     // Returns included taxa ordered by taxon number
     public synchronized List<Item> getIncludedTaxa() {
         List<Item> retList = new ArrayList<Item>();
@@ -1064,6 +1071,13 @@ public class IntkeyContext extends AbstractDeltaContext {
         Collections.sort(retList);
 
         return retList;
+    }
+
+    // Returns included taxa ordered by taxon number
+    public synchronized List<Item> getExcludedTaxa() {
+        List<Item> excludedTaxa = _dataset.getTaxa();
+        excludedTaxa.removeAll(getIncludedTaxa());
+        return excludedTaxa;
     }
 
     public synchronized void setIncludedCharacters(Set<Integer> includedCharacters) {
@@ -1434,6 +1448,18 @@ public class IntkeyContext extends AbstractDeltaContext {
             _currentOutputFileWriter.close();
             _currentOutputFile = null;
         }
+    }
+
+    public synchronized File getJournalFile() {
+        return _journalFile;
+    }
+
+    public synchronized File getLogFile() {
+        return _logFile;
+    }
+    
+    public synchronized File getOutputFile() {
+        return _currentOutputFile;
     }
 
     public synchronized List<File> getOutputFiles() {

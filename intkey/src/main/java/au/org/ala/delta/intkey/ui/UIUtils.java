@@ -39,7 +39,11 @@ public class UIUtils {
         try {
             Application app = Application.getInstance();
             String str = app.getContext().getResourceMap().getString(key);
-            return MessageFormat.format(str, arguments);
+            if (str == null) {
+                return key;
+            } else {
+                return MessageFormat.format(str, arguments);
+            }
         } catch (IllegalStateException ex) {
             // To help with unit testing, return empty string if the Swing
             // Application
