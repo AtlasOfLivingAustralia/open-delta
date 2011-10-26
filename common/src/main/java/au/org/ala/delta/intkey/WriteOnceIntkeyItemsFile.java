@@ -21,6 +21,8 @@ import au.org.ala.delta.translation.intkey.IntkeyItemsFileWriter;
  */
 public class WriteOnceIntkeyItemsFile extends BinaryKeyFile {
 
+	public static final int CONFOR_INT_MAX = (int)Math.pow(2, 29);
+	
 	private ItemsFileHeader _header;
 	
 	public WriteOnceIntkeyItemsFile(int numCharacters, int numItems, String fileName, BinFileMode mode) {
@@ -64,18 +66,13 @@ public class WriteOnceIntkeyItemsFile extends BinaryKeyFile {
 		writeStringsWithOffsetsToRecord(startRecord, descriptions);
 	}
 
-	public void writeCharacterSpecs(List<Integer> characterTypes, List<Integer> numStates, List<Float> characterReliabilities) {
+	public void writeCharacterSpecs(List<Integer> characterTypes, List<Integer> numStates, int maxStates, List<Float> characterReliabilities) {
 		checkCharacterListLength(characterTypes);
 		checkCharacterListLength(numStates);
 		checkCharacterListLength(characterReliabilities);
 		checkEmpty(_header.getRpSpec());
 		int record = nextAvailableRecord();
 		_header.setRpSpec(record);
-		
-		int maxStates = 0;
-		for (int state : numStates) {
-			maxStates = Math.max(maxStates, state);
-		}
 		_header.setMs(maxStates);
 		
 		record += writeToRecord(record, characterTypes);
@@ -102,8 +99,12 @@ public class WriteOnceIntkeyItemsFile extends BinaryKeyFile {
 		List<Integer> maxValues = new ArrayList<Integer>();
 		for (IntRange range : minMaxValues) {
 			minValues.add(range.getMinimumInteger());
-			maxValues.add(range.getMaximumInteger());
-			
+			if (range.getMaximumInteger() == CONFOR_INT_MAX) {
+				maxValues.add(-CONFOR_INT_MAX);
+			}
+			else {
+				maxValues.add(range.getMaximumInteger());
+			}
 		}
 		record += writeToRecord(record, minValues);
 		record += writeToRecord(record, maxValues);
@@ -175,8 +176,8 @@ public class WriteOnceIntkeyItemsFile extends BinaryKeyFile {
 			//               -Float.MIN_VALUE indicates uncoded unknown
 			if (range.getMinimumFloat() == Float.MAX_VALUE) {
 				// These somewhat strange values are for CONFOR compatibility
-				floats.add((float)Math.pow(2, 29));
-				floats.add(-(float)Math.pow(2, 29));
+				floats.add((float)CONFOR_INT_MAX);
+				floats.add(-(float)CONFOR_INT_MAX);
 			}
 			else if (range.getMaximumFloat() == -Float.MAX_VALUE) {
 				floats.add(1f);
@@ -210,16 +211,29 @@ public class WriteOnceIntkeyItemsFile extends BinaryKeyFile {
 		List<Integer> inapplicable = bitSetToInts(inapplicableBits, _header.getNItem());
 		record += writeToRecord(record, inapplicable);
 		
+		int maxSingle = 0;
+		int total = 0;
+		for (String value : values) {
+			total += value.length();
+			maxSingle = Math.max(maxSingle, value.length());
+		}
+		_header.setMaxSingleText(Math.max(maxSingle, _header.getMaxSingleText()));
+		_header.setTotalText(total+_header.getTotalText());
+		
 		writeStringsWithOffsetsToRecord(record, values);
 	}
 	
 	
 	public void writeKeyStateBoundariesIndex() {
-		checkEmpty(_header.getRpNkbd());
-		int indexRecord = nextAvailableRecord();
-		_header.setRpNkbd(indexRecord);
 		
-		writeToRecord(indexRecord, _keyStateBoundariesIndex);
+		checkEmpty(_header.getRpNkbd());
+		if (_keyStateBoundariesIndex != null) {
+			
+			int indexRecord = nextAvailableRecord();
+			_header.setRpNkbd(indexRecord);
+			
+			writeToRecord(indexRecord, _keyStateBoundariesIndex);
+		}
 	}
 	
 	public void writeTaxonImages(List<String> images) {

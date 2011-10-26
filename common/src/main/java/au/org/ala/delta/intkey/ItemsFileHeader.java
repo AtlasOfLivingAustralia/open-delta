@@ -9,7 +9,7 @@ public class ItemsFileHeader {
     private int _nItem;
     private int _nChar;
     private int _ms;
-    // TODO should be contants.RECORD_LENGTH_INTEGER
+    private int _maxDataSize;
     private int _lRec = 32;
     private int _rpTnam;
     private int _rpSpec;
@@ -24,6 +24,8 @@ public class ItemsFileHeader {
     private int _majorVer;
     private int _rpNkbd;
     private int _maxInt;
+    private int _maxSingleText;
+    private int _totalText;
     private int _minorVer;
     private int _taxonImageChar;
     private int _rpCimagesI;
@@ -252,12 +254,29 @@ public class ItemsFileHeader {
     }
     
     
-    public List<Integer> toInts() {
+    public int getMaxDataSize() {
+		return _maxDataSize;
+	}
+	public void setMaxDataSize(int _maxDataSize) {
+		this._maxDataSize = _maxDataSize;
+	}
+	public int getMaxSingleText() {
+		return _maxSingleText;
+	}
+	public void setMaxSingleText(int _maxSingleText) {
+		this._maxSingleText = _maxSingleText;
+	}
+	public int getTotalText() {
+		return _totalText;
+	}
+	public void setTotalText(int _totalText) {
+		this._totalText = _totalText;
+	}
+	public List<Integer> toInts() {
     	List<Integer> ints = new ArrayList<Integer>();
     	ints.add(_nItem);
     	ints.add(_nChar);
-    	ints.add(_ms);
-    	// Max dat is unused.
+    	ints.add(0);
     	ints.add(0);
     	ints.add(_lRec);
     	ints.add(_rpTnam);
@@ -273,12 +292,11 @@ public class ItemsFileHeader {
     	ints.add(_majorVer);
     	ints.add(_rpNkbd);
     	ints.add(_maxInt);
-    	// Maxtxt1
+    	
     	ints.add(0);
-    	// Maxtxt2
-    	ints.add(0);
+    	ints.add(_maxSingleText);
     	ints.add(_minorVer);
-    	// Unused (or maybe _taxonImageChar)
+    	// Unused
     	ints.add(0);
     	ints.add(_rpCimagesI);
     	ints.add(_rpTimages);

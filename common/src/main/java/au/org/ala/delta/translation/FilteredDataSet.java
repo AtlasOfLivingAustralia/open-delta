@@ -6,9 +6,11 @@ import java.util.List;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DataSetWrapper;
 import au.org.ala.delta.model.IdentificationKeyCharacter;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.ObservableDeltaDataSet;
 import au.org.ala.delta.util.IdentificationKeyCharacterIterator;
 
@@ -146,5 +148,33 @@ public class FilteredDataSet extends DataSetWrapper {
 	
 	public Iterator<Item> unfilteredItems() {
 		return new UnfilteredItemIterator();
+	}
+
+	public int getNumberOfIntegerCharacters() {
+		int count = 0;
+		Iterator<IdentificationKeyCharacter> chars = identificationKeyCharacterIterator();
+		while (chars.hasNext()) {
+			if (chars.next().getCharacterType() == CharacterType.IntegerNumeric) {
+				count++;
+			}
+		}
+		return count;
+	}
+	
+	/**
+	 * @return the maximum number of states in any character (including filtered ones), excluding 
+	 * any characters modified by the KEY STATES directive.
+	 */
+	public int getMaximumNumberOfStates() {
+		Iterator<FilteredCharacter> chars = filteredCharacters();
+		int maxStates = 0;
+		while (chars.hasNext()) {
+			Character character = chars.next().getCharacter();
+			if (character.getCharacterType().isMultistate()) {
+				MultiStateCharacter mulitStateChar = (MultiStateCharacter)character;
+				maxStates = Math.max(maxStates, mulitStateChar.getNumberOfStates());
+			}
+		}
+		return maxStates;
 	}
 }

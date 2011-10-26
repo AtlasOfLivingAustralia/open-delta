@@ -71,7 +71,8 @@ public class IntkeyItemsFileWriter {
 		writeItemDescriptions();
 		writeCharacterSpecs(result.getSecond());
 		
-		_itemsFile.writeMinMaxValues(result.getFirst());
+		writeMinMaxValues(result.getFirst());
+		
 		writeCharacterDependencies();
 		
 		_itemsFile.writeAttributeIndex();
@@ -120,7 +121,7 @@ public class IntkeyItemsFileWriter {
 			reliabilities.add((float)_context.getCharacterReliability(character.getCharacterNumber()));
 			
 		}
-		_itemsFile.writeCharacterSpecs(types, states, reliabilities);	
+		_itemsFile.writeCharacterSpecs(types, states, _dataSet.getMaximumNumberOfStates(), reliabilities);	
 	}
 	
 	
@@ -170,12 +171,12 @@ public class IntkeyItemsFileWriter {
 		
 		while (keyChars.hasNext()) {
 			IdentificationKeyCharacter keyChar = keyChars.next();
-			IntRange minMax = new IntRange(0);
+			IntRange minMax = new IntRange(WriteOnceIntkeyItemsFile.CONFOR_INT_MAX);
 				
 			if (keyChar.getCharacterType() == CharacterType.IntegerNumeric) {
-				minMax = writeIntegerAttributes(keyChar.getFilteredCharacterNumber(), keyChar.getCharacter());
-				if (minMax == null) {
-					minMax = new IntRange(0);
+				Pair<IntRange, Boolean> result = writeIntegerAttributes(keyChar.getFilteredCharacterNumber(), keyChar.getCharacter());
+				minMax = result.getFirst();
+				if (result.getSecond()) {
 					convertToReal.add(keyChar.getCharacterNumber());
 				}
 			}
@@ -185,6 +186,12 @@ public class IntkeyItemsFileWriter {
 		
 		return new Pair<List<IntRange>, Set<Integer>>(intRanges, convertToReal);
 	
+	}
+	
+	public void writeMinMaxValues(List<IntRange> minMaxValues) {
+		if (_dataSet.getNumberOfIntegerCharacters() > 0) {
+			_itemsFile.writeMinMaxValues(minMaxValues);
+		}
 	}
 	
 	public void writeRealAttributes(Set<Integer> convertToReal) {
@@ -256,15 +263,16 @@ public class IntkeyItemsFileWriter {
 	}
 	
 	
-	private IntRange writeIntegerAttributes(int filteredCharacterNumber, Character character) {
+	private Pair<IntRange, Boolean> writeIntegerAttributes(int filteredCharacterNumber, Character character) {
 		
 		// Returning null here will trigger a change from integer to real
 		// character type.
 		if (_context.getTreatIntegerCharacterAsReal(character.getCharacterId())) {
-			return null;
+			return new Pair<IntRange, Boolean>(new IntRange(0), true);
 		}
-		IntRange characterRange = determineIntegerRange(character);
-		if (characterRange != null) {
+		Pair<IntRange, Boolean> result = determineIntegerRange(character);
+		IntRange characterRange = result.getFirst();
+		if (!result.getSecond()) {
 		
 			int unfilteredCharNumber = character.getCharacterId();
 			int numStates = characterRange.getMaximumInteger()-characterRange.getMinimumInteger();
@@ -281,8 +289,6 @@ public class IntkeyItemsFileWriter {
 					attributes.add(bits);
 					continue;
 				}
-				
-				
 				
 				List<NumericRange> ranges = attribute.getNumericValue();
 				
@@ -313,11 +319,11 @@ public class IntkeyItemsFileWriter {
 			
 			_itemsFile.writeAttributeBits(filteredCharacterNumber, attributes, numStates+4);
 		}
-		return characterRange;
+		return new Pair<IntRange, Boolean>(characterRange, result.getSecond());
 	}
 	
 	
-	private IntRange determineIntegerRange(Character intChar) {
+	private Pair<IntRange, Boolean> determineIntegerRange(Character intChar) {
 		
 		Set<Integer> values = new HashSet<Integer>();
 		boolean hasMultiRangeAttribute = populateValues(intChar.getCharacterId(), values);
@@ -325,8 +331,9 @@ public class IntkeyItemsFileWriter {
 		List<Integer> orderedValues = new ArrayList<Integer>(values);
 		
 		if (orderedValues.size() == 0) {
-			return new IntRange(0);
+			return new Pair<IntRange, Boolean>(new IntRange(0), false);
 		}
+		boolean outOfRange = false;
 		Collections.sort(orderedValues);
 		
 		int min = orderedValues.get(0);
@@ -340,11 +347,13 @@ public class IntkeyItemsFileWriter {
 			}
 			
 			if (index > values.size()/2) {
-				return null;
+				outOfRange = true;
 			}
-			max = orderedValues.get(index);
+			else {
+				max = orderedValues.get(index);
+			}
 		}
-		return new IntRange(min, max);
+		return new Pair<IntRange, Boolean>( new IntRange(min, max), outOfRange);
 	}
 
 	/**
@@ -450,7 +459,7 @@ public class IntkeyItemsFileWriter {
 				floats.add(range.getMinimumFloat());
 			}
 			else {
-				if (range.getMinimumFloat() == -Float.MAX_VALUE) {
+				if (range.getMinimumFloat() == -Float.MAX_VALUE && !wasInteger) {
 				floats.add(0f);  // For CONFOR compatibility, seems wrong.
 				}
 			}
@@ -459,7 +468,7 @@ public class IntkeyItemsFileWriter {
 				floats.add(range.getMaximumFloat());
 			}
 			else{ 
-				if (range.getMinimumFloat() == -Float.MAX_VALUE) {
+				if (range.getMinimumFloat() == -Float.MAX_VALUE && !wasInteger) {
 				floats.add(1.0f);   // For CONFOR compatibility, seems wrong.
 				}
 			}
@@ -562,11 +571,13 @@ public class IntkeyItemsFileWriter {
 		Set<Integer> values = new HashSet<Integer>(_dataSet.getNumberOfFilteredCharacters());
 		Iterator<FilteredCharacter> characters = _dataSet.filteredCharacters();
 		while (characters.hasNext()) {
-			if (_context.isUseControllingCharacterFirst(characters.next().getCharacterNumber())) {
+			if (_context.isUseControllingCharacterFirst(characters.next().getCharacterNumber())) {		
 				values.add(characters.next().getCharacterNumber());
 			}
 		}
-		_itemsFile.writeUseControllingFirst(values);
+		if (!values.isEmpty()) {
+			_itemsFile.writeUseControllingFirst(values);
+		}
 	}
 
 	public void writeTaxonLinks() {
@@ -597,11 +608,16 @@ public class IntkeyItemsFileWriter {
 				values.add(filteredItemNum);
 			}
 		}
-		_itemsFile.writeOmitPeriod(values);
+		if (!values.isEmpty()) {
+			_itemsFile.writeOmitPeriod(values);
+		}
 	}
 	
 	public void writeNewParagraph() {
-		_itemsFile.writeNewParagraph(_context.getNewParagraphCharacters());
+		Set<Integer> newParagraphChars = _context.getNewParagraphCharacters();
+		if (!newParagraphChars.isEmpty()) {
+			_itemsFile.writeNewParagraph(newParagraphChars);
+		}
 	}
 	
 	public void writeNonAutoControllingChars() {
@@ -613,7 +629,9 @@ public class IntkeyItemsFileWriter {
 				values.add(filteredItemNum);
 			}
 		}
-		_itemsFile.writeNonAutoControllingChars(values);
+		if (!values.isEmpty()) {
+			_itemsFile.writeNonAutoControllingChars(values);
+		}
 	}
 	
 	public void writeSubjectForOutputFiles() {
