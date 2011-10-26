@@ -121,9 +121,14 @@ public class DeltaFormatTranslator extends AbstractDataSetTranslator {
 	
 	protected String getTextAttributeValue(Attribute attribute) {
 		String value = attribute.getValueAsString();
-		if (!value.startsWith("<")) {
-			value = "<"+value+">";
+		if (StringUtils.isNotEmpty(value)) {
+			if (!attribute.isCodedUnknown()) {
+				if (!value.startsWith("<")) {
+					value = "<"+value+">";
+				}
+			}
 		}
+		
 		return value;
 	}
 	

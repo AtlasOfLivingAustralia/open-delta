@@ -35,11 +35,6 @@ public class DeltaFormatDataSetFilter extends AbstractDataSetFilter implements D
 		
 		Attribute attribute = item.getAttribute(character);
 
-		
-		if (attribute.isUnknown()) { 
-			return false;
-		}
-		
 		if (item.isVariant()) {
 			return outputVariantAttribute((VariantItem)item, character);
 		}
