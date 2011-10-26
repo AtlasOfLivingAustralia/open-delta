@@ -74,8 +74,10 @@ public class StatusSetDirectiveInvocation extends IntkeyDirectiveInvocation {
         } else {
             diagTypeString = UIUtils.getResourceString("Status.Set.taxaDiagType");
         }
-        
+
         builder.appendText(UIUtils.getResourceString("Status.Set.diagSettings", diagLevel, diagTypeString));
+
+        builder.appendText(UIUtils.getResourceString("Status.Set.reliabilities", buildReliabilitiesString(context.getDataset().getCharacters())));
 
         Set<Character> exactCharacters = context.getExactCharacters();
         List<Integer> exactCharacterNumbers = new ArrayList<Integer>();
@@ -111,18 +113,47 @@ public class StatusSetDirectiveInvocation extends IntkeyDirectiveInvocation {
 
         return true;
     }
-    
+
     private String buildReliabilitiesString(List<Character> characters) {
         StringBuilder builder = new StringBuilder();
-        
-        int startRange;
-        int currentReliabilityValue;
-        
-        for (int i=0; i < characters.size(); i++) {
-            
+
+        int startRangeCharacterNumber = 0;
+        float rangeReliabilityValue = 0;
+        int prevCharacterNumber = 0;
+
+        for (int i = 0; i < characters.size(); i++) {
+            Character ch = characters.get(i);
+            int characterNumber = ch.getCharacterId();
+            float charReliabilityValue = ch.getReliability();
+
+            // First character
+            if (i == 0) {
+                startRangeCharacterNumber = characterNumber;
+                rangeReliabilityValue = charReliabilityValue;
+            } else if (charReliabilityValue != rangeReliabilityValue) {
+                appendReliabilityForCharacterRange(builder, startRangeCharacterNumber, prevCharacterNumber, rangeReliabilityValue);
+                startRangeCharacterNumber = characterNumber;
+                rangeReliabilityValue = charReliabilityValue;
+            }
+
+            prevCharacterNumber = characterNumber;
+
+            // Last character
+            if (i == characters.size() - 1) {
+                appendReliabilityForCharacterRange(builder, startRangeCharacterNumber, prevCharacterNumber, rangeReliabilityValue);
+            }
         }
-        
+
         return builder.toString();
     }
 
+    private void appendReliabilityForCharacterRange(StringBuilder builder, int startRange, int endRange, float reliabilityValue) {
+        if (startRange == endRange) {
+            builder.append(String.format("%d,%.1f", startRange, reliabilityValue));
+        } else {
+            builder.append(String.format("%d-%d,%.1f", startRange, endRange, reliabilityValue));
+        }
+
+        builder.append(" ");
+    }
 }
