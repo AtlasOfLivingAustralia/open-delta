@@ -14,6 +14,9 @@
  ******************************************************************************/
 package au.org.ala.delta.directives;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DirectiveSearchResult {
 
 	public enum ResultType {
@@ -22,22 +25,26 @@ public class DirectiveSearchResult {
 
 	private ResultType _resultType;
 
-	@SuppressWarnings("rawtypes")
-	private AbstractDirective _directive;
-
-    @SuppressWarnings("rawtypes")
-	public DirectiveSearchResult(ResultType resultType, AbstractDirective directive) {
+	private List<AbstractDirective<?>> _directives;
+	
+	public DirectiveSearchResult(ResultType resultType, AbstractDirective<?> directive) {
 		this._resultType = resultType;
-		this._directive = directive;
+		this._directives = new ArrayList<AbstractDirective<?>>();
+		this._directives.add(directive);
+	}
+	
+    
+	public DirectiveSearchResult(ResultType resultType, List<AbstractDirective<?>> directives) {
+		this._resultType = resultType;
+		this._directives = directives;
 	}
 
 	public ResultType getResultType() {
 		return _resultType;
 	}
-
-    @SuppressWarnings("rawtypes")
-	public AbstractDirective getDirective() {
-		return _directive;
+	
+	public List<AbstractDirective<?>> getMatches() {
+		return _directives;
 	}
 
 }

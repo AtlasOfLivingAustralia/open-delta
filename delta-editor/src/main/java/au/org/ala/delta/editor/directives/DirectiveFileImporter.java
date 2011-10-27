@@ -22,6 +22,7 @@ public class DirectiveFileImporter extends DirectiveParser<ImportContext> {
 	private boolean _importFailed;
 	
 	public DirectiveFileImporter(DirectiveImportHandler handler, Directive[] directives) {
+		getDirectiveRegistry().setNumberOfSignificantCharacters(-1);
 		_handler = handler;
 		_directives = directives;
 		_importFailed = false;

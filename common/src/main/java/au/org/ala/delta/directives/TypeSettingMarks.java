@@ -24,5 +24,9 @@ public class TypeSettingMarks extends AbstractFormattingDirective {
 		}
 	}
 	
+	@Override
+	public boolean canSpecifyTextDelimiter() {		
+		return true;
+	}
 
 }

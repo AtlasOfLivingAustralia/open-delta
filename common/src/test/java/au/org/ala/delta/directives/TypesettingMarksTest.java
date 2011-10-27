@@ -1,5 +1,7 @@
 package au.org.ala.delta.directives;
 
+import java.io.StringReader;
+
 import junit.framework.TestCase;
 
 import org.junit.Before;
@@ -36,6 +38,24 @@ public class TypesettingMarksTest extends TestCase {
 		assertEquals("mark 1", mark.getMarkText());
 		assertEquals(false, mark.getAllowLineBreaks());
 	}
+	
+	/**
+	 * Tests processing of the directive with correct data and delimiter.
+	 */
+	@Test
+	public void testSingleMarkWithDelimiter2() throws Exception {
+		String data = "*Typesetting Marks ! \n #1. <test> !mark *1!";
+		ConforDirectiveFileParser parser = ConforDirectiveFileParser.createInstance();
+		
+		parser.parse(new StringReader(data), _context);
+		
+		TypeSettingMark mark = _context.getTypeSettingMark(MarkPosition.fromId(1));
+		assertEquals(1, mark.getId());
+		assertEquals("mark *1", mark.getMarkText());
+		assertEquals(false, mark.getAllowLineBreaks());
+
+	}
+	
 	
 	/**
 	 * Tests processing of the directive with correct data and delimiter.

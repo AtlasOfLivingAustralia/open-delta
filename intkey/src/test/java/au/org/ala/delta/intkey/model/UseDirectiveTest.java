@@ -1,5 +1,6 @@
 package au.org.ala.delta.intkey.model;
 
+import java.io.StringReader;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -8,8 +9,10 @@ import java.util.Set;
 import org.apache.commons.lang.math.FloatRange;
 import org.junit.Test;
 
+import au.org.ala.delta.directives.DirectiveSearchResult;
 import au.org.ala.delta.intkey.Intkey;
 import au.org.ala.delta.intkey.directives.IntkeyDirectiveParseException;
+import au.org.ala.delta.intkey.directives.IntkeyDirectiveParser;
 import au.org.ala.delta.intkey.directives.UseDirective;
 import au.org.ala.delta.intkey.model.specimen.IntegerValue;
 import au.org.ala.delta.intkey.model.specimen.MultiStateValue;
@@ -615,6 +618,45 @@ public class UseDirectiveTest extends IntkeyDatasetTestCase {
         // while loading the data set file, so the test is
         // successful
     }
+    
+    @Test
+    public void testAdvancedUse1() throws Exception {
+        IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
+        context.setProcessingInputFile(true);
+        IntkeyDataset ds = context.getDataset();        
+        context.parseAndExecuteDirective("1,foo");
+        Character ch = context.getDataset().getCharacter(1);
+        assertEquals(((TextValue)context.getSpecimen().getValueForCharacter(ch)).getValues().get(0), "foo");
+        
+    }
+    
+    @Test
+    public void testAdvancedUse2() throws Exception {
+        IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
+        context.setProcessingInputFile(true);
+        IntkeyDataset ds = context.getDataset();        
+        context.parseAndExecuteDirective("USE 1,foo");
+        Character ch = context.getDataset().getCharacter(1);
+        assertEquals(((TextValue)context.getSpecimen().getValueForCharacter(ch)).getValues().get(0), "foo");
+    }
+    
+    @Test
+    public void testAdvancedUse3() throws Exception {
+        IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
+        context.setProcessingInputFile(true);
+        IntkeyDataset ds = context.getDataset();        
+        context.parseAndExecuteDirective("INCLUDE CHARACTERS 1-10");
+        assertEquals(10, context.getIncludedCharacters().size());
+    }
+    
+    @Test
+    public void testAdvancedUse4() throws Exception {
+        IntkeyDirectiveParser parser = IntkeyDirectiveParser.createInstance();
+        DirectiveSearchResult result = parser.getDirectiveRegistry().findDirective("I");
+        assertEquals(DirectiveSearchResult.ResultType.MoreSpecificityRequired, result.getResultType());
+    }
+    
+    
 
     // USE CC
     // Non auto cc

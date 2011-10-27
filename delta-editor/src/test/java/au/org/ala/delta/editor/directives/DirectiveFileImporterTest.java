@@ -231,14 +231,14 @@ public class DirectiveFileImporterTest extends TestCase {
 		
 		_importer = new DirectiveFileImporter(_importHandler, IntkeyDirType.IntkeyDirArray);
 		List<String> directiveControlWords = Arrays.asList(IntkeyDirType.IntkeyDirArray[IntkeyDirType.DEFINE_BUTTON].getName());
-		DirectiveSearchResult result = _importer.getDirectiveTree().findDirective(directiveControlWords);
+		DirectiveSearchResult result = _importer.getDirectiveRegistry().findDirective(directiveControlWords);
 		assertEquals(ResultType.Found, result.getResultType());
-		assertEquals(directiveControlWords, Arrays.asList(result.getDirective().getControlWords()));
+		assertEquals(directiveControlWords, Arrays.asList(result.getMatches().get(0).getControlWords()));
 		
 		directiveControlWords = Arrays.asList(IntkeyDirType.IntkeyDirArray[IntkeyDirType.COMMENT].getName());
-		result = _importer.getDirectiveTree().findDirective(directiveControlWords);
+		result = _importer.getDirectiveRegistry().findDirective(directiveControlWords);
 		assertEquals(ResultType.Found, result.getResultType());
-		assertEquals(directiveControlWords, Arrays.asList(result.getDirective().getControlWords()));
+		assertEquals(directiveControlWords, Arrays.asList(result.getMatches().get(0).getControlWords()));
 		
 	}
 }

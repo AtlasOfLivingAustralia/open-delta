@@ -71,4 +71,9 @@ public abstract class AbstractDirective<C extends AbstractDeltaContext> {
             }
         }
     }
+    
+    public boolean canSpecifyTextDelimiter() {
+    	return false;
+    }
+    
 }

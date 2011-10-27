@@ -9,10 +9,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
-import au.org.ala.delta.DirectiveTreeNode;
 import au.org.ala.delta.Logger;
-import au.org.ala.delta.Tree;
-import au.org.ala.delta.TreeNode;
 import au.org.ala.delta.directives.DirectiveSearchResult.ResultType;
 import au.org.ala.delta.directives.args.DirectiveArguments;
 
@@ -28,8 +25,13 @@ import au.org.ala.delta.directives.args.DirectiveArguments;
 public abstract class DirectiveParser<C extends AbstractDeltaContext> {
 
 	public static char DIRECTIVE_DELIMITER = '*';
+	
+	public static String ILLEGAL_TEXT_DELIMITERS = "*#<>";
+	
 	private final static String _blank = " \n\r";
-	protected Tree directiveTree = new Tree();
+	// protected Tree directiveTree = new Tree();
+
+	protected DirectiveRegistry<C> _registry = new DirectiveRegistry<C>();
 
 	private List<DirectiveParserObserver> _observers = new ArrayList<DirectiveParserObserver>();
 
@@ -41,16 +43,17 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
 		_observers.remove(o);
 	}
 
-	public Tree getDirectiveTree() {
-		return directiveTree;
+	@SuppressWarnings("unchecked")
+	protected void registerDirective(AbstractDirective<?> dir) {
+		_registry.registerDirective((AbstractDirective<C>) dir);
 	}
 
-	protected void registerDirective(AbstractDirective<?> dir) {
-		directiveTree.addDirective(dir);
+	public DirectiveRegistry<C> getDirectiveRegistry() {
+		return _registry;
 	}
 
 	public void parse(File file, C context) throws IOException {
-		
+
 		FileInputStream fileIn = new FileInputStream(file);
 		InputStreamReader reader = new InputStreamReader(fileIn, context.getFileEncoding());
 		ParsingContext pc = context.newParsingContext();
@@ -63,6 +66,7 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
 		doParse(reader, context, pc);
 	}
 
+	@SuppressWarnings("unchecked")
 	protected void doParse(Reader reader, C context, ParsingContext pc) throws IOException {
 
 		StringBuilder currentData = new StringBuilder();
@@ -70,24 +74,53 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
 		int prev = ' ';
 		pc.setCurrentLine(1);
 		StringBuilder line = new StringBuilder();
+		StringBuilder currentWord = new StringBuilder();
+
+		List<String> currentWords = new ArrayList<String>();
+
+		AbstractDirective<C> currentDirective = null;
+		boolean foundDirectiveDelimiter = false;
+
 		while (ch >= 0) {
 			if (ch == DIRECTIVE_DELIMITER && _blank.indexOf(prev) >= 0) {
-				// Finish off any existing directive
-				processDirective(currentData, context);
-				// Start a new directive
-				currentData = new StringBuilder();
-				pc.setCurrentDirectiveStartLine(pc.getCurrentLine());
-				long offset = pc.getCurrentOffset() - 1;
-				pc.setCurrentDirectiveStartOffset(offset < 0 ? 0 : offset);
+
+				// First test to see if this text is delimited...
+				if (currentDirective != null && isDelimited(currentDirective, currentData)) {
+					currentData.append((char) ch);
+				} else {
+					// Finish off any existing directive
+					if (currentDirective != null) {
+						executeDirective(currentDirective, currentData.toString(), context);
+					}
+
+					foundDirectiveDelimiter = true;
+					// Start a potentially new directive
+					currentWords.clear();
+					currentWord = new StringBuilder();
+					currentDirective = null;
+					pc.setCurrentDirectiveStartLine(pc.getCurrentLine());
+					long offset = pc.getCurrentOffset() - 1;
+					pc.setCurrentDirectiveStartOffset(offset < 0 ? 0 : offset);
+				}
+			} else if (_blank.indexOf(ch) >= 0 && currentDirective == null && foundDirectiveDelimiter) {
+				if (currentWord.length() > 0) {
+					currentWords.add(currentWord.toString());
+					currentData.append((char) ch);
+					currentWord = new StringBuilder();
+					DirectiveSearchResult result = _registry.findDirective(currentWords);
+					if (result.getResultType() == ResultType.Found) {
+						currentData = new StringBuilder();
+						currentDirective = (AbstractDirective<C>) result.getMatches().get(0);
+					}
+				}
 			} else {
+				currentWord.append((char) ch);
 				currentData.append((char) ch);
 			}
 			line.append((char) ch);
 			prev = ch;
 			ch = reader.read();
 			if (ch == '\n') {
-				
-
 				pc.incrementCurrentLine();
 				pc.setCurrentOffset(0);
 				line.setLength(0);
@@ -96,14 +129,56 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
 			pc.incrementCurrentOffset();
 		}
 
-		processDirective(currentData, context);
+		if (currentDirective != null) {
+			executeDirective(currentDirective, currentData.toString(), context);
+		} else {
+			if (currentData.length() > 0) {
+				processTrailing(currentData, context);
+			}
+		}
 
 		Logger.log("Finished!");
 		context.endCurrentParsingContext();
 	}
 
+	private boolean isDelimited(AbstractDirective<C> directive, StringBuilder data) {
+
+		if (!directive.canSpecifyTextDelimiter()) {
+			return false;
+		}
+
+		// Read the first 'word'
+		String word = readWord(data, 0, true);
+		if (word.length() == 1 && ILLEGAL_TEXT_DELIMITERS.indexOf(word.charAt(0)) < 0) {
+			char delim = word.charAt(0);
+			boolean inDelim = false;
+			for (int i = data.indexOf(word) + 1; i < data.length(); ++i) {
+				if (data.charAt(i) == delim) {
+					inDelim = !inDelim;
+				}
+			}
+			return inDelim;
+		}
+
+		return false;
+	}
+
+	private void executeDirective(AbstractDirective<C> directive, String data, C context) {
+		try {
+			for (DirectiveParserObserver o : _observers) {
+				o.preProcess(directive, data);
+			}
+			doProcess(context, directive, data);
+			for (DirectiveParserObserver o : _observers) {
+				o.postProcess(directive);
+			}
+		} catch (Exception ex) {
+			handleDirectiveProcessingException(context, directive, ex);
+		}
+	}
+
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	protected AbstractDirective processDirective(StringBuilder data, C context) {
+	protected void processTrailing(StringBuilder data, C context) {
 		if (data.length() > 0) {
 
 			// Try and find the directive handler for this data...
@@ -111,12 +186,12 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
 			List<String> controlWords = new ArrayList<String>();
 
 			while (i < data.length()) {
-				String word = readWord(data, i);
+				String word = readWord(data, i, true);
 				controlWords.add(word);
-				DirectiveSearchResult result = directiveTree.findDirective(controlWords);
+				DirectiveSearchResult result = _registry.findDirective(controlWords);
 				if (result.getResultType() == ResultType.Found) {
-					AbstractDirective d = result.getDirective();
-					
+					AbstractDirective d = result.getMatches().get(0);
+
 					// do something with the directive...
 					try {
 						String dd;
@@ -125,33 +200,22 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
 						} else {
 							dd = data.substring(i + word.length() + 1);
 						}
-						// String dd = data.substring(i + word.length() +
-						// 1).trim();
-						for (DirectiveParserObserver o : _observers) {
-							o.preProcess(d, dd);
-						}
-						doProcess(context, d, dd);
-						for (DirectiveParserObserver o : _observers) {
-							o.postProcess(d);
-						}
+
+						executeDirective(d, dd, context);
 					} catch (Exception ex) {
 						handleDirectiveProcessingException(context, d, ex);
 					}
-					return d;
-
 				} else if (result.getResultType() == ResultType.NotFound) {
 					handleUnrecognizedDirective(context, controlWords);
-					return null;
 				}
 				i += word.length() + 1;
 			}
 		}
-		return null;
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	protected void doProcess(C context, AbstractDirective d, String dd) throws ParseException, Exception {
-		
+
 		d.parse(context, dd);
 		DirectiveArguments args = d.getDirectiveArgs();
 		d.process(context, args);
@@ -161,9 +225,20 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
 
 	protected abstract void handleDirectiveProcessingException(C context, AbstractDirective<C> d, Exception ex);
 
-	private String readWord(StringBuilder buf, int start) {
+	private String readWord(StringBuilder buf, int start, boolean ignoreLeadingSpace) {
 		int i = start;
 		StringBuilder b = new StringBuilder();
+
+		if (ignoreLeadingSpace) {
+			while (i < buf.length()) {
+				char ch = buf.charAt(i++);
+				if (_blank.indexOf(ch) < 0) {
+					--i;
+					break;
+				}
+			}
+		}
+
 		while (i < buf.length()) {
 			char ch = buf.charAt(i++);
 			if (_blank.indexOf(ch) >= 0) {
@@ -178,17 +253,7 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
 	public void visitDirectives(final DirectiveVisitor<C> visitor) {
 
 		if (visitor != null) {
-
-			this.directiveTree.visit(new Tree.TreeVisitor() {
-				@SuppressWarnings("unchecked")
-				@Override
-				public void visit(TreeNode node) {					
-					if (node instanceof DirectiveTreeNode) {
-						DirectiveTreeNode dnode = (DirectiveTreeNode) node;						
-						visitor.visit((AbstractDirective<C>) dnode.getDirective());
-					}
-				}
-			});
+			this._registry.visitDirectives(visitor);
 		}
 
 	}
