@@ -70,11 +70,14 @@ public class ImportViewModel extends ImportExportViewModel {
 	
 	private void populateExcludedFiles(EditorViewModel model) {
 		
-		String exportPath = model.getExportPath();
-		if (StringUtils.isEmpty(exportPath)) {
-			exportPath = model.getDataSetPath();
+		if (_currentDirectory == null) {
+			String exportPath = model.getExportPath();
+			if (StringUtils.isEmpty(exportPath)) {
+				exportPath = model.getDataSetPath();
+				
+			}
+			setCurrentDirectory(new File(exportPath));
 		}
-		setCurrentDirectory(new File(exportPath));
 		
 		_excludedDirectiveFiles = new ArrayList<DirectiveFileInfo>();
 		for (File file : _currentDirectory.listFiles()) {
