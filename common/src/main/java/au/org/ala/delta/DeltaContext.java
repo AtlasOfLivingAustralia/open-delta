@@ -452,6 +452,10 @@ public class DeltaContext extends AbstractDeltaContext {
 		return _excludedItems.contains(itemNumber);
 	}
 
+	public void excludeItem(int itemNumber) {
+		_excludedItems.add(itemNumber);
+	}
+	
 	/**
 	 * Returns the heading for the supplied item as defined by the ITEM HEADINGS directive.  If no heading has
 	 * been supplied, this method returns null.

@@ -14,25 +14,23 @@
  ******************************************************************************/
 package au.org.ala.delta.directives;
 
-import java.io.File;
-
 import au.org.ala.delta.DeltaContext;
-import au.org.ala.delta.directives.args.DirectiveArguments;
+import au.org.ala.delta.directives.args.DirectiveArgType;
 
-public class InputFile extends InputFileDirective {
-
-	public InputFile() {
-		super("input", "file");
+public class ExcludeItems extends AbstractRangeListDirective<DeltaContext> {
+	
+	public ExcludeItems() {
+		super("exclude", "items");
+	}
+	
+	@Override
+	public int getArgType() {
+		return DirectiveArgType.DIRARG_ITEMLIST;
 	}
 
 	@Override
-	public void process(DeltaContext context, DirectiveArguments args) throws Exception {
-		
-		String data = args.getFirstArgumentText();
-		
-		File file = new File(context.getCurrentParsingContext().getFile().getParent(), data.trim());
-		 
-		parseFile(context, file);
+	protected void processNumber(DeltaContext context, int number) {
+		context.excludeItem(number);
 	}
 
 }

@@ -15,24 +15,31 @@
 package au.org.ala.delta.directives;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 
 import au.org.ala.delta.DeltaContext;
-import au.org.ala.delta.directives.args.DirectiveArguments;
 
-public class InputFile extends InputFileDirective {
+public abstract class InputFileDirective extends AbstractTextDirective {
 
-	public InputFile() {
-		super("input", "file");
+	public InputFileDirective(String... directive) {
+		super(directive);
 	}
 
-	@Override
-	public void process(DeltaContext context, DirectiveArguments args) throws Exception {
-		
-		String data = args.getFirstArgumentText();
-		
-		File file = new File(context.getCurrentParsingContext().getFile().getParent(), data.trim());
-		 
-		parseFile(context, file);
+	protected void parseFile(DeltaContext context, File file) {
+		try {
+			if (file.exists()) {
+				ConforDirectiveFileParser parser = ConforDirectiveFileParser.createInstance();
+				DirectiveParserObserver observer = context.getDirectiveParserObserver();
+				if (observer != null) {
+					parser.registerObserver(observer);
+				}
+				parser.parse(file, context);				
+			} else {
+				throw new FileNotFoundException(file.getName());
+			}
+		} catch (Exception ex) {
+			throw new RuntimeException(ex);
+		}
 	}
 
 }

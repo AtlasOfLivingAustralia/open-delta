@@ -20,7 +20,14 @@ public class CharacterFormatter extends Formatter {
 	}
 	
 	public String formatState(MultiStateCharacter character, int stateNumber) {
-		return formatState(character, stateNumber, _commentStrippingMode);
+		
+		CommentStrippingMode mode = _commentStrippingMode;
+		AngleBracketHandlingMode angleMode = _angleBracketHandlingMode;
+		if (_angleBracketHandlingMode == AngleBracketHandlingMode.REMOVE_SURROUNDING_REPLACE_INNER) {
+			mode = CommentStrippingMode.STRIP_ALL;
+			angleMode = AngleBracketHandlingMode.RETAIN;
+		}
+		return formatState(character, stateNumber, mode, angleMode);
 	}
 
 	
@@ -31,6 +38,16 @@ public class CharacterFormatter extends Formatter {
 	 * @return a String describing the state.
 	 */
 	public String formatState(MultiStateCharacter character, int stateNumber, CommentStrippingMode commentStrippingMode) {
+		return formatState(character, stateNumber, commentStrippingMode, _angleBracketHandlingMode);	
+	}
+	
+	/**
+	 * Formats a character state like <number>. <state text>.
+	 * @param character the character
+	 * @param stateNumber the number of the state to format.
+	 * @return a String describing the state.
+	 */
+	public String formatState(MultiStateCharacter character, int stateNumber, CommentStrippingMode commentStrippingMode, AngleBracketHandlingMode angleMode) {
 		StringBuilder state = new StringBuilder();
 		if (_includeNumber) {
 			state.append(stateNumber).append(". ");
@@ -41,14 +58,26 @@ public class CharacterFormatter extends Formatter {
 		return state.toString();
 	}
 
+
 	public String formatCharacterDescription(Character character) {
-		return formatCharacterDescription(character, _commentStrippingMode);
+		CommentStrippingMode mode = _commentStrippingMode;
+		AngleBracketHandlingMode angleMode = _angleBracketHandlingMode;
+		if (_angleBracketHandlingMode == AngleBracketHandlingMode.REMOVE_SURROUNDING_REPLACE_INNER) {
+			mode = CommentStrippingMode.STRIP_ALL;
+			angleMode = AngleBracketHandlingMode.RETAIN;
+		}
+		return formatCharacterDescription(character, mode, angleMode);
 	}
 	
 	public String formatCharacterDescription(Character character, CommentStrippingMode commentStrippingMode) {
 
+		return formatCharacterDescription(character, commentStrippingMode, _angleBracketHandlingMode);
+	}
+	
+	public String formatCharacterDescription(Character character, CommentStrippingMode commentStrippingMode, AngleBracketHandlingMode angleBracketMode) {
+
 		String description = character.getDescription();
-		String formattedDescription = defaultFormat(description, commentStrippingMode, _angleBracketHandlingMode, _stripFormatting, _capitaliseFirstWord);
+		String formattedDescription = defaultFormat(description, commentStrippingMode, angleBracketMode, _stripFormatting, _capitaliseFirstWord);
 		
 		if (_includeNumber) {
 			formattedDescription = character.getCharacterId()+". "+formattedDescription;

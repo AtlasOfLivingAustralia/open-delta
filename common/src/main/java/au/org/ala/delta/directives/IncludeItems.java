@@ -14,25 +14,46 @@
  ******************************************************************************/
 package au.org.ala.delta.directives;
 
-import java.io.File;
+import java.util.HashSet;
+import java.util.Set;
 
 import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.directives.args.DirectiveArguments;
 
-public class InputFile extends InputFileDirective {
-
-	public InputFile() {
-		super("input", "file");
+/**
+ * Implements the INCLUDE ITEMS directive.
+ */
+public class IncludeItems extends AbstractRangeListDirective<DeltaContext> {
+	
+	private Set<Integer> _includedItems;
+	
+	public IncludeItems() {
+		super("include", "items");
+	}
+	
+	@Override
+	public int getArgType() {
+		return DirectiveArgType.DIRARG_ITEMLIST;
+	}
+	
+	
+	@Override
+	public void process(DeltaContext context, DirectiveArguments directiveArguments) throws Exception {
+		_includedItems = new HashSet<Integer>();
+		super.process(context, directiveArguments);
+		
+		for (int i=1; i<=context.getMaximumNumberOfItems(); i++) {
+			if (!_includedItems.contains(i)) {
+				context.excludeItem(i);
+			}
+		}
 	}
 
 	@Override
-	public void process(DeltaContext context, DirectiveArguments args) throws Exception {
+	protected void processNumber(DeltaContext context, int number) {
 		
-		String data = args.getFirstArgumentText();
-		
-		File file = new File(context.getCurrentParsingContext().getFile().getParent(), data.trim());
-		 
-		parseFile(context, file);
+		_includedItems.add(number);
 	}
 
 }

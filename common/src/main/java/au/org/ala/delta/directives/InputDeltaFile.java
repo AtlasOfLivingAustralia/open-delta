@@ -16,23 +16,44 @@ package au.org.ala.delta.directives;
 
 import java.io.File;
 
+import org.apache.commons.lang.StringUtils;
+
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.args.DirectiveArguments;
 
-public class InputFile extends InputFileDirective {
+/**
+ * Similar to INPUT FILE but if the file doesn't exist in the current directory
+ * it checks an environment variable then a folder.
+ */
+public class InputDeltaFile extends InputFileDirective {
 
-	public InputFile() {
-		super("input", "file");
+	public static final String DELTA_ENV_VARIABLE = "DELTA";
+	
+	public InputDeltaFile() {
+		super("input", "delta", "file");
 	}
 
 	@Override
 	public void process(DeltaContext context, DirectiveArguments args) throws Exception {
 		
-		String data = args.getFirstArgumentText();
+		String fileName = args.getFirstArgumentText().trim();
+		String parent = context.getCurrentParsingContext().getFile().getParent();
+		File file = new File(parent, fileName);
 		
-		File file = new File(context.getCurrentParsingContext().getFile().getParent(), data.trim());
+		if (!file.exists()) {
+			file = lookInDELTADirectory(fileName);
+		}
 		 
 		parseFile(context, file);
+	}
+	
+	private File lookInDELTADirectory(String fileName) {
+		String deltaDir = System.getenv(DELTA_ENV_VARIABLE);
+		if (StringUtils.isBlank(deltaDir)) {
+			deltaDir = "DELTA";
+		}
+		
+		return new File(deltaDir);
 	}
 
 }

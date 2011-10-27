@@ -99,8 +99,15 @@ public class FormattedTextTypeSetter extends PlainTextTypeSetter {
 	}
 	
 	protected void writeTypeSettingMark(MarkPosition mark) {
-		
-		writeTypeSettingMark(_typeSettingMarks.get(mark.getId()).getMarkText());
+		TypeSettingMark typesettingMark = _typeSettingMarks.get(mark.getId());
+		if (typesettingMark != null) {
+			writeTypeSettingMark(typesettingMark.getMarkText());
+		}
+	}
+	
+	protected boolean hasTypeSettingMark(MarkPosition mark) {
+		TypeSettingMark typesettingMark = _typeSettingMarks.get(mark.getId());
+		return typesettingMark != null;
 	}
 	
 	public void beforeItemHeading() {
@@ -114,7 +121,12 @@ public class FormattedTextTypeSetter extends PlainTextTypeSetter {
 	
 	public void beforeItemName() {
 		if (!_firstItemInFile) {
-			writeTypeSettingMark(MarkPosition.BEFORE_ITEM_NAME);
+			if (hasTypeSettingMark(MarkPosition.BEFORE_ITEM_NAME)) {
+				writeTypeSettingMark(MarkPosition.BEFORE_ITEM_NAME);
+			}
+			else {
+				writeTypeSettingMark(MarkPosition.BEFORE_ITEM_NAME_AT_START_OF_FILE);
+			}
 		}
 		_firstItemInFile = false;
 	}
