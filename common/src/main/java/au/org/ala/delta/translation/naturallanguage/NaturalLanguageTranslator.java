@@ -280,8 +280,16 @@ public class NaturalLanguageTranslator extends AbstractDataSetTranslator {
         int minLength = Math.min(master.length(), text.length());
 
         int i = 0;
+        int spaceIndex = 0;
         while (i < minLength && master.charAt(i) == text.charAt(i)) {
+        	if (master.charAt(i) == ' ') {
+        		spaceIndex = i;
+        	}
             i++;
+        }
+        // Don't match partial words.
+        if (i != spaceIndex + 1) {
+        	i = spaceIndex;
         }
         return text.substring(i);
     }
