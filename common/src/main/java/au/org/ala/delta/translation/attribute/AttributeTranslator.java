@@ -21,12 +21,15 @@ public abstract class AttributeTranslator {
 	private Map<String, String> _separators;
 	protected StringBuilder _translatedValue;
 	protected AttributeFormatter _attributeFormatter;
+	protected boolean _omitOr;
 
-	public AttributeTranslator(AttributeFormatter formatter) {
+
+	public AttributeTranslator(AttributeFormatter formatter, boolean omitOr) {
 		_separators = new HashMap<String, String>();
 		_separators.put("&", "and");
 		_separators.put("-", "to");
 		_attributeFormatter = formatter;
+		_omitOr = omitOr;
 	}
 
 	/**
@@ -48,7 +51,10 @@ public abstract class AttributeTranslator {
 			String nextValue = commentedValues(commentedValues.get(i));
 
 			if (valueOutput && StringUtils.isNotEmpty(nextValue)) {
-				_translatedValue.append(", or ");
+				_translatedValue.append(", ");
+				if (!_omitOr) {
+					_translatedValue.append(Words.word(Word.OR)+" ");
+				}
 			}
 			valueOutput = valueOutput | StringUtils.isNotEmpty(nextValue);
 			_translatedValue.append(nextValue);

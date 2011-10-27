@@ -28,8 +28,13 @@ public class NumericAttributeTranslator extends AttributeTranslator {
 	/** Omit the space in between a numeric attribute and the units */
 	private boolean _omitSpaceBeforeUnits;
 	
-	public NumericAttributeTranslator(NumericCharacter<?> character, ItemListTypeSetter typeSetter, AttributeFormatter formatter, boolean omitSpaceBeforeUnits) {
-		super(formatter);
+	public NumericAttributeTranslator(
+			NumericCharacter<?> character, 
+			ItemListTypeSetter typeSetter, 
+			AttributeFormatter formatter, 
+			boolean omitSpaceBeforeUnits,
+			boolean omitOr) {
+		super(formatter, omitOr);
 		_character = character;
 		_formatter = new CharacterFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.RETAIN, true, false);
 		_typeSetter = typeSetter;

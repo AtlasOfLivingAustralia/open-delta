@@ -13,15 +13,11 @@ import au.org.ala.delta.model.IdentificationKeyCharacter.KeyState;
 import au.org.ala.delta.model.IdentificationKeyCharacter.MultiStateKeyState;
 import au.org.ala.delta.model.IdentificationKeyCharacter.NumericKeyState;
 import au.org.ala.delta.model.MultiStateCharacter;
-import au.org.ala.delta.model.NumericCharacter;
-import au.org.ala.delta.translation.FormatterFactory;
-import au.org.ala.delta.translation.PlainTextTypeSetter;
 import au.org.ala.delta.translation.Words;
 import au.org.ala.delta.translation.Words.Word;
 import au.org.ala.delta.translation.attribute.AttributeTranslator;
+import au.org.ala.delta.translation.attribute.AttributeTranslatorFactory;
 import au.org.ala.delta.translation.attribute.CommentedValueList.Values;
-import au.org.ala.delta.translation.attribute.MultiStateAttributeTranslator;
-import au.org.ala.delta.translation.attribute.NumericAttributeTranslator;
 
 /**
  * Translates a state defined by the KEY STATES directive into a natural
@@ -32,10 +28,11 @@ public class KeyStateTranslator {
 	private static final BigDecimal MIN_VALUE = new BigDecimal(-Float.MAX_VALUE);
 	private static final BigDecimal MAX_VALUE = new BigDecimal(Float.MAX_VALUE);
 	
-	private FormatterFactory _formatterFactory;
+	private AttributeTranslatorFactory _attributeTranslatorFactory;
 
-	public KeyStateTranslator(FormatterFactory formatterFactory) {
-		_formatterFactory = formatterFactory;
+	public KeyStateTranslator(AttributeTranslatorFactory translatorFactory) {
+		_attributeTranslatorFactory = translatorFactory;
+		
 	}
 
 	public String translateState(IdentificationKeyCharacter keyChar, int stateNumber) {
@@ -96,9 +93,7 @@ public class KeyStateTranslator {
 			}
 		}
 
-		AttributeTranslator at = new MultiStateAttributeTranslator((MultiStateCharacter) keyChar.getCharacter(),
-				_formatterFactory.createCharacterFormatter(), _formatterFactory.createAttributeFormatter());
-
+		AttributeTranslator at = _attributeTranslatorFactory.translatorFor(keyChar.getCharacter());
 		Values values = new Values(states, separator);
 		return at.translateValues(values);
 	}
@@ -137,9 +132,8 @@ public class KeyStateTranslator {
 			}
 		} 
 
-		AttributeTranslator at = new NumericAttributeTranslator(
-				(NumericCharacter<?>) keyChar.getCharacter(), new PlainTextTypeSetter(null),
-				_formatterFactory.createAttributeFormatter(), false);
+		AttributeTranslator at = _attributeTranslatorFactory.translatorFor(keyChar.getCharacter());
+		
 
 		StringBuffer result = new StringBuffer();
 		if (StringUtils.isNotBlank((values.getPrefix()))) {

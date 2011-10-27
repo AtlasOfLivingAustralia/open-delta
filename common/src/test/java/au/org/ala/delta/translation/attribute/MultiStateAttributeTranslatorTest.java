@@ -38,7 +38,7 @@ public class MultiStateAttributeTranslatorTest extends TestCase {
 		_multiStateCharacter.setState(6, "State 6");
 		AttributeFormatter attributeFormatter = new AttributeFormatter(false, true, CommentStrippingMode.RETAIN);
 		CharacterFormatter characterFormatter = new CharacterFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.RETAIN, true, false);
-		_translator = new MultiStateAttributeTranslator(_multiStateCharacter, characterFormatter, attributeFormatter);
+		_translator = new MultiStateAttributeTranslator(_multiStateCharacter, characterFormatter, attributeFormatter, false);
 	}
 	
 	/**

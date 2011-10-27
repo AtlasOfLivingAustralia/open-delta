@@ -18,6 +18,7 @@ import au.org.ala.delta.model.IdentificationKeyCharacter;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.impl.DefaultDataSet;
 import au.org.ala.delta.translation.FormatterFactory;
+import au.org.ala.delta.translation.attribute.AttributeTranslatorFactory;
 import au.org.ala.delta.translation.key.KeyStateTranslator;
 
 public class KeyStateTranslatorTest extends TestCase {
@@ -43,8 +44,8 @@ public class KeyStateTranslatorTest extends TestCase {
 		char5.setState(5, "state 5");
 		
 		DeltaContext context = new DeltaContext();
-		FormatterFactory formatterFactory = new FormatterFactory(context);
-		_translator = new KeyStateTranslator(formatterFactory);
+		AttributeTranslatorFactory attrFactory = new AttributeTranslatorFactory(context);
+		_translator = new KeyStateTranslator(attrFactory);
 	}
 	
 	@Test

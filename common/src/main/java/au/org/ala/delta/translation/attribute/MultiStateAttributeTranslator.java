@@ -16,8 +16,12 @@ public class MultiStateAttributeTranslator extends AttributeTranslator {
 	/** Knows how to format character states */
 	private CharacterFormatter _formatter;
 	
-	public MultiStateAttributeTranslator(MultiStateCharacter character, CharacterFormatter characterFormatter, AttributeFormatter formatter) {
-		super(formatter);
+	public MultiStateAttributeTranslator(
+			MultiStateCharacter character, 
+			CharacterFormatter characterFormatter, 
+			AttributeFormatter formatter,
+			boolean omitOr) {
+		super(formatter, omitOr);
 		_character = character;
 		_formatter = characterFormatter;
 	}

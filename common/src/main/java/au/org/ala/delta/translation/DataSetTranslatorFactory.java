@@ -7,6 +7,7 @@ import au.org.ala.delta.model.format.AttributeFormatter;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.model.format.ItemFormatter;
+import au.org.ala.delta.translation.attribute.AttributeTranslatorFactory;
 import au.org.ala.delta.translation.delta.DeltaFormatDataSetFilter;
 import au.org.ala.delta.translation.delta.DeltaFormatTranslator;
 import au.org.ala.delta.translation.dist.DistTranslator;
@@ -80,7 +81,12 @@ public class DataSetTranslatorFactory {
 		CharacterFormatter charFormatter = formatterFactory.createCharacterFormatter(false, false, CommentStrippingMode.RETAIN);
 		ItemFormatter itemFormatter = formatterFactory.createItemFormatter(null, CommentStrippingMode.STRIP_ALL, false);
 		FilteredDataSet dataSet = new FilteredDataSet(context, new NexusDataSetFilter(context));
-		KeyStateTranslator keyStateTranslator = new KeyStateTranslator(formatterFactory);
+		AttributeTranslatorFactory attributeTranslatorFactory = new AttributeTranslatorFactory(
+				context, 
+				charFormatter,
+				formatterFactory.createAttributeFormatter(),
+				null);
+		KeyStateTranslator keyStateTranslator = new KeyStateTranslator(attributeTranslatorFactory);
 		return new NexusTranslator(context, dataSet, printFile, keyStateTranslator, charFormatter, itemFormatter);
 	}
 	

@@ -13,8 +13,6 @@ import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateAttribute;
-import au.org.ala.delta.model.MultiStateCharacter;
-import au.org.ala.delta.model.NumericCharacter;
 import au.org.ala.delta.model.format.AttributeFormatter;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.ItemFormatter;
@@ -26,10 +24,8 @@ import au.org.ala.delta.translation.Words;
 import au.org.ala.delta.translation.Words.Word;
 import au.org.ala.delta.translation.attribute.AttributeParser;
 import au.org.ala.delta.translation.attribute.AttributeTranslator;
+import au.org.ala.delta.translation.attribute.AttributeTranslatorFactory;
 import au.org.ala.delta.translation.attribute.CommentedValueList.Values;
-import au.org.ala.delta.translation.attribute.MultiStateAttributeTranslator;
-import au.org.ala.delta.translation.attribute.NumericAttributeTranslator;
-import au.org.ala.delta.translation.attribute.TextAttributeTranslator;
 
 /**
  * The NaturalLanguageTranslator is responsible for turning a DELTA data set
@@ -44,7 +40,8 @@ public class NaturalLanguageTranslator extends AbstractDataSetTranslator {
     protected ItemFormatter _itemFormatter;
     private CharacterFormatter _characterFormatter;
     private AttributeFormatter _attributeFormatter;
-
+    private AttributeTranslatorFactory _attributeTranslatorFactory;
+    
     public NaturalLanguageTranslator(
     		DeltaContext context, 
     		DataSetFilter filter,
@@ -61,6 +58,8 @@ public class NaturalLanguageTranslator extends AbstractDataSetTranslator {
         _itemFormatter = itemFormatter;
         _characterFormatter = characterFormatter;
         _attributeFormatter = attributeFormatter;
+        _attributeTranslatorFactory = new AttributeTranslatorFactory(
+        		context, _characterFormatter, _attributeFormatter, _typeSetter);
     }
 
   
@@ -296,7 +295,7 @@ public class NaturalLanguageTranslator extends AbstractDataSetTranslator {
         	return;
         }
         AttributeParser parser = new AttributeParser();
-        AttributeTranslator translator = translatorFor(character);
+        AttributeTranslator translator = _attributeTranslatorFactory.translatorFor(character);
 
         String value = attribute.getValueAsString();
 
@@ -314,17 +313,6 @@ public class NaturalLanguageTranslator extends AbstractDataSetTranslator {
         _typeSetter.afterAttribute(attribute);
         _characterOutputSinceLastPuntuation = true;
 
-    }
-
-    private AttributeTranslator translatorFor(Character character) {
-        if (character instanceof MultiStateCharacter) {
-            return new MultiStateAttributeTranslator((MultiStateCharacter) character, _characterFormatter, _attributeFormatter);
-        }
-        if (character instanceof NumericCharacter<?>) {
-            return new NumericAttributeTranslator((NumericCharacter<?>) character, _typeSetter, _attributeFormatter, _context.getOmitSpaceBeforeUnits());
-        }
-
-        return new TextAttributeTranslator(_attributeFormatter);
     }
 
     private boolean _newParagraph;

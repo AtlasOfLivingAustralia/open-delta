@@ -11,8 +11,8 @@ import au.org.ala.delta.model.format.AttributeFormatter;
  */
 public class TextAttributeTranslator extends AttributeTranslator {
 
-	public TextAttributeTranslator(AttributeFormatter formatter) {
-		super(formatter);
+	public TextAttributeTranslator(AttributeFormatter formatter, boolean omitOr) {
+		super(formatter, omitOr);
 	}
 	
 	@Override
