@@ -40,8 +40,8 @@ public abstract class AbstractRangeListDirective<C extends AbstractDeltaContext>
 	@Override
 	public void parse(C context, String data) throws ParseException {
 		_args = new DirectiveArguments();
-		// data is a space separate list of ranges...
-		String[] ranges = data.trim().split(" ");
+		// data is a space or newline separate list of ranges...
+		String[] ranges = data.trim().split("\\s+");
 		for (String range : ranges) {
 			IntRange r = parseRange(range);
 			forEach(r, context, new IntegerFunctor<C>() {

@@ -40,7 +40,7 @@ public abstract class AbstractCharacterListDirective<C extends AbstractDeltaCont
 	@Override
 	public void parse(C context, String data) throws ParseException {
 		args = new DirectiveArguments();
-		String[] typeDescriptors = data.split(" |\\n");
+		String[] typeDescriptors = data.trim().split(" |\\n");
 		for (String typeDescriptor : typeDescriptors) {
 			typeDescriptor = typeDescriptor.trim();
 			if (CHAR_LIST_ITEM_PATTERN.matcher(typeDescriptor).matches()) {
