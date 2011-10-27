@@ -156,6 +156,7 @@ public class IntkeyContext extends AbstractDeltaContext {
     private boolean _displayInapplicables;
     private boolean _displayUnknowns;
     private boolean _displayComments;
+    private boolean _displayContinuous;
 
     private File _logFile;
     private File _journalFile;
@@ -1407,6 +1408,14 @@ public class IntkeyContext extends AbstractDeltaContext {
         updateUI();
     }
 
+    public synchronized boolean displayContinuous() {
+        return _displayContinuous;
+    }
+
+    public synchronized void setDisplayContinuous(boolean displayContinuous) {
+        this._displayContinuous = displayContinuous;
+    }
+
     public synchronized void setLogFile(File logFile) throws IOException {
         if (_logFileWriter != null) {
             _logFileWriter.flush();
@@ -1457,7 +1466,7 @@ public class IntkeyContext extends AbstractDeltaContext {
     public synchronized File getLogFile() {
         return _logFile;
     }
-    
+
     public synchronized File getOutputFile() {
         return _currentOutputFile;
     }

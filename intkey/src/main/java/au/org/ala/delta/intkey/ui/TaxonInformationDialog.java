@@ -140,7 +140,7 @@ public class TaxonInformationDialog extends IntkeyDialog {
 
         _btnMultipleImages = new JButton();
         _btnMultipleImages.setAction(actionMap.get("displayMultipleImages"));
-        _btnMultipleImages.setEnabled(false);
+        _btnMultipleImages.setEnabled(!context.displayContinuous());
         _btnPanel.add(_btnMultipleImages);
 
         _btnDeselectAll = new JButton();
@@ -403,7 +403,7 @@ public class TaxonInformationDialog extends IntkeyDialog {
 
     private void displaySelectedTaxonImage(int imageIndex) {
         Item selectedTaxon = getSelectedTaxon();
-        TaxonImageDialog dlg = new TaxonImageDialog(UIUtils.getMainFrame(), _imageSettings, _taxaWithImages, false);
+        TaxonImageDialog dlg = new TaxonImageDialog(UIUtils.getMainFrame(), _imageSettings, _taxaWithImages, false, !_context.displayContinuous());
         dlg.displayImagesForTaxon(selectedTaxon);
         dlg.showImage(imageIndex);
         dlg.setVisible(true);

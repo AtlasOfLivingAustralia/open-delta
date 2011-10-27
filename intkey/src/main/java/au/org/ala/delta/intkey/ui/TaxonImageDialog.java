@@ -30,22 +30,25 @@ public class TaxonImageDialog extends ImageDialog {
     private JMenuItem _mnuItNextTaxon;
     private JMenuItem _mnuItPreviousTaxon;
     private JMenuItem _mnuItMultipleImages;
+    
+    private boolean _multipleImagesMenuEnabled;
 
     private int _selectedTaxonIndex;
 
     private ItemFormatter _itemFormatter;
 
-    public TaxonImageDialog(Dialog owner, ImageSettings imageSettings, List<Item> taxa, boolean modal) {
+    public TaxonImageDialog(Dialog owner, ImageSettings imageSettings, List<Item> taxa, boolean modal, boolean multipleImagesMenuEnabled) {
         super(owner, imageSettings, modal);
-        init(taxa);
+        init(taxa, multipleImagesMenuEnabled);
     }
 
-    public TaxonImageDialog(Frame owner, ImageSettings imageSettings, List<Item> taxa, boolean modal) {
+    public TaxonImageDialog(Frame owner, ImageSettings imageSettings, List<Item> taxa, boolean modal, boolean multipleImagesMenuEnabled) {
         super(owner, imageSettings, modal);
-        init(taxa);
+        init(taxa, multipleImagesMenuEnabled);
     }
 
-    private void init(List<Item> taxa) {
+    private void init(List<Item> taxa, boolean multipleImagesMenuEnabled) {
+        _multipleImagesMenuEnabled = multipleImagesMenuEnabled;
         _taxa = new ArrayList<Item>(taxa);
 
         _itemFormatter = new ItemFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.RETAIN, true, false, false);
@@ -76,7 +79,6 @@ public class TaxonImageDialog extends ImageDialog {
         _mnuItMultipleImages = new JMenuItem();
         _mnuItMultipleImages.setAction(actionMap.get("displayMultipleImages"));
         _mnuControl.add(_mnuItMultipleImages);
-
     }
 
     private void displayImagesForTaxon(int taxonIndex) {
@@ -87,7 +89,7 @@ public class TaxonImageDialog extends ImageDialog {
 
         _mnuItNextTaxon.setEnabled(_selectedTaxonIndex < _taxa.size() - 1);
         _mnuItPreviousTaxon.setEnabled(_selectedTaxonIndex > 0);
-        _mnuItMultipleImages.setEnabled(selectedTaxon.getImageCount() > 1);
+        _mnuItMultipleImages.setEnabled(_multipleImagesMenuEnabled && selectedTaxon.getImageCount() > 1);
 
         updateTitle();
         fitToImage();
