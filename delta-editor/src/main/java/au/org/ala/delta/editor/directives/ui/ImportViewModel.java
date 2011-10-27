@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 import au.org.ala.delta.editor.directives.DirectiveFileInfo;
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile;
@@ -18,7 +20,7 @@ public class ImportViewModel extends ImportExportViewModel {
 	@Override
 	public void populate(EditorViewModel model) {
 		
-		populateExcludedFiles();
+		populateExcludedFiles(model);
 		
 		populateIncludedFiles(model);
 		
@@ -66,7 +68,14 @@ public class ImportViewModel extends ImportExportViewModel {
 		return _excludedDirectiveFiles.contains(file);
 	}
 	
-	private void populateExcludedFiles() {
+	private void populateExcludedFiles(EditorViewModel model) {
+		
+		String exportPath = model.getExportPath();
+		if (StringUtils.isEmpty(exportPath)) {
+			exportPath = model.getDataSetPath();
+		}
+		setCurrentDirectory(new File(exportPath));
+		
 		_excludedDirectiveFiles = new ArrayList<DirectiveFileInfo>();
 		for (File file : _currentDirectory.listFiles()) {
 			if (!file.isDirectory()) {

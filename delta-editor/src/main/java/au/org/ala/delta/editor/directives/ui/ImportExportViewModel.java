@@ -50,6 +50,7 @@ public abstract class ImportExportViewModel {
 		}
 		_excludedDirectiveFiles.remove(file);
 		_specsFile = file;
+		file.setType(DirectiveType.CONFOR);
 
 	}
 	
@@ -67,6 +68,7 @@ public abstract class ImportExportViewModel {
 		}
 		_excludedDirectiveFiles.remove(file);
 		_charactersFile = file;
+		file.setType(DirectiveType.CONFOR);
 	}
 	
 	public void moveToChars(String fileName) {
@@ -79,6 +81,7 @@ public abstract class ImportExportViewModel {
 		}
 		_excludedDirectiveFiles.remove(file);
 		_itemsFile = file;
+		file.setType(DirectiveType.CONFOR);
 	}
 
 	public void moveToItems(String fileName) {

@@ -296,6 +296,7 @@ public class ImportExportDialog extends JDialog {
 		
 		itemsFileTextField = new JTextField();
 		itemsFileTextField.setColumns(10);
+		itemsFileTextField.setEditable(false);
 		
 		moveToItemsButton = new JButton("<<");
 		GroupLayout gl_panel_2 = new GroupLayout(panel_2);
@@ -319,6 +320,7 @@ public class ImportExportDialog extends JDialog {
 		
 		charactersFileTextField = new JTextField();
 		charactersFileTextField.setColumns(10);
+		charactersFileTextField.setEditable(false);
 		
 		moveToCharsButton = new JButton("<<");
 		GroupLayout gl_panel_1 = new GroupLayout(panel_1);
@@ -342,6 +344,7 @@ public class ImportExportDialog extends JDialog {
 		
 		specificationsFileTextField = new JTextField();
 		specificationsFileTextField.setColumns(10);
+		specificationsFileTextField.setEditable(false);
 		
 		moveToSpecsButton = new JButton("<<");
 		
@@ -552,19 +555,19 @@ public class ImportExportDialog extends JDialog {
 	}
 	
 	public void moveToSpecs() {
-		String file = (String)possibleDirectivesList.getSelectedValue();
+		DirectiveFileInfo file = (DirectiveFileInfo)possibleDirectivesList.getSelectedValue();
 		_model.moveToSpecs(file);
 		updateUI();
 	}
 	
 	public void moveToChars() {
-		String file = (String)possibleDirectivesList.getSelectedValue();
+		DirectiveFileInfo file = (DirectiveFileInfo)possibleDirectivesList.getSelectedValue();
 		_model.moveToChars(file);
 		updateUI();
 	}
 	
 	public void moveToItems() {
-		String file = (String)possibleDirectivesList.getSelectedValue();
+		DirectiveFileInfo file = (DirectiveFileInfo)possibleDirectivesList.getSelectedValue();
 		_model.moveToItems(file);
 		updateUI();
 	}
