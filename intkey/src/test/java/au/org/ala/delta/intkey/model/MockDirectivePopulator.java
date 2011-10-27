@@ -14,6 +14,7 @@ import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.RealCharacter;
 import au.org.ala.delta.model.TextCharacter;
+import au.org.ala.delta.util.Pair;
 
 public class MockDirectivePopulator implements DirectivePopulator {
 
@@ -84,6 +85,11 @@ public class MockDirectivePopulator implements DirectivePopulator {
 
     @Override
     public List<Object> promptForButtonDefinition() {
+        return null;
+    }
+
+    @Override
+    public Pair<ImageDisplayMode, DisplayImagesReportType> promptForImageDisplaySettings() {
         return null;
     }
 

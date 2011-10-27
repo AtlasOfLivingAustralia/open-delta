@@ -31,7 +31,7 @@ public class IllustrateTaxaDirectiveInvocation extends IntkeyDirectiveInvocation
             return false;
         }
         
-        context.getUI().IllustrateTaxa(_taxa);
+        context.getUI().illustrateTaxa(_taxa);
         return true;
     }
 

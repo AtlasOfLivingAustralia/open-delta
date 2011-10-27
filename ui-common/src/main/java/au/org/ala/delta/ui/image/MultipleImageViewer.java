@@ -43,7 +43,7 @@ public class MultipleImageViewer extends JPanel {
         _imageViewers = new ArrayList<ImageViewer>();
         _imageViewerMap = new HashMap<String, ImageViewer>();
         _imageIds = new ArrayList<String>();
-        
+
         _selectedIndex = 0;
         _scalingMode = ScalingMode.FIXED_ASPECT_RATIO;
     }
@@ -83,12 +83,12 @@ public class MultipleImageViewer extends JPanel {
         _selectedIndex = _imageViewers.indexOf(viewer);
         _layout.show(_contentPanel, imageId);
     }
-    
+
     public void showImage(int imageIndex) {
         if (imageIndex < 0 || imageIndex > _imageViewers.size() - 1) {
             throw new IllegalArgumentException("Invalid image index");
         }
-        
+
         String imageId = _imageIds.get(imageIndex);
         showImage(imageId);
     }
@@ -113,7 +113,7 @@ public class MultipleImageViewer extends JPanel {
         List<ImageOverlay> sounds = getVisibleViewer().getViewedImage().getSounds();
         for (ImageOverlay sound : sounds) {
             try {
-                URL soundUrl = _imageSettings.findFileOnResourcePath(sound.overlayText);
+                URL soundUrl = _imageSettings.findFileOnResourcePath(sound.overlayText, false);
                 AudioPlayer.playClip(soundUrl);
             } catch (Exception e) {
                 // TODO _messageHelper.errorPlayingSound(sound.overlayText);
@@ -161,7 +161,7 @@ public class MultipleImageViewer extends JPanel {
     public void toggleHideHotSpots() {
         setHideHotSpots(!_hideHotSpots);
     }
-    
+
     public void setHideHotSpots(boolean hideHotSpots) {
         if (_hideHotSpots != hideHotSpots) {
             _hideHotSpots = hideHotSpots;
@@ -170,11 +170,11 @@ public class MultipleImageViewer extends JPanel {
             }
         }
     }
-    
+
     public void toggleHideText() {
         setHideTextOverlays(!_hideTextOverlays);
     }
-    
+
     private void setHideTextOverlays(boolean hideTextOverlays) {
         if (_hideTextOverlays != hideTextOverlays) {
             _hideTextOverlays = hideTextOverlays;

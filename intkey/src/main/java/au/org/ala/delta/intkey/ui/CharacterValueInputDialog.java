@@ -45,7 +45,7 @@ public abstract class CharacterValueInputDialog extends JDialog {
     protected CharacterFormatter _formatter;
     protected ImageSettings _imageSettings;
 
-    public CharacterValueInputDialog(Frame owner, Character ch, ImageSettings imageSettings, boolean displayNumbering) {
+    public CharacterValueInputDialog(Frame owner, Character ch, ImageSettings imageSettings, boolean displayNumbering, boolean enableImagesButton) {
         super(owner, true);
         ActionMap actionMap = Application.getInstance().getContext().getActionMap(CharacterValueInputDialog.class, this); 
         
@@ -68,7 +68,7 @@ public abstract class CharacterValueInputDialog extends JDialog {
 
         _btnImages = new JButton();
         _btnImages.setAction(actionMap.get("characterValueInputDialog_Images"));
-        if (ch.getImageCount() == 0) {
+        if (ch.getImageCount() == 0 || !enableImagesButton) {
             _btnImages.setEnabled(false);
         }
         _buttonPanel.add(_btnImages);

@@ -88,6 +88,8 @@ public class TaxonInformationDialog extends IntkeyDialog {
 
     private List<InformationDialogCommand> _cmds;
 
+    private boolean _imageDisplayEnabled;
+
     /**
      * Calls Desktop.getDesktop on a background thread as it's slow to
      * initialise
@@ -97,7 +99,7 @@ public class TaxonInformationDialog extends IntkeyDialog {
     @Resource
     String noImagesCaption;
 
-    public TaxonInformationDialog(Frame owner, List<Item> taxa, IntkeyContext context) {
+    public TaxonInformationDialog(Frame owner, List<Item> taxa, IntkeyContext context, boolean imageDisplayEnabled) {
         super(owner, false);
 
         setPreferredSize(new Dimension(550, 280));
@@ -140,7 +142,7 @@ public class TaxonInformationDialog extends IntkeyDialog {
 
         _btnMultipleImages = new JButton();
         _btnMultipleImages.setAction(actionMap.get("displayMultipleImages"));
-        _btnMultipleImages.setEnabled(!context.displayContinuous());
+        _btnMultipleImages.setEnabled(!context.displayContinuous() && imageDisplayEnabled);
         _btnPanel.add(_btnMultipleImages);
 
         _btnDeselectAll = new JButton();
@@ -217,8 +219,12 @@ public class TaxonInformationDialog extends IntkeyDialog {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() >= 2) {
-                    int selectedListIndex = _listIllustrations.getSelectedIndex();
-                    displaySelectedTaxonImage(selectedListIndex);
+                    if (_imageDisplayEnabled) {
+                        int selectedListIndex = _listIllustrations.getSelectedIndex();
+                        displaySelectedTaxonImage(selectedListIndex);
+                    } else {
+                        _context.getUI().displayErrorMessage(UIUtils.getResourceString("ImageDisplayDisabled.error"));
+                    }
                 }
             }
 
@@ -230,6 +236,7 @@ public class TaxonInformationDialog extends IntkeyDialog {
         _pnlListIllustrations.add(_sclPnIllustrations);
 
         _context = context;
+        _imageDisplayEnabled = imageDisplayEnabled;
         _definedDirectiveCommands = _context.getTaxonInformationDialogCommands();
 
         _infoSettings = _context.getInfoSettings();
@@ -371,8 +378,13 @@ public class TaxonInformationDialog extends IntkeyDialog {
         }
 
         int[] selectedImageIndicies = _listIllustrations.getSelectedIndices();
-        for (int idx : selectedImageIndicies) {
-            displaySelectedTaxonImage(idx);
+
+        if (!_imageDisplayEnabled && selectedImageIndicies.length > 0) {
+            _context.getUI().displayErrorMessage(UIUtils.getResourceString("ImageDisplayDisabled.error"));
+        } else {
+            for (int idx : selectedImageIndicies) {
+                displaySelectedTaxonImage(idx);
+            }
         }
     }
 
@@ -472,7 +484,7 @@ public class TaxonInformationDialog extends IntkeyDialog {
 
         @Override
         public void execute() {
-            URL linkFileURL = _infoSettings.findFileOnResourcePath(_linkFileName);
+            URL linkFileURL = _infoSettings.findFileOnResourcePath(_linkFileName, false);
 
             try {
                 _context.getUI().displayFile(linkFileURL, _description);

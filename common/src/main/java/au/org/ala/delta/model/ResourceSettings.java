@@ -86,7 +86,7 @@ public class ResourceSettings {
             if (imagePath.startsWith("http") || new File(imagePath).isAbsolute() || StringUtils.isEmpty(_dataSetPath)) {
                 retList.add(imagePath);
             } else {
-            	retList.add(FilenameUtils.concat(_dataSetPath, imagePath));
+                retList.add(FilenameUtils.concat(_dataSetPath, imagePath));
             }
         }
 
@@ -113,21 +113,23 @@ public class ResourceSettings {
     public void setResourcePaths(List<String> resourcePaths) {
         _resourcePaths = new ArrayList<String>(resourcePaths);
     }
-    
+
     /**
      * Checks if a file exists on the resource path.
-     * @param file the file to check.
+     * 
+     * @param file
+     *            the file to check.
      * @return true if the supplied file is on the resource path.
      */
     public boolean isOnResourcePath(File file) {
-    	String filePath = file.getParent();
-    	List<String> resourcePaths = getResourcePathLocations();
-    	for (String path : resourcePaths) {
-    		if (filePath.equals(FilenameUtils.separatorsToSystem(path))) {
-    			return true;
-    		}
-    	}
-    	return false;
+        String filePath = file.getParent();
+        List<String> resourcePaths = getResourcePathLocations();
+        for (String path : resourcePaths) {
+            if (filePath.equals(FilenameUtils.separatorsToSystem(path))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -138,9 +140,12 @@ public class ResourceSettings {
      * 
      * @param fileName
      *            The file name
+     * @param ignoreRemoteLocations
+     *            if true, any remote resource path locations (i.e. those
+     *            specified by http URLS) are ignored when searching.
      * @return A URL for the found file, or null if the file was not found.
      */
-    public URL findFileOnResourcePath(String fileName) {
+    public URL findFileOnResourcePath(String fileName, boolean ignoreRemoteLocations) {
         URL fileLocation = null;
 
         List<String> locationsToSearch = getResourcePathLocations();
@@ -153,6 +158,10 @@ public class ResourceSettings {
         for (String resourcePath : locationsToSearch) {
             try {
                 if (resourcePath.toLowerCase().startsWith("http")) {
+                    if (ignoreRemoteLocations) {
+                        continue;
+                    }
+
                     if (resourcePath.endsWith("/")) {
                         fileLocation = new URL(resourcePath + fileName);
                     } else {
@@ -203,7 +212,5 @@ public class ResourceSettings {
             _resourcePaths.add(relativePath);
         }
     }
-
-    
 
 }

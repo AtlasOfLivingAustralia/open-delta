@@ -92,7 +92,7 @@ public class ImageViewer extends ImagePanel implements LayoutManager2, ActionLis
     }
 
     protected URL findImageFile(String fileName, ImageSettings imageSettings) {
-        URL imageLocation = imageSettings.findFileOnResourcePath(fileName);
+        URL imageLocation = imageSettings.findFileOnResourcePath(fileName, false);
 
         if (imageLocation == null) {
             throw new IllegalArgumentException("Could not open image file " + fileName);

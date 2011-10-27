@@ -7,11 +7,14 @@ import java.util.Set;
 
 import org.apache.commons.lang.math.FloatRange;
 
+import au.org.ala.delta.intkey.model.DisplayImagesReportType;
+import au.org.ala.delta.intkey.model.ImageDisplayMode;
 import au.org.ala.delta.model.IntegerCharacter;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.RealCharacter;
 import au.org.ala.delta.model.TextCharacter;
+import au.org.ala.delta.util.Pair;
 
 public interface DirectivePopulator {
 
@@ -181,5 +184,7 @@ public interface DirectivePopulator {
     List<Object> promptForMatchSettings();
 
     List<Object> promptForButtonDefinition();
+    
+    Pair<ImageDisplayMode, DisplayImagesReportType> promptForImageDisplaySettings();
 
 }

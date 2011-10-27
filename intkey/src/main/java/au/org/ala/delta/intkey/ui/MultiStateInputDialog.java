@@ -40,8 +40,8 @@ public class MultiStateInputDialog extends CharacterValueInputDialog {
     @Resource
     String selectionConfirmationTitle;
 
-    public MultiStateInputDialog(Frame owner, MultiStateCharacter ch, ImageSettings imageSettings, boolean displayNumbering) {
-        super(owner, ch, imageSettings, displayNumbering);
+    public MultiStateInputDialog(Frame owner, MultiStateCharacter ch, ImageSettings imageSettings, boolean displayNumbering, boolean enableImagesButton) {
+        super(owner, ch, imageSettings, displayNumbering, enableImagesButton);
 
         ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(MultiStateInputDialog.class);
         resourceMap.injectFields(this);

@@ -32,8 +32,8 @@ public class IntegerInputDialog extends NumberInputDialog {
     @Resource
     String validationErrorTitle;
 
-    public IntegerInputDialog(Frame owner, IntegerCharacter ch, ImageSettings imageSettings, boolean displayNumbering) {
-        super(owner, ch, imageSettings, displayNumbering);
+    public IntegerInputDialog(Frame owner, IntegerCharacter ch, ImageSettings imageSettings, boolean displayNumbering, boolean enableImagesButton) {
+        super(owner, ch, imageSettings, displayNumbering, enableImagesButton);
 
         ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(IntegerInputDialog.class);
         resourceMap.injectFields(this);

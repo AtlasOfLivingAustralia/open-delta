@@ -157,6 +157,7 @@ public class IntkeyContext extends AbstractDeltaContext {
     private boolean _displayUnknowns;
     private boolean _displayComments;
     private boolean _displayContinuous;
+    private ImageDisplayMode _displayImagesMode;
 
     private File _logFile;
     private File _journalFile;
@@ -239,6 +240,8 @@ public class IntkeyContext extends AbstractDeltaContext {
         _displayInapplicables = true;
         _displayUnknowns = true;
         _displayComments = false;
+
+        _displayImagesMode = ImageDisplayMode.AUTO;
     }
 
     /**
@@ -1414,6 +1417,14 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     public synchronized void setDisplayContinuous(boolean displayContinuous) {
         this._displayContinuous = displayContinuous;
+    }
+
+    public synchronized ImageDisplayMode getImageDisplayMode() {
+        return _displayImagesMode;
+    }
+
+    public synchronized void setImageDisplayMode(ImageDisplayMode imageDisplayMode) {
+        this._displayImagesMode = imageDisplayMode;
     }
 
     public synchronized void setLogFile(File logFile) throws IOException {

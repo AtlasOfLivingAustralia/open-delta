@@ -477,7 +477,7 @@ public class ImageDetailsPanel extends JPanel {
 	public void playSound() {
 		ImageOverlay soundFile = (ImageOverlay)soundComboBox.getSelectedItem();
 		try {
-			URL soundUrl = _dataSet.getImageSettings().findFileOnResourcePath(soundFile.overlayText);
+			URL soundUrl = _dataSet.getImageSettings().findFileOnResourcePath(soundFile.overlayText, false);
 			AudioPlayer.playClip(soundUrl);
 		}
 		catch (Exception e) {

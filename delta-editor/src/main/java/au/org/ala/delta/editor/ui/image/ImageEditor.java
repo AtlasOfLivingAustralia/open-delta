@@ -433,7 +433,7 @@ public class ImageEditor extends AbstractDeltaView {
 		for (ImageOverlay sound : sounds) {
 			
 			try {
-				URL soundUrl = _model.getImageSettings().findFileOnResourcePath(sound.overlayText);
+				URL soundUrl = _model.getImageSettings().findFileOnResourcePath(sound.overlayText, false);
 				AudioPlayer.playClip(soundUrl);
 			}
 			catch (Exception e) {

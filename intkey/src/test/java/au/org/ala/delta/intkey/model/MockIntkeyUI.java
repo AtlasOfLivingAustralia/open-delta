@@ -70,11 +70,11 @@ public class MockIntkeyUI implements IntkeyUI {
     }
 
     @Override
-    public void IllustrateCharacters(List<Character> characters) {
+    public void illustrateCharacters(List<Character> characters) {
     }
 
     @Override
-    public void IllustrateTaxa(List<Item> taxa) {
+    public void illustrateTaxa(List<Item> taxa) {
     }
 
     @Override

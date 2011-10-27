@@ -31,7 +31,7 @@ public class IllustrateCharactersDirectiveInvocation extends IntkeyDirectiveInvo
             return false;
         }
         
-        context.getUI().IllustrateCharacters(_characters);
+        context.getUI().illustrateCharacters(_characters);
         return true;
     }
 

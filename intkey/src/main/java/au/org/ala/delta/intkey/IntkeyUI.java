@@ -58,9 +58,9 @@ public interface IntkeyUI {
 
     void clearToolbar();
 
-    void IllustrateCharacters(List<au.org.ala.delta.model.Character> characters);
+    void illustrateCharacters(List<au.org.ala.delta.model.Character> characters);
 
-    void IllustrateTaxa(List<Item> taxa);
+    void illustrateTaxa(List<Item> taxa);
 
     void displayContents(LinkedHashMap<String, String> contentsMap);
 
