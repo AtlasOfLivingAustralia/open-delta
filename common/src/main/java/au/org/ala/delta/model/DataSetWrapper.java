@@ -206,7 +206,11 @@ public class DataSetWrapper implements ObservableDeltaDataSet {
 	public ControllingInfo checkApplicability(Character character, Item item) {
 		return _wrappedDataSet.checkApplicability(character, item);
 	}
-    
-	
+
+	@Override
+	public boolean isUncoded(Item item, Character character) {
+		return _wrappedDataSet.isUncoded(item, character);
+	}
+   
     
 }

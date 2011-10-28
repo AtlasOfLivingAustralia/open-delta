@@ -8,8 +8,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.NotImplementedException;
 import org.junit.Test;
 
-import au.org.ala.delta.DeltaContext;
-import au.org.ala.delta.TranslateType;
 import au.org.ala.delta.intkey.directives.FileOutputDirective;
 import au.org.ala.delta.intkey.directives.OutputCharactersDirective;
 import au.org.ala.delta.intkey.directives.OutputDifferencesDirective;
@@ -25,9 +23,6 @@ import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.model.impl.ControllingInfo;
 import au.org.ala.delta.rtf.RTFUtils;
-import au.org.ala.delta.translation.DataSetTranslator;
-import au.org.ala.delta.translation.DataSetTranslatorFactory;
-import au.org.ala.delta.translation.PrintFile;
 
 public class OutputReportsTest extends IntkeyDatasetTestCase {
 
@@ -402,5 +397,11 @@ public class OutputReportsTest extends IntkeyDatasetTestCase {
             throw new NotImplementedException();
         }
 
+		@Override
+		public boolean isUncoded(Item item, Character character) {
+			 throw new NotImplementedException();
+		}
+
+        
     }
 }

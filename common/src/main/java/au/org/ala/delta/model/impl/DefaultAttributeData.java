@@ -121,7 +121,14 @@ public class DefaultAttributeData implements AttributeData {
 
 	@Override
 	public boolean isCommentOnly() {
-		throw new UnsupportedOperationException();
+		for (AttrChunk chunk : _parsedAttribute) {
+        	if ((chunk.getType() != ChunkType.CHUNK_TEXT) &&
+        	    (chunk.getType() != ChunkType.CHUNK_LONGTEXT) &&
+        	    (chunk.getType() != ChunkType.CHUNK_STOP)) {
+        		return false;
+        	}
+         }
+		return true;
 	}
 
 	@Override

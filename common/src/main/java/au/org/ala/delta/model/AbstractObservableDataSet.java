@@ -137,11 +137,33 @@ public abstract class AbstractObservableDataSet implements ObservableDeltaDataSe
 		for (int i=1; i<=getMaximumNumberOfItems(); i++) {
 			Item item = getItem(i);
 			if (!item.hasAttribute(character) && 
-				!character.checkApplicability(item).isInapplicable()) {
+				!checkApplicability(character, item).isInapplicable()) {
 				uncodedItems.add(item);
 			}
 		}
 		return uncodedItems;
+	}
+	
+	@Override
+	public boolean isUncoded(Item item, Character character) {
+		
+		// If the character has an implicit value it cannot be considered
+		// uncoded.
+		if (character.getCharacterType().isMultistate()) {
+			if (((MultiStateCharacter)character).getUncodedImplicitState() > 0) {
+				return false;
+			}
+		}
+		
+		// If the character is inapplicable for the supplied item, it can
+		// be absent and not considered uncoded.
+		if (checkApplicability(character, item).isInapplicable()) {
+			return false;
+		}
+		
+		Attribute attribute = item.getAttribute(character);
+		return ((attribute.isUnknown() && !attribute.isCodedUnknown()) || 
+			    (attribute.isComment() && !character.getCharacterType().isText()));
 	}
 	
 	@Override

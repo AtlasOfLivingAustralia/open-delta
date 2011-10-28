@@ -26,6 +26,8 @@ import au.org.ala.delta.translation.print.CharacterListTypeSetter;
 import au.org.ala.delta.translation.print.ItemDescriptionsPrinter;
 import au.org.ala.delta.translation.print.ItemNamesPrinter;
 import au.org.ala.delta.translation.print.PrintAction;
+import au.org.ala.delta.translation.print.UncodedCharactersFilter;
+import au.org.ala.delta.translation.print.UncodedCharactersPrinter;
 
 
 /**
@@ -166,7 +168,9 @@ public class DataSetTranslatorFactory {
 		case PRINT_ITEM_DESCRIPTIONS:
 			action = createItemDescriptionsPrinter(context);
 			break;
-				
+		case PRINT_UNCODED_CHARACTERS:
+			action = createUncodedCharactersPrinter(context);
+			break;	
 		default:
 			throw new UnsupportedOperationException(printAction+" is not yet implemented.");	
 		}
@@ -205,6 +209,17 @@ public class DataSetTranslatorFactory {
 		AttributeFormatter attributeFormatter = formatterFactory.createAttributeFormatter();
 		DataSetFilter filter = new DeltaFormatDataSetFilter(context);
 		return new ItemDescriptionsPrinter(context, filter, printer, itemFormatter, attributeFormatter, typeSetter);
+	}
+	
+	private PrintAction createUncodedCharactersPrinter(DeltaContext context) {
+		PrintFile printer = context.getPrintFile();
+		ItemListTypeSetter typeSetter = new TypeSetterFactory().createItemListTypeSetter(context, printer);
+		FormatterFactory formatterFactory = new FormatterFactory(context);
+		DataSetFilter filter = new UncodedCharactersFilter(context);
+		
+		ItemFormatter itemFormatter  = formatterFactory.createItemFormatter(typeSetter, false);
+		
+		return new UncodedCharactersPrinter(context, filter, printer, itemFormatter, typeSetter);
 	}
 	
 }

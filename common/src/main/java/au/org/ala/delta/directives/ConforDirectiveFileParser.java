@@ -130,7 +130,8 @@ public class ConforDirectiveFileParser extends DirectiveParser<DeltaContext> {
         instance.registerDirective(new PrintFile());
         instance.registerDirective(new PrintHeading()); 
         instance.registerDirective(new PrintItemDescriptions()); 
-        instance.registerDirective(new PrintItemNames());         
+        instance.registerDirective(new PrintItemNames());
+        instance.registerDirective(new PrintUncodedCharacters());
         instance.registerDirective(new PrintWidth());
 
         instance.registerDirective(new RegistrationSubHeading());

@@ -203,4 +203,23 @@ public interface DeltaDataSet {
 	 * in the context of the supplied Item. 
 	 */
 	public ControllingInfo checkApplicability(Character character, Item item);
+
+	/**
+	 * Checks if the value of a character has been coded for a particular item.
+	 * The rules are:
+	 * <ul>
+	 * <li>Characters that have an implicit value are never considered to 
+	 * be uncoded.</li>
+	 * <li>Characters that have been made inapplicable for the supplied item
+	 * are not considered to be uncoded.</li>
+	 * <li>Otherwise if the attribute for the character is absent or just
+	 * a comment (except for text characters) the attribute is considered 
+	 * to be uncoded.
+	 * </ul>
+	 * @param item the item to check.
+	 * @param character the character to check.
+	 * @return true if there is no attribute coded for the supplied character
+	 * and item.
+	 */
+	public boolean isUncoded(Item item, Character character);
 }
