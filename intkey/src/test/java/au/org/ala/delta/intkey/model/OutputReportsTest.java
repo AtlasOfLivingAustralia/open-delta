@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import au.org.ala.delta.intkey.directives.FileOutputDirective;
 import au.org.ala.delta.intkey.directives.OutputCharactersDirective;
+import au.org.ala.delta.intkey.directives.OutputCommentDirective;
 import au.org.ala.delta.intkey.directives.OutputDifferencesDirective;
 import au.org.ala.delta.intkey.directives.OutputSimilaritiesDirective;
 import au.org.ala.delta.intkey.directives.OutputTaxaDirective;
@@ -26,6 +27,8 @@ import au.org.ala.delta.rtf.RTFUtils;
 
 public class OutputReportsTest extends IntkeyDatasetTestCase {
 
+    String lineSeparator = System.getProperties().getProperty("line.separator");
+
     @Test
     public void testOutputCharacters() throws Exception {
         IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
@@ -39,6 +42,22 @@ public class OutputReportsTest extends IntkeyDatasetTestCase {
         String fileContents = FileUtils.readFileToString(tempFile);
 
         assertEquals("OUTPUT CHARACTERS 2-5 13", fileContents.trim());
+    }
+
+    @Test
+    public void testOutputCharactersWithComment() throws Exception {
+        IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
+
+        File tempFile = File.createTempFile("OutputReportsTest", null);
+        tempFile.deleteOnExit();
+
+        new FileOutputDirective().parseAndProcess(context, tempFile.getAbsolutePath());
+        new OutputCommentDirective().parseAndProcess(context, "comment output characters");
+        new OutputCharactersDirective().parseAndProcess(context, "habit");
+
+        String fileContents = FileUtils.readFileToString(tempFile);
+
+        assertEquals("comment output characters" + lineSeparator + "2-5 13", fileContents.trim());
     }
 
     @Test
@@ -57,6 +76,22 @@ public class OutputReportsTest extends IntkeyDatasetTestCase {
     }
 
     @Test
+    public void testOutputTaxaWithComment() throws Exception {
+        IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
+
+        File tempFile = File.createTempFile("OutputReportsTest", null);
+        tempFile.deleteOnExit();
+
+        new FileOutputDirective().parseAndProcess(context, tempFile.getAbsolutePath());
+        new OutputCommentDirective().parseAndProcess(context, "comment output taxa");
+        new OutputTaxaDirective().parseAndProcess(context, "cereals");
+
+        String fileContents = FileUtils.readFileToString(tempFile);
+
+        assertEquals("comment output taxa" + lineSeparator + "7-8 10-11 14", fileContents.trim());
+    }
+
+    @Test
     public void testOutputDifferences() throws Exception {
         IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
 
@@ -67,8 +102,26 @@ public class OutputReportsTest extends IntkeyDatasetTestCase {
         new OutputDifferencesDirective().parseAndProcess(context, "all all");
 
         String fileContents = FileUtils.readFileToString(tempFile);
+        fileContents = fileContents.trim();
 
-        assertEquals("OUTPUT DIFFERENCES\n1-5 7-9 11-13 15-16 18-20 25-28 30-31 34-35 37-41 44-54 56-82 84-87", fileContents.trim());
+        assertEquals("OUTPUT DIFFERENCES" + lineSeparator + "1-5 7-9 11-13 15-16 18-20 25-28 30-31 34-35 37-41 44-54 56-82 84-87", fileContents);
+    }
+
+    @Test
+    public void testOutputDifferencesWithComment() throws Exception {
+        IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
+
+        File tempFile = File.createTempFile("OutputReportsTest", null);
+        tempFile.deleteOnExit();
+
+        new FileOutputDirective().parseAndProcess(context, tempFile.getAbsolutePath());
+        new OutputCommentDirective().parseAndProcess(context, "comment output differences");
+        new OutputDifferencesDirective().parseAndProcess(context, "all all");
+
+        String fileContents = FileUtils.readFileToString(tempFile);
+        fileContents = fileContents.trim();
+
+        assertEquals("comment output differences" + lineSeparator + "1-5 7-9 11-13 15-16 18-20 25-28 30-31 34-35 37-41 44-54 56-82 84-87", fileContents);
     }
 
     @Test
@@ -82,8 +135,26 @@ public class OutputReportsTest extends IntkeyDatasetTestCase {
         new OutputSimilaritiesDirective().parseAndProcess(context, "all all");
 
         String fileContents = FileUtils.readFileToString(tempFile);
+        fileContents = fileContents.trim();
 
-        assertEquals("OUTPUT SIMILARITIES\n6 10 14 17 21-24 29 32-33 36 42-43 55 83", fileContents.trim());
+        assertEquals("OUTPUT SIMILARITIES" + lineSeparator + "6 10 14 17 21-24 29 32-33 36 42-43 55 83", fileContents);
+    }
+
+    @Test
+    public void testOutputSimilaritiesWithComment() throws Exception {
+        IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
+
+        File tempFile = File.createTempFile("OutputReportsTest", null);
+        tempFile.deleteOnExit();
+
+        new FileOutputDirective().parseAndProcess(context, tempFile.getAbsolutePath());
+        new OutputCommentDirective().parseAndProcess(context, "comment output similarities");
+        new OutputSimilaritiesDirective().parseAndProcess(context, "all all");
+
+        String fileContents = FileUtils.readFileToString(tempFile);
+        fileContents = fileContents.trim();
+
+        assertEquals("comment output similarities" + lineSeparator + "6 10 14 17 21-24 29 32-33 36 42-43 55 83", fileContents);
     }
 
     // TODO rework the below into regression tests. They only fail because I
@@ -397,11 +468,10 @@ public class OutputReportsTest extends IntkeyDatasetTestCase {
             throw new NotImplementedException();
         }
 
-		@Override
-		public boolean isUncoded(Item item, Character character) {
-			 throw new NotImplementedException();
-		}
+        @Override
+        public boolean isUncoded(Item item, Character character) {
+            throw new NotImplementedException();
+        }
 
-        
     }
 }

@@ -22,11 +22,16 @@ public class OutputCharactersDirectiveInvocation extends IntkeyDirectiveInvocati
         }
 
         try {
-            context.appendToOutputFile(String.format("OUTPUT CHARACTERS %s", Utils.formatIntegersAsListOfRanges(characterNumbers)));
+            if (context.getLastOutputLineWasComment()) {
+                context.setLastOutputLineWasComment(false);
+                context.appendToOutputFile(Utils.formatIntegersAsListOfRanges(characterNumbers));
+            } else {
+                context.appendToOutputFile(String.format("OUTPUT CHARACTERS %s", Utils.formatIntegersAsListOfRanges(characterNumbers)));
+            }
         } catch (IllegalStateException ex) {
             throw new IntkeyDirectiveInvocationException("NoOutputFileOpen.error");
         }
+
         return true;
     }
-
 }

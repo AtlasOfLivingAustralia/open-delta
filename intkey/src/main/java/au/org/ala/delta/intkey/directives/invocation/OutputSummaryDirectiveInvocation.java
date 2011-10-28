@@ -18,6 +18,7 @@ import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.RealCharacter;
 import au.org.ala.delta.model.TextCharacter;
 import au.org.ala.delta.util.Pair;
+import au.org.ala.delta.util.Utils;
 
 public class OutputSummaryDirectiveInvocation extends IntkeyDirectiveInvocation {
 
@@ -39,7 +40,12 @@ public class OutputSummaryDirectiveInvocation extends IntkeyDirectiveInvocation 
     public boolean execute(IntkeyContext context) throws IntkeyDirectiveInvocationException {
 
         StringBuilder builder = new StringBuilder();
-        builder.append("Output Summary\n");
+
+        if (context.getLastOutputLineWasComment()) {
+            context.setLastOutputLineWasComment(false);
+        } else {
+            builder.append("Output Summary");
+        }
 
         int columnNumber = 0;
 

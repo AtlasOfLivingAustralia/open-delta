@@ -161,6 +161,8 @@ public class IntkeyContext extends AbstractDeltaContext {
     private boolean _displayKeywords;
     private boolean _displayScaled;
 
+    private boolean _lastOutputLineWasComment;
+
     private File _logFile;
     private File _journalFile;
     private PrintWriter _logFileWriter;
@@ -1525,6 +1527,14 @@ public class IntkeyContext extends AbstractDeltaContext {
 
         _currentOutputFileWriter.println(text);
         _currentOutputFileWriter.flush();
+    }
+
+    public synchronized boolean getLastOutputLineWasComment() {
+        return _lastOutputLineWasComment;
+    }
+    
+    public synchronized boolean setLastOutputLineWasComment(boolean lastOutputLineWasComment) {
+        return _lastOutputLineWasComment = lastOutputLineWasComment;
     }
 
     /**
