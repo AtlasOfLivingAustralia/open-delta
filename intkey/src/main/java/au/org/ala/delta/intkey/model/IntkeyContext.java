@@ -160,6 +160,9 @@ public class IntkeyContext extends AbstractDeltaContext {
     private ImageDisplayMode _displayImagesMode;
     private boolean _displayKeywords;
     private boolean _displayScaled;
+    private boolean _displayEndIdentify;
+
+    private List<String> _endIdentifyCommands;
 
     private boolean _lastOutputLineWasComment;
 
@@ -246,10 +249,17 @@ public class IntkeyContext extends AbstractDeltaContext {
         _displayComments = false;
         _displayKeywords = true;
         _displayScaled = true;
+        _displayScaled = true;
 
         // TODO the setting of this should be dependent on whether the UI is in
         // normal or advanced mode.
         _displayImagesMode = ImageDisplayMode.AUTO;
+
+        // TODO the setting of this should be dependent on whether the UI is in
+        // normal or advanced mode.
+        _displayEndIdentify = true;
+
+        _endIdentifyCommands = new ArrayList<String>();
 
     }
 
@@ -541,6 +551,13 @@ public class IntkeyContext extends AbstractDeltaContext {
         }
 
         updateUI();
+
+        // If a taxon has been identified, run commands specified by the DEFINE
+        // ENDIDENTIFY directive. Only do this
+        // if DISPLAY ENDIDENTIFY is set to ON.
+        if (_displayEndIdentify && getAvailableTaxa().size() == 1) {
+            executeEndIdentifyCommands();
+        }
     }
 
     /**
@@ -1452,6 +1469,26 @@ public class IntkeyContext extends AbstractDeltaContext {
         this._displayScaled = displayScaled;
     }
 
+    public synchronized boolean displayEndIdentify() {
+        return _displayEndIdentify;
+    }
+
+    public synchronized void setDisplayEndIdentify(boolean displayEndIdentify) {
+        this._displayEndIdentify = displayEndIdentify;
+    }
+
+    public synchronized void setEndIdentifyCommands(List<String> commands) {
+        _endIdentifyCommands = new ArrayList<String>(commands);
+    }
+
+    private void executeEndIdentifyCommands() {
+        if (_endIdentifyCommands != null) {
+            for (String cmd : _endIdentifyCommands) {
+                parseAndExecuteDirective(cmd);
+            }
+        }
+    }
+
     public synchronized void setLogFile(File logFile) throws IOException {
         if (_logFileWriter != null) {
             _logFileWriter.flush();
@@ -1532,7 +1569,7 @@ public class IntkeyContext extends AbstractDeltaContext {
     public synchronized boolean getLastOutputLineWasComment() {
         return _lastOutputLineWasComment;
     }
-    
+
     public synchronized boolean setLastOutputLineWasComment(boolean lastOutputLineWasComment) {
         return _lastOutputLineWasComment = lastOutputLineWasComment;
     }
