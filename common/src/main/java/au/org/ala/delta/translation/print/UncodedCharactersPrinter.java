@@ -8,8 +8,7 @@ import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.format.ItemFormatter;
-import au.org.ala.delta.translation.AbstractDataSetTranslator;
-import au.org.ala.delta.translation.DataSetFilter;
+import au.org.ala.delta.translation.AbstractIterativeTranslator;
 import au.org.ala.delta.translation.ItemListTypeSetter;
 import au.org.ala.delta.translation.PrintFile;
 import au.org.ala.delta.translation.Words;
@@ -19,38 +18,26 @@ import au.org.ala.delta.translation.delta.DeltaWriter;
 /**
  * Writes the character list to the print file.
  */
-public class UncodedCharactersPrinter extends AbstractDataSetTranslator implements PrintAction {
+public class UncodedCharactersPrinter extends AbstractIterativeTranslator {
 	
 	private ItemListTypeSetter _typeSetter;
 	private PrintFile _printFile;
 	private ItemFormatter _itemFormatter;
-	
+	private DeltaContext _context;
 	protected List<Character> _uncodedChars;
 	private DeltaWriter _deltaWriter;
 	
 	
 	public UncodedCharactersPrinter(
 			DeltaContext context, 
-			DataSetFilter filter,
 			PrintFile printFile, 
 			ItemFormatter itemFormatter,
 			ItemListTypeSetter typeSetter) {
-		super(context, filter);
-		
 		_typeSetter = typeSetter;
 		_printFile = printFile;
 		_itemFormatter = itemFormatter;
 		_deltaWriter = new DeltaWriter();
-	}
-
-	@Override
-	public void translateCharacters() {
-		throw new UnsupportedOperationException();
-	}
-	
-	@Override
-	public void print() {
-		translateItems();
+		_context = context;
 	}
 	
 	@Override

@@ -5,7 +5,6 @@ import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.format.AttributeFormatter;
 import au.org.ala.delta.model.format.ItemFormatter;
-import au.org.ala.delta.translation.DataSetFilter;
 import au.org.ala.delta.translation.ItemListTypeSetter;
 import au.org.ala.delta.translation.PrintFile;
 import au.org.ala.delta.translation.delta.DeltaFormatTranslator;
@@ -13,31 +12,20 @@ import au.org.ala.delta.translation.delta.DeltaFormatTranslator;
 /**
  * Writes the item descriptions to the print file.
  */
-public class ItemDescriptionsPrinter extends DeltaFormatTranslator implements PrintAction {
+public class ItemDescriptionsPrinter extends DeltaFormatTranslator {
 	
 	private ItemListTypeSetter _typeSetter;
 	private AttributeFormatter _attributeFormatter;
 	
 	public ItemDescriptionsPrinter(
 			DeltaContext context,
-			DataSetFilter filter,
 			PrintFile printer,
 			ItemFormatter itemFormatter, 
 			AttributeFormatter attributeFormatter,
 			ItemListTypeSetter typeSetter) {
-		super(context, filter, printer, itemFormatter, null, null);
+		super(context, printer, itemFormatter, null, null);
 		_typeSetter = typeSetter;
 		_attributeFormatter = attributeFormatter;
-	}
-		
-	@Override
-	public void translateCharacters() {
-		throw new UnsupportedOperationException();
-	}
-	
-	@Override
-	public void print() {
-		translateItems();
 	}
 	
 	@Override

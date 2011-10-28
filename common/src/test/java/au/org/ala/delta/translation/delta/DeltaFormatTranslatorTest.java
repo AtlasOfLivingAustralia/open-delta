@@ -21,6 +21,7 @@ public class DeltaFormatTranslatorTest extends TranslatorTest {
 	protected DataSetTranslator _dataSetTranslator;
 	protected PrintFile _printer;
 	protected DataSetTranslatorFactory _factory;
+	protected PrintFile _outputFile;
 	
 	@Before
 	public void setUp() throws Exception {
@@ -29,8 +30,8 @@ public class DeltaFormatTranslatorTest extends TranslatorTest {
 		PrintStream pout = new PrintStream(_bytes, false, "UTF-8");
 		
 		_context = new DeltaContext();
-		_context.setPrintStream(pout);
-		_context.getOutputFileSelector().setPrintWidth(80);
+		_outputFile = new PrintFile(pout, 80);
+		_context.getOutputFileSelector().setOutputFile(_outputFile);
 		_factory = new DataSetTranslatorFactory();
 		
 	}

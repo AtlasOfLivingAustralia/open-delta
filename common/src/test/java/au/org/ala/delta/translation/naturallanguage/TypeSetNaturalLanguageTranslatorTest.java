@@ -16,8 +16,10 @@ import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.model.format.ItemFormatter;
+import au.org.ala.delta.translation.AbstractDataSetTranslator;
 import au.org.ala.delta.translation.DataSetFilter;
 import au.org.ala.delta.translation.FormattedTextTypeSetter;
+import au.org.ala.delta.translation.IterativeTranslator;
 import au.org.ala.delta.translation.TypeSettingAttributeFormatter;
 import au.org.ala.delta.translation.TypeSettingItemFormatter;
 
@@ -69,8 +71,9 @@ public class TypeSetNaturalLanguageTranslatorTest extends NaturalLangaugeTransla
         CharacterFormatter characterFormatter = new CharacterFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.RETAIN, false, false);
         AttributeFormatter attributeFormatter = new TypeSettingAttributeFormatter();
         DataSetFilter filter = new NaturalLanguageDataSetFilter(_context);
-		 _dataSetTranslator = new NaturalLanguageTranslator(_context, filter, _typeSetter, _printer, itemFormatter, characterFormatter, attributeFormatter);
-
+		IterativeTranslator translator = new NaturalLanguageTranslator(_context, _typeSetter, _printer, itemFormatter, characterFormatter, attributeFormatter);
+        _dataSetTranslator = new AbstractDataSetTranslator(_context, filter, translator);
+			
         _dataSetTranslator.translateItems();
         checkResult("typeset.txt");
     }
@@ -87,8 +90,9 @@ public class TypeSetNaturalLanguageTranslatorTest extends NaturalLangaugeTransla
         CharacterFormatter characterFormatter = new CharacterFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.RETAIN, false, false);
         AttributeFormatter attributeFormatter = new TypeSettingAttributeFormatter();
         DataSetFilter filter = new NaturalLanguageDataSetFilter(_context);
-        _dataSetTranslator = new NaturalLanguageTranslator(_context, filter, _typeSetter, _printer, itemFormatter, characterFormatter, attributeFormatter);
-
+        IterativeTranslator translator = new NaturalLanguageTranslator(_context, _typeSetter, _printer, itemFormatter, characterFormatter, attributeFormatter);
+        _dataSetTranslator = new AbstractDataSetTranslator(_context, filter, translator);
+		
         _dataSetTranslator.translateItems();
         checkResult("/dataset/sample/expected_results/withtypesetting.txt");
     }

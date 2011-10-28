@@ -10,7 +10,6 @@ import java.util.Set;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.DeltaContext.OutputFormat;
@@ -312,6 +311,10 @@ public class OutputFileSelector {
 		else {
 			_printFile.setPrintStream(stream);
 		}
+	}
+	
+	public void setOutputFile(PrintFile outputFile) {
+		_outputFile = outputFile;
 	}
 	
 	public PrintFile getPrintFile() {

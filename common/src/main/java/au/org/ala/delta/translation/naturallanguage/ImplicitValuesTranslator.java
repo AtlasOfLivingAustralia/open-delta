@@ -19,7 +19,7 @@ public class ImplicitValuesTranslator extends NaturalLanguageTranslator {
 	public ImplicitValuesTranslator(DeltaContext context, DataSetFilter filter, ItemListTypeSetter typeSetter,
 			PrintFile printer, ItemFormatter itemFormatter, CharacterFormatter characterFormatter,
 			AttributeFormatter attributeFormatter) {
-		super(context, filter, typeSetter, printer, itemFormatter, characterFormatter, attributeFormatter);
+		super(context, typeSetter, printer, itemFormatter, characterFormatter, attributeFormatter);
 		// TODO Auto-generated constructor stub
 	}
 

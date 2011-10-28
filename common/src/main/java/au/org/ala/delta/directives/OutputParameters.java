@@ -47,8 +47,7 @@ public class OutputParameters extends AbstractCustomDirective {
 		OutputParametersParser parser = new OutputParametersParser(context, new StringReader(data));
 		parser.parse();
 		
-		au.org.ala.delta.translation.PrintFile output = context.getOutputFileSelector().getOutputFile();
-		DataSetTranslator translator = _factory.createTranslator(context, output);
+		DataSetTranslator translator = _factory.createTranslator(context);
 		for (String outputParameter : parser.getOutputParameters()) {
 			translator.translateOutputParameter(outputParameter);
 		}

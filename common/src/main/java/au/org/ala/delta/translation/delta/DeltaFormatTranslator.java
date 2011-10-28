@@ -13,8 +13,7 @@ import au.org.ala.delta.model.NumericCharacter;
 import au.org.ala.delta.model.TextAttribute;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.ItemFormatter;
-import au.org.ala.delta.translation.AbstractDataSetTranslator;
-import au.org.ala.delta.translation.DataSetFilter;
+import au.org.ala.delta.translation.AbstractIterativeTranslator;
 import au.org.ala.delta.translation.PrintFile;
 import au.org.ala.delta.translation.attribute.AttributeParser;
 import au.org.ala.delta.translation.attribute.CommentedValueList;
@@ -27,7 +26,7 @@ import au.org.ala.delta.util.Utils;
  * ITEM DESCRIPTIONS and CHARACTER LIST directives.  It is used when the
  * TRANSLATE INTO DELTA FORMAT directive is specified.
  */
-public class DeltaFormatTranslator extends AbstractDataSetTranslator {
+public class DeltaFormatTranslator extends AbstractIterativeTranslator {
 
 	protected PrintFile _printer;
 	protected ItemFormatter _itemFormatter;
@@ -37,12 +36,10 @@ public class DeltaFormatTranslator extends AbstractDataSetTranslator {
 	
 	public DeltaFormatTranslator(
 			DeltaContext context, 
-			DataSetFilter filter,
 			PrintFile printer, 
 			ItemFormatter itemFormatter,
 			CharacterFormatter characterFormatter,
 			CharacterListTypeSetter typeSetter) {
-		super(context, filter);
 		
 		_printer = printer;
 		_printer.setIndentOnLineWrap(true);
@@ -54,6 +51,8 @@ public class DeltaFormatTranslator extends AbstractDataSetTranslator {
 	
 	@Override
 	public void beforeFirstItem() {
+		_printer.setLineWrapIndent(0);
+		_printer.setIndent(0);
 		_printer.writeBlankLines(1, 0);
 	}
 
@@ -213,13 +212,6 @@ public class DeltaFormatTranslator extends AbstractDataSetTranslator {
 		outputLine(_characterFormatter.formatState(character, stateNumber)+"/");
 	}
 	
-	@Override 
-	public void translateItems() {
-		_printer.setLineWrapIndent(0);
-		_printer.setIndent(0);
-		super.translateItems();
-	}
-
 	@Override
 	public void translateOutputParameter(String parameterName) {
 		outputLine(parameterName.replaceAll(" #", " *"));

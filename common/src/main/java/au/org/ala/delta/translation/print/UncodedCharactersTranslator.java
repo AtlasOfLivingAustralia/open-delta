@@ -4,7 +4,6 @@ import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.ItemFormatter;
-import au.org.ala.delta.translation.DataSetFilter;
 import au.org.ala.delta.translation.ItemListTypeSetter;
 import au.org.ala.delta.translation.PrintFile;
 import au.org.ala.delta.translation.Words;
@@ -14,12 +13,11 @@ public class UncodedCharactersTranslator extends UncodedCharactersPrinter {
 	private CharacterFormatter _characterFormatter;
 	public UncodedCharactersTranslator(
 			DeltaContext context, 
-			DataSetFilter filter,
 			PrintFile printFile, 
 			ItemFormatter itemFormatter,
 			CharacterFormatter characterFormatter,
 			ItemListTypeSetter typeSetter) {
-		super(context, filter, printFile, itemFormatter, typeSetter);
+		super(context, printFile, itemFormatter, typeSetter);
 		_characterFormatter = characterFormatter;
 	}
 	

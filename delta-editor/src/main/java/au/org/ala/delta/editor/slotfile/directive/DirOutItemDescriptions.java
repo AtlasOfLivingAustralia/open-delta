@@ -27,8 +27,8 @@ public class DirOutItemDescriptions extends AbstractDirOutFunctor {
 		DataSetTranslatorFactory factory = new DataSetTranslatorFactory();
 		DeltaContext context = new DeltaContext(state.getDataSet());
 		context.setTranslateType(TranslateType.Delta);
-		
-		DataSetTranslator translator = factory.createTranslator(context, state.getPrinter());
+		context.getOutputFileSelector().setOutputFile(state.getPrinter());
+		DataSetTranslator translator = factory.createTranslator(context);
 		translator.translateItems();
 	}
 

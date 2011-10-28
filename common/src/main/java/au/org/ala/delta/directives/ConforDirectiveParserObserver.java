@@ -44,7 +44,7 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
     
     @Override
     public void finishedProcessing() {
-    	processPrintActions();
+    	//processPrintActions();
     }
 
 	private void postProcessCharacters() {
@@ -59,12 +59,12 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
 		translator.translateItems();
 	}
 	
-	private void processPrintActions() {
-		for (PrintActionType actionType : _context.getPrintActions()) {
-			PrintAction action = _factory.createPrintAction(_context, actionType);
-			action.print();
-		}
-	}
+//	private void processPrintActions() {
+//		for (PrintActionType actionType : _context.getPrintActions()) {
+//			PrintAction action = _factory.createPrintAction(_context, actionType);
+//			action.print();
+//		}
+//	}
 	
 	
 }

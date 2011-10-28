@@ -13,8 +13,8 @@
 
 *INSERT REDUNDANT VARIANT ATTRIBUTES
 
-*OUTPUT FILE items.new
-
+*COMMENT OUTPUT FILE items.new
+ 
 *OUTPUT PARAMETERS 
 #SHOW Grass Genera - items with implicit values and variant attributes
        inserted.

@@ -15,7 +15,6 @@ import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageOverlay;
 import au.org.ala.delta.model.image.OverlayType;
-import au.org.ala.delta.translation.DataSetFilter;
 import au.org.ala.delta.translation.ItemListTypeSetter;
 import au.org.ala.delta.translation.PrintFile;
 import au.org.ala.delta.translation.Words.Word;
@@ -30,9 +29,9 @@ public class HtmlNaturalLanguageTranslator extends NaturalLanguageTranslator {
 	private OutputFileSelector _outputFileSelector;
 	
 	public HtmlNaturalLanguageTranslator(
-			DeltaContext context, DataSetFilter filter, ItemListTypeSetter typeSetter, PrintFile printer, ItemFormatter itemFormatter, CharacterFormatter characterFormatter,
+			DeltaContext context, ItemListTypeSetter typeSetter, PrintFile printer, ItemFormatter itemFormatter, CharacterFormatter characterFormatter,
             AttributeFormatter attributeFormatter, IndexWriter indexWriter) {
-        super(context, filter, typeSetter, printer, itemFormatter, characterFormatter, attributeFormatter);
+        super(context, typeSetter, printer, itemFormatter, characterFormatter, attributeFormatter);
         _indexWriter = indexWriter;
         Integer charForTaxonImages = context.getCharacterForTaxonImages();
 		if (charForTaxonImages != null) {
