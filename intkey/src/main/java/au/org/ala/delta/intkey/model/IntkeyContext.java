@@ -159,6 +159,7 @@ public class IntkeyContext extends AbstractDeltaContext {
     private boolean _displayContinuous;
     private ImageDisplayMode _displayImagesMode;
     private boolean _displayKeywords;
+    private boolean _displayScaled;
 
     private File _logFile;
     private File _journalFile;
@@ -242,6 +243,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         _displayUnknowns = true;
         _displayComments = false;
         _displayKeywords = true;
+        _displayScaled = true;
 
         // TODO the setting of this should be dependent on whether the UI is in
         // normal or advanced mode.
@@ -1438,6 +1440,14 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     public synchronized void setDisplayKeywords(boolean displayKeywords) {
         this._displayKeywords = displayKeywords;
+    }
+
+    public synchronized boolean displayScaled() {
+        return _displayScaled;
+    }
+
+    public synchronized void setDisplayScaled(boolean displayScaled) {
+        this._displayScaled = displayScaled;
     }
 
     public synchronized void setLogFile(File logFile) throws IOException {

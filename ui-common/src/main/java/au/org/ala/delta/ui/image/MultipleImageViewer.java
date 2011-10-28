@@ -125,8 +125,8 @@ public class MultipleImageViewer extends JPanel {
     public void replayVideo() {
     }
 
-    public void toggleScaling() {
-        if (_scalingMode == ScalingMode.NO_SCALING) {
+    public void setScaleImages(boolean scale) {
+        if (scale) {
             setScalingMode(ScalingMode.FIXED_ASPECT_RATIO);
         } else {
             setScalingMode(ScalingMode.NO_SCALING);

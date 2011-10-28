@@ -71,16 +71,16 @@ public class CharacterImageDialog extends ImageDialog {
     @Resource
     String imageForViewingOnlyMessage;
 
-    public CharacterImageDialog(Frame owner, List<Character> characters, ImageSettings imageSettings, boolean modal, boolean valuesEditable) {
-        super(owner, imageSettings, modal);
+    public CharacterImageDialog(Frame owner, List<Character> characters, ImageSettings imageSettings, boolean modal, boolean valuesEditable, boolean initScalingMode) {
+        super(owner, imageSettings, modal, initScalingMode);
         init(characters, valuesEditable);
     }
 
     /**
      * @wbp.parser.constructor
      */
-    public CharacterImageDialog(Dialog owner, List<Character> characters, ImageSettings imageSettings, boolean modal, boolean valuesEditable) {
-        super(owner, imageSettings, modal);
+    public CharacterImageDialog(Dialog owner, List<Character> characters, ImageSettings imageSettings, boolean modal, boolean valuesEditable, boolean initScalingMode) {
+        super(owner, imageSettings, modal, initScalingMode);
         init(characters, valuesEditable);
     }
 

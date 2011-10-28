@@ -415,7 +415,7 @@ public class TaxonInformationDialog extends IntkeyDialog {
 
     private void displaySelectedTaxonImage(int imageIndex) {
         Item selectedTaxon = getSelectedTaxon();
-        TaxonImageDialog dlg = new TaxonImageDialog(UIUtils.getMainFrame(), _imageSettings, _taxaWithImages, false, !_context.displayContinuous());
+        TaxonImageDialog dlg = new TaxonImageDialog(UIUtils.getMainFrame(), _imageSettings, _taxaWithImages, false, !_context.displayContinuous(), _context.displayScaled());
         dlg.displayImagesForTaxon(selectedTaxon);
         dlg.showImage(imageIndex);
         dlg.setVisible(true);

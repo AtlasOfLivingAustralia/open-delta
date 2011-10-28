@@ -102,6 +102,7 @@ public class IntkeyDirectiveParser extends DirectiveParser<IntkeyContext> {
         instance.registerDirective(new DisplayContinuousDirective());
         instance.registerDirective(new DisplayImagesDirective());
         instance.registerDirective(new DisplayKeywordsDirective());
+        instance.registerDirective(new DisplayScaledDirective());
         return instance;
     }
 

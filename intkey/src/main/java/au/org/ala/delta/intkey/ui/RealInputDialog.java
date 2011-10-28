@@ -32,8 +32,8 @@ public class RealInputDialog extends NumberInputDialog {
     @Resource
     String validationErrorTitle;
 
-    public RealInputDialog(Frame owner, RealCharacter ch, ImageSettings imageSettings, boolean displayNumbering, boolean enableImagesButton) {
-        super(owner, ch, imageSettings, displayNumbering, enableImagesButton);
+    public RealInputDialog(Frame owner, RealCharacter ch, ImageSettings imageSettings, boolean displayNumbering, boolean enableImagesButton, boolean imagesStartScaled) {
+        super(owner, ch, imageSettings, displayNumbering, enableImagesButton, imagesStartScaled);
 
         ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(RealInputDialog.class);
         resourceMap.injectFields(this);
@@ -66,7 +66,7 @@ public class RealInputDialog extends NumberInputDialog {
 
     @Override
     void handleBtnImagesClicked() {
-        CharacterImageDialog dlg = new CharacterImageDialog(this, Arrays.asList(new au.org.ala.delta.model.Character[] { _ch }), _imageSettings, true, true);
+        CharacterImageDialog dlg = new CharacterImageDialog(this, Arrays.asList(new au.org.ala.delta.model.Character[] { _ch }), _imageSettings, true, true, _imagesStartScaled);
         dlg.setVisible(true);
 
         try {

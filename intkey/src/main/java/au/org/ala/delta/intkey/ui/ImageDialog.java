@@ -93,20 +93,47 @@ public class ImageDialog extends IntkeyDialog implements OverlaySelectionObserve
 
     private List<Image> _images;
 
+    private boolean _scaleImages;
+
     /**
-     * @wbp.parser.constructor
+     * ctor
+     * 
+     * @param owner
+     *            parent window
+     * @param imageSettings
+     *            Intkey image settings - contains lookup paths etc.
+     * @param modal
+     *            if true, dialog is modal
+     * @param imagesStartScaled
+     *            initial value of scaling mode (can be changed using the menu).
+     *            If true, images will be scaled, if false, they will not be
+     *            scaled.
      */
-    public ImageDialog(Frame owner, ImageSettings imageSettings, boolean modal) {
+    public ImageDialog(Frame owner, ImageSettings imageSettings, boolean modal, boolean imagesStartScaled) {
         super(owner, modal);
-        init(imageSettings);
+        init(imageSettings, imagesStartScaled);
     }
 
-    public ImageDialog(Dialog owner, ImageSettings imageSettings, boolean modal) {
+    /**
+     * ctor
+     * 
+     * @param owner
+     *            parent window
+     * @param imageSettings
+     *            Intkey image settings - contains lookup paths etc.
+     * @param modal
+     *            if true, dialog is modal
+     * @param imagesStartScaled
+     *            initial value of scaling mode (can be changed using the menu).
+     *            If true, images will be scaled, if false, they will not be
+     *            scaled.
+     */
+    public ImageDialog(Dialog owner, ImageSettings imageSettings, boolean modal, boolean imagesStartScaled) {
         super(owner, modal);
-        init(imageSettings);
+        init(imageSettings, imagesStartScaled);
     }
 
-    private void init(ImageSettings imageSettings) {
+    private void init(ImageSettings imageSettings, boolean imagesStartScaled) {
         _imageSettings = imageSettings;
 
         _okButtonPressed = false;
@@ -116,6 +143,8 @@ public class ImageDialog extends IntkeyDialog implements OverlaySelectionObserve
         _selectedValues = new HashSet<Pair<String, String>>();
 
         _imageDescriptionFormatter = new Formatter(CommentStrippingMode.RETAIN, AngleBracketHandlingMode.RETAIN, true, false);
+
+        _scaleImages = imagesStartScaled;
 
         buildMenu();
         getContentPane().setLayout(new GridLayout(0, 1, 0, 0));
@@ -162,6 +191,7 @@ public class ImageDialog extends IntkeyDialog implements OverlaySelectionObserve
         _mnuItScaled.setAction(actionMap.get("toggleScaling"));
         _mnuItScaled.getAction().putValue(javax.swing.Action.SELECTED_KEY, true);
         _mnuWindow.add(_mnuItScaled);
+        _mnuItScaled.setSelected(_scaleImages);
 
         _mnuItHideText = new JCheckBoxMenuItem();
         _mnuItHideText.setAction(actionMap.get("toggleHideText"));
@@ -233,6 +263,8 @@ public class ImageDialog extends IntkeyDialog implements OverlaySelectionObserve
 
         _mnuItNextImage.setEnabled(_images.size() > 1);
         _mnuItPreviousImage.setEnabled(false);
+
+        _multipleImageViewer.setScaleImages(_scaleImages);
 
         this.pack();
     }
@@ -315,7 +347,8 @@ public class ImageDialog extends IntkeyDialog implements OverlaySelectionObserve
 
     @Action
     public void toggleScaling() {
-        _multipleImageViewer.toggleScaling();
+        _scaleImages = !_scaleImages;
+        _multipleImageViewer.setScaleImages(_scaleImages);
     }
 
     @Action

@@ -32,8 +32,8 @@ public class IntegerInputDialog extends NumberInputDialog {
     @Resource
     String validationErrorTitle;
 
-    public IntegerInputDialog(Frame owner, IntegerCharacter ch, ImageSettings imageSettings, boolean displayNumbering, boolean enableImagesButton) {
-        super(owner, ch, imageSettings, displayNumbering, enableImagesButton);
+    public IntegerInputDialog(Frame owner, IntegerCharacter ch, ImageSettings imageSettings, boolean displayNumbering, boolean enableImagesButton, boolean imagesStartScaled) {
+        super(owner, ch, imageSettings, displayNumbering, enableImagesButton, imagesStartScaled);
 
         ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(IntegerInputDialog.class);
         resourceMap.injectFields(this);
@@ -60,7 +60,7 @@ public class IntegerInputDialog extends NumberInputDialog {
 
     @Override
     void handleBtnImagesClicked() {
-        CharacterImageDialog dlg = new CharacterImageDialog(this, Arrays.asList(new au.org.ala.delta.model.Character[] { _ch }), _imageSettings, true, true);
+        CharacterImageDialog dlg = new CharacterImageDialog(this, Arrays.asList(new au.org.ala.delta.model.Character[] { _ch }), _imageSettings, true, true, _imagesStartScaled);
         dlg.setVisible(true);
 
         try {

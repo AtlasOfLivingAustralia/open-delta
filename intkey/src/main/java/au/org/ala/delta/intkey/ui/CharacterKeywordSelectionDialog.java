@@ -139,7 +139,7 @@ public class CharacterKeywordSelectionDialog extends KeywordSelectionDialog {
     protected void imagesBtnPressed() {
         List<Image> characterKeywordImages = _context.getDataset().getCharacterKeywordImages();
         if (characterKeywordImages != null && !characterKeywordImages.isEmpty()) {
-            ImageDialog dlg = new ImageDialog(this, _context.getImageSettings(), true);
+            ImageDialog dlg = new ImageDialog(this, _context.getImageSettings(), true, _context.displayScaled());
             dlg.setImages(characterKeywordImages);
             dlg.setVisible(true);
 

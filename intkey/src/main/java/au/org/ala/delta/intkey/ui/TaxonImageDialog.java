@@ -37,13 +37,13 @@ public class TaxonImageDialog extends ImageDialog {
 
     private ItemFormatter _itemFormatter;
 
-    public TaxonImageDialog(Dialog owner, ImageSettings imageSettings, List<Item> taxa, boolean modal, boolean multipleImagesMenuEnabled) {
-        super(owner, imageSettings, modal);
+    public TaxonImageDialog(Dialog owner, ImageSettings imageSettings, List<Item> taxa, boolean modal, boolean multipleImagesMenuEnabled, boolean initScalingMode) {
+        super(owner, imageSettings, modal, initScalingMode);
         init(taxa, multipleImagesMenuEnabled);
     }
 
-    public TaxonImageDialog(Frame owner, ImageSettings imageSettings, List<Item> taxa, boolean modal, boolean multipleImagesMenuEnabled) {
-        super(owner, imageSettings, modal);
+    public TaxonImageDialog(Frame owner, ImageSettings imageSettings, List<Item> taxa, boolean modal, boolean multipleImagesMenuEnabled, boolean initScalingMode) {
+        super(owner, imageSettings, modal, initScalingMode);
         init(taxa, multipleImagesMenuEnabled);
     }
 

@@ -40,8 +40,8 @@ public class MultiStateInputDialog extends CharacterValueInputDialog {
     @Resource
     String selectionConfirmationTitle;
 
-    public MultiStateInputDialog(Frame owner, MultiStateCharacter ch, ImageSettings imageSettings, boolean displayNumbering, boolean enableImagesButton) {
-        super(owner, ch, imageSettings, displayNumbering, enableImagesButton);
+    public MultiStateInputDialog(Frame owner, MultiStateCharacter ch, ImageSettings imageSettings, boolean displayNumbering, boolean enableImagesButton, boolean imagesStartScaled) {
+        super(owner, ch, imageSettings, displayNumbering, enableImagesButton, imagesStartScaled);
 
         ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(MultiStateInputDialog.class);
         resourceMap.injectFields(this);
@@ -94,7 +94,7 @@ public class MultiStateInputDialog extends CharacterValueInputDialog {
 
     @Override
     void handleBtnImagesClicked() {
-        CharacterImageDialog dlg = new CharacterImageDialog(this, Arrays.asList(new au.org.ala.delta.model.Character[] { _ch }), _imageSettings, true, true);
+        CharacterImageDialog dlg = new CharacterImageDialog(this, Arrays.asList(new au.org.ala.delta.model.Character[] { _ch }), _imageSettings, true, true, _imagesStartScaled);
         dlg.setVisible(true);
 
         Set<Integer> selectedStates = dlg.getSelectedStates();

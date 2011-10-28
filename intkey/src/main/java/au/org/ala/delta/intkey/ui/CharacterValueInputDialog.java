@@ -31,7 +31,7 @@ public abstract class CharacterValueInputDialog extends JDialog {
      * 
      */
     private static final long serialVersionUID = 361631735179369565L;
-    
+
     protected JPanel _buttonPanel;
     protected JButton _btnImages;
     protected JButton _btnFullText;
@@ -45,23 +45,26 @@ public abstract class CharacterValueInputDialog extends JDialog {
     protected CharacterFormatter _formatter;
     protected ImageSettings _imageSettings;
 
-    public CharacterValueInputDialog(Frame owner, Character ch, ImageSettings imageSettings, boolean displayNumbering, boolean enableImagesButton) {
+    protected boolean _imagesStartScaled;
+
+    public CharacterValueInputDialog(Frame owner, Character ch, ImageSettings imageSettings, boolean displayNumbering, boolean enableImagesButton, boolean imagesStartScaled) {
         super(owner, true);
-        ActionMap actionMap = Application.getInstance().getContext().getActionMap(CharacterValueInputDialog.class, this); 
-        
+        ActionMap actionMap = Application.getInstance().getContext().getActionMap(CharacterValueInputDialog.class, this);
+
         getContentPane().setLayout(new BorderLayout(0, 0));
 
         setResizable(false);
         setPreferredSize(new Dimension(600, 200));
-        
+
+        _imagesStartScaled = imagesStartScaled;
         _ch = ch;
         _imageSettings = imageSettings;
-        
+
         _buttonPanel = new JPanel();
         _buttonPanel.setBorder(new EmptyBorder(0, 20, 10, 20));
         getContentPane().add(_buttonPanel, BorderLayout.SOUTH);
         _buttonPanel.setLayout(new GridLayout(0, 4, 5, 2));
-        
+
         JButton _btnOk = new JButton();
         _btnOk.setAction(actionMap.get("characterValueInputDialog_OK"));
         _buttonPanel.add(_btnOk);
@@ -84,7 +87,7 @@ public abstract class CharacterValueInputDialog extends JDialog {
         _buttonPanel.add(_btnSearch);
 
         _btnCancel = new JButton();
-        _btnCancel.setAction(actionMap.get("characterValueInputDialog_Cancel"));        
+        _btnCancel.setAction(actionMap.get("characterValueInputDialog_Cancel"));
         _buttonPanel.add(_btnCancel);
 
         _btnNotes = new JButton();
@@ -101,78 +104,80 @@ public abstract class CharacterValueInputDialog extends JDialog {
         _pnlMain.setBorder(new EmptyBorder(10, 10, 10, 10));
         getContentPane().add(_pnlMain, BorderLayout.CENTER);
         _pnlMain.setLayout(new BorderLayout(0, 0));
-        
+
         _lblCharacterDescription = new JLabel();
         _lblCharacterDescription.setBorder(new EmptyBorder(0, 0, 5, 0));
         _formatter = new CharacterFormatter(displayNumbering, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REMOVE_SURROUNDING_REPLACE_INNER, true, false);
         _lblCharacterDescription.setText(_formatter.formatCharacterDescription(_ch));
         _pnlMain.add(_lblCharacterDescription, BorderLayout.NORTH);
-        
+
         setLocationRelativeTo(owner);
     }
 
     abstract void handleBtnOKClicked();
+
     abstract void handleBtnCancelClicked();
+
     abstract void handleBtnImagesClicked();
-    
+
     private String generateRtfFullCharacterText() {
         CharacterFormatter f = new CharacterFormatter(true, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REMOVE_SURROUNDING_REPLACE_INNER, true, false);
-        
+
         RTFBuilder builder = new RTFBuilder();
         builder.appendText(f.formatCharacterDescription(_ch));
-        
+
         builder.increaseIndent();
-        
+
         if (_ch instanceof MultiStateCharacter) {
             MultiStateCharacter msChar = (MultiStateCharacter) _ch;
-            for (int i=0; i < msChar.getNumberOfStates(); i++) {
-                builder.appendText(f.formatState(msChar, i+1));
+            for (int i = 0; i < msChar.getNumberOfStates(); i++) {
+                builder.appendText(f.formatState(msChar, i + 1));
             }
         } else if (_ch instanceof NumericCharacter<?>) {
             NumericCharacter<?> numChar = (NumericCharacter<?>) _ch;
             builder.appendText(f.formatUnits(numChar));
         }
-        
+
         return builder.toString();
     }
-    
+
     private void displayRTFWindow(String rtfContent, String title) {
         RtfReportDisplayDialog dlg = new RtfReportDisplayDialog(this, new SimpleRtfEditorKit(null), rtfContent, title);
         ((SingleFrameApplication) Application.getInstance()).show(dlg);
     }
 
     // Button action handlers
-    
+
     @Action
     public void characterValueInputDialog_OK() {
         handleBtnOKClicked();
     }
-    
+
     @Action
     public void characterValueInputDialog_Images() {
         handleBtnImagesClicked();
     }
-    
+
     @Action
     public void characterValueInputDialog_FullText() {
         String rtfFullText = generateRtfFullCharacterText();
         displayRTFWindow(rtfFullText, "Full text of character");
     }
-    
+
     @Action
     public void characterValueInputDialog_Search() {
     }
-    
+
     @Action
     public void characterValueInputDialog_Cancel() {
         handleBtnCancelClicked();
     }
-    
+
     @Action
     public void characterValueInputDialog_Notes() {
         displayRTFWindow(_ch.getNotes(), "Image Notes");
     }
-    
+
     @Action
     public void characterValueInputDialog_Help() {
     }
