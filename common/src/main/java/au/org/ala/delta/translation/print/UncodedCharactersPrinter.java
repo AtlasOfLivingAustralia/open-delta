@@ -25,7 +25,7 @@ public class UncodedCharactersPrinter extends AbstractDataSetTranslator implemen
 	private PrintFile _printFile;
 	private ItemFormatter _itemFormatter;
 	
-	private List<Character> _uncodedChars;
+	protected List<Character> _uncodedChars;
 	private DeltaWriter _deltaWriter;
 	
 	
@@ -78,7 +78,7 @@ public class UncodedCharactersPrinter extends AbstractDataSetTranslator implemen
 	@Override
 	public void afterItem(Item item) {
 		StringBuilder uncoded = new StringBuilder();
-		uncoded.append(Words.word(Word.NOT_CODED)).append(": ");
+		uncoded.append(Words.word(Word.NOT_CODED)).append(":");
 		
 		appendUncodedCharacters(uncoded);
 		
@@ -89,6 +89,7 @@ public class UncodedCharactersPrinter extends AbstractDataSetTranslator implemen
 	}
 	
 	protected void appendUncodedCharacters(StringBuilder out) {
+		out.append(" ");
 		List<Integer> charNums = new ArrayList<Integer>();
 		for (Character character : _uncodedChars) {
 			charNums.add(character.getCharacterId());

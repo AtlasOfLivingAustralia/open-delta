@@ -11,9 +11,16 @@ import au.org.ala.delta.model.Item;
 public class PlainTextTypeSetter implements ItemListTypeSetter {
 
 	private PrintFile _printer;
+	private int _blankLinesBeforeItem;
 	
-	public PlainTextTypeSetter(PrintFile typeSetter) {
-		_printer = typeSetter;
+	public PlainTextTypeSetter(PrintFile output) {
+		this(output, 2);
+	}
+	
+	public PlainTextTypeSetter(PrintFile output, int blankLinesBeforeItem) {
+		_printer = output;
+		_blankLinesBeforeItem = blankLinesBeforeItem;
+		
 	}
 
 	@Override
@@ -21,7 +28,7 @@ public class PlainTextTypeSetter implements ItemListTypeSetter {
 
 	@Override
 	public void beforeItem(Item item) {
-		_printer.writeBlankLines(2, 5);
+		_printer.writeBlankLines(_blankLinesBeforeItem, 5);
 	}
 
 	@Override

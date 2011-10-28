@@ -30,8 +30,21 @@ public class TypeSetterFactory {
 	 * ITEM DESCRIPTIONS print actions.
 	 */
 	public ItemListTypeSetter createItemListTypeSetter(DeltaContext context, PrintFile printer) {
+		return createItemListTypeSetter(context, printer, false);
+	}
+	
+	
+	/**
+	 * Used when creating typesetters for the PRINT ITEM NAMES and PRINT
+	 * ITEM DESCRIPTIONS print actions.
+	 */
+	public ItemListTypeSetter createItemListTypeSetter(DeltaContext context, PrintFile printer, boolean forPrint) {
 		if (context.getTypeSettingMarks().isEmpty()) {
-			return new PlainTextTypeSetter(printer);
+			int numSpacesBeforeItem = 2;
+			if (forPrint) {
+				numSpacesBeforeItem = 1;
+			}
+			return new PlainTextTypeSetter(printer, numSpacesBeforeItem);
 		}
 		else {
 			return new FormattedItemNameTypeSetter(context, printer);

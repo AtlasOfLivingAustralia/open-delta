@@ -28,6 +28,7 @@ import au.org.ala.delta.translation.print.ItemNamesPrinter;
 import au.org.ala.delta.translation.print.PrintAction;
 import au.org.ala.delta.translation.print.UncodedCharactersFilter;
 import au.org.ala.delta.translation.print.UncodedCharactersPrinter;
+import au.org.ala.delta.translation.print.UncodedCharactersTranslator;
 
 
 /**
@@ -171,6 +172,9 @@ public class DataSetTranslatorFactory {
 		case PRINT_UNCODED_CHARACTERS:
 			action = createUncodedCharactersPrinter(context);
 			break;	
+		case TRANSLATE_UNCODED_CHARACTERS:
+			action = createUncodedCharactersTranslator(context);
+			break;	
 		default:
 			throw new UnsupportedOperationException(printAction+" is not yet implemented.");	
 		}
@@ -213,13 +217,24 @@ public class DataSetTranslatorFactory {
 	
 	private PrintAction createUncodedCharactersPrinter(DeltaContext context) {
 		PrintFile printer = context.getPrintFile();
-		ItemListTypeSetter typeSetter = new TypeSetterFactory().createItemListTypeSetter(context, printer);
+		ItemListTypeSetter typeSetter = new TypeSetterFactory().createItemListTypeSetter(context, printer, true);
 		FormatterFactory formatterFactory = new FormatterFactory(context);
 		DataSetFilter filter = new UncodedCharactersFilter(context);
 		
 		ItemFormatter itemFormatter  = formatterFactory.createItemFormatter(typeSetter, false);
 		
 		return new UncodedCharactersPrinter(context, filter, printer, itemFormatter, typeSetter);
+	}
+	
+	private PrintAction createUncodedCharactersTranslator(DeltaContext context) {
+		PrintFile printer = context.getPrintFile();
+		ItemListTypeSetter typeSetter = new TypeSetterFactory().createItemListTypeSetter(context, printer, true);
+		FormatterFactory formatterFactory = new FormatterFactory(context);
+		DataSetFilter filter = new UncodedCharactersFilter(context);
+		
+		ItemFormatter itemFormatter  = formatterFactory.createItemFormatter(typeSetter, false);
+		CharacterFormatter characterFormatter = formatterFactory.createCharacterFormatter(true, true, CommentStrippingMode.RETAIN);
+		return new UncodedCharactersTranslator(context, filter, printer, itemFormatter, characterFormatter, typeSetter);
 	}
 	
 }
