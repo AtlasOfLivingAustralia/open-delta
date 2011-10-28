@@ -16,7 +16,7 @@ public class ExcludeCharactersDirective extends NewIntkeyDirective {
     @Override
     protected List<IntkeyDirectiveArgument<?>> generateArgumentsList(IntkeyContext context) {
         List<IntkeyDirectiveArgument<?>> arguments = new ArrayList<IntkeyDirectiveArgument<?>>();
-        arguments.add(new CharacterListArgument("characters", null, SelectionMode.KEYWORD, false, true));
+        arguments.add(new CharacterListArgument("characters", null, false, true));
         return arguments;
     }
 

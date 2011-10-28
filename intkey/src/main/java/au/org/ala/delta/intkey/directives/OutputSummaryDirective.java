@@ -16,8 +16,8 @@ public class OutputSummaryDirective extends NewIntkeyDirective {
     @Override
     protected List<IntkeyDirectiveArgument<?>> generateArgumentsList(IntkeyContext context) {
         List<IntkeyDirectiveArgument<?>> arguments = new ArrayList<IntkeyDirectiveArgument<?>>();
-        arguments.add(new BracketedTaxonListArgument("selectedTaxaSpecimen", null, SelectionMode.KEYWORD, false, false));
-        arguments.add(new CharacterListArgument("characters", null, SelectionMode.KEYWORD, false, false));
+        arguments.add(new BracketedTaxonListArgument("selectedTaxaSpecimen", null, false, false));
+        arguments.add(new CharacterListArgument("characters", null, false, false));
         return arguments;
     }
 

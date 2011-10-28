@@ -1993,6 +1993,11 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
             show(dlg);
 
+            if (!dlg.okButtonPressed()) {
+                // user cancelled
+                return null;
+            }
+
             Set<String> keywords = dlg.getSelectedKeywords();
 
             if (!noneKeywordAvailable) {
@@ -2045,6 +2050,11 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             dlg.setTitle(MessageFormat.format(selectTaxonKeywordsCaption, directiveName));
 
             show(dlg);
+
+            if (!dlg.okButtonPressed()) {
+                // user cancelled
+                return null;
+            }
 
             Set<String> keywords = dlg.getSelectedKeywords();
 

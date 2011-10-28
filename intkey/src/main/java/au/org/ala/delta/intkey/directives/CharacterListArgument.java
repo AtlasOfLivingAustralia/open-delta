@@ -12,8 +12,6 @@ public class CharacterListArgument extends IntkeyDirectiveArgument<List<au.org.a
 
     private static final String OVERRIDE_EXCLUDED_CHARACTERS = "/C";
 
-    private SelectionMode _defaultSelectionMode;
-
     /**
      * If true, excluded characters are ignored when prompting the user to
      * select characters. User will select from the list of all characters.
@@ -25,9 +23,8 @@ public class CharacterListArgument extends IntkeyDirectiveArgument<List<au.org.a
      */
     protected boolean _noneSelectionPermitted;
 
-    public CharacterListArgument(String name, String promptText, SelectionMode defaultSelectionMode, boolean selectFromAll, boolean noneSelectionPermitted) {
+    public CharacterListArgument(String name, String promptText, boolean selectFromAll, boolean noneSelectionPermitted) {
         super(name, promptText, null);
-        _defaultSelectionMode = defaultSelectionMode;
         _selectFromAll = selectFromAll;
         _noneSelectionPermitted = noneSelectionPermitted;
     }
@@ -47,12 +44,12 @@ public class CharacterListArgument extends IntkeyDirectiveArgument<List<au.org.a
 
         List<au.org.ala.delta.model.Character> characters = null;
 
-        SelectionMode selectionMode = _defaultSelectionMode;
+        SelectionMode selectionMode = context.displayKeywords() ? SelectionMode.KEYWORD : SelectionMode.LIST;
         DirectivePopulator populator = context.getDirectivePopulator();
 
         if (token != null) {
             if (token.equalsIgnoreCase(DEFAULT_DIALOG_WILDCARD)) {
-                selectionMode = _defaultSelectionMode;
+                // do nothing - default selection mode is already set above.
             } else if (token.equalsIgnoreCase(KEYWORD_DIALOG_WILDCARD)) {
                 selectionMode = SelectionMode.KEYWORD;
             } else if (token.equalsIgnoreCase(LIST_DIALOG_WILDCARD)) {
@@ -63,10 +60,10 @@ public class CharacterListArgument extends IntkeyDirectiveArgument<List<au.org.a
                     characters.addAll(ParsingUtils.parseCharacterToken(token, context));
                     token = inputTokens.poll();
                 }
-            }
 
-            if (!overrideExcludedCharacters) {
-                characters.retainAll(context.getIncludedCharacters());
+                if (!overrideExcludedCharacters) {
+                    characters.retainAll(context.getIncludedCharacters());
+                }
             }
         }
 

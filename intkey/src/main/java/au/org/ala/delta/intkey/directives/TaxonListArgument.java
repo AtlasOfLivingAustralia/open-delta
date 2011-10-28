@@ -21,8 +21,8 @@ public class TaxonListArgument extends AbstractTaxonListArgument<List<Item>> {
      * @param selectFromAll
      *            When prompting, allow selection from all
      */
-    public TaxonListArgument(String name, String promptText, SelectionMode defaultSelectionMode, boolean selectFromAll, boolean noneSelectionPermitted) {
-        super(name, promptText, defaultSelectionMode, selectFromAll, noneSelectionPermitted);
+    public TaxonListArgument(String name, String promptText, boolean selectFromAll, boolean noneSelectionPermitted) {
+        super(name, promptText, selectFromAll, noneSelectionPermitted);
     }
 
     @Override
@@ -39,11 +39,11 @@ public class TaxonListArgument extends AbstractTaxonListArgument<List<Item>> {
 
         List<Item> taxa = null;
 
-        SelectionMode selectionMode = _defaultSelectionMode;
+        SelectionMode selectionMode = context.displayKeywords() ? SelectionMode.KEYWORD : SelectionMode.LIST;
 
         if (token != null) {
             if (token.equalsIgnoreCase(DEFAULT_DIALOG_WILDCARD)) {
-                selectionMode = _defaultSelectionMode;
+                // do nothing - default selection mode is already set above.
             } else if (token.equalsIgnoreCase(KEYWORD_DIALOG_WILDCARD)) {
                 selectionMode = SelectionMode.KEYWORD;
             } else if (token.equalsIgnoreCase(LIST_DIALOG_WILDCARD)) {
@@ -62,10 +62,10 @@ public class TaxonListArgument extends AbstractTaxonListArgument<List<Item>> {
                         throw new IntkeyDirectiveParseException(String.format("Unrecognized taxon keyword %s", token), ex);
                     }
                 }
-            }
-            
-            if (!overrideExcludedTaxa) {
-                taxa.retainAll(context.getIncludedTaxa());
+
+                if (!overrideExcludedTaxa) {
+                    taxa.retainAll(context.getIncludedTaxa());
+                }
             }
         }
 

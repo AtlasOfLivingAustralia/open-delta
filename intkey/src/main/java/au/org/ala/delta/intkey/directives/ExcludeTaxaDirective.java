@@ -15,7 +15,7 @@ public class ExcludeTaxaDirective extends NewIntkeyDirective {
     @Override
     protected List<IntkeyDirectiveArgument<?>> generateArgumentsList(IntkeyContext context) {
         List<IntkeyDirectiveArgument<?>> arguments = new ArrayList<IntkeyDirectiveArgument<?>>();
-        arguments.add(new TaxonListArgument("taxa", null, SelectionMode.KEYWORD, false, true));
+        arguments.add(new TaxonListArgument("taxa", null, false, true));
         return arguments;
     }
 

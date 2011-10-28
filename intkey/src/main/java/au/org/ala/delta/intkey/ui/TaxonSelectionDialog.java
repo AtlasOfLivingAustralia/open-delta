@@ -126,7 +126,7 @@ public class TaxonSelectionDialog extends ListSelectionDialog {
         _btnHelp.setEnabled(false);
         _panelButtons.add(_btnHelp);
 
-        _selectedTaxa = new ArrayList<Item>();
+        _selectedTaxa = null;
 
         if (taxa != null) {
             _listModel = new DefaultListModel();
@@ -144,6 +144,7 @@ public class TaxonSelectionDialog extends ListSelectionDialog {
 
     @Action
     public void taxonSelectionDialog_OK() {
+        _selectedTaxa = new ArrayList<Item>();
         for (int i : _list.getSelectedIndices()) {
             _selectedTaxa.add((Item) _listModel.getElementAt(i));
         }

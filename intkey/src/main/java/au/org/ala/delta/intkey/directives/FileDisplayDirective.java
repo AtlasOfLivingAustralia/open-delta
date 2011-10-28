@@ -20,7 +20,7 @@ public class FileDisplayDirective extends IntkeyDirective {
         String filePath = data;
         FileDisplayDirectiveInvocation invoc = null;
 
-        if (filePath == null || filePath.equals(IntkeyDirectiveArgument.DEFAULT_DIALOG_WILDCARD)) {
+        if (filePath == null || filePath.startsWith(IntkeyDirectiveArgument.DEFAULT_DIALOG_WILDCARD)) {
             File file = context.getDirectivePopulator().promptForFile(Arrays.asList(new String[] { "rtf", "doc", "htm", "html", "wav", "ink" }), "Files (*.rtf, *.doc, *.htm, *.wav, *.ink)", false);
             invoc = new FileDisplayDirectiveInvocation(file.toURI().toURL(), file.getName());
         } else if (filePath.startsWith("http://")) {

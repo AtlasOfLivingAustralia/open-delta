@@ -66,7 +66,7 @@ public class TaxonKeywordSelectionDialog extends KeywordSelectionDialog {
         }
         _list.setModel(model);
 
-        _selectedTaxa = new ArrayList<Item>();
+        _selectedTaxa = null;
         _context = context;
 
         _includedTaxa = context.getIncludedTaxa();
@@ -85,6 +85,7 @@ public class TaxonKeywordSelectionDialog extends KeywordSelectionDialog {
 
     @Override
     protected void okBtnPressed() {
+        _selectedTaxa = new ArrayList<Item>();
         for (Object o : _list.getSelectedValues()) {
             String keyword = (String) o;
             

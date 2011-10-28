@@ -138,7 +138,7 @@ public class CharacterSelectionDialog extends ListSelectionDialog {
         _btnHelp.setEnabled(false);
         _panelButtons.add(_btnHelp);
 
-        _selectedCharacters = new ArrayList<Character>();
+        _selectedCharacters = null;
 
         if (characters != null) {
             _listModel = new DefaultListModel();
@@ -152,8 +152,9 @@ public class CharacterSelectionDialog extends ListSelectionDialog {
 
     @Action
     public void characterSelectionDialog_OK() {
+        _selectedCharacters = new ArrayList<Character>();
         for (int i : _list.getSelectedIndices()) {
-            _selectedCharacters.add((Character)_listModel.getElementAt(i));
+            _selectedCharacters.add((Character) _listModel.getElementAt(i));
         }
 
         this.setVisible(false);
@@ -205,6 +206,6 @@ public class CharacterSelectionDialog extends ListSelectionDialog {
     }
 
     public List<Character> getSelectedCharacters() {
-        return new ArrayList<Character>(_selectedCharacters);
+        return _selectedCharacters;
     }
 }

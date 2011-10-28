@@ -15,7 +15,7 @@ public class DeleteDirective extends NewIntkeyDirective {
     @Override
     protected List<IntkeyDirectiveArgument<?>> generateArgumentsList(IntkeyContext context) {
         List<IntkeyDirectiveArgument<?>> arguments = new ArrayList<IntkeyDirectiveArgument<?>>();
-        arguments.add(new CharacterListArgument("characters", null, SelectionMode.KEYWORD, true, false));
+        arguments.add(new CharacterListArgument("characters", null, true, false));
         return arguments;
     }
 

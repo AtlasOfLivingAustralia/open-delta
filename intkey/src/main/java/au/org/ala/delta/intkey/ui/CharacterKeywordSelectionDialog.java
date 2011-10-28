@@ -58,7 +58,7 @@ public class CharacterKeywordSelectionDialog extends KeywordSelectionDialog {
         resourceMap.injectFields(this);
 
         setTitle(MessageFormat.format(title, _directiveName));
-        _selectedCharacters = new ArrayList<Character>();
+        _selectedCharacters = null;
 
         List<String> characterKeywords = context.getCharacterKeywords();
 
@@ -86,6 +86,7 @@ public class CharacterKeywordSelectionDialog extends KeywordSelectionDialog {
 
     @Override
     protected void okBtnPressed() {
+        _selectedCharacters = new ArrayList<Character>();
         for (Object o : _list.getSelectedValues()) {
             String keyword = (String) o;
 

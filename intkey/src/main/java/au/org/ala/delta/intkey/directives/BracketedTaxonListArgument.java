@@ -24,8 +24,8 @@ public class BracketedTaxonListArgument extends AbstractTaxonListArgument<Pair<L
     private static final String OPEN_BRACKET = "(";
     private static final String CLOSE_BRACKET = ")";
 
-    public BracketedTaxonListArgument(String name, String promptText, SelectionMode defaultSelectionMode, boolean selectFromAll, boolean noneSelectionPermitted) {
-        super(name, promptText, defaultSelectionMode, selectFromAll, noneSelectionPermitted);
+    public BracketedTaxonListArgument(String name, String promptText, boolean selectFromAll, boolean noneSelectionPermitted) {
+        super(name, promptText, selectFromAll, noneSelectionPermitted);
     }
 
     @Override
@@ -43,11 +43,11 @@ public class BracketedTaxonListArgument extends AbstractTaxonListArgument<Pair<L
         boolean includeSpecimen = false;
         List<Item> taxa = null;
 
-        SelectionMode selectionMode = _defaultSelectionMode;
+        SelectionMode selectionMode = context.displayKeywords() ? SelectionMode.KEYWORD : SelectionMode.LIST;
 
         if (token != null) {
             if (token.equalsIgnoreCase(DEFAULT_DIALOG_WILDCARD)) {
-                selectionMode = _defaultSelectionMode;
+                // do nothing - default selection mode is already set above.
             } else if (token.equalsIgnoreCase(KEYWORD_DIALOG_WILDCARD)) {
                 selectionMode = SelectionMode.KEYWORD;
             } else if (token.equalsIgnoreCase(LIST_DIALOG_WILDCARD)) {
@@ -91,10 +91,10 @@ public class BracketedTaxonListArgument extends AbstractTaxonListArgument<Pair<L
                         throw new IntkeyDirectiveParseException(String.format("Unrecognized taxon keyword %s", token), ex);
                     }
                 }
-            }
 
-            if (!overrideExcludedTaxa) {
-                taxa.retainAll(context.getIncludedTaxa());
+                if (!overrideExcludedTaxa) {
+                    taxa.retainAll(context.getIncludedTaxa());
+                }
             }
         }
 
@@ -102,7 +102,7 @@ public class BracketedTaxonListArgument extends AbstractTaxonListArgument<Pair<L
             // TODO NEED TO BE ABLE TO INCLUDE OPTION TO SELECT SPECIMEN IN
             // THESE PROMPTS
             DirectivePopulator populator = context.getDirectivePopulator();
-            if (selectionMode == SelectionMode.KEYWORD) {
+            if (selectionMode == SelectionMode.KEYWORD && context.displayKeywords()) {
                 taxa = populator.promptForTaxaByKeyword(directiveName, !overrideExcludedTaxa, _noneSelectionPermitted);
             } else {
                 boolean autoSelectSingleValue = (selectionMode == SelectionMode.LIST_AUTOSELECT_SINGLE_VALUE);

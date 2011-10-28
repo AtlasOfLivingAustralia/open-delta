@@ -8,6 +8,7 @@ import java.util.List;
 import au.org.ala.delta.intkey.model.DisplayImagesReportType;
 import au.org.ala.delta.intkey.model.ImageDisplayMode;
 import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.intkey.ui.UIUtils;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
@@ -76,7 +77,7 @@ public class DisplayImagesDirectiveInvocation extends IntkeyDirectiveInvocation 
                 String fileName = image.getFileName();
                 URL fileURL = imgSettings.findFileOnResourcePath(fileName, true);
                 if (fileURL == null) {
-                    builder.appendText(MessageFormat.format("Image file ''{0}'' for character {1} does not exist.", fileName, ch.getCharacterId()));
+                    builder.appendText(UIUtils.getResourceString("MissingCharactersList.CharacterImageFileNotFound", fileName, ch.getCharacterId()));
                 }
             }
         }
@@ -87,7 +88,7 @@ public class DisplayImagesDirectiveInvocation extends IntkeyDirectiveInvocation 
                 String fileName = image.getFileName();
                 URL fileURL = imgSettings.findFileOnResourcePath(fileName, true);
                 if (fileURL == null) {
-                    builder.appendText(MessageFormat.format("Image file ''{0}'' for {1} does not exist.", fileName, _itemFormatter.formatItemDescription(taxon)));
+                    builder.appendText(UIUtils.getResourceString("MissingCharactersList.TaxonImageFileNotFound", fileName, _itemFormatter.formatItemDescription(taxon)));
                 }
             }
         }
