@@ -10,7 +10,7 @@ public class FileCloseDirectiveInvocation extends IntkeyDirectiveInvocation {
         // written out to output files
         // Immediately. It is implemented here as a NO OP purely for backwards
         // compatbility.
-        return true;
+        return false;
     }
 
 }
