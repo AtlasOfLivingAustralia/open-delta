@@ -163,6 +163,7 @@ public class IntkeyContext extends AbstractDeltaContext {
     private boolean _displayEndIdentify;
 
     private List<String> _endIdentifyCommands;
+    private List<String> _imageSubjects;
 
     private boolean _lastOutputLineWasComment;
 
@@ -260,7 +261,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         _displayEndIdentify = true;
 
         _endIdentifyCommands = new ArrayList<String>();
-
+        _imageSubjects = new ArrayList<String>();
     }
 
     /**
@@ -1572,6 +1573,14 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     public synchronized boolean setLastOutputLineWasComment(boolean lastOutputLineWasComment) {
         return _lastOutputLineWasComment = lastOutputLineWasComment;
+    }
+
+    public synchronized List<String> getImageSubjects() {
+        return _imageSubjects;
+    }
+
+    public synchronized void setImageSubjects(List<String> imageSubjects) {
+        _imageSubjects = new ArrayList<String>(imageSubjects);
     }
 
     /**
