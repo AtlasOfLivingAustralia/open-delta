@@ -23,7 +23,7 @@ public class CharacterFormatter extends Formatter {
 		
 		CommentStrippingMode mode = _commentStrippingMode;
 		AngleBracketHandlingMode angleMode = _angleBracketHandlingMode;
-		if (_angleBracketHandlingMode == AngleBracketHandlingMode.REMOVE_SURROUNDING_REPLACE_INNER) {
+		if (_angleBracketHandlingMode == AngleBracketHandlingMode.CONTEXT_SENSITIVE_REPLACE) {
 			mode = CommentStrippingMode.STRIP_ALL;
 			angleMode = AngleBracketHandlingMode.RETAIN;
 		}
@@ -62,7 +62,7 @@ public class CharacterFormatter extends Formatter {
 	public String formatCharacterDescription(Character character) {
 		CommentStrippingMode mode = _commentStrippingMode;
 		AngleBracketHandlingMode angleMode = _angleBracketHandlingMode;
-		if (_angleBracketHandlingMode == AngleBracketHandlingMode.REMOVE_SURROUNDING_REPLACE_INNER) {
+		if (_angleBracketHandlingMode == AngleBracketHandlingMode.CONTEXT_SENSITIVE_REPLACE) {
 			mode = CommentStrippingMode.STRIP_ALL;
 			angleMode = AngleBracketHandlingMode.RETAIN;
 		}

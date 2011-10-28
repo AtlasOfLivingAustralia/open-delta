@@ -31,7 +31,7 @@ public class Formatter {
     }
 
     public static enum AngleBracketHandlingMode {
-        RETAIN, REPLACE, REMOVE, REMOVE_SURROUNDING_REPLACE_INNER
+        RETAIN, REPLACE, REMOVE, REMOVE_SURROUNDING_REPLACE_INNER, CONTEXT_SENSITIVE_REPLACE
     };
 
     public Formatter(CommentStrippingMode commentStrippingMode, AngleBracketHandlingMode angleBracketHandlingMode, boolean stripFormatting, boolean capitaliseFirstWord) {
@@ -176,6 +176,7 @@ public class Formatter {
             text = text.replace(">", "");
             break;
         case REPLACE:
+        case CONTEXT_SENSITIVE_REPLACE:
             text = text.replace("<", "(");
             text = text.replace(">", ")");
             break;

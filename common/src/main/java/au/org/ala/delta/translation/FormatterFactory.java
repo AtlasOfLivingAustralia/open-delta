@@ -70,7 +70,7 @@ public class FormatterFactory {
 		
 		AngleBracketHandlingMode angleBracketMode = AngleBracketHandlingMode.RETAIN;
 		if (_context.isReplaceAngleBrackets()) {
-			angleBracketMode = AngleBracketHandlingMode.REMOVE_SURROUNDING_REPLACE_INNER;
+			angleBracketMode = AngleBracketHandlingMode.CONTEXT_SENSITIVE_REPLACE;
 		}
 		
 		if (_context.getOmitInnerComments()) {
@@ -88,7 +88,7 @@ public class FormatterFactory {
 		AttributeFormatter formatter = null;
 		AngleBracketHandlingMode angleBracketMode = AngleBracketHandlingMode.RETAIN;
 		if (_context.isReplaceAngleBrackets()) {
-			angleBracketMode = AngleBracketHandlingMode.REPLACE;
+			angleBracketMode = AngleBracketHandlingMode.CONTEXT_SENSITIVE_REPLACE;
 		}
 		CommentStrippingMode mode = CommentStrippingMode.RETAIN;
 		if (_context.getOmitInnerComments()) {
