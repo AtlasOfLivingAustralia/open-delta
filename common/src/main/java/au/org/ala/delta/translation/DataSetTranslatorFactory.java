@@ -31,6 +31,7 @@ import au.org.ala.delta.translation.print.ItemNamesPrinter;
 import au.org.ala.delta.translation.print.UncodedCharactersFilter;
 import au.org.ala.delta.translation.print.UncodedCharactersPrinter;
 import au.org.ala.delta.translation.print.UncodedCharactersTranslator;
+import au.org.ala.delta.util.Pair;
 
 
 /**
@@ -45,44 +46,54 @@ public class DataSetTranslatorFactory {
 		
 		FormatterFactory formatterFactory = new FormatterFactory(context);
 		
-		if (translation == null) {
-			translator = new NullTranslator();
-		}
-		else if (translation.equals(TranslateType.NaturalLanguage)) {
+		List<DataSetTranslator> translators = new ArrayList<DataSetTranslator>();
+		
+		if (translation.equals(TranslateType.NaturalLanguage)) {
 			translator = createNaturalLanguageTranslator(context, context.getPrintFile(), formatterFactory);
-		}
-		else if (translation.equals(TranslateType.Delta)) {
-			translator = createDeltaFormatTranslator(context, context.getOutputFileSelector().getOutputFile(), formatterFactory);
-		}
-		else if (translation.equals(TranslateType.IntKey)) {
-			translator = createIntkeyFormatTranslator(context, formatterFactory);
-		}
-		else if (translation.equals(TranslateType.Key)) {
-			translator = createKeyFormatTranslator(context, formatterFactory);
-		}
-		else if (translation.equals(TranslateType.Dist)) {
-			translator = createDistFormatTranslator(context, formatterFactory);
-		}
-		else if (translation.equals(TranslateType.NexusFormat)) {
-			translator = createNexusFormatTranslator(context,  context.getOutputFileSelector().getOutputFile(), formatterFactory);
-		}
-		else if (translation.equals(TranslateType.PAUP)) {
-			translator = createPaupFormatTranslator(context,  context.getOutputFileSelector().getOutputFile(), formatterFactory);
+			translators.add(translator);
 		}
 		else {
-			throw new RuntimeException("(Currently) unsupported translation type: "+translation);
-		}
-		
-		List<DataSetTranslator> translators = new ArrayList<DataSetTranslator>();
-		translators.add(translator);
-		
-		for (PrintActionType action : context.getPrintActions()) {
-			translators.add(createPrintAction(context, action));
+			
+			if (translation.equals(TranslateType.Delta)) {
+				translator = createDeltaFormatTranslator(context, context.getOutputFileSelector().getOutputFile(), formatterFactory);
+			}
+			else if (translation.equals(TranslateType.IntKey)) {
+				translator = createIntkeyFormatTranslator(context, formatterFactory);
+			}
+			else if (translation.equals(TranslateType.Key)) {
+				translator = createKeyFormatTranslator(context, formatterFactory);
+			}
+			else if (translation.equals(TranslateType.Dist)) {
+				translator = createDistFormatTranslator(context, formatterFactory);
+			}
+			else if (translation.equals(TranslateType.NexusFormat)) {
+				translator = createNexusFormatTranslator(context,  context.getOutputFileSelector().getOutputFile(), formatterFactory);
+			}
+			else if (translation.equals(TranslateType.PAUP)) {
+				translator = createPaupFormatTranslator(context,  context.getOutputFileSelector().getOutputFile(), formatterFactory);
+			}
+			else if (translation.equals(TranslateType.None)) {
+				translator = new NullTranslator();
+			}
+			else {
+				throw new RuntimeException("(Currently) unsupported translation type: "+translation);
+			}
+			translators.add(translator);
+			translators.add(createPrintActions(context));
 		}
 		
 		return new CompositeDataSetTranslator(translators);
 	}
 	
+	public DataSetTranslator createPrintActions(DeltaContext context) {
+		AbstractDataSetTranslator translator = new AbstractDataSetTranslator(context);
+		
+		for (PrintActionType action : context.getPrintActions()) {
+			translator.add(createPrintAction(context, action));
+		}
+		
+		return translator;
+	}
 	
 
 	private DataSetTranslator createNexusFormatTranslator(DeltaContext context, PrintFile printFile, FormatterFactory formatterFactory) {
@@ -162,31 +173,30 @@ public class DataSetTranslatorFactory {
 		return wrap(context, filter,new DeltaFormatTranslator(context, printer, itemFormatter, charFormatter, typeSetter));
 	}
 	
-	public DataSetTranslator createPrintAction(DeltaContext context, PrintActionType printAction) {
-		DataSetTranslator action = null;
+	public Pair<IterativeTranslator, DataSetFilter> createPrintAction(DeltaContext context, PrintActionType printAction) {
+		Pair<IterativeTranslator, DataSetFilter> translator;
 		switch (printAction) {
 		case PRINT_CHARACTER_LIST:
-			action = createCharacterListPrinter(context);
+			translator = createCharacterListPrinter(context);
 			break;
 		case PRINT_ITEM_NAMES:
-			action = createItemNamesPrinter(context);
-			break;
+			translator = createItemNamesPrinter(context);
 		case PRINT_ITEM_DESCRIPTIONS:
-			action = createItemDescriptionsPrinter(context);
+			translator = createItemDescriptionsPrinter(context);
 			break;
 		case PRINT_UNCODED_CHARACTERS:
-			action = createUncodedCharactersPrinter(context);
+			translator = createUncodedCharactersPrinter(context);
 			break;	
 		case TRANSLATE_UNCODED_CHARACTERS:
-			action = createUncodedCharactersTranslator(context);
+			translator = createUncodedCharactersTranslator(context);
 			break;	
 		default:
 			throw new UnsupportedOperationException(printAction+" is not yet implemented.");	
 		}
-		return action;
+		return translator;
 	}
 	
-	private DataSetTranslator createCharacterListPrinter(DeltaContext context) {
+	private Pair<IterativeTranslator, DataSetFilter> createCharacterListPrinter(DeltaContext context) {
 		FormatterFactory formatterFactory = new FormatterFactory(context);
 		PrintFile printer = context.getPrintFile();
 		CommentStrippingMode mode = CommentStrippingMode.RETAIN;
@@ -196,20 +206,24 @@ public class DataSetTranslatorFactory {
 		CharacterFormatter charFormatter  = formatterFactory.createCharacterFormatter(true, true, mode);
 		CharacterListTypeSetter typeSetter = new TypeSetterFactory().createCharacterListTypeSetter(context, printer);
 		DataSetFilter filter = new DeltaFormatDataSetFilter(context);
-		return wrap(context, filter,new CharacterListPrinter(context, printer, charFormatter, typeSetter));
+		IterativeTranslator translator = new CharacterListPrinter(context, printer, charFormatter, typeSetter);
+		
+		return new Pair<IterativeTranslator, DataSetFilter>(translator, filter);
 	}
 	
-	private DataSetTranslator createItemNamesPrinter(DeltaContext context) {
+	private Pair<IterativeTranslator, DataSetFilter> createItemNamesPrinter(DeltaContext context) {
 		FormatterFactory formatterFactory = new FormatterFactory(context);
 		PrintFile printer = context.getPrintFile();
 		ItemListTypeSetter typeSetter = new TypeSetterFactory().createItemListTypeSetter(context, printer);
 		
 		ItemFormatter itemFormatter  = formatterFactory.createItemFormatter(typeSetter, true);
 		
-		return wrap(context, new DeltaFormatDataSetFilter(context),new ItemNamesPrinter(context, itemFormatter, printer, typeSetter));
+		DataSetFilter filter = new DeltaFormatDataSetFilter(context);
+		IterativeTranslator translator = new ItemNamesPrinter(context, itemFormatter, printer, typeSetter);
+		return new Pair<IterativeTranslator, DataSetFilter>(translator, filter);
 	}
 	
-	private DataSetTranslator createItemDescriptionsPrinter(DeltaContext context) {
+	private Pair<IterativeTranslator, DataSetFilter> createItemDescriptionsPrinter(DeltaContext context) {
 		FormatterFactory formatterFactory = new FormatterFactory(context);
 		PrintFile printer = context.getPrintFile();
 		ItemListTypeSetter typeSetter = new TypeSetterFactory().createItemListTypeSetter(context, printer);
@@ -217,10 +231,11 @@ public class DataSetTranslatorFactory {
 		ItemFormatter itemFormatter  = formatterFactory.createItemFormatter(typeSetter, false);
 		AttributeFormatter attributeFormatter = formatterFactory.createAttributeFormatter();
 		DataSetFilter filter = new DeltaFormatDataSetFilter(context);
-		return wrap(context, filter,new ItemDescriptionsPrinter(context, printer, itemFormatter, attributeFormatter, typeSetter));
+		IterativeTranslator translator = new ItemDescriptionsPrinter(context, printer, itemFormatter, attributeFormatter, typeSetter);
+		return new Pair<IterativeTranslator, DataSetFilter>(translator, filter);
 	}
 	
-	private DataSetTranslator createUncodedCharactersPrinter(DeltaContext context) {
+	private Pair<IterativeTranslator, DataSetFilter> createUncodedCharactersPrinter(DeltaContext context) {
 		PrintFile printer = context.getPrintFile();
 		ItemListTypeSetter typeSetter = new TypeSetterFactory().createItemListTypeSetter(context, printer, true);
 		FormatterFactory formatterFactory = new FormatterFactory(context);
@@ -228,10 +243,11 @@ public class DataSetTranslatorFactory {
 		
 		ItemFormatter itemFormatter  = formatterFactory.createItemFormatter(typeSetter, false);
 		
-		return wrap(context, filter, new UncodedCharactersPrinter(context, printer, itemFormatter, typeSetter));
+		IterativeTranslator translator = new UncodedCharactersPrinter(context, printer, itemFormatter, typeSetter);
+		return new Pair<IterativeTranslator, DataSetFilter>(translator, filter);
 	}
 	
-	private DataSetTranslator createUncodedCharactersTranslator(DeltaContext context) {
+	private Pair<IterativeTranslator, DataSetFilter> createUncodedCharactersTranslator(DeltaContext context) {
 		PrintFile printer = context.getPrintFile();
 		ItemListTypeSetter typeSetter = new TypeSetterFactory().createItemListTypeSetter(context, printer, true);
 		FormatterFactory formatterFactory = new FormatterFactory(context);
@@ -239,7 +255,8 @@ public class DataSetTranslatorFactory {
 		
 		ItemFormatter itemFormatter  = formatterFactory.createItemFormatter(typeSetter, false);
 		CharacterFormatter characterFormatter = formatterFactory.createCharacterFormatter(true, true, CommentStrippingMode.RETAIN);
-		return wrap(context, filter, new UncodedCharactersTranslator(context, printer, itemFormatter, characterFormatter, typeSetter));
+		IterativeTranslator translator = new UncodedCharactersTranslator(context, printer, itemFormatter, characterFormatter, typeSetter);
+		return new Pair<IterativeTranslator, DataSetFilter>(translator, filter);
 	}
 	
 	private AbstractDataSetTranslator wrap(DeltaContext context, DataSetFilter filter, IterativeTranslator translator) {

@@ -15,7 +15,7 @@
 package au.org.ala.delta;
 
 public enum TranslateType {
-	
+	None,
 	Delta,
 	Dist,
 	Hennig86,

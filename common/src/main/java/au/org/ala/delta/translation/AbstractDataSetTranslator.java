@@ -10,6 +10,7 @@ import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.rtf.RTFUtils;
+import au.org.ala.delta.util.Pair;
 
 
 /**
@@ -24,12 +25,22 @@ public class AbstractDataSetTranslator implements DataSetTranslator {
 	private List<IterativeTranslator> _translators;
 	private List<DataSetFilter> _filters;
 	
-	public AbstractDataSetTranslator(DeltaContext context, DataSetFilter filter, IterativeTranslator translator) {
+	
+	public AbstractDataSetTranslator(DeltaContext context) {
 		_context = context;;
 		_translators = new ArrayList<IterativeTranslator>();
-		_translators.add(translator);
 		_filters = new ArrayList<DataSetFilter>();
+	}
+	
+	public AbstractDataSetTranslator(DeltaContext context, DataSetFilter filter, IterativeTranslator translator) {
+		this(context);
+		_translators.add(translator);
 		_filters.add(filter);
+	}
+	
+	public void add(Pair<IterativeTranslator, DataSetFilter> translator) {
+		_translators.add(translator.getFirst());
+		_filters.add(translator.getSecond());
 	}
 	
 	public void translateItems() {

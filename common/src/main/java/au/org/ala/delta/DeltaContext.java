@@ -62,7 +62,7 @@ public class DeltaContext extends AbstractDeltaContext {
 	private List<String> _errorMessages = new ArrayList<String>();
 	private List<PrintActionType> _outputActions = new ArrayList<PrintActionType>();
 
-	private TranslateType _translateType;
+	private TranslateType _translateType = TranslateType.None;
 	private Set<Integer> _excludedCharacters = new HashSet<Integer>();
 	private Set<Integer> _excludedItems = new HashSet<Integer>();
 	private Set<Integer> _omitPeriodForCharacters = new HashSet<Integer>();	
