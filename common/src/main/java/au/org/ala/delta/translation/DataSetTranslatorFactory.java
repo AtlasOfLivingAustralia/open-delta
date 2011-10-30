@@ -41,7 +41,6 @@ public class DataSetTranslatorFactory {
 	
 	public DataSetTranslator createTranslator(DeltaContext context) {
 		
-		DataSetTranslator translator = null;
 		TranslateType translation = context.getTranslateType();
 		
 		FormatterFactory formatterFactory = new FormatterFactory(context);
@@ -49,10 +48,14 @@ public class DataSetTranslatorFactory {
 		List<DataSetTranslator> translators = new ArrayList<DataSetTranslator>();
 		
 		if (translation.equals(TranslateType.NaturalLanguage)) {
-			translator = createNaturalLanguageTranslator(context, context.getPrintFile(), formatterFactory);
+			
+			AbstractDataSetTranslator translator = new AbstractDataSetTranslator(context);
+			translator.add(createNaturalLanguageTranslator(context, context.getPrintFile(), formatterFactory));
+			addPrintActions(translator, context);
 			translators.add(translator);
 		}
 		else {
+			DataSetTranslator translator = null;
 			
 			if (translation.equals(TranslateType.Delta)) {
 				translator = createDeltaFormatTranslator(context, context.getOutputFileSelector().getOutputFile(), formatterFactory);
@@ -88,11 +91,14 @@ public class DataSetTranslatorFactory {
 	public DataSetTranslator createPrintActions(DeltaContext context) {
 		AbstractDataSetTranslator translator = new AbstractDataSetTranslator(context);
 		
+		addPrintActions(translator, context);
+		return translator;
+	}
+	
+	private void addPrintActions(AbstractDataSetTranslator translator, DeltaContext context) {
 		for (PrintActionType action : context.getPrintActions()) {
 			translator.add(createPrintAction(context, action));
 		}
-		
-		return translator;
 	}
 	
 
@@ -139,7 +145,7 @@ public class DataSetTranslatorFactory {
 				formatterFactory.createItemFormatter(typeSetter, CommentStrippingMode.STRIP_ALL, false));
 	}
 
-	private AbstractDataSetTranslator createNaturalLanguageTranslator(
+	private Pair<IterativeTranslator, DataSetFilter> createNaturalLanguageTranslator(
 			DeltaContext context, PrintFile printer, FormatterFactory formatterFactory) {
 		IterativeTranslator translator;
 		ItemListTypeSetter typeSetter = new TypeSetterFactory().createTypeSetter(context, printer);
@@ -159,7 +165,8 @@ public class DataSetTranslatorFactory {
 					context, typeSetter, printer, itemFormatter,
 					characterFormatter, attributeFormatter, indexWriter);
 		}
-		return wrap(context, filter, translator);
+		
+		return new Pair<IterativeTranslator, DataSetFilter>(translator, filter);
 	}
 	
 	private AbstractDataSetTranslator createDeltaFormatTranslator(

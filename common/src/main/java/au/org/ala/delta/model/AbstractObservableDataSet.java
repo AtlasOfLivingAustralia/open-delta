@@ -162,7 +162,7 @@ public abstract class AbstractObservableDataSet implements ObservableDeltaDataSe
 		}
 		
 		Attribute attribute = item.getAttribute(character);
-		return ((attribute.isUnknown() && !attribute.isCodedUnknown()) || 
+		return ((attribute.isUnknown()) || 
 			    (attribute.isComment() && !character.getCharacterType().isText()));
 	}
 	

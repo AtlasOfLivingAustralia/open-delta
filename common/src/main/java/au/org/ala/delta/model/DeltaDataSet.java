@@ -212,9 +212,9 @@ public interface DeltaDataSet {
 	 * be uncoded.</li>
 	 * <li>Characters that have been made inapplicable for the supplied item
 	 * are not considered to be uncoded.</li>
-	 * <li>Otherwise if the attribute for the character is absent or just
-	 * a comment (except for text characters) the attribute is considered 
-	 * to be uncoded.
+	 * <li>Otherwise if the attribute for the character is absent, explicitly
+	 * coded as unknown (U) or just a comment (except for text characters) the 
+	 * attribute is considered to be uncoded.
 	 * </ul>
 	 * @param item the item to check.
 	 * @param character the character to check.
