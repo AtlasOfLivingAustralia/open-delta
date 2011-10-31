@@ -78,7 +78,7 @@ public class AttributeFormatter extends Formatter {
              return "";
          }
     	 AngleBracketHandlingMode mode = _angleBracketHandlingMode;
-    	 if (_angleBracketHandlingMode == AngleBracketHandlingMode.REPLACE) {
+    	 if (_angleBracketHandlingMode == AngleBracketHandlingMode.CONTEXT_SENSITIVE_REPLACE) {
     		 mode = AngleBracketHandlingMode.REMOVE;
     	 }
          return defaultFormat(comment, mode);

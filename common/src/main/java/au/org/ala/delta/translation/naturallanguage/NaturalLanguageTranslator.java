@@ -40,6 +40,7 @@ public class NaturalLanguageTranslator extends AbstractIterativeTranslator {
     private CharacterFormatter _characterFormatter;
     private AttributeFormatter _attributeFormatter;
     private AttributeTranslatorFactory _attributeTranslatorFactory;
+    private String _currentItemSubheading;
     
     public NaturalLanguageTranslator(
     		DeltaContext context, 
@@ -58,6 +59,7 @@ public class NaturalLanguageTranslator extends AbstractIterativeTranslator {
         _attributeFormatter = attributeFormatter;
         _attributeTranslatorFactory = new AttributeTranslatorFactory(
         		context, _characterFormatter, _attributeFormatter, _typeSetter);
+        _currentItemSubheading = "";
     }
 
   
@@ -81,7 +83,10 @@ public class NaturalLanguageTranslator extends AbstractIterativeTranslator {
     public void afterItem(Item item) {
        finishWritingAttributes(item);
         _typeSetter.afterItem(item);
+        _currentItemSubheading = "";
     }
+    
+    
     
     /**
      * This is necessary as attributes aren't written until all attributes of
@@ -110,6 +115,7 @@ public class NaturalLanguageTranslator extends AbstractIterativeTranslator {
         Item item = attribute.getItem();
         au.org.ala.delta.model.Character character = attribute.getCharacter();
        
+        
         String comma = Words.word(Word.COMMA);
         if (_context.useAlternateComma()) {
             comma = Words.word(Word.ALTERNATE_COMMA);
@@ -125,12 +131,26 @@ public class NaturalLanguageTranslator extends AbstractIterativeTranslator {
             if (!_characters.isEmpty()) {
                 writeAttributes(item, _characters);
                 _characters = new ArrayList<Character>();
+                updateItemSubHeading(character.getCharacterId());
             }
 
             _linkedCharacters = _context.getLinkedCharacters(character.getCharacterId());
             _characters.add(character);
 
         }
+    }
+    
+    /**
+     * Tracks the most recently encountered item subheading (while we are 
+     * writing the attributes of an Item).  At the start of each new paragraph, 
+     * the most recent item subheading is written.
+     * @param charNumber the number of the character being processed.
+     */
+    private void updateItemSubHeading(int charNumber) {
+    	String itemSubHeading = _context.getItemSubheading(charNumber);
+    	if (StringUtils.isNotBlank(itemSubHeading)) {
+    		_currentItemSubheading = itemSubHeading;
+    	}
     }
 
     private boolean isPartOfLinkedSet(Set<Integer> linkedCharacters, Character character) {
@@ -286,7 +306,7 @@ public class NaturalLanguageTranslator extends AbstractIterativeTranslator {
             i++;
         }
         // Don't match partial words.
-        if (i != spaceIndex + 1) {
+        if ((i < minLength) && (i != spaceIndex + 1)) {
         	i = spaceIndex;
         }
         return text.substring(i);
@@ -356,9 +376,10 @@ public class NaturalLanguageTranslator extends AbstractIterativeTranslator {
             _typeSetter.newParagraph();
             _typeSetter.beforeNewParagraphCharacter();
             _newParagraph = false;
+            writeItemSubheading(character);
         }
 
-        writeItemSubheading(character);
+       
         if (!_context.omitCharacterNumbers()) {
             _printer.writeJustifiedText("(" + characterNumber + ")", -1);
         }
@@ -389,14 +410,16 @@ public class NaturalLanguageTranslator extends AbstractIterativeTranslator {
 	}
 
 	protected void writeItemSubheading(Character character) {
-		String itemSubheading = _context.getItemSubheading(character.getCharacterId());
-		itemSubheading = _characterFormatter.defaultFormat(itemSubheading);
+		
+		String itemSubheading = _characterFormatter.defaultFormat(_currentItemSubheading);
         
 		if (StringUtils.isNotEmpty(itemSubheading)) {
             _printer.insertTypeSettingMarks(32);
             writeSentence(itemSubheading, 0);
 
             _printer.insertTypeSettingMarks(33);
+            
+            _currentItemSubheading = "";
         }
 	}
 
