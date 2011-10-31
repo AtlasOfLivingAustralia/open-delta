@@ -92,7 +92,6 @@ public class WriteOnceDistItemsFile extends BinaryKeyFile {
 		List<Integer> ints = new ArrayList<Integer>();
 		for (int i=0;i<RECORD_LENGTH_INTEGERS; i++) {
 			ints.add(work.getInt(i*4));
-			System.out.print(Integer.toBinaryString(work.getInt(i*4))+" ");
 		}
 		writeToRecord(record+1, ints);
 		
@@ -170,10 +169,6 @@ public class WriteOnceDistItemsFile extends BinaryKeyFile {
 		record = nextAvailableRecord();
 		_header.setLengthsOfItemNamesRecord(record);
 		writeToRecord(record, nameLengths);
-	}
-
-	public void writeNameLengths(List<Integer> nameLengths) {
-		
 	}
 
 }

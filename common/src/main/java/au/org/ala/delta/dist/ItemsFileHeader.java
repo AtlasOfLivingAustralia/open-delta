@@ -10,6 +10,9 @@ import au.org.ala.delta.io.BinaryKeyFile;
  */
 public class ItemsFileHeader {
 	
+	/** The size of the header in ints */
+	public static final int SIZE = 18;
+	
 	private int _recordLength = BinaryKeyFile.RECORD_LENGTH_INTEGERS;
 	private int _bitsPerWord = 32;
 	private int _charsPerWord = 4;

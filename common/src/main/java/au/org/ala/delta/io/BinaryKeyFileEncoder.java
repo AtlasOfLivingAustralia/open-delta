@@ -185,6 +185,23 @@ public class BinaryKeyFileEncoder {
 		throw new IllegalArgumentException("Invalid character type: "+type);
 	}
 	
+	public CharacterType typeFromInt(int encodedType) {
+		switch (encodedType) {
+		case 1:
+			return CharacterType.UnorderedMultiState;
+		case 2:
+			return CharacterType.OrderedMultiState;
+		case 3:
+			return CharacterType.IntegerNumeric;
+		case 4:
+			return CharacterType.RealNumeric;
+		case 5:
+			return CharacterType.Text;
+		}
+		
+		throw new IllegalArgumentException("Invalid character type: "+encodedType);
+	}
+	
 	public List<Boolean> encodeCharacterMasks(FilteredDataSet dataSet, boolean filterTextChars) {
 		Boolean[] init = new Boolean[dataSet.getNumberOfCharacters()];
 		Arrays.fill(init, Boolean.FALSE);

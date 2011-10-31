@@ -18,6 +18,7 @@
 		<module>delta-editor</module>
 		<module>intkey</module>
 		<module>confor</module>
+		<module>dist</module>
 	</modules>
 
 	<build>
