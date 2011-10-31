@@ -40,7 +40,12 @@ public class NaturalLanguageTranslator extends AbstractIterativeTranslator {
     private CharacterFormatter _characterFormatter;
     private AttributeFormatter _attributeFormatter;
     private AttributeTranslatorFactory _attributeTranslatorFactory;
-    private String _currentItemSubheading;
+    private AttributeParser _attributeParser;
+    
+    /** Tracks the item subheadings that have been output */
+    private int _lastItemSubheadingChecked;
+    /** Tracks the last character checked for a start of paragraph marker */
+    private int _lastNewParagraphCharacterChecked;
     
     public NaturalLanguageTranslator(
     		DeltaContext context, 
@@ -59,7 +64,10 @@ public class NaturalLanguageTranslator extends AbstractIterativeTranslator {
         _attributeFormatter = attributeFormatter;
         _attributeTranslatorFactory = new AttributeTranslatorFactory(
         		context, _characterFormatter, _attributeFormatter, _typeSetter);
-        _currentItemSubheading = "";
+        _lastItemSubheadingChecked = 0;
+        _lastNewParagraphCharacterChecked = 0;
+        _attributeParser = new AttributeParser();
+        
     }
 
   
@@ -83,7 +91,8 @@ public class NaturalLanguageTranslator extends AbstractIterativeTranslator {
     public void afterItem(Item item) {
        finishWritingAttributes(item);
         _typeSetter.afterItem(item);
-        _currentItemSubheading = "";
+        _lastItemSubheadingChecked = 0;
+        _lastNewParagraphCharacterChecked = 0;
     }
     
     
@@ -115,12 +124,6 @@ public class NaturalLanguageTranslator extends AbstractIterativeTranslator {
         Item item = attribute.getItem();
         au.org.ala.delta.model.Character character = attribute.getCharacter();
        
-        
-        String comma = Words.word(Word.COMMA);
-        if (_context.useAlternateComma()) {
-            comma = Words.word(Word.ALTERNATE_COMMA);
-        }
-
         // It is most convenient to write linked characters out in a block.
         if (isPartOfLinkedSet(_linkedCharacters, character)) {
             _characters.add(character);
@@ -131,7 +134,7 @@ public class NaturalLanguageTranslator extends AbstractIterativeTranslator {
             if (!_characters.isEmpty()) {
                 writeAttributes(item, _characters);
                 _characters = new ArrayList<Character>();
-                updateItemSubHeading(character.getCharacterId());
+                
             }
 
             _linkedCharacters = _context.getLinkedCharacters(character.getCharacterId());
@@ -141,16 +144,18 @@ public class NaturalLanguageTranslator extends AbstractIterativeTranslator {
     }
     
     /**
-     * Tracks the most recently encountered item subheading (while we are 
-     * writing the attributes of an Item).  At the start of each new paragraph, 
-     * the most recent item subheading is written.
+     * Returns most recently encountered item subheading that has not 
+     * yet been written.
      * @param charNumber the number of the character being processed.
      */
-    private void updateItemSubHeading(int charNumber) {
+    private String getItemSubHeading(int charNumber) {
     	String itemSubHeading = _context.getItemSubheading(charNumber);
-    	if (StringUtils.isNotBlank(itemSubHeading)) {
-    		_currentItemSubheading = itemSubHeading;
+    	while (charNumber > _lastItemSubheadingChecked && StringUtils.isBlank(itemSubHeading)) {
+    		itemSubHeading = _context.getItemSubheading(charNumber);
+    		charNumber--;
     	}
+    	_lastItemSubheadingChecked = charNumber;
+    	return itemSubHeading;
     }
 
     private boolean isPartOfLinkedSet(Set<Integer> linkedCharacters, Character character) {
@@ -273,9 +278,8 @@ public class NaturalLanguageTranslator extends AbstractIterativeTranslator {
     private void writeAttributes(Item item, List<Character> characters) {
 
     	Character first = characters.get(0);
-	    if (_context.startNewParagraphAtCharacter(first.getCharacterId())) {
-         	_newParagraph = true;
-        }
+	    checkForNewParagraph(first.getCharacterId());
+	    
         for (Character character : characters) {
             
             boolean subsequentPartOfLinkedSet = (characters.size() > 1) && (character != characters.get(0));
@@ -289,6 +293,24 @@ public class NaturalLanguageTranslator extends AbstractIterativeTranslator {
             writeCharacterAttribute(item, character);
         }
     }
+    
+   
+    /**
+     * Goes through the characters since the last attribute output and checks
+     * if any of them were marked by the NEW PARAGRAPH AT CHARACTERS 
+     * directive. (This is necessary as a flagged character may have been
+     * excluded by the filter because it was unknown or inapplicable).
+     * @param charNumber the current character being processed.
+     */
+    private void checkForNewParagraph(int charNumber) {
+    	for (int i=_lastNewParagraphCharacterChecked+1; i<=charNumber; i++) {
+	    	 if (_context.startNewParagraphAtCharacter(i)) {
+	          	_newParagraph = true;
+	         }
+    	}
+    	 _lastNewParagraphCharacterChecked = charNumber;
+    }
+    
 
     private String removeCommonPrefix(String master, String text) {
         if (StringUtils.isEmpty(master) || StringUtils.isEmpty(text)) {
@@ -315,12 +337,7 @@ public class NaturalLanguageTranslator extends AbstractIterativeTranslator {
     private void writeCharacterAttribute(Item item, Character character) {
 
         Attribute attribute = item.getAttribute(character);
-        // Unknown attributes get through the filter if there is an item
-        // subheading for the character.
-        if (attribute.isUnknown()) {
-        	return;
-        }
-        AttributeParser parser = new AttributeParser();
+     
         AttributeTranslator translator = _attributeTranslatorFactory.translatorFor(character);
 
         String value = attribute.getValueAsString();
@@ -332,7 +349,7 @@ public class NaturalLanguageTranslator extends AbstractIterativeTranslator {
             }
         }
 
-        String formattedAttribute = translator.translate(parser.parse(value));
+        String formattedAttribute = translator.translate(_attributeParser.parse(value));
         
         _typeSetter.beforeAttribute(attribute);
         _printer.writeJustifiedText(formattedAttribute, -1);
@@ -411,15 +428,15 @@ public class NaturalLanguageTranslator extends AbstractIterativeTranslator {
 
 	protected void writeItemSubheading(Character character) {
 		
-		String itemSubheading = _characterFormatter.defaultFormat(_currentItemSubheading);
+		String itemSubheading = getItemSubHeading(character.getCharacterId());
+		
+		itemSubheading = _characterFormatter.defaultFormat(itemSubheading);
         
 		if (StringUtils.isNotEmpty(itemSubheading)) {
             _printer.insertTypeSettingMarks(32);
             writeSentence(itemSubheading, 0);
 
             _printer.insertTypeSettingMarks(33);
-            
-            _currentItemSubheading = "";
         }
 	}
 

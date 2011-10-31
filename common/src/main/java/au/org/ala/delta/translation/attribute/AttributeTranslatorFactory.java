@@ -38,22 +38,32 @@ public class AttributeTranslatorFactory {
 
 	public AttributeTranslator translatorFor(Character character) {
 		boolean omitOr = _context.isOrOmmitedForCharacter(character.getCharacterId());
+		
+		AttributeTranslator translator;
 		if (character instanceof MultiStateCharacter) {
-			return new MultiStateAttributeTranslator(
+			translator = new MultiStateAttributeTranslator(
 					(MultiStateCharacter) character, 
 					_characterFormatter,
 					_attributeFormatter,
 					omitOr);
 		}
-		if (character instanceof NumericCharacter<?>) {
-			return new NumericAttributeTranslator(
+		else if (character instanceof NumericCharacter<?>) {
+			translator = new NumericAttributeTranslator(
 					(NumericCharacter<?>) character, 
 					_typeSetter,
 					_attributeFormatter,
 					_context.getOmitSpaceBeforeUnits(), 
 					omitOr);
 		}
-
-		return new TextAttributeTranslator(_attributeFormatter, omitOr);
+		else {
+			translator = new TextAttributeTranslator(_attributeFormatter, omitOr);
+		}
+		if (_context.useAlternateComma()) {
+			translator.useAlternateComma();
+		}
+		if (_context.getOmitInapplicables()) {
+			translator.omitInapplicables();
+		}
+		return translator;
 	}
 }

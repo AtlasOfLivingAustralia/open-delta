@@ -2,11 +2,13 @@ package au.org.ala.delta.translation.attribute;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 
+import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.format.AttributeFormatter;
 import au.org.ala.delta.translation.Words;
 import au.org.ala.delta.translation.Words.Word;
@@ -22,6 +24,8 @@ public abstract class AttributeTranslator {
 	protected StringBuilder _translatedValue;
 	protected AttributeFormatter _attributeFormatter;
 	protected boolean _omitOr;
+	protected String _comma;
+	protected boolean _omitInapplicables;
 
 
 	public AttributeTranslator(AttributeFormatter formatter, boolean omitOr) {
@@ -30,6 +34,27 @@ public abstract class AttributeTranslator {
 		_separators.put("-", "to");
 		_attributeFormatter = formatter;
 		_omitOr = omitOr;
+		_comma = Words.word(Word.COMMA);
+		_omitInapplicables = false;
+	}
+	
+	/**
+	 * After this method has been invoked, the comma character used in
+	 * translated descriptions will be the one specified by the 
+	 * Vocabulary entry of "Word.ALTERNATE_COMMA"
+	 */
+	public void useAlternateComma() {
+		_comma = Words.word(Word.ALTERNATE_COMMA);
+	}
+	
+	/**
+	 * After this method has been invoked, any portion of an attribute 
+	 * that has been coded as inapplicable (e.g. 11,3/-) will be ommitted 
+	 * from the translated description. (Otherwise "or inapplicable" will
+	 * be output).
+	 */
+	public void omitInapplicables() {
+		_omitInapplicables = true;
 	}
 
 	/**
@@ -42,16 +67,17 @@ public abstract class AttributeTranslator {
 	 *         attribute.
 	 */
 	public String translate(CommentedValueList attribute) {
+		
 		_translatedValue = new StringBuilder();
 		_translatedValue.append(translateCharacterComment(attribute.getCharacterComment()));
 
-		List<CommentedValues> commentedValues = attribute.getCommentedValues();
+		List<CommentedValues> commentedValues = getValues(attribute);
 		boolean valueOutput = false;
 		for (int i = 0; i < commentedValues.size(); i++) {
 			String nextValue = commentedValues(commentedValues.get(i));
 
 			if (valueOutput && StringUtils.isNotEmpty(nextValue)) {
-				_translatedValue.append(", ");
+				_translatedValue.append(_comma).append(" ");
 				if (!_omitOr) {
 					_translatedValue.append(Words.word(Word.OR)+" ");
 				}
@@ -62,6 +88,23 @@ public abstract class AttributeTranslator {
 		}
 
 		return _translatedValue.toString().trim();
+	}
+
+	protected List<CommentedValues> getValues(CommentedValueList attribute) {
+		List<CommentedValues> commentedValues = new ArrayList<CommentedValues>(attribute.getCommentedValues());
+		
+		if (_omitInapplicables && commentedValues.size() > 1) {
+			Iterator<CommentedValues> allValues = commentedValues.iterator();
+			while (allValues.hasNext()) {
+				CommentedValues values = allValues.next();
+				// Inapplicable can't appear with other values.
+				if (values.getNumValues() == 1 && Attribute.INAPPICABLE.equals(values.getValue(0))) {
+					allValues.remove();
+				}
+			}
+		}
+		
+		return commentedValues;
 	}
 
 	public String commentedValues(CommentedValues commentedValues) {
@@ -75,15 +118,23 @@ public abstract class AttributeTranslator {
 			Values values = commentedValues.getValues();
 			output.append(translateValues(values));
 		}
-		output.append(comment(commentedValues.getComment()));
+		output.append(comment(commentedValues));
 		return output.toString();
 	}
 
 	private boolean isInapplicableWithComment(CommentedValues commentedValues) {
 
+		return isPseudoValueWithComment(commentedValues, Attribute.INAPPICABLE);
+	}
+	
+	private boolean isUnknownWithComment(CommentedValues commentedValues) {
+		return isPseudoValueWithComment(commentedValues, Attribute.UNKNOWN);
+	}
+	
+	private boolean isPseudoValueWithComment(CommentedValues commentedValues, String pseudoValue) {
 		Values values = commentedValues.getValues();
 		String comment = commentedValues.getComment();
-		return (StringUtils.isNotEmpty(comment) && values.getNumValues() == 1 && "-".equals(values.getValue(0)));
+		return (StringUtils.isNotEmpty(comment) && values.getNumValues() == 1 && pseudoValue.equals(values.getValue(0)));
 
 	}
 
@@ -97,8 +148,18 @@ public abstract class AttributeTranslator {
 		return output.toString();
 	}
 
-	public String comment(String comment) {
-		comment = _attributeFormatter.formatComment(comment);
+	public String comment(CommentedValues commentedValues) {
+		String comment = commentedValues.getComment();
+		
+		// An attribute that consists of a comment and a pseudo value that
+		// does not normally translate (ie. - or U), the character comment
+		// formatting rules are applied.
+		if (isInapplicableWithComment(commentedValues) || isUnknownWithComment(commentedValues)) {
+			comment = _attributeFormatter.formatCharacterComment(comment);
+		}
+		else {
+			comment = _attributeFormatter.formatComment(comment);
+		}
 		StringBuilder output = new StringBuilder();
 		if (StringUtils.isNotEmpty(comment)) {
 			output.append(" ");
@@ -167,7 +228,7 @@ public abstract class AttributeTranslator {
 			for (int i = 1; i < translatedValues.size(); i++) {
 
 				if (translatedValues.size() > 2) {
-					output.append(",");
+					output.append(_comma);
 				}
 				output.append(" ");
 				if (i == translatedValues.size() - 1) {
@@ -193,13 +254,13 @@ public abstract class AttributeTranslator {
 
 	protected String getTranslatedValue(String value) {
 
-		if ("V".equals(value)) {
+		if (Attribute.VARIABLE.equals(value)) {
 			return Words.word(Word.VARIABLE);
 		}
-		if ("U".equals(value)) {
+		if (Attribute.UNKNOWN.equals(value)) {
 			return Words.word(Word.UNKNOWN);
 		}
-		if ("-".equals(value)) {
+		if (Attribute.INAPPICABLE.equals(value)) {
 			return Words.word(Word.NOT_APPLICABLE);
 		}
 		return translateValue(value);

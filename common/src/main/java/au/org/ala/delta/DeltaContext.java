@@ -371,7 +371,7 @@ public class DeltaContext extends AbstractDeltaContext {
 		_omitInapplicables = b;
 	}
 
-	public boolean isOmitInapplicables() {
+	public boolean getOmitInapplicables() {
 		return _omitInapplicables;
 	}
 

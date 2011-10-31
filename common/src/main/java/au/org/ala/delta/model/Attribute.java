@@ -26,6 +26,10 @@ import au.org.ala.delta.model.observer.AttributeObserver;
  */
 public abstract class Attribute {
 
+	public static final String INAPPICABLE = "-";
+	public static final String VARIABLE = "V";
+	public static final String UNKNOWN = "U";
+	
 	protected AttributeData _impl;
 	
 	protected Character _character;
