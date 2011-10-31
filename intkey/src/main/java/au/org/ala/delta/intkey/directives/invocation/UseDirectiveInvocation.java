@@ -228,8 +228,7 @@ public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
             Item taxonToSeparate = context.getDataset().getTaxon(context.getTaxonToSeparate());
             if (!context.getAvailableTaxa().contains(taxonToSeparate)) {
                 boolean changeValue = context.getDirectivePopulator().promptForYesNoOption(
-                        MessageFormat.format(UIUtils.getResourceString("UseDirective.TaxonToSeparateEliminatedMsg"), _charFormatter.formatCharacterDescription(ch),
-                                _taxonFormatter.formatItemDescription(taxonToSeparate)));
+                        UIUtils.getResourceString("UseDirective.TaxonToSeparateEliminatedMsg", _charFormatter.formatCharacterDescription(ch), _taxonFormatter.formatItemDescription(taxonToSeparate)));
 
                 if (changeValue) {
                     CharacterValue newVal = promptForCharacterValue(ch, context.getDirectivePopulator());
@@ -248,7 +247,7 @@ public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
         if (context.charactersFixed()) {
             if (context.getFixedCharactersList().contains(ch.getCharacterId())) {
                 if (!context.isProcessingDirectivesFile()) {
-                    String msg = MessageFormat.format(UIUtils.getResourceString("UseDirective.CharacterFixed"), formatter.formatCharacterDescription(ch));
+                    String msg = UIUtils.getResourceString("UseDirective.CharacterFixed", formatter.formatCharacterDescription(ch));
                     String title = UIUtils.getResourceString("Intkey.informationDlgTitle");
                     JOptionPane.showMessageDialog(UIUtils.getMainFrame(), msg, title, JOptionPane.ERROR_MESSAGE);
                 }
@@ -262,7 +261,7 @@ public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
                 if (context.isProcessingDirectivesFile()) {
                     return true;
                 } else {
-                    String msg = MessageFormat.format(UIUtils.getResourceString("UseDirective.CharacterAlreadyUsed"), formatter.formatCharacterDescription(ch));
+                    String msg = UIUtils.getResourceString("UseDirective.CharacterAlreadyUsed", formatter.formatCharacterDescription(ch));
                     String title = UIUtils.getResourceString("Intkey.informationDlgTitle");
                     int choice = JOptionPane.showConfirmDialog(UIUtils.getMainFrame(), msg, title, JOptionPane.YES_NO_OPTION);
                     if (choice == JOptionPane.YES_OPTION) {
@@ -277,8 +276,8 @@ public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
         // is character unavailable?
         if (context.getSpecimen().isCharacterInapplicable(ch)) {
             if (!context.isProcessingDirectivesFile()) {
-                String msg = MessageFormat.format(UIUtils.getResourceString("UseDirective.CharacterUnavailable"), formatter.formatCharacterDescription(ch));
-                String title = MessageFormat.format(UIUtils.getResourceString("Intkey.informationDlgTitle"), formatter.formatCharacterDescription(ch));
+                String msg = UIUtils.getResourceString("UseDirective.CharacterUnavailable", formatter.formatCharacterDescription(ch));
+                String title = UIUtils.getResourceString("Intkey.informationDlgTitle", formatter.formatCharacterDescription(ch));
                 JOptionPane.showMessageDialog(UIUtils.getMainFrame(), msg, title, JOptionPane.ERROR_MESSAGE);
             }
             return false;
@@ -287,8 +286,8 @@ public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
         // is character excluded?
         if (!context.getIncludedCharacters().contains(ch)) {
             if (!context.isProcessingDirectivesFile()) {
-                String msg = MessageFormat.format(UIUtils.getResourceString("UseDirective.CharacterExcluded"), formatter.formatCharacterDescription(ch));
-                String title = MessageFormat.format(UIUtils.getResourceString("Intkey.informationDlgTitle"), formatter.formatCharacterDescription(ch));
+                String msg = UIUtils.getResourceString("UseDirective.CharacterExcluded", formatter.formatCharacterDescription(ch));
+                String title = UIUtils.getResourceString("Intkey.informationDlgTitle", formatter.formatCharacterDescription(ch));
                 JOptionPane.showMessageDialog(UIUtils.getMainFrame(), msg, title, JOptionPane.ERROR_MESSAGE);
             }
             return false;

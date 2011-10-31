@@ -15,7 +15,7 @@ public class SetVaryWtDirective extends NewIntkeyDirective {
     @Override
     protected List<IntkeyDirectiveArgument<?>> generateArgumentsList(IntkeyContext context) {
         List<IntkeyDirectiveArgument<?>> arguments = new ArrayList<IntkeyDirectiveArgument<?>>();
-        arguments.add(new RealArgument("varywt", "Enter value of VARYWT", context.getVaryWeight()));
+        arguments.add(new RealArgument("varyWt", "Enter value of VARYWT", context.getVaryWeight()));
         return arguments;
     }
 
