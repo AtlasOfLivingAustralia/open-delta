@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Queue;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
-import au.org.ala.delta.intkey.ui.UIUtils;
 import au.org.ala.delta.model.Item;
 
 public class TaxonListArgument extends AbstractTaxonListArgument<List<Item>> {

@@ -639,7 +639,6 @@ public final class IntkeyDatasetFileReader {
         if (itemFileHeader.getLDep() >= numChars) {
             seekToRecord(itemBinFile, itemFileHeader.getRpCdep());
             List<Integer> dependencyData = readIntegerList(itemBinFile, itemFileHeader.getLDep());
-            System.out.println("dep: " + dependencyData);
             // At the start of the dependency data there is an integer value for
             // each character.
             // If non zero, the value is an offset further down the list where

@@ -9,12 +9,21 @@ import org.junit.Test;
 import au.org.ala.delta.intkey.directives.DisplayInputDirective;
 import au.org.ala.delta.intkey.directives.FileInputDirective;
 import au.org.ala.delta.intkey.directives.PreferencesDirective;
+import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.MultiStateCharacter;
+import au.org.ala.delta.model.RealCharacter;
 
 public class DisplayInputTest extends IntkeyDatasetTestCase {
 
     @Test
     public void testDisplayInput() throws Exception {
         IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
+        
+        for (Character ch: context.getDataset().getCharacters()) {
+            if (!(ch instanceof MultiStateCharacter)) {
+                System.out.println(ch.getCharacterId());
+            }
+        }
 
         File tempLogFile = File.createTempFile("DisplayInputTest", null);
         tempLogFile.deleteOnExit();

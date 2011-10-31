@@ -7,7 +7,7 @@ import au.org.ala.delta.intkey.model.ReportUtils;
 import au.org.ala.delta.intkey.ui.UIUtils;
 import au.org.ala.delta.rtf.RTFBuilder;
 
-public class StatusIncludeCharactersDirectiveInvocation extends IntkeyDirectiveInvocation {
+public class StatusDisplayDirectiveInvocation extends IntkeyDirectiveInvocation {
 
     @Override
     public boolean execute(IntkeyContext context) throws IntkeyDirectiveInvocationException {
@@ -15,11 +15,11 @@ public class StatusIncludeCharactersDirectiveInvocation extends IntkeyDirectiveI
         builder.startDocument();
 
         builder.setTextColor(Color.BLUE);
-        builder.appendText(UIUtils.getResourceString("Status.IncludeCharacters.title"));
+        builder.appendText(UIUtils.getResourceString("Status.Display.title"));
         builder.setTextColor(Color.BLACK);
-
-        ReportUtils.generateStatusIncludeCharactersContent(context, builder);
-
+        
+        ReportUtils.generateStatusDisplayContent(context, builder);
+        
         builder.endDocument();
 
         context.getUI().displayRTFReport(builder.toString(), UIUtils.getResourceString("Status.title"));

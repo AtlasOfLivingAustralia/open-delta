@@ -1,15 +1,20 @@
 package au.org.ala.delta.intkey.model;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.FloatRange;
 
+import au.org.ala.delta.intkey.ui.UIUtils;
 import au.org.ala.delta.model.Attribute;
+import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.IntegerAttribute;
 import au.org.ala.delta.model.IntegerCharacter;
 import au.org.ala.delta.model.Item;
@@ -19,7 +24,9 @@ import au.org.ala.delta.model.RealAttribute;
 import au.org.ala.delta.model.RealCharacter;
 import au.org.ala.delta.model.TextCharacter;
 import au.org.ala.delta.rtf.RTFBuilder;
+import au.org.ala.delta.rtf.RTFUtils;
 import au.org.ala.delta.util.Pair;
+import au.org.ala.delta.util.Utils;
 
 /**
  * Utility methods used to generate reports
@@ -235,28 +242,239 @@ public class ReportUtils {
         return new Pair<Double, Double>(mean, stdDev);
     }
 
-    public void generateStatusDisplay(IntkeyContext context, RTFBuilder builder) {
+    public static void generateStatusDisplayContent(IntkeyContext context, RTFBuilder builder) {
+        String onValue = UIUtils.getResourceString("Status.onValue");
+        String offValue = UIUtils.getResourceString("Status.offValue");
+
+        String displayUnknownsValue = context.displayUnknowns() ? onValue : offValue;
+        String displayInapplicablesValue = context.displayInapplicables() ? onValue : offValue;
+        String displayCommentsValue = context.displayComments() ? onValue : offValue;
+        String displayContinuousValue = context.displayContinuous() ? onValue : offValue;
+        String displayEndIdentifyValue = context.displayEndIdentify() ? onValue : offValue;
+        String displayKeywordsValue = context.displayKeywords() ? onValue : offValue;
+        String displayLogValue = context.getUI().isLogVisible() ? onValue : offValue;
+        String displayInputValue = context.displayInput() ? onValue : offValue;
+        String displayNumberingValue = context.displayNumbering() ? onValue : offValue;
+
+        String displayImagesValue;
+        switch (context.getImageDisplayMode()) {
+        case AUTO:
+            displayImagesValue = UIUtils.getResourceString("Status.Display.imageDisplayAuto");
+            break;
+        case MANUAL:
+            displayImagesValue = UIUtils.getResourceString("Status.Display.imageDisplayManual");
+            break;
+        case OFF:
+            displayImagesValue = offValue;
+            break;
+        default:
+            throw new IllegalArgumentException("Unrecognized image display mode");
+        }
+
+        String displayScaledValue = context.displayScaled() ? onValue : offValue;
+
+        builder.appendText(UIUtils.getResourceString("Status.Display.content", displayUnknownsValue, displayInapplicablesValue, displayCommentsValue, displayContinuousValue, displayEndIdentifyValue,
+                displayKeywordsValue, displayLogValue, displayInputValue, displayNumberingValue, displayImagesValue, displayScaledValue));
+
     }
 
-    public void generateStatusIncludeCharacters(IntkeyContext context, RTFBuilder builder) {
+    public static void generateStatusIncludeCharactersContent(IntkeyContext context, RTFBuilder builder) {
+        List<Character> includedCharacters = context.getIncludedCharacters();
+        List<Integer> includedCharacterNumbers = new ArrayList<Integer>();
+        for (Character ch : includedCharacters) {
+            includedCharacterNumbers.add(ch.getCharacterId());
+        }
+
+        String formattedCharacterNumbers = Utils.formatIntegersAsListOfRanges(includedCharacterNumbers);
+
+        builder.appendText(UIUtils.getResourceString("Status.IncludeCharacters.content", includedCharacters.size(), formattedCharacterNumbers));
     }
 
-    public void generateStatusIncludeTaxa(IntkeyContext context, RTFBuilder builder) {
+    public static void generateStatusIncludeTaxaContent(IntkeyContext context, RTFBuilder builder) {
+        List<Item> includedTaxa = context.getIncludedTaxa();
+        List<Integer> includedTaxaNumbers = new ArrayList<Integer>();
+        for (Item taxon : includedTaxa) {
+            includedTaxaNumbers.add(taxon.getItemNumber());
+        }
+
+        String formattedTaxaNumbers = Utils.formatIntegersAsListOfRanges(includedTaxaNumbers);
+
+        builder.appendText(UIUtils.getResourceString("Status.IncludeTaxa.content", includedTaxa.size(), formattedTaxaNumbers));
     }
 
-    public void generateStatusExcludeCharacters(IntkeyContext context, RTFBuilder builder) {
+    public static void generateStatusExcludeCharactersContent(IntkeyContext context, RTFBuilder builder) {
+        List<Character> excludedCharacters = context.getExcludedCharacters();
+        List<Integer> excludedCharacterNumbers = new ArrayList<Integer>();
+        for (Character ch : excludedCharacters) {
+            excludedCharacterNumbers.add(ch.getCharacterId());
+        }
+
+        String formattedCharacterNumbers = Utils.formatIntegersAsListOfRanges(excludedCharacterNumbers);
+
+        builder.appendText(UIUtils.getResourceString("Status.ExcludeCharacters.content", excludedCharacters.size(), formattedCharacterNumbers));
+
     }
 
-    public void generateStatusExcludeTaxa(IntkeyContext context, RTFBuilder builder) {
+    public static void generateStatusExcludeTaxaContent(IntkeyContext context, RTFBuilder builder) {
+        List<Item> excludedTaxa = context.getExcludedTaxa();
+        List<Integer> excludedTaxaNumbers = new ArrayList<Integer>();
+        for (Item taxon : excludedTaxa) {
+            excludedTaxaNumbers.add(taxon.getItemNumber());
+        }
+
+        String formattedTaxaNumbers = Utils.formatIntegersAsListOfRanges(excludedTaxaNumbers);
+
+        builder.appendText(UIUtils.getResourceString("Status.ExcludeTaxa.content", excludedTaxa.size(), formattedTaxaNumbers));
     }
 
-    public void generateStatusFile(IntkeyContext context, RTFBuilder builder) {
+    public static void generateStatusFileContent(IntkeyContext context, RTFBuilder builder) {
+        File journalFile = context.getJournalFile();
+        File logFile = context.getLogFile();
+        File outputFile = context.getOutputFile();
+
+        builder.appendText(UIUtils.getResourceString("Status.Files.heading"));
+
+        if (journalFile == null && logFile == null && outputFile == null) {
+            builder.appendText(UIUtils.getResourceString("Status.Files.noFiles"));
+        }
+
+        if (journalFile != null) {
+            builder.appendText(RTFUtils.escapeRTF(UIUtils.getResourceString("Status.Files.journalFile", journalFile.getAbsolutePath())));
+        }
+
+        if (logFile != null) {
+            builder.appendText(RTFUtils.escapeRTF(UIUtils.getResourceString("Status.Files.logFile", logFile.getAbsolutePath())));
+        }
+
+        if (outputFile != null) {
+            builder.appendText(RTFUtils.escapeRTF(UIUtils.getResourceString("Status.Files.outputFile", outputFile.getAbsolutePath())));
+        }
     }
 
-    public void generateStatusSet(IntkeyContext context, RTFBuilder builder) {
+    public static void generateStatusSetContent(IntkeyContext context, RTFBuilder builder) {
+        builder.appendText(UIUtils.getResourceString("Status.Set.heading"));
+
+        String autoToleranceSetting = context.isAutoTolerance() ? UIUtils.getResourceString("Status.onValue") : UIUtils.getResourceString("Status.offValue");
+        int stopBestSetting = context.getStopBest();
+        double rbaseSetting = context.getRBase();
+        int toleranceSetting = context.getTolerance();
+        double varywt = context.getVaryWeight();
+        // TODO need to implement set demonstration
+        String demonstrationSetting = "TODO";
+        String imagePaths = RTFUtils.escapeRTF(StringUtils.join(context.getImageSettings().getResourcePathLocations(), ";"));
+        String infoPaths = RTFUtils.escapeRTF(StringUtils.join(context.getInfoSettings().getResourcePathLocations(), ";"));
+
+        builder.appendText(UIUtils.getResourceString("Status.Set.line1", autoToleranceSetting, stopBestSetting, rbaseSetting, toleranceSetting, varywt, demonstrationSetting, imagePaths, infoPaths));
+
+        StringBuilder matchValueBuilder = new StringBuilder();
+        if (context.getMatchInapplicables()) {
+            matchValueBuilder.append(UIUtils.getResourceString("Status.Set.inapplicablesMatchValue"));
+            matchValueBuilder.append(" ");
+        }
+
+        if (context.getMatchUnknowns()) {
+            matchValueBuilder.append(UIUtils.getResourceString("Status.Set.unknownsMatchValue"));
+            matchValueBuilder.append(" ");
+        }
+
+        switch (context.getMatchType()) {
+        case OVERLAP:
+            matchValueBuilder.append(UIUtils.getResourceString("Status.Set.overlapMatchValue"));
+            break;
+        case SUBSET:
+            matchValueBuilder.append(UIUtils.getResourceString("Status.Set.subsetMatchValue"));
+            break;
+        case EXACT:
+            matchValueBuilder.append(UIUtils.getResourceString("Status.Set.exactMatchValue"));
+            break;
+        default:
+            throw new IllegalArgumentException("Unrecognized match type");
+        }
+
+        builder.appendText(UIUtils.getResourceString("Status.Set.matchSettings", matchValueBuilder.toString()));
+
+        int diagLevel = context.getDiagLevel();
+        String diagTypeString;
+        if (context.getDiagType() == DiagType.SPECIMENS) {
+            diagTypeString = UIUtils.getResourceString("Status.Set.specimensDiagType");
+        } else {
+            diagTypeString = UIUtils.getResourceString("Status.Set.taxaDiagType");
+        }
+
+        builder.appendText(UIUtils.getResourceString("Status.Set.diagSettings", diagLevel, diagTypeString));
+
+        builder.appendText(UIUtils.getResourceString("Status.Set.reliabilities", buildReliabilitiesString(context.getDataset().getCharacters())));
+
+        Set<Character> exactCharacters = context.getExactCharacters();
+        List<Integer> exactCharacterNumbers = new ArrayList<Integer>();
+        for (Character ch : exactCharacters) {
+            exactCharacterNumbers.add(ch.getCharacterId());
+        }
+        Collections.sort(exactCharacterNumbers);
+
+        String exactCharacterNumbersAsString;
+        if (exactCharacterNumbers.isEmpty()) {
+            exactCharacterNumbersAsString = UIUtils.getResourceString("Status.Set.emptyCharacterSet");
+        } else {
+            exactCharacterNumbersAsString = Utils.formatIntegersAsListOfRanges(exactCharacterNumbers);
+        }
+
+        builder.appendText(UIUtils.getResourceString("Status.Set.exactCharacters", exactCharacterNumbersAsString));
+
+        List<Integer> fixedCharacterNumbers = context.getFixedCharactersList();
+        Collections.sort(fixedCharacterNumbers);
+
+        String fixedCharacterNumbersAsString;
+        if (fixedCharacterNumbers.isEmpty()) {
+            fixedCharacterNumbersAsString = UIUtils.getResourceString("Status.Set.emptyCharacterSet");
+        } else {
+            fixedCharacterNumbersAsString = Utils.formatIntegersAsListOfRanges(fixedCharacterNumbers);
+        }
+
+        builder.appendText(UIUtils.getResourceString("Status.Set.fixedCharacters", fixedCharacterNumbersAsString));
+    }
+    
+    private static String buildReliabilitiesString(List<Character> characters) {
+        StringBuilder builder = new StringBuilder();
+
+        int startRangeCharacterNumber = 0;
+        float rangeReliabilityValue = 0;
+        int prevCharacterNumber = 0;
+
+        for (int i = 0; i < characters.size(); i++) {
+            Character ch = characters.get(i);
+            int characterNumber = ch.getCharacterId();
+            float charReliabilityValue = ch.getReliability();
+
+            // First character
+            if (i == 0) {
+                startRangeCharacterNumber = characterNumber;
+                rangeReliabilityValue = charReliabilityValue;
+            } else if (charReliabilityValue != rangeReliabilityValue) {
+                appendReliabilityForCharacterRange(builder, startRangeCharacterNumber, prevCharacterNumber, rangeReliabilityValue);
+                startRangeCharacterNumber = characterNumber;
+                rangeReliabilityValue = charReliabilityValue;
+            }
+
+            prevCharacterNumber = characterNumber;
+
+            // Last character
+            if (i == characters.size() - 1) {
+                appendReliabilityForCharacterRange(builder, startRangeCharacterNumber, prevCharacterNumber, rangeReliabilityValue);
+            }
+        }
+
+        return builder.toString();
     }
 
-    public void generateStatusAll(IntkeyContext context, RTFBuilder builder) {
+    private static void appendReliabilityForCharacterRange(StringBuilder builder, int startRange, int endRange, float reliabilityValue) {
+        if (startRange == endRange) {
+            builder.append(String.format("%d,%.1f", startRange, reliabilityValue));
+        } else {
+            builder.append(String.format("%d-%d,%.1f", startRange, endRange, reliabilityValue));
+        }
+
+        builder.append(" ");
     }
 
 }
