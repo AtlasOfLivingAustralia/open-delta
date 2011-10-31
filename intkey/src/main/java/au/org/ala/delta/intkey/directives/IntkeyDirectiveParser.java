@@ -105,8 +105,13 @@ public class IntkeyDirectiveParser extends DirectiveParser<IntkeyContext> {
         instance.registerDirective(new DisplayKeywordsDirective());
         instance.registerDirective(new DisplayScaledDirective());
         instance.registerDirective(new DisplayEndIdentifyDirective());
+        instance.registerDirective(new DisplayInputDirective());
 
         instance.registerDirective(new DefineEndIdentifyDirective());
+        instance.registerDirective(new DefineSubjectsDirective());
+
+        instance.registerDirective(new PreferencesDirective());
+
         return instance;
     }
 
@@ -151,7 +156,7 @@ public class IntkeyDirectiveParser extends DirectiveParser<IntkeyContext> {
 
         Logger.log(msg);
 
-        if (!context.isProcessingInputFile()) {
+        if (!context.isProcessingDirectivesFile()) {
             context.getUI().displayErrorMessage(msg);
         }
     }

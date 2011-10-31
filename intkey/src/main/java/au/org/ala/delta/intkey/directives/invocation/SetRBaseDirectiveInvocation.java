@@ -18,7 +18,7 @@ public class SetRBaseDirectiveInvocation extends IntkeyDirectiveInvocation {
             // itself,
             // calculating the best
             // characters in the process
-            if (!context.isProcessingInputFile()) {
+            if (!context.isProcessingDirectivesFile()) {
                 context.clearBestOrSeparateCharacters();
                 context.getUI().handleUpdateAll();
             }

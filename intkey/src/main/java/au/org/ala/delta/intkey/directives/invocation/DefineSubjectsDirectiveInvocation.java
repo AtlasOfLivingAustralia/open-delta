@@ -16,6 +16,7 @@ public class DefineSubjectsDirectiveInvocation extends IntkeyDirectiveInvocation
     @Override
     public boolean execute(IntkeyContext context) throws IntkeyDirectiveInvocationException {
         List<String> subjectsList = Arrays.asList(subjects.split("\\s"));
+        context.setImageSubjects(subjectsList);
         return true;
     }
 

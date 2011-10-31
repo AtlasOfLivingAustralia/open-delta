@@ -249,7 +249,7 @@ public class UseDirectiveTest extends IntkeyDatasetTestCase {
         // set the values of controlling characters as opposed to prompting for
         // them using
         // modal dialogs.
-        context.setProcessingInputFile(true);
+        context.setProcessingDirectivesFile(true);
 
         new UseDirective().parseAndProcess(context, "3,2");
 
@@ -546,7 +546,7 @@ public class UseDirectiveTest extends IntkeyDatasetTestCase {
         // set the values of controlling characters as opposed to prompting for
         // them using
         // modal dialogs.
-        context.setProcessingInputFile(true);
+        context.setProcessingDirectivesFile(true);
 
         IntkeyDataset ds = context.getDataset();
 
@@ -581,7 +581,7 @@ public class UseDirectiveTest extends IntkeyDatasetTestCase {
         // set the values of controlling characters as opposed to prompting for
         // them using
         // modal dialogs.
-        context.setProcessingInputFile(true);
+        context.setProcessingDirectivesFile(true);
 
         IntkeyDataset ds = context.getDataset();
 
@@ -621,7 +621,7 @@ public class UseDirectiveTest extends IntkeyDatasetTestCase {
     @Test
     public void testAdvancedUse1() throws Exception {
         IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
-        context.setProcessingInputFile(true);
+        context.setProcessingDirectivesFile(true);
         IntkeyDataset ds = context.getDataset();        
         context.parseAndExecuteDirective("1,foo");
         Character ch = context.getDataset().getCharacter(1);
@@ -632,7 +632,7 @@ public class UseDirectiveTest extends IntkeyDatasetTestCase {
     @Test
     public void testAdvancedUse2() throws Exception {
         IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
-        context.setProcessingInputFile(true);
+        context.setProcessingDirectivesFile(true);
         IntkeyDataset ds = context.getDataset();        
         context.parseAndExecuteDirective("USE 1,foo");
         Character ch = context.getDataset().getCharacter(1);
@@ -642,7 +642,7 @@ public class UseDirectiveTest extends IntkeyDatasetTestCase {
     @Test
     public void testAdvancedUse3() throws Exception {
         IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
-        context.setProcessingInputFile(true);
+        context.setProcessingDirectivesFile(true);
         IntkeyDataset ds = context.getDataset();        
         context.parseAndExecuteDirective("INCLUDE CHARACTERS 1-10");
         assertEquals(10, context.getIncludedCharacters().size());

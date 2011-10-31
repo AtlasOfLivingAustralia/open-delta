@@ -81,6 +81,12 @@ public class IntkeyContext extends AbstractDeltaContext {
      */
     private File _initializationFile;
 
+    /**
+     * A directives file that sets preferred parameter settings. The directives
+     * in this file are executed every time a new dataset is loaded.
+     */
+    private File _preferencesFile;
+
     private StartupFileData _startupFileData;
 
     private IntkeyUI _appUI;
@@ -125,7 +131,13 @@ public class IntkeyContext extends AbstractDeltaContext {
     private boolean _autoTolerance;
 
     /**
-     * Is an input file currently being processed?
+     * Is a file containing directive calls currently being processed?
+     */
+    private boolean _processingDirectivesFile;
+
+    /**
+     * Is an input file - a file with directive calls as specified by the FILE
+     * INPUT directive currently being processed?
      */
     private boolean _processingInputFile;
 
@@ -161,6 +173,7 @@ public class IntkeyContext extends AbstractDeltaContext {
     private boolean _displayKeywords;
     private boolean _displayScaled;
     private boolean _displayEndIdentify;
+    private boolean _displayInput;
 
     private List<String> _endIdentifyCommands;
     private List<String> _imageSubjects;
@@ -198,6 +211,7 @@ public class IntkeyContext extends AbstractDeltaContext {
 
         _appUI = appUI;
         _directivePopulator = directivePopulator;
+        _processingDirectivesFile = false;
         _processingInputFile = false;
 
         _directiveParser = IntkeyDirectiveParser.createInstance();
@@ -264,21 +278,28 @@ public class IntkeyContext extends AbstractDeltaContext {
         _imageSubjects = new ArrayList<String>();
     }
 
-    /**
-     * @return Is Intkey currently running in advanced mode?
-     */
-    public synchronized boolean isAdvancedMode() {
-        return _isAdvancedMode;
+    public synchronized void setPreferencesFile(File preferencesFile) {
+        _preferencesFile = preferencesFile;
     }
 
     /**
-     * Set whether or not Intkey is running in advanced mode
-     * 
-     * @param isAdvancedMode
-     *            true if Intkey is running in advanced mode
+     * Execute the directives in the preferences file, if a preferences file has
+     * been set.
      */
-    public synchronized void setAdvancedMode(boolean isAdvancedMode) {
-        this._isAdvancedMode = isAdvancedMode;
+    public synchronized void executePreferencesFileDirectives() {
+        if (_preferencesFile != null) {
+            processDirectivesFile(_preferencesFile);
+        }
+    }
+
+    public synchronized void processInputFile(File directivesFile) {
+        // Keep track of old value for _processingInputFile. There could
+        // be a case where there is a call to FILE INPUT inside a
+        // preferences file itself. Unlikely, but it could happen
+        boolean oldProcessingInputFile = _processingInputFile;
+        _processingInputFile = true;
+        processDirectivesFile(directivesFile);
+        _processingInputFile = oldProcessingInputFile;
     }
 
     /**
@@ -346,28 +367,28 @@ public class IntkeyContext extends AbstractDeltaContext {
         }
     }
 
-    public synchronized void processInputFile(File inputFile) {
-        Logger.log("Reading in directives from file: %s", inputFile.getAbsolutePath());
+    private synchronized void processDirectivesFile(File directivesFile) {
+        Logger.log("Reading in directives from file: %s", directivesFile.getAbsolutePath());
 
-        if (inputFile == null || !inputFile.exists()) {
-            throw new IllegalArgumentException("Could not open input file " + inputFile.getAbsolutePath());
+        if (directivesFile == null || !directivesFile.exists()) {
+            throw new IllegalArgumentException("Could not open input file " + directivesFile.getAbsolutePath());
         }
 
         // May be in several levels of input file, so need to ensure we set this
         // back to the correct value.
-        boolean oldProcessingInputFile = _processingInputFile;
-        _processingInputFile = true;
+        boolean oldProcessingInputFile = _processingDirectivesFile;
+        _processingDirectivesFile = true;
 
         IntkeyDirectiveParser parser = IntkeyDirectiveParser.createInstance();
 
         try {
-            parser.parse(inputFile, IntkeyContext.this);
+            parser.parse(directivesFile, IntkeyContext.this);
         } catch (IOException ex) {
             Logger.log(ex.getMessage());
-            _appUI.displayErrorMessage(String.format("Error reading file '%s'", inputFile.getAbsolutePath()));
+            _appUI.displayErrorMessage(String.format("Error reading file '%s'", directivesFile.getAbsolutePath()));
         }
 
-        _processingInputFile = oldProcessingInputFile;
+        _processingDirectivesFile = oldProcessingInputFile;
     }
 
     /**
@@ -393,7 +414,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         }
 
         // TODO need a proper listener pattern here?
-        if (!_processingInputFile) {
+        if (!_processingDirectivesFile) {
             _appUI.handleNewDataset(_dataset);
         }
 
@@ -436,7 +457,8 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     private void processInitializationFile(File initializationFile) {
         _initializationFile = initializationFile;
-        processInputFile(initializationFile);
+        processDirectivesFile(initializationFile);
+        executePreferencesFileDirectives();
     }
 
     // TODO Does this belong here?
@@ -465,7 +487,12 @@ public class IntkeyContext extends AbstractDeltaContext {
 
         try {
             boolean success = invoc.execute(this);
-            if (success && !_processingInputFile) {
+
+            // Omit directive calls from the log and journal if a directives
+            // file is being processes, except in the case
+            // that the file is an "input" file as specified by FILE INPUT, and
+            // DISPLAY INPUT is set to ON.
+            if (success && (!_processingDirectivesFile || (_processingInputFile && _displayInput))) {
                 if (_executedDirectives.size() < insertionIndex) {
                     // executed directives list has been cleared, just add this
                     // directive to the end of the list
@@ -839,8 +866,8 @@ public class IntkeyContext extends AbstractDeltaContext {
     /**
      * @return true if an input file is current being processed
      */
-    public synchronized boolean isProcessingInputFile() {
-        return _processingInputFile;
+    public synchronized boolean isProcessingDirectivesFile() {
+        return _processingDirectivesFile;
     }
 
     /**
@@ -848,8 +875,8 @@ public class IntkeyContext extends AbstractDeltaContext {
      * 
      * @param processing
      */
-    public synchronized void setProcessingInputFile(boolean processing) {
-        _processingInputFile = processing;
+    public synchronized void setProcessingDirectivesFile(boolean processing) {
+        _processingDirectivesFile = processing;
     }
 
     /**
@@ -1482,6 +1509,14 @@ public class IntkeyContext extends AbstractDeltaContext {
         _endIdentifyCommands = new ArrayList<String>(commands);
     }
 
+    public synchronized boolean displayInput() {
+        return _displayInput;
+    }
+
+    public synchronized void setDisplayInput(boolean displayInput) {
+        this._displayInput = displayInput;
+    }
+
     private void executeEndIdentifyCommands() {
         if (_endIdentifyCommands != null) {
             for (String cmd : _endIdentifyCommands) {
@@ -1543,14 +1578,6 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     public synchronized File getOutputFile() {
         return _currentOutputFile;
-    }
-
-    public synchronized List<File> getOutputFiles() {
-        // List<File> fileList = new
-        // ArrayList<File>(_outputFileWriters.keySet());
-        // Collections.sort(fileList);
-        // return fileList;
-        return null;
     }
 
     /**
@@ -1615,7 +1642,10 @@ public class IntkeyContext extends AbstractDeltaContext {
     }
 
     private void updateUI() {
-        if (!_processingInputFile) {
+        // Don't update the UI in the middle of processing an input file. Wait
+        // and update once when the
+        // entire file has finished being processed.
+        if (!_processingDirectivesFile) {
             _appUI.handleUpdateAll();
         }
     }

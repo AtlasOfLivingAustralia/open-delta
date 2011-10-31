@@ -247,7 +247,7 @@ public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
         // is character fixed?
         if (context.charactersFixed()) {
             if (context.getFixedCharactersList().contains(ch.getCharacterId())) {
-                if (!context.isProcessingInputFile()) {
+                if (!context.isProcessingDirectivesFile()) {
                     String msg = MessageFormat.format(UIUtils.getResourceString("UseDirective.CharacterFixed"), formatter.formatCharacterDescription(ch));
                     String title = UIUtils.getResourceString("Intkey.informationDlgTitle");
                     JOptionPane.showMessageDialog(UIUtils.getMainFrame(), msg, title, JOptionPane.ERROR_MESSAGE);
@@ -259,7 +259,7 @@ public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
         // is character already used?
         if (warnAlreadySet) {
             if (context.getSpecimen().hasValueFor(ch)) {
-                if (context.isProcessingInputFile()) {
+                if (context.isProcessingDirectivesFile()) {
                     return true;
                 } else {
                     String msg = MessageFormat.format(UIUtils.getResourceString("UseDirective.CharacterAlreadyUsed"), formatter.formatCharacterDescription(ch));
@@ -276,7 +276,7 @@ public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
 
         // is character unavailable?
         if (context.getSpecimen().isCharacterInapplicable(ch)) {
-            if (!context.isProcessingInputFile()) {
+            if (!context.isProcessingDirectivesFile()) {
                 String msg = MessageFormat.format(UIUtils.getResourceString("UseDirective.CharacterUnavailable"), formatter.formatCharacterDescription(ch));
                 String title = MessageFormat.format(UIUtils.getResourceString("Intkey.informationDlgTitle"), formatter.formatCharacterDescription(ch));
                 JOptionPane.showMessageDialog(UIUtils.getMainFrame(), msg, title, JOptionPane.ERROR_MESSAGE);
@@ -286,7 +286,7 @@ public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
 
         // is character excluded?
         if (!context.getIncludedCharacters().contains(ch)) {
-            if (!context.isProcessingInputFile()) {
+            if (!context.isProcessingDirectivesFile()) {
                 String msg = MessageFormat.format(UIUtils.getResourceString("UseDirective.CharacterExcluded"), formatter.formatCharacterDescription(ch));
                 String title = MessageFormat.format(UIUtils.getResourceString("Intkey.informationDlgTitle"), formatter.formatCharacterDescription(ch));
                 JOptionPane.showMessageDialog(UIUtils.getMainFrame(), msg, title, JOptionPane.ERROR_MESSAGE);
@@ -347,7 +347,7 @@ public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
             // if there are multiple states that the controlling character
             // can be set to for which the dependent character will be
             // inapplicable.
-            if (!context.isProcessingInputFile() && (cc.getNonAutoCc() || ch.getUseCc() || !cc.getNonAutoCc() && !cc.getUseCc() && applicableStates.size() > 1)) {
+            if (!context.isProcessingDirectivesFile() && (cc.getNonAutoCc() || ch.getUseCc() || !cc.getNonAutoCc() && !cc.getUseCc() && applicableStates.size() > 1)) {
                 CharacterValue val = promptForCharacterValue(cc, context.getDirectivePopulator());
                 if (val != null) {
                     context.setValueForCharacter(cc, val);

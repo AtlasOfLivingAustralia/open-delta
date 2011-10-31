@@ -35,4 +35,13 @@ public abstract class IntkeyDatasetTestCase extends TestCase {
 
         return context;
     }
+
+    public void loadNewDatasetInExistingContext(String resourcePathToDataset, IntkeyContext context) throws Exception {
+        URL initFileUrl = getClass().getResource(resourcePathToDataset);
+        SwingWorker<?, ?> worker = context.newDataSetFile(new File(initFileUrl.toURI()));
+
+        // The dataset is loaded on a separate thread so we need to wait until
+        // it is loaded.
+        worker.get();
+    }
 }
