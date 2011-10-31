@@ -7,9 +7,7 @@ import au.org.ala.delta.dist.io.DistItemsFile;
 import au.org.ala.delta.io.BinaryKeyFileEncoder;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterType;
-import au.org.ala.delta.model.DefaultDataSetFactory;
 import au.org.ala.delta.model.DeltaDataSet;
-import au.org.ala.delta.model.DeltaDataSetFactory;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.util.Pair;
@@ -20,16 +18,16 @@ import au.org.ala.delta.util.Pair;
 public class DistItemsFileReader {
 	
 	private DistItemsFile _itemsFile;
-	private DeltaDataSetFactory _factory;
 	private DeltaDataSet _dataSet;
 	private BinaryKeyFileEncoder _encoder;
 	
-	public DistItemsFileReader(DistItemsFile itemsFile) {
+	public DistItemsFileReader(DeltaDataSet dataSet, DistItemsFile itemsFile) {
 		_itemsFile = itemsFile;
-		_factory = new DefaultDataSetFactory();
-		_dataSet = _factory.createDataSet("dist");
+		_dataSet = dataSet;
 		_encoder = new BinaryKeyFileEncoder();
-		
+	}
+	
+	public void readAll() {
 		createCharacters();
 		createItems();
 	}
