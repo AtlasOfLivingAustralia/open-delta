@@ -73,6 +73,7 @@ public class DeltaContext extends AbstractDeltaContext {
 	private Set<Integer> _useControllingCharactersFirst = new HashSet<Integer>(); 
 	private Set<Integer> _nonautomaticControllingCharacters = new HashSet<Integer>(); 
 	private Set<Integer> _treatIntegerCharacterAsReal = new HashSet<Integer>();
+	private Set<Integer> _omitFinalCommaForCharacters = new HashSet<Integer>();
 	
 	private Map<String, String> _itemHeadings = new HashMap<String, String>();
 	private Map<Integer, String> _itemSubHeadings = new HashMap<Integer, String>();
@@ -726,6 +727,14 @@ public class DeltaContext extends AbstractDeltaContext {
 	
 	public void omitOrForCharacter(int charNumber) {
 		_omitOrForCharacters.add(charNumber);
+	}
+	
+	public boolean isFinalCommaOmmitedForCharacter(int i) {
+		return _omitFinalCommaForCharacters.contains(i);
+	}
+	
+	public void omitFinalCommaForCharacter(int charNumber) {
+		_omitFinalCommaForCharacters.add(charNumber);
 	}
 	
 	public boolean isUseControllingCharacterFirst(int i) {

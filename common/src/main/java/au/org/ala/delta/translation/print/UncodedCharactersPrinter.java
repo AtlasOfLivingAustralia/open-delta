@@ -26,18 +26,20 @@ public class UncodedCharactersPrinter extends AbstractIterativeTranslator {
 	private DeltaContext _context;
 	protected List<Character> _uncodedChars;
 	private DeltaWriter _deltaWriter;
-	
+	private boolean _omitItemDescription;
 	
 	public UncodedCharactersPrinter(
 			DeltaContext context, 
 			PrintFile printFile, 
 			ItemFormatter itemFormatter,
-			ItemListTypeSetter typeSetter) {
+			ItemListTypeSetter typeSetter,
+			boolean omitItemDescription) {
 		_typeSetter = typeSetter;
 		_printFile = printFile;
 		_itemFormatter = itemFormatter;
 		_deltaWriter = new DeltaWriter();
 		_context = context;
+		_omitItemDescription = omitItemDescription;
 	}
 	
 	@Override
@@ -45,10 +47,11 @@ public class UncodedCharactersPrinter extends AbstractIterativeTranslator {
 	
 	@Override
 	public void beforeItem(Item item) {
-		_typeSetter.beforeItem(item);
-		_printFile.outputLine(_itemFormatter.formatItemDescription(item));
-		_typeSetter.afterItemName();
-		
+		if (!_omitItemDescription) {
+			_typeSetter.beforeItem(item);
+			_printFile.outputLine(_itemFormatter.formatItemDescription(item));
+			_typeSetter.afterItemName();
+		}
 		_uncodedChars = new ArrayList<Character>();
 	}
 

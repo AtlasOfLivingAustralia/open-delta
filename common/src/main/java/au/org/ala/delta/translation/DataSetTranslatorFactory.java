@@ -249,8 +249,8 @@ public class DataSetTranslatorFactory {
 		DataSetFilter filter = new UncodedCharactersFilter(context);
 		
 		ItemFormatter itemFormatter  = formatterFactory.createItemFormatter(typeSetter, false);
-		
-		IterativeTranslator translator = new UncodedCharactersPrinter(context, printer, itemFormatter, typeSetter);
+		boolean omitItemDescriptions = context.getTranslateType() == TranslateType.NaturalLanguage;
+		IterativeTranslator translator = new UncodedCharactersPrinter(context, printer, itemFormatter, typeSetter, omitItemDescriptions);
 		return new Pair<IterativeTranslator, DataSetFilter>(translator, filter);
 	}
 	
@@ -262,7 +262,9 @@ public class DataSetTranslatorFactory {
 		
 		ItemFormatter itemFormatter  = formatterFactory.createItemFormatter(typeSetter, false);
 		CharacterFormatter characterFormatter = formatterFactory.createCharacterFormatter(true, true, CommentStrippingMode.RETAIN);
-		IterativeTranslator translator = new UncodedCharactersTranslator(context, printer, itemFormatter, characterFormatter, typeSetter);
+		boolean omitItemDescriptions = context.getTranslateType() == TranslateType.NaturalLanguage;
+		
+		IterativeTranslator translator = new UncodedCharactersTranslator(context, printer, itemFormatter, characterFormatter, typeSetter, omitItemDescriptions);
 		return new Pair<IterativeTranslator, DataSetFilter>(translator, filter);
 	}
 	

@@ -16,8 +16,9 @@ public class UncodedCharactersTranslator extends UncodedCharactersPrinter {
 			PrintFile printFile, 
 			ItemFormatter itemFormatter,
 			CharacterFormatter characterFormatter,
-			ItemListTypeSetter typeSetter) {
-		super(context, printFile, itemFormatter, typeSetter);
+			ItemListTypeSetter typeSetter,
+			boolean omitItemDescription) {
+		super(context, printFile, itemFormatter, typeSetter, omitItemDescription);
 		_characterFormatter = characterFormatter;
 	}
 	

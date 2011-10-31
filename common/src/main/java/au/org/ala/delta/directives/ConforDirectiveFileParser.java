@@ -110,6 +110,7 @@ public class ConforDirectiveFileParser extends DirectiveParser<DeltaContext> {
         instance.registerDirective(new NumberStatesFromZero());
         
         instance.registerDirective(new OmitCharacterNumbers());
+        instance.registerDirective(new OmitFinalComma());
         instance.registerDirective(new OmitInapplicables());
         instance.registerDirective(new OmitInnerComments());
         instance.registerDirective(new OmitLowerForCharacters());

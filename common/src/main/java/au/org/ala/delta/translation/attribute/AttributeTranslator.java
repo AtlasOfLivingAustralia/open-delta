@@ -26,6 +26,7 @@ public abstract class AttributeTranslator {
 	protected boolean _omitOr;
 	protected String _comma;
 	protected boolean _omitInapplicables;
+	protected boolean _omitFinalComma;
 
 
 	public AttributeTranslator(AttributeFormatter formatter, boolean omitOr) {
@@ -36,6 +37,7 @@ public abstract class AttributeTranslator {
 		_omitOr = omitOr;
 		_comma = Words.word(Word.COMMA);
 		_omitInapplicables = false;
+		_omitFinalComma = false;
 	}
 	
 	/**
@@ -55,6 +57,14 @@ public abstract class AttributeTranslator {
 	 */
 	public void omitInapplicables() {
 		_omitInapplicables = true;
+	}
+	
+	/**
+	 * Omits the comma when translating multiple values separated by &.
+	 * The comma before the final or remains unaffected.
+	 */
+	public void omitFinalComma() {
+		_omitFinalComma = true;
 	}
 
 	/**
@@ -228,7 +238,10 @@ public abstract class AttributeTranslator {
 			for (int i = 1; i < translatedValues.size(); i++) {
 
 				if (translatedValues.size() > 2) {
-					output.append(_comma);
+					
+					if ((i < translatedValues.size() - 1) || !_omitFinalComma) {
+						output.append(_comma);
+					}
 				}
 				output.append(" ");
 				if (i == translatedValues.size() - 1) {

@@ -64,6 +64,9 @@ public class AttributeTranslatorFactory {
 		if (_context.getOmitInapplicables()) {
 			translator.omitInapplicables();
 		}
+		if (_context.isFinalCommaOmmitedForCharacter(character.getCharacterId())) {
+			translator.omitFinalComma();
+		}
 		return translator;
 	}
 }

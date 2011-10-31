@@ -14,7 +14,7 @@ import org.junit.Before;
  */
 public abstract class ConforTestCase extends TestCase {
 
-	private String _directivesFilePath;
+	protected String _directivesFilePath;
 	protected String _samplePath;
 	
 	@Before

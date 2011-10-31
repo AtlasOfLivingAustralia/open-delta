@@ -36,6 +36,13 @@ public class ToNatRTest extends ConforTestCase {
 		if (!System.getProperty("line.separator").equals(expectedLineSeparator)) {
 			expected = expected.replaceAll(expectedLineSeparator, System.getProperty("line.separator"));
 		}
+		
+		actual = actual.replaceAll("\\{\\} ", "\\{\\}");
+		expected = expected.replaceAll("\\{\\} ", "\\{\\}");
+		actual = actual.replaceAll(" \\\\", "\\\\");
+		expected = expected.replaceAll(" \\\\", "\\\\");
+		
+		
 		// The heading contains the date so will be different.
 		
 		for (int i=0; i<expected.length(); i++) {
