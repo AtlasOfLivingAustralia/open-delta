@@ -413,7 +413,14 @@ public class SortingUtils {
 
             @Override
             public int compare(Character c1, Character c2) {
-                return Double.valueOf(suVals[c1.getCharacterId() - 1]).compareTo(Double.valueOf(suVals[c2.getCharacterId() - 1]));
+                double suValC1 = suVals[c1.getCharacterId() - 1];
+                double suValC2 = suVals[c2.getCharacterId() - 1];
+
+                if (suValC1 == suValC2) {
+                    return Integer.valueOf(c1.getCharacterId()).compareTo(Integer.valueOf(c2.getCharacterId()));
+                } else {
+                    return Double.valueOf(suValC1).compareTo(Double.valueOf(suValC2));
+                }
             }
         });
 
