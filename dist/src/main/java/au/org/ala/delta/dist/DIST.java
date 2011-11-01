@@ -19,14 +19,11 @@ import java.io.File;
 import java.io.InputStreamReader;
 
 import au.org.ala.delta.Logger;
-import au.org.ala.delta.directives.AbstractDeltaContext;
-import au.org.ala.delta.directives.AbstractDirective;
-import au.org.ala.delta.directives.DirectiveParserObserver;
 import au.org.ala.delta.dist.directives.DistDirectiveFileParser;
 import au.org.ala.delta.dist.io.DistItemsFile;
 import au.org.ala.delta.dist.io.DistOutputWriter;
 
-public class DIST implements DirectiveParserObserver {
+public class DIST {
 
 	private DistContext _context;
 	
@@ -77,12 +74,12 @@ public class DIST implements DirectiveParserObserver {
 	public DIST(File input) throws Exception {
 		_context = new DistContext();
 		DistDirectiveFileParser parser = DistDirectiveFileParser.createInstance();
-		parser.registerObserver(this);
 		parser.parse(input, _context);
 		
-		finishedProcessing();
+		computeAndOutputDistanceMatrix();
 	}
 	
+
 	public File getOutputFile() {
 		return _context.getOutputFileSelector().getPrintFileAsFile();
 	}
@@ -99,15 +96,8 @@ public class DIST implements DirectiveParserObserver {
 		return null;
 	}
 
-	public void preProcess(AbstractDirective<? extends AbstractDeltaContext> directive, String data) {}
-
-	public void postProcess(AbstractDirective<? extends AbstractDeltaContext> directive) {}
-
-	public void finishedProcessing() {
-		
-		// Get items file.
-		String itemsFileName = "ditems";
-		DistItemsFile itemsFile = new DistItemsFile(itemsFileName);
+	public void computeAndOutputDistanceMatrix() throws Exception {
+		DistItemsFile itemsFile = getInputFile();
 		DistItemsFileReader reader = new DistItemsFileReader(_context.getDataSet(), itemsFile);
 		reader.readAll();
 		
@@ -116,5 +106,14 @@ public class DIST implements DirectiveParserObserver {
 		
 		DistOutputWriter outputWriter = new DistOutputWriter(_context);
 		outputWriter.writeOutput(matrix);
+	}
+	
+	private DistItemsFile getInputFile() {
+		
+		String itemsFileName = "ditems";
+		itemsFileName = _context.getOutputFileManager().makeAbsolute(itemsFileName);
+		DistItemsFile itemsFile = new DistItemsFile(itemsFileName);
+		
+		return itemsFile;
 	}
 }

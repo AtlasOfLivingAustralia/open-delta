@@ -1,14 +1,19 @@
 package au.org.ala.delta.dist;
 
+import java.math.BigInteger;
 import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import java.util.List;
 
 import au.org.ala.delta.dist.io.DistItemsFile;
 import au.org.ala.delta.io.BinaryKeyFileEncoder;
+import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.MultiStateAttribute;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.util.Pair;
 
@@ -38,6 +43,7 @@ public class DistItemsFileReader {
 		List<Integer> states = _itemsFile.readNumbersOfStates();
 		for (int i=0; i<_itemsFile.getNumberOfCharacters(); i++) {
 			CharacterType type = _encoder.typeFromInt(charTypes.get(i));
+			type = effectiveType(type);
 			Character character = _dataSet.addCharacter(type);
 			if (type.isMultistate()) {
 				((MultiStateCharacter)character).setNumberOfStates(states.get(i));
@@ -45,8 +51,27 @@ public class DistItemsFileReader {
 		}
 	}
 	
+	/**
+	 * During the CONFOR TRANSLATE INTO DIST FORMAT operation, the attribute
+	 * values for OrderedMultistate, Integer Numeric and Real Numeric characters
+	 * are all converted to a single float.  
+	 * This operation is a one way translation so when reading the data set
+	 * back out, it is easiest to treat these character types as 
+	 * real numerics.
+	 * 
+	 * @param type the actual character type.
+	 * @return either UnorderedMulitstate or Real Numeric.
+	 */
+	private CharacterType effectiveType(CharacterType type) {
+		if (type == CharacterType.UnorderedMultiState) {
+			return type;
+		}
+		return CharacterType.RealNumeric;
+	}
+	
+	
 	private void createItems() {
-		for (int i=0; i<_itemsFile.getNumberOfItems(); i++) {
+		for (int i=1; i<=_itemsFile.getNumberOfItems(); i++) {
 			
 			Item item = _dataSet.addItem();
 			Pair<String, ByteBuffer> itemData = _itemsFile.readItem(i);
@@ -58,6 +83,77 @@ public class DistItemsFileReader {
 	}
 	
 	private void decodeAttributes(Item item, ByteBuffer attributeData) {
+		
+		Pair<List<Integer>, List<Integer>> offsets = _itemsFile.getAttributeOffsets();
+		List<Integer> wordOffsets = offsets.getFirst();
+		List<Integer> bitOffsets = offsets.getSecond();
+		for (int i=1; i<=_dataSet.getNumberOfCharacters(); i++) {
+			int wordOffset = wordOffsets.get(i-1);
+			if (wordOffset == 0) {
+				continue;
+			}
+			int bitOffset = bitOffsets.get(i-1);
+			
+			Character character = _dataSet.getCharacter(i);
+			switch (character.getCharacterType()) {
+			case UnorderedMultiState:
+				decodeUnorderedMultiStateCharacter(item, attributeData, (MultiStateCharacter)character, wordOffset, bitOffset);
+				break;
+			case RealNumeric:
+				decodeRealCharacter(item, attributeData, character, wordOffset);
+				break;
+			}
+		}
+	}
+
+	private void decodeRealCharacter(Item item, ByteBuffer attributeData, Character character, int wordOffset) {
+		FloatBuffer buffer = attributeData.asFloatBuffer();
+		float value = buffer.get(wordOffset-1);
+		Attribute attribute = _dataSet.addAttribute(item.getItemNumber(), character.getCharacterId());
+		if (value == -9999f) {
+			return;
+		}
+		String valueStr = Float.toString(value);
+		System.out.println(valueStr);
+		attribute.setValueFromString(valueStr);
+	}
+
+	private void decodeUnorderedMultiStateCharacter(Item item, ByteBuffer attributeData, MultiStateCharacter character, int wordOffset, int bitOffset) {
+		IntBuffer buffer = attributeData.asIntBuffer();
+		int numStates = character.getNumberOfStates();
+		MultiStateAttribute attribute = (MultiStateAttribute)_dataSet.addAttribute(item.getItemNumber(), character.getCharacterId());
+		
+		int numInts = (numStates+bitOffset) / 32;
+		if (numStates % 32 != 0) {
+			numInts++;
+		}
+		
+		wordOffset--;
+		int[] data = new int[numInts];
+		for (int i=wordOffset; i<wordOffset+numInts; i++) {
+			try {
+			data[i-wordOffset] = buffer.get(i);
+			}
+			catch (Exception e) {
+				System.out.println("Blah");
+			}
+		}
+		
+		BigInteger bits = BigInteger.valueOf(data[0]);
+		StringBuilder attributeString = new StringBuilder();
+		for (int i=bitOffset; i<bitOffset+numStates; i++) {
+			if (i %32 == 0) {
+				bits = BigInteger.valueOf(data[i/32]);
+			}
+			if (bits.testBit(i)) {
+				if (attributeString.length() > 0) {
+					attributeString.append("/");
+				}
+				attributeString.append(i-bitOffset+1);
+			}
+		}
+		System.out.println(attributeString.toString());
+		attribute.setValueFromString(attributeString.toString());
 		
 	}
 	

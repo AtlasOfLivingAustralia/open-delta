@@ -9,10 +9,10 @@ public class DistanceMatrix {
 	}
 	
 	public void set(int item1, int item2, double value) {
-		_matrix[item1][item2] = value;
+		_matrix[item1-1][item2-1] = value;
 	}
 	
 	public double get(int item1, int item2) {
-		return _matrix[item1][item2];
+		return _matrix[item1-1][item2-1];
 	}
 }

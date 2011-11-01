@@ -40,9 +40,19 @@ public class DistItemsFile extends BinaryKeyFile {
 		
 		int itemAttributeRecord = itemRecord+numRecords(nameLength);
 		String itemDescription = readString(itemRecord, nameLength);
-		ByteBuffer attributeData = readBytes(itemAttributeRecord, _header.getLengthOfAttributeLists());
+		ByteBuffer attributeData = readBytes(itemAttributeRecord, _header.getLengthOfAttributeLists()*4);
 		
 		return new Pair<String, ByteBuffer>(itemDescription, attributeData);
+	}
+	
+	public Pair<List<Integer>, List<Integer>> getAttributeOffsets() {
+		int record = _header.getItemCharacterIndexRecord();
+		List<Integer> wordsOffset = readIntegerList(record, _header.getNumberOfCharacters());
+		
+		record = _header.getItemCharacterBitOffsetsRecord();
+		List<Integer> bitsOffset = readIntegerList(record, _header.getNumberOfCharacters());
+		
+		return new Pair<List<Integer>, List<Integer>>(wordsOffset, bitsOffset);
 	}
 	
 	private int numRecords(int numBytes) {

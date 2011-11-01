@@ -26,7 +26,7 @@ import au.org.ala.delta.directives.args.DirectiveArguments;
 public class NamesFile extends AbstractTextDirective {
 		
 	public NamesFile() {
-		super("output", "file");
+		super("names", "file");
 	}
 	
 	@Override
@@ -37,5 +37,4 @@ public class NamesFile extends AbstractTextDirective {
 		String outputFile = data.trim();
 		context.getOutputFileSelector().setOutputFileName(outputFile);
 	}
-
 }

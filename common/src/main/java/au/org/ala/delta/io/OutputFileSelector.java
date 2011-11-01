@@ -7,13 +7,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.DeltaContext.OutputFormat;
-import au.org.ala.delta.directives.ParsingContext;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Item;
@@ -26,10 +24,9 @@ import au.org.ala.delta.translation.PrintFile;
 /**
  * Manages CONFOR output files.
  */
-public class OutputFileSelector {
+public class OutputFileSelector extends OutputFileManager {
 	
-	public static final String OUTPUT_FILE_ENCODING = "utf-8";
-	public static final String RTF_OUTPUT_FILE_ENCODING = "cp1252";
+	
 	public static final int DEFAULT_PRINT_WIDTH = 80;
 	
 	private int _characterForOutputFiles = 0;
@@ -40,19 +37,13 @@ public class OutputFileSelector {
 	private String _intkeyOutputFile;
 	private String _keyOutputFile;
 	private String _distOutputFile;
-	private String _outputDirectory;
 	private String _imageDirectory;
 	private String _printFileName;
 	private PrintStream _printStream;
 	private PrintFile _printFile;
-	private ParsingContext _context;
-	private OutputFormat _outputFormat;
 	private int _outputFileIndex;
 	private PrintFile _indexFile;
 	private String _indexFileName;
-	private String _outputFileName;
-	private PrintFile _outputFile;
-	
 	/** output when a new print file is created */
 	private String _printFileHeaderText;
 	/** Output at the end of the print file */
@@ -61,9 +52,6 @@ public class OutputFileSelector {
 	/** Number of characters on a line of text written to the print file */
 	private int _printWidth;
 	
-	/** Number of characters on a line of text written to the output file */
-	private int _outputWidth;
-	
 	public OutputFileSelector(DeltaDataSet dataSet) {
 		_dataSet = dataSet;
 		_printWidth = DEFAULT_PRINT_WIDTH;
@@ -71,9 +59,16 @@ public class OutputFileSelector {
 		_outputFileIndex = 1;
 	}
 
-	public void setParsingContext(ParsingContext context) {
-		_context = context;
-	}
+	/**
+	 * Returns the filename of the file that the translated output from the 
+	 * supplied item should be written to.
+	 * This is used both during natural language translation to determine 
+	 * the output file and by the intkey translation to write the file name
+	 * for the item to the intkey items file.
+	 * @param itemNumber the item to determine the output file for.
+	 * @return the name of the file the translated output for the supplied
+	 * item should go to.
+	 */
 	public String getItemOutputFile(int itemNumber) {
 		
 		String outputFile = "";
@@ -107,6 +102,13 @@ public class OutputFileSelector {
 		return outputFile;
 	}
 	
+	/**
+	 * Determines and adds an appropriate filename extension to an output file
+	 * based on the type of translation being performed.  If the filename
+	 * already includes a '.', no extension will be appended.
+	 * @param outputFile the output file.
+	 * @return the output file with an extension added.
+	 */
 	private String addExtension(String outputFile) {
 		
 		if (StringUtils.isEmpty(outputFile)) {
@@ -163,15 +165,6 @@ public class OutputFileSelector {
 		_keyOutputFile = keyOut;
 	}
 	
-	private String makeAbsolute(String fileName) {
-		File file = new File(fileName);
-		if (!file.isAbsolute()) {
-			File workingDir = _context.getFile().getParentFile();
-			file = new File(workingDir, fileName);
-		}
-		return file.getAbsolutePath();
-	}
-
 	public void setCharacterForOutputFiles(int character) {
 		_characterForOutputFiles = character;
 	}
@@ -198,13 +191,6 @@ public class OutputFileSelector {
 	
 	public boolean getNewFileAtItem(int itemNumber) {
 		return _newFileItems.contains(itemNumber);
-	}
-	
-	public void setOutputDirectory(String directory) throws Exception {
-		_outputDirectory = FilenameUtils.separatorsToSystem(directory);
-		if (_printFileName != null) {
-			recreatePrintFile();
-		}
 	}
 	
 	/**
@@ -246,7 +232,7 @@ public class OutputFileSelector {
 		recreatePrintFile();
 	}
 	
-	private void recreatePrintFile() throws Exception {
+	void recreatePrintFile() throws Exception {
 		
 		closeExistingPrintStream();
 		
@@ -266,43 +252,6 @@ public class OutputFileSelector {
 		
 	}
 	
-	private PrintStream createPrintStream(String fileName) throws Exception {
-		File parent = _context.getFile().getParentFile();
-		
-		String tmpFileName = prependOutputDirectory(fileName);
-		File file = new File(tmpFileName);
-		if (!file.isAbsolute()) {
-			file = new File(FilenameUtils.concat(parent.getAbsolutePath(), tmpFileName));
-		}
-		FileUtils.forceMkdir(file.getParentFile());
-		
-		PrintStream printStream = new PrintStream(file, outputFileEncoding());
-		
-		return printStream;
-	}
-	
-	private String prependOutputDirectory(String fileName) {
-		if (StringUtils.isEmpty(fileName)) {
-			return "";
-		}
-		String outputFileName = fileName;
-		if (!fileName.contains(File.separator) && (_outputDirectory != null)) {
-			outputFileName = FilenameUtils.concat(_outputDirectory, fileName);
-		}
-		return outputFileName;
-	}
-	
-	private void closeExistingPrintStream() {
-		if (_printStream != null && _printStream != System.out && _printStream != System.err) {
-			if (_printFile != null) {
-				_printFile.closePrintStream();
-			}
-			else {
-				IOUtils.closeQuietly(_printStream);
-			}
-		}
-	}
-	
 	public void setPrintStream(PrintStream stream) {
 		_printStream = stream;
 		if (_printFile == null) {
@@ -313,23 +262,10 @@ public class OutputFileSelector {
 		}
 	}
 	
-	public void setOutputFile(PrintFile outputFile) {
-		_outputFile = outputFile;
-	}
-	
 	public PrintFile getPrintFile() {
 		return _printFile;
 	}
 	
-	private String outputFileEncoding() {
-		if (_outputFormat == OutputFormat.RTF) {
-			return RTF_OUTPUT_FILE_ENCODING;
-		}
-		else {
-			return OUTPUT_FILE_ENCODING;
-		}
-	}
-
 	public boolean createNewFileIfRequired(Item item) {
 		
 		boolean newFile = false;
@@ -383,26 +319,22 @@ public class OutputFileSelector {
 		return fullPathOf(_indexFileName);
 	}
 	
-	private File fullPathOf(String fileName) {
-		if (StringUtils.isEmpty(fileName)) {
-			return null;
+	protected void closeExistingPrintStream() {
+		if (_printStream != null && _printStream != System.out && _printStream != System.err) {
+			if (_printFile != null) {
+				_printFile.closePrintStream();
+			}
+			else {
+				IOUtils.closeQuietly(_printStream);
+			}
 		}
-		String parentPath = _context.getFile().getParent();
-		fileName = FilenameUtils.concat(parentPath, prependOutputDirectory(fileName));
-		return new File(fileName);
-	}
-
-	public void setOutputFileName(String outputFile) throws Exception {
-		_outputFileName = FilenameUtils.separatorsToSystem(outputFile);
-		PrintStream indexStream = createPrintStream(_outputFileName);
-		_outputFile = new PrintFile(indexStream, _outputWidth);
 	}
 	
-	public PrintFile getOutputFile() {
-		return _outputFile;
-	}
-
-	public void setOutputWidth(int value) {
-		_outputWidth = value;
+	@Override
+	public void setOutputDirectory(String directory) throws Exception {
+		super.setOutputDirectory(directory);
+		if (_printFileName != null) {
+			recreatePrintFile();
+		}
 	}
 }

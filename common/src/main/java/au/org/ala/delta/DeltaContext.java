@@ -54,7 +54,7 @@ public class DeltaContext extends AbstractDeltaContext {
 	public static enum PrintActionType {PRINT_CHARACTER_LIST, PRINT_ITEM_DESCRIPTIONS, PRINT_ITEM_NAMES, PRINT_SUMMARY, PRINT_UNCODED_CHARACTERS, TRANSLATE_UNCODED_CHARACTERS};
 	
 	private DeltaDataSet _dataSet;
-	private OutputFileSelector _outputFileSelector;
+	protected OutputFileSelector _outputFileSelector;
 	
 	private OutputFormat _outputFormat = OutputFormat.RTF;
 	private Map<String, Object> _variables;
@@ -173,9 +173,13 @@ public class DeltaContext extends AbstractDeltaContext {
 		
 		_dataSet = dataSet;
 		
-		_outputFileSelector = new OutputFileSelector(_dataSet);
+		createOutputFileManager();
 		_outputFileSelector.setOutputFormat(_outputFormat);
 		_outputFileSelector.setPrintStream(System.out);
+	}
+
+	protected void createOutputFileManager() {
+		_outputFileSelector = new OutputFileSelector(_dataSet);
 	}
 	
 	public OutputFileSelector getOutputFileSelector() {
