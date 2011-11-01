@@ -40,6 +40,7 @@ public class IncludeItems extends AbstractRangeListDirective<DeltaContext> {
 	
 	@Override
 	public void process(DeltaContext context, DirectiveArguments directiveArguments) throws Exception {
+		context.includeAllItems();
 		_includedItems = new HashSet<Integer>();
 		super.process(context, directiveArguments);
 		

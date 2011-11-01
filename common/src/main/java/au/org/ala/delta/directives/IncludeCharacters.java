@@ -40,6 +40,8 @@ public class IncludeCharacters extends AbstractRangeListDirective<DeltaContext> 
 	
 	@Override
 	public void process(DeltaContext context, DirectiveArguments directiveArguments) throws Exception {
+		context.includeAllCharacters();
+		
 		_includedChars = new HashSet<Integer>();
 		super.process(context, directiveArguments);
 		

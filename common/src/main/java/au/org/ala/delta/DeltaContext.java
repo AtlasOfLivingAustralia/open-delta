@@ -63,8 +63,8 @@ public class DeltaContext extends AbstractDeltaContext {
 	private List<PrintActionType> _outputActions = new ArrayList<PrintActionType>();
 
 	private TranslateType _translateType = TranslateType.None;
-	private Set<Integer> _excludedCharacters = new HashSet<Integer>();
-	private Set<Integer> _excludedItems = new HashSet<Integer>();
+	protected Set<Integer> _excludedCharacters = new HashSet<Integer>();
+	protected Set<Integer> _excludedItems = new HashSet<Integer>();
 	private Set<Integer> _omitPeriodForCharacters = new HashSet<Integer>();	
 	private Set<Integer> _replaceSemiColonWithComma = new HashSet<Integer>();
 	private Set<Integer> _omitOrForCharacters = new HashSet<Integer>();
@@ -1013,5 +1013,19 @@ public class DeltaContext extends AbstractDeltaContext {
 	
 	public boolean getUseMeanValues() {
 		return _useMeanValues;
+	}
+	
+	/**
+	 * Resets the effect of any include/exclude character calls
+	 */
+	public void includeAllCharacters() {
+		_excludedCharacters.clear();
+	}
+	
+	/**
+	 * Resets the effect of any include/exclude item calls
+	 */
+	public void includeAllItems() {
+		_excludedItems.clear();
 	}
 }

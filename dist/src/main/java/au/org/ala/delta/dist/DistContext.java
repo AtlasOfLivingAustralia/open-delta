@@ -26,4 +26,6 @@ public class DistContext extends DeltaContext {
 	protected void createOutputFileManager() {
 		_outputFileSelector = new DistOutputFileManager();
 	}
+	
+	
 }

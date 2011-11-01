@@ -16,6 +16,7 @@ package au.org.ala.delta.directives;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.args.DirectiveArgType;
+import au.org.ala.delta.directives.args.DirectiveArguments;
 
 public class ExcludeItems extends AbstractRangeListDirective<DeltaContext> {
 	
@@ -26,6 +27,12 @@ public class ExcludeItems extends AbstractRangeListDirective<DeltaContext> {
 	@Override
 	public int getArgType() {
 		return DirectiveArgType.DIRARG_ITEMLIST;
+	}
+	
+	@Override
+	public void process(DeltaContext context, DirectiveArguments directiveArguments) throws Exception {
+		context.includeAllItems();
+		super.process(context, directiveArguments);
 	}
 
 	@Override
