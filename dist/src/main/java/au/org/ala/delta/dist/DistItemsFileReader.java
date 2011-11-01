@@ -25,10 +25,12 @@ public class DistItemsFileReader {
 	private DistItemsFile _itemsFile;
 	private DeltaDataSet _dataSet;
 	private BinaryKeyFileEncoder _encoder;
+	private DistContext _context;
 	
-	public DistItemsFileReader(DeltaDataSet dataSet, DistItemsFile itemsFile) {
+	public DistItemsFileReader(DeltaDataSet dataSet, DistItemsFile itemsFile, DistContext context) {
 		_itemsFile = itemsFile;
 		_dataSet = dataSet;
+		_context = context;
 		_encoder = new BinaryKeyFileEncoder();
 	}
 	
@@ -41,6 +43,9 @@ public class DistItemsFileReader {
 		
 		List<Integer> charTypes = _itemsFile.readCharacterTypes();
 		List<Integer> states = _itemsFile.readNumbersOfStates();
+		List<Float> weights = _itemsFile.readCharacterWeights();
+		List<Boolean> charMask = _itemsFile.readCharacterMask();
+		
 		for (int i=0; i<_itemsFile.getNumberOfCharacters(); i++) {
 			CharacterType type = _encoder.typeFromInt(charTypes.get(i));
 			type = effectiveType(type);
@@ -48,7 +53,12 @@ public class DistItemsFileReader {
 			if (type.isMultistate()) {
 				((MultiStateCharacter)character).setNumberOfStates(states.get(i));
 			}
+			character.setReliability(weights.get(i));
+			if (!charMask.get(i)) {
+				_context.excludeCharacter(i+1);
+			}
 		}
+		
 	}
 	
 	/**
@@ -63,9 +73,10 @@ public class DistItemsFileReader {
 	 * @return either UnorderedMulitstate or Real Numeric.
 	 */
 	private CharacterType effectiveType(CharacterType type) {
-		if (type == CharacterType.UnorderedMultiState) {
+		if (type == CharacterType.UnorderedMultiState || type.isText()) {
 			return type;
 		}
+		
 		return CharacterType.RealNumeric;
 	}
 	
@@ -83,7 +94,8 @@ public class DistItemsFileReader {
 	}
 	
 	private void decodeAttributes(Item item, ByteBuffer attributeData) {
-		
+		System.out.println();
+		System.out.println("Item: "+item.getItemNumber());
 		Pair<List<Integer>, List<Integer>> offsets = _itemsFile.getAttributeOffsets();
 		List<Integer> wordOffsets = offsets.getFirst();
 		List<Integer> bitOffsets = offsets.getSecond();
@@ -103,6 +115,8 @@ public class DistItemsFileReader {
 				decodeRealCharacter(item, attributeData, character, wordOffset);
 				break;
 			}
+			Attribute attribute = item.getAttribute(character);
+			System.out.println(character.getCharacterId() +","+ attribute.getValueAsString());
 		}
 	}
 
@@ -114,7 +128,6 @@ public class DistItemsFileReader {
 			return;
 		}
 		String valueStr = Float.toString(value);
-		System.out.println(valueStr);
 		attribute.setValueFromString(valueStr);
 	}
 
@@ -131,12 +144,7 @@ public class DistItemsFileReader {
 		wordOffset--;
 		int[] data = new int[numInts];
 		for (int i=wordOffset; i<wordOffset+numInts; i++) {
-			try {
 			data[i-wordOffset] = buffer.get(i);
-			}
-			catch (Exception e) {
-				System.out.println("Blah");
-			}
 		}
 		
 		BigInteger bits = BigInteger.valueOf(data[0]);
@@ -152,7 +160,6 @@ public class DistItemsFileReader {
 				attributeString.append(i-bitOffset+1);
 			}
 		}
-		System.out.println(attributeString.toString());
 		attribute.setValueFromString(attributeString.toString());
 		
 	}

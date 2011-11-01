@@ -1,6 +1,7 @@
 package au.org.ala.delta.dist.io;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.List;
 
 import au.org.ala.delta.dist.ItemsFileHeader;
@@ -85,4 +86,15 @@ public class DistItemsFile extends BinaryKeyFile {
 	public List<Float> readCharacterWeights() {
 		return readFloatList(_header.getCharcterWeightsRecord(), _header.getNumberOfCharacters());
 	}
+	
+	public List<Boolean> readCharacterMask() {
+		List<Integer> maskInts = readIntegerList(_header.getCharacterMaskRecord(), _header.getNumberOfCharacters());
+		List<Boolean> mask = new ArrayList<Boolean>(maskInts.size());
+		for (int maskInt : maskInts) {
+			mask.add(maskInt != 0);
+		}
+		return mask;
+	}
+	
+	
 }

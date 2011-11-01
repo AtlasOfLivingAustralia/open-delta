@@ -47,6 +47,16 @@ public class DISTTest extends TestCase {
 		System.out.print(actual);
 		expected = replaceNewLines(expected);
 		
+		
+		if (resultFileName.endsWith(".dis")) {
+			String[] actualFloats = actual.trim().split("\\s+");
+			String[] expectedFloats = expected.trim().split("\\s+");
+			for (int i=0; i<expectedFloats.length; i++) {
+				float float1 = Float.valueOf(actualFloats[i]);
+				float float2 = Float.valueOf(expectedFloats[i]);
+				assertEquals("index "+i, float2, float1, 0.03f);
+			}
+		}
 		assertEquals(expected.trim(), actual.trim());
 	}
 

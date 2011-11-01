@@ -5,7 +5,7 @@ public class DistanceMatrix {
 	private double[][] _matrix;
 	
 	public DistanceMatrix(int numItems) {
-		_matrix = new double[numItems-1][numItems-1];
+		_matrix = new double[numItems][numItems];
 	}
 	
 	public void set(int item1, int item2, double value) {

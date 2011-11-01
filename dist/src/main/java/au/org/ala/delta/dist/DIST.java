@@ -98,7 +98,7 @@ public class DIST {
 
 	public void computeAndOutputDistanceMatrix() throws Exception {
 		DistItemsFile itemsFile = getInputFile();
-		DistItemsFileReader reader = new DistItemsFileReader(_context.getDataSet(), itemsFile);
+		DistItemsFileReader reader = new DistItemsFileReader(_context.getDataSet(), itemsFile, _context);
 		reader.readAll();
 		
 		DistanceMatrixCalculator calculator = new DistanceMatrixCalculator(_context);

@@ -36,7 +36,7 @@ public class DistOutputWriter {
 		DeltaDataSet dataSet = _context.getDataSet();
 		int maxItems = dataSet.getMaximumNumberOfItems();
 		for (int i=1; i<=maxItems-1; i++) {
-			for (int j=maxItems-1; j > i; j--) {
+			for (int j=i+1; j<=maxItems; j++) {
 				double value = matrix.get(i,j);
 				outputFile.writeJustifiedText(_decimalFormat.format(value), -1);
 			}
