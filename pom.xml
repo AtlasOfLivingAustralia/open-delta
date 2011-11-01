@@ -19,6 +19,7 @@
 		<module>intkey</module>
 		<module>confor</module>
 		<module>dist</module>
+		<module>key</module>
 	</modules>
 
 	<build>

@@ -3,8 +3,8 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>au.org.ala.delta</groupId>
 	<artifactId>key</artifactId>
-	<version>1.0-M8-SNAPSHOT</version>
-	<name>CONFOR</name>
+	<version>1.0-M9-SNAPSHOT</version>
+	<name>KEY</name>
 
 	<scm>
 		<connection>scm:svn:http://open-delta.googlecode.com/svn/trunk/</connection>
@@ -19,7 +19,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>au.org.ala.delta.confor.CONFOR</mainClass>
+							<mainClass>au.org.ala.delta.key.Key</mainClass>
 							<addClasspath>true</addClasspath>
 						</manifest>
 						<manifestEntries>
@@ -56,7 +56,7 @@
 						<configuration>
 							<archive>
 								<manifest>
-									<mainClass>au.org.ala.delta.confor.CONFOR</mainClass>
+									<mainClass>au.org.ala.delta.key.Key</mainClass>
 								</manifest>
 								<manifestEntries>
 									<Implementation-Version>${project.version} (${buildNumber})</Implementation-Version>
@@ -107,8 +107,8 @@
 				<configuration>
 					<programs>
 						<program>
-							<mainClass>au.org.ala.delta.confor.CONFOR</mainClass>
-							<name>CONFOR</name>
+							<mainClass>au.org.ala.delta.key.Key</mainClass>
+							<name>Key</name>
 						</program>
 					</programs>
 					<binFileExtensions>
