@@ -56,15 +56,23 @@ public class IntkeyContext extends AbstractDeltaContext {
     // set of commands that have been run
     // other stuff
 
-    private boolean _isAdvancedMode;
+    public static final String CHARACTER_KEYWORD_ALL = "all";
+    public static final String CHARACTER_KEYWORD_USED = "used";
+    public static final String CHARACTER_KEYWORD_AVAILABLE = "available";
+    public static final String CHARACTER_KEYWORD_NONE = "none";
+
+    public static final String TAXON_KEYWORD_ALL = "all";
+    public static final String TAXON_KEYWORD_ELIMINATED = "eliminated";
+    public static final String TAXON_KEYWORD_REMAINING = "remaining";
+    public static final String TAXON_KEYWORD_NONE = "none";
+    public static final String TAXON_KEYWORD_SELECTED = "selected";
+
+    public static final String SPECIMEN_KEYWORD = "specimen";
 
     private File _taxaFile;
     private File _charactersFile;
 
     private IntkeyDataset _dataset;
-
-    private String _remoteInkFileLocation;
-    private File _zippedDatasetFile;
 
     /**
      * A .ink file used to load a new dataset. May be a jnlp style file
@@ -89,46 +97,7 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     private StartupFileData _startupFileData;
 
-    private IntkeyUI _appUI;
-    private DirectivePopulator _directivePopulator;
-
-    private Specimen _specimen;
-
-    private boolean _matchInapplicables;
-    private boolean _matchUnknowns;
-    private MatchType _matchType;
-
-    private int _tolerance;
-
-    private double _varyWeight;
-    private double _rbase;
-
-    private DiagType _diagType;
-    private int _diagLevel;
-    private int _stopBest;
-
-    private IntkeyCharacterOrder _characterOrder;
-
-    // The taxon to be separated when using the SEPARATE character order.
-    private int _taxonToSeparate;
-
-    private LinkedHashMap<Character, Double> _bestOrSeparateCharacters;
-
-    private Set<Integer> _includedCharacters;
-    private Set<Integer> _includedTaxa;
-
-    private List<String> _imagePathLocations;
-    private List<String> _infoPathLocations;
-
-    private List<Pair<String, String>> _taxonInformationDialogCommands;
-
     private IntkeyDirectiveParser _directiveParser;
-
-    private boolean _charactersFixed;
-    private List<Integer> _fixedCharactersList;
-    private Set<Integer> _exactCharactersSet;
-
-    private boolean _autoTolerance;
 
     /**
      * Is a file containing directive calls currently being processed?
@@ -141,29 +110,41 @@ public class IntkeyContext extends AbstractDeltaContext {
      */
     private boolean _processingInputFile;
 
-    // Use linked hashmap so that the keys list will be returned in
-    // order of insertion.
-    private LinkedHashMap<String, Set<Integer>> _userDefinedCharacterKeywords;
-
-    // Use linked hashmap so that the keys list will be returned in
-    // order of insertion.
-    private LinkedHashMap<String, Set<Integer>> _userDefinedTaxonKeywords;
-
-    public static final String CHARACTER_KEYWORD_ALL = "all";
-    public static final String CHARACTER_KEYWORD_USED = "used";
-    public static final String CHARACTER_KEYWORD_AVAILABLE = "available";
-    public static final String CHARACTER_KEYWORD_NONE = "none";
-
-    public static final String TAXON_KEYWORD_ALL = "all";
-    public static final String TAXON_KEYWORD_ELIMINATED = "eliminated";
-    public static final String TAXON_KEYWORD_REMAINING = "remaining";
-    public static final String TAXON_KEYWORD_NONE = "none";
-    public static final String TAXON_KEYWORD_SELECTED = "selected";
-
-    public static final String SPECIMEN_KEYWORD = "specimen";
-
     private List<IntkeyDirectiveInvocation> _executedDirectives;
 
+    private IntkeyUI _appUI;
+    private DirectivePopulator _directivePopulator;
+
+    private Specimen _specimen;
+
+    // values set by SET directives
+    private boolean _autoTolerance;
+    private int _diagLevel;
+    private DiagType _diagType;
+    private boolean _charactersFixed;
+    private List<Integer> _fixedCharactersList;
+    private Set<Integer> _exactCharactersSet;
+    private List<String> _imagePathLocations;
+    private List<String> _infoPathLocations;
+    private boolean _matchInapplicables;
+    private boolean _matchUnknowns;
+    private MatchType _matchType;
+    private double _rbase;
+    private int _stopBest;
+    private int _tolerance;
+    private double _varyWeight;
+
+    private boolean _demonstrationMode;
+
+    // A saved version of the values set for the SET, INCLUDE and DISPLAY
+    // directives at the time that
+    // SET DEMONSTRATION was set to ON. While SET DEMONSTRATION is on, the
+    // IntkeyContext is reverted back to these baseline settings every time the
+    // investigation is
+    // restarted (RESTART directive)
+    private DemonstrationModeSettings _demonstrationModeSettings;
+
+    // values set by DISPLAY directives
     private boolean _displayNumbering;
     private boolean _displayInapplicables;
     private boolean _displayUnknowns;
@@ -174,6 +155,26 @@ public class IntkeyContext extends AbstractDeltaContext {
     private boolean _displayScaled;
     private boolean _displayEndIdentify;
     private boolean _displayInput;
+
+    private IntkeyCharacterOrder _characterOrder;
+
+    // The taxon to be separated when using the SEPARATE character order.
+    private int _taxonToSeparate;
+
+    private LinkedHashMap<Character, Double> _bestOrSeparateCharacters;
+
+    private Set<Integer> _includedCharacters;
+    private Set<Integer> _includedTaxa;
+
+    private List<Pair<String, String>> _taxonInformationDialogCommands;
+
+    // Use linked hashmap so that the keys list will be returned in
+    // order of insertion.
+    private LinkedHashMap<String, Set<Integer>> _userDefinedCharacterKeywords;
+
+    // Use linked hashmap so that the keys list will be returned in
+    // order of insertion.
+    private LinkedHashMap<String, Set<Integer>> _userDefinedTaxonKeywords;
 
     private List<String> _endIdentifyCommands;
     private List<String> _imageSubjects;
@@ -852,6 +853,13 @@ public class IntkeyContext extends AbstractDeltaContext {
             // cleared as they are no longer valid
             _bestOrSeparateCharacters = null;
 
+            // If demonstration mode is on, need to revert back to the values of
+            // SET, DISPLAY and INCLUDE directives
+            // that were saved when demonstration mode enabled.
+            if (_demonstrationMode) {
+                _demonstrationModeSettings.loadIntoContext(this);
+            }
+
             _appUI.handleIdentificationRestarted();
         }
     }
@@ -1302,8 +1310,18 @@ public class IntkeyContext extends AbstractDeltaContext {
         return infoSettings;
     }
 
+    // Only used for saving settings when SET DEMONSTRATION is set to ON.
+    synchronized List<String> getImagePaths() {
+        return new ArrayList<String>(_imagePathLocations);
+    }
+
     public synchronized void setImagePaths(List<String> imagePaths) {
         _imagePathLocations = new ArrayList<String>(imagePaths);
+    }
+
+    // Only used for saving settings when SET DEMONSTRATION is set to ON.
+    synchronized List<String> getInfoPaths() {
+        return new ArrayList<String>(_infoPathLocations);
     }
 
     public synchronized void setInfoPaths(List<String> infoPaths) {
@@ -1399,12 +1417,33 @@ public class IntkeyContext extends AbstractDeltaContext {
         return _fixedCharactersList;
     }
 
+    /**
+     * Set the list of fixed characters.
+     */
+    synchronized void setFixedCharactersList() {
+
+    }
+
     public synchronized boolean isAutoTolerance() {
         return _autoTolerance;
     }
 
     public synchronized void setAutoTolerance(boolean autoTolerance) {
         this._autoTolerance = autoTolerance;
+    }
+
+    public synchronized boolean isDemonstrationMode() {
+        return _demonstrationMode;
+    }
+
+    public synchronized void setDemonstrationMode(boolean demonstrationMode) {
+        this._demonstrationMode = demonstrationMode;
+        if (_demonstrationMode) {
+            _demonstrationModeSettings = new DemonstrationModeSettings(this);
+        } else {
+            _demonstrationModeSettings = null;
+        }
+        // TODO need to update the UI.
     }
 
     public synchronized Set<Character> getExactCharacters() {

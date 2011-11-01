@@ -360,7 +360,7 @@ public class ReportUtils {
         int toleranceSetting = context.getTolerance();
         double varywt = context.getVaryWeight();
         // TODO need to implement set demonstration
-        String demonstrationSetting = "TODO";
+        String demonstrationSetting = context.isDemonstrationMode() ? UIUtils.getResourceString("Status.onValue") : UIUtils.getResourceString("Status.offValue");
         String imagePaths = RTFUtils.escapeRTF(StringUtils.join(context.getImageSettings().getResourcePathLocations(), ";"));
         String infoPaths = RTFUtils.escapeRTF(StringUtils.join(context.getInfoSettings().getResourcePathLocations(), ";"));
 
