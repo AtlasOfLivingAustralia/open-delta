@@ -34,6 +34,7 @@ public class DistanceMatrixCalculator {
 		
 		for (int i=1; i<=_dataSet.getNumberOfCharacters(); i++) {
 			if (_context.isCharacterExcluded(i)) {
+				_ranges.add(-1f);
 				continue;
 			}
 			Character character = _dataSet.getCharacter(i);
@@ -117,8 +118,8 @@ public class DistanceMatrixCalculator {
 		}
 		float distance = 0;
 		for (int i=1; i<=numStates; i++) {
-			float p1 = (states1.contains(i) ? 1 : 0) / states1.size();
-			float p2 = (states2.contains(i) ? 1 : 0) / states2.size();
+			float p1 = (states1.contains(i) ? 1f : 0f) / states1.size();
+			float p2 = (states2.contains(i) ? 1f : 0f) / states2.size();
 			distance += Math.abs(p1-p2);
 		}
 		

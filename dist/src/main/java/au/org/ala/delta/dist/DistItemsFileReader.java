@@ -153,7 +153,7 @@ public class DistItemsFileReader {
 			if (i %32 == 0) {
 				bits = BigInteger.valueOf(data[i/32]);
 			}
-			if (bits.testBit(i)) {
+			if (bits.testBit(i%32)) {
 				if (attributeString.length() > 0) {
 					attributeString.append("/");
 				}

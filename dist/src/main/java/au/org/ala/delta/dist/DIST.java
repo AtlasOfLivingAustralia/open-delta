@@ -19,13 +19,18 @@ import java.io.File;
 import java.io.InputStreamReader;
 
 import au.org.ala.delta.Logger;
+import au.org.ala.delta.directives.AbstractDeltaContext;
+import au.org.ala.delta.directives.AbstractDirective;
+import au.org.ala.delta.directives.DirectiveParserObserver;
+import au.org.ala.delta.directives.IncludeCharacters;
 import au.org.ala.delta.dist.directives.DistDirectiveFileParser;
 import au.org.ala.delta.dist.io.DistItemsFile;
 import au.org.ala.delta.dist.io.DistOutputWriter;
 
-public class DIST {
+public class DIST implements DirectiveParserObserver {
 
 	private DistContext _context;
+	private boolean _itemsFileRead;
 	
 	/**
 	 * @param args specifies the name of the input file to use.
@@ -73,7 +78,9 @@ public class DIST {
 	
 	public DIST(File input) throws Exception {
 		_context = new DistContext();
+		_itemsFileRead = false;
 		DistDirectiveFileParser parser = DistDirectiveFileParser.createInstance();
+		parser.registerObserver(this);
 		parser.parse(input, _context);
 		
 		computeAndOutputDistanceMatrix();
@@ -97,15 +104,22 @@ public class DIST {
 	}
 
 	public void computeAndOutputDistanceMatrix() throws Exception {
-		DistItemsFile itemsFile = getInputFile();
-		DistItemsFileReader reader = new DistItemsFileReader(_context.getDataSet(), itemsFile, _context);
-		reader.readAll();
+		readInputFile();
 		
 		DistanceMatrixCalculator calculator = new DistanceMatrixCalculator(_context);
 		DistanceMatrix matrix = calculator.calculateDistanceMatrix();
 		
 		DistOutputWriter outputWriter = new DistOutputWriter(_context);
 		outputWriter.writeOutput(matrix);
+	}
+
+	protected void readInputFile() {
+		if (!_itemsFileRead) {
+			DistItemsFile itemsFile = getInputFile();
+			DistItemsFileReader reader = new DistItemsFileReader(_context.getDataSet(), itemsFile, _context);
+			reader.readAll();
+			_itemsFileRead = true;
+		}
 	}
 	
 	private DistItemsFile getInputFile() {
@@ -116,4 +130,16 @@ public class DIST {
 		
 		return itemsFile;
 	}
+
+	public void preProcess(AbstractDirective<? extends AbstractDeltaContext> directive, String data) {
+		if (directive instanceof IncludeCharacters) {
+			readInputFile();
+		}
+	}
+
+	public void postProcess(AbstractDirective<? extends AbstractDeltaContext> directive) {}
+
+	public void finishedProcessing() {}
+	
+	
 }

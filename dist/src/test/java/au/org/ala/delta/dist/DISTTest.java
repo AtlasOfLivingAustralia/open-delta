@@ -30,7 +30,7 @@ public class DISTTest extends TestCase {
 		
 		runDIST(FilenameUtils.concat(path, "dist"));
 		checkResults(path, "grass.nam");
-		//checkResults(path, "grass.dis");
+		checkResults(path, "grass.dis");
 	}
 	
 	private void checkResults(String path, String resultFileName) throws Exception {
@@ -54,10 +54,10 @@ public class DISTTest extends TestCase {
 			for (int i=0; i<expectedFloats.length; i++) {
 				float float1 = Float.valueOf(actualFloats[i]);
 				float float2 = Float.valueOf(expectedFloats[i]);
-				assertEquals("index "+i, float2, float1, 0.03f);
+				assertEquals("index "+i, float2, float1, 0.001f);
 			}
 		}
-		assertEquals(expected.trim(), actual.trim());
+		//assertEquals(expected.trim(), actual.trim());
 	}
 
 	protected String replaceNewLines(String expected) {
