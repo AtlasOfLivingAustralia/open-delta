@@ -17,6 +17,7 @@ package au.org.ala.delta.dist.directives;
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.AbstractIntegerDirective;
 import au.org.ala.delta.directives.args.DirectiveArgType;
+import au.org.ala.delta.dist.DistContext;
 
 /**
  * Processes the MINIMUM NUMBER OF COMPARISONS directive.
@@ -35,7 +36,7 @@ public class MinimumNumberOfComparisons extends AbstractIntegerDirective {
 	
 	@Override
 	protected void processInteger(DeltaContext context, int value) throws Exception {
-		
+		((DistContext)context).setMinimumNumberOfComparisons(value);
 	
 	}
 

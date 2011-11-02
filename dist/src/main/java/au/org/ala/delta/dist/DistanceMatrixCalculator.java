@@ -2,14 +2,12 @@ package au.org.ala.delta.dist;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateAttribute;
-import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.NumericAttribute;
 import au.org.ala.delta.model.NumericRange;
 
@@ -22,11 +20,18 @@ public class DistanceMatrixCalculator {
 	private DistContext _context;
 	private DeltaDataSet _dataSet;
 	private List<Float> _ranges;
+	private MultiStateDifferenceCalculator _multistateDifferenceCalculator;
 	
 	public DistanceMatrixCalculator(DistContext context) {
 		_context = context;
 		_dataSet = _context.getDataSet();
 		initialiseRanges();
+		if (context.getMatchOverlap()) {
+			_multistateDifferenceCalculator = new MatchOverlapMultiStateDifferenceCalculator();
+		}
+		else {
+			_multistateDifferenceCalculator = new DefaultMultiStateDifferenceCalculator();
+		}
 	}
 	
 	private void initialiseRanges() {
@@ -99,7 +104,7 @@ public class DistanceMatrixCalculator {
 				distance = computeCharacterDifference((NumericAttribute)attribute1, (NumericAttribute)attribute2);
 			}
 			else {
-				distance = computeMultiStateDifference((MultiStateAttribute)attribute1, (MultiStateAttribute)attribute2);
+				distance = _multistateDifferenceCalculator.computeMultiStateDifference((MultiStateAttribute)attribute1, (MultiStateAttribute)attribute2);
 			}
 			weightedSum += weight * distance;
 			sumOfWeights += weight;
@@ -107,24 +112,6 @@ public class DistanceMatrixCalculator {
 		return weightedSum / sumOfWeights;
 	}
 
-	private float computeMultiStateDifference(MultiStateAttribute attribute1, MultiStateAttribute attribute2) {
-		MultiStateCharacter character = (MultiStateCharacter)attribute1.getCharacter();
-		int numStates = character.getNumberOfStates();
-		Set<Integer> states1 = attribute1.getPresentStates();
-		Set<Integer> states2 = attribute2.getPresentStates();
-		
-		if ((states1.size() == 0) || (states2.size() ==0)) {
-			throw new IllegalArgumentException("Zero states coded - attribute unknown!");
-		}
-		float distance = 0;
-		for (int i=1; i<=numStates; i++) {
-			float p1 = (states1.contains(i) ? 1f : 0f) / states1.size();
-			float p2 = (states2.contains(i) ? 1f : 0f) / states2.size();
-			distance += Math.abs(p1-p2);
-		}
-		
-		return distance*0.5f;
-	}
 
 	private float computeCharacterDifference(NumericAttribute attribute1, NumericAttribute attribute2) {
 		int charNum = attribute1.getCharacter().getCharacterId();

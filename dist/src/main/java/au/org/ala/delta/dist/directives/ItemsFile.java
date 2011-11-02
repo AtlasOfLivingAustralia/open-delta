@@ -17,6 +17,7 @@ package au.org.ala.delta.dist.directives;
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.AbstractTextDirective;
 import au.org.ala.delta.directives.args.DirectiveArguments;
+import au.org.ala.delta.dist.DistContext;
 
 /**
  * Processes the ITEMS FILE directive.  Specifies the name of the items
@@ -34,7 +35,7 @@ public class ItemsFile extends AbstractTextDirective {
 		String data = args.getFirstArgumentText();
 		
 		String itemsFile = data.trim();
-		
+		((DistContext)context).setItemsFileName(itemsFile);
 	}
 
 }

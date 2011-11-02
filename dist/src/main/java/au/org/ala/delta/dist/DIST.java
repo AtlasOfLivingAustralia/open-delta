@@ -124,7 +124,7 @@ public class DIST implements DirectiveParserObserver {
 	
 	private DistItemsFile getInputFile() {
 		
-		String itemsFileName = "ditems";
+		String itemsFileName = _context.getItemsFileName();
 		itemsFileName = _context.getOutputFileManager().makeAbsolute(itemsFileName);
 		DistItemsFile itemsFile = new DistItemsFile(itemsFileName);
 		
@@ -140,6 +140,5 @@ public class DIST implements DirectiveParserObserver {
 	public void postProcess(AbstractDirective<? extends AbstractDeltaContext> directive) {}
 
 	public void finishedProcessing() {}
-	
 	
 }

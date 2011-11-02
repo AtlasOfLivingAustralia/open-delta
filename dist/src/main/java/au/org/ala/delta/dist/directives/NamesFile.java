@@ -17,9 +17,10 @@ package au.org.ala.delta.dist.directives;
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.AbstractTextDirective;
 import au.org.ala.delta.directives.args.DirectiveArguments;
+import au.org.ala.delta.dist.DistContext;
 
 /**
- * Processes the OUTPUT FILE directive.
+ * Processes the NAMES FILE directive.
  * @see http://delta-intkey.com/www/uguide.htm#_*OUTPUT_FILE__1 
  *
  */
@@ -35,6 +36,8 @@ public class NamesFile extends AbstractTextDirective {
 		String data = args.getFirstArgumentText();
 		
 		String outputFile = data.trim();
-		context.getOutputFileSelector().setOutputFileName(outputFile);
+		
+		DistContext distContext = (DistContext)context;
+		distContext.getOutputFileManager().setNamesFileName(outputFile);
 	}
 }

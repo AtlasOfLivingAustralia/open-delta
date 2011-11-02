@@ -15,6 +15,8 @@ public class DistOutputFileManager extends OutputFileSelector {
 
 	private static final int DEFAULT_OUTPUT_FILE_WIDTH = 80;
 	private static final String DEFAULT_NAMES_FILE_EXTENSION = ".nam";
+	private static final String DEFAULT_OUTPUT_FILE_NAME = "dist.dis";
+	
 	private String _namesFileName;
 	
 	public DistOutputFileManager() {
@@ -42,5 +44,20 @@ public class DistOutputFileManager extends OutputFileSelector {
 		}
 		return _namesFileName;
 	}
+
+	@Override
+	public PrintFile getOutputFile() {
+		if (super.getOutputFile() == null) {
+			try {
+				setOutputFileName(DEFAULT_OUTPUT_FILE_NAME);
+			}
+			catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		}
+		return super.getOutputFile();
+	}
+
+	
 	
 }
