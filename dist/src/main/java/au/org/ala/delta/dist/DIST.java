@@ -22,10 +22,15 @@ import au.org.ala.delta.Logger;
 import au.org.ala.delta.directives.AbstractDeltaContext;
 import au.org.ala.delta.directives.AbstractDirective;
 import au.org.ala.delta.directives.DirectiveParserObserver;
+import au.org.ala.delta.directives.ExcludeCharacters;
+import au.org.ala.delta.directives.ExcludeItems;
 import au.org.ala.delta.directives.IncludeCharacters;
+import au.org.ala.delta.directives.IncludeItems;
 import au.org.ala.delta.dist.directives.DistDirectiveFileParser;
 import au.org.ala.delta.dist.io.DistItemsFile;
 import au.org.ala.delta.dist.io.DistOutputWriter;
+import au.org.ala.delta.dist.io.PhylipFormatOutputWriter;
+import au.org.ala.delta.translation.FilteredDataSet;
 
 public class DIST implements DirectiveParserObserver {
 
@@ -106,10 +111,12 @@ public class DIST implements DirectiveParserObserver {
 	public void computeAndOutputDistanceMatrix() throws Exception {
 		readInputFile();
 		
-		DistanceMatrixCalculator calculator = new DistanceMatrixCalculator(_context);
+		FilteredDataSet dataSet = new FilteredDataSet(_context, new DistDataSetFilter(_context));
+		
+		DistanceMatrixCalculator calculator = new DistanceMatrixCalculator(_context, dataSet);
 		DistanceMatrix matrix = calculator.calculateDistanceMatrix();
 		
-		DistOutputWriter outputWriter = new DistOutputWriter(_context);
+		DistOutputWriter outputWriter = getOutputWriter(dataSet);
 		outputWriter.writeOutput(matrix);
 	}
 
@@ -132,13 +139,24 @@ public class DIST implements DirectiveParserObserver {
 	}
 
 	public void preProcess(AbstractDirective<? extends AbstractDeltaContext> directive, String data) {
-		if (directive instanceof IncludeCharacters) {
+		if (directive instanceof IncludeCharacters ||
+			directive instanceof ExcludeCharacters ||
+			directive instanceof IncludeItems ||
+			directive instanceof ExcludeItems) {
 			readInputFile();
 		}
 	}
 
+	private DistOutputWriter getOutputWriter(FilteredDataSet dataSet) {
+		if (_context.isPhylipFormat()) {
+			return new PhylipFormatOutputWriter(_context, dataSet);
+		}
+		else {
+			return new DistOutputWriter(_context, dataSet);
+		}
+	}
+	
 	public void postProcess(AbstractDirective<? extends AbstractDeltaContext> directive) {}
 
 	public void finishedProcessing() {}
-	
 }

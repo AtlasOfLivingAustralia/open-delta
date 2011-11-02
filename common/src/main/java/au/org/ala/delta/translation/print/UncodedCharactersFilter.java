@@ -51,12 +51,6 @@ public class UncodedCharactersFilter extends AbstractDataSetFilter implements Da
 	
 	@Override
 	public boolean filter(Character character) {
-		try {
-			return !_context.isCharacterExcluded(character.getCharacterId());
-		}
-		catch (RuntimeException e) {
-			e.printStackTrace();
-			throw e;
-		}
+		return !_context.isCharacterExcluded(character.getCharacterId());
 	}
 }

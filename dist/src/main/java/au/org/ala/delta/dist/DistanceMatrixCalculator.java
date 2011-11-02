@@ -1,15 +1,17 @@
 package au.org.ala.delta.dist;
 
-import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
-import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateAttribute;
 import au.org.ala.delta.model.NumericAttribute;
 import au.org.ala.delta.model.NumericRange;
+import au.org.ala.delta.translation.FilteredCharacter;
+import au.org.ala.delta.translation.FilteredDataSet;
+import au.org.ala.delta.translation.FilteredItem;
 
 /**
  * Does the work of calculating the distance matrix that is the main output
@@ -18,13 +20,13 @@ import au.org.ala.delta.model.NumericRange;
 public class DistanceMatrixCalculator {
 
 	private DistContext _context;
-	private DeltaDataSet _dataSet;
-	private List<Float> _ranges;
+	private FilteredDataSet _dataSet;
+	private float[] _ranges;
 	private MultiStateDifferenceCalculator _multistateDifferenceCalculator;
 	
-	public DistanceMatrixCalculator(DistContext context) {
+	public DistanceMatrixCalculator(DistContext context, FilteredDataSet dataSet) {
 		_context = context;
-		_dataSet = _context.getDataSet();
+		_dataSet = dataSet;
 		initialiseRanges();
 		if (context.getMatchOverlap()) {
 			_multistateDifferenceCalculator = new MatchOverlapMultiStateDifferenceCalculator();
@@ -35,21 +37,21 @@ public class DistanceMatrixCalculator {
 	}
 	
 	private void initialiseRanges() {
-		_ranges = new ArrayList<Float>();
+		_ranges = new float[_dataSet.getNumberOfCharacters()];
 		
-		for (int i=1; i<=_dataSet.getNumberOfCharacters(); i++) {
-			if (_context.isCharacterExcluded(i)) {
-				_ranges.add(-1f);
-				continue;
-			}
-			Character character = _dataSet.getCharacter(i);
+		Iterator<FilteredCharacter> characters = _dataSet.filteredCharacters();
+		while (characters.hasNext()) {
+			Character character = characters.next().getCharacter();
 			float range = -1;
 			if (character.getCharacterType().isNumeric()) {
 				float min = Float.MAX_VALUE;
 				float max = Float.MIN_VALUE;
-				for (int j=1; j<=_dataSet.getMaximumNumberOfItems();j++) {
-					Item item1 = _dataSet.getItem(j);
-					NumericAttribute attribute = (NumericAttribute)item1.getAttribute(character);
+				
+				Iterator<FilteredItem> items = _dataSet.filteredItems();
+				while (items.hasNext()) {
+					FilteredItem item1 = items.next();
+					
+					NumericAttribute attribute = (NumericAttribute)item1.getItem().getAttribute(character);
 					if (!attribute.isUnknown()) {
 						float value = getSingleValue(attribute);
 						if (value > -999f) {
@@ -61,21 +63,25 @@ public class DistanceMatrixCalculator {
 				range = Math.abs(max-min);
 			}
 			
-			_ranges.add(range);
+			_ranges[character.getCharacterId()-1] = range;
 		}
 		
 	}
 	
 	public DistanceMatrix calculateDistanceMatrix() {
-		DistanceMatrix matrix = new DistanceMatrix(_dataSet.getMaximumNumberOfItems());
+		DistanceMatrix matrix = new DistanceMatrix(_dataSet.getNumberOfFilteredItems());
 		
-		for (int i=1; i<=_dataSet.getMaximumNumberOfItems(); i++) {
-			Item item1 = _dataSet.getItem(i);
+		Iterator<FilteredItem> items = _dataSet.filteredItems();
+		while (items.hasNext()) {
+			FilteredItem item1 = items.next();
 			
-			for (int j=_dataSet.getMaximumNumberOfItems(); j > i ; j--) {
-				Item item2 = _dataSet.getItem(j);
+			Iterator<FilteredItem> itemsToCompareAgainst = _dataSet.filteredItems();
+			while (itemsToCompareAgainst.hasNext()) {
+				FilteredItem item2 = itemsToCompareAgainst.next();
 				
-				matrix.set(i, j, computeDistance(item1, item2));
+				if (item2.getItemNumber() > item1.getItemNumber()) {
+					matrix.set(item1.getItemNumber(), item2.getItemNumber(), computeDistance(item1.getItem(), item2.getItem()));
+				}
 			}
 		}
 		
@@ -86,11 +92,11 @@ public class DistanceMatrixCalculator {
 	private float computeDistance(Item item1, Item item2) {
 		float weightedSum = 0f;
 		float sumOfWeights = 0f;
-		for (int i=1; i<=_dataSet.getNumberOfCharacters(); i++) {
-			if (_context.isCharacterExcluded(i)) {
-				continue;
-			}
-			Character character = _dataSet.getCharacter(i);
+		int comparisonCount = 0;
+		Iterator<FilteredCharacter> characters = _dataSet.filteredCharacters();
+		while (characters.hasNext()) {
+			Character character = characters.next().getCharacter();
+			
 			// The weight values are stored as reliabilities but the values are
 			// not modified.
 			float weight = character.getReliability();
@@ -108,14 +114,20 @@ public class DistanceMatrixCalculator {
 			}
 			weightedSum += weight * distance;
 			sumOfWeights += weight;
+			comparisonCount++;
 		}
-		return weightedSum / sumOfWeights;
+		if (comparisonCount < _context.getMinimumNumberOfComparisons()) {
+			return Float.NaN;
+		}
+		else {
+			return weightedSum / sumOfWeights;
+		}
 	}
 
 
 	private float computeCharacterDifference(NumericAttribute attribute1, NumericAttribute attribute2) {
 		int charNum = attribute1.getCharacter().getCharacterId();
-		float range = _ranges.get(charNum-1);
+		float range = _ranges[charNum-1];
 		if (range == 0) {
 			return 0;
 		}

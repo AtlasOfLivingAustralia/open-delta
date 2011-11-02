@@ -29,12 +29,23 @@ public class DISTTest extends TestCase {
 		String path = FilenameUtils.concat(_path, "sample");
 		
 		runDIST(FilenameUtils.concat(path, "dist"));
-		checkResults(path, "grass.nam");
-		checkResults(path, "grass.dis");
+		checkResults(path, "grass.nam", false);
+		checkResults(path, "grass.dis", true);
 	}
 	
-	private void checkResults(String path, String resultFileName) throws Exception {
+	/**
+	 * Still uses the sample data as input, but tests the PHYLIP FORMAT,
+	 * MATCH OVERLAP and EXCLUDE ITEMS directives.
+	 */
+	@Test
+	public void testDISTPhylipFormatMatchOverlap() throws Exception {
+		String path = FilenameUtils.concat(_path, "sample");
 		
+		runDIST(FilenameUtils.concat(path, "dist2"));
+		checkResults(path, "grass2.dis", false);
+	}
+	
+	private void checkResults(String path, String resultFileName, boolean compareAsFloats) throws Exception {
 		
 		java.io.File expectedFile = new File(FilenameUtils.concat(path, "expected_results/"+resultFileName));
 		String expected = FileUtils.readFileToString(expectedFile, "cp1252");
@@ -47,8 +58,7 @@ public class DISTTest extends TestCase {
 		System.out.print(actual);
 		expected = replaceNewLines(expected);
 		
-		
-		if (resultFileName.endsWith(".dis")) {
+		if (compareAsFloats) {
 			String[] actualFloats = actual.trim().split("\\s+");
 			String[] expectedFloats = expected.trim().split("\\s+");
 			for (int i=0; i<expectedFloats.length; i++) {
@@ -57,6 +67,7 @@ public class DISTTest extends TestCase {
 				assertEquals("index "+i, float2, float1, 0.001f);
 			}
 		}
+		
 		//assertEquals(expected.trim(), actual.trim());
 	}
 

@@ -1,0 +1,15 @@
+*COMMENT Generate distance matrix.
+
+*LISTING FILE dist.lst
+
+*ITEMS FILE ditems
+
+*OUTPUT FILE grass2.dis
+
+*MATCH OVERLAP
+
+*PHYLIP FORMAT
+
+*EXCLUDE ITEMS 2-3
+
+*MINIMUM NUMBER OF COMPARISONS 7
