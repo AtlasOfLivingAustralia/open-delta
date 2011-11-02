@@ -336,5 +336,9 @@ public class BinaryKeyFile extends BinFile {
 		startRecord += writeToRecord(startRecord, offsets);
 		writeToRecord(startRecord, buffer.toString());
 	}
+	
+    protected int recordsSpannedByBytes(int numBytes) {
+        return (int) (Math.ceil((double) numBytes / (double) RECORD_LENGTH_BYTES));
+    }
 
 }

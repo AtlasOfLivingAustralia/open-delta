@@ -955,4 +955,37 @@ public class Utils {
             return builder.toString().trim();
         }
     }
+
+    /**
+     * Return a file object for the file at the supplied path (may be a relative
+     * path)
+     * 
+     * @param filePath
+     *            the path of the file - may be a relative path
+     * @param defaultDirectory
+     *            the default parent directory - this directory will be used as
+     *            the parent directory if the filePath is not absolute
+     * @return
+     */
+    public static File createFileFromPath(String filePath, File defaultDirectory) {
+        File file = null;
+        // If the supplied file path starts with one of the file system
+        // roots, then it is absolute. Otherwise, assume that
+        // it is relative to the directory in which the dataset is located.
+        boolean fileAbsolute = false;
+        for (File root : File.listRoots()) {
+            if (filePath.toLowerCase().startsWith(root.getAbsolutePath().toLowerCase())) {
+                fileAbsolute = true;
+                break;
+            }
+        }
+
+        if (fileAbsolute) {
+            file = new File(filePath);
+        } else {
+            file = new File(defaultDirectory, filePath);
+        }
+
+        return file;
+    }
 }

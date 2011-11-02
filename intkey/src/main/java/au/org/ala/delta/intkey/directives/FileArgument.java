@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Queue;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
-import au.org.ala.delta.intkey.ui.UIUtils;
+import au.org.ala.delta.util.Utils;
 
 public class FileArgument extends IntkeyDirectiveArgument<File> {
 
@@ -32,7 +32,7 @@ public class FileArgument extends IntkeyDirectiveArgument<File> {
                 throw new IntkeyDirectiveParseException("Error creating file");
             }
         } else {
-            file = UIUtils.findFile(filePath, context.getDatasetDirectory());
+            file = Utils.createFileFromPath(filePath, context.getDatasetDirectory());
 
             if (!file.exists() && _createFileIfNonExistant) {
                 try {

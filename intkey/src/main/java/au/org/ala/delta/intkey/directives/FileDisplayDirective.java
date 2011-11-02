@@ -7,7 +7,7 @@ import java.util.Arrays;
 import au.org.ala.delta.intkey.directives.invocation.FileDisplayDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
-import au.org.ala.delta.intkey.ui.UIUtils;
+import au.org.ala.delta.util.Utils;
 
 public class FileDisplayDirective extends IntkeyDirective {
 
@@ -31,7 +31,7 @@ public class FileDisplayDirective extends IntkeyDirective {
 
             }
         } else {
-            File file = UIUtils.findFile(filePath, context.getDatasetDirectory());
+            File file = Utils.createFileFromPath(filePath, context.getDatasetDirectory());
             invoc = new FileDisplayDirectiveInvocation(file.toURI().toURL(), file.getName());
         }
 

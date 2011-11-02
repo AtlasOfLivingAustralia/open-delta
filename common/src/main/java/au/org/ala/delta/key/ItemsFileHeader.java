@@ -7,6 +7,9 @@ import java.util.List;
  * Represents the header for the key items file.
  */
 public class ItemsFileHeader {
+    
+    /** The size of the header in ints */
+    public static final int SIZE = 11;
 
 	private int _numberOfCharacters;
 	private int _numberOfItems;

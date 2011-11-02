@@ -7,6 +7,9 @@ import java.util.List;
  * Represents the header for the key characters file.
  */
 public class CharactersFileHeader {
+    
+    /** The size of the header in ints */
+    public static final int SIZE = 3;
 
 	private int _numberOfCharacters;
 	private int _keyStatesRecord;
