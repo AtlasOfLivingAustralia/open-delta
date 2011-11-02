@@ -18,7 +18,7 @@ import au.org.ala.delta.util.Utils;
  */
 public class OutputFileManager {
 
-	class OutputFile {
+	protected class OutputFile {
 		String _fileName;
 		PrintStream _stream;
 		
@@ -36,7 +36,9 @@ public class OutputFileManager {
 			return _stream;
 		}
 		
-		
+		public String getFileName() {
+			return _fileName;
+		}
 		
 		public void outputMessage(String format, Object... args) {
 			if (_stream != null) {
@@ -58,13 +60,12 @@ public class OutputFileManager {
 	
 	public static final String OUTPUT_FILE_ENCODING = "utf-8";
 	public static final String RTF_OUTPUT_FILE_ENCODING = "cp1252";
-	private static final int LISTING_FILE = 0;
-	private static final int ERROR_FILE = 1;
-	private static final int OUTPUT_FILE = 2;
+	protected static final int LISTING_FILE = 0;
+	protected static final int ERROR_FILE = 1;
+	protected static final int OUTPUT_FILE = 2;
 	
 	protected OutputFormat _outputFormat;
 	private String _outputDirectory;
-	protected String _outputFileName;
 	private PrintFile _outputFile;
 	protected ParsingContext _context;
 	/** Number of characters on a line of text written to the output file */
@@ -72,7 +73,7 @@ public class OutputFileManager {
 	
 	private int _ListFilenameSize = 15;
 
-	private OutputFile[] _outputFiles;
+	protected OutputFile[] _outputFiles;
 	
 	public OutputFileManager() {
 		super();
@@ -209,5 +210,11 @@ public class OutputFileManager {
 	public void ErrorMessage(String format, Object... args) {
 		_outputFiles[ERROR_FILE].outputMessage(format, args);
 	}
+	
+	
+	public File getOutputFileAsFile() {
+		return fullPathOf(_outputFiles[OUTPUT_FILE]._fileName);
+	}
+	
 
 }
