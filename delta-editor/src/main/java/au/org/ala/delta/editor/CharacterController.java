@@ -51,6 +51,14 @@ public class CharacterController {
 		new PopupBuilder();
 	}
 	
+	protected EditorViewModel getModel() {
+		return _model;
+	}
+	
+	protected ActionMap getCharacterActions() {
+		return _characterActions;
+	}
+	
 	/**
 	 * Builds the Item-related popup menu based on the current selection.
 	 * @return a JPopupMenu configured for the current selection.

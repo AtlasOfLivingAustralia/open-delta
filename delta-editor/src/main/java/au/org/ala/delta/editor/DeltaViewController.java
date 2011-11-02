@@ -281,7 +281,7 @@ public class DeltaViewController extends InternalFrameAdapter implements Vetoabl
 		DeltaViewModel model = createViewModel();
 		DeltaView view = _viewFactory.createTreeView(model);
 		
-		new CharacterController(view.getCharacterListView(), model);
+		new TreeCharacterController(view.getCharacterListView(), model);
 		new StateController(view.getCharacterListView(), model);
 		new ItemController(view.getItemListView(), model);
 		

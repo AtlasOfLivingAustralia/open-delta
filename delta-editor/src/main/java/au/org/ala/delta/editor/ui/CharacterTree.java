@@ -1,5 +1,6 @@
 package au.org.ala.delta.editor.ui;
 
+import java.awt.Cursor;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
@@ -364,7 +365,7 @@ public class CharacterTree extends JTree implements ReorderableList {
 		protected GenericSearchPredicate<Character> createPredicate(SearchOptions options) {
 			return new SearchCharacterPredicate(options);
 		}
-		
+
 	}
 
 	class SearchCharacterPredicate extends GenericSearchPredicate<Character> {
@@ -383,6 +384,29 @@ public class CharacterTree extends JTree implements ReorderableList {
 			return desc.contains(getTerm());
 		}
 
+	}
+
+	public void expandAll() {
+
+		try {
+			setCursor(new Cursor(Cursor.WAIT_CURSOR));
+			for (int i = 0; i < getRowCount(); i++) {
+				expandRow(i);
+			}
+		} finally {
+			setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+		}
+	}
+
+	public void collapseAll() {
+		try {
+			setCursor(new Cursor(Cursor.WAIT_CURSOR));
+			for (int i = 0; i < getRowCount(); i++) {
+				collapseRow(i);
+			}
+		} finally {
+			setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+		}
 	}
 
 }
