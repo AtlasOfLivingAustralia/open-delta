@@ -68,7 +68,7 @@ public class DISTTest extends TestCase {
 			}
 		}
 		
-		//assertEquals(expected.trim(), actual.trim());
+		assertEquals(expected.trim(), actual.trim());
 	}
 
 	protected String replaceNewLines(String expected) {

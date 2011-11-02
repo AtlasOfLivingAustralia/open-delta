@@ -25,30 +25,39 @@ public class DistOutputWriter {
 		_context = context;
 		_dataSet = dataSet;
 		_decimalFormat = new DecimalFormat(".00000");
-		
+	
 	}
 	
 	
 	public void writeOutput(DistanceMatrix matrix) throws Exception {
 		DistOutputFileManager outputFileManager = _context.getOutputFileManager();
 		
-		PrintFile outputFile = outputFileManager.getOutputFile();
+		PrintFile outputFile = getOutputFile();
 		
-		if (!_context.isPhylipFormat()) {
-			PrintFile namesFile = outputFileManager.getNamesFile();
-			writeNames(namesFile);
-		}
+		PrintFile namesFile = outputFileManager.getNamesFile();
+		writeNames(namesFile);
 		
 		writeMatrix(matrix, outputFile);
 		
 	}
 
+	protected PrintFile getOutputFile() {
+		DistOutputFileManager outputFileManager = _context.getOutputFileManager();
+		
+		PrintFile outputFile = outputFileManager.getOutputFile();
+		outputFile.setTrimInput(false);
+		outputFile.setIndentOnLineWrap(true);
+		outputFile.setIndent(1);
+		outputFile.setLineWrapIndent(0);
+		
+		return outputFile;
+	}
+	
 	protected void writeMatrix(DistanceMatrix matrix, PrintFile outputFile) {
 		Iterator<FilteredItem> items = _dataSet.filteredItems();
 		while (items.hasNext()) {
 			FilteredItem item1 = items.next();
 			writeDistances(matrix, item1, outputFile);
-			
 			outputFile.printBufferLine();
 		}
 		
@@ -56,12 +65,13 @@ public class DistOutputWriter {
 	
 	protected void writeDistances(DistanceMatrix matrix, FilteredItem item1, PrintFile outputFile) {
 		Iterator<FilteredItem> itemsToCompareAgainst = _dataSet.filteredItems();
+		outputFile.indent();
 		while (itemsToCompareAgainst.hasNext()) {
 			FilteredItem item2 = itemsToCompareAgainst.next();
 			
 			double value = matrix.get(item1.getItemNumber(), item2.getItemNumber());
 			if (item2.getItemNumber() > item1.getItemNumber()) {
-				outputFile.writeJustifiedText(_decimalFormat.format(value), -1);
+				outputFile.writeJustifiedText("   "+_decimalFormat.format(value), -1);
 			}
 		}
 	}

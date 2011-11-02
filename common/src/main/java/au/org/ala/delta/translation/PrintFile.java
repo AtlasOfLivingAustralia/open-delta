@@ -32,6 +32,7 @@ public class PrintFile {
     private String _fileFooter;
     private boolean _omitNextTrailingSpace = false;
     private char[] _wrapAsGroupChar;
+    private boolean _trim;
     
     public PrintFile(final StringBuilder buffer) {
 
@@ -67,6 +68,7 @@ public class PrintFile {
         _softWrap = false;
         _newFile = true;
         _newFileHeader = "";
+        _trim = true;
     }
     
     public void setSoftWrap(boolean softWrap) {
@@ -77,6 +79,10 @@ public class PrintFile {
     	_wrapAsGroupChar = new char[] {startGroup, endGroup};
     }
 
+    public void setTrimInput(boolean trim) {
+    	_trim = trim;
+    }
+    
     public void insertTypeSettingMarks(int number) {
 
     }
@@ -139,11 +145,13 @@ public class PrintFile {
     }
 
     public void printBufferLine(boolean indentNewLine) {
-
-        int i = _outputBuffer.length() - 1;
-        while (i > 0 && _outputBuffer.charAt(i) == ' ') {
-            i--;
-        }
+    	
+	    int i = _outputBuffer.length() - 1;  
+	    if (_trim) {
+	        while (i > 0 && _outputBuffer.charAt(i) == ' ') {
+	            i--;
+	        }
+    	}
         if (_outputBuffer.length() > 0) {
             _output.println(_outputBuffer.substring(0, i + 1));
             _indented = false;
@@ -163,7 +171,9 @@ public class PrintFile {
 
     public void writeJustifiedText(String text, int completionAction) {
         writeFileHeader();
-    	text = text.trim();
+        if (_trim) {
+        	text = text.trim();
+        }
         writeJustifiedText(text, completionAction, true);
     }
 
@@ -196,7 +206,10 @@ public class PrintFile {
             _outputBuffer.delete(wrappingPos, _outputBuffer.length());
             printBufferLine(_indentOnLineWrap);
 
-            _outputBuffer.append(trailingText.trim());
+            if (_trim) {
+            	trailingText = trailingText.trim();
+            }
+            _outputBuffer.append(trailingText);
         }
         complete(completionAction);
     }

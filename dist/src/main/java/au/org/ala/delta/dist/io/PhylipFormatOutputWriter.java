@@ -17,9 +17,8 @@ public class PhylipFormatOutputWriter extends DistOutputWriter {
 	
 	
 	public void writeOutput(DistanceMatrix matrix) throws Exception {
-		DistOutputFileManager outputFileManager = _context.getOutputFileManager();
 		
-		PrintFile outputFile = outputFileManager.getOutputFile();
+		PrintFile outputFile = getOutputFile();
 		
 		outputFile.outputLine(Integer.toString(_dataSet.getNumberOfFilteredItems()));
 		
@@ -27,12 +26,19 @@ public class PhylipFormatOutputWriter extends DistOutputWriter {
 	}
 	
 	protected void writeDistances(DistanceMatrix matrix, FilteredItem item1, PrintFile outputFile) {
+		outputFile.setIndent(0);
 		outputFile.outputLine(truncate(item1.getItem().getDescription()));
+		outputFile.setIndent(1);
 		super.writeDistances(matrix, item1, outputFile);
 	}
 	
 	private String truncate(String item) {
-		if (item.length() < OUTPUT_COLUMNS) {
+		int length = item.length();
+		if (length < OUTPUT_COLUMNS) {
+			
+			for (int i=0; i<OUTPUT_COLUMNS - length; i++) {
+				item += " ";
+			}
 			return item;
 		}
 		return item.substring(0, OUTPUT_COLUMNS);
