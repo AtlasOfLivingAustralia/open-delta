@@ -63,22 +63,13 @@ public class DIST implements DirectiveParserObserver {
 	private static File handleArgs(String[] args) throws Exception {
 		String fileName;
 		if (args.length == 0) {
-			fileName = askForFileName();
+			fileName = "dist";
 		}
 		else {
 			fileName = args[0];
 		}
 		
 		return new File(fileName);
-	}
-	
-	private static String askForFileName() throws Exception {
-		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-		System.out.println();
-		System.out.print("Enter the full pathname of the directives file: ");
-		String fileName = in.readLine();
-		
-		return fileName;
 	}
 	
 	public DIST(File input) throws Exception {
