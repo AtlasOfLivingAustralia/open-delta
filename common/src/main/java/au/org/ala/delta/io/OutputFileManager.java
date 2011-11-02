@@ -5,6 +5,7 @@ import java.io.PrintStream;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.DeltaContext.OutputFormat;
@@ -17,8 +18,49 @@ import au.org.ala.delta.util.Utils;
  */
 public class OutputFileManager {
 
+	class OutputFile {
+		String _fileName;
+		PrintStream _stream;
+		
+		public OutputFile(String fileName) throws Exception {
+			_fileName = FilenameUtils.separatorsToSystem(fileName);
+			_stream = createPrintStream(_fileName);
+		}
+		
+		public OutputFile(PrintStream stream) {
+			_fileName = null;
+			_stream = stream;
+		}
+		
+		public PrintStream getPrintStream() {
+			return _stream;
+		}
+		
+		
+		
+		public void outputMessage(String format, Object... args) {
+			if (_stream != null) {
+				if (args == null || args.length == 0) {
+					_stream.println(format);
+				} else {
+					String message = String.format(format, args);
+					_stream.println(message);
+				}
+			}
+		}
+		
+		public void close() {
+			if (_stream != System.out && _stream != System.err) {
+				IOUtils.closeQuietly(_stream);
+			}
+		}
+	}
+	
 	public static final String OUTPUT_FILE_ENCODING = "utf-8";
 	public static final String RTF_OUTPUT_FILE_ENCODING = "cp1252";
+	private static final int LISTING_FILE = 0;
+	private static final int ERROR_FILE = 1;
+	private static final int OUTPUT_FILE = 2;
 	
 	protected OutputFormat _outputFormat;
 	private String _outputDirectory;
@@ -28,14 +70,27 @@ public class OutputFileManager {
 	/** Number of characters on a line of text written to the output file */
 	protected int _outputWidth;
 	
-	private PrintStream _listingStream;
-	private PrintStream _errorStream;
 	private int _ListFilenameSize = 15;
 
+	private OutputFile[] _outputFiles;
+	
 	public OutputFileManager() {
 		super();
-		_listingStream = System.out;
-		_errorStream = System.err;
+		_outputFiles = new OutputFile[3];
+		_outputFiles[ERROR_FILE] = new OutputFile(System.err);
+	}
+	
+	public void enableListing() {
+		if (_outputFiles[LISTING_FILE] == null) {
+			_outputFiles[LISTING_FILE] = new OutputFile(System.out);
+		}
+	}
+	
+	public void disableListing() {
+		if (_outputFiles[LISTING_FILE] != null) {
+			_outputFiles[LISTING_FILE].close();
+			_outputFiles[LISTING_FILE] = null;
+		}
 	}
 
 	/**
@@ -58,21 +113,6 @@ public class OutputFileManager {
 
 	public void setOutputDirectory(String directory) throws Exception {
 		_outputDirectory = FilenameUtils.separatorsToSystem(directory);
-	}
-
-	protected PrintStream createPrintStream(String fileName) throws Exception {
-		File parent = _context.getFile().getParentFile();
-		
-		String tmpFileName = prependOutputDirectory(fileName);
-		File file = new File(tmpFileName);
-		if (!file.isAbsolute()) {
-			file = new File(FilenameUtils.concat(parent.getAbsolutePath(), tmpFileName));
-		}
-		FileUtils.forceMkdir(file.getParentFile());
-		
-		PrintStream printStream = new PrintStream(file, outputFileEncoding());
-		
-		return printStream;
 	}
 
 	protected String prependOutputDirectory(String fileName) {
@@ -98,11 +138,26 @@ public class OutputFileManager {
 			return OUTPUT_FILE_ENCODING;
 		}
 	}
+	
+	public void setErrorFileName(String errorFile) throws Exception {
+		close(_outputFiles[ERROR_FILE]);
+		_outputFiles[ERROR_FILE] = new OutputFile(errorFile);
+	}
+	
+	public void setListingFileName(String listingFile) throws Exception {
+		close(_outputFiles[LISTING_FILE]);
+		_outputFiles[LISTING_FILE] = new OutputFile(listingFile);
+	}
+	
+	private void close(OutputFile file) {
+		if (file != null) {
+			file.close();
+		}
+	}
 
 	public void setOutputFileName(String outputFile) throws Exception {
-		_outputFileName = FilenameUtils.separatorsToSystem(outputFile);
-		PrintStream indexStream = createPrintStream(_outputFileName);
-		_outputFile = new PrintFile(indexStream, _outputWidth);
+		_outputFiles[OUTPUT_FILE] = new OutputFile(outputFile);
+		_outputFile = new PrintFile(_outputFiles[OUTPUT_FILE].getPrintStream(), _outputWidth);
 	}
 
 	public PrintFile getOutputFile() {
@@ -122,40 +177,37 @@ public class OutputFileManager {
 		return new File(fileName);
 	}
 
-	public void setErrorStream(PrintStream stream) {
-		_errorStream = stream;
-	}
-
-	public void setListingStream(PrintStream stream) {
-		_listingStream = stream;
+	protected PrintStream createPrintStream(String fileName) throws Exception {
+		File parent = _context.getFile().getParentFile();
+		
+		String tmpFileName = prependOutputDirectory(fileName);
+		File file = new File(tmpFileName);
+		if (!file.isAbsolute()) {
+			file = new File(FilenameUtils.concat(parent.getAbsolutePath(), tmpFileName));
+		}
+		FileUtils.forceMkdir(file.getParentFile());
+		
+		PrintStream printStream = new PrintStream(file, outputFileEncoding());
+		
+		return printStream;
 	}
 	
 	public void listMessage(String line) {
 
-		if (_listingStream != null) {
+		if (_outputFiles[LISTING_FILE] != null) {
 			String prefix = "";
-			if (_listingStream == System.out) {
+			if (_outputFiles[LISTING_FILE].getPrintStream() == System.out) {
 				prefix = "LIST:";
 			}
 
 			String filename = Utils.truncate(String.format("%s,%d", _context.getFile().getAbsolutePath(), _context.getCurrentLine()), _ListFilenameSize);
-			OutputMessage(_listingStream, "%s%s %s", prefix, filename, line);
+			
+			_outputFiles[LISTING_FILE].outputMessage("%s%s %s", prefix, filename, line);
 		}
 	}
 
 	public void ErrorMessage(String format, Object... args) {
-		OutputMessage(_errorStream, format, args);
-	}
-	
-	private void OutputMessage(PrintStream stream, String format, Object... args) {
-		if (stream != null) {
-			if (args == null || args.length == 0) {
-				stream.println(format);
-			} else {
-				String message = String.format(format, args);
-				stream.println(message);
-			}
-		}
+		_outputFiles[ERROR_FILE].outputMessage(format, args);
 	}
 
 }

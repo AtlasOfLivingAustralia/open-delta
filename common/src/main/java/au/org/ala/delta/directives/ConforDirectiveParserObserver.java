@@ -1,11 +1,9 @@
 package au.org.ala.delta.directives;
 
 import au.org.ala.delta.DeltaContext;
-import au.org.ala.delta.DeltaContext.PrintActionType;
 import au.org.ala.delta.model.image.ImageType;
 import au.org.ala.delta.translation.DataSetTranslator;
 import au.org.ala.delta.translation.DataSetTranslatorFactory;
-import au.org.ala.delta.translation.print.PrintAction;
 import au.org.ala.delta.util.DataSetHelper;
 
 /**
@@ -28,7 +26,7 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
     
     @Override
     public void preProcess(AbstractDirective<? extends AbstractDeltaContext> directive, String data) {
-        _context.ListMessage(directive.getName() + " " +data);
+        _context.getOutputFileSelector().listMessage(directive.getName() + " " +data);
     }
 
     @Override
@@ -58,13 +56,5 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
 		DataSetTranslator translator = _factory.createTranslator(_context);
 		translator.translateItems();
 	}
-	
-//	private void processPrintActions() {
-//		for (PrintActionType actionType : _context.getPrintActions()) {
-//			PrintAction action = _factory.createPrintAction(_context, actionType);
-//			action.print();
-//		}
-//	}
-	
-	
+		
 }

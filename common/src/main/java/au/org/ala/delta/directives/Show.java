@@ -29,7 +29,7 @@ public class Show extends AbstractTextDirective {
 	public void process(DeltaContext context, DirectiveArguments args) throws Exception {
 		
 		String data = args.getFirstArgumentText();
-		context.ErrorMessage("%s", replaceVariables(context, data.trim()));
+		context.getOutputFileSelector().ErrorMessage("%s", replaceVariables(context, data.trim()));
 	}
 
 }

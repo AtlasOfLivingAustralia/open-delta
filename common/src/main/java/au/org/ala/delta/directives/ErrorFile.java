@@ -14,16 +14,14 @@
  ******************************************************************************/
 package au.org.ala.delta.directives;
 
-import org.apache.commons.lang.StringUtils;
-
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.io.OutputFileSelector;
 
-public class ListingFile extends AbstractTextDirective {
+public class ErrorFile extends AbstractTextDirective {
 	
-	public ListingFile() {
-		super("listing", "file");
+	public ErrorFile() {
+		super("error", "file");
 	}
 	
 	@Override
@@ -33,27 +31,6 @@ public class ListingFile extends AbstractTextDirective {
 		String filename = data.trim();
 		
 		OutputFileSelector fileManager = context.getOutputFileSelector();
-		fileManager.setListingFileName(filename);
-		startFile(context);
-		fileManager.listMessage(data);
+		fileManager.setErrorFileName(filename);
 	}
-	
-	protected void startFile(DeltaContext context) {
-		
-		OutputFileSelector fileManager = context.getOutputFileSelector();
-		String credits = context.getCredits(); 
-		if (StringUtils.isNotEmpty(credits)) {
-			fileManager.listMessage(credits);
-		}
-		String heading = (String) context.getVariable("HEADING", null);
-		if (heading != null) {
-			fileManager.listMessage(heading);
-		}
-		
-		for (String message : context.getErrorMessages()) {
-			fileManager.listMessage(message);
-		}
-		
-	}
-
 }

@@ -229,47 +229,8 @@ public class DeltaContext extends AbstractDeltaContext {
 		return getOutputFileSelector().getPrintFile();
 	}
 
-	public void setErrorStream(PrintStream stream) {
-		_errorStream = stream;
-	}
-
-	public void setListingStream(PrintStream stream) {
-		_listStream = stream;
-	}
-
-	public void ListMessage(String line) {
-
-		if (_listStream != null) {
-			String prefix = "";
-			if (_listStream == System.out) {
-				prefix = "LIST:";
-			}
-
-			ParsingContext pc = getCurrentParsingContext();
-			String filename = Utils.truncate(String.format("%s,%d", pc.getFile().getAbsolutePath(), pc.getCurrentLine()), _ListFilenameSize);
-			OutputMessage(_listStream, "%s%s %s", prefix, filename, line);
-		}
-	}
-
-	public void ErrorMessage(String format, Object... args) {
-		String message = String.format(format, args);
-		_errorMessages.add(message);
-		OutputMessage(_errorStream, format, args);
-	}
-
 	public List<String> getErrorMessages() {
 		return _errorMessages;
-	}
-
-	private void OutputMessage(PrintStream stream, String format, Object... args) {
-		if (stream != null) {
-			if (args == null || args.length == 0) {
-				stream.println(format);
-			} else {
-				String message = String.format(format, args);
-				stream.println(message);
-			}
-		}
 	}
 
 	public void setCredits(String credits) {

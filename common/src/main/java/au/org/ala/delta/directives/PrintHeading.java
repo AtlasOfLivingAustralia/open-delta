@@ -1,5 +1,7 @@
 package au.org.ala.delta.directives;
 
+import org.apache.commons.lang.StringUtils;
+
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.DeltaContext.HeadingType;
 import au.org.ala.delta.directives.args.DirectiveArguments;
@@ -18,9 +20,12 @@ public class PrintHeading extends AbstractNoArgDirective {
 	public void process(DeltaContext context, DirectiveArguments directiveArguments) throws Exception {
 		String heading = context.getHeading(HeadingType.HEADING);
 		au.org.ala.delta.translation.PrintFile printFile = context.getOutputFileSelector().getPrintFile();
-		printFile.writeBlankLines(2, 0);
-		printFile.outputLine(heading);
-		printFile.writeBlankLines(2, 0);
+		
+		if (StringUtils.isNotBlank(heading)) {
+			printFile.writeBlankLines(2, 0);
+			printFile.outputLine(heading);
+			printFile.writeBlankLines(2, 0);
+		}
 	}
 
 }
