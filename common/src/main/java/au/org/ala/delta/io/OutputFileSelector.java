@@ -315,6 +315,10 @@ public class OutputFileSelector extends OutputFileManager {
 		return fullPathOf(_printFileName);
 	}
 	
+	public File getOutputFileAsFile() {
+		return fullPathOf(_outputFileName);
+	}
+	
 	public File getIndexFileAsFile() {
 		return fullPathOf(_indexFileName);
 	}

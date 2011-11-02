@@ -195,6 +195,13 @@
 			<artifactId>delta-ui-common</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+			<dependency>
+			<groupId>au.org.ala.delta</groupId>
+			<artifactId>dist</artifactId>
+			<version>${project.version}</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
 		<dependency>
 			<groupId>commons-lang</groupId>
 			<artifactId>commons-lang</artifactId>
@@ -248,6 +255,8 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
+		
+	
 		
 	</dependencies>
 	<distributionManagement>

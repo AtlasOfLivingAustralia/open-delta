@@ -14,9 +14,7 @@
  ******************************************************************************/
 package au.org.ala.delta.dist;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.InputStreamReader;
 
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.directives.AbstractDeltaContext;
@@ -84,11 +82,7 @@ public class DIST implements DirectiveParserObserver {
 	
 
 	public File getOutputFile() {
-		return _context.getOutputFileSelector().getPrintFileAsFile();
-	}
-	
-	public File getNamesFile() {
-		return _context.getOutputFileSelector().getIndexFileAsFile();
+		return _context.getOutputFileSelector().getOutputFileAsFile();
 	}
 	
 	public File getListingFile() {

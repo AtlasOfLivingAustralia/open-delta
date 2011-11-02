@@ -37,6 +37,7 @@ import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.SingleFrameApplication;
 
 import au.org.ala.delta.confor.CONFOR;
+import au.org.ala.delta.dist.DIST;
 import au.org.ala.delta.editor.DeltaEditor;
 import au.org.ala.delta.editor.directives.ExportController;
 import au.org.ala.delta.editor.model.EditorViewModel;
@@ -200,9 +201,7 @@ public class ActionSetsDialog extends AbstractDeltaView {
 			runNatively(program, fileName);
 			break;
 		case DIST:
-			program = "DISTQW";
-			runNatively(program, fileName);
-			
+			runDIST(fileName);
 			break;
 		case KEY:
 			program = "KEYQW";
@@ -265,6 +264,13 @@ public class ActionSetsDialog extends AbstractDeltaView {
 	    else if (confor.getPrintFile() != null) {
 	    	displayResults(confor.getPrintFile());
 	    }
+	}
+	
+	private void runDIST(String fileName) throws Exception {
+		File fileOnFileSystem = new File(fileName);
+
+	    DIST dist = new DIST(fileOnFileSystem);
+	    displayResults(dist.getOutputFile());
 	}
 	
 	private void displayResults(File file) throws Exception {
