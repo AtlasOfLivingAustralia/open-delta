@@ -18,7 +18,7 @@ import au.org.ala.delta.editor.DeltaFileReader;
 import au.org.ala.delta.editor.slotfile.DeltaVOP;
 import au.org.ala.delta.editor.slotfile.SlotFile;
 import au.org.ala.delta.io.BinFileMode;
-import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.model.DeltaDataSetRepository;
 import au.org.ala.delta.util.IProgressObserver;
 
@@ -37,10 +37,10 @@ public class SlotFileRepository implements DeltaDataSetRepository {
 	 * Saves the supplied data set to permanent storage
 	 * @param dataSet the DELTA data set to save.
 	 * @param observer allows the progress of the save to be tracked if required.
-	 * @see au.org.ala.delta.model.DeltaDataSetRepository#save(au.org.ala.delta.model.DeltaDataSet)
+	 * @see au.org.ala.delta.model.DeltaDataSetRepository#save(au.org.ala.delta.model.MutableDeltaDataSet)
 	 */
 	@Override
-	public void save(DeltaDataSet dataSet, IProgressObserver observer) {
+	public void save(MutableDeltaDataSet dataSet, IProgressObserver observer) {
 		getVOP(dataSet).commit(null);
 	}
 	
@@ -49,10 +49,10 @@ public class SlotFileRepository implements DeltaDataSetRepository {
 	 * @param dataSet the DELTA data set to save.
 	 * @param name the new file name for the data set.
 	 * @param observer allows the progress of the save to be tracked if required.
-	 * @see au.org.ala.delta.model.DeltaDataSetRepository#save(au.org.ala.delta.model.DeltaDataSet)
+	 * @see au.org.ala.delta.model.DeltaDataSetRepository#save(au.org.ala.delta.model.MutableDeltaDataSet)
 	 */
 	@Override
-	public void saveAsName(DeltaDataSet dataSet, String name, IProgressObserver observer) {
+	public void saveAsName(MutableDeltaDataSet dataSet, String name, IProgressObserver observer) {
 		
 		SlotFile newFile = new SlotFile(name, BinFileMode.FM_NEW);
 		getVOP(dataSet).commit(newFile);
@@ -68,9 +68,9 @@ public class SlotFileRepository implements DeltaDataSetRepository {
 	 * @see au.org.ala.delta.model.DeltaDataSetRepository#findByName(java.lang.String)
 	 */
 	@Override
-	public DeltaDataSet findByName(String name, IProgressObserver observer) {
+	public MutableDeltaDataSet findByName(String name, IProgressObserver observer) {
 
-		DeltaDataSet dataSet = DeltaFileReader.readDeltaFile(name, observer);
+		MutableDeltaDataSet dataSet = DeltaFileReader.readDeltaFile(name, observer);
 		return dataSet;
 	}
 	
@@ -78,13 +78,13 @@ public class SlotFileRepository implements DeltaDataSetRepository {
 	 * Creates a new DeltaDataSet backed by a new DeltaVOP.
 	 */
 	@Override
-	public DeltaDataSet newDataSet() {
+	public MutableDeltaDataSet newDataSet() {
 		DeltaVOP vop = new DeltaVOP();
 		SlotFileDataSetFactory _factory = new SlotFileDataSetFactory(vop);
 		return _factory.createDataSet("Document"+_count++);
 	}
 
-	private DeltaVOP getVOP(DeltaDataSet dataSet) {
+	private DeltaVOP getVOP(MutableDeltaDataSet dataSet) {
 		SlotFileDataSet vop = (SlotFileDataSet)dataSet;
 		return vop.getVOP();
 	}

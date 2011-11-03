@@ -17,7 +17,7 @@ package au.org.ala.delta.editor.slotfile.directive;
 import java.util.List;
 
 import au.org.ala.delta.model.Character;
-import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.model.image.Image;
 
 /**
@@ -29,7 +29,7 @@ public class DirOutCharImages extends DirOutImageOverlay {
 	public void writeDirectiveArguments(DirectiveInOutState state) {
 
 		int fileIndent;
-		DeltaDataSet dataSet = state.getDataSet();
+		MutableDeltaDataSet dataSet = state.getDataSet();
 
 		for (int i = 1; i <= dataSet.getNumberOfCharacters(); ++i) {
 			Character character = dataSet.getCharacter(i);

@@ -6,7 +6,7 @@ import java.util.Set;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.model.CharacterDependency;
-import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.model.MultiStateCharacter;
 
 
@@ -22,7 +22,7 @@ public class ApplicableCharacters extends AbstractCharacterDependencyDirective {
 	
 	@Override
 	protected void addCharacterDependencies(DeltaContext context, List<CharacterDependency> dependencies) {
-		DeltaDataSet dataSet = context.getDataSet();
+		MutableDeltaDataSet dataSet = context.getDataSet();
 		
 		for (CharacterDependency dependency : dependencies) {
 			MultiStateCharacter character = (MultiStateCharacter)dataSet.getCharacter(dependency.getControllingCharacterId());

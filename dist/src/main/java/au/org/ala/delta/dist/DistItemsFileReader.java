@@ -11,7 +11,7 @@ import au.org.ala.delta.io.BinaryKeyFileEncoder;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterType;
-import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateAttribute;
 import au.org.ala.delta.model.MultiStateCharacter;
@@ -23,11 +23,11 @@ import au.org.ala.delta.util.Pair;
 public class DistItemsFileReader {
 	
 	private DistItemsFile _itemsFile;
-	private DeltaDataSet _dataSet;
+	private MutableDeltaDataSet _dataSet;
 	private BinaryKeyFileEncoder _encoder;
 	private DistContext _context;
 	
-	public DistItemsFileReader(DeltaDataSet dataSet, DistItemsFile itemsFile, DistContext context) {
+	public DistItemsFileReader(MutableDeltaDataSet dataSet, DistItemsFile itemsFile, DistContext context) {
 		_itemsFile = itemsFile;
 		_dataSet = dataSet;
 		_context = context;

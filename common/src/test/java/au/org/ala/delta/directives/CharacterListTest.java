@@ -7,7 +7,7 @@ import org.junit.Before;
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DefaultDataSetFactory;
-import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.model.MultiStateCharacter;
 
 /**
@@ -16,7 +16,7 @@ import au.org.ala.delta.model.MultiStateCharacter;
 public class CharacterListTest extends TestCase {
 
 	
-	private DeltaDataSet _dataSet;
+	private MutableDeltaDataSet _dataSet;
 	private DeltaContext _context;
 	private CharacterList _characterList = new CharacterList();
 	

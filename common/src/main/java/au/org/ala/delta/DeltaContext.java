@@ -31,7 +31,7 @@ import au.org.ala.delta.directives.ParsingContext;
 import au.org.ala.delta.io.OutputFileSelector;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.DefaultDataSetFactory;
-import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.model.IdentificationKeyCharacter;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.StateValueMatrix;
@@ -52,7 +52,7 @@ public class DeltaContext extends AbstractDeltaContext {
 	public static enum OutputFormat {RTF, HTML, NONE};
 	public static enum PrintActionType {PRINT_CHARACTER_LIST, PRINT_ITEM_DESCRIPTIONS, PRINT_ITEM_NAMES, PRINT_SUMMARY, PRINT_UNCODED_CHARACTERS, TRANSLATE_UNCODED_CHARACTERS};
 	
-	private DeltaDataSet _dataSet;
+	private MutableDeltaDataSet _dataSet;
 	protected OutputFileSelector _outputFileSelector;
 	
 	private OutputFormat _outputFormat = OutputFormat.RTF;
@@ -137,7 +137,7 @@ public class DeltaContext extends AbstractDeltaContext {
 		this(new DefaultDataSetFactory().createDataSet(""));
 	}
 	
-	public DeltaContext(DeltaDataSet dataSet) {
+	public DeltaContext(MutableDeltaDataSet dataSet) {
 		_variables = new HashMap<String, Object>();
 
 		_variables.put("DATEFORMAT", "dd-MMM-yyyy");
@@ -177,7 +177,7 @@ public class DeltaContext extends AbstractDeltaContext {
 		return _outputFileSelector;
 	}
 	
-	public DeltaDataSet getDataSet() {
+	public MutableDeltaDataSet getDataSet() {
 		return _dataSet;
 	}
 

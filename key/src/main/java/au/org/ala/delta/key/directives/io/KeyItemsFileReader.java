@@ -16,7 +16,7 @@ import au.org.ala.delta.key.ItemsFileHeader;
 import au.org.ala.delta.key.KeyContext;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterDependency;
-import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateAttribute;
 import au.org.ala.delta.model.MultiStateCharacter;
@@ -29,10 +29,10 @@ public class KeyItemsFileReader {
 
     private KeyContext _context;
     private ItemsFileHeader _header;
-    private DeltaDataSet _dataset;
+    private MutableDeltaDataSet _dataset;
     private BinaryKeyFile _keyItemsFile;
 
-    public KeyItemsFileReader(KeyContext context, DeltaDataSet dataset, BinaryKeyFile keyItemsFile) {
+    public KeyItemsFileReader(KeyContext context, MutableDeltaDataSet dataset, BinaryKeyFile keyItemsFile) {
         _context = context;
         _dataset = dataset;
         _keyItemsFile = keyItemsFile;

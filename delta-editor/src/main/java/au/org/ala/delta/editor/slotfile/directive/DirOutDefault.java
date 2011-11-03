@@ -28,7 +28,7 @@ import au.org.ala.delta.editor.slotfile.Directive;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile.DirectiveType;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.CharacterType;
-import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.util.Utils;
 
@@ -43,7 +43,7 @@ public class DirOutDefault extends AbstractDirOutFunctor {
 	public void writeDirectiveArguments(DirectiveInOutState state) {
 
 		_deltaWriter.setIndent(2);
-		DeltaDataSet dataSet = state.getDataSet();
+		MutableDeltaDataSet dataSet = state.getDataSet();
 		Directive curDirective = state.getCurrentDirective().getDirective();
 		// Dir directive;
 		DirectiveArguments directiveArgs = state.getCurrentDirective() .getDirectiveArguments();
@@ -292,7 +292,7 @@ public class DirOutDefault extends AbstractDirOutFunctor {
 		outputTextBuffer(0, 2, false);
 	}
 
-	private void writeKeyStates(DeltaDataSet dataSet, DirectiveArguments directiveArgs) {
+	private void writeKeyStates(MutableDeltaDataSet dataSet, DirectiveArguments directiveArgs) {
 		int prevNo;
 		int curNo;
 		List<DirectiveArgument<?>> args;
@@ -375,7 +375,7 @@ public class DirOutDefault extends AbstractDirOutFunctor {
 		}
 	}
 
-	private void writeItemCharacterList(DeltaDataSet dataSet,
+	private void writeItemCharacterList(MutableDeltaDataSet dataSet,
 			DirectiveArguments directiveArgs, DirectiveType directiveType) {
 		String temp;
 		List<Integer> dataList;
@@ -418,7 +418,7 @@ public class DirOutDefault extends AbstractDirOutFunctor {
 		outputTextBuffer(0, 0, true);
 	}
 
-	private void writeTextList(DeltaDataSet dataSet,
+	private void writeTextList(MutableDeltaDataSet dataSet,
 			DirectiveArguments directiveArgs, int argType, String temp) {
 		Collections.sort(directiveArgs.getDirectiveArguments());
 		char delim = 0;
@@ -616,7 +616,7 @@ public class DirOutDefault extends AbstractDirOutFunctor {
 	}
 
 	private void writeIntkeyAttributesArgs(
-			DirectiveArguments directiveArgs, StringBuilder textBuffer, DeltaDataSet dataSet) {
+			DirectiveArguments directiveArgs, StringBuilder textBuffer, MutableDeltaDataSet dataSet) {
 		 for (DirectiveArgument<?> vectIter : directiveArgs.getDirectiveArguments()) {
 			 au.org.ala.delta.model.Character charBase = null;
 			 String temp;

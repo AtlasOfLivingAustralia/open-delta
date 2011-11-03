@@ -12,7 +12,7 @@ import au.org.ala.delta.model.impl.ControllingInfo;
 
 public class CharacterDependencyTest extends TestCase {
 
-	private DeltaDataSet _dataSet;
+	private MutableDeltaDataSet _dataSet;
 	
 	@Before
 	public void setUp() throws Exception {

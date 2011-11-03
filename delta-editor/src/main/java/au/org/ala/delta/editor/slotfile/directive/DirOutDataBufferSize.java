@@ -15,7 +15,7 @@
 package au.org.ala.delta.editor.slotfile.directive;
 
 import au.org.ala.delta.directives.args.DirectiveArguments;
-import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.model.MutableDeltaDataSet;
 
 
 /**
@@ -25,7 +25,7 @@ public class DirOutDataBufferSize extends AbstractDirOutFunctor {
 
 	@Override
 	public void writeDirectiveArguments(DirectiveInOutState state) {
-		DeltaDataSet dataSet = state.getDataSet();
+		MutableDeltaDataSet dataSet = state.getDataSet();
 		DirectiveArguments args = state.getCurrentDirective().getDirectiveArguments();
 		_textBuffer.append(' ');
 		float val = 0;

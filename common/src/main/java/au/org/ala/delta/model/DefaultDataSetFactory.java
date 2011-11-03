@@ -18,7 +18,7 @@ import au.org.ala.delta.model.impl.ItemData;
  */
 public class DefaultDataSetFactory implements DeltaDataSetFactory {
 
-	public static DeltaDataSet load(File file) throws Exception {
+	public static MutableDeltaDataSet load(File file) throws Exception {
 		DeltaContext context = new DeltaContext();
 		ConforDirectiveFileParser parser = ConforDirectiveFileParser.createInstance();
 		parser.parse(file, context);
@@ -26,7 +26,7 @@ public class DefaultDataSetFactory implements DeltaDataSetFactory {
 	}
 	
 	@Override
-	public DeltaDataSet createDataSet(String name) {
+	public MutableDeltaDataSet createDataSet(String name) {
 		return new DefaultDataSet(this);
 	}
 

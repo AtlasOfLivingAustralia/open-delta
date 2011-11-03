@@ -17,16 +17,16 @@ package au.org.ala.delta.editor.slotfile.directive;
 import java.io.PrintStream;
 
 import au.org.ala.delta.editor.slotfile.DirectiveInstance;
-import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.translation.PrintFile;
 
 public class DirectiveInOutState {
 
 	private DirectiveInstance _currentDirective;
 	private PrintFile _printer;
-	private DeltaDataSet _dataSet;
+	private MutableDeltaDataSet _dataSet;
 	
-	public DirectiveInOutState(DeltaDataSet dataSet) {
+	public DirectiveInOutState(MutableDeltaDataSet dataSet) {
 		_dataSet = dataSet;
 	}
 	
@@ -59,11 +59,11 @@ public class DirectiveInOutState {
 		setPrinter(printer);
 	}
 	
-	public DeltaDataSet getDataSet() {
+	public MutableDeltaDataSet getDataSet() {
 		return _dataSet;
 	}
 	
-	public void setDataSet(DeltaDataSet dataSet) {
+	public void setDataSet(MutableDeltaDataSet dataSet) {
 		_dataSet = dataSet;
 	}
 	

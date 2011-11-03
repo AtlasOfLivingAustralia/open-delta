@@ -7,14 +7,14 @@ import org.apache.commons.lang.math.IntRange;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.model.CharacterType;
-import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.model.MutableDeltaDataSet;
 
 /**
  * Parses the KEY STATES directive.
  */
 public class KeyStateParser extends DirectiveArgsParser {
 
-	private DeltaDataSet _dataSet;
+	private MutableDeltaDataSet _dataSet;
 	
 	public KeyStateParser(DeltaContext context, Reader reader) {
 		super(context, reader);

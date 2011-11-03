@@ -18,7 +18,7 @@ import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.directives.args.DirectiveArguments;
-import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.model.MultiStateCharacter;
 
 public class NumbersOfStates extends AbstractCharacterListDirective<DeltaContext, Integer> {
@@ -66,7 +66,7 @@ public class NumbersOfStates extends AbstractCharacterListDirective<DeltaContext
 	 * explicitly assigned a number of states.
 	 */
 	private void setDefaults(DeltaContext context) {
-		DeltaDataSet dataSet = context.getDataSet();
+		MutableDeltaDataSet dataSet = context.getDataSet();
 		for (int i=1; i<=dataSet.getNumberOfCharacters(); i++) {
 			au.org.ala.delta.model.Character character = dataSet.getCharacter(i);
 			if (character.getCharacterType().isMultistate()) {

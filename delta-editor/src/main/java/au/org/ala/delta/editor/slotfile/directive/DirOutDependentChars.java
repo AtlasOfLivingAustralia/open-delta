@@ -21,7 +21,7 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.model.CharacterDependency;
-import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.model.MutableDeltaDataSet;
 
 /**
  * Exports the DEPENDENT CHARACTERS directive.
@@ -30,7 +30,7 @@ public class DirOutDependentChars extends AbstractDirOutFunctor {
 
 	@Override
 	public void writeDirectiveArguments(DirectiveInOutState state) {
-		DeltaDataSet dataSet = state.getDataSet();
+		MutableDeltaDataSet dataSet = state.getDataSet();
 
 		List<CharacterDependency> characterDependencies = dataSet
 				.getAllCharacterDependencies();

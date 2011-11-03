@@ -8,7 +8,7 @@ import org.junit.Test;
 
 import au.org.ala.delta.DeltaTestCase;
 import au.org.ala.delta.model.CharacterType;
-import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.model.IntegerCharacter;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateAttribute;
@@ -252,7 +252,7 @@ public class SlotFileDataSetTest  extends DeltaTestCase {
 	
 	private void deleteItemWithSample(int itemNumberToDelete) throws Exception {
 		File f = copyURLToFile("/SAMPLE.DLT");
-		DeltaDataSet dataSet = _repo.findByName(f.getAbsolutePath(), null);
+		MutableDeltaDataSet dataSet = _repo.findByName(f.getAbsolutePath(), null);
 		
 		List<String> itemNames = new ArrayList<String>();
 		for (int i=1; i<=dataSet.getMaximumNumberOfItems(); i++) {
@@ -277,7 +277,7 @@ public class SlotFileDataSetTest  extends DeltaTestCase {
 		
 	}
 
-	private void checkDescriptions(DeltaDataSet dataSet, List<String> itemNames) {
+	private void checkDescriptions(MutableDeltaDataSet dataSet, List<String> itemNames) {
 		for (int i=1; i<dataSet.getMaximumNumberOfItems(); i++) {
 			Item item = dataSet.getItem(i);
 			assertEquals(i, item.getItemNumber());
@@ -372,7 +372,7 @@ public class SlotFileDataSetTest  extends DeltaTestCase {
 	@Test
 	public void testDeleteState() throws Exception {
 		File f = copyURLToFile("/SAMPLE.DLT");
-		DeltaDataSet dataSet = _repo.findByName(f.getAbsolutePath(), null);
+		MutableDeltaDataSet dataSet = _repo.findByName(f.getAbsolutePath(), null);
 		
 		MultiStateCharacter character = (MultiStateCharacter)dataSet.getCharacter(79);
 		dataSet.deleteState(character, 3);
@@ -387,7 +387,7 @@ public class SlotFileDataSetTest  extends DeltaTestCase {
 	@Test
 	public void testDeleteStateThatControls() throws Exception {
 		File f = copyURLToFile("/SAMPLE.DLT");
-		DeltaDataSet dataSet = _repo.findByName(f.getAbsolutePath(), null);
+		MutableDeltaDataSet dataSet = _repo.findByName(f.getAbsolutePath(), null);
 		
 		MultiStateCharacter character = (MultiStateCharacter)dataSet.getCharacter(10);
 		String description = character.getDescription();
@@ -404,7 +404,7 @@ public class SlotFileDataSetTest  extends DeltaTestCase {
 	@Test
 	public void testGetUncodedItems() throws Exception {
 		File f = copyURLToFile("/SAMPLE.DLT");
-		DeltaDataSet dataSet = _repo.findByName(f.getAbsolutePath(), null);
+		MutableDeltaDataSet dataSet = _repo.findByName(f.getAbsolutePath(), null);
 		
 		au.org.ala.delta.model.Character character = dataSet.getCharacter(2);
 		List<Item> uncodedItems = dataSet.getUncodedItems(character);
@@ -427,7 +427,7 @@ public class SlotFileDataSetTest  extends DeltaTestCase {
 	@Test
 	public void testGetItemsWithMultipleStatesCoded() throws Exception {
 		File f = copyURLToFile("/SAMPLE.DLT");
-		DeltaDataSet dataSet = _repo.findByName(f.getAbsolutePath(), null);
+		MutableDeltaDataSet dataSet = _repo.findByName(f.getAbsolutePath(), null);
 		
 		MultiStateCharacter character = (MultiStateCharacter)dataSet.getCharacter(10);
 		List<Item> items = dataSet.getItemsWithMultipleStatesCoded(character);

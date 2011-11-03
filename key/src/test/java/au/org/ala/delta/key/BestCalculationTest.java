@@ -6,7 +6,7 @@ import java.util.LinkedHashMap;
 
 import junit.framework.TestCase;
 import au.org.ala.delta.best.Best;
-import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.model.MutableDeltaDataSet;
 
 public class BestCalculationTest extends TestCase {
 
@@ -22,7 +22,7 @@ public class BestCalculationTest extends TestCase {
         context.setrBase(1.2);
         context.setVaryWt(1.0);
 
-        DeltaDataSet dataset = context.getDataSet();
+        MutableDeltaDataSet dataset = context.getDataSet();
 
         LinkedHashMap<au.org.ala.delta.model.Character, Double> bestMap = Best.orderBest(dataset, context.getIncludedCharacters(), context.getIncludedItems(), context.getrBase(), context.getVaryWt());
 

@@ -10,7 +10,7 @@ import org.apache.commons.lang.StringUtils;
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
-import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateAttribute;
 import au.org.ala.delta.model.format.AttributeFormatter;
@@ -34,7 +34,7 @@ public class NaturalLanguageTranslator extends AbstractIterativeTranslator {
 
 	protected DeltaContext _context;
     protected PrintFile _printer;
-    protected DeltaDataSet _dataSet;
+    protected MutableDeltaDataSet _dataSet;
     protected ItemListTypeSetter _typeSetter;
     protected ItemFormatter _itemFormatter;
     private CharacterFormatter _characterFormatter;

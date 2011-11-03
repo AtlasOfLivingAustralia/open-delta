@@ -16,7 +16,7 @@ import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterDependency;
 import au.org.ala.delta.model.CharacterFactory;
 import au.org.ala.delta.model.CharacterType;
-import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.model.DeltaDataSetFactory;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
@@ -58,9 +58,9 @@ public class SlotFileDataSetFactory implements DeltaDataSetFactory {
 	 * @param name ignored in this case as the VOP already has a file name associated with it.
 	 */
 	@Override
-	public DeltaDataSet createDataSet(String name) {
+	public MutableDeltaDataSet createDataSet(String name) {
 
-		DeltaDataSet dataSet = new SlotFileDataSet(_vop, this);
+		MutableDeltaDataSet dataSet = new SlotFileDataSet(_vop, this);
 		return dataSet;
 	}
 

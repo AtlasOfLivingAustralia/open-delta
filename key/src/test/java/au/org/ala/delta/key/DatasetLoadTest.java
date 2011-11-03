@@ -11,7 +11,7 @@ import junit.framework.TestCase;
 import org.junit.Test;
 
 import au.org.ala.delta.model.CharacterDependency;
-import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
 
@@ -26,7 +26,7 @@ public class DatasetLoadTest extends TestCase {
         key.calculateKey(directivesFile);
 
         KeyContext context = key.getContext();
-        DeltaDataSet dataset = context.getDataSet();
+        MutableDeltaDataSet dataset = context.getDataSet();
 
         assertEquals(9, dataset.getNumberOfCharacters());
         assertEquals(5, dataset.getMaximumNumberOfItems());

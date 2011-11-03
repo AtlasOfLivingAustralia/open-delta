@@ -13,7 +13,7 @@ import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.DeltaContext.OutputFormat;
 import au.org.ala.delta.model.Attribute;
-import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.format.AttributeFormatter;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
@@ -32,7 +32,7 @@ public class OutputFileSelector extends OutputFileManager {
 	private int _characterForOutputFiles = 0;
 	private Map<String, String> _itemOutputFiles = new HashMap<String, String>();
 	private Set<Integer> _newFileItems = new HashSet<Integer>();
-	private DeltaDataSet _dataSet;
+	private MutableDeltaDataSet _dataSet;
 	private String _subjectForOutputFiles;
 	private String _intkeyOutputFile;
 	private String _keyOutputFile;
@@ -52,7 +52,7 @@ public class OutputFileSelector extends OutputFileManager {
 	/** Number of characters on a line of text written to the print file */
 	private int _printWidth;
 	
-	public OutputFileSelector(DeltaDataSet dataSet) {
+	public OutputFileSelector(MutableDeltaDataSet dataSet) {
 		_dataSet = dataSet;
 		_printWidth = DEFAULT_PRINT_WIDTH;
 		_outputWidth = DEFAULT_PRINT_WIDTH;

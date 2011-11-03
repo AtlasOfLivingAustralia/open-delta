@@ -6,7 +6,7 @@ import au.org.ala.delta.model.observer.DeltaDataSetObserver;
  * An ObservableDeltaDataSet allows interested objects to be notified to changes
  * to the DeltaDataSet.
  */
-public interface ObservableDeltaDataSet extends DeltaDataSet {
+public interface ObservableDeltaDataSet extends MutableDeltaDataSet {
 	/**
 	 * Adds an observer interested in receiving notification of changes to this data set.
 	 * Duplicate observers are ignored.

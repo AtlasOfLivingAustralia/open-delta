@@ -3,7 +3,7 @@ package au.org.ala.delta.editor.directives;
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.editor.slotfile.Directive;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile;
-import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.model.MutableDeltaDataSet;
 
 
 /**
@@ -15,7 +15,7 @@ public class ImportContext extends DeltaContext {
 	private DirectiveFile _currentFile;
 	private Directive _currentDirective;
 	
-	public ImportContext(DeltaDataSet dataSet) {
+	public ImportContext(MutableDeltaDataSet dataSet) {
 		super(dataSet);
 	}
 	

@@ -24,7 +24,7 @@ import au.org.ala.delta.model.impl.ControllingInfo;
 /**
  * Represents a single DELTA data set, consisting of a List of characters and a List of Items.
  */
-public interface DeltaDataSet {
+public interface MutableDeltaDataSet {
 	
 	public String getName();
 	

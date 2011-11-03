@@ -7,7 +7,7 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.model.CharacterDependency;
-import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
@@ -17,10 +17,10 @@ import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
  */
 public class CharacterDependencyFormatter {
 
-	private DeltaDataSet _dataSet;
+	private MutableDeltaDataSet _dataSet;
 	private CharacterFormatter _characterFormatter;
 	
-	public CharacterDependencyFormatter(DeltaDataSet dataSet) {
+	public CharacterDependencyFormatter(MutableDeltaDataSet dataSet) {
 		_dataSet = dataSet;
 		_characterFormatter = new CharacterFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.RETAIN, true, false);
 	}

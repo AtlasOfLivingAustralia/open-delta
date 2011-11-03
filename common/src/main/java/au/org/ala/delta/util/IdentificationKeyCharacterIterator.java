@@ -5,7 +5,7 @@ import java.util.NoSuchElementException;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.model.Character;
-import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.model.IdentificationKeyCharacter;
 import au.org.ala.delta.translation.DataSetFilter;
 
@@ -17,7 +17,7 @@ public class IdentificationKeyCharacterIterator implements Iterator<Identificati
 
 	private int _realIndex;
 	private int _filteredIndex;
-	private DeltaDataSet _dataSet;
+	private MutableDeltaDataSet _dataSet;
 	private DeltaContext _context;
 	private DataSetFilter _filter;
 	

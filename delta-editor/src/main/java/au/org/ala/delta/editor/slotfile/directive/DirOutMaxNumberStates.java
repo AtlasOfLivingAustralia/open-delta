@@ -15,14 +15,14 @@
 package au.org.ala.delta.editor.slotfile.directive;
 
 import au.org.ala.delta.model.Character;
-import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.model.MultiStateCharacter;
 
 public class DirOutMaxNumberStates extends AbstractDirOutFunctor {
 
 	@Override
 	public void writeDirectiveArguments(DirectiveInOutState state) {
-		DeltaDataSet dataSet = state.getDataSet();
+		MutableDeltaDataSet dataSet = state.getDataSet();
 		
 		int maxNumStates = 0;
 		for (int i=1; i<=dataSet.getNumberOfCharacters(); i++) {

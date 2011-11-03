@@ -21,11 +21,11 @@ import au.org.ala.delta.util.IProgressObserver;
  */
 public interface DeltaDataSetRepository {
 
-	public void save(DeltaDataSet dataSet, IProgressObserver observer);
+	public void save(MutableDeltaDataSet dataSet, IProgressObserver observer);
 	
-	public DeltaDataSet findByName(String name, IProgressObserver observer);
+	public MutableDeltaDataSet findByName(String name, IProgressObserver observer);
 	
-	public void saveAsName(DeltaDataSet dataSet, String name, IProgressObserver observer);
+	public void saveAsName(MutableDeltaDataSet dataSet, String name, IProgressObserver observer);
 	
-	public DeltaDataSet newDataSet();
+	public MutableDeltaDataSet newDataSet();
 }

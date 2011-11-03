@@ -1,6 +1,6 @@
 package au.org.ala.delta.model.observer;
 import au.org.ala.delta.model.Character;
-import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.image.Image;
 
@@ -15,7 +15,7 @@ public class DeltaDataSetChangeEvent {
 	
 	public Image _image;
 	
-	public DeltaDataSet _dataSet;
+	public MutableDeltaDataSet _dataSet;
 	
 	/** 
 	 * Allows additional information to be supplied about the change - for example when an Item
@@ -23,22 +23,22 @@ public class DeltaDataSetChangeEvent {
 	 */
 	public Object _extra;
 	
-	public DeltaDataSetChangeEvent(DeltaDataSet source) {
+	public DeltaDataSetChangeEvent(MutableDeltaDataSet source) {
 		this(source, null, null);
 	}
 	
-	public DeltaDataSetChangeEvent(DeltaDataSet source, Character character, Item item) {
+	public DeltaDataSetChangeEvent(MutableDeltaDataSet source, Character character, Item item) {
 		this(source, character, item, -1);
 	}
 	
-	public DeltaDataSetChangeEvent(DeltaDataSet source, Character character, Item item, Object extra) {
+	public DeltaDataSetChangeEvent(MutableDeltaDataSet source, Character character, Item item, Object extra) {
 		_dataSet = source;
 		_character = character;
 		_item = item;
 		_extra = extra;
 	}
 	
-	public DeltaDataSetChangeEvent(DeltaDataSet source, Image image) {
+	public DeltaDataSetChangeEvent(MutableDeltaDataSet source, Image image) {
 		_dataSet = source;
 		_image = image;
 	}

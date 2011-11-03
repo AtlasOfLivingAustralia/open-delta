@@ -11,7 +11,7 @@ public interface DeltaDataSetFactory {
 	/**
 	 * Creates a new DeltaDataSet with the supplied name.
 	 */
-	public DeltaDataSet createDataSet(String name);
+	public MutableDeltaDataSet createDataSet(String name);
 	
 	/**
 	 * Creates an item with the supplied number.

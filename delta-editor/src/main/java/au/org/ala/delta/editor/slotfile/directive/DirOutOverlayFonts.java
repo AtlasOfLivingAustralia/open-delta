@@ -14,7 +14,7 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.slotfile.directive;
 
-import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.model.image.ImageSettings.FontInfo;
 import au.org.ala.delta.model.image.ImageSettings.OverlayFontType;
@@ -26,7 +26,7 @@ public class DirOutOverlayFonts extends AbstractDirOutFunctor {
 	public void writeDirectiveArguments(DirectiveInOutState state) {
 		outputTextBuffer(0, 0, true);
 		
-		DeltaDataSet dataSet = state.getDataSet();
+		MutableDeltaDataSet dataSet = state.getDataSet();
 
 		OverlayFontWriter fontWriter = new OverlayFontWriter(_deltaWriter);
 		ImageSettings settings = dataSet.getImageSettings();

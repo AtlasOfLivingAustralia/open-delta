@@ -10,7 +10,7 @@ import org.junit.Test;
 
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DefaultDataSetFactory;
-import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.model.NumericRange;
 
 /**
@@ -18,7 +18,7 @@ import au.org.ala.delta.model.NumericRange;
  */
 public class DefaultAttributeDataTest extends TestCase {
 
-	private DeltaDataSet _dataSet;
+	private MutableDeltaDataSet _dataSet;
 	
 	@Before
 	public void setUp() {

@@ -9,7 +9,7 @@ import au.org.ala.delta.editor.slotfile.Directive;
 import au.org.ala.delta.editor.slotfile.DirectiveInstance;
 import au.org.ala.delta.editor.slotfile.directive.DirectiveInOutState;
 import au.org.ala.delta.model.DefaultDataSetFactory;
-import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.translation.PrintFile;
 import junit.framework.TestCase;
 
@@ -18,7 +18,7 @@ import junit.framework.TestCase;
  */
 public abstract class DirOutTest extends TestCase {
 
-	protected DeltaDataSet _dataSet;
+	protected MutableDeltaDataSet _dataSet;
 	protected DirectiveInOutState _state;
 	private ByteArrayOutputStream _bytesOut;
 

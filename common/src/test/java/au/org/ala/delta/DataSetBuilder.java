@@ -1,7 +1,7 @@
 package au.org.ala.delta;
 
 import au.org.ala.delta.model.CharacterType;
-import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.model.IntegerCharacter;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
@@ -10,7 +10,7 @@ import au.org.ala.delta.model.TextCharacter;
 
 public class DataSetBuilder {
 
-	public static void buildSimpleDataSet(DeltaDataSet dataSet) {
+	public static void buildSimpleDataSet(MutableDeltaDataSet dataSet) {
 		MultiStateCharacter char1 = (MultiStateCharacter)dataSet.addCharacter(CharacterType.UnorderedMultiState);
 		char1.setDescription("character 1 description");
 		char1.setNumberOfStates(3);

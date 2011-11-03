@@ -31,7 +31,7 @@ import au.org.ala.delta.editor.slotfile.model.SlotFileDataSetFactory;
 import au.org.ala.delta.editor.slotfile.model.VOCharacterAdaptor;
 import au.org.ala.delta.editor.slotfile.model.VOItemAdaptor;
 import au.org.ala.delta.model.Character;
-import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.model.IntegerCharacter;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
@@ -56,7 +56,7 @@ public class DeltaFileReader {
 		return readDeltaFileFully(filename, null);
 	}
 
-	public static DeltaDataSet readDeltaFile(String fileName, IProgressObserver observer) {
+	public static MutableDeltaDataSet readDeltaFile(String fileName, IProgressObserver observer) {
 
 		if (observer != null) {
 			observer.progress("Loading file " + fileName, 0);
@@ -64,7 +64,7 @@ public class DeltaFileReader {
 
 		DeltaVOP vop = new DeltaVOP(fileName, false);
 		SlotFileDataSetFactory factory = new SlotFileDataSetFactory(vop);
-		DeltaDataSet dataSet = new SlotFileDataSet(vop, factory);
+		MutableDeltaDataSet dataSet = new SlotFileDataSet(vop, factory);
 		
 		return dataSet;
 	}

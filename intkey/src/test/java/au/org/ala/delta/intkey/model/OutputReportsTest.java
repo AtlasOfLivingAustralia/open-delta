@@ -18,7 +18,7 @@ import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterDependency;
 import au.org.ala.delta.model.CharacterType;
-import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.image.ImageSettings;
@@ -298,7 +298,7 @@ public class OutputReportsTest extends IntkeyDatasetTestCase {
     // System.out.println(pf);
     // }
 
-    private class WrappedIntkeyDataset implements DeltaDataSet {
+    private class WrappedIntkeyDataset implements MutableDeltaDataSet {
 
         private IntkeyDataset _intkeyDataset;
 

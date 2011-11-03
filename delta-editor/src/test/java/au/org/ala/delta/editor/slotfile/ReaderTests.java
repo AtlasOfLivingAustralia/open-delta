@@ -5,7 +5,7 @@ import java.io.IOException;
 
 import au.org.ala.delta.DeltaTestCase;
 import au.org.ala.delta.editor.DeltaFileReader;
-import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.util.CodeTimer;
 
 public class ReaderTests extends DeltaTestCase {
@@ -28,7 +28,7 @@ public class ReaderTests extends DeltaTestCase {
 			File f = copyURLToFile(String.format("/%s", filename));
 
 			CodeTimer t = new CodeTimer("Deep Reading " + filename);
-			DeltaDataSet ds = DeltaFileReader.readDeltaFile(f.getAbsolutePath(), null);
+			MutableDeltaDataSet ds = DeltaFileReader.readDeltaFile(f.getAbsolutePath(), null);
 			deepRead(ds);
 			t.stop(true);
 		}

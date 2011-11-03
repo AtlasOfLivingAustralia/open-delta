@@ -14,7 +14,7 @@ import au.org.ala.delta.editor.slotfile.DeltaVOP;
 import au.org.ala.delta.editor.slotfile.VOP;
 import au.org.ala.delta.editor.slotfile.model.SlotFileRepository;
 import au.org.ala.delta.editor.slotfile.model.SlotFileDataSet;
-import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.model.MutableDeltaDataSet;
 
 /**
  * Tests the SlotFileRepository class.
@@ -64,7 +64,7 @@ public class SlotFileRepositoryTest {
 		try {
 			testFile = copyToTemp("/SAMPLE.DLT");
 			
-			DeltaDataSet data = _slotFileRepository.findByName(testFile.getAbsolutePath(), null);
+			MutableDeltaDataSet data = _slotFileRepository.findByName(testFile.getAbsolutePath(), null);
 		
 			copy = File.createTempFile("SlotFileRepositoryTest", ".dlt");
 			System.out.println(copy.getAbsolutePath());
@@ -74,7 +74,7 @@ public class SlotFileRepositoryTest {
 			
 			data.close();
 			
-			DeltaDataSet copySet = _slotFileRepository.findByName(copy.getAbsolutePath(), null);
+			MutableDeltaDataSet copySet = _slotFileRepository.findByName(copy.getAbsolutePath(), null);
 			
 			originalVOP = getVOP(data);
 			copiedVOP = getVOP(copySet);
@@ -89,7 +89,7 @@ public class SlotFileRepositoryTest {
 		}
 	}
 	
-	private DeltaVOP getVOP(DeltaDataSet dataSet) {
+	private DeltaVOP getVOP(MutableDeltaDataSet dataSet) {
 		return ((SlotFileDataSet)dataSet).getVOP();
 	}
 	

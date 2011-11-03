@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import au.org.ala.delta.model.Character;
-import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.util.Pair;
 
@@ -30,7 +30,7 @@ public class DirOutNumberStates extends AbstractDirOutFunctor {
 	private static final int DEFAULT_NUMBER_OF_STATES = 2;
 	@Override
 	public void writeDirectiveArguments(DirectiveInOutState state) {
-		DeltaDataSet dataSet = state.getDataSet();
+		MutableDeltaDataSet dataSet = state.getDataSet();
 		
 		List<Pair<Integer, Integer>> numbersOfStates = new ArrayList<Pair<Integer,Integer>>();
 		for (int i=1; i<=dataSet.getNumberOfCharacters(); i++) {

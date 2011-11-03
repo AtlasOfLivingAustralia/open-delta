@@ -23,7 +23,7 @@ import au.org.ala.delta.Logger;
 import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.model.CharacterType;
-import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.util.Pair;
 
@@ -65,7 +65,7 @@ public class CharacterTypes extends AbstractCharacterListDirective<DeltaContext,
 	}
 
 	protected void createCharacters(DeltaContext context) {
-		DeltaDataSet dataSet = context.getDataSet();
+		MutableDeltaDataSet dataSet = context.getDataSet();
 		for (int i=1; i<=context.getNumberOfCharacters(); i++) {
 			CharacterType charType = DEFAULT_CHAR_TYPE;
 			boolean exclusive = false;

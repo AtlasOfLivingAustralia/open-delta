@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import au.org.ala.delta.model.Character;
-import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.util.Pair;
 
@@ -29,7 +29,7 @@ public class DirOutImplicitValues extends AbstractDirOutFunctor {
 
 	@Override
 	public void writeDirectiveArguments(DirectiveInOutState state) {
-		DeltaDataSet dataSet = state.getDataSet();
+		MutableDeltaDataSet dataSet = state.getDataSet();
 		
 		List<Pair<Integer, Integer>> implicitStates = new ArrayList<Pair<Integer,Integer>>();
 		for (int i=1; i<=dataSet.getNumberOfCharacters(); i++) {

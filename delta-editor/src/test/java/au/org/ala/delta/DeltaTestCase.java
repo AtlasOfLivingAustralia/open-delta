@@ -11,7 +11,7 @@ import org.apache.commons.io.FileUtils;
 import au.org.ala.delta.editor.slotfile.SlotFile;
 import au.org.ala.delta.io.BinFileMode;
 import au.org.ala.delta.model.CharacterType;
-import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.rtf.RTFUtils;
@@ -77,7 +77,7 @@ public abstract class DeltaTestCase extends TestCase {
 	 * in some way.
 	 * @param ds the data set to read.
 	 */
-	protected void deepRead(DeltaDataSet ds) {
+	protected void deepRead(MutableDeltaDataSet ds) {
 		// Chars...
 		System.out.println("Processing " + ds.getNumberOfCharacters() + " characters");
 		for (int i = 1; i <= ds.getNumberOfCharacters(); ++i) {

@@ -7,17 +7,17 @@ import java.util.List;
 import au.org.ala.delta.io.BinaryKeyFile;
 import au.org.ala.delta.key.CharactersFileHeader;
 import au.org.ala.delta.model.CharacterType;
-import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.model.MultiStateCharacter;
 
 public class KeyCharactersFileReader {
 
     private CharactersFileHeader _header;
     
-    private DeltaDataSet _dataset;
+    private MutableDeltaDataSet _dataset;
     private BinaryKeyFile _keyCharsFile;
 
-    public KeyCharactersFileReader(DeltaDataSet dataset, BinaryKeyFile keyCharsFile) {
+    public KeyCharactersFileReader(MutableDeltaDataSet dataset, BinaryKeyFile keyCharsFile) {
         _dataset = dataset;
         _keyCharsFile = keyCharsFile;
         

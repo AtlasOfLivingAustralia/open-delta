@@ -7,7 +7,7 @@ import java.util.logging.Logger;
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
-import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.rtf.RTFUtils;
 import au.org.ala.delta.util.Pair;
@@ -45,7 +45,7 @@ public class AbstractDataSetTranslator implements DataSetTranslator {
 	
 	public void translateItems() {
 		
-		DeltaDataSet dataSet = _context.getDataSet();
+		MutableDeltaDataSet dataSet = _context.getDataSet();
 		
 		beforeFirstItem();
 		
@@ -71,7 +71,7 @@ public class AbstractDataSetTranslator implements DataSetTranslator {
 		if (filter.filter(item)) {
 			translator.beforeItem(item);
 			
-			DeltaDataSet dataSet = _context.getDataSet();
+			MutableDeltaDataSet dataSet = _context.getDataSet();
 			
 			int numChars = dataSet.getNumberOfCharacters();
 			for (int i=1; i<=numChars; i++) {
@@ -97,7 +97,7 @@ public class AbstractDataSetTranslator implements DataSetTranslator {
 		
 		beforeFirstCharacter();
 		
-		DeltaDataSet dataSet = _context.getDataSet();
+		MutableDeltaDataSet dataSet = _context.getDataSet();
 		int numChars = dataSet.getNumberOfCharacters();
 		for (int i=1; i<=numChars; i++) {
 			

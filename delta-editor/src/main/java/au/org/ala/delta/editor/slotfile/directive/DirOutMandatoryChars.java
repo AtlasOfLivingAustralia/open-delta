@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import au.org.ala.delta.model.Character;
-import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.model.MutableDeltaDataSet;
 
 /**
  * Exports the MANDATORY CHARACTERS directive.
@@ -27,7 +27,7 @@ public class DirOutMandatoryChars extends AbstractDirOutFunctor {
 
 	@Override
 	public void writeDirectiveArguments(DirectiveInOutState state) {
-		DeltaDataSet dataSet = state.getDataSet();
+		MutableDeltaDataSet dataSet = state.getDataSet();
 		
 		List<Integer> mandatoryChars = new ArrayList<Integer>();
 		

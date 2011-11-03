@@ -13,7 +13,7 @@ import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.model.CharacterDependency;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DefaultDataSetFactory;
-import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.model.MultiStateCharacter;
 
 /**
@@ -21,7 +21,7 @@ import au.org.ala.delta.model.MultiStateCharacter;
  */
 public class DependentCharactersParserTest extends TestCase {
 
-	private DeltaDataSet _dataSet;
+	private MutableDeltaDataSet _dataSet;
 	private DeltaContext _context;
 	
 	@Before

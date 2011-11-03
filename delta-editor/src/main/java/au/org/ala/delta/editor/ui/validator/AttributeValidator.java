@@ -1,7 +1,7 @@
 package au.org.ala.delta.editor.ui.validator;
 
 import au.org.ala.delta.editor.slotfile.Attribute.AttributeParseException;
-import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.model.MutableDeltaDataSet;
 
 /**
  * Delegates to the model classes to validate an attribute of an item.
@@ -18,7 +18,7 @@ public class AttributeValidator implements Validator {
 	 * @param item The Item the attribute belongs to
 	 * @param character The character the attribute is a value for 
 	 */
-	public AttributeValidator(DeltaDataSet dataset, au.org.ala.delta.model.Character character) {
+	public AttributeValidator(MutableDeltaDataSet dataset, au.org.ala.delta.model.Character character) {
 		_character = character;
 	}
 	

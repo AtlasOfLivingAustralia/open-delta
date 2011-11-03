@@ -8,7 +8,7 @@ import au.org.ala.delta.directives.args.DependentCharactersParser;
 import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.model.CharacterDependency;
-import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.model.MultiStateCharacter;
 
 /**
@@ -39,7 +39,7 @@ public abstract class AbstractCharacterDependencyDirective extends AbstractTextD
 	}
 
 	protected void addCharacterDependencies(DeltaContext context, List<CharacterDependency> dependencies) {
-		DeltaDataSet dataSet = context.getDataSet();
+		MutableDeltaDataSet dataSet = context.getDataSet();
 		
 		for (CharacterDependency dependency : dependencies) {
 			MultiStateCharacter character = (MultiStateCharacter)dataSet.getCharacter(dependency.getControllingCharacterId());

@@ -11,7 +11,7 @@ import au.org.ala.delta.DeltaTestCase;
 import au.org.ala.delta.editor.slotfile.DeltaVOP;
 import au.org.ala.delta.editor.slotfile.VOCharBaseDesc;
 import au.org.ala.delta.editor.slotfile.VOControllingDesc;
-import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.model.MutableDeltaDataSet;
 
 /**
  * Tests the VOControllingAdaptor class.
@@ -21,7 +21,7 @@ public class VOControllingAdaptorTest extends DeltaTestCase {
 	/** Holds the data set we obtain the data from to back our test*/
 	private DeltaVOP _vop;
 	
-	private DeltaDataSet _dataSet;
+	private MutableDeltaDataSet _dataSet;
 	
 	@Before
 	public void setUp() throws Exception {

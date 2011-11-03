@@ -17,7 +17,7 @@ package au.org.ala.delta.editor.slotfile.directive;
 import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.model.Character;
-import au.org.ala.delta.model.DeltaDataSet;
+import au.org.ala.delta.model.MutableDeltaDataSet;
 
 /**
  * Exports the CHARACTER NOTES directive
@@ -28,7 +28,7 @@ public class DirOutCharNotes extends AbstractDirOutFunctor {
 	@Override
 	public void writeDirectiveArguments(DirectiveInOutState state) {
 
-		DeltaDataSet dataSet = state.getDataSet();
+		MutableDeltaDataSet dataSet = state.getDataSet();
 		writeLine(state, "");
 		
 		for (int i=1; i<=dataSet.getNumberOfCharacters(); i++) {
