@@ -42,7 +42,6 @@ import au.org.ala.delta.model.image.ImageInfo;
 import au.org.ala.delta.rtf.RTFUtils;
 import au.org.ala.delta.translation.PrintFile;
 import au.org.ala.delta.util.Functor;
-import au.org.ala.delta.util.Utils;
 
 /**
  * Context associated with a set of DELTA input files.
@@ -58,7 +57,6 @@ public class DeltaContext extends AbstractDeltaContext {
 	
 	private OutputFormat _outputFormat = OutputFormat.RTF;
 	private Map<String, Object> _variables;
-	private int _ListFilenameSize = 15;
 	private List<String> _errorMessages = new ArrayList<String>();
 	private List<PrintActionType> _outputActions = new ArrayList<PrintActionType>();
 
@@ -126,10 +124,6 @@ public class DeltaContext extends AbstractDeltaContext {
 	private Integer _characterForTaxonImages = null;
 
 	private String _credits;
-	
-	
-	private PrintStream _listStream;
-	private PrintStream _errorStream;
 
 	private StateValueMatrix _matrix;
 
@@ -167,9 +161,6 @@ public class DeltaContext extends AbstractDeltaContext {
 				return sdf.format(new Date());
 			}
 		});
-
-		_errorStream = System.err;
-		_listStream = System.out;
 		
 		_dataSet = dataSet;
 		
@@ -550,9 +541,14 @@ public class DeltaContext extends AbstractDeltaContext {
 		}
 	}
 
-	public boolean replaceSemiColonWithComma(int characterNum) {
+	public boolean getReplaceSemiColonWithComma(int characterNum) {
 		return _replaceSemiColonWithComma.contains(characterNum);
 	}
+	
+	public void replaceSemiColonWithCommon(int characterNum) {
+		_replaceSemiColonWithComma.add(characterNum);
+	}
+	
 	public boolean useAlternateComma() {
 		return _useAlternateComma;
 	}

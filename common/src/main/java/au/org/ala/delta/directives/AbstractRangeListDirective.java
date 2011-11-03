@@ -16,6 +16,7 @@ package au.org.ala.delta.directives;
 
 import java.text.ParseException;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.IntRange;
 
 import au.org.ala.delta.directives.args.DirectiveArgument;
@@ -41,15 +42,19 @@ public abstract class AbstractRangeListDirective<C extends AbstractDeltaContext>
 	public void parse(C context, String data) throws ParseException {
 		_args = new DirectiveArguments();
 		// data is a space or newline separate list of ranges...
-		String[] ranges = data.trim().split("\\s+");
-		for (String range : ranges) {
-			IntRange r = parseRange(range);
-			forEach(r, context, new IntegerFunctor<C>() {
-				@Override
-				public void invoke(C context, int number) {
-					_args.addDirectiveArgument(number);
-				}
-			});
+		data = data.trim();
+		if (StringUtils.isNotBlank(data)) {
+			String[] ranges = data.split("\\s+");
+			
+			for (String range : ranges) {
+				IntRange r = parseRange(range);
+				forEach(r, context, new IntegerFunctor<C>() {
+					@Override
+					public void invoke(C context, int number) {
+						_args.addDirectiveArgument(number);
+					}
+				});
+			}
 		}
 	}
 
