@@ -67,6 +67,9 @@ public class AttributeTranslatorFactory {
 		if (_context.isFinalCommaOmmitedForCharacter(character.getCharacterId())) {
 			translator.omitFinalComma();
 		}
+		if (!_context.getReplaceSemiColonWithComma(character.getCharacterId()).isEmpty()) {
+			translator.omitAllCommas();
+		}
 		return translator;
 	}
 }

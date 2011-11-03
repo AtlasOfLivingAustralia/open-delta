@@ -472,7 +472,6 @@ public class NaturalLanguageTranslator extends AbstractIterativeTranslator {
 
 	protected void writeItemSubheading(String itemSubheading) {
 		
-		
 		itemSubheading = _characterFormatter.defaultFormat(itemSubheading);
         
 		if (StringUtils.isNotEmpty(itemSubheading)) {

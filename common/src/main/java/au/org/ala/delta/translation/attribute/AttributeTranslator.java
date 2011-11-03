@@ -27,7 +27,7 @@ public abstract class AttributeTranslator {
 	protected String _comma;
 	protected boolean _omitInapplicables;
 	protected boolean _omitFinalComma;
-
+	protected boolean _omitAllCommas;
 
 	public AttributeTranslator(AttributeFormatter formatter, boolean omitOr) {
 		_separators = new HashMap<String, String>();
@@ -38,6 +38,7 @@ public abstract class AttributeTranslator {
 		_comma = Words.word(Word.COMMA);
 		_omitInapplicables = false;
 		_omitFinalComma = false;
+		_omitAllCommas = false;
 	}
 	
 	/**
@@ -66,6 +67,11 @@ public abstract class AttributeTranslator {
 	public void omitFinalComma() {
 		_omitFinalComma = true;
 	}
+	
+	public void omitAllCommas() {
+		_omitAllCommas = true;
+	}
+
 
 	/**
 	 * Translates the supplied ParsedAttribute into a natural language
@@ -87,7 +93,10 @@ public abstract class AttributeTranslator {
 			String nextValue = commentedValues(commentedValues.get(i));
 
 			if (valueOutput && StringUtils.isNotEmpty(nextValue)) {
-				_translatedValue.append(_comma).append(" ");
+				if (!_omitAllCommas) {
+					_translatedValue.append(_comma);
+				}
+				_translatedValue.append(" ");
 				if (!_omitOr) {
 					_translatedValue.append(Words.word(Word.OR)+" ");
 				}
@@ -282,5 +291,6 @@ public abstract class AttributeTranslator {
 	public abstract String rangeSeparator();
 
 	public abstract String translateValue(String value);
+
 
 }
