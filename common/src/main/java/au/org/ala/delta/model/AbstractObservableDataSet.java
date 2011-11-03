@@ -571,4 +571,14 @@ public abstract class AbstractObservableDataSet implements ObservableDeltaDataSe
 			observer.characterMoved(event);
 		}
 	}
+	
+    @Override
+    public List<Item> getItemsAsList() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<Character> getCharactersAsList() {
+        throw new UnsupportedOperationException();
+    }
 }

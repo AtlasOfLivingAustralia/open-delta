@@ -473,5 +473,17 @@ public class OutputReportsTest extends IntkeyDatasetTestCase {
             throw new NotImplementedException();
         }
 
+        @Override
+        public List<Item> getItemsAsList() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        @Override
+        public List<Character> getCharactersAsList() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
     }
 }

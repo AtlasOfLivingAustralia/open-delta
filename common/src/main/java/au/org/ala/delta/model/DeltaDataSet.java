@@ -32,9 +32,13 @@ public interface DeltaDataSet {
 	
 	public Item getItem(int number);
 	
+    public List<Item> getItemsAsList();	
+	
 	public String getAttributeAsString(int itemNumber, int characterNumber);
 
 	public Character getCharacter(int number);
+	
+	public List<Character> getCharactersAsList();
 
 	public int getNumberOfCharacters();
 
