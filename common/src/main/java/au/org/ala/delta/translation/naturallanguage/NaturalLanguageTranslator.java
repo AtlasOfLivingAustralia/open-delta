@@ -338,25 +338,29 @@ public class NaturalLanguageTranslator extends AbstractIterativeTranslator {
     
 
     private String removeCommonPrefix(String master, String text) {
-        if (StringUtils.isEmpty(master) || StringUtils.isEmpty(text)) {
+       
+    	if (StringUtils.isEmpty(master) || StringUtils.isEmpty(text)) {
             return text;
         }
-
-        int minLength = Math.min(master.length(), text.length());
-
-        int i = 0;
-        int spaceIndex = 0;
-        while (i < minLength && master.charAt(i) == text.charAt(i)) {
-        	if (master.charAt(i) == ' ') {
-        		spaceIndex = i;
+        String[] masterWords = master.split("\\s+");
+        String[] words = text.split("\\s+");
+        
+        int minWords = Math.min(masterWords.length, words.length);
+        int matchingWord = -1;
+        for (int i=0; i<minWords; i++) {
+        	if (!masterWords[i].equals(words[i])) {
+        		break;
         	}
-            i++;
+        	matchingWord = i;
         }
-        // Don't match partial words.
-        if ((i < minLength) && (i != spaceIndex + 1)) {
-        	i = spaceIndex;
+        
+        if (matchingWord == words.length-1) {
+        	return "";
         }
-        return text.substring(i);
+        else {
+        	return text.substring(text.indexOf(words[matchingWord+1]));
+        }
+        
     }
 
     private void writeCharacterAttribute(Attribute attribute, String naturalLanguageDescription) {
@@ -413,9 +417,7 @@ public class NaturalLanguageTranslator extends AbstractIterativeTranslator {
 
 
 	protected void insertPunctuation(boolean subsequentPartOfLinkedSet, int characterNumber) {
-		if (characterNumber == 595) {
-			System.out.println("Breakpoint");
-		}
+		
 		// Insert a full stop if required.
         if (_newParagraph == true || (_previousCharInSentence == 0) || (!subsequentPartOfLinkedSet)) {
 

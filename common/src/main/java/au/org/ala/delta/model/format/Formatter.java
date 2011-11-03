@@ -133,6 +133,9 @@ public class Formatter {
      *         brackets, ignoring any nested pairs of angle brackets.
      */
     private boolean textSurroundedByAngleBrackets(String text) {
+    	if (StringUtils.isEmpty(text)) {
+    		return false;
+    	}
         if (text.charAt(0) == '<' && text.charAt(text.length() - 1) == '>') {
             int openBrackets = 0;
             boolean entireStringEnclosed = true;
@@ -177,11 +180,11 @@ public class Formatter {
             break;
         case REPLACE:
         case CONTEXT_SENSITIVE_REPLACE:
-            text = text.replace("<", "(");
+        	text = text.replace("<", "(");
             text = text.replace(">", ")");
             break;
         case REMOVE_SURROUNDING_REPLACE_INNER:
-            if (textSurroundedByAngleBrackets(text)) {
+        	if (textSurroundedByAngleBrackets(text)) {
                 text = removeSurroundingBrackets(text);
             }
             text = text.replace("<", "(");
@@ -197,8 +200,14 @@ public class Formatter {
     }
 
 	private String removeSurroundingBrackets(String text) {
-		text = text.substring(1, text.length() - 1);
-		return text;
+
+		int numBrackets = 0;
+		while (text.charAt(numBrackets) == '<') {
+			numBrackets++;
+		}
+		
+		return text.substring(numBrackets, text.length()-numBrackets);
+
 	}
 
     /**

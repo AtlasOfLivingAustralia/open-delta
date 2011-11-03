@@ -83,6 +83,16 @@ public class AttributeFormatter extends Formatter {
     	 }
          return defaultFormat(comment, mode);
     }
+    
+    public String formatTextAttribute(String value) {
+    	if (StringUtils.isEmpty(value) || EMPTY_COMMENT_PATTERN.matcher(value).matches()) {
+            return "";
+        }
+	   	AngleBracketHandlingMode mode = _angleBracketHandlingMode;
+	   	mode = AngleBracketHandlingMode.REMOVE_SURROUNDING_REPLACE_INNER;
+		
+        return defaultFormat(value, mode);
+    }
 
     /**
      * Format the supplied attribute

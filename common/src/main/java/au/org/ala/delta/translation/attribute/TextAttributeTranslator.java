@@ -29,19 +29,10 @@ public class TextAttributeTranslator extends AttributeTranslator {
 	 * Overrides the parent method to omit the brackets surrounding the comment.
 	 */
 	public String translateCharacterComment(String comment) {
-		comment = removeCommentBrackets(comment);
-		comment = _attributeFormatter.formatComment(comment);
+		
+		comment = _attributeFormatter.formatTextAttribute(comment);
+		
 		return comment;
 	}
-	
-	private String removeCommentBrackets(String comment) {
-		int numBrackets = 0;
-		while (comment.charAt(numBrackets) == '<') {
-			numBrackets++;
-		}
-		
-		return comment.substring(numBrackets, comment.length()-numBrackets);
-	}
-	
 
 }
