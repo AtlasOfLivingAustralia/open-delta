@@ -64,7 +64,6 @@ public class DeltaContext extends AbstractDeltaContext {
 	protected Set<Integer> _excludedCharacters = new HashSet<Integer>();
 	protected Set<Integer> _excludedItems = new HashSet<Integer>();
 	private Set<Integer> _omitPeriodForCharacters = new HashSet<Integer>();	
-	private Set<Integer> _replaceSemiColonWithComma = new HashSet<Integer>();
 	private Set<Integer> _omitOrForCharacters = new HashSet<Integer>();
 	private Set<Integer> _newParagraphCharacters = new HashSet<Integer>();
 	private Set<Integer> _charactersForSynonymy = new HashSet<Integer>(); 
@@ -81,6 +80,8 @@ public class DeltaContext extends AbstractDeltaContext {
 	private Map<Integer, TypeSettingMark> _formattingMarks = new HashMap<Integer, TypeSettingMark>();
 	private Map<String, String> _taxonLinks = new HashMap<String, String>();
 	private Set<Set<Integer>> _linkedCharacters = new HashSet<Set<Integer>>();
+	private Set<Set<Integer>> _replaceSemiColonWithComma = new HashSet<Set<Integer>>();
+	
 	private Map<Integer,Set<Integer>> _emphasizedCharacters = new HashMap<Integer, Set<Integer>>();
 	private Map<String,Set<Integer>> _emphasizedCharactersByDescription = new HashMap<String, Set<Integer>>();
 	
@@ -541,12 +542,17 @@ public class DeltaContext extends AbstractDeltaContext {
 		}
 	}
 
-	public boolean getReplaceSemiColonWithComma(int characterNum) {
-		return _replaceSemiColonWithComma.contains(characterNum);
+	public Set<Integer> getReplaceSemiColonWithComma(int characterNum) {
+		for (Set<Integer> charactersToRepalce : _replaceSemiColonWithComma) {
+			if (charactersToRepalce.contains(characterNum)) {
+				return charactersToRepalce;
+			}
+		}
+		return new HashSet<Integer>();
 	}
 	
-	public void replaceSemiColonWithCommon(int characterNum) {
-		_replaceSemiColonWithComma.add(characterNum);
+	public void replaceSemiColonWithCommon(Set<Integer> characters) {
+		_replaceSemiColonWithComma.add(characters);
 	}
 	
 	public boolean useAlternateComma() {

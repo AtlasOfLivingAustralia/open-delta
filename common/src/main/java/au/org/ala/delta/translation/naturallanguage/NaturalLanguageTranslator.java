@@ -304,6 +304,7 @@ public class NaturalLanguageTranslator extends AbstractIterativeTranslator {
             // any translated output (e.g. if they are just comments and
             // comments are ommitted).
             if (StringUtils.isNotBlank(translatedAttribute)) {
+            	insertPunctuation(subsequentPartOfLinkedSet, character.getCharacterId());
 	            writeFeature(character, item, description, true, subsequentPartOfLinkedSet);
 	            writeCharacterAttribute(attribute, translatedAttribute);
             }
@@ -356,6 +357,7 @@ public class NaturalLanguageTranslator extends AbstractIterativeTranslator {
         _printer.writeJustifiedText(naturalLanguageDescription, -1);
         _typeSetter.afterAttribute(attribute);
         _characterOutputSinceLastPuntuation = true;
+        _lastCharacterOutput = attribute.getCharacter().getCharacterId();
 
     }
 
@@ -389,28 +391,7 @@ public class NaturalLanguageTranslator extends AbstractIterativeTranslator {
             boolean subsequentPartOfLinkedSet) {
 
     	int characterNumber = character.getCharacterId();
-        // Insert a full stop if required.
-        if (_newParagraph == true || (_previousCharInSentence == 0) || (!subsequentPartOfLinkedSet)) {
-
-            if ((_previousCharInSentence != 0) && (!_context.getOmitPeriodForCharacter(_lastCharacterOutput))) {
-                _printer.insertPunctuationMark(Word.FULL_STOP);
-            }
-            _previousCharInSentence = 0;
-            _characterOutputSinceLastPuntuation = false;
-        } else {
-            // do we need to insert a ; or ,?
-            Word punctuationMark = Word.SEMICOLON;
-            if (_context.getReplaceSemiColonWithComma(characterNumber) /* && _context.getReplaceSemiColonWithComma(_lastCharacterOutput) */) {
-                punctuationMark = Word.COMMA;
-                if (_context.useAlternateComma()) {
-                    punctuationMark = Word.ALTERNATE_COMMA;
-                }
-            }
-            if (_characterOutputSinceLastPuntuation) {
-                writePunctuation(punctuationMark);
-            }
-        }
-
+        
         if (_newParagraph == true) {
             _typeSetter.newParagraph();
             _typeSetter.beforeNewParagraphCharacter();
@@ -428,6 +409,37 @@ public class NaturalLanguageTranslator extends AbstractIterativeTranslator {
         _previousCharInSentence = characterNumber;
 
     }
+
+
+	protected void insertPunctuation(boolean subsequentPartOfLinkedSet, int characterNumber) {
+		// Insert a full stop if required.
+        if (_newParagraph == true || (_previousCharInSentence == 0) || (!subsequentPartOfLinkedSet)) {
+
+            if ((_previousCharInSentence != 0) && (!_context.getOmitPeriodForCharacter(_lastCharacterOutput))) {
+                _printer.insertPunctuationMark(Word.FULL_STOP);
+            }
+            _previousCharInSentence = 0;
+            _characterOutputSinceLastPuntuation = false;
+        } else {
+            // do we need to insert a ; or ,?
+            Word punctuationMark = Word.SEMICOLON;
+           
+            Set<Integer> useComma = _context.getReplaceSemiColonWithComma(characterNumber);
+            if (characterNumber == 98) {
+            	System.out.println("Breakpoint");
+            }
+            if (useComma.contains(characterNumber) && useComma.contains(_lastCharacterOutput)) {
+                punctuationMark = Word.COMMA;
+                if (_context.useAlternateComma()) {
+                    punctuationMark = Word.ALTERNATE_COMMA;
+                }
+	            
+            }
+            if (_characterOutputSinceLastPuntuation) {
+                writePunctuation(punctuationMark);
+            }
+        }
+	}
 
 	protected void writeCharacterDescription(Character character, Item item, String description,
 			boolean subsequentPartOfLinkedSet) {
