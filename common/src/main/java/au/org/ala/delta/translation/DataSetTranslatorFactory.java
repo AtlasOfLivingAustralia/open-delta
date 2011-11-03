@@ -18,6 +18,7 @@ import au.org.ala.delta.translation.intkey.IntkeyTranslator;
 import au.org.ala.delta.translation.key.KeyStateTranslator;
 import au.org.ala.delta.translation.key.KeyTranslator;
 import au.org.ala.delta.translation.naturallanguage.HtmlNaturalLanguageTranslator;
+import au.org.ala.delta.translation.naturallanguage.ImplicitValuesTranslator;
 import au.org.ala.delta.translation.naturallanguage.IndexWriter;
 import au.org.ala.delta.translation.naturallanguage.NaturalLanguageDataSetFilter;
 import au.org.ala.delta.translation.naturallanguage.NaturalLanguageTranslator;
@@ -39,6 +40,15 @@ import au.org.ala.delta.util.Pair;
  */
 public class DataSetTranslatorFactory {
 	
+	/**
+	 * Creates a DataSetTranslator instance that is approropriate for the
+	 * supplied DeltaContext.  If more than one output action (e.g. 
+	 * TRANSLATE INTO / PRINT ..) has been specified, the returned 
+	 * DataSetTranslator will be a composite object that delegates to 
+	 * multiple translators responsible for specific output formats.
+	 * @param context determines the translators to create and the
+	 * configuration to use when creating them.
+	 */
 	public DataSetTranslator createTranslator(DeltaContext context) {
 		
 		TranslateType translation = context.getTranslateType();
@@ -88,7 +98,29 @@ public class DataSetTranslatorFactory {
 		return new CompositeDataSetTranslator(translators);
 	}
 	
-	public DataSetTranslator createPrintActions(DeltaContext context) {
+	/**
+	 * Creates an appropriate instance of the ImplicitValuesTranslator for the
+	 * supplied context.
+	 * @param context contains the configuration for the desired ImplicitValuesTranslator.
+	 */
+	public ImplicitValuesTranslator createImplicitValuesTranslator(DeltaContext context) {
+		
+		FormatterFactory formatterFactory = new FormatterFactory(context);
+		
+		PrintFile output = context.getPrintFile();
+		ItemListTypeSetter typeSetter = new TypeSetterFactory().createTypeSetter(context, output);
+		
+		ItemFormatter itemFormatter  = formatterFactory.createItemFormatter(typeSetter);
+		CharacterFormatter characterFormatter = formatterFactory.createCharacterFormatter();
+		AttributeFormatter attributeFormatter = formatterFactory.createAttributeFormatter();
+		DataSetFilter filter = new NaturalLanguageDataSetFilter(context);
+		
+		
+		return new ImplicitValuesTranslator(context, filter, typeSetter, output, itemFormatter, characterFormatter, attributeFormatter);
+	
+	}
+	
+	private DataSetTranslator createPrintActions(DeltaContext context) {
 		AbstractDataSetTranslator translator = new AbstractDataSetTranslator(context);
 		
 		addPrintActions(translator, context);

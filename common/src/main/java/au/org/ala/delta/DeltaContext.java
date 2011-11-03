@@ -115,7 +115,6 @@ public class DeltaContext extends AbstractDeltaContext {
 	private boolean _chineseFormat = false;
 	private Map<Integer, Boolean> _useNormalValues = new HashMap<Integer, Boolean>();
 	private boolean _omitSpaceBeforeUnits = false;
-	private boolean _translateImplicitValues = false;
 	private boolean _keyCharacterListUsed = false;
 	private boolean _numberStatesFromZero = false;
 	private boolean _useMeanValues = false;
@@ -892,14 +891,6 @@ public class DeltaContext extends AbstractDeltaContext {
 	
 	public boolean getOmitSpaceBeforeUnits() {
 		return _omitSpaceBeforeUnits;
-	}
-
-	public void setTranslateImplicitValues(boolean translate) {
-		_translateImplicitValues = translate;
-	}
-	
-	public boolean getTranslateImplictValues() {
-		return _translateImplicitValues;
 	}
 	
 	@Override

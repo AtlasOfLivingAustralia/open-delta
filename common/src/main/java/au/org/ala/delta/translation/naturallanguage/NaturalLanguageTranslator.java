@@ -95,8 +95,6 @@ public class NaturalLanguageTranslator extends AbstractIterativeTranslator {
         _lastNewParagraphCharacterChecked = 0;
     }
     
-    
-    
     /**
      * This is necessary as attributes aren't written until all attributes of
      * a linked set have been processed.
@@ -289,10 +287,8 @@ public class NaturalLanguageTranslator extends AbstractIterativeTranslator {
     	Character first = characters.get(0);
 	    checkForNewParagraph(first.getCharacterId());
 	    
+	    boolean characterInSetOutput = false;
         for (Character character : characters) {
-            
-            boolean subsequentPartOfLinkedSet = (characters.size() > 1) && (character != characters.get(0));
-
             
             Attribute attribute = item.getAttribute(character);
             String translatedAttribute = translateAttribute(attribute);
@@ -301,10 +297,13 @@ public class NaturalLanguageTranslator extends AbstractIterativeTranslator {
             // any translated output (e.g. if they are just comments and
             // comments are ommitted).
             if (StringUtils.isNotBlank(translatedAttribute)) {
+            	
             	String itemSubheading = getItemSubHeading(character.getCharacterId());
-        		// Even if we are are part of a linked set of characters, an
-            	// item subheading can break up the text.
-            	subsequentPartOfLinkedSet = subsequentPartOfLinkedSet && StringUtils.isBlank(itemSubheading);
+        		
+            	// Even if we are are part of a linked set of characters, an
+            	// item subheading can break up the text. 
+            	boolean subsequentPartOfLinkedSet = characterInSetOutput && StringUtils.isBlank(itemSubheading);
+
             	insertPunctuation(subsequentPartOfLinkedSet, character.getCharacterId());
 	            
             	String description = _characterFormatter.formatCharacterDescription(character);
@@ -314,6 +313,8 @@ public class NaturalLanguageTranslator extends AbstractIterativeTranslator {
                 }
             	writeFeature(character, item, description, subsequentPartOfLinkedSet, itemSubheading);
 	            writeCharacterAttribute(attribute, translatedAttribute);
+	            
+	            characterInSetOutput = true;
             }
         }
     }
@@ -412,6 +413,9 @@ public class NaturalLanguageTranslator extends AbstractIterativeTranslator {
 
 
 	protected void insertPunctuation(boolean subsequentPartOfLinkedSet, int characterNumber) {
+		if (characterNumber == 595) {
+			System.out.println("Breakpoint");
+		}
 		// Insert a full stop if required.
         if (_newParagraph == true || (_previousCharInSentence == 0) || (!subsequentPartOfLinkedSet)) {
 
