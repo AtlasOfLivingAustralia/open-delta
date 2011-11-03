@@ -1,6 +1,9 @@
 package au.org.ala.delta.key;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import au.org.ala.delta.DeltaContext;
 
@@ -13,6 +16,10 @@ public class KeyContext extends DeltaContext {
     String charactersFilePath;
     String itemsFilePath;
 
+    private List<Integer> _includedCharacters;
+    private List<Integer> _includedItems;
+    private Map<Integer, Float> _itemAbundances;
+
     private File _dataDirectory;
 
     public KeyContext() {
@@ -24,6 +31,8 @@ public class KeyContext extends DeltaContext {
 
         charactersFilePath = "kchars";
         itemsFilePath = "kitems";
+
+        _itemAbundances = new HashMap<Integer, Float>();
     }
 
     public File getDataDirectory() {
@@ -72,6 +81,30 @@ public class KeyContext extends DeltaContext {
 
     public void setItemsFilePath(String itemsFilePath) {
         this.itemsFilePath = itemsFilePath;
+    }
+
+    public List<Integer> getIncludedCharacters() {
+        return _includedCharacters;
+    }
+
+    public void setIncludedCharacters(List<Integer> includedCharacters) {
+        this._includedCharacters = includedCharacters;
+    }
+
+    public List<Integer> getIncludedItems() {
+        return _includedItems;
+    }
+
+    public void setIncludedItems(List<Integer> includedItems) {
+        this._includedItems = includedItems;
+    }
+
+    public float getItemAbundance(int itemNumber) {
+        return _itemAbundances.get(itemNumber);
+    }
+
+    public void setItemAbundance(int itemNumber, float abundance) {
+        _itemAbundances.put(itemNumber, abundance);
     }
 
 }

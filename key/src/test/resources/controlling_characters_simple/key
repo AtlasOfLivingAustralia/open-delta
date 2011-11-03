@@ -1,0 +1,20 @@
+*COMMENT Default parameter values (set explicitly).
+
+*RBASE 1
+
+*VARYWT 1
+
+*ABASE 1
+
+*REUSE 1
+
+*LISTING FILE key.lst
+
+*ALLOW IMPROPER SUBGROUPS
+*ADD CHARACTER NUMBERS
+
+*COMMENT Non-default value for PRINT WIDTH.
+
+*PRINT WIDTH 78
+
+*NUMBER OF CONFIRMATORY CHARACTERS 0

@@ -6,14 +6,16 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import au.org.ala.delta.Logger;
+import au.org.ala.delta.io.BinFileMode;
+import au.org.ala.delta.io.BinaryKeyFile;
 import au.org.ala.delta.key.directives.KeyDirectiveFileParser;
-import au.org.ala.delta.key.directives.io.KeyCharactersFile;
 import au.org.ala.delta.key.directives.io.KeyCharactersFileReader;
-import au.org.ala.delta.key.directives.io.KeyItemsFile;
 import au.org.ala.delta.key.directives.io.KeyItemsFileReader;
 import au.org.ala.delta.util.Utils;
 
 public class Key {
+    
+    private KeyContext _context;
 
     /**
      * @param args
@@ -57,32 +59,36 @@ public class Key {
     }
 
     public void calculateKey(File directivesFile) {
-        KeyContext context = new KeyContext();
-        context.setDataDirectory(directivesFile.getParentFile());
+        _context = new KeyContext();
+        _context.setDataDirectory(directivesFile.getParentFile());
 
         try {
-            processDirectivesFile(directivesFile, context);
+            processDirectivesFile(directivesFile, _context);
         } catch (IOException ex) {
             System.out.println("Error parsing directive file");
             ex.printStackTrace();
         }
 
-        File charactersFile = Utils.createFileFromPath(context.getCharactersFilePath(), context.getDataDirectory());
-        File itemsFile = Utils.createFileFromPath(context.getItemsFilePath(), context.getDataDirectory());
+        File charactersFile = Utils.createFileFromPath(_context.getCharactersFilePath(), _context.getDataDirectory());
+        File itemsFile = Utils.createFileFromPath(_context.getItemsFilePath(), _context.getDataDirectory());
 
-        KeyCharactersFile keyCharactersFile = new KeyCharactersFile(charactersFile.getAbsolutePath());
-        KeyItemsFile keyItemsFile = new KeyItemsFile(itemsFile.getAbsolutePath());
+        BinaryKeyFile keyCharactersFile = new BinaryKeyFile(charactersFile.getAbsolutePath(), BinFileMode.FM_READONLY);
+        BinaryKeyFile keyItemsFile = new BinaryKeyFile(itemsFile.getAbsolutePath(), BinFileMode.FM_READONLY);
 
-        KeyCharactersFileReader keyCharactersFileReader = new KeyCharactersFileReader(context.getDataSet(), keyCharactersFile);
+        KeyCharactersFileReader keyCharactersFileReader = new KeyCharactersFileReader(_context.getDataSet(), keyCharactersFile);
         keyCharactersFileReader.createCharacters();
 
-        KeyItemsFileReader keyItemsFileReader = new KeyItemsFileReader(context.getDataSet(), keyItemsFile);
-        keyItemsFileReader.readCharacterReliabilities();
+        KeyItemsFileReader keyItemsFileReader = new KeyItemsFileReader(_context, _context.getDataSet(), keyItemsFile);
+        keyItemsFileReader.readAll();
     }
 
     private void processDirectivesFile(File input, KeyContext context) throws IOException {
         KeyDirectiveFileParser parser = KeyDirectiveFileParser.createInstance();
         parser.parse(input, context);
+    }
+    
+    public KeyContext getContext() {
+        return _context;
     }
 
 }

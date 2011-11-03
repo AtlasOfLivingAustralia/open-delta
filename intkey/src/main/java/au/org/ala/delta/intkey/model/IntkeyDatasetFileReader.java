@@ -43,6 +43,7 @@ import au.org.ala.delta.model.impl.DefaultCharacterData;
 import au.org.ala.delta.model.impl.DefaultImageData;
 import au.org.ala.delta.model.impl.ItemData;
 import au.org.ala.delta.util.Pair;
+import au.org.ala.delta.util.Utils;
 
 public final class IntkeyDatasetFileReader {
 
@@ -1088,7 +1089,7 @@ public final class IntkeyDatasetFileReader {
 
             byte[] bytes = new byte[bytesToRead];
             itemBinFile.readBytes(bytes);
-            boolean[] taxaData = byteArrayToBooleanArray(bytes);
+            boolean[] taxaData = Utils.byteArrayToBooleanArray(bytes);
 
             for (int j = 0; j < numTaxa; j++) {
                 Item t = taxa.get(j);
@@ -1136,7 +1137,7 @@ public final class IntkeyDatasetFileReader {
 
             byte[] bytes = new byte[bytesToRead];
             itemBinFile.readBytes(bytes);
-            boolean[] taxaData = byteArrayToBooleanArray(bytes);
+            boolean[] taxaData = Utils.byteArrayToBooleanArray(bytes);
 
             for (int j = 0; j < numTaxa; j++) {
                 Item t = taxa.get(j);
@@ -1168,7 +1169,7 @@ public final class IntkeyDatasetFileReader {
             int bytesToRead = Double.valueOf(Math.ceil(Double.valueOf(numTaxa) / Double.valueOf(Byte.SIZE))).intValue();
             byte[] bytes = new byte[bytesToRead];
             itemBinFile.readBytes(bytes);
-            boolean[] taxaInapplicabilityData = byteArrayToBooleanArray(bytes);
+            boolean[] taxaInapplicabilityData = Utils.byteArrayToBooleanArray(bytes);
 
             int recordsSpannedByInapplicabilityData = recordsSpannedByBytes(bytesToRead);
 
@@ -1207,7 +1208,7 @@ public final class IntkeyDatasetFileReader {
             int bytesToRead = Double.valueOf(Math.ceil(Double.valueOf(numTaxa) / Double.valueOf(Byte.SIZE))).intValue();
             byte[] bytes = new byte[bytesToRead];
             itemBinFile.readBytes(bytes);
-            boolean[] taxaInapplicabilityData = byteArrayToBooleanArray(bytes);
+            boolean[] taxaInapplicabilityData = Utils.byteArrayToBooleanArray(bytes);
 
             int recordsSpannedByInapplicabilityData = recordsSpannedByBytes(bytesToRead);
 
@@ -1322,25 +1323,6 @@ public final class IntkeyDatasetFileReader {
             retList.add(bb.getFloat());
         }
         return retList;
-    }
-
-    // Use the values of the bits in the supplied array of bytes to create a
-    // single array of boolean values
-    private static boolean[] byteArrayToBooleanArray(byte[] bArray) {
-        boolean[] boolArray = new boolean[bArray.length * Byte.SIZE];
-
-        for (int i = 0; i < bArray.length; i++) {
-            byte b = bArray[i];
-            for (int j = 0; j < Byte.SIZE; j++) {
-                if ((b & (1 << j)) > 0) {
-                    boolArray[i * Byte.SIZE + j] = true;
-                } else {
-                    boolArray[i * Byte.SIZE + j] = false;
-                }
-            }
-        }
-
-        return boolArray;
     }
 
     private static int recordsSpannedByBytes(int numBytes) {

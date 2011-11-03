@@ -988,4 +988,25 @@ public class Utils {
 
         return file;
     }
+
+    /**
+     * Use the values of the bits in the supplied array of bytes to create a
+     * single array of boolean values
+     */
+    public static boolean[] byteArrayToBooleanArray(byte[] bArray) {
+        boolean[] boolArray = new boolean[bArray.length * Byte.SIZE];
+
+        for (int i = 0; i < bArray.length; i++) {
+            byte b = bArray[i];
+            for (int j = 0; j < Byte.SIZE; j++) {
+                if ((b & (1 << j)) > 0) {
+                    boolArray[i * Byte.SIZE + j] = true;
+                } else {
+                    boolArray[i * Byte.SIZE + j] = false;
+                }
+            }
+        }
+
+        return boolArray;
+    }
 }
