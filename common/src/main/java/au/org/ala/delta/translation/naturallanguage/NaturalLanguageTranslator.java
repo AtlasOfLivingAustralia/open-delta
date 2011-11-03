@@ -168,7 +168,8 @@ public class NaturalLanguageTranslator extends AbstractIterativeTranslator {
      */
     private boolean isPartOfLinkedSet(Set<Integer> linkedCharacters, Character character) {
         int characterNumber = character.getCharacterId();
-        if (_context.getNewParagraphCharacters().contains(characterNumber)) {
+        if (_context.getNewParagraphCharacters().contains(characterNumber) ||
+        	(StringUtils.isNotBlank(_context.getItemSubheading(characterNumber)))) {
         	return false;
         }
         return ((linkedCharacters != null) && linkedCharacters.contains(characterNumber));
@@ -292,11 +293,7 @@ public class NaturalLanguageTranslator extends AbstractIterativeTranslator {
             
             boolean subsequentPartOfLinkedSet = (characters.size() > 1) && (character != characters.get(0));
 
-            String description = _characterFormatter.formatCharacterDescription(character);
-            String firstDescription = _characterFormatter.formatCharacterDescription(characters.get(0));
-            if (subsequentPartOfLinkedSet) {
-                description = removeCommonPrefix(firstDescription, description);
-            }
+            
             Attribute attribute = item.getAttribute(character);
             String translatedAttribute = translateAttribute(attribute);
             
@@ -304,8 +301,18 @@ public class NaturalLanguageTranslator extends AbstractIterativeTranslator {
             // any translated output (e.g. if they are just comments and
             // comments are ommitted).
             if (StringUtils.isNotBlank(translatedAttribute)) {
+            	String itemSubheading = getItemSubHeading(character.getCharacterId());
+        		// Even if we are are part of a linked set of characters, an
+            	// item subheading can break up the text.
+            	subsequentPartOfLinkedSet = subsequentPartOfLinkedSet && StringUtils.isBlank(itemSubheading);
             	insertPunctuation(subsequentPartOfLinkedSet, character.getCharacterId());
-	            writeFeature(character, item, description, true, subsequentPartOfLinkedSet);
+	            
+            	String description = _characterFormatter.formatCharacterDescription(character);
+                String firstDescription = _characterFormatter.formatCharacterDescription(characters.get(0));
+                if (subsequentPartOfLinkedSet) {
+                    description = removeCommonPrefix(firstDescription, description);
+                }
+            	writeFeature(character, item, description, subsequentPartOfLinkedSet, itemSubheading);
 	            writeCharacterAttribute(attribute, translatedAttribute);
             }
         }
@@ -387,19 +394,12 @@ public class NaturalLanguageTranslator extends AbstractIterativeTranslator {
     private int _previousCharInSentence;
     private boolean _characterOutputSinceLastPuntuation;
 
-    private void writeFeature(Character character, Item item, String description, boolean omitFinalPeriod,
-            boolean subsequentPartOfLinkedSet) {
+    private void writeFeature(Character character, Item item, String description,
+            boolean subsequentPartOfLinkedSet, String itemSubHeading) {
 
-    	int characterNumber = character.getCharacterId();
-        
-        if (_newParagraph == true) {
-            _typeSetter.newParagraph();
-            _typeSetter.beforeNewParagraphCharacter();
-            _newParagraph = false;
-        }
-        writeItemSubheading(character);
-
+        writeItemSubheading(itemSubHeading);
        
+        int characterNumber = character.getCharacterId();
         if (!_context.omitCharacterNumbers()) {
             _printer.writeJustifiedText("(" + characterNumber + ")", -1);
         }
@@ -425,9 +425,7 @@ public class NaturalLanguageTranslator extends AbstractIterativeTranslator {
             Word punctuationMark = Word.SEMICOLON;
            
             Set<Integer> useComma = _context.getReplaceSemiColonWithComma(characterNumber);
-            if (characterNumber == 98) {
-            	System.out.println("Breakpoint");
-            }
+           
             if (useComma.contains(characterNumber) && useComma.contains(_lastCharacterOutput)) {
                 punctuationMark = Word.COMMA;
                 if (_context.useAlternateComma()) {
@@ -438,6 +436,12 @@ public class NaturalLanguageTranslator extends AbstractIterativeTranslator {
             if (_characterOutputSinceLastPuntuation) {
                 writePunctuation(punctuationMark);
             }
+        }
+        
+        if (_newParagraph == true) {
+            _typeSetter.newParagraph();
+            _typeSetter.beforeNewParagraphCharacter();
+            _newParagraph = false;
         }
 	}
 
@@ -460,9 +464,8 @@ public class NaturalLanguageTranslator extends AbstractIterativeTranslator {
 		}
 	}
 
-	protected void writeItemSubheading(Character character) {
+	protected void writeItemSubheading(String itemSubheading) {
 		
-		String itemSubheading = getItemSubHeading(character.getCharacterId());
 		
 		itemSubheading = _characterFormatter.defaultFormat(itemSubheading);
         
