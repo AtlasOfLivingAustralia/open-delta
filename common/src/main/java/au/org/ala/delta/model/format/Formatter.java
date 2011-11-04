@@ -264,7 +264,6 @@ public class Formatter {
         @Override
         public void comment(String comment) {
         	if (_stripInnerComments) {
-        		
         		_value.append(trimComment(comment));
         	}
         }
@@ -356,6 +355,11 @@ public class Formatter {
     					commentNestLevel--;
     					break;
     				case '<':
+    					// Delete the space before the comment bracket also.
+    					if (_previousChar == ' ') {
+    						int lastChar = b.length()-1;
+    						b.deleteCharAt(lastChar);
+    					}
     					commentNestLevel++;
     					break;
     				default:
