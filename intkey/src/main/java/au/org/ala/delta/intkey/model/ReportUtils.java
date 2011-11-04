@@ -403,7 +403,7 @@ public class ReportUtils {
 
         builder.appendText(UIUtils.getResourceString("Status.Set.diagSettings", diagLevel, diagTypeString));
 
-        builder.appendText(UIUtils.getResourceString("Status.Set.reliabilities", buildReliabilitiesString(context.getDataset().getCharacters())));
+        builder.appendText(UIUtils.getResourceString("Status.Set.reliabilities", buildReliabilitiesString(context.getDataset().getCharactersAsList())));
 
         Set<Character> exactCharacters = context.getExactCharacters();
         List<Integer> exactCharacterNumbers = new ArrayList<Integer>();

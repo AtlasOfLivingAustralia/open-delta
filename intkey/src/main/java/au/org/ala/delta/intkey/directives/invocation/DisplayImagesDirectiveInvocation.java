@@ -68,8 +68,8 @@ public class DisplayImagesDirectiveInvocation extends IntkeyDirectiveInvocation 
         builder.setTextColor(Color.RED);
 
         ImageSettings imgSettings = context.getImageSettings();
-        List<Character> characters = context.getDataset().getCharacters();
-        List<Item> taxa = context.getDataset().getTaxa();
+        List<Character> characters = context.getDataset().getCharactersAsList();
+        List<Item> taxa = context.getDataset().getItemsAsList();
 
         for (Character ch : characters) {
             List<Image> images = ch.getImages();
@@ -95,7 +95,7 @@ public class DisplayImagesDirectiveInvocation extends IntkeyDirectiveInvocation 
     }
 
     private void generateCharacterImageList(IntkeyContext context, RTFBuilder builder) {
-        List<Character> characters = context.getDataset().getCharacters();
+        List<Character> characters = context.getDataset().getCharactersAsList();
 
         for (Character ch : characters) {
             List<Image> images = ch.getImages();
@@ -107,7 +107,7 @@ public class DisplayImagesDirectiveInvocation extends IntkeyDirectiveInvocation 
     }
 
     private void generateTaxonImageList(IntkeyContext context, RTFBuilder builder) {
-        List<Item> taxa = context.getDataset().getTaxa();
+        List<Item> taxa = context.getDataset().getItemsAsList();
 
         for (Item taxon : taxa) {
             List<Image> images = taxon.getImages();

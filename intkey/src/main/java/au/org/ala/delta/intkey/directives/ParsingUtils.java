@@ -58,7 +58,7 @@ public class ParsingUtils {
         if (range != null) {
             for (int i : range.toArray()) {
                 try {
-                    Item t = context.getDataset().getTaxon(i);
+                    Item t = context.getDataset().getItem(i);
                     taxa.add(t);
                 } catch (IllegalArgumentException ex) {
                     throw new IntkeyDirectiveParseException("InvalidTaxonNumber.error", i, context.getDataset().getNumberOfTaxa());

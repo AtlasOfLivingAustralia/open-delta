@@ -19,7 +19,7 @@ public class DisplayInputTest extends IntkeyDatasetTestCase {
     public void testDisplayInput() throws Exception {
         IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
         
-        for (Character ch: context.getDataset().getCharacters()) {
+        for (Character ch: context.getDataset().getCharactersAsList()) {
             if (!(ch instanceof MultiStateCharacter)) {
                 System.out.println(ch.getCharacterId());
             }

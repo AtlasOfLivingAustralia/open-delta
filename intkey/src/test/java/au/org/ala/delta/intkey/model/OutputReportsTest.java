@@ -318,7 +318,7 @@ public class OutputReportsTest extends IntkeyDatasetTestCase {
 
         @Override
         public Item getItem(int number) {
-            return _intkeyDataset.getTaxon(number);
+            return _intkeyDataset.getItem(number);
         }
 
         @Override

@@ -25,11 +25,11 @@ public class SetExactTest extends IntkeyDatasetTestCase {
 
         List<Item> eliminatedTaxa = context.getEliminatedTaxa();
         assertEquals(5, eliminatedTaxa.size());
-        assertTrue(eliminatedTaxa.contains(dataset.getTaxon(3)));
-        assertTrue(eliminatedTaxa.contains(dataset.getTaxon(4)));
-        assertTrue(eliminatedTaxa.contains(dataset.getTaxon(6)));
-        assertTrue(eliminatedTaxa.contains(dataset.getTaxon(9)));
-        assertTrue(eliminatedTaxa.contains(dataset.getTaxon(12)));
+        assertTrue(eliminatedTaxa.contains(dataset.getItem(3)));
+        assertTrue(eliminatedTaxa.contains(dataset.getItem(4)));
+        assertTrue(eliminatedTaxa.contains(dataset.getItem(6)));
+        assertTrue(eliminatedTaxa.contains(dataset.getItem(9)));
+        assertTrue(eliminatedTaxa.contains(dataset.getItem(12)));
     }
 
     @Test

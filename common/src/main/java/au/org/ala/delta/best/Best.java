@@ -13,6 +13,7 @@ import org.apache.commons.lang.math.FloatRange;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterType;
+import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.model.IntegerAttribute;
 import au.org.ala.delta.model.IntegerCharacter;
@@ -51,7 +52,7 @@ public class Best {
      *         the characters can be obtained by getting the keyset of the
      *         supplied map
      */
-    public static LinkedHashMap<au.org.ala.delta.model.Character, Double> orderBest(MutableDeltaDataSet dataset, List<Integer> availableCharacterNumbers, List<Integer> availableTaxaNumbers, double rBase,
+    public static LinkedHashMap<au.org.ala.delta.model.Character, Double> orderBest(DeltaDataSet dataset, List<Integer> availableCharacterNumbers, List<Integer> availableTaxaNumbers, double rBase,
             double varyWt) {
         return doOrdering(dataset, availableCharacterNumbers, availableTaxaNumbers, rBase, varyWt, OrderingType.BEST, null, null);
     }
@@ -78,7 +79,7 @@ public class Best {
      *         the characters can be obtained by getting the keyset of the
      *         supplied map
      */
-    public static LinkedHashMap<au.org.ala.delta.model.Character, Double> doOrdering(MutableDeltaDataSet dataset, List<Integer> availableCharacterNumbers, List<Integer> availableTaxaNumbers, double rBase,
+    public static LinkedHashMap<au.org.ala.delta.model.Character, Double> doOrdering(DeltaDataSet dataset, List<Integer> availableCharacterNumbers, List<Integer> availableTaxaNumbers, double rBase,
             double varyWt, OrderingType orderingType, DiagType diagType, Item taxonToSeparate) {
         LinkedHashMap<Character, Double> retMap = new LinkedHashMap<Character, Double>();
 

@@ -9,16 +9,21 @@ import java.util.Map;
 import au.org.ala.delta.io.BinFile;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.CharacterDependency;
+import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.TextAttribute;
 import au.org.ala.delta.model.TextCharacter;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.model.image.Image;
+import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.model.image.ImageSettings.FontInfo;
+import au.org.ala.delta.model.impl.ControllingInfo;
 
-public class IntkeyDataset {
+public class IntkeyDataset implements DeltaDataSet {
 
     private File _charactersFile;
     private File _itemsFile;
@@ -78,12 +83,14 @@ public class IntkeyDataset {
         return _charactersFileHeader;
     }
 
-    public List<au.org.ala.delta.model.Character> getCharacters() {
+    @Override
+    public List<Character> getCharactersAsList() {
         // defensive copy
         return new ArrayList<Character>(_characters);
     }
 
-    public List<Item> getTaxa() {
+    @Override
+    public List<Item> getItemsAsList() {
         // defensive copy
         return new ArrayList<Item>(_taxa);
     }
@@ -213,6 +220,7 @@ public class IntkeyDataset {
         this._chineseFormat = chineseFormat;
     }
 
+    @Override
     public Character getCharacter(int charNum) {
         if (charNum < 1 || charNum > _characters.size()) {
             throw new IllegalArgumentException("Invalid character number " + charNum);
@@ -220,11 +228,13 @@ public class IntkeyDataset {
         return _characters.get(charNum - 1);
     }
 
+    @Override
     public int getNumberOfCharacters() {
         return _characters.size();
     }
 
-    public Item getTaxon(int taxonNum) {
+    @Override
+    public Item getItem(int taxonNum) {
         if (taxonNum < 1 || taxonNum > _taxa.size()) {
             throw new IllegalArgumentException("Invalid taxon number " + taxonNum);
         }
@@ -241,8 +251,10 @@ public class IntkeyDataset {
 
     /**
      * Get all attributes for the character with the supplied number
+     * 
      * @param charNo
-     * @return A list of all attributes for the character, ordered by taxon number in ascending order 
+     * @return A list of all attributes for the character, ordered by taxon
+     *         number in ascending order
      */
     public List<Attribute> getAttributesForCharacter(int charNo) {
         List<Attribute> attrList = IntkeyDatasetFileReader.readAttributesForCharacter(_itemsFileHeader, _itemsBinFile, _characters, _taxa, charNo);
@@ -310,11 +322,63 @@ public class IntkeyDataset {
     void setItemSubheadingsPresent(boolean itemSubheadingsPresent) {
         this._itemSubheadingsPresent = itemSubheadingsPresent;
     }
-    
+
     /**
      * Called prior to application shutdown.
      */
-    public void cleanup() {
+    @Override
+    public void close() {
         _itemsBinFile.close();
     }
+
+    @Override
+    public String getName() {
+        return getHeading();
+    }
+
+    @Override
+    public String getAttributeAsString(int itemNumber, int characterNumber) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public int getMaximumNumberOfItems() {
+        return getNumberOfTaxa();
+    }
+
+    @Override
+    public List<Item> getUncodedItems(Character character) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<Item> getItemsWithMultipleStatesCoded(MultiStateCharacter character) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<CharacterDependency> getAllCharacterDependencies() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public ImageSettings getImageSettings() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Item itemForDescription(String description) {
+        return getTaxonByName(description);
+    }
+
+    @Override
+    public ControllingInfo checkApplicability(Character character, Item item) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean isUncoded(Item item, Character character) {
+        throw new UnsupportedOperationException();
+    }
+
 }

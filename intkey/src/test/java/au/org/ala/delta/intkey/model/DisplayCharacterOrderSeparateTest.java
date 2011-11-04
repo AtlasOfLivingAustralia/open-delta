@@ -15,7 +15,7 @@ public class DisplayCharacterOrderSeparateTest extends IntkeyDatasetTestCase {
         
         new UseDirective().parseAndProcess(context, "11,1");
 
-        Map<Character, Double> bestMap = SortingUtils.orderSeparate(context, context.getDataset().getTaxon(1));
+        Map<Character, Double> bestMap = SortingUtils.orderSeparate(context, context.getDataset().getItem(1));
 
         System.out.println(bestMap.size());
         

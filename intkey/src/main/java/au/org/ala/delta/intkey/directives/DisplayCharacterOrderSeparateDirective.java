@@ -47,7 +47,7 @@ public class DisplayCharacterOrderSeparateDirective extends IntkeyDirective {
                 throw new IntkeyDirectiveParseException("InvalidTaxonNumber.error", context.getDataset().getNumberOfTaxa());
             }
 
-            taxonToSeparate = context.getDataset().getTaxon(taxonNumber);
+            taxonToSeparate = context.getDataset().getItem(taxonNumber);
         }
 
         DisplayCharacterOrderSeparateDirectiveInvocation invoc = new DisplayCharacterOrderSeparateDirectiveInvocation(taxonToSeparate);

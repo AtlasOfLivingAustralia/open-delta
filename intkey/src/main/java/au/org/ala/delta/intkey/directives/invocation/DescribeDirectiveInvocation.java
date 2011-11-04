@@ -270,7 +270,7 @@ public class DescribeDirectiveInvocation extends IntkeyDirectiveInvocation {
 
         String currentSubHeading = null;
 
-        for (Character ch : ds.getCharacters()) {
+        for (Character ch : ds.getCharactersAsList()) {
             if (ch.getItemSubheading() != null) {
                 currentSubHeading = ch.getItemSubheading();
             }

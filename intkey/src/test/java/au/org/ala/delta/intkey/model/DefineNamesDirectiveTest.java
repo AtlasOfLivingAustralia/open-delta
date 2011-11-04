@@ -14,8 +14,8 @@ public class DefineNamesDirectiveTest extends IntkeyDatasetTestCase {
         IntkeyContext context = loadDataset("/dataset/controlling_characters_simple/intkey.ink");
         IntkeyDataset ds = context.getDataset();
 
-        Item taxonCarrot = ds.getTaxon(1);
-        Item taxonApricot = ds.getTaxon(2);
+        Item taxonCarrot = ds.getItem(1);
+        Item taxonApricot = ds.getItem(2);
 
         new DefineNamesDirective().parseAndProcess(context, "foo Carrot,Apricot");
 
@@ -27,8 +27,8 @@ public class DefineNamesDirectiveTest extends IntkeyDatasetTestCase {
         IntkeyContext context = loadDataset("/dataset/controlling_characters_simple/intkey.ink");
         IntkeyDataset ds = context.getDataset();
 
-        Item taxonCarrot = ds.getTaxon(1);
-        Item taxonApricot = ds.getTaxon(2);
+        Item taxonCarrot = ds.getItem(1);
+        Item taxonApricot = ds.getItem(2);
 
         new DefineNamesDirective().parseAndProcess(context, "foo\nCarrot\nApricot");
 
@@ -40,8 +40,8 @@ public class DefineNamesDirectiveTest extends IntkeyDatasetTestCase {
         IntkeyContext context = loadDataset("/dataset/controlling_characters_simple/intkey.ink");
         IntkeyDataset ds = context.getDataset();
 
-        Item taxonCarrot = ds.getTaxon(1);
-        Item taxonApricot = ds.getTaxon(2);
+        Item taxonCarrot = ds.getItem(1);
+        Item taxonApricot = ds.getItem(2);
 
         new DefineNamesDirective().parseAndProcess(context, "\"foo and bar\" Carrot,Apricot");
 
@@ -53,8 +53,8 @@ public class DefineNamesDirectiveTest extends IntkeyDatasetTestCase {
         IntkeyContext context = loadDataset("/dataset/controlling_characters_simple/intkey.ink");
         IntkeyDataset ds = context.getDataset();
 
-        Item taxonCarrot = ds.getTaxon(1);
-        Item taxonApricot = ds.getTaxon(2);
+        Item taxonCarrot = ds.getItem(1);
+        Item taxonApricot = ds.getItem(2);
 
         new DefineNamesDirective().parseAndProcess(context, "\"foo and bar\"\nCarrot\nApricot");
 

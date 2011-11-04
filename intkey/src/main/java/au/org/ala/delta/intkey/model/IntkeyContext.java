@@ -328,7 +328,7 @@ public class IntkeyContext extends AbstractDeltaContext {
             // has
             // been called without loading a new dataset file.
             if (_dataset != null) {
-                _dataset.cleanup();
+                _dataset.close();
             }
 
             _dataset = null;
@@ -360,7 +360,7 @@ public class IntkeyContext extends AbstractDeltaContext {
             // cleanup the old dataset, in case the FILE TAXA directive has
             // been called without loading a new dataset file.
             if (_dataset != null) {
-                _dataset.cleanup();
+                _dataset.close();
             }
 
             _dataset = null;
@@ -630,11 +630,11 @@ public class IntkeyContext extends AbstractDeltaContext {
         keyword = keyword.toLowerCase();
 
         if (keyword.equals(CHARACTER_KEYWORD_ALL)) {
-            return new ArrayList<au.org.ala.delta.model.Character>(_dataset.getCharacters());
+            return new ArrayList<au.org.ala.delta.model.Character>(_dataset.getCharactersAsList());
         } else if (keyword.equals(CHARACTER_KEYWORD_USED)) {
             return _specimen.getUsedCharacters();
         } else if (keyword.equals(CHARACTER_KEYWORD_AVAILABLE)) {
-            List<au.org.ala.delta.model.Character> availableCharacters = new ArrayList<au.org.ala.delta.model.Character>(_dataset.getCharacters());
+            List<au.org.ala.delta.model.Character> availableCharacters = new ArrayList<au.org.ala.delta.model.Character>(_dataset.getCharactersAsList());
             availableCharacters.removeAll(_specimen.getUsedCharacters());
             return availableCharacters;
         } else if (keyword.equals(CHARACTER_KEYWORD_NONE)) {
@@ -729,7 +729,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         keyword = keyword.toLowerCase();
 
         if (keyword.equals(TAXON_KEYWORD_ALL)) {
-            return _dataset.getTaxa();
+            return _dataset.getItemsAsList();
         } else if (keyword.equals(TAXON_KEYWORD_ELIMINATED)) {
             return getEliminatedTaxa();
         } else if (keyword.equals(TAXON_KEYWORD_REMAINING)) {
@@ -775,7 +775,7 @@ public class IntkeyContext extends AbstractDeltaContext {
             }
 
             for (int taxonNumber : taxaNumbersSet) {
-                retList.add(_dataset.getTaxon(taxonNumber));
+                retList.add(_dataset.getItem(taxonNumber));
             }
 
         }
@@ -1056,7 +1056,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         if (_characterOrder == IntkeyCharacterOrder.BEST) {
             _bestOrSeparateCharacters = SortingUtils.orderBest(IntkeyContext.this);
         } else if (_characterOrder == IntkeyCharacterOrder.SEPARATE) {
-            _bestOrSeparateCharacters = SortingUtils.orderSeparate(this, _dataset.getTaxon(_taxonToSeparate));
+            _bestOrSeparateCharacters = SortingUtils.orderSeparate(this, _dataset.getItem(_taxonToSeparate));
         }
     }
 
@@ -1121,7 +1121,7 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     // Returns included characters ordered by character number
     public synchronized List<Character> getExcludedCharacters() {
-        List<Character> excludedCharacters = _dataset.getCharacters();
+        List<Character> excludedCharacters = _dataset.getCharactersAsList();
         excludedCharacters.removeAll(getIncludedCharacters());
         return excludedCharacters;
     }
@@ -1131,7 +1131,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         List<Item> retList = new ArrayList<Item>();
 
         for (int charNum : _includedTaxa) {
-            retList.add(_dataset.getTaxon(charNum));
+            retList.add(_dataset.getItem(charNum));
         }
 
         Collections.sort(retList);
@@ -1141,7 +1141,7 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     // Returns included taxa ordered by taxon number
     public synchronized List<Item> getExcludedTaxa() {
-        List<Item> excludedTaxa = _dataset.getTaxa();
+        List<Item> excludedTaxa = _dataset.getItemsAsList();
         excludedTaxa.removeAll(getIncludedTaxa());
         return excludedTaxa;
     }
@@ -1338,7 +1338,7 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     private void cleanupOldDataset() {
         if (_dataset != null) {
-            _dataset.cleanup();
+            _dataset.close();
         }
 
         if (_startupFileData != null) {

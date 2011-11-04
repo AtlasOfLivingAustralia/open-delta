@@ -40,16 +40,16 @@ public class DifferencesDirectiveTest extends IntkeyDatasetTestCase {
         IntkeyContext context = loadDataset("/dataset/controlling_characters_simple/intkey.ink");
         IntkeyDataset ds = context.getDataset();
 
-        Item taxonCarrot = ds.getTaxon(1);
-        Item taxonApricot = ds.getTaxon(2);
-        Item taxonPlum = ds.getTaxon(4);
+        Item taxonCarrot = ds.getItem(1);
+        Item taxonApricot = ds.getItem(2);
+        Item taxonPlum = ds.getItem(4);
 
         List<Item> taxa = new ArrayList<Item>();
         taxa.add(taxonCarrot);
         taxa.add(taxonApricot);
         taxa.add(taxonPlum);
 
-        List<au.org.ala.delta.model.Character> differingChars = DiffUtils.determineDifferingCharactersForTaxa(ds, ds.getCharacters(), taxa, null, DEFAULT_MATCH_UNKNOWNS, DEFAULT_MATCH_INAPPLICABLES,
+        List<au.org.ala.delta.model.Character> differingChars = DiffUtils.determineDifferingCharactersForTaxa(ds, ds.getCharactersAsList(), taxa, null, DEFAULT_MATCH_UNKNOWNS, DEFAULT_MATCH_INAPPLICABLES,
                 DEFAULT_MATCH_TYPE, false);
 
         assertEquals(6, differingChars.size());
@@ -70,16 +70,16 @@ public class DifferencesDirectiveTest extends IntkeyDatasetTestCase {
         IntkeyContext context = loadDataset("/dataset/controlling_characters_simple/intkey.ink");
         IntkeyDataset ds = context.getDataset();
 
-        Item taxonCarrot = ds.getTaxon(1);
-        Item taxonApricot = ds.getTaxon(2);
-        Item taxonPlum = ds.getTaxon(4);
+        Item taxonCarrot = ds.getItem(1);
+        Item taxonApricot = ds.getItem(2);
+        Item taxonPlum = ds.getItem(4);
 
         List<Item> taxa = new ArrayList<Item>();
         taxa.add(taxonCarrot);
         taxa.add(taxonApricot);
         taxa.add(taxonPlum);
 
-        List<au.org.ala.delta.model.Character> differingChars = DiffUtils.determineDifferingCharactersForTaxa(ds, ds.getCharacters(), taxa, null, DEFAULT_MATCH_UNKNOWNS, DEFAULT_MATCH_INAPPLICABLES,
+        List<au.org.ala.delta.model.Character> differingChars = DiffUtils.determineDifferingCharactersForTaxa(ds, ds.getCharactersAsList(), taxa, null, DEFAULT_MATCH_UNKNOWNS, DEFAULT_MATCH_INAPPLICABLES,
                 DEFAULT_MATCH_TYPE, true);
 
         assertEquals(5, differingChars.size());
@@ -108,7 +108,7 @@ public class DifferencesDirectiveTest extends IntkeyDatasetTestCase {
 
         // note that the differences directive automatically sets match
         // inapplicables and unknown to false if the match type is exact.
-        List<au.org.ala.delta.model.Character> differingChars = DiffUtils.determineDifferingCharactersForTaxa(ds, ds.getCharacters(), remainingTaxa, specimen, false, false, MatchType.EXACT, false);
+        List<au.org.ala.delta.model.Character> differingChars = DiffUtils.determineDifferingCharactersForTaxa(ds, ds.getCharactersAsList(), remainingTaxa, specimen, false, false, MatchType.EXACT, false);
 
         assertEquals(1, differingChars.size());
         assertTrue(differingChars.contains(chUpperGlumeNerveNumber));
@@ -123,7 +123,7 @@ public class DifferencesDirectiveTest extends IntkeyDatasetTestCase {
         IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
         IntkeyDataset ds = context.getDataset();
 
-        List<au.org.ala.delta.model.Character> differingChars = DiffUtils.determineDifferingCharactersForTaxa(ds, ds.getCharacters(), ds.getTaxa(), null, DEFAULT_MATCH_UNKNOWNS, DEFAULT_MATCH_INAPPLICABLES, MatchType.OVERLAP, false);
+        List<au.org.ala.delta.model.Character> differingChars = DiffUtils.determineDifferingCharactersForTaxa(ds, ds.getCharactersAsList(), ds.getItemsAsList(), null, DEFAULT_MATCH_UNKNOWNS, DEFAULT_MATCH_INAPPLICABLES, MatchType.OVERLAP, false);
 
         assertEquals(71, differingChars.size());
         assertFalse(differingChars.contains(ds.getCharacter(6)));
@@ -153,7 +153,7 @@ public class DifferencesDirectiveTest extends IntkeyDatasetTestCase {
 
         // note that the differences directive automatically sets match
         // inapplicables and unknown to false if the match type is exact.
-        List<au.org.ala.delta.model.Character> differingChars = DiffUtils.determineDifferingCharactersForTaxa(ds, ds.getCharacters(), ds.getTaxa(), null, false, false, MatchType.EXACT, false);
+        List<au.org.ala.delta.model.Character> differingChars = DiffUtils.determineDifferingCharactersForTaxa(ds, ds.getCharactersAsList(), ds.getItemsAsList(), null, false, false, MatchType.EXACT, false);
 
         assertEquals(85, differingChars.size());
         assertFalse(differingChars.contains(ds.getCharacter(33)));
@@ -171,7 +171,7 @@ public class DifferencesDirectiveTest extends IntkeyDatasetTestCase {
 
         
         
-        List<au.org.ala.delta.model.Character> differingChars = DiffUtils.determineDifferingCharactersForTaxa(ds, ds.getCharacters(), ds.getTaxa(), null, false,
+        List<au.org.ala.delta.model.Character> differingChars = DiffUtils.determineDifferingCharactersForTaxa(ds, ds.getCharactersAsList(), ds.getItemsAsList(), null, false,
                 false, MatchType.SUBSET, false);
 
         assertEquals(82, differingChars.size());
@@ -192,8 +192,8 @@ public class DifferencesDirectiveTest extends IntkeyDatasetTestCase {
         IntkeyDataset ds = context.getDataset();
 
         List<Item> taxa = new ArrayList<Item>();
-        taxa.add(ds.getTaxon(8));
-        taxa.add(ds.getTaxon(9));
+        taxa.add(ds.getItem(8));
+        taxa.add(ds.getItem(9));
         
         List<au.org.ala.delta.model.Character> characters = new ArrayList<Character>();
         characters.add(ds.getCharacter(26));
@@ -213,7 +213,7 @@ public class DifferencesDirectiveTest extends IntkeyDatasetTestCase {
         IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
         IntkeyDataset ds = context.getDataset();
 
-        List<au.org.ala.delta.model.Character> differingChars = DiffUtils.determineDifferingCharactersForTaxa(ds, ds.getCharacters(), ds.getTaxa(), null, false,
+        List<au.org.ala.delta.model.Character> differingChars = DiffUtils.determineDifferingCharactersForTaxa(ds, ds.getCharactersAsList(), ds.getItemsAsList(), null, false,
                 DEFAULT_MATCH_INAPPLICABLES, MatchType.OVERLAP, false);
 
         assertEquals(80, differingChars.size());
@@ -235,7 +235,7 @@ public class DifferencesDirectiveTest extends IntkeyDatasetTestCase {
         IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
         IntkeyDataset ds = context.getDataset();
 
-        List<au.org.ala.delta.model.Character> differingChars = DiffUtils.determineDifferingCharactersForTaxa(ds, ds.getCharacters(), ds.getTaxa(), null, DEFAULT_MATCH_UNKNOWNS,
+        List<au.org.ala.delta.model.Character> differingChars = DiffUtils.determineDifferingCharactersForTaxa(ds, ds.getCharactersAsList(), ds.getItemsAsList(), null, DEFAULT_MATCH_UNKNOWNS,
                 false, MatchType.OVERLAP, false);
 
         assertEquals(81, differingChars.size());

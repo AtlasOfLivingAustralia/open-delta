@@ -43,20 +43,20 @@ public class ChangeDirectiveTest extends IntkeyDatasetTestCase {
         assertEquals(Arrays.asList(charLongevity), specimen.getUsedCharacters());
         Map<Item, Set<Character>> differingCharacters = specimen.getTaxonDifferences();
         assertEquals(14, differingCharacters.size());
-        assertEquals(0, differingCharacters.get(ds.getTaxon(1)).size());
-        assertEquals(0, differingCharacters.get(ds.getTaxon(2)).size());
-        assertEquals(1, differingCharacters.get(ds.getTaxon(3)).size());
-        assertEquals(1, differingCharacters.get(ds.getTaxon(4)).size());
-        assertEquals(0, differingCharacters.get(ds.getTaxon(5)).size());
-        assertEquals(1, differingCharacters.get(ds.getTaxon(6)).size());
-        assertEquals(0, differingCharacters.get(ds.getTaxon(7)).size());
-        assertEquals(0, differingCharacters.get(ds.getTaxon(8)).size());
-        assertEquals(1, differingCharacters.get(ds.getTaxon(9)).size());
-        assertEquals(0, differingCharacters.get(ds.getTaxon(10)).size());
-        assertEquals(0, differingCharacters.get(ds.getTaxon(11)).size());
-        assertEquals(1, differingCharacters.get(ds.getTaxon(12)).size());
-        assertEquals(0, differingCharacters.get(ds.getTaxon(13)).size());
-        assertEquals(0, differingCharacters.get(ds.getTaxon(14)).size());
+        assertEquals(0, differingCharacters.get(ds.getItem(1)).size());
+        assertEquals(0, differingCharacters.get(ds.getItem(2)).size());
+        assertEquals(1, differingCharacters.get(ds.getItem(3)).size());
+        assertEquals(1, differingCharacters.get(ds.getItem(4)).size());
+        assertEquals(0, differingCharacters.get(ds.getItem(5)).size());
+        assertEquals(1, differingCharacters.get(ds.getItem(6)).size());
+        assertEquals(0, differingCharacters.get(ds.getItem(7)).size());
+        assertEquals(0, differingCharacters.get(ds.getItem(8)).size());
+        assertEquals(1, differingCharacters.get(ds.getItem(9)).size());
+        assertEquals(0, differingCharacters.get(ds.getItem(10)).size());
+        assertEquals(0, differingCharacters.get(ds.getItem(11)).size());
+        assertEquals(1, differingCharacters.get(ds.getItem(12)).size());
+        assertEquals(0, differingCharacters.get(ds.getItem(13)).size());
+        assertEquals(0, differingCharacters.get(ds.getItem(14)).size());
 
         new ChangeDirective().parseAndProcess(context, "2,2");
 
@@ -64,20 +64,20 @@ public class ChangeDirectiveTest extends IntkeyDatasetTestCase {
 
         Map<Item, Set<Character>> differingCharacters2 = specimen.getTaxonDifferences();
         assertEquals(14, differingCharacters2.size());
-        assertEquals(0, differingCharacters2.get(ds.getTaxon(1)).size());
-        assertEquals(0, differingCharacters2.get(ds.getTaxon(2)).size());
-        assertEquals(0, differingCharacters2.get(ds.getTaxon(3)).size());
-        assertEquals(0, differingCharacters2.get(ds.getTaxon(4)).size());
-        assertEquals(0, differingCharacters2.get(ds.getTaxon(5)).size());
-        assertEquals(0, differingCharacters2.get(ds.getTaxon(6)).size());
-        assertEquals(0, differingCharacters2.get(ds.getTaxon(7)).size());
-        assertEquals(0, differingCharacters2.get(ds.getTaxon(8)).size());
-        assertEquals(0, differingCharacters2.get(ds.getTaxon(9)).size());
-        assertEquals(0, differingCharacters2.get(ds.getTaxon(10)).size());
-        assertEquals(0, differingCharacters2.get(ds.getTaxon(11)).size());
-        assertEquals(0, differingCharacters2.get(ds.getTaxon(12)).size());
-        assertEquals(0, differingCharacters2.get(ds.getTaxon(13)).size());
-        assertEquals(1, differingCharacters2.get(ds.getTaxon(14)).size());
+        assertEquals(0, differingCharacters2.get(ds.getItem(1)).size());
+        assertEquals(0, differingCharacters2.get(ds.getItem(2)).size());
+        assertEquals(0, differingCharacters2.get(ds.getItem(3)).size());
+        assertEquals(0, differingCharacters2.get(ds.getItem(4)).size());
+        assertEquals(0, differingCharacters2.get(ds.getItem(5)).size());
+        assertEquals(0, differingCharacters2.get(ds.getItem(6)).size());
+        assertEquals(0, differingCharacters2.get(ds.getItem(7)).size());
+        assertEquals(0, differingCharacters2.get(ds.getItem(8)).size());
+        assertEquals(0, differingCharacters2.get(ds.getItem(9)).size());
+        assertEquals(0, differingCharacters2.get(ds.getItem(10)).size());
+        assertEquals(0, differingCharacters2.get(ds.getItem(11)).size());
+        assertEquals(0, differingCharacters2.get(ds.getItem(12)).size());
+        assertEquals(0, differingCharacters2.get(ds.getItem(13)).size());
+        assertEquals(1, differingCharacters2.get(ds.getItem(14)).size());
     }
 
     /**
@@ -112,20 +112,20 @@ public class ChangeDirectiveTest extends IntkeyDatasetTestCase {
 
         Map<Item, Set<Character>> differingCharacters = specimen.getTaxonDifferences();
         assertEquals(14, differingCharacters.size());
-        assertEquals(6, differingCharacters.get(ds.getTaxon(1)).size());
-        assertEquals(3, differingCharacters.get(ds.getTaxon(2)).size());
-        assertEquals(8, differingCharacters.get(ds.getTaxon(3)).size());
-        assertEquals(3, differingCharacters.get(ds.getTaxon(4)).size());
-        assertEquals(5, differingCharacters.get(ds.getTaxon(5)).size());
-        assertEquals(6, differingCharacters.get(ds.getTaxon(6)).size());
-        assertEquals(5, differingCharacters.get(ds.getTaxon(7)).size());
-        assertEquals(5, differingCharacters.get(ds.getTaxon(8)).size());
-        assertEquals(7, differingCharacters.get(ds.getTaxon(9)).size());
-        assertEquals(4, differingCharacters.get(ds.getTaxon(10)).size());
-        assertEquals(2, differingCharacters.get(ds.getTaxon(11)).size());
-        assertEquals(7, differingCharacters.get(ds.getTaxon(12)).size());
-        assertEquals(4, differingCharacters.get(ds.getTaxon(13)).size());
-        assertEquals(5, differingCharacters.get(ds.getTaxon(14)).size());
+        assertEquals(6, differingCharacters.get(ds.getItem(1)).size());
+        assertEquals(3, differingCharacters.get(ds.getItem(2)).size());
+        assertEquals(8, differingCharacters.get(ds.getItem(3)).size());
+        assertEquals(3, differingCharacters.get(ds.getItem(4)).size());
+        assertEquals(5, differingCharacters.get(ds.getItem(5)).size());
+        assertEquals(6, differingCharacters.get(ds.getItem(6)).size());
+        assertEquals(5, differingCharacters.get(ds.getItem(7)).size());
+        assertEquals(5, differingCharacters.get(ds.getItem(8)).size());
+        assertEquals(7, differingCharacters.get(ds.getItem(9)).size());
+        assertEquals(4, differingCharacters.get(ds.getItem(10)).size());
+        assertEquals(2, differingCharacters.get(ds.getItem(11)).size());
+        assertEquals(7, differingCharacters.get(ds.getItem(12)).size());
+        assertEquals(4, differingCharacters.get(ds.getItem(13)).size());
+        assertEquals(5, differingCharacters.get(ds.getItem(14)).size());
 
         new ChangeDirective().parseAndProcess(context, "10,2");
 
@@ -134,20 +134,20 @@ public class ChangeDirectiveTest extends IntkeyDatasetTestCase {
 
         Map<Item, Set<Character>> differingCharacters2 = specimen.getTaxonDifferences();
         assertEquals(14, differingCharacters2.size());
-        assertEquals(7, differingCharacters2.get(ds.getTaxon(1)).size());
-        assertEquals(4, differingCharacters2.get(ds.getTaxon(2)).size());
-        assertEquals(9, differingCharacters2.get(ds.getTaxon(3)).size());
-        assertEquals(4, differingCharacters2.get(ds.getTaxon(4)).size());
-        assertEquals(6, differingCharacters2.get(ds.getTaxon(5)).size());
-        assertEquals(7, differingCharacters2.get(ds.getTaxon(6)).size());
-        assertEquals(5, differingCharacters2.get(ds.getTaxon(7)).size());
-        assertEquals(6, differingCharacters2.get(ds.getTaxon(8)).size());
-        assertEquals(8, differingCharacters2.get(ds.getTaxon(9)).size());
-        assertEquals(5, differingCharacters2.get(ds.getTaxon(10)).size());
-        assertEquals(3, differingCharacters2.get(ds.getTaxon(11)).size());
-        assertEquals(8, differingCharacters2.get(ds.getTaxon(12)).size());
-        assertEquals(5, differingCharacters2.get(ds.getTaxon(13)).size());
-        assertEquals(6, differingCharacters2.get(ds.getTaxon(14)).size());
+        assertEquals(7, differingCharacters2.get(ds.getItem(1)).size());
+        assertEquals(4, differingCharacters2.get(ds.getItem(2)).size());
+        assertEquals(9, differingCharacters2.get(ds.getItem(3)).size());
+        assertEquals(4, differingCharacters2.get(ds.getItem(4)).size());
+        assertEquals(6, differingCharacters2.get(ds.getItem(5)).size());
+        assertEquals(7, differingCharacters2.get(ds.getItem(6)).size());
+        assertEquals(5, differingCharacters2.get(ds.getItem(7)).size());
+        assertEquals(6, differingCharacters2.get(ds.getItem(8)).size());
+        assertEquals(8, differingCharacters2.get(ds.getItem(9)).size());
+        assertEquals(5, differingCharacters2.get(ds.getItem(10)).size());
+        assertEquals(3, differingCharacters2.get(ds.getItem(11)).size());
+        assertEquals(8, differingCharacters2.get(ds.getItem(12)).size());
+        assertEquals(5, differingCharacters2.get(ds.getItem(13)).size());
+        assertEquals(6, differingCharacters2.get(ds.getItem(14)).size());
     }
 
     /**
@@ -168,39 +168,39 @@ public class ChangeDirectiveTest extends IntkeyDatasetTestCase {
 
         Map<Item, Set<Character>> differingCharacters = specimen.getTaxonDifferences();
         assertEquals(14, differingCharacters.size());
-        assertEquals(1, differingCharacters.get(ds.getTaxon(1)).size());
-        assertEquals(0,  differingCharacters.get(ds.getTaxon(2)).size());
-        assertEquals(1,  differingCharacters.get(ds.getTaxon(3)).size());
-        assertEquals(1,  differingCharacters.get(ds.getTaxon(4)).size());
-        assertEquals(1,  differingCharacters.get(ds.getTaxon(5)).size());
-        assertEquals(1,  differingCharacters.get(ds.getTaxon(6)).size());
-        assertEquals(1,  differingCharacters.get(ds.getTaxon(7)).size());
-        assertEquals(1,  differingCharacters.get(ds.getTaxon(8)).size());
-        assertEquals(1,  differingCharacters.get(ds.getTaxon(9)).size());
-        assertEquals(1,  differingCharacters.get(ds.getTaxon(10)).size());
-        assertEquals(1,  differingCharacters.get(ds.getTaxon(11)).size());
-        assertEquals(1,  differingCharacters.get(ds.getTaxon(12)).size());
-        assertEquals(1,  differingCharacters.get(ds.getTaxon(13)).size());
-        assertEquals(1,  differingCharacters.get(ds.getTaxon(14)).size());
+        assertEquals(1, differingCharacters.get(ds.getItem(1)).size());
+        assertEquals(0,  differingCharacters.get(ds.getItem(2)).size());
+        assertEquals(1,  differingCharacters.get(ds.getItem(3)).size());
+        assertEquals(1,  differingCharacters.get(ds.getItem(4)).size());
+        assertEquals(1,  differingCharacters.get(ds.getItem(5)).size());
+        assertEquals(1,  differingCharacters.get(ds.getItem(6)).size());
+        assertEquals(1,  differingCharacters.get(ds.getItem(7)).size());
+        assertEquals(1,  differingCharacters.get(ds.getItem(8)).size());
+        assertEquals(1,  differingCharacters.get(ds.getItem(9)).size());
+        assertEquals(1,  differingCharacters.get(ds.getItem(10)).size());
+        assertEquals(1,  differingCharacters.get(ds.getItem(11)).size());
+        assertEquals(1,  differingCharacters.get(ds.getItem(12)).size());
+        assertEquals(1,  differingCharacters.get(ds.getItem(13)).size());
+        assertEquals(1,  differingCharacters.get(ds.getItem(14)).size());
 
         new ChangeDirective().parseAndProcess(context, "16,2");
 
         Map<Item, Set<Character>> differingCharacters2 = specimen.getTaxonDifferences();
         assertEquals(14, differingCharacters2.size());
-        assertEquals(0,  differingCharacters2.get(ds.getTaxon(1)).size());
-        assertEquals(1,  differingCharacters2.get(ds.getTaxon(2)).size());
-        assertEquals(0,  differingCharacters2.get(ds.getTaxon(3)).size());
-        assertEquals(0,  differingCharacters2.get(ds.getTaxon(4)).size());
-        assertEquals(0,  differingCharacters2.get(ds.getTaxon(5)).size());
-        assertEquals(0,  differingCharacters2.get(ds.getTaxon(6)).size());
-        assertEquals(0,  differingCharacters2.get(ds.getTaxon(7)).size());
-        assertEquals(0,  differingCharacters2.get(ds.getTaxon(8)).size());
-        assertEquals(0,  differingCharacters2.get(ds.getTaxon(9)).size());
-        assertEquals(0,  differingCharacters2.get(ds.getTaxon(10)).size());
-        assertEquals(0,  differingCharacters2.get(ds.getTaxon(11)).size());
-        assertEquals(0,  differingCharacters2.get(ds.getTaxon(12)).size());
-        assertEquals(0,  differingCharacters2.get(ds.getTaxon(13)).size());
-        assertEquals(0,  differingCharacters2.get(ds.getTaxon(14)).size());
+        assertEquals(0,  differingCharacters2.get(ds.getItem(1)).size());
+        assertEquals(1,  differingCharacters2.get(ds.getItem(2)).size());
+        assertEquals(0,  differingCharacters2.get(ds.getItem(3)).size());
+        assertEquals(0,  differingCharacters2.get(ds.getItem(4)).size());
+        assertEquals(0,  differingCharacters2.get(ds.getItem(5)).size());
+        assertEquals(0,  differingCharacters2.get(ds.getItem(6)).size());
+        assertEquals(0,  differingCharacters2.get(ds.getItem(7)).size());
+        assertEquals(0,  differingCharacters2.get(ds.getItem(8)).size());
+        assertEquals(0,  differingCharacters2.get(ds.getItem(9)).size());
+        assertEquals(0,  differingCharacters2.get(ds.getItem(10)).size());
+        assertEquals(0,  differingCharacters2.get(ds.getItem(11)).size());
+        assertEquals(0,  differingCharacters2.get(ds.getItem(12)).size());
+        assertEquals(0,  differingCharacters2.get(ds.getItem(13)).size());
+        assertEquals(0,  differingCharacters2.get(ds.getItem(14)).size());
     }
 
 }

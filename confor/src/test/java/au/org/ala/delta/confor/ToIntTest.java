@@ -103,8 +103,8 @@ public class ToIntTest extends TestCase {
 		}
 		
 		for (int i=1; i<=expectedDataSet.getNumberOfTaxa(); i++) {
-			Item item = dataSet.getTaxon(i);
-			Item expectedItem = expectedDataSet.getTaxon(i);
+			Item item = dataSet.getItem(i);
+			Item expectedItem = expectedDataSet.getItem(i);
 			
 			assertEquals(expectedItem.getDescription(), item.getDescription());
 			assertEquals(expectedItem.getImages(), item.getImages());

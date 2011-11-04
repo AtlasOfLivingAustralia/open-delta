@@ -82,7 +82,7 @@ public class SortingUtils {
 
         IntkeyDataset dataset = context.getDataset();
 
-        List<Character> allCharacters = dataset.getCharacters();
+        List<Character> allCharacters = dataset.getCharactersAsList();
 
         final double[] suVals = new double[allCharacters.size()];
         double[] sepVals = new double[allCharacters.size()];
@@ -136,7 +136,7 @@ public class SortingUtils {
         Set<Item> eliminatedTaxa = new HashSet<Item>(context.getEliminatedTaxa());
         Map<Item, Boolean> taxaAvailability = new HashMap<Item, Boolean>();
 
-        for (Item taxon : dataset.getTaxa()) {
+        for (Item taxon : dataset.getItemsAsList()) {
 
             boolean ignore = false;
 

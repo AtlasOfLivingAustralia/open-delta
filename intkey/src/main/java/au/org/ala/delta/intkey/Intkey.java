@@ -1381,7 +1381,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
         switch (charOrder) {
         case SEPARATE:
-            taxonToSeparate = _context.getDataset().getTaxon(_context.getTaxonToSeparate());
+            taxonToSeparate = _context.getDataset().getItem(_context.getTaxonToSeparate());
             formattedTaxonToSeparateName = _taxonformatter.formatItemDescription(taxonToSeparate);
             if (!_context.getAvailableTaxa().contains(taxonToSeparate)) {
                 _listAvailableCharacters.setModel(new DefaultListModel());
@@ -1670,7 +1670,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
                     _lblNumAvailableCharacters.setText(MessageFormat.format(bestCharactersCaption, 0));
                     break;
                 case SEPARATE:
-                    Item taxonToSeparate = _context.getDataset().getTaxon(_context.getTaxonToSeparate());
+                    Item taxonToSeparate = _context.getDataset().getItem(_context.getTaxonToSeparate());
                     String formattedTaxonName = _taxonformatter.formatItemDescription(taxonToSeparate);
                     _lblNumAvailableCharacters.setText(MessageFormat.format(separateCharactersCaption, formattedTaxonName, 0));
                     break;

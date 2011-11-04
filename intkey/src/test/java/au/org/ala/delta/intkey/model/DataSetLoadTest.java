@@ -87,11 +87,11 @@ public class DataSetLoadTest extends IntkeyDatasetTestCase {
         assertEquals(8, context.getDataset().getNumberOfCharacters());
         assertEquals(5, context.getDataset().getNumberOfTaxa());
 
-        assertEquals("Carrot", ds.getTaxon(1).getDescription());
-        assertEquals("Apricot", ds.getTaxon(2).getDescription());
-        assertEquals("Strawberry", ds.getTaxon(3).getDescription());
-        assertEquals("Plum", ds.getTaxon(4).getDescription());
-        assertEquals("Potato", ds.getTaxon(5).getDescription());
+        assertEquals("Carrot", ds.getItem(1).getDescription());
+        assertEquals("Apricot", ds.getItem(2).getDescription());
+        assertEquals("Strawberry", ds.getItem(3).getDescription());
+        assertEquals("Plum", ds.getItem(4).getDescription());
+        assertEquals("Potato", ds.getItem(5).getDescription());
 
         RealCharacter charAvgWeight = (RealCharacter) ds.getCharacter(1);
         assertEquals("average weight", charAvgWeight.getDescription());
@@ -294,11 +294,11 @@ public class DataSetLoadTest extends IntkeyDatasetTestCase {
         RealCharacter charAvgLength = (RealCharacter) ds.getCharacter(7);
         TextCharacter charMoreComments = (TextCharacter) ds.getCharacter(8);
 
-        Item itemCarrot = ds.getTaxon(1);
-        Item itemApricot = ds.getTaxon(2);
-        Item itemStrawberry = ds.getTaxon(3);
-        Item itemPlum = ds.getTaxon(4);
-        Item itemPotato = ds.getTaxon(5);
+        Item itemCarrot = ds.getItem(1);
+        Item itemApricot = ds.getItem(2);
+        Item itemStrawberry = ds.getItem(3);
+        Item itemPlum = ds.getItem(4);
+        Item itemPotato = ds.getItem(5);
 
         List<Attribute> averageWeightAttrs = ds.getAttributesForCharacter(1);
         assertEquals(5, averageWeightAttrs.size());
@@ -568,7 +568,7 @@ public class DataSetLoadTest extends IntkeyDatasetTestCase {
 
         IntkeyDataset ds = context.getDataset();
 
-        for (Character ch : context.getDataset().getCharacters()) {
+        for (Character ch : context.getDataset().getCharactersAsList()) {
             if (ch instanceof RealCharacter) {
                 if (((RealCharacter) ch).isIntegerRepresentedAsReal()) {
                     System.out.println(ch.getCharacterId());

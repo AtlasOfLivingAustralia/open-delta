@@ -55,7 +55,7 @@ public class Specimen {
 
         // initialise the taxon differences table
         _taxonDifferences = new HashMap<Item, Set<Character>>();
-        for (Item taxon : _dataset.getTaxa()) {
+        for (Item taxon : _dataset.getItemsAsList()) {
             _taxonDifferences.put(taxon, new HashSet<Character>());
         }
     }
@@ -209,7 +209,7 @@ public class Specimen {
     private void updateDifferencesTable(CharacterValue val, boolean removed) {
         List<Attribute> attrs = _dataset.getAttributesForCharacter(val.getCharacter().getCharacterId());
 
-        for (Item taxon : _dataset.getTaxa()) {
+        for (Item taxon : _dataset.getItemsAsList()) {
             boolean match = false;
 
             // Subtract 1 as taxa are 1 indexed in the dataset

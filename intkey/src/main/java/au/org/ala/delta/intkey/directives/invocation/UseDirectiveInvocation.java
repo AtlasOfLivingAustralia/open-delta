@@ -225,7 +225,7 @@ public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
         // to change the value if it results in
         // the elimination of the taxon being separated.
         if (context.getCharacterOrder() == IntkeyCharacterOrder.SEPARATE) {
-            Item taxonToSeparate = context.getDataset().getTaxon(context.getTaxonToSeparate());
+            Item taxonToSeparate = context.getDataset().getItem(context.getTaxonToSeparate());
             if (!context.getAvailableTaxa().contains(taxonToSeparate)) {
                 boolean changeValue = context.getDirectivePopulator().promptForYesNoOption(
                         UIUtils.getResourceString("UseDirective.TaxonToSeparateEliminatedMsg", _charFormatter.formatCharacterDescription(ch), _taxonFormatter.formatItemDescription(taxonToSeparate)));
