@@ -126,7 +126,7 @@ public class WriteOnceIntkeyCharsFile extends BinaryKeyFile {
 		int recordNum = nextAvailableRecord();
 		_header.setRpStartupImages(recordNum);
 		
-		writeStringWithLength(recordNum, startupImages);
+		writeIndirectStringWithLength(recordNum, startupImages);
 	}
 	
 	public void writeCharacterKeyImages(String characterKeyImages) {
@@ -135,7 +135,7 @@ public class WriteOnceIntkeyCharsFile extends BinaryKeyFile {
 		int recordNum = nextAvailableRecord();
 		_header.setRpCKeyImages(recordNum);
 		
-		writeStringWithLength(recordNum, characterKeyImages);
+		writeIndirectStringWithLength(recordNum, characterKeyImages);
 	}
 	
 	public void writeTaxonKeyImages(String taxonKeyImages) {
@@ -144,7 +144,7 @@ public class WriteOnceIntkeyCharsFile extends BinaryKeyFile {
 		int recordNum = nextAvailableRecord();
 		_header.setRpTKeyImages(recordNum);
 		
-		writeStringWithLength(recordNum, taxonKeyImages);
+		writeIndirectStringWithLength(recordNum, taxonKeyImages);
 	}
 	
 	public void writeHeading(String heading) {

@@ -139,15 +139,19 @@ public abstract class DirectiveArgsParser extends AbstractStreamParser {
 		expect(MARK_IDENTIFIER);
 		
 		readNext();
-		
+		char previousChar = (char)0;
 		StringBuilder id = new StringBuilder();
-		while (_currentChar != '/') {
+		while (!(previousChar == '/' && (_currentChar == ' ' || _currentChar == '\r' || _currentChar == '\n'))) {
 			id.append(_currentChar);
+			previousChar = _currentChar;
 			readNext();
 		}
+		// Delete the '/'
+		if (id.charAt(id.length()-1) != '/') {
+			throw new ParseException("Unterminated item description", _position);
+		}
+		id.deleteCharAt(id.length()-1);
 		
-		expect('/');
-	    readNext();  // consume the / character.
 	    return id.toString().trim();
 	}
 	

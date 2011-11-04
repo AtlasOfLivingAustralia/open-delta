@@ -38,10 +38,11 @@ public class DependentCharactersParser extends DirectiveArgsParser {
 		_dependencies = new ArrayList<CharacterDependency>();
 		
 		readNext();
-		readDependency();
+		skipWhitespace();
 		
-		while (_currentInt >= 0 && Character.isWhitespace(_currentChar)) {	
+		while (_currentInt >= 0 && Character.isDigit(_currentChar)) {	
 			readDependency();
+			skipWhitespace();
 		}
 	}
 

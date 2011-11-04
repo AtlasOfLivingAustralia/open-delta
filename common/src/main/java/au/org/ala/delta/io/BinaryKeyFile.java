@@ -87,8 +87,7 @@ public class BinaryKeyFile extends BinFile {
         if ((offset + numBytes) % RECORD_LENGTH_BYTES > 0) {
             numRecords++;
         }
-        System.out.println("Writing :" + numRecords + ", starting at record: " + recordNumber);
-
+       
         for (int i = recordNumber; i < recordNumber + numRecords; i++) {
             if (_occupiedRecords.contains(i)) {
                 throw new RuntimeException("Writing " + (numBytes + offset) + " bytes to a record will overwrite the next record");
@@ -128,6 +127,23 @@ public class BinaryKeyFile extends BinFile {
         writeToRecord(recordNumber, value.length());
         int numRecords = writeToRecord(recordNumber + 1, 0, value);
         return numRecords + 1;
+    }
+    
+    /**
+     * Writes a single int at the supplied recordNumber, which is the record
+     * number that actually contains the data.
+     * The data is then written as writeStringWithLength().
+     */
+    public int writeIndirectStringWithLength(int recordNumber, String value) {
+        if (value.length() == 0) {
+            throw new RuntimeException("Cannot write zero length strings.");
+        }
+        
+        int next = recordNumber + 1;
+        writeToRecord(recordNumber, next);
+        
+        return writeStringWithLength(next, value) + 1;
+        
     }
 
     /**
