@@ -1,0 +1,87 @@
+*COMMENT ~ Keyword and startup images
+
+*TAXON KEYWORD IMAGES
+	taxon_keyword_bird_image1.jpg
+		 <@keyword "birds" x=10 y=10 w=300 h=78>
+         <@sound chimes.wav>
+         <Developer's notes for taxon keyword bird image 1>
+         <@subject Image one>
+         <@ok x=783 y=293>
+         <@cancel x=781 y=453>
+         <@notes x=774 y=608>
+	taxon_keyword_bird_image2.jpg
+		 <@keyword "birds" x=10 y=10 w=300 h=78>
+         <@sound chord.wav>
+         <Developer's notes for taxon keyword bird image 2>
+         <@subject Image two>
+         <@ok x=783 y=293>
+         <@cancel x=781 y=453>
+         <@notes x=774 y=608>
+	taxon_keyword_amphibians_image.jpg
+		 <@keyword "amphibians" x=10 y=10 w=300 h=78>
+         <@sound notify.wav>
+         <Developer's notes for taxon keyword amphibians>
+         <@subject amphibians>
+         <@ok x=783 y=293>
+         <@cancel x=781 y=453>
+         <@notes x=774 y=608> 
+	taxon_keyword_alltaxa_image.jpg
+		 <@keyword "birds amphibians" x=10 y=10 w=300 h=78>
+         <@sound notify.wav>
+         <Developer's notes for taxon keyword alltaxa>
+         <@subject alltaxa>
+         <@ok x=783 y=293>
+         <@cancel x=781 y=453>
+         <@notes x=774 y=608> 		 
+		 
+*CHARACTER KEYWORD IMAGES
+	character_keyword_measurements_image1.jpg
+		 <@keyword "measurements" x=10 y=10 w=300 h=78>
+         <@sound chimes.wav>
+         <Developer's notes for character keyword measurements image 1>
+         <@subject Image one>
+         <@ok x=783 y=293>
+         <@cancel x=781 y=453>
+         <@notes x=774 y=608>
+	character_keyword_measurements_image2.jpg
+		 <@keyword "measurements" x=10 y=10 w=300 h=78>
+         <@sound chord.wav>
+         <Developer's notes for character keyword measurements image 2>
+         <@subject Image two>
+         <@ok x=783 y=293>
+         <@cancel x=781 y=453>
+         <@notes x=774 y=608>
+	character_keyword_other_image.jpg
+		 <@keyword "other" x=10 y=10 w=300 h=78>
+         <@sound chord.wav>
+         <Developer's notes for character keyword other image>
+         <@subject other>
+         <@ok x=783 y=293>
+         <@cancel x=781 y=453>
+         <@notes x=774 y=608> 
+	character_keyword_allcharacters_image.jpg
+		 <@keyword "measurements other" x=10 y=10 w=300 h=78>
+         <@sound chord.wav>
+         <Developer's notes for character keyword allcharacters image>
+         <@subject allcharacters>
+         <@ok x=783 y=293>
+         <@cancel x=781 y=453>
+         <@notes x=774 y=608> 
+		 
+*STARTUP IMAGES
+	startup_image1.jpg
+		 <@heading x=10 y=10 w=300 h=78>
+         <@sound chimes.wav>
+         <Developer's notes for startup image 1>
+         <@subject Image one>
+         <@ok x=783 y=293>
+         <@cancel x=781 y=453>
+         <@notes x=774 y=608>
+	startup_image2.jpg
+		 <@heading x=10 y=10 w=300 h=78>
+         <@sound chord.wav>
+         <Developer's notes for startup image 2>
+         <@subject Image two>
+         <@ok x=783 y=293>
+         <@cancel x=781 y=453>
+         <@notes x=774 y=608>

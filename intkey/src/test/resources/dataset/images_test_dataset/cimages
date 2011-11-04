@@ -1,0 +1,102 @@
+*COMMENT ~ Character images.
+
+*CHARACTER IMAGES
+#1. character_1_color.JPG
+         <@sound chimes.wav>
+         <Developer's notes for color character>
+         <@subject Image one>
+         <@feature x=366 y=14 w=300 h=78>
+         <@state 1 x=21 y=438 w=300 h=78
+                   x=68 y=219 w=200 h=200 p f=0000FF>
+         <@state 2 x=369 y=438 w=300 h=78
+                   x=397 y=219 w=200 h=200 p f=0000FF>
+         <@state 3 x=15 y=788 w=300 h=78
+                   x=72 y=569 w=200 h=200 e p f=0000FF>
+         <@state 4 x=379 y=793 w=300 h=78
+                   x=389 y=564 w=200 h=200 p f=0000FF>
+         <@ok x=783 y=293>
+         <@cancel x=781 y=453>
+         <@notes x=774 y=608>
+    character_1_color_image2.JPG
+         <@sound ringin.wav>
+         <developer's notes for color image 2>
+         <@subject Image two>
+         <@feature x=213 y=94 w=300 h=-1 c m>
+         <@state 1 x=17 y=438 w=300 h=-1
+                   x=44 y=219 w=200 h=200 p f=0000FF c m>
+         <@state 2 x=333 y=458 w=300 h=-1
+                   x=395 y=217 w=200 h=200 p f=0000FF c m>
+         <@state 3 x=29 y=798 w=300 h=-1
+                   x=66 y=581 w=200 h=200 p c m>
+         <@state 4 x=373 y=798 w=300 h=-1
+                   x=397 y=576 w=200 h=200 p f=800080 c m>
+         <@ok x=749 y=431>
+         <@cancel x=747 y=530>
+         <@notes x=749 y=633>
+
+#2. character_2_length.jpg
+         <@sound flourish.mid>
+         <Developer's notes for character 2 length>
+         <@subject ruler>
+         <@feature x=335 y=32 w=300 h=-1 c m>
+         <@enter x=344 y=793 w=300 h=-1 c m>
+         <@units x=345 y=704 w=300 h=-1 c m>
+         <@ok x=142 y=210>
+         <@cancel x=142 y=326>
+         <@notes x=142 y=442>
+    character_2_length_image2.jpg
+         <blah developers notes for second ruler image>
+         <@subject second ruler images>
+         <@value 1 x=312 y=86 w=300 h=-1 n c m>
+         <@value 2-10 x=312 y=235 w=300 h=-1 n c m>
+         <@value 50 x=305 y=578 w=300 h=-1 n c m>
+         <@units x=305 y=735 w=300 h=-1 n c m
+          t=cm>
+         <@ok x=740 y=332>
+         <@cancel x=743 y=571>
+         <@notes x=736 y=709>
+         <@enter x=394 y=873 w=171 h=-1 n c m>
+
+#3. character_3_number_ears.jpg
+         <@sound ding.wav>
+         <developer notes for character 3 - number ears>
+         <@subject rabbit>
+         <@feature x=362 y=38 w=300 h=-1 c m>
+         <@enter x=268 y=900 w=300 h=-1 c m>
+         <@units x=~ y=~ w=300 h=-1 c m>
+         <@ok x=22 y=46>
+         <@cancel x=22 y=146>
+         <@notes x=24 y=249>
+    character_3_number_ears_image2.JPG
+         <developer's notes for extra image I made for the "number of ears"
+              character>
+         <@subject other image>
+         <@feature x=345 y=39 w=300 h=-1 n c m>
+         <@units x=358 y=884 w=300 h=-1 n c m>
+         <@ok x=31 y=464>
+         <@cancel x=28 y=540>
+         <@notes x=31 y=613>
+         <@value 1 x=364 y=289 w=300 h=-1 n c m>
+         <@value 5-20 x=366 y=456 w=300 h=-1 n c m>
+         <@value 100 x=369 y=627 w=300 h=-1 n c m>
+
+#4. character_4_comments.jpg
+         <@sound tada.wav>
+         <developer's notes for speech bubble>
+         <@subject Speech bubble>
+         <@feature x=335 y=361 w=300 h=-1 c m>
+         <@ok x=348 y=457>
+         <@cancel x=453 y=458>
+         <@notes x=564 y=460>
+         <@enter x=337 y=535 w=300 h=-1 n c m>
+    clock.avi
+         <@feature x=349 y=93 w=300 h=-1 n c m
+          t=Blah>
+         <@ok x=735 y=542>
+         <@cancel x=738 y=667>
+         <@notes x=735 y=785>
+         <@enter x=333 y=794 w=300 h=-1 n c m>
+         <@text x=34 y=458 w=300 h=-1 n c m
+          t=random text here>
+
+*COMMENT Data should be entered via the 'Character edit' dialog.

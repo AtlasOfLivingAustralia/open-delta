@@ -1,0 +1,24 @@
+*SHOW Print the character list - RTF.
+
+*LISTING FILE printcr.lst
+
+*OUTPUT DIRECTORY rtf
+
+*PRINT FILE chars.rtf
+
+*INPUT FILE specs
+
+*PRINT CHARACTER LIST
+
+*INPUT FILE markrtf
+
+*OMIT INNER COMMENTS
+
+*INPUT FILE headc
+
+*INPUT FILE cnotes
+
+*PRINT COMMENT 
+\pard\plain\s1\qc\sb0\sa100\keepn\b\f2\fs32\kerning28{}Character List
+
+*INPUT FILE chars

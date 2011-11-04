@@ -1,0 +1,39 @@
+*COMMENT ~ Layout for natural-language descriptions.
+
+*REPLACE ANGLE BRACKETS
+
+*OMIT CHARACTER NUMBERS
+
+*OMIT INNER COMMENTS
+
+*OMIT INAPPLICABLES
+
+*COMMENT Specify slot in which image links will appear in HTML descriptions.
+There must be a corresponding character in the character list, and no data
+should be recorded against this character in the item descriptions (the data
+come from the TAXON IMAGES directive in the file 'timages').
+
+*COMMENT : CHARACTER FOR TAXON IMAGES 88
+
+*COMMENT : EXCLUDE CHARACTER 89
+
+*COMMENT : NEW PARAGRAPHS AT CHARACTERS 1-2 12 25-26 68 77-78 87-89
+
+*COMMENT Group characters into sentences.
+
+*COMMENT : LINK CHARACTERS 3-5 7-9 10-11 13-15 16-17 18-21 26-29 32-37 41-42
+45-47:52-54 48-51 55-56 57-59 62-63 64-65 68-70 71-72 73-75 78-84
+
+*COMMENT Headings within in taxon descriptions. The numbers specify the
+character before which the heading is placed.
+
+*COMMENT : ITEM SUBHEADINGS
+#2. \b{}Habit, vegetative morphology\b0{}.
+#12. \b{}Inflorescence\b0{}.
+#25. \b{}Female-sterile spikelets\b0{}.
+#26. \b{}Female-fertile spikelets, florets, fruit\b0{}.
+#68. \b{}Photosynthetic pathway, leaf blade anatomy\b0{}.
+#77. \b{}Special diagnostic feature.\b0{}
+#78. \b{}Taxonomy, distribution\b0{}.
+#87. \b{}Anatomical references\b0{}.
+#88. \b{}Illustrations\b0{}.

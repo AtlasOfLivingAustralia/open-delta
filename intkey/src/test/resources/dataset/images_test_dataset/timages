@@ -1,0 +1,33 @@
+*COMMENT ~ Taxon images.
+
+*TAXON IMAGES
+# Frog/
+     taxon_1_frog_image1.jpg
+          <developer's notes for image one>
+          <@subject image one>
+          <@sound ringout.wav>
+          <@text x=328 y=71 w=300 h=-1 c m
+           t=Frog>
+          <@item x=277 y=692 w=300 h=-1 c m
+           t=This is a frog>
+          <@ok x=73 y=174>
+          <@imagenotes x=73 y=375 c m
+           t=Image notes>
+          <@cancel x=748 y=821>
+     taxon_1_frog_image2.jpg
+          <@sound notify.wav>
+
+# Parrot/
+     taxon_2_parrot.jpg
+          <@sound recycle.wav>
+          <developer's notes for image one>
+          <@subject image one>
+          <@text x=325 y=826 w=300 h=-1 c m
+           t=Here is a parrot>
+          <@item x=315 y=30 w=300 h=-1 c m
+           t=Parrot>
+          <@ok x=80 y=430>
+          <@imagenotes x=70 y=196 c m
+           t=Image notes>
+
+*COMMENT Data should be entered via the 'Item edit' dialog.

@@ -1,0 +1,152 @@
+ 
+CONFOR version 2.25 Windows
+ 
+M.J. Dallwitz, T.A. Paine and E.J. Zurcher
+ 
+CSIRO Division of Entomology, GPO Box 1700, Canberra, ACT 2601, Australia
+Phone +61 2 6246 4075. Fax +61 2 6246 4000. Email delta@ento.csiro.au
+ 
+Translate into INTKEY format. 
+ 
+..aset\toint,3 *LISTING FILE toint.lst
+..aset\toint,4  
+..aset\toint,5 *COMMENT Heading which will appear in the Intkey title bar.
+..aset\toint,6  
+..aset\toint,7 *HEADING Images Test Dataset
+..aset\toint,8  
+..aset\toint,9 *COMMENT Subheading which will appear in the Intkey log file.
+..set\toint,10  
+..set\toint,11 *REGISTRATION SUBHEADING Version: Used to test character, taxon, keyword and startup images
+..set\toint,12  
+..set\toint,13 *INPUT FILE specs
+..aset\specs,1 *SHOW ~ Dataset specifications.
+..aset\specs,2  
+..aset\specs,3 *DATA BUFFER SIZE 4000
+..aset\specs,4  
+..aset\specs,5 *NUMBER OF CHARACTERS 4
+..aset\specs,6  
+..aset\specs,7 *MAXIMUM NUMBER OF STATES 4
+..aset\specs,8  
+..aset\specs,9 *MAXIMUM NUMBER OF ITEMS 2
+..set\specs,10  
+..set\specs,11 *CHARACTER TYPES 2,RN 3,IN 4,TE
+..set\specs,12  
+..set\specs,13 *NUMBERS OF STATES 1,4
+..set\specs,14  
+..set\specs,15 *IMPLICIT VALUES
+..set\specs,16  
+..set\specs,17 *DEPENDENT CHARACTERS
+..set\specs,18  
+..set\specs,19 *MANDATORY CHARACTERS
+..set\specs,20 *PREVIOUS INPUT FILE
+..set\toint,14  
+..set\toint,15 *TRANSLATE INTO INTKEY FORMAT
+..set\toint,16  
+..set\toint,17 *OMIT INNER COMMENTS
+..set\toint,18  
+..set\toint,19 *COMMENT Specify a text character or characters containing synonyms, common
+..set\toint,20 names, etc. These characters can be searched in Intkey.
+..set\toint,21  
+..set\toint,22 *COMMENT : CHARACTER FOR SYNONOMY 1
+..set\toint,23  
+..set\toint,24 *COMMENT Specify character(s) for which the word 'or' will be omitted between
+..set\toint,25 states in descriptions. Typically used for geographical-distribution characters.
+..set\toint,26  
+..set\toint,27 *COMMENT : OMIT OR FOR CHARACTER 86
+..set\toint,28  
+..set\toint,29 *COMMENT : EXCLUDE CHARACTERS 88-89
+..set\toint,30  
+..set\toint,31 *COMMENT Influences the order in which characters appear in 'best' order in
+..set\toint,32 Intkey. A reliability of 0 causes the character to be omitted from the 'best'
+..set\toint,33 list, and from diagnostic descriptions.
+..set\toint,34  
+..set\toint,35 *COMMENT : CHARACTER RELIABILITIES
+..set\toint,36 1,0 2-5,7 6,5 7-10,7 11-13,8 14-24,7 25,0 26,7 27,8 28-38,7 39,5 40-43,7 44,8
+..set\toint,37 45-47,7 48,8 49-63,7 64,6 65,7 66,8 67,7 68,3 69,0 70,5 71-76,0 77,7.1 78-87,0
+..set\toint,38  
+..set\toint,39 *COMMENT : NEW PARAGRAPHS AT CHARACTERS 1-2 12 25-26 68 77-78 87-89
+..set\toint,40  
+..set\toint,41 *COMMENT Headings within in taxon descriptions. The numbers specify the
+..set\toint,42 character before which the heading is placed.
+..set\toint,43  
+..set\toint,44 *COMMENT : ITEM SUBHEADINGS
+..set\toint,45 #1. \pard\li0\fi340
+..set\toint,46 #2. \pard\li0\fi340\b{}Habit, vegetative morphology\b0{}.
+..set\toint,47 #12. \pard\li0\fi340\b{}Inflorescence\b0{}.
+..set\toint,48 #25. \pard\li0\fi340\b{}Female-sterile spikelets\b0{}.
+..set\toint,49 #26. \pard\li0\fi340\b{}Female-fertile spikelets, florets, fruit\b0{}.
+..set\toint,50 #68. \pard\li0\fi340\b{}Photosynthetic pathway, leaf blade anatomy\b0{}.
+..set\toint,51 #77. \pard\li0\fi340\b{}Special diagnostic feature.\b0{}
+..set\toint,52 #78. \pard\li0\fi340\b{}Taxonomy, distribution\b0{}.
+..set\toint,53 #87. \pard\li0\fi340\b{}Anatomical references\b0{}.
+..set\toint,54 #88. \pard\li0\fi340\b{}Miscellaneous\b0{}.
+..set\toint,55  
+..set\toint,56 *INPUT FILE cnotes
+..set\cnotes,1 *COMMENT ~ Character notes.
+..set\cnotes,2  
+..set\cnotes,3 *CHARACTER NOTES
+..set\cnotes,9 *COMMENT Data should be entered via the 'Character edit' dialog.
+..et\cnotes,10 *PREVIOUS INPUT FILE
+..set\toint,57  
+..set\toint,58 *INPUT FILE ofonts
+..set\ofonts,1 *COMMENT ~ Set fonts for image overlays.
+..set\ofonts,2  
+..set\ofonts,3 *OVERLAY FONTS
+..set\ofonts,4   #1.  <DEFAULT FONT: used as the default for all text boxes>
+..set\ofonts,5           10 4 0 0 0 1 Times New Roman
+..set\ofonts,6   #2.  <BUTTON FONT: used for the text on push buttons>
+..set\ofonts,7           10 4 0 0 0 1 Times New Roman
+..set\ofonts,8   #3.  <FEATURE FONT: used for feature description text boxes>
+..set\ofonts,9           10 4 0 0 0 1 Times New Roman
+..et\ofonts,10 *PREVIOUS INPUT FILE
+..set\toint,59  
+..set\toint,60 *INPUT FILE cimages
+..et\cimages,1 *COMMENT ~ Character images.
+..et\cimages,2  
+..et\cimages,3 *CHARACTER IMAGES
+..\cimages,102 *COMMENT Data should be entered via the 'Character edit' dialog.
+..\cimages,103 *PREVIOUS INPUT FILE
+..set\toint,61  
+..set\toint,62 *INPUT FILE timages
+..et\timages,1 *COMMENT ~ Taxon images.
+..et\timages,2  
+..et\timages,3 *TAXON IMAGES
+..t\timages,33 *COMMENT Data should be entered via the 'Item edit' dialog.
+..t\timages,34 *PREVIOUS INPUT FILE
+..set\toint,63  
+..set\toint,64 *INPUT FILE oimages
+..et\oimages,1 *COMMENT ~ Keyword and startup images
+..et\oimages,2  
+..et\oimages,3 *TAXON KEYWORD IMAGES
+..t\oimages,37 *CHARACTER KEYWORD IMAGES
+..t\oimages,71 *STARTUP IMAGES
+..t\oimages,88 *PREVIOUS INPUT FILE
+..set\toint,65  
+..set\toint,66 *COMMENT If you want Intkey to link to descriptions generated by 'tonatsr',
+..set\toint,67 activate the following directive. Before running this file (toint), you must
+..set\toint,68 modify 'ofiles', and make additions to your data as described in 'ofiles'.
+..set\toint,69  
+..set\toint,70 *COMMENT : INPUT FILE ofiles
+..set\toint,71  
+..set\toint,72 *INTKEY OUTPUT FILE ichars
+..set\toint,73  
+..set\toint,74 *INPUT FILE chars
+..aset\chars,1 *SHOW ~ Character list.
+..aset\chars,2  
+..aset\chars,3 *CHARACTER LIST
+..set\chars,17 *PREVIOUS INPUT FILE
+..set\toint,75  
+..set\toint,76 *INTKEY OUTPUT FILE iitems
+..set\toint,77  
+..set\toint,78 *INPUT FILE items
+..aset\items,1 *SHOW ~ Item descriptions
+..aset\items,2  
+..aset\items,3 *ITEM DESCRIPTIONS
+..set\items,10 *PREVIOUS INPUT FILE
+..set\toint,79 *END
+Normal Termination.
+ 
+Output files - 
+   C:\delta\images_test_dataset\toint.lst
+   C:\delta\images_test_dataset\ichars
+   C:\delta\images_test_dataset\iitems

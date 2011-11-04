@@ -1,0 +1,129 @@
+*SHOW Translate into natural language - HTML.
+
+*COMMENT ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+*COMMENT Warning. This will not work properly unless you have a character
+
+*COMMENT specifying names for the output files. See file 'ofiles'.
+
+*COMMENT ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+*COMMENT Change My_Title, My_Authors, and My_URL throughout.
+
+*LISTING FILE tonath.lst
+
+*OUTPUT DIRECTORY www
+
+*PRINT FILE implicit.htm
+
+*INPUT FILE specs
+
+*TRANSLATE INTO NATURAL LANGUAGE
+
+*INPUT FILE markhtm
+
+*IMAGE DIRECTORY ..\images
+
+*INPUT FILE ofiles
+
+*INPUT FILE layout
+
+*INPUT FILE timages
+
+*INDEX OUTPUT FILE .\index.htm
+
+*INDEX TEXT 
+<html>
+<head>
+<title>
+My_Title
+- Index
+</title>
+<meta name="description"
+content="My_Title:
+Descriptions, Illustrations, Identification, and Information Retrieval.
+My_Authors.">
+<meta name="keywords"
+content="classification, DELTA, Intkey, key, keys">
+</head>
+
+<body>
+<a href="http://biodiversity.uno.edu/delta/">
+<img align=right border=0 src="www/deltlogo.gif"></a>
+<h1><b>
+My_Title
+</b></h1>
+<h2>
+My_Authors
+</h2>
+<p><hr noshade>
+
+<p><h2>Index</h2>
+
+<h3>
+<a href="www/intro.htm">Introduction</a>
+&#149;&nbsp;<a href="#citation">Citation</a> 
+&#149;&nbsp;<a href="www/ack.htm">Acknowledgements</a>
+&#149;&nbsp;<a href="www/refs.htm">References</a>
+</h3>
+<h3><a href="www/ident.htm">Identification and Information Retrieval</a>
+(Windows 95/NT or later)</h3>
+<h3><a href="www/chars.htm">Character List</a></h3>
+<h3><a href="www/implicit.htm">Implicit Attributes</a></h3>
+
+<h3><b>Descriptions</b></h3>
+
+*INPUT FILE chars
+
+*PRINT COMMENT 
+<head>
+<title>
+My_Title
+- Implicit Attributes
+</title>
+<meta name="description"
+content="Implicit attributes for 
+My_Title,
+generated from a DELTA database.">
+</head>
+
+<body>
+<a href="http://biodiversity.uno.edu/delta/">
+<img align=right border=0 src="deltlogo.gif"></a>
+<h1><b>
+My_Title
+</b></h1>
+<h2>
+My_Authors
+</h2>
+<p><hr noshade>
+
+<h2>Implicit Attributes</h2>
+<p>Unless indicated otherwise, the following attributes are implicit
+throughout the descriptions, except where the characters concerned are
+inapplicable.
+
+*TRANSLATE IMPLICIT VALUES
+
+*INPUT FILE items
+
+*INDEX TEXT 
+<p> <a name="citation"></a> <hr noshade>
+
+<p> Cite this publication as:
+‘My_Authors (2000 onwards).
+My_Title:
+Descriptions, Illustrations, Identification, and Information Retrieval.
+Version: 21st September 2000.
+<a href="http://My_URL">
+http://My_URL</a>’.
+Dallwitz (1980) and
+Dallwitz, Paine and Zurcher (1993, 1995, 2000)
+should also be cited (see <a href="www/refs.htm"> References</a>).
+
+<p><a href="http://biodiversity.uno.edu/delta/">
+<img align=middle border=0 src="www/deltlogo.gif"
+>DELTA Home Page</a>
+
+</body>
+</html>

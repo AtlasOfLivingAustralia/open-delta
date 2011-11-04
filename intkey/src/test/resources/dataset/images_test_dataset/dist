@@ -1,0 +1,7 @@
+*COMMENT Generate distance matrix.
+
+*LISTING FILE dist.lst
+
+*ITEMS FILE ditems
+
+*MINIMUM NUMBER OF COMPARISONS 7

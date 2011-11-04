@@ -1,0 +1,37 @@
+*COMMENT Confirmatory characters - HTML.
+
+*COMMENT Change My_Title and My_Authors throughout.
+
+*HEADING Key 5a. Confirmatory characters
+
+*NUMBER OF CONFIRMATORY CHARACTERS 3
+
+*OUTPUT DIRECTORY www
+
+*PRINT COMMENT 
+<head>
+<title>
+My_Title
+- Key 5a. Confirmatory characters
+</title>
+<meta name="description"
+content="Key for
+My_Title,
+generated from a DELTA database.">
+</head>
+
+<body>
+<a href="http://biodiversity.uno.edu/delta/">
+<img align=right border=0 src="deltlogo.gif"></a>
+<h1><b>
+My_Title
+</b></h1>
+<h2>
+My_Authors
+</h2>
+<p><hr noshade>
+
+<h2>Key 5a. Confirmatory characters</h2>
+<dl>
+
+*INPUT FILE markhtm
