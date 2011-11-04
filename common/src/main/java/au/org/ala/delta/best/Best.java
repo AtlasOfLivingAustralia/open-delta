@@ -14,7 +14,6 @@ import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DeltaDataSet;
-import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.model.IntegerAttribute;
 import au.org.ala.delta.model.IntegerCharacter;
 import au.org.ala.delta.model.Item;
@@ -54,13 +53,14 @@ public class Best {
      */
     public static LinkedHashMap<au.org.ala.delta.model.Character, Double> orderBest(DeltaDataSet dataset, List<Integer> availableCharacterNumbers, List<Integer> availableTaxaNumbers, double rBase,
             double varyWt) {
-        return doOrdering(dataset, availableCharacterNumbers, availableTaxaNumbers, rBase, varyWt, OrderingType.BEST, null, null);
+        return doOrdering(dataset, availableCharacterNumbers, availableTaxaNumbers, rBase, varyWt, OrderingType.BEST, null, -1);
     }
 
-    // public static LinkedHashMap<au.org.ala.delta.model.Character, Double>
-    // orderSeparate(IntkeyContext context, Item taxonToSeparate) {
-    // return doOrdering(context, OrderingType.SEPARATE, taxonToSeparate);
-    // }
+    public static LinkedHashMap<au.org.ala.delta.model.Character, Double> orderSeparate(int taxonToSeparate, DeltaDataSet dataset, List<Integer> availableCharacterNumbers,
+            List<Integer> availableTaxaNumbers, double rBase, double varyWt) {
+        return doOrdering(dataset, availableCharacterNumbers, availableTaxaNumbers, rBase, varyWt, OrderingType.SEPARATE, null, taxonToSeparate);
+    }
+
     //
     // public static LinkedHashMap<au.org.ala.delta.model.Character, Double>
     // orderDiagnose(IntkeyContext context, Item taxonToSeparate, DiagType
@@ -79,8 +79,9 @@ public class Best {
      *         the characters can be obtained by getting the keyset of the
      *         supplied map
      */
-    public static LinkedHashMap<au.org.ala.delta.model.Character, Double> doOrdering(DeltaDataSet dataset, List<Integer> availableCharacterNumbers, List<Integer> availableTaxaNumbers, double rBase,
-            double varyWt, OrderingType orderingType, DiagType diagType, Item taxonToSeparate) {
+    private static LinkedHashMap<au.org.ala.delta.model.Character, Double> doOrdering(DeltaDataSet dataset, List<Integer> availableCharacterNumbers, List<Integer> availableTaxaNumbers, double rBase,
+            double varyWt, OrderingType orderingType, DiagType diagType, int taxonToSeparate) {
+        System.out.println(availableCharacterNumbers);
         LinkedHashMap<Character, Double> retMap = new LinkedHashMap<Character, Double>();
 
         if (availableCharacterNumbers.isEmpty() || availableTaxaNumbers.isEmpty()) {
@@ -176,7 +177,7 @@ public class Best {
             boolean[] taxonToSeparateStatePresence = new boolean[totalNumStates];
             int ndgSum = 1;
             if (orderingType == OrderingType.SEPARATE || orderingType == OrderingType.DIAGNOSE) {
-                Attribute attr = charAttributes.get(taxonToSeparate.getItemNumber() - 1);
+                Attribute attr = charAttributes.get(taxonToSeparate - 1);
 
                 if (attr.isUnknown() && attr.isInapplicable()) {
                     unsuitableCharacters.add(ch);
@@ -375,7 +376,7 @@ public class Best {
         });
 
         for (Character ch : sortedChars) {
-            retMap.put(ch, suVals[ch.getCharacterId() - 1]);
+            retMap.put(ch, sepVals[ch.getCharacterId() - 1]);
         }
 
         return retMap;

@@ -25,6 +25,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.math.IntRange;
 
 import au.org.ala.delta.Logger;
+import au.org.ala.delta.best.Best;
 import au.org.ala.delta.directives.AbstractDeltaContext;
 import au.org.ala.delta.intkey.IntkeyUI;
 import au.org.ala.delta.intkey.directives.DirectivePopulator;
@@ -1053,10 +1054,24 @@ public class IntkeyContext extends AbstractDeltaContext {
      * block the calling thread while the calculation is performed
      */
     public synchronized void calculateBestOrSeparateCharacters() {
+        List<Integer> characterNumbers = new ArrayList<Integer>();
+        List<Integer> taxonNumbers = new ArrayList<Integer>();
+
+        List<Character> availableCharacters = getAvailableCharacters();
+        availableCharacters.removeAll(_dataset.getCharactersToIgnoreForBest());
+
+        for (Character ch : availableCharacters) {
+            characterNumbers.add(ch.getCharacterId());
+        }
+
+        for (Item taxon : getAvailableTaxa()) {
+            taxonNumbers.add(taxon.getItemNumber());
+        }
+        
         if (_characterOrder == IntkeyCharacterOrder.BEST) {
-            _bestOrSeparateCharacters = SortingUtils.orderBest(IntkeyContext.this);
+            _bestOrSeparateCharacters = Best.orderBest(_dataset, characterNumbers, taxonNumbers, _rbase, _varyWeight);
         } else if (_characterOrder == IntkeyCharacterOrder.SEPARATE) {
-            _bestOrSeparateCharacters = SortingUtils.orderSeparate(this, _dataset.getItem(_taxonToSeparate));
+            _bestOrSeparateCharacters = Best.orderSeparate(_taxonToSeparate, _dataset, characterNumbers, taxonNumbers, _rbase, _varyWeight);
         }
     }
 

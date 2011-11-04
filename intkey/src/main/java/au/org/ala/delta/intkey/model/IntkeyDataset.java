@@ -3,8 +3,10 @@ package au.org.ala.delta.intkey.model;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import au.org.ala.delta.io.BinFile;
 import au.org.ala.delta.model.Attribute;
@@ -13,6 +15,7 @@ import au.org.ala.delta.model.CharacterDependency;
 import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
+import au.org.ala.delta.model.RealCharacter;
 import au.org.ala.delta.model.TextAttribute;
 import au.org.ala.delta.model.TextCharacter;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
@@ -30,6 +33,7 @@ public class IntkeyDataset implements DeltaDataSet {
     private ItemsFileHeader _itemsFileHeader;
     private CharactersFileHeader _charactersFileHeader;
     private List<Character> _characters;
+    private Set<Character> _charactersToIgnoreForBest;
     private List<Item> _taxa;
     private BinFile _itemsBinFile;
 
@@ -125,6 +129,35 @@ public class IntkeyDataset implements DeltaDataSet {
 
     void setCharacters(List<au.org.ala.delta.model.Character> characters) {
         this._characters = characters;
+        determineCharactersToIgnoreForBest();
+    }
+
+    private void determineCharactersToIgnoreForBest() {
+        _charactersToIgnoreForBest = new HashSet<Character>();
+        for (Character ch : _characters) {
+            // Ignore character if its reliability is zero
+//            if (ch.getReliability() == 0) {
+//                _charactersToIgnoreForBest.add(ch);
+//                continue;
+//            }
+
+            // Ignore character if it is a text character
+            if (ch instanceof TextCharacter) {
+                _charactersToIgnoreForBest.add(ch);
+                continue;
+            }
+
+            // Ignore real characters if there are no key states
+            // for real characters
+            if (ch instanceof RealCharacter && !realCharacterKeyStateBoundariesPresent()) {
+                _charactersToIgnoreForBest.add(ch);
+            }
+
+        }
+    }
+
+    public Set<Character> getCharactersToIgnoreForBest() {
+        return new HashSet<Character>(_charactersToIgnoreForBest);
     }
 
     void setTaxa(List<Item> taxa) {

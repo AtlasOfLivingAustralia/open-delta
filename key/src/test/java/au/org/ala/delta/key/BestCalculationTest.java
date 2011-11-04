@@ -19,12 +19,9 @@ public class BestCalculationTest extends TestCase {
 
         KeyContext context = key.getContext();
 
-        context.setrBase(1.2);
-        context.setVaryWt(1.0);
-
         MutableDeltaDataSet dataset = context.getDataSet();
 
-        LinkedHashMap<au.org.ala.delta.model.Character, Double> bestMap = Best.orderBest(dataset, context.getIncludedCharacters(), context.getIncludedItems(), context.getrBase(), context.getVaryWt());
+        LinkedHashMap<au.org.ala.delta.model.Character, Double> bestMap = Best.orderBest(dataset, context.getIncludedCharacters(), context.getIncludedItems(), context.getRBase(), context.getVaryWt());
 
         for (au.org.ala.delta.model.Character ch : bestMap.keySet()) {
             double sepPower = bestMap.get(ch);

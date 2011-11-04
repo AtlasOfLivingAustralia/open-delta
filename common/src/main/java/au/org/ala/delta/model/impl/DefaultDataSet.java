@@ -1,6 +1,7 @@
 package au.org.ala.delta.model.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -252,11 +253,15 @@ public class DefaultDataSet extends AbstractObservableDataSet {
 
     @Override
     public List<Item> getItemsAsList() {
-        return new ArrayList<Item>(_items.values());
+        List<Item> itemsList = new ArrayList<Item>(_items.values());
+        Collections.sort(itemsList);
+        return itemsList;
     }
 
     @Override
     public List<Character> getCharactersAsList() {
-        return new ArrayList<Character>(_characters.values());
+        List<Character> characterList = new ArrayList<Character>(_characters.values());
+        Collections.sort(characterList);
+        return characterList;
     }
 }

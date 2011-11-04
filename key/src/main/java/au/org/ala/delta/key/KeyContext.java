@@ -43,19 +43,19 @@ public class KeyContext extends DeltaContext {
         this._dataDirectory = dataDirectory;
     }
 
-    public double getaBase() {
+    public double getABase() {
         return _aBase;
     }
 
-    public void setaBase(double aBase) {
+    public void setABase(double aBase) {
         this._aBase = aBase;
     }
 
-    public double getrBase() {
+    public double getRBase() {
         return _rBase;
     }
 
-    public void setrBase(double rBase) {
+    public void setRBase(double rBase) {
         this._rBase = rBase;
     }
 

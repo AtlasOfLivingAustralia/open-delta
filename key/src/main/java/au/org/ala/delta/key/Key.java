@@ -4,8 +4,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.LinkedHashMap;
 
 import au.org.ala.delta.Logger;
+import au.org.ala.delta.best.Best;
 import au.org.ala.delta.io.BinFileMode;
 import au.org.ala.delta.io.BinaryKeyFile;
 import au.org.ala.delta.key.directives.KeyDirectiveFileParser;
@@ -13,7 +15,8 @@ import au.org.ala.delta.key.directives.io.KeyCharactersFileReader;
 import au.org.ala.delta.key.directives.io.KeyItemsFileReader;
 import au.org.ala.delta.util.Utils;
 
-public class Key {
+public class Key
+ {
     
     private KeyContext _context;
 
@@ -80,6 +83,12 @@ public class Key {
 
         KeyItemsFileReader keyItemsFileReader = new KeyItemsFileReader(_context, _context.getDataSet(), keyItemsFile);
         keyItemsFileReader.readAll();
+        
+        doCalculateKey();
+    }
+    
+    private void doCalculateKey() {
+        LinkedHashMap<au.org.ala.delta.model.Character, Double> bestMap = Best.orderBest(_context.getDataSet(), _context.getIncludedCharacters(), _context.getIncludedItems(), _context.getRBase(), _context.getVaryWt());
     }
 
     private void processDirectivesFile(File input, KeyContext context) throws IOException {
