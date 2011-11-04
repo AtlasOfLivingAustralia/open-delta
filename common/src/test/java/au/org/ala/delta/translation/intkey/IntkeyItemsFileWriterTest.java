@@ -17,6 +17,8 @@ import au.org.ala.delta.io.BinFileMode;
 import au.org.ala.delta.io.BinaryKeyFile;
 import au.org.ala.delta.model.DefaultDataSetFactory;
 import au.org.ala.delta.model.MultiStateCharacter;
+import au.org.ala.delta.model.format.AttributeFormatter;
+import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.model.impl.DefaultDataSet;
 import au.org.ala.delta.translation.FilteredDataSet;
 import au.org.ala.delta.translation.delta.DeltaFormatDataSetFilter;
@@ -42,7 +44,7 @@ public class IntkeyItemsFileWriterTest extends TestCase {
 		_itemsFile = new WriteOnceIntkeyItemsFile(4, 3, null, BinFileMode.FM_TEMPORARY);
 		FilteredDataSet dataSet = new FilteredDataSet(_context, new DeltaFormatDataSetFilter(_context));
 		
-		_itemsFileWriter = new IntkeyItemsFileWriter(_context, dataSet, _itemsFile);
+		_itemsFileWriter = new IntkeyItemsFileWriter(_context, dataSet, _itemsFile, new AttributeFormatter(false, false, CommentStrippingMode.RETAIN));
 	}
 	
 	@After

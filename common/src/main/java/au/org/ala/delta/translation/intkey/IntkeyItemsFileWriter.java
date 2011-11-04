@@ -26,6 +26,7 @@ import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateAttribute;
 import au.org.ala.delta.model.NumericAttribute;
 import au.org.ala.delta.model.NumericRange;
+import au.org.ala.delta.model.format.AttributeFormatter;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.impl.ControllingInfo;
 import au.org.ala.delta.translation.FilteredCharacter;
@@ -46,13 +47,19 @@ public class IntkeyItemsFileWriter {
 	private FilteredDataSet _dataSet;
 	private DeltaContext _context;
 	private BinaryKeyFileEncoder _encoder;
+	private AttributeFormatter _formatter;
 	
-	
-	public IntkeyItemsFileWriter(DeltaContext context, FilteredDataSet dataSet, WriteOnceIntkeyItemsFile itemsFile) {
+	public IntkeyItemsFileWriter(
+			DeltaContext context, 
+			FilteredDataSet dataSet, 
+			WriteOnceIntkeyItemsFile itemsFile,
+			AttributeFormatter formatter) {
+			
 		_itemsFile = itemsFile;
 		_dataSet = dataSet;
 		_context = context;
 		_encoder = new BinaryKeyFileEncoder();
+		_formatter = formatter;
 	}
 	
 	public void writeAll() {
@@ -503,7 +510,7 @@ public class IntkeyItemsFileWriter {
 				continue;
 			}
 			
-			values.add(attribute.getValueAsString());
+			values.add(_formatter.formatCharacterComment(attribute.getValueAsString()));
 			
 		}
 		_itemsFile.writeAttributeStrings(filteredCharNumber, inapplicableBits, values);
