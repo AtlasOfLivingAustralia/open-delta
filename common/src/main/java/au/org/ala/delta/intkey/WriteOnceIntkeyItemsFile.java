@@ -207,6 +207,7 @@ public class WriteOnceIntkeyItemsFile extends BinaryKeyFile {
 	}
 	
 	public void writeAttributeStrings(int charNumber, BitSet inapplicableBits, List<String> values) {
+		
 		int record = updateCharacterIndex(charNumber);
 		List<Integer> inapplicable = bitSetToInts(inapplicableBits, _header.getNItem());
 		record += writeToRecord(record, inapplicable);

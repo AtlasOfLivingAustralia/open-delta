@@ -118,6 +118,7 @@ class ItemsParser extends AbstractStreamParser {
 			}
 			
 			Attribute attribute = getContext().getDataSet().addAttribute(item.getItemNumber(), ch.getCharacterId());
+			
 			attribute.setValueFromString(cleanWhiteSpace(value.toString().trim()));
 			
 			getContext().getMatrix().setValue(charIdx, itemIndex, stateValue);

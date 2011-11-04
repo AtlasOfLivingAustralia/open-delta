@@ -395,7 +395,7 @@ public class DeltaContext extends AbstractDeltaContext {
 	
 	public double getCharacterReliability(int number) {
 		if (_characterWeights == null) {
-			return 0;
+			return 5;
 		}
 		return Math.log(_characterWeights[number-1].doubleValue())/Math.log(2) +5;
 	}

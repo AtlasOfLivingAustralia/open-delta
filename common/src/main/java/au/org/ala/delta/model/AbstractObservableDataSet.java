@@ -344,7 +344,8 @@ public abstract class AbstractObservableDataSet implements ObservableDeltaDataSe
 							return new ControllingInfo(ControlledStateType.Inapplicable, controllingId);
 						}
 					} else {
-						return new ControllingInfo(ControlledStateType.InapplicableOrUnknown, controllingId);
+						//return new ControllingInfo(ControlledStateType.InapplicableOrUnknown, controllingId);
+						maybeInapplicable = new ControllingInfo(ControlledStateType.InapplicableOrUnknown, controllingId);
 						// /// This should probably be handled as a somewhat special case,
 						// /// so the user can be pointed in the right direction
 					}
@@ -378,10 +379,10 @@ public abstract class AbstractObservableDataSet implements ObservableDeltaDataSe
 			}
 			Character testCharBase = getCharacter(j);
 			ControllingInfo info = checkApplicability(baseChar, item, testCharBase, recurseLevel, testedControlledChars);
-			if (info.isInapplicable()) {
+			if (info.isStrictlyInapplicable()) {
 				return info;
 			}
-			else if (info.isMaybeInapplicable()) {
+			else if (info.isMaybeInapplicable() || info.isInapplicable()) {
 				maybeInapplicable = info;
 			}
 		}

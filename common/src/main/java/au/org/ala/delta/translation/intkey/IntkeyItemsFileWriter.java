@@ -257,7 +257,7 @@ public class IntkeyItemsFileWriter {
 			ControllingInfo controllingInfo = _dataSet.checkApplicability(
 					attribute.getCharacter(), attribute.getItem());
 			return controllingInfo.isStrictlyInapplicable() || 
-				(controllingInfo.isMaybeInapplicable() && !attribute.isUnknown());
+				(controllingInfo.isMaybeInapplicable() && !attribute.isUnknown());		
 		}
 		return true;
 	}
@@ -413,6 +413,7 @@ public class IntkeyItemsFileWriter {
 		for (int i=1; i<=_dataSet.getNumberOfFilteredItems(); i++) {
 			
 			NumericAttribute attribute = (NumericAttribute)_dataSet.getAttribute(i, unfilteredCharNumber);
+			
 			if (attribute == null || attribute.isCodedUnknown() || attribute.isInapplicable() || attribute.isVariable()) {
 				FloatRange range = new FloatRange(Float.MAX_VALUE);
 				values.add(range);
@@ -426,6 +427,9 @@ public class IntkeyItemsFileWriter {
 			if (ranges.isEmpty()) {
 				FloatRange range = new FloatRange(-Float.MAX_VALUE);
 				values.add(range);
+				if (isInapplicable(attribute)) {
+					inapplicableBits.set(i-1);
+				}
 				continue;
 			}
 			Range useRange;
@@ -490,17 +494,17 @@ public class IntkeyItemsFileWriter {
 			FilteredItem item = items.next();
 			Attribute attribute = _dataSet.getAttribute(item.getItem().getItemNumber(), characterNumber);
 			
+			if (isInapplicable(attribute)) {
+				inapplicableBits.set(item.getItemNumber()-1);
+			}
+			
 			if (attribute == null || attribute.isUnknown()) {
 				values.add("");
 				continue;
 			}
-			if (isInapplicable(attribute)) {
-				inapplicableBits.set(item.getItemNumber()-1);
-				values.add("");
-			}
-			else {
-				values.add(attribute.getValueAsString());
-			}
+			
+			values.add(attribute.getValueAsString());
+			
 		}
 		_itemsFile.writeAttributeStrings(filteredCharNumber, inapplicableBits, values);
 	}
