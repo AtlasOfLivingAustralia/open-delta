@@ -81,7 +81,6 @@ public class Best {
      */
     private static LinkedHashMap<au.org.ala.delta.model.Character, Double> doOrdering(DeltaDataSet dataset, List<Integer> availableCharacterNumbers, List<Integer> availableTaxaNumbers, double rBase,
             double varyWt, OrderingType orderingType, DiagType diagType, int taxonToSeparate) {
-        System.out.println(availableCharacterNumbers);
         LinkedHashMap<Character, Double> retMap = new LinkedHashMap<Character, Double>();
 
         if (availableCharacterNumbers.isEmpty() || availableTaxaNumbers.isEmpty()) {

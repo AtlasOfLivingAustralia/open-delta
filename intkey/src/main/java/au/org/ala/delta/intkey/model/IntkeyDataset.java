@@ -136,10 +136,10 @@ public class IntkeyDataset implements DeltaDataSet {
         _charactersToIgnoreForBest = new HashSet<Character>();
         for (Character ch : _characters) {
             // Ignore character if its reliability is zero
-//            if (ch.getReliability() == 0) {
-//                _charactersToIgnoreForBest.add(ch);
-//                continue;
-//            }
+            if (ch.getReliability() == 0) {
+                _charactersToIgnoreForBest.add(ch);
+                continue;
+            }
 
             // Ignore character if it is a text character
             if (ch instanceof TextCharacter) {

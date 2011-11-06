@@ -6,17 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import au.org.ala.delta.best.Best;
-import au.org.ala.delta.intkey.directives.IncludeCharactersDirective;
 import au.org.ala.delta.intkey.directives.UseDirective;
-import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
-import au.org.ala.delta.model.MultiStateAttribute;
-import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.util.Pair;
 
 public class DisplayCharacterOrderBestTest extends IntkeyDatasetTestCase {
@@ -47,15 +42,14 @@ public class DisplayCharacterOrderBestTest extends IntkeyDatasetTestCase {
     @Test
     public void testDeltaSampleDataSet() throws Exception {
         IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
-        IntkeyDataset dataset = context.getDataset();
 
-        Pair<List<Integer>, List<Integer>> availableCharactersAndTaxaNumbers = getCharacterAndTaxonNumbersForBest(context);
-        List<Integer> availableCharacterNumbers = availableCharactersAndTaxaNumbers.getFirst();
-        List<Integer> availableTaxaNumbers = availableCharactersAndTaxaNumbers.getSecond();
+        context.calculateBestOrSeparateCharacters();
 
-        Map<Character, Double> bestMap = Best.orderBest(context.getDataset(), availableCharacterNumbers, availableTaxaNumbers, context.getRBase(), context.getVaryWeight());
-
+        Map<Character, Double> bestMap = context.getBestOrSeparateCharacters();
+        
         List<Character> orderedCharList = new ArrayList<Character>(bestMap.keySet());
+        
+        assertEquals(66, bestMap.keySet().size());
 
         bestTestHelper(0, 38, 1.70, orderedCharList, bestMap);
         bestTestHelper(1, 54, 1.18, orderedCharList, bestMap);
@@ -131,14 +125,12 @@ public class DisplayCharacterOrderBestTest extends IntkeyDatasetTestCase {
 
         new UseDirective().parseAndProcess(context, "38,5");
 
-        Pair<List<Integer>, List<Integer>> availableCharactersAndTaxaNumbers = getCharacterAndTaxonNumbersForBest(context);
-        List<Integer> availableCharacterNumbers = availableCharactersAndTaxaNumbers.getFirst();
-        List<Integer> availableTaxaNumbers = availableCharactersAndTaxaNumbers.getSecond();
+        context.calculateBestOrSeparateCharacters();
 
-        Map<Character, Double> bestMap = Best.orderBest(context.getDataset(), availableCharacterNumbers, availableTaxaNumbers, context.getRBase(), context.getVaryWeight());
-
+        Map<Character, Double> bestMap = context.getBestOrSeparateCharacters();
+        
         List<Character> orderedCharList = new ArrayList<Character>(bestMap.keySet());
-
+        
         assertEquals(51, bestMap.keySet().size());
 
         bestTestHelper(0, 40, 1.46, orderedCharList, bestMap);
@@ -206,14 +198,12 @@ public class DisplayCharacterOrderBestTest extends IntkeyDatasetTestCase {
         new UseDirective().parseAndProcess(context, "38,5");
         new UseDirective().parseAndProcess(context, "40,1");
 
-        Pair<List<Integer>, List<Integer>> availableCharactersAndTaxaNumbers = getCharacterAndTaxonNumbersForBest(context);
-        List<Integer> availableCharacterNumbers = availableCharactersAndTaxaNumbers.getFirst();
-        List<Integer> availableTaxaNumbers = availableCharactersAndTaxaNumbers.getSecond();
+        context.calculateBestOrSeparateCharacters();
 
-        Map<Character, Double> bestMap = Best.orderBest(context.getDataset(), availableCharacterNumbers, availableTaxaNumbers, context.getRBase(), context.getVaryWeight());
-
+        Map<Character, Double> bestMap = context.getBestOrSeparateCharacters();
+        
         List<Character> orderedCharList = new ArrayList<Character>(bestMap.keySet());
-
+        
         assertEquals(17, bestMap.keySet().size());
 
         bestTestHelper(0, 13, 1.00, orderedCharList, bestMap);
