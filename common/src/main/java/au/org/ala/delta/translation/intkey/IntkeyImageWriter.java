@@ -44,7 +44,7 @@ public class IntkeyImageWriter {
 			if (buffer.length() > 0) {
 				buffer.append(" ");
 			}
-			buffer.append(" "+image.getFileName()).append(" ");
+			buffer.append(image.getFileName()).append(" ");
 			overlayWriter.writeOverlays(image.getOverlays(), 0, null);
 		}
 		return buffer.toString().replace("\\s", " ");

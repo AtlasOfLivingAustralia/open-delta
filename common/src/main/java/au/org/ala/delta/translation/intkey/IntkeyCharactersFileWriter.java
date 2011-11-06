@@ -194,8 +194,15 @@ public class IntkeyCharactersFileWriter {
 		}
 	}
 	
+	/**
+	 * If a REGISTRATION SUBHEADING has been specified, use that.  Otherwise
+	 * use the HEADING.  
+	 */
 	protected void writeHeading() {
-		String heading = _context.getHeading(HeadingType.HEADING);
+		String heading = _context.getHeading(HeadingType.REGISTRATION_HEADING);
+		if (StringUtils.isBlank(heading)) {
+			heading = _context.getHeading(HeadingType.HEADING);
+		}
 		if (StringUtils.isBlank(heading)) {
 			heading = " ";
 		}

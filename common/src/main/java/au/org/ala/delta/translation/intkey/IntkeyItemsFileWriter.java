@@ -331,51 +331,66 @@ public class IntkeyItemsFileWriter {
 	
 	
 	private Pair<IntRange, Boolean> determineIntegerRange(Character intChar) {
-		
-		Set<Integer> values = new HashSet<Integer>();
+		if (intChar.getCharacterId() == 140){
+			System.out.println("dfsdf");
+		}
+		List<Integer> values = new ArrayList<Integer>();
 		boolean hasMultiRangeAttribute = populateValues(intChar.getCharacterId(), values);
 		
-		List<Integer> orderedValues = new ArrayList<Integer>(values);
-		
-		if (orderedValues.size() == 0) {
+		if (values.size() == 0) {
 			return new Pair<IntRange, Boolean>(new IntRange(0), false);
 		}
 		boolean outOfRange = false;
-		Collections.sort(orderedValues);
 		
-		int min = orderedValues.get(0);
-		int max = orderedValues.get(values.size()-1);
+		IntRange minMax = findMinMaxOfRange(values);
+		int min = minMax.getMinimumInteger();
+		int max = minMax.getMaximumInteger();
 		
 		int upperLimit = hasMultiRangeAttribute ? INTEGER_RANGE_MAX_THRESHOLD : INTEGER_RANGE_WARNING_THRESHOLD;
-		if (max-min > upperLimit) {
-			int index = Collections.binarySearch(orderedValues, min+upperLimit);
-			if (index < 0) {
-				index = -(index+1);
-			}
+		int range = max-min+1;
+		int originalSize = values.size();
+		
+		while (range > upperLimit && !outOfRange) {
 			
-			if (index > values.size()/2) {
+			values = values.subList(0, values.size()-1);
+			minMax = findMinMaxOfRange(values);
+			min = minMax.getMinimumInteger();
+			max = minMax.getMaximumInteger();
+			
+			range = max - min + 1;
+			
+			if (values.size() < originalSize/2d) {
 				outOfRange = true;
-			}
-			else {
-				max = orderedValues.get(index);
 			}
 		}
 		return new Pair<IntRange, Boolean>( new IntRange(min, max), outOfRange);
+	}
+	
+	private IntRange findMinMaxOfRange(List<Integer> values) {
+		int min = Integer.MAX_VALUE;
+		int max = Integer.MIN_VALUE;
+		
+		for (int i : values) {
+			min = Math.min(i, min);
+			max = Math.max(i, max);
+		}
+		
+		return new IntRange(min, max);
 	}
 
 	/**
 	 * Puts all of the values of an integer character into a List as a 
 	 * part of the process of converting an integer character into the
-	 * equivalent of a multistate character.  Note that CONFOR uses a
-	 * fixed sized array of 200 values and starts discarding values after
-	 * this which we are not doing.
+	 * equivalent of a multistate character.  Each value will only appear
+	 * in the list once, however the order of the list is preserved for
+	 * CONFOR compatibility.
 	 * @param characterNumber the character to use.
 	 * @param values the values of all of the attributes using the supplied
 	 * character.
 	 * @return true if one or more of the attributes have more than a single
 	 * range of values encoded.
 	 */
-	private boolean populateValues(int characterNumber, Set<Integer> values) {
+	private boolean populateValues(int characterNumber, List<Integer> values) {
 		boolean useNormalValues = _context.getUseNormalValues(characterNumber);
 		
 		boolean hasMultiRangeAttribute = false;
@@ -393,22 +408,28 @@ public class IntkeyItemsFileWriter {
 			for (NumericRange range : ranges) {
 				if (!useNormalValues) {
 					if (range.hasExtremeLow()) {
-						values.add(range.getExtremeLow().intValue());
+						addIfNotPresent(range.getExtremeLow().intValue(), values);
 					}
 					if (range.hasExtremeHigh()) {
-						values.add(range.getExtremeHigh().intValue());
+						addIfNotPresent(range.getExtremeHigh().intValue(), values);
 					}
 					
 				}
-				values.add(range.getNormalRange().getMinimumInteger());
-				values.add(range.getNormalRange().getMaximumInteger());
+				addIfNotPresent(range.getNormalRange().getMinimumInteger(), values);
+				addIfNotPresent(range.getNormalRange().getMaximumInteger(), values);
 				if (range.hasMiddleValue()) {
-					values.add(range.getMiddle().intValue());
+					addIfNotPresent(range.getMiddle().intValue(), values);
 				}
 			}
 			
 		}
 		return hasMultiRangeAttribute;
+	}
+	
+	private void addIfNotPresent(int value, List<Integer> values) {
+		if (!values.contains(value)) {
+			values.add(value);
+		}
 	}
 	
 	private Set<Float> writeRealAttributes(int filteredCharNumber, Character realChar, boolean wasInteger) {
