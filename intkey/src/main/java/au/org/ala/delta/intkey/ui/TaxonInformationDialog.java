@@ -98,6 +98,7 @@ public class TaxonInformationDialog extends IntkeyDialog {
 
     @Resource
     String noImagesCaption;
+    private JButton _btnWebSearch;
 
     public TaxonInformationDialog(Frame owner, List<Item> taxa, IntkeyContext context, boolean imageDisplayEnabled) {
         super(owner, false);
@@ -144,6 +145,11 @@ public class TaxonInformationDialog extends IntkeyDialog {
         _btnMultipleImages.setAction(actionMap.get("displayMultipleImages"));
         _btnMultipleImages.setEnabled(!context.displayContinuous() && imageDisplayEnabled);
         _btnPanel.add(_btnMultipleImages);
+        
+        _btnWebSearch = new JButton();
+        _btnWebSearch.setAction(actionMap.get("webSearch"));
+        _btnWebSearch.setEnabled(false);
+        _btnPanel.add(_btnWebSearch);
 
         _btnDeselectAll = new JButton();
         _btnDeselectAll.setAction(actionMap.get("deselectAllTaxonInformation"));
@@ -395,7 +401,7 @@ public class TaxonInformationDialog extends IntkeyDialog {
 
     @Action
     public void webSearch() {
-        // TODO should we even bother with this?
+        // TODO 
     }
 
     @Action
