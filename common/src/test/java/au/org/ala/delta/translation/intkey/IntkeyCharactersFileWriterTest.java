@@ -241,7 +241,7 @@ public class IntkeyCharactersFileWriterTest extends TestCase {
 		//assertEquals(startupImages.length()+System.getProperty("line.separator").length(), readInt(2));
 		startupImages = startupImages.replace(System.getProperty("line.separator"), " ");
 		
-		String actual = readString(3, readInt(2)).trim();
+		String actual = readString(4, readInt(3)).trim();
 		
 		actual = actual.replace(System.getProperty("line.separator"), " ");
 		System.out.println(actual);

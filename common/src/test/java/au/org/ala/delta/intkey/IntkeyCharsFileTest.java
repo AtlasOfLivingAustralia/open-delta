@@ -179,9 +179,9 @@ public class IntkeyCharsFileTest extends TestCase {
 		    "file2.jpg <@text x=1 y=2 w=3 h=4>";
 		
 		_charsFile.writeStartupImages(startupImages);
-
-		assertEquals(startupImages.length(), readInt(2));
-		assertEquals(startupImages, readString(3, startupImages.length()));
+		assertEquals(3, readInt(2));
+		assertEquals(startupImages.length(), readInt(3));
+		assertEquals(startupImages, readString(4, startupImages.length()));
 	}
 	
 	@Test
@@ -191,8 +191,8 @@ public class IntkeyCharsFileTest extends TestCase {
 		
 		_charsFile.writeStartupImages(characterKeyImages);
 
-		assertEquals(characterKeyImages.length(), readInt(2));
-		assertEquals(characterKeyImages, readString(3, characterKeyImages.length()));
+		assertEquals(characterKeyImages.length(), readInt(3));
+		assertEquals(characterKeyImages, readString(4, characterKeyImages.length()));
 	}
 	
 	@Test
