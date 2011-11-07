@@ -30,7 +30,7 @@ public class Specimen {
 
     // Use a linked hash map so that character can be returned in the
     // order that they were used.
-    private LinkedHashMap<Character, CharacterValue> _characterValues;
+    private LinkedHashMap<Character, SpecimenValue> _characterValues;
 
     /**
      * Keeps a count of the number of times a character has been made
@@ -43,7 +43,7 @@ public class Specimen {
     private Map<Item, Set<Character>> _taxonDifferences;
 
     public Specimen(IntkeyDataset dataset, boolean matchInapplicables, boolean matchUnknowns, MatchType matchType) {
-        _characterValues = new LinkedHashMap<Character, CharacterValue>();
+        _characterValues = new LinkedHashMap<Character, SpecimenValue>();
 
         _dataset = dataset;
 
@@ -74,12 +74,12 @@ public class Specimen {
         return _characterValues.containsKey(ch);
     }
 
-    public CharacterValue getValueForCharacter(Character ch) {
+    public SpecimenValue getValueForCharacter(Character ch) {
         return _characterValues.get(ch);
     }
 
     public void removeValueForCharacter(Character ch) {
-        CharacterValue valToRemove = _characterValues.get(ch);
+        SpecimenValue valToRemove = _characterValues.get(ch);
 
         // Do nothing if no value recorded for the supplied character
         if (valToRemove != null) {
@@ -98,7 +98,7 @@ public class Specimen {
             for (CharacterDependency cd : ch.getDependentCharacters()) {
                 // This is a controlling character, so that value to remove must
                 // be multistate
-                MultiStateValue msVal = (MultiStateValue) valToRemove;
+                MultiStateSpecimenValue msVal = (MultiStateSpecimenValue) valToRemove;
 
                 for (int dependentCharId : cd.getDependentCharacterIds()) {
                     Character dependentCharacter = _dataset.getCharacter(dependentCharId);
@@ -124,7 +124,7 @@ public class Specimen {
         return usedCharacters;
     }
 
-    public void setValueForCharacter(Character ch, CharacterValue value) {
+    public void setValueForCharacter(Character ch, SpecimenValue value) {
         if (!ch.equals(value.getCharacter())) {
             throw new IllegalArgumentException(String.format("Invalid value for character %s", ch.toString()));
         }
@@ -158,7 +158,7 @@ public class Specimen {
         for (CharacterDependency cd : ch.getDependentCharacters()) {
             // ch is a controlling character and therefore value must be a
             // multistate value
-            MultiStateValue msVal = (MultiStateValue) value;
+            MultiStateSpecimenValue msVal = (MultiStateSpecimenValue) value;
 
             if (cd.getStates().containsAll(msVal.getStateValues())) {
                 for (int depCharId : cd.getDependentCharacterIds()) {
@@ -206,7 +206,7 @@ public class Specimen {
         }
     }
 
-    private void updateDifferencesTable(CharacterValue val, boolean removed) {
+    private void updateDifferencesTable(SpecimenValue val, boolean removed) {
         List<Attribute> attrs = _dataset.getAttributesForCharacter(val.getCharacter().getCharacterId());
 
         for (Item taxon : _dataset.getItemsAsList()) {
@@ -215,20 +215,20 @@ public class Specimen {
             // Subtract 1 as taxa are 1 indexed in the dataset
             Attribute attr = attrs.get(taxon.getItemNumber() - 1);
 
-            if (val instanceof MultiStateValue) {
-                MultiStateValue msVal = (MultiStateValue) val;
+            if (val instanceof MultiStateSpecimenValue) {
+                MultiStateSpecimenValue msVal = (MultiStateSpecimenValue) val;
                 MultiStateAttribute msAttr = (MultiStateAttribute) attr;
                 match = DiffUtils.compareMultistate(this, msVal, msAttr, _matchUnknowns, _matchInapplicables, _matchType);
-            } else if (val instanceof IntegerValue) {
-                IntegerValue intVal = (IntegerValue) val;
+            } else if (val instanceof IntegerSpecimenValue) {
+                IntegerSpecimenValue intVal = (IntegerSpecimenValue) val;
                 IntegerAttribute intAttr = (IntegerAttribute) attr;
                 match = DiffUtils.compareInteger(this, intVal, intAttr, _matchUnknowns, _matchInapplicables, _matchType);
-            } else if (val instanceof RealValue) {
-                RealValue realVal = (RealValue) val;
+            } else if (val instanceof RealSpecimenValue) {
+                RealSpecimenValue realVal = (RealSpecimenValue) val;
                 RealAttribute realAttr = (RealAttribute) attr;
                 match = DiffUtils.compareReal(this, realVal, realAttr, _matchUnknowns, _matchInapplicables, _matchType);
-            } else if (val instanceof TextValue) {
-                TextValue txtVal = (TextValue) val;
+            } else if (val instanceof TextSpecimenValue) {
+                TextSpecimenValue txtVal = (TextSpecimenValue) val;
                 TextAttribute txtAttr = (TextAttribute) attr;
                 match = DiffUtils.compareText(this, txtVal, txtAttr, _matchUnknowns, _matchInapplicables, _matchType);
             } else {

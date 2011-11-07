@@ -156,7 +156,7 @@ import au.org.ala.delta.intkey.model.MatchType;
 import au.org.ala.delta.intkey.model.SearchUtils;
 import au.org.ala.delta.intkey.model.StartupFileData;
 import au.org.ala.delta.intkey.model.StartupUtils;
-import au.org.ala.delta.intkey.model.specimen.CharacterValue;
+import au.org.ala.delta.intkey.model.specimen.SpecimenValue;
 import au.org.ala.delta.intkey.model.specimen.Specimen;
 import au.org.ala.delta.intkey.ui.AttributeCellRenderer;
 import au.org.ala.delta.intkey.ui.BestCharacterCellRenderer;
@@ -551,7 +551,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
                     int selectedIndex = _listUsedCharacters.getSelectedIndex();
                     if (selectedIndex >= 0) {
                         try {
-                            CharacterValue chVal = (CharacterValue) _usedCharacterListModel.getElementAt(selectedIndex);
+                            SpecimenValue chVal = (SpecimenValue) _usedCharacterListModel.getElementAt(selectedIndex);
 
                             if (_context.charactersFixed() && _context.getFixedCharactersList().contains(chVal.getCharacter().getCharacterId())) {
                                 return;
@@ -1543,13 +1543,13 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         Specimen specimen = _context.getSpecimen();
         List<Character> usedCharacters = specimen.getUsedCharacters();
 
-        List<CharacterValue> usedCharacterValues = new ArrayList<CharacterValue>();
+        List<SpecimenValue> usedCharacterValues = new ArrayList<SpecimenValue>();
         for (Character ch : usedCharacters) {
             usedCharacterValues.add(specimen.getValueForCharacter(ch));
         }
 
         _usedCharacterListModel = new DefaultListModel();
-        for (CharacterValue chVal : usedCharacterValues) {
+        for (SpecimenValue chVal : usedCharacterValues) {
             _usedCharacterListModel.addElement(chVal);
         }
         _usedCharactersListCellRenderer = new AttributeCellRenderer(_context.displayNumbering(), _context.getDataset().getOrWord());
@@ -2483,7 +2483,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             int offsetIndex = matchedCharacterIndex - _foundAvailableCharacters.size();
             if (offsetIndex < _foundUsedCharacters.size()) {
                 Character ch = _foundUsedCharacters.get(offsetIndex);
-                CharacterValue chVal = _context.getSpecimen().getValueForCharacter(ch);
+                SpecimenValue chVal = _context.getSpecimen().getValueForCharacter(ch);
                 _listUsedCharacters.setSelectedValue(chVal, true);
                 _listAvailableCharacters.clearSelection();
             }

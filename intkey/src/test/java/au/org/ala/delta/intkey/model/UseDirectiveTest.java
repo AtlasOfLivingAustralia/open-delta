@@ -13,11 +13,11 @@ import au.org.ala.delta.intkey.Intkey;
 import au.org.ala.delta.intkey.directives.IntkeyDirectiveParseException;
 import au.org.ala.delta.intkey.directives.IntkeyDirectiveParser;
 import au.org.ala.delta.intkey.directives.UseDirective;
-import au.org.ala.delta.intkey.model.specimen.IntegerValue;
-import au.org.ala.delta.intkey.model.specimen.MultiStateValue;
-import au.org.ala.delta.intkey.model.specimen.RealValue;
+import au.org.ala.delta.intkey.model.specimen.IntegerSpecimenValue;
+import au.org.ala.delta.intkey.model.specimen.MultiStateSpecimenValue;
+import au.org.ala.delta.intkey.model.specimen.RealSpecimenValue;
 import au.org.ala.delta.intkey.model.specimen.Specimen;
-import au.org.ala.delta.intkey.model.specimen.TextValue;
+import au.org.ala.delta.intkey.model.specimen.TextSpecimenValue;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.IntegerCharacter;
 import au.org.ala.delta.model.Item;
@@ -47,25 +47,25 @@ public class UseDirectiveTest extends IntkeyDatasetTestCase {
         // Set single state
         new UseDirective().parseAndProcess(context, "78,3");
 
-        MultiStateValue val1 = (MultiStateValue) context.getSpecimen().getValueForCharacter(charSubfamily);
+        MultiStateSpecimenValue val1 = (MultiStateSpecimenValue) context.getSpecimen().getValueForCharacter(charSubfamily);
         assertEquals(Arrays.asList(3), val1.getStateValues());
 
         // Set multiple states with "/" (or) character
         new UseDirective().parseAndProcess(context, "/M 78,1/3/5");
 
-        MultiStateValue val2 = (MultiStateValue) context.getSpecimen().getValueForCharacter(charSubfamily);
+        MultiStateSpecimenValue val2 = (MultiStateSpecimenValue) context.getSpecimen().getValueForCharacter(charSubfamily);
         assertEquals(Arrays.asList(1, 3, 5), val2.getStateValues());
 
         // Set multiple states with "-" (range) character
         new UseDirective().parseAndProcess(context, "/M 78,2-4");
 
-        MultiStateValue val3 = (MultiStateValue) context.getSpecimen().getValueForCharacter(charSubfamily);
+        MultiStateSpecimenValue val3 = (MultiStateSpecimenValue) context.getSpecimen().getValueForCharacter(charSubfamily);
         assertEquals(Arrays.asList(2, 3, 4), val3.getStateValues());
 
         // Set multiple states with both "/" and "-" characters
         new UseDirective().parseAndProcess(context, "/M 78,1-2/3/4-5");
 
-        MultiStateValue val4 = (MultiStateValue) context.getSpecimen().getValueForCharacter(charSubfamily);
+        MultiStateSpecimenValue val4 = (MultiStateSpecimenValue) context.getSpecimen().getValueForCharacter(charSubfamily);
         assertEquals(Arrays.asList(1, 2, 3, 4, 5), val4.getStateValues());
 
         Intkey intkey = new Intkey();
@@ -103,22 +103,22 @@ public class UseDirectiveTest extends IntkeyDatasetTestCase {
 
         // set single value
         new UseDirective().parseAndProcess(context, "60,3");
-        IntegerValue val1 = (IntegerValue) context.getSpecimen().getValueForCharacter(charStamens);
+        IntegerSpecimenValue val1 = (IntegerSpecimenValue) context.getSpecimen().getValueForCharacter(charStamens);
         assertEquals(Arrays.asList(3), val1.getValues());
 
         // set a range of values
         new UseDirective().parseAndProcess(context, "/M 60,2-5");
-        IntegerValue val2 = (IntegerValue) context.getSpecimen().getValueForCharacter(charStamens);
+        IntegerSpecimenValue val2 = (IntegerSpecimenValue) context.getSpecimen().getValueForCharacter(charStamens);
         assertEquals(Arrays.asList(2, 3, 4, 5), val2.getValues());
 
         // set more than one value using the "/" (or) separator
         new UseDirective().parseAndProcess(context, "/M 60,2/5");
-        IntegerValue val3 = (IntegerValue) context.getSpecimen().getValueForCharacter(charStamens);
+        IntegerSpecimenValue val3 = (IntegerSpecimenValue) context.getSpecimen().getValueForCharacter(charStamens);
         assertEquals(Arrays.asList(2, 5), val3.getValues());
 
         // use a combination of single values, and ranges
         new UseDirective().parseAndProcess(context, "/M 60,1-3/4/5-6");
-        IntegerValue val4 = (IntegerValue) context.getSpecimen().getValueForCharacter(charStamens);
+        IntegerSpecimenValue val4 = (IntegerSpecimenValue) context.getSpecimen().getValueForCharacter(charStamens);
         assertEquals(Arrays.asList(1, 2, 3, 4, 5, 6), val4.getValues());
 
         // set a value below the character minimum - the value set for the
@@ -126,7 +126,7 @@ public class UseDirectiveTest extends IntkeyDatasetTestCase {
         // one below the minimum - this value represents any values below the
         // character minimum
         new UseDirective().parseAndProcess(context, "/M 60,-100");
-        IntegerValue val5 = (IntegerValue) context.getSpecimen().getValueForCharacter(charStamens);
+        IntegerSpecimenValue val5 = (IntegerSpecimenValue) context.getSpecimen().getValueForCharacter(charStamens);
         assertEquals(Arrays.asList(charStamens.getMinimumValue() - 1), val5.getValues());
 
         // set a value above the character maximum - the value set for the
@@ -134,13 +134,13 @@ public class UseDirectiveTest extends IntkeyDatasetTestCase {
         // one above the maximum - this value represents any values below the
         // character maximum
         new UseDirective().parseAndProcess(context, "/M 60,100");
-        IntegerValue val6 = (IntegerValue) context.getSpecimen().getValueForCharacter(charStamens);
+        IntegerSpecimenValue val6 = (IntegerSpecimenValue) context.getSpecimen().getValueForCharacter(charStamens);
         assertEquals(Arrays.asList(charStamens.getMaximumValue() + 1), val6.getValues());
 
         // set a large range that span both below and above the characters
         // minimum and maximum
         new UseDirective().parseAndProcess(context, "/M 60,-100-100");
-        IntegerValue val7 = (IntegerValue) context.getSpecimen().getValueForCharacter(charStamens);
+        IntegerSpecimenValue val7 = (IntegerSpecimenValue) context.getSpecimen().getValueForCharacter(charStamens);
         assertEquals(Arrays.asList(charStamens.getMinimumValue() - 1, 0, 1, 2, 3, 4, 5, 6, charStamens.getMaximumValue() + 1), val7.getValues());
 
         // Attempt to set integer character using incorrect format
@@ -168,13 +168,13 @@ public class UseDirectiveTest extends IntkeyDatasetTestCase {
         // Set single value
         new UseDirective().parseAndProcess(context, "3,10");
 
-        RealValue val1 = (RealValue) context.getSpecimen().getValueForCharacter(charCulmsMaxHeight);
+        RealSpecimenValue val1 = (RealSpecimenValue) context.getSpecimen().getValueForCharacter(charCulmsMaxHeight);
         assertEquals(new FloatRange(10, 10), val1.getRange());
 
         // Set range
         new UseDirective().parseAndProcess(context, "/M 3,15-20");
 
-        RealValue val2 = (RealValue) context.getSpecimen().getValueForCharacter(charCulmsMaxHeight);
+        RealSpecimenValue val2 = (RealSpecimenValue) context.getSpecimen().getValueForCharacter(charCulmsMaxHeight);
         assertEquals(new FloatRange(15, 20), val2.getRange());
 
         // Set range using "/" character - for a real character, this should be
@@ -182,7 +182,7 @@ public class UseDirectiveTest extends IntkeyDatasetTestCase {
         // the same as the "-" character.
         new UseDirective().parseAndProcess(context, "/M 3,50/100");
 
-        RealValue val3 = (RealValue) context.getSpecimen().getValueForCharacter(charCulmsMaxHeight);
+        RealSpecimenValue val3 = (RealSpecimenValue) context.getSpecimen().getValueForCharacter(charCulmsMaxHeight);
         assertEquals(new FloatRange(50, 100), val3.getRange());
 
         // Attempt to set real character using incorrect format
@@ -209,27 +209,27 @@ public class UseDirectiveTest extends IntkeyDatasetTestCase {
 
         // Set simple text value
         new UseDirective().parseAndProcess(context, "1,foo");
-        TextValue val1 = (TextValue) context.getSpecimen().getValueForCharacter(charIncluding);
+        TextSpecimenValue val1 = (TextSpecimenValue) context.getSpecimen().getValueForCharacter(charIncluding);
         assertEquals(Arrays.asList("foo"), val1.getValues());
 
         // Set text value containing spaces
         new UseDirective().parseAndProcess(context, "/M 1,\"foo and bar\"");
-        TextValue val2 = (TextValue) context.getSpecimen().getValueForCharacter(charIncluding);
+        TextSpecimenValue val2 = (TextSpecimenValue) context.getSpecimen().getValueForCharacter(charIncluding);
         assertEquals(Arrays.asList("foo and bar"), val2.getValues());
 
         // Set multiple text values
         new UseDirective().parseAndProcess(context, "/M 1,foo/bar");
-        TextValue val3 = (TextValue) context.getSpecimen().getValueForCharacter(charIncluding);
+        TextSpecimenValue val3 = (TextSpecimenValue) context.getSpecimen().getValueForCharacter(charIncluding);
         assertEquals(Arrays.asList("foo", "bar"), val3.getValues());
 
         // Multiple text values containing spaces
         new UseDirective().parseAndProcess(context, "/M 1,\"foo and bar/one/two and three\"");
-        TextValue val4 = (TextValue) context.getSpecimen().getValueForCharacter(charIncluding);
+        TextSpecimenValue val4 = (TextSpecimenValue) context.getSpecimen().getValueForCharacter(charIncluding);
         assertEquals(Arrays.asList("foo and bar", "one", "two and three"), val4.getValues());
 
         // Mismatched quotes
         new UseDirective().parseAndProcess(context, "/M 1,\"one and two\"three");
-        TextValue val5 = (TextValue) context.getSpecimen().getValueForCharacter(charIncluding);
+        TextSpecimenValue val5 = (TextSpecimenValue) context.getSpecimen().getValueForCharacter(charIncluding);
         assertEquals(Arrays.asList("\"one and two\"three"), val5.getValues());
     }
 
@@ -339,11 +339,11 @@ public class UseDirectiveTest extends IntkeyDatasetTestCase {
         new UseDirective().parseAndProcess(context, "habit,1");
         Specimen specimen = context.getSpecimen();
 
-        MultiStateValue valLongevity = (MultiStateValue) specimen.getValueForCharacter(charLongevity);
-        RealValue valCulmsMaxHeight = (RealValue) specimen.getValueForCharacter(charCulmsMaxHeight);
-        MultiStateValue valCulmsWoodyHerbacious = (MultiStateValue) specimen.getValueForCharacter(charCulmsWoodyHerbacious);
-        MultiStateValue valCulmsBranchedAbove = (MultiStateValue) specimen.getValueForCharacter(charCulmsBranchedAbove);
-        MultiStateValue valInfloresence = (MultiStateValue) specimen.getValueForCharacter(charInfloresence);
+        MultiStateSpecimenValue valLongevity = (MultiStateSpecimenValue) specimen.getValueForCharacter(charLongevity);
+        RealSpecimenValue valCulmsMaxHeight = (RealSpecimenValue) specimen.getValueForCharacter(charCulmsMaxHeight);
+        MultiStateSpecimenValue valCulmsWoodyHerbacious = (MultiStateSpecimenValue) specimen.getValueForCharacter(charCulmsWoodyHerbacious);
+        MultiStateSpecimenValue valCulmsBranchedAbove = (MultiStateSpecimenValue) specimen.getValueForCharacter(charCulmsBranchedAbove);
+        MultiStateSpecimenValue valInfloresence = (MultiStateSpecimenValue) specimen.getValueForCharacter(charInfloresence);
 
         assertEquals(Arrays.asList(1), valLongevity.getStateValues());
         assertEquals(new FloatRange(1.0, 1.0), valCulmsMaxHeight.getRange());
@@ -373,15 +373,15 @@ public class UseDirectiveTest extends IntkeyDatasetTestCase {
 
         Specimen specimen = context.getSpecimen();
 
-        MultiStateValue charSeedPresenceValue = (MultiStateValue) specimen.getValueForCharacter(charSeedPresence);
+        MultiStateSpecimenValue charSeedPresenceValue = (MultiStateSpecimenValue) specimen.getValueForCharacter(charSeedPresence);
         assertEquals(1, charSeedPresenceValue.getStateValues().size());
         assertEquals(1, (int) charSeedPresenceValue.getStateValues().get(0));
 
-        MultiStateValue charSeedInShellValue = (MultiStateValue) specimen.getValueForCharacter(charSeedInShell);
+        MultiStateSpecimenValue charSeedInShellValue = (MultiStateSpecimenValue) specimen.getValueForCharacter(charSeedInShell);
         assertEquals(1, charSeedInShellValue.getStateValues().size());
         assertEquals(1, (int) charSeedInShellValue.getStateValues().get(0));
 
-        RealValue charAvgThicknessValue = (RealValue) specimen.getValueForCharacter(charAvgThickness);
+        RealSpecimenValue charAvgThicknessValue = (RealSpecimenValue) specimen.getValueForCharacter(charAvgThickness);
         assertEquals(new FloatRange(1.0, 1.0), charAvgThicknessValue.getRange());
     }
 
@@ -406,7 +406,7 @@ public class UseDirectiveTest extends IntkeyDatasetTestCase {
 
         Specimen specimen = context.getSpecimen();
 
-        MultiStateValue charSeedPresenceValue = (MultiStateValue) specimen.getValueForCharacter(charSeedPresence);
+        MultiStateSpecimenValue charSeedPresenceValue = (MultiStateSpecimenValue) specimen.getValueForCharacter(charSeedPresence);
         assertEquals(1, charSeedPresenceValue.getStateValues().size());
         assertEquals(2, (int) charSeedPresenceValue.getStateValues().get(0));
 
@@ -625,7 +625,7 @@ public class UseDirectiveTest extends IntkeyDatasetTestCase {
         IntkeyDataset ds = context.getDataset();        
         context.parseAndExecuteDirective("1,foo");
         Character ch = context.getDataset().getCharacter(1);
-        assertEquals(((TextValue)context.getSpecimen().getValueForCharacter(ch)).getValues().get(0), "foo");
+        assertEquals(((TextSpecimenValue)context.getSpecimen().getValueForCharacter(ch)).getValues().get(0), "foo");
         
     }
     
@@ -636,7 +636,7 @@ public class UseDirectiveTest extends IntkeyDatasetTestCase {
         IntkeyDataset ds = context.getDataset();        
         context.parseAndExecuteDirective("USE 1,foo");
         Character ch = context.getDataset().getCharacter(1);
-        assertEquals(((TextValue)context.getSpecimen().getValueForCharacter(ch)).getValues().get(0), "foo");
+        assertEquals(((TextSpecimenValue)context.getSpecimen().getValueForCharacter(ch)).getValues().get(0), "foo");
     }
     
     @Test

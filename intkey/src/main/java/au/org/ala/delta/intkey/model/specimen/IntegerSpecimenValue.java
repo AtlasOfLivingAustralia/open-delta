@@ -12,13 +12,13 @@ import au.org.ala.delta.model.format.Formatter;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 
-public class IntegerValue extends CharacterValue {
+public class IntegerSpecimenValue extends SpecimenValue {
 
     private IntegerCharacter _character;
     private List<Integer> _values;
     private Formatter _unitsFormatter;
 
-    public IntegerValue(IntegerCharacter character, Set<Integer> values) {
+    public IntegerSpecimenValue(IntegerCharacter character, Set<Integer> values) {
         _character = character;
         _unitsFormatter = new Formatter(CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.RETAIN, true, false);
 
@@ -84,7 +84,7 @@ public class IntegerValue extends CharacterValue {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        IntegerValue other = (IntegerValue) obj;
+        IntegerSpecimenValue other = (IntegerSpecimenValue) obj;
         if (_character == null) {
             if (other._character != null)
                 return false;

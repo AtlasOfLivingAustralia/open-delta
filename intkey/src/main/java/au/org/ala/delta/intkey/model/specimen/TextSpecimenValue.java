@@ -1,70 +1,70 @@
 package au.org.ala.delta.intkey.model.specimen;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
-import au.org.ala.delta.model.MultiStateCharacter;
+import au.org.ala.delta.model.TextCharacter;
 
-public class MultiStateValue extends CharacterValue {
+public class TextSpecimenValue extends SpecimenValue {
     
-    private MultiStateCharacter _character;
-    private List<Integer> _stateValues;
-    
-    public MultiStateValue(MultiStateCharacter character, Set<Integer> stateValues) {
+    private TextCharacter _character;
+    private List<String> _values;
+
+    public TextSpecimenValue(TextCharacter character, List<String> values) {
         _character = character;
-        _stateValues = new ArrayList<Integer>(stateValues);
-        Collections.sort(_stateValues);
+        _values = new ArrayList<String>(values);
     }
-
+    
     @Override
-    public MultiStateCharacter getCharacter() {
+    public TextCharacter getCharacter() {
         return _character;
     }
     
-    public List<Integer> getStateValues() {
-        return new ArrayList<Integer>(_stateValues);
+    public List<String> getValues() {
+        return new ArrayList<String>(_values);
     }
-
+    
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append(_formatter.formatCharacterDescription(_character));
         builder.append(" ");
         
-        for (int i=0; i < _stateValues.size(); i++) {
+        for (int i=0; i < _values.size(); i++) {
             if (i > 0) {
-                // TODO "or" needs to be internationalized
-                builder.append("; or ");
+                builder.append(" or ");
             }
             
-            builder.append(_formatter.formatState(_character, _stateValues.get(i)));
+            builder.append("\"");
+            builder.append(_values.get(i));
+            builder.append("\"");
         }
         
-        return builder.toString().trim();
+        return builder.toString();
     }
 
     @Override
     public String toShortString() {
         StringBuilder builder = new StringBuilder();
-        for (int i=0; i < _stateValues.size(); i++) {
+        builder.append("\"");
+        for (int i=0; i < _values.size(); i++) {
             if (i > 0) {
                 builder.append("/");
             }
             
-            builder.append(_stateValues.get(i));
+            builder.append(_values.get(i));
         }
+        builder.append("\"");
         
         return builder.toString();
     }
-    
+
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((_character == null) ? 0 : _character.hashCode());
-        result = prime * result + ((_stateValues == null) ? 0 : _stateValues.hashCode());
+        result = prime * result + ((_values == null) ? 0 : _values.hashCode());
         return result;
     }
 
@@ -76,18 +76,18 @@ public class MultiStateValue extends CharacterValue {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        MultiStateValue other = (MultiStateValue) obj;
+        TextSpecimenValue other = (TextSpecimenValue) obj;
         if (_character == null) {
             if (other._character != null)
                 return false;
         } else if (!_character.equals(other._character))
             return false;
-        if (_stateValues == null) {
-            if (other._stateValues != null)
+        if (_values == null) {
+            if (other._values != null)
                 return false;
-        } else if (!_stateValues.equals(other._stateValues))
+        } else if (!_values.equals(other._values))
             return false;
         return true;
     }
-
+    
 }

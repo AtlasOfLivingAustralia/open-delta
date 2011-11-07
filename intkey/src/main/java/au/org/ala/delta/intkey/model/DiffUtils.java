@@ -13,12 +13,12 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.FloatRange;
 
-import au.org.ala.delta.intkey.model.specimen.CharacterValue;
-import au.org.ala.delta.intkey.model.specimen.IntegerValue;
-import au.org.ala.delta.intkey.model.specimen.MultiStateValue;
-import au.org.ala.delta.intkey.model.specimen.RealValue;
+import au.org.ala.delta.intkey.model.specimen.SpecimenValue;
+import au.org.ala.delta.intkey.model.specimen.IntegerSpecimenValue;
+import au.org.ala.delta.intkey.model.specimen.MultiStateSpecimenValue;
+import au.org.ala.delta.intkey.model.specimen.RealSpecimenValue;
 import au.org.ala.delta.intkey.model.specimen.Specimen;
-import au.org.ala.delta.intkey.model.specimen.TextValue;
+import au.org.ala.delta.intkey.model.specimen.TextSpecimenValue;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.AttributeFactory;
 import au.org.ala.delta.model.Character;
@@ -402,15 +402,15 @@ public class DiffUtils {
         IntkeyAttributeData attrData = new IntkeyAttributeData(unknown, inapplicable);
 
         if (!unknown && !inapplicable) {
-            CharacterValue val = specimen.getValueForCharacter(ch);
-            if (val instanceof MultiStateValue) {
-                attrData.setPresentStateOrIntegerValues(new HashSet<Integer>(((MultiStateValue) val).getStateValues()));
-            } else if (val instanceof IntegerValue) {
-                attrData.setPresentStateOrIntegerValues(new HashSet<Integer>(((IntegerValue) val).getValues()));
-            } else if (val instanceof RealValue) {
-                attrData.setRealRange(((RealValue) val).getRange());
-            } else if (val instanceof TextValue) {
-                String joinedString = StringUtils.join(((TextValue) val).getValues(), '/');
+            SpecimenValue val = specimen.getValueForCharacter(ch);
+            if (val instanceof MultiStateSpecimenValue) {
+                attrData.setPresentStateOrIntegerValues(new HashSet<Integer>(((MultiStateSpecimenValue) val).getStateValues()));
+            } else if (val instanceof IntegerSpecimenValue) {
+                attrData.setPresentStateOrIntegerValues(new HashSet<Integer>(((IntegerSpecimenValue) val).getValues()));
+            } else if (val instanceof RealSpecimenValue) {
+                attrData.setRealRange(((RealSpecimenValue) val).getRange());
+            } else if (val instanceof TextSpecimenValue) {
+                String joinedString = StringUtils.join(((TextSpecimenValue) val).getValues(), '/');
                 attrData.setValueFromString(joinedString);
             } else {
                 throw new RuntimeException("Unrecognised character value type");
@@ -449,7 +449,7 @@ public class DiffUtils {
      *            the match type - exact, subset or overlap
      * @return true if the specimen value matches the attribute
      */
-    public static boolean compareMultistate(Specimen specimen, MultiStateValue val, MultiStateAttribute attr, boolean matchUnknowns, boolean matchInapplicables, MatchType matchType) {
+    public static boolean compareMultistate(Specimen specimen, MultiStateSpecimenValue val, MultiStateAttribute attr, boolean matchUnknowns, boolean matchInapplicables, MatchType matchType) {
         if (!val.getCharacter().equals(attr.getCharacter())) {
             throw new IllegalArgumentException(String.format("Specimen value character %s does not match attribute character %s", val.getCharacter(), attr.getCharacter()));
         }
@@ -493,7 +493,7 @@ public class DiffUtils {
      *            the match type - exact, subset or overlap
      * @return true if the specimen value matches the attribute
      */
-    public static boolean compareInteger(Specimen specimen, IntegerValue val, IntegerAttribute attr, boolean matchUnknowns, boolean matchInapplicables, MatchType matchType) {
+    public static boolean compareInteger(Specimen specimen, IntegerSpecimenValue val, IntegerAttribute attr, boolean matchUnknowns, boolean matchInapplicables, MatchType matchType) {
         if (!val.getCharacter().equals(attr.getCharacter())) {
             throw new IllegalArgumentException(String.format("Specimen value character %s does not match attribute character %s", val.getCharacter(), attr.getCharacter()));
         }
@@ -561,7 +561,7 @@ public class DiffUtils {
      *            the match type - exact, subset or overlap
      * @return true if the specimen value matches the attribute
      */
-    public static boolean compareReal(Specimen specimen, RealValue val, RealAttribute attr, boolean matchUnknowns, boolean matchInapplicables, MatchType matchType) {
+    public static boolean compareReal(Specimen specimen, RealSpecimenValue val, RealAttribute attr, boolean matchUnknowns, boolean matchInapplicables, MatchType matchType) {
         if (!val.getCharacter().equals(attr.getCharacter())) {
             throw new IllegalArgumentException(String.format("Specimen value character %s does not match attribute character %s", val.getCharacter(), attr.getCharacter()));
         }
@@ -642,7 +642,7 @@ public class DiffUtils {
      *            the match type - exact, subset or overlap
      * @return true if the specimen value matches the attribute
      */
-    public static boolean compareText(Specimen specimen, TextValue val, TextAttribute attr, boolean matchUnknowns, boolean matchInapplicables, MatchType matchType) {
+    public static boolean compareText(Specimen specimen, TextSpecimenValue val, TextAttribute attr, boolean matchUnknowns, boolean matchInapplicables, MatchType matchType) {
         if (!val.getCharacter().equals(attr.getCharacter())) {
             throw new IllegalArgumentException(String.format("Specimen value character %s does not match attribute character %s", val.getCharacter(), attr.getCharacter()));
         }

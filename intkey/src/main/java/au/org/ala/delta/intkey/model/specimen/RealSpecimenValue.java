@@ -8,13 +8,13 @@ import au.org.ala.delta.model.format.Formatter;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 
-public class RealValue extends CharacterValue {
+public class RealSpecimenValue extends SpecimenValue {
     
     private RealCharacter _character;
     private FloatRange _range;
     private Formatter _unitsFormatter;
 
-    public RealValue(RealCharacter character, FloatRange range) {
+    public RealSpecimenValue(RealCharacter character, FloatRange range) {
         _character = character;
         _range = range;
         _unitsFormatter = new Formatter(CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.RETAIN, true, false);
@@ -78,7 +78,7 @@ public class RealValue extends CharacterValue {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        RealValue other = (RealValue) obj;
+        RealSpecimenValue other = (RealSpecimenValue) obj;
         if (_character == null) {
             if (other._character != null)
                 return false;

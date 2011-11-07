@@ -3,7 +3,7 @@ package au.org.ala.delta.intkey.ui;
 import java.util.HashSet;
 import java.util.Set;
 
-import au.org.ala.delta.intkey.model.specimen.CharacterValue;
+import au.org.ala.delta.intkey.model.specimen.SpecimenValue;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.format.AttributeFormatter;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
@@ -33,8 +33,8 @@ public class AttributeCellRenderer extends ColoringListCellRenderer {
 
     @Override
     protected boolean isValueColored(Object value) {
-        if (value instanceof CharacterValue) {
-            CharacterValue charVal = (CharacterValue) value;
+        if (value instanceof SpecimenValue) {
+            SpecimenValue charVal = (SpecimenValue) value;
             return _charactersToColor.contains(charVal.getCharacter());
         } else {
             return false;

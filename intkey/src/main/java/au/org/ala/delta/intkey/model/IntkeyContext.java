@@ -32,7 +32,7 @@ import au.org.ala.delta.intkey.directives.DirectivePopulator;
 import au.org.ala.delta.intkey.directives.IntkeyDirectiveParser;
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocationException;
-import au.org.ala.delta.intkey.model.specimen.CharacterValue;
+import au.org.ala.delta.intkey.model.specimen.SpecimenValue;
 import au.org.ala.delta.intkey.model.specimen.Specimen;
 import au.org.ala.delta.intkey.ui.UIUtils;
 import au.org.ala.delta.model.Character;
@@ -527,7 +527,7 @@ public class IntkeyContext extends AbstractDeltaContext {
      *            the character value
      */
     // TODO take a character number rather than a character object?
-    public synchronized void setValueForCharacter(au.org.ala.delta.model.Character ch, CharacterValue value) {
+    public synchronized void setValueForCharacter(au.org.ala.delta.model.Character ch, SpecimenValue value) {
         Logger.log("Using character");
         _specimen.setValueForCharacter(ch, value);
     }

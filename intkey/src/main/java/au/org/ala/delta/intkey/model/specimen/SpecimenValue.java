@@ -5,11 +5,11 @@ import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 
-public abstract class CharacterValue {
+public abstract class SpecimenValue {
 
     CharacterFormatter _formatter;
     
-    public CharacterValue() {
+    public SpecimenValue() {
         _formatter = new CharacterFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.REMOVE, true, false);
     }
     
