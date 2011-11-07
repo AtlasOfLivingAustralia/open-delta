@@ -8,11 +8,11 @@ import org.junit.Test;
 
 import au.org.ala.delta.intkey.directives.ChangeDirective;
 import au.org.ala.delta.intkey.directives.UseDirective;
-import au.org.ala.delta.intkey.model.specimen.Specimen;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.OrderedMultiStateCharacter;
 import au.org.ala.delta.model.RealCharacter;
+import au.org.ala.delta.model.Specimen;
 import au.org.ala.delta.model.TextCharacter;
 import au.org.ala.delta.model.UnorderedMultiStateCharacter;
 

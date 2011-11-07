@@ -98,5 +98,8 @@ public class MultiStateAttribute extends Attribute {
         return _impl.isUnknown() && !isImplicit();
     }
 	
+    public String toString() {
+        return getCharacter().getCharacterId()+ ":" + getPresentStates().toString();
+    }
 
 }

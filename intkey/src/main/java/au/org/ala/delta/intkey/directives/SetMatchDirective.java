@@ -5,7 +5,7 @@ import java.util.List;
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.SetMatchDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
-import au.org.ala.delta.intkey.model.MatchType;
+import au.org.ala.delta.model.MatchType;
 
 public class SetMatchDirective extends IntkeyDirective {
 

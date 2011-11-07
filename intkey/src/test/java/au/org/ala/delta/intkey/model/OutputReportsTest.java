@@ -485,5 +485,11 @@ public class OutputReportsTest extends IntkeyDatasetTestCase {
             return null;
         }
 
+        @Override
+        public List<Attribute> getAllAttributesForCharacter(int characterNumber) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
     }
 }

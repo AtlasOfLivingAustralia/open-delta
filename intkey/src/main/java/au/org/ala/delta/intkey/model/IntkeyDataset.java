@@ -289,7 +289,8 @@ public class IntkeyDataset implements DeltaDataSet {
      * @return A list of all attributes for the character, ordered by taxon
      *         number in ascending order
      */
-    public List<Attribute> getAttributesForCharacter(int charNo) {
+    @Override
+    public List<Attribute> getAllAttributesForCharacter(int charNo) {
         List<Attribute> attrList = IntkeyDatasetFileReader.readAttributesForCharacter(_itemsFileHeader, _itemsBinFile, _characters, _taxa, charNo);
         return attrList;
     }
@@ -334,7 +335,7 @@ public class IntkeyDataset implements DeltaDataSet {
         }
 
         for (TextCharacter ch : _synonymyCharacters) {
-            List<Attribute> attrs = getAttributesForCharacter(ch.getCharacterId());
+            List<Attribute> attrs = getAllAttributesForCharacter(ch.getCharacterId());
 
             for (Attribute attr : attrs) {
                 TextAttribute textAttr = (TextAttribute) attr;

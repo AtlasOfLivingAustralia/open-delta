@@ -3,12 +3,12 @@ package au.org.ala.delta.intkey.directives.invocation;
 import java.util.ArrayList;
 import java.util.List;
 
-import au.org.ala.delta.intkey.model.DiffUtils;
 import au.org.ala.delta.intkey.model.IntkeyContext;
-import au.org.ala.delta.intkey.model.MatchType;
-import au.org.ala.delta.intkey.model.specimen.Specimen;
 import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.DiffUtils;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.MatchType;
+import au.org.ala.delta.model.Specimen;
 import au.org.ala.delta.util.Pair;
 import au.org.ala.delta.util.Utils;
 

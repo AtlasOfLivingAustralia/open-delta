@@ -3,14 +3,14 @@ package au.org.ala.delta.intkey.directives.invocation;
 import java.awt.Color;
 import java.util.List;
 
-import au.org.ala.delta.intkey.model.DiffUtils;
 import au.org.ala.delta.intkey.model.IntkeyContext;
-import au.org.ala.delta.intkey.model.MatchType;
-import au.org.ala.delta.intkey.model.specimen.Specimen;
 import au.org.ala.delta.intkey.ui.UIUtils;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.DiffUtils;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.MatchType;
+import au.org.ala.delta.model.Specimen;
 import au.org.ala.delta.model.format.AttributeFormatter;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
@@ -106,7 +106,7 @@ public class DifferencesDirectiveInvocation extends IntkeyDirectiveInvocation {
 
         for (au.org.ala.delta.model.Character ch : differences) {
 
-            List<Attribute> attrs = context.getDataset().getAttributesForCharacter(ch.getCharacterId());
+            List<Attribute> attrs = context.getDataset().getAllAttributesForCharacter(ch.getCharacterId());
 
             String charDescription = _characterFormatter.formatCharacterDescription(ch);
             builder.appendText(charDescription);

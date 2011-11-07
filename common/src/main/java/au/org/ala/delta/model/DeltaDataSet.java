@@ -29,6 +29,8 @@ public interface DeltaDataSet {
     public int getMaximumNumberOfItems();
 
     public Attribute getAttribute(int itemNumber, int characterNumber);
+    
+    public List<Attribute> getAllAttributesForCharacter(int characterNumber);
 
     /**
      * Returns Items that do not have an attribute coded for the supplied

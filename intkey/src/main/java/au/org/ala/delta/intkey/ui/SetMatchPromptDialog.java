@@ -25,7 +25,7 @@ import org.jdesktop.application.Application;
 import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 
-import au.org.ala.delta.intkey.model.MatchType;
+import au.org.ala.delta.model.MatchType;
 
 public class SetMatchPromptDialog extends IntkeyDialog {
 

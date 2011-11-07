@@ -7,10 +7,12 @@ import org.junit.Test;
 
 import au.org.ala.delta.intkey.directives.DifferencesDirective;
 import au.org.ala.delta.intkey.directives.UseDirective;
-import au.org.ala.delta.intkey.model.specimen.Specimen;
 import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.DiffUtils;
 import au.org.ala.delta.model.IntegerCharacter;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.MatchType;
+import au.org.ala.delta.model.Specimen;
 
 public class DifferencesDirectiveTest extends IntkeyDatasetTestCase {
 

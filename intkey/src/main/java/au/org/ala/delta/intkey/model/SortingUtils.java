@@ -220,7 +220,7 @@ public class SortingUtils {
             // frequency of character subgroups
             double[] subgroupFrequencies = new double[totalNumStates];
 
-            List<Attribute> charAttributes = dataset.getAttributesForCharacter(ch.getCharacterId());
+            List<Attribute> charAttributes = dataset.getAllAttributesForCharacter(ch.getCharacterId());
 
             // examine taxon to be diagnosed or separated first
             boolean[] taxonToSeparateStatePresence = new boolean[totalNumStates];

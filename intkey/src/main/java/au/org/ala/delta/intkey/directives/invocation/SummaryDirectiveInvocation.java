@@ -56,7 +56,7 @@ public class SummaryDirectiveInvocation extends IntkeyDirectiveInvocation {
         for (Character ch : _characters) {
             int characterNumber = ch.getCharacterId();
             String characterDescription = characterFormatter.formatCharacterDescription(ch);
-            List<Attribute> attrs = context.getDataset().getAttributesForCharacter(ch.getCharacterId());
+            List<Attribute> attrs = context.getDataset().getAllAttributesForCharacter(ch.getCharacterId());
 
             if (ch instanceof MultiStateCharacter) {
                 MultiStateCharacter msChar = (MultiStateCharacter) ch;

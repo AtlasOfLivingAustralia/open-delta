@@ -300,7 +300,7 @@ public class DataSetLoadTest extends IntkeyDatasetTestCase {
         Item itemPlum = ds.getItem(4);
         Item itemPotato = ds.getItem(5);
 
-        List<Attribute> averageWeightAttrs = ds.getAttributesForCharacter(1);
+        List<Attribute> averageWeightAttrs = ds.getAllAttributesForCharacter(1);
         assertEquals(5, averageWeightAttrs.size());
 
         for (Attribute attr : averageWeightAttrs) {
@@ -325,7 +325,7 @@ public class DataSetLoadTest extends IntkeyDatasetTestCase {
         assertEquals(new FloatRange(8.5, 15.0), ((RealAttribute) averageWeightAttrs.get(3)).getPresentRange());
         assertEquals(new FloatRange(100.0, 200.0), ((RealAttribute) averageWeightAttrs.get(4)).getPresentRange());
 
-        List<Attribute> seedPresenceAttrs = ds.getAttributesForCharacter(2);
+        List<Attribute> seedPresenceAttrs = ds.getAllAttributesForCharacter(2);
         assertEquals(5, seedPresenceAttrs.size());
 
         for (Attribute attr : seedPresenceAttrs) {
@@ -350,7 +350,7 @@ public class DataSetLoadTest extends IntkeyDatasetTestCase {
         assertEquals(new HashSet<Integer>(Arrays.asList(1)), ((MultiStateAttribute) seedPresenceAttrs.get(3)).getPresentStates());
         assertEquals(new HashSet<Integer>(Arrays.asList(2)), ((MultiStateAttribute) seedPresenceAttrs.get(4)).getPresentStates());
 
-        List<Attribute> seedInShellAttrs = ds.getAttributesForCharacter(3);
+        List<Attribute> seedInShellAttrs = ds.getAllAttributesForCharacter(3);
         assertEquals(5, seedInShellAttrs.size());
 
         for (Attribute attr : seedInShellAttrs) {
@@ -375,7 +375,7 @@ public class DataSetLoadTest extends IntkeyDatasetTestCase {
         assertEquals(new HashSet<Integer>(Arrays.asList(1)), ((MultiStateAttribute) seedInShellAttrs.get(3)).getPresentStates());
         assertTrue(seedInShellAttrs.get(4).isInapplicable());
 
-        List<Attribute> avgThicknessAttrs = ds.getAttributesForCharacter(4);
+        List<Attribute> avgThicknessAttrs = ds.getAllAttributesForCharacter(4);
         assertEquals(5, avgThicknessAttrs.size());
 
         for (Attribute attr : avgThicknessAttrs) {
@@ -400,7 +400,7 @@ public class DataSetLoadTest extends IntkeyDatasetTestCase {
         assertEquals(new FloatRange(5, 5), ((RealAttribute) avgThicknessAttrs.get(3)).getPresentRange());
         assertTrue(avgThicknessAttrs.get(4).isInapplicable());
 
-        List<Attribute> avgNumSeedsAttrs = ds.getAttributesForCharacter(5);
+        List<Attribute> avgNumSeedsAttrs = ds.getAllAttributesForCharacter(5);
         assertEquals(5, avgNumSeedsAttrs.size());
 
         for (Attribute attr : avgNumSeedsAttrs) {
@@ -425,7 +425,7 @@ public class DataSetLoadTest extends IntkeyDatasetTestCase {
         assertEquals(new HashSet(Arrays.asList(1)), ((IntegerAttribute) avgNumSeedsAttrs.get(3)).getPresentValues());
         assertTrue(avgNumSeedsAttrs.get(4).isInapplicable());
 
-        List<Attribute> colorAttrs = ds.getAttributesForCharacter(6);
+        List<Attribute> colorAttrs = ds.getAllAttributesForCharacter(6);
         assertEquals(5, colorAttrs.size());
 
         for (Attribute attr : colorAttrs) {
@@ -445,7 +445,7 @@ public class DataSetLoadTest extends IntkeyDatasetTestCase {
         assertEquals(new HashSet(Arrays.asList(1)), ((MultiStateAttribute) colorAttrs.get(3)).getPresentStates());
         assertEquals(new HashSet(Arrays.asList(4)), ((MultiStateAttribute) colorAttrs.get(4)).getPresentStates());
 
-        List<Attribute> averageLengthAttrs = ds.getAttributesForCharacter(7);
+        List<Attribute> averageLengthAttrs = ds.getAllAttributesForCharacter(7);
         assertEquals(5, averageLengthAttrs.size());
 
         for (Attribute attr : averageLengthAttrs) {
@@ -465,7 +465,7 @@ public class DataSetLoadTest extends IntkeyDatasetTestCase {
         assertEquals(new FloatRange(6.0, 10.0), ((RealAttribute) averageLengthAttrs.get(3)).getPresentRange());
         assertEquals(new FloatRange(10.0, 20.0), ((RealAttribute) averageLengthAttrs.get(4)).getPresentRange());
 
-        List<Attribute> moreCommentsAttrs = ds.getAttributesForCharacter(8);
+        List<Attribute> moreCommentsAttrs = ds.getAllAttributesForCharacter(8);
         assertEquals(5, moreCommentsAttrs.size());
 
         for (Attribute attr : moreCommentsAttrs) {

@@ -6,6 +6,7 @@ import java.util.Set;
 
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.MatchType;
 
 public class DemonstrationModeSettings {
 

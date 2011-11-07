@@ -6,7 +6,7 @@ import org.junit.Test;
 
 import au.org.ala.delta.intkey.directives.RestartDirective;
 import au.org.ala.delta.intkey.directives.UseDirective;
-import au.org.ala.delta.intkey.model.specimen.Specimen;
+import au.org.ala.delta.model.Specimen;
 
 /**
  * Unit tests for the RESTART directive

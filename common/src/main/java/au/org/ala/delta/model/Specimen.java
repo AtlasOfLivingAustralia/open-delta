@@ -1,4 +1,4 @@
-package au.org.ala.delta.intkey.model.specimen;
+package au.org.ala.delta.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,23 +8,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import au.org.ala.delta.intkey.model.DiffUtils;
-import au.org.ala.delta.intkey.model.IntkeyDataset;
-import au.org.ala.delta.intkey.model.MatchType;
-import au.org.ala.delta.model.Attribute;
-import au.org.ala.delta.model.AttributeFactory;
-import au.org.ala.delta.model.Character;
-import au.org.ala.delta.model.CharacterDependency;
-import au.org.ala.delta.model.IntegerAttribute;
-import au.org.ala.delta.model.Item;
-import au.org.ala.delta.model.MultiStateAttribute;
-import au.org.ala.delta.model.RealAttribute;
-import au.org.ala.delta.model.TextAttribute;
 import au.org.ala.delta.model.impl.SimpleAttributeData;
 
 public class Specimen {
 
-    private IntkeyDataset _dataset;
+    private DeltaDataSet _dataset;
 
     boolean _matchInapplicables;
     boolean _matchUnknowns;
@@ -44,7 +32,7 @@ public class Specimen {
 
     private Map<Item, Set<Character>> _taxonDifferences;
 
-    public Specimen(IntkeyDataset dataset, boolean matchInapplicables, boolean matchUnknowns, MatchType matchType) {
+    public Specimen(DeltaDataSet dataset, boolean matchInapplicables, boolean matchUnknowns, MatchType matchType) {
         _characterValues = new LinkedHashMap<Character, Attribute>();
 
         _dataset = dataset;
@@ -64,7 +52,7 @@ public class Specimen {
 
     // Used to copy values out of an existing specimen and apply new match
     // settings
-    public Specimen(IntkeyDataset dataset, boolean matchInapplicables, boolean matchUnknowns, MatchType matchType, Specimen oldSpecimen) {
+    public Specimen(DeltaDataSet dataset, boolean matchInapplicables, boolean matchUnknowns, MatchType matchType, Specimen oldSpecimen) {
         this(dataset, matchInapplicables, matchUnknowns, matchType);
 
         for (Character ch : oldSpecimen.getUsedCharacters()) {
@@ -216,7 +204,7 @@ public class Specimen {
     }
 
     private void updateDifferencesTable(Attribute specimenAttr, boolean removed) {
-        List<Attribute> attrs = _dataset.getAttributesForCharacter(specimenAttr.getCharacter().getCharacterId());
+        List<Attribute> attrs = _dataset.getAllAttributesForCharacter(specimenAttr.getCharacter().getCharacterId());
 
         for (Item taxon : _dataset.getItemsAsList()) {
             boolean match = false;

@@ -1,7 +1,7 @@
 package au.org.ala.delta.intkey.directives.invocation;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
-import au.org.ala.delta.intkey.model.MatchType;
+import au.org.ala.delta.model.MatchType;
 
 public class SetMatchDirectiveInvocation extends IntkeyDirectiveInvocation {
 

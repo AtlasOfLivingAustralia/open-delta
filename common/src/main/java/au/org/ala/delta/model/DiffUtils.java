@@ -1,4 +1,4 @@
-package au.org.ala.delta.intkey.model;
+package au.org.ala.delta.model;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,19 +10,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.math.FloatRange;
-
-import au.org.ala.delta.intkey.model.specimen.Specimen;
-import au.org.ala.delta.model.Attribute;
-import au.org.ala.delta.model.Character;
-import au.org.ala.delta.model.IntegerAttribute;
-import au.org.ala.delta.model.IntegerCharacter;
-import au.org.ala.delta.model.Item;
-import au.org.ala.delta.model.MultiStateAttribute;
-import au.org.ala.delta.model.MultiStateCharacter;
-import au.org.ala.delta.model.RealAttribute;
-import au.org.ala.delta.model.RealCharacter;
-import au.org.ala.delta.model.TextAttribute;
-import au.org.ala.delta.model.TextCharacter;
 
 /**
  * Utility methods used to compare character values. Used by the DIFFERENCES,
@@ -37,7 +24,7 @@ public class DiffUtils {
     // This is the logic used by the differences directive. It is located here
     // to aid
     // unit testing.
-    public static List<Character> determineDifferingCharactersForTaxa(IntkeyDataset dataset, List<Character> characters, List<Item> taxa, Specimen specimen, boolean matchUnknowns,
+    public static List<Character> determineDifferingCharactersForTaxa(DeltaDataSet dataset, List<Character> characters, List<Item> taxa, Specimen specimen, boolean matchUnknowns,
             boolean matchInapplicables, MatchType matchType, boolean omitTextCharacters) {
         List<Character> differencesList = new ArrayList<Character>();
 
@@ -62,8 +49,8 @@ public class DiffUtils {
         return differencesList;
     }
 
-    public static List<Character> determineSimilaritiesForTaxa(IntkeyDataset dataset, List<Character> characters, List<Item> taxa, Specimen specimen, boolean matchUnknowns,
-            boolean matchInapplicables, MatchType matchType) {
+    public static List<Character> determineSimilaritiesForTaxa(DeltaDataSet dataset, List<Character> characters, List<Item> taxa, Specimen specimen, boolean matchUnknowns, boolean matchInapplicables,
+            MatchType matchType) {
         List<Character> similaritiesList = new ArrayList<Character>();
 
         for (au.org.ala.delta.model.Character ch : characters) {
@@ -104,12 +91,12 @@ public class DiffUtils {
      *         all of the supplied taxa, as well as for the specimen if it was
      *         supplied.
      */
-    public static boolean compareForTaxa(IntkeyDataset dataset, Character ch, List<Item> taxa, Specimen specimen, boolean matchUnknowns, boolean matchInapplicables, MatchType matchType) {
+    public static boolean compareForTaxa(DeltaDataSet dataset, Character ch, List<Item> taxa, Specimen specimen, boolean matchUnknowns, boolean matchInapplicables, MatchType matchType) {
         int countUnknown = 0;
         int countNotApplicable = 0;
         int countTaxaWithCharacterCoded = 0;
 
-        List<Attribute> allAttrsForChar = dataset.getAttributesForCharacter(ch.getCharacterId());
+        List<Attribute> allAttrsForChar = dataset.getAllAttributesForCharacter(ch.getCharacterId());
         List<Attribute> attrs = new ArrayList<Attribute>();
 
         // get number of states present in taxa to be compared

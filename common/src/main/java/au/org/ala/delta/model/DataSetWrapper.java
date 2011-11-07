@@ -215,4 +215,9 @@ public class DataSetWrapper implements ObservableDeltaDataSet {
         return _wrappedDataSet.getCharactersAsList();
     }
 
+    @Override
+    public List<Attribute> getAllAttributesForCharacter(int characterNumber) {
+        return _wrappedDataSet.getAllAttributesForCharacter(characterNumber);
+    }
+
 }

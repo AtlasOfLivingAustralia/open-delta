@@ -7,13 +7,13 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 
-import au.org.ala.delta.intkey.model.DiffUtils;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.model.IntkeyDataset;
-import au.org.ala.delta.intkey.model.specimen.Specimen;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.DiffUtils;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.Specimen;
 import au.org.ala.delta.model.format.AttributeFormatter;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
@@ -289,7 +289,7 @@ public class DescribeDirectiveInvocation extends IntkeyDirectiveInvocation {
         Map<Character, List<Attribute>> characterAttributesMap = new HashMap<Character, List<Attribute>>();
 
         for (Character ch : _characters) {
-            List<Attribute> attrs = dataset.getAttributesForCharacter(ch.getCharacterId());
+            List<Attribute> attrs = dataset.getAllAttributesForCharacter(ch.getCharacterId());
             characterAttributesMap.put(ch, attrs);
         }
 

@@ -55,7 +55,7 @@ public class OutputSummaryDirectiveInvocation extends IntkeyDirectiveInvocation 
             }
 
             int characterNumber = ch.getCharacterId();
-            List<Attribute> attrs = context.getDataset().getAttributesForCharacter(ch.getCharacterId());
+            List<Attribute> attrs = context.getDataset().getAllAttributesForCharacter(ch.getCharacterId());
 
             if (ch instanceof MultiStateCharacter) {
                 MultiStateCharacter msChar = (MultiStateCharacter) ch;
