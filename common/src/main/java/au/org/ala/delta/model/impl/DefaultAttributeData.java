@@ -15,7 +15,7 @@ import au.org.ala.delta.model.NumericRange;
 
 /**
  * A simple implementation of AttributeData that stores attribute data
- * in-memory.
+ * in-memory. The attribute value can only be set from a string representation.
  */
 public class DefaultAttributeData implements AttributeData {
 

@@ -156,7 +156,6 @@ import au.org.ala.delta.intkey.model.MatchType;
 import au.org.ala.delta.intkey.model.SearchUtils;
 import au.org.ala.delta.intkey.model.StartupFileData;
 import au.org.ala.delta.intkey.model.StartupUtils;
-import au.org.ala.delta.intkey.model.specimen.SpecimenValue;
 import au.org.ala.delta.intkey.model.specimen.Specimen;
 import au.org.ala.delta.intkey.ui.AttributeCellRenderer;
 import au.org.ala.delta.intkey.ui.BestCharacterCellRenderer;
@@ -189,6 +188,7 @@ import au.org.ala.delta.intkey.ui.TaxonSelectionDialog;
 import au.org.ala.delta.intkey.ui.TaxonWithDifferenceCountCellRenderer;
 import au.org.ala.delta.intkey.ui.TextInputDialog;
 import au.org.ala.delta.intkey.ui.UIUtils;
+import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.IntegerCharacter;
 import au.org.ala.delta.model.Item;
@@ -551,13 +551,13 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
                     int selectedIndex = _listUsedCharacters.getSelectedIndex();
                     if (selectedIndex >= 0) {
                         try {
-                            SpecimenValue chVal = (SpecimenValue) _usedCharacterListModel.getElementAt(selectedIndex);
+                            Attribute attr = (Attribute) _usedCharacterListModel.getElementAt(selectedIndex);
 
-                            if (_context.charactersFixed() && _context.getFixedCharactersList().contains(chVal.getCharacter().getCharacterId())) {
+                            if (_context.charactersFixed() && _context.getFixedCharactersList().contains(attr.getCharacter().getCharacterId())) {
                                 return;
                             }
 
-                            executeDirective(new ChangeDirective(), Integer.toString(chVal.getCharacter().getCharacterId()));
+                            executeDirective(new ChangeDirective(), Integer.toString(attr.getCharacter().getCharacterId()));
                         } catch (Exception ex) {
                             ex.printStackTrace();
                         }
@@ -1543,14 +1543,14 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         Specimen specimen = _context.getSpecimen();
         List<Character> usedCharacters = specimen.getUsedCharacters();
 
-        List<SpecimenValue> usedCharacterValues = new ArrayList<SpecimenValue>();
+        List<Attribute> usedCharacterValues = new ArrayList<Attribute>();
         for (Character ch : usedCharacters) {
-            usedCharacterValues.add(specimen.getValueForCharacter(ch));
+            usedCharacterValues.add(specimen.getAttributeForCharacter(ch));
         }
 
         _usedCharacterListModel = new DefaultListModel();
-        for (SpecimenValue chVal : usedCharacterValues) {
-            _usedCharacterListModel.addElement(chVal);
+        for (Attribute attr : usedCharacterValues) {
+            _usedCharacterListModel.addElement(attr);
         }
         _usedCharactersListCellRenderer = new AttributeCellRenderer(_context.displayNumbering(), _context.getDataset().getOrWord());
         _listUsedCharacters.setCellRenderer(_usedCharactersListCellRenderer);
@@ -2483,8 +2483,8 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             int offsetIndex = matchedCharacterIndex - _foundAvailableCharacters.size();
             if (offsetIndex < _foundUsedCharacters.size()) {
                 Character ch = _foundUsedCharacters.get(offsetIndex);
-                SpecimenValue chVal = _context.getSpecimen().getValueForCharacter(ch);
-                _listUsedCharacters.setSelectedValue(chVal, true);
+                Attribute attr = _context.getSpecimen().getAttributeForCharacter(ch);
+                _listUsedCharacters.setSelectedValue(attr, true);
                 _listAvailableCharacters.clearSelection();
             }
         }

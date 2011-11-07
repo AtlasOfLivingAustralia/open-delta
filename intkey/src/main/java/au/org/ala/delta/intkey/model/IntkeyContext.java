@@ -32,9 +32,9 @@ import au.org.ala.delta.intkey.directives.DirectivePopulator;
 import au.org.ala.delta.intkey.directives.IntkeyDirectiveParser;
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocationException;
-import au.org.ala.delta.intkey.model.specimen.SpecimenValue;
 import au.org.ala.delta.intkey.model.specimen.Specimen;
 import au.org.ala.delta.intkey.ui.UIUtils;
+import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.ResourceSettings;
@@ -523,13 +523,13 @@ public class IntkeyContext extends AbstractDeltaContext {
      * 
      * @param ch
      *            the character
-     * @param value
+     * @param attribute
      *            the character value
      */
     // TODO take a character number rather than a character object?
-    public synchronized void setValueForCharacter(au.org.ala.delta.model.Character ch, SpecimenValue value) {
+    public synchronized void setSpecimenAttributeForCharacter(au.org.ala.delta.model.Character ch, Attribute attribute) {
         Logger.log("Using character");
-        _specimen.setValueForCharacter(ch, value);
+        _specimen.setAttributeForCharacter(ch, attribute);
     }
 
     /**
@@ -846,7 +846,7 @@ public class IntkeyContext extends AbstractDeltaContext {
             if (_charactersFixed) {
                 for (int characterNumber : _fixedCharactersList) {
                     Character ch = _dataset.getCharacter(characterNumber);
-                    _specimen.setValueForCharacter(ch, oldSpecimen.getValueForCharacter(ch));
+                    _specimen.setAttributeForCharacter(ch, oldSpecimen.getAttributeForCharacter(ch));
                 }
             }
 
@@ -1067,7 +1067,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         for (Item taxon : getAvailableTaxa()) {
             taxonNumbers.add(taxon.getItemNumber());
         }
-        
+
         if (_characterOrder == IntkeyCharacterOrder.BEST) {
             _bestOrSeparateCharacters = Best.orderBest(_dataset, characterNumbers, taxonNumbers, _rbase, _varyWeight);
         } else if (_characterOrder == IntkeyCharacterOrder.SEPARATE) {

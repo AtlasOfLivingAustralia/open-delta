@@ -12,6 +12,7 @@ import au.org.ala.delta.intkey.model.DiffUtils;
 import au.org.ala.delta.intkey.model.IntkeyDataset;
 import au.org.ala.delta.intkey.model.MatchType;
 import au.org.ala.delta.model.Attribute;
+import au.org.ala.delta.model.AttributeFactory;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterDependency;
 import au.org.ala.delta.model.IntegerAttribute;
@@ -19,6 +20,7 @@ import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateAttribute;
 import au.org.ala.delta.model.RealAttribute;
 import au.org.ala.delta.model.TextAttribute;
+import au.org.ala.delta.model.impl.SimpleAttributeData;
 
 public class Specimen {
 
@@ -30,7 +32,7 @@ public class Specimen {
 
     // Use a linked hash map so that character can be returned in the
     // order that they were used.
-    private LinkedHashMap<Character, SpecimenValue> _characterValues;
+    private LinkedHashMap<Character, Attribute> _characterValues;
 
     /**
      * Keeps a count of the number of times a character has been made
@@ -43,7 +45,7 @@ public class Specimen {
     private Map<Item, Set<Character>> _taxonDifferences;
 
     public Specimen(IntkeyDataset dataset, boolean matchInapplicables, boolean matchUnknowns, MatchType matchType) {
-        _characterValues = new LinkedHashMap<Character, SpecimenValue>();
+        _characterValues = new LinkedHashMap<Character, Attribute>();
 
         _dataset = dataset;
 
@@ -66,7 +68,7 @@ public class Specimen {
         this(dataset, matchInapplicables, matchUnknowns, matchType);
 
         for (Character ch : oldSpecimen.getUsedCharacters()) {
-            setValueForCharacter(ch, oldSpecimen.getValueForCharacter(ch));
+            setAttributeForCharacter(ch, oldSpecimen.getAttributeForCharacter(ch));
         }
     }
 
@@ -74,21 +76,28 @@ public class Specimen {
         return _characterValues.containsKey(ch);
     }
 
-    public SpecimenValue getValueForCharacter(Character ch) {
-        return _characterValues.get(ch);
+    public Attribute getAttributeForCharacter(Character ch) {
+        if (_characterValues.containsKey(ch)) {
+            return _characterValues.get(ch);
+        } else {
+            SimpleAttributeData impl = new SimpleAttributeData(true, isCharacterInapplicable(ch));
+            Attribute attr = AttributeFactory.newAttribute(ch, impl);
+            attr.setSpecimenAttribute(true);
+            return attr;
+        }
     }
 
     public void removeValueForCharacter(Character ch) {
-        SpecimenValue valToRemove = _characterValues.get(ch);
+        Attribute attrToRemove = _characterValues.get(ch);
 
         // Do nothing if no value recorded for the supplied character
-        if (valToRemove != null) {
+        if (attrToRemove != null) {
 
             // IMPORTANT - differences table must be updated first, if
             // _characterValues
             // is modified first then the differences table will be updated
             // incorrectly!
-            updateDifferencesTable(valToRemove, true);
+            updateDifferencesTable(attrToRemove, true);
 
             _characterValues.remove(ch);
 
@@ -98,7 +107,7 @@ public class Specimen {
             for (CharacterDependency cd : ch.getDependentCharacters()) {
                 // This is a controlling character, so that value to remove must
                 // be multistate
-                MultiStateSpecimenValue msVal = (MultiStateSpecimenValue) valToRemove;
+                MultiStateAttribute msAttr = (MultiStateAttribute) attrToRemove;
 
                 for (int dependentCharId : cd.getDependentCharacterIds()) {
                     Character dependentCharacter = _dataset.getCharacter(dependentCharId);
@@ -107,7 +116,7 @@ public class Specimen {
                     // If this character was inapplicable due to its value,
                     // update the inapplicablity count for it
                     // and its dependants
-                    if (cd.getStates().containsAll(msVal.getStateValues())) {
+                    if (cd.getStates().containsAll(msAttr.getPresentStates())) {
                         processPreviouslyInapplicableCharacter(dependentCharacter);
                     }
                 }
@@ -124,8 +133,8 @@ public class Specimen {
         return usedCharacters;
     }
 
-    public void setValueForCharacter(Character ch, SpecimenValue value) {
-        if (!ch.equals(value.getCharacter())) {
+    public void setAttributeForCharacter(Character ch, Attribute attr) {
+        if (!ch.equals(attr.getCharacter())) {
             throw new IllegalArgumentException(String.format("Invalid value for character %s", ch.toString()));
         }
 
@@ -136,7 +145,7 @@ public class Specimen {
         // do nothing if the supplied value is identical to the current value
         // for
         // the character.
-        if (hasValueFor(ch) && getValueForCharacter(ch).equals(value)) {
+        if (hasValueFor(ch) && getAttributeForCharacter(ch).equals(attr)) {
             return;
         }
 
@@ -153,14 +162,14 @@ public class Specimen {
             }
         }
 
-        _characterValues.put(ch, value);
+        _characterValues.put(ch, attr);
 
         for (CharacterDependency cd : ch.getDependentCharacters()) {
             // ch is a controlling character and therefore value must be a
             // multistate value
-            MultiStateSpecimenValue msVal = (MultiStateSpecimenValue) value;
+            MultiStateAttribute msAttr = (MultiStateAttribute) attr;
 
-            if (cd.getStates().containsAll(msVal.getStateValues())) {
+            if (cd.getStates().containsAll(msAttr.getPresentStates())) {
                 for (int depCharId : cd.getDependentCharacterIds()) {
                     Character dependentChar = _dataset.getCharacter(depCharId);
                     removeValueForCharacter(dependentChar);
@@ -169,7 +178,7 @@ public class Specimen {
             }
         }
 
-        updateDifferencesTable(value, false);
+        updateDifferencesTable(attr, false);
     }
 
     private void processPreviouslyInapplicableCharacter(Character ch) {
@@ -206,8 +215,8 @@ public class Specimen {
         }
     }
 
-    private void updateDifferencesTable(SpecimenValue val, boolean removed) {
-        List<Attribute> attrs = _dataset.getAttributesForCharacter(val.getCharacter().getCharacterId());
+    private void updateDifferencesTable(Attribute specimenAttr, boolean removed) {
+        List<Attribute> attrs = _dataset.getAttributesForCharacter(specimenAttr.getCharacter().getCharacterId());
 
         for (Item taxon : _dataset.getItemsAsList()) {
             boolean match = false;
@@ -215,24 +224,24 @@ public class Specimen {
             // Subtract 1 as taxa are 1 indexed in the dataset
             Attribute attr = attrs.get(taxon.getItemNumber() - 1);
 
-            if (val instanceof MultiStateSpecimenValue) {
-                MultiStateSpecimenValue msVal = (MultiStateSpecimenValue) val;
+            if (specimenAttr instanceof MultiStateAttribute) {
+                MultiStateAttribute msSpecimenAttr = (MultiStateAttribute) specimenAttr;
                 MultiStateAttribute msAttr = (MultiStateAttribute) attr;
-                match = DiffUtils.compareMultistate(this, msVal, msAttr, _matchUnknowns, _matchInapplicables, _matchType);
-            } else if (val instanceof IntegerSpecimenValue) {
-                IntegerSpecimenValue intVal = (IntegerSpecimenValue) val;
+                match = DiffUtils.compareMultistate(msSpecimenAttr, msAttr, _matchUnknowns, _matchInapplicables, _matchType);
+            } else if (specimenAttr instanceof IntegerAttribute) {
+                IntegerAttribute intSpecimenAttr = (IntegerAttribute) specimenAttr;
                 IntegerAttribute intAttr = (IntegerAttribute) attr;
-                match = DiffUtils.compareInteger(this, intVal, intAttr, _matchUnknowns, _matchInapplicables, _matchType);
-            } else if (val instanceof RealSpecimenValue) {
-                RealSpecimenValue realVal = (RealSpecimenValue) val;
+                match = DiffUtils.compareInteger(intSpecimenAttr, intAttr, _matchUnknowns, _matchInapplicables, _matchType);
+            } else if (specimenAttr instanceof RealAttribute) {
+                RealAttribute realSpecimenAttr = (RealAttribute) specimenAttr;
                 RealAttribute realAttr = (RealAttribute) attr;
-                match = DiffUtils.compareReal(this, realVal, realAttr, _matchUnknowns, _matchInapplicables, _matchType);
-            } else if (val instanceof TextSpecimenValue) {
-                TextSpecimenValue txtVal = (TextSpecimenValue) val;
+                match = DiffUtils.compareReal(realSpecimenAttr, realAttr, _matchUnknowns, _matchInapplicables, _matchType);
+            } else if (specimenAttr instanceof TextAttribute) {
+                TextAttribute txtSpecimenAttr = (TextAttribute) specimenAttr;
                 TextAttribute txtAttr = (TextAttribute) attr;
-                match = DiffUtils.compareText(this, txtVal, txtAttr, _matchUnknowns, _matchInapplicables, _matchType);
+                match = DiffUtils.compareText(txtSpecimenAttr, txtAttr, _matchUnknowns, _matchInapplicables, _matchType);
             } else {
-                throw new RuntimeException(String.format("Unrecognised CharacterValue subtype %s", val.getClass().getName()));
+                throw new RuntimeException(String.format("Unrecognised CharacterValue subtype %s", specimenAttr.getClass().getName()));
             }
 
             // int currentDiffCount = 0;
@@ -245,10 +254,10 @@ public class Specimen {
             if (removed && !match) {
                 // _taxonDifferences.put(taxon, Math.max(0, currentDiffCount -
                 // 1));
-                differingCharacters.remove(val.getCharacter());
+                differingCharacters.remove(specimenAttr.getCharacter());
             } else if (!removed && !match) {
                 // _taxonDifferences.put(taxon, currentDiffCount + 1);
-                differingCharacters.add(val.getCharacter());
+                differingCharacters.add(specimenAttr.getCharacter());
             }
         }
     }

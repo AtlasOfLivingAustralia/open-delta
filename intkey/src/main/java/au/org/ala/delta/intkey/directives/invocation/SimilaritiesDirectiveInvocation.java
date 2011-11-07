@@ -112,8 +112,9 @@ public class SimilaritiesDirectiveInvocation extends IntkeyDirectiveInvocation {
                 builder.appendText(UIUtils.getResourceString("DifferencesDirective.Specimen"));
                 // TODO need to refactor specimen class to take attribute
                 // values directly.
-                Attribute attr = DiffUtils.createAttributeForSpecimenValue(specimen, ch);
-
+                //Attribute attr = DiffUtils.createAttributeForSpecimenValue(specimen, ch);
+                Attribute attr = specimen.getAttributeForCharacter(ch);
+                
                 builder.increaseIndent();
 
                 builder.appendText(_attributeFormatter.formatAttribute(attr));

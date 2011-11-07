@@ -13,19 +13,17 @@ import java.util.Set;
 
 import javax.swing.JOptionPane;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.FloatRange;
 
 import au.org.ala.delta.intkey.directives.DirectivePopulator;
 import au.org.ala.delta.intkey.model.IntkeyCharacterOrder;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.model.IntkeyDataset;
-import au.org.ala.delta.intkey.model.specimen.SpecimenValue;
-import au.org.ala.delta.intkey.model.specimen.IntegerSpecimenValue;
-import au.org.ala.delta.intkey.model.specimen.MultiStateSpecimenValue;
-import au.org.ala.delta.intkey.model.specimen.RealSpecimenValue;
-import au.org.ala.delta.intkey.model.specimen.TextSpecimenValue;
 import au.org.ala.delta.intkey.ui.CharacterSelectionDialog;
 import au.org.ala.delta.intkey.ui.UIUtils;
+import au.org.ala.delta.model.Attribute;
+import au.org.ala.delta.model.AttributeFactory;
 import au.org.ala.delta.model.CharacterDependency;
 import au.org.ala.delta.model.IntegerCharacter;
 import au.org.ala.delta.model.Item;
@@ -36,10 +34,11 @@ import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.model.format.ItemFormatter;
+import au.org.ala.delta.model.impl.SimpleAttributeData;
 
 public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
 
-    private Map<au.org.ala.delta.model.Character, SpecimenValue> _characterValues;
+    private Map<au.org.ala.delta.model.Character, Attribute> _characterAttributes;
     private boolean _change;
     private boolean _suppressAlreadySetWarning;
     private CharacterFormatter _charFormatter;
@@ -52,7 +51,7 @@ public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
         // Use LinkedHashMap so that keys can be iterated over in the order
         // that they
         // were inserted.
-        _characterValues = new LinkedHashMap<au.org.ala.delta.model.Character, SpecimenValue>();
+        _characterAttributes = new LinkedHashMap<au.org.ala.delta.model.Character, Attribute>();
 
         _charFormatter = new CharacterFormatter(true, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REPLACE, true, false);
         _taxonFormatter = new ItemFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.REMOVE, true, false, false);
@@ -67,8 +66,8 @@ public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
         List<au.org.ala.delta.model.Character> charsWithValues = new ArrayList<au.org.ala.delta.model.Character>();
         List<au.org.ala.delta.model.Character> charsNoValues = new ArrayList<au.org.ala.delta.model.Character>();
 
-        for (au.org.ala.delta.model.Character ch : _characterValues.keySet()) {
-            if (_characterValues.get(ch) == null) {
+        for (au.org.ala.delta.model.Character ch : _characterAttributes.keySet()) {
+            if (_characterAttributes.get(ch) == null) {
                 charsNoValues.add(ch);
             } else {
                 charsWithValues.add(ch);
@@ -90,8 +89,8 @@ public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
                 // its controlling
                 // characters
                 if (checkCharacterUsable(ch, context, false)) {
-                    SpecimenValue characterVal = _characterValues.get(ch);
-                    setValueForCharacter(ch, characterVal, context);
+                    Attribute attr = _characterAttributes.get(ch);
+                    setValueForCharacter(ch, attr, context);
                 }
             }
         }
@@ -112,13 +111,13 @@ public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
                 // its controlling
                 // characters
                 if (checkCharacterUsable(ch, context, false)) {
-                    SpecimenValue characterVal = promptForCharacterValue(ch, context.getDirectivePopulator());
-                    if (characterVal != null) {
+                    Attribute attr = promptForCharacterValue(ch, context.getDirectivePopulator());
+                    if (attr != null) {
                         // store this value so that the prompt does not need
                         // to
                         // be done for subsequent invocations
-                        _characterValues.put(ch, characterVal);
-                        setValueForCharacter(ch, characterVal, context);
+                        _characterAttributes.put(ch, attr);
+                        setValueForCharacter(ch, attr, context);
                     } else {
                         // User hit cancel or did not enter a value when
                         // prompted.
@@ -130,7 +129,7 @@ public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
                     // prompted
                     // about it when the command is
                     // run additional times.
-                    _characterValues.remove(ch);
+                    _characterAttributes.remove(ch);
                 }
             }
         } else {
@@ -158,7 +157,7 @@ public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
 
                 for (au.org.ala.delta.model.Character ch : selectedCharacters) {
 
-                    SpecimenValue characterVal = null;
+                    Attribute attr = null;
 
                     if (checkCharacterUsable(ch, context, !_suppressAlreadySetWarning && !_change)) {
 
@@ -186,22 +185,22 @@ public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
                         // more of its controlling
                         // characters
                         if (checkCharacterUsable(ch, context, false)) {
-                            characterVal = promptForCharacterValue(ch, context.getDirectivePopulator());
+                            attr = promptForCharacterValue(ch, context.getDirectivePopulator());
                         } else {
                             // remove this value so that the user will not
                             // be
                             // prompted about it when the command is
                             // run additional times.
-                            _characterValues.remove(ch);
+                            _characterAttributes.remove(ch);
                         }
 
-                        if (characterVal != null) {
+                        if (attr != null) {
                             // store this value so that the prompt does not
                             // need
                             // to
                             // be done for subsequent invocations
-                            _characterValues.put(ch, characterVal);
-                            setValueForCharacter(ch, characterVal, context);
+                            _characterAttributes.put(ch, attr);
+                            setValueForCharacter(ch, attr, context);
 
                             charsNoValues.remove(ch);
                         }
@@ -214,12 +213,12 @@ public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
         return true;
     }
 
-    public void addCharacterValue(au.org.ala.delta.model.Character ch, SpecimenValue val) {
-        _characterValues.put(ch, val);
+    public void addCharacterValue(au.org.ala.delta.model.Character ch, Attribute attr) {
+        _characterAttributes.put(ch, attr);
     }
 
-    private void setValueForCharacter(au.org.ala.delta.model.Character ch, SpecimenValue val, IntkeyContext context) {
-        context.setValueForCharacter(ch, val);
+    private void setValueForCharacter(au.org.ala.delta.model.Character ch, Attribute attr, IntkeyContext context) {
+        context.setSpecimenAttributeForCharacter(ch, attr);
 
         // If using the SEPARATE character order, give the user an opportunity
         // to change the value if it results in
@@ -231,9 +230,9 @@ public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
                         UIUtils.getResourceString("UseDirective.TaxonToSeparateEliminatedMsg", _charFormatter.formatCharacterDescription(ch), _taxonFormatter.formatItemDescription(taxonToSeparate)));
 
                 if (changeValue) {
-                    SpecimenValue newVal = promptForCharacterValue(ch, context.getDirectivePopulator());
-                    _characterValues.put(ch, newVal);
-                    setValueForCharacter(ch, newVal, context);
+                    Attribute newAttr = promptForCharacterValue(ch, context.getDirectivePopulator());
+                    _characterAttributes.put(ch, newAttr);
+                    setValueForCharacter(ch, newAttr, context);
                 }
 
             }
@@ -347,9 +346,9 @@ public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
             // can be set to for which the dependent character will be
             // inapplicable.
             if (!context.isProcessingDirectivesFile() && (cc.getNonAutoCc() || ch.getUseCc() || !cc.getNonAutoCc() && !cc.getUseCc() && applicableStates.size() > 1)) {
-                SpecimenValue val = promptForCharacterValue(cc, context.getDirectivePopulator());
-                if (val != null) {
-                    context.setValueForCharacter(cc, val);
+                Attribute attr = promptForCharacterValue(cc, context.getDirectivePopulator());
+                if (attr != null) {
+                    context.setSpecimenAttributeForCharacter(cc, attr);
                 } else {
                     // No values selected or cancel pressed. Return as
                     // values have not been set for all
@@ -358,8 +357,11 @@ public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
                 }
             } else {
                 // let intkey automatically use the character
-                MultiStateSpecimenValue val = new MultiStateSpecimenValue((MultiStateCharacter) cc, new HashSet<Integer>(applicableStates));
-                context.setValueForCharacter(cc, val);
+                SimpleAttributeData impl = new SimpleAttributeData(false, false);
+                impl.setPresentStateOrIntegerValues(applicableStates);
+                Attribute attr = AttributeFactory.newAttribute(cc, impl);
+                attr.setSpecimenAttribute(true);
+                context.setSpecimenAttributeForCharacter(cc, attr);
             }
 
             // TODO output USEd controlling characters directly to the log
@@ -407,34 +409,45 @@ public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
         return retMap;
     }
 
-    private SpecimenValue promptForCharacterValue(au.org.ala.delta.model.Character ch, DirectivePopulator populator) {
-        SpecimenValue characterVal = null;
+    private Attribute promptForCharacterValue(au.org.ala.delta.model.Character ch, DirectivePopulator populator) {
+        SimpleAttributeData impl = new SimpleAttributeData(false, false);
 
         if (ch instanceof MultiStateCharacter) {
             Set<Integer> stateValues = populator.promptForMultiStateValue((MultiStateCharacter) ch);
             if (stateValues != null && stateValues.size() > 0) {
-                characterVal = new MultiStateSpecimenValue((MultiStateCharacter) ch, stateValues);
+                impl.setPresentStateOrIntegerValues(stateValues);
+            } else {
+                return null;
             }
         } else if (ch instanceof IntegerCharacter) {
             Set<Integer> intValue = populator.promptForIntegerValue((IntegerCharacter) ch);
             if (intValue != null && intValue.size() > 0) {
-                characterVal = new IntegerSpecimenValue((IntegerCharacter) ch, intValue);
+                impl.setPresentStateOrIntegerValues(intValue);
+            } else {
+                return null;
             }
         } else if (ch instanceof RealCharacter) {
             FloatRange floatRange = populator.promptForRealValue((RealCharacter) ch);
             if (floatRange != null) {
-                characterVal = new RealSpecimenValue((RealCharacter) ch, floatRange);
+                impl.setRealRange(floatRange);
+            } else {
+                return null;
             }
         } else if (ch instanceof TextCharacter) {
             List<String> stringList = populator.promptForTextValue((TextCharacter) ch);
             if (stringList != null && stringList.size() > 0) {
-                characterVal = new TextSpecimenValue((TextCharacter) ch, stringList);
+                impl.setValueFromString(StringUtils.join(stringList, '/'));
+            } else {
+                return null;
             }
         } else {
             throw new IllegalArgumentException("Unrecognized character type");
         }
+        
+        Attribute attr = AttributeFactory.newAttribute(ch, impl);
+        attr.setSpecimenAttribute(true);
 
-        return characterVal;
+        return attr;
     }
 
     @Override

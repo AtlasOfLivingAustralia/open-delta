@@ -11,11 +11,8 @@ import org.apache.commons.lang.math.FloatRange;
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.UseDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
-import au.org.ala.delta.intkey.model.specimen.IntegerSpecimenValue;
-import au.org.ala.delta.intkey.model.specimen.MultiStateSpecimenValue;
-import au.org.ala.delta.intkey.model.specimen.RealSpecimenValue;
-import au.org.ala.delta.intkey.model.specimen.TextSpecimenValue;
-import au.org.ala.delta.intkey.ui.UIUtils;
+import au.org.ala.delta.model.Attribute;
+import au.org.ala.delta.model.AttributeFactory;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.IntegerCharacter;
 import au.org.ala.delta.model.MultiStateCharacter;
@@ -24,6 +21,7 @@ import au.org.ala.delta.model.TextCharacter;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
+import au.org.ala.delta.model.impl.SimpleAttributeData;
 
 /**
  * The USE directive - allow the user to enter information about a specimen
@@ -113,7 +111,11 @@ public class UseDirective extends IntkeyDirective {
                                     }
                                 }
 
-                                invoc.addCharacterValue((MultiStateCharacter) ch, new MultiStateSpecimenValue((MultiStateCharacter) ch, setStateValues));
+                                SimpleAttributeData impl = new SimpleAttributeData(false, false);
+                                impl.setPresentStateOrIntegerValues(setStateValues);
+                                Attribute attr = AttributeFactory.newAttribute(ch, impl);
+                                attr.setSpecimenAttribute(true);
+                                invoc.addCharacterValue(ch, attr);
                             } catch (IllegalArgumentException ex) {
                                 throw new IntkeyDirectiveParseException("UseDirective.InvalidStateValue", ex, charValue, Integer.toString(ch.getCharacterId()),
                                         _charFormatter.formatCharacterDescription(ch), msCh.getNumberOfStates());
@@ -122,7 +124,12 @@ public class UseDirective extends IntkeyDirective {
 
                             try {
                                 Set<Integer> intValues = ParsingUtils.parseMultistateOrIntegerCharacterValue(charValue);
-                                invoc.addCharacterValue((IntegerCharacter) ch, new IntegerSpecimenValue((IntegerCharacter) ch, intValues));
+                                
+                                SimpleAttributeData impl = new SimpleAttributeData(false, false);
+                                impl.setPresentStateOrIntegerValues(intValues);
+                                Attribute attr = AttributeFactory.newAttribute(ch, impl);
+                                attr.setSpecimenAttribute(true);
+                                invoc.addCharacterValue(ch, attr);
                             } catch (IllegalArgumentException ex) {
                                 throw new IntkeyDirectiveParseException("UseDirective.InvalidIntegerValue", ex, charValue, Integer.toString(ch.getCharacterId()),
                                         _charFormatter.formatCharacterDescription(ch));
@@ -131,14 +138,23 @@ public class UseDirective extends IntkeyDirective {
 
                             try {
                                 FloatRange floatRange = ParsingUtils.parseRealCharacterValue(charValue);
-                                invoc.addCharacterValue((RealCharacter) ch, new RealSpecimenValue((RealCharacter) ch, floatRange));
+                                
+                                SimpleAttributeData impl = new SimpleAttributeData(false, false);
+                                impl.setRealRange(floatRange);
+                                Attribute attr = AttributeFactory.newAttribute(ch, impl);
+                                attr.setSpecimenAttribute(true);
+                                invoc.addCharacterValue(ch, attr);
                             } catch (IllegalArgumentException ex) {
                                 throw new IntkeyDirectiveParseException("UseDirective.InvalidRealValue", ex, charValue, Integer.toString(ch.getCharacterId()),
                                         _charFormatter.formatCharacterDescription(ch));
                             }
                         } else if (ch instanceof TextCharacter) {
                             List<String> stringList = ParsingUtils.parseTextCharacterValue(charValue);
-                            invoc.addCharacterValue((TextCharacter) ch, new TextSpecimenValue((TextCharacter) ch, stringList));
+                            
+                            SimpleAttributeData impl = new SimpleAttributeData(false, false);
+                            impl.setValueFromString(StringUtils.join(stringList, '/'));
+                            Attribute attr = AttributeFactory.newAttribute(ch, impl);
+                            invoc.addCharacterValue(ch, attr);
                         } else {
                             throw new RuntimeException("Unrecognized character type");
                         }

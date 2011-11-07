@@ -42,6 +42,7 @@ import au.org.ala.delta.model.impl.CharacterData;
 import au.org.ala.delta.model.impl.DefaultCharacterData;
 import au.org.ala.delta.model.impl.DefaultImageData;
 import au.org.ala.delta.model.impl.ItemData;
+import au.org.ala.delta.model.impl.SimpleAttributeData;
 import au.org.ala.delta.util.Pair;
 import au.org.ala.delta.util.Utils;
 
@@ -1113,7 +1114,7 @@ public final class IntkeyDatasetFileReader {
                     }
                 }
 
-                IntkeyAttributeData attrData = new IntkeyAttributeData(presentStates.isEmpty(), inapplicable);
+                SimpleAttributeData attrData = new SimpleAttributeData(presentStates.isEmpty(), inapplicable);
                 MultiStateAttribute msAttr = new MultiStateAttribute(multiStateChar, attrData);
                 msAttr.setItem(t);
 
@@ -1157,7 +1158,7 @@ public final class IntkeyDatasetFileReader {
                     }
                 }
 
-                IntegerAttribute intAttr = new IntegerAttribute(intChar, new IntkeyAttributeData(presentValues.isEmpty(), inapplicable));
+                IntegerAttribute intAttr = new IntegerAttribute(intChar, new SimpleAttributeData(presentValues.isEmpty(), inapplicable));
                 intAttr.setItem(t);
                 intAttr.setPresentValues(presentValues);
 
@@ -1190,7 +1191,7 @@ public final class IntkeyDatasetFileReader {
                 // lowerfloat > upperfloat
                 boolean unknown = lowerFloat > upperFloat;
 
-                RealAttribute realAttr = new RealAttribute((RealCharacter) c, new IntkeyAttributeData(unknown, inapplicable));
+                RealAttribute realAttr = new RealAttribute((RealCharacter) c, new SimpleAttributeData(unknown, inapplicable));
 
                 if (!unknown) {
                     FloatRange range = new FloatRange(lowerFloat, upperFloat);
@@ -1240,7 +1241,7 @@ public final class IntkeyDatasetFileReader {
                 boolean inapplicable = taxaInapplicabilityData[j];
                 boolean unknown = StringUtils.isEmpty(txt);
 
-                TextAttribute txtAttr = new TextAttribute(textChar, new IntkeyAttributeData(unknown, inapplicable));
+                TextAttribute txtAttr = new TextAttribute(textChar, new SimpleAttributeData(unknown, inapplicable));
                 txtAttr.setText(txt);
                 txtAttr.setItem(t);
 

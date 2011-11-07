@@ -5,22 +5,14 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.FloatRange;
 
-import au.org.ala.delta.intkey.model.specimen.SpecimenValue;
-import au.org.ala.delta.intkey.model.specimen.IntegerSpecimenValue;
-import au.org.ala.delta.intkey.model.specimen.MultiStateSpecimenValue;
-import au.org.ala.delta.intkey.model.specimen.RealSpecimenValue;
 import au.org.ala.delta.intkey.model.specimen.Specimen;
-import au.org.ala.delta.intkey.model.specimen.TextSpecimenValue;
 import au.org.ala.delta.model.Attribute;
-import au.org.ala.delta.model.AttributeFactory;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.IntegerAttribute;
 import au.org.ala.delta.model.IntegerCharacter;
@@ -50,8 +42,9 @@ public class DiffUtils {
         List<Character> differencesList = new ArrayList<Character>();
 
         for (au.org.ala.delta.model.Character ch : characters) {
-            
-            //If the specimen is included in the comparison, ignore any characters for which there is no value set in the specimen
+
+            // If the specimen is included in the comparison, ignore any
+            // characters for which there is no value set in the specimen
             if (specimen != null && !specimen.hasValueFor(ch)) {
                 continue;
             }
@@ -68,13 +61,14 @@ public class DiffUtils {
 
         return differencesList;
     }
-    
+
     public static List<Character> determineSimilaritiesForTaxa(IntkeyDataset dataset, List<Character> characters, List<Item> taxa, Specimen specimen, boolean matchUnknowns,
             boolean matchInapplicables, MatchType matchType) {
         List<Character> similaritiesList = new ArrayList<Character>();
 
         for (au.org.ala.delta.model.Character ch : characters) {
-          //If the specimen is included in the comparison, ignore any characters for which there is no value set in the specimen
+            // If the specimen is included in the comparison, ignore any
+            // characters for which there is no value set in the specimen
             if (specimen != null && !specimen.hasValueFor(ch)) {
                 continue;
             }
@@ -147,7 +141,7 @@ public class DiffUtils {
                 // value. this is done to simplify the
                 // comparison code as only the one datatype then needs to be
                 // handled.
-                attrs.add(createAttributeForSpecimenValue(specimen, ch));
+                attrs.add(specimen.getAttributeForCharacter(ch));
             }
         }
 
@@ -389,48 +383,6 @@ public class DiffUtils {
 
     }
 
-    // Helper method to create an attribute containing the value held in a
-    // specimen for a particular character. This is used to simplify
-    // the comparsion methods, allowing them to only handle the one data type
-    // (attributes)
-    // TODO refactor specimen class to take attributes so that we don't need
-    // this method anymore.
-    public static Attribute createAttributeForSpecimenValue(Specimen specimen, Character ch) {
-        boolean unknown = !specimen.hasValueFor(ch);
-        boolean inapplicable = specimen.isCharacterInapplicable(ch);
-
-        IntkeyAttributeData attrData = new IntkeyAttributeData(unknown, inapplicable);
-
-        if (!unknown && !inapplicable) {
-            SpecimenValue val = specimen.getValueForCharacter(ch);
-            if (val instanceof MultiStateSpecimenValue) {
-                attrData.setPresentStateOrIntegerValues(new HashSet<Integer>(((MultiStateSpecimenValue) val).getStateValues()));
-            } else if (val instanceof IntegerSpecimenValue) {
-                attrData.setPresentStateOrIntegerValues(new HashSet<Integer>(((IntegerSpecimenValue) val).getValues()));
-            } else if (val instanceof RealSpecimenValue) {
-                attrData.setRealRange(((RealSpecimenValue) val).getRange());
-            } else if (val instanceof TextSpecimenValue) {
-                String joinedString = StringUtils.join(((TextSpecimenValue) val).getValues(), '/');
-                attrData.setValueFromString(joinedString);
-            } else {
-                throw new RuntimeException("Unrecognised character value type");
-            }
-        }
-
-        return AttributeFactory.newAttribute(ch, attrData);
-    }
-
-    private static boolean compareMultistate(MultiStateAttribute attr1, MultiStateAttribute attr2, boolean matchUnknowns, boolean matchInapplicables, MatchType matchType) {
-        Set<Integer> attr1Values = attr1.getPresentStates();
-        Set<Integer> attr2Values = attr2.getPresentStates();
-        boolean attr1Unknown = attr1.isUnknown();
-        boolean attr2Unknown = attr2.isUnknown();
-        boolean attr1Inapplicable = attr1.isInapplicable();
-        boolean attr2Inapplicable = attr2.isInapplicable();
-
-        return doCompareMultiStateOrInteger(attr1Values, attr2Values, attr1Unknown, attr2Unknown, attr1Inapplicable, attr2Inapplicable, matchUnknowns, matchInapplicables, matchType);
-    }
-
     /**
      * Compare a multistate specimen value with a multistate attribute. Both
      * values must correspond to the same character
@@ -449,24 +401,13 @@ public class DiffUtils {
      *            the match type - exact, subset or overlap
      * @return true if the specimen value matches the attribute
      */
-    public static boolean compareMultistate(Specimen specimen, MultiStateSpecimenValue val, MultiStateAttribute attr, boolean matchUnknowns, boolean matchInapplicables, MatchType matchType) {
-        if (!val.getCharacter().equals(attr.getCharacter())) {
-            throw new IllegalArgumentException(String.format("Specimen value character %s does not match attribute character %s", val.getCharacter(), attr.getCharacter()));
+    public static boolean compareMultistate(MultiStateAttribute attr1, MultiStateAttribute attr2, boolean matchUnknowns, boolean matchInapplicables, MatchType matchType) {
+        if (!attr1.getCharacter().equals(attr2.getCharacter())) {
+            throw new IllegalArgumentException(String.format("Specimen value character %s does not match attribute character %s", attr1.getCharacter(), attr2.getCharacter()));
         }
 
-        Set<Integer> attr1Values = new HashSet<Integer>(val.getStateValues());
-        Set<Integer> attr2Values = attr.getPresentStates();
-        boolean attr1Unknown = !specimen.hasValueFor(val.getCharacter());
-        boolean attr2Unknown = attr.isUnknown();
-        boolean attr1Inapplicable = specimen.isCharacterInapplicable(val.getCharacter());
-        boolean attr2Inapplicable = attr.isInapplicable();
-
-        return doCompareMultiStateOrInteger(attr1Values, attr2Values, attr1Unknown, attr2Unknown, attr1Inapplicable, attr2Inapplicable, matchUnknowns, matchInapplicables, matchType);
-    }
-
-    private static boolean compareInteger(IntegerAttribute attr1, IntegerAttribute attr2, boolean matchUnknowns, boolean matchInapplicables, MatchType matchType) {
-        Set<Integer> attr1Values = attr1.getPresentValues();
-        Set<Integer> attr2Values = attr2.getPresentValues();
+        Set<Integer> attr1Values = attr1.getPresentStates();
+        Set<Integer> attr2Values = attr2.getPresentStates();
         boolean attr1Unknown = attr1.isUnknown();
         boolean attr2Unknown = attr2.isUnknown();
         boolean attr1Inapplicable = attr1.isInapplicable();
@@ -493,17 +434,17 @@ public class DiffUtils {
      *            the match type - exact, subset or overlap
      * @return true if the specimen value matches the attribute
      */
-    public static boolean compareInteger(Specimen specimen, IntegerSpecimenValue val, IntegerAttribute attr, boolean matchUnknowns, boolean matchInapplicables, MatchType matchType) {
-        if (!val.getCharacter().equals(attr.getCharacter())) {
-            throw new IllegalArgumentException(String.format("Specimen value character %s does not match attribute character %s", val.getCharacter(), attr.getCharacter()));
+    public static boolean compareInteger(IntegerAttribute attr1, IntegerAttribute attr2, boolean matchUnknowns, boolean matchInapplicables, MatchType matchType) {
+        if (!attr1.getCharacter().equals(attr2.getCharacter())) {
+            throw new IllegalArgumentException(String.format("Specimen value character %s does not match attribute character %s", attr1.getCharacter(), attr2.getCharacter()));
         }
 
-        Set<Integer> attr1Values = new HashSet<Integer>(val.getValues());
-        Set<Integer> attr2Values = attr.getPresentValues();
-        boolean attr1Unknown = !specimen.hasValueFor(val.getCharacter());
-        boolean attr2Unknown = attr.isUnknown();
-        boolean attr1Inapplicable = specimen.isCharacterInapplicable(val.getCharacter());
-        boolean attr2Inapplicable = attr.isInapplicable();
+        Set<Integer> attr1Values = attr1.getPresentValues();
+        Set<Integer> attr2Values = attr2.getPresentValues();
+        boolean attr1Unknown = attr1.isUnknown();
+        boolean attr2Unknown = attr2.isUnknown();
+        boolean attr1Inapplicable = attr1.isInapplicable();
+        boolean attr2Inapplicable = attr2.isInapplicable();
 
         return doCompareMultiStateOrInteger(attr1Values, attr2Values, attr1Unknown, attr2Unknown, attr1Inapplicable, attr2Inapplicable, matchUnknowns, matchInapplicables, matchType);
     }
@@ -561,22 +502,11 @@ public class DiffUtils {
      *            the match type - exact, subset or overlap
      * @return true if the specimen value matches the attribute
      */
-    public static boolean compareReal(Specimen specimen, RealSpecimenValue val, RealAttribute attr, boolean matchUnknowns, boolean matchInapplicables, MatchType matchType) {
-        if (!val.getCharacter().equals(attr.getCharacter())) {
-            throw new IllegalArgumentException(String.format("Specimen value character %s does not match attribute character %s", val.getCharacter(), attr.getCharacter()));
+    public static boolean compareReal(RealAttribute attr1, RealAttribute attr2, boolean matchUnknowns, boolean matchInapplicables, MatchType matchType) {
+        if (!attr1.getCharacter().equals(attr2.getCharacter())) {
+            throw new IllegalArgumentException(String.format("Specimen value character %s does not match attribute character %s", attr1.getCharacter(), attr2.getCharacter()));
         }
 
-        FloatRange attr1Range = val.getRange();
-        FloatRange attr2Range = attr.getPresentRange();
-        boolean attr1Unknown = !specimen.hasValueFor(val.getCharacter());
-        boolean attr2Unknown = attr.isUnknown();
-        boolean attr1Inapplicable = specimen.isCharacterInapplicable(val.getCharacter());
-        boolean attr2Inapplicable = attr.isInapplicable();
-
-        return doCompareRange(attr1Range, attr2Range, attr1Unknown, attr2Unknown, attr1Inapplicable, attr2Inapplicable, matchUnknowns, matchInapplicables, matchType);
-    }
-
-    private static boolean compareReal(RealAttribute attr1, RealAttribute attr2, boolean matchUnknowns, boolean matchInapplicables, MatchType matchType) {
         FloatRange attr1Range = attr1.getPresentRange();
         FloatRange attr2Range = attr2.getPresentRange();
         boolean attr1Unknown = attr1.isUnknown();
@@ -642,23 +572,11 @@ public class DiffUtils {
      *            the match type - exact, subset or overlap
      * @return true if the specimen value matches the attribute
      */
-    public static boolean compareText(Specimen specimen, TextSpecimenValue val, TextAttribute attr, boolean matchUnknowns, boolean matchInapplicables, MatchType matchType) {
-        if (!val.getCharacter().equals(attr.getCharacter())) {
-            throw new IllegalArgumentException(String.format("Specimen value character %s does not match attribute character %s", val.getCharacter(), attr.getCharacter()));
+    public static boolean compareText(TextAttribute attr1, TextAttribute attr2, boolean matchUnknowns, boolean matchInapplicables, MatchType matchType) {
+        if (!attr1.getCharacter().equals(attr2.getCharacter())) {
+            throw new IllegalArgumentException(String.format("Specimen value character %s does not match attribute character %s", attr1.getCharacter(), attr2.getCharacter()));
         }
 
-        List<String> specimenTextValues = val.getValues();
-        String attrText = attr.getText();
-
-        boolean attr1Unknown = !specimen.hasValueFor(val.getCharacter());
-        boolean attr2Unknown = attr.isUnknown();
-        boolean attr1Inapplicable = specimen.isCharacterInapplicable(val.getCharacter());
-        boolean attr2Inapplicable = attr.isInapplicable();
-
-        return doCompareText(specimenTextValues, attrText, attr1Unknown, attr2Unknown, attr1Inapplicable, attr2Inapplicable, matchUnknowns, matchInapplicables, matchType);
-    }
-
-    private static boolean compareText(TextAttribute attr1, TextAttribute attr2, boolean matchUnknowns, boolean matchInapplicables, MatchType matchType) {
         String attr1Text = attr1.getText();
         String attr2Text = attr2.getText();
         boolean attr1Unknown = attr1.isUnknown();

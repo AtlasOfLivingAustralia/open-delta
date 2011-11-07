@@ -2,8 +2,10 @@ package au.org.ala.delta.model.format;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.FloatRange;
@@ -156,27 +158,29 @@ public class AttributeFormatter extends Formatter {
     private String formatIntegerAttribute(IntegerAttribute attribute) {
         StringBuilder builder = new StringBuilder();
 
-        int belowMinimum = attribute.getCharacter().getMinimumValue() - 1;
-        int aboveMaximum = attribute.getCharacter().getMaximumValue() + 1;
-
+        int minValue = attribute.getCharacter().getMinimumValue();
+        int maxValue = attribute.getCharacter().getMaximumValue();
+        
+        // Need to determine if values below the minimum and or above the maximum are present - these are handled by outputting "or less" and "or more"
         boolean belowMinimumPresent = false;
         boolean aboveMaximumPresent = false;
 
         List<Integer> valuesCopy = new ArrayList<Integer>(attribute.getPresentValues());
         Collections.sort(valuesCopy);
 
-        // One below the character minimum and one above the character
-        // maximum are special cases. They should always be written out
-        // on their own.
-        if (valuesCopy.contains(belowMinimum)) {
-            belowMinimumPresent = true;
-            valuesCopy.remove((Integer) belowMinimum);
+        Set<Integer> belowMinAboveMaxValues = new HashSet<Integer>();
+        for (int value: valuesCopy) {
+            if (value < minValue) {
+                belowMinimumPresent = true;
+                belowMinAboveMaxValues.add(value);
+            } else if (value > maxValue) {
+                aboveMaximumPresent = true;
+                belowMinAboveMaxValues.add(value);
+            }
         }
-
-        if (valuesCopy.contains(aboveMaximum)) {
-            aboveMaximumPresent = true;
-            valuesCopy.remove((Integer) aboveMaximum);
-        }
+        
+        // Remove any values above the maximum or below the minimum from the list as they will be handled specially.
+        valuesCopy.removeAll(belowMinAboveMaxValues);
 
         List<IntRange> intRanges = new ArrayList<IntRange>();
 
@@ -211,7 +215,7 @@ public class AttributeFormatter extends Formatter {
         }
 
         if (belowMinimumPresent) {
-            builder.append(String.format(_orLessCaption, Integer.toString(belowMinimum)));
+            builder.append(String.format(_orLessCaption, Integer.toString(minValue - 1)));
             if (intRanges.size() > 0 || aboveMaximumPresent) {
                 builder.append(orSeparator);
             }
@@ -232,7 +236,7 @@ public class AttributeFormatter extends Formatter {
         }
 
         if (aboveMaximumPresent) {
-            builder.append(String.format(_orMoreCaption, Integer.toString(aboveMaximum)));
+            builder.append(String.format(_orMoreCaption, Integer.toString(maxValue + 1)));
         }
 
         String units = attribute.getCharacter().getUnits();

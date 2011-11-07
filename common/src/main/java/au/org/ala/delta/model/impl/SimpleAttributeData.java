@@ -1,4 +1,4 @@
-package au.org.ala.delta.intkey.model;
+package au.org.ala.delta.model.impl;
 
 import java.util.HashSet;
 import java.util.List;
@@ -8,9 +8,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.FloatRange;
 
 import au.org.ala.delta.model.NumericRange;
-import au.org.ala.delta.model.impl.AttributeData;
 
-public class IntkeyAttributeData implements AttributeData {
+public class SimpleAttributeData implements AttributeData {
 
     private String _textValue;
     private Set<Integer> _stateOrIntegerValues;
@@ -19,7 +18,7 @@ public class IntkeyAttributeData implements AttributeData {
     private boolean _unknown;
     private boolean _inapplicable;
 
-    public IntkeyAttributeData(boolean unknown, boolean inapplicable) {
+    public SimpleAttributeData(boolean unknown, boolean inapplicable) {
         _stateOrIntegerValues = new HashSet<Integer>();
         _unknown = unknown;
         _inapplicable = inapplicable;
@@ -99,7 +98,7 @@ public class IntkeyAttributeData implements AttributeData {
 
     @Override
     public boolean isVariable() {
-        // TODO does this have any relevance in intkey?
+        // TODO does this have any relevance in key or intkey?
         return false;
     }
 
