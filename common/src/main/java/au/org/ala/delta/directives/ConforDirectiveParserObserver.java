@@ -1,6 +1,10 @@
 package au.org.ala.delta.directives;
 
+import java.util.List;
+
 import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.directives.validation.DirectiveError;
+import au.org.ala.delta.io.OutputFileManager;
 import au.org.ala.delta.model.image.ImageType;
 import au.org.ala.delta.translation.DataSetTranslator;
 import au.org.ala.delta.translation.DataSetTranslatorFactory;
@@ -17,6 +21,9 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
     private DataSetTranslatorFactory _factory;
     private DataSetHelper _helper;
     
+    private int _totalErrors;
+    private boolean _fatalErrorEncountered;
+    
     public ConforDirectiveParserObserver(DeltaContext context) {
         _context = context;
         _context.setDirectiveParserObserver(this);
@@ -26,11 +33,21 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
     
     @Override
     public void preProcess(AbstractDirective<? extends AbstractDeltaContext> directive, String data) {
-        _context.getOutputFileSelector().listMessage(directive.getName() + " " +data);
+        
+    	if (directive.getControlWords().equals(CharacterList.CONTROL_WORDS) ||
+            	directive.getControlWords().equals(KeyCharacterList.CONTROL_WORDS) ||
+            	directive.getControlWords().equals(ItemDescriptions.CONTROL_WORDS)) {
+            	checkForFatalError();
+        }
+        
+    	_context.getOutputFileSelector().listMessage(directive.getName() + " " +data);
     }
 
     @Override
     public void postProcess(AbstractDirective<? extends AbstractDeltaContext> directive) {
+    	
+    	handleErrors();
+    	
         if (directive.getControlWords().equals(CharacterList.CONTROL_WORDS) ||
         	directive.getControlWords().equals(KeyCharacterList.CONTROL_WORDS)) {
         	postProcessCharacters();
@@ -57,4 +74,25 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
 		translator.translateItems();
 	}
 		
+	
+	private void handleErrors() {
+		List<DirectiveError> errors = _context.getErrors();
+	
+		OutputFileManager manager = _context.getOutputFileSelector();
+		for (DirectiveError error : errors) {
+			manager.listMessage(error.getMessage());
+			if (error.isFatal()) {
+				_totalErrors++;
+				_fatalErrorEncountered = true;
+			}
+		}
+		
+		_context.clearErrors();
+	}
+	
+	private void checkForFatalError() {
+		if (_fatalErrorEncountered) {
+			throw new RuntimeException("It's all over!");
+		}
+	}
 }

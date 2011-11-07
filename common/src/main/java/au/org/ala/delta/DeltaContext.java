@@ -57,7 +57,6 @@ public class DeltaContext extends AbstractDeltaContext {
 	
 	private OutputFormat _outputFormat = OutputFormat.RTF;
 	private Map<String, Object> _variables;
-	private List<String> _errorMessages = new ArrayList<String>();
 	private List<PrintActionType> _outputActions = new ArrayList<PrintActionType>();
 
 	private TranslateType _translateType = TranslateType.None;
@@ -218,10 +217,6 @@ public class DeltaContext extends AbstractDeltaContext {
 	
 	public PrintFile getPrintFile() {
 		return getOutputFileSelector().getPrintFile();
-	}
-
-	public List<String> getErrorMessages() {
-		return _errorMessages;
 	}
 
 	public void setCredits(String credits) {

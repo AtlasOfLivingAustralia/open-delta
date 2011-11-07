@@ -6,6 +6,8 @@ import java.text.ParseException;
 import org.apache.commons.lang.math.IntRange;
 
 import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.directives.validation.DirectiveError;
+import au.org.ala.delta.directives.validation.UniqueIdValidator;
 
 /**
  * The IdValueList parses directive arguments in the form:
@@ -19,8 +21,11 @@ import au.org.ala.delta.DeltaContext;
  */
 public class IdListParser extends DirectiveArgsParser {
 	
+	private UniqueIdValidator _validator;
+	
 	public IdListParser(DeltaContext context, Reader reader) {
 		super(context, reader);
+		
 	}
 	
 	@Override
@@ -34,6 +39,8 @@ public class IdListParser extends DirectiveArgsParser {
 			
 			IntRange ids = readIds();
 			
+			//validate(ids);
+			
 			for (int id : ids.toArray()) {
 				_args.addDirectiveArgument(id);
 			}
@@ -42,4 +49,11 @@ public class IdListParser extends DirectiveArgsParser {
 		}
 	}
 	
+	
+	private void validate(IntRange ids) {
+		DirectiveError error = _validator.validateIds(ids);
+		if (error != null) {
+			_context.addError(error);
+		}
+	}
 }

@@ -4,6 +4,7 @@ import java.text.ParseException;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.args.DirectiveArguments;
+import au.org.ala.delta.directives.args.ParsingUtils;
 
 public abstract class AbstractIntegerDirective extends AbstractDirective<DeltaContext> {
 
@@ -25,7 +26,7 @@ public abstract class AbstractIntegerDirective extends AbstractDirective<DeltaCo
 	
 	@Override
 	public void parse(DeltaContext context, String data) throws ParseException {
-		_value = Integer.parseInt(data.trim());
+		_value = ParsingUtils.readInt(context.getCurrentParsingContext(), data.trim());
 	}
 
 	@Override

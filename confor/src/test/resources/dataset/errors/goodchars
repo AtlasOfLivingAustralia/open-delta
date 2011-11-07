@@ -1,0 +1,461 @@
+*SHOW ~ Grass Genera - character list.
+
+*CHARACTER LIST
+#1. including <synonyms: ‘genera’ included in the current description>/
+
+#2. <mature> culms <maximum height: data unreliable for large genera>/
+       cm high/
+
+#3. culms <whether woody or herbaceous>/
+       1. woody and persistent/
+       2. herbaceous <not woody, not persistent>/
+
+#4. <longevity of plants>/
+       1. annual <or biennial, without remains of old sheaths or culms>/
+       2. perennial <with remains of old sheaths and/or culms>/
+
+#5. culms <whether branched above>/
+       1. branched <vegetatively> above/
+       2. unbranched <vegetatively> above/
+
+#6. leaf blades <whether pseudopetiolate>/
+       1. pseudopetiolate/
+       2. not pseudopetiolate <<implicit>>/
+
+#7. culm nodes <whether hairy or glabrous>/
+       1. hairy/
+       2. glabrous/
+
+#8. leaf blades <shape: data incomplete>/
+       1. linear/
+       2. linear-lanceolate/
+       3. lanceolate/
+       4. ovate-lanceolate/
+       5. ovate/
+       6. elliptic <oblong>/
+       7. obovate/
+
+#9. leaf blades <mid-width: data very incomplete>/
+       mm wide/
+
+#10. <adaxial> ligule <presence>/
+       1. <consistently> present <<implicit>>/
+       2. absent <at least from upper leaves>/
+
+#11. <adaxial> ligule <form; avoid seedlings>/
+       1. an unfringed membrane <may be variously hairy or ciliolate>/
+       2. a fringed membrane/
+       3. a fringe of hairs/
+       4. a rim of minute papillae/
+
+#12. plants <whether monoecious, with bisexual spikelets, or dioecious>/
+       1. <bisexual, but> monoecious with all the fertile spikelets unisexual/
+       2. bisexual, with <at least some> bisexual spikelets/
+       3. dioecious <with separate male and female-fertile individuals>/
+
+#13. inflorescence <chasmogamous: overall form>/
+       1. a single spike/
+       2. of spicate <spike-like> main branches <of spikes, narrow racemes or
+          narrow panicles>/
+       3. a false spike, with spikelets <or spikelet clusters> on contracted
+          axes/
+       4. a single raceme <at least some of the spikelets clearly pedicellate>/
+       5. paniculate <and not readily referable to any of the other states>/
+
+#14. inflorescence <whether open or contracted: mainly applied to panicles>/
+       1. open/
+       2. contracted <very compact, or narrow and spike-like>/
+
+#15. inflorescence <whether comprising a complex of ‘partial inflorescences’ and
+          intervening foliar organs (= leaves, spathes, spatheoles)>/
+       1. a complex of ‘partial inflorescences’ and intervening foliar organs
+          <i.e., a ‘pseudo-inflorescence’>/
+       2. not comprising ‘partial inflorescences’ and foliar organs/
+
+#16. spikelet-bearing axes <whether disarticulating; note that spikelet-bearing
+          axes may be greatly reduced>/
+       1. disarticulating <often manifested in clearly articulated rachides.
+          Excluding inflorescences falling whole (tumbleweeds)>/
+       2. persistent <not disarticulating: implicit>/
+
+#17. spikelet-bearing axes <manner of disarticulation>/
+       1. falling entire/
+       2. disarticulating at the joints/
+
+#18. spikelets <grouping: recorded mainly in spikes and racemes>/
+       1. <mainly> solitary/
+       2. <consistently> paired/
+       3. <consistently> in triplets/
+
+#19. spikelets <whether secund>/
+       1. secund/
+       2. not secund/
+
+#20. spikelets <whether in regular ‘long-and-short’ combinations, as exemplified
+          in typical andropogonoids>/
+       1. consistently in ‘long-and-short’ combinations <i.e.,
+          pedicellate/sessile or long-pedicel/short-pedicel pairs or triplets:
+          currently includes andropogonoid forms with the pedicellate
+          ‘spikelets’ reduced to their pedicels>/
+       2. not <consistently> in distinct ‘long-and-short’ combinations
+          <<implicit>>/
+
+#21. spikelets <detail of ‘long-and-short’ combinations (intended mainly for
+          andropogonoids)>/
+       1. in pedicellate/sessile combinations/
+       2. unequally pedicellate in each combination/
+
+#22. pedicels of the ‘pedicellate’ spikelets <whether fused with the rachis:
+          intended for andropogonoids>/
+       1. discernible, but <extensively> fused with the rachis/
+       2. free of the rachis/
+
+#23. the ‘shorter’ <andropogonoid> spikelets <sessile or shorter-pedicelled,
+          sexuality>/
+       1. hermaphrodite/
+       2. female-only/
+       3. male-only/
+       4. sterile/
+
+#24. the ‘longer’ <andropogonoid> spikelets <pedicelled or longer-pedicelled,
+          sexuality>/
+       1. hermaphrodite/
+       2. female-only/
+       3. male-only/
+       4. sterile <comment if reduced to pedicels>/
+
+#25. <comments on female-sterile spikelets>/
+
+#26. <female-fertile> spikelets <approximate length, excluding any awns>/
+       mm long/
+
+#27. <female-fertile> spikelets <plane of compression>/
+       1. compressed laterally <lying on the side when placed on a flat
+          surface>/
+       2. not noticeably compressed <terete>/
+       3. compressed <dorsally, ventrally or> dorsiventrally <lying on front or
+          back when placed on a flat surface>/
+
+#28. <female-fertile> spikelets <location of disarticulation positions>/
+       1. <readily> disarticulating above the glumes <when mature>/
+       2. disarticulating between the glumes/
+       3. falling with the glumes <when mature> <pending data changes, including
+          forms where the spikelets are shed by inflorescence disarticulation>/
+       4. not disarticulating <common in cultivated cereals>/
+
+#29. <female-fertile> spikelets <whether rachilla disarticulates between the
+          florets of spikelets with two or more fertile florets>/
+       1. not disarticulating between the florets/
+       2. disarticulating between the florets/
+
+#30. rachilla <of female-fertile spikelets, whether terminated by a
+          female-fertile floret, or ‘prolonged’>/
+       1. prolonged beyond the uppermost female-fertile floret <i.e. not
+          terminated by a female-fertile floret: note that ‘racemose’ spikelets
+          with three or more female-fertile florets have all been awarded this
+          state>/
+       2. terminated by a female-fertile floret <not ‘prolonged’>/
+
+#31. hairy callus <presence>/
+       1. present/
+       2. absent/
+
+#32. glumes <of female-fertile spikelets, present or absent>/
+       1. present <<implicit>>/
+       2. absent/
+
+#33. glumes <of female-fertile spikelets, number: ‘glumes’ are barren, with
+          neither axillary spikelets nor florets>/
+       1. one per spikelet/
+       2. two/
+       3. several/
+
+#34. glumes <of female-fertile spikelets, whether markedly unequal in the intact
+          spikelet; regardless of any differences in form>/
+       1. very unequal <in length in the intact spikelet>/
+       2. more or less equal <in length in the intact spikelet: generally
+          includes ‘subequal’>/
+
+#35. glumes <of female-fertile spikelets, lengths relative to proximal
+          (adjacent) lemmas; refers to the longer glume when glumes unequal>/
+       1. <decidedly> shorter than the adjacent lemmas <in intact spikelets>/
+       2. long relative to the adjacent lemmas <more or less equalling or
+          exceeding them>/
+
+#36. glumes <of female-fertile spikelets, whether awned>/
+       1. awned/
+       2. awnless/
+
+#37. glumes <of female-fertile spikelets, whether carinate (i.e., one-keeled to
+          middle or below)>/
+       1. carinate <one-keeled>/
+       2. non-carinate <includes forms with more than one keel, as well as those
+          with non-keeled glumes>/
+
+#38. upper glume <(or the single glume) of female-fertile spikelets, mid-zone
+          nerve number>/
+       nerved/
+
+#39. <female-fertile> spikelets <whether containing sterile or male-only florets
+          in addition to female-fertile florets>/
+       1. <normally> with female-fertile florets only/
+       2. <or at least some of them, normally> with incomplete <sterile or
+          male-only> florets <note that the situation at the apex of spikelets
+          with more than three florets is often unknown or unclear>/
+
+#40. the incomplete <male or sterile> florets <position in spikelet>/
+       1. proximal to the female-fertile florets/
+       2. distal to the female-fertile florets/
+       3. both distal and proximal to the female-fertile florets/
+
+#41. the proximal incomplete florets <of the female-fertile spikelets, when
+          present, number (intended mainly for panicoids)>/
+
+#42. the proximal incomplete florets <of the female-fertile spikelets:
+          sexuality>/
+       1. male/
+       2. sterile/
+
+#43. the proximal <imperfect> lemmas <of the female-fertile spikelets: whether
+          awned>/
+       1. awned/
+       2. awnless/
+
+#44. <number of> female-fertile florets <per female-fertile spikelet>/
+
+#45. <female-fertile> lemmas <shape of apex>/
+       1. entire/
+       2. incised/
+
+#46. <female-fertile> lemmas <entire, whether pointed or blunt>/
+       1. pointed/
+       2. blunt/
+
+#47. <female-fertile> lemmas <whether mucronate or awned>/
+       1. awnless <neither mucronate nor awned>/
+       2. mucronate <with a short, hard point or vestigial or incipient awn>/
+       3. awned/
+
+#48. awns <of female-fertile lemmas, if present, number>/
+
+#49. awns <of female-fertile lemmas, position of (main, median)>/
+       1. from a sinus/
+       2. dorsal/
+       3. apical/
+
+#50. awns <of female-fertile lemmas, whether straight or geniculate when dry>/
+       1. non-geniculate <straight or curved>/
+       2. geniculate <usually twisted at the base>/
+
+#51. awns <main, median of the female-fertile lemmas, relative length>/
+       1. much shorter than the body of the lemma/
+       2. about as long as the body of the lemma/
+       3. much longer than the body of the lemma/
+
+#52. <female-fertile> lemmas <whether carinate (i.e., one-keeled at least to the
+          middle on the back>/
+       1. carinate <with a single median keel>/
+       2. non-carinate <rounded, flat, with two or more keels>/
+
+#53. <female-fertile> lemmas <presence of germination flap>/
+       1. with a clear germination flap <when mature>/
+       2. without a germination flap/
+
+#54. <female-fertile> lemmas <number of nerves traversing mid-region>/
+       nerved/
+
+#55. palea <female-fertile, presence in female-fertile florets>/
+       1. present/
+       2. absent/
+
+#56. palea <female-fertile, relative size>/
+       1. relatively long <three-quarters or more of female-fertile lemma
+          length>/
+       2. conspicuous but relatively short <less than three-quarters of
+          female-fertile lemma length>/
+       3. very reduced <or vestigial>/
+
+#57. lodicules <presence in female-fertile florets>/
+       1. present/
+       2. absent/
+
+#58. lodicules <of female-fertile florets, texture>/
+       1. <distally> fleshy <‘cuneate’; panicoid type>/
+       2. <distally> membranous <i.e. pooid type>/
+
+#59. lodicules <of female-fertile florets, whether hairy>/
+       1. ciliate <or hairy>/
+       2. glabrous/
+
+#60. stamens <number per female-fertile floret (not applicable to male spikelets
+          or male florets)>/
+
+#61. ovary <of female-fertile florets, whether apex glabrous or hairy>/
+       1. glabrous/
+       2. hairy/
+
+#62. stigmas <number>/
+
+#63. stigmas <colour, in chasmogamous spikelets>/
+       1. white/
+       2. red <anthocyanin> pigmented/
+       3. <golden> brown/
+
+#64. fruit <length when mature>/
+       1. small <less than 4 mm>/
+       2. medium sized <4–10 mm>/
+       3. large <more than 10 mm long>/
+
+#65. fruit <or grain surface pattern>/
+       1. sculptured/
+       2. <relatively> smooth <the near-universal condition: implicit>/
+
+#66. hilum <form>/
+       1. short <punctiform or shortly elliptical, less than half length of
+          fruit>/
+       2. long-linear <more than half as long as fruit>/
+
+#67. pericarp <whether fused or loose (or free)>/
+       1. free/
+       2. loosely adherent <fairly easily removable when soaked>/
+       3. fused <implicit, except in Arundinoideae and Chloridoideae>/
+
+#68. <maximum cells-distant count; reliably indicative of photosynthetic
+          pathway>/
+       1. <showing a maximum cells-distant count of one, reliably predicting>
+          C\sub{}4\nosupersub{}/
+       2. <showing a maximum cells-distant count of two or more, reliably
+          predicting> C\sub{}3\nosupersub{}/
+
+#69. <C\sub{}4\nosupersub{}> biochemical type <as determined by enzyme assay>/
+       1. PCK/
+       2. NAD–ME/
+       3. NADP–ME/
+
+#70. <leaf blade XyMS: reliably indicative of C\sub{}4\nosupersub{} type>/
+       1. XyMS+ <C\sub{}3\nosupersub{}, or C\sub{}4\nosupersub{} ‘aspartate
+          formers’ type PCK or NAD–ME (exceptions: Eriachneae)>/
+       2. XyMS– <C\sub{}4\nosupersub{} ‘malate formers’, type NADP–ME>/
+
+#71. <leaf blade> mesophyll <presence of arm cells (= ‘ratchet’ cells)>/
+       1. with arm cells/
+       2. without arm cells <implicit when ts adequately described>/
+
+#72. <leaf blade> mesophyll <presence of fusoid cells>/
+       1. with fusoids/
+       2. without fusoids <implicit when ts adequately described>/
+
+#73. midrib <of the leaf blade, prominence>/
+       1. conspicuous <prominent in the outline, with distinctive sclerenchyma,
+          etc.>/
+       2. not readily distinguishable <other than by position>/
+
+#74. midrib <of the mid leaf blade, vascularization>/
+       1. with one bundle only/
+       2. having a conventional arc of bundles <i.e. at least three bundles>/
+       3. having complex vascularization <i.e. with more than one bundle, not
+          arranged in a conventional arc>/
+
+#75. midrib <and/or middle part of leaf blade, whether extensively of colourless
+          cells adaxially>/
+       1. with <conspicuous> colourless tissue adaxially/
+       2. without <conspicuous> colourless tissue adaxially <implicit when ts
+          adequately described>/
+
+#76. <presence in the leaf blade of small vascular bundles unaccompanied by
+          sclerenchyma>/
+       1. many of the smallest vascular bundles unaccompanied by sclerenchyma/
+       2. all <or nearly all> the vascular bundles accompanied by sclerenchyma/
+
+#77. <\i{}Zea mays\i0{}>/
+       1. fruiting inflorescence a massive, spatheate cob, the fruits in many
+          rows/
+       2. fruiting inflorescence not as in maize <<implicit>>/
+
+#78. <subfamily>/
+       1. Pooideae/
+       2. Bambusoideae/
+       3. Arundinoideae/
+       4. Chloridoideae/
+       5. Panicoideae/
+
+#79. <supertribes of Watson \i{}et al\i0{}. 1985, with name endings changed>/
+       1. Triticodae/
+       2. Poodae/
+       3. Oryzodae/
+       4. Bambusodae/
+       5. Panicodae/
+       6. Andropogonodae/
+
+#80. <tribe of Pooideae>/
+       1. Triticeae/
+       2. Brachypodieae/
+       3. Bromeae/
+       4. Aveneae <including Agrostideae, Phalarideae>/
+       5. Meliceae/
+       6. Seslerieae/
+       7. Poeae <including Hainardieae, Monermeae>/
+
+#81. <tribe of Bambusoideae>/
+       1. Oryzeae/
+       2. Olyreae/
+       3. Centotheceae/
+       4. Anomochloeae/
+       5. Brachyelytreae/
+       6. Diarrheneae/
+       7. Ehrharteae/
+       8. Phaenospermateae/
+       9. Phyllorhachideae/
+       10. Phareae/
+       11. Streptochaeteae/
+       12. Streptogyneae/
+       13. Guaduelleae/
+       14. Puelieae/
+       15. Bambuseae/
+
+#82. <tribe of Arundinoideae>/
+       1. Steyermarkochloeae/
+       2. Stipeae/
+       3. Nardeae/
+       4. Lygeae/
+       5. Arundineae/
+       6. Danthonieae <and satellites>/
+       7. Cyperochloeae/
+       8. Micraireae/
+       9. Spartochloeae/
+       10. Aristideae/
+       11. Eriachneae/
+       12. Amphipogoneae/
+
+#83. <tribe/assemblage of Chloridoideae>/
+       1. Pappophoreae/
+       2. Orcuttieae/
+       3. Triodieae/
+       4. main chloridoid assemblage <including Chlorideae, Cynodonteae,
+          Eragrosteae, Sporoboleae, Aeluropodeae, Jouveae, Unioleae, Leptureae,
+          Lappagineae, Spartineae, Trageae, Perotideae, Pommereulleae>/
+
+#84. <tribe of Panicoideae>/
+       1. Isachneae/
+       2. Paniceae/
+       3. Neurachneae/
+       4. Arundinelleae/
+       5. Andropogoneae/
+       6. Maydeae/
+
+#85. <number of species>/
+       species/
+
+#86. <floristic Kingdoms: after Takhtajan 1969>/
+       1. Holarctic/
+       2. Paleotropical/
+       3. Neotropical/
+       4. Cape/
+       5. Australian/
+       6. Antarctic/
+
+#87. <leaf anatomical references>/
+
+#88. <illustrations:>/
+
+#89. <abbreviated taxon name:>/

@@ -1,0 +1,12 @@
+
+*COMMENT a directives file that will cause a fatal error or two.
+
+*PRINT WIDTH a
+
+*INPUT FILE goodspecs
+
+*EXCLUDE ITEMS 1-3 3 4
+
+*INPUT FILE goodchars
+
+*INPUT FILE gooditems

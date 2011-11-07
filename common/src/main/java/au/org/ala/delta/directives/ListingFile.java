@@ -50,9 +50,9 @@ public class ListingFile extends AbstractTextDirective {
 			fileManager.listMessage(heading);
 		}
 		
-		for (String message : context.getErrorMessages()) {
-			fileManager.listMessage(message);
-		}
+		//for (String message : context.getErrorMessages()) {
+		//	fileManager.listMessage(message);
+		//}
 		
 	}
 
