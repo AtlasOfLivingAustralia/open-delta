@@ -1,6 +1,10 @@
 
 *COMMENT a directives file that will cause a fatal error or two.
 
+*LISTING FILE tointe.lst
+
+*ERROR FILE tointe.err
+
 *PRINT WIDTH a
 
 *INPUT FILE goodspecs

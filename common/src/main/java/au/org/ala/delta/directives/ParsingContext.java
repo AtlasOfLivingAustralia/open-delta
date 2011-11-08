@@ -23,7 +23,8 @@ public class ParsingContext {
     private long _currentLine;
     private long _currentDirectiveStartLine;
     private long _currentDirectiveStartOffset;
-
+    private long _currentDirectiveEndOffset;
+    
     public ParsingContext() {
 
     }
@@ -76,4 +77,11 @@ public class ParsingContext {
         _currentDirectiveStartOffset = offset;
     }
 
+	public void markDirectiveEnd() {
+		_currentDirectiveEndOffset = _currentOffset-1;
+	}
+	
+	public long getDirectiveEndOffset() {
+		return _currentDirectiveEndOffset;
+	}
 }

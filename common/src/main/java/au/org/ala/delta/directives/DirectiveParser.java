@@ -34,7 +34,7 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
 	protected DirectiveRegistry<C> _registry = new DirectiveRegistry<C>();
 
 	private List<DirectiveParserObserver> _observers = new ArrayList<DirectiveParserObserver>();
-
+	
 	public void registerObserver(DirectiveParserObserver o) {
 		_observers.add(o);
 	}
@@ -74,8 +74,8 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
 		int prev = ' ';
 		pc.setCurrentLine(1);
 		StringBuilder line = new StringBuilder();
+		
 		StringBuilder currentWord = new StringBuilder();
-
 		List<String> currentWords = new ArrayList<String>();
 
 		AbstractDirective<C> currentDirective = null;
@@ -110,7 +110,9 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
 					DirectiveSearchResult result = _registry.findDirective(currentWords);
 					if (result.getResultType() == ResultType.Found) {
 						currentData = new StringBuilder();
+						pc.markDirectiveEnd();
 						currentDirective = (AbstractDirective<C>) result.getMatches().get(0);
+						
 					}
 				}
 			} else {
@@ -223,7 +225,11 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
 
 	protected abstract void handleUnrecognizedDirective(C context, List<String> controlWords);
 
-	protected abstract void handleDirectiveProcessingException(C context, AbstractDirective<C> d, Exception ex);
+	protected void handleDirectiveProcessingException(C context, AbstractDirective<C> directive, Exception ex) {
+		for (DirectiveParserObserver observer : _observers) {
+			observer.handleDirectiveProcessingException(context, directive, ex);
+		}
+	}
 
 	private String readWord(StringBuilder buf, int start, boolean ignoreLeadingSpace) {
 		int i = start;

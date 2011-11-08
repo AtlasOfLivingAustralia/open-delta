@@ -19,7 +19,6 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.Logger;
-import au.org.ala.delta.directives.AbstractDirective;
 import au.org.ala.delta.directives.CharacterWeights;
 import au.org.ala.delta.directives.Comment;
 import au.org.ala.delta.directives.DirectiveParser;
@@ -77,21 +76,6 @@ public class DistDirectiveFileParser extends DirectiveParser<DistContext> {
         } else {
             Logger.log("Unrecognized Directive: %s at offset %d:%d", StringUtils.join(controlWords, " "), pc.getCurrentDirectiveStartLine(), pc.getCurrentDirectiveStartOffset());
         }
-    }
-
-    @Override
-    protected void handleDirectiveProcessingException(DistContext context, AbstractDirective<DistContext> d, Exception ex) {
-        ParsingContext pc = context.getCurrentParsingContext();
-        if (pc.getFile() != null) {
-            Logger.error(String.format("Exception occured trying to process directive: %s (%s %d:%d)", d.getName(), pc.getFile().getName(),
-                    pc.getCurrentDirectiveStartLine(), pc.getCurrentDirectiveStartOffset()));
-            Logger.error(ex);
-        } else {
-            Logger.error(String.format("Exception occured trying to process directive: %s (%d:%d)", d.getName(), pc.getCurrentDirectiveStartLine(),
-                    pc.getCurrentDirectiveStartOffset()));
-            Logger.error(ex);
-        }
-        
     }
 
 }

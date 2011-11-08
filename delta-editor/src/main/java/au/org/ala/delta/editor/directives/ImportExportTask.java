@@ -71,6 +71,11 @@ public abstract class ImportExportTask extends Task<Void, ImportExportStatus> im
 	}
 
 	@Override
+	public void handleDirectiveProcessingException(AbstractDeltaContext context,
+			AbstractDirective<? extends AbstractDeltaContext> directive, Exception ex) {
+	}
+
+	@Override
 	public void handleDirectiveProcessingException(ImportContext context, AbstractDirective<ImportContext> d,
 			Exception ex) {
 		error(ex.getMessage());

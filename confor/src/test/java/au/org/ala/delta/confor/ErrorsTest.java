@@ -16,12 +16,12 @@ import org.junit.Test;
 public class ErrorsTest extends TestCase {
 
 	@Test
-	public void testToIntWithErrors() throws Exception {
+	public void testtointwithe() throws Exception {
 		File directivesFileDirectory = urlToFile("/dataset/errors");
 		
 		String path = directivesFileDirectory.getAbsolutePath();
 		
-		//runAndTest(path, "tointwitherrors", "errors.lis");
+		//runAndTest(path, "tointwithe", "tointe.err");
 	}
 	
 	protected void runAndTest(String path, String directivesFile, String resultFileName) throws Exception, IOException {

@@ -13,8 +13,6 @@ import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 
-import au.org.ala.delta.directives.AbstractDeltaContext;
-import au.org.ala.delta.directives.AbstractDirective;
 import au.org.ala.delta.directives.DirectiveSearchResult;
 import au.org.ala.delta.directives.DirectiveSearchResult.ResultType;
 import au.org.ala.delta.editor.slotfile.DirectiveInstance;
@@ -40,39 +38,7 @@ public class DirectiveFileImporterTest extends TestCase {
 	
 	private ImportContext _context;
 	
-	private DirectiveImportHandlerStub _importHandler;
-	
-	
-	class DirectiveImportHandlerStub implements DirectiveImportHandler {
-
-		@Override
-		public void preProcess(AbstractDirective<? extends AbstractDeltaContext> directive, String data) {
-			System.out.println("preProcess"+data);
-			
-		}
-
-		@Override
-		public void postProcess(
-				AbstractDirective<? extends AbstractDeltaContext> directive) {
-			System.out.println("postProcess"+directive);
-			
-		}
-
-		@Override
-		public void handleUnrecognizedDirective(ImportContext context,
-				List<String> controlWords) {
-			System.err.println("handleUnrecognizedDirective"+controlWords);
-		}
-
-		@Override
-		public void handleDirectiveProcessingException(ImportContext context,
-				AbstractDirective<ImportContext> d, Exception ex) {
-			System.err.println("handleDirectiveProcessingException"+ex.getMessage());
-		}
-		
-		@Override
-		public void finishedProcessing() {}
-	}
+	private DirectiveImportHandlerAdapter _importHandler;
 	
 	@Before
 	public void setUp() throws Exception {
@@ -82,7 +48,7 @@ public class DirectiveFileImporterTest extends TestCase {
 			_dataSet.addCharacter(CharacterType.Text);
 		}
 		_context = new ImportContext(_dataSet);
-		_importHandler = new DirectiveImportHandlerStub();
+		_importHandler = new DirectiveImportHandlerAdapter();
 		
 	}
 	

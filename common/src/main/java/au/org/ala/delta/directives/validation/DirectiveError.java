@@ -1,6 +1,10 @@
 package au.org.ala.delta.directives.validation;
 
+import java.util.ResourceBundle;
+
 public class DirectiveError {
+
+	private static final String ERROR_BUNDLE = "au.org.ala.delta.resources.errors";
 
 	public enum Error {
 		DUPLICATE_VALUE(39), INTEGER_EXPECTED(66);
@@ -15,17 +19,25 @@ public class DirectiveError {
 		}
 	};
 	
+	private ResourceBundle _resources;
+	private String _message;
 	
 	public DirectiveError(Error error) {
-		
+		_message = lookupMessage(error);
+	}
+
+	protected String lookupMessage(Error error) {
+		_resources = ResourceBundle.getBundle(ERROR_BUNDLE);
+		String key = "error."+ error.getErrorNumber();
+		return _resources.getString(key);
 	}
 	
 	public DirectiveError(Error error, Object... args) {
-		
+		_message = String.format(lookupMessage(error), args);
 	}
 	
 	public String getMessage() {
-		return "test";
+		return _message;
 	}
 
 	public boolean isFatal() {

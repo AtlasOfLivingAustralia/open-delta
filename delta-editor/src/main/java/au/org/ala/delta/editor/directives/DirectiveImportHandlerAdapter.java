@@ -23,8 +23,16 @@ public class DirectiveImportHandlerAdapter implements DirectiveImportHandler {
 	}
 
 	@Override
+	public void handleDirectiveProcessingException(AbstractDeltaContext context, AbstractDirective<? extends AbstractDeltaContext> d,
+			Exception ex) {
+	}
+
+	
+	
+	@Override
 	public void handleDirectiveProcessingException(ImportContext context, AbstractDirective<ImportContext> d,
 			Exception ex) {
+		
 	}
 
 	@Override

@@ -24,6 +24,7 @@ import au.org.ala.delta.directives.ExcludeCharacters;
 import au.org.ala.delta.directives.ExcludeItems;
 import au.org.ala.delta.directives.IncludeCharacters;
 import au.org.ala.delta.directives.IncludeItems;
+import au.org.ala.delta.directives.ParsingContext;
 import au.org.ala.delta.dist.directives.DistDirectiveFileParser;
 import au.org.ala.delta.dist.io.DistItemsFile;
 import au.org.ala.delta.dist.io.DistOutputWriter;
@@ -123,7 +124,9 @@ public class DIST implements DirectiveParserObserver {
 		return itemsFile;
 	}
 
+	@Override
 	public void preProcess(AbstractDirective<? extends AbstractDeltaContext> directive, String data) {
+		
 		if (directive instanceof IncludeCharacters ||
 			directive instanceof ExcludeCharacters ||
 			directive instanceof IncludeItems ||
@@ -141,6 +144,24 @@ public class DIST implements DirectiveParserObserver {
 		}
 	}
 	
+	
+	
+	@Override
+	public void handleDirectiveProcessingException(AbstractDeltaContext context, AbstractDirective<? extends AbstractDeltaContext> d, Exception ex) {
+		 ParsingContext pc = context.getCurrentParsingContext();
+	        if (pc.getFile() != null) {
+	            Logger.error(String.format("Exception occured trying to process directive: %s (%s %d:%d)", d.getName(), pc.getFile().getName(),
+	                    pc.getCurrentDirectiveStartLine(), pc.getCurrentDirectiveStartOffset()));
+	            Logger.error(ex);
+	        } else {
+	            Logger.error(String.format("Exception occured trying to process directive: %s (%d:%d)", d.getName(), pc.getCurrentDirectiveStartLine(),
+	                    pc.getCurrentDirectiveStartOffset()));
+	            Logger.error(ex);
+	        }
+	        
+		
+	}
+
 	public void postProcess(AbstractDirective<? extends AbstractDeltaContext> directive) {}
 
 	public void finishedProcessing() {}
