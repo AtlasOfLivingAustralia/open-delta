@@ -386,7 +386,7 @@ public class IntkeyContext extends AbstractDeltaContext {
 
         try {
             parser.parse(directivesFile, IntkeyContext.this);
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             Logger.log(ex.getMessage());
             _appUI.displayErrorMessage(String.format("Error reading file '%s'", directivesFile.getAbsolutePath()));
         }

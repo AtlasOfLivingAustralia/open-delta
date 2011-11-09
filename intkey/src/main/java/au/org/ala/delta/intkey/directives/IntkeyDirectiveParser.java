@@ -10,6 +10,7 @@ import au.org.ala.delta.Logger;
 import au.org.ala.delta.directives.AbstractDirective;
 import au.org.ala.delta.directives.DirectiveParser;
 import au.org.ala.delta.directives.DirectiveSearchResult;
+import au.org.ala.delta.directives.validation.DirectiveException;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
 public class IntkeyDirectiveParser extends DirectiveParser<IntkeyContext> {
@@ -120,7 +121,7 @@ public class IntkeyDirectiveParser extends DirectiveParser<IntkeyContext> {
     }
 
     @Override
-    protected void processTrailing(StringBuilder data, IntkeyContext context) {
+    protected void processTrailing(StringBuilder data, IntkeyContext context) throws DirectiveException {
         if (data.length() > 0) {
             char ch = data.charAt(0);
             if (Character.isDigit(ch)) {

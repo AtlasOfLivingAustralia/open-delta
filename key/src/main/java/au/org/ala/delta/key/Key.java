@@ -2,7 +2,6 @@ package au.org.ala.delta.key;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -21,7 +20,6 @@ import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.AttributeFactory;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
-import au.org.ala.delta.model.MatchType;
 import au.org.ala.delta.model.MultiStateAttribute;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.Specimen;
@@ -80,7 +78,7 @@ public class Key {
 
         try {
             processDirectivesFile(directivesFile, _context);
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             System.out.println("Error parsing directive file");
             ex.printStackTrace();
         }
@@ -198,7 +196,7 @@ public class Key {
         return availableChars;
     }
 
-    private void processDirectivesFile(File input, KeyContext context) throws IOException {
+    private void processDirectivesFile(File input, KeyContext context) throws Exception {
         KeyDirectiveFileParser parser = KeyDirectiveFileParser.createInstance();
         parser.parse(input, context);
     }

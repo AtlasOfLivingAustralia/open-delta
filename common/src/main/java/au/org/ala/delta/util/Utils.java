@@ -52,15 +52,21 @@ public class Utils {
         c.setLocation(x, y);
     }
 
-    public static String truncate(String str, int length) {
+    public static String fixedWidth(String str, int length) {
         if (str == null) {
-            return "";
+            str = "";
         }
 
         if (str.length() > length) {
             return ".." + str.substring(str.length() - (length - 2));
         } else {
-            return str;
+        	// Pad out to 15 chars.
+        	StringBuilder result = new StringBuilder();
+        	result.append(str);
+        	for (int i=result.length(); i<length; i++) {
+        		result.append(' ');
+        	}
+            return result.toString();
         }
     }
 

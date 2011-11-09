@@ -13,6 +13,10 @@ public class DirectiveException extends ParseException {
 	public DirectiveException(DirectiveError error, long errorOffset) {
 		super(error.getMessage(), (int)errorOffset);
 	}
+	
+	public boolean isFatal() {
+		return true;
+	}
 
 	
 }

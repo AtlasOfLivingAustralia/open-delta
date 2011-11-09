@@ -141,7 +141,7 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
 
 	@Override
 	public void handleDirectiveProcessingException(AbstractDeltaContext context,
-			AbstractDirective<? extends AbstractDeltaContext> directive, Exception ex) {
+			AbstractDirective<? extends AbstractDeltaContext> directive, Exception ex) throws DirectiveException {
 		_totalErrors ++;
 		ParsingContext pc = context.getCurrentParsingContext();
 
@@ -152,7 +152,9 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
 
 			// Write the directive out for context.
 			try {
-				fileManager.errorMessage(currentDirective(pc, offset));
+				String text = currentDirective(pc, offset);
+				text = formatWithFileName(text, pc.getFile().getAbsolutePath(), pc.getCurrentDirectiveStartLine());
+				fileManager.errorMessage(text);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -167,6 +169,10 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
 			fileManager.errorMessage(errorLocation.toString());
 			fileManager.errorMessage("****** " + ex.getMessage());
 			fileManager.listMessage("****** " + ex.getMessage());
+			
+			if (((DirectiveException) ex).isFatal()) {
+				throw (DirectiveException)ex;
+			}
 
 		} else {
 			if (pc.getFile() != null) {
@@ -222,11 +228,15 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
 		}
 	}
 	
-	private String formatWithFileName(String text) {
-		ParsingContext context = _context.getCurrentParsingContext();
-		String filename = Utils.truncate(String.format("%s,%d", context.getFile().getAbsolutePath(), context.getCurrentLine()), _ListFilenameSize);
+	private String formatWithFileName(String text, String fileName, long lineNumber) {
+		
+		String filename = Utils.fixedWidth(String.format("%s,%d", fileName, lineNumber), _ListFilenameSize);
 		
 		return String.format("%s %s", filename, text);
-
+	}
+	
+	private String formatWithFileName(String text) {
+		ParsingContext context = _context.getCurrentParsingContext();
+		return formatWithFileName(text, context.getFile().getAbsolutePath(), context.getCurrentLine());
 	}
 }

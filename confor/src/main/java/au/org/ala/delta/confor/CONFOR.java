@@ -22,6 +22,7 @@ import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.directives.ConforDirectiveFileParser;
 import au.org.ala.delta.directives.ConforDirectiveParserObserver;
+import au.org.ala.delta.directives.validation.DirectiveException;
 
 public class CONFOR {
 
@@ -76,9 +77,12 @@ public class CONFOR {
 		ConforDirectiveFileParser p = ConforDirectiveFileParser.createInstance();
 		ConforDirectiveParserObserver observer = new ConforDirectiveParserObserver(_context); 
 		p.registerObserver(observer);
-		
-		p.parse(input, _context);
-		
+		try {
+			p.parse(input, _context);
+		}
+		catch (DirectiveException e) {
+			// Ignore, this just allows us to terminate parsing early.
+		}
 		observer.finishedProcessing();
 	}
 	

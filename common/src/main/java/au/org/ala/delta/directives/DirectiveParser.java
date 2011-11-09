@@ -12,6 +12,7 @@ import java.util.List;
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.directives.DirectiveSearchResult.ResultType;
 import au.org.ala.delta.directives.args.DirectiveArguments;
+import au.org.ala.delta.directives.validation.DirectiveException;
 
 /**
  * Parser for directive files and input streams
@@ -52,7 +53,7 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
 		return _registry;
 	}
 
-	public void parse(File file, C context) throws IOException {
+	public void parse(File file, C context) throws IOException, DirectiveException {
 
 		FileInputStream fileIn = new FileInputStream(file);
 		InputStreamReader reader = new InputStreamReader(fileIn, context.getFileEncoding());
@@ -61,16 +62,15 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
 		doParse(reader, context, pc);
 	}
 
-	public void parse(Reader reader, C context) throws IOException {
+	public void parse(Reader reader, C context) throws IOException, DirectiveException {
 		ParsingContext pc = context.newParsingContext();
 		doParse(reader, context, pc);
 	}
 
 	@SuppressWarnings("unchecked")
-	protected void doParse(Reader reader, C context, ParsingContext pc) throws IOException {
+	protected void doParse(Reader reader, C context, ParsingContext pc) throws IOException, DirectiveException {
 
 		StringBuilder currentData = new StringBuilder();
-		int ch = reader.read();
 		int prev = ' ';
 		pc.setCurrentLine(1);
 		StringBuilder line = new StringBuilder();
@@ -81,6 +81,8 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
 		AbstractDirective<C> currentDirective = null;
 		boolean foundDirectiveDelimiter = false;
 
+		int ch = reader.read();
+		
 		while (ch >= 0) {
 			if (ch == DIRECTIVE_DELIMITER && _blank.indexOf(prev) >= 0) {
 
@@ -112,7 +114,6 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
 						currentData = new StringBuilder();
 						pc.markDirectiveEnd();
 						currentDirective = (AbstractDirective<C>) result.getMatches().get(0);
-						
 					}
 				}
 			} else {
@@ -165,7 +166,7 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
 		return false;
 	}
 
-	private void executeDirective(AbstractDirective<C> directive, String data, C context) {
+	private void executeDirective(AbstractDirective<C> directive, String data, C context) throws DirectiveException {
 		try {
 			for (DirectiveParserObserver o : _observers) {
 				o.preProcess(directive, data);
@@ -180,7 +181,7 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	protected void processTrailing(StringBuilder data, C context) {
+	protected void processTrailing(StringBuilder data, C context) throws DirectiveException {
 		if (data.length() > 0) {
 
 			// Try and find the directive handler for this data...
@@ -225,7 +226,15 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
 
 	protected abstract void handleUnrecognizedDirective(C context, List<String> controlWords);
 
-	protected void handleDirectiveProcessingException(C context, AbstractDirective<C> directive, Exception ex) {
+	/**
+	 * The observers are given the opportunity to handle the exception.
+	 * Any observer can chose to terminate directive processing by rethrowing the
+	 * exception.
+	 * 
+	 * @throws DirectiveException if an observer decides to terminate
+	 * directive processing.
+	 */
+	protected void handleDirectiveProcessingException(C context, AbstractDirective<C> directive, Exception ex) throws DirectiveException {
 		for (DirectiveParserObserver observer : _observers) {
 			observer.handleDirectiveProcessingException(context, directive, ex);
 		}

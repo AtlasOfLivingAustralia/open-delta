@@ -15,6 +15,7 @@ import org.junit.Test;
 
 import au.org.ala.delta.directives.DirectiveSearchResult;
 import au.org.ala.delta.directives.DirectiveSearchResult.ResultType;
+import au.org.ala.delta.directives.validation.DirectiveException;
 import au.org.ala.delta.editor.slotfile.DirectiveInstance;
 import au.org.ala.delta.editor.slotfile.directive.ConforDirType;
 import au.org.ala.delta.editor.slotfile.directive.DistDirType;
@@ -188,7 +189,10 @@ public class DirectiveFileImporterTest extends TestCase {
 		DirectiveFile file = _dataSet.addDirectiveFile(1, fileName, type);
 		
 		_context.setDirectiveFile(file);
-		_importer.parse(toint, _context);
+		try {
+			_importer.parse(toint, _context);
+		}
+		catch (DirectiveException e) {}
 		return file;
 	}
 	
