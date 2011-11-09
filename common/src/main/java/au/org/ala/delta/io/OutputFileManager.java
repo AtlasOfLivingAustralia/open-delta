@@ -2,6 +2,8 @@ package au.org.ala.delta.io;
 
 import java.io.File;
 import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -11,7 +13,6 @@ import org.apache.commons.lang.StringUtils;
 import au.org.ala.delta.DeltaContext.OutputFormat;
 import au.org.ala.delta.directives.ParsingContext;
 import au.org.ala.delta.translation.PrintFile;
-import au.org.ala.delta.util.Utils;
 
 /**
  * Manages the files and file paths that are output by DELTA programs.
@@ -71,8 +72,7 @@ public class OutputFileManager {
 	/** Number of characters on a line of text written to the output file */
 	protected int _outputWidth;
 	
-	private int _ListFilenameSize = 15;
-
+	
 	protected OutputFile[] _outputFiles;
 	
 	public OutputFileManager() {
@@ -201,13 +201,15 @@ public class OutputFileManager {
 				prefix = "LIST:";
 			}
 
-			String filename = Utils.truncate(String.format("%s,%d", _context.getFile().getAbsolutePath(), _context.getCurrentLine()), _ListFilenameSize);
-			
-			_outputFiles[LISTING_FILE].outputMessage("%s%s %s", prefix, filename, line);
+			_outputFiles[LISTING_FILE].outputMessage("%s%s", prefix, line);
 		}
 	}
+	
+	public void listMessage(String line, Object... args) {
+		listMessage(String.format(line, args));
+	}
 
-	public void ErrorMessage(String format, Object... args) {
+	public void errorMessage(String format, Object... args) {
 		_outputFiles[ERROR_FILE].outputMessage(format, args);
 	}
 	
@@ -216,5 +218,23 @@ public class OutputFileManager {
 		return fullPathOf(_outputFiles[OUTPUT_FILE]._fileName);
 	}
 	
+	public List<String> getOutputFileNames() {
+		List<String> names = new ArrayList<String>();
+		for (OutputFile file : _outputFiles) {
+			if (file != null) {
+				names.add(file.getFileName());
+			}
+		}
+		return names;
+	}
 
+	
+	/**
+	 * Writes a line of output to both the list and error files.
+	 * @param line the text to output.
+	 */
+	public void message(String line) {
+		listMessage(line);
+		errorMessage(line);
+	}
 }

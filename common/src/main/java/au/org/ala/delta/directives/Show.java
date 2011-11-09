@@ -15,6 +15,7 @@
 package au.org.ala.delta.directives;
 
 import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.DeltaContext.HeadingType;
 import au.org.ala.delta.directives.args.DirectiveArguments;
 
 public class Show extends AbstractTextDirective {
@@ -28,8 +29,10 @@ public class Show extends AbstractTextDirective {
 	@Override
 	public void process(DeltaContext context, DirectiveArguments args) throws Exception {
 		
-		String data = args.getFirstArgumentText();
-		context.getOutputFileSelector().ErrorMessage("%s", replaceVariables(context, data.trim()));
+		String data = args.getFirstArgumentText().trim();
+		data = replaceVariables(context, data.trim());
+		context.setHeading(HeadingType.SHOW, data);
+		context.getOutputFileSelector().errorMessage("%s", data);
 	}
 
 }

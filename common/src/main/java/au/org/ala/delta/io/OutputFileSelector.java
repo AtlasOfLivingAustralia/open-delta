@@ -2,8 +2,10 @@ package au.org.ala.delta.io;
 
 import java.io.File;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -13,8 +15,8 @@ import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.DeltaContext.OutputFormat;
 import au.org.ala.delta.model.Attribute;
-import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.model.format.AttributeFormatter;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
@@ -337,4 +339,6 @@ public class OutputFileSelector extends OutputFileManager {
 			recreatePrintFile();
 		}
 	}
+
+	
 }

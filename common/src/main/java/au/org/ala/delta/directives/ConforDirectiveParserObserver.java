@@ -15,6 +15,7 @@ import au.org.ala.delta.model.image.ImageType;
 import au.org.ala.delta.translation.DataSetTranslator;
 import au.org.ala.delta.translation.DataSetTranslatorFactory;
 import au.org.ala.delta.util.DataSetHelper;
+import au.org.ala.delta.util.Utils;
 
 /**
  * Takes action at certain points in the directive parsing lifecycle, for
@@ -26,6 +27,8 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
 	private DeltaContext _context;
 	private DataSetTranslatorFactory _factory;
 	private DataSetHelper _helper;
+	private int _ListFilenameSize = 15;
+
 
 	private int _totalErrors;
 	private boolean _fatalErrorEncountered;
@@ -40,13 +43,51 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
 	@Override
 	public void preProcess(AbstractDirective<? extends AbstractDeltaContext> directive, String data) {
 
-		if (directive.getControlWords().equals(CharacterList.CONTROL_WORDS)
-				|| directive.getControlWords().equals(KeyCharacterList.CONTROL_WORDS)
-				|| directive.getControlWords().equals(ItemDescriptions.CONTROL_WORDS)) {
+		outputToListingFile(directive, data);
+		
+		if (isCharacterList(directive) || isItemDescriptions(directive)) {
 			checkForFatalError();
-		}
+		} 
+	}
 
-		_context.getOutputFileSelector().listMessage(directive.getName() + " " + data);
+	protected void outputToListingFile(AbstractDirective<? extends AbstractDeltaContext> directive, String data) {
+		if (isCharacterDirective(directive) && !_context.isCharacterListingEnabled()) {
+
+			_context.getOutputFileSelector().listMessage(directive.getName());
+		}
+		else if (isItemDirective(directive) && !_context.isItemListingEnabled()) {
+			_context.getOutputFileSelector().listMessage(directive.getName());
+		}
+		else {
+			String line = formatWithFileName(directive.getName() + " " + data);
+			_context.getOutputFileSelector().listMessage(line);
+		}
+	}
+	
+	private boolean isCharacterList(AbstractDirective<? extends AbstractDeltaContext> directive) {
+		return directive instanceof CharacterList || directive instanceof KeyCharacterList;
+	}
+	
+	private boolean isItemDescriptions(AbstractDirective<? extends AbstractDeltaContext> directive) {
+		return directive instanceof ItemDescriptions;
+	}
+	
+	/**
+	 * @return true if the directive is CHARACTER LIST, CHARACTER NOTES, 
+	 * CHARACTER IMAGES.  Used to control listing output.
+	 */
+	private boolean isCharacterDirective(AbstractDirective<? extends AbstractDeltaContext> directive) {
+		return isCharacterList(directive) || 
+			directive instanceof CharacterNotes ||
+		    directive instanceof CharacterImages;
+ 	}
+	
+	/**
+	 * @return true if the directive is ITEM DESCRIPTIONS, TAXON IMAGES.  
+	 * Used to control listing output.
+	 */
+	private boolean isItemDirective(AbstractDirective<? extends AbstractDeltaContext> directive) {
+		return isItemDescriptions(directive) || directive instanceof TaxonImages;
 	}
 
 	@Override
@@ -54,17 +95,36 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
 
 		handleErrors();
 
-		if (directive.getControlWords().equals(CharacterList.CONTROL_WORDS)
-				|| directive.getControlWords().equals(KeyCharacterList.CONTROL_WORDS)) {
+		if (isCharacterList(directive)) {
 			postProcessCharacters();
-		} else if (directive.getControlWords().equals(ItemDescriptions.CONTROL_WORDS)) {
+		} else if (isItemDescriptions(directive)) {
 			postProcessItems();
 		}
 	}
 
 	@Override
 	public void finishedProcessing() {
-		// processPrintActions();
+		OutputFileManager fileManager = _context.getOutputFileSelector();
+		if (_totalErrors > 0) {
+			fileManager.message("");
+			fileManager.message("****** Number of errors = "+_totalErrors);
+			fileManager.message("****** Abnormal Termination.");
+		}
+		else {
+			fileManager.message("Normal termination.");
+		}
+		fileManager.message("");
+		
+		listOutputFiles();
+	}
+	
+	private void listOutputFiles() {
+		OutputFileManager fileManager = _context.getOutputFileSelector();
+		fileManager.message("Output files - ");
+		for (String fileName : fileManager.getOutputFileNames()) {
+			fileManager.message("   "+fileName);
+		}
+		
 	}
 
 	private void postProcessCharacters() {
@@ -82,6 +142,7 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
 	@Override
 	public void handleDirectiveProcessingException(AbstractDeltaContext context,
 			AbstractDirective<? extends AbstractDeltaContext> directive, Exception ex) {
+		_totalErrors ++;
 		ParsingContext pc = context.getCurrentParsingContext();
 
 		if (ex instanceof DirectiveException) {
@@ -91,7 +152,7 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
 
 			// Write the directive out for context.
 			try {
-				fileManager.ErrorMessage(currentDirective(pc, offset));
+				fileManager.errorMessage(currentDirective(pc, offset));
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -103,8 +164,8 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
 			}
 
 			errorLocation.append("^");
-			fileManager.ErrorMessage(errorLocation.toString());
-			fileManager.ErrorMessage("****** " + ex.getMessage());
+			fileManager.errorMessage(errorLocation.toString());
+			fileManager.errorMessage("****** " + ex.getMessage());
 			fileManager.listMessage("****** " + ex.getMessage());
 
 		} else {
@@ -159,5 +220,13 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
 		if (_fatalErrorEncountered) {
 			throw new RuntimeException("It's all over!");
 		}
+	}
+	
+	private String formatWithFileName(String text) {
+		ParsingContext context = _context.getCurrentParsingContext();
+		String filename = Utils.truncate(String.format("%s,%d", context.getFile().getAbsolutePath(), context.getCurrentLine()), _ListFilenameSize);
+		
+		return String.format("%s %s", filename, text);
+
 	}
 }

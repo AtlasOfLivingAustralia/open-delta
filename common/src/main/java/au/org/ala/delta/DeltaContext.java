@@ -48,7 +48,7 @@ import au.org.ala.delta.util.Functor;
  */
 public class DeltaContext extends AbstractDeltaContext {
 
-	public static enum HeadingType {HEADING, REGISTRATION_SUBHEADING, REGISTRATION_HEADING};
+	public static enum HeadingType {HEADING, REGISTRATION_SUBHEADING, REGISTRATION_HEADING, SHOW};
 	public static enum OutputFormat {RTF, HTML, NONE};
 	public static enum PrintActionType {PRINT_CHARACTER_LIST, PRINT_ITEM_DESCRIPTIONS, PRINT_ITEM_NAMES, PRINT_SUMMARY, PRINT_UNCODED_CHARACTERS, TRANSLATE_UNCODED_CHARACTERS};
 	
@@ -117,7 +117,8 @@ public class DeltaContext extends AbstractDeltaContext {
 	private boolean _keyCharacterListUsed = false;
 	private boolean _numberStatesFromZero = false;
 	private boolean _useMeanValues = false;
-	
+	private boolean _listCharacters = false;
+	private boolean _listItems = false;
 	
 	private Map<HeadingType, String> _headings = new HashMap<HeadingType, String>();
 	private Integer _characterForTaxonImages = null;
@@ -977,4 +978,29 @@ public class DeltaContext extends AbstractDeltaContext {
 	public void includeAllItems() {
 		_excludedItems.clear();
 	}
+
+	/**
+	 * CHARACTER LIST, CHARACTER NOTES and CHARACTER IMAGES will be output
+	 * to the listing file.  (By default they are not).
+	 */
+	public void enableCharacterListing() {
+		_listCharacters = true;
+	}
+	
+	public boolean isCharacterListingEnabled() {
+		return _listCharacters;
+	}
+	
+	/**
+	 * ITEM DESCRIPTIONS, TAXON IMAGES will be output
+	 * to the listing file.  (By default they are not).
+	 */
+	public void enableItemListing() {
+		_listItems = true;
+	}
+	
+	public boolean isItemListingEnabled() {
+		return _listItems;
+	}
+	
 }
