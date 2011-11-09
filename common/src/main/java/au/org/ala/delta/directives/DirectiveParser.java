@@ -82,8 +82,14 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
 		boolean foundDirectiveDelimiter = false;
 
 		int ch = reader.read();
-		
 		while (ch >= 0) {
+			if (ch == '\n') {
+				pc.incrementCurrentLine();
+				pc.setCurrentOffset(0);
+				line.setLength(0);
+			}
+			pc.incrementCurrentOffset();
+			
 			if (ch == DIRECTIVE_DELIMITER && _blank.indexOf(prev) >= 0) {
 
 				// First test to see if this text is delimited...
@@ -123,13 +129,6 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
 			line.append((char) ch);
 			prev = ch;
 			ch = reader.read();
-			if (ch == '\n') {
-				pc.incrementCurrentLine();
-				pc.setCurrentOffset(0);
-				line.setLength(0);
-			}
-
-			pc.incrementCurrentOffset();
 		}
 
 		if (currentDirective != null) {

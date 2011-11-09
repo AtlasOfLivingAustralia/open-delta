@@ -1,10 +1,10 @@
-tointe,8       *PRINT WIDTH a
-                            ^
+..rors/tointe,8 *PRINT WIDTH a
+                             ^
 ****** Integer number required.
- 
-****** Number of errors = 1 
+
+****** Number of errors = 1
 ****** Abnormal Termination.
- 
+
 Output files - 
    tointe.lst
    tointe.err
