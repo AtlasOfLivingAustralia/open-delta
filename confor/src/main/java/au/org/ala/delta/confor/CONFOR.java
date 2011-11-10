@@ -48,8 +48,9 @@ public class CONFOR {
 		String eol = System.getProperty("line.separator");
 		StringBuilder credits = new StringBuilder("CONFOR version 3.00 (Java)");
 		credits.append(eol).append(eol).append("M. J. Dallwitz, T.A. Paine and E.J. Zurcher");
-		credits.append(eol).append(eol).append("CSIRO Division of Entomology, GPO Box 1700, Canberra, ACT 2601, Australia\nPhone +61 2 6246 4075. Fax +61 2 6246 4000. Email delta@ento.csiro.au");
-		credits.append(eol).append(eol).append("Java edition ported by the Atlas of Living Australia, 2010.\n");
+		credits.append(eol).append(eol).append("CSIRO Division of Entomology, GPO Box 1700, Canberra, ACT 2601, Australia");
+		credits.append(eol).append("Phone +61 2 6246 4075. Fax +61 2 6246 4000. Email delta@ento.csiro.au");
+		credits.append(eol).append(eol).append("Java edition ported by the Atlas of Living Australia, 2010.").append(eol);
 		return credits.toString();
 	}
 	
