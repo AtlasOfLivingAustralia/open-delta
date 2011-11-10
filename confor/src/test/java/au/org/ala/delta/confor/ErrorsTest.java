@@ -54,7 +54,7 @@ public class ErrorsTest extends TestCase {
 
 			String expectedFilePathSeparator = "/";
 			if (!File.separator.equals(expectedFilePathSeparator)) {
-				expected = expected.replaceAll(expectedFilePathSeparator, File.separator);
+				expected = expected.replaceAll(expectedFilePathSeparator, "\\");
 			}
 			
 			for (int i = 0; i < expected.length(); i++) {
