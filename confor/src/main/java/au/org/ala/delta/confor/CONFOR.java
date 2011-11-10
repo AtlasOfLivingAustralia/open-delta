@@ -33,14 +33,7 @@ public class CONFOR {
 	 */
 	public static void main(String[] args) throws Exception {
 
-	    
-		StringBuilder credits = new StringBuilder("CONFOR version 3.00 (Java)");
-		credits.append("\n\nM. J. Dallwitz, T.A. Paine and E.J. Zurcher");
-		credits.append("\n\nCSIRO Division of Entomology, GPO Box 1700, Canberra, ACT 2601, Australia\nPhone +61 2 6246 4075. Fax +61 2 6246 4000. Email delta@ento.csiro.au");
-		credits.append("\n\nJava edition ported by the Atlas of Living Australia, 2010.\n");
-		
-		
-		System.out.println(credits);
+		System.out.println(credits());
 		
 		File f = handleArgs(args);
 		if (!f.exists()) {
@@ -49,6 +42,14 @@ public class CONFOR {
 		}
 		
 		new CONFOR(f);
+	}
+	
+	private static String credits() {
+		StringBuilder credits = new StringBuilder("CONFOR version 3.00 (Java)");
+		credits.append("\n\nM. J. Dallwitz, T.A. Paine and E.J. Zurcher");
+		credits.append("\n\nCSIRO Division of Entomology, GPO Box 1700, Canberra, ACT 2601, Australia\nPhone +61 2 6246 4075. Fax +61 2 6246 4000. Email delta@ento.csiro.au");
+		credits.append("\n\nJava edition ported by the Atlas of Living Australia, 2010.\n");
+		return credits.toString();
 	}
 	
 	private static File handleArgs(String[] args) throws Exception {
@@ -74,6 +75,7 @@ public class CONFOR {
 	
 	public CONFOR(File input) throws Exception {
 		_context = new DeltaContext();
+		_context.setCredits(credits());
 		ConforDirectiveFileParser p = ConforDirectiveFileParser.createInstance();
 		ConforDirectiveParserObserver observer = new ConforDirectiveParserObserver(_context); 
 		p.registerObserver(observer);

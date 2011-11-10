@@ -74,7 +74,8 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
 		int prev = ' ';
 		pc.setCurrentLine(1);
 		StringBuilder line = new StringBuilder();
-		
+		StringBuilder directiveText = new StringBuilder();
+		pc.setCurrentDirectiveText(directiveText);
 		StringBuilder currentWord = new StringBuilder();
 		List<String> currentWords = new ArrayList<String>();
 
@@ -82,13 +83,8 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
 		boolean foundDirectiveDelimiter = false;
 
 		int ch = reader.read();
+		
 		while (ch >= 0) {
-			if (ch == '\n') {
-				pc.incrementCurrentLine();
-				pc.setCurrentOffset(0);
-				line.setLength(0);
-			}
-			pc.incrementCurrentOffset();
 			
 			if (ch == DIRECTIVE_DELIMITER && _blank.indexOf(prev) >= 0) {
 
@@ -101,6 +97,7 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
 						executeDirective(currentDirective, currentData.toString(), context);
 					}
 
+					directiveText.setLength(0);
 					foundDirectiveDelimiter = true;
 					// Start a potentially new directive
 					currentWords.clear();
@@ -127,8 +124,10 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
 				currentData.append((char) ch);
 			}
 			line.append((char) ch);
+			updateParsingContext(pc, line, directiveText, ch);
 			prev = ch;
 			ch = reader.read();
+			
 		}
 
 		if (currentDirective != null) {
@@ -141,6 +140,16 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
 
 		Logger.log("Finished!");
 		context.endCurrentParsingContext();
+	}
+
+	protected void updateParsingContext(ParsingContext pc, StringBuilder line, StringBuilder directiveText, int ch) {
+		if (ch == '\n') {
+			pc.incrementCurrentLine();
+			pc.setCurrentOffset(0);
+			directiveText.append(line);
+			line.setLength(0);
+		}
+		pc.incrementCurrentOffset();
 	}
 
 	private boolean isDelimited(AbstractDirective<C> directive, StringBuilder data) {

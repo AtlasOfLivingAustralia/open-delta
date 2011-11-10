@@ -24,9 +24,18 @@ public class ParsingContext {
     private long _currentDirectiveStartLine;
     private long _currentDirectiveStartOffset;
     private long _currentDirectiveEndOffset;
+    private StringBuilder _currentDirectiveText;
     
     public ParsingContext() {
 
+    }
+    
+    public void setCurrentDirectiveText(StringBuilder text) {
+    	_currentDirectiveText = text;
+    }
+    
+    public String getCurrentDirectiveText() {
+    	return _currentDirectiveText.toString();
     }
 
     public File getFile() {

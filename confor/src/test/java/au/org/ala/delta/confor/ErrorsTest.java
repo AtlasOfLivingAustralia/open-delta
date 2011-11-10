@@ -21,7 +21,7 @@ public class ErrorsTest extends TestCase {
 
 		String path = directivesFileDirectory.getAbsolutePath();
 
-		//runAndTest(path, "tointe", new String[] { "tointe.err", "tointe.lst" });
+		runAndTest(path, "tointe", new String[] { "tointe.err", "tointe.lst" });
 	}
 
 	protected void runAndTest(String path, String directivesFile, String... resultFileName) throws Exception,

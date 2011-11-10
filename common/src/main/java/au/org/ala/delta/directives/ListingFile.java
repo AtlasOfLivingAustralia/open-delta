@@ -17,6 +17,7 @@ package au.org.ala.delta.directives;
 import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.DeltaContext.HeadingType;
 import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.io.OutputFileSelector;
 
@@ -35,7 +36,6 @@ public class ListingFile extends AbstractTextDirective {
 		OutputFileSelector fileManager = context.getOutputFileSelector();
 		fileManager.setListingFileName(filename);
 		startFile(context);
-		fileManager.listMessage(data);
 	}
 	
 	protected void startFile(DeltaContext context) {
@@ -45,15 +45,15 @@ public class ListingFile extends AbstractTextDirective {
 		if (StringUtils.isNotEmpty(credits)) {
 			fileManager.listMessage(credits);
 		}
-		String heading = (String) context.getVariable("HEADING", null);
+		String heading = context.getHeading(HeadingType.HEADING);
 		if (heading != null) {
 			fileManager.listMessage(heading);
 		}
 		
-		//for (String message : context.getErrorMessages()) {
-		//	fileManager.listMessage(message);
-		//}
-		
+		heading = context.getHeading(HeadingType.SHOW);
+		if (heading != null) {
+			fileManager.listMessage(heading);
+		}
 	}
 
 }

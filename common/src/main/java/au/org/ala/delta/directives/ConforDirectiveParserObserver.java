@@ -43,14 +43,12 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
 	@Override
 	public void preProcess(AbstractDirective<? extends AbstractDeltaContext> directive, String data) {
 
-		outputToListingFile(directive, data);
-		
 		if (isCharacterList(directive) || isItemDescriptions(directive)) {
 			checkForFatalError();
 		} 
 	}
 
-	protected void outputToListingFile(AbstractDirective<? extends AbstractDeltaContext> directive, String data) {
+	protected void outputToListingFile(AbstractDirective<? extends AbstractDeltaContext> directive) {
 		if (isCharacterDirective(directive) && !_context.isCharacterListingEnabled()) {
 
 			_context.getOutputFileSelector().listMessage(formatWithFileName(directive.getName()));
@@ -61,17 +59,16 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
 		else {
 			ParsingContext context = _context.getCurrentParsingContext();
 			int pos = 0;
-			String prefix = "*"+directive.getName()+ " ";
+			String directiveText = context.getCurrentDirectiveText();
 			for (int i = (int)context.getCurrentDirectiveStartLine(); i<context.getCurrentLine(); i++) {
-				int nextPos = data.indexOf('\n', pos);
+				int nextPos = directiveText.indexOf('\n', pos);
 				if (nextPos < 0) {
-					nextPos = data.length();
+					nextPos = directiveText.length();
 				}
-				String line = data.substring(pos, nextPos);
-				line = formatWithFileName(prefix + line,context.getFile().getAbsolutePath(), i);
+				String line = directiveText.substring(pos, nextPos);
+				line = formatWithFileName(line,context.getFile().getAbsolutePath(), i);
 				_context.getOutputFileSelector().listMessage(line);
 				pos = nextPos+1;
-				prefix = "";
 			}
 			
 		}
@@ -106,6 +103,8 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
 	@Override
 	public void postProcess(AbstractDirective<? extends AbstractDeltaContext> directive) {
 
+		outputToListingFile(directive);
+		
 		handleErrors();
 
 		if (isCharacterList(directive)) {
@@ -163,18 +162,28 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
 
 			int offset = ((DirectiveException) ex).getErrorOffset();
 
-			// Write the directive out for context.
-			try {
-				String text = currentDirective(pc, offset);
-				text = formatWithFileName(text, pc.getFile().getAbsolutePath(), pc.getCurrentDirectiveStartLine());
-				fileManager.errorMessage(text);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			String directiveText = pc.getCurrentDirectiveText();
+			int dataStart = (int)pc.getDirectiveEndOffset();
+			
+			offset += dataStart;
+			
+			int newLineAfterError = directiveText.indexOf('\n', offset);
+			if (newLineAfterError < 0) {
+				newLineAfterError = directiveText.length();
+			}
+			
+			String[] lines = directiveText.substring(0, newLineAfterError).split("\n");
+			
+			int lineNum = (int)pc.getCurrentDirectiveStartLine();
+			for (String line : lines) {
+				
+				line = formatWithFileName(line, pc.getFile().getAbsolutePath(), lineNum);
+				_context.getOutputFileSelector().message(line);
+				lineNum++;
 			}
 
 			StringBuilder errorLocation = new StringBuilder();
-			for (int i = 0; i < offset + pc.getDirectiveEndOffset() + 14; i++) {
+			for (int i = 0; i < offset + 16; i++) {
 				errorLocation.append(' ');
 			}
 
