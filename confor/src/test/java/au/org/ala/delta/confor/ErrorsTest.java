@@ -52,6 +52,11 @@ public class ErrorsTest extends TestCase {
 				expected = expected.replaceAll(expectedLineSeparator, System.getProperty("line.separator"));
 			}
 
+			String expectedFilePathSeparator = "/";
+			if (!File.separator.equals(expectedFilePathSeparator)) {
+				expected = expected.replaceAll(expectedFilePathSeparator, File.separator);
+			}
+			
 			for (int i = 0; i < expected.length(); i++) {
 				if (expected.charAt(i) != actual.charAt(i)) {
 					System.out.println("Difference @ char: " + i + " Expected: " + expected.charAt(i)
