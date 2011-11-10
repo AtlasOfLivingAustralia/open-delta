@@ -15,12 +15,20 @@ public class TypeSettingMarks extends AbstractFormattingDirective {
 	
 	@Override
 	public void processMark(DeltaContext context, TypeSettingMark mark) {
-		context.addTypeSettingMark(mark);
+		
+		String text = mark.getMarkText();
+		String replacement = " ";
+		if (!mark.getAllowLineBreaks()) {
+			replacement = "";
+		}
+		text = text.replaceAll("[\\r\\n]+", replacement);
+		TypeSettingMark newMark = new TypeSettingMark(mark.getId(), text, mark.getAllowLineBreaks());
+		context.addTypeSettingMark(newMark);
 		if (mark.getId() == MarkPosition.START_OF_FILE.getId()) {
-			context.getOutputFileSelector().setPrintFileHeader(mark.getMarkText());
+			context.getOutputFileSelector().setPrintFileHeader(text);
 		}
 		else if (mark.getId() == MarkPosition.END_OF_FILE.getId()) {
-			context.getOutputFileSelector().setPrintFileFooter(mark.getMarkText());
+			context.getOutputFileSelector().setPrintFileFooter(text);
 		}
 	}
 	

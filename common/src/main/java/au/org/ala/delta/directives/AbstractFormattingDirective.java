@@ -31,7 +31,7 @@ public abstract class AbstractFormattingDirective extends AbstractCustomDirectiv
 	
 	@Override
 	protected TextListParser<?> createParser(DeltaContext context, StringReader reader) {
-		return new IntegerTextListParser(context, reader);
+		return new IntegerTextListParser(context, reader, false);
 	}
 
 	@Override
