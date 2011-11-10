@@ -18,6 +18,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -131,12 +132,31 @@ public class VODirFileDesc extends VOAnyDesc implements WindowsConstants {
 		setDirty();
 	}
 
+	private long windowsToJavaTimeOffset() {
+		Calendar cal = Calendar.getInstance();
+		cal.clear();
+		cal.set(1601, 01, 01);
+		
+		Calendar cal2 = Calendar.getInstance();
+		cal2.clear();
+		cal2.set(1970, 01, 01);
+		
+		return cal.getTimeInMillis() - cal2.getTimeInMillis();
+	}
+	
 	public long getFileModifyTime() {
-		return _fixedData.fileModifyTime;
+		// Convert from the windows FILETIME format (the number of 100
+		// nanosecond intervals since Jan 1, 1601) to the Java representation
+		// (number of milliseconds since Jan 1, 1970).
+		
+		long windowsFileTime = _fixedData.fileModifyTime;
+		long javaFileTime = windowsFileTime/10000 + windowsToJavaTimeOffset();
+		return javaFileTime;
 	}
 
 	public void setFileModifyTime(long newTime) {
-		_fixedData.fileModifyTime = newTime;
+		long windowsFileTime = (newTime - windowsToJavaTimeOffset()) * 10000L;
+		_fixedData.fileModifyTime = windowsFileTime;
 		setDirty();
 	}
 

@@ -116,6 +116,7 @@ public class ExportController {
 				}
 			}
 			state.getPrinter().printBufferLine();
+			file.setLastModifiedTime(System.currentTimeMillis());
 
 		} catch (Exception e) {
 			e.printStackTrace();
