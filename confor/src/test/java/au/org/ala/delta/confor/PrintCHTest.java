@@ -22,7 +22,7 @@ public class PrintCHTest extends ConforTestCase {
 		System.out.println(expected);
 		
 		File actualFile = new File(FilenameUtils.concat(_samplePath, "www/chars.htm"));
-		String actual = FileUtils.readFileToString(actualFile, "utf-8");
+		String actual = FileUtils.readFileToString(actualFile, "cp1252");
 
 		System.out.print(actual);
 		

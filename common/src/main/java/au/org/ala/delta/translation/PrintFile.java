@@ -437,6 +437,7 @@ public class PrintFile {
     	if (_newFile) {
     		if (StringUtils.isNotBlank(_newFileHeader)) {
     			writeJustifiedText(_newFileHeader, -1, false);
+    			_omitNextTrailingSpace = true;
     		}
     		_newFile = false;
     	}

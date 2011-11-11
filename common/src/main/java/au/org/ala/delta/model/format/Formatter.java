@@ -83,6 +83,12 @@ public class Formatter {
     public String defaultFormat(String text, boolean newLinesToSpace) {
         return defaultFormat(text, _commentStrippingMode, _angleBracketHandlingMode, _stripFormatting, _capitaliseFirstWord, newLinesToSpace, _rtfToHtml);
     }
+    
+    public String defaultFormat(String text, boolean newLinesToSpace, boolean capitaliseFirstWord) {
+        return defaultFormat(text, _commentStrippingMode, _angleBracketHandlingMode, _stripFormatting, capitaliseFirstWord, newLinesToSpace, _rtfToHtml);
+    }
+    
+    
 
     public String defaultFormat(String text, CommentStrippingMode commentStrippingMode, AngleBracketHandlingMode angleBracketHandlingMode, boolean stripFormatting, boolean capitaliseFirstWord) {
     	return defaultFormat(text, commentStrippingMode, angleBracketHandlingMode, stripFormatting, capitaliseFirstWord, true);

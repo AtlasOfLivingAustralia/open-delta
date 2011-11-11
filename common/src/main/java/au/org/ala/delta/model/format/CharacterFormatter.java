@@ -1,5 +1,7 @@
 package au.org.ala.delta.model.format;
 
+import org.apache.commons.lang.StringUtils;
+
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.NumericCharacter;
@@ -97,6 +99,14 @@ public class CharacterFormatter extends Formatter {
 	public String formatUnits(NumericCharacter<?> character, CommentStrippingMode commentStrippingMode) {
 		String units = character.getUnits();
 		return defaultFormat(units, commentStrippingMode, _angleBracketHandlingMode, _stripFormatting, false);
+	}
+	
+	public String formatNotes(Character character) {
+		String notes = character.getNotes();
+		if (StringUtils.isEmpty(notes)) {
+			return "";
+		}
+		return defaultFormat(notes, false, false);
 	}
 	
 }

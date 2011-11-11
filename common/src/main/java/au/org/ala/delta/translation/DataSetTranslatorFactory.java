@@ -156,9 +156,10 @@ public class DataSetTranslatorFactory {
 
 	private DataSetTranslator createIntkeyFormatTranslator(DeltaContext context, FormatterFactory formatterFactory) {
 		FilteredDataSet dataSet = new FilteredDataSet(context, new DeltaFormatDataSetFilter(context));
-		
+		CharacterFormatter charFormatter =formatterFactory.createCharacterFormatter(false, false, CommentStrippingMode.RETAIN);
+		charFormatter.setDespaceRtf(true);
 		return new IntkeyTranslator(context, dataSet,
-				formatterFactory.createCharacterFormatter(false, false, CommentStrippingMode.RETAIN),
+				charFormatter,
 				formatterFactory.createAttributeFormatter());
 	}
 	
@@ -246,6 +247,7 @@ public class DataSetTranslatorFactory {
 			mode = CommentStrippingMode.STRIP_INNER;
 		}
 		CharacterFormatter charFormatter  = formatterFactory.createCharacterFormatter(true, true, mode);
+		charFormatter.setDespaceRtf(true);
 		CharacterListTypeSetter typeSetter = new TypeSetterFactory().createCharacterListTypeSetter(context, printer);
 		DataSetFilter filter = new DeltaFormatDataSetFilter(context);
 		IterativeTranslator translator = new CharacterListPrinter(context, printer, charFormatter, typeSetter);
