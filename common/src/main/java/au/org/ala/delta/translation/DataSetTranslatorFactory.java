@@ -224,6 +224,7 @@ public class DataSetTranslatorFactory {
 			break;
 		case PRINT_ITEM_NAMES:
 			translator = createItemNamesPrinter(context);
+			break;
 		case PRINT_ITEM_DESCRIPTIONS:
 			translator = createItemDescriptionsPrinter(context);
 			break;

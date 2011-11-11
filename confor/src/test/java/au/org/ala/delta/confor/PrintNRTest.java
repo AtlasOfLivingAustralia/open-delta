@@ -44,7 +44,7 @@ public class PrintNRTest extends ConforTestCase {
 				break;
 			}
 		}
-		//assertEquals(expected, actual);
+		assertEquals(expected, actual);
 	}
 
 	@Override
