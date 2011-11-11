@@ -40,12 +40,14 @@ public class ExportController {
 	private ImportExportDialog _exportDialog;
 	private ResourceMap _resources;
 	private ActionMap _actions;
+	private String _exportFileEncoding;
 	
 	public ExportController(DeltaEditor context) {
 		_editor = context;
 		_model = context.getCurrentDataSet();
 		_resources = _editor.getContext().getResourceMap();
 		_actions = _editor.getContext().getActionMap(this);
+		_exportFileEncoding = "Cp1252";
 	}
 
 	public void begin(PropertyChangeListener listener) {
@@ -164,7 +166,7 @@ public class ExportController {
 				DirectiveFile dirFile = file.getDirectiveFile();
 				if (dirFile != null) {
 					File output = createExportFile(dirFile, _directoryName);
-					state.setPrintStream(new PrintStream(output, "utf-8"));
+					state.setPrintStream(new PrintStream(output, _exportFileEncoding));
 					_status.setCurrentFile(file);
 					writeDirectivesFile(dirFile, state);
 				}

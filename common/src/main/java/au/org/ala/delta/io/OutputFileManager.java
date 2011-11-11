@@ -19,6 +19,8 @@ import au.org.ala.delta.translation.PrintFile;
  */
 public class OutputFileManager {
 
+	public enum OutputFileType {LISTING_FILE, ERROR_FILE, OUTPUT_FILE, PRINT_FILE};
+	
 	protected class OutputFile {
 		String _fileName;
 		PrintStream _stream;
@@ -61,9 +63,6 @@ public class OutputFileManager {
 	
 	public static final String OUTPUT_FILE_ENCODING = "utf-8";
 	public static final String RTF_OUTPUT_FILE_ENCODING = "cp1252";
-	protected static final int LISTING_FILE = 0;
-	protected static final int ERROR_FILE = 1;
-	protected static final int OUTPUT_FILE = 2;
 	
 	protected OutputFormat _outputFormat;
 	private String _outputDirectory;
@@ -78,19 +77,19 @@ public class OutputFileManager {
 	public OutputFileManager() {
 		super();
 		_outputFiles = new OutputFile[3];
-		_outputFiles[ERROR_FILE] = new OutputFile(System.err);
+		_outputFiles[OutputFileType.ERROR_FILE.ordinal()] = new OutputFile(System.err);
 	}
 	
 	public void enableListing() {
-		if (_outputFiles[LISTING_FILE] == null) {
-			_outputFiles[LISTING_FILE] = new OutputFile(System.out);
+		if (outputFile(OutputFileType.LISTING_FILE) == null) {
+			_outputFiles[OutputFileType.LISTING_FILE.ordinal()] = new OutputFile(System.out);
 		}
 	}
 	
 	public void disableListing() {
-		if (_outputFiles[LISTING_FILE] != null) {
-			_outputFiles[LISTING_FILE].close();
-			_outputFiles[LISTING_FILE] = null;
+		if (outputFile(OutputFileType.LISTING_FILE) != null) {
+			outputFile(OutputFileType.LISTING_FILE).close();
+			_outputFiles[OutputFileType.LISTING_FILE.ordinal()] = null;
 		}
 	}
 
@@ -141,13 +140,13 @@ public class OutputFileManager {
 	}
 	
 	public void setErrorFileName(String errorFile) throws Exception {
-		close(_outputFiles[ERROR_FILE]);
-		_outputFiles[ERROR_FILE] = new OutputFile(errorFile);
+		close(_outputFiles[OutputFileType.ERROR_FILE.ordinal()]);
+		_outputFiles[OutputFileType.ERROR_FILE.ordinal()] = new OutputFile(errorFile);
 	}
 	
 	public void setListingFileName(String listingFile) throws Exception {
-		close(_outputFiles[LISTING_FILE]);
-		_outputFiles[LISTING_FILE] = new OutputFile(listingFile);
+		close(outputFile(OutputFileType.LISTING_FILE));
+		_outputFiles[OutputFileType.LISTING_FILE.ordinal()] = new OutputFile(listingFile);
 	}
 	
 	private void close(OutputFile file) {
@@ -157,8 +156,8 @@ public class OutputFileManager {
 	}
 
 	public void setOutputFileName(String outputFile) throws Exception {
-		_outputFiles[OUTPUT_FILE] = new OutputFile(outputFile);
-		_outputFile = new PrintFile(_outputFiles[OUTPUT_FILE].getPrintStream(), _outputWidth);
+		_outputFiles[OutputFileType.OUTPUT_FILE.ordinal()] = new OutputFile(outputFile);
+		_outputFile = new PrintFile(_outputFiles[OutputFileType.OUTPUT_FILE.ordinal()].getPrintStream(), _outputWidth);
 	}
 
 	public PrintFile getOutputFile() {
@@ -195,13 +194,13 @@ public class OutputFileManager {
 	
 	public void listMessage(String line) {
 
-		if (_outputFiles[LISTING_FILE] != null) {
+		if (outputFile(OutputFileType.LISTING_FILE) != null) {
 			String prefix = "";
-			if (_outputFiles[LISTING_FILE].getPrintStream() == System.out) {
+			if (outputFile(OutputFileType.LISTING_FILE).getPrintStream() == System.out) {
 				prefix = "LIST:";
 			}
 
-			_outputFiles[LISTING_FILE].outputMessage("%s%s", prefix, line);
+			outputFile(OutputFileType.LISTING_FILE).outputMessage("%s%s", prefix, line);
 		}
 	}
 	
@@ -210,12 +209,12 @@ public class OutputFileManager {
 	}
 
 	public void errorMessage(String format, Object... args) {
-		_outputFiles[ERROR_FILE].outputMessage(format, args);
+		_outputFiles[OutputFileType.ERROR_FILE.ordinal()].outputMessage(format, args);
 	}
 	
 	
 	public File getOutputFileAsFile() {
-		return fullPathOf(_outputFiles[OUTPUT_FILE]._fileName);
+		return fullPathOf(outputFile(OutputFileType.OUTPUT_FILE)._fileName);
 	}
 	
 	public List<String> getOutputFileNames() {
@@ -236,5 +235,9 @@ public class OutputFileManager {
 	public void message(String line) {
 		listMessage(line);
 		errorMessage(line);
+	}
+	
+	public OutputFile outputFile(OutputFileType type) {
+		return _outputFiles[type.ordinal()];
 	}
 }

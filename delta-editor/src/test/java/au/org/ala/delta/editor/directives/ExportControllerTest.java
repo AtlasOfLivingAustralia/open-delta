@@ -288,7 +288,7 @@ public class ExportControllerTest extends DeltaTestCase {
 		
 		String[] directives = read(directiveFileName);
 		
-		String actual = FileUtils.readFileToString(new File(directory, directiveFileName), "utf-8");
+		String actual = FileUtils.readFileToString(new File(directory, directiveFileName), "Cp1252");
 		actual = actual.replace("\r\n", "\n");
 		String[] actualDirectives = actual.split("\\*");
 		
@@ -319,7 +319,7 @@ public class ExportControllerTest extends DeltaTestCase {
 		URL expected = getClass().getResource("expected_results/"+fileName);
 	
 		File f = new File(expected.toURI());
-		String buffer = FileUtils.readFileToString(f, "utf-8");
+		String buffer = FileUtils.readFileToString(f, "Cp1252");
 		buffer = buffer.replace("\r\n", "\n");
 		return buffer.toString().split("\\*");
 	}

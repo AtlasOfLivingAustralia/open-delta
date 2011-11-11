@@ -35,6 +35,8 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.SingleFrameApplication;
+import org.jdesktop.application.Task;
+import org.jdesktop.application.Task.BlockingScope;
 
 import au.org.ala.delta.confor.CONFOR;
 import au.org.ala.delta.dist.DIST;
@@ -172,13 +174,19 @@ public class ActionSetsDialog extends AbstractDeltaView {
 		}
 	}
 	
-	@Action
-	public void runDirectiveFile() {
-		
+	@Action(block = BlockingScope.APPLICATION)
+	public Task<Void, Void> runDirectiveFile() {
+		Task<Void, Void> task = null;
 		if (!checkExport()) {
-		
-			doRunDirectiveFile(getExportPath());
+			task = new Task<Void, Void>(Application.getInstance()) {
+				@Override
+				public Void doInBackground() {
+					doRunDirectiveFile(getExportPath());
+					return null;
+				}
+			};
 		}
+		return task;
 	}
 
 

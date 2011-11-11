@@ -38,7 +38,7 @@ public class DistOutputFileManager extends OutputFileSelector {
 	
 	protected String getNamesFileName() {
 		if (StringUtils.isEmpty(_namesFileName)) {
-			String outputFile =_outputFiles[OUTPUT_FILE].getFileName();
+			String outputFile = outputFile(OutputFileType.OUTPUT_FILE).getFileName();
 			_namesFileName = FilenameUtils.getBaseName(outputFile);
 			_namesFileName = _namesFileName + DEFAULT_NAMES_FILE_EXTENSION;
 		}
