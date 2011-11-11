@@ -3,6 +3,7 @@ package au.org.ala.delta.translation.delta;
 import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.directives.OutputParameters.OutputParameter;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
@@ -53,7 +54,7 @@ public class DeltaFormatTranslator extends AbstractIterativeTranslator {
 	public void beforeFirstItem() {
 		_printer.setLineWrapIndent(0);
 		_printer.setIndent(0);
-		_printer.writeBlankLines(1, 0);
+		_printer.writeBlankLines(2, 0);
 	}
 
 	@Override
@@ -213,7 +214,20 @@ public class DeltaFormatTranslator extends AbstractIterativeTranslator {
 	}
 	
 	@Override
-	public void translateOutputParameter(String parameterName) {
-		outputLine(parameterName.replaceAll(" #", " *"));
+	public void translateOutputParameter(OutputParameter parameter) {
+		_printer.setIndent(0);
+		
+		if (parameter.fullText.startsWith("#")) {
+			outputLine("*"+parameter.fullText.substring(1));
+		}
+		else {
+			if (parameter.fullText.contains(" #")) { 
+				outputLine(parameter.fullText.replaceAll(" #", " *"));
+			}
+			else {
+				_printer.setIndent(7);
+				outputLine(parameter.fullText);
+			}
+		}
 	}
 }

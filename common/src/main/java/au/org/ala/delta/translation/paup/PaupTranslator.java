@@ -9,6 +9,7 @@ import java.util.TreeMap;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.DeltaContext.HeadingType;
+import au.org.ala.delta.directives.OutputParameters.OutputParameter;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.IdentificationKeyCharacter;
@@ -171,7 +172,7 @@ public class PaupTranslator extends ParameterBasedTranslator {
 			super(outputFile);
 		}
 		@Override
-		public void translateParameter(String parameter) {
+		public void translateParameter(OutputParameter parameter) {
 			_outputFile.outputLine("!"+_context.getHeading(HeadingType.HEADING));
 		}
 	}
@@ -205,7 +206,7 @@ public class PaupTranslator extends ParameterBasedTranslator {
 		}
 		
 		@Override
-		public void translateParameter(String parameter) {
+		public void translateParameter(OutputParameter parameter) {
 			writeDataSpecification();
 		}
 
@@ -297,7 +298,7 @@ public class PaupTranslator extends ParameterBasedTranslator {
 			super(outputFile);
 		}
 		@Override
-		public void translateParameter(String parameter) {
+		public void translateParameter(OutputParameter parameter) {
 			Map<BigDecimal, List<Integer>> weights = new TreeMap<BigDecimal, List<Integer>>();
 			Iterator<IdentificationKeyCharacter> characters = _dataSet.identificationKeyCharacterIterator();
 			while (characters.hasNext()) {
@@ -330,7 +331,7 @@ public class PaupTranslator extends ParameterBasedTranslator {
 			super(outputFile);
 		}
 		@Override
-		public void translateParameter(String parameter) {
+		public void translateParameter(OutputParameter parameter) {
 			List<Integer> unorderedMultiStateChars = new ArrayList<Integer>();
 			List<Integer> orderedMultiStateChars = new ArrayList<Integer>();
 			Iterator<IdentificationKeyCharacter> characters = _dataSet.identificationKeyCharacterIterator();

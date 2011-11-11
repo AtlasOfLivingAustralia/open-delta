@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.directives.OutputParameters.OutputParameter;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.MutableDeltaDataSet;
@@ -121,7 +122,11 @@ public class AbstractDataSetTranslator implements DataSetTranslator {
 	
 	
 	@Override
-	public void translateOutputParameter(String parameterName) {}
+	public void translateOutputParameter(OutputParameter parameter) {
+		for (IterativeTranslator translator : _translators) {
+			translator.translateOutputParameter(parameter);
+		}
+	}
 	
 	protected void beforeFirstItem() {
 		for (IterativeTranslator translator : _translators) {

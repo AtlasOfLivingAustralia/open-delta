@@ -1,5 +1,6 @@
 package au.org.ala.delta.stub;
 
+import au.org.ala.delta.directives.OutputParameters.OutputParameter;
 import au.org.ala.delta.translation.DataSetTranslator;
 
 /**
@@ -14,5 +15,5 @@ public class DataSetTranslatorStub implements DataSetTranslator {
 	public void translateItems() { }
 	
 	@Override
-	public void translateOutputParameter(String parameterName) {}
+	public void translateOutputParameter(OutputParameter parameterName) {}
 }

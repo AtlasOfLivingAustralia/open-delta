@@ -9,6 +9,7 @@ import java.util.TreeMap;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.DeltaContext.HeadingType;
+import au.org.ala.delta.directives.OutputParameters.OutputParameter;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.IdentificationKeyCharacter;
@@ -185,7 +186,7 @@ public class NexusTranslator extends ParameterBasedTranslator {
 			super(outputFile);
 		}
 		@Override
-		public void translateParameter(String parameter) {
+		public void translateParameter(OutputParameter parameter) {
 
 			_outputFile.outputLine("CHARLABELS");
 			Iterator<IdentificationKeyCharacter> characters = _dataSet.identificationKeyCharacterIterator();
@@ -214,7 +215,7 @@ public class NexusTranslator extends ParameterBasedTranslator {
 			super(outputFile, _dataSet, true, _context.getNumberStatesFromZero());
 		}
 		@Override
-		public void translateParameter(String parameter) {
+		public void translateParameter(OutputParameter parameter) {
 			StringBuilder format = new StringBuilder();
 			format.append("FORMAT MISSING=? GAP=- ");
 			format.append(symbols());
@@ -228,7 +229,7 @@ public class NexusTranslator extends ParameterBasedTranslator {
 			super(outputFile);
 		}
 		@Override
-		public void translateParameter(String parameter) {
+		public void translateParameter(OutputParameter parameter) {
 			_outputFile.outputLine(comment("!"+_context.getHeading(HeadingType.HEADING)));
 		}
 	}
@@ -238,7 +239,7 @@ public class NexusTranslator extends ParameterBasedTranslator {
 			super(outputFile);
 		}
 		@Override
-		public void translateParameter(String parameter) {
+		public void translateParameter(OutputParameter parameter) {
 			_outputFile.setIndentOnLineWrap(true);
 			
 			_outputFile.outputLine("STATELABELS");
@@ -284,7 +285,7 @@ public class NexusTranslator extends ParameterBasedTranslator {
 			super(outputFile);
 		}
 		@Override
-		public void translateParameter(String parameter) {
+		public void translateParameter(OutputParameter parameter) {
 			_outputFile.outputLine("MATRIX");
 			_outputFile.setWrapingGroupChars('(', ')');
 			Iterator<FilteredItem> items = _dataSet.filteredItems();
@@ -358,7 +359,7 @@ public class NexusTranslator extends ParameterBasedTranslator {
 			super(outputFile);
 		}
 		@Override
-		public void translateParameter(String parameter) {
+		public void translateParameter(OutputParameter parameter) {
 			Map<BigDecimal, List<Integer>> weights = new TreeMap<BigDecimal, List<Integer>>();
 			Iterator<IdentificationKeyCharacter> characters = _dataSet.identificationKeyCharacterIterator();
 			while (characters.hasNext()) {
@@ -391,7 +392,7 @@ public class NexusTranslator extends ParameterBasedTranslator {
 			super(outputFile);
 		}
 		@Override
-		public void translateParameter(String parameter) {
+		public void translateParameter(OutputParameter parameter) {
 			List<Integer> unorderedMultiStateChars = new ArrayList<Integer>();
 			List<Integer> orderedMultiStateChars = new ArrayList<Integer>();
 			Iterator<IdentificationKeyCharacter> characters = _dataSet.identificationKeyCharacterIterator();

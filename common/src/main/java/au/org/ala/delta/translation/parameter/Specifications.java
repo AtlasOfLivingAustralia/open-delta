@@ -1,5 +1,6 @@
 package au.org.ala.delta.translation.parameter;
 
+import au.org.ala.delta.directives.OutputParameters.OutputParameter;
 import au.org.ala.delta.translation.FilteredDataSet;
 import au.org.ala.delta.translation.PrintFile;
 
@@ -19,7 +20,7 @@ public class Specifications extends ParameterTranslator {
 	}
 
 	@Override
-	public void translateParameter(String parameter) {
+	public void translateParameter(OutputParameter parameter) {
 		StringBuilder specs = new StringBuilder();
 		specs.append(_command).append(" ");
 		specs.append(_itemsLabel).append("=").append(_dataSet.getNumberOfFilteredItems());

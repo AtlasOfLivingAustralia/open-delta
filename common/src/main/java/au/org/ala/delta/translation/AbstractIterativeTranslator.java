@@ -1,5 +1,6 @@
 package au.org.ala.delta.translation;
 
+import au.org.ala.delta.directives.OutputParameters.OutputParameter;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
@@ -44,5 +45,5 @@ public abstract class AbstractIterativeTranslator implements IterativeTranslator
 	public void afterLastCharacter() {};
 	
 	@Override
-	public void translateOutputParameter(String parameterName) {};
+	public void translateOutputParameter(OutputParameter parameterName) {};
 }

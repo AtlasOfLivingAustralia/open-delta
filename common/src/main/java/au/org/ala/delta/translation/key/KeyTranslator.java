@@ -1,6 +1,7 @@
 package au.org.ala.delta.translation.key;
 
 import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.directives.OutputParameters.OutputParameter;
 import au.org.ala.delta.io.BinFileMode;
 import au.org.ala.delta.key.WriteOnceKeyCharsFile;
 import au.org.ala.delta.key.WriteOnceKeyItemsFile;
@@ -67,5 +68,5 @@ public class KeyTranslator implements DataSetTranslator {
 	}
 	
 	@Override
-	public void translateOutputParameter(String parameterName) {}
+	public void translateOutputParameter(OutputParameter parameter) {}
 }

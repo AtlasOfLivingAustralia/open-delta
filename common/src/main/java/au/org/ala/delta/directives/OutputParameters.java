@@ -21,6 +21,16 @@ public class OutputParameters extends AbstractCustomDirective {
 
 	private DataSetTranslatorFactory _factory;
 
+	public static class OutputParameter {
+		
+		public OutputParameter(String parameter, String fullText) {
+			this.parameter = parameter;
+			this.fullText = fullText;
+		}
+		public String parameter;
+		public String fullText;
+	}
+	
 	public OutputParameters() {
 		super("output", "parameters");
 		_factory = new DataSetTranslatorFactory();
@@ -48,7 +58,7 @@ public class OutputParameters extends AbstractCustomDirective {
 		parser.parse();
 		
 		DataSetTranslator translator = _factory.createTranslator(context);
-		for (String outputParameter : parser.getOutputParameters()) {
+		for (OutputParameter outputParameter : parser.getOutputParameters()) {
 			translator.translateOutputParameter(outputParameter);
 		}
 	}
@@ -58,11 +68,11 @@ public class OutputParameters extends AbstractCustomDirective {
 		private static final char PARAMETER_IDENTIFIER = '#';
 		private static final char PARAMETER_SEPARATOR = '\n';
 		
-		private List<String> _outputParameters;
+		private List<OutputParameter> _outputParameters;
 		
 		public OutputParametersParser(DeltaContext context, Reader reader) {
 			super(context, reader);
-			_outputParameters = new ArrayList<String>();
+			_outputParameters = new ArrayList<OutputParameter>();
 		}
 
 		@Override
@@ -70,28 +80,29 @@ public class OutputParameters extends AbstractCustomDirective {
 			
 			readToNext(PARAMETER_SEPARATOR);
 			while (_currentInt > 0) {
-				String outputParameter = readOutputParameter();
+				OutputParameter outputParameter = readOutputParameter();
 				_outputParameters.add(outputParameter);	
 			}
 		}
 		
-		private String readOutputParameter() throws ParseException {
+		private OutputParameter readOutputParameter() throws ParseException {
 			// Consume the '\n'
 			readNext();
 			String line = readToNext(PARAMETER_SEPARATOR).trim();
+			String parameter = "";
 			int parameterIndex = line.indexOf(PARAMETER_IDENTIFIER);
 			if (parameterIndex >= 0) {
 				int nextSpace = line.indexOf(" ", parameterIndex);
 				if (nextSpace < 0) {
 					nextSpace = line.length();
 				}
-				line = line.substring(parameterIndex, nextSpace);
+				parameter = line.substring(parameterIndex, nextSpace);
 			}
 			
-			return line;
+			return new OutputParameter(parameter, line);
 		}
 		
-		public List<String> getOutputParameters() {
+		public List<OutputParameter> getOutputParameters() {
 			return _outputParameters;
 		}
 		

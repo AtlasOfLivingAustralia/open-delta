@@ -2,6 +2,7 @@ package au.org.ala.delta.translation.parameter;
 
 import java.util.Iterator;
 
+import au.org.ala.delta.directives.OutputParameters.OutputParameter;
 import au.org.ala.delta.model.IdentificationKeyCharacter;
 import au.org.ala.delta.translation.FilteredDataSet;
 import au.org.ala.delta.translation.PrintFile;
@@ -20,7 +21,8 @@ public class Symbols extends ParameterTranslator {
 	}
 
 	@Override
-	public void translateParameter(String parameter) {
+	public void translateParameter(OutputParameter parameter) {
+		
 		_outputFile.outputLine(symbols());
 	}
 	

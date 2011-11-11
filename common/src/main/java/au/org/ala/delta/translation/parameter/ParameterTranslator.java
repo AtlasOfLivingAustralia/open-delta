@@ -1,5 +1,6 @@
 package au.org.ala.delta.translation.parameter;
 
+import au.org.ala.delta.directives.OutputParameters.OutputParameter;
 import au.org.ala.delta.translation.PrintFile;
 
 public abstract class ParameterTranslator {
@@ -10,7 +11,7 @@ public abstract class ParameterTranslator {
 		_outputFile = outputFile;
 	}
 	
-	public abstract void translateParameter(String parameter);
+	public abstract void translateParameter(OutputParameter parameter);
 	
 	protected String comment(String comment) {
 		StringBuilder commentBuffer = new StringBuilder();

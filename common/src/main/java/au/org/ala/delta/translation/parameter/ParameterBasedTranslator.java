@@ -3,6 +3,7 @@ package au.org.ala.delta.translation.parameter;
 import java.util.HashMap;
 import java.util.Map;
 
+import au.org.ala.delta.directives.OutputParameters.OutputParameter;
 import au.org.ala.delta.translation.DataSetTranslator;
 
 public abstract class ParameterBasedTranslator implements DataSetTranslator {
@@ -26,15 +27,15 @@ public abstract class ParameterBasedTranslator implements DataSetTranslator {
 	public void translateItems() {}
 
 	@Override
-	public void translateOutputParameter(String parameterName) {
+	public void translateOutputParameter(OutputParameter parameter) {
 		
-		String name = extractMatchString(parameterName);
+		String name = extractMatchString(parameter.parameter);
 		ParameterTranslator translator = _supportedParameters.get(name);
 		if (translator == null) {
-			unrecognisedParameter(parameterName);
+			unrecognisedParameter(parameter.parameter);
 		}
 		else  {
-			translator.translateParameter(parameterName);
+			translator.translateParameter(parameter);
 		}
 		
 	}

@@ -1,5 +1,7 @@
 package au.org.ala.delta.translation;
 
+import au.org.ala.delta.directives.OutputParameters.OutputParameter;
+
 /**
  * A translator that does nothing.
  */
@@ -12,5 +14,5 @@ public class NullTranslator implements DataSetTranslator {
 	public void translateItems() {}
 
 	@Override
-	public void translateOutputParameter(String parameterName) {}
+	public void translateOutputParameter(OutputParameter parameterName) {}
 }

@@ -2,6 +2,8 @@ package au.org.ala.delta.translation;
 
 import java.util.List;
 
+import au.org.ala.delta.directives.OutputParameters.OutputParameter;
+
 /**
  * Allows multiple translations to occur (sequentially) on the same data
  * set.
@@ -29,9 +31,9 @@ public class CompositeDataSetTranslator implements DataSetTranslator {
 	}
 
 	@Override
-	public void translateOutputParameter(String parameterName) {
+	public void translateOutputParameter(OutputParameter parameter) {
 		for (DataSetTranslator translator : _translators) {
-			translator.translateOutputParameter(parameterName);
+			translator.translateOutputParameter(parameter);
 		}
 	}
 

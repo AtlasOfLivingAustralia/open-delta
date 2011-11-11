@@ -1,5 +1,7 @@
 package au.org.ala.delta.translation;
 
+import au.org.ala.delta.directives.OutputParameters.OutputParameter;
+
 
 public interface DataSetTranslator {
 
@@ -7,5 +9,5 @@ public interface DataSetTranslator {
 	
 	public void translateItems();
 	
-	public void translateOutputParameter(String parameterName);
+	public void translateOutputParameter(OutputParameter parameterName);
 }
