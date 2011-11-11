@@ -18,6 +18,7 @@ import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.MutableDeltaDataSet;
+import au.org.ala.delta.util.Utils;
 
 /**
  * Exports the CHARACTER NOTES directive
@@ -35,6 +36,7 @@ public class DirOutCharNotes extends AbstractDirOutFunctor {
 			Character character = dataSet.getCharacter(i);
 			String notes = character.getNotes();
 			if (StringUtils.isNotEmpty(notes)) {
+				notes = Utils.despaceRtf(notes, false);
 				writeLine(state, "#"+i+". "+notes);
 			}
 		}
