@@ -62,6 +62,15 @@ public class TypeSetterTest extends TestCase {
 		result = _typeSetter.capitaliseFirstWord(text);
 		assertEquals(null, result);
 		
+		text = "<\\i test me\\i0>";
+		result = _typeSetter.capitaliseFirstWord(text);
+		assertEquals("<\\i Test me\\i0>", result);
+		
+		text = "<\\i{}test me\\i0{}>";
+		result = _typeSetter.capitaliseFirstWord(text);
+		assertEquals("<\\i{}Test me\\i0{}>", result);
+		
+		
 	}
 	
 	public void testLineWrap() {

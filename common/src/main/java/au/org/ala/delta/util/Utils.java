@@ -804,27 +804,23 @@ public class Utils {
         if (StringUtils.isEmpty(text)) {
             return text;
         }
-        //
+        
         StringBuilder tmp = new StringBuilder();
         tmp.append(text);
         int index = 0;
-        if (tmp.charAt(0) == '\\') {
-
-            if (tmp.length() > 1) {
-                index++;
-                char next = tmp.charAt(index);
-                if (next != '\\' && next != '-') {
-
-                    while (index < text.length() && Character.isLetterOrDigit(tmp.charAt(index))) {
-                        index++;
-                    }
-                }
+        while (index >= 0 && index < text.length() && !Character.isLetterOrDigit(tmp.charAt(index))) {
+            if (tmp.charAt(index) == '\\') {
+            	index = RTFUtils.skipKeyword(text, index);
+          
+            	if (index < 0 || Character.isLetterOrDigit(tmp.charAt(index))) {
+            		break;
+            	}
             }
+        	index++;
         }
-        while (index < text.length() && !Character.isLetterOrDigit(tmp.charAt(index))) {
-            index++;
-        }
-        if (index < text.length() && Character.isLetter(tmp.charAt(index))) {
+       
+        
+        if (index >= 0 && index < text.length() && Character.isLetter(tmp.charAt(index))) {
             if ((index == 0) || (tmp.charAt(index - 1) != '|')) {
                 tmp.setCharAt(index, Character.toUpperCase(tmp.charAt(index)));
             } else if (tmp.charAt(index - 1) == '|') {

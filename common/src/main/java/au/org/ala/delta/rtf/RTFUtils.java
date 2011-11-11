@@ -55,6 +55,25 @@ public class RTFUtils {
 	}
 	
 	/**
+	 * Returns the index of the first non-RTF keyword character after the 
+	 * specified index.
+	 * @param text the text to check.
+	 * @param startPos the position in the text to start checking.
+	 */
+	public static int skipKeyword(String text, int startPos) {
+		FirstRTFKeywordMarker handler = new FirstRTFKeywordMarker();
+		RTFReader reader = new RTFReader(text.substring(startPos), handler);
+		try {
+			reader.parse();
+		} catch (Exception ex) {
+			// Ignore, and return the original text
+			return -1;
+		}
+		
+		return text.indexOf(handler.getFilteredText());
+	}
+	
+	/**
 	 * Converts RTF formatted text into the html equivalent.
 	 * @param rtf the RTF text to convert.
 	 * @return the text with RTF control words replaced with the equivalent
@@ -77,11 +96,52 @@ public class RTFUtils {
 
 }
 
+class FirstRTFKeywordMarker extends FilteringRTFHandler {
+	
+	private boolean _keywordEncountered;
+	private int _secondKeyWordStart = -1;
+	
+	public FirstRTFKeywordMarker() {
+		super(false);
+	}
+	
+	@Override
+	public void onKeyword(String keyword, boolean hasParam, int param) {
+		markKeyword();
+	}
+
+	protected void markKeyword() {
+		if (_keywordEncountered && _secondKeyWordStart == -1) {
+			_secondKeyWordStart = _buffer.length();
+		}
+		_keywordEncountered = true;
+	}
+	
+	@Override
+	public void onCharacterAttributeChange(List<AttributeValue> values) {
+		markKeyword();
+	}
+
+	@Override
+	public void onParagraphAttributeChange(List<AttributeValue> values) {
+		markKeyword();
+	}
+	
+	public String getFilteredText() {
+		String result = _buffer.toString();
+		if (_secondKeyWordStart >= 0) {
+			result = result.substring(0, _secondKeyWordStart);
+		}
+		return result;
+	}
+	
+}
+
 class FilteringRTFHandler implements RTFHandler {
 
 	private Set<String> _allowedKeywords = new HashSet<String>();
-
-	private StringBuilder _buffer;
+	
+	protected StringBuilder _buffer;
 	private boolean _newlinesToSpace;
 
 	public FilteringRTFHandler(boolean newlinesToSpace, String... allowed) {

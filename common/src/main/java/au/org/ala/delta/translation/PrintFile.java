@@ -436,7 +436,7 @@ public class PrintFile {
     private void writeFileHeader() {
     	if (_newFile) {
     		if (StringUtils.isNotBlank(_newFileHeader)) {
-    			writeJustifiedText(_newFileHeader, 1, false);
+    			writeJustifiedText(_newFileHeader, -1, false);
     		}
     		_newFile = false;
     	}
