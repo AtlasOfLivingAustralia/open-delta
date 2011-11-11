@@ -49,8 +49,8 @@ public class FillinTest extends ConforTestCase {
 		}
 		
 		// CONFOR leaves a lot of trailing spaces around
-		expected = expected.replaceAll(" ([\\r\\n])+", "$1");
-		actual = actual.replaceAll(" ([\\r\\n])+", "$1");
+		expected = expected.replaceAll(" ([\\r\\n]+)", "$1");
+		actual = actual.replaceAll(" ([\\r\\n]+)", "$1");
 		
 		// The heading contains the date so will be different.
 		String heading = "Grass Genera 13:32 12-OCT-11"; // <Date>, eg. 11:32 05-OCT-11

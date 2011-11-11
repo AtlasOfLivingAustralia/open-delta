@@ -101,9 +101,10 @@ public class PaupTranslator extends ParameterBasedTranslator {
 		_context = context;
 		_dataSet = dataSet;
 		_outputFile = outputFile;
-		_outputFile.setWrapingGroupChars('\'', '\'');
-		_outputFile.setLineWrapIndent(5);
-		
+		if (_outputFile != null) {
+			_outputFile.setWrapingGroupChars('\'', '\'');
+			_outputFile.setLineWrapIndent(5);
+		}
 		_characterFormatter = characterFormatter;
 		_itemFormatter = itemFormatter;
 		addParameters();
