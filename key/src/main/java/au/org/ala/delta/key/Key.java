@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -20,6 +21,7 @@ import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.AttributeFactory;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.MatchType;
 import au.org.ala.delta.model.MultiStateAttribute;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.Specimen;
@@ -75,6 +77,9 @@ public class Key {
     public void calculateKey(File directivesFile) {
         _context = new KeyContext();
         _context.setDataDirectory(directivesFile.getParentFile());
+        
+        _context.setVaryWt(1);
+        _context.setRBase(1);
 
         try {
             processDirectivesFile(directivesFile, _context);
@@ -82,7 +87,7 @@ public class Key {
             System.out.println("Error parsing directive file");
             ex.printStackTrace();
         }
-
+        
         File charactersFile = Utils.createFileFromPath(_context.getCharactersFilePath(), _context.getDataDirectory());
         File itemsFile = Utils.createFileFromPath(_context.getItemsFilePath(), _context.getDataDirectory());
 
@@ -94,15 +99,17 @@ public class Key {
 
         KeyItemsFileReader keyItemsFileReader = new KeyItemsFileReader(_context, _context.getDataSet(), keyItemsFile);
         keyItemsFileReader.readAll();
+        
+        //_context.setIncludedItems(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+        
+        Specimen specimen = new Specimen(_context.getDataSet(), true, true, MatchType.OVERLAP);
+        List<Pair<Item, List<Attribute>>> keyList = new ArrayList<Pair<Item, List<Attribute>>>();
 
-//        Specimen specimen = new Specimen(_context.getDataSet(), false, false, MatchType.EXACT);
-//        List<Pair<Item, List<Attribute>>> keyList = new ArrayList<Pair<Item, List<Attribute>>>();
-//
-//        doCalculateKey(specimen, keyList);
-//
-//        for (Pair<Item, List<Attribute>> pair : keyList) {
-//            System.out.println(pair);
-//        }
+        doCalculateKey(specimen, keyList);
+
+        for (Pair<Item, List<Attribute>> pair : keyList) {
+            System.out.println(pair);
+        }
     }
 
     private void doCalculateKey(Specimen specimen, List<Pair<Item, List<Attribute>>> keyList) {
@@ -120,7 +127,6 @@ public class Key {
 
             Pair<Item, List<Attribute>> pair = new Pair<Item, List<Attribute>>(specimenAvailableTaxa.get(0), attrList);
             keyList.add(pair);
-            System.out.println(pair);
         } else {
             List<Integer> specimenAvailableCharacterNumbers = new ArrayList<Integer>();
             for (Character ch: specimenAvailableCharacters) {
@@ -132,13 +138,23 @@ public class Key {
                 specimenAvailableTaxaNumbers.add(item.getItemNumber());
             }
             
-            LinkedHashMap<Character, Double> bestMap = Best.orderBest(_context.getDataSet(), specimenAvailableCharacterNumbers, specimenAvailableTaxaNumbers, _context.getRBase(), _context.getVaryWt());
+            LinkedHashMap<Character, Double> bestMap = KeyBest.orderBest(_context.getDataSet(), specimenAvailableCharacterNumbers, specimenAvailableTaxaNumbers, _context.getRBase(), _context.getVaryWt(), specimenAvailableTaxaNumbers.equals(Arrays.asList(2,3,4,5,10)));
 
             List<Character> bestOrderCharacters = new ArrayList<Character>(bestMap.keySet());
 
             if (!bestOrderCharacters.isEmpty()) {
                 // KEY only uses multi state characters
                 MultiStateCharacter bestCharacter = (MultiStateCharacter) bestOrderCharacters.get(0);
+                
+                System.out.println(String.format("%s %s", bestMap.get(bestCharacter), bestCharacter.getCharacterId()));
+                System.out.println("Available characters: " + specimenAvailableCharacterNumbers.size());
+                System.out.println("Available taxa: " + specimenAvailableTaxaNumbers.size());
+                System.out.println();
+                for (au.org.ala.delta.model.Character ch : bestMap.keySet()) {
+                    double sepPower = bestMap.get(ch);
+                    System.out.println(String.format("%s %s (%s)", sepPower, ch, ch.getReliability()));
+                }
+                System.out.println();
 
                 for (int i = 0; i < bestCharacter.getNumberOfStates(); i++) {
                     int stateNumber = i + 1;
@@ -149,7 +165,15 @@ public class Key {
                     presentStatesSet.add(stateNumber);
                     attr.setPresentStates(presentStatesSet);
 
+//                    System.out.println("Setting attribute " + attr.toString());
                     specimen.setAttributeForCharacter(bestCharacter, attr);
+                    
+                    System.out.println("Used characters: ");
+                    List<Attribute> attrList = new ArrayList<Attribute>();
+                    for (Character ch : specimen.getUsedCharacters()) {
+                        System.out.println(specimen.getAttributeForCharacter(ch));
+                    }
+                    System.out.println("Remaining taxa: " + getSpecimenAvailableTaxa(specimen).toString());
 
                     doCalculateKey(specimen, keyList);
 
@@ -162,7 +186,7 @@ public class Key {
     private List<Item> getSpecimenAvailableTaxa(Specimen specimen) {
         List<Integer> includedItemNumbers = _context.getIncludedItems();
         List<Item> availableTaxa = _context.getDataSet().getItemsAsList();
-
+        
         List<Item> includedTaxa = new ArrayList<Item>();
         for (int includedItemNumber : includedItemNumbers) {
             includedTaxa.add(_context.getDataSet().getItem(includedItemNumber));
@@ -192,6 +216,8 @@ public class Key {
         availableChars.retainAll(includedChars);
 
         availableChars.removeAll(specimen.getUsedCharacters());
+        
+        availableChars.removeAll(specimen.getInapplicableCharacters());
 
         return availableChars;
     }

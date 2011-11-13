@@ -115,88 +115,90 @@ public class KeyItemsFileReader {
     }
 
     public void readCharacterDependencies() {
-        List<Integer> characterDependencyData = _keyItemsFile.readIntegerList(_header.getCharacterDependencyRecord(), _header.getCharacterDependenciesLength());
+        if (_header.getCharacterDependenciesLength() > _header.getNumberOfCharacters()) {
+            List<Integer> characterDependencyData = _keyItemsFile.readIntegerList(_header.getCharacterDependencyRecord(), _header.getCharacterDependenciesLength());
 
-        List<Integer> dependencyInfoPointers = characterDependencyData.subList(0, _header.getNumberOfCharacters());
+            List<Integer> dependencyInfoPointers = characterDependencyData.subList(0, _header.getNumberOfCharacters());
 
-        // At the start of the dependency data there is an integer value for
-        // each character.
-        // If non zero, the value is an offset further down the list where
-        // its dependency data is.
-        // Otherwise the character does not have any dependent characters.
-        for (int i = 0; i < _header.getNumberOfCharacters(); i++) {
-            int charDepIndex = dependencyInfoPointers.get(i);
-            if (charDepIndex > 0) {
+            // At the start of the dependency data there is an integer value for
+            // each character.
+            // If non zero, the value is an offset further down the list where
+            // its dependency data is.
+            // Otherwise the character does not have any dependent characters.
+            for (int i = 0; i < _header.getNumberOfCharacters(); i++) {
+                int charDepIndex = dependencyInfoPointers.get(i);
+                if (charDepIndex > 0) {
 
-                MultiStateCharacter controllingChar = (MultiStateCharacter) _dataset.getCharacter(i + 1);
+                    MultiStateCharacter controllingChar = (MultiStateCharacter) _dataset.getCharacter(i + 1);
 
-                int numStates = controllingChar.getStates().length;
+                    int numStates = controllingChar.getStates().length;
 
-                // The dependency data for each character consists of one
-                // integer for each of the character's states. If the
-                // integer
-                // value listed for a state is non-zero, the value is an
-                // offset pointing to further down the list where
-                // the state's dependency data is.
-                int stateDepIndiciesStart = charDepIndex - 1;
-                int stateDepIndiciesEnd = charDepIndex - 1 + numStates;
-                List<Integer> stateDepRecordIndicies = characterDependencyData.subList(stateDepIndiciesStart, stateDepIndiciesEnd);
+                    // The dependency data for each character consists of one
+                    // integer for each of the character's states. If the
+                    // integer
+                    // value listed for a state is non-zero, the value is an
+                    // offset pointing to further down the list where
+                    // the state's dependency data is.
+                    int stateDepIndiciesStart = charDepIndex - 1;
+                    int stateDepIndiciesEnd = charDepIndex - 1 + numStates;
+                    List<Integer> stateDepRecordIndicies = characterDependencyData.subList(stateDepIndiciesStart, stateDepIndiciesEnd);
 
-                // We need to coalesce the dependency data so that we have
-                // one CharacterDependency object per
-                // controlling character and set of states that make a set
-                // of dependent characters inapplicable.
-                // Use this map to keep track of the state ids that make the
-                // same set of dependent characters
-                // inapplicable.
-                Map<Set<Integer>, Set<Integer>> depCharsToStateIds = new HashMap<Set<Integer>, Set<Integer>>();
+                    // We need to coalesce the dependency data so that we have
+                    // one CharacterDependency object per
+                    // controlling character and set of states that make a set
+                    // of dependent characters inapplicable.
+                    // Use this map to keep track of the state ids that make the
+                    // same set of dependent characters
+                    // inapplicable.
+                    Map<Set<Integer>, Set<Integer>> depCharsToStateIds = new HashMap<Set<Integer>, Set<Integer>>();
 
-                for (int j = 0; j < numStates; j++) {
-                    Integer stateId = j + 1;
+                    for (int j = 0; j < numStates; j++) {
+                        Integer stateId = j + 1;
 
-                    int stateDepRecordIndex = stateDepRecordIndicies.get(j);
+                        int stateDepRecordIndex = stateDepRecordIndicies.get(j);
 
-                    if (stateDepRecordIndex > 0) {
-                        // First value listed in the state's dependency data
-                        // is the number of character ranges dependent on
-                        // that state.
-                        int numDependentCharRanges = characterDependencyData.get(stateDepRecordIndex - 1);
+                        if (stateDepRecordIndex > 0) {
+                            // First value listed in the state's dependency data
+                            // is the number of character ranges dependent on
+                            // that state.
+                            int numDependentCharRanges = characterDependencyData.get(stateDepRecordIndex - 1);
 
-                        // Immediately after the range information is listed
-                        // - the upper and lower bound is listed for each
-                        // range.
-                        List<Integer> rangeNumbers = characterDependencyData.subList(stateDepRecordIndex, stateDepRecordIndex + (numDependentCharRanges * 2));
+                            // Immediately after the range information is listed
+                            // - the upper and lower bound is listed for each
+                            // range.
+                            List<Integer> rangeNumbers = characterDependencyData.subList(stateDepRecordIndex, stateDepRecordIndex + (numDependentCharRanges * 2));
 
-                        Set<Integer> dependentChars = new HashSet<Integer>();
+                            Set<Integer> dependentChars = new HashSet<Integer>();
 
-                        for (int k = 0; k < numDependentCharRanges * 2; k = k + 2) {
-                            int lowerBound = rangeNumbers.get(k);
-                            int upperBound = rangeNumbers.get(k + 1);
+                            for (int k = 0; k < numDependentCharRanges * 2; k = k + 2) {
+                                int lowerBound = rangeNumbers.get(k);
+                                int upperBound = rangeNumbers.get(k + 1);
 
-                            IntRange r = new IntRange(lowerBound, upperBound);
+                                IntRange r = new IntRange(lowerBound, upperBound);
 
-                            for (int dependentChar : r.toArray()) {
-                                dependentChars.add(dependentChar);
+                                for (int dependentChar : r.toArray()) {
+                                    dependentChars.add(dependentChar);
+                                }
+                            }
+
+                            if (depCharsToStateIds.containsKey(dependentChars)) {
+                                Set<Integer> stateSet = depCharsToStateIds.get(dependentChars);
+                                stateSet.add(stateId);
+                            } else {
+                                Set<Integer> stateSet = new HashSet<Integer>();
+                                stateSet.add(stateId);
+                                depCharsToStateIds.put(dependentChars, stateSet);
                             }
                         }
-
-                        if (depCharsToStateIds.containsKey(dependentChars)) {
-                            Set<Integer> stateSet = depCharsToStateIds.get(dependentChars);
-                            stateSet.add(stateId);
-                        } else {
-                            Set<Integer> stateSet = new HashSet<Integer>();
-                            stateSet.add(stateId);
-                            depCharsToStateIds.put(dependentChars, stateSet);
-                        }
                     }
-                }
 
-                // Now that we have coalesced the dependency data into the
-                // form we need, we can
-                // create the CharacterDependency objects.
-                for (Set<Integer> depCharsSet : depCharsToStateIds.keySet()) {
-                    Set<Integer> stateSet = depCharsToStateIds.get(depCharsSet);
-                    CharacterDependency charDep = _dataset.addCharacterDependency(controllingChar, stateSet, depCharsSet);
+                    // Now that we have coalesced the dependency data into the
+                    // form we need, we can
+                    // create the CharacterDependency objects.
+                    for (Set<Integer> depCharsSet : depCharsToStateIds.keySet()) {
+                        Set<Integer> stateSet = depCharsToStateIds.get(depCharsSet);
+                        CharacterDependency charDep = _dataset.addCharacterDependency(controllingChar, stateSet, depCharsSet);
+                    }
                 }
             }
         }

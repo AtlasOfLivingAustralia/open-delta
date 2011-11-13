@@ -31,7 +31,7 @@ import au.org.ala.delta.util.Pair;
  */
 public class Best {
 
-    private enum OrderingType {
+    public enum OrderingType {
         BEST, SEPARATE, DIAGNOSE
     }
 
@@ -381,7 +381,7 @@ public class Best {
         return retMap;
     }
 
-    private static double log2(double x) {
+    public static double log2(double x) {
         return Math.log(x) / Math.log(2);
     }
 
@@ -399,7 +399,7 @@ public class Best {
      *            array indicates that the corresponding state value is present
      * @return the number of key states present for the supplied real value
      */
-    private static int generateKeyStatesForRealCharacter(RealCharacter realChar, FloatRange realValue, boolean[] statePresence) {
+    public static int generateKeyStatesForRealCharacter(RealCharacter realChar, FloatRange realValue, boolean[] statePresence) {
         int numStatesPresent = 0;
 
         List<Float> boundariesList = realChar.getKeyStateBoundaries();
@@ -434,7 +434,7 @@ public class Best {
     // treated as a state.
     // Real attributes are converted to multistate representations using the key
     // state boundaries
-    private static Pair<boolean[], Integer> getStatePresenceForAttribute(Attribute attr, int totalNumStates, OrderingType orderingType, DiagType diagType) {
+    public static Pair<boolean[], Integer> getStatePresenceForAttribute(Attribute attr, int totalNumStates, OrderingType orderingType, DiagType diagType) {
         Character ch = attr.getCharacter();
 
         // has a boolean value for each character state. A true value
@@ -513,7 +513,7 @@ public class Best {
      * @author ChrisF
      * 
      */
-    private static class ReliabilityComparator implements Comparator<Character> {
+    public static class ReliabilityComparator implements Comparator<Character> {
 
         @Override
         public int compare(Character c1, Character c2) {

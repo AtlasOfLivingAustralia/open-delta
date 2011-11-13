@@ -143,12 +143,12 @@ public class Specimen {
 
         // if there are controlling characters, check that their values have
         // been set.
-        for (CharacterDependency cd : ch.getControllingCharacters()) {
-            Character controllingChar = _dataset.getCharacter(cd.getControllingCharacterId());
-            if (!hasValueFor(controllingChar)) {
-                throw new IllegalStateException(String.format("Cannot set value for character %s - controlling character %s has not been set", ch.getCharacterId(), controllingChar.getCharacterId()));
-            }
-        }
+//        for (CharacterDependency cd : ch.getControllingCharacters()) {
+//            Character controllingChar = _dataset.getCharacter(cd.getControllingCharacterId());
+//            if (!hasValueFor(controllingChar)) {
+//                throw new IllegalStateException(String.format("Cannot set value for character %s - controlling character %s has not been set", ch.getCharacterId(), controllingChar.getCharacterId()));
+//            }
+//        }
 
         _characterValues.put(ch, attr);
 
