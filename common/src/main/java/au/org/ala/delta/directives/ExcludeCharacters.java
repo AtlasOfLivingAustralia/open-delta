@@ -40,4 +40,8 @@ public class ExcludeCharacters extends AbstractRangeListDirective<DeltaContext> 
 		context.excludeCharacter(number);
 	}
 
+	@Override
+	public int getOrder() {
+		return 4;
+	}
 }

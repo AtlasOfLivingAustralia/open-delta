@@ -36,4 +36,9 @@ public class ItemSubHeadings extends AbstractCustomDirective {
 			context.itemSubheading((Integer)arg.getId(), arg.getText().trim());
 		}
 	}
+	
+	@Override
+	public int getOrder() {
+		return 4;
+	}
 }

@@ -38,4 +38,10 @@ public class CharacterForOutputFiles extends AbstractIntegerDirective {
 		context.getOutputFileSelector().setCharacterForOutputFiles(character);
 		
 	}
+	
+	@Override
+	public int getOrder() {
+		return 4;
+	}
+	
 }

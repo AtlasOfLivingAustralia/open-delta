@@ -19,4 +19,9 @@ public class UseControllingCharactersFirst extends AbstractRangeListDirective<De
 	protected void processNumber(DeltaContext context, int number) {
 		context.setUseControllingCharacterFirst(number, true);
 	}
+	
+	@Override
+	public int getOrder() {
+		return 4;
+	}
 }

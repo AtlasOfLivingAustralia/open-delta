@@ -20,4 +20,9 @@ public class InapplicableCharacters extends AbstractCharacterDependencyDirective
     public InapplicableCharacters() {
         super("inapplicable", "characters");
     }
+    
+    @Override
+	public int getOrder() {
+		return 4;
+	}
 }

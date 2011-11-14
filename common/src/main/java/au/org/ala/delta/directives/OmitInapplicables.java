@@ -28,4 +28,8 @@ public class OmitInapplicables extends AbstractNoArgDirective {
 		context.setOmitInapplicables(true);
 	}
 
+	@Override
+	public int getOrder() {
+		return 4;
+	}
 }

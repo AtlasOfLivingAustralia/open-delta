@@ -49,6 +49,11 @@ public class ItemDescriptions extends AbstractTextDirective {
 		ItemsParser parser = new ItemsParser(context, reader);
 		parser.parse();	
 	}
+	
+	@Override
+	public int getOrder() {
+		return 5;
+	}
 }
 
 class ItemsParser extends AbstractStreamParser {

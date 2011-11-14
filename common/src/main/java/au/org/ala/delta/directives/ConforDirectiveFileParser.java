@@ -43,6 +43,7 @@ public class ConforDirectiveFileParser extends DirectiveParser<DeltaContext> {
         
         instance.registerDirective(new AbsoluteError());
         instance.registerDirective(new AddCharacters());
+        instance.registerDirective(new AlternateComma());
         instance.registerDirective(new ApplicableCharacters());
         
         instance.registerDirective(new CharacterForOutputFiles());
@@ -50,6 +51,7 @@ public class ConforDirectiveFileParser extends DirectiveParser<DeltaContext> {
         instance.registerDirective(new CharacterForTaxonNames());   
         instance.registerDirective(new CharacterHeadings());
         instance.registerDirective(new CharacterImages());
+        instance.registerDirective(new CharacterKeywordImages());
         instance.registerDirective(new CharacterList());
         instance.registerDirective(new CharacterNotes());
         instance.registerDirective(new CharacterReliabilities());
@@ -86,12 +88,14 @@ public class ConforDirectiveFileParser extends DirectiveParser<DeltaContext> {
         instance.registerDirective(new InputDeltaFile());
         instance.registerDirective(new InputFile());
         instance.registerDirective(new InsertImplicitValues());
+        instance.registerDirective(new InsertRedundantVariantAttributes());       
         instance.registerDirective(new IntkeyOutputFile());
         instance.registerDirective(new ItemAbundances());
         instance.registerDirective(new ItemDescriptions());
         instance.registerDirective(new ItemHeadings());
         instance.registerDirective(new ItemOutputFiles());
         instance.registerDirective(new ItemSubHeadings());
+        instance.registerDirective(new ItemWeights());
         
         instance.registerDirective(new KeyCharacterList()); 
         instance.registerDirective(new KeyOutputFile());   
@@ -120,6 +124,7 @@ public class ConforDirectiveFileParser extends DirectiveParser<DeltaContext> {
         instance.registerDirective(new OmitLowerForCharacters());
         instance.registerDirective(new OmitOrForCharacters());
         instance.registerDirective(new OmitPeriodForCharacters());
+        instance.registerDirective(new OmitRedundantVariantAttributes());
         instance.registerDirective(new OmitSpaceBeforeUnits());
         instance.registerDirective(new OmitTypeSettingMarks());
         instance.registerDirective(new OutputDirectory());
@@ -129,7 +134,7 @@ public class ConforDirectiveFileParser extends DirectiveParser<DeltaContext> {
         instance.registerDirective(new OutputWidth());       
         instance.registerDirective(new OverlayFonts());
         
-        instance.registerDirective(new PercentageError());
+        instance.registerDirective(new PercentError());
         instance.registerDirective(new PrintCharacterList());  
         instance.registerDirective(new PrintComment());  
         instance.registerDirective(new PrintFile());
@@ -149,6 +154,7 @@ public class ConforDirectiveFileParser extends DirectiveParser<DeltaContext> {
         instance.registerDirective(new SubjectForOutputFiles());
         
         instance.registerDirective(new TaxonImages());
+        instance.registerDirective(new TaxonKeywordImages());
         instance.registerDirective(new TaxonLinks());
         instance.registerDirective(new TranslateImplicitValues());
         instance.registerDirective(new TranslateInto());

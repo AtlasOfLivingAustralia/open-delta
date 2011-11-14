@@ -41,4 +41,10 @@ public class CharacterForTaxonNames extends AbstractIntegerDirective {
 		context.setCharacterForTaxonNames(character);
 	}
 
+	
+	@Override
+	public int getOrder() {
+		return 4;
+	}
+	
 }

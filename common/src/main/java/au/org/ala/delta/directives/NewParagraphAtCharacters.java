@@ -33,4 +33,8 @@ public class NewParagraphAtCharacters extends AbstractRangeListDirective<DeltaCo
 		context.newParagraphAtCharacter(number);
 	}
 
+	@Override
+	public int getOrder() {
+		return 4;
+	}
 }

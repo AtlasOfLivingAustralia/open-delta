@@ -47,5 +47,10 @@ public class CharacterNotes extends AbstractTextListDirective<Integer> {
 		}
 		
 	}
+	
+	@Override
+	public int getOrder() {
+		return 4;
+	}
 
 }

@@ -34,5 +34,10 @@ public class MaximumNumberOfItems extends AbstractIntegerDirective {
 		Logger.debug("Setting max number of items to %s", value);
 		context.setMaximumNumberOfItems(value);
 	}
+	
+	@Override
+	public int getOrder() {
+		return 1;
+	}
 
 }

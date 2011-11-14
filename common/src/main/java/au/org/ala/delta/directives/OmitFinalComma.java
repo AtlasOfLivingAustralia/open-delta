@@ -22,4 +22,9 @@ public class OmitFinalComma extends AbstractRangeListDirective<DeltaContext> {
 	protected void processNumber(DeltaContext context, int number) {
 		context.omitFinalCommaForCharacter(number);
 	}
+	
+	@Override
+	public int getOrder() {
+		return 4;
+	}
 }

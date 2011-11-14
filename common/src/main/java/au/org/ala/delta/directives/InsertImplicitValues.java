@@ -19,4 +19,9 @@ public class InsertImplicitValues extends AbstractNoArgDirective {
 	public void process(DeltaContext context, DirectiveArguments data) throws Exception {
 		context.setInsertImplicitValues(true);
 	}
+	
+	@Override
+	public int getOrder() {
+		return 4;
+	}
 }

@@ -19,6 +19,7 @@ import au.org.ala.delta.directives.args.KeyStateParser;
 import au.org.ala.delta.directives.args.NumericArgParser;
 import au.org.ala.delta.directives.args.StringTextListParser;
 import au.org.ala.delta.directives.args.TextArgParser;
+import au.org.ala.delta.directives.validation.DirectiveError;
 import au.org.ala.delta.editor.slotfile.Directive;
 
 public class DirectiveArgParserFactory {
@@ -94,20 +95,15 @@ public class DirectiveArgParserFactory {
 		public void parse() throws ParseException {
 			_args = new DirectiveArguments();
 			
-			try {
-				String value = readFully().trim();
-				if (ON_VALUE.equalsIgnoreCase(value)) {
-					_args.addValueArgument(new BigDecimal("1"));
-				}
-				else if (OFF_VALUE.equalsIgnoreCase(value) || OFF_VALUE.substring(0,2).equalsIgnoreCase(value)) {
-					
-				}
-				else {
-					throw new ParseException("Invalid value", _position);
-				}
+			String value = readFully().trim();
+			if (ON_VALUE.equalsIgnoreCase(value)) {
+				_args.addValueArgument(new BigDecimal("1"));
 			}
-			catch (Exception e) {
-				throw new ParseException(e.getMessage(), _position);
+			else if (OFF_VALUE.equalsIgnoreCase(value) || OFF_VALUE.substring(0,2).equalsIgnoreCase(value)) {
+				_args.addValueArgument(new BigDecimal("-1"));
+			}
+			else {
+				throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, _position);
 			}
 		}
 		

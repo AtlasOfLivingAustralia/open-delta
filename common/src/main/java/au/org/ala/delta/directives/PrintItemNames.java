@@ -17,4 +17,9 @@ public class PrintItemNames extends AbstractNoArgDirective {
 	public void process(DeltaContext context, DirectiveArguments directiveArguments) throws Exception {
 		context.addPrintAction(PrintActionType.PRINT_ITEM_NAMES);
 	}
+	
+	@Override
+	public int getOrder() {
+		return 4;
+	}
 }

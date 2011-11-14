@@ -19,6 +19,8 @@ import java.io.Reader;
 import java.math.BigDecimal;
 import java.text.ParseException;
 
+import au.org.ala.delta.directives.validation.DirectiveError;
+
 public abstract class AbstractStreamParser {
 
 	// For now we use just the period for decimal numbers. In the future we may need to examine how locale should affect this.
@@ -56,7 +58,7 @@ public abstract class AbstractStreamParser {
 			return _currentInt;
 		}
 		catch (IOException e) {
-			throw new ParseException("Failed to read next char. "+e.getMessage(), _position);
+			throw DirectiveError.asException(DirectiveError.Error.FATAL_ERROR, _position);
 		}
 	}
 
@@ -110,10 +112,16 @@ public abstract class AbstractStreamParser {
 			readNext();
 		}
 		if (b.length() == 0) {
-			throw new ParseException("Expected a number, got '" + _currentChar + "'", _position-1);
+			throw DirectiveError.asException(DirectiveError.Error.INTEGER_EXPECTED, _position-1);
 		}
-
-		return Integer.parseInt(b.toString());
+		int result;
+		try {
+			result = Integer.parseInt(b.toString());
+		}
+		catch (NumberFormatException e) {
+			throw DirectiveError.asException(DirectiveError.Error.INTEGER_EXPECTED, _position-1);
+		}
+		return result;
 	}
 	
 	protected BigDecimal readReal() throws ParseException {
@@ -124,14 +132,14 @@ public abstract class AbstractStreamParser {
 			readNext();
 		}
 		if (b.length() == 0) {
-			throw new ParseException("Expected a number, got '" + _currentChar + "'", _position-1);
+			throw DirectiveError.asException(DirectiveError.Error.INVALID_REAL_NUMBER, position-1);
 		}
 		BigDecimal real = null;
 		try {
 			real = new BigDecimal(b.toString());
 		}
 		catch (NumberFormatException e) {
-			throw new ParseException("Expected real number, got: "+b.toString(), position);
+			throw DirectiveError.asException(DirectiveError.Error.INVALID_REAL_NUMBER, position-1);
 		}
 		return real;
 		

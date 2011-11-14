@@ -14,4 +14,8 @@ public class DisableDeltaOutput extends AbstractNoArgDirective {
 		context.disableDeltaOutput();
 	}
 
+	@Override
+	public int getOrder() {
+		return 4;
+	}
 }

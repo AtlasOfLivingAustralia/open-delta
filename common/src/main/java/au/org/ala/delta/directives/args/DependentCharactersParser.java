@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.directives.validation.DirectiveError;
 import au.org.ala.delta.model.CharacterDependency;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DefaultDataSetFactory;
@@ -76,7 +77,7 @@ public class DependentCharactersParser extends DirectiveArgsParser {
 		int charNum = readInteger();
 		CharacterType type = getType(charNum);
 		if (!type.isMultistate()) {
-			throw new ParseException("Invalid character type: "+type+" Must be multistate", _position);
+			throw DirectiveError.asException(DirectiveError.Error.MULTISTATE_CHARACTERS_ONLY, _position);
 		}
 		return charNum;
 	}

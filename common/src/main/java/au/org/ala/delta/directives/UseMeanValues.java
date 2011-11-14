@@ -31,4 +31,8 @@ public class UseMeanValues extends AbstractNoArgDirective {
 		context.useMeanValues();
 	}
 
+	@Override
+	public int getOrder() {
+		return 4;
+	}
 }

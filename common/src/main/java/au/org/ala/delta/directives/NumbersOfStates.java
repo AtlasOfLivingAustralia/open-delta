@@ -82,4 +82,9 @@ public class NumbersOfStates extends AbstractCharacterListDirective<DeltaContext
 	protected void addArgument(DirectiveArguments args, int charIndex, String value) {
 		args.addNumericArgument(charIndex, value);
 	}
+	
+	@Override
+	public int getOrder() {
+		return 3;
+	}
 }

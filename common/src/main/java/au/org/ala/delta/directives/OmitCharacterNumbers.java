@@ -28,4 +28,8 @@ public class OmitCharacterNumbers extends AbstractNoArgDirective {
 		context.setOmitCharacterNumbers(true);
 	}
 
+	@Override
+	public int getOrder() {
+		return 4;
+	}
 }

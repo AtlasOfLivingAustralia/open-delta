@@ -19,4 +19,9 @@ public class TaxonImages extends AbstractImageDirective {
 	protected ImageParser createParser(DeltaContext context, StringReader reader) {
 		return new ImageParser(context, reader, ImageType.IMAGE_TAXON);
 	}
+	
+	@Override
+	public int getOrder() {
+		return 4;
+	}
 }

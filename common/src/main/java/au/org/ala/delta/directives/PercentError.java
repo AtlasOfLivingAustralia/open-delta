@@ -5,13 +5,13 @@ import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.directives.args.DirectiveArguments;
 
 /**
- * Processes the PERCENTAGE ERROR directive.
- * @see http://delta-intkey.com/www/uguide.htm#_*PERCENTAGE_ERROR_
+ * Processes the PERCENT ERROR directive.
+ * @see http://delta-intkey.com/www/uguide.htm#_*PERCENT_ERROR_
  */
-public class PercentageError extends AbstractCharacterListDirective<DeltaContext, Double> {
+public class PercentError extends AbstractCharacterListDirective<DeltaContext, Double> {
 
-	public PercentageError() {
-		super("percentage", "error");
+	public PercentError() {
+		super("percent", "error");
 	}
 	
 	@Override
@@ -32,6 +32,11 @@ public class PercentageError extends AbstractCharacterListDirective<DeltaContext
 	@Override
 	public int getArgType() {
 		return DirectiveArgType.DIRARG_CHARREALLIST;
+	}
+	
+	@Override
+	public int getOrder() {
+		return 4;
 	}
 
 }

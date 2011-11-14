@@ -44,4 +44,9 @@ public class TaxonLinks extends AbstractDirective<DeltaContext> {
 			context.addTaxonLinks((String)arg.getId(), arg.getText());
 		}
 	}
+	
+	@Override
+	public int getOrder() {
+		return 4;
+	}
 }

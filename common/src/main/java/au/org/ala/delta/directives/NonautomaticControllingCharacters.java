@@ -19,4 +19,9 @@ public class NonautomaticControllingCharacters extends AbstractRangeListDirectiv
 	protected void processNumber(DeltaContext context, int number) {
 		context.setNonautomaticControllingCharacter(number, true);
 	}
+	
+	@Override
+	public int getOrder() {
+		return 4;
+	}
 }

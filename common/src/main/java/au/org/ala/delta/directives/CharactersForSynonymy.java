@@ -19,4 +19,9 @@ public class CharactersForSynonymy extends AbstractRangeListDirective<DeltaConte
 	protected void processNumber(DeltaContext context, int number) {
 		context.addCharacterForSynonymy(number);
 	}
+	
+	@Override
+	public int getOrder() {
+		return 4;
+	}
 }

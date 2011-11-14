@@ -80,5 +80,10 @@ public class TranslateInto extends AbstractTextDirective {
 	protected boolean ignoreEmptyArguments() {
 		return false;
 	}
+	
+	@Override
+	public int getOrder() {
+		return 4;
+	}
 
 }

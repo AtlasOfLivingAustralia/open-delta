@@ -56,5 +56,10 @@ public class IncludeItems extends AbstractRangeListDirective<DeltaContext> {
 		
 		_includedItems.add(number);
 	}
+	
+	@Override
+	public int getOrder() {
+		return 4;
+	}
 
 }

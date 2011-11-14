@@ -31,4 +31,8 @@ public class NumberStatesFromZero extends AbstractNoArgDirective {
 		context.numberStatesFromZero();
 	}
 
+	@Override
+	public int getOrder() {
+		return 4;
+	}
 }

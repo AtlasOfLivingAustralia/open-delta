@@ -41,4 +41,9 @@ public class ApplicableCharacters extends AbstractCharacterDependencyDirective {
 		return inverted;
 	}
 	
+	@Override
+	public int getOrder() {
+		return 4;
+	}
+	
 }

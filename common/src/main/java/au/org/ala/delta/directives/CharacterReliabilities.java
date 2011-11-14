@@ -58,4 +58,8 @@ public class CharacterReliabilities extends CharacterWeightDirective {
 		context.setCharacterReliability(charIndex, reliability);
 	}
 	
+	@Override
+	public int getOrder() {
+		return 4;
+	}
 }

@@ -4,6 +4,7 @@ import java.io.Reader;
 import java.text.ParseException;
 
 import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.directives.validation.DirectiveError;
 
 /**
  * The IntegerIdArgParser parses directive arguments in the form:
@@ -24,12 +25,13 @@ public class IntegerIdArgParser extends DirectiveArgsParser {
 	@Override
 	public void parse() throws ParseException {
 		_args = new DirectiveArguments();
+		skipWhitespace();
 		try {
 			Integer id = Integer.parseInt(readFully().trim());
 			_args.addDirectiveArgument(id);
 		}
 		catch (Exception e) {
-			throw new ParseException(e.getMessage(), 0);
+			throw DirectiveError.asException(DirectiveError.Error.INTEGER_EXPECTED, 0);
 		}
 	}
 }

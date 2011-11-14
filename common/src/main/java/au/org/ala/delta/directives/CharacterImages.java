@@ -40,5 +40,9 @@ public class CharacterImages extends AbstractImageDirective {
 		}
 	}
 	
+	@Override
+	public int getOrder() {
+		return 4;
+	}
 	
 }

@@ -29,5 +29,10 @@ public class OmitTypeSettingMarks extends AbstractNoArgDirective {
 		Logger.debug("Omitting type setting marks");
 		context.setOmitTypeSettingMarks(true);
 	}
+	
+	@Override
+	public int getOrder() {
+		return 4;
+	}
 
 }

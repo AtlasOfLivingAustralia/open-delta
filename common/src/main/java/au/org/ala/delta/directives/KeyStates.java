@@ -89,4 +89,9 @@ public class KeyStates extends AbstractDirective<DeltaContext> {
 		IdentificationKeyCharacter keyChar = new IdentificationKeyCharacter(character, context.getUseNormalValues(characterNumber));
 		return keyChar;
 	}
+	
+	@Override
+	public int getOrder() {
+		return 4;
+	}
 }

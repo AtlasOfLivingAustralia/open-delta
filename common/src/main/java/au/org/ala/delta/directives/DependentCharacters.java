@@ -23,4 +23,9 @@ public class DependentCharacters extends AbstractCharacterDependencyDirective {
     public DependentCharacters() {
         super("dependent", "characters");
     }
+    
+    @Override
+	public int getOrder() {
+		return 4;
+	}
 }

@@ -47,4 +47,9 @@ public class CharacterList extends AbstractTextDirective {
 		CharacterListParser parser = new CharacterListParser(context, reader);
 		parser.parse();
 	}
+	
+	@Override
+	public int getOrder() {
+		return 5;
+	}
 }

@@ -35,4 +35,8 @@ public class MaximumNumberOfStates extends AbstractIntegerDirective {
 		context.setMaximumNumberOfStates(value);
 	}
 
+	@Override
+	public int getOrder() {
+		return 1;
+	}
 }

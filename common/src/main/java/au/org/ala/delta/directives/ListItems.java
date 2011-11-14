@@ -19,4 +19,8 @@ public class ListItems extends AbstractNoArgDirective {
 		context.getOutputFileSelector().enableListing();
 	}
 
+	@Override
+	public int getOrder() {
+		return 4;
+	}
 }

@@ -70,6 +70,7 @@ public class DeltaContext extends AbstractDeltaContext {
 	private Set<Integer> _nonautomaticControllingCharacters = new HashSet<Integer>(); 
 	private Set<Integer> _treatIntegerCharacterAsReal = new HashSet<Integer>();
 	private Set<Integer> _omitFinalCommaForCharacters = new HashSet<Integer>();
+	private Set<Integer> _useAlternateComma = new HashSet<Integer>();
 	
 	private Map<String, String> _itemHeadings = new HashMap<String, String>();
 	private Map<Integer, String> _itemSubHeadings = new HashMap<Integer, String>();
@@ -107,7 +108,6 @@ public class DeltaContext extends AbstractDeltaContext {
 	private boolean _omitInnerComments = false;
 	private boolean _omitInapplicables = false;
 	private Boolean _omitRedundantVariantAttributes = null;
-	private boolean _useAlternateComma;
 	private boolean _insertImplicitValues = false;
 	private boolean _outputHtml = false;
 	private boolean _enableDeltaOutput = true;
@@ -507,7 +507,7 @@ public class DeltaContext extends AbstractDeltaContext {
 
 	/**
 	 * Specifies whether attributes in a variant items are output in natural language translations.
-	 * Controlled by the OMIT REDUNDANT VARIANT ATTRIBUTES and INCLUDE REDUNDANT VARIANT ATTRIBUTES
+	 * Controlled by the OMIT REDUNDANT VARIANT ATTRIBUTES and INSERT REDUNDANT VARIANT ATTRIBUTES
 	 * directives. If neither directive is given, the default is to output attributes as coded.
 	 * @param b true if redundant variant attributes should be omitted.
 	 */
@@ -518,7 +518,7 @@ public class DeltaContext extends AbstractDeltaContext {
 	
 	/**
 	 * Specifies whether attributes in a variant items are output in natural language translations.
-	 * Controlled by the OMIT REDUNDANT VARIANT ATTRIBUTES and INCLUDE REDUNDANT VARIANT ATTRIBUTES
+	 * Controlled by the OMIT REDUNDANT VARIANT ATTRIBUTES and INSERT REDUNDANT VARIANT ATTRIBUTES
 	 * directives. If neither directive is given, the default is to output attributes as coded.
 	 * @param b true if redundant variant attributes should be omitted.
 	 */
@@ -550,8 +550,12 @@ public class DeltaContext extends AbstractDeltaContext {
 		_replaceSemiColonWithComma.add(characters);
 	}
 	
-	public boolean useAlternateComma() {
-		return _useAlternateComma;
+	public boolean useAlternateCommaForCharacter(int charNum) {
+		return _useAlternateComma.add(charNum);
+	}
+	
+	public boolean getUseAlternateComma(int charNum) {
+		return _useAlternateComma.contains(charNum);
 	}
 	
 	public boolean isCharacterEmphasized(int itemNum, int characterNum) {

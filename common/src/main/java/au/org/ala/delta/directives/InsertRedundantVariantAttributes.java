@@ -3,14 +3,18 @@ package au.org.ala.delta.directives;
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.args.DirectiveArguments;
 
-public class SubjectForOutputFiles extends AbstractTextDirective {
+/**
+ * Processes the INSERT REDUNDANT VARIANT ATTRIBUTES directive.
+ */
+public class InsertRedundantVariantAttributes extends AbstractNoArgDirective {
 
-	public SubjectForOutputFiles() {
-		super("subject", "for", "output", "files");
+	public InsertRedundantVariantAttributes() {
+		super("insert", "redundant", "variant", "attributes");
 	}
+	
 	@Override
 	public void process(DeltaContext context, DirectiveArguments directiveArguments) throws Exception {
-		context.getOutputFileSelector().setSubjectForOutputFiles(directiveArguments.getFirstArgumentText().trim());
+		context.setOmitRedundantVariantAttributes(false);
 	}
 
 	@Override

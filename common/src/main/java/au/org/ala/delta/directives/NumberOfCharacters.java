@@ -33,5 +33,10 @@ public class NumberOfCharacters extends AbstractIntegerDirective {
 		Logger.debug("Setting number of characters to %s", value);
 		context.setNumberOfCharacters(value);
 	}
+	
+	@Override
+	public int getOrder() {
+		return 1;
+	}
 
 }

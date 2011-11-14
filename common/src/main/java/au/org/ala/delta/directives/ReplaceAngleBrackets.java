@@ -28,5 +28,8 @@ public class ReplaceAngleBrackets extends AbstractNoArgDirective {
 		context.setReplaceAngleBrackets(true);
 	}
 	
-
+	@Override
+	public int getOrder() {
+		return 4;
+	}
 }

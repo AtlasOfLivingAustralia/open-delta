@@ -58,7 +58,7 @@ public class AttributeTranslatorFactory {
 		else {
 			translator = new TextAttributeTranslator(_attributeFormatter, omitOr);
 		}
-		if (_context.useAlternateComma()) {
+		if (_context.getUseAlternateComma(character.getCharacterId())) {
 			translator.useAlternateComma();
 		}
 		if (_context.getOmitInapplicables()) {

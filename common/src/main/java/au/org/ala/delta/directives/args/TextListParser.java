@@ -4,6 +4,7 @@ import java.io.Reader;
 import java.text.ParseException;
 
 import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.directives.validation.DirectiveError;
 
 /**
  * Parser for directives of the form:
@@ -67,15 +68,15 @@ public abstract class TextListParser<T> extends DirectiveArgsParser {
 	
 	
 	/**
-	 * The item subheadings directive allows a delimiter to be specified which can be used to
-	 * surround an item subheading.
+	 * Various directives allow a delimiter to be specified which can be used to
+	 * surround text containing CONFOR special characters.
 	 * @return the delimiter or an empty String if none was specified.
 	 */
 	private char readDelimiter() throws ParseException {
 		
 		String possibleDelimiter = readToNext(MARK_IDENTIFIER).trim();
 		if (possibleDelimiter.length() > 1) {
-			throw new ParseException("Invalid character at position: "+_position, _position);
+			throw DirectiveError.asException(DirectiveError.Error.DELIMITER_ONE_CHARACTER, _position);
 		}
 		if (possibleDelimiter.length() == 0) {
 			return 0;
@@ -155,7 +156,7 @@ public abstract class TextListParser<T> extends DirectiveArgsParser {
 	private void checkDelimiter(char delimiter) throws ParseException {
 		for (char invalid : INVALID_DELIMITERS) {
 			if (invalid == delimiter) {
-				throw new ParseException("Invalid delimiter", _position);
+				throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_DELIMETER, _position);
 			}
 		}
 	}

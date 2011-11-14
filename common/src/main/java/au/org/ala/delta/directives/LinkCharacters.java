@@ -25,4 +25,9 @@ public class LinkCharacters extends AbstractCharacterSetDirective<DeltaContext> 
 	protected void processCharacterSet(DeltaContext context, List<Integer> characters) {
 		context.linkCharacters(new HashSet<Integer>(characters));
 	}	
+	
+	@Override
+	public int getOrder() {
+		return 4;
+	}
 }

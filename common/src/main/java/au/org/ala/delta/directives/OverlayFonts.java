@@ -33,6 +33,11 @@ public class OverlayFonts extends AbstractInternalDirective {
 		parser.parse();
 		
 	}
+	
+	@Override
+	public int getOrder() {
+		return 4;
+	}
 
 	
 	class FontInfoParser extends IntegerTextListParser {

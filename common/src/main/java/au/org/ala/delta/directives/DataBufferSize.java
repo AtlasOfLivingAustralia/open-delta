@@ -24,4 +24,8 @@ public class DataBufferSize extends NoopDirective {
 
 	protected void doProcess(DeltaContext context, String data) {}
 
+	@Override
+	public int getOrder() {
+		return 1;
+	}
 }

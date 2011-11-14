@@ -13,5 +13,10 @@ public class ChineseFormat extends AbstractNoArgDirective {
 	public void process(DeltaContext context, DirectiveArguments directiveArguments) throws Exception {
 		context.disableDeltaOutput();
 	}
+	
+	@Override
+	public int getOrder() {
+		return 4;
+	}
 
 }

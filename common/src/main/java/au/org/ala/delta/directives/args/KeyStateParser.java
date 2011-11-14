@@ -6,6 +6,7 @@ import java.text.ParseException;
 import org.apache.commons.lang.math.IntRange;
 
 import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.directives.validation.DirectiveError;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.MutableDeltaDataSet;
 
@@ -50,7 +51,7 @@ public class KeyStateParser extends DirectiveArgsParser {
 		CharacterType type = _dataSet.getCharacter(charNums.getMinimumInteger()).getCharacterType();
 		for (int i=charNums.getMaximumInteger()+1; i<charNums.getMaximumInteger(); i++) {
 			if (type != _dataSet.getCharacter(i).getCharacterType()) {
-				throw new ParseException("Characters in a range must have the same type!", _position);
+				throw DirectiveError.asException(DirectiveError.Error.CHARACTERS_MUST_BE_SAME_TYPE, _position);
 			}
 		}
 		return type;
@@ -75,7 +76,7 @@ public class KeyStateParser extends DirectiveArgsParser {
 				parseNumericChar(arg);
 				break;
 			default:
-				throw new ParseException("Key state is not valid for character type "+type, _position);
+				throw DirectiveError.asException(DirectiveError.Error.KEY_STATES_TEXT_CHARACTER, _position);
 			}
 		}
 		for (int i=first+1; i<=characters.getMaximumInteger(); i++) {

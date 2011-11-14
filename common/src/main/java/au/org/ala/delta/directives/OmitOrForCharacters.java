@@ -19,4 +19,9 @@ public class OmitOrForCharacters extends AbstractRangeListDirective<DeltaContext
 	protected void processNumber(DeltaContext context, int number) {
 		context.omitOrForCharacter(number);
 	}
+	
+	@Override
+	public int getOrder() {
+		return 4;
+	}
 }

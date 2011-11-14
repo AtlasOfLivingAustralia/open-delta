@@ -32,4 +32,8 @@ public class OmitSpaceBeforeUnits extends AbstractNoArgDirective {
 		context.setOmitSpaceBeforeUnits(true);
 	}
 
+	@Override
+	public int getOrder() {
+		return 4;
+	}
 }

@@ -38,4 +38,9 @@ public class EmphasizeFeatures extends AbstractCustomDirective {
 		}
 		
 	}
+	
+	@Override
+	public int getOrder() {
+		return 4;
+	}
 }

@@ -43,4 +43,9 @@ public class TreatIntegerAsReal extends AbstractDirective<DeltaContext> {
 			context.setTreatIntegerCharacterAsReal((Integer)arg.getId(), true);
 		}
 	}
+	
+	@Override
+	public int getOrder() {
+		return 4;
+	}
 }

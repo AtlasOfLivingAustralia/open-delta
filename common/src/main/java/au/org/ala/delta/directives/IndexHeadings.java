@@ -39,4 +39,9 @@ public class IndexHeadings extends AbstractCustomDirective {
 			}
 		}
 	}
+	
+	@Override
+	public int getOrder() {
+		return 4;
+	}
 }

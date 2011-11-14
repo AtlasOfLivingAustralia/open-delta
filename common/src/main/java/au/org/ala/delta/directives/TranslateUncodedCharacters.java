@@ -17,4 +17,9 @@ public class TranslateUncodedCharacters extends AbstractNoArgDirective {
 	public void process(DeltaContext context, DirectiveArguments directiveArguments) throws Exception {
 		context.addPrintAction(PrintActionType.TRANSLATE_UNCODED_CHARACTERS);
 	}
+	
+	@Override
+	public int getOrder() {
+		return 4;
+	}
 }

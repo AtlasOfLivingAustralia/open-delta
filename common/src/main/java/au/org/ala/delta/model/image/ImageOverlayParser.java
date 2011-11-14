@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import au.org.ala.delta.directives.validation.DirectiveError;
 import au.org.ala.delta.model.image.OverlayLocation.OLDrawType;
 import au.org.ala.delta.util.Utils;
 
@@ -108,7 +109,7 @@ public class ImageOverlayParser {
                 evaluated = true;
             } else if (ch == '>' && (i == 0 || buffer.charAt(i - 1) != '|')) {
                 if (--commentLevel < 0)
-                    throw new ParseException("EIP_UNMATCHED_CLOSEBRACK", i - nHidden);
+                    throw DirectiveError.asException(DirectiveError.Error.UNMATCHED_CLOSING_BRACKET, i - nHidden);
                 if (commentLevel == 0)
                     saveIt = true; // used to be goto SaveIt:
                 else if (commentLevel == 1)
@@ -151,7 +152,7 @@ public class ImageOverlayParser {
                     anOverlay.location.add(0, olLocation);
                     if (anOverlay.type != OverlayType.OLCOMMENT && anOverlay.type != OverlayType.OLSOUND && anOverlay.type != OverlayType.OLSUBJECT) {
                         if (dims != HAS_ALL_DIMS)
-                            throw new ParseException("EIP_MISSING_DIMENSIONS", i - nHidden);
+                            throw DirectiveError.asException(DirectiveError.Error.MISSING_DIMENSIONS, i - nHidden);
                         if (inHotspot) {
                             anOverlay.location.add(hsLocation);
                             inHotspot = false;
@@ -194,14 +195,14 @@ public class ImageOverlayParser {
                     while (++i < buffer.length() && Character.isSpaceChar(buffer.charAt(i)))
                         ;
                     if (i >= buffer.length())
-                        throw new ParseException("EIP_DATA_MISSING", i - nHidden);
+                        throw DirectiveError.asException(DirectiveError.Error.MISSING_DATA, i - nHidden);
                     textStart = --i;
                     dims = HAS_ALL_DIMS;
                     break;
 
                 case OverlayType.OLSTATE: {
                     if (imageType != ImageType.IMAGE_CHARACTER)
-                        throw new ParseException("EIP_BAD_OVERLAY_TYPE", i - nHidden);
+                        throw DirectiveError.asException(DirectiveError.Error.INVALID_OVERLAY_TYPE, i - nHidden);
                     int[] result = readIntegerValue(buffer, ++i, false, false, 10);
                     int stateNo = result[0];
                     i = result[1];
@@ -213,11 +214,11 @@ public class ImageOverlayParser {
                     // In brackets to allow declaration of local variables
                 {
                     if (imageType != ImageType.IMAGE_CHARACTER)
-                        throw new ParseException("EIP_BAD_OVERLAY_TYPE", i - nHidden);
+                        throw DirectiveError.asException(DirectiveError.Error.INVALID_OVERLAY_TYPE, i - nHidden);
                     while (++i < buffer.length() && Character.isSpaceChar(buffer.charAt(i)))
                         ;
                     if (i >= buffer.length())
-                        throw new ParseException("EIP_DATA_MISSING", i - nHidden);
+                        throw DirectiveError.asException(DirectiveError.Error.MISSING_DATA, i - nHidden);
 
                     int lowerBoundStart = i;
                     while (i < buffer.length() && Character.isDigit(buffer.charAt(i))) {
@@ -226,7 +227,7 @@ public class ImageOverlayParser {
                     int lowerBoundEnd = i;
 
                     if (lowerBoundStart == lowerBoundEnd) {
-                        throw new ParseException("EIP_DATA_MISSING", i - nHidden);
+                        throw DirectiveError.asException(DirectiveError.Error.MISSING_DATA, i - nHidden);
                     }
 
                     String rangeLowerBound = buffer.substring(lowerBoundStart, lowerBoundEnd);
@@ -246,7 +247,7 @@ public class ImageOverlayParser {
                         int upperBoundEnd = i;
 
                         if (upperBoundStart == upperBoundEnd) {
-                            throw new ParseException("EIP_DATA_MISSING", i - nHidden);
+                            throw DirectiveError.asException(DirectiveError.Error.MISSING_DATA, i - nHidden);
                         }
 
                         String rangeUpperBound = buffer.substring(upperBoundStart, upperBoundEnd);
@@ -260,7 +261,7 @@ public class ImageOverlayParser {
                     while (++i < buffer.length() && Character.isSpaceChar(buffer.charAt(i)))
                         ;
                     if (i >= buffer.length())
-                        throw new ParseException("EIP_DATA_MISSING", i - nHidden);
+                        throw DirectiveError.asException(DirectiveError.Error.MISSING_DATA, i - nHidden);
                     boolean quoted = buffer.charAt(i) == '\"';
                     int l;
                     if (quoted) {
@@ -292,19 +293,19 @@ public class ImageOverlayParser {
 
                 case OverlayType.OLITEM:
                     if (imageType != ImageType.IMAGE_TAXON)
-                        throw new ParseException("EIP_BAD_OVERLAY_TYPE", i - nHidden);
+                        throw DirectiveError.asException(DirectiveError.Error.INVALID_CHARACTER_TYPE, i - nHidden);
                     break;
 
                 case OverlayType.OLFEATURE:
                 case OverlayType.OLUNITS:
                 case OverlayType.OLENTER:
                     if (imageType != ImageType.IMAGE_CHARACTER)
-                        throw new ParseException("EIP_BAD_OVERLAY_TYPE", i - nHidden);
+                        throw DirectiveError.asException(DirectiveError.Error.INVALID_CHARACTER_TYPE, i - nHidden);
                     break;
 
                 case OverlayType.OLHEADING:
                     if (imageType != ImageType.IMAGE_STARTUP)
-                        throw new ParseException("EIP_BAD_OVERLAY_TYPE", i - nHidden);
+                        throw DirectiveError.asException(DirectiveError.Error.INVALID_CHARACTER_TYPE, i - nHidden);
                     break;
 
                 case OverlayType.OLTEXT:
@@ -339,7 +340,7 @@ public class ImageOverlayParser {
                 switch (ch) {
                 case 'X':
                     if ((dims & HAS_X) != 0)
-                        throw new ParseException("EIP_DUPLICATE_DIMENSION", i - nHidden);
+                        throw DirectiveError.asException(DirectiveError.Error.DUPLICATE_DIMENSION, i - nHidden);
                     dims |= HAS_X;
                     if (inHotspot)
                         hsLocation.X = (short) val;
@@ -349,7 +350,7 @@ public class ImageOverlayParser {
 
                 case 'Y':
                     if ((dims & HAS_Y) != 0)
-                        throw new ParseException("EIP_DUPLICATE_DIMENSION", i - nHidden);
+                        throw DirectiveError.asException(DirectiveError.Error.DUPLICATE_DIMENSION, i - nHidden);
                     dims |= HAS_Y;
                     if (inHotspot)
                         hsLocation.Y = (short) val;
@@ -359,7 +360,7 @@ public class ImageOverlayParser {
 
                 case 'W':
                     if ((dims & HAS_W) != 0)
-                        throw new ParseException("EIP_DUPLICATE_DIMENSION", i - nHidden);
+                        throw DirectiveError.asException(DirectiveError.Error.DUPLICATE_DIMENSION, i - nHidden);
                     dims |= HAS_W;
                     if (inHotspot)
                         hsLocation.W = (short) val;
@@ -369,7 +370,7 @@ public class ImageOverlayParser {
 
                 case 'H':
                     if ((dims & HAS_H) != 0)
-                        throw new ParseException("EIP_DUPLICATE_DIMENSION", i - nHidden);
+                        throw DirectiveError.asException(DirectiveError.Error.DUPLICATE_DIMENSION, i - nHidden);
                     dims |= HAS_H;
                     if (inHotspot)
                         hsLocation.H = (short) val;
@@ -394,13 +395,13 @@ public class ImageOverlayParser {
 
                 case 'P':
                     if (!inHotspot)
-                        throw new ParseException("EIP_NOT_HOTSPOT", i - nHidden);
+                        throw DirectiveError.asException(DirectiveError.Error.NOT_HOTSPOT, i - nHidden);
                     hsLocation.setPopup(true);
                     break;
 
                 case 'E':
                     if (!inHotspot)
-                        throw new ParseException("EIP_NOT_HOTSPOT", i - nHidden);
+                        throw DirectiveError.asException(DirectiveError.Error.NOT_HOTSPOT, i - nHidden);
                     hsLocation.drawType = OLDrawType.ellipse;
                     break;
 
@@ -433,9 +434,9 @@ public class ImageOverlayParser {
                     break; // Should never be reached
                 }
             } else if (parseState == ParseState.MODIFIER && ch != ',')
-                throw new ParseException("EIP_BAD_SYMBOL", i - nHidden);
+                throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE, i - nHidden, ',', ch);
             else if (commentLevel == 0)
-                throw new ParseException("EIP_BAD_SYMBOL", i - nHidden);
+                throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i - nHidden);
             else if (parseState == ParseState.NOWHERE) {
                 anOverlay.type = OverlayType.OLCOMMENT;
                 parseState = ParseState.TEXT;

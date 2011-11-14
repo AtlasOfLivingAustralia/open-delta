@@ -11,6 +11,7 @@ import org.apache.commons.lang.math.IntRange;
 
 import au.org.ala.delta.directives.AbstractDeltaContext;
 import au.org.ala.delta.directives.AbstractStreamParser;
+import au.org.ala.delta.directives.validation.DirectiveError;
 
 /**
  * The DirectiveArgsParser provides methods for parsing common formats
@@ -33,7 +34,7 @@ public abstract class DirectiveArgsParser extends AbstractStreamParser {
 		return _args;
 	}
 	
-	protected String readFully() throws Exception {
+	protected String readFully() throws ParseException {
 		int next = readNext();
 		StringBuilder text = new StringBuilder();
 		while (next != -1) {
@@ -52,7 +53,7 @@ public abstract class DirectiveArgsParser extends AbstractStreamParser {
 			return;
 		}
 		if (_currentChar != token) {
-			throw new ParseException("Invalid character found.  Expected: "+token+" Found: "+_currentChar, _position-1);
+			throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE,_position-1, token, _currentChar);
 		}
 	}
 	
@@ -62,8 +63,8 @@ public abstract class DirectiveArgsParser extends AbstractStreamParser {
 			String value = readToNextWhiteSpaceOrEnd();
 			return new BigDecimal(value);
 		}
-		catch (Exception e) {
-			throw new ParseException("Failed to read value: "+e.getMessage(), startPosition-1);
+		catch (NumberFormatException e) {
+			throw DirectiveError.asException(DirectiveError.Error.INVALID_REAL_NUMBER, startPosition-1);
 		}
 	}
 	
@@ -100,18 +101,14 @@ public abstract class DirectiveArgsParser extends AbstractStreamParser {
 	
 
 	protected IntRange readIds() throws ParseException {
-		try {
-			int first = readInteger();
-			if (_currentChar == '-') {
-				readNext();
-				int last = readInteger();
-				return new IntRange(first, last);
-			}
-			return new IntRange(first);
+		
+		int first = readInteger();
+		if (_currentChar == '-') {
+			readNext();
+			int last = readInteger();
+			return new IntRange(first, last);
 		}
-		catch (Exception e) {
-			throw new ParseException(e.getMessage(), _position-1);
-		}
+		return new IntRange(first);
 	}
 	
 	protected List<Integer> readSet() throws ParseException {
@@ -148,7 +145,7 @@ public abstract class DirectiveArgsParser extends AbstractStreamParser {
 		}
 		// Delete the '/'
 		if (id.charAt(id.length()-1) != '/') {
-			throw new ParseException("Unterminated item description", _position);
+			throw DirectiveError.asException(DirectiveError.Error.ITEM_NAME_MISSING_SLASH, _position);
 		}
 		id.deleteCharAt(id.length()-1);
 		
@@ -174,7 +171,7 @@ public abstract class DirectiveArgsParser extends AbstractStreamParser {
 			_markedInt = _currentInt;
 		}
 		catch (IOException e) {
-			throw new ParseException(e.getMessage(), _position);
+			throw DirectiveError.asException(DirectiveError.Error.FATAL_ERROR, _position);
 		}
 	}
 	
@@ -185,7 +182,7 @@ public abstract class DirectiveArgsParser extends AbstractStreamParser {
 			_currentInt = _markedInt;
 		}
 		catch (IOException e) {
-			throw new ParseException(e.getMessage(), _position);
+			throw DirectiveError.asException(DirectiveError.Error.FATAL_ERROR, _position);
 		}
 	}
 }

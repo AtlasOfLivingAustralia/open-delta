@@ -22,6 +22,7 @@ import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.directives.args.DirectiveArguments;
+import au.org.ala.delta.directives.validation.DirectiveError;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.model.MultiStateCharacter;
@@ -91,16 +92,21 @@ public class CharacterTypes extends AbstractCharacterListDirective<DeltaContext,
 			exclusive = true;
 			type = type.substring(1);
 		}
+		try {
+			CharacterType charType = CharacterType.parse(type);
 		
-		CharacterType charType = CharacterType.parse(type);
-		
-		if (exclusive) {
-			if (!charType.isMultistate()) {
-				throw new ParseException("Invalid character type: "+type, 
+			if (exclusive) {
+				if (!charType.isMultistate()) {
+					throw DirectiveError.asException(DirectiveError.Error.MULTISTATE_CHARACTERS_ONLY, 
 						(int)context.getCurrentParsingContext().getCurrentOffset());
+				}
 			}
+		
+			_characterTypes.put(charNumber, new Pair<CharacterType, Boolean>(charType, exclusive));
+		} catch (Exception e) {
+			throw DirectiveError.asException(DirectiveError.Error.INVALID_CHARACTER_TYPE, 
+					(int)context.getCurrentParsingContext().getCurrentOffset());
 		}
-		_characterTypes.put(charNumber, new Pair<CharacterType, Boolean>(charType, exclusive));
 	}
 
 	@Override
@@ -108,5 +114,9 @@ public class CharacterTypes extends AbstractCharacterListDirective<DeltaContext,
 		args.addTextArgument(charIndex, value);
 	}
 	
+	@Override
+	public int getOrder() {
+		return 2;
+	}
 	
 }

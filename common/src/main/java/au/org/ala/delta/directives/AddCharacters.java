@@ -41,7 +41,8 @@ public class AddCharacters extends AbstractCustomDirective {
 		
 	}
 	
-	
-	
-	
+	@Override
+    public int getOrder() {
+    	return 4;
+    }
 }

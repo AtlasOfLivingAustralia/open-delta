@@ -20,16 +20,8 @@ public class TextArgParser extends DirectiveArgsParser {
 	public void parse() throws ParseException {
 		_args = new DirectiveArguments();
 		
-		String text;
-		try {
-			text = readFully();
-			text = StringUtils.stripEnd(text, null);
-			_args.addTextArgument(text);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-			throw new ParseException(e.getMessage(), 0);
-		}
-		
+		String text = readFully();
+		text = StringUtils.stripEnd(text, null);
+		_args.addTextArgument(text);
 	}
 }

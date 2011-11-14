@@ -35,4 +35,10 @@ public class CharacterForTaxonImages extends AbstractIntegerDirective {
 		context.setCharacterForTaxonImages(character);
 		
 	}
+	
+	@Override
+	public int getOrder() {
+		return 4;
+	}
+	
 }

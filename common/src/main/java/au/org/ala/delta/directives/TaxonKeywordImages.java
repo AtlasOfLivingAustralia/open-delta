@@ -4,25 +4,25 @@ import java.io.StringReader;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.args.ImageParser;
-import au.org.ala.delta.directives.args.NoIdImageParser;
 import au.org.ala.delta.model.image.ImageType;
 
 /**
- * Handles the STARTUP IMAGES directive.
+ * Processes the TAXON KEYWORD IMAGES directive.
  */
-public class StartupImages extends AbstractImageDirective {
+public class TaxonKeywordImages extends AbstractImageDirective {
 
-	protected StartupImages() {
-		super(ImageType.IMAGE_STARTUP, "startup", "images");
+	public TaxonKeywordImages() {
+		super(ImageType.IMAGE_TAXON_KEYWORD, "taxon", "keyword", "images");
 	}
 	
 	@Override
 	protected ImageParser createParser(DeltaContext context, StringReader reader) {
-		return new NoIdImageParser(context, reader, ImageType.IMAGE_STARTUP);
+		return new ImageParser(context, reader, ImageType.IMAGE_TAXON_KEYWORD);
 	}
 
 	@Override
 	public int getOrder() {
 		return 4;
 	}
+	
 }

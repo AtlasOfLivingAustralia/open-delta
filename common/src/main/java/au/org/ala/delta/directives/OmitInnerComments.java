@@ -28,4 +28,8 @@ public class OmitInnerComments extends AbstractNoArgDirective {
 		context.setOmitInnerComments(true);
 	}
 
+	@Override
+	public int getOrder() {
+		return 4;
+	}
 }

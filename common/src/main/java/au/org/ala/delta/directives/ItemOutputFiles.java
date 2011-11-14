@@ -40,4 +40,9 @@ public class ItemOutputFiles extends AbstractCustomDirective {
 			}
 		}
 	}
+	
+	@Override
+	public int getOrder() {
+		return 4;
+	}
 }

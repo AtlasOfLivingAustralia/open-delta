@@ -33,5 +33,10 @@ public class AbsoluteError extends AbstractCharacterListDirective<DeltaContext, 
 	public int getArgType() {
 		return DirectiveArgType.DIRARG_CHARREALLIST;
 	}
+	
+	@Override
+    public int getOrder() {
+    	return 4;
+    }
 
 }

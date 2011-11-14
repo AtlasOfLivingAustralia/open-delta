@@ -21,4 +21,9 @@ public class OutputFormatHtml extends AbstractNoArgDirective {
 	}
 
 	
+	@Override
+	public int getOrder() {
+		return 4;
+	}
+	
 }

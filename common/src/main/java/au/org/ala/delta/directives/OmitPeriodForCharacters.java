@@ -19,4 +19,9 @@ public class OmitPeriodForCharacters extends AbstractRangeListDirective<DeltaCon
 	protected void processNumber(DeltaContext context, int number) {
 		context.setOmitPeriodForCharacter(number, true);
 	}
+	
+	@Override
+	public int getOrder() {
+		return 4;
+	}
 }

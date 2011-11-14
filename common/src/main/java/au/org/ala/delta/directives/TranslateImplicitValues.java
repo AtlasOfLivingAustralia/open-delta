@@ -23,4 +23,9 @@ public class TranslateImplicitValues extends AbstractNoArgDirective {
 		ImplicitValuesTranslator translator = factory.createImplicitValuesTranslator(context);
 		translator.translateImplicitValues();
 	}
+	
+	@Override
+	public int getOrder() {
+		return 4;
+	}
 }

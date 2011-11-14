@@ -40,4 +40,8 @@ public class ExcludeItems extends AbstractRangeListDirective<DeltaContext> {
 		context.excludeItem(number);
 	}
 
+	@Override
+	public int getOrder() {
+		return 4;
+	}
 }

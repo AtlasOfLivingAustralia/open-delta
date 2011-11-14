@@ -434,7 +434,7 @@ public class NaturalLanguageTranslator extends AbstractIterativeTranslator {
            
             if (useComma.contains(characterNumber) && useComma.contains(_lastCharacterOutput)) {
                 punctuationMark = Word.COMMA;
-                if (_context.useAlternateComma()) {
+                if (_context.getUseAlternateComma(characterNumber)) {
                     punctuationMark = Word.ALTERNATE_COMMA;
                 }
 	            

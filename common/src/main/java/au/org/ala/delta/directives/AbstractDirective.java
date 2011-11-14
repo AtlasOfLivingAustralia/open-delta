@@ -31,6 +31,17 @@ public abstract class AbstractDirective<C extends AbstractDeltaContext> {
     public abstract DirectiveArguments getDirectiveArgs();
     
     public abstract int getArgType();
+    
+    /**
+     * The order in which directives appear is important for the correct
+     * operation of CONFOR.  Out of order directives will result in an 
+     * error during parsing.
+     * Directives of order "0" may appear anywhere.
+     * @return the default order for a directive, 0.
+     */
+    public int getOrder() {
+    	return 0;
+    }
 
     @Override
     public String toString() {

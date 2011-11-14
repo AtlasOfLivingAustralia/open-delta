@@ -36,4 +36,10 @@ public class CharacterHeadings extends AbstractCustomDirective {
 			context.addCharacterHeading((Integer)arg.getId(), arg.getText().trim());
 		}
 	}
+	
+	@Override
+	public int getOrder() {
+		return 4;
+	}
+	
 }

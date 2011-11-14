@@ -17,4 +17,9 @@ public class PrintCharacterList extends AbstractNoArgDirective {
 	public void process(DeltaContext context, DirectiveArguments directiveArguments) throws Exception {
 		context.addPrintAction(PrintActionType.PRINT_CHARACTER_LIST);
 	}
+	
+	@Override
+	public int getOrder() {
+		return 4;
+	}
 }

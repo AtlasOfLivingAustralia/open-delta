@@ -25,18 +25,18 @@ import au.org.ala.delta.directives.args.IdValueListParser;
 
 
 /**
- * Processes the ITEM ABUNDANCES directive.
- * @see http://delta-intkey.com/www/uguide.htm#_*ITEM_ABUNDANCES_
+ * Processes the ITEM WEIGHTS directive.
+ * @see http://delta-intkey.com/www/uguide.htm#_*ITEM_WEIGHTS_
  */
-public class ItemAbundances extends AbstractDirective<DeltaContext> {
+public class ItemWeights extends AbstractDirective<DeltaContext> {
 
 	/** The default weight for any characters not included in this directive */
-	private static final double DEFAULT_WEIGHT = 5d;
+	private static final double DEFAULT_WEIGHT = 1d;
 	
 	private DirectiveArguments _args;
 	
-	public ItemAbundances() {
-		super("item", "abundances");
+	public ItemWeights() {
+		super("item", "weights");
 	}
 
 	@Override
@@ -64,9 +64,14 @@ public class ItemAbundances extends AbstractDirective<DeltaContext> {
 			context.addItemAbundancy(i, DEFAULT_WEIGHT);
 		}
 		for (DirectiveArgument<?> arg : directiveArguments.getDirectiveArguments()) {
-			context.addItemAbundancy((Integer)arg.getId(), arg.getValue().doubleValue());
+			double abundancy = weightToAbundancy( arg.getValue().doubleValue());
+			context.addItemAbundancy((Integer)arg.getId(), abundancy);
 		}
 		
+	}
+	
+	private double weightToAbundancy(double weight) {
+		return Math.pow(2, weight-5);
 	}
 	
 	@Override

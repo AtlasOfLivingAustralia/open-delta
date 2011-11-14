@@ -24,4 +24,9 @@ public class OmitLowerForCharacters extends AbstractRangeListDirective<DeltaCont
 	protected void processNumber(DeltaContext context, int number) {
 		context.setOmitLowerForCharacter(number, true);
 	}
+	
+	@Override
+	public int getOrder() {
+		return 4;
+	}
 }

@@ -58,4 +58,9 @@ public class IncludeCharacters extends AbstractRangeListDirective<DeltaContext> 
 		_includedChars.add(number);
 	}
 
+	@Override
+	public int getOrder() {
+		return 4;
+	}
+	
 }

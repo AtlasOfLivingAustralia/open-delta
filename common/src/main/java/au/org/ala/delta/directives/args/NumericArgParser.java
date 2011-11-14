@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 
 import au.org.ala.delta.directives.AbstractDeltaContext;
+import au.org.ala.delta.directives.validation.DirectiveError;
 
 public class NumericArgParser extends DirectiveArgsParser {
 
@@ -21,7 +22,7 @@ public class NumericArgParser extends DirectiveArgsParser {
 			_args.addValueArgument(value);
 		}
 		catch (Exception e) {
-			throw new ParseException(e.getMessage(), 0);
+			throw DirectiveError.asException(DirectiveError.Error.INVALID_REAL_NUMBER, _position);
 		}
 		
 	}

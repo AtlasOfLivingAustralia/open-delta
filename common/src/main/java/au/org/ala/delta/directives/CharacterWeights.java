@@ -34,4 +34,9 @@ public class CharacterWeights extends CharacterWeightDirective {
 	public CharacterWeights() {
 		super(MIN_WEIGHT, MAX_WEIGHT, DEFAULT_WEIGHT, "character", "weights");
 	}
+	
+	@Override
+	public int getOrder() {
+		return 4;
+	}
 }

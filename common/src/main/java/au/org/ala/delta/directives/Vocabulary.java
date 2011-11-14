@@ -15,5 +15,10 @@ public class Vocabulary extends AbstractFormattingDirective {
 	public void processMark(DeltaContext context, TypeSettingMark mark) {
 		Words.setWord(Word.values()[mark.getId()], mark.getMarkText());
 	}
+	
+	@Override
+	public int getOrder() {
+		return 4;
+	}
 
 }

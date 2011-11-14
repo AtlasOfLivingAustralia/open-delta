@@ -26,4 +26,9 @@ public class ReplaceSemicolonByComma extends AbstractCharacterSetDirective<Delta
 	protected void processCharacterSet(DeltaContext context, List<Integer> characters) {
 		context.replaceSemiColonWithCommon(new HashSet<Integer>(characters));
 	}
+	
+	@Override
+	public int getOrder() {
+		return 4;
+	}
 }

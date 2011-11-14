@@ -67,4 +67,9 @@ public class ImplicitValues extends AbstractCharacterListDirective<DeltaContext,
 		args.addTextArgument(charIndex, value);
 	}
 	
+	@Override
+	public int getOrder() {
+		return 4;
+	}
+	
 }

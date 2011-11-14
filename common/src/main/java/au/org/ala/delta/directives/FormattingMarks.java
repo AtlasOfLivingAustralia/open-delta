@@ -16,4 +16,9 @@ public class FormattingMarks extends AbstractFormattingDirective {
 	public void processMark(DeltaContext context, TypeSettingMark mark) {
 		context.addFormattingMark(mark);
 	}
+	
+	@Override
+	public int getOrder() {
+		return 4;
+	}
 }

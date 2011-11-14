@@ -36,4 +36,8 @@ public class MandatoryCharacters extends AbstractRangeListDirective<DeltaContext
 		c.setMandatory(true);
 	}
 
+	@Override
+	public int getOrder() {
+		return 4;
+	}
 }
