@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
@@ -108,7 +109,7 @@ public class Best {
             availableCharacters.add(dataset.getCharacter(availableCharNum));
         }
 
-        List<Item> availableTaxa = new ArrayList<Item>();
+        Set<Item> availableTaxa = new HashSet<Item>();
         for (int availableTaxonNum : availableTaxaNumbers) {
             availableTaxa.add(dataset.getItem(availableTaxonNum));
         }
@@ -167,10 +168,7 @@ public class Best {
             // frequency of character subgroups
             double[] subgroupFrequencies = new double[totalNumStates];
 
-            List<Attribute> charAttributes = new ArrayList<Attribute>();
-            for (Item taxon : dataset.getItemsAsList()) {
-                charAttributes.add(dataset.getAttribute(taxon.getItemNumber(), ch.getCharacterId()));
-            }
+            List<Attribute> charAttributes = dataset.getAllAttributesForCharacter(ch.getCharacterId());
 
             // examine taxon to be diagnosed or separated first
             boolean[] taxonToSeparateStatePresence = new boolean[totalNumStates];

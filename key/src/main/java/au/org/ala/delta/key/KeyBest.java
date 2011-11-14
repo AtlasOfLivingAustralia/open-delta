@@ -3,8 +3,10 @@ package au.org.ala.delta.key;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
 
@@ -71,7 +73,7 @@ public class KeyBest {
             availableCharacters.add(dataset.getCharacter(availableCharNum));
         }
 
-        List<Item> availableTaxa = new ArrayList<Item>();
+        Set<Item> availableTaxa = new HashSet<Item>();
         for (int availableTaxonNum : availableTaxaNumbers) {
             availableTaxa.add(dataset.getItem(availableTaxonNum));
         }
