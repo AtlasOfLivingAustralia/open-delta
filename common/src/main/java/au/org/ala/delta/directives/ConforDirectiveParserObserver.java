@@ -7,6 +7,7 @@ import au.org.ala.delta.Logger;
 import au.org.ala.delta.directives.validation.DirectiveError;
 import au.org.ala.delta.directives.validation.DirectiveException;
 import au.org.ala.delta.directives.validation.IncompatibleDirectivesValidator;
+import au.org.ala.delta.directives.validation.ItemDescriptionsValidator;
 import au.org.ala.delta.io.OutputFileManager;
 import au.org.ala.delta.model.image.ImageType;
 import au.org.ala.delta.translation.DataSetTranslator;
@@ -28,6 +29,7 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
 	private IncompatibleDirectivesValidator _validator;
 
 	private int _totalErrors;
+	private int _totalWarnings;
 	private boolean _fatalErrorEncountered;
 
 	public ConforDirectiveParserObserver(DeltaContext context) {
@@ -145,10 +147,23 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
 	}
 
 	private void postProcessItems() {
+		
+		validateItemDescriptions();
 		_helper.addItemImages(_context.getImages(ImageType.IMAGE_TAXON));
 
 		DataSetTranslator translator = _factory.createTranslator(_context);
 		translator.translateItems();
+	}
+	
+	private void validateItemDescriptions() {
+		ItemDescriptionsValidator validator = new ItemDescriptionsValidator();
+		
+		validator.validate(_context, AddCharacters.CONTROL_WORDS, _context.addCharacterDescriptions());
+		validator.validate(_context, EmphasizeCharacters.CONTROL_WORDS, _context.emphasizedCharacterDescriptions());
+		validator.validate(_context, ItemHeadings.CONTROL_WORDS, _context.itemHeadingDescriptions());
+		validator.validate(_context, ItemOutputFiles.CONTROL_WORDS, _context.itemOutputFilesDescriptions());
+		validator.validate(_context, IndexHeadings.CONTROL_WORDS, _context.indexHeadingsDescriptions());
+		validator.validateImages(_context, TaxonImages.CONTROL_WORDS, _context.getImages(ImageType.IMAGE_TAXON).iterator());
 	}
 
 	@Override
@@ -158,6 +173,7 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
 		ParsingContext pc = context.getCurrentParsingContext();
 
 		if (ex instanceof DirectiveException) {
+			
 			OutputFileManager fileManager = ((DeltaContext)context).getOutputFileSelector();
 
 			int offset = ((DirectiveException) ex).getErrorOffset();
@@ -215,10 +231,15 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
 
 		OutputFileManager manager = _context.getOutputFileSelector();
 		for (DirectiveError error : errors) {
-			manager.listMessage(error.getMessage());
-			if (error.isFatal()) {
+			manager.message(error.getMessage());
+			if (error.isError()) {
 				_totalErrors++;
-				_fatalErrorEncountered = true;
+				if (error.isFatal()) {
+					_fatalErrorEncountered = true;
+				}
+			}
+			else if (error.isWarning()) {
+				_totalWarnings++;
 			}
 		}
 

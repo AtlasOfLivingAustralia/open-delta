@@ -15,8 +15,10 @@ import au.org.ala.delta.directives.args.StringTextListParser;
  */
 public class ItemOutputFiles extends AbstractCustomDirective {
 
+	public static final String[] CONTROL_WORDS = {"item", "output", "files"};
+	
 	public ItemOutputFiles() {
-		super("item", "output", "files");
+		super(CONTROL_WORDS);
 	}
 	
 	@Override

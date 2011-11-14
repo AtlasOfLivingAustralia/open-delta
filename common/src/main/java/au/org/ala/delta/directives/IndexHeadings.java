@@ -14,8 +14,10 @@ import au.org.ala.delta.directives.args.StringTextListParser;
  */
 public class IndexHeadings extends AbstractCustomDirective {
 
+	public static final String[] CONTROL_WORDS = {"index", "headings"};
+	
 	public IndexHeadings() {
-		super("index", "headings");
+		super(CONTROL_WORDS);
 	}
 	
 	@Override

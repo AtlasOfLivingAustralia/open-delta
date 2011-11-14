@@ -9,11 +9,13 @@ import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.AbstractDirective;
+import au.org.ala.delta.directives.AddCharacters;
 import au.org.ala.delta.directives.ApplicableCharacters;
 import au.org.ala.delta.directives.CharacterList;
 import au.org.ala.delta.directives.CharacterReliabilities;
 import au.org.ala.delta.directives.CharacterWeights;
 import au.org.ala.delta.directives.DependentCharacters;
+import au.org.ala.delta.directives.EmphasizeCharacters;
 import au.org.ala.delta.directives.ExcludeCharacters;
 import au.org.ala.delta.directives.ExcludeItems;
 import au.org.ala.delta.directives.InapplicableCharacters;
@@ -45,6 +47,8 @@ public class IncompatibleDirectivesValidator {
 	
 	private Set<String> _encounteredDirectives; 
 	
+	private Set<String> _encounteredDirectivesExceptions;
+	
 	public IncompatibleDirectivesValidator() {
 		
 		_incompatibleDirectives = new HashMap<String, IncompatibleDirectives>();
@@ -61,6 +65,11 @@ public class IncompatibleDirectivesValidator {
 		add(ItemWeights.CONTROL_WORDS, ItemAbundances.CONTROL_WORDS);
 		
 		add(CharacterList.CONTROL_WORDS, KeyCharacterList.CONTROL_WORDS);
+		
+		_encounteredDirectivesExceptions = new HashSet<String>();
+		_encounteredDirectivesExceptions.add(join(AddCharacters.CONTROL_WORDS));
+		_encounteredDirectivesExceptions.add(join(EmphasizeCharacters.CONTROL_WORDS));
+		
 	}
 	
 	private void add(String[] directive1, String[] directive2) {
@@ -88,7 +97,8 @@ public class IncompatibleDirectivesValidator {
 	
 	public void validate(AbstractDirective<DeltaContext> directive) throws DirectiveException {
 		String name = join(directive.getControlWords());
-		if (directive.getOrder() > 0 && _encounteredDirectives.contains(name)) {
+		if (directive.getOrder() > 0 && _encounteredDirectives.contains(name) &&
+				!_encounteredDirectivesExceptions.contains(name)) {
 			throw DirectiveError.asException(DirectiveError.Error.EQUIVALENT_DIRECTIVE_USED, 0);
 		}
 		_encounteredDirectives.add(name);

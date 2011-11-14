@@ -11,8 +11,12 @@ import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.directives.args.IdWithIdListParser;
 
 public class EmphasizeCharacters extends AbstractCustomDirective {
+	
+	public static final String[] CONTROL_WORDS = {"emphasize", "characters"};
+	
+	
 	public EmphasizeCharacters() {
-		super("emphasize", "characters");
+		super(CONTROL_WORDS);
 	}
 
 	@Override

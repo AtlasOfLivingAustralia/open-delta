@@ -17,6 +17,10 @@ public class DirectiveException extends ParseException {
 	public boolean isFatal() {
 		return true;
 	}
+	
+	public boolean isError() {
+		return true;
+	}
 
 	
 }

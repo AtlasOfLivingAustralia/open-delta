@@ -11,8 +11,10 @@ import au.org.ala.delta.model.image.ImageType;
  */
 public class TaxonImages extends AbstractImageDirective {
 
+	public static final String[] CONTROL_WORDS = {"taxon", "images"};
+	
 	public TaxonImages() {
-		super(ImageType.IMAGE_TAXON, "taxon", "images");
+		super(ImageType.IMAGE_TAXON, CONTROL_WORDS);
 	}
 	
 	@Override

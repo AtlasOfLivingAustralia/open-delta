@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -141,6 +142,10 @@ public class OutputFileSelector extends OutputFileManager {
 	
 	public void setItemOutputFile(String itemDescription, String fileName) {
 		_itemOutputFiles.put(RTFUtils.stripFormatting(itemDescription), fileName);
+	}
+	
+	public Iterator<String> itemOutputFileDescriptions() {
+		return _itemOutputFiles.keySet().iterator();
 	}
 	
 	private String itemDescriptionFor(int itemNumber) {
