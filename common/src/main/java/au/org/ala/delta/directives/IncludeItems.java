@@ -26,10 +26,12 @@ import au.org.ala.delta.directives.args.DirectiveArguments;
  */
 public class IncludeItems extends AbstractRangeListDirective<DeltaContext> {
 	
+	public static final String[] CONTROL_WORDS = {"include", "items"};
+	
 	private Set<Integer> _includedItems;
 	
 	public IncludeItems() {
-		super("include", "items");
+		super(CONTROL_WORDS);
 	}
 	
 	@Override

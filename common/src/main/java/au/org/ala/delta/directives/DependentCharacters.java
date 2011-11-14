@@ -20,8 +20,10 @@ package au.org.ala.delta.directives;
  */
 public class DependentCharacters extends AbstractCharacterDependencyDirective {
 
+	public static final String[] CONTROL_WORDS = {"dependent", "characters"};
+	
     public DependentCharacters() {
-        super("dependent", "characters");
+        super(CONTROL_WORDS);
     }
     
     @Override

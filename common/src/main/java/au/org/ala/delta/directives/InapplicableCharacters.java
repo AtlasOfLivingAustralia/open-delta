@@ -17,8 +17,10 @@ package au.org.ala.delta.directives;
 
 public class InapplicableCharacters extends AbstractCharacterDependencyDirective {
 
+	public static final String[] CONTROL_WORDS = {"inapplicable", "characters"};
+	
     public InapplicableCharacters() {
-        super("inapplicable", "characters");
+        super(CONTROL_WORDS);
     }
     
     @Override

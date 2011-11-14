@@ -30,13 +30,16 @@ import au.org.ala.delta.directives.args.IdValueListParser;
  */
 public class ItemWeights extends AbstractDirective<DeltaContext> {
 
+	public static final String[] CONTROL_WORDS =  {"item", "weights"};
+	
+	
 	/** The default weight for any characters not included in this directive */
 	private static final double DEFAULT_WEIGHT = 1d;
 	
 	private DirectiveArguments _args;
 	
 	public ItemWeights() {
-		super("item", "weights");
+		super(CONTROL_WORDS);
 	}
 
 	@Override

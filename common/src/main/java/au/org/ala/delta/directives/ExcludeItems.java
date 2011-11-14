@@ -20,8 +20,10 @@ import au.org.ala.delta.directives.args.DirectiveArguments;
 
 public class ExcludeItems extends AbstractRangeListDirective<DeltaContext> {
 	
+	public static final String[] CONTROL_WORDS = {"exclude", "items"};
+	
 	public ExcludeItems() {
-		super("exclude", "items");
+		super(CONTROL_WORDS);
 	}
 	
 	@Override

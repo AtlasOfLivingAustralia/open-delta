@@ -25,6 +25,8 @@ import au.org.ala.delta.DeltaContext;
  */
 public class CharacterReliabilities extends CharacterWeightDirective {
 
+	public static final String[] CONTROL_WORDS =  {"character", "reliabilities"};
+	
 	/** The default weight for any characters not included in this directive */
 	private static final BigDecimal DEFAULT_WEIGHT = new BigDecimal("5.0");
 	
@@ -35,7 +37,7 @@ public class CharacterReliabilities extends CharacterWeightDirective {
 	private static final double MAX_WEIGHT = 10d;
 	
 	public CharacterReliabilities() {
-		super(MIN_WEIGHT, MAX_WEIGHT, DEFAULT_WEIGHT, "character", "reliabilities");
+		super(MIN_WEIGHT, MAX_WEIGHT, DEFAULT_WEIGHT, CONTROL_WORDS);
 	}
 	
 

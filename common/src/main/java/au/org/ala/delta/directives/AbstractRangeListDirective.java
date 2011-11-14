@@ -21,6 +21,7 @@ import org.apache.commons.lang.math.IntRange;
 
 import au.org.ala.delta.directives.args.DirectiveArgument;
 import au.org.ala.delta.directives.args.DirectiveArguments;
+import au.org.ala.delta.directives.validation.DirectiveException;
 import au.org.ala.delta.util.IntegerFunctor;
 
 public abstract class AbstractRangeListDirective<C extends AbstractDeltaContext> extends AbstractDirective<C> {
@@ -67,6 +68,6 @@ public abstract class AbstractRangeListDirective<C extends AbstractDeltaContext>
 		
 	}
 
-	protected abstract void processNumber(C context, int number);
+	protected abstract void processNumber(C context, int number) throws DirectiveException;
 
 }

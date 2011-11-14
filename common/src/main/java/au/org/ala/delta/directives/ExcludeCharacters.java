@@ -17,11 +17,14 @@ package au.org.ala.delta.directives;
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.directives.args.DirectiveArguments;
+import au.org.ala.delta.directives.validation.DirectiveException;
 
 public class ExcludeCharacters extends AbstractRangeListDirective<DeltaContext> {
 	
+	public static final String[] CONTROL_WORDS = {"exclude", "characters"};
+	
 	public ExcludeCharacters() {
-		super("exclude", "characters");
+		super(CONTROL_WORDS);
 	}
 	
 	@Override
@@ -36,7 +39,7 @@ public class ExcludeCharacters extends AbstractRangeListDirective<DeltaContext> 
 	}
 
 	@Override
-	protected void processNumber(DeltaContext context, int number) {
+	protected void processNumber(DeltaContext context, int number) throws DirectiveException {
 		context.excludeCharacter(number);
 	}
 

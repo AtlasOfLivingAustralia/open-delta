@@ -15,9 +15,10 @@ import au.org.ala.delta.model.MultiStateCharacter;
  */
 public class ApplicableCharacters extends AbstractCharacterDependencyDirective {
 
+	public static final String[] CONTROL_WORDS = {"applicable", "characters"};
 
 	public ApplicableCharacters() {
-		super("applicable", "characters");
+		super(CONTROL_WORDS);
 	}
 	
 	@Override

@@ -22,6 +22,8 @@ import java.math.BigDecimal;
  */
 public class CharacterWeights extends CharacterWeightDirective {
 
+	public static final String[] CONTROL_WORDS =  {"character", "weights"};
+	
 	/** The default weight for any characters not included in this directive */
 	private static final BigDecimal DEFAULT_WEIGHT = new BigDecimal("1");
 	
@@ -32,7 +34,7 @@ public class CharacterWeights extends CharacterWeightDirective {
 	private static final double MAX_WEIGHT = 32d;
 	
 	public CharacterWeights() {
-		super(MIN_WEIGHT, MAX_WEIGHT, DEFAULT_WEIGHT, "character", "weights");
+		super(MIN_WEIGHT, MAX_WEIGHT, DEFAULT_WEIGHT, CONTROL_WORDS);
 	}
 	
 	@Override

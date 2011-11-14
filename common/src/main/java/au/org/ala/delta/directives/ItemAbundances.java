@@ -30,13 +30,15 @@ import au.org.ala.delta.directives.args.IdValueListParser;
  */
 public class ItemAbundances extends AbstractDirective<DeltaContext> {
 
+	public static final String[] CONTROL_WORDS =  {"item", "abundances"};
+	
 	/** The default weight for any characters not included in this directive */
 	private static final double DEFAULT_WEIGHT = 5d;
 	
 	private DirectiveArguments _args;
 	
 	public ItemAbundances() {
-		super("item", "abundances");
+		super(CONTROL_WORDS);
 	}
 
 	@Override
