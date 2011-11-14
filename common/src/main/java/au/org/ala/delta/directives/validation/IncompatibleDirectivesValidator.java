@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
+
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.AbstractDirective;
 import au.org.ala.delta.directives.ApplicableCharacters;
@@ -29,10 +31,25 @@ import au.org.ala.delta.directives.KeyCharacterList;
  */
 public class IncompatibleDirectivesValidator {
 
-	private Map<String[], Set<String[]>> _incompatibleDirectives = new HashMap<String[], Set<String[]>>();
+	class IncompatibleDirectives {
+		boolean _encountered;
+		Set<String> _incompatibleDirectives;
+		
+		public IncompatibleDirectives(Set<String> directives) {
+			_incompatibleDirectives = directives;
+			_encountered = false;
+		}
+	}
 	
+	private Map<String, IncompatibleDirectives> _incompatibleDirectives;
+	
+	private Set<String> _encounteredDirectives; 
 	
 	public IncompatibleDirectivesValidator() {
+		
+		_incompatibleDirectives = new HashMap<String, IncompatibleDirectives>();
+		_encounteredDirectives = new HashSet<String>();
+		
 		add(IncludeItems.CONTROL_WORDS, ExcludeItems.CONTROL_WORDS);
 		
 		add(IncludeCharacters.CONTROL_WORDS, ExcludeCharacters.CONTROL_WORDS);
@@ -47,29 +64,45 @@ public class IncompatibleDirectivesValidator {
 	}
 	
 	private void add(String[] directive1, String[] directive2) {
-		Set<String[]> incompatible = new HashSet<String[]>();
-		incompatible.add(directive1);
-		incompatible.add(directive2);
+		Set<String> incompatible = new HashSet<String>();
+		incompatible.add(join(directive1));
+		incompatible.add(join(directive2));
 		addToIncompatibleDirectives(incompatible);
 	}
 	
 	private void add(String[] directive1, String[] directive2, String[] directive3) {
-		Set<String[]> incompatible = new HashSet<String[]>();
-		incompatible.add(directive1);
-		incompatible.add(directive2);
-		incompatible.add(directive3);
+		Set<String> incompatible = new HashSet<String>();
+		incompatible.add(join(directive1));
+		incompatible.add(join(directive2));
+		incompatible.add(join(directive3));
 		addToIncompatibleDirectives(incompatible);
 	}
 	
-	private void addToIncompatibleDirectives(Set<String[]> directives) {
-		for (String[] directive : directives) {
-			_incompatibleDirectives.put(directive, directives);
+	private void addToIncompatibleDirectives(Set<String> directives) {
+		IncompatibleDirectives incompatibleDirectives = new IncompatibleDirectives(directives);
+		for (String directive : directives) {
+			_incompatibleDirectives.put(directive, incompatibleDirectives);
 		}
 	}
 	
 	
 	public void validate(AbstractDirective<DeltaContext> directive) throws DirectiveException {
+		String name = join(directive.getControlWords());
+		if (directive.getOrder() > 0 && _encounteredDirectives.contains(name)) {
+			throw DirectiveError.asException(DirectiveError.Error.EQUIVALENT_DIRECTIVE_USED, 0);
+		}
+		_encounteredDirectives.add(name);
 		
+		IncompatibleDirectives incompatibleDirectives = _incompatibleDirectives.get(name);
+		if (incompatibleDirectives != null) {
+			if (incompatibleDirectives._encountered) {
+				throw DirectiveError.asException(DirectiveError.Error.EQUIVALENT_DIRECTIVE_USED, 0);
+			}
+			incompatibleDirectives._encountered = true;
+		}
 	}
 	
+	private String join(String[] controlWords) {
+		return StringUtils.join(controlWords).toUpperCase();
+	}
 }

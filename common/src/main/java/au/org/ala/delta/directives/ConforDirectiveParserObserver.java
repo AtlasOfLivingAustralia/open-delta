@@ -1,15 +1,12 @@
 package au.org.ala.delta.directives;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.List;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.directives.validation.DirectiveError;
 import au.org.ala.delta.directives.validation.DirectiveException;
+import au.org.ala.delta.directives.validation.IncompatibleDirectivesValidator;
 import au.org.ala.delta.io.OutputFileManager;
 import au.org.ala.delta.model.image.ImageType;
 import au.org.ala.delta.translation.DataSetTranslator;
@@ -28,7 +25,7 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
 	private DataSetTranslatorFactory _factory;
 	private DataSetHelper _helper;
 	private int _ListFilenameSize = 15;
-
+	private IncompatibleDirectivesValidator _validator;
 
 	private int _totalErrors;
 	private boolean _fatalErrorEncountered;
@@ -38,11 +35,14 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
 		_context.setDirectiveParserObserver(this);
 		_factory = new DataSetTranslatorFactory();
 		_helper = new DataSetHelper(context.getDataSet());
+		_validator = new IncompatibleDirectivesValidator();
 	}
 
 	@Override
-	public void preProcess(AbstractDirective<? extends AbstractDeltaContext> directive, String data) {
+	@SuppressWarnings("unchecked")
+	public void preProcess(AbstractDirective<? extends AbstractDeltaContext> directive, String data) throws DirectiveException {
 
+		_validator.validate((AbstractDirective<DeltaContext>)directive);
 		if (isCharacterList(directive) || isItemDescriptions(directive)) {
 			checkForFatalError();
 		} 
@@ -207,24 +207,6 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
 				Logger.error(ex);
 			}
 		}
-
-	}
-
-	public String currentDirective(ParsingContext pc, int errorOffset) throws IOException {
-		BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(pc.getFile())));
-		String line = null;
-		int i = 1;
-		line = reader.readLine();
-		while (line != null && i < pc.getCurrentDirectiveStartLine()-1) {
-			line = reader.readLine();
-			i++;
-			
-			System.out.println("Line: " + i + ": " + line);
-		}
-
-		String directiveLine = reader.readLine();
-
-		return directiveLine;
 
 	}
 
