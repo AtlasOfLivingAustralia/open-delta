@@ -20,6 +20,8 @@ import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.Logger;
+import au.org.ala.delta.directives.validation.DirectiveError;
+import au.org.ala.delta.directives.validation.DirectiveException;
 
 /**
  * A directive file is a text file containing one or more directives. Directives
@@ -169,6 +171,9 @@ public class ConforDirectiveFileParser extends DirectiveParser<DeltaContext> {
         
         return instance;
     }
+    
+    /** Tracks the order of the most recently processed directive. */
+    private int _currentOrder;
 
     @Override
     protected void handleUnrecognizedDirective(DeltaContext context, List<String> controlWords) {
@@ -180,5 +185,20 @@ public class ConforDirectiveFileParser extends DirectiveParser<DeltaContext> {
             Logger.log("Unrecognized Directive: %s at offset %d:%d", StringUtils.join(controlWords, " "), pc.getCurrentDirectiveStartLine(), pc.getCurrentDirectiveStartOffset());
         }
     }
+
+	@Override
+	protected void executeDirective(AbstractDirective<DeltaContext> directive, String data, DeltaContext context)
+			throws DirectiveException {
+		
+		int order = directive.getOrder();
+		// Directives with order 0 can appear anywhere
+		if (order > 0 && order < _currentOrder) {
+			throw DirectiveError.asException(DirectiveError.Error.DIRECTIVE_OUT_OF_ORDER, 0);
+		}
+		_currentOrder = order;
+		super.executeDirective(directive, data, context);
+	}
+    
+    
     
 }

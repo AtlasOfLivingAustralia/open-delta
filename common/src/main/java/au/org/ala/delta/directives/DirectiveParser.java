@@ -174,7 +174,7 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
 		return false;
 	}
 
-	private void executeDirective(AbstractDirective<C> directive, String data, C context) throws DirectiveException {
+	protected void executeDirective(AbstractDirective<C> directive, String data, C context) throws DirectiveException {
 		try {
 			for (DirectiveParserObserver o : _observers) {
 				o.preProcess(directive, data);
