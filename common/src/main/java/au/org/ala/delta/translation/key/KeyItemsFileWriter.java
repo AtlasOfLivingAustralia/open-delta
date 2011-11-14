@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.DeltaContext.HeadingType;
 import au.org.ala.delta.io.BinaryKeyFileEncoder;
 import au.org.ala.delta.key.WriteOnceKeyItemsFile;
 import au.org.ala.delta.model.Attribute;
@@ -110,9 +111,12 @@ public class KeyItemsFileWriter {
 	}
 	
 	protected void writeHeading() {
-		// For compatibility with older intkey executables, write a single
-		// space.
-		_itemsFile.writeHeading(" ");
+		String heading = _context.getHeading(HeadingType.HEADING);
+		if (heading == null) {
+			heading = " ";
+		}
+		_itemsFile.writeHeading(heading);
+
 	}
 	
 	protected void writeCharacterMask() {
