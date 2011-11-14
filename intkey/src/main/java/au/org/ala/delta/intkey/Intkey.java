@@ -58,6 +58,14 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.event.MouseInputAdapter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.GnuParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.OptionBuilder;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.FloatRange;
@@ -210,52 +218,7 @@ import au.org.ala.delta.util.Pair;
 
 public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, DirectivePopulator {
 
-    private static String INTKEY_ICON_PATH = "/au/org/ala/delta/intkey/resources/icons";
-    private static String MRU_FILES_PREF_KEY = "MRU";
-    private static String MRU_FILES_SEPARATOR = "\n";
-    private static String MRU_ITEM_SEPARATOR = ";";
-    private static int MAX_SIZE_MRU = 4;
-
-    private JPanel _rootPanel;
-    private JSplitPane _rootSplitPane;
-    private JSplitPane _innerSplitPaneRight;
-    private JSplitPane _innerSplitPaneLeft;
-    private JTextField _txtFldCmdBar;
-
-    private Map<String, JMenu> _cmdMenus;
-
-    private IntkeyContext _context;
-    private JList _listAvailableCharacters;
-    private JList _listUsedCharacters;
-    private JList _listRemainingTaxa;
-    private JList _listEliminatedTaxa;
-
-    private CharacterCellRenderer _availableCharactersListCellRenderer;
-    private AttributeCellRenderer _usedCharactersListCellRenderer;
-    private TaxonCellRenderer _availableTaxaCellRenderer;
-    private TaxonWithDifferenceCountCellRenderer _eliminatedTaxaCellRenderer;
-
-    private DefaultListModel _availableCharacterListModel;
-    private DefaultListModel _usedCharacterListModel;
-    private DefaultListModel _availableTaxaListModel;
-    private DefaultListModel _eliminatedTaxaListModel;
-
-    private JLabel _lblNumAvailableCharacters;
-    private JLabel _lblNumUsedCharacters;
-
-    private BusyGlassPane _glassPane = null;
-
-    private boolean _advancedMode = false;
-
-    private List<Character> _foundAvailableCharacters = null;
-    private List<Character> _foundUsedCharacters = null;
-    private List<Item> _foundAvailableTaxa = null;
-    private List<Item> _foundEliminatedTaxa = null;
-
-    private List<JButton> _advancedModeOnlyDynamicButtons;
-    private List<JButton> _normalModeOnlyDynamicButtons;
-    private List<JButton> _activeOnlyWhenCharactersUsedButtons;
-
+    // Resource strings
     @Resource
     String windowTitleWithDatasetTitle;
 
@@ -319,6 +282,47 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     @Resource
     String separateInformationMessage;
 
+    // GUI components
+    private JPanel _rootPanel;
+    private JSplitPane _rootSplitPane;
+    private JSplitPane _innerSplitPaneRight;
+    private JSplitPane _innerSplitPaneLeft;
+    private JTextField _txtFldCmdBar;
+
+    private Map<String, JMenu> _cmdMenus;
+
+    private IntkeyContext _context;
+    private JList _listAvailableCharacters;
+    private JList _listUsedCharacters;
+    private JList _listRemainingTaxa;
+    private JList _listEliminatedTaxa;
+
+    private CharacterCellRenderer _availableCharactersListCellRenderer;
+    private AttributeCellRenderer _usedCharactersListCellRenderer;
+    private TaxonCellRenderer _availableTaxaCellRenderer;
+    private TaxonWithDifferenceCountCellRenderer _eliminatedTaxaCellRenderer;
+
+    private DefaultListModel _availableCharacterListModel;
+    private DefaultListModel _usedCharacterListModel;
+    private DefaultListModel _availableTaxaListModel;
+    private DefaultListModel _eliminatedTaxaListModel;
+
+    private JLabel _lblNumAvailableCharacters;
+    private JLabel _lblNumUsedCharacters;
+
+    private BusyGlassPane _glassPane = null;
+
+    private boolean _advancedMode = false;
+
+    private List<Character> _foundAvailableCharacters = null;
+    private List<Character> _foundUsedCharacters = null;
+    private List<Item> _foundAvailableTaxa = null;
+    private List<Item> _foundEliminatedTaxa = null;
+
+    private List<JButton> _advancedModeOnlyDynamicButtons;
+    private List<JButton> _normalModeOnlyDynamicButtons;
+    private List<JButton> _activeOnlyWhenCharactersUsedButtons;
+
     private JLabel _lblNumRemainingTaxa;
     private JLabel _lblEliminatedTaxa;
     private JButton _btnRestart;
@@ -354,7 +358,23 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     private RtfReportDisplayDialog _logDialog;
 
+    private static String INTKEY_ICON_PATH = "/au/org/ala/delta/intkey/resources/icons";
+
+    private static String MRU_FILES_PREF_KEY = "MRU";
+    private static String MRU_FILES_SEPARATOR = "\n";
+    private static String MRU_ITEM_SEPARATOR = ";";
+    private static int MAX_SIZE_MRU = 4;
+
+    private static String MODE_PREF_KEY = "MODE";
+    private static String BASIC_MODE_PREF_VALUE = "BASIC";
+    private static String ADVANCED_MODE_PREF_VALUE = "ADVANCED";
+
+    private static String LAST_OPENED_DATASET_LOCATION_PREF_KEY = "LAST_OPENED_DATASET_LOCATION";
+
     private String _datasetInitFileToOpen = null;
+    private String _startupPreferencesFile = null;
+    private boolean _suppressStartupImages = false;
+    private File _lastOpenedDatasetDirectory = null;
 
     private ItemFormatter _taxonformatter;
 
@@ -367,7 +387,6 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     public static void main(String[] args) {
         setupMacSystemProperties(Intkey.class);
         launch(Intkey.class, args);
-        System.out.println(new File(".").getAbsolutePath());
     }
 
     @Override
@@ -375,9 +394,65 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         ResourceMap resourceMap = getContext().getResourceMap(Intkey.class);
         resourceMap.injectFields(this);
 
-        if (args.length > 0) {
-            _datasetInitFileToOpen = args[0];
+        boolean startupInAdvancedMode = false;
+        boolean suppressStartupImages = false;
+        String startupPreferencesFile = null;
+
+        // Define and parse command line arguments
+        Options options = new Options();
+        options.addOption("A", false, "Startup in advanced mode.");
+        options.addOption("I", false, "Suppress display of startup images.");
+        Option preferencesOption = OptionBuilder.withArgName("filename").hasArg().withDescription("Use the specified file as the preferences file.").create("P");
+        options.addOption(preferencesOption);
+
+        boolean cmdLineParseSuccess = true;
+        CommandLineParser parser = new GnuParser();
+        try {
+            CommandLine cmdLine = parser.parse(options, args, false);
+
+            if (cmdLine.hasOption("A")) {
+                _advancedMode = true;
+            }
+
+            if (cmdLine.hasOption("I")) {
+                _suppressStartupImages = true;
+            }
+
+            if (cmdLine.hasOption("P")) {
+                _startupPreferencesFile = cmdLine.getOptionValue("P");
+                if (StringUtils.isEmpty(_startupPreferencesFile)) {
+                    cmdLineParseSuccess = false;
+                }
+            }
+
+            if (cmdLine.getArgList().size() == 1) {
+                _datasetInitFileToOpen = (String) cmdLine.getArgList().get(0);
+            }
+
+            if (cmdLine.getArgList().size() > 1) {
+                cmdLineParseSuccess = false;
+            }
+
+        } catch (ParseException ex) {
+            cmdLineParseSuccess = false;
         }
+
+        if (!cmdLineParseSuccess) {
+            HelpFormatter formatter = new HelpFormatter();
+            formatter.printHelp("Intkey [dataset-init-file] [options]", options);
+            System.exit(0);
+        }
+        
+        // If _startupInAdvancedMode has not already been set to true using the
+        // "-A" command line option (see above),
+        // Check saved application state for the mode (advanced or basic) that
+        // was last used in the application.
+        if (!_advancedMode) {
+            _advancedMode = getPreviousApplicationMode();
+        }
+
+        // Get location of last opened dataset from saved application state
+        _lastOpenedDatasetDirectory = getSavedLastOpenedDatasetDirectory();
     }
 
     /**
@@ -706,8 +781,14 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         _innerSplitPaneLeft.setDividerLocation(2.0 / 3.0);
         _innerSplitPaneRight.setDividerLocation(2.0 / 3.0);
 
+        // If a dataset was supplied on the command line, load it
         if (_datasetInitFileToOpen != null) {
             executeDirective(new NewDatasetDirective(), _datasetInitFileToOpen);
+        }
+
+        // If a preferences file was supplied on the command line, process it
+        if (_startupPreferencesFile != null) {
+            executeDirective(new PreferencesDirective(), _startupPreferencesFile);
         }
 
         loadDesktopInBackground();
@@ -716,6 +797,8 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     @Override
     protected void shutdown() {
         saveCurrentlyOpenedDataset();
+        savePreviousApplicationMode(_advancedMode);
+        saveLastOpenedDatasetDirectory(_lastOpenedDatasetDirectory);
         _context.cleanupForShutdown();
         super.shutdown();
     }
@@ -981,7 +1064,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         mnuDisplayBuilder.addOnOffDirectiveInvocationMenuItem("mnuItInputOn", new DisplayInputDirectiveInvocation(), true);
         mnuDisplayBuilder.addOnOffDirectiveInvocationMenuItem("mnuItInputOff", new DisplayInputDirectiveInvocation(), false);
         mnuDisplayBuilder.endSubMenu();
-        
+
         mnuDisplayBuilder.startSubMenu("mnuKeywords", true);
         mnuDisplayBuilder.addOnOffDirectiveInvocationMenuItem("mnuItKeywordsOn", new DisplayKeywordsDirectiveInvocation(), true);
         mnuDisplayBuilder.addOnOffDirectiveInvocationMenuItem("mnuItKeywordsOff", new DisplayKeywordsDirectiveInvocation(), false);
@@ -999,7 +1082,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
         mnuDisplayBuilder.startSubMenu("mnuScaled", true);
         mnuDisplayBuilder.addOnOffDirectiveInvocationMenuItem("mnuItScaledOn", new DisplayScaledDirectiveInvocation(), true);
-        mnuDisplayBuilder.addOnOffDirectiveInvocationMenuItem("mnuItScaledOff", new DisplayScaledDirectiveInvocation(), false);        
+        mnuDisplayBuilder.addOnOffDirectiveInvocationMenuItem("mnuItScaledOff", new DisplayScaledDirectiveInvocation(), false);
         mnuDisplayBuilder.endSubMenu();
 
         mnuDisplayBuilder.startSubMenu("mnuUnknowns", true);
@@ -1607,12 +1690,16 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     @Override
     public void handleNewDataset(IntkeyDataset dataset) {
+        _lastOpenedDatasetDirectory = _context.getDatasetStartupFile().getParentFile();
+
         getMainFrame().setTitle(MessageFormat.format(windowTitleWithDatasetTitle, dataset.getHeading()));
 
         // display startup images
-        List<Image> startupImages = dataset.getStartupImages();
-        if (!startupImages.isEmpty()) {
-            ImageUtils.displayStartupScreen(startupImages, _context.getImageSettings(), getMainFrame());
+        if (!_suppressStartupImages) {
+            List<Image> startupImages = dataset.getStartupImages();
+            if (!startupImages.isEmpty()) {
+                ImageUtils.displayStartupScreen(startupImages, _context.getImageSettings(), getMainFrame());
+            }
         }
 
         initializeIdentification();
@@ -2235,7 +2322,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         String[] extensionsArray = new String[fileExtensions.size()];
         fileExtensions.toArray(extensionsArray);
 
-        JFileChooser chooser = new JFileChooser();
+        JFileChooser chooser = new JFileChooser(_lastOpenedDatasetDirectory);
         FileNameExtensionFilter filter = new FileNameExtensionFilter(description, extensionsArray);
         chooser.setFileFilter(filter);
 
@@ -2551,7 +2638,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         }
 
         if (_context.getDataset() != null) {
-            String datasetTitle = _context.getDataset().getHeading();
+            String datasetTitle = _context.getDataset().getHeading().trim();
 
             addFileToMRU(fileToOpenDataset.getAbsolutePath(), datasetTitle);
         }
@@ -2619,7 +2706,12 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
         Queue<String> q = new LinkedList<String>();
 
-        String newFilePathAndTitle = filename + MRU_ITEM_SEPARATOR + title;
+        String newFilePathAndTitle;
+        if (StringUtils.isEmpty(title)) {
+            newFilePathAndTitle = filename + MRU_ITEM_SEPARATOR + filename;
+        } else {
+            newFilePathAndTitle = filename + MRU_ITEM_SEPARATOR + title;
+        }
         q.add(newFilePathAndTitle);
 
         List<Pair<String, String>> existingFiles = getPreviouslyUsedFiles();
@@ -2649,4 +2741,53 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         }
     }
 
+    /**
+     * @return true if the last time the application was closed, advanced mode
+     *         was in use
+     */
+    private static boolean getPreviousApplicationMode() {
+        Preferences prefs = Preferences.userNodeForPackage(Intkey.class);
+        if (prefs != null) {
+            String previouslyUsedMode = prefs.get(MODE_PREF_KEY, "");
+            if (!StringUtils.isEmpty(previouslyUsedMode)) {
+                return previouslyUsedMode.equals(ADVANCED_MODE_PREF_VALUE);
+            }
+        }
+        return false;
+    }
+
+    private static void savePreviousApplicationMode(boolean advancedMode) {
+        Preferences prefs = Preferences.userNodeForPackage(Intkey.class);
+        prefs.put(MODE_PREF_KEY, advancedMode ? ADVANCED_MODE_PREF_VALUE : BASIC_MODE_PREF_VALUE);
+        try {
+            prefs.sync();
+        } catch (BackingStoreException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * @return true if the last time the application was closed, advanced mode
+     *         was in use
+     */
+    private static File getSavedLastOpenedDatasetDirectory() {
+        Preferences prefs = Preferences.userNodeForPackage(Intkey.class);
+        if (prefs != null) {
+            String lastOpenedDirectoryPath = prefs.get(LAST_OPENED_DATASET_LOCATION_PREF_KEY, "");
+            if (!StringUtils.isEmpty(lastOpenedDirectoryPath)) {
+                return new File(lastOpenedDirectoryPath);
+            }
+        }
+        return null;
+    }
+
+    private static void saveLastOpenedDatasetDirectory(File lastOpenedDatasetDirectory) {
+        Preferences prefs = Preferences.userNodeForPackage(Intkey.class);
+        prefs.put(LAST_OPENED_DATASET_LOCATION_PREF_KEY, lastOpenedDatasetDirectory.getAbsolutePath());
+        try {
+            prefs.sync();
+        } catch (BackingStoreException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
