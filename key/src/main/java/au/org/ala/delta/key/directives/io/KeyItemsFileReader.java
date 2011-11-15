@@ -11,6 +11,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.IntRange;
 
+import au.org.ala.delta.DeltaContext.HeadingType;
 import au.org.ala.delta.io.BinaryKeyFile;
 import au.org.ala.delta.key.ItemsFileHeader;
 import au.org.ala.delta.key.KeyContext;
@@ -43,12 +44,20 @@ public class KeyItemsFileReader {
     }
 
     public void readAll() {
+        readHeading();
         readCharacterReliabilities();
         readCharacterDependencies();
         readItems();
         readItemAbundances();
         readIncludedCharacters();
         readIncludedItems();
+    }
+
+    public void readHeading() {
+        List<Integer> headingLengthInList = _keyItemsFile.readIntegerList(_header.getHeadingRecord(), 1);
+        int headingLength = headingLengthInList.get(0);
+        String heading = _keyItemsFile.readString(_header.getHeadingRecord() + 1, headingLength);
+        _context.setHeading(HeadingType.HEADING, heading);
     }
 
     public void readItems() {
@@ -83,7 +92,7 @@ public class KeyItemsFileReader {
         for (int i = 0; i < _header.getNumberOfItems(); i++) {
             int itemNumber = i + 1;
             float abundance = itemAbundances.get(i);
-            _context.setItemAbundance(itemNumber, abundance);
+            _context.addItemAbundancy(itemNumber, abundance);
         }
     }
 
@@ -220,12 +229,10 @@ public class KeyItemsFileReader {
         List<Integer> includedCharacterNumbers = new ArrayList<Integer>();
         for (int i = 0; i < _header.getNumberOfCharacters(); i++) {
             int characterNumber = i + 1;
-            if (characterMask.get(i) > 0) {
-                includedCharacterNumbers.add(characterNumber);
+            if (characterMask.get(i) == 0) {
+                _context.excludeCharacter(characterNumber);
             }
         }
-
-        _context.setIncludedCharacters(includedCharacterNumbers);
     }
 
     public void readIncludedItems() {
@@ -234,12 +241,10 @@ public class KeyItemsFileReader {
         List<Integer> includedItemNumbers = new ArrayList<Integer>();
         for (int i = 0; i < _header.getNumberOfItems(); i++) {
             int itemNumber = i + 1;
-            if (taxonMask.get(i) > 0) {
-                includedItemNumbers.add(itemNumber);
+            if (taxonMask.get(i) == 0) {
+                _context.excludeItem(itemNumber);
             }
         }
-
-        _context.setIncludedItems(includedItemNumbers);
     }
 
     private int recordsSpannedByBytes(int numBytes) {

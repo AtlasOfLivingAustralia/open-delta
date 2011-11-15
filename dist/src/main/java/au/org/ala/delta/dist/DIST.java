@@ -29,6 +29,7 @@ import au.org.ala.delta.dist.directives.DistDirectiveFileParser;
 import au.org.ala.delta.dist.io.DistItemsFile;
 import au.org.ala.delta.dist.io.DistOutputWriter;
 import au.org.ala.delta.dist.io.PhylipFormatOutputWriter;
+import au.org.ala.delta.translation.IncludeExcludeDataSetFilter;
 import au.org.ala.delta.translation.FilteredDataSet;
 
 public class DIST implements DirectiveParserObserver {
@@ -97,7 +98,7 @@ public class DIST implements DirectiveParserObserver {
 	public void computeAndOutputDistanceMatrix() throws Exception {
 		readInputFile();
 		
-		FilteredDataSet dataSet = new FilteredDataSet(_context, new DistDataSetFilter(_context));
+		FilteredDataSet dataSet = new FilteredDataSet(_context, new IncludeExcludeDataSetFilter(_context));
 		
 		DistanceMatrixCalculator calculator = new DistanceMatrixCalculator(_context, dataSet);
 		DistanceMatrix matrix = calculator.calculateDistanceMatrix();

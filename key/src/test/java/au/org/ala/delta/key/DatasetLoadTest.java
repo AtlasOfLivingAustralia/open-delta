@@ -2,7 +2,9 @@ package au.org.ala.delta.key;
 
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
@@ -31,11 +33,14 @@ public class DatasetLoadTest extends TestCase {
         assertEquals(9, dataset.getNumberOfCharacters());
         assertEquals(5, dataset.getMaximumNumberOfItems());
 
-        assertEquals(3, context.getIncludedCharacters().size());
-        assertEquals(context.getIncludedCharacters(), Arrays.asList(2, 3, 6));
+        List<Integer> excludedCharactersList = new ArrayList<Integer>(context.getExcludedCharacters());
+        Collections.sort(excludedCharactersList);
+        assertEquals(6, excludedCharactersList.size());
+        assertEquals(excludedCharactersList, Arrays.asList(1, 4, 5, 7, 8, 9));
 
-        assertEquals(5, context.getIncludedItems().size());
-        assertEquals(context.getIncludedItems(), Arrays.asList(1, 2, 3, 4, 5));
+        List<Integer> excludedItemsList = new ArrayList<Integer>(context.getExcludedItems());
+        Collections.sort(excludedItemsList);        
+        assertEquals(0, excludedItemsList.size());
 
         MultiStateCharacter ch2 = (MultiStateCharacter) dataset.getCharacter(2);
         MultiStateCharacter ch3 = (MultiStateCharacter) dataset.getCharacter(3);
@@ -80,10 +85,10 @@ public class DatasetLoadTest extends TestCase {
         assertEquals("Plum", it4.getDescription());
         assertEquals("Potato", it5.getDescription());
 
-        assertEquals(5f, context.getItemAbundance(1));
-        assertEquals(5f, context.getItemAbundance(2));
-        assertEquals(5f, context.getItemAbundance(3));
-        assertEquals(5f, context.getItemAbundance(4));
-        assertEquals(5f, context.getItemAbundance(5));
+        assertEquals(5.0, context.getItemAbundancy(1));
+        assertEquals(5.0, context.getItemAbundancy(2));
+        assertEquals(5.0, context.getItemAbundancy(3));
+        assertEquals(5.0, context.getItemAbundancy(4));
+        assertEquals(5.0, context.getItemAbundancy(5));
     }
 }

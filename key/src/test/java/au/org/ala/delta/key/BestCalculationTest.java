@@ -14,13 +14,13 @@ import au.org.ala.delta.model.Specimen;
 public class BestCalculationTest extends TestCase {
 
     public void testBestCalculationSample() throws Exception {
-//        URL directivesFileURL = getClass().getResource("/sample/mykey");
-//        File directivesFile = new File(directivesFileURL.toURI());
-//
-//        Key key = new Key();
-//        key.calculateKey(directivesFile);
-//
-//        KeyContext context = key.getContext();
+        URL directivesFileURL = getClass().getResource("/sample/mykey");
+        File directivesFile = new File(directivesFileURL.toURI());
+
+        Key key = new Key();
+        key.calculateKey(directivesFile);
+
+        KeyContext context = key.getContext();
         //
         // MutableDeltaDataSet dataset = context.getDataSet();
         //
