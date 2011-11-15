@@ -52,7 +52,7 @@ public class Symbols extends ParameterTranslator {
 	protected void writeSymbols(StringBuilder symbols, int first, int last) {
 		
 		for (int i=first; i<last+first; i++) {
-			symbols.append(ParameterBasedTranslator.STATE_CODES[i]);
+			symbols.append(StateEncoder.STATE_CODES[i]);
 		}
 		
 	}

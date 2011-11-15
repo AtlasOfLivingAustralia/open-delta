@@ -32,13 +32,18 @@ public class DeltaWriter {
 		_printer.setIndent(indent);
 	}
 	
+	public <T> String valueRangeToString(List<Pair<Integer, T>> values) {
+		return valueRangeToString(values, '-', "," , true);
+	}
+	
 	/**
 	 * Converts a list of id/value pairs into a string of the format
 	 * <id1>,<value1> <id2>,<value2>.  In addition, if sequential ids in 
 	 * the list have the same value, they will be condensed in the form
 	 * <id1-idx>,<value1>.
 	 */
-	public <T> String valueRangeToString(List<Pair<Integer, T>> values) {
+	public <T> String valueRangeToString(List<Pair<Integer, T>> values, 
+			char rangeSeparator, String valueSeparator, boolean valueLast) {
 		
 		if (values.isEmpty()) {
 			return "";
@@ -52,25 +57,26 @@ public class DeltaWriter {
 			int id = value.getFirst();
 			if (!value.getSecond().equals(previousValue) || (id != previousNum+1)) {
 				
-				if (firstInRange > 0) {
-					appendRange(builder, previousValue, firstInRange,
-							previousNum);
+				if (firstInRange >= 0) {
+					appendRange(builder, previousValue, firstInRange, previousNum,
+							rangeSeparator, valueSeparator, valueLast);
 				}
 				firstInRange = value.getFirst();
 				previousValue = value.getSecond();
 			}
 			previousNum = value.getFirst();
 		}
-		appendRange(builder, previousValue, firstInRange, previousNum);
+		appendRange(builder, previousValue, firstInRange, previousNum, 
+				rangeSeparator, valueSeparator, valueLast);
 		
 		return builder.toString();
 	}
 	
 	public String rangeToString(List<Integer> values) {
-		return rangeToString(values, ' ');
+		return rangeToString(values, ' ', '-');
 	}
 	
-	public String rangeToString(List<Integer> values, char separator) {
+	public String rangeToString(List<Integer> values, char separator, char rangeSeparator) {
 		if (values.isEmpty()) {
 			return "";
 		}
@@ -80,36 +86,47 @@ public class DeltaWriter {
 		for (int value : values) {
 			if (value != previousNum+1) {
 				
-				if (firstInRange > 0) {
-					appendRange(builder, firstInRange, previousNum, separator);
+				if (firstInRange >= 0) {
+					appendRange(builder, firstInRange, previousNum, separator, rangeSeparator);
 				}
 				firstInRange = value;
 			}
 			previousNum = value;
 		}
-		appendRange(builder, firstInRange, previousNum, separator);
+		appendRange(builder, firstInRange, previousNum, separator, rangeSeparator);
 		
 		return builder.toString();
 	}
   
 	private <T> void appendRange(StringBuilder builder, T value,
-			int firstInRange, int lastInRange) {
-		appendRange(builder, firstInRange, lastInRange);
+			int firstInRange, int lastInRange, char rangeSeparator, String valueSeparator, boolean valueLast) {
 		
-		builder.append(",").append(value);
+		if (valueLast) {
+			appendRange(builder, firstInRange, lastInRange, rangeSeparator);
+			builder.append(valueSeparator).append(value);
+		}
+		else {
+			if (builder.length() > 0) {
+				builder.append(" ");
+			}
+			builder.append(value).append(valueSeparator);
+			StringBuilder range = new StringBuilder();
+			appendRange(range, firstInRange, lastInRange, rangeSeparator);
+			builder.append(range.toString());
+		}
 	}
 	
-	private void appendRange(StringBuilder builder, int firstInRange, int lastInRange) {
-		appendRange(builder, firstInRange, lastInRange, ' ');
+	private void appendRange(StringBuilder builder, int firstInRange, int lastInRange, char rangeSeparator) {
+		appendRange(builder, firstInRange, lastInRange, ' ', rangeSeparator);
 	}
 	
-	private void appendRange(StringBuilder builder, int firstInRange, int lastInRange, char separator) {
+	private void appendRange(StringBuilder builder, int firstInRange, int lastInRange, char separator, char rangeSeparator) {
 		if (builder.length() > 0) {
 			builder.append(separator);
 		}
 		builder.append(firstInRange);
 		if (firstInRange != lastInRange) {
-			builder.append("-").append(lastInRange);
+			builder.append(rangeSeparator).append(lastInRange);
 		}
 		
 	}

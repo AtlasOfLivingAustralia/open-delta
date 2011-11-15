@@ -32,6 +32,7 @@ import au.org.ala.delta.translation.parameter.Literal;
 import au.org.ala.delta.translation.parameter.ParameterBasedTranslator;
 import au.org.ala.delta.translation.parameter.ParameterTranslator;
 import au.org.ala.delta.translation.parameter.Specifications;
+import au.org.ala.delta.translation.parameter.StateEncoder;
 import au.org.ala.delta.translation.parameter.Symbols;
 
 /**
@@ -332,15 +333,15 @@ public class NexusTranslator extends ParameterBasedTranslator {
 		}
 		
 		private void addStates(StringBuilder statesOut, List<Integer> states) {
+			StateEncoder encoder = new StateEncoder(_context.getNumberStatesFromZero());
 			if (states.size() == 0) {
 				statesOut.append("?");
 			}
 			else if (states.size() > 1) {
 				statesOut.append("(");
 			}
-			int offset = _context.getNumberStatesFromZero() ? 1 : 0;
 			for (int state : states) {
-				statesOut.append(state - offset);
+				statesOut.append(encoder.encodeState(state));
 			}
 			if (states.size() > 1) {
 				statesOut.append(")");
@@ -420,9 +421,6 @@ public class NexusTranslator extends ParameterBasedTranslator {
 			command(out.toString());
 			_outputFile.writeBlankLines(1, 0);
 			
-			
-			
 		}
 	}
-
 }

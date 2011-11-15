@@ -4,32 +4,27 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.DeltaContext.HeadingType;
 import au.org.ala.delta.directives.OutputParameters.OutputParameter;
-import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.IdentificationKeyCharacter;
-import au.org.ala.delta.model.Item;
-import au.org.ala.delta.model.MultiStateAttribute;
-import au.org.ala.delta.model.NumericAttribute;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.ItemFormatter;
-import au.org.ala.delta.model.impl.ControllingInfo;
 import au.org.ala.delta.translation.FilteredDataSet;
-import au.org.ala.delta.translation.FilteredItem;
 import au.org.ala.delta.translation.PrintFile;
 import au.org.ala.delta.translation.delta.DeltaWriter;
 import au.org.ala.delta.translation.parameter.Command;
 import au.org.ala.delta.translation.parameter.ParameterBasedTranslator;
 import au.org.ala.delta.translation.parameter.ParameterTranslator;
+import au.org.ala.delta.translation.parameter.PaupHenningAttributes;
 import au.org.ala.delta.translation.parameter.Specifications;
+import au.org.ala.delta.translation.parameter.StateEncoder;
 import au.org.ala.delta.translation.parameter.Symbols;
 
 /**
- * Implements the translation into Nexus format as specified using the TRANSLATE
+ * Implements the translation into Paup format as specified using the TRANSLATE
  * INTO PAUP FORMAT directive.
  * 
  * KEY WORDS REQUIRED FOR PAUP SPECIFICATIONS.
@@ -81,12 +76,6 @@ public class PaupTranslator extends ParameterBasedTranslator {
 
 	private static final int ITEM_NAME_LENGTH = 8;
 	private static final int OUTPUT_COLUMNS = 80;
-	
-	private static final String[] STATE_CODES = {
-		"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", 
-		"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", 
-		"K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", 
-		"U", "V", "W", "X", "Y", "Z"};
 	
 	private DeltaContext _context;
 	private PrintFile _outputFile;
@@ -185,25 +174,25 @@ public class PaupTranslator extends ParameterBasedTranslator {
 
 		@Override
 		protected void writeSymbols(StringBuilder symbols, int first, int last) {
-			symbols.append(STATE_CODES[first]).append("-");
+			symbols.append(StateEncoder.STATE_CODES[first]).append("-");
 			if (last > 10 - first) {
-				symbols.append(symbols.append(STATE_CODES[10]));
+				symbols.append(symbols.append(StateEncoder.STATE_CODES[10]));
 				symbols.append(" ");
-				symbols.append(STATE_CODES[11]);
+				symbols.append(StateEncoder.STATE_CODES[11]);
 				if (last > 11 - first) {
 					symbols.append("-");	
 				}
 			}
-			symbols.append(STATE_CODES[last - first]);
+			symbols.append(StateEncoder.STATE_CODES[last - first]);
 		}
 	}
 	
 	/**
 	 * Writes the DATA command (which includes the attribute data).
 	 */
-	class Data extends ParameterTranslator {
+	class Data extends PaupHenningAttributes {
 		public Data(PrintFile outputFile) {
-			super(outputFile);
+			super(outputFile, _context, _dataSet, _itemFormatter, OUTPUT_COLUMNS, ITEM_NAME_LENGTH);
 		}
 		
 		@Override
@@ -216,8 +205,8 @@ public class PaupTranslator extends ParameterBasedTranslator {
 			StringBuilder data = new StringBuilder();
 			// the output width seems to be ignored by the PAUP translation.
 			data.append("DATA ");
+			boolean itemNameOnNewLine = nameOnNewLine();
 			int numChars = _dataSet.getNumberOfFilteredCharacters();
-			boolean itemNameOnNewLine = (numChars > OUTPUT_COLUMNS - (ITEM_NAME_LENGTH+1));
 			if (itemNameOnNewLine) {
 				data.append(String.format("(A%d,A1/(%dA1));", ITEM_NAME_LENGTH, Math.max(numChars, OUTPUT_COLUMNS)));
 			}
@@ -226,121 +215,6 @@ public class PaupTranslator extends ParameterBasedTranslator {
 			}
 			_outputFile.outputLine(data.toString());
 			return itemNameOnNewLine;
-		}
-		
-		protected void writeAttributes(boolean nameOnNewLine) {
-			
-			Iterator<FilteredItem> items = _dataSet.filteredItems();
-			while (items.hasNext()) {
-				Item item = items.next().getItem();
-				writeItemName(nameOnNewLine, item);
-				
-				Iterator<IdentificationKeyCharacter> characters = _dataSet.identificationKeyCharacterIterator();
-				StringBuilder statesOut = new StringBuilder();
-				while (characters.hasNext()) {
-					IdentificationKeyCharacter character = characters.next();
-					Attribute attribute = item.getAttribute(character.getCharacter());
-					if (item.getItemNumber() == 13 && character.getCharacterNumber() == 32) {
-						System.out.println("Breakpoint");
-					}
-					if (isInapplicable(attribute)) {
-						statesOut.append("?");
-					}
-					else {
-						if (character.getCharacterType() == CharacterType.OrderedMultiState) {
-							statesOut.append(toSingleValue(character, (MultiStateAttribute)attribute));
-						}
-						else if (attribute instanceof NumericAttribute) {
-							statesOut.append(toSingleValue(character, (NumericAttribute)attribute));
-						}
-						else if (character.getCharacterType() == CharacterType.UnorderedMultiState) {
-							statesOut.append(unorderedToSingleValue(character, (MultiStateAttribute)attribute));
-						}
-						
-					}
-				}
-				_outputFile.writeJustifiedText(pad(statesOut.toString()), -1);
-			}
-		}
-
-		protected void writeItemName(boolean nameOnNewLine, Item item) {
-			String itemName = truncate(_itemFormatter.formatItemDescription(item), ITEM_NAME_LENGTH);
-			if (nameOnNewLine) {
-				itemName = pad(itemName);
-			}
-			else {
-				itemName += " ";
-			}
-			_outputFile.writeJustifiedText(itemName, -1);
-		}
-		
-		private boolean isInapplicable(Attribute attribute) {
-			if (!attribute.isExclusivelyInapplicable(true)) {
-				ControllingInfo controllingInfo = _dataSet.checkApplicability(
-						attribute.getCharacter(), attribute.getItem());
-				return (controllingInfo.isInapplicable());
-			}
-			return true;
-		}
-		
-		private String toSingleValue(IdentificationKeyCharacter character, MultiStateAttribute attribute) {
-			List<Integer> states = character.getPresentStates(attribute);
-			return getSingleValue(character, states);
-		}
-		
-		private String toSingleValue(IdentificationKeyCharacter character, NumericAttribute attribute) {
-			character.setUseNormalValues(true);
-			List<Integer> states = character.getPresentStates(attribute);
-			return getSingleValue(character, states);
-		}
-
-		protected String getSingleValue(IdentificationKeyCharacter character, List<Integer> states) {
-			if (!_context.getUseMeanValues() && 
-				(states.size() == character.getNumberOfStates() || 
-			    (states.size() > 1 && _context.getTreatVariableAsUnknown()))) {
-				return "?";
-			}
-			double sum = 0;
-			for (int state : states) {
-				sum += state;
-			}
-			double average = sum / states.size();
-			// 0.5 is rounded down, hence the strange rounding behavior below.
-			int value = (int)Math.floor(average + 0.499d);
-			if (value <= 0) {
-				return "?";
-			}
-			return Integer.toString(value);
-		}
-		
-		private String unorderedToSingleValue(IdentificationKeyCharacter character, MultiStateAttribute attribute) {
-			Set<Integer> states = attribute.getPresentStates();
-			if (states.size() == character.getNumberOfStates() || 
-		    (states.size() > 1 && _context.getTreatVariableAsUnknown())) {
-				return "?";
-			}
-			
-			int state = -1;
-			if (_context.getUseLastValueCoded()) {
-				state = attribute.getLastStateCoded();
-			}
-			else {
-				state = attribute.getFirstStateCoded();
-			}
-			
-			state = character.convertToKeyState(state);
-			if (state <= 0) {
-				return "?";
-			}
-			return Integer.toString(state);
-		}
-		
-		private String pad(String value) {
-			StringBuilder paddedValue = new StringBuilder(value);
-			while (paddedValue.length() < OUTPUT_COLUMNS) {
-				paddedValue.append(' ');
-			}
-			return paddedValue.toString();
 		}
 	}
 	

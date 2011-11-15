@@ -7,12 +7,6 @@ import au.org.ala.delta.directives.OutputParameters.OutputParameter;
 import au.org.ala.delta.translation.DataSetTranslator;
 
 public abstract class ParameterBasedTranslator implements DataSetTranslator {
-
-	protected static final String[] STATE_CODES = {
-		"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", 
-		"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", 
-		"K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", 
-		"U", "V", "W", "X", "Y", "Z"};
 	
 	private Map<String, ParameterTranslator> _supportedParameters;
 	
@@ -72,5 +66,4 @@ public abstract class ParameterBasedTranslator implements DataSetTranslator {
 			return value.trim();
 		}
 	}
-
 }

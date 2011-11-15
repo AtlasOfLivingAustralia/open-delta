@@ -121,7 +121,7 @@ public class DirOutApplicableChars extends AbstractDirOutFunctor {
 						}
 					}
 					_textBuffer.append(':');
-					_textBuffer.append(_deltaWriter.rangeToString(revStateLists.get(m), ':'));
+					_textBuffer.append(_deltaWriter.rangeToString(revStateLists.get(m), ':', '-'));
 				}
 			}
 		}

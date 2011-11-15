@@ -924,7 +924,8 @@ public class DeltaContext extends AbstractDeltaContext {
 	}
 	
 	public boolean getNumberStatesFromZero() {
-		return _numberStatesFromZero;
+		return _translateType == TranslateType.Hennig86 ||
+		       (_numberStatesFromZero && (_translateType == TranslateType.PAUP || _translateType == TranslateType.NexusFormat));
 	}
 	
 	public void useMeanValues() {

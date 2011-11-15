@@ -14,6 +14,7 @@ import au.org.ala.delta.translation.attribute.AttributeTranslatorFactory;
 import au.org.ala.delta.translation.delta.DeltaFormatDataSetFilter;
 import au.org.ala.delta.translation.delta.DeltaFormatTranslator;
 import au.org.ala.delta.translation.dist.DistTranslator;
+import au.org.ala.delta.translation.henning86.Henning86Translator;
 import au.org.ala.delta.translation.intkey.IntkeyTranslator;
 import au.org.ala.delta.translation.key.KeyStateTranslator;
 import au.org.ala.delta.translation.key.KeyTranslator;
@@ -85,6 +86,9 @@ public class DataSetTranslatorFactory {
 			else if (translation.equals(TranslateType.PAUP)) {
 				translator = createPaupFormatTranslator(context,  context.getOutputFileSelector().getOutputFile(), formatterFactory);
 			}
+			else if (translation.equals(TranslateType.Hennig86)) {
+				translator = createHenningFormatTranslator(context,  context.getOutputFileSelector().getOutputFile(), formatterFactory);
+			}
 			else if (translation.equals(TranslateType.None)) {
 				translator = new NullTranslator();
 			}
@@ -152,6 +156,14 @@ public class DataSetTranslatorFactory {
 		ItemFormatter itemFormatter = formatterFactory.createItemFormatter(null, CommentStrippingMode.STRIP_ALL, false);
 		FilteredDataSet dataSet = new FilteredDataSet(context, new NexusDataSetFilter(context));
 		return new PaupTranslator(context, dataSet, printFile, charFormatter, itemFormatter);
+	}
+	
+	private DataSetTranslator createHenningFormatTranslator(DeltaContext context, PrintFile printFile, FormatterFactory formatterFactory) {
+		CharacterFormatter charFormatter = formatterFactory.createCharacterFormatter(false, false, CommentStrippingMode.RETAIN);
+		ItemFormatter itemFormatter = formatterFactory.createItemFormatter(null, CommentStrippingMode.STRIP_ALL, false);
+		DataSetFilter filter = new NexusDataSetFilter(context);
+		FilteredDataSet dataSet = new FilteredDataSet(context, filter);
+		return wrap(context, filter, new Henning86Translator(context, dataSet, printFile, charFormatter, itemFormatter));
 	}
 
 	private DataSetTranslator createIntkeyFormatTranslator(DeltaContext context, FormatterFactory formatterFactory) {
