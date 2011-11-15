@@ -3,6 +3,7 @@ package au.org.ala.delta.editor.ui;
 import java.awt.BorderLayout;
 import java.awt.Desktop;
 import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -46,6 +47,8 @@ import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile.DirectiveType;
 import au.org.ala.delta.editor.ui.util.MessageDialogHelper;
+import au.org.ala.delta.intkey.Intkey;
+import au.org.ala.delta.key.Key;
 import au.org.ala.delta.ui.TextFileViewer;
 
 /**
@@ -174,55 +177,44 @@ public class ActionSetsDialog extends AbstractDeltaView {
 		}
 	}
 	
-	@Action(block = BlockingScope.APPLICATION)
-	public Task<Void, Void> runDirectiveFile() {
-		Task<Void, Void> task = null;
+	@Action
+	public void runDirectiveFile() {
 		if (!checkExport()) {
-			task = new Task<Void, Void>(Application.getInstance()) {
-				@Override
-				public Void doInBackground() {
-					doRunDirectiveFile(getExportPath());
-					return null;
-				}
-			};
+			fireRunDirectiveFileAction();
 		}
-		return task;
+	}
+	
+	public void fireRunDirectiveFileAction() {
+		ActionEvent event = new ActionEvent(this, 0, "run");
+		_actions.get("runDirectiveFileAsTask").actionPerformed(event);
 	}
 
 
-	protected void doRunDirectiveFile(String exportPath) {
+	@Action(block = BlockingScope.APPLICATION)
+	public Task<List<File>, Void> runDirectiveFileAsTask() {
+		Task<List<File>, Void> task = null;
 		DirectiveFile file = getSelectedFile();	
 		if (file == null) {
-			return;
+			return null;
 		}
-
-		String name = file.getShortFileName();
-		String fileName = FilenameUtils.concat(exportPath, name);
-		try {
-		String program = null;
+		String exportPath = getExportPath();
+		
 		switch (file.getType()) {
 		case CONFOR:
-			runConfor(fileName);
+			task = new ConforRunner(exportPath);
 			break;
 		case INTKEY:
-			program = "INTKEY5";
-			runNatively(program, fileName);
+			task = new IntKeyRunner(exportPath);
 			break;
 		case DIST:
-			runDIST(fileName);
+			task = new DistRunner(exportPath);
 			break;
 		case KEY:
-			program = "KEYQW";
-			runNatively(program, fileName);
-			
+			task = new KeyRunner(exportPath);
 			break;
 		}
-			
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-			_messageHelper.errorRunningDirectiveFile(file.getShortFileName());
-		}
+		
+		return task;
 	}
 	
 	private boolean checkExport() {
@@ -255,32 +247,13 @@ public class ActionSetsDialog extends AbstractDeltaView {
 			public void propertyChange(PropertyChangeEvent evt) {
 				if ("done".equals(evt.getPropertyName())) {
 					if (Boolean.TRUE.equals(evt.getNewValue())) {
-						doRunDirectiveFile(getExportPath());
+						fireRunDirectiveFileAction();
 					}
 				}
 			}
 		});
 	}
-	
-	private void runConfor(String fileName) throws Exception {
-		File fileOnFileSystem = new File(fileName);
-
-	    CONFOR confor = new CONFOR(fileOnFileSystem);
-	    if (confor.getIndexFile() != null) {
-	    	displayResults(confor.getIndexFile());
-	    }
-	    else if (confor.getPrintFile() != null) {
-	    	displayResults(confor.getPrintFile());
-	    }
-	}
-	
-	private void runDIST(String fileName) throws Exception {
-		File fileOnFileSystem = new File(fileName);
-
-	    DIST dist = new DIST(fileOnFileSystem);
-	    displayResults(dist.getOutputFile());
-	}
-	
+		
 	private void displayResults(File file) throws Exception {
 		if (Desktop.isDesktopSupported()) {
 			try {
@@ -293,11 +266,6 @@ public class ActionSetsDialog extends AbstractDeltaView {
 		TextFileViewer viewer = new TextFileViewer(((SingleFrameApplication)Application.getInstance()).getMainFrame(), file);
 		viewer.setVisible(true);
 		
-	}
-	
-	
-	private void runNatively(String program, String fileName) throws Exception {
-		Runtime.getRuntime().exec(new String[]{program, "\""+fileName+"\""});
 	}
 	
 	@Action
@@ -538,4 +506,118 @@ public class ActionSetsDialog extends AbstractDeltaView {
 		}
 		
 	}
+	
+	abstract class DirectivesRunner extends Task<List<File>, Void> {
+		protected String _exportPath;
+		
+		public DirectivesRunner(String exportPath) {
+			super(Application.getInstance());
+			_exportPath = exportPath;
+		}
+		
+		@Override
+		protected void succeeded(List<File> result) {
+			if (!result.isEmpty()) {
+				try {
+					displayResults(result.get(0));
+				}
+				catch (Exception e) {
+					_messageHelper.errorRunningDirectiveFile(getInputFile());
+				}
+			}
+		}
+		
+		@Override
+		protected void failed(Throwable t) {
+			_messageHelper.errorRunningDirectiveFile(getInputFile());
+		}
+		
+		protected String getInputFile() {
+			DirectiveFile file = getSelectedFile();	
+			if (file == null) {
+				return null;
+			}
+	
+			String name = file.getShortFileName();
+			String fileName = FilenameUtils.concat(_exportPath, name);
+			return fileName;
+		}
+
+	}
+	
+	class ConforRunner extends DirectivesRunner {
+
+		public ConforRunner(String exportPath) {
+			super(exportPath);
+		}
+		
+		@Override
+		public List<File> doInBackground() throws Exception {
+			File fileOnFileSystem = new File(getInputFile());
+
+		    CONFOR confor = new CONFOR(fileOnFileSystem);
+		    
+		    List<File> results = new ArrayList<File>();
+		    if (confor.getIndexFile() != null) {
+		    	results.add(confor.getIndexFile());
+		    }
+		    else if (confor.getPrintFile() != null) {
+		    	results.add(confor.getPrintFile());
+		    }
+		    return results;
+
+		}
+		
+	}
+	
+	class DistRunner extends DirectivesRunner {
+
+		public DistRunner(String exportPath) {
+			super(exportPath);
+		}
+		
+		@Override
+		public List<File> doInBackground() throws Exception {
+			File fileOnFileSystem = new File(getInputFile());
+			DIST dist = new DIST(fileOnFileSystem);
+			
+		    List<File> results = new ArrayList<File>();
+		    results.add(dist.getOutputFile());
+		    return results;
+		}
+	}
+	
+	class KeyRunner extends DirectivesRunner {
+
+		public KeyRunner(String exportPath) {
+			super(exportPath);
+		}
+		
+		@Override
+		public List<File> doInBackground() throws Exception {
+			
+			Key.main(new String[]{getInputFile()});
+			List<File> results = new ArrayList<File>();
+		    return results;
+		}
+	}
+	
+	class IntKeyRunner extends DirectivesRunner {
+
+		public IntKeyRunner(String exportPath) {
+			super(exportPath);
+		}
+		
+		@Override
+		public List<File> doInBackground() throws Exception {
+			List<File> results = new ArrayList<File>();
+		    return results;
+		}
+		
+		@Override
+		protected void succeeded(List<File> result) {
+			Intkey.main(new String[]{getInputFile()});
+		}
+	}
+
 }

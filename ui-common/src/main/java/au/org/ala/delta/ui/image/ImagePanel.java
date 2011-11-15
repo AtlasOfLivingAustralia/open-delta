@@ -176,7 +176,7 @@ public class ImagePanel extends JPanel implements Scrollable {
 	
 	private void dumpImageDetails() {
 		ColorModel mc = _image.getColorModel();
-		System.out.println(mc);
+		
 	}
 	
 	

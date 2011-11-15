@@ -94,8 +94,6 @@ public class DistItemsFileReader {
 	}
 	
 	private void decodeAttributes(Item item, ByteBuffer attributeData) {
-		System.out.println();
-		System.out.println("Item: "+item.getItemNumber());
 		Pair<List<Integer>, List<Integer>> offsets = _itemsFile.getAttributeOffsets();
 		List<Integer> wordOffsets = offsets.getFirst();
 		List<Integer> bitOffsets = offsets.getSecond();
@@ -115,8 +113,6 @@ public class DistItemsFileReader {
 				decodeRealCharacter(item, attributeData, character, wordOffset);
 				break;
 			}
-			Attribute attribute = item.getAttribute(character);
-			System.out.println(character.getCharacterId() +","+ attribute.getValueAsString());
 		}
 	}
 

@@ -34,7 +34,6 @@ public class DirectiveFileImporter extends DirectiveParser<ImportContext> {
 	@Override
 	protected void handleUnrecognizedDirective(ImportContext context, List<String> controlWords) {
 		_importFailed = true;
-		System.out.println(controlWords);
 		
 		_handler.handleUnrecognizedDirective(context, controlWords);
 	}
