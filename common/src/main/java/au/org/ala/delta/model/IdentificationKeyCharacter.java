@@ -228,6 +228,21 @@ public class IdentificationKeyCharacter {
 		return new ArrayList<Integer>(states);
 	}
 	
+	
+	public int convertToKeyState(int originalState) {
+		if (_states.isEmpty()) {
+			return originalState;
+		}
+		else {
+			for (KeyState state : _states) {
+				if (state.isPresent(originalState)) {
+					return state.stateId;
+				}
+			}
+		}
+		return -1;
+	}
+	
 	public Integer getCharacterNumber() {
 		return _character.getCharacterId();
 	}

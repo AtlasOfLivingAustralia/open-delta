@@ -236,6 +236,23 @@ public class VOAttributeAdaptor implements AttributeData {
     }
 
     @Override
+    public List<Integer> getPresentStatesAsList() {
+    	synchronized (_vop) {
+	        Attribute attribute = _itemDesc.readAttribute(_charBaseDesc.getUniId());
+	        List<Integer> stateIds = new ArrayList<Integer>();
+	        short[] pseudoValues = new short[1];
+	        if (attribute != null) {
+	            attribute.getEncodedStates(_charBaseDesc, stateIds, pseudoValues);
+	        }
+	        List<Integer> states = new ArrayList<Integer>(stateIds.size());
+	        for (int id : stateIds) {
+	            states.add(_charBaseDesc.stateNoFromUniId(id));
+	        }
+	        return states;
+    	}
+    }
+    
+    @Override
     public void setPresentStateOrIntegerValues(Set<Integer> values) {
         throw new UnsupportedOperationException();
     }

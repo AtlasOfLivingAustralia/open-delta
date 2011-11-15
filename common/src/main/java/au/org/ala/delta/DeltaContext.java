@@ -120,6 +120,8 @@ public class DeltaContext extends AbstractDeltaContext {
 	private boolean _useMeanValues = false;
 	private boolean _listCharacters = false;
 	private boolean _listItems = false;
+	private boolean _treatVariableAsUnknown = false;
+	private boolean _useLastValueCoded = false;
 	
 	private Map<HeadingType, String> _headings = new HashMap<HeadingType, String>();
 	private Integer _characterForTaxonImages = null;
@@ -987,6 +989,20 @@ public class DeltaContext extends AbstractDeltaContext {
 	public Iterator<String> indexHeadingsDescriptions() {
 		return _indexHeadings.keySet().iterator();
 	}
+
+	public void treatVariableAsUnknown() {
+		_treatVariableAsUnknown = true;
+	}
 	
+	public boolean getTreatVariableAsUnknown() {
+		return _treatVariableAsUnknown;
+	}
+
+	public boolean getUseLastValueCoded() {
+		return _useLastValueCoded;
+	}
 	
+	public void useLastValueCoded() {
+		_useLastValueCoded = true;
+	}
 }

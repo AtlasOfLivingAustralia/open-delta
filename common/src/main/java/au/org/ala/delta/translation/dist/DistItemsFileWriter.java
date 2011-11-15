@@ -7,6 +7,8 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.DeltaContext.HeadingType;
 import au.org.ala.delta.dist.WriteOnceDistItemsFile;
@@ -125,7 +127,10 @@ public class DistItemsFileWriter {
 	}
 	
 	protected void writeHeading() {
-		_itemsFile.writeHeading(_context.getHeading(HeadingType.HEADING));
+		String heading = _context.getHeading(HeadingType.HEADING);
+		if (StringUtils.isNotEmpty(heading)) {
+			_itemsFile.writeHeading(heading);
+		}
 	}
 	
 	protected void writeCharacterSpecs() {

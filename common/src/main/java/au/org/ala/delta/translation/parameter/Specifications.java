@@ -10,13 +10,18 @@ public class Specifications extends ParameterTranslator {
 	private String _itemsLabel;
 	private String _charsLabel;
 	private FilteredDataSet _dataSet;
+	private int _blanks;
 	
-	public Specifications(PrintFile outputFile, FilteredDataSet dataSet, String command, String itemsLabel, String charsLabel) {
+	public Specifications(
+			PrintFile outputFile, FilteredDataSet dataSet, 
+			String command, String itemsLabel, 
+			String charsLabel, int blanks) {
 		super(outputFile);
 		_dataSet = dataSet;
 		_command = command;
 		_itemsLabel = itemsLabel;
 		_charsLabel = charsLabel;
+		_blanks = blanks;
 	}
 
 	@Override
@@ -27,7 +32,9 @@ public class Specifications extends ParameterTranslator {
 		specs.append(" ");
 		specs.append(_charsLabel).append("=").append(_dataSet.getNumberOfFilteredCharacters());
 		command(specs.toString());
-		_outputFile.writeBlankLines(1, 0);
+		if (_blanks > 0) {
+			_outputFile.writeBlankLines(_blanks, 0);
+		}
 	}
 
 }

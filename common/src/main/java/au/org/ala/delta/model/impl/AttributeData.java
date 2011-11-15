@@ -31,6 +31,7 @@ public interface AttributeData {
 	public void setRealRange(FloatRange range);
 	
 	public Set<Integer> getPresentStateOrIntegerValues();
+	
 	public void setPresentStateOrIntegerValues(Set<Integer> values);
 	
 	public boolean hasValueSet();
@@ -42,4 +43,6 @@ public interface AttributeData {
 	public List<NumericRange> getNumericValue();
 
 	boolean isCodedUnknown();
+
+	List<Integer> getPresentStatesAsList();
 }

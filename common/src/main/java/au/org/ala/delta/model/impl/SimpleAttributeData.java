@@ -1,5 +1,6 @@
 package au.org.ala.delta.model.impl;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -88,6 +89,15 @@ public class SimpleAttributeData implements AttributeData {
     public Set<Integer> getPresentStateOrIntegerValues() {
      // no defensive copy here for efficiency when creating attributes after reading file
         return _stateOrIntegerValues;
+    }
+    
+    /**
+     * Note that the order of the states is indeterminate as the data is 
+     * stored in a Set.
+     */
+    @Override
+    public List<Integer> getPresentStatesAsList() {
+        return new ArrayList<Integer>(_stateOrIntegerValues);
     }
 
     @Override

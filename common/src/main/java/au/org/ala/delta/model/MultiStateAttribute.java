@@ -1,6 +1,8 @@
 package au.org.ala.delta.model;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import au.org.ala.delta.model.impl.AttributeData;
@@ -42,8 +44,13 @@ public class MultiStateAttribute extends Attribute {
         notifyObservers();
     }
     
+  
     public Set<Integer> getPresentStates() {
-        Set<Integer> presentStates;
+    	// We could have returned getPresentStatesAsList as a new
+    	// Map, however this would introduce inefficencies in the
+    	// SimpleAttributeData implementation which avoids copying 
+    	// the Set for efficiency of the BEST algorithm.
+    	Set<Integer> presentStates;
         
         if (!_impl.hasValueSet() && isImplicit()) {
             presentStates = new HashSet<Integer>();
@@ -58,6 +65,19 @@ public class MultiStateAttribute extends Attribute {
     public void setPresentStates(Set<Integer> states) {
         _impl.setPresentStateOrIntegerValues(states);
         notifyObservers();
+    }
+    
+    public List<Integer> getPresentStatesAsList() {
+    	List<Integer> presentStates;
+        
+        if (!_impl.hasValueSet() && isImplicit()) {
+            presentStates = new ArrayList<Integer>();
+            presentStates.add(getImplicitValue());
+        } else {
+            presentStates = _impl.getPresentStatesAsList();
+        }
+        
+        return presentStates;
     }
     
     /**
@@ -102,4 +122,25 @@ public class MultiStateAttribute extends Attribute {
         return getCharacter().getCharacterId()+ ":" + getPresentStates().toString();
     }
 
+    public int getFirstStateCoded() {
+    	List<Integer> states = getPresentStatesAsList();
+    	if (states.isEmpty()) {
+    		return -1;
+    	}
+    	else {
+    		return states.get(0);
+    	}
+    	
+    }
+    
+    public int getLastStateCoded() {
+    	List<Integer> states = getPresentStatesAsList();
+    	if (states.isEmpty()) {
+    		return -1;
+    	}
+    	else {
+    		return states.get(states.size()-1);
+    	}
+    	
+    }
 }

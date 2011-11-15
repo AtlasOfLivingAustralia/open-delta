@@ -62,5 +62,15 @@ public abstract class ParameterBasedTranslator implements DataSetTranslator {
 	
 	protected abstract void unrecognisedParameter(String parameter);
 	
+	
+	protected String truncate(String value, int maxLength) {
+		if (value.length() < maxLength) {
+			return value;
+		}
+		else {
+			value = value.substring(0, maxLength);
+			return value.trim();
+		}
+	}
 
 }

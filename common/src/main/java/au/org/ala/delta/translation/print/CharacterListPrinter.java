@@ -3,7 +3,10 @@ package au.org.ala.delta.translation.print;
 import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.directives.OutputParameters.OutputParameter;
+import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.translation.PrintFile;
 import au.org.ala.delta.translation.delta.DeltaFormatTranslator;
@@ -64,5 +67,21 @@ public class CharacterListPrinter extends DeltaFormatTranslator {
 	@Override
 	public void afterLastCharacter() {
 		_typeSetter.afterCharacterList();
-	};
+	}
+	
+	@Override
+	public void beforeFirstItem() {}
+
+	@Override
+	public void beforeItem(Item item) {}
+
+	@Override
+	public void afterItem(Item item) {}
+
+	@Override
+	public void beforeAttribute(Attribute attribute) {}
+	
+	@Override
+	public void translateOutputParameter(OutputParameter parameter) {}
+		
 }

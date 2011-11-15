@@ -46,10 +46,10 @@ public class DistOutputWriter {
 		
 		PrintFile outputFile = outputFileManager.getOutputFile();
 		outputFile.setTrimInput(false);
-		outputFile.setIndentOnLineWrap(true);
-		outputFile.setIndent(1);
+		outputFile.setIndentOnLineWrap(false);
+		outputFile.setIndent(0);
 		outputFile.setLineWrapIndent(0);
-		
+		outputFile.setPrintWidth(80);
 		return outputFile;
 	}
 	
@@ -71,7 +71,7 @@ public class DistOutputWriter {
 			
 			double value = matrix.get(item1.getItemNumber(), item2.getItemNumber());
 			if (item2.getItemNumber() > item1.getItemNumber()) {
-				outputFile.writeJustifiedText("   "+_decimalFormat.format(value), -1);
+				outputFile.writeJustifiedText("    "+_decimalFormat.format(value), -1);
 			}
 		}
 	}

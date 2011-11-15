@@ -1,8 +1,6 @@
 package au.org.ala.delta.confor;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.StringReader;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -39,7 +37,7 @@ public class ToPaupTest extends ConforTestCase {
 			expected = expected.replaceAll(expectedLineSeparator, System.getProperty("line.separator"));
 		}
 		// The heading contains the date so will be different.
-		String heading = "Grass Genera 14:43 20-OCT-11"; // <Date>, eg. 11:32 05-OCT-11
+		String heading = "Grass Genera 15:43 22-OCT-11"; // <Date>, eg. 11:32 05-OCT-11
 		
 		actual = actual.replaceAll("Grass Genera.*[0-9]{2}-[a-zA-Z]{3}-[0-9]{4}", heading);
 		
@@ -60,7 +58,7 @@ public class ToPaupTest extends ConforTestCase {
 			
 		}*/
 		
-		//assertEquals(expected.trim(), actual.trim());
+		assertEquals(expected.trim(), actual.trim());
 	}
 
 	@Override

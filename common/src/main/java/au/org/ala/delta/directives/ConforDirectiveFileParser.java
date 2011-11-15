@@ -162,9 +162,11 @@ public class ConforDirectiveFileParser extends DirectiveParser<DeltaContext> {
         instance.registerDirective(new TranslateInto());
         instance.registerDirective(new TranslateUncodedCharacters());
         instance.registerDirective(new TreatIntegerAsReal());
+        instance.registerDirective(new TreatVariableAsUnknown());
         instance.registerDirective(new TypeSettingMarks());
         
         instance.registerDirective(new UseControllingCharactersFirst());
+        instance.registerDirective(new UseLastValueCoded());
         instance.registerDirective(new UseNormalValues());
         instance.registerDirective(new Vocabulary());
         

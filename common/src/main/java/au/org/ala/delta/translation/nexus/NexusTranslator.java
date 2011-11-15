@@ -125,7 +125,7 @@ public class NexusTranslator extends ParameterBasedTranslator {
 				translator = new Command(_outputFile, "BEGIN DATA");
 				break;
 			case DIMENSIONS:
-				translator = new Specifications(_outputFile, _dataSet, "DIMENSIONS", "NTAX", "NCHAR");
+				translator = new Specifications(_outputFile, _dataSet, "DIMENSIONS", "NTAX", "NCHAR", 1);
 				break;
 			case END:
 				translator = new Command(_outputFile, "END");
@@ -173,13 +173,7 @@ public class NexusTranslator extends ParameterBasedTranslator {
 
 	private static final int MAX_LENGTH = 30;
 	private String truncate(String value) {
-		if (value.length() < MAX_LENGTH) {
-			return value;
-		}
-		else {
-			value = value.substring(0, MAX_LENGTH);
-			return value.trim();
-		}
+		return truncate(value, MAX_LENGTH);
 	}
 	class CharLabels extends ParameterTranslator {
 		

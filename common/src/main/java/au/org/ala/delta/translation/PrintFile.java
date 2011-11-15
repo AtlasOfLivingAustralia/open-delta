@@ -192,7 +192,7 @@ public class PrintFile {
         }
 
         // Insert a space if one is required.
-        if (addSpaceIfRequired) {
+        if (addSpaceIfRequired && !text.startsWith(" ")) {
             insertTrailingSpace();
         }
 
@@ -276,7 +276,7 @@ public class PrintFile {
 			else {
 				wrappingPos = maxSpace;
 			}
-			
+			wrappingPos = wrappingPos+1;
 		}
 		return wrappingPos;
 	}

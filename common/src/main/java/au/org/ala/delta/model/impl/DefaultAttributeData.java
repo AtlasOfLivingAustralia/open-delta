@@ -89,11 +89,17 @@ public class DefaultAttributeData implements AttributeData {
 
     @Override
     public Set<Integer> getPresentStateOrIntegerValues() {
-    	List<Integer> states = new ArrayList<Integer>();
-    	_parsedAttribute.getEncodedStates(states, new short[1]);
-    	return new HashSet<Integer>(states);
+  
+    	return new HashSet<Integer>(getPresentStatesAsList());
     }
 
+    @Override
+    public List<Integer> getPresentStatesAsList() {
+    	List<Integer> states = new ArrayList<Integer>();
+    	_parsedAttribute.getEncodedStates(states, new short[1]);
+    	return states;
+    }
+    
     @Override
     public void setPresentStateOrIntegerValues(Set<Integer> values) {
         throw new UnsupportedOperationException();
