@@ -72,7 +72,7 @@ public class TypesettingMarksTest extends TestCase {
 		
 		mark = _context.getTypeSettingMark(MarkPosition.fromId(2));
 		assertEquals(2, mark.getId());
-		assertEquals("mark 2", mark.getMarkText());
+		assertEquals(" mark 2", mark.getMarkText());
 		assertEquals(true, mark.getAllowLineBreaks());
 	}
 	
@@ -91,7 +91,7 @@ public class TypesettingMarksTest extends TestCase {
 		
 		mark = _context.getTypeSettingMark(MarkPosition.fromId(2));
 		assertEquals(2, mark.getId());
-		assertEquals("mark 2", mark.getMarkText());
+		assertEquals(" mark 2", mark.getMarkText());
 		assertEquals(true, mark.getAllowLineBreaks());
 	}
 	
@@ -105,7 +105,7 @@ public class TypesettingMarksTest extends TestCase {
 		
 		TypeSettingMark mark = _context.getTypeSettingMark(MarkPosition.fromId(1));
 		assertEquals(1, mark.getId());
-		assertEquals("mark 1", mark.getMarkText());
+		assertEquals(" mark 1", mark.getMarkText());
 		assertEquals(false, mark.getAllowLineBreaks());
 		
 		mark = _context.getTypeSettingMark(MarkPosition.fromId(2));

@@ -25,6 +25,7 @@ public class Formatter {
     
     protected CommentStrippingMode _commentStrippingMode;
     protected AngleBracketHandlingMode _angleBracketHandlingMode;
+    protected String _dashReplacement;
 
     public static enum CommentStrippingMode {
         RETAIN, STRIP_ALL, RETAIN_SURROUNDING_STRIP_INNER, STRIP_INNER
@@ -58,6 +59,9 @@ public class Formatter {
     }
     public void setDespaceRtf(boolean despaceRtf) {
     	_despaceRtf = despaceRtf;
+    }
+    public void setDashReplacement(String replacement) {
+    	_dashReplacement = replacement.replaceAll("\\\\", "\\\\\\\\");
     }
     
     /**
@@ -123,6 +127,10 @@ public class Formatter {
 
         if (capitaliseFirstWord) {
             text = Utils.capitaliseFirstWord(text);
+        }
+        
+        if (StringUtils.isNotBlank(_dashReplacement)) {
+        	text = text.replaceAll("([0-9] *)-( *[0-9])", "$1"+_dashReplacement+"$2");
         }
         
         if (rtfToHtml) {

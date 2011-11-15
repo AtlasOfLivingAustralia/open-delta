@@ -32,9 +32,6 @@ public class TypeSettingAttributeFormatter extends AttributeFormatter {
 		if (comment.startsWith("-")) {
 			comment = _numericRangeSeparator+comment.substring(1);
 		}
-		String separatorRegexp = _numericRangeSeparator.replace("\\", "\\\\");
-		comment = comment.replaceAll("([^a-zA-Z])-([^a-zA-Z])", "$1"+separatorRegexp+"$2");
-		
 		return comment;
 	}
 }

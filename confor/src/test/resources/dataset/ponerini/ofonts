@@ -1,0 +1,9 @@
+*COMMENT ~ Set fonts for image overlays.
+
+*OVERLAY FONTS
+  #1.  <DEFAULT FONT: used as the default for all text boxes>
+          10 4 0 2 2 0 MS Sans Serif
+  #2.  <BUTTON FONT: used for the text on push buttons>
+          10 4 0 2 2 0 MS Sans Serif
+  #3.  <FEATURE FONT: used for feature description text boxes>
+          10 7 0 2 2 0 MS Sans Serif

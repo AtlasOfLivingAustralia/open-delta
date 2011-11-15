@@ -17,6 +17,8 @@ import au.org.ala.delta.model.MultiStateAttribute;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.RealAttribute;
 import au.org.ala.delta.model.TextAttribute;
+import au.org.ala.delta.translation.Words;
+import au.org.ala.delta.translation.Words.Word;
 
 /**
  * Formats an attribute.
@@ -133,13 +135,7 @@ public class AttributeFormatter extends Formatter {
             int stateNumber = values.get(i);
 
             if (i > 0) {
-                String orSeparator = null;
-                if (attribute.getCharacter().getOmitOr() == true) {
-                    orSeparator = "; ";
-                } else {
-                    orSeparator = "; " + _orWord + " ";
-                }
-
+                String orSeparator = getOrSeparator(attribute);
                 builder.append(orSeparator);
             }
 
@@ -207,12 +203,7 @@ public class AttributeFormatter extends Formatter {
             }
         }
 
-        String orSeparator = null;
-        if (attribute.getCharacter().getOmitOr() == true) {
-            orSeparator = "; ";
-        } else {
-            orSeparator = "; " + _orWord + " ";
-        }
+        String orSeparator = getOrSeparator(attribute);
 
         if (belowMinimumPresent) {
             builder.append(String.format(_orLessCaption, Integer.toString(minValue - 1)));
@@ -247,6 +238,15 @@ public class AttributeFormatter extends Formatter {
 
         return defaultFormat(builder.toString());
     }
+
+	protected String getOrSeparator(Attribute attribute) {
+		String orSeparator = null;
+        orSeparator = Words.word(Word.SEMICOLON)+" ";
+        if (attribute.getCharacter().getOmitOr() == false) {
+            orSeparator += _orWord + " ";
+        }
+		return orSeparator;
+	}
 
     private String formatRealAttribute(RealAttribute attribute) {
         FloatRange range = attribute.getPresentRange();

@@ -180,7 +180,6 @@ public class PrintFile {
     
 
     private void writeJustifiedText(String text, int completionAction, boolean addSpaceIfRequired) {
-
     	text = doSubstitutions(text);
     	
         if (_capitalise) {

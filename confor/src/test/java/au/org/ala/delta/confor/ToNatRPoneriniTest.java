@@ -10,18 +10,18 @@ import org.junit.Test;
  * Tests the PRINT CHARACTER LIST directive in the context of the sample
  * printc directives file.
  */
-public class PrintCHTest extends ConforTestCase {
+public class ToNatRPoneriniTest extends ConforTestCase {
 
 	@Test
-	public void testSamplePrintCH() throws Exception {
+	public void testSampleToNatR() throws Exception {
 		runConfor();
 		
-		File expectedFile = new File(FilenameUtils.concat(_samplePath, "expected_results/chars.htm"));
+		File expectedFile = new File(FilenameUtils.concat(_samplePath, "expected_results/descrip.rtf"));
 		String expected = FileUtils.readFileToString(expectedFile, "cp1252");
 
 		System.out.println(expected);
 		
-		File actualFile = new File(FilenameUtils.concat(_samplePath, "www/chars.htm"));
+		File actualFile = new File(FilenameUtils.concat(_samplePath, "rtf/descrip.rtf"));
 		String actual = FileUtils.readFileToString(actualFile, "cp1252");
 
 		System.out.print(actual);
@@ -37,12 +37,10 @@ public class PrintCHTest extends ConforTestCase {
 			expected = expected.replaceAll(expectedLineSeparator, System.getProperty("line.separator"));
 		}
 		
-		// This is because StringEscapeUtils.escapeHtml has already done the
-		// character conversion for left and right quotes.  this makes the 
-		//line wrapping not match.
-		actual = actual.replace("&lsquo", "&#145");
-		actual = actual.replace("&rsquo", "&#146");
-		actual = actual.replace("&ndash", "&#150");
+		actual = actual.replaceAll("\\{\\} ", "\\{\\}");
+		expected = expected.replaceAll("\\{\\} ", "\\{\\}");
+		actual = actual.replaceAll(" \\\\", "\\\\");
+		expected = expected.replaceAll(" \\\\", "\\\\");
 		
 		
 		// The heading contains the date so will be different.
@@ -58,7 +56,11 @@ public class PrintCHTest extends ConforTestCase {
 
 	@Override
 	protected String directivesFileName() {
-		return "printch";
+		return "tonatr";
+	}
+	
+	protected String getDataSet() {
+		return "ponerini";
 	}
 	
 	

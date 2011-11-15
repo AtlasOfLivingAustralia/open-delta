@@ -19,6 +19,7 @@ import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.translation.AbstractDataSetTranslator;
 import au.org.ala.delta.translation.DataSetFilter;
 import au.org.ala.delta.translation.FormattedTextTypeSetter;
+import au.org.ala.delta.translation.FormatterFactory;
 import au.org.ala.delta.translation.IterativeTranslator;
 import au.org.ala.delta.translation.TypeSettingAttributeFormatter;
 import au.org.ala.delta.translation.TypeSettingItemFormatter;
@@ -88,7 +89,8 @@ public class TypeSetNaturalLanguageTranslatorTest extends NaturalLangaugeTransla
         _typeSetter = new FormattedTextTypeSetter(_context, _printer);
         ItemFormatter itemFormatter = new TypeSettingItemFormatter(_typeSetter);
         CharacterFormatter characterFormatter = new CharacterFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.RETAIN, false, false);
-        AttributeFormatter attributeFormatter = new TypeSettingAttributeFormatter();
+        AttributeFormatter attributeFormatter = new FormatterFactory(_context).createAttributeFormatter();
+        
         DataSetFilter filter = new NaturalLanguageDataSetFilter(_context);
         IterativeTranslator translator = new NaturalLanguageTranslator(_context, _typeSetter, _printer, itemFormatter, characterFormatter, attributeFormatter);
         _dataSetTranslator = new AbstractDataSetTranslator(_context, filter, translator);

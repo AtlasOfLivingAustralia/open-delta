@@ -61,7 +61,7 @@ public class OutputFileManager {
 		}
 	}
 	
-	public static final String OUTPUT_FILE_ENCODING = "utf-8";
+	public static final String OUTPUT_FILE_ENCODING = "cp1252";
 	public static final String RTF_OUTPUT_FILE_ENCODING = "cp1252";
 	
 	protected OutputFormat _outputFormat;

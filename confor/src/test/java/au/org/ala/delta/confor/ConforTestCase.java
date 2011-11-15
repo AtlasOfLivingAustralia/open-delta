@@ -19,11 +19,11 @@ public abstract class ConforTestCase extends TestCase {
 	
 	@Before
 	public void setUp() throws Exception {
-		File todisDirectory = urlToFile("/dataset/");
+		File directory = urlToFile("/dataset/");
 		File dest = new File(System.getProperty("java.io.tmpdir"));
-		FileUtils.copyDirectory(todisDirectory, dest);
+		FileUtils.copyDirectory(directory, dest);
 	
-		_samplePath = FilenameUtils.concat(dest.getAbsolutePath(), "sample");
+		_samplePath = FilenameUtils.concat(dest.getAbsolutePath(), getDataSet());
 		_directivesFilePath = FilenameUtils.concat(_samplePath, directivesFileName());
 	
 		
@@ -34,6 +34,10 @@ public abstract class ConforTestCase extends TestCase {
 	}
 	
 	protected abstract String directivesFileName();
+	
+	protected String getDataSet() {
+		return "sample";
+	}
 	
 	private File urlToFile(String urlString) throws Exception {
 		URL url = ToDistTest.class.getResource(urlString);

@@ -13,8 +13,6 @@ import org.junit.Test;
 
 import au.org.ala.delta.intkey.model.IntkeyDataset;
 import au.org.ala.delta.intkey.model.IntkeyDatasetFileReader;
-import au.org.ala.delta.io.BinFileMode;
-import au.org.ala.delta.io.BinaryKeyFile;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterType;
@@ -54,6 +52,36 @@ public class ToIntTest extends TestCase {
 		
 		IntkeyDataset expectedDataSet = IntkeyDatasetFileReader.readDataSet(expectedIChars, expectedIItems);
 		
+		compare(dataSet, expectedDataSet);
+		
+	}
+	
+	@Test
+	public void zztestPoneriniToInt() throws Exception {
+		File tointDirectory = urlToFile("/dataset/");
+		File dest = new File(System.getProperty("java.io.tmpdir"));
+		FileUtils.copyDirectory(tointDirectory, dest);
+		
+		String tointFilePath = FilenameUtils.concat(dest.getAbsolutePath(), "ponerini/toint");
+		
+		CONFOR.main(new String[]{tointFilePath});
+		
+		File ichars = new File(FilenameUtils.concat(dest.getAbsolutePath(), "ponerini/ichars"));
+		File iitems = new File(FilenameUtils.concat(dest.getAbsolutePath(), "ponerini/iitems"));
+		
+		IntkeyDataset dataSet = IntkeyDatasetFileReader.readDataSet(ichars, iitems);
+		
+		
+		File expectedIChars = new File(FilenameUtils.concat(dest.getAbsolutePath(), "ponerini/expected_results/ichars"));
+		File expectedIItems = new File(FilenameUtils.concat(dest.getAbsolutePath(), "ponerini/expected_results/iitems"));
+		
+		IntkeyDataset expectedDataSet = IntkeyDatasetFileReader.readDataSet(expectedIChars, expectedIItems);
+		
+		compare(dataSet, expectedDataSet);
+	}
+	
+
+	protected void compare(IntkeyDataset dataSet, IntkeyDataset expectedDataSet) {
 		/*BinaryKeyFile file = new BinaryKeyFile(FilenameUtils.concat(dest.getAbsolutePath(), "sample/ichars"), BinFileMode.FM_READONLY);
 		BinaryKeyFile efile = new BinaryKeyFile(FilenameUtils.concat(dest.getAbsolutePath(), "sample/expected_results/ichars"), BinFileMode.FM_READONLY);
 		
@@ -177,7 +205,6 @@ public class ToIntTest extends TestCase {
 			}
 			
 		}
-		
 	}
 	
 	private File urlToFile(String urlString) throws Exception {

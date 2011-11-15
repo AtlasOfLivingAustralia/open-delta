@@ -2,8 +2,11 @@ package au.org.ala.delta.translation;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.TranslateType;
+import au.org.ala.delta.model.TypeSettingMark;
+import au.org.ala.delta.model.TypeSettingMark.MarkPosition;
 import au.org.ala.delta.model.format.AttributeFormatter;
 import au.org.ala.delta.model.format.CharacterFormatter;
+import au.org.ala.delta.model.format.Formatter;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.model.format.ItemFormatter;
@@ -47,7 +50,7 @@ public class FormatterFactory {
 		else {
 			formatter = new TypeSettingItemFormatter(typeSetter, includeNumber,  mode, angleBracketMode);
 		}
-		formatter.setRtfToHtml(_context.getOutputHtml());
+		setFormattingOptions(formatter);
 			
 		return formatter;
 	}
@@ -78,8 +81,7 @@ public class FormatterFactory {
 		}
 
 		CharacterFormatter formatter =  new CharacterFormatter(includeNumber, mode, angleBracketMode, _context.isOmitTypeSettingMarks(), capitaliseFirst);
-		
-		formatter.setRtfToHtml(_context.getOutputHtml());
+		setFormattingOptions(formatter);
 		
 		return formatter;
 	}
@@ -100,8 +102,15 @@ public class FormatterFactory {
 		else {
 			formatter = new TypeSettingAttributeFormatter("\\endash{}", mode, angleBracketMode);
 		}
-		formatter.setRtfToHtml(_context.getOutputHtml());
-		
+		setFormattingOptions(formatter);
 		return formatter;
+	}
+	
+	protected void setFormattingOptions(Formatter formatter) {
+		formatter.setRtfToHtml(_context.getOutputHtml());
+		TypeSettingMark mark = _context.getTypeSettingMark(MarkPosition.RANGE_SYMBOL);
+		if (mark != null) {
+			formatter.setDashReplacement(mark.getMarkText());
+		}
 	}
 }
