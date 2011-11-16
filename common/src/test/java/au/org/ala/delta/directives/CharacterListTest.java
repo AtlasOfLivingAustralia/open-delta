@@ -1,14 +1,20 @@
 package au.org.ala.delta.directives;
 
+import java.util.List;
+
 import junit.framework.TestCase;
 
 import org.junit.Before;
+import org.junit.Test;
 
 import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.directives.validation.DirectiveError;
+import au.org.ala.delta.directives.validation.DirectiveException;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DefaultDataSetFactory;
-import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.model.MultiStateCharacter;
+import au.org.ala.delta.model.MutableDeltaDataSet;
+import au.org.ala.delta.model.NumericCharacter;
 
 /**
  * Tests the CharacterList class.
@@ -29,10 +35,9 @@ public class CharacterListTest extends TestCase {
 		_characterList = new CharacterList();
 	}
 	
+	@Test
 	public void testCharacterList() throws Exception {
-		_context.setNumberOfCharacters(1);
-		MultiStateCharacter character = (MultiStateCharacter)_dataSet.addCharacter(CharacterType.OrderedMultiState);
-		character.setNumberOfStates(4);
+		MultiStateCharacter multiStateChar = addOrderedMultistateChar(4);
 		
 		String charDescription = 
 			"#1. <adaxial> ligule <form; avoid seedlings>/\n"+
@@ -41,19 +46,101 @@ public class CharacterListTest extends TestCase {
 			"    3. a fringe of hairs/\n"+
 			"    4. a rim of minute papillae/\n";
 
-		
-		
 		_characterList.parseAndProcess(_context, charDescription);
 		
 		assertEquals(1, _dataSet.getNumberOfCharacters());
-		MultiStateCharacter multiStateChar = (MultiStateCharacter)_dataSet.getCharacter(1);
-		assertEquals("<adaxial> ligule <form; avoid seedlings>", character.getDescription());
+		assertEquals("<adaxial> ligule <form; avoid seedlings>", multiStateChar.getDescription());
 		assertEquals(4, multiStateChar.getNumberOfStates());
 		assertEquals("an unfringed membrane <may be variously hairy or ciliolate>", multiStateChar.getState(1));
 		assertEquals("a fringed membrane", multiStateChar.getState(2));
 		assertEquals("a fringe of hairs", multiStateChar.getState(3));
 		assertEquals("a rim of minute papillae", multiStateChar.getState(4));
 		
+	}
+	
+	@Test
+	public void testCharacterListTooManyStates() throws Exception {
+		int numStates = 3;
+		addOrderedMultistateChar(numStates);
+		
+		String charDescription = 
+			"#1. <adaxial> ligule <form; avoid seedlings>/\n"+
+			"    1. an unfringed membrane <may be variously hairy or ciliolate>/\n"+
+			"    2. a fringed membrane/\n"+
+			"    3. a fringe of hairs/\n"+
+			"    4. a rim of minute papillae/\n";
+		
+		try {
+			_characterList.parseAndProcess(_context, charDescription);
+			checkError(138);
+		}
+		catch (DirectiveException e) {
+			fail("Should have added error to context");
+		}
+
+	}
+	
+	@Test
+	public void testCharacterListNotEnoughStates() throws Exception {
+		int numStates = 3;
+		addOrderedMultistateChar(numStates);
+		
+		String charDescription = 
+			"#1. <adaxial> ligule <form; avoid seedlings>/\n"+
+			"    1. an unfringed membrane <may be variously hairy or ciliolate>/\n"+
+			"    2. a fringed membrane/\n";
+		
+		try {
+			_characterList.parseAndProcess(_context, charDescription);
+			checkError(13);
+		}
+		catch (DirectiveException e) {
+			fail("Should have added error to context");
+		}
+
+	}
+	
+	@Test
+	public void testTooManyUnits() throws Exception {
+		addNumericCharacter();
+		addNumericCharacter();
+		
+		
+		String charDescription = 
+			"#1. <adaxial> ligule <form; avoid seedlings>/\n"+
+			"   mm/\n"+
+			"   cm/\n" +
+			"#2. Another one/\n";
+		
+		try {
+			_characterList.parseAndProcess(_context, charDescription);
+			checkError(18);
+		}
+		catch (DirectiveException e) {
+			fail("Should have added error to context");
+		}
+
+	}
+	
+	
+	private MultiStateCharacter addOrderedMultistateChar(int numStates) {
+		_context.setNumberOfCharacters(_context.getNumberOfCharacters()+1);
+		MultiStateCharacter character = (MultiStateCharacter)_dataSet.addCharacter(CharacterType.OrderedMultiState);
+		character.setNumberOfStates(numStates);
+		return character;
+	}
+	
+	private NumericCharacter<?> addNumericCharacter() {
+		_context.setNumberOfCharacters(_context.getNumberOfCharacters()+1);
+		@SuppressWarnings("unchecked")
+		NumericCharacter<Integer> character = (NumericCharacter<Integer>)_dataSet.addCharacter(CharacterType.IntegerNumeric);
+		return character;
+	}
+	
+	private void checkError(int number) {
+		List<DirectiveError> errors = _context.getErrors();
+		assertEquals(1, errors.size());
+		assertEquals(number, errors.get(0).getErrorNumber());
 	}
 	
 }
