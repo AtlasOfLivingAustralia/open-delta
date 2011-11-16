@@ -41,7 +41,10 @@ public class TaxonLinks extends AbstractDirective<DeltaContext> {
 	@Override
 	public void process(DeltaContext context, DirectiveArguments directiveArguments) throws Exception {
 		for (DirectiveArgument<?> arg : directiveArguments.getDirectiveArguments()) {
-			context.addTaxonLinks((String)arg.getId(), arg.getText());
+			Object id = arg.getId();
+			if (id instanceof String) {
+				context.addTaxonLinks((String)arg.getId(), arg.getText());
+			}
 		}
 	}
 	
