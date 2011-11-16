@@ -45,7 +45,7 @@ public class KeyBest {
      *         supplied map
      */
     public static LinkedHashMap<au.org.ala.delta.model.Character, Double> orderBest(DeltaDataSet dataset, List<Integer> availableCharacterNumbers, List<Integer> availableTaxaNumbers, double rBase,
-            double varyWt, boolean dump) {
+            double varyWt) {
         LinkedHashMap<Character, Double> retMap = new LinkedHashMap<Character, Double>();
 
         if (availableCharacterNumbers.isEmpty() || availableTaxaNumbers.isEmpty()) {
@@ -242,23 +242,23 @@ public class KeyBest {
 
             su = charCosts[ch.getCharacterId() - 1] + cmin * sup;
 
-            if (dump) {
-                System.out.println("Character: " + ch.getCharacterId());
-                System.out.println("su:" + su);
-                System.out.println("cost: " + charCosts[ch.getCharacterId() - 1]);
-                System.out.println("cmin " + cmin);
-                System.out.println("sup " + sup);
-                System.out.println("sup0 " + sup0);
-                System.out.println("dupf " + dupf);
-                System.out.println("numsubgroupssamesizeasoriginalgroup: " + numSubgroupsSameSizeAsOriginalGroup);
-                System.out.println("sumtaxainsubgroups: " + sumNumTaxaInSubgroups);
-                System.out.println("numavailabletaxa: " + numAvailableTaxa);
-                System.out.println("subgroupfrequencies " + ArrayUtils.toString(subgroupFrequencies));
-                System.out.println("subgroupsNumTaxa " + ArrayUtils.toString(subgroupsNumTaxa));
-                System.out.println("sumsubgroupsfrequencies " + sumSubgroupsFrequencies);
-                System.out.println("sumnumtaxainsubgroups " + sumNumTaxaInSubgroups);
-                System.out.println();
-            }
+//            if (dump) {
+//                System.out.println("Character: " + ch.getCharacterId());
+//                System.out.println("su:" + su);
+//                System.out.println("cost: " + charCosts[ch.getCharacterId() - 1]);
+//                System.out.println("cmin " + cmin);
+//                System.out.println("sup " + sup);
+//                System.out.println("sup0 " + sup0);
+//                System.out.println("dupf " + dupf);
+//                System.out.println("numsubgroupssamesizeasoriginalgroup: " + numSubgroupsSameSizeAsOriginalGroup);
+//                System.out.println("sumtaxainsubgroups: " + sumNumTaxaInSubgroups);
+//                System.out.println("numavailabletaxa: " + numAvailableTaxa);
+//                System.out.println("subgroupfrequencies " + ArrayUtils.toString(subgroupFrequencies));
+//                System.out.println("subgroupsNumTaxa " + ArrayUtils.toString(subgroupsNumTaxa));
+//                System.out.println("sumsubgroupsfrequencies " + sumSubgroupsFrequencies);
+//                System.out.println("sumnumtaxainsubgroups " + sumNumTaxaInSubgroups);
+//                System.out.println();
+//            }
 
             sepVals[ch.getCharacterId() - 1] = sep;
             suVals[ch.getCharacterId() - 1] = su;

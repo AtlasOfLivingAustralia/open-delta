@@ -46,7 +46,7 @@ public class BestCalculationTest extends TestCase {
 //        
 //         Key key = new Key();
 //         key.calculateKey(directivesFile);
-////        
+//        
 //         KeyContext context = key.getContext();
 //
 //        // List<Integer> availableTaxa = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8,

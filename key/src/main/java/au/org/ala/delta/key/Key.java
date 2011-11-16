@@ -6,7 +6,6 @@ import java.io.InputStreamReader;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -21,6 +20,14 @@ import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.DeltaContext.HeadingType;
 import au.org.ala.delta.Logger;
+import au.org.ala.delta.directives.AbstractDeltaContext;
+import au.org.ala.delta.directives.AbstractDirective;
+import au.org.ala.delta.directives.DirectiveParserObserver;
+import au.org.ala.delta.directives.ExcludeCharacters;
+import au.org.ala.delta.directives.ExcludeItems;
+import au.org.ala.delta.directives.IncludeCharacters;
+import au.org.ala.delta.directives.IncludeItems;
+import au.org.ala.delta.directives.validation.DirectiveException;
 import au.org.ala.delta.io.BinFileMode;
 import au.org.ala.delta.io.BinaryKeyFile;
 import au.org.ala.delta.key.directives.KeyDirectiveParser;
@@ -34,10 +41,9 @@ import au.org.ala.delta.model.MatchType;
 import au.org.ala.delta.model.MultiStateAttribute;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.Specimen;
+import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
-import au.org.ala.delta.model.format.AttributeFormatter;
-import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.model.impl.SimpleAttributeData;
 import au.org.ala.delta.translation.FilteredCharacter;
@@ -48,9 +54,10 @@ import au.org.ala.delta.translation.PrintFile;
 import au.org.ala.delta.util.Pair;
 import au.org.ala.delta.util.Utils;
 
-public class Key {
+public class Key implements DirectiveParserObserver {
 
     private KeyContext _context;
+    private boolean _inputFilesRead = false;
 
     /**
      * @param args
@@ -104,17 +111,7 @@ public class Key {
             ex.printStackTrace();
         }
 
-        File charactersFile = Utils.createFileFromPath(_context.getCharactersFilePath(), _context.getDataDirectory());
-        File itemsFile = Utils.createFileFromPath(_context.getItemsFilePath(), _context.getDataDirectory());
-
-        BinaryKeyFile keyCharactersFile = new BinaryKeyFile(charactersFile.getAbsolutePath(), BinFileMode.FM_READONLY);
-        BinaryKeyFile keyItemsFile = new BinaryKeyFile(itemsFile.getAbsolutePath(), BinFileMode.FM_READONLY);
-
-        KeyCharactersFileReader keyCharactersFileReader = new KeyCharactersFileReader(_context.getDataSet(), keyCharactersFile);
-        keyCharactersFileReader.createCharacters();
-
-        KeyItemsFileReader keyItemsFileReader = new KeyItemsFileReader(_context, _context.getDataSet(), keyItemsFile);
-        keyItemsFileReader.readAll();
+        readInputFiles();
 
         Specimen specimen = new Specimen(_context.getDataSet(), true, true, MatchType.OVERLAP);
         List<Pair<Item, List<Attribute>>> keyList = new ArrayList<Pair<Item, List<Attribute>>>();
@@ -135,9 +132,28 @@ public class Key {
 
         doCalculateKey(dataset, includedCharacters, includedItems, specimen, keyList);
 
-        printHeader(includedCharacters, includedItems);
+        printHeader(includedCharacters, includedItems, keyList);
         printTabularKey(keyList);
+        System.out.println("\n\n");
+        printHeader(includedCharacters, includedItems, keyList);
         printBracketedKey(keyList, true);
+    }
+
+    private void readInputFiles() {
+        if (!_inputFilesRead) {
+            File charactersFile = Utils.createFileFromPath(_context.getCharactersFilePath(), _context.getDataDirectory());
+            File itemsFile = Utils.createFileFromPath(_context.getItemsFilePath(), _context.getDataDirectory());
+
+            BinaryKeyFile keyCharactersFile = new BinaryKeyFile(charactersFile.getAbsolutePath(), BinFileMode.FM_READONLY);
+            BinaryKeyFile keyItemsFile = new BinaryKeyFile(itemsFile.getAbsolutePath(), BinFileMode.FM_READONLY);
+
+            KeyCharactersFileReader keyCharactersFileReader = new KeyCharactersFileReader(_context, _context.getDataSet(), keyCharactersFile);
+            keyCharactersFileReader.createCharacters();
+
+            KeyItemsFileReader keyItemsFileReader = new KeyItemsFileReader(_context, _context.getDataSet(), keyItemsFile);
+            keyItemsFileReader.readAll();
+            _inputFilesRead = true;
+        }
     }
 
     private void doCalculateKey(FilteredDataSet dataset, List<Character> includedCharacters, List<Item> includedItems, Specimen specimen, List<Pair<Item, List<Attribute>>> keyList) {
@@ -169,7 +185,7 @@ public class Key {
             }
 
             LinkedHashMap<Character, Double> bestMap = KeyBest.orderBest(_context.getDataSet(), specimenAvailableCharacterNumbers, specimenAvailableTaxaNumbers, _context.getRBase(),
-                    _context.getVaryWt(), specimenAvailableTaxaNumbers.equals(Arrays.asList(2, 3, 4, 5, 10)));
+                    _context.getVaryWt());
 
             List<Character> bestOrderCharacters = new ArrayList<Character>(bestMap.keySet());
 
@@ -246,6 +262,7 @@ public class Key {
 
     private void processDirectivesFile(File input, KeyContext context) throws Exception {
         KeyDirectiveParser parser = KeyDirectiveParser.createInstance();
+        parser.registerObserver(this);
         parser.parse(input, context);
     }
 
@@ -253,7 +270,7 @@ public class Key {
         return _context;
     }
 
-    private void printHeader(List<Character> includedCharacters, List<Item> includedItems) {
+    private void printHeader(List<Character> includedCharacters, List<Item> includedItems, List<Pair<Item, List<Attribute>>> keyList) {
         PrintFile printFile = new PrintFile(System.out, 78);
 
         printFile.outputLine(_context.getHeading(HeadingType.HEADING));
@@ -275,15 +292,28 @@ public class Key {
 
         printFile.outputLine(MessageFormat.format("Run at {0} on {1}", timeFormat.format(currentDate), dateFormat.format(currentDate)));
         printFile.writeBlankLines(1, 0);
-        printFile.outputLine(MessageFormat.format("Characters - {0} in data, {1} included, {2} in key.", _context.getDataSet().getNumberOfCharacters(), includedCharacters.size(), "TODO"));
-        printFile.outputLine(MessageFormat.format("Items - {0} in data, {1} included, {2} in key.", _context.getDataSet().getMaximumNumberOfItems(), includedItems.size(), "TODO"));
+        
+        Set<Character> charactersInKey = new HashSet<Character>();
+        Set<Item> itemsInKey = new HashSet<Item>();
+        
+        for (Pair<Item, List<Attribute>> pair : keyList) {
+            Item it = pair.getFirst();
+            itemsInKey.add(it);
+            List<Attribute> attrs = pair.getSecond();
+            for (Attribute attr : attrs) {
+                charactersInKey.add(attr.getCharacter());
+            }
+        }
+        
+        printFile.outputLine(MessageFormat.format("Characters - {0} in data, {1} included, {2} in key.", _context.getDataSet().getNumberOfCharacters(), includedCharacters.size(), charactersInKey.size()));
+        printFile.outputLine(MessageFormat.format("Items - {0} in data, {1} included, {2} in key.", _context.getDataSet().getMaximumNumberOfItems(), includedItems.size(), itemsInKey.size()));
         printFile.writeBlankLines(1, 0);
         printFile.outputLine(MessageFormat.format("RBASE = {0} ABASE = {1} REUSE = {2} VARYWT = {3}", formatDouble(_context.getRBase()), formatDouble(_context.getABase()),
                 formatDouble(_context.getReuse()), formatDouble(_context.getVaryWt())));
-        printFile.outputLine(MessageFormat.format("Number of confirmatory characters = {0}", "TODO"));
+        //printFile.outputLine(MessageFormat.format("Number of confirmatory characters = {0}", "TODO"));
         printFile.writeBlankLines(1, 0);
-        printFile.outputLine(MessageFormat.format("Average length of key = {0} Average cost of key = {1}", "TODO", "TODO"));
-        printFile.outputLine(MessageFormat.format("Maximum length of key = {0} Maximum cost of key = {1}", "TODO", "TODO"));
+        //printFile.outputLine(MessageFormat.format("Average length of key = {0} Average cost of key = {1}", "TODO", "TODO"));
+        //printFile.outputLine(MessageFormat.format("Maximum length of key = {0} Maximum cost of key = {1}", "TODO", "TODO"));
         printFile.writeBlankLines(1, 0);
 
         List<Integer> includedCharacterNumbers = new ArrayList<Integer>();
@@ -297,7 +327,8 @@ public class Key {
             includedItemNumbers.add(it.getItemNumber());
         }
         printFile.outputLine(MessageFormat.format("Items included {0}", Utils.formatIntegersAsListOfRanges(includedItemNumbers)));
-        printFile.outputLine(MessageFormat.format("Items abundances {0}", "TODO"));
+        //printFile.outputLine(MessageFormat.format("Items abundances {0}", "TODO"));
+        printFile.writeBlankLines(1, 0);
     }
 
     private void printTabularKey(List<Pair<Item, List<Attribute>>> keyList) {
@@ -478,7 +509,7 @@ public class Key {
             boolean nodeNumberingDisplayed = false;
             for (int j = 1; j <= ch.getNumberOfStates(); j++) {
                 StringBuilder builder = new StringBuilder();
-                
+
                 Pair<Character, Integer> charStateNumberPair = new Pair<Character, Integer>(ch, j);
                 Object charOrItem = keyMap.get(charStateNumberPair);
                 if (charOrItem != null) {
@@ -491,7 +522,6 @@ public class Key {
                     }
 
                     builder.append(StringUtils.repeat(" ", 10 - builder.toString().trim().length()));
-                    
 
                     String descriptionText;
                     if (displayCharacterNumbers) {
@@ -527,6 +557,31 @@ public class Key {
 
     private String formatDouble(double d) {
         return String.format("%.2f", d);
+    }
+
+    @Override
+    public void preProcess(AbstractDirective<? extends AbstractDeltaContext> directive, String data) throws DirectiveException {
+        if (directive instanceof IncludeCharacters || directive instanceof ExcludeCharacters || directive instanceof IncludeItems || directive instanceof ExcludeItems) {
+            readInputFiles();
+        }
+    }
+
+    @Override
+    public void postProcess(AbstractDirective<? extends AbstractDeltaContext> directive) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void finishedProcessing() {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void handleDirectiveProcessingException(AbstractDeltaContext context, AbstractDirective<? extends AbstractDeltaContext> directive, Exception ex) throws DirectiveException {
+        // TODO Auto-generated method stub
+
     }
 
 }

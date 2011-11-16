@@ -84,6 +84,8 @@ public class KeyItemsFileReader {
 
             currentRecord += recordsSpannedByBytes(allAttributesData.length);
         }
+        
+        _context.setMaximumNumberOfItems(_dataset.getMaximumNumberOfItems());
     }
 
     public void readItemAbundances() {

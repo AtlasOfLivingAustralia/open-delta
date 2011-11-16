@@ -6,6 +6,7 @@ import java.util.List;
 
 import au.org.ala.delta.io.BinaryKeyFile;
 import au.org.ala.delta.key.CharactersFileHeader;
+import au.org.ala.delta.key.KeyContext;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.model.MultiStateCharacter;
@@ -16,8 +17,11 @@ public class KeyCharactersFileReader {
     
     private MutableDeltaDataSet _dataset;
     private BinaryKeyFile _keyCharsFile;
+    
+    private KeyContext _context;
 
-    public KeyCharactersFileReader(MutableDeltaDataSet dataset, BinaryKeyFile keyCharsFile) {
+    public KeyCharactersFileReader(KeyContext context, MutableDeltaDataSet dataset, BinaryKeyFile keyCharsFile) {
+        _context = context;
         _dataset = dataset;
         _keyCharsFile = keyCharsFile;
         
@@ -49,6 +53,8 @@ public class KeyCharactersFileReader {
                 msChar.setState(stateNumber, stateDescription);
             }
         }
+        
+        _context.setNumberOfCharacters(_dataset.getNumberOfCharacters());
     }
     
     private List<String> readCharacterDetails(int recordNumber, int numStates) {
