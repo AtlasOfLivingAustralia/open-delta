@@ -119,8 +119,14 @@
 											<define name="INTKEY-EXEPATH" value="..\intkey\target\Intkey.exe" />
 											<define name="INTKEY-EXEOUTPUTNAME" value="Intkey.exe" />
 
-											<define name="CONFOR-EXEPATH" value="..\confor\target\CONFOR-NOJRE.exe" />
+											<define name="CONFOR-EXEPATH" value="..\confor\target\CONFOR.exe" />
 											<define name="CONFOR-EXEOUTPUTNAME" value="CONFOR.exe" />
+											
+											<define name="DIST-EXEPATH" value="..\dist\target\DIST.exe" />
+											<define name="DIST-EXEOUTPUTNAME" value="DIST.exe" />
+											
+											<define name="KEY-EXEPATH" value="..\key\target\KEY.exe" />
+											<define name="KEY-EXEOUTPUTNAME" value="KEY.exe" />
 										</nsis>
 									</target>
 								</configuration>
@@ -159,6 +165,12 @@
 
 											<define name="CONFOR-EXEPATH" value="..\confor\target\CONFOR-NOJRE.exe" />
 											<define name="CONFOR-EXEOUTPUTNAME" value="CONFOR.exe" />
+											
+											<define name="DIST-EXEPATH" value="..\dist\target\DIST-NOJRE.exe" />
+											<define name="DIST-EXEOUTPUTNAME" value="DIST.exe" />
+											
+											<define name="KEY-EXEPATH" value="..\key\target\KEY-NOJRE.exe" />
+											<define name="KEY-EXEOUTPUTNAME" value="KEY.exe" />
 										</nsis>
 									</target>
 								</configuration>

@@ -77,7 +77,8 @@ public class Key implements DirectiveParserObserver {
             Logger.log("File %s does not exist!", f.getName());
             return;
         }
-
+        
+        new Key().calculateKey(f);
     }
 
     private static File handleArgs(String[] args) throws Exception {

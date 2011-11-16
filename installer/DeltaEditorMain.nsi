@@ -66,13 +66,14 @@ Section -Main SEC0000
     SetOutPath "$INSTDIR"
     File "/oname=${DELTA-EDITOR-EXEOUTPUTNAME}" "${DELTA-EDITOR-EXEPATH}"
     File "/oname=${INTKEY-EXEOUTPUTNAME}" "${INTKEY-EXEPATH}" 
-    File "/oname=${CONFOR-EXEOUTPUTNAME}" "${CONFOR-EXEPATH}"  
+    File "/oname=${CONFOR-EXEOUTPUTNAME}" "${CONFOR-EXEPATH}"
+    File "/oname=${DIST-EXEOUTPUTNAME}" "${DIST-EXEPATH}"
+    File "/oname=${KEY-EXEOUTPUTNAME}" "${KEY-EXEPATH}"  
 
     ; Do With JRE/No JRE specific stuff here    
     Call CustomAddFiles
   
     ; Output sample dlt into sample subdirectory
-    SetOutPath "$INSTDIR\sample"
     File /r "${SAMPLE-DATASET-PATH}"
     
     ; Output JAR files to lib subdirectory
@@ -94,6 +95,8 @@ Section -post SEC0001
     
     SetOutPath "$INSTDIR"
     CreateShortCut "$SMPROGRAMS\$StartMenuGroup\CONFOR.lnk" "cmd.exe" '/k "$INSTDIR\${CONFOR-EXEOUTPUTNAME}"' "$INSTDIR\${CONFOR-EXEOUTPUTNAME}" "" ""
+    CreateShortCut "$SMPROGRAMS\$StartMenuGroup\DIST.lnk" "cmd.exe" '/k "$INSTDIR\${DIST-EXEOUTPUTNAME}"' "$INSTDIR\${DIST-EXEOUTPUTNAME}" "" ""
+    CreateShortCut "$SMPROGRAMS\$StartMenuGroup\KEY.lnk" "cmd.exe" '/k "$INSTDIR\${KEY-EXEOUTPUTNAME}"' "$INSTDIR\${KEY-EXEOUTPUTNAME}" "" ""
     SetOutPath $SMPROGRAMS\$StartMenuGroup
     
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Uninstall $(^Name).lnk" "$INSTDIR\uninstall.exe"
@@ -150,6 +153,8 @@ Section -un.post UNSEC0001
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\DELTA Editor.lnk"
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Intkey.lnk"
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\CONFOR.lnk"
+    Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\DIST.lnk"
+    Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\KEY.lnk"
     
     Delete /REBOOTOK "$INSTDIR\uninstall.exe"
     DeleteRegValue SHELL_CONTEXT "${REGKEY}" StartMenuGroup

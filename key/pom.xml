@@ -108,7 +108,7 @@
 					<programs>
 						<program>
 							<mainClass>au.org.ala.delta.key.Key</mainClass>
-							<name>Key</name>
+							<name>KEY</name>
 						</program>
 					</programs>
 					<binFileExtensions>

@@ -57,6 +57,35 @@
 					<revisionOnScmFailure>unknown</revisionOnScmFailure>
 				</configuration>
 			</plugin>
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>appassembler-maven-plugin</artifactId>
+				<version>1.1.1</version>
+				<configuration>
+					<programs>
+						<program>
+							<mainClass>au.org.ala.delta.dist.DIST</mainClass>
+							<name>DIST</name>
+						</program>
+					</programs>
+					<binFileExtensions>
+						<unix>.sh</unix>
+					</binFileExtensions>
+					<repositoryLayout>flat</repositoryLayout>
+					<repositoryName>lib</repositoryName>
+					<generateRepository>false</generateRepository>
+					<showConsoleWindow>true</showConsoleWindow>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>assemble</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 		<extensions>
 			<extension>
@@ -88,14 +117,14 @@
 			<version>1.0-M9-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 			<version>2.0.1</version>
 			<type>jar</type>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -103,5 +132,58 @@
 			<type>jar</type>
 			<scope>test</scope>
 		</dependency>
-			</dependencies>
+	</dependencies>
+	
+		<profiles>
+		<profile>
+			<id>win-installer</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.bluestemsoftware.open.maven.plugin</groupId>
+						<artifactId>launch4j-plugin</artifactId>
+						<version>1.5.0.0</version>
+						<executions>
+							<execution>
+								<id>DistWithJRE</id>
+								<phase>install</phase>
+								<goals>
+									<goal>launch4j</goal>
+								</goals>
+								<configuration>
+									<dontWrapJar>true</dontWrapJar>
+									<headerType>console</headerType>
+									<outfile>target/DIST.exe</outfile>
+									<jar>lib/${project.build.finalName}.jar</jar>
+									<errTitle>Error</errTitle>
+									<icon>installer/resources/Delta_DIST.ico</icon>
+									<jre>
+										<path>jre</path>
+									</jre>
+								</configuration>
+							</execution>
+							<execution>
+								<id>DistNOJRE</id>
+								<phase>install</phase>
+								<goals>
+									<goal>launch4j</goal>
+								</goals>
+								<configuration>
+									<dontWrapJar>true</dontWrapJar>
+									<headerType>console</headerType>
+									<outfile>target/DIST-NOJRE.exe</outfile>
+									<jar>lib/${project.build.finalName}.jar</jar>
+									<errTitle>Error</errTitle>
+									<icon>installer/resources/Delta_DIST.ico</icon>
+									<jre>
+										<minVersion>1.6.0_10</minVersion>
+									</jre>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>
