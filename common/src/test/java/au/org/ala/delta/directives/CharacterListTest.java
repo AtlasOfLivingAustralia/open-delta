@@ -92,7 +92,7 @@ public class CharacterListTest extends TestCase {
 		
 		try {
 			_characterList.parseAndProcess(_context, charDescription);
-			checkError(13);
+			checkError(16);
 		}
 		catch (DirectiveException e) {
 			fail("Should have added error to context");
@@ -122,6 +122,39 @@ public class CharacterListTest extends TestCase {
 
 	}
 	
+	@Test
+	public void testOutOfOrderCharacters() throws Exception {
+		addNumericCharacter();
+		addNumericCharacter();
+		String charDescription = 
+			"#2. Another one/\n"+
+			"#1. <adaxial> ligule <form; avoid seedlings>/\n"+
+			"   mm/\n";
+		try {
+			_characterList.parseAndProcess(_context, charDescription);
+			checkError(14, 14);
+		}
+		catch (DirectiveException e) {
+			fail("Should have added error to context");
+		}
+	}
+	
+	@Test
+	public void testNotEnoughCharacters() throws Exception {
+		addNumericCharacter();
+		addNumericCharacter();
+		String charDescription = 
+			"#1. <adaxial> ligule <form; avoid seedlings>/\n"+
+			"   mm/\n";
+		try {
+			_characterList.parseAndProcess(_context, charDescription);
+			checkError(135);
+		}
+		catch (DirectiveException e) {
+			fail("Should have added error to context");
+		}
+	}
+	
 	
 	private MultiStateCharacter addOrderedMultistateChar(int numStates) {
 		_context.setNumberOfCharacters(_context.getNumberOfCharacters()+1);
@@ -137,10 +170,13 @@ public class CharacterListTest extends TestCase {
 		return character;
 	}
 	
-	private void checkError(int number) {
+	private void checkError(int... numbers) {
 		List<DirectiveError> errors = _context.getErrors();
-		assertEquals(1, errors.size());
-		assertEquals(number, errors.get(0).getErrorNumber());
+		assertEquals(numbers.length, errors.size());
+		int i=0;
+		for (DirectiveError error : errors) {
+			assertEquals(numbers[i++], error.getErrorNumber());
+		}
 	}
 	
 }

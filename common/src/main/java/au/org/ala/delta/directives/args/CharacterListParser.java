@@ -2,6 +2,7 @@ package au.org.ala.delta.directives.args;
 
 import java.io.Reader;
 import java.text.ParseException;
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -12,9 +13,13 @@ import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.NumericCharacter;
 import au.org.ala.delta.model.TextCharacter;
 
+/**
+ * Parses the CHARACTER LIST directive, populating the character descriptions
+ * in the data set as it goes.
+ */
 public class CharacterListParser extends DirectiveArgsParser {
 
-	private static Pattern FEAT_DESC_PATTERN = Pattern.compile("^(\\d+)\\s*[.] (.*)$", Pattern.DOTALL);
+	private static Pattern FEATURE_DESCRIPTION_PATTERN = Pattern.compile("^(\\d+)\\s*[.] (.*)$", Pattern.DOTALL);
 
 	public CharacterListParser(DeltaContext context, Reader reader) {
 		super(context, reader);
@@ -22,11 +27,27 @@ public class CharacterListParser extends DirectiveArgsParser {
 
 	public void parse() throws ParseException {
 		skipTo('#');
+		int previousCharNumber = 0;
+		int count = 0;
+		int maxChars = getContext().getNumberOfCharacters();
+		boolean[] foundChars = new boolean[maxChars];
+		Arrays.fill(foundChars, false);
+		
 		while (_currentChar == '#') {
 			// parseCharacter will consume all characters up until the last / of
 			// the feature description or last state,
 			Character character = parseCharacter();
+			int charNumber = character.getCharacterId();
 			
+			if (charNumber != previousCharNumber + 1) {
+				_context.addError(DirectiveError.Error.CHARACTER_OUT_OF_ORDER, _position);
+			}
+			if (charNumber > maxChars) {
+				_context.addError(DirectiveError.Error.CHARACTER_NUMBER_TOO_HIGH, _position, maxChars);
+			}
+			if (foundChars[charNumber-1] == true) {
+				_context.addError(DirectiveError.Error.CHARACTER_ALREADY_SPECIFIED, _position, charNumber);
+			}
 			if (skipWhitespace() && _currentChar != '#') {
 				if (character instanceof NumericCharacter<?>) {
 					_context.addError(DirectiveError.Error.TOO_MANY_UNITS, _position);
@@ -35,7 +56,14 @@ public class CharacterListParser extends DirectiveArgsParser {
 					_context.addError(DirectiveError.Error.STATES_NOT_ALLOWED, _position);
 				}
 			}
+			foundChars[charNumber-1] = true;
+			previousCharNumber = charNumber;
+			count ++;
 			skipTo('#');
+			
+		}
+		if (count != maxChars) {
+			_context.addError(DirectiveError.Error.WRONG_CHARACTER_COUNT, _position, maxChars);
 		}
 	}
 
@@ -46,7 +74,7 @@ public class CharacterListParser extends DirectiveArgsParser {
 		readNext();
 		
 		String desc = readToNextEndSlashSpace();
-		Matcher m = FEAT_DESC_PATTERN.matcher(desc);
+		Matcher m = FEATURE_DESCRIPTION_PATTERN.matcher(desc);
 
 		Character character = null;
 		if (m.matches()) {
@@ -96,7 +124,7 @@ public class CharacterListParser extends DirectiveArgsParser {
 				}
 			}
 		} else {
-			throw new IllegalStateException("Invalid character feature description: " + desc);
+			_context.addError(DirectiveError.Error.EXPECTED_CHARACTER_NUMBER, _position);
 		}
 		return character;
 	}
@@ -107,7 +135,7 @@ public class CharacterListParser extends DirectiveArgsParser {
 	
 	private int parseState(MultiStateCharacter ch) throws ParseException {
 		String state = readToNextEndSlashSpace();
-		Matcher m = FEAT_DESC_PATTERN.matcher(state);
+		Matcher m = FEATURE_DESCRIPTION_PATTERN.matcher(state);
 		int stateId = -1;
 		if (m.matches()) {
 			stateId = Integer.parseInt(m.group(1));
