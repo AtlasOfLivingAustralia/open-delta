@@ -88,9 +88,9 @@ public class WriteOnceDistItemsFile extends BinaryKeyFile {
 		}
 		writeToRecord(record, description);
 		
-	
+		int size = _header.getLengthOfAttributeLists();
 		List<Integer> ints = new ArrayList<Integer>();
-		for (int i=0;i<RECORD_LENGTH_INTEGERS; i++) {
+		for (int i=0;i<size; i++) {
 			ints.add(work.getInt(i*4));
 		}
 		writeToRecord(record+1, ints);

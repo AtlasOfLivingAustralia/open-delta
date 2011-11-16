@@ -74,13 +74,16 @@ public class DistItemsFileWriter {
 		 final int BYTES_IN_WORD = 4;
 		 List<Integer> itemRecords = new ArrayList<Integer>();
 		 List<Integer> nameLengths = new ArrayList<Integer>();
-		 
+		 int size = BinaryKeyFile.RECORD_LENGTH_BYTES;
+		 for (int offset : wordOffsets) {
+			 size = Math.max(size, offset);
+		 }
 		 Iterator<Item> items = _dataSet.unfilteredItems();
 		 while (items.hasNext()) {
 			 Item item = items.next();
 			 String description = _itemFormatter.formatItemDescription(item);
 			 nameLengths.add(description.length());
-			 byte[] bytes = new byte[1000];
+			 byte[] bytes = new byte[(size+1)*BYTES_IN_WORD];
 			 Arrays.fill(bytes, (byte)0);
 			 
 			 ByteBuffer work = ByteBuffer.wrap(bytes);
@@ -255,9 +258,7 @@ public class DistItemsFileWriter {
         
         int itemLength = wordOffset-1;
         _itemsFile.setLengthOfAttributeLists(itemLength);
-        if (itemLength > BinaryKeyFile.RECORD_LENGTH_INTEGERS) {
-        	throw new IllegalArgumentException("Something is too big");
-        }
+
 
         return new Pair<int[], int[]>(wordOffsets, bitOffsets);
 	}

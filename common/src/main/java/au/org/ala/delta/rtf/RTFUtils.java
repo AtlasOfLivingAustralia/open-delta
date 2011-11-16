@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.IntRange;
 
 public class RTFUtils {
 
@@ -63,6 +64,7 @@ public class RTFUtils {
 	public static int skipKeyword(String text, int startPos) {
 		FirstRTFKeywordMarker handler = new FirstRTFKeywordMarker();
 		RTFReader reader = new RTFReader(text.substring(startPos), handler);
+		handler.setReader(reader);
 		try {
 			reader.parse();
 		} catch (Exception ex) {
@@ -83,6 +85,7 @@ public class RTFUtils {
 		RtfToHtmlConverter converter = new RtfToHtmlConverter();
 		
 		RTFReader reader = new RTFReader(rtf, converter);
+		
 		try {
 			reader.parse();
 		} catch (Exception ex) {
@@ -93,16 +96,36 @@ public class RTFUtils {
 		return converter.getText();
 		
 	}
+	
+	public static IntRange markKeyword(String text) {
+		FirstRTFKeywordMarker handler = new FirstRTFKeywordMarker();
+		RTFReader reader = new RTFReader(text, handler);
+		handler.setReader(reader);
+		try {
+			reader.parse();
+		} catch (Exception ex) {
+			// Ignore, and return the original text
+			return new IntRange(-1);
+		}
+		
+		return handler.getFirstKeywordPosition();
+	}
 
 }
 
 class FirstRTFKeywordMarker extends FilteringRTFHandler {
 	
-	private boolean _keywordEncountered;
+	private int _firstKeywordStart = -1;
+	private int _firstKeywordEnd = -1;
 	private int _secondKeyWordStart = -1;
+	private RTFReader _reader;
 	
 	public FirstRTFKeywordMarker() {
 		super(false);
+	}
+	
+	public void setReader(RTFReader reader) {
+		_reader = reader;
 	}
 	
 	@Override
@@ -111,10 +134,13 @@ class FirstRTFKeywordMarker extends FilteringRTFHandler {
 	}
 
 	protected void markKeyword() {
-		if (_keywordEncountered && _secondKeyWordStart == -1) {
+		
+		if (_firstKeywordStart < 0) {
+			_firstKeywordStart = _buffer.length();
+		}
+		else if (_firstKeywordStart >= 0 && _secondKeyWordStart < 0) {
 			_secondKeyWordStart = _buffer.length();
 		}
-		_keywordEncountered = true;
 	}
 	
 	@Override
@@ -127,6 +153,15 @@ class FirstRTFKeywordMarker extends FilteringRTFHandler {
 		markKeyword();
 	}
 	
+	@Override
+	public void onTextCharacter(char ch) {
+		_buffer.append(ch);
+		if (_firstKeywordStart >= 0 && _firstKeywordEnd < 0) {
+			_firstKeywordEnd = _reader.position();
+		}
+	
+	}
+	
 	public String getFilteredText() {
 		String result = _buffer.toString();
 		if (_secondKeyWordStart >= 0) {
@@ -135,6 +170,13 @@ class FirstRTFKeywordMarker extends FilteringRTFHandler {
 		return result;
 	}
 	
+	
+	public IntRange getFirstKeywordPosition() {
+		if (_firstKeywordStart >= 0 && _firstKeywordEnd < 0) {
+			_firstKeywordEnd = _reader.position();
+		}
+		return new IntRange(_firstKeywordStart, _firstKeywordEnd);
+	}
 }
 
 class FilteringRTFHandler implements RTFHandler {

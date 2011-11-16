@@ -120,11 +120,16 @@ public class DistItemsFileReader {
 		FloatBuffer buffer = attributeData.asFloatBuffer();
 		float value = buffer.get(wordOffset-1);
 		Attribute attribute = _dataSet.addAttribute(item.getItemNumber(), character.getCharacterId());
-		if (value == -9999f) {
+		if (value == -9999f || Float.isNaN(value)) {
 			return;
 		}
 		String valueStr = Float.toString(value);
-		attribute.setValueFromString(valueStr);
+		try {
+			attribute.setValueFromString(valueStr);
+			}
+			catch (Exception e) {
+				System.out.println("Breakpoint");
+			}
 	}
 
 	private void decodeUnorderedMultiStateCharacter(Item item, ByteBuffer attributeData, MultiStateCharacter character, int wordOffset, int bitOffset) {
@@ -156,8 +161,12 @@ public class DistItemsFileReader {
 				attributeString.append(i-bitOffset+1);
 			}
 		}
+		try {
 		attribute.setValueFromString(attributeString.toString());
-		
+		}
+		catch (Exception e) {
+			System.out.println("Breakpoint");
+		}
 	}
 	
 }

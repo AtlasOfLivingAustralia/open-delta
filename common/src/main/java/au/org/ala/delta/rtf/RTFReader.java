@@ -10,6 +10,7 @@ import java.util.Stack;
 
 public class RTFReader {
 
+	private int _position = 0;
     private int _cGroup = 0;
     private PushbackReader _stream;
     private Stack<ParserState> _stateStack = new Stack<ParserState>();
@@ -29,6 +30,10 @@ public class RTFReader {
         _stream = new PushbackReader(new StringReader(rtf));
         _handler = handler;
     }
+    
+    public int position() {
+    	return _position;
+    }
 
     public void parse() throws IOException {
         int cNibble = 2;
@@ -40,7 +45,7 @@ public class RTFReader {
             _handler.startParse();
         }
 
-        while ((intCh = _stream.read()) >= 0) {
+        while ((intCh = read()) >= 0) {
             char ch = (char) intCh;
             if (_cGroup < 0) {
                 throw new RuntimeException("Group stack underflow exception");
@@ -118,7 +123,7 @@ public class RTFReader {
         boolean hasParam = false;
         int param = 0;
 
-        if ((ch = _stream.read()) < 0) {
+        if ((ch = read()) < 0) {
             return;
         }
         
@@ -136,13 +141,13 @@ public class RTFReader {
         }
 
         StringBuilder keyword = new StringBuilder();
-        for (; Character.isLetter((char) ch) && ch >= 0; ch = _stream.read()) {
+        for (; Character.isLetter((char) ch) && ch >= 0; ch = read()) {
             keyword.append((char) ch);
         }
 
         if ((char) ch == '-') {
             isNeg = true;
-            if ((ch = _stream.read()) < 0) {
+            if ((ch = read()) < 0) {
                 return;
             }
         }
@@ -150,7 +155,7 @@ public class RTFReader {
         if (Character.isDigit((char) ch)) {
             StringBuilder strParam = new StringBuilder();
             hasParam = true;
-            for (; Character.isDigit((char) ch); ch = _stream.read()) {
+            for (; Character.isDigit((char) ch); ch = read()) {
                 strParam.append((char) ch);
             }
             param = Integer.parseInt(strParam.toString());
@@ -161,6 +166,7 @@ public class RTFReader {
 
         if (ch != ' ' && ch >= 0) {
             _stream.unread(ch);
+            _position--;
         }
 
         translateKeyword(keyword.toString(), param, hasParam);
@@ -175,6 +181,7 @@ public class RTFReader {
      *             if there is an error reading from the stream.
      */
     int read() throws IOException {
+    	_position++;
         return _stream.read();
     }
 
