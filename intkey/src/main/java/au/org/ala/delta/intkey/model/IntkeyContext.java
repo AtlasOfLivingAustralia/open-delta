@@ -649,6 +649,23 @@ public class IntkeyContext extends AbstractDeltaContext {
             // keyword that begins with the text
             if (characterNumbersSet == null) {
                 List<String> matches = new ArrayList<String>();
+                
+                if (CHARACTER_KEYWORD_ALL.startsWith(keyword)) {
+                   matches.add(CHARACTER_KEYWORD_ALL);
+                } 
+                
+                if (CHARACTER_KEYWORD_ALL.startsWith(keyword)) {
+                    matches.add(CHARACTER_KEYWORD_USED);
+                 } 
+                
+                if (CHARACTER_KEYWORD_AVAILABLE.startsWith(keyword)) {
+                    matches.add(CHARACTER_KEYWORD_AVAILABLE);
+                 } 
+                
+                if (CHARACTER_KEYWORD_NONE.startsWith(keyword)) {
+                    matches.add(CHARACTER_KEYWORD_NONE);
+                 } 
+                
                 for (String savedKeyword : _userDefinedCharacterKeywords.keySet()) {
 
                     // Ignore case when matching keywords
@@ -671,18 +688,18 @@ public class IntkeyContext extends AbstractDeltaContext {
                 if (matches.size() == 0) {
                     throw new IllegalArgumentException("Keyword not found");
                 } else if (matches.size() == 1) {
-                    characterNumbersSet = _userDefinedCharacterKeywords.get(matches.get(0));
+                    return getCharactersForKeyword(matches.get(0));
                 } else {
                     throw new IllegalArgumentException("Keyword ambiguous");
                 }
+            } else {
+                List<au.org.ala.delta.model.Character> retList = new ArrayList<au.org.ala.delta.model.Character>();
+                for (int charNum : characterNumbersSet) {
+                    retList.add(_dataset.getCharacter(charNum));
+                }
+                Collections.sort(retList);
+                return retList;
             }
-
-            List<au.org.ala.delta.model.Character> retList = new ArrayList<au.org.ala.delta.model.Character>();
-            for (int charNum : characterNumbersSet) {
-                retList.add(_dataset.getCharacter(charNum));
-            }
-            Collections.sort(retList);
-            return retList;
         }
     }
 
@@ -711,6 +728,7 @@ public class IntkeyContext extends AbstractDeltaContext {
             throw new IllegalStateException("Cannot define a taxa keyword if no dataset loaded");
         }
 
+        keyword = keyword.toLowerCase();
         if (keyword.equals(TAXON_KEYWORD_ALL) || keyword.equals(TAXON_KEYWORD_ELIMINATED) || keyword.equals(TAXON_KEYWORD_REMAINING) || keyword.equals(TAXON_KEYWORD_SELECTED)
                 || keyword.equals(TAXON_KEYWORD_NONE)) {
             throw new IllegalArgumentException(UIUtils.getResourceString("RedefineSystemKeyword.error", keyword));
@@ -742,13 +760,34 @@ public class IntkeyContext extends AbstractDeltaContext {
             return Collections.EMPTY_LIST;
         } else {
             // TODO match if supplied text matches the beginning of a taxon name
-            Set<Integer> taxaNumbersSet = _userDefinedCharacterKeywords.get(keyword);
+            Set<Integer> taxaNumbersSet = _userDefinedTaxonKeywords.get(keyword);
 
             // If there is no exact match for the specified keyword text, try
             // and match a single
             // keyword that begins with the text
             if (taxaNumbersSet == null) {
                 List<String> matches = new ArrayList<String>();
+                
+                if (TAXON_KEYWORD_ALL.startsWith(keyword)) {
+                    matches.add(TAXON_KEYWORD_ALL);
+                }
+                
+                if (TAXON_KEYWORD_ELIMINATED.startsWith(keyword)) {
+                    matches.add(TAXON_KEYWORD_ELIMINATED);
+                }
+                
+                if (TAXON_KEYWORD_REMAINING.startsWith(keyword)) {
+                    matches.add(TAXON_KEYWORD_REMAINING);
+                }
+                
+                if (TAXON_KEYWORD_SELECTED.startsWith(keyword)) {
+                    matches.add(TAXON_KEYWORD_SELECTED);
+                }
+                
+                if (TAXON_KEYWORD_NONE.startsWith(keyword)) {
+                    matches.add(TAXON_KEYWORD_NONE);
+                }
+                
                 for (String savedKeyword : _userDefinedTaxonKeywords.keySet()) {
                     // Ignore case when matching keywords
                     String modifiedKeyword = keyword.toLowerCase();
@@ -770,16 +809,15 @@ public class IntkeyContext extends AbstractDeltaContext {
                 if (matches.size() == 0) {
                     throw new IllegalArgumentException("keyword not found");
                 } else if (matches.size() == 1) {
-                    taxaNumbersSet = _userDefinedTaxonKeywords.get(matches.get(0));
+                    return getTaxaForKeyword(matches.get(0));
                 } else {
                     throw new IllegalArgumentException("keyword ambiguous");
                 }
+            } else {
+                for (int taxonNumber : taxaNumbersSet) {
+                    retList.add(_dataset.getItem(taxonNumber));
+                }
             }
-
-            for (int taxonNumber : taxaNumbersSet) {
-                retList.add(_dataset.getItem(taxonNumber));
-            }
-
         }
 
         Collections.sort(retList);
