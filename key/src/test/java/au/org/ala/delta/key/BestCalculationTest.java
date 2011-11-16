@@ -2,14 +2,8 @@ package au.org.ala.delta.key;
 
 import java.io.File;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
 
 import junit.framework.TestCase;
-import au.org.ala.delta.best.Best;
-import au.org.ala.delta.model.MutableDeltaDataSet;
-import au.org.ala.delta.model.Specimen;
 
 public class BestCalculationTest extends TestCase {
 
