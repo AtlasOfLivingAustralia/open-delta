@@ -534,9 +534,10 @@ public class Attribute implements Iterable<AttrChunk> {
 						++nHidden;
 					else if (ch == '\\' && text.charAt(i - 1) != '\\')
 						inRTF = true;
-					else if (ch == '{') {
+					else if (ch == '{' && text.charAt(i-1) != '\\') {
 						++bracketLevel;
-					} else if (ch != ' ')
+					} 
+					else if (ch != ' ')
 						--nHidden;
 
 				}
