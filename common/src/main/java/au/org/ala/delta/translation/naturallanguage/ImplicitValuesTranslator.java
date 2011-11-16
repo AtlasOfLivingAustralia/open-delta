@@ -1,6 +1,7 @@
 package au.org.ala.delta.translation.naturallanguage;
 
 import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.directives.validation.DirectiveException;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.DefaultDataSetFactory;
@@ -47,7 +48,13 @@ public class ImplicitValuesTranslator extends NaturalLanguageTranslator {
 					int implicitState = multiStateChar.getUncodedImplicitState();
 					if (implicitState > 0) {
 						Attribute attribute = factory.createAttribute(character, item);
-						attribute.setValueFromString(Integer.toString(implicitState));
+						try {
+							attribute.setValueFromString(Integer.toString(implicitState));
+						}
+						catch (DirectiveException e) {
+							// Since we aren't parsing user data here this shouldn't happen.
+							throw new RuntimeException(e);
+						}
 						item.addAttribute(character, attribute);
 						
 						beforeAttribute(attribute);

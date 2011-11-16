@@ -12,6 +12,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.IntRange;
 
 import au.org.ala.delta.DeltaContext.HeadingType;
+import au.org.ala.delta.directives.validation.DirectiveException;
 import au.org.ala.delta.io.BinaryKeyFile;
 import au.org.ala.delta.key.ItemsFileHeader;
 import au.org.ala.delta.key.KeyContext;
@@ -121,7 +122,10 @@ public class KeyItemsFileReader {
             // only be set using a String.
             // Will be able to fix this up when we switch to using a SlotFile
             // based dataset.
-            msAttr.setValueFromString(StringUtils.join(presentStates, "/"));
+            try {
+            	msAttr.setValueFromString(StringUtils.join(presentStates, "/"));
+            }
+            catch (DirectiveException e) {}
         }
     }
 

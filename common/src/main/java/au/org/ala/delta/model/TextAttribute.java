@@ -1,5 +1,6 @@
 package au.org.ala.delta.model;
 
+import au.org.ala.delta.directives.validation.DirectiveException;
 import au.org.ala.delta.model.impl.AttributeData;
 
 public class TextAttribute extends Attribute {
@@ -17,7 +18,7 @@ public class TextAttribute extends Attribute {
         return getValueAsString();
     }
     
-    public void setText(String text) {
+    public void setText(String text) throws DirectiveException {
         setValueFromString(text);
         notifyObservers();
     }

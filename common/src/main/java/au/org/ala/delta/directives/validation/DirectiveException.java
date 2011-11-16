@@ -29,5 +29,8 @@ public class DirectiveException extends ParseException {
 		return _error.getErrorNumber();
 	}
 
+	public DirectiveError getError() {
+		return _error;
+	}
 	
 }

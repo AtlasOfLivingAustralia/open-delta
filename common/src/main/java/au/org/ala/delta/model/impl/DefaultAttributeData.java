@@ -9,6 +9,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.FloatRange;
 import org.apache.commons.lang.math.NumberRange;
 
+import au.org.ala.delta.directives.validation.DirectiveException;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.NumericRange;
 
@@ -34,7 +35,7 @@ public class DefaultAttributeData implements AttributeData {
     }
 
     @Override
-    public void setValueFromString(String value) {
+    public void setValueFromString(String value) throws DirectiveException {
         _value = value;
         _parsedAttribute.parse(value, false);
     }

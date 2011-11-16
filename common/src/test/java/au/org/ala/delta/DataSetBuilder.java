@@ -10,7 +10,7 @@ import au.org.ala.delta.model.TextCharacter;
 
 public class DataSetBuilder {
 
-	public static void buildSimpleDataSet(MutableDeltaDataSet dataSet) {
+	public static void buildSimpleDataSet(MutableDeltaDataSet dataSet) throws Exception {
 		MultiStateCharacter char1 = (MultiStateCharacter)dataSet.addCharacter(CharacterType.UnorderedMultiState);
 		char1.setDescription("character 1 description");
 		char1.setNumberOfStates(3);

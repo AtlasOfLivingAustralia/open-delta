@@ -15,13 +15,15 @@
 package au.org.ala.delta.model.impl;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import au.org.ala.delta.directives.validation.DirectiveError;
+import au.org.ala.delta.directives.validation.DirectiveException;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterType;
-import au.org.ala.delta.model.DeltaParseException;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.util.Utils;
 
@@ -31,46 +33,7 @@ import au.org.ala.delta.util.Utils;
  */
 public class Attribute implements Iterable<AttrChunk> {
 
-	enum AttributeParseError {
-		EAP_NULL, EAP_BAD_STATE_NUMBER, //
-		EAP_UNMATCHED_CLOSEBRACK, //
-		EAP_MISSING_CLOSEBRACK, EAP_BADATTR_SYMBOL, //
-		EAP_IS_INAPPLICABLE, EAP_CHARTYPE_UNDEFINED, EAP_EXCLUSIVE_ERROR, EAP_BAD_NUMERIC_ORDER, EAP_BAD_RTF, EAP_BAD_RTF_BRACKET, EAP_BAD_SLASH
-	};
-
-	public static class AttributeParseException extends DeltaParseException {
-
-		private static final long serialVersionUID = -6900898497848554617L;
-
-		private AttributeParseError _error;
-		private int _value;
-
-		public AttributeParseException(AttributeParseError error, int value) {
-			super(error.name(), value);
-			_error = error;
-			_value = value;
-		}
-
-		/**
-		 * @return the _error
-		 */
-		public AttributeParseError getError() {
-			return _error;
-		}
-
-		/**
-		 * @return the _value
-		 */
-		public int getValue() {
-			return _value;
-		}
-
-		@Override
-		public String getMessage() {
-			return _error.name();
-		}
-	}
-
+	
 	static class Delimiters {
 		public static char LITERAL = '|'; // Treat next character as literal;
 											// not yet implemented.
@@ -103,7 +66,7 @@ public class Attribute implements Iterable<AttrChunk> {
 		init(charBase);
 	}
 
-	public Attribute(String text, Character charBase) {
+	public Attribute(String text, Character charBase) throws ParseException {
 		init(charBase);
 		parse(text, false);
 	}
@@ -123,7 +86,7 @@ public class Attribute implements Iterable<AttrChunk> {
 		NUMBER, VARIABLE, UNKNOWN, INAPPLICABLE, NOWHERE
 	};
 
-	public void parse(String text,  boolean isIntkey) {
+	public void parse(String text,  boolean isIntkey) throws DirectiveException {
 		
 		CharacterType charType = _character.getCharacterType();
 
@@ -167,18 +130,18 @@ public class Attribute implements Iterable<AttrChunk> {
 					// a comment or not and enable/disable formatting
 					// accordingly.
 					// But that will be awfully hard to get right.....
-					throw new AttributeParseException(AttributeParseError.EAP_BAD_RTF, i - nHidden);
+					throw DirectiveError.asException(DirectiveError.Error.INVALID_RTF, i - nHidden);
 				}
 				// if (bracketLevel != 0)
 				// throw TAttributeParseEx(EAP_BAD_RTF_BRACKET, i - nHidden);
 				// Not really an error. But this would indicate that there are
 				// RTF brackets enclosing text, rather than an RTF command
 				if (ch == Delimiters.CLOSEBRACK)
-					throw new AttributeParseException(AttributeParseError.EAP_UNMATCHED_CLOSEBRACK, i - nHidden);
+					throw DirectiveError.asException(DirectiveError.Error.UNMATCHED_CLOSING_BRACKET, i - nHidden);
 
 				else if (ch == Delimiters.OPENBRACK) {
 					if (isIntkey) {// Disallow comments if Intkey "use"
-						throw new AttributeParseException(AttributeParseError.EAP_BADATTR_SYMBOL, i - nHidden);
+						throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i - nHidden);
 					}
 					++commentLevel; // We have entered a textual comment.
 					textStart = i;
@@ -209,24 +172,29 @@ public class Attribute implements Iterable<AttrChunk> {
 							if (charType.isNumeric()) {
 								BigDecimal aNumb = Utils.stringToBigDecimal(substring(text, startPos, i - startPos + 1), new int[1]);
 								if (aNumb.compareTo(prevNumb) < 0) {
-									throw new AttributeParseException(AttributeParseError.EAP_BAD_NUMERIC_ORDER, startPos - nHidden);
+									throw DirectiveError.asException(DirectiveError.Error.VALUE_OUT_OF_ORDER, startPos - nHidden);
 								}
 								insert(end(), new AttrChunk(aNumb));
 								prevNumb = aNumb;
 							} else if (charType.isMultistate()) {
 								int stateNo = Utils.strtol((substring(text, startPos, i - startPos + 1)));
 								int stateId = stateNo;
-								if (stateId <= 0)
-									throw new AttributeParseException(AttributeParseError.EAP_BAD_STATE_NUMBER, startPos - nHidden);
+								if (stateId <= 0) {
+									throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i - nHidden);
+								}
+								int numStates = ((MultiStateCharacter)_character).getNumberOfStates();
+								if (stateId > numStates) {
+									throw DirectiveError.asException(DirectiveError.Error.STATE_NUMBER_GREATER_THAN_MAX, startPos - nHidden, numStates);
+								}
 								if (isExclusive && hadState)
-									throw new AttributeParseException(AttributeParseError.EAP_EXCLUSIVE_ERROR, startPos - nHidden);
+									throw DirectiveError.asException(DirectiveError.Error.EXCLUSIVE_ERROR, startPos - nHidden);
 								insert(end(), new AttrChunk(ChunkType.CHUNK_STATE, stateId));
 								hadState = true;
 							}
 							break;
 
 						default:
-							throw new AttributeParseException(AttributeParseError.EAP_BADATTR_SYMBOL, i - nHidden);
+							throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i - nHidden);
 						}
 						// If we jumped here by hitting the end of the loop,
 						// then let's
@@ -247,7 +215,7 @@ public class Attribute implements Iterable<AttrChunk> {
 					// / Start test block for handling negative numerics
 					if (charType.isNumeric() && i < text.length() - 1 && (text.charAt(i + 1) == '.' || java.lang.Character.isDigit(text.charAt(i + 1)))) {
 						if (++numbCount > 3)
-							throw new AttributeParseException(AttributeParseError.EAP_BADATTR_SYMBOL, i - nHidden);
+							throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i - nHidden);
 						parseState = ParseState.NUMBER;
 						startPos = i;
 						hadDecimal = false;
@@ -259,29 +227,29 @@ public class Attribute implements Iterable<AttrChunk> {
 						parseState = ParseState.INAPPLICABLE;
 						hadPseudo = true;
 					} else
-						throw new AttributeParseException(AttributeParseError.EAP_BADATTR_SYMBOL, i - nHidden);
+						throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i - nHidden);
 				}
 
 				else if (ch == 'U') {
 					if (!(pseudoOK && parseState == ParseState.NOWHERE))
-						throw new AttributeParseException(AttributeParseError.EAP_BADATTR_SYMBOL, i - nHidden);
+						throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i - nHidden);
 					parseState = ParseState.UNKNOWN;
 					hadPseudo = true;
 				}
 
 				else if (charType.isText())
-					throw new AttributeParseException(AttributeParseError.EAP_BADATTR_SYMBOL, i - nHidden);
+					throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i - nHidden);
 
 				else if (ch == ',') // Should only occur at the start, after a
 									// comment
 				{
 					if (!onlyText)
-						throw new AttributeParseException(AttributeParseError.EAP_BADATTR_SYMBOL, i - nHidden);
+						throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i - nHidden);
 				}
 
 				else if (ch == 'V') {
 					if (!(pseudoOK && parseState == ParseState.NOWHERE))
-						throw new AttributeParseException(AttributeParseError.EAP_BADATTR_SYMBOL, i - nHidden);
+						throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i - nHidden);
 					parseState = ParseState.VARIABLE;
 					hadPseudo = true;
 				}
@@ -293,25 +261,30 @@ public class Attribute implements Iterable<AttrChunk> {
 							if (charType.isNumeric()) {
 								BigDecimal aNumb = Utils.stringToBigDecimal(substring(text, startPos, i - startPos + 1), new int[1]);
 								if (aNumb.compareTo(prevNumb) < 0)
-									throw new AttributeParseException(AttributeParseError.EAP_BAD_NUMERIC_ORDER, startPos - nHidden);
+									throw DirectiveError.asException(DirectiveError.Error.VALUE_OUT_OF_ORDER, startPos - nHidden);
 								insert(end(), new AttrChunk(aNumb));
 								prevNumb = aNumb;
 							} else if (charType.isMultistate()) {
 								int stateNo = Utils.strtol((substring(text, startPos, i - startPos + 1)));
 								int stateId = stateNo;
-								if (stateId <= 0)
-									throw new AttributeParseException(AttributeParseError.EAP_BAD_STATE_NUMBER, startPos - nHidden);
+								if (stateId <= 0) {
+									throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i - nHidden);
+								}
+								int numStates = ((MultiStateCharacter)_character).getNumberOfStates();
+								if (stateId > numStates) {
+									throw DirectiveError.asException(DirectiveError.Error.STATE_NUMBER_GREATER_THAN_MAX, startPos - nHidden, numStates);
+								}
 								if (isExclusive && hadState)
-									throw new AttributeParseException(AttributeParseError.EAP_EXCLUSIVE_ERROR, startPos - nHidden);
+									throw DirectiveError.asException(DirectiveError.Error.EXCLUSIVE_ERROR, startPos - nHidden);
 								insert(end(), new AttrChunk(ChunkType.CHUNK_STATE, stateId));
 								hadState = true;
 							}
 						}
 					} else
-						throw new AttributeParseException(AttributeParseError.EAP_BADATTR_SYMBOL, i - nHidden);
+						throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i - nHidden);
 					if (ch == Delimiters.ANDSTATE) {
 						if (isIntkey) // Disallow & if Intkey "use"
-							throw new AttributeParseException(AttributeParseError.EAP_BADATTR_SYMBOL, i - nHidden);
+							throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i - nHidden);
 						insert(end(), new AttrChunk(ChunkType.CHUNK_AND));
 						numbCount = 0;
 						prevNumb = new BigDecimal(-Float.MAX_VALUE);
@@ -327,7 +300,7 @@ public class Attribute implements Iterable<AttrChunk> {
 
 				else if (ch == Delimiters.ORSTATE) {
 					if (parseState == ParseState.UNKNOWN)
-						throw new AttributeParseException(AttributeParseError.EAP_BADATTR_SYMBOL, i - nHidden);
+						throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i - nHidden);
 					if (!inserted) // If we were in the middle of "something",
 					{ // first save that "something", but don't otherwise change
 						// parse state
@@ -348,24 +321,29 @@ public class Attribute implements Iterable<AttrChunk> {
 							if (charType.isNumeric()) {
 								BigDecimal aNumb = Utils.stringToBigDecimal(substring(text, startPos, i - startPos + 1), new int[1]);
 								if (aNumb.compareTo(prevNumb) < 0) {
-									throw new AttributeParseException(AttributeParseError.EAP_BAD_NUMERIC_ORDER, startPos - nHidden);
+									throw DirectiveError.asException(DirectiveError.Error.VALUE_OUT_OF_ORDER, startPos - nHidden);
 								}
 								insert(end(), new AttrChunk(aNumb));
 								prevNumb = aNumb;
 							} else if (charType.isMultistate()) {
 								int stateNo = Utils.strtol(substring(text, startPos, i - startPos + 1));
 								int stateId = stateNo;
-								if (stateId <= 0)
-									throw new AttributeParseException(AttributeParseError.EAP_BAD_STATE_NUMBER, startPos - nHidden);
+								if (stateId <= 0) {
+									throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i - nHidden);
+								}
+								int numStates = ((MultiStateCharacter)_character).getNumberOfStates();
+								if (stateId > numStates) {
+									throw DirectiveError.asException(DirectiveError.Error.STATE_NUMBER_GREATER_THAN_MAX, startPos - nHidden, numStates);
+								}
 								if (isExclusive && hadState)
-									throw new AttributeParseException(AttributeParseError.EAP_EXCLUSIVE_ERROR, startPos - nHidden);
+									throw DirectiveError.asException(DirectiveError.Error.EXCLUSIVE_ERROR, startPos - nHidden);
 								insert(end(), new AttrChunk(ChunkType.CHUNK_STATE, stateId));
 								hadState = true;
 							}
 							break;
 
 						default:
-							throw new AttributeParseException(AttributeParseError.EAP_BADATTR_SYMBOL, i - nHidden);
+							throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i - nHidden);
 						}
 					}
 					insert(end(), new AttrChunk(ChunkType.CHUNK_OR));
@@ -381,14 +359,14 @@ public class Attribute implements Iterable<AttrChunk> {
 				}
 
 				else if (ch == '.' && (charType != CharacterType.RealNumeric || (parseState == ParseState.NUMBER && hadDecimal)))
-					throw new AttributeParseException(AttributeParseError.EAP_BADATTR_SYMBOL, i - nHidden);
-
+					throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i - nHidden);
+				
 				else if (ch == '.' || java.lang.Character.isDigit(ch)) {
 					if (hadPseudo || hadExHi)
-						throw new AttributeParseException(AttributeParseError.EAP_BADATTR_SYMBOL, i - nHidden);
+						throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i - nHidden);
 					if (parseState == ParseState.NOWHERE) {
 						if (charType.isText() || (charType.isNumeric() && ++numbCount > 3))
-							throw new AttributeParseException(AttributeParseError.EAP_BADATTR_SYMBOL, i - nHidden);
+							throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i - nHidden);
 						parseState = ParseState.NUMBER;
 						startPos = i;
 						hadDecimal = false;
@@ -396,15 +374,15 @@ public class Attribute implements Iterable<AttrChunk> {
 					if (ch == '.')
 						hadDecimal = true;
 					if (parseState != ParseState.NUMBER || inserted)
-						throw new AttributeParseException(AttributeParseError.EAP_BADATTR_SYMBOL, i - nHidden);
+						throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i - nHidden);
 				} else if (ch == '(' && !isIntkey) // Should be "extreme" low or
 													// high value.
 				{ // Handle this specially, since it requires multi-character
 					// scanning.
 					if (hadPseudo || hadExHi)
-						throw new AttributeParseException(AttributeParseError.EAP_BADATTR_SYMBOL, i - nHidden);
+						throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i - nHidden);
 					if (!charType.isNumeric())
-						throw new AttributeParseException(AttributeParseError.EAP_BADATTR_SYMBOL, i - nHidden);
+						throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i - nHidden);
 					int j;
 					hadDecimal = false;
 					if (numbCount > 0 && i + 1 < text.length() && text.charAt(i + 1) == Delimiters.STATERANGE) // (extreme
@@ -414,14 +392,14 @@ public class Attribute implements Iterable<AttrChunk> {
 							if (!inserted) {
 								BigDecimal aNumb = Utils.stringToBigDecimal(substring(text, startPos, i - startPos + 1), new int[1]);
 								if (aNumb.compareTo(prevNumb) < 0) {
-									throw new AttributeParseException(AttributeParseError.EAP_BAD_NUMERIC_ORDER, startPos - nHidden);
+									throw DirectiveError.asException(DirectiveError.Error.VALUE_OUT_OF_ORDER, startPos - nHidden);
 								}
 								insert(end(), new AttrChunk(aNumb));
 								prevNumb = aNumb;
 								inserted = true;
 							}
 						} else if (parseState != ParseState.UNKNOWN)
-							throw new AttributeParseException(AttributeParseError.EAP_BADATTR_SYMBOL, i - nHidden);
+							throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i - nHidden);
 						// insert(end(), TAttrChunk(CHUNK_TO)); // Is this
 						// needed, or is it implicit in the extreme hi flag?
 						pseudoOK = false;
@@ -430,44 +408,44 @@ public class Attribute implements Iterable<AttrChunk> {
 							if (!(java.lang.Character.isDigit(text.charAt(j)) || (text.charAt(j) == '.' && charType == CharacterType.RealNumeric)
 
 							|| (j == i + 2 && text.charAt(j) == '-')))
-								throw new AttributeParseException(AttributeParseError.EAP_BADATTR_SYMBOL, j - nHidden);
+								throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, j - nHidden);
 							if (startPos < 0)
 								startPos = j;
 							if (text.charAt(j) == '.') {
 								if (hadDecimal)
-									throw new AttributeParseException(AttributeParseError.EAP_BADATTR_SYMBOL, j - nHidden);
+									throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, j - nHidden);
 								else
 									hadDecimal = true;
 							}
 						}
 						if (startPos < 0 || j == text.length())
-							throw new AttributeParseException(AttributeParseError.EAP_BADATTR_SYMBOL, startPos - nHidden);
+							throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, startPos - nHidden);
 						i = j;
 						BigDecimal exhiNumb = Utils.stringToBigDecimal(substring(text, startPos, i - startPos), new int[1]);
 						if (exhiNumb.compareTo(prevNumb) < 0) {
-							throw new AttributeParseException(AttributeParseError.EAP_BAD_NUMERIC_ORDER, startPos - nHidden);
+							throw DirectiveError.asException(DirectiveError.Error.VALUE_OUT_OF_ORDER, startPos - nHidden);
 						}
 						insert(end(), new AttrChunk(ChunkType.CHUNK_EXHI_NUMBER, exhiNumb));
 						prevNumb = exhiNumb;
 					} else // Ought to be the start of an extreme low value
 					{
 						if (parseState != ParseState.NOWHERE || hadExLo || numbCount > 0)
-							throw new AttributeParseException(AttributeParseError.EAP_BADATTR_SYMBOL, i - nHidden);
+							throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i - nHidden);
 						startPos = -1;
 						for (j = i + 1; j < text.length() - 1 && (text.charAt(j) != Delimiters.STATERANGE || j == i + 1); ++j) {
 							if (!(java.lang.Character.isDigit(text.charAt(j)) || (text.charAt(j) == '.' && charType == CharacterType.RealNumeric) || (j == i + 1 && text.charAt(j) == '-')))
-								throw new AttributeParseException(AttributeParseError.EAP_BADATTR_SYMBOL, j - nHidden);
+								throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, j - nHidden);
 							if (startPos < 0)
 								startPos = j;
 							if (text.charAt(j) == '.') {
 								if (hadDecimal)
-									throw new AttributeParseException(AttributeParseError.EAP_BADATTR_SYMBOL, j - nHidden);
+									throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, j - nHidden);
 								else
 									hadDecimal = true;
 							}
 						}
 						if (startPos < 0 || j == text.length() - 1 || text.charAt(j + 1) != ')')
-							throw new AttributeParseException(AttributeParseError.EAP_BADATTR_SYMBOL, startPos - nHidden);
+							throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, startPos - nHidden);
 						i = j + 1;
 						BigDecimal exloNumb = Utils.stringToBigDecimal(substring(text, startPos, i - startPos - 1), new int[1]);
 						insert(end(), new AttrChunk(ChunkType.CHUNK_EXLO_NUMBER, exloNumb));
@@ -477,9 +455,9 @@ public class Attribute implements Iterable<AttrChunk> {
 						inserted = false;
 					}
 				} else if (ch == '\\' && !isIntkey)
-					throw new AttributeParseException(AttributeParseError.EAP_BAD_RTF, i - nHidden);
+					throw DirectiveError.asException(DirectiveError.Error.INVALID_RTF, i - nHidden);
 				else
-					throw new AttributeParseException(AttributeParseError.EAP_BADATTR_SYMBOL, i - nHidden);
+					throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i - nHidden);
 
 				if (commentLevel == 0)
 					onlyText = false;
@@ -488,7 +466,7 @@ public class Attribute implements Iterable<AttrChunk> {
 			} else if (ch == Delimiters.CLOSEBRACK && --commentLevel == 0 && i - textStart > 1) // Save text if length > 0
 			{
 				if (bracketLevel != 0)
-					throw new AttributeParseException(AttributeParseError.EAP_BAD_RTF_BRACKET, i - nHidden);
+					throw DirectiveError.asException(DirectiveError.Error.UNMATCHED_RTF_BRACKETS, i - nHidden);
 				// The "+1" and "-1" strip off the outermost pair of brackets.
 				int start = textStart + 1;
 				int finish = i - 1;
@@ -533,7 +511,7 @@ public class Attribute implements Iterable<AttrChunk> {
 		}
 
 		if (commentLevel > 0)
-			throw new AttributeParseException(AttributeParseError.EAP_MISSING_CLOSEBRACK, i - nHidden);
+			throw DirectiveError.asException(DirectiveError.Error.CLOSING_BRACKET_MISSING, i - nHidden);
 
 		if (!inserted && !onlyText) {
 			switch (parseState) {
@@ -553,24 +531,29 @@ public class Attribute implements Iterable<AttrChunk> {
 				if (charType.isNumeric()) {
 					BigDecimal aNumb = Utils.stringToBigDecimal(substring(text, startPos, i - startPos + 1), new int[1]);
 					if (aNumb.compareTo(prevNumb) < 0) {
-						throw new AttributeParseException(AttributeParseError.EAP_BAD_NUMERIC_ORDER, startPos - nHidden);
+						throw DirectiveError.asException(DirectiveError.Error.VALUE_OUT_OF_ORDER, startPos - nHidden);
 					}
 					insert(end(), new AttrChunk(aNumb));
 					prevNumb = aNumb;
 				} else if (charType.isMultistate()) {
 					int stateNo = Utils.strtol((substring(text, startPos, i - startPos + 1)));
 					int stateId = stateNo;
-					if (stateId <= 0)
-						throw new AttributeParseException(AttributeParseError.EAP_BAD_STATE_NUMBER, startPos - nHidden);
+					if (stateId <= 0) {
+						throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i - nHidden);
+					}
+					int numStates = ((MultiStateCharacter)_character).getNumberOfStates();
+					if (stateId > numStates) {
+						throw DirectiveError.asException(DirectiveError.Error.STATE_NUMBER_GREATER_THAN_MAX, startPos - nHidden, numStates);
+					}
 					if (isExclusive && hadState)
-						throw new AttributeParseException(AttributeParseError.EAP_EXCLUSIVE_ERROR, startPos - nHidden);
+						throw DirectiveError.asException(DirectiveError.Error.EXCLUSIVE_ERROR, startPos - nHidden);
 					insert(end(), new AttrChunk(ChunkType.CHUNK_STATE, stateId));
 					hadState = true;
 				}
 				break;
 
 			default:
-				throw new AttributeParseException(AttributeParseError.EAP_BADATTR_SYMBOL, i - nHidden);
+				throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i - nHidden);
 			}
 		}
 	}

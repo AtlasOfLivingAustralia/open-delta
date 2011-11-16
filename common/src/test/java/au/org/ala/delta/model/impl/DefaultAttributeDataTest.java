@@ -30,7 +30,7 @@ public class DefaultAttributeDataTest extends TestCase {
 	 * Tests a single range with all possible values specified.
 	 */
 	@Test
-	public void testGetNumericValue() {	
+	public void testGetNumericValue() throws Exception {	
 		List<NumericRange> values = rangesFor("(1-)2-3-4(-5)");
 		assertEquals(1, values.size());
 		
@@ -42,7 +42,7 @@ public class DefaultAttributeDataTest extends TestCase {
 	 * Tests multiple ranges with only a single value specified in each.
 	 */
 	@Test
-	public void testMultipleRanges() {	
+	public void testMultipleRanges() throws Exception {	
 		List<NumericRange> values = rangesFor("1/2&3");
 		assertEquals(3, values.size());
 		
@@ -55,7 +55,7 @@ public class DefaultAttributeDataTest extends TestCase {
 	}
 	
 	@Test
-	public void testNoExtremes() {
+	public void testNoExtremes() throws Exception {
 		List<NumericRange> values = rangesFor("1-2-3");
 		assertEquals(1, values.size());
 		NumericRange range = values.get(0);
@@ -85,7 +85,7 @@ public class DefaultAttributeDataTest extends TestCase {
 	}
 	
 	
-	private List<NumericRange> rangesFor(String attribute) {
+	private List<NumericRange> rangesFor(String attribute) throws Exception {
 		DefaultAttributeData data = new DefaultAttributeData(_dataSet.getCharacter(1));
 		data.setValueFromString(attribute);
 		

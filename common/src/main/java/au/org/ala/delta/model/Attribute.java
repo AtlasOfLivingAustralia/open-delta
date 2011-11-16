@@ -18,6 +18,7 @@ package au.org.ala.delta.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import au.org.ala.delta.directives.validation.DirectiveException;
 import au.org.ala.delta.model.impl.AttributeData;
 import au.org.ala.delta.model.observer.AttributeObserver;
 
@@ -138,7 +139,7 @@ public abstract class Attribute {
         return _impl.getValueAsString();
     }
 
-    public void setValueFromString(String value) {
+    public void setValueFromString(String value) throws DirectiveException {
         _impl.setValueFromString(value);
         notifyObservers();
     }

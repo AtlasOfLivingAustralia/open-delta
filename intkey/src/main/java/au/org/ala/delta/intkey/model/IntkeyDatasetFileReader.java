@@ -14,6 +14,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.FloatRange;
 import org.apache.commons.lang.math.IntRange;
 
+import au.org.ala.delta.directives.validation.DirectiveException;
 import au.org.ala.delta.io.BinFile;
 import au.org.ala.delta.io.BinFileEncoding;
 import au.org.ala.delta.io.BinFileMode;
@@ -1242,7 +1243,12 @@ public final class IntkeyDatasetFileReader {
                 boolean unknown = StringUtils.isEmpty(txt);
 
                 TextAttribute txtAttr = new TextAttribute(textChar, new SimpleAttributeData(unknown, inapplicable));
-                txtAttr.setText(txt);
+                try {
+                	txtAttr.setText(txt);
+                }
+                catch (DirectiveException e) {
+                	// The SimpleAttributeData implementation won't throw this Exception.
+                }
                 txtAttr.setItem(t);
 
                 retList.add(txtAttr);

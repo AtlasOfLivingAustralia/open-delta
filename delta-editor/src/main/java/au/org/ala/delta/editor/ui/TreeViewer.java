@@ -54,6 +54,7 @@ import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 
+import au.org.ala.delta.directives.validation.DirectiveException;
 import au.org.ala.delta.editor.EditorPreferences;
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.ui.util.EditorUIUtils;
@@ -662,7 +663,12 @@ class CharacterTreeModel extends DefaultTreeModel implements SearchableModel<Cha
         } else {
             CharStateHolder holder = (CharStateHolder) aNode.getUserObject();
             Attribute attribute = item.getAttribute(holder.getCharacter());
-            attribute.setValueFromString((String) newValue);
+            try {
+            	attribute.setValueFromString((String) newValue);
+            }
+            catch (DirectiveException e) {
+            	// The slot file attribute won't actually throw this exception.
+            }
         }
 
         nodeChanged(aNode);

@@ -13,11 +13,10 @@ import au.org.ala.delta.DataSetBuilder;
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DefaultDataSetFactory;
-import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.model.IdentificationKeyCharacter;
 import au.org.ala.delta.model.MultiStateCharacter;
+import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.model.impl.DefaultDataSet;
-import au.org.ala.delta.translation.FormatterFactory;
 import au.org.ala.delta.translation.attribute.AttributeTranslatorFactory;
 import au.org.ala.delta.translation.key.KeyStateTranslator;
 
@@ -28,7 +27,7 @@ public class KeyStateTranslatorTest extends TestCase {
 	private MutableDeltaDataSet _dataSet;
 	
 	@Before
-	public void setUp() {
+	public void setUp() throws Exception {
 		DefaultDataSetFactory factory = new DefaultDataSetFactory();
 		_dataSet = (DefaultDataSet)factory.createDataSet("test");
 		_context = new DeltaContext(_dataSet);

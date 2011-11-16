@@ -22,6 +22,7 @@ import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.directives.args.DirectiveArguments;
+import au.org.ala.delta.directives.validation.DirectiveException;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
@@ -124,8 +125,12 @@ class ItemsParser extends AbstractStreamParser {
 			
 			Attribute attribute = getContext().getDataSet().addAttribute(item.getItemNumber(), ch.getCharacterId());
 			
-			attribute.setValueFromString(cleanWhiteSpace(value.toString().trim()));
-			
+			try {
+				attribute.setValueFromString(cleanWhiteSpace(value.toString().trim()));
+			}
+			catch (DirectiveException e) {
+				getContext().addError(e.getError());
+			}
 			getContext().getMatrix().setValue(charIdx, itemIndex, stateValue);
 		
 			skipWhitespace();
