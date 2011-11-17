@@ -2,7 +2,6 @@ package au.org.ala.delta.translation;
 
 import java.text.ParseException;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -157,9 +156,7 @@ public class FormattedTextTypeSetter extends PlainTextTypeSetter {
 		if (_context.isFeatureEmphasized(character.getCharacterId())) {
 			writeTypeSettingMark(MarkPosition.BEFORE_EMPHASIZED_FEATURE);
 		}
-		if (isFeatureEmphazised(character.getCharacterId(), item.getItemNumber())) {
-			writeTypeSettingMark(MarkPosition.BEFORE_EMPHASIZED_CHARACTER);
-		}
+		
 	}
 
 	@Override
@@ -167,22 +164,16 @@ public class FormattedTextTypeSetter extends PlainTextTypeSetter {
 		if (_context.isFeatureEmphasized(character.getCharacterId())) {
 			writeTypeSettingMark(MarkPosition.AFTER_EMPHASIZED_FEATURE);
 		}
-		if (isFeatureEmphazised(character.getCharacterId(), item.getItemNumber())) {
-			writeTypeSettingMark(MarkPosition.AFTER_EMPHASIZED_CHARACTER);
-		}
 	}
 	
-	private boolean isFeatureEmphazised(int charNum, int itemNum) {
-		Set<Integer> linkedChars = _context.getLinkedCharacters(charNum);
-		if (linkedChars == null) {
-			return isEmphasized(charNum, itemNum);
-		}
-		for (int linkedCharNum : linkedChars) {
-			if (isEmphasized(linkedCharNum, itemNum)) {
-				return true;
-			}
-		}
-		return false;
+	@Override
+	public void beforeEmphasizedCharacter() {
+		writeTypeSettingMark(MarkPosition.BEFORE_EMPHASIZED_CHARACTER);
+	}
+	
+	@Override
+	public void afterEmphasizedCharacter() {
+		writeTypeSettingMark(MarkPosition.AFTER_EMPHASIZED_CHARACTER);
 	}
 	
 	@Override

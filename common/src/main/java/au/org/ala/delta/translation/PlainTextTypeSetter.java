@@ -82,6 +82,11 @@ public class PlainTextTypeSetter implements ItemListTypeSetter {
 
 	@Override
 	public void afterCharacterDescription(Character character, Item item) {}
-	
+
+	@Override
+	public void beforeEmphasizedCharacter() {}
+
+	@Override
+	public void afterEmphasizedCharacter() {}
 	
 }

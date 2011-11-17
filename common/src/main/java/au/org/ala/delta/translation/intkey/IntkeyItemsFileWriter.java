@@ -462,7 +462,7 @@ public class IntkeyItemsFileWriter {
 			}
 			Range useRange;
 			float min = Float.MAX_VALUE;
-			float max = -Float.MIN_VALUE;
+			float max = -Float.MAX_VALUE;
 			for (NumericRange range : ranges) {
 				if (_context.hasAbsoluteError(unfilteredCharNumber)) {
 					range.setAbsoluteError(_context.getAbsoluteError(unfilteredCharNumber));
@@ -480,6 +480,7 @@ public class IntkeyItemsFileWriter {
 				max = Math.max(max, useRange.getMaximumFloat());
 				
 			}
+			
 			FloatRange floatRange = new FloatRange(min, max);
 			values.add(floatRange);
 		}

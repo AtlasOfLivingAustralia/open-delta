@@ -70,7 +70,7 @@ public class HtmlNaturalLanguageTranslator extends NaturalLanguageTranslator {
 		Character character = _dataSet.getCharacter(_charForTaxonImages);
 		List<Image> images = item.getImages();
 		if (!images.isEmpty()) {
-			writeItemSubheading(_context.getItemSubheading(character.getCharacterId()));
+			writeItemSubheading(character, _context.getItemSubheading(character.getCharacterId()));
 			writeImages(images);
 		}
 	}

@@ -43,7 +43,7 @@ public class NaturalLanguageTranslator extends AbstractIterativeTranslator {
     private AttributeParser _attributeParser;
     
     /** Tracks the item subheadings that have been output */
-    private int _lastItemSubheadingChecked;
+    private int _lastItemSubheadingWritten;
     /** Tracks the last character checked for a start of paragraph marker */
     private int _lastNewParagraphCharacterChecked;
     
@@ -64,7 +64,7 @@ public class NaturalLanguageTranslator extends AbstractIterativeTranslator {
         _attributeFormatter = attributeFormatter;
         _attributeTranslatorFactory = new AttributeTranslatorFactory(
         		context, _characterFormatter, _attributeFormatter, _typeSetter);
-        _lastItemSubheadingChecked = 0;
+        _lastItemSubheadingWritten = 0;
         _lastNewParagraphCharacterChecked = 0;
         _attributeParser = new AttributeParser();
         
@@ -91,7 +91,7 @@ public class NaturalLanguageTranslator extends AbstractIterativeTranslator {
     public void afterItem(Item item) {
        finishWritingAttributes(item);
         _typeSetter.afterItem(item);
-        _lastItemSubheadingChecked = 0;
+        _lastItemSubheadingWritten = 0;
         _lastNewParagraphCharacterChecked = 0;
     }
     
@@ -143,16 +143,17 @@ public class NaturalLanguageTranslator extends AbstractIterativeTranslator {
     
     /**
      * Returns most recently encountered item subheading that has not 
-     * yet been written.
+     * with character number above a supplied character.
      * @param charNumber the number of the character being processed.
+     * @param toChar the character to stop the check at.
      */
-    private String getItemSubHeading(int charNumber) {
+    private String getItemSubHeading(int charNumber, int toChar) {
     	String itemSubHeading = "";
-    	while (charNumber > _lastItemSubheadingChecked && StringUtils.isBlank(itemSubHeading)) {
+    	while (charNumber > toChar && StringUtils.isBlank(itemSubHeading)) {
     		itemSubHeading = _context.getItemSubheading(charNumber);
     		charNumber--;
     	}
-    	_lastItemSubheadingChecked = charNumber+1;
+    	
     	return itemSubHeading;
     }
 
@@ -287,6 +288,8 @@ public class NaturalLanguageTranslator extends AbstractIterativeTranslator {
     	Character first = characters.get(0);
 	    checkForNewParagraph(first.getCharacterId());
 	    
+	    Set<Character> featuresToEmphasize = getEmphasizedFeatures(item, characters);
+	    
 	    boolean characterInSetOutput = false;
         for (Character character : characters) {
             
@@ -298,7 +301,7 @@ public class NaturalLanguageTranslator extends AbstractIterativeTranslator {
             // comments are ommitted).
             if (StringUtils.isNotBlank(translatedAttribute)) {
             	
-            	String itemSubheading = getItemSubHeading(character.getCharacterId());
+            	String itemSubheading = getItemSubHeading(character.getCharacterId(), _lastItemSubheadingWritten);
         		
             	// Even if we are are part of a linked set of characters, an
             	// item subheading can break up the text. 
@@ -311,7 +314,8 @@ public class NaturalLanguageTranslator extends AbstractIterativeTranslator {
                 if (subsequentPartOfLinkedSet) {
                     description = removeCommonPrefix(firstDescription, description);
                 }
-            	writeFeature(character, item, description, subsequentPartOfLinkedSet, itemSubheading);
+                boolean emphasize = featuresToEmphasize.contains(character);
+            	writeFeature(character, item, description, emphasize, subsequentPartOfLinkedSet, itemSubheading);
 	            writeCharacterAttribute(attribute, translatedAttribute);
 	            
 	            characterInSetOutput = true;
@@ -319,8 +323,65 @@ public class NaturalLanguageTranslator extends AbstractIterativeTranslator {
         }
     }
     
-   
     /**
+     * Returns the characters in the supplied list that should be emphasized
+     * due to an EMPHASIZE CHARACTERS directive.  A character can be emphasized
+     * if a subsequent character in the set is emphasized but is missing a 
+     * feature description due to the behaviour of the LINK CHARACTERS 
+     * directive. (ommiting common feature descriptions in a sentence composed
+     * of LINKed CHARACTERS).
+     * @param item the item to be output.
+     * @param characters the characters in the sentence.
+     * @return a Set containing the Characters that require emphasis.
+     */
+    private Set<Character> getEmphasizedFeatures(Item item, List<Character> characters) {
+    	
+    	Character firstChar = null;
+    	Set<Character> emphasizedChars = new HashSet<Character>();
+    	int itemNum = item.getItemNumber();
+    	int lastSubHeading = _lastItemSubheadingWritten;
+    	boolean firstOfSet = true;
+    	for (Character character : characters) {
+            
+            Attribute attribute = item.getAttribute(character);
+            String translatedAttribute = translateAttribute(attribute);
+
+            // It's possible that attributes, even if present, will not produce
+            // any translated output (e.g. if they are just comments and
+            // comments are ommitted).
+            if (StringUtils.isNotBlank(translatedAttribute)) {
+            	
+            	String itemSubheading = getItemSubHeading(character.getCharacterId(), lastSubHeading);
+            	if (StringUtils.isNotBlank(itemSubheading)) {
+            		lastSubHeading = character.getCharacterId();
+            		firstOfSet = true;
+            	}
+        		
+                if (!firstOfSet) {
+                	String description = _characterFormatter.formatCharacterDescription(character);
+                    String firstDescription = _characterFormatter.formatCharacterDescription(characters.get(0));
+                    
+                    description = removeCommonPrefix(firstDescription, description);
+                    if (StringUtils.isEmpty(description)) {
+                    	if (_context.isCharacterEmphasized(itemNum, character.getCharacterId())) {
+                    		emphasizedChars.add(firstChar);
+                    	}
+                    }
+                }
+                else {
+                	firstChar = character;
+                	if (_context.isCharacterEmphasized(itemNum, character.getCharacterId())) {
+                		emphasizedChars.add(character);
+                	}
+                	firstOfSet = false;
+                }
+            }
+        }
+        return emphasizedChars;
+	}
+
+
+	/**
      * Goes through the characters since the last attribute output and checks
      * if any of them were marked by the NEW PARAGRAPH AT CHARACTERS 
      * directive. (This is necessary as a flagged character may have been
@@ -400,16 +461,16 @@ public class NaturalLanguageTranslator extends AbstractIterativeTranslator {
     private boolean _characterOutputSinceLastPuntuation;
 
     private void writeFeature(Character character, Item item, String description,
-            boolean subsequentPartOfLinkedSet, String itemSubHeading) {
+            boolean emphasize, boolean subsequentPartOfLinkedSet, String itemSubHeading) {
 
-        writeItemSubheading(itemSubHeading);
+        writeItemSubheading(character, itemSubHeading);
        
         int characterNumber = character.getCharacterId();
         if (!_context.omitCharacterNumbers()) {
             _printer.writeJustifiedText("(" + characterNumber + ")", -1);
         }
 
-        writeCharacterDescription(character, item, description, subsequentPartOfLinkedSet);
+        writeCharacterDescription(character, item, description, emphasize, subsequentPartOfLinkedSet);
 
         _previousCharInSentence = characterNumber;
 
@@ -451,8 +512,9 @@ public class NaturalLanguageTranslator extends AbstractIterativeTranslator {
         }
 	}
 
-	protected void writeCharacterDescription(Character character, Item item, String description,
-			boolean subsequentPartOfLinkedSet) {
+	protected void writeCharacterDescription(
+			Character character, Item item, String description, 
+			 boolean emphasize, boolean subsequentPartOfLinkedSet) {
 		// The character description is commonly empty when writing linked
 		// characters.
 		
@@ -461,20 +523,33 @@ public class NaturalLanguageTranslator extends AbstractIterativeTranslator {
         if ((_previousCharInSentence == 0) || (!subsequentPartOfLinkedSet && _lastCharacterOutput < _previousCharInSentence)) {
             _printer.capitaliseNextWord();
         }
+        
 		if (StringUtils.isNotEmpty(description)) {
 			_typeSetter.beforeCharacterDescription(character, item);
-	
+			if (emphasize) {
+				_typeSetter.beforeEmphasizedCharacter();
+			}
 	        writeSentence(description, -1);
-	
+	        if (emphasize) {
+	        	_typeSetter.afterEmphasizedCharacter();
+	        }
 	        _typeSetter.afterCharacterDescription(character, item);
+		}
+		else {
+			// This is a bit silly but CONFOR does it so it makes my testing
+			// slightly easier....
+			//_typeSetter.beforeEmphasizedCharacter();
+			//_typeSetter.afterEmphasizedCharacter();
 		}
 	}
 
-	protected void writeItemSubheading(String itemSubheading) {
+	protected void writeItemSubheading(Character character, String itemSubheading) {
 		
 		itemSubheading = _characterFormatter.defaultFormat(itemSubheading);
         
 		if (StringUtils.isNotEmpty(itemSubheading)) {
+			_lastItemSubheadingWritten = character.getCharacterId();
+			
             _printer.insertTypeSettingMarks(32);
             writeSentence(itemSubheading, 0);
 

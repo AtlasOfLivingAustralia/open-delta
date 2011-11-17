@@ -61,7 +61,9 @@ public abstract class AbstractObservableDataSet implements ObservableDeltaDataSe
     @Override
     public Item getItem(int number) {
         Item item = doGetItem(number);
-        item.addItemObserver(this);
+        if (item != null) {
+        	item.addItemObserver(this);
+        }
         return item;
     }
 

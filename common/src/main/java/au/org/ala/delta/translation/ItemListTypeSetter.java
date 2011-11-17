@@ -40,4 +40,9 @@ public interface ItemListTypeSetter {
 	public abstract void beforeCharacterDescription(Character character, Item item);
 
 	public abstract void afterCharacterDescription(Character character, Item item);
+	
+	public abstract void beforeEmphasizedCharacter();
+	
+	public abstract void afterEmphasizedCharacter();
+	
 }
