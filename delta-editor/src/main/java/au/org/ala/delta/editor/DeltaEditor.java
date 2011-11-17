@@ -24,7 +24,6 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.beans.PropertyVetoException;
 import java.io.File;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.EventObject;
@@ -50,7 +49,6 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
-import org.apache.commons.io.FileUtils;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ProxyActions;
@@ -59,12 +57,10 @@ import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.Task;
 import org.jdesktop.application.Task.BlockingScope;
 
-import au.org.ala.delta.Logger;
-import au.org.ala.delta.editor.directives.DirectiveFileInfo;
+import au.org.ala.delta.editor.directives.DirectiveFilesInitialiser;
 import au.org.ala.delta.editor.directives.ExportController;
 import au.org.ala.delta.editor.directives.ImportController;
 import au.org.ala.delta.editor.model.EditorDataModel;
-import au.org.ala.delta.editor.slotfile.model.DirectiveFile.DirectiveType;
 import au.org.ala.delta.editor.slotfile.model.SlotFileRepository;
 import au.org.ala.delta.editor.support.InternalFrameApplication;
 import au.org.ala.delta.editor.ui.StatusBar;
@@ -848,58 +844,12 @@ public class DeltaEditor extends InternalFrameApplication implements PreferenceC
 
 		_activeController = createController(dataSet);
 
-		initialiseNewDataSet(_activeController.getModel());
+		DirectiveFilesInitialiser initialiser = new DirectiveFilesInitialiser(this, _activeController.getModel()); 
+		initialiser.importDirectiveFileTemplates();
 
 		newTree();
 	}
 
-	/**
-	 * Populates the VOP with the set of template directives files that are distributed with the DELTA suite. These templates take the form of _<type>_<filename> where type can be one of "c" (confor),
-	 * "i" (intkey), "k" (key) or "d" (dist).
-	 */
-	private void initialiseNewDataSet(EditorDataModel dataSet) {
-
-		String[] templates = { "_c_cimages", "_c_markrtf", "_c_timages", "_c_tonatr", "_i_intkey.ink", "_c_cnotes", "_c_ofiles", "_c_todis", "_c_tonatsr", "_i_toolbar.inp", "_c_headc", "_c_ofonts",
-				"_c_toint", "_c_tonex", "_k_key5", "_c_layout", "_c_printch", "_c_tokey", "_c_uncoded", "_k_key5a", "_c_markhtm", "_c_printcr", "_c_tonath", "_d_dist" };
-		File tmp = new File(System.getProperty("java.io.tmpdir"));
-		List<DirectiveFileInfo> toImport = new ArrayList<DirectiveFileInfo>();
-		for (String template : templates) {
-
-			DirectiveType type = null;
-			if (template.startsWith("_")) {
-				switch (template.charAt(1)) {
-				case 'c':
-					type = DirectiveType.CONFOR;
-					break;
-				case 'i':
-					type = DirectiveType.INTKEY;
-					break;
-				case 'k':
-					type = DirectiveType.KEY;
-					break;
-				case 'd':
-					type = DirectiveType.DIST;
-					break;
-				default:
-					continue;
-				}
-
-				String name = template.substring(3);
-
-				File templateFile = new File(tmp, template);
-				InputStream templateStream = getClass().getResourceAsStream("/templates/" + template);
-				try {
-					FileUtils.copyInputStreamToFile(templateStream, templateFile);
-					toImport.add(new DirectiveFileInfo(name, template, type));
-				} catch (Exception e) {
-					Logger.error("Unable to import template: %s", template);
-				}
-			}
-		}
-
-		ImportController controller = new ImportController(this, dataSet);
-		controller.doSilentImport(tmp, toImport);
-	}
 
 	@Action(enabledProperty = "saveAsEnabled")
 	public void closeFile() {
