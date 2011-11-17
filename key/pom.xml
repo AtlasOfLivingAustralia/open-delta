@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>au.org.ala.delta</groupId>
 	<artifactId>key</artifactId>
-	<version>1.0-M9</version>
+	<version>1.0-BETA-SNAPSHOT</version>
 	<name>KEY</name>
 
 	<scm>
