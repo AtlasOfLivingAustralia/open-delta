@@ -163,7 +163,7 @@
 									<outfile>target/DELFOR.exe</outfile>
 									<jar>lib/${project.build.finalName}.jar</jar>
 									<errTitle>Error</errTitle>
-									<icon>installer/resources/Delta_DIST.ico</icon>
+									<icon>installer/resources/Delta_DELFOR.ico</icon>
 									<jre>
 										<path>jre</path>
 									</jre>
@@ -181,7 +181,7 @@
 									<outfile>target/DELFOR-NOJRE.exe</outfile>
 									<jar>lib/${project.build.finalName}.jar</jar>
 									<errTitle>Error</errTitle>
-									<icon>installer/resources/Delta_DIST.ico</icon>
+									<icon>installer/resources/Delta_DELFOR.ico</icon>
 									<jre>
 										<minVersion>1.6.0_10</minVersion>
 									</jre>
