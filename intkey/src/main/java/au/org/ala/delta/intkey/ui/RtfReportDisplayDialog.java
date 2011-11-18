@@ -60,12 +60,12 @@ public class RtfReportDisplayDialog extends IntkeyDialog {
      * @wbp.parser.constructor
      */
     public RtfReportDisplayDialog(Dialog owner, EditorKit editorKit, String contentSource, String title) {
-        super(owner, false);
+        super(owner, false, true);
         initialize(editorKit, contentSource, title);
     }
 
     public RtfReportDisplayDialog(Frame owner, EditorKit editorKit, String contentSource, String title) {
-        super(owner, false);
+        super(owner, false, true);
         initialize(editorKit, contentSource, title);
     }
 

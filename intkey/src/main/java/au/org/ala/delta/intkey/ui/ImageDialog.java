@@ -110,7 +110,7 @@ public class ImageDialog extends IntkeyDialog implements OverlaySelectionObserve
      *            scaled.
      */
     public ImageDialog(Frame owner, ImageSettings imageSettings, boolean modal, boolean imagesStartScaled) {
-        super(owner, modal);
+        super(owner, modal, true);
         init(imageSettings, imagesStartScaled);
     }
 
@@ -129,7 +129,7 @@ public class ImageDialog extends IntkeyDialog implements OverlaySelectionObserve
      *            scaled.
      */
     public ImageDialog(Dialog owner, ImageSettings imageSettings, boolean modal, boolean imagesStartScaled) {
-        super(owner, modal);
+        super(owner, modal, true);
         init(imageSettings, imagesStartScaled);
     }
 

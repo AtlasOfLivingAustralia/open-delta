@@ -12,18 +12,31 @@ public class IntkeyDialog extends JDialog {
      */
     private static final long serialVersionUID = -2611321681800876175L;
     
-    public IntkeyDialog(Frame owner, boolean modal) {
+    public IntkeyDialog(Frame owner, boolean modal, boolean registerDialog) {
         super(owner, modal);
-        init();
-    }
-
-    public IntkeyDialog(Dialog owner, boolean modal) {
-        super(owner, modal);
-        init();
+        init(registerDialog);
     }
     
-    private void init() {
+    public IntkeyDialog(Frame owner, boolean modal) {
+        super(owner, modal);
+        init(false);
+    }
+
+    public IntkeyDialog(Dialog owner, boolean modal, boolean registerDialog) {
+        super(owner, modal);
+        init(registerDialog);
+    }
+    
+    public IntkeyDialog(Dialog owner, boolean modal) {
+        super(owner, modal);
+        init(false);
+    }
+    
+    private void init(boolean registerDialog) {
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        if (registerDialog) {
+        	IntKeyDialogController.registerDialog(this);
+        }
     }
         
     @Override
