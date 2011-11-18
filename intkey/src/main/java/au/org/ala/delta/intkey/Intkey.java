@@ -8,6 +8,8 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Insets;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -51,6 +53,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
@@ -178,6 +181,7 @@ import au.org.ala.delta.intkey.ui.FindInCharactersDialog;
 import au.org.ala.delta.intkey.ui.FindInTaxaDialog;
 import au.org.ala.delta.intkey.ui.ImageDialog;
 import au.org.ala.delta.intkey.ui.ImageUtils;
+import au.org.ala.delta.intkey.ui.IntKeyDialogController;
 import au.org.ala.delta.intkey.ui.IntegerInputDialog;
 import au.org.ala.delta.intkey.ui.MenuBuilder;
 import au.org.ala.delta.intkey.ui.MultiStateInputDialog;
@@ -1155,19 +1159,19 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
         JMenuItem mnuItCascade = new JMenuItem();
         mnuItCascade.setAction(actionMap.get("mnuItCascadeWindows"));
-        mnuItCascade.setEnabled(false);
+        mnuItCascade.setEnabled(true);
         mnuWindow.add(mnuItCascade);
 
         JMenuItem mnuItTile = new JMenuItem();
         mnuItTile.setAction(actionMap.get("mnuItTileWindows"));
-        mnuItTile.setEnabled(false);
+        mnuItTile.setEnabled(true);
         mnuWindow.add(mnuItTile);
 
         mnuWindow.addSeparator();
 
         JMenuItem mnuItCloseAll = new JMenuItem();
         mnuItCloseAll.setAction(actionMap.get("mnuItCloseAllWindows"));
-        mnuItCloseAll.setEnabled(false);
+        mnuItCloseAll.setEnabled(true);
         mnuWindow.add(mnuItCloseAll);
 
         return mnuWindow;
@@ -1265,14 +1269,17 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     // ==============================
     @Action
     public void mnuItCascadeWindows() {
+    	IntKeyDialogController.cascadeWindows(this);
     }
 
     @Action
     public void mnuItTileWindows() {
+    	IntKeyDialogController.tileWindows(this);
     }
 
     @Action
     public void mnuItCloseAllWindows() {
+    	IntKeyDialogController.closeWindows(this);
     }
 
     // ====================== Help menu actions
@@ -2789,5 +2796,21 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         } catch (BackingStoreException e) {
             throw new RuntimeException(e);
         }
+    }
+    
+    public Rectangle getClientBounds() {
+    	Rectangle r = _rootSplitPane.getBounds();
+    	// Rectangle outer = getMainFrame().getBounds();
+    	// r.x = r.x + outer.x;
+    	// r.y = r.y + _pnlAvailableCharactersHeader.getHeight();
+    	Point p1 = new Point(0,0);
+    	SwingUtilities.convertPointToScreen(p1, _rootSplitPane);
+    	r.x = p1.x;
+    	r.y = p1.y + _pnlAvailableCharactersHeader.getHeight();
+    	r.height = r.height - _pnlAvailableCharactersHeader.getHeight();
+    	
+    	
+    	
+    	return r;
     }
 }
