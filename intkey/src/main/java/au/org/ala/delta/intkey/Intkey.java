@@ -1269,17 +1269,17 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     // ==============================
     @Action
     public void mnuItCascadeWindows() {
-    	IntKeyDialogController.cascadeWindows(this);
+    	IntKeyDialogController.cascadeWindows();
     }
 
     @Action
     public void mnuItTileWindows() {
-    	IntKeyDialogController.tileWindows(this);
+    	IntKeyDialogController.tileWindows();
     }
 
     @Action
     public void mnuItCloseAllWindows() {
-    	IntKeyDialogController.closeWindows(this);
+    	IntKeyDialogController.closeWindows();
     }
 
     // ====================== Help menu actions

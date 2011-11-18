@@ -1,14 +1,14 @@
 package au.org.ala.delta.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
+import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
@@ -20,11 +20,12 @@ import javax.swing.JRadioButton;
 import javax.swing.JRootPane;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
-import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
+
+import net.miginfocom.swing.MigLayout;
 
 import org.apache.commons.lang.StringUtils;
 import org.jdesktop.application.Application;
@@ -33,9 +34,6 @@ import org.jdesktop.application.SingleFrameApplication;
 
 import au.org.ala.delta.model.SearchDirection;
 import au.org.ala.delta.ui.util.UIUtils;
-import net.miginfocom.swing.MigLayout;
-import java.awt.Dimension;
-import javax.swing.BoxLayout;
 
 public class SearchDialog extends JDialog {
 
@@ -174,5 +172,9 @@ public class SearchDialog extends JDialog {
 			_controller.findNext(options);
 		}
 
+	}
+
+	public void setFindText(String findText) {
+		textField.setText(findText);
 	}
 }

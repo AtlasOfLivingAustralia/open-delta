@@ -12,6 +12,8 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
+import org.apache.commons.lang.StringUtils;
+
 import au.org.ala.delta.rtf.CharacterAttributeType;
 import au.org.ala.delta.rtf.CharacterKeyword;
 import au.org.ala.delta.rtf.Keyword;
@@ -52,8 +54,9 @@ public class RTFWriter {
 		_attributeHandlers.put(StyleConstants.Bold, new BooleanAttributeHandler(StyleConstants.Bold, CharacterAttributeType.Bold.keyword()));
 		_attributeHandlers.put(StyleConstants.Italic, new BooleanAttributeHandler(StyleConstants.Italic, CharacterAttributeType.Italics.keyword()));
 		_attributeHandlers.put(StyleConstants.Underline, new BooleanAttributeHandler(StyleConstants.Underline, CharacterAttributeType.Underline.keyword()));
-		_attributeHandlers.put(StyleConstants.Subscript, new BooleanAttributeHandler(StyleConstants.Subscript, CharacterAttributeType.Subscript.keyword()));
-		_attributeHandlers.put(StyleConstants.Superscript, new BooleanAttributeHandler(StyleConstants.Superscript, CharacterAttributeType.Superscript.keyword()));
+		_attributeHandlers.put(StyleConstants.Subscript, new BooleanAttributeHandler(StyleConstants.Subscript, CharacterAttributeType.Subscript.keyword(), CharacterAttributeType.NoSuperscriptOrSubscript.keyword()));
+		_attributeHandlers.put(StyleConstants.Superscript, new BooleanAttributeHandler(StyleConstants.Superscript, CharacterAttributeType.Superscript.keyword(), CharacterAttributeType.NoSuperscriptOrSubscript.keyword()));
+		
 		// _attributeHandlers.put(StyleConstants.FontSize, new FontSizeAttributeHandler(StyleConstants.FontSize, CharacterAttributeType.FontSize.keyword(), 11));
 		// _attributeHandlers.put(StyleConstants.FontFamily, new FontFamilyAttributeHandler(StyleConstants.FontFamily, CharacterAttributeType.Font.keyword()));
 	}
@@ -150,10 +153,20 @@ public class RTFWriter {
 	public class BooleanAttributeHandler extends AttributeHandler {
 
 		private Boolean _currentState;
-
+		private String _closeKeyword; // Keyword that closes off this attribute, defaults to <keyword>0
+		
 		public BooleanAttributeHandler(Object documentAttribute, String rtfKeyword) {
+			this(documentAttribute, rtfKeyword, null);
+		}
+
+		public BooleanAttributeHandler(Object documentAttribute, String rtfKeyword, String closeKeyword) {
 			super(documentAttribute, rtfKeyword);
 			_currentState = false;
+			if (StringUtils.isEmpty(closeKeyword)) {
+				_closeKeyword = String.format("\\%s0", rtfKeyword);
+			} else {
+				_closeKeyword = String.format("\\%s", closeKeyword);
+			}
 		}
 
 		@Override
@@ -163,10 +176,11 @@ public class RTFWriter {
 			if (attributeValue == null) {
 				attributeValue = Boolean.FALSE;
 			}
-			if (_currentState != attributeValue) {
-				_writer.write(_rtfKeyword);
+			if (_currentState != attributeValue) {				
 				if (Boolean.FALSE.equals(attributeValue)) {
-					_writer.write('0');
+					_writer.write(_closeKeyword);					
+				} else {
+					_writer.write(_rtfKeyword);	
 				}
 				_currentState = attributeValue.booleanValue();
 				handled = true;

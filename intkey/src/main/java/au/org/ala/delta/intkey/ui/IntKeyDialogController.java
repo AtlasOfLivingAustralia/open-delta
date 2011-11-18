@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.jdesktop.application.Application;
 
 import au.org.ala.delta.intkey.Intkey;
 
@@ -60,18 +61,24 @@ public class IntKeyDialogController {
 		return temp.toArray(new IntkeyDialog[] {});
 	}
 
-	public static void cascadeWindows(Intkey intkey) {
-		IntkeyDialog[] arr = getVisibleWindows();
-		ArrayUtils.reverse(arr);
-		au.org.ala.delta.ui.util.UIUtils.cascade(arr, intkey.getClientBounds(), 24);
+	public static void cascadeWindows() {
+		if (Application.getInstance() instanceof Intkey) {
+			Intkey intkey = (Intkey) Application.getInstance();
+			IntkeyDialog[] arr = getVisibleWindows();
+			ArrayUtils.reverse(arr);
+			au.org.ala.delta.ui.util.UIUtils.cascade(arr, intkey.getClientBounds(), 24);
+		}
 	}
 
-	public static void tileWindows(Intkey intkey) {
-		IntkeyDialog[] arr = getVisibleWindows();
-		au.org.ala.delta.ui.util.UIUtils.tileWindows(arr, intkey.getClientBounds(), false);
+	public static void tileWindows() {
+		if (Application.getInstance() instanceof Intkey) {
+			Intkey intkey = (Intkey) Application.getInstance();
+			IntkeyDialog[] arr = getVisibleWindows();
+			au.org.ala.delta.ui.util.UIUtils.tileWindows(arr, intkey.getClientBounds(), false);
+		}
 	}
 
-	public static void closeWindows(Intkey intkey) {
+	public static void closeWindows() {
 		IntkeyDialog[] arr = getVisibleWindows();
 		for (IntkeyDialog dlg : arr) {
 			dlg.setVisible(false);

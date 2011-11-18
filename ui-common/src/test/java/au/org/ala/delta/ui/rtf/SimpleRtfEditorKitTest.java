@@ -81,12 +81,12 @@ public class SimpleRtfEditorKitTest extends TestCase {
 		offset += WRITER_HEADER_TEXT.length();
 		assertEquals("\\super", documentAsString.substring(offset, offset+6));
 		assertEquals(" This is plain text. ", documentAsString.substring(offset+6, offset+27));
-		assertTrue(documentAsString.substring(offset+27, offset+44).contains("\\b"));
-		assertTrue(documentAsString.substring(offset+27, offset+44).contains("\\i"));
-		assertTrue(documentAsString.substring(offset+27, offset+44).contains("\\super0"));
-		assertEquals(" This is bold italic", documentAsString.substring(offset+44, offset+64));
-		assertTrue(documentAsString.substring(offset+64, documentAsString.length()).contains("\\i0"));
-		assertTrue(documentAsString.substring(offset+64, documentAsString.length()).contains("\\b0"));
+		assertTrue(documentAsString.substring(offset+27, offset+48).contains("\\b"));
+		assertTrue(documentAsString.substring(offset+27, offset+48).contains("\\i"));
+		assertTrue(documentAsString.substring(offset+27, offset+48).contains("\\nosupersub"));
+		assertEquals(" This is bold italic", documentAsString.substring(offset+48, offset+68));
+		assertTrue(documentAsString.substring(offset+68, documentAsString.length()).contains("\\i0"));
+		assertTrue(documentAsString.substring(offset+68, documentAsString.length()).contains("\\b0"));
 	}
 	
 	public void testUnicode() throws Exception {
