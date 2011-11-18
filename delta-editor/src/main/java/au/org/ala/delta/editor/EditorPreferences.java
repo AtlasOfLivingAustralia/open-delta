@@ -24,7 +24,7 @@ public class EditorPreferences {
 
 	private static String IMPORT_FILE_FILTER_KEY = "importFileFilter";
 	/** Default value for the import file filter */
-	private static String DEFAULT_IMPORT_FILE_FILTER = "*.bak;*.box;tidy*.;reorder*.";
+	private static String DEFAULT_IMPORT_FILE_FILTER = "*.bak;*.box;tidy*.;reorder*.;*.bmp;*.lst;*.prt;*.dlt";
 
 	public static String ADVANCE_MODE_KEY = "EditorAdvanceMode";
 
