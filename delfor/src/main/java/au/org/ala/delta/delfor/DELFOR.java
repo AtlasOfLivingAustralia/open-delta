@@ -3,17 +3,18 @@ package au.org.ala.delta.delfor;
 import java.io.File;
 
 import au.org.ala.delta.Logger;
+import au.org.ala.delta.delfor.format.FormattingAction;
 import au.org.ala.delta.directives.AbstractDeltaContext;
 import au.org.ala.delta.directives.AbstractDirective;
 import au.org.ala.delta.directives.DirectiveParserObserver;
 import au.org.ala.delta.directives.ParsingContext;
-import au.org.ala.delta.dist.DIST;
+import au.org.ala.delta.editor.slotfile.model.SlotFileDataSet;
 import au.org.ala.delta.editor.slotfile.model.SlotFileRepository;
-import au.org.ala.delta.model.AbstractObservableDataSet;
 
 public class DELFOR implements DirectiveParserObserver {
 
 	private DelforContext _context;
+	private SlotFileDataSet _dataSet;
 	
 	/**
 	 * @param args specifies the name of the input file to use.
@@ -33,7 +34,7 @@ public class DELFOR implements DirectiveParserObserver {
 			return;
 		}
 		
-		new DIST(f);
+		new DELFOR(f);
 	}
 	
 	private static File handleArgs(String[] args) throws Exception {
@@ -51,9 +52,8 @@ public class DELFOR implements DirectiveParserObserver {
 	public DELFOR(File input) throws Exception {
 		
 		SlotFileRepository dataSetRepository = new SlotFileRepository();
-		AbstractObservableDataSet dataSet = (AbstractObservableDataSet) dataSetRepository.newDataSet();
-
-		_context = new DelforContext(dataSet);
+		_dataSet = (SlotFileDataSet) dataSetRepository.newDataSet();
+		_context = new DelforContext(_dataSet);
 		
 		DelforDirectiveFileParser parser = DelforDirectiveFileParser.createInstance();
 		parser.registerObserver(this);
@@ -74,7 +74,12 @@ public class DELFOR implements DirectiveParserObserver {
 	}
 
 	@Override
-	public void preProcess(AbstractDirective<? extends AbstractDeltaContext> directive, String data) {}
+	public void preProcess(AbstractDirective<? extends AbstractDeltaContext> directive, String data) {
+		if (directive.getOrder() == 5) {
+			// We have receieved our instructions, time to start reformatting.
+			runFormattingActions();
+		}
+	}
 	
 	@Override
 	public void handleDirectiveProcessingException(AbstractDeltaContext context, AbstractDirective<? extends AbstractDeltaContext> d, Exception ex) {
@@ -95,4 +100,10 @@ public class DELFOR implements DirectiveParserObserver {
 	public void postProcess(AbstractDirective<? extends AbstractDeltaContext> directive) {}
 
 	public void finishedProcessing() {}
+	
+	private void runFormattingActions() {
+		for (FormattingAction action : _context.getFormattingActions()) {
+			action.format(_context, _dataSet);
+		}
+	}
 }

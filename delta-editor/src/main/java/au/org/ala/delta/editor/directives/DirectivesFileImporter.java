@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
+import org.apache.commons.io.IOUtils;
+
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.slotfile.Directive;
 import au.org.ala.delta.editor.slotfile.directive.ConforDirType;
@@ -26,10 +28,19 @@ public class DirectivesFileImporter {
 	}
 	
 	public boolean importDirectivesFile(DirectiveFileInfo fileInfo, File toImport, DirectiveImportHandler handler) throws IOException {
-		FileInputStream fileIn = new FileInputStream(toImport);
-		InputStreamReader reader = new InputStreamReader(fileIn, _context.getFileEncoding());
+		boolean result = false;
+		InputStreamReader reader = null;
+		try {
+			FileInputStream fileIn = new FileInputStream(toImport);
 		
-		return importDirectivesFile(fileInfo, reader, handler);
+			reader = new InputStreamReader(fileIn, _context.getFileEncoding());
+		
+		   result =  importDirectivesFile(fileInfo, reader, handler);
+		}
+		finally {
+			IOUtils.closeQuietly(reader);
+		}
+		return result;
 		
 	}
 	
@@ -74,6 +85,7 @@ public class DirectivesFileImporter {
 			_model.deleteDirectiveFile(directiveFile);
 			e.printStackTrace();
 		}
+		
 		return importer.success();
 	}
 

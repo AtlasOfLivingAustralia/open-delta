@@ -43,6 +43,7 @@ public class DirectivesFileFormatter {
 		files.add(directiveInfo);
 		
 		try {
+			
 			importer.importDirectivesFile(directiveInfo, file, new DirectiveImportHandlerAdapter());
 			
 			// do stuff based on the directives.
@@ -54,6 +55,7 @@ public class DirectivesFileFormatter {
 			exporter.writeDirectivesFile(directiveFile, state);
 		}
 		catch (IOException e) {
+			e.printStackTrace();
 			throw DirectiveError.asException(DirectiveError.Error.ALL_CHARACTERS_EXCLUDED, 0);
 		}
 		

@@ -20,7 +20,31 @@ import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.Logger;
-import au.org.ala.delta.directives.*;
+import au.org.ala.delta.delfor.directives.ControlPhrases;
+import au.org.ala.delta.delfor.directives.NewCharacterOrder;
+import au.org.ala.delta.delfor.directives.Reformat;
+import au.org.ala.delta.directives.AbstractDirective;
+import au.org.ala.delta.directives.CharacterTypes;
+import au.org.ala.delta.directives.ChineseFormat;
+import au.org.ala.delta.directives.Comment;
+import au.org.ala.delta.directives.DataBufferSize;
+import au.org.ala.delta.directives.DirectiveParser;
+import au.org.ala.delta.directives.ErrorFile;
+import au.org.ala.delta.directives.ExcludeCharacters;
+import au.org.ala.delta.directives.ExcludeItems;
+import au.org.ala.delta.directives.IncludeCharacters;
+import au.org.ala.delta.directives.IncludeItems;
+import au.org.ala.delta.directives.InputDeltaFile;
+import au.org.ala.delta.directives.InputFile;
+import au.org.ala.delta.directives.ListingFile;
+import au.org.ala.delta.directives.MandatoryCharacters;
+import au.org.ala.delta.directives.MaximumNumberOfItems;
+import au.org.ala.delta.directives.MaximumNumberOfStates;
+import au.org.ala.delta.directives.NumberOfCharacters;
+import au.org.ala.delta.directives.NumbersOfStates;
+import au.org.ala.delta.directives.OutputWidth;
+import au.org.ala.delta.directives.ParsingContext;
+import au.org.ala.delta.directives.Show;
 import au.org.ala.delta.directives.validation.DirectiveError;
 import au.org.ala.delta.directives.validation.DirectiveException;
 
@@ -44,132 +68,36 @@ public class DelforDirectiveFileParser extends DirectiveParser<DeltaContext> {
     public static DelforDirectiveFileParser createInstance() {
         DelforDirectiveFileParser instance = new DelforDirectiveFileParser();
         
-        instance.registerDirective(new AbsoluteError());
-        instance.registerDirective(new AddCharacters());
-        instance.registerDirective(new AlternateComma());
-        instance.registerDirective(new ApplicableCharacters());
-        
-        instance.registerDirective(new CharacterForOutputFiles());
-        instance.registerDirective(new CharacterForTaxonImages());
-        instance.registerDirective(new CharacterForTaxonNames());   
-        instance.registerDirective(new CharacterHeadings());
-        instance.registerDirective(new CharacterImages());
-        instance.registerDirective(new CharacterKeywordImages());
-        instance.registerDirective(new CharacterList());
-        instance.registerDirective(new CharacterNotes());
-        instance.registerDirective(new CharacterReliabilities());
-        instance.registerDirective(new CharactersForSynonymy());
         instance.registerDirective(new CharacterTypes());
-        instance.registerDirective(new CharacterWeights());
         instance.registerDirective(new ChineseFormat());
         instance.registerDirective(new Comment());
-        
+        instance.registerDirective(new ControlPhrases());
         instance.registerDirective(new DataBufferSize());
-        instance.registerDirective(new DataListing());        
-        instance.registerDirective(new DependentCharacters());
-        instance.registerDirective(new DisableDeltaOutput());
-        instance.registerDirective(new DistOutputFile());
-        
-        instance.registerDirective(new EmphasizeCharacters());
-        instance.registerDirective(new EmphasizeFeatures());
+       
         instance.registerDirective(new ErrorFile());
         instance.registerDirective(new ExcludeCharacters());
         instance.registerDirective(new ExcludeItems());
         
-        instance.registerDirective(new FormattingMarks());
-        
-        instance.registerDirective(new Heading());
-        
-        instance.registerDirective(new ImageDirectory());
-        instance.registerDirective(new ImplicitValues());
-        instance.registerDirective(new InapplicableCharacters());
         instance.registerDirective(new IncludeCharacters());
         instance.registerDirective(new IncludeItems());     
-        instance.registerDirective(new IndexHeadings());
-        instance.registerDirective(new IndexOutputFile());
-        instance.registerDirective(new IndexText());
         instance.registerDirective(new InputDeltaFile());
         instance.registerDirective(new InputFile());
-        instance.registerDirective(new InsertImplicitValues());
-        instance.registerDirective(new InsertRedundantVariantAttributes());       
-        instance.registerDirective(new IntkeyOutputFile());
-        instance.registerDirective(new ItemAbundances());
-        instance.registerDirective(new ItemDescriptions());
-        instance.registerDirective(new ItemHeadings());
-        instance.registerDirective(new ItemOutputFiles());
-        instance.registerDirective(new ItemSubHeadings());
-        instance.registerDirective(new ItemWeights());
-        
-        instance.registerDirective(new KeyCharacterList()); 
-        instance.registerDirective(new KeyOutputFile());   
-        instance.registerDirective(new KeyStates());   
-        
-        instance.registerDirective(new LinkCharacters());
+       
         instance.registerDirective(new ListingFile());
-        instance.registerDirective(new ListHeading());
-
+        
         instance.registerDirective(new MandatoryCharacters());
         instance.registerDirective(new MaximumNumberOfItems());
         instance.registerDirective(new MaximumNumberOfStates());
       
-        instance.registerDirective(new NewFilesAtItems());
-        instance.registerDirective(new NewParagraphAtCharacters());
-        instance.registerDirective(new NonautomaticControllingCharacters());
-        instance.registerDirective(new NoDataListing());
+        instance.registerDirective(new NewCharacterOrder());
         instance.registerDirective(new NumberOfCharacters());
         instance.registerDirective(new NumbersOfStates());
-        instance.registerDirective(new NumberStatesFromZero());
         
-        instance.registerDirective(new OmitCharacterNumbers());
-        instance.registerDirective(new OmitFinalComma());
-        instance.registerDirective(new OmitInapplicables());
-        instance.registerDirective(new OmitInnerComments());
-        instance.registerDirective(new OmitLowerForCharacters());
-        instance.registerDirective(new OmitOrForCharacters());
-        instance.registerDirective(new OmitPeriodForCharacters());
-        instance.registerDirective(new OmitRedundantVariantAttributes());
-        instance.registerDirective(new OmitSpaceBeforeUnits());
-        instance.registerDirective(new OmitTypeSettingMarks());
-        instance.registerDirective(new OutputDirectory());
-        instance.registerDirective(new OutputFile());
-        instance.registerDirective(new OutputFormatHtml());
-        instance.registerDirective(new OutputParameters());
         instance.registerDirective(new OutputWidth());       
-        instance.registerDirective(new OverlayFonts());
         
-        instance.registerDirective(new PercentError());
-        instance.registerDirective(new PrintCharacterList());  
-        instance.registerDirective(new PrintComment());  
-        instance.registerDirective(new PrintFile());
-        instance.registerDirective(new PrintHeading()); 
-        instance.registerDirective(new PrintItemDescriptions()); 
-        instance.registerDirective(new PrintItemNames());
-        instance.registerDirective(new PrintUncodedCharacters());
-        instance.registerDirective(new PrintWidth());
-
-        instance.registerDirective(new RegistrationHeading());
-        instance.registerDirective(new RegistrationSubHeading());
-        instance.registerDirective(new ReplaceAngleBrackets());
-        instance.registerDirective(new ReplaceSemicolonByComma()); 
+        instance.registerDirective(new Reformat());
         
         instance.registerDirective(new Show());
-        instance.registerDirective(new StartupImages());
-        instance.registerDirective(new SubjectForOutputFiles());
-        
-        instance.registerDirective(new TaxonImages());
-        instance.registerDirective(new TaxonKeywordImages());
-        instance.registerDirective(new TaxonLinks());
-        instance.registerDirective(new TranslateImplicitValues());
-        instance.registerDirective(new TranslateInto());
-        instance.registerDirective(new TranslateUncodedCharacters());
-        instance.registerDirective(new TreatIntegerAsReal());
-        instance.registerDirective(new TreatVariableAsUnknown());
-        instance.registerDirective(new TypeSettingMarks());
-        
-        instance.registerDirective(new UseControllingCharactersFirst());
-        instance.registerDirective(new UseLastValueCoded());
-        instance.registerDirective(new UseNormalValues());
-        instance.registerDirective(new Vocabulary());
         
         
         return instance;

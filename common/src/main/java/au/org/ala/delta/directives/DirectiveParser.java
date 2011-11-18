@@ -9,6 +9,8 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
+
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.directives.DirectiveSearchResult.ResultType;
 import au.org.ala.delta.directives.args.DirectiveArguments;
@@ -60,6 +62,7 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
 		ParsingContext pc = context.newParsingContext();
 		pc.setFile(file);
 		doParse(reader, context, pc);
+		IOUtils.closeQuietly(reader);
 	}
 
 	public void parse(Reader reader, C context) throws IOException, DirectiveException {
