@@ -3,11 +3,11 @@ package au.org.ala.delta.delfor;
 import java.io.File;
 
 import au.org.ala.delta.Logger;
-import au.org.ala.delta.delfor.format.FormattingAction;
 import au.org.ala.delta.directives.AbstractDeltaContext;
 import au.org.ala.delta.directives.AbstractDirective;
 import au.org.ala.delta.directives.DirectiveParserObserver;
 import au.org.ala.delta.directives.ParsingContext;
+import au.org.ala.delta.directives.validation.DirectiveException;
 import au.org.ala.delta.editor.slotfile.model.SlotFileDataSet;
 import au.org.ala.delta.editor.slotfile.model.SlotFileRepository;
 
@@ -53,11 +53,14 @@ public class DELFOR implements DirectiveParserObserver {
 		
 		SlotFileRepository dataSetRepository = new SlotFileRepository();
 		_dataSet = (SlotFileDataSet) dataSetRepository.newDataSet();
+		
 		_context = new DelforContext(_dataSet);
 		
 		DelforDirectiveFileParser parser = DelforDirectiveFileParser.createInstance();
 		parser.registerObserver(this);
 		parser.parse(input, _context);
+		
+		finishedProcessing();
 	}
 	
 
@@ -74,12 +77,7 @@ public class DELFOR implements DirectiveParserObserver {
 	}
 
 	@Override
-	public void preProcess(AbstractDirective<? extends AbstractDeltaContext> directive, String data) {
-		if (directive.getOrder() == 5) {
-			// We have receieved our instructions, time to start reformatting.
-			runFormattingActions();
-		}
-	}
+	public void preProcess(AbstractDirective<? extends AbstractDeltaContext> directive, String data) {}
 	
 	@Override
 	public void handleDirectiveProcessingException(AbstractDeltaContext context, AbstractDirective<? extends AbstractDeltaContext> d, Exception ex) {
@@ -99,11 +97,18 @@ public class DELFOR implements DirectiveParserObserver {
 
 	public void postProcess(AbstractDirective<? extends AbstractDeltaContext> directive) {}
 
-	public void finishedProcessing() {}
-	
-	private void runFormattingActions() {
-		for (FormattingAction action : _context.getFormattingActions()) {
-			action.format(_context, _dataSet);
+	public void finishedProcessing() {
+		
+		
+		DirectivesFileFormatter formatter = new DirectivesFileFormatter(_context);
+		try {
+			formatter.reformat();
 		}
+		catch (DirectiveException e) {
+			e.printStackTrace();
+		}
+	
 	}
+	
+	
 }

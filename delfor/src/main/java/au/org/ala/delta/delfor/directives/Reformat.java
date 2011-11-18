@@ -4,7 +4,6 @@ import java.io.File;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.delfor.DelforContext;
-import au.org.ala.delta.delfor.DirectivesFileFormatter;
 import au.org.ala.delta.directives.AbstractTextDirective;
 import au.org.ala.delta.directives.args.DirectiveArguments;
 
@@ -21,10 +20,8 @@ public class Reformat extends AbstractTextDirective {
 	@Override
 	public void process(DeltaContext context, DirectiveArguments directiveArguments) throws Exception {
 		String fileName = directiveArguments.getFirstArgumentText().trim();
-		
-		DirectivesFileFormatter formatter = new DirectivesFileFormatter((DelforContext)context);
-		
-		formatter.reformat(toFile(context, fileName));
+		DelforContext delforContext = (DelforContext)context;
+		delforContext.addReformatFile(toFile(context, fileName));
 	}
 
 	private File toFile(DeltaContext context, String fileName) {

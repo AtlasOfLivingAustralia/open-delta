@@ -21,7 +21,7 @@ public class DelforTest extends TestCase {
 	}
 	
 	@Test
-	public void testDISTWithSample() throws Exception {
+	public void testDELFORWithSample() throws Exception {
 		String path = FilenameUtils.concat(_path, "sample");
 		
 		runDELFOR(FilenameUtils.concat(path, "reorder"));
@@ -40,6 +40,11 @@ public class DelforTest extends TestCase {
 	
 		System.out.print(actual);
 		expected = replaceNewLines(expected);
+		
+		// CONFOR leaves a lot of trailing spaces around
+		expected = expected.replaceAll(" ([\\r\\n]+)", "$1");
+		actual = actual.replaceAll(" ([\\r\\n]+)", "$1");
+		
 		
 		assertEquals(expected, actual);
 	}

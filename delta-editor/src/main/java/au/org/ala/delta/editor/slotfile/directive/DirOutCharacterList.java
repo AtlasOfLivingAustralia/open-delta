@@ -26,6 +26,7 @@ public class DirOutCharacterList extends AbstractDirOutFunctor {
 
 	@Override
 	public void writeDirectiveArguments(DirectiveInOutState state) {
+		state.getPrinter().writeBlankLines(1, 0);
 		DataSetTranslatorFactory factory = new DataSetTranslatorFactory();
 		DeltaContext context = new DeltaContext(state.getDataSet());
 		context.setTranslateType(TranslateType.Delta);

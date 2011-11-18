@@ -1,5 +1,6 @@
 package au.org.ala.delta.delfor;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,12 +12,14 @@ public class DelforContext extends ImportContext {
 
 	private boolean _newLineForAttributes;
 	private List<FormattingAction> _actions;
+	private List<File> _files;
 	
 	public DelforContext(MutableDeltaDataSet dataSet) {
 		super(dataSet);
 		
 		_newLineForAttributes = false;
 		_actions = new ArrayList<FormattingAction>();
+		_files = new ArrayList<File>();
 	}
 	
 	@Override
@@ -44,5 +47,11 @@ public class DelforContext extends ImportContext {
 		return _actions;
 	}
 	
+	public void addReformatFile(File toReformat) {
+		_files.add(toReformat);
+	}
 	
+	public List<File> getFilesToReformat() {
+		return _files;
+	}
 }

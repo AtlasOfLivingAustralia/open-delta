@@ -32,8 +32,8 @@ public class DirectivesFileFormatterTest extends TestCase {
 	@Test
 	public void testReformatSpecs() throws Exception {
 		File specs = urlToFile("/dataset/sample/specs");
-		
-		_formatter.reformat(specs);
+		_context.addReformatFile(specs);
+		_formatter.reformat();
 	}
 	
 	private File urlToFile(String urlString) throws Exception {
