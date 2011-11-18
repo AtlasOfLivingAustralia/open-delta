@@ -1,0 +1,9 @@
+*COMMENT ~ Intkey toolbar.
+
+*DEFINE BUTTON CLEAR
+
+*DEFINE BUTTON intros.bmp
+"CONTENTS contents.ind"
+"Introduction and references"
+"This button allows you to display an introduction to the package, or a list
+of references."

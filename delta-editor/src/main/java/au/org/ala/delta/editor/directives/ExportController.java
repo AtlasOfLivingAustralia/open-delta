@@ -8,7 +8,6 @@ import java.util.List;
 import javax.swing.ActionMap;
 import javax.swing.JFileChooser;
 
-import org.apache.commons.io.FilenameUtils;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ResourceMap;
 
@@ -17,11 +16,9 @@ import au.org.ala.delta.editor.directives.ui.ExportViewModel;
 import au.org.ala.delta.editor.directives.ui.ImportExportDialog;
 import au.org.ala.delta.editor.directives.ui.ImportExportViewModel;
 import au.org.ala.delta.editor.model.EditorViewModel;
-import au.org.ala.delta.editor.slotfile.Directive;
 import au.org.ala.delta.editor.slotfile.DirectiveInstance;
 import au.org.ala.delta.editor.slotfile.directive.DirectiveInOutState;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile;
-import au.org.ala.delta.util.FileUtils;
 
 /**
  * The ExportController manages the process of exporting a set of directives
@@ -100,47 +97,6 @@ public class ExportController {
 			List<DirectiveFileInfo> files) {
 		new DoExportTask(selectedDirectory, files, true).execute();
 	}
-	
-	public void writeDirectivesFile(DirectiveFile file, DirectiveInOutState state) {
-		try {
-			List<DirectiveInstance> directives = file.getDirectives();
-
-			for (int i = 0; i < directives.size(); i++) {
-				writeDirective(directives.get(i), state);
-				if (i != directives.size() - 1) {
-					state.getPrinter().writeBlankLines(1, 0);
-				}
-			}
-			state.getPrinter().printBufferLine();
-			file.setLastModifiedTime(System.currentTimeMillis());
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			if (state.getPrinter() != null) {
-				state.getPrinter().close();
-			}
-		}
-	}
-	
-	private File createExportFile(DirectiveFile file, String directoryPath) {
-		String fileName = file.getShortFileName();
-		FileUtils.backupAndDelete(fileName, directoryPath);
-		
-		FilenameUtils.concat(directoryPath, fileName);
-		File directivesFile = new File(directoryPath + fileName);
-		
-		return directivesFile;
-	}
-
-	protected void writeDirective(DirectiveInstance directive,
-			DirectiveInOutState state) {
-		
-		state.setCurrentDirective(directive);
-		Directive directiveInfo = directive.getDirective();
-
-		directiveInfo.getOutFunc().process(state);
-	}
 
 	public class DoExportTask extends ImportExportTask {
 		
@@ -155,15 +111,16 @@ public class ExportController {
 
 			DirectiveFilesInitialiser initialiser = new DirectiveFilesInitialiser(_editor, _model);
 			initialiser.buildSpecialDirFiles(_files);
+			DirectivesFileExporter exporter = new DirectivesFileExporter();
 			
 			DirectiveInOutState state = new StatusUpdatingState(_model, _status);
 			for (DirectiveFileInfo file : _files) {
 				DirectiveFile dirFile = file.getDirectiveFile();
 				if (dirFile != null) {
-					File output = createExportFile(dirFile, _directoryName);
+					File output = exporter.createExportFile(dirFile, _directoryName);
 					state.setPrintStream(new PrintStream(output, _exportFileEncoding));
 					_status.setCurrentFile(file);
-					writeDirectivesFile(dirFile, state);
+					exporter.writeDirectivesFile(dirFile, state);
 				}
 
 				publish(_status);

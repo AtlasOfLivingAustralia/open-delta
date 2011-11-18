@@ -1,0 +1,19 @@
+*SHOW Translate into natural language - plain text.
+
+*PRINT FILE tonat.prt
+
+*INPUT FILE specs
+
+*TRANSLATE INTO NATURAL LANGUAGE
+
+*INSERT IMPLICIT VALUES
+
+*PRINT WIDTH 0
+
+*INPUT FILE markrtf
+
+*INPUT FILE chars
+
+*PRINT HEADING
+
+*INPUT FILE items

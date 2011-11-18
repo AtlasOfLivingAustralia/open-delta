@@ -1,0 +1,13 @@
+*COMMENT ~ Define keyword for grass genera of the ACT.
+
+*DEFINE NAMES "ACT (Australian Capital Territory)"
+Agrostis
+Chloris
+Cynodon
+Echinochloa
+Eleusine
+Festuca
+Panicum
+Phragmites
+Poa
+Zea

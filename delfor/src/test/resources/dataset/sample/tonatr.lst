@@ -1,0 +1,315 @@
+ 
+CONFOR version 2.25 Windows
+ 
+M.J. Dallwitz, T.A. Paine and E.J. Zurcher
+ 
+CSIRO Division of Entomology, GPO Box 1700, Canberra, ACT 2601, Australia
+Phone +61 2 6246 4075. Fax +61 2 6246 4000. Email delta@ento.csiro.au
+ 
+Translate into natural language - RTF, single file for all taxa. 
+ 
+tonatr,3       *LISTING FILE tonatr.lst
+tonatr,4        
+tonatr,5       *OUTPUT DIRECTORY rtf
+tonatr,6        
+tonatr,7       *PRINT FILE descrip.rtf
+tonatr,8        
+tonatr,9       *INPUT FILE specs
+specs,1        *SHOW ~ Grass Genera - specifications.
+specs,2         
+specs,3        *NUMBER OF CHARACTERS 89
+specs,4         
+specs,5        *MAXIMUM NUMBER OF STATES 15
+specs,6         
+specs,7        *MAXIMUM NUMBER OF ITEMS 14
+specs,8         
+specs,9        *DATA BUFFER SIZE 4450
+specs,10        
+specs,11       *CHARACTER TYPES 1,TE 2,RN 8,OM 9,RN 11,OM 25,TE 26,RN 27,OM 33,OM 38,IN 41,IN
+specs,12         44,IN 47,OM 48,IN 51,OM 54,IN 56,OM 60,IN 62,IN 64,OM 85,IN 87-89,TE
+specs,13        
+specs,14       *NUMBERS OF STATES 8,7 11,4 12,3 13,5 18,3 23-24,4 27,3 28,4 33,3 40,3 47,3 49,3
+specs,15         51,3 56,3 63-64,3 67,3 69,3 74,3 78,5 79,6 80,7 81,15 82,12 83,4 84,6 86,6
+specs,16        
+specs,17       *IMPLICIT VALUES 6,2 10,1 16,2 20,2 32,1 65,2 67,3 71-72,2 75,2 77,2
+specs,18        
+specs,19       *DEPENDENT CHARACTERS 10,2:11 16,2:17 20,2:21-24 32,2:33-38 39,1:40-43
+specs,20         47,1/2:48-51 55,2:56 57,2:58-59 68,2:69 78,1:81-84 78,2:80:82-84
+specs,21         78,3:79-81:83-84 78,4:79-82:84 78,5:80-83
+specs,22        
+specs,23       *MANDATORY CHARACTERS 12 78-86 89
+specs,24       *PREVIOUS INPUT FILE
+tonatr,10       
+tonatr,11      *TRANSLATE INTO NATURAL LANGUAGE
+tonatr,12       
+tonatr,13      *INPUT FILE markrtf
+markrtf,1      *COMMENT ~ Markup for RTF output.
+markrtf,2       
+markrtf,3      *PRINT WIDTH 0
+markrtf,4       
+markrtf,5      *TYPESETTING MARKS !
+markrtf,6      #1. <range symbol>
+markrtf,7       !\endash{}
+markrtf,8      #2. <PRINT CHARACTER LIST: before each character (or character heading if
+markrtf,9      present)>
+markrtf,10      
+markrtf,11     #3. <PRINT CHARACTER LIST: before the first character (or character heading if
+markrtf,12     present) (and before 2) (it was used for TYPSET tabs and indentations)>
+markrtf,13      
+markrtf,14     #4. <PRINT CHARACTER LIST: before a character heading>
+markrtf,15      !\par\pard\plain\s10\ql\sb300\sa100\li0\fi0\keep\keepn\fs24{}
+markrtf,16     #5. <PRINT CHARACTER LIST: after a character heading>
+markrtf,17      
+markrtf,18     #6. <PRINT CHARACTER LIST: before each character>
+markrtf,19      !\par\pard\plain\s11\ql\sb0\sa0\li705\fi-705\fs22{}
+markrtf,20     #7. <PRINT CHARACTER LIST: before a state description>
+markrtf,21      !\par\pard\plain\s12\ql\sb0\sa0\li705\fi-200\fs22{}
+markrtf,22     #8. <PRINT CHARACTER LIST: before character notes>
+markrtf,23      !\par\pard\plain\s13\ql\sb0\sa0\li505\fi400\fs22{}
+markrtf,24     #9. <PRINT ITEM DESCRIPTIONS: before item, with natural language>
+markrtf,25      !\par\pard\plain\ql\sb300\sa0\keepn\fs22{}
+markrtf,26     #10. <PRINT ITEM DESCRIPTIONS: before item, without natural language>
+markrtf,27      !\par\pard\plain\ql\sb300\sa0\keepn\fs22{}
+markrtf,28     #11. <PRINT ITEM DESCRIPTIONS: after item name>
+markrtf,29      !\par\pard\plain\ql\sb0\sa0\fs22{}
+markrtf,30     #12. <not used>
+markrtf,31      
+markrtf,32     #13. <NATURAL LANGUAGE: before each item (or item heading if present)>
+markrtf,33      
+markrtf,34     #14. <NATURAL LANGUAGE: before item name if at start of a file>
+markrtf,35      !\pard\plain\s21\ql\sb0\sa100\li0\fi0\keep\keepn\b\fs24{}
+markrtf,36     #15. <NATURAL LANGUAGE: after item name>
+markrtf,37      !\fs22\b0{}
+markrtf,38     #16. <NATURAL LANGUAGE: before a character which begins a new paragraph>
+markrtf,39      !\par\pard\plain\qj\s22\sb0\sa0\li0\fi340\fs22{}
+markrtf,40     #17. <NATURAL LANGUAGE: before an emphasized feature>
+markrtf,41      !\i{}
+markrtf,42     #18. <NATURAL LANGUAGE: after an emphasized feature>
+markrtf,43      !\i0{}
+markrtf,44     #19. <NATURAL LANGUAGE: before an emphasized character>
+markrtf,45      !\b\i{}
+markrtf,46     #20. <NATURAL LANGUAGE: after an emphasized character>
+markrtf,47      !\i0\b0{}
+markrtf,48     #21. <NATURAL LANGUAGE: before an emphasized state description>
+markrtf,49      !\b\i{}
+markrtf,50     #22. <NATURAL LANGUAGE: after an emphasized state description>
+markrtf,51      !\i0\b0{}
+markrtf,52     #23. <PRINT ITEM NAMES: before item name>
+markrtf,53      !\par\pard\plain\ql\sb0\sa0\fs22{}
+markrtf,54     #24. <PRINT UNCODED CHARACTERS: before list of uncoded characters>
+markrtf,55      !\par\pard\ql\sb200\sa0{}
+markrtf,56     #25. <NATURAL LANGUAGE: before a non-comment section of an item name>
+markrtf,57      
+markrtf,58     #26. <NATURAL LANGUAGE: after non-comment section of an item name>
+markrtf,59      
+markrtf,60     #27. <NATURAL LANGUAGE: after each item; precedes mark 29>
+markrtf,61      
+markrtf,62     #28. <NATURAL LANGUAGE: at the start of each file. Current settings are
+markrtf,63     Australian English, A4 paper, margins 2.5cm. For US English, Letter paper,
+markrtf,64     margins 1", substitute the following.
+markrtf,65     \deflang1033\paperw12242\paperh15842\margl1440\margr1440\margt1440\margb1440{} >
+markrtf,66      !{\rtf1\ansi\ansicpg1252\uc1\deff0{
+markrtf,67     \deflang3081\paperw11906\paperh16838\margl1418\margr1418\margt1418\margb1418{
+markrtf,68     {\fonttb
+markrtf,69     {\f0\froman\fcharset0\fprq2{}Times New Roman;
+markrtf,70     {\f1\froman\fcharset2\fprq2{}Symbol;
+markrtf,71     {\f2\fswiss\fcharset0\fprq2{}Arial;
+markrtf,72     }
+markrtf,73     {\styleshee
+markrtf,74     {\qj\fi340\fs22\snext0{}Normal;
+markrtf,75     {\s1\qc\sb500\sa100\keepn\b\f2\fs32\kerning28\sbasedon0\snext0{}Heading 1;
+markrtf,76     {\s2\qc\sb500\sa100\keepn\b\f2\fs28\kerning28\sbasedon0\snext0{}Heading 2;
+markrtf,77     {\s3\ql\sb500\sa100\keepn\b\f2\fs24\sbasedon0\snext0{}Heading 3;
+markrtf,78     {\s6\ql\sb0\sa0\li340\fi-340\fs22\sbasedon0{}References;
+markrtf,79     {\s10\ql\sb300\sa100\li0\fi0\keep\keepn\fs24\sbasedon0{}Character Heading;
+markrtf,80     {\s11\ql\sb0\sa0\li705\fi-705\fs22\sbasedon0{}Feature;
+markrtf,81     {\s12\ql\sb0\sa0\li705\fi-200\fs22\sbasedon0{}State;
+markrtf,82     {\s13\ql\sb0\sa0\li505\fi400\fs22\sbasedon0{}Character Note;
+markrtf,83     {\s20\qc\sb300\sa0\li0\fi0\keep\keepn\fs24\sbasedon0{}Taxon Heading;
+markrtf,84     {\s21\ql\sb300\sa100\li0\fi0\keep\keepn\b\fs24\sbasedon0{}Taxon Name;
+markrtf,85     {\s22\qj\sb0\sa0\li0\fi340\fs22\sbasedon0{}Description;
+markrtf,86     {\s23\fi-300\li300\keep\keepn\b\fs22\sbasedon0\snext0\sautoupd{}toc 1;
+markrtf,87     {\s24\fi-300\li450\keep\fs22\sbasedon0\snext0\sautoupd{}toc 2;
+markrtf,88     {\s30\ql\sb0\sa0\fi-907\li907\tx680\tqr\tldot\tx9072\fs22\sbasedon0{}Key;
+markrtf,89     {\s31\ql\sb100\sa0\fi-907\li907\tx680\tqr\tldot\tx9072\fs22\sbasedon30{}Ke
+markrtf,90     First Lead;
+markrtf,91     }
+markrtf,92     \widowctrl{}
+markrtf,93     #29. <NATURAL LANGUAGE: after the last item in a file; follows mark 27. PRINT
+markrtf,94     CHARACTER LIST: after the character list; follows mark 40. KEY: at the end of
+markrtf,95     the key file; follows mark 50>
+markrtf,96      !}
+markrtf,97     #30. <NATURAL LANGUAGE: before item heading>
+markrtf,98      !\par\pard\plain\s20\qc\sb0\sa0\li0\fi0\keep\keepn\fs24\b{}
+markrtf,99     #31. <NATURAL LANGUAGE: after item heading>
+markrtf,100     !\b0\fs22{}
+markrtf,101    #32. <NATURAL LANGUAGE: before item subheading>
+markrtf,102     
+markrtf,103    #33. <NATURAL LANGUAGE: after item subheading>
+markrtf,104     
+markrtf,105    #34. <NATURAL LANGUAGE: before output file name in index file>
+markrtf,106     
+markrtf,107    #35. <NATURAL LANGUAGE: between output file name and taxon name in index file>
+markrtf,108     
+markrtf,109    #36. <NATURAL LANGUAGE: after taxon name in index file>
+markrtf,110     
+markrtf,111    #37. <NATURAL LANGUAGE: before image file name in 'character for taxon images';
+markrtf,112    note that absolute path for images must be set>
+markrtf,113     !\par\pard\plain\s21\qc\sb300\sa0\li0\fi0\fs22\keepn{\field{\*\fldins
+markrtf,114    { INCLUDEPICTURE "D:\\\\DELTA\\\\sample\\\\images\\\\
+markrtf,115    #38. <NATURAL LANGUAGE: between image file name and subject>
+markrtf,116     !" \\* MERGEFORMAT \\d }}}\par\pard\plain\s21\qj\sb200\sa0\li0\fi0\fs22\b{}
+markrtf,117    #39. <NATURAL LANGUAGE: after subject in 'character for taxon images'>
+markrtf,118     !\b0{}
+markrtf,119    #40. <PRINT CHARACTER LIST: after the character list; precedes mark 29>
+markrtf,120     
+markrtf,121    #41. <KEY: parameters>
+markrtf,122     !\par\pard\plain\s6\sb100\li340\fi-340\fs22{}\i{}Characters:\i0{} @nchar i
+markrtf,123    data, @ncincl included, @ncinkey in key
+markrtf,124    \par\sb0{}\i{}Items:\i0{} @ntaxa in data, @ntincl included, @ntinkey in key
+markrtf,125    \par{}\i{}Parameters:\i0{} Rbase = @rbase Abase = @abase Reuse = @reuse Varywt 
+markrtf,126    @varyw
+markrtf,127    \par{}\i{}Characters included:\i0{} @cmas
+markrtf,128    \par\sa100{}\i{}Character reliabilities:\i0{} @rel
+markrtf,129    #42. <KEY: first lead of first node of key>
+markrtf,130     !\par\pard\plain\s30\fi-907\li907\sb240\tx680\tqr\tldot\tx9070\fs22{}@node.\tab{}@state
+markrtf,131    #43. <KEY: first lead of any node of key except the first node>
+markrtf,132     !\par\pard\plain\s30\fi-907\li907\sb240\tx680\tqr\tldot\tx9070\fs22{}@node(@from).\tab{}@state
+markrtf,133    #44. <KEY: subsequent lead of any node>
+markrtf,134     !\par\pard\plain\s31\fi-907\li907\sb0\tx680\tqr\tldot\tx9070\fs22{}\tab{}@state
+markrtf,135    #45. <KEY: first destination of a lead which is a taxon name>
+markrtf,136     !\tab{} \b{}@to\b0{}
+markrtf,137    #46. <KEY: subsequent destination of a lead (which must be a taxon name)>
+markrtf,138     !\par\pard\plain\s31\tqr\tx9070\fs22{}\tab{} \b{}@to\b0{}
+markrtf,139    #47. <KEY: after taxon name(s)>
+markrtf,140     
+markrtf,141    #48. <KEY: destination of a lead which is a node of the key>
+markrtf,142     !\tab{} @to
+markrtf,143    #49. <KEY: after each node>
+markrtf,144     
+markrtf,145    #50. <KEY: at end of key; precedes mark 29>
+markrtf,146     
+markrtf,147    #51. <NATURAL LANGUAGE: before item name if not at start of a file>
+markrtf,148     !\par\pard\plain\s21\ql\sb300\sa100\li0\fi0\keep\keepn\b\fs24{}
+markrtf,149    *PREVIOUS INPUT FILE
+tonatr,14       
+tonatr,15      *INPUT FILE layout
+layout,1       *COMMENT ~ Layout for natural-language descriptions.
+layout,2        
+layout,3       *REPLACE ANGLE BRACKETS
+layout,4        
+layout,5       *OMIT CHARACTER NUMBERS
+layout,6        
+layout,7       *OMIT INNER COMMENTS
+layout,8        
+layout,9       *OMIT INAPPLICABLES
+layout,10       
+layout,11      *OMIT PERIOD FOR CHARACTERS 1
+layout,12       
+layout,13      *CHARACTER FOR TAXON IMAGES 88
+layout,14       
+layout,15      *EXCLUDE CHARACTERS 89
+layout,16       
+layout,17      *NEW PARAGRAPHS AT CHARACTERS 1 4 12 25-26 68 77-78 87-89
+layout,18       
+layout,19      *LINK CHARACTERS 2-3:5 6:8-9 10-11 13-15 16-17 18-21 26-29 32-37 41-42
+layout,20        45-47:52-54 48-51 55-56 57-59 62-63 64-65 68-70 71-72 73-75 78-84
+layout,21       
+layout,22      *EMPHASIZE FEATURES 33 44 57 64
+layout,23       
+layout,24      *ITEM SUBHEADINGS
+layout,25      #4. \b{}Habit, vegetative morphology\b0{}.
+layout,26      #12. \b{}Inflorescence\b0{}.
+layout,27      #25. \b{}Female-sterile spikelets\b0{}.
+layout,28      #26. \b{}Female-fertile spikelets, florets, fruit\b0{}.
+layout,29      #68. \b{}Photosynthetic pathway, leaf blade anatomy\b0{}.
+layout,30      #77. \b{}Special diagnostic feature.\b0{}
+layout,31      #78. \b{}Taxonomy, distribution\b0{}.
+layout,32      #87. \b{}Anatomical references\b0{}.
+layout,33      #88. \b{}Illustrations\b0{}.
+layout,34      *PREVIOUS INPUT FILE
+tonatr,16       
+tonatr,17      *INPUT FILE empchari
+empchari,1     *COMMENT ~ Automatically selected characters to be emphasized in descriptions.
+empchari,2      
+empchari,3     *COMMENT Diagnostic descriptions generated by Intkey.
+empchari,4      
+empchari,5     *COMMENT DiagLevel 2, DiagType Taxa, preset character 11
+empchari,6      
+empchari,7     *EMPHASIZE CHARACTERS
+empchari,8     # \i{}Echinochloa\i0{} <P. Beauv.>/ 11 13 19 27 38
+empchari,9     # \i{}Anisopogon\i0{} <R.Br.>/ 2 11 26 66-67
+empchari,10    # \i{}Bambusa\i0{} <Schreber>/ 3 11 15 27 66
+empchari,11    # \i{}Chloris\i0{} <O. Swartz>/ 11 16 19 31 47 52
+empchari,12    # \i{}Cynodon\i0{} <Rich.>/ 11 13 19 26-28 31 44 47
+empchari,13    # \i{}Andropogon\i0{} <L.>/ 11 16 20 28
+empchari,14    # \i{}Agrostis\i0{} <L.>/ 11 28 35 39 52 66
+empchari,15    # \i{}Eleusine\i0{} <Gaertn.>/ 11 19 44 65
+empchari,16    # \i{}Festuca\i0{} <L.>/ 3 11 34 44 52 66
+empchari,17    # \i{}Oryza\i0{} <L.>/ 3 11 38 60
+empchari,18    # \i{}Panicum\i0{} <L.>/ 11-13 16 19 27-28 34
+empchari,19    # \i{}Phragmites\i0{} <Adans.>/ 11 40 44 66
+empchari,20    # \i{}Poa\i0{} <L.>/ 2 11 13 19 30 35 52 66
+empchari,21    # \i{}Zea\i0{} <L.>/ 11-12 77
+empchari,22    *PREVIOUS INPUT FILE
+tonatr,18       
+tonatr,19      *INPUT FILE empcharm
+empcharm,1     *COMMENT ~ Manually selected characters to be emphasized in descriptions.
+empcharm,2      
+empcharm,3     *EMPHASIZE CHARACTERS
+empcharm,4     # \i{}Echinochloa\i0{} <P. Beauv.>/ 18 55
+empcharm,5     # \i{}Anisopogon\i0{} <R.Br.>/ 4 11 30-31
+empcharm,6     # \i{}Bambusa\i0{} <Schreber>/ 13
+empcharm,7     # \i{}Chloris\i0{} <O. Swartz>/
+empcharm,8     # \i{}Cynodon\i0{} <Rich.>/
+empcharm,9     # \i{}Andropogon\i0{} <L.>/ 25
+empcharm,10    # \i{}Agrostis\i0{} <L.>/ 45
+empcharm,11    # \i{}Eleusine\i0{} <Gaertn.>/ 4
+empcharm,12    # \i{}Festuca\i0{} <L.>/
+empcharm,13    # \i{}Oryza\i0{} <L.>/ 13 32 41
+empcharm,14    # \i{}Panicum\i0{} <L.>/ 4
+empcharm,15    # \i{}Phragmites\i0{} <Adans.>/ 14
+empcharm,16    # \i{}Poa\i0{} <L.>/
+empcharm,17    # \i{}Zea\i0{} <L.>/ 13 25
+empcharm,18    *PREVIOUS INPUT FILE
+tonatr,20       
+tonatr,21      *ITEM HEADINGS !
+tonatr,22      # \i{}Echinochloa\i0{} <P. Beauv.>/ !\page\fs50{} E!
+tonatr,23      # \i{}Bambusa\i0{} <Schreber>/ !\page\fs50{} B!
+tonatr,24      # \i{}Chloris\i0{} <O. Swartz>/ !\page\fs50{} C!
+tonatr,25      # \i{}Agrostis\i0{} <L.>/ !\sb300\fs50{} A!
+tonatr,26      # \i{}Festuca\i0{} <L.>/ !\page\fs50{} F!
+tonatr,27      # \i{}Oryza\i0{} <L.>/ !\page\fs50{} O!
+tonatr,28      # \i{}Panicum\i0{} <L.>/ !\page\fs50{} P!
+tonatr,29      # \i{}Zea\i0{} <L.>/ !\page\fs50{} Z!
+tonatr,30       
+tonatr,31      *INPUT FILE chars
+chars,1        *SHOW ~ Grass Genera - character list.
+chars,2         
+chars,3        *CHARACTER LIST
+chars,462      *PREVIOUS INPUT FILE
+tonatr,32       
+tonatr,33      *PRINT COMMENT
+tonatr,34      \pard\plain\s2\qc\sb500\sa400\keepn\b\f2\fs28\kerning28{} Implicit Attributes
+tonatr,35      \par\pard\plain\qj\sa300\fs22{}Unless indicated otherwise,
+tonatr,36      the following attributes are implicit throughout the descriptions,
+tonatr,37      except where the characters concerned are inapplicable.
+tonatr,38       
+tonatr,39      *TRANSLATE IMPLICIT VALUES
+tonatr,41      *PRINT COMMENT
+tonatr,42      \par\pard\plain\s2\qc\sb500\sa400\keepn\b\f2\fs28\kerning28{} Descriptions
+tonatr,43      \par\pard\plain\qj\fs22{}The bold-italic parts are diagnostic descriptions,
+tonatr,44      generated with the aid of Intkey (Dallwitz \i{}et al.\i0{} 1995, 2000).
+tonatr,45      They distinguish each taxon in at least two respects from every other taxon.
+tonatr,46       
+tonatr,47      *INPUT FILE items
+items,1        *SHOW ~ Grass Genera - item descriptions.
+items,2         
+items,3        *ITEM DESCRIPTIONS
+items,208      *PREVIOUS INPUT FILE
+tonatr,48      *END
+Normal Termination.
+ 
+Output files - 
+   tonatr.lst
+   rtf\descrip.rtf

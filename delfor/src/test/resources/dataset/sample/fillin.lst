@@ -1,0 +1,67 @@
+ 
+CONFOR version 2.25 Windows
+ 
+M.J. Dallwitz, T.A. Paine and E.J. Zurcher
+ 
+CSIRO Division of Entomology, GPO Box 1700, Canberra, ACT 2601, Australia
+Phone +61 2 6246 4075. Fax +61 2 6246 4000. Email delta@ento.csiro.au
+ 
+Grass Genera 14:30 27-JUN-11 
+~ Translate into DELTA format, inserting implicit values. 
+ 
+fillin,5       *LISTING FILE fillin.lst
+fillin,6        
+fillin,7       *INPUT FILE specs
+specs,1        *SHOW ~ Grass Genera - specifications.
+specs,2         
+specs,3        *NUMBER OF CHARACTERS 89
+specs,4         
+specs,5        *MAXIMUM NUMBER OF STATES 15
+specs,6         
+specs,7        *MAXIMUM NUMBER OF ITEMS 14
+specs,8         
+specs,9        *DATA BUFFER SIZE 4450
+specs,10        
+specs,11       *CHARACTER TYPES 1,TE 2,RN 8,OM 9,RN 11,OM 25,TE 26,RN 27,OM 33,OM 38,IN 41,IN
+specs,12         44,IN 47,OM 48,IN 51,OM 54,IN 56,OM 60,IN 62,IN 64,OM 85,IN 87-89,TE
+specs,13        
+specs,14       *NUMBERS OF STATES 8,7 11,4 12,3 13,5 18,3 23-24,4 27,3 28,4 33,3 40,3 47,3 49,3
+specs,15         51,3 56,3 63-64,3 67,3 69,3 74,3 78,5 79,6 80,7 81,15 82,12 83,4 84,6 86,6
+specs,16        
+specs,17       *IMPLICIT VALUES 6,2 10,1 16,2 20,2 32,1 65,2 67,3 71-72,2 75,2 77,2
+specs,18        
+specs,19       *DEPENDENT CHARACTERS 10,2:11 16,2:17 20,2:21-24 32,2:33-38 39,1:40-43
+specs,20         47,1/2:48-51 55,2:56 57,2:58-59 68,2:69 78,1:81-84 78,2:80:82-84
+specs,21         78,3:79-81:83-84 78,4:79-82:84 78,5:80-83
+specs,22        
+specs,23       *MANDATORY CHARACTERS 12 78-86 89
+specs,24       *PREVIOUS INPUT FILE
+fillin,8        
+fillin,9       *TRANSLATE INTO DELTA FORMAT
+fillin,10       
+fillin,11      *DECIMAL PLACES 2,3
+fillin,12       
+fillin,13      *COMMENT The following directive has no effect in the sample data, as
+fillin,14             there are no variant items.
+fillin,15       
+fillin,16      *INSERT REDUNDANT VARIANT ATTRIBUTES
+fillin,17       
+fillin,18      *OUTPUT FILE items.new
+fillin,19       
+fillin,20      *OUTPUT PARAMETERS
+fillin,21      #SHOW Grass Genera - items with implicit values and variant attributes
+fillin,22             inserted.
+fillin,23       
+fillin,24      #ITEM DESCRIPTIONS
+fillin,25       
+fillin,26      *INPUT FILE items
+items,1        *SHOW ~ Grass Genera - item descriptions.
+items,2         
+items,3        *ITEM DESCRIPTIONS
+items,208      *PREVIOUS INPUT FILE
+fillin,27      *END
+Normal Termination.
+ 
+Output files - 
+   fillin.lst
+   items.new

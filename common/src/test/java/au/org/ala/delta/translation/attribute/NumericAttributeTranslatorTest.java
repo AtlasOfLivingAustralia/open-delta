@@ -19,16 +19,18 @@ public class NumericAttributeTranslatorTest extends TestCase {
 	private RealCharacter _realCharacter;
 	private DefaultDataSetFactory _factory;
 	private NumericAttributeTranslator _translator;
+	private PlainTextTypeSetter _typeSetter;
+	private AttributeFormatter _attributeFormatter;
 	
 	@Before
 	public void setUp() throws Exception {
 		_factory = new DefaultDataSetFactory();
 		_realCharacter = (RealCharacter)_factory.createCharacter(CharacterType.RealNumeric, 2);
 		_realCharacter.setUnits("units");
-		PlainTextTypeSetter typeSetter = new PlainTextTypeSetter(null);
-		AttributeFormatter attributeFormatter = new AttributeFormatter(false, true, CommentStrippingMode.RETAIN);
+		_typeSetter = new PlainTextTypeSetter(null);
+		_attributeFormatter = new AttributeFormatter(false, true, CommentStrippingMode.RETAIN);
 		
-		_translator = new NumericAttributeTranslator(_realCharacter, typeSetter, attributeFormatter, false, false);
+		_translator = new NumericAttributeTranslator(_realCharacter, _typeSetter, _attributeFormatter, false, false, false);
 	}
 	
 	/**
@@ -69,6 +71,24 @@ public class NumericAttributeTranslatorTest extends TestCase {
 			assertEquals(expected[i], formattedValue);
 		}
 	
+	}
+	
+	@Test
+	public void zztestOmitUpperForCharacter() {
+		_translator = new NumericAttributeTranslator(_realCharacter, _typeSetter, _attributeFormatter, false, false, true);
+	
+		String[] inputs = {
+				"<comment 1>1.3(-2)<comment 2>", "<comment 1>1.3-2<comment 2>",
+				"<comment 1>1&2<comment 2>", "<comment 1>1<comment 2>/2<comment 3>"};
+		
+		String[] expected = {
+				"<comment 1> 1.3 units <comment 2>", "<comment 1> 2 units <comment 2>",
+				"<comment 1> 1 and 2 units <comment 2>", "<comment 1> 1 units <comment 2>, or 2 units <comment 3>"};
+		
+		for (int i=0; i<inputs.length; i++) {
+			String formattedValue = format(_realCharacter, inputs[i]);
+			assertEquals(expected[i], formattedValue);
+		}
 	}
 	
 	private String format(au.org.ala.delta.model.Character character, String value) {

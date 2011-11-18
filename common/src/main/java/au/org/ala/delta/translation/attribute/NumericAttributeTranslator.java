@@ -28,21 +28,43 @@ public class NumericAttributeTranslator extends AttributeTranslator {
 	/** Omit the space in between a numeric attribute and the units */
 	private boolean _omitSpaceBeforeUnits;
 	
+	/** True if OMIT LOWER FOR CHARACTERS was specified for the Character 
+	 * to be translated */
+	private boolean _omitLower;
+	
 	public NumericAttributeTranslator(
 			NumericCharacter<?> character, 
 			ItemListTypeSetter typeSetter, 
 			AttributeFormatter formatter, 
 			boolean omitSpaceBeforeUnits,
-			boolean omitOr) {
+			boolean omitOr,
+			boolean omitLower) {
 		super(formatter, omitOr);
 		_character = character;
 		_formatter = new CharacterFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.RETAIN, true, false);
 		_typeSetter = typeSetter;
 		_omitSpaceBeforeUnits = omitSpaceBeforeUnits;
+		_omitLower = omitLower;
 	}
 	
 	@Override
 	public String translateValue(String value) {
+		if (_omitLower) {
+			int upperExtreme = value.indexOf("(-");
+			int upperEnd = upperExtreme < 0 ? value.length() : upperExtreme;
+			StringBuilder upper = new StringBuilder();
+			int i;
+			for (i=upperEnd-1; i>=0; i--) {
+				if (value.charAt(i) == '-') {
+					break;
+				}
+			}
+			upper.append(value.substring(i+1, upperEnd));
+			if (upperExtreme >= 0) {
+				upper.append(value.substring(upperExtreme, value.length()));
+			}
+			return upper.toString();
+		}
 		return value;
 	}
 

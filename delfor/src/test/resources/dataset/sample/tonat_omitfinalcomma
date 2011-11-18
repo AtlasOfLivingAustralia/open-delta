@@ -1,0 +1,25 @@
+*SHOW Translate into natural language - plain text.
+
+*HEADING Grass Genera #TIME #DATE
+
+*LISTING FILE tonat.lst
+
+*PRINT FILE tonat_omitfinalcomma.prt
+
+*INPUT FILE specs
+
+*TRANSLATE INTO NATURAL LANGUAGE
+
+*OMIT TYPESETTING MARKS
+
+*OMIT FINAL COMMA 4 86
+
+*PRINT WIDTH 78
+
+*INPUT FILE layout
+
+*INPUT FILE chars
+
+*PRINT HEADING
+
+*INPUT FILE items

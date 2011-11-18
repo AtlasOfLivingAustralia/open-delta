@@ -1,0 +1,33 @@
+*SHOW Translate into natural language - RTF, separate file for each taxon.
+
+*LISTING FILE tonatsr.lst
+
+*PRINT FILE implicit.rtf
+
+*INPUT FILE specs
+
+*TRANSLATE INTO NATURAL LANGUAGE
+
+*INPUT FILE markrtf
+
+*INPUT FILE ofiles
+
+*INPUT FILE layout
+
+*INPUT FILE empchari
+
+*INPUT FILE empcharm
+
+*INPUT FILE chars
+
+*PRINT COMMENT 
+\pard\plain\s2\qc\sb500\sa400\keepn\b\f2\fs28\kerning28{} Implicit Attributes
+\par\pard\plain\qj\sa300\fs22{}Unless indicated otherwise,
+the following attributes are implicit throughout the full descriptions,
+except where the characters concerned are inapplicable.
+
+*TRANSLATE IMPLICIT VALUES
+
+*OUTPUT DIRECTORY info
+
+*INPUT FILE items

@@ -52,7 +52,8 @@ public class AttributeTranslatorFactory {
 					(NumericCharacter<?>) character, 
 					_typeSetter,
 					_attributeFormatter,
-					_context.getOmitSpaceBeforeUnits(), 
+					_context.getOmitSpaceBeforeUnits(),
+					_context.getOmitLowerForCharacter(character.getCharacterId()),
 					omitOr);
 		}
 		else {

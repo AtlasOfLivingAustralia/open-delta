@@ -18,12 +18,11 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 
 import au.org.ala.delta.directives.AbstractDirective;
-import au.org.ala.delta.editor.DeltaEditor;
 import au.org.ala.delta.editor.directives.DirectiveFileInfo;
 import au.org.ala.delta.editor.directives.DirectiveImportHandlerAdapter;
-import au.org.ala.delta.editor.directives.ExportController;
+import au.org.ala.delta.editor.directives.DirectivesFileExporter;
+import au.org.ala.delta.editor.directives.DirectivesFileImporter;
 import au.org.ala.delta.editor.directives.ImportContext;
-import au.org.ala.delta.editor.directives.ImportController;
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.slotfile.directive.DirectiveInOutState;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile;
@@ -112,12 +111,13 @@ public class DirectiveFileEditor extends AbstractDeltaView {
 
 	private void updateGUI() {
 		DirectiveFile file = _model.getSelectedDirectiveFile();
-		ExportController ec = new ExportController((DeltaEditor) Application.getInstance());
 		DirectiveInOutState state = new DirectiveInOutState(_model);
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		PrintStream p = new PrintStream(out);
 		state.setPrintStream(p);
-		ec.writeDirectivesFile(file, state);
+		
+		DirectivesFileExporter exporter = new DirectivesFileExporter();
+		exporter.writeDirectivesFile(file, state);
 
 		if (file.isCharsFile() || file.isItemsFile() || file.isSpecsFile()) {
 			directivesEditor.getTextArea().setEditable(false);
@@ -170,13 +170,13 @@ public class DirectiveFileEditor extends AbstractDeltaView {
 		 * @return results of the validation.
 		 */
 		public ValidationResult validate(Object toValidate) {
-			ImportController controller = new ImportController(
-					(DeltaEditor) Application.getInstance(), _model);
+			ImportContext context = new ImportContext(_model);
+			DirectivesFileImporter importer = new DirectivesFileImporter(_model, context);
 		
 			String text = getText();
 			DirectiveFile file = _model.getSelectedDirectiveFile();
 			DirectiveFileInfo fileInfo = new DirectiveFileInfo(file);
-			boolean success = controller.importDirectivesFile(fileInfo, new StringReader(text), this);
+			boolean success = importer.importDirectivesFile(fileInfo, new StringReader(text), this);
 			if (success) {
 				updateGUI();
 			}

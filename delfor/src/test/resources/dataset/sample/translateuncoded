@@ -1,0 +1,21 @@
+*SHOW Print unrecorded characters.
+
+*HEADING Grass Genera #TIME #DATE
+
+*LISTING FILE uncoded.lst
+
+*PRINT FILE translateuncoded.prt
+
+*INPUT FILE specs
+
+*EXCLUDE CHARACTERS 88
+
+*COMMENT PRINT UNCODED CHARACTERS
+
+*OMIT TYPESETTING MARKS
+
+*TRANSLATE UNCODED CHARACTERS
+
+*INPUT FILE chars
+
+*INPUT FILE items
