@@ -12,7 +12,7 @@ import au.org.ala.delta.model.image.ImageType;
  */
 public class StartupImages extends AbstractImageDirective {
 
-	protected StartupImages() {
+	public StartupImages() {
 		super(ImageType.IMAGE_STARTUP, "startup", "images");
 	}
 	

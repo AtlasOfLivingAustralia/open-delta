@@ -12,34 +12,30 @@ import au.org.ala.delta.editor.directives.DirectiveFileInfo;
 import au.org.ala.delta.editor.directives.DirectiveImportHandlerAdapter;
 import au.org.ala.delta.editor.directives.DirectivesFileExporter;
 import au.org.ala.delta.editor.directives.DirectivesFileImporter;
-import au.org.ala.delta.editor.directives.ImportContext;
 import au.org.ala.delta.editor.model.EditorDataModel;
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.slotfile.directive.DirectiveInOutState;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile.DirectiveType;
-import au.org.ala.delta.editor.slotfile.model.SlotFileRepository;
 import au.org.ala.delta.model.AbstractObservableDataSet;
-import au.org.ala.delta.model.DeltaDataSetRepository;
+import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.util.FileUtils;
 
 public class DirectivesFileFormatter {
 
 	private DelforContext _context;
-	private DeltaDataSetRepository _dataSetRepository;
 	
 	public DirectivesFileFormatter(DelforContext context) {
 		_context = context;
-		_dataSetRepository = new SlotFileRepository();
 	}
 	
 	public void reformat(File file) throws DirectiveException {
-		AbstractObservableDataSet dataSet = (AbstractObservableDataSet) _dataSetRepository.newDataSet();
+		DeltaDataSet dataSet = _context.getDataSet();
 
 		
-		EditorDataModel model = new EditorDataModel(dataSet);
-		ImportContext context = new ImportContext(model);
-		DirectivesFileImporter importer = new DirectivesFileImporter(model, context);
+		EditorDataModel model = new EditorDataModel((AbstractObservableDataSet)dataSet);
+		
+		DirectivesFileImporter importer = new DirectivesFileImporter(model, _context);
 		
 		
 		List<DirectiveFileInfo> files = new ArrayList<DirectiveFileInfo>();

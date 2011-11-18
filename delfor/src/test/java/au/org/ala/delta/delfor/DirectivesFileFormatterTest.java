@@ -8,6 +8,9 @@ import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 
+import au.org.ala.delta.editor.slotfile.model.SlotFileRepository;
+import au.org.ala.delta.model.AbstractObservableDataSet;
+
 /**
  * Tests the DirectivesFileFormatter class.
  */
@@ -18,7 +21,10 @@ public class DirectivesFileFormatterTest extends TestCase {
 	
 	@Before
 	public void setUp() {
-		_context = new DelforContext();
+		SlotFileRepository dataSetRepository = new SlotFileRepository();
+		AbstractObservableDataSet dataSet = (AbstractObservableDataSet) dataSetRepository.newDataSet();
+
+		_context = new DelforContext(dataSet);
 		_formatter = new DirectivesFileFormatter(_context);
 	}
 	
