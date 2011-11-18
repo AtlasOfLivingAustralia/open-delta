@@ -20,6 +20,7 @@
 		<module>confor</module>
 		<module>dist</module>
 		<module>key</module>
+		<module>delfor</module>
 	</modules>
 
 	<build>
