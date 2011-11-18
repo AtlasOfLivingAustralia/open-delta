@@ -65,8 +65,8 @@
 				<configuration>
 					<programs>
 						<program>
-							<mainClass>au.org.ala.delta.dist.DIST</mainClass>
-							<name>DIST</name>
+							<mainClass>au.org.ala.delta.delfor.DELFOR</mainClass>
+							<name>DELFOR</name>
 						</program>
 					</programs>
 					<binFileExtensions>
