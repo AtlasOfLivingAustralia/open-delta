@@ -168,6 +168,10 @@ public class OutputFileManager {
 		_outputWidth = value;
 	}
 	
+	public int getOutputWidth() {
+		return _outputWidth;
+	}
+	
 	protected File fullPathOf(String fileName) {
 		if (StringUtils.isEmpty(fileName)) {
 			return null;

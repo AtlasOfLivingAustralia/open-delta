@@ -95,7 +95,7 @@ public class DirectivesFileImporter {
 		existing.setFlags(directiveFile.getFlags());
 	}
 	
-	private Directive[] directivesOfType(DirectiveType type) {
+	protected Directive[] directivesOfType(DirectiveType type) {
 		Directive[] directives = null;
 		switch(type) {
 		case CONFOR:

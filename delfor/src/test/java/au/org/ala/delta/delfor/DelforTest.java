@@ -25,7 +25,9 @@ public class DelforTest extends TestCase {
 		String path = FilenameUtils.concat(_path, "sample");
 		
 		runDELFOR(FilenameUtils.concat(path, "reorder"));
+		//checkResults(path, "specs.new");
 		//checkResults(path, "chars.new");
+		
 	}
 	
 	private void checkResults(String path, String resultFileName) throws Exception {

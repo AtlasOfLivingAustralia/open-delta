@@ -54,4 +54,8 @@ public class DelforContext extends ImportContext {
 	public List<File> getFilesToReformat() {
 		return _files;
 	}
+	
+	public int getOutputWidth() {
+		return getOutputFileSelector().getOutputWidth();
+	}
 }

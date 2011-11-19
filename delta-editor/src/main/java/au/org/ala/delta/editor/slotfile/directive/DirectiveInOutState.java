@@ -22,6 +22,8 @@ import au.org.ala.delta.translation.PrintFile;
 
 public class DirectiveInOutState {
 
+	public static final int DEFAULT_OUTPUT_WIDTH = 80;
+	
 	private DirectiveInstance _currentDirective;
 	private PrintFile _printer;
 	private MutableDeltaDataSet _dataSet;
@@ -51,7 +53,7 @@ public class DirectiveInOutState {
 	 * @param out the print stream to export to.
 	 */
 	public void setPrintStream(PrintStream out) {
-		PrintFile printer = new PrintFile(out, 80);
+		PrintFile printer = new PrintFile(out, DEFAULT_OUTPUT_WIDTH);
 		printer.setIndentOnLineWrap(true);
 		printer.setSoftWrap(true);
 		printer.setIndent(2);

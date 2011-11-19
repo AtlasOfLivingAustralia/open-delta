@@ -28,7 +28,7 @@ public abstract class InputFileDirective extends AbstractTextDirective {
 	protected void parseFile(DeltaContext context, File file) {
 		try {
 			if (file.exists()) {
-				ConforDirectiveFileParser parser = ConforDirectiveFileParser.createInstance();
+				DirectiveParser<DeltaContext> parser = createParser();
 				DirectiveParserObserver observer = context.getDirectiveParserObserver();
 				if (observer != null) {
 					parser.registerObserver(observer);
@@ -42,4 +42,8 @@ public abstract class InputFileDirective extends AbstractTextDirective {
 		}
 	}
 
+	
+	protected DirectiveParser<DeltaContext> createParser() {
+		return  ConforDirectiveFileParser.createInstance();
+	}
 }

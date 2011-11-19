@@ -61,7 +61,7 @@ public class DirectivesFileFormatter {
 	}
 
 	protected void importAll(List<File> toReformat) throws DirectiveException {
-		DirectivesFileImporter importer = new DirectivesFileImporter(_model, _context);
+		DirectivesFileImporter importer = new DelforDirectivesFileImporter(_model, _context);
 		
 		for (File file : toReformat) {
 			DirectiveFileInfo directiveInfo = new DirectiveFileInfo(file.getName(), DirectiveType.CONFOR);
@@ -89,7 +89,7 @@ public class DirectivesFileFormatter {
 		DirectiveInOutState state = new DirectiveInOutState(model);
 		
 		state.setPrintStream(new PrintStream(outputFile, _context.getFileEncoding().name()));
-		
+		state.getPrinter().setPrintWidth(_context.getOutputWidth());
 		return state;
 	}
 	
