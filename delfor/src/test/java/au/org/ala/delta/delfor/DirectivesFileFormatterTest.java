@@ -20,11 +20,17 @@ public class DirectivesFileFormatterTest extends TestCase {
 	private DelforContext _context;
 	
 	@Before
-	public void setUp() {
+	public void setUp() throws Exception {
 		SlotFileRepository dataSetRepository = new SlotFileRepository();
 		AbstractObservableDataSet dataSet = (AbstractObservableDataSet) dataSetRepository.newDataSet();
-
+		
 		_context = new DelforContext(dataSet);
+		
+		DelforDirectiveFileParser parser = DelforDirectiveFileParser.createInstance();
+		File specs = urlToFile("/dataset/sample/specs");
+		parser.parse(specs, _context);
+		
+		
 		_formatter = new DirectivesFileFormatter(_context);
 	}
 	
