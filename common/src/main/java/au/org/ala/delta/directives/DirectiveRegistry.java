@@ -16,7 +16,7 @@ public class DirectiveRegistry<C extends AbstractDeltaContext> {
 
 	public void registerDirective(AbstractDirective<C> directive) {
 		DirectiveSearchResult result = findDirective(directive.getControlWords());
-		if (result.getResultType() != DirectiveSearchResult.ResultType.NotFound) {
+		if (result.getResultType() == DirectiveSearchResult.ResultType.Found) {
 			throw new RuntimeException("Directive already exists!" + directive.toString());
 		}
 

@@ -1,0 +1,59 @@
+*SHOW Translate into INTKEY format. 
+ 
+*LISTING FILE toint.lst 
+ 
+*HEADING DELTA Sample Data 
+ 
+*REGISTRATION SUBHEADING Version: 21st September 2000. 
+ 
+*INPUT FILE specs 
+ 
+*TRANSLATE INTO INTKEY FORMAT 
+ 
+*CHARACTERS FOR SYNONYMY 1 
+ 
+*OMIT PERIOD FOR CHARACTERS 1 
+ 
+*OMIT OR FOR CHARACTERS 86 
+ 
+*OMIT INNER COMMENTS
+ 
+*EXCLUDE CHARACTERS 88-89 
+ 
+*CHARACTER RELIABILITIES 1-2,0 3-7,7 8,5 9-11,7 12-14,8 15-25,7 26,0 27,7 28,8
+29-39,7 40,5 41-44,7 45,8 46-48,7 49,8 50-64,7 65,6 66,7 67,8 68,7 69,3 70,0
+71,5 72-77,0 78,7.1 79-87,0 
+ 
+*NEW PARAGRAPHS AT CHARACTERS 1 5 13 26-27 69 78-79 87-89 
+ 
+*ITEM SUBHEADINGS 
+#1. \pard\li0\fi340 
+#5. \pard\li0\fi340\b{}Habit, vegetative morphology.\b0{} 
+#13. \pard\li0\fi340\b{}Inflorescence.\b0{} 
+#26. \pard\li0\fi340\b{}Female-sterile spikelets.\b0{} 
+#27. \pard\li0\fi340\b{}Female-fertile spikelets, florets, fruit.\b0{} 
+#69. \pard\li0\fi340\b{}Photosynthetic pathway, leaf blade anatomy.\b0{} 
+#78. \pard\li0\fi340\b{}Special diagnostic feature. \b0{} 
+#79. \pard\li0\fi340\b{}Taxonomy, distribution.\b0{} 
+#87. \pard\li0\fi340\b{}Anatomical references.\b0{} 
+#88. \pard\li0\fi340\b{}Miscellaneous.\b0{} 
+ 
+*INPUT FILE cnotes 
+ 
+*INPUT FILE ofonts 
+ 
+*INPUT FILE cimages 
+ 
+*INPUT FILE timages 
+ 
+*INPUT FILE ofiles 
+ 
+*COMMENT INPUT FILE kimages 
+ 
+*INTKEY OUTPUT FILE ichars 
+ 
+*INPUT FILE chars 
+ 
+*INTKEY OUTPUT FILE iitems 
+ 
+*INPUT FILE items 

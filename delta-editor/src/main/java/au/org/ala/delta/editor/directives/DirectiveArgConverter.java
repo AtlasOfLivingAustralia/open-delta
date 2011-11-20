@@ -220,14 +220,7 @@ public class DirectiveArgConverter {
 			}
 			return id;
 		}
-		@Override
-		public BigDecimal convertData(DirListData data) {
-			throw new UnsupportedOperationException();
-		}
-		@Override
-		public void convertData(DirListData data, BigDecimal value) {
-			data.setIntNumb((Integer)convertId(value.intValue()));
-		}
+	
 	}
 	
 	class DirectIntegerConverter implements IdConverter {
@@ -354,10 +347,8 @@ public class DirectiveArgConverter {
 		case DirectiveArgType.DIRARG_ITEM:
 		case DirectiveArgType.DIRARG_ITEMREALLIST:
 		case DirectiveArgType.DIRARG_ITEMLIST:
-		case DirectiveArgType.DIRARG_ITEMCHARLIST:
 		case DirectiveArgType.DIRARG_INTKEY_ITEMLIST:
 		case DirectiveArgType.DIRARG_INTKEY_ITEM:
-		case DirectiveArgType.DIRARG_INTKEY_ITEMCHARSET:
 		case DirectiveArgType.DIRARG_KEYWORD_ITEMLIST:
 			return _itemNumberConverter;
 			
@@ -376,8 +367,9 @@ public class DirectiveArgConverter {
 			
 		case DirectiveArgType.DIRARG_ITEMTEXTLIST:
 		case DirectiveArgType.DIRARG_ITEMFILELIST:
+		case DirectiveArgType.DIRARG_INTKEY_ITEMCHARSET:
+		case DirectiveArgType.DIRARG_ITEMCHARLIST:
 			return _itemDescriptionConverter;
-
 		case DirectiveArgType.DIRARG_ALLOWED:
 			throw new NotImplementedException();
 

@@ -12,7 +12,7 @@ import au.org.ala.delta.editor.slotfile.DirectiveArgType;
 /**
  * Parses and imports all directives not of type DirectiveType.DIRARG_INTERNAL.
  */
-class ImportDirective extends AbstractDirective<ImportContext>{
+public class ImportDirective extends AbstractDirective<ImportContext>{
 
 	private Directive _directive;
 	private DirectiveArguments _args;

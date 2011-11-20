@@ -1,7 +1,44 @@
-* INPUT FILE specs
+*SHOW Reorder the characters (using Delfor - cannot be used with Confor).
 
-* NEW CHARACTER ORDER 89 88 87 86 85 84 83 82 81 80 1-79
+*LISTING FILE reorder.lst
 
-* REFORMAT chars
+*COMMENT This directives file cannot be used with CONFOR.
 
-* REFORMAT specs
+*INPUT FILE specs
+
+*OUTPUT WIDTH 80
+
+*COMMENT Move character 85 ('number of species') to 2.
+*NEW CHARACTER ORDER 1 85 2-84 86-89
+
+*COMMENT INPUT DELTA FILE confor.cph
+
+*COMMENT. CONFOR files.
+*REFORMAT specs
+*REFORMAT chars
+*REFORMAT items
+*REFORMAT cimages
+*REFORMAT cnotes
+*REFORMAT empchari
+*REFORMAT empcharm
+*REFORMAT headc
+*REFORMAT layout
+*REFORMAT summary
+*REFORMAT toali
+*REFORMAT todis
+*REFORMAT tohen
+*REFORMAT toint
+*REFORMAT tokey
+*REFORMAT tonex
+*REFORMAT topau
+*REFORMAT topay
+
+*COMMENT. KEY files.
+*REFORMAT key4
+*REFORMAT key6
+
+*COMMENT INPUT DELTA FILE intkey.cph
+
+*COMMENT. INTKEY files.
+*REFORMAT intkey.ini
+

@@ -1,6 +1,6 @@
 package au.org.ala.delta.delfor;
 
-import java.util.Arrays;
+import java.util.List;
 
 import au.org.ala.delta.editor.directives.DirectivesFileImporter;
 import au.org.ala.delta.editor.directives.ImportContext;
@@ -18,7 +18,7 @@ import au.org.ala.delta.editor.slotfile.model.DirectiveFile.DirectiveType;
  */
 public class DelforDirectivesFileImporter extends DirectivesFileImporter {
 	
-	private Directive[] _conforDirArray;
+	private Directive[] _allDirectives;
 	
 	public DelforDirectivesFileImporter(EditorViewModel model, ImportContext context) {
 		super(model, context);
@@ -26,23 +26,23 @@ public class DelforDirectivesFileImporter extends DirectivesFileImporter {
 	}
 
 	private void initialiseConforDirectives() {
-		_conforDirArray = Arrays.copyOf(ConforDirType.ConforDirArray, ConforDirType.ConforDirArray.length);
+		
+		List<Directive> allDirectives = DirectivesUtils.mergeAllDirectives();
+		_allDirectives = (Directive[])allDirectives.toArray(new Directive[allDirectives.size()]);
+
 		int[] toCopy = {ConforDirType.CHARACTER_TYPES, ConforDirType.MAXIMUM_NUMBER_OF_ITEMS, 
 				ConforDirType.MAXIMUM_NUMBER_OF_STATES, ConforDirType.NUMBER_OF_CHARACTERS, 
 				ConforDirType.NUMBERS_OF_STATES};
 		
 		for (int dirId : toCopy) {
-			_conforDirArray[dirId] = copyWithoutImplementationClass(_conforDirArray[dirId]);
+			_allDirectives[dirId] = copyWithoutImplementationClass(_allDirectives[dirId]);
 		}
+		
 	}
-
+	
 	@Override
 	protected Directive[] directivesOfType(DirectiveType type) {
-		Directive[] directives = super.directivesOfType(type);
-		if (directives == ConforDirType.ConforDirArray) {
-			return _conforDirArray;
-		}
-		return directives;
+		return _allDirectives;
 	}
 
 	private Directive copyWithoutImplementationClass(Directive directive) {

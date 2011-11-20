@@ -3,7 +3,6 @@ package au.org.ala.delta.delfor;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.ArrayList;
 import java.util.List;
 
 import au.org.ala.delta.delfor.format.FormattingAction;
@@ -22,6 +21,13 @@ import au.org.ala.delta.editor.slotfile.model.SlotFileDataSet;
 import au.org.ala.delta.model.AbstractObservableDataSet;
 import au.org.ala.delta.util.FileUtils;
 
+/**
+ * The DirectivesFileFormatter class does the work of reformatting the
+ * directives files.  It achieves this by importing all of the specified
+ * directives files into the dataset, running the specified reformatting
+ * actions (such as reordering characters/states etc) then exporting the
+ * directives files.
+ */
 public class DirectivesFileFormatter {
 
 	private DelforContext _context;
@@ -34,7 +40,6 @@ public class DirectivesFileFormatter {
 	
 	public void reformat() throws DirectiveException {
 		List<File> toReformat = _context.getFilesToReformat();
-		
 		
 		importAll(toReformat);
 		
@@ -62,14 +67,12 @@ public class DirectivesFileFormatter {
 
 	protected void importAll(List<File> toReformat) throws DirectiveException {
 		DirectivesFileImporter importer = new DelforDirectivesFileImporter(_model, _context);
-		
+		DirectivesFileClassifier classifier = new DirectivesFileClassifier(_context);
 		for (File file : toReformat) {
-			DirectiveFileInfo directiveInfo = new DirectiveFileInfo(file.getName(), DirectiveType.CONFOR);
-			List<DirectiveFileInfo> files = new ArrayList<DirectiveFileInfo>();
 			
-			files.add(directiveInfo);
-		
 			try {
+				DirectiveType type = classifier.classify(file);
+				DirectiveFileInfo directiveInfo = new DirectiveFileInfo(file.getName(), type);
 			
 				importer.importDirectivesFile(directiveInfo, file, new DirectiveImportHandlerAdapter());
 			}

@@ -35,7 +35,7 @@ public class DirectivesFileImporter {
 		
 			reader = new InputStreamReader(fileIn, _context.getFileEncoding());
 		
-		   result =  importDirectivesFile(fileInfo, reader, handler);
+		    result =  importDirectivesFile(fileInfo, reader, handler);
 		}
 		finally {
 			IOUtils.closeQuietly(reader);

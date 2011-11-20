@@ -20,6 +20,7 @@ import au.org.ala.delta.directives.args.IntegerIdArgParser;
 import au.org.ala.delta.directives.args.IntegerTextListParser;
 import au.org.ala.delta.directives.args.KeyStateParser;
 import au.org.ala.delta.directives.args.NumericArgParser;
+import au.org.ala.delta.directives.args.PresetCharactersParser;
 import au.org.ala.delta.directives.args.StringTextListParser;
 import au.org.ala.delta.directives.args.TextArgParser;
 import au.org.ala.delta.directives.validation.DirectiveError;
@@ -85,6 +86,9 @@ public class DirectiveArgParserFactory {
       	case DirectiveArgType.DIRARG_INTKEY_CHARLIST:
         case DirectiveArgType.DIRARG_INTKEY_ITEMLIST:
         	parser = new IntKeyParser(context, reader, directive.getArgType());
+        	break;
+        case DirectiveArgType.DIRARG_PRESET:
+        	parser = new PresetCharactersParser(context, reader);
         	break;
 		default:
 			throw new RuntimeException("No parser for :"+directive.joinNameComponents()+
