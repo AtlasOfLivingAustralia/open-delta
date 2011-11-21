@@ -21,15 +21,6 @@ public class DelforContext extends ImportContext {
 		_actions = new ArrayList<FormattingAction>();
 		_files = new ArrayList<File>();
 	}
-	
-	@Override
-	public void setMaximumNumberOfItems(int items) {
-		super.setMaximumNumberOfItems(items);
-		
-		for (int i=1; i<=items; i++) {
-			getDataSet().addItem();
-		}
-	}
 
 	public void newLineForAttributes() {
 		_newLineForAttributes = true;

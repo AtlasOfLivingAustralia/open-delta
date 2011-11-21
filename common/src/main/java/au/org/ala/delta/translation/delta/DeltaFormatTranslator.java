@@ -195,7 +195,6 @@ public class DeltaFormatTranslator extends AbstractIterativeTranslator {
 	}
 	
 	protected void outputCharacterStates(MultiStateCharacter character) {
-		_printer.setIndent(7);
 		for (int i=1; i<=character.getNumberOfStates(); i++) {
 			outputState(character, i);
 		}

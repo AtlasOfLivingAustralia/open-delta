@@ -424,8 +424,8 @@ public class PrintFile {
     	_lineWrapIndent = indent;
     }
     
-    public void useParagraphIndentOnLineWrap() {
-    	_useParagraphIndentOnLineWrap = true;
+    public void setUseParagraphIndentOnLineWrap(boolean b) {
+    	_useParagraphIndentOnLineWrap = b;
     }
     
     public void setNewFileHeader(String header) {

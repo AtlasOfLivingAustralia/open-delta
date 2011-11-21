@@ -27,7 +27,7 @@ public class DelforTest extends TestCase {
 		runDELFOR(FilenameUtils.concat(path, "reorder"));
 		
 		String[] files = {
-				//"specs", "chars", "items",
+				"specs", "chars", "items",
 				"cimages", "cnotes",
 				"empchari", "empcharm", "headc", "layout", "summary",
 				"toali", "todis", "tohen", "toint", "tokey",
@@ -35,13 +35,17 @@ public class DelforTest extends TestCase {
 				"intkey.ini"};
 		
 		for (String file : files) {
-			//checkResults(path, file+".new");
+			checkResults(path, file+".new");
 		}	
 	}
 	
 	private void checkResults(String path, String resultFileName) throws Exception {
 		
-		java.io.File expectedFile = new File(FilenameUtils.concat(path, "expected_results/"+resultFileName));
+		String expectedResultFileName = resultFileName;
+		if (resultFileName.equals("intkey.ini.new")) {
+			expectedResultFileName = "intkey.new";
+		}
+		java.io.File expectedFile = new File(FilenameUtils.concat(path, "expected_results/"+expectedResultFileName));
 		String expected = FileUtils.readFileToString(expectedFile, "cp1252");
 	
 		System.out.println(expected);

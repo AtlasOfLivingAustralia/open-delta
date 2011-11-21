@@ -68,6 +68,7 @@ public class DirectiveArgConverter {
 	private DirectiveArgument<?> directiveArgumentFromDirArgs(int argType, DirArgs arg) {
 		IdConverter converter = idConverterFor(argType);
 		Object id = converter.convertFromSlotFileId(arg.getId());
+		
 		DirectiveArgument<?> directiveArgument = null;
 		if (id == null) {
 			directiveArgument = new DirectiveArgument<Integer>();
@@ -145,6 +146,9 @@ public class DirectiveArgConverter {
 	class CharacterNumberConverter implements IdConverter {
 		@Override
 		public int convertToSlotFileId(Object id) {		
+			if (id == null) {
+				return 0;
+			}
 			return _vop.getDeltaMaster().uniIdFromCharNo((Integer)id);
 		}
 		@Override

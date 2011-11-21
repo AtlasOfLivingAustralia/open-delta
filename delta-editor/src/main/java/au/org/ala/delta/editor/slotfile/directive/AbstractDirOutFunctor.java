@@ -44,7 +44,7 @@ public abstract class AbstractDirOutFunctor implements DirectiveFunctor {
 	    }
 	    
 	    Directive directiveInfo = directive.getDirective();
-	    _textBuffer.append(directiveInfo.joinNameComponents());
+	    _textBuffer.append(directiveInfo.joinNameComponents().toUpperCase());
 		state.getPrinter().writeJustifiedText(_textBuffer.toString(), -1);
 		_textBuffer = new StringBuilder();
 	}

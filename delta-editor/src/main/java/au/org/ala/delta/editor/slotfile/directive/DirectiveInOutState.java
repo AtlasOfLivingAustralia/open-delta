@@ -57,7 +57,8 @@ public class DirectiveInOutState {
 		printer.setIndentOnLineWrap(true);
 		printer.setSoftWrap(true);
 		printer.setIndent(2);
-		printer.useParagraphIndentOnLineWrap();
+		printer.setUseParagraphIndentOnLineWrap(true);
+	
 		setPrinter(printer);
 	}
 	

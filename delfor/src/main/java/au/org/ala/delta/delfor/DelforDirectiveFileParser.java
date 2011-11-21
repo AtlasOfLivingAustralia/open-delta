@@ -36,6 +36,7 @@ import au.org.ala.delta.directives.ExcludeItems;
 import au.org.ala.delta.directives.IncludeCharacters;
 import au.org.ala.delta.directives.IncludeItems;
 import au.org.ala.delta.directives.InputDeltaFile;
+import au.org.ala.delta.directives.ItemDescriptions;
 import au.org.ala.delta.directives.ListingFile;
 import au.org.ala.delta.directives.MandatoryCharacters;
 import au.org.ala.delta.directives.MaximumNumberOfItems;
@@ -82,6 +83,7 @@ public class DelforDirectiveFileParser extends DirectiveParser<DeltaContext> {
         instance.registerDirective(new IncludeItems());     
         instance.registerDirective(new InputDeltaFile());
         instance.registerDirective(new InputFile());
+        instance.registerDirective(new ItemDescriptions());
        
         instance.registerDirective(new ListingFile());
         

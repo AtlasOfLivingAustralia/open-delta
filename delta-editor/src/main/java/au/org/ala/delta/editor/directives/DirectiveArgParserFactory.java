@@ -128,11 +128,13 @@ public class DirectiveArgParserFactory {
 		private int _argType;
 		public IntKeyParser(AbstractDeltaContext context, Reader reader, int argType) {
 			super(context, reader);
+			_argType = argType;
 		}
 		
 		@Override
 		public void parse() throws ParseException {
 			_args = new DirectiveArguments();
+			readNext();
 			Pair<String, IntRange> next;
 			switch (_argType) {
 			case DirectiveArgType.DIRARG_INTKEY_ITEM: 
@@ -178,6 +180,7 @@ public class DirectiveArgParserFactory {
 	                else {
 	              	  _args.addTextArgument(next.getFirst());
 	                }
+	                next = readIntkeyRange(false);
 	            }
 	        
 	            break;
@@ -198,7 +201,6 @@ public class DirectiveArgParserFactory {
 		// if a numeric range looks bad.
 		protected Pair<String, IntRange> readIntkeyRange (boolean isKeyword) throws ParseException {
 		  
-		  readNext();
 		  skipWhitespace();
 		  if (Character.isDigit(_currentChar)) {
 			  return new Pair<String, IntRange>("", readIds());
@@ -214,7 +216,7 @@ public class DirectiveArgParserFactory {
 		  if (tmpWord.charAt(0) == '\"') {
 			  tmpWord.deleteCharAt(0);
 		      boolean moreData = true;
-		      while ((tmpWord.length() == 0 && tmpWord.charAt(tmpWord.length() - 1) != '\"') && moreData) {
+		      while ((tmpWord.length() == 0 || tmpWord.charAt(tmpWord.length() - 1) != '\"') && moreData) {
 		    	  String dataBuf = getNextWord(); 
 		    	  moreData = StringUtils.isNotEmpty(dataBuf);
 		    	  tmpWord.append(dataBuf);
@@ -231,12 +233,16 @@ public class DirectiveArgParserFactory {
 		
 		protected String getNextWord() throws ParseException {
 			StringBuilder word = new StringBuilder();
-			readNext();
-			skipWhitespace();
+			
+			while (Character.isWhitespace(_currentChar)) {
+				word.append(_currentChar);
+				readNext();
+			}
 			boolean finished = false;
 			while (!finished) {
-				while (!Character.isWhitespace(_currentChar)) {
+				while (_currentInt >= 0 && !Character.isWhitespace(_currentChar)) {
 					word.append(_currentChar);
+					readNext();
 				}
 				IntRange rtf = RTFUtils.markKeyword(word.toString());
 				if (rtf.getMaximumInteger() < word.length()) {
