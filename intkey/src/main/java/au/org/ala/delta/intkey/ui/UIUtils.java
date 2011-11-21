@@ -74,7 +74,7 @@ public class UIUtils {
 
         if (fileName.toLowerCase().endsWith(".rtf")) {
             File file = convertURLToFile(fileURL, 60000);
-            String rtfSource = FileUtils.readFileToString(file);
+            String rtfSource = FileUtils.readFileToString(file);                       
             RtfReportDisplayDialog dlg = new RtfReportDisplayDialog(getMainFrame(), new SimpleRtfEditorKit(null), rtfSource, description);
             ((SingleFrameApplication) Application.getInstance()).show(dlg);
         } else if (fileName.toLowerCase().endsWith(".html")) {

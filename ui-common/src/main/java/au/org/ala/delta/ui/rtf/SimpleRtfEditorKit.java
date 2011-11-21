@@ -37,15 +37,22 @@ public class SimpleRtfEditorKit extends StyledEditorKit {
 
 	private JComponent _owner;
 	private boolean _centerVertically = false;
+	private boolean _scaleFontsToScreenDPI = true;
 
 	public SimpleRtfEditorKit(JComponent owner) {
-		this(owner, false);
+		this(owner, false, true);
 	}
 	
 	public SimpleRtfEditorKit(JComponent owner, boolean centerVertically) {
+		this(owner, centerVertically, true);
+	}
+	
+	public SimpleRtfEditorKit(JComponent owner, boolean centerVertically, boolean scaleToScreenDPI) {
 		_owner = owner;
 		_centerVertically = centerVertically;
+		_scaleFontsToScreenDPI = scaleToScreenDPI;
 	}
+	
 	
 
 	@Override
@@ -77,7 +84,7 @@ public class SimpleRtfEditorKit extends StyledEditorKit {
 	}
 
 	private void parseRtf(Reader in, Document doc, int position) throws IOException {
-		RTFHandler handler = new DocumentBuildingRtfHandler((DefaultStyledDocument) doc, position, _owner);
+		RTFHandler handler = new DocumentBuildingRtfHandler((DefaultStyledDocument) doc, position, _owner, _scaleFontsToScreenDPI);
 		RTFReader reader = new RTFReader(in, handler);
 		reader.parse();
 	}

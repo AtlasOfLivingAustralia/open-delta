@@ -1,6 +1,10 @@
-#Tue Nov 01 16:58:27 EST 2011
-eclipse.preferences.version=1
-org.eclipse.jdt.core.compiler.codegen.targetPlatform=1.6
+#Thu Nov 03 09:55:53 EST 2011
+encoding//src/main/java=Cp1252
 org.eclipse.jdt.core.compiler.compliance=1.6
+encoding//src/main/resources=Cp1252
+encoding//src/test/resources=Cp1252
+encoding//src/test/java=Cp1252
 org.eclipse.jdt.core.compiler.problem.forbiddenReference=warning
+org.eclipse.jdt.core.compiler.codegen.targetPlatform=1.6
+eclipse.preferences.version=1
 org.eclipse.jdt.core.compiler.source=1.6

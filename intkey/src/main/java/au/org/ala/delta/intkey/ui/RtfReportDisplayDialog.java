@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Frame;
+import java.awt.print.PrinterException;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -49,6 +50,7 @@ public class RtfReportDisplayDialog extends IntkeyDialog {
 	private JMenuBar _menuBar;
 	private JMenu _mnuFile;
 	private JMenuItem _mnuItSaveAs;
+	private JMenuItem _mnuItPrint;
 	private JMenu _mnuEdit;
 	private JMenuItem _mnuItFind;
 	private JMenuItem _mnuItCopy;
@@ -93,6 +95,7 @@ public class RtfReportDisplayDialog extends IntkeyDialog {
 		getContentPane().add(_scrollPane, BorderLayout.CENTER);
 
 		_textPane = new JTextPane();
+
 		_textPane.setEditable(false);
 		_scrollPane.setViewportView(_textPane);
 
@@ -116,6 +119,10 @@ public class RtfReportDisplayDialog extends IntkeyDialog {
 		_mnuItSaveAs = new JMenuItem();
 		_mnuItSaveAs.setAction(actionMap.get("rtfReportDisplayDialog_mnuItSaveAs"));
 		_mnuFile.add(_mnuItSaveAs);
+
+		_mnuItPrint = new JMenuItem();
+		_mnuItPrint.setAction(actionMap.get("rtfReportDisplayDialog_mnuItPrint"));
+		_mnuFile.add(_mnuItPrint);
 
 		_mnuEdit = new JMenu();
 		_mnuEdit.setName("rtfReportDisplayDialog_mnuEdit");
@@ -189,6 +196,17 @@ public class RtfReportDisplayDialog extends IntkeyDialog {
 					JOptionPane.showMessageDialog(this, MessageFormat.format(fileWriteError, selectedFile.getAbsolutePath()));
 				}
 			}
+		}
+	}
+
+	@Action
+	public void rtfReportDisplayDialog_mnuItPrint() {
+		try {
+			JTextPane temp = new JTextPane();
+			temp.setEditorKit(new SimpleRtfEditorKit(null, false, false));
+			temp.setText(_contentSource);
+			temp.print();
+		} catch (PrinterException ex) {
 		}
 	}
 
