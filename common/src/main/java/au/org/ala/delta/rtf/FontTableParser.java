@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.io.PushbackReader;
 import java.io.StringReader;
 
-import org.junit.Test;
-
 public class FontTableParser {
 
 	public static void parse(String fonttable, FontTableHandler handler) {
