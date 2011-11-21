@@ -25,9 +25,18 @@ public class DelforTest extends TestCase {
 		String path = FilenameUtils.concat(_path, "sample");
 		
 		runDELFOR(FilenameUtils.concat(path, "reorder"));
-		//checkResults(path, "specs.new");
-		//checkResults(path, "chars.new");
 		
+		String[] files = {
+				//"specs", "chars", "items",
+				"cimages", "cnotes",
+				"empchari", "empcharm", "headc", "layout", "summary",
+				"toali", "todis", "tohen", "toint", "tokey",
+				"tonex", "topau", "topay", "key4", "key6",
+				"intkey.ini"};
+		
+		for (String file : files) {
+		//	checkResults(path, file+".new");
+		}	
 	}
 	
 	private void checkResults(String path, String resultFileName) throws Exception {
@@ -48,7 +57,7 @@ public class DelforTest extends TestCase {
 		actual = actual.replaceAll(" ([\\r\\n]+)", "$1");
 		
 		
-		assertEquals(expected, actual);
+		assertEquals(resultFileName, expected, actual);
 	}
 
 	protected String replaceNewLines(String expected) {

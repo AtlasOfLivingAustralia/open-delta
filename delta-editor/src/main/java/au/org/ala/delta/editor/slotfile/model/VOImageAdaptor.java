@@ -57,8 +57,9 @@ public class VOImageAdaptor implements ImageData {
 			deleteOverlay(overlay);
 		}
 		
-		for (ImageOverlay overlay : overlays) {
-			addOverlay(overlay);
+		// Insert in reverse order as each insert goes to the top.
+		for (int i=overlays.size()-1; i>=0; i--) {
+			addOverlay(overlays.get(i));
 		}
 	}
 
@@ -70,7 +71,7 @@ public class VOImageAdaptor implements ImageData {
 	
 	public void addOverlay(ImageOverlay overlay) {
 		synchronized (_vop) {
-			_imageDesc.insertOverlay(updateStateId(overlay), 0);
+			_imageDesc.insertOverlay(updateStateId(overlay));
 		}
 	}
 	

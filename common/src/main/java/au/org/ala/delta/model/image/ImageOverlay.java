@@ -77,6 +77,8 @@ public class ImageOverlay {
 	public ImageOverlay(ImageOverlay toCopy) {
 		this(toCopy.type);
 		location = new ArrayList<OverlayLocation>(toCopy.location);
+		overlayText = toCopy.overlayText;
+		comment = toCopy.comment;
 	}
 
 	public boolean isType(int overlayType) {

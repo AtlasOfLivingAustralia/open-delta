@@ -16,6 +16,7 @@ package au.org.ala.delta.directives;
 
 import java.io.File;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.DeltaContext;
@@ -53,7 +54,7 @@ public class InputDeltaFile extends InputFileDirective {
 			deltaDir = "DELTA";
 		}
 		
-		return new File(deltaDir);
+		return new File(FilenameUtils.concat(deltaDir, fileName));
 	}
 
 }

@@ -22,6 +22,7 @@ public class ImageParser extends DirectiveArgsParser {
 	public ImageParser(DeltaContext context, Reader reader, int imageType) {
 		super(context, reader);
 		_overlayParser = new ImageOverlayParser();
+		_overlayParser.setColorsBGR(true);
 		_imageType = imageType;
 	}
 	
