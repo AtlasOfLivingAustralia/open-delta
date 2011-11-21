@@ -103,20 +103,6 @@ public class FontTableParser {
 
 	}
 
-	@Test
-	public void testParser() {
-		String table = "{\\f0 \\froman \\fcharset0 \\fprq2 {}Times New Roman;}{\\f1 \\froman \\fcharset2 \\fprq2 {}Symbol;}{\\f2 \\fswiss \\fcharset0 \\fprq2 {}Arial;}";
-
-		parse(table, new FontTableHandler() {
-
-			@Override
-			public void onFont(RTFFontInfo font) {
-				System.err.println(String.format("%d. %s", font.getIndex(), font.getName()));
-			}
-		});
-
-	}
-
 	public interface FontTableHandler {
 		void onFont(RTFFontInfo font);
 	}
