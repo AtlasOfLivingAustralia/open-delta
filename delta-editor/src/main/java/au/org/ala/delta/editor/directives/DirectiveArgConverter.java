@@ -67,7 +67,7 @@ public class DirectiveArgConverter {
 	
 	private DirectiveArgument<?> directiveArgumentFromDirArgs(int argType, DirArgs arg) {
 		IdConverter converter = idConverterFor(argType);
-		Object id = converter.convertId(arg.getId());
+		Object id = converter.convertFromSlotFileId(arg.getId());
 		DirectiveArgument<?> directiveArgument = null;
 		if (id == null) {
 			directiveArgument = new DirectiveArgument<Integer>();
@@ -111,7 +111,7 @@ public class DirectiveArgConverter {
 			for (DirectiveArgument<?> arg : args.getDirectiveArguments()) {
 				IdConverter converter = idConverterFor(argType);
 				
-				DirArgs dirArg = new DirArgs(converter.convertId(arg.getId()));
+				DirArgs dirArg = new DirArgs(converter.convertToSlotFileId(arg.getId()));
 				dirArg.setText(arg.getText());
 				dirArg.comment = arg.getComment();
 				BigDecimal value = arg.getValue();
@@ -123,7 +123,6 @@ public class DirectiveArgConverter {
 				for (BigDecimal dataValue : arg.getData()) {
 					DirListData data = new DirListData();
 					converter.convertData(data, dataValue);
-					data.setAsDeltaNumber(new DeltaNumber(dataValue.toPlainString()));
 					dirArg.getData().add(data);
 				}
 				dir.args.add(dirArg);
@@ -134,9 +133,9 @@ public class DirectiveArgConverter {
 
  
 	interface IdConverter {
-		public int convertId(Object id);
+		public int convertToSlotFileId(Object id);
 		
-		public Object convertId(int id);
+		public Object convertFromSlotFileId(int id);
 		
 		public BigDecimal convertData(DirListData data);
 		
@@ -145,35 +144,35 @@ public class DirectiveArgConverter {
 	
 	class CharacterNumberConverter implements IdConverter {
 		@Override
-		public int convertId(Object id) {		
+		public int convertToSlotFileId(Object id) {		
 			return _vop.getDeltaMaster().uniIdFromCharNo((Integer)id);
 		}
 		@Override
-		public Object convertId(int id) {
-			return convert(id);
+		public Object convertFromSlotFileId(int id) {
+			return charNumFromId(id);
 		}
 		@Override
 		public BigDecimal convertData(DirListData data) {
-			return new BigDecimal(convert(data.getIntNumb()));
+			return new BigDecimal(charNumFromId(data.getIntNumb()));
 		}
 		
 		@Override
 		public void convertData(DirListData data, BigDecimal value) {
-			data.setIntNumb((Integer)convertId(value.intValue()));
+			data.setIntNumb((Integer)convertToSlotFileId(value.intValue()));
 		}
 		
-		private int convert(int id) {
+		private int charNumFromId(int id) {
 			return _vop.getDeltaMaster().charNoFromUniId(id);
 		}
 	}
 	
 	class ItemNumberConverter implements IdConverter {
 		@Override
-		public int convertId(Object id) {
+		public int convertToSlotFileId(Object id) {
 			return _vop.getDeltaMaster().uniIdFromItemNo((Integer)id);
 		}
 		@Override
-		public Object convertId(int id) {
+		public Object convertFromSlotFileId(int id) {
 			return convert(id);
 		}
 		@Override
@@ -183,7 +182,7 @@ public class DirectiveArgConverter {
 		
 		@Override
 		public void convertData(DirListData data, BigDecimal value) {
-			data.setIntNumb((Integer)convertId(value.intValue()));
+			data.setIntNumb((Integer)convertFromSlotFileId(value.intValue()));
 		}
 		
 		private int convert(int id) {
@@ -193,12 +192,12 @@ public class DirectiveArgConverter {
 	
 	class ItemDescriptionConverter extends ItemNumberConverter {
 		@Override
-		public int convertId(Object id) {
+		public int convertToSlotFileId(Object id) {
 			// Delimeters have a funny behaviour.
 			if (id instanceof Integer) {
 				int idInt = (Integer)id;
 				if (idInt != Integer.MIN_VALUE) {
-					return super.convertId(id);
+					return super.convertToSlotFileId(id);
 				}
 				return idInt;
 			}
@@ -214,7 +213,7 @@ public class DirectiveArgConverter {
 		 * code.
 		 */
 		@Override
-		public Object convertId(int id) {
+		public Object convertFromSlotFileId(int id) {
 			if (id > 0) {
 				return _vop.getDeltaMaster().itemNoFromUniId(id);
 			}
@@ -225,11 +224,11 @@ public class DirectiveArgConverter {
 	
 	class DirectIntegerConverter implements IdConverter {
 		@Override
-		public int convertId(Object id) {
+		public int convertToSlotFileId(Object id) {
 			return (Integer)id;
 		}
 		@Override
-		public Object convertId(int id) {
+		public Object convertFromSlotFileId(int id) {
 			return Integer.valueOf(id);
 		}
 		@Override
@@ -239,19 +238,19 @@ public class DirectiveArgConverter {
 		
 		@Override
 		public void convertData(DirListData data, BigDecimal value) {
-			data.setIntNumb((Integer)convertId(value.intValue()));
+			data.setIntNumb((Integer)convertFromSlotFileId(value.intValue()));
 		}
 	}
 	class DirectRealConverter extends DirectIntegerConverter {
 		@Override
-		public int convertId(Object id) {
+		public int convertToSlotFileId(Object id) {
 			if (id == null) {
 				return -1;
 			}
 			return (Integer)id;
 		}
 		@Override
-		public Object convertId(int id) {
+		public Object convertFromSlotFileId(int id) {
 			return Integer.valueOf(id);
 		}
 		@Override
@@ -267,11 +266,11 @@ public class DirectiveArgConverter {
 	
 	class NullConverter implements IdConverter {
 		@Override
-		public int convertId(Object id) {
+		public int convertToSlotFileId(Object id) {
 			return 0;
 		}
 		@Override
-		public Object convertId(int id) {
+		public Object convertFromSlotFileId(int id) {
 			return null;
 		}
 		@Override

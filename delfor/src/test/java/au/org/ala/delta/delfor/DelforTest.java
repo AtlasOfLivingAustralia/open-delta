@@ -35,7 +35,7 @@ public class DelforTest extends TestCase {
 				"intkey.ini"};
 		
 		for (String file : files) {
-		//	checkResults(path, file+".new");
+			//checkResults(path, file+".new");
 		}	
 	}
 	
