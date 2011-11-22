@@ -27,6 +27,7 @@ public class DirectiveInOutState {
 	private DirectiveInstance _currentDirective;
 	private PrintFile _printer;
 	private MutableDeltaDataSet _dataSet;
+	private boolean _newLineAfterAttributes;
 	
 	public DirectiveInOutState(MutableDeltaDataSet dataSet) {
 		_dataSet = dataSet;
@@ -68,6 +69,14 @@ public class DirectiveInOutState {
 	
 	public void setDataSet(MutableDeltaDataSet dataSet) {
 		_dataSet = dataSet;
+	}
+	
+	public void setNewLineAfterAttributes(boolean newLineAfterAttributes) {
+		_newLineAfterAttributes = newLineAfterAttributes;
+	}
+	
+	public boolean getNewLineAfterAttributes() {
+		return _newLineAfterAttributes;
 	}
 	
 	public void error(String messageKey) {

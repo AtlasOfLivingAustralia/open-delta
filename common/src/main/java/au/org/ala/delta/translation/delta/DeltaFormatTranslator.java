@@ -15,6 +15,7 @@ import au.org.ala.delta.model.TextAttribute;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.translation.AbstractIterativeTranslator;
+import au.org.ala.delta.translation.ItemListTypeSetter;
 import au.org.ala.delta.translation.PrintFile;
 import au.org.ala.delta.translation.attribute.AttributeParser;
 import au.org.ala.delta.translation.attribute.CommentedValueList;
@@ -34,13 +35,16 @@ public class DeltaFormatTranslator extends AbstractIterativeTranslator {
 	protected CharacterFormatter _characterFormatter;
 	protected AttributeParser _parser;
 	protected CharacterListTypeSetter _typeSetter;
+	protected ItemListTypeSetter _itemTypeSetter;
+	
 	
 	public DeltaFormatTranslator(
 			DeltaContext context, 
 			PrintFile printer, 
 			ItemFormatter itemFormatter,
 			CharacterFormatter characterFormatter,
-			CharacterListTypeSetter typeSetter) {
+			CharacterListTypeSetter typeSetter,
+			ItemListTypeSetter itemTypeSetter) {
 		
 		_printer = printer;
 		_printer.setIndentOnLineWrap(true);
@@ -48,6 +52,7 @@ public class DeltaFormatTranslator extends AbstractIterativeTranslator {
 		_characterFormatter = characterFormatter;
 		 _parser = new AttributeParser();
 		 _typeSetter = typeSetter;
+		 _itemTypeSetter = itemTypeSetter;
 	}
 	
 	@Override
@@ -55,6 +60,7 @@ public class DeltaFormatTranslator extends AbstractIterativeTranslator {
 		_printer.setLineWrapIndent(0);
 		_printer.setIndent(0);
 		_printer.writeBlankLines(2, 0);
+		_itemTypeSetter.beforeFirstItem();
 	}
 
 	@Override
@@ -147,7 +153,9 @@ public class DeltaFormatTranslator extends AbstractIterativeTranslator {
 	}
 
 	@Override
-	public void afterAttribute(Attribute attribute) {}
+	public void afterAttribute(Attribute attribute) {
+		_itemTypeSetter.afterAttribute(attribute);
+	}
 
 	@Override
 	public void afterLastItem() {}

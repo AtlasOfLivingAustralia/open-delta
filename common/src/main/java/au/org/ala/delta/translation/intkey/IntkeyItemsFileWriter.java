@@ -331,9 +331,7 @@ public class IntkeyItemsFileWriter {
 	
 	
 	private Pair<IntRange, Boolean> determineIntegerRange(Character intChar) {
-		if (intChar.getCharacterId() == 140){
-			System.out.println("dfsdf");
-		}
+		
 		List<Integer> values = new ArrayList<Integer>();
 		boolean hasMultiRangeAttribute = populateValues(intChar.getCharacterId(), values);
 		

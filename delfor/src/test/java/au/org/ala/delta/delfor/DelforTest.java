@@ -39,6 +39,15 @@ public class DelforTest extends TestCase {
 		}	
 	}
 	
+	@Test
+	public void testNewLinesForAttributes() throws Exception {
+		String path = FilenameUtils.concat(_path, "sample");
+		
+		runDELFOR(FilenameUtils.concat(path, "newlineattr"));
+		
+		checkResults(path, "newlitems");
+	}
+	
 	private void checkResults(String path, String resultFileName) throws Exception {
 		
 		String expectedResultFileName = resultFileName;

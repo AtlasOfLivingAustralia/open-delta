@@ -6,6 +6,7 @@ import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.format.AttributeFormatter;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.translation.ItemListTypeSetter;
+import au.org.ala.delta.translation.ItemListTypeSetterAdapter;
 import au.org.ala.delta.translation.PrintFile;
 import au.org.ala.delta.translation.delta.DeltaFormatTranslator;
 
@@ -23,7 +24,7 @@ public class ItemDescriptionsPrinter extends DeltaFormatTranslator {
 			ItemFormatter itemFormatter, 
 			AttributeFormatter attributeFormatter,
 			ItemListTypeSetter typeSetter) {
-		super(context, printer, itemFormatter, null, null);
+		super(context, printer, itemFormatter, null, null, new ItemListTypeSetterAdapter());
 		_typeSetter = typeSetter;
 		_attributeFormatter = attributeFormatter;
 	}

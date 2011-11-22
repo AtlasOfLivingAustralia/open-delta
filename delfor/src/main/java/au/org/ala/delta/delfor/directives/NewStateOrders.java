@@ -24,12 +24,12 @@ public class NewStateOrders extends AbstractDirective<DelforContext> {
 	
 	
 	public NewStateOrders() {
-		super("new", "state", "order");
+		super("new", "state", "orders");
 	}
 	
 	@Override
 	public DirectiveArguments getDirectiveArgs() {
-		return null;
+		return _args;
 	}
 
 	@Override

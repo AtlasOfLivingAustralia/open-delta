@@ -23,6 +23,9 @@ import au.org.ala.delta.Logger;
 import au.org.ala.delta.delfor.directives.ControlPhrases;
 import au.org.ala.delta.delfor.directives.InputFile;
 import au.org.ala.delta.delfor.directives.NewCharacterOrder;
+import au.org.ala.delta.delfor.directives.NewLineForAttributes;
+import au.org.ala.delta.delfor.directives.NewStateOrders;
+import au.org.ala.delta.delfor.directives.OutputFile;
 import au.org.ala.delta.delfor.directives.Reformat;
 import au.org.ala.delta.directives.AbstractDirective;
 import au.org.ala.delta.directives.CharacterTypes;
@@ -92,9 +95,12 @@ public class DelforDirectiveFileParser extends DirectiveParser<DeltaContext> {
         instance.registerDirective(new MaximumNumberOfStates());
       
         instance.registerDirective(new NewCharacterOrder());
+        instance.registerDirective(new NewLineForAttributes());
+        instance.registerDirective(new NewStateOrders());
         instance.registerDirective(new NumberOfCharacters());
         instance.registerDirective(new NumbersOfStates());
         
+        instance.registerDirective(new OutputFile());
         instance.registerDirective(new OutputWidth());       
         
         instance.registerDirective(new Reformat());

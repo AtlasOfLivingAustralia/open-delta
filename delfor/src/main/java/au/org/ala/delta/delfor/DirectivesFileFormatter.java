@@ -20,6 +20,7 @@ import au.org.ala.delta.editor.slotfile.model.DirectiveFile.DirectiveType;
 import au.org.ala.delta.editor.slotfile.model.SlotFileDataSet;
 import au.org.ala.delta.model.AbstractObservableDataSet;
 import au.org.ala.delta.util.FileUtils;
+import au.org.ala.delta.util.Pair;
 
 /**
  * The DirectivesFileFormatter class does the work of reformatting the
@@ -39,7 +40,7 @@ public class DirectivesFileFormatter {
 	}
 	
 	public void reformat() throws DirectiveException {
-		List<File> toReformat = _context.getFilesToReformat();
+		List<Pair<File, String>> toReformat = _context.getFilesToReformat();
 		
 		importAll(toReformat);
 		
@@ -48,14 +49,15 @@ public class DirectivesFileFormatter {
 		exportAll(toReformat);
 	}
 
-	protected void exportAll(List<File> toReformat) throws DirectiveException {
-		for (File file : toReformat) {
+	protected void exportAll(List<Pair<File, String>> toReformat) throws DirectiveException {
+		for (Pair<File, String> fileInfo : toReformat) {
 			
+			File file = fileInfo.getFirst();
 			DirectiveFile directiveFile = _model.getDirectiveFile(file.getName());
 			
 			try {
 				DirectivesFileExporter exporter = new DirectivesFileExporter();
-				DirectiveInOutState state = createState(directiveFile, file, _model);
+				DirectiveInOutState state = createState(directiveFile, file, fileInfo.getSecond(), _model);
 				exporter.writeDirectivesFile(directiveFile, state);
 			}
 			catch (IOException e) {
@@ -65,11 +67,12 @@ public class DirectivesFileFormatter {
 		}
 	}
 
-	protected void importAll(List<File> toReformat) throws DirectiveException {
+	protected void importAll(List<Pair<File, String>> toReformat) throws DirectiveException {
 		DirectivesFileImporter importer = new DelforDirectivesFileImporter(_model, _context);
 		DirectivesFileClassifier classifier = new DirectivesFileClassifier(_context);
-		for (File file : toReformat) {
+		for (Pair<File, String> fileInfo : toReformat) {
 			
+			File file = fileInfo.getFirst();
 			try {
 				DirectiveType type = classifier.classify(file);
 				DirectiveFileInfo directiveInfo = new DirectiveFileInfo(file.getName(), type);
@@ -84,12 +87,14 @@ public class DirectivesFileFormatter {
 	}
 	
 	private DirectiveInOutState createState(
-			DirectiveFile directiveFile, File file, EditorViewModel model) throws IOException {
-		String fileName = directiveFile.getShortFileName()+".new";
+			DirectiveFile directiveFile, File file, String outputFileName, EditorViewModel model) throws IOException {
 		
-		File outputFile = new File(file.getParentFile(), fileName);
-		FileUtils.backupAndDelete(fileName, outputFile.getParent());
+		File outputFile = new File(file.getParentFile(), outputFileName);
+		FileUtils.backupAndDelete(outputFileName, outputFile.getParent());
 		DirectiveInOutState state = new DirectiveInOutState(model);
+		if (_context.getNewLineForAttributes()) {
+			state.setNewLineAfterAttributes(true);
+		}
 		
 		state.setPrintStream(new PrintStream(outputFile, _context.getFileEncoding().name()));
 		state.getPrinter().setPrintWidth(_context.getOutputWidth());

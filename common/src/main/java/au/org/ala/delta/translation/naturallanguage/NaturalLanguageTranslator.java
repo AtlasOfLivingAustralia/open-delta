@@ -450,10 +450,6 @@ public class NaturalLanguageTranslator extends AbstractIterativeTranslator {
                 value = Integer.toString(msAttr.getImplicitValue());
             }
         }
-        if (attribute.getItem().getItemNumber() == 5) {
-        	System.out.println("Breakpoint");
-        }
-        	
 
         String formattedAttribute = translator.translate(_attributeParser.parse(value));
 		return formattedAttribute;

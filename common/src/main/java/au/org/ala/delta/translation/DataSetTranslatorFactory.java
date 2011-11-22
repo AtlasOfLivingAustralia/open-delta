@@ -216,16 +216,35 @@ public class DataSetTranslatorFactory {
 		
 		return new Pair<IterativeTranslator, DataSetFilter>(translator, filter);
 	}
+	 
+	public AbstractDataSetTranslator createDeltaFormatTranslator(
+			DeltaContext context, PrintFile printer, ItemListTypeSetter itemTypeSetter) {
+		FormatterFactory factory = new FormatterFactory(context);
+		return createDeltaFormatTranslator(context, printer, factory, itemTypeSetter);
+	}
 	
-	private AbstractDataSetTranslator createDeltaFormatTranslator(
-			DeltaContext context, PrintFile printer, FormatterFactory formatterFactory) {
+	public AbstractDataSetTranslator createDeltaFormatTranslator(
+			DeltaContext context, 
+			PrintFile printer, 
+			FormatterFactory formatterFactory) {
+		ItemListTypeSetter itemTypeSetter = new ItemListTypeSetterAdapter();
+		
+		return createDeltaFormatTranslator(context, printer, formatterFactory, itemTypeSetter);
+	}
+	
+	public AbstractDataSetTranslator createDeltaFormatTranslator(
+			DeltaContext context, 
+			PrintFile printer, 
+			FormatterFactory formatterFactory,
+			ItemListTypeSetter itemTypeSetter) {
 		ItemFormatter itemFormatter  = formatterFactory.createItemFormatter(null);
 		itemFormatter.setDespaceRtf(true);
 		CharacterFormatter charFormatter = formatterFactory.createCharacterFormatter(true, false, CommentStrippingMode.RETAIN);
 		charFormatter.setDespaceRtf(true);
 		CharacterListTypeSetter typeSetter = new au.org.ala.delta.translation.print.PlainTextTypeSetter(printer);
 		DataSetFilter filter = new DeltaFormatDataSetFilter(context);
-		return wrap(context, filter,new DeltaFormatTranslator(context, printer, itemFormatter, charFormatter, typeSetter));
+		
+		return wrap(context, filter,new DeltaFormatTranslator(context, printer, itemFormatter, charFormatter, typeSetter, itemTypeSetter));
 	}
 	
 	public Pair<IterativeTranslator, DataSetFilter> createPrintAction(DeltaContext context, PrintActionType printAction) {

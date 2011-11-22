@@ -1,0 +1,17 @@
+*SHOW Reorder the characters (using Delfor - cannot be used with Confor).
+
+*LISTING FILE reorder.lst
+
+*COMMENT This directives file cannot be used with CONFOR.
+
+*INPUT FILE specs
+*INPUT FILE items
+
+*OUTPUT WIDTH 80
+
+*NEW LINE FOR ATTRIBUTES
+
+*OUTPUT FILE newlitems
+
+*COMMENT. CONFOR files.
+*REFORMAT items
