@@ -446,7 +446,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             formatter.printHelp("Intkey [dataset-init-file] [options]", options);
             System.exit(0);
         }
-        
+
         // If _startupInAdvancedMode has not already been set to true using the
         // "-A" command line option (see above),
         // Check saved application state for the mode (advanced or basic) that
@@ -679,6 +679,16 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
                 taxonSelectionChanged();
             }
         });
+        
+        _listRemainingTaxa.addMouseListener(new MouseInputAdapter() {
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() >= 2) {
+                    displayInfoForSelectedTaxa();
+                }
+            }
+        });
 
         _sclPnRemainingTaxa.setViewportView(_listRemainingTaxa);
 
@@ -731,6 +741,16 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 taxonSelectionChanged();
+            }
+        });
+        
+        _listEliminatedTaxa.addMouseListener(new MouseInputAdapter() {
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() >= 2) {
+                    displayInfoForSelectedTaxa();
+                }
             }
         });
 
@@ -1269,17 +1289,17 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     // ==============================
     @Action
     public void mnuItCascadeWindows() {
-    	IntKeyDialogController.cascadeWindows();
+        IntKeyDialogController.cascadeWindows();
     }
 
     @Action
     public void mnuItTileWindows() {
-    	IntKeyDialogController.tileWindows();
+        IntKeyDialogController.tileWindows();
     }
 
     @Action
     public void mnuItCloseAllWindows() {
-    	IntKeyDialogController.closeWindows();
+        IntKeyDialogController.closeWindows();
     }
 
     // ====================== Help menu actions
@@ -1366,6 +1386,10 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     @Action
     public void btnTaxonInfo() {
+        displayInfoForSelectedTaxa();
+    }
+
+    private void displayInfoForSelectedTaxa() {
         List<Item> selectedTaxa = new ArrayList<Item>();
 
         for (int i : _listRemainingTaxa.getSelectedIndices()) {
@@ -2797,20 +2821,18 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             throw new RuntimeException(e);
         }
     }
-    
+
     public Rectangle getClientBounds() {
-    	Rectangle r = _rootSplitPane.getBounds();
-    	// Rectangle outer = getMainFrame().getBounds();
-    	// r.x = r.x + outer.x;
-    	// r.y = r.y + _pnlAvailableCharactersHeader.getHeight();
-    	Point p1 = new Point(0,0);
-    	SwingUtilities.convertPointToScreen(p1, _rootSplitPane);
-    	r.x = p1.x;
-    	r.y = p1.y + _pnlAvailableCharactersHeader.getHeight();
-    	r.height = r.height - _pnlAvailableCharactersHeader.getHeight();
-    	
-    	
-    	
-    	return r;
+        Rectangle r = _rootSplitPane.getBounds();
+        // Rectangle outer = getMainFrame().getBounds();
+        // r.x = r.x + outer.x;
+        // r.y = r.y + _pnlAvailableCharactersHeader.getHeight();
+        Point p1 = new Point(0, 0);
+        SwingUtilities.convertPointToScreen(p1, _rootSplitPane);
+        r.x = p1.x;
+        r.y = p1.y + _pnlAvailableCharactersHeader.getHeight();
+        r.height = r.height - _pnlAvailableCharactersHeader.getHeight();
+
+        return r;
     }
 }
