@@ -22,6 +22,7 @@ import au.org.ala.delta.DeltaContext.HeadingType;
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.directives.AbstractDeltaContext;
 import au.org.ala.delta.directives.AbstractDirective;
+import au.org.ala.delta.directives.ConforDirectiveParserObserver;
 import au.org.ala.delta.directives.DirectiveParserObserver;
 import au.org.ala.delta.directives.ExcludeCharacters;
 import au.org.ala.delta.directives.ExcludeItems;
@@ -59,6 +60,8 @@ public class Key implements DirectiveParserObserver {
     private KeyContext _context;
     private boolean _inputFilesRead = false;
 
+    private ConforDirectiveParserObserver _nestedObserver;
+
     /**
      * @param args
      *            specifies the name of the input file to use.
@@ -77,7 +80,7 @@ public class Key implements DirectiveParserObserver {
             Logger.log("File %s does not exist!", f.getName());
             return;
         }
-        
+
         new Key().calculateKey(f);
     }
 
@@ -102,48 +105,60 @@ public class Key implements DirectiveParserObserver {
     }
 
     public void calculateKey(File directivesFile) {
-        _context = new KeyContext();
-        _context.setDataDirectory(directivesFile.getParentFile());
+        _context = new KeyContext(directivesFile.getParentFile());
+        _nestedObserver = new ConforDirectiveParserObserver(_context);
 
+        boolean parseSuccessful = true;
         try {
             processDirectivesFile(directivesFile, _context);
         } catch (Exception ex) {
-            System.out.println("Error parsing directive file");
-            ex.printStackTrace();
+            // Error message will be output by the _nestedObserver. Simply stop termination here.
+            parseSuccessful = false;
         }
 
-        readInputFiles();
+        if (parseSuccessful) {
+            _nestedObserver.finishedProcessing();
 
-        Specimen specimen = new Specimen(_context.getDataSet(), true, true, MatchType.OVERLAP);
-        List<Pair<Item, List<Attribute>>> keyList = new ArrayList<Pair<Item, List<Attribute>>>();
+            readInputFiles();
 
-        FilteredDataSet dataset = new FilteredDataSet(_context, new IncludeExcludeDataSetFilter(_context));
+            Specimen specimen = new Specimen(_context.getDataSet(), true, true, MatchType.OVERLAP);
+            List<Pair<Item, List<Attribute>>> keyList = new ArrayList<Pair<Item, List<Attribute>>>();
 
-        List<Character> includedCharacters = new ArrayList<Character>();
-        Iterator<FilteredCharacter> iterFilteredCharacters = dataset.filteredCharacters();
-        while (iterFilteredCharacters.hasNext()) {
-            includedCharacters.add(iterFilteredCharacters.next().getCharacter());
+            FilteredDataSet dataset = new FilteredDataSet(_context, new IncludeExcludeDataSetFilter(_context));
+
+            List<Character> includedCharacters = new ArrayList<Character>();
+            Iterator<FilteredCharacter> iterFilteredCharacters = dataset.filteredCharacters();
+            while (iterFilteredCharacters.hasNext()) {
+                includedCharacters.add(iterFilteredCharacters.next().getCharacter());
+            }
+
+            List<Item> includedItems = new ArrayList<Item>();
+            Iterator<FilteredItem> iterFilteredItems = dataset.filteredItems();
+            while (iterFilteredItems.hasNext()) {
+                includedItems.add(iterFilteredItems.next().getItem());
+            }
+
+            doCalculateKey(dataset, includedCharacters, includedItems, specimen, keyList);
+
+            if (_context.getDisplayTabularKey()) {
+                printHeader(includedCharacters, includedItems, keyList);
+                printTabularKey(keyList);
+            }
+
+            if (_context.getDisplayBracketedKey()) {
+                if (_context.getDisplayTabularKey()) {
+                    System.out.println("\n\n");
+                }
+                printHeader(includedCharacters, includedItems, keyList);
+                printBracketedKey(keyList, _context.getAddCharacterNumbers());
+            }
         }
-
-        List<Item> includedItems = new ArrayList<Item>();
-        Iterator<FilteredItem> iterFilteredItems = dataset.filteredItems();
-        while (iterFilteredItems.hasNext()) {
-            includedItems.add(iterFilteredItems.next().getItem());
-        }
-
-        doCalculateKey(dataset, includedCharacters, includedItems, specimen, keyList);
-
-        printHeader(includedCharacters, includedItems, keyList);
-        printTabularKey(keyList);
-        System.out.println("\n\n");
-        printHeader(includedCharacters, includedItems, keyList);
-        printBracketedKey(keyList, true);
     }
 
     private void readInputFiles() {
         if (!_inputFilesRead) {
-            File charactersFile = Utils.createFileFromPath(_context.getCharactersFilePath(), _context.getDataDirectory());
-            File itemsFile = Utils.createFileFromPath(_context.getItemsFilePath(), _context.getDataDirectory());
+            File charactersFile = _context.getCharactersFile();
+            File itemsFile = _context.getItemsFile();
 
             BinaryKeyFile keyCharactersFile = new BinaryKeyFile(charactersFile.getAbsolutePath(), BinFileMode.FM_READONLY);
             BinaryKeyFile keyItemsFile = new BinaryKeyFile(itemsFile.getAbsolutePath(), BinFileMode.FM_READONLY);
@@ -194,20 +209,15 @@ public class Key implements DirectiveParserObserver {
                 // KEY only uses multi state characters
                 MultiStateCharacter bestCharacter = (MultiStateCharacter) bestOrderCharacters.get(0);
 
-                // System.out.println(String.format("%s %s",
-                // bestMap.get(bestCharacter), bestCharacter.getCharacterId()));
-                // System.out.println("Available characters: " +
-                // specimenAvailableCharacterNumbers.size());
-                // System.out.println("Available taxa: " +
-                // specimenAvailableTaxaNumbers.size());
-                // System.out.println();
-                // for (au.org.ala.delta.model.Character ch : bestMap.keySet())
-                // {
-                // double sepPower = bestMap.get(ch);
-                // System.out.println(String.format("%s %s (%s)", sepPower, ch,
-                // ch.getReliability()));
-                // }
-                // System.out.println();
+                System.out.println(String.format("%s %s", bestMap.get(bestCharacter), bestCharacter.getCharacterId()));
+                System.out.println("Available characters: " + specimenAvailableCharacterNumbers.size());
+                System.out.println("Available taxa: " + specimenAvailableTaxaNumbers.size());
+                System.out.println();
+                for (au.org.ala.delta.model.Character ch : bestMap.keySet()) {
+                    double sepPower = bestMap.get(ch);
+                    System.out.println(String.format("%s %s (%s)", sepPower, ch, ch.getReliability()));
+                }
+                System.out.println();
 
                 for (int i = 0; i < bestCharacter.getNumberOfStates(); i++) {
                     int stateNumber = i + 1;
@@ -293,10 +303,10 @@ public class Key implements DirectiveParserObserver {
 
         printFile.outputLine(MessageFormat.format("Run at {0} on {1}", timeFormat.format(currentDate), dateFormat.format(currentDate)));
         printFile.writeBlankLines(1, 0);
-        
+
         Set<Character> charactersInKey = new HashSet<Character>();
         Set<Item> itemsInKey = new HashSet<Item>();
-        
+
         for (Pair<Item, List<Attribute>> pair : keyList) {
             Item it = pair.getFirst();
             itemsInKey.add(it);
@@ -305,16 +315,20 @@ public class Key implements DirectiveParserObserver {
                 charactersInKey.add(attr.getCharacter());
             }
         }
-        
-        printFile.outputLine(MessageFormat.format("Characters - {0} in data, {1} included, {2} in key.", _context.getDataSet().getNumberOfCharacters(), includedCharacters.size(), charactersInKey.size()));
+
+        printFile.outputLine(MessageFormat.format("Characters - {0} in data, {1} included, {2} in key.", _context.getDataSet().getNumberOfCharacters(), includedCharacters.size(),
+                charactersInKey.size()));
         printFile.outputLine(MessageFormat.format("Items - {0} in data, {1} included, {2} in key.", _context.getDataSet().getMaximumNumberOfItems(), includedItems.size(), itemsInKey.size()));
         printFile.writeBlankLines(1, 0);
         printFile.outputLine(MessageFormat.format("RBASE = {0} ABASE = {1} REUSE = {2} VARYWT = {3}", formatDouble(_context.getRBase()), formatDouble(_context.getABase()),
                 formatDouble(_context.getReuse()), formatDouble(_context.getVaryWt())));
-        //printFile.outputLine(MessageFormat.format("Number of confirmatory characters = {0}", "TODO"));
+        // printFile.outputLine(MessageFormat.format("Number of confirmatory characters = {0}",
+        // "TODO"));
         printFile.writeBlankLines(1, 0);
-        //printFile.outputLine(MessageFormat.format("Average length of key = {0} Average cost of key = {1}", "TODO", "TODO"));
-        //printFile.outputLine(MessageFormat.format("Maximum length of key = {0} Maximum cost of key = {1}", "TODO", "TODO"));
+        // printFile.outputLine(MessageFormat.format("Average length of key = {0} Average cost of key = {1}",
+        // "TODO", "TODO"));
+        // printFile.outputLine(MessageFormat.format("Maximum length of key = {0} Maximum cost of key = {1}",
+        // "TODO", "TODO"));
         printFile.writeBlankLines(1, 0);
 
         List<Integer> includedCharacterNumbers = new ArrayList<Integer>();
@@ -328,7 +342,8 @@ public class Key implements DirectiveParserObserver {
             includedItemNumbers.add(it.getItemNumber());
         }
         printFile.outputLine(MessageFormat.format("Items included {0}", Utils.formatIntegersAsListOfRanges(includedItemNumbers)));
-        //printFile.outputLine(MessageFormat.format("Items abundances {0}", "TODO"));
+        // printFile.outputLine(MessageFormat.format("Items abundances {0}",
+        // "TODO"));
         printFile.writeBlankLines(1, 0);
     }
 
@@ -565,24 +580,23 @@ public class Key implements DirectiveParserObserver {
         if (directive instanceof IncludeCharacters || directive instanceof ExcludeCharacters || directive instanceof IncludeItems || directive instanceof ExcludeItems) {
             readInputFiles();
         }
+
+        _nestedObserver.preProcess(directive, data);
     }
 
     @Override
     public void postProcess(AbstractDirective<? extends AbstractDeltaContext> directive) {
-        // TODO Auto-generated method stub
-
+        _nestedObserver.postProcess(directive);
     }
 
     @Override
     public void finishedProcessing() {
-        // TODO Auto-generated method stub
-
+        _nestedObserver.finishedProcessing();
     }
 
     @Override
     public void handleDirectiveProcessingException(AbstractDeltaContext context, AbstractDirective<? extends AbstractDeltaContext> directive, Exception ex) throws DirectiveException {
-        // TODO Auto-generated method stub
-
+        _nestedObserver.handleDirectiveProcessingException(context, directive, ex);
     }
 
 }

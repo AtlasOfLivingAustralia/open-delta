@@ -385,6 +385,7 @@ public class DeltaContext extends AbstractDeltaContext {
             _characterWeights = new BigDecimal[getNumberOfCharacters()];
         }
         _characterWeights[number - 1] = new BigDecimal(Math.pow(2, reliability.doubleValue() - 5));
+        getCharacter(number).setReliability(reliability.floatValue());
     }
 
     public double getCharacterWeight(int number) {

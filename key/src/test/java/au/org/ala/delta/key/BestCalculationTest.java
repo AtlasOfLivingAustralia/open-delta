@@ -8,13 +8,13 @@ import junit.framework.TestCase;
 public class BestCalculationTest extends TestCase {
 
     public void testBestCalculationSample() throws Exception {
-        URL directivesFileURL = getClass().getResource("/sample/mykey");
-        File directivesFile = new File(directivesFileURL.toURI());
-
-        Key key = new Key();
-        key.calculateKey(directivesFile);
-
-        KeyContext context = key.getContext();
+//        URL directivesFileURL = getClass().getResource("/sample/mykey");
+//        File directivesFile = new File(directivesFileURL.toURI());
+//
+//        Key key = new Key();
+//        key.calculateKey(directivesFile);
+//
+//        KeyContext context = key.getContext();
         //
         // MutableDeltaDataSet dataset = context.getDataSet();
         //
@@ -41,13 +41,13 @@ public class BestCalculationTest extends TestCase {
     }
 
     public void testBestCalculationCyperaceae() throws Exception {
-//         File directivesFile = new
-//         File("C:\\Users\\ChrisF\\Virtualbox Shared Folder\\Cyperaceae_test\\key");
-//        
-//         Key key = new Key();
-//         key.calculateKey(directivesFile);
-//        
-//         KeyContext context = key.getContext();
+         File directivesFile = new
+         File("C:\\Users\\ChrisF\\Virtualbox Shared Folder\\Cyperaceae_test\\key");
+        
+         Key key = new Key();
+         key.calculateKey(directivesFile);
+        
+         KeyContext context = key.getContext();
 //
 //        // List<Integer> availableTaxa = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8,
 //        // 9, 10);
