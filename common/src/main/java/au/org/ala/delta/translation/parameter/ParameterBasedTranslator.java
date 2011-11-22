@@ -9,9 +9,11 @@ import au.org.ala.delta.translation.DataSetTranslator;
 public abstract class ParameterBasedTranslator implements DataSetTranslator {
 	
 	private Map<String, ParameterTranslator> _supportedParameters;
+	protected int _matchLength;
 	
 	public ParameterBasedTranslator() {
 		_supportedParameters = new HashMap<String, ParameterTranslator>();
+		 _matchLength = 2;
 	}
 	
 	@Override
@@ -26,7 +28,7 @@ public abstract class ParameterBasedTranslator implements DataSetTranslator {
 		String name = extractMatchString(parameter.parameter);
 		ParameterTranslator translator = _supportedParameters.get(name);
 		if (translator == null) {
-			unrecognisedParameter(parameter.parameter);
+			unrecognisedParameter(parameter.fullText);
 		}
 		else  {
 			translator.translateParameter(parameter);
@@ -46,10 +48,10 @@ public abstract class ParameterBasedTranslator implements DataSetTranslator {
 	protected String extractMatchString(String parameterName) {
 		String name = parameterName;
 		if (parameterName.startsWith("#")) {
-			if (parameterName.length() < 3) {
+			if (parameterName.length() < _matchLength+1) {
 				throw new IllegalArgumentException("Parameters must be at least 2 characters long");
 			}
-			name = parameterName.substring(1, 3).toUpperCase();	
+			name = parameterName.substring(1, _matchLength+1).toUpperCase();	
 		}
 		return name;
 	}

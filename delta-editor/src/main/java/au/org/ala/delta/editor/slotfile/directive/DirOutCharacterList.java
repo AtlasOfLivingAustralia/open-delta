@@ -18,9 +18,10 @@ import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.TranslateType;
 import au.org.ala.delta.translation.DataSetTranslator;
 import au.org.ala.delta.translation.DataSetTranslatorFactory;
+import au.org.ala.delta.translation.ItemListTypeSetterAdapter;
 
 /**
- * Exports the CHARACTER LIST directive.=
+ * Exports the CHARACTER LIST directive.
  */
 public class DirOutCharacterList extends AbstractDirOutFunctor {
 
@@ -32,8 +33,9 @@ public class DirOutCharacterList extends AbstractDirOutFunctor {
 		DataSetTranslatorFactory factory = new DataSetTranslatorFactory();
 		DeltaContext context = new DeltaContext(state.getDataSet());
 		context.setTranslateType(TranslateType.Delta);
-		context.getOutputFileSelector().setOutputFile(state.getPrinter());
-		DataSetTranslator translator = factory.createTranslator(context);
+		
+		DataSetTranslator translator = factory.createDeltaFormatTranslator(
+				context, state.getPrinter(), new ItemListTypeSetterAdapter());
 		translator.translateCharacters();
 		
 		state.getPrinter().setUseParagraphIndentOnLineWrap(true);

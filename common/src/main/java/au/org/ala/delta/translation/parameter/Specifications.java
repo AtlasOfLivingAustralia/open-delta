@@ -1,5 +1,7 @@
 package au.org.ala.delta.translation.parameter;
 
+import org.apache.commons.lang.StringUtils;
+
 import au.org.ala.delta.directives.OutputParameters.OutputParameter;
 import au.org.ala.delta.translation.FilteredDataSet;
 import au.org.ala.delta.translation.PrintFile;
@@ -28,9 +30,15 @@ public class Specifications extends ParameterTranslator {
 	public void translateParameter(OutputParameter parameter) {
 		StringBuilder specs = new StringBuilder();
 		specs.append(_command).append(" ");
-		specs.append(_itemsLabel).append("=").append(_dataSet.getNumberOfFilteredItems());
+		if (StringUtils.isNotBlank(_itemsLabel)) {
+			specs.append(_itemsLabel).append("=");
+		}
+		specs.append(_dataSet.getNumberOfFilteredItems());
 		specs.append(" ");
-		specs.append(_charsLabel).append("=").append(_dataSet.getNumberOfFilteredCharacters());
+		if (StringUtils.isNotBlank(_charsLabel)) {
+			specs.append(_charsLabel).append("=");
+		}
+		specs.append(_dataSet.getNumberOfFilteredCharacters());
 		command(specs.toString());
 		if (_blanks > 0) {
 			_outputFile.writeBlankLines(_blanks, 0);

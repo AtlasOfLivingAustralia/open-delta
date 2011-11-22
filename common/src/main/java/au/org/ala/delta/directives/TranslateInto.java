@@ -20,6 +20,7 @@ import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.TranslateType;
 import au.org.ala.delta.directives.args.DirectiveArguments;
+import au.org.ala.delta.directives.validation.DirectiveError;
 
 public class TranslateInto extends AbstractTextDirective {
 	
@@ -63,9 +64,10 @@ public class TranslateInto extends AbstractTextDirective {
 				case Dist:
 				case PAUP:
 				case Hennig86:
+				case Payne:
 					break;
 				default:
-					throw new RuntimeException("Recognized, but currently unsupported translate to type: " + t);
+					throw DirectiveError.asException(DirectiveError.Error.UNSUPPORTED_TRANSLATION, 0, data);
 			}
 			
 			Logger.debug("Setting Translate Type to %s", t);
@@ -73,7 +75,7 @@ public class TranslateInto extends AbstractTextDirective {
 			context.setTranslateType(t);
 			
 		} else {
-			throw new RuntimeException("Unrecognized translate format: " + data);
+			throw DirectiveError.asException(DirectiveError.Error.UNSUPPORTED_TRANSLATION, 0, data);
 		}
 
 	}

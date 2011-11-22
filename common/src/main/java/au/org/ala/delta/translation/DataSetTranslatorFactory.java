@@ -6,6 +6,8 @@ import java.util.List;
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.DeltaContext.PrintActionType;
 import au.org.ala.delta.TranslateType;
+import au.org.ala.delta.directives.validation.DirectiveError;
+import au.org.ala.delta.directives.validation.DirectiveException;
 import au.org.ala.delta.model.format.AttributeFormatter;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
@@ -26,6 +28,7 @@ import au.org.ala.delta.translation.naturallanguage.NaturalLanguageTranslator;
 import au.org.ala.delta.translation.nexus.NexusDataSetFilter;
 import au.org.ala.delta.translation.nexus.NexusTranslator;
 import au.org.ala.delta.translation.paup.PaupTranslator;
+import au.org.ala.delta.translation.payne.PayneTranslator;
 import au.org.ala.delta.translation.print.CharacterListPrinter;
 import au.org.ala.delta.translation.print.CharacterListTypeSetter;
 import au.org.ala.delta.translation.print.ItemDescriptionsPrinter;
@@ -50,7 +53,7 @@ public class DataSetTranslatorFactory {
 	 * @param context determines the translators to create and the
 	 * configuration to use when creating them.
 	 */
-	public DataSetTranslator createTranslator(DeltaContext context) {
+	public DataSetTranslator createTranslator(DeltaContext context) throws DirectiveException {
 		
 		TranslateType translation = context.getTranslateType();
 		
@@ -86,6 +89,9 @@ public class DataSetTranslatorFactory {
 			else if (translation.equals(TranslateType.PAUP)) {
 				translator = createPaupFormatTranslator(context,  context.getOutputFileSelector().getOutputFile(), formatterFactory);
 			}
+			else if (translation.equals(TranslateType.Payne)) {
+				translator = createPayneFormatTranslator(context,  context.getOutputFileSelector().getOutputFile(), formatterFactory);
+			}
 			else if (translation.equals(TranslateType.Hennig86)) {
 				translator = createHenningFormatTranslator(context,  context.getOutputFileSelector().getOutputFile(), formatterFactory);
 			}
@@ -93,7 +99,7 @@ public class DataSetTranslatorFactory {
 				translator = new NullTranslator();
 			}
 			else {
-				throw new RuntimeException("(Currently) unsupported translation type: "+translation);
+				throw DirectiveError.asException(DirectiveError.Error.UNSUPPORTED_TRANSLATION, 0, translation);
 			}
 			translators.add(translator);
 			translators.add(createPrintActions(context));
@@ -156,6 +162,20 @@ public class DataSetTranslatorFactory {
 		ItemFormatter itemFormatter = formatterFactory.createItemFormatter(null, CommentStrippingMode.STRIP_ALL, false);
 		FilteredDataSet dataSet = new FilteredDataSet(context, new NexusDataSetFilter(context));
 		return new PaupTranslator(context, dataSet, printFile, charFormatter, itemFormatter);
+	}
+	
+	private DataSetTranslator createPayneFormatTranslator(DeltaContext context, PrintFile printFile, FormatterFactory formatterFactory) {
+		CharacterFormatter charFormatter = formatterFactory.createCharacterFormatter(false, false, CommentStrippingMode.RETAIN);
+		ItemFormatter itemFormatter = formatterFactory.createItemFormatter(null, CommentStrippingMode.STRIP_ALL, false);
+		FilteredDataSet dataSet = new FilteredDataSet(context, new AllPassFilter());
+		AttributeTranslatorFactory attributeTranslatorFactory = new AttributeTranslatorFactory(
+				context, 
+				charFormatter,
+				formatterFactory.createAttributeFormatter(),
+				null);
+		KeyStateTranslator keyStateTranslator = new KeyStateTranslator(attributeTranslatorFactory);
+		
+		return new PayneTranslator(context, dataSet, printFile, charFormatter, itemFormatter, keyStateTranslator);
 	}
 	
 	private DataSetTranslator createHenningFormatTranslator(DeltaContext context, PrintFile printFile, FormatterFactory formatterFactory) {

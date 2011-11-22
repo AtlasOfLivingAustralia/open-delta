@@ -1,0 +1,505 @@
+NUMBERS 14 89
+LEVELS 2 8 2 2 2 2 2 3 8 2 3 3 5 2 2 2 2 3 2 2 2 2 4 4 2 6 3 4 2 2 2 2 3 2 2 2 2
+12 2 3 3 2 2 3 2 2 3 12 3 2 3 2 2 12 2 3 2 2 2 9 2 6 3 3 2 2 3 2 3 2 2 2 2 3 2 2
+2 5 6 7 15 12 4 6 2 6 2 2 2 
+CAPTION Grass Genera 16.08 22-NOV-11:
+RESULTS 
+0 / 4 5 6 7 : 2 / 1 2 : / 1 2 : 2 2 0 0 / 1 2 : 2 2 2 0 2 2 -1 0 1 -1 -1 -1 -1  
+-1 0 / 3 4 : 3 3 0 2 2 1 2 1 / 1 2 : / 1 2 : 0 / 6 8 : 2 1 2 / 1 2 : / 1 2 : 1 1
+0 1 -1 -1 -1 -1 2 1 6 1 1 1 1 2 4 1 2 2 1 2 1 3 1 3 2 2 2 1 2 1 1 2 5 5 -1 -1 -1
+-1 2 0 / 1 2 3 5 : 0 0 0                                                        
+0 / 4 5 : 2 2 0 2 2 1 / 2 3 : 1 2 2 5 1 2 2 -1 -1 2 2 -1 -1 -1 -1 0 6 1 1 0 1 1 
+1 2 2 2 2 2 / 8 9 : / 1 2 : 2 0 0 0 1 2 0 3 3 1 2 3 2 2 4 1 1 1 2 2 4 2 / 2 3 : 
+1 2 2 2 / 1 2 : 2 -1 1 2 2 2 1 2 2 2 3 -1 -1 -1 2 -1 -1 0 5 0 0 0               
+0 / 7 8 : 1 2 1 1 2 0 0 1 / 1 2 : 2 0 1 1 2 -1 0 2 2 -1 -1 -1 -1 0 / 4 5 6 : / 1
+2 : 1 2 1 2 1 2 2 1 2 1 / 8 9 10 11 : 2 / 2 3 : / 1 2 3 : 2 2 / 1 2 3 : 1 2 / 1 
+2 : -1 -1 -1 -1 / 1 2 : 0 / 9 10 11 12 : 1 1 1 2 1 7 2 3 0 0 2 2 3 2 -1 1 1 1 1 
+3 2 2 2 2 4 -1 15 -1 -1 -1 0 / 1 2 3 5 : 0 0 0                                  
+0 / 3 4 5 6 7 : 2 / 1 2 : 0 2 2 1 0 1 2 2 2 -1 2 2 -1 / 1 2 : 1 2 -1 -1 -1 -1 0 
+/ 2 3 4 : 1 1 0 1 1 1 2 1 1 2 0 / 2 3 4 5 : 2 2 0 0 0 1 / 1 2 : 0 3 / 1 3 : / 1 
+3 : 1 0 1 2 / 2 3 4 5 6 7 8 : 1 1 1 1 2 4 1 2 / 1 2 : 1 2 1 / 1 3 : 1 1 1 2 2 1 
+/ 1 2 : / 1 2 : / 1 2 : 2 4 -1 -1 -1 -1 4 -1 0 / 1 2 3 5 : 0 0 0                
+0 / 2 3 4 : 2 2 0 2 2 1 0 1 2 2 2 -1 2 2 -1 1 1 -1 -1 -1 -1 -1 0 / 2 3 : 1 / 1 2
+: 0 / 1 2 : 2 1 2 / 1 2 : 1 2 1 / 2 3 4 : / 1 2 : 2 0 0 0 1 1 / 1 2 : 1 -1 -1 -1
+-1 1 0 / 2 3 4 5 : 1 1 1 1 2 4 1 2 2 1 2 1 3 1 2 1 2 2 1 / 1 2 : 2 2 2 4 -1 -1  
+-1 -1 4 -1 0 / 1 2 3 4 5 6 : 0 0 0                                              
+0 / 3 4 5 6 : 2 / 1 2 : / 1 2 : / 1 2 : 0 1 0 1 / 1 2 : 2 / 2 5 : 0 / 1 2 : 1 2 
+2 0 1 1 2 1 / 3 4 : 0 0 / 1 2 3 : 3 -1 2 1 1 2 2 2 / 1 2 : 0 / 2 3 4 : 2 1 2 2 2
+1 2 0 3 1 1 2 / 2 3 : 2 0 / 2 3 4 : 1 3 1 1 / 1 2 : / 2 3 4 : 1 2 0 1 2 1 3 1 3 
+2 2 2 1 2 1 / 1 2 : 2 5 6 -1 -1 -1 -1 5 0 / 1 2 3 4 : 0 0 0                     
+0 / 2 3 4 5 : 2 / 1 2 : 2 2 2 1 / 1 2 3 4 : 1 1 2 5 / 1 2 : 2 2 -1 -1 2 2 -1 -1 
+-1 -1 0 / 1 2 3 : 1 1 0 / 1 2 : / 1 2 : 1 2 2 2 2 / 1 2 : 2 1 -1 -1 -1 -1 1 / 1 
+2 : 0 / 1 2 3 : / 1 3 5 : 2 2 / 1 2 3 : 2 2 / 4 5 6 : 1 / 1 2 3 : 1 2 2 4 1 2 1 
+1 2 1 3 2 -1 1 2 2 / 1 2 : 1 2 / 1 2 : 2 1 2 4 -1 -1 -1 -1 0 / 1 2 3 4 5 6 : 0 0
+0                                                                               
+0 / 3 4 5 6 : 2 / 1 2 : 0 2 2 1 0 1 2 2 2 / 1 2 : 2 2 -1 0 1 -1 -1 -1 -1 -1 0 / 
+3 4 : 1 / 1 4 : 2 1 2 1 2 1 1 2 1 / 4 5 6 : / 1 2 : 2 0 0 0 3 1 / 1 2 : / 1 2 : 
+-1 -1 -1 -1 1 0 4 1 0 1 / 1 2 : 2 4 1 2 / 1 3 : 1 1 1 1 1 2 1 2 2 1 1 2 2 2 4 -1
+-1 -1 -1 4 -1 0 / 1 2 3 4 6 : 0 0 0                                             
+0 / 1 2 3 4 5 6 : 2 2 2 2 2 1 / 1 2 3 4 5 : 1 1 2 5 / 1 2 : 2 2 -1 -1 2 2 -1 -1 
+-1 -1 0 / 3 4 5 : 1 1 2 1 2 1 2 1 1 2 / 1 2 : / 4 5 6 : 2 2 0 0 0 / 2 3 : / 1 2 
+: / 1 2 : / 1 2 3 : 1 / 1 3 : 1 / 1 2 : 2 0 / 4 5 6 7 8 : 1 1 1 2 / 1 2 : 4 / 1 
+2 : 2 1 / 1 2 3 : 2 2 3 2 -1 1 2 2 / 1 2 : 1 2 / 1 2 : 2 1 2 7 -1 -1 -1 -1 0 / 1
+2 3 4 5 6 : 0 0 0                                                               
+0 / 4 5 6 7 : 2 / 1 2 : 0 / 1 2 : 2 1 0 1 1 2 / 2 5 : 1 2 2 -1 -1 2 2 -1 -1 -1  
+-1 0 / 3 4 : 1 1 0 2 2 / 1 2 : 2 2 1 2 0 1 2 1 3 2 2 1 1 1 / 1 2 3 : 1 3 1 / 1 2
+3 : 1 0 / 4 5 6 7 8 9 : 1 1 1 2 2 7 1 2 0 / 1 2 3 : 2 2 3 2 -1 1 1 2 1 3 2 2 2 2
+3 -1 1 -1 -1 -1 0 / 1 2 3 : 0 0 0                                               
+0 / 3 4 5 6 7 : / 1 2 : / 1 2 : / 1 2 : / 1 2 : / 1 2 : 0 0 1 / 1 2 : 2 5 / 1 2 
+: 2 2 -1 -1 2 2 -1 -1 -1 -1 0 / 2 3 4 : 3 / 3 4 : 0 2 2 1 2 1 2 2 0 / 4 5 6 7 8 
+9 : 2 1 2 / 1 2 : 2 1 1 / 1 2 : 1 -1 -1 -1 -1 2 1 / 4 5 6 7 8 9 10 : 1 1 1 1 2 4
+1 2 2 1 2 1 3 / 1 2 : / 1 2 3 : / 1 2 : 2 2 / 1 2 : / 1 2 : / 1 2 : / 1 2 : 2 5 
+5 -1 -1 -1 -1 2 0 / 1 2 3 5 6 : 0 0 0                                           
+0 / 4 5 6 7 : / 1 2 : 2 / 1 2 : 2 2 1 / 4 5 6 7 : 1 2 2 5 1 2 2 -1 -1 2 2 -1 -1 
+-1 -1 0 / 4 5 : 1 1 2 1 1 1 2 1 1 2 2 / 4 5 6 : 2 3 2 / 1 2 : 2 3 1 1 / 1 3 : 1 
+3 1 1 2 0 / 2 3 4 : 1 2 1 1 / 1 2 : 4 1 2 3 1 2 1 3 2 -1 1 1 2 1 2 2 2 2 3 -1 -1
+-1 5 -1 -1 0 / 1 2 3 5 6 : 0 0 0                                                
+0 / 2 3 4 5 6 : 2 / 1 2 : 2 2 0 1 / 1 2 3 4 5 : 1 / 1 2 : / 2 3 : 5 / 1 2 : 2 2 
+-1 -1 2 2 -1 -1 -1 -1 0 / 2 3 4 : 1 1 2 1 / 1 2 : 1 2 / 1 2 : 1 2 1 4 / 1 2 : 2 
+0 0 0 / 2 3 : 1 1 / 1 2 : -1 -1 -1 -1 1 2 / 6 8 9 10 : 1 / 1 2 : 1 2 2 4 1 2 1 1
+2 1 3 2 -1 1 2 2 1 1 2 / 1 2 : 2 1 2 7 -1 -1 -1 -1 0 / 1 2 3 5 6 : 0 0 0        
+0 / 6 7 : 2 1 0 2 2 0 0 1 2 1 -1 -1 2 2 -1 2 2 / 1 2 : 0 0 0 0 0 0 / 2 3 : 4 0 2
+2 1 2 2 2 2 -1 1 2 1 2 2 2 1 0 0 1 -1 -1 -1 -1 2 0 4 1 1 2 -1 -1 1 1 2 / 1 2 : 2
+2 1 3 1 3 2 2 2 1 2 1 1 1 5 6 -1 -1 -1 -1 6 0 3 0 0 0                           
+NAMES 3 :
+Echinochloa:                                                                    
+Anisopogon:                                                                     
+Bambusa:                                                                        
+Chloris:                                                                        
+Cynodon:                                                                        
+Andropogon:                                                                     
+Agrostis:                                                                       
+Eleusine:                                                                       
+Festuca:                                                                        
+Oryza:                                                                          
+Panicum:                                                                        
+Phragmites:                                                                     
+Poa:                                                                            
+Zea:                                                                            
+                                                                                
+including <synonyms: ‘genera’ included in the current description>:             
+<mature> culms <maximum height: data unreliable for large genera>:              
+culms <whether woody or herbaceous>:                                            
+<longevity of plants>:                                                          
+culms <whether branched above>:                                                 
+leaf blades <whether pseudopetiolate>:                                          
+culm nodes <whether hairy or glabrous>:                                         
+leaf blades <shape: data incomplete>:                                           
+leaf blades <mid-width: data very incomplete>:                                  
+<adaxial> ligule <presence>:                                                    
+<adaxial> ligule <form; avoid seedlings>:                                       
+plants <whether monoecious, with bisexual spikelets, or dioecious>:             
+inflorescence <chasmogamous: overall form>:                                     
+inflorescence <whether open or contracted: mainly applied to panicles>:         
+inflorescence <whether comprising a complex of ‘partial inflorescences’ and     
+intervening foliar organs (= leaves, spathes, spatheoles)>:                     
+spikelet-bearing axes <whether disarticulating; note that spikelet-bearing axes 
+may be greatly reduced>:                                                        
+spikelet-bearing axes <manner of disarticulation>:                              
+spikelets <grouping: recorded mainly in spikes and racemes>:                    
+spikelets <whether secund>:                                                     
+spikelets <whether in regular ‘long-and-short’ combinations, as exemplified in  
+typical andropogonoids>:                                                        
+spikelets <detail of ‘long-and-short’ combinations (intended mainly for         
+andropogonoids)>:                                                               
+pedicels of the ‘pedicellate’ spikelets <whether fused with the rachis: intended
+for andropogonoids>:                                                            
+the ‘shorter’ <andropogonoid> spikelets <sessile or shorter-pedicelled,         
+sexuality>:                                                                     
+the ‘longer’ <andropogonoid> spikelets <pedicelled or longer-pedicelled,        
+sexuality>:                                                                     
+<comments on female-sterile spikelets>:                                         
+<female-fertile> spikelets <approximate length, excluding any awns>:            
+<female-fertile> spikelets <plane of compression>:                              
+<female-fertile> spikelets <location of disarticulation positions>:             
+<female-fertile> spikelets <whether rachilla disarticulates between the florets 
+of spikelets with two or more fertile florets>:                                 
+rachilla <of female-fertile spikelets, whether terminated by a female-fertile   
+floret, or ‘prolonged’>:                                                        
+hairy callus <presence>:                                                        
+glumes <of female-fertile spikelets, present or absent>:                        
+glumes <of female-fertile spikelets, number: ‘glumes’ are barren, with neither  
+axillary spikelets nor florets>:                                                
+glumes <of female-fertile spikelets, whether markedly unequal in the intact     
+spikelet; regardless of any differences in form>:                               
+glumes <of female-fertile spikelets, lengths relative to proximal (adjacent)    
+lemmas; refers to the longer glume when glumes unequal>:                        
+glumes <of female-fertile spikelets, whether awned>:                            
+glumes <of female-fertile spikelets, whether carinate (i.e., one-keeled to      
+middle or below)>:                                                              
+upper glume <(or the single glume) of female-fertile spikelets, mid-zone nerve  
+number>:                                                                        
+<female-fertile> spikelets <whether containing sterile or male-only florets in  
+addition to female-fertile florets>:                                            
+the incomplete <male or sterile> florets <position in spikelet>:                
+the proximal incomplete florets <of the female-fertile spikelets, when present, 
+number (intended mainly for panicoids)>:                                        
+the proximal incomplete florets <of the female-fertile spikelets: sexuality>:   
+the proximal <imperfect> lemmas <of the female-fertile spikelets: whether       
+awned>:                                                                         
+<number of> female-fertile florets <per female-fertile spikelet>:               
+<female-fertile> lemmas <shape of apex>:                                        
+<female-fertile> lemmas <entire, whether pointed or blunt>:                     
+<female-fertile> lemmas <whether mucronate or awned>:                           
+awns <of female-fertile lemmas, if present, number>:                            
+awns <of female-fertile lemmas, position of (main, median)>:                    
+awns <of female-fertile lemmas, whether straight or geniculate when dry>:       
+awns <main, median of the female-fertile lemmas, relative length>:              
+<female-fertile> lemmas <whether carinate (i.e., one-keeled at least to the     
+middle on the back>:                                                            
+<female-fertile> lemmas <presence of germination flap>:                         
+<female-fertile> lemmas <number of nerves traversing mid-region>:               
+palea <female-fertile, presence in female-fertile florets>:                     
+palea <female-fertile, relative size>:                                          
+lodicules <presence in female-fertile florets>:                                 
+lodicules <of female-fertile florets, texture>:                                 
+lodicules <of female-fertile florets, whether hairy>:                           
+stamens <number per female-fertile floret (not applicable to male spikelets or  
+male florets)>:                                                                 
+ovary <of female-fertile florets, whether apex glabrous or hairy>:              
+stigmas <number>:                                                               
+stigmas <colour, in chasmogamous spikelets>:                                    
+fruit <length when mature>:                                                     
+fruit <or grain surface pattern>:                                               
+hilum <form>:                                                                   
+pericarp <whether fused or loose (or free)>:                                    
+<maximum cells-distant count; reliably indicative of photosynthetic pathway>:   
+<C4> biochemical type <as determined by enzyme assay>:                          
+<leaf blade XyMS: reliably indicative of C4 type>:                              
+<leaf blade> mesophyll <presence of arm cells (= ‘ratchet’ cells)>:             
+<leaf blade> mesophyll <presence of fusoid cells>:                              
+midrib <of the leaf blade, prominence>:                                         
+midrib <of the mid leaf blade, vascularization>:                                
+midrib <and/or middle part of leaf blade, whether extensively of colourless     
+cells adaxially>:                                                               
+<presence in the leaf blade of small vascular bundles unaccompanied by          
+sclerenchyma>:                                                                  
+<Zea mays>:                                                                     
+<subfamily>:                                                                    
+<supertribes of Watson et al. 1985, with name endings changed>:                 
+<tribe of Pooideae>:                                                            
+<tribe of Bambusoideae>:                                                        
+<tribe of Arundinoideae>:                                                       
+<tribe/assemblage of Chloridoideae>:                                            
+<tribe of Panicoideae>:                                                         
+<number of species>:                                                            
+<floristic Kingdoms: after Takhtajan 1969>:                                     
+<leaf anatomical references>:                                                   
+<illustrations:>:                                                               
+<abbreviated taxon name:>:                                                      
+A:                                                                              
+B:                                                                              
+up to 2 cm high :                                                               
+2 to 5 cm high :                                                                
+5 to 25 cm high :                                                               
+25 to 75 cm high :                                                              
+75 to 150 cm high :                                                             
+150 to 300 cm high :                                                            
+300 to 1000 cm high :                                                           
+1000 cm high or more :                                                          
+woody and persistent:                                                           
+herbaceous:                                                                     
+annual:                                                                         
+perennial:                                                                      
+branched above:                                                                 
+unbranched above:                                                               
+pseudopetiolate:                                                                
+not pseudopetiolate:                                                            
+hairy:                                                                          
+glabrous:                                                                       
+linear to lanceolate:                                                           
+ovate-lanceolate to elliptic:                                                   
+obovate:                                                                        
+up to 1 mm wide :                                                               
+1 to 3 mm wide :                                                                
+3 to 5 mm wide :                                                                
+5 to 12 mm wide :                                                               
+12 to 25 mm wide :                                                              
+25 to 50 mm wide :                                                              
+50 to 100 mm wide :                                                             
+100 mm wide or more :                                                           
+present:                                                                        
+absent:                                                                         
+an unfringed membrane:                                                          
+a fringed membrane to a fringe of hairs:                                        
+a rim of minute papillae:                                                       
+monoecious with all the fertile spikelets unisexual:                            
+bisexual, with bisexual spikelets:                                              
+dioecious:                                                                      
+a single spike:                                                                 
+of spicate main branches:                                                       
+a false spike, with spikelets on contracted axes:                               
+a single raceme:                                                                
+paniculate:                                                                     
+open:                                                                           
+contracted:                                                                     
+a complex of ‘partial inflorescences’ and intervening foliar organs:            
+not comprising ‘partial inflorescences’ and foliar organs:                      
+disarticulating:                                                                
+persistent:                                                                     
+falling entire:                                                                 
+disarticulating at the joints:                                                  
+solitary:                                                                       
+paired:                                                                         
+in triplets:                                                                    
+secund:                                                                         
+not secund:                                                                     
+consistently in ‘long-and-short’ combinations:                                  
+not in distinct ‘long-and-short’ combinations:                                  
+in pedicellate/sessile combinations:                                            
+unequally pedicellate in each combination:                                      
+discernible, but fused with the rachis:                                         
+free of the rachis:                                                             
+hermaphrodite:                                                                  
+female-only:                                                                    
+male-only:                                                                      
+sterile:                                                                        
+hermaphrodite:                                                                  
+female-only:                                                                    
+male-only:                                                                      
+sterile:                                                                        
+A:                                                                              
+B:                                                                              
+up to 0.9 mm long :                                                             
+0.9 to 2 mm long :                                                              
+2 to 5 mm long :                                                                
+5 to 15 mm long :                                                               
+15 to 30 mm long :                                                              
+30 mm long or more :                                                            
+compressed laterally:                                                           
+not noticeably compressed:                                                      
+compressed dorsiventrally:                                                      
+disarticulating above the glumes:                                               
+disarticulating between the glumes:                                             
+falling with the glumes:                                                        
+not disarticulating:                                                            
+not disarticulating between the florets:                                        
+disarticulating between the florets:                                            
+prolonged beyond the uppermost female-fertile floret:                           
+terminated by a female-fertile floret:                                          
+present:                                                                        
+absent:                                                                         
+present:                                                                        
+absent:                                                                         
+one per spikelet:                                                               
+two:                                                                            
+several:                                                                        
+very unequal:                                                                   
+more or less equal:                                                             
+shorter than the adjacent lemmas:                                               
+long relative to the adjacent lemmas:                                           
+awned:                                                                          
+awnless:                                                                        
+carinate:                                                                       
+non-carinate:                                                                   
+0 nerved :                                                                      
+1 nerved :                                                                      
+2 nerved :                                                                      
+3 nerved :                                                                      
+4 nerved :                                                                      
+5 nerved :                                                                      
+6 nerved :                                                                      
+7 nerved :                                                                      
+8 to 9 nerved :                                                                 
+10 to 12 nerved :                                                               
+13 to 19 nerved :                                                               
+20 nerved or more :                                                             
+with female-fertile florets only:                                               
+with incomplete florets:                                                        
+proximal to the female-fertile florets:                                         
+distal to the female-fertile florets:                                           
+both distal and proximal to the female-fertile florets:                         
+0 :                                                                             
+1 :                                                                             
+2 or more :                                                                     
+male:                                                                           
+sterile:                                                                        
+awned:                                                                          
+awnless:                                                                        
+1 :                                                                             
+2 :                                                                             
+3 or more :                                                                     
+entire:                                                                         
+incised:                                                                        
+pointed:                                                                        
+blunt:                                                                          
+awnless:                                                                        
+mucronate:                                                                      
+awned:                                                                          
+1 :                                                                             
+2 :                                                                             
+3 :                                                                             
+4 :                                                                             
+5 :                                                                             
+6 to 8 :                                                                        
+9 :                                                                             
+10 :                                                                            
+11 :                                                                            
+12 :                                                                            
+13 to 23 :                                                                      
+24 or more :                                                                    
+from a sinus:                                                                   
+dorsal:                                                                         
+apical:                                                                         
+non-geniculate:                                                                 
+geniculate:                                                                     
+much shorter than the body of the lemma:                                        
+about as long as the body of the lemma:                                         
+much longer than the body of the lemma:                                         
+carinate:                                                                       
+non-carinate:                                                                   
+with a clear germination flap:                                                  
+without a germination flap:                                                     
+0 nerved :                                                                      
+1 nerved :                                                                      
+2 nerved :                                                                      
+3 nerved :                                                                      
+4 nerved :                                                                      
+5 nerved :                                                                      
+6 nerved :                                                                      
+7 nerved :                                                                      
+8 to 9 nerved :                                                                 
+10 to 12 nerved :                                                               
+13 to 19 nerved :                                                               
+20 nerved or more :                                                             
+present:                                                                        
+absent:                                                                         
+relatively long:                                                                
+conspicuous but relatively short:                                               
+very reduced:                                                                   
+present:                                                                        
+absent:                                                                         
+fleshy:                                                                         
+membranous:                                                                     
+ciliate:                                                                        
+glabrous:                                                                       
+0 :                                                                             
+1 :                                                                             
+2 :                                                                             
+3 :                                                                             
+4 :                                                                             
+5 :                                                                             
+6 :                                                                             
+7 to 15 :                                                                       
+15 or more :                                                                    
+glabrous:                                                                       
+hairy:                                                                          
+1 :                                                                             
+2 :                                                                             
+3 :                                                                             
+4 to 5 :                                                                        
+6 :                                                                             
+7 or more :                                                                     
+white:                                                                          
+red pigmented:                                                                  
+brown:                                                                          
+small:                                                                          
+medium sized:                                                                   
+large:                                                                          
+sculptured:                                                                     
+smooth:                                                                         
+short:                                                                          
+long-linear:                                                                    
+free:                                                                           
+loosely adherent:                                                               
+fused:                                                                          
+C4:                                                                             
+C3:                                                                             
+PCK:                                                                            
+NAD–ME:                                                                         
+NADP–ME:                                                                        
+XyMS+:                                                                          
+XyMS–:                                                                          
+with arm cells:                                                                 
+without arm cells:                                                              
+with fusoids:                                                                   
+without fusoids:                                                                
+conspicuous:                                                                    
+not readily distinguishable:                                                    
+with one bundle only:                                                           
+having a conventional arc of bundles:                                           
+having complex vascularization:                                                 
+with colourless tissue adaxially:                                               
+without colourless tissue adaxially:                                            
+many of the smallest vascular bundles unaccompanied by sclerenchyma:            
+all the vascular bundles accompanied by sclerenchyma:                           
+fruiting inflorescence a massive, spatheate cob, the fruits in many rows:       
+fruiting inflorescence not as in maize:                                         
+Pooideae:                                                                       
+Bambusoideae:                                                                   
+Arundinoideae:                                                                  
+Chloridoideae:                                                                  
+Panicoideae:                                                                    
+Triticodae:                                                                     
+Poodae:                                                                         
+Oryzodae:                                                                       
+Bambusodae:                                                                     
+Panicodae:                                                                      
+Andropogonodae:                                                                 
+Triticeae:                                                                      
+Brachypodieae:                                                                  
+Bromeae:                                                                        
+Aveneae:                                                                        
+Meliceae:                                                                       
+Seslerieae:                                                                     
+Poeae:                                                                          
+Oryzeae:                                                                        
+Olyreae:                                                                        
+Centotheceae:                                                                   
+Anomochloeae:                                                                   
+Brachyelytreae:                                                                 
+Diarrheneae:                                                                    
+Ehrharteae:                                                                     
+Phaenospermateae:                                                               
+Phyllorhachideae:                                                               
+Phareae:                                                                        
+Streptochaeteae:                                                                
+Streptogyneae:                                                                  
+Guaduelleae:                                                                    
+Puelieae:                                                                       
+Bambuseae:                                                                      
+Steyermarkochloeae:                                                             
+Stipeae:                                                                        
+Nardeae:                                                                        
+Lygeae:                                                                         
+Arundineae:                                                                     
+Danthonieae:                                                                    
+Cyperochloeae:                                                                  
+Micraireae:                                                                     
+Spartochloeae:                                                                  
+Aristideae:                                                                     
+Eriachneae:                                                                     
+Amphipogoneae:                                                                  
+Pappophoreae:                                                                   
+Orcuttieae:                                                                     
+Triodieae:                                                                      
+main chloridoid assemblage:                                                     
+Isachneae:                                                                      
+Paniceae:                                                                       
+Neurachneae:                                                                    
+Arundinelleae:                                                                  
+Andropogoneae:                                                                  
+Maydeae:                                                                        
+A:                                                                              
+B:                                                                              
+Holarctic:                                                                      
+Paleotropical:                                                                  
+Neotropical:                                                                    
+Cape:                                                                           
+Australian:                                                                     
+Antarctic:                                                                      
+A:                                                                              
+B:                                                                              
+A:                                                                              
+B:                                                                              
+A:                                                                              
+B:                                                                              
+COSTS 10 3 3 3 3 3 5 3 3 3 2 2 2 3 3 3 3 3 3 3 3 3 3 3 10 3 2 3 3 3 3 3 3 3 3 3
+3 3 5 3 3 3 3 2 3 3 3 2 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 4 3 2 3 8 9 8 9 9 9 9 9 9
+2 10 10 10 10 10 10 10 10 10 10 10 10 
+PREFERENCES 10 3 3 3 3 3 5 3 3 3 2 2 2 3 3 3 3 3 3 3 3 3 3 3 10 3 2 3 3 3 3 3 3
+3 3 3 3 3 5 3 3 3 3 2 3 3 3 2 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 4 3 2 3 8 9 8 9 9 9
+9 9 9 2 10 10 10 10 10 10 10 10 10 10 10 10 
+USE 9
+RUN                                                                             
+END                                                                             
