@@ -3,8 +3,6 @@ package au.org.ala.delta.editor.directives;
 import java.math.BigDecimal;
 import java.util.List;
 
-import org.apache.commons.lang.NotImplementedException;
-
 import au.org.ala.delta.directives.args.DirectiveArgument;
 import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.editor.slotfile.CharType;
@@ -339,6 +337,7 @@ public class DirectiveArgConverter {
 		case DirectiveArgType.DIRARG_INTKEY_ONOFF:
 		case DirectiveArgType.DIRARG_INTEGER:
 		case DirectiveArgType.DIRARG_CHARGROUPS:
+		case DirectiveArgType.DIRARG_ALLOWED:
 			return new NullConverter();
 
 		case DirectiveArgType.DIRARG_TEXTLIST:
@@ -366,6 +365,7 @@ public class DirectiveArgConverter {
 		case DirectiveArgType.DIRARG_KEYSTATE:
 		case DirectiveArgType.DIRARG_KEYWORD_CHARLIST:
 		case DirectiveArgType.DIRARG_PRESET:
+		case DirectiveArgType.DIRARG_INTKEY_ATTRIBUTES:
 			return _characterNumberConverter;
 			
 		case DirectiveArgType.DIRARG_ITEMTEXTLIST:
@@ -373,12 +373,6 @@ public class DirectiveArgConverter {
 		case DirectiveArgType.DIRARG_INTKEY_ITEMCHARSET:
 		case DirectiveArgType.DIRARG_ITEMCHARLIST:
 			return _itemDescriptionConverter;
-		case DirectiveArgType.DIRARG_ALLOWED:
-			throw new NotImplementedException();
-
-		case DirectiveArgType.DIRARG_INTKEY_ATTRIBUTES:
-			throw new NotImplementedException();
-	
 		}
 		return new NullConverter();
 	}
@@ -408,9 +402,10 @@ public class DirectiveArgConverter {
 		case DirectiveArgType.DIRARG_CHARTEXTLIST:
 		case DirectiveArgType.DIRARG_INTKEY_CHARLIST:
 		case DirectiveArgType.DIRARG_KEYWORD_CHARLIST:
-
 		case DirectiveArgType.DIRARG_ITEMTEXTLIST:
 		case DirectiveArgType.DIRARG_ITEMFILELIST:
+		case DirectiveArgType.DIRARG_INTKEY_ATTRIBUTES:
+		case DirectiveArgType.DIRARG_ALLOWED: 
 			return new NullConverter();
 			
 		case DirectiveArgType.DIRARG_INTKEY_ITEMCHARSET:
@@ -429,13 +424,6 @@ public class DirectiveArgConverter {
 		case DirectiveArgType.DIRARG_PRESET:
 		case DirectiveArgType.DIRARG_CHARINTEGERLIST:
 			return new DirectIntegerConverter();
-			
-		case DirectiveArgType.DIRARG_ALLOWED:
-			throw new NotImplementedException();
-
-		case DirectiveArgType.DIRARG_INTKEY_ATTRIBUTES:
-			throw new NotImplementedException();
-	
 		}
 		return new NullConverter();
 	}

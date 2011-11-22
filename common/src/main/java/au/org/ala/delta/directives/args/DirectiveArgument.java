@@ -12,7 +12,7 @@ public class DirectiveArgument<T> implements Comparable<DirectiveArgument<?>>{
 	private BigDecimal _value;
 	private T _id;
 	private List<BigDecimal> _dataVect;
-	
+	private String _attributeText;
 
 	public DirectiveArgument(T id) {
 		this();
@@ -114,6 +114,14 @@ public class DirectiveArgument<T> implements Comparable<DirectiveArgument<?>>{
 		else {
 			return _text;
 		}
+	}
+	
+	public void setAttributeText(String attribute) {
+		_attributeText = attribute;
+	}
+	
+	public String getAttributeText() {
+		return _attributeText;
 	}
 	
 	@Override

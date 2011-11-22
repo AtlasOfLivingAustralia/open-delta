@@ -43,11 +43,12 @@ public class DirectiveArguments {
 		_args.add(arg);
 	}
 	
-	public void addTextArgument(String text) {
+	public DirectiveArgument<?> addTextArgument(String text) {
 		DirectiveArgument<Integer> arg = new DirectiveArgument<Integer>();
 		arg.setText(text);
 		
 		_args.add(arg);
+		return arg;
 	}
 	
 	public <T,V> void addNumericArgument(T id, String value) {
