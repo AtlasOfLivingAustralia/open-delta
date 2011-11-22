@@ -44,7 +44,7 @@ public class FileArgument extends IntkeyDirectiveArgument<File> {
         }
 
         if (file != null && !file.exists()) {
-            throw new IntkeyDirectiveParseException(String.format("Could not open file %s", file.getAbsolutePath()));
+            throw new IntkeyDirectiveParseException(String.format("File '%s' does not exist", file.getAbsolutePath()));
         }
 
         if (file != null) {
