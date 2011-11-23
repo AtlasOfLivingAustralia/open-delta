@@ -770,7 +770,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         getMainView().setMenuBar(menuBar);
 
         _txtFldCmdBar = new JTextField();
-        _txtFldCmdBar.setCaretColor(Color.WHITE);
+        _txtFldCmdBar.setCaretColor(Color.WHITE);        
         _txtFldCmdBar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 String cmdStr = _txtFldCmdBar.getText();
@@ -789,6 +789,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         _txtFldCmdBar.setFont(new Font("Courier New", Font.BOLD, 13));
         _txtFldCmdBar.setForeground(SystemColor.text);
         _txtFldCmdBar.setBackground(Color.BLACK);
+        _txtFldCmdBar.setOpaque(true);
         _txtFldCmdBar.setVisible(_advancedMode);
         _rootPanel.add(_txtFldCmdBar, BorderLayout.SOUTH);
         _txtFldCmdBar.setColumns(10);
