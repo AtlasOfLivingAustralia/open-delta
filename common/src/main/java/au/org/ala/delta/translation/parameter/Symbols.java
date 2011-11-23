@@ -12,12 +12,19 @@ public class Symbols extends ParameterTranslator {
 	private FilteredDataSet _dataSet;
 	private boolean _quoteSymbols;
 	private boolean _numberFromZero;
+	private String _command;
 	
-	public Symbols(PrintFile outputFile, FilteredDataSet dataSet, boolean quoteSymbols, boolean numberFromZero) {
+	public Symbols(
+			PrintFile outputFile, 
+			FilteredDataSet dataSet,
+			String command,
+			boolean quoteSymbols, 
+			boolean numberFromZero) {
 		super(outputFile);
 		_dataSet = dataSet;
 		_quoteSymbols = quoteSymbols;
 		_numberFromZero = numberFromZero;
+		_command = command;
 	}
 
 	@Override
@@ -28,7 +35,7 @@ public class Symbols extends ParameterTranslator {
 	
 	protected String symbols() {
 		StringBuilder symbols = new StringBuilder();
-		symbols.append("SYMBOLS ");
+		symbols.append(_command);
 		Iterator<IdentificationKeyCharacter> characters = _dataSet.identificationKeyCharacterIterator();
 		int max = 0;
 		while (characters.hasNext()) {
@@ -39,7 +46,7 @@ public class Symbols extends ParameterTranslator {
 		if (_quoteSymbols) {
 			symbols.append("\"");
 		}
-		writeSymbols(symbols, first, max+first);
+		writeSymbols(symbols, first, max+first-1);
 		
 		if (_quoteSymbols) {
 			symbols.append("\"");

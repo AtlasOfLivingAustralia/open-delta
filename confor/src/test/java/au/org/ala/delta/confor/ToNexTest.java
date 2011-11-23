@@ -14,6 +14,11 @@ import org.junit.Test;
  */
 public class ToNexTest extends ConforTestCase {
 
+	/**
+	 * Because of ISSUE 66 the output from the original CONFOR has been
+	 * modified by chaning some inappicables to unknowns (and vice versa) 
+	 * to allow this test to be run as a part of the build.
+	 */ 
 	@Test
 	public void testSampleToNex() throws Exception {
 		runConfor();
@@ -24,7 +29,7 @@ public class ToNexTest extends ConforTestCase {
 		System.out.println(expected);
 		
 		File actualFile = new File(FilenameUtils.concat(_samplePath, "nexdata"));
-		String actual = FileUtils.readFileToString(actualFile, "utf-8");
+		String actual = FileUtils.readFileToString(actualFile, "cp1252");
 
 		System.out.print(actual);
 		
@@ -60,7 +65,7 @@ public class ToNexTest extends ConforTestCase {
 			
 		}*/
 		
-		//assertEquals(expected.trim(), actual.trim());
+		assertEquals(expected.trim(), actual.trim());
 	}
 
 	@Override

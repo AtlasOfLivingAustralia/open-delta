@@ -33,6 +33,8 @@ public class PrintFile {
     private boolean _omitNextTrailingSpace = false;
     private char[] _wrapAsGroupChar;
     private boolean _trim;
+    private boolean _trimLeadingSpacesOnLineWrap;
+    private boolean _outputFixedWidth;
     
     public PrintFile(final StringBuilder buffer) {
 
@@ -69,6 +71,8 @@ public class PrintFile {
         _newFile = true;
         _newFileHeader = "";
         _trim = true;
+        _outputFixedWidth = false;
+        _trimLeadingSpacesOnLineWrap = false;
     }
     
     public void setSoftWrap(boolean softWrap) {
@@ -80,7 +84,25 @@ public class PrintFile {
     }
 
     public void setTrimInput(boolean trim) {
+    	setTrimInput(trim, false);
+    }
+    
+    /**
+     * Sets the trimming mode for text printed by this object.  The default
+     * is true.
+     * 
+     * @param trim If trim is false, input will not be trimmed before being output.
+     * @param trimLeadingOnLineWrap If trimLeadingOnLineWrap is true, the leading spaces will be removed
+     * when a line of text is wrapped.  This parameter only has an effect
+     * if trim is false.
+     */
+    public void setTrimInput(boolean trim, boolean trimLeadingOnLineWrap) {
     	_trim = trim;
+    	_trimLeadingSpacesOnLineWrap = trimLeadingOnLineWrap;
+    }
+    
+    public void setOutputFixedWidth(boolean outputFixedWidth) {
+    	_outputFixedWidth = outputFixedWidth;
     }
     
     public void insertTypeSettingMarks(int number) {
@@ -153,7 +175,8 @@ public class PrintFile {
 	        }
     	}
         if (_outputBuffer.length() > 0) {
-            _output.println(_outputBuffer.substring(0, i + 1));
+        	
+            println(_outputBuffer.substring(0, i + 1));
             _indented = false;
             _outputBuffer = new StringBuilder();
         
@@ -168,6 +191,21 @@ public class PrintFile {
             }
         }
     }
+    
+    protected void println(String text) {
+    	if (_outputFixedWidth) {
+    		text = pad(text);
+    	}
+    	_output.println(text);
+    }
+    
+    protected String pad(String value) {
+		StringBuilder paddedValue = new StringBuilder(value);
+		while (paddedValue.length() % _printWidth != 0) {
+			paddedValue.append(' ');
+		}
+		return paddedValue.toString();
+	}
 
     public void writeJustifiedText(String text, int completionAction) {
         writeFileHeader();
@@ -207,6 +245,9 @@ public class PrintFile {
 
             if (_trim) {
             	trailingText = trailingText.trim();
+            }
+            else if (_trimLeadingSpacesOnLineWrap){
+            	trailingText = StringUtils.stripStart(trailingText, null);
             }
             _outputBuffer.append(trailingText);
         }
@@ -272,10 +313,13 @@ public class PrintFile {
 			if (groupNest > 0 && maxSpace == 0) {
 				wrappingPos = maxGroupStart;
 			}
-			else {
-				wrappingPos = maxSpace;
+			else if (maxSpace > 0) {
+				wrappingPos = maxSpace+1;
 			}
-			wrappingPos = wrappingPos+1;
+			else {
+				wrappingPos = _printWidth;
+			}
+			
 		}
 		return wrappingPos;
 	}
@@ -413,6 +457,7 @@ public class PrintFile {
 			writeBlankLines(numTrailingBlanks, 0);
 		}
 	}
+    
     
     /**
      * If a line is wrapped during output, the line wrap indent will be

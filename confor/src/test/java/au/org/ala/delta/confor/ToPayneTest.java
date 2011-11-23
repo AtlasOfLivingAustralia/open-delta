@@ -37,28 +37,11 @@ public class ToPayneTest extends ConforTestCase {
 			expected = expected.replaceAll(expectedLineSeparator, System.getProperty("line.separator"));
 		}
 		// The heading contains the date so will be different.
-		String heading = "Grass Genera 15:43 22-OCT-11"; // <Date>, eg. 11:32 05-OCT-11
+		String heading = "Grass Genera 16.08 22-NOV-11"; // <Date>, eg. 11:32 05-OCT-11
 		
 		actual = actual.replaceAll("Grass Genera.*[0-9]{2}-[a-zA-Z]{3}-[0-9]{4}", heading);
 		
-		/*for (int i=0; i<expected.length(); i++) {
-			if (expected.charAt(i) != actual.charAt(i)) {
-				System.out.println("Difference @ char: "+i+" Expected: "+expected.charAt(i)+(int)expected.charAt(i)+", Actual: "+actual.charAt(i)+(int)actual.charAt(i));
-				break;
-			}
-		}
-		BufferedReader expectedReader = new BufferedReader(new StringReader(expected));
-		BufferedReader actualReader = new BufferedReader(new StringReader(actual));
-		String expectedLine = expectedReader.readLine();
-		String actualLine = actualReader.readLine();
-		while (expectedLine != null) {
-			assertEquals(expectedLine.trim(), actualLine.trim());
-			expectedLine = expectedReader.readLine();
-			actualLine = actualReader.readLine();
-			
-		}*/
-		
-		//assertEquals(expected.trim(), actual.trim());
+		assertEquals(expected.trim(), actual.trim());
 	}
 
 	@Override

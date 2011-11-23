@@ -92,7 +92,7 @@ public class PaupTranslator extends ParameterBasedTranslator {
 			_outputFile.setWrapingGroupChars('\'', '\'');
 			_outputFile.setLineWrapIndent(0);
 			_outputFile.setIndent(0);
-			_outputFile.setTrimInput(false);
+			_outputFile.setTrimInput(false, true);
 			_outputFile.setPrintWidth(OUTPUT_COLUMNS);
 		}
 		_itemFormatter = itemFormatter;
@@ -169,7 +169,7 @@ public class PaupTranslator extends ParameterBasedTranslator {
 
 	class PaupSymbols extends Symbols {
 		public PaupSymbols(PrintFile outputFile, boolean numberFromZero) {
-			super(outputFile, _dataSet, false, numberFromZero);
+			super(outputFile, _dataSet, "SYMBOLS ", false, numberFromZero);
 		}
 
 		@Override
@@ -183,7 +183,7 @@ public class PaupTranslator extends ParameterBasedTranslator {
 					symbols.append("-");	
 				}
 			}
-			symbols.append(StateEncoder.STATE_CODES[last - first]);
+			symbols.append(StateEncoder.STATE_CODES[last - first+1]);
 		}
 	}
 	

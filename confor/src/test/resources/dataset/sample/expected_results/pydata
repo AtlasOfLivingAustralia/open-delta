@@ -189,14 +189,14 @@ sclerenchyma>:
 <abbreviated taxon name:>:                                                      
 A:                                                                              
 B:                                                                              
-up to 2 cm high :                                                               
-2 to 5 cm high :                                                                
-5 to 25 cm high :                                                               
-25 to 75 cm high :                                                              
-75 to 150 cm high :                                                             
-150 to 300 cm high :                                                            
-300 to 1000 cm high :                                                           
-1000 cm high or more :                                                          
+up to 2 cm high:                                                                
+2 to 5 cm high:                                                                 
+5 to 25 cm high:                                                                
+25 to 75 cm high:                                                               
+75 to 150 cm high:                                                              
+150 to 300 cm high:                                                             
+300 to 1000 cm high:                                                            
+1000 cm high or more:                                                           
 woody and persistent:                                                           
 herbaceous:                                                                     
 annual:                                                                         
@@ -210,14 +210,14 @@ glabrous:
 linear to lanceolate:                                                           
 ovate-lanceolate to elliptic:                                                   
 obovate:                                                                        
-up to 1 mm wide :                                                               
-1 to 3 mm wide :                                                                
-3 to 5 mm wide :                                                                
-5 to 12 mm wide :                                                               
-12 to 25 mm wide :                                                              
-25 to 50 mm wide :                                                              
-50 to 100 mm wide :                                                             
-100 mm wide or more :                                                           
+up to 1 mm wide:                                                                
+1 to 3 mm wide:                                                                 
+3 to 5 mm wide:                                                                 
+5 to 12 mm wide:                                                                
+12 to 25 mm wide:                                                               
+25 to 50 mm wide:                                                               
+50 to 100 mm wide:                                                              
+100 mm wide or more:                                                            
 present:                                                                        
 absent:                                                                         
 an unfringed membrane:                                                          
@@ -260,12 +260,12 @@ male-only:
 sterile:                                                                        
 A:                                                                              
 B:                                                                              
-up to 0.9 mm long :                                                             
-0.9 to 2 mm long :                                                              
-2 to 5 mm long :                                                                
-5 to 15 mm long :                                                               
-15 to 30 mm long :                                                              
-30 mm long or more :                                                            
+up to 0.9 mm long:                                                              
+0.9 to 2 mm long:                                                               
+2 to 5 mm long:                                                                 
+5 to 15 mm long:                                                                
+15 to 30 mm long:                                                               
+30 mm long or more:                                                             
 compressed laterally:                                                           
 not noticeably compressed:                                                      
 compressed dorsiventrally:                                                      
@@ -292,33 +292,33 @@ awned:
 awnless:                                                                        
 carinate:                                                                       
 non-carinate:                                                                   
-0 nerved :                                                                      
-1 nerved :                                                                      
-2 nerved :                                                                      
-3 nerved :                                                                      
-4 nerved :                                                                      
-5 nerved :                                                                      
-6 nerved :                                                                      
-7 nerved :                                                                      
-8 to 9 nerved :                                                                 
-10 to 12 nerved :                                                               
-13 to 19 nerved :                                                               
-20 nerved or more :                                                             
+0 nerved:                                                                       
+1 nerved:                                                                       
+2 nerved:                                                                       
+3 nerved:                                                                       
+4 nerved:                                                                       
+5 nerved:                                                                       
+6 nerved:                                                                       
+7 nerved:                                                                       
+8 to 9 nerved:                                                                  
+10 to 12 nerved:                                                                
+13 to 19 nerved:                                                                
+20 nerved or more:                                                              
 with female-fertile florets only:                                               
 with incomplete florets:                                                        
 proximal to the female-fertile florets:                                         
 distal to the female-fertile florets:                                           
 both distal and proximal to the female-fertile florets:                         
-0 :                                                                             
-1 :                                                                             
-2 or more :                                                                     
+0:                                                                              
+1:                                                                              
+2 or more:                                                                      
 male:                                                                           
 sterile:                                                                        
 awned:                                                                          
 awnless:                                                                        
-1 :                                                                             
-2 :                                                                             
-3 or more :                                                                     
+1:                                                                              
+2:                                                                              
+3 or more:                                                                      
 entire:                                                                         
 incised:                                                                        
 pointed:                                                                        
@@ -326,18 +326,18 @@ blunt:
 awnless:                                                                        
 mucronate:                                                                      
 awned:                                                                          
-1 :                                                                             
-2 :                                                                             
-3 :                                                                             
-4 :                                                                             
-5 :                                                                             
-6 to 8 :                                                                        
-9 :                                                                             
-10 :                                                                            
-11 :                                                                            
-12 :                                                                            
-13 to 23 :                                                                      
-24 or more :                                                                    
+1:                                                                              
+2:                                                                              
+3:                                                                              
+4:                                                                              
+5:                                                                              
+6 to 8:                                                                         
+9:                                                                              
+10:                                                                             
+11:                                                                             
+12:                                                                             
+13 to 23:                                                                       
+24 or more:                                                                     
 from a sinus:                                                                   
 dorsal:                                                                         
 apical:                                                                         
@@ -350,18 +350,18 @@ carinate:
 non-carinate:                                                                   
 with a clear germination flap:                                                  
 without a germination flap:                                                     
-0 nerved :                                                                      
-1 nerved :                                                                      
-2 nerved :                                                                      
-3 nerved :                                                                      
-4 nerved :                                                                      
-5 nerved :                                                                      
-6 nerved :                                                                      
-7 nerved :                                                                      
-8 to 9 nerved :                                                                 
-10 to 12 nerved :                                                               
-13 to 19 nerved :                                                               
-20 nerved or more :                                                             
+0 nerved:                                                                       
+1 nerved:                                                                       
+2 nerved:                                                                       
+3 nerved:                                                                       
+4 nerved:                                                                       
+5 nerved:                                                                       
+6 nerved:                                                                       
+7 nerved:                                                                       
+8 to 9 nerved:                                                                  
+10 to 12 nerved:                                                                
+13 to 19 nerved:                                                                
+20 nerved or more:                                                              
 present:                                                                        
 absent:                                                                         
 relatively long:                                                                
@@ -373,23 +373,23 @@ fleshy:
 membranous:                                                                     
 ciliate:                                                                        
 glabrous:                                                                       
-0 :                                                                             
-1 :                                                                             
-2 :                                                                             
-3 :                                                                             
-4 :                                                                             
-5 :                                                                             
-6 :                                                                             
-7 to 15 :                                                                       
-15 or more :                                                                    
+0:                                                                              
+1:                                                                              
+2:                                                                              
+3:                                                                              
+4:                                                                              
+5:                                                                              
+6:                                                                              
+7 to 15:                                                                        
+15 or more:                                                                     
 glabrous:                                                                       
 hairy:                                                                          
-1 :                                                                             
-2 :                                                                             
-3 :                                                                             
-4 to 5 :                                                                        
-6 :                                                                             
-7 or more :                                                                     
+1:                                                                              
+2:                                                                              
+3:                                                                              
+4 to 5:                                                                         
+6:                                                                              
+7 or more:                                                                      
 white:                                                                          
 red pigmented:                                                                  
 brown:                                                                          
@@ -501,5 +501,5 @@ PREFERENCES 10 3 3 3 3 3 5 3 3 3 2 2 2 3 3 3 3 3 3 3 3 3 3 3 10 3 2 3 3 3 3 3 3
 3 3 3 3 3 5 3 3 3 3 2 3 3 3 2 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 4 3 2 3 8 9 8 9 9 9
 9 9 9 2 10 10 10 10 10 10 10 10 10 10 10 10 
 USE 9
-RUN                                                                             
+RUN
 END                                                                             

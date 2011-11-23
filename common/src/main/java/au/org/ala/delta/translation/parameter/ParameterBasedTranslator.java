@@ -68,4 +68,14 @@ public abstract class ParameterBasedTranslator implements DataSetTranslator {
 			return value.trim();
 		}
 	}
+	
+	protected String pad(String value, int columns) {
+		StringBuilder paddedValue = new StringBuilder(value);
+		while (paddedValue.length() % columns != 0) {
+			paddedValue.append(' ');
+		}
+		return paddedValue.toString();
+	}
+
+	
 }

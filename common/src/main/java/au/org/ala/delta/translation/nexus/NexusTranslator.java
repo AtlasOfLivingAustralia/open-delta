@@ -69,7 +69,7 @@ public class NexusTranslator extends ParameterBasedTranslator {
 
 	};
 
-	
+	private static final int OUTPUT_COLUMNS = 80;
 	private DeltaContext _context;
 	private PrintFile _outputFile;
 	private FilteredDataSet _dataSet;
@@ -86,6 +86,7 @@ public class NexusTranslator extends ParameterBasedTranslator {
 		if (_outputFile != null) {
 			_outputFile.setWrapingGroupChars('\'', '\'');
 			_outputFile.setLineWrapIndent(5);
+			
 		}
 		_characterFormatter = characterFormatter;
 		_itemFormatter = itemFormatter;
@@ -208,7 +209,7 @@ public class NexusTranslator extends ParameterBasedTranslator {
 	class Format extends Symbols {
 		
 		public Format(PrintFile outputFile) {
-			super(outputFile, _dataSet, true, _context.getNumberStatesFromZero());
+			super(outputFile, _dataSet, "SYMBOLS=", true, _context.getNumberStatesFromZero());
 		}
 		@Override
 		public void translateParameter(OutputParameter parameter) {
@@ -282,8 +283,10 @@ public class NexusTranslator extends ParameterBasedTranslator {
 		}
 		@Override
 		public void translateParameter(OutputParameter parameter) {
-			_outputFile.outputLine("MATRIX");
+			_outputFile.setTrimInput(false, true);
+			_outputFile.outputLine("MATRIX ");
 			_outputFile.setWrapingGroupChars('(', ')');
+			_outputFile.setOutputFixedWidth(true);
 			Iterator<FilteredItem> items = _dataSet.filteredItems();
 			while (items.hasNext()) {
 				Item item = items.next().getItem();
@@ -309,10 +312,13 @@ public class NexusTranslator extends ParameterBasedTranslator {
 						addStates(statesOut, states);
 					}
 				}
-				_outputFile.outputLine(statesOut.toString());
+				_outputFile.outputLine(pad(statesOut.toString(), OUTPUT_COLUMNS));
 			}
+			_outputFile.setOutputFixedWidth(false);
 			_outputFile.outputLine(";");
 			_outputFile.writeBlankLines(1, 0);
+			_outputFile.setTrimInput(true);
+		
 		}
 		
 		private boolean isInapplicable(Attribute attribute) {
@@ -329,7 +335,7 @@ public class NexusTranslator extends ParameterBasedTranslator {
 			itemOut.append("'");
 			itemOut.append(_itemFormatter.formatItemDescription(item));
 			itemOut.append("'");
-			_outputFile.outputLine(itemOut.toString());
+			_outputFile.outputLine(pad(itemOut.toString(), OUTPUT_COLUMNS));
 		}
 		
 		private void addStates(StringBuilder statesOut, List<Integer> states) {

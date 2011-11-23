@@ -32,7 +32,6 @@ public class KeyStateTranslator {
 
 	public KeyStateTranslator(AttributeTranslatorFactory translatorFactory) {
 		_attributeTranslatorFactory = translatorFactory;
-		
 	}
 
 	public String translateState(IdentificationKeyCharacter keyChar, int stateNumber) {

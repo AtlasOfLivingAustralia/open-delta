@@ -74,7 +74,7 @@ public class Henning86Translator extends AbstractIterativeTranslator {
 			_outputFile.setWrapingGroupChars('\'', '\'');
 			_outputFile.setLineWrapIndent(0);
 			_outputFile.setIndent(0);
-			_outputFile.setTrimInput(false);
+			_outputFile.setTrimInput(false, true);
 			_outputFile.setPrintWidth(OUTPUT_COLUMNS);
 		}
 		_itemFormatter = itemFormatter;

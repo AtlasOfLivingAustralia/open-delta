@@ -148,9 +148,11 @@ public class DataSetTranslatorFactory {
 		CharacterFormatter charFormatter = formatterFactory.createCharacterFormatter(false, false, CommentStrippingMode.RETAIN);
 		ItemFormatter itemFormatter = formatterFactory.createItemFormatter(null, CommentStrippingMode.STRIP_ALL, false);
 		FilteredDataSet dataSet = new FilteredDataSet(context, new NexusDataSetFilter(context));
+		CharacterFormatter stateFormatter = formatterFactory.createCharacterFormatter(false, false, CommentStrippingMode.STRIP_ALL);
+		
 		AttributeTranslatorFactory attributeTranslatorFactory = new AttributeTranslatorFactory(
 				context, 
-				charFormatter,
+				stateFormatter,
 				formatterFactory.createAttributeFormatter(),
 				null);
 		KeyStateTranslator keyStateTranslator = new KeyStateTranslator(attributeTranslatorFactory);
@@ -168,11 +170,14 @@ public class DataSetTranslatorFactory {
 		CharacterFormatter charFormatter = formatterFactory.createCharacterFormatter(false, false, CommentStrippingMode.RETAIN);
 		ItemFormatter itemFormatter = formatterFactory.createItemFormatter(null, CommentStrippingMode.STRIP_ALL, false);
 		FilteredDataSet dataSet = new FilteredDataSet(context, new AllPassFilter());
+		CharacterFormatter stateFormatter = formatterFactory.createCharacterFormatter(false, false, CommentStrippingMode.STRIP_ALL);
+		
 		AttributeTranslatorFactory attributeTranslatorFactory = new AttributeTranslatorFactory(
 				context, 
-				charFormatter,
+				stateFormatter,
 				formatterFactory.createAttributeFormatter(),
 				null);
+		
 		KeyStateTranslator keyStateTranslator = new KeyStateTranslator(attributeTranslatorFactory);
 		
 		return new PayneTranslator(context, dataSet, printFile, charFormatter, itemFormatter, keyStateTranslator);

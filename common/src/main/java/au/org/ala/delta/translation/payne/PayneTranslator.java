@@ -71,6 +71,7 @@ public class PayneTranslator extends ParameterBasedTranslator {
 			_outputFile.setLineWrapIndent(0);
 			_outputFile.setIndent(0);
 			_outputFile.setPrintWidth(OUTPUT_COLUMNS);
+			_outputFile.setTrimInput(false, true);
 		}
 		_itemFormatter = itemFormatter;
 		_characterFormatter = characterFormatter;
@@ -138,8 +139,8 @@ public class PayneTranslator extends ParameterBasedTranslator {
 			translator.setTerminator("");
 			addSupportedParameter(param.getName(), translator);
 		}
-
 	}
+
 	
 	class Characters extends ParameterTranslator {
 
@@ -149,6 +150,9 @@ public class PayneTranslator extends ParameterBasedTranslator {
 
 		@Override
 		public void translateParameter(OutputParameter parameter) {
+			
+			_outputFile.setOutputFixedWidth(true);
+			_outputFile.outputLine(" ");
 			Iterator<IdentificationKeyCharacter> characters = _dataSet.identificationKeyCharacterIterator();
 			while (characters.hasNext()) {
 				IdentificationKeyCharacter character = characters.next();
@@ -161,28 +165,36 @@ public class PayneTranslator extends ParameterBasedTranslator {
 				IdentificationKeyCharacter character = characters.next();
 				outputCharacterStates(character);
 			}
+			_outputFile.setOutputFixedWidth(false);
 		}
 		
 		private void outputCharacterStates(IdentificationKeyCharacter character) {
 			boolean hasKeyStates = !character.getStates().isEmpty();
-			for (int i=1; i<=character.getNumberOfStates(); i++) {
-				
-				String state = null;
-				if (hasKeyStates) {
-					state = _keyStateTranslator.translateState(character, i);
+			if (character.getNumberOfStates() < 2) {
+				_outputFile.outputLine("A:");
+				_outputFile.outputLine("B:");
+			} 
+			else {
+				for (int i=1; i<=character.getNumberOfStates(); i++) {
+					
+					String state = null;
+					if (hasKeyStates) {
+						state = _keyStateTranslator.translateState(character, i);
+					}
+					else {
+						MultiStateCharacter multiStateChar = (MultiStateCharacter)character.getCharacter();
+						state = _characterFormatter.formatState(multiStateChar, i, CommentStrippingMode.STRIP_ALL);
+					}
+					
+					_outputFile.outputLine(state+":");
 				}
-				else {
-					MultiStateCharacter multiStateChar = (MultiStateCharacter)character.getCharacter();
-					state = _characterFormatter.formatState(multiStateChar, i, CommentStrippingMode.STRIP_ALL);
-				}
-				
-				_outputFile.outputLine(state+":");
 			}
-			
 			
 		}
 		
 	}
+	
+	
 	
 	class Names extends ParameterTranslator {
 		public Names(PrintFile outputFile) {
@@ -192,11 +204,13 @@ public class PayneTranslator extends ParameterBasedTranslator {
 		@Override
 		public void translateParameter(OutputParameter parameter) {
 			_outputFile.outputLine("NAMES 3 :");
+			_outputFile.setOutputFixedWidth(true);
 			Iterator<FilteredItem> items = _dataSet.filteredItems();
 			while (items.hasNext()) {
 				Item item = items.next().getItem();
 				_outputFile.outputLine(_itemFormatter.formatItemDescription(item)+":");
 			}
+			_outputFile.setOutputFixedWidth(false);
 		}
 	}
 
@@ -208,7 +222,8 @@ public class PayneTranslator extends ParameterBasedTranslator {
 		@Override
 		public void translateParameter(OutputParameter parameter) {
 
-			_outputFile.outputLine("RESULTS");
+			_outputFile.outputLine("RESULTS ");
+			_outputFile.setOutputFixedWidth(true);
 			Iterator<FilteredItem> items = _dataSet.filteredItems();
 			while (items.hasNext()) {
 				Item item = items.next().getItem();
@@ -233,6 +248,7 @@ public class PayneTranslator extends ParameterBasedTranslator {
 				}
 				_outputFile.outputLine(statesOut.toString());
 			}
+			_outputFile.setOutputFixedWidth(false);
 		}
 		
 		private boolean isInapplicable(Attribute attribute) {
@@ -268,7 +284,7 @@ public class PayneTranslator extends ParameterBasedTranslator {
 
 		@Override
 		public void translateParameter(OutputParameter parameter) {
-			_outputFile.outputLine("CAPTION " + _context.getHeading(HeadingType.HEADING));
+			_outputFile.outputLine("CAPTION " + _context.getHeading(HeadingType.HEADING)+":");
 		}
 	}
 
@@ -291,7 +307,7 @@ public class PayneTranslator extends ParameterBasedTranslator {
 				
 				levels.append(" ");
 			}
-			_outputFile.outputLine(levels.toString().trim());
+			_outputFile.outputLine(levels.toString());
 		}
 	}
 
@@ -306,8 +322,8 @@ public class PayneTranslator extends ParameterBasedTranslator {
 		@Override
 		public void translateParameter(OutputParameter parameter) {
 
-			StringBuilder weightsOut = new StringBuilder();
-			weightsOut.append(_command);
+			StringBuilder costsOut = new StringBuilder();
+			costsOut.append(_command);
 			Iterator<IdentificationKeyCharacter> characters = _dataSet.identificationKeyCharacterIterator();
 			while (characters.hasNext()) {
 				IdentificationKeyCharacter character = characters.next();
@@ -317,10 +333,10 @@ public class PayneTranslator extends ParameterBasedTranslator {
 				}
 				int cost = 10-reliability;
 				
-				weightsOut.append(" ").append(cost);
+				costsOut.append(" ").append(cost);
 			}
 			
-			_outputFile.outputLine(weightsOut.toString());
+			_outputFile.outputLine(costsOut.toString()+" ");
 			
 		}
 	}
