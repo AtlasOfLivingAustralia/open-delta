@@ -53,7 +53,7 @@ public class HtmlNaturalLanguageTranslator extends NaturalLanguageTranslator {
 
 	@Override
     public void afterItem(Item item) {
-        finishWritingAttributes(item);
+		finishWritingAttributes(item);
        
         if (_charForTaxonImages > 0) {
         	if (_context.startNewParagraphAtCharacter(_charForTaxonImages)) {
@@ -63,6 +63,8 @@ public class HtmlNaturalLanguageTranslator extends NaturalLanguageTranslator {
         }
        
         _typeSetter.afterItem(item);
+        _lastItemSubheadingWritten = 0;
+        _lastNewParagraphCharacterChecked = 0;
     }
 
 	private void writeCharacterImages(Item item) {

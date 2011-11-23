@@ -12,6 +12,7 @@ import au.org.ala.delta.model.NumericCharacter;
 public class CharacterFormatter extends Formatter {
 
 	private boolean _includeNumber;
+	private boolean _useBrackettedNumber;
 	
 	public CharacterFormatter() {
 		this(true, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.RETAIN, false, false);
@@ -19,6 +20,11 @@ public class CharacterFormatter extends Formatter {
 	public CharacterFormatter(boolean includeNumber, CommentStrippingMode commentStrippingMode, AngleBracketHandlingMode angleBracketHandlingMode, boolean stripFormatting, boolean capitaliseFirstWord) {
 		super(commentStrippingMode, angleBracketHandlingMode, stripFormatting, capitaliseFirstWord);
 		_includeNumber = includeNumber;
+		_useBrackettedNumber = false;
+	}
+	
+	public void setUseBrackettedNumber(boolean useBracketedNumber) {
+		_useBrackettedNumber = useBracketedNumber;
 	}
 	
 	public String formatState(MultiStateCharacter character, int stateNumber) {
@@ -82,11 +88,17 @@ public class CharacterFormatter extends Formatter {
 		String formattedDescription = defaultFormat(description, commentStrippingMode, angleBracketMode, _stripFormatting, _capitaliseFirstWord);
 		
 		if (_includeNumber) {
-			formattedDescription = character.getCharacterId()+". "+formattedDescription;
+			formattedDescription = formatCharacterNumber(character.getCharacterId())+formattedDescription;
 		}
 		return formattedDescription;
 	}
 	
+	protected String formatCharacterNumber(int number) {
+		if (_useBrackettedNumber) {
+			return "("+number+") ";
+		}
+		return Integer.toString(number) + ". ";
+	}
 	/**
 	 * Formats the units of a numeric character.
 	 * @param character the character to format.

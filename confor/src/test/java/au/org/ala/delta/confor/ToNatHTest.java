@@ -17,7 +17,7 @@ public class ToNatHTest extends ConforTestCase {
 	public void testSampleToNatH() throws Exception {
 		runConfor();
 		
-		//testFile("index.htm", "");
+		testFile("index.htm", "");
 		
 		String[] files = {
 				"agrostis.htm", "andropog.htm", "anisopog.htm", "bambusa.htm",
@@ -49,6 +49,7 @@ public class ToNatHTest extends ConforTestCase {
 		
 		if (!System.getProperty("line.separator").equals(expectedLineSeparator)) {
 			expected = expected.replaceAll(expectedLineSeparator, System.getProperty("line.separator"));
+			//actual = actual.replaceAll(expectedLineSeparator, System.getProperty("line.separator"));
 		}
 		// The heading contains the date so will be different.
 		

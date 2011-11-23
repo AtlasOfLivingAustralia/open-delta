@@ -356,6 +356,7 @@ public class DataSetTranslatorFactory {
 		
 		ItemFormatter itemFormatter  = formatterFactory.createItemFormatter(typeSetter, false);
 		CharacterFormatter characterFormatter = formatterFactory.createCharacterFormatter(true, true, CommentStrippingMode.RETAIN);
+		characterFormatter.setUseBrackettedNumber(true);
 		boolean omitItemDescriptions = context.getTranslateType() == TranslateType.NaturalLanguage;
 		
 		IterativeTranslator translator = new UncodedCharactersTranslator(context, printer, itemFormatter, characterFormatter, typeSetter, omitItemDescriptions);

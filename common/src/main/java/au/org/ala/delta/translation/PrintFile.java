@@ -35,6 +35,7 @@ public class PrintFile {
     private boolean _trim;
     private boolean _trimLeadingSpacesOnLineWrap;
     private boolean _outputFixedWidth;
+    private String _newLineSequence;
     
     public PrintFile(final StringBuilder buffer) {
 
@@ -73,6 +74,7 @@ public class PrintFile {
         _trim = true;
         _outputFixedWidth = false;
         _trimLeadingSpacesOnLineWrap = false;
+        _newLineSequence = System.getProperty("line.separator");
     }
     
     public void setSoftWrap(boolean softWrap) {
@@ -193,9 +195,11 @@ public class PrintFile {
     }
     
     protected void println(String text) {
+    	
     	if (_outputFixedWidth) {
     		text = pad(text);
     	}
+    	
     	_output.println(text);
     }
     
@@ -224,7 +228,7 @@ public class PrintFile {
             text = capitaliseFirstWord(text);
         }
 
-        if (willFitOnLine() == false) {
+        if (needsLineWrap() == false) {
             printBufferLine(_indentOnLineWrap);
         }
 
@@ -235,7 +239,7 @@ public class PrintFile {
 
         _outputBuffer.append(text);
 
-        while (willFitOnLine() == false) {
+        while (needsLineWrap() == false) {
 
             int wrappingPos = findWrapPosition();
 
@@ -259,23 +263,31 @@ public class PrintFile {
 	}
 
 	private int findWrapPosition() {
-        int numSpaces = numLeadingSpaces(_outputBuffer);
-        int wrappingPos = findWrappingSpace();
-        if (wrappingPos <= numSpaces) {
-            if (_softWrap) {
-                wrappingPos = _outputBuffer.indexOf(" ", _printWidth);
-                if (wrappingPos < 0) {
-                    wrappingPos = _outputBuffer.length();
-                }
-            } else {
-                wrappingPos = _printWidth;
-            }
+		int wrappingPos = -1;
+		int newLinePos = _outputBuffer.indexOf("\n");
+        if (newLinePos >=0 && newLinePos <= _printWidth) {
+        	wrappingPos = newLinePos;
+        	_outputBuffer.deleteCharAt(newLinePos);
+        	if (newLinePos > 0 && _outputBuffer.charAt(newLinePos-1) == '\r') {
+        		_outputBuffer.deleteCharAt(newLinePos-1);
+        		wrappingPos--;
+        	}
         }
-        int newLinePos = _outputBuffer.indexOf("\n");
-        if (newLinePos >=0 && newLinePos < wrappingPos) {
-        	wrappingPos = _outputBuffer.indexOf("\n");
-        	_outputBuffer.delete(wrappingPos, wrappingPos);
+        else {
+	        int numSpaces = numLeadingSpaces(_outputBuffer);
+	        wrappingPos = findWrappingSpace();
+	        if (wrappingPos <= numSpaces) {
+	            if (_softWrap) {
+	                wrappingPos = _outputBuffer.indexOf(" ", _printWidth);
+	                if (wrappingPos < 0) {
+	                    wrappingPos = _outputBuffer.length();
+	                }
+	            } else {
+	                wrappingPos = _printWidth;
+	            }
+	        }
         }
+        
         return wrappingPos;
     }
 	
@@ -350,7 +362,7 @@ public class PrintFile {
     }
 
     private void complete(int completionAction) {
-        if ((completionAction == 0) && (willFitOnLine())) {
+        if ((completionAction == 0) && (needsLineWrap())) {
             _outputBuffer.append(' ');
         } else if (completionAction > 0) {
             writeBlankLines(completionAction, 0);
@@ -407,11 +419,12 @@ public class PrintFile {
         return _outputBuffer.length() - 1;
     }
 
-    private boolean willFitOnLine() {
+    private boolean needsLineWrap() {
         if (_printWidth == 0) {
             return true;
         }
-        return bufferIndex() < Math.abs(_printWidth);
+        int newLinePos = _outputBuffer.indexOf("\n");
+        return bufferIndex() < Math.abs(_printWidth) && (newLinePos == -1);
     }
 
     private char lastCharInBuffer() {

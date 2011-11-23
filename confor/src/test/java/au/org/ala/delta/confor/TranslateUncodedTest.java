@@ -22,7 +22,7 @@ public class TranslateUncodedTest extends ConforTestCase {
 		System.out.println(expected);
 		
 		File actualFile = new File(FilenameUtils.concat(_samplePath, "translateuncoded.prt"));
-		String actual = FileUtils.readFileToString(actualFile, "utf-8");
+		String actual = FileUtils.readFileToString(actualFile, "cp1252");
 
 		System.out.print(actual);
 		
@@ -47,7 +47,7 @@ public class TranslateUncodedTest extends ConforTestCase {
 				break;
 			}
 		}
-		//assertEquals(expected.trim(), actual.trim());
+		assertEquals(expected.trim(), actual.trim());
 	}
 
 	@Override

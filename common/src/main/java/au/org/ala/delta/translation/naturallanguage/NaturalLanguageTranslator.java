@@ -43,9 +43,9 @@ public class NaturalLanguageTranslator extends AbstractIterativeTranslator {
     private AttributeParser _attributeParser;
     
     /** Tracks the item subheadings that have been output */
-    private int _lastItemSubheadingWritten;
+    protected int _lastItemSubheadingWritten;
     /** Tracks the last character checked for a start of paragraph marker */
-    private int _lastNewParagraphCharacterChecked;
+    protected int _lastNewParagraphCharacterChecked;
     
     public NaturalLanguageTranslator(
     		DeltaContext context, 
