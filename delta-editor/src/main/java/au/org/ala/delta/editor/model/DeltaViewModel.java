@@ -8,6 +8,7 @@ import java.util.prefs.PreferenceChangeListener;
 
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile.DirectiveType;
+import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
@@ -201,6 +202,15 @@ public class DeltaViewModel extends DataSetWrapper implements EditorViewModel, P
 	public void setExportPath(String path) {
 		_editorDataModel.setExportPath(path);
 	}
-	
+
+	@Override
+	public String displayTextFromAttributeValue(Attribute attribute, String attributeText) {
+		return _editorDataModel.displayTextFromAttributeValue(attribute, attributeText);
+	}
+
+	@Override
+	public String attributeValueFromDisplayText(Attribute attribute, String attributeDisplayText) {
+		return _editorDataModel.attributeValueFromDisplayText(attribute, attributeDisplayText);
+	}
 	
 }

@@ -142,10 +142,10 @@ public class SlotFileDataSetTest  extends DeltaTestCase {
 		item.setDescription(description);
 		item.setVariant(true);
 		
-		String attributeText = "I am a new item attribute";
+		String attributeText = "<I am a new item attribute>";
 		
 		TextAttribute textAttr = (TextAttribute) _dataSet.addAttribute(item.getItemNumber(), textChar.getCharacterId());
-		textAttr.setText("<"+attributeText+">");
+		textAttr.setText(attributeText);
 		
 		File temp = File.createTempFile("test", ".dlt");
 		_repo.saveAsName(_dataSet, temp.getAbsolutePath(), null);
@@ -159,9 +159,9 @@ public class SlotFileDataSetTest  extends DeltaTestCase {
 		assertTrue(item.isVariant());
 		
 		item = _dataSet.addItem();
-		attributeText = "\\i{}Ornithospermum\\i0{} Dumoulin, \\i{}Tema\\i0{} Adans.";
+		attributeText = "<\\i{}Ornithospermum\\i0{} Dumoulin, \\i{}Tema\\i0{} Adans.>";
 		textAttr = (TextAttribute) _dataSet.addAttribute(item.getItemNumber(), textChar.getCharacterId());
-        textAttr.setText("<"+attributeText+">");
+        textAttr.setText(attributeText);
 		assertEquals(attributeText, item.getAttribute(textChar).getValueAsString());
 		assertFalse(item.isVariant());
 	}

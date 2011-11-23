@@ -327,16 +327,8 @@ public class AttributeEditor extends JPanel implements ValidationListener, Prefe
 				_inapplicable = _character.checkApplicability(_item).isInapplicable();
 				Attribute attr = _item.getAttribute(_character);
 				if (attr != null) {
-					String value = attr.getValueAsString();
-					if (value != null) {
-						if (!value.startsWith("{\\rtf1")) {
-							value = String.format("{\\rtf1\\ansi\\ansicpg1252 %s }", value);
-						}
-
-						_textPane.setText(value);
-					} else {
-						_textPane.setText("");
-					}
+					String value = _dataSet.displayTextFromAttributeValue(attr, attr.getValueAsString());
+					_textPane.setRtfTextBody(value);
 				} else {
 					_textPane.setText("");
 				}
@@ -356,7 +348,7 @@ public class AttributeEditor extends JPanel implements ValidationListener, Prefe
 					_characterDetailsTable.setModel(new CharacterModel(ch));
 					_characterDetailsTable.getColumnModel().getColumn(0).setCellRenderer(new CharacterRenderer());
 				}
-				AttributeValidator validator = new AttributeValidator(_dataSet, _character);
+				AttributeValidator validator = new AttributeValidator(_dataSet, attr);
 				RtfEditorValidator rtfValidator = new RtfEditorValidator(validator, this);
 				_textPane.setInputVerifier(rtfValidator);
 			} else {
@@ -464,9 +456,11 @@ public class AttributeEditor extends JPanel implements ValidationListener, Prefe
 	
 			try {
 				String attributeText = _textPane.getRtfTextBody();
+				
 				Attribute attr = _item.getAttribute(_character);
 				if (attr != null) {
-					attr.setValueFromString(attributeText);
+					String value = _dataSet.attributeValueFromDisplayText(attr, attributeText);	            	
+					attr.setValueFromString(value);
 				} else {
 					System.err.println("No Attribute! should I be allowed to edit this?");
 				}

@@ -126,16 +126,7 @@ public class DeltaFormatTranslator extends AbstractIterativeTranslator {
 	}
 	
 	protected String getTextAttributeValue(Attribute attribute) {
-		String value = attribute.getValueAsString();
-		if (StringUtils.isNotEmpty(value)) {
-			if (!attribute.isCodedUnknown()) {
-				if (!value.startsWith("<")) {
-					value = "<"+value+">";
-				}
-			}
-		}
-		
-		return value;
+		return attribute.getValueAsString();
 	}
 	
 	protected String getMultiStateAttributeValue(MultiStateAttribute attribute) {

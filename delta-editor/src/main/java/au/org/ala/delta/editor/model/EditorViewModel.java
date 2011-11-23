@@ -5,6 +5,7 @@ import java.util.prefs.PreferenceChangeListener;
 
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile.DirectiveType;
+import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.ObservableDeltaDataSet;
@@ -77,5 +78,8 @@ public interface EditorViewModel extends ObservableDeltaDataSet {
 	public String getExportPath();
 
 	public void setExportPath(String path);
-
+	
+	public String displayTextFromAttributeValue(Attribute attribute, String attributeText);
+	
+	public String attributeValueFromDisplayText(Attribute attribute, String attributeDisplayText);
 }

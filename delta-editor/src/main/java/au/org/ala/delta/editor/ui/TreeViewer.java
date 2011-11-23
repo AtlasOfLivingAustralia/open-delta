@@ -412,7 +412,8 @@ public class TreeViewer extends AbstractDeltaView {
 
         @Override
         protected Component configureEditingComponent(Attribute attribute, DefaultMutableTreeNode nodeUserObject) {
-            getTextField().setText(attribute.getValueAsString());
+            String attributeText = _dataModel.displayTextFromAttributeValue(attribute, attribute.getValueAsString());
+        	getTextField().setText(attributeText);
             Character character = attribute.getCharacter();
 
             if ((character != null) && (character instanceof NumericCharacter<?>)) {
@@ -423,7 +424,7 @@ public class TreeViewer extends AbstractDeltaView {
                 textField.setColumns(30);
             }
 
-            _validator = new TextComponentValidator(new AttributeValidator(_dataModel, character), this);
+            _validator = new TextComponentValidator(new AttributeValidator(_dataModel, attribute), this);
             getTextField().setInputVerifier(_validator);
             _valid = true;
 
@@ -664,7 +665,8 @@ class CharacterTreeModel extends DefaultTreeModel implements SearchableModel<Cha
             CharStateHolder holder = (CharStateHolder) aNode.getUserObject();
             Attribute attribute = item.getAttribute(holder.getCharacter());
             try {
-            	attribute.setValueFromString((String) newValue);
+            	String value = _dataModel.attributeValueFromDisplayText(attribute, (String)newValue);
+            	attribute.setValueFromString(value);
             }
             catch (DirectiveException e) {
             	// The slot file attribute won't actually throw this exception.

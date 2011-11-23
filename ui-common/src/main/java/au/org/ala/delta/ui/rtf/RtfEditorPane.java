@@ -41,8 +41,9 @@ public class RtfEditorPane extends JTextPane {
 	}
 
 	/**
-	 * @return a String containing the text in this RtfEditorPane's document, inclusive of RTF formatting characters. Note that this method strips the RTF header and attributes (such as font table
-	 *         etc). Note that the String will be ANSI encoded as that is what the editor kit supports. Unicode characters will be encoded using the RTF unicode control characters.
+	 * @return a String containing the text in this RtfEditorPane's document, inclusive of RTF formatting characters. 
+	 * Note that this method strips the RTF header and attributes (such as font table etc).
+	 * Note that the String will be ANSI encoded as that is what the editor kit supports. Unicode characters will be encoded using the RTF unicode control characters.
 	 */
 	public String getRtfTextBody() {
 		String rtfText = null;
@@ -61,6 +62,24 @@ public class RtfEditorPane extends JTextPane {
 			return getPlainText();
 		}
 		return rtfText;
+	}
+	
+	/**
+	 * Sets the text in this editor pane without requiring it to contain 
+	 * an RTF header.  If one exists not changes will be made, but if it does
+	 * not it will be inserted before setting the document text.
+	 * @param text the text to display minus the rtf header.
+	 */
+	public void setRtfTextBody(String text) {
+		
+		if (text != null) {
+			if (!text.startsWith("{\\rtf1")) {
+				text = String.format("{\\rtf1\\ansi\\ansicpg1252 %s }", text);
+			}
+			setText(text);
+		} else {
+			setText("");
+		}
 	}
 
 	public String getPlainText() {

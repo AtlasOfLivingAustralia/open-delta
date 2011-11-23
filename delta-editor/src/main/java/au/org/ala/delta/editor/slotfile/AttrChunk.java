@@ -79,7 +79,7 @@ public class AttrChunk {
 
 			case ChunkType.CHUNK_TEXT:
 			case ChunkType.CHUNK_LONGTEXT:
-				if (charBase == null || CharType.isText(charBase.getCharType()))
+				if (charBase == null)
 					dest = _strVal;
 				else
 					dest = "<" + _strVal + ">";

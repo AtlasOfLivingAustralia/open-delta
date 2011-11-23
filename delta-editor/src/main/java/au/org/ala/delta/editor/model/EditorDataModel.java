@@ -9,11 +9,14 @@ import java.util.List;
 import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
 
+import org.apache.commons.lang.StringUtils;
+
 import au.org.ala.delta.editor.EditorPreferences;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile.DirectiveType;
 import au.org.ala.delta.editor.slotfile.model.SlotFileDataSet;
 import au.org.ala.delta.model.AbstractObservableDataSet;
+import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
@@ -406,4 +409,40 @@ public class EditorDataModel extends DataSetWrapper implements EditorViewModel, 
 	public void setExportPath(String path) {
 		_exportPath = path;
 	}
+
+	@Override
+	public String displayTextFromAttributeValue(Attribute attribute, String attributeText) {
+		Character character = attribute.getCharacter();
+		if (character.getCharacterType().isText()) {
+			if (StringUtils.isNotBlank(attributeText) && attributeText.length() >= 2) {
+				// Remove the surrouding <>.
+				attributeText = attributeText.substring(1, attributeText.length()-1);
+			}
+		}
+		return attributeText;
+	}
+
+	@Override
+	public String attributeValueFromDisplayText(Attribute attribute, String attributeDisplayText) {
+		 
+		Character character = attribute.getCharacter();
+		if (character.getCharacterType().isText()) {
+			
+			if (!Attribute.UNKNOWN.equals(attributeDisplayText) && !Attribute.INAPPICABLE.equals(attributeDisplayText)) {
+				attributeDisplayText = "<" + attributeDisplayText + ">";
+			}
+		}
+		return attributeDisplayText;
+	}
+	
+	@Override
+    public String getAttributeAsString(int itemNumber, int characterNumber) {
+		
+		Attribute attribute = getAttribute(itemNumber, characterNumber);
+		
+		return displayTextFromAttributeValue(attribute, _wrappedDataSet.getAttributeAsString(itemNumber, characterNumber));
+		
+	}
+	
+	
 }
