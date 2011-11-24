@@ -45,6 +45,7 @@ import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageOverlay;
 import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.model.image.OverlayType;
+import au.org.ala.delta.rtf.RTFBuilder;
 import au.org.ala.delta.ui.image.AboutImageDialog;
 import au.org.ala.delta.ui.image.ImagePanel.ScalingMode;
 import au.org.ala.delta.ui.image.ImageViewer;
@@ -306,7 +307,11 @@ public class ImageDialog extends IntkeyDialog implements OverlaySelectionObserve
             setVisible(false);
         } else if (imageOverlay.isType(OverlayType.OLIMAGENOTES)) {
             Image image = _multipleImageViewer.getVisibleViewer().getViewedImage();
-            displayRTFWindow(image.getNotes(), "Image Notes");
+            RTFBuilder builder = new RTFBuilder();
+            builder.startDocument();
+            builder.appendText(image.getNotes());
+            builder.endDocument();
+            displayRTFWindow(builder.toString(), "Image Notes");
         } else if (imageOverlay.isType(OverlayType.OLNOTES)) {
             displayRTFWindow("Character notes go here", "Notes");
         } else if (imageOverlay.isType(OverlayType.OLSTATE)) {

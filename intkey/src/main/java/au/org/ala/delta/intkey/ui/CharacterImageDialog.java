@@ -22,6 +22,7 @@ import au.org.ala.delta.model.RealCharacter;
 import au.org.ala.delta.model.image.ImageOverlay;
 import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.model.image.OverlayType;
+import au.org.ala.delta.rtf.RTFBuilder;
 import au.org.ala.delta.ui.image.SelectableOverlay;
 
 /**
@@ -171,7 +172,11 @@ public class CharacterImageDialog extends ImageDialog {
     public void overlaySelected(SelectableOverlay overlay) {
         ImageOverlay imageOverlay = overlay.getImageOverlay();
         if (imageOverlay.isType(OverlayType.OLNOTES)) {
-            displayRTFWindow(_characters.get(_selectedCharacterIndex).getNotes(), "Notes");
+            RTFBuilder builder = new RTFBuilder();
+            builder.startDocument();
+            builder.appendText(_characters.get(_selectedCharacterIndex).getNotes());
+            builder.endDocument();
+            displayRTFWindow(builder.toString(), "Notes");
         } else {
             if (_valuesEditable) {
                 super.overlaySelected(overlay);
