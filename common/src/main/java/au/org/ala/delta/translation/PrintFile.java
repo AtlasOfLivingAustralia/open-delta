@@ -153,7 +153,8 @@ public class PrintFile {
     }
 
     public void writeBlankLines(int numLines, int requiredNumLinesLeftOnPage) {
-
+    	writeFileHeader();
+    	
         if (_outputBuffer.length() > 0) {
             printBufferLine();
         }

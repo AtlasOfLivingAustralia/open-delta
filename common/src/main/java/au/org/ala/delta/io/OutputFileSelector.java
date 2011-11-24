@@ -243,7 +243,7 @@ public class OutputFileSelector extends OutputFileManager {
 		
 		_printStream = createPrintStream(_printFileName);
 		
-		if (StringUtils.isNotEmpty(_printFileHeaderText)) {
+		if (StringUtils.isNotBlank(_printFileHeaderText)) {
 			_printStream.println(_printFileHeaderText);
 		}
 		if (_printFile == null) {
