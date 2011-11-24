@@ -36,6 +36,7 @@ import au.org.ala.delta.translation.print.ItemNamesPrinter;
 import au.org.ala.delta.translation.print.UncodedCharactersFilter;
 import au.org.ala.delta.translation.print.UncodedCharactersPrinter;
 import au.org.ala.delta.translation.print.UncodedCharactersTranslator;
+import au.org.ala.delta.translation.print.UncodedCharactersTypeSetter;
 import au.org.ala.delta.util.Pair;
 
 
@@ -338,28 +339,33 @@ public class DataSetTranslatorFactory {
 	
 	private Pair<IterativeTranslator, DataSetFilter> createUncodedCharactersPrinter(DeltaContext context) {
 		PrintFile printer = context.getPrintFile();
-		ItemListTypeSetter typeSetter = new TypeSetterFactory().createItemListTypeSetter(context, printer, true);
+		TypeSetterFactory typeSetterFactory = new TypeSetterFactory();
+		ItemListTypeSetter typeSetter = typeSetterFactory.createItemListTypeSetter(context, printer, 0);
+		UncodedCharactersTypeSetter charTypeSetter = typeSetterFactory.createUncodedCharactersTypeSetter(context, printer);
 		FormatterFactory formatterFactory = new FormatterFactory(context);
-		DataSetFilter filter = new UncodedCharactersFilter(context);
+		DataSetFilter filter = new UncodedCharactersFilter(context, false);
 		
 		ItemFormatter itemFormatter  = formatterFactory.createItemFormatter(typeSetter, false);
 		boolean omitItemDescriptions = context.getTranslateType() == TranslateType.NaturalLanguage;
-		IterativeTranslator translator = new UncodedCharactersPrinter(context, printer, itemFormatter, typeSetter, omitItemDescriptions);
+		IterativeTranslator translator = new UncodedCharactersPrinter(context, printer, itemFormatter, typeSetter, charTypeSetter, omitItemDescriptions);
 		return new Pair<IterativeTranslator, DataSetFilter>(translator, filter);
 	}
 	
 	private Pair<IterativeTranslator, DataSetFilter> createUncodedCharactersTranslator(DeltaContext context) {
 		PrintFile printer = context.getPrintFile();
-		ItemListTypeSetter typeSetter = new TypeSetterFactory().createItemListTypeSetter(context, printer, true);
+		TypeSetterFactory typeSetterFactory = new TypeSetterFactory();
+		ItemListTypeSetter typeSetter = typeSetterFactory.createItemListTypeSetter(context, printer, 0);
+		UncodedCharactersTypeSetter charTypeSetter = typeSetterFactory.createUncodedCharactersTypeSetter(context, printer);
+		
 		FormatterFactory formatterFactory = new FormatterFactory(context);
-		DataSetFilter filter = new UncodedCharactersFilter(context);
+		DataSetFilter filter = new UncodedCharactersFilter(context, true);
 		
 		ItemFormatter itemFormatter  = formatterFactory.createItemFormatter(typeSetter, false);
 		CharacterFormatter characterFormatter = formatterFactory.createCharacterFormatter(true, true, CommentStrippingMode.RETAIN);
 		characterFormatter.setUseBrackettedNumber(true);
 		boolean omitItemDescriptions = context.getTranslateType() == TranslateType.NaturalLanguage;
 		
-		IterativeTranslator translator = new UncodedCharactersTranslator(context, printer, itemFormatter, characterFormatter, typeSetter, omitItemDescriptions);
+		IterativeTranslator translator = new UncodedCharactersTranslator(context, printer, itemFormatter, characterFormatter, typeSetter, charTypeSetter, omitItemDescriptions);
 		return new Pair<IterativeTranslator, DataSetFilter>(translator, filter);
 	}
 	

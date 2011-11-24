@@ -1,11 +1,8 @@
 package au.org.ala.delta.translation.print;
 
 import au.org.ala.delta.DeltaContext;
-import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
-import au.org.ala.delta.model.MultiStateAttribute;
-import au.org.ala.delta.model.VariantItem;
 import au.org.ala.delta.translation.AbstractDataSetFilter;
 import au.org.ala.delta.translation.DataSetFilter;
 
@@ -15,12 +12,15 @@ import au.org.ala.delta.translation.DataSetFilter;
  */
 public class UncodedCharactersFilter extends AbstractDataSetFilter implements DataSetFilter {
 
+	private boolean _filterChars = false;
+	
 	/**
 	 * Creates a new DataSetFilter
 	 * @param context
 	 */
-	public UncodedCharactersFilter(DeltaContext context) {
+	public UncodedCharactersFilter(DeltaContext context, boolean filterChars) {
 		_context = context;
+		_filterChars = filterChars;
 	}
 	
 	@Override
@@ -32,25 +32,14 @@ public class UncodedCharactersFilter extends AbstractDataSetFilter implements Da
 	@Override
 	public boolean filter(Item item, Character character) {
 		
-		if (!filter(character)) {
-			return false;
-		}
-		
-		Attribute attribute = item.getAttribute(character);
-
-		if (item.isVariant()) {
-			return outputVariantAttribute((VariantItem)item, character);
-		}
-		
-		if (attribute instanceof MultiStateAttribute && ((MultiStateAttribute)attribute).isImplicit()) {
-			return outputImplictValue(attribute);
-		}
-		
-		return true;
+		return filter(character);
 	}
 	
 	@Override
 	public boolean filter(Character character) {
+		if (!_filterChars) {
+			return true;
+		}
 		return !_context.isCharacterExcluded(character.getCharacterId());
 	}
 }

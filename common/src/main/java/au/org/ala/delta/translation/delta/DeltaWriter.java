@@ -59,7 +59,7 @@ public class DeltaWriter {
 				
 				if (firstInRange >= 0) {
 					appendRange(builder, previousValue, firstInRange, previousNum,
-							rangeSeparator, valueSeparator, valueLast);
+							Character.toString(rangeSeparator), valueSeparator, valueLast);
 				}
 				firstInRange = value.getFirst();
 				previousValue = value.getSecond();
@@ -67,16 +67,24 @@ public class DeltaWriter {
 			previousNum = value.getFirst();
 		}
 		appendRange(builder, previousValue, firstInRange, previousNum, 
-				rangeSeparator, valueSeparator, valueLast);
+				Character.toString(rangeSeparator), valueSeparator, valueLast);
 		
 		return builder.toString();
 	}
 	
 	public String rangeToString(List<Integer> values) {
-		return rangeToString(values, ' ', '-');
+		return rangeToString(values, ' ', "-");
+	}
+	
+	public String rangeToString(List<Integer> values, String rangeSeparator) {
+		return rangeToString(values, ' ', rangeSeparator);
 	}
 	
 	public String rangeToString(List<Integer> values, char separator, char rangeSeparator) {
+		return rangeToString(values, separator, Character.toString(rangeSeparator));
+	}
+	
+	public String rangeToString(List<Integer> values, char separator, String rangeSeparator) {
 		if (values.isEmpty()) {
 			return "";
 		}
@@ -99,7 +107,7 @@ public class DeltaWriter {
 	}
   
 	private <T> void appendRange(StringBuilder builder, T value,
-			int firstInRange, int lastInRange, char rangeSeparator, String valueSeparator, boolean valueLast) {
+			int firstInRange, int lastInRange, String rangeSeparator, String valueSeparator, boolean valueLast) {
 		
 		if (valueLast) {
 			appendRange(builder, firstInRange, lastInRange, rangeSeparator);
@@ -116,11 +124,11 @@ public class DeltaWriter {
 		}
 	}
 	
-	private void appendRange(StringBuilder builder, int firstInRange, int lastInRange, char rangeSeparator) {
+	private void appendRange(StringBuilder builder, int firstInRange, int lastInRange, String rangeSeparator) {
 		appendRange(builder, firstInRange, lastInRange, ' ', rangeSeparator);
 	}
 	
-	private void appendRange(StringBuilder builder, int firstInRange, int lastInRange, char separator, char rangeSeparator) {
+	private void appendRange(StringBuilder builder, int firstInRange, int lastInRange, char separator, String rangeSeparator) {
 		if (builder.length() > 0) {
 			builder.append(separator);
 		}

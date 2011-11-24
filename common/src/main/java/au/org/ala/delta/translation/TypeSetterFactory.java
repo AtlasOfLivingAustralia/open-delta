@@ -3,6 +3,8 @@ package au.org.ala.delta.translation;
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.translation.print.CharacterListTypeSetter;
 import au.org.ala.delta.translation.print.FormattedItemNameTypeSetter;
+import au.org.ala.delta.translation.print.FormattedUncodedCharactersTypeSetter;
+import au.org.ala.delta.translation.print.UncodedCharactersTypeSetter;
 
 /**
  * Creates the appropriate TypeSetter for the supplied context.  If the TYPESETTING MARKS
@@ -16,7 +18,7 @@ public class TypeSetterFactory {
 	
 	public ItemListTypeSetter createTypeSetter(DeltaContext context, PrintFile printer) {
 		
-		if (context.getTypeSettingMarks().isEmpty()) {
+		if (context.isOmitTypeSettingMarks() || context.getTypeSettingMarks().isEmpty()) {
 			return new PlainTextTypeSetter(printer);
 		}
 		else {
@@ -39,12 +41,22 @@ public class TypeSetterFactory {
 	 * ITEM DESCRIPTIONS print actions.
 	 */
 	public ItemListTypeSetter createItemListTypeSetter(DeltaContext context, PrintFile printer, boolean forPrint) {
-		if (context.getTypeSettingMarks().isEmpty()) {
-			int numSpacesBeforeItem = 2;
+		if (context.isOmitTypeSettingMarks() || context.getTypeSettingMarks().isEmpty()) {
+			int blankLinesBeforeItem = 2;
 			if (forPrint) {
-				numSpacesBeforeItem = 1;
+				blankLinesBeforeItem = 1;
 			}
-			return new PlainTextTypeSetter(printer, numSpacesBeforeItem);
+			return new PlainTextTypeSetter(printer, blankLinesBeforeItem);
+		}
+		else {
+			return new FormattedItemNameTypeSetter(context, printer);
+		}
+	}
+	
+	public ItemListTypeSetter createItemListTypeSetter(DeltaContext context, PrintFile printer, int blankLinesBeforeItem) {
+		if (context.isOmitTypeSettingMarks() || context.getTypeSettingMarks().isEmpty()) {
+			
+			return new PlainTextTypeSetter(printer, blankLinesBeforeItem);
 		}
 		else {
 			return new FormattedItemNameTypeSetter(context, printer);
@@ -54,12 +66,21 @@ public class TypeSetterFactory {
 	
 	public CharacterListTypeSetter createCharacterListTypeSetter(DeltaContext context, PrintFile printer) {
 		
-		if (context.getTypeSettingMarks().isEmpty()) {
+		if (context.isOmitTypeSettingMarks() || context.getTypeSettingMarks().isEmpty()) {
 			return new au.org.ala.delta.translation.print.PlainTextTypeSetter(printer);
 		}
 		else {
 			return new au.org.ala.delta.translation.print.FormattedTypeSetter(context.getTypeSettingMarks(), printer);
 		}
 		
+	}
+	
+	public UncodedCharactersTypeSetter createUncodedCharactersTypeSetter(DeltaContext context, PrintFile printer) {
+		if (context.isOmitTypeSettingMarks() || context.getTypeSettingMarks().isEmpty()) {
+			return new UncodedCharactersTypeSetter(printer);
+		}
+		else {
+			return new FormattedUncodedCharactersTypeSetter( printer, context);
+		}
 	}
 }

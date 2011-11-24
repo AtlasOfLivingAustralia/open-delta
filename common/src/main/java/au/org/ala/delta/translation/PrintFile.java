@@ -35,7 +35,6 @@ public class PrintFile {
     private boolean _trim;
     private boolean _trimLeadingSpacesOnLineWrap;
     private boolean _outputFixedWidth;
-    private String _newLineSequence;
     
     public PrintFile(final StringBuilder buffer) {
 
@@ -74,7 +73,6 @@ public class PrintFile {
         _trim = true;
         _outputFixedWidth = false;
         _trimLeadingSpacesOnLineWrap = false;
-        _newLineSequence = System.getProperty("line.separator");
     }
     
     public void setSoftWrap(boolean softWrap) {

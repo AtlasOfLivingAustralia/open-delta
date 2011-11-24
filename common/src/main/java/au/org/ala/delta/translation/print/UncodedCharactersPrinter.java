@@ -1,6 +1,7 @@
 package au.org.ala.delta.translation.print;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import au.org.ala.delta.DeltaContext;
@@ -27,12 +28,15 @@ public class UncodedCharactersPrinter extends AbstractIterativeTranslator {
 	protected List<Character> _uncodedChars;
 	private DeltaWriter _deltaWriter;
 	private boolean _omitItemDescription;
+	protected UncodedCharactersTypeSetter _charactersTypesetter;
+	
 	
 	public UncodedCharactersPrinter(
 			DeltaContext context, 
 			PrintFile printFile, 
 			ItemFormatter itemFormatter,
 			ItemListTypeSetter typeSetter,
+			UncodedCharactersTypeSetter charactersTypesetter,
 			boolean omitItemDescription) {
 		_typeSetter = typeSetter;
 		_printFile = printFile;
@@ -40,19 +44,24 @@ public class UncodedCharactersPrinter extends AbstractIterativeTranslator {
 		_deltaWriter = new DeltaWriter();
 		_context = context;
 		_omitItemDescription = omitItemDescription;
+		_charactersTypesetter = charactersTypesetter;
 	}
 	
 	@Override
-	public void beforeFirstItem() {}
+	public void beforeFirstItem() {
+		
+	}
 	
 	@Override
 	public void beforeItem(Item item) {
+		_charactersTypesetter.beforeUncodedCharacterList();
 		if (!_omitItemDescription) {
 			_typeSetter.beforeItem(item);
 			_printFile.outputLine(_itemFormatter.formatItemDescription(item));
 			_typeSetter.afterItemName();
 		}
 		_uncodedChars = new ArrayList<Character>();
+		_charactersTypesetter.beforeNewParagraph();
 	}
 
 	
@@ -60,13 +69,15 @@ public class UncodedCharactersPrinter extends AbstractIterativeTranslator {
 	public void beforeAttribute(Attribute attribute) {
 		Character character = attribute.getCharacter();
 		Item item = attribute.getItem();
+		
 		if (_context.getDataSet().isUncoded(item, character)) {
-			_uncodedChars.add(attribute.getCharacter());
+			_uncodedChars.add(character);
 		}
 	}
 	
 	@Override
 	public void afterItem(Item item) {
+		
 		StringBuilder uncoded = new StringBuilder();
 		uncoded.append(Words.word(Word.NOT_CODED)).append(":");
 		
@@ -79,13 +90,31 @@ public class UncodedCharactersPrinter extends AbstractIterativeTranslator {
 	}
 	
 	protected void appendUncodedCharacters(StringBuilder out) {
+		
+
 		out.append(" ");
 		List<Integer> charNums = new ArrayList<Integer>();
+		
 		for (Character character : _uncodedChars) {
-			charNums.add(character.getCharacterId());
+			int charNum = character.getCharacterId();
+			charNums.add(charNum);
 		}
 		
-		out.append(_deltaWriter.rangeToString(charNums));
+		// Excluded characters still influence the output.  They cannot
+		// appear explicitly but can determine whether a range is 
+		// broken or not.
+		Iterator<Integer> charNumIterator = charNums.iterator();
+		while (charNumIterator.hasNext()) {
+			int charNum = charNumIterator.next();
+			if (_context.isCharacterExcluded(charNum)) {
+				if (!charNums.contains(charNum-1) || !charNums.contains(charNum+1)) {
+					charNumIterator.remove();
+				}
+			}
+		}
+		
+		out.append(_deltaWriter.rangeToString(charNums, _charactersTypesetter.rangeSeparator()));
+
 	}
 
 	
