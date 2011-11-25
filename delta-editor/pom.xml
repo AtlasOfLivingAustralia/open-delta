@@ -69,29 +69,6 @@
 							<appendAssemblyId>false</appendAssemblyId>
 						</configuration>
 					</execution>
-					<execution>
-						<id>with-dependencies</id>
-						<phase>package</phase>
-						<goals>
-							<goal>single</goal>
-						</goals>
-						<configuration>
-							<archive>
-								<manifest>
-									<mainClass>au.org.ala.delta.editor.DeltaEditor</mainClass>
-								</manifest>
-								<manifestEntries>
-									<Implementation-Version>${project.version} (${buildNumber})</Implementation-Version>
-								</manifestEntries>
-							</archive>
-							<descriptorRefs>
-								<descriptorRef>jar-with-dependencies</descriptorRef>
-							</descriptorRefs>
-							<appendAssemblyId>false</appendAssemblyId>
-							<classifier>with-dependencies</classifier>
-							<finalName>${project.build.finalName}-with-dependencies</finalName>
-						</configuration>
-					</execution>
 				</executions>
 			</plugin>
 			<plugin>

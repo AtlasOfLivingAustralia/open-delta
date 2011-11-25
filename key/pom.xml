@@ -47,29 +47,6 @@
 							<finalName>dependencies</finalName>
 						</configuration>
 					</execution>
-					<execution>
-						<id>with-dependencies</id>
-						<phase>package</phase>
-						<goals>
-							<goal>single</goal>
-						</goals>
-						<configuration>
-							<archive>
-								<manifest>
-									<mainClass>au.org.ala.delta.key.Key</mainClass>
-								</manifest>
-								<manifestEntries>
-									<Implementation-Version>${project.version} (${buildNumber})</Implementation-Version>
-								</manifestEntries>
-							</archive>
-							<descriptorRefs>
-								<descriptorRef>jar-with-dependencies</descriptorRef>
-							</descriptorRefs>
-							<classifier>with-dependencies</classifier>
-							<appendAssemblyId>false</appendAssemblyId>
-							<finalName>${project.build.finalName}-with-dependencies</finalName>
-						</configuration>
-					</execution>
 				</executions>
 			</plugin>
 			<plugin>
