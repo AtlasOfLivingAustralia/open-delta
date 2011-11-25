@@ -649,23 +649,23 @@ public class IntkeyContext extends AbstractDeltaContext {
             // keyword that begins with the text
             if (characterNumbersSet == null) {
                 List<String> matches = new ArrayList<String>();
-                
+
                 if (CHARACTER_KEYWORD_ALL.startsWith(keyword)) {
-                   matches.add(CHARACTER_KEYWORD_ALL);
-                } 
-                
+                    matches.add(CHARACTER_KEYWORD_ALL);
+                }
+
                 if (CHARACTER_KEYWORD_ALL.startsWith(keyword)) {
                     matches.add(CHARACTER_KEYWORD_USED);
-                 } 
-                
+                }
+
                 if (CHARACTER_KEYWORD_AVAILABLE.startsWith(keyword)) {
                     matches.add(CHARACTER_KEYWORD_AVAILABLE);
-                 } 
-                
+                }
+
                 if (CHARACTER_KEYWORD_NONE.startsWith(keyword)) {
                     matches.add(CHARACTER_KEYWORD_NONE);
-                 } 
-                
+                }
+
                 for (String savedKeyword : _userDefinedCharacterKeywords.keySet()) {
 
                     // Ignore case when matching keywords
@@ -767,27 +767,27 @@ public class IntkeyContext extends AbstractDeltaContext {
             // keyword that begins with the text
             if (taxaNumbersSet == null) {
                 List<String> matches = new ArrayList<String>();
-                
+
                 if (TAXON_KEYWORD_ALL.startsWith(keyword)) {
                     matches.add(TAXON_KEYWORD_ALL);
                 }
-                
+
                 if (TAXON_KEYWORD_ELIMINATED.startsWith(keyword)) {
                     matches.add(TAXON_KEYWORD_ELIMINATED);
                 }
-                
+
                 if (TAXON_KEYWORD_REMAINING.startsWith(keyword)) {
                     matches.add(TAXON_KEYWORD_REMAINING);
                 }
-                
+
                 if (TAXON_KEYWORD_SELECTED.startsWith(keyword)) {
                     matches.add(TAXON_KEYWORD_SELECTED);
                 }
-                
+
                 if (TAXON_KEYWORD_NONE.startsWith(keyword)) {
                     matches.add(TAXON_KEYWORD_NONE);
                 }
-                
+
                 for (String savedKeyword : _userDefinedTaxonKeywords.keySet()) {
                     // Ignore case when matching keywords
                     String modifiedKeyword = keyword.toLowerCase();
@@ -962,7 +962,11 @@ public class IntkeyContext extends AbstractDeltaContext {
      *            The current vary weight
      */
     public synchronized void setVaryWeight(double varyWeight) {
-        _varyWeight = varyWeight;
+        if (varyWeight >= 0.0 && varyWeight <= 1.0) {
+            _varyWeight = varyWeight;
+        } else {
+            throw new IllegalArgumentException("VaryWt must be a double value in range 0-1");
+        }
     }
 
     /**
@@ -983,7 +987,11 @@ public class IntkeyContext extends AbstractDeltaContext {
      *            the current rbase value
      */
     public synchronized void setRBase(double rbase) {
-        _rbase = rbase;
+        if (rbase >= 1.0 && rbase <= 5.0) {
+            _rbase = rbase;
+        } else {
+            throw new IllegalArgumentException("RBase must be a double value in range 1-5");
+        }
 
     }
 
