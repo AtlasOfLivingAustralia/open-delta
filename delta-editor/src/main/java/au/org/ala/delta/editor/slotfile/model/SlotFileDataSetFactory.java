@@ -169,16 +169,13 @@ public class SlotFileDataSetFactory implements DeltaDataSetFactory {
 			stateIds.add(charDesc.uniIdFromStateNo(stateNum));
 		}
 		
-		List<Integer> controlledCharIds = new ArrayList<Integer>(dependentCharacters.size());
-		for (int charNum : dependentCharacters) {
-			controlledCharIds.add(getVOP().getDeltaMaster().uniIdFromCharNo(charNum));
-		}
-	
-		controllingDesc.setControllingInfo(charId, stateIds, "");
-		controllingDesc.writeControlledChars(controlledCharIds);
-		charDesc.addDependentContAttr(controllingDesc.getUniId());
 		
-		return new CharacterDependency(new VOControllingAdapter(getVOP(), controllingDesc));
+		
+		controllingDesc.setControllingInfo(charId, stateIds, "");
+		charDesc.addDependentContAttr(controllingDesc.getUniId());
+		CharacterDependency charDependency = new CharacterDependency(new VOControllingAdapter(getVOP(), controllingDesc));
+		
+		return charDependency;
 		
 	}
     

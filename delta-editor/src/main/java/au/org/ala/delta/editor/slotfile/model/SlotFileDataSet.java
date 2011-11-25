@@ -2,6 +2,7 @@ package au.org.ala.delta.editor.slotfile.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -645,8 +646,11 @@ public class SlotFileDataSet extends AbstractObservableDataSet {
     @Override
     public CharacterDependency addCharacterDependency(MultiStateCharacter owningCharacter, Set<Integer> states, Set<Integer> dependentCharacters) {
         synchronized (_vop) {
-            return _factory.createCharacterDependency(owningCharacter, states, dependentCharacters);
-
+        	CharacterDependency charDependency = _factory.createCharacterDependency(owningCharacter, states, new HashSet<Integer>());
+        	for (int charNum : dependentCharacters) {
+        		charDependency.addDependentCharacter(doGetCharacter(charNum));
+        	}
+        	return charDependency;
         }
     }
 
