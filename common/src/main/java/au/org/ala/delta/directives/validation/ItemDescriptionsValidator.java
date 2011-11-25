@@ -49,6 +49,7 @@ public class ItemDescriptionsValidator {
 			}
 			DirectiveError warning = new DirectiveError(
 					DirectiveError.Warning.TAXON_NAMES_DUPLICATED_OR_UNMATCHED, 
+					0,
 					StringUtils.join(directiveName, " ").toUpperCase(),
 					invalidList.toString());
 			context.addError(warning);

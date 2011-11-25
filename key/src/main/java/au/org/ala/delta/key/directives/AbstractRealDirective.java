@@ -2,7 +2,6 @@ package au.org.ala.delta.key.directives;
 
 import java.text.ParseException;
 
-import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.AbstractDirective;
 import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.directives.args.DirectiveArguments;
@@ -36,7 +35,7 @@ public abstract class AbstractRealDirective extends AbstractDirective<KeyContext
         try {
             _value = Double.parseDouble(data.trim());
         } catch (Exception ex) {
-            throw DirectiveError.asException(Error.INVALID_REAL_NUMBER, context.getCurrentParsingContext().getCurrentOffset());
+            throw DirectiveError.asException(Error.INVALID_REAL_NUMBER, 0, context.getCurrentParsingContext().getCurrentOffset());
         }
     }
     

@@ -51,7 +51,7 @@ public class IdListParser extends DirectiveArgsParser {
 	
 	
 	private void validate(IntRange ids) {
-		DirectiveError error = _validator.validateIds(ids);
+		DirectiveError error = _validator.validateIds(ids, _position);
 		if (error != null) {
 			_context.addError(error);
 		}

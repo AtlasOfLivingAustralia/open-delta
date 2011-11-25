@@ -22,6 +22,7 @@ import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.directives.args.DirectiveArguments;
+import au.org.ala.delta.directives.validation.DirectiveError;
 import au.org.ala.delta.directives.validation.DirectiveException;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
@@ -141,9 +142,14 @@ class ItemsParser extends AbstractStreamParser {
 		Item item;
 		if (_currentChar == '+') {
 			if (itemIndex == 1) {
-				throw new RuntimeException("The first item cannot be a variant item!");
+				
+				_context.addError(new DirectiveError(DirectiveError.Warning.FIRST_ITEM_CANNOT_BE_VARIANT, _position, (Object[])null));
+				item = getContext().getDataSet().addItem(itemIndex);
+				_lastMaster = itemIndex;
 			}
-		    item = getContext().getDataSet().addVariantItem(_lastMaster, itemIndex);
+			else {
+				item = getContext().getDataSet().addVariantItem(_lastMaster, itemIndex);
+			}
 			readNext();
 		}
 		else {

@@ -183,42 +183,7 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
 
 		if (ex instanceof DirectiveException) {
 			
-			OutputFileManager fileManager = ((DeltaContext)context).getOutputFileSelector();
-
-			int offset = ((DirectiveException) ex).getErrorOffset();
-
-			String directiveText = pc.getCurrentDirectiveText();
-			int dataStart = (int)pc.getDirectiveEndOffset();
-			
-			offset += dataStart;
-			
-			int newLineAfterError = directiveText.indexOf('\n', offset);
-			if (newLineAfterError < 0) {
-				newLineAfterError = directiveText.length();
-			}
-			
-			String[] lines = directiveText.substring(0, newLineAfterError).split("\n");
-			
-			int lineNum = (int)pc.getCurrentDirectiveStartLine();
-			for (String line : lines) {
-				
-				line = formatWithFileName(line, pc.getFile().getAbsolutePath(), lineNum);
-				_context.getOutputFileSelector().message(line);
-				lineNum++;
-			}
-
-			StringBuilder errorLocation = new StringBuilder();
-			for (int i = 0; i < offset + 16; i++) {
-				errorLocation.append(' ');
-			}
-
-			errorLocation.append("^");
-			fileManager.message(errorLocation.toString());
-			fileManager.message("****** " + ex.getMessage());
-			
-			if (((DirectiveException) ex).isFatal()) {
-				throw (DirectiveException)ex;
-			}
+			writeError(context, ex, pc);
 
 		} else {
 			if (pc.getFile() != null) {
@@ -233,6 +198,45 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
 			}
 		}
 
+	}
+
+	protected void writeError(AbstractDeltaContext context, Exception ex, ParsingContext pc) throws DirectiveException {
+		OutputFileManager fileManager = ((DeltaContext)context).getOutputFileSelector();
+
+		int offset = ((DirectiveException) ex).getErrorOffset();
+
+		String directiveText = pc.getCurrentDirectiveText();
+		int dataStart = (int)pc.getDirectiveEndOffset();
+		
+		offset += dataStart;
+		
+		int newLineAfterError = directiveText.indexOf('\n', offset);
+		if (newLineAfterError < 0) {
+			newLineAfterError = directiveText.length();
+		}
+		
+		String[] lines = directiveText.substring(0, newLineAfterError).split("\n");
+		
+		int lineNum = (int)pc.getCurrentDirectiveStartLine();
+		for (String line : lines) {
+			
+			line = formatWithFileName(line, pc.getFile().getAbsolutePath(), lineNum);
+			_context.getOutputFileSelector().message(line);
+			lineNum++;
+		}
+
+		StringBuilder errorLocation = new StringBuilder();
+		for (int i = 0; i < offset + 16; i++) {
+			errorLocation.append(' ');
+		}
+
+		errorLocation.append("^");
+		fileManager.message(errorLocation.toString());
+		fileManager.message("****** " + ex.getMessage());
+		
+		if (((DirectiveException) ex).isFatal()) {
+			throw (DirectiveException)ex;
+		}
 	}
 
 	private void handleErrors() {

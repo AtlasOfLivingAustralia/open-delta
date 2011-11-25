@@ -15,10 +15,10 @@ public class UniqueIdValidator {
 		_ids = new HashSet<Integer>();
 	}
 	
-	public DirectiveError validateIds(IntRange ids) {
+	public DirectiveError validateIds(IntRange ids, int position) {
 		for (int i : ids.toArray()) {
 			if (_ids.contains(i)) {
-				return new DirectiveError(Error.DUPLICATE_VALUE);
+				return new DirectiveError(Error.DUPLICATE_VALUE, position);
 			}
 			_ids.add(i);
 		}

@@ -17,7 +17,7 @@ public class ParsingUtils {
 			return Integer.parseInt(value);
 		}
 		catch (Exception e) {
-			throw DirectiveError.asException(Error.INTEGER_EXPECTED, context.getCurrentOffset());
+			throw DirectiveError.asException(Error.INTEGER_EXPECTED, (int)context.getCurrentOffset());
 		}
 	}
 }

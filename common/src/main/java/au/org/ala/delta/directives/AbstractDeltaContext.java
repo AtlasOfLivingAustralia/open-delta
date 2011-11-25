@@ -46,7 +46,7 @@ public abstract class AbstractDeltaContext {
 	}
 	
 	public void addError(DirectiveError.Error error, int position, Object... args) {
-		_errors.add(new DirectiveError(error, args));
+		_errors.add(new DirectiveError(error, position, args));
 	}
 	
 	public List<DirectiveError> getErrors() {

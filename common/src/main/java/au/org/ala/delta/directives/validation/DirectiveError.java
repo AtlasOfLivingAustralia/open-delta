@@ -37,7 +37,7 @@ public class DirectiveError {
 	};
 	
 	public enum Warning {
-		TAXON_NAMES_DUPLICATED_OR_UNMATCHED(103);
+		TAXON_NAMES_DUPLICATED_OR_UNMATCHED(103), FIRST_ITEM_CANNOT_BE_VARIANT(158);
 		
 		private int _errorNumber;
 		private Warning(int number) {
@@ -54,26 +54,30 @@ public class DirectiveError {
 	private boolean _error;
 	private boolean _warning;
 	private int _errorNumber;
+	private long _position;
 	
-	public DirectiveError(Error error) {
+	public DirectiveError(Error error, long position) {
 		_message = lookupMessage(error);
 		_error = true;
 		_warning = false;
 		_errorNumber = error.getErrorNumber();
+		_position = position;
 	}
 	
-	public DirectiveError(Error error, Object... args) {
+	public DirectiveError(Error error, long position, Object... args) {
 		_message = lookupMessage("error."+ error.getErrorNumber(), args);	
 		_error = true;
 		_warning = false;
 		_errorNumber = error.getErrorNumber();
+		_position = position;
 	}
 	
-	public DirectiveError(Warning warning, Object... args) {
+	public DirectiveError(Warning warning, long position, Object... args) {
 		_message = lookupMessage(warning, args);
 		_error = false;
 		_warning = true;
 		_errorNumber = warning.getErrorNumber();
+		_position = position;
 	}
 	
 	protected String lookupMessage(Warning warning, Object... args) {
@@ -89,7 +93,9 @@ public class DirectiveError {
 		return String.format(_resources.getString(key), args);
 	}
 	
-	
+	public long getPosition() {
+		return _position;
+	}
 	
 	public String getMessage() {
 		return _message;
@@ -107,13 +113,13 @@ public class DirectiveError {
 		return _warning;
 	}
 	
-	public static DirectiveException asException(Error error, long offset, Object... args) {
-		DirectiveError directiveError = new DirectiveError(error, args);
+	public static DirectiveException asException(Error error, int offset, Object... args) {
+		DirectiveError directiveError = new DirectiveError(error, offset, args);
 		return new DirectiveException(directiveError, offset);
 	}
 	
-	public static DirectiveException asException(Error error, long offset) {
-		DirectiveError directiveError = new DirectiveError(error);
+	public static DirectiveException asException(Error error, int offset) {
+		DirectiveError directiveError = new DirectiveError(error, offset);
 		return new DirectiveException(directiveError, offset);
 	}
 
