@@ -12,7 +12,7 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  ******************************************************************************/
-package au.org.ala.delta.model.impl;
+package au.org.ala.delta.model.attribute;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -31,28 +31,9 @@ import au.org.ala.delta.util.Utils;
  * TODO - borrowed from the Editor to save rewriting the parsing code but
  * I haven't refactored the Editor to use this yet....
  */
-public class Attribute implements Iterable<AttrChunk> {
+public class ParsedAttribute implements Iterable<AttrChunk> {
 
 	
-	static class Delimiters {
-		public static char LITERAL = '|'; // Treat next character as literal;
-											// not yet implemented.
-		public static char HEX = '!'; // Treat next 2 characters as Hex byte;
-										// not yet implemented.
-		public static char DIRECTIVE = '*'; // Start of directive
-		public static char ELEMSTART = '#'; // Start of character, item, etc.
-		public static char ELEMEND = '/'; // End of character, item, etc.
-		public static char OPENBRACK = '<'; // Opening bracket
-		public static char CLOSEBRACK = '>'; // Closing bracket
-		public static char KEYWORD = '@'; //
-		public static char QUOTE = '\"'; // Quotation mark
-		public static char SETDELIM = ':'; // Separates character numbers (or
-											// ranges) in character sets
-		public static char ORSTATE = '/'; // Separates "or"ed state values
-		public static char ANDSTATE = '&'; // Separates "and"ed state values
-		public static char STATERANGE = '-'; // Separates a range of values
-	}
-
 	private static final short PSEUDO_INAPPLICABLE = 0;
 	private static final short PSEUDO_VARIABLE = 0;
 	private static final short PSEUDO_UNKNOWN = 0;
@@ -62,11 +43,11 @@ public class Attribute implements Iterable<AttrChunk> {
 	private int _nChunks;
 	private List<AttrChunk> _chunks;
 
-	public Attribute(Character charBase) {
+	public ParsedAttribute(Character charBase) {
 		init(charBase);
 	}
 
-	public Attribute(String text, Character charBase) throws ParseException {
+	public ParsedAttribute(String text, Character charBase) throws ParseException {
 		init(charBase);
 		parse(text, false);
 	}
@@ -136,10 +117,10 @@ public class Attribute implements Iterable<AttrChunk> {
 				// throw TAttributeParseEx(EAP_BAD_RTF_BRACKET, i - nHidden);
 				// Not really an error. But this would indicate that there are
 				// RTF brackets enclosing text, rather than an RTF command
-				if (ch == Delimiters.CLOSEBRACK)
+				if (ch == au.org.ala.delta.model.Attribute.Delimiters.CLOSEBRACK)
 					throw DirectiveError.asException(DirectiveError.Error.UNMATCHED_CLOSING_BRACKET, i - nHidden);
 
-				else if (ch == Delimiters.OPENBRACK) {
+				else if (ch == au.org.ala.delta.model.Attribute.Delimiters.OPENBRACK) {
 					if (isIntkey) {// Disallow comments if Intkey "use"
 						throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i - nHidden);
 					}
@@ -209,7 +190,7 @@ public class Attribute implements Iterable<AttrChunk> {
 					}
 				}
 
-				else if (ch == Delimiters.STATERANGE /* && pseudoOK */
+				else if (ch == au.org.ala.delta.model.Attribute.Delimiters.STATERANGE /* && pseudoOK */
 						&& parseState == ParseState.NOWHERE) {
 
 					// / Start test block for handling negative numerics
@@ -254,7 +235,7 @@ public class Attribute implements Iterable<AttrChunk> {
 					hadPseudo = true;
 				}
 
-				else if (ch == Delimiters.STATERANGE || ch == Delimiters.ANDSTATE) {
+				else if (ch == au.org.ala.delta.model.Attribute.Delimiters.STATERANGE || ch == au.org.ala.delta.model.Attribute.Delimiters.ANDSTATE) {
 					// Is this a pseudo-value?
 					if (parseState == ParseState.NUMBER) {
 						if (!inserted) {
@@ -282,7 +263,7 @@ public class Attribute implements Iterable<AttrChunk> {
 						}
 					} else
 						throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i - nHidden);
-					if (ch == Delimiters.ANDSTATE) {
+					if (ch == au.org.ala.delta.model.Attribute.Delimiters.ANDSTATE) {
 						if (isIntkey) // Disallow & if Intkey "use"
 							throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i - nHidden);
 						insert(end(), new AttrChunk(ChunkType.CHUNK_AND));
@@ -290,7 +271,7 @@ public class Attribute implements Iterable<AttrChunk> {
 						prevNumb = new BigDecimal(-Float.MAX_VALUE);
 						hadExLo = false; // /
 						hadExHi = false; // /
-					} else if (ch == Delimiters.STATERANGE) {
+					} else if (ch == au.org.ala.delta.model.Attribute.Delimiters.STATERANGE) {
 						insert(end(), new AttrChunk(ChunkType.CHUNK_TO));
 					}
 					parseState = ParseState.NOWHERE;
@@ -298,7 +279,7 @@ public class Attribute implements Iterable<AttrChunk> {
 					pseudoOK = false;
 				}
 
-				else if (ch == Delimiters.ORSTATE) {
+				else if (ch == au.org.ala.delta.model.Attribute.Delimiters.ORSTATE) {
 					if (parseState == ParseState.UNKNOWN)
 						throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i - nHidden);
 					if (!inserted) // If we were in the middle of "something",
@@ -385,7 +366,7 @@ public class Attribute implements Iterable<AttrChunk> {
 						throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i - nHidden);
 					int j;
 					hadDecimal = false;
-					if (numbCount > 0 && i + 1 < text.length() && text.charAt(i + 1) == Delimiters.STATERANGE) // (extreme
+					if (numbCount > 0 && i + 1 < text.length() && text.charAt(i + 1) == au.org.ala.delta.model.Attribute.Delimiters.STATERANGE) // (extreme
 																												// high)
 					{
 						if (parseState == ParseState.NUMBER) {
@@ -432,7 +413,7 @@ public class Attribute implements Iterable<AttrChunk> {
 						if (parseState != ParseState.NOWHERE || hadExLo || numbCount > 0)
 							throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i - nHidden);
 						startPos = -1;
-						for (j = i + 1; j < text.length() - 1 && (text.charAt(j) != Delimiters.STATERANGE || j == i + 1); ++j) {
+						for (j = i + 1; j < text.length() - 1 && (text.charAt(j) != au.org.ala.delta.model.Attribute.Delimiters.STATERANGE || j == i + 1); ++j) {
 							if (!(java.lang.Character.isDigit(text.charAt(j)) || (text.charAt(j) == '.' && charType == CharacterType.RealNumeric) || (j == i + 1 && text.charAt(j) == '-')))
 								throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, j - nHidden);
 							if (startPos < 0)
@@ -461,9 +442,9 @@ public class Attribute implements Iterable<AttrChunk> {
 
 				if (commentLevel == 0)
 					onlyText = false;
-			} else if (ch == Delimiters.OPENBRACK) {
+			} else if (ch == au.org.ala.delta.model.Attribute.Delimiters.OPENBRACK) {
 				++commentLevel;
-			} else if (ch == Delimiters.CLOSEBRACK && --commentLevel == 0 && i - textStart > 1) // Save text if length > 0
+			} else if (ch == au.org.ala.delta.model.Attribute.Delimiters.CLOSEBRACK && --commentLevel == 0 && i - textStart > 1) // Save text if length > 0
 			{
 				if (bracketLevel != 0)
 					throw DirectiveError.asException(DirectiveError.Error.UNMATCHED_RTF_BRACKETS, i - nHidden);
@@ -582,7 +563,7 @@ public class Attribute implements Iterable<AttrChunk> {
 	}
 	
 	public int end() {
-		return  _chunks.size();
+		return  _chunks.size()-1;
 	}
 
 	/**

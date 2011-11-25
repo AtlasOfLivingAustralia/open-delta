@@ -269,8 +269,8 @@ public class DataSetTranslatorFactory {
 		charFormatter.setDespaceRtf(true);
 		CharacterListTypeSetter typeSetter = new au.org.ala.delta.translation.print.PlainTextTypeSetter(printer);
 		DataSetFilter filter = new DeltaFormatDataSetFilter(context);
-		
-		return wrap(context, filter,new DeltaFormatTranslator(context, printer, itemFormatter, charFormatter, typeSetter, itemTypeSetter));
+		AttributeFormatter attributeFormatter = formatterFactory.createAttributeFormatter();
+		return wrap(context, filter,new DeltaFormatTranslator(context, printer, itemFormatter, charFormatter, attributeFormatter, typeSetter, itemTypeSetter));
 	}
 	
 	public Pair<IterativeTranslator, DataSetFilter> createPrintAction(DeltaContext context, PrintActionType printAction) {

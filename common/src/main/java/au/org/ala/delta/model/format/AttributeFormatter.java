@@ -98,6 +98,23 @@ public class AttributeFormatter extends Formatter {
         return defaultFormat(value, mode);
     }
 
+    public String formatNumericAttribute(String attribute) {
+    	if (StringUtils.isNotBlank(_dashReplacement)) {
+        	attribute = attribute.replaceAll("([0-9] *)-( *[0-9])", "$1"+_dashReplacement+"$2");
+        	attribute = attribute.replaceAll("\\(-", "("+_dashReplacement);
+        	attribute = attribute.replaceAll("-\\)", _dashReplacement+")");
+        }
+    	return attribute;
+    }
+    
+    interface AttributeChunkFormatter {
+    	
+    }
+    
+    public String formatAttribute(Attribute attribute, AttributeChunkFormatter formatter) {
+    	return null;
+    }
+    
     /**
      * Format the supplied attribute
      * 

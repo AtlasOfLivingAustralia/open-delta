@@ -24,7 +24,7 @@ public class CharacterListPrinter extends DeltaFormatTranslator {
 			PrintFile printer, 
 			CharacterFormatter characterFormatter,
 			CharacterListTypeSetter typeSetter) {
-		super(context, printer, null, characterFormatter, typeSetter, new ItemListTypeSetterAdapter());
+		super(context, printer, null, characterFormatter, null, typeSetter, new ItemListTypeSetterAdapter());
 		_context = context;
 	}
 	

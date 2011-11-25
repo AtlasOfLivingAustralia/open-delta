@@ -12,6 +12,7 @@ import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.NumericAttribute;
 import au.org.ala.delta.model.NumericCharacter;
 import au.org.ala.delta.model.TextAttribute;
+import au.org.ala.delta.model.format.AttributeFormatter;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.translation.AbstractIterativeTranslator;
@@ -33,6 +34,7 @@ public class DeltaFormatTranslator extends AbstractIterativeTranslator {
 	protected PrintFile _printer;
 	protected ItemFormatter _itemFormatter;
 	protected CharacterFormatter _characterFormatter;
+	protected AttributeFormatter _attributeFormatter;
 	protected AttributeParser _parser;
 	protected CharacterListTypeSetter _typeSetter;
 	protected ItemListTypeSetter _itemTypeSetter;
@@ -43,6 +45,7 @@ public class DeltaFormatTranslator extends AbstractIterativeTranslator {
 			PrintFile printer, 
 			ItemFormatter itemFormatter,
 			CharacterFormatter characterFormatter,
+			AttributeFormatter attributeFormatter,
 			CharacterListTypeSetter typeSetter,
 			ItemListTypeSetter itemTypeSetter) {
 		
@@ -53,6 +56,7 @@ public class DeltaFormatTranslator extends AbstractIterativeTranslator {
 		 _parser = new AttributeParser();
 		 _typeSetter = typeSetter;
 		 _itemTypeSetter = itemTypeSetter;
+		 _attributeFormatter = attributeFormatter;
 	}
 	
 	@Override
@@ -139,8 +143,7 @@ public class DeltaFormatTranslator extends AbstractIterativeTranslator {
 	
 	protected String getNumericAttributeValue(NumericAttribute attribute) {
 		String value = attribute.getValueAsString();
-		
-		return value;
+		return _attributeFormatter.formatNumericAttribute(value);
 	}
 
 	@Override

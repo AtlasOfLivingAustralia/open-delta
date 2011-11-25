@@ -12,7 +12,7 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  ******************************************************************************/
-package au.org.ala.delta.model.impl;
+package au.org.ala.delta.model.attribute;
 
 public class ChunkType {
 	  public static final byte CHUNK_STOP = 0;   	// Marker for end of list

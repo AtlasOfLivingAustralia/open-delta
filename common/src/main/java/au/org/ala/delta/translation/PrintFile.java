@@ -409,6 +409,7 @@ public class PrintFile {
     }
 
     public void newParagraph() {
+    	writeFileHeader();
         newLine();
         indent();
 
@@ -520,9 +521,12 @@ public class PrintFile {
 	}
 	
 	public void closePrintStream() {
-		printBufferLine();
-		writeFooter();
-		IOUtils.closeQuietly(_output);
+		if (_output != null) {
+			printBufferLine();
+			writeFooter();
+			IOUtils.closeQuietly(_output);
+			_output = null;
+		}
 	}
 
 	

@@ -27,7 +27,26 @@ import au.org.ala.delta.model.observer.AttributeObserver;
  */
 public abstract class Attribute {
 
-    public static final String INAPPICABLE = "-";
+    public static class Delimiters {
+		public static char LITERAL = '|'; // Treat next character as literal;
+											// not yet implemented.
+		public static char HEX = '!'; // Treat next 2 characters as Hex byte;
+										// not yet implemented.
+		public static char DIRECTIVE = '*'; // Start of directive
+		public static char ELEMSTART = '#'; // Start of character, item, etc.
+		public static char ELEMEND = '/'; // End of character, item, etc.
+		public static char OPENBRACK = '<'; // Opening bracket
+		public static char CLOSEBRACK = '>'; // Closing bracket
+		public static char KEYWORD = '@'; //
+		public static char QUOTE = '\"'; // Quotation mark
+		public static char SETDELIM = ':'; // Separates character numbers (or
+											// ranges) in character sets
+		public static char ORSTATE = '/'; // Separates "or"ed state values
+		public static char ANDSTATE = '&'; // Separates "and"ed state values
+		public static char STATERANGE = '-'; // Separates a range of values
+	}
+
+	public static final String INAPPICABLE = "-";
     public static final String VARIABLE = "V";
     public static final String UNKNOWN = "U";
 

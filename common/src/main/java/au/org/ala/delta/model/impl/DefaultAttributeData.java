@@ -12,6 +12,9 @@ import org.apache.commons.lang.math.NumberRange;
 import au.org.ala.delta.directives.validation.DirectiveException;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.NumericRange;
+import au.org.ala.delta.model.attribute.AttrChunk;
+import au.org.ala.delta.model.attribute.ParsedAttribute;
+import au.org.ala.delta.model.attribute.ChunkType;
 
 
 /**
@@ -21,12 +24,12 @@ import au.org.ala.delta.model.NumericRange;
 public class DefaultAttributeData implements AttributeData {
 
     private String _value;
-    private Attribute _parsedAttribute;
+    private ParsedAttribute _parsedAttribute;
     private Character _character;
     
     public DefaultAttributeData(Character character) {
     	_character = character;
-    	_parsedAttribute = new Attribute(_character);
+    	_parsedAttribute = new ParsedAttribute(_character);
     }
     
     @Override

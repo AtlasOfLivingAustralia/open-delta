@@ -24,7 +24,7 @@ public class ItemDescriptionsPrinter extends DeltaFormatTranslator {
 			ItemFormatter itemFormatter, 
 			AttributeFormatter attributeFormatter,
 			ItemListTypeSetter typeSetter) {
-		super(context, printer, itemFormatter, null, null, new ItemListTypeSetterAdapter());
+		super(context, printer, itemFormatter, null, attributeFormatter, null, new ItemListTypeSetterAdapter());
 		_typeSetter = typeSetter;
 		_attributeFormatter = attributeFormatter;
 	}
