@@ -5,12 +5,15 @@
 *COMMENT This directives file cannot be used with CONFOR.
 
 *INPUT FILE specs
+*COMMENT This statement was not required for the original DELFOR
+*INPUT FILE items
 
 *OUTPUT WIDTH 80
 
 *COMMENT Move character 85 ('number of species') to 2.
 *NEW CHARACTER ORDER 1 85 2-84 86-89
 
+*COMMENT This statement is no longer required.
 *INPUT DELTA FILE confor.cph
 
 *COMMENT. CONFOR files.
@@ -37,6 +40,7 @@
 *REFORMAT key4
 *REFORMAT key6
 
+*COMMENT This statement is no longer required.
 *INPUT DELTA FILE intkey.cph
 
 *COMMENT. INTKEY files.
