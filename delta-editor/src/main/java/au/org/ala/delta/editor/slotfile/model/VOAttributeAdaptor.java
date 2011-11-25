@@ -17,6 +17,7 @@ import au.org.ala.delta.editor.slotfile.TextType;
 import au.org.ala.delta.editor.slotfile.VOCharBaseDesc;
 import au.org.ala.delta.editor.slotfile.VOItemDesc;
 import au.org.ala.delta.model.NumericRange;
+import au.org.ala.delta.model.attribute.ParsedAttribute;
 import au.org.ala.delta.model.impl.AttributeData;
 
 /**
@@ -314,5 +315,9 @@ public class VOAttributeAdaptor implements AttributeData {
 		throw new UnsupportedOperationException();
 	}
 	
+	@Override
+	public ParsedAttribute parsedAttribute() {
+		throw new UnsupportedOperationException();
+	}	
 	
 }

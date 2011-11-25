@@ -7,6 +7,7 @@ import org.apache.commons.lang.math.FloatRange;
 
 import au.org.ala.delta.directives.validation.DirectiveException;
 import au.org.ala.delta.model.NumericRange;
+import au.org.ala.delta.model.attribute.ParsedAttribute;
 
 public interface AttributeData {
 	
@@ -46,4 +47,6 @@ public interface AttributeData {
 	boolean isCodedUnknown();
 
 	List<Integer> getPresentStatesAsList();
+
+	public ParsedAttribute parsedAttribute();
 }

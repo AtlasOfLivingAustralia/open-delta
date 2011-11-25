@@ -13,8 +13,9 @@ import au.org.ala.delta.directives.validation.DirectiveException;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.NumericRange;
 import au.org.ala.delta.model.attribute.AttrChunk;
-import au.org.ala.delta.model.attribute.ParsedAttribute;
 import au.org.ala.delta.model.attribute.ChunkType;
+import au.org.ala.delta.model.attribute.DefaultParsedAttribute;
+import au.org.ala.delta.model.attribute.ParsedAttribute;
 
 
 /**
@@ -24,12 +25,12 @@ import au.org.ala.delta.model.attribute.ChunkType;
 public class DefaultAttributeData implements AttributeData {
 
     private String _value;
-    private ParsedAttribute _parsedAttribute;
+    private DefaultParsedAttribute _parsedAttribute;
     private Character _character;
     
     public DefaultAttributeData(Character character) {
     	_character = character;
-    	_parsedAttribute = new ParsedAttribute(_character);
+    	_parsedAttribute = new DefaultParsedAttribute(_character);
     }
     
     @Override
@@ -186,7 +187,13 @@ public class DefaultAttributeData implements AttributeData {
 			range.setMiddle(numbers.get(1));
 		}
 		ranges.add(range);
+	}
+
+	@Override
+	public ParsedAttribute parsedAttribute() {
+		return _parsedAttribute;
 	}	
+	
 	
 	
 }

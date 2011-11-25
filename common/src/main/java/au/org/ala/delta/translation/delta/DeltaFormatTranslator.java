@@ -130,20 +130,22 @@ public class DeltaFormatTranslator extends AbstractIterativeTranslator {
 	}
 	
 	protected String getTextAttributeValue(Attribute attribute) {
-		return attribute.getValueAsString();
+		return _attributeFormatter.formatAttributeChunks(attribute);
 	}
 	
 	protected String getMultiStateAttributeValue(MultiStateAttribute attribute) {
-		String value = attribute.getValueAsString();
+		String value;
 		if (attribute.isImplicit()) {
             value = Integer.toString(attribute.getImplicitValue());
         }
+		else {
+			value = _attributeFormatter.formatAttributeChunks(attribute);
+		}
 		return value;
 	}
 	
 	protected String getNumericAttributeValue(NumericAttribute attribute) {
-		String value = attribute.getValueAsString();
-		return _attributeFormatter.formatNumericAttribute(value);
+		return _attributeFormatter.formatAttributeChunks(attribute);
 	}
 
 	@Override

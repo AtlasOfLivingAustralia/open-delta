@@ -74,59 +74,11 @@ public class AttrChunk {
 	}
 
 	public String getAsText(boolean encloseInCommentBrackets) {
-		String dest = null;
-		switch (_type) {
-			case ChunkType.CHUNK_STOP:
-				dest = "";
-				break;
-
-			case ChunkType.CHUNK_TEXT:
-			case ChunkType.CHUNK_LONGTEXT:
-				if (encloseInCommentBrackets)
-					dest = "<" + _strVal + ">";
-				else
-					dest = _strVal;
-				break;
-			case ChunkType.CHUNK_STATE:
-				dest = _stateVal + "";			
-				break;
-			case ChunkType.CHUNK_NUMBER:
-				dest = _numVal.toPlainString();
-				break;
-			case ChunkType.CHUNK_EXLO_NUMBER:
-				dest = "(" + _numVal.toPlainString() + "-)";
-				break;
-			case ChunkType.CHUNK_EXHI_NUMBER:
-				dest = "(-" + _numVal.toPlainString() + ")";
-				break;
-			case ChunkType.CHUNK_VARIABLE:
-				dest = "V";
-				break;
-			case ChunkType.CHUNK_UNKNOWN:
-				dest = "U";
-				break;
-			case ChunkType.CHUNK_INAPPLICABLE:
-				dest = "-";
-				break;
-
-			case ChunkType.CHUNK_OR:
-				dest = "/";
-				break;
-
-			case ChunkType.CHUNK_AND:
-				dest = "&";
-				break;
-
-			case ChunkType.CHUNK_TO:
-				dest = "-";
-				break;
-
-			default:
-				dest = "";
-				break;
-		}
-
-		return dest;
+		return new DefaultAttributeChunkFormatter(encloseInCommentBrackets).formatChunk(this);
+	}
+	
+	public String getAsText(AttributeChunkFormatter formatter) {
+		return formatter.formatChunk(this);
 	}
 
 	public void setStateId(int stateVal) {

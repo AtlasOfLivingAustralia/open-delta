@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import au.org.ala.delta.directives.validation.DirectiveException;
+import au.org.ala.delta.model.attribute.ParsedAttribute;
 import au.org.ala.delta.model.impl.AttributeData;
 import au.org.ala.delta.model.observer.AttributeObserver;
 
@@ -170,6 +171,10 @@ public abstract class Attribute {
         return _impl.isCommentOnly();
     }
 
+    public ParsedAttribute parsedAttribute() {
+    	return _impl.parsedAttribute();
+    }
+    
     /**
      * Registers interest in being notified of changes to this Attribute.
      * 

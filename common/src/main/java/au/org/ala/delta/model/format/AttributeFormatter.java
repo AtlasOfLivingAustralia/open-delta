@@ -17,6 +17,8 @@ import au.org.ala.delta.model.MultiStateAttribute;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.RealAttribute;
 import au.org.ala.delta.model.TextAttribute;
+import au.org.ala.delta.model.attribute.AttributeChunkFormatter;
+import au.org.ala.delta.model.attribute.DefaultAttributeChunkFormatter;
 import au.org.ala.delta.translation.Words;
 import au.org.ala.delta.translation.Words.Word;
 
@@ -98,21 +100,17 @@ public class AttributeFormatter extends Formatter {
         return defaultFormat(value, mode);
     }
 
-    public String formatNumericAttribute(String attribute) {
+    public String formatAttributeChunks(Attribute attribute) {
     	if (StringUtils.isNotBlank(_dashReplacement)) {
-        	attribute = attribute.replaceAll("([0-9] *)-( *[0-9])", "$1"+_dashReplacement+"$2");
-        	attribute = attribute.replaceAll("\\(-", "("+_dashReplacement);
-        	attribute = attribute.replaceAll("-\\)", _dashReplacement+")");
+        	DefaultAttributeChunkFormatter formatter = new DefaultAttributeChunkFormatter(true, _dashReplacement);
+        	return attribute.parsedAttribute().getAsText(formatter);
+ 
         }
-    	return attribute;
-    }
-    
-    interface AttributeChunkFormatter {
-    	
+    	return attribute.getValueAsString();
     }
     
     public String formatAttribute(Attribute attribute, AttributeChunkFormatter formatter) {
-    	return null;
+    	return attribute.parsedAttribute().getAsText(formatter);
     }
     
     /**
