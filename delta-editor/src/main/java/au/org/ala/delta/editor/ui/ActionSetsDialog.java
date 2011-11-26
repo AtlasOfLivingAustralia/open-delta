@@ -1,13 +1,14 @@
 package au.org.ala.delta.editor.ui;
 
 import java.awt.BorderLayout;
-import java.awt.Desktop;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -24,6 +25,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
@@ -39,17 +41,18 @@ import org.jdesktop.application.SingleFrameApplication;
 import org.jdesktop.application.Task;
 import org.jdesktop.application.Task.BlockingScope;
 
+import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.confor.CONFOR;
 import au.org.ala.delta.dist.DIST;
 import au.org.ala.delta.editor.DeltaEditor;
 import au.org.ala.delta.editor.directives.ExportController;
+import au.org.ala.delta.editor.directives.ui.RunDirectivesProgressDialog;
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile.DirectiveType;
 import au.org.ala.delta.editor.ui.util.MessageDialogHelper;
 import au.org.ala.delta.intkey.Intkey;
 import au.org.ala.delta.key.Key;
-import au.org.ala.delta.ui.TextFileViewer;
 
 /**
  * Allows the user to see and execute CONFOR / DIST / KEY directives files.
@@ -254,19 +257,6 @@ public class ActionSetsDialog extends AbstractDeltaView {
 		});
 	}
 		
-	private void displayResults(File file) throws Exception {
-		if (Desktop.isDesktopSupported()) {
-			try {
-				Desktop.getDesktop().open(file);
-				return;
-			}
-			catch (IOException e) {}
-		}
-		
-		TextFileViewer viewer = new TextFileViewer(((SingleFrameApplication)Application.getInstance()).getMainFrame(), file);
-		viewer.setVisible(true);
-		
-	}
 	
 	@Action
 	public void addDirectiveFile() {
@@ -507,19 +497,45 @@ public class ActionSetsDialog extends AbstractDeltaView {
 		
 	}
 	
+	class OutputStreamAdapter extends OutputStream {
+
+		RunDirectivesProgressDialog dialog;
+		public OutputStreamAdapter(RunDirectivesProgressDialog dialog) {
+			this.dialog = dialog;
+		}
+		@Override
+		public void write(final int b) throws IOException {
+			SwingUtilities.invokeLater(new Runnable() {
+				
+				@Override
+				public void run() {
+
+					dialog.print(Character.toString((char)b));
+				}
+			});
+		}
+		
+	}
+	
 	abstract class DirectivesRunner extends Task<List<File>, Void> {
 		protected String _exportPath;
+		protected RunDirectivesProgressDialog _dialog;
 		
 		public DirectivesRunner(String exportPath) {
 			super(Application.getInstance());
 			_exportPath = exportPath;
+			_dialog = new RunDirectivesProgressDialog(
+					((SingleFrameApplication)Application.getInstance()).getMainFrame(),
+					"Running : "+getInputFile());
+			_dialog.pack();
+			_dialog.setVisible(true);
 		}
 		
 		@Override
 		protected void succeeded(List<File> result) {
 			if (!result.isEmpty()) {
 				try {
-					displayResults(result.get(0));
+					_dialog.setOutputFiles(result);
 				}
 				catch (Exception e) {
 					_messageHelper.errorRunningDirectiveFile(getInputFile());
@@ -555,7 +571,9 @@ public class ActionSetsDialog extends AbstractDeltaView {
 		public List<File> doInBackground() throws Exception {
 			File fileOnFileSystem = new File(getInputFile());
 
-		    CONFOR confor = new CONFOR(fileOnFileSystem);
+			PrintStream out = new PrintStream(new OutputStreamAdapter(_dialog));
+			DeltaContext context = new DeltaContext(out, out);
+		    CONFOR confor = new CONFOR(context, fileOnFileSystem);
 		    
 		    List<File> results = new ArrayList<File>();
 		    if (confor.getIndexFile() != null) {

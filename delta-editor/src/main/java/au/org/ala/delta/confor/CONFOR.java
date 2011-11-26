@@ -22,6 +22,7 @@ import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.directives.ConforDirectiveFileParser;
 import au.org.ala.delta.directives.ConforDirectiveParserObserver;
+import au.org.ala.delta.directives.validation.DirectiveException;
 
 public class CONFOR {
 
@@ -32,14 +33,7 @@ public class CONFOR {
 	 */
 	public static void main(String[] args) throws Exception {
 
-	    
-		StringBuilder credits = new StringBuilder("CONFOR version 3.00 (Java)");
-		credits.append("\n\nM. J. Dallwitz, T.A. Paine and E.J. Zurcher");
-		credits.append("\n\nCSIRO Division of Entomology, GPO Box 1700, Canberra, ACT 2601, Australia\nPhone +61 2 6246 4075. Fax +61 2 6246 4000. Email delta@ento.csiro.au");
-		credits.append("\n\nJava edition ported by the Atlas of Living Australia, 2010.\n");
-		
-		
-		System.out.println(credits);
+		System.out.println(credits());
 		
 		File f = handleArgs(args);
 		if (!f.exists()) {
@@ -48,6 +42,16 @@ public class CONFOR {
 		}
 		
 		new CONFOR(f);
+	}
+	
+	private static String credits() {
+		String eol = System.getProperty("line.separator");
+		StringBuilder credits = new StringBuilder("CONFOR version 3.00 (Java)");
+		credits.append(eol).append(eol).append("M. J. Dallwitz, T.A. Paine and E.J. Zurcher");
+		credits.append(eol).append(eol).append("CSIRO Division of Entomology, GPO Box 1700, Canberra, ACT 2601, Australia");
+		credits.append(eol).append("Phone +61 2 6246 4075. Fax +61 2 6246 4000. Email delta@ento.csiro.au");
+		credits.append(eol).append(eol).append("Java edition ported by the Atlas of Living Australia, 2010.").append(eol);
+		return credits.toString();
 	}
 	
 	private static File handleArgs(String[] args) throws Exception {
@@ -71,15 +75,24 @@ public class CONFOR {
 		return fileName;
 	}
 	
-	public CONFOR(File input) throws Exception {
-		_context = new DeltaContext();
+	public CONFOR(DeltaContext context, File input) throws Exception {
+		_context = context;
+		_context.out(credits());
+		_context.setCredits(credits());
 		ConforDirectiveFileParser p = ConforDirectiveFileParser.createInstance();
 		ConforDirectiveParserObserver observer = new ConforDirectiveParserObserver(_context); 
 		p.registerObserver(observer);
-		
-		p.parse(input, _context);
-		
+		try {
+			p.parse(input, _context);
+		}
+		catch (DirectiveException e) {
+			// Ignore, this just allows us to terminate parsing early.
+		}
 		observer.finishedProcessing();
+	}
+	
+	public CONFOR(File input) throws Exception {
+		this(new DeltaContext(), input);
 	}
 	
 	public File getPrintFile() {
