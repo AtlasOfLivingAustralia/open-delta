@@ -75,8 +75,9 @@ public class CONFOR {
 		return fileName;
 	}
 	
-	public CONFOR(File input) throws Exception {
-		_context = new DeltaContext();
+	public CONFOR(DeltaContext context, File input) throws Exception {
+		_context = context;
+		_context.out(credits());
 		_context.setCredits(credits());
 		ConforDirectiveFileParser p = ConforDirectiveFileParser.createInstance();
 		ConforDirectiveParserObserver observer = new ConforDirectiveParserObserver(_context); 
@@ -88,6 +89,10 @@ public class CONFOR {
 			// Ignore, this just allows us to terminate parsing early.
 		}
 		observer.finishedProcessing();
+	}
+	
+	public CONFOR(File input) throws Exception {
+		this(new DeltaContext(), input);
 	}
 	
 	public File getPrintFile() {

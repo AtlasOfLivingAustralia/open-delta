@@ -54,6 +54,15 @@ public class OutputFileSelector extends OutputFileManager {
 	private int _printWidth;
 	
 	public OutputFileSelector(MutableDeltaDataSet dataSet) {
+		init(dataSet);
+	}
+	
+	public OutputFileSelector(MutableDeltaDataSet dataSet, PrintStream out, PrintStream err) {
+		super(out, err);
+		init(dataSet);
+	}
+	
+	private void init(MutableDeltaDataSet dataSet) {
 		_dataSet = dataSet;
 		_printWidth = DEFAULT_PRINT_WIDTH;
 		_outputWidth = DEFAULT_PRINT_WIDTH;

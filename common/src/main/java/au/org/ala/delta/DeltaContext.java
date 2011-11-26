@@ -143,45 +143,62 @@ public class DeltaContext extends AbstractDeltaContext {
     private DirectiveParserObserver _observer;
 
     private Map<String, String> _indexHeadings = new HashMap<String, String>();
+    private PrintStream _defaultOut;
+    private PrintStream _defaultErr;
 
     public DeltaContext() {
         this(new DefaultDataSetFactory().createDataSet(""));
     }
+    
+    public DeltaContext(PrintStream out, PrintStream err) {
+    	this(new DefaultDataSetFactory().createDataSet(""), out, err);
+    }
+    
+    public DeltaContext(MutableDeltaDataSet dataSet, PrintStream out, PrintStream err) {
+    	_defaultOut = out;   
+    	_defaultErr = err;
+    	_variables = new HashMap<String, Object>();
+
+           _variables.put("DATEFORMAT", "dd-MMM-yyyy");
+           _variables.put("TIMEFORMAT", "HH:mm");
+
+           _variables.put("DATE", new Functor() {
+               @Override
+               public Object invoke(DeltaContext context) {
+                   String dateFormat = (String) context.getVariable("DATEFORMAT", "dd-MMM-yyyy");
+                   SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
+                   return sdf.format(new Date());
+               }
+           });
+
+           _variables.put("TIME", new Functor() {
+
+               @Override
+               public Object invoke(DeltaContext context) {
+                   String timeFormat = (String) context.getVariable("TIMEFORMAT", "HH:mm");
+                   SimpleDateFormat sdf = new SimpleDateFormat(timeFormat);
+                   return sdf.format(new Date());
+               }
+           });
+
+           _dataSet = dataSet;
+
+           createOutputFileManager();
+           _outputFileSelector.setOutputFormat(_outputFormat);
+           _outputFileSelector.setPrintStream(out);
+
+    }
 
     public DeltaContext(MutableDeltaDataSet dataSet) {
-        _variables = new HashMap<String, Object>();
-
-        _variables.put("DATEFORMAT", "dd-MMM-yyyy");
-        _variables.put("TIMEFORMAT", "HH:mm");
-
-        _variables.put("DATE", new Functor() {
-            @Override
-            public Object invoke(DeltaContext context) {
-                String dateFormat = (String) context.getVariable("DATEFORMAT", "dd-MMM-yyyy");
-                SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
-                return sdf.format(new Date());
-            }
-        });
-
-        _variables.put("TIME", new Functor() {
-
-            @Override
-            public Object invoke(DeltaContext context) {
-                String timeFormat = (String) context.getVariable("TIMEFORMAT", "HH:mm");
-                SimpleDateFormat sdf = new SimpleDateFormat(timeFormat);
-                return sdf.format(new Date());
-            }
-        });
-
-        _dataSet = dataSet;
-
-        createOutputFileManager();
-        _outputFileSelector.setOutputFormat(_outputFormat);
-        _outputFileSelector.setPrintStream(System.out);
+    	this(dataSet, System.out, System.err);
+    }
+    
+    public void out(String line) {
+    	_defaultOut.println(line);
     }
 
     protected void createOutputFileManager() {
-        _outputFileSelector = new OutputFileSelector(_dataSet);
+        _outputFileSelector = new OutputFileSelector(_dataSet, _defaultOut, _defaultErr);
     }
 
     public OutputFileSelector getOutputFileSelector() {

@@ -70,19 +70,27 @@ public class OutputFileManager {
 	protected ParsingContext _context;
 	/** Number of characters on a line of text written to the output file */
 	protected int _outputWidth;
-	
+	protected PrintStream _defaultOut;
+	protected PrintStream _defaultErr;
 	
 	protected OutputFile[] _outputFiles;
 	
 	public OutputFileManager() {
+		this(System.out, System.err);
+	}
+	
+	public OutputFileManager(PrintStream out, PrintStream error) {
 		super();
+		_defaultErr = error;
+		_defaultOut = out;
 		_outputFiles = new OutputFile[3];
-		_outputFiles[OutputFileType.ERROR_FILE.ordinal()] = new OutputFile(System.err);
+		_outputFiles[OutputFileType.ERROR_FILE.ordinal()] = new OutputFile(_defaultErr);
+
 	}
 	
 	public void enableListing() {
 		if (outputFile(OutputFileType.LISTING_FILE) == null) {
-			_outputFiles[OutputFileType.LISTING_FILE.ordinal()] = new OutputFile(System.out);
+			_outputFiles[OutputFileType.LISTING_FILE.ordinal()] = new OutputFile(_defaultOut);
 		}
 	}
 	
