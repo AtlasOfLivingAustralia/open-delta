@@ -45,8 +45,12 @@ public class RunDirectivesProgressDialog extends JDialog {
 	public RunDirectivesProgressDialog(Window owner, String message) {
 		super(owner);
 		createGUI();
-		lblDirectivesfilelabel.setText(message);
 		addEventHandlers();
+		setMessage(message);
+	}
+	
+	public void setMessage(String message) {
+		lblDirectivesfilelabel.setText(message);
 	}
 
 	public void addEventHandlers() {
@@ -133,6 +137,7 @@ public class RunDirectivesProgressDialog extends JDialog {
 		table.getColumnModel().getColumn(1).setCellEditor(new ButtonEditor());
 		scrollPane.setViewportView(table);
 		table.getColumnModel().getColumn(1).setMaxWidth(75);
+		progressBar.setMaximum(100);
 		
 		getContentPane().setLayout(groupLayout);
 	}
@@ -154,9 +159,15 @@ public class RunDirectivesProgressDialog extends JDialog {
 	}
 	
 	public void updateProgress(int progress) {
-		progressBar.setIndeterminate(false);
-		progressBar.setMaximum(100);
-		progressBar.setValue(100);
+		if (progress > 0) {
+			progressBar.setIndeterminate(false);
+			progressBar.setValue(100);
+		}
+		else {
+			progressBar.setIndeterminate(true);
+			textArea.setText("");
+			_model.setRowCount(0);
+		}
 	}
 	
 	private void displayResults(File file) {

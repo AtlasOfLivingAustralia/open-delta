@@ -82,6 +82,8 @@ public class ActionSetsDialog extends AbstractDeltaView {
 	private JTable keyTable;
 	private JTabbedPane tabbedPane;
 	
+	protected RunDirectivesProgressDialog _dialog;
+	
 	
 	public ActionSetsDialog(EditorViewModel model) {
 		
@@ -526,16 +528,23 @@ public class ActionSetsDialog extends AbstractDeltaView {
 	
 	abstract class DirectivesRunner extends Task<List<File>, Void> {
 		protected String _exportPath;
-		protected RunDirectivesProgressDialog _dialog;
 		
 		public DirectivesRunner(String exportPath) {
 			super(Application.getInstance());
 			_exportPath = exportPath;
-			_dialog = new RunDirectivesProgressDialog(
+		}
+		
+		protected void showProgressDialog() {
+			if (_dialog == null) {
+				_dialog = new RunDirectivesProgressDialog(
 					((SingleFrameApplication)Application.getInstance()).getMainFrame(),
-					"Running : "+getInputFile());
+					"");
+			}
+			_dialog.updateProgress(0);
+			_dialog.setMessage("Running : "+getInputFile());
 			_dialog.pack();
 			_dialog.setVisible(true);
+
 		}
 		
 		@Override
@@ -553,9 +562,7 @@ public class ActionSetsDialog extends AbstractDeltaView {
 		protected void failed(Throwable t) {
 			_messageHelper.errorRunningDirectiveFile(getInputFile());
 		}
-		
-		
-		
+			
 		protected String getInputFile() {
 			DirectiveFile file = getSelectedFile();	
 			if (file == null) {
@@ -573,6 +580,7 @@ public class ActionSetsDialog extends AbstractDeltaView {
 
 		public ConforRunner(String exportPath) {
 			super(exportPath);
+			showProgressDialog();
 		}
 		
 		@Override
@@ -583,14 +591,7 @@ public class ActionSetsDialog extends AbstractDeltaView {
 			DeltaContext context = new DeltaContext(out, out);
 		    CONFOR confor = new CONFOR(context, fileOnFileSystem);
 		    
-		    List<File> results = new ArrayList<File>();
-		    if (confor.getIndexFile() != null) {
-		    	results.add(confor.getIndexFile());
-		    }
-		    else if (confor.getPrintFile() != null) {
-		    	results.add(confor.getPrintFile());
-		    }
-		    return results;
+		    return confor.getOutputFiles();
 
 		}
 		
@@ -600,6 +601,7 @@ public class ActionSetsDialog extends AbstractDeltaView {
 
 		public DistRunner(String exportPath) {
 			super(exportPath);
+			showProgressDialog();
 		}
 		
 		@Override
@@ -617,6 +619,7 @@ public class ActionSetsDialog extends AbstractDeltaView {
 
 		public KeyRunner(String exportPath) {
 			super(exportPath);
+			showProgressDialog();
 		}
 		
 		@Override

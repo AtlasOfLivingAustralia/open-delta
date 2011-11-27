@@ -1,5 +1,6 @@
 package au.org.ala.delta.directives;
 
+import java.io.File;
 import java.util.List;
 
 import au.org.ala.delta.DeltaContext;
@@ -144,8 +145,8 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
 	private void listOutputFiles() {
 		OutputFileManager fileManager = _context.getOutputFileSelector();
 		fileManager.message("Output files - ");
-		for (String fileName : fileManager.getOutputFileNames()) {
-			fileManager.message("   "+fileName);
+		for (File fileName : fileManager.getOutputFiles()) {
+			fileManager.message("   "+fileName.getName());
 		}
 		
 	}

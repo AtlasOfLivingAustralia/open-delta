@@ -3,7 +3,6 @@ package au.org.ala.delta.io;
 import java.io.File;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -46,7 +45,6 @@ public class OutputFileManager {
 		
 		public void outputMessage(String format, Object... args) {
 			
-			System.out.println("Printing: "+format+":"+Arrays.asList(args)+" on "+_stream);
 			if (_stream != null) {
 				if (args == null || args.length == 0) {
 					_stream.println(format);
@@ -232,14 +230,17 @@ public class OutputFileManager {
 		return fullPathOf(outputFile(OutputFileType.OUTPUT_FILE)._fileName);
 	}
 	
-	public List<String> getOutputFileNames() {
-		List<String> names = new ArrayList<String>();
+	public List<File> getOutputFiles() {
+		List<File> files = new ArrayList<File>();
 		for (OutputFile file : _outputFiles) {
 			if (file != null) {
-				names.add(file.getFileName());
+				String fileName= file.getFileName();
+				if (StringUtils.isNotEmpty(fileName)) {
+					files.add(fullPathOf(fileName));
+				}
 			}
 		}
-		return names;
+		return files;
 	}
 
 	

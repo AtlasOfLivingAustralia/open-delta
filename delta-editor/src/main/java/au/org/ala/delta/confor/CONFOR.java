@@ -17,6 +17,7 @@ package au.org.ala.delta.confor;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
+import java.util.List;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.Logger;
@@ -101,6 +102,11 @@ public class CONFOR {
 	
 	public File getIndexFile() {
 		return _context.getOutputFileSelector().getIndexFileAsFile();
+	}
+	
+
+	public List<File> getOutputFiles() {
+		return _context.getOutputFileSelector().getOutputFiles();
 	}
 	
 	public File getListingFile() {
