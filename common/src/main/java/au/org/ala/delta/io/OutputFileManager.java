@@ -3,6 +3,7 @@ package au.org.ala.delta.io;
 import java.io.File;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -44,6 +45,8 @@ public class OutputFileManager {
 		}
 		
 		public void outputMessage(String format, Object... args) {
+			
+			System.out.println("Printing: "+format+":"+Arrays.asList(args)+" on "+_stream);
 			if (_stream != null) {
 				if (args == null || args.length == 0) {
 					_stream.println(format);
@@ -55,7 +58,7 @@ public class OutputFileManager {
 		}
 		
 		public void close() {
-			if (_stream != System.out && _stream != System.err) {
+			if (_stream != _defaultOut && _stream != _defaultErr) {
 				IOUtils.closeQuietly(_stream);
 			}
 		}
@@ -247,6 +250,9 @@ public class OutputFileManager {
 	public void message(String line) {
 		listMessage(line);
 		errorMessage(line);
+		if (_outputFiles[OutputFileType.ERROR_FILE.ordinal()].getPrintStream() != _defaultErr) {
+			_defaultErr.println(line);
+		}
 	}
 	
 	public OutputFile outputFile(OutputFileType type) {

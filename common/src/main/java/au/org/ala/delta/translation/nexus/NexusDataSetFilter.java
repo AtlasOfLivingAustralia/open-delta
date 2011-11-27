@@ -40,7 +40,7 @@ public class NexusDataSetFilter extends AbstractDataSetFilter {
 			}
 			else if (type.isNumeric()) {
 				IdentificationKeyCharacter idChar = _context.getIdentificationKeyCharacter(character.getCharacterId());
-				if (idChar.getNumberOfStates() > 0) {
+				if (idChar != null && idChar.getNumberOfStates() > 0) {
 					return true;
 				}
 			}

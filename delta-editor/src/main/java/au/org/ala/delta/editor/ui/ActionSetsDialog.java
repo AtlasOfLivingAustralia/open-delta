@@ -500,19 +500,26 @@ public class ActionSetsDialog extends AbstractDeltaView {
 	class OutputStreamAdapter extends OutputStream {
 
 		RunDirectivesProgressDialog dialog;
+		StringBuilder buffer = new StringBuilder();
 		public OutputStreamAdapter(RunDirectivesProgressDialog dialog) {
 			this.dialog = dialog;
 		}
 		@Override
 		public void write(final int b) throws IOException {
-			SwingUtilities.invokeLater(new Runnable() {
+			char ch = (char)b;
+			buffer.append((char)b);
+			if (ch == '\n') {
+				final String line = buffer.toString();
+				buffer.setLength(0);
 				
-				@Override
-				public void run() {
-
-					dialog.print(Character.toString((char)b));
-				}
-			});
+				SwingUtilities.invokeLater(new Runnable() {
+					
+					@Override
+					public void run() {
+						dialog.print(line);
+					}
+				});
+			}
 		}
 		
 	}
@@ -533,20 +540,21 @@ public class ActionSetsDialog extends AbstractDeltaView {
 		
 		@Override
 		protected void succeeded(List<File> result) {
-			if (!result.isEmpty()) {
-				try {
-					_dialog.setOutputFiles(result);
-				}
-				catch (Exception e) {
-					_messageHelper.errorRunningDirectiveFile(getInputFile());
-				}
+			try {
+				_dialog.setOutputFiles(result);
 			}
+			catch (Exception e) {
+				_messageHelper.errorRunningDirectiveFile(getInputFile());
+			}
+		
 		}
 		
 		@Override
 		protected void failed(Throwable t) {
 			_messageHelper.errorRunningDirectiveFile(getInputFile());
 		}
+		
+		
 		
 		protected String getInputFile() {
 			DirectiveFile file = getSelectedFile();	

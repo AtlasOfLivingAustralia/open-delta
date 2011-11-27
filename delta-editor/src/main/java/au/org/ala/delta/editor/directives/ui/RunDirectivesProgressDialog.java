@@ -123,7 +123,7 @@ public class RunDirectivesProgressDialog extends JDialog {
 		textArea = new JTextArea();
 		scrollPane_1.setViewportView(textArea);
 		
-		btnOk = new JButton("Done");
+		btnOk = new JButton("Close");
 		panel.add(btnOk);
 		
 		table = new JTable();
@@ -132,6 +132,8 @@ public class RunDirectivesProgressDialog extends JDialog {
 		table.getColumnModel().getColumn(1).setCellRenderer(new ButtonRenderer());
 		table.getColumnModel().getColumn(1).setCellEditor(new ButtonEditor());
 		scrollPane.setViewportView(table);
+		table.getColumnModel().getColumn(1).setMaxWidth(75);
+		
 		getContentPane().setLayout(groupLayout);
 	}
 	

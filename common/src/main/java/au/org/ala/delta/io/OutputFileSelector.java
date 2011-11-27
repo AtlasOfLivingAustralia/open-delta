@@ -334,7 +334,7 @@ public class OutputFileSelector extends OutputFileManager {
 	}
 	
 	protected void closeExistingPrintStream() {
-		if (_printStream != null && _printStream != System.out && _printStream != System.err) {
+		if (_printStream != null && _printStream != _defaultOut && _printStream != _defaultErr) {
 			if (_printFile != null) {
 				_printFile.closePrintStream();
 			}
