@@ -165,7 +165,7 @@ public class OutputFileManager {
 			return "";
 		}
 		String outputFileName = FilenameUtils.separatorsToSystem(fileName);
-		if (!fileName.contains(File.separator) && (_outputDirectory != null)) {
+		if (!outputFileName.contains(File.separator) && (_outputDirectory != null)) {
 			outputFileName = FilenameUtils.concat(_outputDirectory, fileName);
 		}
 		return outputFileName;
@@ -240,10 +240,9 @@ public class OutputFileManager {
 	protected File createFile(String fileName) {
 		File parent = _context.getFile().getParentFile();
 		
-		String tmpFileName = prependOutputDirectory(fileName);
-		File file = new File(tmpFileName);
+		File file = new File(fileName);
 		if (!file.isAbsolute()) {
-			file = new File(FilenameUtils.concat(parent.getAbsolutePath(), tmpFileName));
+			file = new File(FilenameUtils.concat(parent.getAbsolutePath(), fileName));
 		}
 		return file;
 	}
