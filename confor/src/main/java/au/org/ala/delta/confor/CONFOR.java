@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright (C) 2011 Atlas of Living Australia
  * All Rights Reserved.
- * 
+ *   
  * The contents of this file are subject to the Mozilla Public
  * License Version 1.1 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of
  * the License at http://www.mozilla.org/MPL/
- * 
+ *   
  * Software distributed under the License is distributed on an "AS
  * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
  * implied. See the License for the specific language governing
@@ -47,7 +47,7 @@ public class CONFOR {
 	
 	private static String credits() {
 		String eol = System.getProperty("line.separator");
-		StringBuilder credits = new StringBuilder("CONFOR version 3.00 (Java)");
+	    StringBuilder credits = new StringBuilder("CONFOR version 3.00 (Java)");
 		credits.append(eol).append(eol).append("M. J. Dallwitz, T.A. Paine and E.J. Zurcher");
 		credits.append(eol).append(eol).append("CSIRO Division of Entomology, GPO Box 1700, Canberra, ACT 2601, Australia");
 		credits.append(eol).append("Phone +61 2 6246 4075. Fax +61 2 6246 4000. Email delta@ento.csiro.au");
