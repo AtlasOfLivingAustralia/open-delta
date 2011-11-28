@@ -12,9 +12,28 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  ******************************************************************************/
-package au.org.ala.delta.translation.print;
+package au.org.ala.delta.directives;
 
-public interface PrintAction {
+import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.DeltaContext.PrintActionType;
+import au.org.ala.delta.directives.args.DirectiveArguments;
 
-	public void print();
+/**
+ * Processes the PRINT SUMMARY directive.
+ */
+public class PrintSummary extends AbstractNoArgDirective {
+
+	public PrintSummary() {
+		super("print", "summary");
+	}
+	
+	@Override
+	public void process(DeltaContext context, DirectiveArguments directiveArguments) throws Exception {
+		context.addPrintAction(PrintActionType.PRINT_SUMMARY);
+	}
+	
+	@Override
+	public int getOrder() {
+		return 4;
+	}
 }

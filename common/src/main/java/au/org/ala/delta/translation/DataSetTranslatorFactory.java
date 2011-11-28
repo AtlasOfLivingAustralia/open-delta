@@ -47,6 +47,7 @@ import au.org.ala.delta.translation.print.CharacterListPrinter;
 import au.org.ala.delta.translation.print.CharacterListTypeSetter;
 import au.org.ala.delta.translation.print.ItemDescriptionsPrinter;
 import au.org.ala.delta.translation.print.ItemNamesPrinter;
+import au.org.ala.delta.translation.print.SummaryPrinter;
 import au.org.ala.delta.translation.print.UncodedCharactersFilter;
 import au.org.ala.delta.translation.print.UncodedCharactersPrinter;
 import au.org.ala.delta.translation.print.UncodedCharactersTranslator;
@@ -145,14 +146,14 @@ public class DataSetTranslatorFactory {
 	
 	}
 	
-	private DataSetTranslator createPrintActions(DeltaContext context) {
+	private DataSetTranslator createPrintActions(DeltaContext context) throws DirectiveException {
 		AbstractDataSetTranslator translator = new AbstractDataSetTranslator(context);
 		
 		addPrintActions(translator, context);
 		return translator;
 	}
 	
-	private void addPrintActions(AbstractDataSetTranslator translator, DeltaContext context) {
+	private void addPrintActions(AbstractDataSetTranslator translator, DeltaContext context) throws DirectiveException {
 		for (PrintActionType action : context.getPrintActions()) {
 			translator.add(createPrintAction(context, action));
 		}
@@ -287,7 +288,7 @@ public class DataSetTranslatorFactory {
 		return wrap(context, filter,new DeltaFormatTranslator(context, printer, itemFormatter, charFormatter, attributeFormatter, typeSetter, itemTypeSetter));
 	}
 	
-	public Pair<IterativeTranslator, DataSetFilter> createPrintAction(DeltaContext context, PrintActionType printAction) {
+	public Pair<IterativeTranslator, DataSetFilter> createPrintAction(DeltaContext context, PrintActionType printAction) throws DirectiveException {
 		Pair<IterativeTranslator, DataSetFilter> translator;
 		switch (printAction) {
 		case PRINT_CHARACTER_LIST:
@@ -305,11 +306,23 @@ public class DataSetTranslatorFactory {
 		case TRANSLATE_UNCODED_CHARACTERS:
 			translator = createUncodedCharactersTranslator(context);
 			break;	
+		case PRINT_SUMMARY:
+			translator = createSummaryPrinter(context);
+			break;
 		default:
-			throw new UnsupportedOperationException(printAction+" is not yet implemented.");	
+			throw DirectiveError.asException(DirectiveError.Error.UNSUPPORTED_TRANSLATION, 0, printAction.toString());
 		}
 		return translator;
 	}
+	
+	private Pair<IterativeTranslator, DataSetFilter> createSummaryPrinter(DeltaContext context) {
+		PrintFile printer = context.getPrintFile();
+		DataSetFilter filter = new IncludeExcludeDataSetFilter(context);
+		FilteredDataSet dataSet = new FilteredDataSet(context, filter);
+		IterativeTranslator translator = new SummaryPrinter(context, dataSet, printer);
+		return new Pair<IterativeTranslator, DataSetFilter>(translator, filter);
+	}
+	
 	
 	private Pair<IterativeTranslator, DataSetFilter> createCharacterListPrinter(DeltaContext context) {
 		FormatterFactory formatterFactory = new FormatterFactory(context);

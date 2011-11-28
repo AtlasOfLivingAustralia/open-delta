@@ -1,0 +1,760 @@
+ Grass Genera 15:43 28-NOV-11
+
+ Summary.
+
+ Characters      89 Read      89 Included.
+ Items           14 Read       3 Included.
+
+ Character                    1
+   Type                      TE
+   Uncoded or unknown         1
+
+ Character                    2
+   Type                      RN
+   Uncoded or unknown         0
+   Not applicable             0
+   Mean                      89
+   Std deviation             62
+   Minimum                    4 (Item 5)
+   Maximum                  300 (Item 4)
+   Key states                 8
+   Distribution of states     0    1    3    3    3    2    1    0
+   Items coded                3
+   Items variable             3
+
+ Character                    3
+   Type                      UM
+   Uncoded or unknown         0
+   Not applicable             0
+   Number of states           2
+   Distribution of states     0    3
+   Items coded                3
+   Items variable             0
+
+ Character                    4
+   Type                      UM
+   Uncoded or unknown         0
+   Not applicable             0
+   Number of states           2
+   Distribution of states     2    3
+   Items coded                3
+   Items variable             2
+
+ Character                    5
+   Type                      UM
+   Uncoded or unknown         3
+   Not applicable             0
+
+ Character                    6
+   Type                      UM
+   Uncoded or unknown         0
+   Not applicable             0
+   Number of states           2
+   Distribution of states     0    3
+   Items coded                3
+   Items variable             0
+
+ Character                    7
+   Type                      UM
+   Uncoded or unknown         0
+   Not applicable             0
+   Number of states           2
+   Distribution of states     0    3
+   Items coded                3
+   Items variable             0
+
+ Character                    8
+   Type                      OM
+   Uncoded or unknown         0
+   Not applicable             0
+   Number of states           7
+   Distribution of states     3    0    0    0    0    0    0
+   Items variable             0
+   Key states                 3
+   Distribution of states     3    0    0
+   Items coded                3
+   Items variable             0
+
+ Character                    9
+   Type                      RN
+   Uncoded or unknown         3
+   Not applicable             0
+
+ Character                   10
+   Type                      UM
+   Uncoded or unknown         0
+   Not applicable             0
+   Number of states           2
+   Distribution of states     3    0
+   Items coded                3
+   Items variable             0
+
+ Character                   11
+   Type                      OM
+   Uncoded or unknown         0
+   Not applicable             0
+   Number of states           4
+   Distribution of states     0    3    2    0
+   Items variable             2
+   Key states                 3
+   Distribution of states     0    3    0
+   Items coded                3
+   Items variable             0
+
+ Character                   12
+   Type                      UM
+   Uncoded or unknown         0
+   Not applicable             0
+   Number of states           3
+   Distribution of states     0    3    0
+   Items coded                3
+   Items variable             0
+
+ Character                   13
+   Type                      UM
+   Uncoded or unknown         0
+   Not applicable             0
+   Number of states           5
+   Distribution of states     0    3    0    0    0
+   Items coded                3
+   Items variable             0
+
+ Character                   14
+   Type                      UM
+   Uncoded or unknown         0
+   Not applicable             2
+   Number of states           2
+   Distribution of states     1    1
+   Items coded                1
+   Items variable             1
+
+ Character                   15
+   Type                      UM
+   Uncoded or unknown         0
+   Not applicable             0
+   Number of states           2
+   Distribution of states     0    3
+   Items coded                3
+   Items variable             0
+
+ Character                   16
+   Type                      UM
+   Uncoded or unknown         0
+   Not applicable             0
+   Number of states           2
+   Distribution of states     0    3
+   Items coded                3
+   Items variable             0
+
+ Character                   17
+   Type                      UM
+   Uncoded or unknown         0
+   Not applicable             3
+
+ Character                   18
+   Type                      UM
+   Uncoded or unknown         1
+   Not applicable             0
+   Number of states           3
+   Distribution of states     2    1    0
+   Items coded                2
+   Items variable             1
+
+ Character                   19
+   Type                      UM
+   Uncoded or unknown         0
+   Not applicable             0
+   Number of states           2
+   Distribution of states     3    0
+   Items coded                3
+   Items variable             0
+
+ Character                   20
+   Type                      UM
+   Uncoded or unknown         0
+   Not applicable             2
+   Number of states           2
+   Distribution of states     0    1
+   Items coded                1
+   Items variable             0
+
+ Character                   21
+   Type                      UM
+   Uncoded or unknown         0
+   Not applicable             3
+
+ Character                   22
+   Type                      UM
+   Uncoded or unknown         0
+   Not applicable             3
+
+ Character                   23
+   Type                      UM
+   Uncoded or unknown         0
+   Not applicable             3
+
+ Character                   24
+   Type                      UM
+   Uncoded or unknown         0
+   Not applicable             3
+
+ Character                   25
+   Type                      TE
+   Uncoded or unknown         3
+
+ Character                   26
+   Type                      RN
+   Uncoded or unknown         0
+   Not applicable             0
+   Mean                    4.42
+   Std deviation           2.54
+   Minimum                  1.7 (Item 5)
+   Maximum                   11 (Item 8)
+   Key states                 6
+   Distribution of states     0    2    3    2    0    0
+   Items coded                3
+   Items variable             3
+
+ Character                   27
+   Type                      OM
+   Uncoded or unknown         0
+   Not applicable             0
+   Number of states           3
+   Distribution of states     3    0    0
+   Items coded                3
+   Items variable             0
+
+ Character                   28
+   Type                      UM
+   Uncoded or unknown         0
+   Not applicable             0
+   Number of states           4
+   Distribution of states     3    1    0    1
+   Items coded                3
+   Items variable             2
+
+ Character                   29
+   Type                      UM
+   Uncoded or unknown         2
+   Not applicable             0
+   Number of states           2
+   Distribution of states     0    1
+   Items coded                1
+   Items variable             0
+
+ Character                   30
+   Type                      UM
+   Uncoded or unknown         0
+   Not applicable             0
+   Number of states           2
+   Distribution of states     3    1
+   Items coded                3
+   Items variable             1
+
+ Character                   31
+   Type                      UM
+   Uncoded or unknown         0
+   Not applicable             0
+   Number of states           2
+   Distribution of states     1    2
+   Items coded                3
+   Items variable             0
+
+ Character                   32
+   Type                      UM
+   Uncoded or unknown         0
+   Not applicable             0
+   Number of states           2
+   Distribution of states     3    0
+   Items coded                3
+   Items variable             0
+
+ Character                   33
+   Type                      OM
+   Uncoded or unknown         0
+   Not applicable             0
+   Number of states           3
+   Distribution of states     0    3    0
+   Items coded                3
+   Items variable             0
+
+ Character                   34
+   Type                      UM
+   Uncoded or unknown         0
+   Not applicable             0
+   Number of states           2
+   Distribution of states     3    1
+   Items coded                3
+   Items variable             1
+
+ Character                   35
+   Type                      UM
+   Uncoded or unknown         0
+   Not applicable             0
+   Number of states           2
+   Distribution of states     3    0
+   Items coded                3
+   Items variable             0
+
+ Character                   36
+   Type                      UM
+   Uncoded or unknown         0
+   Not applicable             0
+   Number of states           2
+   Distribution of states     0    3
+   Items coded                3
+   Items variable             0
+
+ Character                   37
+   Type                      UM
+   Uncoded or unknown         1
+   Not applicable             0
+   Number of states           2
+   Distribution of states     2    0
+   Items coded                2
+   Items variable             0
+
+ Character                   38
+   Type                      IN
+   Uncoded or unknown         0
+   Not applicable             0
+   Mean                    2.72
+   Std deviation           1.18
+   Minimum                    1 (Item 4)
+   Maximum                    7 (Item 8)
+   Key states                12
+   Distribution of states     0    2    2    3    2    1    1    1    0    0
+                              0    0
+   Items coded                3
+   Items variable             3
+
+ Character                   39
+   Type                      UM
+   Uncoded or unknown         0
+   Not applicable             0
+   Number of states           2
+   Distribution of states     2    3
+   Items coded                3
+   Items variable             2
+
+ Character                   40
+   Type                      UM
+   Uncoded or unknown         0
+   Not applicable             0
+   Number of states           3
+   Distribution of states     0    3    0
+   Items coded                3
+   Items variable             0
+
+ Character                   41
+   Type                      IN
+   Uncoded or unknown         3
+   Not applicable             0
+
+ Character                   42
+   Type                      UM
+   Uncoded or unknown         3
+   Not applicable             0
+
+ Character                   43
+   Type                      UM
+   Uncoded or unknown         3
+   Not applicable             0
+
+ Character                   44
+   Type                      IN
+   Uncoded or unknown         0
+   Not applicable             0
+   Mean                    3.67
+   Std deviation           4.62
+   Minimum                    1 (Item 4)
+   Maximum                   15 (Item 8)
+   Key states                 3
+   Distribution of states     2    0    1
+   Items coded                3
+   Items variable             0
+
+ Character                   45
+   Type                      UM
+   Uncoded or unknown         0
+   Not applicable             0
+   Number of states           2
+   Distribution of states     3    1
+   Items coded                3
+   Items variable             1
+
+ Character                   46
+   Type                      UM
+   Uncoded or unknown         1
+   Not applicable             0
+   Number of states           2
+   Distribution of states     2    2
+   Items coded                2
+   Items variable             2
+
+ Character                   47
+   Type                      OM
+   Uncoded or unknown         0
+   Not applicable             0
+   Number of states           3
+   Distribution of states     2    1    1
+   Items coded                3
+   Items variable             1
+
+ Character                   48
+   Type                      IN
+   Uncoded or unknown         0
+   Not applicable             2
+   Mean                       2
+   Std deviation              0
+   Minimum                    1 (Item 4)
+   Maximum                    3 (Item 4)
+   Key states                12
+   Distribution of states     1    0    1    0    0    0    0    0    0    0
+                              0    0
+   Items coded                1
+   Items variable             1
+
+ Character                   49
+   Type                      UM
+   Uncoded or unknown         0
+   Not applicable             2
+   Number of states           3
+   Distribution of states     1    0    1
+   Items coded                1
+   Items variable             1
+
+ Character                   50
+   Type                      UM
+   Uncoded or unknown         0
+   Not applicable             2
+   Number of states           2
+   Distribution of states     1    0
+   Items coded                1
+   Items variable             0
+
+ Character                   51
+   Type                      OM
+   Uncoded or unknown         1
+   Not applicable             2
+
+ Character                   52
+   Type                      UM
+   Uncoded or unknown         0
+   Not applicable             0
+   Number of states           2
+   Distribution of states     3    0
+   Items coded                3
+   Items variable             0
+
+ Character                   53
+   Type                      UM
+   Uncoded or unknown         2
+   Not applicable             0
+   Number of states           2
+   Distribution of states     0    1
+   Items coded                1
+   Items variable             0
+
+ Character                   54
+   Type                      IN
+   Uncoded or unknown         0
+   Not applicable             0
+   Mean                    3.17
+   Std deviation          0.764
+   Minimum                    1 (Item 4)
+   Maximum                    7 (Item 4)
+   Key states                12
+   Distribution of states     0    2    2    3    2    1    1    1    0    0
+                              0    0
+   Items coded                3
+   Items variable             2
+
+ Character                   55
+   Type                      UM
+   Uncoded or unknown         0
+   Not applicable             0
+   Number of states           2
+   Distribution of states     3    0
+   Items coded                3
+   Items variable             0
+
+ Character                   56
+   Type                      OM
+   Uncoded or unknown         1
+   Not applicable             0
+   Number of states           3
+   Distribution of states     2    0    0
+   Items coded                2
+   Items variable             0
+
+ Character                   57
+   Type                      UM
+   Uncoded or unknown         0
+   Not applicable             0
+   Number of states           2
+   Distribution of states     3    0
+   Items coded                3
+   Items variable             0
+
+ Character                   58
+   Type                      UM
+   Uncoded or unknown         0
+   Not applicable             0
+   Number of states           2
+   Distribution of states     3    1
+   Items coded                3
+   Items variable             1
+
+ Character                   59
+   Type                      UM
+   Uncoded or unknown         0
+   Not applicable             0
+   Number of states           2
+   Distribution of states     0    3
+   Items coded                3
+   Items variable             0
+
+ Character                   60
+   Type                      IN
+   Uncoded or unknown         0
+   Not applicable             0
+   Mean                       3
+   Std deviation              0
+   Minimum                    3 (Item 4)
+   Maximum                    3 (Item 4)
+   Key states                 9
+   Distribution of states     0    0    0    3    0    0    0    0    0
+   Items coded                3
+   Items variable             0
+
+ Character                   61
+   Type                      UM
+   Uncoded or unknown         0
+   Not applicable             0
+   Number of states           2
+   Distribution of states     3    0
+   Items coded                3
+   Items variable             0
+
+ Character                   62
+   Type                      IN
+   Uncoded or unknown         0
+   Not applicable             0
+  Mean                       2
+   Std deviation              0
+   Minimum                    2 (Item 4)
+   Maximum                    2 (Item 4)
+   Key states                 6
+   Distribution of states     0    3    0    0    0    0
+   Items coded                3
+   Items variable             0
+
+ Character                   63
+   Type                      UM
+   Uncoded or unknown         0
+   Not applicable             0
+   Number of states           3
+   Distribution of states     2    2    1
+   Items coded                3
+   Items variable             2
+
+ Character                   64
+   Type                      OM
+   Uncoded or unknown         0
+   Not applicable             0
+   Number of states           3
+   Distribution of states     3    0    0
+   Items coded                3
+   Items variable             0
+
+ Character                   65
+   Type                      UM
+   Uncoded or unknown         0
+   Not applicable             0
+   Number of states           2
+   Distribution of states     1    2
+   Items coded                3
+   Items variable             0
+
+ Character                   66
+   Type                      UM
+   Uncoded or unknown         0
+   Not applicable             0
+   Number of states           2
+   Distribution of states     3    0
+   Items coded                3
+   Items variable             0
+
+ Character                   67
+   Type                      UM
+   Uncoded or unknown         0
+   Not applicable             0
+   Number of states           3
+   Distribution of states     2    0    2
+   Items coded                3
+   Items variable             1
+
+ Character                   68
+   Type                      UM
+   Uncoded or unknown         0
+   Not applicable             0
+   Number of states           2
+   Distribution of states     3    0
+   Items coded                3
+   Items variable             0
+
+ Character                   69
+   Type                      UM
+   Uncoded or unknown         0
+   Not applicable             0
+   Number of states           3
+   Distribution of states     1    2    0
+   Items coded                3
+   Items variable             0
+
+ Character                   70
+   Type                      UM
+   Uncoded or unknown         0
+   Not applicable             0
+   Number of states           2
+   Distribution of states     3    0
+   Items coded                3
+   Items variable             0
+
+ Character                   71
+   Type                      UM
+   Uncoded or unknown         0
+   Not applicable             0
+   Number of states           2
+   Distribution of states     0    3
+   Items coded                3
+   Items variable             0
+
+ Character                   72
+   Type                      UM
+   Uncoded or unknown         0
+   Not applicable             0
+   Number of states           2
+   Distribution of states     0    3
+   Items coded                3
+   Items variable             0
+
+ Character                   73
+   Type                      UM
+   Uncoded or unknown         0
+   Not applicable             0
+   Number of states           2
+   Distribution of states     3    0
+   Items coded                3
+   Items variable             0
+
+ Character                   74
+   Type                      UM
+   Uncoded or unknown         0
+   Not applicable             0
+   Number of states           3
+   Distribution of states     3    2    0
+   Items coded                3
+   Items variable             2
+
+ Character                   75
+   Type                      UM
+   Uncoded or unknown         0
+   Not applicable             0
+   Number of states           2
+   Distribution of states     1    3
+   Items coded                3
+   Items variable             1
+
+ Character                   76
+   Type                      UM
+   Uncoded or unknown         0
+   Not applicable             0
+   Number of states           2
+   Distribution of states     1    3
+   Items coded                3
+   Items variable             1
+
+ Character                   77
+   Type                      UM
+   Uncoded or unknown         0
+   Not applicable             0
+   Number of states           2
+   Distribution of states     0    3
+   Items coded                3
+   Items variable             0
+
+ Character                   78
+   Type                      UM
+   Uncoded or unknown         0
+   Not applicable             0
+   Number of states           5
+   Distribution of states     0    0    0    3    0
+   Items coded                3
+   Items variable             0
+
+ Character                   79
+   Type                      UM
+   Uncoded or unknown         0
+   Not applicable             3
+
+ Character                   80
+   Type                      UM
+   Uncoded or unknown         0
+   Not applicable             3
+
+ Character                   81
+   Type                      UM
+   Uncoded or unknown         0
+   Not applicable             3
+
+ Character                   82
+   Type                      UM
+   Uncoded or unknown         0
+   Not applicable             3
+
+ Character                   83
+   Type                      UM
+   Uncoded or unknown         0
+   Not applicable             0
+   Number of states           4
+   Distribution of states     0    0    0    3
+   Items coded                3
+   Items variable             0
+
+ Character                   84
+   Type                      UM
+   Uncoded or unknown         0
+   Not applicable             3
+
+ Character                   85
+   Type                      IN
+   Uncoded or unknown         0
+   Not applicable             0
+   Mean                    24.7
+   Std deviation           26.3
+   Minimum                    9 (Item 8)
+   Maximum                   55 (Item 4)
+   Items coded                3
+   
+ Character                   86
+   Type                      UM
+   Uncoded or unknown         0
+   Not applicable             0
+   Number of states           6
+   Distribution of states     3    3    3    2    2    2
+   Items coded                3
+   Items variable             3
+
+ Character                   87
+   Type                      TE
+   Uncoded or unknown         0
+
+ Character                   88
+   Type                      TE
+   Uncoded or unknown         3
+
+ Character                   89
+   Type                      TE
+   Uncoded or unknown         0
