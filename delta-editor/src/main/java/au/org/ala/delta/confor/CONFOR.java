@@ -95,15 +95,6 @@ public class CONFOR {
 	public CONFOR(File input) throws Exception {
 		this(new DeltaContext(), input);
 	}
-	
-	public File getPrintFile() {
-		return _context.getOutputFileSelector().getPrintFileAsFile();
-	}
-	
-	public File getIndexFile() {
-		return _context.getOutputFileSelector().getIndexFileAsFile();
-	}
-	
 
 	public List<File> getOutputFiles() {
 		return _context.getOutputFileSelector().getOutputFiles();

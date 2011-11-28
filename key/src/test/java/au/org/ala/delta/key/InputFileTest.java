@@ -14,7 +14,7 @@ public class InputFileTest extends TestCase {
         URL directivesFileURL = getClass().getResource("/sample/scriptToCallInputFile");
         File directivesFile = new File(directivesFileURL.toURI());
 
-        Key key = new Key();
+        Key key = new Key(directivesFile);
         key.calculateKey(directivesFile);
         
         assertEquals(3d, key.getContext().getABase());

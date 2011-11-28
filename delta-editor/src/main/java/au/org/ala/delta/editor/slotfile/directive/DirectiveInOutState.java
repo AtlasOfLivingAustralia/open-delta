@@ -16,6 +16,7 @@ package au.org.ala.delta.editor.slotfile.directive;
 
 import java.io.PrintStream;
 
+import au.org.ala.delta.directives.validation.DirectiveException;
 import au.org.ala.delta.editor.slotfile.DirectiveInstance;
 import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.translation.PrintFile;
@@ -77,6 +78,10 @@ public class DirectiveInOutState {
 	
 	public boolean getNewLineAfterAttributes() {
 		return _newLineAfterAttributes;
+	}
+	
+	public void error(DirectiveException e) {
+		
 	}
 	
 	public void error(String messageKey) {

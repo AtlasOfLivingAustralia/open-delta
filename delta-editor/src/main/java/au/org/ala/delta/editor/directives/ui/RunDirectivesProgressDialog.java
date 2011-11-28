@@ -125,6 +125,7 @@ public class RunDirectivesProgressDialog extends JDialog {
 		);
 		
 		textArea = new JTextArea();
+		textArea.setRows(8);
 		scrollPane_1.setViewportView(textArea);
 		
 		btnOk = new JButton("Close");
@@ -166,6 +167,7 @@ public class RunDirectivesProgressDialog extends JDialog {
 		else {
 			progressBar.setIndeterminate(true);
 			textArea.setText("");
+			table.getColumnModel().getColumn(1).getCellEditor().stopCellEditing();
 			_model.setRowCount(0);
 		}
 	}
@@ -221,15 +223,16 @@ public class RunDirectivesProgressDialog extends JDialog {
 				
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					int selected = table.getSelectedRow();
-					if (selected >= 0) {
-						displayResults(_results.get(selected));
+					Integer row = (Integer)_viewButton.getClientProperty("row");
+					if (row != null && row >= 0) {
+						displayResults(_results.get(row));
 					}
 				}
 			});
 		}
 		@Override
 		public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+			_viewButton.putClientProperty("row", row);
 			return _viewButton;
 		}
 

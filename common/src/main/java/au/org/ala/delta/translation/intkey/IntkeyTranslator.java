@@ -2,6 +2,7 @@ package au.org.ala.delta.translation.intkey;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.OutputParameters.OutputParameter;
+import au.org.ala.delta.directives.validation.DirectiveException;
 import au.org.ala.delta.intkey.WriteOnceIntkeyCharsFile;
 import au.org.ala.delta.intkey.WriteOnceIntkeyItemsFile;
 import au.org.ala.delta.io.BinFileMode;
@@ -33,7 +34,7 @@ public class IntkeyTranslator implements DataSetTranslator {
 	}
 
 	@Override
-	public void translateCharacters() {
+	public void translateCharacters() throws DirectiveException {
 		
 		String fileName = _context.getOutputFileSelector().getIntkeyOutputFilePath();
 		FileUtils.backupAndDelete(fileName);
@@ -46,7 +47,7 @@ public class IntkeyTranslator implements DataSetTranslator {
 	}
 	
 	@Override
-	public void translateItems() {
+	public void translateItems() throws DirectiveException {
 		String fileName = _context.getOutputFileSelector().getIntkeyOutputFilePath();
 		FileUtils.backupAndDelete(fileName);
 		

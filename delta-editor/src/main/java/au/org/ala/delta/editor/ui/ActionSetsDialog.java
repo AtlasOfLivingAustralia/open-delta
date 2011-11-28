@@ -9,6 +9,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -44,6 +47,7 @@ import org.jdesktop.application.Task.BlockingScope;
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.confor.CONFOR;
 import au.org.ala.delta.dist.DIST;
+import au.org.ala.delta.dist.DistContext;
 import au.org.ala.delta.editor.DeltaEditor;
 import au.org.ala.delta.editor.directives.ExportController;
 import au.org.ala.delta.editor.directives.ui.RunDirectivesProgressDialog;
@@ -51,8 +55,8 @@ import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile.DirectiveType;
 import au.org.ala.delta.editor.ui.util.MessageDialogHelper;
-import au.org.ala.delta.intkey.Intkey;
 import au.org.ala.delta.key.Key;
+import au.org.ala.delta.key.KeyContext;
 
 /**
  * Allows the user to see and execute CONFOR / DIST / KEY directives files.
@@ -195,7 +199,7 @@ public class ActionSetsDialog extends AbstractDeltaView {
 	}
 
 
-	@Action(block = BlockingScope.APPLICATION)
+	@Action(block = BlockingScope.ACTION)
 	public Task<List<File>, Void> runDirectiveFileAsTask() {
 		Task<List<File>, Void> task = null;
 		DirectiveFile file = getSelectedFile();	
@@ -549,6 +553,9 @@ public class ActionSetsDialog extends AbstractDeltaView {
 		
 		@Override
 		protected void succeeded(List<File> result) {
+			if (_dialog == null) {
+				return;
+			}
 			try {
 				_dialog.setOutputFiles(result);
 			}
@@ -561,6 +568,9 @@ public class ActionSetsDialog extends AbstractDeltaView {
 		@Override
 		protected void failed(Throwable t) {
 			_messageHelper.errorRunningDirectiveFile(getInputFile());
+			if (_dialog != null) {
+				_dialog.updateProgress(100);
+			}
 		}
 			
 		protected String getInputFile() {
@@ -607,10 +617,11 @@ public class ActionSetsDialog extends AbstractDeltaView {
 		@Override
 		public List<File> doInBackground() throws Exception {
 			File fileOnFileSystem = new File(getInputFile());
-			DIST dist = new DIST(fileOnFileSystem);
+			PrintStream out = new PrintStream(new OutputStreamAdapter(_dialog));
+			DistContext context = new DistContext(out, out);
+			DIST dist = new DIST(context, fileOnFileSystem);
 			
-		    List<File> results = new ArrayList<File>();
-		    results.add(dist.getOutputFile());
+		    List<File> results = dist.getOutputFiles();
 		    return results;
 		}
 	}
@@ -624,9 +635,13 @@ public class ActionSetsDialog extends AbstractDeltaView {
 		
 		@Override
 		public List<File> doInBackground() throws Exception {
+			File fileOnFileSystem = new File(getInputFile());
+			PrintStream out = new PrintStream(new OutputStreamAdapter(_dialog));
+			KeyContext context = new KeyContext(fileOnFileSystem.getParentFile(), out, out);
+			Key key = new Key(context);
+			key.calculateKey(fileOnFileSystem);
 			
-			Key.main(new String[]{getInputFile()});
-			List<File> results = new ArrayList<File>();
+			List<File> results = key.getOutputFiles();
 		    return results;
 		}
 	}
@@ -639,14 +654,31 @@ public class ActionSetsDialog extends AbstractDeltaView {
 		
 		@Override
 		public List<File> doInBackground() throws Exception {
+			
+			// Gah.... this is a horrible work around for the fact that 
+			// the swing application framework relies on a static 
+			// Application instance so we can't have the Editor and 
+			// Intkey playing together nicely in the same JVM.
+			// It doesn't really work properly anyway, the swing application
+			// framework generates exceptions during loading and saving
+			// state due to failing instanceof checks.
+			String classPath = System.getProperty("java.class.path");
+			String[] path = classPath.split(File.pathSeparator);
+			List<URL> urls = new ArrayList<URL>();
+			for (String pathEntry : path) {
+				urls.add(new File(pathEntry).toURI().toURL());
+			}
+			ClassLoader intkeyLoader = new URLClassLoader(urls.toArray(new URL[0]), ClassLoader.getSystemClassLoader().getParent());
+			Class<?> intkey = intkeyLoader.loadClass("au.org.ala.delta.intkey.Intkey");
+			Method main = intkey.getMethod("main", String[].class);
+			main.invoke(null, (Object)new String[]{getInputFile()});
+			
 			List<File> results = new ArrayList<File>();
 		    return results;
 		}
 		
 		@Override
-		protected void succeeded(List<File> result) {
-			Intkey.main(new String[]{getInputFile()});
-		}
+		protected void succeeded(List<File> result) {}
 	}
 
 }

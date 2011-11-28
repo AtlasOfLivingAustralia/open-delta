@@ -15,6 +15,7 @@
 package au.org.ala.delta.dist;
 
 import java.io.File;
+import java.util.List;
 
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.directives.AbstractDeltaContext;
@@ -29,8 +30,8 @@ import au.org.ala.delta.dist.directives.DistDirectiveFileParser;
 import au.org.ala.delta.dist.io.DistItemsFile;
 import au.org.ala.delta.dist.io.DistOutputWriter;
 import au.org.ala.delta.dist.io.PhylipFormatOutputWriter;
-import au.org.ala.delta.translation.IncludeExcludeDataSetFilter;
 import au.org.ala.delta.translation.FilteredDataSet;
+import au.org.ala.delta.translation.IncludeExcludeDataSetFilter;
 
 public class DIST implements DirectiveParserObserver {
 
@@ -73,6 +74,10 @@ public class DIST implements DirectiveParserObserver {
 	}
 	
 	public DIST(File input) throws Exception {
+		this(new DistContext(), input);
+	}
+	
+	public DIST(DistContext context, File input) throws Exception {
 		_context = new DistContext();
 		_itemsFileRead = false;
 		DistDirectiveFileParser parser = DistDirectiveFileParser.createInstance();
@@ -166,4 +171,8 @@ public class DIST implements DirectiveParserObserver {
 	public void postProcess(AbstractDirective<? extends AbstractDeltaContext> directive) {}
 
 	public void finishedProcessing() {}
+	
+	public List<File> getOutputFiles() {
+		return _context.getOutputFileSelector().getOutputFiles();
+	}
 }

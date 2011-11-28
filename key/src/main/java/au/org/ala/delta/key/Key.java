@@ -81,7 +81,7 @@ public class Key implements DirectiveParserObserver {
             return;
         }
 
-        new Key().calculateKey(f);
+        new Key(f).calculateKey(f);
     }
 
     private static File handleArgs(String[] args) throws Exception {
@@ -103,9 +103,21 @@ public class Key implements DirectiveParserObserver {
 
         return fileName;
     }
+    
+    public Key(File directivesFile) {
+    	_context = new KeyContext(directivesFile.getParentFile());
+    }
+    
+    public Key(KeyContext context) {
+    	_context = context;
+    }
+    
+    public List<File> getOutputFiles() {
+		return _context.getOutputFileSelector().getOutputFiles();
+	}
 
     public void calculateKey(File directivesFile) {
-        _context = new KeyContext(directivesFile.getParentFile());
+        
         _nestedObserver = new ConforDirectiveParserObserver(_context);
 
         boolean parseSuccessful = true;

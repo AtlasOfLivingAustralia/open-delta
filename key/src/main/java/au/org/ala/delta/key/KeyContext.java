@@ -1,6 +1,7 @@
 package au.org.ala.delta.key;
 
 import java.io.File;
+import java.io.PrintStream;
 
 import au.org.ala.delta.DeltaContext;
 
@@ -21,22 +22,25 @@ public class KeyContext extends DeltaContext {
     private boolean _displayTabularKey;
     
 
+    public KeyContext(File dataDirectory, PrintStream out, PrintStream err) {
+    	super(out, err);
+    	 this._dataDirectory = dataDirectory;
+
+         _aBase = 2;
+         _rBase = 1.4;
+         _reuse = 1.01;
+         _varyWt = 0.8;
+
+         _charactersFile = new File(_dataDirectory, "kchars");
+         _itemsFile = new File(_dataDirectory, "kitems");
+         
+         _addCharacterNumbers = false;
+         _displayBracketedKey = true;
+         _displayTabularKey = true;
+    }
+    
     public KeyContext(File dataDirectory) {
-        // Set default values for settings
-        
-        this._dataDirectory = dataDirectory;
-
-        _aBase = 2;
-        _rBase = 1.4;
-        _reuse = 1.01;
-        _varyWt = 0.8;
-
-        _charactersFile = new File(_dataDirectory, "kchars");
-        _itemsFile = new File(_dataDirectory, "kitems");
-        
-        _addCharacterNumbers = false;
-        _displayBracketedKey = true;
-        _displayTabularKey = true;
+    	this(dataDirectory, System.out, System.err);
     }
 
     public File getDataDirectory() {

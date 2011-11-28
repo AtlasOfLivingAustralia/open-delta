@@ -2,9 +2,11 @@ package au.org.ala.delta.io;
 
 import java.io.File;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -13,6 +15,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.DeltaContext.OutputFormat;
+import au.org.ala.delta.directives.validation.DirectiveError;
+import au.org.ala.delta.directives.validation.DirectiveException;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MutableDeltaDataSet;
@@ -27,6 +31,23 @@ import au.org.ala.delta.translation.PrintFile;
  */
 public class OutputFileSelector extends OutputFileManager {
 	
+	enum ConforOutputFileType {
+		PRINT_FILE("PRINT"), 
+		INDEX_FILE("INDEX"), 
+		KEY_OUTPUT_FILE("KEY"), 
+		INTKEY_OUTPUT_FILE("INTKEY"), 
+		DIST_OUTPUT_FILE("DIST");
+		
+		String _name;
+		
+		private ConforOutputFileType(String name) {
+			_name = name;
+		}
+		
+		public String getName() {
+			return _name;
+		}
+	}
 	
 	public static final int DEFAULT_PRINT_WIDTH = 80;
 	
@@ -35,16 +56,12 @@ public class OutputFileSelector extends OutputFileManager {
 	private Set<Integer> _newFileItems = new HashSet<Integer>();
 	private MutableDeltaDataSet _dataSet;
 	private String _subjectForOutputFiles;
-	private String _intkeyOutputFile;
-	private String _keyOutputFile;
-	private String _distOutputFile;
 	private String _imageDirectory;
-	private String _printFileName;
 	private PrintStream _printStream;
 	private PrintFile _printFile;
+	private String _printFileName;
 	private int _outputFileIndex;
 	private PrintFile _indexFile;
-	private String _indexFileName;
 	/** output when a new print file is created */
 	private String _printFileHeaderText;
 	/** Output at the end of the print file */
@@ -52,6 +69,9 @@ public class OutputFileSelector extends OutputFileManager {
 	
 	/** Number of characters on a line of text written to the print file */
 	private int _printWidth;
+	
+	private List<OutputFile> _archivedFiles;
+	private Map<ConforOutputFileType, OutputFile> _currentFiles;
 	
 	public OutputFileSelector(MutableDeltaDataSet dataSet) {
 		init(dataSet);
@@ -67,6 +87,9 @@ public class OutputFileSelector extends OutputFileManager {
 		_printWidth = DEFAULT_PRINT_WIDTH;
 		_outputWidth = DEFAULT_PRINT_WIDTH;
 		_outputFileIndex = 1;
+		_archivedFiles = new ArrayList<OutputFileManager.OutputFile>();
+		_currentFiles = new HashMap<OutputFileSelector.ConforOutputFileType, OutputFileManager.OutputFile>();
+		
 	}
 
 	/**
@@ -163,20 +186,44 @@ public class OutputFileSelector extends OutputFileManager {
 		return description;
 	}
 	
-	public String getIntkeyOutputFilePath() {
-		return makeAbsolute(_intkeyOutputFile);
+	protected String getFilePath(ConforOutputFileType fileType) throws DirectiveException {
+		OutputFile file = _currentFiles.get(fileType);
+		if (file == null) {
+			throw DirectiveError.asException(DirectiveError.Error.MISSING_OUTPUT_FILE, 0, fileType.getName());
+		}
+		return makeAbsolute(file.getFileName());
+	}
+	
+	protected void addAndArchive(ConforOutputFileType fileType, String fileName) {
+		BinaryOutputFile file = new BinaryOutputFile(fileName);
+		if (_currentFiles.containsKey(fileType)) {
+			_archivedFiles.add(_currentFiles.get(fileType));
+		}
+		_currentFiles.put(fileType, file);
+	}
+	
+	public String getIntkeyOutputFilePath() throws DirectiveException {
+		return getFilePath(ConforOutputFileType.INTKEY_OUTPUT_FILE);
 	}
 	
 	public void setIntkeyOutputFile(String intkeyOut) {
-		_intkeyOutputFile = intkeyOut;
+		addAndArchive(ConforOutputFileType.INTKEY_OUTPUT_FILE, intkeyOut);
 	}
-
-	public String getKeyOutputFile() {
-		return makeAbsolute(_keyOutputFile);
+	
+	public String getKeyOutputFilePath() throws DirectiveException {
+		return getFilePath(ConforOutputFileType.KEY_OUTPUT_FILE);
 	}
 	
 	public void setKeyOutputFile(String keyOut) {
-		_keyOutputFile = keyOut;
+		addAndArchive(ConforOutputFileType.KEY_OUTPUT_FILE, keyOut);
+	}
+	
+	public void setDistOutputFile(String outputFile) {
+		addAndArchive(ConforOutputFileType.DIST_OUTPUT_FILE, outputFile);
+	}
+	
+	public String getDistOutputFilePath() throws DirectiveException {
+		return getFilePath(ConforOutputFileType.DIST_OUTPUT_FILE);
 	}
 	
 	public void setCharacterForOutputFiles(int character) {
@@ -186,19 +233,7 @@ public class OutputFileSelector extends OutputFileManager {
 	public void setOutputFormat(OutputFormat outputFormat) {
 		_outputFormat = outputFormat;
 	}
-
-	public String getKeyOutputFilePath() {
-		return makeAbsolute(_keyOutputFile);
-	}
-
-	public void setDistOutputFile(String outputFile) {
-		_distOutputFile = outputFile;
-	}
 	
-	public String getDistOutputFilePath() {
-		return makeAbsolute(_distOutputFile);
-	}
-
 	public void addNewFileAtItem(int itemNumber) {
 		_newFileItems.add(itemNumber);
 	}
@@ -241,8 +276,7 @@ public class OutputFileSelector extends OutputFileManager {
 	}
 	
 	public void setPrintFileName(String filename) throws Exception {
-		_printFileName = FilenameUtils.separatorsToSystem(filename);
-		
+		_printFileName = filename;
 		recreatePrintFile();
 	}
 	
@@ -250,7 +284,15 @@ public class OutputFileSelector extends OutputFileManager {
 		
 		closeExistingPrintStream();
 		
-		_printStream = createPrintStream(_printFileName);
+		TextOutputFile printFile = (TextOutputFile)_currentFiles.get(ConforOutputFileType.PRINT_FILE);
+		if (printFile != null) {
+			_archivedFiles.add(printFile);
+		}
+		
+		printFile = new TextOutputFile(_printFileName);
+		_currentFiles.put(ConforOutputFileType.PRINT_FILE, printFile);
+		
+		_printStream = printFile.getPrintStream();
 		
 		if (StringUtils.isNotBlank(_printFileHeaderText)) {
 			_printStream.println(_printFileHeaderText);
@@ -280,6 +322,7 @@ public class OutputFileSelector extends OutputFileManager {
 		return _printFile;
 	}
 	
+	
 	public boolean createNewFileIfRequired(Item item) {
 		
 		boolean newFile = false;
@@ -305,9 +348,9 @@ public class OutputFileSelector extends OutputFileManager {
 	}
 
 	public void setIndexOutputFile(String fileName) throws Exception {
-		_indexFileName = FilenameUtils.separatorsToSystem(fileName);
-		PrintStream indexStream = createPrintStream(_indexFileName);
-		_indexFile = new PrintFile(indexStream, _printWidth);
+		TextOutputFile indexFile = new TextOutputFile(fileName);
+		_indexFile = new PrintFile(indexFile.getPrintStream(), _printWidth);
+		_currentFiles.put(ConforOutputFileType.INDEX_FILE, indexFile);
 	}
 	
 	public PrintFile getIndexFile() {
@@ -323,14 +366,6 @@ public class OutputFileSelector extends OutputFileManager {
 			_imageDirectory = "";
 		}
 		return _imageDirectory;
-	}
-	
-	public File getPrintFileAsFile() {
-		return fullPathOf(_printFileName);
-	}
-
-	public File getIndexFileAsFile() {
-		return fullPathOf(_indexFileName);
 	}
 	
 	protected void closeExistingPrintStream() {
@@ -352,5 +387,21 @@ public class OutputFileSelector extends OutputFileManager {
 		}
 	}
 
+	@Override
+	public List<File> getOutputFiles() {
+		List<File> files = new ArrayList<File>(super.getOutputFiles());
+		
+		for (OutputFile file : _archivedFiles) {
+			files.add(file.toFile());
+		}
+		
+		for (OutputFile file : _currentFiles.values()) {
+			files.add(file.toFile());
+		}
+		
+		return files;
+	}
+
+	
 	
 }

@@ -15,9 +15,11 @@
 package au.org.ala.delta.directives;
 
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.text.ParseException;
 
 import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.directives.validation.DirectiveError;
 
 public abstract class InputFileDirective extends AbstractTextDirective {
 
@@ -25,7 +27,7 @@ public abstract class InputFileDirective extends AbstractTextDirective {
 		super(directive);
 	}
 
-	protected void parseFile(DeltaContext context, File file) {
+	protected void parseFile(DeltaContext context, File file) throws ParseException {
 		try {
 			if (file.exists()) {
 				DirectiveParser<DeltaContext> parser = createParser();
@@ -35,10 +37,11 @@ public abstract class InputFileDirective extends AbstractTextDirective {
 				}
 				parser.parse(file, context);				
 			} else {
-				throw new FileNotFoundException(file.getName());
+				throw DirectiveError.asException(DirectiveError.Error.FILE_DOES_NOT_EXIST, 0);
 			}
-		} catch (Exception ex) {
-			throw new RuntimeException(ex);
+		}
+		catch (IOException e) {
+			throw DirectiveError.asException(DirectiveError.Error.FILE_INACCESSABLE, 0);
 		}
 	}
 

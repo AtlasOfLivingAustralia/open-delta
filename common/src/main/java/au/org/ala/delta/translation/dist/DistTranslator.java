@@ -2,6 +2,7 @@ package au.org.ala.delta.translation.dist;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.OutputParameters.OutputParameter;
+import au.org.ala.delta.directives.validation.DirectiveException;
 import au.org.ala.delta.dist.WriteOnceDistItemsFile;
 import au.org.ala.delta.io.BinFileMode;
 import au.org.ala.delta.model.format.ItemFormatter;
@@ -25,12 +26,10 @@ public class DistTranslator implements DataSetTranslator {
 	}
 
 	@Override
-	public void translateCharacters() {
-		throw new UnsupportedOperationException("Dist character translation is not supported");
-	}
+	public void translateCharacters() {}
 	
 	@Override
-	public void translateItems() {
+	public void translateItems() throws DirectiveException {
 		String fileName = _context.getOutputFileSelector().getDistOutputFilePath();
 		FileUtils.backupAndDelete(fileName);
 		

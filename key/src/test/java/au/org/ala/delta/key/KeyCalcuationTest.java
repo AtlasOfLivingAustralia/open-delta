@@ -14,7 +14,7 @@ public class KeyCalcuationTest extends TestCase {
         URL directivesFileURL = getClass().getResource("/sample/mykey");
         File directivesFile = new File(directivesFileURL.toURI());
 
-        Key key = new Key();
+        Key key = new Key(directivesFile);
         key.calculateKey(directivesFile);
     }
     
@@ -23,7 +23,7 @@ public class KeyCalcuationTest extends TestCase {
         URL directivesFileURL = getClass().getResource("/controlling_characters_simple/key");
         File directivesFile = new File(directivesFileURL.toURI());
 
-        Key key = new Key();
+        Key key = new Key(directivesFile);
         key.calculateKey(directivesFile);
     }
     

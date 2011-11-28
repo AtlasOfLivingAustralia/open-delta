@@ -1,5 +1,7 @@
 package au.org.ala.delta.dist;
 
+import java.io.PrintStream;
+
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.dist.io.DistOutputFileManager;
 
@@ -15,12 +17,16 @@ public class DistContext extends DeltaContext {
 	private int _minimumNumberOfComparisons;
 	private String _itemsFileName;
 	
-	
-	
-	public DistContext() {
-		_phylipFormat = false;
+	public DistContext(PrintStream out, PrintStream err) {
+    	super(out, err);
+    	
+    	_phylipFormat = false;
 		_matchOverlap = false;
 		_itemsFileName = DEFAULT_ITEMS_FILE_NAME;
+    }
+	
+	public DistContext() {
+		this(System.out, System.err);
 	}
 
 	public DistOutputFileManager getOutputFileManager() {

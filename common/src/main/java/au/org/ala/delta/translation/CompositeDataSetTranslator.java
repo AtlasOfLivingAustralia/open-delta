@@ -3,6 +3,7 @@ package au.org.ala.delta.translation;
 import java.util.List;
 
 import au.org.ala.delta.directives.OutputParameters.OutputParameter;
+import au.org.ala.delta.directives.validation.DirectiveException;
 
 /**
  * Allows multiple translations to occur (sequentially) on the same data
@@ -17,14 +18,14 @@ public class CompositeDataSetTranslator implements DataSetTranslator {
 	}
 	
 	@Override
-	public void translateCharacters() {
+	public void translateCharacters() throws DirectiveException {
 		for (DataSetTranslator translator : _translators) {
 			translator.translateCharacters();
 		}
 	}
 
 	@Override
-	public void translateItems() {
+	public void translateItems() throws DirectiveException {
 		for (DataSetTranslator translator : _translators) {
 			translator.translateItems();
 		}

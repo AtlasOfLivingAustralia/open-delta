@@ -17,6 +17,7 @@ package au.org.ala.delta.editor.slotfile.directive;
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.TranslateType;
 import au.org.ala.delta.translation.PrintFile;
+import au.org.ala.delta.directives.validation.DirectiveException;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.translation.DataSetTranslator;
 import au.org.ala.delta.translation.DataSetTranslatorFactory;
@@ -53,7 +54,12 @@ public class DirOutItemDescriptions extends AbstractDirOutFunctor {
 		}
 		DataSetTranslator translator = factory.createDeltaFormatTranslator(context, printFile, typeSetter);
 		
-		translator.translateItems();
+		try {
+			translator.translateItems();
+		}
+		catch (DirectiveException e) {
+			state.error(e);
+		}
 		printFile.setUseParagraphIndentOnLineWrap(true);
 		
 	}
