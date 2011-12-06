@@ -30,6 +30,7 @@ import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.IdentificationKeyCharacter;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateAttribute;
+import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.NumericAttribute;
 import au.org.ala.delta.model.NumericRange;
 import au.org.ala.delta.model.impl.ControllingInfo;
@@ -50,7 +51,9 @@ public class SummaryPrinter extends AbstractIterativeTranslator  {
 		int notApplicable;
 		int coded;
 		int variable;
+		int keyStatesVariable;
 		int[] stateDistribution;
+		int[] keyStateDistribution;
 		double max;
 		double min;
 		int minItem;
@@ -59,10 +62,16 @@ public class SummaryPrinter extends AbstractIterativeTranslator  {
 		
 		public CharacterStats(IdentificationKeyCharacter character) {
 			_character = character;
-			stateDistribution = new int[character.getNumberOfStates()];
-			Arrays.fill(stateDistribution, 0);
+			keyStateDistribution = new int[character.getNumberOfKeyStates()];
+			Arrays.fill(keyStateDistribution, 0);
 			min = Double.MAX_VALUE;
 			max = -Double.MAX_VALUE;
+			if (_character.getCharacterType().isMultistate()) {
+				MultiStateCharacter multiStateChar = (MultiStateCharacter)getCharacter();
+				stateDistribution = new int[multiStateChar.getNumberOfStates()];
+				Arrays.fill(stateDistribution, 0);
+				
+			}
 		}
 		
 		public au.org.ala.delta.model.Character getCharacter() {
@@ -152,9 +161,12 @@ public class SummaryPrinter extends AbstractIterativeTranslator  {
 				
 				NumericAttribute numericAttribute = (NumericAttribute)attribute;
 				states = keyChar.getPresentStates(numericAttribute);
-				System.out.println("Char: "+keyChar.getCharacterNumber());
+				if (states.size() > 1) {
+					stats.keyStatesVariable++;
+				}
+				List<NumericRange> values = numericAttribute.getNumericValue();
 				
-				for (NumericRange value : numericAttribute.getNumericValue()) {
+				for (NumericRange value : values) {
 					Range range;
 					if (_context.getUseNormalValues(keyChar.getCharacterNumber())) {
 						range = value.getNormalRange();
@@ -184,14 +196,30 @@ public class SummaryPrinter extends AbstractIterativeTranslator  {
 					System.out.println("Middle: "+middle);
 					stats.accumulate(middle);
 				}
+				for (int state : states) {
+					stats.keyStateDistribution[state-1]++;
+				}
 				
 			}
 			else if (attribute instanceof MultiStateAttribute) {
-				states = keyChar.getPresentStates((MultiStateAttribute)attribute);
+				if (keyChar.getNumberOfKeyStates() > 0) {
+					states = keyChar.getPresentStates((MultiStateAttribute)attribute);
+					if (states.size() > 1) {
+						stats.keyStatesVariable++;
+					}
+					for (int state : states) {
+						stats.keyStateDistribution[state-1]++;
+					}
+				}
+				List<Integer> originalStates = ((MultiStateAttribute) attribute).getPresentStatesAsList();
+				if (originalStates.size() > 1) {
+					stats.variable++;
+				}
+				for (int state : originalStates) {
+					stats.stateDistribution[state-1]++;
+				}
 			}
-			for (int state : states) {
-				stats.stateDistribution[state-1]++;
-			}
+			
 		}
 		
 	}
@@ -239,6 +267,8 @@ public class SummaryPrinter extends AbstractIterativeTranslator  {
 	
 	private void writeStats(CharacterStats stats) {
 		CharacterType type = stats.getCharacter().getCharacterType();
+		_printFile.setIndentOnLineWrap(true);
+		_printFile.setLineWrapIndent(29);
 		_printFile.outputLine(String.format("Character %20d", stats.getCharacter().getCharacterId()));
 		_printFile.outputLine(String.format("  Type %23s", type.toTypeCode()));
 		_printFile.outputLine(String.format("  Uncoded or unknown %9d", stats.uncodedOrUnknown));
@@ -246,26 +276,47 @@ public class SummaryPrinter extends AbstractIterativeTranslator  {
 		if (!type.isText()) {
 			_printFile.outputLine(String.format("  Not applicable %13d", stats.notApplicable));
 			
-			
-			if (type.isNumeric()) {
-				if (stats.min != Double.MAX_VALUE) {
-					_printFile.outputLine(String.format("  Mean %23.2f", stats.getMean()));
-					_printFile.outputLine(String.format("  Std deviation %14.2f", stats.getStdDev()));
-					_printFile.outputLine(String.format("  Minimum %20.2f (Item %d)", stats.min, stats.minItem));
-					_printFile.outputLine(String.format("  Maximum %20.2f (Item %d)", stats.max, stats.maxItem));
+			if (stats.coded > 0) { 
+				if (type.isNumeric()) {
+					if (stats.min != Double.MAX_VALUE) {
+						_printFile.outputLine(String.format("  Mean %23.2f", stats.getMean()));
+						_printFile.outputLine(String.format("  Std deviation %14.2f", stats.getStdDev()));
+						_printFile.outputLine(String.format("  Minimum %20.2f (Item %d)", stats.min, stats.minItem));
+						_printFile.outputLine(String.format("  Maximum %20.2f (Item %d)", stats.max, stats.maxItem));
+					}
+					
+				}
+				if (type.isMultistate()) {
+					MultiStateCharacter multiStateChar = (MultiStateCharacter)stats.getCharacter();
+					_printFile.outputLine(String.format("  Number of states %11d", multiStateChar.getNumberOfStates()));
+				    StringBuilder states = new StringBuilder();
+				    for (int count : stats.stateDistribution) {
+					    states.append(String.format("%5d", count));
+				    }
+				    _printFile.outputLine("  Distribution of states "+states.toString());
+				    if (stats._character.getNumberOfKeyStates() > 0) { 
+				    	_printFile.outputLine(String.format("  Items variable %13d",stats.variable));
+				    }
+				}
+				if (stats._character.getNumberOfKeyStates() > 0) {
+				    _printFile.outputLine(String.format("  Key states %17d", stats.getKeyChar().getNumberOfKeyStates()));
+				    StringBuilder states = new StringBuilder();
+				    for (int count : stats.keyStateDistribution) {
+					    states.append(String.format("%5d", count));
+				    }
+				    _printFile.outputLine("  Distribution of states "+states.toString());
+					
+				}
+				
+				_printFile.outputLine(String.format("  Items coded %16d",stats.coded));
+				if (stats._character.getNumberOfKeyStates() > 0) { 
+					_printFile.outputLine(String.format("  Items variable %13d",stats.keyStatesVariable));
+				}
+				else if (type.isMultistate()) {
+					_printFile.outputLine(String.format("  Items variable %13d",stats.variable));
 				}
 				
 			}
-			
-			_printFile.outputLine(String.format("  Number of states %11d", stats.getKeyChar().getNumberOfStates()));
-			StringBuilder states = new StringBuilder();
-			for (int count : stats.stateDistribution) {
-				states.append(String.format("%5d", count));
-			}
-			_printFile.outputLine("  Distribution of states "+states.toString());
-			_printFile.outputLine(String.format("  Items coded %16d",stats.coded));
-			_printFile.outputLine(String.format("  Items variable %13d",stats.variable));
-			
 		}
 		_printFile.writeBlankLines(1,0);
 	}

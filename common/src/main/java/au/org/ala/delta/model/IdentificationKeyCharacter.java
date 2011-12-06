@@ -165,6 +165,12 @@ public class IdentificationKeyCharacter {
 		Collections.sort(_states);
 	}
 	
+	/**
+	 * If the character has key states defined, the number of key states will
+	 * be returned.  Otherwise, if the character is a multistate character
+	 * the number of character states will be returned.  If the character is
+	 * not multistate this method returns zero.
+	 */
 	public int getNumberOfStates() {
 		if (_states.size() > 0) {
 			return _states.size();
@@ -177,6 +183,10 @@ public class IdentificationKeyCharacter {
 				return 0;
 			}
 		}
+	}
+	
+	public int getNumberOfKeyStates() {
+		return _states.size();
 	}
 	
 	public KeyState getKeyState(int stateNum) {
