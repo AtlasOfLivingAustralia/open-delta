@@ -95,12 +95,23 @@ public class SummaryPrinter extends AbstractIterativeTranslator  {
 		}
 		
 		public double getStdDev() {
+			if (values.size() < 2) {
+				return 0;
+			}
 			double mean = getMean();
 			double sum =0;
 			for (double value : values) {
 				sum += Math.pow(value-mean, 2);
 			}
 			return Math.sqrt(sum/(values.size()-1));
+		}
+		
+		public int minInt() {
+			return (int)min;
+		}
+		
+		public int maxInt() {
+			return (int)max;
 		}
 	}
 	
@@ -165,9 +176,11 @@ public class SummaryPrinter extends AbstractIterativeTranslator  {
 					stats.keyStatesVariable++;
 				}
 				List<NumericRange> values = numericAttribute.getNumericValue();
-				
+				double count = 0;
+				double sum = 0;
 				for (NumericRange value : values) {
 					Range range;
+					
 					if (_context.getUseNormalValues(keyChar.getCharacterNumber())) {
 						range = value.getNormalRange();
 					}
@@ -185,17 +198,27 @@ public class SummaryPrinter extends AbstractIterativeTranslator  {
 						stats.max = max;
 						stats.maxItem = item.getItemNumber();
 					}
-					double middle;
+					range = value.getNormalRange();
+					
 					if (value.hasMiddleValue()) {
-						 middle = (Double)value.getMiddle();
+						 count++;
+						 sum += value.getMiddle().doubleValue();
+					}
+					else if (range.getMinimumDouble() == range.getMaximumDouble()) {
+						count++;
+						sum += range.getMinimumDouble();
 					}
 					else {
-						range = value.getNormalRange();
-						middle = (range.getMinimumDouble()+range.getMaximumDouble())/2;
+						count +=2;
+						sum += range.getMinimumDouble();
+						sum += range.getMaximumDouble();
 					}
-					System.out.println("Middle: "+middle);
-					stats.accumulate(middle);
+					
 				}
+				if (count > 0) {
+					stats.accumulate(sum/(double)count);
+				}
+				
 				for (int state : states) {
 					stats.keyStateDistribution[state-1]++;
 				}
@@ -281,8 +304,15 @@ public class SummaryPrinter extends AbstractIterativeTranslator  {
 					if (stats.min != Double.MAX_VALUE) {
 						_printFile.outputLine(String.format("  Mean %23.2f", stats.getMean()));
 						_printFile.outputLine(String.format("  Std deviation %14.2f", stats.getStdDev()));
-						_printFile.outputLine(String.format("  Minimum %20.2f (Item %d)", stats.min, stats.minItem));
-						_printFile.outputLine(String.format("  Maximum %20.2f (Item %d)", stats.max, stats.maxItem));
+						
+						if (type == CharacterType.IntegerNumeric) {
+						    _printFile.outputLine(String.format("  Minimum %20d (Item %d)", stats.minInt(), stats.minItem));
+						    _printFile.outputLine(String.format("  Maximum %20d (Item %d)", stats.maxInt(), stats.maxItem));
+						}
+						else {
+							_printFile.outputLine(String.format("  Minimum %20.2f (Item %d)", stats.min, stats.minItem));
+						    _printFile.outputLine(String.format("  Maximum %20.2f (Item %d)", stats.max, stats.maxItem));
+						}
 					}
 					
 				}
