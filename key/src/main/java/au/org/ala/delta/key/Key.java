@@ -16,6 +16,7 @@ package au.org.ala.delta.key;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
@@ -30,9 +31,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 
-import au.org.ala.delta.DeltaContext.HeadingType;
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.directives.AbstractDeltaContext;
 import au.org.ala.delta.directives.AbstractDirective;
@@ -48,14 +49,17 @@ import au.org.ala.delta.io.BinaryKeyFile;
 import au.org.ala.delta.key.directives.KeyDirectiveParser;
 import au.org.ala.delta.key.directives.io.KeyCharactersFileReader;
 import au.org.ala.delta.key.directives.io.KeyItemsFileReader;
+import au.org.ala.delta.key.directives.io.KeyOutputFileManager;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.AttributeFactory;
 import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MatchType;
 import au.org.ala.delta.model.MultiStateAttribute;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.Specimen;
+import au.org.ala.delta.model.TypeSettingMark;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
@@ -71,8 +75,15 @@ import au.org.ala.delta.util.Utils;
 
 public class Key implements DirectiveParserObserver {
 
+    private static final String DEFAULT_TYPESETTING_FILE_EXTENSION = ".rtf";
+    private static final String DEFAULT_OUTPUT_FILE_EXTENSION = ".prt";
+
     private KeyContext _context;
     private boolean _inputFilesRead = false;
+    private PrintFile _listingPrintFile;
+    
+    private SimpleDateFormat _timeFormat = new SimpleDateFormat("HH:mm");
+    private SimpleDateFormat _dateFormat = new SimpleDateFormat("d-MMM-yyyy");
 
     private ConforDirectiveParserObserver _nestedObserver;
 
@@ -82,12 +93,7 @@ public class Key implements DirectiveParserObserver {
      */
     public static void main(String[] args) throws Exception {
 
-        StringBuilder credits = new StringBuilder("KEY version 2.12 (Java)");
-        credits.append("\n\nM. J. Dallwitz, T.A. Paine");
-        credits.append("\n\nCSIRO Division of Entomology, GPO Box 1700, Canberra, ACT 2601, Australia\nPhone +61 2 6246 4075. Fax +61 2 6246 4000. Email delta@ento.csiro.au");
-        credits.append("\n\nJava edition ported by the Atlas of Living Australia, 2011.\n");
-
-        System.out.println(credits);
+        System.out.println(generateCreditsString());
 
         File f = handleArgs(args);
         if (!f.exists()) {
@@ -96,6 +102,27 @@ public class Key implements DirectiveParserObserver {
         }
 
         new Key(f).calculateKey(f);
+    }
+
+    // The character(s) used for newline is system-dependent, so need to get it
+    // from the
+    // system properties
+    private static String getNewLine() {
+        return System.getProperty("line.separator");
+    }
+
+    private static String generateCreditsString() {
+        StringBuilder credits = new StringBuilder("KEY version 2.12 (Java)");
+        credits.append(getNewLine());
+        credits.append("M.J. Dallwitz and T.A. Paine");
+        credits.append(getNewLine());
+        credits.append("Java edition ported by the Atlas of Living Australia, 2011.");
+        credits.append(getNewLine());
+        credits.append("CSIRO Division of Entomology, GPO Box 1700, Canberra, ACT 2601, Australia");
+        credits.append(getNewLine());
+        credits.append("Phone +61 2 6246 4075. Fax +61 2 6246 4000. Email delta@ento.csiro.au");
+        credits.append(getNewLine());
+        return credits.toString();
     }
 
     private static File handleArgs(String[] args) throws Exception {
@@ -117,34 +144,55 @@ public class Key implements DirectiveParserObserver {
 
         return fileName;
     }
-    
+
     public Key(File directivesFile) {
-    	_context = new KeyContext(directivesFile.getParentFile());
+        _context = new KeyContext(directivesFile.getParentFile());
     }
-    
+
     public Key(KeyContext context) {
-    	_context = context;
+        _context = context;
     }
-    
+
     public List<File> getOutputFiles() {
-		return _context.getOutputFileSelector().getOutputFiles();
-	}
+        return _context.getOutputFileSelector().getOutputFiles();
+    }
 
     public void calculateKey(File directivesFile) {
-        
         _nestedObserver = new ConforDirectiveParserObserver(_context);
 
         boolean parseSuccessful = true;
         try {
             processDirectivesFile(directivesFile, _context);
-        } catch (Exception ex) {
-            // Error message will be output by the _nestedObserver. Simply stop termination here.
+        } catch (DirectiveException ex) {
+            // Error message will be output by the _nestedObserver. Simply stop
+            // termination here.
             parseSuccessful = false;
+        } catch (Exception ex) {
+            throw new RuntimeException("Fatal error occurred while processing directives file", ex);
         }
 
-        if (parseSuccessful) {
-            _nestedObserver.finishedProcessing();
+        // Set default names for output files if their names were not set in the
+        // directives file
+        KeyOutputFileManager outputFileManager = _context.getOutputFileManager();
+        if (outputFileManager.getOutputFile() == null) {
+            try {
+                outputFileManager.setOutputFileName(FilenameUtils.getBaseName(directivesFile.getName()) + DEFAULT_OUTPUT_FILE_EXTENSION);
+            } catch (Exception ex) {
+                throw new RuntimeException("Error creating output file", ex);
+            }
+        }
 
+        if (outputFileManager.getTypesettingFile() == null) {
+            try {
+                outputFileManager.setTypesettingFileName(FilenameUtils.getBaseName(directivesFile.getName()) + DEFAULT_TYPESETTING_FILE_EXTENSION);
+            } catch (Exception ex) {
+                throw new RuntimeException("Error creating typesetting file", ex);
+            }
+        }
+
+        initializeListingPrintFile();
+
+        if (parseSuccessful) {
             readInputFiles();
 
             Specimen specimen = new Specimen(_context.getDataSet(), true, true, MatchType.OVERLAP);
@@ -165,20 +213,15 @@ public class Key implements DirectiveParserObserver {
             }
 
             doCalculateKey(dataset, includedCharacters, includedItems, specimen, keyList);
-
-            if (_context.getDisplayTabularKey()) {
-                printHeader(includedCharacters, includedItems, keyList);
-                printTabularKey(keyList);
-            }
-
-            if (_context.getDisplayBracketedKey()) {
-                if (_context.getDisplayTabularKey()) {
-                    System.out.println("\n\n");
-                }
-                printHeader(includedCharacters, includedItems, keyList);
-                printBracketedKey(keyList, _context.getAddCharacterNumbers());
-            }
+            System.out.println("Key generation completed");
+            printKey(includedCharacters, includedItems, keyList);
         }
+        
+        _nestedObserver.finishedProcessing();
+    }
+
+    private void printKeyDataAndKeyDetails(List<Character> includedCharacters, List<Item> includedItems, List<Pair<Item, List<Attribute>>> keyList) {
+
     }
 
     private void readInputFiles() {
@@ -195,6 +238,8 @@ public class Key implements DirectiveParserObserver {
             KeyItemsFileReader keyItemsFileReader = new KeyItemsFileReader(_context, _context.getDataSet(), keyItemsFile);
             keyItemsFileReader.readAll();
             _inputFilesRead = true;
+
+            System.out.println("Data input completed.");
         }
     }
 
@@ -235,15 +280,20 @@ public class Key implements DirectiveParserObserver {
                 // KEY only uses multi state characters
                 MultiStateCharacter bestCharacter = (MultiStateCharacter) bestOrderCharacters.get(0);
 
-                System.out.println(String.format("%s %s", bestMap.get(bestCharacter), bestCharacter.getCharacterId()));
-                System.out.println("Available characters: " + specimenAvailableCharacterNumbers.size());
-                System.out.println("Available taxa: " + specimenAvailableTaxaNumbers.size());
-                System.out.println();
-                for (au.org.ala.delta.model.Character ch : bestMap.keySet()) {
-                    double sepPower = bestMap.get(ch);
-                    System.out.println(String.format("%s %s (%s)", sepPower, ch, ch.getReliability()));
-                }
-                System.out.println();
+                // System.out.println(String.format("%s %s",
+                // bestMap.get(bestCharacter), bestCharacter.getCharacterId()));
+                // System.out.println("Available characters: " +
+                // specimenAvailableCharacterNumbers.size());
+                // System.out.println("Available taxa: " +
+                // specimenAvailableTaxaNumbers.size());
+                // System.out.println();
+                // for (au.org.ala.delta.model.Character ch : bestMap.keySet())
+                // {
+                // double sepPower = bestMap.get(ch);
+                // System.out.println(String.format("%s %s (%s)", sepPower, ch,
+                // ch.getReliability()));
+                // }
+                // System.out.println();
 
                 for (int i = 0; i < bestCharacter.getNumberOfStates(); i++) {
                     int stateNumber = i + 1;
@@ -297,7 +347,7 @@ public class Key implements DirectiveParserObserver {
         return availableChars;
     }
 
-    private void processDirectivesFile(File input, KeyContext context) throws Exception {
+    private void processDirectivesFile(File input, KeyContext context) throws IOException, DirectiveException {
         KeyDirectiveParser parser = KeyDirectiveParser.createInstance();
         parser.registerObserver(this);
         parser.parse(input, context);
@@ -307,27 +357,48 @@ public class Key implements DirectiveParserObserver {
         return _context;
     }
 
-    private void printHeader(List<Character> includedCharacters, List<Item> includedItems, List<Pair<Item, List<Attribute>>> keyList) {
-        PrintFile printFile = new PrintFile(System.out, 78);
+    private void initializeListingPrintFile() {
+        KeyOutputFileManager outputFileManager = _context.getOutputFileManager();
+        int outputWidth = outputFileManager.getOutputWidth();
 
-        printFile.outputLine(_context.getHeading(HeadingType.HEADING));
-        printFile.outputLine(StringUtils.repeat("*", 78));
-        printFile.writeBlankLines(1, 0);
-        printFile.outputLine("KEY version 2.12 Windows (Java)");
-        printFile.writeBlankLines(1, 0);
-        printFile.outputLine("M.J. Dallwitz and T.A. Paine");
-        printFile.outputLine("Java edition ported by the Atlas of Living Australia, 2011.");
-        printFile.writeBlankLines(1, 0);
-        printFile.outputLine("CSIRO Division of Entomology, GPO Box 1700, Canberra, ACT 2601, Australia");
-        printFile.outputLine("Phone +61 2 6246 4075. Fax +61 2 6246 4000. Email delta@ento.csiro.au");
+        _listingPrintFile = outputFileManager.getPrintFile();
+        if (_listingPrintFile == null) {
+            _listingPrintFile = new PrintFile(System.out, outputWidth);
+        } else {
+            // Only output the credits when writing to a listing file. They have
+            // already been written to
+            // standard out.
+            _listingPrintFile.outputLine(generateCreditsString());
+            _listingPrintFile.writeBlankLines(1, 0);
+        }
+
+    }
+    
+    private void generateKeyOutput(List<Character> includedCharacters, List<Item> includedItems, List<Pair<Item, List<Attribute>>> keyList, PrintFile printFile) {
+        DeltaDataSet dataset = _context.getDataSet();
+        long datasetGenerationDate = _context.getCharactersFile().lastModified();
+        printFile.outputLine(MessageFormat.format("{0}. Data converted {1} {2}", dataset.getName(), _timeFormat.format(datasetGenerationDate), _dateFormat.format(datasetGenerationDate)));
+        printFile.outputLine(StringUtils.repeat("*", _context.getOutputFileSelector().getOutputWidth()));
+    }
+    
+    private void generateListingOutput() {
+        
+    }
+    
+    private void generateTypesettingOutput() {
+        
+    }
+
+    private void printOutputFileHeader(List<Character> includedCharacters, List<Item> includedItems, List<Pair<Item, List<Attribute>>> keyList, PrintFile printFile) {
+
+        printFile.outputLine(generateCreditsString());
         printFile.writeBlankLines(1, 0);
 
-        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
-        SimpleDateFormat dateFormat = new SimpleDateFormat("d-MMM-yyyy");
+
 
         Date currentDate = Calendar.getInstance().getTime();
 
-        printFile.outputLine(MessageFormat.format("Run at {0} on {1}", timeFormat.format(currentDate), dateFormat.format(currentDate)));
+        printFile.outputLine(MessageFormat.format("Run at {0} on {1}", _timeFormat.format(currentDate), _dateFormat.format(currentDate)));
         printFile.writeBlankLines(1, 0);
 
         Set<Character> charactersInKey = new HashSet<Character>();
@@ -373,7 +444,7 @@ public class Key implements DirectiveParserObserver {
         printFile.writeBlankLines(1, 0);
     }
 
-    private void printTabularKey(List<Pair<Item, List<Attribute>>> keyList) {
+    private void printTabularKey(List<Pair<Item, List<Attribute>>> keyList, PrintFile printFile) {
         ItemFormatter itemFormatter = new ItemFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.REMOVE, true, false, false);
 
         // Do a first pass of the data structure to get the counts for the
@@ -497,10 +568,10 @@ public class Key implements DirectiveParserObserver {
             }
         }
 
-        System.out.println(builder.toString());
+        printFile.outputLine(builder.toString());
     }
 
-    private void printBracketedKey(List<Pair<Item, List<Attribute>>> keyList, boolean displayCharacterNumbers) {
+    private void printBracketedKey(List<Pair<Item, List<Attribute>>> keyList, boolean displayCharacterNumbers, PrintFile printFile) {
         CharacterFormatter charFormatter = new CharacterFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.REMOVE, true, false);
         ItemFormatter itemFormatter = new ItemFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.REMOVE, true, false, false);
 
@@ -588,15 +659,52 @@ public class Key implements DirectiveParserObserver {
                         sourceNodeNumbers.put(nextNodeCharacter, orderedCharacterNumber);
                     }
 
-                    System.out.println(builder.toString());
+                    printFile.outputLine(builder.toString());
                 }
             }
             orderedCharacterNumber++;
 
-            System.out.println("\n");
+            printFile.outputLine(getNewLine());
         }
     }
 
+    private void printKey(List<Character> includedCharacters, List<Item> includedItems, List<Pair<Item, List<Attribute>>> keyList) {
+        if (_context.getDisplayTabularKey()) {
+            PrintFile printFile = _context.getOutputFileSelector().getOutputFile();
+            generateKeyOutput(includedCharacters, includedItems, keyList, printFile);
+            printOutputFileHeader(includedCharacters, includedItems, keyList, printFile);
+            printTabularKey(keyList, printFile);
+            System.out.println("Tabular key completed");
+        }
+
+        if (_context.getDisplayBracketedKey()) {
+            PrintFile printFile;
+            Map<Integer, TypeSettingMark> typesettingMarksMap = _context.getTypeSettingMarks();
+            if (typesettingMarksMap == null || typesettingMarksMap.isEmpty()) {
+                // TYPESETTING MARKS directive has not been called, so bracketed
+                // key
+                // should be output to the same file as the tabular key
+                printFile = _context.getOutputFileSelector().getOutputFile();
+                if (_context.getDisplayTabularKey()) {
+                    printFile.writeBlankLines(2, 0);
+                }
+            } else {
+                // TYPESETTING MARKS directive has not been called, so bracketed
+                // key
+                // should be output to the file specified by the
+                // KEY TYPESETTING FILE directive
+                printFile = _context.getOutputFileManager().getTypesettingFile();
+
+                // should header go here???
+                // printHeader(includedCharacters, includedItems, keyList,
+                // printFile);
+            }
+
+            printBracketedKey(keyList, _context.getAddCharacterNumbers(), printFile);
+            System.out.println("Bracketed key completed");
+        }
+    }
+    
     private String formatDouble(double d) {
         return String.format("%.2f", d);
     }

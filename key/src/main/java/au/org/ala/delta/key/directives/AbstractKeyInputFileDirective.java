@@ -20,7 +20,6 @@ import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.AbstractTextDirective;
 import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.directives.validation.DirectiveError;
-import au.org.ala.delta.directives.validation.DirectiveError.Error;
 import au.org.ala.delta.key.KeyContext;
 import au.org.ala.delta.util.Utils;
 

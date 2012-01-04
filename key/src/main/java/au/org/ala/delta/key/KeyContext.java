@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.PrintStream;
 
 import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.key.directives.io.KeyOutputFileManager;
 
 public class KeyContext extends DeltaContext {
 
@@ -28,33 +29,42 @@ public class KeyContext extends DeltaContext {
 
     private File _charactersFile;
     private File _itemsFile;
-    
+
+    private File _keyOutputFile;
+    private File _keyTypesettingFile;
+    private File _listingFile;
+
     private File _dataDirectory;
-    
+
     private boolean _addCharacterNumbers;
     private boolean _displayBracketedKey;
     private boolean _displayTabularKey;
     
-
     public KeyContext(File dataDirectory, PrintStream out, PrintStream err) {
-    	super(out, err);
-    	 this._dataDirectory = dataDirectory;
+        super(out, err);
+        this._dataDirectory = dataDirectory;
 
-         _aBase = 2;
-         _rBase = 1.4;
-         _reuse = 1.01;
-         _varyWt = 0.8;
+        try {
+            _outputFileSelector.setOutputDirectory(_dataDirectory.getAbsolutePath());
+        } catch (Exception ex) {
+            throw new RuntimeException("Error setting output directory");
+        }
 
-         _charactersFile = new File(_dataDirectory, "kchars");
-         _itemsFile = new File(_dataDirectory, "kitems");
-         
-         _addCharacterNumbers = false;
-         _displayBracketedKey = true;
-         _displayTabularKey = true;
+        _aBase = 2;
+        _rBase = 1.4;
+        _reuse = 1.01;
+        _varyWt = 0.8;
+
+        _charactersFile = new File(_dataDirectory, "kchars");
+        _itemsFile = new File(_dataDirectory, "kitems");
+
+        _addCharacterNumbers = false;
+        _displayBracketedKey = true;
+        _displayTabularKey = true;
     }
-    
+
     public KeyContext(File dataDirectory) {
-    	this(dataDirectory, System.out, System.err);
+        this(dataDirectory, System.out, System.err);
     }
 
     public File getDataDirectory() {
@@ -84,7 +94,7 @@ public class KeyContext extends DeltaContext {
     public void setReuse(double reuse) {
         this._reuse = reuse;
     }
-    
+
     public double getVaryWt() {
         return _varyWt;
     }
@@ -108,7 +118,7 @@ public class KeyContext extends DeltaContext {
     public void setItemsFile(File itemsFile) {
         this._itemsFile = itemsFile;
     }
-    
+
     public boolean getAddCharacterNumbers() {
         return _addCharacterNumbers;
     }
@@ -116,7 +126,7 @@ public class KeyContext extends DeltaContext {
     public void setAddCharacterNumbers(boolean addCharacterNumbers) {
         this._addCharacterNumbers = addCharacterNumbers;
     }
-    
+
     public boolean getDisplayBracketedKey() {
         return _displayBracketedKey;
     }
@@ -133,4 +143,36 @@ public class KeyContext extends DeltaContext {
         this._displayTabularKey = displayTabularKey;
     }
 
+    public File getKeyOutputFile() {
+        return _keyOutputFile;
+    }
+
+    public void setKeyOutputFile(File keyOutputFile) {
+        this._keyOutputFile = keyOutputFile;
+    }
+
+    public File getKeyTypesettingFile() {
+        return _keyTypesettingFile;
+    }
+
+    public void setKeyTypesettingFile(File keyTypesettingFile) {
+        this._keyTypesettingFile = keyTypesettingFile;
+    }
+
+    public File getListingFile() {
+        return _listingFile;
+    }
+
+    public void setListingFile(File listingFile) {
+        this._listingFile = listingFile;
+    }
+
+    @Override
+    protected void createOutputFileManager() {
+        _outputFileSelector = new KeyOutputFileManager(getDataSet());
+    }
+
+    public KeyOutputFileManager getOutputFileManager() {
+        return (KeyOutputFileManager) _outputFileSelector;
+    }
 }

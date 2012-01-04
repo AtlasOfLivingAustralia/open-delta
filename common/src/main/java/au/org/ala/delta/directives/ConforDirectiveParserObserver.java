@@ -193,7 +193,7 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
 	@Override
 	public void handleDirectiveProcessingException(AbstractDeltaContext context,
 			AbstractDirective<? extends AbstractDeltaContext> directive, Exception ex) throws DirectiveException {
-		_totalErrors ++;
+		_totalErrors++;
 		ParsingContext pc = context.getCurrentParsingContext();
 
 		if (ex instanceof DirectiveException) {

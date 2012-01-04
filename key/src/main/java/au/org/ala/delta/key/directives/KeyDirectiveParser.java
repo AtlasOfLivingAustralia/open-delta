@@ -16,6 +16,8 @@ package au.org.ala.delta.key.directives;
 
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 import au.org.ala.delta.directives.CharacterReliabilities;
 import au.org.ala.delta.directives.Comment;
 import au.org.ala.delta.directives.DirectiveParser;
@@ -25,6 +27,7 @@ import au.org.ala.delta.directives.Heading;
 import au.org.ala.delta.directives.IncludeCharacters;
 import au.org.ala.delta.directives.IncludeItems;
 import au.org.ala.delta.directives.ItemAbundances;
+import au.org.ala.delta.directives.PrintWidth;
 import au.org.ala.delta.key.KeyContext;
 
 public class KeyDirectiveParser extends DirectiveParser<KeyContext> {
@@ -52,7 +55,10 @@ public class KeyDirectiveParser extends DirectiveParser<KeyContext> {
         instance.registerDirective(new RBaseDirective());
         instance.registerDirective(new ReuseDirective());
         instance.registerDirective(new VaryWtDirective());
-
+        instance.registerDirective(new PrintWidth());
+        instance.registerDirective(new KeyOutputFileDirective());
+        instance.registerDirective(new KeyTypesettingFileDirective());
+        instance.registerDirective(new ListingFileDirective());
         return instance;
     }
 

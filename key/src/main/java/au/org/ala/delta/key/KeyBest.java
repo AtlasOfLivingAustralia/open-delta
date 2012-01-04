@@ -1,17 +1,3 @@
-/*******************************************************************************
- * Copyright (C) 2011 Atlas of Living Australia
- * All Rights Reserved.
- *   
- * The contents of this file are subject to the Mozilla Public
- * License Version 1.1 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of
- * the License at http://www.mozilla.org/MPL/
- *   
- * Software distributed under the License is distributed on an "AS
- * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
- * implied. See the License for the specific language governing
- * rights and limitations under the License.
- ******************************************************************************/
 package au.org.ala.delta.key;
 
 import java.util.ArrayList;
@@ -153,7 +139,6 @@ public class KeyBest {
             boolean[] taxonToSeparateStatePresence = new boolean[totalNumStates];
             int ndgSum = 1;
 
-
             for (Attribute attr : charAttributes) {
                 Item taxon = attr.getItem();
 
@@ -166,6 +151,10 @@ public class KeyBest {
                 if (attr.isUnknown() || attr.isInapplicable()) {
                     unsuitableCharacters.add(ch);
                     continue charLoop;
+                }
+                
+                if (ch.getCharacterId() == 291) {
+                    System.out.println(attr);
                 }
 
                 Pair<boolean[], Integer> statePresencePair = Best.getStatePresenceForAttribute(attr, totalNumStates, OrderingType.BEST, null);
@@ -256,23 +245,23 @@ public class KeyBest {
 
             su = charCosts[ch.getCharacterId() - 1] + cmin * sup;
 
-//            if (dump) {
-//                System.out.println("Character: " + ch.getCharacterId());
-//                System.out.println("su:" + su);
-//                System.out.println("cost: " + charCosts[ch.getCharacterId() - 1]);
-//                System.out.println("cmin " + cmin);
-//                System.out.println("sup " + sup);
-//                System.out.println("sup0 " + sup0);
-//                System.out.println("dupf " + dupf);
-//                System.out.println("numsubgroupssamesizeasoriginalgroup: " + numSubgroupsSameSizeAsOriginalGroup);
-//                System.out.println("sumtaxainsubgroups: " + sumNumTaxaInSubgroups);
-//                System.out.println("numavailabletaxa: " + numAvailableTaxa);
-//                System.out.println("subgroupfrequencies " + ArrayUtils.toString(subgroupFrequencies));
-//                System.out.println("subgroupsNumTaxa " + ArrayUtils.toString(subgroupsNumTaxa));
-//                System.out.println("sumsubgroupsfrequencies " + sumSubgroupsFrequencies);
-//                System.out.println("sumnumtaxainsubgroups " + sumNumTaxaInSubgroups);
-//                System.out.println();
-//            }
+            if (ch.getCharacterId() == 17) {
+                System.out.println("Character: " + ch.getCharacterId());
+                System.out.println("su:" + su);
+                System.out.println("cost: " + charCosts[ch.getCharacterId() - 1]);
+                System.out.println("cmin " + cmin);
+                System.out.println("sup " + sup);
+                System.out.println("sup0 " + sup0);
+                System.out.println("dupf " + dupf);
+                System.out.println("numsubgroupssamesizeasoriginalgroup: " + numSubgroupsSameSizeAsOriginalGroup);
+                System.out.println("sumtaxainsubgroups: " + sumNumTaxaInSubgroups);
+                System.out.println("numavailabletaxa: " + numAvailableTaxa);
+                System.out.println("subgroupfrequencies " + ArrayUtils.toString(subgroupFrequencies));
+                System.out.println("subgroupsNumTaxa " + ArrayUtils.toString(subgroupsNumTaxa));
+                System.out.println("sumsubgroupsfrequencies " + sumSubgroupsFrequencies);
+                System.out.println("sumnumtaxainsubgroups " + sumNumTaxaInSubgroups);
+                System.out.println();
+            }
 
             sepVals[ch.getCharacterId() - 1] = sep;
             suVals[ch.getCharacterId() - 1] = su;
