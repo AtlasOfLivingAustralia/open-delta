@@ -55,13 +55,13 @@ public class BestCalculationTest extends TestCase {
     }
 
     public void testBestCalculationCyperaceae() throws Exception {
-         File directivesFile = new
-         File("C:\\Users\\ChrisF\\Virtualbox Shared Folder\\Cyperaceae_test\\key");
-        
-         Key key = new Key(directivesFile);
-         key.calculateKey(directivesFile);
-        
-         KeyContext context = key.getContext();
+//         File directivesFile = new
+//         File("C:\\Users\\ChrisF\\Virtualbox Shared Folder\\Cyperaceae_test\\key");
+//        
+//         Key key = new Key(directivesFile);
+//         key.calculateKey(directivesFile);
+//        
+//         KeyContext context = key.getContext();
 //
 //        // List<Integer> availableTaxa = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8,
 //        // 9, 10);
