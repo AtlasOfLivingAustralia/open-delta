@@ -1,0 +1,148 @@
+*COMMENT ~ Markup for RTF output.
+
+*PRINT WIDTH 0
+
+*TYPESETTING MARKS !
+#1. <range symbol>
+ !\endash{}!
+#2. <PRINT CHARACTER LIST: before each character (or character heading if
+present)>
+
+#3. <PRINT CHARACTER LIST: before the first character (or character heading if
+present) (and before 2) (it was used for TYPSET tabs and indentations)>
+
+#4. <PRINT CHARACTER LIST: before a character heading>
+ !\par\pard\plain\s10\ql\sb300\sa100\li0\fi0\keep\keepn\fs24{}!
+#5. <PRINT CHARACTER LIST: after a character heading>
+
+#6. <PRINT CHARACTER LIST: before each character>
+ !\par\pard\plain\s11\ql\sb0\sa0\li705\fi-705\fs22{}!
+#7. <PRINT CHARACTER LIST: before a state description>
+ !\par\pard\plain\s12\ql\sb0\sa0\li705\fi-200\fs22{}!
+#8. <PRINT CHARACTER LIST: before character notes>
+ !\par\pard\plain\s13\ql\sb0\sa0\li505\fi400\fs22{}!
+#9. <PRINT ITEM DESCRIPTIONS: before item, with natural language>
+ !\par\pard\plain\ql\sb300\sa0\keepn\fs22{}!
+#10. <PRINT ITEM DESCRIPTIONS: before item, without natural language>
+ !\par\pard\plain\ql\sb300\sa0\keepn\fs22{}!
+#11. <PRINT ITEM DESCRIPTIONS: after item name>
+ !\par\pard\plain\ql\sb0\sa0\fs22{}!
+#12. <not used>
+
+#13. <NATURAL LANGUAGE: before each item (or item heading if present)>
+
+#14. <NATURAL LANGUAGE: before item name if at start of a file>
+ !\pard\plain\s21\ql\sb0\sa100\li0\fi0\keep\keepn\b\fs24{}!
+#15. <NATURAL LANGUAGE: after item name>
+ !\fs22\b0{}!
+#16. <NATURAL LANGUAGE: before a character which begins a new paragraph>
+ !\par\pard\plain\qj\s22\sb0\sa0\li0\fi340\fs22{}!
+#17. <NATURAL LANGUAGE: before an emphasized feature>
+ !\i{}!
+#18. <NATURAL LANGUAGE: after an emphasized feature>
+ !\i0{}!
+#19. <NATURAL LANGUAGE: before an emphasized character>
+ !\b\i{}!
+#20. <NATURAL LANGUAGE: after an emphasized character>
+ !\i0\b0{}!
+#21. <NATURAL LANGUAGE: before an emphasized state description>
+ !\b\i{}!
+#22. <NATURAL LANGUAGE: after an emphasized state description>
+ !\i0\b0{}!
+#23. <PRINT ITEM NAMES: before item name>
+ !\par\pard\plain\ql\sb0\sa0\fs22{}!
+#24. <PRINT UNCODED CHARACTERS: before list of uncoded characters>
+ !\par\pard\ql\sb200\sa0{}!
+#25. <NATURAL LANGUAGE: before a non-comment section of an item name>
+
+#26. <NATURAL LANGUAGE: after non-comment section of an item name>
+
+#27. <NATURAL LANGUAGE: after each item; precedes mark 29>
+
+#28. <NATURAL LANGUAGE: at the start of each file. Current settings are
+Australian English, A4 paper, margins 2.5cm. For US English, Letter paper,
+margins 1", substitute the following.
+\deflang1033\paperw12242\paperh15842\margl1440\margr1440\margt1440\margb1440{} >
+ !{\rtf1\ansi\ansicpg1252\uc1\deff0{}
+\deflang3081\paperw11906\paperh16838\margl1418\margr1418\margt1418\margb1418{}
+{\fonttbl
+{\f0\froman\fcharset0\fprq2{}Times New Roman;}
+{\f1\froman\fcharset2\fprq2{}Symbol;}
+{\f2\fswiss\fcharset0\fprq2{}Arial;}
+}
+{\stylesheet
+{\qj\fi340\fs22\snext0{}Normal;}
+{\s1\qc\sb500\sa100\keepn\b\f2\fs32\kerning28\sbasedon0\snext0{}Heading 1;}
+{\s2\qc\sb500\sa100\keepn\b\f2\fs28\kerning28\sbasedon0\snext0{}Heading 2;}
+{\s3\ql\sb500\sa100\keepn\b\f2\fs24\sbasedon0\snext0{}Heading 3;}
+{\s6\ql\sb0\sa0\li340\fi-340\fs22\sbasedon0{}References;}
+{\s10\ql\sb300\sa100\li0\fi0\keep\keepn\fs24\sbasedon0{}Character Heading;}
+{\s11\ql\sb0\sa0\li705\fi-705\fs22\sbasedon0{}Feature;}
+{\s12\ql\sb0\sa0\li705\fi-200\fs22\sbasedon0{}State;}
+{\s13\ql\sb0\sa0\li505\fi400\fs22\sbasedon0{}Character Note;}
+{\s20\qc\sb300\sa0\li0\fi0\keep\keepn\fs24\sbasedon0{}Taxon Heading;}
+{\s21\ql\sb300\sa100\li0\fi0\keep\keepn\b\fs24\sbasedon0{}Taxon Name;}
+{\s22\qj\sb0\sa0\li0\fi340\fs22\sbasedon0{}Description;}
+{\s23\fi-300\li300\keep\keepn\b\fs22\sbasedon0\snext0\sautoupd{}toc 1;}
+{\s24\fi-300\li450\keep\fs22\sbasedon0\snext0\sautoupd{}toc 2;}
+{\s30\ql\sb0\sa0\fi-907\li907\tx680\tqr\tldot\tx9072\fs22\sbasedon0{}Key;}
+{\s31\ql\sb100\sa0\fi-907\li907\tx680\tqr\tldot\tx9072\fs22\sbasedon30{}Key
+First Lead;}
+}
+\widowctrl{}!
+#29. <NATURAL LANGUAGE: after the last item in a file; follows mark 27. PRINT
+CHARACTER LIST: after the character list; follows mark 40. KEY: at the end of
+the key file; follows mark 50>
+ !}!
+#30. <NATURAL LANGUAGE: before item heading>
+ !\par\pard\plain\s20\qc\sb0\sa0\li0\fi0\keep\keepn\fs24\b{}!
+#31. <NATURAL LANGUAGE: after item heading>
+ !\b0\fs22{}!
+#32. <NATURAL LANGUAGE: before item subheading>
+
+#33. <NATURAL LANGUAGE: after item subheading>
+
+#34. <NATURAL LANGUAGE: before output file name in index file>
+
+#35. <NATURAL LANGUAGE: between output file name and taxon name in index file>
+
+#36. <NATURAL LANGUAGE: after taxon name in index file>
+
+#37. <NATURAL LANGUAGE: before image file name in 'character for taxon images';
+note that absolute path for images must be set>
+ !\par\pard\plain\s21\qc\sb300\sa0\li0\fi0\fs22\keepn{\field{\*\fldinst
+{ INCLUDEPICTURE "D:\\\\DELTA\\\\sample\\\\images\\\\!
+#38. <NATURAL LANGUAGE: between image file name and subject>
+ !" \\* MERGEFORMAT \\d }}}\par\pard\plain\s21\qj\sb200\sa0\li0\fi0\fs22\b{}!
+#39. <NATURAL LANGUAGE: after subject in 'character for taxon images'>
+ !\b0{}!
+#40. <PRINT CHARACTER LIST: after the character list; precedes mark 29>
+
+#41. <KEY: parameters>
+ !\par\pard\plain\s6\sb100\li340\fi-340\fs22{}\i{}Characters:\i0{} @nchar in
+data, @ncincl included, @ncinkey in key.
+\par\sb0{}\i{}Items:\i0{} @ntaxa in data, @ntincl included, @ntinkey in key.
+\par{}\i{}Parameters:\i0{} Rbase = @rbase Abase = @abase Reuse = @reuse Varywt =
+@varywt
+\par{}\i{}Characters included:\i0{} @cmask
+\par\sa100{}\i{}Character reliabilities:\i0{} @rel!
+#42. <KEY: first lead of first node of key>
+ !\par\pard\plain\s30\fi-907\li907\sb240\tx680\tqr\tldot\tx9070\fs22{}@node.\tab{}@state!
+#43. <KEY: first lead of any node of key except the first node>
+ !\par\pard\plain\s30\fi-907\li907\sb240\tx680\tqr\tldot\tx9070\fs22{}@node(@from).\tab{}@state!
+#44. <KEY: subsequent lead of any node>
+ !\par\pard\plain\s31\fi-907\li907\sb0\tx680\tqr\tldot\tx9070\fs22{}\tab{}@state!
+#45. <KEY: first destination of a lead which is a taxon name>
+ !\tab{} \b{}@to\b0{}!
+#46. <KEY: subsequent destination of a lead (which must be a taxon name)>
+ !\par\pard\plain\s31\tqr\tx9070\fs22{}\tab{} \b{}@to\b0{}!
+#47. <KEY: after taxon name(s)>
+
+#48. <KEY: destination of a lead which is a node of the key>
+ !\tab{} @to!
+#49. <KEY: after each node>
+
+#50. <KEY: at end of key; precedes mark 29>
+
+#51. <NATURAL LANGUAGE: before item name if not at start of a file>
+ !\par\pard\plain\s21\ql\sb300\sa100\li0\fi0\keep\keepn\b\fs24{}!

@@ -10,13 +10,15 @@ public class KeyTypesettingFileDirective extends AbstractTextDirective {
     public KeyTypesettingFileDirective() {
         super("key", "typesetting", "file");
     }
-    
+
     @Override
     public void process(DeltaContext context, DirectiveArguments directiveArguments) throws Exception {
         KeyContext keyContext = (KeyContext) context;
 
         String fileName = directiveArguments.getFirstArgumentText().trim();
-        keyContext.getOutputFileManager().setTypesettingFileName(fileName);
+        // Use the print file to output the typeset bracketed key.
+        keyContext.getOutputFileManager().setPrintFileName(fileName);
+        keyContext.setTypesettingFileSet(true);
     }
 
 }

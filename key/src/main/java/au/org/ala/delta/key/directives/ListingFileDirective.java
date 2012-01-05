@@ -16,7 +16,7 @@ public class ListingFileDirective extends AbstractTextDirective {
         KeyContext keyContext = (KeyContext) context;
 
         String fileName = directiveArguments.getFirstArgumentText().trim();
-        keyContext.getOutputFileManager().setPrintFileName(fileName);
+        keyContext.getOutputFileManager().setKeyListingFileName(fileName);
     }
 
 }

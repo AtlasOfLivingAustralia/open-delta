@@ -40,6 +40,10 @@ public class KeyContext extends DeltaContext {
     private boolean _displayBracketedKey;
     private boolean _displayTabularKey;
     
+    // Has the print file (getPrintFile) on the OutputFileManager been set to the location a typesetting file? Need to do this because the
+    // print file defaults to pointing to stdout
+    private boolean _typesettingFileSet;
+    
     public KeyContext(File dataDirectory, PrintStream out, PrintStream err) {
         super(out, err);
         this._dataDirectory = dataDirectory;
@@ -61,6 +65,7 @@ public class KeyContext extends DeltaContext {
         _addCharacterNumbers = false;
         _displayBracketedKey = true;
         _displayTabularKey = true;
+        _typesettingFileSet = false;
     }
 
     public KeyContext(File dataDirectory) {
@@ -174,5 +179,13 @@ public class KeyContext extends DeltaContext {
 
     public KeyOutputFileManager getOutputFileManager() {
         return (KeyOutputFileManager) _outputFileSelector;
+    }
+    
+    public boolean isTypesettingFileSet() {
+        return _typesettingFileSet;
+    }
+
+    public void setTypesettingFileSet(boolean typesettingFileSet) {
+        this._typesettingFileSet = typesettingFileSet;
     }
 }

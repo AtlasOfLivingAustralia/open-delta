@@ -35,6 +35,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.Logger;
+import au.org.ala.delta.DeltaContext.HeadingType;
 import au.org.ala.delta.directives.AbstractDeltaContext;
 import au.org.ala.delta.directives.AbstractDirective;
 import au.org.ala.delta.directives.ConforDirectiveParserObserver;
@@ -80,8 +81,7 @@ public class Key implements DirectiveParserObserver {
 
     private KeyContext _context;
     private boolean _inputFilesRead = false;
-    private PrintFile _listingPrintFile;
-    
+
     private SimpleDateFormat _timeFormat = new SimpleDateFormat("HH:mm");
     private SimpleDateFormat _dateFormat = new SimpleDateFormat("d-MMM-yyyy");
 
@@ -182,46 +182,61 @@ public class Key implements DirectiveParserObserver {
             }
         }
 
-        if (outputFileManager.getTypesettingFile() == null) {
+        if (!_context.isTypesettingFileSet()) {
             try {
-                outputFileManager.setTypesettingFileName(FilenameUtils.getBaseName(directivesFile.getName()) + DEFAULT_TYPESETTING_FILE_EXTENSION);
+                outputFileManager.setPrintFileName(FilenameUtils.getBaseName(directivesFile.getName()) + DEFAULT_TYPESETTING_FILE_EXTENSION);
             } catch (Exception ex) {
                 throw new RuntimeException("Error creating typesetting file", ex);
             }
         }
 
-        initializeListingPrintFile();
-
         if (parseSuccessful) {
             readInputFiles();
 
-            Specimen specimen = new Specimen(_context.getDataSet(), true, true, MatchType.OVERLAP);
-            List<Pair<Item, List<Attribute>>> keyList = new ArrayList<Pair<Item, List<Attribute>>>();
+            boolean displayTabularKey = _context.getDisplayTabularKey();
+            boolean displayBracketedKey = _context.getDisplayBracketedKey();
 
-            FilteredDataSet dataset = new FilteredDataSet(_context, new IncludeExcludeDataSetFilter(_context));
+            if (displayTabularKey || displayBracketedKey) { // Don't bother
+                                                            // calculating the
+                                                            // key if we don't
+                                                            // want one!
+                Specimen specimen = new Specimen(_context.getDataSet(), true, true, MatchType.OVERLAP);
+                List<Pair<Item, List<Attribute>>> keyList = new ArrayList<Pair<Item, List<Attribute>>>();
 
-            List<Character> includedCharacters = new ArrayList<Character>();
-            Iterator<FilteredCharacter> iterFilteredCharacters = dataset.filteredCharacters();
-            while (iterFilteredCharacters.hasNext()) {
-                includedCharacters.add(iterFilteredCharacters.next().getCharacter());
+                FilteredDataSet dataset = new FilteredDataSet(_context, new IncludeExcludeDataSetFilter(_context));
+
+                List<Character> includedCharacters = new ArrayList<Character>();
+                Iterator<FilteredCharacter> iterFilteredCharacters = dataset.filteredCharacters();
+                while (iterFilteredCharacters.hasNext()) {
+                    includedCharacters.add(iterFilteredCharacters.next().getCharacter());
+                }
+
+                List<Item> includedItems = new ArrayList<Item>();
+                Iterator<FilteredItem> iterFilteredItems = dataset.filteredItems();
+                while (iterFilteredItems.hasNext()) {
+                    includedItems.add(iterFilteredItems.next().getItem());
+                }
+
+                // if ()
+                doCalculateKey(dataset, includedCharacters, includedItems, specimen, keyList);
+                System.out.println("Key generation completed");
+
+                Map<Integer, TypeSettingMark> typesettingMarksMap = _context.getTypeSettingMarks();
+                boolean typsettingMarksSpecified = !(typesettingMarksMap == null || typesettingMarksMap.isEmpty());
+
+                generateKeyOutput(includedCharacters, includedItems, keyList, _context.getDisplayTabularKey(), _context.getDisplayBracketedKey() && !typsettingMarksSpecified);
+
+                if (_context.getDisplayBracketedKey() && typsettingMarksSpecified) {
+                    generateTypesettingOutput();
+                }
+
+                generateListingOutput(includedCharacters, includedItems, true);
+            } else {
+                generateListingOutput(null, null, false);
             }
-
-            List<Item> includedItems = new ArrayList<Item>();
-            Iterator<FilteredItem> iterFilteredItems = dataset.filteredItems();
-            while (iterFilteredItems.hasNext()) {
-                includedItems.add(iterFilteredItems.next().getItem());
-            }
-
-            doCalculateKey(dataset, includedCharacters, includedItems, specimen, keyList);
-            System.out.println("Key generation completed");
-            printKey(includedCharacters, includedItems, keyList);
         }
-        
+
         _nestedObserver.finishedProcessing();
-    }
-
-    private void printKeyDataAndKeyDetails(List<Character> includedCharacters, List<Item> includedItems, List<Pair<Item, List<Attribute>>> keyList) {
-
     }
 
     private void readInputFiles() {
@@ -357,44 +372,14 @@ public class Key implements DirectiveParserObserver {
         return _context;
     }
 
-    private void initializeListingPrintFile() {
-        KeyOutputFileManager outputFileManager = _context.getOutputFileManager();
-        int outputWidth = outputFileManager.getOutputWidth();
+    private void generateKeyOutput(List<Character> includedCharacters, List<Item> includedItems, List<Pair<Item, List<Attribute>>> keyList, boolean outputTabularKey, boolean outputBracketedKey) {
+        PrintFile printFile = _context.getOutputFileSelector().getOutputFile();
 
-        _listingPrintFile = outputFileManager.getPrintFile();
-        if (_listingPrintFile == null) {
-            _listingPrintFile = new PrintFile(System.out, outputWidth);
-        } else {
-            // Only output the credits when writing to a listing file. They have
-            // already been written to
-            // standard out.
-            _listingPrintFile.outputLine(generateCreditsString());
-            _listingPrintFile.writeBlankLines(1, 0);
-        }
-
-    }
-    
-    private void generateKeyOutput(List<Character> includedCharacters, List<Item> includedItems, List<Pair<Item, List<Attribute>>> keyList, PrintFile printFile) {
-        DeltaDataSet dataset = _context.getDataSet();
-        long datasetGenerationDate = _context.getCharactersFile().lastModified();
-        printFile.outputLine(MessageFormat.format("{0}. Data converted {1} {2}", dataset.getName(), _timeFormat.format(datasetGenerationDate), _dateFormat.format(datasetGenerationDate)));
+        printFile.outputLine(_context.getHeading(HeadingType.HEADING));
         printFile.outputLine(StringUtils.repeat("*", _context.getOutputFileSelector().getOutputWidth()));
-    }
-    
-    private void generateListingOutput() {
-        
-    }
-    
-    private void generateTypesettingOutput() {
-        
-    }
-
-    private void printOutputFileHeader(List<Character> includedCharacters, List<Item> includedItems, List<Pair<Item, List<Attribute>>> keyList, PrintFile printFile) {
 
         printFile.outputLine(generateCreditsString());
         printFile.writeBlankLines(1, 0);
-
-
 
         Date currentDate = Calendar.getInstance().getTime();
 
@@ -442,6 +427,63 @@ public class Key implements DirectiveParserObserver {
         // printFile.outputLine(MessageFormat.format("Items abundances {0}",
         // "TODO"));
         printFile.writeBlankLines(1, 0);
+
+        if (outputTabularKey) {
+            printTabularKey(keyList, printFile);
+            System.out.println("Tabular key completed");
+        }
+
+        if (outputBracketedKey) {
+            if (_context.getDisplayTabularKey()) {
+                printFile.writeBlankLines(2, 0);
+            }
+
+            printBracketedKey(keyList, _context.getAddCharacterNumbers(), printFile);
+            System.out.println("Bracketed key completed");
+        }
+
+    }
+
+    // NOTE: In addition to the output lines generated here, any errors and a
+    // list of output files are also written to the listing file.
+    // These pieces of output are inserted by the KeyOutputFileManager.
+    private void generateListingOutput(List<Character> includedCharacters, List<Item> includedItems, boolean outputKeyConfiguration) {
+        KeyOutputFileManager outputFileManager = _context.getOutputFileManager();
+        int outputWidth = outputFileManager.getOutputWidth();
+
+        PrintFile listingPrintFile = outputFileManager.getKeyListingFile();
+        if (listingPrintFile == null) {
+            listingPrintFile = new PrintFile(System.out, outputWidth);
+        } else {
+            // Only output the credits when writing to a listing file. They have
+            // already been written to
+            // standard out.
+            listingPrintFile.outputLine(generateCreditsString());
+            listingPrintFile.writeBlankLines(1, 0);
+        }
+
+        if (outputKeyConfiguration) {
+            DeltaDataSet dataset = _context.getDataSet();
+            listingPrintFile.outputLine(MessageFormat.format("Number of characters = {0} Number of items = {1}", dataset.getNumberOfCharacters(), dataset.getMaximumNumberOfItems()));
+            listingPrintFile.outputLine(MessageFormat.format("RBASE = {0} ABASE = {1} REUSE = {2} VARYWT = {3}", formatDouble(_context.getRBase()), formatDouble(_context.getABase()),
+                    formatDouble(_context.getReuse()), formatDouble(_context.getVaryWt())));
+            // TODO Number of confirmatory characers, number of preset
+            // characters
+
+            List<Integer> includedCharacterNumbers = new ArrayList<Integer>();
+            for (Character ch : includedCharacters) {
+                includedCharacterNumbers.add(ch.getCharacterId());
+            }
+            listingPrintFile.outputLine(MessageFormat.format("Characters included {0}", Utils.formatIntegersAsListOfRanges(includedCharacterNumbers)));
+
+            listingPrintFile.outputLine(MessageFormat.format("{0} characters included.", includedCharacters.size()));
+            listingPrintFile.outputLine(MessageFormat.format("{0} items included.", includedItems.size()));
+            listingPrintFile.writeBlankLines(1, 0);
+        }
+    }
+
+    private void generateTypesettingOutput() {
+        _context.getOutputFileManager().getPrintFile().outputLine("TODO - IMPLEMENT TYPESETTING OF BRACKETED KEY!");
     }
 
     private void printTabularKey(List<Pair<Item, List<Attribute>>> keyList, PrintFile printFile) {
@@ -668,43 +710,6 @@ public class Key implements DirectiveParserObserver {
         }
     }
 
-    private void printKey(List<Character> includedCharacters, List<Item> includedItems, List<Pair<Item, List<Attribute>>> keyList) {
-        if (_context.getDisplayTabularKey()) {
-            PrintFile printFile = _context.getOutputFileSelector().getOutputFile();
-            generateKeyOutput(includedCharacters, includedItems, keyList, printFile);
-            printOutputFileHeader(includedCharacters, includedItems, keyList, printFile);
-            printTabularKey(keyList, printFile);
-            System.out.println("Tabular key completed");
-        }
-
-        if (_context.getDisplayBracketedKey()) {
-            PrintFile printFile;
-            Map<Integer, TypeSettingMark> typesettingMarksMap = _context.getTypeSettingMarks();
-            if (typesettingMarksMap == null || typesettingMarksMap.isEmpty()) {
-                // TYPESETTING MARKS directive has not been called, so bracketed
-                // key
-                // should be output to the same file as the tabular key
-                printFile = _context.getOutputFileSelector().getOutputFile();
-                if (_context.getDisplayTabularKey()) {
-                    printFile.writeBlankLines(2, 0);
-                }
-            } else {
-                // TYPESETTING MARKS directive has not been called, so bracketed
-                // key
-                // should be output to the file specified by the
-                // KEY TYPESETTING FILE directive
-                printFile = _context.getOutputFileManager().getTypesettingFile();
-
-                // should header go here???
-                // printHeader(includedCharacters, includedItems, keyList,
-                // printFile);
-            }
-
-            printBracketedKey(keyList, _context.getAddCharacterNumbers(), printFile);
-            System.out.println("Bracketed key completed");
-        }
-    }
-    
     private String formatDouble(double d) {
         return String.format("%.2f", d);
     }
