@@ -16,9 +16,12 @@ package au.org.ala.delta.key;
 
 import java.io.File;
 import java.io.PrintStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.key.directives.io.KeyOutputFileManager;
+import au.org.ala.delta.util.Pair;
 
 public class KeyContext extends DeltaContext {
 
@@ -26,6 +29,8 @@ public class KeyContext extends DeltaContext {
     double _rBase;
     double _reuse;
     double _varyWt;
+    
+    private int _numberOfConfirmatoryCharacters;
 
     private File _charactersFile;
     private File _itemsFile;
@@ -39,11 +44,11 @@ public class KeyContext extends DeltaContext {
     private boolean _addCharacterNumbers;
     private boolean _displayBracketedKey;
     private boolean _displayTabularKey;
-    
-    // Has the print file (getPrintFile) on the OutputFileManager been set to the location a typesetting file? Need to do this because the
-    // print file defaults to pointing to stdout
-    private boolean _typesettingFileSet;
-    
+
+    private String _typeSettingFileHeaderText;
+
+    private Map<Pair<Integer, Integer>, Integer> _presetCharacters;
+
     public KeyContext(File dataDirectory, PrintStream out, PrintStream err) {
         super(out, err);
         this._dataDirectory = dataDirectory;
@@ -65,7 +70,8 @@ public class KeyContext extends DeltaContext {
         _addCharacterNumbers = false;
         _displayBracketedKey = true;
         _displayTabularKey = true;
-        _typesettingFileSet = false;
+
+        _presetCharacters = new HashMap<Pair<Integer, Integer>, Integer>();
     }
 
     public KeyContext(File dataDirectory) {
@@ -180,12 +186,44 @@ public class KeyContext extends DeltaContext {
     public KeyOutputFileManager getOutputFileManager() {
         return (KeyOutputFileManager) _outputFileSelector;
     }
-    
-    public boolean isTypesettingFileSet() {
-        return _typesettingFileSet;
+
+    public String getTypeSettingFileHeaderText() {
+        return _typeSettingFileHeaderText;
     }
 
-    public void setTypesettingFileSet(boolean typesettingFileSet) {
-        this._typesettingFileSet = typesettingFileSet;
+    public void setTypeSettingFileHeaderText(String typeSettingFileHeaderText) {
+        this._typeSettingFileHeaderText = typeSettingFileHeaderText;
+    }
+
+    public void setPresetCharacter(int characterNumber, int columnNumber, int groupNumber) {
+        Pair<Integer, Integer> columnGroupPair = new Pair<Integer, Integer>(columnNumber, groupNumber);
+        _presetCharacters.put(columnGroupPair, characterNumber);
+    }
+
+    /**
+     * Returns the preset character number for the given column number and group
+     * number, or -1 if no character has been preset for the column and group.
+     * 
+     * @param columnNumber
+     * @param groupNumber
+     * @return the preset character number for the given column number and group
+     *         number, or -1 if no character has been preset for the column and
+     *         group.
+     */
+    public int getPresetCharacter(int columnNumber, int groupNumber) {
+        Pair<Integer, Integer> columnGroupPair = new Pair<Integer, Integer>(columnNumber, groupNumber);
+        if (_presetCharacters.containsKey(columnGroupPair)) {
+            return _presetCharacters.get(columnGroupPair);
+        } else {
+            return -1;
+        }
+    }
+    
+    public int getNumberOfConfirmatoryCharacters() {
+        return _numberOfConfirmatoryCharacters;
+    }
+
+    public void setNumberOfConfirmatoryCharacters(int numberOfConfirmatoryCharacters) {
+        this._numberOfConfirmatoryCharacters = numberOfConfirmatoryCharacters;
     }
 }

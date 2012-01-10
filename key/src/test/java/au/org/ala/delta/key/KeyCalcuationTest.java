@@ -40,12 +40,12 @@ public class KeyCalcuationTest extends TestCase {
         Key key = new Key(directivesFile);
         key.calculateKey(directivesFile);
     }
-    
+   
 //    @Test
 //    public void testLoadPonerini() throws Exception {
 //        File directivesFile = new File("C:\\Users\\ChrisF\\Virtualbox Shared Folder\\Cyperaceae_test\\key");
 //
-//        Key key = new Key();
+//        Key key = new Key(directivesFile);
 //        key.calculateKey(directivesFile);
 //    }
 }

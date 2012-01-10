@@ -5,18 +5,17 @@ import au.org.ala.delta.directives.AbstractTextDirective;
 import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.key.KeyContext;
 
-public class KeyTypesettingFileDirective extends AbstractTextDirective {
+public class KeyPrintCommentDirective extends AbstractTextDirective {
 
-    public KeyTypesettingFileDirective() {
-        super("key", "typesetting", "file");
+    public KeyPrintCommentDirective() {
+        super("print", "comment");
     }
 
     @Override
     public void process(DeltaContext context, DirectiveArguments directiveArguments) throws Exception {
         KeyContext keyContext = (KeyContext) context;
-
-        String fileName = directiveArguments.getFirstArgumentText().trim();
-        keyContext.getOutputFileManager().setTypesettingFileName(fileName);
+        String content = directiveArguments.getFirstArgumentText().trim();
+        keyContext.setTypeSettingFileHeaderText(content);
     }
 
 }

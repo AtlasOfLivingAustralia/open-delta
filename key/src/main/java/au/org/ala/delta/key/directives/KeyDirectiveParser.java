@@ -61,15 +61,18 @@ public class KeyDirectiveParser extends DirectiveParser<KeyContext> {
         instance.registerDirective(new KeyOutputFileDirective());
         instance.registerDirective(new KeyTypesettingFileDirective());
         instance.registerDirective(new ListingFileDirective());
-        
+        instance.registerDirective(new PresetCharactersDirective());
+        instance.registerDirective(new NumberOfConfirmatoryCharactersDirective());
+
         instance.registerDirective(new TypeSettingMarks());
-        instance.registerDirective(new PrintComment());
+        instance.registerDirective(new KeyPrintCommentDirective());
         return instance;
     }
 
     @Override
     protected void handleUnrecognizedDirective(KeyContext context, List<String> controlWords) {
-        //System.err.println("Unrecognized directive " + StringUtils.join(controlWords, " "));
+        // System.err.println("Unrecognized directive " +
+        // StringUtils.join(controlWords, " "));
     }
 
 }

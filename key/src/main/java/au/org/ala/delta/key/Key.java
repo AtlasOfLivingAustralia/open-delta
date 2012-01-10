@@ -171,25 +171,6 @@ public class Key implements DirectiveParserObserver {
             throw new RuntimeException("Fatal error occurred while processing directives file", ex);
         }
 
-        // Set default names for output files if their names were not set in the
-        // directives file
-        KeyOutputFileManager outputFileManager = _context.getOutputFileManager();
-        if (outputFileManager.getOutputFile() == null) {
-            try {
-                outputFileManager.setOutputFileName(FilenameUtils.getBaseName(directivesFile.getName()) + DEFAULT_OUTPUT_FILE_EXTENSION);
-            } catch (Exception ex) {
-                throw new RuntimeException("Error creating output file", ex);
-            }
-        }
-
-        if (!_context.isTypesettingFileSet()) {
-            try {
-                outputFileManager.setPrintFileName(FilenameUtils.getBaseName(directivesFile.getName()) + DEFAULT_TYPESETTING_FILE_EXTENSION);
-            } catch (Exception ex) {
-                throw new RuntimeException("Error creating typesetting file", ex);
-            }
-        }
-
         if (parseSuccessful) {
             readInputFiles();
 
@@ -217,16 +198,35 @@ public class Key implements DirectiveParserObserver {
                     includedItems.add(iterFilteredItems.next().getItem());
                 }
 
-                // if ()
                 doCalculateKey(dataset, includedCharacters, includedItems, specimen, keyList);
                 System.out.println("Key generation completed");
 
                 Map<Integer, TypeSettingMark> typesettingMarksMap = _context.getTypeSettingMarks();
                 boolean typsettingMarksSpecified = !(typesettingMarksMap == null || typesettingMarksMap.isEmpty());
 
+                // Set default name for key output file if the name was not
+                // specified in the directives file
+                KeyOutputFileManager outputFileManager = _context.getOutputFileManager();
+                if (outputFileManager.getOutputFile() == null) {
+                    try {
+                        outputFileManager.setOutputFileName(FilenameUtils.getBaseName(directivesFile.getName()) + DEFAULT_OUTPUT_FILE_EXTENSION);
+                    } catch (Exception ex) {
+                        throw new RuntimeException("Error creating output file", ex);
+                    }
+                }
                 generateKeyOutput(includedCharacters, includedItems, keyList, _context.getDisplayTabularKey(), _context.getDisplayBracketedKey() && !typsettingMarksSpecified);
 
                 if (_context.getDisplayBracketedKey() && typsettingMarksSpecified) {
+                    // Set default name for typesetting output file if the name
+                    // was not
+                    // specified in the directives file
+                    if (outputFileManager.getTypesettingFile() == null) {
+                        try {
+                            outputFileManager.setTypesettingFileName(FilenameUtils.getBaseName(directivesFile.getName()) + DEFAULT_TYPESETTING_FILE_EXTENSION);
+                        } catch (Exception ex) {
+                            throw new RuntimeException("Error creating typesetting file", ex);
+                        }
+                    }
                     generateTypesettingOutput();
                 }
 
@@ -273,7 +273,6 @@ public class Key implements DirectiveParserObserver {
             Pair<Item, List<Attribute>> pair = new Pair<Item, List<Attribute>>(specimenAvailableTaxa.iterator().next(), attrList);
             keyList.add(pair);
         } else {
-
             // These won't be in order but that doesn't matter - best orders
             // stuff itself
             List<Integer> specimenAvailableCharacterNumbers = new ArrayList<Integer>();
@@ -286,57 +285,158 @@ public class Key implements DirectiveParserObserver {
                 specimenAvailableTaxaNumbers.add(item.getItemNumber());
             }
 
-            LinkedHashMap<Character, Double> bestMap = KeyBest.orderBest(_context.getDataSet(), specimenAvailableCharacterNumbers, specimenAvailableTaxaNumbers, _context.getRBase(),
-                    _context.getVaryWt());
+            MultiStateCharacter bestCharacter;
 
-            List<Character> bestOrderCharacters = new ArrayList<Character>(bestMap.keySet());
+            // Find preset character for this column/group, if there is one
+            int currentColumn = specimen.getUsedCharacters().size() + 1;
+            int currentGroup = getGroupCountForColumn(currentColumn - 1, keyList) + 1;
 
-            if (!bestOrderCharacters.isEmpty()) {
-                // KEY only uses multi state characters
-                MultiStateCharacter bestCharacter = (MultiStateCharacter) bestOrderCharacters.get(0);
+            int presetCharacterNumber = _context.getPresetCharacter(currentColumn, currentGroup);
 
-                // System.out.println(String.format("%s %s",
-                // bestMap.get(bestCharacter), bestCharacter.getCharacterId()));
-                // System.out.println("Available characters: " +
-                // specimenAvailableCharacterNumbers.size());
-                // System.out.println("Available taxa: " +
-                // specimenAvailableTaxaNumbers.size());
-                // System.out.println();
-                // for (au.org.ala.delta.model.Character ch : bestMap.keySet())
-                // {
-                // double sepPower = bestMap.get(ch);
-                // System.out.println(String.format("%s %s (%s)", sepPower, ch,
-                // ch.getReliability()));
+            // -1 indicates no preset character for the column/group
+            if (presetCharacterNumber > 0) {
+                Character presetCharacter = _context.getDataSet().getCharacter(presetCharacterNumber);
+                if (checkPresetCharacter(presetCharacter, specimen, includedItems)) {
+                    System.out.println(MessageFormat.format("Using preset character {0},{1}:{2}", presetCharacterNumber, currentColumn, currentGroup));
+                    bestCharacter = (MultiStateCharacter) presetCharacter;
+                } else {
+                    throw new RuntimeException(MessageFormat.format("Character {0} is not suitable for use at column {1} group {2}", presetCharacterNumber, currentColumn, currentGroup));
+                }
+            } else {
+
+                LinkedHashMap<Character, Double> bestMap = KeyBest.orderBest(_context.getDataSet(), specimenAvailableCharacterNumbers, specimenAvailableTaxaNumbers, _context.getRBase(),
+                        _context.getVaryWt());
+
+                List<Character> bestOrderCharacters = new ArrayList<Character>(bestMap.keySet());
+
+                if (bestOrderCharacters.isEmpty()) {
+                    return;
+                } else {
+                    // KEY only uses multi state characters
+                    bestCharacter = (MultiStateCharacter) bestOrderCharacters.get(0);
+                }
+            }
+
+            // System.out.println(String.format("%s %s",
+            // bestMap.get(bestCharacter), bestCharacter.getCharacterId()));
+            // System.out.println("Available characters: " +
+            // specimenAvailableCharacterNumbers.size());
+            // System.out.println("Available taxa: " +
+            // specimenAvailableTaxaNumbers.size());
+            // System.out.println();
+            // for (au.org.ala.delta.model.Character ch : bestMap.keySet())
+            // {
+            // double sepPower = bestMap.get(ch);
+            // System.out.println(String.format("%s %s (%s)", sepPower, ch,
+            // ch.getReliability()));
+            // }
+            // System.out.println();
+
+            for (int i = 0; i < bestCharacter.getNumberOfStates(); i++) {
+                int stateNumber = i + 1;
+
+                MultiStateAttribute attr = createMultiStateAttribute(bestCharacter, stateNumber);
+
+                // System.out.println("Setting attribute " +
+                // attr.toString());
+                specimen.setAttributeForCharacter(bestCharacter, attr);
+
+                // System.out.println("Used characters: ");
+                // List<Attribute> attrList = new ArrayList<Attribute>();
+                // for (Character ch : specimen.getUsedCharacters()) {
+                // System.out.println(specimen.getAttributeForCharacter(ch));
                 // }
-                // System.out.println();
+                // System.out.println("Remaining taxa: " +
+                // getSpecimenAvailableTaxa(specimen).toString());
 
-                for (int i = 0; i < bestCharacter.getNumberOfStates(); i++) {
-                    int stateNumber = i + 1;
+                doCalculateKey(dataset, includedCharacters, includedItems, specimen, keyList);
 
-                    SimpleAttributeData impl = new SimpleAttributeData(false, false);
-                    MultiStateAttribute attr = (MultiStateAttribute) AttributeFactory.newAttribute(bestCharacter, impl);
-                    Set<Integer> presentStatesSet = new HashSet<Integer>();
-                    presentStatesSet.add(stateNumber);
-                    attr.setPresentStates(presentStatesSet);
+                specimen.removeValueForCharacter(bestCharacter);
+            }
+        }
+    }
 
-                    // System.out.println("Setting attribute " +
-                    // attr.toString());
-                    specimen.setAttributeForCharacter(bestCharacter, attr);
+    private MultiStateAttribute createMultiStateAttribute(MultiStateCharacter msChar, int stateNumber) {
+        SimpleAttributeData impl = new SimpleAttributeData(false, false);
+        MultiStateAttribute attr = (MultiStateAttribute) AttributeFactory.newAttribute(msChar, impl);
+        Set<Integer> presentStatesSet = new HashSet<Integer>();
+        presentStatesSet.add(stateNumber);
+        attr.setPresentStates(presentStatesSet);
+        return attr;
+    }
 
-                    // System.out.println("Used characters: ");
-                    // List<Attribute> attrList = new ArrayList<Attribute>();
-                    // for (Character ch : specimen.getUsedCharacters()) {
-                    // System.out.println(specimen.getAttributeForCharacter(ch));
-                    // }
-                    // System.out.println("Remaining taxa: " +
-                    // getSpecimenAvailableTaxa(specimen).toString());
+    private int getGroupCountForColumn(int columnNumber, List<Pair<Item, List<Attribute>>> keyList) {
+        Attribute currentAttribute = null;
+        int countForCurrentAttribute = 0;
+        int groupCount = 0;
+        for (int i = 0; i < keyList.size(); i++) {
+            Pair<Item, List<Attribute>> row = keyList.get(i);
+            List<Attribute> attributes = row.getSecond();
+            if (attributes.size() >= columnNumber) {
+                Attribute attr = attributes.get(columnNumber - 1);
 
-                    doCalculateKey(dataset, includedCharacters, includedItems, specimen, keyList);
-
-                    specimen.removeValueForCharacter(bestCharacter);
+                if (currentAttribute == null) {
+                    currentAttribute = attr;
+                    countForCurrentAttribute = 1;
+                } else {
+                    if (attr.equals(currentAttribute)) {
+                        countForCurrentAttribute++;
+                    } else {
+                        // Do not count groups of only one attribute
+                        if (countForCurrentAttribute > 1) {
+                            groupCount++;
+                        }
+                        countForCurrentAttribute = 0;
+                        currentAttribute = attr;
+                        countForCurrentAttribute = 1;
+                    }
                 }
             }
         }
+
+        // handle the last group in the key
+        // Do not count groups of only one attribute
+        if (countForCurrentAttribute > 1) {
+            groupCount++;
+        }
+
+        return groupCount;
+    }
+
+    private boolean checkPresetCharacter(Character presetCharacter, Specimen specimen, List<Item> includedItems) {
+        // Preset characters must be multistate
+        if (!(presetCharacter instanceof MultiStateCharacter)) {
+            return false;
+        }
+
+        // Used characters or ones that have been made inapplicable cannot be
+        // used as
+        // presets
+        if (specimen.getInapplicableCharacters().contains(presetCharacter)) {
+            return false;
+        }
+
+        if (specimen.getUsedCharacters().contains(presetCharacter)) {
+            return false;
+        }
+
+        // A preset character cannot complete eliminate any of the available
+        // taxa. Each taxon must be
+        // available after at least one of the character states is used in the
+        // specimen
+        Set<Item> availableTaxa = getSpecimenAvailableTaxa(specimen, includedItems);
+        Set<Item> availableTaxaAfterPresetUsed = new HashSet<Item>();
+
+        MultiStateCharacter msPreset = (MultiStateCharacter) presetCharacter;
+        for (int i = 0; i < msPreset.getNumberOfStates(); i++) {
+            int stateNumber = i + 1;
+            MultiStateAttribute attr = createMultiStateAttribute(msPreset, stateNumber);
+            specimen.setAttributeForCharacter(msPreset, attr);
+            availableTaxaAfterPresetUsed.addAll(getSpecimenAvailableTaxa(specimen, includedItems));
+            specimen.removeValueForCharacter(msPreset);
+        }
+
+        return availableTaxaAfterPresetUsed.equals(availableTaxa);
     }
 
     private Set<Item> getSpecimenAvailableTaxa(Specimen specimen, List<Item> includedItems) {
@@ -411,8 +511,10 @@ public class Key implements DirectiveParserObserver {
         // "TODO", "TODO"));
         // printFile.outputLine(MessageFormat.format("Maximum length of key = {0} Maximum cost of key = {1}",
         // "TODO", "TODO"));
-        printFile.writeBlankLines(1, 0);
 
+        printFile.writeBlankLines(1, 0);
+        // printFile.outputLine(MessageFormat.format("Preset characters (character,column:group) 666,2:1",
+        // "TODO");
         List<Integer> includedCharacterNumbers = new ArrayList<Integer>();
         for (Character ch : includedCharacters) {
             includedCharacterNumbers.add(ch.getCharacterId());
@@ -483,7 +585,12 @@ public class Key implements DirectiveParserObserver {
     }
 
     private void generateTypesettingOutput() {
-        _context.getOutputFileManager().getPrintFile().outputLine("TODO - IMPLEMENT TYPESETTING OF BRACKETED KEY!");
+        String headerText = _context.getTypeSettingFileHeaderText();
+
+        if (headerText != null) {
+            _context.getOutputFileManager().getTypesettingFile().outputLine(headerText);
+        }
+        _context.getOutputFileManager().getTypesettingFile().outputLine("TODO - IMPLEMENT TYPESETTING OF BRACKETED KEY!");
     }
 
     private void printTabularKey(List<Pair<Item, List<Attribute>>> keyList, PrintFile printFile) {
