@@ -29,7 +29,7 @@ public class KeyContext extends DeltaContext {
     double _rBase;
     double _reuse;
     double _varyWt;
-    
+
     private int _numberOfConfirmatoryCharacters;
 
     private File _charactersFile;
@@ -218,12 +218,15 @@ public class KeyContext extends DeltaContext {
             return -1;
         }
     }
-    
+
     public int getNumberOfConfirmatoryCharacters() {
         return _numberOfConfirmatoryCharacters;
     }
 
     public void setNumberOfConfirmatoryCharacters(int numberOfConfirmatoryCharacters) {
+        if (numberOfConfirmatoryCharacters < 1 || numberOfConfirmatoryCharacters > 4) {
+            throw new IllegalArgumentException("Number of confirmatory characters must be between 1 and 4");
+        }
         this._numberOfConfirmatoryCharacters = numberOfConfirmatoryCharacters;
     }
 }

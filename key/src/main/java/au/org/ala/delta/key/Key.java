@@ -22,6 +22,7 @@ import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -293,6 +294,11 @@ public class Key implements DirectiveParserObserver {
 
             int presetCharacterNumber = _context.getPresetCharacter(currentColumn, currentGroup);
 
+            LinkedHashMap<Character, Double> bestMap = KeyBest.orderBest(_context.getDataSet(), specimenAvailableCharacterNumbers, specimenAvailableTaxaNumbers, _context.getRBase(),
+                    _context.getVaryWt());
+
+            List<Character> bestOrderCharacters = new ArrayList<Character>(bestMap.keySet());
+
             // -1 indicates no preset character for the column/group
             if (presetCharacterNumber > 0) {
                 Character presetCharacter = _context.getDataSet().getCharacter(presetCharacterNumber);
@@ -304,10 +310,14 @@ public class Key implements DirectiveParserObserver {
                 }
             } else {
 
-                LinkedHashMap<Character, Double> bestMap = KeyBest.orderBest(_context.getDataSet(), specimenAvailableCharacterNumbers, specimenAvailableTaxaNumbers, _context.getRBase(),
-                        _context.getVaryWt());
-
-                List<Character> bestOrderCharacters = new ArrayList<Character>(bestMap.keySet());
+                // LinkedHashMap<Character, Double> bestMap =
+                // KeyBest.orderBest(_context.getDataSet(),
+                // specimenAvailableCharacterNumbers,
+                // specimenAvailableTaxaNumbers, _context.getRBase(),
+                // _context.getVaryWt());
+                //
+                // List<Character> bestOrderCharacters = new
+                // ArrayList<Character>(bestMap.keySet());
 
                 if (bestOrderCharacters.isEmpty()) {
                     return;
@@ -331,6 +341,11 @@ public class Key implements DirectiveParserObserver {
             // ch.getReliability()));
             // }
             // System.out.println();
+
+            int numberOfConfirmatoryCharacters = _context.getNumberOfConfirmatoryCharacters();
+            if (numberOfConfirmatoryCharacters > 0) {
+                getConfirmatoryCharacters(specimen, includedItems, bestOrderCharacters, bestCharacter, numberOfConfirmatoryCharacters);
+            }
 
             for (int i = 0; i < bestCharacter.getNumberOfStates(); i++) {
                 int stateNumber = i + 1;
@@ -437,6 +452,64 @@ public class Key implements DirectiveParserObserver {
         }
 
         return availableTaxaAfterPresetUsed.equals(availableTaxa);
+    }
+
+    private List<ConfirmatoryCharacter> getConfirmatoryCharacters(Specimen specimen, List<Item> includedItems, List<Character> bestCharacters, MultiStateCharacter mainCharacter,
+            int numberOfConfirmatoryCharacters) {
+        int foundConfirmatoryCharacters = 0;
+        List<ConfirmatoryCharacter> confirmatoryCharacters = new ArrayList<ConfirmatoryCharacter>();
+
+        List<Set<Item>> mainCharacterStateDistributions = new ArrayList<Set<Item>>();
+        for (int i = 0; i < mainCharacter.getNumberOfStates(); i++) {
+            int stateNumber = i + 1;
+            MultiStateAttribute attr = createMultiStateAttribute(mainCharacter, stateNumber);
+            specimen.setAttributeForCharacter(mainCharacter, attr);
+            mainCharacterStateDistributions.add(getSpecimenAvailableTaxa(specimen, includedItems));
+            specimen.removeValueForCharacter(mainCharacter);
+        }
+
+        for (Character ch : bestCharacters) {
+            MultiStateCharacter multiStateChar = (MultiStateCharacter) ch;
+
+            if (!multiStateChar.equals(mainCharacter)) {
+
+                List<Set<Item>> confirmatoryCharacterStateDistributions = new ArrayList<Set<Item>>();
+
+                for (int i = 0; i < multiStateChar.getNumberOfStates(); i++) {
+                    int stateNumber = i + 1;
+                    MultiStateAttribute attr = createMultiStateAttribute(multiStateChar, stateNumber);
+                    specimen.setAttributeForCharacter(multiStateChar, attr);
+                    confirmatoryCharacterStateDistributions.add(getSpecimenAvailableTaxa(specimen, includedItems));
+                    specimen.removeValueForCharacter(multiStateChar);
+                }
+                
+                if (compareStateDistributions(mainCharacterStateDistributions, confirmatoryCharacterStateDistributions)) {
+                    System.out.println(MessageFormat.format("Confirmatory character {0}:{1}", mainCharacter.getCharacterId(), multiStateChar.getCharacterId()));
+                    foundConfirmatoryCharacters++;
+                }
+
+                if (foundConfirmatoryCharacters == numberOfConfirmatoryCharacters) {
+                    break;
+                }
+            }
+        }
+
+        return confirmatoryCharacters;
+    }
+
+    private boolean compareStateDistributions(List<Set<Item>> dist1, List<Set<Item>> dist2) {
+        
+        for (Set<Item> dist1Item : dist1) {
+            if (dist1Item.isEmpty()) {
+                continue;
+            }
+
+            if (Collections.frequency(dist1, dist1Item) != Collections.frequency(dist2, dist1Item)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private Set<Item> getSpecimenAvailableTaxa(Specimen specimen, List<Item> includedItems) {
