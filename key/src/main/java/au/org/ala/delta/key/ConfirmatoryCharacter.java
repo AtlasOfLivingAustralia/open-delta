@@ -15,7 +15,7 @@ public class ConfirmatoryCharacter {
         _mainToConfirmatoryStateMap = new HashMap<Integer, Integer>(mainToConfirmatoryStateMap);
     }
 
-    public int getCharacterNumber() {
+    public int getConfirmatoryCharacterNumber() {
         return _characterNumber;
     }
 
@@ -23,8 +23,11 @@ public class ConfirmatoryCharacter {
         return _mainCharacterNumber;
     }
 
-    public int getConfirmatoryState(int mainCharacterState) {
-        return _mainToConfirmatoryStateMap.get(mainCharacterState);
+    public int getConfirmatoryStateNumber(int mainCharacterState) {
+        if (_mainToConfirmatoryStateMap.containsKey(mainCharacterState)) {
+            return _mainToConfirmatoryStateMap.get(mainCharacterState);
+        } else {
+            return -1;
+        }
     }
-
 }
