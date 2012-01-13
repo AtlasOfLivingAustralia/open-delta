@@ -631,7 +631,7 @@ public class Key implements DirectiveParserObserver {
         printFile.writeBlankLines(1, 0);
 
         if (outputTabularKey) {
-            // printTabularKey(keyList, printFile);
+            printTabularKey(key, printFile);
             System.out.println("Tabular key completed");
         }
 
@@ -694,232 +694,243 @@ public class Key implements DirectiveParserObserver {
         _context.getOutputFileManager().getTypesettingFile().outputLine("TODO - IMPLEMENT TYPESETTING OF BRACKETED KEY!");
     }
 
-//    private void printTabularKey(IdentificationKey key, PrintFile printFile) {
-//        ItemFormatter itemFormatter = new ItemFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.REMOVE, true, false, false);
-//
-//        // Do a first pass of the data structure to get the counts for the
-//        // number of times a taxon appears in the key, and to work out how wide
-//        // the cells need to be
-//
-//        Map<Item, Integer> itemOccurrences = new HashMap<Item, Integer>();
-//        int cellWidth = 0;
-//
-//        for (KeyRow row : key.getRows()) {
-//            Item it = row.getItem();
-//            List<MultiStateAttribute> mainCharacterValues = row.getMainCharacterValues();
-//
-//            if (itemOccurrences.containsKey(it)) {
-//                int currentItemCount = itemOccurrences.get(it);
-//                itemOccurrences.put(it, currentItemCount + 1);
-//            } else {
-//                itemOccurrences.put(it, 1);
-//            }
-//
-//            for (List<MultiStateAttribute> columnCharacterValues : row.getRowAsList()) {
-//                for (MultiStateAttribute characterValue : columnCharacterValues) {
-//
-//                    int characterNumber = characterValue.getCharacter().getCharacterId();
-//                    int numberOfDigits = Integer.toString(characterNumber).length();
-//
-//                    // Cell width needs to be at least as wide as the number of
-//                    // digits, plus one extra character for the state value
-//                    // associated with the attribute
-//                    if (cellWidth < numberOfDigits + 1) {
-//                        cellWidth = numberOfDigits + 1;
-//                    }
-//                }
-//            }
-//        }
-//
-//        StringBuilder builder = new StringBuilder();
-//
-//        for (int i = 0; i < key.getNumberOfRows(); i++) {
-//            KeyRow row = key.getRowAt(i);
-//            Item it = row.getItem();
-//            List<List<MultiStateAttribute>> rowCharacterValues = row.getRowAsList();
-//
-//            List<List<MultiStateAttribute>> previousRowAttributes = null;
-//
-//            if (i > 0) {
-//                previousRowAttributes = key.getRowAt(i - 1).getRowAsList();
-//            }
-//
-//            builder.append("+---------------------------+");
-//            for (int j = 0; j < rowAttributes.size(); j++) {
-//                Attribute currentRowAttribute = rowAttributes.get(j);
-//
-//                if (previousRowAttributes != null && previousRowAttributes.size() >= j + 1) {
-//                    Attribute previousRowAttribute = previousRowAttributes.get(j);
-//                    if (currentRowAttribute.equals(previousRowAttribute)) {
-//                        builder.append(StringUtils.repeat(" ", cellWidth));
-//                        builder.append("|");
-//                    } else {
-//                        builder.append(StringUtils.repeat("-", cellWidth));
-//                        builder.append("+");
-//                    }
-//
-//                } else {
-//                    builder.append(StringUtils.repeat("-", cellWidth));
-//                    builder.append("+");
-//                }
-//            }
-//
-//            if (previousRowAttributes != null) {
-//                int diffPrevRowAttributes = previousRowAttributes.size() - rowAttributes.size();
-//                for (int k = 0; k < diffPrevRowAttributes; k++) {
-//                    builder.append(StringUtils.repeat("-", cellWidth));
-//                    builder.append("+");
-//                }
-//            }
-//
-//            builder.append("\n");
-//
-//            builder.append("|");
-//            String formattedItemName = itemFormatter.formatItemDescription(rowItem);
-//            builder.append(formattedItemName);
-//
-//            int numItemOccurrences = itemOccurrences.get(rowItem);
-//
-//            if (numItemOccurrences > 1) {
-//                builder.append(StringUtils.repeat(" ", 27 - formattedItemName.length() - Integer.toString(numItemOccurrences).length()));
-//                builder.append(numItemOccurrences);
-//            } else {
-//                builder.append(StringUtils.repeat(" ", 27 - formattedItemName.length()));
-//            }
-//
-//            builder.append("|");
-//
-//            for (Attribute attr : rowAttributes) {
-//                MultiStateAttribute msAttr = (MultiStateAttribute) attr;
-//                int characterId = msAttr.getCharacter().getCharacterId();
-//
-//                // Insert spaces to pad out the cell if the character id + state
-//                // value are not as wide as the cell width
-//                builder.append(StringUtils.repeat(" ", cellWidth - (Integer.toString(characterId).length() + 1)));
-//
-//                builder.append(characterId);
-//
-//                // Only 1 state will be ever set - the key generation algorithm
-//                // only sets
-//                // Individual states for characters
-//                int stateNumber = msAttr.getPresentStates().iterator().next();
-//                // Convert state numbers to "A", "B", "C" etc
-//                builder.append((char) (64 + stateNumber));
-//                builder.append("|");
-//            }
-//
-//            builder.append("\n");
-//
-//            // If this is the last row, need to print the bottom edge of the
-//            // table
-//            if (i == keyList.size() - 1) {
-//                builder.append("+---------------------------+");
-//                for (int l = 0; l < rowAttributes.size(); l++) {
-//                    builder.append(StringUtils.repeat("-", cellWidth));
-//                    builder.append("+");
-//                }
-//            }
-//        }
-//
-//        printFile.outputLine(builder.toString());
-//    }
-
-    private void printBracketedKey(List<Pair<Item, List<Attribute>>> keyList, boolean displayCharacterNumbers, PrintFile printFile) {
-        CharacterFormatter charFormatter = new CharacterFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.REMOVE, true, false);
+    private void printTabularKey(IdentificationKey key, PrintFile printFile) {
         ItemFormatter itemFormatter = new ItemFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.REMOVE, true, false, false);
 
-        List<MultiStateCharacter> orderedCharacters = new ArrayList<MultiStateCharacter>();
-        Map<MultiStateCharacter, Integer> characterIndices = new HashMap<MultiStateCharacter, Integer>();
+        // Do a first pass of the data structure to get the counts for the
+        // number of times a taxon appears in the key, and to work out how wide
+        // the cells need to be
+        Map<Item, Integer> itemOccurrences = new HashMap<Item, Integer>();
+        int cellWidth = 0;
 
-        int currentCharacterIndex = 1;
+        for (KeyRow row : key.getRows()) {
+            Item it = row.getItem();
 
-        for (Pair<Item, List<Attribute>> pair : keyList) {
-            List<Attribute> attrs = pair.getSecond();
-            for (Attribute attr : attrs) {
-                MultiStateCharacter ch = (MultiStateCharacter) attr.getCharacter();
-                if (!characterIndices.containsKey(ch)) {
-                    characterIndices.put(ch, currentCharacterIndex);
-                    orderedCharacters.add(ch);
-                    currentCharacterIndex++;
+            if (itemOccurrences.containsKey(it)) {
+                int currentItemCount = itemOccurrences.get(it);
+                itemOccurrences.put(it, currentItemCount + 1);
+            } else {
+                itemOccurrences.put(it, 1);
+            }
+
+            for (MultiStateAttribute characterValue : row.getAllCharacterValues()) {
+
+                int characterNumber = characterValue.getCharacter().getCharacterId();
+                int numberOfDigits = Integer.toString(characterNumber).length();
+
+                // Cell width needs to be at least as wide as the number of
+                // digits, plus one extra character for the state value
+                // associated with the attribute
+                if (cellWidth < numberOfDigits + 1) {
+                    cellWidth = numberOfDigits + 1;
                 }
             }
         }
 
-        Map<Pair<Character, Integer>, Object> keyMap = new HashMap<Pair<Character, Integer>, Object>();
-        for (Pair<Item, List<Attribute>> itemAttrsPair : keyList) {
-            Item it = itemAttrsPair.getFirst();
-            List<Attribute> attrs = itemAttrsPair.getSecond();
+        StringBuilder builder = new StringBuilder();
 
-            for (int i = 0; i < attrs.size(); i++) {
-                MultiStateAttribute currentAttr = (MultiStateAttribute) attrs.get(i);
-                MultiStateAttribute nextAttr = null;
+        for (int i = 0; i < key.getNumberOfRows(); i++) {
+            KeyRow row = key.getRowAt(i);
+            Item it = row.getItem();
+            List<MultiStateAttribute> rowCharacterValues = row.getAllCharacterValues();
 
-                if (i < attrs.size() - 1) {
-                    nextAttr = (MultiStateAttribute) attrs.get(i + 1);
-                }
+            List<MultiStateAttribute> previousRowCharacterValues = null;
 
-                Pair<Character, Integer> charStateNumberPair = new Pair<Character, Integer>(currentAttr.getCharacter(), currentAttr.getPresentStatesAsList().get(0));
+            if (i > 0) {
+                previousRowCharacterValues = key.getRowAt(i - 1).getAllCharacterValues();
+            }
 
-                if (nextAttr == null) {
-                    keyMap.put(charStateNumberPair, it);
+            // Output the dividing line between the previous row and the current
+            // row
+            builder.append("+---------------------------+");
+            for (int j = 0; j < rowCharacterValues.size(); j++) {
+                Attribute currentRowAttribute = rowCharacterValues.get(j);
+
+                if (previousRowCharacterValues != null && previousRowCharacterValues.size() >= j + 1) {
+                    Attribute previousRowAttribute = previousRowCharacterValues.get(j);
+                    if (currentRowAttribute.equals(previousRowAttribute)) {
+                        builder.append(StringUtils.repeat(" ", cellWidth));
+                        builder.append("|");
+                    } else {
+                        builder.append(StringUtils.repeat("-", cellWidth));
+                        builder.append("+");
+                    }
+
                 } else {
-                    keyMap.put(charStateNumberPair, nextAttr.getCharacter());
+                    builder.append(StringUtils.repeat("-", cellWidth));
+                    builder.append("+");
+                }
+            }
+
+            if (previousRowCharacterValues != null) {
+                int diffPrevRowAttributes = previousRowCharacterValues.size() - rowCharacterValues.size();
+                for (int k = 0; k < diffPrevRowAttributes; k++) {
+                    builder.append(StringUtils.repeat("-", cellWidth));
+                    builder.append("+");
+                }
+            }
+
+            builder.append("\n");
+
+            // Output the item name and the number of occurences of the item in
+            // the key, if it appears more than once
+            builder.append("|");
+            String formattedItemName = itemFormatter.formatItemDescription(it);
+            builder.append(formattedItemName);
+
+            int numItemOccurrences = itemOccurrences.get(it);
+
+            if (numItemOccurrences > 1) {
+                builder.append(StringUtils.repeat(" ", 27 - formattedItemName.length() - Integer.toString(numItemOccurrences).length()));
+                builder.append(numItemOccurrences);
+            } else {
+                builder.append(StringUtils.repeat(" ", 27 - formattedItemName.length()));
+            }
+
+            builder.append("|");
+
+            // Output the values character values used in the. Include values
+            // for confirmatory characters if they are present
+            for (int j = 0; j < row.getNumberOfColumnValues(); j++) {
+                List<MultiStateAttribute> cellCharacterValues = row.getAllCharacterValuesAt(j);
+                for (int k = 0; k < cellCharacterValues.size(); k++) {
+                    MultiStateAttribute cellCharacterValue = cellCharacterValues.get(k);
+                    int characterId = cellCharacterValue.getCharacter().getCharacterId();
+
+                    // Insert spaces to pad out the cell if the character id +
+                    // state
+                    // value are not as wide as the cell width
+                    builder.append(StringUtils.repeat(" ", cellWidth - (Integer.toString(characterId).length() + 1)));
+
+                    builder.append(characterId);
+
+                    // Only 1 state will be ever set - the key generation
+                    // algorithm
+                    // only sets
+                    // Individual states for characters
+                    int stateNumber = cellCharacterValue.getPresentStates().iterator().next();
+                    // Convert state numbers to "A", "B", "C" etc
+                    builder.append((char) (64 + stateNumber));
+
+                    if (cellCharacterValues.size() > 1 && k < cellCharacterValues.size() - 1) {
+                        builder.append(" ");
+                    }
+                }
+
+                builder.append("|");
+            }
+
+            builder.append("\n");
+
+            // If this is the last row, need to print the bottom edge of the
+            // table
+            if (i == key.getNumberOfRows() - 1) {
+                builder.append("+---------------------------+");
+                for (int l = 0; l < rowCharacterValues.size(); l++) {
+                    builder.append(StringUtils.repeat("-", cellWidth));
+                    builder.append("+");
                 }
             }
         }
 
-        int orderedCharacterNumber = 1;
-
-        Map<MultiStateCharacter, Integer> sourceNodeNumbers = new HashMap<MultiStateCharacter, Integer>();
-        for (MultiStateCharacter ch : orderedCharacters) {
-            boolean nodeNumberingDisplayed = false;
-            for (int j = 1; j <= ch.getNumberOfStates(); j++) {
-                StringBuilder builder = new StringBuilder();
-
-                Pair<Character, Integer> charStateNumberPair = new Pair<Character, Integer>(ch, j);
-                Object charOrItem = keyMap.get(charStateNumberPair);
-                if (charOrItem != null) {
-                    if (!nodeNumberingDisplayed) {
-                        builder.append(orderedCharacterNumber);
-                        builder.append("(");
-                        builder.append(sourceNodeNumbers.containsKey(ch) ? sourceNodeNumbers.get(ch) : 0);
-                        builder.append(").");
-                        nodeNumberingDisplayed = true;
-                    }
-
-                    builder.append(StringUtils.repeat(" ", 10 - builder.toString().trim().length()));
-
-                    String descriptionText;
-                    if (displayCharacterNumbers) {
-                        descriptionText = String.format("(%d) %s %s", ch.getCharacterId(), charFormatter.formatCharacterDescription(ch), charFormatter.formatState(ch, j));
-                    } else {
-                        descriptionText = String.format("%s %s", charFormatter.formatCharacterDescription(ch), charFormatter.formatState(ch, j));
-                    }
-
-                    builder.append(Utils.capitaliseFirstWord(descriptionText));
-
-                    if (charOrItem instanceof Item) {
-                        String itemDescription = itemFormatter.formatItemDescription((Item) charOrItem);
-                        builder.append(StringUtils.repeat(".", 78 - builder.toString().length() - itemDescription.length() - 1));
-                        builder.append(" ");
-                        builder.append(itemDescription);
-                    } else {
-                        MultiStateCharacter nextNodeCharacter = (MultiStateCharacter) charOrItem;
-                        int nextNodeCharacterIndex = characterIndices.get((nextNodeCharacter));
-                        builder.append(StringUtils.repeat(".", 78 - builder.toString().length() - Integer.toString(nextNodeCharacterIndex).length() - 1));
-                        builder.append(" ");
-                        builder.append(nextNodeCharacterIndex);
-                        sourceNodeNumbers.put(nextNodeCharacter, orderedCharacterNumber);
-                    }
-
-                    printFile.outputLine(builder.toString());
-                }
-            }
-            orderedCharacterNumber++;
-
-            printFile.outputLine(getNewLine());
-        }
+        printFile.outputLine(builder.toString());
     }
+
+//    private void printBracketedKey(IdentificationKey key, boolean displayCharacterNumbers, PrintFile printFile) {
+//        CharacterFormatter charFormatter = new CharacterFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.REMOVE, true, false);
+//        ItemFormatter itemFormatter = new ItemFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.REMOVE, true, false, false);
+//
+//        List<MultiStateCharacter> orderedCharacters = new ArrayList<MultiStateCharacter>();
+//        Map<List<MultiStateAttribute>, Integer> cellIndices = new HashMap<List<MultiStateAttribute>, Integer>();
+//
+//        int currentCharacterIndex = 1;
+//
+//        for (KeyRow row : key.getRows()) {
+//            for (int i=0; i < row.getNumberOfColumnValues(); i++) {
+//            List<MultiStateAttribute> attrs = row.getAllCharacterValuesAt(i);
+//                if (!cellIndices.containsKey(attrs)) {
+//                    cellIndices.put(attrs, currentCharacterIndex);
+//                    orderedCharacters.add(attrs);
+//                    currentCharacterIndex++;
+//                }
+//            }
+//        }
+//
+//        Map<Pair<Character, Integer>, Object> keyMap = new HashMap<Pair<Character, Integer>, Object>();
+//        for (Pair<Item, List<Attribute>> itemAttrsPair : keyList) {
+//            Item it = itemAttrsPair.getFirst();
+//            List<Attribute> attrs = itemAttrsPair.getSecond();
+//
+//            for (int i = 0; i < attrs.size(); i++) {
+//                MultiStateAttribute currentAttr = (MultiStateAttribute) attrs.get(i);
+//                MultiStateAttribute nextAttr = null;
+//
+//                if (i < attrs.size() - 1) {
+//                    nextAttr = (MultiStateAttribute) attrs.get(i + 1);
+//                }
+//
+//                Pair<Character, Integer> charStateNumberPair = new Pair<Character, Integer>(currentAttr.getCharacter(), currentAttr.getPresentStatesAsList().get(0));
+//
+//                if (nextAttr == null) {
+//                    keyMap.put(charStateNumberPair, it);
+//                } else {
+//                    keyMap.put(charStateNumberPair, nextAttr.getCharacter());
+//                }
+//            }
+//        }
+//
+//        int orderedCharacterNumber = 1;
+//
+//        Map<MultiStateCharacter, Integer> sourceNodeNumbers = new HashMap<MultiStateCharacter, Integer>();
+//        for (MultiStateCharacter ch : orderedCharacters) {
+//            boolean nodeNumberingDisplayed = false;
+//            for (int j = 1; j <= ch.getNumberOfStates(); j++) {
+//                StringBuilder builder = new StringBuilder();
+//
+//                Pair<Character, Integer> charStateNumberPair = new Pair<Character, Integer>(ch, j);
+//                Object charOrItem = keyMap.get(charStateNumberPair);
+//                if (charOrItem != null) {
+//                    if (!nodeNumberingDisplayed) {
+//                        builder.append(orderedCharacterNumber);
+//                        builder.append("(");
+//                        builder.append(sourceNodeNumbers.containsKey(ch) ? sourceNodeNumbers.get(ch) : 0);
+//                        builder.append(").");
+//                        nodeNumberingDisplayed = true;
+//                    }
+//
+//                    builder.append(StringUtils.repeat(" ", 10 - builder.toString().trim().length()));
+//
+//                    String descriptionText;
+//                    if (displayCharacterNumbers) {
+//                        descriptionText = String.format("(%d) %s %s", ch.getCharacterId(), charFormatter.formatCharacterDescription(ch), charFormatter.formatState(ch, j));
+//                    } else {
+//                        descriptionText = String.format("%s %s", charFormatter.formatCharacterDescription(ch), charFormatter.formatState(ch, j));
+//                    }
+//
+//                    builder.append(Utils.capitaliseFirstWord(descriptionText));
+//
+//                    if (charOrItem instanceof Item) {
+//                        String itemDescription = itemFormatter.formatItemDescription((Item) charOrItem);
+//                        builder.append(StringUtils.repeat(".", 78 - builder.toString().length() - itemDescription.length() - 1));
+//                        builder.append(" ");
+//                        builder.append(itemDescription);
+//                    } else {
+//                        MultiStateCharacter nextNodeCharacter = (MultiStateCharacter) charOrItem;
+//                        int nextNodeCharacterIndex = cellIndices.get((nextNodeCharacter));
+//                        builder.append(StringUtils.repeat(".", 78 - builder.toString().length() - Integer.toString(nextNodeCharacterIndex).length() - 1));
+//                        builder.append(" ");
+//                        builder.append(nextNodeCharacterIndex);
+//                        sourceNodeNumbers.put(nextNodeCharacter, orderedCharacterNumber);
+//                    }
+//
+//                    printFile.outputLine(builder.toString());
+//                }
+//            }
+//            orderedCharacterNumber++;
+//
+//            printFile.outputLine(getNewLine());
+//        }
+//    }
 
     private String formatDouble(double d) {
         return String.format("%.2f", d);
