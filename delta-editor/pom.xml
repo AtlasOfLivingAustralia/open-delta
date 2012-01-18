@@ -22,7 +22,6 @@
 	<scm>
 		<connection>scm:svn:http://open-delta.googlecode.com/svn/trunk/</connection>
 		<developerConnection>scm:svn:https://open-delta.googlecode.com/svn/trunk/</developerConnection>
-		<url>http://code.google.com/p/open-delta/</url>
 	</scm>
 	<build>
 		<resources>
