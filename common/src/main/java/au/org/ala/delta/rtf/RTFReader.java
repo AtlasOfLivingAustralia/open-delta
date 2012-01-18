@@ -179,8 +179,7 @@ public class RTFReader {
         }
 
         if (ch != ' ' && ch >= 0) {
-            _stream.unread(ch);
-            _position--;
+            unread(ch);
         }
 
         translateKeyword(keyword.toString(), param, hasParam);
@@ -198,6 +197,19 @@ public class RTFReader {
     	_position++;
         return _stream.read();
     }
+    
+    /**
+     * This method is to allow SpecialKeyword to unread data from the input
+     * stream.
+     * 
+     * @throws IOException
+     *             if there is an error reading from the stream.
+     */
+    void unread(int ch) throws IOException {
+    	_stream.unread(ch);
+        _position--;
+    }
+    
 
     /**
      * This method is to allow SpecialKeyword access to the parser state.

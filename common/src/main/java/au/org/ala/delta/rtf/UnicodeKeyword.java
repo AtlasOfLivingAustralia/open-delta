@@ -49,8 +49,19 @@ public class UnicodeKeyword extends SpecialKeyword {
 		// Convert the code point to one or more characters.
 		char[] characters = Character.toChars(param);
 		
-		// skip the next character.
-		reader.read();
+		// skip the next character, or the next keyword. (e.g. if the
+		// replacement char is > 127 the RTF may be : \u1234\'3f )
+		int ch = reader.read();
+		if (ch == '\\') {
+			ch = reader.read();
+			while (ch >= 0 && ch != ' ' && ch != '\\' && ch != '}' && ch != '{') {
+				ch = reader.read();
+			}
+			if (ch >= 0 && ch != ' ') {
+				reader.unread(ch);
+			}
+		}
+		
 		
 		return characters;
 		

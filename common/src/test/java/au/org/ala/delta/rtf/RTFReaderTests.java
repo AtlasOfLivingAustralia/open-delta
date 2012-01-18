@@ -96,6 +96,17 @@ public class RTFReaderTests extends TestCase {
 		
 		assertEquals(expectedResult, stripped);
 	}
+	
+	
+	public void testUnicodeCharacterAlternativeAsHex() throws IOException {
+		String rtf = "{\\rtf\\ansi\\deff0\\pard\\plain Test unicode \\u63\\'3f }";
+		String stripped = RTFUtils.stripFormatting(rtf);
+		// 08AE is 2222 expressed in Hex.
+		String expectedResult = "Test unicode \u003f";
+		
+		assertEquals(expectedResult, stripped);
+		
+	}
 
 	private String getFileAsString(String resource) throws IOException {
 		URL url = getClass().getResource(resource);
@@ -109,5 +120,7 @@ public class RTFReaderTests extends TestCase {
 		}
 		return stringBuilder.toString();
 	}
+	
+	
 
 }
