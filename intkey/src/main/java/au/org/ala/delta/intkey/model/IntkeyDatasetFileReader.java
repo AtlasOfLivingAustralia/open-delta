@@ -653,7 +653,7 @@ public final class IntkeyDatasetFileReader {
         // If LDep is 0, there are no dependencies. Otherwise dependency data
         // consists of LDep integers, starting at record
         // rpCdep.
-        if (itemFileHeader.getLDep() >= numChars) {
+        if (itemFileHeader.getLDep() >= numChars && itemFileHeader.getRpCdep() > 0) {
             seekToRecord(itemBinFile, itemFileHeader.getRpCdep());
             List<Integer> dependencyData = readIntegerList(itemBinFile, itemFileHeader.getLDep());
             // At the start of the dependency data there is an integer value for
