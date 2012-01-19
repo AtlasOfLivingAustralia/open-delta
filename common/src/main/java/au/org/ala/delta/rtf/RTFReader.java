@@ -198,6 +198,29 @@ public class RTFReader {
         return _stream.read();
     }
     
+    int readNextLiteral() throws IOException {
+    	int ch = read();
+    	if (ch == '\\') {
+    		int next = read();
+    		if (next == '\'') {					 	// \'XX where XX is a hex digit representing an ANSI (cp1252) character
+    			char[] hex = new char[2];
+    			hex[0] = (char) read();
+    			hex[1] = (char) read();    			
+    			ch = Integer.parseInt(new String(hex), 16);
+    		} else if ("{}\\".indexOf(next) >= 0) {	// An escaped control symbol (one of {}\)
+    			return next;
+    		} else {
+    			// The next literal could not be determined - its a control word that doesn't yield a single character. 
+    			// For now just return space. This may indicate an error in the RTF, or that
+    			// we are not correctly handling all literal types
+    			unread(next);
+    			unread(ch);
+    			return ' ';
+    		}
+    	}
+    	return ch;
+    }
+    
     /**
      * This method is to allow SpecialKeyword to unread data from the input
      * stream.

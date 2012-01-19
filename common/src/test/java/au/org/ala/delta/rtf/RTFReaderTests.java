@@ -98,14 +98,39 @@ public class RTFReaderTests extends TestCase {
 	}
 	
 	
-	public void testUnicodeCharacterAlternativeAsHex() throws IOException {
-		String rtf = "{\\rtf\\ansi\\deff0\\pard\\plain Test unicode \\u63\\'3f }";
+	public void testUnicodeCharacterAlternativeAsHex1() throws IOException {
+		String rtf = "{\\rtf\\ansi\\deff0\\pard\\plain Test unicode \\u63\\'3f}";
 		String stripped = RTFUtils.stripFormatting(rtf);
-		// 08AE is 2222 expressed in Hex.
-		String expectedResult = "Test unicode \u003f";
-		
-		assertEquals(expectedResult, stripped);
-		
+		String expectedResult = "Test unicode \u003f";	
+		assertEquals(expectedResult, stripped);		
+	}
+	
+	public void testUnicodeCharacterAlternativeAsHex2() throws IOException {
+		String rtf = "{\\rtf\\ansi\\deff0\\pard\\plain Test unicode \\u63\\}}";
+		String stripped = RTFUtils.stripFormatting(rtf);
+		String expectedResult = "Test unicode \u003f";		
+		assertEquals(expectedResult, stripped);		
+	}
+	
+	public void testUnicodeCharacterAlternativeAsHex3() throws IOException {
+		String rtf = "{\\rtf\\ansi\\deff0\\pard\\plain Test unicode \\u63\\{}";
+		String stripped = RTFUtils.stripFormatting(rtf);
+		String expectedResult = "Test unicode \u003f";		
+		assertEquals(expectedResult, stripped);		
+	}
+	
+	public void testUnicodeCharacterAlternativeAsHex4() throws IOException {
+		String rtf = "{\\rtf\\ansi\\deff0\\pard\\plain Test unicode \\u63\\\\}";
+		String stripped = RTFUtils.stripFormatting(rtf);
+		String expectedResult = "Test unicode \u003f";		
+		assertEquals(expectedResult, stripped);		
+	}
+	
+	public void testUnicodeCharacterAlternativeAsHex5() throws IOException {
+		String rtf = "{\\rtf\\ansi\\deff0\\pard\\plain Test unicode \\u63?}";
+		String stripped = RTFUtils.stripFormatting(rtf);
+		String expectedResult = "Test unicode \u003f";		
+		assertEquals(expectedResult, stripped);		
 	}
 
 	private String getFileAsString(String resource) throws IOException {
