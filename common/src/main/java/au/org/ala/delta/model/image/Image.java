@@ -22,6 +22,7 @@ import org.apache.commons.lang.StringUtils;
 import au.org.ala.delta.model.Illustratable;
 import au.org.ala.delta.model.impl.ImageData;
 import au.org.ala.delta.model.observer.ImageObserver;
+import au.org.ala.delta.rtf.RTFUtils;
 
 /**
  * DELTA data sets support the inclusion of images to illustrate Taxa and
@@ -292,6 +293,7 @@ public class Image {
      */
     public String getSubjectTextOrFileName() {
         String text = getSubjectText();
+        text = RTFUtils.stripFormatting(text).trim();
         if (StringUtils.isEmpty(text)) {
             text = getFileName();
         }

@@ -23,7 +23,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 public class SupportedFileTypes {
 
 	public static FileFilter getSupportedImageFilesFilter() {
-		return new FileNameExtensionFilter("Image files", "gif", "jpeg", "png", "bmp");
+		return new FileNameExtensionFilter("Image files", "gif", "jpg", "png", "bmp", "jpeg");
 	}
 	
 	public static FileFilter getSupportedSoundFilesFilter() {

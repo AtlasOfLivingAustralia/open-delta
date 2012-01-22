@@ -16,6 +16,7 @@ package au.org.ala.delta.model;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -163,6 +164,16 @@ public class ResourceSettings {
         URL fileLocation = null;
 
         List<String> locationsToSearch = getResourcePathLocations();
+
+        // First check to see if the filename is an absolute filename on the file system
+        File file = new File(fileName);
+        if (file.exists() && file.isAbsolute()) {
+        	try {
+        		return file.toURI().toURL();
+        	} catch (MalformedURLException ex) {
+        		// Ignore
+        	}
+        }
 
         // If file cannot be found at any of the resource path locations, also
         // search the
