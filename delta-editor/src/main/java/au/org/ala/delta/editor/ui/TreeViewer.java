@@ -331,6 +331,8 @@ public class TreeViewer extends AbstractDeltaView {
 
         private boolean _valid;
         private TextComponentValidator _validator;
+        private CharacterFormatter _formatter;
+
 
         class EditorPanel extends JPanel {
 
@@ -376,7 +378,8 @@ public class TreeViewer extends AbstractDeltaView {
 
         public NumericTextAttributeCellEditor() {
             super(new JTextField());
-
+            _formatter = new CharacterFormatter(true, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.RETAIN, true, false);
+            
             createEditorComponent();
 
             delegate = new EditorDelegate() {
@@ -417,7 +420,7 @@ public class TreeViewer extends AbstractDeltaView {
             Character character = attribute.getCharacter();
 
             if ((character != null) && (character instanceof NumericCharacter<?>)) {
-                unitsLabel.setText(((NumericCharacter<?>) character).getUnits());
+                unitsLabel.setText(_formatter.formatUnits((NumericCharacter<?>) character));
                 textField.setColumns(10);
             } else {
                 unitsLabel.setText("");
@@ -921,7 +924,7 @@ class DeltaTreeCellRenderer extends DefaultTreeCellRenderer {
                     }
                     return stateValueRenderer;
                 } else if (ch instanceof NumericCharacter) {
-                    setText(getText() + " " + ((NumericCharacter) ch).getUnits());
+                    setText(getText() + " " + _formatter.formatUnits((NumericCharacter) ch));
                 }
             }
         }

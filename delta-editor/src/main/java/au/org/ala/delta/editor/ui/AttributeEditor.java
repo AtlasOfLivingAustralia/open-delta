@@ -571,6 +571,7 @@ public class AttributeEditor extends JPanel implements ValidationListener, Prefe
 	class CharacterRenderer extends DefaultTableCellRenderer {
 
 		private static final long serialVersionUID = 1L;
+		private CharacterFormatter _formatter = new CharacterFormatter(true, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.RETAIN, true, false);
 		
 		@Override
 		public Component getTableCellRendererComponent(JTable table,
@@ -580,7 +581,7 @@ public class AttributeEditor extends JPanel implements ValidationListener, Prefe
 			setIcon(EditorUIUtils.iconForCharacter(ch));
 
 			if (ch instanceof NumericCharacter) {
-				setText(((NumericCharacter<?>) ch).getUnits());
+				setText(_formatter.formatUnits((NumericCharacter<?>) ch));
 			} else {
 				setText("");
 			}
