@@ -31,6 +31,7 @@ public class KeyContext extends DeltaContext {
     double _varyWt;
 
     private int _numberOfConfirmatoryCharacters;
+    private int _stopAfterColumn;
 
     private File _charactersFile;
     private File _itemsFile;
@@ -63,6 +64,8 @@ public class KeyContext extends DeltaContext {
         _rBase = 1.4;
         _reuse = 1.01;
         _varyWt = 0.8;
+
+        _stopAfterColumn = -1;
 
         _charactersFile = new File(_dataDirectory, "kchars");
         _itemsFile = new File(_dataDirectory, "kitems");
@@ -224,9 +227,28 @@ public class KeyContext extends DeltaContext {
     }
 
     public void setNumberOfConfirmatoryCharacters(int numberOfConfirmatoryCharacters) {
-        if (numberOfConfirmatoryCharacters < 1 || numberOfConfirmatoryCharacters > 4) {
-            throw new IllegalArgumentException("Number of confirmatory characters must be between 1 and 4");
+        if (numberOfConfirmatoryCharacters < 0 || numberOfConfirmatoryCharacters > 4) {
+            throw new IllegalArgumentException("Number of confirmatory characters must be between 0 and 4");
         }
         this._numberOfConfirmatoryCharacters = numberOfConfirmatoryCharacters;
     }
+
+    /**
+     * Returns the column after which key generation stops, or -1 if no such
+     * value has been set - in this case, key generation will proceed as far as
+     * possible.
+     * 
+     * @param stopAfterColumn
+     */
+    public int getStopAfterColumn() {
+        return _stopAfterColumn;
+    }
+
+    public void setStopAfterColumn(int stopAfterColumn) {
+        if (stopAfterColumn <= 0) {
+            throw new IllegalArgumentException("Value for STOP AFTER COLUMN must be a positive integer");
+        }
+        this._stopAfterColumn = stopAfterColumn;
+    }
+
 }

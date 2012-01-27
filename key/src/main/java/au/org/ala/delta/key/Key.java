@@ -35,8 +35,8 @@ import java.util.Set;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 
-import au.org.ala.delta.Logger;
 import au.org.ala.delta.DeltaContext.HeadingType;
+import au.org.ala.delta.Logger;
 import au.org.ala.delta.directives.AbstractDeltaContext;
 import au.org.ala.delta.directives.AbstractDirective;
 import au.org.ala.delta.directives.ConforDirectiveParserObserver;
@@ -72,7 +72,6 @@ import au.org.ala.delta.translation.FilteredDataSet;
 import au.org.ala.delta.translation.FilteredItem;
 import au.org.ala.delta.translation.IncludeExcludeDataSetFilter;
 import au.org.ala.delta.translation.PrintFile;
-import au.org.ala.delta.util.Pair;
 import au.org.ala.delta.util.Utils;
 
 public class Key implements DirectiveParserObserver {
@@ -640,8 +639,7 @@ public class Key implements DirectiveParserObserver {
                 printFile.writeBlankLines(2, 0);
             }
 
-            // printBracketedKey(keyList, _context.getAddCharacterNumbers(),
-            // printFile);
+            printBracketedKey(key, _context.getAddCharacterNumbers(), printFile);
             System.out.println("Bracketed key completed");
         }
 
@@ -836,101 +834,200 @@ public class Key implements DirectiveParserObserver {
         printFile.outputLine(builder.toString());
     }
 
-//    private void printBracketedKey(IdentificationKey key, boolean displayCharacterNumbers, PrintFile printFile) {
-//        CharacterFormatter charFormatter = new CharacterFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.REMOVE, true, false);
-//        ItemFormatter itemFormatter = new ItemFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.REMOVE, true, false, false);
-//
-//        List<MultiStateCharacter> orderedCharacters = new ArrayList<MultiStateCharacter>();
-//        Map<List<MultiStateAttribute>, Integer> cellIndices = new HashMap<List<MultiStateAttribute>, Integer>();
-//
-//        int currentCharacterIndex = 1;
-//
-//        for (KeyRow row : key.getRows()) {
-//            for (int i=0; i < row.getNumberOfColumnValues(); i++) {
-//            List<MultiStateAttribute> attrs = row.getAllCharacterValuesAt(i);
-//                if (!cellIndices.containsKey(attrs)) {
-//                    cellIndices.put(attrs, currentCharacterIndex);
-//                    orderedCharacters.add(attrs);
-//                    currentCharacterIndex++;
-//                }
-//            }
-//        }
-//
-//        Map<Pair<Character, Integer>, Object> keyMap = new HashMap<Pair<Character, Integer>, Object>();
-//        for (Pair<Item, List<Attribute>> itemAttrsPair : keyList) {
-//            Item it = itemAttrsPair.getFirst();
-//            List<Attribute> attrs = itemAttrsPair.getSecond();
-//
-//            for (int i = 0; i < attrs.size(); i++) {
-//                MultiStateAttribute currentAttr = (MultiStateAttribute) attrs.get(i);
-//                MultiStateAttribute nextAttr = null;
-//
-//                if (i < attrs.size() - 1) {
-//                    nextAttr = (MultiStateAttribute) attrs.get(i + 1);
-//                }
-//
-//                Pair<Character, Integer> charStateNumberPair = new Pair<Character, Integer>(currentAttr.getCharacter(), currentAttr.getPresentStatesAsList().get(0));
-//
-//                if (nextAttr == null) {
-//                    keyMap.put(charStateNumberPair, it);
-//                } else {
-//                    keyMap.put(charStateNumberPair, nextAttr.getCharacter());
-//                }
-//            }
-//        }
-//
-//        int orderedCharacterNumber = 1;
-//
-//        Map<MultiStateCharacter, Integer> sourceNodeNumbers = new HashMap<MultiStateCharacter, Integer>();
-//        for (MultiStateCharacter ch : orderedCharacters) {
-//            boolean nodeNumberingDisplayed = false;
-//            for (int j = 1; j <= ch.getNumberOfStates(); j++) {
-//                StringBuilder builder = new StringBuilder();
-//
-//                Pair<Character, Integer> charStateNumberPair = new Pair<Character, Integer>(ch, j);
-//                Object charOrItem = keyMap.get(charStateNumberPair);
-//                if (charOrItem != null) {
-//                    if (!nodeNumberingDisplayed) {
-//                        builder.append(orderedCharacterNumber);
-//                        builder.append("(");
-//                        builder.append(sourceNodeNumbers.containsKey(ch) ? sourceNodeNumbers.get(ch) : 0);
-//                        builder.append(").");
-//                        nodeNumberingDisplayed = true;
-//                    }
-//
-//                    builder.append(StringUtils.repeat(" ", 10 - builder.toString().trim().length()));
-//
-//                    String descriptionText;
-//                    if (displayCharacterNumbers) {
-//                        descriptionText = String.format("(%d) %s %s", ch.getCharacterId(), charFormatter.formatCharacterDescription(ch), charFormatter.formatState(ch, j));
-//                    } else {
-//                        descriptionText = String.format("%s %s", charFormatter.formatCharacterDescription(ch), charFormatter.formatState(ch, j));
-//                    }
-//
-//                    builder.append(Utils.capitaliseFirstWord(descriptionText));
-//
-//                    if (charOrItem instanceof Item) {
-//                        String itemDescription = itemFormatter.formatItemDescription((Item) charOrItem);
-//                        builder.append(StringUtils.repeat(".", 78 - builder.toString().length() - itemDescription.length() - 1));
-//                        builder.append(" ");
-//                        builder.append(itemDescription);
-//                    } else {
-//                        MultiStateCharacter nextNodeCharacter = (MultiStateCharacter) charOrItem;
-//                        int nextNodeCharacterIndex = cellIndices.get((nextNodeCharacter));
-//                        builder.append(StringUtils.repeat(".", 78 - builder.toString().length() - Integer.toString(nextNodeCharacterIndex).length() - 1));
-//                        builder.append(" ");
-//                        builder.append(nextNodeCharacterIndex);
-//                        sourceNodeNumbers.put(nextNodeCharacter, orderedCharacterNumber);
-//                    }
-//
-//                    printFile.outputLine(builder.toString());
-//                }
-//            }
-//            orderedCharacterNumber++;
-//
-//            printFile.outputLine(getNewLine());
-//        }
-//    }
+    private void printBracketedKey(IdentificationKey key, boolean displayCharacterNumbers, PrintFile printFile) {
+        CharacterFormatter charFormatter = new CharacterFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.REMOVE, true, false);
+        ItemFormatter itemFormatter = new ItemFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.REMOVE, true, false, false);
+
+        List<List<MultiStateCharacter>> indexCharacters = new ArrayList<List<MultiStateCharacter>>();
+        List<Map<List<MultiStateAttribute>, Object>> indexInfoMaps = new ArrayList<Map<List<MultiStateAttribute>, Object>>();
+
+        Map<List<MultiStateCharacter>, Integer> latestIndexForCharacterGroupMap = new HashMap<List<MultiStateCharacter>, Integer>();
+        Map<Integer, Integer> indexBackReferences = new HashMap<Integer, Integer>();
+
+        // int currentCharacterIndex = 1;
+
+        for (int i = 0; i < key.getNumberOfRows(); i++) {
+            KeyRow row = key.getRowAt(i);
+            for (int j = 0; j < row.getNumberOfColumnValues(); j++) {
+                List<MultiStateAttribute> columnAttrs = row.getAllCharacterValuesAt(j);
+                List<MultiStateCharacter> columnChars = getCharactersFromAttributes(columnAttrs);
+
+                KeyRow previousRow = null;
+
+                // If the corresponding column in the previous row has the same
+                // characters, use the latest existing index for that set of
+                // characters.
+                // Otherwise we need to create a new index
+                boolean newIndex = false;
+                if (i > 0) {
+                    previousRow = key.getRowAt(i - 1);
+                    if (previousRow.getNumberOfColumnValues() >= j + 1) {
+                        if (!rowsMatchCharactersAtColumn(row, previousRow, j)) {
+                            newIndex = true;
+                        }
+                    } else {
+                        newIndex = true;
+                    }
+                }
+
+                int indexForColumn;
+                Map<List<MultiStateAttribute>, Object> indexInfo;
+
+                if (newIndex || !latestIndexForCharacterGroupMap.containsKey(columnChars)) {
+                    indexForColumn = indexCharacters.size();
+                    indexCharacters.add(columnChars);
+                    indexInfo = new HashMap<List<MultiStateAttribute>, Object>();
+                    indexInfoMaps.add(indexInfo);
+                    latestIndexForCharacterGroupMap.put(columnChars, indexForColumn);
+                } else {
+                    indexForColumn = latestIndexForCharacterGroupMap.get(columnChars);
+                    indexInfo = indexInfoMaps.get(indexForColumn);
+                }
+
+                if (j == row.getNumberOfColumnValues() - 1) {
+                    indexInfo.put(columnAttrs, row.getItem());
+                } else {
+                    List<MultiStateAttribute> nextColumnAttrs = row.getAllCharacterValuesAt(j + 1);
+                    List<MultiStateCharacter> nextColumnChars = getCharactersFromAttributes(nextColumnAttrs);
+
+                    // Get the index for the next column. If no index has been recorded for the group of characters, or
+                    // the group of characters is different to the corresponding column in the previous row, then we
+                    // need to create a new 
+                    int indexForNextColumn;
+                    if (latestIndexForCharacterGroupMap.containsKey(nextColumnChars)) {
+                        indexForNextColumn = latestIndexForCharacterGroupMap.get(nextColumnChars);
+                        
+                        if (i > 0) {
+                            if (previousRow.getNumberOfColumnValues() >= j + 2) {
+                                if (!rowsMatchCharactersAtColumn(row, previousRow, j + 1)) {
+                                    indexForNextColumn = indexCharacters.size();
+                                }
+                            } else {
+                                indexForNextColumn = indexCharacters.size();
+                            }
+                        }
+                    } else {
+                        indexForNextColumn = indexCharacters.size();
+                    }
+
+                    indexInfo.put(columnAttrs, indexForNextColumn);
+                    indexBackReferences.put(indexForNextColumn, indexForColumn);
+                }
+            }
+        }
+
+         System.out.println("TODO - print bracketed key");
+
+        // Map<Pair<Character, Integer>, Object> keyMap = new
+        // HashMap<Pair<Character, Integer>, Object>();
+        // for (Pair<Item, List<Attribute>> itemAttrsPair : keyList) {
+        // Item it = itemAttrsPair.getFirst();
+        // List<Attribute> attrs = itemAttrsPair.getSecond();
+        //
+        // for (int i = 0; i < attrs.size(); i++) {
+        // MultiStateAttribute currentAttr = (MultiStateAttribute) attrs.get(i);
+        // MultiStateAttribute nextAttr = null;
+        //
+        // if (i < attrs.size() - 1) {
+        // nextAttr = (MultiStateAttribute) attrs.get(i + 1);
+        // }
+        //
+        // Pair<Character, Integer> charStateNumberPair = new Pair<Character,
+        // Integer>(currentAttr.getCharacter(),
+        // currentAttr.getPresentStatesAsList().get(0));
+        //
+        // if (nextAttr == null) {
+        // keyMap.put(charStateNumberPair, it);
+        // } else {
+        // keyMap.put(charStateNumberPair, nextAttr.getCharacter());
+        // }
+        // }
+        // }
+
+        // int orderedCharacterNumber = 1;
+        //
+        // Map<MultiStateCharacter, Integer> sourceNodeNumbers = new
+        // HashMap<MultiStateCharacter, Integer>();
+        // for (MultiStateCharacter ch : indexCharacters) {
+        // boolean nodeNumberingDisplayed = false;
+        // for (int j = 1; j <= ch.getNumberOfStates(); j++) {
+        // StringBuilder builder = new StringBuilder();
+        //
+        // Pair<Character, Integer> charStateNumberPair = new Pair<Character,
+        // Integer>(ch, j);
+        // Object charOrItem = keyMap.get(charStateNumberPair);
+        // if (charOrItem != null) {
+        // if (!nodeNumberingDisplayed) {
+        // builder.append(orderedCharacterNumber);
+        // builder.append("(");
+        // builder.append(sourceNodeNumbers.containsKey(ch) ?
+        // sourceNodeNumbers.get(ch) : 0);
+        // builder.append(").");
+        // nodeNumberingDisplayed = true;
+        // }
+        //
+        // builder.append(StringUtils.repeat(" ", 10 -
+        // builder.toString().trim().length()));
+        //
+        // String descriptionText;
+        // if (displayCharacterNumbers) {
+        // descriptionText = String.format("(%d) %s %s", ch.getCharacterId(),
+        // charFormatter.formatCharacterDescription(ch),
+        // charFormatter.formatState(ch, j));
+        // } else {
+        // descriptionText = String.format("%s %s",
+        // charFormatter.formatCharacterDescription(ch),
+        // charFormatter.formatState(ch, j));
+        // }
+        //
+        // builder.append(Utils.capitaliseFirstWord(descriptionText));
+        //
+        // if (charOrItem instanceof Item) {
+        // String itemDescription = itemFormatter.formatItemDescription((Item)
+        // charOrItem);
+        // builder.append(StringUtils.repeat(".", 78 -
+        // builder.toString().length() - itemDescription.length() - 1));
+        // builder.append(" ");
+        // builder.append(itemDescription);
+        // } else {
+        // MultiStateCharacter nextNodeCharacter = (MultiStateCharacter)
+        // charOrItem;
+        // int nextNodeCharacterIndex = cellIndices.get((nextNodeCharacter));
+        // builder.append(StringUtils.repeat(".", 78 -
+        // builder.toString().length() -
+        // Integer.toString(nextNodeCharacterIndex).length() - 1));
+        // builder.append(" ");
+        // builder.append(nextNodeCharacterIndex);
+        // sourceNodeNumbers.put(nextNodeCharacter, orderedCharacterNumber);
+        // }
+        //
+        // printFile.outputLine(builder.toString());
+        // }
+        // }
+        // orderedCharacterNumber++;
+        //
+        // printFile.outputLine(getNewLine());
+        // }
+    }
+
+    private List<MultiStateCharacter> getCharactersFromAttributes(List<MultiStateAttribute> attrs) {
+        List<MultiStateCharacter> chars = new ArrayList<MultiStateCharacter>();
+        for (MultiStateAttribute attr : attrs) {
+            chars.add(attr.getCharacter());
+        }
+
+        return chars;
+    }
+
+    private boolean rowsMatchCharactersAtColumn(KeyRow row1, KeyRow row2, int columnIndex) {
+        List<MultiStateAttribute> row1ColumnAttrs = row1.getAllCharacterValuesAt(columnIndex);
+        List<MultiStateCharacter> row1ColumnChars = getCharactersFromAttributes(row1ColumnAttrs);
+
+        List<MultiStateAttribute> row2ColumnAttrs = row2.getAllCharacterValuesAt(columnIndex);
+        List<MultiStateCharacter> row2ColumnChars = getCharactersFromAttributes(row2ColumnAttrs);
+
+        return row1ColumnChars.equals(row2ColumnChars);
+    }
 
     private String formatDouble(double d) {
         return String.format("%.2f", d);
