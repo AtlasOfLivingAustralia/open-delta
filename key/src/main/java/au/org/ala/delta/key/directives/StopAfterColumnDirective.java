@@ -6,6 +6,11 @@ import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.key.KeyContext;
 
 public class StopAfterColumnDirective extends AbstractIntegerDirective {
+    
+    public StopAfterColumnDirective() {
+        super("stop", "after", "column");
+        
+    }
 
     @Override
     protected void processInteger(DeltaContext context, int stopAtColumn) throws Exception {

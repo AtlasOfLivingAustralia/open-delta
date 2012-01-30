@@ -21,8 +21,10 @@ import java.io.InputStreamReader;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -86,6 +88,9 @@ public class Key implements DirectiveParserObserver {
     private SimpleDateFormat _dateFormat = new SimpleDateFormat("d-MMM-yyyy");
 
     private ConforDirectiveParserObserver _nestedObserver;
+
+    private CharacterFormatter _charFormatter = new CharacterFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.REMOVE, true, false);
+    private ItemFormatter _itemFormatter = new ItemFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.REMOVE, true, false, false);
 
     /**
      * @param args
@@ -272,23 +277,28 @@ public class Key implements DirectiveParserObserver {
 
         if (specimenAvailableTaxa.size() == 0) {
             return;
-        } else if (specimenAvailableTaxa.size() == 1) {
-            // If only one taxon is available, it has successfully been
-            // identified. Add the taxon and the character values used to
-            // identify it to the key.
+        } else if (specimenAvailableTaxa.size() == 1 || (_context.getStopAfterColumn() != -1 && specimen.getUsedCharacters().size() == _context.getStopAfterColumn())) {
+            // Add a row to the table if a taxon has been identified (only 1
+            // taxon remains available)
 
-            KeyRow row = new KeyRow();
-            row.setItem(specimenAvailableTaxa.iterator().next());
+            // if the column limit set using the STOP AFTER COLUMN directive has
+            // been reached, add a row for each remaining taxon
+            // with the used characters
 
-            List<Attribute> attrList = new ArrayList<Attribute>();
-            for (Character ch : specimen.getUsedCharacters()) {
-                MultiStateAttribute mainCharacterValue = (MultiStateAttribute) specimen.getAttributeForCharacter(ch);
-                row.addColumnValue(mainCharacterValue, confirmatoryCharacterValues.get(ch));
+            for (Item taxon : specimenAvailableTaxa) {
+                KeyRow row = new KeyRow();
+                row.setItem(taxon);
 
-                attrList.add(specimen.getAttributeForCharacter(ch));
+                List<Attribute> attrList = new ArrayList<Attribute>();
+                for (Character ch : specimen.getUsedCharacters()) {
+                    MultiStateAttribute mainCharacterValue = (MultiStateAttribute) specimen.getAttributeForCharacter(ch);
+                    row.addColumnValue(mainCharacterValue, confirmatoryCharacterValues.get(ch));
+
+                    attrList.add(specimen.getAttributeForCharacter(ch));
+                }
+
+                key.addRow(row);
             }
-
-            key.addRow(row);
         } else {
             // These won't be in order but that doesn't matter - best orders
             // stuff itself
@@ -835,10 +845,8 @@ public class Key implements DirectiveParserObserver {
     }
 
     private void printBracketedKey(IdentificationKey key, boolean displayCharacterNumbers, PrintFile printFile) {
-        CharacterFormatter charFormatter = new CharacterFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.REMOVE, true, false);
-        ItemFormatter itemFormatter = new ItemFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.REMOVE, true, false, false);
-
-        List<List<MultiStateCharacter>> indexCharacters = new ArrayList<List<MultiStateCharacter>>();
+        // List<List<MultiStateCharacter>> indexCharacters = new
+        // ArrayList<List<MultiStateCharacter>>();
         List<Map<List<MultiStateAttribute>, Object>> indexInfoMaps = new ArrayList<Map<List<MultiStateAttribute>, Object>>();
 
         Map<List<MultiStateCharacter>, Integer> latestIndexForCharacterGroupMap = new HashMap<List<MultiStateCharacter>, Integer>();
@@ -874,8 +882,8 @@ public class Key implements DirectiveParserObserver {
                 Map<List<MultiStateAttribute>, Object> indexInfo;
 
                 if (newIndex || !latestIndexForCharacterGroupMap.containsKey(columnChars)) {
-                    indexForColumn = indexCharacters.size();
-                    indexCharacters.add(columnChars);
+                    indexForColumn = indexInfoMaps.size();
+                    // indexCharacters.add(columnChars);
                     indexInfo = new HashMap<List<MultiStateAttribute>, Object>();
                     indexInfoMaps.add(indexInfo);
                     latestIndexForCharacterGroupMap.put(columnChars, indexForColumn);
@@ -885,29 +893,38 @@ public class Key implements DirectiveParserObserver {
                 }
 
                 if (j == row.getNumberOfColumnValues() - 1) {
-                    indexInfo.put(columnAttrs, row.getItem());
+                    if (indexInfo.containsKey(columnAttrs)) {
+                        List<Item> taxaList = (List<Item>) indexInfo.get(columnAttrs);
+                        taxaList.add(row.getItem());
+                    } else {
+                        List<Item> taxaList = new ArrayList<Item>();
+                        taxaList.add(row.getItem());
+                        indexInfo.put(columnAttrs, taxaList);
+                    }
                 } else {
                     List<MultiStateAttribute> nextColumnAttrs = row.getAllCharacterValuesAt(j + 1);
                     List<MultiStateCharacter> nextColumnChars = getCharactersFromAttributes(nextColumnAttrs);
 
-                    // Get the index for the next column. If no index has been recorded for the group of characters, or
-                    // the group of characters is different to the corresponding column in the previous row, then we
-                    // need to create a new 
+                    // Get the index for the next column. If no index has been
+                    // recorded for the group of characters, or
+                    // the group of characters is different to the corresponding
+                    // column in the previous row, then we
+                    // need to create a new
                     int indexForNextColumn;
                     if (latestIndexForCharacterGroupMap.containsKey(nextColumnChars)) {
                         indexForNextColumn = latestIndexForCharacterGroupMap.get(nextColumnChars);
-                        
+
                         if (i > 0) {
                             if (previousRow.getNumberOfColumnValues() >= j + 2) {
                                 if (!rowsMatchCharactersAtColumn(row, previousRow, j + 1)) {
-                                    indexForNextColumn = indexCharacters.size();
+                                    indexForNextColumn = indexInfoMaps.size();
                                 }
                             } else {
-                                indexForNextColumn = indexCharacters.size();
+                                indexForNextColumn = indexInfoMaps.size();
                             }
                         }
                     } else {
-                        indexForNextColumn = indexCharacters.size();
+                        indexForNextColumn = indexInfoMaps.size();
                     }
 
                     indexInfo.put(columnAttrs, indexForNextColumn);
@@ -916,98 +933,73 @@ public class Key implements DirectiveParserObserver {
             }
         }
 
-         System.out.println("TODO - print bracketed key");
+        System.out.println("TODO - print bracketed key");
 
-        // Map<Pair<Character, Integer>, Object> keyMap = new
-        // HashMap<Pair<Character, Integer>, Object>();
-        // for (Pair<Item, List<Attribute>> itemAttrsPair : keyList) {
-        // Item it = itemAttrsPair.getFirst();
-        // List<Attribute> attrs = itemAttrsPair.getSecond();
-        //
-        // for (int i = 0; i < attrs.size(); i++) {
-        // MultiStateAttribute currentAttr = (MultiStateAttribute) attrs.get(i);
-        // MultiStateAttribute nextAttr = null;
-        //
-        // if (i < attrs.size() - 1) {
-        // nextAttr = (MultiStateAttribute) attrs.get(i + 1);
-        // }
-        //
-        // Pair<Character, Integer> charStateNumberPair = new Pair<Character,
-        // Integer>(currentAttr.getCharacter(),
-        // currentAttr.getPresentStatesAsList().get(0));
-        //
-        // if (nextAttr == null) {
-        // keyMap.put(charStateNumberPair, it);
-        // } else {
-        // keyMap.put(charStateNumberPair, nextAttr.getCharacter());
-        // }
-        // }
-        // }
+        for (int i = 0; i < indexInfoMaps.size(); i++) {
+            Map<List<MultiStateAttribute>, Object> indexInfoMap = indexInfoMaps.get(i);
 
-        // int orderedCharacterNumber = 1;
-        //
-        // Map<MultiStateCharacter, Integer> sourceNodeNumbers = new
-        // HashMap<MultiStateCharacter, Integer>();
-        // for (MultiStateCharacter ch : indexCharacters) {
-        // boolean nodeNumberingDisplayed = false;
-        // for (int j = 1; j <= ch.getNumberOfStates(); j++) {
-        // StringBuilder builder = new StringBuilder();
-        //
-        // Pair<Character, Integer> charStateNumberPair = new Pair<Character,
-        // Integer>(ch, j);
-        // Object charOrItem = keyMap.get(charStateNumberPair);
-        // if (charOrItem != null) {
-        // if (!nodeNumberingDisplayed) {
-        // builder.append(orderedCharacterNumber);
-        // builder.append("(");
-        // builder.append(sourceNodeNumbers.containsKey(ch) ?
-        // sourceNodeNumbers.get(ch) : 0);
-        // builder.append(").");
-        // nodeNumberingDisplayed = true;
-        // }
-        //
-        // builder.append(StringUtils.repeat(" ", 10 -
-        // builder.toString().trim().length()));
-        //
-        // String descriptionText;
-        // if (displayCharacterNumbers) {
-        // descriptionText = String.format("(%d) %s %s", ch.getCharacterId(),
-        // charFormatter.formatCharacterDescription(ch),
-        // charFormatter.formatState(ch, j));
-        // } else {
-        // descriptionText = String.format("%s %s",
-        // charFormatter.formatCharacterDescription(ch),
-        // charFormatter.formatState(ch, j));
-        // }
-        //
-        // builder.append(Utils.capitaliseFirstWord(descriptionText));
-        //
-        // if (charOrItem instanceof Item) {
-        // String itemDescription = itemFormatter.formatItemDescription((Item)
-        // charOrItem);
-        // builder.append(StringUtils.repeat(".", 78 -
-        // builder.toString().length() - itemDescription.length() - 1));
-        // builder.append(" ");
-        // builder.append(itemDescription);
-        // } else {
-        // MultiStateCharacter nextNodeCharacter = (MultiStateCharacter)
-        // charOrItem;
-        // int nextNodeCharacterIndex = cellIndices.get((nextNodeCharacter));
-        // builder.append(StringUtils.repeat(".", 78 -
-        // builder.toString().length() -
-        // Integer.toString(nextNodeCharacterIndex).length() - 1));
-        // builder.append(" ");
-        // builder.append(nextNodeCharacterIndex);
-        // sourceNodeNumbers.put(nextNodeCharacter, orderedCharacterNumber);
-        // }
-        //
-        // printFile.outputLine(builder.toString());
-        // }
-        // }
-        // orderedCharacterNumber++;
-        //
-        // printFile.outputLine(getNewLine());
-        // }
+            int backReference;
+            if (i == 0) {
+                backReference = 0;
+            } else {
+                backReference = indexBackReferences.get(i) + 1;
+            }
+
+            outputBrackedKeyIndex(printFile, i + 1, backReference, indexInfoMap);
+        }
+    }
+
+    private void outputBrackedKeyIndex(PrintFile printFile, int indexNumber, int backReference, Map<List<MultiStateAttribute>, Object> attributeLinks) {
+        StringBuilder builder = new StringBuilder();
+
+        builder.append(indexNumber);
+        builder.append(" ");
+        builder.append("(").append(backReference).append(")").append(".");
+
+        // Sort attribute lists by the first state values of the first attribute - any other attributes in the list are for
+        // confirmatory characters, these will not effect the sort order.
+        List<List<MultiStateAttribute>> sortedAttributeLists = new ArrayList<List<MultiStateAttribute>>(attributeLinks.keySet());
+        Collections.sort(sortedAttributeLists, new Comparator<List<MultiStateAttribute>>() {
+
+            @Override
+            public int compare(List<MultiStateAttribute> l1, List<MultiStateAttribute> l2) {
+                MultiStateAttribute l1FirstAttr = l1.get(0);
+                MultiStateAttribute l2FirstAttr = l2.get(0);
+
+                int l1FirstAttrStateNumber = l1FirstAttr.getPresentStates().iterator().next();
+                int l2FirstAttrStateNumber = l2FirstAttr.getPresentStates().iterator().next();
+
+                return Integer.valueOf(l1FirstAttrStateNumber).compareTo(l2FirstAttrStateNumber);
+            }
+
+        });
+
+        for (List<MultiStateAttribute> attrs : sortedAttributeLists) {
+            for (MultiStateAttribute attr : attrs) {
+                builder.append(_charFormatter.formatCharacterDescription(attr.getCharacter()));
+                builder.append(" ");
+                builder.append(_charFormatter.formatState(attr.getCharacter(), attr.getPresentStates().iterator().next()));
+                builder.append(" ");
+            }
+            builder.append(".....");
+
+            Object itemListOrIndexNumber = attributeLinks.get(attrs);
+
+            if (itemListOrIndexNumber instanceof List<?>) {
+                List<Item> taxa = (List<Item>) itemListOrIndexNumber;
+                for (Item taxon : taxa) {
+                    builder.append(_itemFormatter.formatItemDescription(taxon));
+                    builder.append(" ");
+                }
+            } else {
+                int forwardReference = (Integer) itemListOrIndexNumber;
+                builder.append(forwardReference + 1);
+            }
+
+            builder.append("\n");
+        }
+
+        System.out.println(builder.toString());
     }
 
     private List<MultiStateCharacter> getCharactersFromAttributes(List<MultiStateAttribute> attrs) {
