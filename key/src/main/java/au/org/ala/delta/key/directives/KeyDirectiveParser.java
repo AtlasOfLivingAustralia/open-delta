@@ -16,8 +16,6 @@ package au.org.ala.delta.key.directives;
 
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
-
 import au.org.ala.delta.directives.CharacterReliabilities;
 import au.org.ala.delta.directives.Comment;
 import au.org.ala.delta.directives.DirectiveParser;
@@ -27,7 +25,6 @@ import au.org.ala.delta.directives.Heading;
 import au.org.ala.delta.directives.IncludeCharacters;
 import au.org.ala.delta.directives.IncludeItems;
 import au.org.ala.delta.directives.ItemAbundances;
-import au.org.ala.delta.directives.PrintComment;
 import au.org.ala.delta.directives.PrintWidth;
 import au.org.ala.delta.directives.TypeSettingMarks;
 import au.org.ala.delta.key.KeyContext;
@@ -67,6 +64,11 @@ public class KeyDirectiveParser extends DirectiveParser<KeyContext> {
         instance.registerDirective(new TypeSettingMarks());
         instance.registerDirective(new KeyPrintCommentDirective());
         instance.registerDirective(new StopAfterColumnDirective());
+        
+        // No-op directives implemented to allow backward compatibility of old scripts
+        instance.registerDirective(new DumpDirective());
+        instance.registerDirective(new MatrixDumpDirective());
+        instance.registerDirective(new StorageFactorDirective());
         return instance;
     }
 
