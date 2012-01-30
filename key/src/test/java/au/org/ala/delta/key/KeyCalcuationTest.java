@@ -32,14 +32,14 @@ public class KeyCalcuationTest extends TestCase {
         key.calculateKey(directivesFile);
     }
     
-//    @Test
-//    public void testLoad2() throws Exception {
-//        URL directivesFileURL = getClass().getResource("/controlling_characters_simple/key");
-//        File directivesFile = new File(directivesFileURL.toURI());
-//
-//        Key key = new Key(directivesFile);
-//        key.calculateKey(directivesFile);
-//    }
+    @Test
+    public void testLoad2() throws Exception {
+        URL directivesFileURL = getClass().getResource("/controlling_characters_simple/key");
+        File directivesFile = new File(directivesFileURL.toURI());
+
+        Key key = new Key(directivesFile);
+        key.calculateKey(directivesFile);
+    }
    
 //    @Test
 //    public void testLoadPonerini() throws Exception {

@@ -33,7 +33,7 @@ public class InputFileTest extends TestCase {
         
         assertEquals(3d, key.getContext().getABase());
         assertEquals(3d, key.getContext().getRBase());
-        assertEquals(3d, key.getContext().getVaryWt());
+        assertEquals(1d, key.getContext().getVaryWt());
     }
     
     @Test

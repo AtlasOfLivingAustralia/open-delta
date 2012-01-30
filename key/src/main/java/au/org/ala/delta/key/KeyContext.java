@@ -114,6 +114,9 @@ public class KeyContext extends DeltaContext {
     }
 
     public void setVaryWt(double varyWt) {
+        if (varyWt < 0 || varyWt > 1) {
+            throw new IllegalArgumentException("VARYWT must be a real number between 0 and 1");
+        }
         this._varyWt = varyWt;
     }
 
