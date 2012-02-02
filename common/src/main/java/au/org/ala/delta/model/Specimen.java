@@ -28,6 +28,9 @@ public class Specimen {
 
     private DeltaDataSet _dataset;
 
+    // If true, all character dependencies are ignored.
+    boolean _ignoreCharacterDependencies;
+
     boolean _matchInapplicables;
     boolean _matchUnknowns;
     MatchType _matchType;
@@ -46,13 +49,15 @@ public class Specimen {
 
     private Map<Item, Set<Character>> _taxonDifferences;
 
-    public Specimen(DeltaDataSet dataset, boolean matchInapplicables, boolean matchUnknowns, MatchType matchType) {
+    public Specimen(DeltaDataSet dataset, boolean ignoreCharacterDependencies, boolean matchInapplicables, boolean matchUnknowns, MatchType matchType) {
         _characterValues = new LinkedHashMap<Character, Attribute>();
 
         _dataset = dataset;
 
         _characterInapplicabilityCounts = new HashMap<Character, Integer>();
 
+        _ignoreCharacterDependencies = ignoreCharacterDependencies;
+        
         _matchInapplicables = matchInapplicables;
         _matchUnknowns = matchUnknowns;
         _matchType = matchType;
@@ -66,8 +71,8 @@ public class Specimen {
 
     // Used to copy values out of an existing specimen and apply new match
     // settings
-    public Specimen(DeltaDataSet dataset, boolean matchInapplicables, boolean matchUnknowns, MatchType matchType, Specimen oldSpecimen) {
-        this(dataset, matchInapplicables, matchUnknowns, matchType);
+    public Specimen(DeltaDataSet dataset, boolean ignoreCharacterDependencies, boolean matchInapplicables, boolean matchUnknowns, MatchType matchType, Specimen oldSpecimen) {
+        this(dataset, ignoreCharacterDependencies, matchInapplicables, matchUnknowns, matchType);
 
         for (Character ch : oldSpecimen.getUsedCharacters()) {
             setAttributeForCharacter(ch, oldSpecimen.getAttributeForCharacter(ch));
@@ -106,20 +111,23 @@ public class Specimen {
             // If this is a controlling character, also need to remove values
             // for
             // any dependent characters
-            for (CharacterDependency cd : ch.getDependentCharacters()) {
-                // This is a controlling character, so that value to remove must
-                // be multistate
-                MultiStateAttribute msAttr = (MultiStateAttribute) attrToRemove;
+            if (!_ignoreCharacterDependencies) {
+                for (CharacterDependency cd : ch.getDependentCharacters()) {
+                    // This is a controlling character, so that value to remove
+                    // must
+                    // be multistate
+                    MultiStateAttribute msAttr = (MultiStateAttribute) attrToRemove;
 
-                for (int dependentCharId : cd.getDependentCharacterIds()) {
-                    Character dependentCharacter = _dataset.getCharacter(dependentCharId);
-                    removeValueForCharacter(dependentCharacter);
+                    for (int dependentCharId : cd.getDependentCharacterIds()) {
+                        Character dependentCharacter = _dataset.getCharacter(dependentCharId);
+                        removeValueForCharacter(dependentCharacter);
 
-                    // If this character was inapplicable due to its value,
-                    // update the inapplicablity count for it
-                    // and its dependants
-                    if (cd.getStates().containsAll(msAttr.getPresentStates())) {
-                        processPreviouslyInapplicableCharacter(dependentCharacter);
+                        // If this character was inapplicable due to its value,
+                        // update the inapplicablity count for it
+                        // and its dependants
+                        if (cd.getStates().containsAll(msAttr.getPresentStates())) {
+                            processPreviouslyInapplicableCharacter(dependentCharacter);
+                        }
                     }
                 }
             }
@@ -157,25 +165,30 @@ public class Specimen {
 
         // if there are controlling characters, check that their values have
         // been set.
-//        for (CharacterDependency cd : ch.getControllingCharacters()) {
-//            Character controllingChar = _dataset.getCharacter(cd.getControllingCharacterId());
-//            if (!hasValueFor(controllingChar)) {
-//                throw new IllegalStateException(String.format("Cannot set value for character %s - controlling character %s has not been set", ch.getCharacterId(), controllingChar.getCharacterId()));
-//            }
-//        }
+        if (!_ignoreCharacterDependencies) {
+            for (CharacterDependency cd : ch.getControllingCharacters()) {
+                Character controllingChar = _dataset.getCharacter(cd.getControllingCharacterId());
+                if (!hasValueFor(controllingChar)) {
+                    throw new IllegalStateException(String.format("Cannot set value for character %s - controlling character %s has not been set", ch.getCharacterId(),
+                            controllingChar.getCharacterId()));
+                }
+            }
+        }
 
         _characterValues.put(ch, attr);
 
-        for (CharacterDependency cd : ch.getDependentCharacters()) {
-            // ch is a controlling character and therefore value must be a
-            // multistate value
-            MultiStateAttribute msAttr = (MultiStateAttribute) attr;
+        if (!_ignoreCharacterDependencies) {
+            for (CharacterDependency cd : ch.getDependentCharacters()) {
+                // ch is a controlling character and therefore value must be a
+                // multistate value
+                MultiStateAttribute msAttr = (MultiStateAttribute) attr;
 
-            if (cd.getStates().containsAll(msAttr.getPresentStates())) {
-                for (int depCharId : cd.getDependentCharacterIds()) {
-                    Character dependentChar = _dataset.getCharacter(depCharId);
-                    removeValueForCharacter(dependentChar);
-                    processNewlyInapplicableCharacter(dependentChar);
+                if (cd.getStates().containsAll(msAttr.getPresentStates())) {
+                    for (int depCharId : cd.getDependentCharacterIds()) {
+                        Character dependentChar = _dataset.getCharacter(depCharId);
+                        removeValueForCharacter(dependentChar);
+                        processNewlyInapplicableCharacter(dependentChar);
+                    }
                 }
             }
         }
@@ -196,9 +209,11 @@ public class Specimen {
             throw new IllegalStateException(String.format("Character %s not inapplicable", ch.getCharacterId()));
         }
 
-        for (CharacterDependency cd : ch.getDependentCharacters()) {
-            for (int depCharId : cd.getDependentCharacterIds()) {
-                processPreviouslyInapplicableCharacter(_dataset.getCharacter(depCharId));
+        if (!_ignoreCharacterDependencies) {
+            for (CharacterDependency cd : ch.getDependentCharacters()) {
+                for (int depCharId : cd.getDependentCharacterIds()) {
+                    processPreviouslyInapplicableCharacter(_dataset.getCharacter(depCharId));
+                }
             }
         }
     }
@@ -210,9 +225,11 @@ public class Specimen {
             _characterInapplicabilityCounts.put(ch, 1);
         }
 
-        for (CharacterDependency cd : ch.getDependentCharacters()) {
-            for (int depCharId : cd.getDependentCharacterIds()) {
-                processNewlyInapplicableCharacter(_dataset.getCharacter(depCharId));
+        if (!_ignoreCharacterDependencies) {
+            for (CharacterDependency cd : ch.getDependentCharacters()) {
+                for (int depCharId : cd.getDependentCharacterIds()) {
+                    processNewlyInapplicableCharacter(_dataset.getCharacter(depCharId));
+                }
             }
         }
     }
@@ -246,19 +263,11 @@ public class Specimen {
                 throw new RuntimeException(String.format("Unrecognised CharacterValue subtype %s", specimenAttr.getClass().getName()));
             }
 
-            // int currentDiffCount = 0;
-            // if (_taxonDifferences.containsKey(taxon)) {
-            // currentDiffCount = _taxonDifferences.get(taxon);
-            // }
-
             Set<Character> differingCharacters = _taxonDifferences.get(taxon);
 
             if (removed && !match) {
-                // _taxonDifferences.put(taxon, Math.max(0, currentDiffCount -
-                // 1));
                 differingCharacters.remove(specimenAttr.getCharacter());
             } else if (!removed && !match) {
-                // _taxonDifferences.put(taxon, currentDiffCount + 1);
                 differingCharacters.add(specimenAttr.getCharacter());
             }
         }

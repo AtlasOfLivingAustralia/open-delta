@@ -99,7 +99,7 @@ public class KeyItemsFileReader {
 
             currentRecord += recordsSpannedByBytes(allAttributesData.length);
         }
-        
+
         _context.setMaximumNumberOfItems(_dataset.getMaximumNumberOfItems());
     }
 
@@ -109,7 +109,11 @@ public class KeyItemsFileReader {
         for (int i = 0; i < _header.getNumberOfItems(); i++) {
             int itemNumber = i + 1;
             float abundance = itemAbundances.get(i);
-            _context.addItemAbundancy(itemNumber, abundance);
+            
+            // Item abundancy may have already been set in the directives file
+            if (!_context.itemAbundancySet(itemNumber)) {
+                _context.addItemAbundancy(itemNumber, abundance);
+            }
         }
     }
 
@@ -132,14 +136,24 @@ public class KeyItemsFileReader {
                 }
             }
 
+            // unknown is treated as variable (all states available) unless the
+            // TREAT UNKNOWN AS INAPPLICABLE directive has been used.
+            if (presentStates.isEmpty() && !_context.getTreatUnknownAsInapplicable()) {
+                for (int j = 0; j < ch.getNumberOfStates(); j++) {
+                    int stateNumber = j + 1;
+                    presentStates.add(stateNumber);
+                }
+            }
+
             // TODO bit of a hack here, as DefaultAttributeData can currently
             // only be set using a String.
             // Will be able to fix this up when we switch to using a SlotFile
             // based dataset.
             try {
-            	msAttr.setValueFromString(StringUtils.join(presentStates, "/"));
+                msAttr.setValueFromString(StringUtils.join(presentStates, "/"));
+            } catch (DirectiveException e) {
+                throw new RuntimeException(e);
             }
-            catch (DirectiveException e) {}
         }
     }
 

@@ -10,6 +10,7 @@ import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
 
+import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.best.Best;
 import au.org.ala.delta.best.Best.OrderingType;
 import au.org.ala.delta.model.Attribute;
@@ -44,8 +45,12 @@ public class KeyBest {
      *         the characters can be obtained by getting the keyset of the
      *         supplied map
      */
-    public static LinkedHashMap<au.org.ala.delta.model.Character, Double> orderBest(DeltaDataSet dataset, List<Integer> availableCharacterNumbers, List<Integer> availableTaxaNumbers, double rBase,
-            double varyWt) {
+    public static LinkedHashMap<au.org.ala.delta.model.Character, Double> orderBest(DeltaContext context, List<Integer> availableCharacterNumbers, List<Integer> availableTaxaNumbers, double rBase,
+            double aBase, double reuse, double varyWt) {
+        
+        
+        DeltaDataSet dataset = context.getDataSet();
+        
         LinkedHashMap<Character, Double> retMap = new LinkedHashMap<Character, Double>();
 
         if (availableCharacterNumbers.isEmpty() || availableTaxaNumbers.isEmpty()) {
@@ -59,14 +64,24 @@ public class KeyBest {
         double[] sepVals = new double[dataset.getNumberOfCharacters()];
 
         double[] charCosts = new double[dataset.getNumberOfCharacters()];
+        double[] itemAbundanceValues = new double[dataset.getMaximumNumberOfItems()];
 
         for (int i = 0; i < dataset.getNumberOfCharacters(); i++) {
             Character ch = dataset.getCharacter(i + 1);
             double charCost = Math.pow(rBase, 5.0 - Math.min(10.0, ch.getReliability()));
             charCosts[ch.getCharacterId() - 1] = charCost;
         }
-
-        double varw = (1 - varyWt) / Math.max(varyWt, 0.01);
+        
+        for (int i = 0; i < dataset.getMaximumNumberOfItems(); i++) {
+            Item taxon = dataset.getItem(i + 1);
+            double itemAbundanceValue = Math.pow(aBase, context.getItemAbundancy(i + 1) - 5.0);
+            itemAbundanceValues[taxon.getItemNumber() - 1] =  itemAbundanceValue;
+        }
+        
+        double varw = 0;
+        if (varyWt > 0) {
+            varw = (1 - varyWt) / varyWt;    
+        } 
 
         List<Character> availableCharacters = new ArrayList<Character>();
         for (int availableCharNum : availableCharacterNumbers) {
@@ -100,44 +115,21 @@ public class KeyBest {
                             // dupf
             double su = 0; // character suitability
 
-            // NOTE: to simplify the algorithm, all characters are treated as
-            // multistate characters. Integer and real
-            // characters are converted into multistate representations.
-
             // Determine the total available states for each character
             int totalNumStates = 0;
             if (ch instanceof MultiStateCharacter) {
                 totalNumStates = ((MultiStateCharacter) ch).getNumberOfStates();
-            } else if (ch instanceof IntegerCharacter) {
-                // for an integer character, 1 state for each value between
-                // the minimum and
-                // maximum (inclusive), 1 state for all values below the
-                // minimum, and 1 state for
-                // all values above the maximum
-                IntegerCharacter intChar = (IntegerCharacter) ch;
-                totalNumStates = intChar.getMaximumValue() - intChar.getMinimumValue() + 3;
-            } else if (ch instanceof RealCharacter) {
-                // the real character's key state boundaries are used to convert
-                // a real value into a
-                // multistate value (see below). The total number of possible
-                // states is equal to the number of
-                // key state boundaries.
-                totalNumStates = ((RealCharacter) ch).getKeyStateBoundaries().size();
             } else {
-                throw new RuntimeException("Invalid character type " + ch.toString());
+                throw new RuntimeException("Invalid character type " + ch.toString() + " KEY only uses multistate characters");
             }
 
             // number of taxa in character subgroups
             int[] subgroupsNumTaxa = new int[totalNumStates];
 
             // frequency of character subgroups
-            double[] subgroupFrequencies = new double[totalNumStates];
+            double[] subgroupAbundances = new double[totalNumStates];
 
             List<Attribute> charAttributes = dataset.getAllAttributesForCharacter(ch.getCharacterId());
-
-            // examine taxon to be diagnosed or separated first
-            boolean[] taxonToSeparateStatePresence = new boolean[totalNumStates];
-            int ndgSum = 1;
 
             for (Attribute attr : charAttributes) {
                 Item taxon = attr.getItem();
@@ -152,10 +144,6 @@ public class KeyBest {
                     unsuitableCharacters.add(ch);
                     continue charLoop;
                 }
-                
-//                if (ch.getCharacterId() == 291) {
-//                    System.out.println(attr);
-//                }
 
                 Pair<boolean[], Integer> statePresencePair = Best.getStatePresenceForAttribute(attr, totalNumStates, OrderingType.BEST, null);
 
@@ -173,7 +161,7 @@ public class KeyBest {
                         // numStatesPresent;
                         // stateFrequency += subgroupFrequencies[i];
                         // subgroupFrequencies[i] = stateFrequency;
-                        subgroupFrequencies[i]++;
+                        subgroupAbundances[i] += itemAbundanceValues[attr.getItem().getItemNumber() - 1];
                     }
                 }
 
@@ -185,7 +173,7 @@ public class KeyBest {
             // work out sum of subgroup sizes and frequencies
             for (int i = 0; i < totalNumStates; i++) {
                 sumNumTaxaInSubgroups += subgroupsNumTaxa[i];
-                sumSubgroupsFrequencies += subgroupFrequencies[i];
+                sumSubgroupsFrequencies += subgroupAbundances[i];
 
                 if (subgroupsNumTaxa[i] > 0) {
                     totalNumSubgroups++;
@@ -195,37 +183,34 @@ public class KeyBest {
             for (int i = 0; i < totalNumStates; i++) {
                 int numTaxaInSubgroup = subgroupsNumTaxa[i];
 
-                if (numTaxaInSubgroup == sumNumTaxaInSubgroups) {
-                    // character is unsuitable if it divides the characters
-                    // into a
-                    // single
-                    // subgroup
-                    unsuitableCharacters.add(ch);
-                    continue;
-                } else {
-                    if (numTaxaInSubgroup == numAvailableTaxa) {
-                        numSubgroupsSameSizeAsOriginalGroup++;
-                    }
-
-                    if (subgroupsNumTaxa[i] > 0) {
-                        sup0 += (subgroupFrequencies[i] * Best.log2(subgroupsNumTaxa[i]));
-                    }
+                if (numTaxaInSubgroup == numAvailableTaxa) {
+                    numSubgroupsSameSizeAsOriginalGroup++;
                 }
-            }
 
-            boolean isControllingChar = !ch.getDependentCharacters().isEmpty();
-            // TODO what is this test for???
-            if (!isControllingChar && (totalNumSubgroups == numSubgroupsSameSizeAsOriginalGroup || (sumNumTaxaInSubgroups > numAvailableTaxa && numSubgroupsSameSizeAsOriginalGroup == totalNumStates))) {
-                unsuitableCharacters.add(ch);
-                continue;
+                if (subgroupsNumTaxa[i] > 0) {
+                    sup0 += (subgroupAbundances[i] * Best.log2(subgroupsNumTaxa[i]));
+                }
             }
 
             sup0 = sup0 / sumSubgroupsFrequencies;
 
-            if (numAvailableTaxa > 1 && sumNumTaxaInSubgroups > numAvailableTaxa) {
-                dupf = varw * (1 + 100 * numSubgroupsSameSizeAsOriginalGroup) * (sumNumTaxaInSubgroups - numAvailableTaxa) * ((numAvailableTaxa + 8) / (numAvailableTaxa * Best.log2(numAvailableTaxa)));
-            } else {
-                dupf = 0;
+            dupf = 0;
+            if (sumNumTaxaInSubgroups > numAvailableTaxa) {
+                if (numSubgroupsSameSizeAsOriginalGroup == totalNumStates) {
+                    unsuitableCharacters.add(ch);
+                    continue;
+                }
+
+                // Why???
+                if (varyWt == 0) {
+                    unsuitableCharacters.add(ch);
+                    continue;
+                }
+
+                // TODO thing with preset characters here
+                // if (numSubgroupsSameSizeAsOriginalGroup != 0 && true && )
+                dupf = varw * (1 + 100 * numSubgroupsSameSizeAsOriginalGroup) * (sumNumTaxaInSubgroups - numAvailableTaxa)
+                * ((numAvailableTaxa + 8) / (numAvailableTaxa * Best.log2(numAvailableTaxa)));
             }
 
             sep = -sup0 + Best.log2(numAvailableTaxa);
@@ -235,33 +220,9 @@ public class KeyBest {
                 sep = 0.0;
             }
 
-            // don't display controlling characters with 0 separation
-            if (isControllingChar && sep == 0) {
-                unsuitableCharacters.add(ch);
-                continue;
-            }
-
             sup = sup0 + dupf;
 
             su = charCosts[ch.getCharacterId() - 1] + cmin * sup;
-
-//            if (ch.getCharacterId() == 17) {
-//                System.out.println("Character: " + ch.getCharacterId());
-//                System.out.println("su:" + su);
-//                System.out.println("cost: " + charCosts[ch.getCharacterId() - 1]);
-//                System.out.println("cmin " + cmin);
-//                System.out.println("sup " + sup);
-//                System.out.println("sup0 " + sup0);
-//                System.out.println("dupf " + dupf);
-//                System.out.println("numsubgroupssamesizeasoriginalgroup: " + numSubgroupsSameSizeAsOriginalGroup);
-//                System.out.println("sumtaxainsubgroups: " + sumNumTaxaInSubgroups);
-//                System.out.println("numavailabletaxa: " + numAvailableTaxa);
-//                System.out.println("subgroupfrequencies " + ArrayUtils.toString(subgroupFrequencies));
-//                System.out.println("subgroupsNumTaxa " + ArrayUtils.toString(subgroupsNumTaxa));
-//                System.out.println("sumsubgroupsfrequencies " + sumSubgroupsFrequencies);
-//                System.out.println("sumnumtaxainsubgroups " + sumNumTaxaInSubgroups);
-//                System.out.println();
-//            }
 
             sepVals[ch.getCharacterId() - 1] = sep;
             suVals[ch.getCharacterId() - 1] = su;

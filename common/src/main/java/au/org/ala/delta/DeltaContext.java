@@ -103,7 +103,7 @@ public class DeltaContext extends AbstractDeltaContext {
     private Map<Integer, IdentificationKeyCharacter> _keyCharacters = new HashMap<Integer, IdentificationKeyCharacter>();
     private Map<Integer, Double> _absolueErrorInCharacterAttributes = new HashMap<Integer, Double>();
     private Map<Integer, Double> _percentageErrorInCharacterAttributes = new HashMap<Integer, Double>();
-    private Map<Integer, Double> _itemAbundances = new HashMap<Integer, Double>();
+    protected Map<Integer, Double> _itemAbundances = new HashMap<Integer, Double>();
 
     private Set<Integer> _omitLowerRangeCharacters = new HashSet<Integer>();
 

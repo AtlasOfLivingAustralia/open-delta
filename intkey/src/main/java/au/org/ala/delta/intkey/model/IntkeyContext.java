@@ -416,7 +416,7 @@ public class IntkeyContext extends AbstractDeltaContext {
     private void createNewDataSet() {
         _dataset = IntkeyDatasetFileReader.readDataSet(_charactersFile, _taxaFile);
 
-        _specimen = new Specimen(_dataset, _matchInapplicables, _matchInapplicables, _matchType);
+        _specimen = new Specimen(_dataset, false, _matchInapplicables, _matchInapplicables, _matchType);
 
         _includedCharacters = new HashSet<Integer>();
         IntRange charNumRange = new IntRange(1, _dataset.getNumberOfCharacters());
@@ -892,7 +892,7 @@ public class IntkeyContext extends AbstractDeltaContext {
             Specimen oldSpecimen = _specimen;
 
             // Create a new blank specimen
-            _specimen = new Specimen(_dataset, _matchInapplicables, _matchUnknowns, _matchType);
+            _specimen = new Specimen(_dataset, false, _matchInapplicables, _matchUnknowns, _matchType);
 
             // Any character values that have been fixed need to be copied into
             // the new specimen
@@ -1169,7 +1169,7 @@ public class IntkeyContext extends AbstractDeltaContext {
     // so that the eliminated taxa can be recalculated given the new match
     // settings.
     private void updateSpecimenMatchSettings() {
-        Specimen newSpecimen = new Specimen(_dataset, _matchInapplicables, _matchUnknowns, _matchType, _specimen);
+        Specimen newSpecimen = new Specimen(_dataset, false, _matchInapplicables, _matchUnknowns, _matchType, _specimen);
         _specimen = newSpecimen;
         updateUI();
     }

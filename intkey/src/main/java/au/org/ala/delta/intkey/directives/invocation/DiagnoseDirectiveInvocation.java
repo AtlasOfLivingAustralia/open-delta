@@ -63,7 +63,7 @@ public class DiagnoseDirectiveInvocation extends IntkeyDirectiveInvocation {
             // output taxon name
             builder.appendText(itemFormatter.formatItemDescription(taxon));
 
-            Specimen s = new Specimen(context.getDataset(), true, true, MatchType.OVERLAP);
+            Specimen s = new Specimen(context.getDataset(), false, true, true, MatchType.OVERLAP);
 
             // process preset characters first
             for (Character ch : _characters) {

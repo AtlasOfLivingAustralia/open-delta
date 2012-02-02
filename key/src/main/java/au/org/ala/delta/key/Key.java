@@ -186,7 +186,7 @@ public class Key implements DirectiveParserObserver {
                                                             // calculating the
                                                             // key if we don't
                                                             // want one!
-                Specimen specimen = new Specimen(_context.getDataSet(), true, true, MatchType.OVERLAP);
+                Specimen specimen = new Specimen(_context.getDataSet(), true, false, false, MatchType.OVERLAP);
                 // List<Pair<Item, List<Attribute>>> keyList = new
                 // ArrayList<Pair<Item, List<Attribute>>>();
                 IdentificationKey key = new IdentificationKey();
@@ -332,7 +332,13 @@ public class Key implements DirectiveParserObserver {
                     throw new RuntimeException(MessageFormat.format("Character {0} is not suitable for use at column {1} group {2}", presetCharacterNumber, currentColumn, currentGroup));
                 }
             } else {
-                bestMap = KeyBest.orderBest(_context.getDataSet(), specimenAvailableCharacterNumbers, specimenAvailableTaxaNumbers, _context.getRBase(), _context.getVaryWt());
+                bestMap = KeyBest.orderBest(_context, specimenAvailableCharacterNumbers, specimenAvailableTaxaNumbers, _context.getRBase(), _context.getABase(), _context.getReuse(), _context.getVaryWt());
+                for (Character ch: specimen.getUsedCharacters()) {
+                    System.out.println(specimen.getAttributeForCharacter(ch));
+                }
+                System.out.println("------");
+                System.out.println(bestMap);
+                System.out.println("#####");
                 List<Character> bestOrderCharacters = new ArrayList<Character>(bestMap.keySet());
                 if (bestOrderCharacters.isEmpty()) {
                     return;
@@ -347,7 +353,7 @@ public class Key implements DirectiveParserObserver {
             if (numberOfConfirmatoryCharacters > 0) {
                 // generated best characters if this has not already been done
                 if (bestMap == null) {
-                    bestMap = KeyBest.orderBest(_context.getDataSet(), specimenAvailableCharacterNumbers, specimenAvailableTaxaNumbers, _context.getRBase(), _context.getVaryWt());
+                    bestMap = KeyBest.orderBest(_context, specimenAvailableCharacterNumbers, specimenAvailableTaxaNumbers, _context.getRBase(), _context.getABase(), _context.getReuse(), _context.getVaryWt());
                 }
                 List<Character> bestOrderCharacters = new ArrayList<Character>(bestMap.keySet());
                 confirmatoryCharacters = getConfirmatoryCharacters(specimen, includedItems, bestOrderCharacters, bestCharacter, numberOfConfirmatoryCharacters);
@@ -447,7 +453,7 @@ public class Key implements DirectiveParserObserver {
             return false;
         }
 
-        // A preset character cannot complete eliminate any of the available
+        // A preset character cannot completely eliminate any of the available
         // taxa. Each taxon must be
         // available after at least one of the character states is used in the
         // specimen

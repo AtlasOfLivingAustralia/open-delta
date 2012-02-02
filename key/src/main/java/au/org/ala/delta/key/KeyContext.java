@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.directives.ItemAbundances;
 import au.org.ala.delta.key.directives.io.KeyOutputFileManager;
 import au.org.ala.delta.util.Pair;
 
@@ -45,6 +46,8 @@ public class KeyContext extends DeltaContext {
     private boolean _addCharacterNumbers;
     private boolean _displayBracketedKey;
     private boolean _displayTabularKey;
+    
+    private boolean _treatUnknownAsInapplicable;
 
     private String _typeSettingFileHeaderText;
 
@@ -73,6 +76,8 @@ public class KeyContext extends DeltaContext {
         _addCharacterNumbers = false;
         _displayBracketedKey = true;
         _displayTabularKey = true;
+        
+        _treatUnknownAsInapplicable = false;
 
         _presetCharacters = new HashMap<Pair<Integer, Integer>, Integer>();
     }
@@ -252,6 +257,18 @@ public class KeyContext extends DeltaContext {
             throw new IllegalArgumentException("Value for STOP AFTER COLUMN must be a positive integer");
         }
         this._stopAfterColumn = stopAfterColumn;
+    }
+    
+    public boolean getTreatUnknownAsInapplicable() {
+        return _treatUnknownAsInapplicable;
+    }
+
+    public void setTreatUnknownAsInapplicable(boolean treatUnknownAsInapplicable) {
+        this._treatUnknownAsInapplicable = treatUnknownAsInapplicable;
+    }
+    
+    public boolean itemAbundancySet(int itemNumber) {
+        return _itemAbundances.containsKey(itemNumber);
     }
 
 }
