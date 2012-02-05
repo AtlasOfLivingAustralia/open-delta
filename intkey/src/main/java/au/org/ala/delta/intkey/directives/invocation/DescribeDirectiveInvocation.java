@@ -130,7 +130,7 @@ public class DescribeDirectiveInvocation extends IntkeyDirectiveInvocation {
 
         Character ch = attr.getCharacter();
 
-        if ((!attr.isInapplicable() || displayInapplicables) && (!attr.isUnknown() || displayUnknowns)) {
+        if ((!(attr.isInapplicable() && attr.isUnknown()) || displayInapplicables) && (!attr.isUnknown() || displayUnknowns)) {
             String itemSubheading = charactersItemSubheadingMap.get(ch);
             if (itemSubheading != null && !itemSubheading.equals(currentItemSubheading)) {
 
@@ -229,7 +229,7 @@ public class DescribeDirectiveInvocation extends IntkeyDirectiveInvocation {
 
         Character ch = attr.getCharacter();
 
-        if ((!attr.isInapplicable() || displayInapplicables) && (!attr.isUnknown() || displayUnknowns)) {
+        if ((!(attr.isInapplicable() && attr.isUnknown()) || displayInapplicables) && (!attr.isUnknown() || displayUnknowns)) {
             
             //If this is the beginning of a new itemsubheading category then we need to add the item subheading
             String itemSubheading = charactersItemSubheadingMap.get(ch);
