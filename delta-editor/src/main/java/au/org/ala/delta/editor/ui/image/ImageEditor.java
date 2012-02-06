@@ -124,7 +124,7 @@ public class ImageEditor extends AbstractDeltaView {
 		}
 		
 		_actionMap.get("replayVideo").setEnabled(false);
-		setName("ImageEditor-"+_subject.toString());
+		setName(null);
 		
 		buildMenus();
 	}
