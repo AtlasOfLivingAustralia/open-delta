@@ -41,18 +41,9 @@ public class AudioPlayer {
 
 		try {
 			Line.Info lineInfo = new Line.Info(Clip.class);
-			Line line = null;
+			Line line = AudioSystem.getLine(lineInfo);		
 			
-			Mixer.Info[] mixers = AudioSystem.getMixerInfo();
-			if (mixers.length > 0) {			
-				Mixer.Info mixerInfo = mixers[0];
-				line = AudioSystem.getMixer(mixerInfo).getLine(lineInfo);
-			} else {
-				line = AudioSystem.getLine(lineInfo);	
-			}
-			
-			if ( line == null) {
-				
+			if ( line == null) {			
 				return;
 			}
 			 
