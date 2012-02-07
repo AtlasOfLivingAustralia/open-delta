@@ -45,7 +45,7 @@ public class TreeCharacterController extends CharacterController {
 		JPopupMenu popup = new JPopupMenu();
 		
 		String[] characterPopupActions;
-		if (getModel().getMaximumNumberOfItems() == 0) {
+		if (getModel().getNumberOfCharacters() == 0) {
 			characterPopupActions = new String[] {"addCharacter", "-", "cancel"};
 		}
 		else {

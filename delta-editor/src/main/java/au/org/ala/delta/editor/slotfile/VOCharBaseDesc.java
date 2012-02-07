@@ -24,6 +24,7 @@ import java.util.Set;
 import au.org.ala.delta.editor.slotfile.VOCharTextDesc.CharTextFixedData;
 import au.org.ala.delta.io.BinFile;
 import au.org.ala.delta.model.image.ImageType;
+import au.org.ala.delta.util.Utils;
 
 public class VOCharBaseDesc extends VOImageHolderDesc {
 
@@ -621,12 +622,9 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 		--_fixedData.nStatesUsed;
 
 		// Then re-insert it in the (sorted) "available IDs" list at the end
-		for (int i=_fixedData.nStatesUsed; i<_stateNumberMappingVector.size(); i++) {
-			if (stateId < _stateNumberMappingVector.get(i)) {
-				_stateNumberMappingVector.add(i, stateId);
-			}
-		}
-		
+		pos = Utils.lowerBound(_stateNumberMappingVector, _fixedData.nStatesUsed, _stateNumberMappingVector.size(), stateId);
+		_stateNumberMappingVector.add(pos, stateId);
+				
 		// Check the "available IDs" at the end of the list to see which can truly
 		// be removed. This will actually only happen when the state ID currently being
 		// deleted is the largest of the entire set.

@@ -14,10 +14,13 @@
  ******************************************************************************/
 package au.org.ala.delta.util;
 
-import au.org.ala.delta.util.Utils;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import junit.framework.TestCase;
 
-public class UtilsTests extends TestCase {
+public class UtilsTest extends TestCase {
 
 	public void testLOWORD() {
 		int dword = 0xffffeeee;
@@ -113,9 +116,31 @@ public class UtilsTests extends TestCase {
 		String noRtf = "<<Test Hypenated-String Word  #2>>";
 		despaced = Utils.despaceRtf(noRtf, false);
 		assertEquals(noRtf, despaced);
-		
-		
 	}
+	
+	public void testLowerBound1() {
+		lbtest(new Integer[] {1,2,3,4},3,5, new Integer[] {1,2,3,4,5});
+	}
+	
+	public void testLowerBound2() {
+		lbtest(new Integer[] {1,2,4,3},2,5, new Integer[] {1,2,4,3,5});
+	}
+	
+	public void testLowerBound3() {
+		lbtest(new Integer[] {1,3,4},2,2, new Integer[] {1,3,2,4});
+	}
+	
+	
+	
+	private void lbtest(Integer[] numbers, int start, int n, Integer[] expected) {
+		List<Integer> ilist = new ArrayList<Integer>(Arrays.asList(numbers));
+		int lb = Utils.lowerBound(ilist, start, ilist.size(), n);
+		ilist.add(lb, n);		
+		System.out.println(ilist);	
+		assertEquals(Arrays.asList(expected).toString(), ilist.toString());
+	}
+	
+	
 	
 //	/**
 //	 * Tests the remove comments method with nested comments

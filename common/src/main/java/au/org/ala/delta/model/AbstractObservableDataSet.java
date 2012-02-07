@@ -519,7 +519,8 @@ public abstract class AbstractObservableDataSet implements ObservableDeltaDataSe
     }
 
     @Override
-    public void characterTypeChanged(Character oldCharacter, Character newCharacter) {
+    public void characterTypeChanged(Character oldCharacter, Character newCharacter) {    	
+    	newCharacter.addCharacterObserver(this);    	
         fireDeltaDataSetEvent(null, oldCharacter, newCharacter, new CharacterChangedTypeDispatcher());
     }
 
