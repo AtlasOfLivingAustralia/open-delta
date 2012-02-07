@@ -182,4 +182,5 @@ public class MessageDialogHelper {
 		int result = au.org.ala.delta.ui.MessageDialogHelper.showConfirmDialog(_dialogParent, title, message, 50);
 		return result == JOptionPane.OK_OPTION;
 	}
+	
 }

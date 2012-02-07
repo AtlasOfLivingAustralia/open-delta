@@ -14,6 +14,7 @@
  ******************************************************************************/
 package au.org.ala.delta.ui.image;
 
+import java.awt.LinearGradientPaint;
 import java.net.URL;
 
 import javax.sound.sampled.AudioInputStream;
@@ -22,6 +23,7 @@ import javax.sound.sampled.Clip;
 import javax.sound.sampled.Line;
 import javax.sound.sampled.LineEvent;
 import javax.sound.sampled.LineListener;
+import javax.sound.sampled.LineUnavailableException;
 
 /**
  * Helper class for playing audio.
@@ -34,34 +36,35 @@ public class AudioPlayer {
 	 * @param sound
 	 *            the URL containing the audio stream.
 	 */
-	public static void playClip(URL sound) {
+	public static void playClip(URL sound) throws LineUnavailableException {
 
 		try {
-			System.err.println("Getting line info");
 			Line.Info lineInfo = new Line.Info(Clip.class);
-			System.err.println("Getting line");
 			Line line = AudioSystem.getLine(lineInfo);
-			System.err.println("Casting line to clip");
 			Clip clip = (Clip) line;
-			System.err.println("Getting stream");
+			if (line.isOpen()) {
+				System.err.println("line is open, closing it first...");
+				line.close();
+			}
 			AudioInputStream ais = AudioSystem.getAudioInputStream(sound);
-			System.err.println("Opening clip");
 			clip.open(ais);
 
 			clip.addLineListener(new LineListener() {
 				public void update(LineEvent evt) {
-					if (evt.getType() == LineEvent.Type.STOP) {
-						System.err.println("Closing line");
+					
+					if (evt.getType() == LineEvent.Type.STOP) {						
 						evt.getLine().close();
 					}
+					
 				}
+				
 			});
 
-			System.err.println("Starting Clip");
 			clip.start();
+		} catch (LineUnavailableException laex) {
+			throw laex;
 		} catch (Exception e) {
-			e.printStackTrace();
-			throw new RuntimeException("Error opening file: " + sound);
+			throw new RuntimeException(e);
 		}
 	}
 }
