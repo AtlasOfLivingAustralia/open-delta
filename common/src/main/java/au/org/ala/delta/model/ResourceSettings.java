@@ -146,12 +146,20 @@ public class ResourceSettings {
         }
         return false;
     }
+    
+    public URL findFileOnResourcePath(String fileName, boolean ignoreRemoteLocations) {
+    	return findFileOnResourcePath(fileName, ignoreRemoteLocations, true);
+    }
 
     /**
      * Find a file on the resource path. The individual resource path locations
      * are checked in turn until a file with the specified name is found. The
      * dataset path is also searched if the file cannot be found at any of the
      * resource path locations.
+     * 
+     * if ignoreCase is true then the exact case is test first, and if the file could not be found
+     * a case insensitive search is performed. This is avoid problems with older data sets developed under MS DOS or Windows
+     * in which items inconsistently cased names.
      * 
      * @param fileName
      *            The file name
@@ -160,7 +168,7 @@ public class ResourceSettings {
      *            specified by http URLS) are ignored when searching.
      * @return A URL for the found file, or null if the file was not found.
      */
-    public URL findFileOnResourcePath(String fileName, boolean ignoreRemoteLocations) {
+    public URL findFileOnResourcePath(String fileName, boolean ignoreRemoteLocations, boolean ignoreCase) {
         URL fileLocation = null;
 
         List<String> locationsToSearch = getResourcePathLocations();
@@ -172,6 +180,17 @@ public class ResourceSettings {
         		return file.toURI().toURL();
         	} catch (MalformedURLException ex) {
         		// Ignore
+        	}
+        }
+        
+        if (ignoreCase) {
+        	file = FileUtils.findFileIgnoreCase(file);
+        	if (file != null) {
+            	try {
+            		return file.toURI().toURL();
+            	} catch (MalformedURLException ex) {
+            		// Ignore
+            	}        	
         	}
         }
 
@@ -205,6 +224,14 @@ public class ResourceSettings {
                     if (f.exists()) {
                         fileLocation = f.toURI().toURL();
                         break;
+                    } else {
+                    	if (ignoreCase) {
+	                    	f = FileUtils.findFileIgnoreCase(f);
+	                    	if (f != null) {
+	                            fileLocation = f.toURI().toURL();
+	                            break;                    		 
+	                    	}
+                    	}
                     }
 
                 }

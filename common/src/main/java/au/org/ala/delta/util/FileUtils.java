@@ -15,6 +15,7 @@
 package au.org.ala.delta.util;
 
 import java.io.File;
+import java.io.FilenameFilter;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -83,4 +84,57 @@ public class FileUtils {
             return parent(start.getParentFile(), parent);
         }
     }
+
+	public static File findFileIgnoreCase(String filename) {		
+		File f = new File(filename);
+		return findFileIgnoreCase(f);
+	}
+	
+	public static File findFileIgnoreCase(File file) {
+		
+		if (file.exists()) {
+			return file;
+		}
+		
+		File parent = file.getParentFile();
+		
+		if (parent == null) {
+			parent = new File(System.getProperty("user.dir"));
+		}
+		
+		if (parent.exists()) {
+			String[] matches = parent.list(new CaseInsenstiveFilenameMatcher(file.getName()));
+			if (matches.length > 0) {
+				String newFilename = String.format("%s%s%s", parent.getAbsolutePath(), File.separator, matches[0]);
+				File candidateFile = new File(newFilename);
+				if (candidateFile.exists()) {
+					return candidateFile;
+				}
+			}
+		}
+		
+		return null;
+	}
+	
 }
+
+class CaseInsenstiveFilenameMatcher implements FilenameFilter {
+	
+	private String _name;
+	
+	public CaseInsenstiveFilenameMatcher(String name) {
+		_name = name;
+	}
+
+	@Override
+	public boolean accept(File dir, String name) {
+		if (_name == null) {
+			return false;
+		}
+		
+		return _name.equalsIgnoreCase(name);
+	}
+	
+}
+
+
