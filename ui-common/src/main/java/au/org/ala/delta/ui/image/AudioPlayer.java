@@ -29,29 +29,39 @@ import javax.sound.sampled.LineListener;
 public class AudioPlayer {
 
 	/**
-	 * Plays a short sound using the java sound Clip mechanism which loads the
-	 * sound file into memory.
-	 * @param sound the URL containing the audio stream.
+	 * Plays a short sound using the java sound Clip mechanism which loads the sound file into memory.
+	 * 
+	 * @param sound
+	 *            the URL containing the audio stream.
 	 */
 	public static void playClip(URL sound) {
-		
+
 		try {
 			System.err.println("Getting line info");
 			Line.Info lineInfo = new Line.Info(Clip.class);
 			System.err.println("Getting line");
 			Line line = AudioSystem.getLine(lineInfo);
 			System.err.println("Casting line to clip");
-			Clip clip = (Clip)line;
+			Clip clip = (Clip) line;
 			System.err.println("Getting stream");
 			AudioInputStream ais = AudioSystem.getAudioInputStream(sound);
 			System.err.println("Opening clip");
 			clip.open(ais);
+
+			clip.addLineListener(new LineListener() {
+				public void update(LineEvent evt) {
+					if (evt.getType() == LineEvent.Type.STOP) {
+						System.err.println("Closing line");
+						evt.getLine().close();
+					}
+				}
+			});
+
 			System.err.println("Starting Clip");
 			clip.start();
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
-			throw new RuntimeException("Error opening file: "+sound);
+			throw new RuntimeException("Error opening file: " + sound);
 		}
 	}
 }
