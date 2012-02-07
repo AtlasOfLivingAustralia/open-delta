@@ -20,6 +20,8 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.Line;
+import javax.sound.sampled.LineEvent;
+import javax.sound.sampled.LineListener;
 
 /**
  * Helper class for playing audio.
@@ -34,15 +36,21 @@ public class AudioPlayer {
 	public static void playClip(URL sound) {
 		
 		try {
+			System.err.println("Getting line info");
 			Line.Info lineInfo = new Line.Info(Clip.class);
+			System.err.println("Getting line");
 			Line line = AudioSystem.getLine(lineInfo);
+			System.err.println("Casting line to clip");
 			Clip clip = (Clip)line;
-			
+			System.err.println("Getting stream");
 			AudioInputStream ais = AudioSystem.getAudioInputStream(sound);
+			System.err.println("Opening clip");
 			clip.open(ais);
+			System.err.println("Starting Clip");
 			clip.start();
 		}
 		catch (Exception e) {
+			e.printStackTrace();
 			throw new RuntimeException("Error opening file: "+sound);
 		}
 	}
