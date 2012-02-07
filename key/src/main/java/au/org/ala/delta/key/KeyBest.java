@@ -45,11 +45,8 @@ public class KeyBest {
      *         the characters can be obtained by getting the keyset of the
      *         supplied map
      */
-    public static LinkedHashMap<au.org.ala.delta.model.Character, Double> orderBest(DeltaContext context, List<Integer> availableCharacterNumbers, List<Integer> availableTaxaNumbers, double rBase,
+    public static LinkedHashMap<au.org.ala.delta.model.Character, Double> orderBest(DeltaDataSet dataset, double[] charCosts, double[] itemAbundanceValues, List<Integer> availableCharacterNumbers, List<Integer> availableTaxaNumbers, double rBase,
             double aBase, double reuse, double varyWt) {
-        
-        
-        DeltaDataSet dataset = context.getDataSet();
         
         LinkedHashMap<Character, Double> retMap = new LinkedHashMap<Character, Double>();
 
@@ -63,21 +60,6 @@ public class KeyBest {
         final double[] suVals = new double[dataset.getNumberOfCharacters()];
         double[] sepVals = new double[dataset.getNumberOfCharacters()];
 
-        double[] charCosts = new double[dataset.getNumberOfCharacters()];
-        double[] itemAbundanceValues = new double[dataset.getMaximumNumberOfItems()];
-
-        for (int i = 0; i < dataset.getNumberOfCharacters(); i++) {
-            Character ch = dataset.getCharacter(i + 1);
-            double charCost = Math.pow(rBase, 5.0 - Math.min(10.0, ch.getReliability()));
-            charCosts[ch.getCharacterId() - 1] = charCost;
-        }
-        
-        for (int i = 0; i < dataset.getMaximumNumberOfItems(); i++) {
-            Item taxon = dataset.getItem(i + 1);
-            double itemAbundanceValue = Math.pow(aBase, context.getItemAbundancy(i + 1) - 5.0);
-            itemAbundanceValues[taxon.getItemNumber() - 1] =  itemAbundanceValue;
-        }
-        
         double varw = 0;
         if (varyWt > 0) {
             varw = (1 - varyWt) / varyWt;    

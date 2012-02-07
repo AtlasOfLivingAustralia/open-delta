@@ -46,12 +46,15 @@ public class KeyContext extends DeltaContext {
     private boolean _addCharacterNumbers;
     private boolean _displayBracketedKey;
     private boolean _displayTabularKey;
-    
+
     private boolean _treatUnknownAsInapplicable;
 
     private String _typeSettingFileHeaderText;
 
     private Map<Pair<Integer, Integer>, Integer> _presetCharacters;
+
+    double[] _characterCosts;
+    double[] _calculatedItemAbundanceValues;
 
     public KeyContext(File dataDirectory, PrintStream out, PrintStream err) {
         super(out, err);
@@ -76,10 +79,12 @@ public class KeyContext extends DeltaContext {
         _addCharacterNumbers = false;
         _displayBracketedKey = true;
         _displayTabularKey = true;
-        
+
         _treatUnknownAsInapplicable = false;
 
         _presetCharacters = new HashMap<Pair<Integer, Integer>, Integer>();
+        _characterCosts = null;
+        _calculatedItemAbundanceValues = null;
     }
 
     public KeyContext(File dataDirectory) {
@@ -258,7 +263,7 @@ public class KeyContext extends DeltaContext {
         }
         this._stopAfterColumn = stopAfterColumn;
     }
-    
+
     public boolean getTreatUnknownAsInapplicable() {
         return _treatUnknownAsInapplicable;
     }
@@ -266,9 +271,57 @@ public class KeyContext extends DeltaContext {
     public void setTreatUnknownAsInapplicable(boolean treatUnknownAsInapplicable) {
         this._treatUnknownAsInapplicable = treatUnknownAsInapplicable;
     }
-    
+
     public boolean itemAbundancySet(int itemNumber) {
         return _itemAbundances.containsKey(itemNumber);
+    }
+
+    public void setCharacterCost(int characterNumber, double cost) {
+        if (characterNumber < 1 || characterNumber > getNumberOfCharacters()) {
+            throw new IllegalArgumentException("Invalid character number");
+        }
+
+        if (_characterCosts == null) {
+            _characterCosts = new double[getNumberOfCharacters()];
+        }
+
+        _characterCosts[characterNumber - 1] = cost;
+    }
+
+    public double getCharacterCost(int characterNumber) {
+        if (characterNumber < 1 || characterNumber > getNumberOfCharacters()) {
+            throw new IllegalArgumentException("Invalid character number");
+        }
+
+        return _characterCosts[characterNumber - 1];
+    }
+
+    public double[] getCharacterCostsAsArray() {
+        return _characterCosts;
+    }
+
+    public void setCalculatedItemAbundanceValue(int itemNumber, double value) {
+        if (itemNumber < 1 || itemNumber > getMaximumNumberOfItems()) {
+            throw new IllegalArgumentException("Invalid item number");
+        }
+
+        if (_calculatedItemAbundanceValues == null) {
+            _calculatedItemAbundanceValues = new double[getMaximumNumberOfItems()];
+        }
+
+        _calculatedItemAbundanceValues[itemNumber - 1] = value;
+    }
+
+    public double getCalculatedItemAbundanceValue(int itemNumber) {
+        if (itemNumber < 1 || itemNumber > getMaximumNumberOfItems()) {
+            throw new IllegalArgumentException("Invalid item number");
+        }
+
+        return _calculatedItemAbundanceValues[itemNumber - 1];
+    }
+
+    public double[] getCalculatedItemAbundanceValuesAsArray() {
+        return _calculatedItemAbundanceValues;
     }
 
 }
