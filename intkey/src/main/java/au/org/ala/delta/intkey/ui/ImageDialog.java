@@ -51,6 +51,7 @@ import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.SingleFrameApplication;
 
+import au.org.ala.delta.intkey.Intkey;
 import au.org.ala.delta.intkey.directives.ParsingUtils;
 import au.org.ala.delta.model.format.Formatter;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
@@ -435,17 +436,17 @@ public class ImageDialog extends IntkeyDialog implements OverlaySelectionObserve
 
     @Action
     public void cascade() {
-
+    	IntKeyDialogController.cascadeWindows();
     }
 
     @Action
     public void tile() {
-
+    	IntKeyDialogController.tileWindows();
     }
 
     @Action
     public void closeAll() {
-
+    	IntKeyDialogController.closeWindows();
     }
 
     @Action

@@ -106,7 +106,7 @@ public class ImageSettingsDialog extends JDialog {
 		_resources = Application.getInstance().getContext().getResourceMap();
 		createUI();
 		pack();
-		
+		setName("ImageSettings");		
 		updateGUI();
 		addEventHandlers();
 	}

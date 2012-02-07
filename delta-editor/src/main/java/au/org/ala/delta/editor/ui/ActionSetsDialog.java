@@ -17,6 +17,8 @@ package au.org.ala.delta.editor.ui;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -42,12 +44,15 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
+import javax.swing.RowSorter;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -126,7 +131,7 @@ public class ActionSetsDialog extends AbstractDeltaView {
 		doneButton.setAction(_actions.get("doneWithActionSets"));
 		
 		JTable[] tables = {conforTable, intkeyTable, distTable, keyTable};
-		for (JTable table : tables) {
+		for (final JTable table : tables) {
 			table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 				
 				@Override
@@ -134,6 +139,9 @@ public class ActionSetsDialog extends AbstractDeltaView {
 					updateAction();
 				}
 			});
+			
+			table.getTableHeader().setReorderingAllowed(false);
+			
 		}
 		tabbedPane.addChangeListener(new ChangeListener() {
 			
@@ -323,8 +331,11 @@ public class ActionSetsDialog extends AbstractDeltaView {
 		JTable selectedTable = (JTable)((JScrollPane)tabbedPane.getSelectedComponent()).getViewport().getView();
 		
 		int selected = selectedTable.getSelectedRow();
+		
 		DirectiveFile file = null;
 		if (selected >= 0) {
+			// Convert view index to model index (we have a row sorter active).
+			selected = selectedTable.convertRowIndexToModel(selected);			
 			file = ((DirectiveFileTableModel)selectedTable.getModel()).getFileAt(selected); 
 		}
 		return file;
@@ -414,6 +425,13 @@ public class ActionSetsDialog extends AbstractDeltaView {
 		configureWidths(distTable);
 		keyTable.setModel(new DirectiveFileTableModel(files.get(DirectiveType.KEY)));
 		configureWidths(keyTable);
+		
+		JTable[] tables = {conforTable, intkeyTable, distTable, keyTable};
+		
+		for (JTable table : tables) {
+			TableRowSorter<? extends TableModel> sorter = new TableRowSorter<DirectiveFileTableModel>((DirectiveFileTableModel) table.getModel());
+			table.setRowSorter(sorter);
+		}
 		
 		updateAction();
 	}

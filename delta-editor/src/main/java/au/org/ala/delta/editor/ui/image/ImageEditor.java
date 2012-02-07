@@ -29,7 +29,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.sound.sampled.LineUnavailableException;
 import javax.swing.ActionMap;
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBoxMenuItem;

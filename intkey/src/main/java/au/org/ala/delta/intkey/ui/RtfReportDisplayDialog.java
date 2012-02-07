@@ -272,7 +272,7 @@ public class RtfReportDisplayDialog extends IntkeyDialog {
 
 	@Action
 	public void rtfReportDisplayDialog_mnuItTile() {
-		IntKeyDialogController.cascadeWindows();
+		IntKeyDialogController.tileWindows();
 	}
 
 	@Action

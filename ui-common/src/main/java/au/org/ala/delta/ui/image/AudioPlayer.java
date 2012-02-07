@@ -14,7 +14,6 @@
  ******************************************************************************/
 package au.org.ala.delta.ui.image;
 
-import java.awt.LinearGradientPaint;
 import java.net.URL;
 
 import javax.sound.sampled.AudioInputStream;
@@ -24,7 +23,6 @@ import javax.sound.sampled.Line;
 import javax.sound.sampled.LineEvent;
 import javax.sound.sampled.LineListener;
 import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.Mixer;
 
 /**
  * Helper class for playing audio.
@@ -41,25 +39,25 @@ public class AudioPlayer {
 
 		try {
 			Line.Info lineInfo = new Line.Info(Clip.class);
-			Line line = AudioSystem.getLine(lineInfo);		
-			
-			if ( line == null) {			
+			Line line = AudioSystem.getLine(lineInfo);
+
+			if (line == null) {
 				return;
 			}
-			 
+
 			Clip clip = (Clip) line;
 			AudioInputStream ais = AudioSystem.getAudioInputStream(sound);
 			clip.open(ais);
 
 			clip.addLineListener(new LineListener() {
 				public void update(LineEvent evt) {
-					
-					if (evt.getType() == LineEvent.Type.STOP) {						
+
+					if (evt.getType() == LineEvent.Type.STOP) {
 						evt.getLine().close();
 					}
-					
+
 				}
-				
+
 			});
 
 			clip.start();
