@@ -496,14 +496,19 @@ public class CharacterEditor extends AbstractDeltaView {
 		setSelectedCharacter(dataSet.getSelectedCharacter());
 		
 		_dataSet.addDeltaDataSetObserver(new AbstractDataSetObserver() {
+			
+			@Override
+			public void characterTypeChanged(DeltaDataSetChangeEvent event) {
+				setSelectedCharacter((Character) event.getExtraInformation());
+			}
 
 			@Override
 			public void characterEdited(DeltaDataSetChangeEvent event) {
 				if (event.getCharacter().equals(_selectedCharacter)) {
 					// This is to handle CharacterType changes.
-					_selectedCharacter = _dataSet.getCharacter(_selectedCharacter.getCharacterId());
-					
-					updateScreen();
+//					_selectedCharacter = _dataSet.getCharacter(_selectedCharacter.getCharacterId());
+//					
+//					updateScreen();
 				}
 			}
 		});
@@ -567,7 +572,7 @@ public class CharacterEditor extends AbstractDeltaView {
 				else {
 					tabbedPane.setSelectedIndex(NOTES_EDITOR_TAB_INDEX);
 				}
-			}
+			}			
 		}
 		_editsDisabled = false;
 	}

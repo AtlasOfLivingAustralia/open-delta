@@ -47,11 +47,10 @@ import au.org.ala.delta.ui.rtf.RtfEditor;
 import au.org.ala.delta.ui.rtf.RtfToolBar;
 
 /**
- * The StateEditor provides a user with the ability to add / delete / edit / reorder the states
- * of a multistate character.
+ * The StateEditor provides a user with the ability to add / delete / edit / reorder the states of a multistate character.
  */
 public class StateEditor extends CharacterEditTab {
-	
+
 	private static final long serialVersionUID = 7879506441983307844L;
 	private JButton btnAdd;
 	private JButton btnDelete;
@@ -59,11 +58,11 @@ public class StateEditor extends CharacterEditTab {
 	private SelectionList stateList;
 	private RtfEditor stateDescriptionPane;
 	private MultiStateCharacter _character;
-	
+
 	private CharacterFormatter _formatter;
 	private EditorViewModel _model;
 	private StateController _stateController;
-	
+
 	private boolean _ignoreUpdates;
 	private int _selectedState;
 
@@ -74,7 +73,7 @@ public class StateEditor extends CharacterEditTab {
 		createUI();
 		addEventHandlers();
 	}
-	
+
 	public void setModel(EditorViewModel model) {
 		_model = model;
 		_stateController.setModel(model);
@@ -95,53 +94,53 @@ public class StateEditor extends CharacterEditTab {
 		btnAdd.setAction(actions.get("addState"));
 		btnDelete.setAction(actions.get("deleteState"));
 		chckbxImplicit.setAction(actions.get("toggleStateImplicit"));
-		
+
 		stateList.addListSelectionListener(new ListSelectionListener() {
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
 				updateScreen();
 			}
 		});
-		
+
 		stateDescriptionPane.getDocument().addDocumentListener(new DocumentListener() {
-			
+
 			@Override
 			public void removeUpdate(DocumentEvent e) {
 				updateStateText();
 			}
-			
+
 			@Override
 			public void insertUpdate(DocumentEvent e) {
 				updateStateText();
 			}
-			
+
 			@Override
 			public void changedUpdate(DocumentEvent e) {
 				updateStateText();
 			}
 		});
-		
+
 		stateDescriptionPane.addKeyListener(new SelectionNavigationKeyListener() {
-			
+
 			@Override
 			protected void reverseSelection() {
-				
+
 				int selected = stateList.getSelectedIndex();
 				if (selected > 0) {
-					stateList.setSelectedIndex(selected-1);
+					stateList.setSelectedIndex(selected - 1);
 				}
 			}
-			
+
 			@Override
 			protected void advanceSelection() {
 				int selected = stateList.getSelectedIndex();
-				if (selected < stateList.getModel().getSize()-1) {
-					stateList.setSelectedIndex(selected+1);
+				if (selected < stateList.getModel().getSize() - 1) {
+					stateList.setSelectedIndex(selected + 1);
 				}
 			}
 		});
 	}
-	
+
 	/**
 	 * Creates the UI components and lays them out.
 	 */
@@ -149,73 +148,64 @@ public class StateEditor extends CharacterEditTab {
 		setName("stateEditor");
 		JLabel lblDefinedStates = new JLabel("Defined states:");
 		lblDefinedStates.setName("definedStatesLabel");
-		
-		
+
 		stateList = new SelectionList();
 		stateList.setDragEnabled(true);
 		stateList.setDropMode(DropMode.INSERT);
 		JScrollPane listScroller = new JScrollPane(stateList);
-		
+
 		chckbxImplicit = new JCheckBox("Implicit");
-		
+
 		btnAdd = new JButton("Add");
-		
+
 		btnDelete = new JButton("Delete");
-		
+
 		JLabel stateDescriptionLabel = new JLabel("Edit state description");
 		stateDescriptionLabel.setName("stateDescriptionLabel");
-		
+
 		stateDescriptionPane = new RtfEditor();
 		_toolbar.addEditor(stateDescriptionPane);
 		JScrollPane descriptionScroller = new JScrollPane(stateDescriptionPane);
-		
+
 		GroupLayout groupLayout = new GroupLayout(this);
-		groupLayout.setHorizontalGroup(
-			groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(groupLayout.createSequentialGroup()
-					.addContainerGap()
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addComponent(lblDefinedStates)
-						.addComponent(listScroller, GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
-						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(chckbxImplicit, GroupLayout.PREFERRED_SIZE, 88, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(btnDelete, GroupLayout.PREFERRED_SIZE, 80, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(btnAdd, GroupLayout.PREFERRED_SIZE, 80, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-					.addGap(0)
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addComponent(stateDescriptionLabel)
-						.addComponent(descriptionScroller, GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE))
-					.addContainerGap())
-		);
-		groupLayout.setVerticalGroup(
-			groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(groupLayout.createSequentialGroup()
-					.addGap(10)
-					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-						.addComponent(lblDefinedStates)
-						.addComponent(stateDescriptionLabel))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(chckbxImplicit)
-							.addGap(96)
-							.addComponent(btnAdd)
-							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addComponent(btnDelete))
-						.addComponent(listScroller, GroupLayout.DEFAULT_SIZE, 189, Short.MAX_VALUE)
-						.addComponent(descriptionScroller, GroupLayout.DEFAULT_SIZE, 192, Short.MAX_VALUE))
-					.addContainerGap())
-		);
+		groupLayout.setHorizontalGroup(groupLayout.createParallelGroup(Alignment.LEADING).addGroup(
+				groupLayout
+						.createSequentialGroup()
+						.addContainerGap()
+						.addGroup(groupLayout.createParallelGroup(Alignment.LEADING).addComponent(lblDefinedStates).addComponent(listScroller, GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE))
+						.addPreferredGap(ComponentPlacement.RELATED)
+						.addGroup(
+								groupLayout
+										.createParallelGroup(Alignment.LEADING, false)
+										.addGroup(
+												groupLayout.createSequentialGroup().addComponent(chckbxImplicit, GroupLayout.PREFERRED_SIZE, 88, GroupLayout.PREFERRED_SIZE)
+														.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+										.addGroup(
+												groupLayout.createSequentialGroup().addComponent(btnDelete, GroupLayout.PREFERRED_SIZE, 80, GroupLayout.PREFERRED_SIZE)
+														.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+										.addGroup(
+												groupLayout.createSequentialGroup().addComponent(btnAdd, GroupLayout.PREFERRED_SIZE, 80, GroupLayout.PREFERRED_SIZE)
+														.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+						.addGap(0)
+						.addGroup(
+								groupLayout.createParallelGroup(Alignment.LEADING).addComponent(stateDescriptionLabel)
+										.addComponent(descriptionScroller, GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)).addContainerGap()));
+		groupLayout.setVerticalGroup(groupLayout.createParallelGroup(Alignment.LEADING).addGroup(
+				groupLayout
+						.createSequentialGroup()
+						.addGap(10)
+						.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE).addComponent(lblDefinedStates).addComponent(stateDescriptionLabel))
+						.addPreferredGap(ComponentPlacement.RELATED)
+						.addGroup(
+								groupLayout
+										.createParallelGroup(Alignment.TRAILING)
+										.addGroup(
+												groupLayout.createSequentialGroup().addComponent(chckbxImplicit).addGap(96).addComponent(btnAdd).addPreferredGap(ComponentPlacement.UNRELATED)
+														.addComponent(btnDelete)).addComponent(listScroller, GroupLayout.DEFAULT_SIZE, 189, Short.MAX_VALUE)
+										.addComponent(descriptionScroller, GroupLayout.DEFAULT_SIZE, 192, Short.MAX_VALUE)).addContainerGap()));
 		setLayout(groupLayout);
 	}
-	
+
 	/**
 	 * Updates the contents of the screen based on the selected state.
 	 */
@@ -226,18 +216,16 @@ public class StateEditor extends CharacterEditTab {
 		try {
 			_ignoreUpdates = true;
 			int selectedIndex = stateList.getSelectedIndex();
-			
+
 			_selectedState = selectedIndex + 1;
 			int stateCount = _character.getNumberOfStates();
-			
+
 			if (_selectedState > stateCount) {
 				stateDescriptionPane.setText("");
-			}
-			else {
+			} else {
 				if ((stateCount > 0) && (_selectedState > 0)) {
 					stateDescriptionPane.setText(_character.getState(_selectedState));
-				}
-				else {
+				} else {
 					stateDescriptionPane.setText("");
 				}
 				if (_selectedState > 0) {
@@ -245,62 +233,66 @@ public class StateEditor extends CharacterEditTab {
 				}
 			}
 			chckbxImplicit.setEnabled(_selectedState > 0 && _selectedState <= stateCount);
-		}
-		finally {
+		} finally {
 			_ignoreUpdates = false;
 		}
-		
+
 	}
-	
+
 	/**
 	 * Updates the character being displayed by this StateEditor.
-	 * @param character the character to display/edit.
+	 * 
+	 * @param character
+	 *            the character to display/edit.
 	 */
 	@Override
 	public void bind(EditorViewModel model, au.org.ala.delta.model.Character character) {
-		if (character.equals(_character)) {
+		if (character == _character) {
 			return;
 		}
-		_character = (MultiStateCharacter)character;
 		
+		_character = (MultiStateCharacter) character;
+
 		setModel(model);
-		ListModel listModel = new StateListModel(_model, _character);
-		stateList.setModel(listModel);
-		if (model.getSelectedState() > 0) {
-			stateList.setSelectedIndex(model.getSelectedState()-1);
-		}
-		else {
-			stateList.setSelectedIndex(0);
+
+		if (_character != null) {
+			ListModel listModel = new StateListModel(_model, _character);
+			stateList.setModel(listModel);
+			if (model.getSelectedState() > 0) {
+				stateList.setSelectedIndex(model.getSelectedState() - 1);
+			} else {
+				stateList.setSelectedIndex(0);
+			}
 		}
 		updateScreen();
 	}
-	
+
 	public void updateStateText() {
 		if (!_ignoreUpdates && _selectedState > 0) {
-			
-			if (_selectedState == _character.getNumberOfStates()+1) {
+
+			if (_selectedState == _character.getNumberOfStates() + 1) {
 				_stateController.addState(null);
 			}
-			
+
 			String text = stateDescriptionPane.getRtfTextBody();
 			_character.setState(_selectedState, text);
-		
+
 		}
 	}
-	
+
 	class StateListModel extends AbstractListModel {
 
 		private static final long serialVersionUID = -8487636933835456688L;
 		private MultiStateCharacter _character;
-		
+
 		public StateListModel(EditorViewModel model, MultiStateCharacter character) {
 			model.addDeltaDataSetObserver(new CharacterChangeListener());
 			_character = character;
 		}
-		
+
 		@Override
 		public int getSize() {
-			return _character.getNumberOfStates()+1;
+			return _character.getNumberOfStates() + 1;
 		}
 
 		@Override
@@ -308,9 +300,9 @@ public class StateEditor extends CharacterEditTab {
 			if (index == _character.getNumberOfStates()) {
 				return "";
 			}
-			return _formatter.formatState(_character, index+1);
+			return _formatter.formatState(_character, index + 1);
 		}
-		
+
 		class CharacterChangeListener extends AbstractDataSetObserver {
 
 			@Override
@@ -319,9 +311,8 @@ public class StateEditor extends CharacterEditTab {
 					fireContentsChanged(this, 0, _character.getNumberOfStates());
 				}
 			}
-			
+
 		}
 	}
-	
-	
+
 }

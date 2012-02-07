@@ -89,6 +89,7 @@ public class DeltaViewModel extends DataSetWrapper implements EditorViewModel, P
 		if (_selectedCharacter == oldCharacter) {
 			_selectedCharacter = newCharacter;
 		}
+		super.characterTypeChanged(event);
 	}
 
 	@Override

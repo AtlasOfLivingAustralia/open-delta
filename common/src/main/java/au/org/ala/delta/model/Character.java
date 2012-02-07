@@ -320,9 +320,9 @@ public abstract class Character implements Illustratable, Comparable<Character>,
 	public boolean equals(Object character) {
 		if ((character == null) || !(character instanceof Character)) {
 			return false;
-		}
-		
-		return _number == ((Character)character).getCharacterId();
+		}		
+		Character other = (Character) character;		
+		return _number == other._number && _characterType == other._characterType;
 	}
 	
 	/**
