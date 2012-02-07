@@ -24,6 +24,7 @@ import javax.sound.sampled.Line;
 import javax.sound.sampled.LineEvent;
 import javax.sound.sampled.LineListener;
 import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.Mixer;
 
 /**
  * Helper class for playing audio.
@@ -40,12 +41,22 @@ public class AudioPlayer {
 
 		try {
 			Line.Info lineInfo = new Line.Info(Clip.class);
-			Line line = AudioSystem.getLine(lineInfo);
-			Clip clip = (Clip) line;
-			if (line.isOpen()) {
-				System.err.println("line is open, closing it first...");
-				line.close();
+			Line line = null;
+			
+			Mixer.Info[] mixers = AudioSystem.getMixerInfo();
+			if (mixers.length > 0) {			
+				Mixer.Info mixerInfo = mixers[0];
+				line = AudioSystem.getMixer(mixerInfo).getLine(lineInfo);
+			} else {
+				line = AudioSystem.getLine(lineInfo);	
 			}
+			
+			if ( line == null) {
+				
+				return;
+			}
+			 
+			Clip clip = (Clip) line;
 			AudioInputStream ais = AudioSystem.getAudioInputStream(sound);
 			clip.open(ais);
 
