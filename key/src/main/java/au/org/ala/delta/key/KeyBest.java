@@ -132,6 +132,10 @@ public class KeyBest {
             List<Attribute> charAttributes = dataset.getAllAttributesForCharacter(ch.getCharacterId());
 
             for (Attribute attr : charAttributes) {
+//                if (attr.isInapplicable()) {
+//                    System.out.println("Inapplicable! " + attr.toString());
+//                    
+//                }
                 Item taxon = attr.getItem();
 
                 // Skip any attributes that pertain to taxa that are not
@@ -140,7 +144,7 @@ public class KeyBest {
                     continue;
                 }
 
-                if (attr.isUnknown() || attr.isInapplicable()) {
+                if (attr.isUnknown() || (attr.isInapplicable())) {
                     unsuitableCharacters.add(ch);
                     continue charLoop;
                 }
@@ -198,17 +202,19 @@ public class KeyBest {
             if (sumNumTaxaInSubgroups > numAvailableTaxa) {
                 if (numSubgroupsSameSizeAsOriginalGroup == totalNumStates) {
                     unsuitableCharacters.add(ch);
-                    continue;
+                    continue charLoop;
                 }
 
                 // Why???
                 if (varyWt == 0) {
-                    unsuitableCharacters.add(ch);
+                    //unsuitableCharacters.add(ch);
                     continue;
                 }
 
                 // TODO thing with preset characters here
-                // if (numSubgroupsSameSizeAsOriginalGroup != 0 && true && )
+//                if (numSubgroupsSameSizeAsOriginalGroup != 0 && true && true) {
+//                    continue;
+//                }
                 dupf = varw * (1 + 100 * numSubgroupsSameSizeAsOriginalGroup) * (sumNumTaxaInSubgroups - numAvailableTaxa)
                 * ((numAvailableTaxa + 8) / (numAvailableTaxa * Best.log2(numAvailableTaxa)));
             }

@@ -30,18 +30,22 @@ import au.org.ala.delta.directives.validation.DirectiveException;
 import au.org.ala.delta.io.BinaryKeyFile;
 import au.org.ala.delta.key.ItemsFileHeader;
 import au.org.ala.delta.key.KeyContext;
+import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterDependency;
 import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateAttribute;
 import au.org.ala.delta.model.MultiStateCharacter;
+import au.org.ala.delta.model.impl.ControllingInfo;
 import au.org.ala.delta.util.Utils;
 
 public class KeyItemsFileReader {
 
     // Attribute data is stored as 32 bit words
     private static int ATTRIBUTE_DATA_LENGTH = 32 / Byte.SIZE;
+
+    public static final int INAPPLICABLE_BIT = 20;
 
     private KeyContext _context;
     private ItemsFileHeader _header;
@@ -109,7 +113,7 @@ public class KeyItemsFileReader {
         for (int i = 0; i < _header.getNumberOfItems(); i++) {
             int itemNumber = i + 1;
             float abundance = itemAbundances.get(i);
-            
+
             // Item abundancy may have already been set in the directives file
             if (!_context.itemAbundancySet(itemNumber)) {
                 _context.addItemAbundancy(itemNumber, abundance);
@@ -118,6 +122,8 @@ public class KeyItemsFileReader {
     }
 
     private void processItemAttributes(Item item, byte[] allAttributesData) {
+
+        // First pass, read attribute data from file
         for (int i = 0; i < _header.getNumberOfCharacters(); i++) {
             MultiStateCharacter ch = (MultiStateCharacter) _dataset.getCharacter(i + 1);
 
@@ -128,21 +134,18 @@ public class KeyItemsFileReader {
 
             boolean[] attributeDataAsBooleans = Utils.byteArrayToBooleanArray(attributeDataAsBytes);
 
-            List<Integer> presentStates = new ArrayList<Integer>();
+            List<String> presentStatesStrings = new ArrayList<String>();
             for (int j = 0; j < ch.getNumberOfStates(); j++) {
                 int stateNumber = j + 1;
                 if (attributeDataAsBooleans[j]) {
-                    presentStates.add(stateNumber);
+                    presentStatesStrings.add(Integer.toString(stateNumber));
                 }
             }
 
-            // unknown is treated as variable (all states available) unless the
-            // TREAT UNKNOWN AS INAPPLICABLE directive has been used.
-            if (presentStates.isEmpty() && !_context.getTreatUnknownAsInapplicable()) {
-                for (int j = 0; j < ch.getNumberOfStates(); j++) {
-                    int stateNumber = j + 1;
-                    presentStates.add(stateNumber);
-                }
+            boolean inapplicable = attributeDataAsBooleans[INAPPLICABLE_BIT];
+
+            if (inapplicable) {
+                presentStatesStrings.add("-");
             }
 
             // TODO bit of a hack here, as DefaultAttributeData can currently
@@ -150,9 +153,83 @@ public class KeyItemsFileReader {
             // Will be able to fix this up when we switch to using a SlotFile
             // based dataset.
             try {
-                msAttr.setValueFromString(StringUtils.join(presentStates, "/"));
+                msAttr.setValueFromString(StringUtils.join(presentStatesStrings, "/"));
             } catch (DirectiveException e) {
                 throw new RuntimeException(e);
+            }
+        }
+
+        // Second pass, set inapplicable any dependent characters that are made
+        // inapplicable by the values of their
+        // controlling characters
+        // First pass, read attribute data from file
+        for (int i = 0; i < _header.getNumberOfCharacters(); i++) {
+            MultiStateCharacter ch = (MultiStateCharacter) _dataset.getCharacter(i + 1);
+
+            MultiStateAttribute msAttr = (MultiStateAttribute) _dataset.getAttribute(item.getItemNumber(), ch.getCharacterId());
+
+            if (!msAttr.isInapplicable()) {
+                ControllingInfo controllingInfo = _dataset.checkApplicability(ch, item);
+                // if (controllingInfo.isStrictlyInapplicable() ||
+                // (controllingInfo.isMaybeInapplicable() &&
+                // !msAttr.isUnknown())) {
+                if (controllingInfo.isInapplicable()) {
+
+                    // Maintain existing state information - any attribute with
+                    // state information already set becomes
+                    // "maybe inapplicable"
+                    List<Integer> presentStates = msAttr.getPresentStatesAsList();
+                    List<String> presentStatesStrings = new ArrayList<String>();
+                    for (int stateNum : presentStates) {
+                        presentStatesStrings.add(Integer.toString(stateNum));
+                    }
+
+                    // add inapplicable value
+                    presentStatesStrings.add("-");
+
+                    // TODO bit of a hack here, as DefaultAttributeData can
+                    // currently
+                    // only be set using a String.
+                    // Will be able to fix this up when we switch to using a
+                    // SlotFile
+                    // based dataset.
+                    try {
+                        msAttr.setValueFromString(StringUtils.join(presentStatesStrings, "/"));
+                    } catch (DirectiveException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        }
+
+        // Third pass, unknown values should be variable unless the
+        // TREAT UNKNOWN AS INAPPLICABLE directive has been used
+        if (!_context.getTreatUnknownAsInapplicable()) {
+            for (int i = 0; i < _header.getNumberOfCharacters(); i++) {
+                MultiStateCharacter ch = (MultiStateCharacter) _dataset.getCharacter(i + 1);
+
+                MultiStateAttribute msAttr = (MultiStateAttribute) _dataset.getAttribute(item.getItemNumber(), ch.getCharacterId());
+
+                if (msAttr.getPresentStates().isEmpty() && !msAttr.isInapplicable()) {
+                    // Set attribute as variable - all states are present
+                    List<String> presentStatesStrings = new ArrayList<String>();
+                    for (int j = 0; j < ch.getNumberOfStates(); j++) {
+                        int stateNumber = j + 1;
+                        presentStatesStrings.add(Integer.toString(stateNumber));
+                    }
+
+                    // TODO bit of a hack here, as DefaultAttributeData can
+                    // currently
+                    // only be set using a String.
+                    // Will be able to fix this up when we switch to using a
+                    // SlotFile
+                    // based dataset.
+                    try {
+                        msAttr.setValueFromString(StringUtils.join(presentStatesStrings, "/"));
+                    } catch (DirectiveException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
             }
         }
     }

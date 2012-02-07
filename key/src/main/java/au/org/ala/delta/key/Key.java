@@ -333,12 +333,12 @@ public class Key implements DirectiveParserObserver {
                 }
             } else {
                 bestMap = KeyBest.orderBest(_context, specimenAvailableCharacterNumbers, specimenAvailableTaxaNumbers, _context.getRBase(), _context.getABase(), _context.getReuse(), _context.getVaryWt());
-                for (Character ch: specimen.getUsedCharacters()) {
-                    System.out.println(specimen.getAttributeForCharacter(ch));
-                }
-                System.out.println("------");
-                System.out.println(bestMap);
-                System.out.println("#####");
+//                for (Character ch: specimen.getUsedCharacters()) {
+//                    System.out.println(specimen.getAttributeForCharacter(ch));
+//                }
+//                System.out.println("------");
+//                System.out.println(bestMap);
+//                System.out.println("#####");
                 List<Character> bestOrderCharacters = new ArrayList<Character>(bestMap.keySet());
                 if (bestOrderCharacters.isEmpty()) {
                     return;
@@ -502,7 +502,7 @@ public class Key implements DirectiveParserObserver {
                 }
 
                 if (compareStateDistributions(mainCharacterStateDistributions, confirmatoryCharacterStateDistributions)) {
-                    System.out.println(MessageFormat.format("Confirmatory character {0}:{1}", mainCharacter.getCharacterId(), multiStateChar.getCharacterId()));
+                    //System.out.println(MessageFormat.format("Confirmatory character {0}:{1}", mainCharacter.getCharacterId(), multiStateChar.getCharacterId()));
 
                     Map<Integer, Integer> mainToConfirmatoryStateMap = new HashMap<Integer, Integer>();
 
