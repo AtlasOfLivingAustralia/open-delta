@@ -42,6 +42,6 @@ public class PreferencesDirectiveTest extends IntkeyDatasetTestCase {
 
         Character secondDatasetChar1 = context.getDataset().getCharacter(1);
         assertEquals(1, context.getCharactersForKeyword("preferencestest").size());
-        assertEquals(firstDatasetChar1, context.getCharactersForKeyword("preferencestest").get(0));
+        assertEquals(secondDatasetChar1, context.getCharactersForKeyword("preferencestest").get(0));
     }
 }
