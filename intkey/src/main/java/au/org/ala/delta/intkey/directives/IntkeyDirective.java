@@ -14,7 +14,6 @@
  ******************************************************************************/
 package au.org.ala.delta.intkey.directives;
 
-import java.text.MessageFormat;
 import java.text.ParseException;
 
 import org.apache.commons.lang.StringUtils;

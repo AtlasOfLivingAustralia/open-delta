@@ -28,7 +28,9 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
 
 public class DirectiveAction extends AbstractAction {
 
-    private AbstractDirective<IntkeyContext> _directive;
+	private static final long serialVersionUID = 1L;
+	
+	private AbstractDirective<IntkeyContext> _directive;
     private IntkeyContext _context;
 
     public DirectiveAction(AbstractDirective<IntkeyContext> directive, IntkeyContext context) {
