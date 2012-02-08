@@ -13,6 +13,7 @@ import org.apache.commons.lang.ArrayUtils;
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.best.Best;
 import au.org.ala.delta.best.Best.OrderingType;
+import au.org.ala.delta.key.directives.AllowImproperSubgroupsDirective;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.DeltaDataSet;
@@ -46,7 +47,7 @@ public class KeyBest {
      *         supplied map
      */
     public static LinkedHashMap<au.org.ala.delta.model.Character, Double> orderBest(DeltaDataSet dataset, double[] charCosts, double[] itemAbundanceValues, List<Integer> availableCharacterNumbers, List<Integer> availableTaxaNumbers, double rBase,
-            double aBase, double reuse, double varyWt) {
+            double aBase, double reuse, double varyWt, boolean allowImproperSubgroups) {
         
         LinkedHashMap<Character, Double> retMap = new LinkedHashMap<Character, Double>();
 
@@ -188,15 +189,16 @@ public class KeyBest {
                 }
 
                 // Why???
-                if (varyWt == 0) {
-                    //unsuitableCharacters.add(ch);
-                    continue;
-                }
-
-                // TODO thing with preset characters here
-//                if (numSubgroupsSameSizeAsOriginalGroup != 0 && true && true) {
+//                if (varyWt == 0) {
 //                    continue;
 //                }
+
+                // TODO thing with preset characters here
+                if (numSubgroupsSameSizeAsOriginalGroup != 0 && !allowImproperSubgroups) {
+                    unsuitableCharacters.add(ch);
+                    continue charLoop;
+                }
+                
                 dupf = varw * (1 + 100 * numSubgroupsSameSizeAsOriginalGroup) * (sumNumTaxaInSubgroups - numAvailableTaxa)
                 * ((numAvailableTaxa + 8) / (numAvailableTaxa * Best.log2(numAvailableTaxa)));
             }

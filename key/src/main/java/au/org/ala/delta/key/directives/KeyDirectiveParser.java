@@ -64,6 +64,7 @@ public class KeyDirectiveParser extends DirectiveParser<KeyContext> {
         instance.registerDirective(new TypeSettingMarks());
         instance.registerDirective(new KeyPrintCommentDirective());
         instance.registerDirective(new StopAfterColumnDirective());
+        instance.registerDirective(new AllowImproperSubgroupsDirective());
         
         // No-op directives implemented to allow backward compatibility of old scripts
         instance.registerDirective(new DumpDirective());

@@ -248,36 +248,8 @@ public class Key implements DirectiveParserObserver {
 
     private void readInputFiles() {
         if (!_inputFilesRead) {
-            File charactersFile = _context.getCharactersFile();
-            File itemsFile = _context.getItemsFile();
-
-            BinaryKeyFile keyCharactersFile = new BinaryKeyFile(charactersFile.getAbsolutePath(), BinFileMode.FM_READONLY);
-            BinaryKeyFile keyItemsFile = new BinaryKeyFile(itemsFile.getAbsolutePath(), BinFileMode.FM_READONLY);
-
-            KeyCharactersFileReader keyCharactersFileReader = new KeyCharactersFileReader(_context, _context.getDataSet(), keyCharactersFile);
-            keyCharactersFileReader.createCharacters();
-
-            KeyItemsFileReader keyItemsFileReader = new KeyItemsFileReader(_context, _context.getDataSet(), keyItemsFile);
-            keyItemsFileReader.readAll();
+            KeyUtils.loadDataset(_context);
             _inputFilesRead = true;
-            
-            // Calculate character costs and item abundance values
-            
-            DeltaDataSet dataset = _context.getDataSet();
-            
-            for (int i = 0; i < dataset.getNumberOfCharacters(); i++) {
-                Character ch = dataset.getCharacter(i + 1);
-                double charCost = Math.pow(_context.getRBase(), 5.0 - Math.min(10.0, ch.getReliability()));
-                _context.setCharacterCost(ch.getCharacterId(), charCost);
-            }
-            
-            for (int i = 0; i < dataset.getMaximumNumberOfItems(); i++) {
-                Item taxon = dataset.getItem(i + 1);
-                double itemAbundanceValue = Math.pow(_context.getABase(), _context.getItemAbundancy(i + 1) - 5.0);
-                _context.setCalculatedItemAbundanceValue(taxon.getItemNumber(), itemAbundanceValue);
-            }
-
-            System.out.println("Data input completed.");
         }
     }
 
@@ -353,7 +325,7 @@ public class Key implements DirectiveParserObserver {
                     throw new RuntimeException(MessageFormat.format("Character {0} is not suitable for use at column {1} group {2}", presetCharacterNumber, currentColumn, currentGroup));
                 }
             } else {
-                bestMap = KeyBest.orderBest(_context.getDataSet(), _context.getCharacterCostsAsArray(), _context.getCalculatedItemAbundanceValuesAsArray(), specimenAvailableCharacterNumbers, specimenAvailableTaxaNumbers, _context.getRBase(), _context.getABase(), _context.getReuse(), _context.getVaryWt());
+                bestMap = KeyBest.orderBest(_context.getDataSet(), _context.getCharacterCostsAsArray(), _context.getCalculatedItemAbundanceValuesAsArray(), specimenAvailableCharacterNumbers, specimenAvailableTaxaNumbers, _context.getRBase(), _context.getABase(), _context.getReuse(), _context.getVaryWt(), _context.getAllowImproperSubgroups());
 //                for (Character ch: specimen.getUsedCharacters()) {
 //                    System.out.println(specimen.getAttributeForCharacter(ch));
 //                }
@@ -374,7 +346,7 @@ public class Key implements DirectiveParserObserver {
             if (numberOfConfirmatoryCharacters > 0) {
                 // generated best characters if this has not already been done
                 if (bestMap == null) {
-                    bestMap = KeyBest.orderBest(_context.getDataSet(), _context.getCharacterCostsAsArray(), _context.getCalculatedItemAbundanceValuesAsArray(), specimenAvailableCharacterNumbers, specimenAvailableTaxaNumbers, _context.getRBase(), _context.getABase(), _context.getReuse(), _context.getVaryWt());
+                    bestMap = KeyBest.orderBest(_context.getDataSet(), _context.getCharacterCostsAsArray(), _context.getCalculatedItemAbundanceValuesAsArray(), specimenAvailableCharacterNumbers, specimenAvailableTaxaNumbers, _context.getRBase(), _context.getABase(), _context.getReuse(), _context.getVaryWt(), _context.getAllowImproperSubgroups());
                 }
                 List<Character> bestOrderCharacters = new ArrayList<Character>(bestMap.keySet());
                 confirmatoryCharacters = getConfirmatoryCharacters(specimen, includedItems, bestOrderCharacters, bestCharacter, numberOfConfirmatoryCharacters);

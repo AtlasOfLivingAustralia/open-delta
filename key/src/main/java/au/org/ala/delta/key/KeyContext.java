@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import au.org.ala.delta.DeltaContext;
-import au.org.ala.delta.directives.ItemAbundances;
 import au.org.ala.delta.key.directives.io.KeyOutputFileManager;
 import au.org.ala.delta.util.Pair;
 
@@ -47,6 +46,8 @@ public class KeyContext extends DeltaContext {
     private boolean _displayBracketedKey;
     private boolean _displayTabularKey;
 
+    private boolean _allowImproperSubgroups;
+    
     private boolean _treatUnknownAsInapplicable;
 
     private String _typeSettingFileHeaderText;
@@ -79,6 +80,7 @@ public class KeyContext extends DeltaContext {
         _addCharacterNumbers = false;
         _displayBracketedKey = true;
         _displayTabularKey = true;
+        _allowImproperSubgroups = false;
 
         _treatUnknownAsInapplicable = false;
 
@@ -322,6 +324,14 @@ public class KeyContext extends DeltaContext {
 
     public double[] getCalculatedItemAbundanceValuesAsArray() {
         return _calculatedItemAbundanceValues;
+    }
+    
+    public boolean getAllowImproperSubgroups() {
+        return _allowImproperSubgroups;
+    }
+
+    public void setAllowImproperSubgroups(boolean allowImproperSubgroups) {
+        this._allowImproperSubgroups = allowImproperSubgroups;
     }
 
 }
