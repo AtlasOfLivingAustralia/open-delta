@@ -118,7 +118,7 @@ public class CharacterValidator extends DescriptionValidator {
 	public ValidationResult validateStates() {
 		if (_character.getCharacterType().isMultistate()) {
 			if (((MultiStateCharacter)_character).getNumberOfStates() == 0) {
-				return ValidationResult.error("MULTISTATE_CHARS_NEED_AT_LEAST_ONE_STATE");
+				return ValidationResult.error("multistate.character.no.states");
 			}
 		
 		}

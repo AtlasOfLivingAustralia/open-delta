@@ -192,7 +192,7 @@ public class EditorPreferences {
 
 	public static void removePreferenceChangeListener(PreferenceChangeListener listener) {
 		Preferences prefs = Preferences.userNodeForPackage(DeltaEditor.class);
-		if (prefs != null) {
+		if (prefs != null) {			
 			prefs.removePreferenceChangeListener(listener);
 		}
 
