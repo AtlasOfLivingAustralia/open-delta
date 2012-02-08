@@ -19,6 +19,7 @@ import java.util.List;
 
 import javax.swing.ActionMap;
 import javax.swing.JFileChooser;
+import javax.swing.plaf.FileChooserUI;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ResourceMap;
@@ -82,6 +83,8 @@ public class ImportController  {
 			currentDirectory = new File(System.getProperty("user.dir"));
 		}
 		JFileChooser directorySelector = new JFileChooser(currentDirectory.getAbsolutePath());
+		directorySelector.setSelectedFile(currentDirectory);
+		
 		String directoryChooserTitle = _resources.getString("ImportDialog.directoryChooserTitle");
 		directorySelector.setDialogTitle(directoryChooserTitle);
 		directorySelector.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
