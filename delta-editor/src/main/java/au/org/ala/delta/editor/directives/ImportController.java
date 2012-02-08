@@ -77,7 +77,11 @@ public class ImportController  {
 	
 	@Action
 	public void changeImportDirectory() {
-		JFileChooser directorySelector = new JFileChooser(_importModel.getCurrentDirectory());
+		File currentDirectory = _importModel.getCurrentDirectory();
+		if (currentDirectory == null) {
+			currentDirectory = new File(System.getProperty("user.dir"));
+		}
+		JFileChooser directorySelector = new JFileChooser(currentDirectory.getAbsolutePath());
 		String directoryChooserTitle = _resources.getString("ImportDialog.directoryChooserTitle");
 		directorySelector.setDialogTitle(directoryChooserTitle);
 		directorySelector.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
