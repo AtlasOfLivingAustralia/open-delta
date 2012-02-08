@@ -19,7 +19,6 @@ import java.util.List;
 
 import javax.swing.ActionMap;
 import javax.swing.JFileChooser;
-import javax.swing.plaf.FileChooserUI;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ResourceMap;

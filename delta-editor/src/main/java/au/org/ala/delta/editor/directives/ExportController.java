@@ -94,11 +94,17 @@ public class ExportController {
 	
 	@Action
 	public void changeExportDirectory() {
-		JFileChooser directorySelector = new JFileChooser(_exportModel.getCurrentDirectory());
+		File currentDirectory = _exportModel.getCurrentDirectory();
+		if (currentDirectory == null) {
+			currentDirectory = new File(System.getProperty("user.dir"));
+		}
+		
+		JFileChooser directorySelector = new JFileChooser(currentDirectory);
 		String directoryChooserTitle = _resources.getString("ExportDialog.directoryChooserTitle");
 		directorySelector.setDialogTitle(directoryChooserTitle);
 		directorySelector.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		directorySelector.setAcceptAllFileFilterUsed(false);
+		directorySelector.setSelectedFile(currentDirectory);
 		
 		int result = directorySelector.showOpenDialog(_exportDialog);
 		if (result == JFileChooser.APPROVE_OPTION) {
