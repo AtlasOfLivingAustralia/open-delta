@@ -16,11 +16,19 @@ package au.org.ala.delta.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Window;
 
+import javax.swing.ActionMap;
+import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.UIManager;
+
+import org.jdesktop.application.Action;
+import org.jdesktop.application.Application;
 
 import au.org.ala.delta.ui.rtf.RtfEditorPane;
 
@@ -33,10 +41,15 @@ public class RichTextDialog extends JDialog {
 	private static final long serialVersionUID = 9109806191571551508L;
 
 	private RtfEditorPane editor;
+	private ActionMap _actionMap;
+	
 	public RichTextDialog(Window owner, String text) {
 		super(owner);
+		_actionMap = Application.getInstance().getContext().getActionMap(this);
 		setLayout(new BorderLayout());
 		editor = new RtfEditorPane();
+		
+		setPreferredSize(new Dimension(300, 300));
 		
 		editor.setEditable(false);
 		editor.setBackground(Color.WHITE);
@@ -49,6 +62,20 @@ public class RichTextDialog extends JDialog {
 		scroller.setViewportBorder(null);
 		scroller.setBorder(null);
 		add(scroller, BorderLayout.CENTER);
+		
+		JPanel btnBar = new JPanel();
+		btnBar.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		JButton btnClose = new JButton();
+		btnClose.setAction(_actionMap.get("closePressed"));
+		btnBar.add(btnClose);
+		add(btnBar, BorderLayout.SOUTH);
+		
+		setName("RichTextDialog");
+	}
+	
+	@Action
+	public void closePressed() {
+		this.setVisible(false);
 	}
 	
 	public void setText(String text) {
