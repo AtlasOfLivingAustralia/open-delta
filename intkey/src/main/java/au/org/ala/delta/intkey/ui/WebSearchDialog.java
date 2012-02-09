@@ -101,13 +101,13 @@ public class WebSearchDialog extends JDialog {
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
 			{
 				JButton okButton = new JButton("[OK]");
-				okButton.setAction(actionMap.get("WebSearch_search"));
+				okButton.setAction(actionMap.get("WebSearchDialog_search"));
 				buttonPane.add(okButton);
 				getRootPane().setDefaultButton(okButton);
 			}
 			{
 				JButton cancelButton = new JButton("[Cancel]");
-				cancelButton.setAction(actionMap.get("WebSearch_cancel"));
+				cancelButton.setAction(actionMap.get("WebSearchDialog_cancel"));
 				buttonPane.add(cancelButton);
 			}
 		}
@@ -122,12 +122,12 @@ public class WebSearchDialog extends JDialog {
 	}
 	
 	@Action
-	public void WebSearch_cancel() {
+	public void WebSearchDialog_cancel() {
 		this.dispose();
 	}
 
 	@Action
-	public void WebSearch_search() {
+	public void WebSearchDialog_search() {
 		String term = txtSearch.getText().trim();
 		if (!org.apache.commons.lang.StringUtils.isEmpty(term)) {
 			SearchEngineDescriptor selected = (SearchEngineDescriptor) cmbSearchEngine.getSelectedItem();
