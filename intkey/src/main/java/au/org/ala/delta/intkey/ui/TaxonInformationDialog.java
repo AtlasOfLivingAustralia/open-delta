@@ -162,7 +162,7 @@ public class TaxonInformationDialog extends IntkeyDialog {
         
         _btnWebSearch = new JButton();
         _btnWebSearch.setAction(actionMap.get("webSearch"));
-        _btnWebSearch.setEnabled(false);
+        _btnWebSearch.setEnabled(true);
         _btnPanel.add(_btnWebSearch);
 
         _btnDeselectAll = new JButton();
@@ -415,7 +415,12 @@ public class TaxonInformationDialog extends IntkeyDialog {
 
     @Action
     public void webSearch() {
-        // TODO 
+    	WebSearchDialog websearch = new WebSearchDialog(this);    	
+    	websearch.setModal(true);
+    	Item selectedTaxon = _taxa.get(_selectedIndex);
+    	ItemFormatter formatter = new ItemFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.REMOVE, true, false, true);
+    	websearch.setSearchTerm(formatter.formatItemDescription(selectedTaxon));
+    	websearch.setVisible(true);
     }
 
     @Action
