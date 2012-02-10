@@ -25,5 +25,15 @@ public class Platform {
 		}
 		return false;
 	}
+	
+	public static boolean isWindows() {
+		String os = System.getProperty("os.name");
+		if (os != null && os.toLowerCase().contains("windows")) {
+			return true;
+		}
+		
+		return false;		
+	}
+
 
 }
