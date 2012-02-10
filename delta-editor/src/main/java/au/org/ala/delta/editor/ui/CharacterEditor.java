@@ -239,6 +239,11 @@ public class CharacterEditor extends AbstractDeltaView {
 				return false;
 			}
 			
+			if (_selectedCharacter.getCharacterType() == CharacterType.Unknown) {
+				_dialogHelper.displayValidationResult(ValidationResult.error("unknown.character.type"));
+				return false;
+			}
+			
 		}
 
 		return true;

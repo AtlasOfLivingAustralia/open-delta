@@ -48,6 +48,9 @@ public class MatrixTableModel extends AbstractTableModel {
 		
 	@Override
 	public int getColumnCount() {
+		if (_dataSet.getNumberOfCharacters() == 0) {
+			return 1;
+		}
 		return _dataSet.getNumberOfCharacters();
 	}
 
@@ -58,6 +61,10 @@ public class MatrixTableModel extends AbstractTableModel {
 
 	@Override
 	public String getColumnName(int column) {
+		
+		if (_dataSet.getNumberOfCharacters() == 0) {
+			return "";
+		}
 		
 		Character ch = _dataSet.getCharacter(column + 1);
 		return RTFUtils.stripFormatting(ch.getDescription());
@@ -96,6 +103,11 @@ public class MatrixTableModel extends AbstractTableModel {
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
+		
+		if (_dataSet.getNumberOfCharacters() == 0) {
+			return "";
+		}
+		
 		String tmp = _dataSet.getAttributeAsString(rowIndex+1, columnIndex+1);
 		Item item = _dataSet.getItem(rowIndex + 1);
 		Character character = _dataSet.getCharacter(columnIndex+1);
@@ -120,6 +132,10 @@ public class MatrixTableModel extends AbstractTableModel {
 		}
 		
 		return vm;
+	}
+	
+	public EditorViewModel getDataSet() {
+		return _dataSet;
 	}
 	
 	class ModelUpdater extends AbstractDataSetObserver {

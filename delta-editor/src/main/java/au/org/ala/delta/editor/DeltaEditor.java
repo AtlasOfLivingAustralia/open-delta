@@ -128,7 +128,9 @@ public class DeltaEditor extends InternalFrameApplication implements PreferenceC
 	@Resource
 	private String closeWithoutSavingMessage;
 	@Resource
-	private String newDataSetName;
+	private String newDataSetName;	
+	@Resource
+	private String unableToCloseMessage;
 
 	public static void main(String[] args) {
 		setupMacSystemProperties(DeltaEditor.class);
@@ -614,6 +616,7 @@ public class DeltaEditor extends InternalFrameApplication implements PreferenceC
 		DeltaViewController controller = new DeltaViewController(model, DeltaEditor.this, _dataSetRepository);
 		controller.setNewDataSetName(newDataSetName);
 		controller.setCloseWithoutSavingMessage(closeWithoutSavingMessage);
+		controller.setUnableToCloseMessage(unableToCloseMessage);
 		controller.addDeltaViewStatusObserver(this);
 		_controllers.add(controller);
 		return controller;

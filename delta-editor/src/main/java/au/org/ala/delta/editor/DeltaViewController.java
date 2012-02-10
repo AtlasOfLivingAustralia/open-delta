@@ -59,6 +59,8 @@ public class DeltaViewController extends InternalFrameAdapter implements Vetoabl
 	
 	private String _closeWithoutSavingMessage;
 	
+	private String _unableToCloseMessage;
+	
 	private DeltaViewFactory _viewFactory;
 	
 	private Map<DeltaView, DeltaViewModel> _models;
@@ -95,6 +97,10 @@ public class DeltaViewController extends InternalFrameAdapter implements Vetoabl
 	
 	public void setCloseWithoutSavingMessage(String windowClosingMessage) {
 		_closeWithoutSavingMessage = windowClosingMessage;
+	}
+	
+	public void setUnableToCloseMessage(String unableToCloseMessage) {
+		_unableToCloseMessage = unableToCloseMessage;
 	}
 
 	/**
@@ -218,6 +224,16 @@ public class DeltaViewController extends InternalFrameAdapter implements Vetoabl
 	 * @return true if the close proceeded.
 	 */
 	public boolean closeAll() {
+		
+		for (JInternalFrame view : _activeViews) {
+			if (view instanceof DeltaView) {
+				DeltaView dv = (DeltaView) view;
+				if (!dv.canClose()) {
+					JOptionPane.showMessageDialog(view, _unableToCloseMessage);
+					return false;
+				}								
+			}
+		}
 		
 		if (confirmClose()) {
 			try {

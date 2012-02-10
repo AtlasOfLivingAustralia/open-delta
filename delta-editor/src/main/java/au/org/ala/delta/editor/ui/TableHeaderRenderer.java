@@ -34,7 +34,8 @@ public class TableHeaderRenderer extends DefaultTableCellRenderer {
 	
 	@Override
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-		_renderer.bind(column, (String) value); 
+		MatrixTableModel model = (MatrixTableModel) table.getModel();
+		_renderer.bind(column, (String) value, model); 
 		return _renderer;
 	}
 	
@@ -59,10 +60,13 @@ public class TableHeaderRenderer extends DefaultTableCellRenderer {
 			setBorder(new BottomLineBorder(SystemColor.controlShadow));
 		}
 		
-		public void bind(int colIndex, String text) {
-			_label.setText(String.format("%d", colIndex + 1));
-			_text.setText(text);
-			
+		public void bind(int colIndex, String text, MatrixTableModel model) {
+			if (model.getDataSet().getNumberOfCharacters() == 0) {
+				_label.setText(" ");
+			} else {
+				_label.setText(String.format("%d", colIndex + 1));
+			}
+			_text.setText(text);			
 		}
 		
 		@Override

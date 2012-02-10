@@ -28,6 +28,8 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 
@@ -101,6 +103,11 @@ public class MatrixViewer extends AbstractDeltaView {
 			public void characterDeleted(DeltaDataSetChangeEvent event) {
 				restoreSelection(event);
 			}
+			
+			@Override
+			public void itemDeleted(DeltaDataSetChangeEvent event) {
+				_table.revalidate();
+			}
 
 			private void restoreSelection(DeltaDataSetChangeEvent event) {
 				int row = _fixedColumns.getSelectedRow();
@@ -145,7 +152,7 @@ public class MatrixViewer extends AbstractDeltaView {
 		_table.setCellSelectionEnabled(true);
 		_table.setDefaultRenderer(Object.class, new AttributeCellRenderer());
 		_table.getTableHeader().setReorderingAllowed(false);
-
+		
 		ListSelectionListener listener = new ListSelectionListener() {
 
 			@Override
@@ -159,11 +166,11 @@ public class MatrixViewer extends AbstractDeltaView {
 					Item selectedItem = _dataSet.getItem(itemId);
 					_dataSet.setSelectedItem(selectedItem);
 				}
-				if (charId > 0) {
+				if (charId > 0 && charId <= _dataSet.getNumberOfCharacters()) {
 					au.org.ala.delta.model.Character selectedCharacter = _dataSet.getCharacter(charId);
 					_dataSet.setSelectedCharacter(selectedCharacter);
 				}
-				if ((itemId > 0) && (charId > 0)) {
+				if ((itemId > 0) && (charId > 0) && charId <= _dataSet.getNumberOfCharacters()) {
 					_attributeEditor.bind(_dataSet.getSelectedCharacter(), _dataSet.getSelectedItem());
 				}
 			}
@@ -175,6 +182,16 @@ public class MatrixViewer extends AbstractDeltaView {
 		_table.getTableHeader().setDefaultRenderer(new TableHeaderRenderer());
 
 		final JScrollPane scrollpane = new JScrollPane(_table);
+		
+		scrollpane.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				if (e.isPopupTrigger()) {
+					
+				}
+			}
+		});
+		
 		scrollpane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		scrollpane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 

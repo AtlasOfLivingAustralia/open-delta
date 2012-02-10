@@ -101,6 +101,11 @@ implements DragGestureListener, ListSelectionListener, ReorderableList {
 	}
 	
 	private void updateTableColumnSelection(int column) {
+		MatrixTableModel model = (MatrixTableModel) getTable().getModel();
+		if (model.getDataSet().getNumberOfCharacters() == 0) {
+			return;
+		}
+		
 		getTable().getColumnModel().getSelectionModel().setSelectionInterval(column, column);
 	}
 	

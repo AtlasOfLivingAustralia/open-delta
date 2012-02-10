@@ -47,9 +47,9 @@ public class CharacterController {
 	private au.org.ala.delta.editor.ui.util.MessageDialogHelper _dialogHelper;
 	
 	/**
-	 * Creates a new ItemController.
-	 * @param view the view of the Items.
-	 * @param model the model containing Item data.
+	 * Creates a new CharacterController.
+	 * @param view the view of the Characters.
+	 * @param model the model containing Character data.
 	 */
 	public CharacterController(ReorderableList view, EditorViewModel model) {
 		_view = view;
@@ -74,17 +74,16 @@ public class CharacterController {
 	}
 	
 	/**
-	 * Builds the Item-related popup menu based on the current selection.
+	 * Builds the Character related popup menu based on the current selection.
 	 * @return a JPopupMenu configured for the current selection.
 	 */
 	public JPopupMenu buildPopup() {
 		JPopupMenu popup = new JPopupMenu();
 		
 		String[] characterPopupActions;
-		if (_model.getMaximumNumberOfItems() == 0) {
+		if (_model.getNumberOfCharacters() == 0) {
 			characterPopupActions = new String[] {"addCharacter", "-", "cancel"};
-		}
-		else {
+		} else {
 		    characterPopupActions = new String[] {"editCharacter", "addCharacter", "insertCharacter", "deleteCharacter", "-", "cancel"};
 		}
 		MenuBuilder.buildMenu(popup, characterPopupActions, _characterActions);
@@ -107,7 +106,7 @@ public class CharacterController {
 	 * @return the new Character.
 	 */
 	public Character addCharacter() {
-		return _model.addCharacter(CharacterType.UnorderedMultiState);
+		return _model.addCharacter(CharacterType.Unknown);
 	}
 	
 	/**
@@ -122,15 +121,15 @@ public class CharacterController {
 			return;
 		}
 		
-		int itemNum = toDelete.getCharacterId();
+		int charNum = toDelete.getCharacterId();
 		if (confirmDelete(toDelete)) {
 			_model.deleteCharacter(toDelete);
 		}
-		updateSelection(itemNum);
+		updateSelection(charNum);
 	}
 	
 	/**
-	 * Displays the Item editor for the currently selected Item.
+	 * Displays the Character editor for the currently selected Character.
 	 */
 	@Action
 	public void editCharacter(ActionEvent e) {
@@ -140,14 +139,14 @@ public class CharacterController {
 	
 	@Action
 	public void insertCharacter() {
-		Character selectedItem = _model.getCharacter(_view.getSelectedIndex()+1);
+		Character selectedCharacter = _model.getCharacter(_view.getSelectedIndex()+1);
 		int characterNumber = 1;
-		if (selectedItem != null) {
-			characterNumber = selectedItem.getCharacterId();
+		if (selectedCharacter != null) {
+			characterNumber = selectedCharacter.getCharacterId();
 		}
-		Character newItem = _model.addCharacter(characterNumber, CharacterType.Unknown);
+		Character newCharacter = _model.addCharacter(characterNumber, CharacterType.Unknown);
 		
-		editNewCharacter(newItem, new ActionEvent(_view, -1, ""));
+		editNewCharacter(newCharacter, new ActionEvent(_view, -1, ""));
 	}
 	
 	@Action
@@ -155,9 +154,9 @@ public class CharacterController {
 		// Do nothing.
 	}
 	
-	public void editNewCharacter(Character newItem, ActionEvent e) {
-		int selectedItem = newItem.getCharacterId();
-		_view.setSelectedIndex(selectedItem-1);
+	public void editNewCharacter(Character newCharacter, ActionEvent e) {
+		int selectedCharacter = newCharacter.getCharacterId();
+		_view.setSelectedIndex(selectedCharacter-1);
 		
 		editCharacter(e);
 	}
@@ -178,8 +177,8 @@ public class CharacterController {
 	
 	public void copyCharacter(Character character, int copyLocation) {
 		
-		Character newItem = _model.addCharacter(copyLocation+1, character.getCharacterType());
-		newItem.setDescription("Copy of " +character.getDescription());
+		Character newCharacter = _model.addCharacter(copyLocation+1, character.getCharacterType());
+		newCharacter.setDescription("Copy of " +character.getDescription());
 	}
 	
 	private boolean confirmDelete(Character toDelete) {
@@ -246,13 +245,13 @@ public class CharacterController {
 		}
 
 		@Override
-		protected void move(Character item, int targetIndex) {
-			CharacterController.this.moveCharacter(item, targetIndex);
+		protected void move(Character character, int targetIndex) {
+			CharacterController.this.moveCharacter(character, targetIndex);
 		}
 
 		@Override
-		protected void copy(Character item, int targetIndex) {
-			CharacterController.this.copyCharacter(item, targetIndex);
+		protected void copy(Character character, int targetIndex) {
+			CharacterController.this.copyCharacter(character, targetIndex);
 		}
 	}
 	

@@ -67,7 +67,7 @@ public class CharacterValidator extends DescriptionValidator {
 		if (_model.getUncodedItems(_character).size() != _model.getMaximumNumberOfItems()) {
 			return ValidationResult.warning("coded.data.exists");
 		}
-		
+				
 		return ValidationResult.success(); 
 	}
 	
