@@ -35,8 +35,7 @@ import au.org.ala.delta.editor.slotfile.directive.DirectiveInOutState;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile;
 
 /**
- * The ExportController manages the process of exporting a set of directives
- * files from the data set to the file system.
+ * The ExportController manages the process of exporting a set of directives files from the data set to the file system.
  */
 public class ExportController {
 	private DeltaEditor _editor;
@@ -46,13 +45,15 @@ public class ExportController {
 	private ResourceMap _resources;
 	private ActionMap _actions;
 	private String _exportFileEncoding;
-	
+	private String _lineSeparator;
+
 	public ExportController(DeltaEditor context) {
 		_editor = context;
 		_model = context.getCurrentDataSet();
 		_resources = _editor.getContext().getResourceMap();
 		_actions = _editor.getContext().getActionMap(this);
 		_exportFileEncoding = "Cp1252";
+		_lineSeparator = System.getProperty("line.separator");
 	}
 
 	public void begin(PropertyChangeListener listener) {
@@ -61,26 +62,29 @@ public class ExportController {
 
 		_exportDialog = new ImportExportDialog(_editor.getMainFrame(), _exportModel, "ExportDialog");
 		_exportDialog.setDirectorySelectionAction(_actions.get("changeExportDirectory"));
-		
+
 		_editor.show(_exportDialog);
 
 		if (_exportDialog.proceed()) {
 			List<DirectiveFileInfo> files = _exportModel.getSelectedFiles();
 			File selectedDirectory = _exportModel.getCurrentDirectory();
 			_model.setExportPath(selectedDirectory.getAbsolutePath());
+			_lineSeparator = _exportDialog.getLineSeparator();
 			doExport(selectedDirectory, files, listener);
 		}
 	}
-	
+
 	public void begin() {
 		begin(null);
 	}
 
-	
 	/**
 	 * Exports the supplied directives files into the specified directory.
-	 * @param selectedDirectory the directory to export the files to.
-	 * @param files the files to export.
+	 * 
+	 * @param selectedDirectory
+	 *            the directory to export the files to.
+	 * @param files
+	 *            the files to export.
 	 */
 	public void doExport(File selectedDirectory, List<DirectiveFileInfo> files, PropertyChangeListener listener) {
 
@@ -91,21 +95,21 @@ public class ExportController {
 		}
 		exportTask.execute();
 	}
-	
+
 	@Action
 	public void changeExportDirectory() {
 		File currentDirectory = _exportModel.getCurrentDirectory();
 		if (currentDirectory == null) {
 			currentDirectory = new File(System.getProperty("user.dir"));
 		}
-		
+
 		JFileChooser directorySelector = new JFileChooser(currentDirectory);
 		String directoryChooserTitle = _resources.getString("ExportDialog.directoryChooserTitle");
 		directorySelector.setDialogTitle(directoryChooserTitle);
 		directorySelector.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		directorySelector.setAcceptAllFileFilterUsed(false);
 		directorySelector.setSelectedFile(currentDirectory);
-		
+
 		int result = directorySelector.showOpenDialog(_exportDialog);
 		if (result == JFileChooser.APPROVE_OPTION) {
 			_exportModel.setCurrentDirectory(directorySelector.getSelectedFile());
@@ -113,52 +117,60 @@ public class ExportController {
 		}
 	}
 
-	public void doSilentExport(File selectedDirectory,
-			List<DirectiveFileInfo> files) {
+	public void doSilentExport(File selectedDirectory, List<DirectiveFileInfo> files) {
 		new DoExportTask(selectedDirectory, files, true).execute();
 	}
 
 	public class DoExportTask extends ImportExportTask {
-		
+
 		public DoExportTask(File directory, List<DirectiveFileInfo> files, boolean silent) {
 			super(_editor, _model, directory, files, "export", silent);
 		}
 
 		@Override
 		protected Void doInBackground() throws Exception {
-			
+
 			publish(_status);
 
 			DirectiveFilesInitialiser initialiser = new DirectiveFilesInitialiser(_editor, _model);
 			initialiser.buildSpecialDirFiles(_files);
 			DirectivesFileExporter exporter = new DirectivesFileExporter();
-			
-			DirectiveInOutState state = new StatusUpdatingState(_model, _status);
-			for (DirectiveFileInfo file : _files) {
-				DirectiveFile dirFile = file.getDirectiveFile();
-				if (dirFile != null) {
-					File output = exporter.createExportFile(dirFile, _directoryName);
-					state.setPrintStream(new PrintStream(output, _exportFileEncoding));
-					_status.setCurrentFile(file);
-					exporter.writeDirectivesFile(dirFile, state);
-				}
 
+			// Set the line separator...
+			String previousLineSeparator = System.getProperty("line.separator");
+			System.setProperty("line.separator", _lineSeparator);
+
+			try {
+				DirectiveInOutState state = new StatusUpdatingState(_model, _status);
+				for (DirectiveFileInfo file : _files) {
+					DirectiveFile dirFile = file.getDirectiveFile();
+					if (dirFile != null) {
+						File output = exporter.createExportFile(dirFile, _directoryName);
+						state.setPrintStream(new PrintStream(output, _exportFileEncoding));
+						_status.setCurrentFile(file);
+						exporter.writeDirectivesFile(dirFile, state);
+					}
+
+					publish(_status);
+				}
+				_status.finish();
 				publish(_status);
+			} finally {
+				// Restore the line separator.
+				System.setProperty("line.separator", previousLineSeparator);
 			}
-			_status.finish();
-			publish(_status);
 
 			return null;
 		}
 	}
-	
+
 	/**
-	 * Wraps the DirectiveInOutState to allow status updates during the 
-	 * export operation.
+	 * Wraps the DirectiveInOutState to allow status updates during the export operation.
 	 */
 	private class StatusUpdatingState extends DirectiveInOutState {
-		
+
 		private ImportExportStatus _status;
+
 		public StatusUpdatingState(EditorViewModel model, ImportExportStatus status) {
 			super(model);
 			_status = status;
@@ -166,7 +178,7 @@ public class ExportController {
 
 		@Override
 		public void setCurrentDirective(DirectiveInstance directive) {
-			
+
 			_status.setCurrentDirective(directive);
 			super.setCurrentDirective(directive);
 		}
