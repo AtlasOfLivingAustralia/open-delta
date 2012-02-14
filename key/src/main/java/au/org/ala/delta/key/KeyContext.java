@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.key.directives.io.KeyOutputFileManager;
@@ -47,7 +48,7 @@ public class KeyContext extends DeltaContext {
     private boolean _displayTabularKey;
 
     private boolean _allowImproperSubgroups;
-    
+
     private boolean _treatUnknownAsInapplicable;
 
     private String _typeSettingFileHeaderText;
@@ -56,6 +57,13 @@ public class KeyContext extends DeltaContext {
 
     double[] _characterCosts;
     double[] _calculatedItemAbundanceValues;
+
+    /**
+     * Map of taxon number to set of character numbers - these characters have
+     * been explicitly set as variable for the taxon using the TREAT CHARACTERS
+     * AS VARIABLE
+     */
+    private Map<Integer, Set<Integer>> _taxonVariableCharacters;
 
     public KeyContext(File dataDirectory, PrintStream out, PrintStream err) {
         super(out, err);
@@ -87,6 +95,8 @@ public class KeyContext extends DeltaContext {
         _presetCharacters = new HashMap<Pair<Integer, Integer>, Integer>();
         _characterCosts = null;
         _calculatedItemAbundanceValues = null;
+
+        _taxonVariableCharacters = new HashMap<Integer, Set<Integer>>();
     }
 
     public KeyContext(File dataDirectory) {
@@ -325,13 +335,36 @@ public class KeyContext extends DeltaContext {
     public double[] getCalculatedItemAbundanceValuesAsArray() {
         return _calculatedItemAbundanceValues;
     }
-    
+
     public boolean getAllowImproperSubgroups() {
         return _allowImproperSubgroups;
     }
 
     public void setAllowImproperSubgroups(boolean allowImproperSubgroups) {
         this._allowImproperSubgroups = allowImproperSubgroups;
+    }
+
+    /**
+     * Set a set of characters as variable for the specified taxon. Used when
+     * processing the TREAT CHARACTERS AS VARIABLE directive
+     * 
+     * @param taxonNumber
+     *            the taxon number
+     * @param characterNumbers
+     *            the character numbers
+     */
+    public void setVariableCharactersForTaxon(int taxonNumber, Set<Integer> characterNumbers) {
+        _taxonVariableCharacters.put(taxonNumber, characterNumbers);
+    }
+
+    /**
+     * Get the set of characters that have been set as variable for the
+     * specified taxon, through the TREAT CHARACTERS AS VARIABLE directive
+     * @param taxonNumber the taxon number
+     * @return a set of character numbers
+     */
+    public Set<Integer> getVariableCharactersForTaxon(int taxonNumber) {
+        return _taxonVariableCharacters.get(taxonNumber);
     }
 
 }

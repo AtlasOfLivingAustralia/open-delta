@@ -123,37 +123,51 @@ public class KeyItemsFileReader {
 
     private void processItemAttributes(Item item, byte[] allAttributesData) {
 
-        // First pass, read attribute data from file
-        for (int i = 0; i < _header.getNumberOfCharacters(); i++) {
-            MultiStateCharacter ch = (MultiStateCharacter) _dataset.getCharacter(i + 1);
+        Set<Integer> variableCharacters = _context.getVariableCharactersForTaxon(item.getItemNumber());
 
+        // First pass, read attribute data from file, or set values specified by
+        // TREAT CHARACTERS AS VARIABLE directive
+        for (int i = 0; i < _header.getNumberOfCharacters(); i++) {
+            int charNum = i + 1;
+            MultiStateCharacter ch = (MultiStateCharacter) _dataset.getCharacter(charNum);
             MultiStateAttribute msAttr = (MultiStateAttribute) _dataset.addAttribute(item.getItemNumber(), ch.getCharacterId());
 
-            int arrayOffset = i * ATTRIBUTE_DATA_LENGTH;
-            byte[] attributeDataAsBytes = ArrayUtils.subarray(allAttributesData, arrayOffset, arrayOffset + ATTRIBUTE_DATA_LENGTH);
+            List<String> presentStatesAsStrings = new ArrayList<String>();
 
-            boolean[] attributeDataAsBooleans = Utils.byteArrayToBooleanArray(attributeDataAsBytes);
+            if (variableCharacters != null && variableCharacters.contains(charNum)) {
+                // Character is variable so all states are present
+                for (int j = 0; j < ch.getNumberOfStates(); j++) {
+                    int stateNumber = j + 1;
+                    presentStatesAsStrings.add(Integer.toString(stateNumber));
+                }
+            } else {
+                int arrayOffset = i * ATTRIBUTE_DATA_LENGTH;
+                byte[] attributeDataAsBytes = ArrayUtils.subarray(allAttributesData, arrayOffset, arrayOffset + ATTRIBUTE_DATA_LENGTH);
 
-            List<String> presentStatesStrings = new ArrayList<String>();
-            for (int j = 0; j < ch.getNumberOfStates(); j++) {
-                int stateNumber = j + 1;
-                if (attributeDataAsBooleans[j]) {
-                    presentStatesStrings.add(Integer.toString(stateNumber));
+                boolean[] attributeDataAsBooleans = Utils.byteArrayToBooleanArray(attributeDataAsBytes);
+
+                for (int j = 0; j < ch.getNumberOfStates(); j++) {
+                    int stateNumber = j + 1;
+                    if (attributeDataAsBooleans[j]) {
+                        presentStatesAsStrings.add(Integer.toString(stateNumber));
+                    }
+                }
+
+                boolean inapplicable = attributeDataAsBooleans[INAPPLICABLE_BIT];
+
+                if (inapplicable) {
+                    presentStatesAsStrings.add("-");
                 }
             }
 
-            boolean inapplicable = attributeDataAsBooleans[INAPPLICABLE_BIT];
-
-            if (inapplicable) {
-                presentStatesStrings.add("-");
-            }
-
-            // TODO bit of a hack here, as DefaultAttributeData can currently
+            // TODO bit of a hack here, as DefaultAttributeData can
+            // currently
             // only be set using a String.
-            // Will be able to fix this up when we switch to using a SlotFile
+            // Will be able to fix this up when we switch to using a
+            // SlotFile
             // based dataset.
             try {
-                msAttr.setValueFromString(StringUtils.join(presentStatesStrings, "/"));
+                msAttr.setValueFromString(StringUtils.join(presentStatesAsStrings, "/"));
             } catch (DirectiveException e) {
                 throw new RuntimeException(e);
             }
@@ -179,13 +193,13 @@ public class KeyItemsFileReader {
                     // state information already set becomes
                     // "maybe inapplicable"
                     List<Integer> presentStates = msAttr.getPresentStatesAsList();
-                    List<String> presentStatesStrings = new ArrayList<String>();
+                    List<String> presentStatesAsStrings = new ArrayList<String>();
                     for (int stateNum : presentStates) {
-                        presentStatesStrings.add(Integer.toString(stateNum));
+                        presentStatesAsStrings.add(Integer.toString(stateNum));
                     }
 
                     // add inapplicable value
-                    presentStatesStrings.add("-");
+                    presentStatesAsStrings.add("-");
 
                     // TODO bit of a hack here, as DefaultAttributeData can
                     // currently
@@ -194,7 +208,7 @@ public class KeyItemsFileReader {
                     // SlotFile
                     // based dataset.
                     try {
-                        msAttr.setValueFromString(StringUtils.join(presentStatesStrings, "/"));
+                        msAttr.setValueFromString(StringUtils.join(presentStatesAsStrings, "/"));
                     } catch (DirectiveException e) {
                         throw new RuntimeException(e);
                     }
@@ -212,10 +226,10 @@ public class KeyItemsFileReader {
 
                 if (msAttr.getPresentStates().isEmpty() && !msAttr.isInapplicable()) {
                     // Set attribute as variable - all states are present
-                    List<String> presentStatesStrings = new ArrayList<String>();
+                    List<String> presentStatesAsStrings = new ArrayList<String>();
                     for (int j = 0; j < ch.getNumberOfStates(); j++) {
                         int stateNumber = j + 1;
-                        presentStatesStrings.add(Integer.toString(stateNumber));
+                        presentStatesAsStrings.add(Integer.toString(stateNumber));
                     }
 
                     // TODO bit of a hack here, as DefaultAttributeData can
@@ -225,7 +239,7 @@ public class KeyItemsFileReader {
                     // SlotFile
                     // based dataset.
                     try {
-                        msAttr.setValueFromString(StringUtils.join(presentStatesStrings, "/"));
+                        msAttr.setValueFromString(StringUtils.join(presentStatesAsStrings, "/"));
                     } catch (DirectiveException e) {
                         throw new RuntimeException(e);
                     }
