@@ -1,0 +1,11 @@
+*COMMENT Default parameter values (set explicitly).
+
+*RBASE 1
+
+*VARYWT 1
+
+*ABASE 1
+
+*REUSE 1
+
+*OUTPUT DIRECTORY foo

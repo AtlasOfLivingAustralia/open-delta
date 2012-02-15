@@ -18,9 +18,6 @@ public class TreatCharactersAsVariableTest extends TestCase {
 
     @Test
     public void testTreatCharactersAsVariable() throws Exception {
-        // Use dummy temp file for data directory seeing as we don't have a use
-        // for it here
-
         URL dataDirectoryURL = getClass().getResource("/sample");
         File dataDirectory= new File(dataDirectoryURL.toURI());
         

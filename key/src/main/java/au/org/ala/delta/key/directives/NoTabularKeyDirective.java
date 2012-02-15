@@ -22,7 +22,7 @@ import au.org.ala.delta.key.KeyContext;
 public class NoTabularKeyDirective extends AbstractNoArgDirective {
 
     public NoTabularKeyDirective() {
-        super("no", "bracketed", "key");
+        super("no", "tabular", "key");
     }
 
     @Override

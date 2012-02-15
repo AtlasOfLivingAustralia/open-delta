@@ -40,8 +40,10 @@ public class KeyContext extends DeltaContext {
     private File _keyOutputFile;
     private File _keyTypesettingFile;
     private File _listingFile;
-
+    
     private File _dataDirectory;
+    
+    private File _typesetFilesOutputDirectory;
 
     private boolean _addCharacterNumbers;
     private boolean _displayBracketedKey;
@@ -67,6 +69,11 @@ public class KeyContext extends DeltaContext {
 
     public KeyContext(File dataDirectory, PrintStream out, PrintStream err) {
         super(out, err);
+        
+        if (!dataDirectory.exists() || !dataDirectory.isDirectory()) {
+            throw new IllegalArgumentException("Specified data directory does not exist or is not a directory");
+        }
+        
         this._dataDirectory = dataDirectory;
 
         try {
@@ -365,6 +372,14 @@ public class KeyContext extends DeltaContext {
      */
     public Set<Integer> getVariableCharactersForTaxon(int taxonNumber) {
         return _taxonVariableCharacters.get(taxonNumber);
+    }
+    
+    public File getTypesetFilesOutputDirectory() {
+        return _typesetFilesOutputDirectory;
+    }
+
+    public void setTypesetFilesOutputDirectory(File typesetFilesOutputDirectory) {
+        this._typesetFilesOutputDirectory = typesetFilesOutputDirectory;
     }
 
 }

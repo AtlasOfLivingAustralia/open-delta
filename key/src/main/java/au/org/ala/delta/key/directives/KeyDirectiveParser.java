@@ -40,9 +40,14 @@ public class KeyDirectiveParser extends DirectiveParser<KeyContext> {
         KeyDirectiveParser instance = new KeyDirectiveParser();
         instance.registerDirective(new ABaseDirective());
         instance.registerDirective(new AddCharacterNumbersDirective());
-        instance.registerDirective(new CharactersFileDirective());
+        instance.registerDirective(new AllowImproperSubgroupsDirective());
         instance.registerDirective(new CharacterReliabilities());
+        instance.registerDirective(new CharactersFileDirective());
         instance.registerDirective(new Comment());
+        
+        // No-op directive implemented to allow backward compatibility of old
+        // scripts
+        instance.registerDirective(new DumpDirective());
         instance.registerDirective(new ExcludeCharacters());
         instance.registerDirective(new ExcludeItems());
         instance.registerDirective(new Heading());
@@ -51,26 +56,38 @@ public class KeyDirectiveParser extends DirectiveParser<KeyContext> {
         instance.registerDirective(new KeyInputFileDirective());
         instance.registerDirective(new ItemAbundances());
         instance.registerDirective(new ItemsFileDirective());
-        instance.registerDirective(new RBaseDirective());
-        instance.registerDirective(new ReuseDirective());
-        instance.registerDirective(new VaryWtDirective());
-        instance.registerDirective(new PrintWidth());
         instance.registerDirective(new KeyOutputFileDirective());
         instance.registerDirective(new KeyTypesettingFileDirective());
         instance.registerDirective(new ListingFileDirective());
-        instance.registerDirective(new PresetCharactersDirective());
-        instance.registerDirective(new NumberOfConfirmatoryCharactersDirective());
 
-        instance.registerDirective(new TypeSettingMarks());
-        instance.registerDirective(new KeyPrintCommentDirective());
-        instance.registerDirective(new StopAfterColumnDirective());
-        instance.registerDirective(new AllowImproperSubgroupsDirective());
-        instance.registerDirective(new TreatCharactersAsVariableDirective());
-        
-        // No-op directives implemented to allow backward compatibility of old scripts
-        instance.registerDirective(new DumpDirective());
+        // No-op directive implemented to allow backward compatibility of old
+        // scripts
         instance.registerDirective(new MatrixDumpDirective());
+        instance.registerDirective(new NoBracketedKeyDirective());
+        instance.registerDirective(new NoTabularKeyDirective());
+        instance.registerDirective(new NumberOfConfirmatoryCharactersDirective());
+        instance.registerDirective(new KeyOutputDirectoryDirective());
+        //TODO outputformathtml
+        //TODO page length
+        
+        instance.registerDirective(new PresetCharactersDirective());
+        instance.registerDirective(new KeyPrintCommentDirective());
+        instance.registerDirective(new PrintWidth());
+        
+        instance.registerDirective(new RBaseDirective());
+        instance.registerDirective(new ReuseDirective());
+        instance.registerDirective(new StopAfterColumnDirective());
+        
+        // No-op directive implemented to allow backward compatibility of old
+        // scripts
         instance.registerDirective(new StorageFactorDirective());
+        instance.registerDirective(new TreatCharactersAsVariableDirective());
+        instance.registerDirective(new TreatUnknownAsInapplicableDirective());
+        //TODO truncate tabular key at
+        instance.registerDirective(new TypeSettingMarks());
+        instance.registerDirective(new VaryWtDirective());
+
+
         return instance;
     }
 
