@@ -83,7 +83,7 @@ public class KeyDirectiveParser extends DirectiveParser<KeyContext> {
         instance.registerDirective(new StorageFactorDirective());
         instance.registerDirective(new TreatCharactersAsVariableDirective());
         instance.registerDirective(new TreatUnknownAsInapplicableDirective());
-        //TODO truncate tabular key at
+        instance.registerDirective(new TruncateTabularKeyAtDirective());
         instance.registerDirective(new TypeSettingMarks());
         instance.registerDirective(new VaryWtDirective());
 

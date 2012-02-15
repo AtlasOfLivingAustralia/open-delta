@@ -265,7 +265,7 @@ public class Key implements DirectiveParserObserver {
 
         if (specimenAvailableTaxa.size() == 0) {
             return;
-        } else if (specimenAvailableTaxa.size() == 1 || (_context.getStopAfterColumn() != -1 && specimen.getUsedCharacters().size() == _context.getStopAfterColumn())) {
+        } else if (specimenAvailableTaxa.size() == 1 || (_context.getStopAfterColumnNumber() != -1 && specimen.getUsedCharacters().size() == _context.getStopAfterColumnNumber())) {
             // Add a row to the table if a taxon has been identified (only 1
             // taxon remains available)
 
@@ -281,8 +281,9 @@ public class Key implements DirectiveParserObserver {
                     // Add row to key
                     MultiStateAttribute mainCharacterValue = (MultiStateAttribute) specimen.getAttributeForCharacter(ch);
                     row.addColumnValue(mainCharacterValue, confirmatoryCharacterValues.get(ch));
-                    
-                    // If character has not already been used in key, update its cost using the REUSE setting to increase the 
+
+                    // If character has not already been used in key, update its
+                    // cost using the REUSE setting to increase the
                     // probability of reuse
                     if (!key.isCharacterUsedInKey(ch)) {
                         double newCost = _context.getCharacterCost(ch.getCharacterId()) / _context.getReuse();
@@ -325,13 +326,14 @@ public class Key implements DirectiveParserObserver {
                     throw new RuntimeException(MessageFormat.format("Character {0} is not suitable for use at column {1} group {2}", presetCharacterNumber, currentColumn, currentGroup));
                 }
             } else {
-                bestMap = KeyBest.orderBest(_context.getDataSet(), _context.getCharacterCostsAsArray(), _context.getCalculatedItemAbundanceValuesAsArray(), specimenAvailableCharacterNumbers, specimenAvailableTaxaNumbers, _context.getRBase(), _context.getABase(), _context.getReuse(), _context.getVaryWt(), _context.getAllowImproperSubgroups());
-//                for (Character ch: specimen.getUsedCharacters()) {
-//                    System.out.println(specimen.getAttributeForCharacter(ch));
-//                }
-//                System.out.println("------");
-//                System.out.println(bestMap);
-//                System.out.println("#####");
+                bestMap = KeyBest.orderBest(_context.getDataSet(), _context.getCharacterCostsAsArray(), _context.getCalculatedItemAbundanceValuesAsArray(), specimenAvailableCharacterNumbers,
+                        specimenAvailableTaxaNumbers, _context.getRBase(), _context.getABase(), _context.getReuse(), _context.getVaryWt(), _context.getAllowImproperSubgroups());
+                // for (Character ch: specimen.getUsedCharacters()) {
+                // System.out.println(specimen.getAttributeForCharacter(ch));
+                // }
+                // System.out.println("------");
+                // System.out.println(bestMap);
+                // System.out.println("#####");
                 List<Character> bestOrderCharacters = new ArrayList<Character>(bestMap.keySet());
                 if (bestOrderCharacters.isEmpty()) {
                     return;
@@ -346,7 +348,8 @@ public class Key implements DirectiveParserObserver {
             if (numberOfConfirmatoryCharacters > 0) {
                 // generated best characters if this has not already been done
                 if (bestMap == null) {
-                    bestMap = KeyBest.orderBest(_context.getDataSet(), _context.getCharacterCostsAsArray(), _context.getCalculatedItemAbundanceValuesAsArray(), specimenAvailableCharacterNumbers, specimenAvailableTaxaNumbers, _context.getRBase(), _context.getABase(), _context.getReuse(), _context.getVaryWt(), _context.getAllowImproperSubgroups());
+                    bestMap = KeyBest.orderBest(_context.getDataSet(), _context.getCharacterCostsAsArray(), _context.getCalculatedItemAbundanceValuesAsArray(), specimenAvailableCharacterNumbers,
+                            specimenAvailableTaxaNumbers, _context.getRBase(), _context.getABase(), _context.getReuse(), _context.getVaryWt(), _context.getAllowImproperSubgroups());
                 }
                 List<Character> bestOrderCharacters = new ArrayList<Character>(bestMap.keySet());
                 confirmatoryCharacters = getConfirmatoryCharacters(specimen, includedItems, bestOrderCharacters, bestCharacter, numberOfConfirmatoryCharacters);
@@ -495,7 +498,9 @@ public class Key implements DirectiveParserObserver {
                 }
 
                 if (compareStateDistributions(mainCharacterStateDistributions, confirmatoryCharacterStateDistributions)) {
-                    //System.out.println(MessageFormat.format("Confirmatory character {0}:{1}", mainCharacter.getCharacterId(), multiStateChar.getCharacterId()));
+                    // System.out.println(MessageFormat.format("Confirmatory character {0}:{1}",
+                    // mainCharacter.getCharacterId(),
+                    // multiStateChar.getCharacterId()));
 
                     Map<Integer, Integer> mainToConfirmatoryStateMap = new HashMap<Integer, Integer>();
 
@@ -594,10 +599,11 @@ public class Key implements DirectiveParserObserver {
             Item it = row.getItem();
             itemsInKey.add(it);
             for (int i = 0; i < row.getNumberOfColumnValues(); i++) {
-                MultiStateAttribute mainCharacterValue = row.getMainCharacterValueAt(i);
+                int columnNumber = i + 1;
+                MultiStateAttribute mainCharacterValue = row.getMainCharacterValueForColumn(columnNumber);
                 charactersInKey.add(mainCharacterValue.getCharacter());
 
-                List<MultiStateAttribute> confirmatoryCharacterValues = row.getConfirmatoryCharacterValuesAt(i);
+                List<MultiStateAttribute> confirmatoryCharacterValues = row.getConfirmatoryCharacterValuesForColumn(columnNumber);
                 if (confirmatoryCharacterValues != null) {
                     for (MultiStateAttribute confCharVal : confirmatoryCharacterValues) {
                         charactersInKey.add(confCharVal.getCharacter());
@@ -720,33 +726,57 @@ public class Key implements DirectiveParserObserver {
                 itemOccurrences.put(it, 1);
             }
 
-            for (MultiStateAttribute characterValue : row.getAllCharacterValues()) {
+            // If TRUNCATE TABULAR KEY AT directive has been used, only
+            // traverse up to the relevant column.
+            int columnLimit = row.getNumberOfColumnValues();
+            if (_context.getTruncateTabularKeyAtColumnNumber() != -1) {
+                columnLimit = _context.getTruncateTabularKeyAtColumnNumber();
+            }
 
-                int characterNumber = characterValue.getCharacter().getCharacterId();
-                int numberOfDigits = Integer.toString(characterNumber).length();
+            for (int i = 0; i < columnLimit; i++) {
+                int columnNumber = i + 1;
+                
+                for (MultiStateAttribute characterValue : row.getAllCharacterValuesForColumn(columnNumber)) {
+                    int characterNumber = characterValue.getCharacter().getCharacterId();
+                    int numberOfDigits = Integer.toString(characterNumber).length();
 
-                // Cell width needs to be at least as wide as the number of
-                // digits, plus one extra character for the state value
-                // associated with the attribute
-                if (cellWidth < numberOfDigits + 1) {
-                    cellWidth = numberOfDigits + 1;
+                    // Cell width needs to be at least as wide as the number of
+                    // digits, plus one extra character for the state value
+                    // associated with the attribute
+                    if (cellWidth < numberOfDigits + 1) {
+                        cellWidth = numberOfDigits + 1;
+                    }
                 }
             }
         }
 
         StringBuilder builder = new StringBuilder();
 
+        //Second pass - output the key
         for (int i = 0; i < key.getNumberOfRows(); i++) {
             KeyRow row = key.getRowAt(i);
             Item it = row.getItem();
-            List<MultiStateAttribute> rowCharacterValues = row.getAllCharacterValues();
-
+            
+            List<MultiStateAttribute> rowCharacterValues;
             List<MultiStateAttribute> previousRowCharacterValues = null;
+            
+            // If TRUNCATE TABULAR KEY AT directive has been used, only
+            // traverse up to the relevant column.
+            int columnLimit = row.getNumberOfColumnValues();
 
-            if (i > 0) {
-                previousRowCharacterValues = key.getRowAt(i - 1).getAllCharacterValues();
+            if (_context.getTruncateTabularKeyAtColumnNumber() == -1) {
+                rowCharacterValues = row.getAllCharacterValues();
+                if (i > 0) {
+                    previousRowCharacterValues = key.getRowAt(i - 1).getAllCharacterValues();
+                }
+            } else {
+                columnLimit = _context.getTruncateTabularKeyAtColumnNumber();
+                rowCharacterValues = row.getAllCharacterValuesUpToColumn(columnLimit);
+                if (i > 0) {
+                    previousRowCharacterValues = key.getRowAt(i - 1).getAllCharacterValuesUpToColumn(columnLimit);
+                }
             }
-
+            
             // Output the dividing line between the previous row and the current
             // row
             builder.append("+---------------------------+");
@@ -798,8 +828,9 @@ public class Key implements DirectiveParserObserver {
 
             // Output the values character values used in the. Include values
             // for confirmatory characters if they are present
-            for (int j = 0; j < row.getNumberOfColumnValues(); j++) {
-                List<MultiStateAttribute> cellCharacterValues = row.getAllCharacterValuesAt(j);
+            for (int j = 0; j < columnLimit; j++) {
+                int columnNumber = j + 1;
+                List<MultiStateAttribute> cellCharacterValues = row.getAllCharacterValuesForColumn(columnNumber);
                 for (int k = 0; k < cellCharacterValues.size(); k++) {
                     MultiStateAttribute cellCharacterValue = cellCharacterValues.get(k);
                     int characterId = cellCharacterValue.getCharacter().getCharacterId();
@@ -856,7 +887,8 @@ public class Key implements DirectiveParserObserver {
         for (int i = 0; i < key.getNumberOfRows(); i++) {
             KeyRow row = key.getRowAt(i);
             for (int j = 0; j < row.getNumberOfColumnValues(); j++) {
-                List<MultiStateAttribute> columnAttrs = row.getAllCharacterValuesAt(j);
+                int columnNumber = j + 1;
+                List<MultiStateAttribute> columnAttrs = row.getAllCharacterValuesForColumn(columnNumber);
                 List<MultiStateCharacter> columnChars = getCharactersFromAttributes(columnAttrs);
 
                 KeyRow previousRow = null;
@@ -869,7 +901,7 @@ public class Key implements DirectiveParserObserver {
                 if (i > 0) {
                     previousRow = key.getRowAt(i - 1);
                     if (previousRow.getNumberOfColumnValues() >= j + 1) {
-                        if (!rowsMatchCharactersAtColumn(row, previousRow, j)) {
+                        if (!rowsMatchCharactersAtColumn(row, previousRow, columnNumber)) {
                             newIndex = true;
                         }
                     } else {
@@ -901,7 +933,7 @@ public class Key implements DirectiveParserObserver {
                         indexInfo.put(columnAttrs, taxaList);
                     }
                 } else {
-                    List<MultiStateAttribute> nextColumnAttrs = row.getAllCharacterValuesAt(j + 1);
+                    List<MultiStateAttribute> nextColumnAttrs = row.getAllCharacterValuesForColumn(columnNumber + 1);
                     List<MultiStateCharacter> nextColumnChars = getCharactersFromAttributes(nextColumnAttrs);
 
                     // Get the index for the next column. If no index has been
@@ -915,7 +947,7 @@ public class Key implements DirectiveParserObserver {
 
                         if (i > 0) {
                             if (previousRow.getNumberOfColumnValues() >= j + 2) {
-                                if (!rowsMatchCharactersAtColumn(row, previousRow, j + 1)) {
+                                if (!rowsMatchCharactersAtColumn(row, previousRow, columnNumber + 1)) {
                                     indexForNextColumn = indexInfoMaps.size();
                                 }
                             } else {
@@ -955,7 +987,8 @@ public class Key implements DirectiveParserObserver {
         builder.append(" ");
         builder.append("(").append(backReference).append(")").append(".");
 
-        // Sort attribute lists by the first state values of the first attribute - any other attributes in the list are for
+        // Sort attribute lists by the first state values of the first attribute
+        // - any other attributes in the list are for
         // confirmatory characters, these will not effect the sort order.
         List<List<MultiStateAttribute>> sortedAttributeLists = new ArrayList<List<MultiStateAttribute>>(attributeLinks.keySet());
         Collections.sort(sortedAttributeLists, new Comparator<List<MultiStateAttribute>>() {
@@ -1011,10 +1044,10 @@ public class Key implements DirectiveParserObserver {
     }
 
     private boolean rowsMatchCharactersAtColumn(KeyRow row1, KeyRow row2, int columnIndex) {
-        List<MultiStateAttribute> row1ColumnAttrs = row1.getAllCharacterValuesAt(columnIndex);
+        List<MultiStateAttribute> row1ColumnAttrs = row1.getAllCharacterValuesForColumn(columnIndex);
         List<MultiStateCharacter> row1ColumnChars = getCharactersFromAttributes(row1ColumnAttrs);
 
-        List<MultiStateAttribute> row2ColumnAttrs = row2.getAllCharacterValuesAt(columnIndex);
+        List<MultiStateAttribute> row2ColumnAttrs = row2.getAllCharacterValuesForColumn(columnIndex);
         List<MultiStateCharacter> row2ColumnChars = getCharactersFromAttributes(row2ColumnAttrs);
 
         return row1ColumnChars.equals(row2ColumnChars);

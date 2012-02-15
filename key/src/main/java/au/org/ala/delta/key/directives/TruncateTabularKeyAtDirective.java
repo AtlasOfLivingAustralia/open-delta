@@ -5,17 +5,17 @@ import au.org.ala.delta.directives.AbstractIntegerDirective;
 import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.key.KeyContext;
 
-public class StopAfterColumnDirective extends AbstractIntegerDirective {
+public class TruncateTabularKeyAtDirective extends AbstractIntegerDirective {
     
-    public StopAfterColumnDirective() {
-        super("stop", "after", "column");
+    public TruncateTabularKeyAtDirective() {
+        super("truncate", "tabular", "key", "at");
         
     }
 
     @Override
-    protected void processInteger(DeltaContext context, int stopAtColumn) throws Exception {
+    protected void processInteger(DeltaContext context, int truncateTabularKeyAtColumnNumber) throws Exception {
         KeyContext keyContext = (KeyContext) context;
-        keyContext.setStopAfterColumnNumber(stopAtColumn);
+        keyContext.setTruncateTabularKeyAtColumnNumber(truncateTabularKeyAtColumnNumber);
     }
 
     @Override

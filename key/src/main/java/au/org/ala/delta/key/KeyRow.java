@@ -44,24 +44,56 @@ public class KeyRow {
         return _mainCharacterValues.size();
     }
 
-    public MultiStateAttribute getMainCharacterValueAt(int idx) {
-        return _mainCharacterValues.get(idx);
+    public MultiStateAttribute getMainCharacterValueForColumn(int columnNumber) {
+        if (columnNumber <= 0 || columnNumber > getNumberOfColumnValues()) {
+            throw new IllegalArgumentException("Invalid column index");
+        }
+        
+        return _mainCharacterValues.get(columnNumber - 1);
     }
 
-    public List<MultiStateAttribute> getConfirmatoryCharacterValuesAt(int idx) {
-        return _confirmatoryCharacterValuesLists.get(idx);
+    public List<MultiStateAttribute> getConfirmatoryCharacterValuesForColumn(int columnNumber) {
+        if (columnNumber <= 0 || columnNumber > getNumberOfColumnValues()) {
+            throw new IllegalArgumentException("Invalid column index");
+        }
+        
+        return _confirmatoryCharacterValuesLists.get(columnNumber - 1);
     }
 
     public List<MultiStateAttribute> getMainCharacterValues() {
         return _mainCharacterValues;
     }
 
-    public List<MultiStateAttribute> getAllCharacterValuesAt(int idx) {
-        List<MultiStateAttribute> retList = new ArrayList<MultiStateAttribute>();
-        retList.add(getMainCharacterValueAt(idx));
-        if (getConfirmatoryCharacterValuesAt(idx) != null) {
-            retList.addAll(getConfirmatoryCharacterValuesAt(idx));
+    public List<MultiStateAttribute> getAllCharacterValuesForColumn(int columnNumber) {
+        if (columnNumber <= 0 || columnNumber > getNumberOfColumnValues()) {
+            throw new IllegalArgumentException("Invalid column index");
         }
+        
+        List<MultiStateAttribute> retList = new ArrayList<MultiStateAttribute>();
+        retList.add(getMainCharacterValueForColumn(columnNumber));
+        if (getConfirmatoryCharacterValuesForColumn(columnNumber) != null) {
+            retList.addAll(getConfirmatoryCharacterValuesForColumn(columnNumber));
+        }
+        return retList;
+    }
+
+    /**
+     * Get all character values in the row for the columns up to and including the 
+     * specified column number. If the column number supplied is greater than the number of
+     * columns in the row, all available column values will be returned.
+     * @param columnNumber
+     * @return
+     */
+    public List<MultiStateAttribute> getAllCharacterValuesUpToColumn(int columnNumber) {
+        if (columnNumber <= 0) {
+            throw new IllegalArgumentException("Invalid column index");
+        }
+        
+        List<MultiStateAttribute> retList = new ArrayList<MultiStateAttribute>();
+        for (int i=1; i <= columnNumber && i <= getNumberOfColumnValues(); i++) {
+            retList.addAll(getAllCharacterValuesForColumn(i));
+        }
+        
         return retList;
     }
 

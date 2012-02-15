@@ -32,7 +32,8 @@ public class KeyContext extends DeltaContext {
     double _varyWt;
 
     private int _numberOfConfirmatoryCharacters;
-    private int _stopAfterColumn;
+    private int _stopAfterColumnNumber;
+    private int _truncateTabularKeyAtColumnNumber;
 
     private File _charactersFile;
     private File _itemsFile;
@@ -87,7 +88,8 @@ public class KeyContext extends DeltaContext {
         _reuse = 1.01;
         _varyWt = 0.8;
 
-        _stopAfterColumn = -1;
+        _stopAfterColumnNumber = -1;
+        _truncateTabularKeyAtColumnNumber = -1;
 
         _charactersFile = new File(_dataDirectory, "kchars");
         _itemsFile = new File(_dataDirectory, "kitems");
@@ -272,15 +274,15 @@ public class KeyContext extends DeltaContext {
      * 
      * @param stopAfterColumn
      */
-    public int getStopAfterColumn() {
-        return _stopAfterColumn;
+    public int getStopAfterColumnNumber() {
+        return _stopAfterColumnNumber;
     }
 
-    public void setStopAfterColumn(int stopAfterColumn) {
-        if (stopAfterColumn <= 0) {
+    public void setStopAfterColumnNumber(int stopAfterColumnNumber) {
+        if (stopAfterColumnNumber <= 0) {
             throw new IllegalArgumentException("Value for STOP AFTER COLUMN must be a positive integer");
         }
-        this._stopAfterColumn = stopAfterColumn;
+        this._stopAfterColumnNumber = stopAfterColumnNumber;
     }
 
     public boolean getTreatUnknownAsInapplicable() {
@@ -380,6 +382,21 @@ public class KeyContext extends DeltaContext {
 
     public void setTypesetFilesOutputDirectory(File typesetFilesOutputDirectory) {
         this._typesetFilesOutputDirectory = typesetFilesOutputDirectory;
+    }
+    
+    /**
+     * Returns the column after the tabular key will be truncated, or -1 if no such
+     * value has been set - in this case, the entire tabular key should be output
+     */
+    public int getTruncateTabularKeyAtColumnNumber() {
+        return _truncateTabularKeyAtColumnNumber;
+    }
+
+    public void setTruncateTabularKeyAtColumnNumber(int truncateTabularKeyAtColumnNumber) {
+        if (truncateTabularKeyAtColumnNumber <= 0) {
+            throw new IllegalArgumentException("Value for TRUNCATE TABULAR KEY AT must be a positive integer");
+        }
+        this._truncateTabularKeyAtColumnNumber = truncateTabularKeyAtColumnNumber;
     }
 
 }
