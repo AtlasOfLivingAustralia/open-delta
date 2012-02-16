@@ -16,7 +16,7 @@ public class KeyOutputFileDirective extends AbstractTextDirective {
         KeyContext keyContext = (KeyContext) context;
 
         String fileName = directiveArguments.getFirstArgumentText().trim();
-        keyContext.getOutputFileManager().setOutputFileName(fileName);
+        keyContext.getOutputFileManager().setPrintFileName(fileName);
 
     }
 }

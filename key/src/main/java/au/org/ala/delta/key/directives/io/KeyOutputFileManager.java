@@ -24,16 +24,18 @@ public class KeyOutputFileManager extends OutputFileSelector {
     public void setKeyListingFileName(String fileName) throws Exception {
         _keyListingFileName = fileName;
         PrintStream out = createPrintStream(_keyListingFileName);
-        _keyListingFile = new PrintFile(out, DEFAULT_OUTPUT_FILE_WIDTH);
+        _keyListingFile = new PrintFile(out, getPrintWidth());
     }
 
     public PrintFile getKeyListingFile() {
         return _keyListingFile;
     }
-    
+
     public void setTypesettingFileName(String fileName) throws Exception {
         _typesettingFileName = fileName;
         PrintStream out = createPrintStream(_typesettingFileName);
+        // The file width has no effect on typeset data. Always use the default
+        // file width.
         _typesettingFile = new PrintFile(out, DEFAULT_OUTPUT_FILE_WIDTH);
     }
 
@@ -47,11 +49,11 @@ public class KeyOutputFileManager extends OutputFileSelector {
         if (_keyListingFile != null) {
             files.add(createFile(_keyListingFileName));
         }
-        
+
         if (_typesettingFile != null) {
             files.add(createFile(_typesettingFileName));
         }
-        
+
         return files;
     }
 
@@ -63,6 +65,5 @@ public class KeyOutputFileManager extends OutputFileSelector {
         // Output message to stdout
         System.out.println(line);
     }
-    
 
 }

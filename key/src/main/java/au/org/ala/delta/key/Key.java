@@ -578,10 +578,30 @@ public class Key implements DirectiveParserObserver {
 
     private void generateKeyOutput(IdentificationKey key, List<Character> includedCharacters, List<Item> includedItems, boolean outputTabularKey, boolean outputBracketedKey) {
         PrintFile printFile = _context.getOutputFileSelector().getOutputFile();
+        
+        if (outputTabularKey) {
+            generateKeyHeader(printFile, key, includedCharacters, includedItems, outputTabularKey, outputBracketedKey);
+            printTabularKey(key, printFile);
+            System.out.println("Tabular key completed");
+        }
 
+        if (outputBracketedKey) {
+            if (_context.getDisplayTabularKey()) {
+                printFile.writeBlankLines(2, 0);
+            }
+
+            generateKeyHeader(printFile, key, includedCharacters, includedItems, outputTabularKey, outputBracketedKey);
+            
+            printBracketedKey(key, _context.getAddCharacterNumbers(), printFile);
+            System.out.println("Bracketed key completed");
+        }
+    }
+    
+    private void generateKeyHeader(PrintFile printFile, IdentificationKey key, List<Character> includedCharacters, List<Item> includedItems, boolean outputTabularKey, boolean outputBracketedKey) {
         printFile.outputLine(_context.getHeading(HeadingType.HEADING));
         printFile.outputLine(StringUtils.repeat("*", _context.getOutputFileSelector().getOutputWidth()));
-
+        printFile.writeBlankLines(1, 0);
+        
         printFile.outputLine(generateCreditsString());
         printFile.writeBlankLines(1, 0);
 
@@ -644,19 +664,7 @@ public class Key implements DirectiveParserObserver {
         // "TODO"));
         printFile.writeBlankLines(1, 0);
 
-        if (outputTabularKey) {
-            printTabularKey(key, printFile);
-            System.out.println("Tabular key completed");
-        }
 
-        if (outputBracketedKey) {
-            if (_context.getDisplayTabularKey()) {
-                printFile.writeBlankLines(2, 0);
-            }
-
-            printBracketedKey(key, _context.getAddCharacterNumbers(), printFile);
-            System.out.println("Bracketed key completed");
-        }
 
     }
 
@@ -875,8 +883,6 @@ public class Key implements DirectiveParserObserver {
     }
 
     private void printBracketedKey(IdentificationKey key, boolean displayCharacterNumbers, PrintFile printFile) {
-        // List<List<MultiStateCharacter>> indexCharacters = new
-        // ArrayList<List<MultiStateCharacter>>();
         List<Map<List<MultiStateAttribute>, Object>> indexInfoMaps = new ArrayList<Map<List<MultiStateAttribute>, Object>>();
 
         Map<List<MultiStateCharacter>, Integer> latestIndexForCharacterGroupMap = new HashMap<List<MultiStateCharacter>, Integer>();
@@ -1031,7 +1037,8 @@ public class Key implements DirectiveParserObserver {
             builder.append("\n");
         }
 
-        System.out.println(builder.toString());
+        //System.out.println(builder.toString());
+        printFile.outputLine(builder.toString());
     }
 
     private List<MultiStateCharacter> getCharactersFromAttributes(List<MultiStateAttribute> attrs) {

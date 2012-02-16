@@ -72,7 +72,7 @@ public class KeyDirectiveParser extends DirectiveParser<KeyContext> {
         
         instance.registerDirective(new PresetCharactersDirective());
         instance.registerDirective(new KeyPrintCommentDirective());
-        instance.registerDirective(new PrintWidth());
+        instance.registerDirective(new KeyPrintWidthDirective());
         
         instance.registerDirective(new RBaseDirective());
         instance.registerDirective(new ReuseDirective());
