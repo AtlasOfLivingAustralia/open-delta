@@ -24,7 +24,7 @@ public class KeyOutputFileManager extends OutputFileSelector {
     public void setKeyListingFileName(String fileName) throws Exception {
         _keyListingFileName = fileName;
         PrintStream out = createPrintStream(_keyListingFileName);
-        _keyListingFile = new PrintFile(out, getPrintWidth());
+        _keyListingFile = new PrintFile(out, getOutputWidth());
     }
 
     public PrintFile getKeyListingFile() {
