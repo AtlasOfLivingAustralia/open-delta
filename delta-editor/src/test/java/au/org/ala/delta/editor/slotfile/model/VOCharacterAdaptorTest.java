@@ -62,7 +62,7 @@ public class VOCharacterAdaptorTest extends DeltaTestCase {
 		adaptor.addState(6);
 		assertEquals(7, adaptor.getNumberOfStates());
 		
-		assertEquals("", adaptor.getStateText(7));
+		assertEquals("", adaptor.getStateText(6));
 	}
 	
 	/**
