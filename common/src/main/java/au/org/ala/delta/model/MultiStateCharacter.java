@@ -48,8 +48,8 @@ public abstract class MultiStateCharacter extends Character {
 	/**
 	 * Adds a new state (with an empty description) to this character.
 	 */
-	public void addState() {
-		_impl.addState();
+	public void addState(int index) {
+		_impl.addState(index);
 		notifyObservers();
 	}
 	

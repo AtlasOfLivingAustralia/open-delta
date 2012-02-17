@@ -106,7 +106,7 @@ public interface CharacterData extends Illustratable {
     
     void setNonAutoCc(boolean nonAutoCc);
 
-	void addState();
+	void addState(int index);
 
 	void moveState(int stateNumber, int newNumber);
 

@@ -62,8 +62,22 @@ public class StateController {
 	@Action
 	public void addState(ActionEvent e) {
 		MultiStateCharacter character = getSelectedCharacter();
-		character.addState();
-		updateSelection(character.getNumberOfStates());
+		int selectedIndex = _view.getSelectedIndex();
+		character.addState(selectedIndex + 1);	// addState expects a state number
+		
+		// We want to change the selected index to something other than the previously selected index to force a refresh
+		// If we don't do this then the state editor will not know that the actual selection has changed
+		if (selectedIndex > 0) { 
+			updateSelection(1);		// If the selected state is not the first state, selected the first state
+		} else {
+			// Otherwise select the second state
+			if (getSelectedCharacter().getNumberOfStates() > 1) {
+				updateSelection(2);
+			}
+		}
+		
+		// Then finally reselected the new selected state.
+		updateSelection(selectedIndex + 1);
 	}
 	
 	/**

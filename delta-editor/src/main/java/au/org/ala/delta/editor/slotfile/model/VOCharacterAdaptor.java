@@ -541,9 +541,9 @@ public class VOCharacterAdaptor extends ImageHolderAdaptor implements CharacterD
     }
 
     @Override
-    public void addState() {
+    public void addState(int stateNumber) {
         synchronized (_vop) {
-            _charDesc.insertState(getNumberOfStates() + 1, getVOP());
+            _charDesc.insertState(stateNumber, getVOP());
         }
     }
 

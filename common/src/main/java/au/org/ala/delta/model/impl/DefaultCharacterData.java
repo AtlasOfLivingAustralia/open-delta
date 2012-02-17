@@ -280,9 +280,9 @@ public class DefaultCharacterData implements CharacterData {
     }
 
     @Override
-    public void addState() {
+    public void addState(int index) {
         List<String> states = Arrays.asList(_states);
-        states.add("");
+        states.add(index, "");
         _states = states.toArray(new String[states.size()]);
     }
 
