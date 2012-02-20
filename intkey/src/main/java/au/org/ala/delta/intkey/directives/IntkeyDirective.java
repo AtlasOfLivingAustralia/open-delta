@@ -54,14 +54,34 @@ public abstract class IntkeyDirective extends AbstractDirective<IntkeyContext> {
 
     @Override
     public final void process(IntkeyContext context, DirectiveArguments directiveArguments) throws Exception {
-        parseAndProcess(context, directiveArguments.getFirstArgumentText());
+		parseAndProcess(context, directiveArguments.getFirstArgumentText());
     }
 
     @Override
     public final void parseAndProcess(IntkeyContext context, String data) throws Exception {
+   	
         if (context.getDataset() == null && _errorIfNoDatasetLoaded) {
-            context.getUI().displayErrorMessage(UIUtils.getResourceString("DirectiveCallNoDatasetLoaded.error", getControlWordsAsString()));
-            return;
+        	
+        	// If we get here we are processing a directive that requires a dataset to be loaded.
+        	// If the data set is not loaded it is because either, or both, of the FILE directives have not been encountered
+        	
+        	// we'll inject them using the defaults, depending on whether they have been processed or not 
+        	if (context.getTaxaFile() == null) {        		
+	        	IntkeyDirectiveInvocation invoc = new FileTaxaDirective().doProcess(context, "iitems");
+	        	context.executeDirective(invoc);
+        	}
+        	
+        	if (context.getCharactersFile() == null) {
+        		IntkeyDirectiveInvocation invoc = new FileCharactersDirective().doProcess(context, "ichars");
+        		context.executeDirective(invoc);
+        	}
+        	
+        	// If we get here, and the dataset is still null, there is an actual issue with either the files being missing, or not loadable
+        	if (context.getDataset() == null) {
+        		String message = UIUtils.getResourceString("DirectiveCallNoDatasetLoaded.error", getControlWordsAsString());
+        		context.getUI().displayErrorMessage(message);
+        		throw new RuntimeException(message);
+        	}        	            
         }
 
         if (data != null) {

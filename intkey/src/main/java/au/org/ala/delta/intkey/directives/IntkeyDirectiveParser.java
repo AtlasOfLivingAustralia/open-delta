@@ -178,6 +178,11 @@ public class IntkeyDirectiveParser extends DirectiveParser<IntkeyContext> {
         if (!context.isProcessingDirectivesFile()) {
             context.getUI().displayErrorMessage(msg);
         }
+        
+        if (ex instanceof RuntimeException) {
+        	// this will cause the directive parsing loop to halt, preventing multiple errors of the same type
+        	throw (RuntimeException) ex;
+        }
     }
 
 }
