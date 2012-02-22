@@ -17,6 +17,8 @@ package au.org.ala.delta.directives;
 import java.io.File;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.directives.validation.DirectiveError;
@@ -31,9 +33,7 @@ import au.org.ala.delta.util.DataSetHelper;
 import au.org.ala.delta.util.Utils;
 
 /**
- * Takes action at certain points in the directive parsing lifecycle, for
- * example after the CHARACTER LIST or ITEM DESCRIPTIONS directives have been
- * parsed a translation action may be initiated.
+ * Takes action at certain points in the directive parsing lifecycle, for example after the CHARACTER LIST or ITEM DESCRIPTIONS directives have been parsed a translation action may be initiated.
  */
 public class ConforDirectiveParserObserver implements DirectiveParserObserver {
 
@@ -59,59 +59,57 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
 	@SuppressWarnings("unchecked")
 	public void preProcess(AbstractDirective<? extends AbstractDeltaContext> directive, String data) throws DirectiveException {
 
-		_validator.validate((AbstractDirective<DeltaContext>)directive);
+		_validator.validate((AbstractDirective<DeltaContext>) directive);
 		if (isCharacterList(directive) || isItemDescriptions(directive)) {
 			checkForFatalError();
-		} 
+		}
 	}
 
 	protected void outputToListingFile(AbstractDirective<? extends AbstractDeltaContext> directive) {
 		if (isCharacterDirective(directive) && !_context.isCharacterListingEnabled()) {
 
 			_context.getOutputFileSelector().listMessage(formatWithFileName(directive.getName()));
-		}
-		else if (isItemDirective(directive) && !_context.isItemListingEnabled()) {
+		} else if (isItemDirective(directive) && !_context.isItemListingEnabled()) {
 			_context.getOutputFileSelector().listMessage(formatWithFileName(directive.getName()));
-		}
-		else {
+		} else {
 			ParsingContext context = _context.getCurrentParsingContext();
 			int pos = 0;
 			String directiveText = context.getCurrentDirectiveText();
-			for (int i = (int)context.getCurrentDirectiveStartLine(); i<context.getCurrentLine(); i++) {
+			for (int i = (int) context.getCurrentDirectiveStartLine(); i < context.getCurrentLine(); i++) {
 				int nextPos = directiveText.indexOf('\n', pos);
 				if (nextPos < 0) {
 					nextPos = directiveText.length();
 				}
 				String line = directiveText.substring(pos, nextPos);
-				line = formatWithFileName(line,context.getFile().getAbsolutePath(), i);
+				String filename = "<nofile>";
+				if (context.getFile() != null) {
+					filename = context.getFile().getAbsolutePath();
+				}
+				line = formatWithFileName(line, filename, i);
 				_context.getOutputFileSelector().listMessage(line);
-				pos = nextPos+1;
+				pos = nextPos + 1;
 			}
-			
+
 		}
 	}
-	
+
 	private boolean isCharacterList(AbstractDirective<? extends AbstractDeltaContext> directive) {
 		return directive instanceof CharacterList || directive instanceof KeyCharacterList;
 	}
-	
+
 	private boolean isItemDescriptions(AbstractDirective<? extends AbstractDeltaContext> directive) {
 		return directive instanceof ItemDescriptions;
 	}
-	
+
 	/**
-	 * @return true if the directive is CHARACTER LIST, CHARACTER NOTES, 
-	 * CHARACTER IMAGES.  Used to control listing output.
+	 * @return true if the directive is CHARACTER LIST, CHARACTER NOTES, CHARACTER IMAGES. Used to control listing output.
 	 */
 	private boolean isCharacterDirective(AbstractDirective<? extends AbstractDeltaContext> directive) {
-		return isCharacterList(directive) || 
-			directive instanceof CharacterNotes ||
-		    directive instanceof CharacterImages;
- 	}
-	
+		return isCharacterList(directive) || directive instanceof CharacterNotes || directive instanceof CharacterImages;
+	}
+
 	/**
-	 * @return true if the directive is ITEM DESCRIPTIONS, TAXON IMAGES.  
-	 * Used to control listing output.
+	 * @return true if the directive is ITEM DESCRIPTIONS, TAXON IMAGES. Used to control listing output.
 	 */
 	private boolean isItemDirective(AbstractDirective<? extends AbstractDeltaContext> directive) {
 		return isItemDescriptions(directive) || directive instanceof TaxonImages;
@@ -121,7 +119,7 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
 	public void postProcess(AbstractDirective<? extends AbstractDeltaContext> directive) {
 
 		outputToListingFile(directive);
-		
+
 		handleErrors();
 		try {
 			if (isCharacterList(directive)) {
@@ -129,12 +127,10 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
 			} else if (isItemDescriptions(directive)) {
 				postProcessItems();
 			}
-		}
-		catch (DirectiveException e) {
+		} catch (DirectiveException e) {
 			try {
 				handleDirectiveProcessingException(_context, directive, e);
-			}
-			catch (Exception ex) {
+			} catch (Exception ex) {
 				throw new RuntimeException(ex);
 			}
 		}
@@ -145,24 +141,23 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
 		OutputFileManager fileManager = _context.getOutputFileSelector();
 		if (_totalErrors > 0) {
 			fileManager.message("");
-			fileManager.message("****** Number of errors = "+_totalErrors);
+			fileManager.message("****** Number of errors = " + _totalErrors);
 			fileManager.message("****** Abnormal Termination.");
-		}
-		else {
+		} else {
 			fileManager.message("Normal termination.");
 		}
 		fileManager.message("");
-		
+
 		listOutputFiles();
 	}
-	
+
 	private void listOutputFiles() {
 		OutputFileManager fileManager = _context.getOutputFileSelector();
 		fileManager.message("Output files - ");
 		for (File fileName : fileManager.getOutputFiles()) {
-			fileManager.message("   "+fileName.getName());
+			fileManager.message("   " + fileName.getName());
 		}
-		
+
 	}
 
 	private void postProcessCharacters() throws DirectiveException {
@@ -171,17 +166,17 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
 	}
 
 	private void postProcessItems() throws DirectiveException {
-		
+
 		validateItemDescriptions();
 		_helper.addItemImages(_context.getImages(ImageType.IMAGE_TAXON));
 
 		DataSetTranslator translator = _factory.createTranslator(_context);
 		translator.translateItems();
 	}
-	
+
 	private void validateItemDescriptions() {
 		ItemDescriptionsValidator validator = new ItemDescriptionsValidator();
-		
+
 		validator.validate(_context, AddCharacters.CONTROL_WORDS, _context.addCharacterDescriptions());
 		validator.validate(_context, EmphasizeCharacters.CONTROL_WORDS, _context.emphasizedCharacterDescriptions());
 		validator.validate(_context, ItemHeadings.CONTROL_WORDS, _context.itemHeadingDescriptions());
@@ -191,87 +186,111 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
 	}
 
 	@Override
-	public void handleDirectiveProcessingException(AbstractDeltaContext context,
-			AbstractDirective<? extends AbstractDeltaContext> directive, Exception ex) throws DirectiveException {
+	public void handleDirectiveProcessingException(AbstractDeltaContext context, AbstractDirective<? extends AbstractDeltaContext> directive, Exception ex) throws DirectiveException {
 		_totalErrors++;
 		ParsingContext pc = context.getCurrentParsingContext();
 
 		if (ex instanceof DirectiveException) {
-			
-			writeError(context, ex, pc);
+
+			writeError(context, ((DirectiveException) ex).getError(), pc);
+			throw (DirectiveException) ex;
 
 		} else {
 			if (pc.getFile() != null) {
-				Logger.error(String.format("Exception occured trying to process directive: %s (%s %d:%d)",
-						directive.getName(), pc.getFile().getName(), pc.getCurrentDirectiveStartLine(),
+				Logger.error(String.format("Exception occured trying to process directive: %s (%s %d:%d)", directive.getName(), pc.getFile().getName(), pc.getCurrentDirectiveStartLine(),
 						pc.getCurrentDirectiveStartOffset()));
 				Logger.error(ex);
 			} else {
-				Logger.error(String.format("Exception occured trying to process directive: %s (%d:%d)",
-						directive.getName(), pc.getCurrentDirectiveStartLine(), pc.getCurrentDirectiveStartOffset()));
+				Logger.error(String.format("Exception occured trying to process directive: %s (%d:%d)", directive.getName(), pc.getCurrentDirectiveStartLine(), pc.getCurrentDirectiveStartOffset()));
 				Logger.error(ex);
 			}
 		}
 
 	}
 
-	protected void writeError(AbstractDeltaContext context, Exception ex, ParsingContext pc) throws DirectiveException {
-		OutputFileManager fileManager = ((DeltaContext)context).getOutputFileSelector();
+	protected void writeError(AbstractDeltaContext context, DirectiveError error, ParsingContext pc) throws DirectiveException {
+		OutputFileManager fileManager = ((DeltaContext) context).getOutputFileSelector();
 
-		int offset = ((DirectiveException) ex).getErrorOffset();
+		int offset = (int) error.getPosition();
 
 		String directiveText = pc.getCurrentDirectiveText();
-		int dataStart = (int)pc.getDirectiveEndOffset();
-		
+		int dataStart = (int) pc.getDirectiveEndOffset();
+
 		offset += dataStart;
-		
+
 		int newLineAfterError = directiveText.indexOf('\n', offset);
 		if (newLineAfterError < 0) {
 			newLineAfterError = directiveText.length();
 		}
-		
+
 		String[] lines = directiveText.substring(0, newLineAfterError).split("\n");
+
+		int lineNum = (int) pc.getCurrentDirectiveStartLine();
 		
-		int lineNum = (int)pc.getCurrentDirectiveStartLine();
+		System.err.println(StringUtils.join(lines, ""));
+			// Error marker should go below this line
+		StringBuilder bb = new StringBuilder();
+		for (int i = 0; i < offset; i++) {
+			bb.append(' ');
+		}
+
+		bb.append("^");
+		System.err.println(bb.toString());				
+		
+		
+		
 		for (String line : lines) {
+
+			String filename = "<no file>";
+			if (pc.getFile() != null) {
+				filename = pc.getFile().getAbsolutePath();
+			}
 			
-			line = formatWithFileName(line, pc.getFile().getAbsolutePath(), lineNum);
+			int lineLength = line.length();
+			
+			line = formatWithFileName(line, filename, lineNum);
 			_context.getOutputFileSelector().message(line);
+			
+			if (offset > 0 && offset < lineLength) {
+				// Error marker should go below this line
+				StringBuilder errorLocation = new StringBuilder();
+				for (int i = 0; i < offset + 16; i++) {
+					errorLocation.append(' ');
+				}
+
+				errorLocation.append("^");
+				fileManager.message(errorLocation.toString());				
+			} 
+			
+			offset -= lineLength;
+			
 			lineNum++;
 		}
 
-		StringBuilder errorLocation = new StringBuilder();
-		for (int i = 0; i < offset + 16; i++) {
-			errorLocation.append(' ');
-		}
-
-		errorLocation.append("^");
-		fileManager.message(errorLocation.toString());
-		fileManager.message("****** " + ex.getMessage());
-		
-		if (((DirectiveException) ex).isFatal()) {
-			throw (DirectiveException)ex;
-		}
+		fileManager.message("****** " + error.getMessage());
 	}
 
 	private void handleErrors() {
-		List<DirectiveError> errors = _context.getErrors();
 
-		OutputFileManager manager = _context.getOutputFileSelector();
-		for (DirectiveError error : errors) {
-			manager.message(error.getMessage());
-			if (error.isError()) {
-				_totalErrors++;
-				if (error.isFatal()) {
-					_fatalErrorEncountered = true;
+		try {
+			List<DirectiveError> errors = _context.getErrors();
+			ParsingContext pc = _context.getCurrentParsingContext();
+			OutputFileManager manager = _context.getOutputFileSelector();
+			for (DirectiveError error : errors) {
+				writeError(_context, error, pc);
+				if (error.isError()) {
+					_totalErrors++;
+					if (error.isFatal()) {
+						_fatalErrorEncountered = true;
+					}
+				} else if (error.isWarning()) {
+					_totalWarnings++;
 				}
 			}
-			else if (error.isWarning()) {
-				_totalWarnings++;
-			}
+			_context.clearErrors();
+		} catch (Exception ex) {
+			throw new RuntimeException(ex);
 		}
-
-		_context.clearErrors();
 	}
 
 	private void checkForFatalError() {
@@ -279,16 +298,20 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
 			throw new RuntimeException("It's all over!");
 		}
 	}
-	
+
 	private String formatWithFileName(String text, String fileName, long lineNumber) {
-		
+
 		String filename = Utils.fixedWidth(String.format("%s,%d", fileName, lineNumber), _ListFilenameSize);
-		
+
 		return String.format("%s %s", filename, text);
 	}
-	
+
 	private String formatWithFileName(String text) {
 		ParsingContext context = _context.getCurrentParsingContext();
-		return formatWithFileName(text, context.getFile().getAbsolutePath(), context.getCurrentDirectiveStartLine());
+		String filename = "<no file>";
+		if (context.getFile() != null) {
+			filename = context.getFile().getAbsolutePath();
+		}
+		return formatWithFileName(text, filename, context.getCurrentDirectiveStartLine());
 	}
 }

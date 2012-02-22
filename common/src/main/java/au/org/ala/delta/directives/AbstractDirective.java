@@ -15,6 +15,8 @@
 package au.org.ala.delta.directives;
 
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,13 +27,25 @@ import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.util.IntegerFunctor;
 
 public abstract class AbstractDirective<C extends AbstractDeltaContext> {
+	
+	protected List<Class<? extends AbstractDirective<?>>> _prereqs;
     
     protected String _data;
     protected String _controlWords[];
     
+    
     protected AbstractDirective(String... controlWords) {
         assert controlWords.length <= 4;
         _controlWords = controlWords;
+        _prereqs = new ArrayList<Class<? extends AbstractDirective<?>>>();
+    }
+    
+    protected void registerPrerequiste(Class<? extends AbstractDirective<?>> prereq) {
+    	_prereqs.add(prereq);
+    }
+    
+    public List<Class<? extends AbstractDirective<?>>> getPrerequisites() {
+    	return _prereqs;
     }
     
     public String getData() {

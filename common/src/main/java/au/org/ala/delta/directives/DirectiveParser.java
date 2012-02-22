@@ -28,6 +28,7 @@ import org.apache.commons.io.IOUtils;
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.directives.DirectiveSearchResult.ResultType;
 import au.org.ala.delta.directives.args.DirectiveArguments;
+import au.org.ala.delta.directives.validation.DirectiveError;
 import au.org.ala.delta.directives.validation.DirectiveException;
 
 /**
@@ -77,7 +78,7 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
         FileInputStream fileIn = new FileInputStream(file);
         InputStreamReader reader = new InputStreamReader(fileIn, context.getFileEncoding());
         ParsingContext pc = context.newParsingContext();
-        pc.setFile(file);
+		pc.setFile(file);
         doParse(reader, context, pc);
         IOUtils.closeQuietly(reader);
     }
@@ -246,13 +247,45 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
             }
         }
     }
-
+    
+    private void checkDirectivePrerequisites(@SuppressWarnings("rawtypes") AbstractDirective directive, C context) throws DirectiveException {
+    	// Check prerequisites
+    	@SuppressWarnings("unchecked")
+		List<Class<? extends AbstractDirective<C>>> r = directive.getPrerequisites();
+    	List<Class<? extends AbstractDirective<C>>> failed = new ArrayList<Class<? extends AbstractDirective<C>>>();
+    	for (Class<? extends AbstractDirective<C>> c : r) {
+    		if (!context.hasProcessedDirective(c)) {
+    			failed.add(c);
+    		}
+    	}
+    	
+    	if (failed.size() > 0) {
+    		StringBuilder b = new StringBuilder();
+    		int i = 0;
+    		for (Class<? extends AbstractDirective<C>> c : failed) {
+    			DirectiveSearchResult result = _registry.findDirectiveByClass(c);    			
+    			if (result.getResultType() == ResultType.Found) {    				
+    				b.append(result.getMatches().get(0).getName());
+    			}
+    			
+    			if (i < failed.size() - 1) {
+    				b.append(", ");
+    			}    			
+    			i++;
+    		}
+    	    throw DirectiveError.asException(au.org.ala.delta.directives.validation.DirectiveError.Error.FAILED_PREREQUISITES, 0, b.toString(), directive.getName());		
+    	}
+    	
+    }
+    
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    protected void doProcess(C context, AbstractDirective d, String dd) throws ParseException, Exception {
-
-        d.parse(context, dd);
-        DirectiveArguments args = d.getDirectiveArgs();
-        d.process(context, args);
+    protected void doProcess(C context, AbstractDirective directive, String directiveData) throws ParseException, Exception {
+    	checkDirectivePrerequisites(directive, context);
+        directive.parse(context, directiveData);
+        DirectiveArguments args = directive.getDirectiveArgs();
+        directive.process(context, args);
+        
+        context.addProcessedDirective((Class<? extends AbstractDirective<?>>) directive.getClass());
     }
 
     protected abstract void handleUnrecognizedDirective(C context, List<String> controlWords);

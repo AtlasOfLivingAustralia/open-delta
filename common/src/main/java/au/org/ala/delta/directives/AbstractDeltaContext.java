@@ -27,6 +27,8 @@ public abstract class AbstractDeltaContext {
     
     private List<DirectiveError> _errors = new ArrayList<DirectiveError>();
     
+    private List<Class<? extends AbstractDirective<?>>> _processedDirectives = new ArrayList<Class<? extends AbstractDirective<?>>>();
+    
     public ParsingContext getCurrentParsingContext() {
         if (_parsingContexts.size() > 0) {
             return _parsingContexts.peek();
@@ -69,6 +71,14 @@ public abstract class AbstractDeltaContext {
 	
 	public void clearErrors() {
 		_errors.clear();
+	}
+	
+	public void addProcessedDirective(Class<? extends AbstractDirective<?>> dirClass) {
+		_processedDirectives.add(dirClass);
+	}
+	
+	public boolean hasProcessedDirective(Class<? extends AbstractDirective<?>> dirClass) {
+		return _processedDirectives.contains(dirClass);
 	}
 
 }

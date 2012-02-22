@@ -28,7 +28,7 @@ public class DirectiveError {
 		NUMBER_OF_STATES_WRONG(16), TOO_MANY_UNITS(18), STATES_NOT_ALLOWED(19),
 		ILLEGAL_VALUE_NO_ARGS(22), INVALID_REAL_NUMBER(23), 
 		ALL_CHARACTERS_EXCLUDED(25), ALL_ITEMS_EXCLUDED(26), ILLEGAL_DELIMETER(31),
-		MULTISTATE_CHARACTERS_ONLY(33), INVALID_TAXON_NUMBER(37), DUPLICATE_VALUE(39), 
+		MULTISTATE_CHARACTERS_ONLY(33), FAILED_PREREQUISITES(36), INVALID_TAXON_NUMBER(37), DUPLICATE_VALUE(39), 
 		FILE_DOES_NOT_EXIST(55), FILE_INACCESSABLE(57), FILE_CANNOT_BE_OPENED(58),
 		CHARACTER_ALREADY_SPECIFIED(64), VALUE_OUT_OF_ORDER(65), INTEGER_EXPECTED(66),
 		CLOSING_BRACKET_MISSING(91),
@@ -71,6 +71,7 @@ public class DirectiveError {
 	private boolean _warning;
 	private int _errorNumber;
 	private long _position;
+	private boolean _fatal = false;
 	
 	public DirectiveError(Error error, long position) {
 		_message = lookupMessage(error);
@@ -113,12 +114,20 @@ public class DirectiveError {
 		return _position;
 	}
 	
+	public void setPosition(long pos) {
+		_position = pos;
+	}
+	
 	public String getMessage() {
 		return _message;
 	}
 
 	public boolean isFatal() {
-		return false;
+		return _fatal;
+	}
+	
+	public void setFatal(boolean fatal) {
+		_fatal = fatal;
 	}
 	
 	public boolean isError() {
@@ -137,6 +146,10 @@ public class DirectiveError {
 	public static DirectiveException asException(Error error, int offset) {
 		DirectiveError directiveError = new DirectiveError(error, offset);
 		return new DirectiveException(directiveError, offset);
+	}
+	
+	public DirectiveException asException() {
+		return new DirectiveException(this, this.getPosition());
 	}
 
 	public int getErrorNumber() {

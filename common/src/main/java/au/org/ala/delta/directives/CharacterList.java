@@ -31,6 +31,9 @@ public class CharacterList extends AbstractTextDirective {
 	
 	public CharacterList() {
 		super(CONTROL_WORDS);
+		registerPrerequiste(NumberOfCharacters.class);
+		registerPrerequiste(MaximumNumberOfItems.class);
+		registerPrerequiste(MaximumNumberOfStates.class);
 	}
 	
 	@Override

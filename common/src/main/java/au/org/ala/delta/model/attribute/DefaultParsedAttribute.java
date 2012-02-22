@@ -94,7 +94,7 @@ public class DefaultParsedAttribute implements ParsedAttribute {
 		boolean hadExHi = false;
 		int numbCount = 0;
 		int i;
-		int nHidden = 0;
+		// int nHidden = 0;
 		boolean inRTF = false;
 		boolean inParam = false;
 		BigDecimal prevNumb = new BigDecimal(-Float.MAX_VALUE);
@@ -111,18 +111,18 @@ public class DefaultParsedAttribute implements ParsedAttribute {
 					// a comment or not and enable/disable formatting
 					// accordingly.
 					// But that will be awfully hard to get right.....
-					throw DirectiveError.asException(DirectiveError.Error.INVALID_RTF, i - nHidden);
+					throw DirectiveError.asException(DirectiveError.Error.INVALID_RTF, i);
 				}
 				// if (bracketLevel != 0)
 				// throw TAttributeParseEx(EAP_BAD_RTF_BRACKET, i - nHidden);
 				// Not really an error. But this would indicate that there are
 				// RTF brackets enclosing text, rather than an RTF command
 				if (ch == au.org.ala.delta.model.Attribute.Delimiters.CLOSEBRACK)
-					throw DirectiveError.asException(DirectiveError.Error.UNMATCHED_CLOSING_BRACKET, i - nHidden);
+					throw DirectiveError.asException(DirectiveError.Error.UNMATCHED_CLOSING_BRACKET, i);
 
 				else if (ch == au.org.ala.delta.model.Attribute.Delimiters.OPENBRACK) {
 					if (isIntkey) {// Disallow comments if Intkey "use"
-						throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i - nHidden);
+						throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i);
 					}
 					++commentLevel; // We have entered a textual comment.
 					textStart = i;
@@ -153,7 +153,7 @@ public class DefaultParsedAttribute implements ParsedAttribute {
 							if (charType.isNumeric()) {
 								BigDecimal aNumb = Utils.stringToBigDecimal(substring(text, startPos, i - startPos + 1), new int[1]);
 								if (aNumb.compareTo(prevNumb) < 0) {
-									throw DirectiveError.asException(DirectiveError.Error.VALUE_OUT_OF_ORDER, startPos - nHidden);
+									throw DirectiveError.asException(DirectiveError.Error.VALUE_OUT_OF_ORDER, startPos);
 								}
 								insert(end(), new AttrChunk(aNumb));
 								prevNumb = aNumb;
@@ -161,21 +161,21 @@ public class DefaultParsedAttribute implements ParsedAttribute {
 								int stateNo = Utils.strtol((substring(text, startPos, i - startPos + 1)));
 								int stateId = stateNo;
 								if (stateId <= 0) {
-									throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i - nHidden);
+									throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i);
 								}
 								int numStates = ((MultiStateCharacter)_character).getNumberOfStates();
 								if (stateId > numStates) {
-									throw DirectiveError.asException(DirectiveError.Error.STATE_NUMBER_GREATER_THAN_MAX, startPos - nHidden, numStates);
+									throw DirectiveError.asException(DirectiveError.Error.STATE_NUMBER_GREATER_THAN_MAX, startPos, numStates);
 								}
 								if (isExclusive && hadState)
-									throw DirectiveError.asException(DirectiveError.Error.EXCLUSIVE_ERROR, startPos - nHidden);
+									throw DirectiveError.asException(DirectiveError.Error.EXCLUSIVE_ERROR, startPos);
 								insert(end(), new AttrChunk(ChunkType.CHUNK_STATE, stateId));
 								hadState = true;
 							}
 							break;
 
 						default:
-							throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i - nHidden);
+							throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i);
 						}
 						// If we jumped here by hitting the end of the loop,
 						// then let's
@@ -196,7 +196,7 @@ public class DefaultParsedAttribute implements ParsedAttribute {
 					// / Start test block for handling negative numerics
 					if (charType.isNumeric() && i < text.length() - 1 && (text.charAt(i + 1) == '.' || java.lang.Character.isDigit(text.charAt(i + 1)))) {
 						if (++numbCount > 3)
-							throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i - nHidden);
+							throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i);
 						parseState = ParseState.NUMBER;
 						startPos = i;
 						hadDecimal = false;
@@ -208,29 +208,30 @@ public class DefaultParsedAttribute implements ParsedAttribute {
 						parseState = ParseState.INAPPLICABLE;
 						hadPseudo = true;
 					} else
-						throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i - nHidden);
+						throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i);
 				}
 
 				else if (ch == 'U') {
 					if (!(pseudoOK && parseState == ParseState.NOWHERE))
-						throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i - nHidden);
+						throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i);
 					parseState = ParseState.UNKNOWN;
 					hadPseudo = true;
 				}
 
-				else if (charType.isText())
-					throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i - nHidden);
+				else if (charType.isText()) {
+					throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i);
+				}
 
 				else if (ch == ',') // Should only occur at the start, after a
 									// comment
 				{
 					if (!onlyText)
-						throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i - nHidden);
+						throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i);
 				}
 
 				else if (ch == 'V') {
 					if (!(pseudoOK && parseState == ParseState.NOWHERE))
-						throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i - nHidden);
+						throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i);
 					parseState = ParseState.VARIABLE;
 					hadPseudo = true;
 				}
@@ -242,30 +243,30 @@ public class DefaultParsedAttribute implements ParsedAttribute {
 							if (charType.isNumeric()) {
 								BigDecimal aNumb = Utils.stringToBigDecimal(substring(text, startPos, i - startPos + 1), new int[1]);
 								if (aNumb.compareTo(prevNumb) < 0)
-									throw DirectiveError.asException(DirectiveError.Error.VALUE_OUT_OF_ORDER, startPos - nHidden);
+									throw DirectiveError.asException(DirectiveError.Error.VALUE_OUT_OF_ORDER, startPos);
 								insert(end(), new AttrChunk(aNumb));
 								prevNumb = aNumb;
 							} else if (charType.isMultistate()) {
 								int stateNo = Utils.strtol((substring(text, startPos, i - startPos + 1)));
 								int stateId = stateNo;
 								if (stateId <= 0) {
-									throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i - nHidden);
+									throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i);
 								}
 								int numStates = ((MultiStateCharacter)_character).getNumberOfStates();
 								if (stateId > numStates) {
-									throw DirectiveError.asException(DirectiveError.Error.STATE_NUMBER_GREATER_THAN_MAX, startPos - nHidden, numStates);
+									throw DirectiveError.asException(DirectiveError.Error.STATE_NUMBER_GREATER_THAN_MAX, startPos, numStates);
 								}
 								if (isExclusive && hadState)
-									throw DirectiveError.asException(DirectiveError.Error.EXCLUSIVE_ERROR, startPos - nHidden);
+									throw DirectiveError.asException(DirectiveError.Error.EXCLUSIVE_ERROR, startPos);
 								insert(end(), new AttrChunk(ChunkType.CHUNK_STATE, stateId));
 								hadState = true;
 							}
 						}
 					} else
-						throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i - nHidden);
+						throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i);
 					if (ch == au.org.ala.delta.model.Attribute.Delimiters.ANDSTATE) {
 						if (isIntkey) // Disallow & if Intkey "use"
-							throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i - nHidden);
+							throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i);
 						insert(end(), new AttrChunk(ChunkType.CHUNK_AND));
 						numbCount = 0;
 						prevNumb = new BigDecimal(-Float.MAX_VALUE);
@@ -281,7 +282,7 @@ public class DefaultParsedAttribute implements ParsedAttribute {
 
 				else if (ch == au.org.ala.delta.model.Attribute.Delimiters.ORSTATE) {
 					if (parseState == ParseState.UNKNOWN)
-						throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i - nHidden);
+						throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i);
 					if (!inserted) // If we were in the middle of "something",
 					{ // first save that "something", but don't otherwise change
 						// parse state
@@ -302,7 +303,7 @@ public class DefaultParsedAttribute implements ParsedAttribute {
 							if (charType.isNumeric()) {
 								BigDecimal aNumb = Utils.stringToBigDecimal(substring(text, startPos, i - startPos + 1), new int[1]);
 								if (aNumb.compareTo(prevNumb) < 0) {
-									throw DirectiveError.asException(DirectiveError.Error.VALUE_OUT_OF_ORDER, startPos - nHidden);
+									throw DirectiveError.asException(DirectiveError.Error.VALUE_OUT_OF_ORDER, startPos);
 								}
 								insert(end(), new AttrChunk(aNumb));
 								prevNumb = aNumb;
@@ -310,21 +311,21 @@ public class DefaultParsedAttribute implements ParsedAttribute {
 								int stateNo = Utils.strtol(substring(text, startPos, i - startPos + 1));
 								int stateId = stateNo;
 								if (stateId <= 0) {
-									throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i - nHidden);
+									throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i);
 								}
 								int numStates = ((MultiStateCharacter)_character).getNumberOfStates();
 								if (stateId > numStates) {
-									throw DirectiveError.asException(DirectiveError.Error.STATE_NUMBER_GREATER_THAN_MAX, startPos - nHidden, numStates);
+									throw DirectiveError.asException(DirectiveError.Error.STATE_NUMBER_GREATER_THAN_MAX, startPos, numStates);
 								}
 								if (isExclusive && hadState)
-									throw DirectiveError.asException(DirectiveError.Error.EXCLUSIVE_ERROR, startPos - nHidden);
+									throw DirectiveError.asException(DirectiveError.Error.EXCLUSIVE_ERROR, startPos);
 								insert(end(), new AttrChunk(ChunkType.CHUNK_STATE, stateId));
 								hadState = true;
 							}
 							break;
 
 						default:
-							throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i - nHidden);
+							throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i);
 						}
 					}
 					insert(end(), new AttrChunk(ChunkType.CHUNK_OR));
@@ -340,14 +341,14 @@ public class DefaultParsedAttribute implements ParsedAttribute {
 				}
 
 				else if (ch == '.' && (charType != CharacterType.RealNumeric || (parseState == ParseState.NUMBER && hadDecimal)))
-					throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i - nHidden);
+					throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i);
 				
 				else if (ch == '.' || java.lang.Character.isDigit(ch)) {
 					if (hadPseudo || hadExHi)
-						throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i - nHidden);
+						throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i);
 					if (parseState == ParseState.NOWHERE) {
 						if (charType.isText() || (charType.isNumeric() && ++numbCount > 3))
-							throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i - nHidden);
+							throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i);
 						parseState = ParseState.NUMBER;
 						startPos = i;
 						hadDecimal = false;
@@ -355,15 +356,15 @@ public class DefaultParsedAttribute implements ParsedAttribute {
 					if (ch == '.')
 						hadDecimal = true;
 					if (parseState != ParseState.NUMBER || inserted)
-						throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i - nHidden);
+						throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i);
 				} else if (ch == '(' && !isIntkey) // Should be "extreme" low or
 													// high value.
 				{ // Handle this specially, since it requires multi-character
 					// scanning.
 					if (hadPseudo || hadExHi)
-						throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i - nHidden);
+						throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i);
 					if (!charType.isNumeric())
-						throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i - nHidden);
+						throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i);
 					int j;
 					hadDecimal = false;
 					if (numbCount > 0 && i + 1 < text.length() && text.charAt(i + 1) == au.org.ala.delta.model.Attribute.Delimiters.STATERANGE) // (extreme
@@ -373,14 +374,14 @@ public class DefaultParsedAttribute implements ParsedAttribute {
 							if (!inserted) {
 								BigDecimal aNumb = Utils.stringToBigDecimal(substring(text, startPos, i - startPos + 1), new int[1]);
 								if (aNumb.compareTo(prevNumb) < 0) {
-									throw DirectiveError.asException(DirectiveError.Error.VALUE_OUT_OF_ORDER, startPos - nHidden);
+									throw DirectiveError.asException(DirectiveError.Error.VALUE_OUT_OF_ORDER, startPos);
 								}
 								insert(end(), new AttrChunk(aNumb));
 								prevNumb = aNumb;
 								inserted = true;
 							}
 						} else if (parseState != ParseState.UNKNOWN)
-							throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i - nHidden);
+							throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i);
 						// insert(end(), TAttrChunk(CHUNK_TO)); // Is this
 						// needed, or is it implicit in the extreme hi flag?
 						pseudoOK = false;
@@ -389,44 +390,44 @@ public class DefaultParsedAttribute implements ParsedAttribute {
 							if (!(java.lang.Character.isDigit(text.charAt(j)) || (text.charAt(j) == '.' && charType == CharacterType.RealNumeric)
 
 							|| (j == i + 2 && text.charAt(j) == '-')))
-								throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, j - nHidden);
+								throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, j);
 							if (startPos < 0)
 								startPos = j;
 							if (text.charAt(j) == '.') {
 								if (hadDecimal)
-									throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, j - nHidden);
+									throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, j);
 								else
 									hadDecimal = true;
 							}
 						}
 						if (startPos < 0 || j == text.length())
-							throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, startPos - nHidden);
+							throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, startPos);
 						i = j;
 						BigDecimal exhiNumb = Utils.stringToBigDecimal(substring(text, startPos, i - startPos), new int[1]);
 						if (exhiNumb.compareTo(prevNumb) < 0) {
-							throw DirectiveError.asException(DirectiveError.Error.VALUE_OUT_OF_ORDER, startPos - nHidden);
+							throw DirectiveError.asException(DirectiveError.Error.VALUE_OUT_OF_ORDER, startPos);
 						}
 						insert(end(), new AttrChunk(ChunkType.CHUNK_EXHI_NUMBER, exhiNumb));
 						prevNumb = exhiNumb;
 					} else // Ought to be the start of an extreme low value
 					{
 						if (parseState != ParseState.NOWHERE || hadExLo || numbCount > 0)
-							throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i - nHidden);
+							throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i);
 						startPos = -1;
 						for (j = i + 1; j < text.length() - 1 && (text.charAt(j) != au.org.ala.delta.model.Attribute.Delimiters.STATERANGE || j == i + 1); ++j) {
 							if (!(java.lang.Character.isDigit(text.charAt(j)) || (text.charAt(j) == '.' && charType == CharacterType.RealNumeric) || (j == i + 1 && text.charAt(j) == '-')))
-								throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, j - nHidden);
+								throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, j);
 							if (startPos < 0)
 								startPos = j;
 							if (text.charAt(j) == '.') {
 								if (hadDecimal)
-									throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, j - nHidden);
+									throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, j);
 								else
 									hadDecimal = true;
 							}
 						}
 						if (startPos < 0 || j == text.length() - 1 || text.charAt(j + 1) != ')')
-							throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, startPos - nHidden);
+							throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, startPos);
 						i = j + 1;
 						BigDecimal exloNumb = Utils.stringToBigDecimal(substring(text, startPos, i - startPos - 1), new int[1]);
 						insert(end(), new AttrChunk(ChunkType.CHUNK_EXLO_NUMBER, exloNumb));
@@ -436,9 +437,9 @@ public class DefaultParsedAttribute implements ParsedAttribute {
 						inserted = false;
 					}
 				} else if (ch == '\\' && !isIntkey)
-					throw DirectiveError.asException(DirectiveError.Error.INVALID_RTF, i - nHidden);
+					throw DirectiveError.asException(DirectiveError.Error.INVALID_RTF, i);
 				else
-					throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i - nHidden);
+					throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i);
 
 				if (commentLevel == 0)
 					onlyText = false;
@@ -447,7 +448,7 @@ public class DefaultParsedAttribute implements ParsedAttribute {
 			} else if (ch == au.org.ala.delta.model.Attribute.Delimiters.CLOSEBRACK && --commentLevel == 0 && i - textStart > 1) // Save text if length > 0
 			{
 				if (bracketLevel != 0)
-					throw DirectiveError.asException(DirectiveError.Error.UNMATCHED_RTF_BRACKETS, i - nHidden);
+					throw DirectiveError.asException(DirectiveError.Error.UNMATCHED_RTF_BRACKETS, i);
 				// The "+1" and "-1" strip off the outermost pair of brackets.
 				int start = textStart + 1;
 				int finish = i - 1;
@@ -463,36 +464,37 @@ public class DefaultParsedAttribute implements ParsedAttribute {
 			}
 			// ///
 			else if (inRTF) {
-				++nHidden;
+				// ++nHidden;
 				if (java.lang.Character.isDigit(ch) || (!inParam && ch == '-')) {
 					inParam = true;
 				} else if (inParam || !java.lang.Character.isLetter(ch)) {
 					inParam = inRTF = false;
-					if (ch == '\'' && text.charAt(i - 1) == '\\')
-						++nHidden;
-					else if (ch == '\\' && text.charAt(i - 1) != '\\')
+					if (ch == '\'' && text.charAt(i - 1) == '\\') {
+						//++nHidden;
+					} else if (ch == '\\' && text.charAt(i - 1) != '\\')
 						inRTF = true;
 					else if (ch == '{' && text.charAt(i-1) != '\\') {
 						++bracketLevel;
-					} else if (ch != ' ')
-						--nHidden;
+					} else if (ch != ' ') {
+						// --nHidden;
+					}
 
 				}
 			} else if (ch == '{') {
 				++bracketLevel;
-				++nHidden;
+				// ++nHidden;
 			} else if (ch == '}') {
 				--bracketLevel;
-				++nHidden;
+				// ++nHidden;
 			} else if (ch == '\\') {
-				++nHidden;
+				// ++nHidden;
 				inRTF = true;
 				inParam = false;
 			}
 		}
 
 		if (commentLevel > 0)
-			throw DirectiveError.asException(DirectiveError.Error.CLOSING_BRACKET_MISSING, i - nHidden);
+			throw DirectiveError.asException(DirectiveError.Error.CLOSING_BRACKET_MISSING, i);
 
 		if (!inserted && !onlyText) {
 			switch (parseState) {
@@ -512,7 +514,7 @@ public class DefaultParsedAttribute implements ParsedAttribute {
 				if (charType.isNumeric()) {
 					BigDecimal aNumb = Utils.stringToBigDecimal(substring(text, startPos, i - startPos + 1), new int[1]);
 					if (aNumb.compareTo(prevNumb) < 0) {
-						throw DirectiveError.asException(DirectiveError.Error.VALUE_OUT_OF_ORDER, startPos - nHidden);
+						throw DirectiveError.asException(DirectiveError.Error.VALUE_OUT_OF_ORDER, startPos);
 					}
 					insert(end(), new AttrChunk(aNumb));
 					prevNumb = aNumb;
@@ -520,21 +522,21 @@ public class DefaultParsedAttribute implements ParsedAttribute {
 					int stateNo = Utils.strtol((substring(text, startPos, i - startPos + 1)));
 					int stateId = stateNo;
 					if (stateId <= 0) {
-						throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i - nHidden);
+						throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i);
 					}
 					int numStates = ((MultiStateCharacter)_character).getNumberOfStates();
 					if (stateId > numStates) {
-						throw DirectiveError.asException(DirectiveError.Error.STATE_NUMBER_GREATER_THAN_MAX, startPos - nHidden, numStates);
+						throw DirectiveError.asException(DirectiveError.Error.STATE_NUMBER_GREATER_THAN_MAX, startPos, numStates);
 					}
 					if (isExclusive && hadState)
-						throw DirectiveError.asException(DirectiveError.Error.EXCLUSIVE_ERROR, startPos - nHidden);
+						throw DirectiveError.asException(DirectiveError.Error.EXCLUSIVE_ERROR, startPos);
 					insert(end(), new AttrChunk(ChunkType.CHUNK_STATE, stateId));
 					hadState = true;
 				}
 				break;
 
 			default:
-				throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i - nHidden);
+				throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i);
 			}
 		}
 	}

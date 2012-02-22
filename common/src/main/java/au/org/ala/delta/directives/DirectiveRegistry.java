@@ -36,6 +36,16 @@ public class DirectiveRegistry<C extends AbstractDeltaContext> {
 
 		_list.add(directive);
 	}
+	
+	public DirectiveSearchResult findDirectiveByClass(Class<? extends AbstractDirective<C>> clazz) {
+		
+		for (AbstractDirective<C> directive : _list) {
+			if (clazz.equals(directive.getClass())) {
+				return new DirectiveSearchResult(ResultType.Found, directive);
+			}
+		}
+		return new DirectiveSearchResult(); // Not found by default
+	}
 
 	public DirectiveSearchResult findDirective(List<String> controlWords) {
 		String[] words = controlWords.toArray(new String[] {});

@@ -27,6 +27,11 @@ public class DirectiveSearchResult {
 
 	private List<AbstractDirective<?>> _directives;
 	
+	public DirectiveSearchResult() {
+		this._resultType = ResultType.NotFound;
+		this._directives = new ArrayList<AbstractDirective<?>>();
+	}
+	
 	public DirectiveSearchResult(ResultType resultType, AbstractDirective<?> directive) {
 		this._resultType = resultType;
 		this._directives = new ArrayList<AbstractDirective<?>>();

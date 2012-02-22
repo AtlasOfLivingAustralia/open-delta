@@ -21,6 +21,7 @@ import java.util.Set;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
 public class DefineCharactersDirectiveInvocation extends IntkeyDirectiveInvocation {
+	
     String _keyword;
     List<au.org.ala.delta.model.Character> _characters;
 

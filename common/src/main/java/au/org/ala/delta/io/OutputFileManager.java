@@ -261,7 +261,16 @@ public class OutputFileManager {
     }
 
     protected File createFile(String fileName) {
-        File parent = _context.getFile().getParentFile();
+    	
+    	File parent = null;
+    	
+    	if (_context.getFile() != null) {
+    		parent = _context.getFile().getParentFile();
+    	}
+    	
+    	if (parent == null) {
+    		parent = new File(System.getProperty("user.dir"));
+    	}
 
         File file = new File(fileName);
         if (!file.isAbsolute()) {

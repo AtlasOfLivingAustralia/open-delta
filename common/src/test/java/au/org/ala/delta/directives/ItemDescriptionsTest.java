@@ -14,71 +14,78 @@
  ******************************************************************************/
 package au.org.ala.delta.directives;
 
-import java.util.List;
+import java.io.InputStream;
+import java.io.StringReader;
 
 import junit.framework.TestCase;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 
 import au.org.ala.delta.DeltaContext;
-import au.org.ala.delta.directives.validation.DirectiveError;
 import au.org.ala.delta.directives.validation.DirectiveException;
-import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DefaultDataSetFactory;
 import au.org.ala.delta.model.MutableDeltaDataSet;
-import au.org.ala.delta.model.TextCharacter;
 
 public class ItemDescriptionsTest extends TestCase {
-	
-	
+
 	private MutableDeltaDataSet _dataSet;
 	private DeltaContext _context;
-	private ItemDescriptions _itemDescriptions;
-	
+	// private ItemDescriptions _itemDescriptions;
+
 	@Before
 	public void setUp() {
 		DefaultDataSetFactory factory = new DefaultDataSetFactory();
 		_dataSet = factory.createDataSet("test");
 		_context = new DeltaContext(_dataSet);
 		_context.setMaximumNumberOfItems(1);
-		_itemDescriptions = new ItemDescriptions();
+		// _itemDescriptions = new ItemDescriptions();
+	}
+	
+	private void confor(String scriptName) throws Exception {
+		String directives = getConforResoure(scriptName);
+		ConforDirectiveFileParser parser = ConforDirectiveFileParser.createInstance();
+		ConforDirectiveParserObserver observer = new ConforDirectiveParserObserver(_context);
+		parser.registerObserver(observer);
+		parser.parse(new StringReader(directives), _context);			
+	}
+	
+	private String getConforResoure(String name) throws Exception {
+		InputStream is = ItemDescriptionsTest.class.getResourceAsStream(String.format("/confor/%s", name));
+		return StringUtils.join(IOUtils.readLines(is), "\n");
+	}
+
+	@Test
+	public void testParsing() throws Exception {		
+		try {
+			confor("prereqtest");
+			fail("Exception should have been thrown");
+		} catch (DirectiveException e) {
+			assertEquals(36, e.getErrorNumber());
+		}
 	}
 	
 	@Test
-	public void testParsing() throws Exception {
-		addTextCharacter();
-		
-		String itemDescription = 
-			"# Blah/\n"+
-			"   1<Cyperus aggregatus (Willd.) Endl., Catalogus horti academici vindobonensis 1:\n"+
-            "93. 1842. \\{Cat. Horti Vindob. \\} \\par{}Mariscus aggregatus Willd., Enumeratio\n"+
-            "Plantarum Horti Botanici Berolinensis, 1: 70. 1809.>\n";
-		try {
-			_itemDescriptions.parseAndProcess(_context, itemDescription);
-			//checkError(135);
-		}
-		catch (DirectiveException e) {
-			fail("Should have added error to context");
-		}
-		
-		
+	public void test1() throws Exception {
+		confor("test1");
+		System.err.println(_context.getDataSet().getItemsAsList());
 	}
-	
-	
-	private TextCharacter addTextCharacter() {
-		_context.setNumberOfCharacters(_context.getNumberOfCharacters()+1);
-		TextCharacter character = (TextCharacter)_dataSet.addCharacter(CharacterType.Text);
-		return character;
-	}
-	
-	private void checkError(int... numbers) {
-		List<DirectiveError> errors = _context.getErrors();
-		assertEquals(numbers.length, errors.size());
-		int i=0;
-		for (DirectiveError error : errors) {
-			assertEquals(numbers[i++], error.getErrorNumber());
-		}
-	}
+
+//	private TextCharacter addTextCharacter() {
+//		_context.setNumberOfCharacters(_context.getNumberOfCharacters() + 1);
+//		TextCharacter character = (TextCharacter) _dataSet.addCharacter(CharacterType.Text);
+//		return character;
+//	}
+//
+//	private void checkError(int... numbers) {
+//		List<DirectiveError> errors = _context.getErrors();
+//		assertEquals(numbers.length, errors.size());
+//		int i = 0;
+//		for (DirectiveError error : errors) {
+//			assertEquals(numbers[i++], error.getErrorNumber());
+//		}
+//	}
 
 }

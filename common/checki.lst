@@ -1,0 +1,13 @@
+Check the items.
+<nofile>,3      *LISTING FILE checki.lst
+<nofile>,4      
+<nofile>,5      *MAXIMUM NUMBER OF ITEMS 1
+<nofile>,6      
+<nofile>,7      *NUMBER OF CHARACTERS 1
+<nofile>,8      
+<nofile>,9      *MAXIMUM NUMBER OF STATES 2
+<nofile>,10     
+<nofile>,11     *CHARACTER TYPES
+<nofile>,12      	1,TE
+<nofile>,13      	
+<no file>,14    ITEM DESCRIPTIONS

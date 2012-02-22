@@ -35,9 +35,12 @@ import au.org.ala.delta.model.StateValue;
 public class ItemDescriptions extends AbstractTextDirective {
 
 	public static final String[] CONTROL_WORDS = {"item", "descriptions"};
-	
+		
 	public ItemDescriptions() {
 		super(CONTROL_WORDS);
+		registerPrerequiste(NumberOfCharacters.class);
+		registerPrerequiste(MaximumNumberOfItems.class);
+		registerPrerequiste(MaximumNumberOfStates.class);
 	}
 	
 	@Override
@@ -96,6 +99,8 @@ class ItemsParser extends AbstractStreamParser {
 		while (_currentChar != '#' && _currentInt >= 0) {
 			int charIdx = readInteger();
 			
+			long oldOffset = _position;
+			
 			au.org.ala.delta.model.Character ch = getContext().getCharacter(charIdx);
 			String strValue = null;
 			String comment = null;
@@ -125,11 +130,12 @@ class ItemsParser extends AbstractStreamParser {
 			}
 			
 			Attribute attribute = getContext().getDataSet().addAttribute(item.getItemNumber(), ch.getCharacterId());
-			
+						
 			try {
-				attribute.setValueFromString(cleanWhiteSpace(value.toString().trim()));
+				attribute.setValueFromString(cleanWhiteSpace(value.toString().trim()));				
 			}
 			catch (DirectiveException e) {
+				e.getError().setPosition(e.getErrorOffset() + oldOffset);
 				getContext().addError(e.getError());
 			}
 			getContext().getMatrix().setValue(charIdx, itemIndex, stateValue);

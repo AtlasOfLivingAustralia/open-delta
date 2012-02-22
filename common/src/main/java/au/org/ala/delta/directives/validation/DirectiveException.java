@@ -27,8 +27,9 @@ public class DirectiveException extends ParseException {
 	}
 	
 	public DirectiveException(DirectiveError error, long errorOffset) {
-		super(error.getMessage(), (int)errorOffset);
+		super(error.getMessage(), (int)errorOffset);		
 		_error = error;
+		_error.setFatal(true);
 	}
 	
 	public boolean isFatal() {

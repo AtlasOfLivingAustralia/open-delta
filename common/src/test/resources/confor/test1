@@ -1,0 +1,17 @@
+*SHOW Check the items.
+
+*COMMENT LISTING FILE checki.lst
+
+*MAXIMUM NUMBER OF ITEMS 1
+
+*NUMBER OF CHARACTERS 1
+
+*MAXIMUM NUMBER OF STATES 2
+
+*CHARACTER TYPES
+ 	1,TE
+ 	
+*ITEM DESCRIPTIONS # Blah/ 
+1<Cyperus aggregatus (Willd.) Endl., Catalogus horti academici vindobonensis 1:93. 
+1842. \\{Cat. Horti Vindob. \\} \\par{}Mariscus aggregatus Willd., 
+Enumeratio Plantarum Horti Botanici Berolinensis, 1: 70. 1809.>,1
