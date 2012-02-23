@@ -44,12 +44,17 @@ public class ItemDescriptionsTest extends TestCase {
 		// _itemDescriptions = new ItemDescriptions();
 	}
 	
-	private void confor(String scriptName) throws Exception {
-		String directives = getConforResoure(scriptName);
-		ConforDirectiveFileParser parser = ConforDirectiveFileParser.createInstance();
-		ConforDirectiveParserObserver observer = new ConforDirectiveParserObserver(_context);
-		parser.registerObserver(observer);
-		parser.parse(new StringReader(directives), _context);			
+	private void confor(String scriptName, int expectedError) throws Exception {
+		try {
+			String directives = getConforResoure(scriptName);
+			ConforDirectiveFileParser parser = ConforDirectiveFileParser.createInstance();
+			ConforDirectiveParserObserver observer = new ConforDirectiveParserObserver(_context);
+			parser.registerObserver(observer);
+			parser.parse(new StringReader(directives), _context);
+		} catch (DirectiveException ex) {
+			assertEquals(expectedError, ex.getErrorNumber());
+		}
+		
 	}
 	
 	private String getConforResoure(String name) throws Exception {
@@ -59,33 +64,12 @@ public class ItemDescriptionsTest extends TestCase {
 
 	@Test
 	public void testParsing() throws Exception {		
-		try {
-			confor("prereqtest");
-			fail("Exception should have been thrown");
-		} catch (DirectiveException e) {
-			assertEquals(36, e.getErrorNumber());
-		}
+		confor("prereqtest", 36);
 	}
 	
 	@Test
 	public void test1() throws Exception {
-		confor("test1");
-		System.err.println(_context.getDataSet().getItemsAsList());
+		confor("test1", 12);
 	}
-
-//	private TextCharacter addTextCharacter() {
-//		_context.setNumberOfCharacters(_context.getNumberOfCharacters() + 1);
-//		TextCharacter character = (TextCharacter) _dataSet.addCharacter(CharacterType.Text);
-//		return character;
-//	}
-//
-//	private void checkError(int... numbers) {
-//		List<DirectiveError> errors = _context.getErrors();
-//		assertEquals(numbers.length, errors.size());
-//		int i = 0;
-//		for (DirectiveError error : errors) {
-//			assertEquals(numbers[i++], error.getErrorNumber());
-//		}
-//	}
 
 }

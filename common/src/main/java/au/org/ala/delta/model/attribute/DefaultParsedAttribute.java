@@ -219,7 +219,7 @@ public class DefaultParsedAttribute implements ParsedAttribute {
 				}
 
 				else if (charType.isText()) {
-					throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i);
+					throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_SYMBOL, i);
 				}
 
 				else if (ch == ',') // Should only occur at the start, after a

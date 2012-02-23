@@ -67,7 +67,7 @@ public abstract class DirectiveArgsParser extends AbstractStreamParser {
 			return;
 		}
 		if (_currentChar != token) {
-			throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE,_position-1, token, _currentChar);
+			throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_SYMBOL_WITH_ARGS,_position-1, token, _currentChar);
 		}
 	}
 	

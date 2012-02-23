@@ -448,7 +448,7 @@ public class ImageOverlayParser {
                     break; // Should never be reached
                 }
             } else if (parseState == ParseState.MODIFIER && ch != ',')
-                throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE, i - nHidden, ',', ch);
+                throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_SYMBOL, i - nHidden, ',', ch);
             else if (commentLevel == 0)
                 throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i - nHidden);
             else if (parseState == ParseState.NOWHERE) {

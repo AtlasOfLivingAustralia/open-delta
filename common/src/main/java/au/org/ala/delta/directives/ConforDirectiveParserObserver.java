@@ -116,7 +116,7 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
 	}
 
 	@Override
-	public void postProcess(AbstractDirective<? extends AbstractDeltaContext> directive) {
+	public void postProcess(AbstractDirective<? extends AbstractDeltaContext> directive) throws DirectiveException {
 
 		outputToListingFile(directive);
 
@@ -270,27 +270,23 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
 		fileManager.message("****** " + error.getMessage());
 	}
 
-	private void handleErrors() {
-
-		try {
-			List<DirectiveError> errors = _context.getErrors();
-			ParsingContext pc = _context.getCurrentParsingContext();
-			OutputFileManager manager = _context.getOutputFileSelector();
-			for (DirectiveError error : errors) {
-				writeError(_context, error, pc);
-				if (error.isError()) {
-					_totalErrors++;
-					if (error.isFatal()) {
-						_fatalErrorEncountered = true;
-					}
-				} else if (error.isWarning()) {
-					_totalWarnings++;
+	private void handleErrors() throws DirectiveException {
+		List<DirectiveError> errors = _context.getErrors();
+		ParsingContext pc = _context.getCurrentParsingContext();
+		OutputFileManager manager = _context.getOutputFileSelector();
+		for (DirectiveError error : errors) {
+			writeError(_context, error, pc);
+			if (error.isError()) {
+				_totalErrors++;
+				if (error.isFatal()) {
+					_fatalErrorEncountered = true;
+					throw error.asException();
 				}
+			} else if (error.isWarning()) {
+				_totalWarnings++;
 			}
-			_context.clearErrors();
-		} catch (Exception ex) {
-			throw new RuntimeException(ex);
 		}
+		_context.clearErrors();
 	}
 
 	private void checkForFatalError() {

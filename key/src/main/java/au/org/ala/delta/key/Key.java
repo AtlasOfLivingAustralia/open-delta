@@ -1108,7 +1108,7 @@ public class Key implements DirectiveParserObserver {
     }
 
     @Override
-    public void postProcess(AbstractDirective<? extends AbstractDeltaContext> directive) {
+    public void postProcess(AbstractDirective<? extends AbstractDeltaContext> directive) throws DirectiveException {
         _nestedObserver.postProcess(directive);
     }
 
