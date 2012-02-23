@@ -21,7 +21,6 @@ import java.io.InputStreamReader;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -48,11 +47,7 @@ import au.org.ala.delta.directives.ExcludeItems;
 import au.org.ala.delta.directives.IncludeCharacters;
 import au.org.ala.delta.directives.IncludeItems;
 import au.org.ala.delta.directives.validation.DirectiveException;
-import au.org.ala.delta.io.BinFileMode;
-import au.org.ala.delta.io.BinaryKeyFile;
 import au.org.ala.delta.key.directives.KeyDirectiveParser;
-import au.org.ala.delta.key.directives.io.KeyCharactersFileReader;
-import au.org.ala.delta.key.directives.io.KeyItemsFileReader;
 import au.org.ala.delta.key.directives.io.KeyOutputFileManager;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.AttributeFactory;
@@ -979,15 +974,23 @@ public class Key implements DirectiveParserObserver {
         // extra space
         int indexNumberIndent = Integer.toString(numberOfIndicies).length() * 2 + 4;
 
-        printFile.setLineWrapIndent(indexNumberIndent + 2); // If a line wraps,
-                                                            // add an extra 2
-                                                            // spaces on top of
-                                                            // the indent from
-                                                            // the index and
-                                                            // backreference
-                                                            // numbers
+        // If a line wraps,
+        // add an extra 1
+        // space on top of
+        // the indent from
+        // the index and
+        // backreference
+        // numbers
+        int indexLineWrapIndent = indexNumberIndent + 1;
+        printFile.setLineWrapIndent(indexLineWrapIndent);
+
+        // allow print file to wrap lines on '.' as well as spaces
+        List<java.lang.Character> lineWrapChars = new ArrayList<java.lang.Character>();
+        lineWrapChars.add(' ');
+        lineWrapChars.add('.');
+
         printFile.setIndentOnLineWrap(true);
-        printFile.setTrimInput(false, true);
+        printFile.setTrimInput(false, false);
 
         for (int i = 0; i < indexInfoMaps.size(); i++) {
             Map<List<MultiStateAttribute>, Object> indexInfoMap = indexInfoMaps.get(i);
@@ -999,13 +1002,13 @@ public class Key implements DirectiveParserObserver {
                 backReference = indexBackReferences.get(i) + 1;
             }
 
-            outputBrackedKeyIndex(printFile, i + 1, backReference, indexInfoMap, displayCharacterNumbers, indexNumberIndent);
+            outputBrackedKeyIndex(printFile, i + 1, backReference, indexInfoMap, displayCharacterNumbers, indexNumberIndent, indexLineWrapIndent);
             printFile.writeBlankLines(1, 0);
         }
     }
 
     private void outputBrackedKeyIndex(PrintFile printFile, int indexNumber, int backReference, Map<List<MultiStateAttribute>, Object> attributeLinks, boolean displayCharacterNumbers,
-            int indexNumberIndent) {
+            int indexNumberIndent, int indexLineWrapIndent) {
         int outputWidth = _context.getOutputFileManager().getOutputWidth();
 
         // Sort attribute lists by the first state values of the first attribute
@@ -1027,51 +1030,64 @@ public class Key implements DirectiveParserObserver {
 
         });
 
+        // An index contains an "entry" for each group of attributes
         for (int i = 0; i < sortedAttributeLists.size(); i++) {
-            StringBuilder lineBuilder = new StringBuilder();
+            StringBuilder entryBuilder = new StringBuilder();
 
             if (i == 0) {
-                lineBuilder.append(indexNumber);
-                lineBuilder.append("(").append(backReference).append(")").append(".");
-                lineBuilder.append(" ");
+                entryBuilder.append(indexNumber);
+                entryBuilder.append("(").append(backReference).append(")").append(".");
+                entryBuilder.append(" ");
             } else {
-                lineBuilder.append(StringUtils.repeat(" ", indexNumberIndent));
+                entryBuilder.append(StringUtils.repeat(" ", indexNumberIndent));
             }
 
             List<MultiStateAttribute> attrs = sortedAttributeLists.get(i);
-            for (MultiStateAttribute attr : attrs) {
+
+            for (int j = 0; j < attrs.size(); j++) {
+                MultiStateAttribute attr = attrs.get(j);
                 if (displayCharacterNumbers) {
-                    lineBuilder.append("(");
-                    lineBuilder.append(attr.getCharacter().getCharacterId());
-                    lineBuilder.append(") ");
+                    entryBuilder.append("(");
+                    entryBuilder.append(attr.getCharacter().getCharacterId());
+                    entryBuilder.append(") ");
                 }
 
-                lineBuilder.append(_charFormatter.formatCharacterDescription(attr.getCharacter()));
-                lineBuilder.append(" ");
-                lineBuilder.append(_charFormatter.formatState(attr.getCharacter(), attr.getPresentStates().iterator().next()));
-                lineBuilder.append(" ");
+                entryBuilder.append(_charFormatter.formatCharacterDescription(attr.getCharacter()));
+                entryBuilder.append(" ");
+                entryBuilder.append(_charFormatter.formatState(attr.getCharacter(), attr.getPresentStates().iterator().next()));
+
+                // Don't put a space after the last attribute description
+                if (j < attrs.size() - 1) {
+                    entryBuilder.append(" ");
+                }
             }
 
             Object itemListOrIndexNumber = attributeLinks.get(attrs);
-            String stringForItemListOrIndexNumber;
 
             if (itemListOrIndexNumber instanceof List<?>) {
+                // Index references one or more taxa
                 StringBuilder taxonListBuilder = new StringBuilder();
                 List<Item> taxa = (List<Item>) itemListOrIndexNumber;
-                for (Item taxon : taxa) {
-                    lineBuilder.append(_itemFormatter.formatItemDescription(taxon));
-                    lineBuilder.append(" ");
+
+                for (int k = 0; k < taxa.size(); k++) {
+                    Item taxon = taxa.get(k);
+                    String taxonDescription = _itemFormatter.formatItemDescription(taxon);
+
+                    if (k == 0) {
+                        printFile.outputStringPairWithPaddingCharacter(entryBuilder.toString(), " " + taxonDescription, '.');
+                    } else {
+                        printFile.outputLine(StringUtils.repeat(" ", outputWidth - taxonDescription.length()) + taxonDescription);
+                        
+                    }
+
                 }
+
             } else {
+                // Index references another index
                 int forwardReference = (Integer) itemListOrIndexNumber;
-                stringForItemListOrIndexNumber = Integer.toString(forwardReference + 1);
-                lineBuilder.append(forwardReference + 1);
+                String forwardReferenceAsString  = Integer.toString(forwardReference + 1);
+                printFile.outputStringPairWithPaddingCharacter(entryBuilder.toString(), " " + forwardReferenceAsString, '.');
             }
-            //lineBuilder.append(".....");
-
-
-
-            printFile.outputLine(lineBuilder.toString());
         }
     }
 

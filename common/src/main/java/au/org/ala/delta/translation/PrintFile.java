@@ -17,6 +17,8 @@ package au.org.ala.delta.translation;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -25,8 +27,8 @@ import au.org.ala.delta.translation.Words.Word;
 import au.org.ala.delta.util.Utils;
 
 /**
- * The PrintFile is a wrapper around an output steam that provides some
- * utility methods for line wrapping and formatting the output.
+ * The PrintFile is a wrapper around an output steam that provides some utility
+ * methods for line wrapping and formatting the output.
  */
 public class PrintFile {
 
@@ -49,7 +51,7 @@ public class PrintFile {
     private boolean _trim;
     private boolean _trimLeadingSpacesOnLineWrap;
     private boolean _outputFixedWidth;
-    
+
     public PrintFile(final StringBuilder buffer) {
 
         _output = new PrintStream(new OutputStream() {
@@ -88,37 +90,40 @@ public class PrintFile {
         _outputFixedWidth = false;
         _trimLeadingSpacesOnLineWrap = false;
     }
-    
+
     public void setSoftWrap(boolean softWrap) {
         _softWrap = softWrap;
     }
-    
+
     public void setWrapingGroupChars(char startGroup, char endGroup) {
-    	_wrapAsGroupChar = new char[] {startGroup, endGroup};
+        _wrapAsGroupChar = new char[] { startGroup, endGroup };
     }
 
     public void setTrimInput(boolean trim) {
-    	setTrimInput(trim, false);
+        setTrimInput(trim, false);
     }
-    
+
     /**
-     * Sets the trimming mode for text printed by this object.  The default
-     * is true.
+     * Sets the trimming mode for text printed by this object. The default is
+     * true.
      * 
-     * @param trim If trim is false, input will not be trimmed before being output.
-     * @param trimLeadingOnLineWrap If trimLeadingOnLineWrap is true, the leading spaces will be removed
-     * when a line of text is wrapped.  This parameter only has an effect
-     * if trim is false.
+     * @param trim
+     *            If trim is false, input will not be trimmed before being
+     *            output.
+     * @param trimLeadingOnLineWrap
+     *            If trimLeadingOnLineWrap is true, the leading spaces will be
+     *            removed when a line of text is wrapped. This parameter only
+     *            has an effect if trim is false.
      */
     public void setTrimInput(boolean trim, boolean trimLeadingOnLineWrap) {
-    	_trim = trim;
-    	_trimLeadingSpacesOnLineWrap = trimLeadingOnLineWrap;
+        _trim = trim;
+        _trimLeadingSpacesOnLineWrap = trimLeadingOnLineWrap;
     }
-    
+
     public void setOutputFixedWidth(boolean outputFixedWidth) {
-    	_outputFixedWidth = outputFixedWidth;
+        _outputFixedWidth = outputFixedWidth;
     }
-    
+
     public void insertTypeSettingMarks(int number) {
 
     }
@@ -141,15 +146,15 @@ public class PrintFile {
     }
 
     public void indent() {
-    	indent(_paragraphIndent);
+        indent(_paragraphIndent);
     }
-    
+
     /**
      * Indents the default amount for the current output type. (takes a luntype
      * and a number of spaces)
      */
     public void indent(int indent) {
-  
+
         if (_indented) {
             return;
         }
@@ -167,8 +172,8 @@ public class PrintFile {
     }
 
     public void writeBlankLines(int numLines, int requiredNumLinesLeftOnPage) {
-    	writeFileHeader();
-    	
+        writeFileHeader();
+
         if (_outputBuffer.length() > 0) {
             printBufferLine();
         }
@@ -182,61 +187,59 @@ public class PrintFile {
     }
 
     public void printBufferLine(boolean indentNewLine) {
-    	
-	    int i = _outputBuffer.length() - 1;  
-	    if (_trim) {
-	        while (i > 0 && _outputBuffer.charAt(i) == ' ') {
-	            i--;
-	        }
-    	}
+
+        int i = _outputBuffer.length() - 1;
+        if (_trim) {
+            while (i > 0 && _outputBuffer.charAt(i) == ' ') {
+                i--;
+            }
+        }
         if (_outputBuffer.length() > 0) {
-        	
+
             println(_outputBuffer.substring(0, i + 1));
             _indented = false;
             _outputBuffer = new StringBuilder();
-        
+
             if (indentNewLine) {
-            	int lineWrap = _lineWrapIndent;
-            	if (_useParagraphIndentOnLineWrap) {
-            		lineWrap = _paragraphIndent;
-            	}
-	            for (int j = 0; j < lineWrap; j++) {
-	                _outputBuffer.append(' ');
-	            }
+                int lineWrap = _lineWrapIndent;
+                if (_useParagraphIndentOnLineWrap) {
+                    lineWrap = _paragraphIndent;
+                }
+                for (int j = 0; j < lineWrap; j++) {
+                    _outputBuffer.append(' ');
+                }
             }
         }
     }
-    
+
     protected void println(String text) {
-    	
-    	if (_outputFixedWidth) {
-    		text = pad(text);
-    	}
-    	
-    	_output.println(text);
+
+        if (_outputFixedWidth) {
+            text = pad(text);
+        }
+
+        _output.println(text);
     }
-    
+
     protected String pad(String value) {
-		StringBuilder paddedValue = new StringBuilder(value);
-		while (paddedValue.length() % _printWidth != 0) {
-			paddedValue.append(' ');
-		}
-		return paddedValue.toString();
-	}
+        StringBuilder paddedValue = new StringBuilder(value);
+        while (paddedValue.length() % _printWidth != 0) {
+            paddedValue.append(' ');
+        }
+        return paddedValue.toString();
+    }
 
     public void writeJustifiedText(String text, int completionAction) {
         writeFileHeader();
         if (_trim) {
-        	text = text.trim();
+            text = text.trim();
         }
         writeJustifiedText(text, completionAction, true);
     }
 
-    
-
     private void writeJustifiedText(String text, int completionAction, boolean addSpaceIfRequired) {
-    	text = doSubstitutions(text);
-    	
+        text = doSubstitutions(text);
+
         if (_capitalise) {
             text = capitaliseFirstWord(text);
         }
@@ -261,10 +264,9 @@ public class PrintFile {
             printBufferLine(_indentOnLineWrap);
 
             if (_trim) {
-            	trailingText = trailingText.trim();
-            }
-            else if (_trimLeadingSpacesOnLineWrap){
-            	trailingText = StringUtils.stripStart(trailingText, null);
+                trailingText = trailingText.trim();
+            } else if (_trimLeadingSpacesOnLineWrap) {
+                trailingText = StringUtils.stripStart(trailingText, null);
             }
             _outputBuffer.append(trailingText);
         }
@@ -272,90 +274,90 @@ public class PrintFile {
     }
 
     private String doSubstitutions(String text) {
-		return KeywordSubstitutions.substitute(text);
-	}
+        return KeywordSubstitutions.substitute(text);
+    }
 
-	private int findWrapPosition() {
-		int wrappingPos = -1;
-		int newLinePos = _outputBuffer.indexOf("\n");
+    private int findWrapPosition() {
+        int wrappingPos = -1;
+        int newLinePos = _outputBuffer.indexOf("\n");
         if (newLinePos >=0 && newLinePos <= _printWidth) {
-        	wrappingPos = newLinePos;
-        	_outputBuffer.deleteCharAt(newLinePos);
-        	if (newLinePos > 0 && _outputBuffer.charAt(newLinePos-1) == '\r') {
-        		_outputBuffer.deleteCharAt(newLinePos-1);
-        		wrappingPos--;
-        	}
+            wrappingPos = newLinePos;
+            _outputBuffer.deleteCharAt(newLinePos);
+            if (newLinePos > 0 && _outputBuffer.charAt(newLinePos-1) == '\r') {
+                _outputBuffer.deleteCharAt(newLinePos-1);
+                wrappingPos--;
+            }
         }
         else {
-	        int numSpaces = numLeadingSpaces(_outputBuffer);
-	        wrappingPos = findWrappingSpace();
-	        if (wrappingPos <= numSpaces) {
-	            if (_softWrap) {
-	                wrappingPos = _outputBuffer.indexOf(" ", _printWidth);
-	                if (wrappingPos < 0) {
-	                    wrappingPos = _outputBuffer.length();
-	                }
-	            } else {
-	                wrappingPos = _printWidth;
-	            }
-	        }
+            int numSpaces = numLeadingSpaces(_outputBuffer);
+            wrappingPos = findWrappingSpace();
+            if (wrappingPos <= numSpaces) {
+                if (_softWrap) {
+                    wrappingPos = _outputBuffer.indexOf(" ", _printWidth);
+                    if (wrappingPos < 0) {
+                        wrappingPos = _outputBuffer.length();
+                    }
+                } else {
+                    wrappingPos = _printWidth;
+                }
+            }
         }
         
         return wrappingPos;
     }
-	
-	private int findWrappingSpace() {
-		int wrappingPos;
-		if (_wrapAsGroupChar == null) {
-			wrappingPos = _outputBuffer.lastIndexOf(" ", _printWidth);
-		}
-		else {
-			int maxSpace = 0;
-			int groupNest = 0;
-			int maxGroupStart = 0;
-			for (int i=0; i<_printWidth; i++) {
-				if (_wrapAsGroupChar[0] == _wrapAsGroupChar[1]) {
-					if (_outputBuffer.charAt(i) == _wrapAsGroupChar[0]) {
-						groupNest = groupNest == 0 ? 1: 0;
-					}
-				}
-				else {
-					if (_outputBuffer.charAt(i) == _wrapAsGroupChar[0]) {
-						groupNest++;
-						maxGroupStart = i;
-					}
-					else if (_outputBuffer.charAt(i) == _wrapAsGroupChar[1]) {
-						groupNest = Math.max(groupNest-1, 0);
-						
-					}
-				}
-				if (_outputBuffer.charAt(i) == ' ') {
-					if (groupNest == 0) {
-						maxSpace = i;
-					}
-				}
-			}
-			if (groupNest > 0 && maxSpace == 0) {
-				wrappingPos = maxGroupStart;
-			}
-			else if (maxSpace > 0) {
-				wrappingPos = maxSpace+1;
-			}
-			else {
-				wrappingPos = _printWidth;
-			}
-			
-		}
-		return wrappingPos;
-	}
+    
+    private int findWrappingSpace() {
+        int wrappingPos;
+        if (_wrapAsGroupChar == null) {
+            wrappingPos = _outputBuffer.lastIndexOf(" ", _printWidth);
+        }
+        else {
+            int maxSpace = 0;
+            int groupNest = 0;
+            int maxGroupStart = 0;
+            for (int i=0; i<_printWidth; i++) {
+                if (_wrapAsGroupChar[0] == _wrapAsGroupChar[1]) {
+                    if (_outputBuffer.charAt(i) == _wrapAsGroupChar[0]) {
+                        groupNest = groupNest == 0 ? 1: 0;
+                    }
+                }
+                else {
+                    if (_outputBuffer.charAt(i) == _wrapAsGroupChar[0]) {
+                        groupNest++;
+                        maxGroupStart = i;
+                    }
+                    else if (_outputBuffer.charAt(i) == _wrapAsGroupChar[1]) {
+                        groupNest = Math.max(groupNest-1, 0);
+                        
+                    }
+                }
+                if (_outputBuffer.charAt(i) == ' ') {
+                    if (groupNest == 0) {
+                        maxSpace = i;
+                    }
+                }
+            }
+            if (groupNest > 0 && maxSpace == 0) {
+                wrappingPos = maxGroupStart;
+            }
+            else if (maxSpace > 0) {
+                wrappingPos = maxSpace+1;
+            }
+            else {
+                wrappingPos = _printWidth;
+            }
+            
+        }
+        return wrappingPos;
+    }
 
     public void writeTypeSettingMark(String mark) {
-    	
-    	boolean tmpCapitalise = _capitalise;
-    	_capitalise = false;
-    	if (!spaceRequired()) {
-    		_omitNextTrailingSpace = true;
-    	}
+
+        boolean tmpCapitalise = _capitalise;
+        _capitalise = false;
+        if (!spaceRequired()) {
+            _omitNextTrailingSpace = true;
+        }
         writeJustifiedText(mark, -1, false);
         _capitalise = tmpCapitalise;
     }
@@ -369,9 +371,9 @@ public class PrintFile {
             _outputBuffer.append(' ');
         }
     }
-    
+
     private boolean spaceRequired() {
-    	return (_outputBuffer.length() > 0 && lastCharInBuffer() != ' ') ;
+        return (_outputBuffer.length() > 0 && lastCharInBuffer() != ' ');
     }
 
     private void complete(int completionAction) {
@@ -423,7 +425,7 @@ public class PrintFile {
     }
 
     public void newParagraph() {
-    	writeFileHeader();
+        writeFileHeader();
         newLine();
         indent();
 
@@ -466,82 +468,112 @@ public class PrintFile {
     public void writeFromVocabulary(Word word, int completionAction) {
         writeJustifiedText(Words.word(word), completionAction, false);
     }
-    
+
     public void outputLine(int indent, String value, int numTrailingBlanks) {
-		setIndent(indent);
-		outputLine(value, numTrailingBlanks);
-	}
-	
+        setIndent(indent);
+        outputLine(value, numTrailingBlanks);
+    }
+
     public void outputLine(String value) {
-		outputLine(value, 0);
-	}
-	
+        outputLine(value, 0);
+    }
+
     private void outputLine(String value, int numTrailingBlanks) {
-		indent();
-		writeJustifiedText(value, -1);
-		printBufferLine();
-		if (numTrailingBlanks > 0) {
-			writeBlankLines(numTrailingBlanks, 0);
-		}
-	}
-    
+        indent();
+        writeJustifiedText(value, -1);
+        printBufferLine();
+        if (numTrailingBlanks > 0) {
+            writeBlankLines(numTrailingBlanks, 0);
+        }
+    }
     
     /**
-     * If a line is wrapped during output, the line wrap indent will be
-     * applied if the setIndentOnLineWrap(true) method has been invoked.
-     * @param indent the indent to apply in addition to the paragraph indent 
-     * if a line is wrapped.
+     * Output a pair of strings, separated by multiple instances of a supplied padding character. The padding character is used to ensure 
+     * that the content fills the print width exactly.
+     * 
+     * E.g. 
+     * str1.........................str2
+     * 
+     * @param str1 The first string
+     * @param str2 The second string
+     * @param paddingChar the padding character
+     */
+    public void outputStringPairWithPaddingCharacter(String str1, String str2, char paddingChar) {
+        indent();
+        writeJustifiedText(str1, -1);
+        
+        int currentLineLength = _outputBuffer.length();
+        if (currentLineLength + str2.length() >= _printWidth) {
+            _outputBuffer.append(StringUtils.repeat(Character.toString(paddingChar), _printWidth - currentLineLength));
+            printBufferLine(_indentOnLineWrap);
+            currentLineLength = _outputBuffer.length();
+            _outputBuffer.append(StringUtils.repeat(Character.toString(paddingChar), _printWidth - currentLineLength - str2.length()));
+            _outputBuffer.append(str2);
+            printBufferLine(); 
+        } else {
+            _outputBuffer.append(StringUtils.repeat(Character.toString(paddingChar), _printWidth - currentLineLength - str2.length()));
+            _outputBuffer.append(str2);
+            printBufferLine();           
+        }
+    }
+
+    /**
+     * If a line is wrapped during output, the line wrap indent will be applied
+     * if the setIndentOnLineWrap(true) method has been invoked.
+     * 
+     * @param indent
+     *            the indent to apply in addition to the paragraph indent if a
+     *            line is wrapped.
      */
     public void setLineWrapIndent(int indent) {
-    	_lineWrapIndent = indent;
+        _lineWrapIndent = indent;
     }
-    
+
     public void setUseParagraphIndentOnLineWrap(boolean b) {
-    	_useParagraphIndentOnLineWrap = b;
+        _useParagraphIndentOnLineWrap = b;
     }
-    
+
     public void setNewFileHeader(String header) {
-    	_newFileHeader = header;
+        _newFileHeader = header;
     }
-    
+
     private void writeFileHeader() {
-    	if (_newFile) {
-    		if (StringUtils.isNotBlank(_newFileHeader)) {
-    			writeJustifiedText(_newFileHeader, -1, false);
-    			_omitNextTrailingSpace = true;
-    		}
-    		_newFile = false;
-    	}
+        if (_newFile) {
+            if (StringUtils.isNotBlank(_newFileHeader)) {
+                writeJustifiedText(_newFileHeader, -1, false);
+                _omitNextTrailingSpace = true;
+            }
+            _newFile = false;
+        }
     }
-    
+
     public void setFileFooter(String footer) {
-    	_fileFooter = footer;
+        _fileFooter = footer;
     }
-    
+
     private void writeFooter() {
-    	if (StringUtils.isNotBlank(_fileFooter)) {
-    		outputLine(_fileFooter);
-    	}
+        if (StringUtils.isNotBlank(_fileFooter)) {
+            outputLine(_fileFooter);
+        }
     }
 
-	public void setPrintWidth(int printWidth) {
-		_printWidth = printWidth;
-	}
+    public void setPrintWidth(int printWidth) {
+        _printWidth = printWidth;
+    }
 
-	public void setPrintStream(PrintStream stream) {
-		// This can occur if we are changing files.
-		
-		_output = stream;
-	}
-	
-	public void closePrintStream() {
-		if (_output != null) {
-			printBufferLine();
-			writeFooter();
-			IOUtils.closeQuietly(_output);
-			_output = null;
-		}
-	}
+    public void setPrintStream(PrintStream stream) {
+        // This can occur if we are changing files.
 
-	
+        _output = stream;
+    }
+
+    public void closePrintStream() {
+        if (_output != null) {
+            printBufferLine();
+            writeFooter();
+            IOUtils.closeQuietly(_output);
+            _output = null;
+        }
+    }
+
 }
