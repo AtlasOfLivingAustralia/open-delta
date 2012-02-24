@@ -115,7 +115,7 @@ public class OutputFileManager {
     public static final String RTF_OUTPUT_FILE_ENCODING = "cp1252";
 
     protected OutputFormat _outputFormat;
-    private String _outputDirectory;
+    protected String _outputDirectory;
     private PrintFile _outputFile;
     private PrintFile _listingFile;
     private PrintFile _errorFile;

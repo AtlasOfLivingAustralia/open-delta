@@ -18,13 +18,10 @@ public class TreatCharactersAsVariableTest extends TestCase {
 
     @Test
     public void testTreatCharactersAsVariable() throws Exception {
-        URL dataDirectoryURL = getClass().getResource("/sample");
-        File dataDirectory= new File(dataDirectoryURL.toURI());
-        
         URL directivesFileURL = getClass().getResource("/sample/testTreatCharactersAsVariableInputFile");
         File directivesFile = new File(directivesFileURL.toURI());
         
-        KeyContext context = new KeyContext(dataDirectory);
+        KeyContext context = new KeyContext(directivesFile);
         
         KeyDirectiveParser parser = KeyDirectiveParser.createInstance();
         parser.parse(directivesFile, context);

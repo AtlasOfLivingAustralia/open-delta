@@ -15,36 +15,32 @@ import au.org.ala.delta.directives.DirectiveParserObserver;
 import au.org.ala.delta.directives.validation.DirectiveError.Error;
 import au.org.ala.delta.directives.validation.DirectiveException;
 import au.org.ala.delta.key.directives.KeyDirectiveParser;
+import au.org.ala.delta.util.Utils;
 
 public class OutputDirectoryTest extends TestCase {
 
     //Test basic case - directory should be created
     @Test
     public void testCreateOutputDirectory() throws Exception {
-        URL dataDirectoryURL = getClass().getResource("/sample");
-        File dataDirectory = new File(dataDirectoryURL.toURI());
-
         URL directivesFileURL = getClass().getResource("/sample/testOutputDirectoryInputFile1");
         File directivesFile = new File(directivesFileURL.toURI());
 
-        KeyContext context = new KeyContext(dataDirectory);
+        KeyContext context = new KeyContext(directivesFile);
 
         KeyDirectiveParser parser = KeyDirectiveParser.createInstance();
         parser.parse(directivesFile, context);
 
-        assertEquals("foo", context.getTypesetFilesOutputDirectory().getName());
+        assertTrue(context.getOutputFileManager().getTypesettingFileOutputDirectory().exists());
+        assertEquals(Utils.createFileFromPath("foo", directivesFile.getParentFile()), context.getOutputFileManager().getTypesettingFileOutputDirectory());
     }
 
     //Test existing file name supplied as directory name - this should result in an error
     @Test
     public void testSupplyExistingFileNameForDirectory() throws Exception {
-        URL dataDirectoryURL = getClass().getResource("/sample");
-        File dataDirectory = new File(dataDirectoryURL.toURI());
-
         URL directivesFileURL = getClass().getResource("/sample/testOutputDirectoryInputFile2");
         File directivesFile = new File(directivesFileURL.toURI());
 
-        KeyContext context = new KeyContext(dataDirectory);
+        KeyContext context = new KeyContext(directivesFile);
 
         KeyDirectiveParser parser = KeyDirectiveParser.createInstance();
         SimpleObserver observer = new SimpleObserver();

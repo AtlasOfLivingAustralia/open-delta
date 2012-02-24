@@ -73,9 +73,6 @@ import au.org.ala.delta.util.Utils;
 
 public class Key implements DirectiveParserObserver {
 
-    private static final String DEFAULT_TYPESETTING_FILE_EXTENSION = ".rtf";
-    private static final String DEFAULT_OUTPUT_FILE_EXTENSION = ".prt";
-
     private KeyContext _context;
     private boolean _inputFilesRead = false;
 
@@ -146,7 +143,7 @@ public class Key implements DirectiveParserObserver {
     }
 
     public Key(File directivesFile) {
-        _context = new KeyContext(directivesFile.getParentFile());
+        _context = new KeyContext(directivesFile);
     }
 
     public Key(KeyContext context) {
@@ -209,26 +206,26 @@ public class Key implements DirectiveParserObserver {
                 // Set default name for key output file if the name was not
                 // specified in the directives file
                 KeyOutputFileManager outputFileManager = _context.getOutputFileManager();
-                if (outputFileManager.getOutputFile() == null) {
-                    try {
-                        outputFileManager.setOutputFileName(FilenameUtils.getBaseName(directivesFile.getName()) + DEFAULT_OUTPUT_FILE_EXTENSION);
-                    } catch (Exception ex) {
-                        throw new RuntimeException("Error creating output file", ex);
-                    }
-                }
+//                if (outputFileManager.getOutputFile() == null) {
+//                    try {
+//                        outputFileManager.setOutputFileName(FilenameUtils.getBaseName(directivesFile.getName()) + DEFAULT_OUTPUT_FILE_EXTENSION);
+//                    } catch (Exception ex) {
+//                        throw new RuntimeException("Error creating output file", ex);
+//                    }
+//                }
                 generateKeyOutput(key, includedCharacters, includedItems, _context.getDisplayTabularKey(), _context.getDisplayBracketedKey() && !typsettingMarksSpecified);
 
                 if (_context.getDisplayBracketedKey() && typsettingMarksSpecified) {
                     // Set default name for typesetting output file if the name
                     // was not
                     // specified in the directives file
-                    if (outputFileManager.getTypesettingFile() == null) {
-                        try {
-                            outputFileManager.setTypesettingFileName(FilenameUtils.getBaseName(directivesFile.getName()) + DEFAULT_TYPESETTING_FILE_EXTENSION);
-                        } catch (Exception ex) {
-                            throw new RuntimeException("Error creating typesetting file", ex);
-                        }
-                    }
+//                    if (outputFileManager.getTypesettingFile() == null) {
+//                        try {
+//                            outputFileManager.setTypesettingFileName(FilenameUtils.getBaseName(directivesFile.getName()) + DEFAULT_TYPESETTING_FILE_EXTENSION);
+//                        } catch (Exception ex) {
+//                            throw new RuntimeException("Error creating typesetting file", ex);
+//                        }
+//                    }
                     generateTypesettingOutput();
                 }
 

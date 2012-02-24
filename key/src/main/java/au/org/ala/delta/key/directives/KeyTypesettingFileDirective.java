@@ -16,7 +16,7 @@ public class KeyTypesettingFileDirective extends AbstractTextDirective {
         KeyContext keyContext = (KeyContext) context;
 
         String fileName = directiveArguments.getFirstArgumentText().trim();
-        keyContext.getOutputFileManager().setTypesettingFileName(fileName);
+        keyContext.getOutputFileManager().setTypesettingFileByName(fileName);
     }
 
 }

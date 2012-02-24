@@ -20,6 +20,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.key.directives.io.KeyOutputFileManager;
 import au.org.ala.delta.util.Pair;
@@ -39,11 +42,12 @@ public class KeyContext extends DeltaContext {
     private File _itemsFile;
 
     private File _keyOutputFile;
-    private File _keyTypesettingFile;
     private File _listingFile;
-    
+    private String _keyTypesettingFileName;
+
+    private File _directivesFile;
     private File _dataDirectory;
-    
+
     private File _typesetFilesOutputDirectory;
 
     private boolean _addCharacterNumbers;
@@ -68,20 +72,26 @@ public class KeyContext extends DeltaContext {
      */
     private Map<Integer, Set<Integer>> _taxonVariableCharacters;
 
-    public KeyContext(File dataDirectory, PrintStream out, PrintStream err) {
+    public KeyContext(File directivesFile, PrintStream out, PrintStream err) {
         super(out, err);
-        
-        if (!dataDirectory.exists() || !dataDirectory.isDirectory()) {
-            throw new IllegalArgumentException("Specified data directory does not exist or is not a directory");
-        }
-        
-        this._dataDirectory = dataDirectory;
 
+        if (!directivesFile.exists() || directivesFile.isDirectory()) {
+            throw new IllegalArgumentException(String.format("****** File %s does not exist.", directivesFile.toString()));
+        }
+
+        this._directivesFile = directivesFile;
+        this._dataDirectory = directivesFile.getParentFile();
+
+        KeyOutputFileManager outputFileManager = (KeyOutputFileManager) _outputFileSelector;
         try {
-            _outputFileSelector.setOutputDirectory(_dataDirectory.getAbsolutePath());
+            outputFileManager.setOutputDirectory(_dataDirectory.getAbsolutePath());
         } catch (Exception ex) {
             throw new RuntimeException("Error setting output directory");
         }
+        
+        outputFileManager.setDefaultBaseFileName(FilenameUtils.getBaseName(directivesFile.getName()));
+
+        _typesetFilesOutputDirectory = _dataDirectory;
 
         _aBase = 2;
         _rBase = 1.4;
@@ -108,8 +118,8 @@ public class KeyContext extends DeltaContext {
         _taxonVariableCharacters = new HashMap<Integer, Set<Integer>>();
     }
 
-    public KeyContext(File dataDirectory) {
-        this(dataDirectory, System.out, System.err);
+    public KeyContext(File directivesFile) {
+        this(directivesFile, System.out, System.err);
     }
 
     public File getDataDirectory() {
@@ -197,14 +207,6 @@ public class KeyContext extends DeltaContext {
 
     public void setKeyOutputFile(File keyOutputFile) {
         this._keyOutputFile = keyOutputFile;
-    }
-
-    public File getKeyTypesettingFile() {
-        return _keyTypesettingFile;
-    }
-
-    public void setKeyTypesettingFile(File keyTypesettingFile) {
-        this._keyTypesettingFile = keyTypesettingFile;
     }
 
     public File getListingFile() {
@@ -369,24 +371,19 @@ public class KeyContext extends DeltaContext {
     /**
      * Get the set of characters that have been set as variable for the
      * specified taxon, through the TREAT CHARACTERS AS VARIABLE directive
-     * @param taxonNumber the taxon number
+     * 
+     * @param taxonNumber
+     *            the taxon number
      * @return a set of character numbers
      */
     public Set<Integer> getVariableCharactersForTaxon(int taxonNumber) {
         return _taxonVariableCharacters.get(taxonNumber);
     }
-    
-    public File getTypesetFilesOutputDirectory() {
-        return _typesetFilesOutputDirectory;
-    }
 
-    public void setTypesetFilesOutputDirectory(File typesetFilesOutputDirectory) {
-        this._typesetFilesOutputDirectory = typesetFilesOutputDirectory;
-    }
-    
     /**
-     * Returns the column after the tabular key will be truncated, or -1 if no such
-     * value has been set - in this case, the entire tabular key should be output
+     * Returns the column after the tabular key will be truncated, or -1 if no
+     * such value has been set - in this case, the entire tabular key should be
+     * output
      */
     public int getTruncateTabularKeyAtColumnNumber() {
         return _truncateTabularKeyAtColumnNumber;

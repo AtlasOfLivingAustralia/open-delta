@@ -16,8 +16,8 @@ import junit.framework.TestCase;
 public class AllowImproperSubgroupsTest extends TestCase {
 
     public void testAllowImproperSubgroups() throws Exception {
-        URL dataDirectoryURL = getClass().getResource("/sample");
-        File dataDirectory= new File(dataDirectoryURL.toURI());
+        URL directivesFileURL = getClass().getResource("/sample/mykey");
+        File directivesFile = new File(directivesFileURL.toURI());
         
         URL charFileURL = getClass().getResource("/sample/kchars");
         File charFile = new File(charFileURL.toURI());
@@ -27,7 +27,7 @@ public class AllowImproperSubgroupsTest extends TestCase {
 
         // Use dummy temp file for data directory seeing as we don't have a use
         // for it here
-        KeyContext context = new KeyContext(dataDirectory);
+        KeyContext context = new KeyContext(directivesFile);
         context.setABase(1.0);
         context.setVaryWt(1.0);
         context.setRBase(1.0);
